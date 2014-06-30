@@ -2,11 +2,13 @@ package txtuml.export.cpp;
 
 import java.io.PrintWriter;
 import java.io.IOException;
+
 import txtuml.core.*;
+import txtuml.core.instructions.*;
 import txtuml.importer.Importer;
 import txtuml.importer.ImportException;
 
-public class Cpp {
+public class ExportCpp {
 	public static void main(String[] args) {
 		if(args.length != 2) {
 			System.out.println("Two command line arguments needed.");
@@ -14,13 +16,13 @@ public class Cpp {
 		}
 
 		try {
-			Model m = Importer.importModel(args[0]);
+			CoreModel m = Importer.importModel(args[0]);
             String header = createHeader(m);
-            PrintWriter writer = new PrintWriter(args[1] + "/" + m.getName() + ".hh", "UTF-8");
+            PrintWriter writer = new PrintWriter(args[1] + "\\" + m.getName() + ".hh", "UTF-8");
             writer.println(header);
             writer.close();
             String source = createSource(m);
-            writer = new PrintWriter(args[1] + "/" + m.getName() + ".cpp", "UTF-8");
+            writer = new PrintWriter(args[1] + "\\" + m.getName() + ".cpp", "UTF-8");
             writer.println(source);
             writer.close();
 		} catch(ImportException ie) {
@@ -30,7 +32,7 @@ public class Cpp {
         }
 	}
     
-    static String createHeader(Model m) {
+    static String createHeader(CoreModel m) {
         String guard = "__" + m.getName() + "_HH__";
         return "#ifndef " + guard + "\n"
              + "#define " + guard + "\n\n"
@@ -43,10 +45,10 @@ public class Cpp {
              + "#endif // " + guard;
     }
 
-    static String defineEvents(Model m) {
+    static String defineEvents(CoreModel m) {
         String result = "enum event { ";
         boolean isFirst = true;
-        for(txtuml.core.Event ev : m.getEvents()) {
+        for(CoreEvent ev : m.getEvents()) {
         	if(!isFirst) {
         		result += ", ";
         		isFirst = false;
@@ -57,25 +59,25 @@ public class Cpp {
         return result;
     }
 
-    static String declareMethods(Model m) {
+    static String declareMethods(CoreModel m) {
         String result = "";
-        for(txtuml.core.Method met : m.getMethods()) {
+        for(CoreMethod met : m.getMethods()) {
             result += "void " + met.getName() + "();\n";
         }
         return result;
     }
 
-    static String declareClasses(Model m) {
+    static String declareClasses(CoreModel m) {
         String result = "";
-        for(txtuml.core.Class cl : m.getClasses()) {
+        for(CoreClass cl : m.getClasses()) {
             result += "struct " + cl.getName() + ";\n";
         }
         return result;
     }
 
-    static String defineClasses(Model m) {
+    static String defineClasses(CoreModel m) {
         String result = "";
-        for(txtuml.core.Class cl : m.getClasses()) {
+        for(CoreClass cl : m.getClasses()) {
             result += "struct " + cl.getName() + "\n"
                     + "{\n"
                     + defineAttributes(cl,m)
@@ -86,15 +88,15 @@ public class Cpp {
         return result;
     }
     
-    static String defineAttributes(txtuml.core.Class cl, Model m) {
+    static String defineAttributes(CoreClass cl, CoreModel m) {
         String result = "";
-        for(Attribute attr : cl.getAttributes()) {
+        for(CoreAttribute attr : cl.getAttributes()) {
             result += "  " + compileType(attr.getType()) + " " + attr.getName() + ";\n";
         }
-        for(Association assoc : m.getAssociations()) {
+        for(CoreAssociation assoc : m.getAssociations()) {
         	if(assoc.getLeft().getParticipant() == cl) {
         		String name = assoc.getRight().getParticipant().getName();
-        		if(assoc.getRight().getMultiplicity().equals(Multiplicity.One)) {
+        		if(assoc.getRight().getMultiplicity().equals(CoreMultiplicity.One) || assoc.getRight().getMultiplicity().equals(CoreMultiplicity.MaybeOne)) {
         			result += "  " + name + " *" + assoc.getRight().getPhrase() + ";\n";
         		} else {
         			result += "  std::vector<" + name + "*> " + assoc.getRight().getPhrase() + ";\n";
@@ -102,7 +104,7 @@ public class Cpp {
         	}
         	if(assoc.getRight().getParticipant() == cl) {
         		String name = assoc.getLeft().getParticipant().getName();
-        		if(assoc.getLeft().getMultiplicity().equals(Multiplicity.One)) {
+        		if(assoc.getLeft().getMultiplicity().equals(CoreMultiplicity.One) || assoc.getRight().getMultiplicity().equals(CoreMultiplicity.MaybeOne)) {
         			result += "  " + name + " *" + assoc.getLeft().getPhrase() + ";\n";
         		} else {
         			result += "  std::vector<*" + name + "*> " + assoc.getLeft().getPhrase() + ";\n";
@@ -112,30 +114,30 @@ public class Cpp {
         return result;
     }
 
-    static String declareMethods(txtuml.core.Class cl) {
+    static String declareMethods(CoreClass cl) {
         String result = "";
-        for(Method m : cl.getMethods()) {
+        for(CoreMethod m : cl.getMethods()) {
             result += "  void " + m.getName() + "();\n";
         }
-        StateMachine stm = cl.getStateMachine();
+        CoreStateMachine stm = cl.getStateMachine();
         if(stm != null) {
-        	for(State st : stm.getStates()) {
+        	for(CoreState st : stm.getStates()) {
         		result += "  void " + st.getName() + "();\n";
         	}
-        	for(Transition tr : stm.getTransitions()) {
+        	for(CoreTransition tr : stm.getTransitions()) {
         		result += "  void " + tr.getAction().getName() + "();\n";
         	}
         }
         return result;
     }
 
-    static String defineStates(txtuml.core.Class cl) {
+    static String defineStates(CoreClass cl) {
         String result = "";
-        StateMachine stm = cl.getStateMachine();
+        CoreStateMachine stm = cl.getStateMachine();
         if(stm != null) {
             result += "  enum state { ";
             boolean first = true;
-            for(State st : stm.getStates()) {
+            for(CoreState st : stm.getStates()) {
                 if(!first) {
                     result += ", ";
                 }
@@ -150,7 +152,7 @@ public class Cpp {
         return result;
     }
     
-    static String compileType(DataType dt) {
+    static String compileType(CoreDataType dt) {
         switch(dt) {
             case IntType: return "int";
             case BoolType: return "bool";
@@ -159,16 +161,16 @@ public class Cpp {
         return "int";
     }
     
-	static String createSource(Model m) {
+	static String createSource(CoreModel m) {
         return "#include \"" + m.getName() + ".hh\"\n"
         	 + "#include <iostream>\n\n"
              + compileMethods(m)
              + compileMemberFunctions(m);
     }
 
-	static String compileMethods(Model m) {
+	static String compileMethods(CoreModel m) {
 		String result = "";
-		for(Method met : m.getMethods()) {
+		for(CoreMethod met : m.getMethods()) {
 			result += "void " + met.getName() + "()\n"
 			        + "{\n"
 			        + compileInstructions(met)
@@ -177,9 +179,9 @@ public class Cpp {
 		return result;
 	}
 
-	static String compileMemberFunctions(Model m) {
+	static String compileMemberFunctions(CoreModel m) {
 		String result = "";
-		for(txtuml.core.Class cl : m.getClasses()) {
+		for(CoreClass cl : m.getClasses()) {
             result += compileMemberFunctionsOfClass(cl)
             		+ compileStates(cl)
             		+ compileTransitions(cl);
@@ -187,31 +189,31 @@ public class Cpp {
 		return result;
 	}
 
-	static String compileMemberFunctionsOfClass(txtuml.core.Class c) {
+	static String compileMemberFunctionsOfClass(CoreClass c) {
 		String result = "";
-		StateMachine stm = c.getStateMachine();
+		CoreStateMachine stm = c.getStateMachine();
 		if(stm != null) {
 			result += c.getName() + "::" + c.getName() + "()\n"
 					+ "{\n";
-			State ini = stm.getInitialState(); 
+			CoreState ini = stm.getInitialState(); 
 			if(ini != null) {
 				result += "  current_state = state_" + ini.getName() + ";\n";
 			}
 			result += "}\n\n";
 			result += compileStateMachine(c,stm);
 		}
-		for(Method m : c.getMethods()) {
+		for(CoreMethod m : c.getMethods()) {
 			result += "void " + c.getName() + "::" + m.getName() + "()\n"
 					+ "{\n" + compileInstructions(m) + "}\n\n";
 		}
 		return result;
 	}
 
-	static String compileStates(txtuml.core.Class c) {
+	static String compileStates(CoreClass c) {
 		String result = "";
-		StateMachine stm = c.getStateMachine();
+		CoreStateMachine stm = c.getStateMachine();
 		if(stm != null) {
-			for(State st : stm.getStates()) {
+			for(CoreState st : stm.getStates()) {
 				result += "void " + c.getName() + "::" + st.getName() + "()\n"
 						+ "{\n" + compileInstructions(st.getAction()) + "}\n\n";
 			}
@@ -219,11 +221,11 @@ public class Cpp {
 		return result;
 	}
 
-	static String compileTransitions(txtuml.core.Class c) {
+	static String compileTransitions(CoreClass c) {
 		String result = "";
-		StateMachine stm = c.getStateMachine();
+		CoreStateMachine stm = c.getStateMachine();
 		if(stm != null) {
-			for(Transition tr : stm.getTransitions()) {
+			for(CoreTransition tr : stm.getTransitions()) {
 				result += "void " + c.getName() + "::" + tr.getAction().getName() + "()\n"
 						+ "{\n" + compileInstructions(tr.getAction()) + "}\n\n";
 			}
@@ -231,7 +233,7 @@ public class Cpp {
 		return result;
 	}
 
-	static String compileInstructions(Method m) {
+	static String compileInstructions(CoreMethod m) {
 		String result = "";
 		for(Instruction i : m.getInstructions()) {
 			if(i instanceof CreateInstruction) {
@@ -239,9 +241,13 @@ public class Cpp {
 				String typeName = ci.getType().getName();
 				String instName = ci.getReference().getName();
 				result += "  " + typeName + " *" + instName + " = new " + typeName + "();\n";
+			} else if(i instanceof DeleteInstruction) {
+				DeleteInstruction di = (DeleteInstruction)i;
+				String instName = di.getReference().getName();
+				result += "  delete " + instName + ";\n";
 			} else if(i instanceof LinkInstruction) {
 				LinkInstruction li = (LinkInstruction)i;
-				if(li.getAssociation().getRight().getMultiplicity().equals(Multiplicity.Many)) {
+				if(li.getAssociation().getRight().getMultiplicity().equals(CoreMultiplicity.Many) || li.getAssociation().getRight().getMultiplicity().equals(CoreMultiplicity.Some)) {
 					result += "  " + li.getLeftInstance().getName() + "->"
 				            + li.getAssociation().getRight().getPhrase()
 				            + ".push_back(" + li.getRightInstance().getName() + ");\n";
@@ -250,7 +256,7 @@ public class Cpp {
 				            + li.getAssociation().getRight().getPhrase()
 				            + " = &" + li.getRightInstance().getName() + ";\n";
 				}
-				if(li.getAssociation().getLeft().getMultiplicity().equals(Multiplicity.Many)) {
+				if(li.getAssociation().getLeft().getMultiplicity().equals(CoreMultiplicity.Many) || li.getAssociation().getLeft().getMultiplicity().equals(CoreMultiplicity.Some)) {
 					result += "  " + li.getRightInstance().getName() + "->"
 				            + li.getAssociation().getLeft().getPhrase()
 				            + ".push_back(" + li.getLeftInstance().getName() + ");\n";
@@ -263,6 +269,9 @@ public class Cpp {
 				CallInstruction ci = (CallInstruction)i;
 				result += "  " + ci.getObject().getName() + "->"
 				        + ci.getMethod().getName() + "();\n";
+			} else if(i instanceof LogErrorInstruction) {
+				LogErrorInstruction eli = (LogErrorInstruction)i;
+				result += "  std::cerr << \"" + eli.getMessage() + "\" << std::endl;\n";
 			} else if(i instanceof LogInstruction) {
 				LogInstruction li = (LogInstruction)i;
 				result += "  std::cout << \"" + li.getMessage() + "\" << std::endl;\n";
@@ -277,7 +286,7 @@ public class Cpp {
 					resultClassName = si.getAssociation().getLeft().getParticipant().getName();
 				}
 				String startName;
-				if(si.getStart().getName().equals(m.getSelf().getName())) {
+				if(m.getSelf() != null && si.getStart().getName().equals(m.getSelf().getName())) {
 					startName = "this";
 				} else {
 					startName = si.getStart().getName();
@@ -294,15 +303,16 @@ public class Cpp {
 				}
 				result += "  " + receiverName + "->send(" + si.getEvent().getName() + ");\n";
 			}
+			// TODO create the implementation of UnLinkInstruction
 		}
 		return result;
 	}
 	
-	static String compileStateMachine(txtuml.core.Class c, StateMachine stm) {
+	static String compileStateMachine(CoreClass c, CoreStateMachine stm) {
 		String result = "";
 		result += "void " + c.getName() + "::send(event e)\n" + "{\n";
 		String branchKeyword = "if";
-		for(Transition t : stm.getTransitions()) {
+		for(CoreTransition t : stm.getTransitions()) {
 			result += "  " + branchKeyword + "(current_state == state_" + t.getFrom().getName()
 					+ " && e == " + t.getTrigger().getName() + ")\n"
 					+ "  {\n"

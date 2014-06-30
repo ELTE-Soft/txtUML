@@ -1,5 +1,6 @@
 package txtuml.importer;
 
+@SuppressWarnings("serial")
 public class ImportException extends Exception {
 	public ImportException(String msg) {
 		message = msg;

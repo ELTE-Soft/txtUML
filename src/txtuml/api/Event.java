@@ -1,3 +1,5 @@
 package txtuml.api;
 
-public class Event {}
+public class Event {
+	protected Event() {}
+}

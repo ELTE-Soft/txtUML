@@ -2,14 +2,12 @@ package txtuml.core;
 
 import java.util.Vector;
 
-public class Method {
-    public Method(String n) {
-        name = n;
+import txtuml.core.instructions.Instruction;
+
+public class CoreMethod extends CoreNamedObject {
+    public CoreMethod(String name) {
+        super(name);
         instructions = new Vector<Instruction>();
-    }
-    
-    public String getName() {
-        return name;
     }
     
     public void addInstruction(Instruction i) {
@@ -20,15 +18,14 @@ public class Method {
 		return instructions;
 	}
 
-    public void setSelf(Instance i) {
+    public void setSelf(CoreInstance i) {
         self = i;
     }
     
-    public Instance getSelf() {
+    public CoreInstance getSelf() {
     	return self;
     }
 
-    String name;
-    Instance self;
-    Vector<Instruction> instructions;
+    private CoreInstance self;
+    private Vector<Instruction> instructions;
 }

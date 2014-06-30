@@ -33,13 +33,14 @@ public class JavaToUML2 {
 	}
 	
 	public static Model importModel(String className) throws ImportException {
-		Class modelClass = findModel(className);
+		// TODO unused
+		//Class<?> modelClass = findModel(className);
 		Model model = UMLFactory.eINSTANCE.createModel();
         model.setName(className);
         return model;
 	}
 	
-    static Class findModel(String className) throws ImportException {
+    static Class<?> findModel(String className) throws ImportException {
 		try {
 			return Class.forName(className);
 		} catch(ClassNotFoundException e) {

@@ -6,7 +6,7 @@ import txtuml.core.*;
 import txtuml.importer.Importer;
 import txtuml.importer.ImportException;
 
-public class XMI {
+public class ExportXMI {
 	public static void main(String[] args) {
 		if(args.length != 2) {
 			System.out.println("Two command line arguments needed.");
@@ -14,7 +14,7 @@ public class XMI {
 		}
 
 		try {
-			Model m = Importer.importModel(args[0]);
+			CoreModel m = Importer.importModel(args[0]);
             String xmi = createXmi(m);
             PrintWriter writer = new PrintWriter(args[1] + "/" + m.getName() + ".xmi", "UTF-8");
             writer.println(xmi);
@@ -32,7 +32,7 @@ public class XMI {
 		return Integer.toString(uniqueId++);
 	}
 	
-    static String createXmi(Model m) {
+    static String createXmi(CoreModel m) {
         return "<?xml version = '1.0' encoding = 'UTF-8' ?>\n"
              + "<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Wed May 21 09:04:47 CEST 2014'>\n"
              + "<XMI.header> <XMI.documentation>\n"
@@ -51,9 +51,9 @@ public class XMI {
              + "</XMI>\n";
     }
 
-    static String exportClasses(Model m) {
+    static String exportClasses(CoreModel m) {
         String result = "";
-        for(txtuml.core.Class cl : m.getClasses()) {
+        for(CoreClass cl : m.getClasses()) {
             result += "<UML:Class xmi.id = '" + cl.hashCode() + "'\n"
                     + "name = '" + cl.getName() + "' visibility = 'public' isSpecification = 'false' isRoot = 'false'\n"
                     + "isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>\n";
@@ -61,9 +61,9 @@ public class XMI {
         return result;
     }
 
-    static String exportAssociations(Model m) {
+    static String exportAssociations(CoreModel m) {
         String result = "";
-        for(Association assoc : m.getAssociations()) {
+        for(CoreAssociation assoc : m.getAssociations()) {
             result += "<UML:Association xmi.id = '" + assoc.hashCode() + "'\n"
                     + "name = '" + assoc.getName() + "' isSpecification = 'false' isRoot = 'false' isLeaf = 'false' isAbstract = 'false'>\n"
                     + "<UML:Association.connection>\n"
@@ -75,7 +75,7 @@ public class XMI {
         return result;
     }
     
-    static String exportAssociationEnd(AssociationEnd end) {
+    static String exportAssociationEnd(CoreAssociationEnd end) {
         return "<UML:AssociationEnd xmi.id = '" + end.hashCode() + "'\n"
                     + "name = '" + end.getPhrase() + "' visibility = 'public' isSpecification = 'false' isNavigable = 'true'\n"
                     + "ordering = 'unordered' aggregation = 'none' targetScope = 'instance' changeability = 'changeable'>\n"

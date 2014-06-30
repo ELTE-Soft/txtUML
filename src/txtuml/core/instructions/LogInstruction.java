@@ -1,4 +1,5 @@
-package txtuml.core;
+package txtuml.core.instructions;
+
 
 public class LogInstruction extends Instruction {
     public LogInstruction(String msg) {
@@ -9,5 +10,5 @@ public class LogInstruction extends Instruction {
     	return message;
     }
     
-    String message;
+    private String message;
 }
