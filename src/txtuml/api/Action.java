@@ -34,7 +34,6 @@ public class Action {
     		String leftPhrase,  ModelObject<?> leftObject,
     		String rightPhrase, ModelObject<?> rightObject) {
     	ModelClass leftObj = leftObject.getObject(), rightObj = rightObject.getObject();
-    	// no validation (Association class should be already validated)
         if(Importer.unLink(assocClass, leftPhrase, leftObj, rightPhrase, rightObj)) {
             return;
         }
