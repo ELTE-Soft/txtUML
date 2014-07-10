@@ -6,5 +6,7 @@
 	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.emf.common_2.9.2.v20131212-0545.jar"/>
 	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.uml2.uml_4.1.2.v20140202-2055.jar"/>
 	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.uml2.uml.resources_4.1.0.v20140202-2055.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.uml2.common_1.8.2.v20140202-2055.jar"/>
+	<classpathentry kind="con" path="org.eclipse.ajdt.core.ASPECTJRT_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

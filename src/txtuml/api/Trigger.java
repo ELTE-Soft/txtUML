@@ -3,4 +3,7 @@ package txtuml.api;
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Operation {}
+@Target(ElementType.TYPE)
+public @interface Trigger {
+	Class<? extends Signal> value();
+}

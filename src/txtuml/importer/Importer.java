@@ -8,20 +8,10 @@ import java.util.LinkedList;
 
 import txtuml.core.*;
 import txtuml.core.instructions.*;
-import txtuml.api.Association;
-import txtuml.api.Initial;
-import txtuml.api.ModelClass;
-import txtuml.api.ModelObject;
-import txtuml.api.ModelType;
-import txtuml.api.ModelInt;
-import txtuml.api.ModelBool;
-import txtuml.api.ModelString;
-import txtuml.api.Operation;
-import txtuml.api.State;
-import txtuml.api.Transition;
-import txtuml.api.Event;
+import txtuml.api.*;
 import txtuml.utils.InstanceCreator;
 
+// note on thread safety: during importation only thread is used
 public class Importer {
 	public static void main(String[] args) {
 		if(args.length != 1) {
@@ -57,14 +47,12 @@ public class Importer {
         // Import events
 		for(Class<?> c : modelClass.getDeclaredClasses()) {
 			if(isEvent(c)) {
-                model.addEvent(new CoreEvent(c.getSimpleName()));
+                model.addSignal(new CoreSignal(c.getSimpleName()));
 			}
 		}
         // Import method names
         for(Method m : modelClass.getDeclaredMethods()) {
-            if(m.getParameterTypes().length == 0) { // TODO remove when parameters are handled
-                model.addMethodName(m.getName());
-            }
+            model.addMethodName(m.getName());
         }
         // Import class attributes
 		for(Class<?> c : modelClass.getDeclaredClasses()) {
@@ -92,7 +80,7 @@ public class Importer {
 		for(Method m : modelClass.getDeclaredMethods()) {
 			CoreMethod coreMethod = model.getMethod(m.getName());
             if(coreMethod != null) {
-                importMethod(coreMethod,m,modelClass,model);
+                importMethod(coreMethod,m,modelClass);
 			}
 		}
         // Import class method bodies
@@ -102,7 +90,7 @@ public class Importer {
 				for(Method m : c.getDeclaredMethods()) {
                     CoreMethod coreMethod = coreClass.getMethod(m.getName());
                     if(coreMethod != null) {
-                        importMethod(coreMethod,m,c,model);
+                        importMethod(coreMethod,m,c);
                     }
                 }
 			}
@@ -111,7 +99,7 @@ public class Importer {
 		for(Class<?> c : modelClass.getDeclaredClasses()) {
 			if(isClass(c)) {
                 CoreClass coreClass = model.getClass(c.getSimpleName());
-                coreClass.setStateMachine(importStateMachine(coreClass,c,model));
+                coreClass.setStateMachine(importStateMachine(c,model));
 			}
 		}
         currentModel = null;
@@ -124,51 +112,50 @@ public class Importer {
 
     static Class<?> findModel(String className) throws ImportException {
 		try {
-			return Class.forName(className);
+			Class<?> ret = Class.forName(className);
+			if(!Model.class.isAssignableFrom(ret)) {
+				//throw new ImportException("A subclass of Model is expected, got: " + className);
+			}
+			return ret;
 		} catch(ClassNotFoundException e) {
 			throw new ImportException("Cannot find class: " + className);
 		}
     }
 	
 	static boolean isClass(Class<?> c) {
-		return (c.getSuperclass() == ModelClass.class);
-		// TODO not allow two or more level inheritance from ModelClass
+		return ModelClass.class.isAssignableFrom(c);
 	}
 
 	static boolean isAssociation(Class<?> c) {
-		return (c.getSuperclass() == Association.class);
-		// TODO not allow two or more level inheritance from Association		
+		return Association.class.isAssignableFrom(c);
 	}
     
 	static boolean isEvent(Class<?> c) {
-		return (c.getSuperclass() == Event.class);
-		// TODO not allow two or more level inheritance from Event
+		return Signal.class.isAssignableFrom(c);
 	}
 
     static boolean isAttribute(Field f) {
-        return f.getType().getSuperclass() == ModelType.class;   
+        return ModelType.class.isAssignableFrom(f.getType());   
     }
     
-    static boolean isState(Method m) {
-        return m.isAnnotationPresent(State.class);
+    static boolean isState(Class<?> c) {
+        return ModelClass.State.class.isAssignableFrom(c);
     }
 
-    static boolean isInitialState(Method m) {
-    	return m.isAnnotationPresent(Initial.class);
-    }
-    
-    static boolean isTransition(Method m) {
-        return m.isAnnotationPresent(Transition.class);
+    static boolean isInitialState(Class<?> c) {
+        return ModelClass.InitialState.class.isAssignableFrom(c);
     }
 
-    static boolean isOperation(Method m) {
-    	return m.isAnnotationPresent(Operation.class);
+    static boolean isCompositeState(Class<?> c) {
+        return ModelClass.CompositeState.class.isAssignableFrom(c);
+    }
+
+    static boolean isTransition(Class<?> c) {
+        return ModelClass.Transition.class.isAssignableFrom(c);
     }
     
     static boolean isMemberFunction(Method m) {
-        return (m.getDeclaredAnnotations().length == 0
-        		|| (m.getDeclaredAnnotations().length == 1 && m.isAnnotationPresent(Operation.class) ) )
-               && m.getParameterTypes().length == 0; // TODO remove when parameters are handled
+        return m.getParameterTypes().length == 0; // TODO remove when parameters are handled
     }
     
     static CoreAssociation importAssociation(Class<?> c, CoreModel m) throws ImportException {
@@ -215,19 +202,20 @@ public class Importer {
     }
 
 	static void importMethod(CoreMethod coreMethod, Method sourceMethod,
-                             Class<?> declaringClass, CoreModel model, Object... params) {
+                             Class<?> declaringClass, Object... params) {
 		instructionBuffer = coreMethod;
 		sourceMethod.setAccessible(true);
-        setLocalInstanceToBeDeclared(true);
+        setLocalInstanceToBeCreated(true);
 		Object o = InstanceCreator.createInstance(declaringClass,3);
-        setLocalInstanceToBeDeclared(false);
+        setLocalInstanceToBeCreated(false);
         if(o instanceof ModelClass) {
             coreMethod.setSelf(new CoreInstance(((ModelClass)o).getIdentifier()));
-            InstanceCreator.createInstance(ModelObject.class, 1, o);
         }
 		try {
 			sourceMethod.invoke(o,params);
 		} catch(Exception e) {
+			System.out.println(sourceMethod.getName());
+			System.out.println(o.getClass().getSimpleName());
 			e.printStackTrace();
 		}
 		instructionBuffer = null;
@@ -250,63 +238,106 @@ public class Importer {
         return null;
     }
     
-    static CoreStateMachine importStateMachine(CoreClass coreClass,
-      Class<?> sourceClass, CoreModel model) throws ImportException {
+    static CoreStateMachine importStateMachine(Class<?> sourceClass, CoreModel model) throws ImportException {
         CoreStateMachine result = new CoreStateMachine();
-        for(Method method : sourceClass.getDeclaredMethods()) {
-			boolean isState = false, isTransition = false;
-            if(isState(method)) {
-            	isState = true;
-            	CoreState st = importState(method,coreClass,sourceClass,model);
-                result.addState(st);
-                if(isInitialState(method)) {
+        for(Class<?> c : sourceClass.getDeclaredClasses()) {
+            if(isState(c)) {
+            	CoreState st;
+                if(isInitialState(c)) {
         			if (result.getInitialState() != null) {
-                    	throw new ImportException(sourceClass.getName() + " has two initial states: " + result.getInitialState().getName() + ", " + method.getName());
+                    	throw new ImportException(sourceClass.getName() + " has two initial states: " + result.getInitialState().getName() + ", " + c.getName());
         			}
+                	st = new CoreState(c.getSimpleName(),true);
                 	result.setInitialState(st);
+                } else {
+                	st = importState(c,model);
                 }
+                result.addState(st);
             }
-            if(isTransition(method)) {
-            	isTransition = true;
-				if (isState) {
-					throw new ImportException(sourceClass.getName() + "." + method.getName() + " cannot be a state and a transition at the same time");
-				}
-                result.addTransition(importTransition(method,result,sourceClass,model));
-            }
-            if (isOperation(method)) {
-				if (isState) {
-					throw new ImportException(sourceClass.getName() + "." + method.getName() + " cannot be a state and an operation at the same time");
-				}
-				if (isTransition) {
-					throw new ImportException(sourceClass.getName() + "." + method.getName() + " cannot be a transition and operation at the same time");
-				}
-        	} else if (!isState && !isTransition) {
-    			importWarning(sourceClass.getName() + "." + method.getName() + " is a non-state method not annotated to be an operation");				
-        	}
         }
-        if(result.getStates().size() != 0 && result.getInitialState() == null) {
-        	importWarning(sourceClass.getName() + " has one or more states but no initial state (state machine will not be created)");
+        for(Class<?> c: sourceClass.getDeclaredClasses()) {
+        	 if(isTransition(c)) {
+        		 result.addTransition(importTransition(c,result,model));
+             }
+        }
+        if(result.getInitialState() == null) {
+        	if (result.getStates().size() != 0) {
+        		importWarning(sourceClass.getName() + " has one or more states but no initial state (state machine will not be created)");
+        	}
         	return null;
         }
         return result;
     }
     
-    static CoreState importState(Method state, CoreClass coreClass, Class<?> sourceClass, CoreModel model) {
-		String stateName = state.getName();
-        CoreMethod coreMethod = new CoreMethod(stateName);
-        importMethod(coreMethod, state, sourceClass, model);
-        return new CoreState(stateName, coreMethod);
+    static CoreState importState(Class<?> state, CoreModel model) throws ImportException { // not initial
+    	String stateName = state.getSimpleName();
+        CoreMethod entry = new CoreMethod(stateName + "_entry");
+        CoreMethod exit = new CoreMethod(stateName + "_exit");
+		try {
+	        importMethod(entry, state.getMethod("entry"), state);
+	        importMethod(exit, state.getMethod("exit"), state);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace(); // not possible
+		}
+		if (isCompositeState(state)) {
+			return new CoreState(stateName, entry, exit, importStateMachine(state, model));
+		} else {
+			return new CoreState(stateName, entry, exit);
+		}
     }
 
-    static CoreTransition importTransition(Method trans, CoreStateMachine stateMachine, Class<?> sourceClass, CoreModel model) {
-		String trName = trans.getName();
-        Transition trAnnot = (Transition)trans.getAnnotation(Transition.class);
-        CoreState from = stateMachine.getState(trAnnot.from());
-        CoreState to = stateMachine.getState(trAnnot.to());
-        CoreEvent event = model.getEvent(trans.getParameterTypes()[0].getSimpleName());
-        CoreMethod coreMethod = new CoreMethod(trName);
-        importMethod(coreMethod, trans, sourceClass, model, (Object)null);
-        return new CoreTransition(event, from, to, coreMethod);
+    static CoreTransition importTransition(Class<?> trans, CoreStateMachine stateMachine, CoreModel model) throws ImportException {
+		String trName = trans.getSimpleName();
+		From fromAnnot = trans.getAnnotation(From.class);
+		if (fromAnnot == null) {
+			throw new ImportException("transition " + trans.getSimpleName() + " has no @From annotation");
+		}
+		To toAnnot = trans.getAnnotation(To.class);
+		if (toAnnot == null) {
+			throw new ImportException("transition " + trans.getSimpleName() + " has no @To annotation");
+		}
+		if (fromAnnot.value().getEnclosingClass() != toAnnot.value().getEnclosingClass()) {
+			throw new ImportException("the two states connected by transition " + trans.getSimpleName() + " are not part of the same state machine or composite state");
+		}
+		CoreState from = stateMachine.getState(fromAnnot.value().getSimpleName());
+        CoreState to = stateMachine.getState(toAnnot.value().getSimpleName());
+        if (to.isInitial()) {
+			throw new ImportException("transition " + trans.getSimpleName() + " goes to an initial state");
+        }
+        Trigger triggerAnnot = trans.getAnnotation(Trigger.class);
+        CoreSignal signal = null;
+        if (triggerAnnot == null) {
+        	if (!from.isInitial()) {
+    			throw new ImportException("transition " + trans.getSimpleName() + " has no @Trigger annotation which is only allowed from an initial state");
+        	}
+        } else {
+        	signal = model.getSignal(triggerAnnot.value().getSimpleName());
+        }
+        CoreMethod effect = new CoreMethod(trName + "_effect");
+        CoreMethod guard = new CoreMethod(trName + "_guard");
+        
+        try {
+        	importMethod(effect, trans.getDeclaredMethod("effect"), trans);
+        } catch (NoSuchMethodException e) {
+        	effect = null; // effect is not redefined
+        }
+        try {
+        	importMethod(guard,  trans.getDeclaredMethod("guard"), trans);
+        	if (from.isInitial()) {
+        		throw new ImportException("transition " + trans.getSimpleName() + " goes from an initial state and redefines its guard which is not allowed");
+        	}
+        } catch (NoSuchMethodException e) {
+        	guard = null; // guard is not redefined
+        }
+        return new CoreTransition(signal, from, to, effect, guard);
+    }
+    
+    public static Signal createSignal(Class<? extends ModelClass.Transition> tr) {
+    	Trigger triggerAnnot = tr.getAnnotation(Trigger.class);
+    	if (triggerAnnot != null) {
+        	return InstanceCreator.createInstance(triggerAnnot.value(), 3);
+    	}
+		return null;
     }
     
     public static boolean createInstance(ModelClass created) {
@@ -353,42 +384,61 @@ public class Importer {
         return false;
     }
     
-    public static boolean call(ModelClass obj, String methodName) {
-        if(instructionBuffer != null) {
-            CoreInstance o = new CoreInstance(obj.getIdentifier());
-            CoreClass c = currentModel.getClass(obj.getClass().getSimpleName());
-            CoreMethod m = c.getMethod(methodName);
-            instructionBuffer.addInstruction(new CallInstruction(o,m));
-            return true;
-        }
-        return false;
+    public static Object call(ModelClass target, String methodName, Object... args) {
+    	// this method is called at every method call where the target object is of any type that extends ModelClass 
+    	// parameters: the target object, the name of the called method and the given parameters
+        CoreInstance o = new CoreInstance(target.getIdentifier());
+        CoreClass c = currentModel.getClass(target.getClass().getSimpleName());
+        CoreMethod m = c.getMethod(methodName);
+        instructionBuffer.addInstruction(new CallInstruction(o,m));
+        return null;
+        // TODO should return an instance of the actual return type of the called method
+        // it can be get through its Method class
+        // the imported model will get this returned object as the result of the method call
+        // (if the called method is a void, a null can be returned) 
+    }
+	
+    public static Object callExternal(Class<?> c, String methodName, Object... args) {
+		// this method is called before any STATIC call where the target class does NOT implement the ModelElement interface 
+    	// parameters: the target class, the name of the called method and the given parameters
+    	return null;
+        // TODO not implemented; should return an instance of the actual return type of the called method
+        // it can be get through its Method class
+        // the imported model will get this returned object as the result of the method call
+	}
+    
+    public static void fieldGet(ModelClass target, String fieldName) {
+    	// TODO not implemented
+    	// this method is called BEFORE any field get on a ModelClass object
+    	// if this method changes the value of the actual field, the model will get that value as the result of this field get
     }
 
+    public static void fieldSet(ModelClass target, String fieldName, Object newValue) {
+    	// TODO not implemented
+    	// this method is called BEFORE any field set on a ModelClass object
+    }
+    
 	public static ModelClass selectOne(ModelClass start, Class<? extends Association> assocClass, String phrase) {
-        if(instructionBuffer != null) {
-            Field[] fields = assocClass.getDeclaredFields();
-            ModelClass result = null;
-			for(Field field : fields) {
-				if(field.getName().equals(phrase)) {
-                    setLocalInstanceToBeDeclared(true);
-					result = (ModelClass)InstanceCreator.createInstance(field.getType(),3);
-		            InstanceCreator.createInstance(ModelObject.class, 1, result);
-                    setLocalInstanceToBeDeclared(false);
-                    break;
-				}
-			}            
-            CoreInstance st = new CoreInstance(start.getIdentifier());
-            CoreAssociation asc = currentModel.getAssociation(assocClass.getSimpleName());
-            CoreInstance res = new CoreInstance(result.getIdentifier());
-            instructionBuffer.addInstruction(new SelectOneInstruction(st,asc,phrase,res));
-            return result;
-        }
-        return null;
+        Field[] fields = assocClass.getDeclaredFields();
+        ModelClass result = null;
+		for(Field field : fields) {
+			if(field.getName().equals(phrase)) {
+                setLocalInstanceToBeCreated(true);
+				result = (ModelClass)InstanceCreator.createInstance(field.getType(),3);
+                setLocalInstanceToBeCreated(false);
+                break;
+			}
+		}            
+        CoreInstance st = new CoreInstance(start.getIdentifier());
+        CoreAssociation asc = currentModel.getAssociation(assocClass.getSimpleName());
+        CoreInstance res = new CoreInstance(result.getIdentifier());
+        instructionBuffer.addInstruction(new SelectOneInstruction(st,asc,phrase,res));
+        return result;
 	}
 
-	public static boolean send(ModelClass receiver, Class<? extends Event> eventClass) {
+	public static boolean send(ModelClass receiver, Signal event) {
 		if(instructionBuffer != null) {
-            CoreEvent ev = currentModel.getEvent(eventClass.getSimpleName());
+            CoreSignal ev = currentModel.getSignal(event.getClass().getSimpleName());
             CoreInstance rec = new CoreInstance(receiver.getIdentifier());
             instructionBuffer.addInstruction(new SendInstruction(ev,rec));
 			return true;
@@ -413,25 +463,18 @@ public class Importer {
 	}
 
 	public static boolean runtimeLog(String message) {
-		// TODO Auto-generated method stub
+		// log generated by the api package 
+		// TODO not implemented
 		return false;
 	}
 	
 	public static boolean runtimeErrorLog(String message) {
-		// TODO Auto-generated method stub
+		// error log generated by the api package 
+		// TODO not implemented
 		return false;
 	}	
 	
-	public static boolean callExternal(Class<?> c, String methodName) {
-		if(instructionBuffer != null) {
-            // TODO not implemented 
-			// instructionBuffer.addInstruction(new CallExternalInstruction(c,methodName));
-			return true;
-		}
-		return false;
-	}
-
-	static void setLocalInstanceToBeDeclared(boolean bool) {
+	static void setLocalInstanceToBeCreated(boolean bool) {
 		localInstanceToBeCreated = bool;
 	}
 	

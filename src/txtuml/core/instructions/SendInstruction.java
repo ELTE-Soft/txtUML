@@ -1,15 +1,15 @@
 package txtuml.core.instructions;
 
-import txtuml.core.CoreEvent;
+import txtuml.core.CoreSignal;
 import txtuml.core.CoreInstance;
 
 public class SendInstruction extends Instruction {
-    public SendInstruction(CoreEvent ev, CoreInstance rec) {
+    public SendInstruction(CoreSignal ev, CoreInstance rec) {
         event = ev;
         receiver = rec;
     }
     
-    public CoreEvent getEvent() {
+    public CoreSignal getEvent() {
     	return event;
     }
     
@@ -17,6 +17,6 @@ public class SendInstruction extends Instruction {
     	return receiver;
     }
     
-    private CoreEvent event;
+    private CoreSignal event;
     private CoreInstance receiver;
 }

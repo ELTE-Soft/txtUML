@@ -1,3 +1,3 @@
 package txtuml.api;
 
-public class Interface {}
+public class Interface implements ModelElement {}

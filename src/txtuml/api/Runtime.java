@@ -3,15 +3,12 @@ package txtuml.api;
 import java.util.Vector;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 import txtuml.api.Association;
 import txtuml.api.ModelClass;
 import txtuml.utils.InstanceCreator;
 
-public final class Runtime {
-	
+public final class Runtime implements ModelElement {	
 	public static final class Settings {
 		public static void setUserOutStream(PrintStream userOutStream) {
 			Settings.userOutStream = userOutStream;
@@ -25,10 +22,17 @@ public final class Runtime {
 		public static void setRuntimeErrorStream(PrintStream runtimeErrorStream) {
 			Settings.runtimeErrorStream = runtimeErrorStream;
 		}
+		public static void setRuntimeLog(boolean newValue) {
+			runtimeLog = newValue;
+		}
+		static boolean runtimeLog() {
+			return runtimeLog;
+		}
 		private static PrintStream userOutStream = System.out;
 		private static PrintStream userErrorStream = System.err;
 		private static PrintStream runtimeOutStream = System.out;
-		private static PrintStream runtimeErrorStream = System.err;		
+		private static PrintStream runtimeErrorStream = System.err;
+		private static boolean runtimeLog = false;
 	}
 	
 	static void link(Class<? extends Association> assocClass, String leftPhrase,  ModelClass leftObj, String rightPhrase, ModelClass rightObj) {
@@ -70,23 +74,27 @@ public final class Runtime {
 	}
 	
 	static void delete(ModelClass obj) {
-		if (obj == null) return;
-		for (Association assoc : associations) {
-			Field[] fs = assoc.getClass().getDeclaredFields();
-			for(Field f : fs) {
-				f.setAccessible(true);
-				try {
-					if (f.get(assoc) == obj) {
-						Action.runtimeErrorLog("Error: object is not allowed to be deleted because of existing associations.");
+		if (obj == null) {
+			return;
+		}
+		synchronized(obj) {
+			for (Association assoc : associations) {
+				Field[] fs = assoc.getClass().getDeclaredFields();
+				for(Field f : fs) {
+					f.setAccessible(true);
+					try {
+						if (f.get(assoc) == obj) {
+							Action.runtimeErrorLog("Error: object is not allowed to be deleted because of existing associations.");
+						}
+					} catch (IllegalArgumentException | IllegalAccessException e) {
+						// this should not be possible to happen
+						e.printStackTrace();
 					}
-				} catch (IllegalArgumentException | IllegalAccessException e) {
-					e.printStackTrace();
-					// this should not be possible to happen
 				}
 			}
+		    obj.finishThread();
+		    // TODO how to delete object?
 		}
-	    obj.finishThread();
-	    obj.self().deleteObject();
 	}
 	
 	static Object selectOne(ModelClass start, Class<? extends Association> assocClass, String phrase) {
@@ -120,49 +128,36 @@ public final class Runtime {
 	}
 	
 	static void log(String message) { // user log
-        Settings.userOutStream.println(message);
+        synchronized(Settings.userOutStream) {
+        	Settings.userOutStream.println(message);
+        }
     }
 
 	static void logError(String message) { // user log
-        Settings.userErrorStream.println(message);
+        synchronized(Settings.userErrorStream) {
+        	Settings.userErrorStream.println(message);
+        }
 	}
 	
 	static void runtimeLog(String message) { // api log
-        Settings.runtimeOutStream.println(message);
+        synchronized(Settings.runtimeOutStream) {
+        	Settings.runtimeOutStream.println(message);
+        }
+	}
+
+	static void runtimeFormattedLog(String format, Object... args) { // api log
+        synchronized(Settings.runtimeOutStream) {
+			Settings.runtimeOutStream.format(format, args);
+        }
 	}
 	
 	static void runtimeErrorLog(String message) { // api log
-        Settings.runtimeErrorStream.println(message);
-	}	
-	
-	static void call(ModelClass obj, String methodName) {
-	    try {
-	        Method m = obj.getClass().getDeclaredMethod(methodName);
-			m.setAccessible(true);
-	        m.invoke(obj);
-	    } catch (NoSuchMethodException e) {
-	    	Action.runtimeErrorLog("Error:" + obj.getClass().getName() + "." + methodName + " not found");
-		} catch (IllegalAccessException | IllegalArgumentException e) {
-			Action.runtimeErrorLog("Error:" + obj.getClass().getName() + "." + methodName + " cannot be called due to: " + e.getMessage());
-		} catch (InvocationTargetException e) {
-			Action.runtimeErrorLog("Exception:" + obj.getClass().getName() + "." + methodName + " threw " + e.getTargetException().toString());
-		}
+        synchronized(Settings.runtimeErrorStream) {
+        	Settings.runtimeErrorStream.println(message);
+        }
 	}
 	
-	static void callExternal(Class<?> c, String methodName) {
-        try {
-            Method m = c.getMethod(methodName);
-            m.invoke(null); // TODO Works for static methods only
-	    } catch (NoSuchMethodException e) {
-	    	Action.runtimeErrorLog("Error:" + c.getName() + "." + methodName + " not found");
-		} catch (IllegalAccessException | IllegalArgumentException e) {
-			Action.runtimeErrorLog("Error:" + c.getName() + "." + methodName + " cannot be called due to: " + e.getMessage());
-		} catch (InvocationTargetException e) {
-			Action.runtimeErrorLog("Exception:" + c.getName() + "." + methodName + " threw " + e.getTargetException().toString());
-		}
-    }
-	
-	static void send(ModelClass receiverObj, Class<? extends Event> event) {
+	static void send(ModelClass receiverObj, Signal event) {
 		receiverObj.send(event);
 	}
 	

@@ -1,3 +1,3 @@
 package txtuml.api;
 
-public class Component {}
+public class Component implements ModelElement {}

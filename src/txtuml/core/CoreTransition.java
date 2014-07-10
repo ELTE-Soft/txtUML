@@ -1,11 +1,12 @@
 package txtuml.core;
 
 public class CoreTransition {
-    public CoreTransition(CoreEvent e, CoreState f, CoreState t, CoreMethod a) {
-        trigger = e;
+    public CoreTransition(CoreSignal s, CoreState f, CoreState t, CoreMethod e, CoreMethod g) {
+        trigger = s;
         from = f;
         to = t;
-        action = a;
+        effect = e;
+        guard = g;
     }
     
     public CoreState getFrom() {
@@ -16,16 +17,21 @@ public class CoreTransition {
     	return to;
     }
 
-    public CoreEvent getTrigger() {
+    public CoreSignal getTrigger() {
     	return trigger;
     }
 
-    public CoreMethod getAction() {
-    	return action;
+    public CoreMethod getEffect() {
+    	return effect;
     }
 
-	private CoreEvent trigger;
+    public CoreMethod getGuard() {
+    	return guard;
+    }
+    
+	private CoreSignal trigger;
 	private CoreState from;
 	private CoreState to;
-	private CoreMethod action;
+	private CoreMethod effect;
+	private CoreMethod guard;
 }

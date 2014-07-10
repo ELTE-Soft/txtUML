@@ -2,38 +2,98 @@ package txtuml.examples.example1;
 
 import txtuml.api.*;
 
-class Model1 {
+class Model1 extends Model {
 	
 	class Machine extends ModelClass {
-		ModelInt modelNumber = new ModelInt(200);
-        @State void on() {
-            Action.log("Current state: 'on'");
-            Action.callExternal(txtuml.examples.example1.MachineUI.class, "showOn");
+		ModelInt tasksTodo = new ModelInt(2);
+
+		class Init extends InitialState {}
+		
+		class Off extends State {
+			@Override public void entry() {
+	        	Action.log("Enters state: 'off'");
+            }
+            @Override public void exit() {
+	        	Action.log("Exits state: 'off'");
+            }
 		}
-		@Initial @State void off() {
-            Action.log("Current state: 'off'");
+				
+		class On extends CompositeState {
+			@Override public void entry() {
+	        	Action.log("Enters state: 'on'");
+				MachineUI.showOn();
+            }
+			@Override public void exit() {
+	        	Action.log("Exits state: 'on'");
+            }
+			
+			class Init extends InitialState {}
+
+			class Active extends State {
+				@Override public void entry() {
+		            Action.log("Enters state: 'active'");
+					Action.log("tasks todo: " + Machine.this.tasksTodo); // not valid: when importing, the actual value of tasksTodo will be burnt into the code (this was only written for the testing)
+				}
+	            @Override public void exit() {
+		        	Action.log("Exits state: 'active'");
+	            }
+			}
+
+			@From(Init.class) @To(Active.class)
+			class Initialize extends Transition {}
+			
+			@From(Active.class) @To(Active.class) @Trigger(DoTasks.class)
+			class DoActivity extends Transition {
+				@Override public void effect() {
+					DoTasks dTE = getSignal();
+					Machine.this.tasksTodo = Machine.this.tasksTodo.subtract(dTE.count);
+					Action.log("\tBecoming active...");
+				}
+			}
+		}		
+
+		@From(Init.class) @To(Off.class)
+		class Initialize extends Transition {
+			@Override public void effect() {
+				Action.log("\tInitializing...");
+			}
+		} 
+		
+		@From(Off.class) @To(On.class) @Trigger(ButtonPress.class)
+        class SwitchOn extends Transition {
+			@Override public void effect() {
+				Action.log("\tSwitch on...");
+			}
+			
 		}
-		@Transition(from="off", to="on")
-        void switchOn(ButtonPress event) {
-			Action.log("Switch on...");
-		}
-		@Transition(from="on", to="off")
-        void switchOff(ButtonPress event) {
-			Action.log("Switch off...");
+		
+		@From(On.class) @To(Off.class) @Trigger(ButtonPress.class)
+		class SwitchOff extends Transition {
+			@Override public void effect() {
+				Action.log("\tSwitch off...");
+			}
+			@Override public ModelBool guard() {
+				return Machine.this.tasksTodo.isLessEqual(new ModelInt(0));
+			}
 		}
 	}
 	
 	class User extends ModelClass {
-		ModelString name = new ModelString(); // equivalent to new ModelString(""); 
-		@Operation
 		void doWork() {
-			Action.log("Starting to work...");
-			ModelObject<Machine> myMachine = // type-safe usage
-					Action.selectOne(self(), Usage.class, "usedMachine");
-					// using "this" does not work, must use protected function self() (inherited from ModelClass)
-			Action.send(myMachine, ButtonPress.class);
-			Action.send(myMachine, ButtonPress.class);
-            Action.log("Work finished...");
+			Action.log("User: starting to work...");
+			Machine myMachine =	Action.selectOne(this, Usage.class, "usedMachine");
+			
+			Action.send(myMachine, new ButtonPress()); // switches the machine on
+			Action.send(myMachine, new ButtonPress()); // tries to switch it off, but fails because of the guard
+			Action.send(myMachine, new DoTasks(new ModelInt(1))); // the machine becomes active and decreases its tasks-to-do count by 1 
+
+			Action.send(myMachine, new ButtonPress()); // tries to switch it off, but fails again
+			Action.send(myMachine, new DoTasks(new ModelInt(1))); // the machine becomes active again and decreases its tasks-to-do count by 1
+			
+			Action.send(myMachine, new ButtonPress()); // tries to switch the machine off, now with success 
+			Action.send(myMachine, new DoTasks(new ModelInt(1))); // this event has no effect, the machine is switched off
+
+			Action.log("User: work finished...");
 		}
 	}
     
@@ -42,24 +102,28 @@ class Model1 {
 		@Many User userOfMachine;
 	}
 
-	class ButtonPress extends Event {}
+	class ButtonPress extends Signal {
+		ModelString name = new ModelString("ButtonPress");
+	}
 
-	public void test() {		
-		//three ways to use class ModelObject
-		@SuppressWarnings("rawtypes")
-		ModelObject m = // simplest version (with warning)
-				Action.create(Machine.class); 
-		ModelObject<?> u1 = // without warning
-				Action.create(User.class);
-		ModelObject<User> u2 = // type-safe usage
-				Action.create(User.class);
+	class DoTasks extends Signal {
+		DoTasks(ModelInt count) {
+			this.count = count; 
+		}
+		ModelInt count;
+	}
+	
+	public void test() {
+		txtuml.api.Runtime.Settings.setRuntimeLog(true);
+		Machine m = new Machine(); 
+		User u1 = new User();
+		User u2 = Action.create(User.class); //almost equivalent to 'new User()'
+												//not exactly: with current implementation the object created by Action.create() will have no enclosing Model1 object
 		
-		//all the three works correctly with the methods of class Action 
         Action.link(Usage.class, "usedMachine", m, "userOfMachine", u1);
         Action.link(Usage.class, "usedMachine", m, "userOfMachine", u2);
-        Action.call(u1, "doWork");
-        Action.call(u2, "doWork");
-        
+        u1.doWork();
+
         /*
          * to test the instance deletion
         

@@ -8,7 +8,7 @@ public class CoreModel extends CoreNamedObject {
         classes = new Vector<CoreClass>();
 		associations = new Vector<CoreAssociation>();
 		methods = new Vector<CoreMethod>();
-		events = new Vector<CoreEvent>();
+		signals = new Vector<CoreSignal>();
 	}
 
 	public void addClassName(String className) {
@@ -49,21 +49,21 @@ public class CoreModel extends CoreNamedObject {
         methods.add(m);
     }
 
-    public void addEvent(CoreEvent e) {
-        events.add(e);
+    public void addSignal(CoreSignal s) {
+        signals.add(s);
     }
 
-    public CoreEvent getEvent(String eventName) {
-        for(CoreEvent e : events) {
-            if(e.getName().equals(eventName)) {
-                return e;
+    public CoreSignal getSignal(String signalName) {
+        for(CoreSignal s : signals) {
+            if(s.getName().equals(signalName)) {
+                return s;
             }
         }
         return null;
     }
 
-    public Vector<CoreEvent> getEvents() {
-    	return events;
+    public Vector<CoreSignal> getEvents() {
+    	return signals;
     }
     
     public void addMethodName(String methodName) {
@@ -87,5 +87,5 @@ public class CoreModel extends CoreNamedObject {
     private Vector<CoreClass> classes;
     private Vector<CoreAssociation> associations;
     private Vector<CoreMethod> methods;
-    private Vector<CoreEvent> events;
+    private Vector<CoreSignal> signals;
 }

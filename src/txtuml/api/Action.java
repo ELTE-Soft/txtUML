@@ -3,27 +3,14 @@ package txtuml.api;
 import txtuml.importer.Importer;
 import txtuml.utils.InstanceCreator;
 
-public class Action {
-	public static <T extends ModelClass> ModelObject<T> create(Class<T> classType) {
-		T obj = InstanceCreator.createInstance(classType, 1);
-		if (!Importer.createInstance(obj)) {
-			obj.startThread();
-		}
-		return new ModelObject<T>(obj);
-	}
-	
-	public static void assign(ModelType left, ModelType right) {
-		// TODO Action.assign
+public class Action implements ModelElement {
+	public static <T extends ModelClass> T create(Class<T> classType) {
+		return InstanceCreator.createInstance(classType, 1);
 	}
 
-	public static void assign(ModelType left, String right) {
-		// TODO Action.assign
-	}
-	
-    public static void link(Class<? extends Association> assocClass,
-    		String leftPhrase,  ModelObject<?> leftObject,
-    		String rightPhrase, ModelObject<?> rightObject) {
-    	ModelClass leftObj = leftObject.getObject(), rightObj = rightObject.getObject();
+	public static void link(Class<? extends Association> assocClass,
+    		String leftPhrase,  ModelClass leftObj,
+    		String rightPhrase, ModelClass rightObj) {
         if(Importer.link(assocClass, leftPhrase, leftObj, rightPhrase, rightObj)) {
             return;
         }
@@ -31,63 +18,43 @@ public class Action {
     }
 
     public static void unLink(Class<? extends Association> assocClass,
-    		String leftPhrase,  ModelObject<?> leftObject,
-    		String rightPhrase, ModelObject<?> rightObject) {
-    	ModelClass leftObj = leftObject.getObject(), rightObj = rightObject.getObject();
+    		String leftPhrase,  ModelClass leftObj,
+    		String rightPhrase, ModelClass rightObj) {
         if(Importer.unLink(assocClass, leftPhrase, leftObj, rightPhrase, rightObj)) {
             return;
         }
         Runtime.unLink(assocClass, leftPhrase, leftObj, rightPhrase, rightObj);
     }
-    
-    public static void call(ModelObject<?> object, String methodName) {
-        ModelClass obj = object.getObject();
-    	if(Importer.call(obj,methodName)) {
-            return;
-        }        
-    	Runtime.call(obj, methodName);
-    }
 
-	@SuppressWarnings("unchecked") // unchecked cast from ModelClass to T (runtime check)
-	public static <T extends ModelClass> ModelObject<T> selectOne(ModelObject<?> startObject, Class<? extends Association> assocClass, String phrase) {
-		ModelClass startObj = startObject.getObject();
-		ModelClass importResult	= Importer.selectOne(startObj, assocClass, phrase);
-        if(importResult != null) {
-            return (ModelObject<T>) ((T)importResult).self();
+	@SuppressWarnings("unchecked") // unchecked cast from ModelClass to T
+	public static <T extends ModelClass> T selectOne(ModelClass startObj, Class<? extends Association> assocClass, String phrase) {
+        if(Importer.instructionImport()) {
+            return (T) Importer.selectOne(startObj, assocClass, phrase);
 		}
-		return (ModelObject<T>) ((T)Runtime.selectOne(startObj, assocClass, phrase)).self();
+		return (T) Runtime.selectOne(startObj, assocClass, phrase);
 	}
 	
-	public static void send(ModelObject<?> receiverObject, Class<? extends Event> event) {
-		ModelClass receiverObj = receiverObject.getObject();
+	public static void send(ModelClass receiverObj, Signal event) {
 		if(Importer.send(receiverObj, event)) {
 			return;
 		}
 		Runtime.send(receiverObj, event);
 	}
 
-	public static void delete(ModelObject<?> object) {
-		ModelClass obj = object.getObject();		
-    	if(Importer.delete(object.getObject())) {
+	public static void delete(ModelClass obj) {
+    	if(Importer.delete(obj)) {
     		return;
     	}
     	Runtime.delete(obj);
     }
-    	
-    public static void callExternal(Class<?> c, String methodName) {
-		if(Importer.callExternal(c, methodName)) {
-			return;
-		}
-		Runtime.callExternal(c,methodName);        
-    }
-    
+
 	public static void log(String message) { // user log
 		if(Importer.log(message)) {
 			return;
 		}
 		Runtime.log(message);
 	}
-    
+    	
 	public static void logError(String message) { // user log
 		if (Importer.logError(message)) {
 			return;
@@ -100,6 +67,13 @@ public class Action {
 			return;
 		}
 		Runtime.runtimeLog(message);
+	}
+
+	static void runtimeFormattedLog(String format, Object... args) { // api log
+		/*if (Importer.runtimeLog(message)) {
+			return;
+		}*/
+		Runtime.runtimeFormattedLog(format, args);
 	}
 	
 	static void runtimeErrorLog(String message) { // api log

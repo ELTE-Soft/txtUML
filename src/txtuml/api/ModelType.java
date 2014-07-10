@@ -1,22 +1,20 @@
 package txtuml.api;
 
-public class ModelType {
-	protected ModelType(Object val) {
+public class ModelType<T> implements ModelElement {
+	protected ModelType(T val) {
 		value = val;
 	}
 	protected ModelType() {
 		this(null);
 	}
-	void setValue(Object val) {
-		value = val;
-	}
-	Object getValue(Object val) {
+	T getValue() {
 		return value;
 	}
 	public String toString() {
-		return value.toString();
+		return value.toString(); // TODO should not be used in the model
+									// instead we should force the user to use ModelString ( an alternative method returning ModelString should be provided ) 
 	}
 		
-	private Object value;
+	private final T value;
 }
 

@@ -1,6 +1,6 @@
 package txtuml.api;
 
-public class Association {
+public class Association implements ModelElement {
 	protected Association() {}	
 }
 

@@ -48,12 +48,12 @@ public class ExportCpp {
     static String defineEvents(CoreModel m) {
         String result = "enum event { ";
         boolean isFirst = true;
-        for(CoreEvent ev : m.getEvents()) {
+        for(CoreSignal ev : m.getEvents()) {
         	if(!isFirst) {
         		result += ", ";
-        		isFirst = false;
         	}
             result += ev.getName();
+    		isFirst = false;
         }
         result += " };\n";
         return result;
@@ -122,10 +122,16 @@ public class ExportCpp {
         CoreStateMachine stm = cl.getStateMachine();
         if(stm != null) {
         	for(CoreState st : stm.getStates()) {
-        		result += "  void " + st.getName() + "();\n";
+        		if (!st.isInitial()) {
+		    		result += "  void " + st.getName() + "_entry();\n";
+		    		result += "  void " + st.getName() + "_exit();\n";
+        		}
         	}
         	for(CoreTransition tr : stm.getTransitions()) {
-        		result += "  void " + tr.getAction().getName() + "();\n";
+        		if (tr.getEffect() != null) 
+        			result += "  void " + tr.getEffect().getName() + "();\n";
+        		if (tr.getGuard() != null) 
+        			result += "  bool " + tr.getGuard().getName() + "();\n";
         	}
         }
         return result;
@@ -198,6 +204,15 @@ public class ExportCpp {
 			CoreState ini = stm.getInitialState(); 
 			if(ini != null) {
 				result += "  current_state = state_" + ini.getName() + ";\n";
+				for (CoreTransition tr : c.getStateMachine().getTransitions()) {
+					if (tr.getFrom() == ini) {
+						if (tr.getEffect() != null) {
+							result += "  " + tr.getEffect().getName() + "();\n";
+						}
+						result += "  current_state = state_" + tr.getTo().getName() + ";\n";
+						break;
+					}
+				}
 			}
 			result += "}\n\n";
 			result += compileStateMachine(c,stm);
@@ -214,8 +229,12 @@ public class ExportCpp {
 		CoreStateMachine stm = c.getStateMachine();
 		if(stm != null) {
 			for(CoreState st : stm.getStates()) {
-				result += "void " + c.getName() + "::" + st.getName() + "()\n"
-						+ "{\n" + compileInstructions(st.getAction()) + "}\n\n";
+				if (!st.isInitial()) {
+					result += "void " + c.getName() + "::" + st.getName() + "_entry()\n"
+							+ "{\n" + compileInstructions(st.getEntry()) + "}\n\n";
+					result += "void " + c.getName() + "::" + st.getName() + "_exit()\n"
+							+ "{\n" + compileInstructions(st.getExit()) + "}\n\n";
+				}
 			}
 		}
 		return result;
@@ -226,8 +245,15 @@ public class ExportCpp {
 		CoreStateMachine stm = c.getStateMachine();
 		if(stm != null) {
 			for(CoreTransition tr : stm.getTransitions()) {
-				result += "void " + c.getName() + "::" + tr.getAction().getName() + "()\n"
-						+ "{\n" + compileInstructions(tr.getAction()) + "}\n\n";
+				if (tr.getEffect() != null) {
+					result += "void " + c.getName() + "::" + tr.getEffect().getName() + "()\n"
+							+ "{\n" + compileInstructions(tr.getEffect()) + "}\n\n";
+				}
+				if (tr.getGuard() != null) {
+					result += "bool " + c.getName() + "::" + tr.getGuard().getName() + "()\n"
+							+ "{\n" + compileInstructions(tr.getGuard()) + " return true;" // TODO needs to return the right value (when return values are handled)
+									+ "}\n\n";
+				}
 			}
 		}
 		return result;
@@ -309,18 +335,28 @@ public class ExportCpp {
 	}
 	
 	static String compileStateMachine(CoreClass c, CoreStateMachine stm) {
+		// TODO create the implementation of composite states
 		String result = "";
 		result += "void " + c.getName() + "::send(event e)\n" + "{\n";
 		String branchKeyword = "if";
 		for(CoreTransition t : stm.getTransitions()) {
-			result += "  " + branchKeyword + "(current_state == state_" + t.getFrom().getName()
-					+ " && e == " + t.getTrigger().getName() + ")\n"
-					+ "  {\n"
-					+ "    " + t.getAction().getName() + "();\n"
-					+ "    " + t.getTo().getName() + "();\n"
-					+ "    current_state = state_" + t.getTo().getName() + ";\n"
-					+ "  }\n";
-			branchKeyword = "else if";
+			if (t.getTrigger() != null) {
+				String guard = "";
+				if (t.getGuard() != null) {
+					guard = " && " + t.getGuard().getName() + "()";
+				}
+				result += "  " + branchKeyword + "(current_state == state_" + t.getFrom().getName()
+						+ " && e == " + t.getTrigger().getName() + guard + ")\n"
+						+ "  {\n"
+						+ "    " + t.getFrom().getName() + "_exit();\n"
+						+ "    " + t.getEffect().getName() + "();\n"
+						+ "    current_state = state_" + t.getTo().getName() + ";\n"
+						+ "    " + t.getTo().getName() + "_entry();\n"
+						+ "  }\n";
+				branchKeyword = "else if";
+			} else {
+				
+			}
 		}
 		result += "}\n\n";
 
