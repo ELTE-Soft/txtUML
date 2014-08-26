@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import txtuml.importer.Importer;
+import txtuml.importer.MethodImporter;
 import txtuml.utils.InstanceCreator;
 
 public class ModelClass implements ModelElement {
@@ -35,8 +35,8 @@ public class ModelClass implements ModelElement {
 		}
 		@SuppressWarnings("unchecked")
 		protected final <T extends Signal> T getSignal() {
-			if (signal ==  null && Importer.instructionImport()) {
-				signal = Importer.createSignal(getClass());
+			if (signal ==  null && MethodImporter.instructionImport()) {
+				signal = MethodImporter.createSignal(getClass());
 			}
 			return (T)signal;
 		}
@@ -55,9 +55,16 @@ public class ModelClass implements ModelElement {
 		currentState = null;
 		thread = null;
 		innerClassInstances.put(getClass(), this);
-		if (!Importer.createInstance(this)) {
+		
+		if(MethodImporter.instructionImport())
+		{
+			MethodImporter.createInstance(this);
+		}
+		else 
+		{
 			startThread();
 		}
+		
 	}
 	
 	private void startThread() {

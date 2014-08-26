@@ -21,10 +21,11 @@ class Model1 extends Model {
 		class On extends CompositeState {
 			@Override public void entry() {
 	        	Action.log("Enters state: 'on'");
-				MachineUI.showOn();
+				
             }
 			@Override public void exit() {
 	        	Action.log("Exits state: 'on'");
+    
             }
 			
 			class Init extends InitialState {}
@@ -45,8 +46,8 @@ class Model1 extends Model {
 			@From(Active.class) @To(Active.class) @Trigger(DoTasks.class)
 			class DoActivity extends Transition {
 				@Override public void effect() {
-					DoTasks dTE = getSignal();
-					Machine.this.tasksTodo = Machine.this.tasksTodo.subtract(dTE.count);
+					//DoTasks dTE = getSignal();
+					//Machine.this.tasksTodo = Machine.this.tasksTodo.subtract(dTE.count);	
 					Action.log("\tBecoming active...");
 				}
 			}
@@ -116,22 +117,26 @@ class Model1 extends Model {
 	public void test() {
 		txtuml.api.Runtime.Settings.setRuntimeLog(true);
 		Machine m = new Machine(); 
+		
 		User u1 = new User();
 		User u2 = Action.create(User.class); //almost equivalent to 'new User()'
 												//not exactly: with current implementation the object created by Action.create() will have no enclosing Model1 object
 		
         Action.link(Usage.class, "usedMachine", m, "userOfMachine", u1);
         Action.link(Usage.class, "usedMachine", m, "userOfMachine", u2);
+      
         u1.doWork();
+        
 
         /*
          * to test the instance deletion
-        
+        */
         Action.unLink(Usage.class, "usedMachine", m, "userOfMachine", u1); // must delete all the links to an instance before deleting it
         Action.unLink(Usage.class, "usedMachine", m, "userOfMachine", u2);
         Action.delete(m); // problem here: the machine object contained in m does not finish processing its four events before being deleted
+      
         Action.log("Machine instance deleted");
-        
+/*        
         */
    	}
 }

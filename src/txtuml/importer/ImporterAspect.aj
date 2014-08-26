@@ -2,29 +2,29 @@ package txtuml.importer;
 
 import java.lang.reflect.*;
 import java.util.LinkedList;
-
+import txtuml.importer.MethodImporter;
 import txtuml.api.*;
 
 public privileged aspect ImporterAspect {
 	private pointcut withinProject() : within(txtuml..*) && !within(txtuml.examples..*); // TODO only until the examples package exists
 	private pointcut withinModel() : within(ModelElement+) && !within(txtuml.api..*);
-	private pointcut importing() : if(Importer.instructionImport());
+	private pointcut importing() : if(MethodImporter.instructionImport());
 	private pointcut isActive() : withinModel() && importing();
 	
 	Object around(ModelClass target): target(target) && call(* *(..)) && isActive() {
-		return Importer.call(target, thisJoinPoint.getSignature().getName(),thisJoinPoint.getArgs());
+		return MethodImporter.call(target, thisJoinPoint.getSignature().getName(),thisJoinPoint.getArgs());
 	}
 	
 	Object around() : call(static * (!ModelElement+).*()) && isActive() {
-		return Importer.callExternal(thisJoinPoint.getSignature().getDeclaringType(), thisJoinPoint.getSignature().getName(), thisJoinPoint.getArgs());
+		return MethodImporter.callExternal(thisJoinPoint.getSignature().getDeclaringType(), thisJoinPoint.getSignature().getName(), thisJoinPoint.getArgs());
 	}
 	
 	before(ModelClass target, Object newValue) : target(target) && set(* *) && args(newValue) && isActive() {
-		Importer.fieldSet(target,thisJoinPoint.getSignature().getName(),newValue);
+		MethodImporter.fieldSet(target,thisJoinPoint.getSignature().getName(),newValue);
 	}
 	
 	before(ModelClass target) : target(target) && get(* *) && isActive() {
-		Importer.fieldGet(target,thisJoinPoint.getSignature().getName());
+		MethodImporter.fieldGet(target,thisJoinPoint.getSignature().getName());
 	}
 	
 	/*
