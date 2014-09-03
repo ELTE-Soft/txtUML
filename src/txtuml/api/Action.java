@@ -1,7 +1,7 @@
 package txtuml.api;
 
+import txtuml.importer.InstructionImporter;
 import txtuml.importer.MethodImporter;
-import txtuml.importer.Importer;
 import txtuml.utils.InstanceCreator;
 
 public class Action implements ModelElement {
@@ -12,9 +12,9 @@ public class Action implements ModelElement {
 	public static void link(Class<? extends Association> assocClass,
     		String leftPhrase,  ModelClass leftObj,
     		String rightPhrase, ModelClass rightObj) {
-		if(MethodImporter.instructionImport())
+		if(MethodImporter.isImporting())
 		{
-			MethodImporter.link(assocClass,leftPhrase,leftObj,rightPhrase,rightObj);		
+			InstructionImporter.link(assocClass,leftPhrase,leftObj,rightPhrase,rightObj);		
 		}
 		else
 		{
@@ -26,9 +26,9 @@ public class Action implements ModelElement {
     public static void unLink(Class<? extends Association> assocClass,
     		String leftPhrase,  ModelClass leftObj,
     		String rightPhrase, ModelClass rightObj) {
-    	if(MethodImporter.instructionImport())
+    	if(MethodImporter.isImporting())
 		{
-    		MethodImporter.unLink(assocClass, leftPhrase, leftObj, rightPhrase, rightObj);
+    		InstructionImporter.unLink(assocClass, leftPhrase, leftObj, rightPhrase, rightObj);
 			
 		}
     	else
@@ -40,9 +40,9 @@ public class Action implements ModelElement {
 
 	@SuppressWarnings("unchecked") // unchecked cast from ModelClass to T
 	public static <T extends ModelClass> T selectOne(ModelClass startObj, Class<? extends Association> assocClass, String phrase) {
-		if(MethodImporter.instructionImport())
+		if(MethodImporter.isImporting())
 		{
-			return (T) MethodImporter.selectOne(startObj, assocClass, phrase);
+			return (T) InstructionImporter.selectOne(startObj, assocClass, phrase);
 		}
 		else
 		{
@@ -52,9 +52,9 @@ public class Action implements ModelElement {
 	}
 	
 	public static void send(ModelClass receiverObj, Signal event) {
-		if(MethodImporter.instructionImport())
+		if(MethodImporter.isImporting())
 		{
-			MethodImporter.send(receiverObj, event);
+			InstructionImporter.send(receiverObj, event);
 		}
 		else
 		{
@@ -64,9 +64,9 @@ public class Action implements ModelElement {
 	}
 
 	public static void delete(ModelClass obj) {
-		if(MethodImporter.instructionImport())
+		if(MethodImporter.isImporting())
 		{
-			MethodImporter.delete(obj);
+			InstructionImporter.delete(obj);
 		}
 		else
 		{
@@ -76,7 +76,7 @@ public class Action implements ModelElement {
     }
 
 	public static void log(String message) { // user log
-		if(MethodImporter.instructionImport())
+		if(MethodImporter.isImporting())
 		{
 			
 		}
@@ -88,7 +88,7 @@ public class Action implements ModelElement {
 	}
     	
 	public static void logError(String message) { // user log
-		if(MethodImporter.instructionImport())
+		if(MethodImporter.isImporting())
 		{
 			
 		}
@@ -100,7 +100,7 @@ public class Action implements ModelElement {
 	}
 	
 	static void runtimeLog(String message) { // api log
-		if(MethodImporter.instructionImport())
+		if(MethodImporter.isImporting())
 		{
 			
 		}
@@ -112,7 +112,7 @@ public class Action implements ModelElement {
 	}
 
 	static void runtimeFormattedLog(String format, Object... args) { // api log
-		if(MethodImporter.instructionImport())
+		if(MethodImporter.isImporting())
 		{
 			
 		}
@@ -124,7 +124,7 @@ public class Action implements ModelElement {
 	}
 	
 	static void runtimeErrorLog(String message) { // api log
-		if(Importer.instructionImport())
+		if(MethodImporter.isImporting())
 		{
 			
 		}	

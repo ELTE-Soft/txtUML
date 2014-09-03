@@ -117,7 +117,7 @@ class RegionImporter extends AbstractImporter {
 		
 		if(isInitialState(state))
         {
-			if (hasInitialState(region)) 
+			if (isContainsInitialState(region)) 
 			{
             	throw new ImportException(sourceClass.getName() + " has two initial states");
 			}
@@ -142,7 +142,7 @@ class RegionImporter extends AbstractImporter {
 		Region subRegion= new RegionImporter(state,currentModel,compositeState.createRegion(state.getSimpleName())).importRegion();
 		subRegion.setState(compositeState);
 		       
-        if(subRegion.getSubvertices().size() != 0 && !hasInitialState(subRegion)) 
+        if(subRegion.getSubvertices().size() != 0 && !isContainsInitialState(subRegion)) 
         {
         	importWarning(state.getName() + " has one or more states but no initial state (state machine will not be created)");
         	return null;

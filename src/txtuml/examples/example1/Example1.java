@@ -80,10 +80,11 @@ class Model1 extends Model {
 	}
 	
 	class User extends ModelClass {
-		void doWork() {
+		Machine doWork(User param) {
 			Action.log("User: starting to work...");
 			Machine myMachine =	Action.selectOne(this, Usage.class, "usedMachine");
 			
+			Action.send(param,new ButtonPress());
 			Action.send(myMachine, new ButtonPress()); // switches the machine on
 			Action.send(myMachine, new ButtonPress()); // tries to switch it off, but fails because of the guard
 			Action.send(myMachine, new DoTasks(new ModelInt(1))); // the machine becomes active and decreases its tasks-to-do count by 1 
@@ -95,6 +96,8 @@ class Model1 extends Model {
 			Action.send(myMachine, new DoTasks(new ModelInt(1))); // this event has no effect, the machine is switched off
 
 			Action.log("User: work finished...");
+			return myMachine;
+			
 		}
 	}
     
@@ -125,7 +128,7 @@ class Model1 extends Model {
         Action.link(Usage.class, "usedMachine", m, "userOfMachine", u1);
         Action.link(Usage.class, "usedMachine", m, "userOfMachine", u2);
       
-        u1.doWork();
+        u1.doWork(u2);
         
 
         /*

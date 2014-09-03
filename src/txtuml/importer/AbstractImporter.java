@@ -2,6 +2,7 @@ package txtuml.importer;
 
 import java.lang.reflect.*;
 
+import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.PseudostateKind;
 import org.eclipse.uml2.uml.Region;
@@ -56,7 +57,8 @@ public abstract class AbstractImporter {
     }
     
 	protected static boolean isMemberFunction(Method m) {
-		 return m.getParameterTypes().length == 0; // TODO remove when parameters are handled
+		// return m.getParameterTypes().length == 0; // TODO remove when parameters are handled
+		return true;
     }
 	
 	protected static void importWarning(String msg) {
@@ -72,7 +74,7 @@ public abstract class AbstractImporter {
 		return false;
     }
 	
-	protected static boolean hasInitialState(Region region)
+	protected static boolean isContainsInitialState(Region region)
 	{
 		for(Object vert: region.getSubvertices().toArray())
 		{
@@ -91,8 +93,18 @@ public abstract class AbstractImporter {
 		localInstanceToBeCreated = bool;
 	}
 	
+	protected static Method findMethod(Class<?> containingClass, String name)
+	{
+		for(Method m:containingClass.getDeclaredMethods())
+		{
+			if(m.getName().equals(name))
+			{
+				return m;
+			}
+		}
+		return null;
+	}
+
 	protected static boolean localInstanceToBeCreated = false;
-	
-	
-	
+
 }

@@ -15,8 +15,7 @@ import java.lang.Class;
 import java.lang.reflect.*;
 
 
-
-public class Importer extends AbstractImporter{
+public class ModelImporter extends AbstractImporter{
 	
 	public static Model importModel(String className) throws ImportException {
 		modelClass= findModel(className);
@@ -24,6 +23,7 @@ public class Importer extends AbstractImporter{
         model.setName(className);
        
         currentModel=model;
+        
         createPrimitiveTypes();
 		importClassNames();
 		importAssociations();
@@ -34,14 +34,13 @@ public class Importer extends AbstractImporter{
 		importOperationBodies();
 		importMemberFunctionBodies();
 		importClassStateMachines();
+		
    		return currentModel;
   
 	}
-	
-	
 
 	public static boolean instructionImport() {
-		return MethodImporter.instructionImport();
+		return MethodImporter.isImporting();
 	}
 	
 	private static void createPrimitiveTypes()
@@ -115,11 +114,9 @@ public class Importer extends AbstractImporter{
 		org.eclipse.uml2.uml.Class dummyClass=currentModel.createOwnedClass("DummyClassForMethods", false);
 	    for(Method method : modelClass.getDeclaredMethods()) 
 	    {
-	        if(method.getParameterTypes().length == 0)
-	        {
-	        	// TODO remove when parameters are handled
-            	importOperationWithoutBody(dummyClass,modelClass,method);
-	        }
+	        
+            importOperationWithoutBody(dummyClass,modelClass,method);
+	        
 	    }
 	}
 	
@@ -129,11 +126,9 @@ public class Importer extends AbstractImporter{
 					currentModel.getOwnedMember("DummyClassForMethods");
 	    for(Method method : modelClass.getDeclaredMethods()) 
 	    {
-	        if(method.getParameterTypes().length == 0)
-	        {
-	        	// TODO remove when parameters are handled
-            	importOperationBody(MethodImporter.getOperation(dummyClass,method.getName()),dummyClass,modelClass,method);
-	        }
+	        
+            importOperationBody(MethodImporter.getOperation(dummyClass,method.getName()),dummyClass,modelClass,method);
+	       
 	    }
 	}
 	
@@ -233,7 +228,7 @@ public class Importer extends AbstractImporter{
     	{
             if(isMemberFunction(method)) 
             {    
-            	importOperationBody(MethodImporter.getOperation(ownerClass, method.getName()),ownerClass,sourceClass,method);;
+            	importOperationBody(MethodImporter.getOperation(ownerClass, method.getName()),ownerClass,sourceClass,method);
             }
         }
     }
@@ -264,7 +259,7 @@ public class Importer extends AbstractImporter{
         
         
        
-        if(region.getSubvertices().size() != 0 && !hasInitialState(region)) 
+        if(region.getSubvertices().size() != 0 && !isContainsInitialState(region)) 
         {
         	importWarning(sourceClass.getName() + " has one or more states but no initial state (state machine will not be created)");
         	return null;
@@ -276,8 +271,9 @@ public class Importer extends AbstractImporter{
 		(Operation operation,org.eclipse.uml2.uml.Class ownerClass,Class<?> sourceClass,Method sourceMethod)
 	{
 		Activity activity=(Activity) ownerClass.createOwnedBehavior(sourceMethod.getName(),UMLPackage.Literals.ACTIVITY);
-		MethodImporter.importMethod(currentModel,activity,sourceMethod,sourceClass);
 		activity.setSpecification(operation);
+		MethodImporter.importMethod(currentModel,activity,sourceMethod,sourceClass);
+		
 		
 		return activity;
 	}
@@ -287,7 +283,7 @@ public class Importer extends AbstractImporter{
 		Class<?> returnTypeClass = sourceMethod.getReturnType();
 		if(returnTypeClass!=void.class)
 		{
-			Type returnType=Importer.importType(returnTypeClass);
+			Type returnType=ModelImporter.importType(returnTypeClass);
 			operation.createReturnResult("return",returnType);
 		}
 		return operation;
@@ -301,7 +297,7 @@ public class Importer extends AbstractImporter{
 		int i=0;
 		for(Class<?> paramTypeClass : sourceMethod.getParameterTypes())
 		{
-			Type paramType=Importer.importType(paramTypeClass);
+			Type paramType=ModelImporter.importType(paramTypeClass);
 			paramTypes.add(paramType);
 			paramNames.add("arg"+i);
 			++i;
@@ -309,11 +305,12 @@ public class Importer extends AbstractImporter{
 		}
 	
 		return ownerClass.createOwnedOperation(sourceMethod.getName(),paramNames,paramTypes);
+		
 	}
 	private static Operation importOperationWithoutBody(org.eclipse.uml2.uml.Class ownerClass,Class<?> sourceClass,Method sourceMethod)
 	{
 		Operation operation = createOwnedOperation(ownerClass, sourceMethod);
-		createOperationReturnResult(null, sourceMethod);
+		createOperationReturnResult(operation, sourceMethod);
 		return operation;
 	}
 	

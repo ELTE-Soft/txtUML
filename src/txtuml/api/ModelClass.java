@@ -6,10 +6,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import txtuml.importer.InstructionImporter;
 import txtuml.importer.MethodImporter;
 import txtuml.utils.InstanceCreator;
 
-public class ModelClass implements ModelElement {
+public class ModelClass extends ModelIdentifiedElement {
 	public abstract class State {
 		public void entry() {
 		}
@@ -35,7 +36,7 @@ public class ModelClass implements ModelElement {
 		}
 		@SuppressWarnings("unchecked")
 		protected final <T extends Signal> T getSignal() {
-			if (signal ==  null && MethodImporter.instructionImport()) {
+			if (signal ==  null && MethodImporter.isImporting()) {
 				signal = MethodImporter.createSignal(getClass());
 			}
 			return (T)signal;
@@ -46,19 +47,16 @@ public class ModelClass implements ModelElement {
 		private Signal signal;
 	}
 	
-	public final String getIdentifier() {
-		return identifier;
-	}
 	
 	protected ModelClass() {
-		identifier = "inst_" + hashCode();
+		super();
 		currentState = null;
 		thread = null;
 		innerClassInstances.put(getClass(), this);
 		
-		if(MethodImporter.instructionImport())
+		if(MethodImporter.isImporting())
 		{
-			MethodImporter.createInstance(this);
+			InstructionImporter.createInstance(this);
 		}
 		else 
 		{
@@ -242,8 +240,6 @@ public class ModelClass implements ModelElement {
 	        return null;
 		}
 	}
-	
-	private final String identifier;
 	private State currentState;
 	private ModelClassThread thread;
 	private Map<Class<?>, Object> innerClassInstances = new HashMap<>(); 

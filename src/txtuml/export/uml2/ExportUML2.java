@@ -7,7 +7,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
-import txtuml.importer.Importer;
+import txtuml.importer.ModelImporter;
 
 
 public class ExportUML2 {
@@ -19,7 +19,7 @@ public class ExportUML2 {
 		String modelClassName = args[0];
 		String outputName = args[1];
 		try {
-			org.eclipse.uml2.uml. Model m = Importer.importModel(modelClassName);
+			org.eclipse.uml2.uml. Model m = ModelImporter.importModel(modelClassName);
 			ResourceSet resourceSet = new ResourceSetImpl();
 			UMLResourcesUtil.init(resourceSet);
 			URI uri = URI.createFileURI(outputName).appendSegment(modelClassName).appendFileExtension(UMLResource.FILE_EXTENSION);
