@@ -26,22 +26,22 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 		return importing;
 	}
 	
-	protected static <T> T createLocalInstance(Class<T> c, int depth, Object... givenParameters)
+	protected static <T> T createLocalInstance(Class<T> typeClass, int depth, Object... givenParameters)
 	{
 		setLocalInstanceToBeCreated(true);
-		T createdObject = InstanceCreator.createInstance(c,3);
+		T createdObject = InstanceCreator.createInstance(typeClass,depth);
 		setLocalInstanceToBeCreated(false);
 		return createdObject;
 	}
 	
 	protected static String getObjectIdentifier(ModelIdentifiedElement object)
 	{
-		String id=object.getIdentifier();
+		object.getIdentifier();
 		try
 		{
-			if(id==self.getIdentifier())
+			if(object.getIdentifier()==self.getIdentifier())
 			{
-				id="self";
+				return "self";
 			}
 		}
 		catch(NullPointerException e)
@@ -59,7 +59,7 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 				{
 					if(p.getIdentifier().equals(object.getIdentifier()))
 					{
-						id="arg"+i;
+						return "arg"+i;
 					}
 				}
 				catch(NullPointerException e)
@@ -73,16 +73,16 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 			}
 			++i;
 		}
-		return id;
+		return object.getIdentifier();
 	}
 	
 	protected static void createFlowBetweenNodes(ActivityNode source, ActivityNode target)
 	{
-		if(source.getClass().isAssignableFrom(ObjectNode.class) && target.getClass().isAssignableFrom(ObjectNode.class))
+		if(source instanceof ObjectNode || target instanceof ObjectNode)
 		{
 			createObjectFlowBetweenNodes(source,target);
 		}
-		if(!source.getClass().isAssignableFrom(ObjectNode.class) && !target.getClass().isAssignableFrom(ObjectNode.class))
+		else
 		{
 			createControlFlowBetweenNodes(source,target);
 		}
