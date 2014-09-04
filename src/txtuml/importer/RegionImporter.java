@@ -38,6 +38,10 @@ class RegionImporter extends AbstractImporter {
 	{
 		for(Class<?> c : sourceClass.getDeclaredClasses())
         {
+			if(!isModelElement(c))
+			{
+				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
+			}
             if(isState(c)) 
             {	   
             	region=importState(c);
@@ -97,6 +101,10 @@ class RegionImporter extends AbstractImporter {
 	{
 		for(Class<?> c : sourceClass.getDeclaredClasses())
 	    {		
+			if(!isModelElement(c))
+			{
+				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
+			}
 	    	if(isTransition(c))
 	        {
 				if (isState(c))

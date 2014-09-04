@@ -12,18 +12,14 @@ import txtuml.api.*;
 
 public abstract class AbstractImporter {
 	
-	protected static Class<?> findModel(String className) throws ImportException {
-		try {
-			Class<?> ret = Class.forName(className);
-			if(!Model.class.isAssignableFrom(ret)) {
-				//throw new ImportException("A subclass of Model is expected, got: " + className);
-			}
-			return ret;
-		} catch(ClassNotFoundException e) {
-			throw new ImportException("Cannot find class: " + className);
-		}
-    }
-	
+
+	protected static boolean isModelElement(Class<?> c)
+	{
+		 
+		return ModelElement.class.isAssignableFrom(c) ||
+			   isState(c) ||
+			   isTransition(c) ;
+	}
 	protected static boolean isClass(Class<?> c) {
 		return ModelClass.class.isAssignableFrom(c);
 	}

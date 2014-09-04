@@ -38,6 +38,18 @@ public class ModelImporter extends AbstractImporter{
    		return currentModel;
   
 	}
+	
+	private static Class<?> findModel(String className) throws ImportException {
+		try {
+			Class<?> ret = Class.forName(className);
+			if(!Model.class.isAssignableFrom(ret)) {
+				//throw new ImportException("A subclass of Model is expected, got: " + className);
+			}
+			return ret;
+		} catch(ClassNotFoundException e) {
+			throw new ImportException("Cannot find class: " + className);
+		}
+    }
 
 	public static boolean instructionImport() {
 		return MethodImporter.isImporting();
@@ -54,9 +66,13 @@ public class ModelImporter extends AbstractImporter{
 		
 	}
 	
-	private static void importClassNames() 
+	private static void importClassNames() throws ImportException 
 	{
 		for(Class<?> c : modelClass.getDeclaredClasses()) {
+			if(!isModelElement(c))
+			{
+				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
+			}
 			if(isClass(c)) 
 			{
 				currentModel.createOwnedClass(c.getSimpleName(),Modifier.isAbstract(c.getModifiers()));
@@ -68,6 +84,10 @@ public class ModelImporter extends AbstractImporter{
 	{
 		for(Class<?> sourceClass : modelClass.getDeclaredClasses()) 
 		{
+			if(!isModelElement(sourceClass))
+			{
+				throw new ImportException(sourceClass.getName()+" is a non-txtUML class found in model.");
+			}
 			if(isAssociation(sourceClass)) 
 			{
 				new AssociationImporter(sourceClass,currentModel).importAssociation();
@@ -75,10 +95,14 @@ public class ModelImporter extends AbstractImporter{
 		}
 	}	
 	
-	private static void importSignals()
+	private static void importSignals() throws ImportException
 	{
 		for(Class<?> c : modelClass.getDeclaredClasses()) 
 		{
+			if(!isModelElement(c))
+			{
+				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
+			}
 			if(isEvent(c)) 
 			{
 				createSignalAndEvent(c);
@@ -87,7 +111,7 @@ public class ModelImporter extends AbstractImporter{
 	}
 	
 	
-	private static void createSignalAndEvent(Class<?> sourceClass)
+	private static void createSignalAndEvent(Class<?> sourceClass) throws ImportException
 	{
 		Signal signal = (Signal)currentModel.createOwnedType(sourceClass.getSimpleName(),UMLPackage.Literals.SIGNAL);
 		
@@ -98,7 +122,7 @@ public class ModelImporter extends AbstractImporter{
 	}
 	
 	
-	private static void importSignalAttributes(Signal signal, Class<?> sourceClass)
+	private static void importSignalAttributes(Signal signal, Class<?> sourceClass) throws ImportException
 	{
 		for(Field f : sourceClass.getDeclaredFields()) 
 		{
@@ -132,16 +156,20 @@ public class ModelImporter extends AbstractImporter{
 	    }
 	}
 	
-    private static void importClassAttributes()
+    private static void importClassAttributes() throws ImportException
     {
 		for(Class<?> c : modelClass.getDeclaredClasses()) 
 		{
+			if(!isModelElement(c))
+			{
+				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
+			}
 			if(isClass(c)) 
 			{
 				org.eclipse.uml2.uml.Class currClass=(org.eclipse.uml2.uml.Class) currentModel.getMember(c.getSimpleName());
 	            
 				for(Field f : c.getDeclaredFields()) 
-				{
+				{		
 	                if(isAttribute(f)) 
 	                {
 	                	createClassAttribute(currClass,f);
@@ -188,20 +216,28 @@ public class ModelImporter extends AbstractImporter{
         return null;
     }
 	
-    private static void importMemberFunctionsWithoutBodies()
+    private static void importMemberFunctionsWithoutBodies() throws ImportException
     {
 		for(Class<?> c : modelClass.getDeclaredClasses()) 
 		{
+			if(!isModelElement(c))
+			{
+				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
+			}
 			if(isClass(c)) 
 			{
 				createClassMemberFunctions(c);
 			}
 		}
     }
-    private static void importMemberFunctionBodies()
+    private static void importMemberFunctionBodies() throws ImportException
     {
 		for(Class<?> c : modelClass.getDeclaredClasses()) 
 		{
+			if(!isModelElement(c))
+			{
+				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
+			}
 			if(isClass(c)) 
 			{
 				importClassMemberFunctionBodies(c);
@@ -237,6 +273,10 @@ public class ModelImporter extends AbstractImporter{
 	{
 		for(Class<?> c : modelClass.getDeclaredClasses()) 
 		{
+			if(!isModelElement(c))
+			{
+				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
+			}
 			if(isClass(c)) 
 			{
 				org.eclipse.uml2.uml.Class currClass = (org.eclipse.uml2.uml.Class) currentModel.getOwnedMember(c.getSimpleName());
