@@ -7,6 +7,7 @@ import org.eclipse.uml2.uml.*;
 import org.eclipse.uml2.uml.Type;
 
 import txtuml.api.ModelBool;
+import txtuml.api.ModelClass;
 import txtuml.api.ModelInt;
 import txtuml.api.ModelString;
 import txtuml.importer.AssociationImporter;
@@ -212,6 +213,10 @@ public class ModelImporter extends AbstractImporter{
         if(sourceClass == ModelString.class) 
         {
         	return UML2String;
+        }
+        if(ModelClass.class.isAssignableFrom(sourceClass))
+        {
+        	return currentModel.getOwnedType(sourceClass.getSimpleName());
         }
         return null;
     }
