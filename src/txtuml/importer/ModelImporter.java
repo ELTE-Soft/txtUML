@@ -3,8 +3,16 @@ package txtuml.importer;
 
 
 import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.common.util.WrappedException;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.uml2.uml.*;
 import org.eclipse.uml2.uml.Type;
+import org.eclipse.uml2.uml.resource.UMLResource;
+import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
 import txtuml.api.ModelBool;
 import txtuml.api.ModelClass;
@@ -40,6 +48,56 @@ public class ModelImporter extends AbstractImporter{
   
 	}
 	
+	 //the following code fragment originates from http://wiki.eclipse.org/MDT/UML2/Introduction_to_UML2_Profiles
+	 private static final ResourceSet RESOURCE_SET;
+
+	    static {
+	        // Create a resource-set to contain the resource(s) that we load and
+	        // save
+	        RESOURCE_SET = new ResourceSetImpl();
+
+	        // Initialize registrations of resource factories, library models,
+	        // profiles, Ecore metadata, and other dependencies required for
+	        // serializing and working with UML resources. This is only necessary in
+	        // applications that are not hosted in the Eclipse platform run-time, in
+	        // which case these registrations are discovered automatically from
+	        // Eclipse extension points.
+	        UMLResourcesUtil.init(RESOURCE_SET);
+
+	    }
+	
+	//this function originates from http://wiki.eclipse.org/MDT/UML2/Introduction_to_UML2_Profiles
+	private static PrimitiveType importPrimitiveType(org.eclipse.uml2.uml.Package package_, String name) {
+        org.eclipse.uml2.uml.Package umlLibrary = (org.eclipse.uml2.uml.Package) load(URI.createURI(UMLResource.UML_PRIMITIVE_TYPES_LIBRARY_URI));
+
+        PrimitiveType primitiveType = (PrimitiveType) umlLibrary.getOwnedType(name);
+
+        package_.createElementImport(primitiveType);
+
+      
+
+        return primitiveType;
+    }
+	
+	//this function originates from http://wiki.eclipse.org/MDT/UML2/Introduction_to_UML2_Profiles
+	private static org.eclipse.uml2.uml.Package load(URI uri) {
+        org.eclipse.uml2.uml.Package package_ = null;
+
+        try {
+            // Load the requested resource
+            Resource resource = RESOURCE_SET.getResource(uri, true);
+
+            // Get the first (should be only) package from it
+            package_ = (org.eclipse.uml2.uml.Package) EcoreUtil.getObjectByType(resource.getContents(), UMLPackage.Literals.PACKAGE);
+        } catch (WrappedException we) {
+            
+            System.exit(1);
+        }
+
+        return package_;
+    }
+	
+	
 	private static Class<?> findModel(String className) throws ImportException {
 		try {
 			Class<?> ret = Class.forName(className);
@@ -58,12 +116,9 @@ public class ModelImporter extends AbstractImporter{
 	
 	private static void createPrimitiveTypes()
 	{
-		//TODO: import packages of UML types and use the types from there
-		
-		UML2Int=currentModel.createOwnedPrimitiveType("Int");
-		UML2Bool=currentModel.createOwnedPrimitiveType("Bool");
-		UML2String=currentModel.createOwnedPrimitiveType("String");
-		
+		UML2Int=importPrimitiveType(currentModel, "Int");
+		UML2Bool=importPrimitiveType(currentModel, "Bool");
+		UML2String=importPrimitiveType(currentModel, "String");
 		
 	}
 	
