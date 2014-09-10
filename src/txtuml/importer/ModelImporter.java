@@ -35,6 +35,7 @@ public class ModelImporter extends AbstractImporter{
         
         createPrimitiveTypes();
 		importClassNames();
+		importGeneralizations();
 		importAssociations();
 		importSignals();
 		importOperationsWithoutBodies();
@@ -48,6 +49,30 @@ public class ModelImporter extends AbstractImporter{
   
 	}
 	
+	private static void importGeneralizations() throws ImportException 
+	{
+		for(Class<?> c : modelClass.getDeclaredClasses()) {
+			if(!isModelElement(c))
+			{
+				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
+			}
+			if(isClass(c) && c.getSuperclass()!=ModelClass.class ) 
+			{
+				createGeneralization(c,c.getSuperclass());
+			}
+		}
+	}
+	
+	private static void createGeneralization(Class<?> subclass, Class<?> superclass)
+	{
+		org.eclipse.uml2.uml.Class uml2Subclass = 
+				(org.eclipse.uml2.uml.Class) currentModel.getOwnedMember(subclass.getSimpleName());
+		
+		org.eclipse.uml2.uml.Class uml2Superclass = 
+				(org.eclipse.uml2.uml.Class) currentModel.getOwnedMember(superclass.getSimpleName());
+		
+		uml2Subclass.createGeneralization(uml2Superclass);
+	}
 	
 	private static Class<?> findModel(String className) throws ImportException {
 		try {
