@@ -176,8 +176,9 @@ class RegionImporter extends AbstractImporter {
         
         if(triggerAnnot!=null)
         {
-	        Trigger trigger=transition.createTrigger(transition.getName()+"_trigger");
-	        trigger.setEvent((Event) currentModel.getPackagedElement(triggerAnnot.value().getSimpleName()+"_event"));
+        	String eventName=triggerAnnot.value().getSimpleName();
+	        Trigger trigger=transition.createTrigger(eventName);
+	        trigger.setEvent((Event) currentModel.getPackagedElement(eventName+"_event"));
         }
         
         importEffectAction(trans,transition);
