@@ -83,7 +83,7 @@ class Model1 extends Model {
 		Machine doWork(User param) {
 			Action.log("User: starting to work...");
 			Machine myMachine =	Action.selectOne(this, Usage.class, "usedMachine");
-			
+	
 			Action.send(param,new ButtonPress());
 			Action.send(myMachine, new ButtonPress()); // switches the machine on
 			Action.send(myMachine, new ButtonPress()); // tries to switch it off, but fails because of the guard

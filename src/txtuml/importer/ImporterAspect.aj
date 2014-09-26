@@ -2,6 +2,10 @@ package txtuml.importer;
 
 import java.lang.reflect.*;
 import java.util.LinkedList;
+
+import org.aspectj.lang.Signature;
+import org.aspectj.lang.reflect.FieldSignature;
+
 import txtuml.importer.InstructionImporter;
 import txtuml.api.*;
 
@@ -19,12 +23,22 @@ public privileged aspect ImporterAspect {
 		return InstructionImporter.callExternal(thisJoinPoint.getSignature().getDeclaringType(), thisJoinPoint.getSignature().getName(), thisJoinPoint.getArgs());
 	}
 	
-	before(ModelClass target, Object newValue) : target(target) && set(* *) && args(newValue) && isActive() {
-		InstructionImporter.fieldSet(target,thisJoinPoint.getSignature().getName(),newValue);
+	Object around(ModelClass target, Object newValue) : target(target) && set(* *) && args(newValue) && isActive() {
+		return InstructionImporter.fieldSet(target,thisJoinPoint.getSignature().getName(),newValue);
 	}
 	
-	before(ModelClass target) : target(target) && get(* *) && isActive() {
-		InstructionImporter.fieldGet(target,thisJoinPoint.getSignature().getName());
+	Object around(ModelClass target) : target(target) && get(* *) && isActive() {
+		Signature signature=thisJoinPoint.getSignature();
+		try {
+			return InstructionImporter.fieldGet(target,signature.getName(),signature.getDeclaringType().getDeclaredField(signature.getName()).getType());
+		} catch (NoSuchFieldException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	/*

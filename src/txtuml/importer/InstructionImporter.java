@@ -1,8 +1,10 @@
 package txtuml.importer;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.eclipse.uml2.uml.AddStructuralFeatureValueAction;
 import org.eclipse.uml2.uml.AddVariableValueAction;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.CallOperationAction;
@@ -25,10 +27,25 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValuePin;
 import org.eclipse.uml2.uml.Variable;
 
+import txtuml.api.ModelBool;
 import txtuml.api.ModelClass;
+import txtuml.api.ModelIdentifiedElement;
+import txtuml.api.ModelInt;
+import txtuml.api.ModelString;
+import txtuml.api.ModelType;
 
 public class InstructionImporter extends AbstractMethodImporter {
 
+	private enum ModelIntOperations{
+		ADD_LITERAL,
+		SUBTRACT_LITERAL,
+		MULTIPLY_LITERAL, 
+		DIVIDE_LITERAL,
+		REMAINDER_LITERAL,
+		SIGNUM_LITERAL, 
+		NEGATE_LITERAL
+	};
+	
 	public static void delete(ModelClass obj) {
         if(currentActivity != null) 
         {
@@ -45,6 +62,8 @@ public class InstructionImporter extends AbstractMethodImporter {
 			createControlFlowBetweenNodes(lastNode,destroyAction);
 			
 			lastNode=destroyAction;
+			
+			
         }
 		
 	}
@@ -88,6 +107,8 @@ public class InstructionImporter extends AbstractMethodImporter {
 			end2.setEnd(end2prop);
 			createControlFlowBetweenNodes(lastNode,createLinkAction);
 			lastNode=createLinkAction;
+			
+			
         }
        
     }
@@ -136,10 +157,13 @@ public class InstructionImporter extends AbstractMethodImporter {
 		createObjectFlowBetweenNodes(outputPin,inputPin_AVVA);
 		lastNode=setVarAction;
 		
+		
+		
         return result;
 	}
 	 public static void createInstance(ModelClass created)
 	 {
+
         if(currentActivity != null && !localInstanceToBeCreated)
         {
         	String instanceName=created.getIdentifier();
@@ -229,6 +253,7 @@ public class InstructionImporter extends AbstractMethodImporter {
 			end2.setEnd(end2prop);
 			createControlFlowBetweenNodes(lastNode,destroyLinkAction);
 			lastNode=destroyLinkAction;
+			
 	    }
        
     }	    
@@ -319,6 +344,7 @@ public class InstructionImporter extends AbstractMethodImporter {
 			createControlFlowBetweenNodes(lastNode,sendSignalAction);
 			
 			lastNode=sendSignalAction;
+			
 		}
 			
 	}
@@ -335,17 +361,241 @@ public class InstructionImporter extends AbstractMethodImporter {
 	        // the imported model will get this returned object as the result of the method call
 	}
 	    
-	public static void fieldGet(ModelClass target, String fieldName)
-	{
-	    	// TODO not implemented
-	    	// this method is called BEFORE any field get on a ModelClass object
-	    	// if this method changes the value of the actual field, the model will get that value as the result of this field get
-	}
+	
 
-	public static void fieldSet(ModelClass target, String fieldName, Object newValue) 
+	
+	
+	private static Object initField(ModelClass target, String fieldName, Object newValue) 
+			throws IllegalAccessException, IllegalArgumentException, 
+				   InvocationTargetException, NoSuchFieldException, 
+				   SecurityException, NoSuchMethodException
 	{
-	    	// TODO not implemented
-	    	// this method is called BEFORE any field set on a ModelClass object
+		Field field=target.getClass().getDeclaredField(fieldName);
+		
+		field.setAccessible(true);
+		//fieldObj= current value of target.field
+		Object fieldObj=field.get(target);
+		 
+		/*If target.field is not yet initialized and it's an identified model element, 
+		  create a new instance of the corresponding type and assign it to target.field.
+		  Because of this, we can now identify target.field with a unique id. */
+		
+		if(fieldObj==null && newValue instanceof ModelIdentifiedElement)
+		{
+			
+			
+				Method method=ModelType.class.getDeclaredMethod("getValue");
+				method.setAccessible(true);
+			
+				if(newValue instanceof ModelInt)
+				{
+					int val=(int) method.invoke(newValue);
+					fieldObj=new ModelInt(val);	
+				}
+				else if(newValue instanceof ModelBool)
+				{
+					boolean val=(boolean) method.invoke(newValue);
+					fieldObj=new ModelBool(val);	
+				}
+				else if(newValue instanceof ModelString)
+				{
+		
+					String val=(String) method.invoke(newValue);
+					fieldObj=new ModelString(val);
+				}
+				else if(newValue instanceof ModelClass)
+				{
+					fieldObj=createLocalInstance(newValue.getClass(),1);
+				}
+				method.setAccessible(false);
+
+			
+		}
+		else
+		{
+			fieldObj=newValue;
+		}
+		
+		field.set(target, fieldObj);
+		field.setAccessible(false);
+		
+		return fieldObj;
 	}
+	public static Object fieldGet(ModelClass target, String fieldName, Class<?> fieldType)
+	{
+		Object val=null;
+		if(fieldType==ModelInt.class)
+		{
+			val=new ModelInt();
+		}
+		else if(fieldType==ModelBool.class)
+		{
+			val=new ModelBool();
+		}
+		else if(fieldType==ModelString.class)
+		{
+			val=new ModelInt();
+		}
+		else if(isClass(fieldType))
+		{
+			val=createLocalInstance(fieldType,1);
+		}
+		try
+		{
+			return initField(target,fieldName,val);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return val;
+	
+	}
+	
+	public static Object fieldSet(ModelClass target, String fieldName, Object newValue)  
+	{
+		try{
+			
+			Object fieldObj=initField(target,fieldName,newValue);
+			if(currentActivity!=null)
+			{
+	
+				
+				String newValueInstName=getObjectIdentifier((ModelIdentifiedElement)newValue);
+	
+				Type newValType=ModelImporter.importType(newValue.getClass());
+	
+				setStructuralFeatureValue(target,fieldName,newValueInstName,newValType);
+				
+			}
+		
+			return fieldObj;
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
+
+	private static ModelInt importModelInt2OpOperation(ModelInt target, ModelInt val, ModelIntOperations operationType) 
+	{
+		String valInstName=getObjectIdentifier(val);
+		char operator=' ';
+		
+		switch(operationType)
+		{
+			case ADD_LITERAL:
+				operator='+';
+			break;
+			
+			case SUBTRACT_LITERAL:
+				operator='-';
+			break;
+			
+			case MULTIPLY_LITERAL:
+				operator='*';
+			break;
+			
+			case DIVIDE_LITERAL:
+				operator='/';
+			break;
+			
+			case REMAINDER_LITERAL:
+				operator='%';
+			break;		
+			
+			
+		}
+		
+		ModelInt result=new ModelInt();
+		currentActivity.createVariable(result.getIdentifier(), UML2Int);
+		String valueExpression=getObjectIdentifier(target)+operator+valInstName;
+		setVariableValue(result,valueExpression);
+		
+		return result;
+	}
+	public static ModelInt add(ModelInt target, ModelInt val)  {
+
+		return importModelInt2OpOperation(target,val,ModelIntOperations.ADD_LITERAL);
+		
+	}
+	
+	public static ModelInt subtract(ModelInt target, ModelInt val) {
+
+		return importModelInt2OpOperation(target,val,ModelIntOperations.SUBTRACT_LITERAL);
+		
+	}
+	
+	public static ModelInt multiply(ModelInt target, ModelInt val)  {
+
+		return importModelInt2OpOperation(target,val,ModelIntOperations.MULTIPLY_LITERAL);
+	}
+	
+	public static ModelInt divide(ModelInt target, ModelInt val){
+
+		return importModelInt2OpOperation(target,val,ModelIntOperations.DIVIDE_LITERAL);
+		
+	}
+	
+	public static ModelInt remainder(ModelInt target, ModelInt val) {
+
+		return importModelInt2OpOperation(target,val,ModelIntOperations.REMAINDER_LITERAL);
+		
+	}
+	
+	private static ModelInt importModelInt1OpOperation(ModelInt target,ModelIntOperations operationType)  {
+
+		boolean isFunction=false;
+		String operator="";
+		
+		switch(operationType)
+		{
+			case SIGNUM_LITERAL:
+				operator="signum";
+				isFunction=true;
+			break;
+			
+			case NEGATE_LITERAL:
+				operator="-";
+			break;		
+			
+				
+		}
+		
+		String valueExpression=null;
+		
+		ModelInt result=new ModelInt();
+		currentActivity.createVariable(result.getIdentifier(), UML2Int);
+		
+		String targetId=getObjectIdentifier(target);
+		if(isFunction)
+		{
+			valueExpression=operator+'('+targetId+')';
+		}
+		else
+		{
+			valueExpression=operator+targetId;
+		}
+		setVariableValue(result,valueExpression);
+		return result;
+		
+	}
+	
+	public static ModelInt negate(ModelInt target)  {
+
+		return importModelInt1OpOperation(target,ModelIntOperations.NEGATE_LITERAL);
+		
+	}
+	
+	public static ModelInt signum(ModelInt target) {
+
+		return importModelInt1OpOperation(target,ModelIntOperations.SIGNUM_LITERAL);
+		
+	}
+	
+	
 		    
 }

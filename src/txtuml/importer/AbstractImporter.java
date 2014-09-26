@@ -3,6 +3,7 @@ package txtuml.importer;
 import java.lang.reflect.*;
 
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.PseudostateKind;
 import org.eclipse.uml2.uml.Region;
@@ -102,5 +103,6 @@ public abstract class AbstractImporter {
 	}
 
 	protected static boolean localInstanceToBeCreated = false;
+	protected static PrimitiveType UML2Int,UML2Bool,UML2String;
 
 }

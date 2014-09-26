@@ -2,16 +2,22 @@ package txtuml.importer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.ActivityParameterNode;
+import org.eclipse.uml2.uml.AddVariableValueAction;
+import org.eclipse.uml2.uml.InputPin;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.ReadVariableAction;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 
+import org.eclipse.uml2.uml.ValuePin;
+import org.eclipse.uml2.uml.Variable;
 
 import txtuml.api.ModelClass;
 import txtuml.api.ModelIdentifiedElement;
@@ -83,6 +89,7 @@ public class MethodImporter extends AbstractMethodImporter {
 		importing=false;
 	}
 	
+	
 	private static void createAssignReturnValueAction(Object returnObj) throws Exception
 	{
 		String retName=getObjectIdentifier((ModelIdentifiedElement) returnObj);
@@ -99,14 +106,22 @@ public class MethodImporter extends AbstractMethodImporter {
 			}
 			
 		}
-		ReadVariableAction readVariableAction	=	(ReadVariableAction)
-					currentActivity.createOwnedNode("get_"+retName,UMLPackage.Literals.READ_VARIABLE_ACTION);
+		ActivityNode readAction=null;
+		OutputPin outputPin=null;
+		if(isObjectAFieldOfSelf((ModelIdentifiedElement)returnObj))
+		{
+			String fieldName=getObjectIdentifier((ModelIdentifiedElement) returnObj).substring(5);
+			readAction=createReadStructuralFeatureAction(self,fieldName,returnType);
+			outputPin=((ReadStructuralFeatureAction) readAction).createResult(readAction.getName()+"_result",returnType);
+		}
+		else
+		{
+			String variableName=getObjectIdentifier((ModelIdentifiedElement)returnObj);
+			readAction=createReadVariableAction(variableName,returnType);
+			outputPin=((ReadVariableAction)readAction).createResult(readAction.getName()+"_result",returnType);
+		}
+		createControlFlowBetweenNodes(lastNode,readAction);
 		
-		readVariableAction.setVariable(currentActivity.getVariable(retName,returnType));
-		OutputPin outputPin=readVariableAction.createResult(readVariableAction.getName()+"_result",returnType);
-		
-		createControlFlowBetweenNodes(lastNode,readVariableAction);
-
 		ActivityParameterNode returnParamNode= (ActivityParameterNode)
 					currentActivity.createOwnedNode("return_paramNode",UMLPackage.Literals.ACTIVITY_PARAMETER_NODE);
 		
@@ -125,6 +140,39 @@ public class MethodImporter extends AbstractMethodImporter {
 		for(Class<?> c: currentMethod.getParameterTypes())
 		{
 			currentParameters[i]=createLocalInstance(c,1);
+			String argName="arg"+i;
+			Type paramType=null;
+			Parameter param=null;
+			
+			for(Parameter p : currentActivity.getSpecification().getOwnedParameters())
+			{	
+				if(p.getName().equals(argName))
+				{
+					paramType=p.getType();
+					param=p;
+					break;
+				}
+				
+			}
+			Variable paramVar=currentActivity.createVariable(argName, paramType);
+			
+			ActivityParameterNode paramNode= (ActivityParameterNode)
+					currentActivity.createOwnedNode(argName+"_paramNode",UMLPackage.Literals.ACTIVITY_PARAMETER_NODE);
+		
+			
+			paramNode.setParameter(param);
+			paramNode.setType(paramType);
+			
+			AddVariableValueAction addVarValAction = (AddVariableValueAction)
+					currentActivity.createOwnedNode("set_"+argName, UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION);
+			
+			addVarValAction.setVariable(paramVar);
+			
+			InputPin inputPin =  addVarValAction.createValue("value",paramType,UMLPackage.Literals.INPUT_PIN);
+			
+			createObjectFlowBetweenNodes(paramNode,inputPin);
+			createControlFlowBetweenNodes(lastNode,addVarValAction);
+			lastNode=addVarValAction;
 			++i;
 		}
 	}

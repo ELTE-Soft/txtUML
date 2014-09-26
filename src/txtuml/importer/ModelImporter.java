@@ -29,7 +29,7 @@ public class ModelImporter extends AbstractImporter{
 	public static Model importModel(String className) throws ImportException {
 		modelClass= findModel(className);
 		Model model = UMLFactory.eINSTANCE.createModel();
-        model.setName(className);
+        model.setName(modelClass.getSimpleName());
        
         currentModel=model;
         
@@ -38,12 +38,10 @@ public class ModelImporter extends AbstractImporter{
 		importGeneralizations();
 		importAssociations();
 		importSignals();
-		importOperationsWithoutBodies();
 		importClassAttributes();
 		importMemberFunctionsWithoutBodies();
-		importOperationBodies();
 		importMemberFunctionBodies();
-		importClassStateMachines();
+		importClassStateMachinesAndNestedSignals();
 		
    		return currentModel;
   
@@ -110,6 +108,7 @@ public class ModelImporter extends AbstractImporter{
 			if(isClass(c)) 
 			{
 				currentModel.createOwnedClass(c.getSimpleName(),Modifier.isAbstract(c.getModifiers()));
+
 			}
 		}
 	}
@@ -145,6 +144,7 @@ public class ModelImporter extends AbstractImporter{
 	}
 	
 	
+	
 	private static void createSignalAndEvent(Class<?> sourceClass) throws ImportException
 	{
 		Signal signal = (Signal)currentModel.createOwnedType(sourceClass.getSimpleName(),UMLPackage.Literals.SIGNAL);
@@ -164,29 +164,6 @@ public class ModelImporter extends AbstractImporter{
 	        {
 	        	createSignalAttribute(signal,f);
 	        }
-	    }
-	}
-	
-	private static void importOperationsWithoutBodies()
-	{
-		org.eclipse.uml2.uml.Class dummyClass=currentModel.createOwnedClass("DummyClassForMethods", false);
-	    for(Method method : modelClass.getDeclaredMethods()) 
-	    {
-	        
-            importOperationWithoutBody(dummyClass,modelClass,method);
-	        
-	    }
-	}
-	
-	private static void importOperationBodies()
-	{
-		org.eclipse.uml2.uml.Class dummyClass	=	(org.eclipse.uml2.uml.Class) 
-					currentModel.getOwnedMember("DummyClassForMethods");
-	    for(Method method : modelClass.getDeclaredMethods()) 
-	    {
-	        
-            importOperationBody(MethodImporter.getOperation(dummyClass,method.getName()),dummyClass,modelClass,method);
-	       
 	    }
 	}
 	
@@ -307,7 +284,7 @@ public class ModelImporter extends AbstractImporter{
         }
     }
     
-  	private static void importClassStateMachines() throws ImportException
+  	private static void importClassStateMachinesAndNestedSignals() throws ImportException
 	{
 		for(Class<?> c : modelClass.getDeclaredClasses()) 
 		{
@@ -319,6 +296,8 @@ public class ModelImporter extends AbstractImporter{
 			{
 				org.eclipse.uml2.uml.Class currClass = (org.eclipse.uml2.uml.Class) currentModel.getOwnedMember(c.getSimpleName());
 				
+				importNestedSignals(c);
+				
 				if(isContainsStateMachine(c))
 				{
 					importStateMachine(currClass,c);
@@ -328,6 +307,19 @@ public class ModelImporter extends AbstractImporter{
 		}
 	}
     
+  	private static void importNestedSignals(Class<?> sourceClass) throws ImportException
+  	{
+		for(Class<?> innerClass:sourceClass.getDeclaredClasses())
+		{
+			
+			if(isEvent(innerClass) && currentModel.getOwnedType(innerClass.getSimpleName())==null)
+			{
+				//innerClass is an event and no signal in the model has the same name
+				createSignalAndEvent(innerClass);		
+			}
+		}
+  	}
+
 	private static StateMachine importStateMachine(org.eclipse.uml2.uml.Class ownerClass,Class<?> sourceClass) 
 											throws ImportException
 	{	
@@ -396,7 +388,7 @@ public class ModelImporter extends AbstractImporter{
 		return modelClass;
 	}
 	
-	private static PrimitiveType UML2Int,UML2Bool,UML2String;
+	
 	private static Model currentModel=null;
 	private static Class<?> modelClass=null;
 	

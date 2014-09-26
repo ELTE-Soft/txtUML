@@ -1,11 +1,14 @@
 package txtuml.importer;
 
+import java.lang.reflect.Method;
+
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Event;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.Trigger;
+import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
@@ -68,16 +71,18 @@ class RegionImporter extends AbstractImporter {
 	private void importStateEntryAction(Class<?> stateClass,State state)
 	{
 		
-		Activity activity=(Activity)state.createEntry(state.getName()+"_entry",UMLPackage.Literals.ACTIVITY);
-				
-		try
+		try 
 		{
-			MethodImporter.importMethod(currentModel,activity, stateClass.getDeclaredMethod("entry"), stateClass);
+			Method entryMethod=stateClass.getDeclaredMethod("entry");
+			Activity activity=(Activity)state.createEntry(state.getName()+"_entry",UMLPackage.Literals.ACTIVITY);
+			MethodImporter.importMethod(currentModel,activity, entryMethod, stateClass);
+
 		}
 		catch (NoSuchMethodException e) 
-		{	
-			
+		{
+			//if there's no entry method, do nothing
 		} 
+		
 		
 	}
 	
@@ -85,15 +90,18 @@ class RegionImporter extends AbstractImporter {
 	private void importStateExitAction(Class<?> stateClass,State state)
 	{
 		
+		try 
+		{
+			Method exitMethod=stateClass.getDeclaredMethod("exit");
 			Activity activity=(Activity)state.createExit(state.getName()+"_exit",UMLPackage.Literals.ACTIVITY);
-			try
-			{
-				MethodImporter.importMethod(currentModel,activity, stateClass.getDeclaredMethod("exit"), stateClass);
-			}
-			catch (NoSuchMethodException e)
-			{
-				
-			} 
+			MethodImporter.importMethod(currentModel,activity, exitMethod, stateClass);
+
+		}
+		catch (NoSuchMethodException e)
+		{
+			//if there's no exit method, do nothing
+		} 
+		
 	}
 	
 	
@@ -173,26 +181,47 @@ class RegionImporter extends AbstractImporter {
         Vertex target = region.getSubvertex(toAnnot.value().getSimpleName());
         
         org.eclipse.uml2.uml.Transition transition=createTransitionBetweenVertices(trName,source,target);
-        
-        if(triggerAnnot!=null)
-        {
+         
+        importTrigger(triggerAnnot,transition);
+        importEffectAction(trans,transition);
+        importGuard(trans,transition);
+    }   
+	
+	private void importTrigger( txtuml.api.Trigger triggerAnnot,org.eclipse.uml2.uml.Transition transition)
+	{
+		 if(triggerAnnot!=null)
+	     {
         	String eventName=triggerAnnot.value().getSimpleName();
 	        Trigger trigger=transition.createTrigger(eventName);
 	        trigger.setEvent((Event) currentModel.getPackagedElement(eventName+"_event"));
-        }
-        
-        importEffectAction(trans,transition);
-    }   
-	
-	
+	     }
+	}
 	private void importEffectAction(Class<?> transitionClass,org.eclipse.uml2.uml.Transition transition)
 	{
 				
 		
-			Activity activity= (Activity) transition.createEffect(transition.getName()+"_effect", UMLPackage.Literals.ACTIVITY);
+		try 
+		{
+			Method effectMethod=transitionClass.getDeclaredMethod("effect");
+			Activity activity=(Activity)transition.createEffect(transition.getName()+"_effect",UMLPackage.Literals.ACTIVITY);
+			MethodImporter.importMethod(currentModel,activity, effectMethod, transitionClass);
+		}
+		catch (NoSuchMethodException e)
+		{
+			//if there's no effect method, do nothing
+		} 
+		
+	}
+	
+	private void importGuard(Class<?> transitionClass,org.eclipse.uml2.uml.Transition transition)
+	{
+				
+		
+			
 			try
 			{
-				MethodImporter.importMethod(currentModel,activity, transitionClass.getDeclaredMethod("effect"), transitionClass);
+				Method guardMethod=transitionClass.getDeclaredMethod("guard");
+				
 			}
 			catch (NoSuchMethodException e) {
 				
