@@ -4,14 +4,13 @@ import java.lang.reflect.*;
 import java.util.LinkedList;
 
 import org.aspectj.lang.Signature;
-import org.aspectj.lang.reflect.FieldSignature;
 
 import txtuml.importer.InstructionImporter;
 import txtuml.api.*;
 
 public privileged aspect ImporterAspect {
 	private pointcut withinProject() : within(txtuml..*) && !within(txtuml.examples..*); // TODO only until the examples package exists
-	private pointcut withinModel() : within(ModelElement+) && !within(txtuml.api..*);
+	private pointcut withinModel() : within(ModelElement+) && !within(ExternalClass+) && !within(txtuml.api..*);
 	private pointcut importing() : if(MethodImporter.isImporting());
 	private pointcut isActive() : withinModel() && importing();
 	
@@ -19,8 +18,18 @@ public privileged aspect ImporterAspect {
 		return InstructionImporter.call(target, thisJoinPoint.getSignature().getName(),thisJoinPoint.getArgs());
 	}
 	
-	Object around() : call(static * (!ModelElement+).*()) && isActive() {
-		return InstructionImporter.callExternal(thisJoinPoint.getSignature().getDeclaringType(), thisJoinPoint.getSignature().getName(), thisJoinPoint.getArgs());
+	Object around(ExternalClass target) : target(target) && call(* (ExternalClass+).*(..)) && isActive() {
+		return InstructionImporter.callExternal(target, thisJoinPoint.getSignature().getName(), thisJoinPoint.getArgs());
+	}
+
+	Object around() : call(static * (ExternalClass+).*(..)) && isActive() {
+		return InstructionImporter.callStaticExternal(thisJoinPoint.getSignature().getDeclaringType(), thisJoinPoint.getSignature().getName(), thisJoinPoint.getArgs());
+	}
+
+	
+	Object around() : call(* (!ModelElement+).*(..)) && !call(* (java.lang..*).*(..)) && isActive() {
+		System.err.println("Error: unpermitted method call: " + thisJoinPoint.getSignature().getDeclaringType().getName() + "." + thisJoinPoint.getSignature().getName());
+		return proceed();
 	}
 	
 	Object around(ModelClass target, Object newValue) : target(target) && set(* *) && args(newValue) && isActive() {
@@ -32,9 +41,6 @@ public privileged aspect ImporterAspect {
 		try {
 			return InstructionImporter.fieldGet(target,signature.getName(),signature.getDeclaringType().getDeclaredField(signature.getName()).getType());
 		} catch (NoSuchFieldException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

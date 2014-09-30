@@ -5,6 +5,8 @@ import txtuml.importer.MethodImporter;
 import txtuml.utils.InstanceCreator;
 
 public class Action implements ModelElement {
+	protected Action() {}
+	
 	public static <T extends ModelClass> T create(Class<T> classType) {
 		return InstanceCreator.createInstance(classType, 1);
 	}
@@ -59,10 +61,9 @@ public class Action implements ModelElement {
 		else
 		{
 			Runtime.send(receiverObj, event);
-		}
-		
+		}	
 	}
-
+	
 	public static void delete(ModelClass obj) {
 		if(MethodImporter.isImporting())
 		{

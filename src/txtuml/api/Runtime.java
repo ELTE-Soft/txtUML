@@ -8,8 +8,12 @@ import txtuml.api.Association;
 import txtuml.api.ModelClass;
 import txtuml.utils.InstanceCreator;
 
-public final class Runtime implements ModelElement {	
-	public static final class Settings {
+public final class Runtime implements ModelElement {
+	private Runtime() {}
+	
+	public static final class Settings implements ModelElement {
+		private Settings() {}
+
 		public static void setUserOutStream(PrintStream userOutStream) {
 			Settings.userOutStream = userOutStream;
 		}
@@ -25,6 +29,19 @@ public final class Runtime implements ModelElement {
 		public static void setRuntimeLog(boolean newValue) {
 			runtimeLog = newValue;
 		}
+		public static void setSimulationTimeMultiplier(long newMultiplier) {
+			if (canChangeSimulationTimeMultiplier) {
+				simulationTimeMultiplier = newMultiplier;
+			} else {
+				Action.runtimeErrorLog("Error: Simulation time multiplier can only be changed before any time-related event takes place in the model simulation");
+			}
+		}
+		public static long getSimulationTimeMultiplier() {
+			return simulationTimeMultiplier;
+		}
+		public static void lockSimulationTimeMultiplier() {
+			canChangeSimulationTimeMultiplier = false;
+		}
 		static boolean runtimeLog() {
 			return runtimeLog;
 		}
@@ -32,6 +49,8 @@ public final class Runtime implements ModelElement {
 		private static PrintStream userErrorStream = System.err;
 		private static PrintStream runtimeOutStream = System.out;
 		private static PrintStream runtimeErrorStream = System.err;
+		private static long simulationTimeMultiplier = 1;
+		private static boolean canChangeSimulationTimeMultiplier = true;
 		private static boolean runtimeLog = false;
 	}
 	

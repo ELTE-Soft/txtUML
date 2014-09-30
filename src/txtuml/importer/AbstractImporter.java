@@ -2,7 +2,6 @@ package txtuml.importer;
 
 import java.lang.reflect.*;
 
-import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.PseudostateKind;

@@ -1,6 +1,7 @@
 package txtuml.examples.example1;
 
 import txtuml.api.*;
+import txtuml.external.*;
 
 class Model1 extends Model {
 	
@@ -92,7 +93,9 @@ class Model1 extends Model {
 			Action.send(myMachine, new ButtonPress()); // tries to switch it off, but fails again
 			Action.send(myMachine, new DoTasks(new ModelInt(1))); // the machine becomes active again and decreases its tasks-to-do count by 1
 			
-			Action.send(myMachine, new ButtonPress()); // tries to switch the machine off, now with success 
+			Timer.Handle t1 = Timer.start(myMachine, new ButtonPress(), 2000);
+			t1.add(3000);
+			Action.log(""+ t1.query());
 			Action.send(myMachine, new DoTasks(new ModelInt(1))); // this event has no effect, the machine is switched off
 
 			Action.log("User: work finished...");

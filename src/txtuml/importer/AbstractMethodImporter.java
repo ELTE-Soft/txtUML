@@ -2,7 +2,6 @@ package txtuml.importer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Stack;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -15,7 +14,6 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.ObjectNode;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Operation;
-import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.ReadVariableAction;

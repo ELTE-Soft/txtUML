@@ -11,7 +11,7 @@ import txtuml.importer.MethodImporter;
 import txtuml.utils.InstanceCreator;
 
 public class ModelClass extends ModelIdentifiedElement {
-	public abstract class State {
+	public abstract class State implements ModelElement {
 		public void entry() {
 		}
 		public void exit() {
@@ -28,7 +28,7 @@ public class ModelClass extends ModelIdentifiedElement {
 	public abstract class CompositeState extends State {
 	}
 	
-	public abstract class Transition {
+	public abstract class Transition implements ModelElement {
 		public void effect() {
 		}
 		public ModelBool guard() {
@@ -74,7 +74,7 @@ public class ModelClass extends ModelIdentifiedElement {
 	}
 
 	void finishThread() {
-		synchronized(thread) {
+		synchronized(lockOnThread) {
 			if (thread != null) {
 				thread.interrupt();
 				thread = null;
@@ -83,7 +83,7 @@ public class ModelClass extends ModelIdentifiedElement {
 	}
 
 	void send(Signal signal) {
-		synchronized(thread) {
+		synchronized(lockOnThread) {
 			if (thread != null) {
 				thread.send(signal);
 			}
@@ -97,13 +97,13 @@ public class ModelClass extends ModelIdentifiedElement {
 		if (Runtime.Settings.runtimeLog() && signal != null) {
 			Action.runtimeFormattedLog("%10s %-15s    got signal: %-18s%n",getClass().getSimpleName(),getIdentifier(),signal.getClass().getSimpleName());
 		}
-		if (searchForTransition(signal)) {
+		if (executeTransition(signal)) {
 			callEntryAction();
 		}
 	}
 
-	private synchronized boolean searchForTransition(Signal signal) {
-		Class<?> good = null;
+	private synchronized boolean executeTransition(Signal signal) {
+		Class<?> applicableTransition = null;
 		for (Class<?> examinedStateClass = currentState.getClass(), parentClass = examinedStateClass.getEnclosingClass();
 				parentClass != null;
 				examinedStateClass = parentClass, parentClass = examinedStateClass.getEnclosingClass()) {
@@ -116,18 +116,18 @@ public class ModelClass extends ModelIdentifiedElement {
 					} catch (NullPointerException e) {
 						continue;
 					}
-					if (from != examinedStateClass || notGoodTrigger(c, signal)) {
+					if (from != examinedStateClass || notApplicableTrigger(c, signal)) {
 						continue;
 					}
 					Transition transition = (Transition)getInnerClassInstance(c);
-					if (!transition.guard().getValue()) { // check guard
+					if (!transition.guard().getValue()) { // checking guard
 						continue;
 					}
-					if (good != null) {
-						Action.runtimeErrorLog("Error: guards of transitions " + good.getName() + " and " + c.getName() + " from class " + getClass().getSimpleName() + " are overlapping");
+					if (applicableTransition != null) {
+						Action.runtimeErrorLog("Error: guards of transitions " + applicableTransition.getName() + " and " + c.getName() + " from class " + getClass().getSimpleName() + " are overlapping");
 						continue;
 					}
-					good = c;
+					applicableTransition = c;
 					if (Runtime.Settings.runtimeLog()) {
 						Action.runtimeFormattedLog("%10s %-15s changes state: from: %-10s tran: %-18s to: %-10s%n",getClass().getSimpleName(),getIdentifier(),
 								from.getSimpleName(),c.getSimpleName(),to.getSimpleName());
@@ -139,10 +139,10 @@ public class ModelClass extends ModelIdentifiedElement {
 				}
 			}
 		}
-		return good != null;
+		return applicableTransition != null;
 	}
 	
-	private boolean notGoodTrigger(Class<?> transitionClass, Signal signal) {
+	private boolean notApplicableTrigger(Class<?> transitionClass, Signal signal) {
 		Trigger trigger = transitionClass.getAnnotation(Trigger.class);
 		if ( (signal == null) == (trigger == null) &&
 				 ( (signal == null) || (trigger.value().isAssignableFrom(signal.getClass())) ) ) {
@@ -242,6 +242,7 @@ public class ModelClass extends ModelIdentifiedElement {
 	}
 	private State currentState;
 	private ModelClassThread thread;
+	private final Object lockOnThread = new Object();
 	private Map<Class<?>, Object> innerClassInstances = new HashMap<>(); 
 	private static Map<Class<?>, Class<? extends InitialState>> initialStates = new HashMap<>();
 }

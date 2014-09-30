@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.eclipse.uml2.uml.AddStructuralFeatureValueAction;
 import org.eclipse.uml2.uml.AddVariableValueAction;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.CallOperationAction;
@@ -27,6 +26,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValuePin;
 import org.eclipse.uml2.uml.Variable;
 
+import txtuml.api.ExternalClass;
 import txtuml.api.ModelBool;
 import txtuml.api.ModelClass;
 import txtuml.api.ModelIdentifiedElement;
@@ -349,18 +349,25 @@ public class InstructionImporter extends AbstractMethodImporter {
 			
 	}
 		 
-
-			
-	public static Object callExternal(Class<?> c, String methodName, Object... args)
+	public static Object callExternal(ExternalClass target, String methodName, Object... args)
 	{
-			// this method is called before any STATIC call where the target class does NOT implement the ModelElement interface 
-	    	// parameters: the target class, the name of the called method and the given parameters
 		return null;
 	        // TODO not implemented; should return an instance of the actual return type of the called method
 	        // it can be get through its Method class
 	        // the imported model will get this returned object as the result of the method call
 	}
-	    
+
+	public static Object callStaticExternal(Class<?> c, String methodName, Object... args)
+	{
+		return null;
+	        // TODO not implemented; should return an instance of the actual return type of the called method
+	        // it can be get through its Method class
+	        // the imported model will get this returned object as the result of the method call
+	        
+	        // c will actually always be Class<? extends ExternalClass>
+	        // so this method informs the importer about a static method call on an ExternalClass class
+	}
+	
 	
 
 	
@@ -479,7 +486,7 @@ public class InstructionImporter extends AbstractMethodImporter {
 	}
 	
 	
-
+	@SuppressWarnings("incomplete-switch")
 	private static ModelInt importModelInt2OpOperation(ModelInt target, ModelInt val, ModelIntOperations operationType) 
 	{
 		String valInstName=getObjectIdentifier(val);
@@ -546,6 +553,7 @@ public class InstructionImporter extends AbstractMethodImporter {
 		
 	}
 	
+	@SuppressWarnings("incomplete-switch")
 	private static ModelInt importModelInt1OpOperation(ModelInt target,ModelIntOperations operationType)  {
 
 		boolean isFunction=false;
