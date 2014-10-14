@@ -7,23 +7,32 @@ public class ModelBool extends ModelType<Boolean> {
 	public ModelBool() {
 		this(false);
 	}
-	
+
 	public ModelBool not() {
-		return new ModelBool(!getValue());
+		return !getValue() ? TRUE : FALSE;
 	}
 	public ModelBool or(ModelBool val) {
-		return new ModelBool(getValue() || val.getValue());
+		return getValue() || val.getValue() ? TRUE : FALSE;
 	}
 	public ModelBool and(ModelBool val) {
-		return new ModelBool(getValue() && val.getValue());
+		return getValue() && val.getValue() ? TRUE : FALSE;
 	}
 	public ModelBool xor(ModelBool val) {
-		return new ModelBool(getValue() ^ val.getValue());
+		return getValue() ^ val.getValue() ? TRUE : FALSE;
 	}
 	public ModelBool equ(ModelBool val) {
-		return new ModelBool(getValue() == val.getValue());
+		return getValue() == val.getValue() ? TRUE : FALSE;
 	}
 	public ModelBool notEqu(ModelBool val) {
-		return new ModelBool(getValue() != val.getValue());
+		return getValue() != val.getValue() ? TRUE : FALSE;
+	}
+	public ModelBool isNull(Object o) {
+		return o == null ? TRUE : FALSE;
+	}
+	public ModelBool isNotNull(Object o) {
+		return o != null ? TRUE : FALSE;
 	}	
+	
+	public static final ModelBool TRUE = new ModelBool(true);
+	public static final ModelBool FALSE = new ModelBool(false);
 }

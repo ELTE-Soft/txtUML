@@ -57,7 +57,7 @@ public class ModelInt extends ModelType<Integer> {
 		return new ModelInt(getValue() - val.getValue());
 	}
 	public ModelBool isEqual(ModelInt val) {
-		return new ModelBool(getValue().equals(val.getValue()));
+		return new ModelBool(getValue() == val.getValue());
 	}
 	public ModelBool isLess(ModelInt val) {
 		return new ModelBool(getValue() < val.getValue());
@@ -85,5 +85,8 @@ public class ModelInt extends ModelType<Integer> {
 		}
 		return new ModelInt(Integer.signum(getValue()));
 	}
+	
+	public static final ModelInt ONE = new ModelInt(1);
+	public static final ModelInt ZERO = new ModelInt(0);
 }
 

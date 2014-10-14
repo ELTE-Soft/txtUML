@@ -218,8 +218,8 @@ public class ModelClass extends ModelIdentifiedElement {
         T ret = (T)innerClassInstances.get(forWhat);
         if (ret == null) { 
         	ret = InstanceCreator.createInstance(forWhat, 1, getInnerClassInstance(forWhat.getEnclosingClass()));
+            innerClassInstances.put(forWhat, ret);
         }
-        innerClassInstances.put(forWhat, ret);
         return ret;
 	}
 	

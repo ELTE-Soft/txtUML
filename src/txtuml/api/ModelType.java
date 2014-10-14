@@ -19,7 +19,7 @@ public class ModelType<T> extends ModelIdentifiedElement {
 	public ModelString toMString() {
 		return new ModelString(value.toString());
 	}
-	
+
 	private final T value;
 
 }
