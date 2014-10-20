@@ -50,7 +50,6 @@ public class GenerationTemplates {
 		return EventList.substring(0,EventList.length()-1)+"};\n";
 	}
 	
-	
 	public static String EventClass(String name_,List<Util.Pair<String,String>> params_)//kell még params
 	{
 		return "Struct "+name_+ ":public EventBase\n{\n"+name_+"(int t_):EventBase(t_){}"+"\n};\n\n";
@@ -181,11 +180,14 @@ public class GenerationTemplates {
 	
 	private static String EntryExitTemplate(String type_,String machineName_,Map<String,String> states_)
 	{
-		String source="void "+machineName_+"::"+type_+"()\n{\n"+
-				  "switch("+CurrentStateName+")\n{\n";
-		for (Map.Entry<String,String> entry : states_.entrySet())
+		String source="void "+machineName_+"::"+type_+"()\n{\n";
+		if(states_!=null)
 		{
-			source+="case("+entry.getKey()+"):\n{\n"+entry.getValue()+"}\n";
+			source+="switch("+CurrentStateName+")\n{\n";
+			for (Map.Entry<String,String> entry : states_.entrySet())
+			{
+				source+="case("+entry.getKey()+"):\n{\n"+entry.getValue()+"}\n";
+			}
 		}
 		return source+"}\n\n";
 	}
