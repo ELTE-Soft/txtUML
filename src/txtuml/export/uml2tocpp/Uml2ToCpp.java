@@ -31,19 +31,24 @@ import org.eclipse.uml2.uml.Vertex;
 
 public class Uml2ToCpp {
 
-	public static void main(String[] arg) {
-		/*if(args.length != 2) {
-			System.out.println("Two command line arguments needed.");
+	public static void main(String[] args) {
+		if(args.length != 2) {
+			System.out.println("Two command line arguments needed:input file, output directory");
 			return;
-		}*/
-
+		}
+		
+		Model model= Util.loadModel(args[0]);
+		buildCppCode(model,args[1]);
+	}
+	
+	
+	
+	public static void buildCppCode(Model model_,String outputDir_) {
 		try {
-			String args[] ={"import/Model1.uml","export/"};
-			Model model= Util.loadModel(args[0]);
-			EList<Element> elements=model.allOwnedElements();
+			EList<Element> elements=model_.allOwnedElements();
 			
 			String source=createEventSource(elements);
-			writeOutSource(args[1],(GenerationTemplates.EventHeaderName + ".hh"),source);
+			writeOutSource(outputDir_,(GenerationTemplates.EventHeaderName + ".hh"),source);
 
 			
 			List<Class> classList=new ArrayList<Class>();
@@ -52,35 +57,93 @@ public class Uml2ToCpp {
 			{
 				source="";
 				source=createClassHeaderSource(item);
-				writeOutSource(args[1],item.getName()+".hh", source);
+				writeOutSource(outputDir_,item.getName()+".hh", GenerationTemplates.HeaderGuard(source,item.getName()));
 				source="";
 				source=createClassCppSource(item);
-				writeOutSource(args[1],item.getName()+".cpp","#include \""+item.getName()+".hh\"\n\n"+source);
+				writeOutSource(outputDir_,item.getName()+".cpp","#include \""+item.getName()+".hh\"\n\n"+source);
 			}
-            
 		} catch(IOException ioe) {
 			System.out.println("IO error.");
         }
 	}
-	
+
+
+
 	private static String createClassHeaderSource(Class class_) {
 		String source="";
 		List<StateMachine> smList=new ArrayList<StateMachine>();
 		getTypedElements(smList,class_.allOwnedElements(),UMLPackage.Literals.STATE_MACHINE);
 		if(!smList.isEmpty())
 		{
-			source=GenerationTemplates.StateMachineClassHeader(class_.getName(), createParts(class_,"public")+
+			source=GenerationTemplates.StateMachineClassHeader(createDependency(class_),class_.getName(), createParts(class_,"public")+
 															   GenerationTemplates.StateEnum(getStateList(smList.get(0)))+
 															   GenerationTemplates.EventEnum(getEventList(smList.get(0))),
 															   createTransitionFunctionDecl(smList.get(0))+createParts(class_,"private"));
 		}
 		else
 		{
-			source=GenerationTemplates.ClassHeader(class_.getName(), createParts(class_,"public"), createParts(class_,"private"));
+			source=GenerationTemplates.ClassHeader(createDependency(class_),class_.getName(), createParts(class_,"public"), createParts(class_,"private"));
 		}
 		return source;
 	}
 	
+	private static String getCppType(String type_)
+	{
+		String tmp=GenerationTemplates.CppType(type_);
+		if(tmp!=GenerationTemplates.unknown)
+		{
+			type_=tmp;
+		}
+		return type_;
+	}
+	
+	private static String createDependency(Class class_) {
+		String source="";
+		List<String> types=new ArrayList<String>();
+		//collecting each item type for dependency analysis
+		EList<Operation> operations=class_.getAllOperations();
+		for(Operation item:operations)
+		{
+				if(item.getReturnResult() != null)
+				{
+					types.add(item.getReturnResult().getType().getName());
+				}
+				types.addAll(operationParamTypes(item));
+		}
+		
+		EList<Property> propertis=class_.getAttributes();
+		for(Property item:propertis)
+		{
+			types.add(item.getType().getName());
+		}
+		
+		//dependency analysis
+		String tmp;
+		String header;
+		for(String t:types)
+		{
+			tmp=GenerationTemplates.CppType(t);
+			if(tmp==GenerationTemplates.unknown)
+			{
+				header=GenerationTemplates.LocalInclude(t);
+				if(!source.contains(header))
+				{
+					source+=header;
+				}
+			}
+			if(tmp==GenerationTemplates.cppString)
+			{
+				header=GenerationTemplates.OuterInclude(tmp);
+				if(!source.contains(header))
+				{
+					source+=header;
+				}
+			}
+		}
+		
+		return source+"\n";
+	}
+
 	private static String createTransitionFunctionDecl(StateMachine machine_) 
 	{
 		String source="";
@@ -139,7 +202,7 @@ public class Uml2ToCpp {
 				{
 					returnType=item.getReturnResult().getType().getName();
 				}
-				source+=GenerationTemplates.FunctionDecl(returnType, item.getName(),operationParamTypes(item));
+				source+=GenerationTemplates.FunctionDecl(getCppType(returnType), item.getName(),operationParamTypes(item));
 			}
 		}
 		
@@ -148,7 +211,7 @@ public class Uml2ToCpp {
 		{
 			if(item.getVisibility().toString().equals(modifyer_))
 			{
-				source+=GenerationTemplates.Property(item.getType().getName(),item.getName());
+				source+=GenerationTemplates.Property(getCppType(item.getType().getName()),item.getName());
 			}
 		}
 		
@@ -200,7 +263,7 @@ public class Uml2ToCpp {
 			{
 				returnType=item.getReturnResult().getType().getName();
 			}
-			source+=GenerationTemplates.FunctionDef(class_.getName(),returnType, item.getName(),operationParams(item),"");
+			source+=GenerationTemplates.FunctionDef(class_.getName(),getCppType(returnType), item.getName(),operationParams(item),"");
 		}
 		
 		
@@ -287,7 +350,7 @@ public class Uml2ToCpp {
 	{
 		List<Signal> signalList=new ArrayList<Signal>();
 		getTypedElements(signalList,elements_,UMLPackage.Literals.SIGNAL);
-		String source = "";
+		String source = GenerationTemplates.EventBase+"\n";
 		
 		for(Signal item:signalList)
 		{

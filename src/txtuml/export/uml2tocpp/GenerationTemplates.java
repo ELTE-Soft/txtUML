@@ -11,11 +11,13 @@ public class GenerationTemplates {
 	public static String EventHeaderName="event";
 	public static String EventBaseName="EventBase";
 	public static String EventBaseRefName=EventBaseName+"CRef";
+	public static String unknown="?";
+	public static String cppString="std::string";
 
 	
 	public static String EHI = "#include\""+EventHeaderName+"\"";
 	public static String ClassHeaderIncludes ="#include <functional>\n#include <vector>\n#include \""+EventHeaderName+".hh\"\n\n";
-	public static String EventBase = "Struct "+EventBaseName+"\n{\n"+EventBaseName+"(int t_):t(t_){}\nint t;\n};\ntypedef const "+EventBaseName+"& "+EventBaseRefName+";\n\n";
+	public static String EventBase = "struct "+EventBaseName+"\n{\n"+EventBaseName+"(int t_):t(t_){}\nint t;\n};\ntypedef const "+EventBaseName+"& "+EventBaseRefName+";\n\n";
 	
 	private static String EntryName="Entry";
 	private static String ExitName="Exit";
@@ -29,7 +31,7 @@ public class GenerationTemplates {
 	
 	public static String HeaderGuard(String source_,String name_)
 	{
-		return "#ifndef __"+name_.toUpperCase()+"__HPP__\n"+
+		return "#ifndef __"+name_.toUpperCase()+"_HPP__\n"+
 				"#define __"+name_.toUpperCase()+"_HPP__\n\n"+
 				source_+
 				"\n\n#endif //__"+name_.toUpperCase()+"_HPP_";
@@ -52,20 +54,20 @@ public class GenerationTemplates {
 	
 	public static String EventClass(String name_,List<Util.Pair<String,String>> params_)//kell még params
 	{
-		return "Struct "+name_+ ":public EventBase\n{\n"+name_+"(int t_):EventBase(t_){}"+"\n};\n\n";
+		return "struct "+name_+ ":public EventBase\n{\n"+name_+"(int t_):EventBase(t_){}"+"\n};\n\n";
 	}
 	
 	
-	public static String StateMachineClassHeader(String name_,String public_,String private_)
+	public static String StateMachineClassHeader(String dependency_,String name_,String public_,String private_)
 	{
-		return ClassHeader(name_,
+		return ClassHeader(ClassHeaderIncludes+dependency_,name_,
 				StateMachineClassFixPublicParts(name_)+public_,
-				StateMachineClassFixPrivateParts(name_)+private_); 
+				StateMachineClassFixPrivateParts(name_)+private_);
 	}
 	
-	public static String ClassHeader(String name_,String public_,String private_)
+	public static String ClassHeader(String dependency_,String name_,String public_,String private_)
 	{
-		String source= ClassHeaderIncludes+"Struct "+name_+"{\npublic:\n"+name_+"();\n";
+		String source=dependency_+"struct "+name_+"{\npublic:\n"+name_+"();\n";
 		if(!public_.isEmpty())
 		{
 			source +=public_;
@@ -202,7 +204,32 @@ public class GenerationTemplates {
 		return StateList.substring(0,StateList.length()-1)+"};\n";
 	}
 	
+	public static String CppType(String type_)
+	{
+		String cppType=unknown;
+		switch(type_)
+		{
+			case "Integer": cppType="int";break;
+			case "Real": cppType="double";break;
+			case "Boolean": cppType="bool";break;
+			case "String": cppType=cppString;break;
+		}
+		return cppType;
+	}
 	
+	public static String LocalInclude(String className_)
+	{
+		return "#include \""+className_+".hh\"\n";
+	}
+	
+	public static String OuterInclude(String name_)
+	{
+		if(name_.contains("std::"))
+		{
+			name_=name_.substring(5);
+		}
+		return "#include <"+name_+">\n";
+	}
 	
 	public class ActionLanguage
 	{
