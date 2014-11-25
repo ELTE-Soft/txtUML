@@ -49,9 +49,9 @@ class TrainModel {
 		@From(Forwards.class) @To(Neutral.class) @Trigger(Backward.class)
 		class Forwards_Neutral extends Transition {
 			@Override public void effect() {
-				Engine e = Action.selectOne(Gearbox.this, GE.class, "e");
+				Engine e = Gearbox.this.assoc(GE.e.class).selectOne();
 				Action.send(e, new EngineOff());
-				Lamp l = Action.selectOne(Gearbox.this, GL.class, "l");
+				Lamp l = Gearbox.this.assoc(GL.l.class).selectOne();
 				Action.send(l, new LightOff());
 			}
 		}
@@ -59,7 +59,7 @@ class TrainModel {
 		class Backwards_Neutral extends Forwards_Neutral {} // inherited effect
 		
 		void startEngineOp() {
-			Engine e = Action.selectOne(this, GE.class, "e");
+			Engine e = Gearbox.this.assoc(GE.e.class).selectOne();
 			Action.send(e, new EngineOn());
 		}
 	}
@@ -101,16 +101,16 @@ class TrainModel {
 	private static class EngineOff extends Signal {}
 	
 	class GE extends Association {
-		@One Gearbox g;
-		@One Engine e;
+		class g extends One<Gearbox>{}
+		class e extends One<Engine>{}
 	}
 	class GL extends Association {
-		@One Gearbox g;
-		@One Lamp l;		
+		class g extends One<Gearbox>{}
+		class l extends One<Lamp>{}		
 	}
 	class LE extends Association {
-		@One Lamp l;
-		@One Engine e;		
+		class l extends One<Lamp>{}
+		class e extends One<Engine>{}		
 	}			
 }
 
@@ -129,9 +129,9 @@ class Tester extends Thread {
 		g = Action.create(Gearbox.class);
 		e = Action.create(Engine.class);
 		l = Action.create(Lamp.class);
-		Action.link(GE.class, "g", g, "e", e);
-		Action.link(GL.class, "g", g, "l", l);
-		Action.link(LE.class, "l", l, "e", e);
+		Action.link(GE.g.class, g, GE.e.class, e);
+		Action.link(GL.g.class, g, GL.l.class, l);
+		Action.link(LE.l.class, l, LE.e.class, e);
 	}
 
 	public void run() {

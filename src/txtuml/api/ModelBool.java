@@ -1,6 +1,12 @@
 package txtuml.api;
 
 public class ModelBool extends ModelType<Boolean> {
+	public static class Else extends ModelBool { // special ModelBool which value is always false
+		public Else() {
+			super();
+		}
+	}
+	
 	public ModelBool(boolean val) {
 		super(val);
 	}
@@ -35,4 +41,5 @@ public class ModelBool extends ModelType<Boolean> {
 	
 	public static final ModelBool TRUE = new ModelBool(true);
 	public static final ModelBool FALSE = new ModelBool(false);
+	public static final ModelBool ELSE = new Else();
 }

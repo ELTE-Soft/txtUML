@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.uml2.uml.AggregationKind;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Type;
@@ -81,10 +80,12 @@ class AssociationImporter extends AbstractImporter{
 	
 	private static AssociationEnd createAssociationEnd(org.eclipse.uml2.uml.Type participant,String phrase,Annotation[] annotations)
 									throws ImportException
-	{ 
+	{
+            // TODO import associations
+	    /*
 		int lowerBound;
 	    int upperBound;
-	        
+	    
 	    //converting multiplicity
 	    if(annotations[0].annotationType().equals(txtuml.api.One.class))
 	    {
@@ -106,11 +107,11 @@ class AssociationImporter extends AbstractImporter{
 	        upperBound=org.eclipse.uml2.uml.LiteralUnlimitedNatural.UNLIMITED;
 	    }
 	    else
-	    {
-	        throw new ImportException(phrase + ": has invalid multiplicity.");            
-	    }
+	    {*/
+	        throw new ImportException(phrase + ": has invalid multiplicity.");           
+	    /*}
 	
-	    return new AssociationEnd(participant,phrase,false,AggregationKind.NONE_LITERAL,lowerBound,upperBound);
+	    return new AssociationEnd(participant,phrase,false,AggregationKind.NONE_LITERAL,lowerBound,upperBound);*/
 	}
 	private Class<?> sourceClass;
 	private Model currentModel;

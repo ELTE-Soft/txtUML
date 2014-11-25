@@ -15,18 +15,18 @@ class PhoneX extends Model {
 	}
 	
 	class ServiceHandlesCall extends Association {
-		@One Service handler;
-		@Many Call handled;
+		class handler extends One<Service>{}
+		class handled extends Many<Call>{}
 	}
 
 	class ServiceHandlesRegistrationProcess extends Association {
-		@One Service handler;
-		@Many RegistrationProcess handled;
+		class handler extends One<Service>{}
+		class handled extends Many<RegistrationProcess>{}
 	}
 
 	class ServiceHandlesUnregistrationProcess extends Association {
-		@One Service handler;
-		@Many UnregistrationProcess handled;
+		class handler extends One<Service>{}
+		class handled extends Many<UnregistrationProcess>{}
 	}
 
 	class Call extends ModelClass {
@@ -125,29 +125,29 @@ class PhoneX extends Model {
 	}
 	
 	class CallerInitiatesCall extends Association {
-		@One Call initiated;
-		@One Caller initiator;
+		class initiated extends One<Call>{}
+		class initiator extends One<Caller>{}
 	}
 
 	class CalleeJoinsCall extends Association {
-		@One Call joined;
-		@One Callee joiner;
+		class joined extends One<Call>{}
+		class joiner extends One<Callee>{}
 	}
 
 	class RegistrationProcess extends ModelClass {
 	}
 
 	class RegistrationProcessRegistersSubscriber extends Association {
-		@One RegistrationProcess controller;
-		@One UnregisteredSubscriber toBeRegistered;
+		class controller extends One<RegistrationProcess>{}
+		class toBeRegistered extends One<UnregisteredSubscriber>{}
 	}
 
 	class UnregistrationProcess extends ModelClass {
 	}
 
 	class UnregistrationProcessUnregistersSubscriber extends Association {
-		@One UnregistrationProcess controller;
-		@One RegisteredSubscriber toBeUnregistered;
+		class controller extends One<UnregistrationProcess>{}
+		class toBeUnregistered extends One<RegisteredSubscriber>{}
 	}
 
 	class Subscriber extends ModelClass {
@@ -158,8 +158,8 @@ class PhoneX extends Model {
 	}
 	
 	class StatusOfSubscriber extends Association {
-		@One Subscriber statusOwner;
-		@One SubscriberStatus status;
+		class statusOwner extends One<Subscriber>{}
+		class status extends One<SubscriberStatus>{}
 	}
 	
 	class Caller extends SubscriberStatus {

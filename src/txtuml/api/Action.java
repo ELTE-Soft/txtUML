@@ -1,5 +1,6 @@
 package txtuml.api;
 
+import txtuml.api.Association.*;
 import txtuml.importer.InstructionImporter;
 import txtuml.importer.MethodImporter;
 import txtuml.utils.InstanceCreator;
@@ -8,50 +9,21 @@ public class Action implements ModelElement {
 	protected Action() {}
 	
 	public static <T extends ModelClass> T create(Class<T> classType) {
-		return InstanceCreator.createInstance(classType, 1);
+		return InstanceCreator.createInstance(classType);
 	}
 
-	public static void link(Class<? extends Association> assocClass,
-    		String leftPhrase,  ModelClass leftObj,
-    		String rightPhrase, ModelClass rightObj) {
-		if(MethodImporter.isImporting())
-		{
-			InstructionImporter.link(assocClass,leftPhrase,leftObj,rightPhrase,rightObj);		
-		}
-		else
-		{
-			Runtime.link(assocClass, leftPhrase, leftObj, rightPhrase, rightObj);
-		}
-        
-    }
+	public static <MODELCLASS1 extends ModelClass, MODELCLASS2 extends ModelClass> void link(
+			Class<? extends AssociationEnd<MODELCLASS1>> leftEnd, MODELCLASS1 leftObj,
+    		Class<? extends AssociationEnd<MODELCLASS2>> rightEnd, MODELCLASS2 rightObj) {
+		//TODO import 'link' into UML2
+		//it does not reuse the other link implementation because of optimization issues
 
-    public static void unLink(Class<? extends Association> assocClass,
-    		String leftPhrase,  ModelClass leftObj,
-    		String rightPhrase, ModelClass rightObj) {
-    	if(MethodImporter.isImporting())
-		{
-    		InstructionImporter.unLink(assocClass, leftPhrase, leftObj, rightPhrase, rightObj);
-			
+		synchronized(lockOnAssociations) {
+			leftObj.addToAssoc(rightEnd, rightObj);
+			rightObj.addToAssoc(leftEnd, leftObj);
 		}
-    	else
-    	{
-    		Runtime.unLink(assocClass, leftPhrase, leftObj, rightPhrase, rightObj);
-    	}
-        
     }
-
-	@SuppressWarnings("unchecked") // unchecked cast from ModelClass to T
-	public static <T extends ModelClass> T selectOne(ModelClass startObj, Class<? extends Association> assocClass, String phrase) {
-		if(MethodImporter.isImporting())
-		{
-			return (T) InstructionImporter.selectOne(startObj, assocClass, phrase);
-		}
-		else
-		{
-			return (T) Runtime.selectOne(startObj, assocClass, phrase);
-		}
-		
-	}
+	
 	
 	public static void send(ModelClass receiverObj, Signal event) {
 		if(MethodImporter.isImporting())
@@ -63,19 +35,45 @@ public class Action implements ModelElement {
 			Runtime.send(receiverObj, event);
 		}	
 	}
-	
-	public static void delete(ModelClass obj) {
-		if(MethodImporter.isImporting())
-		{
-			InstructionImporter.delete(obj);
-		}
-		else
-		{
-			Runtime.delete(obj);
-		}
-    	
-    }
 
+	public static void If(Condition cond, BlockBody thenBody, BlockBody elseBody) {
+		//TODO import 'If' into UML2
+
+		if (cond.check().getValue()) {
+			thenBody.run();
+		} else {
+			elseBody.run();
+		}
+	}
+	
+	public static void If(Condition cond, BlockBody thenBody) {
+		If(cond, thenBody, () -> {});
+	}
+
+	public static void While(Condition cond, BlockBody body) {
+		//TODO import 'While' into UML2
+
+		while (cond.check().getValue()) {
+			body.run();
+		}
+	}
+	
+	public static <T extends ModelClass> void For(Collection<T> collection, ParameterizedBlockBody<T> body) {
+		//TODO import 'For' (foreach) into UML2
+		
+		for(T element : collection) {
+			body.run(element);
+		}
+	}
+	
+	public static void For(ModelInt begin, ModelInt end, ParameterizedBlockBody<ModelInt> body) {
+		//TODO import 'For' (simple) into UML2
+		
+		for (int i = begin.getValue(); i <= end.getValue(); ++i) {
+			body.run(new ModelInt(i));
+		}
+	}
+	
 	public static void log(String message) { // user log
 		if(MethodImporter.isImporting())
 		{
@@ -128,11 +126,13 @@ public class Action implements ModelElement {
 		if(MethodImporter.isImporting())
 		{
 			
-		}	
+		}
 		else
 		{
 			Runtime.runtimeErrorLog(message);
 		}
 		
 	}
+	
+	static final Object lockOnAssociations = new Object();
 }

@@ -33,10 +33,10 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 		return importing;
 	}
 	
-	protected static <T> T createLocalInstance(Class<T> typeClass, int depth, Object... givenParameters)
+	protected static <T> T createLocalInstance(Class<T> typeClass)
 	{
 		setLocalInstanceToBeCreated(true);
-		T createdObject = InstanceCreator.createInstance(typeClass,depth);
+		T createdObject = InstanceCreator.createInstance(typeClass);
 		setLocalInstanceToBeCreated(false);
 		return createdObject;
 	}

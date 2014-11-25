@@ -22,11 +22,9 @@ class Model1 extends Model {
 		class On extends CompositeState {
 			@Override public void entry() {
 	        	Action.log("Enters state: 'on'");
-				
             }
 			@Override public void exit() {
 	        	Action.log("Exits state: 'on'");
-    
             }
 			
 			class Init extends InitialState {}
@@ -47,12 +45,12 @@ class Model1 extends Model {
 			@From(Active.class) @To(Active.class) @Trigger(DoTasks.class)
 			class DoActivity extends Transition {
 				@Override public void effect() {
-					//DoTasks dTE = getSignal();
-					//Machine.this.tasksTodo = Machine.this.tasksTodo.subtract(dTE.count);	
+					DoTasks dTE = getSignal();
+					Machine.this.tasksTodo = Machine.this.tasksTodo.subtract(dTE.count);	
 					Action.log("\tBecoming active...");
 				}
 			}
-		}		
+		}
 
 		@From(Init.class) @To(Off.class)
 		class Initialize extends Transition {
@@ -83,8 +81,11 @@ class Model1 extends Model {
 	class User extends ModelClass {
 		Machine doWork(User param) {
 			Action.log("User: starting to work...");
-			Machine myMachine =	Action.selectOne(this, Usage.class, "usedMachine");
-	
+			//Machine myMachine = Action.selectOne(this, Usage.class, "usedMachine");
+			Object o = this.assoc(Usage.usedMachine.class);
+			System.out.println(o.getClass().getSimpleName());
+			Machine myMachine = this.assoc(Usage.usedMachine.class).selectOne();
+			
 			Action.send(param,new ButtonPress());
 			Action.send(myMachine, new ButtonPress()); // switches the machine on
 			Action.send(myMachine, new ButtonPress()); // tries to switch it off, but fails because of the guard
@@ -95,18 +96,27 @@ class Model1 extends Model {
 			
 			Timer.Handle t1 = Timer.start(myMachine, new ButtonPress(), 2000);
 			t1.add(3000);
-			Action.log(""+ t1.query());
+			
+			If(() -> {
+				return new ModelBool(true);
+			}, () -> {
+				Action.log(""+t1.query());
+			});
+			
+			//if (true) Action.log(""+ t1.query());
+			
 			Action.send(myMachine, new DoTasks(new ModelInt(1))); // this event has no effect, the machine is switched off
 
 			Action.log("User: work finished...");
 			return myMachine;
-			
 		}
 	}
     
 	class Usage extends Association {
-		@One Machine usedMachine;
-		@Many User userOfMachine;
+		//@One Machine usedMachine;
+		//@Many User userOfMachine;
+		class usedMachine extends One<Machine> {}
+		class userOfMachine extends Many<User> {}
 	}
 
 	class ButtonPress extends Signal {
@@ -128,28 +138,19 @@ class Model1 extends Model {
 		User u2 = Action.create(User.class); //almost equivalent to 'new User()'
 												//not exactly: with current implementation the object created by Action.create() will have no enclosing Model1 object
 		
-        Action.link(Usage.class, "usedMachine", m, "userOfMachine", u1);
-        Action.link(Usage.class, "usedMachine", m, "userOfMachine", u2);
-      
+		
+        Action.link(Usage.usedMachine.class, m, Usage.userOfMachine.class, u1);
+        Action.link(Usage.usedMachine.class, m, Usage.userOfMachine.class, u2);
+                
+        u1.assoc(Usage.usedMachine.class);
+        
         u1.doWork(u2);
         
-
-        /*
-         * to test the instance deletion
-        */
-        Action.unLink(Usage.class, "usedMachine", m, "userOfMachine", u1); // must delete all the links to an instance before deleting it
-        Action.unLink(Usage.class, "usedMachine", m, "userOfMachine", u2);
-        Action.delete(m); // problem here: the machine object contained in m does not finish processing its four events before being deleted
-      
-        Action.log("Machine instance deleted");
-/*        
-        */
    	}
 }
 
 public class Example1 {
 	public static void main(String[] args) {
-		Model1 mod = new Model1();
-		mod.test();
+		(new Model1()).test();
 	}
 }

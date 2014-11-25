@@ -119,7 +119,7 @@ public class InstructionImporter extends AbstractMethodImporter {
         ModelClass result;
 		for(Field field : fields) {
 			if(field.getName().equals(phrase)) {
-				result = (ModelClass)createLocalInstance(field.getType(),3);
+				result = (ModelClass)createLocalInstance(field.getType());
                 return result;
 			}
 		}      
@@ -313,7 +313,7 @@ public class InstructionImporter extends AbstractMethodImporter {
 		try {
 			Method method = findMethod(target.getClass(),methodName);
 			Class<?> returnType=method.getReturnType();
-			returnObj=createLocalInstance(returnType,1);
+			returnObj=createLocalInstance(returnType);
 		} catch (SecurityException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -352,20 +352,22 @@ public class InstructionImporter extends AbstractMethodImporter {
 	public static Object callExternal(ExternalClass target, String methodName, Object... args)
 	{
 		return null;
-	        // TODO not implemented; should return an instance of the actual return type of the called method
-	        // it can be get through its Method class
-	        // the imported model will get this returned object as the result of the method call
+	        // TODO not implemented
+			// Should return an instance of the actual return type of the called method.
+	        // It can be got through its Method class.
+	        // The imported model will get this returned object as the result of the method call.
 	}
 
 	public static Object callStaticExternal(Class<?> c, String methodName, Object... args)
 	{
 		return null;
-	        // TODO not implemented; should return an instance of the actual return type of the called method
-	        // it can be get through its Method class
-	        // the imported model will get this returned object as the result of the method call
+	        // TODO not implemented
+			// Should return an instance of the actual return type of the called method.
+	        // It can be got through its Method class.
+	        // The imported model will get this returned object as the result of the method call.
 	        
-	        // c will actually always be Class<? extends ExternalClass>
-	        // so this method informs the importer about a static method call on an ExternalClass class
+	        // 'c' will actually always be Class<? extends ExternalClass>,
+	        // so this method informs the importer about a static method call on an ExternalClass class.
 	}
 	
 	
@@ -412,7 +414,7 @@ public class InstructionImporter extends AbstractMethodImporter {
 				}
 				else if(newValue instanceof ModelClass)
 				{
-					fieldObj=createLocalInstance(newValue.getClass(),1);
+					fieldObj=createLocalInstance(newValue.getClass());
 				}
 				method.setAccessible(false);
 
@@ -445,7 +447,7 @@ public class InstructionImporter extends AbstractMethodImporter {
 		}
 		else if(isClass(fieldType))
 		{
-			val=createLocalInstance(fieldType,1);
+			val=createLocalInstance(fieldType);
 		}
 		try
 		{

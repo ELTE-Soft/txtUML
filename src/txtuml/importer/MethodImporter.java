@@ -28,7 +28,7 @@ public class MethodImporter extends AbstractMethodImporter {
 	public static txtuml.api.Signal createSignal(Class<? extends ModelClass.Transition> tr) {
     	Trigger triggerAnnot = tr.getAnnotation(Trigger.class);
     	if (triggerAnnot != null) {
-        	return InstanceCreator.createInstance(triggerAnnot.value(), 3);
+        	return InstanceCreator.createInstance(triggerAnnot.value());
     	}
 		return null;
     }
@@ -48,7 +48,7 @@ public class MethodImporter extends AbstractMethodImporter {
 		
 		lastNode=initialNode;
 		
-		Object obj=createLocalInstance(declaringClass,3);
+		Object obj=createLocalInstance(declaringClass);
 		
 		loadCurrentParameters();
 		assignSelf(obj);
@@ -138,7 +138,7 @@ public class MethodImporter extends AbstractMethodImporter {
 		int i=0;
 		for(Class<?> c: currentMethod.getParameterTypes())
 		{
-			currentParameters[i]=createLocalInstance(c,1);
+			currentParameters[i]=createLocalInstance(c);
 			String argName="arg"+i;
 			Type paramType=null;
 			Parameter param=null;
