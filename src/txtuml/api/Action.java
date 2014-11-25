@@ -16,7 +16,6 @@ public class Action implements ModelElement {
 			Class<? extends AssociationEnd<MODELCLASS1>> leftEnd, MODELCLASS1 leftObj,
     		Class<? extends AssociationEnd<MODELCLASS2>> rightEnd, MODELCLASS2 rightObj) {
 		//TODO import 'link' into UML2
-		//it does not reuse the other link implementation because of optimization issues
 
 		synchronized(lockOnAssociations) {
 			leftObj.addToAssoc(rightEnd, rightObj);
