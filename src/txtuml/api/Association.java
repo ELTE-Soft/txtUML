@@ -30,7 +30,6 @@ public class Association implements ModelElement {
 		@Override
 		final synchronized AssociationEnd<T> init(Collection<T> other) {
 			if (!isFinal && other != null && other instanceof Many) {
-				System.out.println("Many ok");
 				this.set = ((Many<T>)other).set;
 			}
 			isFinal = true;
@@ -161,7 +160,6 @@ public class Association implements ModelElement {
 		@Override
 		final synchronized AssociationEnd<T> init(Collection<T> other) {
 			if (!isFinal && other != null && other instanceof MaybeOne) {
-				System.out.println("MaybeOne ok");
 				this.obj = ((MaybeOne<T>)other).obj;
 			}
 			isFinal = true;

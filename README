@@ -1,0 +1,10 @@
+Installation and execution:
+
+1. Download Eclipse Modeling Tools (Eclipse 4.4.1 Luna).
+    * https://www.eclipse.org/downloads/
+2. Install AJDT (which is needed for AspectJ).
+    * In Eclipse: go Help -> Install new software and type http://download.eclipse.org/tools/ajdt/44/dev/update
+    * Installing only the first (required) component should work.
+3. Restart Eclipse.
+4. Import the project into the workspace (does not need to be copied inside the workspace).
+5. Run as AspectJ/Java application.
