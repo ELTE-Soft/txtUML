@@ -23,6 +23,9 @@ public class Action implements ModelElement {
 		}
     }
 	
+	public static void start(ModelClass obj) {
+		obj.start();
+	}
 	
 	public static void send(ModelClass receiverObj, Signal event) {
 		if(MethodImporter.isImporting())

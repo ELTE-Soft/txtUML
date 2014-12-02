@@ -103,6 +103,10 @@ public class ModelClass extends ModelIdentifiedElement {
 		}
 	}
 
+	void start() {
+		thread.start();
+	}
+	
 	void send(Signal signal) {
 		synchronized(lockOnThread) {
 			if (thread != null) {
@@ -273,7 +277,8 @@ public class ModelClass extends ModelIdentifiedElement {
 		private ModelClassThread(ModelClass p) { // called from enclosing ModelClass
 			parent = p;
 			mailbox = new LinkedBlockingQueue<>();
-			start();
+			// To be removed as explicit start operations starts the behavior of new objects:
+			// start();
 		}
 
 		private void send(Signal signal) { // called from enclosing ModelClass
