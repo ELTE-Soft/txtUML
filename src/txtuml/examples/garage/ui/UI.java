@@ -235,7 +235,7 @@ class GaragePanel extends ImagePanel {
 	
 	class Siren extends Thread {
 		private GaragePanel parent;
-		private String sirenFile = "sounds/siren.wav";
+		private String sirenFile = "src/txtuml/examples/garage/sounds/siren.wav";
 		private boolean soundOn = false;
 		private Clip clip;
 		

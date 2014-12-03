@@ -10,6 +10,7 @@ public class Glue implements IControl {
 	GarageModel gmodel = new GarageModel();
 	GarageModel.Door door = gmodel.new Door();
 	GarageModel.Motor motor = gmodel.new Motor();
+	GarageModel.Alarm alarm = gmodel.new Alarm();
 
 	// Linkage to the UI
 	public IControlled controlled;
@@ -21,9 +22,12 @@ public class Glue implements IControl {
 	static Glue instance = null;
 	
 	private Glue() {
+		// Initialize links and start object instances
 		Action.link(GarageModel.MotorMovesDoor.movedDoor.class, door, GarageModel.MotorMovesDoor.movingMotor.class, motor);
+		Action.link(GarageModel.DoorSwitchesOnAlarm.SwitchingDoor.class, door, GarageModel.DoorSwitchesOnAlarm.SwitchedAlarm.class, alarm);
 		Action.start(door);
 		Action.start(motor);
+		Action.start(alarm);
 	}
 
 	public static synchronized Glue getInstance() {
@@ -34,20 +38,16 @@ public class Glue implements IControl {
 	}
 	
 	// IControl implementation
-	@Override
-	public void remoteControlButtonPressed() {
+	@Override public void remoteControlButtonPressed() {
 		Action.send(door,gmodel.new RemoteControlButtonPressed());
 	}
 
-	@Override
-	public void motionSensorActivated() {
+	@Override public void motionSensorActivated() {
 		Action.send(door, gmodel.new MotionSensorActivated());
 	}
 
-	@Override
-	public void alarmSensorActivated() {
-		// TODO Auto-generated method stub
-		
+	@Override public void alarmSensorActivated() {
+		Action.send(alarm, gmodel.new AlarmSensorActivated());
 	}
 
 	@Override
@@ -62,20 +62,17 @@ public class Glue implements IControl {
 
 	@Override
 	public void keyPress(int nr) {
-		// TODO Auto-generated method stub
-		
+		Action.send(alarm, gmodel.new KeyPress(new ModelInt(nr)));
 	}
 
 	@Override
 	public void starPressed() {
-		// TODO Auto-generated method stub
-		
+		Action.send(alarm, gmodel.new StarPressed());
 	}
 
 	@Override
 	public void hashPressed() {
-		// TODO Auto-generated method stub
-		
+		Action.send(alarm, gmodel.new HashPressed());
 	}
 }
 	
