@@ -22,7 +22,9 @@ public class GarageModel extends Model {
 	class DoorTimerExpired extends Signal {}
 	class ReenableMotor extends Signal {}
 	class ChangeMotorMode extends Signal {}
-	class AlarmTimerExpired extends Signal {}
+	class KeyboardTimerExpired extends Signal {}
+	class WaitForCode extends Signal {}
+	class KeyboardTimeout extends Signal {}
 
 	class Door extends ModelClass {
 		Timer.Handle doorTimer;
@@ -119,10 +121,6 @@ public class GarageModel extends Model {
 	
 	class Alarm extends ModelClass {
 		ModelInt code = new ModelInt(8);
-		Timer.Handle alarmTimer;
-		ModelInt alarmDelay = new ModelInt(5000);
-		ModelInt alarmDelayInterval = new ModelInt(50);
-		ModelInt elapsed = new ModelInt(0);
 		
 		class InitAlarm extends InitialState {}
 		@From(InitAlarm.class) @To(On.class)
@@ -142,7 +140,8 @@ public class GarageModel extends Model {
 		class ExpectingCode extends State {
 			@Override public void entry() {
 				Glue.getInstance().controlled.codeExpected();
-//				alarmTimer = Timer.start(Alarm.this, new AlarmTimerExpired(), alarmDelayInterval);
+				Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectOne();
+				Action.send(kb, new WaitForCode());
 			}
 		}
 		class InAlarm extends State {
@@ -153,11 +152,15 @@ public class GarageModel extends Model {
 		class ExpectingOldCode extends State {
 			@Override public void entry() {
 				Glue.getInstance().controlled.oldCodeExpected();
+				Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectOne();
+				Action.send(kb, new WaitForCode());
 			}
 		}
 		class ExpectingNewCode extends State {
 			@Override public void entry() {
 				Glue.getInstance().controlled.newCodeExpected();
+				Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectOne();
+				Action.send(kb, new WaitForCode());
 			}
 		}
 		
@@ -215,16 +218,80 @@ public class GarageModel extends Model {
 		class TSwitchOn extends Transition {}
 		@From(Off.class) @To(ExpectingOldCode.class) @Trigger(HashPressed.class)
 		class TChangeCode extends Transition {}
-		@From(ExpectingCode.class) @To(InAlarm.class) @Trigger(AlarmTimerExpired.class)
-		class TTimeOut extends Transition {
-//			@Override public ModelBool guard() {
-//				
-//			}
-		}
+		@From(ExpectingCode.class) @To(InAlarm.class) @Trigger(KeyboardTimeout.class)
+		class TNoCodeGiven extends Transition {}
+		@From(ExpectingOldCode.class) @To(Off.class) @Trigger(KeyboardTimeout.class)
+		class TNoOldCodeGiven extends Transition {}
+		@From(ExpectingNewCode.class) @To(Off.class) @Trigger(KeyboardTimeout.class)
+		class TNoNewCodeGiven extends Transition {}
 	}
 	
 	class DoorSwitchesOnAlarm extends Association {
 		class SwitchingDoor extends One<Door> {}
 		class SwitchedAlarm extends One<Alarm> {}
+	}
+	
+	class Keyboard extends ModelClass {
+		Timer.Handle keyboardTimer;
+		ModelInt keyboardTimerCount;
+		ModelInt keyboardTimerMaxCount = new ModelInt(100);
+		
+		class InitKeyboard extends InitialState {}
+		@From(InitKeyboard.class) @To(Idle.class)
+		class TInitKeyboard extends Transition {}
+		class Idle extends State {
+			@Override public void entry() {
+				keyboardTimerCount = new ModelInt(0);
+			}
+		}
+		class Waiting extends State {}
+		
+		@From(Idle.class) @To(Idle.class) @Trigger(KeyPress.class) 
+		class TSpontaneousKeyPress extends Transition {
+			@Override public void effect() {
+				Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).selectOne();
+				Action.send(a, (KeyPress)getSignal());
+			}
+		}
+		@From(Idle.class) @To(Waiting.class) @Trigger(WaitForCode.class) 
+		class TWaitForCode extends Transition {
+			@Override public void effect() {
+				keyboardTimerCount = keyboardTimerCount.add(new ModelInt(0));
+				keyboardTimer = Timer.start(Keyboard.this, new KeyboardTimerExpired(), 50);
+			}
+		}
+		@From(Waiting.class) @To(Waiting.class) @Trigger(KeyboardTimerExpired.class)
+		class TRefreshProgress extends Transition {
+			@Override public ModelBool guard() {
+				return keyboardTimerCount.isLess(keyboardTimerMaxCount);
+			}
+			@Override public void effect() {
+				keyboardTimerCount = keyboardTimerCount.add(new ModelInt(1));
+				Glue.getInstance().controlled.progress(keyboardTimerCount.getInt());
+				keyboardTimer.reset(50);
+			}
+		}	
+		@From(Waiting.class) @To(Idle.class) @Trigger(KeyPress.class)
+		class TExpectedKeyPress extends Transition {
+			@Override public void effect() {
+				Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).selectOne();
+				Action.send(a, (KeyPress)getSignal());
+			}
+		}
+		@From(Waiting.class) @To(Idle.class) @Trigger(KeyboardTimerExpired.class)
+		class TTimeout extends Transition {
+			@Override public ModelBool guard() {
+				return keyboardTimerCount.isEqual(keyboardTimerMaxCount);
+			}
+			@Override public void effect() {
+				Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).selectOne();
+				Action.send(a, new KeyboardTimeout());
+			}
+		}
+	}
+	
+	class KeyboardProvidesCode extends Association {
+		class Provider extends One<Keyboard> {}
+		class Receiver extends One<Alarm> {}
 	}
 }

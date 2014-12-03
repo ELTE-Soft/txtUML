@@ -11,6 +11,7 @@ public class Glue implements IControl {
 	GarageModel.Door door = gmodel.new Door();
 	GarageModel.Motor motor = gmodel.new Motor();
 	GarageModel.Alarm alarm = gmodel.new Alarm();
+	GarageModel.Keyboard keyboard = gmodel.new Keyboard();
 
 	// Linkage to the UI
 	public IControlled controlled;
@@ -25,9 +26,11 @@ public class Glue implements IControl {
 		// Initialize links and start object instances
 		Action.link(GarageModel.MotorMovesDoor.movedDoor.class, door, GarageModel.MotorMovesDoor.movingMotor.class, motor);
 		Action.link(GarageModel.DoorSwitchesOnAlarm.SwitchingDoor.class, door, GarageModel.DoorSwitchesOnAlarm.SwitchedAlarm.class, alarm);
+		Action.link(GarageModel.KeyboardProvidesCode.Provider.class, keyboard, GarageModel.KeyboardProvidesCode.Receiver.class, alarm);
 		Action.start(door);
 		Action.start(motor);
 		Action.start(alarm);
+		Action.start(keyboard);
 	}
 
 	public static synchronized Glue getInstance() {
@@ -62,7 +65,7 @@ public class Glue implements IControl {
 
 	@Override
 	public void keyPress(int nr) {
-		Action.send(alarm, gmodel.new KeyPress(new ModelInt(nr)));
+		Action.send(keyboard, gmodel.new KeyPress(new ModelInt(nr)));
 	}
 
 	@Override

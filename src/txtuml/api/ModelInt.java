@@ -10,6 +10,10 @@ public class ModelInt extends ModelType<Integer> {
 	public ModelInt() {
 		this(0);
 	}
+	// To be called only from glue code
+	public int getInt() {
+		return this.getValue().intValue();
+	}
 	public ModelInt abs() {
 		if(getValue() >= 0) {
 			return this;
