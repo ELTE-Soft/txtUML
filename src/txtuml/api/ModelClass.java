@@ -3,6 +3,7 @@ package txtuml.api;
 import java.lang.Thread;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import txtuml.api.Association.*;
@@ -128,7 +129,7 @@ public class ModelClass extends ModelIdentifiedElement {
 	}
 
 	private synchronized boolean executeTransition(Signal signal) {
-		Class<?> applicableTransition = null;
+		Vector<Class<?>> applicableTransitions = new Vector<Class<?>>();
 		for (Class<?> examinedStateClass = currentState.getClass(), parentClass = examinedStateClass.getEnclosingClass();
 				parentClass != null;
 				examinedStateClass = parentClass, parentClass = examinedStateClass.getEnclosingClass()) {
@@ -151,26 +152,37 @@ public class ModelClass extends ModelIdentifiedElement {
 						continue;
 					}
 
-					if (applicableTransition != null) {
-						Action.runtimeErrorLog("Error: guards of transitions " + applicableTransition.getName() + " and " + c.getName() + " from class " + currentState.getClass().getSimpleName() + " are overlapping");
-						continue;
-					}
-					applicableTransition = c;
-					if (Runtime.Settings.runtimeLog()) {
-						Action.runtimeFormattedLog("%10s %-15s changes state: from: %-10s tran: %-18s to: %-10s%n",getClass().getSimpleName(),getIdentifier(),
-								from.getSimpleName(),c.getSimpleName(),to.getSimpleName());
-					}
-					callExitAction(from);
-					transition.effect();
-					currentState = getInnerClassInstance(to);
+					applicableTransitions.add(c);
 				}
 			}
 		}
-
-		if (applicableTransition == null) { //there was no transition which could be used
+		
+		if(applicableTransitions.size() == 0) { //there was no transition which could be used
 			return false;
 		}
-		
+		else if (applicableTransitions.size() > 1) {
+			String transitions = new String();
+			boolean first = true;
+			for(Class<?> tr : applicableTransitions) {
+				if(!first) {
+					transitions += ", ";
+				}
+				transitions += tr.getName();
+			}
+			Action.runtimeErrorLog("Error: Guards of the following transitions from class " + currentState.getClass().getSimpleName() + " are overlapping:\n" + transitions);
+		}
+		// Exactly one transition found
+		Class<?> c = applicableTransitions.get(0);
+		Transition transition = (Transition)getInnerClassInstance(c);
+		Class<? extends State> from = c.getAnnotation(From.class).value();
+		Class<? extends State> to = c.getAnnotation(To.class).value();
+		if (Runtime.Settings.runtimeLog()) {
+			Action.runtimeFormattedLog("%10s %-15s changes state: from: %-10s tran: %-18s to: %-10s%n",getClass().getSimpleName(),getIdentifier(),
+					from.getSimpleName(),c.getSimpleName(),to.getSimpleName());
+		}
+		callExitAction(from);
+		transition.effect();
+		currentState = getInnerClassInstance(to);
 		if (currentState instanceof Choice) {
 			executeTransitionFromChoice(signal);
 		}
