@@ -129,17 +129,18 @@ public class ModelClass extends ModelIdentifiedElement {
 	}
 
 	private synchronized boolean executeTransition(Signal signal) {
-		Vector<Class<?>> applicableTransitions = new Vector<Class<?>>();
+		Class<?> applicableTransition = null;
 		for (Class<?> examinedStateClass = currentState.getClass(), parentClass = examinedStateClass.getEnclosingClass();
 				parentClass != null;
 				examinedStateClass = parentClass, parentClass = examinedStateClass.getEnclosingClass()) {
 			for (Class<?> c : parentClass.getDeclaredClasses()) {
 				if (Transition.class.isAssignableFrom(c)) {
-					Class<? extends State> from, to;
+					Class<? extends State> from/*,to*/;
 					try {
 						from = c.getAnnotation(From.class).value(); // NullPointerException if no @From is set on the transition
-						to = c.getAnnotation(To.class).value(); // NullPointerException if no @To is set on the transition
+						/*to =*/ c.getAnnotation(To.class).value(); // NullPointerException if no @To is set on the transition
 					} catch (NullPointerException e) {
+                        //TODO show warning
 						continue;
 					}
 					if (from != examinedStateClass || notApplicableTrigger(c, signal)) {
@@ -152,37 +153,20 @@ public class ModelClass extends ModelIdentifiedElement {
 						continue;
 					}
 
-					applicableTransitions.add(c);
+					if (applicableTransition != null) {
+						Action.runtimeErrorLog("Error: guards of transitions " + applicableTransition.getName() + " and " + c.getName() + " from class " + currentState.getClass().getSimpleName() + " are overlapping");
+						continue;
+					}
+					applicableTransition = c;
 				}
 			}
 		}
-		
-		if(applicableTransitions.size() == 0) { //there was no transition which could be used
+
+		if (applicableTransition == null) { //there was no transition which could be used
 			return false;
 		}
-		else if (applicableTransitions.size() > 1) {
-			String transitions = new String();
-			boolean first = true;
-			for(Class<?> tr : applicableTransitions) {
-				if(!first) {
-					transitions += ", ";
-				}
-				transitions += tr.getName();
-			}
-			Action.runtimeErrorLog("Error: Guards of the following transitions from class " + currentState.getClass().getSimpleName() + " are overlapping:\n" + transitions);
-		}
-		// Exactly one transition found
-		Class<?> c = applicableTransitions.get(0);
-		Transition transition = (Transition)getInnerClassInstance(c);
-		Class<? extends State> from = c.getAnnotation(From.class).value();
-		Class<? extends State> to = c.getAnnotation(To.class).value();
-		if (Runtime.Settings.runtimeLog()) {
-			Action.runtimeFormattedLog("%10s %-15s changes state: from: %-10s tran: %-18s to: %-10s%n",getClass().getSimpleName(),getIdentifier(),
-					from.getSimpleName(),c.getSimpleName(),to.getSimpleName());
-		}
-		callExitAction(from);
-		transition.effect();
-		currentState = getInnerClassInstance(to);
+		useTransition(applicableTransition);
+		
 		if (currentState instanceof Choice) {
 			executeTransitionFromChoice(signal);
 		}
@@ -192,15 +176,15 @@ public class ModelClass extends ModelIdentifiedElement {
 
 	private void executeTransitionFromChoice(Signal signal) {
 		Class<?> applicableTransition = null;
-		Class<? extends State> elseConnectsTo = null;
+		Class<?> elseTransition = null;
 		Class<?> examinedChoiceClass = currentState.getClass();
 		Class<?> parentClass = examinedChoiceClass.getEnclosingClass();
 		for (Class<?> c : parentClass.getDeclaredClasses()) {
 			if (Transition.class.isAssignableFrom(c)) {
-				Class<? extends State> from, to;
+				Class<? extends State> from/*,to*/;
 				try {
 					from = c.getAnnotation(From.class).value(); // NullPointerException if no @From is set on the transition
-					to = c.getAnnotation(To.class).value(); // NullPointerException if no @To is set on the transition
+					/*to = */c.getAnnotation(To.class).value(); // NullPointerException if no @To is set on the transition
 				} catch (NullPointerException e) {
 					continue;
 				}
@@ -213,11 +197,11 @@ public class ModelClass extends ModelIdentifiedElement {
 				ModelBool resultOfGuard = transition.guard();
 				if (!resultOfGuard.getValue()) { // check guard
 					if (resultOfGuard instanceof ModelBool.Else) { // transition with else condition
-						if (elseConnectsTo != null) { // there was already a transition with an else condition
+						if (elseTransition != null) { // there was already a transition with an else condition
 							Action.runtimeErrorLog("Error: there are more than one transitions from choice " + examinedChoiceClass.getSimpleName() + " with an Else condition");
 							continue;
 						}
-						elseConnectsTo = to;
+						elseTransition = c;
 					}
 					continue;
 				}
@@ -226,27 +210,34 @@ public class ModelClass extends ModelIdentifiedElement {
 					continue;
 				}
 				applicableTransition = c;
-				if (Runtime.Settings.runtimeLog()) {
-					Action.runtimeFormattedLog("%10s %-15s changes state: from: %-10s tran: %-18s to: %-10s%n",getClass().getSimpleName(),getIdentifier(),
-							from.getSimpleName(),c.getSimpleName(),to.getSimpleName());
-				}
-				transition.effect();
-				currentState = getInnerClassInstance(to);
 			}
 		}
 		if (applicableTransition == null) { //there was no transition which could be used
-			if (elseConnectsTo != null) { // but there was a transition with an else condition
-				currentState = getInnerClassInstance(elseConnectsTo);
+			if (elseTransition != null) { // but there was a transition with an else condition
+				useTransition(elseTransition);
 			} else {
 				Action.runtimeErrorLog("Error: there was no transition from choice class " + examinedChoiceClass.getSimpleName() + " which could be used");
-				return;
 			}
+			return;
 		}
-
+		useTransition(applicableTransition);
 		if (currentState instanceof Choice) {
 			executeTransitionFromChoice(signal);
 		}
 	}
+	
+	private void useTransition(Class<?> transitionClass) {
+		Transition transition = (Transition)getInnerClassInstance(transitionClass);
+		Class<? extends State> from = transitionClass.getAnnotation(From.class).value();
+		Class<? extends State> to = transitionClass.getAnnotation(To.class).value();
+		if (Runtime.Settings.runtimeLog()) {
+			Action.runtimeFormattedLog("%10s %-15s changes state: from: %-10s tran: %-18s to: %-10s%n",getClass().getSimpleName(),getIdentifier(),
+					from.getSimpleName(),transitionClass.getSimpleName(),to.getSimpleName());
+		}
+		callExitAction(from); 
+		transition.effect();
+		currentState = getInnerClassInstance(to);
+	}	
 	
 	private boolean notApplicableTrigger(Class<?> transitionClass, Signal signal) {
 		Trigger trigger = transitionClass.getAnnotation(Trigger.class);

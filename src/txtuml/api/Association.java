@@ -235,7 +235,7 @@ public class Association implements ModelElement {
 			if (object == null || this.obj != object) {
 				return this;
 			}
-			return new EmptyCollection<T>();
+			return new Empty<T>();
 		}
 						
 		@Override @SuppressWarnings("unchecked")
