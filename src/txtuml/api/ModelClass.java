@@ -3,7 +3,6 @@ package txtuml.api;
 import java.lang.Thread;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import txtuml.api.Association.*;
@@ -68,7 +67,7 @@ public class ModelClass extends ModelIdentifiedElement {
 		}
 		else 
 		{
-			startThread();
+			createThread();
 		}
 	}
 	
@@ -87,7 +86,7 @@ public class ModelClass extends ModelIdentifiedElement {
 		associations.put(otherEnd, (AE)InstanceCreator.createInstanceWithGivenParams(otherEnd, (Object)null).init(assoc(otherEnd).typeKeepingAdd(object)));
 	}
 	
-	private void startThread() {
+	private void createThread() {
 		Class<? extends InitialState> initStateClass = getInitialState(getClass());
 		if (initStateClass != null) {
 			currentState = getInnerClassInstance(initStateClass);
@@ -186,6 +185,7 @@ public class ModelClass extends ModelIdentifiedElement {
 					from = c.getAnnotation(From.class).value(); // NullPointerException if no @From is set on the transition
 					/*to = */c.getAnnotation(To.class).value(); // NullPointerException if no @To is set on the transition
 				} catch (NullPointerException e) {
+                    //TODO show warning
 					continue;
 				}
 				if (from != examinedChoiceClass) { // actual transition is from another state
@@ -277,11 +277,9 @@ public class ModelClass extends ModelIdentifiedElement {
 	}
 	
 	private class ModelClassThread extends Thread {
-		private ModelClassThread(ModelClass p) { // called from enclosing ModelClass
-			parent = p;
-			mailbox = new LinkedBlockingQueue<>();
-			// To be removed as explicit start operations starts the behavior of new objects:
-			// start();
+		private ModelClassThread(ModelClass parent) { // called from enclosing ModelClass
+			this.parent = parent;
+			this.mailbox = new LinkedBlockingQueue<>();
 		}
 
 		private void send(Signal signal) { // called from enclosing ModelClass
