@@ -1,6 +1,8 @@
 package txtuml.api;
 
-public class ModelType<T> extends ModelIdentifiedElement {
+public abstract class ModelType<T> extends ModelIdentifiedElementImpl
+	implements ModelElement, ModelIdentifiedElement {
+	
 	protected ModelType(T val) {
 		super();
 		value = val;
@@ -9,7 +11,7 @@ public class ModelType<T> extends ModelIdentifiedElement {
 	protected ModelType() {
 		this(null);
 	}
-	T getValue() {
+	final T getValue() {
 		return value;
 	}
 	public String toString() {

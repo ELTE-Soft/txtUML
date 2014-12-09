@@ -7,7 +7,9 @@ import java.util.Set;
 public class Association implements ModelElement {
 	protected Association() {}
 	
-	public abstract class AssociationEnd<T extends ModelClass> implements Collection<T> {
+	public abstract class AssociationEnd<T extends ModelClass> extends ModelIdentifiedElementImpl
+		implements Collection<T> {
+		
 		AssociationEnd() {}
 		
 		@Override

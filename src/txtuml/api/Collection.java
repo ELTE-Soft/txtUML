@@ -2,7 +2,7 @@ package txtuml.api;
 
 import java.util.Iterator;
 
-public interface Collection<T extends ModelClass> extends ModelElement, Iterable<T> {
+public interface Collection<T extends ModelClass> extends ModelIdentifiedElement, Iterable<T> {
 	ModelBool isEmpty();
 	ModelInt count();
 	ModelBool contains(ModelClass object);  
@@ -20,7 +20,7 @@ public interface Collection<T extends ModelClass> extends ModelElement, Iterable
 	//  - selectAll(ParameterizedCondition<T>)
 	//  - add(T)
 
-	public static class Empty<T extends ModelClass> implements Collection<T> {
+	public static class Empty<T extends ModelClass> extends ModelIdentifiedElementImpl implements Collection<T> {
 		@Override
 		public Iterator<T> iterator() {
 			return new Iterator<T>() {

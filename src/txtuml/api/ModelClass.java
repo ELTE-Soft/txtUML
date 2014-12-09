@@ -10,7 +10,9 @@ import txtuml.importer.InstructionImporter;
 import txtuml.importer.MethodImporter;
 import txtuml.utils.InstanceCreator;
 
-public class ModelClass extends ModelIdentifiedElement {
+public class ModelClass extends ModelIdentifiedElementImpl
+	implements ModelElement, ModelIdentifiedElement {
+	
 	public abstract class State implements ModelElement {
 		public void entry() {
 		}
