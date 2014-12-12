@@ -317,7 +317,6 @@ public class ModelClass extends ModelIdentifiedElementImpl
         if (ret == null) { 
         	ret = InstanceCreator.createInstanceWithGivenParams(forWhat, getInnerClassInstance(forWhat.getEnclosingClass()));
             innerClassInstances.put(forWhat, ret);
-            innerClassInstances.put(forWhat, ret);
         }
         return ret;
 	}
