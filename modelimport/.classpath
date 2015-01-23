@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+
+	<classpathentry kind="con" path="org.eclipse.ajdt.core.ASPECTJRT_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.uml2.uml_5.0.1.v20140910-1354.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.emf.common_2.10.1.v20140901-1043.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.emf.ecore_2.10.1.v20140901-1043.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.uml2.uml.resources_5.0.0.v20140910-1354.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.emf.ecore.xmi_2.10.1.v20140901-1043.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.uml2.common_2.0.1.v20140910-1354.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.uml2.types_2.0.0.v20140910-1354.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.ocl.examples.domain_3.4.0.v20140528-1458.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.uml2.uml.profile.standard_1.0.0.v20140910-1354.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.emf.mapping.ecore2xml_2.8.0.v20140901-1055.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.apache.log4j_1.2.15.v201012070815.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.ocl.examples.common_3.3.0.v20140528-1458.jar"/>
+	<classpathentry kind="src" path=".apt_generated">
+		<attributes>
+			<attribute name="optional" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
