@@ -267,7 +267,7 @@ public class GarageModel extends Model {
 			}
 			@Override public void effect() {
 				keyboardTimerCount = keyboardTimerCount.add(new ModelInt(1));
-				Glue.getInstance().controlled.progress(keyboardTimerCount.getInt());
+				Glue.getInstance().progress(keyboardTimerCount);
 				keyboardTimer.reset(50);
 			}
 		}	

@@ -3,29 +3,56 @@ package txtuml.importer;
 
 
 import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.uml2.uml.*;
 import org.eclipse.uml2.uml.Type;
+import org.eclipse.uml2.uml.resource.UMLResource;
+import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
+import txtuml.api.ExternalClass;
 import txtuml.api.ModelBool;
 import txtuml.api.ModelClass;
 import txtuml.api.ModelInt;
 import txtuml.api.ModelString;
 import txtuml.importer.AssociationImporter;
 
+import java.io.IOException;
 import java.lang.Class;
 import java.lang.reflect.*;
+import java.util.Map;
 
 
 public class ModelImporter extends AbstractImporter{
 	
-	public static Model importModel(String className) throws ImportException {
+	
+	public static Model importModel(String className,String path) throws ImportException
+	{
+		importing=true;
 		modelClass= findModel(className);
+	
 		Model model = UMLFactory.eINSTANCE.createModel();
         model.setName(modelClass.getSimpleName());
-       
+ 
+		initResourceSet();
+		
+        try
+        {
+        	URI uri = URI.createURI(path).appendSegment(className).appendFileExtension(UMLResource.FILE_EXTENSION);
+	        Resource resource = resourceSet.createResource(uri);
+	        resource.getContents().add(model);
+        }
+        catch(Exception e)
+        {
+        	//e.printStackTrace();
+        }
         currentModel=model;
-        
-        createPrimitiveTypes();
+        createProfile(path);
+        loadAndApplyProfile();
+        importPrimitiveTypes();
 		importClassNames();
 		importGeneralizations();
 		importAssociations();
@@ -34,9 +61,77 @@ public class ModelImporter extends AbstractImporter{
 		importMemberFunctionsWithoutBodies();
 		importMemberFunctionBodies();
 		importClassStateMachinesAndNestedSignals();
-		
+		importing=false;
    		return currentModel;
   
+	}
+	
+	private static org.eclipse.uml2.uml.Package loadResource(URI uri)
+	{
+		Resource resource=resourceSet.getResource(uri,true);
+		return (org.eclipse.uml2.uml.Package) EcoreUtil.getObjectByType(resource.getContents(),UMLPackage.Literals.PACKAGE);
+	}
+	private static void createProfile(String path) throws ImportException
+	{
+		//creating profile
+		Profile profile = UMLFactory.eINSTANCE.createProfile();
+		profile.setName("Custom Profile");
+		profile.setURI(URI.createFileURI(path).appendSegment("Profile_"+currentModel.getName()).appendFileExtension(UMLResource.PROFILE_FILE_EXTENSION).toString());
+
+		//loading the UML metamodel
+		Model umlMetamodel = (Model) loadResource(URI.createURI(UMLResource.UML_METAMODEL_URI));
+
+		//loading UML Primitive Types Library and importing the primitve types from there
+		org.eclipse.uml2.uml.Package umlLibrary= loadResource(URI.createURI(UMLResource.UML_PRIMITIVE_TYPES_LIBRARY_URI));
+		profile.createElementImport(umlLibrary.getOwnedType("Integer"));
+		profile.createElementImport(umlLibrary.getOwnedType("Real"));
+		profile.createElementImport(umlLibrary.getOwnedType("Boolean"));
+		profile.createElementImport(umlLibrary.getOwnedType("String"));
+		profile.createElementImport(umlLibrary.getOwnedType("UnlimitedNatural"));
+
+
+		//creating the ExternalClass stereotype and an extension for it
+		try
+		{
+			org.eclipse.uml2.uml.Class classifierMetaclass = (org.eclipse.uml2.uml.Class) umlMetamodel.getOwnedType("Classifier");
+
+			profile.createMetaclassReference(classifierMetaclass);
+
+			Stereotype externalStereotype=profile.createOwnedStereotype("ExternalClass", false);
+			externalStereotype.createExtension(classifierMetaclass,false);
+		}
+		catch(Exception e)
+		{
+			
+		}
+
+		//defining and saving the profile
+		profile.define();
+		Resource resource = resourceSet.createResource(URI.createFileURI("").appendSegment("Profile_"+currentModel.getName()).appendFileExtension(UMLResource.PROFILE_FILE_EXTENSION));
+		resource.getContents().add(profile);
+		try
+		{
+			resource.save(null);
+
+		} 
+		catch (IOException ioe)
+		{
+			throw new ImportException("I/O error occured during model import. Cannot save UML profile.");
+		}
+		
+		
+	}
+	
+	public static Profile getProfile()
+	{
+		return currentProfile;
+	}
+	
+	private static void loadAndApplyProfile()
+	{
+		Resource resource = resourceSet.getResource(URI.createFileURI("").appendSegment("Profile_"+currentModel.getName()).appendFileExtension(UMLResource.PROFILE_FILE_EXTENSION),true);
+		currentProfile=(Profile) EcoreUtil.getObjectByType(resource.getContents(), UMLPackage.Literals.PROFILE);
+		currentModel.applyProfile(currentProfile);
 	}
 	
 	private static void importGeneralizations() throws ImportException 
@@ -46,7 +141,7 @@ public class ModelImporter extends AbstractImporter{
 			{
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
 			}
-			if(isClass(c) && c.getSuperclass()!=ModelClass.class ) 
+			else if(isClass(c) && c.getSuperclass()!=ModelClass.class  && c.getSuperclass()!=ExternalClass.class )	 
 			{
 				createGeneralization(c,c.getSuperclass());
 			}
@@ -67,8 +162,8 @@ public class ModelImporter extends AbstractImporter{
 	private static Class<?> findModel(String className) throws ImportException {
 		try {
 			Class<?> ret = Class.forName(className);
-			if(!Model.class.isAssignableFrom(ret)) {
-				//throw new ImportException("A subclass of Model is expected, got: " + className);
+			if(!txtuml.api.Model.class.isAssignableFrom(ret)) {
+				throw new ImportException("A subclass of Model is expected, got: " + className);
 			}
 			return ret;
 		} catch(ClassNotFoundException e) {
@@ -80,27 +175,45 @@ public class ModelImporter extends AbstractImporter{
 		return MethodImporter.isImporting();
 	}
 	
-	private static void createPrimitiveTypes()
+	private static void importPrimitiveTypes()
 	{
-		//TODO: import packages of UML types and use the types from there
-		
-		UML2Int=currentModel.createOwnedPrimitiveType("Int");
-		UML2Bool=currentModel.createOwnedPrimitiveType("Bool");
-		UML2String=currentModel.createOwnedPrimitiveType("String");
+		UML2Integer=(PrimitiveType) currentProfile.getImportedMember("Integer");
+		UML2Bool=(PrimitiveType) currentProfile.getImportedMember("Boolean");
+		UML2String=(PrimitiveType) currentProfile.getImportedMember("String");
+		UML2Real=(PrimitiveType) currentProfile.getImportedMember("Real");
+		UML2UnlimitedNatural=(PrimitiveType) currentProfile.getImportedMember("UnlimitedNatural");
 		
 	}
-	
+	private static void importClassName(Class<?> sourceClass) throws ImportException
+	{
+		org.eclipse.uml2.uml.Class importedClass =
+				currentModel.createOwnedClass(sourceClass.getSimpleName(),Modifier.isAbstract(sourceClass.getModifiers()));
+		setVisibility(importedClass,sourceClass);
+		
+		if(isExternalClass(sourceClass))
+		{
+			try
+			{
+				importedClass.applyStereotype(currentProfile.getOwnedStereotype("ExternalClass"));
+			}
+			catch(Exception e)
+			{
+				throw new ImportException("Error: cannot apply stereotype ExternalClass to class: "+sourceClass.getCanonicalName());
+			}
+		}
+	}
 	private static void importClassNames() throws ImportException 
 	{
+	
 		for(Class<?> c : modelClass.getDeclaredClasses()) {
+			
 			if(!isModelElement(c))
 			{
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
 			}
-			if(isClass(c)) 
+			else if(isClass(c))
 			{
-				currentModel.createOwnedClass(c.getSimpleName(),Modifier.isAbstract(c.getModifiers()));
-
+				importClassName(c);
 			}
 		}
 	}
@@ -113,7 +226,7 @@ public class ModelImporter extends AbstractImporter{
 			{
 				throw new ImportException(sourceClass.getName()+" is a non-txtUML class found in model.");
 			}
-			if(isAssociation(sourceClass)) 
+			else if(isAssociation(sourceClass)) 
 			{
 				new AssociationImporter(sourceClass,currentModel).importAssociation();
 			}
@@ -154,7 +267,7 @@ public class ModelImporter extends AbstractImporter{
 		{
 	        if(isAttribute(f)) 
 	        {
-	        	createSignalAttribute(signal,f);
+	        	importAttribute(signal,f);
 	        }
 	    }
 	}
@@ -167,7 +280,7 @@ public class ModelImporter extends AbstractImporter{
 			{
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
 			}
-			if(isClass(c)) 
+			else if(isClass(c)) 
 			{
 				org.eclipse.uml2.uml.Class currClass=(org.eclipse.uml2.uml.Class) currentModel.getMember(c.getSimpleName());
 	            
@@ -175,52 +288,58 @@ public class ModelImporter extends AbstractImporter{
 				{		
 	                if(isAttribute(f)) 
 	                {
-	                	createClassAttribute(currClass,f);
+	                	importAttribute(currClass,f);
 	                }
 	            }
 			}
 		}
     }
     
-    private static void createClassAttribute(org.eclipse.uml2.uml.Class ownerClass, Field field)
+    private static void importAttribute(Classifier owner, Field field) throws ImportException
     {
-    	int upperBound=1;
-    	int lowerBound=1;
+
     	
+    	String fieldName=field.getName();
     	org.eclipse.uml2.uml.Type fieldType=importType(field.getType());
     	
-    	ownerClass.createOwnedAttribute(field.getName(),fieldType,lowerBound,upperBound);
-    }
-    
-    private static void createSignalAttribute(org.eclipse.uml2.uml.Signal signal, Field field)
-    {
-    	int upperBound=1;
-    	int lowerBound=1;
-    	
-    	org.eclipse.uml2.uml.Type fieldType=importType(field.getType());
-    	
-    	signal.createOwnedAttribute(field.getName(),fieldType,lowerBound,upperBound);
+    	Property property=null;
+    	if(owner instanceof Signal)
+    	{
+    		property=((Signal) owner).createOwnedAttribute(fieldName,fieldType);
+    	}
+    	else if(owner instanceof org.eclipse.uml2.uml.Class)
+    	{
+    		property=((org.eclipse.uml2.uml.Class) owner).createOwnedAttribute(fieldName,fieldType);
+    	}
+    	else
+    	{
+    		throw new ImportException(owner.getName()+" is not a Class nor a Signal.");
+    	}
+    	setVisibility(property,field);
     }
     
     static org.eclipse.uml2.uml.Type importType(Class<?> sourceClass) 
     {
         if(sourceClass == ModelInt.class) 
         {
-        	return UML2Int;
+        	return UML2Integer;
         }
-        if(sourceClass == ModelBool.class) 
+        else if(sourceClass == ModelBool.class) 
         {
         	return UML2Bool;
         }
-        if(sourceClass == ModelString.class) 
+        else if(sourceClass == ModelString.class) 
         {
         	return UML2String;
         }
-        if(ModelClass.class.isAssignableFrom(sourceClass))
+        else if(isClass(sourceClass))
         {
         	return currentModel.getOwnedType(sourceClass.getSimpleName());
         }
-        return null;
+        else
+        {
+        	return null;
+        }
     }
 	
     private static void importMemberFunctionsWithoutBodies() throws ImportException
@@ -231,7 +350,7 @@ public class ModelImporter extends AbstractImporter{
 			{
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
 			}
-			if(isClass(c)) 
+			if(isModelClass(c)) 
 			{
 				createClassMemberFunctions(c);
 			}
@@ -245,7 +364,7 @@ public class ModelImporter extends AbstractImporter{
 			{
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
 			}
-			if(isClass(c)) 
+			if(isModelClass(c)) 
 			{
 				importClassMemberFunctionBodies(c);
 			}
@@ -259,7 +378,8 @@ public class ModelImporter extends AbstractImporter{
     	{
             if(isMemberFunction(method)) 
             {    
-            	importOperationWithoutBody(ownerClass,sourceClass,method);;
+            	Operation operation=importOperationWithoutBody(ownerClass,sourceClass,method);
+            	setVisibility(operation, method);
             }
         }
     }
@@ -271,7 +391,7 @@ public class ModelImporter extends AbstractImporter{
     	{
             if(isMemberFunction(method)) 
             {    
-            	importOperationBody(MethodImporter.getOperation(ownerClass, method.getName()),ownerClass,sourceClass,method);
+            	importOperationBody(MethodImporter.findOperation(ownerClass, method.getName()),ownerClass,sourceClass,method);
             }
         }
     }
@@ -284,7 +404,7 @@ public class ModelImporter extends AbstractImporter{
 			{
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
 			}
-			if(isClass(c)) 
+			if(isModelClass(c)) 
 			{
 				org.eclipse.uml2.uml.Class currClass = (org.eclipse.uml2.uml.Class) currentModel.getOwnedMember(c.getSimpleName());
 				
@@ -380,10 +500,44 @@ public class ModelImporter extends AbstractImporter{
 		return modelClass;
 	}
 	
-	
+
+    private static void initResourceSet()
+    {
+    	 resourceSet = new ResourceSetImpl();
+          // Initialize registrations of resource factories, library models,
+          // profiles, Ecore metadata, and other dependencies required for
+          // serializing and working with UML resources. This is only necessary in
+          // applications that are not hosted in the Eclipse platform run-time, in
+          // which case these registrations are discovered automatically from
+          // Eclipse extension points.
+  		
+  		URI locationURI=URI.createURI("platform:/plugin/org.eclipse.uml2.uml.resources");
+  		resourceSet.getPackageRegistry().put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
+  		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION,UMLResource.Factory.INSTANCE);
+  		 
+  		Map<URI,URI> uriMap=resourceSet.getURIConverter().getURIMap();
+  		  
+  		uriMap.put(URI.createURI(UMLResource.LIBRARIES_PATHMAP), locationURI.appendSegment("libraries").appendSegment(""));
+  		uriMap.put(URI.createURI(UMLResource.METAMODELS_PATHMAP), locationURI.appendSegment("metamodels").appendSegment(""));
+  		uriMap.put(URI.createURI(UMLResource.PROFILES_PATHMAP), locationURI.appendSegment("profiles").appendSegment(""));
+          
+  		UMLResourcesUtil.init(resourceSet);
+    }
+    
+
+    public static ResourceSet getResourceSet()
+    {
+    	return resourceSet;
+    }
+    
+    public static boolean isImporting()
+    {
+    	return importing;
+    }
+    private static Profile currentProfile=null;
+    private static ResourceSet resourceSet;
 	private static Model currentModel=null;
-	private static Class<?> modelClass=null;
-	
+	private static boolean importing=false;
 	
 }
 

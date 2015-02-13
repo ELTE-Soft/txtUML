@@ -2,6 +2,7 @@ package txtuml.importer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Stack;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -24,6 +25,8 @@ import org.eclipse.uml2.uml.Variable;
 
 import txtuml.api.ModelClass;
 import txtuml.api.ModelIdentifiedElement;
+import txtuml.api.ModelInt;
+import txtuml.api.ModelType;
 import txtuml.utils.InstanceCreator;
 
 public abstract class AbstractMethodImporter extends AbstractImporter {
@@ -33,10 +36,10 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 		return importing;
 	}
 	
-	protected static <T> T createLocalInstance(Class<T> typeClass)
+	protected static <T> T createLocalInstance(Class<T> typeClass,Object... givenParameters)
 	{
 		setLocalInstanceToBeCreated(true);
-		T createdObject = InstanceCreator.createInstance(typeClass);
+		T createdObject = InstanceCreator.createInstanceWithGivenParams(typeClass,givenParameters);
 		setLocalInstanceToBeCreated(false);
 		return createdObject;
 	}
@@ -74,12 +77,14 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 	{
 		String targetInstanceName=getObjectIdentifier(target);
 		Type type=ModelImporter.importType(target.getClass());
+		
 		Variable variable=currentActivity.getVariable(targetInstanceName, type);
+		if(variable==null)
+		{
+			variable=currentActivity.createVariable(targetInstanceName,type);
+		}
 		
-		AddVariableValueAction addVarValAction = (AddVariableValueAction)
-				currentActivity.createOwnedNode(targetInstanceName+":="+valueExpression, UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION);
-		
-		addVarValAction.setVariable(variable);
+		AddVariableValueAction addVarValAction = createAddVarValAction(variable,targetInstanceName+":="+valueExpression);
 		
 		ValuePin valuePin = (ValuePin) addVarValAction.createValue(addVarValAction.getName()+"_value",type,UMLPackage.Literals.VALUE_PIN);
 		addOpaqueExpressionToValuePin(valuePin,valueExpression,type);
@@ -143,12 +148,9 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 							return true;
 						}
 					}
-				} catch (IllegalArgumentException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 				
 			}
@@ -156,14 +158,40 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 		
 		return false;
 	}
-	
-	protected static String getObjectIdentifier(ModelIdentifiedElement object)
-	{
-
 		
+	protected static String getExpression(ModelIdentifiedElement object)
+	{
+		if(object instanceof ModelType)
+		{	
+			boolean literal=(boolean)getObjectFieldVal(object,"literal");
+			boolean calculated=(boolean)getObjectFieldVal(object,"calculated");
+			
+			if(literal)
+			{
+				if(object instanceof ModelInt)
+				{
+					Integer val=(Integer) getObjectFieldVal(object,"value");
+					if(val<0)
+					{
+						return "("+val.toString()+")";
+					}
+				}
+				return getObjectFieldVal(object,"value").toString();
+			}
+			if(currentActivity==null && calculated)
+			{
+				return "("+(String)getObjectFieldVal(object,"expression")+")";
+			}
+		}
+		
+		return getObjectIdentifier(object);
+	}
+	
+	protected static String getObjectIdentifier(String instanceId)
+	{
 		try
 		{
-			if(object.getIdentifier()==self.getIdentifier())
+			if(instanceId==self.getIdentifier())
 			{
 				return "self";
 			}
@@ -175,20 +203,15 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 					f.setAccessible(false);
 					if(fieldObj instanceof ModelIdentifiedElement)
 					{
-						if( ( (ModelIdentifiedElement) fieldObj ).getIdentifier().equals( object.getIdentifier() ) )
+						if( ( (ModelIdentifiedElement) fieldObj ).getIdentifier().equals( instanceId ) )
 						{
 							return "self."+f.getName();
 						}
 					}
-				} catch (IllegalArgumentException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				
+					//e.printStackTrace();
+				} 
 				
 			}
 		}
@@ -207,7 +230,7 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 					ModelIdentifiedElement p=(ModelIdentifiedElement) param;
 					try
 					{
-						if(p.getIdentifier().equals(object.getIdentifier()))
+						if(p.getIdentifier().equals(instanceId))
 						{
 							return "arg"+i;
 						}
@@ -219,7 +242,7 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 				}
 				catch(ClassCastException e)
 				{
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 				++i;
 			}
@@ -229,29 +252,25 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 			
 		}
 		
-		
-		
-		try
-		{
-			return object.getIdentifier();
-		}
-		catch(NullPointerException e)
-		{
-			
-		}
-		return null;
-		
+		return instanceId;
+	}
+
+	protected static String getObjectIdentifier(ModelIdentifiedElement object)
+	{
+		if(object!=null) return getObjectIdentifier(object.getIdentifier());
+		else return null;
+	
 	}
 	
-	protected static void createFlowBetweenNodes(ActivityNode source, ActivityNode target)
+	protected static ActivityEdge createFlowBetweenNodes(ActivityNode source, ActivityNode target)
 	{
 		if(source instanceof ObjectNode || target instanceof ObjectNode)
 		{
-			createObjectFlowBetweenNodes(source,target);
+			return createObjectFlowBetweenNodes(source,target);
 		}
 		else
 		{
-			createControlFlowBetweenNodes(source,target);
+			return createControlFlowBetweenNodes(source,target);
 		}
 	}
 	
@@ -278,6 +297,11 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 		ActivityEdge edge=currentActivity.createEdge("controlflow_from_"+source.getName()+"_to_"+target.getName(), UMLPackage.Literals.CONTROL_FLOW);
 		edge.setSource(source);
 		edge.setTarget(target);
+		
+		if(cntBlockBodiesBeingImported>0 && blockBodyFirstEdges.size()<cntBlockBodiesBeingImported)
+		{
+			blockBodyFirstEdges.push(edge);
+		}
 		return edge;
 	}
 	
@@ -286,6 +310,10 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 		ActivityEdge edge=currentActivity.createEdge("objectflow_from_"+source.getName()+"_to_"+target.getName(), UMLPackage.Literals.OBJECT_FLOW);
 		edge.setSource(source);
 		edge.setTarget(target);
+		if(cntBlockBodiesBeingImported>0 && blockBodyFirstEdges.size()<cntBlockBodiesBeingImported)
+		{
+			blockBodyFirstEdges.push(edge);
+		}
 		return edge;
 	}
 	
@@ -297,7 +325,7 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
     }
 	
 
-	protected static Operation getOperation(org.eclipse.uml2.uml.Class ownerClass,String name)
+	protected static Operation findOperation(org.eclipse.uml2.uml.Class ownerClass,String name)
 	{
 		for(Operation op:ownerClass.getOperations())
 		{
@@ -309,6 +337,17 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 		return null;
 	}
 	
+	protected static AddVariableValueAction createAddVarValAction(Variable var, String name)
+	{
+		AddVariableValueAction addVarValAction = (AddVariableValueAction)
+				currentActivity.createOwnedNode(name, UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION);
+		
+		addVarValAction.setVariable(var);
+		
+		return addVarValAction;
+	}
+	
+	
 	protected static boolean importing=false;
 	protected static Object[] currentParameters=null;
 	protected static Method currentMethod=null;
@@ -316,4 +355,8 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 	protected static Activity currentActivity=null;
 	protected static ModelClass self=null;
 	protected static Model currentModel=null;
+	protected static int cntBlockBodiesBeingImported=0;
+	protected static Stack<ActivityEdge> blockBodyFirstEdges=new Stack<>();
+	protected static int cntDummyNodes=0;
+	protected static int cntDecisionNodes;
 }

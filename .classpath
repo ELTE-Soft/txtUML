@@ -11,5 +11,7 @@
 	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.emf.ecore.xmi_2.10.1.v20140901-1043.jar"/>
 	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.uml2.common_2.0.1.v20140910-1354.jar"/>
 	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.uml2.types_2.0.0.v20140910-1354.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.uml2.uml.profile.standard_1.0.0.v20140910-1354.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.eclipse.emf.mapping.ecore2xml_2.8.0.v20140901-1055.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

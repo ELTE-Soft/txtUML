@@ -5,7 +5,7 @@ import txtuml.examples.garage.interfaces.IControl;
 import txtuml.examples.garage.interfaces.IControlled;
 
 // This class is the glue code between the UI and the control model
-public class Glue implements IControl {
+public class Glue extends ExternalClass implements IControl {
 	// Model instantiation
 	GarageModel gmodel = new GarageModel();
 	GarageModel.Door door = gmodel.new Door();
@@ -38,6 +38,10 @@ public class Glue implements IControl {
 			instance = new Glue();
 		}
 		return instance;
+	}
+	
+	public void progress(ModelInt percent) {
+		controlled.progress(convertModelInt(percent));
 	}
 	
 	// IControl implementation

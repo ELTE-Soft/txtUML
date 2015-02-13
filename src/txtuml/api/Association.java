@@ -12,6 +12,16 @@ public class Association implements ModelElement {
 		
 		AssociationEnd() {}
 		
+		private String ownerId;
+		void setOwnerId(String newId)
+		{
+			ownerId=newId;
+		}
+		String getOwnerId()
+		{
+			return ownerId;
+		}
+		
 		@Override
 		public final ModelBool isEmpty() {
 			return new ModelBool(count().getValue() == 0);

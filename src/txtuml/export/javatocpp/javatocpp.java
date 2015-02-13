@@ -19,7 +19,7 @@ public class javatocpp {
 		String modelClassName = args[0];
 		String outputName = args[1];
 		try {
-			org.eclipse.uml2.uml. Model m = ModelImporter.importModel(modelClassName);
+			org.eclipse.uml2.uml. Model m = ModelImporter.importModel(modelClassName,outputName);
 			ResourceSet resourceSet = new ResourceSetImpl();
 			UMLResourcesUtil.init(resourceSet);
 			URI uri = URI.createFileURI(outputName).appendSegment(modelClassName).appendFileExtension(UMLResource.FILE_EXTENSION);

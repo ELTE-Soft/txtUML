@@ -2,17 +2,54 @@ package txtuml.importer;
 
 import java.lang.reflect.*;
 
+import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.PseudostateKind;
 import org.eclipse.uml2.uml.Region;
+import org.eclipse.uml2.uml.VisibilityKind;
 
 import txtuml.api.*;
 
 
 public abstract class AbstractImporter {
 	
+	protected static Object getObjectFieldVal(Object object,String fieldName)
+	{
+		
+		Field field = getField(object.getClass(),fieldName);
+		field.setAccessible(true);
+		Object val=null;
+		try {
+			val = field.get(object);
+			return val;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
+		field.setAccessible(false);
+			
+		
+		return null;
+		
+	}
+	
+	protected static Field getField(Class<?> type,String fieldName) {
 
+	    Class<?> i = type;
+	    while (i != null && i != Object.class) {
+	        for(Field f:i.getDeclaredFields())
+	        {
+	        	if(fieldName.equals(f.getName()))
+	        	{
+	        		return f;
+	        	}
+	        }
+	        i = i.getSuperclass();
+	    }
+
+	    return null;
+	}
 	protected static boolean isModelElement(Class<?> c)
 	{
 		 
@@ -20,10 +57,18 @@ public abstract class AbstractImporter {
 			   isState(c) ||
 			   isTransition(c) ;
 	}
-	protected static boolean isClass(Class<?> c) {
+	protected static boolean isModelClass(Class<?> c) {
 		return ModelClass.class.isAssignableFrom(c);
 	}
 
+	protected static boolean isExternalClass(Class<?> c) {
+		return ExternalClass.class.isAssignableFrom(c);
+	}
+	protected static boolean isClass(Class<?> c )
+	{
+		return isModelClass(c) || isExternalClass(c);
+	}
+	
 	protected static boolean isAssociation(Class<?> c) {
 		return Association.class.isAssignableFrom(c);
 	}
@@ -100,8 +145,40 @@ public abstract class AbstractImporter {
 		}
 		return null;
 	}
+	private static void setVisibilityBasedOnModifiers(NamedElement element,int modifiers)
+	{
+		if(Modifier.isPrivate(modifiers))
+		{
+			element.setVisibility(VisibilityKind.PRIVATE_LITERAL);
+		}
+		else if(Modifier.isProtected(modifiers))
+		{
+			element.setVisibility(VisibilityKind.PROTECTED_LITERAL);
+		}
+		else if(Modifier.isPublic(modifiers))
+		{
+			element.setVisibility(VisibilityKind.PUBLIC_LITERAL);
+		}
+		else
+		{
+			element.setVisibility(VisibilityKind.PACKAGE_LITERAL);
+		}
+	}
+	protected static void setVisibility(NamedElement importedElement,Class<?> sourceClass)
+	{
+		setVisibilityBasedOnModifiers(importedElement,sourceClass.getModifiers());	
+	}
+	protected static void setVisibility(NamedElement importedElement, Method sourceMethod)
+	{
+		setVisibilityBasedOnModifiers(importedElement,sourceMethod.getModifiers());	
+	}
+	protected static void setVisibility(NamedElement importedElement,Field sourceField)
+	{
+		setVisibilityBasedOnModifiers(importedElement,sourceField.getModifiers());	
+	}
 
 	protected static boolean localInstanceToBeCreated = false;
-	protected static PrimitiveType UML2Int,UML2Bool,UML2String;
+	protected static PrimitiveType UML2Integer,UML2Bool,UML2String,UML2Real,UML2UnlimitedNatural;
+	protected static Class<?> modelClass=null;
 
 }

@@ -1,5 +1,6 @@
 package txtuml.api;
 
+@ModelAnnotatedElement
 public abstract class ExternalClass implements ModelElement {
 	protected ExternalClass() {}
 		

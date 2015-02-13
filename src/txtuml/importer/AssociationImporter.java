@@ -1,6 +1,9 @@
 package txtuml.importer;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.uml2.uml.AggregationKind;
 import org.eclipse.uml2.uml.Association;
@@ -22,22 +25,16 @@ class AssociationImporter extends AbstractImporter{
 	}
 	Association importAssociation() throws ImportException
 	{
-	    Class<?>[] classes = sourceClass.getDeclaredClasses();
-	    if(classes.length != 2)
-	    {
-	        throw new ImportException("Associations must have exactly two fields. "
-	                                  + sourceClass.getSimpleName() + " has "
-	                                  + Integer.toString(classes.length) + ".");
-	    }
+	    List<Class<?> > classes = new LinkedList<Class<?> >(Arrays.asList(sourceClass.getDeclaredClasses()));
 	    
-	    currentAssociation = createAssociation(classes);
+	    currentAssociation= createAssociation(classes);
 	    return currentAssociation;
 	}
 
-	private Association createAssociation(Class<?>[] classes) throws ImportException
+	private Association createAssociation(List<Class<?> > classes) throws ImportException
 	{
-		AssociationEnd end1=importAssociationEnd(classes[0]);
-	    AssociationEnd end2=importAssociationEnd(classes[1]);
+		AssociationEnd end1=importAssociationEnd(classes.get(0));
+	    AssociationEnd end2=importAssociationEnd(classes.get(1));
 	    
 	    Association assoc=end1.getType().createAssociation
 	     		(end2.isNavigable(), end2.getAggregationKind(), end2.getName() ,end2.getLowerBound(), end2.getUpperBound(),
@@ -47,63 +44,54 @@ class AssociationImporter extends AbstractImporter{
 	    return assoc;
 	}
 	
-	private  AssociationEnd importAssociationEnd(Class<?> cl) throws ImportException
+	@SuppressWarnings("rawtypes")
+	private  AssociationEnd importAssociationEnd(Class sourceClass) throws ImportException
 	{
-	    String assoc = cl.getSimpleName();
-	    ParameterizedType scl = (ParameterizedType)cl.getGenericSuperclass();
-	    String multiplicityError = "Association ends have to extend one of the generic classes 'One', 'MaybeOne', 'Some', 'Many'.";
-	    if(scl == null) {
-	    	throw new ImportException(assoc + ": " + multiplicityError);
-	    }
-	    java.lang.reflect.Type[] tpars = scl.getActualTypeArguments();
-	    if(tpars == null || tpars.length != 1) {
-	    	throw new ImportException(assoc + ": " + multiplicityError);
-	    }
-	    Class<?> parCl = (Class<?>)tpars[0];
-	    String className = parCl.getSimpleName();
+	    String phrase = sourceClass.getSimpleName();
+	    Class genericParameter0 =(Class)
+	    		((ParameterizedType)sourceClass.getGenericSuperclass())
+	    		.getActualTypeArguments()[0];
+	    	    
+	    
+	    String className = genericParameter0.getSimpleName();
+	   
+	    int lowerBound; 
+		int upperBound; 
+	    
+	    if(txtuml.api.Association.One.class.isAssignableFrom(sourceClass))
+		{
+			lowerBound=upperBound=1;
+		}
+		else if(txtuml.api.Association.MaybeOne.class.isAssignableFrom(sourceClass))
+		{
+			lowerBound=0;
+			upperBound=1;
+		}
+		else if(txtuml.api.Association.Some.class.isAssignableFrom(sourceClass))
+		{
+			lowerBound=0;
+			upperBound= org.eclipse.uml2.uml.LiteralUnlimitedNatural.UNLIMITED;
+		}
+		else if(txtuml.api.Association.Many.class.isAssignableFrom(sourceClass))
+		{
+			lowerBound=1;
+			upperBound= org.eclipse.uml2.uml.LiteralUnlimitedNatural.UNLIMITED;
+		}
+		else
+		{
+			throw new ImportException("Invalid multiplicity.");            
+		}
+	    
 	    org.eclipse.uml2.uml.Type participant = (Type) currentModel.getMember(className);
-	        
+	    
 	    if(participant == null)
 	    {
-	        throw new ImportException(assoc + ": No class " + className + " found in this model.");
+	        throw new ImportException(phrase + ": No class " + className + " found in this model.");
 	    }
-
-	    return createAssociationEnd(participant,assoc,cl.getSuperclass());
-	}
-	
-	private static AssociationEnd createAssociationEnd(org.eclipse.uml2.uml.Type participant,String phrase,Class<?> mult)
-									throws ImportException
-	{
-		int lowerBound;
-	    int upperBound;
-	    
-	    //converting multiplicity
-	    if(mult.equals(txtuml.api.Association.One.class))
-	    {
-	        lowerBound=upperBound=1;
-	    }
-	    else if(mult.equals(txtuml.api.Association.MaybeOne.class))
-	    {
-	        lowerBound=0;
-	        upperBound=1;
-	    }
-	    else if(mult.equals(txtuml.api.Association.Some.class))
-	    {
-	        lowerBound=0;
-	        upperBound=org.eclipse.uml2.uml.LiteralUnlimitedNatural.UNLIMITED;
-	    }
-	    else if(mult.equals(txtuml.api.Association.Many.class))
-	    {
-	        lowerBound=1;
-	        upperBound=org.eclipse.uml2.uml.LiteralUnlimitedNatural.UNLIMITED;
-	    }
-	    else
-	    {
-	        throw new ImportException(phrase + ": has invalid multiplicity.");           
-	    }
-	
+	   
 	    return new AssociationEnd(participant,phrase,false,AggregationKind.NONE_LITERAL,lowerBound,upperBound);
 	}
+
 	private Class<?> sourceClass;
 	private Model currentModel;
 	private Association currentAssociation;

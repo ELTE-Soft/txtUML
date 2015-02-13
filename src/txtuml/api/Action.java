@@ -1,7 +1,6 @@
 package txtuml.api;
 
 import txtuml.api.Association.*;
-import txtuml.importer.InstructionImporter;
 import txtuml.importer.MethodImporter;
 import txtuml.utils.InstanceCreator;
 
@@ -15,7 +14,6 @@ public class Action implements ModelElement {
 	public static <MODELCLASS1 extends ModelClass, MODELCLASS2 extends ModelClass> void link(
 			Class<? extends AssociationEnd<MODELCLASS1>> leftEnd, MODELCLASS1 leftObj,
     		Class<? extends AssociationEnd<MODELCLASS2>> rightEnd, MODELCLASS2 rightObj) {
-		//TODO import 'link' into UML2
 
 		synchronized(lockOnAssociations) {
 			leftObj.addToAssoc(rightEnd, rightObj);
@@ -28,18 +26,12 @@ public class Action implements ModelElement {
 	}
 	
 	public static void send(ModelClass receiverObj, Signal event) {
-		if(MethodImporter.isImporting())
-		{
-			InstructionImporter.send(receiverObj, event);
-		}
-		else
-		{
+	
 			Runtime.send(receiverObj, event);
-		}	
+		
 	}
 
 	public static void If(Condition cond, BlockBody thenBody, BlockBody elseBody) {
-		//TODO import 'If' into UML2
 
 		if (cond.check().getValue()) {
 			thenBody.run();
@@ -53,7 +45,6 @@ public class Action implements ModelElement {
 	}
 
 	public static void While(Condition cond, BlockBody body) {
-		//TODO import 'While' into UML2
 
 		while (cond.check().getValue()) {
 			body.run();

@@ -97,9 +97,15 @@ class ExtendedModel1 extends Model {
 			Action.send(myMachine, new ButtonPress()); // tries to switch it off, but fails again
 			
 			While(() -> workToDo.isMore(ModelInt.ZERO), () -> { // repeats until he or she has work to do
-						Action.send(myMachine, new DoTasks(new ModelInt(1)));
+				Action.send(myMachine, new DoTasks(new ModelInt(1)));
 						workToDo = workToDo.subtract(ModelInt.ONE);
 			});
+			
+			For(new ModelInt(0), new ModelInt(5),
+					i -> If( () -> i.isLess(new ModelInt(3)),
+							() -> Action.send(myMachine, new ButtonPress()),
+							() -> Action.send(myMachine, new DoTasks(ModelInt.ONE))
+					) );
 			
 			Timer.Handle t1 = Timer.start(myMachine, new ButtonPress(), 2000); // switching off the machine with delay
 			t1.add(3000);

@@ -12,6 +12,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
 import txtuml.api.From;
+import txtuml.api.ModelBool;
 import txtuml.api.To;
 
 class RegionImporter extends AbstractImporter {
@@ -46,8 +47,7 @@ class RegionImporter extends AbstractImporter {
 			}
             if(isState(c)) 
             {	   
-            	region=importState(c);
-            	
+            	importState(c);
             }
              
         }
@@ -55,7 +55,7 @@ class RegionImporter extends AbstractImporter {
 	}
 	
 	
-	private  Region importState(Class<?> state)	throws ImportException
+	private  Vertex importState(Class<?> state)	throws ImportException
 	{
 		Vertex vertex=createState(state);
 		if(!isInitialState(state))
@@ -63,7 +63,7 @@ class RegionImporter extends AbstractImporter {
 			importStateEntryAction(state,(State) vertex);
 			importStateExitAction(state,(State) vertex);
 		}
-		return region;
+		return vertex;
 	}
 	
 
@@ -118,14 +118,13 @@ class RegionImporter extends AbstractImporter {
 				{
 					throw new ImportException(sourceClass.getName() + "." + c.getSimpleName() + " cannot be a state and a transition at the same time");
 				}		
-	            importTransition(c);
+				importTransition(c);
+				
 	        }
 	         
 	    }
 		return region;
 	}
-	
-	
 	
 	private  Vertex createState(Class<?> state)	throws ImportException
 	{
@@ -169,7 +168,7 @@ class RegionImporter extends AbstractImporter {
 	
 	
 		
-	private void importTransition(Class<?> trans)
+	private org.eclipse.uml2.uml.Transition importTransition(Class<?> trans)
 	{
 		String trName = trans.getSimpleName();
         From fromAnnot = trans.getAnnotation(From.class);
@@ -184,6 +183,8 @@ class RegionImporter extends AbstractImporter {
         importTrigger(triggerAnnot,transition);
         importEffectAction(trans,transition);
         importGuard(trans,transition);
+        
+        return transition;
     }   
 	
 	private void importTrigger( txtuml.api.Trigger triggerAnnot,org.eclipse.uml2.uml.Transition transition)
@@ -207,6 +208,7 @@ class RegionImporter extends AbstractImporter {
 		}
 		catch (NoSuchMethodException e)
 		{
+			
 			//if there's no effect method, do nothing
 		} 
 		
@@ -214,13 +216,20 @@ class RegionImporter extends AbstractImporter {
 	
 	private void importGuard(Class<?> transitionClass,org.eclipse.uml2.uml.Transition transition)
 	{
-				
-		
-			
 			try
 			{
 				Method guardMethod=transitionClass.getDeclaredMethod("guard");
-				
+				ModelBool returnValue=MethodImporter.importGuardMethod(currentModel,guardMethod,transitionClass);
+				if(returnValue!=null)
+				{
+					String guardExpression=MethodImporter.getExpression(returnValue);
+					if((boolean)getObjectFieldVal(returnValue,"calculated"))
+					{
+						guardExpression=guardExpression.substring(1,guardExpression.length()-1);
+					}
+					transition.createGuard(guardExpression);
+				}
+						
 			}
 			catch (NoSuchMethodException e) {
 				

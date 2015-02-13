@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import txtuml.api.Association.*;
-import txtuml.importer.InstructionImporter;
 import txtuml.importer.MethodImporter;
+import txtuml.importer.ModelImporter;
 import txtuml.utils.InstanceCreator;
 
 public class ModelClass extends ModelIdentifiedElementImpl
@@ -63,14 +63,11 @@ public class ModelClass extends ModelIdentifiedElementImpl
 		thread = null;
 		innerClassInstances.put(getClass(), this);
 		
-		if(MethodImporter.isImporting())
-		{
-			InstructionImporter.createInstance(this);
-		}
-		else 
+		if(!ModelImporter.isImporting())
 		{
 			createThread();
 		}
+
 	}
 	
 	public synchronized <T extends ModelClass, AE extends AssociationEnd<T>> AE assoc(Class<AE> otherEnd) {
@@ -80,6 +77,7 @@ public class ModelClass extends ModelIdentifiedElementImpl
         	ret = InstanceCreator.createInstance(otherEnd);
             associations.put(otherEnd, ret);
         }
+        ret.setOwnerId(this.getIdentifier());
         return ret;
 	}
 	
