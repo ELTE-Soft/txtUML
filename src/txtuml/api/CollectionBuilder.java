@@ -6,6 +6,8 @@ import java.util.List;
 
 // TODO needs optimization
 class CollectionBuilder<T extends ModelClass> implements Iterable<T> {
+	private final List<T> list = new LinkedList<>();
+
 	CollectionBuilder<T> append(T object) {
 		list.add(object);
 		return this;
@@ -17,10 +19,8 @@ class CollectionBuilder<T extends ModelClass> implements Iterable<T> {
 		}
 		return this;
 	}
-	
+
 	public Iterator<T> iterator() {
 		return list.iterator();
 	}
-	
-	private final List<T> list = new LinkedList<>(); 
 }

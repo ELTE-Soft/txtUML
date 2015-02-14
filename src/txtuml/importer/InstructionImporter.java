@@ -46,7 +46,8 @@ import txtuml.api.ModelIdentifiedElement;
 import txtuml.api.ModelInt;
 import txtuml.api.ModelString;
 import txtuml.api.ModelType;
-import txtuml.api.One;
+//FIXME there is no One annotation
+//import txtuml.api.One;
 import txtuml.api.ParameterizedBlockBody;
 import txtuml.export.uml2tocpp.Util.Pair;
 
@@ -176,10 +177,12 @@ public class InstructionImporter extends AbstractMethodImporter {
 		Field[] fields = assocClass.getDeclaredFields();
   
 		for(Field field : fields) {
-			if(field.getName().equals(phrase) && field.isAnnotationPresent(One.class)) 
+			//FIXME there is no One annotation
+			/*if(field.getName().equals(phrase) && field.isAnnotationPresent(One.class)) 
 			{
 				return true;
-			}
+			}*/
+			return false;
 		}      
 		return false;
 	}

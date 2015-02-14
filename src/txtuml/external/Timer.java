@@ -7,9 +7,20 @@ import txtuml.api.Runtime;
 
 public class Timer extends ExternalClass {
 	protected Timer() {}
+
+	public static Handle start(ModelClass targetObj, Signal signal, long millisecs) {
+		Runtime.Settings.lockSimulationTimeMultiplier();
+		return new Handle(targetObj, signal, millisecs);		
+	}
 	
 	public static class Handle extends ExternalClass {
-		Handle(long millisecs, ModelClass obj, Signal s) {
+		private final Signal signal;
+		private final ModelClass targetObj;
+		private final Runnable action;
+		private ScheduledFuture<?> handle;
+		private final static ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+		Handle(ModelClass obj, Signal s, long millisecs) {
 			this.signal = s;
 			this.targetObj = obj;
 			this.action = new Runnable() {
@@ -46,16 +57,5 @@ public class Timer extends ExternalClass {
 		private void schedule(long millisecs) {
 			handle = scheduler.schedule(action, millisecs / Runtime.Settings.getSimulationTimeMultiplier(), TimeUnit.MILLISECONDS);
 		}
-		
-		private final Signal signal;
-		private final ModelClass targetObj;
-		private final Runnable action;
-		private ScheduledFuture<?> handle;
-		private final static ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-	}
-	
-	public static Handle start(ModelClass targetObj, Signal signal, long millisecs) {
-		Runtime.Settings.lockSimulationTimeMultiplier();
-		return new Handle(millisecs, targetObj, signal);		
 	}
 }

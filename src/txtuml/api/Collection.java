@@ -2,35 +2,49 @@ package txtuml.api;
 
 import java.util.Iterator;
 
-public interface Collection<T extends ModelClass> extends ModelIdentifiedElement, Iterable<T> {
+public interface Collection<T extends ModelClass> extends
+		ModelIdentifiedElement, Iterable<T> {
+
 	ModelBool isEmpty();
+
 	ModelInt count();
-	ModelBool contains(ModelClass object);  
+
+	ModelBool contains(ModelClass object);
+
 	T selectOne();
+
 	T selectOne(ParameterizedCondition<T> cond);
+
 	Collection<T> selectAll(ParameterizedCondition<T> cond);
+
 	Collection<T> add(T object);
+
 	Collection<T> addAll(Collection<T> objects);
+
 	Collection<T> remove(T object);
-	
+
 	// Some of the methods above can be calculated with the use of the others.
 	// The minimum needed:
-	//  - count()
-	//  - selectOne()
-	//  - selectAll(ParameterizedCondition<T>)
-	//  - add(T)
+	// - count()
+	// - selectOne()
+	// - selectAll(ParameterizedCondition<T>)
+	// - add(T)
 
-	public static class Empty<T extends ModelClass> extends ModelIdentifiedElementImpl implements Collection<T> {
+	public static class Empty<T extends ModelClass> extends
+			ModelIdentifiedElementImpl implements Collection<T> {
 		@Override
 		public Iterator<T> iterator() {
 			return new Iterator<T>() {
 				public boolean hasNext() {
 					return false;
 				}
+
 				public T next() {
 					return null;
 				}
-				public void remove() {}
+
+				public void remove() {
+				}
 			};
 		}
 
@@ -38,7 +52,7 @@ public interface Collection<T extends ModelClass> extends ModelIdentifiedElement
 		public ModelBool isEmpty() {
 			return ModelBool.FALSE;
 		}
-		
+
 		@Override
 		public ModelInt count() {
 			return ModelInt.ZERO;
@@ -66,7 +80,7 @@ public interface Collection<T extends ModelClass> extends ModelIdentifiedElement
 
 		@Override
 		public Collection<T> add(T object) {
-			return 	new Association().new MaybeOne<T>(object);
+			return new Association().new MaybeOne<T>(object);
 		}
 
 		@Override

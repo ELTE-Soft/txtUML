@@ -151,6 +151,6 @@ class Model1 extends Model {
 
 public class Example1 {
 	public static void main(String[] args) {
-		(new Model1()).test();
+		new Model1().test();
 	}
 }

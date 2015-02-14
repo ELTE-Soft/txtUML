@@ -2,21 +2,22 @@ package txtuml.api;
 
 @ModelAnnotatedElement
 public abstract class ExternalClass implements ModelElement {
-	protected ExternalClass() {}
-		
-	protected <T> T convert(ModelType<T> objectToConvert) {
+	protected ExternalClass() {
+	}
+
+	protected static <T> T convert(ModelType<T> objectToConvert) {
 		return objectToConvert.getValue();
 	}
-	
-	protected Integer convertModelInt(ModelInt intToConvert) {
+
+	protected static Integer convertModelInt(ModelInt intToConvert) {
 		return convert(intToConvert);
 	}
 
-	protected Boolean convertModelBool(ModelBool boolToConvert) {
+	protected static Boolean convertModelBool(ModelBool boolToConvert) {
 		return convert(boolToConvert);
 	}
-	
-	protected String convertModelString(ModelString stringToConvert) {
+
+	protected static String convertModelString(ModelString stringToConvert) {
 		return convert(stringToConvert);
 	}
 }

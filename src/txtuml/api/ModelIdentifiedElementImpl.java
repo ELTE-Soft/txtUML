@@ -1,14 +1,20 @@
 package txtuml.api;
 
 abstract class ModelIdentifiedElementImpl implements ModelIdentifiedElement {
+	private final String identifier;
+
 	protected ModelIdentifiedElementImpl() {
-		this.identifier = "inst_" + System.identityHashCode(this); // guarantees to give a different identifier for every object
+		this.identifier = "inst_" + System.identityHashCode(this); // FIXME
+																	// guarantee
+																	// to give
+																	// different
+																	// ids for
+																	// every
+																	// object
 	}
-	
+
 	@Override
 	public final String getIdentifier() {
 		return identifier;
 	}
-	
-	private final String identifier;
 }
