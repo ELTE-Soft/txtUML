@@ -45,7 +45,7 @@ public class GarageModel extends Model {
 		@From(Enabled.class) @To(Disabled.class) @Trigger(MotionSensorActivated.class)
 		class TDisable extends Transition {
 			@Override public void effect() {
-				doorTimer = Timer.start(Door.this, new DoorTimerExpired(), 2000);
+				doorTimer = Timer.start(Door.this, new DoorTimerExpired(), new ModelInt(2000));
 			}
 		}
 		@From(Disabled.class) @To(Disabled.class) @Trigger(MotionSensorActivated.class)
@@ -257,7 +257,7 @@ public class GarageModel extends Model {
 		class TWaitForCode extends Transition {
 			@Override public void effect() {
 				keyboardTimerCount = keyboardTimerCount.add(new ModelInt(0));
-				keyboardTimer = Timer.start(Keyboard.this, new KeyboardTimerExpired(), 50);
+				keyboardTimer = Timer.start(Keyboard.this, new KeyboardTimerExpired(), new ModelInt(50));
 			}
 		}
 		@From(Waiting.class) @To(Waiting.class) @Trigger(KeyboardTimerExpired.class)

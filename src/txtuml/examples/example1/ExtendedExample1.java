@@ -107,7 +107,7 @@ class ExtendedModel1 extends Model {
 							() -> Action.send(myMachine, new DoTasks(ModelInt.ONE))
 					) );
 			
-			Timer.Handle t1 = Timer.start(myMachine, new ButtonPress(), 2000); // switching off the machine with delay
+			Timer.Handle t1 = Timer.start(myMachine, new ButtonPress(), new ModelInt(2000)); // switching off the machine with delay
 			t1.add(3000);
 
 			Action.log("User: work finished...");
@@ -219,12 +219,12 @@ class ExtendedModel1 extends Model {
 		User oneOfTheUsers = m.assoc(Usage.userOfMachine.class).selectOne();
 		send(oneOfTheUsers, new DoYourWork());
 		
-		Timer.start(oneOfTheUsers, new DoYourWork(),10000);
+		Timer.start(oneOfTheUsers, new DoYourWork(), new ModelInt(10000));
 	}
 }
 
 public class ExtendedExample1 {
 	public static void main(String[] args) {
-		new Model1().test();
+		new ExtendedModel1().test();
 	}
 }

@@ -6,19 +6,22 @@ import txtuml.api.*;
 import txtuml.api.Runtime;
 
 public class Timer extends ExternalClass {
-	protected Timer() {}
-
-	public static Handle start(ModelClass targetObj, Signal signal, long millisecs) {
-		Runtime.Settings.lockSimulationTimeMultiplier();
-		return new Handle(targetObj, signal, millisecs);		
+	protected Timer() {
 	}
-	
+
+	public static Handle start(ModelClass targetObj, Signal signal,
+			ModelInt millisecs) {
+		Runtime.Settings.lockSimulationTimeMultiplier();
+		return new Handle(targetObj, signal, (long) convert(millisecs));
+	}
+
 	public static class Handle extends ExternalClass {
 		private final Signal signal;
 		private final ModelClass targetObj;
 		private final Runnable action;
 		private ScheduledFuture<?> handle;
-		private final static ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+		private final static ScheduledExecutorService scheduler = Executors
+				.newSingleThreadScheduledExecutor();
 
 		Handle(ModelClass obj, Signal s, long millisecs) {
 			this.signal = s;
@@ -28,18 +31,19 @@ public class Timer extends ExternalClass {
 					Action.send(targetObj, signal);
 				}
 			};
-	        schedule(millisecs);
+			schedule(millisecs);
 		}
-				
+
 		public long query() {
-			return handle.getDelay(TimeUnit.MILLISECONDS) * Runtime.Settings.getSimulationTimeMultiplier();
+			return handle.getDelay(TimeUnit.MILLISECONDS)
+					* Runtime.Settings.getSimulationTimeMultiplier();
 		}
-		
+
 		public synchronized void reset(long millisecs) {
 			handle.cancel(false);
 			schedule(millisecs);
 		}
-		
+
 		public synchronized void add(long millisecs) {
 			long delay = query();
 			if (delay < 0) {
@@ -47,15 +51,17 @@ public class Timer extends ExternalClass {
 			}
 			reset(delay + millisecs);
 		}
-		
+
 		public boolean cancel() {
 			boolean wasCancelled = handle.isCancelled();
 			handle.cancel(false);
 			return !wasCancelled;
 		}
-		
+
 		private void schedule(long millisecs) {
-			handle = scheduler.schedule(action, millisecs / Runtime.Settings.getSimulationTimeMultiplier(), TimeUnit.MILLISECONDS);
+			handle = scheduler.schedule(action,
+					millisecs / Runtime.Settings.getSimulationTimeMultiplier(),
+					TimeUnit.MILLISECONDS);
 		}
 	}
 }

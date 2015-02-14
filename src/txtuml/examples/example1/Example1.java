@@ -94,7 +94,7 @@ class Model1 extends Model {
 			Action.send(myMachine, new ButtonPress()); // tries to switch it off, but fails again
 			Action.send(myMachine, new DoTasks(new ModelInt(1))); // the machine becomes active again and decreases its tasks-to-do count by 1
 			
-			Timer.Handle t1 = Timer.start(myMachine, new ButtonPress(), 2000);
+			Timer.Handle t1 = Timer.start(myMachine, new ButtonPress(), new ModelInt(2000));
 			t1.add(3000);
 			
 			If(() -> {
