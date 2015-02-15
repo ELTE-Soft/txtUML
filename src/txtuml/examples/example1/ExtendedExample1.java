@@ -108,7 +108,7 @@ class ExtendedModel1 extends Model {
 					) );
 			
 			Timer.Handle t1 = Timer.start(myMachine, new ButtonPress(), new ModelInt(2000)); // switching off the machine with delay
-			t1.add(3000);
+			t1.add(new ModelInt(3000));
 
 			Action.log("User: work finished...");
 		}

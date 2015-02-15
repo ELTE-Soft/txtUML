@@ -20,6 +20,10 @@ public class ModelInt extends ModelType<Integer> {
 		this(0, false);
 	}
 
+	public ModelInt(long val) {
+		this((int) val);
+	}
+
 	public ModelInt abs() {
 		if (getValue() >= 0) {
 			return this;

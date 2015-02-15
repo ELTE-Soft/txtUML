@@ -12,7 +12,7 @@ public class Timer extends ExternalClass {
 	public static Handle start(ModelClass targetObj, Signal signal,
 			ModelInt millisecs) {
 		Runtime.Settings.lockSimulationTimeMultiplier();
-		return new Handle(targetObj, signal, (long) convert(millisecs));
+		return new Handle(targetObj, signal, millisecs);
 	}
 
 	public static class Handle extends ExternalClass {
@@ -23,7 +23,7 @@ public class Timer extends ExternalClass {
 		private final static ScheduledExecutorService scheduler = Executors
 				.newSingleThreadScheduledExecutor();
 
-		Handle(ModelClass obj, Signal s, long millisecs) {
+		Handle(ModelClass obj, Signal s, ModelInt millisecs) {
 			this.signal = s;
 			this.targetObj = obj;
 			this.action = new Runnable() {
@@ -34,22 +34,26 @@ public class Timer extends ExternalClass {
 			schedule(millisecs);
 		}
 
-		public long query() {
+		private long queryLong() {
 			return handle.getDelay(TimeUnit.MILLISECONDS)
 					* Runtime.Settings.getSimulationTimeMultiplier();
 		}
 
-		public synchronized void reset(long millisecs) {
+		public ModelInt query() {
+			return new ModelInt(queryLong());
+		}
+
+		public synchronized void reset(ModelInt millisecs) {
 			handle.cancel(false);
 			schedule(millisecs);
 		}
 
-		public synchronized void add(long millisecs) {
-			long delay = query();
+		public synchronized void add(ModelInt millisecs) {
+			long delay = queryLong();
 			if (delay < 0) {
 				delay = 0;
 			}
-			reset(delay + millisecs);
+			reset(new ModelInt(delay).add(millisecs));
 		}
 
 		public boolean cancel() {
@@ -58,9 +62,9 @@ public class Timer extends ExternalClass {
 			return !wasCancelled;
 		}
 
-		private void schedule(long millisecs) {
-			handle = scheduler.schedule(action,
-					millisecs / Runtime.Settings.getSimulationTimeMultiplier(),
+		private void schedule(ModelInt millisecs) {
+			handle = scheduler.schedule(action, ((long) convert(millisecs))
+					/ Runtime.Settings.getSimulationTimeMultiplier(),
 					TimeUnit.MILLISECONDS);
 		}
 	}

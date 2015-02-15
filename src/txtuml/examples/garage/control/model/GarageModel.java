@@ -51,7 +51,7 @@ public class GarageModel extends Model {
 		@From(Disabled.class) @To(Disabled.class) @Trigger(MotionSensorActivated.class)
 		class TKeepDisabled extends Transition {
 			@Override public void effect() {
-				doorTimer.reset(2000);
+				doorTimer.reset(new ModelInt(2000));
 			}			
 		}
 		@From(Disabled.class) @To(Enabled.class) @Trigger(DoorTimerExpired.class)
@@ -268,7 +268,7 @@ public class GarageModel extends Model {
 			@Override public void effect() {
 				keyboardTimerCount = keyboardTimerCount.add(new ModelInt(1));
 				Glue.getInstance().progress(keyboardTimerCount);
-				keyboardTimer.reset(50);
+				keyboardTimer.reset(new ModelInt(50));
 			}
 		}	
 		@From(Waiting.class) @To(Idle.class) @Trigger(KeyPress.class)
