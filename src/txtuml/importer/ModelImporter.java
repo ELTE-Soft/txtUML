@@ -24,20 +24,21 @@ import java.io.IOException;
 import java.lang.Class;
 import java.lang.reflect.*;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 
 public class ModelImporter extends AbstractImporter{
 	
-	
-	public static Model importModel(String className,String path) throws ImportException
+	private static void initModelImport(String className, String path) throws ImportException
 	{
 		importing=true;
 		modelClass= findModel(className);
 	
 		Model model = UMLFactory.eINSTANCE.createModel();
         model.setName(modelClass.getSimpleName());
- 
-		initResourceSet();
+        
+        initResourceSet();
+		
 		
         try
         {
@@ -50,20 +51,53 @@ public class ModelImporter extends AbstractImporter{
         	//e.printStackTrace();
         }
         currentModel=model;
+        
+
+        initModelTypeInstancesInfo();
         createProfile(path);
         loadAndApplyProfile();
         importPrimitiveTypes();
+	}
+	
+	private static void initModelTypeInstancesInfo() {
+		
+		modelTypeInstancesInfo=new WeakHashMap<>();
+		modelTypeInstancesInfo.put(ModelInt.ONE, new ModelTypeInformation("1",true,false,1));
+		modelTypeInstancesInfo.put(ModelInt.ZERO, new ModelTypeInformation("0",true,false,0));
+		modelTypeInstancesInfo.put(ModelBool.TRUE, new ModelTypeInformation("true",true,false));
+		modelTypeInstancesInfo.put(ModelBool.FALSE, new ModelTypeInformation("false",true,false));
+		modelTypeInstancesInfo.put(ModelBool.ELSE, new ModelTypeInformation("else",true,false));
+		
+	}
+
+	private static void endModelImport()
+	{
+		modelTypeInstancesInfo.clear();
+		importing=false;
+	}
+	
+	private static void importModelElements() throws ImportException
+	{
 		importClassNames();
-		importGeneralizations();
 		importAssociations();
 		importSignals();
+		importGeneralizations();
 		importClassAttributes();
 		importMemberFunctionsWithoutBodies();
 		importMemberFunctionBodies();
 		importClassStateMachinesAndNestedSignals();
-		importing=false;
+	}
+	public static Model importModel(String className,String path) throws ImportException
+	{
+		
+        initModelImport(className, path);
+       
+		importModelElements();
+		
+		endModelImport();
+		
    		return currentModel;
-  
+   	  
 	}
 	
 	private static org.eclipse.uml2.uml.Package loadResource(URI uri)
@@ -134,6 +168,21 @@ public class ModelImporter extends AbstractImporter{
 		currentModel.applyProfile(currentProfile);
 	}
 	
+	private static boolean isSpecificClassOrEvent(Class<?> c)
+	{
+		if(!isClass(c) && !isEvent(c))
+		{
+			return false;
+		}
+		Class<?> superClass=c.getSuperclass();
+		
+		if(superClass==null) return false;
+		else if(superClass==ModelClass.class) return false;
+		else if(superClass==ExternalClass.class) return false;
+		else if(superClass==txtuml.api.Signal.class) return false;
+		else return true;
+		
+	}
 	private static void importGeneralizations() throws ImportException 
 	{
 		for(Class<?> c : modelClass.getDeclaredClasses()) {
@@ -141,22 +190,22 @@ public class ModelImporter extends AbstractImporter{
 			{
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
 			}
-			else if(isClass(c) && c.getSuperclass()!=ModelClass.class  && c.getSuperclass()!=ExternalClass.class )	 
+			else if(isSpecificClassOrEvent(c))	 
 			{
 				createGeneralization(c,c.getSuperclass());
 			}
 		}
 	}
 	
-	private static void createGeneralization(Class<?> subclass, Class<?> superclass)
+	private static void createGeneralization(Class<?> specific, Class<?> general)
 	{
-		org.eclipse.uml2.uml.Class uml2Subclass = 
-				(org.eclipse.uml2.uml.Class) currentModel.getOwnedMember(subclass.getSimpleName());
+		Classifier uml2SpecClassifier = 
+				(Classifier) currentModel.getOwnedMember(specific.getSimpleName());
 		
-		org.eclipse.uml2.uml.Class uml2Superclass = 
-				(org.eclipse.uml2.uml.Class) currentModel.getOwnedMember(superclass.getSimpleName());
+		Classifier uml2GeneralClassifier = 
+				(Classifier) currentModel.getOwnedMember(general.getSimpleName());
 		
-		uml2Subclass.createGeneralization(uml2Superclass);
+		uml2SpecClassifier.createGeneralization(uml2GeneralClassifier);
 	}
 	
 	private static Class<?> findModel(String className) throws ImportException {

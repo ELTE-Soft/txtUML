@@ -130,6 +130,14 @@ class Model1 extends Model {
 		ModelInt count;
 	}
 	
+	class SpecialDoTasks extends DoTasks{
+
+		SpecialDoTasks(ModelInt count) {
+			super(count);
+		
+		}
+	}
+	
 	public void test() {
 		txtuml.api.Runtime.Settings.setRuntimeLog(true);
 		Machine m = new Machine(); 

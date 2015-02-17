@@ -12,20 +12,13 @@ public class ModelBool extends ModelType<Boolean> {
 		}
 	}
 
-	public ModelBool(boolean val, boolean literal) {
-		super(val, literal);
-	}
-
-	public ModelBool(boolean val, boolean literal, String expression) {
-		super(val, literal, expression);
-	}
 
 	public ModelBool(boolean val) {
-		this(val, true);
+		super(val);
 	}
 
 	public ModelBool() {
-		this(false, false);
+		this(false);
 	}
 
 	public ModelBool not() {

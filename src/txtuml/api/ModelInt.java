@@ -4,24 +4,16 @@ public class ModelInt extends ModelType<Integer> {
 	public static final ModelInt ONE = new ModelInt(1);
 	public static final ModelInt ZERO = new ModelInt(0);
 
-	public ModelInt(int val, boolean literal) {
-		super(val, literal);
-	}
-
-	public ModelInt(int val, boolean literal, String expression) {
-		super(val, literal, expression);
-	}
-
 	public ModelInt(int val) {
-		this(val, true);
+		super(val);
 	}
-
-	public ModelInt() {
-		this(0, false);
-	}
-
 	public ModelInt(long val) {
 		this((int) val);
+	}
+
+	public ModelInt()
+	{
+		this(0);
 	}
 
 	public ModelInt abs() {

@@ -95,10 +95,10 @@ public class MethodImporter extends AbstractMethodImporter {
 		Object classInstance=createLocalInstance(declaringClass);
 		assignSelf(classInstance);
 		
-		loadCurrentParameters();
-		
 		ActivityNode initialNode=activity.createOwnedNode("initialNode",UMLPackage.Literals.INITIAL_NODE);	
 		lastNode=initialNode;
+		
+		loadCurrentParameters();
 		
 		return classInstance;
 	}

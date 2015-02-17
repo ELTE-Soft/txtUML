@@ -1,6 +1,7 @@
 package txtuml.importer;
 
 import java.lang.reflect.*;
+import java.util.WeakHashMap;
 
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.PrimitiveType;
@@ -10,7 +11,6 @@ import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.VisibilityKind;
 
 import txtuml.api.*;
-
 
 public abstract class AbstractImporter {
 	
@@ -92,6 +92,11 @@ public abstract class AbstractImporter {
 	protected static boolean isCompositeState(Class<?> c) {
         return ModelClass.CompositeState.class.isAssignableFrom(c);
     }
+	
+	protected static boolean isChoice(Class<?> c)
+	{
+		return ModelClass.Choice.class.isAssignableFrom(c);
+	}
 
 	protected static boolean isTransition(Class<?> c) {
         return ModelClass.Transition.class.isAssignableFrom(c);
@@ -180,5 +185,7 @@ public abstract class AbstractImporter {
 	protected static boolean localInstanceToBeCreated = false;
 	protected static PrimitiveType UML2Integer,UML2Bool,UML2String,UML2Real,UML2UnlimitedNatural;
 	protected static Class<?> modelClass=null;
+	@SuppressWarnings("rawtypes")
+	protected static WeakHashMap<ModelType, ModelTypeInformation> modelTypeInstancesInfo=null;
 
 }

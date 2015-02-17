@@ -3,6 +3,7 @@ package txtuml.importer;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Stack;
+import java.util.WeakHashMap;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -10,6 +11,7 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.AddStructuralFeatureValueAction;
 import org.eclipse.uml2.uml.AddVariableValueAction;
 import org.eclipse.uml2.uml.ForkNode;
+import org.eclipse.uml2.uml.JoinNode;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.ObjectNode;
@@ -31,7 +33,6 @@ import txtuml.utils.InstanceCreator;
 
 public abstract class AbstractMethodImporter extends AbstractImporter {
 	
-
 	public static boolean isImporting() {
 		return importing;
 	}
@@ -159,32 +160,64 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 		return false;
 	}
 		
-	protected static String getExpression(ModelIdentifiedElement object)
+	@SuppressWarnings("rawtypes")
+	private static String getModelTypeLiteralExpression(ModelType instance, ModelTypeInformation instInfo)
 	{
-		if(object instanceof ModelType)
-		{	
-			boolean literal=(boolean)getObjectFieldVal(object,"literal");
-			boolean calculated=(boolean)getObjectFieldVal(object,"calculated");
-			
-			if(literal)
+		String expression=null;
+		if(instance instanceof ModelInt)
+		{
+			Integer val=instInfo.getIntVal();
+			if(val<0)
 			{
-				if(object instanceof ModelInt)
-				{
-					Integer val=(Integer) getObjectFieldVal(object,"value");
-					if(val<0)
-					{
-						return "("+val.toString()+")";
-					}
-				}
-				return getObjectFieldVal(object,"value").toString();
+				expression= "("+val.toString()+")";
 			}
-			if(currentActivity==null && calculated)
+			else
 			{
-				return "("+(String)getObjectFieldVal(object,"expression")+")";
+				expression=val.toString();
 			}
 		}
+		else
+		{
+			expression=instInfo.getExpression();
+		}
+		return expression;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	private static String getModelTypeExpression(ModelType instance)
+	{
+		String expression=null;
+		ModelTypeInformation instInfo=modelTypeInstancesInfo.get(instance);
 		
-		return getObjectIdentifier(object);
+		if(instInfo!=null && instInfo.isLiteral())
+		{
+			expression=getModelTypeLiteralExpression(instance,instInfo);
+		}
+		else if(instInfo!=null && instInfo.isCalculated() && currentActivity==null)
+		{
+			expression= "("+instInfo.getExpression()+")";
+		}
+		else
+		{
+			expression=getObjectIdentifier(instance);
+		}
+		return expression;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	protected static String getExpression(ModelIdentifiedElement object)
+	{
+		String expression=null;
+		
+		if(object instanceof ModelType)
+		{	
+			expression=getModelTypeExpression((ModelType)object);
+		}
+		else
+		{
+			expression=getObjectIdentifier(object);
+		}
+		return expression;
 	}
 	
 	protected static String getObjectIdentifier(String instanceId)
@@ -284,14 +317,24 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 		return result;
 	 }
 	
-	 protected static MergeNode createMergeNode(String name,ActivityNode node1,ActivityNode node2)
+	 protected static JoinNode createJoinNode(ActivityNode node1,ActivityNode node2)
 	 {
-		 MergeNode result=(MergeNode) currentActivity.createOwnedNode(name,UMLPackage.Literals.MERGE_NODE);
+		 String name="join_"+node1.getName()+"_and_"+node2.getName();
+		 JoinNode result=(JoinNode) currentActivity.createOwnedNode(name,UMLPackage.Literals.JOIN_NODE);
 		 createControlFlowBetweenNodes(node1,result);
 		 createControlFlowBetweenNodes(node2,result);
 		 return result;
 	 }
 
+	 protected static MergeNode createMergeNode(ActivityNode node1,ActivityNode node2)
+	 {
+		 String name="merge_"+node1.getName()+"_and_"+node2.getName();
+		 MergeNode result=(MergeNode) currentActivity.createOwnedNode(name,UMLPackage.Literals.MERGE_NODE);
+		 createControlFlowBetweenNodes(node1,result);
+		 createControlFlowBetweenNodes(node2,result);
+		 return result;
+	 }
+	 
 	protected static ActivityEdge createControlFlowBetweenNodes(ActivityNode source,ActivityNode target)
 	{
 		ActivityEdge edge=currentActivity.createEdge("controlflow_from_"+source.getName()+"_to_"+target.getName(), UMLPackage.Literals.CONTROL_FLOW);
@@ -359,4 +402,5 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 	protected static Stack<ActivityEdge> blockBodyFirstEdges=new Stack<>();
 	protected static int cntDummyNodes=0;
 	protected static int cntDecisionNodes;
+	
 }

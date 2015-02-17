@@ -171,9 +171,8 @@ class ExtendedModel1 extends Model {
 	}
 
 	class DoYourWork extends Signal {}
-
-	// tester method
 	
+	// tester method	
 	public void test() {
 		txtuml.api.Runtime.Settings.setRuntimeLog(true);
 		Machine m = new Machine(); 

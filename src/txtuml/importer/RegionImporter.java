@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Event;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.Pseudostate;
+import org.eclipse.uml2.uml.PseudostateKind;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.Trigger;
@@ -13,6 +15,7 @@ import org.eclipse.uml2.uml.Vertex;
 
 import txtuml.api.From;
 import txtuml.api.ModelBool;
+import txtuml.api.ModelType;
 import txtuml.api.To;
 
 class RegionImporter extends AbstractImporter {
@@ -58,7 +61,7 @@ class RegionImporter extends AbstractImporter {
 	private  Vertex importState(Class<?> state)	throws ImportException
 	{
 		Vertex vertex=createState(state);
-		if(!isInitialState(state))
+		if(!isInitialState(state) && !isChoice(state))
 		{
 			importStateEntryAction(state,(State) vertex);
 			importStateExitAction(state,(State) vertex);
@@ -135,11 +138,15 @@ class RegionImporter extends AbstractImporter {
 			{
             	throw new ImportException(sourceClass.getName() + " has two initial states");
 			}
-			return region.createSubvertex(state.getSimpleName(), UMLPackage.Literals.PSEUDOSTATE);
+			return createInitialState(state);
         }
 		else if(isCompositeState(state))
 		{
 			return createCompositeState(state);
+		}
+		else if(isChoice(state))
+		{
+			return createChoice(state);
 		}
 		else
 		{
@@ -148,8 +155,18 @@ class RegionImporter extends AbstractImporter {
 			
 	}
 	
+	private Vertex createInitialState(Class<?> state)
+	{
+		return region.createSubvertex(state.getSimpleName(), UMLPackage.Literals.PSEUDOSTATE);
+	}
 	
-	
+	private Pseudostate createChoice(Class<?> state)
+	{
+		Pseudostate ret= (Pseudostate)region.createSubvertex(state.getSimpleName(),UMLPackage.Literals.PSEUDOSTATE);
+		ret.setKind(PseudostateKind.CHOICE_LITERAL);
+		return ret;
+	}
+
 	private State createCompositeState(Class<?> state) throws ImportException
 	{
 		State compositeState=(State) region.createSubvertex(state.getSimpleName(),UMLPackage.Literals.STATE);
@@ -223,7 +240,8 @@ class RegionImporter extends AbstractImporter {
 				if(returnValue!=null)
 				{
 					String guardExpression=MethodImporter.getExpression(returnValue);
-					if((boolean)getObjectFieldVal(returnValue,"calculated"))
+					
+					if(isModelTypeInstCalculated(returnValue))
 					{
 						guardExpression=guardExpression.substring(1,guardExpression.length()-1);
 					}
@@ -238,6 +256,16 @@ class RegionImporter extends AbstractImporter {
 		
 	}
 	
+	private boolean isModelTypeInstCalculated(ModelType returnValue)
+	{
+		ModelTypeInformation instInfo=modelTypeInstancesInfo.get(returnValue);
+		boolean calculated;
+		if(instInfo==null) calculated=false;
+		
+		else calculated =instInfo.isCalculated();
+		return calculated;
+	}
+
 	private org.eclipse.uml2.uml.Transition createTransitionBetweenVertices(String name,Vertex source, Vertex target)
 	{
 		org.eclipse.uml2.uml.Transition transition=region.createTransition(name);

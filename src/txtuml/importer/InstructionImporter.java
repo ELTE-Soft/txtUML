@@ -172,21 +172,6 @@ public class InstructionImporter extends AbstractMethodImporter {
 		return null;
 	}
 	
-	private static boolean isOtherEndOne(Class<? extends txtuml.api.Association> assocClass, String phrase)
-	{
-		Field[] fields = assocClass.getDeclaredFields();
-  
-		for(Field field : fields) {
-			//FIXME there is no One annotation
-			/*if(field.getName().equals(phrase) && field.isAnnotationPresent(One.class)) 
-			{
-				return true;
-			}*/
-			return false;
-		}      
-		return false;
-	}
-	
 	private static <T extends ModelClass> T selectOne(Collection<T> target) 
 	{
 
@@ -339,9 +324,8 @@ public class InstructionImporter extends AbstractMethodImporter {
     		ForkNode forkNode=createForkNode("fork_"+createAction.getName(),inputPin_AVVA,inputPin_startCBA);
     		createObjectFlowBetweenNodes(outputPin,forkNode);
     		
-    		//creating a merge node for merging the two separate "threads"
-    		String mergeNodeName="merge_"+startClassifierBehaviorAction.getName()+"_and_"+setVarAction.getName();
-    		lastNode = createMergeNode(mergeNodeName,startClassifierBehaviorAction,setVarAction);
+    		//creating a join node for joining the two separate "threads"
+    		lastNode = createJoinNode(startClassifierBehaviorAction,setVarAction);
     		
 
         }
@@ -518,18 +502,18 @@ public class InstructionImporter extends AbstractMethodImporter {
 			if(newValue instanceof ModelInt)
 			{
 				int val=(int) method.invoke(newValue);
-				fieldObj=new ModelInt(val,false);	
+				fieldObj=new ModelInt(val);	
 			}
 			else if(newValue instanceof ModelBool)
 			{
 				boolean val=(boolean) method.invoke(newValue);
-				fieldObj=new ModelBool(val,false);	
+				fieldObj=new ModelBool(val);	
 			}
 			else if(newValue instanceof ModelString)
 			{
 
 				String val=(String) method.invoke(newValue);
-				fieldObj=new ModelString(val,false);
+				fieldObj=new ModelString(val);
 			}
 			else if(newValue instanceof ModelClass)
 			{
@@ -596,7 +580,12 @@ public class InstructionImporter extends AbstractMethodImporter {
 		}
 		return null;
 	}
-	
+
+	private static <T> void createCalculatedModelTypeInstInfo(ModelType<T> inst, String expression)
+	{
+		ModelTypeInformation instInfo=new ModelTypeInformation(expression,false,true);
+		modelTypeInstancesInfo.put(inst,instInfo);
+	}
 	@SuppressWarnings("unchecked")
 	private static <T> ModelType<T> importModelType2OpOperation
 				(ModelType<T> target, ModelType<T> value, ModelType<T> result, String operator, boolean isFunction)
@@ -624,17 +613,19 @@ public class InstructionImporter extends AbstractMethodImporter {
 		{
 			if(result instanceof ModelInt)
 			{
-				result=(ModelType<T>) new ModelInt(0,false,valueExpression);
+				result=(ModelType<T>) new ModelInt();
 			}
 			else if(result instanceof ModelBool)
 			{
-				result=(ModelType<T>) new ModelBool(false,false,valueExpression);
+				result=(ModelType<T>) new ModelBool();
 			}
 			else if(result instanceof ModelString)
 			{
-				result=(ModelType<T>) new ModelString("",false,valueExpression);
+				result=(ModelType<T>) new ModelString();
 			}
+			createCalculatedModelTypeInstInfo(result,valueExpression);
 		}
+		
 		return result;
 	}
 	@SuppressWarnings("incomplete-switch")
@@ -671,7 +662,7 @@ public class InstructionImporter extends AbstractMethodImporter {
 			
 		}
 		
-		ModelInt result=new ModelInt(0,false);
+		ModelInt result=new ModelInt();
 		
 		return (ModelInt) importModelType2OpOperation(target,value,result,operator,isFunction);
 	}
@@ -767,16 +758,17 @@ public class InstructionImporter extends AbstractMethodImporter {
 		{
 			if(result instanceof ModelInt)
 			{
-				result=(ModelType<T>) new ModelInt(0,false,valueExpression);
+				result=(ModelType<T>) new ModelInt();
 			}
 			else if(result instanceof ModelBool)
 			{
-				result=(ModelType<T>) new ModelBool(false,false,valueExpression);
+				result=(ModelType<T>) new ModelBool();
 			}
 			else if(result instanceof ModelString)
 			{
-				result=(ModelType<T>) new ModelString("",false,valueExpression);
+				result=(ModelType<T>) new ModelBool();
 			}
+			createCalculatedModelTypeInstInfo(result,valueExpression);
 		}
 		
 		return result;
@@ -889,7 +881,11 @@ public class InstructionImporter extends AbstractMethodImporter {
 		String leftExpr=getExpression(left);
 		String rightExpr=getExpression(right);
 		String expression=leftExpr+" "+operator+" "+rightExpr;
-		return new ModelBool(false,false,expression);
+		
+		ModelBool result=new ModelBool();
+		createCalculatedModelTypeInstInfo(result,expression);
+		
+		return result;
 	}
 
 	private static String importCondition(Condition cond)
@@ -1000,10 +996,7 @@ public class InstructionImporter extends AbstractMethodImporter {
 		ActivityNode elseLastNode=importElseBodyResult.getKey();
 		addGuardToEdge(elseFirstEdge, "else");
 		
-		OpaqueAction afterDummyNode=createNextDummyNode();
-		createFlowBetweenNodes(thenLastNode,afterDummyNode);
-		createFlowBetweenNodes(elseLastNode,afterDummyNode);
-		lastNode=afterDummyNode;
+		lastNode=createMergeNode(thenLastNode,elseLastNode);
 		
 	}
 	
@@ -1057,6 +1050,25 @@ public class InstructionImporter extends AbstractMethodImporter {
 		String name="decision"+cntDecisionNodes;
 		DecisionNode decisionNode=(DecisionNode) currentActivity.createOwnedNode(name,UMLPackage.Literals.DECISION_NODE);
 		return decisionNode;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private static <T> void createModelTypeLiteral(ModelType<T> inst)
+	{
+		T val=(T)getObjectFieldVal(inst,"value");
+		String expression=val.toString();
+		boolean literal=true;
+		boolean calculated=false;
+		ModelTypeInformation instInfo;
+		if(val instanceof Integer)
+		{
+			instInfo=new ModelTypeInformation(expression,literal,calculated,(Integer)val);
+		}
+		else
+		{
+			instInfo=new ModelTypeInformation(expression,literal,calculated);
+		}
+		modelTypeInstancesInfo.put(inst,instInfo);
 	}
 	
 }

@@ -4,36 +4,14 @@ public abstract class ModelType<T> extends ModelIdentifiedElementImpl implements
 		ModelElement, ModelIdentifiedElement {
 
 	private final T value;
-	@SuppressWarnings("unused")
-	private final String expression;
-	@SuppressWarnings("unused")
-	private final boolean literal;
-	@SuppressWarnings("unused")
-	private final boolean calculated;
 
 	protected ModelType(T val) {
-		this(val, true);
-	}
-
-	protected ModelType(T val, boolean literal, String expression) {
-		this(val, literal, true, expression);
-	}
-
-	protected ModelType(T val, boolean literal, boolean calculated,
-			String expression) {
 		super();
-		value = val;
-		this.calculated = calculated;
-		this.literal = literal;
-		this.expression = expression;
-	}
-
-	protected ModelType(T val, boolean literal) {
-		this(val, literal, false, val.toString());
+		value=val;
 	}
 
 	protected ModelType() {
-		this(null, false);
+		this(null);
 	}
 
 	final T getValue() {

@@ -16,6 +16,7 @@ import txtuml.api.Condition;
 import txtuml.api.ModelInt;
 import txtuml.api.Action;
 import txtuml.api.ModelElement;
+import txtuml.api.ModelString;
 import txtuml.api.ParameterizedBlockBody;
 import txtuml.api.Signal;
 import txtuml.importer.InstructionImporter.LinkTypes;
@@ -26,6 +27,21 @@ public privileged aspect ImporterAspect {
 	private pointcut withinModel() : within(ModelElement+) && !within(ExternalClass+) && !within(txtuml.api..*);
 	private pointcut importing() : if(ModelImporter.isImporting());
 	private pointcut isActive() : withinModel() && importing();
+	private pointcut canCreateModelTypeLiteral(): within(ModelElement+) && importing();
+	
+	
+	after() returning(ModelInt target) : call((ModelInt).new(int)) && isActive()
+	{
+		InstructionImporter.createModelTypeLiteral(target);
+	}
+	after() returning(ModelBool target) : call((ModelBool).new(boolean)) && isActive()
+	{
+		InstructionImporter.createModelTypeLiteral(target);
+	}
+	after() returning(ModelString target) : call((ModelString).new(String)) && isActive()
+	{
+		InstructionImporter.createModelTypeLiteral(target);
+	}
 
 	
 	void around():call(void Action.For(ModelInt, ModelInt, ParameterizedBlockBody<ModelInt>) ) && isActive()

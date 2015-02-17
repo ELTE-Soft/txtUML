@@ -7,7 +7,14 @@ import java.nio.file.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.uml2.uml.AggregationKind;
+import org.eclipse.uml2.uml.Classifier;
+import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Generalization;
+import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.Profile;
+import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.resource.UMLResource;
 
 import txtuml.importer.ModelImporter;
@@ -24,6 +31,7 @@ public class ExportUML2 {
 		System.out.println("Exporting model: "+modelClassName);
 		try {
 			org.eclipse.uml2.uml. Model m = ModelImporter.importModel(modelClassName,outputName);
+			
 			ResourceSet resourceSet=ModelImporter.getResourceSet();
 			Resource resource=null;
 			for(Resource r:resourceSet.getResources())
@@ -50,6 +58,7 @@ public class ExportUML2 {
 		}
 		catch(Exception e) 
 		{
+			e.printStackTrace();
 			System.out.println("Error: " + e.getMessage());
 		}
 		System.exit(0);
