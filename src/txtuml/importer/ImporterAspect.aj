@@ -1,5 +1,7 @@
 package txtuml.importer;
 
+
+
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 
@@ -7,7 +9,6 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.SuppressAjWarnings;
 
 import txtuml.api.ExternalClass;
-import txtuml.api.ModelBool;
 import txtuml.api.ModelClass;
 import txtuml.api.Association.AssociationEnd;
 import txtuml.api.ModelClass.Transition;
@@ -16,34 +17,16 @@ import txtuml.api.Condition;
 import txtuml.api.ModelInt;
 import txtuml.api.Action;
 import txtuml.api.ModelElement;
-import txtuml.api.ModelString;
 import txtuml.api.ParameterizedBlockBody;
 import txtuml.api.Signal;
+import txtuml.external.Timer;
 import txtuml.importer.InstructionImporter.LinkTypes;
 
 
-public privileged aspect ImporterAspect {
-	private pointcut withinProject() : within(txtuml..*) && !within(txtuml.examples..*); // TODO only until the examples package exists
-	private pointcut withinModel() : within(ModelElement+) && !within(ExternalClass+) && !within(txtuml.api..*);
-	private pointcut importing() : if(ModelImporter.isImporting());
-	private pointcut isActive() : withinModel() && importing();
-	private pointcut canCreateModelTypeLiteral(): within(ModelElement+) && importing();
-	
-	
-	after() returning(ModelInt target) : call((ModelInt).new(int)) && isActive()
-	{
-		InstructionImporter.createModelTypeLiteral(target);
-	}
-	after() returning(ModelBool target) : call((ModelBool).new(boolean)) && isActive()
-	{
-		InstructionImporter.createModelTypeLiteral(target);
-	}
-	after() returning(ModelString target) : call((ModelString).new(String)) && isActive()
-	{
-		InstructionImporter.createModelTypeLiteral(target);
-	}
 
+public privileged aspect ImporterAspect extends AbstractImporterAspect {
 	
+
 	void around():call(void Action.For(ModelInt, ModelInt, ParameterizedBlockBody<ModelInt>) ) && isActive()
 	{
 		ModelInt from=(ModelInt)(thisJoinPoint.getArgs()[0]);
@@ -75,9 +58,10 @@ public privileged aspect ImporterAspect {
 		InstructionImporter.importIfStatement(cond,thenBody,elseBody);
 	}
 	
+	@SuppressWarnings("rawtypes")
 	Object around(AssociationEnd target):target(target) && call(ModelClass selectOne()) && isActive()
 	{
-		return InstructionImporter.selectOne_AE(target);
+		return InstructionImporter.importAssociationEnd_SelectOne(target);
 	}
 
 	@SuppressAjWarnings
@@ -89,7 +73,7 @@ public privileged aspect ImporterAspect {
 	@SuppressAjWarnings
 	after(ModelClass target): execution((ModelClass+).new(..)) && isActive() && target(target)
 	{
-		InstructionImporter.createInstance(target);
+		InstructionImporter.importInstanceCreation(target);
 	}
 	
 	@SuppressAjWarnings
@@ -125,7 +109,7 @@ public privileged aspect ImporterAspect {
 		ModelClass receiverObj=(ModelClass)(thisJoinPoint.getArgs()[0]);
 		Signal event=(Signal)(thisJoinPoint.getArgs()[1]);
 		
-		InstructionImporter.send(receiverObj, event);	
+		InstructionImporter.importSignalSend(receiverObj, event);	
 			
 	}
 	
@@ -135,7 +119,7 @@ public privileged aspect ImporterAspect {
 	
 		ModelClass obj=(ModelClass)(thisJoinPoint.getArgs()[0]);
 		
-		InstructionImporter.delete(obj);	
+		InstructionImporter.importObjectDeletion(obj);	
 			
 	}
 	
@@ -143,7 +127,7 @@ public privileged aspect ImporterAspect {
 	Object around(ModelClass target): target(target) && call(* *(..))  && isActive() {
 		try
 		{
-			return InstructionImporter.call(target, thisJoinPoint.getSignature().getName(),thisJoinPoint.getArgs());
+			return InstructionImporter.importMethodCall(target, thisJoinPoint.getSignature().getName(),thisJoinPoint.getArgs());
 		}
 		catch(ImportException exc)
 		{
@@ -151,101 +135,7 @@ public privileged aspect ImporterAspect {
 			return null;
 		}
 	}
-	@SuppressAjWarnings
-	ModelInt around(ModelInt target): target(target) && isActive() && call(ModelInt ModelInt.add(ModelInt))
-	{
-		return InstructionImporter.add(target, (ModelInt)(thisJoinPoint.getArgs()[0]));
-	}
-	@SuppressAjWarnings
-	ModelInt around(ModelInt target): target(target) && isActive() && call(ModelInt ModelInt.subtract(ModelInt))
-	{
-		return InstructionImporter.subtract(target, (ModelInt)(thisJoinPoint.getArgs()[0]));
-	}
-	@SuppressAjWarnings
-	ModelInt around(ModelInt target): target(target) && isActive() && call(ModelInt ModelInt.multiply(ModelInt))
-	{
-		return InstructionImporter.multiply(target, (ModelInt)(thisJoinPoint.getArgs()[0]));
-	}
-	@SuppressAjWarnings
-	ModelInt around(ModelInt target): target(target) && isActive() && call(ModelInt ModelInt.divide(ModelInt))
-	{
-		return InstructionImporter.divide(target, (ModelInt)(thisJoinPoint.getArgs()[0]));
-	}
-	@SuppressAjWarnings
-	ModelInt around(ModelInt target): target(target) && isActive() && call(ModelInt ModelInt.remainder(ModelInt))
-	{
-		return InstructionImporter.remainder(target, (ModelInt)(thisJoinPoint.getArgs()[0]));
-	}
-	@SuppressAjWarnings
-	ModelInt around(ModelInt target): target(target) && isActive() && call(ModelInt ModelInt.abs())
-	{
-		return InstructionImporter.abs(target);
-	}
-	@SuppressAjWarnings
-	ModelInt around(ModelInt target): target(target) && isActive() && call(ModelInt ModelInt.signum())
-	{
-		return InstructionImporter.signum(target);
-	}
-	@SuppressAjWarnings
-	ModelInt around(ModelInt target): target(target) && isActive() && call(ModelInt ModelInt.negate())
-	{
-		return InstructionImporter.negate(target);
-	}
-	@SuppressAjWarnings
-	ModelBool around(ModelBool target): target(target) && isActive() && call(ModelBool ModelBool.and(ModelBool))
-	{
-		return InstructionImporter.and(target, (ModelBool)(thisJoinPoint.getArgs()[0]));
-	}
-	@SuppressAjWarnings
-	ModelBool around(ModelBool target): target(target) && isActive() && call(ModelBool ModelBool.or(ModelBool))
-	{
-		return InstructionImporter.or(target, (ModelBool)(thisJoinPoint.getArgs()[0]));
-	}
-	@SuppressAjWarnings
-	ModelBool around(ModelBool target): target(target) && isActive() && call(ModelBool ModelBool.xor(ModelBool))
-	{
-		return InstructionImporter.xor(target, (ModelBool)(thisJoinPoint.getArgs()[0]));
-	}
-	@SuppressAjWarnings
-	ModelBool around(ModelBool target): target(target) && isActive() && call(ModelBool ModelBool.eq(ModelBool))
-	{
-		return InstructionImporter.equal(target, (ModelBool)(thisJoinPoint.getArgs()[0]));
-	}
-	@SuppressAjWarnings
-	ModelBool around(ModelBool target): target(target) && isActive() && call(ModelBool ModelBool.notEqu(ModelBool))
-	{
-		return InstructionImporter.noteq(target, (ModelBool)(thisJoinPoint.getArgs()[0]));
-	}
-	@SuppressAjWarnings
-	ModelBool around(ModelBool target): target(target) && isActive() && call(ModelBool ModelBool.not())
-	{
-		return InstructionImporter.not(target);
-	}	
-	@SuppressAjWarnings
-	ModelBool around(ModelInt target): target(target) && isActive() && call(ModelBool ModelInt.isEqual(ModelInt))
-	{
-		return InstructionImporter.isEqual(target, (ModelInt)(thisJoinPoint.getArgs()[0]));
-	}
-	@SuppressAjWarnings
-	ModelBool around(ModelInt target): target(target) && isActive() && call(ModelBool ModelInt.isLessEqual(ModelInt))
-	{
-		return InstructionImporter.isLessEqual(target, (ModelInt)(thisJoinPoint.getArgs()[0]));
-	}
-	@SuppressAjWarnings
-	ModelBool around(ModelInt target): target(target) && isActive() && call(ModelBool ModelInt.isMoreEqual(ModelInt))
-	{
-		return InstructionImporter.isMoreEqual(target, (ModelInt)(thisJoinPoint.getArgs()[0]));
-	}
-	@SuppressAjWarnings
-	ModelBool around(ModelInt target): target(target) && isActive() && call(ModelBool ModelInt.isLess(ModelInt))
-	{
-		return InstructionImporter.isLess(target, (ModelInt)(thisJoinPoint.getArgs()[0]));
-	}
-	@SuppressAjWarnings
-	ModelBool around(ModelInt target): target(target) && isActive() && call(ModelBool ModelInt.isMore(ModelInt))
-	{
-		return InstructionImporter.isMore(target, (ModelInt)(thisJoinPoint.getArgs()[0]));
-	}
+	
 	@SuppressAjWarnings
 	Object around(ExternalClass target) : target(target) && call(* (ExternalClass+).*(..)) && isActive() {
 		return InstructionImporter.callExternal(target, thisJoinPoint.getSignature().getName(), thisJoinPoint.getArgs());
@@ -305,6 +195,7 @@ public privileged aspect ImporterAspect {
 	{
 		//do nothing
 	}
+	
     	
 	
 }

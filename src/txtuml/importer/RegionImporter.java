@@ -3,13 +3,16 @@ package txtuml.importer;
 import java.lang.reflect.Method;
 
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.Event;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.PseudostateKind;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.Trigger;
+import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
@@ -239,13 +242,21 @@ class RegionImporter extends AbstractImporter {
 				ModelBool returnValue=MethodImporter.importGuardMethod(currentModel,guardMethod,transitionClass);
 				if(returnValue!=null)
 				{
+		
 					String guardExpression=MethodImporter.getExpression(returnValue);
 					
 					if(isModelTypeInstCalculated(returnValue))
 					{
 						guardExpression=guardExpression.substring(1,guardExpression.length()-1);
 					}
-					transition.createGuard(guardExpression);
+					
+					OpaqueExpression opaqueExpression=(OpaqueExpression) UMLFactory.eINSTANCE.createOpaqueExpression();
+					opaqueExpression.getBodies().add(guardExpression);
+					
+					Constraint constraint=UMLFactory.eINSTANCE.createConstraint();
+					constraint.setSpecification(opaqueExpression);
+					
+					transition.setGuard(constraint);
 				}
 						
 			}
@@ -256,7 +267,7 @@ class RegionImporter extends AbstractImporter {
 		
 	}
 	
-	private boolean isModelTypeInstCalculated(ModelType returnValue)
+	private boolean isModelTypeInstCalculated(ModelType<?> returnValue)
 	{
 		ModelTypeInformation instInfo=modelTypeInstancesInfo.get(returnValue);
 		boolean calculated;

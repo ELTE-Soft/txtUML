@@ -46,35 +46,12 @@ import txtuml.api.ModelIdentifiedElement;
 import txtuml.api.ModelInt;
 import txtuml.api.ModelString;
 import txtuml.api.ModelType;
-//FIXME there is no One annotation
-//import txtuml.api.One;
 import txtuml.api.ParameterizedBlockBody;
 import txtuml.export.uml2tocpp.Util.Pair;
 
 @SuppressWarnings("unused")
 public class InstructionImporter extends AbstractMethodImporter {
 
-	private enum ModelIntOperations{
-		ADD_LITERAL,
-		SUBTRACT_LITERAL,
-		MULTIPLY_LITERAL, 
-		DIVIDE_LITERAL,
-		REMAINDER_LITERAL,
-		SIGNUM_LITERAL, 
-		NEGATE_LITERAL,
-		ABS_LITERAL
-	};
-	
-	private enum ModelBoolOperations{
-		NOT_LITERAL,
-		OR_LITERAL,
-		AND_LITERAL,
-		XOR_LITERAL,
-		EQUAL_LITERAL,
-		NOTEQ_LITERAL
-	};
-	
-	
 	enum LinkTypes
 	{
 		CREATE_LINK_LITERAL,
@@ -82,7 +59,7 @@ public class InstructionImporter extends AbstractMethodImporter {
 	};
 
 	
-	private static void delete(ModelClass obj) {
+	private static void importObjectDeletion(ModelClass obj) {
         if(currentActivity != null) 
         {
            	DestroyObjectAction destroyAction=	(DestroyObjectAction) 
@@ -189,7 +166,9 @@ public class InstructionImporter extends AbstractMethodImporter {
 			}
 		}
 
+		@SuppressWarnings("unchecked")
 		T result=(T) createLocalInstance(resultClass);
+		
 		String resultName=result.getIdentifier();
         String startName=target.getIdentifier();
 		
@@ -235,7 +214,7 @@ public class InstructionImporter extends AbstractMethodImporter {
 		return ret;
 	}
 	private static <T extends ModelClass, AE extends txtuml.api.Association.AssociationEnd<T> >
-	T selectOne_AE(AE target) 
+	T importAssociationEnd_SelectOne(AE target) 
 	{
 
 		ParameterizedType genericSupClass=(ParameterizedType) target.getClass().getGenericSuperclass();
@@ -253,7 +232,9 @@ public class InstructionImporter extends AbstractMethodImporter {
 			}
 		}
 
+		@SuppressWarnings("unchecked")
 		T result=(T) createLocalInstance(resultClass);
+		
         String phrase=target.getClass().getSimpleName();
         String resultName=result.getIdentifier();
         
@@ -273,7 +254,15 @@ public class InstructionImporter extends AbstractMethodImporter {
 		createControlFlowBetweenNodes(lastNode, selectOneAction);
 		
 		Association association=(Association) currentModel.getOwnedMember(assocClass.getSimpleName());
-		Type type=association.getEndType(phrase);
+		Type type=null;
+		for(Property p:association.getMemberEnds())
+		{
+			if(p.getName().equals(phrase))
+			{
+				type=p.getType();
+				break;
+			}
+		}
 		OutputPin outputPin=selectOneAction.createOutputValue(selectOneAction.getName()+"_output", type);
 			
 		Variable variable=currentActivity.createVariable(resultName,type);
@@ -286,7 +275,7 @@ public class InstructionImporter extends AbstractMethodImporter {
 		
         return result;
 	}
-	private static void createInstance(ModelClass created)
+	private static void importInstanceCreation(ModelClass created)
 	 {
 
         if(currentActivity != null && !localInstanceToBeCreated)
@@ -378,7 +367,7 @@ public class InstructionImporter extends AbstractMethodImporter {
 			++i;
 		}
 	}
-	private static Object call(ModelClass target, String methodName, Object... args) throws ImportException
+	private static Object importMethodCall(ModelClass target, String methodName, Object... args) throws ImportException
 	 {
 	    // this method is called at every method call where the target object is of any type that extends ModelClass 
 	    // parameters: the target object, the name of the called method and the given parameters
@@ -433,7 +422,7 @@ public class InstructionImporter extends AbstractMethodImporter {
 		return returnObj;
 	 }
 	 
-	 private static void send(ModelClass receiver, txtuml.api.Signal event) 
+	 private static void importSignalSend(ModelClass receiver, txtuml.api.Signal event) 
 	 {
 		if(currentActivity != null) 
 		{
@@ -581,313 +570,7 @@ public class InstructionImporter extends AbstractMethodImporter {
 		return null;
 	}
 
-	private static <T> void createCalculatedModelTypeInstInfo(ModelType<T> inst, String expression)
-	{
-		ModelTypeInformation instInfo=new ModelTypeInformation(expression,false,true);
-		modelTypeInstancesInfo.put(inst,instInfo);
-	}
-	@SuppressWarnings("unchecked")
-	private static <T> ModelType<T> importModelType2OpOperation
-				(ModelType<T> target, ModelType<T> value, ModelType<T> result, String operator, boolean isFunction)
-	{
-		
-		String valueExpression=null;
-		String newValExpr=getExpression(value);
-		String targetExpr=getExpression(target);
-
-		if(isFunction)
-		{
-			valueExpression=targetExpr+"."+operator+"("+newValExpr+")";
-		}
-		else
-		{
-			valueExpression=targetExpr+operator+newValExpr;
-		}
-		
-		if(currentActivity!=null)
-		{
-			currentActivity.createVariable(result.getIdentifier(), ModelImporter.importType(target.getClass()));
-			setVariableValue(result,valueExpression);
-		}
-		else
-		{
-			if(result instanceof ModelInt)
-			{
-				result=(ModelType<T>) new ModelInt();
-			}
-			else if(result instanceof ModelBool)
-			{
-				result=(ModelType<T>) new ModelBool();
-			}
-			else if(result instanceof ModelString)
-			{
-				result=(ModelType<T>) new ModelString();
-			}
-			createCalculatedModelTypeInstInfo(result,valueExpression);
-		}
-		
-		return result;
-	}
-	@SuppressWarnings("incomplete-switch")
-	private static ModelInt importModelInt2OpOperation(ModelInt target, ModelInt value, ModelIntOperations operationType) 
-	{
-		
-		String operator=" ";
-		boolean isFunction=false;
-		
-		switch(operationType)
-		{
-			case ADD_LITERAL:
-				operator=" + ";
-			break;
-			
-			case SUBTRACT_LITERAL:
-				operator=" - ";
-			break;
-			
-			case MULTIPLY_LITERAL:
-				operator=" * ";
-			break;
-			
-			case DIVIDE_LITERAL:
-				operator="div";
-				isFunction=true;
-			break;
-			
-			case REMAINDER_LITERAL:
-				operator="mod";
-				isFunction=true;
-			break;		
-			
-			
-		}
-		
-		ModelInt result=new ModelInt();
-		
-		return (ModelInt) importModelType2OpOperation(target,value,result,operator,isFunction);
-	}
-	@SuppressWarnings("incomplete-switch")
-	private static ModelBool importModelBool2OpOperation(ModelBool target, ModelBool value, ModelBoolOperations operationType) 
-	{
-		
-		String operator=" ";
-		
-		boolean isFunction=false;
-		switch(operationType)
-		{
-		
-			case OR_LITERAL:
-				operator=" or ";
-			break;
-			
-			case XOR_LITERAL:
-				operator=" xor ";
-			break;
-			
-			case AND_LITERAL:
-				operator=" and ";
-			break;
-			
-			case EQUAL_LITERAL:
-				operator=" = ";
-			break;
-			
-			case NOTEQ_LITERAL:
-				operator=" <> ";
-			break;
-			
-			
-		}
-		
-		ModelBool result=new ModelBool();
-		
-		return (ModelBool) importModelType2OpOperation(target,value,result,operator,isFunction);
-	}
-	private static ModelInt add(ModelInt target, ModelInt val)  {
-
-		return importModelInt2OpOperation(target,val,ModelIntOperations.ADD_LITERAL);
-		
-	}
 	
-	private static ModelInt subtract(ModelInt target, ModelInt val) {
-
-		return importModelInt2OpOperation(target,val,ModelIntOperations.SUBTRACT_LITERAL);
-		
-	}
-	
-	private static ModelInt multiply(ModelInt target, ModelInt val)  {
-
-		return importModelInt2OpOperation(target,val,ModelIntOperations.MULTIPLY_LITERAL);
-	}
-	
-	private static ModelInt divide(ModelInt target, ModelInt val){
-
-		return importModelInt2OpOperation(target,val,ModelIntOperations.DIVIDE_LITERAL);
-		
-	}
-	
-	private static ModelInt remainder(ModelInt target, ModelInt val) {
-
-		return importModelInt2OpOperation(target,val,ModelIntOperations.REMAINDER_LITERAL);
-		
-	}
-	
-	@SuppressWarnings("unchecked")
-	private static <T> ModelType<T> importModelType1OpOperation
-			(ModelType<T> target, ModelType<T> result, String operator, boolean isFunction)
-	{
-		String valueExpression=null;
-		String targetExpr=getExpression(target);
-	
-
-		if(isFunction)
-		{
-			valueExpression=targetExpr+"."+operator+"()";
-		}
-		else
-		{
-			valueExpression=operator+targetExpr;
-		}
-		
-		if(currentActivity!=null)
-		{
-			currentActivity.createVariable(result.getIdentifier(), ModelImporter.importType(target.getClass()));
-			setVariableValue(result,valueExpression);
-		}
-		else
-		{
-			if(result instanceof ModelInt)
-			{
-				result=(ModelType<T>) new ModelInt();
-			}
-			else if(result instanceof ModelBool)
-			{
-				result=(ModelType<T>) new ModelBool();
-			}
-			else if(result instanceof ModelString)
-			{
-				result=(ModelType<T>) new ModelBool();
-			}
-			createCalculatedModelTypeInstInfo(result,valueExpression);
-		}
-		
-		return result;
-	}
-	
-	@SuppressWarnings("incomplete-switch")
-	private static ModelInt importModelInt1OpOperation(ModelInt target,ModelIntOperations operationType)  {
-
-		boolean isFunction=false;
-		String operator="";
-		
-		switch(operationType)
-		{
-			case SIGNUM_LITERAL:
-				operator="signum";
-				isFunction=true;
-			break;
-			
-			case NEGATE_LITERAL:
-				operator="-";
-			break;		
-			
-			case ABS_LITERAL:
-				operator="abs";
-				isFunction=true;
-			break;
-				
-		}
-		
-		ModelInt result=new ModelInt();
-		
-		return (ModelInt) importModelType1OpOperation(target,result,operator,isFunction);
-		
-	}
-	
-	private static ModelInt negate(ModelInt target)  {
-
-		return importModelInt1OpOperation(target,ModelIntOperations.NEGATE_LITERAL);
-		
-	}
-	private static ModelInt abs(ModelInt target) {
-		return importModelInt1OpOperation(target,ModelIntOperations.ABS_LITERAL);
-	}
-	
-	private static ModelInt signum(ModelInt target) {
-
-		return importModelInt1OpOperation(target,ModelIntOperations.SIGNUM_LITERAL);
-		
-	}
-
-	private static ModelBool not(ModelBool target) {
-		return (ModelBool)importModelType1OpOperation(target,new ModelBool(),"not ",false);
-	}
-	
-	private static ModelBool or(ModelBool target, ModelBool val)  {
-
-		return importModelBool2OpOperation(target,val,ModelBoolOperations.OR_LITERAL);
-	}
-	
-	private static ModelBool xor(ModelBool target, ModelBool val)  {
-
-		return importModelBool2OpOperation(target,val,ModelBoolOperations.XOR_LITERAL);
-	}
-	
-	
-	private  static ModelBool and(ModelBool target, ModelBool val)  {
-
-		return importModelBool2OpOperation(target,val,ModelBoolOperations.AND_LITERAL);
-	}
-	
-	private static ModelBool equal(ModelBool target, ModelBool val)  {
-
-		return importModelBool2OpOperation(target,val,ModelBoolOperations.EQUAL_LITERAL);
-	}
-	
-	private static ModelBool noteq(ModelBool target, ModelBool val)  {
-
-		return importModelBool2OpOperation(target,val,ModelBoolOperations.NOTEQ_LITERAL);
-	}
-
-	private static ModelBool isEqual(ModelInt left, ModelInt right)
-	{
-		return compareModelInts(left,right,"=");
-	}
-	
-	private static ModelBool isLessEqual(ModelInt left, ModelInt right)
-	{
-		return compareModelInts(left,right,"<=");
-	}
-	
-	private static ModelBool isLess(ModelInt left, ModelInt right)
-	{
-		return compareModelInts(left,right,"<");
-	}
-	
-	
-	private static ModelBool isMoreEqual(ModelInt left, ModelInt right)
-	{
-		return compareModelInts(left,right,">=");
-	}
-	
-	private static ModelBool isMore(ModelInt left, ModelInt right)
-	{
-		return compareModelInts(left,right,">");
-	}
-	
-	
-	private static ModelBool compareModelInts(ModelInt left, ModelInt right, String operator)
-	{
-		String leftExpr=getExpression(left);
-		String rightExpr=getExpression(right);
-		String expression=leftExpr+" "+operator+" "+rightExpr;
-		
-		ModelBool result=new ModelBool();
-		createCalculatedModelTypeInstInfo(result,expression);
-		
-		return result;
-	}
-
 	private static String importCondition(Condition cond)
 	{
 		
@@ -1050,25 +733,6 @@ public class InstructionImporter extends AbstractMethodImporter {
 		String name="decision"+cntDecisionNodes;
 		DecisionNode decisionNode=(DecisionNode) currentActivity.createOwnedNode(name,UMLPackage.Literals.DECISION_NODE);
 		return decisionNode;
-	}
-
-	@SuppressWarnings("rawtypes")
-	private static <T> void createModelTypeLiteral(ModelType<T> inst)
-	{
-		T val=(T)getObjectFieldVal(inst,"value");
-		String expression=val.toString();
-		boolean literal=true;
-		boolean calculated=false;
-		ModelTypeInformation instInfo;
-		if(val instanceof Integer)
-		{
-			instInfo=new ModelTypeInformation(expression,literal,calculated,(Integer)val);
-		}
-		else
-		{
-			instInfo=new ModelTypeInformation(expression,literal,calculated);
-		}
-		modelTypeInstancesInfo.put(inst,instInfo);
 	}
 	
 }

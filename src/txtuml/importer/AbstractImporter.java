@@ -4,7 +4,9 @@ import java.lang.reflect.*;
 import java.util.WeakHashMap;
 
 import org.eclipse.uml2.uml.NamedElement;
+import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.PrimitiveType;
+import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.PseudostateKind;
 import org.eclipse.uml2.uml.Region;
@@ -166,7 +168,18 @@ public abstract class AbstractImporter {
 		}
 		else
 		{
-			element.setVisibility(VisibilityKind.PACKAGE_LITERAL);
+			if(element instanceof Property)
+			{
+				element.setVisibility(VisibilityKind.PRIVATE_LITERAL);
+			}
+			else if(element instanceof Operation)
+			{
+				element.setVisibility(VisibilityKind.PUBLIC_LITERAL);
+			}
+			else
+			{
+				element.setVisibility(VisibilityKind.PACKAGE_LITERAL);
+			}
 		}
 	}
 	protected static void setVisibility(NamedElement importedElement,Class<?> sourceClass)
@@ -185,7 +198,6 @@ public abstract class AbstractImporter {
 	protected static boolean localInstanceToBeCreated = false;
 	protected static PrimitiveType UML2Integer,UML2Bool,UML2String,UML2Real,UML2UnlimitedNatural;
 	protected static Class<?> modelClass=null;
-	@SuppressWarnings("rawtypes")
-	protected static WeakHashMap<ModelType, ModelTypeInformation> modelTypeInstancesInfo=null;
+	protected static WeakHashMap<ModelType<?>, ModelTypeInformation> modelTypeInstancesInfo=null;
 
 }

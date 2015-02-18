@@ -60,7 +60,7 @@ public class Util {
 	    resSet.getPackageRegistry().put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
 
 	    resSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION, UMLResource.Factory.INSTANCE);
-	    Map uriMap = resSet.getURIConverter().getURIMap();
+	    Map<URI, URI> uriMap = resSet.getURIConverter().getURIMap();
 		URI _uri = URI.createURI("jar:file:umlplugins/org.eclipse.uml2.uml.resources_4.1.0.v20140202-2055.jar!/"); // for example
 		uriMap.put(URI.createURI(UMLResource.LIBRARIES_PATHMAP), _uri.appendSegment("libraries").appendSegment(""));//ha nem húzzuk be a típusnevek null-értékûek
 		//uriMap.put(URI.createURI(UMLResource.METAMODELS_PATHMAP), _uri.appendSegment("metamodels").appendSegment(""));//passz, egyenlõre nincs hiba
