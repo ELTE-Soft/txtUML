@@ -4,12 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import txtuml.api.Association.AssociationEnd;
+import txtuml.api.layout.elements.LayoutNode;
 import txtuml.importer.MethodImporter;
 import txtuml.importer.ModelImporter;
 import txtuml.utils.InstanceCreator;
 
 public abstract class ModelClass extends ModelIdentifiedElementImpl implements
-		ModelElement, ModelIdentifiedElement {
+		ModelElement, ModelIdentifiedElement, LayoutNode {
 
 	private enum Status {
 		READYTOSTART, ACTIVE, FINALIZED, DESTROYED

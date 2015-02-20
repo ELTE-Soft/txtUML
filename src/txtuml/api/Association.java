@@ -4,7 +4,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Association implements ModelElement {
+import txtuml.api.layout.elements.LayoutLink;
+
+public class Association implements ModelElement, LayoutLink {
 	protected Association() {
 	}
 
