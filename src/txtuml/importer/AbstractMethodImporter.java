@@ -3,7 +3,6 @@ package txtuml.importer;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Stack;
-import java.util.WeakHashMap;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;

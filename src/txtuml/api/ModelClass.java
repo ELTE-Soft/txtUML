@@ -1,24 +1,26 @@
 package txtuml.api;
 
-import java.lang.Thread;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.LinkedBlockingQueue;
 
-import txtuml.api.Association.*;
+import txtuml.api.Association.AssociationEnd;
 import txtuml.importer.MethodImporter;
 import txtuml.importer.ModelImporter;
 import txtuml.utils.InstanceCreator;
 
-public class ModelClass extends ModelIdentifiedElementImpl implements
+public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 		ModelElement, ModelIdentifiedElement {
 
+	private enum Status {
+		READYTOSTART, ACTIVE, FINALIZED, DESTROYED
+	}
+
 	private static Map<Class<?>, Class<? extends InitialState>> initialStates = new HashMap<>();
+	private final Map<Class<?>, Object> innerClassInstances = new HashMap<>();
+	private final Map<Class<? extends AssociationEnd<?>>, AssociationEnd<?>> associations = new HashMap<>();
+	private final ModelExecutorThread executorThread;
 	private State currentState;
-	private ModelClassThread thread;
-	private final Object lockOnThread = new Object();
-	private Map<Class<?>, Object> innerClassInstances = new HashMap<>();
-	private Map<Class<? extends AssociationEnd<?>>, AssociationEnd<?>> associations = new HashMap<>();
+	private Status STATUS;
 
 	public abstract class State implements ModelElement {
 		public void entry() {
@@ -39,8 +41,9 @@ public class ModelClass extends ModelIdentifiedElementImpl implements
 	public abstract class CompositeState extends State {
 	}
 
-	public abstract class Choice extends State { // TODO import 'Choice' into
-													// UML2
+	public abstract class Choice extends State {
+		// TODO import 'Choice' into UML2
+
 		public final void entry() {
 		}
 
@@ -49,6 +52,9 @@ public class ModelClass extends ModelIdentifiedElementImpl implements
 	}
 
 	public abstract class Transition implements ModelElement {
+
+		private Signal signal;
+
 		public void effect() {
 		}
 
@@ -67,23 +73,32 @@ public class ModelClass extends ModelIdentifiedElementImpl implements
 		final void setSignal(Signal s) {
 			signal = s;
 		}
-
-		private Signal signal;
 	}
 
 	protected ModelClass() {
 		super();
-		currentState = null;
-		thread = null;
-		innerClassInstances.put(getClass(), this);
+		this.currentState = null;
+		this.innerClassInstances.put(getClass(), this);
 
 		if (!ModelImporter.isImporting()) {
-			createThread();
+			this.executorThread = ModelExecutor.getExecutorThread();
+			setCurrentStateToInitial();
+		} else {
+			this.executorThread = null;
 		}
-
 	}
 
-	public synchronized <T extends ModelClass, AE extends AssociationEnd<T>> AE assoc(
+	private void setCurrentStateToInitial() {
+		Class<? extends InitialState> initStateClass = getInitialState(getClass());
+		if (initStateClass != null) {
+			currentState = getInnerClassInstance(initStateClass);
+			STATUS = Status.READYTOSTART;
+		} else {
+			STATUS = Status.FINALIZED;
+		}
+	}
+
+	public <T extends ModelClass, AE extends AssociationEnd<T>> AE assoc(
 			Class<AE> otherEnd) {
 		@SuppressWarnings("unchecked")
 		AE ret = (AE) associations.get(otherEnd);
@@ -96,7 +111,7 @@ public class ModelClass extends ModelIdentifiedElementImpl implements
 	}
 
 	@SuppressWarnings("unchecked")
-	synchronized <T extends ModelClass, AE extends AssociationEnd<T>> void addToAssoc(
+	<T extends ModelClass, AE extends AssociationEnd<T>> void addToAssoc(
 			Class<AE> otherEnd, T object) {
 		associations.put(
 				otherEnd,
@@ -105,41 +120,25 @@ public class ModelClass extends ModelIdentifiedElementImpl implements
 						assoc(otherEnd).typeKeepingAdd(object)));
 	}
 
-	private void createThread() {
-		Class<? extends InitialState> initStateClass = getInitialState(getClass());
-		if (initStateClass != null) {
-			currentState = getInnerClassInstance(initStateClass);
-			thread = new ModelClassThread(this);
-		}
-	}
-
-	void finishThread() {
-		synchronized (lockOnThread) {
-			if (thread != null) {
-				thread.interrupt();
-				thread = null;
-			}
-		}
-	}
-
 	void start() {
-		thread.start();
+		if (STATUS != Status.READYTOSTART) {
+			return;
+		}
+		send(null);
+		// to move from initial state
+		STATUS = Status.ACTIVE;
 	}
 
 	void send(Signal signal) {
-		synchronized (lockOnThread) {
-			if (thread != null) {
-				thread.send(signal);
-			}
-		}
+		executorThread.send(this, signal);
 	}
 
-	private void processEvent(Signal signal) {
+	void processSignal(Signal signal) {
 		if (currentState == null) { // no state machine
 			return;
 		}
-		if (Runtime.Settings.runtimeLog() && signal != null) {
-			Action.runtimeFormattedLog("%10s %-15s    got signal: %-18s%n",
+		if (ModelExecutor.Settings.executorLogStatic() && signal != null) {
+			Action.executorFormattedLog("%10s %-15s    got signal: %-18s%n",
 					getClass().getSimpleName(), getIdentifier(), signal
 							.getClass().getSimpleName());
 		}
@@ -148,7 +147,7 @@ public class ModelClass extends ModelIdentifiedElementImpl implements
 		}
 	}
 
-	private synchronized boolean executeTransition(Signal signal) {
+	private boolean executeTransition(Signal signal) {
 		Class<?> applicableTransition = null;
 		for (Class<?> examinedStateClass = currentState.getClass(), parentClass = examinedStateClass
 				.getEnclosingClass(); parentClass != null; examinedStateClass = parentClass, parentClass = examinedStateClass
@@ -187,7 +186,7 @@ public class ModelClass extends ModelIdentifiedElementImpl implements
 					}
 
 					if (applicableTransition != null) {
-						Action.runtimeErrorLog("Error: guards of transitions "
+						Action.executorErrorLog("Error: guards of transitions "
 								+ applicableTransition.getName() + " and "
 								+ c.getName() + " from class "
 								+ currentState.getClass().getSimpleName()
@@ -249,7 +248,7 @@ public class ModelClass extends ModelIdentifiedElementImpl implements
 						if (elseTransition != null) { // there was already a
 														// transition with an
 														// else condition
-							Action.runtimeErrorLog("Error: there are more than one transitions from choice "
+							Action.executorErrorLog("Error: there are more than one transitions from choice "
 									+ examinedChoiceClass.getSimpleName()
 									+ " with an Else condition");
 							continue;
@@ -260,7 +259,7 @@ public class ModelClass extends ModelIdentifiedElementImpl implements
 				}
 				if (applicableTransition != null) { // there was already an
 													// applicable transition
-					Action.runtimeErrorLog("Error: guards of transitions "
+					Action.executorErrorLog("Error: guards of transitions "
 							+ applicableTransition.getName() + " and "
 							+ c.getName() + " from class "
 							+ examinedChoiceClass.getSimpleName()
@@ -276,7 +275,7 @@ public class ModelClass extends ModelIdentifiedElementImpl implements
 											// else condition
 				useTransition(elseTransition);
 			} else {
-				Action.runtimeErrorLog("Error: there was no transition from choice class "
+				Action.executorErrorLog("Error: there was no transition from choice class "
 						+ examinedChoiceClass.getSimpleName()
 						+ " which could be used");
 			}
@@ -289,13 +288,18 @@ public class ModelClass extends ModelIdentifiedElementImpl implements
 	}
 
 	private void useTransition(Class<?> transitionClass) {
+		/*
+		 * The signal has to be already set to the transition instance returned
+		 * by the getInnerClassInstance(transitionClass) call.
+		 */
+
 		Transition transition = (Transition) getInnerClassInstance(transitionClass);
 		Class<? extends State> from = transitionClass.getAnnotation(From.class)
 				.value();
 		Class<? extends State> to = transitionClass.getAnnotation(To.class)
 				.value();
-		if (Runtime.Settings.runtimeLog()) {
-			Action.runtimeFormattedLog(
+		if (ModelExecutor.Settings.executorLogStatic()) {
+			Action.executorFormattedLog(
 					"%10s %-15s changes state: from: %-10s tran: %-18s to: %-10s%n",
 					getClass().getSimpleName(), getIdentifier(),
 					from.getSimpleName(), transitionClass.getSimpleName(),
@@ -318,10 +322,11 @@ public class ModelClass extends ModelIdentifiedElementImpl implements
 
 	private void callExitAction(Class<? extends State> from) {
 		while (currentState.getClass() != from) {
-			if (Runtime.Settings.runtimeLog()) {
-				Action.runtimeFormattedLog("%10s %-15s   exits state: %-18s%n",
-						getClass().getSimpleName(), getIdentifier(),
-						currentState.getClass().getSimpleName());
+			if (ModelExecutor.Settings.executorLogStatic()) {
+				Action.executorFormattedLog(
+						"%10s %-15s   exits state: %-18s%n", getClass()
+								.getSimpleName(), getIdentifier(), currentState
+								.getClass().getSimpleName());
 			}
 			currentState.exit();
 			@SuppressWarnings("unchecked")
@@ -332,28 +337,28 @@ public class ModelClass extends ModelIdentifiedElementImpl implements
 		currentState.exit();
 	}
 
-	private synchronized void callEntryAction() {
+	private void callEntryAction() {
 		currentState.entry();
 		if (currentState instanceof CompositeState) {
 			Class<? extends InitialState> initStateClass = getInitialState(currentState
 					.getClass());
 			if (initStateClass != null) {
-				if (Runtime.Settings.runtimeLog()) {
-					Action.runtimeFormattedLog(
+				if (ModelExecutor.Settings.executorLogStatic()) {
+					Action.executorFormattedLog(
 							"%10s %-15s  enters state: %-18s%n", getClass()
 									.getSimpleName(), getIdentifier(),
 							initStateClass.getSimpleName());
 				}
 				currentState = getInnerClassInstance(initStateClass);
 				// no entry action needs to be called: initial states have none
-				processEvent(null); // step forward from initial state
+				processSignal(null); // step forward from initial state
 			}
 		}
 	}
 
 	private <T> T getInnerClassInstance(Class<T> forWhat) {
 		if (forWhat == null) {
-			Action.runtimeErrorLog("Error: in class "
+			Action.executorErrorLog("Error: in class "
 					+ getClass().getSimpleName()
 					+ " a transition or state is used which is not an inner state of "
 					+ getClass().getSimpleName());
@@ -386,36 +391,6 @@ public class ModelClass extends ModelIdentifiedElementImpl implements
 			}
 			initialStates.put(forWhat, null);
 			return null;
-		}
-	}
-
-	private class ModelClassThread extends Thread {
-		private LinkedBlockingQueue<Signal> mailbox;
-		private ModelClass parent;
-
-		private ModelClassThread(ModelClass parent) { // called from enclosing
-														// ModelClass
-			this.parent = parent;
-			this.mailbox = new LinkedBlockingQueue<>();
-		}
-
-		private void send(Signal signal) { // called from enclosing ModelClass
-			try {
-				mailbox.put(signal);
-			} catch (InterruptedException e) {
-			}
-		}
-
-		public void run() {
-			processEvent(null); // step forward from the initial state
-			try {
-				while (true) { // TODO stop loop after everything is finished
-					Signal signal = mailbox.take();
-					parent.processEvent(signal);
-				}
-			} catch (InterruptedException e) {
-				// do nothing (finish thread)
-			}
 		}
 	}
 }

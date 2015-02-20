@@ -174,7 +174,7 @@ class ExtendedModel1 extends Model {
 	
 	// tester method	
 	public void test() {
-		txtuml.api.Runtime.Settings.setRuntimeLog(true);
+		ModelExecutor.Settings.setExecutorLog(true);
 		Machine m = new Machine(); 
 		
 		User u1 = new User();

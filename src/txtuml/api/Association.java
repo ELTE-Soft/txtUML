@@ -1,8 +1,8 @@
 package txtuml.api;
 
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Association implements ModelElement {
 	protected Association() {
@@ -38,7 +38,7 @@ public class Association implements ModelElement {
 	}
 
 	public class Many<T extends ModelClass> extends AssociationEnd<T> {
-		private Set<T> set = new HashSet<>();
+		private List<T> list = new LinkedList<>();
 
 		public Many() {
 			isFinal = false;
@@ -47,64 +47,64 @@ public class Association implements ModelElement {
 		@Override
 		final synchronized AssociationEnd<T> init(Collection<T> other) {
 			if (!isFinal && other != null && other instanceof Many) {
-				this.set = ((Many<T>) other).set;
+				this.list = ((Many<T>) other).list;
 			}
 			isFinal = true;
 			return this;
 		}
 
 		Many(T object1, T object2) {
-			set.add(object1);
-			set.add(object2);
+			list.add(object1);
+			list.add(object2);
 		}
 
 		Many(CollectionBuilder<T> builder) {
 			for (T obj : builder) {
-				set.add(obj);
+				list.add(obj);
 			}
 		}
 
 		Many(Collection<T> collection) {
 			for (T obj : collection) {
-				set.add(obj);
+				list.add(obj);
 			}
 		}
 
 		Many(Collection<T> collection, CollectionBuilder<T> builder) {
 			this(collection);
 			for (T obj : builder) {
-				set.add(obj);
+				list.add(obj);
 			}
 		}
 
 		Many(Collection<T> collection, T object) {
 			this(collection);
-			set.add(object);
+			list.add(object);
 		}
 
 		@Override
 		public Iterator<T> iterator() {
-			return set.iterator();
+			return list.iterator();
 		}
 
 		@Override
 		public final ModelInt count() {
-			return new ModelInt(set.size());
+			return new ModelInt(list.size());
 		}
 
 		@Override
 		public final ModelBool contains(ModelClass object) {
-			return new ModelBool(set.contains(object));
+			return new ModelBool(list.contains(object));
 		}
 
 		@Override
 		public final T selectOne() {
-			return set.iterator().next();
+			return list.iterator().next();
 		}
 
 		@Override
 		public final T selectOne(ParameterizedCondition<T> cond) {
-			for (T obj : set) {
+			for (T obj : list) {
 				if (cond.check(obj).getValue()) {
 					return obj;
 				}
@@ -115,7 +115,7 @@ public class Association implements ModelElement {
 		@Override
 		public final Collection<T> selectAll(ParameterizedCondition<T> cond) {
 			CollectionBuilder<T> builder = new CollectionBuilder<>();
-			for (T obj : set) {
+			for (T obj : list) {
 				if (cond.check(obj).getValue()) {
 					builder.append(obj);
 				}
@@ -135,9 +135,9 @@ public class Association implements ModelElement {
 
 		@Override
 		public final Collection<T> remove(T object) {
-			if (set.contains(object)) {
+			if (list.contains(object)) {
 				CollectionBuilder<T> builder = new CollectionBuilder<>();
-				for (T obj : set) {
+				for (T obj : list) {
 					if (obj != object) {
 						builder.append(obj);
 					}
@@ -161,7 +161,7 @@ public class Association implements ModelElement {
 		}
 
 		int getSize() {
-			return set.size();
+			return list.size();
 		}
 	}
 

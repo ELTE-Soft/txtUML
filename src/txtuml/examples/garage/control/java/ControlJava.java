@@ -135,6 +135,7 @@ public class ControlJava implements IControl {
 	}
 	
 	class Enable extends TimerTask {
+		@SuppressWarnings("unused") // TODO check warning
 		private ControlJava parent;
 		
 		Enable(ControlJava p) {
@@ -142,14 +143,14 @@ public class ControlJava implements IControl {
 		}
 		
 		public void run() {
-			if(parent.doorSecurityState == DoorSecurityState.Disabled) {
-				parent.doorSecurityState = DoorSecurityState.Enabled;
-				switch(parent.doorState) {
+			if(ControlJava.doorSecurityState == DoorSecurityState.Disabled) {
+				ControlJava.doorSecurityState = DoorSecurityState.Enabled;
+				switch(ControlJava.doorState) {
 				case Down:
-					parent.controlled.startDoorDown();
+					ControlJava.controlled.startDoorDown();
 					break;
 				case Up:
-					parent.controlled.startDoorUp();
+					ControlJava.controlled.startDoorUp();
 					break;
 				default:
 				}
@@ -159,6 +160,7 @@ public class ControlJava implements IControl {
 	
 	class CodeDelay extends TimerTask {
 		private int elapsed = 0;
+		@SuppressWarnings("unused") // TODO check warning
 		private ControlJava parent;
 		
 		CodeDelay(ControlJava p) {
@@ -167,26 +169,26 @@ public class ControlJava implements IControl {
 		
 		@Override
 		public void run() {
-			elapsed += parent.alarmDelayInterval;
-			elapsed = Math.min(elapsed,parent.alarmDelay);
-			parent.controlled.progress(100*elapsed/parent.alarmDelay);
+			elapsed += ControlJava.alarmDelayInterval;
+			elapsed = Math.min(elapsed,ControlJava.alarmDelay);
+			ControlJava.controlled.progress(100*elapsed/ControlJava.alarmDelay);
 			if(alarmState == AlarmState.CodeExpected) {
-				parent.controlled.codeExpected();
+				ControlJava.controlled.codeExpected();
 			} else if(alarmState == AlarmState.OldCodeExpected) {
-				parent.controlled.oldCodeExpected();
+				ControlJava.controlled.oldCodeExpected();
 			} else if(alarmState == AlarmState.NewCodeExpected) {
-				parent.controlled.newCodeExpected();
+				ControlJava.controlled.newCodeExpected();
 			}
-			if(elapsed >= parent.alarmDelay) {
-				parent.alarmTimer.cancel();
-				parent.alarmTimer = new Timer();
-				if(parent.alarmState == AlarmState.CodeExpected) {
-					parent.alarmState = AlarmState.InAlarm;
-					parent.controlled.startSiren();
-				} else if(parent.alarmState == AlarmState.OldCodeExpected
-					   || parent.alarmState == AlarmState.NewCodeExpected) {
-					parent.alarmState = AlarmState.Idle;
-					parent.controlled.alarmOff();
+			if(elapsed >= ControlJava.alarmDelay) {
+				ControlJava.alarmTimer.cancel();
+				ControlJava.alarmTimer = new Timer();
+				if(ControlJava.alarmState == AlarmState.CodeExpected) {
+					ControlJava.alarmState = AlarmState.InAlarm;
+					ControlJava.controlled.startSiren();
+				} else if(ControlJava.alarmState == AlarmState.OldCodeExpected
+					   || ControlJava.alarmState == AlarmState.NewCodeExpected) {
+					ControlJava.alarmState = AlarmState.Idle;
+					ControlJava.controlled.alarmOff();
 				}
 			}
 		}	

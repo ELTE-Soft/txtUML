@@ -139,8 +139,9 @@ class Model1 extends Model {
 	}
 	
 	public void test() {
-		txtuml.api.Runtime.Settings.setRuntimeLog(true);
-		Machine m = new Machine(); 
+		ModelExecutor.Settings.setExecutorLog(true);
+		Machine m = new Machine();
+		start(m);
 		
 		User u1 = new User();
 		User u2 = Action.create(User.class); //almost equivalent to 'new User()'

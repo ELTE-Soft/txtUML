@@ -4,9 +4,7 @@ import txtuml.api.Association.*;
 import txtuml.importer.MethodImporter;
 import txtuml.utils.InstanceCreator;
 
-public class Action implements ModelElement {
-
-	static final Object lockOnAssociations = new Object();
+public abstract class Action implements ModelElement {
 
 	protected Action() {
 	}
@@ -20,40 +18,17 @@ public class Action implements ModelElement {
 			MODELCLASS1 leftObj,
 			Class<? extends AssociationEnd<MODELCLASS2>> rightEnd,
 			MODELCLASS2 rightObj) {
-		// it does not reuse the other link implementation because of
-		// optimization issues
 
-		synchronized (lockOnAssociations) {
-			leftObj.addToAssoc(rightEnd, rightObj);
-			rightObj.addToAssoc(leftEnd, leftObj);
-		}
+		leftObj.addToAssoc(rightEnd, rightObj);
+		rightObj.addToAssoc(leftEnd, leftObj);
 	}
-
-	// TODO upcoming feature
-	/*
-	 * public static void link(AssocEnd<?>... associationEnds) {
-	 * 
-	 * synchronized(lockOnAssociations) { for (int i = 0; i <
-	 * associationEnds.length - 1; ++i) { for (int j = i + 1; j <
-	 * associationEnds.length; ++j) { AssocEnd<?> leftEnd = associationEnds[i];
-	 * AssocEnd<?> rightEnd = associationEnds[j]; leftEnd.link(rightEnd);
-	 * rightEnd.link(leftEnd); } } } }
-	 */
-	// TODO upcoming feature
-	/*
-	 * @SuppressWarnings("unchecked") public static <T extends ModelClass>
-	 * AssocEnd<T> assocEnd( Class<? extends AssociationEnd<T>> m, T object,
-	 * T... followingObjects) {
-	 * 
-	 * return new AssocEnd<>(m, object, followingObjects); }
-	 */
 
 	public static void start(ModelClass obj) {
 		obj.start();
 	}
 
-	public static void send(ModelClass receiverObj, Signal event) {
-		Runtime.send(receiverObj, event);
+	public static void send(ModelClass target, Signal signal) {
+		target.send(signal);
 	}
 
 	public static void If(Condition cond, BlockBody thenBody, BlockBody elseBody) {
@@ -99,7 +74,7 @@ public class Action implements ModelElement {
 		if (MethodImporter.isImporting()) {
 
 		} else {
-			Runtime.log(message);
+			ModelExecutor.log(message);
 		}
 
 	}
@@ -108,34 +83,34 @@ public class Action implements ModelElement {
 		if (MethodImporter.isImporting()) {
 
 		} else {
-			Runtime.logError(message);
+			ModelExecutor.logError(message);
 		}
 
 	}
 
-	static void runtimeLog(String message) { // api log
+	static void executorLog(String message) { // api log
 		if (MethodImporter.isImporting()) {
 
 		} else {
-			Runtime.runtimeLog(message);
+			ModelExecutor.executorLog(message);
 		}
 
 	}
 
-	static void runtimeFormattedLog(String format, Object... args) { // api log
+	static void executorFormattedLog(String format, Object... args) { // api log
 		if (MethodImporter.isImporting()) {
 
 		} else {
-			Runtime.runtimeFormattedLog(format, args);
+			ModelExecutor.executorFormattedLog(format, args);
 		}
 
 	}
 
-	static void runtimeErrorLog(String message) { // api log
+	static void executorErrorLog(String message) { // api log
 		if (MethodImporter.isImporting()) {
 
 		} else {
-			Runtime.runtimeErrorLog(message);
+			ModelExecutor.executorErrorLog(message);
 		}
 
 	}

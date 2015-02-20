@@ -361,6 +361,7 @@ public class Uml2ToCpp {
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	private static <ElementType,EClassType> 
 	void getTypedElements(Collection<ElementType> dest_,Collection<Element> source_,EClassType eClass_)
 	{

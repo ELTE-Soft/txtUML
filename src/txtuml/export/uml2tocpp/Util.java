@@ -1,24 +1,14 @@
 package txtuml.export.uml2tocpp;
 
 
-import static java.lang.System.out;
-
-import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.Resource.Factory.Registry;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.uml2.uml.Classifier;
-import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.UMLPackage;
-import org.eclipse.uml2.uml.internal.resource.UMLResourceFactoryImpl;
 import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
@@ -46,7 +36,7 @@ public class Util {
 		  public boolean equals(Object o) {
 		    if (o == null) return false;
 		    if (!(o instanceof Pair)) return false;
-		    Pair pairo = (Pair) o;
+		    Pair<?, ?> pairo = (Pair<?, ?>) o;
 		    return this.left.equals(pairo.getKey()) &&
 		           this.right.equals(pairo.getValue());
 		  }

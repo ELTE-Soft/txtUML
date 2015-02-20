@@ -3,7 +3,6 @@ package txtuml.external;
 import java.util.concurrent.*;
 
 import txtuml.api.*;
-import txtuml.api.Runtime;
 
 public class Timer extends ExternalClass {
 	protected Timer() {
@@ -11,7 +10,7 @@ public class Timer extends ExternalClass {
 
 	public static Handle start(ModelClass targetObj, Signal signal,
 			ModelInt millisecs) {
-		Runtime.Settings.lockSimulationTimeMultiplier();
+		ModelExecutor.Settings.lockSimulationTimeMultiplier();
 		return new Handle(targetObj, signal, millisecs);
 	}
 
@@ -36,7 +35,7 @@ public class Timer extends ExternalClass {
 
 		private long queryLong() {
 			return handle.getDelay(TimeUnit.MILLISECONDS)
-					* Runtime.Settings.getSimulationTimeMultiplier();
+					* ModelExecutor.Settings.getSimulationTimeMultiplier();
 		}
 
 		public ModelInt query() {
@@ -64,7 +63,7 @@ public class Timer extends ExternalClass {
 
 		private void schedule(ModelInt millisecs) {
 			handle = scheduler.schedule(action, ((long) convert(millisecs))
-					/ Runtime.Settings.getSimulationTimeMultiplier(),
+					/ ModelExecutor.Settings.getSimulationTimeMultiplier(),
 					TimeUnit.MILLISECONDS);
 		}
 	}

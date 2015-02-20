@@ -125,10 +125,13 @@ class Tester extends Thread {
 	Lamp l;
 
 	public void createInstances() {
-		txtuml.api.Runtime.Settings.setRuntimeLog(true);
+		ModelExecutor.Settings.setExecutorLog(true);
 		g = Action.create(Gearbox.class);
 		e = Action.create(Engine.class);
 		l = Action.create(Lamp.class);
+		Action.start(g);
+		Action.start(e);
+		Action.start(l);
 		Action.link(GE.g.class, g, GE.e.class, e);
 		Action.link(GL.g.class, g, GL.l.class, l);
 		Action.link(LE.l.class, l, LE.e.class, e);

@@ -19,7 +19,6 @@ import txtuml.api.Action;
 import txtuml.api.ModelElement;
 import txtuml.api.ParameterizedBlockBody;
 import txtuml.api.Signal;
-import txtuml.external.Timer;
 import txtuml.importer.InstructionImporter.LinkTypes;
 
 

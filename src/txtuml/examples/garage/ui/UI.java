@@ -28,7 +28,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import txtuml.examples.garage.control.java.ControlJava;
 import txtuml.examples.garage.control.model.Glue;
 import txtuml.examples.garage.interfaces.IControl;
 import txtuml.examples.garage.interfaces.IControlled;
