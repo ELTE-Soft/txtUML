@@ -15,7 +15,6 @@ import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.ObjectNode;
 import org.eclipse.uml2.uml.OpaqueExpression;
-import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.ReadVariableAction;
@@ -24,13 +23,14 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValuePin;
 import org.eclipse.uml2.uml.Variable;
 
+import txtuml.api.Event;
 import txtuml.api.ModelClass;
 import txtuml.api.ModelIdentifiedElement;
 import txtuml.api.ModelInt;
 import txtuml.api.ModelType;
 import txtuml.utils.InstanceCreator;
 
-public abstract class AbstractMethodImporter extends AbstractImporter {
+abstract class AbstractMethodImporter extends AbstractImporter {
 	
 	public static boolean isImporting() {
 		return importing;
@@ -219,25 +219,25 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 		return expression;
 	}
 	
-	protected static String getObjectIdentifier(String instanceId)
+	private static String compareInstanceIdWithObjAndFields (String instanceId,ModelIdentifiedElement obj, String expr)
 	{
 		try
 		{
-			if(instanceId==self.getIdentifier())
+			if(instanceId==obj.getIdentifier())
 			{
-				return "self";
+				return expr;
 			}
-			for(Field f:self.getClass().getDeclaredFields())
+			for(Field f:obj.getClass().getDeclaredFields())
 			{
 				try {
 					f.setAccessible(true);
-					Object fieldObj = f.get(self);
+					Object fieldObj = f.get(obj);
 					f.setAccessible(false);
 					if(fieldObj instanceof ModelIdentifiedElement)
 					{
 						if( ( (ModelIdentifiedElement) fieldObj ).getIdentifier().equals( instanceId ) )
 						{
-							return "self."+f.getName();
+							return expr+"."+f.getName();
 						}
 					}
 				} catch (Exception e) {
@@ -251,7 +251,12 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 		{
 			
 		}
-		
+		return null;
+			
+	}
+	
+	private static String compareInstanceIdWithCurrentParams(String instanceId)
+	{
 		try
 		{
 			int i=0;
@@ -283,6 +288,27 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 		{
 			
 		}
+		return null;
+	}
+	protected static String getObjectIdentifier(String instanceId)
+	{
+		String identifier;
+		
+		identifier=compareInstanceIdWithObjAndFields(instanceId,self,"self");
+		
+		if(identifier!=null) return identifier;
+		
+		identifier=compareInstanceIdWithCurrentParams(instanceId);
+			
+		if(identifier!=null) return identifier;
+		
+		if(currentSignal!=null)
+		{
+			String signalName=currentSignal.getClass().getSimpleName();
+			identifier=compareInstanceIdWithObjAndFields(instanceId,currentSignal,signalName);
+		}
+		
+		if(identifier!=null) return identifier;
 		
 		return instanceId;
 	}
@@ -367,18 +393,6 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
     }
 	
 
-	protected static Operation findOperation(org.eclipse.uml2.uml.Class ownerClass,String name)
-	{
-		for(Operation op:ownerClass.getOperations())
-		{
-			if(op.getName().equals(name))
-			{
-				return op;
-			}
-		}
-		return null;
-	}
-	
 	protected static AddVariableValueAction createAddVarValAction(Variable var, String name)
 	{
 		AddVariableValueAction addVarValAction = (AddVariableValueAction)
@@ -401,5 +415,5 @@ public abstract class AbstractMethodImporter extends AbstractImporter {
 	protected static Stack<ActivityEdge> blockBodyFirstEdges=new Stack<>();
 	protected static int cntDummyNodes=0;
 	protected static int cntDecisionNodes;
-	
+	protected static Event currentSignal=null;
 }

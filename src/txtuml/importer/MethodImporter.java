@@ -1,6 +1,7 @@
 package txtuml.importer;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Stack;
 
@@ -19,6 +20,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.Variable;
 
+import txtuml.api.Event;
 import txtuml.api.ModelBool;
 import txtuml.api.ModelClass;
 import txtuml.api.ModelIdentifiedElement;
@@ -80,6 +82,25 @@ public class MethodImporter extends AbstractMethodImporter {
 		
 		return classInstance;
 	}
+	
+	private static void setCurrentSignal(txtuml.api.ModelClass.Transition transitionInstance)
+	{
+		Method m=findMethod(txtuml.api.ModelClass.Transition.class,"getSignal");
+		m.setAccessible(true);
+		try {
+			currentSignal=(Event) m.invoke(transitionInstance);
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		m.setAccessible(false);
+	}
 	private static Object initMethodImport(Model model, Activity activity, Method sourceMethod, Class<?> declaringClass)
 	{
 		currentModel=model;
@@ -92,6 +113,10 @@ public class MethodImporter extends AbstractMethodImporter {
 		importing=true;
 		
 		Object classInstance=createLocalInstance(declaringClass);
+		if(isTransition(declaringClass))
+		{
+			setCurrentSignal((txtuml.api.ModelClass.Transition)classInstance);					
+		}
 		assignSelf(classInstance);
 		
 		ActivityNode initialNode=activity.createOwnedNode("initialNode",UMLPackage.Literals.INITIAL_NODE);	
@@ -111,6 +136,7 @@ public class MethodImporter extends AbstractMethodImporter {
 		currentActivity = null;
 		currentModel=null;
 		currentParameters=null;
+		currentSignal=null;
 		importing=false;
 	}
 	static void importMethod(Model model, Activity activity, Method sourceMethod, Class<?> declaringClass) 

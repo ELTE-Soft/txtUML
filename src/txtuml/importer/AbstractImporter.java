@@ -14,7 +14,7 @@ import org.eclipse.uml2.uml.VisibilityKind;
 
 import txtuml.api.*;
 
-public abstract class AbstractImporter {
+abstract class AbstractImporter {
 	
 	protected static Object getObjectFieldVal(Object object,String fieldName)
 	{
@@ -80,7 +80,7 @@ public abstract class AbstractImporter {
 	}
 
 	protected static boolean isAttribute(Field f) {
-        return ModelType.class.isAssignableFrom(f.getType());   
+		return ModelIdentifiedElement.class.isAssignableFrom(f.getType());
     }
     
 	protected static boolean isState(Class<?> c) {
@@ -172,7 +172,7 @@ public abstract class AbstractImporter {
 			{
 				element.setVisibility(VisibilityKind.PRIVATE_LITERAL);
 			}
-			else if(element instanceof Operation)
+			else if(element instanceof Operation || element instanceof org.eclipse.uml2.uml.Classifier)
 			{
 				element.setVisibility(VisibilityKind.PUBLIC_LITERAL);
 			}
@@ -199,5 +199,16 @@ public abstract class AbstractImporter {
 	protected static PrimitiveType UML2Integer,UML2Bool,UML2String,UML2Real,UML2UnlimitedNatural;
 	protected static Class<?> modelClass=null;
 	protected static WeakHashMap<ModelType<?>, ModelTypeInformation> modelTypeInstancesInfo=null;
+	protected static Operation findOperation(org.eclipse.uml2.uml.Class ownerClass,String name)
+	{
+		for(Operation op:ownerClass.getOperations())
+		{
+			if(op.getName().equals(name))
+			{
+				return op;
+			}
+		}
+		return null;
+	}
 
 }

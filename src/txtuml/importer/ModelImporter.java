@@ -440,7 +440,7 @@ public class ModelImporter extends AbstractImporter{
     	{
             if(isMemberFunction(method)) 
             {    
-            	importOperationBody(MethodImporter.findOperation(ownerClass, method.getName()),ownerClass,sourceClass,method);
+            	importOperationBody(AbstractImporter.findOperation(ownerClass, method.getName()),ownerClass,sourceClass,method);
             }
         }
     }

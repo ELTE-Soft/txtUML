@@ -14,14 +14,8 @@ import txtuml.importer.ModelImporter;
 
 
 public class ExportUML2 {
-	public static void main(String[] args) {
-		if(args.length != 2) {
-			System.out.println("Two command line arguments needed: model class, output directory (relative path).");
-			return;
-		}
-		String modelClassName = args[0];
-		String outputName = args[1];
-		System.out.println("Exporting model: "+modelClassName);
+	public static void exportModel(String modelClassName, String outputName) throws Exception
+	{
 		try {
 			org.eclipse.uml2.uml. Model m = ModelImporter.importModel(modelClassName,outputName);
 			
@@ -47,13 +41,31 @@ public class ExportUML2 {
         	    Files.delete(path);
     	    }
     
-    	    System.out.println("Model exportation was successful");
+    	    
 		}
 		catch(Exception e) 
 		{
-			e.printStackTrace();
+			throw e;
+		}
+	}
+	public static void main(String[] args) {
+		if(args.length != 2) {
+			System.out.println("Two command line arguments needed: model class, output directory (relative path).");
+			return;
+		}
+		String modelClassName = args[0];
+		String outputName = args[1];
+		
+		System.out.println("Exporting model: "+modelClassName);
+		try
+		{	exportModel(modelClassName, outputName);
+			System.out.println("Model exportation was successful");
+		}
+		catch(Exception e)
+		{
 			System.out.println("Error: " + e.getMessage());
 		}
+		
 		System.exit(0);
 	}
 }

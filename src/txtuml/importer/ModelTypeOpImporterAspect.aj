@@ -4,22 +4,9 @@ import org.aspectj.lang.annotation.SuppressAjWarnings;
 
 import txtuml.api.ModelBool;
 import txtuml.api.ModelInt;
-import txtuml.api.ModelString;
 
 public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspect {
 
-	after() returning(ModelInt target) : call((ModelInt).new(int)) && isActive()
-	{
-		ModelTypeOpImporter.createLiteral(target);
-	}
-	after() returning(ModelBool target) : call((ModelBool).new(boolean)) && isActive()
-	{
-		ModelTypeOpImporter.createLiteral(target);
-	}
-	after() returning(ModelString target) : call((ModelString).new(String)) && isActive()
-	{
-		ModelTypeOpImporter.createLiteral(target);
-	}
 	
 	@SuppressAjWarnings
 	ModelInt around(ModelInt target): target(target) && isActive() && call(ModelInt ModelInt.add(ModelInt))

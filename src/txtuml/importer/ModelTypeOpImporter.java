@@ -6,7 +6,7 @@ import txtuml.api.ModelString;
 import txtuml.api.ModelType;
 
 
-public class ModelTypeOpImporter extends InstructionImporter {
+class ModelTypeOpImporter extends AbstractInstructionImporter {
 
 	private enum ModelIntOperations{
 		ADD_LITERAL,
@@ -28,29 +28,6 @@ public class ModelTypeOpImporter extends InstructionImporter {
 		NOTEQ_LITERAL
 	};
 	
-	@SuppressWarnings("unused")
-	private static <T> void createLiteral(ModelType<T> inst)
-	{
-		@SuppressWarnings("unchecked")
-		T val=(T)getObjectFieldVal(inst,"value");
-		String expression=val.toString();
-		
-		boolean literal=true;
-		boolean calculated=false;
-		ModelTypeInformation instInfo;
-		
-		if(val instanceof Integer)
-		{
-			instInfo=new ModelTypeInformation(expression,literal,calculated,(Integer)val);
-		}
-		else
-		{
-			instInfo=new ModelTypeInformation(expression,literal,calculated);
-		}
-		
-		modelTypeInstancesInfo.put(inst,instInfo);
-	}
-
 	private static <T> void createCalculatedModelTypeInstInfo(ModelType<T> inst, String expression)
 	{
 		ModelTypeInformation instInfo=new ModelTypeInformation(expression,false,true);
@@ -172,35 +149,31 @@ public class ModelTypeOpImporter extends InstructionImporter {
 		
 		return (ModelBool) importModelType2OpOperation(target,value,result,operator,isFunction);
 	}
-	@SuppressWarnings("unused")
-	private static ModelInt importModelIntAddOp(ModelInt target, ModelInt val)  {
+	
+	static ModelInt importModelIntAddOp(ModelInt target, ModelInt val)  {
 
 		return importModelInt2OpOperation(target,val,ModelIntOperations.ADD_LITERAL);
 		
 	}
 	
-	@SuppressWarnings("unused")
-	private static ModelInt importModelIntSubtractOp(ModelInt target, ModelInt val) {
+	static ModelInt importModelIntSubtractOp(ModelInt target, ModelInt val) {
 
 		return importModelInt2OpOperation(target,val,ModelIntOperations.SUBTRACT_LITERAL);
 		
 	}
 	
-	@SuppressWarnings("unused")
-	private static ModelInt importModelIntMultiplyOp(ModelInt target, ModelInt val)  {
+	static ModelInt importModelIntMultiplyOp(ModelInt target, ModelInt val)  {
 
 		return importModelInt2OpOperation(target,val,ModelIntOperations.MULTIPLY_LITERAL);
 	}
 	
-	@SuppressWarnings("unused")
-	private static ModelInt importModelIntDivideOp(ModelInt target, ModelInt val){
+	static ModelInt importModelIntDivideOp(ModelInt target, ModelInt val){
 
 		return importModelInt2OpOperation(target,val,ModelIntOperations.DIVIDE_LITERAL);
 		
 	}
 	
-	@SuppressWarnings("unused")
-	private static ModelInt importModelIntRemainderOp(ModelInt target, ModelInt val) {
+	static ModelInt importModelIntRemainderOp(ModelInt target, ModelInt val) {
 
 		return importModelInt2OpOperation(target,val,ModelIntOperations.REMAINDER_LITERAL);
 		
@@ -277,87 +250,73 @@ public class ModelTypeOpImporter extends InstructionImporter {
 		
 	}
 	
-	@SuppressWarnings("unused")
-	private static ModelInt importModelIntNegateOp(ModelInt target)  {
+	static ModelInt importModelIntNegateOp(ModelInt target)  {
 
 		return importModelInt1OpOperation(target,ModelIntOperations.NEGATE_LITERAL);
 		
 	}
-	@SuppressWarnings("unused")
-	private static ModelInt importModelIntAbsOp(ModelInt target) {
+	
+	static ModelInt importModelIntAbsOp(ModelInt target) {
 		return importModelInt1OpOperation(target,ModelIntOperations.ABS_LITERAL);
 	}
 	
-	@SuppressWarnings("unused")
-	private static ModelInt importModelIntSignumOp(ModelInt target) {
+	static ModelInt importModelIntSignumOp(ModelInt target) {
 
 		return importModelInt1OpOperation(target,ModelIntOperations.SIGNUM_LITERAL);
 		
 	}
 
-	@SuppressWarnings("unused")
-	private static ModelBool importModelBoolNotOp(ModelBool target) {
+	static ModelBool importModelBoolNotOp(ModelBool target) {
 		return (ModelBool)importModelType1OpOperation(target,new ModelBool(),"not ",false);
 	}
 	
-	@SuppressWarnings("unused")
-	private static ModelBool importModelBoolOrOp(ModelBool target, ModelBool val)  {
+	static ModelBool importModelBoolOrOp(ModelBool target, ModelBool val)  {
 
 		return importModelBool2OpOperation(target,val,ModelBoolOperations.OR_LITERAL);
 	}
 	
-	@SuppressWarnings("unused")
-	private static ModelBool importModelBoolXorOp(ModelBool target, ModelBool val)  {
+	static ModelBool importModelBoolXorOp(ModelBool target, ModelBool val)  {
 
 		return importModelBool2OpOperation(target,val,ModelBoolOperations.XOR_LITERAL);
 	}
 	
 	
-	@SuppressWarnings("unused")
-	private  static ModelBool importModelBoolAndOp(ModelBool target, ModelBool val)  {
+	static ModelBool importModelBoolAndOp(ModelBool target, ModelBool val)  {
 
 		return importModelBool2OpOperation(target,val,ModelBoolOperations.AND_LITERAL);
 	}
 	
-	@SuppressWarnings("unused")
-	private static ModelBool importModelBoolEqualOp(ModelBool target, ModelBool val)  {
+	static ModelBool importModelBoolEqualOp(ModelBool target, ModelBool val)  {
 
 		return importModelBool2OpOperation(target,val,ModelBoolOperations.EQUAL_LITERAL);
 	}
 	
-	@SuppressWarnings("unused")
-	private static ModelBool importModelBoolNotEqOp(ModelBool target, ModelBool val)  {
+	static ModelBool importModelBoolNotEqOp(ModelBool target, ModelBool val)  {
 
 		return importModelBool2OpOperation(target,val,ModelBoolOperations.NOTEQ_LITERAL);
 	}
 
-	@SuppressWarnings("unused")
-	private static ModelBool importModelIntIsEqualOp(ModelInt left, ModelInt right)
+	static ModelBool importModelIntIsEqualOp(ModelInt left, ModelInt right)
 	{
 		return compareModelInts(left,right,"=");
 	}
 	
-	@SuppressWarnings("unused")
-	private static ModelBool importModelIntIsLessEqualOp(ModelInt left, ModelInt right)
+	static ModelBool importModelIntIsLessEqualOp(ModelInt left, ModelInt right)
 	{
 		return compareModelInts(left,right,"<=");
 	}
 	
-	@SuppressWarnings("unused")
-	private static ModelBool importModelIntIsLessOp(ModelInt left, ModelInt right)
+	static ModelBool importModelIntIsLessOp(ModelInt left, ModelInt right)
 	{
 		return compareModelInts(left,right,"<");
 	}
 	
-
-	@SuppressWarnings("unused")
-	private static ModelBool importModelIntIsMoreEqualOp(ModelInt left, ModelInt right)
+	static ModelBool importModelIntIsMoreEqualOp(ModelInt left, ModelInt right)
 	{
 		return compareModelInts(left,right,">=");
 	}
 	
-	@SuppressWarnings("unused")
-	private static ModelBool importModelIntIsMoreOp(ModelInt left, ModelInt right)
+	static ModelBool importModelIntIsMoreOp(ModelInt left, ModelInt right)
 	{
 		return compareModelInts(left,right,">");
 	}

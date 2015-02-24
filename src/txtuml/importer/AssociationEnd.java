@@ -2,7 +2,7 @@ package txtuml.importer;
 
 import org.eclipse.uml2.uml.AggregationKind;
 
-public class AssociationEnd
+class AssociationEnd
 {
 	private org.eclipse.uml2.uml.Type type;
 	private String name;

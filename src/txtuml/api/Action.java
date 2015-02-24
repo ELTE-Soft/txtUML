@@ -1,7 +1,6 @@
 package txtuml.api;
 
 import txtuml.api.Association.*;
-import txtuml.importer.MethodImporter;
 import txtuml.utils.InstanceCreator;
 
 public abstract class Action implements ModelElement {
@@ -63,7 +62,6 @@ public abstract class Action implements ModelElement {
 
 	public static void For(ModelInt begin, ModelInt end,
 			ParameterizedBlockBody<ModelInt> body) {
-		// TODO import 'For' (simple) into UML2
 
 		for (int i = begin.getValue(); i <= end.getValue(); ++i) {
 			body.run(new ModelInt(i));
@@ -71,47 +69,22 @@ public abstract class Action implements ModelElement {
 	}
 
 	public static void log(String message) { // user log
-		if (MethodImporter.isImporting()) {
-
-		} else {
 			ModelExecutor.log(message);
-		}
-
 	}
 
 	public static void logError(String message) { // user log
-		if (MethodImporter.isImporting()) {
-
-		} else {
 			ModelExecutor.logError(message);
-		}
-
 	}
 
 	static void executorLog(String message) { // api log
-		if (MethodImporter.isImporting()) {
-
-		} else {
 			ModelExecutor.executorLog(message);
-		}
-
 	}
 
 	static void executorFormattedLog(String format, Object... args) { // api log
-		if (MethodImporter.isImporting()) {
-
-		} else {
 			ModelExecutor.executorFormattedLog(format, args);
-		}
-
 	}
 
 	static void executorErrorLog(String message) { // api log
-		if (MethodImporter.isImporting()) {
-
-		} else {
 			ModelExecutor.executorErrorLog(message);
-		}
-
 	}
 }
