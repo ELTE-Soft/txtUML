@@ -6,6 +6,7 @@ package txtuml.export.uml2tocpp;
  * Email:zodiakus (at) elte.hu
  **********************************************************/
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -121,7 +122,7 @@ public class Shared
 			Files.createDirectory(Paths.get(path_));
 		}
 		catch(IOException e){}
-		PrintWriter writer = new PrintWriter(path_+fileName_, "UTF-8");
+		PrintWriter writer = new PrintWriter(path_+File.separator+fileName_, "UTF-8");
         writer.println(source_);
         writer.close();
 	}

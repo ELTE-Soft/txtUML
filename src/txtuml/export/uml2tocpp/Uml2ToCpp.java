@@ -40,7 +40,8 @@ public class Uml2ToCpp
 	private static final String RuntimeFolder=GenerationTemplates.RuntimePath;
 	private static final String RuntimeCppFileLocation=CppFileLocation+RuntimeFolder;
 	private static final String RuntimeLibName="libsmrt.a";
-	private static final String DefaultMakeFileName="projectmakefile";
+	private static final String DefaultMakeFileName="make";
+	private static final String DefaultModelName="main";
 	
 	public static void main(String[] args) 
 	{	
@@ -93,7 +94,7 @@ public class Uml2ToCpp
 				ClassNames.add(item.getName());
 			}
 			
-			createMakeFile(args[1],DefaultMakeFileName,ClassNames,rt);
+			createMakeFile(args[1],DefaultModelName,DefaultMakeFileName,ClassNames,rt);
 			
 			System.out.println("Compile completed");
 		} catch(IOException ioe) 
@@ -112,7 +113,7 @@ public class Uml2ToCpp
 		catch(IOException e){}
 		
 		Files.copy(Paths.get(CppFileLocation+GenerationTemplates.StateMachineBaseHeader),
-				Paths.get(destination_+GenerationTemplates.StateMachineBaseHeader), StandardCopyOption.REPLACE_EXISTING);
+				Paths.get(destination_+File.separator+GenerationTemplates.StateMachineBaseHeader), StandardCopyOption.REPLACE_EXISTING);
 		if(rt_)
 		{
 			try
@@ -121,61 +122,67 @@ public class Uml2ToCpp
 			}
 			catch(IOException e){}
 			Files.copy(Paths.get(RuntimeCppFileLocation+"runtimemain.cpp"),
-					Paths.get(destination_+"main.cpp"), StandardCopyOption.REPLACE_EXISTING);
+					Paths.get(destination_+File.separator+"main.cpp"), StandardCopyOption.REPLACE_EXISTING);
 			Files.copy(Paths.get(RuntimeCppFileLocation+"eventI.hpp"),
-					Paths.get(destination_+RuntimeFolder+"eventI.hpp"), StandardCopyOption.REPLACE_EXISTING);
+					Paths.get(destination_+File.separator+RuntimeFolder+"eventI.hpp"), StandardCopyOption.REPLACE_EXISTING);
 			Files.copy(Paths.get(RuntimeCppFileLocation+"runtime.hpp"),
-					Paths.get(destination_+RuntimeFolder+"runtime.hpp"), StandardCopyOption.REPLACE_EXISTING);
+					Paths.get(destination_+File.separator+RuntimeFolder+"runtime.hpp"), StandardCopyOption.REPLACE_EXISTING);
 			Files.copy(Paths.get(RuntimeCppFileLocation+"runtime.cpp"),
-					Paths.get(destination_+RuntimeFolder+"runtime.cpp"), StandardCopyOption.REPLACE_EXISTING);
+					Paths.get(destination_+File.separator+RuntimeFolder+"runtime.cpp"), StandardCopyOption.REPLACE_EXISTING);
 			Files.copy(Paths.get(RuntimeCppFileLocation+"runtimetypes.hpp"),
-					Paths.get(destination_+RuntimeFolder+"runtimetypes.hpp"), StandardCopyOption.REPLACE_EXISTING);
+					Paths.get(destination_+File.separator+RuntimeFolder+"runtimetypes.hpp"), StandardCopyOption.REPLACE_EXISTING);
 			Files.copy(Paths.get(RuntimeCppFileLocation+"statemachineI.hpp"),
-					Paths.get(destination_+RuntimeFolder+"statemachineI.hpp"), StandardCopyOption.REPLACE_EXISTING);
+					Paths.get(destination_+File.separator+RuntimeFolder+"statemachineI.hpp"), StandardCopyOption.REPLACE_EXISTING);
 			Files.copy(Paths.get(RuntimeCppFileLocation+"statemachineI.cpp"),
-					Paths.get(destination_+RuntimeFolder+"statemachineI.cpp"), StandardCopyOption.REPLACE_EXISTING);
+					Paths.get(destination_+File.separator+RuntimeFolder+"statemachineI.cpp"), StandardCopyOption.REPLACE_EXISTING);
 			Files.copy(Paths.get(RuntimeCppFileLocation+"threadpool.hpp"),
-					Paths.get(destination_+RuntimeFolder+"threadpool.hpp"), StandardCopyOption.REPLACE_EXISTING);
+					Paths.get(destination_+File.separator+RuntimeFolder+"threadpool.hpp"), StandardCopyOption.REPLACE_EXISTING);
 			Files.copy(Paths.get(RuntimeCppFileLocation+"threadpool.cpp"),
-					Paths.get(destination_+RuntimeFolder+"threadpool.cpp"), StandardCopyOption.REPLACE_EXISTING);
+					Paths.get(destination_+File.separator+RuntimeFolder+"threadpool.cpp"), StandardCopyOption.REPLACE_EXISTING);
 			Files.copy(Paths.get(RuntimeCppFileLocation+"threadsafequeue.hpp"),
-					Paths.get(destination_+RuntimeFolder+"threadsafequeue.hpp"), StandardCopyOption.REPLACE_EXISTING);
+					Paths.get(destination_+File.separator+RuntimeFolder+"threadsafequeue.hpp"), StandardCopyOption.REPLACE_EXISTING);
 		}
 		else
 		{
 			Files.copy(Paths.get(CppFileLocation+"main.cpp"),
-					Paths.get(destination_+"main.cpp"), StandardCopyOption.REPLACE_EXISTING);
+					Paths.get(destination_+File.separator+"main.cpp"), StandardCopyOption.REPLACE_EXISTING);
 		}
 		
 	}
 
-	private static void createMakeFile(String path_,String outputName_,List<String> classNames_,Boolean rt_) throws FileNotFoundException, UnsupportedEncodingException
+	private static void createMakeFile(String path_,String outputName_,String makefileName_,List<String> classNames_,Boolean rt_) throws FileNotFoundException, UnsupportedEncodingException
 	{
-		String makeFile="CC="+DefaultCompiler+"\n\n";
-		
-		if(rt_)
-		{
-			makeFile+="runtime: "+RuntimeFolder+"runtime.cpp "+RuntimeFolder+"statemachineI.cpp "+RuntimeFolder+"threadpool.cpp\n"+
-					"\t$(CC) -c "+RuntimeFolder+"runtime.cpp "+RuntimeFolder+"statemachineI.cpp "+RuntimeFolder+"threadpool.cpp -std=c++11 -I.\n\n"+
-					"ar rcs "+RuntimeLibName+" runtime.o statemachineI.o threadpool.o.\n\n"
-					;
-		}
+		String makeFile="CC="+DefaultCompiler+"\n\nall: "+outputName_+"\n\n";
 		
 		makeFile+=outputName_+":";
+		if(rt_)
+		{
+			makeFile+=" "+RuntimeLibName;
+		}
+		
 		String fileList=" main.cpp";
 		for(String file:classNames_)
 		{
 			fileList+=" "+GenerationTemplates.SourceName(file);
 		}
+		
+
 		makeFile+=fileList+"\n";
-		makeFile+="\t$(CC) -o "+outputName_+fileList+" -std=c++11 -I";
+		makeFile+="\t$(CC) -o "+outputName_+fileList+" -std=c++11";
+		if(rt_)
+		{
+			makeFile+=" -I "+RuntimeFolder+" -LC "+RuntimeLibName;
+		}
 		
 		if(rt_)
 		{
-			makeFile+=" "+RuntimeFolder+" -LC "+RuntimeLibName;
+			makeFile+="\n\n"+RuntimeLibName+": runtime runtime.o statemachineI.o threadpool.o\n"+
+					"\tar rcs "+RuntimeLibName+" runtime.o statemachineI.o threadpool.o\n\n"+
+					".PHONY:runtime\n"+
+					"runtime:\n\t$(CC) -c "+RuntimeFolder+"runtime.cpp "+RuntimeFolder+"statemachineI.cpp "+RuntimeFolder+"threadpool.cpp -std=c++11";
 		}
 		
-		Shared.writeOutSource(path_, outputName_+".makefile", makeFile+".");
+		Shared.writeOutSource(path_, makefileName_+".makefile", makeFile);
 	}
 
 	private static String createEventSource(EList<Element> elements_,Boolean rt_)
