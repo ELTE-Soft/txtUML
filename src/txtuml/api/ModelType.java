@@ -7,7 +7,7 @@ public abstract class ModelType<T> extends ModelIdentifiedElementImpl implements
 
 	protected ModelType(T val) {
 		super();
-		value=val;
+		value = val;
 	}
 
 	protected ModelType() {

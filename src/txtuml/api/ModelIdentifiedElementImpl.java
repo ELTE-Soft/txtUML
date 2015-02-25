@@ -4,9 +4,9 @@ abstract class ModelIdentifiedElementImpl implements ModelIdentifiedElement {
 
 	private static Integer counter = 0;
 	private final String identifier;
-	
+
 	protected ModelIdentifiedElementImpl() {
-		synchronized(counter) {
+		synchronized (counter) {
 			this.identifier = "inst_" + counter++;
 		}
 	}

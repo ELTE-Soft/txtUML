@@ -10,7 +10,7 @@ public class Timer extends ExternalClass {
 
 	public static Handle start(ModelClass targetObj, Signal signal,
 			ModelInt millisecs) {
-		ModelExecutor.Settings.lockSimulationTimeMultiplier();
+		ModelExecutor.Settings.getExecutionTimeMultiplier();
 		return new Handle(targetObj, signal, millisecs);
 	}
 
@@ -35,7 +35,7 @@ public class Timer extends ExternalClass {
 
 		private long queryLong() {
 			return handle.getDelay(TimeUnit.MILLISECONDS)
-					* ModelExecutor.Settings.getSimulationTimeMultiplier();
+					* ModelExecutor.Settings.getExecutionTimeMultiplier();
 		}
 
 		public ModelInt query() {
@@ -63,7 +63,7 @@ public class Timer extends ExternalClass {
 
 		private void schedule(ModelInt millisecs) {
 			handle = scheduler.schedule(action, ((long) convert(millisecs))
-					/ ModelExecutor.Settings.getSimulationTimeMultiplier(),
+					/ ModelExecutor.Settings.getExecutionTimeMultiplier(),
 					TimeUnit.MILLISECONDS);
 		}
 	}

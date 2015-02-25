@@ -11,14 +11,17 @@ import txtuml.utils.InstanceCreator;
 public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 		ModelElement, ModelIdentifiedElement {
 
+	/*
+	 * DESTROYED status is currently unreachable, FINALIZED is only by a class
+	 * which has no state machine.
+	 */
 	private enum Status {
-		READYTOSTART, ACTIVE, FINALIZED, DESTROYED
+		READY, ACTIVE, FINALIZED, DESTROYED
 	}
 
 	private static Map<Class<?>, Class<? extends InitialState>> initialStates = new HashMap<>();
 	private final Map<Class<?>, Object> innerClassInstances = new HashMap<>();
 	private final Map<Class<? extends AssociationEnd<?>>, AssociationEnd<?>> associations = new HashMap<>();
-	private final ModelExecutorThread executorThread;
 	private State currentState;
 	private Status STATUS;
 
@@ -81,10 +84,7 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 		this.innerClassInstances.put(getClass(), this);
 
 		if (!ModelImporter.isImporting()) {
-			this.executorThread = ModelExecutor.getExecutorThread();
 			setCurrentStateToInitial();
-		} else {
-			this.executorThread = null;
 		}
 	}
 
@@ -92,7 +92,7 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 		Class<? extends InitialState> initStateClass = getInitialState(getClass());
 		if (initStateClass != null) {
 			currentState = getInnerClassInstance(initStateClass);
-			STATUS = Status.READYTOSTART;
+			STATUS = Status.READY;
 		} else {
 			STATUS = Status.FINALIZED;
 		}
@@ -121,23 +121,22 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 	}
 
 	void start() {
-		if (STATUS != Status.READYTOSTART) {
+		if (STATUS != Status.READY) {
 			return;
 		}
-		send(null);
-		// to move from initial state
+		send(null); // to move from initial state
 		STATUS = Status.ACTIVE;
 	}
 
 	void send(Signal signal) {
-		executorThread.send(this, signal);
+		ModelExecutor.send(this, signal);
 	}
 
 	void processSignal(Signal signal) {
 		if (currentState == null) { // no state machine
 			return;
 		}
-		if (ModelExecutor.Settings.executorLogStatic() && signal != null) {
+		if (ModelExecutor.Settings.executorLog() && signal != null) {
 			Action.executorFormattedLog("%10s %-15s    got signal: %-18s%n",
 					getClass().getSimpleName(), getIdentifier(), signal
 							.getClass().getSimpleName());
@@ -298,7 +297,7 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 				.value();
 		Class<? extends State> to = transitionClass.getAnnotation(To.class)
 				.value();
-		if (ModelExecutor.Settings.executorLogStatic()) {
+		if (ModelExecutor.Settings.executorLog()) {
 			Action.executorFormattedLog(
 					"%10s %-15s changes state: from: %-10s tran: %-18s to: %-10s%n",
 					getClass().getSimpleName(), getIdentifier(),
@@ -322,7 +321,7 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 
 	private void callExitAction(Class<? extends State> from) {
 		while (currentState.getClass() != from) {
-			if (ModelExecutor.Settings.executorLogStatic()) {
+			if (ModelExecutor.Settings.executorLog()) {
 				Action.executorFormattedLog(
 						"%10s %-15s   exits state: %-18s%n", getClass()
 								.getSimpleName(), getIdentifier(), currentState
@@ -343,7 +342,7 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 			Class<? extends InitialState> initStateClass = getInitialState(currentState
 					.getClass());
 			if (initStateClass != null) {
-				if (ModelExecutor.Settings.executorLogStatic()) {
+				if (ModelExecutor.Settings.executorLog()) {
 					Action.executorFormattedLog(
 							"%10s %-15s  enters state: %-18s%n", getClass()
 									.getSimpleName(), getIdentifier(),

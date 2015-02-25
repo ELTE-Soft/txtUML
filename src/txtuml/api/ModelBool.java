@@ -12,7 +12,6 @@ public class ModelBool extends ModelType<Boolean> {
 		}
 	}
 
-
 	public ModelBool(boolean val) {
 		super(val);
 	}

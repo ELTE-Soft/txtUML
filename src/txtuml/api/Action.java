@@ -69,22 +69,22 @@ public abstract class Action implements ModelElement {
 	}
 
 	public static void log(String message) { // user log
-			ModelExecutor.log(message);
+		ModelExecutor.log(message);
 	}
 
 	public static void logError(String message) { // user log
-			ModelExecutor.logError(message);
+		ModelExecutor.logError(message);
 	}
 
 	static void executorLog(String message) { // api log
-			ModelExecutor.executorLog(message);
+		ModelExecutor.executorLog(message);
 	}
 
 	static void executorFormattedLog(String format, Object... args) { // api log
-			ModelExecutor.executorFormattedLog(format, args);
+		ModelExecutor.executorFormattedLog(format, args);
 	}
 
 	static void executorErrorLog(String message) { // api log
-			ModelExecutor.executorErrorLog(message);
+		ModelExecutor.executorErrorLog(message);
 	}
 }

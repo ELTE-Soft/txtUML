@@ -2,81 +2,30 @@ package txtuml.api;
 
 import java.io.PrintStream;
 
-// WARNING: file is in a completely temporary state.
-
-// currently singleton, will have more instances in the future
-
-public final class ModelExecutor<MODEL extends Model> implements ModelElement {
+/*
+ * Currently not instantiatable, will have more instances in the future.
+ */
+public final class ModelExecutor implements ModelElement {
 	/*
-	 * This class has to be thread-safe as every component will communicate with
-	 * it.
+	 * Accessed from multiple threads, so must be thread-safe.
 	 */
 
-	private static final Object LOCK = new Object(); // TODO change to non-static when possible
-	private static ModelExecutorThread thread = null; // TODO erase when possible
-	
-	private final Settings settings = new Settings();
-	//private final MODEL model;
-	//private final Configuration<MODEL> configuration;
-	private ModelExecutorThread.Group executorGroup = null;
-
-	/*
-	public ModelExecutor(Class<MODEL> modelClass,
-			Configuration<MODEL> configuration) {
-		
-		if (modelClass == null || configuration == null) {
-			throw new IllegalArgumentException(
-					"ModelExecutor instance cannot be created with null parameters.");
-		}
-		this.model = InstanceCreator.createInstanceWithGivenParams(modelClass); // null
-																				// parameter
-																				// constructor
-																				// is
-																				// called
-		if (this.model == null) {
-			throw new IllegalArgumentException(
-					"Instantiation of given modelClass type failed: given type cannot be instantiated with null parameter constructor.");
-		}
-		this.configuration = configuration;
-	}
-	*/
-	
-	private ModelExecutor() { // TODO erase when possible
+	private ModelExecutor() {
 	}
 
-	static ModelExecutorThread getExecutorThread() {
-		/*
-		try {
-			return ((ModelExecutorThread) Thread.currentThread());
-		} catch (ClassCastException ex) {
-			System.err
-					.println("Error: model commands can only be executed from within the context of a model and run by an instance of ModelExecutor class.");
-			throw ex;
-		}
-		*/
-		synchronized (LOCK) {
-			if (thread == null) {
-				thread = new ModelExecutorThread(new ModelExecutorThread.Group(new ModelExecutor<Model>()));
-				thread.start();
-			}
-			return thread;
-		}
-	}
-	
-	static ModelExecutor<?> getExecutor() {
-		return getExecutorThread().getExecutor();
-	}
-
-	Settings getSettings() {
-		return settings;
+	static ModelExecutorThread getExecutorThreadStatic() {
+		return ModelExecutorThread.getSingletonInstance();
 	}
 
 	static Settings getSettingsStatic() {
-		return getExecutor().settings;
+		return Settings.instance;
 	}
 
 	// SETTINGS
 
+	/*
+	 * Currently singleton.
+	 */
 	public static final class Settings implements ModelElement {
 		/*
 		 * In the setters of the four streams, no synchronization is needed
@@ -85,13 +34,17 @@ public final class ModelExecutor<MODEL extends Model> implements ModelElement {
 		 * the old stream in either way.
 		 */
 
+		private static final Settings instance = new Settings();
+
 		private PrintStream userOutStream = System.out;
 		private PrintStream userErrorStream = System.err;
 		private PrintStream executorOutStream = System.out;
 		private PrintStream executorErrorStream = System.err;
-		private long simulationTimeMultiplier = 1;
-		private boolean canChangeSimulationTimeMultiplier = true;
 		private boolean executorLog = false;
+
+		private final Object lockOnExecutionTimeMultiplier = new Object();
+		private long executionTimeMultiplier = 1;
+		private boolean canChangeExecutionTimeMultiplier = true;
 
 		private Settings() {
 		}
@@ -113,76 +66,43 @@ public final class ModelExecutor<MODEL extends Model> implements ModelElement {
 			getSettingsStatic().executorErrorStream = executorErrorStream;
 		}
 
-		@SuppressWarnings("static-access")
 		public static void setExecutorLog(boolean newValue) {
-			ModelExecutor<?> executor = getExecutor();
-			synchronized (executor.LOCK) {
-				executor.getSettings().executorLog = newValue;
-			}
+			getSettingsStatic().executorLog = newValue;
 		}
 
-		@SuppressWarnings("static-access")
-		public static void setSimulationTimeMultiplier(long newMultiplier) {
-			ModelExecutor<?> executor = getExecutor();
-			synchronized (executor.LOCK) {
-				Settings settings = executor.getSettings();
-				if (settings.canChangeSimulationTimeMultiplier) {
-					settings.simulationTimeMultiplier = newMultiplier;
+		public static void setExecutionTimeMultiplier(long newMultiplier) {
+			Settings settings = getSettingsStatic();
+			synchronized (settings.lockOnExecutionTimeMultiplier) {
+				if (settings.canChangeExecutionTimeMultiplier) {
+					settings.executionTimeMultiplier = newMultiplier;
 				} else {
-					Action.executorErrorLog("Error: Simulation time multiplier can only be changed before any time-related event has taken place in the model simulation.");
+					// TODO show error
 				}
 			}
 		}
 
-		public static long getSimulationTimeMultiplier() {
-			return getSettingsStatic().simulationTimeMultiplier;
-		}
-
-		@SuppressWarnings("static-access")
-		public static void lockSimulationTimeMultiplier() {
-			ModelExecutor<?> executor = getExecutor();
-			synchronized (executor.LOCK) {
-				executor.getSettings().canChangeSimulationTimeMultiplier = false;
+		public static long getExecutionTimeMultiplier() {
+			/*
+			 * Reading a long value is not atomic, so synchronization is needed.
+			 */
+			synchronized (getSettingsStatic().lockOnExecutionTimeMultiplier) {
+				return getSettingsStatic().executionTimeMultiplier;
 			}
 		}
 
-		boolean executorLog() {
-			return executorLog;
+		public static void lockExecutionTimeMultiplier() {
+			getSettingsStatic().canChangeExecutionTimeMultiplier = false;
 		}
 
-		static boolean executorLogStatic() {
+		static boolean executorLog() {
 			return getSettingsStatic().executorLog;
 		}
 	}
 
-	// START EXECUTION
+	// EXECUTION
 
-	/*public*/ void start() {
-		if (executorGroup != null) {
-			System.err
-					.println("A ModelExecutor instance can only perform one execution at a time.");
-			return;
-		}
-		executorGroup = new ModelExecutorThread.Group(this);
-
-		new MainModelExecutorThread(executorGroup).start();
-	}
-
-	// MAIN THREAD
-
-	private class MainModelExecutorThread extends ModelExecutorThread {
-
-		MainModelExecutorThread(Group group) {
-			super(group);
-		}
-
-		/*
-		@Override
-		public void run() {
-			configuration.configure(model);
-			super.run();
-		}
-		*/
+	static void send(ModelClass target, Signal signal) {
+		getExecutorThreadStatic().send(target, signal);
 	}
 
 	// LOGGING METHODS

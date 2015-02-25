@@ -1,7 +1,7 @@
 package txtuml.api;
 
 public abstract class Event extends ModelIdentifiedElementImpl implements
-ModelElement, ModelIdentifiedElement{
+		ModelElement, ModelIdentifiedElement {
 	Event() {
 	}
 }

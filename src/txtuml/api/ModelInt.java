@@ -7,12 +7,12 @@ public class ModelInt extends ModelType<Integer> {
 	public ModelInt(int val) {
 		super(val);
 	}
+
 	public ModelInt(long val) {
 		this((int) val);
 	}
 
-	public ModelInt()
-	{
+	public ModelInt() {
 		this(0);
 	}
 

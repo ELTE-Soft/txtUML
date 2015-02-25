@@ -2,25 +2,24 @@ package txtuml.api;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
-//WARNING: file is in a completely temporary state.
-
-//currently singleton, will have more instances in the future
-
+/*
+ * Currently singleton, will have more instances in the future.
+ */
 class ModelExecutorThread extends Thread {
 	
-	private ModelExecutor<?> executor;
+	private static final ModelExecutorThread instance = new ModelExecutorThread();;
 	private LinkedBlockingQueue<QueueEntry> mailbox;
-		
-	ModelExecutorThread(Group group) {
-		super(group, null, "ExecutorThread");
-		this.executor = group.getExecutor();
-		this.mailbox = new LinkedBlockingQueue<>(); 
+
+	private ModelExecutorThread() {
+		this.mailbox = new LinkedBlockingQueue<>();
+		this.start();
 	}
 
-	ModelExecutor<?> getExecutor() {
-		return executor;
+	static ModelExecutorThread getSingletonInstance() {
+		return instance;
+
 	}
-	
+
 	void send(ModelClass target, Signal signal) {
 		try {
 			mailbox.put(new QueueEntry(target, signal));
@@ -30,7 +29,7 @@ class ModelExecutorThread extends Thread {
 
 	@Override
 	public void run() {
-		try { // TODO component
+		try {
 			while (true) {
 				QueueEntry entry = mailbox.take();
 				entry.target.processSignal(entry.signal);
@@ -38,7 +37,7 @@ class ModelExecutorThread extends Thread {
 		} catch (InterruptedException e) { // do nothing (finish thread)
 		}
 	}
-	
+
 	private static class QueueEntry {
 
 		ModelClass target;
@@ -47,20 +46,6 @@ class ModelExecutorThread extends Thread {
 		QueueEntry(ModelClass target, Signal signal) {
 			this.target = target;
 			this.signal = signal;
-		}		
-	}
-	
-	static class Group extends ThreadGroup {
-
-		private ModelExecutor<?> executor;
-		
-		public Group(ModelExecutor<?> executor) {
-			super("ModelExecutorThreadGroup");
-			this.executor = executor;
-		}
-
-		ModelExecutor<?> getExecutor() {
-			return executor;
 		}
 	}
 }
