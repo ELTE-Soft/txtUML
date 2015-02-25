@@ -1,5 +1,10 @@
 package txtuml.export.uml2tocpp;
 
+/***********************************************************
+ * Author: Hack János
+ * Version 0.9 2014.02.25
+ * Email:zodiakus (at) elte.hu
+ **********************************************************/
 
 import java.util.Map;
 
@@ -11,7 +16,6 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
-
 
 
 public class Util {
@@ -43,19 +47,15 @@ public class Util {
 
 		}
 	
-	  public static Model loadModel(String modelUri) 
+	  public static Model loadModel(String modelUri)
 	  {
-
 	    ResourceSet resSet = new ResourceSetImpl();
 	    resSet.getPackageRegistry().put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
 
 	    resSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION, UMLResource.Factory.INSTANCE);
 	    Map<URI, URI> uriMap = resSet.getURIConverter().getURIMap();
-		URI _uri = URI.createURI("jar:file:umlplugins/org.eclipse.uml2.uml.resources_4.1.0.v20140202-2055.jar!/"); // for example
-		uriMap.put(URI.createURI(UMLResource.LIBRARIES_PATHMAP), _uri.appendSegment("libraries").appendSegment(""));//ha nem húzzuk be a típusnevek null-értékûek
-		//uriMap.put(URI.createURI(UMLResource.METAMODELS_PATHMAP), _uri.appendSegment("metamodels").appendSegment(""));//passz, egyenlõre nincs hiba
-		//uriMap.put(URI.createURI(UMLResource.PROFILES_PATHMAP), _uri.appendSegment("profiles").appendSegment(""));//passz, egyenlõre nincs hiba
-		
+		URI _uri =URI.createURI("jar:"+org.eclipse.uml2.uml.resources.ResourcesPlugin.INSTANCE.getBaseURL().getPath());
+		uriMap.put(URI.createURI(UMLResource.LIBRARIES_PATHMAP), _uri.appendSegment("libraries").appendSegment(""));//make the load of the type names from the .uml file possible
 		UMLResourcesUtil.init(resSet);
 	    
 	    // Get the resource
@@ -66,5 +66,7 @@ public class Util {
 	    Model model = (Model) resource.getContents().get(0);
 	    return model;
 	  }
+	  
+
 
 }

@@ -1,4 +1,5 @@
 package txtuml.export.javatocpp;
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -11,7 +12,7 @@ import txtuml.export.uml2tocpp.Uml2ToCpp;
 
 public class javatocpp {
 	public static void main(String[] args) {
-		if(args.length != 2) {
+		if(args.length < 2) {
 			System.out.println("Two command line arguments needed: model class, output directory");
 			return;
 		}
@@ -27,7 +28,7 @@ public class javatocpp {
 	        resource.getContents().add(m);
             resource.save(null); // no save options needed
             
-            Uml2ToCpp.buildCppCode(m,args[1]);
+            Uml2ToCpp.buildCppCode(m,args);
 		}
 		catch(Exception e) 
 		{
