@@ -74,11 +74,11 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 	
 	void around(): 
 		(
-			call(void Action.log(String)) || 
-			call(void Action.logError(String)) ||
-			call(void Action.executorLog(String)) ||
-			call(void Action.executorFormattedLog(String, Object...)) ||
-			call(void Action.executorErrorLog(String))
+			call(void Action.log(..)) || 
+			call(void Action.logError(..)) ||
+			call(void Action.executorLog(..)) ||
+			call(void Action.executorFormattedLog(..)) ||
+			call(void Action.executorErrorLog(..))
 		)
 		&& isActive()
 	{

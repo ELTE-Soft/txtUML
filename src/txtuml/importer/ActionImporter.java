@@ -9,13 +9,10 @@ import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.DestroyLinkAction;
 import org.eclipse.uml2.uml.LinkAction;
 import org.eclipse.uml2.uml.LinkEndData;
-import org.eclipse.uml2.uml.OpaqueAction;
-import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.SendSignalAction;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.Type;
-import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValuePin;
 
@@ -103,8 +100,10 @@ class ActionImporter extends AbstractInstructionImporter {
 			try
 			{
 				ModelIdentifiedElement attributeInstance=(ModelIdentifiedElement) getObjectFieldVal(event,attributeName);
-				String instanceExpr=getExpression(attributeInstance);
-				addOpaqueExpressionToValuePin(argValuePin,instanceExpr,attributeType);
+				
+				addExpressionToValuePin(argValuePin,attributeInstance,attributeType);
+				
+				
 			}
 			catch(Exception e)
 			{
@@ -113,6 +112,8 @@ class ActionImporter extends AbstractInstructionImporter {
 
 		}
 	}
+	
+	
 	static void importSignalSend(ModelClass receiver, txtuml.api.Signal event) 
 	{
 		if(currentActivity != null) 
@@ -199,18 +200,14 @@ class ActionImporter extends AbstractInstructionImporter {
 
 		lastNode=decisionNode;
 
-		OpaqueAction elseDummyNode=createNextDummyNode();
-		ActivityEdge elseFirstEdge=createControlFlowBetweenNodes(decisionNode,elseDummyNode);
-		addGuardToEdge(elseFirstEdge, "else");
-
 		Pair<ActivityNode,ActivityEdge> importThenBodyResult=importBlockBody(body);
 		ActivityEdge thenFirstEdge=importThenBodyResult.getValue();
 		ActivityNode thenLastNode=importThenBodyResult.getKey();
-		addGuardToEdge(thenFirstEdge, condExpr);
+		addGuardToActivityEdge(thenFirstEdge, condExpr);
 
 		createFlowBetweenNodes(thenLastNode,decisionNode);
-		lastNode=elseDummyNode;
-
+		unfinishedDecisionNodes.push(decisionNode);
+		lastNode=decisionNode;
 
 	}
 
@@ -221,7 +218,7 @@ class ActionImporter extends AbstractInstructionImporter {
 		Pair<ActivityNode,ActivityEdge> importBlockBodyResult=importBlockBody(thenBody);
 		ActivityEdge thenFirstEdge=importBlockBodyResult.getValue();
 		ActivityNode thenLastNode=importBlockBodyResult.getKey();
-		addGuardToEdge(thenFirstEdge, condExpr);
+		addGuardToActivityEdge(thenFirstEdge, condExpr);
 
 		lastNode=thenLastNode;
 
@@ -239,24 +236,17 @@ class ActionImporter extends AbstractInstructionImporter {
 		Pair<ActivityNode,ActivityEdge> importThenBodyResult=importBlockBody(thenBody);
 		ActivityEdge thenFirstEdge=importThenBodyResult.getValue();
 		ActivityNode thenLastNode=importThenBodyResult.getKey();
-		addGuardToEdge(thenFirstEdge, condExpr);
+		addGuardToActivityEdge(thenFirstEdge, condExpr);
 
 		lastNode=decisionNode;
 
 		Pair<ActivityNode,ActivityEdge> importElseBodyResult=importBlockBody(elseBody);
 		ActivityEdge elseFirstEdge=importElseBodyResult.getValue();
 		ActivityNode elseLastNode=importElseBodyResult.getKey();
-		addGuardToEdge(elseFirstEdge, "else");
+		addGuardToActivityEdge(elseFirstEdge, "else");
 
 		lastNode=createMergeNode(thenLastNode,elseLastNode);
 
-	}
-
-	static void addGuardToEdge(ActivityEdge edge, String expression)
-	{
-		OpaqueExpression opaqueExpression=(OpaqueExpression) UMLFactory.eINSTANCE.createOpaqueExpression();
-		opaqueExpression.getBodies().add(expression);
-		edge.setGuard(opaqueExpression);
 	}
 
 	static void importForStatement(ModelInt from, ModelInt to, ParameterizedBlockBody<ModelInt> body) 
@@ -274,26 +264,16 @@ class ActionImporter extends AbstractInstructionImporter {
 
 		lastNode=decisionNode;
 
-		OpaqueAction elseDummyNode=createNextDummyNode();
-		ActivityEdge elseFirstEdge=createControlFlowBetweenNodes(decisionNode,elseDummyNode);
-		addGuardToEdge(elseFirstEdge, "else");
-
 		Pair<ActivityNode,ActivityEdge> importThenBodyResult=importParameterizedBlockBody(body,loopVar);
 		ActivityEdge thenFirstEdge=importThenBodyResult.getValue();
 		ActivityNode thenLastNode=importThenBodyResult.getKey();
-		addGuardToEdge(thenFirstEdge, condExpr);
+		addGuardToActivityEdge(thenFirstEdge, condExpr);
 
 		createFlowBetweenNodes(thenLastNode,decisionNode);
-		lastNode=elseDummyNode;
+		
+		unfinishedDecisionNodes.push(decisionNode);
+		lastNode=decisionNode;
 
-	}
-
-	private static OpaqueAction createNextDummyNode()
-	{
-		++cntDummyNodes;
-		String name="dummy"+cntDummyNodes;
-		OpaqueAction dummyNode=(OpaqueAction) currentActivity.createOwnedNode(name,UMLPackage.Literals.OPAQUE_ACTION);
-		return dummyNode;
 	}
 
 	private static DecisionNode createNextDecisionNode()

@@ -108,7 +108,6 @@ public class MethodImporter extends AbstractMethodImporter {
 		currentMethod=sourceMethod;
 		cntBlockBodiesBeingImported=0;
 		blockBodyFirstEdges=new Stack<ActivityEdge>();
-		cntDummyNodes=0;
 		cntDecisionNodes=0;
 		importing=true;
 		

@@ -45,7 +45,6 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 	}
 
 	public abstract class Choice extends State {
-		// TODO import 'Choice' into UML2
 
 		public final void entry() {
 		}

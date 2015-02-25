@@ -42,29 +42,11 @@ public privileged aspect ImporterAspect extends AbstractImporterAspect {
 		return InstructionImporter.importAssociationEnd_SelectOne(target);
 	}
 
-	
-/*	Signal around(Transition target): call(Signal getSignal()) && importing() && target(target)
-	{
-		if(target.signal==null)	
-		{
-			target.signal= MethodImporter.createSignal(target.getClass());
-		}
-		return target.signal;
-	}*/
-	
-
 	@SuppressAjWarnings
 	after(ModelClass target): execution((ModelClass+).new(..)) && isActive() && target(target)
 	{
 		InstructionImporter.importInstanceCreation(target);
 	}
-	
-	/*void around(ModelClass target): call(void startThread()) && importing()  && target(target)
-	{
-		//do nothing when importing and startThread is called on a ModelClass
-	}
-*/
-	
 	
 	
 	@SuppressAjWarnings

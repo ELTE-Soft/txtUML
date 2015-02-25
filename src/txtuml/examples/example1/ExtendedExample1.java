@@ -110,6 +110,8 @@ class ExtendedModel1 extends Model {
 			Timer.Handle t1 = Timer.start(myMachine, new ButtonPress(), new ModelInt(2000)); // switching off the machine with delay
 			t1.add(new ModelInt(3000));
 
+			Action.send(myMachine, new ButtonPress());
+						
 			Action.log("User: work finished...");
 		}
 		
@@ -207,8 +209,7 @@ class ExtendedModel1 extends Model {
 						() -> log("Number lesser than three."),
 						() -> log("Number is not lesser than three.")
 				) );
-		
-		
+			
 		log("Machine and users are starting.");
 		start(m);
 		start(u1);

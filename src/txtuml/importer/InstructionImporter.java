@@ -238,10 +238,9 @@ class InstructionImporter extends AbstractInstructionImporter {
 			{
 				throw new ImportException("Illegal argument (position "+(i+1)+ ") passed to method "+target+"."+methodName);
 			}
-			String paramExpression=getExpression((ModelIdentifiedElement)param);
 
 			ValuePin argValuePin=(ValuePin)callAction.createArgument(paramName, paramType, UMLPackage.Literals.VALUE_PIN);
-			addOpaqueExpressionToValuePin(argValuePin,paramExpression,paramType);
+			addExpressionToValuePin(argValuePin,(ModelIdentifiedElement)param,paramType);
 			++i;
 		}
 	}
@@ -409,10 +408,8 @@ class InstructionImporter extends AbstractInstructionImporter {
 			Object fieldObj=initField(target,fieldName,newValue);
 			if(currentActivity!=null)
 			{
-
-				String newValueExpression=getExpression((ModelIdentifiedElement)newValue);			
 				Type newValType=ModelImporter.importType(newValue.getClass());
-				setStructuralFeatureValue(target,fieldName,newValueExpression,newValType);
+				setStructuralFeatureValue(target,fieldName,(ModelIdentifiedElement)newValue,newValType);
 
 			}
 

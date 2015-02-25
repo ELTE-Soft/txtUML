@@ -9,8 +9,10 @@ import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.AddStructuralFeatureValueAction;
 import org.eclipse.uml2.uml.AddVariableValueAction;
+import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.JoinNode;
+import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.ObjectNode;
@@ -19,6 +21,7 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.ReadVariableAction;
 import org.eclipse.uml2.uml.Type;
+import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValuePin;
 import org.eclipse.uml2.uml.Variable;
@@ -27,15 +30,16 @@ import txtuml.api.Event;
 import txtuml.api.ModelClass;
 import txtuml.api.ModelIdentifiedElement;
 import txtuml.api.ModelInt;
+import txtuml.api.ModelString;
 import txtuml.api.ModelType;
 import txtuml.utils.InstanceCreator;
 
 abstract class AbstractMethodImporter extends AbstractImporter {
-	
+
 	public static boolean isImporting() {
 		return importing;
 	}
-	
+
 	protected static <T> T createLocalInstance(Class<T> typeClass,Object... givenParameters)
 	{
 		setLocalInstanceToBeCreated(true);
@@ -43,19 +47,19 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		setLocalInstanceToBeCreated(false);
 		return createdObject;
 	}
-	
+
 	protected static ReadVariableAction createReadVariableAction(String variableName,Type variableType)
 	{
 		ReadVariableAction readVariableAction	=	(ReadVariableAction)
 				currentActivity.createOwnedNode("get_"+variableName,UMLPackage.Literals.READ_VARIABLE_ACTION);
-	
+
 		readVariableAction.setVariable(currentActivity.getVariable(variableName,variableType));
-		
-		
+
+
 		return readVariableAction;
-	
+
 	}
-	
+
 	protected static ReadStructuralFeatureAction createReadStructuralFeatureAction(ModelClass targetClass, String fieldName, Type valueType)
 	{
 		String targetName=getObjectIdentifier(targetClass);
@@ -63,64 +67,65 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		String fieldQualifiedName=targetName+"."+fieldName;
 		ReadStructuralFeatureAction readStrFeatAction = (ReadStructuralFeatureAction) 
 				currentActivity.createOwnedNode("get_"+fieldQualifiedName,UMLPackage.Literals.READ_STRUCTURAL_FEATURE_ACTION);
-		
+
 		Property field=getClassField(targetClass,fieldName);
 		readStrFeatAction.setStructuralFeature(field);
-		
+
 		ValuePin rsfa_object=(ValuePin) readStrFeatAction.createObject(readStrFeatAction.getName()+"_input",targetType,UMLPackage.Literals.VALUE_PIN);
 		addOpaqueExpressionToValuePin(rsfa_object,targetName,targetType);
-		
+
 		return readStrFeatAction;
 	}
-	
+
 	protected static void setVariableValue(ModelIdentifiedElement target, String valueExpression)
 	{
 		String targetInstanceName=getObjectIdentifier(target);
 		Type type=ModelImporter.importType(target.getClass());
-		
+
 		Variable variable=currentActivity.getVariable(targetInstanceName, type);
 		if(variable==null)
 		{
 			variable=currentActivity.createVariable(targetInstanceName,type);
 		}
-		
+
 		AddVariableValueAction addVarValAction = createAddVarValAction(variable,targetInstanceName+":="+valueExpression);
-		
+
 		ValuePin valuePin = (ValuePin) addVarValAction.createValue(addVarValAction.getName()+"_value",type,UMLPackage.Literals.VALUE_PIN);
 		addOpaqueExpressionToValuePin(valuePin,valueExpression,type);
-		
+
 		createControlFlowBetweenNodes(lastNode,addVarValAction);
 		lastNode=addVarValAction;
-		
+
 	}
-	protected static void setStructuralFeatureValue(ModelClass targetClass, String fieldName,String valueExpression, Type valueType)
+	protected static void setStructuralFeatureValue(ModelClass targetClass, String fieldName,ModelIdentifiedElement value, Type valueType)
 	{
 		String targetName=getObjectIdentifier(targetClass);
+		String valueExpr=getExpression(value);
 		Type targetType=ModelImporter.importType(targetClass.getClass());
 		String fieldQualifiedName=targetName+"."+fieldName;
 		AddStructuralFeatureValueAction addStrFeatValAction = (AddStructuralFeatureValueAction) 
-				currentActivity.createOwnedNode(fieldQualifiedName+":="+valueExpression,UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION);
-		
+				currentActivity.createOwnedNode(fieldQualifiedName+":="+valueExpr,UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION);
+
 		Property field=getClassField(targetClass,fieldName);
 		addStrFeatValAction.setStructuralFeature(field);
 		addStrFeatValAction.setIsReplaceAll(true);
-		
+
 		ValuePin asfva_object=(ValuePin) addStrFeatValAction.createObject(addStrFeatValAction.getName()+"_input",targetType,UMLPackage.Literals.VALUE_PIN);
 		addOpaqueExpressionToValuePin(asfva_object,targetName,targetType);
-		
+
 
 		ValuePin asfva_value=(ValuePin) addStrFeatValAction.createValue(addStrFeatValAction.getName()+"_value",valueType,UMLPackage.Literals.VALUE_PIN);
-		addOpaqueExpressionToValuePin(asfva_value,valueExpression,valueType);
-		
+		addExpressionToValuePin(asfva_value,value,valueType);
+
 		createControlFlowBetweenNodes(lastNode,addStrFeatValAction);
 		lastNode=addStrFeatValAction;
 	}
-	
+
 	protected static Property getClassField(ModelClass target, String fieldName)
 	{
 		org.eclipse.uml2.uml.Class uml2Class = (org.eclipse.uml2.uml.Class) 
 				currentModel.getOwnedMember(target.getClass().getSimpleName());
-		
+
 		for(Property field:uml2Class.getAllAttributes())
 		{
 			if(field.getName().equals(fieldName))
@@ -130,7 +135,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		}
 		return null;
 	}
-	
+
 	protected static boolean isObjectAFieldOfSelf(ModelIdentifiedElement object)
 	{
 		if(self!=null)
@@ -152,13 +157,13 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 					// TODO Auto-generated catch block
 					//e.printStackTrace();
 				}
-				
+
 			}
 		}
-		
+
 		return false;
 	}
-		
+
 	@SuppressWarnings("rawtypes")
 	private static String getModelTypeLiteralExpression(ModelType instance, ModelTypeInformation instInfo)
 	{
@@ -181,13 +186,13 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		}
 		return expression;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	private static String getModelTypeExpression(ModelType instance)
 	{
 		String expression=null;
 		ModelTypeInformation instInfo=modelTypeInstancesInfo.get(instance);
-		
+
 		if(instInfo!=null && instInfo.isLiteral())
 		{
 			expression=getModelTypeLiteralExpression(instance,instInfo);
@@ -202,12 +207,12 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		}
 		return expression;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	protected static String getExpression(ModelIdentifiedElement object)
 	{
 		String expression=null;
-		
+
 		if(object instanceof ModelType)
 		{	
 			expression=getModelTypeExpression((ModelType)object);
@@ -218,7 +223,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		}
 		return expression;
 	}
-	
+
 	private static String compareInstanceIdWithObjAndFields (String instanceId,ModelIdentifiedElement obj, String expr)
 	{
 		try
@@ -244,17 +249,17 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 					// TODO Auto-generated catch block
 					//e.printStackTrace();
 				} 
-				
+
 			}
 		}
 		catch(NullPointerException e)
 		{
-			
+
 		}
 		return null;
-			
+
 	}
-	
+
 	private static String compareInstanceIdWithCurrentParams(String instanceId)
 	{
 		try
@@ -274,7 +279,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 					}
 					catch(NullPointerException e)
 					{
-						
+
 					}
 				}
 				catch(ClassCastException e)
@@ -286,30 +291,30 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		}
 		catch(NullPointerException e)
 		{
-			
+
 		}
 		return null;
 	}
 	protected static String getObjectIdentifier(String instanceId)
 	{
 		String identifier;
-		
+
 		identifier=compareInstanceIdWithObjAndFields(instanceId,self,"self");
-		
+
 		if(identifier!=null) return identifier;
-		
+
 		identifier=compareInstanceIdWithCurrentParams(instanceId);
-			
+
 		if(identifier!=null) return identifier;
-		
+
 		if(currentSignal!=null)
 		{
 			String signalName=currentSignal.getClass().getSimpleName();
 			identifier=compareInstanceIdWithObjAndFields(instanceId,currentSignal,signalName);
 		}
-		
+
 		if(identifier!=null) return identifier;
-		
+
 		return instanceId;
 	}
 
@@ -317,9 +322,37 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	{
 		if(object!=null) return getObjectIdentifier(object.getIdentifier());
 		else return null;
-	
+
 	}
-	
+
+	protected static ForkNode createForkNode(String name, ActivityNode node1, ActivityNode node2)
+	{
+		ForkNode result=(ForkNode) currentActivity.createOwnedNode(name,UMLPackage.Literals.FORK_NODE);
+
+		createFlowBetweenNodes(result,node1);
+		createFlowBetweenNodes(result,node2);
+
+		return result;
+	}
+
+	protected static JoinNode createJoinNode(ActivityNode node1,ActivityNode node2)
+	{
+		String name="join_"+node1.getName()+"_and_"+node2.getName();
+		JoinNode result=(JoinNode) currentActivity.createOwnedNode(name,UMLPackage.Literals.JOIN_NODE);
+		createControlFlowBetweenNodes(node1,result);
+		createControlFlowBetweenNodes(node2,result);
+		return result;
+	}
+
+	protected static MergeNode createMergeNode(ActivityNode node1,ActivityNode node2)
+	{
+		String name="merge_"+node1.getName()+"_and_"+node2.getName();
+		MergeNode result=(MergeNode) currentActivity.createOwnedNode(name,UMLPackage.Literals.MERGE_NODE);
+		createControlFlowBetweenNodes(node1,result);
+		createControlFlowBetweenNodes(node2,result);
+		return result;
+	}
+
 	protected static ActivityEdge createFlowBetweenNodes(ActivityNode source, ActivityNode target)
 	{
 		if(source instanceof ObjectNode || target instanceof ObjectNode)
@@ -331,48 +364,29 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 			return createControlFlowBetweenNodes(source,target);
 		}
 	}
-	
-	protected static ForkNode createForkNode(String name, ActivityNode node1, ActivityNode node2)
-	{
-		ForkNode result=(ForkNode) currentActivity.createOwnedNode(name,UMLPackage.Literals.FORK_NODE);
-		
-		createFlowBetweenNodes(result,node1);
-		createFlowBetweenNodes(result,node2);
 
-		return result;
-	 }
-	
-	 protected static JoinNode createJoinNode(ActivityNode node1,ActivityNode node2)
-	 {
-		 String name="join_"+node1.getName()+"_and_"+node2.getName();
-		 JoinNode result=(JoinNode) currentActivity.createOwnedNode(name,UMLPackage.Literals.JOIN_NODE);
-		 createControlFlowBetweenNodes(node1,result);
-		 createControlFlowBetweenNodes(node2,result);
-		 return result;
-	 }
-
-	 protected static MergeNode createMergeNode(ActivityNode node1,ActivityNode node2)
-	 {
-		 String name="merge_"+node1.getName()+"_and_"+node2.getName();
-		 MergeNode result=(MergeNode) currentActivity.createOwnedNode(name,UMLPackage.Literals.MERGE_NODE);
-		 createControlFlowBetweenNodes(node1,result);
-		 createControlFlowBetweenNodes(node2,result);
-		 return result;
-	 }
-	 
 	protected static ActivityEdge createControlFlowBetweenNodes(ActivityNode source,ActivityNode target)
 	{
 		ActivityEdge edge=currentActivity.createEdge("controlflow_from_"+source.getName()+"_to_"+target.getName(), UMLPackage.Literals.CONTROL_FLOW);
 		edge.setSource(source);
 		edge.setTarget(target);
-		
+
 		if(cntBlockBodiesBeingImported>0 && blockBodyFirstEdges.size()<cntBlockBodiesBeingImported)
 		{
 			blockBodyFirstEdges.push(edge);
 		}
+		if(source.equals(lastNode) && !unfinishedDecisionNodes.empty())
+		{
+			DecisionNode top=unfinishedDecisionNodes.peek();
+			if(top.equals(lastNode))
+			{
+				unfinishedDecisionNodes.pop();
+				addGuardToActivityEdge(edge,"else");
+			}
+		}
 		return edge;
 	}
-	
+
 	protected static ActivityEdge createObjectFlowBetweenNodes(ActivityNode source,ActivityNode target)
 	{
 		ActivityEdge edge=currentActivity.createEdge("objectflow_from_"+source.getName()+"_to_"+target.getName(), UMLPackage.Literals.OBJECT_FLOW);
@@ -384,26 +398,97 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		}
 		return edge;
 	}
-	
+
 	protected static ValuePin addOpaqueExpressionToValuePin(ValuePin pin,String expression, Type type)
-    {
-    	OpaqueExpression opaqueExpression=(OpaqueExpression) pin.createValue(pin.getName()+"_expression",type,UMLPackage.Literals.OPAQUE_EXPRESSION);
+	{
+		OpaqueExpression opaqueExpression=(OpaqueExpression) pin.createValue(pin.getName()+"_expression",type,UMLPackage.Literals.OPAQUE_EXPRESSION);
 		opaqueExpression.getBodies().add(expression);
 		return pin;
-    }
-	
+	}
+	private static void addStringLiteralToValuePin(ValuePin pin, String expr)
+	{
+		LiteralString literal=
+				(LiteralString) pin.createValue(pin.getName()+"_expression",UML2String,UMLPackage.Literals.LITERAL_STRING);
+		literal.setValue(expr);
+	}
+	private static boolean isStringLiteral(ModelIdentifiedElement object)
+	{
+		if(!(object instanceof ModelString)) return false;
+		else
+		{
+			ModelString string=(ModelString) object;
+			ModelTypeInformation info=modelTypeInstancesInfo.get(string);
+			if(info == null) return false;
+			else
+			{
+				return info.isLiteral();
+			}
+			
+		}
+		
+	}
+	protected static void addExpressionToValuePin(ValuePin pin, ModelIdentifiedElement value)
+	{
+		String expression=getExpression(value);
+		
+		if(value instanceof ModelString)
+		{
+			if(isStringLiteral(value))
+			{
+				addStringLiteralToValuePin(pin,expression);
+			}
+			else
+			{
+				Type type=ModelImporter.importType(value.getClass());
+				addOpaqueExpressionToValuePin(pin,expression, type);
+			}
+		}
+		else
+		{
+			Type type=ModelImporter.importType(value.getClass());
+			addOpaqueExpressionToValuePin(pin,expression, type);
+		}
+		
+	}
 
+	protected static void addExpressionToValuePin(ValuePin pin, ModelIdentifiedElement value, Type type)
+	{
+		String expression=getExpression(value);
+		
+		if(value instanceof ModelString)
+		{
+			if(isStringLiteral(value))
+			{
+				addStringLiteralToValuePin(pin,expression);
+			}
+			else
+			{
+				addOpaqueExpressionToValuePin(pin,expression, type);
+			}
+		}
+		else
+		{
+			addOpaqueExpressionToValuePin(pin,expression, type);
+		}
+		
+	}
 	protected static AddVariableValueAction createAddVarValAction(Variable var, String name)
 	{
 		AddVariableValueAction addVarValAction = (AddVariableValueAction)
 				currentActivity.createOwnedNode(name, UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION);
-		
+
 		addVarValAction.setVariable(var);
-		
+
 		return addVarValAction;
 	}
-	
-	
+
+	protected static void addGuardToActivityEdge(ActivityEdge edge, String expression)
+	{
+		OpaqueExpression opaqueExpression=(OpaqueExpression) UMLFactory.eINSTANCE.createOpaqueExpression();
+		opaqueExpression.getBodies().add(expression);
+		edge.setGuard(opaqueExpression);
+	}
+
 	protected static boolean importing=false;
 	protected static Object[] currentParameters=null;
 	protected static Method currentMethod=null;
@@ -413,7 +498,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	protected static Model currentModel=null;
 	protected static int cntBlockBodiesBeingImported=0;
 	protected static Stack<ActivityEdge> blockBodyFirstEdges=new Stack<>();
-	protected static int cntDummyNodes=0;
+	protected static Stack<DecisionNode> unfinishedDecisionNodes=new Stack<>();
 	protected static int cntDecisionNodes;
 	protected static Event currentSignal=null;
 }
