@@ -9,6 +9,7 @@ package txtuml.export.uml2tocpp.templates;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.State;
@@ -78,7 +79,7 @@ public class GenerationTemplates
 		return source+body+"};\n\n";
 	}
 	
-	public static String EventEnum(List<SignalEvent> events_)//TODO works only with signal events! (Time,Change,.. not handled)
+	public static String EventEnum(Set<SignalEvent> events_)//TODO works only with signal events! (Time,Change,.. not handled)
 	{
 		if(events_== null || events_.isEmpty())
 		{

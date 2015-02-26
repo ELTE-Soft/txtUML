@@ -10,9 +10,11 @@ import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
@@ -739,9 +741,9 @@ public class ClassExporter
 		return stateList;
 	}
 	
-	private List<SignalEvent> getEventList(Region region_)
+	private Set<SignalEvent> getEventList(Region region_)
 	{
-		List<SignalEvent> eventList=new LinkedList<SignalEvent>();
+		Set<SignalEvent> eventList=new HashSet<SignalEvent>();
 		for(Transition item:region_.getTransitions())
 		{
 				for(Trigger tri:item.getTriggers())

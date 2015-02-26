@@ -306,7 +306,7 @@ public class ActivityExport
 		}
 		else if	(valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_STRING))
 		{
-			source=((LiteralString)valueSpec_).getValue();
+			source="\""+((LiteralString)valueSpec_).getValue()+"\"";
 		}
 		else
 		{
