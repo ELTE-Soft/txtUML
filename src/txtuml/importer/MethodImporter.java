@@ -78,6 +78,8 @@ public class MethodImporter extends AbstractMethodImporter {
 	
 
 		Object classInstance=createLocalInstance(declaringClass);
+		setCurrentSignal((txtuml.api.ModelClass.Transition)classInstance);					
+		
 		assignSelf(classInstance);
 		
 		return classInstance;
@@ -91,15 +93,16 @@ public class MethodImporter extends AbstractMethodImporter {
 			currentSignal=(Event) m.invoke(transitionInstance);
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		m.setAccessible(false);
+		
 	}
 	private static Object initMethodImport(Model model, Activity activity, Method sourceMethod, Class<?> declaringClass)
 	{
@@ -112,10 +115,7 @@ public class MethodImporter extends AbstractMethodImporter {
 		importing=true;
 		
 		Object classInstance=createLocalInstance(declaringClass);
-		if(isTransition(declaringClass))
-		{
-			setCurrentSignal((txtuml.api.ModelClass.Transition)classInstance);					
-		}
+		
 		assignSelf(classInstance);
 		
 		ActivityNode initialNode=activity.createOwnedNode("initialNode",UMLPackage.Literals.INITIAL_NODE);	
@@ -123,7 +123,26 @@ public class MethodImporter extends AbstractMethodImporter {
 		
 		loadCurrentParameters();
 		
+		if(isTransition(declaringClass))
+		{
+			setCurrentSignal((txtuml.api.ModelClass.Transition)classInstance);		
+			
+			if(currentSignal!=null)
+			{
+				addSignalParameter();
+			}
+		}
+		
 		return classInstance;
+	}
+	
+	private static void addSignalParameter()
+	{
+		Class<?> signalClass=currentSignal.getClass();
+		String signalName=signalClass.getSimpleName();
+		Type signalType=ModelImporter.importType(signalClass);
+		Parameter signalParam=currentActivity.createOwnedParameter(signalName,signalType);
+		createParameterNode(signalParam,signalName,signalType);
 	}
 	
 	private static void endMethodImport()
