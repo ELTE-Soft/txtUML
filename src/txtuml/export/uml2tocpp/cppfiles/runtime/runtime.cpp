@@ -62,7 +62,6 @@ void SingleThreadRT::run()
   int count=0;
   for(;;)
   {
-    if(count==2000)break;
     if(_stop)break;
     if(!_messageQueue->empty())
     {

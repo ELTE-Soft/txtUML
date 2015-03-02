@@ -36,11 +36,11 @@ namespace std
 class StateMachineBase
 {
 public:
- virtual bool process_event(EventBaseCRef e_)=0;
+ virtual bool process_event(EventBaseCRef)=0;
  virtual void setInitialState()=0;
  virtual ~StateMachineBase(){}
 protected:
-  bool defaultGuard(){return true;}
+  bool defaultGuard(EventBaseCRef){return true;}
 };
 
 

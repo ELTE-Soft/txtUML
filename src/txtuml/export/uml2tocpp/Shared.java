@@ -108,7 +108,7 @@ public class Shared
 	public static boolean isBasicType(String typeName_)//TODO need a better solution
 	{
 
-		if(typeName_.equals("Integer") || typeName_.equals("Real") || typeName_.equals("Boolean") || typeName_.equals("String"))
+		if(typeName_.equals("Integer") || typeName_.equals("Real") || typeName_.equals("Boolean"))
 		{
 			return true;
 		}
@@ -148,6 +148,10 @@ public class Shared
 		if(source.contains("last"))
 		{
 			source=source.replaceAll("last", ActivityTemplates.Operators.Last);
+		}
+		if(source.contains("not"))
+		{
+			source=source.replaceAll("^[a-zA-Z]not", ActivityTemplates.Operators.Not);
 		}
 		if(source.contains("="))
 		{

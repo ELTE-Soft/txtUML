@@ -15,6 +15,8 @@ class GenerationNames
 	public static final String HeaderExtension="hpp";
 	public static final String SourceExtension="cpp";
 	public static final String ClassType="struct";
+	public static final String DebugSimbol="_DEBUG";
+	public static final String StandardIOinclude="#include <iostream>\n";
 	
 	public static final String NullPtr="nullptr";
 	public static final String MemoryAllocator="new";
@@ -40,7 +42,8 @@ class GenerationNames
 	public static final String GuardActionName ="GuardAction";
 	public static final String EventStateTypeName="EventState";
 	public static final String ProcessEventFName="process_event";
-	public static final String ProcessEventDecl ="bool "+ProcessEventFName+"("+EventBaseRefName+" "+EventFParamName+");\n";
+	public static final String ProcessEventDeclShared ="bool "+ProcessEventFName+"("+EventBaseRefName+" "+EventFParamName+")";
+	public static final String ProcessEventDecl =ProcessEventDeclShared+";\n";
 	public static final String TransitionTable = "std::unordered_multimap<"+EventStateTypeName+","+GuardActionName+"> "+TransitionTableName+";\n";
 	public static final String SetStateDecl = NoReturn+" "+setStateFuncName+"(int "+GenerationNames.StateParamName+");\n";
 	public static final String SetInitialStateName ="setInitialState";
@@ -48,7 +51,7 @@ class GenerationNames
 	public static final String StatemachineBaseName = "StateMachineBase";
 	public static final String StatemachineBaseHeaderName = "statemachinebase";
 	public static final String DefaultGuardName="defaultGuard";
-	
+	public static final String DummyProcessEventDef=ProcessEventDeclShared+"{return false;}\n";
 	
 	//hierarchical state machine
 	public static final String ParentSmPointerName="_parentSm";
@@ -114,7 +117,7 @@ class GenerationNames
 				"{\n"+
 					"for(auto it=range.first;it!=range.second;++it)\n"+
 					"{\n"+
-						"if((it->second).first(*this))//Guard call\n"+
+						"if((it->second).first(*this,"+EventFParamName+"))//Guard call\n"+
 						"{\n"+
 							"(it->second).second(*this,"+EventFParamName+");//Action Call\n"+
 							"handled=true;\n"+

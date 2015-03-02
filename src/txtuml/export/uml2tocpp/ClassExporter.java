@@ -37,6 +37,7 @@ import org.eclipse.uml2.uml.Vertex;
 import txtuml.export.uml2tocpp.Util.Pair;
 import txtuml.export.uml2tocpp.templates.ActivityTemplates;
 import txtuml.export.uml2tocpp.templates.GenerationTemplates;
+import txtuml.export.uml2tocpp.templates.Options;
 
 public class ClassExporter 
 {
@@ -61,7 +62,7 @@ public class ClassExporter
 		_subSubMachines=new LinkedList<String>();
 	}
 	
-	public void createSource(Class class_,String dest_,Boolean rt_) throws FileNotFoundException, UnsupportedEncodingException
+	public void createSource(Class class_,String dest_) throws FileNotFoundException, UnsupportedEncodingException
 	{
 		String source="";
 		List<StateMachine> smList=new ArrayList<StateMachine>();
@@ -70,8 +71,8 @@ public class ClassExporter
 		{
 			Region region=smList.get(0).getRegions().get(0);
 			_submachineMap=getSubMachines(region);
-			createFuncTypeMap(region,FuncTypeEnum.Entry,rt_);
-			createFuncTypeMap(region,FuncTypeEnum.Exit,rt_);
+			createFuncTypeMap(region,FuncTypeEnum.Entry,Options.Runtime());
+			createFuncTypeMap(region,FuncTypeEnum.Exit,Options.Runtime());
 			
 			for(Map.Entry<String, Pair<String, Region>> entry:_submachineMap.entrySet())
 			{
@@ -81,10 +82,10 @@ public class ClassExporter
 			}
 		}
 		
-		source=createClassHeaderSource(class_,rt_);
+		source=createClassHeaderSource(class_);
 		Shared.writeOutSource(dest_,GenerationTemplates.HeaderName(class_.getName()), GenerationTemplates.HeaderGuard(source,class_.getName()));
-		source=createClassCppSource(class_,rt_);
-		Shared.writeOutSource(dest_,GenerationTemplates.SourceName(class_.getName()),GenerationTemplates.CppInclude(class_.getName())+getAllDependency(class_,false,rt_)+source);
+		source=createClassCppSource(class_);
+		Shared.writeOutSource(dest_,GenerationTemplates.SourceName(class_.getName()),GenerationTemplates.CppInclude(class_.getName())+getAllDependency(class_,false)+source);
 	}
 	
 	public List<String> getSubmachines()
@@ -116,15 +117,22 @@ public class ClassExporter
 		source=createSubSmClassHeaderSource(className_,parentClass_,region_);
 		Shared.writeOutSource(dest_,GenerationTemplates.HeaderName(className_),GenerationTemplates.HeaderGuard(source,className_));
 		source=createSubSmClassCppSource(className_,parentClass_,region_);
-		Shared.writeOutSource(dest_,GenerationTemplates.SourceName(className_),GenerationTemplates.CppInclude(className_)+"\n"+source);
+		
+		String dependencyIncludes=GenerationTemplates.CppInclude(className_);
+		if(Options.DebugLog())
+		{
+			dependencyIncludes=GenerationTemplates.StandardIOinclude+dependencyIncludes;
+		}
+		
+		Shared.writeOutSource(dest_,GenerationTemplates.SourceName(className_),dependencyIncludes+"\n"+source);
 	}
 	
-	private String createClassHeaderSource(Class class_,Boolean rt_) 
+	private String createClassHeaderSource(Class class_) 
 	{
 		String source="";
 		List<StateMachine> smList=new ArrayList<StateMachine>();
 		Shared.getTypedElements(smList,class_.allOwnedElements(),UMLPackage.Literals.STATE_MACHINE);
-		String dependency=getAllDependency(class_,true,rt_);
+		String dependency=getAllDependency(class_,true);
 		String privateParts=createParts(class_,"private");
 		String protectedParts=createParts(class_,"protected");
 		String publicParts=createParts(class_,"public");
@@ -139,11 +147,11 @@ public class ClassExporter
 			
 			if(_submachineMap.isEmpty())
 			{
-				source=GenerationTemplates.SimpleStateMachineClassHeader(dependency,class_.getName(),publicParts,protectedParts,privateParts,rt_);
+				source=GenerationTemplates.SimpleStateMachineClassHeader(dependency,class_.getName(),publicParts,protectedParts,privateParts,Options.Runtime());
 			}
 			else
 			{
-				source=GenerationTemplates.HierarchicalStateMachineClassHeader(dependency,class_.getName(),getSubmachines(),publicParts,protectedParts,privateParts,rt_);
+				source=GenerationTemplates.HierarchicalStateMachineClassHeader(dependency,class_.getName(),getSubmachines(),publicParts,protectedParts,privateParts,Options.Runtime());
 			}
 		}
 		else
@@ -175,7 +183,7 @@ public class ClassExporter
 		return source;
 	}
 
-	private String createClassCppSource(Class class_,Boolean rt_) 
+	private String createClassCppSource(Class class_) 
 	{
 		String source="";
 		List<StateMachine> smList=new ArrayList<StateMachine>();
@@ -186,15 +194,15 @@ public class ClassExporter
 			Map<Util.Pair<String,String>,Util.Pair<String,String>> smMap=createMachine(region);
 			if(_submachineMap.isEmpty())
 			{
-				source+=GenerationTemplates.SimpleStateMachineClassConstructor(class_.getName(),smMap,getInitialState(region),rt_);
+				source+=GenerationTemplates.SimpleStateMachineClassConstructor(class_.getName(),smMap,getInitialState(region),Options.Runtime());
 			}
 			else
 			{
-				source+=GenerationTemplates.HierarchicalStateMachineClassConstructor(class_.getName(),smMap,getEventSubmachineNameMap(),getInitialState(region),rt_);
+				source+=GenerationTemplates.HierarchicalStateMachineClassConstructor(class_.getName(),smMap,getEventSubmachineNameMap(),getInitialState(region),Options.Runtime());
 			}
 			source+=createEntryFunctionsDef(class_.getName(),region)+
 					createExitFunctionsDef(class_.getName(),region)+
-					createTransitionFunctionsDef(class_.getName(),region,rt_);
+					createTransitionFunctionsDef(class_.getName(),region,Options.Runtime());
 			
 			source+=GenerationTemplates.Entry(class_.getName(), createStateActionMap(_entryMap,region))+"\n";
 			source+=GenerationTemplates.Exit(class_.getName(), createStateActionMap(_exitMap,region))+"\n";
@@ -212,7 +220,7 @@ public class ClassExporter
 			String funcBody="";
 			if(behavior.eClass().equals(UMLPackage.Literals.ACTIVITY))
 			{
-				funcBody=ActivityExport.createfunctionBody((Activity)behavior,rt_);
+				funcBody=ActivityExport.createfunctionBody((Activity)behavior,Options.Runtime());
 			}
 			else
 			{
@@ -368,15 +376,15 @@ public class ClassExporter
 				}
 				
 				_guardMap.put(guard,guardName);
-				source+=GenerationTemplates.GuardFunction(guardName,guard);
+				source+=GenerationTemplates.GuardFunction(guardName,guard,parameterisedEventTrigger(item));
 			}
 			
 		}
 		
 		return source+"\n";
 	}
-
-	private String getAllDependency(Class class_,Boolean isHeader_,Boolean rt_)
+	
+	private String getAllDependency(Class class_,Boolean isHeader_)//TODO string dependency as special case ....
 	{
 		String source="";
 		List<String> types=new ArrayList<String>();
@@ -416,7 +424,7 @@ public class ClassExporter
 		}
 		
 		//dependency analysis
-		String header;
+		String header="";
 		for(String t:types)
 		{				
 			if(!Shared.isBasicType(t) && t!=class_.getName())
@@ -427,7 +435,10 @@ public class ClassExporter
 				}
 				else
 				{
-					header=GenerationTemplates.CppInclude(t);
+					if(!t.equals("String"))
+					{
+						header=GenerationTemplates.CppInclude(t);
+					}
 				}
 					
 				if(!source.contains(header))
@@ -437,9 +448,13 @@ public class ClassExporter
 			}
 		}
 		
-		if(rt_ && !isHeader_)
+		if(Options.Runtime() && !isHeader_)
 		{
 			source+=GenerationTemplates.CppInclude(GenerationTemplates.RuntimeHeader);
+		}
+		if(Options.DebugLog() && !isHeader_)
+		{
+			source+=GenerationTemplates.StandardIOinclude;
 		}
 		
 		return source+"\n";
@@ -462,7 +477,7 @@ public class ClassExporter
 		for(Transition item:region_.getTransitions())
 		{
 			String body="";
-			String eventName=isParameterisedEventTrigger(item);
+			String eventName=parameterisedEventTrigger(item);
 			
 			Behavior b=item.getEffect();
 			if(b != null && b.eClass().equals(UMLPackage.Literals.ACTIVITY))
@@ -527,7 +542,7 @@ public class ClassExporter
 	}
 	
 
-	private String isParameterisedEventTrigger(Transition transition_)
+	private String parameterisedEventTrigger(Transition transition_)
 	{
 		for(Trigger tri:transition_.getTriggers())
 		{

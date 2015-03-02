@@ -15,6 +15,7 @@ import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.State;
 
 import txtuml.export.uml2tocpp.Util;
+import txtuml.export.uml2tocpp.Util.Pair;
 
 public class GenerationTemplates 
 {		
@@ -23,38 +24,39 @@ public class GenerationTemplates
 	public static String StateMachineBaseHeader = GenerationNames.StatemachineBaseHeaderName +"."+GenerationNames.HeaderExtension;
 	public static String RuntimeHeader=RuntimeTemplates.RuntimeHeaderName;
 	public static String RuntimePath=RuntimeTemplates.RTPath;
+	public static String StandardIOinclude=GenerationNames.StandardIOinclude;
 	
-	public static String EventBase(Boolean rt_)
+	public static String EventBase()
 	{
 		String eventBase="";
 		
-		if(rt_)
+		if(Options.Runtime())
 		{
 			eventBase+=RuntimeTemplates.RTEventHeaderInclude()+"\n";
 		}
 		
 		eventBase+= GenerationNames.ClassType+" "+GenerationNames.EventBaseName;
-		if(rt_)
+		if(Options.Runtime())
 		{
 			eventBase+=":"+RuntimeTemplates.EventIName;
 		}
 		eventBase+="\n{\n"+GenerationNames.EventBaseName+"(";
-		if(rt_)
+		if(Options.Runtime())
 		{
 			eventBase+=RuntimeTemplates.SMParam+",";
 		}
 		eventBase+="int t_):";
-		if(rt_)
+		if(Options.Runtime())
 		{
 			eventBase+=RuntimeTemplates.EventIName+"("+GenerationNames.FormatIncomignParamName(RuntimeTemplates.SMRefName)+"),";
 		}
 		return eventBase+"t(t_){}\nint t;\n};\ntypedef const "+GenerationNames.EventBaseName+"& "+GenerationNames.EventBaseRefName+";\n\n";
 	}
 	
-	public static String EventClass(String className_,List<Util.Pair<String,String>> params_,Boolean rt_)
+	public static String EventClass(String className_,List<Util.Pair<String,String>> params_)
 	{
 		String source=GenerationNames.ClassType+" "+GenerationNames.EventClassName(className_)+":public "+GenerationNames.EventBaseName+"\n{\n"+GenerationNames.EventClassName(className_)+"(";
-		if(rt_)
+		if(Options.Runtime())
 		{
 			source+=RuntimeTemplates.SMParam+",";
 		}
@@ -65,7 +67,7 @@ public class GenerationTemplates
 			source +=","+paramList;
 		}
 		source+="):"+GenerationNames.EventBaseName+"(";
-		if(rt_)
+		if(Options.Runtime())
 		{
 			source+=GenerationNames.FormatIncomignParamName(RuntimeTemplates.SMRefName)+",";
 		}
@@ -170,7 +172,13 @@ public class GenerationTemplates
 	
 	public static String ClassHeader(String dependency_,String className_,List<String> constructorParams_,String public_,String protected_,String private_,Boolean sm_,Boolean rt_)
 	{
-		String source=dependency_+GenerationNames.ClassType+" "+className_;
+		String source=dependency_;
+		if(!sm_)
+		{
+			source+=PrivateFunctionalTemplates.LocalInclude(GenerationNames.EventHeaderName)+"\n";
+		}
+		
+		source+=GenerationNames.ClassType+" "+className_;
 		if(sm_)
 		{
 			source+=":public "+GenerationNames.StatemachineBaseName;
@@ -181,6 +189,10 @@ public class GenerationTemplates
 		}
 		
 		source+="\n{\npublic:\n"+className_+"("+PrivateFunctionalTemplates.ParamTypeList(constructorParams_)+");\n";
+		if(!sm_)
+		{
+			source+=GenerationNames.DummyProcessEventDef;
+		}
 		
 		if(!public_.isEmpty())
 		{
@@ -235,6 +247,14 @@ public class GenerationTemplates
 		return FunctionDecl(transitionActionName_, params);
 	}
 
+	public static String TransitionActionDef(String className_,String transitionActionName_,String body_)
+	{
+		List<Util.Pair<String,String>> params=new LinkedList<Util.Pair<String,String>>();
+		params.add(new Util.Pair<String, String>(GenerationNames.EventBaseRefName, GenerationNames.EventParamName));
+		
+		return FunctionDef(className_,transitionActionName_, params, PrivateFunctionalTemplates.DebugLogMessage(className_, transitionActionName_)+body_);
+	}
+
 	public static String FunctionDecl(String functionName_)
 	{
 		return FunctionDecl(functionName_,null);
@@ -248,14 +268,6 @@ public class GenerationTemplates
 	public static String FunctionDecl(String returnTypeName_,String functionName_,List<String> params_)//TODO modifiers
 	{
 		return PrivateFunctionalTemplates.CppType(returnTypeName_)+" "+functionName_+"("+PrivateFunctionalTemplates.ParamTypeList(params_)+");\n" ;
-	}
-	
-	public static String TransitionActionDef(String className_,String transitionActionName_,String body_)
-	{
-		List<Util.Pair<String,String>> params=new LinkedList<Util.Pair<String,String>>();
-		params.add(new Util.Pair<String, String>(GenerationNames.EventBaseRefName, GenerationNames.EventParamName));
-		
-		return FunctionDef(className_,transitionActionName_, params, body_);
 	}
 	
 	public static String FunctionDef(String className_,String functionName_,String body_)
@@ -314,9 +326,20 @@ public class GenerationTemplates
 		return source+PrivateFunctionalTemplates.SimpleStateMachineClassConstructorSharedBody(className_, machine_, intialState_, rt_);
 	}
 	
-	public static String GuardFunction(String guardFunctionName_,String constraint_)
+	public static String GuardFunction(String guardFunctionName_,String constraint_,String eventName_)
 	{
-		return "bool "+guardFunctionName_+"(){return "+constraint_+";}\n";
+		String source="bool "+guardFunctionName_+"("+GenerationNames.EventBaseRefName;
+		if(eventName_!=null && !eventName_.isEmpty() && constraint_.contains(eventName_))
+		{
+			source+=" "+GenerationNames.EventFParamName+")\n{"+GetRealEvent(eventName_);
+			constraint_=EventParamUsage(eventName_,constraint_);
+		}
+		else
+		{
+			source+="){";
+		}
+		
+		return source+"return "+constraint_+";}\n";
 	}
 
 	/*
@@ -351,7 +374,17 @@ public class GenerationTemplates
 	
 	public static String ForwardDeclaration(String className_)
 	{
-		return GenerationNames.ClassType+" "+className_+";\n";
+		String source="";
+		String cppType=PrivateFunctionalTemplates.CppType(className_);
+		if(PrivateFunctionalTemplates.StdType(cppType))
+		{
+			source=PrivateFunctionalTemplates.Include(cppType);
+		}
+		else
+		{
+			source=GenerationNames.ClassType+" "+className_+";\n";
+		}
+		return source;
 	}
 	
 	public static String GetRealEvent(String eventName_) {
@@ -370,9 +403,9 @@ public class GenerationTemplates
 		return source_.replaceAll(ActivityTemplates.Self,GenerationNames.ParentSmMemberName);
 	}
 
-	public static String EventParamUsage(String eventName_, String transitionActionBody_)
+	public static String EventParamUsage(String eventName_, String body_)
 	{
-		return transitionActionBody_.replaceAll((eventName_+"\\"+GenerationNames.SimpleAccess), (GenerationNames.RealEventName+GenerationNames.SimpleAccess));
+		return body_.replaceAll((eventName_+"\\"+GenerationNames.SimpleAccess), (GenerationNames.RealEventName+GenerationNames.SimpleAccess));
 	}
 	
 }

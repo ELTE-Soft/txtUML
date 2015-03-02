@@ -112,7 +112,7 @@ class PrivateFunctionalTemplates
 	
 	public static String OuterInclude(String className_)
 	{
-		if(className_.contains("std::"))
+		if(StdType(className_))
 		{
 			className_=className_.substring(5);
 		}
@@ -161,7 +161,7 @@ class PrivateFunctionalTemplates
 	public static String Typedefs(String className_)
 	{ 
 		return "typedef std::function<"+GenerationNames.NoReturn+"("+className_+"&,"+GenerationNames.EventBaseRefName+")> "+GenerationNames.FunctionPtrTypeName+";\n"+
-				"typedef std::function<bool("+className_+"&)> "+GenerationNames.GuardFuncTypeName+";\n"+
+				"typedef std::function<bool("+className_+"&,"+GenerationNames.EventBaseRefName+")> "+GenerationNames.GuardFuncTypeName+";\n"+
 				"typedef std::pair<"+GenerationNames.GuardFuncTypeName+","+GenerationNames.FunctionPtrTypeName+"> "+GenerationNames.GuardActionName+";\n";
 	}
 	
@@ -240,6 +240,22 @@ class PrivateFunctionalTemplates
 	public static String SubStateMachineClassFixPrivateParts(String parentclass_) 
 	{
 		return GenerationNames.PointerType(parentclass_)+" "+GenerationNames.ParentSmMemberName+";\n";
+	}
+
+	public static boolean StdType(String cppType_) 
+	{
+		if(cppType_.contains("std::"))
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	public static String DebugLogMessage(String className_,String functionName_)
+	{
+		return "#ifdef "+GenerationNames.DebugSimbol+"\n"+
+			   "\tstd::cout<<\""+className_+"::"+functionName_+"\"<<std::endl;\n"+
+			   "#endif\n";
 	}
 	
 }

@@ -8,7 +8,9 @@ package txtuml.export.uml2tocpp;
 
 import java.util.Map;
 
+import org.eclipse.emf.common.util.DiagnosticException;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -47,7 +49,7 @@ public class Util {
 
 		}
 	
-	  public static Model loadModel(String modelUri)
+	  public static Model loadModel(String modelUri) throws WrappedException
 	  {
 	    ResourceSet resSet = new ResourceSetImpl();
 	    resSet.getPackageRegistry().put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
