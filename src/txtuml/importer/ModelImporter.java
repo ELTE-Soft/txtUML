@@ -237,7 +237,7 @@ public class ModelImporter extends AbstractImporter{
 	{
 		org.eclipse.uml2.uml.Class importedClass =
 				currentModel.createOwnedClass(sourceClass.getSimpleName(),Modifier.isAbstract(sourceClass.getModifiers()));
-		setVisibility(importedClass,sourceClass);
+		setModifiers(importedClass,sourceClass);
 		
 		if(isExternalClass(sourceClass))
 		{
@@ -364,7 +364,7 @@ public class ModelImporter extends AbstractImporter{
     	{
     		throw new ImportException(owner.getName()+" is not a Class nor a Signal.");
     	}
-    	setVisibility(property,field);
+    	setModifiers(property,field);
     }
     
     static org.eclipse.uml2.uml.Type importType(Class<?> sourceClass) 
@@ -428,7 +428,7 @@ public class ModelImporter extends AbstractImporter{
             if(isMemberFunction(method)) 
             {    
             	Operation operation=importOperationWithoutBody(ownerClass,sourceClass,method);
-            	setVisibility(operation, method);
+            	setModifiers(operation, method);
             }
         }
     }

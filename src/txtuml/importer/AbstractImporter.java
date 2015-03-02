@@ -3,6 +3,7 @@ package txtuml.importer;
 import java.lang.reflect.*;
 import java.util.WeakHashMap;
 
+import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.PrimitiveType;
@@ -152,7 +153,7 @@ abstract class AbstractImporter {
 		}
 		return null;
 	}
-	private static void setVisibilityBasedOnModifiers(NamedElement element,int modifiers)
+	private static void setVisibilityBasedOnModifiersGivenByReflection(NamedElement element,int modifiers)
 	{
 		if(Modifier.isPrivate(modifiers))
 		{
@@ -182,17 +183,29 @@ abstract class AbstractImporter {
 			}
 		}
 	}
-	protected static void setVisibility(NamedElement importedElement,Class<?> sourceClass)
+	private static void setElementModifiersBasedOnModifiersGivenByReflection(NamedElement element,int modifiers)
 	{
-		setVisibilityBasedOnModifiers(importedElement,sourceClass.getModifiers());	
+		setVisibilityBasedOnModifiersGivenByReflection(element,modifiers);
+		
+		if(element instanceof Classifier)
+		{
+			boolean isAbstract = Modifier.isAbstract(modifiers);
+			Classifier classifierElem=(Classifier) element;
+			classifierElem.setIsAbstract(isAbstract);
+		}
+		
 	}
-	protected static void setVisibility(NamedElement importedElement, Method sourceMethod)
+	protected static void setModifiers(NamedElement importedElement,Class<?> sourceClass)
 	{
-		setVisibilityBasedOnModifiers(importedElement,sourceMethod.getModifiers());	
+		setElementModifiersBasedOnModifiersGivenByReflection(importedElement,sourceClass.getModifiers());	
 	}
-	protected static void setVisibility(NamedElement importedElement,Field sourceField)
+	protected static void setModifiers(NamedElement importedElement, Method sourceMethod)
 	{
-		setVisibilityBasedOnModifiers(importedElement,sourceField.getModifiers());	
+		setElementModifiersBasedOnModifiersGivenByReflection(importedElement,sourceMethod.getModifiers());	
+	}
+	protected static void setModifiers(NamedElement importedElement,Field sourceField)
+	{
+		setElementModifiersBasedOnModifiersGivenByReflection(importedElement,sourceField.getModifiers());	
 	}
 
 	protected static boolean localInstanceToBeCreated = false;
