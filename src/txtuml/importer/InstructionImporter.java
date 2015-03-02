@@ -244,59 +244,107 @@ class InstructionImporter extends AbstractInstructionImporter {
 			++i;
 		}
 	}
+	
+	private static Object assocCall(ModelClass target,Object... args)
+	{
+		Object returnVal=null;
+		Method assocMethod=findMethod(target.getClass(),"assoc");
+		try {
+			returnVal=assocMethod.invoke(target,args);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
+		return returnVal;
+	}
+	
+	private static Object importMethodCallInOperationBody(ModelClass target, String methodName, Object... args) throws ImportException
+	{
+		Object returnObj=null;
+		
+		if(methodName.equals("assoc"))
+		{
+			returnObj=assocCall(target,args);
+		}
+		else
+		{
+			String targetName=getObjectIdentifier(target);
+
+			CallOperationAction callAction=(CallOperationAction)
+					currentActivity.createOwnedNode("call_"+targetName+"."+methodName, UMLPackage.Literals.CALL_OPERATION_ACTION);
+
+			Type type=currentModel.getOwnedType(target.getClass().getSimpleName());
+
+			org.eclipse.uml2.uml.Class targetClass	=	(org.eclipse.uml2.uml.Class)
+					currentModel.getOwnedMember(target.getClass().getSimpleName());
+
+			ValuePin callTarget=(ValuePin)callAction.createTarget(callAction.getName()+"_target",type,UMLPackage.Literals.VALUE_PIN);
+
+			addOpaqueExpressionToValuePin(callTarget,targetName,type);
+
+			callAction.setOperation(AbstractImporter.findOperation(targetClass,methodName));
+			addParamsToCallAction(callAction,target,methodName,args);
+
+			createControlFlowBetweenNodes(lastNode,callAction);
+			lastNode=callAction;
+
+			try {
+				Method method = findMethod(target.getClass(),methodName);
+				Class<?> returnType=method.getReturnType();
+				returnObj=createLocalInstance(returnType);
+			} catch (SecurityException e1) {
+				// TODO Auto-generated catch block
+				//e1.printStackTrace();
+			}
+
+		}
+		
+		return returnObj;
+	}
+	static ModelBool importMethodCallInGuardBody(ModelClass target, String methodName, Object... args)
+	{
+		ModelBool returnVal=new ModelBool();
+		String expression=methodName+"(";
+		int argsProcessed=0;
+		for(Object currArg : args)
+		{
+			String currArgExpr=getExpression((ModelIdentifiedElement)currArg);
+			if(argsProcessed>0)
+			{
+				expression+=",";
+			}
+			
+			expression+=currArgExpr;		
+			
+			++argsProcessed;
+		}
+		expression+=")";
+		
+		boolean literal=false;
+		boolean calculated=true;
+			
+		ModelTypeInformation returnValInfo=new ModelTypeInformation(expression,literal,calculated);
+		
+		modelTypeInstancesInfo.put(returnVal,returnValInfo);
+		
+		return returnVal;
+	}
 	static Object importMethodCall(ModelClass target, String methodName, Object... args) throws ImportException
 	{
 		// this method is called at every method call where the target object is of any type that extends ModelClass 
 		// parameters: the target object, the name of the called method and the given parameters
 
-		if(methodName.equals("assoc"))
-		{
-			for(Method m:target.getClass().getMethods())
-			{
-				if(m.getName().equals("assoc"))
-				{
-					try {
-						return m.invoke(target,args);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						//e.printStackTrace();
-					}
-				}
-			}
-		}
-		String targetName=getObjectIdentifier(target);
-
-		CallOperationAction callAction=(CallOperationAction)
-				currentActivity.createOwnedNode("call_"+targetName+"."+methodName, UMLPackage.Literals.CALL_OPERATION_ACTION);
-
-		Type type=currentModel.getOwnedType(target.getClass().getSimpleName());
-
-		org.eclipse.uml2.uml.Class targetClass	=	(org.eclipse.uml2.uml.Class)
-				currentModel.getOwnedMember(target.getClass().getSimpleName());
-
-		ValuePin callTarget=(ValuePin)callAction.createTarget(callAction.getName()+"_target",type,UMLPackage.Literals.VALUE_PIN);
-
-		addOpaqueExpressionToValuePin(callTarget,targetName,type);
-
-		callAction.setOperation(AbstractImporter.findOperation(targetClass,methodName));
-		addParamsToCallAction(callAction,target,methodName,args);
-
-		createControlFlowBetweenNodes(lastNode,callAction);
-		lastNode=callAction;
-
-
 		Object returnObj=null;
-		try {
-			Method method = findMethod(target.getClass(),methodName);
-			Class<?> returnType=method.getReturnType();
-			returnObj=createLocalInstance(returnType);
-		} catch (SecurityException e1) {
-			// TODO Auto-generated catch block
-			//e1.printStackTrace();
+		if(currentActivity!=null)
+		{
+			returnObj = importMethodCallInOperationBody(target, methodName, args);
 		}
-
-
+		else
+		{
+			returnObj= importMethodCallInGuardBody(target, methodName, args);
+		}
 		return returnObj;
+		
 	}
 
 

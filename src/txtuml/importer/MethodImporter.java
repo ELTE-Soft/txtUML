@@ -77,10 +77,9 @@ public class MethodImporter extends AbstractMethodImporter {
 		importing=true;
 	
 
-		Object classInstance=createLocalInstance(declaringClass);
-		setCurrentSignal((txtuml.api.ModelClass.Transition)classInstance);					
-		
+		Object classInstance=createLocalInstance(declaringClass);			
 		assignSelf(classInstance);
+		setCurrentSignal((txtuml.api.ModelClass.Transition)classInstance);	
 		
 		return classInstance;
 	}
