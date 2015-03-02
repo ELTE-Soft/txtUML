@@ -8,7 +8,6 @@ package txtuml.export.uml2tocpp;
 
 import java.util.Map;
 
-import org.eclipse.emf.common.util.DiagnosticException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;

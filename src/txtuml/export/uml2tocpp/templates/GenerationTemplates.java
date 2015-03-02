@@ -15,7 +15,6 @@ import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.State;
 
 import txtuml.export.uml2tocpp.Util;
-import txtuml.export.uml2tocpp.Util.Pair;
 
 public class GenerationTemplates 
 {		
