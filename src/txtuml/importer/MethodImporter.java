@@ -25,6 +25,8 @@ import txtuml.api.ModelBool;
 import txtuml.api.ModelClass;
 import txtuml.api.ModelIdentifiedElement;
 import txtuml.api.Trigger;
+import txtuml.importer.utils.ElementFinder;
+import txtuml.importer.utils.ElementTypeTeller;
 import txtuml.utils.InstanceCreator;
 
 public class MethodImporter extends AbstractMethodImporter {
@@ -86,7 +88,7 @@ public class MethodImporter extends AbstractMethodImporter {
 	
 	private static void setCurrentSignal(txtuml.api.ModelClass.Transition transitionInstance)
 	{
-		Method m=findMethod(txtuml.api.ModelClass.Transition.class,"getSignal");
+		Method m=ElementFinder.findMethod(txtuml.api.ModelClass.Transition.class,"getSignal");
 		m.setAccessible(true);
 		try {
 			currentSignal=(Event) m.invoke(transitionInstance);
@@ -122,7 +124,7 @@ public class MethodImporter extends AbstractMethodImporter {
 		
 		loadCurrentParameters();
 		
-		if(isTransition(declaringClass))
+		if(ElementTypeTeller.isTransition(declaringClass))
 		{
 			setCurrentSignal((txtuml.api.ModelClass.Transition)classInstance);		
 			
@@ -194,7 +196,7 @@ public class MethodImporter extends AbstractMethodImporter {
 	{
 		String retName=getObjectIdentifier((ModelIdentifiedElement) returnObj);
 
-		Parameter returnParam=findParameter("return");
+		Parameter returnParam=ElementFinder.findParameterInActivity("return",currentActivity);
 		
 		if(returnParam!=null)
 		{
@@ -247,7 +249,7 @@ public class MethodImporter extends AbstractMethodImporter {
 			currentParameters[i]=createLocalInstance(c);
 			String argName="arg"+i;
 			
-			Parameter param=findParameter(argName);
+			Parameter param=ElementFinder.findParameterInActivity(argName,currentActivity);
 			if(param!=null)
 			{
 				Type paramType=param.getType();
@@ -257,18 +259,7 @@ public class MethodImporter extends AbstractMethodImporter {
 		}
 	}
 	
-	private static Parameter findParameter(String paramName)
-	{
-		for(Parameter p : currentActivity.getSpecification().getOwnedParameters())
-		{	
-			if(p.getName().equals(paramName))
-			{
-				return p;
-			}
-			
-		}
-		return null;
-	}
+	
 	
 	private static void addParameterToActivity(Parameter param,String paramName,Type paramType)
 	{

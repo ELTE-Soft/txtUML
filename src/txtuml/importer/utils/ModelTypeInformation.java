@@ -1,13 +1,13 @@
-package txtuml.importer;
+package txtuml.importer.utils;
 
-class ModelTypeInformation {
+public class ModelTypeInformation {
 
 	private final String expression;
 	private final boolean literal;
 	private final boolean calculated;
 	private final Integer intVal;
 	
-	ModelTypeInformation(String expression, boolean literal, boolean calculated, Integer intVal)
+	public ModelTypeInformation(String expression, boolean literal, boolean calculated, Integer intVal)
 	{
 		this.expression=expression;
 		this.literal=literal;
@@ -15,24 +15,24 @@ class ModelTypeInformation {
 		this.intVal=intVal;
 	}
 	
-	ModelTypeInformation(String expression, boolean literal, boolean calculated)
+	public ModelTypeInformation(String expression, boolean literal, boolean calculated)
 	{
 		this(expression,literal,calculated,0);
 	}
 	
-	String getExpression()
+	public String getExpression()
 	{
 		return expression;
 	}
-	boolean isLiteral()
+	public boolean isLiteral()
 	{
 		return literal;
 	}
-	boolean isCalculated()
+	public boolean isCalculated()
 	{
 		return calculated;
 	}
-	Integer getIntVal()
+	public Integer getIntVal()
 	{
 		return intVal;
 	}

@@ -1,6 +1,7 @@
 package txtuml.importer;
 
 import org.aspectj.lang.Signature;
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 
 import txtuml.api.ExternalClass;
 import txtuml.api.ModelBool;
@@ -9,6 +10,7 @@ import txtuml.api.ModelInt;
 import txtuml.api.ModelString;
 import txtuml.api.ExternalClass;
 import txtuml.api.Association.AssociationEnd;
+import txtuml.importer.utils.ImportException;
 
 public privileged aspect InstructionImporterAspect extends AbstractImporterAspect {
 
@@ -51,11 +53,11 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 		}
 	}
 	
-
+	@SuppressAjWarnings
 	Object around(ExternalClass target) : target(target) && call(* (ExternalClass+).*(..)) && isActive() {
 		return InstructionImporter.callExternal(target, thisJoinPoint.getSignature().getName(), thisJoinPoint.getArgs());
 	}
-	
+	@SuppressAjWarnings
 	Object around() : call(static * (ExternalClass+).*(..)) && isActive() {
 		return InstructionImporter.callStaticExternal(thisJoinPoint.getSignature().getDeclaringType(), thisJoinPoint.getSignature().getName(), thisJoinPoint.getArgs());
 	}

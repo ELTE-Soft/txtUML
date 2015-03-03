@@ -32,6 +32,8 @@ import txtuml.api.ModelIdentifiedElement;
 import txtuml.api.ModelInt;
 import txtuml.api.ModelString;
 import txtuml.api.ModelType;
+import txtuml.importer.utils.ElementTypeTeller;
+import txtuml.importer.utils.ModelTypeInformation;
 import txtuml.utils.InstanceCreator;
 
 abstract class AbstractMethodImporter extends AbstractImporter {
@@ -245,7 +247,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 			{
 				return expression;
 			}
-			else if(isClassifier(objectClass))
+			else if(ElementTypeTeller.isClassifier(objectClass))
 			{
 				for(Field field:object.getClass().getDeclaredFields())
 				{

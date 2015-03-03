@@ -10,6 +10,9 @@ import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Type;
 
+import txtuml.importer.utils.AssociationEnd;
+import txtuml.importer.utils.ImportException;
+
 class AssociationImporter extends AbstractImporter{
 	
 	

@@ -1,4 +1,4 @@
-package txtuml.importer;
+package txtuml.importer.utils;
 
 @SuppressWarnings("serial")
 public class ImportException extends Exception {

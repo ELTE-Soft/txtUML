@@ -14,12 +14,15 @@ import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.VisibilityKind;
 
 import txtuml.api.*;
+import txtuml.importer.utils.ElementFinder;
+import txtuml.importer.utils.ElementTypeTeller;
+import txtuml.importer.utils.ModelTypeInformation;
 
 abstract class AbstractImporter {
 	
 	protected static Object getObjectFieldVal(Object object,String fieldName)
 	{	
-		Field field = findField(object.getClass(),fieldName);
+		Field field = ElementFinder.findField(object.getClass(),fieldName);
 		return accessObjectFieldVal(object, field);	
 	}
 	
@@ -43,82 +46,8 @@ abstract class AbstractImporter {
 		
 		return val;
 	}
-	protected static Field findField(Class<?> type,String fieldName) {
-
-	    Class<?> i = type;
-	    while (i != null && i != Object.class) {
-	        for(Field f:i.getDeclaredFields())
-	        {
-	        	if(fieldName.equals(f.getName()))
-	        	{
-	        		return f;
-	        	}
-	        }
-	        i = i.getSuperclass();
-	    }
-
-	    return null;
-	}
-	protected static boolean isModelElement(Class<?> c)
-	{
-		 
-		return ModelElement.class.isAssignableFrom(c) ||
-			   isState(c) ||
-			   isTransition(c) ;
-	}
-	protected static boolean isModelClass(Class<?> c) {
-		return ModelClass.class.isAssignableFrom(c);
-	}
-
-	protected static boolean isExternalClass(Class<?> c) {
-		return ExternalClass.class.isAssignableFrom(c);
-	}
-	protected static boolean isClass(Class<?> c )
-	{
-		return isModelClass(c) || isExternalClass(c);
-	}
 	
-	protected static boolean isAssociation(Class<?> c) {
-		return Association.class.isAssignableFrom(c);
-	}
-    
-	protected static boolean isEvent(Class<?> c) {
-		return Signal.class.isAssignableFrom(c);
-	}
-
-	protected static boolean isAttribute(Field f) {
-		return ModelIdentifiedElement.class.isAssignableFrom(f.getType());
-    }
-    
-	protected static boolean isState(Class<?> c) {
-        return ModelClass.State.class.isAssignableFrom(c);
-    }
-
-	protected static boolean isInitialState(Class<?> c) {
-        return ModelClass.InitialState.class.isAssignableFrom(c);
-    }
-
-	protected static boolean isCompositeState(Class<?> c) {
-        return ModelClass.CompositeState.class.isAssignableFrom(c);
-    }
 	
-	protected static boolean isChoice(Class<?> c)
-	{
-		return ModelClass.Choice.class.isAssignableFrom(c);
-	}
-
-	protected static boolean isTransition(Class<?> c) {
-        return ModelClass.Transition.class.isAssignableFrom(c);
-    }
-    
-	protected static boolean isClassifier(Class<?> c)
-	{
-		return isClass(c) || isEvent(c);
-	}
-	protected static boolean isMemberFunction(Method m) {
-		// return m.getParameterTypes().length == 0; // TODO remove when parameters are handled
-		return true;
-    }
 	
 	protected static void importWarning(String msg) {
 		System.out.println("Warning: " + msg);
@@ -126,7 +55,7 @@ abstract class AbstractImporter {
 	
 	protected static boolean isContainsStateMachine(Class<?> sourceClass){
 		for(Class<?> c : sourceClass.getDeclaredClasses()){
-			if(isState(c)){
+			if(ElementTypeTeller.isState(c)){
 				return true;
 			}
 	    }
@@ -152,26 +81,7 @@ abstract class AbstractImporter {
 		localInstanceToBeCreated = bool;
 	}
 	
-	protected static Method findMethod(Class<?> containingClass, String name)
-	{
-		for(Method m: containingClass.getDeclaredMethods())
-		{
-			if(m.getName().equals(name))
-			{
-				return m;
-			}
-		}
-		
-		for(Method m: containingClass.getMethods())
-		{
-			if(m.getName().equals(name))
-			{
-				return m;
-			}
-		}
-		return null;
-	}
-
+	
 	private static void setVisibilityBasedOnModifiersGivenByReflection(NamedElement element,int modifiers)
 	{
 		if(Modifier.isPrivate(modifiers))
@@ -231,16 +141,6 @@ abstract class AbstractImporter {
 	protected static PrimitiveType UML2Integer,UML2Bool,UML2String,UML2Real,UML2UnlimitedNatural;
 	protected static Class<?> modelClass=null;
 	protected static WeakHashMap<ModelType<?>, ModelTypeInformation> modelTypeInstancesInfo=null;
-	protected static Operation findOperation(org.eclipse.uml2.uml.Class ownerClass,String name)
-	{
-		for(Operation op:ownerClass.getOperations())
-		{
-			if(op.getName().equals(name))
-			{
-				return op;
-			}
-		}
-		return null;
-	}
+
 
 }

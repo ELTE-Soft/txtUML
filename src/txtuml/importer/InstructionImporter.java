@@ -29,6 +29,10 @@ import txtuml.api.ModelIdentifiedElement;
 import txtuml.api.ModelInt;
 import txtuml.api.ModelString;
 import txtuml.api.ModelType;
+import txtuml.importer.utils.ElementFinder;
+import txtuml.importer.utils.ElementTypeTeller;
+import txtuml.importer.utils.ImportException;
+import txtuml.importer.utils.ModelTypeInformation;
 
 class InstructionImporter extends AbstractInstructionImporter {
 
@@ -248,9 +252,8 @@ class InstructionImporter extends AbstractInstructionImporter {
 	private static Object assocCall(ModelClass target,Object... args)
 	{
 		Object returnVal=null;
-		Method assocMethod=findMethod(ModelClass.class,"assoc");
+		Method assocMethod=ElementFinder.findMethod(ModelClass.class,"assoc");
 
-		
 		try {
 			returnVal=assocMethod.invoke(target,args);
 		} catch (Exception e) {
@@ -284,14 +287,14 @@ class InstructionImporter extends AbstractInstructionImporter {
 
 			addOpaqueExpressionToValuePin(callTarget,targetName,type);
 
-			callAction.setOperation(AbstractImporter.findOperation(targetClass,methodName));
+			callAction.setOperation(ElementFinder.findOperation(targetClass,methodName));
 			addParamsToCallAction(callAction,target,methodName,args);
 
 			createControlFlowBetweenNodes(lastNode,callAction);
 			lastNode=callAction;
 
 			try {
-				Method method = findMethod(target.getClass(),methodName);
+				Method method = ElementFinder.findMethod(target.getClass(),methodName);
 				Class<?> returnType=method.getReturnType();
 				returnObj=createLocalInstance(returnType);
 			} catch (SecurityException e1) {
@@ -435,7 +438,7 @@ class InstructionImporter extends AbstractInstructionImporter {
 		{
 			val=new ModelString();
 		}
-		else if(isModelClass(fieldType))
+		else if(ElementTypeTeller.isModelClass(fieldType))
 		{
 			val=createLocalInstance(fieldType);
 		}

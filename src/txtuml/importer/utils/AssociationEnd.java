@@ -1,8 +1,8 @@
-package txtuml.importer;
+package txtuml.importer.utils;
 
 import org.eclipse.uml2.uml.AggregationKind;
 
-class AssociationEnd
+public class AssociationEnd
 {
 	private org.eclipse.uml2.uml.Type type;
 	private String name;

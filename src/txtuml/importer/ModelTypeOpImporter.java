@@ -4,6 +4,7 @@ import txtuml.api.ModelBool;
 import txtuml.api.ModelInt;
 import txtuml.api.ModelString;
 import txtuml.api.ModelType;
+import txtuml.importer.utils.ModelTypeInformation;
 
 
 class ModelTypeOpImporter extends AbstractInstructionImporter {

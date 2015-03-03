@@ -20,6 +20,9 @@ import txtuml.api.From;
 import txtuml.api.ModelBool;
 import txtuml.api.ModelType;
 import txtuml.api.To;
+import txtuml.importer.utils.ElementTypeTeller;
+import txtuml.importer.utils.ImportException;
+import txtuml.importer.utils.ModelTypeInformation;
 
 class RegionImporter extends AbstractImporter {
 
@@ -47,11 +50,11 @@ class RegionImporter extends AbstractImporter {
 	{
 		for(Class<?> c : sourceClass.getDeclaredClasses())
         {
-			if(!isModelElement(c))
+			if(!ElementTypeTeller.isModelElement(c))
 			{
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
 			}
-            if(isState(c)) 
+            if(ElementTypeTeller.isState(c)) 
             {	   
             	importState(c);
             }
@@ -64,7 +67,7 @@ class RegionImporter extends AbstractImporter {
 	private  Vertex importState(Class<?> state)	throws ImportException
 	{
 		Vertex vertex=createState(state);
-		if(!isInitialState(state) && !isChoice(state))
+		if(!ElementTypeTeller.isInitialState(state) && !ElementTypeTeller.isChoice(state))
 		{
 			importStateEntryAction(state,(State) vertex);
 			importStateExitAction(state,(State) vertex);
@@ -114,13 +117,13 @@ class RegionImporter extends AbstractImporter {
 	{
 		for(Class<?> c : sourceClass.getDeclaredClasses())
 	    {		
-			if(!isModelElement(c))
+			if(!ElementTypeTeller.isModelElement(c))
 			{
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
 			}
-	    	if(isTransition(c))
+	    	if(ElementTypeTeller.isTransition(c))
 	        {
-				if (isState(c))
+				if (ElementTypeTeller.isState(c))
 				{
 					throw new ImportException(sourceClass.getName() + "." + c.getSimpleName() + " cannot be a state and a transition at the same time");
 				}		
@@ -135,7 +138,7 @@ class RegionImporter extends AbstractImporter {
 	private  Vertex createState(Class<?> state)	throws ImportException
 	{
 		
-		if(isInitialState(state))
+		if(ElementTypeTeller.isInitialState(state))
         {
 			if (isContainsInitialState(region)) 
 			{
@@ -143,11 +146,11 @@ class RegionImporter extends AbstractImporter {
 			}
 			return createInitialState(state);
         }
-		else if(isCompositeState(state))
+		else if(ElementTypeTeller.isCompositeState(state))
 		{
 			return createCompositeState(state);
 		}
-		else if(isChoice(state))
+		else if(ElementTypeTeller.isChoice(state))
 		{
 			return createChoice(state);
 		}
