@@ -59,13 +59,11 @@ SingleThreadRT::SingleThreadRT():_messageQueue(new MessageQueueType){}
 
 void SingleThreadRT::run()
 {
-  int count=0;
   for(;;)
   {
     if(_stop)break;
     if(!_messageQueue->empty())
     {
-      ++count;
       _messageQueue->front()->dest.processEventVirtual();
     }
   }

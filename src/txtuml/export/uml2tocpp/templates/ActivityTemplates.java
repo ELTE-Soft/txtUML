@@ -35,7 +35,7 @@ public class ActivityTemplates
 		String signal=GenerationNames.EventClassName(signalName_)+"(";
 		if(rt_)
 		{
-			signal+="*this,";
+			signal+=GenerationNames.DerefenrencePointer(targetName_)+",";
 		}
 		signal+=targetTypeName_+"::"+GenerationNames.EventEnumName(signalName_);
 		String paramList=OperationCallParamList(params_);

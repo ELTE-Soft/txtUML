@@ -172,6 +172,11 @@ class GenerationNames
 		return stateName_+StateEnumTypeId;
 	}
 	
+	public static String DerefenrencePointer(String pointer_)
+	{
+		return "(*"+pointer_+")";
+	}
+	
 	public static String PointerType(String typeName_)
 	{
 		return typeName_+"*";
