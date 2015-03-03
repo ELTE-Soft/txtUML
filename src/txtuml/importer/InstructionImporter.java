@@ -64,16 +64,7 @@ class InstructionImporter extends AbstractInstructionImporter {
 		ParameterizedType genericSupClass=(ParameterizedType) target.getClass().getGenericSuperclass();
 		String typeName=genericSupClass.getActualTypeArguments()[0].getTypeName();
 		Type type=currentModel.getOwnedType(typeName);
-		Class<?> resultClass=null;
-
-		for(Class<?> c: modelClass.getDeclaredClasses())
-		{
-			if(c.getName().equals(typeName))
-			{
-				resultClass=c;
-				break;
-			}
-		}
+		Class<?> resultClass=ElementFinder.findDeclaredClass(modelClass, typeName);
 
 		@SuppressWarnings("unchecked")
 		T result=(T) createLocalInstance(resultClass);
@@ -130,16 +121,7 @@ class InstructionImporter extends AbstractInstructionImporter {
 		String typeName=genericSupClass.getActualTypeArguments()[0].getTypeName();
 
 		Class<?> assocClass=target.getClass().getDeclaringClass();
-		Class<?> resultClass=null;
-
-		for(Class<?> c: modelClass.getDeclaredClasses())
-		{
-			if(c.getName().equals(typeName))
-			{
-				resultClass=c;
-				break;
-			}
-		}
+		Class<?> resultClass=ElementFinder.findDeclaredClass(modelClass, typeName);
 
 		@SuppressWarnings("unchecked")
 		T result=(T) createLocalInstance(resultClass);
@@ -163,15 +145,13 @@ class InstructionImporter extends AbstractInstructionImporter {
 		createControlFlowBetweenNodes(lastNode, selectOneAction);
 
 		Association association=(Association) currentModel.getOwnedMember(assocClass.getSimpleName());
+		Property memberEnd=ElementFinder.findAssociationMemberEnd(association,phrase);
 		Type type=null;
-		for(Property p:association.getMemberEnds())
+		if(memberEnd!=null)
 		{
-			if(p.getName().equals(phrase))
-			{
-				type=p.getType();
-				break;
-			}
+			type=memberEnd.getType();
 		}
+		
 		OutputPin outputPin=selectOneAction.createOutputValue(selectOneAction.getName()+"_output", type);
 
 		Variable variable=currentActivity.createVariable(resultName,type);
@@ -389,33 +369,10 @@ class InstructionImporter extends AbstractInstructionImporter {
 
 		if(newValue instanceof ModelIdentifiedElement)
 		{
-
-
-			Method method=ModelType.class.getDeclaredMethod("getValue");
-			method.setAccessible(true);
-
-			if(newValue instanceof ModelInt)
-			{
-				int val=(int) method.invoke(newValue);
-				fieldObj=new ModelInt(val);	
-			}
-			else if(newValue instanceof ModelBool)
-			{
-				boolean val=(boolean) method.invoke(newValue);
-				fieldObj=new ModelBool(val);	
-			}
-			else if(newValue instanceof ModelString)
-			{
-
-				String val=(String) method.invoke(newValue);
-				fieldObj=new ModelString(val);
-			}
-			else if(newValue instanceof ModelClass)
-			{
-				fieldObj=createLocalInstance(newValue.getClass());
-			}
-
-			method.setAccessible(false);
+			if(newValue instanceof ModelInt) fieldObj=new ModelInt();	
+			else if(newValue instanceof ModelBool) fieldObj=new ModelBool();	
+			else if(newValue instanceof ModelString) fieldObj=new ModelString();
+			else if(newValue instanceof ModelClass) fieldObj=createLocalInstance(newValue.getClass());
 		}
 		field.set(target, fieldObj);
 		field.setAccessible(false);
@@ -426,22 +383,12 @@ class InstructionImporter extends AbstractInstructionImporter {
 	static Object fieldGet(ModelClass target, String fieldName, Class<?> fieldType)
 	{
 		Object val=null;
-		if(fieldType==ModelInt.class)
-		{
-			val=new ModelInt();
-		}
-		else if(fieldType==ModelBool.class)
-		{
-			val=new ModelBool();
-		}
-		else if(fieldType==ModelString.class)
-		{
-			val=new ModelString();
-		}
-		else if(ElementTypeTeller.isModelClass(fieldType))
-		{
-			val=createLocalInstance(fieldType);
-		}
+		
+		if(fieldType==ModelInt.class) val=new ModelInt();
+		else if(fieldType==ModelBool.class) val=new ModelBool();
+		else if(fieldType==ModelString.class) val=new ModelString();
+		else if(ElementTypeTeller.isModelClass(fieldType)) val=createLocalInstance(fieldType);
+	
 		try
 		{
 			return initField(target,fieldName,val);

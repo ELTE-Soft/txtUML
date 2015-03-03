@@ -4,8 +4,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Parameter;
+import org.eclipse.uml2.uml.Property;
 
 public class ElementFinder {
 
@@ -67,6 +69,32 @@ public class ElementFinder {
 				return p;
 			}
 			
+		}
+		return null;
+	}
+	
+	public static Class<?> findDeclaredClass(Class<?> enclosingClass, String classToFindName)
+	{
+		for(Class<?> c : enclosingClass.getDeclaredClasses())
+		{
+			String className=c.getName();
+			if(className.equals(classToFindName))
+			{
+				return c;
+			}
+		}
+		return null;
+	}
+	
+	public static Property findAssociationMemberEnd(Association association, String endToFindName)
+	{
+		for(Property memberEnd:association.getMemberEnds())
+		{
+			String memberEndName=memberEnd.getName();
+			if(memberEndName.equals(endToFindName))
+			{
+				return memberEnd;
+			}
 		}
 		return null;
 	}
