@@ -37,6 +37,8 @@ class GenerationNames
 	public static final String TransitionTableName="_mM";
 	public static final String setStateFuncName="setState";
 	public static final String CurrentStateName="_cS";
+	public static final String DefaultInvalidState="-1";
+	public static final String DefaultStateInitialization=CurrentStateName+"("+DefaultInvalidState+")";
 	public static final String FunctionPtrTypeName ="ActionFuncType";
 	public static final String GuardFuncTypeName ="GuardFuncType";
 	public static final String GuardActionName ="GuardAction";
@@ -67,6 +69,7 @@ class GenerationNames
 	
 	public static final String Unknown="?";
 	public static final String AssocMultiplicityDataStruct="std::list";
+	
 	
 	public static String FriendClassDecl(String className_)
 	{

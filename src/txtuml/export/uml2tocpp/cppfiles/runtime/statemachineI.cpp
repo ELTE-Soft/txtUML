@@ -3,7 +3,7 @@
 
 
  StateMachineI::StateMachineI(std::shared_ptr<MessageQueueType> messageQueue_)
-                :_messageQueue(messageQueue_),_pool(nullptr),_runtime(nullptr),_inPool(false){}
+                :_runtime(nullptr),_messageQueue(messageQueue_),_pool(nullptr),_inPool(false){}
 
 
 void StateMachineI::runSM()

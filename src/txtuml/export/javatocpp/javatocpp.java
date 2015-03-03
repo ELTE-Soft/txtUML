@@ -11,9 +11,21 @@ import txtuml.importer.ModelImporter;
 import txtuml.export.uml2tocpp.Uml2ToCpp;
 
 public class javatocpp {
+	
+	private static final String HelpAOption="-h";
+	private static final String HelpBOption="-help";
+	
 	public static void main(String[] args) {
-		if(args.length < 2) {
-			System.out.println("Two command line arguments needed: model class, output directory");
+		
+		if(args[0].equals(HelpAOption) || args[0].equals(HelpBOption))
+		{
+			help();
+			return;
+		}
+		
+		if(args.length < 2) 
+		{
+			System.out.println("Missing arguments for more information use -h or -help");
 			return;
 		}
 		
@@ -34,6 +46,13 @@ public class javatocpp {
 		{
 			System.out.println("Error: " + e.getMessage());
 		}
+	}
+
+	private static void help() 
+	{
+		System.out.println("Usage: javatocpp txtUMLModelPath outputDirectoryPath [options] ...\n"+
+							HelpAOption+","+HelpBOption+"\tPrint this message and exit.\n"+
+							Uml2ToCpp.helpArgs());
 	}
 }
 

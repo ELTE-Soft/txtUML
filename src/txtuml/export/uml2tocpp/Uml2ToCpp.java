@@ -134,10 +134,15 @@ public class Uml2ToCpp
 	private static void help()
 	{
 		System.out.println("Usage: UmlToCpp umlModelFilePath outputDirectoryPath [options] ...\n"+
-							"Options:\n"+
-							RuntimeOption+"\t\tGenerate source with runtime.\n"+
-							DebugLogOption+"\t\tGenerate source with log messages in transition actions if _DEBUG is defined.\n"+
-							HelpAOption+","+HelpBOption+"\tPrint this message and exit.");
+							helpArgs()+
+							HelpAOption+","+HelpBOption+"\tPrint this message and exit.\n");
+	}
+	
+	public static String helpArgs()
+	{
+		return  "C++ Compile Options:\n"+
+				RuntimeOption+"\t\tGenerate source with runtime.\n"+
+				DebugLogOption+"\t\tGenerate source with log messages in transition actions if _DEBUG is defined.\n";
 	}
 	
 
