@@ -156,15 +156,12 @@ public class MethodImporter extends AbstractMethodImporter {
 		currentSignal=null;
 		importing=false;
 	}
+	
 	static void importMethod(Model model, Activity activity, Method sourceMethod, Class<?> declaringClass) 
-
 	{
 		Object classInstance=initMethodImport(model,activity,sourceMethod,declaringClass);
-		
 		importBody(classInstance);
-	
-		endMethodImport();
-		
+		endMethodImport();	
 	}
 	
 	private static void importBody(Object classInstance)

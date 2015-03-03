@@ -18,26 +18,32 @@ import txtuml.api.*;
 abstract class AbstractImporter {
 	
 	protected static Object getObjectFieldVal(Object object,String fieldName)
-	{
-		
-		Field field = getField(object.getClass(),fieldName);
-		field.setAccessible(true);
-		Object val=null;
-		try {
-			val = field.get(object);
-			return val;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		}
-		field.setAccessible(false);
-			
-		
-		return null;
-		
+	{	
+		Field field = findField(object.getClass(),fieldName);
+		return accessObjectFieldVal(object, field);	
 	}
 	
-	protected static Field getField(Class<?> type,String fieldName) {
+	protected static Object accessObjectFieldVal(Object object, Field field)
+	{
+		Object val=null;
+		
+		if(field!=null)
+		{
+			field.setAccessible(true);
+			try {
+				val = field.get(object);
+				return val;
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
+			field.setAccessible(false);
+		}
+		
+		
+		return val;
+	}
+	protected static Field findField(Class<?> type,String fieldName) {
 
 	    Class<?> i = type;
 	    while (i != null && i != Object.class) {
@@ -105,6 +111,10 @@ abstract class AbstractImporter {
         return ModelClass.Transition.class.isAssignableFrom(c);
     }
     
+	protected static boolean isClassifier(Class<?> c)
+	{
+		return isClass(c) || isEvent(c);
+	}
 	protected static boolean isMemberFunction(Method m) {
 		// return m.getParameterTypes().length == 0; // TODO remove when parameters are handled
 		return true;

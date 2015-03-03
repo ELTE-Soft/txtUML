@@ -138,30 +138,18 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 
 	protected static boolean isObjectAFieldOfSelf(ModelIdentifiedElement object)
 	{
-		if(self!=null)
+		boolean answer=false;
+		if(object!=null)
 		{
-			for(Field f:self.getClass().getDeclaredFields())
+			String objectIdentifier=object.getIdentifier();
+			if(self!=null)
 			{
-				try {
-					f.setAccessible(true);
-					Object fieldObj = f.get(self);
-					f.setAccessible(false);
-					if(fieldObj instanceof ModelIdentifiedElement)
-					{
-						if( ( (ModelIdentifiedElement) fieldObj ).getIdentifier().equals( object.getIdentifier() ) )
-						{
-							return true;
-						}
-					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					//e.printStackTrace();
-				}
-
+				ModelIdentifiedElement fieldInstance=getObjectFieldInstanceWithGivenInstId(objectIdentifier,self);
+				answer=fieldInstance!=null;
 			}
-		}
 
-		return false;
+		}
+		return answer;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -224,74 +212,77 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		return expression;
 	}
 
-	private static String compareInstanceIdWithObjAndFields (String instanceId,ModelIdentifiedElement obj, String expr)
+	private static ModelIdentifiedElement getObjectFieldInstanceWithGivenInstId(String instanceId, Object object)
 	{
-		try
+		//going through declared fields of the object
+		for(Field field:object.getClass().getDeclaredFields())
 		{
-			if(instanceId==obj.getIdentifier())
+			Object fieldInstance=accessObjectFieldVal(object,field);
+			
+			//if the instance of the object's current field is an identifiable element and it's identifier equals
+			//the given instanceId, then it's the same instance
+			if(fieldInstance!=null && fieldInstance instanceof ModelIdentifiedElement)
 			{
-				return expr;
+				ModelIdentifiedElement identifiedFieldInst= (ModelIdentifiedElement) fieldInstance;
+				String fieldInstanceIdentifier=identifiedFieldInst.getIdentifier();
+				if(fieldInstanceIdentifier.equals(instanceId))
+				{
+					return identifiedFieldInst;
+				}
+			}		
+		}
+		
+		return null;
+	}
+	private static String compareInstanceIdWithObjAndFields (String instanceId,ModelIdentifiedElement object, String expression)
+	{
+
+		if(object!=null)
+		{
+			String objectIdentifier=object.getIdentifier();
+			Class<?> objectClass = object.getClass();
+			if(instanceId.equals(objectIdentifier))
+			{
+				return expression;
 			}
-			for(Field f:obj.getClass().getDeclaredFields())
+			else if(isClassifier(objectClass))
 			{
-				try {
-					f.setAccessible(true);
-					Object fieldObj = f.get(obj);
-					f.setAccessible(false);
-					if(fieldObj instanceof ModelIdentifiedElement)
+				for(Field field:object.getClass().getDeclaredFields())
+				{
+					Object fieldInstance=accessObjectFieldVal(object,field);
+					
+					if(fieldInstance!=null && fieldInstance instanceof ModelIdentifiedElement)
 					{
-						if( ( (ModelIdentifiedElement) fieldObj ).getIdentifier().equals( instanceId ) )
+						ModelIdentifiedElement identifiedFieldInst=(ModelIdentifiedElement) fieldInstance;
+						String fieldInstanceIdentifier=identifiedFieldInst.getIdentifier();
+						
+						if( fieldInstanceIdentifier.equals( instanceId ) )
 						{
-							return expr+"."+f.getName();
+							String fieldName=field.getName();
+							return expression+"."+fieldName;
 						}
-					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					//e.printStackTrace();
-				} 
-
+					}				
+				}	
 			}
 		}
-		catch(NullPointerException e)
-		{
 
-		}
 		return null;
 
 	}
 
 	private static String compareInstanceIdWithCurrentParams(String instanceId)
 	{
-		try
-		{
-			int i=0;
-			for(Object param: currentParameters)
-			{
-				try
-				{
-					ModelIdentifiedElement p=(ModelIdentifiedElement) param;
-					try
-					{
-						if(p.getIdentifier().equals(instanceId))
-						{
-							return "arg"+i;
-						}
-					}
-					catch(NullPointerException e)
-					{
 
-					}
-				}
-				catch(ClassCastException e)
-				{
-					//e.printStackTrace();
-				}
-				++i;
-			}
-		}
-		catch(NullPointerException e)
+		int i=0;
+		for(Object param: currentParameters)
 		{
+			String argName="arg"+i;
+			ModelIdentifiedElement identifiedParameter= (ModelIdentifiedElement) param;
+		
+			String ret=compareInstanceIdWithObjAndFields(instanceId,identifiedParameter,argName);
 
+			if(ret!=null) return ret;
+			++i;
 		}
 		return null;
 	}
