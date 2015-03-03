@@ -144,7 +144,15 @@ abstract class AbstractImporter {
 	
 	protected static Method findMethod(Class<?> containingClass, String name)
 	{
-		for(Method m:containingClass.getDeclaredMethods())
+		for(Method m: containingClass.getDeclaredMethods())
+		{
+			if(m.getName().equals(name))
+			{
+				return m;
+			}
+		}
+		
+		for(Method m: containingClass.getMethods())
 		{
 			if(m.getName().equals(name))
 			{
@@ -153,6 +161,7 @@ abstract class AbstractImporter {
 		}
 		return null;
 	}
+
 	private static void setVisibilityBasedOnModifiersGivenByReflection(NamedElement element,int modifiers)
 	{
 		if(Modifier.isPrivate(modifiers))

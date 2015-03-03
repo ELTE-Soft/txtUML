@@ -248,7 +248,9 @@ class InstructionImporter extends AbstractInstructionImporter {
 	private static Object assocCall(ModelClass target,Object... args)
 	{
 		Object returnVal=null;
-		Method assocMethod=findMethod(target.getClass(),"assoc");
+		Method assocMethod=findMethod(ModelClass.class,"assoc");
+
+		
 		try {
 			returnVal=assocMethod.invoke(target,args);
 		} catch (Exception e) {
