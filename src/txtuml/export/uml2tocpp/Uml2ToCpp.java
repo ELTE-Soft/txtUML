@@ -6,7 +6,7 @@ package txtuml.export.uml2tocpp;
  * Email:zodiakus (at) elte.hu
  * upcoming features:
  * 	TODO -logging
- *  TODO - ?exceptions, depending on design 
+ *  TODO -?exceptions, depending on design 
  *  TODO -redesign dependency analysis and include generation
  * 	TODO -refactoring more
  **********************************************************/

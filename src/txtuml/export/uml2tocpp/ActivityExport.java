@@ -35,6 +35,7 @@ import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
+import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValuePin;
@@ -159,9 +160,19 @@ public class ActivityExport
 	private static String createObjectActionCode(CreateObjectAction node_,Boolean rt_)
 	{
 		String type=node_.getClassifier().getName();
+		boolean isSm=false;
+		for(Element element:node_.getClassifier().allOwnedElements())
+		{
+			if(element.eClass().equals(UMLPackage.Literals.STATE_MACHINE))
+			{
+				isSm=true;
+				break;
+			}
+		}
+
 		String name="co_of_"+type+"_"+_objCounter++;//#Create#Object_#of_type_GlobalNumberOfObjectCreation
 		_objectMap.put(node_,name);
-		return ActivityTemplates.CreateObject(type,name,rt_);
+		return ActivityTemplates.CreateObject(type,name,rt_,isSm);
 	}
 
 	//decide if it's a while or if-else

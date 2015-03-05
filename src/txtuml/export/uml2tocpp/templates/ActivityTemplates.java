@@ -148,10 +148,10 @@ public class ActivityTemplates
 		return GenerationNames.RealEventName+"."+paramName_;
 	}
 		
-	public static String CreateObject(String typenName_,String objName_,Boolean rt_)
+	public static String CreateObject(String typenName_,String objName_,Boolean rt_,Boolean isSm_)
 	{
 		String source=GenerationNames.PointerType(typenName_)+" "+objName_+"= "+GenerationNames.MemoryAllocator+" "+typenName_+"();\n";
-		if(rt_)
+		if(rt_ && isSm_)
 		{
 			source+=RuntimeTemplates.CreateObject(objName_);
 		}
