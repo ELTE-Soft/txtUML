@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Uml2
+Bundle-SymbolicName: hu.elte.txtuml.uml2
+Bundle-Version: 1.0.0.qualifier
+Export-Package: hu.elte.txtuml.uml2,
+ hu.elte.txtuml.uml2.transform,
+ hu.elte.txtuml.uml2.utils
+Require-Bundle: org.eclipse.uml2.uml;bundle-version="5.0.1",
+ org.eclipse.uml2.uml.resources;bundle-version="5.0.0"
