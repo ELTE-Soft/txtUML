@@ -85,23 +85,23 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 		this.currentState = null;
 		this.innerClassInstances.put(getClass(), this);
 
-// TODO: The following two lines create an unwanted dependency
+// TODO: The following line creates an unwanted dependency
 // between the API and the Importer.
 // Can it be eliminated by AspectJ tricks?		
 //		if (!ModelImporter.isImporting()) {
-//			setCurrentStateToInitial();
+			setCurrentStateToInitial();
 //		}
 	}
-//
-//	private void setCurrentStateToInitial() {
-//		Class<? extends InitialState> initStateClass = getInitialState(getClass());
-//		if (initStateClass != null) {
-//			currentState = getInnerClassInstance(initStateClass);
-//			STATUS = Status.READY;
-//		} else {
-//			STATUS = Status.FINALIZED;
-//		}
-//	}
+
+	private void setCurrentStateToInitial() {
+		Class<? extends InitialState> initStateClass = getInitialState(getClass());
+		if (initStateClass != null) {
+			currentState = getInnerClassInstance(initStateClass);
+			STATUS = Status.READY;
+		} else {
+			STATUS = Status.FINALIZED;
+		}
+	}
 
 	public <T extends ModelClass, AE extends AssociationEnd<T>> AE assoc(
 			Class<AE> otherEnd) {
