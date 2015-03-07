@@ -1,4 +1,4 @@
-package hu.elte.txtuml.uml2.transform;
+package hu.elte.txtuml.export.uml2.transform;
 
 
 
@@ -18,11 +18,11 @@ import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
-import hu.elte.txtuml.uml2.transform.AssociationImporter;
-import hu.elte.txtuml.uml2.utils.ElementFinder;
-import hu.elte.txtuml.uml2.utils.ElementTypeTeller;
-import hu.elte.txtuml.uml2.utils.ImportException;
-import hu.elte.txtuml.uml2.utils.ModelTypeInformation;
+import hu.elte.txtuml.export.uml2.transform.AssociationImporter;
+import hu.elte.txtuml.export.uml2.utils.ElementFinder;
+import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
+import hu.elte.txtuml.export.uml2.utils.ImportException;
+import hu.elte.txtuml.export.uml2.utils.ModelTypeInformation;
 
 import java.io.IOException;
 import java.lang.Class;

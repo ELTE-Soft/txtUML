@@ -1,4 +1,4 @@
-package hu.elte.txtuml.uml2.transform;
+package hu.elte.txtuml.export.uml2.transform;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -29,10 +29,10 @@ import hu.elte.txtuml.api.ModelIdentifiedElement;
 import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.api.ModelType;
-import hu.elte.txtuml.uml2.utils.ElementFinder;
-import hu.elte.txtuml.uml2.utils.ElementTypeTeller;
-import hu.elte.txtuml.uml2.utils.ImportException;
-import hu.elte.txtuml.uml2.utils.ModelTypeInformation;
+import hu.elte.txtuml.export.uml2.utils.ElementFinder;
+import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
+import hu.elte.txtuml.export.uml2.utils.ImportException;
+import hu.elte.txtuml.export.uml2.utils.ModelTypeInformation;
 
 class InstructionImporter extends AbstractInstructionImporter {
 

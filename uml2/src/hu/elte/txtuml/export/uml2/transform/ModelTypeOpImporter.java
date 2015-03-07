@@ -1,10 +1,10 @@
-package hu.elte.txtuml.uml2.transform;
+package hu.elte.txtuml.export.uml2.transform;
 
 import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.api.ModelType;
-import hu.elte.txtuml.uml2.utils.ModelTypeInformation;
+import hu.elte.txtuml.export.uml2.utils.ModelTypeInformation;
 
 
 class ModelTypeOpImporter extends AbstractInstructionImporter {

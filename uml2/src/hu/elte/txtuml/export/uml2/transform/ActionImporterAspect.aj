@@ -1,4 +1,4 @@
-package hu.elte.txtuml.uml2.transform;
+package hu.elte.txtuml.export.uml2.transform;
 
 
 import hu.elte.txtuml.api.BlockBody;
@@ -8,7 +8,7 @@ import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ParameterizedBlockBody;
 import hu.elte.txtuml.api.Signal;
 import hu.elte.txtuml.api.Action;
-import hu.elte.txtuml.uml2.transform.ActionImporter.LinkTypes;
+import hu.elte.txtuml.export.uml2.transform.ActionImporter.LinkTypes;
 
 public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 

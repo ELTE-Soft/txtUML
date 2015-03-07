@@ -1,4 +1,4 @@
-package hu.elte.txtuml.uml2.transform;
+package hu.elte.txtuml.export.uml2.transform;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
@@ -10,8 +10,8 @@ import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Type;
 
-import hu.elte.txtuml.uml2.utils.AssociationEnd;
-import hu.elte.txtuml.uml2.utils.ImportException;
+import hu.elte.txtuml.export.uml2.utils.AssociationEnd;
+import hu.elte.txtuml.export.uml2.utils.ImportException;
 
 class AssociationImporter extends AbstractImporter{
 	

@@ -1,4 +1,4 @@
-package hu.elte.txtuml.uml2.transform;
+package hu.elte.txtuml.export.uml2.transform;
 
 import java.lang.reflect.Method;
 
@@ -20,9 +20,9 @@ import hu.elte.txtuml.api.From;
 import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelType;
 import hu.elte.txtuml.api.To;
-import hu.elte.txtuml.uml2.utils.ElementTypeTeller;
-import hu.elte.txtuml.uml2.utils.ImportException;
-import hu.elte.txtuml.uml2.utils.ModelTypeInformation;
+import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
+import hu.elte.txtuml.export.uml2.utils.ImportException;
+import hu.elte.txtuml.export.uml2.utils.ModelTypeInformation;
 
 class RegionImporter extends AbstractImporter {
 

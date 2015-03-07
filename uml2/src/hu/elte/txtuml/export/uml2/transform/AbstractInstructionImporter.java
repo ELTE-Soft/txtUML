@@ -1,4 +1,4 @@
-package hu.elte.txtuml.uml2.transform;
+package hu.elte.txtuml.export.uml2.transform;
 
 abstract class AbstractInstructionImporter extends AbstractMethodImporter {
 

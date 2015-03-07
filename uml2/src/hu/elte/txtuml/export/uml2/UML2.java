@@ -1,4 +1,4 @@
-package hu.elte.txtuml.uml2;
+package hu.elte.txtuml.export.uml2;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -10,7 +10,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.uml2.uml.Profile;
 import org.eclipse.uml2.uml.resource.UMLResource;
 
-import hu.elte.txtuml.uml2.transform.ModelImporter;
+import hu.elte.txtuml.export.uml2.transform.ModelImporter;
 
 
 public class UML2 {

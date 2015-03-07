@@ -1,4 +1,4 @@
-package hu.elte.txtuml.uml2.utils;
+package hu.elte.txtuml.export.uml2.utils;
 
 public class ModelTypeInformation {
 

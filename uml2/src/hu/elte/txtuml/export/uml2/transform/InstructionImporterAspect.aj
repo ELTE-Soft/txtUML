@@ -1,4 +1,4 @@
-package hu.elte.txtuml.uml2.transform;
+package hu.elte.txtuml.export.uml2.transform;
 
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.SuppressAjWarnings;
@@ -9,7 +9,7 @@ import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.api.Association.AssociationEnd;
-import hu.elte.txtuml.uml2.utils.ImportException;
+import hu.elte.txtuml.export.uml2.utils.ImportException;
 
 public privileged aspect InstructionImporterAspect extends AbstractImporterAspect {
 
