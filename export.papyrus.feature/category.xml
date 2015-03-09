@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.elte.txtuml.papyrusdiagramgenerator.feature_1.0.0.qualifier.jar" id="org.elte.txtuml.papyrusdiagramgenerator.feature" version="1.0.0.qualifier">
+      <category name="txtUML"/>
+   </feature>
+   <category-def name="txtUML" label="txtUML"/>
+</site>
