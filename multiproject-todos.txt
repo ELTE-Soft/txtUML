@@ -1,4 +1,0 @@
-api project:
-
-hu.elte.txtuml.api.ModelClass:
-- two todos about dependency on Importer
