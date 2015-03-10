@@ -1,18 +1,16 @@
 package hu.elte.txtuml.api;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import hu.elte.txtuml.api.Association.AssociationEnd;
 import hu.elte.txtuml.api.util.collections.AssociationsMap;
 import hu.elte.txtuml.api.util.collections.InitialStatesMap;
 import hu.elte.txtuml.api.util.collections.InnerClassInstancesMap;
+import hu.elte.txtuml.layout.lang.elements.LayoutNode;
 // import hu.elte.txtuml.importer.MethodImporter;
 // import hu.elte.txtuml.importer.ModelImporter;
 import hu.elte.txtuml.utils.InstanceCreator;
 
 public abstract class ModelClass extends ModelIdentifiedElementImpl implements
-		ModelElement, ModelIdentifiedElement {
+		ModelElement, ModelIdentifiedElement, LayoutNode {
 
 	/*
 	 * DESTROYED status is currently unreachable, FINALIZED is only by a class
