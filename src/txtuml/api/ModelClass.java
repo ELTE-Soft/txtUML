@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import txtuml.api.Association.AssociationEnd;
+import txtuml.importer.MethodImporter;
 import txtuml.utils.InstanceCreator;
 
 public abstract class ModelClass extends ModelIdentifiedElementImpl implements
@@ -135,7 +136,7 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 	void start() {
 		startOn(null);
 	}
-	
+
 	void send(Signal signal) {
 		if (executor == null) {
 			// TODO show warning

@@ -1,11 +1,10 @@
 package txtuml.api;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 
 class ModelExecutorThread extends Thread {
-
-	private final Object lockOnMailbox = new Object();
+	
 	private LinkedBlockingQueue<QueueEntry> mailbox;
 	private ModelExecutor<?> executor;
 

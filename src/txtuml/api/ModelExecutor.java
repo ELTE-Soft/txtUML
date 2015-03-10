@@ -2,13 +2,10 @@ package txtuml.api;
 
 import java.io.PrintStream;
 
-import txtuml.importer.MethodImporter;
 import txtuml.utils.InstanceCreator;
 
 public final class ModelExecutor<MODEL extends Model> implements ModelElement {
-	/*
-	 * This class has to be thread-safe as every component will communicate with
-	 * it.
+	/* Accessed from multiple threads, so must be thread-safe.
 	 */
 
 	// settings of execution
@@ -141,31 +138,19 @@ public final class ModelExecutor<MODEL extends Model> implements ModelElement {
 	}
 
 	void executorLog(String message) { // api log
-		if (MethodImporter.isImporting()) {
-
-		} else {
-			logOnStream(executorOutStream, message);
-		}
+		logOnStream(executorOutStream, message);
 	}
 
 	void executorFormattedLog(String format, Object... args) { // api
 																// log
-		if (MethodImporter.isImporting()) {
-
-		} else {
-			PrintStream printStream = executorOutStream;
-			synchronized (printStream) {
-				printStream.format(format, args);
-			}
+		PrintStream printStream = executorOutStream;
+		synchronized (printStream) {
+			printStream.format(format, args);
 		}
 	}
 
 	void executorErrorLog(String message) { // api log
-		if (MethodImporter.isImporting()) {
-
-		} else {
-			logOnStream(executorErrorStream, message);
-		}
+		logOnStream(executorErrorStream, message);
 	}
 
 	private void logOnStream(PrintStream printStream, String message) {
