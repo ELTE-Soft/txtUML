@@ -1,19 +1,24 @@
 package hu.elte.txtuml.api;
 
 public class ModelInt extends ModelType<Integer> {
+
 	public static final ModelInt ONE = new ModelInt(1);
 	public static final ModelInt ZERO = new ModelInt(0);
 
+	public ModelInt(Integer val) {
+		super(val);
+	}
+	
 	public ModelInt(int val) {
 		super(val);
 	}
 
 	public ModelInt(long val) {
-		this((int) val);
+		super((int) val);
 	}
 
 	public ModelInt() {
-		this(0);
+		super(0);
 	}
 
 	public ModelInt abs() {
