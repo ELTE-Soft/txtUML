@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.elementsarrangers;
+package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateEditPart;
 
-public class StateMachineDiagramElementsArranger extends
-		AbstractDiagramElementsArranger {
+public class StateMachineDiagramElementsTxtUmlArranger extends
+		AbstractDiagramElementsTxtUmlArranger {
 
 	@Override
 	public void arrange(DiagramEditPart diagep) {

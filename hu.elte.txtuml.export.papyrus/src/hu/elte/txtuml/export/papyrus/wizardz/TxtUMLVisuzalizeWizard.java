@@ -1,5 +1,9 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
+import hu.elte.txtuml.export.papyrus.MainAction;
+import hu.elte.txtuml.export.papyrus.ProjectManager;
+import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -23,9 +27,6 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
-import hu.elte.txtuml.export.papyrus.MainAction;
-import hu.elte.txtuml.export.papyrus.ProjectManager;
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
 public class TxtUMLVisuzalizeWizard extends Wizard{
 

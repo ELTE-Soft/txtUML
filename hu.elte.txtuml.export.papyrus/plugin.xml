@@ -6,22 +6,22 @@
    <extension
          point="org.eclipse.ui.commands">
       <command
-            defaultHandler="org.elte.txtuml.papyrusdiagramgenerator.handlers.InstantHandler"
+            defaultHandler="hu.elte.txtuml.export.papyrus.handlers.InstantHandler"
             id="org.elte.txtuml.papyrusdiagramgenerator.InstantCommand"
             name="InstantCommand">
       </command>
       <command
-            defaultHandler="org.elte.txtuml.papyrusdiagramgenerator.handlers.WizardHandler"
+            defaultHandler="hu.elte.txtuml.export.papyrus.handlers.WizardHandler"
             id="org.elte.txtuml.papyrusdiagramgenerator.WizardCommand"
             name="WizardCommand">
       </command>
       <command
-            defaultHandler="org.elte.txtuml.papyrusdiagramgenerator.handlers.PreferencesPageHandler"
+            defaultHandler="hu.elte.txtuml.export.papyrus.handlers.PreferencesPageHandler"
             id="org.elte.txtuml.papyrusdiagramgenerator.PreferencePageCommand"
             name="PreferencePageCommand">
       </command>
       <command
-            defaultHandler="org.elte.txtuml.papyrusdiagramgenerator.handlers.TxtUMLVisualizeHandler"
+            defaultHandler="hu.elte.txtuml.export.papyrus.handlers.TxtUMLVisualizeHandler"
             id="org.elte.txtuml.papyrusdiagramgenerator.txtUMLVisualize"
             name="txtUMLVisualize">
       </command>
@@ -88,7 +88,7 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="org.elte.txtuml.papyrusdiagramgenerator.preferences.PreferencesPage"
+            class="hu.elte.txtuml.export.papyrus.preferences.PreferencesPage"
             id="org.elte.txtuml.papyrusdiagramgenerator.preferences1"
             name="txtUML Diagram generation">
       </page>
@@ -96,7 +96,7 @@
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="org.elte.txtuml.papyrusdiagramgenerator.preferences.PreferencesInitializer">
+            class="hu.elte.txtuml.export.papyrus.preferences.PreferencesInitializer">
       </initializer>
    </extension>
 

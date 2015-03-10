@@ -1,11 +1,12 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
+import hu.elte.txtuml.export.papyrus.MainAction;
+
 import java.io.File;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.wizard.Wizard;
-import hu.elte.txtuml.export.papyrus.MainAction;
 
 
 public class UmlToPapyrusWizard extends Wizard {

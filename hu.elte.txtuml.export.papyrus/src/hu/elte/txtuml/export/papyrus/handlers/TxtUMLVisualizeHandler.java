@@ -1,11 +1,12 @@
 package hu.elte.txtuml.export.papyrus.handlers;
 
+import hu.elte.txtuml.export.papyrus.wizardz.TxtUMLVisuzalizeWizard;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.jface.wizard.WizardDialog;
-import hu.elte.txtuml.export.papyrus.wizardz.TxtUMLVisuzalizeWizard;
 
 public class TxtUMLVisualizeHandler  extends AbstractHandler implements IHandler {
 

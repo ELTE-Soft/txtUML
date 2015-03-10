@@ -1,32 +1,37 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
+import org.eclipse.gmf.runtime.diagram.core.commands.SetConnectionAnchorsCommand;
 import org.eclipse.gmf.runtime.diagram.core.preferences.PreferencesHint;
-import org.eclipse.gmf.runtime.diagram.ui.actions.ActionIds;
 import org.eclipse.gmf.runtime.diagram.ui.commands.ICommandProxy;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.internal.commands.SetConnectionBendpointsCommand;
 import org.eclipse.gmf.runtime.diagram.ui.l10n.DiagramUIMessages;
-import org.eclipse.gmf.runtime.diagram.ui.requests.ArrangeRequest;
 import org.eclipse.gmf.runtime.emf.commands.core.command.CompositeTransactionalCommand;
+import org.eclipse.gmf.runtime.emf.core.util.EObjectAdapter;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.common.commands.SemanticAdapter;
 import org.eclipse.papyrus.uml.diagram.common.commands.ShowHideLabelsRequest;
 import org.eclipse.papyrus.uml.diagram.statemachine.custom.commands.CustomStateMachineResizeCommand;
 
-public abstract class  AbstractDiagramElementsArranger implements IDiagramElementsArranger{
-	
+
+
+@SuppressWarnings("restriction")
+public abstract class AbstractDiagramElementsArranger implements
+		IDiagramElementsArranger {
+
 	protected void resizeGraphicalEditPart(GraphicalEditPart graphEP, int new_width, int new_height){
 		Dimension figuredim = graphEP.getFigure().getSize();
 		ChangeBoundsRequest resize_req = new ChangeBoundsRequest(RequestConstants.REQ_RESIZE);
@@ -34,11 +39,8 @@ public abstract class  AbstractDiagramElementsArranger implements IDiagramElemen
 		resize_req.setEditParts(graphEP);
 		
 		Command cmd = graphEP.getCommand(resize_req);
-		if(cmd != null){
+		if(cmd != null)
 			cmd.execute();
-		}else{
-			System.out.println("Command NULL");
-		}
 	}
 	
 	protected void hideConnectionLabelsForEditParts(List<EditPart> elements){
@@ -74,6 +76,40 @@ public abstract class  AbstractDiagramElementsArranger implements IDiagramElemen
 		return new ICommandProxy(cc.reduce());
 	}
 	
+	protected void setConnectionAnchors(ConnectionNodeEditPart connection, String src, String trg){
+		TransactionalEditingDomain editingDomain = connection.getEditingDomain();
+		SetConnectionAnchorsCommand asd = new SetConnectionAnchorsCommand(editingDomain, "Rearrange Anchor");
+		asd.setEdgeAdaptor(new EObjectAdapter(connection.getNotationView()));
+		asd.setNewSourceTerminal(src);
+		asd.setNewTargetTerminal(trg);
+		Command proxy =  new ICommandProxy(asd);
+		proxy.execute();
+	}
+	
+	protected void SetConnectionBendpoints(ConnectionNodeEditPart connection, List<Point> bendpoints){
+		TransactionalEditingDomain editingDomain = connection.getEditingDomain();
+		SetConnectionBendpointsCommand cmd = new SetConnectionBendpointsCommand(editingDomain);
+		cmd.setEdgeAdapter(new EObjectAdapter(connection.getNotationView()));
+		
+		Point sourceRef = connection.getConnectionFigure().getSourceAnchor().getReferencePoint();
+		Point targetRef = connection.getConnectionFigure().getTargetAnchor().getReferencePoint();
+		PointList pointList = new PointList();
+		
+		pointList.addPoint(sourceRef);
+		for(Point bendpoint: bendpoints){
+			pointList.addPoint(bendpoint);
+		}
+		pointList.addPoint(targetRef);
+		
+		cmd.setNewPointList(pointList, sourceRef, targetRef);
+		Command proxy =  new ICommandProxy(cmd);
+		proxy.execute();
+	}
+	
+	protected void moveGraphicalEditPart(GraphicalEditPart graphEp, Point p){
+		moveGraphicalEditPart(graphEp, p.x(), p.y());
+	}
+	
 	protected void moveGraphicalEditPart(GraphicalEditPart graphEP, int new_X, int new_Y){
 		Rectangle figurebounds = graphEP.getFigure().getBounds();
 		ChangeBoundsRequest move_req = new ChangeBoundsRequest(RequestConstants.REQ_MOVE);
@@ -84,14 +120,5 @@ public abstract class  AbstractDiagramElementsArranger implements IDiagramElemen
 			cmd.execute();
 	}
 	
-	protected void arrangeAll(EditPart EP, List<EditPart> elements) {
-		if(!elements.isEmpty()){
-			ArrangeRequest arrangeRequest = new ArrangeRequest(ActionIds.ACTION_ARRANGE_ALL);
-			List<EditPart> l = new ArrayList<EditPart>();
-			l.addAll(elements);
-			arrangeRequest.setPartsToArrange(l);
-			Command cmd = EP.getCommand(arrangeRequest);
-			cmd.execute();
-		}
-	}
+
 }

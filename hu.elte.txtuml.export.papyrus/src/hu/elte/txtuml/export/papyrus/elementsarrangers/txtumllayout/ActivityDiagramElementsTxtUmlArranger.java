@@ -1,11 +1,11 @@
-package hu.elte.txtuml.export.papyrus.elementsarrangers;
+package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
 import java.util.List;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 
-public class ActivityDiagramElementsArranger extends AbstractDiagramElementsArranger {
+public class ActivityDiagramElementsTxtUmlArranger extends AbstractDiagramElementsTxtUmlArranger {
 
 	@Override
 	public void arrange(DiagramEditPart diagep) {

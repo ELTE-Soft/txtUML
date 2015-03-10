@@ -1,11 +1,11 @@
-package hu.elte.txtuml.export.papyrus.elementsarrangers;
+package hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout;
 
 import java.util.List;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 
-public class ClassDiagramElementsArranger extends AbstractDiagramElementsArranger{
+public class ClassDiagramElementsGmfArranger extends AbstractDiagramElementsGmfArranger{
 
 	@Override
 	public void arrange(DiagramEditPart diagep) {

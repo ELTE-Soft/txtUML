@@ -1,5 +1,7 @@
 package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
+import hu.elte.txtuml.export.papyrus.ModelManager;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,7 +10,6 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.uml2.uml.Element;
-import hu.elte.txtuml.export.papyrus.ModelManager;
 
 public class ActivityDiagramElementsManager extends AbstractDiagramElementsManager{
 	

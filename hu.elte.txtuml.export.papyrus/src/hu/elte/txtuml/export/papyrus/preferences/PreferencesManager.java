@@ -1,12 +1,13 @@
 package hu.elte.txtuml.export.papyrus.preferences;
 
+import hu.elte.txtuml.export.papyrus.Activator;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jface.preference.IPreferenceStore;
-import hu.elte.txtuml.export.papyrus.Activator;
 
 public class PreferencesManager{
 	

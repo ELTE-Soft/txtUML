@@ -1,5 +1,8 @@
 package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
+import hu.elte.txtuml.export.papyrus.ModelManager;
+import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,8 +15,6 @@ import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.InterfaceEditPart;
 import org.eclipse.uml2.uml.Element;
-import hu.elte.txtuml.export.papyrus.ModelManager;
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
 public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 	

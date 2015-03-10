@@ -1,5 +1,15 @@
 package hu.elte.txtuml.export.papyrus;
 
+import hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout.ActivityDiagramElementsGmfArranger;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout.StateMachineDiagramElementsGmfArranger;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.ClassDiagramElementsTxtUmlArranger;
+import hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager;
+import hu.elte.txtuml.export.papyrus.elementsmanagers.ActivityDiagramElementsManager;
+import hu.elte.txtuml.export.papyrus.elementsmanagers.ClassDiagramElementsManager;
+import hu.elte.txtuml.export.papyrus.elementsmanagers.StateMachineDiagramElementsManager;
+import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,15 +27,6 @@ import org.eclipse.papyrus.uml.diagram.clazz.CreateClassDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.statemachine.CreateStateMachineDiagramCommand;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.uml2.uml.Element;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.ActivityDiagramElementsArranger;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.ClassDiagramElementsArranger;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.StateMachineDiagramElementsArranger;
-import hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager;
-import hu.elte.txtuml.export.papyrus.elementsmanagers.ActivityDiagramElementsManager;
-import hu.elte.txtuml.export.papyrus.elementsmanagers.ClassDiagramElementsManager;
-import hu.elte.txtuml.export.papyrus.elementsmanagers.StateMachineDiagramElementsManager;
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
 public class PapyrusModelManager {
 	
@@ -35,10 +36,10 @@ public class PapyrusModelManager {
 	private IEditorPart editor;
 
 	public PapyrusModelManager(IMultiDiagramEditor editor) throws ServiceException {
-		
 		preferencesManager = new PreferencesManager();
 		modelManager = new ModelManager(editor);
 		diagramManager = new DiagramManager(editor);
+		this.editor = editor;
 	}
 
 	public void createAndFillDiagrams() throws ExecutionException, NotFoundException, ServiceException {
@@ -97,13 +98,13 @@ public class PapyrusModelManager {
 			
 			if(diagram.getType().equals("PapyrusUMLClassDiagram")){					
 				diagramElementsManager = new ClassDiagramElementsManager(modelManager, diagep);
-				diagramElementsArranger = new ClassDiagramElementsArranger();
+				diagramElementsArranger = new ClassDiagramElementsTxtUmlArranger();
 			}else if(diagram.getType().equals("PapyrusUMLActivityDiagram")){
 				diagramElementsManager = new ActivityDiagramElementsManager(modelManager, diagep);
-				diagramElementsArranger = new ActivityDiagramElementsArranger();
+				diagramElementsArranger = new ActivityDiagramElementsGmfArranger();
 			}else if(diagram.getType().equals("PapyrusUMLStateMachineDiagram")){
 				diagramElementsManager = new StateMachineDiagramElementsManager(modelManager, diagep);
-				diagramElementsArranger = new StateMachineDiagramElementsArranger();
+				diagramElementsArranger = new StateMachineDiagramElementsGmfArranger();
 			}else{
 				continue;
 			}
