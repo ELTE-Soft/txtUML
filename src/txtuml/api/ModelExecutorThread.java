@@ -1,23 +1,21 @@
 package txtuml.api;
 
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.LinkedList;
+import java.util.Queue;
 
-/*
- * Currently singleton, will have more instances in the future.
- */
 class ModelExecutorThread extends Thread {
-	
-	private static final ModelExecutorThread instance = new ModelExecutorThread();;
-	private LinkedBlockingQueue<QueueEntry> mailbox;
 
-	private ModelExecutorThread() {
+	private final Object lockOnMailbox = new Object();
+	private LinkedBlockingQueue<QueueEntry> mailbox;
+	private ModelExecutor<?> executor;
+
+	ModelExecutorThread(ModelExecutor<?> executor) {
 		this.mailbox = new LinkedBlockingQueue<>();
-		this.start();
+		this.executor = executor;
 	}
 
-	static ModelExecutorThread getSingletonInstance() {
-		return instance;
-
+	ModelExecutor<?> getExecutor() {
+		return executor;
 	}
 
 	void send(ModelClass target, Signal signal) {

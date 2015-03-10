@@ -22,6 +22,10 @@ public abstract class Action implements ModelElement {
 		rightObj.addToAssoc(leftEnd, leftObj);
 	}
 
+	public static void startOn(ModelClass obj, ModelExecutor<?> executor) {
+		obj.startOn(executor);
+	}
+	
 	public static void start(ModelClass obj) {
 		obj.start();
 	}
@@ -69,22 +73,13 @@ public abstract class Action implements ModelElement {
 	}
 
 	public static void log(String message) { // user log
-		ModelExecutor.log(message);
+
+			ModelExecutor.getExecutorStatic().log(message);
 	}
 
 	public static void logError(String message) { // user log
-		ModelExecutor.logError(message);
+
+			ModelExecutor.getExecutorStatic().logError(message);
 	}
 
-	static void executorLog(String message) { // api log
-		ModelExecutor.executorLog(message);
-	}
-
-	static void executorFormattedLog(String format, Object... args) { // api log
-		ModelExecutor.executorFormattedLog(format, args);
-	}
-
-	static void executorErrorLog(String message) { // api log
-		ModelExecutor.executorErrorLog(message);
-	}
 }

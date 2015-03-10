@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import txtuml.api.Association.AssociationEnd;
-import txtuml.importer.MethodImporter;
-import txtuml.importer.ModelImporter;
 import txtuml.utils.InstanceCreator;
 
 public abstract class ModelClass extends ModelIdentifiedElementImpl implements
@@ -22,6 +20,7 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 	private static Map<Class<?>, Class<? extends InitialState>> initialStates = new HashMap<>();
 	private final Map<Class<?>, Object> innerClassInstances = new HashMap<>();
 	private final Map<Class<? extends AssociationEnd<?>>, AssociationEnd<?>> associations = new HashMap<>();
+	private ModelExecutor<?> executor;
 	private State currentState;
 	private Status STATUS;
 
@@ -82,9 +81,9 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 		this.currentState = null;
 		this.innerClassInstances.put(getClass(), this);
 
-		if (!ModelImporter.isImporting()) {
-			setCurrentStateToInitial();
-		}
+		this.executor = null;
+		
+		setCurrentStateToInitial();
 	}
 
 	private void setCurrentStateToInitial() {
@@ -119,24 +118,38 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 						assoc(otherEnd).typeKeepingAdd(object)));
 	}
 
-	void start() {
+	void startOn(ModelExecutor<?> executor) {
 		if (STATUS != Status.READY) {
+			// TODO show warning
 			return;
 		}
+		this.executor = executor;
+		
+		if (this.executor == null) {
+			this.executor = ModelExecutor.getExecutorStatic();
+		}
+		
 		send(null); // to move from initial state
-		STATUS = Status.ACTIVE;
 	}
-
+	
+	void start() {
+		startOn(null);
+	}
+	
 	void send(Signal signal) {
-		ModelExecutor.send(this, signal);
+		if (executor == null) {
+			// TODO show warning
+			return;
+		}
+		executor.send(this, signal);
 	}
 
 	void processSignal(Signal signal) {
 		if (currentState == null) { // no state machine
 			return;
 		}
-		if (ModelExecutor.Settings.executorLog() && signal != null) {
-			Action.executorFormattedLog("%10s %-15s    got signal: %-18s%n",
+		if (executor.executorLog() && signal != null) {
+			executor.executorFormattedLog("%10s %-15s    got signal: %-18s%n",
 					getClass().getSimpleName(), getIdentifier(), signal
 							.getClass().getSimpleName());
 		}
@@ -184,7 +197,7 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 					}
 
 					if (applicableTransition != null) {
-						Action.executorErrorLog("Error: guards of transitions "
+						executor.executorErrorLog("Error: guards of transitions "
 								+ applicableTransition.getName() + " and "
 								+ c.getName() + " from class "
 								+ currentState.getClass().getSimpleName()
@@ -246,7 +259,7 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 						if (elseTransition != null) { // there was already a
 														// transition with an
 														// else condition
-							Action.executorErrorLog("Error: there are more than one transitions from choice "
+							executor.executorErrorLog("Error: there are more than one transitions from choice "
 									+ examinedChoiceClass.getSimpleName()
 									+ " with an Else condition");
 							continue;
@@ -257,7 +270,7 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 				}
 				if (applicableTransition != null) { // there was already an
 													// applicable transition
-					Action.executorErrorLog("Error: guards of transitions "
+					executor.executorErrorLog("Error: guards of transitions "
 							+ applicableTransition.getName() + " and "
 							+ c.getName() + " from class "
 							+ examinedChoiceClass.getSimpleName()
@@ -273,7 +286,7 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 											// else condition
 				useTransition(elseTransition);
 			} else {
-				Action.executorErrorLog("Error: there was no transition from choice class "
+				executor.executorErrorLog("Error: there was no transition from choice class "
 						+ examinedChoiceClass.getSimpleName()
 						+ " which could be used");
 			}
@@ -296,8 +309,8 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 				.value();
 		Class<? extends State> to = transitionClass.getAnnotation(To.class)
 				.value();
-		if (ModelExecutor.Settings.executorLog()) {
-			Action.executorFormattedLog(
+		if (executor.executorLog()) {
+			executor.executorFormattedLog(
 					"%10s %-15s changes state: from: %-10s tran: %-18s to: %-10s%n",
 					getClass().getSimpleName(), getIdentifier(),
 					from.getSimpleName(), transitionClass.getSimpleName(),
@@ -320,8 +333,8 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 
 	private void callExitAction(Class<? extends State> from) {
 		while (currentState.getClass() != from) {
-			if (ModelExecutor.Settings.executorLog()) {
-				Action.executorFormattedLog(
+			if (executor.executorLog()) {
+				executor.executorFormattedLog(
 						"%10s %-15s   exits state: %-18s%n", getClass()
 								.getSimpleName(), getIdentifier(), currentState
 								.getClass().getSimpleName());
@@ -341,8 +354,8 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 			Class<? extends InitialState> initStateClass = getInitialState(currentState
 					.getClass());
 			if (initStateClass != null) {
-				if (ModelExecutor.Settings.executorLog()) {
-					Action.executorFormattedLog(
+				if (executor.executorLog()) {
+					executor.executorFormattedLog(
 							"%10s %-15s  enters state: %-18s%n", getClass()
 									.getSimpleName(), getIdentifier(),
 							initStateClass.getSimpleName());
@@ -356,7 +369,7 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 
 	private <T> T getInnerClassInstance(Class<T> forWhat) {
 		if (forWhat == null) {
-			Action.executorErrorLog("Error: in class "
+			executor.executorErrorLog("Error: in class "
 					+ getClass().getSimpleName()
 					+ " a transition or state is used which is not an inner state of "
 					+ getClass().getSimpleName());

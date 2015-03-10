@@ -98,8 +98,9 @@ class Model1 extends Model {
 			Timer.Handle t1 = Timer.start(myMachine, new ButtonPress(), new ModelInt(2000));
 			t1.add(new ModelInt(3000));
 			
+			
 			If(() -> {
-				return new ModelBool(true);
+				return ModelBool.TRUE;
 			}, () -> {
 				Action.log(""+t1.query());
 			});
@@ -140,9 +141,11 @@ class Model1 extends Model {
 	}
 	
 	public void test() {
-		ModelExecutor.Settings.setExecutorLog(true);
+		ModelExecutor<?> executor = new ModelExecutor<Model1>(Model1.class);
+		executor.setExecutorLog(true);
+		
 		Machine m = new Machine();
-		start(m);
+		startOn(m, executor);
 		
 		User u1 = new User();
 		User u2 = Action.create(User.class); //almost equivalent to 'new User()'

@@ -12,12 +12,16 @@ public class ModelBool extends ModelType<Boolean> {
 		}
 	}
 
+	public ModelBool(Boolean val) {
+		super(val);
+	}
+	
 	public ModelBool(boolean val) {
 		super(val);
 	}
 
 	public ModelBool() {
-		this(false);
+		super(false);
 	}
 
 	public ModelBool not() {
