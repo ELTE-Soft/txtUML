@@ -8,7 +8,7 @@ public class ModelInt extends ModelType<Integer> {
 	public ModelInt(Integer val) {
 		super(val);
 	}
-	
+
 	public ModelInt(int val) {
 		super(val);
 	}

@@ -4,6 +4,7 @@ import hu.elte.txtuml.api.Association.AssociationEnd;
 import hu.elte.txtuml.api.util.collections.AssociationsMap;
 import hu.elte.txtuml.api.util.collections.InitialStatesMap;
 import hu.elte.txtuml.api.util.collections.InnerClassInstancesMap;
+import hu.elte.txtuml.layout.lang.elements.LayoutLink;
 import hu.elte.txtuml.layout.lang.elements.LayoutNode;
 // import hu.elte.txtuml.importer.MethodImporter;
 // import hu.elte.txtuml.importer.ModelImporter;
@@ -28,7 +29,7 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 	private final InnerClassInstancesMap innerClassInstances = InnerClassInstancesMap
 			.create();
 
-	public abstract class State implements ModelElement {
+	public abstract class State implements ModelElement, LayoutNode {
 		public void entry() {
 		}
 
@@ -84,7 +85,7 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 
 	}
 
-	public abstract class Transition implements ModelElement {
+	public abstract class Transition implements ModelElement, LayoutLink {
 
 		private Signal signal;
 

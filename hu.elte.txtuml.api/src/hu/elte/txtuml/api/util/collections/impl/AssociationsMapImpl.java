@@ -6,8 +6,10 @@ import hu.elte.txtuml.api.util.collections.AssociationsMap;
 import java.util.HashMap;
 
 @SuppressWarnings("serial")
-public class AssociationsMapImpl extends HashMap<Class<? extends AssociationEnd<?>>, AssociationEnd<?>> implements AssociationsMap {
-	
+public class AssociationsMapImpl extends
+		HashMap<Class<? extends AssociationEnd<?>>, AssociationEnd<?>>
+		implements AssociationsMap {
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder("{\n");

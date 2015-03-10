@@ -9,8 +9,8 @@ public interface InnerClassInstancesMap extends Map<Class<?>, Object> {
 	static InnerClassInstancesMap create() {
 		return new InnerClassInstancesMapImpl();
 	}
-	
+
 	@Override
 	public String toString();
-	
+
 }

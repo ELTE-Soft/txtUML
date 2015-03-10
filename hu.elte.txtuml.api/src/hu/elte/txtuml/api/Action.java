@@ -1,6 +1,6 @@
 package hu.elte.txtuml.api;
 
-import hu.elte.txtuml.api.Association.*;
+import hu.elte.txtuml.api.Association.AssociationEnd;
 import hu.elte.txtuml.utils.InstanceCreator;
 
 public abstract class Action implements ModelElement {

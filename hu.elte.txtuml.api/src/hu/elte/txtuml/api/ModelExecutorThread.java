@@ -6,7 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Currently singleton, will have more instances in the future.
  */
 class ModelExecutorThread extends Thread {
-	
+
 	private static final ModelExecutorThread instance = new ModelExecutorThread();;
 	private LinkedBlockingQueue<QueueEntry> mailbox;
 

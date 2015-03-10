@@ -1,10 +1,12 @@
 package hu.elte.txtuml.api;
 
+import hu.elte.txtuml.layout.lang.elements.LayoutLink;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Association implements ModelElement {
+public class Association implements ModelElement, LayoutLink {
 	protected Association() {
 	}
 
