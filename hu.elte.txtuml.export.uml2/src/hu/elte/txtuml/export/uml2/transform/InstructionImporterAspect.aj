@@ -8,6 +8,8 @@ import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
+import hu.elte.txtuml.api.Signal;
+import hu.elte.txtuml.api.ModelClass.Transition;
 import hu.elte.txtuml.api.Association.AssociationEnd;
 import hu.elte.txtuml.export.uml2.utils.ImportException;
 
@@ -39,7 +41,17 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 		InstructionImporter.importInstanceCreation(target);
 	}
 	
-	
+	//do nothing when setCurrentStateToInitial is called on a ModelClass
+		void around(ModelClass target): call(void setCurrentStateToInitial()) && target(target) && importing()
+		{
+			
+		}
+		
+		Signal around(Transition target):call(Signal getSignal()) && target(target) &&  importing()
+		{
+			return InstructionImporter.initAndGetSignalInstanceOfTransition(target);
+		}
+		
 	Object around(ModelClass target): target(target) && call(* *(..))  && isActive() {
 		try
 		{
@@ -65,13 +77,13 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	
 	Object around(ModelClass target, Object newValue) : target(target) && set(* *) && args(newValue) && isActive() && !withincode((ModelClass+).new(..))
 	{
-		return InstructionImporter.fieldSet(target,thisJoinPoint.getSignature().getName(),newValue);
+		return InstructionImporter.importModelClassFieldSet(target,thisJoinPoint.getSignature().getName(),newValue);
 	}
 
 	Object around(ModelClass target) : target(target) && get(* *) && isActive() {
 		Signature signature=thisJoinPoint.getSignature();
 		try {
-			return InstructionImporter.fieldGet(target,signature.getName(),signature.getDeclaringType().getDeclaredField(signature.getName()).getType());
+			return InstructionImporter.importModelClassFieldGet(target,signature.getName(),signature.getDeclaringType().getDeclaredField(signature.getName()).getType());
 		} catch (NoSuchFieldException e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();

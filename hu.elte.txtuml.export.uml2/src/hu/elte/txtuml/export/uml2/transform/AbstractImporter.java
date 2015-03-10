@@ -16,6 +16,23 @@ import hu.elte.txtuml.export.uml2.utils.ModelTypeInformation;
 
 abstract class AbstractImporter {
 	
+	protected static void setObjectFieldVal(Object object, String fieldName,Object newVal)
+	{
+		Field field = ElementFinder.findField(object.getClass(),fieldName);
+		
+		if(field!=null)
+		{
+			field.setAccessible(true);
+			try {
+				field.set(object,newVal);
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
+			field.setAccessible(false);
+		}
+	}
 	protected static Object getObjectFieldVal(Object object,String fieldName)
 	{	
 		Field field = ElementFinder.findField(object.getClass(),fieldName);

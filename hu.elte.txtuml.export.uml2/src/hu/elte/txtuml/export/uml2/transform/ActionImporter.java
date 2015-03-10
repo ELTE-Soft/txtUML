@@ -218,7 +218,11 @@ class ActionImporter extends AbstractInstructionImporter {
 		Pair<ActivityNode,ActivityEdge> importBlockBodyResult=importBlockBody(thenBody);
 		ActivityEdge thenFirstEdge=importBlockBodyResult.getValue();
 		ActivityNode thenLastNode=importBlockBodyResult.getKey();
-		addGuardToActivityEdge(thenFirstEdge, condExpr);
+		if(thenFirstEdge!=null)
+		{
+			addGuardToActivityEdge(thenFirstEdge, condExpr);
+		}
+		
 
 		lastNode=thenLastNode;
 
@@ -266,9 +270,12 @@ class ActionImporter extends AbstractInstructionImporter {
 
 		Pair<ActivityNode,ActivityEdge> importThenBodyResult=importParameterizedBlockBody(body,loopVar);
 		ActivityEdge thenFirstEdge=importThenBodyResult.getValue();
-		//ActivityNode thenLastNode=importThenBodyResult.getKey();
-		addGuardToActivityEdge(thenFirstEdge, condExpr);
-
+		
+		if(thenFirstEdge!=null)
+		{
+			addGuardToActivityEdge(thenFirstEdge, condExpr);
+		}
+		
 		setVariableValue(loopVar, loopVarId+" + 1"); // inc loopVar by 1
 		createFlowBetweenNodes(lastNode,decisionNode);
 		

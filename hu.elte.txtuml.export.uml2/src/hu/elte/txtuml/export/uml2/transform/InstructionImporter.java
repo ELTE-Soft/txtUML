@@ -1,7 +1,6 @@
 package hu.elte.txtuml.export.uml2.transform;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 
@@ -25,38 +24,37 @@ import hu.elte.txtuml.api.Collection;
 import hu.elte.txtuml.api.ExternalClass;
 import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelClass;
+import hu.elte.txtuml.api.ModelClass.Transition;
 import hu.elte.txtuml.api.ModelIdentifiedElement;
-import hu.elte.txtuml.api.ModelInt;
-import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.api.ModelType;
+import hu.elte.txtuml.api.Signal;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
-import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.export.uml2.utils.ImportException;
 import hu.elte.txtuml.export.uml2.utils.ModelTypeInformation;
 
 class InstructionImporter extends AbstractInstructionImporter {
 
 	/*private static void importObjectDeletion(ModelClass obj) {
-    if(currentActivity != null) 
-    {
-       	DestroyObjectAction destroyAction=	(DestroyObjectAction) 
-				currentActivity.createOwnedNode("delete_"+obj.getIdentifier(),UMLPackage.Literals.DESTROY_OBJECT_ACTION);
+	    if(currentActivity != null) 
+	    {
+	       	DestroyObjectAction destroyAction=	(DestroyObjectAction) 
+					currentActivity.createOwnedNode("delete_"+obj.getIdentifier(),UMLPackage.Literals.DESTROY_OBJECT_ACTION);
 
-		String instanceName=getObjectIdentifier(obj);
+			String instanceName=getObjectIdentifier(obj);
 
-		Type type= currentModel.getOwnedType(obj.getClass().getSimpleName());
+			Type type= currentModel.getOwnedType(obj.getClass().getSimpleName());
 
-		ValuePin target = (ValuePin) destroyAction.createTarget("target", type, UMLPackage.Literals.VALUE_PIN);
-		addOpaqueExpressionToValuePin(target,instanceName,type);
+			ValuePin target = (ValuePin) destroyAction.createTarget("target", type, UMLPackage.Literals.VALUE_PIN);
+			addOpaqueExpressionToValuePin(target,instanceName,type);
 
-		createControlFlowBetweenNodes(lastNode,destroyAction);
+			createControlFlowBetweenNodes(lastNode,destroyAction);
 
-		lastNode=destroyAction;
+			lastNode=destroyAction;
 
 
-    }
+	    }
 
-}*/
+	}*/
 
 	static <T extends ModelClass> T selectOne(Collection<T> target) 
 	{
@@ -333,10 +331,11 @@ class InstructionImporter extends AbstractInstructionImporter {
 	}
 
 
-
 	static Object callExternal(ExternalClass target, String methodName, Object... args)
 	{
-		return null;
+		Method method=ElementFinder.findMethod(target.getClass(), methodName);
+		Class<?> returnType=method.getReturnType();
+		return createLocalInstance(returnType);
 		// TODO not implemented; should return an instance of the actual return type of the called method
 		// it can be get through its Method class
 		// the imported model will get this returned object as the result of the method call
@@ -344,7 +343,11 @@ class InstructionImporter extends AbstractInstructionImporter {
 
 	static Object callStaticExternal(Class<?> c, String methodName, Object... args)
 	{
-		return null;
+		Method method=ElementFinder.findMethod(c, methodName);
+		Class<?> returnType=method.getReturnType();
+		Object ret=createLocalInstance(returnType);
+		return ret;
+	
 		// TODO not implemented; should return an instance of the actual return type of the called method
 		// it can be get through its Method class
 		// the imported model will get this returned object as the result of the method call
@@ -354,58 +357,31 @@ class InstructionImporter extends AbstractInstructionImporter {
 	}
 
 
-
-
-
-	static Object initField(ModelClass target, String fieldName, Object newValue) 
-			throws IllegalAccessException, IllegalArgumentException, 
-			InvocationTargetException, NoSuchFieldException, 
-			SecurityException, NoSuchMethodException
+	private static Object assignField(Object target, String fieldName, Class<?> newValueClass) 
 	{
-		Field field=target.getClass().getDeclaredField(fieldName);
-
-		field.setAccessible(true);
-		Object fieldObj=field.get(target);
-
-		if(newValue instanceof ModelIdentifiedElement)
-		{
-			if(newValue instanceof ModelInt) fieldObj=new ModelInt();	
-			else if(newValue instanceof ModelBool) fieldObj=new ModelBool();	
-			else if(newValue instanceof ModelString) fieldObj=new ModelString();
-			else if(newValue instanceof ModelClass) fieldObj=createLocalInstance(newValue.getClass());
-		}
-		field.set(target, fieldObj);
-		field.setAccessible(false);
-
-		return fieldObj;
-	}
 	
-	static Object fieldGet(ModelClass target, String fieldName, Class<?> fieldType)
-	{
-		Object val=null;
-		
-		if(fieldType==ModelInt.class) val=new ModelInt();
-		else if(fieldType==ModelBool.class) val=new ModelBool();
-		else if(fieldType==ModelString.class) val=new ModelString();
-		else if(ElementTypeTeller.isModelClass(fieldType)) val=createLocalInstance(fieldType);
-	
-		try
-		{
-			return initField(target,fieldName,val);
-		}
-		catch(Exception e)
-		{
-			//e.printStackTrace();
-		}
-		return val;
+		Object fieldValue=createLocalInstance(newValueClass);
+		setObjectFieldVal(target,fieldName,fieldValue);
 
+		return fieldValue;
 	}
 
-	static Object fieldSet(ModelClass target, String fieldName, Object newValue)  
+	static Object importModelClassFieldGet(ModelClass target, String fieldName, Class<?> fieldType)
+	{
+		return assignField(target,fieldName,fieldType);
+
+	}
+	static Object importExternalClassFieldGet(ExternalClass target, String fieldName, Class<?> fieldType)
+	{	
+		return assignField(target,fieldName,fieldType);
+	}
+
+	static Object importModelClassFieldSet(ModelClass target, String fieldName, Object newValue)  
 	{
 		try{
 
-			Object fieldObj=initField(target,fieldName,newValue);
+			Class<?> newValueClass = newValue.getClass();
+			Object fieldObj=assignField(target,fieldName,newValueClass);
 			if(currentActivity!=null)
 			{
 				Type newValType=ModelImporter.importType(newValue.getClass());
@@ -442,6 +418,17 @@ class InstructionImporter extends AbstractInstructionImporter {
 		}
 		
 		modelTypeInstancesInfo.put(inst,instInfo);
+	}
+
+	static Signal initAndGetSignalInstanceOfTransition(Transition target) {
+	
+		Signal signal = (Signal) getObjectFieldVal(target,"signal");
+		if(signal == null)
+		{
+			signal=MethodImporter.createSignal(target.getClass());
+			setObjectFieldVal(target,"signal",signal);
+		}
+		return signal;
 	}
 
 

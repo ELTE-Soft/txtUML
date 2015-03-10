@@ -1,7 +1,6 @@
 package hu.elte.txtuml.export.uml2.transform;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Stack;
 
@@ -20,7 +19,6 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.Variable;
 
-import hu.elte.txtuml.api.Event;
 import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelIdentifiedElement;
@@ -88,22 +86,7 @@ public class MethodImporter extends AbstractMethodImporter {
 	
 	private static void setCurrentSignal(hu.elte.txtuml.api.ModelClass.Transition transitionInstance)
 	{
-		Method m=ElementFinder.findMethod(hu.elte.txtuml.api.ModelClass.Transition.class,"getSignal");
-		m.setAccessible(true);
-		try {
-			currentSignal=(Event) m.invoke(transitionInstance);
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		}
-		m.setAccessible(false);
-		
+		currentSignal=InstructionImporter.initAndGetSignalInstanceOfTransition(transitionInstance);	
 	}
 	private static Object initMethodImport(Model model, Activity activity, Method sourceMethod, Class<?> declaringClass)
 	{

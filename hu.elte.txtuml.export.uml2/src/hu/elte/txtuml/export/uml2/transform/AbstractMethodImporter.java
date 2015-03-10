@@ -33,6 +33,7 @@ import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.api.ModelType;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
+import hu.elte.txtuml.export.uml2.utils.InterfaceMethodInvocationHandler;
 import hu.elte.txtuml.export.uml2.utils.ModelTypeInformation;
 import hu.elte.txtuml.utils.InstanceCreator;
 
@@ -42,10 +43,23 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		return importing;
 	}
 
-	protected static <T> T createLocalInstance(Class<T> typeClass,Object... givenParameters)
+	@SuppressWarnings("unchecked")
+	protected static <T> T createLocalInstance(Class<T> typeClass)
 	{
 		setLocalInstanceToBeCreated(true);
-		T createdObject = InstanceCreator.createInstanceWithGivenParams(typeClass,givenParameters);
+		T createdObject;
+		if(typeClass.isInterface())
+		{
+			createdObject=(T) java.lang.reflect.Proxy.newProxyInstance(
+					typeClass.getClassLoader(), 
+					new java.lang.Class[] { typeClass},
+					new InterfaceMethodInvocationHandler()
+					);
+		}
+		else
+		{
+			createdObject=InstanceCreator.createInstance(typeClass);	
+		}
 		setLocalInstanceToBeCreated(false);
 		return createdObject;
 	}
