@@ -35,6 +35,9 @@ public class Association implements ModelElement {
 		abstract <S extends Collection<T>> S typeKeepingAdd(T object);
 
 		abstract <S extends Collection<T>> S typeKeepingRemove(T object);
+
+		@Override
+		public abstract String toString();
 	}
 
 	public class Many<T extends ModelClass> extends AssociationEnd<T> {
@@ -163,6 +166,11 @@ public class Association implements ModelElement {
 		int getSize() {
 			return list.size();
 		}
+
+		@Override
+		public String toString() {
+			return list.toString();
+		}
 	}
 
 	public class Some<T extends ModelClass> extends Many<T> {
@@ -273,6 +281,11 @@ public class Association implements ModelElement {
 				return (S) this;
 			}
 			return (S) new MaybeOne<T>();
+		}
+
+		@Override
+		public String toString() {
+			return obj == null ? "null" : obj.toString();
 		}
 	}
 

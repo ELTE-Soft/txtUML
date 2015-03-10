@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import hu.elte.txtuml.api.Association.AssociationEnd;
+import hu.elte.txtuml.api.util.collections.AssociationsMap;
+import hu.elte.txtuml.api.util.collections.InitialStatesMap;
+import hu.elte.txtuml.api.util.collections.InnerClassInstancesMap;
 // import hu.elte.txtuml.importer.MethodImporter;
 // import hu.elte.txtuml.importer.ModelImporter;
 import hu.elte.txtuml.utils.InstanceCreator;
@@ -19,11 +22,13 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 		READY, ACTIVE, FINALIZED, DESTROYED
 	}
 
-	private static Map<Class<?>, Class<? extends InitialState>> initialStates = new HashMap<>();
-	private final Map<Class<?>, Object> innerClassInstances = new HashMap<>();
-	private final Map<Class<? extends AssociationEnd<?>>, AssociationEnd<?>> associations = new HashMap<>();
+	private static InitialStatesMap initialStates = InitialStatesMap.create();
+
+	private Status status;
 	private State currentState;
-	private Status STATUS;
+	private final AssociationsMap associations = AssociationsMap.create();
+	private final InnerClassInstancesMap innerClassInstances = InnerClassInstancesMap
+			.create();
 
 	public abstract class State implements ModelElement {
 		public void entry() {
@@ -31,6 +36,16 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 
 		public void exit() {
 		}
+
+		String stateIdentifier() {
+			return getClass().getSimpleName();
+		}
+
+		@Override
+		public String toString() {
+			return "state:" + stateIdentifier();
+		}
+
 	}
 
 	public abstract class InitialState extends State {
@@ -39,9 +54,21 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 
 		public final void exit() {
 		}
+
+		@Override
+		public String toString() {
+			return "initial " + super.toString();
+		}
+
 	}
 
 	public abstract class CompositeState extends State {
+
+		@Override
+		public String toString() {
+			return "composite " + super.toString();
+		}
+
 	}
 
 	public abstract class Choice extends State {
@@ -51,6 +78,12 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 
 		public final void exit() {
 		}
+
+		@Override
+		public String toString() {
+			return "choice:" + stateIdentifier();
+		}
+
 	}
 
 	public abstract class Transition implements ModelElement {
@@ -66,18 +99,31 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 
 		@SuppressWarnings("unchecked")
 		protected final <T extends Signal> T getSignal() {
-// TODO: The following two lines create an unwanted dependency
-// between the API and the Importer.
-// Can it be eliminated by AspectJ tricks?		
-//			if (signal == null && MethodImporter.isImporting()) {
-//				signal = MethodImporter.createSignal(getClass());
-//			}
+			// TODO: The following two lines create an unwanted dependency
+			// between the API and the Importer.
+			// Can it be eliminated by AspectJ tricks?
+			// if (signal == null && MethodImporter.isImporting()) {
+			// signal = MethodImporter.createSignal(getClass());
+			// }
 			return (T) signal;
 		}
 
 		final void setSignal(Signal s) {
 			signal = s;
 		}
+
+		@Override
+		public String toString() {
+			Class<? extends Transition> cls = getClass();
+			From from = cls.getAnnotation(From.class);
+			String fromAsString = from == null ? "???" : from.value()
+					.toString();
+			To to = cls.getAnnotation(To.class);
+			String toAsString = to == null ? "???" : to.value().toString();
+			return "transition:" + getClass().getSimpleName() + " ("
+					+ fromAsString + "->" + toAsString + ")";
+		}
+
 	}
 
 	protected ModelClass() {
@@ -85,21 +131,21 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 		this.currentState = null;
 		this.innerClassInstances.put(getClass(), this);
 
-// TODO: The following line creates an unwanted dependency
-// between the API and the Importer.
-// Can it be eliminated by AspectJ tricks?		
-//		if (!ModelImporter.isImporting()) {
-			setCurrentStateToInitial();
-//		}
+		// TODO: The following line creates an unwanted dependency
+		// between the API and the Importer.
+		// Can it be eliminated by AspectJ tricks?
+		// if (!ModelImporter.isImporting()) {
+		setCurrentStateToInitial();
+		// }
 	}
 
 	private void setCurrentStateToInitial() {
 		Class<? extends InitialState> initStateClass = getInitialState(getClass());
 		if (initStateClass != null) {
 			currentState = getInnerClassInstance(initStateClass);
-			STATUS = Status.READY;
+			status = Status.READY;
 		} else {
-			STATUS = Status.FINALIZED;
+			status = Status.FINALIZED;
 		}
 	}
 
@@ -126,11 +172,11 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 	}
 
 	void start() {
-		if (STATUS != Status.READY) {
+		if (status != Status.READY) {
 			return;
 		}
 		send(null); // to move from initial state
-		STATUS = Status.ACTIVE;
+		status = Status.ACTIVE;
 	}
 
 	void send(Signal signal) {
@@ -396,5 +442,10 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 			initialStates.put(forWhat, null);
 			return null;
 		}
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + ":" + getIdentifier();
 	}
 }
