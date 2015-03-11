@@ -1,5 +1,19 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
+import hu.elte.txtuml.layout.visualizer.algorithms.LayoutVisualize;
+import hu.elte.txtuml.layout.visualizer.annotations.Statement;
+import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
+import hu.elte.txtuml.layout.visualizer.exceptions.CannotPositionObjectException;
+import hu.elte.txtuml.layout.visualizer.exceptions.ConflictException;
+import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
+import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
+import hu.elte.txtuml.layout.visualizer.exceptions.MyException;
+import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
+import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
+import hu.elte.txtuml.layout.visualizer.helpers.MyModel;
+import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
+import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,20 +27,6 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.uml2.uml.NamedElement;
-
-import Algorithm.LayoutVisualize;
-import Annotations.Statement;
-import AnnotationsExceptions.CannotFindAssociationRouteException;
-import AnnotationsExceptions.CannotPositionObjectException;
-import AnnotationsExceptions.ConflictException;
-import AnnotationsExceptions.ConversionException;
-import AnnotationsExceptions.InternalException;
-import AnnotationsExceptions.MyException;
-import AnnotationsExceptions.StatementTypeMatchException;
-import AnnotationsExceptions.UnknownStatementException;
-import Helpers.MyModel;
-import Model.LineAssociation;
-import Model.RectangleObject;
 
 public class LayoutVisualizerManager {
 	

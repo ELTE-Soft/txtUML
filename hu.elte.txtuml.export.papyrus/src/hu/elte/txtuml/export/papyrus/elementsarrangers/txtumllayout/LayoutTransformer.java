@@ -1,14 +1,9 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
-import java.awt.BufferCapabilities.FlipContents;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.naming.NoPermissionException;
-
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.gef.EditPart;
 
 /**
  * Represents a Transformer, considering the unity scale.

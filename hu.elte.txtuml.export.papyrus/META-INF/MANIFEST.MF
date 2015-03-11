@@ -18,6 +18,6 @@ Require-Bundle: org.eclipse.debug.ui,
  org.eclipse.papyrus.uml.diagram.statemachine,
  org.eclipse.papyrus.infra.core.log,
  org.eclipse.ui.ide,
- org.elte.txtuml.layoutvisualizer
+ hu.elte.txtuml.layout.visualizer
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
