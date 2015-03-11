@@ -1,6 +1,6 @@
 package hu.elte.txtuml.layout.lang.statements;
 
-import hu.elte.txtuml.layout.lang.GroupLayoutType;
+import hu.elte.txtuml.layout.lang.AlignmentType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface LayoutType {
-	GroupLayoutType value();
+public @interface Alignment {
+	AlignmentType value();
 
 }

@@ -1,5 +1,6 @@
 package hu.elte.txtuml.layout.lang.statements;
 
+import hu.elte.txtuml.layout.lang.LinkEnd;
 import hu.elte.txtuml.layout.lang.elements.LayoutElement;
 import hu.elte.txtuml.layout.lang.elements.LayoutNode;
 import hu.elte.txtuml.layout.lang.statements.containers.EastContainer;
@@ -18,4 +19,6 @@ public @interface East {
 
 	Class<? extends LayoutNode> from();
 
+	LinkEnd end() default LinkEnd.Default;
+	
 }
