@@ -20,5 +20,5 @@ public @interface West {
 	Class<? extends LayoutNode> from();
 
 	LinkEnd end() default LinkEnd.Default;
-	
+
 }

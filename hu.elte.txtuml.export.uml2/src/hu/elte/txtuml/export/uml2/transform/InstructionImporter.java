@@ -95,12 +95,12 @@ class InstructionImporter extends AbstractInstructionImporter {
 		return result;
 	}
 
-	private static <T extends ModelClass, AE extends hu.elte.txtuml.api.Association.AssociationEnd<T> > String getAssociationEndOwner(AE target)
+	private static <T extends ModelClass, AE extends hu.elte.txtuml.api.AssociationEnd<T> > String getAssociationEndOwner(AE target)
 	{
 		Method method=null;
 		String ret=null;
 		try {
-			method=hu.elte.txtuml.api.Association.AssociationEnd.class.getDeclaredMethod("getOwnerId");
+			method=hu.elte.txtuml.api.AssociationEnd.class.getDeclaredMethod("getOwnerId");
 			method.setAccessible(true);
 			ret=getObjectIdentifier( (String) method.invoke(target) );
 			method.setAccessible(false);
@@ -111,7 +111,7 @@ class InstructionImporter extends AbstractInstructionImporter {
 		}
 		return ret;
 	}
-	static <T extends ModelClass, AE extends hu.elte.txtuml.api.Association.AssociationEnd<T> >
+	static <T extends ModelClass, AE extends hu.elte.txtuml.api.AssociationEnd<T> >
 		T importAssociationEnd_SelectOne(AE target) 
 	{
 

@@ -1,300 +1,56 @@
 package hu.elte.txtuml.api;
 
-import hu.elte.txtuml.api.blocks.ParameterizedCondition;
-import hu.elte.txtuml.api.primitives.ModelBool;
-import hu.elte.txtuml.api.primitives.ModelInt;
 import hu.elte.txtuml.layout.lang.elements.LayoutLink;
-
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 public class Association implements ModelElement, LayoutLink {
 	protected Association() {
 	}
 
-	public abstract class AssociationEnd<T extends ModelClass> extends
-			ModelIdentifiedElementImpl implements Collection<T> {
+	public interface VisibleEnd<T extends ModelClass> extends ModelElement,
+			Collection<T> {
+	}
 
-		protected boolean isFinal = true;
-		private String ownerId;
+	public interface HiddenEnd<T extends ModelClass> extends ModelElement,
+			Collection<T> {
+	}
 
-		AssociationEnd() {
+	public class Many<T extends ModelClass> extends DefaultMany<T> implements
+			VisibleEnd<T> {
+	}
+
+	public class Some<T extends ModelClass> extends DefaultSome<T> implements
+			VisibleEnd<T> {
+	}
+
+	public class MaybeOne<T extends ModelClass> extends DefaultMaybeOne<T>
+			implements VisibleEnd<T> {
+	}
+
+	public class One<T extends ModelClass> extends DefaultOne<T> implements
+			VisibleEnd<T> {
+	}
+
+	public abstract class Hidden {
+
+		private Hidden() {
 		}
 
-		void setOwnerId(String newId) {
-			ownerId = newId;
+		public class Many<T extends ModelClass> extends DefaultMany<T>
+				implements HiddenEnd<T> {
 		}
 
-		String getOwnerId() {
-			return ownerId;
+		public class Some<T extends ModelClass> extends DefaultSome<T>
+				implements HiddenEnd<T> {
 		}
 
-		@Override
-		public final ModelBool isEmpty() {
-			return new ModelBool(count().getValue() == 0);
+		public class MaybeOne<T extends ModelClass> extends DefaultMaybeOne<T>
+				implements HiddenEnd<T> {
 		}
 
-		abstract AssociationEnd<T> init(Collection<T> other);
-
-		abstract <S extends Collection<T>> S typeKeepingAdd(T object);
-
-		abstract <S extends Collection<T>> S typeKeepingRemove(T object);
-
-		@Override
-		public abstract String toString();
+		public class One<T extends ModelClass> extends DefaultOne<T> implements
+				HiddenEnd<T> {
+		}
 
 	}
 
-	public class Many<T extends ModelClass> extends AssociationEnd<T> {
-		private List<T> list = new LinkedList<>();
-
-		public Many() {
-			isFinal = false;
-		}
-
-		@Override
-		final synchronized AssociationEnd<T> init(Collection<T> other) {
-			if (!isFinal && other != null && other instanceof Many) {
-				this.list = ((Many<T>) other).list;
-			}
-			isFinal = true;
-			return this;
-		}
-
-		Many(T object1, T object2) {
-			list.add(object1);
-			list.add(object2);
-		}
-
-		Many(CollectionBuilder<T> builder) {
-			for (T obj : builder) {
-				list.add(obj);
-			}
-		}
-
-		Many(Collection<T> collection) {
-			for (T obj : collection) {
-				list.add(obj);
-			}
-		}
-
-		Many(Collection<T> collection, CollectionBuilder<T> builder) {
-			this(collection);
-			for (T obj : builder) {
-				list.add(obj);
-			}
-		}
-
-		Many(Collection<T> collection, T object) {
-			this(collection);
-			list.add(object);
-		}
-
-		@Override
-		public Iterator<T> iterator() {
-			return list.iterator();
-		}
-
-		@Override
-		public final ModelInt count() {
-			return new ModelInt(list.size());
-		}
-
-		@Override
-		public final ModelBool contains(ModelClass object) {
-			return new ModelBool(list.contains(object));
-		}
-
-		@Override
-		public final T selectOne() {
-			return list.iterator().next();
-		}
-
-		@Override
-		public final T selectOne(ParameterizedCondition<T> cond) {
-			for (T obj : list) {
-				if (cond.check(obj).getValue()) {
-					return obj;
-				}
-			}
-			return null;
-		}
-
-		@Override
-		public final Collection<T> selectAll(ParameterizedCondition<T> cond) {
-			CollectionBuilder<T> builder = new CollectionBuilder<>();
-			for (T obj : list) {
-				if (cond.check(obj).getValue()) {
-					builder.append(obj);
-				}
-			}
-			return new Many<T>(builder);
-		}
-
-		@Override
-		public final Collection<T> add(T object) {
-			return new Many<T>(this, object);
-		}
-
-		@Override
-		public final Collection<T> addAll(Collection<T> objects) {
-			return new Many<T>(this, new CollectionBuilder<T>().append(objects));
-		}
-
-		@Override
-		public final Collection<T> remove(T object) {
-			if (list.contains(object)) {
-				CollectionBuilder<T> builder = new CollectionBuilder<>();
-				for (T obj : list) {
-					if (obj != object) {
-						builder.append(obj);
-					}
-				}
-				return new Many<T>(builder);
-			} else {
-				return this;
-			}
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		final <S extends Collection<T>> S typeKeepingAdd(T object) {
-			return (S) add(object);
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		final <S extends Collection<T>> S typeKeepingRemove(T object) {
-			return (S) remove(object);
-		}
-
-		int getSize() {
-			return list.size();
-		}
-
-		@Override
-		public String toString() {
-			return list.toString();
-		}
-	}
-
-	public class Some<T extends ModelClass> extends Many<T> {
-	}
-
-	public class MaybeOne<T extends ModelClass> extends AssociationEnd<T> {
-		private T obj = null;
-
-		public MaybeOne() {
-			isFinal = false;
-		}
-
-		@Override
-		final synchronized AssociationEnd<T> init(Collection<T> other) {
-			if (!isFinal && other != null && other instanceof MaybeOne) {
-				this.obj = ((MaybeOne<T>) other).obj;
-			}
-			isFinal = true;
-			return this;
-		}
-
-		MaybeOne(T object) {
-			this.obj = object;
-		}
-
-		@Override
-		public final Iterator<T> iterator() {
-			return new Iterator<T>() {
-				public T next() {
-					hasNext = false;
-					return obj;
-				}
-
-				public boolean hasNext() {
-					return hasNext;
-				}
-
-				public void remove() {
-				}
-
-				private boolean hasNext = true;
-			};
-		}
-
-		@Override
-		public final ModelInt count() {
-			return this.obj != null ? ModelInt.ONE : ModelInt.ZERO;
-		}
-
-		@Override
-		public final ModelBool contains(ModelClass object) {
-			return new ModelBool(this.obj == object);
-		}
-
-		@Override
-		public final T selectOne() {
-			return obj;
-		}
-
-		@Override
-		public final T selectOne(ParameterizedCondition<T> cond) {
-			if (obj == null || cond.check(obj).getValue()) {
-				return obj;
-			} else {
-				return null;
-			}
-		}
-
-		@Override
-		public final Collection<T> selectAll(ParameterizedCondition<T> cond) {
-			return new MaybeOne<T>(selectOne(cond));
-		}
-
-		@Override
-		public final Collection<T> add(T object) {
-			if (obj == null) {
-				return new MaybeOne<T>(object);
-			}
-			return new Many<T>(obj, object);
-		}
-
-		@Override
-		public final Collection<T> addAll(Collection<T> objects) {
-			return new Many<T>(objects, this.obj);
-		}
-
-		@Override
-		public final Collection<T> remove(T object) {
-			if (object == null || this.obj != object) {
-				return this;
-			}
-			return new Empty<T>();
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		final <S extends Collection<T>> S typeKeepingAdd(T object) {
-			if (object == null) {
-				return (S) new MaybeOne<T>(object);
-			}
-			return (S) new MaybeOne<T>(object);
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		final <S extends Collection<T>> S typeKeepingRemove(T object) {
-			if (object == null || this.obj != object) {
-				return (S) this;
-			}
-			return (S) new MaybeOne<T>();
-		}
-
-		@Override
-		public String toString() {
-			return obj == null ? "null" : obj.toString();
-		}
-	}
-
-	public class One<T extends ModelClass> extends MaybeOne<T> {
-	}
 }

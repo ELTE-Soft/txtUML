@@ -20,5 +20,5 @@ public @interface East {
 	Class<? extends LayoutNode> from();
 
 	LinkEnd end() default LinkEnd.Default;
-	
+
 }

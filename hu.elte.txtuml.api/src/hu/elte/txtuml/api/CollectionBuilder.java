@@ -1,26 +1,31 @@
 package hu.elte.txtuml.api;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import hu.elte.txtuml.api.backend.collections.JavaCollectionOfMany;
 
-// TODO needs optimization
+import java.util.Iterator;
+
 class CollectionBuilder<T extends ModelClass> implements Iterable<T> {
-	private final List<T> list = new LinkedList<>();
+
+	private final JavaCollectionOfMany<T> collection = JavaCollectionOfMany
+			.create();
 
 	CollectionBuilder<T> append(T object) {
-		list.add(object);
+		collection.add(object);
 		return this;
 	}
 
 	CollectionBuilder<T> append(Collection<T> objects) {
 		for (T object : objects) {
-			list.add(object);
+			collection.add(object);
 		}
 		return this;
 	}
 
+	JavaCollectionOfMany<T> getJavaCollection() {
+		return collection;
+	}
+
 	public Iterator<T> iterator() {
-		return list.iterator();
+		return collection.iterator();
 	}
 }

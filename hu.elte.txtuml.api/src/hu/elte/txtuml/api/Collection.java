@@ -84,12 +84,12 @@ public interface Collection<T extends ModelClass> extends
 
 		@Override
 		public Collection<T> add(T object) {
-			return new Association().new MaybeOne<T>(object);
+			return new DefaultMaybeOne<T>(object);
 		}
 
 		@Override
 		public Collection<T> addAll(Collection<T> objects) {
-			return new Association().new Many<T>(objects);
+			return new DefaultMany<T>(objects);
 		}
 
 		@Override

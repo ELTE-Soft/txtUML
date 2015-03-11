@@ -1,6 +1,5 @@
-package hu.elte.txtuml.stdlib;
+package hu.elte.txtuml.api.primitives;
 
-import hu.elte.txtuml.api.primitives.ModelBool;
 
 public class VariableBool extends VariableType<Boolean, ModelBool> {
 

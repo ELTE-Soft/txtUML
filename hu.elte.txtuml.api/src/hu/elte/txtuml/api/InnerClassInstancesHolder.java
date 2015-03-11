@@ -7,13 +7,13 @@ abstract class InnerClassInstancesHolder {
 
 	private final InnerClassInstancesMap innerClassInstances = InnerClassInstancesMap
 			.create();
-	
+
 	InnerClassInstancesHolder() {
 		super();
-		
+
 		this.innerClassInstances.put(getClass(), this);
 	}
-	
+
 	<T> T getInnerClassInstance(Class<T> forWhat) {
 		if (forWhat == null) {
 			// TODO show error
@@ -28,5 +28,5 @@ abstract class InnerClassInstancesHolder {
 		}
 		return ret;
 	}
-	
+
 }

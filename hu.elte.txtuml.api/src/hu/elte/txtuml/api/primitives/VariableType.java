@@ -1,10 +1,8 @@
-package hu.elte.txtuml.stdlib;
+package hu.elte.txtuml.api.primitives;
 
-import hu.elte.txtuml.api.ExternalClass;
 import hu.elte.txtuml.api.ModelType;
 
-public abstract class VariableType<T, MT extends ModelType<T>> extends
-		ExternalClass {
+public abstract class VariableType<T, MT extends ModelType<T>> {
 
 	private MT value;
 

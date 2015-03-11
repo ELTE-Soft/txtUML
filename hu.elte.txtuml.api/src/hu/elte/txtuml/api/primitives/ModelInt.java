@@ -79,5 +79,5 @@ public class ModelInt extends ModelType<Integer> {
 	public ModelInt signum() {
 		return new ModelInt(Integer.signum(getValue()));
 	}
-	
+
 }

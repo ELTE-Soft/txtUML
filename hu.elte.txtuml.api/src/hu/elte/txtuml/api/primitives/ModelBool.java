@@ -3,7 +3,7 @@ package hu.elte.txtuml.api.primitives;
 import hu.elte.txtuml.api.ModelType;
 
 public class ModelBool extends ModelType<Boolean> {
-	
+
 	public static final ModelBool TRUE = new ModelBool(true);
 	public static final ModelBool FALSE = new ModelBool(false);
 	public static final ModelBool ELSE = new Else();

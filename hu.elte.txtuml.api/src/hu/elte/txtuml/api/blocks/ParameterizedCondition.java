@@ -5,7 +5,7 @@ import hu.elte.txtuml.api.primitives.ModelBool;
 
 @FunctionalInterface
 public interface ParameterizedCondition<T> extends ModelElement {
-	
+
 	ModelBool check(T selected);
-	
+
 }

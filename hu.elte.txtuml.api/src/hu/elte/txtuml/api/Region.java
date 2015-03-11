@@ -6,12 +6,12 @@ import hu.elte.txtuml.api.primitives.ModelBool;
 public abstract class Region extends StateMachine {
 
 	private static InitialStatesMap initialStates = InitialStatesMap.create();
-	
+
 	private State currentState;
 
 	Region() {
 		super();
-		
+
 		Class<? extends InitialState> initStateClass = getInitialState(getClass());
 		if (initStateClass != null) {
 			currentState = getInnerClassInstance(initStateClass);
@@ -23,7 +23,7 @@ public abstract class Region extends StateMachine {
 	final State getCurrentState() {
 		return currentState;
 	}
-	
+
 	void processSignal(Signal signal) {
 		if (currentState == null) { // no state machine
 			return;
@@ -38,30 +38,72 @@ public abstract class Region extends StateMachine {
 		}
 	}
 
+	private class TransitionExecutor {
+
+		private Transition transition;
+		private Class<?> transitionClass;
+		private Class<? extends State> from;
+		private Class<? extends State> to;
+
+		TransitionExecutor() {
+			this.transition = null;
+			this.transitionClass = null;
+			this.from = null;
+			this.to = null;
+		}
+
+		boolean isEmpty() {
+			return transition == null;
+		}
+
+		void set(Transition transition, Class<?> transitionClass,
+				Class<? extends State> from, Class<? extends State> to) {
+			this.transition = transition;
+			this.transitionClass = transitionClass;
+			this.from = from;
+			this.to = to;
+		}
+
+		Class<?> getTransitionClass() {
+			return transitionClass;
+		}
+
+		/**
+		 * The signal has to be already set on the transition contained in this
+		 * executor before calling this method.
+		 */
+		void execute() {
+			if (ModelExecutor.Settings.executorLog()) {
+				Action.executorFormattedLog(
+						"%10s %-15s changes state: from: %-10s tran: %-18s to: %-10s%n",
+						getClass().getSimpleName(), getIdentifier(),
+						from.getSimpleName(), transitionClass.getSimpleName(),
+						to.getSimpleName());
+			}
+			callExitAction(from);
+			transition.effect();
+			currentState = getInnerClassInstance(to);
+		}
+
+	}
+
 	private boolean executeTransition(Signal signal) {
-		Class<?> applicableTransition = null;
+		final TransitionExecutor applicableTransitionExecutor = new TransitionExecutor();
+
 		for (Class<?> examinedStateClass = currentState.getClass(), parentClass = examinedStateClass
 				.getEnclosingClass(); parentClass != null; examinedStateClass = parentClass, parentClass = examinedStateClass
 				.getEnclosingClass()) {
+
 			for (Class<?> c : parentClass.getDeclaredClasses()) {
 				if (Transition.class.isAssignableFrom(c)) {
-					Class<? extends State> from/* ,to */;
+					Class<? extends State> from, to;
 					try {
-						from = c.getAnnotation(From.class).value(); // NullPointerException
-																	// if no
-																	// @From is
-																	// set on
-																	// the
-																	// transition
-						/* to = */c.getAnnotation(To.class).value(); // NullPointerException
-																		// if no
-																		// @To
-																		// is
-																		// set
-																		// on
-																		// the
-																		// transition
+						from = c.getAnnotation(From.class).value();
+						to = c.getAnnotation(To.class).value();
 					} catch (NullPointerException e) {
+						// if no @From or @To annotation is present on the
+						// transition, a NullPointerException is thrown
+
 						// TODO show warning
 						continue;
 					}
@@ -72,28 +114,34 @@ public abstract class Region extends StateMachine {
 
 					Transition transition = (Transition) getInnerClassInstance(c);
 					transition.setSignal(signal);
+
 					if (!transition.guard().getValue()) { // checking guard
 						continue;
 					}
 
-					if (applicableTransition != null) {
+					if (!applicableTransitionExecutor.isEmpty()) {
 						Action.executorErrorLog("Error: guards of transitions "
-								+ applicableTransition.getName() + " and "
-								+ c.getName() + " from class "
+								+ applicableTransitionExecutor
+										.getTransitionClass().getName()
+								+ " and " + c.getName() + " from class "
 								+ currentState.getClass().getSimpleName()
 								+ " are overlapping");
 						continue;
 					}
-					applicableTransition = c;
+
+					applicableTransitionExecutor.set(transition, c, from, to);
+					;
+
 				}
 			}
 		}
 
-		if (applicableTransition == null) { // there was no transition which
-											// could be used
+		if (applicableTransitionExecutor.isEmpty()) { // there was no transition
+														// which
+														// could be used
 			return false;
 		}
-		useTransition(applicableTransition);
+		applicableTransitionExecutor.execute();
 
 		if (currentState instanceof Choice) {
 			executeTransitionFromChoice(signal);
@@ -103,24 +151,22 @@ public abstract class Region extends StateMachine {
 	}
 
 	private void executeTransitionFromChoice(Signal signal) {
-		Class<?> applicableTransition = null;
-		Class<?> elseTransition = null;
-		Class<?> examinedChoiceClass = currentState.getClass();
-		Class<?> parentClass = examinedChoiceClass.getEnclosingClass();
+		final TransitionExecutor applicableTransitionExecutor = new TransitionExecutor();
+		final TransitionExecutor elseTransitionExecutor = new TransitionExecutor();
+
+		final Class<?> examinedChoiceClass = currentState.getClass();
+		final Class<?> parentClass = examinedChoiceClass.getEnclosingClass();
+
 		for (Class<?> c : parentClass.getDeclaredClasses()) {
 			if (Transition.class.isAssignableFrom(c)) {
-				Class<? extends State> from/* ,to */;
+				Class<? extends State> from, to;
 				try {
-					from = c.getAnnotation(From.class).value(); // NullPointerException
-																// if no @From
-																// is set on the
-																// transition
-					/* to = */c.getAnnotation(To.class).value(); // NullPointerException
-																	// if no @To
-																	// is set on
-																	// the
-																	// transition
+					from = c.getAnnotation(From.class).value();
+					to = c.getAnnotation(To.class).value();
 				} catch (NullPointerException e) {
+					// if no @From or @To annotation is present on the
+					// transition, a NullPointerException is thrown
+
 					// TODO show warning
 					continue;
 				}
@@ -136,35 +182,43 @@ public abstract class Region extends StateMachine {
 					if (resultOfGuard instanceof ModelBool.Else) { // transition
 																	// with else
 																	// condition
-						if (elseTransition != null) { // there was already a
-														// transition with an
-														// else condition
+						if (!elseTransitionExecutor.isEmpty()) { // there was
+																	// already a
+							// transition with an
+							// else condition
 							Action.executorErrorLog("Error: there are more than one transitions from choice "
 									+ examinedChoiceClass.getSimpleName()
 									+ " with an Else condition");
 							continue;
 						}
-						elseTransition = c;
+						elseTransitionExecutor.set(transition, c, from, to);
+						;
 					}
 					continue;
 				}
-				if (applicableTransition != null) { // there was already an
-													// applicable transition
+				if (!applicableTransitionExecutor.isEmpty()) { // there was
+																// already an
+																// applicable
+																// transition
 					Action.executorErrorLog("Error: guards of transitions "
-							+ applicableTransition.getName() + " and "
-							+ c.getName() + " from class "
+							+ applicableTransitionExecutor.getTransitionClass()
+									.getName() + " and " + c.getName()
+							+ " from class "
 							+ examinedChoiceClass.getSimpleName()
 							+ " are overlapping");
 					continue;
 				}
-				applicableTransition = c;
+				applicableTransitionExecutor.set(transition, c, from, to);
+				;
 			}
 		}
-		if (applicableTransition == null) { // there was no transition which
-											// could be used
-			if (elseTransition != null) { // but there was a transition with an
-											// else condition
-				useTransition(elseTransition);
+		if (applicableTransitionExecutor.isEmpty()) { // there was no transition
+														// which
+														// could be used
+			if (!elseTransitionExecutor.isEmpty()) { // but there was a
+														// transition with an
+														// else condition
+				elseTransitionExecutor.execute();
 			} else {
 				Action.executorErrorLog("Error: there was no transition from choice class "
 						+ examinedChoiceClass.getSimpleName()
@@ -172,33 +226,12 @@ public abstract class Region extends StateMachine {
 			}
 			return;
 		}
-		useTransition(applicableTransition);
+
+		applicableTransitionExecutor.execute();
+
 		if (currentState instanceof Choice) {
 			executeTransitionFromChoice(signal);
 		}
-	}
-
-	private void useTransition(Class<?> transitionClass) {
-		/*
-		 * The signal has to be already set to the transition instance returned
-		 * by the getInnerClassInstance(transitionClass) call.
-		 */
-
-		Transition transition = (Transition) getInnerClassInstance(transitionClass);
-		Class<? extends State> from = transitionClass.getAnnotation(From.class)
-				.value();
-		Class<? extends State> to = transitionClass.getAnnotation(To.class)
-				.value();
-		if (ModelExecutor.Settings.executorLog()) {
-			Action.executorFormattedLog(
-					"%10s %-15s changes state: from: %-10s tran: %-18s to: %-10s%n",
-					getClass().getSimpleName(), getIdentifier(),
-					from.getSimpleName(), transitionClass.getSimpleName(),
-					to.getSimpleName());
-		}
-		callExitAction(from);
-		transition.effect();
-		currentState = getInnerClassInstance(to);
 	}
 
 	private boolean notApplicableTrigger(Class<?> transitionClass, Signal signal) {
@@ -247,8 +280,7 @@ public abstract class Region extends StateMachine {
 		}
 	}
 
-	static Class<? extends InitialState> getInitialState(
-			Class<?> forWhat) {
+	static Class<? extends InitialState> getInitialState(Class<?> forWhat) {
 		synchronized (initialStates) {
 			if (initialStates.containsKey(forWhat)) {
 				return initialStates.get(forWhat);

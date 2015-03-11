@@ -1,6 +1,5 @@
 package hu.elte.txtuml.api;
 
-import hu.elte.txtuml.api.Association.AssociationEnd;
 import hu.elte.txtuml.api.blocks.BlockBody;
 import hu.elte.txtuml.api.blocks.Condition;
 import hu.elte.txtuml.api.blocks.ParameterizedBlockBody;

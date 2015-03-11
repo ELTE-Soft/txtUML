@@ -1,6 +1,6 @@
 package hu.elte.txtuml.export.uml2.transform;
 
-import hu.elte.txtuml.api.Association.AssociationEnd;
+import hu.elte.txtuml.api.AssociationEnd;
 import hu.elte.txtuml.api.ExternalClass;
 import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.Signal;

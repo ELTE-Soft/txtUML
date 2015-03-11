@@ -1,7 +1,7 @@
 package hu.elte.txtuml.api;
 
-
-public abstract class ModelIdentifiedElementImpl implements ModelIdentifiedElement {
+public abstract class ModelIdentifiedElementImpl implements
+		ModelIdentifiedElement {
 
 	private static Integer counter = 0;
 	private final String identifier;

@@ -18,7 +18,7 @@ public @interface North {
 	Class<? extends LayoutElement> val();
 
 	Class<? extends LayoutNode> from();
-	
+
 	LinkEnd end() default LinkEnd.Default;
-	
+
 }
