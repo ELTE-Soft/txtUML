@@ -2,8 +2,8 @@ package hu.elte.txtuml.layout.export;
 
 import java.util.List;
 
-import Annotations.Statement;
 import hu.elte.txtuml.layout.export.interfaces.StatementList;
+import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 
 public class DiagramExportationReport {
 

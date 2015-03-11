@@ -2,9 +2,9 @@ package hu.elte.txtuml.layout.export.impl;
 
 import java.util.LinkedList;
 
-import Annotations.Statement;
-import Annotations.StatementType;
 import hu.elte.txtuml.layout.export.interfaces.StatementList;
+import hu.elte.txtuml.layout.visualizer.annotations.Statement;
+import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
 
 @SuppressWarnings("serial")
 public class StatementListImpl extends LinkedList<Statement> implements StatementList {

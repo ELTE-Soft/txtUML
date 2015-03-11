@@ -1,12 +1,12 @@
 package hu.elte.txtuml.layout.export.example;
 
 
-import Annotations.Statement;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.export.DiagramExporter;
 import hu.elte.txtuml.layout.lang.Diagram;
 import hu.elte.txtuml.layout.lang.elements.LayoutNode;
 import hu.elte.txtuml.layout.lang.statements.*;
+import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 
 class D extends Diagram {
 

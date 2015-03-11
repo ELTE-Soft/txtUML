@@ -1,6 +1,5 @@
 package hu.elte.txtuml.layout.export.example;
 
-import Annotations.Statement;
 import hu.elte.txtuml.api.Association;
 import hu.elte.txtuml.api.Model;
 import hu.elte.txtuml.api.ModelClass;
@@ -10,6 +9,7 @@ import hu.elte.txtuml.layout.lang.AlignmentType;
 import hu.elte.txtuml.layout.lang.Diagram;
 import hu.elte.txtuml.layout.lang.LinkEnd;
 import hu.elte.txtuml.layout.lang.statements.*;
+import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 import hu.elte.txtuml.layout.export.example.ExampleModel.*;
 
 class ExampleModel extends Model {

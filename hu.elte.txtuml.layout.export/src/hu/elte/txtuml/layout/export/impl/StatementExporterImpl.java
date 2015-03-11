@@ -1,6 +1,5 @@
 package hu.elte.txtuml.layout.export.impl;
 
-import Annotations.StatementType;
 import hu.elte.txtuml.layout.export.interfaces.StatementExporter;
 import hu.elte.txtuml.layout.export.interfaces.StatementList;
 import hu.elte.txtuml.layout.lang.Diagram.LayoutGroup;
@@ -30,6 +29,7 @@ import hu.elte.txtuml.layout.lang.statements.containers.PriorityContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.RightContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.SouthContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.WestContainer;
+import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
 
 public class StatementExporterImpl implements StatementExporter {
 
