@@ -373,17 +373,18 @@ public class LayoutVisualize
 			testObjects.add(new RectangleObject("A"));
 			testObjects.add(new RectangleObject("B"));
 			testObjects.add(new RectangleObject("C"));
-			testObjects.add(new RectangleObject("D"));
-			testObjects.add(new RectangleObject("E"));
 			testObjects.add(new RectangleObject("F"));
 			
 			System.out.println("/Set Assocs/");
 			
 			HashSet<LineAssociation> testAssocs = new HashSet<LineAssociation>();
 			
-			testAssocs.add(new LineAssociation("1", "E", "B", AssociationType.normal));
-			testAssocs.add(new LineAssociation("2", "C", "D", AssociationType.normal));
-			testAssocs.add(new LineAssociation("3", "E", "C", AssociationType.normal));
+			// testAssocs.add(new LineAssociation("1", "E", "B",
+			// AssociationType.normal));
+			// testAssocs.add(new LineAssociation("2", "C", "D",
+			// AssociationType.normal));
+			// testAssocs.add(new LineAssociation("3", "E", "C",
+			// AssociationType.normal));
 			
 			System.out.println("/Load Data/");
 			v.load(new Pair<HashSet<RectangleObject>, HashSet<LineAssociation>>(
@@ -393,7 +394,12 @@ public class LayoutVisualize
 			ArrayList<Statement> stats = new ArrayList<Statement>();
 			
 			// Objects
-			stats.add(Statement.Parse("topmost(E)"));
+			stats.add(Statement.Parse("group(A, G)"));
+			stats.add(Statement.Parse("group(C, G3)"));
+			stats.add(Statement.Parse("group(B, G2)"));
+			stats.add(Statement.Parse("group(G3, G2)"));
+			stats.add(Statement.Parse("group(G2, G)"));
+			stats.add(Statement.Parse("south(F, G)"));
 			
 			System.out.println("/Arrange/");
 			v.arrange(stats);

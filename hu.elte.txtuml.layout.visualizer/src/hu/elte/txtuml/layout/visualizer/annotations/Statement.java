@@ -180,16 +180,17 @@ public class Statement
 		while (wasmodification)
 		{
 			wasmodification = false;
-			for (String group : groups.keySet())
+			HashMap<String, ArrayList<String>> groupsM = new HashMap<String, ArrayList<String>>();
+			groupsM = Helper.cloneMap(groups);
+			for (String group : groupsM.keySet())
 			{
-				ArrayList<String> listToIterate = groups.get(group);
+				ArrayList<String> listToIterate = groupsM.get(group);
 				for (String name : listToIterate)
 				{
-					if (groups.keySet().contains(name))
+					if (groupsM.keySet().contains(name))
 					{
-						ArrayList<String> temp = groups.get(group);
-						temp.remove(name);
-						temp.addAll(groups.get(name));
+						groups.get(group).remove(name);
+						groups.get(group).addAll(groups.get(name));
 						wasmodification = true;
 					}
 				}
@@ -202,14 +203,13 @@ public class Statement
 		ArrayList<Statement> result = new ArrayList<Statement>();
 		
 		// Remove layouts
-		for (Statement s : stats)
+		for (Statement s : stats.stream()
+				.filter(st -> st.getType().equals(StatementType.layout))
+				.collect(Collectors.toList()))
 		{
-			if (s.getType().equals(StatementType.layout))
-			{
-				LayoutType lt = Enum.valueOf(LayoutType.class, s.getParameter(1)
-						.toLowerCase());
-				result.addAll(getStatementsFromLayout(lt, groups.get(s.getParameter(0))));
-			}
+			LayoutType lt = Enum.valueOf(LayoutType.class, s.getParameter(1)
+					.toLowerCase());
+			result.addAll(getStatementsFromLayout(lt, groups.get(s.getParameter(0))));
 		}
 		
 		stats.removeIf(s -> s.getType().equals(StatementType.layout));
