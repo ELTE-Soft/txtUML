@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Layout Visualizer
+Bundle-SymbolicName: hu.elte.txtuml.layout.visualizer
+Bundle-Version: 1.0.0.qualifier
+Export-Package: hu.elte.txtuml.layout.visualizer.algorithms,
+ hu.elte.txtuml.layout.visualizer.algorithms.bellmanfordhelpers,
+ hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers,
+ hu.elte.txtuml.layout.visualizer.annotations,
+ hu.elte.txtuml.layout.visualizer.debug,
+ hu.elte.txtuml.layout.visualizer.exceptions,
+ hu.elte.txtuml.layout.visualizer.helpers,
+ hu.elte.txtuml.layout.visualizer.model
