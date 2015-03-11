@@ -1,5 +1,6 @@
 package hu.elte.txtuml.api;
 
+import hu.elte.txtuml.api.blocks.ParameterizedCondition;
 import hu.elte.txtuml.layout.lang.elements.LayoutLink;
 
 import java.util.Iterator;
@@ -40,6 +41,7 @@ public class Association implements ModelElement, LayoutLink {
 
 		@Override
 		public abstract String toString();
+
 	}
 
 	public class Many<T extends ModelClass> extends AssociationEnd<T> {

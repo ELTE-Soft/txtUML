@@ -1,7 +1,8 @@
 package hu.elte.txtuml.api;
 
 @ModelAnnotatedElement
-public abstract class ExternalClass extends Action {
+public class ExternalClass extends Action {
+
 	protected ExternalClass() {
 	}
 
@@ -20,4 +21,5 @@ public abstract class ExternalClass extends Action {
 	protected static String convertModelString(ModelString stringToConvert) {
 		return convert(stringToConvert);
 	}
+
 }

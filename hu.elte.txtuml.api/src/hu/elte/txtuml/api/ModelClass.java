@@ -1,16 +1,16 @@
 package hu.elte.txtuml.api;
 
 import hu.elte.txtuml.api.Association.AssociationEnd;
-import hu.elte.txtuml.api.util.collections.AssociationsMap;
-import hu.elte.txtuml.api.util.collections.InitialStatesMap;
-import hu.elte.txtuml.api.util.collections.InnerClassInstancesMap;
+import hu.elte.txtuml.api.backend.collections.AssociationsMap;
+import hu.elte.txtuml.api.backend.collections.InitialStatesMap;
+import hu.elte.txtuml.api.backend.collections.InnerClassInstancesMap;
 import hu.elte.txtuml.layout.lang.elements.LayoutLink;
 import hu.elte.txtuml.layout.lang.elements.LayoutNode;
 // import hu.elte.txtuml.importer.MethodImporter;
 // import hu.elte.txtuml.importer.ModelImporter;
 import hu.elte.txtuml.utils.InstanceCreator;
 
-public abstract class ModelClass extends ModelIdentifiedElementImpl implements
+public class ModelClass extends ModelIdentifiedElementImpl implements
 		ModelElement, ModelIdentifiedElement, LayoutNode {
 
 	/*
@@ -29,7 +29,11 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 	private final InnerClassInstancesMap innerClassInstances = InnerClassInstancesMap
 			.create();
 
-	public abstract class State implements ModelElement, LayoutNode {
+	public class State implements ModelElement, LayoutNode {
+		
+		protected State() {
+		}
+		
 		public void entry() {
 		}
 
@@ -47,7 +51,11 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 
 	}
 
-	public abstract class InitialState extends State {
+	public class InitialState extends State {
+		
+		protected InitialState() {
+		}
+		
 		public final void entry() {
 		}
 
@@ -61,8 +69,11 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 
 	}
 
-	public abstract class CompositeState extends State {
+	public class CompositeState extends State {
 
+		protected CompositeState() {
+		}
+		
 		@Override
 		public String toString() {
 			return "composite " + super.toString();
@@ -70,8 +81,11 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 
 	}
 
-	public abstract class Choice extends State {
+	public class Choice extends State {
 
+		protected Choice() {
+		}
+		
 		public final void entry() {
 		}
 
@@ -85,8 +99,11 @@ public abstract class ModelClass extends ModelIdentifiedElementImpl implements
 
 	}
 
-	public abstract class Transition implements ModelElement, LayoutLink {
+	public class Transition implements ModelElement, LayoutLink {
 
+		protected Transition() {
+		}
+		
 		private Signal signal;
 
 		public void effect() {

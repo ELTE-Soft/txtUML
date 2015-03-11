@@ -1,5 +1,14 @@
 package hu.elte.txtuml.export.uml2.transform;
 
+import hu.elte.txtuml.api.ModelBool;
+import hu.elte.txtuml.api.ModelClass;
+import hu.elte.txtuml.api.ModelIdentifiedElement;
+import hu.elte.txtuml.api.ModelInt;
+import hu.elte.txtuml.api.blocks.BlockBody;
+import hu.elte.txtuml.api.blocks.Condition;
+import hu.elte.txtuml.api.blocks.ParameterizedBlockBody;
+import hu.elte.txtuml.utils.Pair;
+
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
@@ -15,15 +24,6 @@ import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValuePin;
-
-import hu.elte.txtuml.api.BlockBody;
-import hu.elte.txtuml.api.Condition;
-import hu.elte.txtuml.api.ModelBool;
-import hu.elte.txtuml.api.ModelClass;
-import hu.elte.txtuml.api.ModelIdentifiedElement;
-import hu.elte.txtuml.api.ModelInt;
-import hu.elte.txtuml.api.ParameterizedBlockBody;
-import hu.elte.txtuml.utils.Pair;
 
 class ActionImporter extends AbstractInstructionImporter {
 

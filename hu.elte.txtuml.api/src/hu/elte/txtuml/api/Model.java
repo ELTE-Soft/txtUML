@@ -1,4 +1,8 @@
 package hu.elte.txtuml.api;
 
-public abstract class Model extends Action {
+public class Model extends Action {
+
+	protected Model() {
+	}
+
 }

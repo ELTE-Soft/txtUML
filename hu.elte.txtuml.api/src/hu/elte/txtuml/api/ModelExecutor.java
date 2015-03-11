@@ -2,6 +2,8 @@ package hu.elte.txtuml.api;
 
 import java.io.PrintStream;
 
+// TODO check
+
 /*
  * Currently not instantiatable, will have more instances in the future.
  */

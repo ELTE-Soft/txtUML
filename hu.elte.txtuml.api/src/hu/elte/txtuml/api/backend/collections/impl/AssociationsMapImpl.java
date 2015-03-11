@@ -1,7 +1,7 @@
-package hu.elte.txtuml.api.util.collections.impl;
+package hu.elte.txtuml.api.backend.collections.impl;
 
 import hu.elte.txtuml.api.Association.AssociationEnd;
-import hu.elte.txtuml.api.util.collections.AssociationsMap;
+import hu.elte.txtuml.api.backend.collections.AssociationsMap;
 
 import java.util.HashMap;
 
@@ -23,4 +23,5 @@ public class AssociationsMapImpl extends
 		builder.append("}");
 		return builder.toString();
 	}
+	
 }

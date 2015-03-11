@@ -2,6 +2,8 @@ package hu.elte.txtuml.api;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+// TODO check
+
 /*
  * Currently singleton, will have more instances in the future.
  */

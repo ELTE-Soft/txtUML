@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api;
 
+import hu.elte.txtuml.api.blocks.ParameterizedCondition;
+
 import java.util.Iterator;
 
 public interface Collection<T extends ModelClass> extends

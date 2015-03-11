@@ -12,13 +12,4 @@ public class ModelString extends ModelType<String> {
 		super("");
 	}
 
-	@Override
-	public ModelString toMString() {
-		return this;
-	}
-
-	public ModelString concat(ModelString val) {
-		return new ModelString(getValue() + val.getValue());
-	}
-
 }

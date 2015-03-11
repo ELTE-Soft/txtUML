@@ -1,7 +1,7 @@
-package hu.elte.txtuml.api.util.collections;
+package hu.elte.txtuml.api.backend.collections;
 
 import hu.elte.txtuml.api.Association.AssociationEnd;
-import hu.elte.txtuml.api.util.collections.impl.AssociationsMapImpl;
+import hu.elte.txtuml.api.backend.collections.impl.AssociationsMapImpl;
 
 import java.util.Map;
 

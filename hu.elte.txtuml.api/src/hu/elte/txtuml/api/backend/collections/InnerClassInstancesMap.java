@@ -1,6 +1,6 @@
-package hu.elte.txtuml.api.util.collections;
+package hu.elte.txtuml.api.backend.collections;
 
-import hu.elte.txtuml.api.util.collections.impl.InnerClassInstancesMapImpl;
+import hu.elte.txtuml.api.backend.collections.impl.InnerClassInstancesMapImpl;
 
 import java.util.Map;
 
