@@ -42,15 +42,15 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	}
 	
 	//do nothing when setCurrentStateToInitial is called on a ModelClass
-		void around(ModelClass target): call(void setCurrentStateToInitial()) && target(target) && importing()
-		{
-			
-		}
+	void around(ModelClass target): call(void setCurrentStateToInitial()) && target(target) 
+	{
 		
-		Signal around(Transition target):call(Signal getSignal()) && target(target) &&  importing()
-		{
-			return InstructionImporter.initAndGetSignalInstanceOfTransition(target);
-		}
+	}
+		
+	Signal around(Transition target):call(Signal getSignal()) && target(target) &&  importing()
+	{
+		return InstructionImporter.initAndGetSignalInstanceOfTransition(target);
+	}
 		
 	Object around(ModelClass target): target(target) && call(* *(..))  && isActive() {
 		try
@@ -90,4 +90,16 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 		}
 		return null;
 	}
+	
+	Object around(ExternalClass target) : target(target) && get(* *) && isActive() {
+		Signature signature=thisJoinPoint.getSignature();
+		try {
+			return InstructionImporter.importExternalClassFieldGet(target,signature.getName(),signature.getDeclaringType().getDeclaredField(signature.getName()).getType());
+		} catch (NoSuchFieldException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
+		return null;
+	}
+	
 }

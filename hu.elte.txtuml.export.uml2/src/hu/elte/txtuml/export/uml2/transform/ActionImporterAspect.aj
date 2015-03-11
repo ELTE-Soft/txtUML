@@ -63,7 +63,6 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 
 	void around(): call(void Action.send(ModelClass, Signal)) && isActive()
 	{
-	
 		ModelClass receiverObj=(ModelClass)(thisJoinPoint.getArgs()[0]);
 		Signal event=(Signal)(thisJoinPoint.getArgs()[1]);
 		

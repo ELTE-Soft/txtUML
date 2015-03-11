@@ -59,7 +59,7 @@ public class GarageModel extends Model {
 		@From(Enabled.class) @To(Enabled.class) @Trigger(RemoteControlButtonPressed.class)
 		class TAcceptRemoteControl extends Transition {
 			@Override public void effect() {
-				Motor m = Door.this.assoc(MotorMovesDoor.movingMotor.class).selectOne();
+				Motor m = Door.this.assoc(MotorMovesDoor.movingMotor.class).selectOne();	
 				Action.send(m, new ChangeMotorMode());
 			}
 		}
