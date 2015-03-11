@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface To {
 	
-	Class<? extends ModelClass.State> value();
+	Class<? extends StateMachine.State> value();
 	
 }

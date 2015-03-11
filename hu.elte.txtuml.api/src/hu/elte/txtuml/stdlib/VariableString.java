@@ -1,6 +1,6 @@
 package hu.elte.txtuml.stdlib;
 
-import hu.elte.txtuml.api.ModelString;
+import hu.elte.txtuml.api.primitives.ModelString;
 
 public class VariableString extends VariableType<String, ModelString> {
 

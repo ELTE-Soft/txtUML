@@ -1,4 +1,6 @@
-package hu.elte.txtuml.api;
+package hu.elte.txtuml.api.primitives;
+
+import hu.elte.txtuml.api.ModelType;
 
 public class ModelString extends ModelType<String> {
 

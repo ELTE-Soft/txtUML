@@ -17,9 +17,9 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
 import hu.elte.txtuml.api.From;
-import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelType;
 import hu.elte.txtuml.api.To;
+import hu.elte.txtuml.api.primitives.ModelBool;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.export.uml2.utils.ImportException;
 import hu.elte.txtuml.export.uml2.utils.ModelTypeInformation;

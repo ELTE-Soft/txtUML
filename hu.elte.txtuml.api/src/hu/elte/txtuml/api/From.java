@@ -8,5 +8,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface From {
-	Class<? extends ModelClass.State> value();
+	Class<? extends StateMachine.State> value();
 }

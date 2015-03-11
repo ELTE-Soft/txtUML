@@ -14,10 +14,10 @@ import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
 import hu.elte.txtuml.api.ExternalClass;
-import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelClass;
-import hu.elte.txtuml.api.ModelInt;
-import hu.elte.txtuml.api.ModelString;
+import hu.elte.txtuml.api.primitives.ModelBool;
+import hu.elte.txtuml.api.primitives.ModelInt;
+import hu.elte.txtuml.api.primitives.ModelString;
 import hu.elte.txtuml.export.uml2.transform.AssociationImporter;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;

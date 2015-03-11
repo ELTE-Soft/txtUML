@@ -1,5 +1,9 @@
 package hu.elte.txtuml.api;
 
+import hu.elte.txtuml.api.primitives.ModelBool;
+import hu.elte.txtuml.api.primitives.ModelInt;
+import hu.elte.txtuml.api.primitives.ModelString;
+
 @ModelAnnotatedElement
 public class ExternalClass extends Action {
 

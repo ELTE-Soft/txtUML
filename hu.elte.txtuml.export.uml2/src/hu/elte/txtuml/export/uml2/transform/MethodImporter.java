@@ -19,9 +19,9 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.Variable;
 
-import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelIdentifiedElement;
+import hu.elte.txtuml.api.primitives.ModelBool;
 import hu.elte.txtuml.api.Trigger;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
@@ -79,12 +79,12 @@ public class MethodImporter extends AbstractMethodImporter {
 
 		Object classInstance=createLocalInstance(declaringClass);			
 		assignSelf(classInstance);
-		setCurrentSignal((hu.elte.txtuml.api.ModelClass.Transition)classInstance);	
+		setCurrentSignal((hu.elte.txtuml.api.StateMachine.Transition)classInstance);	
 		
 		return classInstance;
 	}
 	
-	private static void setCurrentSignal(hu.elte.txtuml.api.ModelClass.Transition transitionInstance)
+	private static void setCurrentSignal(hu.elte.txtuml.api.StateMachine.Transition transitionInstance)
 	{
 		currentSignal=InstructionImporter.initAndGetSignalInstanceOfTransition(transitionInstance);	
 	}

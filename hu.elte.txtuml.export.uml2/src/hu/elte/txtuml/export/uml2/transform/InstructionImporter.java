@@ -1,6 +1,18 @@
 package hu.elte.txtuml.export.uml2.transform;
 
 
+import hu.elte.txtuml.api.Collection;
+import hu.elte.txtuml.api.ExternalClass;
+import hu.elte.txtuml.api.ModelClass;
+import hu.elte.txtuml.api.ModelType;
+import hu.elte.txtuml.api.Signal;
+import hu.elte.txtuml.api.StateMachine.Transition;
+import hu.elte.txtuml.api.primitives.ModelBool;
+import hu.elte.txtuml.api.ModelIdentifiedElement;
+import hu.elte.txtuml.export.uml2.utils.ElementFinder;
+import hu.elte.txtuml.export.uml2.utils.ImportException;
+import hu.elte.txtuml.export.uml2.utils.ModelTypeInformation;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 
@@ -19,18 +31,6 @@ import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValuePin;
 import org.eclipse.uml2.uml.Variable;
-
-import hu.elte.txtuml.api.Collection;
-import hu.elte.txtuml.api.ExternalClass;
-import hu.elte.txtuml.api.ModelBool;
-import hu.elte.txtuml.api.ModelClass;
-import hu.elte.txtuml.api.ModelClass.Transition;
-import hu.elte.txtuml.api.ModelIdentifiedElement;
-import hu.elte.txtuml.api.ModelType;
-import hu.elte.txtuml.api.Signal;
-import hu.elte.txtuml.export.uml2.utils.ElementFinder;
-import hu.elte.txtuml.export.uml2.utils.ImportException;
-import hu.elte.txtuml.export.uml2.utils.ModelTypeInformation;
 
 class InstructionImporter extends AbstractInstructionImporter {
 

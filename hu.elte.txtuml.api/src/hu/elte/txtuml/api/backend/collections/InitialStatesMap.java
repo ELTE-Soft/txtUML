@@ -1,6 +1,6 @@
 package hu.elte.txtuml.api.backend.collections;
 
-import hu.elte.txtuml.api.ModelClass.InitialState;
+import hu.elte.txtuml.api.StateMachine.InitialState;
 import hu.elte.txtuml.api.backend.collections.impl.InitialStatesMapImpl;
 
 import java.util.Map;

@@ -2,8 +2,8 @@ package hu.elte.txtuml.export.uml2.transform;
 
 import org.aspectj.lang.annotation.SuppressAjWarnings;
 
-import hu.elte.txtuml.api.ModelBool;
-import hu.elte.txtuml.api.ModelInt;
+import hu.elte.txtuml.api.primitives.ModelBool;
+import hu.elte.txtuml.api.primitives.ModelInt;
 
 public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspect {
 
@@ -64,7 +64,7 @@ public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspec
 		return ModelTypeOpImporter.importModelBoolXorOp(target, (ModelBool)(thisJoinPoint.getArgs()[0]));
 	}
 	@SuppressAjWarnings
-	ModelBool around(ModelBool target): target(target) && isActive() && call(ModelBool ModelBool.eq(ModelBool))
+	ModelBool around(ModelBool target): target(target) && isActive() && call(ModelBool ModelBool.equ(ModelBool))
 	{
 		return ModelTypeOpImporter.importModelBoolEqualOp(target, (ModelBool)(thisJoinPoint.getArgs()[0]));
 	}

@@ -1,6 +1,6 @@
 package hu.elte.txtuml.stdlib;
 
-import hu.elte.txtuml.api.ModelInt;
+import hu.elte.txtuml.api.primitives.ModelInt;
 
 public class VariableInt extends VariableType<Integer, ModelInt> {
 

@@ -1,6 +1,8 @@
 package hu.elte.txtuml.api;
 
 import hu.elte.txtuml.api.blocks.ParameterizedCondition;
+import hu.elte.txtuml.api.primitives.ModelBool;
+import hu.elte.txtuml.api.primitives.ModelInt;
 import hu.elte.txtuml.layout.lang.elements.LayoutLink;
 
 import java.util.Iterator;
