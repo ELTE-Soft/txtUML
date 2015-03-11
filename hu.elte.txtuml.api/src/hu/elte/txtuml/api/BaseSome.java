@@ -1,10 +1,10 @@
 package hu.elte.txtuml.api;
 
-class DefaultSome<T extends ModelClass> extends DefaultMany<T> {
-	
+class BaseSome<T extends ModelClass> extends BaseMany<T> {
+
 	@Override
 	boolean checkLowerBound() {
 		return getSize() > 0;
 	}
-	
+
 }

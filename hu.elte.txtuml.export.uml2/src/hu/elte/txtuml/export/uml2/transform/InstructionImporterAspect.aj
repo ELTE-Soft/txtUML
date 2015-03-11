@@ -2,12 +2,12 @@ package hu.elte.txtuml.export.uml2.transform;
 
 import hu.elte.txtuml.api.AssociationEnd;
 import hu.elte.txtuml.api.ExternalClass;
+import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelClass;
+import hu.elte.txtuml.api.ModelInt;
+import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.api.Signal;
 import hu.elte.txtuml.api.StateMachine.Transition;
-import hu.elte.txtuml.api.primitives.ModelBool;
-import hu.elte.txtuml.api.primitives.ModelInt;
-import hu.elte.txtuml.api.primitives.ModelString;
 import hu.elte.txtuml.export.uml2.utils.ImportException;
 
 import org.aspectj.lang.Signature;

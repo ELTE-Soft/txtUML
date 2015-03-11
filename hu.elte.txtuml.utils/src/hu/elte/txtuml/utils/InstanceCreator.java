@@ -1,6 +1,6 @@
 package hu.elte.txtuml.utils;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.Set;
 

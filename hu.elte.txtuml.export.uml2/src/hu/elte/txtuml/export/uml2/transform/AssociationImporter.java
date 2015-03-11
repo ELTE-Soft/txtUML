@@ -1,5 +1,8 @@
 package hu.elte.txtuml.export.uml2.transform;
 
+import hu.elte.txtuml.export.uml2.utils.AssociationEnd;
+import hu.elte.txtuml.export.uml2.utils.ImportException;
+
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -9,9 +12,6 @@ import org.eclipse.uml2.uml.AggregationKind;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Type;
-
-import hu.elte.txtuml.export.uml2.utils.AssociationEnd;
-import hu.elte.txtuml.export.uml2.utils.ImportException;
 
 class AssociationImporter extends AbstractImporter{
 	
@@ -61,21 +61,21 @@ class AssociationImporter extends AbstractImporter{
 	    int lowerBound; 
 		int upperBound; 
 	    
-	    if(hu.elte.txtuml.api.Association.One.class.isAssignableFrom(sourceClass))
+	    if(hu.elte.txtuml.api.semantics.Multiplicity.One.class.isAssignableFrom(sourceClass))
 		{
 			lowerBound=upperBound=1;
 		}
-		else if(hu.elte.txtuml.api.Association.MaybeOne.class.isAssignableFrom(sourceClass))
+		else if(hu.elte.txtuml.api.semantics.Multiplicity.ZeroToOne.class.isAssignableFrom(sourceClass))
 		{
 			lowerBound=0;
 			upperBound=1;
 		}
-		else if(hu.elte.txtuml.api.Association.Some.class.isAssignableFrom(sourceClass))
+		else if(hu.elte.txtuml.api.semantics.Multiplicity.ZeroToUnlimited.class.isAssignableFrom(sourceClass))
 		{
 			lowerBound=0;
 			upperBound= org.eclipse.uml2.uml.LiteralUnlimitedNatural.UNLIMITED;
 		}
-		else if(hu.elte.txtuml.api.Association.Many.class.isAssignableFrom(sourceClass))
+		else if(hu.elte.txtuml.api.semantics.Multiplicity.OneToUnlimited.class.isAssignableFrom(sourceClass))
 		{
 			lowerBound=1;
 			upperBound= org.eclipse.uml2.uml.LiteralUnlimitedNatural.UNLIMITED;
@@ -85,6 +85,21 @@ class AssociationImporter extends AbstractImporter{
 			throw new ImportException("Invalid multiplicity.");            
 		}
 	    
+	    boolean navigable;
+	    
+	    if(hu.elte.txtuml.api.semantics.Navigability.Navigable.class.isAssignableFrom(sourceClass))
+	    {
+	    	navigable = true;
+	    }
+	    else if(hu.elte.txtuml.api.semantics.Navigability.NonNavigable.class.isAssignableFrom(sourceClass))
+	    {
+	    	navigable = false;
+	    }
+	    else
+	    {
+	    	throw new ImportException("Invalid navigability");
+	    }
+	    
 	    org.eclipse.uml2.uml.Type participant = (Type) currentModel.getMember(className);
 	    
 	    if(participant == null)
@@ -92,7 +107,7 @@ class AssociationImporter extends AbstractImporter{
 	        throw new ImportException(phrase + ": No class " + className + " found in this model.");
 	    }
 	   
-	    return new AssociationEnd(participant,phrase,false,AggregationKind.NONE_LITERAL,lowerBound,upperBound);
+	    return new AssociationEnd(participant,phrase,navigable,AggregationKind.NONE_LITERAL,lowerBound,upperBound);
 	}
 
 	private Class<?> sourceClass;

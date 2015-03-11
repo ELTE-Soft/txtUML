@@ -1,5 +1,4 @@
-package hu.elte.txtuml.api.primitives;
-
+package hu.elte.txtuml.api;
 
 public class VariableString extends VariableType<String, ModelString> {
 

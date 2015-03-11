@@ -1,7 +1,6 @@
 package hu.elte.txtuml.api;
 
 import hu.elte.txtuml.api.backend.collections.InitialStatesMap;
-import hu.elte.txtuml.api.primitives.ModelBool;
 
 public abstract class Region extends StateMachine {
 

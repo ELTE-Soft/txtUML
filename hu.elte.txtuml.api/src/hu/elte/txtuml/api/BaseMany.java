@@ -2,44 +2,42 @@ package hu.elte.txtuml.api;
 
 import hu.elte.txtuml.api.backend.collections.JavaCollectionOfMany;
 import hu.elte.txtuml.api.blocks.ParameterizedCondition;
-import hu.elte.txtuml.api.primitives.ModelBool;
-import hu.elte.txtuml.api.primitives.ModelInt;
 
 import java.util.Iterator;
 
-class DefaultMany<T extends ModelClass> extends AssociationEnd<T> {
+class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 
 	private JavaCollectionOfMany<T> coll = JavaCollectionOfMany.create();
 
-	public DefaultMany() {
+	public BaseMany() {
 		isFinal = false;
 	}
 
 	@Override
 	final AssociationEnd<T> init(Collection<T> other) {
-		if (!isFinal && other != null && other instanceof DefaultMany) {
-			this.coll = ((DefaultMany<T>) other).coll;
+		if (!isFinal && other != null && other instanceof BaseMany) {
+			this.coll = ((BaseMany<T>) other).coll;
 		}
 		isFinal = true;
 		return this;
 	}
 
-	DefaultMany(T object1, T object2) {
+	BaseMany(T object1, T object2) {
 		coll.add(object1);
 		coll.add(object2);
 	}
 
-	DefaultMany(CollectionBuilder<T> builder) {
+	BaseMany(CollectionBuilder<T> builder) {
 		this.coll = builder.getJavaCollection();
 	}
 
-	DefaultMany(Collection<T> collection) {
+	BaseMany(Collection<T> collection) {
 		for (T obj : collection) {
 			collection.add(obj);
 		}
 	}
 
-	DefaultMany(Collection<T> collection, CollectionBuilder<T> builder) {
+	BaseMany(Collection<T> collection, CollectionBuilder<T> builder) {
 		this.coll = builder.getJavaCollection();
 
 		for (T obj : collection) {
@@ -47,7 +45,7 @@ class DefaultMany<T extends ModelClass> extends AssociationEnd<T> {
 		}
 	}
 
-	DefaultMany(Collection<T> collection, T object) {
+	BaseMany(Collection<T> collection, T object) {
 		this(collection);
 		coll.add(object);
 	}
@@ -90,18 +88,17 @@ class DefaultMany<T extends ModelClass> extends AssociationEnd<T> {
 				builder.append(obj);
 			}
 		}
-		return new DefaultMany<T>(builder);
+		return new BaseMany<T>(builder);
 	}
 
 	@Override
 	public final Collection<T> add(T object) {
-		return new DefaultMany<T>(this, object);
+		return new BaseMany<T>(this, object);
 	}
 
 	@Override
 	public final Collection<T> addAll(Collection<T> objects) {
-		return new DefaultMany<T>(this,
-				new CollectionBuilder<T>().append(objects));
+		return new BaseMany<T>(this, new CollectionBuilder<T>().append(objects));
 	}
 
 	@Override
@@ -113,7 +110,7 @@ class DefaultMany<T extends ModelClass> extends AssociationEnd<T> {
 					builder.append(obj);
 				}
 			}
-			return new DefaultMany<T>(builder);
+			return new BaseMany<T>(builder);
 		} else {
 			return this;
 		}

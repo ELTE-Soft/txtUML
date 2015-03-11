@@ -1,6 +1,5 @@
 package hu.elte.txtuml.api;
 
-import hu.elte.txtuml.api.primitives.ModelBool;
 import hu.elte.txtuml.layout.lang.elements.LayoutLink;
 import hu.elte.txtuml.layout.lang.elements.LayoutNode;
 

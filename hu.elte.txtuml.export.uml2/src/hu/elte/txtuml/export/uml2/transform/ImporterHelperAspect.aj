@@ -2,11 +2,12 @@ package hu.elte.txtuml.export.uml2.transform;
 
 
 
+import hu.elte.txtuml.api.ModelElement;
+
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 
 import org.aspectj.lang.annotation.SuppressAjWarnings;
-import hu.elte.txtuml.api.ModelElement;
 
 public privileged aspect ImporterHelperAspect extends AbstractImporterAspect {
 	

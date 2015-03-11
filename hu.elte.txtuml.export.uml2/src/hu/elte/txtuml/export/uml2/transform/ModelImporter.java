@@ -2,33 +2,48 @@ package hu.elte.txtuml.export.uml2.transform;
 
 
 
-import org.eclipse.emf.common.util.BasicEList;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.uml2.uml.*;
-import org.eclipse.uml2.uml.Type;
-import org.eclipse.uml2.uml.resource.UMLResource;
-import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
-
 import hu.elte.txtuml.api.ExternalClass;
+import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelClass;
-import hu.elte.txtuml.api.primitives.ModelBool;
-import hu.elte.txtuml.api.primitives.ModelInt;
-import hu.elte.txtuml.api.primitives.ModelString;
-import hu.elte.txtuml.export.uml2.transform.AssociationImporter;
+import hu.elte.txtuml.api.ModelInt;
+import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.export.uml2.utils.ImportException;
 import hu.elte.txtuml.export.uml2.utils.ModelTypeInformation;
 
 import java.io.IOException;
-import java.lang.Class;
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.WeakHashMap;
+
+import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.Classifier;
+import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.NamedElement;
+import org.eclipse.uml2.uml.Operation;
+import org.eclipse.uml2.uml.PrimitiveType;
+import org.eclipse.uml2.uml.Profile;
+import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.Region;
+import org.eclipse.uml2.uml.Signal;
+import org.eclipse.uml2.uml.SignalEvent;
+import org.eclipse.uml2.uml.StateMachine;
+import org.eclipse.uml2.uml.Stereotype;
+import org.eclipse.uml2.uml.Type;
+import org.eclipse.uml2.uml.UMLFactory;
+import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.VisibilityKind;
+import org.eclipse.uml2.uml.resource.UMLResource;
+import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
 
 public class ModelImporter extends AbstractImporter{

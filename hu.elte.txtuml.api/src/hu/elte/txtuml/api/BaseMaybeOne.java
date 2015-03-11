@@ -2,29 +2,27 @@ package hu.elte.txtuml.api;
 
 import hu.elte.txtuml.api.backend.problems.MultiplicityException;
 import hu.elte.txtuml.api.blocks.ParameterizedCondition;
-import hu.elte.txtuml.api.primitives.ModelBool;
-import hu.elte.txtuml.api.primitives.ModelInt;
 
 import java.util.Iterator;
 
-class DefaultMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
-	
+class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
+
 	private T obj = null;
 
-	public DefaultMaybeOne() {
+	public BaseMaybeOne() {
 		isFinal = false;
 	}
 
 	@Override
 	final AssociationEnd<T> init(Collection<T> other) {
-		if (!isFinal && other != null && other instanceof DefaultMaybeOne) {
-			this.obj = ((DefaultMaybeOne<T>) other).obj;
+		if (!isFinal && other != null && other instanceof BaseMaybeOne) {
+			this.obj = ((BaseMaybeOne<T>) other).obj;
 		}
 		isFinal = true;
 		return this;
 	}
 
-	DefaultMaybeOne(T object) {
+	BaseMaybeOne(T object) {
 		this.obj = object;
 	}
 
@@ -74,20 +72,20 @@ class DefaultMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 
 	@Override
 	public final Collection<T> selectAll(ParameterizedCondition<T> cond) {
-		return new DefaultMaybeOne<T>(selectOne(cond));
+		return new BaseMaybeOne<T>(selectOne(cond));
 	}
 
 	@Override
 	public final Collection<T> add(T object) {
 		if (obj == null) {
-			return new DefaultMaybeOne<T>(object);
+			return new BaseMaybeOne<T>(object);
 		}
-		return new DefaultMany<T>(obj, object);
+		return new BaseMany<T>(obj, object);
 	}
 
 	@Override
 	public final Collection<T> addAll(Collection<T> objects) {
-		return new DefaultMany<T>(objects, this.obj);
+		return new BaseMany<T>(objects, this.obj);
 	}
 
 	@Override
@@ -100,13 +98,14 @@ class DefaultMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	final <S extends Collection<T>> S typeKeepingAdd(T object) throws MultiplicityException {
+	final <S extends Collection<T>> S typeKeepingAdd(T object)
+			throws MultiplicityException {
 		if (object == null) {
 			return (S) this;
 		} else if (this.obj != null && !this.obj.equals(object)) {
 			throw new MultiplicityException(); // TODO set message
 		}
-		return (S) new DefaultMaybeOne<T>(object);
+		return (S) new BaseMaybeOne<T>(object);
 	}
 
 	@Override
@@ -115,7 +114,7 @@ class DefaultMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 		if (object == null || !object.equals(this.obj)) {
 			return (S) this;
 		}
-		return (S) new DefaultMaybeOne<T>();
+		return (S) new BaseMaybeOne<T>();
 	}
 
 	@Override

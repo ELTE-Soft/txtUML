@@ -1,18 +1,17 @@
 package hu.elte.txtuml.export.uml2.transform;
 
-import java.lang.reflect.*;
-import java.util.WeakHashMap;
+import hu.elte.txtuml.api.ModelType;
+import hu.elte.txtuml.export.uml2.utils.ElementFinder;
+import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
+import hu.elte.txtuml.export.uml2.utils.ModelTypeInformation;
 
+import java.lang.reflect.Field;
+import java.util.WeakHashMap;
 
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.PseudostateKind;
 import org.eclipse.uml2.uml.Region;
-
-import hu.elte.txtuml.api.*;
-import hu.elte.txtuml.export.uml2.utils.ElementFinder;
-import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
-import hu.elte.txtuml.export.uml2.utils.ModelTypeInformation;
 
 abstract class AbstractImporter {
 	

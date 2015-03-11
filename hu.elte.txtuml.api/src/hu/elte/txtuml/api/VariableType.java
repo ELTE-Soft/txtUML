@@ -1,6 +1,4 @@
-package hu.elte.txtuml.api.primitives;
-
-import hu.elte.txtuml.api.ModelType;
+package hu.elte.txtuml.api;
 
 public abstract class VariableType<T, MT extends ModelType<T>> {
 

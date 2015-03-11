@@ -43,8 +43,16 @@ public class ModelClass extends Region implements ModelElement,
 		}
 	}
 
-	public <T extends ModelClass, AE extends AssociationEnd<T>> AE assoc(
+	public <T extends ModelClass, AE extends AssociationEnd<T> & hu.elte.txtuml.api.semantics.Navigability.Navigable> AE assoc(
 			Class<AE> otherEnd) {
+
+		return assocPrivate(otherEnd);
+
+	}
+
+	private <T extends ModelClass, AE extends AssociationEnd<T>> AE assocPrivate(
+			Class<AE> otherEnd) {
+
 		@SuppressWarnings("unchecked")
 		AE ret = (AE) associations.get(otherEnd);
 		if (ret == null) {
@@ -53,36 +61,34 @@ public class ModelClass extends Region implements ModelElement,
 		}
 		ret.setOwnerId(this.getIdentifier());
 		return ret;
+
 	}
 
 	@SuppressWarnings("unchecked")
 	<T extends ModelClass, AE extends AssociationEnd<T>> void addToAssoc(
 			Class<AE> otherEnd, T object) {
-		
+
 		try {
-			associations.put(
-					otherEnd,
-					(AE) InstanceCreator.createInstanceWithGivenParams(otherEnd,
-							(Object) null).init(
-							assoc(otherEnd).typeKeepingAdd(object)));
+			associations.put(otherEnd, (AE) InstanceCreator
+					.createInstanceWithGivenParams(otherEnd, (Object) null)
+					.init(assocPrivate(otherEnd).typeKeepingAdd(object)));
 		} catch (MultiplicityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	@SuppressWarnings("unchecked")
 	<T extends ModelClass, AE extends AssociationEnd<T>> void removeFromAssoc(
 			Class<AE> otherEnd, T object) {
-		
+
 		associations.put(
 				otherEnd,
 				(AE) InstanceCreator.createInstanceWithGivenParams(otherEnd,
 						(Object) null).init(
-						assoc(otherEnd).typeKeepingRemove(object)));
-		
-		
+						assocPrivate(otherEnd).typeKeepingRemove(object)));
+
 	}
 
 	void start() {

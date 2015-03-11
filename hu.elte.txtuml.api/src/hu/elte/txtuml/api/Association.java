@@ -3,54 +3,49 @@ package hu.elte.txtuml.api;
 import hu.elte.txtuml.layout.lang.elements.LayoutLink;
 
 public class Association implements ModelElement, LayoutLink {
+
 	protected Association() {
 	}
 
-	public interface VisibleEnd<T extends ModelClass> extends ModelElement,
-			Collection<T> {
+	public class Many<T extends ModelClass> extends BaseMany<T> implements
+			hu.elte.txtuml.api.semantics.Navigability.Navigable,
+			hu.elte.txtuml.api.semantics.Multiplicity.ZeroToUnlimited {
 	}
 
-	public interface HiddenEnd<T extends ModelClass> extends ModelElement,
-			Collection<T> {
+	public class Some<T extends ModelClass> extends BaseSome<T> implements
+			hu.elte.txtuml.api.semantics.Navigability.Navigable,
+			hu.elte.txtuml.api.semantics.Multiplicity.OneToUnlimited {
 	}
 
-	public class Many<T extends ModelClass> extends DefaultMany<T> implements
-			VisibleEnd<T> {
+	public class MaybeOne<T extends ModelClass> extends BaseMaybeOne<T>
+			implements hu.elte.txtuml.api.semantics.Navigability.Navigable,
+			hu.elte.txtuml.api.semantics.Multiplicity.ZeroToOne {
 	}
 
-	public class Some<T extends ModelClass> extends DefaultSome<T> implements
-			VisibleEnd<T> {
+	public class One<T extends ModelClass> extends BaseOne<T> implements
+			hu.elte.txtuml.api.semantics.Navigability.Navigable,
+			hu.elte.txtuml.api.semantics.Multiplicity.One {
 	}
 
-	public class MaybeOne<T extends ModelClass> extends DefaultMaybeOne<T>
-			implements VisibleEnd<T> {
+	public class HiddenMany<T extends ModelClass> extends BaseMany<T> implements
+			hu.elte.txtuml.api.semantics.Navigability.NonNavigable,
+			hu.elte.txtuml.api.semantics.Multiplicity.ZeroToUnlimited {
 	}
 
-	public class One<T extends ModelClass> extends DefaultOne<T> implements
-			VisibleEnd<T> {
+	public class HiddenSome<T extends ModelClass> extends BaseSome<T> implements
+			hu.elte.txtuml.api.semantics.Navigability.NonNavigable,
+			hu.elte.txtuml.api.semantics.Multiplicity.OneToUnlimited {
 	}
 
-	public abstract class Hidden {
+	public class HiddenMaybeOne<T extends ModelClass> extends BaseMaybeOne<T>
+			implements
+			hu.elte.txtuml.api.semantics.Navigability.NonNavigable,
+			hu.elte.txtuml.api.semantics.Multiplicity.ZeroToOne {
+	}
 
-		private Hidden() {
-		}
-
-		public class Many<T extends ModelClass> extends DefaultMany<T>
-				implements HiddenEnd<T> {
-		}
-
-		public class Some<T extends ModelClass> extends DefaultSome<T>
-				implements HiddenEnd<T> {
-		}
-
-		public class MaybeOne<T extends ModelClass> extends DefaultMaybeOne<T>
-				implements HiddenEnd<T> {
-		}
-
-		public class One<T extends ModelClass> extends DefaultOne<T> implements
-				HiddenEnd<T> {
-		}
-
+	public class HiddenOne<T extends ModelClass> extends BaseOne<T> implements
+			hu.elte.txtuml.api.semantics.Navigability.NonNavigable,
+			hu.elte.txtuml.api.semantics.Multiplicity.One {
 	}
 
 }

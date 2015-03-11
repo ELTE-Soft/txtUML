@@ -3,12 +3,12 @@ package hu.elte.txtuml.export.uml2.transform;
 
 import hu.elte.txtuml.api.Collection;
 import hu.elte.txtuml.api.ExternalClass;
+import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelClass;
+import hu.elte.txtuml.api.ModelIdentifiedElement;
 import hu.elte.txtuml.api.ModelType;
 import hu.elte.txtuml.api.Signal;
 import hu.elte.txtuml.api.StateMachine.Transition;
-import hu.elte.txtuml.api.primitives.ModelBool;
-import hu.elte.txtuml.api.ModelIdentifiedElement;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 import hu.elte.txtuml.export.uml2.utils.ImportException;
 import hu.elte.txtuml.export.uml2.utils.ModelTypeInformation;

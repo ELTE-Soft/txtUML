@@ -1,9 +1,9 @@
 package hu.elte.txtuml.export.uml2.transform;
 
-import org.aspectj.lang.annotation.SuppressAjWarnings;
+import hu.elte.txtuml.api.ModelBool;
+import hu.elte.txtuml.api.ModelInt;
 
-import hu.elte.txtuml.api.primitives.ModelBool;
-import hu.elte.txtuml.api.primitives.ModelInt;
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 
 public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspect {
 

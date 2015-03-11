@@ -1,8 +1,6 @@
 package hu.elte.txtuml.api;
 
 import hu.elte.txtuml.api.blocks.ParameterizedCondition;
-import hu.elte.txtuml.api.primitives.ModelBool;
-import hu.elte.txtuml.api.primitives.ModelInt;
 
 import java.util.Iterator;
 
@@ -84,12 +82,12 @@ public interface Collection<T extends ModelClass> extends
 
 		@Override
 		public Collection<T> add(T object) {
-			return new DefaultMaybeOne<T>(object);
+			return new BaseMaybeOne<T>(object);
 		}
 
 		@Override
 		public Collection<T> addAll(Collection<T> objects) {
-			return new DefaultMany<T>(objects);
+			return new BaseMany<T>(objects);
 		}
 
 		@Override

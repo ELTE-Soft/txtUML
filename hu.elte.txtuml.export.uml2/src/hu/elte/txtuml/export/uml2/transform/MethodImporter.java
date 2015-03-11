@@ -1,5 +1,13 @@
 package hu.elte.txtuml.export.uml2.transform;
 
+import hu.elte.txtuml.api.ModelBool;
+import hu.elte.txtuml.api.ModelClass;
+import hu.elte.txtuml.api.ModelIdentifiedElement;
+import hu.elte.txtuml.api.Trigger;
+import hu.elte.txtuml.export.uml2.utils.ElementFinder;
+import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
+import hu.elte.txtuml.utils.InstanceCreator;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Stack;
@@ -13,19 +21,11 @@ import org.eclipse.uml2.uml.InputPin;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.Parameter;
+import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.ReadVariableAction;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
-import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.Variable;
-
-import hu.elte.txtuml.api.ModelClass;
-import hu.elte.txtuml.api.ModelIdentifiedElement;
-import hu.elte.txtuml.api.primitives.ModelBool;
-import hu.elte.txtuml.api.Trigger;
-import hu.elte.txtuml.export.uml2.utils.ElementFinder;
-import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
-import hu.elte.txtuml.utils.InstanceCreator;
 
 public class MethodImporter extends AbstractMethodImporter {
 

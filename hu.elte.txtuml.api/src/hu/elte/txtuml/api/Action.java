@@ -3,7 +3,6 @@ package hu.elte.txtuml.api;
 import hu.elte.txtuml.api.blocks.BlockBody;
 import hu.elte.txtuml.api.blocks.Condition;
 import hu.elte.txtuml.api.blocks.ParameterizedBlockBody;
-import hu.elte.txtuml.api.primitives.ModelInt;
 import hu.elte.txtuml.utils.InstanceCreator;
 
 public abstract class Action implements ModelElement {
@@ -13,6 +12,10 @@ public abstract class Action implements ModelElement {
 
 	public static <T extends ModelClass> T create(Class<T> classType) {
 		return InstanceCreator.createInstance(classType);
+	}
+
+	public static void delete(ModelClass obj) {
+		// TODO implement
 	}
 
 	public static <MODELCLASS1 extends ModelClass, MODELCLASS2 extends ModelClass> void link(

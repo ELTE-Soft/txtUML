@@ -1,7 +1,6 @@
 package hu.elte.txtuml.examples.garage.control.model;
 
 import hu.elte.txtuml.api.*;
-import hu.elte.txtuml.api.primitives.ModelInt;
 import hu.elte.txtuml.examples.garage.interfaces.IControl;
 import hu.elte.txtuml.examples.garage.interfaces.IControlled;
 

@@ -4,8 +4,8 @@ import hu.elte.txtuml.api.Action;
 import hu.elte.txtuml.api.ExternalClass;
 import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelExecutor;
+import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.Signal;
-import hu.elte.txtuml.api.primitives.ModelInt;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
