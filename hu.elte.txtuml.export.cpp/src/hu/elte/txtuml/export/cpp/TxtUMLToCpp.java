@@ -15,7 +15,14 @@ public class TxtUMLToCpp {
 	private static final String HelpAOption="-h";
 	private static final String HelpBOption="-help";
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) 
+	{
+		
+		if(args.length < 2) 
+		{
+			System.out.println("Missing arguments for more information use -h or -help");
+			return;
+		}
 		
 		if(args[0].equals(HelpAOption) || args[0].equals(HelpBOption))
 		{
@@ -23,11 +30,7 @@ public class TxtUMLToCpp {
 			return;
 		}
 		
-		if(args.length < 2) 
-		{
-			System.out.println("Missing arguments for more information use -h or -help");
-			return;
-		}
+
 		
 		String modelClassName = args[0];
 		String outputName = args[1];

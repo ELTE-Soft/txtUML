@@ -40,7 +40,7 @@ public class Uml2ToCpp
 {
 	private static final String DefaultCompiler="g++";
 	private static final String GCCDebugSymbolOn="-D_DEBUG";//the symbol located in GenerationNames
-	private static final String CppFileLocation="src"+File.separator+"txtuml"+File.separator+"export"+File.separator+"uml2tocpp"+File.separator+"cppfiles"+File.separator;
+	private static final String CppFileLocation="src"+File.separator+"hu"+File.separator+"elte"+File.separator+"txtuml"+File.separator+"export"+File.separator+"cpp"+File.separator+"cppsources"+File.separator;
 	private static final String RuntimeFolder=GenerationTemplates.RuntimePath;
 	private static final String RuntimeCppFileLocation=CppFileLocation+RuntimeFolder;
 	private static final String RuntimeLibName="libsmrt.a";
@@ -57,18 +57,17 @@ public class Uml2ToCpp
 	public static void main(String[] args) 
 	{	
 		
-		if(args[0].equals(HelpAOption) || args[0].equals(HelpBOption))
-		{
-			help();
-			return;
-		}
-		
 		if(args.length < 2 ) 
 		{
 			System.out.println("Missing arguments for more information use -h or -help");
 			return;
 		}
-
+		
+		if(args[0].equals(HelpAOption) || args[0].equals(HelpBOption))
+		{
+			help();
+			return;
+		}
 		
 		try
 		{
