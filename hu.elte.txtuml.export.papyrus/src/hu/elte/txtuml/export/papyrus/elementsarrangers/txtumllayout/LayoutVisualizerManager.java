@@ -17,9 +17,12 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.gef.EditPart;
@@ -85,26 +88,34 @@ public class LayoutVisualizerManager {
 		associations = v.getAssocs();
 	}
 	
-	public HashMap<EditPart, Point> getNodesAndCoordinates(){
-		HashMap<EditPart, Point> result = new HashMap<EditPart, Point>();
+	public HashMap<EditPart, Rectangle> getNodesAndCoordinates(){
+		HashMap<EditPart, Rectangle> result = new HashMap<EditPart, Rectangle>();
+		int x,y,width,height;
+		
 		for(RectangleObject object : objects){
-			Point p = new Point(object.getPosition().getX(), object.getPosition().getY());
-			EditPart ep = getEditPartByXmiId(editparts, object.getName());
+			GraphicalEditPart ep = (GraphicalEditPart) getEditPartByXmiId(editparts, object.getName());
+			x = object.getPosition().getX();
+			y = object.getPosition().getY();
+			width = ep.getFigure().getPreferredSize().width();
+			height = ep.getFigure().getPreferredSize().height();
+			Rectangle p = new Rectangle(x, y, width, height);
 			result.put(ep, p);
 		}
 		return result;
 	}
 	
-	public HashMap<ConnectionNodeEditPart, ArrayList<Point> > getConnectionsAndRoutes(){
-		HashMap<ConnectionNodeEditPart, ArrayList<Point> > result = new HashMap<ConnectionNodeEditPart, ArrayList<Point> >();
-		for(LineAssociation connection : associations){
+	public HashMap<ConnectionNodeEditPart, List<Point> > getConnectionsAndRoutes(){
+		HashMap<ConnectionNodeEditPart, List<Point> > result = new HashMap<ConnectionNodeEditPart, List<Point> >();
+		for(LineAssociation connection : associations){	
 			@SuppressWarnings("unchecked")
 			ConnectionNodeEditPart ep = 
-					(ConnectionNodeEditPart) getEditPartByXmiId(
-												(List<EditPart>)(List<?>) connectionNodeEditParts,
-												connection.getId());
-			@SuppressWarnings("unchecked")
-			ArrayList<Point> route = (ArrayList<Point>)(List<?>) connection.getRoute();
+					(ConnectionNodeEditPart) getEditPartByXmiId((List<EditPart>)(List<?>) connectionNodeEditParts,connection.getId());
+			
+			List<Point> route = new LinkedList<Point>();
+			for(hu.elte.txtuml.layout.visualizer.model.Point point: connection.getRoute()){
+				route.add(new Point(point.getX(), point.getY()));
+			}
+			
 			result.put(ep, route);
 		}
 		return result;
@@ -121,5 +132,21 @@ public class LayoutVisualizerManager {
 	private String getXmiId(EditPart editPart){
 		EObject object = ((View) editPart.getModel()).getElement();
 	    return ((XMLResource) object.eResource()).getID(object);
+	}
+	
+	public void simplifyRoutes(Map<ConnectionNodeEditPart, List<Point>> connections){
+		for(List<Point> route : connections.values()){
+			simpliflyRoute(route);
+		}
+	}
+
+	public void simpliflyRoute(List<Point> route) {
+		if(route.size() < 2)
+			return;
+		for(int i = 1; i< route.size()-1; i++){
+			while(i<route.size()-1 && (route.get(i-1).x == route.get(i+1).x || route.get(i-1).y == route.get(i+1).y)){
+				route.remove(i);
+			}
+		}
 	}
 }

@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.gef.EditPart;
@@ -31,51 +32,47 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 					
 			LayoutVisualizerManager vismanager = new LayoutVisualizerManager(elements, statementsList);
 			vismanager.arrange();
-			Map<EditPart, Point> nodeMap = vismanager.getNodesAndCoordinates();
+			Map<EditPart, Rectangle> nodeMap = vismanager.getNodesAndCoordinates();
+			@SuppressWarnings("unchecked")
+			Map<ConnectionNodeEditPart, List<Point>> connectionMap = (Map<ConnectionNodeEditPart, List<Point>>)(Map<?,?>)
+																				vismanager.getConnectionsAndRoutes();
+			vismanager.simplifyRoutes(connectionMap);
 			
 			LayoutTransformer layoutTransformer = new LayoutTransformer(maxWidth, maxHeight);
 			layoutTransformer.setGapX(gapX);
 			layoutTransformer.setGapY(gapY);
 			layoutTransformer.setOrigo(OrigoConstraint.UpperLeft);
 			layoutTransformer.flipYAxis();
-			layoutTransformer.doTranformations(nodeMap);
+			layoutTransformer.doTranformations(nodeMap, connectionMap);
 			
-			for(Entry<EditPart, Point> e : nodeMap.entrySet()) {
+			for(Entry<EditPart, Rectangle> e : nodeMap.entrySet()) {
 		        EditPart ep = e.getKey();
-		        Point gridPosition = e.getValue();
-		        Point pixelPosition = new Point(gridPosition.x()*(maxWidth+gapX), (gridPosition.y()*(maxHeight+gapY)));
 		        if(ep != null)
-		        	super.moveGraphicalEditPart((GraphicalEditPart) ep, pixelPosition);
+		        	super.moveGraphicalEditPart((GraphicalEditPart) ep, e.getValue().getTopLeft());
 		    }
 			
-			Map<ConnectionNodeEditPart, ArrayList<Point>> ConnectionMap = vismanager.getConnectionsAndRoutes();
-			
-			for(Entry<ConnectionNodeEditPart, ArrayList<Point> > e : ConnectionMap.entrySet()) {
-		        EditPart ep = e.getKey();
-		        ArrayList<Point> gridPosition = e.getValue();
-		        //TODO do sg;
-		        System.out.print(true);
+			for(Entry<ConnectionNodeEditPart, List<Point>> e : connectionMap.entrySet()) {
+		        ConnectionNodeEditPart connection = e.getKey();
+		        String[] anchors;
+		        if(connection != null){
+		        	List<Point> bendpoints = e.getValue();
+		        	anchors = defineAnchors(bendpoints);
+		        	super.setConnectionAnchors(connection, anchors[0], anchors[1]);
+		        	bendpoints.remove(0);
+		        	bendpoints.remove(bendpoints.size()-1);
+		        	super.SetConnectionBendpoints(connection, bendpoints);
+		        }
 		    }
-			
-			
-			for(EditPart editpart: elements){
-				GraphicalEditPart ep = ((GraphicalEditPart) editpart);
-				@SuppressWarnings("unchecked")
-				List<ConnectionNodeEditPart> connections = ep.getSourceConnections();
-				for(ConnectionNodeEditPart connection : connections){
-					super.setConnectionAnchors(connection, "(1.0, 0.5)", "(1.0, 0.5)");
-					super.SetConnectionBendpoints(connection, Arrays.asList(new Point(140, 170), new Point(140, 50)));
-				}
-			}
+		    
 		}
 	}
 
-	private String getXmiId(EditPart editPart){
+	protected String getXmiId(EditPart editPart){
 		EObject object = ((View) editPart.getModel()).getElement();
 	    return ((XMLResource) object.eResource()).getID(object);
 	}
 	
-	private int getMaxWidth(List<EditPart> editParts){
+	protected int getMaxWidth(List<EditPart> editParts){
 		int max = 0;
 		int width = 0;
 		for(EditPart editpart : editParts){
@@ -86,7 +83,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		return max;
 	}
 	
-	private int getMaxHeight(List<EditPart> editParts){
+	protected int getMaxHeight(List<EditPart> editParts){
 		int max = 0;
 		int height = 0;
 		for(EditPart editpart : editParts){
@@ -97,7 +94,28 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		return max;
 	}
 	
-	private Dimension getSize(GraphicalEditPart editpart){
+	protected Dimension getSize(GraphicalEditPart editpart){
 		return 	editpart.getFigure().getPreferredSize();
+	}
+	
+	protected  String[] defineAnchors(List<Point> route){
+		String[] result = new String[2];
+		
+		if(route.size() >= 2){
+			double[] source = defineAnchor(route.get(1), route.get(0));
+			double[] target = defineAnchor(route.get(route.size()-1), route.get(route.size()-2));
+			result[0] = "("+source[0]+", "+source[1]+")";
+			result[1] = "("+target[0]+", "+target[1]+")";
+		}
+		return result;
+	}
+	
+	private double[] defineAnchor(Point a, Point b){
+		Point vec = new Point(a.x-b.x, a.y-b.y);
+		double length = Math.sqrt(vec.x*vec.x+vec.y*vec.y);
+		double[] result = new double[2];
+		result[0] = (vec.x/length+1)/2;
+		result[1] = (vec.y/length+1)/2;
+		return result;
 	}
 }

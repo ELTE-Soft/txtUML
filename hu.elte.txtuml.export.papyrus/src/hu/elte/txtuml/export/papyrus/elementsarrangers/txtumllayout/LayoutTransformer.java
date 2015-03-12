@@ -1,9 +1,13 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
+import java.util.HashMap;import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Stream;
 
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.gef.EditPart;
+import org.eclipse.jdt.core.dom.ReturnStatement;
 
 /**
  * Represents a Transformer, considering the unity scale.
@@ -83,21 +87,39 @@ public class LayoutTransformer {
 	public void setOrigo(OrigoConstraint origo) {
 		this.origoConstaint = origo;
 	}
-	
+
 	/**
 	 * Transforms the Points with the given settings (scaling, gap, axisfilling)
 	 * @param objects
 	 */
-	public void doTranformations(Map<?, Point> objects) {
-		translateOrigo(objects);
+	public void doTranformations(Map<?, Rectangle> objects, Map<?, List<Point>> connections) {
+		translateOrigo(objects, connections);
 		if(this.flipXAxis)
-			flipXAxistranformation(objects);
+			flipXAxisTranformation(objects, connections);
 		
 		if(this.flipYAxis)
-			flipYAxistranformation(objects);
+			flipYAxisTranformation(objects, connections);
+		
+		scaleUpObjects(objects, connections);
 	}
 	
-	private void translateOrigo(Map<?, Point> objects){
+	private void scaleUpObjects(Map<?, Rectangle> objects, Map<?, List<Point>> connections) {
+		for(Rectangle rect : objects.values()){
+			int shiftToCenterX = Math.abs(scaleX-rect.width())/2;
+			int shiftToCenterY = Math.abs(scaleY-rect.height())/2;
+			rect.setX(rect.x()*(this.scaleX+this.gapX)+shiftToCenterX);
+			rect.setY(rect.y()*(this.scaleY+this.gapY)+shiftToCenterY);
+		}
+		
+		for(List<Point> pointlist: connections.values()){
+			for(Point p : pointlist){
+				p.setX(p.x()*(this.scaleX+this.gapX)+this.scaleX/2);
+				p.setY(p.y()*(this.scaleY+this.gapY)+this.scaleY/2);
+			}
+		}
+	}
+
+	private void translateOrigo(Map<?, Rectangle> objects, Map<?, List<Point>> connections){
 		int moveX = 0;
 		int moveY = 0;
 		switch(this.origoConstaint){
@@ -122,24 +144,41 @@ public class LayoutTransformer {
 				moveY = 0;
 		}
 		
-		for(Entry<?, Point> object: objects.entrySet()){
-			Point p = object.getValue();
-			p.setX(p.x()-moveX);
-			p.setY(p.y()-moveY);
+		for(Rectangle rect: objects.values()){
+			rect.setX(rect.x()-moveX);
+			rect.setY(rect.y()-moveY);
+		}
+		
+		for(Entry<?, List<Point>> connection: connections.entrySet()){
+			List<Point> pointlist = (List<Point>) connection.getValue();
+			for(Point p: pointlist){
+				p.setX(p.x()-moveX);
+				p.setY(p.y()-moveY);
+			}
 		}
 	}
 	
-	private void flipYAxistranformation(Map<?, Point> objects){
-		//objects.values().stream().map(p -> p.y = -p.y);
-		for(Entry<?, Point> object : objects.entrySet()){
-			Point p = object.getValue();
-			p.setY(-p.y);
+	private void flipYAxisTranformation(Map<?, Rectangle> objects, Map<?, List<Point>> connections){
+		for(Rectangle rect : objects.values()){
+			rect.setY(-rect.y);
+		}
+		
+		for(List<Point> pointlist : connections.values()){
+			for(Point p: pointlist){
+				p.setY(-p.y);
+			}
 		}
 	}
 	
-	private void flipXAxistranformation(Map<?, Point> objects){
-		objects.values().stream().map(
-					p -> p.x = -p.x
-				);
+	private void flipXAxisTranformation(Map<?, Rectangle> objects, Map<?, List<Point>> connections){
+		for(Rectangle rect : objects.values()){
+			rect.setX(-rect.x);
+		}
+		
+		for(List<Point> pointlist : connections.values()){
+			for(Point p: pointlist){
+				p.setX(-p.x);
+			}
+		}
 	}
 }
