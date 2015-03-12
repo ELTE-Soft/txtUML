@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 
