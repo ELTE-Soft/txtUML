@@ -64,7 +64,7 @@
             <command
                   commandId="org.elte.txtuml.papyrusdiagramgenerator.txtUMLVisualize"
                   icon="icons/sample.png"
-                  label="Visualize txtUML Model2"
+                  label="Visualize txtUML Model"
                   style="push">
             </command>
             <command

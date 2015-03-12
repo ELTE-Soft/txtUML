@@ -25,7 +25,7 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 
 	private List<String> generateNodesToBeAdded() {
 		List<String> nodes = Arrays.asList("InitialNode", "FinalNode", "ForkNode", "JoinNode",
-				"DecisionNode", "MergeNode", "OpaqueAction", "ReadSelfAction", "ObjectFlow",
+				"DecisionNode", "MergeNode", "OpaqueAction", "ReadSelfAction",
 				"AddVariableValueAction", "AddStructuralFeatureValueAction", "SendSignalAction",
 				"CallOperationAction");
 		return nodes;
