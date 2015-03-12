@@ -1,7 +1,6 @@
 package txtuml.importer;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Stack;
 
@@ -81,29 +80,23 @@ public class MethodImporter extends AbstractMethodImporter {
 
 		Object classInstance=createLocalInstance(declaringClass);			
 		assignSelf(classInstance);
-		setCurrentSignal((txtuml.api.ModelClass.Transition)classInstance);	
+		assignCurrentSignal((txtuml.api.ModelClass.Transition)classInstance);	
 		
 		return classInstance;
 	}
 	
-	private static void setCurrentSignal(txtuml.api.ModelClass.Transition transitionInstance)
+	private static void assignCurrentSignal(txtuml.api.ModelClass.Transition transitionInstance)
 	{
 		Method m=ElementFinder.findMethod(txtuml.api.ModelClass.Transition.class,"getSignal");
 		m.setAccessible(true);
 		try {
 			currentSignal=(Event) m.invoke(transitionInstance);
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		} catch (InvocationTargetException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
 		}
 		m.setAccessible(false);
-		
+	
 	}
 	private static Object initMethodImport(Model model, Activity activity, Method sourceMethod, Class<?> declaringClass)
 	{
@@ -126,23 +119,24 @@ public class MethodImporter extends AbstractMethodImporter {
 		
 		if(ElementTypeTeller.isTransition(declaringClass))
 		{
-			setCurrentSignal((txtuml.api.ModelClass.Transition)classInstance);		
+			assignCurrentSignal((txtuml.api.ModelClass.Transition)classInstance);		
 			
 			if(currentSignal!=null)
 			{
-				addSignalParameter();
+				addCurrentSignalToActivityParameters();
 			}
 		}
 		
 		return classInstance;
 	}
 	
-	private static void addSignalParameter()
+	private static void addCurrentSignalToActivityParameters()
 	{
 		Class<?> signalClass=currentSignal.getClass();
 		String signalName=signalClass.getSimpleName();
 		Type signalType=ModelImporter.importType(signalClass);
 		Parameter signalParam=currentActivity.createOwnedParameter(signalName,signalType);
+		
 		createParameterNode(signalParam,signalName,signalType);
 	}
 	
@@ -187,7 +181,7 @@ public class MethodImporter extends AbstractMethodImporter {
 		}
 		catch(Exception e) 
 		{
-			//e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 	

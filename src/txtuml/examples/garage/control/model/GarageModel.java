@@ -1,6 +1,7 @@
 package txtuml.examples.garage.control.model;
 
 import txtuml.api.*;
+import txtuml.examples.garage.interfaces.IControlled;
 import txtuml.external.Timer;
 
 public class GarageModel extends Model {
@@ -37,7 +38,11 @@ public class GarageModel extends Model {
 		}
 		class Disabled extends State {		
 			@Override public void entry() {
-				Glue.getInstance().controlled.stopDoor();
+				Glue glue=Glue.getInstance();
+			//	System.out.println(glue);
+				IControlled ictrl=glue.controlled;
+			//	System.out.println(ictrl);
+				ictrl.stopDoor();
 			}
 		}
 		@From(InitDoor.class) @To(Enabled.class)

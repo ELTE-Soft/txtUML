@@ -72,6 +72,11 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 			
 	}
 	
+	//prevent execution of Action.start and do nothing
+	void around(): call(void Action.start(..)) && importing()
+	{
+			
+	}
 	void around(): 
 		(
 			call(void Action.log(..)) || 

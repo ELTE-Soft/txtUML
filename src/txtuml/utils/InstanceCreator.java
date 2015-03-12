@@ -7,7 +7,9 @@ import java.util.Set;
 public class InstanceCreator {
 
 	public static <T> T createInstance(Class<T> c) {
-		return createInstanceRecursively(c, new HashSet<>());
+		
+			return createInstanceRecursively(c, new HashSet<>());
+		
 	}
 
 	@SuppressWarnings("unchecked")

@@ -33,6 +33,7 @@ import txtuml.api.ModelInt;
 import txtuml.api.ModelString;
 import txtuml.api.ModelType;
 import txtuml.importer.utils.ElementTypeTeller;
+import txtuml.importer.utils.InterfaceMethodInvocationHandler;
 import txtuml.importer.utils.ModelTypeInformation;
 import txtuml.utils.InstanceCreator;
 
@@ -42,10 +43,23 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		return importing;
 	}
 
-	protected static <T> T createLocalInstance(Class<T> typeClass,Object... givenParameters)
+	@SuppressWarnings("unchecked")
+	protected static <T> T createLocalInstance(Class<T> typeClass)
 	{
 		setLocalInstanceToBeCreated(true);
-		T createdObject = InstanceCreator.createInstanceWithGivenParams(typeClass,givenParameters);
+		T createdObject;
+		if(typeClass.isInterface())
+		{
+			createdObject=(T) java.lang.reflect.Proxy.newProxyInstance(
+					typeClass.getClassLoader(), 
+					new java.lang.Class[] { typeClass},
+					new InterfaceMethodInvocationHandler()
+					);
+		}
+		else
+		{
+			createdObject=InstanceCreator.createInstance(typeClass);	
+		}
 		setLocalInstanceToBeCreated(false);
 		return createdObject;
 	}

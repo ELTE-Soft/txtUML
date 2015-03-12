@@ -1,7 +1,5 @@
 package txtuml.importer;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 
@@ -26,11 +24,8 @@ import txtuml.api.ExternalClass;
 import txtuml.api.ModelBool;
 import txtuml.api.ModelClass;
 import txtuml.api.ModelIdentifiedElement;
-import txtuml.api.ModelInt;
-import txtuml.api.ModelString;
 import txtuml.api.ModelType;
 import txtuml.importer.utils.ElementFinder;
-import txtuml.importer.utils.ElementTypeTeller;
 import txtuml.importer.utils.ImportException;
 import txtuml.importer.utils.ModelTypeInformation;
 
@@ -336,7 +331,11 @@ class InstructionImporter extends AbstractInstructionImporter {
 
 	static Object callExternal(ExternalClass target, String methodName, Object... args)
 	{
-		return null;
+	
+		Method method=ElementFinder.findMethod(target.getClass(), methodName);
+		
+		Class<?> returnType=method.getReturnType();
+		return createLocalInstance(returnType);
 		// TODO not implemented; should return an instance of the actual return type of the called method
 		// it can be get through its Method class
 		// the imported model will get this returned object as the result of the method call
@@ -344,7 +343,13 @@ class InstructionImporter extends AbstractInstructionImporter {
 
 	static Object callStaticExternal(Class<?> c, String methodName, Object... args)
 	{
-		return null;
+		
+		Method method=ElementFinder.findMethod(c, methodName);
+		Class<?> returnType=method.getReturnType();
+		Object ret=createLocalInstance(returnType);
+		
+		return ret;
+	
 		// TODO not implemented; should return an instance of the actual return type of the called method
 		// it can be get through its Method class
 		// the imported model will get this returned object as the result of the method call
@@ -355,57 +360,31 @@ class InstructionImporter extends AbstractInstructionImporter {
 
 
 
-
-
-	static Object initField(ModelClass target, String fieldName, Object newValue) 
-			throws IllegalAccessException, IllegalArgumentException, 
-			InvocationTargetException, NoSuchFieldException, 
-			SecurityException, NoSuchMethodException
+	private static Object assignField(Object target, String fieldName, Class<?> newValueClass) 
 	{
-		Field field=target.getClass().getDeclaredField(fieldName);
-
-		field.setAccessible(true);
-		Object fieldObj=field.get(target);
-
-		if(newValue instanceof ModelIdentifiedElement)
-		{
-			if(newValue instanceof ModelInt) fieldObj=new ModelInt();	
-			else if(newValue instanceof ModelBool) fieldObj=new ModelBool();	
-			else if(newValue instanceof ModelString) fieldObj=new ModelString();
-			else if(newValue instanceof ModelClass) fieldObj=createLocalInstance(newValue.getClass());
-		}
-		field.set(target, fieldObj);
-		field.setAccessible(false);
-
-		return fieldObj;
-	}
 	
-	static Object fieldGet(ModelClass target, String fieldName, Class<?> fieldType)
-	{
-		Object val=null;
-		
-		if(fieldType==ModelInt.class) val=new ModelInt();
-		else if(fieldType==ModelBool.class) val=new ModelBool();
-		else if(fieldType==ModelString.class) val=new ModelString();
-		else if(ElementTypeTeller.isModelClass(fieldType)) val=createLocalInstance(fieldType);
-	
-		try
-		{
-			return initField(target,fieldName,val);
-		}
-		catch(Exception e)
-		{
-			//e.printStackTrace();
-		}
-		return val;
+		Object fieldValue=createLocalInstance(newValueClass);
+		setObjectFieldVal(target,fieldName,fieldValue);
 
+		return fieldValue;
 	}
 
-	static Object fieldSet(ModelClass target, String fieldName, Object newValue)  
+	static Object importModelClassFieldGet(ModelClass target, String fieldName, Class<?> fieldType)
+	{
+		return assignField(target,fieldName,fieldType);
+
+	}
+	static Object importExternalClassFieldGet(ExternalClass target, String fieldName, Class<?> fieldType)
+	{	
+		return assignField(target,fieldName,fieldType);
+	}
+
+	static Object importModelClassFieldSet(ModelClass target, String fieldName, Object newValue)  
 	{
 		try{
 
-			Object fieldObj=initField(target,fieldName,newValue);
+			Class<?> newValueClass = newValue.getClass();
+			Object fieldObj=assignField(target,fieldName,newValueClass);
 			if(currentActivity!=null)
 			{
 				Type newValType=ModelImporter.importType(newValue.getClass());
@@ -421,6 +400,7 @@ class InstructionImporter extends AbstractInstructionImporter {
 		}
 		return null;
 	}
+
 
 	static <T> void createModelTypeLiteral(ModelType<T> inst)
 	{

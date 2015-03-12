@@ -14,6 +14,7 @@ public class Glue extends ExternalClass implements IControl {
 	GarageModel.Keyboard keyboard = gmodel.new Keyboard();
 
 	// Linkage to the UI
+	//public IControlled controlled;
 	public IControlled controlled;
 	public void setControlled(IControlled ctd) {
 		controlled = ctd;
