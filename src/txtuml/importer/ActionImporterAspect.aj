@@ -1,13 +1,13 @@
 package txtuml.importer;
 
 
-import txtuml.api.BlockBody;
-import txtuml.api.Condition;
 import txtuml.api.ModelClass;
 import txtuml.api.ModelInt;
-import txtuml.api.ParameterizedBlockBody;
 import txtuml.api.Signal;
 import txtuml.api.Action;
+import txtuml.api.blocks.BlockBody;
+import txtuml.api.blocks.Condition;
+import txtuml.api.blocks.ParameterizedBlockBody;
 import txtuml.importer.ActionImporter.LinkTypes;
 
 public privileged aspect ActionImporterAspect extends AbstractImporterAspect {

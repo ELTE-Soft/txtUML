@@ -16,13 +16,13 @@ import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValuePin;
 
-import txtuml.api.BlockBody;
-import txtuml.api.Condition;
 import txtuml.api.ModelBool;
 import txtuml.api.ModelClass;
 import txtuml.api.ModelIdentifiedElement;
 import txtuml.api.ModelInt;
-import txtuml.api.ParameterizedBlockBody;
+import txtuml.api.blocks.BlockBody;
+import txtuml.api.blocks.Condition;
+import txtuml.api.blocks.ParameterizedBlockBody;
 import txtuml.export.uml2tocpp.Util.Pair;
 
 class ActionImporter extends AbstractInstructionImporter {
