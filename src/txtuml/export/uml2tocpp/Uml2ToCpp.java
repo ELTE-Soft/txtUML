@@ -56,15 +56,15 @@ public class Uml2ToCpp
 	public static void main(String[] args) 
 	{	
 		
-		if(args[0].equals(HelpAOption) || args[0].equals(HelpBOption))
-		{
-			help();
-			return;
-		}
-		
 		if(args.length < 2 ) 
 		{
 			System.out.println("Missing arguments for more information use -h or -help");
+			return;
+		}
+		
+		if(args[0].equals(HelpAOption) || args[0].equals(HelpBOption))
+		{
+			help();
 			return;
 		}
 
