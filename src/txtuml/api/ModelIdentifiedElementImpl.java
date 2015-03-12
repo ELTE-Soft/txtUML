@@ -1,6 +1,7 @@
 package txtuml.api;
 
-abstract class ModelIdentifiedElementImpl implements ModelIdentifiedElement {
+abstract class ModelIdentifiedElementImpl implements
+		ModelIdentifiedElement {
 
 	private static Integer counter = 0;
 	private final String identifier;

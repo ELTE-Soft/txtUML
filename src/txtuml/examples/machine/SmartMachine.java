@@ -1,9 +1,9 @@
-package txtuml.examples.example1;
+package txtuml.examples.machine;
 
 import txtuml.api.*;
 import txtuml.external.*;
 
-class ExtendedModel1 extends Model {
+class SmartMachineModel extends Model {
 	
 	class Machine extends ModelClass {
 		ModelInt tasksTodo = new ModelInt(3);
@@ -82,15 +82,6 @@ class ExtendedModel1 extends Model {
 		ModelString name;
 		ModelInt id;
 		ModelInt workToDo = new ModelInt(3);
-		
-		void doMyWork() {
-			VariableInt i = new VariableInt(0);
-			ModelInt TEN = new ModelInt(10);
-			While(() -> i.get().isLess(TEN), () -> {
-				log(i.toString());
-				i.set(i.get().add(ModelInt.ONE));
-			});
-		}
 		
 		void doWork() {
 			Action.log("User: starting to work...");
@@ -185,7 +176,7 @@ class ExtendedModel1 extends Model {
 	
 	// tester method	
 	public void test() {
-		//ModelExecutor.Settings.setExecutorLog(true);
+		ModelExecutor.Settings.setExecutorLog(true);
 		Machine m = new Machine(); 
 		
 		User u1 = new User();
@@ -220,10 +211,9 @@ class ExtendedModel1 extends Model {
 				) );
 			
 		log("Machine and users are starting.");
-		ModelExecutor<?> e = new ModelExecutor<ExtendedModel1>(ExtendedModel1.class);
-		startOn(m, e);
-		startOn(u1, e);
-		startOn(u2, e);
+		start(m);
+		start(u1);
+		start(u2);
 		
 		log("One of the users is starting to do his or her work.");
 		User oneOfTheUsers = m.assoc(Usage.userOfMachine.class).selectOne();
@@ -233,8 +223,8 @@ class ExtendedModel1 extends Model {
 	}
 }
 
-public class ExtendedExample1 {
+public class SmartMachine {
 	public static void main(String[] args) {
-		new ExtendedModel1().test();
+		new SmartMachineModel().test();
 	}
 }

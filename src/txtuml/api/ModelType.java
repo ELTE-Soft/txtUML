@@ -19,10 +19,7 @@ public abstract class ModelType<T> extends ModelIdentifiedElementImpl implements
 	}
 
 	public String toString() {
-		return value.toString(); // TODO should not be used in the model
+		return value.toString();
 	}
 
-	public ModelString toMString() {
-		return new ModelString(value.toString());
-	}
 }

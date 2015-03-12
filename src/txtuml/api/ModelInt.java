@@ -5,10 +5,6 @@ public class ModelInt extends ModelType<Integer> {
 	public static final ModelInt ONE = new ModelInt(1);
 	public static final ModelInt ZERO = new ModelInt(0);
 
-	public ModelInt(Integer val) {
-		super(val);
-	}
-	
 	public ModelInt(int val) {
 		super(val);
 	}
@@ -32,10 +28,6 @@ public class ModelInt extends ModelType<Integer> {
 	public ModelInt add(ModelInt val) {
 
 		return new ModelInt(getValue() + val.getValue());
-	}
-
-	public ModelInt compareTo(ModelInt val) {
-		return new ModelInt(getValue().compareTo(val.getValue()));
 	}
 
 	public ModelInt divide(ModelInt val) {
@@ -85,4 +77,5 @@ public class ModelInt extends ModelType<Integer> {
 	public ModelInt signum() {
 		return new ModelInt(Integer.signum(getValue()));
 	}
+
 }

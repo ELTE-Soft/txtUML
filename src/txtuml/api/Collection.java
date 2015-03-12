@@ -2,6 +2,8 @@ package txtuml.api;
 
 import java.util.Iterator;
 
+import txtuml.api.blocks.ParameterizedCondition;
+
 public interface Collection<T extends ModelClass> extends
 		ModelIdentifiedElement, Iterable<T> {
 

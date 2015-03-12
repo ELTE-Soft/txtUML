@@ -1,6 +1,9 @@
 package txtuml.api;
 
-import txtuml.api.Association.*;
+import txtuml.api.Association.AssociationEnd;
+import txtuml.api.blocks.BlockBody;
+import txtuml.api.blocks.Condition;
+import txtuml.api.blocks.ParameterizedBlockBody;
 import txtuml.utils.InstanceCreator;
 
 public abstract class Action implements ModelElement {
@@ -22,10 +25,6 @@ public abstract class Action implements ModelElement {
 		rightObj.addToAssoc(leftEnd, leftObj);
 	}
 
-	public static void startOn(ModelClass obj, ModelExecutor<?> executor) {
-		obj.startOn(executor);
-	}
-	
 	public static void start(ModelClass obj) {
 		obj.start();
 	}
@@ -73,13 +72,22 @@ public abstract class Action implements ModelElement {
 	}
 
 	public static void log(String message) { // user log
-
-			ModelExecutor.getExecutorStatic().log(message);
+		ModelExecutor.log(message);
 	}
 
 	public static void logError(String message) { // user log
-
-			ModelExecutor.getExecutorStatic().logError(message);
+		ModelExecutor.logError(message);
 	}
 
+	static void executorLog(String message) { // api log
+		ModelExecutor.executorLog(message);
+	}
+
+	static void executorFormattedLog(String format, Object... args) { // api log
+		ModelExecutor.executorFormattedLog(format, args);
+	}
+
+	static void executorErrorLog(String message) { // api log
+		ModelExecutor.executorErrorLog(message);
+	}
 }

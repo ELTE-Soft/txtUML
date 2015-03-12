@@ -2,160 +2,138 @@ package txtuml.api;
 
 import java.io.PrintStream;
 
-import txtuml.utils.InstanceCreator;
-
-public final class ModelExecutor<MODEL extends Model> implements ModelElement {
-	/* Accessed from multiple threads, so must be thread-safe.
+/*
+ * Currently not instantiatable, will have more instances in the future.
+ */
+public final class ModelExecutor implements ModelElement {
+	/*
+	 * Accessed from multiple threads, so must be thread-safe.
 	 */
 
-	// settings of execution
-
-	private PrintStream userOutStream = System.out;
-	private PrintStream userErrorStream = System.err;
-	private PrintStream executorOutStream = System.out;
-	private PrintStream executorErrorStream = System.err;
-	private boolean executorLog = false;
-
-	private final Object lockOnExecutionTimeMultiplier = new Object();
-	private long executionTimeMultiplier = 1;
-	private boolean canChangeExecutionTimeMultiplier = true;
-
-	// own private attributes
-
-	private final MODEL model;
-	private final ModelExecutorThread thread;
-
-	public ModelExecutor(Class<MODEL> modelClass) {
-
-		if (modelClass == null) {
-			throw new IllegalArgumentException(
-					"ModelExecutor instance cannot be created with null parameter.");
-		}
-		this.model = InstanceCreator.createInstanceWithGivenParams(modelClass); // null
-																				// parameter
-																				// constructor
-																				// is
-																				// called
-		if (this.model == null) {
-			throw new IllegalArgumentException(
-					"Instantiation of given modelClass type failed: given type cannot be instantiated with null parameter constructor.");
-		}
-
-		this.thread = new ModelExecutorThread(this);
+	private ModelExecutor() {
 	}
 
-	// static getters
+	static ModelExecutorThread getExecutorThreadStatic() {
+		return ModelExecutorThread.getSingletonInstance();
+	}
+
+	static Settings getSettingsStatic() {
+		return Settings.instance;
+	}
+
+	// SETTINGS
 
 	/*
-	 * Should only be called from model.
+	 * Currently singleton.
 	 */
-	public static ModelExecutor<?> getExecutorStatic() {
-		return getExecutorThread().getExecutor();
-	}
+	public static final class Settings implements ModelElement {
+		/*
+		 * In the setters of the four streams, no synchronization is needed
+		 * because the assignment is atomic and if a printing operation is
+		 * active on another thread, that operation will completely finish on
+		 * the old stream in either way.
+		 */
 
-	private static ModelExecutorThread getExecutorThread() {
-		try {
-			return ((ModelExecutorThread) Thread.currentThread());
-		} catch (ClassCastException ex) {
-			// TODO: show error
-			throw ex;
+		private static final Settings instance = new Settings();
+
+		private PrintStream userOutStream = System.out;
+		private PrintStream userErrorStream = System.err;
+		private PrintStream executorOutStream = System.out;
+		private PrintStream executorErrorStream = System.err;
+		private boolean executorLog = false;
+
+		private final Object lockOnExecutionTimeMultiplier = new Object();
+		private long executionTimeMultiplier = 1;
+		private boolean canChangeExecutionTimeMultiplier = true;
+
+		private Settings() {
 		}
-	}
 
-	// public methods of settings
+		public static void setUserOutStream(PrintStream userOutStream) {
+			getSettingsStatic().userOutStream = userOutStream;
+		}
 
-	/*
-	 * In the following setter methods, no synchronization is needed because the
-	 * assignment is atomic and if a printing operation is currently active,
-	 * that will finish properly either way.
-	 */
+		public static void setUserErrorStream(PrintStream userErrorStream) {
+			getSettingsStatic().userErrorStream = userErrorStream;
+		}
 
-	public void setUserOutStream(PrintStream userOutStream) {
-		this.userOutStream = userOutStream;
-	}
+		public static void setExecutorOutStream(PrintStream executorOutStream) {
+			getSettingsStatic().executorOutStream = executorOutStream;
+		}
 
-	public void setUserErrorStream(PrintStream userErrorStream) {
-		this.userErrorStream = userErrorStream;
-	}
+		public static void setExecutorErrorStream(
+				PrintStream executorErrorStream) {
+			getSettingsStatic().executorErrorStream = executorErrorStream;
+		}
 
-	public void setExecutorOutStream(PrintStream executorOutStream) {
-		this.executorOutStream = executorOutStream;
-	}
+		public static void setExecutorLog(boolean newValue) {
+			getSettingsStatic().executorLog = newValue;
+		}
 
-	public void setExecutorErrorStream(PrintStream executorErrorStream) {
-		this.executorErrorStream = executorErrorStream;
-	}
-
-	public void setExecutorLog(boolean newValue) {
-		executorLog = newValue;
-	}
-
-	public void setExecutionTimeMultiplier(long newMultiplier) {
-		synchronized (lockOnExecutionTimeMultiplier) {
-			if (canChangeExecutionTimeMultiplier) {
-				executionTimeMultiplier = newMultiplier;
-			} else {
-				// TODO show error
+		public static void setExecutionTimeMultiplier(long newMultiplier) {
+			Settings settings = getSettingsStatic();
+			synchronized (settings.lockOnExecutionTimeMultiplier) {
+				if (settings.canChangeExecutionTimeMultiplier) {
+					settings.executionTimeMultiplier = newMultiplier;
+				} else {
+					// TODO show error
+				}
 			}
 		}
-	}
 
-	public long getExecutionTimeMultiplier() {
-		/*
-		 * Reading a long value is not atomic, so synchronization is needed.
-		 */
-		synchronized (lockOnExecutionTimeMultiplier) {
-			return executionTimeMultiplier;
+		public static long getExecutionTimeMultiplier() {
+			/*
+			 * Reading a long value is not atomic, so synchronization is needed.
+			 */
+			synchronized (getSettingsStatic().lockOnExecutionTimeMultiplier) {
+				return getSettingsStatic().executionTimeMultiplier;
+			}
 		}
-	}
 
-	public void lockExecutionTimeMultiplier() {
-		canChangeExecutionTimeMultiplier = false;
-	}
+		public static void lockExecutionTimeMultiplier() {
+			getSettingsStatic().canChangeExecutionTimeMultiplier = false;
+		}
 
-	boolean executorLog() {
-		return executorLog;
+		static boolean executorLog() {
+			return getSettingsStatic().executorLog;
+		}
 	}
 
 	// EXECUTION
 
-	public void start() {
-		this.thread.start();
-	}
-
-	void send(ModelClass target, Signal signal) {
-		thread.send(target, signal);
+	static void send(ModelClass target, Signal signal) {
+		getExecutorThreadStatic().send(target, signal);
 	}
 
 	// LOGGING METHODS
 
-	void log(String message) { // user log
-		logOnStream(userOutStream, message);
+	private static void logOnStream(PrintStream printStream, String message) {
+		synchronized (printStream) {
+			printStream.println(message);
+		}
 	}
 
-	void logError(String message) { // user log
-		logOnStream(userErrorStream, message);
+	static void log(String message) { // user log
+		logOnStream(getSettingsStatic().userOutStream, message);
 	}
 
-	void executorLog(String message) { // api log
-		logOnStream(executorOutStream, message);
+	static void logError(String message) { // user log
+		logOnStream(getSettingsStatic().userErrorStream, message);
 	}
 
-	void executorFormattedLog(String format, Object... args) { // api
-																// log
-		PrintStream printStream = executorOutStream;
+	static void executorLog(String message) { // api log
+		logOnStream(getSettingsStatic().executorOutStream, message);
+	}
+
+	static void executorFormattedLog(String format, Object... args) { // api
+																		// log
+		PrintStream printStream = getSettingsStatic().executorOutStream;
 		synchronized (printStream) {
 			printStream.format(format, args);
 		}
 	}
 
-	void executorErrorLog(String message) { // api log
-		logOnStream(executorErrorStream, message);
-	}
-
-	private void logOnStream(PrintStream printStream, String message) {
-		synchronized (printStream) {
-			printStream.println(message);
-		}
+	static void executorErrorLog(String message) { // api log
+		logOnStream(getSettingsStatic().executorErrorStream, message);
 	}
 }

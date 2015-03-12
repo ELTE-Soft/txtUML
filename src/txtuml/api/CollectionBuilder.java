@@ -1,26 +1,32 @@
 package txtuml.api;
 
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
-// TODO needs optimization
+import txtuml.api.backend.collections.JavaCollectionOfMany;
+
 class CollectionBuilder<T extends ModelClass> implements Iterable<T> {
-	private final List<T> list = new LinkedList<>();
+
+	private JavaCollectionOfMany<T> collection = JavaCollectionOfMany.create();
 
 	CollectionBuilder<T> append(T object) {
-		list.add(object);
+		collection.add(object);
 		return this;
 	}
 
 	CollectionBuilder<T> append(Collection<T> objects) {
 		for (T object : objects) {
-			list.add(object);
+			collection.add(object);
 		}
 		return this;
 	}
 
+	JavaCollectionOfMany<T> getJavaCollection() {
+		JavaCollectionOfMany<T> coll = collection;
+		collection = null;
+		return coll;
+	}
+
 	public Iterator<T> iterator() {
-		return list.iterator();
+		return collection.iterator();
 	}
 }

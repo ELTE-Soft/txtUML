@@ -1,10 +1,12 @@
 package txtuml.api;
 
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+
+import txtuml.api.backend.collections.JavaCollectionOfMany;
+import txtuml.api.blocks.ParameterizedCondition;
 
 public class Association implements ModelElement {
+
 	protected Association() {
 	}
 
@@ -35,76 +37,80 @@ public class Association implements ModelElement {
 		abstract <S extends Collection<T>> S typeKeepingAdd(T object);
 
 		abstract <S extends Collection<T>> S typeKeepingRemove(T object);
+
+		@Override
+		public abstract String toString();
+
 	}
 
 	public class Many<T extends ModelClass> extends AssociationEnd<T> {
-		private List<T> list = new LinkedList<>();
+
+		private JavaCollectionOfMany<T> coll = JavaCollectionOfMany.create();
 
 		public Many() {
 			isFinal = false;
 		}
 
 		@Override
-		final synchronized AssociationEnd<T> init(Collection<T> other) {
+		final AssociationEnd<T> init(Collection<T> other) {
 			if (!isFinal && other != null && other instanceof Many) {
-				this.list = ((Many<T>) other).list;
+				this.coll = ((Many<T>) other).coll;
 			}
 			isFinal = true;
 			return this;
 		}
 
 		Many(T object1, T object2) {
-			list.add(object1);
-			list.add(object2);
+			coll.add(object1);
+			coll.add(object2);
 		}
 
 		Many(CollectionBuilder<T> builder) {
-			for (T obj : builder) {
-				list.add(obj);
-			}
+			this.coll = builder.getJavaCollection();
 		}
 
 		Many(Collection<T> collection) {
 			for (T obj : collection) {
-				list.add(obj);
+				coll.add(obj);
 			}
 		}
 
 		Many(Collection<T> collection, CollectionBuilder<T> builder) {
-			this(collection);
-			for (T obj : builder) {
-				list.add(obj);
+			this.coll = builder.getJavaCollection();
+
+			for (T obj : collection) {
+				coll.add(obj);
 			}
 		}
 
 		Many(Collection<T> collection, T object) {
 			this(collection);
-			list.add(object);
+			coll.add(object);
 		}
 
 		@Override
 		public Iterator<T> iterator() {
-			return list.iterator();
+			return coll.iterator();
 		}
 
 		@Override
 		public final ModelInt count() {
-			return new ModelInt(list.size());
+			return new ModelInt(coll.size());
 		}
 
 		@Override
 		public final ModelBool contains(ModelClass object) {
-			return new ModelBool(list.contains(object));
+			return new ModelBool(coll.contains(object));
 		}
 
 		@Override
 		public final T selectOne() {
-			return list.iterator().next();
+			return coll.iterator().next();
 		}
 
 		@Override
 		public final T selectOne(ParameterizedCondition<T> cond) {
-			for (T obj : list) {
+			for (T obj : coll) {
 				if (cond.check(obj).getValue()) {
 					return obj;
 				}
@@ -115,7 +121,7 @@ public class Association implements ModelElement {
 		@Override
 		public final Collection<T> selectAll(ParameterizedCondition<T> cond) {
 			CollectionBuilder<T> builder = new CollectionBuilder<>();
-			for (T obj : list) {
+			for (T obj : coll) {
 				if (cond.check(obj).getValue()) {
 					builder.append(obj);
 				}
@@ -135,10 +141,10 @@ public class Association implements ModelElement {
 
 		@Override
 		public final Collection<T> remove(T object) {
-			if (list.contains(object)) {
+			if (coll.contains(object)) {
 				CollectionBuilder<T> builder = new CollectionBuilder<>();
-				for (T obj : list) {
-					if (obj != object) {
+				for (T obj : coll) {
+					if (obj == null ? object == null : !obj.equals(object)) {
 						builder.append(obj);
 					}
 				}
@@ -161,14 +167,21 @@ public class Association implements ModelElement {
 		}
 
 		int getSize() {
-			return list.size();
+			return coll.size();
 		}
+
+		@Override
+		public String toString() {
+			return coll.toString();
+		}
+
 	}
 
 	public class Some<T extends ModelClass> extends Many<T> {
 	}
 
 	public class MaybeOne<T extends ModelClass> extends AssociationEnd<T> {
+
 		private T obj = null;
 
 		public MaybeOne() {
@@ -176,7 +189,7 @@ public class Association implements ModelElement {
 		}
 
 		@Override
-		final synchronized AssociationEnd<T> init(Collection<T> other) {
+		final AssociationEnd<T> init(Collection<T> other) {
 			if (!isFinal && other != null && other instanceof MaybeOne) {
 				this.obj = ((MaybeOne<T>) other).obj;
 			}
@@ -214,7 +227,8 @@ public class Association implements ModelElement {
 
 		@Override
 		public final ModelBool contains(ModelClass object) {
-			return new ModelBool(this.obj == object);
+			return new ModelBool(this.obj == null ? object == null
+					: this.obj.equals(object));
 		}
 
 		@Override
@@ -251,7 +265,7 @@ public class Association implements ModelElement {
 
 		@Override
 		public final Collection<T> remove(T object) {
-			if (object == null || this.obj != object) {
+			if (object == null || object.equals(this.obj)) {
 				return this;
 			}
 			return new Empty<T>();
@@ -261,7 +275,7 @@ public class Association implements ModelElement {
 		@SuppressWarnings("unchecked")
 		final <S extends Collection<T>> S typeKeepingAdd(T object) {
 			if (object == null) {
-				return (S) new MaybeOne<T>(object);
+				return (S) this;
 			}
 			return (S) new MaybeOne<T>(object);
 		}
@@ -269,11 +283,17 @@ public class Association implements ModelElement {
 		@Override
 		@SuppressWarnings("unchecked")
 		final <S extends Collection<T>> S typeKeepingRemove(T object) {
-			if (object == null || this.obj != object) {
+			if (object == null || !object.equals(this.obj)) {
 				return (S) this;
 			}
 			return (S) new MaybeOne<T>();
 		}
+
+		@Override
+		public String toString() {
+			return obj == null ? "null" : obj.toString();
+		}
+
 	}
 
 	public class One<T extends ModelClass> extends MaybeOne<T> {

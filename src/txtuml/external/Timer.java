@@ -1,8 +1,16 @@
 package txtuml.external;
 
-import java.util.concurrent.*;
+import txtuml.api.Action;
+import txtuml.api.ExternalClass;
+import txtuml.api.ModelClass;
+import txtuml.api.ModelExecutor;
+import txtuml.api.ModelInt;
+import txtuml.api.Signal;
 
-import txtuml.api.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class Timer extends ExternalClass {
 	protected Timer() {
@@ -10,26 +18,19 @@ public class Timer extends ExternalClass {
 
 	public static Handle start(ModelClass targetObj, Signal signal,
 			ModelInt millisecs) {
-
-		return new Handle(targetObj, signal, millisecs, null);
+		ModelExecutor.Settings.getExecutionTimeMultiplier();
+		return new Handle(targetObj, signal, millisecs);
 	}
-	
-	public static Handle startOn(ModelClass targetObj, Signal signal,
-			ModelInt millisecs, ModelExecutor<?> executor) {
-		
-		return new Handle(targetObj, signal, millisecs, executor);
-	}	
 
 	public static class Handle extends ExternalClass {
 		private final Signal signal;
 		private final ModelClass targetObj;
 		private final Runnable action;
-		private final ModelExecutor<?> executor;
 		private ScheduledFuture<?> handle;
 		private final static ScheduledExecutorService scheduler = Executors
 				.newSingleThreadScheduledExecutor();
 
-		Handle(ModelClass obj, Signal s, ModelInt millisecs, ModelExecutor<?> executor) {
+		Handle(ModelClass obj, Signal s, ModelInt millisecs) {
 			this.signal = s;
 			this.targetObj = obj;
 			this.action = new Runnable() {
@@ -37,20 +38,12 @@ public class Timer extends ExternalClass {
 					Action.send(targetObj, signal);
 				}
 			};
-			
-			if (executor == null) {
-				this.executor = ModelExecutor.getExecutorStatic();
-			} else {
-				this.executor = executor;	
-			}
-			this.executor.lockExecutionTimeMultiplier();
-			
 			schedule(millisecs);
 		}
 
 		private long queryLong() {
 			return handle.getDelay(TimeUnit.MILLISECONDS)
-					* executor.getExecutionTimeMultiplier();
+					* ModelExecutor.Settings.getExecutionTimeMultiplier();
 		}
 
 		public ModelInt query() {
@@ -78,7 +71,7 @@ public class Timer extends ExternalClass {
 
 		private void schedule(ModelInt millisecs) {
 			handle = scheduler.schedule(action, ((long) convert(millisecs))
-					/ executor.getExecutionTimeMultiplier(),
+					/ ModelExecutor.Settings.getExecutionTimeMultiplier(),
 					TimeUnit.MILLISECONDS);
 		}
 	}

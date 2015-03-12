@@ -125,97 +125,96 @@ class Tester extends Thread {
 	Lamp l;
 
 	public void createInstances() {
-		ModelExecutor<TrainModel> executor = new ModelExecutor<>(TrainModel.class);
-		executor.setExecutorLog(true);
+		ModelExecutor.Settings.setExecutorLog(true);
 		g = Action.create(Gearbox.class);
 		e = Action.create(Engine.class);
 		l = Action.create(Lamp.class);
+		Action.start(g);
+		Action.start(e);
+		Action.start(l);
 		Action.link(GE.g.class, g, GE.e.class, e);
 		Action.link(GL.g.class, g, GL.l.class, l);
 		Action.link(LE.l.class, l, LE.e.class, e);
-		Action.startOn(g, executor);
-		Action.startOn(e, executor);
-		Action.startOn(l, executor);
 	}
 
 	public void run() {
 		synchronized (this) {
 			try {
 				int time = 50;
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(l,new Light());
 
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(l,new Light());
 
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(l,new Light());
 				
-				wait(3 * time); System.out.println();
+				wait(3 * time); Action.log("");
 				Action.send(g, new Forward());
 				// at this point an overhead can occur because of the initialization of the aspects that watch the method calls inside ModelClass instances
 				
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(g, new Backward());
 
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(g, new Forward());
 				
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(g, new Backward());
 
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(g, new Forward());
 				
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(g, new Backward());
 				
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(g, new Forward());
 				
-				wait(time); System.out.println();
-				Action.send(g, new Backward());
-
-				wait(time); System.out.println();
-				Action.send(g, new Forward());
-				
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(g, new Backward());
 
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(g, new Forward());
 				
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(g, new Backward());
 
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(g, new Forward());
 				
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(g, new Backward());
 
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(g, new Forward());
 				
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(g, new Backward());
 
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(g, new Forward());
 				
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(g, new Backward());
 
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(g, new Forward());
 				
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(g, new Backward());
 
-				wait(time); System.out.println();
+				wait(time); Action.log("");
 				Action.send(g, new Forward());
 				
-				wait(time); System.out.println();
+				wait(time); Action.log("");
+				Action.send(g, new Backward());
+
+				wait(time); Action.log("");
+				Action.send(g, new Forward());
+				
+				wait(time); Action.log("");
 				Action.send(g, new Backward());
 			} catch (InterruptedException e) {
 			}

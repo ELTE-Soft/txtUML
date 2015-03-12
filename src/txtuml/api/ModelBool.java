@@ -1,6 +1,7 @@
 package txtuml.api;
 
 public class ModelBool extends ModelType<Boolean> {
+
 	public static final ModelBool TRUE = new ModelBool(true);
 	public static final ModelBool FALSE = new ModelBool(false);
 	public static final ModelBool ELSE = new Else();
@@ -12,10 +13,6 @@ public class ModelBool extends ModelType<Boolean> {
 		}
 	}
 
-	public ModelBool(Boolean val) {
-		super(val);
-	}
-	
 	public ModelBool(boolean val) {
 		super(val);
 	}
@@ -48,11 +45,4 @@ public class ModelBool extends ModelType<Boolean> {
 		return getValue() != val.getValue() ? TRUE : FALSE;
 	}
 
-	public ModelBool isNull(Object o) {
-		return o == null ? TRUE : FALSE;
-	}
-
-	public ModelBool isNotNull(Object o) {
-		return o != null ? TRUE : FALSE;
-	}
 }

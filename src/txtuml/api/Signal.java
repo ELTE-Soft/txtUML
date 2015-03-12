@@ -1,7 +1,9 @@
 package txtuml.api;
 
 @ModelAnnotatedElement
-public abstract class Signal extends Event {
+public class Signal extends Event {
+
 	protected Signal() {
 	}
+
 }

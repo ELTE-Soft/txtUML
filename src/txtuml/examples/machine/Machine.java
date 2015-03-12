@@ -1,9 +1,9 @@
-package txtuml.examples.example1;
+package txtuml.examples.machine;
 
 import txtuml.api.*;
 import txtuml.external.*;
 
-class Model1 extends Model {
+class MachineModel extends Model {
 	
 	class Machine extends ModelClass {
 		ModelInt tasksTodo = new ModelInt(2);
@@ -141,11 +141,9 @@ class Model1 extends Model {
 	}
 	
 	public void test() {
-		ModelExecutor<?> executor = new ModelExecutor<Model1>(Model1.class);
-		executor.setExecutorLog(true);
-		
+		ModelExecutor.Settings.setExecutorLog(true);
 		Machine m = new Machine();
-		startOn(m, executor);
+		start(m);
 		
 		User u1 = new User();
 		User u2 = Action.create(User.class); //almost equivalent to 'new User()'
@@ -162,8 +160,8 @@ class Model1 extends Model {
    	}
 }
 
-public class Example1 {
+public class Machine {
 	public static void main(String[] args) {
-		new Model1().test();
+		new MachineModel().test();
 	}
 }
