@@ -34,28 +34,6 @@ import org.eclipse.uml2.uml.Variable;
 
 class InstructionImporter extends AbstractInstructionImporter {
 
-	/*private static void importObjectDeletion(ModelClass obj) {
-	    if(currentActivity != null) 
-	    {
-	       	DestroyObjectAction destroyAction=	(DestroyObjectAction) 
-					currentActivity.createOwnedNode("delete_"+obj.getIdentifier(),UMLPackage.Literals.DESTROY_OBJECT_ACTION);
-
-			String instanceName=getObjectIdentifier(obj);
-
-			Type type= currentModel.getOwnedType(obj.getClass().getSimpleName());
-
-			ValuePin target = (ValuePin) destroyAction.createTarget("target", type, UMLPackage.Literals.VALUE_PIN);
-			addOpaqueExpressionToValuePin(target,instanceName,type);
-
-			createControlFlowBetweenNodes(lastNode,destroyAction);
-
-			lastNode=destroyAction;
-
-
-	    }
-
-	}*/
-
 	static <T extends ModelClass> T selectOne(Collection<T> target) 
 	{
 
@@ -336,9 +314,7 @@ class InstructionImporter extends AbstractInstructionImporter {
 		Method method=ElementFinder.findMethod(target.getClass(), methodName);
 		Class<?> returnType=method.getReturnType();
 		return createLocalInstance(returnType);
-		// TODO not implemented; should return an instance of the actual return type of the called method
-		// it can be get through its Method class
-		// the imported model will get this returned object as the result of the method call
+		// TODO import calls into UML2 model
 	}
 
 	static Object callStaticExternal(Class<?> c, String methodName, Object... args)
@@ -348,12 +324,7 @@ class InstructionImporter extends AbstractInstructionImporter {
 		Object ret=createLocalInstance(returnType);
 		return ret;
 	
-		// TODO not implemented; should return an instance of the actual return type of the called method
-		// it can be get through its Method class
-		// the imported model will get this returned object as the result of the method call
-
-		// c will actually always be Class<? extends ExternalClass>
-		// so this method informs the importer about a static method call on an ExternalClass class
+		// TODO import calls into UML2 model
 	}
 
 
@@ -430,8 +401,5 @@ class InstructionImporter extends AbstractInstructionImporter {
 		}
 		return signal;
 	}
-
-
-
 
 }

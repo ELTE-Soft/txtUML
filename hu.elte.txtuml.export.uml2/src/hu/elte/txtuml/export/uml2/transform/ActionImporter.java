@@ -16,6 +16,7 @@ import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.CreateLinkAction;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.DestroyLinkAction;
+import org.eclipse.uml2.uml.DestroyObjectAction;
 import org.eclipse.uml2.uml.LinkAction;
 import org.eclipse.uml2.uml.LinkEndData;
 import org.eclipse.uml2.uml.Property;
@@ -27,12 +28,11 @@ import org.eclipse.uml2.uml.ValuePin;
 
 class ActionImporter extends AbstractInstructionImporter {
 
-	enum LinkTypes
-	{
+	private enum LinkTypes {
+
 		CREATE_LINK_LITERAL,
 		DESTROY_LINK_LITERAL
-	};
-	
+	}
 	private static void addEndToLinkAction(LinkAction linkAction, Association association, 
 			String phrase, String instName,ModelClass obj,int endNum)
 	{
@@ -49,7 +49,21 @@ class ActionImporter extends AbstractInstructionImporter {
 
 	}
 
-	static void importLinkAction(Class<?> leftEnd, ModelClass leftObj,
+	static void importCreateLinkAction(Class<?> leftEnd, ModelClass leftObj,
+			Class<?> rightEnd, ModelClass rightObj)
+	{
+	
+		ActionImporter.importLinkAction(leftEnd,leftObj,rightEnd,rightObj,LinkTypes.CREATE_LINK_LITERAL);
+	}
+	
+	static void importDestroyLinkAction(Class<?> leftEnd, ModelClass leftObj,
+			Class<?> rightEnd, ModelClass rightObj)
+	{
+	
+		ActionImporter.importLinkAction(leftEnd,leftObj,rightEnd,rightObj,LinkTypes.DESTROY_LINK_LITERAL);
+	}
+	
+	private static void importLinkAction(Class<?> leftEnd, ModelClass leftObj,
 			Class<?> rightEnd, ModelClass rightObj, LinkTypes linkType)
 	{
 		if(currentActivity != null) 
@@ -290,5 +304,26 @@ class ActionImporter extends AbstractInstructionImporter {
 		String name="decision"+cntDecisionNodes;
 		DecisionNode decisionNode=(DecisionNode) currentActivity.createOwnedNode(name,UMLPackage.Literals.DECISION_NODE);
 		return decisionNode;
+	}
+
+	static void importDeleteObjectAction(ModelClass obj) {
+	    if(currentActivity != null) 
+	    {
+	       	DestroyObjectAction destroyAction=	(DestroyObjectAction) 
+					currentActivity.createOwnedNode("delete_"+obj.getIdentifier(),UMLPackage.Literals.DESTROY_OBJECT_ACTION);
+	
+			String instanceName=getObjectIdentifier(obj);
+	
+			Type type= currentModel.getOwnedType(obj.getClass().getSimpleName());
+	
+			ValuePin target = (ValuePin) destroyAction.createTarget("target", type, UMLPackage.Literals.VALUE_PIN);
+			addOpaqueExpressionToValuePin(target,instanceName,type);
+	
+			createControlFlowBetweenNodes(lastNode,destroyAction);
+	
+			lastNode=destroyAction;
+	
+	    }
+	
 	}
 }

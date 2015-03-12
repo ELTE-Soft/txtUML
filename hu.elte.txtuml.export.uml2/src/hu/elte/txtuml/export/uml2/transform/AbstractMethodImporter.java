@@ -71,9 +71,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 
 		readVariableAction.setVariable(currentActivity.getVariable(variableName,variableType));
 
-
 		return readVariableAction;
-
 	}
 
 	protected static ReadStructuralFeatureAction createReadStructuralFeatureAction(ModelClass targetClass, String fieldName, Type valueType)

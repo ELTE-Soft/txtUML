@@ -7,10 +7,10 @@ import hu.elte.txtuml.api.Signal;
 import hu.elte.txtuml.api.blocks.BlockBody;
 import hu.elte.txtuml.api.blocks.Condition;
 import hu.elte.txtuml.api.blocks.ParameterizedBlockBody;
-import hu.elte.txtuml.export.uml2.transform.ActionImporter.LinkTypes;
 
 public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 
+	
 	void around():call(void Action.For(ModelInt, ModelInt, ParameterizedBlockBody<ModelInt>) ) && isActive()
 	{
 		ModelInt from=(ModelInt)(thisJoinPoint.getArgs()[0]);
@@ -48,17 +48,17 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 		ModelClass leftObj=(ModelClass)(thisJoinPoint.getArgs()[1]);
 		Class<?> rightEnd=(Class<?>)(thisJoinPoint.getArgs()[2]);
 		ModelClass rightObj=(ModelClass)(thisJoinPoint.getArgs()[3]);
-		ActionImporter.importLinkAction(leftEnd,leftObj,rightEnd,rightObj,LinkTypes.CREATE_LINK_LITERAL);	
+		ActionImporter.importCreateLinkAction(leftEnd,leftObj,rightEnd,rightObj);	
 	}
     		
-	/*void around(): call(void Action.unlink(..)) && isActive()
+	void around(): call(void Action.unlink(..)) && isActive()
 	{
 		Class<?> leftEnd=(Class<?>)(thisJoinPoint.getArgs()[0]);
 		ModelClass leftObj=(ModelClass)(thisJoinPoint.getArgs()[1]);
 		Class<?> rightEnd=(Class<?>)(thisJoinPoint.getArgs()[2]);
 		ModelClass rightObj=(ModelClass)(thisJoinPoint.getArgs()[3]);
-		ActionImporter.importLinkAction(leftEnd,leftObj,rightEnd,rightObj,LinkTypes.DESTROY_LINK_LITERAL);	
-	}*/
+		ActionImporter.importDestroyLinkAction(leftEnd,leftObj,rightEnd,rightObj);	
+	}
     	
 
 	void around(): call(void Action.send(ModelClass, Signal)) && isActive()
@@ -70,12 +70,19 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 			
 	}
 	
+	void around(): call(void Action.delete(ModelClass)) && isActive()
+	{
+		ModelClass obj = (ModelClass) thisJoinPoint.getArgs()[0];
+		ActionImporter.importDeleteObjectAction(obj);
+	}
+
 	//prevent execution of Action.start and do nothing
 	void around(): call(void Action.start(..)) && importing()
 	{
 			
 	}
-
+	
+	//prevent logging
 	void around(): 
 		(
 			call(void Action.log(..)) || 
