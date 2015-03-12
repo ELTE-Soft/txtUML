@@ -8,6 +8,7 @@ import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.api.ModelIdentifiedElement;
 import hu.elte.txtuml.api.Signal;
+import hu.elte.txtuml.api.StateMachine;
 
 public class ElementTypeTeller {
 
@@ -48,24 +49,24 @@ public class ElementTypeTeller {
     }
     
 	public static boolean isState(Class<?> c) {
-        return ModelClass.State.class.isAssignableFrom(c);
+        return StateMachine.State.class.isAssignableFrom(c);
     }
 
 	public static boolean isInitialState(Class<?> c) {
-        return ModelClass.InitialState.class.isAssignableFrom(c);
+        return StateMachine.InitialState.class.isAssignableFrom(c);
     }
 
 	public static boolean isCompositeState(Class<?> c) {
-        return ModelClass.CompositeState.class.isAssignableFrom(c);
+        return StateMachine.CompositeState.class.isAssignableFrom(c);
     }
 	
 	public static boolean isChoice(Class<?> c)
 	{
-		return ModelClass.Choice.class.isAssignableFrom(c);
+		return StateMachine.Choice.class.isAssignableFrom(c);
 	}
 
 	public static boolean isTransition(Class<?> c) {
-        return ModelClass.Transition.class.isAssignableFrom(c);
+        return StateMachine.Transition.class.isAssignableFrom(c);
     }
     
 	
