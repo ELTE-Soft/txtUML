@@ -17,17 +17,27 @@ public class javatocpp {
 	
 	public static void main(String[] args) {
 		
+		if(args.length == 1)
+		{
+			if(args[0].equals(HelpAOption) || args[0].equals(HelpBOption))
+			{
+				help();
+				return;
+			}
+			else
+			{
+				System.out.println("Missing arguments for more information use -h or -help");
+				return;
+			}
+		}
+		
+		
 		if(args.length < 2) 
 		{
 			System.out.println("Missing arguments for more information use -h or -help");
 			return;
 		}
 		
-		if(args[0].equals(HelpAOption) || args[0].equals(HelpBOption))
-		{
-			help();
-			return;
-		}
 		
 		String modelClassName = args[0];
 		String outputName = args[1];
