@@ -14,7 +14,7 @@ public abstract class ModelType<T> extends ModelIdentifiedElementImpl implements
 		this(null);
 	}
 
-	protected final T getValue() {
+	final T getValue() {
 		return value;
 	}
 

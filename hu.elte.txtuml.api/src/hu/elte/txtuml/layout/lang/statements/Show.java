@@ -1,7 +1,7 @@
 package hu.elte.txtuml.layout.lang.statements;
 
-import hu.elte.txtuml.layout.lang.elements.LayoutNode;
-import hu.elte.txtuml.layout.lang.statements.containers.LeftContainer;
+import hu.elte.txtuml.layout.lang.elements.LayoutNonGroupElement;
+import hu.elte.txtuml.layout.lang.statements.containers.ShowContainer;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
@@ -9,13 +9,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-//TODO doc
+// TODO doc
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Repeatable(LeftContainer.class)
-public @interface Left {
-	Class<? extends LayoutNode> val();
-
-	Class<? extends LayoutNode> from();
+@Repeatable(ShowContainer.class)
+public @interface Show {
+	Class<? extends LayoutNonGroupElement>[] value();
 
 }

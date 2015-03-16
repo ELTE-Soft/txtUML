@@ -1,6 +1,5 @@
 package hu.elte.txtuml.layout.lang.statements;
 
-import hu.elte.txtuml.layout.lang.elements.LayoutAbstractNode;
 import hu.elte.txtuml.layout.lang.elements.LayoutNode;
 import hu.elte.txtuml.layout.lang.statements.containers.AboveContainer;
 
@@ -10,11 +9,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+//TODO doc
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Repeatable(AboveContainer.class)
 public @interface Above {
-	Class<? extends LayoutAbstractNode> val();
+	Class<? extends LayoutNode> val();
 
 	Class<? extends LayoutNode> from();
 

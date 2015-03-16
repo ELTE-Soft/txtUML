@@ -38,8 +38,7 @@ public class Association implements ModelElement, LayoutLink {
 	}
 
 	public class HiddenMaybeOne<T extends ModelClass> extends BaseMaybeOne<T>
-			implements
-			hu.elte.txtuml.api.semantics.Navigability.NonNavigable,
+			implements hu.elte.txtuml.api.semantics.Navigability.NonNavigable,
 			hu.elte.txtuml.api.semantics.Multiplicity.ZeroToOne {
 	}
 

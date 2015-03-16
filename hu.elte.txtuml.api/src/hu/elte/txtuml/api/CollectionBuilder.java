@@ -6,8 +6,7 @@ import java.util.Iterator;
 
 class CollectionBuilder<T extends ModelClass> implements Iterable<T> {
 
-	private final JavaCollectionOfMany<T> collection = JavaCollectionOfMany
-			.create();
+	private JavaCollectionOfMany<T> collection = JavaCollectionOfMany.create();
 
 	CollectionBuilder<T> append(T object) {
 		collection.add(object);
@@ -22,7 +21,9 @@ class CollectionBuilder<T extends ModelClass> implements Iterable<T> {
 	}
 
 	JavaCollectionOfMany<T> getJavaCollection() {
-		return collection;
+		JavaCollectionOfMany<T> coll = collection;
+		collection = null;
+		return coll;
 	}
 
 	public Iterator<T> iterator() {

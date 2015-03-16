@@ -33,7 +33,7 @@ class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 
 	BaseMany(Collection<T> collection) {
 		for (T obj : collection) {
-			collection.add(obj);
+			coll.add(obj);
 		}
 	}
 

@@ -1,5 +1,13 @@
 package hu.elte.txtuml.layout.lang.elements;
 
-public interface LayoutAbstractNode extends LayoutElement {
-
+/**
+ * Abstraction to the {@link LayoutNode} interface, may also represent a
+ * {@link LayoutNodeGroup}.
+ * <p>
+ * Should not be extended or implemented directly from outside this package.
+ * 
+ * @author Gábor Ferenc Kovács
+ *
+ */
+public abstract interface LayoutAbstractNode extends LayoutElement {
 }
