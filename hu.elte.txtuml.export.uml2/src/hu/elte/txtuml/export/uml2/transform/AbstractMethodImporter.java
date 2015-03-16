@@ -2,16 +2,12 @@ package hu.elte.txtuml.export.uml2.transform;
 
 import hu.elte.txtuml.api.Event;
 import hu.elte.txtuml.api.ModelClass;
+import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.api.ModelIdentifiedElement;
 import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
-import hu.elte.txtuml.api.ModelType;
-import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
-import hu.elte.txtuml.export.uml2.utils.InterfaceMethodInvocationHandler;
-import hu.elte.txtuml.export.uml2.utils.ModelTypeInformation;
-import hu.elte.txtuml.utils.InstanceCreator;
+import hu.elte.txtuml.export.uml2.transform.backend.ModelElementInformation;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Stack;
 
@@ -41,27 +37,6 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 
 	public static boolean isImporting() {
 		return importing;
-	}
-
-	@SuppressWarnings("unchecked")
-	protected static <T> T createLocalInstance(Class<T> typeClass)
-	{
-		setLocalInstanceToBeCreated(true);
-		T createdObject;
-		if(typeClass.isInterface())
-		{
-			createdObject=(T) java.lang.reflect.Proxy.newProxyInstance(
-					typeClass.getClassLoader(), 
-					new java.lang.Class[] { typeClass},
-					new InterfaceMethodInvocationHandler()
-					);
-		}
-		else
-		{
-			createdObject=InstanceCreator.createInstance(typeClass);	
-		}
-		setLocalInstanceToBeCreated(false);
-		return createdObject;
 	}
 
 	protected static ReadVariableAction createReadVariableAction(String variableName,Type variableType)
@@ -152,22 +127,12 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 
 	protected static boolean isObjectAFieldOfSelf(ModelIdentifiedElement object)
 	{
-		boolean answer=false;
-		if(object!=null)
-		{
-			String objectIdentifier=object.getIdentifier();
-			if(self!=null)
-			{
-				ModelIdentifiedElement fieldInstance=getObjectFieldInstanceWithGivenInstId(objectIdentifier,self);
-				answer=fieldInstance!=null;
-			}
-
-		}
-		return answer;
+		String objectName = getObjectIdentifier(object);
+		
+		return objectName.startsWith("self");
 	}
 
-	@SuppressWarnings("rawtypes")
-	private static String getModelTypeLiteralExpression(ModelType instance, ModelTypeInformation instInfo)
+	private static String getModelTypeLiteralExpression(ModelElement instance, ModelElementInformation instInfo)
 	{
 		String expression=null;
 		if(instance instanceof ModelInt)
@@ -189,145 +154,49 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		return expression;
 	}
 
-	@SuppressWarnings("rawtypes")
-	private static String getModelTypeExpression(ModelType instance)
+
+	protected static void createLocalFieldsRecursively(Object classifier)
+  	{
+  		createFieldsRecursively(classifier, true);
+  	}
+
+	protected static String getExpression(ModelIdentifiedElement instance)
 	{
 		String expression=null;
-		ModelTypeInformation instInfo=modelTypeInstancesInfo.get(instance);
+		ModelElementInformation instInfo=getInstanceInfo(instance);
 
-		if(instInfo!=null && instInfo.isLiteral())
+		
+		if(instInfo != null)
 		{
-			expression=getModelTypeLiteralExpression(instance,instInfo);
-		}
-		else if(instInfo!=null && instInfo.isCalculated() && currentActivity==null)
-		{
-			expression= "("+instInfo.getExpression()+")";
+			if(instInfo.isLiteral())
+				expression = getModelTypeLiteralExpression(instance,instInfo);
+			else if(instInfo.isCalculated() && currentActivity == null)
+				expression = "("+instInfo.getExpression()+")";
+			else
+				expression = instInfo.getExpression();
 		}
 		else
 		{
-			expression=getObjectIdentifier(instance);
+			expression = instance.getIdentifier();
 		}
 		return expression;
 	}
 
-	@SuppressWarnings("rawtypes")
-	protected static String getExpression(ModelIdentifiedElement object)
+	
+
+	protected static String getObjectIdentifier(ModelIdentifiedElement instance)
 	{
 		String expression=null;
+		ModelElementInformation instInfo=getInstanceInfo(instance);
 
-		if(object instanceof ModelType)
-		{	
-			expression=getModelTypeExpression((ModelType)object);
-		}
+		
+		if(instInfo != null && !instInfo.isLiteral() && !instInfo.isCalculated())
+			expression = instInfo.getExpression();
+		//else
+		//	expression = instance.getIdentifier();
 		else
-		{
-			expression=getObjectIdentifier(object);
-		}
+			expression = "inst_"+System.identityHashCode(instance);
 		return expression;
-	}
-
-	private static ModelIdentifiedElement getObjectFieldInstanceWithGivenInstId(String instanceId, Object object)
-	{
-		//going through declared fields of the object
-		for(Field field:object.getClass().getDeclaredFields())
-		{
-			Object fieldInstance=accessObjectFieldVal(object,field);
-			
-			//if the instance of the object's current field is an identifiable element and it's identifier equals
-			//the given instanceId, then it's the same instance
-			if(fieldInstance!=null && fieldInstance instanceof ModelIdentifiedElement)
-			{
-				ModelIdentifiedElement identifiedFieldInst= (ModelIdentifiedElement) fieldInstance;
-				String fieldInstanceIdentifier=identifiedFieldInst.getIdentifier();
-				if(fieldInstanceIdentifier.equals(instanceId))
-				{
-					return identifiedFieldInst;
-				}
-			}		
-		}
-		
-		return null;
-	}
-	private static String compareInstanceIdWithObjAndFields (String instanceId,ModelIdentifiedElement object, String expression)
-	{
-
-		if(object!=null)
-		{
-			String objectIdentifier=object.getIdentifier();
-			Class<?> objectClass = object.getClass();
-			if(instanceId.equals(objectIdentifier))
-			{
-				return expression;
-			}
-			else if(ElementTypeTeller.isClassifier(objectClass))
-			{
-				for(Field field:object.getClass().getDeclaredFields())
-				{
-					Object fieldInstance=accessObjectFieldVal(object,field);
-					
-					if(fieldInstance!=null && fieldInstance instanceof ModelIdentifiedElement)
-					{
-						ModelIdentifiedElement identifiedFieldInst=(ModelIdentifiedElement) fieldInstance;
-						String fieldInstanceIdentifier=identifiedFieldInst.getIdentifier();
-						
-						if( fieldInstanceIdentifier.equals( instanceId ) )
-						{
-							String fieldName=field.getName();
-							return expression+"."+fieldName;
-						}
-					}				
-				}	
-			}
-		}
-
-		return null;
-
-	}
-
-	private static String compareInstanceIdWithCurrentParams(String instanceId)
-	{
-
-		int i=0;
-		for(Object param: currentParameters)
-		{
-			String argName="arg"+i;
-			ModelIdentifiedElement identifiedParameter= (ModelIdentifiedElement) param;
-		
-			String ret=compareInstanceIdWithObjAndFields(instanceId,identifiedParameter,argName);
-
-			if(ret!=null) return ret;
-			++i;
-		}
-		return null;
-	}
-	protected static String getObjectIdentifier(String instanceId)
-	{
-		String identifier;
-
-		identifier=compareInstanceIdWithObjAndFields(instanceId,self,"self");
-
-		if(identifier!=null) return identifier;
-
-		identifier=compareInstanceIdWithCurrentParams(instanceId);
-
-		if(identifier!=null) return identifier;
-
-		if(currentSignal!=null)
-		{
-			String signalName=currentSignal.getClass().getSimpleName();
-			identifier=compareInstanceIdWithObjAndFields(instanceId,currentSignal,signalName);
-		}
-
-		if(identifier!=null) return identifier;
-
-		return instanceId;
-	}
-
-	protected static String getObjectIdentifier(ModelIdentifiedElement object)
-	{
-		if(object!=null) return getObjectIdentifier(object.getIdentifier());
-		else return null;
-
 	}
 
 	protected static ForkNode createForkNode(String name, ActivityNode node1, ActivityNode node2)
@@ -421,8 +290,8 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		if(!(object instanceof ModelString)) return false;
 		else
 		{
-			ModelString string=(ModelString) object;
-			ModelTypeInformation info=modelTypeInstancesInfo.get(string);
+			ModelString modelString=(ModelString) object;
+			ModelElementInformation info=getInstanceInfo(modelString);
 			if(info == null) return false;
 			else
 			{
@@ -494,12 +363,12 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		edge.setGuard(opaqueExpression);
 	}
 
+	
 	protected static boolean importing=false;
-	protected static Object[] currentParameters=null;
+	protected static ModelElement[] currentParameters=null;
 	protected static Method currentMethod=null;
 	protected static ActivityNode lastNode=null;
 	protected static Activity currentActivity=null;
-	protected static ModelClass self=null;
 	protected static Model currentModel=null;
 	protected static int cntBlockBodiesBeingImported=0;
 	protected static Stack<ActivityEdge> blockBodyFirstEdges=new Stack<>();

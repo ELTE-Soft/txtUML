@@ -6,17 +6,17 @@ public abstract class AssociationEnd<T extends ModelClass> extends
 		ModelIdentifiedElementImpl implements Collection<T> {
 
 	protected boolean isFinal = true;
-	private String ownerId;
+	private ModelIdentifiedElement owner;
 
 	AssociationEnd() {
 	}
 
-	void setOwnerId(String newId) {
-		ownerId = newId;
+	void setOwner(ModelIdentifiedElement newOwner) {
+		owner = newOwner;
 	}
 
-	String getOwnerId() {
-		return ownerId;
+	ModelIdentifiedElement getOwner() {
+		return owner;
 	}
 
 	@Override

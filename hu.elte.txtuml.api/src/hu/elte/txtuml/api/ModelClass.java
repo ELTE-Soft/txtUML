@@ -59,7 +59,7 @@ public class ModelClass extends Region implements ModelElement,
 			ret = InstanceCreator.createInstance(otherEnd);
 			associations.put(otherEnd, ret);
 		}
-		ret.setOwnerId(this.getIdentifier());
+		ret.setOwner(this);
 		return ret;
 	}
 

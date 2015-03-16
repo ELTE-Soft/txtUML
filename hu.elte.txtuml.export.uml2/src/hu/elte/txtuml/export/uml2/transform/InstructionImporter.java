@@ -3,15 +3,16 @@ package hu.elte.txtuml.export.uml2.transform;
 
 import hu.elte.txtuml.api.Collection;
 import hu.elte.txtuml.api.ExternalClass;
-import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelClass;
+import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.api.ModelIdentifiedElement;
 import hu.elte.txtuml.api.ModelType;
 import hu.elte.txtuml.api.Signal;
 import hu.elte.txtuml.api.StateMachine.Transition;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 import hu.elte.txtuml.export.uml2.utils.ImportException;
-import hu.elte.txtuml.export.uml2.utils.ModelTypeInformation;
+import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
+import hu.elte.txtuml.export.uml2.transform.backend.ModelElementInformation;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -43,7 +44,7 @@ class InstructionImporter extends AbstractInstructionImporter {
 		Class<?> resultClass=ElementFinder.findDeclaredClass(modelClass, typeName);
 
 		@SuppressWarnings("unchecked")
-		T result=(T) createLocalInstance(resultClass);
+		T result=(T) DummyInstanceCreator.createDummyInstance(resultClass);
 
 		String resultName=result.getIdentifier();
 		String startName=target.getIdentifier();
@@ -78,9 +79,9 @@ class InstructionImporter extends AbstractInstructionImporter {
 		Method method=null;
 		String ret=null;
 		try {
-			method=hu.elte.txtuml.api.AssociationEnd.class.getDeclaredMethod("getOwnerId");
+			method=hu.elte.txtuml.api.AssociationEnd.class.getDeclaredMethod("getOwner");
 			method.setAccessible(true);
-			ret=getObjectIdentifier( (String) method.invoke(target) );
+			ret=getObjectIdentifier( (ModelIdentifiedElement) method.invoke(target) );
 			method.setAccessible(false);
 		}
 		catch(Exception e)
@@ -100,7 +101,7 @@ class InstructionImporter extends AbstractInstructionImporter {
 		Class<?> resultClass=ElementFinder.findDeclaredClass(modelClass, typeName);
 
 		@SuppressWarnings("unchecked")
-		T result=(T) createLocalInstance(resultClass);
+		T result=(T) DummyInstanceCreator.createDummyInstance(resultClass);
 
 		String phrase=target.getClass().getSimpleName();
 		String resultName=result.getIdentifier();
@@ -140,16 +141,18 @@ class InstructionImporter extends AbstractInstructionImporter {
 
 		return result;
 	}
-	static void importInstanceCreation(ModelClass created)
+	static void importInstanceCreation(ModelClass createdInstance)
 	{
 
-		if(currentActivity != null && !localInstanceToBeCreated)
+		if(currentActivity != null && !DummyInstanceCreator.isCreating())
 		{
-			String instanceName=created.getIdentifier();
+			String instanceName=createdInstance.getIdentifier();
+			localInstances.put(createdInstance, new ModelElementInformation(instanceName));
+			createLocalFieldsRecursively(createdInstance);
 			//creating Create Object Action
 			CreateObjectAction createAction=(CreateObjectAction)
 					currentActivity.createOwnedNode("create_"+instanceName,UMLPackage.Literals.CREATE_OBJECT_ACTION);
-			Classifier classifier=(Classifier) currentModel.getOwnedMember(created.getClass().getSimpleName());
+			Classifier classifier=(Classifier) currentModel.getOwnedMember(createdInstance.getClass().getSimpleName());
 			createAction.setClassifier(classifier);
 
 			//creating output pin for Create Object Action
@@ -159,7 +162,7 @@ class InstructionImporter extends AbstractInstructionImporter {
 			createControlFlowBetweenNodes(lastNode,createAction);
 
 			//creating a variable for created instance, so we can reference it later
-			Type type=ModelImporter.importType(created.getClass());
+			Type type=ModelImporter.importType(createdInstance.getClass());
 			Variable variable=currentActivity.createVariable(instanceName,type);
 
 			//creating an Add Variable Value action
@@ -212,6 +215,7 @@ class InstructionImporter extends AbstractInstructionImporter {
 
 		try {
 			returnVal=assocMethod.invoke(target,args);
+			//localInstances.put(returnVal, new ModelElementInformation(getExpression(target)+args[0].""))
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
@@ -252,7 +256,7 @@ class InstructionImporter extends AbstractInstructionImporter {
 			try {
 				Method method = ElementFinder.findMethod(target.getClass(),methodName);
 				Class<?> returnType=method.getReturnType();
-				returnObj=createLocalInstance(returnType);
+				returnObj=DummyInstanceCreator.createDummyInstance(returnType);
 			} catch (SecurityException e1) {
 				// TODO Auto-generated catch block
 				//e1.printStackTrace();
@@ -262,10 +266,10 @@ class InstructionImporter extends AbstractInstructionImporter {
 		
 		return returnObj;
 	}
-	static ModelBool importMethodCallInGuardBody(ModelClass target, String methodName, Object... args)
+	static Object importMethodCallInGuardBody(ModelClass target, String methodName, Object... args)
 	{
-		ModelBool returnVal=new ModelBool();
-		String expression=methodName+"(";
+		String targetExpression = getExpression(target);
+		String expression=targetExpression+"."+methodName+"(";
 		int argsProcessed=0;
 		for(Object currArg : args)
 		{
@@ -284,11 +288,22 @@ class InstructionImporter extends AbstractInstructionImporter {
 		boolean literal=false;
 		boolean calculated=true;
 			
-		ModelTypeInformation returnValInfo=new ModelTypeInformation(expression,literal,calculated);
+		ModelElementInformation returnValInfo=new ModelElementInformation(expression,literal,calculated);
 		
-		modelTypeInstancesInfo.put(returnVal,returnValInfo);
+		ModelElement returnObj=null;
+		try {
+			Method method = ElementFinder.findMethod(target.getClass(),methodName);
+			Class<?> returnType= method.getReturnType();
+			returnObj=(ModelElement)DummyInstanceCreator.createDummyInstance(returnType);
+		} catch (SecurityException e1) {
+			// TODO Auto-generated catch block
+			//e1.printStackTrace();
+		}
 		
-		return returnVal;
+		localInstances.put(returnObj,returnValInfo);
+		
+		
+		return returnObj;
 	}
 	static Object importMethodCall(ModelClass target, String methodName, Object... args) throws ImportException
 	{
@@ -313,7 +328,7 @@ class InstructionImporter extends AbstractInstructionImporter {
 	{
 		Method method=ElementFinder.findMethod(target.getClass(), methodName);
 		Class<?> returnType=method.getReturnType();
-		return createLocalInstance(returnType);
+		return DummyInstanceCreator.createDummyInstance(returnType);
 		// TODO import calls into UML2 model
 	}
 
@@ -321,7 +336,7 @@ class InstructionImporter extends AbstractInstructionImporter {
 	{
 		Method method=ElementFinder.findMethod(c, methodName);
 		Class<?> returnType=method.getReturnType();
-		Object ret=createLocalInstance(returnType);
+		Object ret=DummyInstanceCreator.createDummyInstance(returnType);
 		return ret;
 	
 		// TODO import calls into UML2 model
@@ -331,8 +346,17 @@ class InstructionImporter extends AbstractInstructionImporter {
 	private static Object assignField(Object target, String fieldName, Class<?> newValueClass) 
 	{
 	
-		Object fieldValue=createLocalInstance(newValueClass);
-		setObjectFieldVal(target,fieldName,fieldValue);
+		Object fieldValue=getObjectFieldVal(target,fieldName);
+		if(fieldValue != null)
+		{
+			
+		}
+		else
+		{
+			fieldValue=DummyInstanceCreator.createDummyInstance(newValueClass);
+			setObjectFieldVal(target,fieldName,fieldValue);
+		}
+		
 
 		return fieldValue;
 	}
@@ -340,11 +364,13 @@ class InstructionImporter extends AbstractInstructionImporter {
 	static Object importModelClassFieldGet(ModelClass target, String fieldName, Class<?> fieldType)
 	{
 		return assignField(target,fieldName,fieldType);
+		
 
 	}
 	static Object importExternalClassFieldGet(ExternalClass target, String fieldName, Class<?> fieldType)
 	{	
 		return assignField(target,fieldName,fieldType);
+		
 	}
 
 	static Object importModelClassFieldSet(ModelClass target, String fieldName, Object newValue)  
@@ -359,7 +385,7 @@ class InstructionImporter extends AbstractInstructionImporter {
 				setStructuralFeatureValue(target,fieldName,(ModelIdentifiedElement)newValue,newValType);
 
 			}
-
+			
 			return fieldObj;
 		}
 		catch(Exception e)
@@ -377,18 +403,18 @@ class InstructionImporter extends AbstractInstructionImporter {
 		
 		boolean literal=true;
 		boolean calculated=false;
-		ModelTypeInformation instInfo;
+		ModelElementInformation instInfo;
 		
 		if(val instanceof Integer)
 		{
-			instInfo=new ModelTypeInformation(expression,literal,calculated,(Integer)val);
+			instInfo=new ModelElementInformation(expression,literal,calculated,(Integer)val);
 		}
 		else
 		{
-			instInfo=new ModelTypeInformation(expression,literal,calculated);
+			instInfo=new ModelElementInformation(expression,literal,calculated);
 		}
 		
-		modelTypeInstancesInfo.put(inst,instInfo);
+		localInstances.put(inst,instInfo);
 	}
 
 	static Signal initAndGetSignalInstanceOfTransition(Transition target) {
@@ -398,6 +424,11 @@ class InstructionImporter extends AbstractInstructionImporter {
 		{
 			signal=MethodImporter.createSignal(target.getClass());
 			setObjectFieldVal(target,"signal",signal);
+			
+			String signalName=signal.getClass().getSimpleName();
+			localInstances.put(signal, new ModelElementInformation(signalName,false,false));
+			createLocalFieldsRecursively(signal);
+			
 		}
 		return signal;
 	}

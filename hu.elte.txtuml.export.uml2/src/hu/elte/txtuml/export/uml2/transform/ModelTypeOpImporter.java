@@ -1,10 +1,11 @@
 package hu.elte.txtuml.export.uml2.transform;
 
 import hu.elte.txtuml.api.ModelBool;
+import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.api.ModelType;
-import hu.elte.txtuml.export.uml2.utils.ModelTypeInformation;
+import hu.elte.txtuml.export.uml2.transform.backend.ModelElementInformation;
 
 
 class ModelTypeOpImporter extends AbstractInstructionImporter {
@@ -29,10 +30,10 @@ class ModelTypeOpImporter extends AbstractInstructionImporter {
 		NOTEQ_LITERAL
 	};
 	
-	private static <T> void createCalculatedModelTypeInstInfo(ModelType<T> inst, String expression)
+	private static <T> void createCalculatedInstanceInfo(ModelElement inst, String expression)
 	{
-		ModelTypeInformation instInfo=new ModelTypeInformation(expression,false,true);
-		modelTypeInstancesInfo.put(inst,instInfo);
+		ModelElementInformation instInfo=new ModelElementInformation(expression,false,true);
+		localInstances.put(inst,instInfo);
 	}
 	@SuppressWarnings("unchecked")
 	private static <T> ModelType<T> importModelType2OpOperation
@@ -70,7 +71,7 @@ class ModelTypeOpImporter extends AbstractInstructionImporter {
 			{
 				result=(ModelType<T>) new ModelString();
 			}
-			createCalculatedModelTypeInstInfo(result,valueExpression);
+			createCalculatedInstanceInfo(result,valueExpression);
 		}
 		
 		return result;
@@ -215,7 +216,7 @@ class ModelTypeOpImporter extends AbstractInstructionImporter {
 			{
 				result=(ModelType<T>) new ModelBool();
 			}
-			createCalculatedModelTypeInstInfo(result,valueExpression);
+			createCalculatedInstanceInfo(result,valueExpression);
 		}
 		
 		return result;
@@ -330,7 +331,7 @@ class ModelTypeOpImporter extends AbstractInstructionImporter {
 		String expression=leftExpr+" "+operator+" "+rightExpr;
 		
 		ModelBool result=new ModelBool();
-		createCalculatedModelTypeInstInfo(result,expression);
+		createCalculatedInstanceInfo(result,expression);
 		
 		return result;
 	}

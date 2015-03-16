@@ -8,16 +8,18 @@ import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
+import hu.elte.txtuml.export.uml2.utils.ElementModifiersSetter;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.export.uml2.utils.ImportException;
-import hu.elte.txtuml.export.uml2.utils.ModelTypeInformation;
+import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
+import hu.elte.txtuml.export.uml2.transform.backend.InstancesMap;
+import hu.elte.txtuml.export.uml2.transform.backend.ModelElementInformation;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.URI;
@@ -28,7 +30,6 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Profile;
@@ -41,7 +42,6 @@ import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
-import org.eclipse.uml2.uml.VisibilityKind;
 import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
@@ -72,26 +72,26 @@ public class ModelImporter extends AbstractImporter{
         currentModel=model;
         
 
-        initModelTypeInstancesInfo();
+        initGlobalInstancesMap();
         createProfile(path);
         loadAndApplyProfile();
         importPrimitiveTypes();
 	}
 	
-	private static void initModelTypeInstancesInfo() {
+	private static void initGlobalInstancesMap() {
 		
-		modelTypeInstancesInfo=new WeakHashMap<>();
-		modelTypeInstancesInfo.put(ModelInt.ONE, new ModelTypeInformation("1",true,false,1));
-		modelTypeInstancesInfo.put(ModelInt.ZERO, new ModelTypeInformation("0",true,false,0));
-		modelTypeInstancesInfo.put(ModelBool.TRUE, new ModelTypeInformation("true",true,false));
-		modelTypeInstancesInfo.put(ModelBool.FALSE, new ModelTypeInformation("false",true,false));
-		modelTypeInstancesInfo.put(ModelBool.ELSE, new ModelTypeInformation("else",true,false));
+		globalInstances=InstancesMap.create();
+		globalInstances.put(ModelInt.ONE, new ModelElementInformation("1",true,false,1));
+		globalInstances.put(ModelInt.ZERO, new ModelElementInformation("0",true,false,0));
+		globalInstances.put(ModelBool.TRUE, new ModelElementInformation("true",true,false));
+		globalInstances.put(ModelBool.FALSE, new ModelElementInformation("false",true,false));
+		globalInstances.put(ModelBool.ELSE, new ModelElementInformation("else",true,false));
 		
 	}
 
 	private static void endModelImport()
 	{
-		modelTypeInstancesInfo.clear();
+		globalInstances.clear();
 		importing=false;
 	}
 	
@@ -103,8 +103,7 @@ public class ModelImporter extends AbstractImporter{
 		importGeneralizations();
 		importClassAttributes();
 		importMemberFunctionsWithoutBodies();
-		importMemberFunctionBodies();
-		importClassStateMachinesAndNestedSignals();
+		importClassOperationBodiesStateMachinesAndNestedSignals();
 	}
 	public static Model importModel(String className,String path) throws ImportException
 	{
@@ -256,7 +255,7 @@ public class ModelImporter extends AbstractImporter{
 	{
 		org.eclipse.uml2.uml.Class importedClass =
 				currentModel.createOwnedClass(sourceClass.getSimpleName(),Modifier.isAbstract(sourceClass.getModifiers()));
-		setModifiers(importedClass,sourceClass);
+		ElementModifiersSetter.setModifiers(importedClass,sourceClass);
 		
 		if(ElementTypeTeller.isExternalClass(sourceClass))
 		{
@@ -383,7 +382,7 @@ public class ModelImporter extends AbstractImporter{
     	{
     		throw new ImportException(owner.getName()+" is not a Class nor a Signal.");
     	}
-    	setModifiers(property,field);
+    	ElementModifiersSetter.setModifiers(property,field);
     }
     
     static org.eclipse.uml2.uml.Type importType(Class<?> sourceClass) 
@@ -424,20 +423,7 @@ public class ModelImporter extends AbstractImporter{
 			}
 		}
     }
-    private static void importMemberFunctionBodies() throws ImportException
-    {
-		for(Class<?> c : modelClass.getDeclaredClasses()) 
-		{
-			if(!ElementTypeTeller.isModelElement(c))
-			{
-				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
-			}
-			if(ElementTypeTeller.isModelClass(c)) 
-			{
-				importClassMemberFunctionBodies(c);
-			}
-		}
-    }
+
     
     private static void createClassMemberFunctions( Class<?> sourceClass)
     {
@@ -446,7 +432,7 @@ public class ModelImporter extends AbstractImporter{
     	{
            
             Operation operation=importOperationWithoutBody(ownerClass,sourceClass,method);
-            setModifiers(operation, method);
+            ElementModifiersSetter.setModifiers(operation, method);
            
         }
     }
@@ -456,14 +442,13 @@ public class ModelImporter extends AbstractImporter{
     	org.eclipse.uml2.uml.Class ownerClass=(org.eclipse.uml2.uml.Class) currentModel.getMember(sourceClass.getSimpleName());
     	for(Method method : sourceClass.getDeclaredMethods()) 
     	{
-   
-           	importOperationBody(ElementFinder.findOperation(ownerClass, method.getName()),ownerClass,sourceClass,method);
+           	importOperationBody(ElementFinder.findOperation(ownerClass, method.getName()),ownerClass,method);
         }
     }
     
-  	private static void importClassStateMachinesAndNestedSignals() throws ImportException
-	{
-		for(Class<?> c : modelClass.getDeclaredClasses()) 
+ 	private static void importClassOperationBodiesStateMachinesAndNestedSignals() throws ImportException
+ 	{
+ 		for(Class<?> c : modelClass.getDeclaredClasses()) 
 		{
 			if(!ElementTypeTeller.isModelElement(c))
 			{
@@ -474,17 +459,39 @@ public class ModelImporter extends AbstractImporter{
 				org.eclipse.uml2.uml.Class currClass = (org.eclipse.uml2.uml.Class) currentModel.getOwnedMember(c.getSimpleName());
 				
 				importNestedSignals(c);
+			
+				createInstancesAndInitInstancesMap(c);
 				
 				if(isContainsStateMachine(c))
 				{
 					importStateMachine(currClass,c);
 				}
 				
+				importClassMemberFunctionBodies(c);
+				
+				classAndFieldInstances.clear();
 			}
 		}
-	}
+ 	}
     
-  	private static void importNestedSignals(Class<?> sourceClass) throws ImportException
+  	private static void createInstancesAndInitInstancesMap(Class<?> c) {
+		
+		classAndFieldInstances=InstancesMap.create();
+		
+  		selfInstance=(ModelClass) DummyInstanceCreator.createDummyInstance(c);
+ 
+		classAndFieldInstances.put(selfInstance, new ModelElementInformation("self",false,false));
+		
+		createNonLocalFieldsRecursively(selfInstance);
+		
+	}
+  	
+  	private static void createNonLocalFieldsRecursively(Object classifier)
+  	{
+  		createFieldsRecursively(classifier, false);
+  	}
+
+	private static void importNestedSignals(Class<?> sourceClass) throws ImportException
   	{
 		for(Class<?> innerClass:sourceClass.getDeclaredClasses())
 		{
@@ -502,7 +509,9 @@ public class ModelImporter extends AbstractImporter{
 	{	
 		
         StateMachine stateMachine = (StateMachine) ownerClass.createClassifierBehavior(ownerClass.getName(),UMLPackage.Literals.STATE_MACHINE);
-        Region region = new RegionImporter(sourceClass,currentModel,stateMachine.createRegion(stateMachine.getName())).importRegion();
+        Region region = new RegionImporter
+        		(sourceClass,selfInstance,currentModel,stateMachine.createRegion(stateMachine.getName()))
+        		.importRegion();
         
         
        
@@ -515,11 +524,11 @@ public class ModelImporter extends AbstractImporter{
     }
 	
 	private static Activity importOperationBody
-		(Operation operation,org.eclipse.uml2.uml.Class ownerClass,Class<?> sourceClass,Method sourceMethod)
+		(Operation operation,org.eclipse.uml2.uml.Class ownerClass,Method sourceMethod)
 	{
 		Activity activity=(Activity) ownerClass.createOwnedBehavior(sourceMethod.getName(),UMLPackage.Literals.ACTIVITY);
 		activity.setSpecification(operation);
-		MethodImporter.importMethod(currentModel,activity,sourceMethod,sourceClass);
+		MethodImporter.importMethod(currentModel,activity,sourceMethod,selfInstance);
 		
 		
 		return activity;
@@ -590,60 +599,7 @@ public class ModelImporter extends AbstractImporter{
     }
     
 
-    private static void setVisibilityBasedOnModifiersGivenByReflection(NamedElement element,int modifiers)
-	{
-		if(Modifier.isPrivate(modifiers))
-		{
-			element.setVisibility(VisibilityKind.PRIVATE_LITERAL);
-		}
-		else if(Modifier.isProtected(modifiers))
-		{
-			element.setVisibility(VisibilityKind.PROTECTED_LITERAL);
-		}
-		else if(Modifier.isPublic(modifiers))
-		{
-			element.setVisibility(VisibilityKind.PUBLIC_LITERAL);
-		}
-		else
-		{
-			if(element instanceof Property)
-			{
-				element.setVisibility(VisibilityKind.PRIVATE_LITERAL);
-			}
-			else if(element instanceof Operation || element instanceof org.eclipse.uml2.uml.Classifier)
-			{
-				element.setVisibility(VisibilityKind.PUBLIC_LITERAL);
-			}
-			else
-			{
-				element.setVisibility(VisibilityKind.PACKAGE_LITERAL);
-			}
-		}
-	}
-	private static void setElementModifiersBasedOnModifiersGivenByReflection(NamedElement element,int modifiers)
-	{
-		setVisibilityBasedOnModifiersGivenByReflection(element,modifiers);
-		
-		if(element instanceof Classifier)
-		{
-			boolean isAbstract = Modifier.isAbstract(modifiers);
-			Classifier classifierElem=(Classifier) element;
-			classifierElem.setIsAbstract(isAbstract);
-		}
-		
-	}
-	private static void setModifiers(NamedElement importedElement,Class<?> sourceClass)
-	{
-		setElementModifiersBasedOnModifiersGivenByReflection(importedElement,sourceClass.getModifiers());	
-	}
-	private static void setModifiers(NamedElement importedElement, Method sourceMethod)
-	{
-		setElementModifiersBasedOnModifiersGivenByReflection(importedElement,sourceMethod.getModifiers());	
-	}
-	private static void setModifiers(NamedElement importedElement,Field sourceField)
-	{
-		setElementModifiersBasedOnModifiersGivenByReflection(importedElement,sourceField.getModifiers());	
-	}
+
     public static ResourceSet getResourceSet()
     {
     	return resourceSet;

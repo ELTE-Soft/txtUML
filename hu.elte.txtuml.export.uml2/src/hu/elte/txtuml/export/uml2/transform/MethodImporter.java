@@ -1,14 +1,17 @@
 package hu.elte.txtuml.export.uml2.transform;
 
 import hu.elte.txtuml.api.ModelBool;
-import hu.elte.txtuml.api.ModelClass;
+import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.api.ModelIdentifiedElement;
+import hu.elte.txtuml.api.StateMachine;
 import hu.elte.txtuml.api.Trigger;
+import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
+import hu.elte.txtuml.export.uml2.transform.backend.InstancesMap;
+import hu.elte.txtuml.export.uml2.transform.backend.ModelElementInformation;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.utils.InstanceCreator;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Stack;
 
@@ -19,6 +22,7 @@ import org.eclipse.uml2.uml.ActivityParameterNode;
 import org.eclipse.uml2.uml.AddVariableValueAction;
 import org.eclipse.uml2.uml.InputPin;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
@@ -29,7 +33,7 @@ import org.eclipse.uml2.uml.Variable;
 
 public class MethodImporter extends AbstractMethodImporter {
 
-	public static hu.elte.txtuml.api.Signal createSignal(Class<? extends ModelClass.Transition> tr) {
+	public static hu.elte.txtuml.api.Signal createSignal(Class<? extends StateMachine.Transition> tr) {
     	Trigger triggerAnnot = tr.getAnnotation(Trigger.class);
     	if (triggerAnnot != null) {
         	return InstanceCreator.createInstance(triggerAnnot.value());
@@ -45,7 +49,7 @@ public class MethodImporter extends AbstractMethodImporter {
 			returnValue = (ModelBool) currentMethod.invoke(classInstance);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			//e.printStackTrace();
+			e.printStackTrace();
 		} 
 		currentMethod.setAccessible(false);
 		
@@ -54,41 +58,39 @@ public class MethodImporter extends AbstractMethodImporter {
 	
 	private static void endGuardImport()
 	{
-		self=null;
 		currentModel=null;
 		importing=false;
 	}
-	static ModelBool importGuardMethod(Model model, Method sourceMethod, Class<?> declaringClass)
+	static ModelBool importGuardMethod(Model model, Method sourceMethod,StateMachine.Transition transitionInstance)
 	{
-		Object classInstance=initGuardImport(model,sourceMethod,declaringClass);
+		initGuardImport(model,sourceMethod,transitionInstance);
 		
-		ModelBool returnValue=importGuardBody(classInstance);
+		ModelBool returnValue=importGuardBody(transitionInstance);
 		
 		endGuardImport();
 	
 		return returnValue;
 	}
 
-	private static Object initGuardImport(Model model, Method sourceMethod, Class<?> declaringClass)
+	private static void initGuardImport(Model model, Method sourceMethod, StateMachine.Transition transitionInstance)
 	{
+		localInstances=InstancesMap.create();
 		currentModel=model;
 		currentMethod=sourceMethod;
 		currentParameters=null;
 		importing=true;
 	
+		setCurrentSignal(transitionInstance);	
 
-		Object classInstance=createLocalInstance(declaringClass);			
-		assignSelf(classInstance);
-		setCurrentSignal((hu.elte.txtuml.api.StateMachine.Transition)classInstance);	
-		
-		return classInstance;
 	}
 	
 	private static void setCurrentSignal(hu.elte.txtuml.api.StateMachine.Transition transitionInstance)
 	{
 		currentSignal=InstructionImporter.initAndGetSignalInstanceOfTransition(transitionInstance);	
+		
+		
 	}
-	private static Object initMethodImport(Model model, Activity activity, Method sourceMethod, Class<?> declaringClass)
+	private static void initMethodImport(Model model, Activity activity, Method sourceMethod, ModelElement classInstance)
 	{
 		currentModel=model;
 		currentActivity = activity;
@@ -97,17 +99,14 @@ public class MethodImporter extends AbstractMethodImporter {
 		blockBodyFirstEdges=new Stack<ActivityEdge>();
 		cntDecisionNodes=0;
 		importing=true;
-		
-		Object classInstance=createLocalInstance(declaringClass);
-		
-		assignSelf(classInstance);
+		localInstances=InstancesMap.create();
 		
 		ActivityNode initialNode=activity.createOwnedNode("initialNode",UMLPackage.Literals.INITIAL_NODE);	
 		lastNode=initialNode;
 		
 		loadCurrentParameters();
 		
-		if(ElementTypeTeller.isTransition(declaringClass))
+		if(ElementTypeTeller.isTransition(classInstance))
 		{
 			setCurrentSignal((hu.elte.txtuml.api.ModelClass.Transition)classInstance);		
 			
@@ -116,8 +115,6 @@ public class MethodImporter extends AbstractMethodImporter {
 				addSignalParameter();
 			}
 		}
-		
-		return classInstance;
 	}
 	
 	private static void addSignalParameter()
@@ -134,17 +131,17 @@ public class MethodImporter extends AbstractMethodImporter {
 		ActivityNode finalNode=currentActivity.createOwnedNode("finalNode",UMLPackage.Literals.ACTIVITY_FINAL_NODE);
 		createControlFlowBetweenNodes(lastNode,finalNode);
 		
-		self=null;
 		currentActivity = null;
 		currentModel=null;
 		currentParameters=null;
 		currentSignal=null;
 		importing=false;
+		
 	}
 	
-	static void importMethod(Model model, Activity activity, Method sourceMethod, Class<?> declaringClass) 
+	static void importMethod(Model model, Activity activity, Method sourceMethod, ModelElement classInstance) 
 	{
-		Object classInstance=initMethodImport(model,activity,sourceMethod,declaringClass);
+		initMethodImport(model,activity,sourceMethod,classInstance);
 		importBody(classInstance);
 		endMethodImport();	
 	}
@@ -154,7 +151,7 @@ public class MethodImporter extends AbstractMethodImporter {
 		try 
 		{
 			currentMethod.setAccessible(true);
-			Object returnValue=currentMethod.invoke(classInstance,currentParameters);
+			Object returnValue=currentMethod.invoke(classInstance,(Object[])currentParameters);
 			if(returnValue!=null)
 			{
 				try
@@ -184,23 +181,43 @@ public class MethodImporter extends AbstractMethodImporter {
 		if(returnParam!=null)
 		{
 			Type returnType=returnParam.getType();
-			ActivityNode readAction=null;
+			ActivityNode returnValProviderAction=null;
 			OutputPin outputPin=null;
 			
 			if(isObjectAFieldOfSelf((ModelIdentifiedElement)returnObj))
 			{
 				String fieldName=retName.substring(5);
-				readAction=createReadStructuralFeatureAction(self,fieldName,returnType);
-				outputPin=((ReadStructuralFeatureAction) readAction).createResult(readAction.getName()+"_result",returnType);
+				returnValProviderAction=
+						createReadStructuralFeatureAction(selfInstance,fieldName,returnType);
+				outputPin=
+						((ReadStructuralFeatureAction) returnValProviderAction).
+						createResult(returnValProviderAction.getName()+"_result",returnType);
+			}
+			else if(isInstanceCalculated((ModelElement) returnObj) || isInstanceLiteral((ModelElement) returnObj))
+			{
+				
+				String expression = getExpression ((ModelIdentifiedElement) returnObj);
+				
+				returnValProviderAction=
+						currentActivity.createOwnedNode(expression,UMLPackage.Literals.OPAQUE_ACTION);
+			
+				
+				
+				((OpaqueAction)returnValProviderAction)
+					.getBodies().add(expression);
+
+				outputPin=
+						((OpaqueAction)returnValProviderAction)
+						.createOutputValue(returnValProviderAction.getName()+"_result",returnType);
 			}
 			else
 			{
 				String variableName=retName;
-				readAction=createReadVariableAction(variableName,returnType);
-				outputPin=((ReadVariableAction)readAction).createResult(readAction.getName()+"_result",returnType);
+				returnValProviderAction=createReadVariableAction(variableName,returnType);
+				outputPin=((ReadVariableAction)returnValProviderAction).createResult(returnValProviderAction.getName()+"_result",returnType);
 			}
 			
-			createControlFlowBetweenNodes(lastNode,readAction);
+			createControlFlowBetweenNodes(lastNode,returnValProviderAction);
 			
 			ActivityParameterNode returnParamNode = createParameterNode(returnParam,"return",returnType);
 			createObjectFlowBetweenNodes(outputPin,returnParamNode);
@@ -212,6 +229,12 @@ public class MethodImporter extends AbstractMethodImporter {
 		
 	}
 	
+	private static boolean isInstanceLiteral(ModelElement instance) {
+		
+		ModelElementInformation instInfo=getInstanceInfo(instance);
+		return instInfo!=null && instInfo.isLiteral();
+	}
+
 	private static ActivityParameterNode createParameterNode(Parameter param,String paramName,Type paramType)
 	{
 		ActivityParameterNode paramNode= (ActivityParameterNode)
@@ -225,13 +248,14 @@ public class MethodImporter extends AbstractMethodImporter {
 	
 	private static void loadCurrentParameters()
 	{
-		currentParameters=new Object[currentMethod.getParameterTypes().length];
+		currentParameters=new ModelElement[currentMethod.getParameterTypes().length];
 		int i=0;
 		for(Class<?> c: currentMethod.getParameterTypes())
 		{
-			currentParameters[i]=createLocalInstance(c);
+			currentParameters[i]=(ModelElement) DummyInstanceCreator.createDummyInstance(c);
+		
 			String argName="arg"+i;
-			
+			localInstances.put(currentParameters[i],new ModelElementInformation(argName,false,false));
 			Parameter param=ElementFinder.findParameterInActivity(argName,currentActivity);
 			if(param!=null)
 			{
@@ -241,8 +265,6 @@ public class MethodImporter extends AbstractMethodImporter {
 			++i;
 		}
 	}
-	
-	
 	
 	private static void addParameterToActivity(Parameter param,String paramName,Type paramType)
 	{
@@ -257,56 +279,6 @@ public class MethodImporter extends AbstractMethodImporter {
 		createObjectFlowBetweenNodes(paramNode,inputPin);
 		createControlFlowBetweenNodes(lastNode,addVarValAction);
 		lastNode=addVarValAction;
-	}
-	
-	private static void assignSelf(Object obj)
-	{
-		//the imported activity is a method of a ModelClass
-		if(obj instanceof ModelClass) 
-		{
-			self=(ModelClass)obj;
-		}
-		//the imported activity is an effect/entry/exit action of a transition/state
-		//therefore, obj is an instance of a state/transition
-		//we go through this$... fields until we get the instance of the ModelClass we're looking for
-		else if(!obj.getClass().equals(ModelImporter.getModelClass()))
-		{
-		
-		        Object o=obj;
-		        while(o!=null && !(o instanceof ModelClass))
-		        {
-		        	Field field=null;
-		        	for(Field f:o.getClass().getDeclaredFields())
-		        	{
-		        		if(f.getName().startsWith("this"));
-		        		field=f;
-		        		break;
-		        	}
-		        	field.setAccessible(true);
-		        	try {
-						o=field.get(o);
-					} catch (IllegalArgumentException e) {
-						
-					} catch (IllegalAccessException e) {
-						
-					}
-		        	field.setAccessible(false);
-		        }
-		        if(o==null)
-		        {
-		        	self=null;
-		        }
-		        else
-		        {
-		        	self=(ModelClass) o;
-		        }
-		        
-		        
-		}
-		else
-		{
-			self=null;
-		}
 	}
 	
 

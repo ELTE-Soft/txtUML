@@ -1,12 +1,14 @@
 package hu.elte.txtuml.export.uml2.transform;
 
-import hu.elte.txtuml.api.ModelType;
+import hu.elte.txtuml.api.ModelClass;
+import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
-import hu.elte.txtuml.export.uml2.utils.ModelTypeInformation;
+import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
+import hu.elte.txtuml.export.uml2.transform.backend.InstancesMap;
+import hu.elte.txtuml.export.uml2.transform.backend.ModelElementInformation;
 
 import java.lang.reflect.Field;
-import java.util.WeakHashMap;
 
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Pseudostate;
@@ -14,6 +16,62 @@ import org.eclipse.uml2.uml.PseudostateKind;
 import org.eclipse.uml2.uml.Region;
 
 abstract class AbstractImporter {
+	
+	protected static ModelElementInformation getInstanceInfo(Object instance)
+	{
+		ModelElementInformation ret;
+		
+		ret = globalInstances.get(instance);
+		
+		if(ret != null)
+			return ret;
+		
+		ret = classAndFieldInstances.get(instance);
+		
+		if(ret != null) 
+			return ret;
+		
+		ret = localInstances.get(instance);
+		
+		return ret;
+	}
+	
+
+	protected static void createFieldsRecursively(Object classifier, boolean local)
+  	{
+  		InstancesMap instancesMap;
+  		
+  		if(local)
+  			instancesMap = localInstances;
+  		else
+  			instancesMap = classAndFieldInstances;
+		
+  		if(classifier != null)
+  		{
+  			String classifierExpr = getInstanceInfo(classifier).getExpression();
+  	  		
+  	  		for(Field field: classifier.getClass().getDeclaredFields())
+  	  		{
+  	  			Class<?> fieldType = field.getType();
+  	  			String fieldName = field.getName();
+  	  			Object fieldInst =  DummyInstanceCreator.createDummyInstance(fieldType);
+  	  			setObjectFieldVal(classifier,fieldName, fieldInst);
+  	  			String fieldExpr = classifierExpr+"."+fieldName;
+  	  			
+  	  			ModelElementInformation elementInfo = new ModelElementInformation(fieldExpr,false,false);
+  	  			if(fieldInst != null)
+  	  			{
+  	 
+  	  				instancesMap.put(fieldInst,elementInfo);
+  	  	  			if(ElementTypeTeller.isClassifier(fieldType))
+  	  	  				createFieldsRecursively(fieldInst,local);
+  	  	  			
+  	  			}
+  	  			
+  	  		}
+  		}
+		
+  	}
 	
 	protected static void setObjectFieldVal(Object object, String fieldName,Object newVal)
 	{
@@ -35,6 +93,7 @@ abstract class AbstractImporter {
 	protected static Object getObjectFieldVal(Object object,String fieldName)
 	{	
 		Field field = ElementFinder.findField(object.getClass(),fieldName);
+		
 		return accessObjectFieldVal(object, field);	
 	}
 	
@@ -89,15 +148,24 @@ abstract class AbstractImporter {
 		return false;
 	}
 	
-	protected static void setLocalInstanceToBeCreated(boolean bool) {
-		localInstanceToBeCreated = bool;
+	protected static boolean isInstanceCalculated(ModelElement instance)
+	{
+		ModelElementInformation instInfo=getInstanceInfo(instance);
+		boolean calculated;
+		if(instInfo==null)
+			calculated=false;
+		else 
+			calculated =instInfo.isCalculated();
+		return calculated;
 	}
-	
-	
-	protected static boolean localInstanceToBeCreated = false;
+
+
 	protected static PrimitiveType UML2Integer,UML2Bool,UML2String,UML2Real,UML2UnlimitedNatural;
 	protected static Class<?> modelClass=null;
-	protected static WeakHashMap<ModelType<?>, ModelTypeInformation> modelTypeInstancesInfo=null;
-
+	protected static InstancesMap globalInstances;
+	protected static InstancesMap classAndFieldInstances;
+	protected static InstancesMap localInstances;
+	protected static ModelClass selfInstance=null;
+	
 
 }

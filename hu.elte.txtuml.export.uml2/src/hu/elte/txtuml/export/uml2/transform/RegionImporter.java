@@ -2,11 +2,13 @@ package hu.elte.txtuml.export.uml2.transform;
 
 import hu.elte.txtuml.api.From;
 import hu.elte.txtuml.api.ModelBool;
-import hu.elte.txtuml.api.ModelType;
+import hu.elte.txtuml.api.ModelElement;
+import hu.elte.txtuml.api.StateMachine;
+import hu.elte.txtuml.api.StateMachine.Transition;
 import hu.elte.txtuml.api.To;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.export.uml2.utils.ImportException;
-import hu.elte.txtuml.export.uml2.utils.ModelTypeInformation;
+import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 
 import java.lang.reflect.Method;
 
@@ -27,9 +29,11 @@ import org.eclipse.uml2.uml.Vertex;
 class RegionImporter extends AbstractImporter {
 
 	
-	RegionImporter(Class<?> sourceClass,Model currentModel,Region currentRegion) throws ImportException
+	
+	RegionImporter(Class<?> sourceClass,ModelElement ownerInstance,Model currentModel,Region currentRegion) throws ImportException
 	{
 		this.sourceClass=sourceClass;
+		this.ownerInstance=ownerInstance;
 		this.currentModel=currentModel;
 		this.region=currentRegion;
 	}
@@ -67,23 +71,40 @@ class RegionImporter extends AbstractImporter {
 	private  Vertex importState(Class<?> state)	throws ImportException
 	{
 		Vertex vertex=createState(state);
+
+		StateMachine.State stateInstance=(hu.elte.txtuml.api.StateMachine.State) 
+				DummyInstanceCreator.createDummyInstance(state,ownerInstance);
+		if(ElementTypeTeller.isCompositeState(state))
+		{
+			Region subRegion= new RegionImporter
+					(state,stateInstance,currentModel,((State) vertex).createRegion(state.getSimpleName()))
+			.importRegion();
+			subRegion.setState((State) vertex);
+
+			if(subRegion.getSubvertices().size() != 0 && !isContainsInitialState(subRegion)) 
+			{
+				importWarning(state.getName() + " has one or more states but no initial state (state machine will not be created)");
+				return null;
+			}
+		}
+		
 		if(!ElementTypeTeller.isInitialState(state) && !ElementTypeTeller.isChoice(state))
 		{
-			importStateEntryAction(state,(State) vertex);
-			importStateExitAction(state,(State) vertex);
+			importStateEntryAction(state, (State) vertex, stateInstance);
+			importStateExitAction(state, (State) vertex, stateInstance);
 		}
 		return vertex;
 	}
 	
 
-	private void importStateEntryAction(Class<?> stateClass,State state)
+	private void importStateEntryAction(Class<?> stateClass,State state, StateMachine.State stateInstance)
 	{
 		
 		try 
 		{
 			Method entryMethod=stateClass.getDeclaredMethod("entry");
 			Activity activity=(Activity)state.createEntry(state.getName()+"_entry",UMLPackage.Literals.ACTIVITY);
-			MethodImporter.importMethod(currentModel,activity, entryMethod, stateClass);
+			MethodImporter.importMethod(currentModel,activity, entryMethod, stateInstance);
 
 		}
 		catch (NoSuchMethodException e) 
@@ -95,14 +116,14 @@ class RegionImporter extends AbstractImporter {
 	}
 	
 
-	private void importStateExitAction(Class<?> stateClass,State state)
+	private void importStateExitAction(Class<?> stateClass,State state, StateMachine.State stateInstance)
 	{
 		
 		try 
 		{
 			Method exitMethod=stateClass.getDeclaredMethod("exit");
 			Activity activity=(Activity)state.createExit(state.getName()+"_exit",UMLPackage.Literals.ACTIVITY);
-			MethodImporter.importMethod(currentModel,activity, exitMethod, stateClass);
+			MethodImporter.importMethod(currentModel,activity, exitMethod, stateInstance);
 
 		}
 		catch (NoSuchMethodException e)
@@ -146,10 +167,10 @@ class RegionImporter extends AbstractImporter {
 			}
 			return createInitialState(state);
         }
-		else if(ElementTypeTeller.isCompositeState(state))
+		/*else if(ElementTypeTeller.isCompositeState(state))
 		{
 			return createCompositeState(state);
-		}
+		}*/
 		else if(ElementTypeTeller.isChoice(state))
 		{
 			return createChoice(state);
@@ -173,10 +194,12 @@ class RegionImporter extends AbstractImporter {
 		return ret;
 	}
 
-	private State createCompositeState(Class<?> state) throws ImportException
+	/*private State createCompositeState(Class<?> state) throws ImportException
 	{
 		State compositeState=(State) region.createSubvertex(state.getSimpleName(),UMLPackage.Literals.STATE);
-		Region subRegion= new RegionImporter(state,currentModel,compositeState.createRegion(state.getSimpleName())).importRegion();
+		Region subRegion= new RegionImporter
+						(state,ownerInstance,currentModel,compositeState.createRegion(state.getSimpleName()))
+						.importRegion();
 		subRegion.setState(compositeState);
 		       
         if(subRegion.getSubvertices().size() != 0 && !isContainsInitialState(subRegion)) 
@@ -185,7 +208,7 @@ class RegionImporter extends AbstractImporter {
         	return null;
         }
         return compositeState;
-	}
+	}*/
 	
 	
 	
@@ -203,9 +226,11 @@ class RegionImporter extends AbstractImporter {
         
         org.eclipse.uml2.uml.Transition transition=createTransitionBetweenVertices(trName,source,target);
          
+        StateMachine.Transition transitionInstance = (Transition)
+        		DummyInstanceCreator.createDummyInstance(trans,ownerInstance); 
         importTrigger(triggerAnnot,transition);
-        importEffectAction(trans,transition);
-        importGuard(trans,transition);
+        importEffectAction(trans,transition,transitionInstance);
+        importGuard(trans,transition,transitionInstance);
         
         return transition;
     }   
@@ -219,7 +244,8 @@ class RegionImporter extends AbstractImporter {
 	        trigger.setEvent((Event) currentModel.getPackagedElement(eventName+"_event"));
 	     }
 	}
-	private void importEffectAction(Class<?> transitionClass,org.eclipse.uml2.uml.Transition transition)
+	private void importEffectAction
+		(Class<?> transitionClass,org.eclipse.uml2.uml.Transition transition, StateMachine.Transition transitionInstance)
 	{
 				
 		
@@ -227,7 +253,7 @@ class RegionImporter extends AbstractImporter {
 		{
 			Method effectMethod=transitionClass.getDeclaredMethod("effect");
 			Activity activity=(Activity)transition.createEffect(transition.getName()+"_effect",UMLPackage.Literals.ACTIVITY);
-			MethodImporter.importMethod(currentModel,activity, effectMethod, transitionClass);
+			MethodImporter.importMethod(currentModel,activity, effectMethod, transitionInstance);
 		}
 		catch (NoSuchMethodException e)
 		{
@@ -237,18 +263,20 @@ class RegionImporter extends AbstractImporter {
 		
 	}
 	
-	private void importGuard(Class<?> transitionClass,org.eclipse.uml2.uml.Transition transition)
+	private void importGuard
+		(Class<?> transitionClass,org.eclipse.uml2.uml.Transition transition, StateMachine.Transition transitionInstance)
 	{
 			try
 			{
 				Method guardMethod=transitionClass.getDeclaredMethod("guard");
-				ModelBool returnValue=MethodImporter.importGuardMethod(currentModel,guardMethod,transitionClass);
+				ModelBool returnValue=MethodImporter.importGuardMethod(currentModel,guardMethod,transitionInstance);
+				
 				if(returnValue!=null)
-				{
-		
+				{				
 					String guardExpression=MethodImporter.getExpression(returnValue);
 					
-					if(isModelTypeInstCalculated(returnValue))
+			
+					if(isInstanceCalculated(returnValue))
 					{
 						guardExpression=guardExpression.substring(1,guardExpression.length()-1);
 					}
@@ -270,15 +298,7 @@ class RegionImporter extends AbstractImporter {
 		
 	}
 	
-	private boolean isModelTypeInstCalculated(ModelType<?> returnValue)
-	{
-		ModelTypeInformation instInfo=modelTypeInstancesInfo.get(returnValue);
-		boolean calculated;
-		if(instInfo==null) calculated=false;
-		
-		else calculated =instInfo.isCalculated();
-		return calculated;
-	}
+	
 
 	private org.eclipse.uml2.uml.Transition createTransitionBetweenVertices(String name,Vertex source, Vertex target)
 	{
@@ -288,6 +308,7 @@ class RegionImporter extends AbstractImporter {
         return transition;
 	}
 	
+	private ModelElement ownerInstance;
 	private Class<?> sourceClass; 
 	private Model currentModel;
 	private Region region;

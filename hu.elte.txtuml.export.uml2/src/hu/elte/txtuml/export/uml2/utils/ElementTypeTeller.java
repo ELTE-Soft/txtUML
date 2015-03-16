@@ -68,6 +68,50 @@ public class ElementTypeTeller {
 	public static boolean isTransition(Class<?> c) {
         return StateMachine.Transition.class.isAssignableFrom(c);
     }
+	
+	public static boolean isModelClass(ModelElement element) {
+		return element!=null && isModelClass(element.getClass());
+	}
+
+	public static boolean isExternalClass(ModelElement element) {
+		return element!=null && isExternalClass(element.getClass());
+	}
+	public static boolean isClass(ModelElement  element )
+	{
+		return isModelClass(element) || isExternalClass(element);
+	}
+	public static boolean isEvent(ModelElement element) {
+		return element!=null && isEvent(element.getClass());
+	}
+
+	public static boolean isClassifier(ModelElement element)
+	{
+		return isClass(element) || isEvent(element);
+	}
+	
+	public static boolean isAssociation(ModelElement element) {
+		return element!=null && isAssociation(element.getClass());
+	}
+        
+	public static boolean isState(ModelElement element) {
+		return element!=null && isState(element.getClass());
+    }
+
+	public static boolean isInitialState(ModelElement element) {
+		return element!=null && isInitialState(element.getClass());
+    }
+
+	public static boolean isCompositeState(ModelElement element) {
+		return element!=null && isCompositeState(element.getClass());
+    }
+	
+	public static boolean isChoice(ModelElement element) {
+		return element!=null && isChoice(element.getClass());
+    }
+
+	public static boolean isTransition(ModelElement element) {
+		return element!=null && isTransition(element.getClass());
+    }
     
 	
 }

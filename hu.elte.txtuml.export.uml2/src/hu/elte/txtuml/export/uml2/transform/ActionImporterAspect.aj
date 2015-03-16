@@ -1,5 +1,7 @@
 package hu.elte.txtuml.export.uml2.transform;
 
+import org.aspectj.lang.annotation.SuppressAjWarnings;
+
 import hu.elte.txtuml.api.Action;
 import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelInt;
@@ -10,7 +12,7 @@ import hu.elte.txtuml.api.blocks.ParameterizedBlockBody;
 
 public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 
-	
+	@SuppressAjWarnings
 	void around():call(void Action.For(ModelInt, ModelInt, ParameterizedBlockBody<ModelInt>) ) && isActive()
 	{
 		ModelInt from=(ModelInt)(thisJoinPoint.getArgs()[0]);
@@ -20,6 +22,7 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 		ActionImporter.importForStatement(from, to,body);
 	}
 	
+	@SuppressAjWarnings
 	void around():call(void Action.While(Condition,BlockBody)) && isActive()
 	{
 		Condition cond=(Condition)(thisJoinPoint.getArgs()[0]);
@@ -27,6 +30,7 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 		ActionImporter.importWhileStatement(cond,body);
 	}
 	
+	@SuppressAjWarnings
 	void around():call(void Action.If(Condition,BlockBody)) && isActive()
 	{
 		Condition cond=(Condition)(thisJoinPoint.getArgs()[0]);
@@ -34,6 +38,7 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 		ActionImporter.importIfStatement(cond,thenBody);
 	}
 	
+	@SuppressAjWarnings
 	void around():call(void Action.If(Condition,BlockBody , BlockBody)) && isActive()
 	{
 		Condition cond=(Condition)(thisJoinPoint.getArgs()[0]);
@@ -42,6 +47,7 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 		ActionImporter.importIfStatement(cond,thenBody,elseBody);
 	}
 	
+	@SuppressAjWarnings
 	void around(): call(void Action.link(..)) && isActive()
 	{
 		Class<?> leftEnd=(Class<?>)(thisJoinPoint.getArgs()[0]);
@@ -51,6 +57,7 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 		ActionImporter.importCreateLinkAction(leftEnd,leftObj,rightEnd,rightObj);	
 	}
     		
+	@SuppressAjWarnings
 	void around(): call(void Action.unlink(..)) && isActive()
 	{
 		Class<?> leftEnd=(Class<?>)(thisJoinPoint.getArgs()[0]);
@@ -60,16 +67,17 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 		ActionImporter.importDestroyLinkAction(leftEnd,leftObj,rightEnd,rightObj);	
 	}
     	
-
+	@SuppressAjWarnings
 	void around(): call(void Action.send(ModelClass, Signal)) && isActive()
 	{
 		ModelClass receiverObj=(ModelClass)(thisJoinPoint.getArgs()[0]);
 		Signal event=(Signal)(thisJoinPoint.getArgs()[1]);
 		
-		ActionImporter.importSignalSend(receiverObj, event);	
+		ActionImporter.importSendSignalAction(receiverObj, event);	
 			
 	}
 	
+	@SuppressAjWarnings
 	void around(): call(void Action.delete(ModelClass)) && isActive()
 	{
 		ModelClass obj = (ModelClass) thisJoinPoint.getArgs()[0];
@@ -77,12 +85,14 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 	}
 
 	//prevent execution of Action.start and do nothing
+	@SuppressAjWarnings
 	void around(): call(void Action.start(..)) && importing()
 	{
 			
 	}
 	
 	//prevent logging
+	@SuppressAjWarnings
 	void around(): 
 		(
 			call(void Action.log(..)) || 

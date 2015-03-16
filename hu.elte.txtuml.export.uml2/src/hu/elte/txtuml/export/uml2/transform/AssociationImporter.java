@@ -1,6 +1,6 @@
 package hu.elte.txtuml.export.uml2.transform;
 
-import hu.elte.txtuml.export.uml2.utils.AssociationEnd;
+import hu.elte.txtuml.export.uml2.transform.backend.AssociationEnd;
 import hu.elte.txtuml.export.uml2.utils.ImportException;
 
 import java.lang.reflect.ParameterizedType;

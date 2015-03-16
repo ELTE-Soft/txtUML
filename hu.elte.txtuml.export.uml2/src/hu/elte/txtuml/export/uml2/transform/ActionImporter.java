@@ -82,16 +82,16 @@ class ActionImporter extends AbstractInstructionImporter {
 
 			switch(linkType)
 			{
-			case CREATE_LINK_LITERAL:
-				linkActionName="link_"+leftName+"_and_"+rightName;
-				linkAction	=	(CreateLinkAction) 
-						currentActivity.createOwnedNode(linkActionName, UMLPackage.Literals.CREATE_LINK_ACTION);
-				break;
-			case DESTROY_LINK_LITERAL:
-				linkActionName="unlink_"+leftName+"_and_"+rightName;
-				linkAction	=	(DestroyLinkAction) 
-						currentActivity.createOwnedNode(linkActionName, UMLPackage.Literals.DESTROY_LINK_ACTION);
-				break;
+				case CREATE_LINK_LITERAL:
+					linkActionName="link_"+leftName+"_and_"+rightName;
+					linkAction	=	(CreateLinkAction) 
+							currentActivity.createOwnedNode(linkActionName, UMLPackage.Literals.CREATE_LINK_ACTION);
+					break;
+				case DESTROY_LINK_LITERAL:
+					linkActionName="unlink_"+leftName+"_and_"+rightName;
+					linkAction	=	(DestroyLinkAction) 
+							currentActivity.createOwnedNode(linkActionName, UMLPackage.Literals.DESTROY_LINK_ACTION);
+					break;
 			}
 
 			addEndToLinkAction(linkAction,association,leftPhrase,leftName,leftObj,1);
@@ -128,7 +128,7 @@ class ActionImporter extends AbstractInstructionImporter {
 	}
 	
 	
-	static void importSignalSend(ModelClass receiver, hu.elte.txtuml.api.Signal event) 
+	static void importSendSignalAction(ModelClass receiver, hu.elte.txtuml.api.Signal event) 
 	{
 		if(currentActivity != null) 
 		{

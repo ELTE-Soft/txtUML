@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.uml2.utils;
+package hu.elte.txtuml.export.uml2.transform.backend;
 
 import org.eclipse.uml2.uml.AggregationKind;
 
