@@ -68,7 +68,7 @@ public class DiagramExportationReport { // FIXME add set of nodes and set of lin
 	}
 
 	/**
-	 * Should only be called by the diagram exporter.
+	 * Should be called only by the diagram exporter.
 	 * 
 	 * Resets fields to their default value;
 	 */
@@ -79,7 +79,7 @@ public class DiagramExportationReport { // FIXME add set of nodes and set of lin
 	}
 
 	/**
-	 * Should only be called by the diagram exporter.
+	 * Should be called only by the diagram exporter.
 	 * 
 	 * @param statements
 	 *            The statement list created as the result of the exportation.
@@ -89,7 +89,7 @@ public class DiagramExportationReport { // FIXME add set of nodes and set of lin
 	}
 
 	/**
-	 * Should only be called by the diagram exporter.
+	 * Should be called only by the diagram exporter.
 	 * 
 	 * Registers and logs a new warning.
 	 */
@@ -99,7 +99,7 @@ public class DiagramExportationReport { // FIXME add set of nodes and set of lin
 	}
 
 	/**
-	 * Should only be called by the diagram exporter.
+	 * Should be called only by the diagram exporter.
 	 * 
 	 * Registers and logs a new error.
 	 */
