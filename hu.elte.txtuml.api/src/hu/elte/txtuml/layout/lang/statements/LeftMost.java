@@ -11,6 +11,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface LeftMost {
-	Class<? extends LayoutAbstractNode> value();
+	Class<? extends LayoutAbstractNode>[] value();
 
 }

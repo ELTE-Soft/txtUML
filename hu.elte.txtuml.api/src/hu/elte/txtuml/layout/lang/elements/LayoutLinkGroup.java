@@ -7,7 +7,8 @@ package hu.elte.txtuml.layout.lang.elements;
  * See {@link LayoutGroup} for more information on groups.
  * <p>
  * Should not be extended or implemented directly from outside this package,
- * with the exception of TODO Diagram.LinkGroup
+ * with the exception of the
+ * {@link hu.elte.txtuml.layout.lang.Diagram.LinkGroup Diagram.LinkGroup} class.
  * 
  * @author Gábor Ferenc Kovács
  * @see LayoutLink

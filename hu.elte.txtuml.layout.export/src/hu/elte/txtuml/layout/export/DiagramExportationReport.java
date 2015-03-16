@@ -5,7 +5,7 @@ import java.util.List;
 import hu.elte.txtuml.layout.export.interfaces.StatementList;
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 
-public class DiagramExportationReport { // FIXME add set of nodes and set of links as result parameters
+public class DiagramExportationReport { // TODO add set of nodes and set of links as result parameters
 
 	private StatementList statements;
 	private int errors;

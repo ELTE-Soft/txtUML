@@ -9,7 +9,9 @@ import hu.elte.txtuml.layout.lang.statements.Above;
 import hu.elte.txtuml.layout.lang.statements.Alignment;
 import hu.elte.txtuml.layout.lang.statements.Below;
 import hu.elte.txtuml.layout.lang.statements.BottomMost;
+import hu.elte.txtuml.layout.lang.statements.Column;
 import hu.elte.txtuml.layout.lang.statements.Contains;
+import hu.elte.txtuml.layout.lang.statements.Diamond;
 import hu.elte.txtuml.layout.lang.statements.East;
 import hu.elte.txtuml.layout.lang.statements.Left;
 import hu.elte.txtuml.layout.lang.statements.LeftMost;
@@ -17,16 +19,22 @@ import hu.elte.txtuml.layout.lang.statements.North;
 import hu.elte.txtuml.layout.lang.statements.Priority;
 import hu.elte.txtuml.layout.lang.statements.Right;
 import hu.elte.txtuml.layout.lang.statements.RightMost;
+import hu.elte.txtuml.layout.lang.statements.Row;
+import hu.elte.txtuml.layout.lang.statements.Show;
 import hu.elte.txtuml.layout.lang.statements.South;
 import hu.elte.txtuml.layout.lang.statements.TopMost;
 import hu.elte.txtuml.layout.lang.statements.West;
 import hu.elte.txtuml.layout.lang.statements.containers.AboveContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.BelowContainer;
+import hu.elte.txtuml.layout.lang.statements.containers.ColumnContainer;
+import hu.elte.txtuml.layout.lang.statements.containers.DiamondContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.EastContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.LeftContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.NorthContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.PriorityContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.RightContainer;
+import hu.elte.txtuml.layout.lang.statements.containers.RowContainer;
+import hu.elte.txtuml.layout.lang.statements.containers.ShowContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.SouthContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.WestContainer;
 import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
@@ -43,32 +51,34 @@ public class StatementExporterImpl implements StatementExporter {
 		return element.getSimpleName();
 	}
 
-	private void newStatementWithLinkEndCheck(StatementType type, String param1, String param2, LinkEnd end) {
+	private void newStatementWithLinkEndCheck(StatementType type,
+			String param1, String param2, LinkEnd end) {
 		if (end == LinkEnd.Default) {
 			statements.addNew(type, param1, param2);
 		} else {
-			statements.addNew(type, param1, param2, end.toString());			
+			statements.addNew(type, param1, param2, end.toString());
 		}
 	}
-	
-	// exporters
+
+	// statement exporters
 
 	@Override
 	public void exportAlignment(Class<? extends LayoutGroup> group,
 			Alignment annot) {
-		// FIXME
-		//statements.addNew(StatementType.layout, asString(group), annot.value()
-			//	.toString());
+		// TODO
+		// statements.addNew(StatementType.layout, asString(group),
+		// annot.value()
+		// .toString());
 	}
 
 	@Override
 	public void exportContains(Class<? extends LayoutGroup> group,
 			Contains annot) {
-		// FIXME
-		//for (Class<? extends LayoutElement> element : annot.value()) {
-			//statements.addNew(StatementType.group, asString(element),
-				//	asString(group));
-		//}
+		// TODO
+		// for (Class<? extends LayoutElement> element : annot.value()) {
+		// statements.addNew(StatementType.group, asString(element),
+		// asString(group));
+		// }
 	}
 
 	@Override
@@ -97,59 +107,88 @@ public class StatementExporterImpl implements StatementExporter {
 
 	@Override
 	public void exportNorth(North annot) {
-		newStatementWithLinkEndCheck(StatementType.north,
-				asString(annot.val()), asString(annot.from()), annot.end());
+		// TODO
+		// newStatementWithLinkEndCheck(StatementType.north,
+		// asString(annot.val()), asString(annot.from()), annot.end());
 	}
 
 	@Override
 	public void exportSouth(South annot) {
-		newStatementWithLinkEndCheck(StatementType.south,
-				asString(annot.val()), asString(annot.from()), annot.end());
+		// TODO
+		// newStatementWithLinkEndCheck(StatementType.south,
+		// asString(annot.val()), asString(annot.from()), annot.end());
 	}
 
 	@Override
 	public void exportEast(East annot) {
-		newStatementWithLinkEndCheck(StatementType.east,
-				asString(annot.val()), asString(annot.from()), annot.end());
+		// TODO
+		// newStatementWithLinkEndCheck(StatementType.east,
+		// asString(annot.val()), asString(annot.from()), annot.end());
 	}
 
 	@Override
 	public void exportWest(West annot) {
-		newStatementWithLinkEndCheck(StatementType.west,
-				asString(annot.val()), asString(annot.from()), annot.end());
+		// TODO
+		// newStatementWithLinkEndCheck(StatementType.west,
+		// asString(annot.val()), asString(annot.from()), annot.end());
 	}
 
 	@Override
 	public void exportTopMost(TopMost annot) {
-		// FIXME
-		//statements.addNew(StatementType.topmost, asString(annot.value()));
+		// TODO
+		// statements.addNew(StatementType.topmost, asString(annot.value()));
 	}
 
 	@Override
 	public void exportBottomMost(BottomMost annot) {
-		// FIXME
-		//statements.addNew(StatementType.bottommost, asString(annot.value()));
+		// TODO
+		// statements.addNew(StatementType.bottommost, asString(annot.value()));
 	}
 
 	@Override
 	public void exportLeftMost(LeftMost annot) {
-		// FIXME
-		//statements.addNew(StatementType.leftmost, asString(annot.value()));
+		// TODO
+		// statements.addNew(StatementType.leftmost, asString(annot.value()));
 	}
 
 	@Override
 	public void exportRightMost(RightMost annot) {
-		// FIXME
-		//statements.addNew(StatementType.rightmost, asString(annot.value()));
+		// TODO
+		// statements.addNew(StatementType.rightmost, asString(annot.value()));
 	}
 
 	@Override
 	public void exportPriority(Priority annot) {
-		statements.addNew(StatementType.priority, asString(annot.val()),
-				Integer.toString(annot.prior()));
+		// TODO
+		// statements.addNew(StatementType.priority, asString(annot.val()),
+		// Integer.toString(annot.prior()));
 	}
 
-	// container exporters
+	@Override
+	public void exportShow(Show annot) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void exportColumn(Column annot) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void exportRow(Row annot) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void exportDiamond(Diamond annot) {
+		// TODO Auto-generated method stub
+
+	}
+
+	// statement container exporters
 
 	@Override
 	public void exportAboveContainer(AboveContainer annot) {
@@ -211,6 +250,34 @@ public class StatementExporterImpl implements StatementExporter {
 	public void exportPriorityContainer(PriorityContainer annot) {
 		for (Priority a : annot.value()) {
 			exportPriority(a);
+		}
+	}
+
+	@Override
+	public void exportShowContainer(ShowContainer annot) {
+		for (Show a : annot.value()) {
+			exportShow(a);
+		}
+	}
+
+	@Override
+	public void exportColumnContainer(ColumnContainer annot) {
+		for (Column a : annot.value()) {
+			exportColumn(a);
+		}
+	}
+
+	@Override
+	public void exportRowContainer(RowContainer annot) {
+		for (Row a : annot.value()) {
+			exportRow(a);
+		}
+	}
+
+	@Override
+	public void exportDiamondContainer(DiamondContainer annot) {
+		for (Diamond a : annot.value()) {
+			exportDiamond(a);
 		}
 	}
 

@@ -6,7 +6,9 @@ import hu.elte.txtuml.layout.lang.statements.Above;
 import hu.elte.txtuml.layout.lang.statements.Alignment;
 import hu.elte.txtuml.layout.lang.statements.Below;
 import hu.elte.txtuml.layout.lang.statements.BottomMost;
+import hu.elte.txtuml.layout.lang.statements.Column;
 import hu.elte.txtuml.layout.lang.statements.Contains;
+import hu.elte.txtuml.layout.lang.statements.Diamond;
 import hu.elte.txtuml.layout.lang.statements.East;
 import hu.elte.txtuml.layout.lang.statements.Left;
 import hu.elte.txtuml.layout.lang.statements.LeftMost;
@@ -14,16 +16,22 @@ import hu.elte.txtuml.layout.lang.statements.North;
 import hu.elte.txtuml.layout.lang.statements.Priority;
 import hu.elte.txtuml.layout.lang.statements.Right;
 import hu.elte.txtuml.layout.lang.statements.RightMost;
+import hu.elte.txtuml.layout.lang.statements.Row;
+import hu.elte.txtuml.layout.lang.statements.Show;
 import hu.elte.txtuml.layout.lang.statements.South;
 import hu.elte.txtuml.layout.lang.statements.TopMost;
 import hu.elte.txtuml.layout.lang.statements.West;
 import hu.elte.txtuml.layout.lang.statements.containers.AboveContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.BelowContainer;
+import hu.elte.txtuml.layout.lang.statements.containers.ColumnContainer;
+import hu.elte.txtuml.layout.lang.statements.containers.DiamondContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.EastContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.LeftContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.NorthContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.PriorityContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.RightContainer;
+import hu.elte.txtuml.layout.lang.statements.containers.RowContainer;
+import hu.elte.txtuml.layout.lang.statements.containers.ShowContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.SouthContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.WestContainer;
 
@@ -33,7 +41,7 @@ public interface StatementExporter {
 		return new StatementExporterImpl(statements);
 	}
 
-	// exporters
+	// statement exporters
 	
 	void exportAlignment(Class<? extends LayoutGroup> group, Alignment annot);
 
@@ -50,8 +58,6 @@ public interface StatementExporter {
 	void exportNorth(North annot);
 
 	void exportSouth(South annot);
-
-	// FIXME add Show
 	
 	void exportEast(East annot);
 
@@ -66,8 +72,16 @@ public interface StatementExporter {
 	void exportRightMost(RightMost annot);
 
 	void exportPriority(Priority annot);
+
+	void exportShow(Show annot);
 	
-	// container exporters
+	void exportColumn(Column annot);
+	
+	void exportRow(Row annot);
+	
+	void exportDiamond(Diamond annot);
+	
+	// statement container exporters
 	
 	void exportAboveContainer(AboveContainer annot);
 
@@ -81,12 +95,18 @@ public interface StatementExporter {
 
 	void exportSouthContainer(SouthContainer annot);
 
-	// FIXME add ShowContainer
-
 	void exportEastContainer(EastContainer annot);
 
 	void exportWestContainer(WestContainer annot);
 
 	void exportPriorityContainer(PriorityContainer annot);
+	
+	void exportShowContainer(ShowContainer annot);
+	
+	void exportColumnContainer(ColumnContainer annot);
+	
+	void exportRowContainer(RowContainer annot);
+	
+	void exportDiamondContainer(DiamondContainer annot);
 
 }

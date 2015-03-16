@@ -15,9 +15,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Repeatable(SouthContainer.class)
 public @interface South {
-	Class<? extends LayoutElement> val();
+	Class<? extends LayoutElement>[] val();
 
-	Class<? extends LayoutElement> from();
+	Class<? extends LayoutElement>[] from();
 
 	LinkEnd end() default LinkEnd.Default;
 

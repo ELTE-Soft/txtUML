@@ -114,7 +114,7 @@ public class DiagramExporterImpl implements DiagramExporter {
 
 	private void exportLayout(Class<? extends Layout> layoutClass) {
 		for (Annotation annot : layoutClass.getAnnotations()) {
-			if (isOfType(Above.class, annot)) {		// FIXME add Show and ShowGroup
+			if (isOfType(Above.class, annot)) {
 				statementExporter.exportAbove((Above) annot);				
 			
 			} else if (isOfType(Below.class, annot)) {
@@ -153,6 +153,18 @@ public class DiagramExporterImpl implements DiagramExporter {
 			} else if (isOfType(Priority.class, annot)) {
 				statementExporter.exportPriority((Priority) annot);
 		
+			} else if (isOfType(Show.class, annot)) {
+				statementExporter.exportShow((Show) annot);
+			
+			} else if (isOfType(Column.class, annot)) {
+				statementExporter.exportColumn((Column) annot);
+			
+			} else if (isOfType(Row.class, annot)) {
+				statementExporter.exportRow((Row) annot);
+			
+			} else if (isOfType(Diamond.class, annot)) {
+				statementExporter.exportDiamond((Diamond) annot);
+			
 			} else if (isOfType(AboveContainer.class, annot)) {
 				statementExporter.exportAboveContainer((AboveContainer) annot);
 		
@@ -177,8 +189,20 @@ public class DiagramExporterImpl implements DiagramExporter {
 			} else if (isOfType(WestContainer.class, annot)) {
 				statementExporter.exportWestContainer((WestContainer) annot);
 		
-			} else if (isOfType(Priority.class, annot)) {
-				statementExporter.exportPriority((Priority) annot);
+			} else if (isOfType(PriorityContainer.class, annot)) {
+				statementExporter.exportPriorityContainer((PriorityContainer) annot);
+			
+			} else if (isOfType(ShowContainer.class, annot)) {
+				statementExporter.exportShowContainer((ShowContainer) annot);
+			
+			} else if (isOfType(ColumnContainer.class, annot)) {
+				statementExporter.exportColumnContainer((ColumnContainer) annot);
+			
+			} else if (isOfType(RowContainer.class, annot)) {
+				statementExporter.exportRowContainer((RowContainer) annot);
+			
+			} else if (isOfType(DiamondContainer.class, annot)) {
+				statementExporter.exportDiamondContainer((DiamondContainer) annot);
 			
 			} else {
 				

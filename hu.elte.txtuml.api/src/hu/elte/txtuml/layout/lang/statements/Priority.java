@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Repeatable(PriorityContainer.class)
 public @interface Priority {
-	Class<? extends LayoutAbstractLink> val();
+	Class<? extends LayoutAbstractLink>[] val();
 
 	int prior();
 
