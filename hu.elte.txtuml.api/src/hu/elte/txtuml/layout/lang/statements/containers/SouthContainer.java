@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The container for repeteable annotation {@link South}.
+ * The container for repeatable annotation {@link South}.
  * 
  * @author Gábor Ferenc Kovács
  *
