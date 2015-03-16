@@ -2,9 +2,9 @@ package hu.elte.txtuml.layout.export.impl;
 
 import hu.elte.txtuml.layout.export.interfaces.StatementExporter;
 import hu.elte.txtuml.layout.export.interfaces.StatementList;
-import hu.elte.txtuml.layout.lang.Diagram.LayoutGroup;
 import hu.elte.txtuml.layout.lang.LinkEnd;
 import hu.elte.txtuml.layout.lang.elements.LayoutElement;
+import hu.elte.txtuml.layout.lang.elements.LayoutGroup;
 import hu.elte.txtuml.layout.lang.statements.Above;
 import hu.elte.txtuml.layout.lang.statements.Alignment;
 import hu.elte.txtuml.layout.lang.statements.Below;

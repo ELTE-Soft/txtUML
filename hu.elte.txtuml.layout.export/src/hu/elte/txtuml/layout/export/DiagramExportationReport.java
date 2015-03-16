@@ -5,7 +5,7 @@ import java.util.List;
 import hu.elte.txtuml.layout.export.interfaces.StatementList;
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 
-public class DiagramExportationReport {
+public class DiagramExportationReport { // FIXME add set of nodes and set of links as result parameters
 
 	private StatementList statements;
 	private int errors;
@@ -16,8 +16,8 @@ public class DiagramExportationReport {
 	}
 
 	/**
-	 * The exportation is successful if no errors have occurred. If it is
-	 * successful, getResult() returns the expected list of statements.
+	 * Returns whether the exportation was successful or not. The exportation is
+	 * successful if no errors have occurred.
 	 */
 	public final boolean isSuccessful() {
 		return errors == 0;
@@ -38,33 +38,35 @@ public class DiagramExportationReport {
 	}
 
 	/**
-	 * If isSuccesful() returns false, the return value of this method should
-	 * not be used (it is probably null).
+	 * If the <code>isSuccesful</code> method returns <code>false</code>, the return value of
+	 * this method should not be used (it is probably <code>null</code>).
 	 * 
 	 * @return The statement list created as the result of the exportation.
 	 */
-	public final List<Statement> getResult() {
+	public final List<Statement> getStatements() {
 		return statements;
 	}
 
 	/**
-	 * Overridable method to log a warning. Called for every warning during exportation.
+	 * Overridable method to log a warning. Called for every warning during
+	 * exportation.
 	 * 
 	 * @param message
 	 */
 	protected void logWarning(String message) {
 		System.err.println("Warning: " + message);
 	}
-	
+
 	/**
-	 * Overridable method to log an error. Called for every error during exportation.
+	 * Overridable method to log an error. Called for every error during
+	 * exportation.
 	 * 
 	 * @param message
 	 */
 	protected void logError(String message) {
 		System.err.println("Error: " + message);
 	}
-	
+
 	/**
 	 * Should only be called by the diagram exporter.
 	 * 
@@ -75,9 +77,9 @@ public class DiagramExportationReport {
 		warnings = 0;
 		statements = null;
 	}
-	
+
 	/**
-	 * Should only be called by the diagram exporter. 
+	 * Should only be called by the diagram exporter.
 	 * 
 	 * @param statements
 	 *            The statement list created as the result of the exportation.
@@ -90,8 +92,6 @@ public class DiagramExportationReport {
 	 * Should only be called by the diagram exporter.
 	 * 
 	 * Registers and logs a new warning.
-	 * 
-	 * @param message
 	 */
 	public final void warning(String message) {
 		++warnings;
@@ -102,8 +102,6 @@ public class DiagramExportationReport {
 	 * Should only be called by the diagram exporter.
 	 * 
 	 * Registers and logs a new error.
-	 * 
-	 * @param message
 	 */
 	public final void error(String message) {
 		++errors;

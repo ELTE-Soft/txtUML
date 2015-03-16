@@ -1,7 +1,7 @@
 package hu.elte.txtuml.layout.export.interfaces;
 
 import hu.elte.txtuml.layout.export.impl.StatementExporterImpl;
-import hu.elte.txtuml.layout.lang.Diagram.LayoutGroup;
+import hu.elte.txtuml.layout.lang.elements.LayoutGroup;
 import hu.elte.txtuml.layout.lang.statements.Above;
 import hu.elte.txtuml.layout.lang.statements.Alignment;
 import hu.elte.txtuml.layout.lang.statements.Below;
@@ -51,6 +51,8 @@ public interface StatementExporter {
 
 	void exportSouth(South annot);
 
+	// FIXME add Show
+	
 	void exportEast(East annot);
 
 	void exportWest(West annot);
@@ -78,6 +80,8 @@ public interface StatementExporter {
 	void exportNorthContainer(NorthContainer annot);
 
 	void exportSouthContainer(SouthContainer annot);
+
+	// FIXME add ShowContainer
 
 	void exportEastContainer(EastContainer annot);
 

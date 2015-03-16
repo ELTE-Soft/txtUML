@@ -10,7 +10,7 @@ import hu.elte.txtuml.layout.export.problems.ErrorMessages;
 import hu.elte.txtuml.layout.export.problems.WarningMessages;
 import hu.elte.txtuml.layout.lang.Diagram;
 import hu.elte.txtuml.layout.lang.Diagram.Layout;
-import hu.elte.txtuml.layout.lang.Diagram.LayoutGroup;
+import hu.elte.txtuml.layout.lang.elements.LayoutGroup;
 import hu.elte.txtuml.layout.lang.statements.*;
 import hu.elte.txtuml.layout.lang.statements.containers.*;
 
@@ -114,7 +114,7 @@ public class DiagramExporterImpl implements DiagramExporter {
 
 	private void exportLayout(Class<? extends Layout> layoutClass) {
 		for (Annotation annot : layoutClass.getAnnotations()) {
-			if (isOfType(Above.class, annot)) {	
+			if (isOfType(Above.class, annot)) {		// FIXME add Show and ShowGroup
 				statementExporter.exportAbove((Above) annot);				
 			
 			} else if (isOfType(Below.class, annot)) {
