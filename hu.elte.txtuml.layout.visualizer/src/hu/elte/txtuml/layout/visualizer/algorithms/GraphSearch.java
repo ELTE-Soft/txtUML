@@ -6,7 +6,6 @@ import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Link;
 import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Parent;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.MyException;
-import hu.elte.txtuml.layout.visualizer.helpers.Pair;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 
@@ -22,7 +21,7 @@ class GraphSearch
 	private Point _before;
 	private Point _after;
 	// private Point _trueEnd;
-	private HashSet<Pair<Point, Integer>> _objects;
+	private Set<Point> _objects;
 	private Integer _korlat;
 	private Integer _kiterjesztesek;
 	
@@ -45,7 +44,7 @@ class GraphSearch
 	 * @throws Exception
 	 * @throws MyException
 	 */
-	public GraphSearch(Point s, Point e, HashSet<Pair<Point, Integer>> os)
+	public GraphSearch(Point s, Point e, Set<Point> os)
 			throws CannotFindAssociationRouteException
 	{
 		_start = s;
@@ -71,8 +70,8 @@ class GraphSearch
 					+ " to " + e.toString() + "!");
 	}
 	
-	public GraphSearch(Point s, Point e, HashSet<Pair<Point, Integer>> os, Point beforeS,
-			Point afterE) throws CannotFindAssociationRouteException
+	public GraphSearch(Point s, Point e, Set<Point> os, Point beforeS, Point afterE)
+			throws CannotFindAssociationRouteException
 	{
 		_start = s;
 		_end = e;
@@ -102,7 +101,7 @@ class GraphSearch
 					+ " to " + e.toString() + "!");
 	}
 	
-	public GraphSearch(Point s, Point e, HashSet<Pair<Point, Integer>> os, Integer k)
+	public GraphSearch(Point s, Point e, Set<Point> os, Integer k)
 			throws CannotFindAssociationRouteException
 	{
 		_start = s;
@@ -128,8 +127,8 @@ class GraphSearch
 					+ " to " + e.toString() + "!");
 	}
 	
-	public GraphSearch(Point s, Point e, HashSet<Pair<Point, Integer>> os, Point beforeS,
-			Point afterE, Integer k) throws CannotFindAssociationRouteException
+	public GraphSearch(Point s, Point e, Set<Point> os, Point beforeS, Point afterE,
+			Integer k) throws CannotFindAssociationRouteException
 	{
 		_start = s;
 		_end = e;
@@ -224,7 +223,7 @@ class GraphSearch
 		Double weightCost = 1.0;
 		Double weightAway = 1.0;
 		Double weightTurns = 2.0;
-		Double weightDistance = 1.18;
+		Double weightDistance = 1.1;
 		Double weightRemainingTurns = 1.0;
 		
 		Integer cost = g.get(p);
@@ -341,12 +340,10 @@ class GraphSearch
 			}
 			
 			if (!tempP.equals(_end)
-					&& (_objects.contains(new Pair<Point, Integer>(tempP, 1)) || _objects
-							.contains(new Pair<Point, Integer>(tempP, 2))))
+					&& (_objects.contains(tempP) || _objects.contains(tempP2)))
 				result = result + penalizeTurns;
 			if (!tempP2.equals(_end)
-					&& (_objects.contains(new Pair<Point, Integer>(tempP, 1)) || _objects
-							.contains(new Pair<Point, Integer>(tempP2, 2))))
+					&& (_objects.contains(tempP) || _objects.contains(tempP2)))
 				result2 = result2 + penalizeTurns;
 		}
 		
@@ -364,12 +361,10 @@ class GraphSearch
 			}
 			
 			if (!tempP.equals(_end)
-					&& (_objects.contains(new Pair<Point, Integer>(tempP, 1)) || _objects
-							.contains(new Pair<Point, Integer>(tempP, 2))))
+					&& (_objects.contains(tempP) || _objects.contains(tempP2)))
 				result = result + penalizeTurns;
 			if (!tempP2.equals(_end)
-					&& (_objects.contains(new Pair<Point, Integer>(tempP, 1)) || _objects
-							.contains(new Pair<Point, Integer>(tempP2, 2))))
+					&& (_objects.contains(tempP) || _objects.contains(tempP2)))
 				result2 = result2 + penalizeTurns;
 		}
 		
@@ -385,9 +380,9 @@ class GraphSearch
 		return (int) Math.round(result);
 	}
 	
-	private HashSet<Point> Gamma(Point parent)
+	private Set<Point> Gamma(Point parent)
 	{
-		HashSet<Point> result = new HashSet<Point>();
+		Set<Point> result = new HashSet<Point>();
 		ArrayList<Point> toberemoved = new ArrayList<Point>();
 		
 		// Add possible neighbors
@@ -401,8 +396,7 @@ class GraphSearch
 		{
 			if (G.contains(n))
 				toberemoved.add(n);
-			else if (_objects.contains(new Pair<Point, Integer>(n, 2))
-					&& !n.equals(_start) && !n.equals(_end))
+			else if (_objects.contains(n) && !n.equals(_start) && !n.equals(_end))
 				toberemoved.add(n);
 			else if (_korlat != -1
 					&& (Math.abs(n.getX()) > _korlat || Math.abs(n.getY()) > _korlat))
@@ -457,55 +451,4 @@ class GraphSearch
 		return _kiterjesztesek;
 	}
 	
-	public static void test()
-	{
-		
-		System.out.println("--START--");
-		HashSet<Pair<Point, Integer>> o = new HashSet<Pair<Point, Integer>>();
-		
-		// Transform everything to new dimensions (*2)
-		
-		// Point START = Point.Multiply(new Point(0, 0), 2);
-		// Point END = Point.Multiply(new Point(10, 10), 2);
-		Point START = new Point(-3, 0);
-		Point END = new Point(-4, -1);
-		
-		o.add(new Pair<Point, Integer>(START, 2));
-		o.add(new Pair<Point, Integer>(END, 2));
-		
-		// o.add(Point.Multiply(new Point(0, 1), 2));
-		// o.add(Point.Multiply(new Point(10, 9), 2));
-		// o.add(Point.Multiply(new Point(9, 10), 2));
-		
-		// End of setup
-		
-		try
-		{
-			GraphSearch gs = new GraphSearch(START, END, o, null, null);
-			
-			System.out.println("Route:");
-			ArrayList<Point> val = gs.value();
-			boolean first = true;
-			
-			for (Point p : val)
-			{
-				if (first)
-					first = false;
-				else
-					System.out.print(" -> ");
-				System.out.print(p.toString());
-			}
-			System.out.println();
-			
-			System.out.println("Length: " + (val.size() - 1));
-			System.out.println("Turns: " + gs.turns());
-			System.out.println("Extends: " + gs.extendsNum());
-		}
-		catch (MyException e)
-		{
-			System.out.println(e.getMessage());
-		}
-		
-		System.out.println("--END--");
-	}
 }

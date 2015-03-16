@@ -5,7 +5,6 @@ import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotPositionObjectException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
-import hu.elte.txtuml.layout.visualizer.exceptions.MyException;
 import hu.elte.txtuml.layout.visualizer.helpers.BiMap;
 import hu.elte.txtuml.layout.visualizer.helpers.Triple;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
@@ -14,13 +13,13 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 class ArrangeObjects
 {
-	private HashSet<RectangleObject> _objects;
+	private Set<RectangleObject> _objects;
 	private BiMap<String, Integer> _indices;
 	
 	private Integer _transformAmount;
@@ -35,7 +34,7 @@ class ArrangeObjects
 		_transformAmount = value;
 	}
 	
-	public ArrangeObjects(HashSet<RectangleObject> obj, ArrayList<Statement> stats)
+	public ArrangeObjects(Set<RectangleObject> obj, ArrayList<Statement> stats)
 			throws ConflictException, CannotPositionObjectException, InternalException
 	
 	{
@@ -348,57 +347,9 @@ class ArrangeObjects
 		return result;
 	}
 	
-	public HashSet<RectangleObject> value()
+	public Set<RectangleObject> value()
 	{
 		return _objects;
-	}
-	
-	public static void test()
-	{
-		System.out.println("--START--");
-		
-		HashSet<RectangleObject> testObjects = new HashSet<RectangleObject>();
-		
-		testObjects.add(new RectangleObject("A"));
-		testObjects.add(new RectangleObject("B"));
-		testObjects.add(new RectangleObject("C"));
-		testObjects.add(new RectangleObject("D"));
-		
-		try
-		{
-			ArrayList<Statement> stats = new ArrayList<Statement>();
-			stats.add(Statement.Parse("topmost(A)"));
-			stats.add(Statement.Parse("west(B, A)"));
-			stats.add(Statement.Parse("east(C, B)"));
-			stats.add(Statement.Parse("north(A, B)"));
-			stats.add(Statement.Parse("north(B, D)"));
-			
-			// Unfold groups
-			stats = Statement.UnfoldGroups(stats);
-			
-			// Reduce statements: mosts
-			stats = Statement.ReduceObjects(stats, testObjects);
-			
-			ArrangeObjects arro = new ArrangeObjects(testObjects, stats);
-			
-			System.out.println("--Objects--");
-			for (RectangleObject o : arro.value())
-			{
-				System.out.println(o.getName() + ": " + o.getPosition().toString());
-			}
-			System.out.println();
-			
-			System.out.println();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		catch (MyException e)
-		{
-			System.out.println(e.getMessage());
-		}
-		System.out.println("--END--");
 	}
 	
 }

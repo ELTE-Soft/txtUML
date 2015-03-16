@@ -4,9 +4,7 @@ import hu.elte.txtuml.layout.visualizer.algorithms.bellmanfordhelpers.DirectedEd
 import hu.elte.txtuml.layout.visualizer.algorithms.bellmanfordhelpers.EdgeWeightedDigraph;
 import hu.elte.txtuml.layout.visualizer.algorithms.bellmanfordhelpers.EdgeWeightedDirectedCycle;
 import hu.elte.txtuml.layout.visualizer.algorithms.bellmanfordhelpers.Queue;
-import hu.elte.txtuml.layout.visualizer.helpers.Triple;
 
-import java.util.ArrayList;
 import java.util.Stack;
 
 /**
@@ -268,87 +266,7 @@ class BellmanFordSP
 			}
 		}
 		
-		// System.out.println("Satisfies optimality conditions");
-		// System.out.println();
 		return true;
 	}
 	
-	/**
-	 * Unit tests the <tt>BellmanFordSP</tt> data type.
-	 */
-	/*
-	 * public static void main(String[] args) { In in = new In(args[0]); int s =
-	 * Integer.parseInt(args[1]); EdgeWeightedDigraph G = new
-	 * EdgeWeightedDigraph(in);
-	 * 
-	 * BellmanFordSP sp = new BellmanFordSP(G, s);
-	 * 
-	 * // print negative cycle if (sp.hasNegativeCycle()) { for (DirectedEdge e
-	 * : sp.negativeCycle()) System.out.println(e); }
-	 * 
-	 * // print shortest paths else { for (int v = 0; v < G.V(); v++) { if
-	 * (sp.hasPathTo(v)) { System.out.printf("%d to %d (%5.2f)  ", s, v,
-	 * sp.distTo(v)); for (DirectedEdge e : sp.pathTo(v)) { System.out.print(e +
-	 * "   "); } System.out.println(); } else {
-	 * System.out.printf("%d to %d           no path\n", s, v); } } }
-	 * 
-	 * }
-	 */
-	
-	public static void test()
-	{
-		System.out.println("--START--");
-		int n = 2 * 2;
-		int s = 0;
-		ArrayList<Triple<Integer, Integer, Integer>> l = new ArrayList<Triple<Integer, Integer, Integer>>();
-		
-		/*
-		 * for (int i = 0; i < n + 1; ++i) { l.add(new Triple<Integer, Integer,
-		 * Integer>(0, i, 0)); } l.add(new Triple<Integer, Integer, Integer>(1,
-		 * 2, 0)); l.add(new Triple<Integer, Integer, Integer>(2, 1, 0));
-		 * l.add(new Triple<Integer, Integer, Integer>(3, 4, 1)); l.add(new
-		 * Triple<Integer, Integer, Integer>(4, 3, -1));
-		 */
-		
-		l.add(new Triple<Integer, Integer, Integer>(0, 1, -1));
-		l.add(new Triple<Integer, Integer, Integer>(0, 2, 0));
-		l.add(new Triple<Integer, Integer, Integer>(0, 3, -2));
-		l.add(new Triple<Integer, Integer, Integer>(0, 4, 0));
-		l.add(new Triple<Integer, Integer, Integer>(4, 3, -1));
-		
-		EdgeWeightedDigraph G = new EdgeWeightedDigraph(n + 1, l);
-		
-		BellmanFordSP sp = new BellmanFordSP(G, s);
-		
-		// print negative cycle
-		if (sp.hasNegativeCycle())
-		{
-			System.out.println("Negative circle found: ");
-			for (DirectedEdge e : sp.negativeCycle())
-				System.out.println(e);
-		}
-		
-		// print shortest paths
-		else
-		{
-			System.out.println("Shortest paths: ");
-			for (int v = 0; v < G.V(); v++)
-			{
-				if (sp.hasPathTo(v))
-				{
-					System.out.printf("%d to %d (%5.2f)  ", s, v, sp.distTo(v));
-					for (DirectedEdge e : sp.pathTo(v))
-					{
-						System.out.print(e + "   ");
-					}
-					System.out.println();
-				}
-				else
-				{
-					System.out.printf("%d to %d           no path\n", s, v);
-				}
-			}
-		}
-		System.out.println("--END--");
-	}
 }

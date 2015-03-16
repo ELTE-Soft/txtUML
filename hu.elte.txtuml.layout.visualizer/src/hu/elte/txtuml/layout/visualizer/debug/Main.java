@@ -12,9 +12,7 @@ public class Main
 		// Algorithm.GraphSearch.test();
 		// Algorithm.ArrangeAssociations.test();
 		// Algorithm.LayoutVisualize.usage();
-		// Algorithm.LayoutVisualize.test();
-		// Algorithm.LayoutVisualize.test2();
-		hu.elte.txtuml.layout.visualizer.algorithms.LayoutVisualize.test3();
+		hu.elte.txtuml.layout.visualizer.algorithms.LayoutVisualize.test();
 		
 		System.out.println("/");
 	}

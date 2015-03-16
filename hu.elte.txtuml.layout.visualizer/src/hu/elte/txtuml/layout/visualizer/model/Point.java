@@ -94,6 +94,12 @@ public class Point
 		return new Point(p1._x * m, p1._y * m);
 	}
 	
+	public static Point Multiply(Direction dir, Integer m)
+	{
+		return new Point(Add(new Point(0, 0), dir)._x * m, Add(new Point(0, 0), dir)._y
+				* m);
+	}
+	
 	// end Statics
 	
 	// Equality
@@ -134,6 +140,11 @@ public class Point
 	public DoublePoint toDoublePoint()
 	{
 		return new DoublePoint(_x, _y);
+	}
+	
+	public Object clone()
+	{
+		return new Point(_x, _y);
 	}
 	
 	public String toString()

@@ -55,6 +55,11 @@ public class RectangleObject
 	
 	// Methods
 	
+	public boolean equals(RectangleObject obj)
+	{
+		return (this._name.equals(obj._name) && this._position.equals(obj._position));
+	}
+	
 	@Override
 	public boolean equals(Object obj)
 	{
@@ -70,7 +75,7 @@ public class RectangleObject
 		{
 			RectangleObject o1 = (RectangleObject) this;
 			RectangleObject o2 = (RectangleObject) obj;
-			return o1._name.equals(o2._name);
+			return o1.equals(o2);
 		}
 		
 		return false;
@@ -86,6 +91,7 @@ public class RectangleObject
 		return result;
 	}
 	
+	@Override
 	public String toString()
 	{
 		return _name + ": " + _position.toString();

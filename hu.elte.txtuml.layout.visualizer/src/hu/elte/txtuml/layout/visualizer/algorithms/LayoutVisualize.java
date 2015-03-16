@@ -1,6 +1,7 @@
 package hu.elte.txtuml.layout.visualizer.algorithms;
 
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
+import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotPositionObjectException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConflictException;
@@ -10,7 +11,6 @@ import hu.elte.txtuml.layout.visualizer.exceptions.MyException;
 import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
 import hu.elte.txtuml.layout.visualizer.helpers.MyModel;
-import hu.elte.txtuml.layout.visualizer.helpers.Pair;
 import hu.elte.txtuml.layout.visualizer.model.AssociationType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Point;
@@ -18,17 +18,19 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class LayoutVisualize
 {
 	/***
 	 * Objects to arrange.
 	 */
-	private HashSet<RectangleObject> _objects;
+	private Set<RectangleObject> _objects;
 	/***
 	 * Links to arrange
 	 */
-	private HashSet<LineAssociation> _assocs;
+	private Set<LineAssociation> _assocs;
 	
 	/***
 	 * Statements which arrange.
@@ -45,7 +47,7 @@ public class LayoutVisualize
 	 * 
 	 * @return Set of Objects. Can be null.
 	 */
-	public HashSet<RectangleObject> getObjects()
+	public Set<RectangleObject> getObjects()
 	{
 		return _objects;
 	}
@@ -55,7 +57,7 @@ public class LayoutVisualize
 	 * 
 	 * @return Set of Links. Can be null.
 	 */
-	public HashSet<LineAssociation> getAssocs()
+	public Set<LineAssociation> getAssocs()
 	{
 		return _assocs;
 	}
@@ -98,35 +100,46 @@ public class LayoutVisualize
 			return;
 		
 		// Unfold groups
-		stats = Statement.UnfoldGroups(stats);
+		// stats = Statement.UnfoldGroups(stats);
 		
 		// Split statements on assocs
-		_assocStatements = Statement.SplitAssocs(stats, _assocs);
-		_assocStatements = Statement.ReduceAssocs(_assocStatements);
+		_assocStatements = StatementHelper.splitAssocs(stats, _assocs);
+		_assocStatements = StatementHelper.reduceAssocs(_assocStatements);
 		stats.removeAll(_assocStatements);
 		
-		// Reduce statements: mosts
-		stats.addAll(Statement.TransformAssocs(stats, _assocs));
-		_statements = Statement.ReduceObjects(stats, _objects);
+		// Transform special associations into statements
+		stats.addAll(StatementHelper.transformAssocs(stats, _assocs));
+		
+		// Transform Phantom statements into Objects
+		Set<String> phantoms = new HashSet<String>();
+		phantoms.addAll(StatementHelper.extractPhantoms(stats));
+		for (String p : phantoms)
+			_objects.add(new RectangleObject(p));
+		stats.removeAll(stats.stream()
+				.filter(s -> s.getType().equals(StatementType.phantom))
+				.collect(Collectors.toSet()));
+		
+		// Remove duplicates
+		_statements = StatementHelper.reduceObjects(stats, _objects);
 		
 		// Check Obejct Statement Types
 		for (Statement s : _statements)
 		{
-			if (!Statement.IsTypeChecked(s, _objects, _assocs))
+			if (!StatementHelper.isTypeChecked(s, _objects, _assocs))
 				throw new StatementTypeMatchException("Types not match at statement: "
 						+ s.toString() + "!");
 		}
 		// Check Association Statement Types
 		for (Statement s : _assocStatements)
 		{
-			if (!Statement.IsTypeChecked(s, _objects, _assocs))
+			if (!StatementHelper.isTypeChecked(s, _objects, _assocs))
 				throw new StatementTypeMatchException("Types not match at statement: "
 						+ s.toString() + "!");
 		}
 		
 		// Arrange objects
 		ArrangeObjects ao = new ArrangeObjects(_objects, _statements);
-		_objects = ao.value();
+		_objects = new HashSet<RectangleObject>(ao.value());
 		
 		// Set start-end positions for associations
 		for (LineAssociation a : _assocs)
@@ -156,6 +169,10 @@ public class LayoutVisualize
 			a.setRoute(al);
 		}
 		
+		// Remove phantom objects
+		_objects.removeAll(_objects.stream().filter(o -> phantoms.contains(o.getName()))
+				.collect(Collectors.toSet()));
+		
 		// Arrange associations between objects
 		if (_assocs.size() <= 0)
 			return;
@@ -178,10 +195,10 @@ public class LayoutVisualize
 	 * @param pair
 	 *            A pair of sets about the Objects and Links of the model.
 	 */
-	public void load(Pair<HashSet<RectangleObject>, HashSet<LineAssociation>> pair)
+	public void load(Set<RectangleObject> os, Set<LineAssociation> as)
 	{
-		_objects = pair.First;
-		_assocs = pair.Second;
+		_objects = os;
+		_assocs = as;
 	}
 	
 	public static void usage()
@@ -193,11 +210,11 @@ public class LayoutVisualize
 			// "C:/Users/serveradmin/Documents/ELTE/SzoftLabor/input.xml",
 			// "Class");
 			
-			v.load(model.Value.ToFirstPair());
+			v.load(model.Value.First, model.Value.Second);
 			
 			v.arrange(model.Value.Third);
-			HashSet<RectangleObject> o = v.getObjects();
-			HashSet<LineAssociation> a = v.getAssocs();
+			Set<RectangleObject> o = v.getObjects();
+			Set<LineAssociation> a = v.getAssocs();
 			
 			// Do sth with o and a
 			System.out.println(o.toString());
@@ -223,7 +240,7 @@ public class LayoutVisualize
 			
 			System.out.println("/Set Objects/");
 			
-			HashSet<RectangleObject> testObjects = new HashSet<RectangleObject>();
+			Set<RectangleObject> testObjects = new HashSet<RectangleObject>();
 			testObjects.add(new RectangleObject("A"));
 			testObjects.add(new RectangleObject("B"));
 			testObjects.add(new RectangleObject("C"));
@@ -231,121 +248,38 @@ public class LayoutVisualize
 			
 			System.out.println("/Set Assocs/");
 			
-			HashSet<LineAssociation> testAssocs = new HashSet<LineAssociation>();
-			
-			testAssocs.add(new LineAssociation("Fugg", "A", "B", AssociationType.normal));
-			testAssocs.add(new LineAssociation("Viz", "C", "D", AssociationType.normal));
-			
-			System.out.println("/Load Data/");
-			v.load(new Pair<HashSet<RectangleObject>, HashSet<LineAssociation>>(
-					testObjects, testAssocs));
-			
-			System.out.println("/Set Statements/");
-			
-			ArrayList<Statement> stats = new ArrayList<Statement>();
-			
-			stats.add(Statement.Parse("topmost(A)"));
-			stats.add(Statement.Parse("bottommost(D)"));
-			stats.add(Statement.Parse("leftmost(C)"));
-			stats.add(Statement.Parse("rightmost(B)"));
-			stats.add(Statement.Parse("south(Fugg, A)"));
-			stats.add(Statement.Parse("west(Fugg, B)"));
-			
-			System.out.println("/Arrange/");
-			v.arrange(stats);
-			
-			System.out.println(v.getObjects());
-			System.out.println(v.getAssocs());
-			
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		catch (MyException e)
-		{
-			System.out.println(e.getMessage());
-		}
-		System.out.println("--END--");
-	}
-	
-	public static void test2()
-	{
-		System.out.println("--START--");
-		
-		try
-		{
-			LayoutVisualize v = new LayoutVisualize();
-			
-			System.out.println("/Set Objects/");
-			
-			HashSet<RectangleObject> testObjects = new HashSet<RectangleObject>();
-			testObjects.add(new RectangleObject("A"));
-			testObjects.add(new RectangleObject("B"));
-			testObjects.add(new RectangleObject("C"));
-			
-			System.out.println("/Set Assocs/");
-			
-			HashSet<LineAssociation> testAssocs = new HashSet<LineAssociation>();
+			Set<LineAssociation> testAssocs = new HashSet<LineAssociation>();
 			
 			testAssocs.add(new LineAssociation("L1", "A", "B", AssociationType.normal));
-			testAssocs.add(new LineAssociation("L2", "B", "C", AssociationType.normal));
-			testAssocs.add(new LineAssociation("L3", "A", "C", AssociationType.normal));
-			testAssocs.add(new LineAssociation("L4", "B", "B", AssociationType.normal));
+			/*
+			 * testAssocs.add(new LineAssociation("L2", "A", "C",
+			 * AssociationType.normal));
+			 * testAssocs.add(new LineAssociation("L3", "A", "D",
+			 * AssociationType.normal));
+			 * testAssocs.add(new LineAssociation("L4", "A", "B",
+			 * AssociationType.normal));
+			 */
 			
 			System.out.println("/Load Data/");
-			v.load(new Pair<HashSet<RectangleObject>, HashSet<LineAssociation>>(
-					testObjects, testAssocs));
+			v.load(testObjects, testAssocs);
 			
 			System.out.println("/Set Statements/");
 			
 			ArrayList<Statement> stats = new ArrayList<Statement>();
 			
-			stats.add(Statement.Parse("topmost(A)"));
-			stats.add(Statement.Parse("bottommost(C)"));
-			stats.add(Statement.Parse("south(B, A)"));
-			
-			stats.add(Statement.Parse("south(L1, A)"));
-			stats.add(Statement.Parse("north(L1, B)"));
-			
-			stats.add(Statement.Parse("south(L2, B)"));
-			stats.add(Statement.Parse("north(L2, C)"));
-			
-			stats.add(Statement.Parse("west(L3, A)"));
-			stats.add(Statement.Parse("west(L3, C)"));
-			
-			stats.add(Statement.Parse("east(L4, B)"));
+			stats.add(Statement.Parse("phantom(F)"));
+			stats.add(Statement.Parse("above(A, F)"));
+			stats.add(Statement.Parse("below(C, F)"));
+			stats.add(Statement.Parse("right(B, F)"));
+			stats.add(Statement.Parse("left(D, F)"));
 			
 			System.out.println("/Arrange/");
-			// v.arrange(Transformers.loadStatements("TARGET_FILE_NAME"));
 			v.arrange(stats);
 			
-			System.out.println("--Objects--");
-			
 			for (RectangleObject o : v.getObjects())
-			{
-				System.out.println(o.getName() + ": " + o.getPosition().toString());
-			}
-			System.out.println();
-			
-			System.out.println("--Assocs--");
-			
+				System.out.println(o.toString());
 			for (LineAssociation a : v.getAssocs())
-			{
-				System.out.println("(" + a.getId() + ") " + a.getFrom() + " - "
-						+ a.getTo() + " [T:" + a.getTurns() + "] :");
-				boolean first = true;
-				for (Point p : a.getRoute())
-				{
-					if (first)
-						first = false;
-					else
-						System.out.print(" -> ");
-					System.out.print(p.toString());
-				}
-				System.out.println();
-			}
-			System.out.println();
+				System.out.println(a.toString());
 			
 		}
 		catch (Exception e)
@@ -359,70 +293,4 @@ public class LayoutVisualize
 		System.out.println("--END--");
 	}
 	
-	public static void test3()
-	{
-		System.out.println("--START--");
-		
-		try
-		{
-			LayoutVisualize v = new LayoutVisualize();
-			
-			System.out.println("/Set Objects/");
-			
-			HashSet<RectangleObject> testObjects = new HashSet<RectangleObject>();
-			testObjects.add(new RectangleObject("A"));
-			testObjects.add(new RectangleObject("B"));
-			testObjects.add(new RectangleObject("C"));
-			testObjects.add(new RectangleObject("F"));
-			
-			System.out.println("/Set Assocs/");
-			
-			HashSet<LineAssociation> testAssocs = new HashSet<LineAssociation>();
-			
-			// testAssocs.add(new LineAssociation("1", "E", "B",
-			// AssociationType.normal));
-			// testAssocs.add(new LineAssociation("2", "C", "D",
-			// AssociationType.normal));
-			// testAssocs.add(new LineAssociation("3", "E", "C",
-			// AssociationType.normal));
-			
-			System.out.println("/Load Data/");
-			v.load(new Pair<HashSet<RectangleObject>, HashSet<LineAssociation>>(
-					testObjects, testAssocs));
-			
-			System.out.println("/Set Statements/");
-			ArrayList<Statement> stats = new ArrayList<Statement>();
-			
-			// Objects
-			stats.add(Statement.Parse("group(A, G)"));
-			stats.add(Statement.Parse("group(C, G3)"));
-			stats.add(Statement.Parse("group(B, G2)"));
-			stats.add(Statement.Parse("group(G3, G2)"));
-			stats.add(Statement.Parse("group(G2, G)"));
-			stats.add(Statement.Parse("south(F, G)"));
-			
-			System.out.println("/Arrange/");
-			v.arrange(stats);
-			
-			System.out.println("--Objects--");
-			for (RectangleObject o : v.getObjects())
-				System.out.println(o);
-			System.out.println();
-			
-			System.out.println("--Assocs--");
-			for (LineAssociation a : v.getAssocs())
-				System.out.println(a);
-			System.out.println();
-			
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		catch (MyException e)
-		{
-			System.out.println(e.getMessage());
-		}
-		System.out.println("--END--");
-	}
 }

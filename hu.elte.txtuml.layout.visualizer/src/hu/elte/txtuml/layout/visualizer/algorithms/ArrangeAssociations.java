@@ -5,18 +5,18 @@ import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
-import hu.elte.txtuml.layout.visualizer.exceptions.MyException;
 import hu.elte.txtuml.layout.visualizer.helpers.Helper;
 import hu.elte.txtuml.layout.visualizer.helpers.Pair;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
+import hu.elte.txtuml.layout.visualizer.model.LineAssociation.RouteConfig;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
-import hu.elte.txtuml.layout.visualizer.model.LineAssociation.RouteConfig;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 class ArrangeAssociations
@@ -45,50 +45,178 @@ class ArrangeAssociations
 	 *            Associations to arrange on the grid.
 	 * @param stats
 	 *            Statements on associations.
-	 * @throws CannotFindAssociationRouteException
-	 *             Throws if the algorithm cannot find the route for a
-	 *             association.
 	 * @throws ConversionException
 	 *             Throws if algorithm cannot convert certain StatementType into
 	 *             Direction.
 	 * @throws InternalException
 	 *             Throws if any error occurs which should not happen. Contact
 	 *             developer!
+	 * @throws CannotFindAssociationRouteException
 	 */
-	public ArrangeAssociations(HashSet<RectangleObject> diagramObjects,
-			HashSet<LineAssociation> diagramAssocs, ArrayList<Statement> stats)
-			throws ConversionException, CannotFindAssociationRouteException,
-			InternalException
+	public ArrangeAssociations(Set<RectangleObject> diagramObjects,
+			Set<LineAssociation> diagramAssocs, ArrayList<Statement> stats)
+			throws ConversionException, InternalException,
+			CannotFindAssociationRouteException
 	{
 		if (diagramAssocs == null || diagramAssocs.size() == 0 || diagramAssocs == null
 				|| diagramAssocs.size() == 0)
 			return;
 		
 		_transformAmount = 2;
-		arrange(diagramObjects, diagramAssocs, stats);
+		OLDarrange(diagramObjects, diagramAssocs, stats);
 	}
 	
-	private void arrange(HashSet<RectangleObject> diagramObjects,
-			HashSet<LineAssociation> diagramAssocs, ArrayList<Statement> stats)
-			throws ConversionException, CannotFindAssociationRouteException,
-			InternalException
+	@SuppressWarnings("unused")
+	private void arrange(Set<RectangleObject> diagramObjects,
+			Set<LineAssociation> diagramAssocs, ArrayList<Statement> stats)
+			throws ConversionException, InternalException
 	{
-		HashSet<Pair<Point, Integer>> occupied = new HashSet<Pair<Point, Integer>>();
+		Set<Point> occupied = new HashSet<Point>();
 		_assocs = (ArrayList<LineAssociation>) diagramAssocs.stream().collect(
 				Collectors.toList());
 		_modifies = new HashMap<Pair<String, RouteConfig>, Point>();
 		
-		// Count maxlinks on side of obejct
-		// Integer maxLinks = maxLinksOnSide();
+		// Count maxlinks on obejcts
+		Integer maxLinks = maxLinks();
 		
 		// TODO
+		// transformAmount páros
+		// assocs= (object-2)*4 + 8
+		// 2:> object=1, assocs=4;
+		// 4:> object=3, assocs=12;
+		// 6:> object=5, assocs=20;
+		// 8:> object=7, assocs=;
+		_transformAmount = getTransformAmount(maxLinks);
+		if (_transformAmount < 2)
+			_transformAmount = 2;
 		
+		Boolean repeat = true;
+		while (repeat)
+		{
+			repeat = false;
+			
+			// Transform everything according to transform amount.
+			// set object width rectangle
+			for (RectangleObject obj : diagramObjects)
+			{
+				Point origin = transformDimension(obj.getPosition());
+				
+				// generate row
+				ArrayList<Point> row = new ArrayList<Point>();
+				for (int i = 1; i < _transformAmount - 1; ++i)
+				{
+					Point tempP = Point.Add(origin, Point.Multiply(Direction.east, i));
+					Point tempM = Point.Add(origin, Point.Multiply(Direction.west, i));
+					row.add(tempP);
+					row.add(tempM);
+				}
+				occupied.addAll(row);
+				
+				// generate coloumns
+				for (int i = 1; i < _transformAmount - 1; ++i)
+				{
+					Point tempN = Point.Multiply(Direction.north, i);
+					Point tempS = Point.Multiply(Direction.south, i);
+					
+					ArrayList<Point> temp = new ArrayList<Point>(row);
+					temp.forEach(p -> Point.Add(p, tempN));
+					occupied.addAll(temp);
+					temp = new ArrayList<Point>(row);
+					temp.forEach(p -> Point.Add(p, tempS));
+					occupied.addAll(temp);
+				}
+			}
+			
+			// Calculate maximum distance between objects
+			Integer top = calcMaxDistance(occupied);
+			
+			// Process statements, priority and direction
+			if (stats != null && stats.size() != 0)
+			{
+				// Set priority
+				HashMap<String, Integer> priorityMap = setPriorityMap(stats);
+				
+				// Order based on priority
+				_assocs.sort((a1, a2) ->
+				{
+					if (priorityMap.containsKey(a1.getId()))
+					{
+						if (priorityMap.containsKey(a2.getId()))
+						{
+							Integer v = priorityMap.get(a1.getId());
+							Integer w = priorityMap.get(a2.getId());
+							return (v - w > 0) ? 1 : -1;
+						}
+						else
+							return -1;
+					}
+					else
+					{
+						if (priorityMap.containsKey(a2.getId()))
+							return 1;
+						else
+							return 0;
+					}
+				});
+				
+				// Set starts/ends for statemented assocs
+				setModified(stats, diagramObjects);
+			}
+			
+			// Search for the route of every Link
+			try
+			{
+				// Graph Search
+				for (int i = 0; i < _assocs.size(); ++i)
+				{
+					LineAssociation a = _assocs.get(i);
+					Point START = a.getRoute(LineAssociation.RouteConfig.START);
+					Point END = a.getRoute(LineAssociation.RouteConfig.END);
+					Point BEFORE = _modifies.get(new Pair<String, RouteConfig>(a.getId(),
+							RouteConfig.START));
+					Point AFTER = _modifies.get(new Pair<String, RouteConfig>(a.getId(),
+							RouteConfig.END));
+					
+					GraphSearch gs = new GraphSearch(START, END, occupied, BEFORE, AFTER,
+							top);
+					a.setRoute(gs.value());
+					a.setTurns(gs.turns());
+					a.setExtends(gs.extendsNum());
+					_assocs.set(i, a);
+					
+					// Update occupied places with the route of this link
+					if (a.getRoute().size() < 3)
+						throw new InternalException("Route is shorter then 3!");
+					
+					for (int ri = 1; ri < a.getRoute().size() - 1; ++ri)
+					{
+						occupied.add(new Point(a.getRoute().get(ri)));
+					}
+				}
+			}
+			catch (CannotFindAssociationRouteException e)
+			{
+				repeat = true;
+				_transformAmount = _transformAmount + 2;
+			}
+		}
+		
+	}
+	
+	private void OLDarrange(Set<RectangleObject> diagramObjects,
+			Set<LineAssociation> diagramAssocs, ArrayList<Statement> stats)
+			throws ConversionException, InternalException,
+			CannotFindAssociationRouteException
+	{
+		Set<Point> occupied = new HashSet<Point>();
+		_assocs = (ArrayList<LineAssociation>) diagramAssocs.stream().collect(
+				Collectors.toList());
+		_modifies = new HashMap<Pair<String, RouteConfig>, Point>();
 		// Transform everything to new dimensions (*2)
 		// Add objects transformed place to occupied list
 		for (RectangleObject obj : diagramObjects)
 		{
-			occupied.add(new Pair<Point, Integer>(transformDimension(obj.getPosition()),
-					2));
+			occupied.add(transformDimension(obj.getPosition()));
 		}
 		// Transform Links' start and end route point
 		for (int i = 0; i < _assocs.size(); ++i)
@@ -165,36 +293,32 @@ class ArrangeAssociations
 			if (a.getRoute().size() < 3)
 				throw new InternalException("Route is shorter then 3!");
 			
-			for (int ri = 2; ri < a.getRoute().size() - 2; ++ri)
+			for (int ri = 1; ri < a.getRoute().size() - 1; ++ri)
 			{
-				if (a.getRoute().size() > ri + 1
-						&& !Point.Substract(a.getRoute().get(ri - 1),
-								a.getRoute().get(ri)).equals(
-								Point.Substract(a.getRoute().get(ri),
-										a.getRoute().get(ri + 1))))
-				{
-					occupied.add(new Pair<Point, Integer>(a.getRoute().get(ri), 2));
-				}
-				else
-				{
-					Point temp = a.getRoute().get(ri);
-					if (!occupied.stream().anyMatch(pr -> pr.First.equals(temp)))
-						occupied.add(new Pair<Point, Integer>(a.getRoute().get(ri), 1));
-				}
+				occupied.add(new Point(a.getRoute().get(ri)));
 			}
 		}
 	}
 	
-	private Integer calcMaxDistance(HashSet<Pair<Point, Integer>> grid)
+	private Integer getTransformAmount(Integer max)
+	{
+		Integer result = (int) Math.ceil(((max - 8) / 4) + 2);
+		if (result % 2 == 0)
+			return result;
+		else
+			return result + 1;
+	}
+	
+	private Integer calcMaxDistance(Set<Point> grid)
 	{
 		Integer maxval = 0;
 		
-		for (Pair<Point, Integer> p1 : grid)
+		for (Point p1 : grid)
 		{
-			for (Pair<Point, Integer> p2 : grid)
+			for (Point p2 : grid)
 			{
-				int dx = Math.abs(p1.First.getX() - p2.First.getX());
-				int dy = Math.abs(p1.First.getY() - p2.First.getY());
+				int dx = Math.abs(p1.getX() - p2.getX());
+				int dy = Math.abs(p1.getY() - p2.getY());
 				if (dx > maxval)
 					maxval = dx;
 				if (dy > maxval)
@@ -205,77 +329,29 @@ class ArrangeAssociations
 		return maxval;
 	}
 	
-	@SuppressWarnings("unused")
-	private Integer maxLinksOnSide()
+	private Integer maxLinks()
 	{
-		HashMap<Pair<String, Direction>, Integer> temp = new HashMap<Pair<String, Direction>, Integer>();
+		HashMap<String, Integer> temp = new HashMap<String, Integer>();
 		Integer maxvalue = 0;
 		
 		for (LineAssociation a : _assocs)
 		{
-			// which direction
-			int dx = a.getRoute(RouteConfig.START).getX()
-					- a.getRoute(RouteConfig.END).getX();
-			int dy = a.getRoute(RouteConfig.START).getY()
-					- a.getRoute(RouteConfig.END).getY();
+			if (temp.containsKey(a.getFrom()))
+				temp.put(a.getFrom(), temp.get(a.getFrom()) + 1);
+			else
+				temp.put(a.getFrom(), 1);
 			
-			String objname = a.getFrom();
+			if (maxvalue < temp.get(a.getFrom()))
+				maxvalue = temp.get(a.getFrom());
 			
-			if (Math.abs(dx) >= Math.abs(dy) && dx >= 0)
-			{
-				// jobbra
-				Pair<String, Direction> key = new Pair<String, Direction>(objname,
-						Direction.east);
-				if (temp.containsKey(key))
-					temp.put(key, temp.get(key) + 1);
-				else
-					temp.put(key, 1);
-				
-				if (temp.get(key) > maxvalue)
-					maxvalue = temp.get(key);
-			}
-			if (Math.abs(dx) >= Math.abs(dy) && dx <= 0)
-			{
-				// balra
-				Pair<String, Direction> key = new Pair<String, Direction>(objname,
-						Direction.west);
-				if (temp.containsKey(key))
-					temp.put(key, temp.get(key) + 1);
-				else
-					temp.put(key, 1);
-				
-				if (temp.get(key) > maxvalue)
-					maxvalue = temp.get(key);
-			}
-			if (Math.abs(dx) <= Math.abs(dy) && dy >= 0)
-			{
-				// fel
-				Pair<String, Direction> key = new Pair<String, Direction>(objname,
-						Direction.north);
-				if (temp.containsKey(key))
-					temp.put(key, temp.get(key) + 1);
-				else
-					temp.put(key, 1);
-				
-				if (temp.get(key) > maxvalue)
-					maxvalue = temp.get(key);
-			}
-			if (Math.abs(dx) <= Math.abs(dy) && dy <= 0)
-			{
-				// le
-				Pair<String, Direction> key = new Pair<String, Direction>(objname,
-						Direction.south);
-				if (temp.containsKey(key))
-					temp.put(key, temp.get(key) + 1);
-				else
-					temp.put(key, 1);
-				
-				if (temp.get(key) > maxvalue)
-					maxvalue = temp.get(key);
-			}
+			if (temp.containsKey(a.getTo()))
+				temp.put(a.getTo(), temp.get(a.getTo()) + 1);
+			else
+				temp.put(a.getTo(), 1);
 			
+			if (maxvalue < temp.get(a.getTo()))
+				maxvalue = temp.get(a.getTo());
 		}
-		
 		return maxvalue;
 	}
 	
@@ -294,7 +370,7 @@ class ArrangeAssociations
 		return result;
 	}
 	
-	private void setModified(ArrayList<Statement> stats, HashSet<RectangleObject> objs)
+	private void setModified(ArrayList<Statement> stats, Set<RectangleObject> objs)
 			throws ConversionException
 	{
 		for (Statement s : stats)
@@ -318,8 +394,7 @@ class ArrangeAssociations
 		}
 	}
 	
-	private void modifyIfInList(Statement stat, Direction dir,
-			HashSet<RectangleObject> objs)
+	private void modifyIfInList(Statement stat, Direction dir, Set<RectangleObject> objs)
 	{
 		
 		String nameOfAssoc = stat.getParameter(0);
@@ -360,73 +435,9 @@ class ArrangeAssociations
 		return Point.Multiply(p, _transformAmount);
 	}
 	
-	public HashSet<LineAssociation> value()
+	public Set<LineAssociation> value()
 	{
-		return (HashSet<LineAssociation>) _assocs.stream().collect(Collectors.toSet());
+		return (Set<LineAssociation>) _assocs.stream().collect(Collectors.toSet());
 	}
 	
-	public static void test()
-	{
-		try
-		{
-			HashSet<RectangleObject> o = new HashSet<RectangleObject>();
-			// o.add(new RectangleObject("A", new Point(0, 1)));
-			// o.add(new RectangleObject("B", new Point(-1, 0)));
-			o.add(new RectangleObject("C", new Point(0, 0)));
-			o.add(new RectangleObject("D", new Point(0, -1)));
-			
-			HashSet<LineAssociation> a = new HashSet<LineAssociation>();
-			// a.add(new LineAssociation("AtoB", "A", "B", new Point(0, 1),
-			// new
-			// Point(-1, 0)));
-			// a.add(new LineAssociation("BtoC", "B", "C", new Point(-1, 0),
-			// new
-			// Point(0, 0)));
-			// a.add(new LineAssociation("BtoD", "B", "D", new Point(-1, 0),
-			// new
-			// Point(0, -1)));
-			a.add(new LineAssociation("CtoD1", "C", "D", new Point(0, 0),
-					new Point(0, -1)));
-			a.add(new LineAssociation("CtoD2", "C", "D", new Point(0, 0),
-					new Point(0, -1)));
-			a.add(new LineAssociation("CtoD3", "C", "D", new Point(0, 0),
-					new Point(0, -1)));
-			a.add(new LineAssociation("CtoD4", "C", "D", new Point(0, 0),
-					new Point(0, -1)));
-			// a.add(new LineAssociation("CtoD5", "C", "D", new Point(0, 0), new
-			// Point(0, -1)));
-			
-			ArrayList<Statement> s = new ArrayList<Statement>();
-			// s.add(Statement.Parse("priority(BtoC, 50)"));
-			// s.add(Statement.Parse("priority(BtoC, 20)"));
-			// s.add(Statement.Parse("north(BtoD, D)"));
-			s.add(Statement.Parse("north(CtoD2, C)"));
-			s.add(Statement.Parse("priority(CtoD2, 10)"));
-			
-			ArrangeAssociations aa = new ArrangeAssociations(o, a, s);
-			for (LineAssociation as : aa.value())
-			{
-				System.out.println(as.getId() + ": " + as.getFrom() + " - " + as.getTo()
-						+ ":");
-				boolean first = true;
-				for (Point p : as.getRoute())
-				{
-					if (first)
-						first = false;
-					else
-						System.out.print(" -> ");
-					System.out.print(p.toString());
-				}
-				System.out.println();
-			}
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		catch (MyException e)
-		{
-			System.out.println(e.getMessage());
-		}
-	}
 }

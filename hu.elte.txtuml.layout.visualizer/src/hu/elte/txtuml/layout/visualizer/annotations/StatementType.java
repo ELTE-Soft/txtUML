@@ -1,9 +1,14 @@
 package hu.elte.txtuml.layout.visualizer.annotations;
 
+/***
+ * Enumeration of the Types of Statements.
+ * 
+ * @author Balázs, Gregorics
+ *
+ */
 public enum StatementType
 {
 	unknown,
-	// pos,
 	north,
 	south,
 	east,
@@ -12,15 +17,6 @@ public enum StatementType
 	below,
 	right,
 	left,
-	topmost,
-	bottommost,
-	rightmost,
-	leftmost,
-	// centered,
-	// eastwest,
-	// nextto,
-	group,
-	layout,
-	// entry,
-	priority
+	priority,
+	phantom
 }
