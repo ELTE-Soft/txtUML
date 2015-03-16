@@ -1,44 +1,38 @@
 package hu.elte.txtuml.export.uml2.transform.backend;
 
-public class ModelElementInformation {
+class InstanceInformationImpl implements InstanceInformation {
 
 	private final String expression;
 	private final boolean literal;
 	private final boolean calculated;
-	private final Integer intVal;
 	
-	public ModelElementInformation(String expression, boolean literal, boolean calculated, Integer intVal)
+	InstanceInformationImpl(String expression, boolean literal, boolean calculated)
 	{
 		this.expression=expression;
 		this.literal=literal;
 		this.calculated=calculated;
-		this.intVal=intVal;
+		
 	}
-	
-	public ModelElementInformation(String expression, boolean literal, boolean calculated)
-	{
-		this(expression,literal,calculated,0);
-	}
-	
-	public ModelElementInformation(String expression)
+	InstanceInformationImpl(String expression)
 	{
 		this(expression, false, false);
 	}
+	
+	@Override
 	public String getExpression()
 	{
 		return expression;
 	}
+	
+	@Override
 	public boolean isLiteral()
 	{
 		return literal;
 	}
+	@Override
 	public boolean isCalculated()
 	{
 		return calculated;
 	}
-	public Integer getIntVal()
-	{
-		return intVal;
-	}
-	
+
 }

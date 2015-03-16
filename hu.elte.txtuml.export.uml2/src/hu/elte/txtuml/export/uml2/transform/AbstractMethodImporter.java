@@ -6,7 +6,7 @@ import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.api.ModelIdentifiedElement;
 import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
-import hu.elte.txtuml.export.uml2.transform.backend.ModelElementInformation;
+import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
 
 import java.lang.reflect.Method;
 import java.util.Stack;
@@ -132,12 +132,12 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		return objectName.startsWith("self");
 	}
 
-	private static String getModelTypeLiteralExpression(ModelElement instance, ModelElementInformation instInfo)
+	private static String getModelTypeLiteralExpression(ModelElement instance, InstanceInformation instInfo)
 	{
 		String expression=null;
 		if(instance instanceof ModelInt)
 		{
-			Integer val=instInfo.getIntVal();
+			Integer val=Integer.parseInt(instInfo.getExpression());
 			if(val<0)
 			{
 				expression= "("+val.toString()+")";
@@ -163,7 +163,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	protected static String getExpression(ModelIdentifiedElement instance)
 	{
 		String expression=null;
-		ModelElementInformation instInfo=getInstanceInfo(instance);
+		InstanceInformation instInfo=getInstanceInfo(instance);
 
 		
 		if(instInfo != null)
@@ -182,20 +182,16 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		return expression;
 	}
 
-	
-
 	protected static String getObjectIdentifier(ModelIdentifiedElement instance)
 	{
 		String expression=null;
-		ModelElementInformation instInfo=getInstanceInfo(instance);
-
+		InstanceInformation instInfo=getInstanceInfo(instance);
 		
 		if(instInfo != null && !instInfo.isLiteral() && !instInfo.isCalculated())
 			expression = instInfo.getExpression();
-		//else
-		//	expression = instance.getIdentifier();
 		else
 			expression = "inst_"+System.identityHashCode(instance);
+		
 		return expression;
 	}
 
@@ -279,19 +275,21 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		opaqueExpression.getBodies().add(expression);
 		return pin;
 	}
+	
 	private static void addStringLiteralToValuePin(ValuePin pin, String expr)
 	{
 		LiteralString literal=
 				(LiteralString) pin.createValue(pin.getName()+"_expression",UML2String,UMLPackage.Literals.LITERAL_STRING);
 		literal.setValue(expr);
 	}
+	
 	private static boolean isStringLiteral(ModelIdentifiedElement object)
 	{
 		if(!(object instanceof ModelString)) return false;
 		else
 		{
 			ModelString modelString=(ModelString) object;
-			ModelElementInformation info=getInstanceInfo(modelString);
+			InstanceInformation info=getInstanceInfo(modelString);
 			if(info == null) return false;
 			else
 			{

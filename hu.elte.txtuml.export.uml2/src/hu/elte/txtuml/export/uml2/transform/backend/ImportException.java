@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.uml2.utils;
+package hu.elte.txtuml.export.uml2.transform.backend;
 
 @SuppressWarnings("serial")
 public class ImportException extends Exception {

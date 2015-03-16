@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.uml2.utils;
 import java.lang.reflect.Field;
 
 import hu.elte.txtuml.api.Association;
+import hu.elte.txtuml.api.Event;
 import hu.elte.txtuml.api.ExternalClass;
 import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelElement;
@@ -112,6 +113,27 @@ public class ElementTypeTeller {
 	public static boolean isTransition(ModelElement element) {
 		return element!=null && isTransition(element.getClass());
     }
+	public static boolean isSpecificClassifier(Class<?> c)
+	{
+		if(!isClassifier(c))
+			return false;
+		
+		Class<?> superClass=c.getSuperclass();
+		
+		if(superClass==null)
+			return false;
+		else if(superClass==ModelClass.class)
+			return false;
+		else if(superClass==ExternalClass.class)
+			return false;
+		else if(superClass==Signal.class)
+			return false;
+		else if(superClass==Event.class)
+			return false;
+		else
+			return true;
+		
+	}
     
 	
 }

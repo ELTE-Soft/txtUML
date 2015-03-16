@@ -7,7 +7,7 @@ import hu.elte.txtuml.api.StateMachine;
 import hu.elte.txtuml.api.Trigger;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 import hu.elte.txtuml.export.uml2.transform.backend.InstancesMap;
-import hu.elte.txtuml.export.uml2.transform.backend.ModelElementInformation;
+import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.utils.InstanceCreator;
@@ -80,16 +80,10 @@ public class MethodImporter extends AbstractMethodImporter {
 		currentParameters=null;
 		importing=true;
 	
-		setCurrentSignal(transitionInstance);	
+		currentSignal=InstructionImporter.initAndGetSignalInstanceOfTransition(transitionInstance);	
 
 	}
 	
-	private static void setCurrentSignal(hu.elte.txtuml.api.StateMachine.Transition transitionInstance)
-	{
-		currentSignal=InstructionImporter.initAndGetSignalInstanceOfTransition(transitionInstance);	
-		
-		
-	}
 	private static void initMethodImport(Model model, Activity activity, Method sourceMethod, ModelElement classInstance)
 	{
 		currentModel=model;
@@ -108,7 +102,10 @@ public class MethodImporter extends AbstractMethodImporter {
 		
 		if(ElementTypeTeller.isTransition(classInstance))
 		{
-			setCurrentSignal((hu.elte.txtuml.api.ModelClass.Transition)classInstance);		
+			currentSignal=InstructionImporter.
+					initAndGetSignalInstanceOfTransition(
+							(StateMachine.Transition)classInstance
+							);		
 			
 			if(currentSignal!=null)
 			{
@@ -231,7 +228,7 @@ public class MethodImporter extends AbstractMethodImporter {
 	
 	private static boolean isInstanceLiteral(ModelElement instance) {
 		
-		ModelElementInformation instInfo=getInstanceInfo(instance);
+		InstanceInformation instInfo=getInstanceInfo(instance);
 		return instInfo!=null && instInfo.isLiteral();
 	}
 
@@ -255,7 +252,7 @@ public class MethodImporter extends AbstractMethodImporter {
 			currentParameters[i]=(ModelElement) DummyInstanceCreator.createDummyInstance(c);
 		
 			String argName="arg"+i;
-			localInstances.put(currentParameters[i],new ModelElementInformation(argName,false,false));
+			localInstances.put(currentParameters[i],InstanceInformation.create(argName));
 			Parameter param=ElementFinder.findParameterInActivity(argName,currentActivity);
 			if(param!=null)
 			{

@@ -2,11 +2,11 @@ package hu.elte.txtuml.export.uml2.transform;
 
 import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelElement;
-import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
+import hu.elte.txtuml.export.uml2.utils.FieldValueAccessor;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 import hu.elte.txtuml.export.uml2.transform.backend.InstancesMap;
-import hu.elte.txtuml.export.uml2.transform.backend.ModelElementInformation;
+import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
 
 import java.lang.reflect.Field;
 
@@ -17,9 +17,9 @@ import org.eclipse.uml2.uml.Region;
 
 abstract class AbstractImporter {
 	
-	protected static ModelElementInformation getInstanceInfo(Object instance)
+	protected static InstanceInformation getInstanceInfo(Object instance)
 	{
-		ModelElementInformation ret;
+		InstanceInformation ret;
 		
 		ret = globalInstances.get(instance);
 		
@@ -55,10 +55,10 @@ abstract class AbstractImporter {
   	  			Class<?> fieldType = field.getType();
   	  			String fieldName = field.getName();
   	  			Object fieldInst =  DummyInstanceCreator.createDummyInstance(fieldType);
-  	  			setObjectFieldVal(classifier,fieldName, fieldInst);
+  	  			FieldValueAccessor.setObjectFieldVal(classifier,fieldName, fieldInst);
   	  			String fieldExpr = classifierExpr+"."+fieldName;
   	  			
-  	  			ModelElementInformation elementInfo = new ModelElementInformation(fieldExpr,false,false);
+  	  			InstanceInformation elementInfo = InstanceInformation.create(fieldExpr);
   	  			if(fieldInst != null)
   	  			{
   	 
@@ -72,53 +72,6 @@ abstract class AbstractImporter {
   		}
 		
   	}
-	
-	protected static void setObjectFieldVal(Object object, String fieldName,Object newVal)
-	{
-		Field field = ElementFinder.findField(object.getClass(),fieldName);
-		
-		if(field!=null)
-		{
-			field.setAccessible(true);
-			try {
-				field.set(object,newVal);
-				
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
-			}
-			field.setAccessible(false);
-		}
-	}
-	protected static Object getObjectFieldVal(Object object,String fieldName)
-	{	
-		Field field = ElementFinder.findField(object.getClass(),fieldName);
-		
-		return accessObjectFieldVal(object, field);	
-	}
-	
-	protected static Object accessObjectFieldVal(Object object, Field field)
-	{
-		Object val=null;
-		
-		if(field!=null)
-		{
-			field.setAccessible(true);
-			try {
-				val = field.get(object);
-				return val;
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
-			}
-			field.setAccessible(false);
-		}
-		
-		
-		return val;
-	}
-	
-	
 	
 	protected static void importWarning(String msg) {
 		System.out.println("Warning: " + msg);
@@ -150,7 +103,7 @@ abstract class AbstractImporter {
 	
 	protected static boolean isInstanceCalculated(ModelElement instance)
 	{
-		ModelElementInformation instInfo=getInstanceInfo(instance);
+		InstanceInformation instInfo=getInstanceInfo(instance);
 		boolean calculated;
 		if(instInfo==null)
 			calculated=false;

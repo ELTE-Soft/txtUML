@@ -7,6 +7,7 @@ import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.blocks.BlockBody;
 import hu.elte.txtuml.api.blocks.Condition;
 import hu.elte.txtuml.api.blocks.ParameterizedBlockBody;
+import hu.elte.txtuml.export.uml2.utils.FieldValueAccessor;
 import hu.elte.txtuml.utils.Pair;
 
 import org.eclipse.uml2.uml.Activity;
@@ -109,15 +110,15 @@ class ActionImporter extends AbstractInstructionImporter {
 			String attributeName=signalAttribute.getName();
 			Type attributeType=signalAttribute.getType();
 
-			ValuePin argValuePin=(ValuePin)sendSignalAction.createArgument(attributeName,attributeType,UMLPackage.Literals.VALUE_PIN);
+			ValuePin argValuePin = (ValuePin)
+					sendSignalAction.createArgument(attributeName,attributeType,UMLPackage.Literals.VALUE_PIN);
 
 			try
 			{
-				ModelIdentifiedElement attributeInstance=(ModelIdentifiedElement) getObjectFieldVal(event,attributeName);
+				ModelIdentifiedElement attributeInstance=
+						(ModelIdentifiedElement) FieldValueAccessor.getObjectFieldVal(event,attributeName);
 				
-				addExpressionToValuePin(argValuePin,attributeInstance,attributeType);
-				
-				
+				addExpressionToValuePin(argValuePin,attributeInstance,attributeType);	
 			}
 			catch(Exception e)
 			{
@@ -126,7 +127,6 @@ class ActionImporter extends AbstractInstructionImporter {
 
 		}
 	}
-	
 	
 	static void importSendSignalAction(ModelClass receiver, hu.elte.txtuml.api.Signal event) 
 	{
@@ -306,7 +306,8 @@ class ActionImporter extends AbstractInstructionImporter {
 		return decisionNode;
 	}
 
-	static void importDeleteObjectAction(ModelClass obj) {
+	static void importDeleteObjectAction(ModelClass obj) 
+	{
 	    if(currentActivity != null) 
 	    {
 	       	DestroyObjectAction destroyAction=	(DestroyObjectAction) 

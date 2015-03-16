@@ -2,18 +2,17 @@ package hu.elte.txtuml.export.uml2.transform;
 
 
 
-import hu.elte.txtuml.api.ExternalClass;
 import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
-import hu.elte.txtuml.export.uml2.utils.ElementModifiersSetter;
+import hu.elte.txtuml.export.uml2.utils.ElementModifiersAssigner;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
-import hu.elte.txtuml.export.uml2.utils.ImportException;
+import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 import hu.elte.txtuml.export.uml2.transform.backend.InstancesMap;
-import hu.elte.txtuml.export.uml2.transform.backend.ModelElementInformation;
+import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -81,11 +80,11 @@ public class ModelImporter extends AbstractImporter{
 	private static void initGlobalInstancesMap() {
 		
 		globalInstances=InstancesMap.create();
-		globalInstances.put(ModelInt.ONE, new ModelElementInformation("1",true,false,1));
-		globalInstances.put(ModelInt.ZERO, new ModelElementInformation("0",true,false,0));
-		globalInstances.put(ModelBool.TRUE, new ModelElementInformation("true",true,false));
-		globalInstances.put(ModelBool.FALSE, new ModelElementInformation("false",true,false));
-		globalInstances.put(ModelBool.ELSE, new ModelElementInformation("else",true,false));
+		globalInstances.put(ModelInt.ONE, InstanceInformation.createLiteral("1"));
+		globalInstances.put(ModelInt.ZERO, InstanceInformation.createLiteral("0"));
+		globalInstances.put(ModelBool.TRUE, InstanceInformation.createLiteral("true"));
+		globalInstances.put(ModelBool.FALSE, InstanceInformation.createLiteral("false"));
+		globalInstances.put(ModelBool.ELSE, InstanceInformation.createLiteral("else"));
 		
 	}
 
@@ -186,21 +185,6 @@ public class ModelImporter extends AbstractImporter{
 		currentModel.applyProfile(currentProfile);
 	}
 	
-	private static boolean isSpecificClassOrEvent(Class<?> c)
-	{
-		if(!ElementTypeTeller.isClassifier(c))
-		{
-			return false;
-		}
-		Class<?> superClass=c.getSuperclass();
-		
-		if(superClass==null) return false;
-		else if(superClass==ModelClass.class) return false;
-		else if(superClass==ExternalClass.class) return false;
-		else if(superClass==hu.elte.txtuml.api.Signal.class) return false;
-		else return true;
-		
-	}
 	private static void importGeneralizations() throws ImportException 
 	{
 		for(Class<?> c : modelClass.getDeclaredClasses()) {
@@ -208,7 +192,7 @@ public class ModelImporter extends AbstractImporter{
 			{
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
 			}
-			else if(isSpecificClassOrEvent(c))	 
+			else if(ElementTypeTeller.isSpecificClassifier(c))	 
 			{
 				createGeneralization(c,c.getSuperclass());
 			}
@@ -255,7 +239,7 @@ public class ModelImporter extends AbstractImporter{
 	{
 		org.eclipse.uml2.uml.Class importedClass =
 				currentModel.createOwnedClass(sourceClass.getSimpleName(),Modifier.isAbstract(sourceClass.getModifiers()));
-		ElementModifiersSetter.setModifiers(importedClass,sourceClass);
+		ElementModifiersAssigner.setModifiers(importedClass,sourceClass);
 		
 		if(ElementTypeTeller.isExternalClass(sourceClass))
 		{
@@ -364,8 +348,6 @@ public class ModelImporter extends AbstractImporter{
     
     private static void importAttribute(Classifier owner, Field field) throws ImportException
     {
-
-    	
     	String fieldName=field.getName();
     	org.eclipse.uml2.uml.Type fieldType=importType(field.getType());
     	
@@ -382,7 +364,7 @@ public class ModelImporter extends AbstractImporter{
     	{
     		throw new ImportException(owner.getName()+" is not a Class nor a Signal.");
     	}
-    	ElementModifiersSetter.setModifiers(property,field);
+    	ElementModifiersAssigner.setModifiers(property,field);
     }
     
     static org.eclipse.uml2.uml.Type importType(Class<?> sourceClass) 
@@ -432,7 +414,7 @@ public class ModelImporter extends AbstractImporter{
     	{
            
             Operation operation=importOperationWithoutBody(ownerClass,sourceClass,method);
-            ElementModifiersSetter.setModifiers(operation, method);
+            ElementModifiersAssigner.setModifiers(operation, method);
            
         }
     }
@@ -477,10 +459,10 @@ public class ModelImporter extends AbstractImporter{
   	private static void createInstancesAndInitInstancesMap(Class<?> c) {
 		
 		classAndFieldInstances=InstancesMap.create();
-		
+
   		selfInstance=(ModelClass) DummyInstanceCreator.createDummyInstance(c);
  
-		classAndFieldInstances.put(selfInstance, new ModelElementInformation("self",false,false));
+		classAndFieldInstances.put(selfInstance, InstanceInformation.create("self"));
 		
 		createNonLocalFieldsRecursively(selfInstance);
 		

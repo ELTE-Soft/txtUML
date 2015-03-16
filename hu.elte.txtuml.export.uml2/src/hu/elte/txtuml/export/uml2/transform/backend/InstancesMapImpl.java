@@ -2,8 +2,9 @@ package hu.elte.txtuml.export.uml2.transform.backend;
 
 import java.util.IdentityHashMap;
 
-public class InstancesMapImpl 
-extends IdentityHashMap<Object, ModelElementInformation> 
+@SuppressWarnings("serial")
+class InstancesMapImpl 
+extends IdentityHashMap<Object, InstanceInformation> 
 implements InstancesMap{
 
 	InstancesMapImpl()
@@ -12,7 +13,7 @@ implements InstancesMap{
 	}
 	
 	@Override
-	public	String toString()
+	public String toString()
 	{
 		String ret="";
 		for(Object obj : this.keySet())

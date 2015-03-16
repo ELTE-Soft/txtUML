@@ -5,12 +5,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import org.eclipse.uml2.uml.Classifier;
+import org.eclipse.uml2.uml.Feature;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.VisibilityKind;
 
-public class ElementModifiersSetter {
+public class ElementModifiersAssigner {
 
     private static void setVisibilityBasedOnModifiersGivenByReflection(NamedElement element,int modifiers)
 	{
@@ -51,6 +52,12 @@ public class ElementModifiersSetter {
 			boolean isAbstract = Modifier.isAbstract(modifiers);
 			Classifier classifierElem=(Classifier) element;
 			classifierElem.setIsAbstract(isAbstract);
+		}
+		if(element instanceof Feature)
+		{
+			boolean isStatic = Modifier.isStatic(modifiers);
+			Feature featureElem = (Feature) element;
+			featureElem.setIsStatic(isStatic);
 		}
 		
 	}

@@ -1,7 +1,7 @@
 package hu.elte.txtuml.export.uml2.transform;
 
 import hu.elte.txtuml.export.uml2.transform.backend.AssociationEnd;
-import hu.elte.txtuml.export.uml2.utils.ImportException;
+import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;

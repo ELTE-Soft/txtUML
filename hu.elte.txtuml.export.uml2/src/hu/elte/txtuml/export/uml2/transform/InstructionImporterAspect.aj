@@ -8,7 +8,7 @@ import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.api.Signal;
 import hu.elte.txtuml.api.StateMachine.Transition;
-import hu.elte.txtuml.export.uml2.utils.ImportException;
+import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 
 import org.aspectj.lang.Signature;
@@ -17,6 +17,8 @@ import org.aspectj.lang.annotation.SuppressAjWarnings;
 public privileged aspect InstructionImporterAspect extends AbstractImporterAspect {
 
 	private pointcut creatingDummyInstance() : if(DummyInstanceCreator.isCreating());
+	private pointcut callingAssocMethod(): if(thisJoinPoint.getSignature().getName().equals("assoc"));
+	
 	@SuppressAjWarnings
 	after() returning(ModelInt target) : call((ModelInt).new(int)) && isActive() && !creatingDummyInstance()
 	{
@@ -53,7 +55,8 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	}
 		
 	@SuppressAjWarnings
-	Object around(ModelClass target): target(target) && call(* *(..))  && isActive() {
+	Object around(ModelClass target): target(target) && call(* *(..))  && isActive() && !callingAssocMethod()
+	{
 		try
 		{
 			return InstructionImporter.importMethodCall(target, thisJoinPoint.getSignature().getName(),thisJoinPoint.getArgs());

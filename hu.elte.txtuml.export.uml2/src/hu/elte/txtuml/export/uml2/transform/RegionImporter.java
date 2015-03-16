@@ -7,7 +7,7 @@ import hu.elte.txtuml.api.StateMachine;
 import hu.elte.txtuml.api.StateMachine.Transition;
 import hu.elte.txtuml.api.To;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
-import hu.elte.txtuml.export.uml2.utils.ImportException;
+import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 
 import java.lang.reflect.Method;
@@ -28,8 +28,6 @@ import org.eclipse.uml2.uml.Vertex;
 
 class RegionImporter extends AbstractImporter {
 
-	
-	
 	RegionImporter(Class<?> sourceClass,ModelElement ownerInstance,Model currentModel,Region currentRegion) throws ImportException
 	{
 		this.sourceClass=sourceClass;
@@ -67,7 +65,6 @@ class RegionImporter extends AbstractImporter {
 		return region;
 	}
 	
-	
 	private  Vertex importState(Class<?> state)	throws ImportException
 	{
 		Vertex vertex=createState(state);
@@ -96,7 +93,6 @@ class RegionImporter extends AbstractImporter {
 		return vertex;
 	}
 	
-
 	private void importStateEntryAction(Class<?> stateClass,State state, StateMachine.State stateInstance)
 	{
 		
@@ -146,7 +142,9 @@ class RegionImporter extends AbstractImporter {
 	        {
 				if (ElementTypeTeller.isState(c))
 				{
-					throw new ImportException(sourceClass.getName() + "." + c.getSimpleName() + " cannot be a state and a transition at the same time");
+					throw new ImportException(
+							sourceClass.getName() + "." + c.getSimpleName() + " cannot be a state and a transition at the same time"
+							);
 				}		
 				importTransition(c);
 				
@@ -157,8 +155,7 @@ class RegionImporter extends AbstractImporter {
 	}
 	
 	private  Vertex createState(Class<?> state)	throws ImportException
-	{
-		
+	{	
 		if(ElementTypeTeller.isInitialState(state))
         {
 			if (isContainsInitialState(region)) 
@@ -167,10 +164,6 @@ class RegionImporter extends AbstractImporter {
 			}
 			return createInitialState(state);
         }
-		/*else if(ElementTypeTeller.isCompositeState(state))
-		{
-			return createCompositeState(state);
-		}*/
 		else if(ElementTypeTeller.isChoice(state))
 		{
 			return createChoice(state);
@@ -194,26 +187,6 @@ class RegionImporter extends AbstractImporter {
 		return ret;
 	}
 
-	/*private State createCompositeState(Class<?> state) throws ImportException
-	{
-		State compositeState=(State) region.createSubvertex(state.getSimpleName(),UMLPackage.Literals.STATE);
-		Region subRegion= new RegionImporter
-						(state,ownerInstance,currentModel,compositeState.createRegion(state.getSimpleName()))
-						.importRegion();
-		subRegion.setState(compositeState);
-		       
-        if(subRegion.getSubvertices().size() != 0 && !isContainsInitialState(subRegion)) 
-        {
-        	importWarning(state.getName() + " has one or more states but no initial state (state machine will not be created)");
-        	return null;
-        }
-        return compositeState;
-	}*/
-	
-	
-	
-	
-		
 	private org.eclipse.uml2.uml.Transition importTransition(Class<?> trans)
 	{
 		String trName = trans.getSimpleName();
@@ -228,6 +201,7 @@ class RegionImporter extends AbstractImporter {
          
         StateMachine.Transition transitionInstance = (Transition)
         		DummyInstanceCreator.createDummyInstance(trans,ownerInstance); 
+        
         importTrigger(triggerAnnot,transition);
         importEffectAction(trans,transition,transitionInstance);
         importGuard(trans,transition,transitionInstance);
@@ -275,12 +249,9 @@ class RegionImporter extends AbstractImporter {
 				{				
 					String guardExpression=MethodImporter.getExpression(returnValue);
 					
-			
 					if(isInstanceCalculated(returnValue))
-					{
 						guardExpression=guardExpression.substring(1,guardExpression.length()-1);
-					}
-					
+							
 					OpaqueExpression opaqueExpression=(OpaqueExpression) UMLFactory.eINSTANCE.createOpaqueExpression();
 					opaqueExpression.getBodies().add(guardExpression);
 					
@@ -298,8 +269,6 @@ class RegionImporter extends AbstractImporter {
 		
 	}
 	
-	
-
 	private org.eclipse.uml2.uml.Transition createTransitionBetweenVertices(String name,Vertex source, Vertex target)
 	{
 		org.eclipse.uml2.uml.Transition transition=region.createTransition(name);

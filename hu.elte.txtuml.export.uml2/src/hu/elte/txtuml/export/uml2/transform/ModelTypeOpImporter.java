@@ -5,7 +5,7 @@ import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.api.ModelType;
-import hu.elte.txtuml.export.uml2.transform.backend.ModelElementInformation;
+import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
 
 
 class ModelTypeOpImporter extends AbstractInstructionImporter {
@@ -30,9 +30,9 @@ class ModelTypeOpImporter extends AbstractInstructionImporter {
 		NOTEQ_LITERAL
 	};
 	
-	private static <T> void createCalculatedInstanceInfo(ModelElement inst, String expression)
+	private static void createCalculatedInstanceInfo(ModelElement inst, String expression)
 	{
-		ModelElementInformation instInfo=new ModelElementInformation(expression,false,true);
+		InstanceInformation instInfo=InstanceInformation.createCalculated(expression);
 		localInstances.put(inst,instInfo);
 	}
 	@SuppressWarnings("unchecked")
