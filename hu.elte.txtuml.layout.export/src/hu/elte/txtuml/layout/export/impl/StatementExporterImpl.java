@@ -56,17 +56,19 @@ public class StatementExporterImpl implements StatementExporter {
 	@Override
 	public void exportAlignment(Class<? extends LayoutGroup> group,
 			Alignment annot) {
-		statements.addNew(StatementType.layout, asString(group), annot.value()
-				.toString());
+		// FIXME
+		//statements.addNew(StatementType.layout, asString(group), annot.value()
+			//	.toString());
 	}
 
 	@Override
 	public void exportContains(Class<? extends LayoutGroup> group,
 			Contains annot) {
-		for (Class<? extends LayoutElement> element : annot.value()) {
-			statements.addNew(StatementType.group, asString(element),
-					asString(group));
-		}
+		// FIXME
+		//for (Class<? extends LayoutElement> element : annot.value()) {
+			//statements.addNew(StatementType.group, asString(element),
+				//	asString(group));
+		//}
 	}
 
 	@Override
@@ -119,22 +121,26 @@ public class StatementExporterImpl implements StatementExporter {
 
 	@Override
 	public void exportTopMost(TopMost annot) {
-		statements.addNew(StatementType.topmost, asString(annot.value()));
+		// FIXME
+		//statements.addNew(StatementType.topmost, asString(annot.value()));
 	}
 
 	@Override
 	public void exportBottomMost(BottomMost annot) {
-		statements.addNew(StatementType.bottommost, asString(annot.value()));
+		// FIXME
+		//statements.addNew(StatementType.bottommost, asString(annot.value()));
 	}
 
 	@Override
 	public void exportLeftMost(LeftMost annot) {
-		statements.addNew(StatementType.leftmost, asString(annot.value()));
+		// FIXME
+		//statements.addNew(StatementType.leftmost, asString(annot.value()));
 	}
 
 	@Override
 	public void exportRightMost(RightMost annot) {
-		statements.addNew(StatementType.rightmost, asString(annot.value()));
+		// FIXME
+		//statements.addNew(StatementType.rightmost, asString(annot.value()));
 	}
 
 	@Override
