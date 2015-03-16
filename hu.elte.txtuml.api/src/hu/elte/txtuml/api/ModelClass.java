@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import hu.elte.txtuml.api.backend.collections.AssociationsMap;
 import hu.elte.txtuml.api.backend.problems.MultiplicityException;
 import hu.elte.txtuml.layout.lang.elements.LayoutNode;
@@ -11,14 +13,14 @@ public class ModelClass extends Region implements ModelElement,
 		ModelIdentifiedElement, LayoutNode {
 
 	/*
-	 * DESTROYED status is currently unreachable, FINALIZED is only by a class
+	 * DELETED status is currently unreachable, FINALIZED is only by a class
 	 * which has no state machine.
 	 */
 	private enum Status {
-		READY, ACTIVE, FINALIZED, DESTROYED
+		READY, ACTIVE, FINALIZED, DELETED
 	}
 
-	private static Integer counter = 0;
+	private static AtomicLong counter = new AtomicLong(0);
 
 	private Status status;
 	private final String identifier;
@@ -32,9 +34,7 @@ public class ModelClass extends Region implements ModelElement,
 	protected ModelClass() {
 		super();
 
-		synchronized (counter) {
-			this.identifier = "obj_" + counter++;
-		}
+		this.identifier = "obj_" + counter.addAndGet(1);
 
 		if (getCurrentState() == null) {
 			status = Status.FINALIZED;
@@ -61,7 +61,6 @@ public class ModelClass extends Region implements ModelElement,
 		}
 		ret.setOwnerId(this.getIdentifier());
 		return ret;
-
 	}
 
 	@SuppressWarnings("unchecked")

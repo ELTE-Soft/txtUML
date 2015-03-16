@@ -1,14 +1,14 @@
 package hu.elte.txtuml.api;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 abstract class ModelIdentifiedElementImpl implements ModelIdentifiedElement {
 
-	private static Integer counter = 0;
+	private static AtomicLong counter = new AtomicLong(0);
 	private final String identifier;
 
 	protected ModelIdentifiedElementImpl() {
-		synchronized (counter) {
-			this.identifier = "inst_" + counter++;
-		}
+		this.identifier = "inst_" + counter.addAndGet(1);
 	}
 
 	@Override
