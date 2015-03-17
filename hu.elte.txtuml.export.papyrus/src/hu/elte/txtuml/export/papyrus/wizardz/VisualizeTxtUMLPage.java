@@ -11,17 +11,16 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 public class VisualizeTxtUMLPage extends WizardPage {
-	
-	private Text destinationFolder;
 	private Composite container;
 	private Text txtUMLModel;
+	private Text txtUMLProject;
 	private PreferencesManager preferencesManager;
-	private Text txtUMLProjectName;
+	
 
 	public VisualizeTxtUMLPage() {
 		super("Visualize txtUML Page");
 		setTitle("Visualize txtUML page");
-	    setDescription("Give the txtUML Model, the destination folder, and the txtUML Project name");
+	    setDescription("Give your txtUML project and model class to be visualized");
 	    preferencesManager = new PreferencesManager();
 	}
 	
@@ -31,26 +30,21 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	    GridLayout layout = new GridLayout();
 	    container.setLayout(layout);
 	    layout.numColumns = 2;
-
+	    
 	    Label label1 = new Label(container, SWT.NONE);
-	    label1.setText("txtUML Model: ");
+	    label1.setText("txtUML Project: ");
+	    txtUMLProject = new Text(container, SWT.BORDER | SWT.SINGLE);
+	    txtUMLProject.setText(preferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT));
+	
+	    Label label2 = new Label(container, SWT.NONE);
+	    label2.setText("txtUML Model: ");
 	    txtUMLModel = new Text(container, SWT.BORDER | SWT.SINGLE);
 	    txtUMLModel.setText(preferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL));
 	
-	    Label label2 = new Label(container, SWT.NONE);
-	    label2.setText("Destination folder: ");
-	    destinationFolder = new Text(container, SWT.BORDER | SWT.SINGLE);
-	    destinationFolder.setText(preferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER));
-	
-	    Label label3 = new Label(container, SWT.NONE);
-	    label3.setText("txtUML ProjectName: ");
-	    txtUMLProjectName = new Text(container, SWT.BORDER | SWT.SINGLE);
-	    txtUMLProjectName.setText(preferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT));
 	    
 	    GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 	    txtUMLModel.setLayoutData(gd);
-	    destinationFolder.setLayoutData(gd);
-	    txtUMLProjectName.setLayoutData(gd);
+	    txtUMLProject.setLayoutData(gd);
 	    
 	    setControl(container);
 	    setPageComplete(true);
@@ -59,12 +53,8 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	public String getTxtUmlModelClass(){
 		return txtUMLModel.getText();
 	}
-		  
-	public String getDestinationFolder(){
-		return destinationFolder.getText();
-	}
-
-	public String getTxtUmlProjectName() {
-		return txtUMLProjectName.getText();
+	
+	public String getTxtUmlProject(){
+		return txtUMLProject.getText();
 	}
 }

@@ -12,6 +12,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 public class PreferencesManager{
 	
 	
+	
 	private IPreferenceStore store;
 	private Map<String, Object> fieldsWithDefaultValues;
 	
@@ -27,8 +28,8 @@ public class PreferencesManager{
 	public static String STATEMACHINE_DIAGRAM_COMMENT_PREF = "StateMachine Diagram Comment";
 	
 	public static String TXTUML_VISUALIZE_TXTUML_MODEL = "txtUML Visualize txtUML Model";
-	public static String TXTUML_VISUALIZE_DESTINATION_FOLDER = "txtUML Visualize Destination Folder";
 	public static String TXTUML_VISUALIZE_TXTUML_PROJECT = "txtUML Visualize txtUML Project";
+	public static String TXTUML_VISUALIZE_DESTINATION_FOLDER = "txtUML Visualize Destination Folder";
 	
 	public PreferencesManager() {
 		store = Activator.getDefault().getPreferenceStore();
@@ -47,7 +48,6 @@ public class PreferencesManager{
 		
 		fieldsWithDefaultValues.put(TXTUML_VISUALIZE_TXTUML_MODEL, "");
 		fieldsWithDefaultValues.put(TXTUML_VISUALIZE_DESTINATION_FOLDER, "gen");
-		fieldsWithDefaultValues.put(TXTUML_VISUALIZE_TXTUML_PROJECT, "txtUML");
 	}
 	
 	public void setDefaults(){

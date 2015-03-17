@@ -1,10 +1,15 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import hu.elte.txtuml.export.papyrus.MainAction;
 import hu.elte.txtuml.export.papyrus.ProjectManager;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
@@ -18,7 +23,14 @@ import org.eclipse.debug.core.ILaunchesListener2;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.emf.common.CommonPlugin;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.wizard.Wizard;
@@ -54,14 +66,17 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 	
 	@Override
 	public boolean performFinish() {
-		final String txtUMLModelName = selectTxtUmlPage.getTxtUmlModelClass();
-		final String folder = selectTxtUmlPage.getDestinationFolder();
-		final String txtUMLProjectname = selectTxtUmlPage.getTxtUmlProjectName();
-		String txtUMLExport =  "txtuml.export.uml2.ExportUML2";
-		
+		//TODO Refactor this ugliness
 		PreferencesManager preferncesManager = new PreferencesManager();
+		final String txtUMLModelName = selectTxtUmlPage.getTxtUmlModelClass();
+		final String txtUMLProjectName = selectTxtUmlPage.getTxtUmlProject();
+		final String folder = preferncesManager.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
+		final String txtUMLExportProjectname = "hu.elte.txtuml.export.uml2"; // TODO Place in preferences
+		String txtUMLExport =  txtUMLExportProjectname+".UML2";
+		
+		
+		preferncesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT, txtUMLProjectName);
 		preferncesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL, txtUMLModelName);
-		preferncesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER, folder);
 		
 		try{
 			final ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
@@ -80,11 +95,36 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 			ILaunchConfigurationWorkingCopy workingCopy =
 			      type.newInstance(null, LAUNCHCONFIG_NAME);
 		
+			ArrayList array = new ArrayList();
+			
+			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProjectName);
+			IJavaProject javaproject = (IJavaProject) project.getNature(JavaCore.NATURE_ID);
+			
+			IProject project2 = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLExportProjectname);
+			IJavaProject javaproject2 = (IJavaProject) project2.getNature(JavaCore.NATURE_ID);
+			
+			IRuntimeClasspathEntry rcpEntry = JavaRuntime.newProjectRuntimeClasspathEntry(javaproject);
+			IRuntimeClasspathEntry rcpEntry2 = JavaRuntime.newDefaultProjectClasspathEntry(javaproject2);
+			IRuntimeClasspathEntry rcpEntry3 = JavaRuntime.newRuntimeContainerClasspathEntry(new Path("org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"), IClasspathEntry.CPE_LIBRARY, javaproject2);
+			
+			array.add(rcpEntry.getMemento());
+			array.add(rcpEntry2.getMemento());
+			array.add(rcpEntry3.getMemento());
+			
 			workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, txtUMLModelName+"\n"+folder);
 			workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, txtUMLExport);
-			workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, txtUMLProjectname);
+			workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, txtUMLExportProjectname);
+			workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, false);
+			workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, array);
+			
 			
 			ILaunchConfiguration configuration = workingCopy.doSave();
+			
+			List<String> list = (List<String>) configuration.getAttribute(
+					IJavaLaunchConfigurationConstants.ATTR_BOOTPATH, Arrays.asList("NOTING"));
+			list = (List<String>) configuration.getAttribute(
+					IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, Arrays.asList("NOTING"));
+			
 			DebugUITools.launch(configuration, ILaunchManager.RUN_MODE);
 			
 			manager.addLaunchListener(new ILaunchesListener2() {
@@ -108,7 +148,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 					    public void run() {
 					    	
 					    	
-					    	URI umlFileURI = URI.createFileURI(txtUMLProjectname+"/"+folder+"/"+txtUMLModelName+".uml");
+					    	URI umlFileURI = URI.createFileURI(txtUMLExportProjectname+"/"+folder+"/"+txtUMLModelName+".uml");
 					    	URI UmlFileResURI = CommonPlugin.resolve(umlFileURI);
 					    	IFile UmlFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(UmlFileResURI.toFileString()));
 					    	

@@ -99,7 +99,7 @@ public class PapyrusModelManager {
 			
 			if(diagram.getType().equals("PapyrusUMLClassDiagram")){					
 				diagramElementsManager = new ClassDiagramElementsManager(modelManager, diagep);
-				diagramElementsArranger = new ClassDiagramElementsGmfArranger();
+				diagramElementsArranger = new ClassDiagramElementsTxtUmlArranger();
 			}else if(diagram.getType().equals("PapyrusUMLActivityDiagram")){
 				diagramElementsManager = new ActivityDiagramElementsManager(modelManager, diagep);
 				diagramElementsArranger = new ActivityDiagramElementsGmfArranger();
