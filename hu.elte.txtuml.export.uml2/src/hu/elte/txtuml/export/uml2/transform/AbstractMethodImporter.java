@@ -165,7 +165,6 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		String expression=null;
 		InstanceInformation instInfo=getInstanceInfo(instance);
 
-		
 		if(instInfo != null)
 		{
 			if(instInfo.isLiteral())
@@ -175,10 +174,10 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 			else
 				expression = instInfo.getExpression();
 		}
-		else
-		{
+		else if(instance instanceof ModelClass)
 			expression = instance.getIdentifier();
-		}
+		else
+			expression = "inst_"+System.identityHashCode(instance);
 		return expression;
 	}
 
@@ -189,6 +188,8 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		
 		if(instInfo != null && !instInfo.isLiteral() && !instInfo.isCalculated())
 			expression = instInfo.getExpression();
+		else if(instance instanceof ModelClass)
+			expression = instance.getIdentifier();
 		else
 			expression = "inst_"+System.identityHashCode(instance);
 		
