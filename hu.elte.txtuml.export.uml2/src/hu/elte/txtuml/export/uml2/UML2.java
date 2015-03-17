@@ -64,7 +64,7 @@ public class UML2 {
 		catch(Exception e)
 		{
 			e.printStackTrace();
-		//	System.out.println("Error: " + e.getMessage());
+			//System.out.println("Error: " + e.getMessage());
 		}
 		
 		System.exit(0);

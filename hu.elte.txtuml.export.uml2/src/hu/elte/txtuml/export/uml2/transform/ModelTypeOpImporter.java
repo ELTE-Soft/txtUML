@@ -8,7 +8,7 @@ import hu.elte.txtuml.api.ModelType;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
 
 
-class ModelTypeOpImporter extends AbstractInstructionImporter {
+public class ModelTypeOpImporter extends AbstractInstructionImporter {
 
 	private enum ModelIntOperations{
 		ADD_LITERAL,

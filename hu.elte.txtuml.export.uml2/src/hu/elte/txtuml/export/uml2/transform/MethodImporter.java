@@ -31,7 +31,7 @@ import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Variable;
 
-public class MethodImporter extends AbstractMethodImporter {
+class MethodImporter extends AbstractMethodImporter {
 
 	public static hu.elte.txtuml.api.Signal createSignal(Class<? extends StateMachine.Transition> tr) {
     	Trigger triggerAnnot = tr.getAnnotation(Trigger.class);
@@ -58,18 +58,29 @@ public class MethodImporter extends AbstractMethodImporter {
 	
 	private static void endGuardImport()
 	{
+		localInstances.clear();
 		currentModel=null;
 		importing=false;
 	}
-	static ModelBool importGuardMethod(Model model, Method sourceMethod,StateMachine.Transition transitionInstance)
+	static String importGuardMethod(Model model, Method sourceMethod,StateMachine.Transition transitionInstance)
 	{
 		initGuardImport(model,sourceMethod,transitionInstance);
 		
-		ModelBool returnValue=importGuardBody(transitionInstance);
+		ModelBool guardReturnValue=importGuardBody(transitionInstance);
+		
+		String guardExpression = null;
+		if(guardReturnValue!=null)
+		{				
+			guardExpression=MethodImporter.getExpression(guardReturnValue);
+			
+			if(isInstanceCalculated(guardReturnValue))
+				guardExpression=guardExpression.substring(1,guardExpression.length()-1);
+					
+		}
 		
 		endGuardImport();
 	
-		return returnValue;
+		return guardExpression;
 	}
 
 	private static void initGuardImport(Model model, Method sourceMethod, StateMachine.Transition transitionInstance)
@@ -128,6 +139,7 @@ public class MethodImporter extends AbstractMethodImporter {
 		ActivityNode finalNode=currentActivity.createOwnedNode("finalNode",UMLPackage.Literals.ACTIVITY_FINAL_NODE);
 		createControlFlowBetweenNodes(lastNode,finalNode);
 		
+		localInstances.clear();
 		currentActivity = null;
 		currentModel=null;
 		currentParameters=null;

@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.uml2.transform;
+package hu.elte.txtuml.export.uml2.transform.aspects;
 
 import hu.elte.txtuml.api.AssociationEnd;
 import hu.elte.txtuml.api.ExternalClass;
@@ -8,11 +8,14 @@ import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.api.Signal;
 import hu.elte.txtuml.api.StateMachine.Transition;
+
 import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
+import hu.elte.txtuml.export.uml2.transform.InstructionImporter;
 
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.SuppressAjWarnings;
+
 
 public privileged aspect InstructionImporterAspect extends AbstractImporterAspect {
 
@@ -35,7 +38,7 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 		InstructionImporter.createModelTypeLiteral(target);
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings( "rawtypes")
 	@SuppressAjWarnings
 	Object around(AssociationEnd target):target(target) && call(ModelClass selectOne()) && isActive()
 	{

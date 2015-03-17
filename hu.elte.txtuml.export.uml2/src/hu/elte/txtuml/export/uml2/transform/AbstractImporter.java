@@ -35,7 +35,6 @@ abstract class AbstractImporter {
 		
 		return ret;
 	}
-	
 
 	protected static void createFieldsRecursively(Object classifier, boolean local)
   	{
@@ -63,6 +62,7 @@ abstract class AbstractImporter {
   	  			{
   	 
   	  				instancesMap.put(fieldInst,elementInfo);
+  	  				
   	  	  			if(ElementTypeTeller.isClassifier(fieldType))
   	  	  				createFieldsRecursively(fieldInst,local);
   	  	  			
@@ -77,7 +77,7 @@ abstract class AbstractImporter {
 		System.out.println("Warning: " + msg);
 	}
 	
-	protected static boolean isContainsStateMachine(Class<?> sourceClass){
+	protected static boolean containsStateMachine(Class<?> sourceClass){
 		for(Class<?> c : sourceClass.getDeclaredClasses()){
 			if(ElementTypeTeller.isState(c)){
 				return true;
@@ -86,7 +86,7 @@ abstract class AbstractImporter {
 		return false;
     }
 	
-	protected static boolean isContainsInitialState(Region region)
+	protected static boolean containsInitialState(Region region)
 	{
 		for(Object vert: region.getSubvertices().toArray())
 		{
@@ -111,7 +111,6 @@ abstract class AbstractImporter {
 			calculated =instInfo.isCalculated();
 		return calculated;
 	}
-
 
 	protected static PrimitiveType UML2Integer,UML2Bool,UML2String,UML2Real,UML2UnlimitedNatural;
 	protected static Class<?> modelClass=null;

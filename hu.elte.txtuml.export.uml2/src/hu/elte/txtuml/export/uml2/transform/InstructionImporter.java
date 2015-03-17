@@ -34,7 +34,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValuePin;
 import org.eclipse.uml2.uml.Variable;
 
-class InstructionImporter extends AbstractInstructionImporter {
+public class InstructionImporter extends AbstractInstructionImporter {
 
 	static <T extends ModelClass> T selectOne(Collection<T> target) 
 	{

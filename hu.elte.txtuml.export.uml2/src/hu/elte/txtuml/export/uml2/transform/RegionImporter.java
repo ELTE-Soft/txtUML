@@ -1,7 +1,6 @@
 package hu.elte.txtuml.export.uml2.transform;
 
 import hu.elte.txtuml.api.From;
-import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.api.StateMachine;
 import hu.elte.txtuml.api.StateMachine.Transition;
@@ -78,7 +77,7 @@ class RegionImporter extends AbstractImporter {
 			.importRegion();
 			subRegion.setState((State) vertex);
 
-			if(subRegion.getSubvertices().size() != 0 && !isContainsInitialState(subRegion)) 
+			if(subRegion.getSubvertices().size() != 0 && !containsInitialState(subRegion)) 
 			{
 				importWarning(state.getName() + " has one or more states but no initial state (state machine will not be created)");
 				return null;
@@ -101,7 +100,7 @@ class RegionImporter extends AbstractImporter {
 			Method entryMethod=stateClass.getDeclaredMethod("entry");
 			Activity activity=(Activity)state.createEntry(state.getName()+"_entry",UMLPackage.Literals.ACTIVITY);
 			MethodImporter.importMethod(currentModel,activity, entryMethod, stateInstance);
-
+			
 		}
 		catch (NoSuchMethodException e) 
 		{
@@ -158,7 +157,7 @@ class RegionImporter extends AbstractImporter {
 	{	
 		if(ElementTypeTeller.isInitialState(state))
         {
-			if (isContainsInitialState(region)) 
+			if (containsInitialState(region)) 
 			{
             	throw new ImportException(sourceClass.getName() + " has two initial states");
 			}
@@ -243,27 +242,19 @@ class RegionImporter extends AbstractImporter {
 			try
 			{
 				Method guardMethod=transitionClass.getDeclaredMethod("guard");
-				ModelBool returnValue=MethodImporter.importGuardMethod(currentModel,guardMethod,transitionInstance);
+				String guardExpression=MethodImporter.importGuardMethod(currentModel,guardMethod,transitionInstance);
 				
-				if(returnValue!=null)
-				{				
-					String guardExpression=MethodImporter.getExpression(returnValue);
+				OpaqueExpression opaqueExpression=(OpaqueExpression) UMLFactory.eINSTANCE.createOpaqueExpression();
+				opaqueExpression.getBodies().add(guardExpression);
+				
+				Constraint constraint=UMLFactory.eINSTANCE.createConstraint();
+				constraint.setSpecification(opaqueExpression);
 					
-					if(isInstanceCalculated(returnValue))
-						guardExpression=guardExpression.substring(1,guardExpression.length()-1);
-							
-					OpaqueExpression opaqueExpression=(OpaqueExpression) UMLFactory.eINSTANCE.createOpaqueExpression();
-					opaqueExpression.getBodies().add(guardExpression);
-					
-					Constraint constraint=UMLFactory.eINSTANCE.createConstraint();
-					constraint.setSpecification(opaqueExpression);
-					
-					transition.setGuard(constraint);
-				}
-						
+				transition.setGuard(constraint);
+									
 			}
 			catch (NoSuchMethodException e) {
-				
+				//no guard for this transition -> do nothing 
 				
 			} 
 		

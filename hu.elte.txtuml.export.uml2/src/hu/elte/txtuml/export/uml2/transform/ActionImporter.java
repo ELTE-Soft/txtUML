@@ -27,7 +27,7 @@ import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValuePin;
 
-class ActionImporter extends AbstractInstructionImporter {
+public class ActionImporter extends AbstractInstructionImporter {
 
 	private enum LinkTypes {
 

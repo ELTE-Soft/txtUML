@@ -1,8 +1,8 @@
-package hu.elte.txtuml.export.uml2.transform;
+package hu.elte.txtuml.export.uml2.transform.aspects;
 
 import hu.elte.txtuml.api.ExternalClass;
 import hu.elte.txtuml.api.ModelElement;
-
+import hu.elte.txtuml.export.uml2.transform.*;
 
 abstract aspect AbstractImporterAspect
 {
