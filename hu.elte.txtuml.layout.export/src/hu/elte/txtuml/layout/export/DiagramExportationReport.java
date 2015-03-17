@@ -1,13 +1,26 @@
 package hu.elte.txtuml.layout.export;
 
 import java.util.List;
+import java.util.Set;
 
 import hu.elte.txtuml.layout.export.interfaces.StatementList;
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
+import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
+import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
-public class DiagramExportationReport { // TODO add set of nodes and set of links as result parameters
+/**
+ * The type to be returned by the exportation of a diagram layout description.
+ * Provides important information about the exportation, including its results.
+ * 
+ * @author Gábor Ferenc Kovács
+ *
+ */
+public class DiagramExportationReport {
 
+	private DiagramType type;
 	private StatementList statements;
+	private Set<RectangleObject> nodes;
+	private Set<LineAssociation> links;
 	private int errors;
 	private int warnings;
 
@@ -38,13 +51,47 @@ public class DiagramExportationReport { // TODO add set of nodes and set of link
 	}
 
 	/**
-	 * If the <code>isSuccesful</code> method returns <code>false</code>, the return value of
-	 * this method should not be used (it is probably <code>null</code>).
+	 * If the <code>isSuccesful</code> method returns <code>false</code>, the
+	 * return value of this method should not be used (it is probably
+	 * <code>Unknown</code>).
+	 * 
+	 * @return The type of the exported diagram.
+	 */
+	public final DiagramType getType() {
+		return type;
+	}
+	
+	/**
+	 * If the <code>isSuccesful</code> method returns <code>false</code>, the
+	 * return value of this method should not be used (it is probably
+	 * <code>null</code>).
 	 * 
 	 * @return The statement list created as the result of the exportation.
 	 */
 	public final List<Statement> getStatements() {
 		return statements;
+	}
+
+	/**
+	 * If the <code>isSuccesful</code> method returns <code>false</code>, the
+	 * return value of this method should not be used (it is probably
+	 * <code>null</code>).
+	 * 
+	 * @return The set of nodes created as the result of the exportation.
+	 */
+	public final Set<RectangleObject> getNodes() {
+		return nodes;
+	}
+
+	/**
+	 * If the <code>isSuccesful</code> method returns <code>false</code>, the
+	 * return value of this method should not be used (it is probably
+	 * <code>null</code>).
+	 * 
+	 * @return The set of links created as the result of the exportation.
+	 */
+	public final Set<LineAssociation> getLinks() {
+		return links;
 	}
 
 	/**
@@ -73,9 +120,22 @@ public class DiagramExportationReport { // TODO add set of nodes and set of link
 	 * Resets fields to their default value;
 	 */
 	public final void clear() {
+		type = DiagramType.Unknown;
 		errors = 0;
 		warnings = 0;
 		statements = null;
+		nodes = null;
+		links = null;
+	}
+	
+	/**
+	 * Should be called only by the diagram exporter.
+	 * 
+	 * @param type
+	 *            The type of the exported diagram.
+	 */
+	public final void setType(DiagramType type) {
+		this.type = type;
 	}
 
 	/**
@@ -84,8 +144,28 @@ public class DiagramExportationReport { // TODO add set of nodes and set of link
 	 * @param statements
 	 *            The statement list created as the result of the exportation.
 	 */
-	public final void setResult(StatementList statements) {
+	public final void setStatements(StatementList statements) {
 		this.statements = statements;
+	}
+
+	/**
+	 * Should be called only by the diagram exporter.
+	 * 
+	 * @param nodes
+	 *            The set of nodest created as the result of the exportation.
+	 */
+	public final void setNodes(Set<RectangleObject> nodes) {
+		this.nodes = nodes;
+	}
+
+	/**
+	 * Should be called only by the diagram exporter.
+	 * 
+	 * @param links
+	 *            The set of links created as the result of the exportation.
+	 */
+	public final void setLinks(Set<LineAssociation> links) {
+		this.links = links;
 	}
 
 	/**

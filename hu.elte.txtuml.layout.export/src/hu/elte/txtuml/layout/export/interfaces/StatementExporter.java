@@ -35,10 +35,15 @@ import hu.elte.txtuml.layout.lang.statements.containers.ShowContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.SouthContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.WestContainer;
 
+/**
+ * 
+ * @author Gábor Ferenc Kovács
+ *
+ */
 public interface StatementExporter {
 
-	static StatementExporter create(StatementList statements) {
-		return new StatementExporterImpl(statements);
+	static StatementExporter create(StatementList statements, ElementExporter elementExporter) {
+		return new StatementExporterImpl(statements, elementExporter);
 	}
 
 	// statement exporters

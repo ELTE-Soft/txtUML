@@ -4,6 +4,10 @@ import java.lang.annotation.Annotation;
 
 import hu.elte.txtuml.layout.export.DiagramExporter;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.layout.export.DiagramType;
+import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
+import hu.elte.txtuml.layout.export.interfaces.LinkMap;
+import hu.elte.txtuml.layout.export.interfaces.NodeMap;
 import hu.elte.txtuml.layout.export.interfaces.StatementExporter;
 import hu.elte.txtuml.layout.export.interfaces.StatementList;
 import hu.elte.txtuml.layout.export.problems.ErrorMessages;
@@ -14,11 +18,20 @@ import hu.elte.txtuml.layout.lang.elements.LayoutGroup;
 import hu.elte.txtuml.layout.lang.statements.*;
 import hu.elte.txtuml.layout.lang.statements.containers.*;
 
+/**
+ * Default implementation for {@link DiagramExporter}.
+ * 
+ * @author Gábor Ferenc Kovács
+ *
+ */
 public class DiagramExporterImpl implements DiagramExporter {
 
 	private final DiagramExportationReport report;
 	private final Class<? extends Diagram> diagClass;
 	private final StatementList statements;
+	private final NodeMap nodes;
+	private final LinkMap links;
+	private final ElementExporter elementExporter;
 	private final StatementExporter statementExporter;
 
 	public DiagramExporterImpl(Class<? extends Diagram> diagClass) {
@@ -36,7 +49,10 @@ public class DiagramExporterImpl implements DiagramExporter {
 
 		this.diagClass = diagClass;
 		this.statements = StatementList.create();
-		this.statementExporter = StatementExporter.create(statements);
+		this.nodes = NodeMap.create();
+		this.links = LinkMap.create();
+		this.elementExporter = ElementExporter.create(nodes, links);
+		this.statementExporter = StatementExporter.create(statements, elementExporter);
 
 	}
 
@@ -45,7 +61,10 @@ public class DiagramExporterImpl implements DiagramExporter {
 		exportDiagram();
 
 		if (report.isSuccessful()) {
-			report.setResult(statements);
+			report.setType(DiagramType.Class); // TODO other types
+			report.setStatements(statements);
+			report.setNodes(nodes.convert());
+			report.setLinks(links.convert());
 		}
 
 		return report;
@@ -60,10 +79,11 @@ public class DiagramExporterImpl implements DiagramExporter {
 		for (Class<?> innerClass : diagClass.getDeclaredClasses()) {
 
 			if (isGroup(innerClass)) {
-
+				// TODO currently removed
+				/*
 				Class<? extends LayoutGroup> groupClass = (Class<? extends LayoutGroup>) innerClass;
 				exportGroup(groupClass);
-
+				*/
 			} else if (isLayout(innerClass)) {
 
 				if (layoutClass != null) {
@@ -87,7 +107,7 @@ public class DiagramExporterImpl implements DiagramExporter {
 		}
 	}
 
-	private boolean isGroup(Class<?> cls) {
+	private boolean isGroup(Class<?> cls) { // TODO split groups into node and link groups
 		return LayoutGroup.class.isAssignableFrom(cls);
 	}
 
@@ -95,6 +115,7 @@ public class DiagramExporterImpl implements DiagramExporter {
 		return Layout.class.isAssignableFrom(cls);
 	}
 	
+	@SuppressWarnings("unused") // TODO remove when used
 	private void exportGroup(Class<? extends LayoutGroup> groupClass) {
 		for (Annotation annot : groupClass.getAnnotations()) {
 			if (isOfType(Contains.class, annot)) {

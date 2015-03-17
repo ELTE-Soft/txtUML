@@ -1,10 +1,13 @@
 package hu.elte.txtuml.layout.export.impl;
 
+import hu.elte.txtuml.layout.export.elementinfo.NodeInfo;
+import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
 import hu.elte.txtuml.layout.export.interfaces.StatementExporter;
 import hu.elte.txtuml.layout.export.interfaces.StatementList;
 import hu.elte.txtuml.layout.lang.LinkEnd;
-import hu.elte.txtuml.layout.lang.elements.LayoutElement;
 import hu.elte.txtuml.layout.lang.elements.LayoutGroup;
+import hu.elte.txtuml.layout.lang.elements.LayoutNode;
+import hu.elte.txtuml.layout.lang.elements.LayoutNonGroupElement;
 import hu.elte.txtuml.layout.lang.statements.Above;
 import hu.elte.txtuml.layout.lang.statements.Alignment;
 import hu.elte.txtuml.layout.lang.statements.Below;
@@ -39,155 +42,166 @@ import hu.elte.txtuml.layout.lang.statements.containers.SouthContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.WestContainer;
 import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
 
+/**
+ * Default implementation for {@link StatementExporter}.
+ * 
+ * @author Gábor Ferenc Kovács
+ *
+ */
 public class StatementExporterImpl implements StatementExporter {
 
 	private final StatementList statements;
+	private final ElementExporter elementExporter;
 
-	public StatementExporterImpl(StatementList statements) {
+	public StatementExporterImpl(StatementList statements, ElementExporter elementExporter) {
 		this.statements = statements;
+		this.elementExporter = elementExporter;
 	}
 
-	private String asString(Class<? extends LayoutElement> element) {
-		return element.getSimpleName();
-	}
-
-	private void newStatementWithLinkEndCheck(StatementType type,
-			String param1, String param2, LinkEnd end) {
+	@SuppressWarnings("unused") // TODO remove when used
+	private void newStatementWithLinkEndCheck(StatementType type, String param1, String param2, LinkEnd end) {
 		if (end == LinkEnd.Default) {
 			statements.addNew(type, param1, param2);
 		} else {
-			statements.addNew(type, param1, param2, end.toString());
+			statements.addNew(type, param1, param2, end.toString());			
 		}
 	}
-
+	
+	private void exportAdjacencyStatement(StatementType type, Class<? extends LayoutNode> val, Class<? extends LayoutNode> from) {
+		NodeInfo valInfo = elementExporter.exportNode(val).asNodeInfo();
+		NodeInfo fromInfo = elementExporter.exportNode(from).asNodeInfo();
+		if (valInfo == null || fromInfo == null) {
+			// TODO show error
+			return;
+		}
+		statements.addNew(type, valInfo.toString(), fromInfo.toString());
+	}
+	
 	// statement exporters
 
 	@Override
 	public void exportAlignment(Class<? extends LayoutGroup> group,
 			Alignment annot) {
 		// TODO
-		// statements.addNew(StatementType.layout, asString(group),
-		// annot.value()
-		// .toString());
+		//statements.addNew(StatementType.layout, asString(group), annot.value()
+			//	.toString());
 	}
 
 	@Override
 	public void exportContains(Class<? extends LayoutGroup> group,
 			Contains annot) {
 		// TODO
-		// for (Class<? extends LayoutElement> element : annot.value()) {
-		// statements.addNew(StatementType.group, asString(element),
-		// asString(group));
-		// }
+		//for (Class<? extends LayoutElement> element : annot.value()) {
+			//statements.addNew(StatementType.group, asString(element),
+				//	asString(group));
+		//}
 	}
 
 	@Override
 	public void exportAbove(Above annot) {
-		statements.addNew(StatementType.above, asString(annot.val()),
-				asString(annot.from()));
+		exportAdjacencyStatement(StatementType.above, annot.val(), annot.from());
 	}
 
 	@Override
 	public void exportBelow(Below annot) {
-		statements.addNew(StatementType.below, asString(annot.val()),
-				asString(annot.from()));
+		exportAdjacencyStatement(StatementType.below, annot.val(), annot.from());
 	}
 
 	@Override
 	public void exportRight(Right annot) {
-		statements.addNew(StatementType.right, asString(annot.val()),
-				asString(annot.from()));
+		exportAdjacencyStatement(StatementType.right, annot.val(), annot.from());
 	}
 
 	@Override
 	public void exportLeft(Left annot) {
-		statements.addNew(StatementType.left, asString(annot.val()),
-				asString(annot.from()));
+		exportAdjacencyStatement(StatementType.left, annot.val(), annot.from());
 	}
 
 	@Override
 	public void exportNorth(North annot) {
 		// TODO
-		// newStatementWithLinkEndCheck(StatementType.north,
-		// asString(annot.val()), asString(annot.from()), annot.end());
+		//newStatementWithLinkEndCheck(StatementType.north,
+			//	asString(annot.val()), asString(annot.from()), annot.end());
 	}
 
 	@Override
 	public void exportSouth(South annot) {
 		// TODO
-		// newStatementWithLinkEndCheck(StatementType.south,
-		// asString(annot.val()), asString(annot.from()), annot.end());
+		//newStatementWithLinkEndCheck(StatementType.south,
+			//	asString(annot.val()), asString(annot.from()), annot.end());
 	}
 
 	@Override
 	public void exportEast(East annot) {
 		// TODO
-		// newStatementWithLinkEndCheck(StatementType.east,
-		// asString(annot.val()), asString(annot.from()), annot.end());
+		//newStatementWithLinkEndCheck(StatementType.east,
+			//	asString(annot.val()), asString(annot.from()), annot.end());
 	}
 
 	@Override
 	public void exportWest(West annot) {
 		// TODO
-		// newStatementWithLinkEndCheck(StatementType.west,
-		// asString(annot.val()), asString(annot.from()), annot.end());
+		//newStatementWithLinkEndCheck(StatementType.west,
+			//	asString(annot.val()), asString(annot.from()), annot.end());
 	}
 
 	@Override
 	public void exportTopMost(TopMost annot) {
 		// TODO
-		// statements.addNew(StatementType.topmost, asString(annot.value()));
+		//statements.addNew(StatementType.topmost, asString(annot.value()));
 	}
 
 	@Override
 	public void exportBottomMost(BottomMost annot) {
 		// TODO
-		// statements.addNew(StatementType.bottommost, asString(annot.value()));
+		//statements.addNew(StatementType.bottommost, asString(annot.value()));
 	}
 
 	@Override
 	public void exportLeftMost(LeftMost annot) {
 		// TODO
-		// statements.addNew(StatementType.leftmost, asString(annot.value()));
+		//statements.addNew(StatementType.leftmost, asString(annot.value()));
 	}
 
 	@Override
 	public void exportRightMost(RightMost annot) {
 		// TODO
-		// statements.addNew(StatementType.rightmost, asString(annot.value()));
+		//statements.addNew(StatementType.rightmost, asString(annot.value()));
 	}
 
 	@Override
 	public void exportPriority(Priority annot) {
 		// TODO
-		// statements.addNew(StatementType.priority, asString(annot.val()),
-		// Integer.toString(annot.prior()));
+		//statements.addNew(StatementType.priority, asString(annot.val()),
+			//	Integer.toString(annot.prior()));
 	}
 
 	@Override
 	public void exportShow(Show annot) {
-		// TODO Auto-generated method stub
-
+		for (Class<? extends LayoutNonGroupElement> element : annot.value()) {
+			elementExporter.exportNonGroupElement(element);
+		}
+		// TODO show warning if empty
 	}
 
 	@Override
 	public void exportColumn(Column annot) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
 	public void exportRow(Row annot) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
 	public void exportDiamond(Diamond annot) {
 		// TODO Auto-generated method stub
-
+		
 	}
-
+	
 	// statement container exporters
 
 	@Override
@@ -257,28 +271,28 @@ public class StatementExporterImpl implements StatementExporter {
 	public void exportShowContainer(ShowContainer annot) {
 		for (Show a : annot.value()) {
 			exportShow(a);
-		}
+		}		
 	}
 
 	@Override
 	public void exportColumnContainer(ColumnContainer annot) {
 		for (Column a : annot.value()) {
 			exportColumn(a);
-		}
+		}		
 	}
 
 	@Override
 	public void exportRowContainer(RowContainer annot) {
 		for (Row a : annot.value()) {
 			exportRow(a);
-		}
+		}		
 	}
 
 	@Override
 	public void exportDiamondContainer(DiamondContainer annot) {
 		for (Diamond a : annot.value()) {
 			exportDiamond(a);
-		}
+		}		
 	}
-
+	
 }

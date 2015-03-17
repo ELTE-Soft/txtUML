@@ -6,6 +6,12 @@ import hu.elte.txtuml.layout.export.interfaces.StatementList;
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
 
+/**
+ * Default implementation for {@link StatementList}.
+ * 
+ * @author Gábor Ferenc Kovács
+ *
+ */
 @SuppressWarnings("serial")
 public class StatementListImpl extends LinkedList<Statement> implements StatementList {
 
