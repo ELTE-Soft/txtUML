@@ -71,12 +71,10 @@ public class LayoutVisualizerManager {
 	
 	public void arrange(){
 		LayoutVisualize v = new LayoutVisualize();
-		MyModel model = new MyModel((HashSet<RectangleObject>) objects,(HashSet<LineAssociation>)  associations, statementsSet);
-		
-		v.load(model.Value.First, model.Value.Second);
+		v.load(objects, associations);
 		
 		try {
-			v.arrange(model.Value.Third);
+			v.arrange(statementsSet);
 		} catch (UnknownStatementException | ConflictException
 				| ConversionException | StatementTypeMatchException
 				| InternalException | CannotPositionObjectException
