@@ -16,5 +16,5 @@ package hu.elte.txtuml.layout.lang.elements;
  * @see LayoutNodeGroup
  *
  */
-public interface LayoutLink extends LayoutElement {
+public interface LayoutLink extends LayoutAbstractLink, LayoutNonGroupElement {
 }
