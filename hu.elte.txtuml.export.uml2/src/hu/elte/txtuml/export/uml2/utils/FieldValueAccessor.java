@@ -2,7 +2,7 @@ package hu.elte.txtuml.export.uml2.utils;
 
 import java.lang.reflect.Field;
 
-public class FieldValueAccessor {
+public final class FieldValueAccessor {
 
 	public static void setObjectFieldVal(Object object, String fieldName,Object newVal)
 	{

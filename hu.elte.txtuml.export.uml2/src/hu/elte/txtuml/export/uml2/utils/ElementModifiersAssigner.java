@@ -11,7 +11,7 @@ import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.VisibilityKind;
 
-public class ElementModifiersAssigner {
+public final class ElementModifiersAssigner {
 
     private static void setVisibilityBasedOnModifiersGivenByReflection(NamedElement element,int modifiers)
 	{

@@ -10,7 +10,6 @@ import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
 
 import java.lang.reflect.Field;
 
-import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.PseudostateKind;
 import org.eclipse.uml2.uml.Region;
@@ -112,7 +111,7 @@ abstract class AbstractImporter {
 		return calculated;
 	}
 
-	protected static PrimitiveType UML2Integer,UML2Bool,UML2String,UML2Real,UML2UnlimitedNatural;
+	
 	protected static Class<?> modelClass=null;
 	protected static InstancesMap globalInstances;
 	protected static InstancesMap classAndFieldInstances;

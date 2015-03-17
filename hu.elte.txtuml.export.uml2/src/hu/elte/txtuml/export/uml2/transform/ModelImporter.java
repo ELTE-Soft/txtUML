@@ -14,6 +14,7 @@ import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 import hu.elte.txtuml.export.uml2.transform.backend.InstancesMap;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
+import hu.elte.txtuml.export.uml2.transform.backend.UMLPrimitiveTypes;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -30,7 +31,6 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Operation;
-import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Profile;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Region;
@@ -72,7 +72,7 @@ public class ModelImporter extends AbstractImporter{
         initGlobalInstancesMap();
         ProfileCreator.createProfileForModel(path,modelName,resourceSet);
         loadAndApplyProfile();
-        importPrimitiveTypes();
+        UMLPrimitiveTypes.importFromProfile(currentProfile);
 	}
 	
 	private static void initGlobalInstancesMap() {
@@ -102,9 +102,9 @@ public class ModelImporter extends AbstractImporter{
 		importMemberFunctionsWithoutBodies();
 		importClassOperationBodiesStateMachinesAndNestedSignals();
 	}
+	
 	public static Model importModel(String className,String path) throws ImportException
 	{
-		
         initModelImport(className, path);
 		importModelElements();	
 		endModelImport();
@@ -165,14 +165,7 @@ public class ModelImporter extends AbstractImporter{
 		return MethodImporter.isImporting();
 	}
 	
-	private static void importPrimitiveTypes()
-	{
-		UML2Integer=(PrimitiveType) currentProfile.getImportedMember("Integer");
-		UML2Bool=(PrimitiveType) currentProfile.getImportedMember("Boolean");
-		UML2String=(PrimitiveType) currentProfile.getImportedMember("String");
-		UML2Real=(PrimitiveType) currentProfile.getImportedMember("Real");
-		UML2UnlimitedNatural=(PrimitiveType) currentProfile.getImportedMember("UnlimitedNatural");	
-	}
+	
 	private static void importClassifier(Class<?> sourceClass) throws ImportException
 	{
 		org.eclipse.uml2.uml.Class importedClass = null;
@@ -301,15 +294,15 @@ public class ModelImporter extends AbstractImporter{
     {
         if(sourceClass == ModelInt.class) 
         {
-        	return UML2Integer;
+        	return UMLPrimitiveTypes.getInteger();
         }
         else if(sourceClass == ModelBool.class) 
         {
-        	return UML2Bool;
+        	return UMLPrimitiveTypes.getBoolean();
         }
         else if(sourceClass == ModelString.class) 
         {
-        	return UML2String;
+        	return UMLPrimitiveTypes.getString();
         }
         else if(ElementTypeTeller.isClass(sourceClass))
         {
@@ -340,11 +333,9 @@ public class ModelImporter extends AbstractImporter{
     {
     	org.eclipse.uml2.uml.Class ownerClass=(org.eclipse.uml2.uml.Class) currentModel.getMember(sourceClass.getSimpleName());
     	for(Method method : sourceClass.getDeclaredMethods()) 
-    	{
-           
+    	{         
             Operation operation=importOperationWithoutBody(ownerClass,sourceClass,method);
-            ElementModifiersAssigner.setModifiers(operation, method);
-           
+            ElementModifiersAssigner.setModifiers(operation, method);        
         }
     }
     
@@ -385,16 +376,12 @@ public class ModelImporter extends AbstractImporter{
 		}
  	}
     
-  	private static void createInstancesAndInitInstancesMap(Class<?> c) {
-		
+  	private static void createInstancesAndInitInstancesMap(Class<?> c) 
+  	{	
 		classAndFieldInstances=InstancesMap.create();
-
   		selfInstance=(ModelClass) DummyInstanceCreator.createDummyInstance(c);
- 
 		classAndFieldInstances.put(selfInstance, InstanceInformation.create("self"));
-		
 		createNonLocalFieldsRecursively(selfInstance);
-		
 	}
   	
   	private static void createNonLocalFieldsRecursively(Object classifier)

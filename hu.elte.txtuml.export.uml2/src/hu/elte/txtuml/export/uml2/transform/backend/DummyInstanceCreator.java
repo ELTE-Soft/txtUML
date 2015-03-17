@@ -2,9 +2,10 @@ package hu.elte.txtuml.export.uml2.transform.backend;
 
 import hu.elte.txtuml.utils.InstanceCreator;
 
-public class DummyInstanceCreator {
+public final class DummyInstanceCreator {
 
-	static boolean creating=false;
+	private static boolean creating=false;
+	private static InterfaceMethodInvocationHandler handler = new InterfaceMethodInvocationHandler();
 	
 	public static boolean isCreating()
 	{
@@ -21,7 +22,7 @@ public class DummyInstanceCreator {
 			createdObject=(T) java.lang.reflect.Proxy.newProxyInstance(
 					typeClass.getClassLoader(), 
 					new java.lang.Class[] { typeClass},
-					new InterfaceMethodInvocationHandler()
+					handler
 					);
 		}
 		else
@@ -43,7 +44,7 @@ public class DummyInstanceCreator {
 			createdObject=(T) java.lang.reflect.Proxy.newProxyInstance(
 					typeClass.getClassLoader(), 
 					new java.lang.Class[] { typeClass},
-					new InterfaceMethodInvocationHandler()
+					handler
 					);
 		}
 		else

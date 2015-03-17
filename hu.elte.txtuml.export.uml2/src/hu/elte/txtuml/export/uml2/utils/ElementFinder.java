@@ -9,7 +9,7 @@ import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Property;
 
-public class ElementFinder {
+public final class ElementFinder {
 
 	public static Field findField(Class<?> type,String fieldName) {
 

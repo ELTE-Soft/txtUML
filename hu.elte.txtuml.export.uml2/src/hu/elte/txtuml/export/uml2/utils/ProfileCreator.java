@@ -15,7 +15,7 @@ import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
 
-public class ProfileCreator {
+public final class ProfileCreator {
 
 	public static void createProfileForModel(String path, String modelName, ResourceSet resourceSet) throws ImportException
 	{

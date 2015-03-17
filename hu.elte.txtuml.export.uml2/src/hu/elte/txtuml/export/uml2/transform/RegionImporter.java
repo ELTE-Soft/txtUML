@@ -220,8 +220,6 @@ class RegionImporter extends AbstractImporter {
 	private void importEffectAction
 		(Class<?> transitionClass,org.eclipse.uml2.uml.Transition transition, StateMachine.Transition transitionInstance)
 	{
-				
-		
 		try 
 		{
 			Method effectMethod=transitionClass.getDeclaredMethod("effect");
@@ -229,8 +227,7 @@ class RegionImporter extends AbstractImporter {
 			MethodImporter.importMethod(currentModel,activity, effectMethod, transitionInstance);
 		}
 		catch (NoSuchMethodException e)
-		{
-			
+		{	
 			//if there's no effect method, do nothing
 		} 
 		
@@ -239,24 +236,23 @@ class RegionImporter extends AbstractImporter {
 	private void importGuard
 		(Class<?> transitionClass,org.eclipse.uml2.uml.Transition transition, StateMachine.Transition transitionInstance)
 	{
-			try
-			{
-				Method guardMethod=transitionClass.getDeclaredMethod("guard");
-				String guardExpression=MethodImporter.importGuardMethod(currentModel,guardMethod,transitionInstance);
-				
-				OpaqueExpression opaqueExpression=(OpaqueExpression) UMLFactory.eINSTANCE.createOpaqueExpression();
-				opaqueExpression.getBodies().add(guardExpression);
-				
-				Constraint constraint=UMLFactory.eINSTANCE.createConstraint();
-				constraint.setSpecification(opaqueExpression);
-					
-				transition.setGuard(constraint);
-									
-			}
-			catch (NoSuchMethodException e) {
-				//no guard for this transition -> do nothing 
-				
-			} 
+		try
+		{
+			Method guardMethod=transitionClass.getDeclaredMethod("guard");
+			String guardExpression=MethodImporter.importGuardMethod(currentModel,guardMethod,transitionInstance);
+
+			OpaqueExpression opaqueExpression=(OpaqueExpression) UMLFactory.eINSTANCE.createOpaqueExpression();
+			opaqueExpression.getBodies().add(guardExpression);
+
+			Constraint constraint=UMLFactory.eINSTANCE.createConstraint();
+			constraint.setSpecification(opaqueExpression);
+
+			transition.setGuard(constraint);
+
+		}
+		catch (NoSuchMethodException e) {
+			//no guard for this transition -> do nothing
+		} 
 		
 	}
 	

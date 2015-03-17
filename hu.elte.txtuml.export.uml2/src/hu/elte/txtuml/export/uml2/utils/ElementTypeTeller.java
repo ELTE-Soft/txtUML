@@ -11,7 +11,7 @@ import hu.elte.txtuml.api.ModelIdentifiedElement;
 import hu.elte.txtuml.api.Signal;
 import hu.elte.txtuml.api.StateMachine;
 
-public class ElementTypeTeller {
+public final class ElementTypeTeller {
 
 	public static boolean isModelElement(Class<?> c)
 	{
