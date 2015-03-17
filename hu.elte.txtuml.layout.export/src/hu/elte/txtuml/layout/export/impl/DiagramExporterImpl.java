@@ -4,7 +4,6 @@ import java.lang.annotation.Annotation;
 
 import hu.elte.txtuml.layout.export.DiagramExporter;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
-import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
 import hu.elte.txtuml.layout.export.interfaces.LinkMap;
 import hu.elte.txtuml.layout.export.interfaces.NodeMap;
@@ -61,7 +60,7 @@ public class DiagramExporterImpl implements DiagramExporter {
 		exportDiagram();
 
 		if (report.isSuccessful()) {
-			report.setType(DiagramType.Class); // TODO other types
+			report.setType(elementExporter.getDiagramTypeBasedOnElements());
 			report.setStatements(statements);
 			report.setNodes(nodes.convert());
 			report.setLinks(links.convert());
