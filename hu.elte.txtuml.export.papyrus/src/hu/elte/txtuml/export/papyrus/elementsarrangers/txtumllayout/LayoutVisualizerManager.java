@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -29,12 +30,11 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.gmf.runtime.notation.View;
-import org.eclipse.uml2.uml.NamedElement;
 
 public class LayoutVisualizerManager {
 	
-	private HashSet<RectangleObject> objects;
-	private HashSet<LineAssociation> associations;
+	private Set<RectangleObject> objects;
+	private Set<LineAssociation> associations;
 	private ArrayList<Statement> statementsSet;
 	private List<EditPart> editparts;
 	private List<ConnectionNodeEditPart> connectionNodeEditParts;
@@ -71,9 +71,9 @@ public class LayoutVisualizerManager {
 	
 	public void arrange(){
 		LayoutVisualize v = new LayoutVisualize();
-		MyModel model = new MyModel(objects, associations, statementsSet);
+		MyModel model = new MyModel((HashSet<RectangleObject>) objects,(HashSet<LineAssociation>)  associations, statementsSet);
 		
-		v.load(model.Value.ToFirstPair());
+		v.load(model.Value.First, model.Value.Second);
 		
 		try {
 			v.arrange(model.Value.Third);

@@ -26,6 +26,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			int maxHeight = getMaxHeight(elements);
 			int gapX = 20;
 			int gapY = 20;
+			
 			List<String> statementsList = Arrays.asList(
 					"topmost("+getXmiId(elements.get(0))+")"
 				);		
