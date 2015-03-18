@@ -23,11 +23,11 @@ import hu.elte.txtuml.utils.Pair;
 public class ElementExporterImpl implements ElementExporter {
 
 	public DiagramType diagramType;
-	// TODO check diagram type: when a new element is found, and it is of a
-	// certain type (a node or a link), check if that type equals with this
-	// field. If this field's value is Unknown, set it to the element's value.
-	// If it is not Unknown, and also unequal to the element's type, an has to
-	// be shown.
+	// TODO check diagram type: when a new element (a node or a link) is found,
+	// and it is of a certain type, check if that type equals with this field.
+	// If this field's value is Unknown, set it to the element's value. If it is
+	// not Unknown, and also unequal to the element's type, an error has to be
+	// shown.
 	public final NodeMap nodes;
 	public final LinkMap links;
 
@@ -40,12 +40,12 @@ public class ElementExporterImpl implements ElementExporter {
 		this.links = links;
 		this.diagramType = type;
 	}
-	
+
 	@Override
 	public DiagramType getDiagramTypeBasedOnElements() {
 		return diagramType;
 	}
-	
+
 	@Override
 	public ElementInfo exportElement(Class<? extends LayoutElement> element) {
 		// TODO Auto-generated method stub
