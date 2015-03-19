@@ -3,7 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Uml2
 Bundle-SymbolicName: hu.elte.txtuml.export.uml2
 Bundle-Version: 1.0.0.qualifier
-Export-Package: hu.elte.txtuml.export.uml2
+Export-Package: hu.elte.txtuml.export.uml2,
+ hu.elte.txtuml.export.uml2.transform
 Require-Bundle: org.eclipse.uml2.uml,
  org.eclipse.uml2.uml.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
