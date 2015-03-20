@@ -14,8 +14,8 @@ import java.util.Stack;
  * the <em>hasCycle</em> operation takes constant time; the <em>cycle</em>
  * operation takes time proportional to the length of the cycle.
  * <p>
- * See {@link Topological} to compute a topological order if the edge-weighted
- * digraph is acyclic.
+ * See Topological to compute a topological order if the edge-weighted digraph
+ * is acyclic.
  * <p>
  * For additional documentation, see <a href="/algs4/44sp">Section 4.4</a> of
  * <i>Algorithms, 4th Edition</i> by Robert Sedgewick and Kevin Wayne.
@@ -129,8 +129,7 @@ public class EdgeWeightedDirectedCycle
 					if (last.to() != e.from())
 					{
 						System.err
-								.printf("cycle edges %s and %s not incident\n",
-										last, e);
+								.printf("cycle edges %s and %s not incident\n", last, e);
 						return false;
 					}
 				}
@@ -139,8 +138,7 @@ public class EdgeWeightedDirectedCycle
 			
 			if (last.to() != first.from())
 			{
-				System.err.printf("cycle edges %s and %s not incident\n", last,
-						first);
+				System.err.printf("cycle edges %s and %s not incident\n", last, first);
 				return false;
 			}
 		}

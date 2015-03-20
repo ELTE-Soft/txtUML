@@ -10,8 +10,8 @@ import java.util.NoSuchElementException;
  * queue is empty, and iterating through the items in FIFO order.
  * <p>
  * This implementation uses a singly-linked list with a static nested class for
- * linked-list nodes. See {@link LinkedQueue} for the version from the textbook
- * that uses a non-static nested class. The <em>enqueue</em>, <em>dequeue</em>,
+ * linked-list nodes. See LinkedQueue for the version from the textbook that
+ * uses a non-static nested class. The <em>enqueue</em>, <em>dequeue</em>,
  * <em>peek</em>, <em>size</em>, and <em>is-empty</em> operations all take
  * constant time in the worst case.
  * <p>
@@ -21,6 +21,8 @@ import java.util.NoSuchElementException;
  *
  * @author Robert Sedgewick
  * @author Kevin Wayne
+ * @param <Item>
+ *            Type to store.
  */
 public class Queue<Item> implements Iterable<Item>
 {

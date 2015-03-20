@@ -1,5 +1,11 @@
 package hu.elte.txtuml.layout.visualizer.exceptions;
 
+/**
+ * Exception indicating that somewhere in the algorithm there was either an
+ * illegal conversion between types or a conversion which is not defined.
+ * 
+ * @author Balázs Gregorics
+ */
 public class ConversionException extends MyException
 {
 	/**
@@ -7,11 +13,20 @@ public class ConversionException extends MyException
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * Create ConversionException.
+	 */
 	public ConversionException()
 	{
 		super();
 	}
 	
+	/**
+	 * Create ConversionException.
+	 * 
+	 * @param m
+	 *            Message of the exception.
+	 */
 	public ConversionException(String m)
 	{
 		super(m);

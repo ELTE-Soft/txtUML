@@ -1,10 +1,41 @@
 package hu.elte.txtuml.layout.visualizer.helpers;
 
+/**
+ * Pair type. One type to store two values.
+ * 
+ * @author Balázs Gregorics
+ *
+ * @param <T1>
+ *            First type of the pair.
+ * @param <T2>
+ *            Second type of the pair.
+ */
 public class Pair<T1, T2>
 {
+	
+	// Variables
+	
+	/**
+	 * First value.
+	 */
 	public T1 First;
+	/**
+	 * Second value.
+	 */
 	public T2 Second;
 	
+	// end Variables.
+	
+	// Ctors
+	
+	/**
+	 * Create a pair.
+	 * 
+	 * @param f
+	 *            First value of type T1.
+	 * @param s
+	 *            Second value of type T2.
+	 */
 	public Pair(T1 f, T2 s)
 	{
 		First = f;

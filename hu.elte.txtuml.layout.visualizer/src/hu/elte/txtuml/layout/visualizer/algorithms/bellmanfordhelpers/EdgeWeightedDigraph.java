@@ -34,7 +34,10 @@ public class EdgeWeightedDigraph
 	
 	/**
 	 * Initializes an empty edge-weighted digraph with <tt>V</tt> vertices and 0
-	 * edges. param V the number of vertices
+	 * edges.
+	 * 
+	 * @param V
+	 *            the number of vertices
 	 * 
 	 * @throws java.lang.IllegalArgumentException
 	 *             if <tt>V</tt> < 0
@@ -54,8 +57,12 @@ public class EdgeWeightedDigraph
 	
 	/**
 	 * Initializes a random edge-weighted digraph with <tt>V</tt> vertices and
-	 * <em>E</em> edges. param V the number of vertices param E the number of
-	 * edges
+	 * <em>E</em> edges.
+	 * 
+	 * @param V
+	 *            the number of vertices
+	 * @param E
+	 *            the number of edges
 	 * 
 	 * @throws java.lang.IllegalArgumentException
 	 *             if <tt>V</tt> < 0
@@ -78,18 +85,21 @@ public class EdgeWeightedDigraph
 		}
 	}
 	
-	/**
+	/*
+	 * /**
 	 * Initializes an edge-weighted digraph from an input stream. The format is
 	 * the number of vertices <em>V</em>, followed by the number of edges
 	 * <em>E</em>, followed by <em>E</em> pairs of vertices and edge weights,
 	 * with each entry separated by whitespace.
 	 * 
 	 * @param in
-	 *            the input stream
+	 * the input stream
+	 * 
 	 * @throws java.lang.IndexOutOfBoundsException
-	 *             if the endpoints of any edge are not in prescribed range
+	 * if the endpoints of any edge are not in prescribed range
+	 * 
 	 * @throws java.lang.IllegalArgumentException
-	 *             if the number of vertices or edges is negative
+	 * if the number of vertices or edges is negative
 	 */
 	
 	/*
@@ -104,6 +114,14 @@ public class EdgeWeightedDigraph
 	 * weight)); } }
 	 */
 	
+	/**
+	 * Create Edge Weighted Digraph.
+	 * 
+	 * @param ns
+	 *            Number of vertices.
+	 * @param es
+	 *            List of edges.
+	 */
 	public EdgeWeightedDigraph(Integer ns, ArrayList<Triple<Integer, Integer, Integer>> es)
 	{
 		this(ns);

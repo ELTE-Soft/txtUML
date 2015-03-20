@@ -4,6 +4,13 @@ import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
 
 import java.util.ArrayList;
 
+/**
+ * Statement class represents a layout statement defined on a diagram object or
+ * link. These support the algorithm to arrange the objects and the links.
+ * 
+ * @author Balázs Gregorics
+ *
+ */
 public class Statement
 {
 	// Variables
@@ -52,7 +59,7 @@ public class Statement
 	// Ctors
 	
 	/***
-	 * Layout Statement.
+	 * Create Layout Statement.
 	 */
 	public Statement()
 	{
@@ -61,7 +68,7 @@ public class Statement
 	}
 	
 	/***
-	 * Layout Statement.
+	 * Create Layout Statement.
 	 * 
 	 * @param t
 	 *            Type of the Statement to create.
@@ -80,7 +87,7 @@ public class Statement
 	}
 	
 	/***
-	 * Layout Statement.
+	 * Create Layout Statement.
 	 * 
 	 * @param t
 	 *            Type of the Statement to create.
@@ -222,6 +229,7 @@ public class Statement
 		return result;
 	}
 	
+	@Override
 	public String toString()
 	{
 		String result = _type.toString() + "(";

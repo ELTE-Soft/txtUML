@@ -10,7 +10,6 @@ import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.MyException;
 import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
-import hu.elte.txtuml.layout.visualizer.helpers.MyModel;
 import hu.elte.txtuml.layout.visualizer.model.AssociationType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Point;
@@ -21,6 +20,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * This class is used to wrap the arrange of a whole diagram.
+ * 
+ * @author Balázs Gregorics
+ */
 public class LayoutVisualize
 {
 	/***
@@ -82,6 +86,7 @@ public class LayoutVisualize
 	 *             other type (Missing Statement upgrade?).
 	 * @throws ConflictException
 	 * @throws StatementTypeMatchException
+	 *             Throws if any of the statements are not in correct format.
 	 * @throws InternalException
 	 *             Throws if any error occurs which should not happen. Contact
 	 *             developer!
@@ -92,9 +97,9 @@ public class LayoutVisualize
 	 *             association.
 	 */
 	public void arrange(ArrayList<Statement> stats) throws UnknownStatementException,
-			ConflictException, ConversionException, StatementTypeMatchException,
-			InternalException, CannotPositionObjectException,
-			CannotFindAssociationRouteException
+			ConflictException, ConversionException, InternalException,
+			CannotPositionObjectException, CannotFindAssociationRouteException,
+			StatementTypeMatchException
 	{
 		if (_objects == null)
 			return;
@@ -178,22 +183,26 @@ public class LayoutVisualize
 			return;
 		
 		ArrangeAssociations aa = new ArrangeAssociations(_objects, _assocs,
-				_assocStatements);
+				_assocStatements, true);
 		_assocs = aa.value();
 		
 		// Transform objects according to link transformation
 		Integer transformAmount = aa.getTransformAmount();
+		Integer widthAmount = aa.getWidthAmount();
 		for (RectangleObject o : _objects)
 		{
 			o.setPosition(Point.Multiply(o.getPosition(), transformAmount));
+			o.setWidth(widthAmount);
 		}
 	}
 	
 	/***
-	 * This function loads the model to arrange.
+	 * This function is used to load data to arrange.
 	 * 
-	 * @param pair
-	 *            A pair of sets about the Objects and Links of the model.
+	 * @param os
+	 *            Set of RectangleObjects to arrange on a grid.
+	 * @param as
+	 *            Set of LineAssociations to arrange between objects.
 	 */
 	public void load(Set<RectangleObject> os, Set<LineAssociation> as)
 	{
@@ -201,18 +210,24 @@ public class LayoutVisualize
 		_assocs = as;
 	}
 	
+	/**
+	 * A simple use case of the <i>LayoutVisualize<i> class.
+	 */
 	public static void usage()
 	{
 		try
 		{
 			LayoutVisualize v = new LayoutVisualize();
-			MyModel model = new MyModel();// = Transformers.loadLayout(
-			// "C:/Users/serveradmin/Documents/ELTE/SzoftLabor/input.xml",
-			// "Class");
+			Set<RectangleObject> objs = new HashSet<RectangleObject>();
+			// load objs
+			Set<LineAssociation> links = new HashSet<LineAssociation>();
+			// load links
+			ArrayList<Statement> stats = new ArrayList<Statement>();
+			// load stats
 			
-			v.load(model.Value.First, model.Value.Second);
+			v.load(objs, links);
 			
-			v.arrange(model.Value.Third);
+			v.arrange(stats);
 			Set<RectangleObject> o = v.getObjects();
 			Set<LineAssociation> a = v.getAssocs();
 			
@@ -230,6 +245,9 @@ public class LayoutVisualize
 		}
 	}
 	
+	/**
+	 * Test function.
+	 */
 	public static void test()
 	{
 		System.out.println("--START--");
@@ -243,22 +261,29 @@ public class LayoutVisualize
 			Set<RectangleObject> testObjects = new HashSet<RectangleObject>();
 			testObjects.add(new RectangleObject("A"));
 			testObjects.add(new RectangleObject("B"));
-			testObjects.add(new RectangleObject("C"));
-			testObjects.add(new RectangleObject("D"));
+			// testObjects.add(new RectangleObject("C"));
+			// testObjects.add(new RectangleObject("D"));
 			
 			System.out.println("/Set Assocs/");
 			
 			Set<LineAssociation> testAssocs = new HashSet<LineAssociation>();
 			
 			testAssocs.add(new LineAssociation("L1", "A", "B", AssociationType.normal));
-			/*
-			 * testAssocs.add(new LineAssociation("L2", "A", "C",
-			 * AssociationType.normal));
-			 * testAssocs.add(new LineAssociation("L3", "A", "D",
-			 * AssociationType.normal));
-			 * testAssocs.add(new LineAssociation("L4", "A", "B",
-			 * AssociationType.normal));
-			 */
+			testAssocs.add(new LineAssociation("L2", "A", "B", AssociationType.normal));
+			testAssocs.add(new LineAssociation("L3", "A", "B", AssociationType.normal));
+			testAssocs.add(new LineAssociation("L4", "A", "B", AssociationType.normal));
+			testAssocs.add(new LineAssociation("L5", "A", "B", AssociationType.normal));
+			testAssocs.add(new LineAssociation("L6", "A", "B", AssociationType.normal));
+			testAssocs.add(new LineAssociation("L7", "A", "B", AssociationType.normal));
+			testAssocs.add(new LineAssociation("L8", "A", "B", AssociationType.normal));
+			testAssocs.add(new LineAssociation("L9", "A", "B", AssociationType.normal));
+			testAssocs.add(new LineAssociation("L10", "A", "B", AssociationType.normal));
+			testAssocs.add(new LineAssociation("L11", "A", "B", AssociationType.normal));
+			testAssocs.add(new LineAssociation("L12", "A", "B", AssociationType.normal));
+			testAssocs.add(new LineAssociation("L13", "A", "B", AssociationType.normal));
+			testAssocs.add(new LineAssociation("L14", "A", "B", AssociationType.normal));
+			testAssocs.add(new LineAssociation("L15", "A", "B", AssociationType.normal));
+			testAssocs.add(new LineAssociation("L16", "A", "B", AssociationType.normal));
 			
 			System.out.println("/Load Data/");
 			v.load(testObjects, testAssocs);
@@ -267,11 +292,9 @@ public class LayoutVisualize
 			
 			ArrayList<Statement> stats = new ArrayList<Statement>();
 			
-			stats.add(Statement.Parse("phantom(F)"));
-			stats.add(Statement.Parse("above(A, F)"));
-			stats.add(Statement.Parse("below(C, F)"));
-			stats.add(Statement.Parse("right(B, F)"));
-			stats.add(Statement.Parse("left(D, F)"));
+			stats.add(Statement.Parse("above(A, B)"));
+			stats.add(Statement.Parse("priority(L1, 50)"));
+			stats.add(Statement.Parse("north(L1, A)"));
 			
 			System.out.println("/Arrange/");
 			v.arrange(stats);
