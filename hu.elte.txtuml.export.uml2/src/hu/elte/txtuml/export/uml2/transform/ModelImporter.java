@@ -1,9 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform;
-
-
-
 import hu.elte.txtuml.api.ModelBool;
-import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
@@ -11,9 +7,7 @@ import hu.elte.txtuml.export.uml2.utils.ElementModifiersAssigner;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.export.uml2.utils.ProfileCreator;
 import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
-import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
-import hu.elte.txtuml.export.uml2.transform.backend.InstancesMap;
-import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
+import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
 import hu.elte.txtuml.export.uml2.transform.backend.UMLPrimitiveTypes;
 
 import java.lang.reflect.Field;
@@ -43,8 +37,16 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
-
 public class ModelImporter extends AbstractImporter{
+	
+	public static Model importModel(String className,String path) throws ImportException
+	{
+        initModelImport(className, path);
+		importModelElements();	
+		endModelImport();
+		
+   		return currentModel; 	  
+	}
 	
 	private static void initModelImport(String className, String path) throws ImportException
 	{
@@ -69,27 +71,10 @@ public class ModelImporter extends AbstractImporter{
         }
         currentModel=model;
         
-        initGlobalInstancesMap();
+        InstanceManager.initGlobalInstancesMap();
         ProfileCreator.createProfileForModel(path,modelName,resourceSet);
         loadAndApplyProfile();
         UMLPrimitiveTypes.importFromProfile(currentProfile);
-	}
-	
-	private static void initGlobalInstancesMap() {
-		
-		globalInstances=InstancesMap.create();
-		globalInstances.put(ModelInt.ONE, InstanceInformation.createLiteral("1"));
-		globalInstances.put(ModelInt.ZERO, InstanceInformation.createLiteral("0"));
-		globalInstances.put(ModelBool.TRUE, InstanceInformation.createLiteral("true"));
-		globalInstances.put(ModelBool.FALSE, InstanceInformation.createLiteral("false"));
-		globalInstances.put(ModelBool.ELSE, InstanceInformation.createLiteral("else"));
-		
-	}
-
-	private static void endModelImport()
-	{
-		globalInstances.clear();
-		importing=false;
 	}
 	
 	private static void importModelElements() throws ImportException
@@ -103,18 +88,11 @@ public class ModelImporter extends AbstractImporter{
 		importClassOperationBodiesStateMachinesAndNestedSignals();
 	}
 	
-	public static Model importModel(String className,String path) throws ImportException
-	{
-        initModelImport(className, path);
-		importModelElements();	
-		endModelImport();
-		
-   		return currentModel; 	  
-	}
 	
-	public static Profile getProfile()
+	private static void endModelImport()
 	{
-		return currentProfile;
+		InstanceManager.clearGlobalInstancesMap();
+		importing=false;
 	}
 	
 	private static void loadAndApplyProfile()
@@ -126,7 +104,8 @@ public class ModelImporter extends AbstractImporter{
 	
 	private static void importGeneralizations() throws ImportException 
 	{
-		for(Class<?> c : modelClass.getDeclaredClasses()) {
+		for(Class<?> c : modelClass.getDeclaredClasses())
+		{
 			if(!ElementTypeTeller.isModelElement(c))
 			{
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
@@ -149,14 +128,19 @@ public class ModelImporter extends AbstractImporter{
 		uml2SpecClassifier.createGeneralization(uml2GeneralClassifier);
 	}
 	
-	private static Class<?> findModel(String className) throws ImportException {
-		try {
+	private static Class<?> findModel(String className) throws ImportException 
+	{
+		try 
+		{
 			Class<?> ret = Class.forName(className);
-			if(!hu.elte.txtuml.api.Model.class.isAssignableFrom(ret)) {
+			if(!hu.elte.txtuml.api.Model.class.isAssignableFrom(ret))
+			{
 				throw new ImportException("A subclass of Model is expected, got: " + className);
 			}
 			return ret;
-		} catch(ClassNotFoundException e) {
+		}
+		catch(ClassNotFoundException e) 
+		{
 			throw new ImportException("Cannot find class: " + className);
 		}
     }
@@ -362,7 +346,7 @@ public class ModelImporter extends AbstractImporter{
 				
 				importNestedSignals(c);
 			
-				createInstancesAndInitInstancesMap(c);
+				InstanceManager.createClassAndFieldInstancesAndInitClassAndFieldInstancesMap(c);
 				
 				if(containsStateMachine(c))
 				{
@@ -371,25 +355,12 @@ public class ModelImporter extends AbstractImporter{
 				
 				importClassMemberFunctionBodies(c);
 				
-				classAndFieldInstances.clear();
+				InstanceManager.clearClassAndFieldInstancesMap();;
 			}
 		}
  	}
     
-  	private static void createInstancesAndInitInstancesMap(Class<?> c) 
-  	{	
-		classAndFieldInstances=InstancesMap.create();
-  		selfInstance=(ModelClass) DummyInstanceCreator.createDummyInstance(c);
-		classAndFieldInstances.put(selfInstance, InstanceInformation.create("self"));
-		createNonLocalFieldsRecursively(selfInstance);
-	}
-  	
-  	private static void createNonLocalFieldsRecursively(Object classifier)
-  	{
-  		createFieldsRecursively(classifier, false);
-  	}
-
-	private static void importNestedSignals(Class<?> sourceClass) throws ImportException
+  	private static void importNestedSignals(Class<?> sourceClass) throws ImportException
   	{
 		for(Class<?> innerClass:sourceClass.getDeclaredClasses())
 		{
@@ -407,7 +378,7 @@ public class ModelImporter extends AbstractImporter{
 		
         StateMachine stateMachine = (StateMachine) ownerClass.createClassifierBehavior(ownerClass.getName(),UMLPackage.Literals.STATE_MACHINE);
         Region region = new RegionImporter
-        		(sourceClass,selfInstance,currentModel,stateMachine.createRegion(stateMachine.getName()))
+        		(sourceClass,InstanceManager.getSelfInstance(),currentModel,stateMachine.createRegion(stateMachine.getName()))
         		.importRegion();
         
         
@@ -425,7 +396,7 @@ public class ModelImporter extends AbstractImporter{
 	{
 		Activity activity=(Activity) ownerClass.createOwnedBehavior(sourceMethod.getName(),UMLPackage.Literals.ACTIVITY);
 		activity.setSpecification(operation);
-		MethodImporter.importMethod(currentModel,activity,sourceMethod,selfInstance);
+		MethodImporter.importMethod(currentModel,activity,sourceMethod,InstanceManager.getSelfInstance());
 		
 		
 		return activity;
@@ -467,10 +438,6 @@ public class ModelImporter extends AbstractImporter{
 		return operation;
 	}
 	
-	public static Class<?> getModelClass() {
-		return modelClass;
-	}
-	
 
     private static void initResourceSet()
     {
@@ -500,6 +467,16 @@ public class ModelImporter extends AbstractImporter{
     	return resourceSet;
     }
     
+    public static Class<?> getModelClass() 
+    {
+		return modelClass;
+	}
+	
+	public static Profile getProfile()
+	{
+		return currentProfile;
+	}
+	
     public static boolean isImporting()
     {
     	return importing;

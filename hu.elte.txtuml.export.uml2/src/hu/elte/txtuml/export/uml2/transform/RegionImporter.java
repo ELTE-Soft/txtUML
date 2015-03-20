@@ -52,31 +52,32 @@ class RegionImporter extends AbstractImporter {
 		for(Class<?> c : sourceClass.getDeclaredClasses())
         {
 			if(!ElementTypeTeller.isModelElement(c))
-			{
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
-			}
-            if(ElementTypeTeller.isState(c)) 
-            {	   
-            	importState(c);
-            }
-             
+            if(ElementTypeTeller.isState(c)) 	   
+            	importState(c);        
         }
 		return region;
 	}
 	
+	private Region importSubRegion(Class<?> state, StateMachine.State stateInstance, Vertex vertex) throws ImportException
+	{
+		Region subRegion= new RegionImporter
+				(state,stateInstance,currentModel,((State) vertex).createRegion(state.getSimpleName()))
+				.importRegion();
+		subRegion.setState((State) vertex);
+	
+		return subRegion;
+	}
 	private  Vertex importState(Class<?> state)	throws ImportException
 	{
 		Vertex vertex=createState(state);
 
 		StateMachine.State stateInstance=(hu.elte.txtuml.api.StateMachine.State) 
 				DummyInstanceCreator.createDummyInstance(state,ownerInstance);
+		
 		if(ElementTypeTeller.isCompositeState(state))
 		{
-			Region subRegion= new RegionImporter
-					(state,stateInstance,currentModel,((State) vertex).createRegion(state.getSimpleName()))
-			.importRegion();
-			subRegion.setState((State) vertex);
-
+			Region subRegion = importSubRegion(state,stateInstance, vertex);
 			if(subRegion.getSubvertices().size() != 0 && !containsInitialState(subRegion)) 
 			{
 				importWarning(state.getName() + " has one or more states but no initial state (state machine will not be created)");
@@ -92,13 +93,17 @@ class RegionImporter extends AbstractImporter {
 		return vertex;
 	}
 	
-	private void importStateEntryAction(Class<?> stateClass,State state, StateMachine.State stateInstance)
+	private void importStateEntryAction(Class<?> stateClass,State importedState, StateMachine.State stateInstance)
 	{
 		
 		try 
 		{
 			Method entryMethod=stateClass.getDeclaredMethod("entry");
-			Activity activity=(Activity)state.createEntry(state.getName()+"_entry",UMLPackage.Literals.ACTIVITY);
+			Activity activity = (Activity)
+					importedState.createEntry(
+							importedState.getName()+"_entry",
+							UMLPackage.Literals.ACTIVITY
+						);
 			MethodImporter.importMethod(currentModel,activity, entryMethod, stateInstance);
 			
 		}
@@ -107,17 +112,19 @@ class RegionImporter extends AbstractImporter {
 			//if there's no entry method, do nothing
 		} 
 		
-		
 	}
 	
-
-	private void importStateExitAction(Class<?> stateClass,State state, StateMachine.State stateInstance)
+	private void importStateExitAction(Class<?> stateClass,State importedState, StateMachine.State stateInstance)
 	{
 		
 		try 
 		{
 			Method exitMethod=stateClass.getDeclaredMethod("exit");
-			Activity activity=(Activity)state.createExit(state.getName()+"_exit",UMLPackage.Literals.ACTIVITY);
+			Activity activity = (Activity)
+					importedState.createExit(
+							importedState.getName()+"_exit",
+							UMLPackage.Literals.ACTIVITY
+						);
 			MethodImporter.importMethod(currentModel,activity, exitMethod, stateInstance);
 
 		}
@@ -127,7 +134,6 @@ class RegionImporter extends AbstractImporter {
 		} 
 		
 	}
-	
 	
 	private  Region importTransitions() throws ImportException
 	{
@@ -186,44 +192,51 @@ class RegionImporter extends AbstractImporter {
 		return ret;
 	}
 
-	private org.eclipse.uml2.uml.Transition importTransition(Class<?> trans)
+	private org.eclipse.uml2.uml.Transition importTransition(Class<?> transition)
 	{
-		String trName = trans.getSimpleName();
-        From fromAnnot = trans.getAnnotation(From.class);
-        To toAnnot = trans.getAnnotation(To.class);
-        hu.elte.txtuml.api.Trigger triggerAnnot=trans.getAnnotation(hu.elte.txtuml.api.Trigger.class);
+		String transitionName = transition.getSimpleName();
+        From fromAnnotation = transition.getAnnotation(From.class);
+        To toAnnotation = transition.getAnnotation(To.class);
+        hu.elte.txtuml.api.Trigger triggerAnnotation=transition.getAnnotation(hu.elte.txtuml.api.Trigger.class);
         
-        Vertex source = region.getSubvertex(fromAnnot.value().getSimpleName());
-        Vertex target = region.getSubvertex(toAnnot.value().getSimpleName());
+        String sourceName = fromAnnotation.value().getSimpleName();
+        String targetName = toAnnotation.value().getSimpleName();
         
-        org.eclipse.uml2.uml.Transition transition=createTransitionBetweenVertices(trName,source,target);
+        Vertex source = region.getSubvertex(sourceName);
+        Vertex target = region.getSubvertex(targetName);
+        
+        org.eclipse.uml2.uml.Transition importedTransition=createTransitionBetweenVertices(transitionName,source,target);
          
         StateMachine.Transition transitionInstance = (Transition)
-        		DummyInstanceCreator.createDummyInstance(trans,ownerInstance); 
+        		DummyInstanceCreator.createDummyInstance(transition,ownerInstance); 
         
-        importTrigger(triggerAnnot,transition);
-        importEffectAction(trans,transition,transitionInstance);
-        importGuard(trans,transition,transitionInstance);
+        importTrigger(triggerAnnotation,importedTransition);
+        importEffectAction(transition,importedTransition,transitionInstance);
+        importGuard(transition,importedTransition,transitionInstance);
         
-        return transition;
+        return importedTransition;
     }   
 	
-	private void importTrigger( hu.elte.txtuml.api.Trigger triggerAnnot,org.eclipse.uml2.uml.Transition transition)
+	private void importTrigger( hu.elte.txtuml.api.Trigger triggerAnnotation,org.eclipse.uml2.uml.Transition importedTransition)
 	{
-		 if(triggerAnnot!=null)
+		 if(triggerAnnotation!=null)
 	     {
-        	String eventName=triggerAnnot.value().getSimpleName();
-	        Trigger trigger=transition.createTrigger(eventName);
+        	String eventName=triggerAnnotation.value().getSimpleName();
+	        Trigger trigger=importedTransition.createTrigger(eventName);
 	        trigger.setEvent((Event) currentModel.getPackagedElement(eventName+"_event"));
 	     }
 	}
 	private void importEffectAction
-		(Class<?> transitionClass,org.eclipse.uml2.uml.Transition transition, StateMachine.Transition transitionInstance)
+		(Class<?> transitionClass,org.eclipse.uml2.uml.Transition importedTransition, StateMachine.Transition transitionInstance)
 	{
 		try 
 		{
 			Method effectMethod=transitionClass.getDeclaredMethod("effect");
-			Activity activity=(Activity)transition.createEffect(transition.getName()+"_effect",UMLPackage.Literals.ACTIVITY);
+			Activity activity=(Activity)
+					importedTransition.createEffect(
+							importedTransition.getName()+"_effect",
+							UMLPackage.Literals.ACTIVITY
+						);
 			MethodImporter.importMethod(currentModel,activity, effectMethod, transitionInstance);
 		}
 		catch (NoSuchMethodException e)
@@ -234,7 +247,7 @@ class RegionImporter extends AbstractImporter {
 	}
 	
 	private void importGuard
-		(Class<?> transitionClass,org.eclipse.uml2.uml.Transition transition, StateMachine.Transition transitionInstance)
+		(Class<?> transitionClass,org.eclipse.uml2.uml.Transition importedTransition, StateMachine.Transition transitionInstance)
 	{
 		try
 		{
@@ -247,7 +260,7 @@ class RegionImporter extends AbstractImporter {
 			Constraint constraint=UMLFactory.eINSTANCE.createConstraint();
 			constraint.setSpecification(opaqueExpression);
 
-			transition.setGuard(constraint);
+			importedTransition.setGuard(constraint);
 
 		}
 		catch (NoSuchMethodException e) {

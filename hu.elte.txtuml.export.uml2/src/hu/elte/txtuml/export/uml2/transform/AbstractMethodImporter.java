@@ -7,6 +7,7 @@ import hu.elte.txtuml.api.ModelIdentifiedElement;
 import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
+import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
 import hu.elte.txtuml.export.uml2.transform.backend.UMLPrimitiveTypes;
 
 import java.lang.reflect.Method;
@@ -156,15 +157,10 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	}
 
 
-	protected static void createLocalFieldsRecursively(Object classifier)
-  	{
-  		createFieldsRecursively(classifier, true);
-  	}
-
 	protected static String getExpression(ModelIdentifiedElement instance)
 	{
 		String expression=null;
-		InstanceInformation instInfo=getInstanceInfo(instance);
+		InstanceInformation instInfo=InstanceManager.getInstanceInfo(instance);
 
 		if(instInfo != null)
 		{
@@ -185,7 +181,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	protected static String getObjectIdentifier(ModelIdentifiedElement instance)
 	{
 		String expression=null;
-		InstanceInformation instInfo=getInstanceInfo(instance);
+		InstanceInformation instInfo=InstanceManager.getInstanceInfo(instance);
 		
 		if(instInfo != null && !instInfo.isLiteral() && !instInfo.isCalculated())
 			expression = instInfo.getExpression();
@@ -296,7 +292,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		else
 		{
 			ModelString modelString=(ModelString) object;
-			InstanceInformation info=getInstanceInfo(modelString);
+			InstanceInformation info=InstanceManager.getInstanceInfo(modelString);
 			if(info == null) return false;
 			else
 			{

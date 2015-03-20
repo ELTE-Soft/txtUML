@@ -6,6 +6,7 @@ import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.api.ModelType;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
+import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
 
 
 public class ModelTypeOpImporter extends AbstractInstructionImporter {
@@ -33,7 +34,7 @@ public class ModelTypeOpImporter extends AbstractInstructionImporter {
 	private static void createCalculatedInstanceInfo(ModelElement inst, String expression)
 	{
 		InstanceInformation instInfo=InstanceInformation.createCalculated(expression);
-		localInstances.put(inst,instInfo);
+		InstanceManager.createLocalInstancesMapEntry(inst,instInfo);
 	}
 	@SuppressWarnings("unchecked")
 	private static <T> ModelType<T> importModelType2OpOperation
@@ -45,32 +46,21 @@ public class ModelTypeOpImporter extends AbstractInstructionImporter {
 		String targetExpr=getExpression(target);
 
 		if(isFunction)
-		{
 			valueExpression=targetExpr+"."+operator+"("+newValExpr+")";
-		}
 		else
-		{
 			valueExpression=targetExpr+operator+newValExpr;
-		}
 		
 		if(currentActivity!=null)
-		{
 			setVariableValue(result,valueExpression);
-		}
 		else
 		{
 			if(result instanceof ModelInt)
-			{
-				result=(ModelType<T>) new ModelInt();
-			}
+				result=(ModelType<T>) new ModelInt();			
 			else if(result instanceof ModelBool)
-			{
 				result=(ModelType<T>) new ModelBool();
-			}
 			else if(result instanceof ModelString)
-			{
 				result=(ModelType<T>) new ModelString();
-			}
+			
 			createCalculatedInstanceInfo(result,valueExpression);
 		}
 		
@@ -106,8 +96,6 @@ public class ModelTypeOpImporter extends AbstractInstructionImporter {
 				operator="mod";
 				isFunction=true;
 			break;		
-			
-			
 		}
 		
 		ModelInt result=new ModelInt();
@@ -122,8 +110,7 @@ public class ModelTypeOpImporter extends AbstractInstructionImporter {
 		
 		boolean isFunction=false;
 		switch(operationType)
-		{
-		
+		{	
 			case OR_LITERAL:
 				operator=" or ";
 			break;
@@ -143,8 +130,7 @@ public class ModelTypeOpImporter extends AbstractInstructionImporter {
 			case NOTEQ_LITERAL:
 				operator=" <> ";
 			break;
-			
-			
+				
 		}
 		
 		ModelBool result=new ModelBool();
@@ -153,32 +139,23 @@ public class ModelTypeOpImporter extends AbstractInstructionImporter {
 	}
 	
 	static ModelInt importModelIntAddOp(ModelInt target, ModelInt val)  {
-
-		return importModelInt2OpOperation(target,val,ModelIntOperations.ADD_LITERAL);
-		
+		return importModelInt2OpOperation(target,val,ModelIntOperations.ADD_LITERAL);	
 	}
 	
 	static ModelInt importModelIntSubtractOp(ModelInt target, ModelInt val) {
-
-		return importModelInt2OpOperation(target,val,ModelIntOperations.SUBTRACT_LITERAL);
-		
+		return importModelInt2OpOperation(target,val,ModelIntOperations.SUBTRACT_LITERAL);	
 	}
 	
 	static ModelInt importModelIntMultiplyOp(ModelInt target, ModelInt val)  {
-
 		return importModelInt2OpOperation(target,val,ModelIntOperations.MULTIPLY_LITERAL);
 	}
 	
 	static ModelInt importModelIntDivideOp(ModelInt target, ModelInt val){
-
-		return importModelInt2OpOperation(target,val,ModelIntOperations.DIVIDE_LITERAL);
-		
+		return importModelInt2OpOperation(target,val,ModelIntOperations.DIVIDE_LITERAL);	
 	}
 	
 	static ModelInt importModelIntRemainderOp(ModelInt target, ModelInt val) {
-
-		return importModelInt2OpOperation(target,val,ModelIntOperations.REMAINDER_LITERAL);
-		
+		return importModelInt2OpOperation(target,val,ModelIntOperations.REMAINDER_LITERAL);	
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -187,38 +164,25 @@ public class ModelTypeOpImporter extends AbstractInstructionImporter {
 	{
 		String valueExpression=null;
 		String targetExpr=getExpression(target);
-	
 
 		if(isFunction)
-		{
 			valueExpression=targetExpr+"."+operator+"()";
-		}
 		else
-		{
 			valueExpression=operator+targetExpr;
-		}
 		
 		if(currentActivity!=null)
-		{
 			setVariableValue(result,valueExpression);
-		}
 		else
 		{
 			if(result instanceof ModelInt)
-			{
 				result=(ModelType<T>) new ModelInt();
-			}
 			else if(result instanceof ModelBool)
-			{
 				result=(ModelType<T>) new ModelBool();
-			}
 			else if(result instanceof ModelString)
-			{
 				result=(ModelType<T>) new ModelBool();
-			}
+			
 			createCalculatedInstanceInfo(result,valueExpression);
 		}
-		
 		return result;
 	}
 	
@@ -242,20 +206,15 @@ public class ModelTypeOpImporter extends AbstractInstructionImporter {
 			case ABS_LITERAL:
 				operator="abs";
 				isFunction=true;
-			break;
-				
+			break;	
 		}
 		
 		ModelInt result=new ModelInt();
-		
 		return (ModelInt) importModelType1OpOperation(target,result,operator,isFunction);
-		
 	}
 	
 	static ModelInt importModelIntNegateOp(ModelInt target)  {
-
 		return importModelInt1OpOperation(target,ModelIntOperations.NEGATE_LITERAL);
-		
 	}
 	
 	static ModelInt importModelIntAbsOp(ModelInt target) {
@@ -263,9 +222,7 @@ public class ModelTypeOpImporter extends AbstractInstructionImporter {
 	}
 	
 	static ModelInt importModelIntSignumOp(ModelInt target) {
-
-		return importModelInt1OpOperation(target,ModelIntOperations.SIGNUM_LITERAL);
-		
+		return importModelInt1OpOperation(target,ModelIntOperations.SIGNUM_LITERAL);	
 	}
 
 	static ModelBool importModelBoolNotOp(ModelBool target) {
@@ -273,53 +230,42 @@ public class ModelTypeOpImporter extends AbstractInstructionImporter {
 	}
 	
 	static ModelBool importModelBoolOrOp(ModelBool target, ModelBool val)  {
-
 		return importModelBool2OpOperation(target,val,ModelBoolOperations.OR_LITERAL);
 	}
 	
 	static ModelBool importModelBoolXorOp(ModelBool target, ModelBool val)  {
-
 		return importModelBool2OpOperation(target,val,ModelBoolOperations.XOR_LITERAL);
 	}
 	
-	
 	static ModelBool importModelBoolAndOp(ModelBool target, ModelBool val)  {
-
 		return importModelBool2OpOperation(target,val,ModelBoolOperations.AND_LITERAL);
 	}
 	
 	static ModelBool importModelBoolEqualOp(ModelBool target, ModelBool val)  {
-
 		return importModelBool2OpOperation(target,val,ModelBoolOperations.EQUAL_LITERAL);
 	}
 	
 	static ModelBool importModelBoolNotEqOp(ModelBool target, ModelBool val)  {
-
 		return importModelBool2OpOperation(target,val,ModelBoolOperations.NOTEQ_LITERAL);
 	}
 
-	static ModelBool importModelIntIsEqualOp(ModelInt left, ModelInt right)
-	{
+	static ModelBool importModelIntIsEqualOp(ModelInt left, ModelInt right) 	{
 		return compareModelInts(left,right,"=");
 	}
 	
-	static ModelBool importModelIntIsLessEqualOp(ModelInt left, ModelInt right)
-	{
+	static ModelBool importModelIntIsLessEqualOp(ModelInt left, ModelInt right) 	{
 		return compareModelInts(left,right,"<=");
 	}
 	
-	static ModelBool importModelIntIsLessOp(ModelInt left, ModelInt right)
-	{
+	static ModelBool importModelIntIsLessOp(ModelInt left, ModelInt right)	{
 		return compareModelInts(left,right,"<");
 	}
 	
-	static ModelBool importModelIntIsMoreEqualOp(ModelInt left, ModelInt right)
-	{
+	static ModelBool importModelIntIsMoreEqualOp(ModelInt left, ModelInt right)	{
 		return compareModelInts(left,right,">=");
 	}
 	
-	static ModelBool importModelIntIsMoreOp(ModelInt left, ModelInt right)
-	{
+	static ModelBool importModelIntIsMoreOp(ModelInt left, ModelInt right)	{
 		return compareModelInts(left,right,">");
 	}
 	

@@ -82,30 +82,22 @@ class AssociationImporter extends AbstractImporter{
 		}
 		else
 		{
-			throw new ImportException("Invalid multiplicity.");            
+			throw new ImportException("Association end "+sourceClass.getName()+" has invalid multiplicity.");            
 		}
 	    
 	    boolean navigable;
 	    
 	    if(hu.elte.txtuml.api.semantics.Navigability.Navigable.class.isAssignableFrom(sourceClass))
-	    {
 	    	navigable = true;
-	    }
 	    else if(hu.elte.txtuml.api.semantics.Navigability.NonNavigable.class.isAssignableFrom(sourceClass))
-	    {
 	    	navigable = false;
-	    }
 	    else
-	    {
-	    	throw new ImportException("Invalid navigability");
-	    }
+	    	throw new ImportException("Association end "+sourceClass.getName()+" has invalid navigability.");    
 	    
 	    org.eclipse.uml2.uml.Type participant = (Type) currentModel.getMember(className);
 	    
 	    if(participant == null)
-	    {
 	        throw new ImportException(phrase + ": No class " + className + " found in this model.");
-	    }
 	   
 	    return new AssociationEnd(participant,phrase,navigable,AggregationKind.NONE_LITERAL,lowerBound,upperBound);
 	}

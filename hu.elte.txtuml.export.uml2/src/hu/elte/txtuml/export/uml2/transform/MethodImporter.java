@@ -6,7 +6,7 @@ import hu.elte.txtuml.api.ModelIdentifiedElement;
 import hu.elte.txtuml.api.StateMachine;
 import hu.elte.txtuml.api.Trigger;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
-import hu.elte.txtuml.export.uml2.transform.backend.InstancesMap;
+import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
@@ -58,7 +58,7 @@ class MethodImporter extends AbstractMethodImporter {
 	
 	private static void endGuardImport()
 	{
-		localInstances.clear();
+		InstanceManager.clearLocallInstancesMap();
 		currentModel=null;
 		importing=false;
 	}
@@ -73,7 +73,7 @@ class MethodImporter extends AbstractMethodImporter {
 		{				
 			guardExpression=MethodImporter.getExpression(guardReturnValue);
 			
-			if(isInstanceCalculated(guardReturnValue))
+			if(InstanceManager.isInstanceCalculated(guardReturnValue))
 				guardExpression=guardExpression.substring(1,guardExpression.length()-1);
 					
 		}
@@ -85,7 +85,7 @@ class MethodImporter extends AbstractMethodImporter {
 
 	private static void initGuardImport(Model model, Method sourceMethod, StateMachine.Transition transitionInstance)
 	{
-		localInstances=InstancesMap.create();
+		InstanceManager.initLocalInstancesMap();
 		currentModel=model;
 		currentMethod=sourceMethod;
 		currentParameters=null;
@@ -104,7 +104,7 @@ class MethodImporter extends AbstractMethodImporter {
 		blockBodyFirstEdges=new Stack<ActivityEdge>();
 		cntDecisionNodes=0;
 		importing=true;
-		localInstances=InstancesMap.create();
+		InstanceManager.initLocalInstancesMap();
 		
 		ActivityNode initialNode=activity.createOwnedNode("initialNode",UMLPackage.Literals.INITIAL_NODE);	
 		lastNode=initialNode;
@@ -139,7 +139,7 @@ class MethodImporter extends AbstractMethodImporter {
 		ActivityNode finalNode=currentActivity.createOwnedNode("finalNode",UMLPackage.Literals.ACTIVITY_FINAL_NODE);
 		createControlFlowBetweenNodes(lastNode,finalNode);
 		
-		localInstances.clear();
+		InstanceManager.clearLocallInstancesMap();
 		currentActivity = null;
 		currentModel=null;
 		currentParameters=null;
@@ -197,12 +197,14 @@ class MethodImporter extends AbstractMethodImporter {
 			{
 				String fieldName=retName.substring(5);
 				returnValProviderAction=
-						createReadStructuralFeatureAction(selfInstance,fieldName,returnType);
+						createReadStructuralFeatureAction(InstanceManager.getSelfInstance(),fieldName,returnType);
 				outputPin=
 						((ReadStructuralFeatureAction) returnValProviderAction).
 						createResult(returnValProviderAction.getName()+"_result",returnType);
 			}
-			else if(isInstanceCalculated((ModelElement) returnObj) || isInstanceLiteral((ModelElement) returnObj))
+			else if(InstanceManager.isInstanceCalculated((ModelElement) returnObj) ||
+					InstanceManager.isInstanceLiteral((ModelElement) returnObj)
+				)
 			{
 				
 				String expression = getExpression ((ModelIdentifiedElement) returnObj);
@@ -238,12 +240,6 @@ class MethodImporter extends AbstractMethodImporter {
 		
 	}
 	
-	private static boolean isInstanceLiteral(ModelElement instance) {
-		
-		InstanceInformation instInfo=getInstanceInfo(instance);
-		return instInfo!=null && instInfo.isLiteral();
-	}
-
 	private static ActivityParameterNode createParameterNode(Parameter param,String paramName,Type paramType)
 	{
 		ActivityParameterNode paramNode= (ActivityParameterNode)
@@ -264,7 +260,7 @@ class MethodImporter extends AbstractMethodImporter {
 			currentParameters[i]=(ModelElement) DummyInstanceCreator.createDummyInstance(c);
 		
 			String argName="arg"+i;
-			localInstances.put(currentParameters[i],InstanceInformation.create(argName));
+			InstanceManager.createLocalInstancesMapEntry(currentParameters[i],InstanceInformation.create(argName));
 			Parameter param=ElementFinder.findParameterInActivity(argName,currentActivity);
 			if(param!=null)
 			{

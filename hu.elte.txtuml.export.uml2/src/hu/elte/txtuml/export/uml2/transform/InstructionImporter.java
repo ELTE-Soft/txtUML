@@ -14,6 +14,7 @@ import hu.elte.txtuml.export.uml2.utils.FieldValueAccessor;
 import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
+import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -148,8 +149,8 @@ public class InstructionImporter extends AbstractInstructionImporter {
 		if(currentActivity != null && !DummyInstanceCreator.isCreating())
 		{
 			String instanceName=createdInstance.getIdentifier();
-			localInstances.put(createdInstance, InstanceInformation.create(instanceName));
-			createLocalFieldsRecursively(createdInstance);
+			InstanceManager.createLocalInstancesMapEntry(createdInstance, InstanceInformation.create(instanceName));
+			InstanceManager.createLocalFieldsRecursively(createdInstance);
 			
 			//creating Create Object Action
 			CreateObjectAction createAction=(CreateObjectAction)
@@ -276,7 +277,7 @@ public class InstructionImporter extends AbstractInstructionImporter {
 			//e1.printStackTrace();
 		}
 		
-		localInstances.put(returnObj,returnValInfo);
+		InstanceManager.createLocalInstancesMapEntry(returnObj,returnValInfo);
 		
 		
 		return returnObj;
@@ -376,8 +377,7 @@ public class InstructionImporter extends AbstractInstructionImporter {
 		String expression=val.toString();
 		
 		InstanceInformation instInfo=InstanceInformation.createLiteral(expression);
-		
-		localInstances.put(inst,instInfo);
+		InstanceManager.createLocalInstancesMapEntry(inst,instInfo);
 	}
 
 	static Signal initAndGetSignalInstanceOfTransition(Transition target) {
@@ -389,8 +389,8 @@ public class InstructionImporter extends AbstractInstructionImporter {
 			FieldValueAccessor.setObjectFieldVal(target,"signal",signal);
 			
 			String signalName=signal.getClass().getSimpleName();
-			localInstances.put(signal,InstanceInformation.create(signalName));
-			createLocalFieldsRecursively(signal);
+			InstanceManager.createLocalInstancesMapEntry(signal,InstanceInformation.create(signalName));
+			InstanceManager.createLocalFieldsRecursively(signal);
 			
 		}
 		return signal;
