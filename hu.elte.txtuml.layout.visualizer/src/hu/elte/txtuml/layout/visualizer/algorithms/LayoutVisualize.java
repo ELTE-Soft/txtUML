@@ -81,10 +81,12 @@ public class LayoutVisualize
 	 * @param stats
 	 *            List of statements.
 	 * @throws UnknownStatementException
+	 *             Throws if an unknown statement is provided.
 	 * @throws ConversionException
 	 *             Throws if algorithm cannot convert certain type into
 	 *             other type (Missing Statement upgrade?).
 	 * @throws ConflictException
+	 *             Throws if there are some conflicts in the user statements.
 	 * @throws StatementTypeMatchException
 	 *             Throws if any of the statements are not in correct format.
 	 * @throws InternalException

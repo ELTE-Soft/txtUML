@@ -109,6 +109,31 @@ public class LineAssociation
 		_type = value;
 	}
 	
+	/**
+	 * Getter for a simplyfied route. (Removed straight points)
+	 * 
+	 * @return ArrayList of points.
+	 */
+	public ArrayList<Point> getMinimalRoute()
+	{
+		ArrayList<Point> result = Helper.clonePointList(_route);
+		
+		if (result.size() < 2)
+			return result;
+		
+		for (int i = 1; i < result.size() - 1; i++)
+		{
+			while (i < result.size() - 1
+					&& (result.get(i - 1).getX() == result.get(i + 1).getX() || result
+							.get(i - 1).getY() == result.get(i + 1).getY()))
+			{
+				result.remove(i);
+			}
+		}
+		
+		return result;
+	}
+	
 	/***
 	 * Getter for the Link's Route of Points.
 	 * 
