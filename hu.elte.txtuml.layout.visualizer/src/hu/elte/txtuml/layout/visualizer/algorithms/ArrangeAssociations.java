@@ -179,7 +179,6 @@ class ArrangeAssociations
 			}
 			catch (CannotStartAssociationRouteException e)
 			{
-				System.out.println("Outer Catch Start!");
 				repeat = true;
 				// Grid * 2, ObjectWidth * 2 + 1
 				_transformAmount = _transformAmount * 2;
@@ -189,7 +188,6 @@ class ArrangeAssociations
 			}
 			catch (CannotFindAssociationRouteException e)
 			{
-				System.out.println("Outer Catch Find!");
 				repeat = true;
 				_transformAmount = _transformAmount * 2;
 				if (doLargeObjects)
