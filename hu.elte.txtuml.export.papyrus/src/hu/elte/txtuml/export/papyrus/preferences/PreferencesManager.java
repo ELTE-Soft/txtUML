@@ -13,6 +13,7 @@ public class PreferencesManager{
 	
 	
 	
+	
 	private IPreferenceStore store;
 	private Map<String, Object> fieldsWithDefaultValues;
 	
@@ -30,6 +31,7 @@ public class PreferencesManager{
 	public static String TXTUML_VISUALIZE_TXTUML_MODEL = "txtUML Visualize txtUML Model";
 	public static String TXTUML_VISUALIZE_TXTUML_PROJECT = "txtUML Visualize txtUML Project";
 	public static String TXTUML_VISUALIZE_DESTINATION_FOLDER = "txtUML Visualize Destination Folder";
+	public static String TXTUML_VISUALIZE_TXTUML_LAYOUT = "txtUML Visualize txtUML Layout";
 	
 	public PreferencesManager() {
 		store = Activator.getDefault().getPreferenceStore();

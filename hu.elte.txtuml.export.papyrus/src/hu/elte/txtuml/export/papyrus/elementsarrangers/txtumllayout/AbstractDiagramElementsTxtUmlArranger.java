@@ -28,7 +28,6 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			int gapY = 20;
 			
 			List<String> statementsList = Arrays.asList(
-					"topmost("+getXmiId(elements.get(0))+")"
 				);		
 					
 			LayoutVisualizerManager vismanager = new LayoutVisualizerManager(elements, statementsList);

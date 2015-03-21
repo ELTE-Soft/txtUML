@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: txtUML Papyrus diagram generator plugin
-Bundle-SymbolicName: hu.elte.txtuml.papyrusdiagramgenerator;singleton:=true
+Bundle-SymbolicName: hu.elte.txtuml.export.papyrus;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: hu.elte.txtuml.export.papyrus.Activator
 Require-Bundle: org.eclipse.debug.ui,
@@ -18,6 +18,17 @@ Require-Bundle: org.eclipse.debug.ui,
  org.eclipse.papyrus.uml.diagram.statemachine,
  org.eclipse.papyrus.infra.core.log,
  org.eclipse.ui.ide,
- hu.elte.txtuml.layout.visualizer
+ hu.elte.txtuml.layout.visualizer,
+ hu.elte.txtuml.layout.export,
+ hu.elte.txtuml.api
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
+Export-Package: hu.elte.txtuml.export.papyrus,
+ hu.elte.txtuml.export.papyrus.elementsarrangers,
+ hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout,
+ hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout,
+ hu.elte.txtuml.export.papyrus.elementsmanagers,
+ hu.elte.txtuml.export.papyrus.graphics,
+ hu.elte.txtuml.export.papyrus.handlers,
+ hu.elte.txtuml.export.papyrus.preferences,
+ hu.elte.txtuml.export.papyrus.wizardz
