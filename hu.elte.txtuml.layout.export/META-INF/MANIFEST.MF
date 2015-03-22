@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: txtUML Layout Definitions
+Bundle-SymbolicName: hu.elte.txtuml.layout.export
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: ELTE
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: hu.elte.txtuml.layout.export
+Require-Bundle: hu.elte.txtuml.api;bundle-version="1.0.0",
+ hu.elte.txtuml.utils;bundle-version="1.0.0",
+ hu.elte.txtuml.layout.visualizer;bundle-version="1.0.0"

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/hu.elte.txtuml.feature_1.0.0.qualifier.jar" id="hu.elte.txtuml.feature" version="1.0.0.qualifier">
+      <category name="txtuml"/>
+   </feature>
+   <category-def name="txtuml" label="txtUML"/>
+</site>

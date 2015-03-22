@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: txtUML import from UML2
+Bundle-Name: txtUML Import from UML2
 Bundle-SymbolicName: hu.elte.txtuml.importing.uml2
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: ELTE

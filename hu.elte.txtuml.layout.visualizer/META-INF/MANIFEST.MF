@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Layout Visualizer
+Bundle-Name: txtUML Layout Visualizer
 Bundle-SymbolicName: hu.elte.txtuml.layout.visualizer
 Bundle-Version: 1.0.0.qualifier
 Export-Package: hu.elte.txtuml.layout.visualizer.algorithms,
