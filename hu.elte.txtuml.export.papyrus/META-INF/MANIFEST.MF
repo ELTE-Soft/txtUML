@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: txtUML Papyrus diagram generator plugin
+Bundle-Name: txtUML Papyrus visualizer
 Bundle-SymbolicName: hu.elte.txtuml.export.papyrus;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: hu.elte.txtuml.export.papyrus.Activator
