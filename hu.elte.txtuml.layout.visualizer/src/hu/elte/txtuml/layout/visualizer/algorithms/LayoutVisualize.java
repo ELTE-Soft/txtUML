@@ -185,7 +185,7 @@ public class LayoutVisualize
 			return;
 		
 		ArrangeAssociations aa = new ArrangeAssociations(_objects, _assocs,
-				_assocStatements, true);
+				_assocStatements);
 		_assocs = aa.value();
 		
 		// Transform objects according to link transformation

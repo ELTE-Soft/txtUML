@@ -1,5 +1,7 @@
 package hu.elte.txtuml.layout.visualizer.algorithms;
 
+import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Painted;
+import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Painted.Colors;
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
@@ -26,7 +28,6 @@ class ArrangeAssociations
 	private Integer _widthOfObjects;
 	private Integer _transformAmount;
 	private ArrayList<LineAssociation> _assocs;
-	private HashMap<Pair<String, RouteConfig>, Point> _modifies;
 	private HashMap<Pair<String, RouteConfig>, HashSet<Point>> _possibleStarts;
 	
 	/**
@@ -73,25 +74,8 @@ class ArrangeAssociations
 		
 		_transformAmount = 2;
 		_widthOfObjects = 1;
-		OLDarrange(diagramObjects, diagramAssocs, stats);
-	}
-	
-	public ArrangeAssociations(Set<RectangleObject> diagramObjects,
-			Set<LineAssociation> diagramAssocs, ArrayList<Statement> stats, boolean trynew)
-			throws ConversionException, InternalException,
-			CannotFindAssociationRouteException
-	{
-		if (diagramAssocs == null || diagramAssocs.size() == 0 || diagramAssocs == null
-				|| diagramAssocs.size() == 0)
-			return;
 		
-		_transformAmount = 2;
-		_widthOfObjects = 1;
-		
-		if (trynew)
-			arrange(diagramObjects, diagramAssocs, stats);
-		else
-			OLDarrange(diagramObjects, diagramAssocs, stats);
+		arrange(diagramObjects, diagramAssocs, stats);
 	}
 	
 	private void arrange(Set<RectangleObject> diagramObjects,
@@ -110,13 +94,12 @@ class ArrangeAssociations
 		diagramObjects = updateObjects(diagramObjects);
 		
 		Boolean repeat = true;
-		Boolean doLargeObjects = false;
 		
 		while (repeat)
 		{
 			// Process statements, priority and direction
 			processStatements(stats, diagramObjects);
-			Set<Point> occupiedLinks = new HashSet<Point>();
+			Set<Painted<Point>> occupiedLinks = new HashSet<Painted<Point>>();
 			repeat = false;
 			
 			try
@@ -131,27 +114,31 @@ class ArrangeAssociations
 					
 					Set<Point> STARTSET = setStartSet(
 							new Pair<String, RouteConfig>(a.getId(), RouteConfig.START),
-							START, WIDTH, occupiedLinks);
+							START, WIDTH, occupiedLinks.stream().map(p -> p.Inner)
+									.collect(Collectors.toSet()));
 					Set<Point> ENDSET = setEndSet(new Pair<String, RouteConfig>(
-							a.getId(), RouteConfig.END), END, WIDTH, occupiedLinks);
+							a.getId(), RouteConfig.END), END, WIDTH, occupiedLinks
+							.stream().map(p -> p.Inner).collect(Collectors.toSet()));
 					
 					// Assemble occupied points
-					Set<Point> OBJS = new HashSet<Point>();
+					Set<Painted<Point>> OBJS = new HashSet<Painted<Point>>();
 					OBJS.addAll(occupiedLinks);
 					// Add objects transformed place to occupied list
-					Set<Point> occupied = new HashSet<Point>();
+					Set<Painted<Point>> occupied = new HashSet<Painted<Point>>();
 					for (RectangleObject obj : diagramObjects)
 					{
 						if (END.equals(obj.getPosition()))
 							continue;
 						
 						for (Point p : obj.getPoints())
-							occupied.add(p);
+							occupied.add(new Painted<Point>(Colors.Red, p));
 					}
 					OBJS.addAll(occupied);
 					
 					// Maximum distance between objects
-					Integer top = Math.max(10 * calcMaxDistance(occupied), 10);
+					Integer top = Math.max(
+							10 * calcMaxDistance(occupied.stream().map(p -> p.Inner)
+									.collect(Collectors.toSet())), 10);
 					
 					// Search for the route
 					if (STARTSET.size() == 0 || ENDSET.size() == 0)
@@ -160,7 +147,7 @@ class ArrangeAssociations
 					}
 					
 					GraphSearch gs = new GraphSearch(START, STARTSET, END, ENDSET, OBJS,
-							null, null, top);
+							top);
 					a.setRoute(gs.value());
 					a.setTurns(gs.turns());
 					a.setExtends(gs.extendsNum());
@@ -173,7 +160,19 @@ class ArrangeAssociations
 					
 					for (int ri = 1; ri < a.getRoute().size() - 1; ++ri)
 					{
-						occupiedLinks.add(new Point(a.getRoute().get(ri)));
+						if (!Point.Substract(a.getRoute().get(ri - 1),
+								a.getRoute().get(ri)).equals(
+								Point.Substract(a.getRoute().get(ri),
+										a.getRoute().get(ri + 1))))
+						{
+							occupiedLinks.add(new Painted<Point>(Colors.Red, new Point(a
+									.getRoute().get(ri))));
+						}
+						else
+						{
+							occupiedLinks.add(new Painted<Point>(Colors.Yellow,
+									new Point(a.getRoute().get(ri))));
+						}
 					}
 				}
 			}
@@ -190,14 +189,10 @@ class ArrangeAssociations
 			{
 				repeat = true;
 				_transformAmount = _transformAmount * 2;
-				if (doLargeObjects)
-				{
-					diagramObjects = enlargeObjects(diagramObjects);
-				}
+				diagramObjects = enlargeObjects(diagramObjects);
 				_assocs = Helper.cloneLinkList(originalAssocs);
 				diagramObjects = updateObjects(diagramObjects);
 				transformAssocs();
-				doLargeObjects = !doLargeObjects;
 			}
 		}
 		
@@ -347,120 +342,6 @@ class ArrangeAssociations
 		return result;
 	}
 	
-	private void OLDarrange(Set<RectangleObject> diagramObjects,
-			Set<LineAssociation> diagramAssocs, ArrayList<Statement> stats)
-			throws ConversionException, InternalException,
-			CannotFindAssociationRouteException
-	{
-		Set<Point> occupiedLinks = new HashSet<Point>();
-		
-		_assocs = (ArrayList<LineAssociation>) diagramAssocs.stream().collect(
-				Collectors.toList());
-		_modifies = new HashMap<Pair<String, RouteConfig>, Point>();
-		// Transform everything to new dimensions (*2)
-		// Transform Links' start and end route point
-		for (int i = 0; i < _assocs.size(); ++i)
-		{
-			LineAssociation mod = _assocs.get(i);
-			ArrayList<Point> temp = mod.getRoute();
-			ArrayList<Point> route = new ArrayList<Point>();
-			for (Point p : temp)
-			{
-				route.add(transformDimension(p));
-			}
-			mod.setRoute(route);
-			_assocs.set(i, mod);
-		}
-		
-		// Process statements, priority and direction
-		if (stats != null && stats.size() != 0)
-		{
-			// Set priority
-			HashMap<String, Integer> priorityMap = setPriorityMap(stats);
-			
-			// Order based on priority
-			_assocs.sort((a1, a2) ->
-			{
-				if (priorityMap.containsKey(a1.getId()))
-				{
-					if (priorityMap.containsKey(a2.getId()))
-					{
-						Integer v = priorityMap.get(a1.getId());
-						Integer w = priorityMap.get(a2.getId());
-						return (v - w > 0) ? 1 : -1;
-					}
-					else
-						return -1;
-				}
-				else
-				{
-					if (priorityMap.containsKey(a2.getId()))
-						return 1;
-					else
-						return 0;
-				}
-			});
-			
-			// Set starts/ends for statemented assocs
-			setModified(stats, diagramObjects);
-		}
-		
-		// Search for the route of every Link
-		for (int i = 0; i < _assocs.size(); ++i)
-		{
-			LineAssociation a = _assocs.get(i);
-			Point START = a.getRoute(LineAssociation.RouteConfig.START);
-			Point END = a.getRoute(LineAssociation.RouteConfig.END);
-			Point BEFORE = _modifies.get(new Pair<String, RouteConfig>(a.getId(),
-					RouteConfig.START));
-			Point AFTER = _modifies.get(new Pair<String, RouteConfig>(a.getId(),
-					RouteConfig.END));
-			Set<Point> ENDSET = new HashSet<Point>();
-			
-			// Assemble occupied points
-			Set<Point> OBJS = new HashSet<Point>();
-			OBJS.addAll(occupiedLinks);
-			// Add objects transformed place to occupied list
-			Set<Point> occupied = new HashSet<Point>();
-			for (RectangleObject obj : diagramObjects)
-			{
-				if (obj.getName().equals(a.getTo()))
-					continue;
-				
-				for (Point p : obj.getPoints())
-					occupied.add(transformDimension(p));
-			}
-			OBJS.addAll(occupied);
-			// Maximum distance between objects
-			Integer top = 2 * calcMaxDistance(OBJS);
-			
-			// Search for the route
-			GraphSearch gs;
-			try
-			{
-				gs = new GraphSearch(START, null, END, ENDSET, OBJS, BEFORE, AFTER, top);
-				a.setRoute(gs.value());
-				a.setTurns(gs.turns());
-				a.setExtends(gs.extendsNum());
-			}
-			catch (CannotStartAssociationRouteException e)
-			{
-				throw new CannotFindAssociationRouteException(e.getMessage());
-			}
-			
-			_assocs.set(i, a);
-			
-			// Update occupied places with the route of this link
-			if (a.getRoute().size() < 3)
-				throw new InternalException("Route is shorter then 3!");
-			
-			for (int ri = 1; ri < a.getRoute().size() - 1; ++ri)
-			{
-				occupiedLinks.add(new Point(a.getRoute().get(ri)));
-			}
-		}
-	}
-	
 	private Integer calcMaxDistance(Set<Point> grid)
 	{
 		Integer maxval = 0;
@@ -589,30 +470,6 @@ class ArrangeAssociations
 		}
 	}
 	
-	private void setModified(ArrayList<Statement> stats, Set<RectangleObject> objs)
-			throws ConversionException
-	{
-		for (Statement s : stats)
-		{
-			if (s.getType().equals(StatementType.north))
-			{
-				modifyIfInList(s, Helper.asDirection(StatementType.north), objs);
-			}
-			else if (s.getType().equals(StatementType.south))
-			{
-				modifyIfInList(s, Helper.asDirection(StatementType.south), objs);
-			}
-			else if (s.getType().equals(StatementType.east))
-			{
-				modifyIfInList(s, Helper.asDirection(StatementType.east), objs);
-			}
-			else if (s.getType().equals(StatementType.west))
-			{
-				modifyIfInList(s, Helper.asDirection(StatementType.west), objs);
-			}
-		}
-	}
-	
 	private void generatePossiblePoints(LineAssociation toModify,
 			RectangleObject connectsTo, Point first, Direction toMove, RouteConfig r)
 	{
@@ -626,42 +483,6 @@ class ArrangeAssociations
 				toModify.getId(), r);
 		
 		_possibleStarts.put(key, points);
-	}
-	
-	private void modifyIfInList(Statement stat, Direction dir, Set<RectangleObject> objs)
-	{
-		
-		String nameOfAssoc = stat.getParameter(0);
-		// Search 'nameOfAssoc' in '_assocs'
-		LineAssociation toModify = _assocs.stream()
-				.filter(a -> a.getId().equals(nameOfAssoc)).collect(Collectors.toList())
-				.get(0);
-		Integer indexOfAssoc = _assocs.indexOf(toModify);
-		
-		String nameOfObject = stat.getParameter(1);
-		// Search 'nameOfObject' in 'objs'
-		RectangleObject ob = objs.stream().filter(o -> o.getName().equals(nameOfObject))
-				.collect(Collectors.toList()).get(0);
-		
-		ArrayList<Point> route = toModify.getRoute();
-		if (toModify.getRoute(RouteConfig.START).equals(
-				transformDimension(ob.getPosition())))
-		{
-			route.set(0, Point.Add(transformDimension(ob.getPosition()), dir));
-			_modifies.put(new Pair<String, LineAssociation.RouteConfig>(toModify.getId(),
-					RouteConfig.START), transformDimension(ob.getPosition()));
-		}
-		if (toModify.getRoute(RouteConfig.END).equals(
-				transformDimension(ob.getPosition())))
-		{
-			route.set(1, Point.Add(transformDimension(ob.getPosition()), dir));
-			_modifies.put(new Pair<String, LineAssociation.RouteConfig>(toModify.getId(),
-					RouteConfig.END), transformDimension(ob.getPosition()));
-		}
-		toModify.setRoute(route);
-		
-		// Set in List
-		_assocs.set(indexOfAssoc, toModify);
 	}
 	
 	private Point transformDimension(Point p)

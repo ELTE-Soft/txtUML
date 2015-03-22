@@ -3,6 +3,8 @@ package hu.elte.txtuml.layout.visualizer.algorithms;
 import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Cost;
 import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Graph;
 import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Link;
+import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Painted;
+import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Painted.Colors;
 import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Parent;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotStartAssociationRouteException;
@@ -27,10 +29,7 @@ class GraphSearch
 	private Set<Point> _startSet;
 	private Point _end;
 	private Set<Point> _endSet;
-	private Point _before;
-	private Point _after;
-	// private Point _trueEnd;
-	private Set<Point> _objects;
+	private Set<Painted<Point>> _objects;
 	private Integer _korlat;
 	private Integer _kiterjesztesek;
 	
@@ -146,10 +145,6 @@ class GraphSearch
 	 *            Set of end Points to reach.
 	 * @param os
 	 *            Points we have to skip (already occupied).
-	 * @param beforeS
-	 *            Point before starting point. Can be null.
-	 * @param afterE
-	 *            Point after ending point. Can be null.
 	 * @param top
 	 *            Upper bound of the maximum width of the graph to search in.
 	 * @throws CannotFindAssociationRouteException
@@ -158,8 +153,8 @@ class GraphSearch
 	 *             Throws if the alogirthm cannot even start the route from
 	 *             start.
 	 */
-	public GraphSearch(Point s, Set<Point> ss, Point e, Set<Point> es, Set<Point> os,
-			Point beforeS, Point afterE, Integer top)
+	public GraphSearch(Point s, Set<Point> ss, Point e, Set<Point> es,
+			Set<Painted<Point>> os, Integer top)
 			throws CannotFindAssociationRouteException,
 			CannotStartAssociationRouteException
 	{
@@ -180,23 +175,12 @@ class GraphSearch
 		g = new Cost();
 		g.set(_start, 0);
 		
-		_before = beforeS;
-		_after = afterE;
-		
 		PI = new Parent();
-		if (_before != null)
-		{
-			PI.set(_before, null);
-			PI.set(_start, _before);
-		}
-		else
-			PI.set(_start, null);
-		if (_after != null)
-			PI.set(_after, _end);
+		PI.set(_start, null);
 		
 		if (!search())
 		{
-			if (_before == null && !PI.hasChild(_start))
+			if (!PI.hasChild(_start))
 				throw new CannotStartAssociationRouteException("Cannot start from"
 						+ s.toString() + "!");
 			else
@@ -222,13 +206,6 @@ class GraphSearch
 			{
 				return true;
 			}
-			/*
-			 * else if (_endSet.contains(n))
-			 * {
-			 * PI.set(_end, n);
-			 * return true;
-			 * }
-			 */
 			
 			Nyilt.remove(n);
 			
@@ -295,7 +272,7 @@ class GraphSearch
 		ArrayList<Point> result = new ArrayList<Point>();
 		Point p = current;
 		
-		Point pointToReach = (_before != null) ? _before : _start;
+		Point pointToReach = _start;
 		do
 		{
 			result.add(p);
@@ -465,7 +442,20 @@ class GraphSearch
 			if (G.contains(n))
 				toberemoved.add(n);
 			else if (_objects.contains(n))
-				toberemoved.add(n);
+			{
+				if (_objects.stream().filter(p -> p.Inner.equals(n)).findFirst().get().Color
+						.equals(Colors.Red))
+				{
+					toberemoved.add(n);
+				}
+				else if (_objects.stream().filter(p -> p.Inner.equals(n)).findFirst()
+						.get().Color.equals(Colors.Yellow)
+						&& _objects.stream().filter(p -> p.Inner.equals(n)).findFirst()
+								.get().Color.equals(Colors.Yellow))
+				{
+					toberemoved.add(n);
+				}
+			}
 			else if (_korlat != -1
 					&& (Math.abs(n.getX()) > _korlat || Math.abs(n.getY()) > _korlat))
 				toberemoved.add(n);
@@ -482,7 +472,7 @@ class GraphSearch
 	public ArrayList<Point> value()
 	{
 		ArrayList<Point> result = new ArrayList<Point>();
-		Point pointToEnd = (_after != null) ? _after : _end;
+		Point pointToEnd = _end;
 		ArrayList<Point> temp = getCurrentRoute(pointToEnd);
 		
 		for (int i = temp.size() - 1; i >= 0; --i)
