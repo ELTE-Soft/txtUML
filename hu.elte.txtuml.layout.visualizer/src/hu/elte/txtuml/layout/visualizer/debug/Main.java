@@ -15,6 +15,7 @@ public class Main
 	 */
 	public static void main(String[] args)
 	{
+		long startTime = System.nanoTime();
 		System.out.println("Test:");
 		
 		// Algorithm.BellmanFordSP.test();
@@ -23,6 +24,8 @@ public class Main
 		// Algorithm.ArrangeAssociations.test();
 		// Algorithm.LayoutVisualize.usage();
 		hu.elte.txtuml.layout.visualizer.algorithms.LayoutVisualize.test();
+		long endTime = System.nanoTime();
+		double Time = (endTime - startTime) * 1000000000;
+		System.out.println("Took " + Time + " sec(s).");
 	}
-	
 }

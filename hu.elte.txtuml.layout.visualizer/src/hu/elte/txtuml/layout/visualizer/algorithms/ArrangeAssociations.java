@@ -93,6 +93,22 @@ class ArrangeAssociations
 		transformAssocs();
 		diagramObjects = updateObjects(diagramObjects);
 		
+		// Inflate diagram to start with a object width enough for the maximum
+		// number of links
+		Integer maxLinks = calculateMaxLinks(_assocs);
+		for (int i = 4; i <= maxLinks; i = i + 8)
+		{
+			if (_widthOfObjects == 1)
+			{
+				i = i - 8;
+			}
+			// Grid * 2, ObjectWidth * 2 + 1
+			_transformAmount = _transformAmount * 2;
+			diagramObjects = enlargeObjects(diagramObjects);
+			_assocs = Helper.cloneLinkList(originalAssocs);
+			transformAssocs();
+		}
+		
 		Boolean repeat = true;
 		
 		while (repeat)
@@ -143,7 +159,9 @@ class ArrangeAssociations
 					// Search for the route
 					if (STARTSET.size() == 0 || ENDSET.size() == 0)
 					{
-						throw new CannotStartAssociationRouteException();
+						// Cannot start or end
+						throw new CannotStartAssociationRouteException(
+								"Cannot get out of start, or cannot enter end!");
 					}
 					
 					GraphSearch gs = new GraphSearch(START, STARTSET, END, ENDSET, OBJS,
@@ -176,7 +194,8 @@ class ArrangeAssociations
 					}
 				}
 			}
-			catch (CannotStartAssociationRouteException e)
+			catch (CannotStartAssociationRouteException
+					| CannotFindAssociationRouteException e)
 			{
 				repeat = true;
 				// Grid * 2, ObjectWidth * 2 + 1
@@ -185,17 +204,43 @@ class ArrangeAssociations
 				_assocs = Helper.cloneLinkList(originalAssocs);
 				transformAssocs();
 			}
-			catch (CannotFindAssociationRouteException e)
+		}
+		
+	}
+	
+	private Integer calculateMaxLinks(ArrayList<LineAssociation> as)
+	{
+		// Gather data
+		HashMap<String, Integer> data = new HashMap<String, Integer>();
+		
+		for (LineAssociation a : as)
+		{
+			// From
+			if (data.containsKey(a.getFrom()))
 			{
-				repeat = true;
-				_transformAmount = _transformAmount * 2;
-				diagramObjects = enlargeObjects(diagramObjects);
-				_assocs = Helper.cloneLinkList(originalAssocs);
-				diagramObjects = updateObjects(diagramObjects);
-				transformAssocs();
+				data.put(a.getFrom(), data.get(a.getFrom()) + 1);
+			}
+			else
+			{
+				data.put(a.getFrom(), 1);
+			}
+			// To
+			if (data.containsKey(a.getTo()))
+			{
+				data.put(a.getTo(), data.get(a.getTo()) + 1);
+			}
+			else
+			{
+				data.put(a.getTo(), 1);
 			}
 		}
 		
+		// Find max
+		Integer max = data.entrySet().stream()
+				.max((e1, e2) -> Integer.compare(e1.getValue(), e2.getValue())).get()
+				.getValue();
+		
+		return max;
 	}
 	
 	private void transformAssocs()

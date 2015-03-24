@@ -30,8 +30,8 @@ class GraphSearch
 	private Point _end;
 	private Set<Point> _endSet;
 	private Set<Painted<Point>> _objects;
-	private Integer _korlat;
-	private Integer _kiterjesztesek;
+	private Integer _boundary;
+	private Integer _extends;
 	
 	private Graph G;
 	private Set<Point> Nyilt;
@@ -163,8 +163,8 @@ class GraphSearch
 		_end = e;
 		_endSet = new HashSet<Point>(es);
 		_objects = os;
-		_korlat = (top > 0) ? top : -1;
-		_kiterjesztesek = 0;
+		_boundary = (top > 0) ? top : -1;
+		_extends = 0;
 		
 		G = new Graph();
 		G.add(_start);
@@ -209,7 +209,7 @@ class GraphSearch
 			
 			Nyilt.remove(n);
 			
-			++_kiterjesztesek;
+			++_extends;
 			for (Point m : Gamma(n))
 			{
 				if (!G.contains(m) || g.get(n) + 1 < g.get(m))
@@ -417,19 +417,21 @@ class GraphSearch
 		ArrayList<Point> toberemoved = new ArrayList<Point>();
 		
 		// Add possible neighbors
-		// TODO HAAAACKS! (_startSet != null)
-		if (parent == _start && _startSet != null)
+		if (parent == _start)
 		{
+			// Starting edges
 			result.addAll(_startSet);
 			return result;
 		}
 		else if (_endSet.contains(parent))
 		{
+			// Ending edges
 			result.add(_end);
 			return result;
 		}
 		else
 		{
+			// Default
 			result.add(Point.Add(parent, Direction.north));
 			result.add(Point.Add(parent, Direction.east));
 			result.add(Point.Add(parent, Direction.south));
@@ -456,8 +458,8 @@ class GraphSearch
 					toberemoved.add(n);
 				}
 			}
-			else if (_korlat != -1
-					&& (Math.abs(n.getX()) > _korlat || Math.abs(n.getY()) > _korlat))
+			else if (_boundary != -1
+					&& (Math.abs(n.getX()) > _boundary || Math.abs(n.getY()) > _boundary))
 				toberemoved.add(n);
 		}
 		
@@ -506,7 +508,7 @@ class GraphSearch
 	
 	public Integer extendsNum()
 	{
-		return _kiterjesztesek;
+		return _extends;
 	}
 	
 }
