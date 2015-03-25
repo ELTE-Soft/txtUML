@@ -92,6 +92,7 @@ public class InstructionImporter extends AbstractInstructionImporter {
 		}
 		return ret;
 	}
+	
 	static <T extends ModelClass, AE extends hu.elte.txtuml.api.AssociationEnd<T> >
 		T importAssociationEnd_SelectOne(AE target) 
 	{
@@ -108,17 +109,17 @@ public class InstructionImporter extends AbstractInstructionImporter {
 		String phrase=target.getClass().getSimpleName();
 		String resultName=result.getIdentifier();
 
-
 		String startName=getAssociationEndOwner(target);		
 
 		OpaqueAction selectOneAction=	(OpaqueAction)
 				currentActivity.createOwnedNode("selectOne_"+startName+"."+phrase,UMLPackage.Literals.OPAQUE_ACTION);
 		String expression=startName+"."+phrase;
-		if(!hu.elte.txtuml.api.Association.One.class.isAssignableFrom(target.getClass()) &&
-				!hu.elte.txtuml.api.Association.MaybeOne.class.isAssignableFrom(target.getClass())   )
-		{
+		
+		if (!hu.elte.txtuml.api.Association.One.class.isAssignableFrom(target.getClass()) &&
+			!hu.elte.txtuml.api.Association.MaybeOne.class.isAssignableFrom(target.getClass())  
+		   )
 			expression+="->first()";
-		}
+	
 		selectOneAction.getBodies().add(expression);
 
 		createControlFlowBetweenNodes(lastNode, selectOneAction);
@@ -126,11 +127,10 @@ public class InstructionImporter extends AbstractInstructionImporter {
 		Association association=(Association) currentModel.getOwnedMember(assocClass.getSimpleName());
 		Property memberEnd=ElementFinder.findAssociationMemberEnd(association,phrase);
 		Type type=null;
-		if(memberEnd!=null)
-		{
-			type=memberEnd.getType();
-		}
 		
+		if(memberEnd!=null)
+			type=memberEnd.getType();
+	
 		OutputPin outputPin=selectOneAction.createOutputValue(selectOneAction.getName()+"_output", type);
 
 		Variable variable=currentActivity.createVariable(resultName,type);
@@ -186,10 +186,7 @@ public class InstructionImporter extends AbstractInstructionImporter {
 
 			//creating a join node for joining the two separate "threads"
 			lastNode = createJoinNode(startClassifierBehaviorAction,setVarAction);
-
-
 		}
-
 	}
 
 	private static void addParamsToCallAction
@@ -254,11 +251,10 @@ public class InstructionImporter extends AbstractInstructionImporter {
 		for(Object currArg : args)
 		{
 			String currArgExpr=getExpression((ModelIdentifiedElement)currArg);
-			if(argsProcessed>0)
-			{
-				expression+=",";
-			}
 			
+			if(argsProcessed>0)
+				expression+=",";
+
 			expression+=currArgExpr;		
 			
 			++argsProcessed;
@@ -324,7 +320,7 @@ public class InstructionImporter extends AbstractInstructionImporter {
 		Object fieldValue=FieldValueAccessor.getObjectFieldVal(target,fieldName);
 		if(fieldValue != null)
 		{
-			
+		
 		}
 		else
 		{
@@ -332,33 +328,30 @@ public class InstructionImporter extends AbstractInstructionImporter {
 			FieldValueAccessor.setObjectFieldVal(target,fieldName,fieldValue);
 		}
 		
-
 		return fieldValue;
 	}
 
 	static Object importModelClassFieldGet(ModelClass target, String fieldName, Class<?> fieldType)
 	{
 		return assignField(target,fieldName,fieldType);
-		
-
 	}
+	
 	static Object importExternalClassFieldGet(ExternalClass target, String fieldName, Class<?> fieldType)
 	{	
 		return assignField(target,fieldName,fieldType);
-		
 	}
 
 	static Object importModelClassFieldSet(ModelClass target, String fieldName, Object newValue)  
 	{
-		try{
-
+		try
+		{
 			Class<?> newValueClass = newValue.getClass();
 			Object fieldObj=assignField(target,fieldName,newValueClass);
 			if(currentActivity!=null)
+			
 			{
 				Type newValType=ModelImporter.importType(newValue.getClass());
 				setStructuralFeatureValue(target,fieldName,(ModelIdentifiedElement)newValue,newValType);
-
 			}
 			
 			return fieldObj;
@@ -380,9 +373,10 @@ public class InstructionImporter extends AbstractInstructionImporter {
 		InstanceManager.createLocalInstancesMapEntry(inst,instInfo);
 	}
 
-	static Signal initAndGetSignalInstanceOfTransition(Transition target) {
-	
+	static Signal initAndGetSignalInstanceOfTransition(Transition target)
+	{
 		Signal signal = (Signal) FieldValueAccessor.getObjectFieldVal(target,"signal");
+		
 		if(signal == null)
 		{
 			signal=MethodImporter.createSignal(target.getClass());
@@ -393,7 +387,7 @@ public class InstructionImporter extends AbstractInstructionImporter {
 			InstanceManager.createLocalFieldsRecursively(signal);
 			
 		}
+		
 		return signal;
 	}
-
 }

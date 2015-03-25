@@ -37,7 +37,8 @@ import org.eclipse.uml2.uml.Variable;
 
 abstract class AbstractMethodImporter extends AbstractImporter {
 
-	public static boolean isImporting() {
+	public static boolean isImporting()
+	{
 		return importing;
 	}
 
@@ -75,9 +76,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 
 		Variable variable=currentActivity.getVariable(targetInstanceName, type);
 		if(variable==null)
-		{
 			variable=currentActivity.createVariable(targetInstanceName,type);
-		}
 
 		AddVariableValueAction addVarValAction = createAddVarValAction(variable,targetInstanceName+":="+valueExpression);
 
@@ -120,9 +119,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		for(Property field:uml2Class.getAllAttributes())
 		{
 			if(field.getName().equals(fieldName))
-			{
 				return field;
-			}
 		}
 		return null;
 	}
@@ -141,21 +138,15 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		{
 			Integer val=Integer.parseInt(instInfo.getExpression());
 			if(val<0)
-			{
 				expression= "("+val.toString()+")";
-			}
 			else
-			{
 				expression=val.toString();
-			}
 		}
 		else
-		{
 			expression=instInfo.getExpression();
-		}
+		
 		return expression;
 	}
-
 
 	protected static String getExpression(ModelIdentifiedElement instance)
 	{
@@ -175,6 +166,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 			expression = instance.getIdentifier();
 		else
 			expression = "inst_"+System.identityHashCode(instance);
+		
 		return expression;
 	}
 
@@ -224,13 +216,9 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	protected static ActivityEdge createFlowBetweenNodes(ActivityNode source, ActivityNode target)
 	{
 		if(source instanceof ObjectNode || target instanceof ObjectNode)
-		{
 			return createObjectFlowBetweenNodes(source,target);
-		}
 		else
-		{
 			return createControlFlowBetweenNodes(source,target);
-		}
 	}
 
 	protected static ActivityEdge createControlFlowBetweenNodes(ActivityNode source,ActivityNode target)
@@ -240,9 +228,8 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		edge.setTarget(target);
 
 		if(cntBlockBodiesBeingImported>0 && blockBodyFirstEdges.size()<cntBlockBodiesBeingImported)
-		{
 			blockBodyFirstEdges.push(edge);
-		}
+		
 		if(source.equals(lastNode) && !unfinishedDecisionNodes.empty())
 		{
 			DecisionNode top=unfinishedDecisionNodes.peek();
@@ -260,10 +247,10 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		ActivityEdge edge=currentActivity.createEdge("objectflow_from_"+source.getName()+"_to_"+target.getName(), UMLPackage.Literals.OBJECT_FLOW);
 		edge.setSource(source);
 		edge.setTarget(target);
+		
 		if(cntBlockBodiesBeingImported>0 && blockBodyFirstEdges.size()<cntBlockBodiesBeingImported)
-		{
 			blockBodyFirstEdges.push(edge);
-		}
+		
 		return edge;
 	}
 
@@ -288,16 +275,16 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	
 	private static boolean isStringLiteral(ModelIdentifiedElement object)
 	{
-		if(!(object instanceof ModelString)) return false;
+		if(!(object instanceof ModelString)) 
+			return false;
 		else
 		{
 			ModelString modelString=(ModelString) object;
 			InstanceInformation info=InstanceManager.getInstanceInfo(modelString);
-			if(info == null) return false;
+			if(info == null) 
+				return false;
 			else
-			{
 				return info.isLiteral();
-			}
 			
 		}
 		
@@ -309,9 +296,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		if(value instanceof ModelString)
 		{
 			if(isStringLiteral(value))
-			{
 				addStringLiteralToValuePin(pin,expression);
-			}
 			else
 			{
 				Type type=ModelImporter.importType(value.getClass());
@@ -333,20 +318,14 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		if(value instanceof ModelString)
 		{
 			if(isStringLiteral(value))
-			{
 				addStringLiteralToValuePin(pin,expression);
-			}
 			else
-			{
 				addOpaqueExpressionToValuePin(pin,expression, type);
-			}
 		}
 		else
-		{
 			addOpaqueExpressionToValuePin(pin,expression, type);
-		}
-		
 	}
+	
 	protected static AddVariableValueAction createAddVarValAction(Variable var, String name)
 	{
 		AddVariableValueAction addVarValAction = (AddVariableValueAction)
@@ -364,7 +343,6 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		edge.setGuard(opaqueExpression);
 	}
 
-	
 	protected static boolean importing=false;
 	protected static ModelElement[] currentParameters=null;
 	protected static Method currentMethod=null;

@@ -13,6 +13,7 @@ class InstanceInformationImpl implements InstanceInformation {
 		this.calculated=calculated;
 		
 	}
+	
 	InstanceInformationImpl(String expression)
 	{
 		this(expression, false, false);
@@ -29,6 +30,7 @@ class InstanceInformationImpl implements InstanceInformation {
 	{
 		return literal;
 	}
+	
 	@Override
 	public boolean isCalculated()
 	{

@@ -3,8 +3,8 @@ package hu.elte.txtuml.export.uml2.transform.backend;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Profile;
 
-public class UMLPrimitiveTypes {
-
+public class UMLPrimitiveTypes 
+{
 	private static PrimitiveType UML2Integer;
 	private static PrimitiveType UML2Boolean;
 	private static PrimitiveType UML2String;
@@ -19,6 +19,7 @@ public class UMLPrimitiveTypes {
 		UML2Real=(PrimitiveType) profile.getImportedMember("Real");
 		UML2UnlimitedNatural=(PrimitiveType) profile.getImportedMember("UnlimitedNatural");	
 	}
+	
 	public static PrimitiveType getInteger()
 	{
 		return UML2Integer;

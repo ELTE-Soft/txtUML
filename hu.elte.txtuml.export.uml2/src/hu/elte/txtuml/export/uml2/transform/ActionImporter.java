@@ -29,11 +29,12 @@ import org.eclipse.uml2.uml.ValuePin;
 
 public class ActionImporter extends AbstractInstructionImporter {
 
-	private enum LinkTypes {
-
+	private enum LinkTypes 
+	{
 		CREATE_LINK_LITERAL,
 		DESTROY_LINK_LITERAL
 	}
+	
 	private static void addEndToLinkAction(LinkAction linkAction, Association association, 
 			String phrase, String instName,ModelClass obj,int endNum)
 	{
@@ -47,20 +48,17 @@ public class ActionImporter extends AbstractInstructionImporter {
 		LinkEndData end=linkAction.createEndData();
 		Property endProp=association.getOwnedEnd(phrase,endType);
 		end.setEnd(endProp);
-
 	}
 
 	static void importCreateLinkAction(Class<?> leftEnd, ModelClass leftObj,
 			Class<?> rightEnd, ModelClass rightObj)
 	{
-	
 		ActionImporter.importLinkAction(leftEnd,leftObj,rightEnd,rightObj,LinkTypes.CREATE_LINK_LITERAL);
 	}
 	
 	static void importDestroyLinkAction(Class<?> leftEnd, ModelClass leftObj,
 			Class<?> rightEnd, ModelClass rightObj)
 	{
-	
 		ActionImporter.importLinkAction(leftEnd,leftObj,rightEnd,rightObj,LinkTypes.DESTROY_LINK_LITERAL);
 	}
 	
@@ -99,7 +97,6 @@ public class ActionImporter extends AbstractInstructionImporter {
 			addEndToLinkAction(linkAction,association,rightPhrase,rightName,rightObj,2);
 			createControlFlowBetweenNodes(lastNode,linkAction);
 			lastNode=linkAction;
-
 		}
 	}
 
@@ -124,7 +121,6 @@ public class ActionImporter extends AbstractInstructionImporter {
 			{
 
 			}
-
 		}
 	}
 	
@@ -150,41 +146,33 @@ public class ActionImporter extends AbstractInstructionImporter {
 			createControlFlowBetweenNodes(lastNode,sendSignalAction);
 
 			lastNode=sendSignalAction;
-
 		}
-
 	}
 
 	private static String importCondition(Condition cond)
 	{
-
 		Activity currActivityBackup=currentActivity;
 		currentActivity=null;
 		ModelBool checkedCond=cond.check();
 		String ret= getExpression(checkedCond);
 		currentActivity=currActivityBackup;
 		return ret;
-
 	}
-
 
 	private static Pair<ActivityNode,ActivityEdge> createImportBlockBodyRetVal()
 	{
 		ActivityEdge firstEdge;
 		if(blockBodyFirstEdges.size()==cntBlockBodiesBeingImported)
-		{
 			firstEdge=blockBodyFirstEdges.pop();
-		}
 		else
-		{
 			firstEdge=null;
-		}
+
 		Pair<ActivityNode,ActivityEdge> ret=new Pair<>(lastNode,firstEdge);
 		return ret;
 	}
+	
 	private static Pair<ActivityNode,ActivityEdge> importBlockBody(BlockBody body)
 	{
-
 		++cntBlockBodiesBeingImported;
 
 		body.run();		
@@ -196,7 +184,6 @@ public class ActionImporter extends AbstractInstructionImporter {
 
 	private static <T> Pair<ActivityNode,ActivityEdge> importParameterizedBlockBody(ParameterizedBlockBody<T> body, T param)
 	{
-
 		++cntBlockBodiesBeingImported;
 
 		body.run(param);		
@@ -222,7 +209,6 @@ public class ActionImporter extends AbstractInstructionImporter {
 		createFlowBetweenNodes(thenLastNode,decisionNode);
 		unfinishedDecisionNodes.push(decisionNode);
 		lastNode=decisionNode;
-
 	}
 
 	static void importIfStatement(Condition cond, BlockBody thenBody)
@@ -232,14 +218,11 @@ public class ActionImporter extends AbstractInstructionImporter {
 		Pair<ActivityNode,ActivityEdge> importBlockBodyResult=importBlockBody(thenBody);
 		ActivityEdge thenFirstEdge=importBlockBodyResult.getValue();
 		ActivityNode thenLastNode=importBlockBodyResult.getKey();
-		if(thenFirstEdge!=null)
-		{
-			addGuardToActivityEdge(thenFirstEdge, condExpr);
-		}
 		
-
+		if(thenFirstEdge!=null)
+			addGuardToActivityEdge(thenFirstEdge, condExpr);
+		
 		lastNode=thenLastNode;
-
 	}
 
 	static void importIfStatement(Condition cond, BlockBody thenBody,BlockBody elseBody)
@@ -249,7 +232,6 @@ public class ActionImporter extends AbstractInstructionImporter {
 		createFlowBetweenNodes(lastNode,decisionNode);
 
 		lastNode=decisionNode;
-
 
 		Pair<ActivityNode,ActivityEdge> importThenBodyResult=importBlockBody(thenBody);
 		ActivityEdge thenFirstEdge=importThenBodyResult.getValue();
@@ -264,7 +246,6 @@ public class ActionImporter extends AbstractInstructionImporter {
 		addGuardToActivityEdge(elseFirstEdge, "else");
 
 		lastNode=createMergeNode(thenLastNode,elseLastNode);
-
 	}
 
 	static void importForStatement(ModelInt from, ModelInt to, ParameterizedBlockBody<ModelInt> body) 
@@ -286,16 +267,13 @@ public class ActionImporter extends AbstractInstructionImporter {
 		ActivityEdge thenFirstEdge=importThenBodyResult.getValue();
 		
 		if(thenFirstEdge!=null)
-		{
 			addGuardToActivityEdge(thenFirstEdge, condExpr);
-		}
 		
 		setVariableValue(loopVar, loopVarId+" + 1"); // inc loopVar by 1
 		createFlowBetweenNodes(lastNode,decisionNode);
 		
 		unfinishedDecisionNodes.push(decisionNode);
 		lastNode=decisionNode;
-
 	}
 
 	private static DecisionNode createNextDecisionNode()
@@ -303,6 +281,7 @@ public class ActionImporter extends AbstractInstructionImporter {
 		++cntDecisionNodes;
 		String name="decision"+cntDecisionNodes;
 		DecisionNode decisionNode=(DecisionNode) currentActivity.createOwnedNode(name,UMLPackage.Literals.DECISION_NODE);
+		
 		return decisionNode;
 	}
 
@@ -323,8 +302,6 @@ public class ActionImporter extends AbstractInstructionImporter {
 			createControlFlowBetweenNodes(lastNode,destroyAction);
 	
 			lastNode=destroyAction;
-	
 	    }
-	
 	}
 }

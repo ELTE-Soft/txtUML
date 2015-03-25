@@ -20,13 +20,9 @@ public final class ProfileCreator {
 	public static void createProfileForModel(String path, String modelName, ResourceSet resourceSet) throws ImportException
 	{
 		Profile profile = createProfile(path, modelName);
-
 		Model umlMetamodel = loadUMLMetamodelAndPrimitiveTypes(profile, resourceSet);
-		
 		createExternalClassStereotypeForProfile(profile, umlMetamodel);
-
 		defineAndSaveProfile(profile, modelName, resourceSet);
-		
 	}	
 	
  	private static void defineAndSaveProfile(Profile profile,String modelName, ResourceSet resourceSet) throws ImportException
@@ -43,13 +39,13 @@ public final class ProfileCreator {
 		try
 		{
 			resource.save(null);
-
 		} 
 		catch (IOException ioe)
 		{
 			throw new ImportException("I/O error occured during model import. Cannot save UML profile.");
 		}
  	}
+ 	
 	private static void createExternalClassStereotypeForProfile(Profile profile, Model umlMetamodel)
 	{
 		//creating the ExternalClass stereotype and an extension for it
@@ -91,6 +87,7 @@ public final class ProfileCreator {
 
 		return umlMetamodel;
 	}
+	
 	private static Profile createProfile(String path, String modelName)
 	{
 		Profile profile = UMLFactory.eINSTANCE.createProfile();
@@ -104,10 +101,10 @@ public final class ProfileCreator {
 		
 		return profile;
 	}
+	
 	private static org.eclipse.uml2.uml.Package loadResource(URI uri, ResourceSet resourceSet)
 	{
 		Resource resource=resourceSet.getResource(uri,true);
 		return (org.eclipse.uml2.uml.Package) EcoreUtil.getObjectByType(resource.getContents(),UMLPackage.Literals.PACKAGE);
 	}
-	
 }

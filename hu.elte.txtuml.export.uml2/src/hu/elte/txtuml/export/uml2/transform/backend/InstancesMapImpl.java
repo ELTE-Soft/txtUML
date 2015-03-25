@@ -5,8 +5,8 @@ import java.util.IdentityHashMap;
 @SuppressWarnings("serial")
 class InstancesMapImpl 
 extends IdentityHashMap<Object, InstanceInformation> 
-implements InstancesMap{
-
+implements InstancesMap
+{
 	InstancesMapImpl()
 	{
 		super();
@@ -15,12 +15,17 @@ implements InstancesMap{
 	@Override
 	public String toString()
 	{
-		String ret="";
+		StringBuilder strBuilder = new StringBuilder();
 		for(Object obj : this.keySet())
 		{
-			ret+="<"+System.identityHashCode(obj)+","+obj.getClass()+","+this.get(obj).getExpression()+">\n";
+			strBuilder.append("<");
+			strBuilder.append(System.identityHashCode(obj));
+			strBuilder.append(",");
+			strBuilder.append(obj.getClass());
+			strBuilder.append(",");
+			strBuilder.append(this.get(obj).getExpression());
+			strBuilder.append("\n");
 		}
-		return ret;
+		return strBuilder.toString();
 	}
-
 }

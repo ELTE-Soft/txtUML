@@ -15,7 +15,6 @@ import org.eclipse.uml2.uml.Type;
 
 class AssociationImporter extends AbstractImporter{
 	
-	
 	AssociationImporter(Class<?> sourceClass, Model currentModel)
 	{
 		this.sourceClass=sourceClass;
@@ -26,6 +25,7 @@ class AssociationImporter extends AbstractImporter{
 	{
 		return currentAssociation;
 	}
+	
 	Association importAssociation() throws ImportException
 	{
 	    List<Class<?> > classes = new LinkedList<Class<?> >(Arrays.asList(sourceClass.getDeclaredClasses()));
@@ -62,9 +62,7 @@ class AssociationImporter extends AbstractImporter{
 		int upperBound; 
 	    
 	    if(hu.elte.txtuml.api.semantics.Multiplicity.One.class.isAssignableFrom(sourceClass))
-		{
 			lowerBound=upperBound=1;
-		}
 		else if(hu.elte.txtuml.api.semantics.Multiplicity.ZeroToOne.class.isAssignableFrom(sourceClass))
 		{
 			lowerBound=0;
@@ -81,9 +79,7 @@ class AssociationImporter extends AbstractImporter{
 			upperBound= org.eclipse.uml2.uml.LiteralUnlimitedNatural.UNLIMITED;
 		}
 		else
-		{
 			throw new ImportException("Association end "+sourceClass.getName()+" has invalid multiplicity.");            
-		}
 	    
 	    boolean navigable;
 	    

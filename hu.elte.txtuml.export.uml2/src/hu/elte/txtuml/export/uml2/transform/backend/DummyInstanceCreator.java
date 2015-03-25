@@ -11,12 +11,13 @@ public final class DummyInstanceCreator {
 	{
 		return creating;
 	}
+	
 	@SuppressWarnings("unchecked")
 	public static <T> T createDummyInstance(Class<T> typeClass)
 	{
-		
 		creating = true;
 		T createdObject;
+		
 		if(typeClass.isInterface())
 		{
 			createdObject=(T) java.lang.reflect.Proxy.newProxyInstance(
@@ -26,9 +27,8 @@ public final class DummyInstanceCreator {
 					);
 		}
 		else
-		{
 			createdObject=InstanceCreator.createInstance(typeClass);	
-		}
+
 		creating=false;
 		return createdObject;
 	}
@@ -48,9 +48,8 @@ public final class DummyInstanceCreator {
 					);
 		}
 		else
-		{
 			createdObject=InstanceCreator.createInstanceWithGivenParams(typeClass,owner);	
-		}
+
 		creating = false;
 		return createdObject;
 	}

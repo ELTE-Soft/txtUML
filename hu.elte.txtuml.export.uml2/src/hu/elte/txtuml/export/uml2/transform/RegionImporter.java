@@ -151,10 +151,8 @@ class RegionImporter extends AbstractImporter {
 							sourceClass.getName() + "." + c.getSimpleName() + " cannot be a state and a transition at the same time"
 							);
 				}		
-				importTransition(c);
-				
-	        }
-	         
+				importTransition(c);			
+	        }       
 	    }
 		return region;
 	}
@@ -164,20 +162,14 @@ class RegionImporter extends AbstractImporter {
 		if(ElementTypeTeller.isInitialState(state))
         {
 			if (containsInitialState(region)) 
-			{
             	throw new ImportException(sourceClass.getName() + " has two initial states");
-			}
+
 			return createInitialState(state);
         }
 		else if(ElementTypeTeller.isChoice(state))
-		{
 			return createChoice(state);
-		}
 		else
-		{
-			return region.createSubvertex(state.getSimpleName(),UMLPackage.Literals.STATE);
-		}
-			
+			return region.createSubvertex(state.getSimpleName(),UMLPackage.Literals.STATE);		
 	}
 	
 	private Vertex createInitialState(Class<?> state)
@@ -226,6 +218,7 @@ class RegionImporter extends AbstractImporter {
 	        trigger.setEvent((Event) currentModel.getPackagedElement(eventName+"_event"));
 	     }
 	}
+	
 	private void importEffectAction
 		(Class<?> transitionClass,org.eclipse.uml2.uml.Transition importedTransition, StateMachine.Transition transitionInstance)
 	{
@@ -263,7 +256,8 @@ class RegionImporter extends AbstractImporter {
 			importedTransition.setGuard(constraint);
 
 		}
-		catch (NoSuchMethodException e) {
+		catch (NoSuchMethodException e) 
+		{
 			//no guard for this transition -> do nothing
 		} 
 		

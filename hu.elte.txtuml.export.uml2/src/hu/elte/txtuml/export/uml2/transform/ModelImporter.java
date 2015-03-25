@@ -81,7 +81,6 @@ public class ModelImporter extends AbstractImporter{
 	{
 		importClassesAndSignals();
 		importAssociations();
-		importSignals();
 		importGeneralizations();
 		importClassifierAttributes();
 		importMemberFunctionsWithoutBodies();
@@ -107,13 +106,9 @@ public class ModelImporter extends AbstractImporter{
 		for(Class<?> c : modelClass.getDeclaredClasses())
 		{
 			if(!ElementTypeTeller.isModelElement(c))
-			{
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
-			}
 			else if(ElementTypeTeller.isSpecificClassifier(c))	 
-			{
 				createGeneralization(c,c.getSuperclass());
-			}
 		}
 	}
 	
@@ -133,10 +128,10 @@ public class ModelImporter extends AbstractImporter{
 		try 
 		{
 			Class<?> ret = Class.forName(className);
+			
 			if(!hu.elte.txtuml.api.Model.class.isAssignableFrom(ret))
-			{
 				throw new ImportException("A subclass of Model is expected, got: " + className);
-			}
+			
 			return ret;
 		}
 		catch(ClassNotFoundException e) 
@@ -181,13 +176,9 @@ public class ModelImporter extends AbstractImporter{
 		for(Class<?> c : modelClass.getDeclaredClasses()) {
 			
 			if(!ElementTypeTeller.isModelElement(c))
-			{
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
-			}
 			else if(ElementTypeTeller.isClassifier(c))
-			{
 				importClassifier(c);
-			}	
 		}
 	}
 	
@@ -196,31 +187,12 @@ public class ModelImporter extends AbstractImporter{
 		for(Class<?> sourceClass : modelClass.getDeclaredClasses()) 
 		{
 			if(!ElementTypeTeller.isModelElement(sourceClass))
-			{
 				throw new ImportException(sourceClass.getName()+" is a non-txtUML class found in model.");
-			}
 			else if(ElementTypeTeller.isAssociation(sourceClass)) 
-			{
 				new AssociationImporter(sourceClass,currentModel).importAssociation();
-			}
 		}
 	}	
-	
-	private static void importSignals() throws ImportException
-	{
-		for(Class<?> c : modelClass.getDeclaredClasses()) 
-		{
-			if(!ElementTypeTeller.isModelElement(c))
-			{
-				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
-			}
-			if(ElementTypeTeller.isEvent(c)) 
-			{
-				createSignalAndSignalEvent(c);
-			}
-		}
-	}
-	
+		
 	private static void createSignalAndSignalEvent(Class<?> sourceClass) throws ImportException
 	{
 		Signal signal = (Signal)currentModel.createOwnedType(sourceClass.getSimpleName(),UMLPackage.Literals.SIGNAL);
@@ -234,9 +206,7 @@ public class ModelImporter extends AbstractImporter{
 		for(Class<?> c : modelClass.getDeclaredClasses()) 
 		{
 			if(!ElementTypeTeller.isModelElement(c))
-			{
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
-			}
 			else if(ElementTypeTeller.isClassifier(c)) 
 			{
 				org.eclipse.uml2.uml.Classifier classifier=
@@ -245,9 +215,7 @@ public class ModelImporter extends AbstractImporter{
 				for(Field f : c.getDeclaredFields()) 
 				{		
 	                if(ElementTypeTeller.isAttribute(f)) 
-	                {
 	                	importAttribute(classifier,f);
-	                }
 	            }
 			}
 		}
@@ -259,43 +227,29 @@ public class ModelImporter extends AbstractImporter{
     	org.eclipse.uml2.uml.Type fieldType=importType(field.getType());
     	
     	Property property=null;
+    	
     	if(owner instanceof Signal)
-    	{
     		property=((Signal) owner).createOwnedAttribute(fieldName,fieldType);
-    	}
     	else if(owner instanceof org.eclipse.uml2.uml.Class)
-    	{
     		property=((org.eclipse.uml2.uml.Class) owner).createOwnedAttribute(fieldName,fieldType);
-    	}
     	else
-    	{
     		throw new ImportException(owner.getName()+" is not a Class nor a Signal.");
-    	}
+    	
     	ElementModifiersAssigner.setModifiers(property,field);
     }
     
     static org.eclipse.uml2.uml.Type importType(Class<?> sourceClass) 
     {
         if(sourceClass == ModelInt.class) 
-        {
         	return UMLPrimitiveTypes.getInteger();
-        }
         else if(sourceClass == ModelBool.class) 
-        {
         	return UMLPrimitiveTypes.getBoolean();
-        }
         else if(sourceClass == ModelString.class) 
-        {
         	return UMLPrimitiveTypes.getString();
-        }
         else if(ElementTypeTeller.isClass(sourceClass))
-        {
         	return currentModel.getOwnedType(sourceClass.getSimpleName());
-        }
         else
-        {
         	return null;
-        }
     }
 	
     private static void importMemberFunctionsWithoutBodies() throws ImportException
@@ -303,13 +257,9 @@ public class ModelImporter extends AbstractImporter{
 		for(Class<?> c : modelClass.getDeclaredClasses()) 
 		{
 			if(!ElementTypeTeller.isModelElement(c))
-			{
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
-			}
 			if(ElementTypeTeller.isModelClass(c)) 
-			{
 				createClassMemberFunctions(c);
-			}
 		}
     }
 
@@ -364,11 +314,9 @@ public class ModelImporter extends AbstractImporter{
   	{
 		for(Class<?> innerClass:sourceClass.getDeclaredClasses())
 		{
+			//innerClass is an event and no signal in the model has the same name
 			if(ElementTypeTeller.isEvent(innerClass) && currentModel.getOwnedType(innerClass.getSimpleName())==null)
-			{
-				//innerClass is an event and no signal in the model has the same name
 				createSignalAndSignalEvent(innerClass);		
-			}
 		}
   	}
 
@@ -381,8 +329,6 @@ public class ModelImporter extends AbstractImporter{
         		(sourceClass,InstanceManager.getSelfInstance(),currentModel,stateMachine.createRegion(stateMachine.getName()))
         		.importRegion();
         
-        
-       
         if(region.getSubvertices().size() != 0 && !containsInitialState(region)) 
         {
         	importWarning(sourceClass.getName() + " has one or more states but no initial state (state machine will not be created)");
@@ -397,8 +343,7 @@ public class ModelImporter extends AbstractImporter{
 		Activity activity=(Activity) ownerClass.createOwnedBehavior(sourceMethod.getName(),UMLPackage.Literals.ACTIVITY);
 		activity.setSpecification(operation);
 		MethodImporter.importMethod(currentModel,activity,sourceMethod,InstanceManager.getSelfInstance());
-		
-		
+
 		return activity;
 	}
 	
@@ -425,7 +370,6 @@ public class ModelImporter extends AbstractImporter{
 			paramTypes.add(paramType);
 			paramNames.add("arg"+i);
 			++i;
-		
 		}
 	
 		return ownerClass.createOwnedOperation(sourceMethod.getName(),paramNames,paramTypes);

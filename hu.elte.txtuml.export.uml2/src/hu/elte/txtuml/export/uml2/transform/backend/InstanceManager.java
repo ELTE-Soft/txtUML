@@ -33,6 +33,7 @@ public class InstanceManager {
 	{
 		localInstances.put(instance, instanceInfo);
 	}
+	
 	public static void initLocalInstancesMap()
 	{
 		localInstances = InstancesMap.create();
@@ -62,17 +63,13 @@ public class InstanceManager {
 	  			InstanceInformation elementInfo = InstanceInformation.create(fieldExpr);
 	  			if(fieldInst != null)
 	  			{
-	
 	  				instancesMap.put(fieldInst,elementInfo);
 	  				
 	  	  			if(ElementTypeTeller.isClassifier(fieldType))
 	  	  				createFieldsRecursively(fieldInst,local);
-	  	  			
 	  			}
-	  			
 	  		}
 		}
-		
 	}
 
 	public static void createLocalFieldsRecursively(Object classifier)
@@ -134,10 +131,12 @@ public class InstanceManager {
 	{
 		InstanceInformation instInfo=getInstanceInfo(instance);
 		boolean calculated;
+		
 		if(instInfo==null)
 			calculated=false;
 		else 
 			calculated =instInfo.isCalculated();
+		
 		return calculated;
 	}
 
@@ -145,5 +144,4 @@ public class InstanceManager {
 	private static InstancesMap classAndFieldInstances;
 	private static InstancesMap localInstances;
 	private static ModelClass selfInstance=null;
-	
 }
