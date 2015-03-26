@@ -1,14 +1,11 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
-import java.util.HashMap;import java.util.List;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Stream;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gef.EditPart;
-import org.eclipse.jdt.core.dom.ReturnStatement;
 
 /**
  * Represents a Transformer, considering the unity scale.

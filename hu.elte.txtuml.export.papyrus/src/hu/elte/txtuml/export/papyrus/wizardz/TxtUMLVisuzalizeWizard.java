@@ -49,7 +49,6 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 		final String txtUMLProjectName = selectTxtUmlPage.getTxtUmlProject();
 		final String folder = preferncesManager.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
 		final String txtUMLExportProjectname = "hu.elte.txtuml.export.uml2"; // TODO Place in preferences
-		String txtUMLExport =  txtUMLExportProjectname+".UML2";
 		
 		
 		/******** Diagram Layout ************
