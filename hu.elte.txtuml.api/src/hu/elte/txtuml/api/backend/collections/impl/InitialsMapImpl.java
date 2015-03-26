@@ -1,14 +1,14 @@
 package hu.elte.txtuml.api.backend.collections.impl;
 
-import hu.elte.txtuml.api.StateMachine.InitialState;
-import hu.elte.txtuml.api.backend.collections.InitialStatesMap;
+import hu.elte.txtuml.api.StateMachine.Initial;
+import hu.elte.txtuml.api.backend.collections.InitialsMap;
 
 import java.util.HashMap;
 
 @SuppressWarnings("serial")
-public class InitialStatesMapImpl extends
-		HashMap<Class<?>, Class<? extends InitialState>> implements
-		InitialStatesMap {
+public class InitialsMapImpl extends
+		HashMap<Class<?>, Class<? extends Initial>> implements
+		InitialsMap {
 
 	@Override
 	public String toString() {

@@ -49,7 +49,7 @@ public class InstructionImporter extends AbstractInstructionImporter {
 		T result=(T) DummyInstanceCreator.createDummyInstance(resultClass);
 
 		String resultName=result.getIdentifier();
-		String startName=target.getIdentifier();
+		String startName=getObjectIdentifier(target);
 
 		OpaqueAction selectOneAction=	(OpaqueAction)
 				currentActivity.createOwnedNode("selectOne_"+startName,UMLPackage.Literals.OPAQUE_ACTION);

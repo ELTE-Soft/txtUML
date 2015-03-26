@@ -54,7 +54,7 @@ public final class ElementTypeTeller {
     }
 
 	public static boolean isInitialState(Class<?> c) {
-        return StateMachine.InitialState.class.isAssignableFrom(c);
+        return StateMachine.Initial.class.isAssignableFrom(c);
     }
 
 	public static boolean isCompositeState(Class<?> c) {

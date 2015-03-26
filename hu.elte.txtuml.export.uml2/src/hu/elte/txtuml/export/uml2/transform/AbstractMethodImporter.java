@@ -163,7 +163,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 				expression = instInfo.getExpression();
 		}
 		else if(instance instanceof ModelClass)
-			expression = instance.getIdentifier();
+			expression = ((ModelClass) instance).getIdentifier();
 		else
 			expression = "inst_"+System.identityHashCode(instance);
 		
@@ -178,7 +178,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		if(instInfo != null && !instInfo.isLiteral() && !instInfo.isCalculated())
 			expression = instInfo.getExpression();
 		else if(instance instanceof ModelClass)
-			expression = instance.getIdentifier();
+			expression = ((ModelClass) instance).getIdentifier();
 		else
 			expression = "inst_"+System.identityHashCode(instance);
 		

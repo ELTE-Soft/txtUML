@@ -27,7 +27,7 @@ public class CodeGenerator {
 	}
 
 	public String PseudostateInString(Pseudostate ps) {
-		return "class " + ps.getName() + " extends InitialState {";
+		return "class " + ps.getName() + " extends Initial {";
 	}
 
 	public String StateInString(State s) {

@@ -9,7 +9,35 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	StateMachine() {
 	}
 
-	public class State implements ModelElement, LayoutNode {
+	public class Vertex implements ModelElement, LayoutNode {
+		
+		Vertex() {
+		}
+		
+		String vertexIdentifier() {
+			return getClass().getSimpleName();
+		}
+
+		@Override
+		public String toString() {
+			return "vertex: " + vertexIdentifier();
+		}
+
+	}
+	
+	public class Pseudostate extends Vertex {
+		
+		Pseudostate() {
+		}
+
+		@Override
+		public String toString() {
+			return "pseudostate: " + vertexIdentifier();
+		}
+		
+	}
+	
+	public class State extends Vertex {
 
 		protected State() {
 		}
@@ -20,20 +48,16 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		public void exit() {
 		}
 
-		String stateIdentifier() {
-			return getClass().getSimpleName();
-		}
-
 		@Override
 		public String toString() {
-			return "state:" + stateIdentifier();
+			return "state: " + vertexIdentifier();
 		}
 
 	}
 
-	public class InitialState extends State {
+	public class Initial extends State {
 
-		protected InitialState() {
+		protected Initial() {
 		}
 
 		public final void entry() {
@@ -44,7 +68,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 		@Override
 		public String toString() {
-			return "initial " + super.toString();
+			return "initial: " + super.toString();
 		}
 
 	}
@@ -56,7 +80,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 		@Override
 		public String toString() {
-			return "composite " + super.toString();
+			return "composite state: " + super.toString();
 		}
 
 	}
@@ -74,7 +98,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 		@Override
 		public String toString() {
-			return "choice:" + stateIdentifier();
+			return "choice:" + vertexIdentifier();
 		}
 
 	}
@@ -95,12 +119,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 		@SuppressWarnings("unchecked")
 		protected final <T extends Signal> T getSignal() {
-			// TODO: The following two lines create an unwanted dependency
-			// between the API and the Importer.
-			// Can it be eliminated by AspectJ tricks?
-			// if (signal == null && MethodImporter.isImporting()) {
-			// signal = MethodImporter.createSignal(getClass());
-			// }
 			return (T) signal;
 		}
 

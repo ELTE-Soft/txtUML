@@ -32,8 +32,7 @@ public interface Collection<T extends ModelClass> extends
 	// - selectAll(ParameterizedCondition<T>)
 	// - add(T)
 
-	public static class Empty<T extends ModelClass> extends
-			ModelIdentifiedElementImpl implements Collection<T> {
+	public static class Empty<T extends ModelClass> implements Collection<T> {
 		@Override
 		public Iterator<T> iterator() {
 			return new Iterator<T>() {

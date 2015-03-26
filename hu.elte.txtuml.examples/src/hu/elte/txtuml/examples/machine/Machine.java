@@ -8,7 +8,7 @@ class MachineModel extends Model {
 	class Machine extends ModelClass {
 		ModelInt tasksTodo = new ModelInt(2);
 
-		class Init extends InitialState {}
+		class Init extends Initial {}
 		
 		class Off extends State {
 			@Override public void entry() {
@@ -27,7 +27,7 @@ class MachineModel extends Model {
 	        	Action.log("Exits state: 'on'");
             }
 			
-			class Init extends InitialState {}
+			class Init extends Initial {}
 
 			class Active extends State {
 				@Override public void entry() {

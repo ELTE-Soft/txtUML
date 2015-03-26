@@ -6,11 +6,11 @@ import hu.elte.txtuml.examples.train.TrainModel.*;
 class TrainModel {
 	
 	class Gearbox extends ModelClass {
-		class Init extends InitialState {}
+		class Init extends Initial {}
 		
 		class Neutral extends State {}
 		class Forwards extends CompositeState {
-			class FInit extends InitialState {}
+			class FInit extends Initial {}
 			class F1 extends State {}
 			class F2 extends State {}
 
@@ -22,7 +22,7 @@ class TrainModel {
 			class F2_F1 extends Transition {}
 		}
 		class Backwards extends CompositeState {
-			class BInit extends InitialState {}
+			class BInit extends Initial {}
 			class B1 extends State {}
 			class B2 extends State {}
 
@@ -65,7 +65,7 @@ class TrainModel {
 	}
 	
 	class Engine extends ModelClass {
-		class Init extends InitialState {}
+		class Init extends Initial {}
 		class Stopped extends State {}
 		class Working extends State {}
 		
@@ -78,7 +78,7 @@ class TrainModel {
 	}
 
 	class Lamp extends ModelClass {
-		class Init extends InitialState {}
+		class Init extends Initial {}
 		class Dark extends State {}
 		class Light extends State {}
 		

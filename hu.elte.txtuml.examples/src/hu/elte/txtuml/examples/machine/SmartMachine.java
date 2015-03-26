@@ -8,7 +8,7 @@ class SmartMachineModel extends Model {
 	class Machine extends ModelClass {
 		ModelInt tasksTodo = new ModelInt(3);
 
-		class Init extends InitialState {}
+		class Init extends Initial {}
 		
 		class Off extends State {
 			@Override public void entry() {
@@ -27,7 +27,7 @@ class SmartMachineModel extends Model {
 	        	Action.log("Machine: leaving state: 'on'");
             }
 			
-			class Init extends InitialState {}
+			class Init extends Initial {}
 
 			class Active extends State {
 				@Override public void entry() {
@@ -119,7 +119,7 @@ class SmartMachineModel extends Model {
 			Action.log("Hello, I am " + name.toString());
 		}
 		
-		class Init extends InitialState {}
+		class Init extends Initial {}
 		class NotWorking extends State {}
 		class WhereToGo extends Choice {}
 		

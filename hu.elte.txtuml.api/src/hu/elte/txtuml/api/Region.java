@@ -1,17 +1,19 @@
 package hu.elte.txtuml.api;
 
-import hu.elte.txtuml.api.backend.collections.InitialStatesMap;
+import hu.elte.txtuml.api.backend.collections.InitialsMap;
 
 public abstract class Region extends StateMachine {
 
-	private static InitialStatesMap initialStates = InitialStatesMap.create();
+	private static InitialsMap initials = InitialsMap.create();
 
 	private State currentState;
 
+	public abstract String getIdentifier(); 
+	
 	Region() {
 		super();
 
-		Class<? extends InitialState> initStateClass = getInitialState(getClass());
+		Class<? extends Initial> initStateClass = getInitialState(getClass());
 		if (initStateClass != null) {
 			currentState = getInnerClassInstance(initStateClass);
 		} else {
@@ -263,7 +265,7 @@ public abstract class Region extends StateMachine {
 	private void callEntryAction() {
 		currentState.entry();
 		if (currentState instanceof CompositeState) {
-			Class<? extends InitialState> initStateClass = getInitialState(currentState
+			Class<? extends Initial> initStateClass = getInitialState(currentState
 					.getClass());
 			if (initStateClass != null) {
 				if (ModelExecutor.Settings.executorLog()) {
@@ -279,21 +281,21 @@ public abstract class Region extends StateMachine {
 		}
 	}
 
-	static Class<? extends InitialState> getInitialState(Class<?> forWhat) {
-		synchronized (initialStates) {
-			if (initialStates.containsKey(forWhat)) {
-				return initialStates.get(forWhat);
+	static Class<? extends Initial> getInitialState(Class<?> forWhat) {
+		synchronized (initials) {
+			if (initials.containsKey(forWhat)) {
+				return initials.get(forWhat);
 			}
 			for (Class<?> c : forWhat.getDeclaredClasses()) {
-				if (InitialState.class.isAssignableFrom(c)) {
+				if (Initial.class.isAssignableFrom(c)) {
 					@SuppressWarnings("unchecked")
 					// it is checked
-					Class<? extends InitialState> ret = (Class<? extends InitialState>) c;
-					initialStates.put(forWhat, ret);
+					Class<? extends Initial> ret = (Class<? extends Initial>) c;
+					initials.put(forWhat, ret);
 					return ret;
 				}
 			}
-			initialStates.put(forWhat, null);
+			initials.put(forWhat, null);
 			return null;
 		}
 	}

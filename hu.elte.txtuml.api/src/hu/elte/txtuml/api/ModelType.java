@@ -1,7 +1,7 @@
 package hu.elte.txtuml.api;
 
-public abstract class ModelType<T> extends ModelIdentifiedElementImpl implements
-		ModelElement, ModelIdentifiedElement {
+public abstract class ModelType<T> implements ModelElement,
+		ModelIdentifiedElement {
 
 	private final T value;
 

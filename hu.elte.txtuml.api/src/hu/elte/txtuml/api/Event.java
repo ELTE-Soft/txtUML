@@ -1,6 +1,6 @@
 package hu.elte.txtuml.api;
 
-public class Event extends ModelIdentifiedElementImpl implements ModelElement,
+public class Event implements ModelElement,
 		ModelIdentifiedElement {
 
 	Event() {

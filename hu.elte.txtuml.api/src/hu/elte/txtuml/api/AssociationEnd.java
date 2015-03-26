@@ -2,8 +2,8 @@ package hu.elte.txtuml.api;
 
 import hu.elte.txtuml.api.backend.problems.MultiplicityException;
 
-public abstract class AssociationEnd<T extends ModelClass> extends
-		ModelIdentifiedElementImpl implements Collection<T> {
+public abstract class AssociationEnd<T extends ModelClass> implements
+		Collection<T> {
 
 	protected boolean isFinal = true;
 	private ModelIdentifiedElement owner;

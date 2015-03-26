@@ -28,7 +28,7 @@ public class GarageModel extends Model {
 
 	class Door extends ModelClass {
 		Timer.Handle doorTimer;
-		class InitDoor extends InitialState {}
+		class InitDoor extends Initial {}
 		class Enabled extends State {
 			@Override public void entry() {
 				Motor m = Door.this.assoc(MotorMovesDoor.movingMotor.class).selectOne();
@@ -66,7 +66,7 @@ public class GarageModel extends Model {
 	}
 	
 	class Motor extends ModelClass {
-		class InitMotor extends InitialState {}
+		class InitMotor extends Initial {}
 		@From(InitMotor.class) @To(HeadingUp.class)
 		class TInitMotor extends Transition {			
 		}
@@ -122,7 +122,7 @@ public class GarageModel extends Model {
 	class Alarm extends ModelClass {
 		ModelInt code = new ModelInt(8);
 		
-		class InitAlarm extends InitialState {}
+		class InitAlarm extends Initial {}
 		@From(InitAlarm.class) @To(On.class)
 		class TInitAlarm extends Transition {}
 
@@ -236,7 +236,7 @@ public class GarageModel extends Model {
 		ModelInt keyboardTimerCount;
 		ModelInt keyboardTimerMaxCount = new ModelInt(100);
 		
-		class InitKeyboard extends InitialState {}
+		class InitKeyboard extends Initial {}
 		@From(InitKeyboard.class) @To(Idle.class)
 		class TInitKeyboard extends Transition {}
 		class Idle extends State {
