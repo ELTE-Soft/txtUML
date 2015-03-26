@@ -17,13 +17,13 @@ abstract class AbstractImporter {
 	{
 		for(Class<?> c : sourceClass.getDeclaredClasses())
 		{
-			if(ElementTypeTeller.isState(c))
+			if(ElementTypeTeller.isVertex(c))
 				return true;
 	    }
 		return false;
     }
 	
-	protected static boolean containsInitialState(Region region)
+	protected static boolean containsInitial(Region region)
 	{
 		for(Object vert: region.getSubvertices().toArray())
 		{

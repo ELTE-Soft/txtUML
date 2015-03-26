@@ -16,9 +16,7 @@ public final class ElementTypeTeller {
 	public static boolean isModelElement(Class<?> c)
 	{
 		 
-		return ModelElement.class.isAssignableFrom(c) ||
-			   isState(c) ||
-			   isTransition(c) ;
+		return ModelElement.class.isAssignableFrom(c);
 	}
 	public static boolean isModelClass(Class<?> c) {
 		return ModelClass.class.isAssignableFrom(c);
@@ -49,11 +47,15 @@ public final class ElementTypeTeller {
 		return ModelIdentifiedElement.class.isAssignableFrom(f.getType());
     }
     
+	public static boolean isVertex(Class<?> c) {
+        return StateMachine.Vertex.class.isAssignableFrom(c);
+    }	
+	
 	public static boolean isState(Class<?> c) {
         return StateMachine.State.class.isAssignableFrom(c);
     }
 
-	public static boolean isInitialState(Class<?> c) {
+	public static boolean isInitial(Class<?> c) {
         return StateMachine.Initial.class.isAssignableFrom(c);
     }
 
@@ -93,13 +95,17 @@ public final class ElementTypeTeller {
 	public static boolean isAssociation(ModelElement element) {
 		return element!=null && isAssociation(element.getClass());
 	}
-        
+
+	public static boolean isVertex(ModelElement element) {
+		return element!=null && isVertex(element.getClass());
+    }
+	
 	public static boolean isState(ModelElement element) {
 		return element!=null && isState(element.getClass());
     }
 
-	public static boolean isInitialState(ModelElement element) {
-		return element!=null && isInitialState(element.getClass());
+	public static boolean isInitial(ModelElement element) {
+		return element!=null && isInitial(element.getClass());
     }
 
 	public static boolean isCompositeState(ModelElement element) {

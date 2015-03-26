@@ -6,27 +6,27 @@ public abstract class Region extends StateMachine {
 
 	private static InitialsMap initials = InitialsMap.create();
 
-	private State currentState;
+	private Vertex currentVertex;
 
 	public abstract String getIdentifier(); 
 	
 	Region() {
 		super();
 
-		Class<? extends Initial> initStateClass = getInitialState(getClass());
-		if (initStateClass != null) {
-			currentState = getInnerClassInstance(initStateClass);
+		Class<? extends Initial> initClass = getInitial(getClass());
+		if (initClass != null) {
+			currentVertex = getInnerClassInstance(initClass);
 		} else {
-			currentState = null;
+			currentVertex = null;
 		}
 	}
 
-	final State getCurrentState() {
-		return currentState;
+	final Vertex getCurrentVertex() {
+		return currentVertex;
 	}
 
 	void processSignal(Signal signal) {
-		if (currentState == null) { // no state machine
+		if (currentVertex == null) { // no state machine
 			return;
 		}
 		if (ModelExecutor.Settings.executorLog() && signal != null) {
@@ -43,8 +43,8 @@ public abstract class Region extends StateMachine {
 
 		private Transition transition;
 		private Class<?> transitionClass;
-		private Class<? extends State> from;
-		private Class<? extends State> to;
+		private Class<? extends Vertex> from;
+		private Class<? extends Vertex> to;
 
 		TransitionExecutor() {
 			this.transition = null;
@@ -58,7 +58,7 @@ public abstract class Region extends StateMachine {
 		}
 
 		void set(Transition transition, Class<?> transitionClass,
-				Class<? extends State> from, Class<? extends State> to) {
+				Class<? extends Vertex> from, Class<? extends Vertex> to) {
 			this.transition = transition;
 			this.transitionClass = transitionClass;
 			this.from = from;
@@ -76,14 +76,14 @@ public abstract class Region extends StateMachine {
 		void execute() {
 			if (ModelExecutor.Settings.executorLog()) {
 				Action.executorFormattedLog(
-						"%10s %-15s changes state: from: %-10s tran: %-18s to: %-10s%n",
+						"%10s %-15s changes vertex: from: %-10s tran: %-18s to: %-10s%n",
 						getClass().getSimpleName(), getIdentifier(),
 						from.getSimpleName(), transitionClass.getSimpleName(),
 						to.getSimpleName());
 			}
 			callExitAction(from);
 			transition.effect();
-			currentState = getInnerClassInstance(to);
+			currentVertex = getInnerClassInstance(to);
 		}
 
 	}
@@ -91,13 +91,13 @@ public abstract class Region extends StateMachine {
 	private boolean executeTransition(Signal signal) {
 		final TransitionExecutor applicableTransitionExecutor = new TransitionExecutor();
 
-		for (Class<?> examinedStateClass = currentState.getClass(), parentClass = examinedStateClass
-				.getEnclosingClass(); parentClass != null; examinedStateClass = parentClass, parentClass = examinedStateClass
+		for (Class<?> examinedClass = currentVertex.getClass(), parentClass = examinedClass
+				.getEnclosingClass(); parentClass != null; examinedClass = parentClass, parentClass = examinedClass
 				.getEnclosingClass()) {
 
 			for (Class<?> c : parentClass.getDeclaredClasses()) {
 				if (Transition.class.isAssignableFrom(c)) {
-					Class<? extends State> from, to;
+					Class<? extends Vertex> from, to;
 					try {
 						from = c.getAnnotation(From.class).value();
 						to = c.getAnnotation(To.class).value();
@@ -108,7 +108,7 @@ public abstract class Region extends StateMachine {
 						// TODO show warning
 						continue;
 					}
-					if (from != examinedStateClass
+					if (from != examinedClass
 							|| notApplicableTrigger(c, signal)) {
 						continue;
 					}
@@ -125,7 +125,7 @@ public abstract class Region extends StateMachine {
 								+ applicableTransitionExecutor
 										.getTransitionClass().getName()
 								+ " and " + c.getName() + " from class "
-								+ currentState.getClass().getSimpleName()
+								+ currentVertex.getClass().getSimpleName()
 								+ " are overlapping");
 						continue;
 					}
@@ -144,7 +144,7 @@ public abstract class Region extends StateMachine {
 		}
 		applicableTransitionExecutor.execute();
 
-		if (currentState instanceof Choice) {
+		if (currentVertex instanceof Choice) {
 			executeTransitionFromChoice(signal);
 		}
 
@@ -155,12 +155,12 @@ public abstract class Region extends StateMachine {
 		final TransitionExecutor applicableTransitionExecutor = new TransitionExecutor();
 		final TransitionExecutor elseTransitionExecutor = new TransitionExecutor();
 
-		final Class<?> examinedChoiceClass = currentState.getClass();
+		final Class<?> examinedChoiceClass = currentVertex.getClass();
 		final Class<?> parentClass = examinedChoiceClass.getEnclosingClass();
 
 		for (Class<?> c : parentClass.getDeclaredClasses()) {
 			if (Transition.class.isAssignableFrom(c)) {
-				Class<? extends State> from, to;
+				Class<? extends Vertex> from, to;
 				try {
 					from = c.getAnnotation(From.class).value();
 					to = c.getAnnotation(To.class).value();
@@ -172,7 +172,7 @@ public abstract class Region extends StateMachine {
 					continue;
 				}
 				if (from != examinedChoiceClass) { // actual transition is from
-													// another state
+													// another vertex
 					continue;
 				}
 
@@ -230,7 +230,7 @@ public abstract class Region extends StateMachine {
 
 		applicableTransitionExecutor.execute();
 
-		if (currentState instanceof Choice) {
+		if (currentVertex instanceof Choice) {
 			executeTransitionFromChoice(signal);
 		}
 	}
@@ -245,43 +245,43 @@ public abstract class Region extends StateMachine {
 		return true;
 	}
 
-	private void callExitAction(Class<? extends State> from) {
-		while (currentState.getClass() != from) {
+	private void callExitAction(Class<? extends Vertex> from) {
+		while (currentVertex.getClass() != from) {
 			if (ModelExecutor.Settings.executorLog()) {
 				Action.executorFormattedLog(
-						"%10s %-15s   exits state: %-18s%n", getClass()
-								.getSimpleName(), getIdentifier(), currentState
+						"%10s %-15s   exits vertex: %-18s%n", getClass()
+								.getSimpleName(), getIdentifier(), currentVertex
 								.getClass().getSimpleName());
 			}
-			currentState.exit();
+			currentVertex.exit();
 			@SuppressWarnings("unchecked")
-			Class<? extends State> currentParentState = (Class<? extends State>) currentState
+			Class<? extends Vertex> currentParentState = (Class<? extends Vertex>) currentVertex
 					.getClass().getEnclosingClass();
-			currentState = getInnerClassInstance(currentParentState);
+			currentVertex = getInnerClassInstance(currentParentState);
 		}
-		currentState.exit();
+		currentVertex.exit();
 	}
 
 	private void callEntryAction() {
-		currentState.entry();
-		if (currentState instanceof CompositeState) {
-			Class<? extends Initial> initStateClass = getInitialState(currentState
+		currentVertex.entry();
+		if (currentVertex instanceof CompositeState) {
+			Class<? extends Initial> initClass = getInitial(currentVertex
 					.getClass());
-			if (initStateClass != null) {
+			if (initClass != null) {
 				if (ModelExecutor.Settings.executorLog()) {
 					Action.executorFormattedLog(
-							"%10s %-15s  enters state: %-18s%n", getClass()
+							"%10s %-15s  enters vertex: %-18s%n", getClass()
 									.getSimpleName(), getIdentifier(),
-							initStateClass.getSimpleName());
+							initClass.getSimpleName());
 				}
-				currentState = getInnerClassInstance(initStateClass);
-				// no entry action needs to be called: initial states have none
-				processSignal(null); // step forward from initial state
+				currentVertex = getInnerClassInstance(initClass);
+				// no entry action needs to be called: initial pseudostates have none
+				processSignal(null); // step forward from initial pseudostate
 			}
 		}
 	}
 
-	static Class<? extends Initial> getInitialState(Class<?> forWhat) {
+	static Class<? extends Initial> getInitial(Class<?> forWhat) {
 		synchronized (initials) {
 			if (initials.containsKey(forWhat)) {
 				return initials.get(forWhat);

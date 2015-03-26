@@ -36,7 +36,7 @@ public class ModelClass extends Region implements ModelElement,
 
 		this.identifier = "obj_" + counter.addAndGet(1);
 
-		if (getCurrentState() == null) {
+		if (getCurrentVertex() == null) {
 			status = Status.FINALIZED;
 		} else {
 			status = Status.READY;

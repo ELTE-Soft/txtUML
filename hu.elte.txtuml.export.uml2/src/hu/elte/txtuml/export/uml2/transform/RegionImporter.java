@@ -37,7 +37,7 @@ class RegionImporter extends AbstractImporter {
 	
 	Region importRegion() throws ImportException
 	{
-		importStates();
+		importVertices();
 		importTransitions();
 		return region;
 	}
@@ -47,48 +47,48 @@ class RegionImporter extends AbstractImporter {
 		return region;
 	}
 	
-	private Region importStates() throws ImportException
+	private Region importVertices() throws ImportException
 	{
 		for(Class<?> c : sourceClass.getDeclaredClasses())
         {
 			if(!ElementTypeTeller.isModelElement(c))
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
-            if(ElementTypeTeller.isState(c)) 	   
-            	importState(c);        
+            if(ElementTypeTeller.isVertex(c)) 	   
+            	importVertex(c);        
         }
 		return region;
 	}
 	
-	private Region importSubRegion(Class<?> state, StateMachine.State stateInstance, Vertex vertex) throws ImportException
+	private Region importSubRegion(Class<?> vertexClass, StateMachine.Vertex vertexInstance, Vertex vertex) throws ImportException
 	{
 		Region subRegion= new RegionImporter
-				(state,stateInstance,currentModel,((State) vertex).createRegion(state.getSimpleName()))
+				(vertexClass,vertexInstance,currentModel,((State) vertex).createRegion(vertexClass.getSimpleName()))
 				.importRegion();
 		subRegion.setState((State) vertex);
 	
 		return subRegion;
 	}
-	private  Vertex importState(Class<?> state)	throws ImportException
+	private  Vertex importVertex(Class<?> vertexClass) throws ImportException
 	{
-		Vertex vertex=createState(state);
+		Vertex vertex=createVertex(vertexClass);
 
-		StateMachine.State stateInstance=(hu.elte.txtuml.api.StateMachine.State) 
-				DummyInstanceCreator.createDummyInstance(state,ownerInstance);
+		StateMachine.Vertex vertexInstance=(hu.elte.txtuml.api.StateMachine.Vertex) 
+				DummyInstanceCreator.createDummyInstance(vertexClass,ownerInstance);
 		
-		if(ElementTypeTeller.isCompositeState(state))
+		if(ElementTypeTeller.isCompositeState(vertexClass))
 		{
-			Region subRegion = importSubRegion(state,stateInstance, vertex);
-			if(subRegion.getSubvertices().size() != 0 && !containsInitialState(subRegion)) 
+			Region subRegion = importSubRegion(vertexClass, vertexInstance, vertex);
+			if(subRegion.getSubvertices().size() != 0 && !containsInitial(subRegion)) 
 			{
-				importWarning(state.getName() + " has one or more states but no initial state (state machine will not be created)");
+				importWarning(vertexClass.getName() + " has one or more vertices but no initial pseudostate (state machine will not be created)");
 				return null;
 			}
 		}
 		
-		if(!ElementTypeTeller.isInitialState(state) && !ElementTypeTeller.isChoice(state))
+		if(ElementTypeTeller.isState(vertexClass))
 		{
-			importStateEntryAction(state, (State) vertex, stateInstance);
-			importStateExitAction(state, (State) vertex, stateInstance);
+			importStateEntryAction(vertexClass, (State) vertex, (StateMachine.State) vertexInstance);
+			importStateExitAction(vertexClass, (State) vertex, (StateMachine.State) vertexInstance);
 		}
 		return vertex;
 	}
@@ -145,10 +145,10 @@ class RegionImporter extends AbstractImporter {
 			}
 	    	if(ElementTypeTeller.isTransition(c))
 	        {
-				if (ElementTypeTeller.isState(c))
+				if (ElementTypeTeller.isVertex(c))
 				{
 					throw new ImportException(
-							sourceClass.getName() + "." + c.getSimpleName() + " cannot be a state and a transition at the same time"
+							sourceClass.getName() + "." + c.getSimpleName() + " cannot be a vertex and a transition at the same time"
 							);
 				}		
 				importTransition(c);			
@@ -157,29 +157,29 @@ class RegionImporter extends AbstractImporter {
 		return region;
 	}
 	
-	private  Vertex createState(Class<?> state)	throws ImportException
+	private  Vertex createVertex(Class<?> vertex) throws ImportException
 	{	
-		if(ElementTypeTeller.isInitialState(state))
+		if(ElementTypeTeller.isInitial(vertex))
         {
-			if (containsInitialState(region)) 
-            	throw new ImportException(sourceClass.getName() + " has two initial states");
+			if (containsInitial(region)) 
+            	throw new ImportException(sourceClass.getName() + " has two initial pseudostates");
 
-			return createInitialState(state);
+			return createInitial(vertex);
         }
-		else if(ElementTypeTeller.isChoice(state))
-			return createChoice(state);
+		else if(ElementTypeTeller.isChoice(vertex))
+			return createChoice(vertex);
 		else
-			return region.createSubvertex(state.getSimpleName(),UMLPackage.Literals.STATE);		
+			return region.createSubvertex(vertex.getSimpleName(),UMLPackage.Literals.STATE);		
 	}
 	
-	private Vertex createInitialState(Class<?> state)
+	private Vertex createInitial(Class<?> vertex)
 	{
-		return region.createSubvertex(state.getSimpleName(), UMLPackage.Literals.PSEUDOSTATE);
+		return region.createSubvertex(vertex.getSimpleName(), UMLPackage.Literals.PSEUDOSTATE);
 	}
 	
-	private Pseudostate createChoice(Class<?> state)
+	private Pseudostate createChoice(Class<?> vertex)
 	{
-		Pseudostate ret= (Pseudostate)region.createSubvertex(state.getSimpleName(),UMLPackage.Literals.PSEUDOSTATE);
+		Pseudostate ret= (Pseudostate)region.createSubvertex(vertex.getSimpleName(),UMLPackage.Literals.PSEUDOSTATE);
 		ret.setKind(PseudostateKind.CHOICE_LITERAL);
 		return ret;
 	}

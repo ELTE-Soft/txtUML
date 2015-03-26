@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Documented
 public @interface From {
-	Class<? extends StateMachine.State> value();
+	Class<? extends StateMachine.Vertex> value();
 }

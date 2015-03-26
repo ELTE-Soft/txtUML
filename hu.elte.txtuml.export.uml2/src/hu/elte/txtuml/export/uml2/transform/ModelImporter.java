@@ -331,7 +331,7 @@ public class ModelImporter extends AbstractImporter{
         
         if(region.getSubvertices().size() != 0 && !containsInitialState(region)) 
         {
-        	importWarning(sourceClass.getName() + " has one or more states but no initial state (state machine will not be created)");
+        	importWarning(sourceClass.getName() + " has one or more vertices but no initial pseudostate (state machine will not be created)");
         	return null;
         }
         return stateMachine; 

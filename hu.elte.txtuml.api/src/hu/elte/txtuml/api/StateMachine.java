@@ -18,6 +18,12 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 			return getClass().getSimpleName();
 		}
 
+		public void entry() {
+		}
+
+		public void exit() {
+		}
+		
 		@Override
 		public String toString() {
 			return "vertex: " + vertexIdentifier();
@@ -31,44 +37,52 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		}
 
 		@Override
+		public final void entry() {
+		}
+
+		@Override
+		public final void exit() {
+		}
+		
+		@Override
 		public String toString() {
 			return "pseudostate: " + vertexIdentifier();
 		}
 		
 	}
-	
-	public class State extends Vertex {
 
-		protected State() {
-		}
-
-		public void entry() {
-		}
-
-		public void exit() {
-		}
-
-		@Override
-		public String toString() {
-			return "state: " + vertexIdentifier();
-		}
-
-	}
-
-	public class Initial extends State {
+	public class Initial extends Pseudostate {
 
 		protected Initial() {
-		}
-
-		public final void entry() {
-		}
-
-		public final void exit() {
 		}
 
 		@Override
 		public String toString() {
 			return "initial: " + super.toString();
+		}
+
+	}
+
+	public class Choice extends Pseudostate {
+
+		protected Choice() {
+		}
+
+		@Override
+		public String toString() {
+			return "choice:" + vertexIdentifier();
+		}
+
+	}
+
+	public class State extends Vertex {
+
+		protected State() {
+		}
+
+		@Override
+		public String toString() {
+			return "state: " + vertexIdentifier();
 		}
 
 	}
@@ -81,24 +95,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		@Override
 		public String toString() {
 			return "composite state: " + super.toString();
-		}
-
-	}
-
-	public class Choice extends State {
-
-		protected Choice() {
-		}
-
-		public final void entry() {
-		}
-
-		public final void exit() {
-		}
-
-		@Override
-		public String toString() {
-			return "choice:" + vertexIdentifier();
 		}
 
 	}
