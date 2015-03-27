@@ -146,6 +146,9 @@ class ArrangeAssociations
 						if (END.equals(obj.getPosition()))
 							continue;
 						
+						if (obj.getName().equals("1Signal"))
+							System.out.println();
+						
 						for (Point p : obj.getPoints())
 							occupied.add(new Painted<Point>(Colors.Red, p));
 					}

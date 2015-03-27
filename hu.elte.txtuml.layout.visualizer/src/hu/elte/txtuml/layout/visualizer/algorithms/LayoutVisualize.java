@@ -261,31 +261,19 @@ public class LayoutVisualize
 			System.out.println("/Set Objects/");
 			
 			Set<RectangleObject> testObjects = new HashSet<RectangleObject>();
-			testObjects.add(new RectangleObject("A"));
-			testObjects.add(new RectangleObject("B"));
-			// testObjects.add(new RectangleObject("C"));
-			// testObjects.add(new RectangleObject("D"));
+			testObjects.add(new RectangleObject("Machine"));
+			testObjects.add(new RectangleObject("User"));
+			testObjects.add(new RectangleObject("1Signal"));
+			testObjects.add(new RectangleObject("2Signal"));
 			
 			System.out.println("/Set Assocs/");
 			
 			Set<LineAssociation> testAssocs = new HashSet<LineAssociation>();
 			
-			testAssocs.add(new LineAssociation("L1", "A", "B", AssociationType.normal));
-			testAssocs.add(new LineAssociation("L2", "A", "B", AssociationType.normal));
-			testAssocs.add(new LineAssociation("L3", "A", "B", AssociationType.normal));
-			testAssocs.add(new LineAssociation("L4", "A", "B", AssociationType.normal));
-			testAssocs.add(new LineAssociation("L5", "A", "B", AssociationType.normal));
-			testAssocs.add(new LineAssociation("L6", "A", "B", AssociationType.normal));
-			testAssocs.add(new LineAssociation("L7", "A", "B", AssociationType.normal));
-			testAssocs.add(new LineAssociation("L8", "A", "B", AssociationType.normal));
-			testAssocs.add(new LineAssociation("L9", "A", "B", AssociationType.normal));
-			testAssocs.add(new LineAssociation("L10", "A", "B", AssociationType.normal));
-			testAssocs.add(new LineAssociation("L11", "A", "B", AssociationType.normal));
-			testAssocs.add(new LineAssociation("L12", "A", "B", AssociationType.normal));
-			testAssocs.add(new LineAssociation("L13", "A", "B", AssociationType.normal));
-			testAssocs.add(new LineAssociation("L14", "A", "B", AssociationType.normal));
-			testAssocs.add(new LineAssociation("L15", "A", "B", AssociationType.normal));
-			testAssocs.add(new LineAssociation("L16", "A", "B", AssociationType.normal));
+			testAssocs.add(new LineAssociation("L1", "1Signal", "2Signal",
+					AssociationType.generalization));
+			testAssocs.add(new LineAssociation("L2", "Machine", "User",
+					AssociationType.normal));
 			
 			System.out.println("/Load Data/");
 			v.load(testObjects, testAssocs);
@@ -294,9 +282,11 @@ public class LayoutVisualize
 			
 			ArrayList<Statement> stats = new ArrayList<Statement>();
 			
-			stats.add(Statement.Parse("above(A, B)"));
-			stats.add(Statement.Parse("priority(L1, 50)"));
-			stats.add(Statement.Parse("north(L1, A)"));
+			/*
+			 * stats.add(Statement.Parse("above(A, B)"));
+			 * stats.add(Statement.Parse("priority(L1, 50)"));
+			 * stats.add(Statement.Parse("north(L1, A)"));
+			 */
 			
 			System.out.println("/Arrange/");
 			v.arrange(stats);

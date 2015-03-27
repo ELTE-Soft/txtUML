@@ -443,7 +443,7 @@ class GraphSearch
 		{
 			if (G.contains(n))
 				toberemoved.add(n);
-			else if (_objects.contains(n))
+			else if (_objects.stream().anyMatch(p -> p.Inner.equals(n)))
 			{
 				if (_objects.stream().filter(p -> p.Inner.equals(n)).findFirst().get().Color
 						.equals(Colors.Red))
