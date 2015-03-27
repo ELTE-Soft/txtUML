@@ -37,14 +37,14 @@ public class DiagramExportationReport {
 	}
 
 	/**
-	 * @return The number of errors occurred during exportation.
+	 * @return the number of errors occurred during exportation
 	 */
 	public final int getErrorCount() {
 		return errors;
 	}
 
 	/**
-	 * @return The number of warnings occurred during exportation.
+	 * @return the number of warnings occurred during exportation
 	 */
 	public final int getWarningCount() {
 		return warnings;
@@ -55,18 +55,18 @@ public class DiagramExportationReport {
 	 * return value of this method should not be used (it is probably
 	 * <code>Unknown</code>).
 	 * 
-	 * @return The type of the exported diagram.
+	 * @return the type of the exported diagram
 	 */
 	public final DiagramType getType() {
 		return type;
 	}
-	
+
 	/**
 	 * If the <code>isSuccesful</code> method returns <code>false</code>, the
 	 * return value of this method should not be used (it is probably
 	 * <code>null</code>).
 	 * 
-	 * @return The statement list created as the result of the exportation.
+	 * @return the statement list created as the result of the exportation
 	 */
 	public final List<Statement> getStatements() {
 		return statements;
@@ -77,7 +77,7 @@ public class DiagramExportationReport {
 	 * return value of this method should not be used (it is probably
 	 * <code>null</code>).
 	 * 
-	 * @return The set of nodes created as the result of the exportation.
+	 * @return the set of nodes created as the result of the exportation
 	 */
 	public final Set<RectangleObject> getNodes() {
 		return nodes;
@@ -88,7 +88,7 @@ public class DiagramExportationReport {
 	 * return value of this method should not be used (it is probably
 	 * <code>null</code>).
 	 * 
-	 * @return The set of links created as the result of the exportation.
+	 * @return the set of links created as the result of the exportation
 	 */
 	public final Set<LineAssociation> getLinks() {
 		return links;
@@ -99,6 +99,7 @@ public class DiagramExportationReport {
 	 * exportation.
 	 * 
 	 * @param message
+	 *            the message to show
 	 */
 	protected void logWarning(String message) {
 		System.err.println("Warning: " + message);
@@ -109,6 +110,7 @@ public class DiagramExportationReport {
 	 * exportation.
 	 * 
 	 * @param message
+	 *            the message to show
 	 */
 	protected void logError(String message) {
 		System.err.println("Error: " + message);
@@ -127,12 +129,12 @@ public class DiagramExportationReport {
 		nodes = null;
 		links = null;
 	}
-	
+
 	/**
 	 * Should be called only by the diagram exporter.
 	 * 
 	 * @param type
-	 *            The type of the exported diagram.
+	 *            the type of the exported diagram
 	 */
 	public final void setType(DiagramType type) {
 		this.type = type;
@@ -142,7 +144,7 @@ public class DiagramExportationReport {
 	 * Should be called only by the diagram exporter.
 	 * 
 	 * @param statements
-	 *            The statement list created as the result of the exportation.
+	 *            the statement list created as the result of the exportation
 	 */
 	public final void setStatements(StatementList statements) {
 		this.statements = statements;
@@ -152,7 +154,7 @@ public class DiagramExportationReport {
 	 * Should be called only by the diagram exporter.
 	 * 
 	 * @param nodes
-	 *            The set of nodest created as the result of the exportation.
+	 *            the set of nodest created as the result of the exportation
 	 */
 	public final void setNodes(Set<RectangleObject> nodes) {
 		this.nodes = nodes;
@@ -162,7 +164,7 @@ public class DiagramExportationReport {
 	 * Should be called only by the diagram exporter.
 	 * 
 	 * @param links
-	 *            The set of links created as the result of the exportation.
+	 *            the set of links created as the result of the exportation
 	 */
 	public final void setLinks(Set<LineAssociation> links) {
 		this.links = links;

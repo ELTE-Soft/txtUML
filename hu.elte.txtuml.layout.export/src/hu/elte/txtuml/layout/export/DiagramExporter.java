@@ -4,7 +4,8 @@ import hu.elte.txtuml.layout.export.impl.DiagramExporterImpl;
 import hu.elte.txtuml.layout.lang.Diagram;
 
 /**
- * Public interface to export diagram layout descriptions from their Java format.
+ * Public interface to export diagram layout descriptions from their Java
+ * format.
  * 
  * @author Gábor Ferenc Kovács
  *
@@ -15,8 +16,8 @@ public interface DiagramExporter {
 	 * Creates a new <code>DiagramExporter</code> to export the given diagram.
 	 * 
 	 * @param diagClass
-	 *            The diagram class to export.
-	 * @return The new exporter instance.
+	 *            the diagram class to export
+	 * @return the new exporter instance
 	 */
 	static DiagramExporter create(Class<? extends Diagram> diagClass) {
 
@@ -35,12 +36,12 @@ public interface DiagramExporter {
 	 * @see DiagramExportationReport
 	 * 
 	 * @param diagClass
-	 *            The diagram class to export.
+	 *            the diagram class to export
 	 * @param emptyReport
-	 *            An empty report instance. If <code>null</code>, the method
+	 *            an empty report instance. If <code>null</code>, the method
 	 *            behaves exactly as if the one-parameter create method was
-	 *            called.
-	 * @return The new exporter instance.
+	 *            called
+	 * @return the new exporter instance
 	 */
 	static DiagramExporter create(Class<? extends Diagram> diagClass,
 			DiagramExportationReport emptyReport) {
@@ -50,7 +51,7 @@ public interface DiagramExporter {
 	/**
 	 * Exports the diagram the instance was parameterized with.
 	 * 
-	 * @return A report about the exportation.
+	 * @return a report about the exportation
 	 */
 	DiagramExportationReport export();
 

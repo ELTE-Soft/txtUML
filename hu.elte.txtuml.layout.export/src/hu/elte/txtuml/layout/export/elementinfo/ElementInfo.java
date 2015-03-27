@@ -30,33 +30,33 @@ public interface ElementInfo {
 	}
 
 	/**
-	 * @return Whether <code>getType</code> method returns anything different
-	 *         from <code>Invalid</code>.
+	 * @return whether <code>getType</code> method returns anything different
+	 *         from <code>Invalid</code>
 	 */
 	default boolean isValid() {
 		return getType() != ElementType.Invalid;
 	}
 
 	/**
-	 * @return The type of the element this object holds info about.
+	 * @return the type of the element this object holds info about
 	 */
 	ElementType getType();
 
 	/**
-	 * @return The diagram type in which the element this object holds info
+	 * @return the diagram type in which the element this object holds info
 	 *         about may occur. Null if <code>getType</code> method returns
-	 *         <code>ElementType.Invalid</code>.
+	 *         <code>ElementType.Invalid</code>
 	 */
 	DiagramType getDiagType();
 
 	/**
-	 * @return The element type this object holds info about.
+	 * @return the element type this object holds info about
 	 */
 	Class<? extends LayoutElement> getElementClass();
 
 	/**
-	 * @return The string representation of the element this object holds info
-	 *         about.
+	 * @return the string representation of the element this object holds info
+	 *         about
 	 */
 	@Override
 	String toString();
@@ -64,7 +64,7 @@ public interface ElementInfo {
 	/**
 	 * Casts to <code>LinkInfo</code>.
 	 * 
-	 * @return This object casted to LinkInfo. Is <code>null</code> if
+	 * @return this object casted to LinkInfo. Is <code>null</code> if
 	 *         <code>getType</code> method does not return
 	 *         <code>ElementType.Link</code>.
 	 */
@@ -75,7 +75,7 @@ public interface ElementInfo {
 	/**
 	 * Casts to <code>LinkGroupInfo</code>.
 	 * 
-	 * @return This object casted to LinkGroupInfo. Is <code>null</code> if
+	 * @return this object casted to LinkGroupInfo. Is <code>null</code> if
 	 *         <code>getType</code> method does not return
 	 *         <code>LinkGroup</code>.
 	 */
@@ -86,7 +86,7 @@ public interface ElementInfo {
 	/**
 	 * Casts to <code>NodeInfo</code>.
 	 * 
-	 * @return This object casted to NodeInfo. Is <code>null</code> if
+	 * @return this object casted to NodeInfo. Is <code>null</code> if
 	 *         <code>getType</code> method does not return <code>Node</code>.
 	 */
 	default NodeInfo asNodeInfo() {
@@ -96,7 +96,7 @@ public interface ElementInfo {
 	/**
 	 * Casts to <code>NodeGroupInfo</code>.
 	 * 
-	 * @return This object casted to NodeGroupInfo. Is <code>null</code> if
+	 * @return this object casted to NodeGroupInfo. Is <code>null</code> if
 	 *         <code>getType</code> method does not return
 	 *         <code>NodeGroup</code>.
 	 */
@@ -112,7 +112,7 @@ public interface ElementInfo {
 	 * @param obj
 	 *            the other object to be compared with this info holder
 	 * @return <code>true</code> if this info holder equals <code>obj</code>,
-	 *         <code>false</code> otherwise.
+	 *         <code>false</code> otherwise
 	 */
 	@Override
 	boolean equals(Object obj);

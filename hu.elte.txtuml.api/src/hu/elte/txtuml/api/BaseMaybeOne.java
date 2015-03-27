@@ -5,14 +5,51 @@ import hu.elte.txtuml.api.blocks.ParameterizedCondition;
 
 import java.util.Iterator;
 
+/**
+ * Base class of association ends having a 0..1 multiplicity.
+ * <p>
+ * See the documentation of the {@link hu.elte.txtuml.api} package to get an
+ * overview on modeling in txtUML.
+
+ * @author Gábor Ferenc Kovács
+ *
+ * @param <T>
+ *            the type of model objects to be contained in this collection
+ */
 class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 
+	/**
+	 * The model object contained in this collection. If <code>null</code>, this
+	 * collection is empty.
+	 */
 	private T obj = null;
 
+	/**
+	 * Creates an empty, unfinalized <code>BaseMaybeOne</code> instance which
+	 * might be changed once using the <code>init</code> method.
+	 */
 	public BaseMaybeOne() {
 		isFinal = false;
 	}
 
+	/**
+	 * An initilazing method which changes this instance to be a copy of the
+	 * <code>other</code> collection, if certain conditions are met:
+	 * <ul>
+	 * <li>this instance is unfinalized, so the value of its
+	 * <code>isFinal</code> field is <code>false</code>,
+	 * <li>the given collection is a subclass of BaseMaybeOne</li>
+	 * </ul>
+	 * After this method returns (either way), this association end is surely
+	 * finalized, so its <code>isFinal</code> field is set to be
+	 * <code>true</code>.
+	 * 
+	 * @param other
+	 *            the other collection to copy
+	 * @return this instance
+	 * @throws NullPointerException
+	 *             if <code>other</code> is <code>null</code>
+	 */
 	@Override
 	final AssociationEnd<T> init(Collection<T> other) {
 		if (!isFinal && other != null && other instanceof BaseMaybeOne) {
@@ -22,6 +59,15 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 		return this;
 	}
 
+	/**
+	 * Creates a finalized <code>BaseMaybeOne</code> instance to contain the
+	 * specified value.
+	 * <p>
+	 * Finalized means that this object will operate as its class was immutable.
+	 * 
+	 * @param object
+	 *            the model object to contain
+	 */
 	BaseMaybeOne(T object) {
 		this.obj = object;
 	}
@@ -29,19 +75,24 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 	@Override
 	public final Iterator<T> iterator() {
 		return new Iterator<T>() {
+
+			private boolean hasNext = true;
+
+			@Override
 			public T next() {
 				hasNext = false;
 				return obj;
 			}
 
+			@Override
 			public boolean hasNext() {
 				return hasNext;
 			}
 
+			@Override
 			public void remove() {
 			}
 
-			private boolean hasNext = true;
 		};
 	}
 
@@ -65,9 +116,8 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 	public final T selectOne(ParameterizedCondition<T> cond) {
 		if (obj == null || cond.check(obj).getValue()) {
 			return obj;
-		} else {
-			return null;
 		}
+		return null;
 	}
 
 	@Override
@@ -98,7 +148,7 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	final <S extends Collection<T>> S typeKeepingAdd(T object)
+	final <S extends AssociationEnd<T>> S typeKeepingAdd(T object)
 			throws MultiplicityException {
 		if (object == null) {
 			return (S) this;
@@ -110,7 +160,7 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	final <S extends Collection<T>> S typeKeepingRemove(T object) {
+	final <S extends AssociationEnd<T>> S typeKeepingRemove(T object) {
 		if (object == null || !object.equals(this.obj)) {
 			return (S) this;
 		}

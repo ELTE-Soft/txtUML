@@ -18,6 +18,7 @@ public abstract class VariableType<T, MT extends ModelType<T>> {
 
 	public abstract void set(T rawValue);
 
+	@Override
 	public String toString() {
 		return value.toString();
 	}

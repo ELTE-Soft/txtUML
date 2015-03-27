@@ -24,6 +24,13 @@ public interface Collection<T extends ModelClass> extends
 	Collection<T> addAll(Collection<T> objects);
 
 	Collection<T> remove(T object);
+	
+	/**
+	 * Iterators over collections are purely for API implementation issues, they
+	 * must not be used in the model.
+	 */
+	@Override
+	public abstract Iterator<T> iterator();
 
 	// Some of the methods above can be calculated with the use of the others.
 	// The minimum needed:

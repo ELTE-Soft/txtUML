@@ -5,14 +5,50 @@ import hu.elte.txtuml.api.blocks.ParameterizedCondition;
 
 import java.util.Iterator;
 
+/**
+ * Base class of association ends having a 0..* multiplicity.
+ * <p>
+ * See the documentation of the {@link hu.elte.txtuml.api} package to get an
+ * overview on modeling in txtUML.
+ *
+ * @author Gábor Ferenc Kovács
+ *
+ * @param <T>
+ *            the type of model objects to be contained in this collection
+ */
 class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 
+	/**
+	 * A java.lang.Collection to keep the values contained in this object.
+	 */
 	private JavaCollectionOfMany<T> coll = JavaCollectionOfMany.create();
 
+	/**
+	 * Creates an empty, unfinalized <code>BaseMany</code> instance which might
+	 * be changed once using the <code>init</code> method.
+	 */
 	public BaseMany() {
 		isFinal = false;
 	}
 
+	/**
+	 * An initilazing method which changes this instance to be a copy of the
+	 * <code>other</code> collection, if certain conditions are met:
+	 * <ul>
+	 * <li>this instance is unfinalized, so the value of its
+	 * <code>isFinal</code> field is <code>false</code>,
+	 * <li>the given collection is a subclass of BaseMany</li>
+	 * </ul>
+	 * After this method returns (either way), this association end is surely
+	 * finalized, so its <code>isFinal</code> field is set to be
+	 * <code>true</code>.
+	 * 
+	 * @param other
+	 *            the other collection to copy
+	 * @return this instance
+	 * @throws NullPointerException
+	 *             if <code>other</code> is <code>null</code>
+	 */
 	@Override
 	final AssociationEnd<T> init(Collection<T> other) {
 		if (!isFinal && other != null && other instanceof BaseMany) {
@@ -22,21 +58,65 @@ class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 		return this;
 	}
 
+	/**
+	 * Creates a finalized <code>BaseMany</code> instance to contain the
+	 * specified values.
+	 * <p>
+	 * Finalized means that this object will operate as its class was immutable.
+	 * 
+	 * @param object1
+	 *            a model object this collection will contain
+	 * @param object2
+	 *            a model object this collection will contain
+	 */
 	BaseMany(T object1, T object2) {
 		coll.add(object1);
 		coll.add(object2);
 	}
 
+	/**
+	 * Creates a finalized <code>BaseMany</code> instance to contain the
+	 * specified values.
+	 * <p>
+	 * Finalized means that this object will operate as its class was immutable.
+	 * 
+	 * @param builder
+	 *            a mutable builder used to gather the elements of this
+	 *            collection
+	 */
 	BaseMany(CollectionBuilder<T> builder) {
 		this.coll = builder.getJavaCollection();
 	}
 
+	/**
+	 * Creates a finalized <code>BaseMany</code> instance to contain the
+	 * specified values.
+	 * <p>
+	 * Finalized means that this object will operate as its class was immutable.
+	 * 
+	 * @param collection
+	 *            a collection the elements of which will all be in this
+	 *            collection as well
+	 */
 	BaseMany(Collection<T> collection) {
 		for (T obj : collection) {
 			coll.add(obj);
 		}
 	}
 
+	/**
+	 * Creates a finalized <code>BaseMany</code> instance to contain the
+	 * specified values.
+	 * <p>
+	 * Finalized means that this object will operate as its class was immutable.
+	 * 
+	 * @param collection
+	 *            a collection the elements of which will all be in this
+	 *            collection as well
+	 * @param builder
+	 *            a mutable collection builder the elements of which will all be
+	 *            in this collection as well
+	 */
 	BaseMany(Collection<T> collection, CollectionBuilder<T> builder) {
 		this.coll = builder.getJavaCollection();
 
@@ -45,6 +125,18 @@ class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 		}
 	}
 
+	/**
+	 * Creates a finalized <code>BaseMany</code> instance to contain the
+	 * specified values.
+	 * <p>
+	 * Finalized means that this object will operate as its class was immutable.
+	 * 
+	 * @param collection
+	 *            a collection the elements of which will all be in this
+	 *            collection as well
+	 * @param object
+	 *            a model object to be included in this collection
+	 */
 	BaseMany(Collection<T> collection, T object) {
 		this(collection);
 		coll.add(object);
@@ -111,23 +203,29 @@ class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 				}
 			}
 			return new BaseMany<T>(builder);
-		} else {
-			return this;
 		}
+		return this;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	final <S extends Collection<T>> S typeKeepingAdd(T object) {
+	final <S extends AssociationEnd<T>> S typeKeepingAdd(T object) {
 		return (S) add(object);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	final <S extends Collection<T>> S typeKeepingRemove(T object) {
+	final <S extends AssociationEnd<T>> S typeKeepingRemove(T object) {
 		return (S) remove(object);
 	}
 
+	/**
+	 * Returns the size if this collection. Differs from <code>count</code> in
+	 * that this method returns an integer instead of <code>ModelInt</code>.
+	 * This is used only in the API to optimize this query.
+	 * 
+	 * @return the size of this collection
+	 */
 	int getSize() {
 		return coll.size();
 	}
