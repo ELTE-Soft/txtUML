@@ -4,7 +4,8 @@ Bundle-Name: txtUML Export to Uml2
 Bundle-SymbolicName: hu.elte.txtuml.export.uml2
 Bundle-Version: 1.0.0.qualifier
 Export-Package: hu.elte.txtuml.export.uml2,
- hu.elte.txtuml.export.uml2.transform
+ hu.elte.txtuml.export.uml2.transform,
+ hu.elte.txtuml.export.uml2.transform.aspects
 Require-Bundle: org.eclipse.uml2.uml,
  org.eclipse.uml2.uml.resources,
  hu.elte.txtuml.api,

@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform;
 
-
-import hu.elte.txtuml.api.Collection;
 import hu.elte.txtuml.api.ExternalClass;
 import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelElement;
@@ -35,47 +33,8 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValuePin;
 import org.eclipse.uml2.uml.Variable;
 
-public class InstructionImporter extends AbstractInstructionImporter {
-
-	static <T extends ModelClass> T selectOne(Collection<T> target) 
-	{
-
-		ParameterizedType genericSupClass=(ParameterizedType) target.getClass().getGenericSuperclass();
-		String typeName=genericSupClass.getActualTypeArguments()[0].getTypeName();
-		Type type=currentModel.getOwnedType(typeName);
-		Class<?> resultClass=ElementFinder.findDeclaredClass(modelClass, typeName);
-
-		@SuppressWarnings("unchecked")
-		T result=(T) DummyInstanceCreator.createDummyInstance(resultClass);
-
-		String resultName=result.getIdentifier();
-		String startName=getObjectIdentifier(target);
-
-		OpaqueAction selectOneAction=	(OpaqueAction)
-				currentActivity.createOwnedNode("selectOne_"+startName,UMLPackage.Literals.OPAQUE_ACTION);
-		String expression=startName;
-		if(!hu.elte.txtuml.api.Association.One.class.isAssignableFrom(target.getClass()) &&
-				!hu.elte.txtuml.api.Association.MaybeOne.class.isAssignableFrom(target.getClass())   )
-		{
-			expression+="->first()";
-		}
-		selectOneAction.getBodies().add(expression);
-
-		createControlFlowBetweenNodes(lastNode, selectOneAction);
-
-		OutputPin outputPin=selectOneAction.createOutputValue(selectOneAction.getName()+"_output", type);
-
-		Variable variable=currentActivity.createVariable(resultName,type);
-		AddVariableValueAction setVarAction = createAddVarValAction(variable,"setVar_"+resultName);
-
-		InputPin inputPin_AVVA=setVarAction.createValue(setVarAction.getName()+"_input",type);
-
-		createObjectFlowBetweenNodes(outputPin,inputPin_AVVA);
-		lastNode=setVarAction;
-
-		return result;
-	}
-
+public class InstructionImporter extends AbstractInstructionImporter
+{
 	private static <T extends ModelClass, AE extends hu.elte.txtuml.api.AssociationEnd<T> > String getAssociationEndOwner(AE target)
 	{
 		Method method=null;
@@ -116,10 +75,11 @@ public class InstructionImporter extends AbstractInstructionImporter {
 		String expression=startName+"."+phrase;
 		
 		if (!hu.elte.txtuml.api.Association.One.class.isAssignableFrom(target.getClass()) &&
-			!hu.elte.txtuml.api.Association.MaybeOne.class.isAssignableFrom(target.getClass())  
-		   )
+			!hu.elte.txtuml.api.Association.MaybeOne.class.isAssignableFrom(target.getClass())  )
+		{
 			expression+="->first()";
-	
+		}
+		
 		selectOneAction.getBodies().add(expression);
 
 		createControlFlowBetweenNodes(lastNode, selectOneAction);
@@ -143,9 +103,9 @@ public class InstructionImporter extends AbstractInstructionImporter {
 
 		return result;
 	}
+	
 	static void importInstanceCreation(ModelClass createdInstance)
 	{
-
 		if(currentActivity != null && !DummyInstanceCreator.isCreating())
 		{
 			String instanceName=createdInstance.getIdentifier();
@@ -198,9 +158,7 @@ public class InstructionImporter extends AbstractInstructionImporter {
 			Type paramType=ModelImporter.importType(param.getClass());
 			String paramName="arg"+i;
 			if(!(param instanceof ModelIdentifiedElement))
-			{
 				throw new ImportException("Illegal argument (position "+(i+1)+ ") passed to method "+target+"."+methodName);
-			}
 
 			ValuePin argValuePin=(ValuePin)callAction.createArgument(paramName, paramType, UMLPackage.Literals.VALUE_PIN);
 			addExpressionToValuePin(argValuePin,(ModelIdentifiedElement)param,paramType);
@@ -208,7 +166,8 @@ public class InstructionImporter extends AbstractInstructionImporter {
 		}
 	}
 	
-	private static Object importMethodCallInOperationBody(ModelClass target, String methodName, Object... args) throws ImportException
+	private static Object importMethodCallInOperationBody
+		(ModelClass target, String methodName, Object... args) throws ImportException
 	{
 		Object returnObj=null;
 
@@ -243,23 +202,36 @@ public class InstructionImporter extends AbstractInstructionImporter {
 
 		return returnObj;
 	}
-	static Object importMethodCallInGuardBody(ModelClass target, String methodName, Object... args)
+	
+	private static String createMethodCallExpression(ModelClass target, String methodName, Object... args)
 	{
 		String targetExpression = getExpression(target);
-		String expression=targetExpression+"."+methodName+"(";
+		StringBuilder expression=new StringBuilder(targetExpression);
+		
+		expression.append(".");
+		expression.append(methodName);
+		expression.append("(");
+
 		int argsProcessed=0;
 		for(Object currArg : args)
 		{
 			String currArgExpr=getExpression((ModelIdentifiedElement)currArg);
 			
 			if(argsProcessed>0)
-				expression+=",";
+				expression.append(",");
 
-			expression+=currArgExpr;		
+			expression.append(currArgExpr);		
 			
 			++argsProcessed;
 		}
-		expression+=")";
+		expression.append(")");
+		
+		return expression.toString();
+	}
+	
+	private static Object importMethodCallInGuardBody(ModelClass target, String methodName, Object... args)
+	{
+		String expression = createMethodCallExpression(target,methodName,args);
 		
 		InstanceInformation returnValInfo=InstanceInformation.createCalculated(expression);
 		
@@ -275,9 +247,9 @@ public class InstructionImporter extends AbstractInstructionImporter {
 		
 		InstanceManager.createLocalInstancesMapEntry(returnObj,returnValInfo);
 		
-		
 		return returnObj;
 	}
+	
 	static Object importMethodCall(ModelClass target, String methodName, Object... args) throws ImportException
 	{
 		// this method is called at every method call where the target object is of any type that extends ModelClass 
@@ -293,7 +265,6 @@ public class InstructionImporter extends AbstractInstructionImporter {
 		return returnObj;
 		
 	}
-
 
 	static Object callExternal(ExternalClass target, String methodName, Object... args)
 	{
@@ -312,7 +283,6 @@ public class InstructionImporter extends AbstractInstructionImporter {
 	
 		// TODO import calls into UML2 model
 	}
-
 
 	private static Object assignField(Object target, String fieldName, Class<?> newValueClass) 
 	{
@@ -380,14 +350,16 @@ public class InstructionImporter extends AbstractInstructionImporter {
 		if(signal == null)
 		{
 			signal=MethodImporter.createSignal(target.getClass());
-			FieldValueAccessor.setObjectFieldVal(target,"signal",signal);
 			
-			String signalName=signal.getClass().getSimpleName();
-			InstanceManager.createLocalInstancesMapEntry(signal,InstanceInformation.create(signalName));
-			InstanceManager.createLocalFieldsRecursively(signal);
-			
+			if(signal != null)
+			{
+				FieldValueAccessor.setObjectFieldVal(target,"signal",signal);
+				
+				String signalName=signal.getClass().getSimpleName();
+				InstanceManager.createLocalInstancesMapEntry(signal,InstanceInformation.create(signalName));
+				InstanceManager.createLocalFieldsRecursively(signal);
+			}
 		}
-		
 		return signal;
 	}
 }

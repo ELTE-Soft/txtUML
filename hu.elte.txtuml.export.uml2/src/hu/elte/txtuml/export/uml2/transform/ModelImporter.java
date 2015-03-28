@@ -87,7 +87,6 @@ public class ModelImporter extends AbstractImporter{
 		importClassOperationBodiesStateMachinesAndNestedSignals();
 	}
 	
-	
 	private static void endModelImport()
 	{
 		InstanceManager.clearGlobalInstancesMap();
@@ -143,7 +142,6 @@ public class ModelImporter extends AbstractImporter{
 	public static boolean instructionImport() {
 		return MethodImporter.isImporting();
 	}
-	
 	
 	private static void importClassifier(Class<?> sourceClass) throws ImportException
 	{
@@ -287,9 +285,8 @@ public class ModelImporter extends AbstractImporter{
  		for(Class<?> c : modelClass.getDeclaredClasses()) 
 		{
 			if(!ElementTypeTeller.isModelElement(c))
-			{
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
-			}
+
 			if(ElementTypeTeller.isModelClass(c)) 
 			{
 				org.eclipse.uml2.uml.Class currClass = (org.eclipse.uml2.uml.Class) currentModel.getOwnedMember(c.getSimpleName());
@@ -304,7 +301,7 @@ public class ModelImporter extends AbstractImporter{
 				}
 				
 				importClassMemberFunctionBodies(c);
-				
+	
 				InstanceManager.clearClassAndFieldInstancesMap();;
 			}
 		}
@@ -360,8 +357,8 @@ public class ModelImporter extends AbstractImporter{
 	
 	private static Operation createOwnedOperation(org.eclipse.uml2.uml.Class ownerClass,Method sourceMethod)
 	{
-		BasicEList<String> paramNames=new BasicEList<String>();
-		BasicEList<Type> paramTypes=new BasicEList<Type>();
+		BasicEList<String> paramNames=new BasicEList<>();
+		BasicEList<Type> paramTypes=new BasicEList<>();
 		
 		int i=0;
 		for(Class<?> paramTypeClass : sourceMethod.getParameterTypes())
@@ -373,8 +370,8 @@ public class ModelImporter extends AbstractImporter{
 		}
 	
 		return ownerClass.createOwnedOperation(sourceMethod.getName(),paramNames,paramTypes);
-		
 	}
+	
 	private static Operation importOperationWithoutBody(org.eclipse.uml2.uml.Class ownerClass,Class<?> sourceClass,Method sourceMethod)
 	{
 		Operation operation = createOwnedOperation(ownerClass, sourceMethod);
@@ -382,7 +379,6 @@ public class ModelImporter extends AbstractImporter{
 		return operation;
 	}
 	
-
     private static void initResourceSet()
     {
     	 resourceSet = new ResourceSetImpl();
