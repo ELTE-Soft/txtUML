@@ -1,15 +1,31 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
+
 import hu.elte.txtuml.export.papyrus.MainAction;
 import hu.elte.txtuml.export.papyrus.ProjectManager;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.export.uml2.UML2;
+import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.layout.export.DiagramExporter;
+import hu.elte.txtuml.layout.lang.Diagram;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.CommonPlugin;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -44,19 +60,21 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 	@Override
 	public boolean performFinish() {
 		PreferencesManager preferncesManager = new PreferencesManager();
+		
 		final String txtUMLModelName = selectTxtUmlPage.getTxtUmlModelClass();
 		final String txtUMLLayoutName = selectTxtUmlPage.getTxtUmlLayout();
 		final String txtUMLProjectName = selectTxtUmlPage.getTxtUmlProject();
+		
 		final String folder = preferncesManager.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
 		final String txtUMLExportProjectname = "hu.elte.txtuml.export.uml2"; // TODO Place in preferences
 		
 		
-		/******** Diagram Layout ************
+		/******** Diagram Layout ************/
+		
 		try {
 			Class<?> cls;
-
-			
 			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProjectName);
+			ClassLoader parentClassLoader = project.getClass().getClassLoader();
 			IJavaProject javaproject = JavaCore.create(project);
 			
 			String[] classPathEntries = JavaRuntime.computeDefaultRuntimeClassPath(javaproject);
@@ -69,29 +87,22 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 			 urlList.add(url);
 			}
 			
-			ClassLoader parentClassLoader = project.getClass().getClassLoader();
 			URL[] urls = (URL[]) urlList.toArray(new URL[urlList.size()]);
 			URLClassLoader classLoader = new URLClassLoader(urls, parentClassLoader);
 			
-		
-			
-			
 			cls = classLoader.loadClass(txtUMLLayoutName);
-			classLoader.close();
-
+			
 			@SuppressWarnings("unchecked")
-			Class<? extends Diagram> diagramClass = (Class<? extends Diagram>) cls;
-			
-			DiagramExporter exporter= DiagramExporter.create(diagramClass);
-			
+			DiagramExporter exporter= DiagramExporter.create((Class<? extends Diagram>) cls);
 			DiagramExportationReport  report = exporter.export();
 			System.out.println(report.getStatements());
-			
-			
-		} catch (ClassNotFoundException | CoreException | IOException e1) {
+
+			classLoader.close();
+		} catch (ClassNotFoundException  | CoreException | IOException e1) {
 			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 			MessageDialog.openInformation(window.getShell(),"Layout Diagram Error",e1.getMessage());
 			e1.printStackTrace();
+			
 		}
 		
 		/***********************************/
@@ -101,7 +112,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 		preferncesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, txtUMLLayoutName);
 	
 		
-		/*********  Export *************/
+		/*********  Export *************
 		    	try {
 					UML2.exportModel(txtUMLModelName, folder);
 				} catch (Exception e) {
@@ -111,7 +122,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 					return false;
 				}
 	    /***********************************/
-		/********* Visualization ***********/
+		/********* Visualization ***********
 		    	try{
 			    	URI umlFileURI = URI.createFileURI(txtUMLExportProjectname+"/"+folder+"/"+txtUMLModelName+".uml");
 			    	URI UmlFileResURI = CommonPlugin.resolve(umlFileURI);
