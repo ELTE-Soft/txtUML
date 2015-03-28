@@ -8,5 +8,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: hu.elte.txtuml.utils
 Export-Package: hu.elte.txtuml.api,
  hu.elte.txtuml.layout.lang,
+ hu.elte.txtuml.layout.lang.elements,
  hu.elte.txtuml.layout.lang.statements,
- hu.elte.txtuml.stdlib
+ hu.elte.txtuml.layout.lang.statements.containers
