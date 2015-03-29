@@ -74,7 +74,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 		try {
 			Class<?> cls;
 			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProjectName);
-			ClassLoader parentClassLoader = project.getClass().getClassLoader();
+			ClassLoader parentClassLoader = getClass().getClassLoader();
 			IJavaProject javaproject = JavaCore.create(project);
 			
 			String[] classPathEntries = JavaRuntime.computeDefaultRuntimeClassPath(javaproject);
