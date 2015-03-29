@@ -11,6 +11,7 @@ import hu.elte.txtuml.export.papyrus.MainAction;
 import hu.elte.txtuml.export.papyrus.ProjectManager;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.export.uml2.UML2;
+import hu.elte.txtuml.export.utils.ClassLoaderProvider;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.export.DiagramExporter;
 import hu.elte.txtuml.layout.lang.Diagram;
@@ -70,39 +71,18 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 		
 		
 		/******** Diagram Layout ************/
-		
-		try {
-			Class<?> cls;
-			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProjectName);
-			ClassLoader parentClassLoader = getClass().getClassLoader();
-			IJavaProject javaproject = JavaCore.create(project);
-			
-			String[] classPathEntries = JavaRuntime.computeDefaultRuntimeClassPath(javaproject);
-			
-			List<URL> urlList = new ArrayList<URL>();
-			for (int i = 0; i < classPathEntries.length; i++) {
-			 String entry = classPathEntries[i];
-			 IPath path = new Path(entry);
-			 URL url = path.toFile().toURI().toURL();
-			 urlList.add(url);
-			}
-			
-			URL[] urls = (URL[]) urlList.toArray(new URL[urlList.size()]);
-			URLClassLoader classLoader = new URLClassLoader(urls, parentClassLoader);
-			
-			cls = classLoader.loadClass(txtUMLLayoutName);
-			
+		ClassLoaderProvider wcl = new ClassLoaderProvider();
+		ClassLoader parent = this.getClass().getClassLoader();
+		try(URLClassLoader loader = wcl.getClassLoaderForProject(txtUMLProjectName, parent)){
+			Class<?> cls = loader.loadClass(txtUMLLayoutName); 
 			@SuppressWarnings("unchecked")
 			DiagramExporter exporter= DiagramExporter.create((Class<? extends Diagram>) cls);
 			DiagramExportationReport  report = exporter.export();
 			System.out.println(report.getStatements());
-
-			classLoader.close();
-		} catch (ClassNotFoundException  | CoreException | IOException e1) {
+		} catch (ClassNotFoundException | IOException e) {
 			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-			MessageDialog.openInformation(window.getShell(),"Layout Diagram Error",e1.getMessage());
-			e1.printStackTrace();
-			
+			MessageDialog.openInformation(window.getShell(),"Layout Diagram Error",e.getMessage());
+			e.printStackTrace();
 		}
 		
 		/***********************************/
@@ -112,7 +92,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 		preferncesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, txtUMLLayoutName);
 	
 		
-		/*********  Export *************
+		/*********  Export *************/
 		    	try {
 					UML2.exportModel(txtUMLModelName, folder);
 				} catch (Exception e) {
@@ -122,7 +102,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 					return false;
 				}
 	    /***********************************/
-		/********* Visualization ***********
+		/********* Visualization ***********/
 		    	try{
 			    	URI umlFileURI = URI.createFileURI(txtUMLExportProjectname+"/"+folder+"/"+txtUMLModelName+".uml");
 			    	URI UmlFileResURI = CommonPlugin.resolve(umlFileURI);

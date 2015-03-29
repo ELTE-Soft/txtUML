@@ -21,7 +21,8 @@ Require-Bundle: org.eclipse.debug.ui,
  hu.elte.txtuml.layout.visualizer,
  hu.elte.txtuml.layout.export,
  hu.elte.txtuml.api,
- hu.elte.txtuml.export.uml2
+ hu.elte.txtuml.export.uml2,
+ hu.elte.txtuml.export.utils
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: hu.elte.txtuml.export.papyrus,
