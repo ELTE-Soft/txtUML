@@ -11,3 +11,4 @@ Require-Bundle: org.eclipse.uml2.uml,
  hu.elte.txtuml.api,
  hu.elte.txtuml.utils
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Vendor: ELTE

@@ -2,7 +2,8 @@
 <feature
       id="hu.elte.txtuml.feature"
       label="txtUML"
-      version="1.0.0.qualifier">
+      version="1.0.0.qualifier"
+      provider-name="ELTE">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -37,9 +38,9 @@
       <import plugin="org.eclipse.papyrus.uml.diagram.statemachine"/>
       <import plugin="org.eclipse.papyrus.infra.core.log"/>
       <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="hu.elte.txtuml.api" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="hu.elte.txtuml.utils" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="hu.elte.txtuml.layout.visualizer" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.core.runtime" version="3.10.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jdt.core" version="3.10.0" match="greaterOrEqual"/>
    </requires>
 
    <plugin
@@ -93,6 +94,13 @@
 
    <plugin
          id="hu.elte.txtuml.layout.export"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="hu.elte.txtuml.export.utils"
          download-size="0"
          install-size="0"
          version="0.0.0"
