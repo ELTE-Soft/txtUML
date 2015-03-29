@@ -61,24 +61,26 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 	@Override
 	public boolean performFinish() {
 		PreferencesManager preferncesManager = new PreferencesManager();
-		
 		final String txtUMLModelName = selectTxtUmlPage.getTxtUmlModelClass();
 		final String txtUMLLayoutName = selectTxtUmlPage.getTxtUmlLayout();
-		final String txtUMLProjectName = selectTxtUmlPage.getTxtUmlProject();
-		
+		final String txtUMLProjectName = selectTxtUmlPage.getTxtUmlProject();		
 		final String folder = preferncesManager.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
-		final String txtUMLExportProjectname = "hu.elte.txtuml.export.uml2"; // TODO Place in preferences
+		
+		ClassLoader parentClassLoader = this.getClass().getClassLoader();
+
+		preferncesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT, txtUMLProjectName);
+		preferncesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL, txtUMLModelName);
+		preferncesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, txtUMLLayoutName);
+	
 		
 		
 		/******** Diagram Layout ************/
-		ClassLoaderProvider wcl = new ClassLoaderProvider();
-		ClassLoader parent = this.getClass().getClassLoader();
-		try(URLClassLoader loader = wcl.getClassLoaderForProject(txtUMLProjectName, parent)){
-			Class<?> cls = loader.loadClass(txtUMLLayoutName); 
+		try(URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(txtUMLProjectName, parentClassLoader)){
+			Class<?> txtUMLLayoutClass = loader.loadClass(txtUMLLayoutName); 
 			@SuppressWarnings("unchecked")
-			DiagramExporter exporter= DiagramExporter.create((Class<? extends Diagram>) cls);
+			DiagramExporter exporter= DiagramExporter.create((Class<? extends Diagram>) txtUMLLayoutClass);
 			DiagramExportationReport  report = exporter.export();
-			System.out.println(report.getStatements());
+			System.out.println("Statements: "+report.getStatements());
 		} catch (ClassNotFoundException | IOException e) {
 			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 			MessageDialog.openInformation(window.getShell(),"Layout Diagram Error",e.getMessage());
@@ -86,53 +88,48 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 		}
 		
 		/***********************************/
-		
-		preferncesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT, txtUMLProjectName);
-		preferncesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL, txtUMLModelName);
-		preferncesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, txtUMLLayoutName);
-	
-		
 		/*********  Export *************/
-		    	try {
-					UML2.exportModel(txtUMLModelName, folder);
-				} catch (Exception e) {
-					IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-					MessageDialog.openInformation(window.getShell(),"txtUML export Error",e.getMessage());
-					e.printStackTrace();
-					return false;
-				}
+    	try (URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(txtUMLProjectName, parentClassLoader)){
+    		Class<?> txtUMLModelClass = loader.loadClass(txtUMLModelName);
+    		String uri = URI.createPlatformResourceURI(txtUMLProjectName+"/"+folder, false).toString();
+			UML2.exportModel(txtUMLModelClass, uri);
+		} catch (Exception e) {
+			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+			MessageDialog.openInformation(window.getShell(),"txtUML export Error",e.getMessage());
+			e.printStackTrace();
+			return false;
+		}
 	    /***********************************/
 		/********* Visualization ***********/
-		    	try{
-			    	URI umlFileURI = URI.createFileURI(txtUMLExportProjectname+"/"+folder+"/"+txtUMLModelName+".uml");
-			    	URI UmlFileResURI = CommonPlugin.resolve(umlFileURI);
-			    	IFile UmlFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(UmlFileResURI.toFileString()));
-			    	
-			    	URI diFileURI = URI.createFileURI(txtUMLModelName+"/"+txtUMLModelName+".di");
-			    	URI diFileResURI = CommonPlugin.resolve(diFileURI);
-			    	IFile diFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(diFileResURI.toFileString()));
-			    	
-			    	IEditorInput input = new FileEditorInput(diFile);
-	
-	
-			    	IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findEditor(input);
-			    	if(editor != null){
-			    		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().closeEditor(editor, false);
-			    	}
-	
-			    	ProjectManager projectManager = new ProjectManager();
-					projectManager.deleteProjectbyName(txtUMLModelName);
-	
-			        MainAction ma  = new MainAction(txtUMLModelName, txtUMLModelName, UmlFile.getRawLocationURI().toString());
-					IAction act = new Action() {};
-					ma.run(act);
-		    	}catch(Exception e){
-		    		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-					MessageDialog.openInformation(window.getShell(),"txtUML visualization Error",e.getMessage());
-					e.printStackTrace();
-					return false;
-		    	}
-		/***********************************/
+    	try{
+	    	URI umlFileURI = URI.createFileURI(txtUMLProjectName+"/"+folder+"/"+txtUMLModelName+".uml");
+	    	URI UmlFileResURI = CommonPlugin.resolve(umlFileURI);
+	    	IFile UmlFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(UmlFileResURI.toFileString()));
+	    	
+	    	URI diFileURI = URI.createFileURI(txtUMLModelName+"/"+txtUMLModelName+".di");
+	    	URI diFileResURI = CommonPlugin.resolve(diFileURI);
+	    	IFile diFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(diFileResURI.toFileString()));
+	    	
+	    	IEditorInput input = new FileEditorInput(diFile);
+
+	    	IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findEditor(input);
+	    	if(editor != null){
+	    		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().closeEditor(editor, false);
+	    	}
+
+	    	ProjectManager projectManager = new ProjectManager();
+			projectManager.deleteProjectbyName(txtUMLModelName);
+
+	        MainAction ma  = new MainAction(txtUMLModelName, txtUMLModelName, UmlFile.getRawLocationURI().toString());
+			IAction act = new Action() {};
+			ma.run(act);
+    	}catch(Exception e){
+    		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+			MessageDialog.openInformation(window.getShell(),"txtUML visualization Error",e.getClass()+":\n"+e.getMessage());
+			e.printStackTrace();
+			return false;
+    	}
+    	/***********************************/
 		return true;
 	}
 
