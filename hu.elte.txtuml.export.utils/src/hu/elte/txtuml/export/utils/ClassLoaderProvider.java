@@ -22,8 +22,9 @@ public class ClassLoaderProvider {
 	 * @param projectName
 	 * @param parent
 	 * @return
+	 * @author András Dobreff
 	 */
-	public URLClassLoader getClassLoaderForProject(String projectName, ClassLoader parent){
+	public static URLClassLoader getClassLoaderForProject(String projectName, ClassLoader parent){
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		return getClassLoaderForProject(project, parent);
 	}
@@ -33,8 +34,9 @@ public class ClassLoaderProvider {
 	 * @param project
 	 * @param parent
 	 * @return
+	 * @author András Dobreff
 	 */
-	public URLClassLoader getClassLoaderForProject(IProject project, ClassLoader parent){
+	public static URLClassLoader getClassLoaderForProject(IProject project, ClassLoader parent){
 		String[] classPathEntries;
 		
 		try{
@@ -53,8 +55,9 @@ public class ClassLoaderProvider {
 	 * Converts ClassPathEntries StringArray to URL Array
 	 * @param classPathEntries
 	 * @return
+	 * @author András Dobreff
 	 */
-	private URL[] getClassPathEntyUrls(String[] classPathEntries){
+	private static URL[] getClassPathEntyUrls(String[] classPathEntries){
 		try{
 			List<URL> urlList = new ArrayList<URL>();
 			for (String entry: classPathEntries) {
