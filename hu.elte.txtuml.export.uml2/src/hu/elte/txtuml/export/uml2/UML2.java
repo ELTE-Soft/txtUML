@@ -11,6 +11,7 @@ import org.eclipse.uml2.uml.Profile;
 import org.eclipse.uml2.uml.resource.UMLResource;
 
 import hu.elte.txtuml.export.uml2.transform.ModelImporter;
+import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 
 /**
  * This class is responsible for generating Eclipse UML2 model from txtUML model.
@@ -31,8 +32,28 @@ public class UML2 {
 	public static void exportModel(String modelClassName, String outputDirectory) throws Exception
 	{
 		try {
+			Class<?> modelClass = ElementFinder.findModel(modelClassName);
+			exportModel(modelClass, outputDirectory);
+		}
+		catch(Exception e) 
+		{
+			throw e;
+		}
+	}
+	
+	/**
+	 * 
+	 * @param modelClass 		The class representing the txtUML model.
+	 * 
+	 * @param outputDirectory 	The name of the output directory. 
+	 * 						 	(relative to the path of the project containing the txtUML model)
+	 * @throws Exception
+	 */
+	public static void exportModel(Class<?> modelClass, String outputDirectory) throws Exception
+	{
+		try {
 			//import model
-			org.eclipse.uml2.uml. Model m = ModelImporter.importModel(modelClassName,outputDirectory);
+			org.eclipse.uml2.uml. Model m = ModelImporter.importModel(modelClass,outputDirectory);
 			
 			//obtain resource of model
 			ResourceSet resourceSet=ModelImporter.getResourceSet();
@@ -65,6 +86,7 @@ public class UML2 {
 			throw e;
 		}
 	}
+	
 	/**
 	 * Main method for the class, provides opportunity for using model export as a Java application.
 	 * @param args 	Program arguments

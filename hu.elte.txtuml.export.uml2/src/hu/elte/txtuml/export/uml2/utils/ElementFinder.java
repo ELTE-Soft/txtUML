@@ -1,5 +1,8 @@
 package hu.elte.txtuml.export.uml2.utils;
 
+import hu.elte.txtuml.api.Model;
+import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -97,5 +100,22 @@ public final class ElementFinder {
 			}
 		}
 		return null;
+	}
+
+	public static Class<?> findModel(String className) throws ImportException 
+	{
+		try 
+		{
+			Class<?> ret = Class.forName(className);
+			
+			if(!Model.class.isAssignableFrom(ret))
+				throw new ImportException("A subclass of Model is expected, got: " + className);
+			
+			return ret;
+		}
+		catch(ClassNotFoundException e) 
+		{
+			throw new ImportException("Cannot find class: " + className);
+		}
 	}
 }

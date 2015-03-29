@@ -39,21 +39,26 @@ import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
 public class ModelImporter extends AbstractImporter{
 	
-	public static Model importModel(String className,String path) throws ImportException
+	public static Model importModel(Class<?> modelClass, String path) throws ImportException
 	{
-        initModelImport(className, path);
+		ModelImporter.modelClass = modelClass;
+		initModelImport(path);
 		importModelElements();	
 		endModelImport();
 		
-   		return currentModel; 	  
+   		return currentModel; 
 	}
 	
-	private static void initModelImport(String className, String path) throws ImportException
+	public static Model importModel(String modelClassName, String path) throws ImportException
+	{
+		return importModel(ElementFinder.findModel(modelClassName),path);
+	}
+	private static void initModelImport(String path) throws ImportException
 	{
 		importing=true;
-		modelClass= findModel(className);
-	
+		
 		String modelName=modelClass.getSimpleName();
+		String className=modelClass.getCanonicalName();
 		Model model = UMLFactory.eINSTANCE.createModel();
         model.setName(modelName);
         
@@ -122,23 +127,6 @@ public class ModelImporter extends AbstractImporter{
 		uml2SpecClassifier.createGeneralization(uml2GeneralClassifier);
 	}
 	
-	private static Class<?> findModel(String className) throws ImportException 
-	{
-		try 
-		{
-			Class<?> ret = Class.forName(className);
-			
-			if(!hu.elte.txtuml.api.Model.class.isAssignableFrom(ret))
-				throw new ImportException("A subclass of Model is expected, got: " + className);
-			
-			return ret;
-		}
-		catch(ClassNotFoundException e) 
-		{
-			throw new ImportException("Cannot find class: " + className);
-		}
-    }
-
 	public static boolean instructionImport() {
 		return MethodImporter.isImporting();
 	}
