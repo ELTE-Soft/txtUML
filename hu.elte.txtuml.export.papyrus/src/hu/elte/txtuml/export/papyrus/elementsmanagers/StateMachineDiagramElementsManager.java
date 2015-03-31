@@ -13,14 +13,14 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateEditPart;
-import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.*;
 
 public class StateMachineDiagramElementsManager extends AbstractDiagramElementsManager {
 
 	private PreferencesManager preferencesManager;
 	
-	private List<String> elementsToBeAdded;
-	private List<String> edgesToBeAdded;
+	private List<java.lang.Class<?>> elementsToBeAdded;
+	private List<java.lang.Class<?>> edgesToBeAdded;
 
 	public StateMachineDiagramElementsManager(ModelManager modelManager,DiagramEditPart diagramEditPart) {
 		super(modelManager, diagramEditPart);
@@ -29,19 +29,19 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 		edgesToBeAdded = generateEdgesToBeAdded();
 	}
 	
-	private List<String> generateElementsToBeAdded() {
-		List<String> nodes = new LinkedList<String>(Arrays.asList("FinalState", "State", "Pseudostate"));
+	private List<java.lang.Class<?>> generateElementsToBeAdded() {
+		List<java.lang.Class<?>> nodes = new LinkedList<java.lang.Class<?>>(Arrays.asList(FinalState.class, State.class, Pseudostate.class));
 		
 		if(preferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_CONSTRAINT_PREF))
-			nodes.add("Constraint");
+			nodes.add(Constraint.class);
 		if(preferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_COMMENT_PREF))
-			nodes.add("Comment");
+			nodes.add(Comment.class);
 		
 		return nodes;
 	}
 	
-	private List<String> generateEdgesToBeAdded() {
-		List<String> edges = Arrays.asList("Transition");
+	private List<java.lang.Class<?>> generateEdgesToBeAdded() {
+		List<java.lang.Class<?>> edges = Arrays.asList(Transition.class);
 		return edges;
 	}
 	

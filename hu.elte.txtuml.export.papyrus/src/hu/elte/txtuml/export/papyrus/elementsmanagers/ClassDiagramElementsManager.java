@@ -14,16 +14,19 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.InterfaceEditPart;
-import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.*;
+import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.Package;
+
 
 public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 	
 	private PreferencesManager preferencesManager;
 	
-	private List<String> elementsToBeAdded;
-	private List<String> connectorsToBeAdded;
-	private List<String> propertyFieldElementsToBeAdded;
-	private List<String> methodFieldElementsToBeAdded;
+	private List<java.lang.Class<?>> elementsToBeAdded;
+	private List<java.lang.Class<?>> connectorsToBeAdded;
+	private List<java.lang.Class<?>> propertyFieldElementsToBeAdded;
+	private List<java.lang.Class<?>> methodFieldElementsToBeAdded;
 	
 	public ClassDiagramElementsManager(ModelManager modelManager,DiagramEditPart diagramEditPart) {
 		super(modelManager, diagramEditPart);
@@ -34,41 +37,41 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 		methodFieldElementsToBeAdded = generateMethodFieldElementsToBeAdded();
 	}
 
-	private List<String> generateElementsToBeAdded() {
-		List<String> nodes = new LinkedList<String>(Arrays.asList("Class", "Interface", "Package", "Component"));
+	private List<java.lang.Class<?>> generateElementsToBeAdded() {
+		List<java.lang.Class<?>> nodes = new LinkedList<java.lang.Class<?>>(Arrays.asList(Class.class, Interface.class, Package.class, Component.class));
 		
 		if(preferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_CONSTRAINT_PREF))
-			nodes.add("Constraint");
+			nodes.add(Constraint.class);
 		if(preferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_COMMENT_PREF))
-			nodes.add("Comment");
+			nodes.add(Comment.class);
 		if(preferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_SIGNAL_PREF))
-			nodes.add("Signal");
+			nodes.add(Signal.class);
 		
 		return nodes;
 	}
 	
-	private List<String> generateConnectorsToBeAdded() {
-		List<String> connectors = Arrays.asList("Association", "Generalization", "InterfaceRealization");
+	private List<java.lang.Class<?>> generateConnectorsToBeAdded() {
+		List<java.lang.Class<?>> connectors = Arrays.asList(Association.class, Generalization.class, InterfaceRealization.class);
 		return connectors;
 	}
 	
-	private List<String> generatePropertyFieldElementsToBeAdded() {
-		List<String> properties= Arrays.asList("Property","Port");
+	private List<java.lang.Class<?>> generatePropertyFieldElementsToBeAdded() {
+		List<java.lang.Class<?>> properties= Arrays.asList(Property.class, Port.class);
 		return properties;
 	}
 	
-	private List<String> generateMethodFieldElementsToBeAdded() {
-		List<String> methods = Arrays.asList("Operation","Reception");
+	private List<java.lang.Class<?>> generateMethodFieldElementsToBeAdded() {
+		List<java.lang.Class<?>> methods = Arrays.asList(Operation.class, Reception.class);
 		return methods;
 	}
 	
 
 	public void addElementsToDiagram(List<Element> elements) throws ServiceException {
-		List<String> types = new LinkedList<String>();
+		List<java.lang.Class<?>> types = new LinkedList<java.lang.Class<?>>();
 		types.addAll(elementsToBeAdded);
 		types.addAll(connectorsToBeAdded);
 		
-		for(String type : types){
+		for(java.lang.Class<?> type : types){
 			List<Element> listofTypes = modelManager.getElementsOfTypeFromList(elements, type);
 			if(!listofTypes.isEmpty()){
 				super.addElementsToEditpart(diagramEditPart, listofTypes);

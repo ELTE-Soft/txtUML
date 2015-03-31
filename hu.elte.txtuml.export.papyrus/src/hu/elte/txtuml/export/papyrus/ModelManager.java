@@ -3,13 +3,14 @@ package hu.elte.txtuml.export.papyrus;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.infra.core.resource.ModelSet;
 import org.eclipse.papyrus.infra.core.resource.NotFoundException;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.uml.tools.model.UmlModel;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Package;;
 
 public class ModelManager {
 	
@@ -19,19 +20,22 @@ public class ModelManager {
 		this.editor = editor;
 	}
 
-	
-	public List<Element> getElementsOfTypes(List<String> types) throws  NotFoundException, ExecutionException, ServiceException{
+	public Element getRoot() throws ServiceException, NotFoundException{
 		ModelSet modelSet = editor.getServicesRegistry().getService(ModelSet.class);
 		UmlModel umlModel = (UmlModel) modelSet.getModel(UmlModel.MODEL_ID);
-		Element container = (Element) umlModel.lookupRoot();
+		Element root = (Element) umlModel.lookupRoot();
+		return root;
+	}
+	
+	public List<Element> getElementsOfTypes(Element container, List<java.lang.Class<?>> types){
 		List<Element> elements = getTypesRecursively(container, types); 
 		return elements;
 	}
 	
-	private List<Element> getTypesRecursively(Element container, List<String> types) throws ExecutionException{
+	private List<Element> getTypesRecursively(Element container, List<java.lang.Class<?>> types){
  		List<Element> packages = new LinkedList<Element>();
- 		for(String type : types){
-	 		if(container.eClass().getName().compareTo(type) == 0){			
+ 		for(java.lang.Class<?> type : types){
+	 		if(isElementOfType(container, type)){			
 				packages.add(container);
 			}
  		}
@@ -59,7 +63,7 @@ public class ModelManager {
 		List<Element> result = new LinkedList<Element>();
 		result.addAll(ownedElements);
 		for (Element act : ownedElements) {
-			if (act.eClass().getName().compareTo("Package") != 0){
+			if (!isElementOfType(act, Package.class)){
 				result.addAll(recursive(act.getOwnedElements()));
 			}
 		}
@@ -68,10 +72,10 @@ public class ModelManager {
 	
 	
 	
-	public List<Element> getElementsOfTypeFromList(List<Element> elements, String type){
+	public List<Element> getElementsOfTypeFromList(List<Element> elements, java.lang.Class<?> type){
 		List<Element> result = new LinkedList<Element>(); 
 		for(Element element : elements){
-			if (element.eClass().getName().compareTo(type) == 0){
+			if (isElementOfType(element, type)){
 				result.add(element);
 			}
 		}
@@ -79,11 +83,17 @@ public class ModelManager {
 	}
 	
 
-	public List<Element> getElementsOfTypesFromList(List<Element> elements, List<String> types){
+	public List<Element> getElementsOfTypesFromList(List<Element> elements, List<java.lang.Class<?>> types){
 		List<Element> all = new LinkedList<Element>();
-		for(String type : types){
+		for(java.lang.Class<?> type : types){
 			all.addAll(getElementsOfTypeFromList(elements, type));
 		}
 		return all;
+	}
+	
+	private boolean isElementOfType(Element element, java.lang.Class<?> type){
+		EClass eclass = element.eClass();
+		Class<?> cls = eclass.getInstanceClass();
+		return cls == type;
 	}
 }

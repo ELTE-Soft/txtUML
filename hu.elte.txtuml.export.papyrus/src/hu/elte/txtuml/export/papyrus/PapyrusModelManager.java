@@ -13,7 +13,6 @@ import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
@@ -26,7 +25,11 @@ import org.eclipse.papyrus.uml.diagram.activity.CreateActivityDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.clazz.CreateClassDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.statemachine.CreateStateMachineDiagramCommand;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.Package;
+import org.eclipse.uml2.uml.StateMachine;
 
 public class PapyrusModelManager {
 	
@@ -42,7 +45,7 @@ public class PapyrusModelManager {
 		this.editor = editor;
 	}
 
-	public void createAndFillDiagrams() throws ExecutionException, NotFoundException, ServiceException {
+	public void createAndFillDiagrams() throws NotFoundException, ServiceException {
 		createDiagrams();	
 		addElementsToDiagrams();
 		editor.doSave(new NullProgressMonitor());
@@ -56,20 +59,22 @@ public class PapyrusModelManager {
 	 * @throws ExecutionException
 	 * @throws NotFoundException
 	 */
-	private void createDiagrams() throws ServiceException, ExecutionException, NotFoundException{
+	private void createDiagrams() throws ServiceException, NotFoundException{
 
+		Element root = modelManager.getRoot();
+		
 		if(preferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_PREF)){
-			List<Element> packages = modelManager.getElementsOfTypes(Arrays.asList("Model", "Package"));
+			List<Element> packages = modelManager.getElementsOfTypes(root, Arrays.asList(Model.class, Package.class));
 			diagramManager.createDiagrams(packages, new CreateClassDiagramCommand());
 		}
 	
 		if(preferencesManager.getBoolean(PreferencesManager.ACTIVITY_DIAGRAM_PREF)){
-			List<Element> activities = modelManager.getElementsOfTypes(Arrays.asList("Activity"));
+			List<Element> activities = modelManager.getElementsOfTypes(root, Arrays.asList(Activity.class));
 			diagramManager.createDiagrams(activities, new CreateActivityDiagramCommand());
 		}
 		
 		if(preferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_PREF)){
-			List<Element> statemachines = modelManager.getElementsOfTypes(Arrays.asList("StateMachine"));
+			List<Element> statemachines = modelManager.getElementsOfTypes(root, Arrays.asList(StateMachine.class));
 			diagramManager.createDiagrams(statemachines, new CreateStateMachineDiagramCommand());
 		}
 	

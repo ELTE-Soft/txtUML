@@ -28,8 +28,7 @@ public class InstantHandler extends AbstractHandler implements IHandler {
 
 		
 		MainAction ma = new MainAction(project.getName(), getFileNameWithOutExtension(file), file.getRawLocationURI().toString());
-		IAction act = new Action() {};
-		ma.run(act);
+		ma.run();
 		return null;
 	}
 	

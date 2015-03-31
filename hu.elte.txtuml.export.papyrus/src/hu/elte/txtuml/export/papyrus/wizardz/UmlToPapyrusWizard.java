@@ -38,8 +38,7 @@ public class UmlToPapyrusWizard extends Wizard {
 	preferencesPage.setPreferences();
 	File f = new File(selectUmlPage.getUMLPath()); 
     MainAction ma = new MainAction(selectUmlPage.getProjectName(), getFileNameWithOutExtension(f), f.toURI().toString());
-    IAction act = new Action() {};
-	ma.run(act);
+	ma.run();
     return true;
   }
   

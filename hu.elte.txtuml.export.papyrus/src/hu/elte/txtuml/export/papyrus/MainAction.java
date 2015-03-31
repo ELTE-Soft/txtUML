@@ -4,14 +4,12 @@ import static org.eclipse.papyrus.uml.diagram.wizards.Activator.log;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
@@ -37,17 +35,24 @@ public class MainAction {
 	
 	/**
 	 * The constructor.
+	 * @param projectName - The name of the project in which the Papyrus Model will be created.
+	 * if the project does not exist it will be created.
+	 * @param modelName - The Name of the Papyrus Model
+	 * @param sourceUMLpath - Sourcepath of the ECore uml2 model 
 	 */
-	public MainAction(String project, String model, String sourceUMLpath) {
-		Projectname = project;
-		Modelname = model;
+	public MainAction(String projectName, String modelName, String sourceUMLpath) {
+		Projectname = projectName;
+		Modelname = modelName;
 		SourceUMLPath = sourceUMLpath;
 		window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		projectManager = new ProjectManager();
 		papyrusModelCreator = new PapyrusModelCreator();
 	}
 	
-	public void run(IAction action) {
+	/**
+	 * 
+	 */
+	public void run() {
 		IProject project = projectManager.createProject(Projectname);
 		projectManager.openProject(project);
 		createPapyrusProject();

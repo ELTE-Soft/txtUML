@@ -1,12 +1,5 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-
 import hu.elte.txtuml.export.papyrus.MainAction;
 import hu.elte.txtuml.export.papyrus.ProjectManager;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
@@ -16,17 +9,14 @@ import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.export.DiagramExporter;
 import hu.elte.txtuml.layout.lang.Diagram;
 
+import java.io.IOException;
+import java.net.URLClassLoader;
+
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.CommonPlugin;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -37,10 +27,18 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 
+/**
+ * Wizard for visualization of txtUML models 
+ *
+ * @author András Dobreff
+ */
 public class TxtUMLVisuzalizeWizard extends Wizard{
 	protected VisualizeTxtUMLPage selectTxtUMLPage;
 	private VisualizeTxtUMLPage selectTxtUmlPage;
 	
+	/**
+	 * The Constructor
+	 */
 	public TxtUMLVisuzalizeWizard() {
 		super();
 	    setNeedsProgressMonitor(true);
@@ -71,10 +69,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 		preferncesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT, txtUMLProjectName);
 		preferncesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL, txtUMLModelName);
 		preferncesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, txtUMLLayoutName);
-	
-		
-		
-		/******** Diagram Layout ************/
+
 		try(URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(txtUMLProjectName, parentClassLoader)){
 			Class<?> txtUMLLayoutClass = loader.loadClass(txtUMLLayoutName); 
 			@SuppressWarnings("unchecked")
@@ -86,10 +81,8 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 			MessageDialog.openInformation(window.getShell(),"Layout Diagram Error",e.getMessage());
 			e.printStackTrace();
 		}
-		
-		/***********************************/
-		/*********  Export *************/
-    	try (URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(txtUMLProjectName, parentClassLoader)){
+
+		try (URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(txtUMLProjectName, parentClassLoader)){
     		Class<?> txtUMLModelClass = loader.loadClass(txtUMLModelName);
     		String uri = URI.createPlatformResourceURI(txtUMLProjectName+"/"+folder, false).toString();
 			UML2.exportModel(txtUMLModelClass, uri);
@@ -99,9 +92,8 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 			e.printStackTrace();
 			return false;
 		}
-	    /***********************************/
-		/********* Visualization ***********/
-    	try{
+
+		try{
 	    	URI umlFileURI = URI.createFileURI(txtUMLProjectName+"/"+folder+"/"+txtUMLModelName+".uml");
 	    	URI UmlFileResURI = CommonPlugin.resolve(umlFileURI);
 	    	IFile UmlFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(UmlFileResURI.toFileString()));
@@ -121,15 +113,13 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 			projectManager.deleteProjectbyName(txtUMLModelName);
 
 	        MainAction ma  = new MainAction(txtUMLModelName, txtUMLModelName, UmlFile.getRawLocationURI().toString());
-			IAction act = new Action() {};
-			ma.run(act);
+			ma.run();
     	}catch(Exception e){
     		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 			MessageDialog.openInformation(window.getShell(),"txtUML visualization Error",e.getClass()+":\n"+e.getMessage());
 			e.printStackTrace();
 			return false;
     	}
-    	/***********************************/
 		return true;
 	}
 

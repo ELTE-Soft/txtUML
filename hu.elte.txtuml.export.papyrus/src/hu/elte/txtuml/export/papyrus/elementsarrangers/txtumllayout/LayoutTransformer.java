@@ -10,16 +10,17 @@ import org.eclipse.draw2d.geometry.Rectangle;
 /**
  * Represents a Transformer, considering the unity scale.
  * Applies transformations on the given Objects' coordinates
- * @author Dobreff András
+ * @author András Dobreff
  */
 public class LayoutTransformer {
 
 	/**
 	 * Constraints to the Position of the Origo
-	 * @author Andris
+	 * @author András Dobreff
 	 */
+	@SuppressWarnings("javadoc")
 	public enum OrigoConstraint{
-		UpperLeft, UpperRight, BottomLeft, BottomRight, None
+		UpperLeft, UpperRight, BottomLeft,BottomRight, None
 	};
 
 	private int scaleX;
@@ -89,6 +90,7 @@ public class LayoutTransformer {
 	/**
 	 * Transforms the Points with the given settings (scaling, gap, axisfilling)
 	 * @param objects
+	 * @param connections 
 	 */
 	public void doTranformations(Map<?, Rectangle> objects, Map<?, List<Point>> connections) {
 		translateOrigo(objects, connections);

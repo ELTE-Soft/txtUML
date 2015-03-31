@@ -9,12 +9,12 @@ import java.util.List;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
-import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.*;
 
 public class ActivityDiagramElementsManager extends AbstractDiagramElementsManager{
 	
-	private List<String> NodesToBeAdded;
-	private List<String> ConnectorsToBeAdded;
+	private List<java.lang.Class<?>> NodesToBeAdded;
+	private List<java.lang.Class<?>> ConnectorsToBeAdded;
 	
 	
 	public ActivityDiagramElementsManager(ModelManager modelManager,DiagramEditPart diagramEditPart) {
@@ -23,21 +23,24 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 		ConnectorsToBeAdded = generateConnectorsToBeAdded(); 
 	}
 
-	private List<String> generateNodesToBeAdded() {
-		List<String> nodes = Arrays.asList("InitialNode", "FinalNode", "ForkNode", "JoinNode",
-				"DecisionNode", "MergeNode", "OpaqueAction", "ReadSelfAction",
-				"AddVariableValueAction", "AddStructuralFeatureValueAction", "SendSignalAction",
-				"CallOperationAction");
+	private List<java.lang.Class<?>> generateNodesToBeAdded() {
+		List<java.lang.Class<?>> nodes = Arrays.asList(
+				InitialNode.class, FinalNode.class,
+				ForkNode.class, JoinNode.class,
+				DecisionNode.class, MergeNode.class,
+				OpaqueAction.class, ReadSelfAction.class,
+				AddVariableValueAction.class, AddStructuralFeatureValueAction.class,
+				SendSignalAction.class, CallOperationAction.class);
 		return nodes;
 	}
 	
-	private List<String> generateConnectorsToBeAdded() {
-		List<String> connectors = Arrays.asList("ControlFlow", "ObjectFlow");
+	private List<java.lang.Class<?>> generateConnectorsToBeAdded() {
+		List<java.lang.Class<?>> connectors = Arrays.asList(ControlFlow.class, ObjectFlow.class);
 		return connectors;
 	}
 
 	public void addElementsToDiagram(List<Element> elements) throws ServiceException {
-		List<String> types = new LinkedList<String>();
+		List<java.lang.Class<?>> types = new LinkedList<java.lang.Class<?>>();
 		types.addAll(NodesToBeAdded);
 		types.addAll(ConnectorsToBeAdded);
 		
@@ -45,7 +48,7 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 		EditPart activityEditpart = (EditPart) diagramEditPart.getChildren().get(0);
 		EditPart activityContentEditpart = (EditPart) activityEditpart.getChildren().get(5);
 		
-		for(String type : types){
+		for(java.lang.Class<?> type : types){
 			List<Element> listofTypes = modelManager.getElementsOfTypeFromList(elements, type);
 			if(!listofTypes.isEmpty()){
 				super.addElementsToEditpart(activityContentEditpart, listofTypes);
