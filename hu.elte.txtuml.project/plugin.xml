@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="hu.elte.txtuml.project"
+            name="txtUML">
+      </category>
+      <wizard
+            category="hu.elte.txtuml.project"
+            class="hu.elte.txtuml.project.wizards.TxtUMLProject"
+            icon="icons/sample.gif"
+            id="hu.elte.txtuml.project.wizards.TxtUMLProject"
+            name="txtUML Project">
+      </wizard>
+   </extension>
+
+
+</plugin>
