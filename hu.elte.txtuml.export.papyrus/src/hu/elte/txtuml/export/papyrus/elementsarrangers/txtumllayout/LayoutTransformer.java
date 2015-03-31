@@ -18,7 +18,6 @@ public class LayoutTransformer {
 	 * Constraints to the Position of the Origo
 	 * @author András Dobreff
 	 */
-	@SuppressWarnings("javadoc")
 	public enum OrigoConstraint{
 		UpperLeft, UpperRight, BottomLeft,BottomRight, None
 	};

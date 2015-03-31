@@ -20,6 +20,13 @@ public class ModelManager {
 	private IMultiDiagramEditor editor;
 	private MultiMap<Class<?>, Element> modelMap;
 
+	public Element getRoot() throws ServiceException, NotFoundException{
+		ModelSet modelSet = editor.getServicesRegistry().getService(ModelSet.class);
+		UmlModel umlModel = (UmlModel) modelSet.getModel(UmlModel.MODEL_ID);
+		Element root = (Element) umlModel.lookupRoot();
+		return root;
+	}
+	
 	public ModelManager(IMultiDiagramEditor editor) throws ServiceException, NotFoundException{
 		this.editor = editor;
 		modelMap = buildUpMap();
@@ -35,25 +42,20 @@ public class ModelManager {
 		return result;
 	}
 
-	private void runThroughModelRecursive(Queue<Element> queue, MultiMap<Class<?>, Element> map) {
-		if(!queue.isEmpty()){
-			Element head = queue.poll();
-			List<Element> children = head.getOwnedElements();
-			if(children != null)
-				queue.addAll(children);
-			map.put(head.eClass().getInstanceClass(), head);
-			runThroughModelRecursive(queue, map);
-		}else{
-			return;
+		private void runThroughModelRecursive(Queue<Element> queue, MultiMap<Class<?>, Element> map) {
+			if(!queue.isEmpty()){
+				Element head = queue.poll();
+				List<Element> children = head.getOwnedElements();
+				if(children != null)
+					queue.addAll(children);
+				map.put(head.eClass().getInstanceClass(), head);
+				runThroughModelRecursive(queue, map);
+			}else{
+				return;
+			}
 		}
-	}
 
-	public Element getRoot() throws ServiceException, NotFoundException{
-		ModelSet modelSet = editor.getServicesRegistry().getService(ModelSet.class);
-		UmlModel umlModel = (UmlModel) modelSet.getModel(UmlModel.MODEL_ID);
-		Element root = (Element) umlModel.lookupRoot();
-		return root;
-	}
+
 	
 	public List<Element> getElementsOfTypes(List<java.lang.Class<?>> types){
 		List<Element> elements = new LinkedList<Element>();
@@ -72,16 +74,16 @@ public class ModelManager {
 		return allElements;
 	}
 	
-	private List<Element> recursive(List<Element> ownedElements){
-		List<Element> result = new LinkedList<Element>();
-		result.addAll(ownedElements);
-		for (Element act : ownedElements) {
-			if (!isElementOfType(act, Package.class)){
-				result.addAll(recursive(act.getOwnedElements()));
+		private List<Element> recursive(List<Element> ownedElements){
+			List<Element> result = new LinkedList<Element>();
+			result.addAll(ownedElements);
+			for (Element act : ownedElements) {
+				if (!isElementOfType(act, Package.class)){
+					result.addAll(recursive(act.getOwnedElements()));
+				}
 			}
+			return result;
 		}
-		return result;
-	}
 	
 	
 	
