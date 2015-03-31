@@ -38,7 +38,7 @@ public class PapyrusModelManager {
 	private PreferencesManager preferencesManager;
 	private IEditorPart editor;
 
-	public PapyrusModelManager(IMultiDiagramEditor editor) throws ServiceException {
+	public PapyrusModelManager(IMultiDiagramEditor editor) throws ServiceException, NotFoundException {
 		preferencesManager = new PreferencesManager();
 		modelManager = new ModelManager(editor);
 		diagramManager = new DiagramManager(editor);
@@ -59,22 +59,20 @@ public class PapyrusModelManager {
 	 * @throws ExecutionException
 	 * @throws NotFoundException
 	 */
-	private void createDiagrams() throws ServiceException, NotFoundException{
-
-		Element root = modelManager.getRoot();
+	private void createDiagrams() throws ServiceException{
 		
 		if(preferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_PREF)){
-			List<Element> packages = modelManager.getElementsOfTypes(root, Arrays.asList(Model.class, Package.class));
+			List<Element> packages = modelManager.getElementsOfTypes(Arrays.asList(Model.class, Package.class));
 			diagramManager.createDiagrams(packages, new CreateClassDiagramCommand());
 		}
 	
 		if(preferencesManager.getBoolean(PreferencesManager.ACTIVITY_DIAGRAM_PREF)){
-			List<Element> activities = modelManager.getElementsOfTypes(root, Arrays.asList(Activity.class));
+			List<Element> activities = modelManager.getElementsOfTypes(Arrays.asList(Activity.class));
 			diagramManager.createDiagrams(activities, new CreateActivityDiagramCommand());
 		}
 		
 		if(preferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_PREF)){
-			List<Element> statemachines = modelManager.getElementsOfTypes(root, Arrays.asList(StateMachine.class));
+			List<Element> statemachines = modelManager.getElementsOfTypes(Arrays.asList(StateMachine.class));
 			diagramManager.createDiagrams(statemachines, new CreateStateMachineDiagramCommand());
 		}
 	
