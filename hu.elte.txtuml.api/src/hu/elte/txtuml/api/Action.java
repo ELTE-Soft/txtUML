@@ -101,7 +101,13 @@ public abstract class Action implements ModelElement {
 	 * 
 	 * @param cond
 	 * @param thenBody
+	 *            the block to be performed if the condition is evaluated
+	 *            to <code>true</code>
 	 * @param elseBody
+	 *            the block to be performed if the condition is evaluated
+	 *            to <code>false</code>
+	 * @throws NullPointerException
+	 *             if either parameter is <code>null</code>
 	 */
 	public static void If(Condition cond, BlockBody thenBody, BlockBody elseBody) {
 

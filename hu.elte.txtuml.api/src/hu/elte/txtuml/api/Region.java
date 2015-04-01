@@ -8,8 +8,26 @@ public abstract class Region extends StateMachine {
 
 	private Vertex currentVertex;
 
-	public abstract String getIdentifier(); 
-	
+	public abstract String getIdentifier();
+
+	/**
+	 * The sole constructor of <code>Region</code>.
+	 * <p>
+	 * Sets the <code>currentVertex</code> field to an instance of this region's
+	 * initial pseudostate. The initial pseudostate is a nested class of the
+	 * <i>actual region class</i> which is a subclass of
+	 * {@link StateMachine.Initial}.
+	 * <p>
+	 * The <i>actual region class</i> refers to the class represented by the
+	 * <code>java.lang.Class<?></code> object which is returned by the
+	 * <code>getClass</code> method when this constructor is run.
+	 * <p>
+	 * If two or more initial pseudostates exist in this region (two or more
+	 * nested classes which extend <code>StateMachine.Initial</code>), then an
+	 * unspecified one will be used, without any runtime errors or warnings.
+	 * However, it is indeed determined as an error in the model, so this case
+	 * has to be completely avoided.
+	 */
 	Region() {
 		super();
 
@@ -21,10 +39,33 @@ public abstract class Region extends StateMachine {
 		}
 	}
 
+	/**
+	 * Returns the value of the <code>currentVertex</code> field, which is an
+	 * object of the class which represents the currently active vertex of this
+	 * region. If this method is called when no other methods of this class has
+	 * been called or all of them has already returned, then this method returns
+	 * either <code>null</code> (if this region is inactive) or an instance of a
+	 * state class (an object, for which
+	 * <code>instanceof StateMachine.State</code> returns true).
+	 * 
+	 * @return an object of the currently active vertex in this region
+	 */
 	final Vertex getCurrentVertex() {
 		return currentVertex;
 	}
 
+	/**
+	 * Processes a signal and changes to another state if necessary (possibly
+	 * after entering and exiting multiple vertices). Also executes every
+	 * required exit and entry actions, transition effects. Stops after entering
+	 * the first state which is not a composite state (and as a state, also not
+	 * an initial or choice pseudostate).
+	 * 
+	 * @param signal
+	 *            the signal object to be processed
+	 * @throws NullPointerException
+	 *             if <code>signal</code> is <code>null</code>
+	 */
 	void processSignal(Signal signal) {
 		if (currentVertex == null) { // no state machine
 			return;
@@ -39,13 +80,40 @@ public abstract class Region extends StateMachine {
 		}
 	}
 
+	/**
+	 * This private inner class
+	 * TODO
+	 */
 	private class TransitionExecutor {
 
+		/**
+		 * An instance of the class representing the transition which is to be
+		 * executed.
+		 */
 		private Transition transition;
+
+		/**
+		 * The class representing the transition which is to be executed.
+		 */
 		private Class<?> transitionClass;
+
+		/**
+		 * The class representing the source vertex of the transition which is
+		 * to be executed.
+		 */
 		private Class<? extends Vertex> from;
+
+		/**
+		 * The class representing the target vertex of the transition which is
+		 * to be executed.
+		 */
 		private Class<? extends Vertex> to;
 
+		/**
+		 * Sole constructor of <code>TransitionExecutor</code>. Sets the values
+		 * of all its fields to <code>null</code>.
+		 *
+		 */
 		TransitionExecutor() {
 			this.transition = null;
 			this.transitionClass = null;
@@ -53,6 +121,11 @@ public abstract class Region extends StateMachine {
 			this.to = null;
 		}
 
+		/**
+		 * 
+		 * TODO
+		 * @return <code>true</code> if this instance is not yet set to execute a certain
+		 */
 		boolean isEmpty() {
 			return transition == null;
 		}
@@ -77,7 +150,7 @@ public abstract class Region extends StateMachine {
 			if (ModelExecutor.Settings.executorLog()) {
 				Action.executorFormattedLog(
 						"%10s %-15s changes vertex: from: %-10s tran: %-18s to: %-10s%n",
-						getClass().getSimpleName(), getIdentifier(),
+						Region.this.getClass().getSimpleName(), getIdentifier(),
 						from.getSimpleName(), transitionClass.getSimpleName(),
 						to.getSimpleName());
 			}
@@ -250,8 +323,8 @@ public abstract class Region extends StateMachine {
 			if (ModelExecutor.Settings.executorLog()) {
 				Action.executorFormattedLog(
 						"%10s %-15s   exits vertex: %-18s%n", getClass()
-								.getSimpleName(), getIdentifier(), currentVertex
-								.getClass().getSimpleName());
+								.getSimpleName(), getIdentifier(),
+						currentVertex.getClass().getSimpleName());
 			}
 			currentVertex.exit();
 			@SuppressWarnings("unchecked")
@@ -275,7 +348,8 @@ public abstract class Region extends StateMachine {
 							initClass.getSimpleName());
 				}
 				currentVertex = getInnerClassInstance(initClass);
-				// no entry action needs to be called: initial pseudostates have none
+				// no entry action needs to be called: initial pseudostates have
+				// none
 				processSignal(null); // step forward from initial pseudostate
 			}
 		}
