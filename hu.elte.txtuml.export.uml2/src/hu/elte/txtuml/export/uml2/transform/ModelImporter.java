@@ -53,6 +53,41 @@ public class ModelImporter extends AbstractImporter{
 	{
 		return importModel(ElementFinder.findModel(modelClassName),path);
 	}
+	
+	public static ResourceSet getResourceSet()
+	{
+		return resourceSet;
+	}
+
+	public static Class<?> getModelClass() 
+	{
+		return modelClass;
+	}
+
+	public static Profile getProfile()
+	{
+		return currentProfile;
+	}
+
+	public static boolean isImporting()
+	{
+		return importing;
+	}
+	
+	static org.eclipse.uml2.uml.Type importType(Class<?> sourceClass) 
+	{
+		if(sourceClass == ModelInt.class) 
+			return UMLPrimitiveTypes.getInteger();
+		else if(sourceClass == ModelBool.class) 
+			return UMLPrimitiveTypes.getBoolean();
+		else if(sourceClass == ModelString.class) 
+			return UMLPrimitiveTypes.getString();
+		else if(ElementTypeTeller.isClass(sourceClass))
+			return currentModel.getOwnedType(sourceClass.getSimpleName());
+		else
+			return null;
+	}
+	
 	private static void initModelImport(String path) throws ImportException
 	{
 		importing=true;
@@ -125,10 +160,6 @@ public class ModelImporter extends AbstractImporter{
 				(Classifier) currentModel.getOwnedMember(general.getSimpleName());
 		
 		uml2SpecClassifier.createGeneralization(uml2GeneralClassifier);
-	}
-	
-	public static boolean instructionImport() {
-		return MethodImporter.isImporting();
 	}
 	
 	private static void importClassifier(Class<?> sourceClass) throws ImportException
@@ -224,20 +255,6 @@ public class ModelImporter extends AbstractImporter{
     	ElementModifiersAssigner.setModifiers(property,field);
     }
     
-    static org.eclipse.uml2.uml.Type importType(Class<?> sourceClass) 
-    {
-        if(sourceClass == ModelInt.class) 
-        	return UMLPrimitiveTypes.getInteger();
-        else if(sourceClass == ModelBool.class) 
-        	return UMLPrimitiveTypes.getBoolean();
-        else if(sourceClass == ModelString.class) 
-        	return UMLPrimitiveTypes.getString();
-        else if(ElementTypeTeller.isClass(sourceClass))
-        	return currentModel.getOwnedType(sourceClass.getSimpleName());
-        else
-        	return null;
-    }
-	
     private static void importMemberFunctionsWithoutBodies() throws ImportException
     {
 		for(Class<?> c : modelClass.getDeclaredClasses()) 
@@ -390,25 +407,6 @@ public class ModelImporter extends AbstractImporter{
   		UMLResourcesUtil.init(resourceSet);
     }
     
-    public static ResourceSet getResourceSet()
-    {
-    	return resourceSet;
-    }
-    
-    public static Class<?> getModelClass() 
-    {
-		return modelClass;
-	}
-	
-	public static Profile getProfile()
-	{
-		return currentProfile;
-	}
-	
-    public static boolean isImporting()
-    {
-    	return importing;
-    }
     private static Profile currentProfile=null;
     private static ResourceSet resourceSet;
 	private static Model currentModel=null;

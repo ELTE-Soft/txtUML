@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.aspects;
 
-
-
 import hu.elte.txtuml.api.ModelElement;
 
 import java.lang.reflect.Method;

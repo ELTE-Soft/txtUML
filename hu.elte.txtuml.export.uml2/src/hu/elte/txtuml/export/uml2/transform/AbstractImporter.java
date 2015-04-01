@@ -6,6 +6,11 @@ import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.PseudostateKind;
 import org.eclipse.uml2.uml.Region;
 
+/**
+ * Represents an importer. Every importer must extend this class or one of it's subclasses.
+ * @author Ádám Ancsin
+ *
+ */
 abstract class AbstractImporter {
 	
 	protected static void importWarning(String msg)

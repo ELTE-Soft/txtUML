@@ -35,12 +35,12 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValuePin;
 import org.eclipse.uml2.uml.Variable;
 
+/**
+ * Represents an importer that imports methods or instructions/actions/etc. in method bodies.
+ * @author Ádám Ancsin
+ *
+ */
 abstract class AbstractMethodImporter extends AbstractImporter {
-
-	public static boolean isImporting()
-	{
-		return importing;
-	}
 
 	protected static ReadVariableAction createReadVariableAction(String variableName,Type variableType)
 	{
@@ -60,10 +60,11 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		ReadStructuralFeatureAction readStrFeatAction = (ReadStructuralFeatureAction) 
 				currentActivity.createOwnedNode("get_"+fieldQualifiedName,UMLPackage.Literals.READ_STRUCTURAL_FEATURE_ACTION);
 
-		Property field=getClassField(targetClass,fieldName);
-		readStrFeatAction.setStructuralFeature(field);
+		Property property=getClassProperty(targetClass,fieldName);
+		readStrFeatAction.setStructuralFeature(property);
 
-		ValuePin rsfa_object=(ValuePin) readStrFeatAction.createObject(readStrFeatAction.getName()+"_input",targetType,UMLPackage.Literals.VALUE_PIN);
+		ValuePin rsfa_object = (ValuePin)
+				readStrFeatAction.createObject(readStrFeatAction.getName()+"_input",targetType,UMLPackage.Literals.VALUE_PIN);
 		addOpaqueExpressionToValuePin(rsfa_object,targetName,targetType);
 
 		return readStrFeatAction;
@@ -87,65 +88,39 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		lastNode=addVarValAction;
 
 	}
-	protected static void setStructuralFeatureValue(ModelClass targetClass, String fieldName,ModelIdentifiedElement value, Type valueType)
+	
+	protected static void setStructuralFeatureValue
+		(ModelClass targetClass, String fieldName, ModelIdentifiedElement value, Type valueType) 
 	{
-		String targetName=getObjectIdentifier(targetClass);
-		String valueExpr=getExpression(value);
-		Type targetType=ModelImporter.importType(targetClass.getClass());
-		String fieldQualifiedName=targetName+"."+fieldName;
-		AddStructuralFeatureValueAction addStrFeatValAction = (AddStructuralFeatureValueAction) 
-				currentActivity.createOwnedNode(fieldQualifiedName+":="+valueExpr,UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION);
+		String targetName = getObjectIdentifier(targetClass);
+		String valueExpr = getExpression(value);
+		Type targetType = ModelImporter.importType(targetClass.getClass());
+		String fieldQualifiedName = targetName + "." + fieldName;
+		String actionName = fieldQualifiedName + ":=" + valueExpr;
+		
+		AddStructuralFeatureValueAction addStrFeatValAction = (AddStructuralFeatureValueAction) currentActivity
+				.createOwnedNode(actionName,
+						UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION);
 
-		Property field=getClassField(targetClass,fieldName);
-		addStrFeatValAction.setStructuralFeature(field);
+		Property property = getClassProperty(targetClass, fieldName);
+		addStrFeatValAction.setStructuralFeature(property);
 		addStrFeatValAction.setIsReplaceAll(true);
 
-		ValuePin asfva_object=(ValuePin) addStrFeatValAction.createObject(addStrFeatValAction.getName()+"_input",targetType,UMLPackage.Literals.VALUE_PIN);
-		addOpaqueExpressionToValuePin(asfva_object,targetName,targetType);
+		ValuePin objectPin = (ValuePin) addStrFeatValAction.createObject(
+				actionName + "_input", 
+				targetType,
+				UMLPackage.Literals.VALUE_PIN
+			);
+		addOpaqueExpressionToValuePin(objectPin, targetName, targetType);
 
+		ValuePin valuePin = (ValuePin) addStrFeatValAction.createValue(
+				actionName + "_value", valueType,
+				UMLPackage.Literals.VALUE_PIN
+			);
+		addExpressionToValuePin(valuePin, value, valueType);
 
-		ValuePin asfva_value=(ValuePin) addStrFeatValAction.createValue(addStrFeatValAction.getName()+"_value",valueType,UMLPackage.Literals.VALUE_PIN);
-		addExpressionToValuePin(asfva_value,value,valueType);
-
-		createControlFlowBetweenNodes(lastNode,addStrFeatValAction);
-		lastNode=addStrFeatValAction;
-	}
-
-	protected static Property getClassField(ModelClass target, String fieldName)
-	{
-		org.eclipse.uml2.uml.Class uml2Class = (org.eclipse.uml2.uml.Class) 
-				currentModel.getOwnedMember(target.getClass().getSimpleName());
-
-		for(Property field:uml2Class.getAllAttributes())
-		{
-			if(field.getName().equals(fieldName))
-				return field;
-		}
-		return null;
-	}
-
-	protected static boolean isObjectAFieldOfSelf(ModelIdentifiedElement object)
-	{
-		String objectName = getObjectIdentifier(object);
-		
-		return objectName.startsWith("self");
-	}
-
-	private static String getModelTypeLiteralExpression(ModelElement instance, InstanceInformation instInfo)
-	{
-		String expression=null;
-		if(instance instanceof ModelInt)
-		{
-			Integer val=Integer.parseInt(instInfo.getExpression());
-			if(val<0)
-				expression= "("+val.toString()+")";
-			else
-				expression=val.toString();
-		}
-		else
-			expression=instInfo.getExpression();
-		
-		return expression;
+		createControlFlowBetweenNodes(lastNode, addStrFeatValAction);
+		lastNode = addStrFeatValAction;
 	}
 
 	protected static String getExpression(ModelIdentifiedElement instance)
@@ -223,7 +198,11 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 
 	protected static ActivityEdge createControlFlowBetweenNodes(ActivityNode source,ActivityNode target)
 	{
-		ActivityEdge edge=currentActivity.createEdge("controlflow_from_"+source.getName()+"_to_"+target.getName(), UMLPackage.Literals.CONTROL_FLOW);
+		ActivityEdge edge=currentActivity.createEdge(
+				"controlflow_from_"+source.getName()+"_to_"+target.getName(),
+				UMLPackage.Literals.CONTROL_FLOW
+			);
+		
 		edge.setSource(source);
 		edge.setTarget(target);
 
@@ -244,7 +223,10 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 
 	protected static ActivityEdge createObjectFlowBetweenNodes(ActivityNode source,ActivityNode target)
 	{
-		ActivityEdge edge=currentActivity.createEdge("objectflow_from_"+source.getName()+"_to_"+target.getName(), UMLPackage.Literals.OBJECT_FLOW);
+		ActivityEdge edge=currentActivity.createEdge(
+				"objectflow_from_"+source.getName()+"_to_"+target.getName(),
+				UMLPackage.Literals.OBJECT_FLOW
+			);
 		edge.setSource(source);
 		edge.setTarget(target);
 		
@@ -261,34 +243,6 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		return pin;
 	}
 	
-	private static void addStringLiteralToValuePin(ValuePin pin, String expr)
-	{
-		LiteralString literal = (LiteralString)
-				pin.createValue(
-						pin.getName()+"_expression",
-						UMLPrimitiveTypes.getString(),
-						UMLPackage.Literals.LITERAL_STRING
-					);
-		
-		literal.setValue(expr);
-	}
-	
-	private static boolean isStringLiteral(ModelIdentifiedElement object)
-	{
-		if(!(object instanceof ModelString)) 
-			return false;
-		else
-		{
-			ModelString modelString=(ModelString) object;
-			InstanceInformation info=InstanceManager.getInstanceInfo(modelString);
-			if(info == null) 
-				return false;
-			else
-				return info.isLiteral();
-			
-		}
-		
-	}
 	protected static void addExpressionToValuePin(ValuePin pin, ModelIdentifiedElement value)
 	{
 		String expression=getExpression(value);
@@ -342,8 +296,70 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		opaqueExpression.getBodies().add(expression);
 		edge.setGuard(opaqueExpression);
 	}
+	
+	private static void addStringLiteralToValuePin(ValuePin pin, String expr)
+	{
+		LiteralString literal = (LiteralString)	pin.createValue(
+				pin.getName()+"_expression",
+				UMLPrimitiveTypes.getString(),
+				UMLPackage.Literals.LITERAL_STRING
+			);
+		
+		literal.setValue(expr);
+	}
+	
+	private static boolean isStringLiteral(ModelIdentifiedElement object)
+	{
+		if(!(object instanceof ModelString)) 
+			return false;
+		else
+		{
+			ModelString modelString=(ModelString) object;
+			InstanceInformation info=InstanceManager.getInstanceInfo(modelString);
+			
+			if(info == null) 
+				return false;
+			else
+				return info.isLiteral();
+			
+		}
+		
+	}
 
-	protected static boolean importing=false;
+	private static Property getClassProperty(ModelClass target, String fieldName)
+	{
+		org.eclipse.uml2.uml.Class uml2Class = (org.eclipse.uml2.uml.Class) 
+				currentModel.getOwnedMember(target.getClass().getSimpleName());
+
+		if(uml2Class == null)
+			return null;
+		
+		for(Property field:uml2Class.getAllAttributes())
+		{
+			if(field.getName().equals(fieldName))
+				return field;
+		}
+		
+		return null;
+	}
+
+	private static String getModelTypeLiteralExpression(ModelElement instance, InstanceInformation instInfo)
+	{
+		String expression=null;
+		if(instance instanceof ModelInt)
+		{
+			Integer val=Integer.parseInt(instInfo.getExpression());
+			if(val<0)
+				expression= "("+val.toString()+")";
+			else
+				expression=val.toString();
+		}
+		else
+			expression=instInfo.getExpression();
+		
+		return expression;
+	}
+
 	protected static ModelElement[] currentParameters=null;
 	protected static Method currentMethod=null;
 	protected static ActivityNode lastNode=null;

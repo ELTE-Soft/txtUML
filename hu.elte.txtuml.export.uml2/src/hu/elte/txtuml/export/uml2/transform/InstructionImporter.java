@@ -6,6 +6,8 @@ import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.api.ModelIdentifiedElement;
 import hu.elte.txtuml.api.ModelType;
 import hu.elte.txtuml.api.Signal;
+import hu.elte.txtuml.api.StateMachine;
+import hu.elte.txtuml.api.Trigger;
 import hu.elte.txtuml.api.StateMachine.Transition;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 import hu.elte.txtuml.export.uml2.utils.FieldValueAccessor;
@@ -13,6 +15,7 @@ import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
+import hu.elte.txtuml.utils.InstanceCreator;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -33,25 +36,15 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValuePin;
 import org.eclipse.uml2.uml.Variable;
 
-public class InstructionImporter extends AbstractInstructionImporter
+/**
+ * This class is responsible for importing instructions that are not actions (Action.* calls)
+ * and ModelType operations inside method bodies.
+ * 
+ * @author Ádám Ancsin
+ *
+ */
+public class InstructionImporter extends AbstractMethodImporter
 {
-	private static <T extends ModelClass, AE extends hu.elte.txtuml.api.AssociationEnd<T> > String getAssociationEndOwner(AE target)
-	{
-		Method method=null;
-		String ret=null;
-		try {
-			method=hu.elte.txtuml.api.AssociationEnd.class.getDeclaredMethod("getOwner");
-			method.setAccessible(true);
-			ret=getObjectIdentifier( (ModelIdentifiedElement) method.invoke(target) );
-			method.setAccessible(false);
-		}
-		catch(Exception e)
-		{
-			//e.printStackTrace();
-		}
-		return ret;
-	}
-	
 	static <T extends ModelClass, AE extends hu.elte.txtuml.api.AssociationEnd<T> >
 		T importAssociationEnd_SelectOne(AE target) 
 	{
@@ -149,6 +142,110 @@ public class InstructionImporter extends AbstractInstructionImporter
 		}
 	}
 
+	static Object importMethodCall(ModelClass target, String methodName, Object... args) throws ImportException
+	{
+		// this method is called at every method call where the target object is of any type that extends ModelClass 
+		// parameters: the target object, the name of the called method and the given parameters
+
+		Object returnObj=null;
+		
+		if(currentActivity!=null)
+			returnObj = importMethodCallInOperationBody(target, methodName, args);
+		else
+			returnObj= importMethodCallInGuardBody(target, methodName, args);
+	
+		return returnObj;
+		
+	}
+
+	static Object callExternal(ExternalClass target, String methodName, Object... args)
+	{
+		Method method=ElementFinder.findMethod(target.getClass(), methodName);
+		Class<?> returnType=method.getReturnType();
+		return DummyInstanceCreator.createDummyInstance(returnType);
+		// TODO import calls into UML2 model
+	}
+
+	static Object callStaticExternal(Class<?> c, String methodName, Object... args)
+	{
+		Method method=ElementFinder.findMethod(c, methodName);
+		Class<?> returnType=method.getReturnType();
+		Object ret=DummyInstanceCreator.createDummyInstance(returnType);
+		return ret;
+	
+		// TODO import calls into UML2 model
+	}
+
+	static Object importModelClassFieldGet(ModelClass target, String fieldName, Class<?> fieldType)
+	{
+		return assignField(target,fieldName,fieldType);
+	}
+	
+	static Object importExternalClassFieldGet(ExternalClass target, String fieldName, Class<?> fieldType)
+	{	
+		return assignField(target,fieldName,fieldType);
+	}
+
+	static Object importModelClassFieldSet(ModelClass target, String fieldName, Object newValue)  
+	{
+		try
+		{
+			Class<?> newValueClass = newValue.getClass();
+			Object fieldObj=assignField(target,fieldName,newValueClass);
+			
+			if(currentActivity!=null)			
+			{
+				Type newValType=ModelImporter.importType(newValue.getClass());
+				setStructuralFeatureValue(target,fieldName,(ModelIdentifiedElement)newValue,newValType);
+			}
+			
+			return fieldObj;
+		}
+		catch(Exception e)
+		{
+			//e.printStackTrace();
+		}
+		return null;
+	}
+
+	static <T> void createModelTypeLiteral(ModelType<T> inst)
+	{
+		@SuppressWarnings("unchecked")
+		T val=(T)FieldValueAccessor.getObjectFieldVal(inst,"value");
+		String expression=val.toString();
+		
+		InstanceInformation instInfo=InstanceInformation.createLiteral(expression);
+		InstanceManager.createLocalInstancesMapEntry(inst,instInfo);
+	}
+
+	static Signal initAndGetSignalInstanceOfTransition(Transition target)
+	{
+		Signal signal = (Signal) FieldValueAccessor.getObjectFieldVal(target,"signal");
+		
+		if(signal == null)
+		{
+			signal=createSignal(target.getClass());
+			
+			if(signal != null)
+			{
+				FieldValueAccessor.setObjectFieldVal(target,"signal",signal);
+				
+				String signalName=signal.getClass().getSimpleName();
+				InstanceManager.createLocalInstancesMapEntry(signal,InstanceInformation.create(signalName));
+				InstanceManager.createLocalFieldsRecursively(signal);
+			}
+		}
+		return signal;
+	}
+	
+	private static hu.elte.txtuml.api.Signal createSignal(Class<? extends StateMachine.Transition> tr) {
+		Trigger triggerAnnot = tr.getAnnotation(Trigger.class);
+		if (triggerAnnot != null) {
+			return InstanceCreator.createInstance(triggerAnnot.value());
+		}
+		return null;
+	}
+
 	private static void addParamsToCallAction
 		(CallOperationAction callAction, ModelClass target, String methodName,Object[] args) throws ImportException
 	{
@@ -165,7 +262,7 @@ public class InstructionImporter extends AbstractInstructionImporter
 			++i;
 		}
 	}
-	
+
 	private static Object importMethodCallInOperationBody
 		(ModelClass target, String methodName, Object... args) throws ImportException
 	{
@@ -202,12 +299,12 @@ public class InstructionImporter extends AbstractInstructionImporter
 
 		return returnObj;
 	}
-	
+
 	private static String createMethodCallExpression(ModelClass target, String methodName, Object... args)
 	{
 		String targetExpression = getExpression(target);
 		StringBuilder expression=new StringBuilder(targetExpression);
-		
+
 		expression.append(".");
 		expression.append(methodName);
 		expression.append("(");
@@ -216,83 +313,65 @@ public class InstructionImporter extends AbstractInstructionImporter
 		for(Object currArg : args)
 		{
 			String currArgExpr=getExpression((ModelIdentifiedElement)currArg);
-			
+
 			if(argsProcessed>0)
 				expression.append(",");
 
 			expression.append(currArgExpr);		
-			
+
 			++argsProcessed;
 		}
 		expression.append(")");
-		
+
 		return expression.toString();
 	}
-	
+
 	private static Object importMethodCallInGuardBody(ModelClass target, String methodName, Object... args)
 	{
 		String expression = createMethodCallExpression(target,methodName,args);
-		
+
 		InstanceInformation returnValInfo=InstanceInformation.createCalculated(expression);
-		
+
 		ModelElement returnObj=null;
-		try {
+		try 
+		{
 			Method method = ElementFinder.findMethod(target.getClass(),methodName);
 			Class<?> returnType= method.getReturnType();
 			returnObj=(ModelElement)DummyInstanceCreator.createDummyInstance(returnType);
-		} catch (SecurityException e1) {
+		} 
+		catch (SecurityException e1) 
+		{
 			// TODO Auto-generated catch block
 			//e1.printStackTrace();
 		}
-		
+
 		InstanceManager.createLocalInstancesMapEntry(returnObj,returnValInfo);
-		
+
 		return returnObj;
 	}
 	
-	static Object importMethodCall(ModelClass target, String methodName, Object... args) throws ImportException
+	private static <T extends ModelClass, AE extends hu.elte.txtuml.api.AssociationEnd<T> > String getAssociationEndOwner(AE target)
 	{
-		// this method is called at every method call where the target object is of any type that extends ModelClass 
-		// parameters: the target object, the name of the called method and the given parameters
-
-		Object returnObj=null;
-		
-		if(currentActivity!=null)
-			returnObj = importMethodCallInOperationBody(target, methodName, args);
-		else
-			returnObj= importMethodCallInGuardBody(target, methodName, args);
-	
-		return returnObj;
-		
-	}
-
-	static Object callExternal(ExternalClass target, String methodName, Object... args)
-	{
-		Method method=ElementFinder.findMethod(target.getClass(), methodName);
-		Class<?> returnType=method.getReturnType();
-		return DummyInstanceCreator.createDummyInstance(returnType);
-		// TODO import calls into UML2 model
-	}
-
-	static Object callStaticExternal(Class<?> c, String methodName, Object... args)
-	{
-		Method method=ElementFinder.findMethod(c, methodName);
-		Class<?> returnType=method.getReturnType();
-		Object ret=DummyInstanceCreator.createDummyInstance(returnType);
+		Method method=null;
+		String ret=null;
+		try {
+			method=hu.elte.txtuml.api.AssociationEnd.class.getDeclaredMethod("getOwner");
+			method.setAccessible(true);
+			ret=getObjectIdentifier( (ModelIdentifiedElement) method.invoke(target) );
+			method.setAccessible(false);
+		}
+		catch(Exception e)
+		{
+			//e.printStackTrace();
+		}
 		return ret;
-	
-		// TODO import calls into UML2 model
 	}
-
+	
 	private static Object assignField(Object target, String fieldName, Class<?> newValueClass) 
 	{
-	
 		Object fieldValue=FieldValueAccessor.getObjectFieldVal(target,fieldName);
-		if(fieldValue != null)
-		{
 		
-		}
-		else
+		if(fieldValue == null)
 		{
 			fieldValue=DummyInstanceCreator.createDummyInstance(newValueClass);
 			FieldValueAccessor.setObjectFieldVal(target,fieldName,fieldValue);
@@ -301,65 +380,4 @@ public class InstructionImporter extends AbstractInstructionImporter
 		return fieldValue;
 	}
 
-	static Object importModelClassFieldGet(ModelClass target, String fieldName, Class<?> fieldType)
-	{
-		return assignField(target,fieldName,fieldType);
-	}
-	
-	static Object importExternalClassFieldGet(ExternalClass target, String fieldName, Class<?> fieldType)
-	{	
-		return assignField(target,fieldName,fieldType);
-	}
-
-	static Object importModelClassFieldSet(ModelClass target, String fieldName, Object newValue)  
-	{
-		try
-		{
-			Class<?> newValueClass = newValue.getClass();
-			Object fieldObj=assignField(target,fieldName,newValueClass);
-			if(currentActivity!=null)
-			
-			{
-				Type newValType=ModelImporter.importType(newValue.getClass());
-				setStructuralFeatureValue(target,fieldName,(ModelIdentifiedElement)newValue,newValType);
-			}
-			
-			return fieldObj;
-		}
-		catch(Exception e)
-		{
-			//e.printStackTrace();
-		}
-		return null;
-	}
-
-	static <T> void createModelTypeLiteral(ModelType<T> inst)
-	{
-		@SuppressWarnings("unchecked")
-		T val=(T)FieldValueAccessor.getObjectFieldVal(inst,"value");
-		String expression=val.toString();
-		
-		InstanceInformation instInfo=InstanceInformation.createLiteral(expression);
-		InstanceManager.createLocalInstancesMapEntry(inst,instInfo);
-	}
-
-	static Signal initAndGetSignalInstanceOfTransition(Transition target)
-	{
-		Signal signal = (Signal) FieldValueAccessor.getObjectFieldVal(target,"signal");
-		
-		if(signal == null)
-		{
-			signal=MethodImporter.createSignal(target.getClass());
-			
-			if(signal != null)
-			{
-				FieldValueAccessor.setObjectFieldVal(target,"signal",signal);
-				
-				String signalName=signal.getClass().getSimpleName();
-				InstanceManager.createLocalInstancesMapEntry(signal,InstanceInformation.create(signalName));
-				InstanceManager.createLocalFieldsRecursively(signal);
-			}
-		}
-		return signal;
-	}
 }

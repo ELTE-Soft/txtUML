@@ -22,12 +22,15 @@ import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 public class UML2 {
 	
 	/**
+	 * Exports UML2 model generated from a txtUML model.
 	 * 
 	 * @param modelClassName 	The fully qualified name of the class representing the txtUML model.
 	 * 						 	(e.g. hu.elte.txtuml.examples.machine.MachineModel)
 	 * @param outputDirectory 	The name of the output directory. 
 	 * 						 	(relative to the path of the project containing the txtUML model)
 	 * @throws Exception
+	 * 
+	 * @author Ádám Ancsin
 	 */
 	public static void exportModel(String modelClassName, String outputDirectory) throws Exception
 	{
@@ -42,12 +45,15 @@ public class UML2 {
 	}
 	
 	/**
+	 * Exports UML2 model generated from a txtUML model.
 	 * 
 	 * @param modelClass 		The class representing the txtUML model.
 	 * 
 	 * @param outputDirectory 	The name of the output directory. 
 	 * 						 	(relative to the path of the project containing the txtUML model)
 	 * @throws Exception
+	 * 
+	 * @author Ádám Ancsin
 	 */
 	public static void exportModel(Class<?> modelClass, String outputDirectory) throws Exception
 	{
@@ -93,6 +99,7 @@ public class UML2 {
 	 * 				1st argument: modelClassName
 	 * 				2nd argument: outputDirectory
 	 * 				(see exportModel method)
+	 * @author Ádám Ancsin
 	 */
 	public static void main(String[] args) {
 		if(args.length != 2) {

@@ -4,13 +4,11 @@ import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.api.ModelIdentifiedElement;
 import hu.elte.txtuml.api.StateMachine;
-import hu.elte.txtuml.api.Trigger;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
-import hu.elte.txtuml.utils.InstanceCreator;
 
 import java.lang.reflect.Method;
 import java.util.Stack;
@@ -31,37 +29,13 @@ import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Variable;
 
-class MethodImporter extends AbstractMethodImporter {
-
-	public static hu.elte.txtuml.api.Signal createSignal(Class<? extends StateMachine.Transition> tr) {
-    	Trigger triggerAnnot = tr.getAnnotation(Trigger.class);
-    	if (triggerAnnot != null) {
-        	return InstanceCreator.createInstance(triggerAnnot.value());
-    	}
-		return null;
-    }
-	
-	private static ModelBool importGuardBody(Object classInstance)
-	{
-		currentMethod.setAccessible(true);
-		ModelBool returnValue = null;
-		try {
-			returnValue = (ModelBool) currentMethod.invoke(classInstance);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		currentMethod.setAccessible(false);
-		
-		return returnValue;
-	}
-	
-	private static void endGuardImport()
-	{
-		InstanceManager.clearLocallInstancesMap();
-		currentModel=null;
-		importing=false;
-	}
+/**
+ * This class is responsible for importing methods and their parameters, bodies and return values.
+ * @author Ádám Ancsin
+ *
+ */
+class MethodImporter extends AbstractMethodImporter 
+{
 	static String importGuardMethod(Model model, Method sourceMethod,StateMachine.Transition transitionInstance)
 	{
 		initGuardImport(model,sourceMethod,transitionInstance);
@@ -82,17 +56,44 @@ class MethodImporter extends AbstractMethodImporter {
 	
 		return guardExpression;
 	}
+	
+	static void importMethod(Model model, Activity activity, Method sourceMethod, ModelElement classInstance) 
+	{
+		initMethodImport(model,activity,sourceMethod,classInstance);
+		importBody(classInstance);
+		endMethodImport();	
+	}
 
+	private static ModelBool importGuardBody(Object classInstance)
+	{
+		currentMethod.setAccessible(true);
+		ModelBool returnValue = null;
+		try {
+			returnValue = (ModelBool) currentMethod.invoke(classInstance);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		currentMethod.setAccessible(false);
+		
+		return returnValue;
+	}
+	
 	private static void initGuardImport(Model model, Method sourceMethod, StateMachine.Transition transitionInstance)
 	{
 		InstanceManager.initLocalInstancesMap();
 		currentModel=model;
 		currentMethod=sourceMethod;
 		currentParameters=null;
-		importing=true;
 	
 		currentSignal=InstructionImporter.initAndGetSignalInstanceOfTransition(transitionInstance);	
 
+	}
+	
+	private static void endGuardImport()
+	{
+		InstanceManager.clearLocallInstancesMap();
+		currentModel=null;
 	}
 	
 	private static void initMethodImport(Model model, Activity activity, Method sourceMethod, ModelElement classInstance)
@@ -103,7 +104,6 @@ class MethodImporter extends AbstractMethodImporter {
 		cntBlockBodiesBeingImported=0;
 		blockBodyFirstEdges=new Stack<ActivityEdge>();
 		cntDecisionNodes=0;
-		importing=true;
 		InstanceManager.initLocalInstancesMap();
 		
 		ActivityNode initialNode=activity.createOwnedNode("initialNode",UMLPackage.Literals.INITIAL_NODE);	
@@ -119,13 +119,11 @@ class MethodImporter extends AbstractMethodImporter {
 							);		
 			
 			if(currentSignal!=null)
-			{
-				addSignalParameter();
-			}
+				createSignalParameter();
 		}
 	}
 	
-	private static void addSignalParameter()
+	private static void createSignalParameter()
 	{
 		Class<?> signalClass=currentSignal.getClass();
 		String signalName=signalClass.getSimpleName();
@@ -143,16 +141,7 @@ class MethodImporter extends AbstractMethodImporter {
 		currentActivity = null;
 		currentModel=null;
 		currentParameters=null;
-		currentSignal=null;
-		importing=false;
-		
-	}
-	
-	static void importMethod(Model model, Activity activity, Method sourceMethod, ModelElement classInstance) 
-	{
-		initMethodImport(model,activity,sourceMethod,classInstance);
-		importBody(classInstance);
-		endMethodImport();	
+		currentSignal=null;	
 	}
 	
 	private static void importBody(Object classInstance)
@@ -179,7 +168,6 @@ class MethodImporter extends AbstractMethodImporter {
 			//e.printStackTrace();
 		}
 	}
-	
 	
 	private static void createAssignReturnValueAction(Object returnObj) throws Exception
 	{
@@ -211,9 +199,7 @@ class MethodImporter extends AbstractMethodImporter {
 				
 				returnValProviderAction=
 						currentActivity.createOwnedNode(expression,UMLPackage.Literals.OPAQUE_ACTION);
-			
-				
-				
+
 				((OpaqueAction)returnValProviderAction)
 					.getBodies().add(expression);
 
@@ -235,9 +221,6 @@ class MethodImporter extends AbstractMethodImporter {
 			lastNode=returnParamNode;
 			
 		}
-		
-		
-		
 	}
 	
 	private static ActivityParameterNode createParameterNode(Parameter param,String paramName,Type paramType)
@@ -285,6 +268,10 @@ class MethodImporter extends AbstractMethodImporter {
 		createControlFlowBetweenNodes(lastNode,addVarValAction);
 		lastNode=addVarValAction;
 	}
-	
 
+	private static boolean isObjectAFieldOfSelf(ModelIdentifiedElement object)
+	{
+		String objectName = AbstractMethodImporter.getObjectIdentifier(object);
+		return objectName!=null && objectName.startsWith("self");
+	}
 }
