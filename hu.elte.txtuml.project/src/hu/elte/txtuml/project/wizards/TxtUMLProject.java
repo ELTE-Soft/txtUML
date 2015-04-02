@@ -20,8 +20,6 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -29,7 +27,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.part.FileEditorInput;
 import org.osgi.framework.Constants;
 /**
  * This is a sample new wizard. Its role is to create a new file 
@@ -74,6 +71,7 @@ public class TxtUMLProject extends Wizard implements INewWizard {
 		return success;
 	}
 	
+	@SuppressWarnings("deprecation")
 	private boolean setUptxtUMLProject(String projectName, String modelName){
 		try{
 			IProject project = ProjectCreator.createProject(projectName);
@@ -142,7 +140,6 @@ public class TxtUMLProject extends Wizard implements INewWizard {
 			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 			if(page != null) {
 				try {
-					IEditorInput editorInput = new FileEditorInput(file);
 					IDE.openEditor(page, file);
 				} catch (PartInitException e) {
 					//ignore
