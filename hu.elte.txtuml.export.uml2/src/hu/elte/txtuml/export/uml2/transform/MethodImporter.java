@@ -23,8 +23,6 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.Parameter;
-import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
-import org.eclipse.uml2.uml.ReadVariableAction;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Variable;
@@ -36,6 +34,15 @@ import org.eclipse.uml2.uml.Variable;
  */
 class MethodImporter extends AbstractMethodImporter 
 {
+	/**
+	 * Imports a guard method of a transition.
+	 * @param model The UML2 model.
+	 * @param sourceMethod The guard method to be imported.
+	 * @param transitionInstance The dummy instance of the transition.
+	 * @return The guard expression represented by the method's return value.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static String importGuardMethod(Model model, Method sourceMethod,StateMachine.Transition transitionInstance)
 	{
 		initGuardImport(model,sourceMethod,transitionInstance);
@@ -57,6 +64,15 @@ class MethodImporter extends AbstractMethodImporter
 		return guardExpression;
 	}
 	
+	/**
+	 * Imports a method (member function of a model class or an entry/exit/effect action).
+	 * @param model The UML2 model.
+	 * @param activity The UML2 activity of the member function/action (entry/exit/effect).
+	 * @param sourceMethod The method to be imported.
+	 * @param classInstance The dummy instance of the owner class. (model class, state or transition)
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static void importMethod(Model model, Activity activity, Method sourceMethod, ModelElement classInstance) 
 	{
 		initMethodImport(model,activity,sourceMethod,classInstance);
@@ -64,21 +80,36 @@ class MethodImporter extends AbstractMethodImporter
 		endMethodImport();	
 	}
 
-	private static ModelBool importGuardBody(Object classInstance)
+	/**
+	 * Imports the body of a guard method.
+	 * @param transitionInstance The dummy instance of the transition.
+	 * @return The return value of the guard method.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private static ModelBool importGuardBody(StateMachine.Transition transitionInstance)
 	{
 		currentMethod.setAccessible(true);
 		ModelBool returnValue = null;
 		try {
-			returnValue = (ModelBool) currentMethod.invoke(classInstance);
+			returnValue = (ModelBool) currentMethod.invoke(transitionInstance);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		} 
 		currentMethod.setAccessible(false);
 		
 		return returnValue;
 	}
 	
+	/**
+	 * Initializes the import of a guard method.
+	 * @param model The UML2 model.
+	 * @param sourceMethod The guard method to be imported.
+	 * @param transitionInstance The dummy instance of the transition.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static void initGuardImport(Model model, Method sourceMethod, StateMachine.Transition transitionInstance)
 	{
 		InstanceManager.initLocalInstancesMap();
@@ -90,12 +121,26 @@ class MethodImporter extends AbstractMethodImporter
 
 	}
 	
+	/**
+	 * Ends guard import.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static void endGuardImport()
 	{
 		InstanceManager.clearLocallInstancesMap();
 		currentModel=null;
 	}
 	
+	/**
+	 * Initializes the import of a method (member function of a model class or an entry/exit/effect action).
+	 * @param model The UML2 model.
+	 * @param activity The UML2 activity of the member function/action (entry/exit/effect).
+	 * @param sourceMethod The method to be imported.
+	 * @param classInstance The dummy instance of the owner class. (model class, state or transition)
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static void initMethodImport(Model model, Activity activity, Method sourceMethod, ModelElement classInstance)
 	{
 		currentModel=model;
@@ -122,7 +167,28 @@ class MethodImporter extends AbstractMethodImporter
 				createSignalParameter();
 		}
 	}
-	
+	/**
+	 * Ends method import.
+	 * 
+	 * @author Ádám Ancsin
+	 */
+	private static void endMethodImport()
+	{
+		ActivityNode finalNode=currentActivity.createOwnedNode("finalNode",UMLPackage.Literals.ACTIVITY_FINAL_NODE);
+		createControlFlowBetweenActivityNodes(lastNode,finalNode);
+		
+		InstanceManager.clearLocallInstancesMap();
+		currentActivity = null;
+		currentModel=null;
+		currentParameters=null;
+		currentSignal=null;	
+	}
+	/**
+	 * Creates an activity parameter and parameter node for the trigger signal of an effect method. Should only be used when
+	 * imported method is an effect method of a transition and it has a trigger.
+	 * 
+	 * @author Ádám Ancsin
+	 */
 	private static void createSignalParameter()
 	{
 		Class<?> signalClass=currentSignal.getClass();
@@ -132,19 +198,13 @@ class MethodImporter extends AbstractMethodImporter
 		createParameterNode(signalParam,signalName,signalType);
 	}
 	
-	private static void endMethodImport()
-	{
-		ActivityNode finalNode=currentActivity.createOwnedNode("finalNode",UMLPackage.Literals.ACTIVITY_FINAL_NODE);
-		createControlFlowBetweenNodes(lastNode,finalNode);
-		
-		InstanceManager.clearLocallInstancesMap();
-		currentActivity = null;
-		currentModel=null;
-		currentParameters=null;
-		currentSignal=null;	
-	}
-	
-	private static void importBody(Object classInstance)
+	/**
+	 * Imports the body of a method (member function of a model class or an entry/exit/effect action).
+	 * @param classInstance The dummy instance of the owner class. (model class, state or transition)
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private static void importBody(ModelElement classInstance)
 	{
 		try 
 		{
@@ -154,7 +214,7 @@ class MethodImporter extends AbstractMethodImporter
 			{
 				try
 				{
-					createAssignReturnValueAction(returnValue);
+					assignReturnValue(returnValue);
 				}
 				catch(Exception e)
 				{
@@ -169,60 +229,48 @@ class MethodImporter extends AbstractMethodImporter
 		}
 	}
 	
-	private static void createAssignReturnValueAction(Object returnObj) throws Exception
+	/**
+	 * Assigns the return value to the return parameter of the activity.
+	 * @param returnObj The return value object.
+	 * @throws Exception
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private static void assignReturnValue(Object returnObj) throws Exception
 	{
-		String retName=getObjectIdentifier((ModelIdentifiedElement) returnObj);
-
 		Parameter returnParam=ElementFinder.findParameterInActivity("return",currentActivity);
 		
 		if(returnParam!=null)
 		{
 			Type returnType=returnParam.getType();
-			ActivityNode returnValProviderAction=null;
-			OutputPin outputPin=null;
-			
-			if(isObjectAFieldOfSelf((ModelIdentifiedElement)returnObj))
-			{
-				String fieldName=retName.substring(5);
-				returnValProviderAction=
-						createReadStructuralFeatureAction(InstanceManager.getSelfInstance(),fieldName,returnType);
-				outputPin=
-						((ReadStructuralFeatureAction) returnValProviderAction).
-						createResult(returnValProviderAction.getName()+"_result",returnType);
-			}
-			else if(InstanceManager.isInstanceCalculated((ModelElement) returnObj) ||
-					InstanceManager.isInstanceLiteral((ModelElement) returnObj)
-				)
-			{
+			String expression = getExpression ((ModelIdentifiedElement) returnObj);
 				
-				String expression = getExpression ((ModelIdentifiedElement) returnObj);
-				
-				returnValProviderAction=
-						currentActivity.createOwnedNode(expression,UMLPackage.Literals.OPAQUE_ACTION);
+			OpaqueAction returnValProviderAction = (OpaqueAction)
+					currentActivity.createOwnedNode(expression,UMLPackage.Literals.OPAQUE_ACTION);
 
-				((OpaqueAction)returnValProviderAction)
-					.getBodies().add(expression);
+			((OpaqueAction)returnValProviderAction).getBodies().add(expression);
 
-				outputPin=
-						((OpaqueAction)returnValProviderAction)
-						.createOutputValue(returnValProviderAction.getName()+"_result",returnType);
-			}
-			else
-			{
-				String variableName=retName;
-				returnValProviderAction=createReadVariableAction(variableName,returnType);
-				outputPin=((ReadVariableAction)returnValProviderAction).createResult(returnValProviderAction.getName()+"_result",returnType);
-			}
+			OutputPin outputPin = ((OpaqueAction)returnValProviderAction)
+					.createOutputValue(returnValProviderAction.getName()+"_result",returnType);
 			
-			createControlFlowBetweenNodes(lastNode,returnValProviderAction);
+			createControlFlowBetweenActivityNodes(lastNode,returnValProviderAction);
 			
 			ActivityParameterNode returnParamNode = createParameterNode(returnParam,"return",returnType);
-			createObjectFlowBetweenNodes(outputPin,returnParamNode);
-			lastNode=returnParamNode;
 			
+			createObjectFlowBetweenActivityNodes(outputPin,returnParamNode);
+			lastNode=returnParamNode;
 		}
 	}
 	
+	/**
+	 * Creates a parameter node in the current activity for a specified parameter.
+	 * @param param The UML2 parameter.
+	 * @param paramName The name of the parameter.
+	 * @param paramType The UML2 type of the parameter.
+	 * @return The created activity parameter node.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static ActivityParameterNode createParameterNode(Parameter param,String paramName,Type paramType)
 	{
 		ActivityParameterNode paramNode= (ActivityParameterNode)
@@ -234,6 +282,11 @@ class MethodImporter extends AbstractMethodImporter
 		return paramNode;
 	}
 	
+	/**
+	 * Loads the parameters of the imported method to currentParameters.
+	 * 
+	 * @author Ádám Ancsin
+	 */
 	private static void loadCurrentParameters()
 	{
 		currentParameters=new ModelElement[currentMethod.getParameterTypes().length];
@@ -254,6 +307,16 @@ class MethodImporter extends AbstractMethodImporter
 		}
 	}
 	
+	/**
+	 * Adds a parameter to the current activity. Creates an activity parameter node and a variable for the parameter, reads
+	 * the value of the parameter node and assigns it to the variable.
+	 * 
+	 * @param param The UML2 parameter.
+	 * @param paramName The name of the parameter.
+	 * @param paramType The UML2 type of the parameter.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static void addParameterToActivity(Parameter param,String paramName,Type paramType)
 	{
 		Variable paramVar=currentActivity.createVariable(paramName, paramType);
@@ -264,14 +327,9 @@ class MethodImporter extends AbstractMethodImporter
 		
 		InputPin inputPin =  addVarValAction.createValue(addVarValAction.getName()+"_value",paramType,UMLPackage.Literals.INPUT_PIN);
 		
-		createObjectFlowBetweenNodes(paramNode,inputPin);
-		createControlFlowBetweenNodes(lastNode,addVarValAction);
+		createObjectFlowBetweenActivityNodes(paramNode,inputPin);
+		createControlFlowBetweenActivityNodes(lastNode,addVarValAction);
 		lastNode=addVarValAction;
 	}
 
-	private static boolean isObjectAFieldOfSelf(ModelIdentifiedElement object)
-	{
-		String objectName = AbstractMethodImporter.getObjectIdentifier(object);
-		return objectName!=null && objectName.startsWith("self");
-	}
 }

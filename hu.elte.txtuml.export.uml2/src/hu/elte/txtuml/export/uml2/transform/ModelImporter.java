@@ -37,8 +37,23 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
+/**
+ * This class is responsible for generating Eclipse UML2 model from a txtUML model.
+ *
+ * @author Ádám Ancsin
+ *
+ */
 public class ModelImporter extends AbstractImporter{
 	
+	/**
+	 * Imports a txtUML model.
+	 * @param modelClass The class of the txtUML model.
+	 * @param path The output directory path. (needed for resource handling)
+	 * @return The imported UML2 model.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
 	public static Model importModel(Class<?> modelClass, String path) throws ImportException
 	{
 		ModelImporter.modelClass = modelClass;
@@ -49,31 +64,71 @@ public class ModelImporter extends AbstractImporter{
    		return currentModel; 
 	}
 	
+	/**
+	 * Imports a txtUML model.
+	 * @param modelClass The name of the class of the txtUML model.
+	 * @param path The output directory path. (needed for resource handling)
+	 * @return The imported UML2 model.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
 	public static Model importModel(String modelClassName, String path) throws ImportException
 	{
 		return importModel(ElementFinder.findModel(modelClassName),path);
 	}
 	
+	/**
+	 * Gets the resource set.
+	 * @return The resource set.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	public static ResourceSet getResourceSet()
 	{
 		return resourceSet;
 	}
 
+	/**
+	 * Gets the class of the txtUML model being imported.
+	 * @return The class of the txtUML model being imported.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	public static Class<?> getModelClass() 
 	{
 		return modelClass;
 	}
 
+	/**
+	 * Gets the UML profile.
+	 * @return The UML profile.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	public static Profile getProfile()
 	{
 		return currentProfile;
 	}
 
+	/**
+	 * Decides if model import is in progress.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	public static boolean isImporting()
 	{
 		return importing;
 	}
 	
+	/**
+	 * Imports the type with the specified class.
+	 * @param sourceClass The specified class.
+	 * @return The imported type.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static org.eclipse.uml2.uml.Type importType(Class<?> sourceClass) 
 	{
 		if(sourceClass == ModelInt.class) 
@@ -88,6 +143,13 @@ public class ModelImporter extends AbstractImporter{
 			return null;
 	}
 	
+	/**
+	 * Initializes model import.
+	 * @param path The path of the output directory. (needed for resource handling)
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static void initModelImport(String path) throws ImportException
 	{
 		importing=true;
@@ -117,22 +179,38 @@ public class ModelImporter extends AbstractImporter{
         UMLPrimitiveTypes.importFromProfile(currentProfile);
 	}
 	
+	/**
+	 * Imports the model elements of the txtUML model.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static void importModelElements() throws ImportException
 	{
 		importClassesAndSignals();
 		importAssociations();
 		importGeneralizations();
 		importClassifierAttributes();
-		importMemberFunctionsWithoutBodies();
-		importClassOperationBodiesStateMachinesAndNestedSignals();
+		importMemberFunctionSkeletons();
+		importClassMemberFunctionBodiesStateMachinesAndNestedSignals();
 	}
 	
+	/**
+	 * Ends the model import in progress. 
+	 * 
+	 * @author Ádám Ancsin
+	 */
 	private static void endModelImport()
 	{
 		InstanceManager.clearGlobalInstancesMap();
 		importing=false;
 	}
 	
+	/**
+	 * Loads the UML profile and applies it to the model.
+	 * 
+	 * @author Ádám Ancsin
+	 */
 	private static void loadAndApplyProfile()
 	{
 		Resource resource = resourceSet.getResource(URI.createFileURI("").appendSegment("Profile_"+currentModel.getName()).appendFileExtension(UMLResource.PROFILE_FILE_EXTENSION),true);
@@ -140,6 +218,12 @@ public class ModelImporter extends AbstractImporter{
 		currentModel.applyProfile(currentProfile);
 	}
 	
+	/**
+	 * Imports generalizations between classifiers.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static void importGeneralizations() throws ImportException 
 	{
 		for(Class<?> c : modelClass.getDeclaredClasses())
@@ -151,6 +235,13 @@ public class ModelImporter extends AbstractImporter{
 		}
 	}
 	
+	/**
+	 * Creates a generalization.
+	 * @param specific The specific (super) classifier.
+	 * @param general The general (sub) classifier.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static void createGeneralization(Class<?> specific, Class<?> general)
 	{
 		Classifier uml2SpecClassifier = 
@@ -162,6 +253,13 @@ public class ModelImporter extends AbstractImporter{
 		uml2SpecClassifier.createGeneralization(uml2GeneralClassifier);
 	}
 	
+	/**
+	 * Imports a given classifier.
+	 * @param sourceClass The Java class of the classifier.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static void importClassifier(Class<?> sourceClass) throws ImportException
 	{
 		org.eclipse.uml2.uml.Class importedClass = null;
@@ -188,6 +286,12 @@ public class ModelImporter extends AbstractImporter{
 			createSignalAndSignalEvent(sourceClass);
 		
 	}
+	/**
+	 * Imports classes and signals.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static void importClassesAndSignals() throws ImportException 
 	{	
 		for(Class<?> c : modelClass.getDeclaredClasses()) {
@@ -199,6 +303,13 @@ public class ModelImporter extends AbstractImporter{
 		}
 	}
 	
+	/**
+	 * Imports associations.
+	 * 
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static void importAssociations() throws ImportException
 	{
 		for(Class<?> sourceClass : modelClass.getDeclaredClasses()) 
@@ -210,6 +321,13 @@ public class ModelImporter extends AbstractImporter{
 		}
 	}	
 		
+	/**
+	 * Creates a signal and a signal event in the UML2 model based on the Java class of a signal in the txtUML model.
+	 * @param sourceClass The Java class of the signal in the txtUML model.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static void createSignalAndSignalEvent(Class<?> sourceClass) throws ImportException
 	{
 		Signal signal = (Signal)currentModel.createOwnedType(sourceClass.getSimpleName(),UMLPackage.Literals.SIGNAL);
@@ -218,6 +336,12 @@ public class ModelImporter extends AbstractImporter{
 		signalEvent.setSignal(signal);
 	}
 		
+	/**
+	 * Imports the attributes of all classifiers in the model.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
     private static void importClassifierAttributes() throws ImportException
     {
 		for(Class<?> c : modelClass.getDeclaredClasses()) 
@@ -238,6 +362,14 @@ public class ModelImporter extends AbstractImporter{
 		}
     }
     
+    /**
+     * Imports the given attribute of the specified classifier.
+     * @param owner The owner classifier.
+     * @param field The Java field representing the attribute in the txtUML model.
+     * @throws ImportException
+     *
+     * @author Ádám Ancsin
+     */
     private static void importAttribute(Classifier owner, Field field) throws ImportException
     {
     	String fieldName=field.getName();
@@ -255,28 +387,46 @@ public class ModelImporter extends AbstractImporter{
     	ElementModifiersAssigner.setModifiers(property,field);
     }
     
-    private static void importMemberFunctionsWithoutBodies() throws ImportException
+    /**
+     * Import the skeletons (no body) of class member functions.
+     * @throws ImportException
+     *
+     * @author Ádám Ancsin
+     */
+    private static void importMemberFunctionSkeletons() throws ImportException
     {
 		for(Class<?> c : modelClass.getDeclaredClasses()) 
 		{
 			if(!ElementTypeTeller.isModelElement(c))
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
 			if(ElementTypeTeller.isModelClass(c)) 
-				createClassMemberFunctions(c);
+				createClassMemberFunctionSkeletons(c);
 		}
     }
 
-    private static void createClassMemberFunctions( Class<?> sourceClass)
+    /**
+     * Creates member function skeletons for the specified class.
+     * @param sourceClass The txtUML class.
+     *
+     * @author Ádám Ancsin
+     */
+    private static void createClassMemberFunctionSkeletons(Class<?> sourceClass)
     {
     	org.eclipse.uml2.uml.Class ownerClass=(org.eclipse.uml2.uml.Class) currentModel.getMember(sourceClass.getSimpleName());
     	for(Method method : sourceClass.getDeclaredMethods()) 
     	{         
-            Operation operation=importOperationWithoutBody(ownerClass,sourceClass,method);
+            Operation operation=importOperationSkeleton(ownerClass,sourceClass,method);
             ElementModifiersAssigner.setModifiers(operation, method);        
         }
     }
     
-    private static void importClassMemberFunctionBodies( Class<?> sourceClass)
+    /**
+     * Imports the bodies of the member functions of the specified class.
+     * @param sourceClass The txtUML class.
+     *
+     * @author Ádám Ancsin
+     */
+    private static void importClassMemberFunctionBodies(Class<?> sourceClass)
     {
     	org.eclipse.uml2.uml.Class ownerClass=(org.eclipse.uml2.uml.Class) currentModel.getMember(sourceClass.getSimpleName());
     	for(Method method : sourceClass.getDeclaredMethods()) 
@@ -285,7 +435,13 @@ public class ModelImporter extends AbstractImporter{
         }
     }
     
- 	private static void importClassOperationBodiesStateMachinesAndNestedSignals() throws ImportException
+    /**
+     * Imports the member function bodies, state machines and nested signals of all model classes in the model.
+     * @throws ImportException
+     *
+     * @author Ádám Ancsin
+     */
+ 	private static void importClassMemberFunctionBodiesStateMachinesAndNestedSignals() throws ImportException
  	{
  		for(Class<?> c : modelClass.getDeclaredClasses()) 
 		{
@@ -312,6 +468,13 @@ public class ModelImporter extends AbstractImporter{
 		}
  	}
     
+ 	/**
+ 	 * Imports the nested signals of the specified class.
+ 	 * @param sourceClass The txtUML class.
+ 	 * @throws ImportException
+ 	 *
+ 	 * @author Ádám Ancsin
+ 	 */
   	private static void importNestedSignals(Class<?> sourceClass) throws ImportException
   	{
 		for(Class<?> innerClass:sourceClass.getDeclaredClasses())
@@ -322,6 +485,15 @@ public class ModelImporter extends AbstractImporter{
 		}
   	}
 
+  	/**
+  	 * Imports the state machine of the specified class.
+  	 * @param ownerClass The UML2 class.
+  	 * @param sourceClass The txtUML class.
+  	 * @return The imported UML2 state machine.
+  	 * @throws ImportException
+  	 *
+  	 * @author Ádám Ancsin
+  	 */
 	private static StateMachine importStateMachine(org.eclipse.uml2.uml.Class ownerClass,Class<?> sourceClass) 
 											throws ImportException
 	{	
@@ -339,6 +511,15 @@ public class ModelImporter extends AbstractImporter{
         return stateMachine; 
     }
 	
+	/**
+	 * Imports the body of a specified operation.
+	 * @param operation The specified operation.
+	 * @param ownerClass The owner UML2 class of the operation.
+	 * @param sourceMethod The txtUML method.
+	 * @return The imported UML2 activity of the operation.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static Activity importOperationBody
 		(Operation operation,org.eclipse.uml2.uml.Class ownerClass,Method sourceMethod)
 	{
@@ -349,7 +530,14 @@ public class ModelImporter extends AbstractImporter{
 		return activity;
 	}
 	
-	private static Operation createOperationReturnResult(Operation operation,Method sourceMethod)
+	/**
+	 * Creates the return result of the specified operation.
+	 * @param operation The specified operation.
+	 * @param sourceMethod The txtUML method.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private static void createOperationReturnResult(Operation operation,Method sourceMethod)
 	{
 		Class<?> returnTypeClass = sourceMethod.getReturnType();
 		if(returnTypeClass!=void.class)
@@ -357,9 +545,16 @@ public class ModelImporter extends AbstractImporter{
 			Type returnType=ModelImporter.importType(returnTypeClass);
 			operation.createReturnResult("return",returnType);
 		}
-		return operation;
 	}
 	
+	/**
+	 * Creates an owned operation of a specified UML2 class based on a txtUML method.
+	 * @param ownerClass The owner UML2 class.
+	 * @param sourceMethod The txtUML method.
+	 * @return The created UML2 operation.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static Operation createOwnedOperation(org.eclipse.uml2.uml.Class ownerClass,Method sourceMethod)
 	{
 		BasicEList<String> paramNames=new BasicEList<>();
@@ -377,13 +572,28 @@ public class ModelImporter extends AbstractImporter{
 		return ownerClass.createOwnedOperation(sourceMethod.getName(),paramNames,paramTypes);
 	}
 	
-	private static Operation importOperationWithoutBody(org.eclipse.uml2.uml.Class ownerClass,Class<?> sourceClass,Method sourceMethod)
+	/**
+	 * Imports the skeleton of an operation.
+	 * @param ownerClass The owner UML2 class of the operation.
+	 * @param sourceClass The owner txtUML class.
+	 * @param sourceMethod The txtUML method.
+	 * @return The imported operation skeleton.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private static Operation importOperationSkeleton
+		(org.eclipse.uml2.uml.Class ownerClass,Class<?> sourceClass,Method sourceMethod)
 	{
 		Operation operation = createOwnedOperation(ownerClass, sourceMethod);
 		createOperationReturnResult(operation, sourceMethod);
 		return operation;
 	}
 	
+	/**
+	 * Initializes the resource set.
+	 * 
+	 * @author Ádám Ancsin
+	 */
     private static void initResourceSet()
     {
     	 resourceSet = new ResourceSetImpl();

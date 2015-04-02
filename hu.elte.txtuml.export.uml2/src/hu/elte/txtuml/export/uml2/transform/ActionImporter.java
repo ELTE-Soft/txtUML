@@ -96,10 +96,10 @@ public class ActionImporter extends AbstractMethodImporter {
 
 			ValuePin target=(ValuePin)sendSignalAction.createTarget(sendSignalAction.getName()+"_target",instanceType,UMLPackage.Literals.VALUE_PIN);
 
-			addOpaqueExpressionToValuePin(target,instanceName,instanceType);
+			createAndAddOpaqueExpressionToValuePin(target,instanceName,instanceType);
 
 			addArgumentsToSendSignalAction(sendSignalAction,event,signalToSend);
-			createControlFlowBetweenNodes(lastNode,sendSignalAction);
+			createControlFlowBetweenActivityNodes(lastNode,sendSignalAction);
 
 			lastNode=sendSignalAction;
 		}
@@ -116,7 +116,7 @@ public class ActionImporter extends AbstractMethodImporter {
 	{
 		String condExpr=importCondition(cond);
 		DecisionNode decisionNode=createNextDecisionNode();
-		createFlowBetweenNodes(lastNode,decisionNode);
+		createEdgeBetweenActivityNodes(lastNode,decisionNode);
 
 		lastNode=decisionNode;
 
@@ -125,7 +125,7 @@ public class ActionImporter extends AbstractMethodImporter {
 		ActivityNode thenLastNode=importThenBodyResult.getKey();
 		addGuardToActivityEdge(thenFirstEdge, condExpr);
 
-		createFlowBetweenNodes(thenLastNode,decisionNode);
+		createEdgeBetweenActivityNodes(thenLastNode,decisionNode);
 		unfinishedDecisionNodes.push(decisionNode);
 		lastNode=decisionNode;
 	}
@@ -163,7 +163,7 @@ public class ActionImporter extends AbstractMethodImporter {
 	{
 		String condExpr=importCondition(cond);
 		DecisionNode decisionNode=createNextDecisionNode();
-		createFlowBetweenNodes(lastNode,decisionNode);
+		createEdgeBetweenActivityNodes(lastNode,decisionNode);
 
 		lastNode=decisionNode;
 
@@ -201,7 +201,7 @@ public class ActionImporter extends AbstractMethodImporter {
 		setVariableValue(loopVar, fromExpression);
 
 		DecisionNode decisionNode=createNextDecisionNode();
-		createFlowBetweenNodes(lastNode,decisionNode);
+		createEdgeBetweenActivityNodes(lastNode,decisionNode);
 
 		lastNode=decisionNode;
 
@@ -212,7 +212,7 @@ public class ActionImporter extends AbstractMethodImporter {
 			addGuardToActivityEdge(thenFirstEdge, condExpr);
 		
 		setVariableValue(loopVar, loopVarId+" + 1"); // inc loopVar by 1
-		createFlowBetweenNodes(lastNode,decisionNode);
+		createEdgeBetweenActivityNodes(lastNode,decisionNode);
 		
 		unfinishedDecisionNodes.push(decisionNode);
 		lastNode=decisionNode;
@@ -236,9 +236,9 @@ public class ActionImporter extends AbstractMethodImporter {
 			Type type= currentModel.getOwnedType(obj.getClass().getSimpleName());
 	
 			ValuePin target = (ValuePin) destroyAction.createTarget("target", type, UMLPackage.Literals.VALUE_PIN);
-			addOpaqueExpressionToValuePin(target,instanceName,type);
+			createAndAddOpaqueExpressionToValuePin(target,instanceName,type);
 	
-			createControlFlowBetweenNodes(lastNode,destroyAction);
+			createControlFlowBetweenActivityNodes(lastNode,destroyAction);
 	
 			lastNode=destroyAction;
 	    }
@@ -262,7 +262,7 @@ public class ActionImporter extends AbstractMethodImporter {
 		ValuePin end_valuePin=(ValuePin) 
 				linkAction.createInputValue(linkAction.getName()+"_end"+endNum+"input",endType,UMLPackage.Literals.VALUE_PIN);
 
-		addOpaqueExpressionToValuePin(end_valuePin,instName,endType);
+		createAndAddOpaqueExpressionToValuePin(end_valuePin,instName,endType);
 
 		LinkEndData end=linkAction.createEndData();
 		Property endProp=association.getOwnedEnd(phrase,endType);
@@ -312,7 +312,7 @@ public class ActionImporter extends AbstractMethodImporter {
 
 			addEndToLinkAction(linkAction,association,leftPhrase,leftName,leftEndObj,1);
 			addEndToLinkAction(linkAction,association,rightPhrase,rightName,rightEndObj,2);
-			createControlFlowBetweenNodes(lastNode,linkAction);
+			createControlFlowBetweenActivityNodes(lastNode,linkAction);
 			lastNode=linkAction;
 		}
 	}
@@ -341,7 +341,7 @@ public class ActionImporter extends AbstractMethodImporter {
 				ModelIdentifiedElement attributeInstance=
 						(ModelIdentifiedElement) FieldValueAccessor.getObjectFieldVal(event,attributeName);
 				
-				addExpressionToValuePin(argValuePin,attributeInstance,attributeType);	
+				createAndAddValueExpressionToValuePin(argValuePin,attributeInstance,attributeType);	
 			}
 			catch(Exception e)
 			{

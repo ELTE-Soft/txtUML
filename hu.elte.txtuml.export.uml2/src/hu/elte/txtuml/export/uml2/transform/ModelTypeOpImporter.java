@@ -9,13 +9,18 @@ import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
 
 /**
- * This class is repsonsible for importing ModelType operations in method bodies.
+ * This class is responsible for importing ModelType operations in method bodies.
  * @author Ádám Ancsin
  *
  */
 public class ModelTypeOpImporter extends AbstractMethodImporter {
 
-	private enum ModelIntOperations
+	/**
+	 * Enumerates the different types of ModelInt operations.
+	 * @author Ádám Ancsin
+	 *
+	 */
+	private enum ModelIntOperationType
 	{
 		ADD_LITERAL,
 		SUBTRACT_LITERAL,
@@ -27,7 +32,12 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 		ABS_LITERAL
 	};
 	
-	private enum ModelBoolOperations
+	/**
+	 * Enumerates the different types of ModelBool operations.
+	 * @author Ádám Ancsin
+	 *
+	 */
+	private enum ModelBoolOperationType
 	{
 		NOT_LITERAL,
 		OR_LITERAL,
@@ -37,107 +47,274 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 		NOTEQ_LITERAL
 	};
 	
+	/**
+	 * Imports the add ModelInt operation.
+	 * @param target The dummy instance of the left operand.
+	 * @param val The dummy instance of the right operand.
+	 * @return The dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static ModelInt importModelIntAddOp(ModelInt target, ModelInt val)  
 	{
-		return importModelInt2OpOperation(target,val,ModelIntOperations.ADD_LITERAL);	
+		return importModelInt2OpOperation(target,val,ModelIntOperationType.ADD_LITERAL);	
 	}
 	
+	/**
+	 * Imports the subtract ModelInt operation.
+	 * @param target The dummy instance of the left operand.
+	 * @param val The dummy instance of the right operand.
+	 * @return The dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static ModelInt importModelIntSubtractOp(ModelInt target, ModelInt val)
 	{
-		return importModelInt2OpOperation(target,val,ModelIntOperations.SUBTRACT_LITERAL);	
+		return importModelInt2OpOperation(target,val,ModelIntOperationType.SUBTRACT_LITERAL);	
 	}
 	
+	/**
+	 * Imports the multiply ModelInt operation.
+	 * @param target The dummy instance of the left operand.
+	 * @param val The dummy instance of the right operand.
+	 * @return The dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static ModelInt importModelIntMultiplyOp(ModelInt target, ModelInt val) 
 	{
-		return importModelInt2OpOperation(target,val,ModelIntOperations.MULTIPLY_LITERAL);
+		return importModelInt2OpOperation(target,val,ModelIntOperationType.MULTIPLY_LITERAL);
 	}
 	
+	/**
+	 * Imports the divide ModelInt operation.
+	 * @param target The dummy instance of the left operand.
+	 * @param val The dummy instance of the right operand.
+	 * @return The dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static ModelInt importModelIntDivideOp(ModelInt target, ModelInt val)
 	{
-		return importModelInt2OpOperation(target,val,ModelIntOperations.DIVIDE_LITERAL);	
+		return importModelInt2OpOperation(target,val,ModelIntOperationType.DIVIDE_LITERAL);	
 	}
 	
+	/**
+	 * Imports the remainder ModelInt operation.
+	 * @param target The dummy instance of the left operand.
+	 * @param val The dummy instance of the right operand.
+	 * @return The dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static ModelInt importModelIntRemainderOp(ModelInt target, ModelInt val)
 	{
-		return importModelInt2OpOperation(target,val,ModelIntOperations.REMAINDER_LITERAL);	
+		return importModelInt2OpOperation(target,val,ModelIntOperationType.REMAINDER_LITERAL);	
 	}
 	
+	/**
+	 * Imports the negate ModelInt operation.
+	 * @param target The dummy instance of the operand
+	 * @return The dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static ModelInt importModelIntNegateOp(ModelInt target)  
 	{
-		return importModelInt1OpOperation(target,ModelIntOperations.NEGATE_LITERAL);
+		return importModelInt1OpOperation(target,ModelIntOperationType.NEGATE_LITERAL);
 	}
 	
+	/**
+	 * Imports the "abs" ModelInt operation.
+	 * @param target The dummy instance of the operand
+	 * @return The dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static ModelInt importModelIntAbsOp(ModelInt target) 
 	{
-		return importModelInt1OpOperation(target,ModelIntOperations.ABS_LITERAL);
+		return importModelInt1OpOperation(target,ModelIntOperationType.ABS_LITERAL);
 	}
 	
+	/**
+	 * Imports the signum ModelInt operation.
+	 * @param target The dummy instance of the operand
+	 * @return The dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static ModelInt importModelIntSignumOp(ModelInt target)
 	{
-		return importModelInt1OpOperation(target,ModelIntOperations.SIGNUM_LITERAL);	
+		return importModelInt1OpOperation(target,ModelIntOperationType.SIGNUM_LITERAL);	
 	}
 
+	/**
+	 * Imports the "not" ModelBool operation.
+	 * @param target The dummy instance of the operand
+	 * @return The dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static ModelBool importModelBoolNotOp(ModelBool target)
 	{
 		return (ModelBool)importModelType1OpOperation(target,new ModelBool(),"not ",false);
 	}
 	
+	/**
+	 * Imports the "or" ModelBool operation.
+	 * @param target The dummy instance of the left operand.
+	 * @param val The dummy instance of the right operand.
+	 * @return The dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static ModelBool importModelBoolOrOp(ModelBool target, ModelBool val) 
 	{
-		return importModelBool2OpOperation(target,val,ModelBoolOperations.OR_LITERAL);
+		return importModelBool2OpOperation(target,val,ModelBoolOperationType.OR_LITERAL);
 	}
 	
+	/**
+	 * Imports the "xor" ModelBool operation.
+	 * @param target The dummy instance of the left operand.
+	 * @param val The dummy instance of the right operand.
+	 * @return The dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static ModelBool importModelBoolXorOp(ModelBool target, ModelBool val)
 	{
-		return importModelBool2OpOperation(target,val,ModelBoolOperations.XOR_LITERAL);
+		return importModelBool2OpOperation(target,val,ModelBoolOperationType.XOR_LITERAL);
 	}
 	
+	/**
+	 * Imports the "and" ModelBool operation.
+	 * @param target The dummy instance of the left operand.
+	 * @param val The dummy instance of the right operand.
+	 * @return The dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static ModelBool importModelBoolAndOp(ModelBool target, ModelBool val)
 	{
-		return importModelBool2OpOperation(target,val,ModelBoolOperations.AND_LITERAL);
+		return importModelBool2OpOperation(target,val,ModelBoolOperationType.AND_LITERAL);
 	}
 	
+	/**
+	 * Imports the "equal" ModelBool operation.
+	 * @param target The dummy instance of the left operand.
+	 * @param val The dummy instance of the right operand.
+	 * @return The dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static ModelBool importModelBoolEqualOp(ModelBool target, ModelBool val) 
 	{
-		return importModelBool2OpOperation(target,val,ModelBoolOperations.EQUAL_LITERAL);
+		return importModelBool2OpOperation(target,val,ModelBoolOperationType.EQUAL_LITERAL);
 	}
 	
+	/**
+	 * Imports the "not equal" ModelBool operation.
+	 * @param target The dummy instance of the left operand.
+	 * @param val The dummy instance of the right operand.
+	 * @return The dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static ModelBool importModelBoolNotEqOp(ModelBool target, ModelBool val) 
 	{
-		return importModelBool2OpOperation(target,val,ModelBoolOperations.NOTEQ_LITERAL);
+		return importModelBool2OpOperation(target,val,ModelBoolOperationType.NOTEQ_LITERAL);
 	}
 
+	/**
+	 * Imports the "is equal" ModelInt operation.
+	 * @param target The dummy instance of the left operand.
+	 * @param val The dummy instance of the right operand.
+	 * @return The dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static ModelBool importModelIntIsEqualOp(ModelInt left, ModelInt right) 
 	{
 		return compareModelInts(left,right,"=");
 	}
 	
+	/**
+	 * Imports the "is less equal" ModelInt operation.
+	 * @param target The dummy instance of the left operand.
+	 * @param val The dummy instance of the right operand.
+	 * @return The dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static ModelBool importModelIntIsLessEqualOp(ModelInt left, ModelInt right) 
 	{
 		return compareModelInts(left,right,"<=");
 	}
 	
+	/**
+	 * Imports the "is less" ModelInt operation.
+	 * @param target The dummy instance of the left operand.
+	 * @param val The dummy instance of the right operand.
+	 * @return The dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static ModelBool importModelIntIsLessOp(ModelInt left, ModelInt right)
 	{
 		return compareModelInts(left,right,"<");
 	}
 	
+	/**
+	 * Imports the "is more equal" ModelInt operation.
+	 * @param target The dummy instance of the left operand.
+	 * @param val The dummy instance of the right operand.
+	 * @return The dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static ModelBool importModelIntIsMoreEqualOp(ModelInt left, ModelInt right)
 	{
 		return compareModelInts(left,right,">=");
 	}
 	
+	/**
+	 * Imports the "is more" ModelInt operation.
+	 * @param target The dummy instance of the left operand.
+	 * @param val The dummy instance of the right operand.
+	 * @return The dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static ModelBool importModelIntIsMoreOp(ModelInt left, ModelInt right)	
 	{
 		return compareModelInts(left,right,">");
 	}
 	
-	private static void createCalculatedInstanceInfo(ModelElement inst, String expression)
+	/**
+	 * Creates a calculated instance information for a given dummy instance. It also creates a 
+	 * local instances map entry for the instance with the created instance information.
+	 * @param inst The given dummy instance.
+	 * @param expression The value expression for the dummy instance.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private static void createCalculatedInstanceInfoAndLocalInstancesEntry(ModelElement inst, String expression)
 	{
 		InstanceInformation instInfo=InstanceInformation.createCalculated(expression);
 		InstanceManager.createLocalInstancesMapEntry(inst,instInfo);
 	}
 	
+	/**
+	 * Imports a generic 2-operand ModelType operation.
+	 * @param target The dummy instance of the left operand.
+	 * @param value The dummy instance of the right operand.
+	 * @param result The dummy instance of the operation result-
+	 * @param operator The operator.
+	 * @param isFunction Marks that the operation is a function or not.
+	 * @return The dummy instance of the operation result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	@SuppressWarnings("unchecked")
 	private static <T> ModelType<T> importModelType2OpOperation
 				(ModelType<T> target, ModelType<T> value, ModelType<T> result, String operator, boolean isFunction)
@@ -162,14 +339,23 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 			else if(result instanceof ModelString)
 				result=(ModelType<T>) new ModelString();
 			
-			createCalculatedInstanceInfo(result,valueExpression);
+			createCalculatedInstanceInfoAndLocalInstancesEntry(result,valueExpression);
 		}
 		
 		return result;
 	}
 	
+	/**
+	 * Imports a generic 2-operand ModelInt operation.
+	 * @param target The dummy instance of the left operand.
+	 * @param value The dummy instance of the right operand.
+	 * @param operationType The type of the operation. (e.g. add, subtract, multiply, etc.)
+	 * @return The dummy instance of the result of the operation.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	@SuppressWarnings("incomplete-switch")
-	private static ModelInt importModelInt2OpOperation(ModelInt target, ModelInt value, ModelIntOperations operationType) 
+	private static ModelInt importModelInt2OpOperation(ModelInt target, ModelInt value, ModelIntOperationType operationType) 
 	{
 		String operator=" ";
 		boolean isFunction=false;
@@ -204,8 +390,17 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 		return (ModelInt) importModelType2OpOperation(target,value,result,operator,isFunction);
 	}
 	
+	/**
+	 * Imports a generic 2-operand ModelBool operation.
+	 * @param target The dummy instance of the left operand.
+	 * @param value The dummy instance of the right operand.
+	 * @param operationType The type of the operation. (e.g. and, or, xor, etc.)
+	 * @return The dummy instance of the result of the operation.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	@SuppressWarnings("incomplete-switch")
-	private static ModelBool importModelBool2OpOperation(ModelBool target, ModelBool value, ModelBoolOperations operationType) 
+	private static ModelBool importModelBool2OpOperation(ModelBool target, ModelBool value, ModelBoolOperationType operationType) 
 	{
 		String operator=" ";
 		
@@ -239,6 +434,16 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 		return (ModelBool) importModelType2OpOperation(target,value,result,operator,isFunction);
 	}
 	
+	/**
+	 * Imports a generic 1-operand ModelType operation.
+	 * @param target The dummy instance of the operand.
+	 * @param result The dummy instance of the operation result-
+	 * @param operator The operator.
+	 * @param isFunction Marks that the operation is a function or not.
+	 * @return The dummy instance of the operation result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	@SuppressWarnings("unchecked")
 	private static <T> ModelType<T> importModelType1OpOperation
 			(ModelType<T> target, ModelType<T> result, String operator, boolean isFunction)
@@ -262,13 +467,21 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 			else if(result instanceof ModelString)
 				result=(ModelType<T>) new ModelBool();
 			
-			createCalculatedInstanceInfo(result,valueExpression);
+			createCalculatedInstanceInfoAndLocalInstancesEntry(result,valueExpression);
 		}
 		return result;
 	}
 	
+	/**
+	 * Imports a generic 1-operand ModelInt operation.
+	 * @param target The dummy instance of the operand.
+	 * @param operationType The type of the operation. (e.g. add, subtract, multiply, etc.)
+	 * @return The dummy instance of the result of the operation.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	@SuppressWarnings("incomplete-switch")
-	private static ModelInt importModelInt1OpOperation(ModelInt target,ModelIntOperations operationType)  {
+	private static ModelInt importModelInt1OpOperation(ModelInt target,ModelIntOperationType operationType)  {
 
 		boolean isFunction=false;
 		String operator="";
@@ -294,6 +507,15 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 		return (ModelInt) importModelType1OpOperation(target,result,operator,isFunction);
 	}
 	
+	/**
+	 * Imports a generic 2-operand ModelInt comparing operation.
+	 * @param left The dummy instance of the left operand.
+	 * @param right The dummy instance of the right operand.
+	 * @param operator The comparing operator.
+	 * @return The dummy instance of the result of the operation.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static ModelBool compareModelInts(ModelInt left, ModelInt right, String operator)
 	{
 		String leftExpr=getExpression(left);
@@ -301,7 +523,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 		String expression=leftExpr+" "+operator+" "+rightExpr;
 		
 		ModelBool result=new ModelBool();
-		createCalculatedInstanceInfo(result,expression);
+		createCalculatedInstanceInfoAndLocalInstancesEntry(result,expression);
 		
 		return result;
 	}

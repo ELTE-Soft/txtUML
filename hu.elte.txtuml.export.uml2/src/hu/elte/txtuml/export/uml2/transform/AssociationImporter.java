@@ -13,19 +13,42 @@ import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Type;
 
+/**
+ * Instances of this class are responsible for importing associations.
+ * @author Ádám Ancsin
+ *
+ */
 class AssociationImporter extends AbstractImporter{
 	
+	/**
+	 * Creates an AssocationImporter instance.
+	 * @param sourceClass The class representing the txtUML association.
+	 * @param currentModel The current UML2 model.
+	 */
 	AssociationImporter(Class<?> sourceClass, Model currentModel)
 	{
 		this.sourceClass=sourceClass;
 		this.currentModel=currentModel;
 	}
 	
+	/**
+	 * Gets the current UML2 association.
+	 * @return The current UML2 association.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	Association getAssociation()
 	{
 		return currentAssociation;
 	}
 	
+	/**
+	 * Imports the association.
+	 * @return The imported UML2 association.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
 	Association importAssociation() throws ImportException
 	{
 	    List<Class<?> > classes = new LinkedList<Class<?> >(Arrays.asList(sourceClass.getDeclaredClasses()));
@@ -34,6 +57,14 @@ class AssociationImporter extends AbstractImporter{
 	    return currentAssociation;
 	}
 
+	/**
+	 * Creates the UML2 association.
+	 * @param classes The declared classes (representing the association ends of the association) of the txtUML association.
+	 * @return The created UML2 association.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private Association createAssociation(List<Class<?> > classes) throws ImportException
 	{
 		AssociationEnd end1=importAssociationEnd(classes.get(0));
@@ -47,6 +78,14 @@ class AssociationImporter extends AbstractImporter{
 	    return assoc;
 	}
 	
+	/**
+	 * Imports an association end.
+	 * @param sourceClass The class representing the txtUML association end.
+	 * @return The imported association end.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
 	@SuppressWarnings("rawtypes")
 	private  AssociationEnd importAssociationEnd(Class sourceClass) throws ImportException
 	{

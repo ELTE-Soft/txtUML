@@ -45,6 +45,13 @@ import org.eclipse.uml2.uml.Variable;
  */
 public class InstructionImporter extends AbstractMethodImporter
 {
+	/**
+	 * Imports a select one instruction of an association end in a method body.
+	 * @param target The dummy instance of the target association end.
+	 * @return The dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static <T extends ModelClass, AE extends hu.elte.txtuml.api.AssociationEnd<T> >
 		T importAssociationEnd_SelectOne(AE target) 
 	{
@@ -75,7 +82,7 @@ public class InstructionImporter extends AbstractMethodImporter
 		
 		selectOneAction.getBodies().add(expression);
 
-		createControlFlowBetweenNodes(lastNode, selectOneAction);
+		createControlFlowBetweenActivityNodes(lastNode, selectOneAction);
 
 		Association association=(Association) currentModel.getOwnedMember(assocClass.getSimpleName());
 		Property memberEnd=ElementFinder.findAssociationMemberEnd(association,phrase);
@@ -91,12 +98,23 @@ public class InstructionImporter extends AbstractMethodImporter
 
 		InputPin inputPin_AVVA=setVarAction.createValue(setVarAction.getName()+"_input",type);
 
-		createObjectFlowBetweenNodes(outputPin,inputPin_AVVA);
+		createObjectFlowBetweenActivityNodes(outputPin,inputPin_AVVA);
 		lastNode=setVarAction;
 
+		if(result!=null)
+		{
+			InstanceManager.createLocalInstancesMapEntry(result, InstanceInformation.create(result.getIdentifier()));
+			InstanceManager.createLocalFieldsRecursively(result);
+		}
 		return result;
 	}
 	
+	/**
+	 * Imports the creation of a model class instance in a method body.
+	 * @param createdInstance The created dummy instance.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static void importInstanceCreation(ModelClass createdInstance)
 	{
 		if(currentActivity != null && !DummyInstanceCreator.isCreating())
@@ -115,7 +133,7 @@ public class InstructionImporter extends AbstractMethodImporter
 			OutputPin outputPin=createAction.createResult(createAction.getName()+"_output",classifier);
 
 			//creating a control flow from the previous node to the newly created Create Object Action
-			createControlFlowBetweenNodes(lastNode,createAction);
+			createControlFlowBetweenActivityNodes(lastNode,createAction);
 
 			//creating a variable for created instance, so we can reference it later
 			Type type=ModelImporter.importType(createdInstance.getClass());
@@ -134,14 +152,24 @@ public class InstructionImporter extends AbstractMethodImporter
 			InputPin inputPin_startCBA=startClassifierBehaviorAction.createObject(startClassifierBehaviorAction.getName()+"_input",classifier);
 
 			//creating a fork node and an object flow from Create Object Action's output pin to fork node
-			ForkNode forkNode=createForkNode("fork_"+createAction.getName(),inputPin_AVVA,inputPin_startCBA);
-			createObjectFlowBetweenNodes(outputPin,forkNode);
+			ForkNode forkNode=forkToNodes("fork_"+createAction.getName(),inputPin_AVVA,inputPin_startCBA);
+			createObjectFlowBetweenActivityNodes(outputPin,forkNode);
 
 			//creating a join node for joining the two separate "threads"
-			lastNode = createJoinNode(startClassifierBehaviorAction,setVarAction);
+			lastNode = joinNodes(startClassifierBehaviorAction,setVarAction);
 		}
 	}
 
+	/**
+	 * Imports a method call in a method body.
+	 * @param target The target dummy instance.
+	 * @param methodName The name of the method.
+	 * @param args The dummy instances of the current arguments.
+	 * @return The dummy instance of the return value.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static Object importMethodCall(ModelClass target, String methodName, Object... args) throws ImportException
 	{
 		// this method is called at every method call where the target object is of any type that extends ModelClass 
@@ -150,7 +178,7 @@ public class InstructionImporter extends AbstractMethodImporter
 		Object returnObj=null;
 		
 		if(currentActivity!=null)
-			returnObj = importMethodCallInOperationBody(target, methodName, args);
+			returnObj = importMethodCallInActivity(target, methodName, args);
 		else
 			returnObj= importMethodCallInGuardBody(target, methodName, args);
 	
@@ -158,7 +186,16 @@ public class InstructionImporter extends AbstractMethodImporter
 		
 	}
 
-	static Object callExternal(ExternalClass target, String methodName, Object... args)
+	/**
+	 * Imports a method call of an external class in a method body.
+	 * @param target The target dummy instance of the external class.
+	 * @param methodName The name of the method.
+	 * @param args The dummy instances of the current arguments. 
+	 * @return The dummy instance of the return value.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	static Object importExternalMethodCall(ExternalClass target, String methodName, Object... args)
 	{
 		Method method=ElementFinder.findMethod(target.getClass(), methodName);
 		Class<?> returnType=method.getReturnType();
@@ -166,9 +203,18 @@ public class InstructionImporter extends AbstractMethodImporter
 		// TODO import calls into UML2 model
 	}
 
-	static Object callStaticExternal(Class<?> c, String methodName, Object... args)
+	/**
+	 * Imports a static method call of an external class in a method body.
+	 * @param target The target external class.
+	 * @param methodName The name of the method.
+	 * @param args The dummy instances of the current arguments. 
+	 * @return The dummy instance of the return value.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	static Object importExternalStaticMethodCall(Class<?> targetClass, String methodName, Object... args)
 	{
-		Method method=ElementFinder.findMethod(c, methodName);
+		Method method=ElementFinder.findMethod(targetClass, methodName);
 		Class<?> returnType=method.getReturnType();
 		Object ret=DummyInstanceCreator.createDummyInstance(returnType);
 		return ret;
@@ -176,22 +222,49 @@ public class InstructionImporter extends AbstractMethodImporter
 		// TODO import calls into UML2 model
 	}
 
+	/**
+	 * Imports a field get of a model class instance.
+	 * @param target The dummy instance of the target model class.
+	 * @param fieldName The name of the field.
+	 * @param fieldType The type of the field.
+	 * @return The dummy instance of the field.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static Object importModelClassFieldGet(ModelClass target, String fieldName, Class<?> fieldType)
 	{
-		return assignField(target,fieldName,fieldType);
+		return initAndGetField(target,fieldName,fieldType);
 	}
 	
+	/**
+	 * Imports a field get of an external class instance.
+	 * @param target The dummy instance of the target external class.
+	 * @param fieldName The name of the field.
+	 * @param fieldType The type of the field.
+	 * @return The dummy instance of the field.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static Object importExternalClassFieldGet(ExternalClass target, String fieldName, Class<?> fieldType)
 	{	
-		return assignField(target,fieldName,fieldType);
+		return initAndGetField(target,fieldName,fieldType);
 	}
 
+	/**
+	 * Imports a field set of a model class instance.
+	 * @param target The dummy instance of the target model class.
+	 * @param fieldName The name of the field.
+	 * @param newValue The dummy instance of the new value.
+	 * @return The dummy instance of the field.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static Object importModelClassFieldSet(ModelClass target, String fieldName, Object newValue)  
 	{
 		try
 		{
 			Class<?> newValueClass = newValue.getClass();
-			Object fieldObj=assignField(target,fieldName,newValueClass);
+			Object fieldObj=initAndGetField(target,fieldName,newValueClass);
 			
 			if(currentActivity!=null)			
 			{
@@ -208,7 +281,13 @@ public class InstructionImporter extends AbstractMethodImporter
 		return null;
 	}
 
-	static <T> void createModelTypeLiteral(ModelType<T> inst)
+	/**
+	 * Imports the creation of a ModelType literal.
+	 * @param inst The dummy instance representing the literal.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	static <T> void importModelTypeLiteralCreation(ModelType<T> inst)
 	{
 		@SuppressWarnings("unchecked")
 		T val=(T)FieldValueAccessor.getObjectFieldVal(inst,"value");
@@ -218,6 +297,14 @@ public class InstructionImporter extends AbstractMethodImporter
 		InstanceManager.createLocalInstancesMapEntry(inst,instInfo);
 	}
 
+	/**
+	 * Initializes (creates a dummy instance and assigns it) the trigger signal of the given transition, if not
+	 * yet initialized. Gets the dummy instance of the trigger signal.
+	 * @param target The dummy instance of the target transition.
+	 * @return The dummy instance of the trigger signal of the transition.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	static Signal initAndGetSignalInstanceOfTransition(Transition target)
 	{
 		Signal signal = (Signal) FieldValueAccessor.getObjectFieldVal(target,"signal");
@@ -238,14 +325,31 @@ public class InstructionImporter extends AbstractMethodImporter
 		return signal;
 	}
 	
-	private static hu.elte.txtuml.api.Signal createSignal(Class<? extends StateMachine.Transition> tr) {
-		Trigger triggerAnnot = tr.getAnnotation(Trigger.class);
-		if (triggerAnnot != null) {
-			return InstanceCreator.createInstance(triggerAnnot.value());
+	/**
+	 * Creates a dummy instance of the trigger signal (if there's any) of the given transition.
+	 * @param transitionClass The class of the transition.
+	 * @return The created dummy instance. (null if there's no trigger)
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private static hu.elte.txtuml.api.Signal createSignal(Class<? extends StateMachine.Transition> transitionClass) {
+		Trigger triggerAnnotation = transitionClass.getAnnotation(Trigger.class);
+		if (triggerAnnotation != null) {
+			return InstanceCreator.createInstance(triggerAnnotation.value());
 		}
 		return null;
 	}
 
+	/**
+	 * Adds the parameters of the method call to a CallOperationAction.
+	 * @param callAction The call operation action.
+	 * @param target The dummy instance of the target model class.
+	 * @param methodName The name of the called method.
+	 * @param args The dummy instances of the current arguments.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static void addParamsToCallAction
 		(CallOperationAction callAction, ModelClass target, String methodName,Object[] args) throws ImportException
 	{
@@ -258,12 +362,22 @@ public class InstructionImporter extends AbstractMethodImporter
 				throw new ImportException("Illegal argument (position "+(i+1)+ ") passed to method "+target+"."+methodName);
 
 			ValuePin argValuePin=(ValuePin)callAction.createArgument(paramName, paramType, UMLPackage.Literals.VALUE_PIN);
-			addExpressionToValuePin(argValuePin,(ModelIdentifiedElement)param,paramType);
+			createAndAddValueExpressionToValuePin(argValuePin,(ModelIdentifiedElement)param,paramType);
 			++i;
 		}
 	}
 
-	private static Object importMethodCallInOperationBody
+	/**
+	 * Imports a method call in a method body with an activity. (member functions of model classes or entry/exit/effect actions)
+	 * @param target The dummy instance of the target model class.
+	 * @param methodName The name of the called method.
+	 * @param args The dummy instances of the current arguments.
+	 * @return The dummy instance of the return value.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private static Object importMethodCallInActivity
 		(ModelClass target, String methodName, Object... args) throws ImportException
 	{
 		Object returnObj=null;
@@ -280,12 +394,12 @@ public class InstructionImporter extends AbstractMethodImporter
 
 		ValuePin callTarget=(ValuePin)callAction.createTarget(callAction.getName()+"_target",type,UMLPackage.Literals.VALUE_PIN);
 
-		addOpaqueExpressionToValuePin(callTarget,targetName,type);
+		createAndAddOpaqueExpressionToValuePin(callTarget,targetName,type);
 
 		callAction.setOperation(ElementFinder.findOperation(targetClass,methodName));
 		addParamsToCallAction(callAction,target,methodName,args);
 
-		createControlFlowBetweenNodes(lastNode,callAction);
+		createControlFlowBetweenActivityNodes(lastNode,callAction);
 		lastNode=callAction;
 
 		try {
@@ -300,6 +414,15 @@ public class InstructionImporter extends AbstractMethodImporter
 		return returnObj;
 	}
 
+	/**
+	 * Creates a method call expression. (e.g. "self.doThis(arg0,arg1)")
+	 * @param target The dummy instance of the target model class.
+	 * @param methodName The name of the called method.
+	 * @param args The dummy instances of the current arguments.
+	 * @return The created expression.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static String createMethodCallExpression(ModelClass target, String methodName, Object... args)
 	{
 		String targetExpression = getExpression(target);
@@ -326,6 +449,15 @@ public class InstructionImporter extends AbstractMethodImporter
 		return expression.toString();
 	}
 
+	/**
+	 * Imports a method call in a guard body.
+	 * @param target The dummy instance of the target model class.
+	 * @param methodName The name of the called method.
+	 * @param args The dummy instances of the current arguments.
+	 * @return The dummy instance of the return value.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static Object importMethodCallInGuardBody(ModelClass target, String methodName, Object... args)
 	{
 		String expression = createMethodCallExpression(target,methodName,args);
@@ -350,7 +482,15 @@ public class InstructionImporter extends AbstractMethodImporter
 		return returnObj;
 	}
 	
-	private static <T extends ModelClass, AE extends hu.elte.txtuml.api.AssociationEnd<T> > String getAssociationEndOwner(AE target)
+	/**
+	 * Gets the identifier of the owner of the given association end.
+	 * @param target The target association end.
+	 * @return The identifier of the owner.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private static <T extends ModelClass, AE extends hu.elte.txtuml.api.AssociationEnd<T> >
+		String getAssociationEndOwner(AE target)
 	{
 		Method method=null;
 		String ret=null;
@@ -367,13 +507,23 @@ public class InstructionImporter extends AbstractMethodImporter
 		return ret;
 	}
 	
-	private static Object assignField(Object target, String fieldName, Class<?> newValueClass) 
+	/**
+	 * If not yet initialized (value is null), initializes the field with the given field name of the
+	 * given target object with a dummy instance of the specified value type.
+	 * @param target The dummy instance of the target.
+	 * @param fieldName The name of the field.
+	 * @param valueType The value type of the field.
+	 * @return The dummy instance of the field.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private static Object initAndGetField(Object target, String fieldName, Class<?> valueType) 
 	{
 		Object fieldValue=FieldValueAccessor.getObjectFieldVal(target,fieldName);
 		
 		if(fieldValue == null)
 		{
-			fieldValue=DummyInstanceCreator.createDummyInstance(newValueClass);
+			fieldValue=DummyInstanceCreator.createDummyInstance(valueType);
 			FieldValueAccessor.setObjectFieldVal(target,fieldName,fieldValue);
 		}
 		

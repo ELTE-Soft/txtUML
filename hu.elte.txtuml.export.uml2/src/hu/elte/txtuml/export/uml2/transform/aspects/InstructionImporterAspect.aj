@@ -25,17 +25,17 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	@SuppressAjWarnings
 	after() returning(ModelInt target) : call((ModelInt).new(int)) && isActive() && !creatingDummyInstance()
 	{
-		InstructionImporter.createModelTypeLiteral(target);
+		InstructionImporter.importModelTypeLiteralCreation(target);
 	}
 	@SuppressAjWarnings
 	after() returning(ModelBool target) : call((ModelBool).new(boolean)) && isActive() && !creatingDummyInstance()
 	{
-		InstructionImporter.createModelTypeLiteral(target);
+		InstructionImporter.importModelTypeLiteralCreation(target);
 	}
 	@SuppressAjWarnings
 	after() returning(ModelString target) : call((ModelString).new(String)) && isActive() && !creatingDummyInstance()
 	{
-		InstructionImporter.createModelTypeLiteral(target);
+		InstructionImporter.importModelTypeLiteralCreation(target);
 	}
 	
 	@SuppressWarnings( "rawtypes")
@@ -73,11 +73,19 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	
 	@SuppressAjWarnings
 	Object around(ExternalClass target) : target(target) && call(* (ExternalClass+).*(..)) && isActive() {
-		return InstructionImporter.callExternal(target, thisJoinPoint.getSignature().getName(), thisJoinPoint.getArgs());
+		return InstructionImporter.importExternalMethodCall(
+				target, 
+				thisJoinPoint.getSignature().getName(), 
+				thisJoinPoint.getArgs()
+			);
 	}
 	@SuppressAjWarnings
 	Object around() : call(static * (ExternalClass+).*(..)) && isActive() {
-		return InstructionImporter.callStaticExternal(thisJoinPoint.getSignature().getDeclaringType(), thisJoinPoint.getSignature().getName(), thisJoinPoint.getArgs());
+		return InstructionImporter.importExternalStaticMethodCall(
+				thisJoinPoint.getSignature().getDeclaringType(),
+				thisJoinPoint.getSignature().getName(),
+				thisJoinPoint.getArgs()
+			);
 	}
 
 	

@@ -80,7 +80,10 @@ class RegionImporter extends AbstractImporter {
 			Region subRegion = importSubRegion(vertexClass, vertexInstance, vertex);
 			if(subRegion.getSubvertices().size() != 0 && !containsInitial(subRegion)) 
 			{
-				importWarning(vertexClass.getName() + " has one or more vertices but no initial pseudostate (state machine will not be created)");
+				importWarning(
+						vertexClass.getName() +
+						" has one or more vertices but no initial pseudostate (state machine will not be created)"
+					);
 				return null;
 			}
 		}

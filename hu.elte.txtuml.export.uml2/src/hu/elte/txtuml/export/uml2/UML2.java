@@ -14,7 +14,7 @@ import hu.elte.txtuml.export.uml2.transform.ModelImporter;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 
 /**
- * This class is responsible for generating Eclipse UML2 model from txtUML model.
+ * This class is responsible for exporting Eclipse UML2 model generated from a txtUML model.
  * 
  * @author Ádám Ancsin
  *
