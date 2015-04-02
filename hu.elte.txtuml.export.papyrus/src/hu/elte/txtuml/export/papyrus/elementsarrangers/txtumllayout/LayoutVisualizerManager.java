@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.draw2d.geometry.Point;
@@ -107,7 +106,7 @@ public class LayoutVisualizerManager {
 					(ConnectionNodeEditPart) getEditPartByXmiId((List<EditPart>)(List<?>) connectionNodeEditParts,connection.getId());
 			
 			List<Point> route = new LinkedList<Point>();
-			for(hu.elte.txtuml.layout.visualizer.model.Point point: connection.getRoute()){
+			for(hu.elte.txtuml.layout.visualizer.model.Point point: connection.getMinimalRoute()){
 				route.add(new Point(point.getX(), point.getY()));
 			}
 			
@@ -127,21 +126,5 @@ public class LayoutVisualizerManager {
 	private String getXmiId(EditPart editPart){
 		EObject object = ((View) editPart.getModel()).getElement();
 	    return ((XMLResource) object.eResource()).getID(object);
-	}
-	
-	public void simplifyRoutes(Map<ConnectionNodeEditPart, List<Point>> connections){
-		for(List<Point> route : connections.values()){
-			simpliflyRoute(route);
-		}
-	}
-
-	public void simpliflyRoute(List<Point> route) {
-		if(route.size() < 2)
-			return;
-		for(int i = 1; i< route.size()-1; i++){
-			while(i<route.size()-1 && (route.get(i-1).x == route.get(i+1).x || route.get(i-1).y == route.get(i+1).y)){
-				route.remove(i);
-			}
-		}
 	}
 }

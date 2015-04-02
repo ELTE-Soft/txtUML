@@ -41,7 +41,6 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			@SuppressWarnings("unchecked")
 			Map<ConnectionNodeEditPart, List<Point>> connectionMap = (Map<ConnectionNodeEditPart, List<Point>>)(Map<?,?>)
 																				vismanager.getConnectionsAndRoutes();
-			vismanager.simplifyRoutes(connectionMap);
 			
 			LayoutTransformer layoutTransformer = new LayoutTransformer(maxWidth, maxHeight);
 			layoutTransformer.setGapX(gapX);
