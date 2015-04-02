@@ -7,8 +7,8 @@ public class Model extends Action {
 	 * <p>
 	 * <b>Implementation note:</b>
 	 * <p>
-	 * Protected because this class is intended to be inherited from but
-	 * not instantiated. However, it has to be a non-abstract class to make sure
+	 * Protected because this class is intended to be inherited from but not
+	 * instantiated. However, it has to be a non-abstract class to make sure
 	 * that it is instantiatable when that is needed for the API or the model
 	 * exportation.
 	 */

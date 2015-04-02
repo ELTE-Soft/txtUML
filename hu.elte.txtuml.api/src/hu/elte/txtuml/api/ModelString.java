@@ -10,8 +10,8 @@ package hu.elte.txtuml.api;
  * <b>Usage:</b>
  * <p>
  * May be used, for example, as a field of a class, signal parameter or local
- * variable. As it is immutable, it can be used in a style very similar to
- * using primitive values.
+ * variable. As it is immutable, it can be used in a style very similar to using
+ * primitive values.
  * <p>
  * <b>Java restrictions:</b>
  * <ul>
@@ -37,15 +37,15 @@ package hu.elte.txtuml.api;
  * 
  */
 public class ModelString extends ModelType<String> {
-	
+
 	/**
 	 * A <code>ModelString</code> instance representing an empty string value.
 	 */
 	public static final ModelString EMPTY = new ModelString("");
 
 	/**
-	 * Creates a new <code>ModelString</code> instance representing the specified
-	 * string value.
+	 * Creates a new <code>ModelString</code> instance representing the
+	 * specified string value.
 	 * 
 	 * @param val
 	 *            the string value this new <code>ModelString</code> instance
@@ -56,7 +56,8 @@ public class ModelString extends ModelType<String> {
 	}
 
 	/**
-	 * Creates a new <code>ModelString</code> instance representing an empty string value. 
+	 * Creates a new <code>ModelString</code> instance representing an empty
+	 * string value.
 	 */
 	public ModelString() {
 		super("");

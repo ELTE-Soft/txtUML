@@ -7,34 +7,26 @@ public final class ModelExecutor implements ModelElement {
 	 * Accessed from multiple threads, so must be thread-safe.
 	 */
 
-	private ModelExecutor() {
-	}
+	private static final ModelExecutorThread thread = new ModelExecutorThread();
 
-	static ModelExecutorThread getExecutorThreadStatic() {
-		return ModelExecutorThread.getSingletonInstance();
+	private ModelExecutor() {
 	}
 
 	// SETTINGS
 
 	public static final class Settings implements ModelElement {
-		/*
-		 * In the setters of the four streams, no synchronization is needed
-		 * because the assignment is atomic and if a printing operation is
-		 * active on another thread, that operation will completely finish on
-		 * the old stream either way.
-		 */
-		
-		private static PrintStream userOutStream = System.out;
-		private static PrintStream userErrorStream = System.err;
-		private static PrintStream executorOutStream = System.out;
-		private static PrintStream executorErrorStream = System.err;
-		private static boolean executorLog = false;
-		private static boolean dynamicChecks = true;
+
+		private static volatile PrintStream userOutStream = System.out;
+		private static volatile PrintStream userErrorStream = System.err;
+		private static volatile PrintStream executorOutStream = System.out;
+		private static volatile PrintStream executorErrorStream = System.err;
+		private static volatile boolean executorLog = false;
+		private static volatile boolean dynamicChecks = true;
 
 		private static final Object LOCK_ON_EXECUTION_TIME_MULTIPLIER = new Object();
-		
 		private static long executionTimeMultiplier = 1;
-		private static boolean canChangeExecutionTimeMultiplier = true;
+
+		private static volatile boolean canChangeExecutionTimeMultiplier = true;
 
 		private Settings() {
 		}
@@ -58,6 +50,10 @@ public final class ModelExecutor implements ModelElement {
 
 		public static void setExecutorLog(boolean newValue) {
 			Settings.executorLog = newValue;
+		}
+
+		public static void setDynamicChecks(boolean newValue) {
+			Settings.dynamicChecks = newValue;
 		}
 
 		public static void setExecutionTimeMultiplier(long newMultiplier) {
@@ -86,7 +82,7 @@ public final class ModelExecutor implements ModelElement {
 		static boolean executorLog() {
 			return Settings.executorLog;
 		}
-		
+
 		static boolean dynamicChecks() {
 			return Settings.dynamicChecks;
 		}
@@ -95,16 +91,10 @@ public final class ModelExecutor implements ModelElement {
 	// EXECUTION
 
 	static void send(ModelClass target, Signal signal) {
-		getExecutorThreadStatic().send(target, signal);
+		thread.send(target, signal);
 	}
 
 	// LOGGING METHODS
-
-	private static void logOnStream(PrintStream printStream, String message) {
-		synchronized (printStream) {
-			printStream.println(message);
-		}
-	}
 
 	static void log(String message) {
 		logOnStream(Settings.userOutStream, message);
@@ -120,5 +110,11 @@ public final class ModelExecutor implements ModelElement {
 
 	static void executorErrorLog(String message) {
 		logOnStream(Settings.executorErrorStream, message);
+	}
+
+	private static void logOnStream(PrintStream printStream, String message) {
+		synchronized (printStream) {
+			printStream.println(message);
+		}
 	}
 }

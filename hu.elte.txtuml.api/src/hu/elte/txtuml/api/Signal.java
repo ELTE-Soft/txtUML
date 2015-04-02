@@ -40,7 +40,8 @@ package hu.elte.txtuml.api;
  * <li><i>Inner classes:</i> disallowed</li>
  * </ul>
  * </li>
- * <li><i>Inherit from defined subtype:</i> allowed to represent signal inheritance</li>
+ * <li><i>Inherit from defined subtype:</i> allowed to represent signal
+ * inheritance</li>
  * </ul>
  * 
  * <p>
@@ -84,5 +85,5 @@ public class Signal extends Event {
 	public String toString() {
 		return "signal_" + super.toString();
 	}
-	
+
 }

@@ -165,7 +165,7 @@ public abstract class AssociationEnd<T extends ModelClass> implements
 	 * @return the result of the operation
 	 */
 	abstract <S extends AssociationEnd<T>> S typeKeepingRemove(T object);
-	
+
 	/**
 	 * Checks whether the upper bound of this association end's multiplicity is
 	 * unoffended.
@@ -183,7 +183,7 @@ public abstract class AssociationEnd<T extends ModelClass> implements
 	 *         elements than its lower bound, <code>false</code> otherwise
 	 */
 	abstract boolean checkLowerBound();
-	
+
 	/**
 	 * Returns the size if this collection. Differs from <code>count</code> in
 	 * that this method returns an integer instead of <code>ModelInt</code>.
@@ -192,7 +192,7 @@ public abstract class AssociationEnd<T extends ModelClass> implements
 	 * @return the size of this collection
 	 */
 	abstract int getSize();
-	
+
 	@Override
 	public abstract String toString();
 

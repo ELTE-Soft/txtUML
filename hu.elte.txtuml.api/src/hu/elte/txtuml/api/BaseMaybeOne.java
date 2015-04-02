@@ -183,7 +183,7 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 	int getSize() {
 		return obj == null ? 0 : 1;
 	}
-	
+
 	@Override
 	public String toString() {
 		return obj == null ? "null" : obj.toString();

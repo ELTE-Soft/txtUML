@@ -10,7 +10,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	}
 
 	public class Vertex implements ModelElement, LayoutNode {
-		
+
 		Vertex() {
 		}
 
@@ -19,20 +19,20 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 		public void exit() {
 		}
-	
+
 		String vertexIdentifier() {
 			return getClass().getSimpleName();
 		}
-		
+
 		@Override
 		public String toString() {
 			return "vertex:" + vertexIdentifier();
 		}
 
 	}
-	
+
 	public class Pseudostate extends Vertex {
-		
+
 		Pseudostate() {
 		}
 
@@ -43,12 +43,12 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		@Override
 		public final void exit() {
 		}
-		
+
 		@Override
 		public String toString() {
 			return "pseudostate:" + vertexIdentifier();
 		}
-		
+
 	}
 
 	public class Initial extends Pseudostate {
@@ -104,21 +104,21 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		private final Vertex source;
 		private final Vertex target;
 		private Signal signal;
-		
+
 		protected Transition() {
 			Class<? extends Transition> cls = getClass();
-			
+
 			From from = cls.getAnnotation(From.class);
 			To to = cls.getAnnotation(To.class);
-			
-			if (from == null || to == null) {				
+
+			if (from == null || to == null) {
 				this.source = null;
 				this.target = null;
 				// TODO show error
 			} else {
 				this.source = getInnerClassInstance(from.value());
 				this.target = getInnerClassInstance(to.value());
-			}			
+			}
 		}
 
 		public void effect() {
@@ -132,11 +132,11 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		protected final <T extends Signal> T getSignal() {
 			return (T) signal;
 		}
-		
+
 		final void setSignal(Signal s) {
 			signal = s;
 		}
-		
+
 		Vertex getSource() {
 			return source;
 		}
@@ -148,7 +148,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		boolean isFromSource(Class<?> c) {
 			return source == null ? false : c == source.getClass();
 		}
-		
+
 		@Override
 		public String toString() {
 			return "transition:" + getClass().getSimpleName() + " ("

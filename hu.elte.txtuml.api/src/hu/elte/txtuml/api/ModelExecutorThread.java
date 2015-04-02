@@ -7,17 +7,12 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 class ModelExecutorThread extends Thread {
 
-	private static final ModelExecutorThread instance = new ModelExecutorThread();
 	private final LinkedBlockingQueue<QueueEntry> mailbox;
 
-	private ModelExecutorThread() {
+	ModelExecutorThread() {
 		this.mailbox = new LinkedBlockingQueue<>();
-		this.start();
-	}
 
-	static ModelExecutorThread getSingletonInstance() {
-		return instance;
-
+		start();
 	}
 
 	void send(ModelClass target, Signal signal) {

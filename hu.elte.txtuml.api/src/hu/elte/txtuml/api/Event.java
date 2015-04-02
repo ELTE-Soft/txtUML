@@ -47,5 +47,5 @@ public class Event implements ModelElement, ModelIdentifiedElement {
 	public String toString() {
 		return "event:" + getClass().getSimpleName();
 	}
-	
+
 }

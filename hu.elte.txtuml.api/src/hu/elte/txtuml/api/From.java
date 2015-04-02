@@ -19,8 +19,8 @@ import java.lang.annotation.Target;
  * <p>
  * 
  * Use on a subclass of {@link Transition} and set the value of the
- * {@link #value() value} element to reference the representing class of
- * the desired vertex.
+ * {@link #value() value} element to reference the representing class of the
+ * desired vertex.
  * <p>
  * If used on class <i>t</i> with the value referencing class <i>v</i>, the
  * following conditions must be met:
@@ -65,10 +65,11 @@ import java.lang.annotation.Target;
 public @interface From {
 
 	/**
-	 * The annotation type element to set the source vertex of the transition this annotation is used on.
+	 * The annotation type element to set the source vertex of the transition
+	 * this annotation is used on.
 	 * 
 	 * @return the class representing the source vertex of the transition
 	 */
 	Class<? extends StateMachine.Vertex> value();
-	
+
 }

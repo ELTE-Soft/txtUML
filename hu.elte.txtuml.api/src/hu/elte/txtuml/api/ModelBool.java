@@ -10,8 +10,8 @@ package hu.elte.txtuml.api;
  * <b>Usage:</b>
  * <p>
  * May be used, for example, as a field of a class, signal parameter or local
- * variable. As it is immutable, it can be used in a style very similar to
- * using primitive values.
+ * variable. As it is immutable, it can be used in a style very similar to using
+ * primitive values.
  * <p>
  * <b>Java restrictions:</b>
  * <ul>
@@ -54,7 +54,6 @@ public class ModelBool extends ModelType<Boolean> {
 	 * An <code>Else</code> instance.
 	 */
 	public static final ModelBool ELSE = new Else();
-
 
 	public static final class Else extends ModelBool {
 

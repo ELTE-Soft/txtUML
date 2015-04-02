@@ -42,8 +42,8 @@ import hu.elte.txtuml.layout.lang.elements.LayoutLink;
  * <li><i>Nested interfaces:</i> disallowed</li>
  * <li><i>Static nested classes:</i> disallowed</li>
  * <li><i>Nested enums:</i> disallowed</li>
- * <li><i>Inner classes:</i> allowed at most two, both of which are subclasses of
- * <code>AssociationEnd</code></li>
+ * <li><i>Inner classes:</i> allowed at most two, both of which are subclasses
+ * of <code>AssociationEnd</code></li>
  * </ul>
  * <li><i>Inherit from defined subtype:</i> disallowed</li></li>
  * </ul>

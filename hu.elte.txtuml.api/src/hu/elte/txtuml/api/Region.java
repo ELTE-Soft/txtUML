@@ -71,7 +71,8 @@ public abstract class Region extends StateMachine {
 			return;
 		}
 		if (ModelExecutor.Settings.executorLog() && signal != null) {
-			ModelExecutor.executorLog(toString() + " processes " + signal.toString());
+			ModelExecutor.executorLog(toString() + " processes "
+					+ signal.toString());
 		}
 		if (executeTransition(signal)) {
 			callEntryAction();
@@ -103,7 +104,7 @@ public abstract class Region extends StateMachine {
 
 		/*
 		 * @return <code>true</code> if this instance is not yet set to execute
-		 *         a certain transition
+		 * a certain transition
 		 */
 		boolean isEmpty() {
 			return transition == null;
@@ -158,12 +159,16 @@ public abstract class Region extends StateMachine {
 					}
 
 					if (!applicableTransitionExecutor.isEmpty()) {
-						ModelExecutor.executorErrorLog("Error: guards of transitions "
-								+ applicableTransitionExecutor
-										.getTransitionClass().getName()
-								+ " and " + c.getName() + " from class "
-								+ currentVertex.getClass().getSimpleName()
-								+ " are overlapping");
+						ModelExecutor
+								.executorErrorLog("Error: guards of transitions "
+										+ applicableTransitionExecutor
+												.getTransitionClass().getName()
+										+ " and "
+										+ c.getName()
+										+ " from class "
+										+ currentVertex.getClass()
+												.getSimpleName()
+										+ " are overlapping");
 						continue;
 					}
 
@@ -172,7 +177,7 @@ public abstract class Region extends StateMachine {
 					if (!ModelExecutor.Settings.dynamicChecks()) {
 						break;
 					}
-					
+
 				}
 			}
 		}
@@ -221,9 +226,10 @@ public abstract class Region extends StateMachine {
 					if (!elseTransitionExecutor.isEmpty()) {
 						// there was already a transition with an else condition
 
-						ModelExecutor.executorErrorLog("Error: there are more than one transitions from choice "
-								+ examinedChoiceClass.getSimpleName()
-								+ " with an Else condition");
+						ModelExecutor
+								.executorErrorLog("Error: there are more than one transitions from choice "
+										+ examinedChoiceClass.getSimpleName()
+										+ " with an Else condition");
 						continue;
 					}
 
@@ -235,18 +241,19 @@ public abstract class Region extends StateMachine {
 				if (!applicableTransitionExecutor.isEmpty()) {
 					// there was already an applicable transition
 
-					ModelExecutor.executorErrorLog("Error: guards of transitions "
-							+ applicableTransitionExecutor.getTransitionClass()
-									.getName() + " and " + c.getName()
-							+ " from class "
-							+ examinedChoiceClass.getSimpleName()
-							+ " are overlapping");
+					ModelExecutor
+							.executorErrorLog("Error: guards of transitions "
+									+ applicableTransitionExecutor
+											.getTransitionClass().getName()
+									+ " and " + c.getName() + " from class "
+									+ examinedChoiceClass.getSimpleName()
+									+ " are overlapping");
 
 					continue;
 				}
 
 				applicableTransitionExecutor.set(transition, c);
-				
+
 				if (!ModelExecutor.Settings.dynamicChecks()) {
 					break;
 				}
@@ -260,9 +267,10 @@ public abstract class Region extends StateMachine {
 
 				elseTransitionExecutor.execute();
 			} else {
-				ModelExecutor.executorErrorLog("Error: there was no transition from choice class "
-						+ examinedChoiceClass.getSimpleName()
-						+ " which could be used");
+				ModelExecutor
+						.executorErrorLog("Error: there was no transition from choice class "
+								+ examinedChoiceClass.getSimpleName()
+								+ " which could be used");
 			}
 			return;
 		}
@@ -290,9 +298,9 @@ public abstract class Region extends StateMachine {
 
 			Class<?> currentParentState = currentVertex.getClass()
 					.getEnclosingClass();
-			
+
 			currentVertex = (Vertex) getInnerClassInstance(currentParentState);
-			
+
 			if (ModelExecutor.Settings.executorLog()) {
 				ModelExecutor.executorLog(toString() + " leaves "
 						+ currentVertex.toString());

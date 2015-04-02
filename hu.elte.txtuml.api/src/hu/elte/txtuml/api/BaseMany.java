@@ -228,7 +228,7 @@ class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 	boolean checkLowerBound() {
 		return true; // There is no lower bound of Many.
 	}
-	
+
 	@Override
 	int getSize() {
 		return coll.size();

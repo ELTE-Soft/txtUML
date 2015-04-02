@@ -65,10 +65,10 @@ public abstract class Action implements ModelElement {
 			Class<? extends AssociationEnd<MODELCLASS2>> rightEnd,
 			MODELCLASS2 rightObj) {
 
-		if (linkingDeleted(leftObj) || linkingDeleted(rightObj)) {
+		if (isLinkingDeleted(leftObj) || isLinkingDeleted(rightObj)) {
 			return;
 		}
-		
+
 		try {
 			leftObj.addToAssoc(rightEnd, rightObj);
 			rightObj.addToAssoc(leftEnd, leftObj);
@@ -77,10 +77,12 @@ public abstract class Action implements ModelElement {
 					.executorErrorLog("Error: upper bound of an association end's multiplicity has been offended.");
 		}
 	}
-	
-	private static boolean linkingDeleted(ModelClass obj) {
+
+	private static boolean isLinkingDeleted(ModelClass obj) {
 		if (obj.isDeleted()) {
-			ModelExecutor.executorErrorLog("Error: trying to link deleted model object " + obj.toString() + ".");
+			ModelExecutor
+					.executorErrorLog("Error: trying to link deleted model object "
+							+ obj.toString() + ".");
 			return true;
 		}
 		return false;
@@ -101,7 +103,7 @@ public abstract class Action implements ModelElement {
 								+ leftObj.toString()
 								+ " and "
 								+ rightObj.toString() + ".");
-				
+
 				return;
 			}
 		}
@@ -113,21 +115,24 @@ public abstract class Action implements ModelElement {
 	/*
 	 * Starts the state machine of the specified modelClass object.
 	 * 
-	 * @param obj
-	 *            the model object the state machine of which has to be started.
-	 * @throws NullPointerException
-	 *             if <code>obj</code> is <code>null</code>
+	 * @param obj the model object the state machine of which has to be started.
+	 * 
+	 * @throws NullPointerException if <code>obj</code> is <code>null</code>
 	 */
 	public static void start(ModelClass obj) {
 		if (obj.isDeleted()) {
-			ModelExecutor.executorErrorLog("Error: trying to start deleted model object " + obj.toString() + ".");
+			ModelExecutor
+					.executorErrorLog("Error: trying to start deleted model object "
+							+ obj.toString() + ".");
 		}
-		
+
 		obj.start();
 	}
 
 	/**
 	 * Asynchronously sends the specified signal to the specified target object.
+	 * <p>
+	 * Does not check whether the target object is deleted.
 	 * 
 	 * @param target
 	 *            the model object which will receive the signal
@@ -137,24 +142,19 @@ public abstract class Action implements ModelElement {
 	 *             if <code>target</code> is <code>null</code>
 	 */
 	public static void send(ModelClass target, Signal signal) {
-		if (target.isDeleted()) {
-			ModelExecutor.executorErrorLog("Error: trying to send a signal to deleted model object " + target.toString() + ".");
-		}
-		
 		target.send(signal);
 	}
 
 	/*
 	 * An <code>if</code> statement of the model
 	 * 
-	 * @param thenBody
-	 *            the block to be performed if the condition is evaluated to
-	 *            <code>true</code>
-	 * @param elseBody
-	 *            the block to be performed if the condition is evaluated to
-	 *            <code>false</code>
-	 * @throws NullPointerException
-	 *             if either parameter is <code>null</code>
+	 * @param thenBody the block to be performed if the condition is evaluated
+	 * to <code>true</code>
+	 * 
+	 * @param elseBody the block to be performed if the condition is evaluated
+	 * to <code>false</code>
+	 * 
+	 * @throws NullPointerException if either parameter is <code>null</code>
 	 */
 	public static void If(Condition cond, BlockBody thenBody, BlockBody elseBody) {
 

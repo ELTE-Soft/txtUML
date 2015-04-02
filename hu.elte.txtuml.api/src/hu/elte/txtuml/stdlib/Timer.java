@@ -27,7 +27,7 @@ public class Timer extends ExternalClass {
 		private final ModelClass targetObj;
 		private final Runnable action;
 		private ScheduledFuture<?> handle;
-		private final static ScheduledExecutorService scheduler = Executors
+		private static final ScheduledExecutorService scheduler = Executors
 				.newSingleThreadScheduledExecutor();
 
 		Handle(ModelClass obj, Signal s, ModelInt millisecs) {

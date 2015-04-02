@@ -36,7 +36,7 @@ public class ModelClass extends Region implements ModelElement,
 			status = Status.READY;
 		}
 	}
-
+	
 	public <T extends ModelClass, AE extends AssociationEnd<T> & hu.elte.txtuml.api.semantics.Navigability.Navigable> AE assoc(
 			Class<AE> otherEnd) {
 
