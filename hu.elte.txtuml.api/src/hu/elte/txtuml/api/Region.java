@@ -78,9 +78,6 @@ public abstract class Region extends StateMachine {
 		}
 	}
 
-	/**
-	 * This private inner class TODO
-	 */
 	private class TransitionExecutor {
 
 		/**
@@ -104,12 +101,9 @@ public abstract class Region extends StateMachine {
 			this.transitionClass = null;
 		}
 
-		/**
-		 * 
-		 * TODO
-		 * 
+		/*
 		 * @return <code>true</code> if this instance is not yet set to execute
-		 *         a certain
+		 *         a certain transition
 		 */
 		boolean isEmpty() {
 			return transition == null;

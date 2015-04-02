@@ -153,7 +153,7 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 		if (object == null) {
 			return (S) this;
 		} else if (this.obj != null && !this.obj.equals(object)) {
-			throw new MultiplicityException(); // TODO set message
+			throw new MultiplicityException(); // TODO set exception message
 		}
 		return (S) new BaseMaybeOne<T>(object);
 	}

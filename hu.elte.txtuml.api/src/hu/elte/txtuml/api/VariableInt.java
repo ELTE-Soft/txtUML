@@ -1,6 +1,6 @@
 package hu.elte.txtuml.api;
 
-/**
+/*
  * A mutable container of a <code>ModelInt</code> instance.
  * 
  * <p>
@@ -8,8 +8,6 @@ package hu.elte.txtuml.api;
  * <p>
  * <b>Usage:</b>
  * <p>
- * 
- * TODO
  * 
  * <p>
  * <b>Java restrictions:</b>

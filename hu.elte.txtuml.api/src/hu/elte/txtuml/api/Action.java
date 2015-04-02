@@ -6,7 +6,7 @@ import hu.elte.txtuml.api.blocks.Condition;
 import hu.elte.txtuml.api.blocks.ParameterizedBlockBody;
 import hu.elte.txtuml.utils.InstanceCreator;
 
-/**
+/*
  * Class <code>Action</code> provides methods for the user to be used as
  * statements of the action language of the model.
  * 
@@ -32,7 +32,7 @@ import hu.elte.txtuml.utils.InstanceCreator;
  * </code>
  * </pre>
  * 
- * TODO See the documentation of the {@link hu.elte.txtuml.api} package to get
+ * See the documentation of the {@link hu.elte.txtuml.api} package to get
  * an overview on modeling in txtUML.
  *
  * @author Gábor Ferenc Kovács
@@ -110,8 +110,8 @@ public abstract class Action implements ModelElement {
 		rightObj.removeFromAssoc(leftEnd, leftObj);
 	}
 
-	/**
-	 * Starts the state machine of the specified modelClass object. TODO
+	/*
+	 * Starts the state machine of the specified modelClass object.
 	 * 
 	 * @param obj
 	 *            the model object the state machine of which has to be started.
@@ -144,10 +144,8 @@ public abstract class Action implements ModelElement {
 		target.send(signal);
 	}
 
-	/**
+	/*
 	 * An <code>if</code> statement of the model
-	 * 
-	 * TODO
 	 * 
 	 * @param thenBody
 	 *            the block to be performed if the condition is evaluated to

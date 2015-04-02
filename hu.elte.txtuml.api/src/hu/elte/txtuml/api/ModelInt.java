@@ -73,9 +73,8 @@ public class ModelInt extends ModelType<Integer> {
 		super((int) val);
 	}
 
-	/**
+	/*
 	 * Creates a new <code>ModelInt</code> instance representing a zero value.
-	 * TODO
 	 */
 	public ModelInt() {
 		super(0);

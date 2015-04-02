@@ -58,10 +58,6 @@ public class ModelBool extends ModelType<Boolean> {
 
 	public static final class Else extends ModelBool {
 
-		/**
-		 * Sole constructor of <code>Else</code>.
-		 * TODO
-		 */
 		public Else() {
 			super(true);
 		}

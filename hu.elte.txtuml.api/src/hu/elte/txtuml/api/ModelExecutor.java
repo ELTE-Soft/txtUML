@@ -2,11 +2,6 @@ package hu.elte.txtuml.api;
 
 import java.io.PrintStream;
 
-// TODO check
-
-/*
- * Currently not instantiatable, will have more instances in the future.
- */
 public final class ModelExecutor implements ModelElement {
 	/*
 	 * Accessed from multiple threads, so must be thread-safe.
@@ -19,65 +14,56 @@ public final class ModelExecutor implements ModelElement {
 		return ModelExecutorThread.getSingletonInstance();
 	}
 
-	static Settings getSettingsStatic() {
-		return Settings.instance;
-	}
-
 	// SETTINGS
 
-	/*
-	 * Currently singleton.
-	 */
 	public static final class Settings implements ModelElement {
 		/*
 		 * In the setters of the four streams, no synchronization is needed
 		 * because the assignment is atomic and if a printing operation is
 		 * active on another thread, that operation will completely finish on
-		 * the old stream in either way.
+		 * the old stream either way.
 		 */
+		
+		private static PrintStream userOutStream = System.out;
+		private static PrintStream userErrorStream = System.err;
+		private static PrintStream executorOutStream = System.out;
+		private static PrintStream executorErrorStream = System.err;
+		private static boolean executorLog = false;
+		private static boolean dynamicChecks = true;
 
-		private static final Settings instance = new Settings();
-
-		private PrintStream userOutStream = System.out;
-		private PrintStream userErrorStream = System.err;
-		private PrintStream executorOutStream = System.out;
-		private PrintStream executorErrorStream = System.err;
-		private boolean executorLog = false;
-		private boolean dynamicChecks = true;
-
-		private final Object lockOnExecutionTimeMultiplier = new Object();
-		private long executionTimeMultiplier = 1;
-		private boolean canChangeExecutionTimeMultiplier = true;
+		private static final Object LOCK_ON_EXECUTION_TIME_MULTIPLIER = new Object();
+		
+		private static long executionTimeMultiplier = 1;
+		private static boolean canChangeExecutionTimeMultiplier = true;
 
 		private Settings() {
 		}
 
 		public static void setUserOutStream(PrintStream userOutStream) {
-			getSettingsStatic().userOutStream = userOutStream;
+			Settings.userOutStream = userOutStream;
 		}
 
 		public static void setUserErrorStream(PrintStream userErrorStream) {
-			getSettingsStatic().userErrorStream = userErrorStream;
+			Settings.userErrorStream = userErrorStream;
 		}
 
 		public static void setExecutorOutStream(PrintStream executorOutStream) {
-			getSettingsStatic().executorOutStream = executorOutStream;
+			Settings.executorOutStream = executorOutStream;
 		}
 
 		public static void setExecutorErrorStream(
 				PrintStream executorErrorStream) {
-			getSettingsStatic().executorErrorStream = executorErrorStream;
+			Settings.executorErrorStream = executorErrorStream;
 		}
 
 		public static void setExecutorLog(boolean newValue) {
-			getSettingsStatic().executorLog = newValue;
+			Settings.executorLog = newValue;
 		}
 
 		public static void setExecutionTimeMultiplier(long newMultiplier) {
-			Settings settings = getSettingsStatic();
-			synchronized (settings.lockOnExecutionTimeMultiplier) {
-				if (settings.canChangeExecutionTimeMultiplier) {
-					settings.executionTimeMultiplier = newMultiplier;
+			synchronized (Settings.LOCK_ON_EXECUTION_TIME_MULTIPLIER) {
+				if (Settings.canChangeExecutionTimeMultiplier) {
+					Settings.executionTimeMultiplier = newMultiplier;
 				} else {
 					// TODO show error
 				}
@@ -88,21 +74,21 @@ public final class ModelExecutor implements ModelElement {
 			/*
 			 * Reading a long value is not atomic, so synchronization is needed.
 			 */
-			synchronized (getSettingsStatic().lockOnExecutionTimeMultiplier) {
-				return getSettingsStatic().executionTimeMultiplier;
+			synchronized (Settings.LOCK_ON_EXECUTION_TIME_MULTIPLIER) {
+				return Settings.executionTimeMultiplier;
 			}
 		}
 
 		public static void lockExecutionTimeMultiplier() {
-			getSettingsStatic().canChangeExecutionTimeMultiplier = false;
+			Settings.canChangeExecutionTimeMultiplier = false;
 		}
 
 		static boolean executorLog() {
-			return getSettingsStatic().executorLog;
+			return Settings.executorLog;
 		}
 		
 		static boolean dynamicChecks() {
-			return Settings.instance.dynamicChecks;
+			return Settings.dynamicChecks;
 		}
 	}
 
@@ -120,19 +106,19 @@ public final class ModelExecutor implements ModelElement {
 		}
 	}
 
-	static void log(String message) { // user log
-		logOnStream(getSettingsStatic().userOutStream, message);
+	static void log(String message) {
+		logOnStream(Settings.userOutStream, message);
 	}
 
-	static void logError(String message) { // user log
-		logOnStream(getSettingsStatic().userErrorStream, message);
+	static void logError(String message) {
+		logOnStream(Settings.userErrorStream, message);
 	}
 
-	static void executorLog(String message) { // api log
-		logOnStream(getSettingsStatic().executorOutStream, message);
+	static void executorLog(String message) {
+		logOnStream(Settings.executorOutStream, message);
 	}
 
-	static void executorErrorLog(String message) { // api log
-		logOnStream(getSettingsStatic().executorErrorStream, message);
+	static void executorErrorLog(String message) {
+		logOnStream(Settings.executorErrorStream, message);
 	}
 }

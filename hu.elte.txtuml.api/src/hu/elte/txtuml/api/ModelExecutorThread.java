@@ -2,15 +2,13 @@ package hu.elte.txtuml.api;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
-// TODO check
-
 /*
  * Currently singleton, will have more instances in the future.
  */
 class ModelExecutorThread extends Thread {
 
 	private static final ModelExecutorThread instance = new ModelExecutorThread();
-	private LinkedBlockingQueue<QueueEntry> mailbox;
+	private final LinkedBlockingQueue<QueueEntry> mailbox;
 
 	private ModelExecutorThread() {
 		this.mailbox = new LinkedBlockingQueue<>();

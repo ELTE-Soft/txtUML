@@ -21,7 +21,7 @@ import hu.elte.txtuml.api.backend.problems.MultiplicityException;
  * contained objects might be accessed through the collection methods.
  * <p>
  * 
- * TODO checking multiplicity when???
+ * TODO upgrade doc: checking multiplicity when???
  * 
  * <p>
  * <b>Java restrictions:</b>

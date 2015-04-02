@@ -5,8 +5,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import hu.elte.txtuml.api.backend.collections.AssociationsMap;
 import hu.elte.txtuml.api.backend.problems.MultiplicityException;
 import hu.elte.txtuml.layout.lang.elements.LayoutNode;
-// import hu.elte.txtuml.importer.MethodImporter;
-// import hu.elte.txtuml.importer.ModelImporter;
 import hu.elte.txtuml.utils.InstanceCreator;
 
 public class ModelClass extends Region implements ModelElement,
@@ -59,25 +57,23 @@ public class ModelClass extends Region implements ModelElement,
 		return ret;
 	}
 
-	@SuppressWarnings("unchecked")
 	<T extends ModelClass, AE extends AssociationEnd<T>> void addToAssoc(
 			Class<AE> otherEnd, T object) throws MultiplicityException {
 
 		associations.put(
 				otherEnd,
-				(AE) InstanceCreator.createInstanceWithGivenParams(otherEnd,
+				InstanceCreator.createInstanceWithGivenParams(otherEnd,
 						(Object) null).init(
 						assocPrivate(otherEnd).typeKeepingAdd(object)));
 
 	}
 
-	@SuppressWarnings("unchecked")
 	<T extends ModelClass, AE extends AssociationEnd<T>> void removeFromAssoc(
 			Class<AE> otherEnd, T object) {
 
 		associations.put(
 				otherEnd,
-				(AE) InstanceCreator.createInstanceWithGivenParams(otherEnd,
+				InstanceCreator.createInstanceWithGivenParams(otherEnd,
 						(Object) null).init(
 						assocPrivate(otherEnd).typeKeepingRemove(object)));
 
@@ -88,6 +84,15 @@ public class ModelClass extends Region implements ModelElement,
 		
 		AssociationEnd<?> actualOtherEnd = associations.get(otherEnd);
 		return actualOtherEnd == null ? false : actualOtherEnd.contains(object).getValue();
+	}
+	
+	@Override
+	void process(Signal signal) {
+		if (isDeleted()) {
+			ModelExecutor.executorErrorLog("Warning: signal arrived to deleted model object " + toString());
+			return;
+		}
+		super.process(signal);
 	}
 	
 	void start() {
