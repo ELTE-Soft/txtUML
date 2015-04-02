@@ -32,15 +32,13 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			int gapX = 20;
 			int gapY = 20;
 			
-			List<String> statementsList = Arrays.asList(
-				);		
+			List<String> statementsList = Arrays.asList();		
 					
 			LayoutVisualizerManager vismanager = new LayoutVisualizerManager(elements, statementsList);
 			vismanager.arrange();
+			
 			Map<EditPart, Rectangle> nodeMap = vismanager.getNodesAndCoordinates();
-			@SuppressWarnings("unchecked")
-			Map<ConnectionNodeEditPart, List<Point>> connectionMap = (Map<ConnectionNodeEditPart, List<Point>>)(Map<?,?>)
-																				vismanager.getConnectionsAndRoutes();
+			Map<ConnectionNodeEditPart, List<Point>> connectionMap = vismanager.getConnectionsAndRoutes();
 			
 			LayoutTransformer layoutTransformer = new LayoutTransformer(maxWidth, maxHeight);
 			layoutTransformer.setGapX(gapX);
