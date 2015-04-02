@@ -7,8 +7,12 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 
 public class ActivityDiagramElementsTxtUmlArranger extends AbstractDiagramElementsTxtUmlArranger {
 
+	public ActivityDiagramElementsTxtUmlArranger(DiagramEditPart diagramEditPart) {
+		super(diagramEditPart);
+	}
+
 	@Override
-	public void arrange(DiagramEditPart diagep) {
+	public void arrange() {
 		EditPart activityEditpart = (EditPart) diagep.getChildren().get(0);
 		EditPart activityContentEditpart = (EditPart) activityEditpart.getChildren().get(5);
 		@SuppressWarnings("unchecked")

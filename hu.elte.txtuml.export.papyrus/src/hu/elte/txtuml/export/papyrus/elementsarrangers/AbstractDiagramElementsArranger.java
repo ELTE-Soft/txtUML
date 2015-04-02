@@ -16,6 +16,7 @@ import org.eclipse.gmf.runtime.diagram.core.commands.SetConnectionAnchorsCommand
 import org.eclipse.gmf.runtime.diagram.core.preferences.PreferencesHint;
 import org.eclipse.gmf.runtime.diagram.ui.commands.ICommandProxy;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.internal.commands.SetConnectionBendpointsCommand;
 import org.eclipse.gmf.runtime.diagram.ui.l10n.DiagramUIMessages;
@@ -37,6 +38,12 @@ import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomTrans
 @SuppressWarnings("restriction")
 public abstract class AbstractDiagramElementsArranger implements
 		IDiagramElementsArranger {
+	
+	protected DiagramEditPart diagep;
+	
+	public AbstractDiagramElementsArranger(DiagramEditPart diagramEditPart) {
+		diagep = diagramEditPart;
+	}
 
 	protected void resizeGraphicalEditPart(GraphicalEditPart graphEP, int new_width, int new_height){
 		Dimension figuredim = graphEP.getFigure().getSize();

@@ -10,8 +10,12 @@ import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateEditPart;
 public class StateMachineDiagramElementsGmfArranger extends
 		AbstractDiagramElementsGmfArranger {
 
+	public StateMachineDiagramElementsGmfArranger(DiagramEditPart diagramEditPart) {
+		super(diagramEditPart);
+	}
+
 	@Override
-	public void arrange(DiagramEditPart diagep) {
+	public void arrange() {
 		GraphicalEditPart stateMachineEP = (GraphicalEditPart) diagep.getChildren().get(0);
 		super.resizeGraphicalEditPart(stateMachineEP, 400, 200);
 		arrange_recurively(stateMachineEP);

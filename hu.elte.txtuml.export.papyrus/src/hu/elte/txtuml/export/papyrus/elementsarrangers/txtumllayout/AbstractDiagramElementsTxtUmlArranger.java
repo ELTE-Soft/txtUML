@@ -15,10 +15,16 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.gmf.runtime.notation.View;
 
 public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDiagramElementsArranger{
+	
+	public AbstractDiagramElementsTxtUmlArranger(DiagramEditPart diagramEditPart) {
+		super(diagramEditPart);
+	}
+
 	protected void arrangeAll(EditPart EP, List<EditPart> elements) {
 		if(!elements.isEmpty()){
 			int maxWidth = getMaxWidth(elements);

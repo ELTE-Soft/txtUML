@@ -101,19 +101,19 @@ public class PapyrusModelManager {
 			
 			if(diagram.getType().equals("PapyrusUMLClassDiagram")){					
 				diagramElementsManager = new ClassDiagramElementsManager(modelManager, diagep);
-				diagramElementsArranger = new ClassDiagramElementsTxtUmlArranger();
+				diagramElementsArranger = new ClassDiagramElementsTxtUmlArranger(diagep);
 			}else if(diagram.getType().equals("PapyrusUMLActivityDiagram")){
 				diagramElementsManager = new ActivityDiagramElementsManager(modelManager, diagep);
-				diagramElementsArranger = new ActivityDiagramElementsGmfArranger();
+				diagramElementsArranger = new ActivityDiagramElementsGmfArranger(diagep);
 			}else if(diagram.getType().equals("PapyrusUMLStateMachineDiagram")){
 				diagramElementsManager = new StateMachineDiagramElementsManager(modelManager, diagep);
-				diagramElementsArranger = new StateMachineDiagramElementsGmfArranger();
+				diagramElementsArranger = new StateMachineDiagramElementsGmfArranger(diagep);
 			}else{
 				continue;
 			}
 			
 			diagramElementsManager.addElementsToDiagram(elements);	
-			diagramElementsArranger.arrange(diagep);
+			diagramElementsArranger.arrange();
 		}
 		
 	}
