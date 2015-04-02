@@ -1,11 +1,11 @@
 package hu.elte.txtuml.api;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import hu.elte.txtuml.api.backend.collections.AssociationsMap;
 import hu.elte.txtuml.api.backend.problems.MultiplicityException;
 import hu.elte.txtuml.layout.lang.elements.LayoutNode;
 import hu.elte.txtuml.utils.InstanceCreator;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 public class ModelClass extends Region implements ModelElement,
 		ModelIdentifiedElement, LayoutNode {
@@ -36,7 +36,7 @@ public class ModelClass extends Region implements ModelElement,
 			status = Status.READY;
 		}
 	}
-	
+
 	public <T extends ModelClass, AE extends AssociationEnd<T> & hu.elte.txtuml.api.semantics.Navigability.Navigable> AE assoc(
 			Class<AE> otherEnd) {
 
@@ -81,20 +81,23 @@ public class ModelClass extends Region implements ModelElement,
 
 	<T extends ModelClass, AE extends AssociationEnd<T>> boolean hasAssoc(
 			Class<AE> otherEnd, T object) {
-		
+
 		AssociationEnd<?> actualOtherEnd = associations.get(otherEnd);
-		return actualOtherEnd == null ? false : actualOtherEnd.contains(object).getValue();
+		return actualOtherEnd == null ? false : actualOtherEnd.contains(object)
+				.getValue();
 	}
-	
+
 	@Override
 	void process(Signal signal) {
 		if (isDeleted()) {
-			ModelExecutor.executorErrorLog("Warning: signal arrived to deleted model object " + toString());
+			ModelExecutor
+					.executorErrorLog("Warning: signal arrived to deleted model object "
+							+ toString());
 			return;
 		}
 		super.process(signal);
 	}
-	
+
 	void start() {
 		if (status != Status.READY) {
 			return;
@@ -106,7 +109,6 @@ public class ModelClass extends Region implements ModelElement,
 	void send(Signal signal) {
 		ModelExecutor.send(this, signal);
 	}
-
 
 	boolean isDeleted() {
 		return status == Status.DELETED;
@@ -134,10 +136,9 @@ public class ModelClass extends Region implements ModelElement,
 		status = Status.DELETED;
 	}
 
-
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + ":" + getIdentifier();
 	}
-	
+
 }
