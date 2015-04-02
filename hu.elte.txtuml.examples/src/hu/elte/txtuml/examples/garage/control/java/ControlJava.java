@@ -56,7 +56,7 @@ public class ControlJava implements IControl {
 			doorSecurityState = DoorSecurityState.Disabled;
 			doorSecurityTimer.cancel();
 			doorSecurityTimer = new Timer();
-			doorSecurityTimer.schedule(new Enable(this), 2000);
+			doorSecurityTimer.schedule(new Enable(), 2000);
 			break;
 		default:
 		}
@@ -99,7 +99,7 @@ public class ControlJava implements IControl {
 			alarmTimer = new Timer();
 			if(nr == code) {
 				alarmState = AlarmState.NewCodeExpected;
-				alarmTimer.scheduleAtFixedRate(new CodeDelay(this), alarmDelayInterval, alarmDelayInterval);
+				alarmTimer.scheduleAtFixedRate(new CodeDelay(), alarmDelayInterval, alarmDelayInterval);
 			} else {
 				alarmState = AlarmState.Idle;
 				controlled.alarmOff();
@@ -123,23 +123,20 @@ public class ControlJava implements IControl {
 	public void hashPressed() {
 		if(alarmState == AlarmState.Idle) {
 			alarmState = AlarmState.OldCodeExpected;
-			alarmTimer.scheduleAtFixedRate(new CodeDelay(this), alarmDelayInterval, alarmDelayInterval);			
+			alarmTimer.scheduleAtFixedRate(new CodeDelay(), alarmDelayInterval, alarmDelayInterval);			
 		}
 	}
 	
 	public void alarmSensorActivated() {
 		if(alarmState == AlarmState.Alarmed) {
 			alarmState = AlarmState.CodeExpected;
-			alarmTimer.scheduleAtFixedRate(new CodeDelay(this), alarmDelayInterval, alarmDelayInterval);
+			alarmTimer.scheduleAtFixedRate(new CodeDelay(), alarmDelayInterval, alarmDelayInterval);
 		}
 	}
 	
 	class Enable extends TimerTask {
-		@SuppressWarnings("unused") // TODO check warning
-		private ControlJava parent;
 		
-		Enable(ControlJava p) {
-			parent = p;
+		Enable() {
 		}
 		
 		public void run() {
@@ -160,11 +157,8 @@ public class ControlJava implements IControl {
 	
 	class CodeDelay extends TimerTask {
 		private int elapsed = 0;
-		@SuppressWarnings("unused") // TODO check warning
-		private ControlJava parent;
 		
-		CodeDelay(ControlJava p) {
-			parent = p;
+		CodeDelay() {
 		}
 		
 		@Override
