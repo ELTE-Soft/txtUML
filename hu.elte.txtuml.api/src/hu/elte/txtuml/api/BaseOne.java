@@ -10,7 +10,14 @@ package hu.elte.txtuml.api;
  * 
  * @author Gábor Ferenc Kovács
  *
- * @param <T> the type of model objects to be contained in this collection
+ * @param <T>
+ *            the type of model objects to be contained in this collection
  */
 class BaseOne<T extends ModelClass> extends BaseMaybeOne<T> {
+
+	@Override
+	boolean checkLowerBound() {
+		return getSize() > 0;
+	}
+
 }

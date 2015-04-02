@@ -32,7 +32,7 @@ class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 	}
 
 	/**
-	 * An initilazing method which changes this instance to be a copy of the
+	 * An initializer method which changes this instance to be a copy of the
 	 * <code>other</code> collection, if certain conditions are met:
 	 * <ul>
 	 * <li>this instance is unfinalized, so the value of its
@@ -219,22 +219,6 @@ class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 		return (S) remove(object);
 	}
 
-	/**
-	 * Returns the size if this collection. Differs from <code>count</code> in
-	 * that this method returns an integer instead of <code>ModelInt</code>.
-	 * This is used only in the API to optimize this query.
-	 * 
-	 * @return the size of this collection
-	 */
-	int getSize() {
-		return coll.size();
-	}
-
-	@Override
-	public String toString() {
-		return coll.toString();
-	}
-
 	@Override
 	boolean checkUpperBound() {
 		return true; // There is no upper bound of Many.
@@ -244,4 +228,15 @@ class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 	boolean checkLowerBound() {
 		return true; // There is no lower bound of Many.
 	}
+	
+	@Override
+	int getSize() {
+		return coll.size();
+	}
+
+	@Override
+	public String toString() {
+		return coll.toString();
+	}
+
 }

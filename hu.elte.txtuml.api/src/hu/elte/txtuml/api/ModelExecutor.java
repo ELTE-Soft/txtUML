@@ -43,6 +43,7 @@ public final class ModelExecutor implements ModelElement {
 		private PrintStream executorOutStream = System.out;
 		private PrintStream executorErrorStream = System.err;
 		private boolean executorLog = false;
+		private boolean dynamicChecks = true;
 
 		private final Object lockOnExecutionTimeMultiplier = new Object();
 		private long executionTimeMultiplier = 1;
@@ -99,6 +100,10 @@ public final class ModelExecutor implements ModelElement {
 		static boolean executorLog() {
 			return getSettingsStatic().executorLog;
 		}
+		
+		static boolean dynamicChecks() {
+			return Settings.instance.dynamicChecks;
+		}
 	}
 
 	// EXECUTION
@@ -125,14 +130,6 @@ public final class ModelExecutor implements ModelElement {
 
 	static void executorLog(String message) { // api log
 		logOnStream(getSettingsStatic().executorOutStream, message);
-	}
-
-	static void executorFormattedLog(String format, Object... args) { // api
-																		// log
-		PrintStream printStream = getSettingsStatic().executorOutStream;
-		synchronized (printStream) {
-			printStream.format(format, args);
-		}
 	}
 
 	static void executorErrorLog(String message) { // api log

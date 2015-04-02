@@ -26,6 +26,7 @@ class CollectionBuilder<T extends ModelClass> implements Iterable<T> {
 		return coll;
 	}
 
+	@Override
 	public Iterator<T> iterator() {
 		return collection.iterator();
 	}

@@ -1,5 +1,6 @@
 package hu.elte.txtuml.api;
 
+import hu.elte.txtuml.api.backend.problems.MultiplicityException;
 import hu.elte.txtuml.api.blocks.BlockBody;
 import hu.elte.txtuml.api.blocks.Condition;
 import hu.elte.txtuml.api.blocks.ParameterizedBlockBody;
@@ -55,7 +56,7 @@ public abstract class Action implements ModelElement {
 	}
 
 	public static void delete(ModelClass obj) {
-		// TODO implement
+		obj.forceDelete();
 	}
 
 	public static <MODELCLASS1 extends ModelClass, MODELCLASS2 extends ModelClass> void link(
@@ -64,8 +65,49 @@ public abstract class Action implements ModelElement {
 			Class<? extends AssociationEnd<MODELCLASS2>> rightEnd,
 			MODELCLASS2 rightObj) {
 
-		leftObj.addToAssoc(rightEnd, rightObj);
-		rightObj.addToAssoc(leftEnd, leftObj);
+		if (linkingDeleted(leftObj) || linkingDeleted(rightObj)) {
+			return;
+		}
+		
+		try {
+			leftObj.addToAssoc(rightEnd, rightObj);
+			rightObj.addToAssoc(leftEnd, leftObj);
+		} catch (MultiplicityException e) {
+			ModelExecutor
+					.executorErrorLog("Error: upper bound of an association end's multiplicity has been offended.");
+		}
+	}
+	
+	private static boolean linkingDeleted(ModelClass obj) {
+		if (obj.isDeleted()) {
+			ModelExecutor.executorErrorLog("Error: trying to link deleted model object " + obj.toString() + ".");
+			return true;
+		}
+		return false;
+	}
+
+	public static <MODELCLASS1 extends ModelClass, MODELCLASS2 extends ModelClass> void unlink(
+			Class<? extends AssociationEnd<MODELCLASS1>> leftEnd,
+			MODELCLASS1 leftObj,
+			Class<? extends AssociationEnd<MODELCLASS2>> rightEnd,
+			MODELCLASS2 rightObj) {
+
+		if (ModelExecutor.Settings.dynamicChecks()) {
+			if (!leftObj.hasAssoc(rightEnd, rightObj)
+					|| !rightObj.hasAssoc(leftEnd, leftObj)) {
+
+				ModelExecutor
+						.executorErrorLog("Error: trying to unlink a non-existing association between "
+								+ leftObj.toString()
+								+ " and "
+								+ rightObj.toString() + ".");
+				
+				return;
+			}
+		}
+
+		leftObj.removeFromAssoc(rightEnd, rightObj);
+		rightObj.removeFromAssoc(leftEnd, leftObj);
 	}
 
 	/**
@@ -77,6 +119,10 @@ public abstract class Action implements ModelElement {
 	 *             if <code>obj</code> is <code>null</code>
 	 */
 	public static void start(ModelClass obj) {
+		if (obj.isDeleted()) {
+			ModelExecutor.executorErrorLog("Error: trying to start deleted model object " + obj.toString() + ".");
+		}
+		
 		obj.start();
 	}
 
@@ -91,6 +137,10 @@ public abstract class Action implements ModelElement {
 	 *             if <code>target</code> is <code>null</code>
 	 */
 	public static void send(ModelClass target, Signal signal) {
+		if (target.isDeleted()) {
+			ModelExecutor.executorErrorLog("Error: trying to send a signal to deleted model object " + target.toString() + ".");
+		}
+		
 		target.send(signal);
 	}
 
@@ -99,13 +149,12 @@ public abstract class Action implements ModelElement {
 	 * 
 	 * TODO
 	 * 
-	 * @param cond
 	 * @param thenBody
-	 *            the block to be performed if the condition is evaluated
-	 *            to <code>true</code>
+	 *            the block to be performed if the condition is evaluated to
+	 *            <code>true</code>
 	 * @param elseBody
-	 *            the block to be performed if the condition is evaluated
-	 *            to <code>false</code>
+	 *            the block to be performed if the condition is evaluated to
+	 *            <code>false</code>
 	 * @throws NullPointerException
 	 *             if either parameter is <code>null</code>
 	 */
@@ -155,15 +204,4 @@ public abstract class Action implements ModelElement {
 		ModelExecutor.logError(message);
 	}
 
-	static void executorLog(String message) { // api log
-		ModelExecutor.executorLog(message);
-	}
-
-	static void executorFormattedLog(String format, Object... args) { // api log
-		ModelExecutor.executorFormattedLog(format, args);
-	}
-
-	static void executorErrorLog(String message) { // api log
-		ModelExecutor.executorErrorLog(message);
-	}
 }

@@ -10,7 +10,7 @@ import java.util.Iterator;
  * <p>
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an
  * overview on modeling in txtUML.
-
+ * 
  * @author Gábor Ferenc Kovács
  *
  * @param <T>
@@ -33,7 +33,7 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 	}
 
 	/**
-	 * An initilazing method which changes this instance to be a copy of the
+	 * An initializer method which changes this instance to be a copy of the
 	 * <code>other</code> collection, if certain conditions are met:
 	 * <ul>
 	 * <li>this instance is unfinalized, so the value of its
@@ -168,17 +168,25 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 	}
 
 	@Override
-	public String toString() {
-		return obj == null ? "null" : obj.toString();
-	}
-
-	@Override
 	boolean checkUpperBound() {
-		return false;
+		return true;
+		// The upper bound of MaybeOne is always unoffended as it simply cannot
+		// contain more instances than its upper bound.
 	}
 
 	@Override
 	boolean checkLowerBound() {
 		return true; // There is no lower bound of MaybeOne.
 	}
+
+	@Override
+	int getSize() {
+		return obj == null ? 0 : 1;
+	}
+	
+	@Override
+	public String toString() {
+		return obj == null ? "null" : obj.toString();
+	}
+
 }

@@ -13,20 +13,20 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		
 		Vertex() {
 		}
-		
-		String vertexIdentifier() {
-			return getClass().getSimpleName();
-		}
 
 		public void entry() {
 		}
 
 		public void exit() {
 		}
+	
+		String vertexIdentifier() {
+			return getClass().getSimpleName();
+		}
 		
 		@Override
 		public String toString() {
-			return "vertex: " + vertexIdentifier();
+			return "vertex:" + vertexIdentifier();
 		}
 
 	}
@@ -46,7 +46,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		
 		@Override
 		public String toString() {
-			return "pseudostate: " + vertexIdentifier();
+			return "pseudostate:" + vertexIdentifier();
 		}
 		
 	}
@@ -58,7 +58,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 		@Override
 		public String toString() {
-			return "initial: " + super.toString();
+			return "initial_" + super.toString();
 		}
 
 	}
@@ -70,7 +70,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 		@Override
 		public String toString() {
-			return "choice:" + vertexIdentifier();
+			return "choice_" + super.toString();
 		}
 
 	}
@@ -82,7 +82,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 		@Override
 		public String toString() {
-			return "state: " + vertexIdentifier();
+			return "state:" + vertexIdentifier();
 		}
 
 	}
@@ -94,17 +94,32 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 		@Override
 		public String toString() {
-			return "composite state: " + super.toString();
+			return "composite_" + super.toString();
 		}
 
 	}
 
 	public class Transition implements ModelElement, LayoutLink {
 
-		protected Transition() {
-		}
-
+		private final Vertex source;
+		private final Vertex target;
 		private Signal signal;
+		
+		protected Transition() {
+			Class<? extends Transition> cls = getClass();
+			
+			From from = cls.getAnnotation(From.class);
+			To to = cls.getAnnotation(To.class);
+			
+			if (from == null || to == null) {				
+				this.source = null;
+				this.target = null;
+				// TODO show error
+			} else {
+				this.source = getInnerClassInstance(from.value());
+				this.target = getInnerClassInstance(to.value());
+			}			
+		}
 
 		public void effect() {
 		}
@@ -117,21 +132,27 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		protected final <T extends Signal> T getSignal() {
 			return (T) signal;
 		}
-
+		
 		final void setSignal(Signal s) {
 			signal = s;
 		}
+		
+		Vertex getSource() {
+			return source;
+		}
 
+		Vertex getTarget() {
+			return target;
+		}
+
+		boolean isFromSource(Class<?> c) {
+			return source == null ? false : c == source.getClass();
+		}
+		
 		@Override
 		public String toString() {
-			Class<? extends Transition> cls = getClass();
-			From from = cls.getAnnotation(From.class);
-			String fromAsString = from == null ? "???" : from.value()
-					.toString();
-			To to = cls.getAnnotation(To.class);
-			String toAsString = to == null ? "???" : to.value().toString();
 			return "transition:" + getClass().getSimpleName() + " ("
-					+ fromAsString + "->" + toAsString + ")";
+					+ source.toString() + " --> " + target.toString() + ")";
 		}
 
 	}

@@ -9,7 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 class ModelExecutorThread extends Thread {
 
-	private static final ModelExecutorThread instance = new ModelExecutorThread();;
+	private static final ModelExecutorThread instance = new ModelExecutorThread();
 	private LinkedBlockingQueue<QueueEntry> mailbox;
 
 	private ModelExecutorThread() {
@@ -34,7 +34,7 @@ class ModelExecutorThread extends Thread {
 		try {
 			while (true) {
 				QueueEntry entry = mailbox.take();
-				entry.target.processSignal(entry.signal);
+				entry.target.process(entry.signal);
 			}
 		} catch (InterruptedException e) { // do nothing (finish thread)
 		}

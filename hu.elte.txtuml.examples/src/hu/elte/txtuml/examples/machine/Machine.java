@@ -141,18 +141,16 @@ class MachineModel extends Model {
 	
 	public void test() {
 		ModelExecutor.Settings.setExecutorLog(true);
-		Machine m = new Machine();
-		start(m);
+		
+		Machine m = new Machine();		
 		
 		User u1 = new User();
-		User u2 = Action.create(User.class); //almost equivalent to 'new User()'
-												//not exactly: with current implementation the object created by Action.create() will have no enclosing Model1 object
-		
-		
+		User u2 = Action.create(User.class);
+				
         Action.link(Usage.usedMachine.class, m, Usage.userOfMachine.class, u1);
         Action.link(Usage.usedMachine.class, m, Usage.userOfMachine.class, u2);
-                
-        u1.assoc(Usage.usedMachine.class);
+        
+		start(m);
         
         u1.doWork(u2);
         

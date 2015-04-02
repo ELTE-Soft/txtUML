@@ -12,10 +12,6 @@ import hu.elte.txtuml.utils.InstanceCreator;
 public class ModelClass extends Region implements ModelElement,
 		ModelIdentifiedElement, LayoutNode {
 
-	/*
-	 * DELETED status is currently unreachable, FINALIZED is only by a class
-	 * which has no state machine.
-	 */
 	private enum Status {
 		READY, ACTIVE, FINALIZED, DELETED
 	}
@@ -65,16 +61,13 @@ public class ModelClass extends Region implements ModelElement,
 
 	@SuppressWarnings("unchecked")
 	<T extends ModelClass, AE extends AssociationEnd<T>> void addToAssoc(
-			Class<AE> otherEnd, T object) {
+			Class<AE> otherEnd, T object) throws MultiplicityException {
 
-		try {
-			associations.put(otherEnd, (AE) InstanceCreator
-					.createInstanceWithGivenParams(otherEnd, (Object) null)
-					.init(assocPrivate(otherEnd).typeKeepingAdd(object)));
-		} catch (MultiplicityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		associations.put(
+				otherEnd,
+				(AE) InstanceCreator.createInstanceWithGivenParams(otherEnd,
+						(Object) null).init(
+						assocPrivate(otherEnd).typeKeepingAdd(object)));
 
 	}
 
@@ -90,6 +83,13 @@ public class ModelClass extends Region implements ModelElement,
 
 	}
 
+	<T extends ModelClass, AE extends AssociationEnd<T>> boolean hasAssoc(
+			Class<AE> otherEnd, T object) {
+		
+		AssociationEnd<?> actualOtherEnd = associations.get(otherEnd);
+		return actualOtherEnd == null ? false : actualOtherEnd.contains(object).getValue();
+	}
+	
 	void start() {
 		if (status != Status.READY) {
 			return;
@@ -102,9 +102,37 @@ public class ModelClass extends Region implements ModelElement,
 		ModelExecutor.send(this, signal);
 	}
 
+
+	boolean isDeleted() {
+		return status == Status.DELETED;
+	}
+
+	boolean isDeletable() {
+		if (isDeleted()) {
+			return true;
+		}
+		for (AssociationEnd<?> assocEnd : this.associations.values()) {
+			if (!assocEnd.isEmpty().getValue()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	void forceDelete() {
+		if (!isDeletable()) {
+			ModelExecutor.executorErrorLog("Error: model object " + toString()
+					+ " cannot be deleted because of existing associations.");
+			return;
+		}
+
+		status = Status.DELETED;
+	}
+
+
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + ":" + getIdentifier();
 	}
-
+	
 }

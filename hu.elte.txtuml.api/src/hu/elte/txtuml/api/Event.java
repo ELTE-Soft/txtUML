@@ -43,4 +43,9 @@ public class Event implements ModelElement, ModelIdentifiedElement {
 	Event() {
 	}
 
+	@Override
+	public String toString() {
+		return "event:" + getClass().getSimpleName();
+	}
+	
 }

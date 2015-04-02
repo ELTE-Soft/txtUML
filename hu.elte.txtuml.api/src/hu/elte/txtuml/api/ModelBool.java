@@ -63,7 +63,7 @@ public class ModelBool extends ModelType<Boolean> {
 		 * TODO
 		 */
 		public Else() {
-			super();
+			super(true);
 		}
 	}
 

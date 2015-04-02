@@ -66,14 +66,12 @@ public abstract class Region extends StateMachine {
 	 * @throws NullPointerException
 	 *             if <code>signal</code> is <code>null</code>
 	 */
-	void processSignal(Signal signal) {
+	void process(Signal signal) {
 		if (currentVertex == null) { // no state machine
 			return;
 		}
 		if (ModelExecutor.Settings.executorLog() && signal != null) {
-			Action.executorFormattedLog("%10s %-15s    got signal: %-18s%n",
-					getClass().getSimpleName(), getIdentifier(), signal
-							.getClass().getSimpleName());
+			ModelExecutor.executorLog(toString() + " processes " + signal.toString());
 		}
 		if (executeTransition(signal)) {
 			callEntryAction();
@@ -81,8 +79,7 @@ public abstract class Region extends StateMachine {
 	}
 
 	/**
-	 * This private inner class
-	 * TODO
+	 * This private inner class TODO
 	 */
 	private class TransitionExecutor {
 
@@ -98,18 +95,6 @@ public abstract class Region extends StateMachine {
 		private Class<?> transitionClass;
 
 		/**
-		 * The class representing the source vertex of the transition which is
-		 * to be executed.
-		 */
-		private Class<? extends Vertex> from;
-
-		/**
-		 * The class representing the target vertex of the transition which is
-		 * to be executed.
-		 */
-		private Class<? extends Vertex> to;
-
-		/**
 		 * Sole constructor of <code>TransitionExecutor</code>. Sets the values
 		 * of all its fields to <code>null</code>.
 		 *
@@ -117,25 +102,22 @@ public abstract class Region extends StateMachine {
 		TransitionExecutor() {
 			this.transition = null;
 			this.transitionClass = null;
-			this.from = null;
-			this.to = null;
 		}
 
 		/**
 		 * 
 		 * TODO
-		 * @return <code>true</code> if this instance is not yet set to execute a certain
+		 * 
+		 * @return <code>true</code> if this instance is not yet set to execute
+		 *         a certain
 		 */
 		boolean isEmpty() {
 			return transition == null;
 		}
 
-		void set(Transition transition, Class<?> transitionClass,
-				Class<? extends Vertex> from, Class<? extends Vertex> to) {
+		void set(Transition transition, Class<?> transitionClass) {
 			this.transition = transition;
 			this.transitionClass = transitionClass;
-			this.from = from;
-			this.to = to;
 		}
 
 		Class<?> getTransitionClass() {
@@ -148,15 +130,12 @@ public abstract class Region extends StateMachine {
 		 */
 		void execute() {
 			if (ModelExecutor.Settings.executorLog()) {
-				Action.executorFormattedLog(
-						"%10s %-15s changes vertex: from: %-10s tran: %-18s to: %-10s%n",
-						Region.this.getClass().getSimpleName(), getIdentifier(),
-						from.getSimpleName(), transitionClass.getSimpleName(),
-						to.getSimpleName());
+				ModelExecutor.executorLog(Region.this.toString() + " uses "
+						+ transition.toString());
 			}
-			callExitAction(from);
+			callExitAction(transition.getSource());
 			transition.effect();
-			currentVertex = getInnerClassInstance(to);
+			currentVertex = transition.getTarget();
 		}
 
 	}
@@ -170,23 +149,14 @@ public abstract class Region extends StateMachine {
 
 			for (Class<?> c : parentClass.getDeclaredClasses()) {
 				if (Transition.class.isAssignableFrom(c)) {
-					Class<? extends Vertex> from, to;
-					try {
-						from = c.getAnnotation(From.class).value();
-						to = c.getAnnotation(To.class).value();
-					} catch (NullPointerException e) {
-						// if no @From or @To annotation is present on the
-						// transition, a NullPointerException is thrown
 
-						// TODO show warning
-						continue;
-					}
-					if (from != examinedClass
+					Transition transition = (Transition) getInnerClassInstance(c);
+
+					if (!transition.isFromSource(examinedClass)
 							|| notApplicableTrigger(c, signal)) {
 						continue;
 					}
 
-					Transition transition = (Transition) getInnerClassInstance(c);
 					transition.setSignal(signal);
 
 					if (!transition.guard().getValue()) { // checking guard
@@ -194,7 +164,7 @@ public abstract class Region extends StateMachine {
 					}
 
 					if (!applicableTransitionExecutor.isEmpty()) {
-						Action.executorErrorLog("Error: guards of transitions "
+						ModelExecutor.executorErrorLog("Error: guards of transitions "
 								+ applicableTransitionExecutor
 										.getTransitionClass().getName()
 								+ " and " + c.getName() + " from class "
@@ -203,18 +173,21 @@ public abstract class Region extends StateMachine {
 						continue;
 					}
 
-					applicableTransitionExecutor.set(transition, c, from, to);
-					;
+					applicableTransitionExecutor.set(transition, c);
 
+					if (!ModelExecutor.Settings.dynamicChecks()) {
+						break;
+					}
+					
 				}
 			}
 		}
 
-		if (applicableTransitionExecutor.isEmpty()) { // there was no transition
-														// which
-														// could be used
+		if (applicableTransitionExecutor.isEmpty()) {
+			// there was no transition which could be used
 			return false;
 		}
+
 		applicableTransitionExecutor.execute();
 
 		if (currentVertex instanceof Choice) {
@@ -233,68 +206,67 @@ public abstract class Region extends StateMachine {
 
 		for (Class<?> c : parentClass.getDeclaredClasses()) {
 			if (Transition.class.isAssignableFrom(c)) {
-				Class<? extends Vertex> from, to;
-				try {
-					from = c.getAnnotation(From.class).value();
-					to = c.getAnnotation(To.class).value();
-				} catch (NullPointerException e) {
-					// if no @From or @To annotation is present on the
-					// transition, a NullPointerException is thrown
-
-					// TODO show warning
-					continue;
-				}
-				if (from != examinedChoiceClass) { // actual transition is from
-													// another vertex
-					continue;
-				}
 
 				Transition transition = (Transition) getInnerClassInstance(c);
-				transition.setSignal(signal);
-				ModelBool resultOfGuard = transition.guard();
-				if (!resultOfGuard.getValue()) { // check guard
-					if (resultOfGuard instanceof ModelBool.Else) { // transition
-																	// with else
-																	// condition
-						if (!elseTransitionExecutor.isEmpty()) { // there was
-																	// already a
-							// transition with an
-							// else condition
-							Action.executorErrorLog("Error: there are more than one transitions from choice "
-									+ examinedChoiceClass.getSimpleName()
-									+ " with an Else condition");
-							continue;
-						}
-						elseTransitionExecutor.set(transition, c, from, to);
-						;
-					}
+
+				if (!transition.isFromSource(examinedChoiceClass)) {
+					// actual transition is from another vertex
 					continue;
 				}
-				if (!applicableTransitionExecutor.isEmpty()) { // there was
-																// already an
-																// applicable
-																// transition
-					Action.executorErrorLog("Error: guards of transitions "
+
+				transition.setSignal(signal);
+				ModelBool resultOfGuard = transition.guard();
+
+				if (!resultOfGuard.getValue()) { // check guard
+					continue;
+				}
+
+				if (resultOfGuard instanceof ModelBool.Else) {
+					// transition with else condition
+
+					if (!elseTransitionExecutor.isEmpty()) {
+						// there was already a transition with an else condition
+
+						ModelExecutor.executorErrorLog("Error: there are more than one transitions from choice "
+								+ examinedChoiceClass.getSimpleName()
+								+ " with an Else condition");
+						continue;
+					}
+
+					elseTransitionExecutor.set(transition, c);
+
+					continue;
+				}
+
+				if (!applicableTransitionExecutor.isEmpty()) {
+					// there was already an applicable transition
+
+					ModelExecutor.executorErrorLog("Error: guards of transitions "
 							+ applicableTransitionExecutor.getTransitionClass()
 									.getName() + " and " + c.getName()
 							+ " from class "
 							+ examinedChoiceClass.getSimpleName()
 							+ " are overlapping");
+
 					continue;
 				}
-				applicableTransitionExecutor.set(transition, c, from, to);
-				;
+
+				applicableTransitionExecutor.set(transition, c);
+				
+				if (!ModelExecutor.Settings.dynamicChecks()) {
+					break;
+				}
 			}
 		}
-		if (applicableTransitionExecutor.isEmpty()) { // there was no transition
-														// which
-														// could be used
-			if (!elseTransitionExecutor.isEmpty()) { // but there was a
-														// transition with an
-														// else condition
+		if (applicableTransitionExecutor.isEmpty()) {
+			// there was no transition which could be used
+
+			if (!elseTransitionExecutor.isEmpty()) {
+				// but there was a transition with an else condition
+
 				elseTransitionExecutor.execute();
 			} else {
-				Action.executorErrorLog("Error: there was no transition from choice class "
+				ModelExecutor.executorErrorLog("Error: there was no transition from choice class "
 						+ examinedChoiceClass.getSimpleName()
 						+ " which could be used");
 			}
@@ -311,26 +283,26 @@ public abstract class Region extends StateMachine {
 	private boolean notApplicableTrigger(Class<?> transitionClass, Signal signal) {
 		Trigger trigger = transitionClass.getAnnotation(Trigger.class);
 		if ((signal == null) == (trigger == null)
-				&& ((signal == null) || (trigger.value()
-						.isAssignableFrom(signal.getClass())))) {
+				&& ((signal == null) || (trigger.value().isInstance(signal)))) {
 			return false;
 		}
 		return true;
 	}
 
-	private void callExitAction(Class<? extends Vertex> from) {
-		while (currentVertex.getClass() != from) {
-			if (ModelExecutor.Settings.executorLog()) {
-				Action.executorFormattedLog(
-						"%10s %-15s   exits vertex: %-18s%n", getClass()
-								.getSimpleName(), getIdentifier(),
-						currentVertex.getClass().getSimpleName());
-			}
+	private void callExitAction(Vertex vertex) {
+		while (currentVertex != vertex) {
+
 			currentVertex.exit();
-			@SuppressWarnings("unchecked")
-			Class<? extends Vertex> currentParentState = (Class<? extends Vertex>) currentVertex
-					.getClass().getEnclosingClass();
-			currentVertex = getInnerClassInstance(currentParentState);
+
+			Class<?> currentParentState = currentVertex.getClass()
+					.getEnclosingClass();
+			
+			currentVertex = (Vertex) getInnerClassInstance(currentParentState);
+			
+			if (ModelExecutor.Settings.executorLog()) {
+				ModelExecutor.executorLog(toString() + " leaves "
+						+ currentVertex.toString());
+			}
 		}
 		currentVertex.exit();
 	}
@@ -342,15 +314,15 @@ public abstract class Region extends StateMachine {
 					.getClass());
 			if (initClass != null) {
 				if (ModelExecutor.Settings.executorLog()) {
-					Action.executorFormattedLog(
-							"%10s %-15s  enters vertex: %-18s%n", getClass()
-									.getSimpleName(), getIdentifier(),
-							initClass.getSimpleName());
+					ModelExecutor.executorLog(toString() + " enters "
+							+ currentVertex.toString());
 				}
+
 				currentVertex = getInnerClassInstance(initClass);
 				// no entry action needs to be called: initial pseudostates have
 				// none
-				processSignal(null); // step forward from initial pseudostate
+
+				process(null); // step forward from initial pseudostate
 			}
 		}
 	}

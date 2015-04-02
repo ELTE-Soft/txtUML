@@ -80,4 +80,9 @@ public class Signal extends Event {
 	protected Signal() {
 	}
 
+	@Override
+	public String toString() {
+		return "signal_" + super.toString();
+	}
+	
 }

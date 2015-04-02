@@ -34,6 +34,7 @@ public class Timer extends ExternalClass {
 			this.signal = s;
 			this.targetObj = obj;
 			this.action = new Runnable() {
+				@Override
 				public void run() {
 					Action.send(targetObj, signal);
 				}

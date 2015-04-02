@@ -1,7 +1,5 @@
 package hu.elte.txtuml.api;
 
-import java.util.Iterator;
-
 import hu.elte.txtuml.api.backend.problems.MultiplicityException;
 
 /*
@@ -80,7 +78,7 @@ public abstract class AssociationEnd<T extends ModelClass> implements
 	}
 
 	/**
-	 * An initilazing method which changes this instance to be a copy of the
+	 * An initializer method which changes this instance to be a copy of the
 	 * <code>other</code> collection, if certain conditions are met:
 	 * <ul>
 	 * <li>this instance is unfinalized, so the value of its
@@ -127,24 +125,6 @@ public abstract class AssociationEnd<T extends ModelClass> implements
 	}
 
 	/**
-	 * Checks whether the upper bound of this association end's multiplicity is
-	 * unoffended.
-	 * 
-	 * @return <code>true</code> if this association end has less or equal
-	 *         elements than its upper bound, <code>false</code> otherwise
-	 */
-	abstract boolean checkUpperBound();
-
-	/**
-	 * Checks whether the lower bound of this association end's multiplicity is
-	 * unoffended.
-	 * 
-	 * @return <code>true</code> if this association end has more or equal
-	 *         elements than its lower bound, <code>false</code> otherwise
-	 */
-	abstract boolean checkLowerBound();
-
-	/**
 	 * Creates a new association end having the elements of this end and also
 	 * the specified <code>object</code> parameter. This is a <i>type
 	 * keeping</i> add operation, which means that the method prefers keeping
@@ -161,7 +141,7 @@ public abstract class AssociationEnd<T extends ModelClass> implements
 	 *            the model object to be added to this association end
 	 * @return the result of the operation
 	 * @throws MultiplicityException
-	 *             if he upper bound of this association end's multiplicity has
+	 *             if the upper bound of this association end's multiplicity has
 	 *             been offended
 	 */
 	abstract <S extends AssociationEnd<T>> S typeKeepingAdd(T object)
@@ -185,7 +165,34 @@ public abstract class AssociationEnd<T extends ModelClass> implements
 	 * @return the result of the operation
 	 */
 	abstract <S extends AssociationEnd<T>> S typeKeepingRemove(T object);
+	
+	/**
+	 * Checks whether the upper bound of this association end's multiplicity is
+	 * unoffended.
+	 * 
+	 * @return <code>true</code> if this association end has less or equal
+	 *         elements than its upper bound, <code>false</code> otherwise
+	 */
+	abstract boolean checkUpperBound();
 
+	/**
+	 * Checks whether the lower bound of this association end's multiplicity is
+	 * unoffended.
+	 * 
+	 * @return <code>true</code> if this association end has more or equal
+	 *         elements than its lower bound, <code>false</code> otherwise
+	 */
+	abstract boolean checkLowerBound();
+	
+	/**
+	 * Returns the size if this collection. Differs from <code>count</code> in
+	 * that this method returns an integer instead of <code>ModelInt</code>.
+	 * This is used only in the API to optimize this query.
+	 * 
+	 * @return the size of this collection
+	 */
+	abstract int getSize();
+	
 	@Override
 	public abstract String toString();
 
