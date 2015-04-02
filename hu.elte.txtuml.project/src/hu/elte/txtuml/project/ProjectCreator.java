@@ -2,8 +2,15 @@ package hu.elte.txtuml.project;
 
 import hu.elte.txtuml.utils.Pair;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
@@ -17,7 +24,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IAccessRule;
 import org.eclipse.jdt.core.IClasspathAttribute;
 import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
@@ -32,6 +41,7 @@ public class ProjectCreator {
 		public IFolder output;
 		public IFolder source;
 		public List<Pair<String, String>> pluginDepAttributes;
+		public Manifest manifest;
 	}
 	
 	public static IProject createProject(String name) throws CoreException{
@@ -99,6 +109,50 @@ public class ProjectCreator {
 		javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[entries.size()]), null);
 		javaProject.setOutputLocation(settings.output.getFullPath(), null);
 	}
+
+	public static void addManifest(IFolder folder, Manifest manifest) throws IOException {
+		Attributes attrs = manifest.getMainAttributes();
+		Iterator<Entry<Object, Object>> it = attrs.entrySet().iterator();
+		StringBuilder manifestStrBuilder = new StringBuilder();
+		while(it.hasNext()){
+			Entry<Object, Object> entry = it.next();
+			manifestStrBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+		}
+		
+		createFile(folder, "MANIFEST.MF", manifestStrBuilder.toString());
+	}
 	
+	public static void createBuildProps(IProject project, IFolder srcFolder, IFolder outFolder) throws IOException{
+			StringBuilder bpContent = new StringBuilder("source.. = ");
+			bpContent.append(srcFolder.getName()).append("\n");
+			bpContent.append("output.. = ");
+			bpContent.append(outFolder.getName()).append("\n");
+			bpContent.append("\n");
+			bpContent.append("bin.includes = META-INF/,.\n");
+			
+			createFile(project, "build.properties", bpContent.toString());
+	}
 	
+	public static ICompilationUnit addTxtUMLModel(IProject project, IFolder sourceFolder, String packageName, String modelName) throws JavaModelException {
+		IJavaProject javaProject = JavaCore.create(project);
+		IPackageFragment pack = javaProject.getPackageFragmentRoot(sourceFolder).createPackageFragment(packageName, false, null);
+		
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("package " + pack.getElementName() + ";\n");
+		buffer.append("\n");
+		buffer.append("import hu.elte.txtuml.api.*;\n");
+		buffer.append("\n");
+		buffer.append("public class "+modelName+" extends Model{\n\n}\n");
+		
+		ICompilationUnit cu = pack.createCompilationUnit(modelName+".java", buffer.toString(), false, null);
+		return cu;
+	}
+	
+	private static void createFile(IContainer container, String fileNameWithExtension, String content) throws FileNotFoundException{
+		String path = container.getLocation().append(fileNameWithExtension).toString();
+		PrintWriter writer = new PrintWriter(path);
+		writer.print(content);
+		writer.close();
+	}
+
 }
