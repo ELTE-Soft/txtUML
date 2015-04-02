@@ -1,7 +1,6 @@
 package hu.elte.txtuml.layout.lang.elements;
 
-/**
- * TODO complete doc
+/*
  * <p>
  * Should not be extended or implemented directly from outside this package.
  * 

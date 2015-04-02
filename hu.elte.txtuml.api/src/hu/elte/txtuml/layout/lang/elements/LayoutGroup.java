@@ -1,7 +1,6 @@
 package hu.elte.txtuml.layout.lang.elements;
 
-/**
- * TODO complete doc
+/*
  * <p>
  * Is either a {@link LayoutNodeGroup} or a {@link LayoutLinkGroup}.
  * <p>
