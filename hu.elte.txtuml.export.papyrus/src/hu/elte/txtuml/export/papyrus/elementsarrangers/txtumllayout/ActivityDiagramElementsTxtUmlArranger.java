@@ -1,9 +1,12 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
+import org.eclipse.papyrus.uml.diagram.activity.edit.parts.ControlFlowGuardEditPart;
+import org.eclipse.papyrus.uml.diagram.activity.edit.parts.ObjectFlowGuardEditPart;
 
 public class ActivityDiagramElementsTxtUmlArranger extends AbstractDiagramElementsTxtUmlArranger {
 
@@ -18,5 +21,6 @@ public class ActivityDiagramElementsTxtUmlArranger extends AbstractDiagramElemen
 		@SuppressWarnings("unchecked")
 		List<EditPart> listEp =  activityContentEditpart.getChildren();
 		super.arrangeAll(activityContentEditpart, listEp);
-		super.hideConnectionLabelsForEditParts(listEp);	}	
+		super.hideConnectionLabelsForEditParts(listEp, Arrays.asList(ObjectFlowGuardEditPart.class, ControlFlowGuardEditPart.class));
+	}	
 }

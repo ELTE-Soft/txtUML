@@ -97,7 +97,7 @@ public class PapyrusModelManager {
 			AbstractDiagramElementsManager diagramElementsManager;
 			IDiagramElementsArranger diagramElementsArranger;  
 			
-			List<Element> elements = modelManager.getAllElementsOfPackage((Element) container);
+			List<Element> elements = modelManager.getAllChildrenOfPackage((Element) container);
 			
 			if(diagram.getType().equals("PapyrusUMLClassDiagram")){					
 				diagramElementsManager = new ClassDiagramElementsManager(modelManager, diagep);

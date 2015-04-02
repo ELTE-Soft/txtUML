@@ -67,7 +67,7 @@ public class ModelManager {
 		return elements;
 	}
 
-	public List<Element> getAllElementsOfPackage(Element container){
+	public List<Element> getAllChildrenOfPackage(Element container){
 		List<Element> ownedElements = new LinkedList<Element>();
 		ownedElements.addAll(container.getOwnedElements());
 		List<Element> allElements = recursive(ownedElements);

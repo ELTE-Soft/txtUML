@@ -1,5 +1,7 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.IAdaptable;
@@ -56,7 +58,7 @@ public abstract class AbstractDiagramElementsArranger implements
 			cmd.execute();
 	}
 	
-	protected void hideConnectionLabelsForEditParts(List<EditPart> elements){
+	protected void hideConnectionLabelsForEditParts(List<EditPart> elements, List<java.lang.Class<?>> excluding){
 		for(EditPart editpart: elements){
 			GraphicalEditPart ep = ((GraphicalEditPart) editpart);
 			@SuppressWarnings("unchecked")
@@ -65,14 +67,7 @@ public abstract class AbstractDiagramElementsArranger implements
 				@SuppressWarnings("unchecked")
 				List<ConnectionNodeEditPart> labels = ((ConnectionNodeEditPart) connection).getChildren();
 				for(EditPart label : labels){
-					if(!(label instanceof AssociationMultiplicitySourceEditPart ||
-					   label instanceof AssociationMultiplicityTargetEditPart ||
-					   label instanceof AssociationNameEditPart ||
-					   label instanceof ControlFlowGuardEditPart ||
-					   label instanceof ObjectFlowGuardEditPart ||
-					   label instanceof CustomTransitionGuardEditPart
-							)){
-							
+					if(!isInstanceOfAny(label, excluding)){
 						ShowHideLabelsRequest request = new ShowHideLabelsRequest(false, ((View) label.getModel()));
 						Command com = connection.getCommand(request);
 						com.execute();
@@ -81,6 +76,16 @@ public abstract class AbstractDiagramElementsArranger implements
 				
 			}
 		}
+	}
+	
+	protected boolean isInstanceOfAny(Object object, Collection<java.lang.Class<?>> types){
+		boolean result = false;
+		Iterator<java.lang.Class<?>> it = types.iterator();
+		while(!result && it.hasNext()){
+			java.lang.Class<?> cls = it.next();
+			result = cls.isInstance(object);
+		}
+		return result;
 	}
 	
 	protected Command createChangeConstraintCommand(ChangeBoundsRequest request, GraphicalEditPart child, Rectangle constraint){

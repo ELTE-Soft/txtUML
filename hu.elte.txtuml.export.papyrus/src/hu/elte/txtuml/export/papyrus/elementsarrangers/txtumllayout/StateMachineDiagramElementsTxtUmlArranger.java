@@ -1,10 +1,12 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
+import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomTransitionGuardEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateEditPart;
 
 public class StateMachineDiagramElementsTxtUmlArranger extends
@@ -34,7 +36,7 @@ public class StateMachineDiagramElementsTxtUmlArranger extends
 			@SuppressWarnings("unchecked")
 			List<EditPart> listEp = regioncompartement.getChildren();
 			super.arrangeAll(regioncompartement, listEp);
-			super.hideConnectionLabelsForEditParts(listEp);
+			super.hideConnectionLabelsForEditParts(listEp, Arrays.asList(CustomTransitionGuardEditPart.class));
 			for(EditPart Ep : listEp){
 				if(Ep instanceof StateEditPart){
 					arrange_recurively((GraphicalEditPart) Ep);
