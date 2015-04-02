@@ -21,7 +21,6 @@ public class ProjectManager {
 	        try {
 				project.create(null);
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
         }
@@ -35,7 +34,6 @@ public class ProjectManager {
 		try {
 			project.open(new NullProgressMonitor());
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

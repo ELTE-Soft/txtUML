@@ -62,7 +62,6 @@ public class LayoutVisualizerManager {
 			try {
 				statementsSet.add(Statement.Parse(statement));
 			} catch (MyException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -78,7 +77,6 @@ public class LayoutVisualizerManager {
 				| ConversionException | StatementTypeMatchException
 				| InternalException | CannotPositionObjectException
 				| CannotFindAssociationRouteException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		objects = v.getObjects();

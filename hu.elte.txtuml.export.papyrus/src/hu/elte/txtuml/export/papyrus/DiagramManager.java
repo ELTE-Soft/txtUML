@@ -36,7 +36,6 @@ public class DiagramManager {
 				diagramCreationCommand.createDiagram(ms, Container, ((NamedElement)Container).getName());
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -52,7 +51,6 @@ public class DiagramManager {
 		try {
 			openDiagram(diagram);
 		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

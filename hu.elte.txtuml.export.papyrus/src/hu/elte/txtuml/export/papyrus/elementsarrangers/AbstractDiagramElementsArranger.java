@@ -25,15 +25,9 @@ import org.eclipse.gmf.runtime.diagram.ui.l10n.DiagramUIMessages;
 import org.eclipse.gmf.runtime.emf.commands.core.command.CompositeTransactionalCommand;
 import org.eclipse.gmf.runtime.emf.core.util.EObjectAdapter;
 import org.eclipse.gmf.runtime.notation.View;
-import org.eclipse.papyrus.uml.diagram.activity.edit.parts.ControlFlowGuardEditPart;
-import org.eclipse.papyrus.uml.diagram.activity.edit.parts.ObjectFlowGuardEditPart;
-import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationMultiplicitySourceEditPart;
-import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationMultiplicityTargetEditPart;
-import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationNameEditPart;
 import org.eclipse.papyrus.uml.diagram.common.commands.SemanticAdapter;
 import org.eclipse.papyrus.uml.diagram.common.commands.ShowHideLabelsRequest;
 import org.eclipse.papyrus.uml.diagram.statemachine.custom.commands.CustomStateMachineResizeCommand;
-import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomTransitionGuardEditPart;
 
 
 
