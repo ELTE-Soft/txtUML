@@ -11,120 +11,339 @@ import hu.elte.txtuml.api.ModelIdentifiedElement;
 import hu.elte.txtuml.api.Signal;
 import hu.elte.txtuml.api.StateMachine;
 
+
+/**
+ * This class provides utilities for telling the types of txtUML model elements.
+ * @author Ádám Ancsin
+ *
+ */
 public final class ElementTypeTeller {
 
-	public static boolean isModelElement(Class<?> c)
-	{
-		 
-		return ModelElement.class.isAssignableFrom(c);
-	}
-	public static boolean isModelClass(Class<?> c) {
-		return ModelClass.class.isAssignableFrom(c);
-	}
-
-	public static boolean isExternalClass(Class<?> c) {
-		return ExternalClass.class.isAssignableFrom(c);
-	}
-	public static boolean isClass(Class<?> c )
-	{
-		return isModelClass(c) || isExternalClass(c);
-	}
-	public static boolean isEvent(Class<?> c) {
-		return Signal.class.isAssignableFrom(c);
-	}
-
-	public static boolean isClassifier(Class<?> c)
-	{
-		return isClass(c) || isEvent(c);
+	/**
+	 * Decides if the specified class represents a txtUML model element.
+	 * @param specifiedClass The specified class.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isModelElement(Class<?> specifiedClass)
+	{ 
+		return ModelElement.class.isAssignableFrom(specifiedClass);
 	}
 	
-	public static boolean isAssociation(Class<?> c) {
-		return Association.class.isAssignableFrom(c);
+	/**
+	 * Decides if the specified class represents a txtUML model class.
+	 * @param specifiedClass The specified class.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isModelClass(Class<?> specifiedClass) 
+	{
+		return ModelClass.class.isAssignableFrom(specifiedClass);
+	}
+
+	/**
+	 * Decides if the specified class represents a txtUML external class.
+	 * @param specifiedClass The specified class.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isExternalClass(Class<?> specifiedClass)
+	{
+		return ExternalClass.class.isAssignableFrom(specifiedClass);
+	}
+	
+	/**
+	 * Decides if the specified class represents a txtUML class (model class or external class).
+	 * @param specifiedClass The specified class.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isClass(Class<?> specifiedClass)
+	{
+		return isModelClass(specifiedClass) || isExternalClass(specifiedClass);
+	}
+	
+	/**
+	 * Decides if the specified class represents a txtUML event.
+	 * @param specifiedClass The specified class.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isEvent(Class<?> specifiedClass) 
+	{
+		return Signal.class.isAssignableFrom(specifiedClass);
+	}
+	
+	/**
+	 * Decides if the specified class represents a txtUML classifier (class or event).
+	 * @param specifiedClass The specified class.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isClassifier(Class<?> specifiedClass)
+	{
+		return isClass(specifiedClass) || isEvent(specifiedClass);
+	}
+	
+	/**
+	 * Decides if the specified class represents a txtUML association.
+	 * @param specifiedClass The specified class.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isAssociation(Class<?> specifiedClass)
+	{
+		return Association.class.isAssignableFrom(specifiedClass);
 	}
     
-	
-	public static boolean isAttribute(Field f) {
-		return ModelIdentifiedElement.class.isAssignableFrom(f.getType());
+	/**
+	 * Decides if the specified field represents a txtUML classifier attribute.
+	 * @param field The specified field.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isAttribute(Field field)
+	{
+		return ModelIdentifiedElement.class.isAssignableFrom(field.getType());
     }
     
-	public static boolean isVertex(Class<?> c) {
-        return StateMachine.Vertex.class.isAssignableFrom(c);
+	/**
+	 * Decides if the specified class represents a txtUML state machine vertex.
+	 * @param specifiedClass The specified class.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isVertex(Class<?> specifiedClass)
+	{
+        return StateMachine.Vertex.class.isAssignableFrom(specifiedClass);
     }	
 	
-	public static boolean isState(Class<?> c) {
-        return StateMachine.State.class.isAssignableFrom(c);
+	/**
+	 * Decides if the specified class represents a txtUML state.
+	 * @param specifiedClass The specified class.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isState(Class<?> specifiedClass)
+	{
+        return StateMachine.State.class.isAssignableFrom(specifiedClass);
     }
 
-	public static boolean isInitial(Class<?> c) {
-        return StateMachine.Initial.class.isAssignableFrom(c);
+	/**
+	 * Decides if the specified class represents a txtUML initial pseudostate.
+	 * @param specifiedClass The specified class.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isInitial(Class<?> specifiedClass)
+	{
+        return StateMachine.Initial.class.isAssignableFrom(specifiedClass);
     }
 
-	public static boolean isCompositeState(Class<?> c) {
-        return StateMachine.CompositeState.class.isAssignableFrom(c);
+	/**
+	 * Decides if the specified class represents a txtUML composite state.
+	 * @param specifiedClass The specified class.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isCompositeState(Class<?> specifiedClass)
+	{
+        return StateMachine.CompositeState.class.isAssignableFrom(specifiedClass);
     }
 	
-	public static boolean isChoice(Class<?> c)
+	/**
+	 * Decides if the specified class represents a txtUML choice pseudostate.
+	 * @param specifiedClass The specified class.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isChoice(Class<?> specifiedClass)
 	{
-		return StateMachine.Choice.class.isAssignableFrom(c);
+		return StateMachine.Choice.class.isAssignableFrom(specifiedClass);
 	}
 
-	public static boolean isTransition(Class<?> c) {
-        return StateMachine.Transition.class.isAssignableFrom(c);
+	/**
+	 * Decides if the specified class represents a txtUML state machine transition.
+	 * @param specifiedClass The specified class.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isTransition(Class<?> specifiedClass)
+	{
+        return StateMachine.Transition.class.isAssignableFrom(specifiedClass);
     }
 	
-	public static boolean isModelClass(ModelElement element) {
+	/**
+	 * Decides if the specified model element is a txtUML model class instance.
+	 * @param element The specified model element.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isModelClass(ModelElement element)
+	{
 		return element!=null && isModelClass(element.getClass());
 	}
 
-	public static boolean isExternalClass(ModelElement element) {
+	/**
+	 * Decides if the specified model element is a txtUML external class instance.
+	 * @param element The specified model element.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isExternalClass(ModelElement element)
+	{
 		return element!=null && isExternalClass(element.getClass());
 	}
-	public static boolean isClass(ModelElement  element )
+	
+	/**
+	 * Decides if the specified model element is a txtUML class (model/external class) instance.
+	 * @param element The specified model element.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isClass(ModelElement element)
 	{
 		return isModelClass(element) || isExternalClass(element);
 	}
-	public static boolean isEvent(ModelElement element) {
+	
+	/**
+	 * Decides if the specified model element is a txtUML event instance.
+	 * @param element The specified model element.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isEvent(ModelElement element)
+	{
 		return element!=null && isEvent(element.getClass());
 	}
 
+	/**
+	 * Decides if the specified model element is a txtUML classifier(class/event) instance.
+	 * @param element The specified model element.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	public static boolean isClassifier(ModelElement element)
 	{
 		return isClass(element) || isEvent(element);
 	}
 	
-	public static boolean isAssociation(ModelElement element) {
+	/**
+	 * Decides if the specified model element is a txtUML association instance.
+	 * @param element The specified model element.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isAssociation(ModelElement element) 
+	{
 		return element!=null && isAssociation(element.getClass());
 	}
 
-	public static boolean isVertex(ModelElement element) {
+	/**
+	 * Decides if the specified model element is a txtUML state machine vertex instance.
+	 * @param element The specified model element.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isVertex(ModelElement element) 
+	{
 		return element!=null && isVertex(element.getClass());
     }
 	
-	public static boolean isState(ModelElement element) {
+	/**
+	 * Decides if the specified model element is a txtUML state instance.
+	 * @param element The specified model element.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isState(ModelElement element)
+	{
 		return element!=null && isState(element.getClass());
     }
 
-	public static boolean isInitial(ModelElement element) {
+	/**
+	 * Decides if the specified model element is a txtUML initial pseudostate instance.
+	 * @param element The specified model element.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isInitial(ModelElement element)
+	{
 		return element!=null && isInitial(element.getClass());
     }
 
-	public static boolean isCompositeState(ModelElement element) {
+	/**
+	 * Decides if the specified model element is a txtUML composite state instance.
+	 * @param element The specified model element.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isCompositeState(ModelElement element) 
+	{
 		return element!=null && isCompositeState(element.getClass());
     }
 	
-	public static boolean isChoice(ModelElement element) {
+	/**
+	 * Decides if the specified model element is a txtUML choice pseudostate instance.
+	 * @param element The specified model element.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isChoice(ModelElement element)
+	{
 		return element!=null && isChoice(element.getClass());
     }
 
-	public static boolean isTransition(ModelElement element) {
+	/**
+	 * Decides if the specified model element is a txtUML transition instance.
+	 * @param element The specified model element.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isTransition(ModelElement element)
+	{
 		return element!=null && isTransition(element.getClass());
     }
-	public static boolean isSpecificClassifier(Class<?> c)
+	
+	/**
+	 * Decides if the specified class represents a specific txtUML classifier (class/event).
+	 * @param specifiedClass The specified class.
+	 * @return The decision.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static boolean isSpecificClassifier(Class<?> specifiedClass)
 	{
-		if(!isClassifier(c))
+		if(!isClassifier(specifiedClass))
 			return false;
 		
-		Class<?> superClass=c.getSuperclass();
+		Class<?> superClass=specifiedClass.getSuperclass();
 		
 		if(superClass==null)
 			return false;
@@ -138,8 +357,5 @@ public final class ElementTypeTeller {
 			return false;
 		else
 			return true;
-		
-	}
-    
-	
+	}	
 }

@@ -134,7 +134,7 @@ class AssociationImporter extends AbstractImporter{
 	    if(participant == null)
 	        throw new ImportException(phrase + ": No class " + className + " found in this model.");
 	   
-	    return new AssociationEnd(participant,phrase,navigable,AggregationKind.NONE_LITERAL,lowerBound,upperBound);
+	    return new AssociationEnd(participant,phrase,lowerBound,upperBound,AggregationKind.NONE_LITERAL, navigable);
 	}
 
 	private Class<?> sourceClass;

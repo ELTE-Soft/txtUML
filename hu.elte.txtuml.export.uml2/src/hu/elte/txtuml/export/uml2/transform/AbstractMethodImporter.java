@@ -8,7 +8,7 @@ import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
-import hu.elte.txtuml.export.uml2.transform.backend.UMLPrimitiveTypes;
+import hu.elte.txtuml.export.uml2.transform.backend.UMLPrimitiveTypesProvider;
 
 import java.lang.reflect.Method;
 import java.util.Stack;
@@ -456,7 +456,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	{
 		LiteralString literal = (LiteralString)	pin.createValue(
 				pin.getName()+"_expression",
-				UMLPrimitiveTypes.getString(),
+				UMLPrimitiveTypesProvider.getString(),
 				UMLPackage.Literals.LITERAL_STRING
 			);
 		

@@ -2,6 +2,13 @@ package hu.elte.txtuml.export.uml2.transform.backend;
 
 import java.util.IdentityHashMap;
 
+/**
+ * Implementation of the InstancesMap interface.
+ * An IdentityHashMap for storing instance information for dummy instances
+ * during model import.
+ * @author Ádám Ancsin
+ *
+ */
 @SuppressWarnings("serial")
 class InstancesMapImpl 
 extends IdentityHashMap<Object, InstanceInformation> 

@@ -8,7 +8,7 @@ import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.export.uml2.utils.ProfileCreator;
 import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
-import hu.elte.txtuml.export.uml2.transform.backend.UMLPrimitiveTypes;
+import hu.elte.txtuml.export.uml2.transform.backend.UMLPrimitiveTypesProvider;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -132,11 +132,11 @@ public class ModelImporter extends AbstractImporter{
 	static org.eclipse.uml2.uml.Type importType(Class<?> sourceClass) 
 	{
 		if(sourceClass == ModelInt.class) 
-			return UMLPrimitiveTypes.getInteger();
+			return UMLPrimitiveTypesProvider.getInteger();
 		else if(sourceClass == ModelBool.class) 
-			return UMLPrimitiveTypes.getBoolean();
+			return UMLPrimitiveTypesProvider.getBoolean();
 		else if(sourceClass == ModelString.class) 
-			return UMLPrimitiveTypes.getString();
+			return UMLPrimitiveTypesProvider.getString();
 		else if(ElementTypeTeller.isClass(sourceClass))
 			return currentModel.getOwnedType(sourceClass.getSimpleName());
 		else
@@ -174,9 +174,9 @@ public class ModelImporter extends AbstractImporter{
         currentModel=model;
         
         InstanceManager.initGlobalInstancesMap();
-        ProfileCreator.createProfileForModel(path,modelName,resourceSet);
+        ProfileCreator.createProfileForModel(modelName,path,resourceSet);
         loadAndApplyProfile();
-        UMLPrimitiveTypes.importFromProfile(currentProfile);
+        UMLPrimitiveTypesProvider.importFromProfile(currentProfile);
 	}
 	
 	/**

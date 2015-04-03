@@ -15,16 +15,42 @@ import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
 
+/**
+ * This class provides utilities for creating an UML profile for a model.
+ * @author Ádám Ancsin
+ *
+ */
 public final class ProfileCreator {
 
-	public static void createProfileForModel(String path, String modelName, ResourceSet resourceSet) throws ImportException
+	/**
+	 * Creates the profile for a model with the specified model name
+	 * in a given output directory path and resource set.
+	 * 
+	 * @param modelName The specified model name.
+	 * @param path The given output directory path.
+	 * @param resourceSet The given resource set.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
+	public static void createProfileForModel(String modelName, String path, ResourceSet resourceSet) throws ImportException
 	{
-		Profile profile = createProfile(path, modelName);
+		Profile profile = createProfile(modelName, path);
 		Model umlMetamodel = loadUMLMetamodelAndPrimitiveTypes(profile, resourceSet);
 		createExternalClassStereotypeForProfile(profile, umlMetamodel);
 		defineAndSaveProfile(profile, modelName, resourceSet);
 	}	
 	
+	/**
+	 * Defines and saves the specified profile.
+	 * 
+	 * @param profile The specified profile.
+	 * @param modelName The name of the model.
+	 * @param resourceSet The resource set.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
  	private static void defineAndSaveProfile(Profile profile,String modelName, ResourceSet resourceSet) throws ImportException
  	{
  		profile.define();
@@ -46,6 +72,13 @@ public final class ProfileCreator {
 		}
  	}
  	
+ 	/**
+ 	 * Creates the ExternalClass stereotype for the specified profile using the given UML metamodel.
+ 	 * @param profile The specified profile.
+ 	 * @param umlMetamodel The given UML metamodel.
+ 	 *
+ 	 * @author Ádám Ancsin
+ 	 */
 	private static void createExternalClassStereotypeForProfile(Profile profile, Model umlMetamodel)
 	{
 		//creating the ExternalClass stereotype and an extension for it
@@ -64,6 +97,15 @@ public final class ProfileCreator {
 
 		}
 	}
+	
+	/**
+	 * Loads the UML metamodel and Primitive Types Library to the specified profile with the given resource set.
+	 * @param profile The specified profile.
+	 * @param resourceSet The given resource set.
+	 * @return The UML metamodel.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static Model loadUMLMetamodelAndPrimitiveTypes(Profile profile,ResourceSet resourceSet)
 	{
 		//loading the UML metamodel
@@ -73,7 +115,7 @@ public final class ProfileCreator {
 						resourceSet
 				);
 
-		//loading UML Primitive Types Library and importing the primitve types from there
+		//loading UML Primitive Types Library and importing the primitive types from there
 		org.eclipse.uml2.uml.Package umlLibrary= 
 				loadResource(
 						URI.createURI(UMLResource.UML_PRIMITIVE_TYPES_LIBRARY_URI),
@@ -88,7 +130,17 @@ public final class ProfileCreator {
 		return umlMetamodel;
 	}
 	
-	private static Profile createProfile(String path, String modelName)
+	/**
+	 * Creates a profile for the model with the specified model name at the given
+	 * output directory path.
+	 * @param modelName The specified model name.
+	 * @param path The given output directory path. 
+	 * 
+	 * @return The created profile-
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private static Profile createProfile(String modelName, String path)
 	{
 		Profile profile = UMLFactory.eINSTANCE.createProfile();
 		profile.setName("Custom Profile");
@@ -102,6 +154,14 @@ public final class ProfileCreator {
 		return profile;
 	}
 	
+	/**
+	 * Loads a resource (an UML2 package) from a specified URI in the given resource set. 
+	 * @param uri The specified URI.
+	 * @param resourceSet The given resource set.
+	 * @return The loaded package.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private static org.eclipse.uml2.uml.Package loadResource(URI uri, ResourceSet resourceSet)
 	{
 		Resource resource=resourceSet.getResource(uri,true);
