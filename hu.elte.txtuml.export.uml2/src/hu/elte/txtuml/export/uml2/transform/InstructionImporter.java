@@ -38,7 +38,7 @@ import org.eclipse.uml2.uml.Variable;
 
 /**
  * This class is responsible for importing instructions that are not actions (Action.* calls)
- * and ModelType operations inside method bodies.
+ * nor ModelType operations inside method bodies.
  * 
  * @author Ádám Ancsin
  *

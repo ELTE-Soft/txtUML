@@ -25,16 +25,36 @@ import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
+/**
+ * Instances of this class are responsible for importing state machine regions.
+ * @author Ádám Ancsin
+ *
+ */
 class RegionImporter extends AbstractImporter {
 
-	RegionImporter(Class<?> sourceClass,ModelElement ownerInstance,Model currentModel,Region currentRegion) throws ImportException
+	/**
+	 * Creates a RegionImporter instance.
+	 * @param ownerClass The owner class (either a model class, or a composite state) which contains the region to be imported.
+	 * @param ownerInstance The dummy instance of the owner.
+	 * @param currentModel The UML2 model.
+	 * @param currentRegion The UML2 region.
+	 * @throws ImportException
+	 */
+	RegionImporter(Class<?> ownerClass,ModelElement ownerInstance,Model currentModel,Region currentRegion) throws ImportException
 	{
-		this.sourceClass=sourceClass;
+		this.ownerClass=ownerClass;
 		this.ownerInstance=ownerInstance;
 		this.currentModel=currentModel;
 		this.region=currentRegion;
 	}
 	
+	/**
+	 * Imports the region.
+	 * @return The imported UML2 region.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
 	Region importRegion() throws ImportException
 	{
 		importVertices();
@@ -42,66 +62,109 @@ class RegionImporter extends AbstractImporter {
 		return region;
 	}
 	
+	/**
+	 * Gets the UML2 region.
+	 * @return The UML2 region.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	Region getRegion()
 	{
 		return region;
 	}
 	
-	private Region importVertices() throws ImportException
+	/**
+	 * Imports the vertices (states and pseudostates) of the region.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private void importVertices() throws ImportException
 	{
-		for(Class<?> c : sourceClass.getDeclaredClasses())
+		for(Class<?> c : ownerClass.getDeclaredClasses())
         {
 			if(!ElementTypeTeller.isModelElement(c))
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
             if(ElementTypeTeller.isVertex(c)) 	   
             	importVertex(c);        
         }
-		return region;
 	}
 	
-	private Region importSubRegion(Class<?> vertexClass, StateMachine.Vertex vertexInstance, Vertex vertex) throws ImportException
+	/**
+	 * Imports a sub-region (a region belonging to a vertex).
+	 * @param txtUMLVertexClass The class of the owner txtUML vertex. 
+	 * @param txtUMLVertexInstance The dummy instance of the owner txtUML vertex.
+	 * @param uml2Vertex The UML2 vertex.
+	 * @return The imported sub-region.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private Region importSubRegion(Class<?> txtUMLVertexClass, StateMachine.Vertex txtUMLVertexInstance, Vertex uml2Vertex) 
+			throws ImportException
 	{
-		Region subRegion= new RegionImporter
-				(vertexClass,vertexInstance,currentModel,((State) vertex).createRegion(vertexClass.getSimpleName()))
-				.importRegion();
-		subRegion.setState((State) vertex);
+		Region subRegion= new RegionImporter(
+				txtUMLVertexClass,
+				txtUMLVertexInstance,
+				currentModel,
+				((State) uml2Vertex).createRegion(txtUMLVertexClass.getSimpleName())
+			).importRegion();
+		
+		subRegion.setState((State) uml2Vertex);
 	
 		return subRegion;
 	}
-	private  Vertex importVertex(Class<?> vertexClass) throws ImportException
+	
+	/**
+	 * Imports a vertex.
+	 * @param txtUMLVertexClass The class of the txtUML vertex.
+	 * @return The imported UML2 vertex.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private  Vertex importVertex(Class<?> txtUMLVertexClass) throws ImportException
 	{
-		Vertex vertex=createVertex(vertexClass);
+		Vertex vertex=createVertex(txtUMLVertexClass);
 
 		StateMachine.Vertex vertexInstance=(hu.elte.txtuml.api.StateMachine.Vertex) 
-				DummyInstanceCreator.createDummyInstance(vertexClass,ownerInstance);
+				DummyInstanceCreator.createDummyInstance(txtUMLVertexClass,ownerInstance);
 		
-		if(ElementTypeTeller.isCompositeState(vertexClass))
+		if(ElementTypeTeller.isCompositeState(txtUMLVertexClass))
 		{
-			Region subRegion = importSubRegion(vertexClass, vertexInstance, vertex);
+			Region subRegion = importSubRegion(txtUMLVertexClass, vertexInstance, vertex);
 			if(subRegion.getSubvertices().size() != 0 && !containsInitial(subRegion)) 
 			{
 				importWarning(
-						vertexClass.getName() +
+						txtUMLVertexClass.getName() +
 						" has one or more vertices but no initial pseudostate (state machine will not be created)"
 					);
 				return null;
 			}
 		}
 		
-		if(ElementTypeTeller.isState(vertexClass))
+		if(ElementTypeTeller.isState(txtUMLVertexClass))
 		{
-			importStateEntryAction(vertexClass, (State) vertex, (StateMachine.State) vertexInstance);
-			importStateExitAction(vertexClass, (State) vertex, (StateMachine.State) vertexInstance);
+			importStateEntryAction(txtUMLVertexClass, (State) vertex, (StateMachine.State) vertexInstance);
+			importStateExitAction(txtUMLVertexClass, (State) vertex, (StateMachine.State) vertexInstance);
 		}
 		return vertex;
 	}
 	
-	private void importStateEntryAction(Class<?> stateClass,State importedState, StateMachine.State stateInstance)
+	/**
+	 * Imports the entry action of a state.
+	 * @param txtUMLStateClass The class of the txtUML state.
+	 * @param importedState The imported UML2 state.
+	 * @param stateInstance The dummy instance of the txtUML state.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private void importStateEntryAction(Class<?> txtUMLStateClass,State importedState, StateMachine.State stateInstance)
 	{
 		
 		try 
 		{
-			Method entryMethod=stateClass.getDeclaredMethod("entry");
+			Method entryMethod=txtUMLStateClass.getDeclaredMethod("entry");
 			Activity activity = (Activity)
 					importedState.createEntry(
 							importedState.getName()+"_entry",
@@ -117,6 +180,14 @@ class RegionImporter extends AbstractImporter {
 		
 	}
 	
+	/**
+	 * Imports the exit action of a state.
+	 * @param txtUMLStateClass The class of the txtUML state.
+	 * @param importedState The imported UML2 state.
+	 * @param stateInstance The dummy instance of the txtUML state.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private void importStateExitAction(Class<?> stateClass,State importedState, StateMachine.State stateInstance)
 	{
 		
@@ -138,9 +209,15 @@ class RegionImporter extends AbstractImporter {
 		
 	}
 	
-	private  Region importTransitions() throws ImportException
+	/**
+	 * Imports the transitions of the region.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private  void importTransitions() throws ImportException
 	{
-		for(Class<?> c : sourceClass.getDeclaredClasses())
+		for(Class<?> c : ownerClass.getDeclaredClasses())
 	    {		
 			if(!ElementTypeTeller.isModelElement(c))
 			{
@@ -151,48 +228,76 @@ class RegionImporter extends AbstractImporter {
 				if (ElementTypeTeller.isVertex(c))
 				{
 					throw new ImportException(
-							sourceClass.getName() + "." + c.getSimpleName() + " cannot be a vertex and a transition at the same time"
+							ownerClass.getName() + "." + c.getSimpleName() + " cannot be a vertex and a transition at the same time"
 							);
 				}		
 				importTransition(c);			
 	        }       
 	    }
-		return region;
+
 	}
-	
-	private  Vertex createVertex(Class<?> vertex) throws ImportException
+	/**
+	 * Creates a vertex of the right type (state/initial/choice) based on the given txtUML vertex class.
+	 * @param txtUMLVertexClass The class of the txtUML vertex.
+	 * @return The created vertex.
+	 * @throws ImportException
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private Vertex createVertex(Class<?> txtUMLVertexClass) throws ImportException
 	{	
-		if(ElementTypeTeller.isInitial(vertex))
+		if(ElementTypeTeller.isInitial(txtUMLVertexClass))
         {
 			if (containsInitial(region)) 
-            	throw new ImportException(sourceClass.getName() + " has two initial pseudostates");
+            	throw new ImportException(ownerClass.getName() + " has two initial pseudostates");
 
-			return createInitial(vertex);
+			return createInitial(txtUMLVertexClass);
         }
-		else if(ElementTypeTeller.isChoice(vertex))
-			return createChoice(vertex);
+		else if(ElementTypeTeller.isChoice(txtUMLVertexClass))
+			return createChoice(txtUMLVertexClass);
 		else
-			return region.createSubvertex(vertex.getSimpleName(),UMLPackage.Literals.STATE);		
+			return region.createSubvertex(txtUMLVertexClass.getSimpleName(),UMLPackage.Literals.STATE);		
 	}
 	
-	private Vertex createInitial(Class<?> vertex)
+	/**
+	 * Creates an UML2 initial pseudostate.
+	 * @param txtUMLVertexClass The class of the txtUML vertex.
+	 * @return The created UML2 initial pseudostate.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private Vertex createInitial(Class<?> txtUMLVertexClass)
 	{
-		return region.createSubvertex(vertex.getSimpleName(), UMLPackage.Literals.PSEUDOSTATE);
+		return region.createSubvertex(txtUMLVertexClass.getSimpleName(), UMLPackage.Literals.PSEUDOSTATE);
 	}
 	
-	private Pseudostate createChoice(Class<?> vertex)
+	/**
+	 * Creates an UML2 choice pseudostate.
+	 * @param txtUMLVertexClass The class of the txtUML vertex.
+	 * @return The created UML2 choice pseudostate.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private Pseudostate createChoice(Class<?> txtUMLVertexClass)
 	{
-		Pseudostate ret= (Pseudostate)region.createSubvertex(vertex.getSimpleName(),UMLPackage.Literals.PSEUDOSTATE);
+		Pseudostate ret= (Pseudostate)region.createSubvertex(txtUMLVertexClass.getSimpleName(),UMLPackage.Literals.PSEUDOSTATE);
 		ret.setKind(PseudostateKind.CHOICE_LITERAL);
 		return ret;
 	}
 
-	private org.eclipse.uml2.uml.Transition importTransition(Class<?> transition)
+	/**
+	 * Imports a transition.
+	 * @param txtUMLTransitionClass The class of the txtUML transition.
+	 * @return The imported UML2 transition.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private org.eclipse.uml2.uml.Transition importTransition(Class<?> txtUMLTransitionClass)
 	{
-		String transitionName = transition.getSimpleName();
-        From fromAnnotation = transition.getAnnotation(From.class);
-        To toAnnotation = transition.getAnnotation(To.class);
-        hu.elte.txtuml.api.Trigger triggerAnnotation=transition.getAnnotation(hu.elte.txtuml.api.Trigger.class);
+		String transitionName = txtUMLTransitionClass.getSimpleName();
+        From fromAnnotation = txtUMLTransitionClass.getAnnotation(From.class);
+        To toAnnotation = txtUMLTransitionClass.getAnnotation(To.class);
+        hu.elte.txtuml.api.Trigger triggerAnnotation=txtUMLTransitionClass.getAnnotation(hu.elte.txtuml.api.Trigger.class);
         
         String sourceName = fromAnnotation.value().getSimpleName();
         String targetName = toAnnotation.value().getSimpleName();
@@ -203,15 +308,22 @@ class RegionImporter extends AbstractImporter {
         org.eclipse.uml2.uml.Transition importedTransition=createTransitionBetweenVertices(transitionName,source,target);
          
         StateMachine.Transition transitionInstance = (Transition)
-        		DummyInstanceCreator.createDummyInstance(transition,ownerInstance); 
+        		DummyInstanceCreator.createDummyInstance(txtUMLTransitionClass,ownerInstance); 
         
         importTrigger(triggerAnnotation,importedTransition);
-        importEffectAction(transition,importedTransition,transitionInstance);
-        importGuard(transition,importedTransition,transitionInstance);
+        importEffectAction(txtUMLTransitionClass,importedTransition,transitionInstance);
+        importGuard(txtUMLTransitionClass,importedTransition,transitionInstance);
         
         return importedTransition;
     }   
 	
+	/**
+	 * Imports the trigger of a transition.
+	 * @param triggerAnnotation The @Trigget annotation of the txtUML transition class.
+	 * @param importedTransition The imported UML2 transition.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private void importTrigger( hu.elte.txtuml.api.Trigger triggerAnnotation,org.eclipse.uml2.uml.Transition importedTransition)
 	{
 		 if(triggerAnnotation!=null)
@@ -222,18 +334,29 @@ class RegionImporter extends AbstractImporter {
 	     }
 	}
 	
-	private void importEffectAction
-		(Class<?> transitionClass,org.eclipse.uml2.uml.Transition importedTransition, StateMachine.Transition transitionInstance)
+	/**
+	 * Imports the effect action of a transition.
+	 * @param txtUMLTransitionClass The class of the txtUML transition.
+	 * @param importedTransition The imported UML2 transition.
+	 * @param txtUMLTransitionInstance The dummy instance of the txtUML transition.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private void importEffectAction(
+			Class<?> txtUMLTransitionClass,
+			org.eclipse.uml2.uml.Transition importedTransition, 
+			StateMachine.Transition txtUMLTransitionInstance
+		)
 	{
 		try 
 		{
-			Method effectMethod=transitionClass.getDeclaredMethod("effect");
+			Method effectMethod=txtUMLTransitionClass.getDeclaredMethod("effect");
 			Activity activity=(Activity)
 					importedTransition.createEffect(
 							importedTransition.getName()+"_effect",
 							UMLPackage.Literals.ACTIVITY
 						);
-			MethodImporter.importMethod(currentModel,activity, effectMethod, transitionInstance);
+			MethodImporter.importMethod(currentModel,activity, effectMethod, txtUMLTransitionInstance);
 		}
 		catch (NoSuchMethodException e)
 		{	
@@ -242,13 +365,24 @@ class RegionImporter extends AbstractImporter {
 		
 	}
 	
-	private void importGuard
-		(Class<?> transitionClass,org.eclipse.uml2.uml.Transition importedTransition, StateMachine.Transition transitionInstance)
+	/**
+	 * Imports the guard constraint of a transition.
+	 * @param txtUMLTransitionClass The class of the txtUML transition.
+	 * @param importedTransition The imported UML2 transition.
+	 * @param txtUMLTransitionInstance The dummy instance of the txtUML transition.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private void importGuard(
+			Class<?> txtUMLTransitionClass,
+			org.eclipse.uml2.uml.Transition importedTransition, 
+			StateMachine.Transition txtUMLTransitionInstance
+		)
 	{
 		try
 		{
-			Method guardMethod=transitionClass.getDeclaredMethod("guard");
-			String guardExpression=MethodImporter.importGuardMethod(currentModel,guardMethod,transitionInstance);
+			Method guardMethod=txtUMLTransitionClass.getDeclaredMethod("guard");
+			String guardExpression=MethodImporter.importGuardMethod(currentModel,guardMethod,txtUMLTransitionInstance);
 
 			OpaqueExpression opaqueExpression=(OpaqueExpression) UMLFactory.eINSTANCE.createOpaqueExpression();
 			opaqueExpression.getBodies().add(guardExpression);
@@ -266,6 +400,15 @@ class RegionImporter extends AbstractImporter {
 		
 	}
 	
+	/**
+	 * Creates a UML2 transition from the source UML2 vertex to the target UML2 vertex.
+	 * @param name The name of the transition.
+	 * @param source The source UML2 vertex.
+	 * @param target The target UML2 vertex.
+	 * @return The created UML2 transition.
+	 *
+	 * @author Ádám Ancsin
+	 */
 	private org.eclipse.uml2.uml.Transition createTransitionBetweenVertices(String name,Vertex source, Vertex target)
 	{
 		org.eclipse.uml2.uml.Transition transition=region.createTransition(name);
@@ -275,7 +418,7 @@ class RegionImporter extends AbstractImporter {
 	}
 	
 	private ModelElement ownerInstance;
-	private Class<?> sourceClass; 
+	private Class<?> ownerClass; 
 	private Model currentModel;
 	private Region region;
 }
