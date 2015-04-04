@@ -18,9 +18,9 @@ public class ActivityDiagramElementsGmfArranger extends AbstractDiagramElementsG
 	public void arrange() {
 		EditPart activityEditpart = (EditPart) diagep.getChildren().get(0);
 		EditPart activityContentEditpart = (EditPart) activityEditpart.getChildren().get(5);
+		super.arrangeChildren(activityContentEditpart);
 		@SuppressWarnings("unchecked")
 		List<EditPart> listEp =  activityContentEditpart.getChildren();
-		super.arrangeAll(activityContentEditpart, listEp);
 		super.hideConnectionLabelsForEditParts(listEp, Arrays.asList(ObjectFlowGuardEditPart.class, ControlFlowGuardEditPart.class));
 	}	
 }

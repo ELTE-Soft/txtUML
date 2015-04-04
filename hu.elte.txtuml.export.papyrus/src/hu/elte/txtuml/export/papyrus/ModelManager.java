@@ -30,7 +30,6 @@ public class ModelManager {
 	public ModelManager(IMultiDiagramEditor editor) throws ServiceException, NotFoundException{
 		this.editor = editor;
 		modelMap = buildUpMap();
-		System.out.print(true);
 	}
 
 	private MultiMap<Class<?>, Element> buildUpMap() throws NotFoundException, ServiceException {

@@ -21,29 +21,53 @@ public class StateMachineDiagramElementsGmfArranger extends
 		GraphicalEditPart stateMachineEP = (GraphicalEditPart) diagep.getChildren().get(0);
 		super.resizeGraphicalEditPart(stateMachineEP, 400, 200);
 		arrange_recurively(stateMachineEP);
-		
+		arrange_and_resize_recursively(stateMachineEP);
 	}
 
-	private void arrange_recurively(GraphicalEditPart stateEP) {
+	private void arrange_and_resize_recursively(GraphicalEditPart stateEP) {
 		@SuppressWarnings("unchecked")
-		List<GraphicalEditPart> stateChildren = stateEP.getChildren();
+		List<GraphicalEditPart> stateCompartements = stateEP.getChildren();
 
 		@SuppressWarnings("unchecked")
-		List<GraphicalEditPart> regions =  ((EditPart) stateChildren.get(1)).getChildren();
+		List<GraphicalEditPart> regions =  ((EditPart) stateCompartements.get(1)).getChildren();
 		
 		for(GraphicalEditPart region: regions){		
 			GraphicalEditPart regioncompartement = (GraphicalEditPart) region.getChildren().get(0);
 			@SuppressWarnings("unchecked")
 			List<EditPart> listEp = regioncompartement.getChildren();
-			super.arrangeAll(regioncompartement, listEp);
-			super.hideConnectionLabelsForEditParts(listEp, Arrays.asList(CustomTransitionGuardEditPart.class));
+			
 			for(EditPart Ep : listEp){
 				if(Ep instanceof StateEditPart){
-					arrange_recurively((GraphicalEditPart) Ep);
-					/* TODO : Resize and postfix arrange */
+					arrange_and_resize_recursively((GraphicalEditPart) Ep);				
 				}
 			}
+			super.autoresizeGraphicalEditPart(stateEP);
+			super.arrangeChildren(regioncompartement);
 		}
 	}
 
+	private void arrange_recurively(GraphicalEditPart stateEP) {
+		@SuppressWarnings("unchecked")
+		List<GraphicalEditPart> stateCompartements = stateEP.getChildren();
+
+		@SuppressWarnings("unchecked")
+		List<GraphicalEditPart> regions =  ((EditPart) stateCompartements.get(1)).getChildren();
+		
+		for(GraphicalEditPart region: regions){		
+			GraphicalEditPart regioncompartement = (GraphicalEditPart) region.getChildren().get(0);
+			@SuppressWarnings("unchecked")
+			List<EditPart> listEp = regioncompartement.getChildren();
+			
+			for(EditPart Ep : listEp){
+				if(Ep instanceof StateEditPart){
+					arrange_recurively((GraphicalEditPart) Ep);				
+				}
+			}
+			super.arrangeChildren(regioncompartement);
+			super.hideConnectionLabelsForEditParts(listEp, Arrays.asList(CustomTransitionGuardEditPart.class));	
+		}
+	}
+	
 }
+
+
