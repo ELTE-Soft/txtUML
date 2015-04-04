@@ -5,11 +5,7 @@ import hu.elte.txtuml.export.papyrus.ProjectManager;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.export.uml2.UML2;
 import hu.elte.txtuml.export.utils.ClassLoaderProvider;
-import hu.elte.txtuml.layout.export.DiagramExportationReport;
-import hu.elte.txtuml.layout.export.DiagramExporter;
-import hu.elte.txtuml.layout.lang.Diagram;
 
-import java.io.IOException;
 import java.net.URLClassLoader;
 
 import org.eclipse.core.resources.IFile;
@@ -58,7 +54,6 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 	public boolean performFinish() {
 		PreferencesManager preferncesManager = new PreferencesManager();
 		final String txtUMLModelName = selectTxtUmlPage.getTxtUmlModelClass();
-		final String txtUMLLayoutName = selectTxtUmlPage.getTxtUmlLayout();
 		final String txtUMLProjectName = selectTxtUmlPage.getTxtUmlProject();		
 		final String folder = preferncesManager.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
 		
@@ -66,19 +61,6 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 
 		preferncesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT, txtUMLProjectName);
 		preferncesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL, txtUMLModelName);
-		preferncesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, txtUMLLayoutName);
-
-		try(URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(txtUMLProjectName, parentClassLoader)){
-			Class<?> txtUMLLayoutClass = loader.loadClass(txtUMLLayoutName); 
-			@SuppressWarnings("unchecked")
-			DiagramExporter exporter= DiagramExporter.create((Class<? extends Diagram>) txtUMLLayoutClass);
-			DiagramExportationReport  report = exporter.export();
-			System.out.println("Statements: "+report.getStatements());
-		} catch (ClassNotFoundException | IOException e) {
-			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-			MessageDialog.openInformation(window.getShell(),"Layout Diagram Error",e.getMessage());
-			e.printStackTrace();
-		}
 
 		try (URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(txtUMLProjectName, parentClassLoader)){
     		Class<?> txtUMLModelClass = loader.loadClass(txtUMLModelName);
