@@ -12,7 +12,7 @@ public class PreferencesPageHandler extends AbstractHandler implements IHandler 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		PreferenceDialog pd = PreferencesUtil.createPreferenceDialogOn(null,
-								"org.elte.txtuml.papyrusdiagramgenerator.preferences1", null, null);
+								"hu.elte.txtuml.export.papyrus.preferences1", null, null);
 		
 		pd.open();
 		return null;

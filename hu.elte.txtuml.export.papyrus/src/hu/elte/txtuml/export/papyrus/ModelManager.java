@@ -19,13 +19,6 @@ public class ModelManager {
 	
 	private IMultiDiagramEditor editor;
 	private MultiMap<Class<?>, Element> modelMap;
-
-	public Element getRoot() throws ServiceException, NotFoundException{
-		ModelSet modelSet = editor.getServicesRegistry().getService(ModelSet.class);
-		UmlModel umlModel = (UmlModel) modelSet.getModel(UmlModel.MODEL_ID);
-		Element root = (Element) umlModel.lookupRoot();
-		return root;
-	}
 	
 	public ModelManager(IMultiDiagramEditor editor) throws ServiceException, NotFoundException{
 		this.editor = editor;
@@ -54,6 +47,13 @@ public class ModelManager {
 			}
 		}
 
+
+	public Element getRoot() throws ServiceException, NotFoundException{
+		ModelSet modelSet = editor.getServicesRegistry().getService(ModelSet.class);
+		UmlModel umlModel = (UmlModel) modelSet.getModel(UmlModel.MODEL_ID);
+		Element root = (Element) umlModel.lookupRoot();
+		return root;
+	}
 
 	
 	public List<Element> getElementsOfTypes(List<java.lang.Class<?>> types){

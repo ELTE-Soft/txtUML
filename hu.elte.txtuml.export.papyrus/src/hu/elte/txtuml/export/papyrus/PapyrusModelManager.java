@@ -78,12 +78,6 @@ public class PapyrusModelManager {
 	
 	}
 
-	/**
-	 * Adds elements to existing ClassDiagrams. Only the elements of types in parameter will be added to the diagrams.
-	 *  Elements of same type will be added together. Different types will be added at the order of the list 
-	 * @param types
-	 * @throws ServiceException
-	 */
 	protected void addElementsToDiagrams() throws ServiceException{
 		
 		EList<EObject> diags =  diagramManager.getDiagrams();
@@ -97,7 +91,7 @@ public class PapyrusModelManager {
 			AbstractDiagramElementsManager diagramElementsManager;
 			IDiagramElementsArranger diagramElementsArranger;  
 			
-			List<Element> elements = modelManager.getAllChildrenOfPackage((Element) container);
+			List<Element> baseElements = modelManager.getAllChildrenOfPackage((Element) container);
 			
 			if(diagram.getType().equals("PapyrusUMLClassDiagram")){					
 				diagramElementsManager = new ClassDiagramElementsManager(modelManager, diagep);
@@ -112,7 +106,7 @@ public class PapyrusModelManager {
 				continue;
 			}
 			
-			diagramElementsManager.addElementsToDiagram(elements);	
+			diagramElementsManager.addElementsToDiagram(baseElements);	
 			diagramElementsArranger.arrange();
 		}
 		

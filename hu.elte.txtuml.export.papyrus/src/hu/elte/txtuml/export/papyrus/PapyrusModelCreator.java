@@ -46,18 +46,16 @@ public class PapyrusModelCreator {
 		
 		diFile = fileFromPath(diFilePath);
 		umlFile = fileFromPath(umlFilePath);
-		
-		copyUmlToProjectIfNotExists(sourceUMLPath);
+		if(!umlFile.exists()){
+			copyUmlToProject(sourceUMLPath);
+		}
 	}
 	
 	
-	private void copyUmlToProjectIfNotExists(String SourceUMLPath) throws FileNotFoundException, CoreException {
-		
-		if(!umlFile.exists()){
-				InputStream  is = new FileInputStream(new File(java.net.URI.create(SourceUMLPath)));
-				umlFile.create(null, true, null);
-				umlFile.setContents(is, true, false, new NullProgressMonitor());
-		}
+	private void copyUmlToProject(String SourceUMLPath) throws FileNotFoundException, CoreException {
+			InputStream  is = new FileInputStream(new File(java.net.URI.create(SourceUMLPath)));
+			umlFile.create(null, true, null);
+			umlFile.setContents(is, true, false, new NullProgressMonitor());
 	}
 	
 	public void createPapyrusModel() throws ServiceException, IOException{
@@ -100,12 +98,8 @@ public class PapyrusModelCreator {
 	
 	private ServicesRegistry createServicesRegistry() throws ServiceException {
 		ServicesRegistry result = null;
-		try {
-			result = new ExtensionServicesRegistry(org.eclipse.papyrus.infra.core.Activator.PLUGIN_ID);
-		} catch (ServiceException e) {
-			// couldn't create the registry? Fatal problem
-			throw e;
-		}
+		result = new ExtensionServicesRegistry(org.eclipse.papyrus.infra.core.Activator.PLUGIN_ID);
+		
 		try {
 			// have to create the model set and populate it with the DI model
 			// before initializing other services that actually need the DI

@@ -82,7 +82,6 @@ public class MainAction {
 		if(!papyrusModelCreator.diExists()){
 			
 			papyrusModelCreator.createPapyrusModel();
-
 			IMultiDiagramEditor editor = (IMultiDiagramEditor) openEditor(papyrusModelCreator.getDi());
 			papyrusModelManager = new PapyrusModelManager(editor);
 			papyrusModelManager.createAndFillDiagrams();
@@ -115,7 +114,7 @@ public class MainAction {
 	}
 	
 	/**
-	 * Opens a MessageBox with the given message.
+	 * Opens a MessageBox with the given title and message.
 	 * @param title The title of the MessageBox window
 	 * @param body The Message
 	 */

@@ -7,22 +7,22 @@
          point="org.eclipse.ui.commands">
       <command
             defaultHandler="hu.elte.txtuml.export.papyrus.handlers.InstantHandler"
-            id="org.elte.txtuml.papyrusdiagramgenerator.InstantCommand"
+            id="hu.elte.txtuml.export.papyrus.InstantCommand"
             name="InstantCommand">
       </command>
       <command
             defaultHandler="hu.elte.txtuml.export.papyrus.handlers.WizardHandler"
-            id="org.elte.txtuml.papyrusdiagramgenerator.WizardCommand"
+            id="hu.elte.txtuml.export.papyrus.WizardCommand"
             name="WizardCommand">
       </command>
       <command
             defaultHandler="hu.elte.txtuml.export.papyrus.handlers.PreferencesPageHandler"
-            id="org.elte.txtuml.papyrusdiagramgenerator.PreferencePageCommand"
+            id="hu.elte.txtuml.export.papyrus.PreferencePageCommand"
             name="PreferencePageCommand">
       </command>
       <command
             defaultHandler="hu.elte.txtuml.export.papyrus.handlers.TxtUMLVisualizeHandler"
-            id="org.elte.txtuml.papyrusdiagramgenerator.txtUMLVisualize"
+            id="hu.elte.txtuml.export.papyrus.txtUMLVisualize"
             name="txtUMLVisualize">
       </command>
    </extension>
@@ -32,7 +32,7 @@
             allPopups="false"
             locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions">
          <command
-               commandId="org.elte.txtuml.papyrusdiagramgenerator.InstantCommand"
+               commandId="hu.elte.txtuml.export.papyrus.InstantCommand"
                icon="icons/sample.png"
                label="*.uml to Papyrus"
                style="push"
@@ -62,13 +62,13 @@
          <menu
                label="txtUML">
             <command
-                  commandId="org.elte.txtuml.papyrusdiagramgenerator.txtUMLVisualize"
+                  commandId="hu.elte.txtuml.export.papyrus.txtUMLVisualize"
                   icon="icons/sample.png"
                   label="Visualize txtUML Model"
                   style="push">
             </command>
             <command
-                  commandId="org.elte.txtuml.papyrusdiagramgenerator.WizardCommand"
+                  commandId="hu.elte.txtuml.export.papyrus.WizardCommand"
                   icon="icons/sample.png"
                   label="uml to Papyrus"
                   style="push">
@@ -78,7 +78,7 @@
                   visible="true">
             </separator>
             <command
-                  commandId="org.elte.txtuml.papyrusdiagramgenerator.PreferencePageCommand"
+                  commandId="hu.elte.txtuml.export.papyrus.PreferencePageCommand"
                   label="Preferences"
                   style="push">
             </command>
@@ -89,7 +89,7 @@
          point="org.eclipse.ui.preferencePages">
       <page
             class="hu.elte.txtuml.export.papyrus.preferences.PreferencesPage"
-            id="org.elte.txtuml.papyrusdiagramgenerator.preferences1"
+            id="hu.elte.txtuml.export.papyrus.preferences1"
             name="txtUML Diagram generation">
       </page>
    </extension>
