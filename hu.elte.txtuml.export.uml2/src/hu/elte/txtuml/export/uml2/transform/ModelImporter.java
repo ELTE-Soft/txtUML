@@ -596,14 +596,8 @@ public class ModelImporter extends AbstractImporter{
 	 */
     private static void initResourceSet()
     {
-    	 resourceSet = new ResourceSetImpl();
-          // Initialize registrations of resource factories, library models,
-          // profiles, Ecore metadata, and other dependencies required for
-          // serializing and working with UML resources. This is only necessary in
-          // applications that are not hosted in the Eclipse platform run-time, in
-          // which case these registrations are discovered automatically from
-          // Eclipse extension points.
-  		
+    	resourceSet = new ResourceSetImpl();
+     
   		URI locationURI=URI.createURI("platform:/plugin/org.eclipse.uml2.uml.resources");
   		resourceSet.getPackageRegistry().put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
   		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION,UMLResource.Factory.INSTANCE);

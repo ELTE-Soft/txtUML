@@ -1,11 +1,13 @@
 package hu.elte.txtuml.export.uml2.transform.backend;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
 
 import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.api.ModelInt;
+import hu.elte.txtuml.api.Signal;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.export.uml2.utils.FieldValueAccessor;
 
@@ -69,48 +71,7 @@ public final class InstanceManager {
 		localInstances = InstancesMap.create();
 	}
 	
-	/**
-	 * Creates dummy instances, generates instance information and creates instance map entries
-	 * of the specified classifier instance's fields recursively.
-	 * @param classifier The specified classifier.
-	 * @param local Indicates that the instances will be local or non-local.
-	 *
-	 * @author Ádám Ancsin
-	 */
-	private static void createFieldsRecursively(Object classifier, boolean local)
-	{
-		InstancesMap instancesMap;
-		
-		if(local)
-			instancesMap = localInstances;
-		else
-			instancesMap = classAndFieldInstances;
-		
-		if(classifier != null)
-		{
-			String classifierExpr = getInstanceInfo(classifier).getExpression();
-	  		
-	  		for(Field field: classifier.getClass().getDeclaredFields())
-	  		{
-	  			Class<?> fieldType = field.getType();
-	  			String fieldName = field.getName();
-	  			Object fieldInst =  DummyInstanceCreator.createDummyInstance(fieldType);
-	  			FieldValueAccessor.setObjectFieldVal(classifier,fieldName, fieldInst);
-	  			String fieldExpr = classifierExpr+"."+fieldName;
-	  			
-	  			InstanceInformation elementInfo = InstanceInformation.create(fieldExpr);
-	  			if(fieldInst != null)
-	  			{
-	  				instancesMap.put(fieldInst,elementInfo);
-	  				
-	  	  			if(ElementTypeTeller.isClassifier(fieldType))
-	  	  				createFieldsRecursively(fieldInst,local);
-	  			}
-	  		}
-		}
-	}
-
-
+	
 	/**
 	 * Creates local dummy instances, generates instance information and creates instance map entries
 	 * of the specified classifier instance's fields recursively.
@@ -236,6 +197,76 @@ public final class InstanceManager {
 	}
 
 	/**
+	 * Creates dummy instances, generates instance information and creates instance map entries
+	 * of the specified classifier instance's fields recursively.
+	 * @param classifierInstance The specified classifier instance.
+	 * @param local Indicates that the instances will be local or non-local.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private static void createFieldsRecursively(Object classifierInstance, boolean local)
+	{
+		InstancesMap instancesMap;
+		
+		if(local)
+			instancesMap = localInstances;
+		else
+			instancesMap = classAndFieldInstances;
+		
+		if(classifierInstance != null)
+		{
+			String classifierExpr = getInstanceInfo(classifierInstance).getExpression();
+	  		
+			for(Field field: getAllDeclaredFields(classifierInstance.getClass()))
+			{
+	  			Class<?> fieldType = field.getType();
+	  			String fieldName = field.getName();
+	  			Object fieldInst =  DummyInstanceCreator.createDummyInstance(fieldType);
+	  			FieldValueAccessor.setObjectFieldVal(classifierInstance,fieldName, fieldInst);
+	  			String fieldExpr = classifierExpr+"."+fieldName;
+	  			
+	  			InstanceInformation elementInfo = InstanceInformation.create(fieldExpr);
+	  			if(fieldInst != null)
+	  			{
+	  				instancesMap.put(fieldInst,elementInfo);
+	  				
+	  	  			if(ElementTypeTeller.isClassifier(fieldType))
+	  	  				createFieldsRecursively(fieldInst,local);
+	  			}
+	  		}
+		}
+	}
+
+	/**
+	 * Gets all declared txtUML fields of the specified class representing a txtUML classifier, including inherited ones.
+	 * @param specifiedClass The specified class representing a txtUML classifier.
+	 * @return All declared txtUML fields of the specified class, including inherited ones.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private static HashSet<Field> getAllDeclaredFields(Class<?> specifiedClass)
+	{
+		HashSet<Class<?>> tabooClasses = new HashSet<>(); 
+		tabooClasses.add(ModelClass.class);
+		tabooClasses.add(Signal.class);
+		tabooClasses.add(null);
+		
+		HashSet<Field> fields = new HashSet<>();
+		
+		Class<?> cl=specifiedClass;
+		while(!tabooClasses.contains(cl))
+		{
+			for(Field f: cl.getDeclaredFields())
+			{
+				if(ElementTypeTeller.isModelElement(f.getType()) && !f.getName().startsWith("this"))
+					fields.add(f);
+			}
+			cl=cl.getSuperclass();
+		}
+		return fields;
+	}
+	
+	/**
 	 * A map for storing information for global instances.
 	 */
 	private static InstancesMap globalInstances;
@@ -250,7 +281,7 @@ public final class InstanceManager {
 	 */
 	private static InstancesMap localInstances;
 	/**
-	 * The "sef" instance.
+	 * The "self" instance.
 	 */
 	private static ModelClass selfInstance=null;
 }
