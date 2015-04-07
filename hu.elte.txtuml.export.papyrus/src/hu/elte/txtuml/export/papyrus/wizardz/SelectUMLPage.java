@@ -15,18 +15,30 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+/**
+ * The Page where the user can select Ecore UML2 file.
+ *
+ * @author András Dobreff
+ */
 public class SelectUMLPage extends WizardPage {
   private Text ProjectName;
   private Text UmlFile;
   private Button browse1;
   private Composite container;
 
+  /**
+   * The Constructor
+   */
   public SelectUMLPage() {
     super("Select UML page");
     setTitle("Select UML page");
     setDescription("Give the project name, and browse the source UML file! ");
   }
 
+  /*
+   * (non-Javadoc)
+   * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
+   */
   @Override
   public void createControl(Composite parent) {
 	    container = new Composite(parent, SWT.NONE);
@@ -113,17 +125,27 @@ public class SelectUMLPage extends WizardPage {
 	    setPageComplete(false);
   }
   
+  /**
+   * Sets the Page complete if it's ready
+   */
   private void SetPageComleteIfReady(){
 	  if (!ProjectName.getText().isEmpty() && !UmlFile.getText().isEmpty()) {
           setPageComplete(true);
         }
   }
   
+  /**
+   * Returns the project's name
+   * @return Returns the project's name
+   */
   public String getProjectName(){
 	 return ProjectName.getText();
   }
   
-
+  /**
+   * Returns the Ecore UML2 file path
+   * @return Returns the Ecore UML2 file path
+   */
   public String getUMLPath(){
 	 return UmlFile.getText();
   }

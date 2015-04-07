@@ -14,12 +14,25 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.requests.ArrangeRequest;
 import org.eclipse.papyrus.uml.diagram.menu.actions.SizeAction;
 
+/**
+ * An abstract class for arranging the elements with the GMF arranging algorithm. 
+ *
+ * @author András Dobreff
+ */
 public abstract class  AbstractDiagramElementsGmfArranger extends AbstractDiagramElementsArranger{
-	
+
+	/**
+	 * The Constructor 
+	 * @param diagramEditPart - The EditPart of the diagram which elements is to arranged.
+	 */
 	public AbstractDiagramElementsGmfArranger(DiagramEditPart diagramEditPart) {
 		super(diagramEditPart);
 	}
 
+	/**
+	 * Arranges the children of an EditPart with the GMF arranging algorithm 
+	 * @param parent - The children of this EditPart will be arranged
+	 */
 	protected void arrangeChildren(EditPart parent) {
 		@SuppressWarnings("unchecked")
 		List<EditPart> elements = parent.getChildren();
@@ -34,6 +47,10 @@ public abstract class  AbstractDiagramElementsGmfArranger extends AbstractDiagra
 		}
 	}
 
+	/**
+	 * Calls an autosize on the given GraphicalEditPart
+	 * @param graphicalEditPart - The GraphicalEditPart that is to be resized
+	 */
 	public void autoresizeGraphicalEditPart(GraphicalEditPart graphicalEditPart) {
 		List<IGraphicalEditPart> l = new ArrayList<IGraphicalEditPart>();
 		l.add((IGraphicalEditPart) graphicalEditPart);

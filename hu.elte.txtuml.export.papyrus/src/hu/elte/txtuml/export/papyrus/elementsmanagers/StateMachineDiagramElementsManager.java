@@ -15,6 +15,11 @@ import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateEditPart;
 import org.eclipse.uml2.uml.*;
 
+/**
+ * An abstract class for adding/removing elements to StateMachineDiagrams.
+ *
+ * @author András Dobreff
+ */
 public class StateMachineDiagramElementsManager extends AbstractDiagramElementsManager {
 
 	private PreferencesManager preferencesManager;
@@ -22,6 +27,11 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	private List<java.lang.Class<?>> elementsToBeAdded;
 	private List<java.lang.Class<?>> edgesToBeAdded;
 
+	/**
+	 * The Constructor
+	 * @param modelManager - The ModelManager which serves the model elements
+	 * @param diagramEditPart - The DiagramEditPart of the diagram which is to be handled
+	 */
 	public StateMachineDiagramElementsManager(ModelManager modelManager,DiagramEditPart diagramEditPart) {
 		super(modelManager, diagramEditPart);
 		preferencesManager = new PreferencesManager();
@@ -29,6 +39,10 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 		edgesToBeAdded = generateEdgesToBeAdded();
 	}
 	
+	/**
+	 * Returns the types of elements that are to be added
+	 * @return Returns the types of elements that are to be added
+	 */
 	private List<java.lang.Class<?>> generateElementsToBeAdded() {
 		List<java.lang.Class<?>> nodes = new LinkedList<java.lang.Class<?>>(Arrays.asList(FinalState.class, State.class, Pseudostate.class));
 		
@@ -40,11 +54,19 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 		return nodes;
 	}
 	
+	/**
+	 * Returns the types of connectors that are to be added
+	 * @return Returns the types of connectors that are to be added
+	 */
 	private List<java.lang.Class<?>> generateEdgesToBeAdded() {
 		List<java.lang.Class<?>> edges = Arrays.asList(Transition.class);
 		return edges;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager#addElementsToDiagram(java.util.List)
+	 */
 	@Override
 	public void addElementsToDiagram(List<Element> elements) throws ServiceException {
 		
@@ -61,7 +83,11 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 		fillState(stateMachineEditpart);
 	}
 	
-
+	/**
+	 * Adds the children of a state to the state.
+	 * (Calls the {@link #addSubElements(EditPart)} for every region) 
+	 * @param state - The state
+	 */
 	private void fillState(EditPart state){
 		EditPart stateCompartmentEditPart = (EditPart) state.getChildren().get(1);
 		@SuppressWarnings("unchecked")
@@ -73,6 +99,11 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 		}
 	}
 	
+	/**
+	 * Adds the subElements to an EditPart. Then calls the {@link #fillState(EditPart)}
+	 * for every state. 
+	 * @param ep - The EditPart
+	 */
 	private void addSubElements(EditPart ep){
 		EObject parent = ((View) ep.getModel()).getElement();
 		List<Element> list = ((Element) parent).getOwnedElements();

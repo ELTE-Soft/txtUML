@@ -8,8 +8,16 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.jface.wizard.WizardDialog;
 
+/**
+ * Handles the call to txtUML Visualization
+ *
+ * @author András Dobreff
+ */
 public class TxtUMLVisualizeHandler  extends AbstractHandler implements IHandler {
 
+	/**
+	 * Opens a TxtUMLVisuzalize wizard
+	 */
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 

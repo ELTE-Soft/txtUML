@@ -18,7 +18,11 @@ import org.eclipse.uml2.uml.*;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Package;
 
-
+/**
+ * An abstract class for adding/removing elements to ClassDiagrams.
+ *
+ * @author András Dobreff
+ */
 public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 	
 	private PreferencesManager preferencesManager;
@@ -28,6 +32,11 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 	private List<java.lang.Class<?>> propertyFieldElementsToBeAdded;
 	private List<java.lang.Class<?>> methodFieldElementsToBeAdded;
 	
+	/**
+	 * The Constructor
+	 * @param modelManager - The ModelManager which serves the model elements
+	 * @param diagramEditPart - The DiagramEditPart of the diagram which is to be handled
+	 */
 	public ClassDiagramElementsManager(ModelManager modelManager,DiagramEditPart diagramEditPart) {
 		super(modelManager, diagramEditPart);
 		preferencesManager = new PreferencesManager();
@@ -37,6 +46,10 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 		methodFieldElementsToBeAdded = generateMethodFieldElementsToBeAdded();
 	}
 
+	/**
+	 * Returns the types of elements that are to be added
+	 * @return Returns the types of elements that are to be added
+	 */
 	private List<java.lang.Class<?>> generateElementsToBeAdded() {
 		List<java.lang.Class<?>> nodes = new LinkedList<java.lang.Class<?>>(Arrays.asList(Class.class, Interface.class, Package.class, Component.class));
 		
@@ -50,22 +63,42 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 		return nodes;
 	}
 	
+	/**
+	 * Returns the types of connectors that are to be added
+	 * @return Returns the types of connectors that are to be added 
+	 */
 	private List<java.lang.Class<?>> generateConnectorsToBeAdded() {
 		List<java.lang.Class<?>> connectors = Arrays.asList(Association.class, Generalization.class, InterfaceRealization.class);
 		return connectors;
 	}
 	
+	/**
+	 * Returns the types of elements that are to be added to the 
+	 * properties compartment of a class
+	 * @return Returns the types of elements that are to be added 
+	 * to the properties compartment of a class 
+	 */
 	private List<java.lang.Class<?>> generatePropertyFieldElementsToBeAdded() {
 		List<java.lang.Class<?>> properties= Arrays.asList(Property.class, Port.class);
 		return properties;
 	}
 	
+	/**
+	 * Returns the types of elements that are to be added to the 
+	 * methods compartment of a class
+	 * @return Returns the types of elements that are to be added to the 
+	 * methods compartment of a class 
+	 */
 	private List<java.lang.Class<?>> generateMethodFieldElementsToBeAdded() {
 		List<java.lang.Class<?>> methods = Arrays.asList(Operation.class, Reception.class);
 		return methods;
 	}
 	
-
+	/*
+	 * (non-Javadoc)
+	 * @see hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager#addElementsToDiagram(java.util.List)
+	 */
+	@Override
 	public void addElementsToDiagram(List<Element> elements) throws ServiceException {
 		List<java.lang.Class<?>> types = new LinkedList<java.lang.Class<?>>();
 		types.addAll(elementsToBeAdded);
@@ -88,6 +121,11 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 		}
 	}
 	
+	/**
+	 * Fills up the compartments of classes and interfaces
+	 * @param ep - The EditPart of the class or interface
+	 * @throws ServiceException
+	 */
 	private void addSubElements(EditPart ep) throws ServiceException{
 		EObject parent = ((View) ep.getModel()).getElement();
 		@SuppressWarnings("unchecked")

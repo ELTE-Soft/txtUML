@@ -11,8 +11,18 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
+/**
+ * Creates the controls for the preferences
+ *
+ * @author András Dobreff
+ */
 public class PreferencesUI {
 
+	/**
+	 * Value-Objects that hold the checkboxes and the preferences together
+	 *
+	 * @author András Dobreff
+	 */
 	private class CheckBoxRecord{
 		TreeItem chbx;
 		String preference;
@@ -39,13 +49,20 @@ public class PreferencesUI {
 	private PreferencesManager preferencesManager;
 	private Map<String, CheckBoxRecord> checkboxes; 
 
-	
+	/**
+	 * The Constructor
+	 */
 	public PreferencesUI(){
 		checkboxes = new HashMap<String, CheckBoxRecord>();
 	}
 	
+	/**
+	 * Initializes the UI
+	 * @param parent - The parent of the controls
+	 * @param preferencesManager - The PreferencesManager where the preferences are get/set
+	 */
 	public void init(Composite parent, PreferencesManager preferencesManager){
-		this.setPreferencesManager(preferencesManager);
+		this.preferencesManager = preferencesManager;
 		
 		final Tree tree = new Tree(parent, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL);
 		
@@ -71,13 +88,8 @@ public class PreferencesUI {
 		this.refresh();
 	}
 	
-	public void setPreferencesManager(PreferencesManager preferencesManager){
-		this.preferencesManager = preferencesManager;
-	}
-	
-	
 	/**
-	 * Gives a Map<String, Object> which contains the prefence name-value pairs, tha should be saved.
+	 * Gives a Map<String, Object> which contains the prefence name-value pairs, that should be saved.
 	 * @return Map<String, Object> of name-value pairs of the swt widgets on the UI. 
 	 */
 	public Map<String, Object> getValues(){
@@ -96,6 +108,9 @@ public class PreferencesUI {
 		return map;
 	}
 	
+	/**
+	 * Refreshes the states of the swt widgets
+	 */
 	public void refresh(){
 		Iterator<Map.Entry<String, CheckBoxRecord>> it = checkboxes.entrySet().iterator();
 		while (it.hasNext()) {

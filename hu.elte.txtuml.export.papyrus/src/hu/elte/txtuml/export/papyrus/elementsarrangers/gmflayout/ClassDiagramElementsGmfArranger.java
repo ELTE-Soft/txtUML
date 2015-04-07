@@ -9,12 +9,25 @@ import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationMultiplicityS
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationMultiplicityTargetEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationNameEditPart;
 
+/**
+ * Controls the arranging of a ClassDiagram with GMF algorithm
+ *
+ * @author András Dobreff
+ */
 public class ClassDiagramElementsGmfArranger extends AbstractDiagramElementsGmfArranger{
 
+	/**
+	 * The Constructor 
+	 * @param diagramEditPart - The EditPart of the diagram which elements is to arranged.
+	 */
 	public ClassDiagramElementsGmfArranger(DiagramEditPart diagramEditPart) {
 		super(diagramEditPart);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger#arrange()
+	 */
 	@Override
 	public void arrange() {
 		super.arrangeChildren(diagep);

@@ -9,10 +9,13 @@ import java.util.Map.Entry;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 
+/**
+ * Handles the preferences that are saved by eclipse
+ *
+ * @author András Dobreff
+ */
+@SuppressWarnings("javadoc")
 public class PreferencesManager{
-	
-	
-	
 	
 	private IPreferenceStore store;
 	private Map<String, Object> fieldsWithDefaultValues;
@@ -33,6 +36,9 @@ public class PreferencesManager{
 	public static String TXTUML_VISUALIZE_DESTINATION_FOLDER = "txtUML Visualize Destination Folder";
 	public static String TXTUML_VISUALIZE_TXTUML_LAYOUT = "txtUML Visualize txtUML Layout";
 	
+	/**
+	 * The constructor
+	 */
 	public PreferencesManager() {
 		store = Activator.getDefault().getPreferenceStore();
 		fieldsWithDefaultValues = new HashMap<String, Object>();
@@ -52,6 +58,9 @@ public class PreferencesManager{
 		fieldsWithDefaultValues.put(TXTUML_VISUALIZE_DESTINATION_FOLDER, "gen");
 	}
 	
+	/**
+	 * Sets the default values for each preference
+	 */
 	public void setDefaults(){
 		Iterator<Map.Entry<String, Object>> it = fieldsWithDefaultValues.entrySet().iterator();
 		while (it.hasNext()) {
@@ -76,6 +85,9 @@ public class PreferencesManager{
 	    }
 	}
 	
+	/**
+	 * Sets all preferences to the default
+	 */
 	public void resetDefaults(){
 		Iterator<Entry<String, Object>> it = fieldsWithDefaultValues.entrySet().iterator();
 		while (it.hasNext()) {
@@ -84,7 +96,10 @@ public class PreferencesManager{
 	    }
 	}
 	
-	
+	/**
+	 * Sets the values for preferences
+	 * @param mp - A map with Preference-Value keys
+	 */
 	public void setValues(Map<String, Object> mp){
 		Iterator<Map.Entry<String, Object>> it = mp.entrySet().iterator();
 		
@@ -110,50 +125,104 @@ public class PreferencesManager{
 	    }
 	}
 	
+	/**
+	 * Sets the value of a preference
+	 * @param name - The preference
+	 * @param value - The value
+	 */
 	public void setValue(String name, boolean value){
 		store.setValue(name, value);
 	}
 	
+	/**
+	 * Sets the value of a preference
+	 * @param name - The preference
+	 * @param value - The value
+	 */
 	public void setValue(String name, double value){
 		store.setValue(name, value);
 	}
 	
+	/**
+	 * Sets the value of a preference
+	 * @param name - The preference
+	 * @param value - The value
+	 */
 	public void setValue(String name, float value){
 		store.setValue(name, value);
 	}
 	
+	/**
+	 * Sets the value of a preference
+	 * @param name - The preference
+	 * @param value - The value
+	 */
 	public void setValue(String name, int value){
 		store.setValue(name, value);
 	}
 	
+	/**
+	 * Sets the value of a preference
+	 * @param name - The preference
+	 * @param value - The value
+	 */
 	public void setValue(String name, long value){
 		store.setValue(name, value);
 	}
 	
+	/**
+	 * Sets the value of a preference
+	 * @param name - The preference
+	 * @param value - The value
+	 */
 	public void setValue(String name, String value){
 		store.setValue(name, value);
 	}
 	
+	/**
+	 * Gets the value of a preference
+	 * @param name - The preference
+	 */
 	public String getString(String name){
 		return store.getString(name);
 	}
 	
+	/**
+	 * Gets the value of a preference
+	 * @param name - The preference
+	 */
 	public boolean getBoolean(String name){
 		return store.getBoolean(name);
 	}
 
+	/**
+	 * Gets the value of a preference
+	 * @param name - The preference
+	 */
 	public int getInt(String name){
 		return store.getInt(name);
 	}
 	
+	/**
+	 * Gets the value of a preference
+	 * @param name - The preference
+	 */
 	public double getDouble(String name){
 		return store.getDouble(name);
 	}
 	
+	/**
+	 * Gets the value of a preference
+	 * @param name - The preference
+	 */
 	public float getFloat(String name){
 		return store.getFloat(name);
 	}
 
+	/**
+	 * Gets the value of a preference
+	 * @param name - The preference
+	 */
 	public long getLong(String name){
 		return store.getLong(name);
 	}

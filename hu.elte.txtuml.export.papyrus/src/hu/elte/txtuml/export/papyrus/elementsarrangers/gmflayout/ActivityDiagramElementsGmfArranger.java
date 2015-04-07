@@ -8,12 +8,25 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.papyrus.uml.diagram.activity.edit.parts.ControlFlowGuardEditPart;
 import org.eclipse.papyrus.uml.diagram.activity.edit.parts.ObjectFlowGuardEditPart;
 
+/**
+ * Controls the arranging of an ActivityDiagram with GMF algorithm
+ *
+ * @author András Dobreff
+ */
 public class ActivityDiagramElementsGmfArranger extends AbstractDiagramElementsGmfArranger {
-
+	
+	/**
+	 * The Constructor 
+	 * @param diagramEditPart - The EditPart of the diagram which elements is to arranged.
+	 */
 	public ActivityDiagramElementsGmfArranger(DiagramEditPart diagramEditPart) {
 		super(diagramEditPart);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger#arrange()
+	 */
 	@Override
 	public void arrange() {
 		EditPart activityEditpart = (EditPart) diagep.getChildren().get(0);

@@ -27,7 +27,7 @@ import org.eclipse.ui.part.FileEditorInput;
  * @author András Dobreff
  */
 public class TxtUMLVisuzalizeWizard extends Wizard{
-	protected VisualizeTxtUMLPage selectTxtUMLPage;
+
 	private VisualizeTxtUMLPage selectTxtUmlPage;
 	
 	/**
@@ -38,18 +38,29 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 	    setNeedsProgressMonitor(true);
 	}
 	
-
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.jface.wizard.Wizard#getWindowTitle()
+	 */
 	@Override
 	  public String getWindowTitle() {
 	    return "Create Papyrus Model from txtUML Model";
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.jface.wizard.Wizard#addPages()
+	 */
 	@Override
 	public void addPages() {
 	  selectTxtUmlPage = new VisualizeTxtUMLPage();
 	  addPage(selectTxtUmlPage);
 	}
 	
+	/**
+	 * Calls the {@link hu.elte.txtuml.export.uml2.UML2 txtUML UML2 Export}
+	 *  and then starts the visualization.
+	 */
 	@Override
 	public boolean performFinish() {
 		PreferencesManager preferncesManager = new PreferencesManager();

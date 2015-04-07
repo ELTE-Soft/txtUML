@@ -7,8 +7,16 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
+/**
+ * Handles the the call to preferences page.
+ *
+ * @author András Dobreff
+ */
 public class PreferencesPageHandler extends AbstractHandler implements IHandler {
 
+	/**
+	 * Opens the perferences page 
+	 */
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		PreferenceDialog pd = PreferencesUtil.createPreferenceDialogOn(null,

@@ -6,23 +6,37 @@ import java.io.File;
 
 import org.eclipse.jface.wizard.Wizard;
 
-
+/**
+ * Wizard for visualizing Ecore UML2 file from local filesystem
+ *
+ * @author András Dobreff
+ */
 public class UmlToPapyrusWizard extends Wizard {
 
-  protected SelectUMLPage selectUmlPage;
-  protected PreferencesPage preferencesPage;
+  private SelectUMLPage selectUmlPage;
+  private PreferencesPage preferencesPage;
 
-
+  /**
+   * The Constructor
+   */
   public UmlToPapyrusWizard() {
     super();
     setNeedsProgressMonitor(true);
   }
 
+  /*
+   * (non-Javadoc)
+   * @see org.eclipse.jface.wizard.Wizard#getWindowTitle()
+   */
   @Override
   public String getWindowTitle() {
     return "Create papyrus model from UML file";
   }
 
+  /*
+   * (non-Javadoc)
+   * @see org.eclipse.jface.wizard.Wizard#addPages()
+   */
   @Override
   public void addPages() {
     selectUmlPage = new SelectUMLPage();
@@ -31,6 +45,9 @@ public class UmlToPapyrusWizard extends Wizard {
     addPage(preferencesPage);
   }
 
+  /**
+   * Sets the preferences and starts the visualization process.
+   */
   @Override
   public boolean performFinish() {
 	preferencesPage.setPreferences();
@@ -40,6 +57,11 @@ public class UmlToPapyrusWizard extends Wizard {
     return true;
   }
   
+  	/**
+	 * Gets the FileName without extension
+	 * @param file - The File
+	 * @return - Filname without extension
+	 */
 	private String getFileNameWithOutExtension(File file){
 		String name = file.getName();
 		int pos = name.lastIndexOf(".");

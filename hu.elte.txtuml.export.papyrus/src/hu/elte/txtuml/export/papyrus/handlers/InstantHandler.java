@@ -13,7 +13,16 @@ import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 
+/**
+ * Handles the the call to visualization from context menu.
+ *
+ * @author András Dobreff
+ */
 public class InstantHandler extends AbstractHandler implements IHandler {
+	
+	/**
+	 * Collects the parameters and calls the {@link MainAction#run()}
+	 */
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
@@ -30,6 +39,11 @@ public class InstantHandler extends AbstractHandler implements IHandler {
 		return null;
 	}
 	
+	/**
+	 * Gets the FileName without extension
+	 * @param file - The File
+	 * @return - Filname without extension
+	 */
 	private String getFileNameWithOutExtension(IFile file){
 		String name = file.getName();
 		int pos = name.lastIndexOf(".");

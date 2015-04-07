@@ -7,6 +7,12 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
+/**
+ * A collection of papyrus icons
+ *
+ * @author András Dobreff
+ */
+@SuppressWarnings("javadoc")
 public class IconsUtil {
 	
 	public static String CLASS_DIAGRAM_16 = "platform:/plugin/org.eclipse.papyrus.uml.diagram.icons/resource/obj16/Diagram_Class.gif";
@@ -16,7 +22,12 @@ public class IconsUtil {
 	public static String CONSTRAINT_16 = "platform:/plugin/org.eclipse.papyrus.uml.icons/resource/gif/Constraint.gif";
 	public static String SIGNAL_16 = "platform:/plugin/org.eclipse.papyrus.uml.icons/resource/gif/Signal.gif";
 	public static String COMMENT_16 = "platform:/plugin/org.eclipse.papyrus.uml.icons/resource/gif/Comment.gif";
-		
+	
+	/**
+	 * Gets an Image from the given URL
+	 * @param IconURL - The URL
+	 * @return Returns an Image
+	 */
 	public static Image getIcon(String IconURL){
 			Image img;
 			try{

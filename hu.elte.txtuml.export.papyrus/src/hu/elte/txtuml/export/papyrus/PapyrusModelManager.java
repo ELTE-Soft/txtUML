@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.Diagram;
@@ -31,6 +30,11 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.StateMachine;
 
+/**
+ * Controls the Papyrus Model
+ *
+ * @author András Dobreff
+ */
 public class PapyrusModelManager {
 	
 	private DiagramManager diagramManager;
@@ -38,6 +42,12 @@ public class PapyrusModelManager {
 	private PreferencesManager preferencesManager;
 	private IEditorPart editor;
 
+	/**
+	 * The Constructor
+	 * @param editor - The Editor to which the PapyrusModelManager will be attached
+	 * @throws ServiceException
+	 * @throws NotFoundException
+	 */
 	public PapyrusModelManager(IMultiDiagramEditor editor) throws ServiceException, NotFoundException {
 		preferencesManager = new PreferencesManager();
 		modelManager = new ModelManager(editor);
@@ -45,6 +55,11 @@ public class PapyrusModelManager {
 		this.editor = editor;
 	}
 
+	/**
+	 * Creates the diagrams and adds the elements to them
+	 * @throws NotFoundException
+	 * @throws ServiceException
+	 */
 	public void createAndFillDiagrams() throws NotFoundException, ServiceException {
 		createDiagrams();	
 		addElementsToDiagrams();
@@ -78,11 +93,15 @@ public class PapyrusModelManager {
 	
 	}
 
+	/**
+	 * Adds the elements to the diagrams
+	 * @throws ServiceException
+	 */
 	protected void addElementsToDiagrams() throws ServiceException{
 		
-		EList<EObject> diags =  diagramManager.getDiagrams();
+		List<Diagram> diags =  diagramManager.getDiagrams();
 		
-		for(EObject diag : diags){
+		for(Diagram diag : diags){
 			Diagram diagram = (Diagram) diag;
 			
 			EObject container = diagramManager.getDiagramContainer(diagram);

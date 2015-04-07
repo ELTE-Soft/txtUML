@@ -11,18 +11,31 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.uml2.uml.*;
 
+/**
+ * An abstract class for adding/removing elements to ActivityDiagrams.
+ *
+ * @author András Dobreff
+ */
 public class ActivityDiagramElementsManager extends AbstractDiagramElementsManager{
 	
 	private List<java.lang.Class<?>> NodesToBeAdded;
 	private List<java.lang.Class<?>> ConnectorsToBeAdded;
 	
-	
+	/**
+	 * The Constructor
+	 * @param modelManager - The ModelManager which serves the model elements
+	 * @param diagramEditPart - The DiagramEditPart of the diagram which is to be handled
+	 */
 	public ActivityDiagramElementsManager(ModelManager modelManager,DiagramEditPart diagramEditPart) {
 		super(modelManager, diagramEditPart);
 		NodesToBeAdded = generateNodesToBeAdded();
 		ConnectorsToBeAdded = generateConnectorsToBeAdded(); 
 	}
 
+	/**
+	 * Returns the types of nodes that are to be added
+	 * @return Returns the types of nodes that are to be added
+	 */
 	private List<java.lang.Class<?>> generateNodesToBeAdded() {
 		List<java.lang.Class<?>> nodes = Arrays.asList(
 				InitialNode.class, FinalNode.class,
@@ -34,11 +47,20 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 		return nodes;
 	}
 	
+	/**
+	 * Returns the types of connectors that are to be added
+	 * @return Returns the types of connectors that are to be added 
+	 */
 	private List<java.lang.Class<?>> generateConnectorsToBeAdded() {
 		List<java.lang.Class<?>> connectors = Arrays.asList(ControlFlow.class, ObjectFlow.class);
 		return connectors;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager#addElementsToDiagram(java.util.List)
+	 */
+	@Override
 	public void addElementsToDiagram(List<Element> elements) throws ServiceException {
 		List<java.lang.Class<?>> types = new LinkedList<java.lang.Class<?>>();
 		types.addAll(NodesToBeAdded);

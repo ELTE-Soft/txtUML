@@ -24,17 +24,35 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.common.commands.ShowHideLabelsRequest;
 
 
+/**
+ * Abstract class for arranging the elements of a diagram.
+ *
+ * @author András Dobreff
+ */
 
 @SuppressWarnings("restriction")
 public abstract class AbstractDiagramElementsArranger implements
 		IDiagramElementsArranger {
 	
+	/**
+	 * The EditPart of the diagram which elements is to arranged.
+	 */
 	protected DiagramEditPart diagep;
 	
+	/**
+	 * The Constructor 
+	 * @param diagramEditPart - The EditPart of the diagram which elements is to arranged.
+	 */
 	public AbstractDiagramElementsArranger(DiagramEditPart diagramEditPart) {
 		diagep = diagramEditPart;
 	}
 
+	/**
+	 * Resizes  a GraphicalEditPart
+	 * @param graphEP - The GraphicalEditPart that is to be resized
+	 * @param new_width - The new width of the EditPart
+	 * @param new_height - The new height of the EditPart
+	 */
 	protected void resizeGraphicalEditPart(GraphicalEditPart graphEP, int new_width, int new_height){
 		Dimension figuredim = graphEP.getFigure().getSize();
 		ChangeBoundsRequest resize_req = new ChangeBoundsRequest(RequestConstants.REQ_RESIZE);
@@ -46,6 +64,11 @@ public abstract class AbstractDiagramElementsArranger implements
 			cmd.execute();
 	}
 	
+	/**
+	 * Hides the labels on the connections of the given elements
+	 * @param elements - The EditParts which's connection labels is to be hidden 
+	 * @param excluding - The types of connection labels which are not wanted to be hidden
+	 */
 	protected void hideConnectionLabelsForEditParts(List<EditPart> elements, List<java.lang.Class<?>> excluding){
 		for(EditPart editpart: elements){
 			GraphicalEditPart ep = ((GraphicalEditPart) editpart);
@@ -66,6 +89,12 @@ public abstract class AbstractDiagramElementsArranger implements
 		}
 	}
 	
+	/**
+	 * Checks if an object is instance any of the given types
+	 * @param object - The objects whose parent class is checked
+	 * @param types - The types that are checked
+	 * @return Returns true if the object is instance any of the given types
+	 */
 	protected boolean isInstanceOfAny(Object object, Collection<java.lang.Class<?>> types){
 		boolean result = false;
 		Iterator<java.lang.Class<?>> it = types.iterator();
@@ -76,6 +105,12 @@ public abstract class AbstractDiagramElementsArranger implements
 		return result;
 	}
 	
+	/**
+	 * Sets the anchors of a connection according to the given terminals in format: (float, float) .
+	 * @param connection - The connection 
+	 * @param src - Source Terminal
+	 * @param trg - Target Terminal
+	 */
 	protected void setConnectionAnchors(ConnectionNodeEditPart connection, String src, String trg){
 		TransactionalEditingDomain editingDomain = connection.getEditingDomain();
 		SetConnectionAnchorsCommand asd = new SetConnectionAnchorsCommand(editingDomain, "Rearrange Anchor");
@@ -86,6 +121,11 @@ public abstract class AbstractDiagramElementsArranger implements
 		proxy.execute();
 	}
 	
+	/**
+	 * Sets the BendPoints of a connection. (Starting point and Ending points are not BendPoints)
+	 * @param connection - The connection
+	 * @param bendpoints - The BendPoints
+	 */
 	protected void SetConnectionBendpoints(ConnectionNodeEditPart connection, List<Point> bendpoints){
 		TransactionalEditingDomain editingDomain = connection.getEditingDomain();
 		SetConnectionBendpointsCommand cmd = new SetConnectionBendpointsCommand(editingDomain);
@@ -106,10 +146,21 @@ public abstract class AbstractDiagramElementsArranger implements
 		proxy.execute();
 	}
 	
+	/**
+	 * Moves a GraphicalEditPart to the given location
+	 * @param graphEP - The GraphicalEditPart
+	 * @param p - The new location
+	 */
 	protected void moveGraphicalEditPart(GraphicalEditPart graphEp, Point p){
 		moveGraphicalEditPart(graphEp, p.x(), p.y());
 	}
 	
+	/**
+	 * Moves a GraphicalEditPart to the given location
+	 * @param graphEP - The GraphicalEditPart
+	 * @param new_X - The new x coordinate
+	 * @param new_Y - The new y coordinate
+	 */
 	protected void moveGraphicalEditPart(GraphicalEditPart graphEP, int new_X, int new_Y){
 		Rectangle figurebounds = graphEP.getFigure().getBounds();
 		ChangeBoundsRequest move_req = new ChangeBoundsRequest(RequestConstants.REQ_MOVE);
@@ -119,6 +170,4 @@ public abstract class AbstractDiagramElementsArranger implements
 		if(cmd != null)
 			cmd.execute();
 	}
-	
-
 }

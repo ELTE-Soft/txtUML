@@ -8,7 +8,15 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.jface.wizard.WizardDialog;
 
+/**
+ * Handles the call to visualization from wizard
+ *
+ * @author András Dobreff
+ */
 public class WizardHandler extends AbstractHandler implements IHandler {
+	/**
+	 * Opens a UmlToPapyrus wizard
+	 */
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		

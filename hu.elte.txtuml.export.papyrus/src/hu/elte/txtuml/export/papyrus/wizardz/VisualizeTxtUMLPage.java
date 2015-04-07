@@ -10,14 +10,20 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+/**
+ * The Page for txtUML visualization.
+ *
+ * @author András Dobreff
+ */
 public class VisualizeTxtUMLPage extends WizardPage {
 	private Composite container;
 	private Text txtUMLModel;
 	private Text txtUMLProject;
 	private PreferencesManager preferencesManager;
 	
-	
-
+	/**
+	 * The Constructor
+	 */
 	public VisualizeTxtUMLPage() {
 		super("Visualize txtUML Page");
 		setTitle("Visualize txtUML page");
@@ -25,6 +31,10 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	    preferencesManager = new PreferencesManager();
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
+	 */
 	@Override
 	public void createControl(Composite parent) {
 		container = new Composite(parent, SWT.NONE);
@@ -50,10 +60,18 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	    setPageComplete(true);
 	}
 
+	/**
+	   * Returns the txtUML ModelClass
+	   * @return Returns the txtUML ModelClass
+	   */
 	public String getTxtUmlModelClass(){
 		return txtUMLModel.getText();
 	}
 	
+	/**
+	   * Returns the txtUML project's name
+	   * @return Returns the txtUML project's name
+	   */
 	public String getTxtUmlProject(){
 		return txtUMLProject.getText();
 	}

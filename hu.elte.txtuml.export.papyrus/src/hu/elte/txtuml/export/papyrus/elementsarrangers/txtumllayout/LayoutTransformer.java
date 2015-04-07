@@ -18,6 +18,7 @@ public class LayoutTransformer {
 	 * Constraints to the Position of the Origo
 	 * @author András Dobreff
 	 */
+	@SuppressWarnings("javadoc")
 	public enum OrigoConstraint{
 		UpperLeft, UpperRight, BottomLeft,BottomRight, None
 	};
@@ -87,7 +88,7 @@ public class LayoutTransformer {
 	}
 
 	/**
-	 * Transforms the Points with the given settings (scaling, gap, axisfilling)
+	 * Transforms the Points with the given settings (scaling, gap, axisflipping)
 	 * @param objects
 	 * @param connections 
 	 */
@@ -102,6 +103,11 @@ public class LayoutTransformer {
 		scaleUpObjects(objects, connections);
 	}
 	
+	/**
+	 * Scales the objects according to the scales and gaps
+	 * @param objects - The object that are to be scaled 
+	 * @param connections - The connections that are to be scaled
+	 */
 	private void scaleUpObjects(Map<?, Rectangle> objects, Map<?, List<Point>> connections) {
 		for(Rectangle rect : objects.values()){
 			int shiftToCenterX = Math.abs(scaleX-rect.width())/2;
@@ -118,6 +124,11 @@ public class LayoutTransformer {
 		}
 	}
 
+	/**
+	 * Translates the objects to fit the origoConstraint
+	 * @param objects - The object that are to be translated 
+	 * @param connections - The connections that are to be translated 
+	 */
 	private void translateOrigo(Map<?, Rectangle> objects, Map<?, List<Point>> connections){
 		int moveX = 0;
 		int moveY = 0;
@@ -157,6 +168,12 @@ public class LayoutTransformer {
 		}
 	}
 	
+	/**
+	 * Multiplies the y coordinates of the objects with -1. From now on they can be handled
+	 *  as the Y axis would be flipped
+	 * @param objects - The object that's y coordinates are to be multiplied
+	 * @param connections - The connections that's y coordinates are to be multiplied
+	 */
 	private void flipYAxisTranformation(Map<?, Rectangle> objects, Map<?, List<Point>> connections){
 		for(Rectangle rect : objects.values()){
 			rect.setY(-rect.y);
@@ -169,6 +186,12 @@ public class LayoutTransformer {
 		}
 	}
 	
+	/**
+	 * Multiplies the x coordinates of the objects with -1. From now on they can be handled
+	 *  as the X axis would be flipped
+	 * @param objects - The object that's x coordinates are to be multiplied
+	 * @param connections - The connections that's x coordinates are to be multiplied
+	 */
 	private void flipXAxisTranformation(Map<?, Rectangle> objects, Map<?, List<Point>> connections){
 		for(Rectangle rect : objects.values()){
 			rect.setX(-rect.x);

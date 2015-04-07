@@ -36,7 +36,6 @@ public class MainAction {
 	/**
 	 * The constructor.
 	 * @param projectName - The name of the project in which the Papyrus Model will be created.
-	 * if the project does not exist it will be created.
 	 * @param modelName - The Name of the Papyrus Model
 	 * @param sourceUMLpath - Sourcepath of the ECore uml2 model 
 	 */
@@ -50,7 +49,8 @@ public class MainAction {
 	}
 	
 	/**
-	 * 
+	 * Executes the visualization process. 
+	 * Creates the project (if not exists) and sets up the Papyrus Model
 	 */
 	public void run() {
 		IProject project = projectManager.createProject(Projectname);

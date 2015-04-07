@@ -9,17 +9,30 @@ import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationMultiplicityS
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationMultiplicityTargetEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationNameEditPart;
 
+/**
+ * Controls the arranging of a ClassDiagram with txtUML algorithm
+ *
+ * @author András Dobreff
+ */
 public class ClassDiagramElementsTxtUmlArranger extends AbstractDiagramElementsTxtUmlArranger{
 	
+	/**
+	 * Arranges the children of an EditPart with the GMF arranging algorithm 
+	 * @param diagramEditPart - The children of this EditPart will be arranged
+	 */
 	public ClassDiagramElementsTxtUmlArranger(DiagramEditPart diagramEditPart) {
 		super(diagramEditPart);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger#arrange()
+	 */
 	@Override
 	public void arrange() {
 		@SuppressWarnings("unchecked")
 		List<EditPart> listEp = diagep.getChildren();
-		super.arrangeAll(diagep, listEp);
+		super.arrangeChildren(diagep, listEp);
 		super.hideConnectionLabelsForEditParts(listEp, Arrays.asList(
 				AssociationNameEditPart.class,
 				AssociationMultiplicityTargetEditPart.class,

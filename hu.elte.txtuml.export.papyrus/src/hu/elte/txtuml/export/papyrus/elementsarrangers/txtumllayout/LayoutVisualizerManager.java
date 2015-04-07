@@ -14,6 +14,7 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -29,6 +30,11 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.gmf.runtime.notation.View;
 
+/**
+ * Enables the communications to txtUML arranging algorithm.
+ *
+ * @author András Dobreff
+ */
 public class LayoutVisualizerManager {
 	
 	private Set<RectangleObject> objects;
@@ -37,6 +43,11 @@ public class LayoutVisualizerManager {
 	private List<EditPart> editparts;
 	private List<ConnectionNodeEditPart> connectionNodeEditParts;
 	
+	/**
+	 * The Constructor
+	 * @param editparts - The EditParts that are to be arranged
+	 * @param statementsList - The expected statements about the arranged diagram
+	 */
 	public LayoutVisualizerManager(List<EditPart> editparts, List<String> statementsList){
 		objects = new HashSet<RectangleObject>();
 		associations = new HashSet<LineAssociation>();
@@ -66,6 +77,9 @@ public class LayoutVisualizerManager {
 		}
 	}
 	
+	/**
+	 * Arranging command
+	 */
 	public void arrange(){
 		LayoutVisualize v = new LayoutVisualize();
 		v.load(objects, associations);
@@ -82,6 +96,10 @@ public class LayoutVisualizerManager {
 		associations = v.getAssocs();
 	}
 	
+	/**
+	 * Returns the Nodes and their locations
+	 * @return Returns the Nodes and their locations
+	 */
 	public HashMap<EditPart, Rectangle> getNodesAndCoordinates(){
 		HashMap<EditPart, Rectangle> result = new HashMap<EditPart, Rectangle>();
 		int x,y,width,height;
@@ -98,6 +116,10 @@ public class LayoutVisualizerManager {
 		return result;
 	}
 	
+	/**
+	 * Returns the Nodes and their routes
+	 * @return Returns the Nodes and their routes
+	 */
 	public HashMap<ConnectionNodeEditPart, List<Point> > getConnectionsAndRoutes(){
 		HashMap<ConnectionNodeEditPart, List<Point> > result = new HashMap<ConnectionNodeEditPart, List<Point> >();
 		for(LineAssociation connection : associations){	
@@ -115,14 +137,25 @@ public class LayoutVisualizerManager {
 		return result;
 	}
 
-	private EditPart getEditPartByXmiId(List<EditPart> editparts, String name){
+	/**
+	 * Gets an EditPart by it's XmiId from the given EditParts. Returns null if not found
+	 * @param editparts - The EditParts
+	 * @param xmiId - The XmiId
+	 * @return The found EditPart or null if not found.
+	 */
+	private EditPart getEditPartByXmiId(Collection<EditPart> editparts, String xmiId){
 		for (EditPart ep : editparts) {
-			if(getXmiId(ep).equals(name))
+			if(getXmiId(ep).equals(xmiId))
 				return ep;
 		}
 		return null;
 	}
 	
+	/**
+	 * Gets the XmiId of the Model elment of an EditPart
+	 * @param editPart - The EditPart
+	 * @return The XmiId
+	 */
 	private String getXmiId(EditPart editPart){
 		EObject object = ((View) editPart.getModel()).getElement();
 	    return ((XMLResource) object.eResource()).getID(object);

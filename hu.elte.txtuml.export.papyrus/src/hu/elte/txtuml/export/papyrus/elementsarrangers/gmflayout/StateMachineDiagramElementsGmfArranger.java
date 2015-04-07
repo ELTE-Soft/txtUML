@@ -6,24 +6,45 @@ import java.util.List;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
+import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateMachineEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomTransitionGuardEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateEditPart;
 
+/**
+ * Controls the arranging of a StateMachineDiagram with GMF algorithm
+ *
+ * @author András Dobreff
+ */
 public class StateMachineDiagramElementsGmfArranger extends
 		AbstractDiagramElementsGmfArranger {
 
+	/**
+	 * The Constructor 
+	 * @param diagramEditPart - The EditPart of the diagram which elements is to arranged.
+	 */
 	public StateMachineDiagramElementsGmfArranger(DiagramEditPart diagramEditPart) {
 		super(diagramEditPart);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger#arrange()
+	 */
 	@Override
 	public void arrange() {
-		GraphicalEditPart stateMachineEP = (GraphicalEditPart) diagep.getChildren().get(0);
+		CustomStateMachineEditPart stateMachineEP = (CustomStateMachineEditPart) diagep.getChildren().get(0);
 		super.resizeGraphicalEditPart(stateMachineEP, 400, 200);
 		arrange_recurively(stateMachineEP);
 		arrange_and_resize_recursively(stateMachineEP);
 	}
-
+	
+	/**
+	 * Calls an {@link AbstractDiagramElementsGmfArranger#autoresizeGraphicalEditPart(GraphicalEditPart) autosize}
+	 * and {@link AbstractDiagramElementsGmfArranger#arrangeChildren(EditPart) arrangeChildren} 
+	 * on the given statemachine.
+	 * The method is called recursively for all children which are {@link StateEditPart}s
+	 * @param stateEP - The StateEditPart
+	 */
 	private void arrange_and_resize_recursively(GraphicalEditPart stateEP) {
 		@SuppressWarnings("unchecked")
 		List<GraphicalEditPart> stateCompartements = stateEP.getChildren();
@@ -38,7 +59,7 @@ public class StateMachineDiagramElementsGmfArranger extends
 			
 			for(EditPart Ep : listEp){
 				if(Ep instanceof StateEditPart){
-					arrange_and_resize_recursively((GraphicalEditPart) Ep);				
+					arrange_and_resize_recursively((StateEditPart) Ep);				
 				}
 			}
 			super.autoresizeGraphicalEditPart(stateEP);
@@ -46,6 +67,11 @@ public class StateMachineDiagramElementsGmfArranger extends
 		}
 	}
 
+	/**
+	 * Calls an {@link AbstractDiagramElementsGmfArranger#arrangeChildren(EditPart) arrangeChildren}
+	 *  and a hideConnectionLabels on the children of the given GraphicalEditPart
+	 * @param stateEP - The GraphicalEditPart
+	 */
 	private void arrange_recurively(GraphicalEditPart stateEP) {
 		@SuppressWarnings("unchecked")
 		List<GraphicalEditPart> stateCompartements = stateEP.getChildren();

@@ -6,11 +6,16 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
+/**
+ * Responsible for basic functionalities of an Eclipse Project
+ *
+ * @author András Dobreff
+ */
 public class ProjectManager {
 
 	/**
 	 * Creates project or returns the existing.
-	 * @param name
+	 * @param name - The Name of the Project
 	 * @return Existing or created project
 	 */
 	
@@ -26,9 +31,10 @@ public class ProjectManager {
         }
         return project;
 	}
-	/**
+	
+	/** 
 	 * Opens a project 
-	 * @param project
+	 * @param project - The Project to be opened
 	 */
 	public void openProject(IProject project){
 		try {
@@ -38,6 +44,10 @@ public class ProjectManager {
 		}
 	}
 	
+	/**
+	 * Deletes a project
+	 * @param project - The Project to be deleted
+	 */
 	public void deleteProject(IProject project){
 		 if (project.exists()){
 			try{
@@ -48,6 +58,10 @@ public class ProjectManager {
 		 }
 	}
 
+	/**
+	 * Deletes a Project by Name
+	 * @param projectname - The Name of the Project to be deleted
+	 */
 	public void deleteProjectbyName(String projectname){
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IProject project = root.getProject(projectname);

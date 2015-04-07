@@ -19,13 +19,26 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.gmf.runtime.notation.View;
 
+/**
+ * An abstract class for arranging the elements with the txtUML arranging algorithm. 
+ *
+ * @author András Dobreff
+ */
 public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDiagramElementsArranger{
 	
+	/**
+	 * The Constructor 
+	 * @param diagramEditPart - The EditPart of the diagram which elements is to arranged.
+	 */
 	public AbstractDiagramElementsTxtUmlArranger(DiagramEditPart diagramEditPart) {
 		super(diagramEditPart);
 	}
 
-	protected void arrangeAll(EditPart EP, List<EditPart> elements) {
+	/**
+	 * Arranges the children of an EditPart with the txtUML arranging algorithm 
+	 * @param parent - The children of this EditPart will be arranged
+	 */
+	protected void arrangeChildren(EditPart EP, List<EditPart> elements) {
 		if(!elements.isEmpty()){
 			int maxWidth = getMaxWidth(elements);
 			int maxHeight = getMaxHeight(elements);
@@ -69,11 +82,21 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		}
 	}
 
+	/**
+	 * Gets the XmiId of the Model elment of an EditPart
+	 * @param editPart - The EditPart
+	 * @return The XmiId
+	 */
 	protected String getXmiId(EditPart editPart){
 		EObject object = ((View) editPart.getModel()).getElement();
 	    return ((XMLResource) object.eResource()).getID(object);
 	}
 	
+	/**
+	 * Gets the maximum width of the given EditParts 
+	 * @param editParts - The EditParts
+	 * @return The maximum width
+	 */
 	protected int getMaxWidth(List<EditPart> editParts){
 		int max = 0;
 		int width = 0;
@@ -85,6 +108,11 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		return max;
 	}
 	
+	/**
+	 * Gets the maximum height of the given EditParts 
+	 * @param editParts - The EditParts
+	 * @return The maximum height
+	 */
 	protected int getMaxHeight(List<EditPart> editParts){
 		int max = 0;
 		int height = 0;
@@ -96,10 +124,21 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		return max;
 	}
 	
+	/**
+	 * Gets the size of a GrapchicalEditPart
+	 * @param editpart - The GraphicalEditPart
+	 * @return The size
+	 */
 	protected Dimension getSize(GraphicalEditPart editpart){
 		return 	editpart.getFigure().getPreferredSize();
 	}
 	
+	/**
+	 * Gets the anchors from a route
+	 * @param route - The route
+	 * @return A String array width two values. The first
+	 *  is the source anchor, the second is the target
+	 */
 	protected  String[] defineAnchors(List<Point> route){
 		String[] result = new String[2];
 		
@@ -112,6 +151,12 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		return result;
 	}
 	
+	/**
+	 * Gets an anchor from the given Points
+	 * @param a - The first Point
+	 * @param b - The second Point
+	 * @return The anchor
+	 */
 	private double[] defineAnchor(Point a, Point b){
 		Point vec = new Point(a.x-b.x, a.y-b.y);
 		double length = Math.sqrt(vec.x*vec.x+vec.y*vec.y);
