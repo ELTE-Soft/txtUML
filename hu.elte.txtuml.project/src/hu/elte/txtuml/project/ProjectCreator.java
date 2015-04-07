@@ -142,7 +142,7 @@ public class ProjectCreator {
 		buffer.append("\n");
 		buffer.append("import hu.elte.txtuml.api.*;\n");
 		buffer.append("\n");
-		buffer.append("public class "+modelName+" extends Model{\n\n}\n");
+		buffer.append("public class "+modelName+" extends Model {\n\n}\n");
 		
 		ICompilationUnit cu = pack.createCompilationUnit(modelName+".java", buffer.toString(), false, null);
 		return cu;
