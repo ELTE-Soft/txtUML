@@ -598,15 +598,29 @@ public class ModelImporter extends AbstractImporter{
     {
     	resourceSet = new ResourceSetImpl();
      
-  		URI locationURI=URI.createURI("platform:/plugin/org.eclipse.uml2.uml.resources");
+  		URI uml2ResourcesPluginURI=URI.createURI("platform:/plugin/org.eclipse.uml2.uml.resources");
   		resourceSet.getPackageRegistry().put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
-  		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION,UMLResource.Factory.INSTANCE);
+  		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(
+  				UMLResource.FILE_EXTENSION,
+  				UMLResource.Factory.INSTANCE
+  			);
   		 
   		Map<URI,URI> uriMap=resourceSet.getURIConverter().getURIMap();
   		  
-  		uriMap.put(URI.createURI(UMLResource.LIBRARIES_PATHMAP), locationURI.appendSegment("libraries").appendSegment(""));
-  		uriMap.put(URI.createURI(UMLResource.METAMODELS_PATHMAP), locationURI.appendSegment("metamodels").appendSegment(""));
-  		uriMap.put(URI.createURI(UMLResource.PROFILES_PATHMAP), locationURI.appendSegment("profiles").appendSegment(""));
+  		uriMap.put(
+  				URI.createURI(UMLResource.LIBRARIES_PATHMAP), 
+  				uml2ResourcesPluginURI.appendSegment("libraries").appendSegment("")
+  			);
+  		
+  		uriMap.put(
+  				URI.createURI(UMLResource.METAMODELS_PATHMAP), 
+  				uml2ResourcesPluginURI.appendSegment("metamodels").appendSegment("")
+  			);
+  		
+  		uriMap.put(
+  				URI.createURI(UMLResource.PROFILES_PATHMAP),
+  				uml2ResourcesPluginURI.appendSegment("profiles").appendSegment("")
+  			);
           
   		UMLResourcesUtil.init(resourceSet);
     }

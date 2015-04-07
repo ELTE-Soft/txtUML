@@ -270,16 +270,19 @@ public final class InstanceManager {
 	 * A map for storing information for global instances.
 	 */
 	private static InstancesMap globalInstances;
+	
 	/**
 	 * A map for storing information for the dummy instances of the class being imported
 	 * and it's fields.
 	 */
 	private static InstancesMap classAndFieldInstances;
+	
 	/**
 	 * A map for storing information for dummy instances that are considered local.
 	 * (e.g. local variables in a method, results of method calls in a method body, etc.)
 	 */
 	private static InstancesMap localInstances;
+	
 	/**
 	 * The "self" instance.
 	 */

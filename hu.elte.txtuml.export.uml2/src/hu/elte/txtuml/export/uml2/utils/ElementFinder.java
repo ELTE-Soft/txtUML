@@ -81,7 +81,7 @@ public final class ElementFinder {
 	 */
 	public static Operation findOperation(org.eclipse.uml2.uml.Class ownerClass,String name)
 	{
-		for(Operation op:ownerClass.getOperations())
+		for(Operation op:ownerClass.getAllOperations())
 		{
 			if(op.getName().equals(name))
 			{
