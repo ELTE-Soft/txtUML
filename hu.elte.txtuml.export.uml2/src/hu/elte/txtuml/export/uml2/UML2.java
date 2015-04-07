@@ -95,9 +95,9 @@ public class UML2 {
 	
 	/**
 	 * Main method for the class, provides opportunity for using model export as a Java application.
-	 * @param args 	Program arguments
-	 * 				1st argument: modelClassName
-	 * 				2nd argument: outputDirectory
+	 * @param args 	Program arguments <br/>
+	 * 				1st argument: modelClassName <br/>
+	 * 				2nd argument: outputDirectory <br/>
 	 * 				(see exportModel method)
 	 * @author Ádám Ancsin
 	 */

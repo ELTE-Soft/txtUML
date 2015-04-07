@@ -340,12 +340,12 @@ public class ActionImporter extends AbstractMethodImporter {
 			{
 				ModelIdentifiedElement attributeInstance=
 						(ModelIdentifiedElement) FieldValueAccessor.getObjectFieldVal(event,attributeName);
-				
+						
 				createAndAddValueExpressionToValuePin(argValuePin,attributeInstance,attributeType);	
 			}
 			catch(Exception e)
 			{
-
+				
 			}
 		}
 	}

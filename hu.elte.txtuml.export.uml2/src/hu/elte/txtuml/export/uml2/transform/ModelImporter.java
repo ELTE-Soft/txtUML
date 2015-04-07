@@ -190,7 +190,7 @@ public class ModelImporter extends AbstractImporter{
 		importClassesAndSignals();
 		importAssociations();
 		importGeneralizations();
-		importClassifierAttributes();
+		importAttributesOfAllClassifiers();
 		importMemberFunctionSkeletons();
 		importClassMemberFunctionBodiesStateMachinesAndNestedSignals();
 	}
@@ -330,9 +330,12 @@ public class ModelImporter extends AbstractImporter{
 	 */
 	private static void createSignalAndSignalEvent(Class<?> sourceClass) throws ImportException
 	{
-		Signal signal = (Signal)currentModel.createOwnedType(sourceClass.getSimpleName(),UMLPackage.Literals.SIGNAL);
+		Signal signal = (Signal)
+				currentModel.createOwnedType(sourceClass.getSimpleName(),UMLPackage.Literals.SIGNAL);
 		
-		SignalEvent signalEvent =(SignalEvent) currentModel.createPackagedElement(signal.getName()+"_event",UMLPackage.Literals.SIGNAL_EVENT);
+		SignalEvent signalEvent = (SignalEvent)
+				currentModel.createPackagedElement(signal.getName()+"_event",UMLPackage.Literals.SIGNAL_EVENT);
+		
 		signalEvent.setSignal(signal);
 	}
 		
@@ -342,24 +345,34 @@ public class ModelImporter extends AbstractImporter{
 	 *
 	 * @author Ádám Ancsin
 	 */
-    private static void importClassifierAttributes() throws ImportException
+    private static void importAttributesOfAllClassifiers() throws ImportException
     {
 		for(Class<?> c : modelClass.getDeclaredClasses()) 
 		{
 			if(!ElementTypeTeller.isModelElement(c))
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
 			else if(ElementTypeTeller.isClassifier(c)) 
-			{
-				org.eclipse.uml2.uml.Classifier classifier=
-						(org.eclipse.uml2.uml.Classifier) currentModel.getMember(c.getSimpleName());
-	            
-				for(Field f : c.getDeclaredFields()) 
-				{		
-	                if(ElementTypeTeller.isAttribute(f)) 
-	                	importAttribute(classifier,f);
-	            }
-			}
+				importClassifierAttributes(c);
 		}
+    }
+    
+    /**
+     * Imports the attributes of the specified txtUML classifier.
+     * @param classifier The specified txtUML classifier.
+     * @throws ImportException
+     *
+     * @author Ádám Ancsin
+     */
+    private static void importClassifierAttributes(Class<?> classifier) throws ImportException
+    {
+    	org.eclipse.uml2.uml.Classifier uml2Classifier=
+				(org.eclipse.uml2.uml.Classifier) currentModel.getMember(classifier.getSimpleName());
+        
+		for(Field f : classifier.getDeclaredFields()) 
+		{		
+            if(ElementTypeTeller.isAttribute(f)) 
+            	importAttribute(uml2Classifier,f);
+        }
     }
     
     /**
@@ -481,7 +494,10 @@ public class ModelImporter extends AbstractImporter{
 		{
 			//innerClass is an event and no signal in the model has the same name
 			if(ElementTypeTeller.isEvent(innerClass) && currentModel.getOwnedType(innerClass.getSimpleName())==null)
-				createSignalAndSignalEvent(innerClass);		
+			{
+				createSignalAndSignalEvent(innerClass);
+				importClassifierAttributes(innerClass);
+			}
 		}
   	}
 

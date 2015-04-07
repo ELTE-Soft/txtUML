@@ -258,7 +258,7 @@ public final class InstanceManager {
 		{
 			for(Field f: cl.getDeclaredFields())
 			{
-				if(ElementTypeTeller.isModelElement(f.getType()) && !f.getName().startsWith("this"))
+				if(ElementTypeTeller.isModelElement(f.getType()))
 					fields.add(f);
 			}
 			cl=cl.getSuperclass();
