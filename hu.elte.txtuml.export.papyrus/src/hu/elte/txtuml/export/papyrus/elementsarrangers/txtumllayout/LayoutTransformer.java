@@ -150,8 +150,7 @@ public class LayoutTransformer {
 					moveY = objects.values().stream().map(p -> p.y()).max((p1, p2) -> Integer.compare(p1, p2)).get();
 				break;
 			default: 
-				moveX = 0;
-				moveY = 0;
+				return;
 		}
 		
 		for(Rectangle rect: objects.values()){
