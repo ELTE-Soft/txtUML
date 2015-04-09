@@ -23,7 +23,7 @@ import hu.elte.txtuml.layout.lang.elements.LayoutLink;
  * <p>
  * <b>Java restrictions:</b>
  * <ul>
- * <li><i>Instantiate:</i> disallowed
+ * <li><i>Instantiate:</i> disallowed</li>
  * <li><i>Define subtype:</i> allowed
  * <p>
  * <b>Subtype requirements:</b>
@@ -40,12 +40,11 @@ import hu.elte.txtuml.layout.lang.elements.LayoutLink;
  * <li><i>Fields:</i> disallowed</li>
  * <li><i>Methods:</i> disallowed</li>
  * <li><i>Nested interfaces:</i> disallowed</li>
- * <li><i>Static nested classes:</i> disallowed</li>
+ * <li><i>Nested classes:</i> allowed at most two, both of which are non-static
+ * and are subclasses of <code>AssociationEnd</code></li>
  * <li><i>Nested enums:</i> disallowed</li>
- * <li><i>Inner classes:</i> allowed at most two, both of which are subclasses
- * of <code>AssociationEnd</code></li>
  * </ul>
- * <li><i>Inherit from defined subtype:</i> disallowed</li></li>
+ * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
  * </ul>
  * 
  * <p>
@@ -60,11 +59,11 @@ import hu.elte.txtuml.layout.lang.elements.LayoutLink;
  * }
  * </code>
  * </pre>
- *
+ * 
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an
  * overview on modeling in txtUML.
  *
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  *
  */
 public class Association implements ModelElement, LayoutLink {
@@ -75,19 +74,19 @@ public class Association implements ModelElement, LayoutLink {
 	 * <b>Implementation note:</b>
 	 * <p>
 	 * Protected because this class is intended to be inherited from but not
-	 * instantiated. However, it has to be a non-abstract class to make sure
-	 * that it is instantiatable when that is needed for the API or the model
-	 * exportation.
+	 * instantiated. However, <code>Association</code> has to be a non-abstract
+	 * class to make sure that it is instantiatable when that is needed for the
+	 * API or the model exportation.
 	 */
 	protected Association() {
 	}
 
 	/**
 	 * An immutable collection which contains the elements of a navigable
-	 * association end with 0..* multiplicity.
+	 * association end with a multiplicity of 0..*.
 	 * 
 	 * <p>
-	 * <b>Represents:</b> navigable association end with 0..* multiplicity
+	 * <b>Represents:</b> navigable association end with a multiplicity of 0..*
 	 * <p>
 	 * <b>Usage:</b>
 	 * <p>
@@ -97,7 +96,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <p>
 	 * <b>Java restrictions:</b>
 	 * <ul>
-	 * <li><i>Instantiate:</i> disallowed
+	 * <li><i>Instantiate:</i> disallowed</li>
 	 * <li><i>Define subtype:</i> allowed
 	 * <p>
 	 * <b>Subtype requirements:</b>
@@ -114,32 +113,35 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Fields:</i> disallowed</li>
 	 * <li><i>Methods:</i> disallowed</li>
 	 * <li><i>Nested interfaces:</i> disallowed</li>
-	 * <li><i>Static nested classes:</i> disallowed</li>
+	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
-	 * <li><i>Inner classes:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
 	 * </ul>
 	 * 
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
 	 * overview on modeling in txtUML.
-	 *
-	 * @author Gábor Ferenc Kovács
-	 *
+	 * 
+	 * @author Gabor Ferenc Kovacs
+	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
 	public class Many<T extends ModelClass> extends BaseMany<T> implements
 			hu.elte.txtuml.api.semantics.Navigability.Navigable,
 			hu.elte.txtuml.api.semantics.Multiplicity.ZeroToUnlimited {
+		
+		protected Many() {
+		}
+		
 	}
 
 	/**
 	 * An immutable collection which contains the elements of a navigable
-	 * association end with 1..* multiplicity.
+	 * association end with a multiplicity of 1..*.
 	 * 
 	 * <p>
-	 * <b>Represents:</b> navigable association end with 1..* multiplicity
+	 * <b>Represents:</b> navigable association end with a multiplicity of 1..*
 	 * <p>
 	 * <b>Usage:</b>
 	 * <p>
@@ -149,7 +151,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <p>
 	 * <b>Java restrictions:</b>
 	 * <ul>
-	 * <li><i>Instantiate:</i> disallowed
+	 * <li><i>Instantiate:</i> disallowed</li>
 	 * <li><i>Define subtype:</i> allowed
 	 * <p>
 	 * <b>Subtype requirements:</b>
@@ -166,32 +168,35 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Fields:</i> disallowed</li>
 	 * <li><i>Methods:</i> disallowed</li>
 	 * <li><i>Nested interfaces:</i> disallowed</li>
-	 * <li><i>Static nested classes:</i> disallowed</li>
+	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
-	 * <li><i>Inner classes:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
 	 * </ul>
 	 * 
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
 	 * overview on modeling in txtUML.
-	 *
-	 * @author Gábor Ferenc Kovács
-	 *
+	 * 
+	 * @author Gabor Ferenc Kovacs
+	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
 	public class Some<T extends ModelClass> extends BaseSome<T> implements
 			hu.elte.txtuml.api.semantics.Navigability.Navigable,
 			hu.elte.txtuml.api.semantics.Multiplicity.OneToUnlimited {
+		
+		protected Some() {
+		}
+		
 	}
 
 	/**
 	 * An immutable collection which contains the elements of a navigable
-	 * association end with 0..1 multiplicity.
+	 * association end with a multiplicity of 0..1.
 	 * 
 	 * <p>
-	 * <b>Represents:</b> navigable association end with 0..1 multiplicity
+	 * <b>Represents:</b> navigable association end with a multiplicity of 0..1
 	 * <p>
 	 * <b>Usage:</b>
 	 * <p>
@@ -201,7 +206,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <p>
 	 * <b>Java restrictions:</b>
 	 * <ul>
-	 * <li><i>Instantiate:</i> disallowed
+	 * <li><i>Instantiate:</i> disallowed</li>
 	 * <li><i>Define subtype:</i> allowed
 	 * <p>
 	 * <b>Subtype requirements:</b>
@@ -218,32 +223,35 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Fields:</i> disallowed</li>
 	 * <li><i>Methods:</i> disallowed</li>
 	 * <li><i>Nested interfaces:</i> disallowed</li>
-	 * <li><i>Static nested classes:</i> disallowed</li>
+	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
-	 * <li><i>Inner classes:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
 	 * </ul>
 	 * 
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
 	 * overview on modeling in txtUML.
-	 *
-	 * @author Gábor Ferenc Kovács
-	 *
+	 * 
+	 * @author Gabor Ferenc Kovacs
+	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
 	public class MaybeOne<T extends ModelClass> extends BaseMaybeOne<T>
 			implements hu.elte.txtuml.api.semantics.Navigability.Navigable,
 			hu.elte.txtuml.api.semantics.Multiplicity.ZeroToOne {
+		
+		protected MaybeOne() {
+		}
+		
 	}
 
 	/**
 	 * An immutable collection which contains the elements of a navigable
-	 * association end with 1 multiplicity.
+	 * association end with a multiplicity of 1.
 	 * 
 	 * <p>
-	 * <b>Represents:</b> navigable association end with 1 multiplicity
+	 * <b>Represents:</b> navigable association end with a multiplicity of 1
 	 * <p>
 	 * <b>Usage:</b>
 	 * <p>
@@ -253,7 +261,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <p>
 	 * <b>Java restrictions:</b>
 	 * <ul>
-	 * <li><i>Instantiate:</i> disallowed
+	 * <li><i>Instantiate:</i> disallowed</li>
 	 * <li><i>Define subtype:</i> allowed
 	 * <p>
 	 * <b>Subtype requirements:</b>
@@ -270,32 +278,36 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Fields:</i> disallowed</li>
 	 * <li><i>Methods:</i> disallowed</li>
 	 * <li><i>Nested interfaces:</i> disallowed</li>
-	 * <li><i>Static nested classes:</i> disallowed</li>
+	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
-	 * <li><i>Inner classes:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
 	 * </ul>
 	 * 
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
 	 * overview on modeling in txtUML.
-	 *
-	 * @author Gábor Ferenc Kovács
-	 *
+	 * 
+	 * @author Gabor Ferenc Kovacs
+	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
 	public class One<T extends ModelClass> extends BaseOne<T> implements
 			hu.elte.txtuml.api.semantics.Navigability.Navigable,
 			hu.elte.txtuml.api.semantics.Multiplicity.One {
+		
+		protected One() {
+		}
+		
 	}
 
 	/**
 	 * An immutable collection which contains the elements of a non-navigable
-	 * association end with 0..* multiplicity.
+	 * association end with a multiplicity of 0..*.
 	 * 
 	 * <p>
-	 * <b>Represents:</b> non-navigable association end with 0..* multiplicity
+	 * <b>Represents:</b> non-navigable association end with a multiplicity of
+	 * 0..*
 	 * <p>
 	 * <b>Usage:</b>
 	 * <p>
@@ -305,7 +317,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <p>
 	 * <b>Java restrictions:</b>
 	 * <ul>
-	 * <li><i>Instantiate:</i> disallowed
+	 * <li><i>Instantiate:</i> disallowed</li>
 	 * <li><i>Define subtype:</i> allowed
 	 * <p>
 	 * <b>Subtype requirements:</b>
@@ -322,32 +334,36 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Fields:</i> disallowed</li>
 	 * <li><i>Methods:</i> disallowed</li>
 	 * <li><i>Nested interfaces:</i> disallowed</li>
-	 * <li><i>Static nested classes:</i> disallowed</li>
+	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
-	 * <li><i>Inner classes:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
 	 * </ul>
 	 * 
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
 	 * overview on modeling in txtUML.
-	 *
-	 * @author Gábor Ferenc Kovács
-	 *
+	 * 
+	 * @author Gabor Ferenc Kovacs
+	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
 	public class HiddenMany<T extends ModelClass> extends BaseMany<T> implements
 			hu.elte.txtuml.api.semantics.Navigability.NonNavigable,
 			hu.elte.txtuml.api.semantics.Multiplicity.ZeroToUnlimited {
+		
+		protected HiddenMany() {
+		}
+		
 	}
 
 	/**
 	 * An immutable collection which contains the elements of a non-navigable
-	 * association end with 1..* multiplicity.
+	 * association end with a multiplicity of 1..*.
 	 * 
 	 * <p>
-	 * <b>Represents:</b> non-navigable association end with 1..* multiplicity
+	 * <b>Represents:</b> non-navigable association end with a multiplicity of
+	 * 1..*
 	 * <p>
 	 * <b>Usage:</b>
 	 * <p>
@@ -357,7 +373,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <p>
 	 * <b>Java restrictions:</b>
 	 * <ul>
-	 * <li><i>Instantiate:</i> disallowed
+	 * <li><i>Instantiate:</i> disallowed</li>
 	 * <li><i>Define subtype:</i> allowed
 	 * <p>
 	 * <b>Subtype requirements:</b>
@@ -374,32 +390,36 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Fields:</i> disallowed</li>
 	 * <li><i>Methods:</i> disallowed</li>
 	 * <li><i>Nested interfaces:</i> disallowed</li>
-	 * <li><i>Static nested classes:</i> disallowed</li>
+	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
-	 * <li><i>Inner classes:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
 	 * </ul>
 	 * 
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
 	 * overview on modeling in txtUML.
-	 *
-	 * @author Gábor Ferenc Kovács
-	 *
+	 * 
+	 * @author Gabor Ferenc Kovacs
+	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
 	public class HiddenSome<T extends ModelClass> extends BaseSome<T> implements
 			hu.elte.txtuml.api.semantics.Navigability.NonNavigable,
 			hu.elte.txtuml.api.semantics.Multiplicity.OneToUnlimited {
+
+		protected HiddenSome() {
+		}
+		
 	}
 
 	/**
 	 * An immutable collection which contains the elements of a non-navigable
-	 * association end with 0..1 multiplicity.
+	 * association end with a multiplicity of 0..1.
 	 * 
 	 * <p>
-	 * <b>Represents:</b> non-navigable association end with 0..1 multiplicity
+	 * <b>Represents:</b> non-navigable association end with a multiplicity of
+	 * 0..1
 	 * <p>
 	 * <b>Usage:</b>
 	 * <p>
@@ -409,7 +429,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <p>
 	 * <b>Java restrictions:</b>
 	 * <ul>
-	 * <li><i>Instantiate:</i> disallowed
+	 * <li><i>Instantiate:</i> disallowed</li>
 	 * <li><i>Define subtype:</i> allowed
 	 * <p>
 	 * <b>Subtype requirements:</b>
@@ -426,32 +446,35 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Fields:</i> disallowed</li>
 	 * <li><i>Methods:</i> disallowed</li>
 	 * <li><i>Nested interfaces:</i> disallowed</li>
-	 * <li><i>Static nested classes:</i> disallowed</li>
+	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
-	 * <li><i>Inner classes:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
 	 * </ul>
 	 * 
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
 	 * overview on modeling in txtUML.
-	 *
-	 * @author Gábor Ferenc Kovács
-	 *
+	 * 
+	 * @author Gabor Ferenc Kovacs
+	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
 	public class HiddenMaybeOne<T extends ModelClass> extends BaseMaybeOne<T>
 			implements hu.elte.txtuml.api.semantics.Navigability.NonNavigable,
 			hu.elte.txtuml.api.semantics.Multiplicity.ZeroToOne {
+		
+		protected HiddenMaybeOne() {
+		}
+		
 	}
 
 	/**
 	 * An immutable collection which contains the elements of a non-navigable
-	 * association end with 1 multiplicity.
+	 * association end with a multiplicity of 1.
 	 * 
 	 * <p>
-	 * <b>Represents:</b> non-navigable association end with 1 multiplicity
+	 * <b>Represents:</b> non-navigable association end with a multiplicity of 1
 	 * <p>
 	 * <b>Usage:</b>
 	 * <p>
@@ -461,7 +484,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <p>
 	 * <b>Java restrictions:</b>
 	 * <ul>
-	 * <li><i>Instantiate:</i> disallowed
+	 * <li><i>Instantiate:</i> disallowed</li>
 	 * <li><i>Define subtype:</i> allowed
 	 * <p>
 	 * <b>Subtype requirements:</b>
@@ -478,24 +501,27 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Fields:</i> disallowed</li>
 	 * <li><i>Methods:</i> disallowed</li>
 	 * <li><i>Nested interfaces:</i> disallowed</li>
-	 * <li><i>Static nested classes:</i> disallowed</li>
+	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
-	 * <li><i>Inner classes:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
 	 * </ul>
 	 * 
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
 	 * overview on modeling in txtUML.
-	 *
-	 * @author Gábor Ferenc Kovács
-	 *
+	 * 
+	 * @author Gabor Ferenc Kovacs
+	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
 	public class HiddenOne<T extends ModelClass> extends BaseOne<T> implements
 			hu.elte.txtuml.api.semantics.Navigability.NonNavigable,
 			hu.elte.txtuml.api.semantics.Multiplicity.One {
+		
+		protected HiddenOne() {
+		}
+		
 	}
 
 }

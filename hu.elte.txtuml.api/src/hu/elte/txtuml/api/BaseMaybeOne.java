@@ -6,12 +6,12 @@ import hu.elte.txtuml.api.blocks.ParameterizedCondition;
 import java.util.Iterator;
 
 /**
- * Base class of association ends having a 0..1 multiplicity.
+ * Base class of association ends having a multiplicity of 0..1.
  * <p>
- * See the documentation of the {@link hu.elte.txtuml.api} package to get an
- * overview on modeling in txtUML.
+ * Directly unusable by the user.
+
  * 
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  *
  * @param <T>
  *            the type of model objects to be contained in this collection
@@ -26,7 +26,7 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 
 	/**
 	 * Creates an empty, unfinalized <code>BaseMaybeOne</code> instance which
-	 * might be changed once using the <code>init</code> method.
+	 * might be changed once by the <code>init</code> method.
 	 */
 	public BaseMaybeOne() {
 		isFinal = false;
@@ -37,8 +37,8 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 	 * <code>other</code> collection, if certain conditions are met:
 	 * <ul>
 	 * <li>this instance is unfinalized, so the value of its
-	 * <code>isFinal</code> field is <code>false</code>,
-	 * <li>the given collection is a subclass of BaseMaybeOne</li>
+	 * <code>isFinal</code> field is <code>false</code>,</li>
+	 * <li>the given collection is a subclass of <code>BaseMaybeOne</code></li>
 	 * </ul>
 	 * After this method returns (either way), this association end is surely
 	 * finalized, so its <code>isFinal</code> field is set to be
@@ -63,7 +63,7 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 	 * Creates a finalized <code>BaseMaybeOne</code> instance to contain the
 	 * specified value.
 	 * <p>
-	 * Finalized means that this object will operate as its class was immutable.
+	 * Finalized means that this object will operate as it was immutable.
 	 * 
 	 * @param object
 	 *            the model object to contain
@@ -176,7 +176,8 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 
 	@Override
 	boolean checkLowerBound() {
-		return true; // There is no lower bound of MaybeOne.
+		return true;
+		// There is no lower bound of MaybeOne.
 	}
 
 	@Override

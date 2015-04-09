@@ -2,7 +2,7 @@ package hu.elte.txtuml.api;
 
 import hu.elte.txtuml.api.backend.problems.MultiplicityException;
 
-/*
+/**
  * Abstract base class for association ends in the model.
  * 
  * <p>
@@ -26,7 +26,7 @@ import hu.elte.txtuml.api.backend.problems.MultiplicityException;
  * <p>
  * <b>Java restrictions:</b>
  * <ul>
- * <li><i>Instantiate:</i> disallowed
+ * <li><i>Instantiate:</i> disallowed</li>
  * <li><i>Define subtype:</i> disallowed, inherit from its predefined subclasses
  * instead (see the nested classes of {@link Association})</li>
  * </ul>
@@ -37,10 +37,10 @@ import hu.elte.txtuml.api.backend.problems.MultiplicityException;
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an
  * overview on modeling in txtUML.
  *
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  * @see Association.Many
  * @see Association.One
- * @see Association.MaybeOne 
+ * @see Association.MaybeOne
  * @see Association.Some
  * @see Association.HiddenMany
  * @see Association.HiddenOne
@@ -62,17 +62,17 @@ public abstract class AssociationEnd<T extends ModelClass> implements
 	protected boolean isFinal = true;
 
 	/**
-	 * The owner model element of this association end.
+	 * The owner model object of this association end.
 	 */
-	private ModelIdentifiedElement owner;
+	private ModelClass owner;
 
 	/**
 	 * Sole constructor of <code>AssociationEnd</code>.
 	 * <p>
 	 * <b>Implementation note:</b>
 	 * <p>
-	 * Package private to make sure that this class is only used by the user
-	 * through its subclasses.
+	 * Package private to make sure that this class is neither instantiated, nor
+	 * directly inherited by the user.
 	 */
 	AssociationEnd() {
 	}
@@ -82,9 +82,9 @@ public abstract class AssociationEnd<T extends ModelClass> implements
 	 * <code>other</code> collection, if certain conditions are met:
 	 * <ul>
 	 * <li>this instance is unfinalized, so the value of its
-	 * <code>isFinal</code> field is <code>false</code>,
+	 * <code>isFinal</code> field is <code>false</code>,</li>
 	 * <li>the given collection is of a certain type, see the concrete
-	 * definitions for details</li>
+	 * definitions of this method for details</li>
 	 * </ul>
 	 * After this method returns (either way), this association end is surely
 	 * finalized, so its <code>isFinal</code> field is set to be
@@ -99,19 +99,19 @@ public abstract class AssociationEnd<T extends ModelClass> implements
 	abstract AssociationEnd<T> init(Collection<T> other);
 
 	/**
-	 * Sets the owner model element of this association end.
+	 * Sets the owner of this association end.
 	 * 
 	 * @param newOwner
 	 *            the new owner of this association end
 	 */
-	void setOwner(ModelIdentifiedElement newOwner) {
+	void setOwner(ModelClass newOwner) {
 		owner = newOwner;
 	}
 
 	/**
 	 * @return the owner of this association end
 	 */
-	ModelIdentifiedElement getOwner() {
+	ModelClass getOwner() {
 		return owner;
 	}
 
@@ -131,15 +131,19 @@ public abstract class AssociationEnd<T extends ModelClass> implements
 	 * the type of the result than executing the add operation. So if the latter
 	 * makes impossible the former, the latter is not performed.
 	 * <p>
-	 * To be more specific, if this method returns <i>r</i> and a new
-	 * unfinalized instance <i>u</i> is created of this object's dynamic type
-	 * then calling the <code>init</code> method of <i>u</i> with <i>r</i> as
-	 * its parameter, copying <i>r</i> to <i>u</i> must be performed
-	 * successfully.
+	 * To be more specific, if this method returns <i>r</i> and <i>u</i> is an
+	 * unfinalized instance of this object's dynamic type then calling the
+	 * <code>init</code> method of <i>u</i> with <i>r</i> as its parameter,
+	 * copying <i>r</i> to <i>u</i> must be performed successfully.
+	 * <p>
+	 * Despite causing no direct errors or exception throws, this method should
+	 * not be called with a <code>null</code> parameter as association ends are
+	 * intended to contain only non-null values.
 	 * 
 	 * @param object
-	 *            the model object to be added to this association end
-	 * @return the result of the operation
+	 *            the model object to be added to this association end, should
+	 *            not be <code>null</code>
+	 * @return the result of the add operation
 	 * @throws MultiplicityException
 	 *             if the upper bound of this association end's multiplicity has
 	 *             been offended
@@ -154,14 +158,13 @@ public abstract class AssociationEnd<T extends ModelClass> implements
 	 * the result than executing the remove operation. So if the latter makes
 	 * impossible the former, the latter is not performed.
 	 * <p>
-	 * To be more specific, if this method returns <i>r</i> and a new
-	 * unfinalized instance <i>u</i> is created of this object's dynamic type
-	 * then calling the <code>init</code> method of <i>u</i> with <i>r</i> as
-	 * its parameter, copying <i>r</i> to <i>u</i> must be performed
-	 * successfully.
+	 * To be more specific, if this method returns <i>r</i> and <i>u</i> is an
+	 * unfinalized instance of this object's dynamic type then calling the
+	 * <code>init</code> method of <i>u</i> with <i>r</i> as its parameter,
+	 * copying <i>r</i> to <i>u</i> must be performed successfully.
 	 * 
 	 * @param object
-	 *            the model object to be added to this association end
+	 *            the model object to be removed from this association end
 	 * @return the result of the operation
 	 */
 	abstract <S extends AssociationEnd<T>> S typeKeepingRemove(T object);

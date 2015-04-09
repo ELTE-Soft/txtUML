@@ -8,14 +8,16 @@ package hu.elte.txtuml.api;
  * <p>
  * <b>Usage:</b>
  * <p>
- * As event is just a base class for events, it is not used directly to define
- * certain kinds of events.
+ * 
+ * As <code>Event</code> is just a base class for events, it is not used
+ * directly to define certain kinds of events.
+ * 
  * <p>
  * <b>Java restrictions:</b>
  * <ul>
- * <li><i>Instantiate:</i> disallowed
+ * <li><i>Instantiate:</i> disallowed</li>
  * <li><i>Define subtype:</i> disallowed, inherit from its predefined
- * subclasses, like {@link Signal}
+ * subclasses, like {@link Signal}</li>
  * </ul>
  * 
  * <p>
@@ -26,7 +28,7 @@ package hu.elte.txtuml.api;
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an
  * overview on modeling in txtUML.
  *
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  * @see Signal
  * 
  */
@@ -37,8 +39,8 @@ public class Event implements ModelElement, ModelIdentifiedElement {
 	 * <p>
 	 * <b>Implementation note:</b>
 	 * <p>
-	 * Package private to make sure that this class is only used by the user
-	 * through its subclasses.
+	 * Package private to make sure that this class is neither instantiated, nor
+	 * directly inherited by the user.
 	 */
 	Event() {
 	}

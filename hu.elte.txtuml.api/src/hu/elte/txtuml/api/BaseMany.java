@@ -6,12 +6,11 @@ import hu.elte.txtuml.api.blocks.ParameterizedCondition;
 import java.util.Iterator;
 
 /**
- * Base class of association ends having a 0..* multiplicity.
+ * Base class of association ends having a multiplicity of 0..*.
  * <p>
- * See the documentation of the {@link hu.elte.txtuml.api} package to get an
- * overview on modeling in txtUML.
+ * Directly unusable by the user.
  *
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  *
  * @param <T>
  *            the type of model objects to be contained in this collection
@@ -25,7 +24,7 @@ class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 
 	/**
 	 * Creates an empty, unfinalized <code>BaseMany</code> instance which might
-	 * be changed once using the <code>init</code> method.
+	 * be changed once by the <code>init</code> method.
 	 */
 	public BaseMany() {
 		isFinal = false;
@@ -36,8 +35,8 @@ class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 	 * <code>other</code> collection, if certain conditions are met:
 	 * <ul>
 	 * <li>this instance is unfinalized, so the value of its
-	 * <code>isFinal</code> field is <code>false</code>,
-	 * <li>the given collection is a subclass of BaseMany</li>
+	 * <code>isFinal</code> field is <code>false</code>,</li>
+	 * <li>the given collection is a subclass of <code>BaseMany</code></li>
 	 * </ul>
 	 * After this method returns (either way), this association end is surely
 	 * finalized, so its <code>isFinal</code> field is set to be
@@ -62,7 +61,7 @@ class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 	 * Creates a finalized <code>BaseMany</code> instance to contain the
 	 * specified values.
 	 * <p>
-	 * Finalized means that this object will operate as its class was immutable.
+	 * Finalized means that this object will operate as it was immutable.
 	 * 
 	 * @param object1
 	 *            a model object this collection will contain
@@ -78,11 +77,13 @@ class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 	 * Creates a finalized <code>BaseMany</code> instance to contain the
 	 * specified values.
 	 * <p>
-	 * Finalized means that this object will operate as its class was immutable.
+	 * Finalized means that this object will operate as it was immutable.
 	 * 
 	 * @param builder
-	 *            a mutable builder used to gather the elements of this
-	 *            collection
+	 *            a mutable collection builder which's elements are to be
+	 *            included in this collection (the builder will be used up as
+	 *            this constructor calls
+	 *            {@link CollectionBuilder#getJavaCollection()})
 	 */
 	BaseMany(CollectionBuilder<T> builder) {
 		this.coll = builder.getJavaCollection();
@@ -92,11 +93,11 @@ class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 	 * Creates a finalized <code>BaseMany</code> instance to contain the
 	 * specified values.
 	 * <p>
-	 * Finalized means that this object will operate as its class was immutable.
+	 * Finalized means that this object will operate as it was immutable.
 	 * 
 	 * @param collection
-	 *            a collection the elements of which will all be in this
-	 *            collection as well
+	 *            a collection which's elements are to be included in this
+	 *            collection
 	 */
 	BaseMany(Collection<T> collection) {
 		for (T obj : collection) {
@@ -108,14 +109,16 @@ class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 	 * Creates a finalized <code>BaseMany</code> instance to contain the
 	 * specified values.
 	 * <p>
-	 * Finalized means that this object will operate as its class was immutable.
+	 * Finalized means that this object will operate as it was immutable.
 	 * 
 	 * @param collection
-	 *            a collection the elements of which will all be in this
-	 *            collection as well
+	 *            a collection which's elements are to be included in this
+	 *            collection
 	 * @param builder
-	 *            a mutable collection builder the elements of which will all be
-	 *            in this collection as well
+	 *            a mutable collection builder which's elements are to be
+	 *            included in this collection (the builder will be used up as
+	 *            this constructor calls
+	 *            {@link CollectionBuilder#getJavaCollection()})
 	 */
 	BaseMany(Collection<T> collection, CollectionBuilder<T> builder) {
 		this.coll = builder.getJavaCollection();
@@ -129,11 +132,11 @@ class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 	 * Creates a finalized <code>BaseMany</code> instance to contain the
 	 * specified values.
 	 * <p>
-	 * Finalized means that this object will operate as its class was immutable.
+	 * Finalized means that this object will operate as it was immutable.
 	 * 
 	 * @param collection
-	 *            a collection the elements of which will all be in this
-	 *            collection as well
+	 *            a collection which's elements are to be included in this
+	 *            collection
 	 * @param object
 	 *            a model object to be included in this collection
 	 */

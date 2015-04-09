@@ -1,14 +1,13 @@
 package hu.elte.txtuml.api;
 
 /**
- * Base class of association ends having a 1 multiplicity.
+ * Base class of association ends having a multiplicity of 1.
  * <p>
  * Inherits its implementation from <code>BaseMaybeOne</code>.
  * <p>
- * See the documentation of the {@link hu.elte.txtuml.api} package to get an
- * overview on modeling in txtUML.
+ * Directly unusable by the user.
  * 
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  *
  * @param <T>
  *            the type of model objects to be contained in this collection
