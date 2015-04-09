@@ -3,8 +3,8 @@ package hu.elte.txtuml.api;
 public class VariableBool extends VariableType<Boolean, ModelBool> {
 
 	/**
-	 * Creates a new <code>VariableBool</code> instance containing a false
-	 * value.
+	 * Creates a new <code>VariableBool</code> instance containing a
+	 * <code>ModelBool</code> that represents a <code>false</code> value.
 	 */
 	public VariableBool() {
 		super(ModelBool.FALSE);
@@ -26,7 +26,8 @@ public class VariableBool extends VariableType<Boolean, ModelBool> {
 	 * <code>ModelBool</code> that represents the specified boolean value.
 	 * 
 	 * @param rawValue
-	 *            the raw value this variable's value will represent
+	 *            the raw value this variable's new <code>ModelBool</code> value
+	 *            will represent
 	 */
 	public VariableBool(boolean rawValue) {
 		super(new ModelBool(rawValue));
@@ -37,7 +38,8 @@ public class VariableBool extends VariableType<Boolean, ModelBool> {
 	 * the specified boolean value.
 	 * 
 	 * @param rawValue
-	 *            the raw value this variable's value will represent
+	 *            the raw value this variable's new <code>ModelBool</code> value
+	 *            will represent
 	 */
 	@Override
 	public void set(Boolean rawValue) {

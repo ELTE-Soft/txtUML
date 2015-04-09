@@ -18,8 +18,8 @@ import hu.elte.txtuml.utils.InstanceCreator;
  * 
  * <b>Java restrictions:</b>
  * <ul>
- * <li><i>Instantiate:</i> disallowed
- * <li><i>Define subtype:</i> disallowed
+ * <li><i>Instantiate:</i> disallowed</li>
+ * <li><i>Define subtype:</i> disallowed</li>
  * </ul>
  * </li> </ul>
  * 
@@ -35,7 +35,7 @@ import hu.elte.txtuml.utils.InstanceCreator;
  * See the documentation of the {@link hu.elte.txtuml.api} package to get
  * an overview on modeling in txtUML.
  *
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  *
  */
 public abstract class Action implements ModelElement {
@@ -45,7 +45,7 @@ public abstract class Action implements ModelElement {
 	 * <p>
 	 * <b>Implementation note:</b>
 	 * <p>
-	 * Package private to make sure that this class is not instantiated, nor
+	 * Package private to make sure that this class is neither instantiated, nor
 	 * directly inherited by the user.
 	 */
 	Action() {
@@ -113,11 +113,14 @@ public abstract class Action implements ModelElement {
 	}
 
 	/*
-	 * Starts the state machine of the specified modelClass object.
+	 * Starts the state machine of the specified <code>ModelClass</code> object.
+	 * <p>
+	 * Shows an error message if the parameter is in a deleted state.
 	 * 
-	 * @param obj the model object the state machine of which has to be started.
-	 * 
-	 * @throws NullPointerException if <code>obj</code> is <code>null</code>
+	 * @param obj
+	 *            the model object the state machine of which has to be started
+	 * @throws NullPointerException
+	 *             if <code>obj</code> is <code>null</code>
 	 */
 	public static void start(ModelClass obj) {
 		if (obj.isDeleted()) {
@@ -129,7 +132,7 @@ public abstract class Action implements ModelElement {
 		obj.start();
 	}
 
-	/**
+	/*
 	 * Asynchronously sends the specified signal to the specified target object.
 	 * <p>
 	 * Does not check whether the target object is deleted.
@@ -150,10 +153,8 @@ public abstract class Action implements ModelElement {
 	 * 
 	 * @param thenBody the block to be performed if the condition is evaluated
 	 * to <code>true</code>
-	 * 
 	 * @param elseBody the block to be performed if the condition is evaluated
 	 * to <code>false</code>
-	 * 
 	 * @throws NullPointerException if either parameter is <code>null</code>
 	 */
 	public static void If(Condition cond, BlockBody thenBody, BlockBody elseBody) {

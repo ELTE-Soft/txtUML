@@ -10,20 +10,16 @@ public abstract class Region extends StateMachine {
 
 	public abstract String getIdentifier();
 
-	/**
-	 * The sole constructor of <code>Region</code>.
-	 * <p>
-	 * Sets the <code>currentVertex</code> field to an instance of this region's
-	 * initial pseudostate. The initial pseudostate is a nested class of the
-	 * <i>actual region class</i> which is a subclass of
-	 * {@link StateMachine.Initial}.
-	 * <p>
+	/*
+	 * The sole constructor of <code>Region</code>. <p> Sets the
+	 * <code>currentVertex</code> field to an instance of this region's initial
+	 * pseudostate. The initial pseudostate is a nested class of the <i>actual
+	 * region class</i> which is a subclass of {@link StateMachine.Initial}. <p>
 	 * The <i>actual region class</i> refers to the class represented by the
 	 * <code>java.lang.Class<?></code> object which is returned by the
-	 * <code>getClass</code> method when this constructor is run.
-	 * <p>
-	 * If two or more initial pseudostates exist in this region (two or more
-	 * nested classes which extend <code>StateMachine.Initial</code>), then an
+	 * <code>getClass</code> method when this constructor is run. <p> If two or
+	 * more initial pseudostates exist in this region (two or more nested
+	 * classes which extend <code>StateMachine.Initial</code>), then an
 	 * unspecified one will be used, without any runtime errors or warnings.
 	 * However, it is indeed determined as an error in the model, so this case
 	 * has to be completely avoided.
@@ -55,6 +51,14 @@ public abstract class Region extends StateMachine {
 	}
 
 	/**
+	 * Inactivates this region by setting its <code>currentVertex</code> field
+	 * to <code>null</code>.
+	 */
+	final void inactivate() {
+		currentVertex = null;
+	}
+
+	/**
 	 * Processes a signal and changes to another state if necessary (possibly
 	 * after entering and exiting multiple vertices). Also executes every
 	 * required exit and entry actions, transition effects. Stops after entering
@@ -74,7 +78,7 @@ public abstract class Region extends StateMachine {
 			ModelExecutor.executorLog(toString() + " processes "
 					+ signal.toString());
 		}
-		if (executeTransition(signal)) {
+		if (findAndExecuteTransition(signal)) {
 			callEntryAction();
 		}
 	}
@@ -95,31 +99,44 @@ public abstract class Region extends StateMachine {
 		/**
 		 * Sole constructor of <code>TransitionExecutor</code>. Sets the values
 		 * of all its fields to <code>null</code>.
-		 *
 		 */
 		TransitionExecutor() {
 			this.transition = null;
 			this.transitionClass = null;
 		}
 
-		/*
+		/**
 		 * @return <code>true</code> if this instance is not yet set to execute
-		 * a certain transition
+		 *         a certain transition
 		 */
 		boolean isEmpty() {
 			return transition == null;
 		}
 
+		/**
+		 * Sets this object to execute a certain transition. Does not perform
+		 * the execution.
+		 * 
+		 * @param transition
+		 *            an instance of the class representing the transition which
+		 *            is to be executed
+		 * @param transitionClass
+		 *            the class representing the transition which is to be
+		 *            executed
+		 */
 		void set(Transition transition, Class<?> transitionClass) {
 			this.transition = transition;
 			this.transitionClass = transitionClass;
 		}
 
+		/**
+		 * @return the class representing the transition which is to be executed
+		 */
 		Class<?> getTransitionClass() {
 			return transitionClass;
 		}
 
-		/**
+		/*
 		 * The signal has to be already set on the transition contained in this
 		 * executor before calling this method.
 		 */
@@ -135,7 +152,7 @@ public abstract class Region extends StateMachine {
 
 	}
 
-	private boolean executeTransition(Signal signal) {
+	private boolean findAndExecuteTransition(Signal signal) {
 		final TransitionExecutor applicableTransitionExecutor = new TransitionExecutor();
 
 		for (Class<?> examinedClass = currentVertex.getClass(), parentClass = examinedClass
@@ -190,13 +207,13 @@ public abstract class Region extends StateMachine {
 		applicableTransitionExecutor.execute();
 
 		if (currentVertex instanceof Choice) {
-			executeTransitionFromChoice(signal);
+			findAndExecuteTransitionFromChoice(signal);
 		}
 
 		return true;
 	}
 
-	private void executeTransitionFromChoice(Signal signal) {
+	private void findAndExecuteTransitionFromChoice(Signal signal) {
 		final TransitionExecutor applicableTransitionExecutor = new TransitionExecutor();
 		final TransitionExecutor elseTransitionExecutor = new TransitionExecutor();
 
@@ -278,7 +295,7 @@ public abstract class Region extends StateMachine {
 		applicableTransitionExecutor.execute();
 
 		if (currentVertex instanceof Choice) {
-			executeTransitionFromChoice(signal);
+			findAndExecuteTransitionFromChoice(signal);
 		}
 	}
 

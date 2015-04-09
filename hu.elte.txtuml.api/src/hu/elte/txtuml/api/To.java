@@ -56,7 +56,7 @@ import java.lang.annotation.Target;
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an
  * overview on modeling in txtUML.
  *
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  *
  */
 @Retention(RetentionPolicy.RUNTIME)

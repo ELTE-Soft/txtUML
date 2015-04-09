@@ -12,7 +12,7 @@ package hu.elte.txtuml.api;
  * <p>
  * <b>Java restrictions:</b>
  * <ul>
- * <li><i>Instantiate:</i> allowed
+ * <li><i>Instantiate:</i> allowed</li>
  * <li><i>Define subtype:</i> disallowed
  * </li>
  * </ul>
@@ -20,20 +20,21 @@ package hu.elte.txtuml.api;
  * See the documentation of the {@link hu.elte.txtuml.api} package to get
  * an overview on modeling in txtUML.
  *
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  *
  */
 public class VariableInt extends VariableType<Integer, ModelInt> {
 
 	/**
-	 * Creates a new <code>VariableInt</code> instance containing a zero value.
+	 * Creates a new <code>VariableInt</code> instance containing a
+	 * <code>ModelInt</code> that represents 0.
 	 */
 	public VariableInt() {
 		super(ModelInt.ZERO);
 	}
 
 	/**
-	 * Creates a new <code>VariableBool</code> instance containing the specified
+	 * Creates a new <code>VariableInt</code> instance containing the specified
 	 * value.
 	 * 
 	 * @param value
@@ -48,7 +49,8 @@ public class VariableInt extends VariableType<Integer, ModelInt> {
 	 * <code>ModelInt</code> that represents the specified integer value.
 	 * 
 	 * @param rawValue
-	 *            the raw value this variable's value will represent
+	 *            the raw integer value this variable's <code>ModelInt</code>
+	 *            value will represent
 	 */
 	public VariableInt(int rawValue) {
 		super(new ModelInt(rawValue));
@@ -59,7 +61,8 @@ public class VariableInt extends VariableType<Integer, ModelInt> {
 	 * the specified integer value.
 	 * 
 	 * @param rawValue
-	 *            the raw value this variable's new value will represent
+	 *            the raw integer value this variable's new
+	 *            <code>ModelInt</code> value will represent
 	 */
 	@Override
 	public void set(Integer rawValue) {

@@ -9,7 +9,7 @@ package hu.elte.txtuml.layout.lang.elements;
  * Should not be extended or implemented directly from outside this package with
  * the exception of the {@link hu.elte.txtuml.layout.lang.Diagram.Phantom Diagram.Phantom} class.
  * 
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  *
  */
 public interface LayoutPhantomNode extends LayoutNode {

@@ -10,7 +10,7 @@ package hu.elte.txtuml.layout.lang.elements;
  * with the exception of types in the model API which are super types of classes
  * representing certain kinds of nodes.
  * 
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  * @see LayoutLink
  * @see LayoutLinkGroup
  * @see LayoutNodeGroup

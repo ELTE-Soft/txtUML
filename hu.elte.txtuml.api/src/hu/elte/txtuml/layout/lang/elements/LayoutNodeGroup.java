@@ -10,7 +10,7 @@ package hu.elte.txtuml.layout.lang.elements;
  * the exception of the {@link hu.elte.txtuml.layout.lang.Diagram.NodeGroup
  * Diagram.NodeGroup} class.
  * 
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  * @see LayoutLink
  * @see LayoutLinkGroup
  * @see LayoutNode

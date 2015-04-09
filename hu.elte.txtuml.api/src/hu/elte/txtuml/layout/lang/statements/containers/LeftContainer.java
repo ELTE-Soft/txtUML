@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 /**
  * The container for repeatable annotation {@link Left}.
  * 
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  *
  */
 @Retention(RetentionPolicy.RUNTIME)

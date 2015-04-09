@@ -1,7 +1,7 @@
 /*
  * This package provides the txtUML model API. 
  * 
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  *
  */
 package hu.elte.txtuml.api;

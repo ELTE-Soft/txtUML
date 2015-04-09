@@ -8,7 +8,7 @@ package hu.elte.txtuml.layout.lang.elements;
  * <p>
  * Should not be extended or implemented directly from outside this package.
  * 
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  * @see LayoutGroup
  */
 public interface LayoutNonGroupElement extends LayoutElement {

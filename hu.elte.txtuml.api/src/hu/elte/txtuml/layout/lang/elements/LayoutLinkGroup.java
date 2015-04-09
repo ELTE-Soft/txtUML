@@ -10,7 +10,7 @@ package hu.elte.txtuml.layout.lang.elements;
  * with the exception of the
  * {@link hu.elte.txtuml.layout.lang.Diagram.LinkGroup Diagram.LinkGroup} class.
  * 
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  * @see LayoutLink
  * @see LayoutNode
  * @see LayoutNodeGroup

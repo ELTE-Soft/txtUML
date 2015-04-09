@@ -8,18 +8,20 @@ package hu.elte.txtuml.api;
  * <p>
  * <b>Usage:</b>
  * <p>
+ * 
  * Inherit signals from this class. To keep modeling simple, a signal is also a
- * signal event in txtUML so it can be used as trigger of transitions directly.
- * As a signal event, it is considered to contain itself as a signal.
+ * signal event in txtUML so it can be used as a trigger of transitions
+ * directly. As a signal event, it is considered to contain itself as a signal.
  * <p>
  * Signals might be inherited from other signals as well. This is represented in
  * the model by defining a subclass of another signal class. It means, that
  * because the limitations of the Java language, every signal may have at most
  * one parent signal.
+ * 
  * <p>
  * <b>Java restrictions:</b>
  * <ul>
- * <li><i>Instantiate:</i> disallowed
+ * <li><i>Instantiate:</i> disallowed</li>
  * <li><i>Define subtype:</i> allowed
  * <p>
  * <b>Subtype requirements:</b>
@@ -29,18 +31,17 @@ package hu.elte.txtuml.api;
  * <p>
  * <b>Subtype restrictions:</b>
  * <ul>
- * <li><i>Constructors:</i> allowed containing only simple assignments to set
+ * <li><i>Constructors:</i> allowed, containing only simple assignments to set
  * the values of its fields</li>
  * <li><i>Initialization blocks:</i> disallowed</li>
  * <li><i>Fields:</i> allowed to represent parameters of the signal</li>
  * <li><i>Methods:</i> disallowed</li>
  * <li><i>Nested interfaces:</i> disallowed</li>
- * <li><i>Static nested classes:</i> disallowed</li>
+ * <li><i>Nested classes:</i> disallowed</li>
  * <li><i>Nested enums:</i> disallowed</li>
- * <li><i>Inner classes:</i> disallowed</li>
  * </ul>
  * </li>
- * <li><i>Inherit from defined subtype:</i> allowed to represent signal
+ * <li><i>Inherit from the defined subtype:</i> allowed to represent signal
  * inheritance</li>
  * </ul>
  * 
@@ -50,19 +51,18 @@ package hu.elte.txtuml.api;
  * 
  * <pre>
  * <code>
- * class Sg extends Signal {}
+ * class ExampleSignal extends Signal {}
  * 
  * {@literal /}{@literal /} ... somewhere in the action code
  * 
- * Action.send(obj, new Sg());
- * 
+ * Action.send(obj, new ExampleSignal());
  * </code>
  * </pre>
  *
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an
  * overview on modeling in txtUML.
  *
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  *
  */
 @ModelAnnotatedElement
@@ -74,9 +74,9 @@ public class Signal extends Event {
 	 * <b>Implementation note:</b>
 	 * <p>
 	 * Protected because this class is intended to be inherited from but not
-	 * instantiated. However, it has to be a non-abstract class to make sure
-	 * that it is instantiatable when that is needed for the API or the model
-	 * exportation.
+	 * instantiated. However, <code>Signal</code> has to be a non-abstract class
+	 * to make sure that it is instantiatable when that is needed for the API or
+	 * the model exportation.
 	 */
 	protected Signal() {
 	}
