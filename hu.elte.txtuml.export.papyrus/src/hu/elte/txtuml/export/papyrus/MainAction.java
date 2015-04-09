@@ -37,7 +37,7 @@ public class MainAction {
 	 * The constructor.
 	 * @param projectName - The name of the project in which the Papyrus Model will be created.
 	 * @param modelName - The Name of the Papyrus Model
-	 * @param sourceUMLpath - Sourcepath of the ECore uml2 model 
+	 * @param sourceUMLpath - Sourcepath of the Eclipse UML2 model 
 	 */
 	public MainAction(String projectName, String modelName, String sourceUMLpath) {
 		Projectname = projectName;

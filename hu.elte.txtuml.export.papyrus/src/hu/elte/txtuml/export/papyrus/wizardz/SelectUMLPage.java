@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * The Page where the user can select Ecore UML2 file.
+ * The Page where the user can select eclipse UML2 file.
  *
  * @author András Dobreff
  */
@@ -143,8 +143,8 @@ public class SelectUMLPage extends WizardPage {
   }
   
   /**
-   * Returns the Ecore UML2 file path
-   * @return Returns the Ecore UML2 file path
+   * Returns the Eclipse UML2 file path
+   * @return Returns the Eclipse UML2 file path
    */
   public String getUMLPath(){
 	 return UmlFile.getText();

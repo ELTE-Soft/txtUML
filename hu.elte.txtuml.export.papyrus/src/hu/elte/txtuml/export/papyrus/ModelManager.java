@@ -16,7 +16,7 @@ import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Package;
 
 /**
- * Controls the Ecore UML2 Model.
+ * Controls the Eclipse UML2 Model.
  *
  * @author András Dobreff
  */

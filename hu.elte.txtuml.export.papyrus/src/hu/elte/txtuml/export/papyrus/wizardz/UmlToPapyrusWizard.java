@@ -7,7 +7,7 @@ import java.io.File;
 import org.eclipse.jface.wizard.Wizard;
 
 /**
- * Wizard for visualizing Ecore UML2 file from local filesystem
+ * Wizard for visualizing Eclipse UML2 file from local filesystem
  *
  * @author András Dobreff
  */
