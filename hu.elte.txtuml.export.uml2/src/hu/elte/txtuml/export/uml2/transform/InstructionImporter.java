@@ -25,12 +25,10 @@ import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.CallOperationAction;
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.CreateObjectAction;
-import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InputPin;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.Property;
-import org.eclipse.uml2.uml.StartClassifierBehaviorAction;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValuePin;
@@ -135,31 +133,21 @@ public class InstructionImporter extends AbstractMethodImporter
 			//creating a control flow from the previous node to the newly created Create Object Action
 			createControlFlowBetweenActivityNodes(lastNode,createAction);
 
-			//creating a variable for created instance, so we can reference it later
+			//creating a variable for created instance, so it can be referenced later
 			Type type=ModelImporter.importType(createdInstance.getClass());
 			Variable variable=currentActivity.createVariable(instanceName,type);
 
 			//creating an Add Variable Value action
 			AddVariableValueAction setVarAction = createAddVarValAction(variable,"setVar_"+instanceName);
 			//creating an input pin for Add Variable Action
-			InputPin inputPin_AVVA=setVarAction.createValue(setVarAction.getName()+"_input",type);
+			InputPin inputPin=setVarAction.createValue(setVarAction.getName()+"_input",type);
 
-			//creating a Start Classifier Behavior Action for our newly created object
-			StartClassifierBehaviorAction startClassifierBehaviorAction = (StartClassifierBehaviorAction) 
-					currentActivity.createOwnedNode("startClassifierBehavior_"+instanceName,UMLPackage.Literals.START_CLASSIFIER_BEHAVIOR_ACTION);
-
-			//creating an input pin for Start Classifier Behavior Action
-			InputPin inputPin_startCBA=startClassifierBehaviorAction.createObject(startClassifierBehaviorAction.getName()+"_input",classifier);
-
-			//creating a fork node and an object flow from Create Object Action's output pin to fork node
-			ForkNode forkNode=forkToNodes("fork_"+createAction.getName(),inputPin_AVVA,inputPin_startCBA);
-			createObjectFlowBetweenActivityNodes(outputPin,forkNode);
-
-			//creating a join node for joining the two separate "threads"
-			lastNode = joinNodes(startClassifierBehaviorAction,setVarAction);
+			createObjectFlowBetweenActivityNodes(outputPin,inputPin);
+			lastNode = setVarAction;
 		}
 	}
 
+	
 	/**
 	 * Imports a method call in a method body.
 	 * @param target The target dummy instance.

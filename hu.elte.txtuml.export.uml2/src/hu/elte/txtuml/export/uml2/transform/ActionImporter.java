@@ -14,6 +14,7 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Association;
+import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.CreateLinkAction;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.DestroyLinkAction;
@@ -23,6 +24,7 @@ import org.eclipse.uml2.uml.LinkEndData;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.SendSignalAction;
 import org.eclipse.uml2.uml.Signal;
+import org.eclipse.uml2.uml.StartClassifierBehaviorAction;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValuePin;
@@ -45,6 +47,36 @@ public class ActionImporter extends AbstractMethodImporter {
 		CREATE_LINK_LITERAL,
 		DESTROY_LINK_LITERAL
 	}
+	
+	/**
+	 * Imports a start object action (Action.start) in a method body.
+	 * @param instance The instance which's behavior is to be started.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	static void importStartObjectAction(ModelClass instance)
+	{
+		String instanceIdentifier = getObjectIdentifier(instance);
+		Classifier classifier=(Classifier) currentModel.getOwnedType(instance.getClass().getSimpleName());
+		
+		StartClassifierBehaviorAction startClassifierBehaviorAction = (StartClassifierBehaviorAction) 
+				currentActivity.createOwnedNode(
+						"startClassifierBehavior_"+instanceIdentifier,
+						UMLPackage.Literals.START_CLASSIFIER_BEHAVIOR_ACTION
+					);
+
+		
+		ValuePin valuePin = (ValuePin) 
+				startClassifierBehaviorAction.createObject(
+						startClassifierBehaviorAction.getName()+"_input",
+						classifier,UMLPackage.Literals.VALUE_PIN
+					);
+
+		createAndAddOpaqueExpressionToValuePin(valuePin, instanceIdentifier, classifier);
+		
+		lastNode = startClassifierBehaviorAction;
+	}
+	
 	/**
 	 * Imports a create link action in a method body.
 	 * @param leftEndClass The class of the left association end.
@@ -90,11 +122,18 @@ public class ActionImporter extends AbstractMethodImporter {
 			Type instanceType=currentModel.getOwnedType(receiver.getClass().getSimpleName());
 
 			SendSignalAction sendSignalAction	=	(SendSignalAction) 
-					currentActivity.createOwnedNode("send_"+signalToSend.getName()+"_to_"+instanceName,UMLPackage.Literals.SEND_SIGNAL_ACTION);
+					currentActivity.createOwnedNode(
+							"send_"+signalToSend.getName()+"_to_"+instanceName,
+							UMLPackage.Literals.SEND_SIGNAL_ACTION
+						);
 
 			sendSignalAction.setSignal(signalToSend);
 
-			ValuePin target=(ValuePin)sendSignalAction.createTarget(sendSignalAction.getName()+"_target",instanceType,UMLPackage.Literals.VALUE_PIN);
+			ValuePin target = (ValuePin)
+					sendSignalAction.createTarget(
+							sendSignalAction.getName()+"_target",
+							instanceType,UMLPackage.Literals.VALUE_PIN
+						);
 
 			createAndAddOpaqueExpressionToValuePin(target,instanceName,instanceType);
 
@@ -255,6 +294,7 @@ public class ActionImporter extends AbstractMethodImporter {
 			lastNode=destroyAction;
 	    }
 	}
+	
 	/**
 	 * Adds the association end to the link (create or destroy link) action
 	 * @param linkAction The link action.
@@ -271,14 +311,16 @@ public class ActionImporter extends AbstractMethodImporter {
 	{
 		Type endType=ModelImporter.importType(obj.getClass());
 
-		ValuePin end_valuePin=(ValuePin) 
+		ValuePin endValuePin=(ValuePin) 
 				linkAction.createInputValue(linkAction.getName()+"_end"+endNum+"input",endType,UMLPackage.Literals.VALUE_PIN);
 
-		createAndAddOpaqueExpressionToValuePin(end_valuePin,instName,endType);
+		createAndAddOpaqueExpressionToValuePin(endValuePin,instName,endType);
 
 		LinkEndData end=linkAction.createEndData();
-		Property endProp=association.getOwnedEnd(phrase,endType);
+		Property endProp=association.getMemberEnd(phrase,endType);
+
 		end.setEnd(endProp);
+		end.setValue(endValuePin);
 	}
 
 	/**

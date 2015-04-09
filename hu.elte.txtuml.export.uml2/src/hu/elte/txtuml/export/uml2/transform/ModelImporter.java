@@ -219,7 +219,7 @@ public class ModelImporter extends AbstractImporter{
 	}
 	
 	/**
-	 * Imports generalizations between classifiers.
+	 * Imports all generalizations of the model.
 	 * @throws ImportException
 	 *
 	 * @author Ádám Ancsin
@@ -254,8 +254,8 @@ public class ModelImporter extends AbstractImporter{
 	}
 	
 	/**
-	 * Imports a given classifier.
-	 * @param sourceClass The Java class of the classifier.
+	 * Imports the specified classifier.
+	 * @param sourceClass The class representing the classifier.
 	 * @throws ImportException
 	 *
 	 * @author Ádám Ancsin
@@ -287,7 +287,7 @@ public class ModelImporter extends AbstractImporter{
 		
 	}
 	/**
-	 * Imports classes and signals.
+	 * Imports the classes and signals of the model.
 	 * @throws ImportException
 	 *
 	 * @author Ádám Ancsin
@@ -304,7 +304,7 @@ public class ModelImporter extends AbstractImporter{
 	}
 	
 	/**
-	 * Imports associations.
+	 * Imports the associations of the model.
 	 * 
 	 * @throws ImportException
 	 *
@@ -322,8 +322,9 @@ public class ModelImporter extends AbstractImporter{
 	}	
 		
 	/**
-	 * Creates a signal and a signal event in the UML2 model based on the Java class of a signal in the txtUML model.
-	 * @param sourceClass The Java class of the signal in the txtUML model.
+	 * Creates a signal and a signal event in the UML2 model based on the specified class
+	 * representing a signal in the txtUML model.
+	 * @param sourceClass The class representing the signal in the txtUML model.
 	 * @throws ImportException
 	 *
 	 * @author Ádám Ancsin
@@ -470,9 +471,7 @@ public class ModelImporter extends AbstractImporter{
 				InstanceManager.createClassAndFieldInstancesAndInitClassAndFieldInstancesMap(c);
 				
 				if(containsStateMachine(c))
-				{
 					importStateMachine(currClass,c);
-				}
 				
 				importClassMemberFunctionBodies(c);
 	

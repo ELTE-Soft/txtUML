@@ -134,15 +134,28 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 	}
 
 	/**
-	 * This advice prevents execution of Action.start (so none of the ModelClass instances start functioning)
-	 * during model import. 
+	 * This advice prevents execution of Action.start if called from outside the model (e.g. from glue code)
+	 * during model import, so none of the ModelClass instances start functioning. 
 	 *
 	 * @author Ádám Ancsin
 	 */
 	@SuppressAjWarnings
-	void around(): call(void Action.start(..)) && importing()
+	void around(): call(void Action.start(..)) && importing() && !withinModel()
 	{
 		//do nothing.
+	}
+	
+	/**
+	 * This advice imports a start object action if Action.start is called from a txtUML method body
+	 * during model import.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	@SuppressAjWarnings
+	void around(): call(void Action.start(ModelClass)) && isActive()
+	{
+		ModelClass obj = (ModelClass) thisJoinPoint.getArgs()[0];
+		ActionImporter.importStartObjectAction(obj);
 	}
 	
 	/**
