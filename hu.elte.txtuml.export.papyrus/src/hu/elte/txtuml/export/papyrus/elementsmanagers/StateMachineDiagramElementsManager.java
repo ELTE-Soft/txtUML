@@ -44,7 +44,12 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	 * @return Returns the types of elements that are to be added
 	 */
 	private List<java.lang.Class<?>> generateElementsToBeAdded() {
-		List<java.lang.Class<?>> nodes = new LinkedList<java.lang.Class<?>>(Arrays.asList(FinalState.class, State.class, Pseudostate.class));
+		List<java.lang.Class<?>> nodes = new LinkedList<java.lang.Class<?>>(
+				Arrays.asList(
+						FinalState.class,
+						State.class,
+						Pseudostate.class
+				));
 		
 		if(preferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_CONSTRAINT_PREF))
 			nodes.add(Constraint.class);

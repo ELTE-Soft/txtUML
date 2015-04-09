@@ -51,7 +51,19 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 	 * @return Returns the types of elements that are to be added
 	 */
 	private List<java.lang.Class<?>> generateElementsToBeAdded() {
-		List<java.lang.Class<?>> nodes = new LinkedList<java.lang.Class<?>>(Arrays.asList(Class.class, Interface.class, Package.class, Component.class));
+		List<java.lang.Class<?>> nodes = new LinkedList<java.lang.Class<?>>(
+				Arrays.asList(
+						Class.class,
+						Component.class,
+						DataType.class,
+						Enumeration.class,
+						InformationItem.class,
+						InstanceSpecification.class,
+						Interface.class,
+						Model.class,
+						Package.class,
+						PrimitiveType.class
+				));
 		
 		if(preferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_CONSTRAINT_PREF))
 			nodes.add(Constraint.class);

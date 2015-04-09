@@ -38,12 +38,29 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 	 */
 	private List<java.lang.Class<?>> generateNodesToBeAdded() {
 		List<java.lang.Class<?>> nodes = Arrays.asList(
-				InitialNode.class, FinalNode.class,
-				ForkNode.class, JoinNode.class,
-				DecisionNode.class, MergeNode.class,
-				OpaqueAction.class, ReadSelfAction.class,
-				AddVariableValueAction.class, AddStructuralFeatureValueAction.class,
-				SendSignalAction.class, CallOperationAction.class);
+				AcceptEventAction.class,
+				Activity.class,
+				AddStructuralFeatureValueAction.class,
+				AddVariableValueAction.class,
+				BroadcastSignalAction.class,
+				CallBehaviorAction.class, 
+				CallOperationAction.class,
+				CreateObjectAction.class,
+				DecisionNode.class,
+				DestroyObjectAction.class,
+				FinalNode.class,
+				ForkNode.class,
+				InitialNode.class,
+				JoinNode.class,
+				MergeNode.class,
+				OpaqueAction.class,
+				ReadSelfAction.class,
+				ReadStructuralFeatureAction.class,
+				ReadVariableAction.class,
+				SendObjectAction.class,
+				SendSignalAction.class,
+				ValueSpecificationAction.class
+			);
 		return nodes;
 	}
 	
