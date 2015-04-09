@@ -16,15 +16,18 @@ import org.aspectj.lang.annotation.SuppressAjWarnings;
 public privileged aspect ImporterSupportingAspect extends AbstractImporterAspect {
 	
 
-	/**
-	 * This advice shows an error message when a non-txtUML method is called from a method body during model import.
-	 * @return The return value of the method call.
-	 *
-	 * @author Gábor Ferenc Kovács
+	/*
+	 * This advice shows an error message when a non-txtUML method is called from a method body
+	 * during model import.
 	 */
 	@SuppressAjWarnings
 	Object around() : call(* (!ModelElement+).*(..)) && !call(* (java.lang..*).*(..)) && isActive() {
-		System.err.println("Error: unpermitted method call: " + thisJoinPoint.getSignature().getDeclaringType().getName() + "." + thisJoinPoint.getSignature().getName());
+		System.err.println(
+				"Error: unpermitted method call: " +
+				thisJoinPoint.getSignature().getDeclaringType().getName() + 
+				"." + 
+				thisJoinPoint.getSignature().getName()
+			);
 		return proceed();
 	}
 	

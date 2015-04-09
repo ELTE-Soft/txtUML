@@ -123,9 +123,13 @@ public class ActionImporter extends AbstractMethodImporter {
 		Pair<ActivityNode,ActivityEdge> importThenBodyResult=importBlockBody(body);
 		ActivityEdge thenFirstEdge=importThenBodyResult.getValue();
 		ActivityNode thenLastNode=importThenBodyResult.getKey();
-		addGuardToActivityEdge(thenFirstEdge, condExpr);
+		
+		if(thenFirstEdge != null)
+			addGuardToActivityEdge(thenFirstEdge, condExpr);
 
-		createEdgeBetweenActivityNodes(thenLastNode,decisionNode);
+		if(thenLastNode != decisionNode)
+			createEdgeBetweenActivityNodes(thenLastNode,decisionNode);
+		
 		unfinishedDecisionNodes.push(decisionNode);
 		lastNode=decisionNode;
 	}
@@ -139,16 +143,8 @@ public class ActionImporter extends AbstractMethodImporter {
 	 */
 	static void importIfStatement(Condition cond, BlockBody thenBody)
 	{
-		String condExpr=importCondition(cond);
-
-		Pair<ActivityNode,ActivityEdge> importBlockBodyResult=importBlockBody(thenBody);
-		ActivityEdge thenFirstEdge=importBlockBodyResult.getValue();
-		ActivityNode thenLastNode=importBlockBodyResult.getKey();
-		
-		if(thenFirstEdge!=null)
-			addGuardToActivityEdge(thenFirstEdge, condExpr);
-		
-		lastNode=thenLastNode;
+		BlockBody emptyElseBody = () -> {};
+		importIfStatement(cond,thenBody,emptyElseBody);
 	}
 
 	/**
@@ -170,16 +166,27 @@ public class ActionImporter extends AbstractMethodImporter {
 		Pair<ActivityNode,ActivityEdge> importThenBodyResult=importBlockBody(thenBody);
 		ActivityEdge thenFirstEdge=importThenBodyResult.getValue();
 		ActivityNode thenLastNode=importThenBodyResult.getKey();
-		addGuardToActivityEdge(thenFirstEdge, condExpr);
-
+	
 		lastNode=decisionNode;
 
 		Pair<ActivityNode,ActivityEdge> importElseBodyResult=importBlockBody(elseBody);
 		ActivityEdge elseFirstEdge=importElseBodyResult.getValue();
 		ActivityNode elseLastNode=importElseBodyResult.getKey();
-		addGuardToActivityEdge(elseFirstEdge, "else");
-
+		
 		lastNode=createMergeNode(thenLastNode,elseLastNode);
+		
+		//if the "then" block body was empty, the first edge will be the one that targets the merge node
+		//lastNode is the merge node
+		if(thenFirstEdge == null) 
+			thenFirstEdge = lastNode.getIncomings().get(0);
+				
+		//if the "else" block body was empty, the first edge will be the one that targets the merge node
+		//lastNode is the merge node
+		if(elseFirstEdge == null)
+			elseFirstEdge = lastNode.getIncomings().get(1);
+		
+		addGuardToActivityEdge(thenFirstEdge, condExpr);
+		addGuardToActivityEdge(elseFirstEdge, "else");
 	}
 
 	/**
@@ -208,10 +215,15 @@ public class ActionImporter extends AbstractMethodImporter {
 		Pair<ActivityNode,ActivityEdge> importThenBodyResult=importParameterizedBlockBody(body,loopVar);
 		ActivityEdge thenFirstEdge=importThenBodyResult.getValue();
 		
-		if(thenFirstEdge!=null)
-			addGuardToActivityEdge(thenFirstEdge, condExpr);
+		setVariableValue(loopVar, loopVarId+" + 1"); // increment loopVar by 1
 		
-		setVariableValue(loopVar, loopVarId+" + 1"); // inc loopVar by 1
+		//if block body was empty, the first edge will be the one that targets the loop variable incrementing node
+		//lastNode is a SetVariableAction that increments the loop variable by 1
+		if(thenFirstEdge==null) 
+			thenFirstEdge = lastNode.getIncomings().get(0);
+	
+		addGuardToActivityEdge(thenFirstEdge, condExpr);
+		
 		createEdgeBetweenActivityNodes(lastNode,decisionNode);
 		
 		unfinishedDecisionNodes.push(decisionNode);

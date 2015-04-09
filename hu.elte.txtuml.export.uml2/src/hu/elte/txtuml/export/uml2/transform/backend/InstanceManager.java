@@ -19,7 +19,7 @@ import hu.elte.txtuml.export.uml2.utils.FieldValueAccessor;
 public final class InstanceManager {
 
 	/**
-	 * Initializes the global instances map. Creates map entries for the global constants.
+	 * Initializes the global instances map. Creates map entries for global constants.
 	 * 
 	 * @author Ádám Ancsin
 	 */
