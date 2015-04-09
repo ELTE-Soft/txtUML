@@ -10,14 +10,85 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ModelClass extends Region implements ModelElement,
 		ModelIdentifiedElement, LayoutNode {
 
-	private enum Status {
-		READY, ACTIVE, FINALIZED, DELETED
+	/*
+	 * The life cycle of a model object consists of steps represented by this
+	 * enumeration type. <p> See the documentation of the {@link
+	 * hu.elte.txtuml.api} package to get an overview on modeling in txtUML.
+	 * 
+	 * @see Status#READY
+	 * @see Status#ACTIVE
+	 * @see Status#FINALIZED
+	 * @see Status#DELETED
+	 */
+	public enum Status {
+		/**
+		 * This status of a <code>ModelClass</code> object indicates that the
+		 * represented model object's state machine is not yet started. It will
+		 * not react to any asynchronous events, for example, sending signals to
+		 * it. However, sending signal to a <code>READY</code> object is legal
+		 * in the model, therefore no error or warning messages are shown if it
+		 * is done.
+		 * 
+		 * @see Action#start(ModelClass)
+		 */
+		READY,
+		/**
+		 * This status of a <code>ModelClass</code> object indicates that the
+		 * represented model object's state machine is currently running.
+		 * <p>
+		 * It may be reached by starting the state machine of this object
+		 * manually.
+		 *
+		 * @see Action#start(ModelClass)
+		 */
+		ACTIVE,
+		/**
+		 * This status of a <code>ModelClass</code> object indicates that the
+		 * represented model object either has no state machine or its state
+		 * machine is already stopped but the object itself is not yet deleted
+		 * from the model. Its fields and methods might be used but it will not
+		 * react to any asynchronous events, for example, sending signals to it.
+		 * However, sending signal to a <code>FINALIZED</code> object is legal
+		 * in the model, therefore no error or warning messages are shown if it
+		 * is done.
+		 * <p>
+		 * <b>Note:</b> currently there is no way to stop the state machine of a
+		 * model object without deleting it. So the only way to reach this
+		 * status is to implement a model class without a state machine.
+		 */
+		FINALIZED,
+		/**
+		 * This status of a <code>ModelClass</code> object indicates that the
+		 * represented model object is deleted. No further use of this object is
+		 * allowed, however, using its fields or methods do not result in any
+		 * error messages because of the limitations of the Java language.
+		 * <p>
+		 * An object may only be in this status when all of its associations are
+		 * unlinked and its state machine is stopped.
+		 * 
+		 * @see Action#delete(ModelClass)
+		 */
+		DELETED
 	}
 
+	/**
+	 * A static counter to give different identifiers to each created model
+	 * object instance.
+	 */
 	private static AtomicLong counter = new AtomicLong(0);
 
+	/**
+	 * The current status of this model object.
+	 * 
+	 * @see Status
+	 */
 	private Status status;
+	
+	/**
+	 * A unique identifier of this object.
+	 */
 	private final String identifier;
+	
 	private final AssociationsMap associations = AssociationsMap.create();
 
 	@Override
@@ -132,6 +203,8 @@ public class ModelClass extends Region implements ModelElement,
 					+ " cannot be deleted because of existing associations.");
 			return;
 		}
+
+		this.inactivate();
 
 		status = Status.DELETED;
 	}

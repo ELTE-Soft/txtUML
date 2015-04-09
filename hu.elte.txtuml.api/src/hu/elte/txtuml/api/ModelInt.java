@@ -15,8 +15,8 @@ package hu.elte.txtuml.api;
  * <p>
  * <b>Java restrictions:</b>
  * <ul>
- * <li><i>Instantiate:</i> allowed
- * <li><i>Define subtype:</i> disallowed
+ * <li><i>Instantiate:</i> allowed</li>
+ * <li><i>Define subtype:</i> disallowed</li>
  * </ul>
  * 
  * <p>
@@ -33,19 +33,18 @@ package hu.elte.txtuml.api;
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an
  * overview on modeling in txtUML.
  *
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  * @see ModelType
- * 
  */
 public class ModelInt extends ModelType<Integer> {
 
 	/**
-	 * A <code>ModelInt</code> instance representing a one value.
+	 * A <code>ModelInt</code> instance representing a value of 1.
 	 */
 	public static final ModelInt ONE = new ModelInt(1);
 
 	/**
-	 * A <code>ModelInt</code> instance representing a zero value.
+	 * A <code>ModelInt</code> instance representing a value of 0.
 	 */
 	public static final ModelInt ZERO = new ModelInt(0);
 
@@ -63,7 +62,7 @@ public class ModelInt extends ModelType<Integer> {
 
 	/**
 	 * Creates a new <code>ModelInt</code> instance representing the specified
-	 * long value converted to integer.
+	 * long value casted to integer.
 	 * 
 	 * @param val
 	 *            the long value this new <code>ModelInt</code> instance will
@@ -73,8 +72,8 @@ public class ModelInt extends ModelType<Integer> {
 		super((int) val);
 	}
 
-	/*
-	 * Creates a new <code>ModelInt</code> instance representing a zero value.
+	/**
+	 * Creates a new <code>ModelInt</code> instance representing a value of 0.
 	 */
 	public ModelInt() {
 		super(0);
@@ -82,10 +81,10 @@ public class ModelInt extends ModelType<Integer> {
 
 	/**
 	 * Calculates <code>abs(</code><i>t</i><code>)</code> where <i>t</i> is the
-	 * boolean value of this object. Returns a new <code>ModelBool</code>
+	 * integer value of this object. Returns a new <code>ModelInt</code>
 	 * instance representing the result.
 	 * 
-	 * @return new <code>ModelBool</code> instance representing the result
+	 * @return new <code>ModelInt</code> instance representing the result
 	 */
 	public ModelInt abs() {
 		if (getValue() >= 0) {
@@ -108,7 +107,6 @@ public class ModelInt extends ModelType<Integer> {
 	 *             if <code>val</code> is <code>null</code>
 	 */
 	public ModelInt add(ModelInt val) {
-
 		return new ModelInt(getValue() + val.getValue());
 	}
 
@@ -125,7 +123,6 @@ public class ModelInt extends ModelType<Integer> {
 	 *             if <code>val</code> is <code>null</code>
 	 */
 	public ModelInt divide(ModelInt val) {
-
 		return new ModelInt(getValue() / val.getValue());
 	}
 
@@ -143,7 +140,6 @@ public class ModelInt extends ModelType<Integer> {
 	 */
 
 	public ModelInt remainder(ModelInt val) {
-
 		return new ModelInt(getValue() % val.getValue());
 	}
 
@@ -177,7 +173,6 @@ public class ModelInt extends ModelType<Integer> {
 	 */
 
 	public ModelInt subtract(ModelInt val) {
-
 		return new ModelInt(getValue() - val.getValue());
 	}
 
@@ -263,23 +258,22 @@ public class ModelInt extends ModelType<Integer> {
 	}
 
 	/**
-	 * Calculates <code>!</code><i>t</i> where <i>t</i> is the boolean value of
-	 * this object. Returns a new <code>ModelBool</code> instance representing
+	 * Calculates <code>-</code><i>t</i> where <i>t</i> is the integer value of
+	 * this object. Returns a new <code>ModelInt</code> instance representing
 	 * the result.
 	 * 
-	 * @return new <code>ModelBool</code> instance representing the result
+	 * @return new <code>ModelInt</code> instance representing the result
 	 */
 	public ModelInt negate() {
-
 		return new ModelInt(-getValue());
 	}
 
 	/**
 	 * Calculates <code>signum(</code><i>t</i><code>)</code> where <i>t</i> is
-	 * the boolean value of this object. Returns a new <code>ModelBool</code>
+	 * the integer value of this object. Returns a new <code>ModelInt</code>
 	 * instance representing the result.
 	 * 
-	 * @return new <code>ModelBool</code> instance representing the result
+	 * @return new <code>ModelInt</code> instance representing the result
 	 */
 	public ModelInt signum() {
 		return new ModelInt(Integer.signum(getValue()));

@@ -1,7 +1,7 @@
 package hu.elte.txtuml.api;
 
 /**
- * Base class to immutable classes representing primitive types in the model.
+ * Base class for immutable classes representing primitive types in the model.
  * Use of the Java primitive types is completely disallowed in the model, except
  * for constructor parameters of <code>ModelType</code> objects.
  * <p>
@@ -14,14 +14,16 @@ package hu.elte.txtuml.api;
  * <p>
  * <b>Java restrictions:</b>
  * <ul>
- * <li><i>Instantiate:</i> disallowed
- * <li><i>Define subtype:</i> disallowed
+ * <li><i>Instantiate:</i> disallowed</li>
+ * <li><i>Define subtype:</i> disallowed</li>
  * </ul>
  * 
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an
  * overview on modeling in txtUML.
  *
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
+ * @param <T>
+ *            the Java type of the primitive type this object represents
  * @see ModelBool
  * @see ModelInt
  * @see ModelString
@@ -40,7 +42,7 @@ public class ModelType<T> implements ModelElement, ModelIdentifiedElement {
 	 * @param val
 	 *            the value the new instance will represent
 	 */
-	protected ModelType(T val) {
+	ModelType(T val) {
 		super();
 		value = val;
 	}

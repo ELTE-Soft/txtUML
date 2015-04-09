@@ -15,8 +15,8 @@ package hu.elte.txtuml.api;
  * <p>
  * <b>Java restrictions:</b>
  * <ul>
- * <li><i>Instantiate:</i> allowed
- * <li><i>Define subtype:</i> disallowed
+ * <li><i>Instantiate:</i> allowed</li>
+ * <li><i>Define subtype:</i> disallowed</li>
  * </ul>
  * 
  * <p>
@@ -33,7 +33,7 @@ package hu.elte.txtuml.api;
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an
  * overview on modeling in txtUML.
  *
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  * @see ModelType
  *
  */
