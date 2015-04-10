@@ -1,5 +1,8 @@
 package hu.elte.txtuml.api;
 
+/*
+ * TODO how to use variable types 
+ */
 public abstract class VariableType<T, MT extends ModelType<T>> {
 
 	private MT value;

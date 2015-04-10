@@ -33,7 +33,7 @@ import hu.elte.txtuml.api.backend.MultiplicityException;
  *
  * See the documentation of {@link Association} for details on defining and
  * using associations.
- * 
+ * <p>
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an
  * overview on modeling in txtUML.
  *

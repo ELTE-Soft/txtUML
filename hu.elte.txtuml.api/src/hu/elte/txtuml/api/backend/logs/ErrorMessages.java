@@ -40,9 +40,9 @@ public interface ErrorMessages {
 				+ " are overlapping.";
 	}
 
-	static String getMoreThanOneTransitionsFromChoiceMessage(Vertex choice) {
+	static String getMoreThanOneElseTransitionsFromChoiceMessage(Vertex choice) {
 		return "Error: there are more than one transitions from "
-				+ choice.toString() + " with an Else condition.";
+				+ choice.toString() + " with an 'else' condition.";
 	}
 
 	static String getNoTransitionFromChoiceMessage(Vertex choice) {

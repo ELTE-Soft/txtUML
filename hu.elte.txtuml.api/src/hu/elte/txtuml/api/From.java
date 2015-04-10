@@ -52,7 +52,7 @@ import java.lang.annotation.Target;
  * </pre>
  * 
  * See the documentation of {@link StateMachine} for detailed examples.
- *
+ * <p>
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an
  * overview on modeling in txtUML.
  *
