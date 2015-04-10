@@ -1,6 +1,8 @@
 package hu.elte.txtuml.api;
 
 import hu.elte.txtuml.api.backend.collections.InitialsMap;
+import hu.elte.txtuml.api.backend.logs.ErrorMessages;
+import hu.elte.txtuml.api.backend.logs.LogMessages;
 
 public abstract class Region extends StateMachine {
 
@@ -75,85 +77,16 @@ public abstract class Region extends StateMachine {
 			return;
 		}
 		if (ModelExecutor.Settings.executorLog() && signal != null) {
-			ModelExecutor.executorLog(toString() + " processes "
-					+ signal.toString());
+			ModelExecutor.executorLog(LogMessages.getProcessingSignalMessage(
+					this, signal));
 		}
 		if (findAndExecuteTransition(signal)) {
 			callEntryAction();
 		}
 	}
 
-	private class TransitionExecutor {
-
-		/**
-		 * An instance of the class representing the transition which is to be
-		 * executed.
-		 */
-		private Transition transition;
-
-		/**
-		 * The class representing the transition which is to be executed.
-		 */
-		private Class<?> transitionClass;
-
-		/**
-		 * Sole constructor of <code>TransitionExecutor</code>. Sets the values
-		 * of all its fields to <code>null</code>.
-		 */
-		TransitionExecutor() {
-			this.transition = null;
-			this.transitionClass = null;
-		}
-
-		/**
-		 * @return <code>true</code> if this instance is not yet set to execute
-		 *         a certain transition
-		 */
-		boolean isEmpty() {
-			return transition == null;
-		}
-
-		/**
-		 * Sets this object to execute a certain transition. Does not perform
-		 * the execution.
-		 * 
-		 * @param transition
-		 *            an instance of the class representing the transition which
-		 *            is to be executed
-		 * @param transitionClass
-		 *            the class representing the transition which is to be
-		 *            executed
-		 */
-		void set(Transition transition, Class<?> transitionClass) {
-			this.transition = transition;
-			this.transitionClass = transitionClass;
-		}
-
-		/**
-		 * @return the class representing the transition which is to be executed
-		 */
-		Class<?> getTransitionClass() {
-			return transitionClass;
-		}
-
-		/*
-		 * The signal has to be already set on the transition contained in this
-		 * executor before calling this method.
-		 */
-		void execute() {
-			if (ModelExecutor.Settings.executorLog()) {
-				ModelExecutor.executorLog(Region.this.toString() + " uses "
-						+ transition.toString());
-			}
-			callExitAction(transition.getSource());
-			transition.effect();
-			currentVertex = transition.getTarget();
-		}
-
-	}
-
 	private boolean findAndExecuteTransition(Signal signal) {
-		final TransitionExecutor applicableTransitionExecutor = new TransitionExecutor();
+		Transition applicableTransition = null;
 
 		for (Class<?> examinedClass = currentVertex.getClass(), parentClass = examinedClass
 				.getEnclosingClass(); parentClass != null; examinedClass = parentClass, parentClass = examinedClass
@@ -175,21 +108,15 @@ public abstract class Region extends StateMachine {
 						continue;
 					}
 
-					if (!applicableTransitionExecutor.isEmpty()) {
-						ModelExecutor
-								.executorErrorLog("Error: guards of transitions "
-										+ applicableTransitionExecutor
-												.getTransitionClass().getName()
-										+ " and "
-										+ c.getName()
-										+ " from class "
-										+ currentVertex.getClass()
-												.getSimpleName()
-										+ " are overlapping");
+					if (applicableTransition != null) {
+						ModelExecutor.executorErrorLog(ErrorMessages
+								.getGuardsOfTransitionsAreOverlappingMessage(
+										applicableTransition, transition,
+										currentVertex));
 						continue;
 					}
 
-					applicableTransitionExecutor.set(transition, c);
+					applicableTransition = transition;
 
 					if (!ModelExecutor.Settings.dynamicChecks()) {
 						break;
@@ -199,12 +126,12 @@ public abstract class Region extends StateMachine {
 			}
 		}
 
-		if (applicableTransitionExecutor.isEmpty()) {
+		if (applicableTransition == null) {
 			// there was no transition which could be used
 			return false;
 		}
 
-		applicableTransitionExecutor.execute();
+		executeTransition(applicableTransition);
 
 		if (currentVertex instanceof Choice) {
 			findAndExecuteTransitionFromChoice(signal);
@@ -214,8 +141,8 @@ public abstract class Region extends StateMachine {
 	}
 
 	private void findAndExecuteTransitionFromChoice(Signal signal) {
-		final TransitionExecutor applicableTransitionExecutor = new TransitionExecutor();
-		final TransitionExecutor elseTransitionExecutor = new TransitionExecutor();
+		Transition applicableTransition = null;
+		Transition elseTransition = null;
 
 		final Class<?> examinedChoiceClass = currentVertex.getClass();
 		final Class<?> parentClass = examinedChoiceClass.getEnclosingClass();
@@ -240,65 +167,71 @@ public abstract class Region extends StateMachine {
 				if (resultOfGuard instanceof ModelBool.Else) {
 					// transition with else condition
 
-					if (!elseTransitionExecutor.isEmpty()) {
+					if (elseTransition != null) {
 						// there was already a transition with an else condition
 
 						ModelExecutor
-								.executorErrorLog("Error: there are more than one transitions from choice "
-										+ examinedChoiceClass.getSimpleName()
-										+ " with an Else condition");
+								.executorErrorLog(ErrorMessages
+										.getMoreThanOneTransitionsFromChoiceMessage(currentVertex));
 						continue;
 					}
 
-					elseTransitionExecutor.set(transition, c);
+					elseTransition = transition;
 
 					continue;
 				}
 
-				if (!applicableTransitionExecutor.isEmpty()) {
+				if (applicableTransition != null) {
 					// there was already an applicable transition
 
-					ModelExecutor
-							.executorErrorLog("Error: guards of transitions "
-									+ applicableTransitionExecutor
-											.getTransitionClass().getName()
-									+ " and " + c.getName() + " from class "
-									+ examinedChoiceClass.getSimpleName()
-									+ " are overlapping");
+					ModelExecutor.executorErrorLog(ErrorMessages
+							.getGuardsOfTransitionsAreOverlappingMessage(
+									applicableTransition, transition,
+									currentVertex));
 
 					continue;
 				}
 
-				applicableTransitionExecutor.set(transition, c);
+				applicableTransition = transition;
 
 				if (!ModelExecutor.Settings.dynamicChecks()) {
 					break;
 				}
 			}
 		}
-		if (applicableTransitionExecutor.isEmpty()) {
+		if (applicableTransition == null) {
 			// there was no transition which could be used
 
-			if (!elseTransitionExecutor.isEmpty()) {
+			if (elseTransition != null) {
 				// but there was a transition with an else condition
 
-				elseTransitionExecutor.execute();
+				executeTransition(elseTransition);
 			} else {
 				ModelExecutor
-						.executorErrorLog("Error: there was no transition from choice class "
-								+ examinedChoiceClass.getSimpleName()
-								+ " which could be used");
+						.executorErrorLog(ErrorMessages.getNoTransitionFromChoiceMessage(currentVertex));
 			}
+			
 			return;
 		}
 
-		applicableTransitionExecutor.execute();
+		executeTransition(applicableTransition);
 
 		if (currentVertex instanceof Choice) {
 			findAndExecuteTransitionFromChoice(signal);
 		}
 	}
 
+	private void executeTransition(Transition transition) {
+		if (ModelExecutor.Settings.executorLog()) {
+			ModelExecutor.executorLog(LogMessages
+					.getUsingTransitionMessage(Region.this, transition));
+		}
+		callExitAction(transition.getSource());
+		transition.effect();
+		currentVertex = transition.getTarget();
+	}
+
+	
 	private boolean notApplicableTrigger(Class<?> transitionClass, Signal signal) {
 		Trigger trigger = transitionClass.getAnnotation(Trigger.class);
 		if ((signal == null) == (trigger == null)
@@ -319,8 +252,8 @@ public abstract class Region extends StateMachine {
 			currentVertex = (Vertex) getNestedClassInstance(currentParentState);
 
 			if (ModelExecutor.Settings.executorLog()) {
-				ModelExecutor.executorLog(toString() + " leaves "
-						+ currentVertex.toString());
+				ModelExecutor.executorLog(LogMessages.getLeavingVertexMessage(
+						this, currentVertex));
 			}
 		}
 		currentVertex.exit();
@@ -333,8 +266,8 @@ public abstract class Region extends StateMachine {
 					.getClass());
 			if (initClass != null) {
 				if (ModelExecutor.Settings.executorLog()) {
-					ModelExecutor.executorLog(toString() + " enters "
-							+ currentVertex.toString());
+					ModelExecutor.executorLog(LogMessages
+							.getEnteringVertexMessage(this, currentVertex));
 				}
 
 				currentVertex = getNestedClassInstance(initClass);
