@@ -1,9 +1,9 @@
 package hu.elte.txtuml.api;
 
+import hu.elte.txtuml.api.backend.MultiplicityException;
 import hu.elte.txtuml.api.backend.collections.AssociationsMap;
 import hu.elte.txtuml.api.backend.logs.ErrorMessages;
 import hu.elte.txtuml.api.backend.logs.WarningMessages;
-import hu.elte.txtuml.api.backend.MultiplicityException;
 import hu.elte.txtuml.layout.lang.elements.LayoutNode;
 import hu.elte.txtuml.utils.InstanceCreator;
 
@@ -47,8 +47,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * {@link ModelClass} or {@link ModelType}; they represent attributes of the
  * model class</li>
  * <li><i>Methods:</i> allowed, only with parameters and return values of types
- * which are subclasses of {@link ModelClass} or {@link ModelType}; they represent
- * operations of the model class</li>
+ * which are subclasses of {@link ModelClass} or {@link ModelType}; they
+ * represent operations of the model class</li>
  * <li><i>Nested interfaces:</i> disallowed</li>
  * <li><i>Nested classes:</i> allowed, only non-static and extending either
  * {@link StateMachine.Vertex} or {@link StateMachine.Transition}</li>

@@ -8,7 +8,6 @@ import hu.elte.txtuml.api.ModelClass;
  * @author Gabor Ferenc Kovacs
  *
  */
-@SuppressWarnings("javadoc")
 public interface WarningMessages {
 
 	static String getUnlinkingNonExistingAssociationMessage(ModelClass leftObj,
@@ -18,7 +17,8 @@ public interface WarningMessages {
 	}
 
 	static String getSignalArrivedToDeletedObjectMessage(ModelClass obj) {
-		return "Warning: signal arrived to deleted model object " + obj.toString() + ".";
+		return "Warning: signal arrived to deleted model object "
+				+ obj.toString() + ".";
 	}
 
 }

@@ -333,9 +333,9 @@ public class Association implements ModelElement, LayoutLink {
 		 * <b>Implementation note:</b>
 		 * <p>
 		 * Protected because this class is intended to be inherited from but not
-		 * instantiated. However, <code>One</code> has to be a non-abstract class
-		 * to make sure that it is instantiatable when that is needed for the API or
-		 * the model exportation.
+		 * instantiated. However, <code>One</code> has to be a non-abstract
+		 * class to make sure that it is instantiatable when that is needed for
+		 * the API or the model exportation.
 		 */
 		protected One() {
 		}
@@ -399,9 +399,9 @@ public class Association implements ModelElement, LayoutLink {
 		 * <b>Implementation note:</b>
 		 * <p>
 		 * Protected because this class is intended to be inherited from but not
-		 * instantiated. However, <code>HiddenMany</code> has to be a non-abstract class
-		 * to make sure that it is instantiatable when that is needed for the API or
-		 * the model exportation.
+		 * instantiated. However, <code>HiddenMany</code> has to be a
+		 * non-abstract class to make sure that it is instantiatable when that
+		 * is needed for the API or the model exportation.
 		 */
 		protected HiddenMany() {
 		}
@@ -465,9 +465,9 @@ public class Association implements ModelElement, LayoutLink {
 		 * <b>Implementation note:</b>
 		 * <p>
 		 * Protected because this class is intended to be inherited from but not
-		 * instantiated. However, <code>HiddenSome</code> has to be a non-abstract class
-		 * to make sure that it is instantiatable when that is needed for the API or
-		 * the model exportation.
+		 * instantiated. However, <code>HiddenSome</code> has to be a
+		 * non-abstract class to make sure that it is instantiatable when that
+		 * is needed for the API or the model exportation.
 		 */
 		protected HiddenSome() {
 		}
@@ -531,9 +531,9 @@ public class Association implements ModelElement, LayoutLink {
 		 * <b>Implementation note:</b>
 		 * <p>
 		 * Protected because this class is intended to be inherited from but not
-		 * instantiated. However, <code>HiddenMaybeOne</code> has to be a non-abstract class
-		 * to make sure that it is instantiatable when that is needed for the API or
-		 * the model exportation.
+		 * instantiated. However, <code>HiddenMaybeOne</code> has to be a
+		 * non-abstract class to make sure that it is instantiatable when that
+		 * is needed for the API or the model exportation.
 		 */
 		protected HiddenMaybeOne() {
 		}
@@ -596,9 +596,9 @@ public class Association implements ModelElement, LayoutLink {
 		 * <b>Implementation note:</b>
 		 * <p>
 		 * Protected because this class is intended to be inherited from but not
-		 * instantiated. However, <code>HiddenOne</code> has to be a non-abstract class
-		 * to make sure that it is instantiatable when that is needed for the API or
-		 * the model exportation.
+		 * instantiated. However, <code>HiddenOne</code> has to be a
+		 * non-abstract class to make sure that it is instantiatable when that
+		 * is needed for the API or the model exportation.
 		 */
 		protected HiddenOne() {
 		}

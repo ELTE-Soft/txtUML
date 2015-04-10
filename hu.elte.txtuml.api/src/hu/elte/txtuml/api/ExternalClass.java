@@ -1,5 +1,49 @@
 package hu.elte.txtuml.api;
 
+/**
+ * Base class for external classes in the model which are classes which's
+ * implementation is not part of the model. They might be used to bring external
+ * features in the model.
+ * 
+ * <p>
+ * <b>Represents:</b> external classes
+ * <p>
+ * <b>Usage:</b>
+ * <p>
+ * 
+ * TODO
+ * 
+ * <p>
+ * <b>Java restrictions:</b>
+ * <ul>
+ * <li><i>Instantiate:</i> disallowed</li>
+ * <li><i>Define subtype:</i> allowed
+ * <p>
+ * <b>Subtype requirements:</b>
+ * <ul>
+ * <li>none</li>
+ * </ul>
+ * <p>
+ * <b>Subtype restrictions:</b>
+ * <ul>
+ * <li><i>Generic parameters:</i> allowed</li>
+ * <li><i>Constructors:</i> allowed</li>
+ * <li><i>Initialization blocks:</i> allowed</li>
+ * <li><i>Fields:</i> allowed</li>
+ * <li><i>Methods:</i> allowed</li>
+ * <li><i>Nested interfaces:</i> allowed</li>
+ * <li><i>Nested classes:</i> allowed</li>
+ * <li><i>Nested enums:</i> allowed</li>
+ * </ul>
+ * <li><i>Inherit from the defined subtype:</i> allowed</li></li>
+ * </ul>
+ * 
+ * See the documentation of the {@link hu.elte.txtuml.api} package to get an
+ * overview on modeling in txtUML.
+ *
+ * @author Gabor Ferenc Kovacs
+ *
+ */
 @ModelAnnotatedElement
 public class ExternalClass extends Action {
 

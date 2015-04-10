@@ -14,8 +14,7 @@ import java.util.HashMap;
  */
 @SuppressWarnings("serial")
 public class InitialsMapImpl extends
-		HashMap<Class<?>, Class<? extends Initial>> implements
-		InitialsMap {
+		HashMap<Class<?>, Class<? extends Initial>> implements InitialsMap {
 
 	@Override
 	public String toString() {

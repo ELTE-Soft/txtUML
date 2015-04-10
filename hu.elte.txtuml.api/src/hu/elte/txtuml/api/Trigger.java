@@ -60,8 +60,8 @@ public @interface Trigger {
 	 * The annotation type element to set the triggering signal event of the
 	 * transition this annotation is used on.
 	 * 
-	 * @return the class representing the signal receiving which will
-	 *         trigger the transition
+	 * @return the class representing the signal receiving which will trigger
+	 *         the transition
 	 */
 	Class<? extends Signal> value();
 

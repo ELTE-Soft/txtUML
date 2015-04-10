@@ -9,7 +9,7 @@ import java.util.Iterator;
  * Base class of association ends having a multiplicity of 0..1.
  * <p>
  * Directly unusable by the user.
-
+ * 
  * 
  * @author Gabor Ferenc Kovacs
  *

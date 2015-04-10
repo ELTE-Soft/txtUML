@@ -23,9 +23,8 @@ package hu.elte.txtuml.api;
  * <p>
  * <b>Implementation note:</b>
  * <p>
- * It is needed for AspectJ to work well. All types
- * that are used in the model should implement this interface (not directly but
- * through inheritance).
+ * It is needed for AspectJ to work well. All types that are used in the model
+ * should implement this interface (not directly but through inheritance).
  * 
  * @author Gabor Ferenc Kovacs
  *

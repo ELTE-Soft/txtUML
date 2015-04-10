@@ -10,7 +10,6 @@ import hu.elte.txtuml.api.StateMachine.Vertex;
  * @author Gabor Ferenc Kovacs
  *
  */
-@SuppressWarnings("javadoc")
 public interface ErrorMessages {
 
 	static String getUpperBoundOfMultiplicityOffendedMessage() {

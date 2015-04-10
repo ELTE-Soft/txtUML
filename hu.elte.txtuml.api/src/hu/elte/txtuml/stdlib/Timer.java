@@ -76,10 +76,11 @@ public class Timer extends ExternalClass {
 				.newSingleThreadScheduledExecutor();
 
 		/**
-		 * The handle of the event scheduled with the {@link Handle#scheduler scheduler}.
+		 * The handle of the event scheduled with the {@link Handle#scheduler
+		 * scheduler}.
 		 */
 		private ScheduledFuture<?> handle;
-		
+
 		/**
 		 * The signal to send after the timeout.
 		 */
@@ -118,8 +119,8 @@ public class Timer extends ExternalClass {
 		}
 
 		/**
-		 * @return the remaining delay in millisecs; zero or negative values indicate that the delay
-		 *         has already elapsed
+		 * @return the remaining delay in millisecs; zero or negative values
+		 *         indicate that the delay has already elapsed
 		 */
 		private long queryLong() {
 			return handle.getDelay(TimeUnit.MILLISECONDS)

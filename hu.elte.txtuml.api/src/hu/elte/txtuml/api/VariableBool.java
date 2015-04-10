@@ -16,7 +16,7 @@ package hu.elte.txtuml.api;
  * <ul>
  * <li><i>Instantiate:</i> allowed</li>
  * <li><i>Define subtype:</i> disallowed</li>
- * </ul> 
+ * </ul>
  * 
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an
  * overview on modeling in txtUML.
