@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
@@ -113,6 +114,7 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 	@Override
 	public void addElementsToDiagram(List<Element> elements) throws ServiceException {
 		List<java.lang.Class<?>> types = new LinkedList<java.lang.Class<?>>();
+		
 		types.addAll(elementsToBeAdded);
 		types.addAll(connectorsToBeAdded);
 		
@@ -122,6 +124,7 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 				super.addElementsToEditpart(diagramEditPart, listofTypes);
 			}
 		}
+		
 		
 		@SuppressWarnings("unchecked")
 		List<EditPart> editParts = diagramEditPart.getChildren();
@@ -146,11 +149,26 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 		
 		List<Element> properties = modelManager.getElementsOfTypesFromList(list, propertyFieldElementsToBeAdded);
 		List<Element> methods = modelManager.getElementsOfTypesFromList(list, methodFieldElementsToBeAdded);
-	
+		
+		removeAssociationProperties(properties);
+		
 		EditPart parametersEp = parentEditParts.get(1);
 		addElementsToEditpart(parametersEp, properties);
 	
 		EditPart methodsEp = parentEditParts.get(2);
 		addElementsToEditpart(methodsEp, methods);
 	}
+	
+	private void removeAssociationProperties(List<Element> properties){
+		List<Element> propertiesToRemove = new LinkedList<Element>();
+		for(Element property : properties){
+			Property prop = (Property) property;
+			if(prop.getAssociation() != null){
+				propertiesToRemove.add(property);
+			}
+		}
+		properties.removeAll(propertiesToRemove);
+	}
 }
+
+
