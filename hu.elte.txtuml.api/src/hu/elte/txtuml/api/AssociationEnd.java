@@ -45,7 +45,7 @@ import hu.elte.txtuml.api.backend.problems.MultiplicityException;
  * @see Association.HiddenMany
  * @see Association.HiddenOne
  * @see Association.HiddenMaybeOne
- * @see Association.Some
+ * @see Association.HiddenSome
  * 
  * @param <T>
  *            the type of model objects to be contained in this collection

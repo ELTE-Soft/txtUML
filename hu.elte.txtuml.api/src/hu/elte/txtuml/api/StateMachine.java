@@ -32,12 +32,20 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 
 		/**
 		 * Overridable method to implement the entry action of this vertex.
+		 * <p>
+		 * Overriding methods may only contain action code. See the
+		 * documentation of the {@link hu.elte.txtuml.api} package for details
+		 * about the action language.
 		 */
 		public void entry() {
 		}
 
 		/**
 		 * Overridable method to implement the exit action of this vertex.
+		 * <p>
+		 * Overriding methods may only contain action code. See the
+		 * documentation of the {@link hu.elte.txtuml.api} package for details
+		 * about the action language.
 		 */
 		public void exit() {
 		}
@@ -196,8 +204,9 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		private final Vertex target;
 
 		/**
-		 * Before this transition is executed, <code>signal</code> must be set
-		 * to be the actual signal receiving which triggered the transition.
+		 * Before this transition is executed or its guard is called,
+		 * <code>signal</code> must be set to be the actual signal receiving
+		 * which triggered the transition.
 		 * <p>
 		 * If the transition has no triggers defined, the value of this field is
 		 * unused.
@@ -240,6 +249,10 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		 * If the actual transition has a trigger defined, the
 		 * {@link #getSignal() getSignal} method can be used inside the
 		 * overriding methods to get the triggering signal.
+		 * <p>
+		 * Overriding methods may only contain action code. See the
+		 * documentation of the {@link hu.elte.txtuml.api} package for details
+		 * about the action language.
 		 */
 		public void effect() {
 		}
@@ -269,22 +282,26 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		 * <li>the current vertex is a choice pseudostate</li>
 		 * <li>the source of at least one of the transitions is the choice
 		 * pseodostate</li>
-		 * <li>this transition's <code>guard</code> method returns a
-		 * {@link ModelBool.Else} instance which always represents
+		 * <li>that transition's <code>guard</code> method returns an
+		 * {@link ModelBool.Else Else} instance which always represents
 		 * <code>true</code></li>
 		 * <li>the other transition's <code>guard</code> method does not return
-		 * a {@link ModelBool.Else} instance</li>
+		 * an <code>Else</code> instance</li>
 		 * </ul>
 		 * In this case, the second transition will be executed as the one with
 		 * an else condition is executed only if no other transition might be
 		 * used.
 		 * <p>
-		 * <i>If the overriding method once returns an <code>Else</code>
-		 * instance, it should always do so.</i>
+		 * If the overriding method once returns an <code>Else</code> instance,
+		 * it should always do so.
 		 * <p>
 		 * If the actual transition has a trigger defined, the
 		 * {@link #getSignal() getSignal} method can be used inside the
 		 * overriding methods to get the triggering signal.
+		 * <p>
+		 * Overriding methods may only contain a condition evaluation. See the
+		 * documentation of the {@link hu.elte.txtuml.api} package for details
+		 * about condition evaluations in the model.
 		 * 
 		 * @return a <code>ModelBool</code> representing <code>true</code> by
 		 *         default implementation
@@ -293,16 +310,44 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 			return ModelBool.TRUE;
 		}
 
+		/**
+		 * Returns the signal receiving which triggered the execution (or the
+		 * call of the guard) of this transition. The return value is casted to
+		 * any desired type which is a subclass of <code>Signal</code>.
+		 * <p>
+		 * It is guaranteed for this method to return a non-null value
+		 * successfully if the following conditions are met:
+		 * <ul>
+		 * <li>the actual transition has a trigger defined with a triggering
+		 * signal <code>s</code></li>
+		 * <li>the transition is not from an initial or a choice pseudostate</li>
+		 * <li>a cast to <code>s</code> is asked</li>
+		 * </ul>
+		 * If the transition has no triggers defined, this method should not be
+		 * called.
+		 * 
+		 * @return the signal receiving which triggered the execution (or the
+		 *         call of the guard) of this transition
+		 * @throws ClassCastException
+		 *             if the cast might not be performed
+		 */
 		@SuppressWarnings("unchecked")
 		protected final <T extends Signal> T getSignal() {
 			return (T) signal;
 		}
 
 		/**
-		 * 
-		 * TODO
+		 * Sets the <code>signal</code> field of this transition.
+		 * <p>
+		 * Before this transition is executed or its guard is called,
+		 * <code>signal</code> must be set to be the actual signal receiving
+		 * which triggered the transition.
+		 * <p>
+		 * If the transition has no triggers defined, the value of the
+		 * <code>signal</code> field is unused.
 		 * 
 		 * @param s
+		 *            the new value of the <code>signal</code> field
 		 */
 		final void setSignal(Signal s) {
 			signal = s;

@@ -10,8 +10,8 @@ public interface Collection<T extends ModelClass> extends
 	/**
 	 * Checks if this collection is empty.
 	 * <p>
-	 * This method is currently only available in the API, its use is not
-	 * exported to UML2.
+	 * This method is currently <b>only available in the API</b>, its use is <b>not
+	 * exported to UML2</b>.
 	 * 
 	 * @return a <code>ModelBool</code> representing <code>true</code> if this
 	 *         collection is empty, a <code>ModelBool</code> representing
@@ -22,8 +22,8 @@ public interface Collection<T extends ModelClass> extends
 	/**
 	 * Returns the number of elements in this collection.
 	 * <p>
-	 * This method is currently only available in the API, its use is not
-	 * exported to UML2.
+	 * This method is currently <b>only available in the API</b>, its use is <b>not
+	 * exported to UML2</b>.
 	 * 
 	 * @return a <code>ModelInt</code> representing the size of this collection
 	 */
@@ -32,8 +32,8 @@ public interface Collection<T extends ModelClass> extends
 	/**
 	 * Checks whether a certain model object is in this collection.
 	 * <p>
-	 * This method is currently only available in the API, its use is not
-	 * exported to UML2.
+	 * This method is currently <b>only available in the API</b>, its use is <b>not
+	 * exported to UML2</b>.
 	 * 
 	 * @param object
 	 *            the model object to check
@@ -63,7 +63,7 @@ public interface Collection<T extends ModelClass> extends
 
 	/**
 	 * Iterators over collections are purely for API implementation issues, they
-	 * must not be used in the model.
+	 * <b>must not</b> be used in the model.
 	 */
 	@Override
 	public abstract Iterator<T> iterator();
