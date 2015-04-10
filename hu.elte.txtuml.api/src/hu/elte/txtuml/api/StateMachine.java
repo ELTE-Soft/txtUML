@@ -1,6 +1,5 @@
 package hu.elte.txtuml.api;
 
-
 public abstract class StateMachine extends NestedClassInstancesHolder implements
 		ModelElement {
 
@@ -15,6 +14,34 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	StateMachine() {
 	}
 
+	/**
+	 * Base class for vertices in the model
+	 * 
+	 * <p>
+	 * <b>Represents:</b> vertex
+	 * <p>
+	 * <b>Usage:</b>
+	 * <p>
+	 * 
+	 * Should not be used directly, use its subclasses instead.
+	 * 
+	 * <p>
+	 * <b>Java restrictions:</b>
+	 * <ul>
+	 * <li><i>Instantiate:</i> disallowed</li>
+	 * <li><i>Define subtype:</i> disallowed, use its subclasses</li>
+	 * </ul>
+	 *
+	 * See the documentation of {@link StateMachine} for detailed examples.
+	 * <p>
+	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
+	 * overview on modeling in txtUML.
+	 *
+	 * @author Gabor Ferenc Kovacs
+	 * @see State
+	 * @see Pseudostate
+	 *
+	 */
 	public class Vertex implements ModelElement {
 
 		/**
@@ -48,6 +75,12 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		public void exit() {
 		}
 
+		/**
+		 * Returns the identifying string value of the vertex represented by
+		 * this object's dynamic type.
+		 * 
+		 * @return the identifying string
+		 */
 		String vertexIdentifier() {
 			return getClass().getSimpleName();
 		}
@@ -59,6 +92,34 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 
 	}
 
+	/**
+	 * Base class for pseudostate in the model
+	 * 
+	 * <p>
+	 * <b>Represents:</b> pseudostate
+	 * <p>
+	 * <b>Usage:</b>
+	 * <p>
+	 * 
+	 * Should not be used directly, use its subclasses instead.
+	 * 
+	 * <p>
+	 * <b>Java restrictions:</b>
+	 * <ul>
+	 * <li><i>Instantiate:</i> disallowed</li>
+	 * <li><i>Define subtype:</i> disallowed, use its subclasses</li>
+	 * </ul>
+	 *
+	 * See the documentation of {@link StateMachine} for detailed examples.
+	 * <p>
+	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
+	 * overview on modeling in txtUML.
+	 *
+	 * @author Gabor Ferenc Kovacs
+	 * @see State
+	 * @see Vertex
+	 *
+	 */
 	public class Pseudostate extends Vertex {
 
 		/**
