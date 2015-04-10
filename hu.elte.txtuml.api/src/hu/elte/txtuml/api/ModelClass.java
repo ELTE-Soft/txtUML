@@ -1,14 +1,15 @@
 package hu.elte.txtuml.api;
 
 import hu.elte.txtuml.api.backend.collections.AssociationsMap;
-import hu.elte.txtuml.api.backend.problems.MultiplicityException;
+import hu.elte.txtuml.api.backend.logs.ErrorMessages;
+import hu.elte.txtuml.api.backend.logs.WarningMessages;
+import hu.elte.txtuml.api.backend.MultiplicityException;
 import hu.elte.txtuml.layout.lang.elements.LayoutNode;
 import hu.elte.txtuml.utils.InstanceCreator;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class ModelClass extends Region implements ModelElement,
-		LayoutNode {
+public class ModelClass extends Region implements ModelElement, LayoutNode {
 
 	/*
 	 * The life cycle of a model object consists of steps represented by this
@@ -83,12 +84,12 @@ public class ModelClass extends Region implements ModelElement,
 	 * @see Status
 	 */
 	private Status status;
-	
+
 	/**
 	 * A unique identifier of this object.
 	 */
 	private final String identifier;
-	
+
 	private final AssociationsMap associations = AssociationsMap.create();
 
 	@Override
@@ -161,9 +162,8 @@ public class ModelClass extends Region implements ModelElement,
 	@Override
 	void process(Signal signal) {
 		if (isDeleted()) {
-			ModelExecutor
-					.executorErrorLog("Warning: signal arrived to deleted model object "
-							+ toString());
+			ModelExecutor.executorErrorLog(WarningMessages
+					.getSignalArrivedToDeletedObjectMessage(this));
 			return;
 		}
 		super.process(signal);
@@ -181,10 +181,26 @@ public class ModelClass extends Region implements ModelElement,
 		ModelExecutor.send(this, signal);
 	}
 
+	/**
+	 * Checks whether this model object is in a {@link Status#DELETED DELETED}
+	 * status.
+	 * 
+	 * @return <code>true</code> if this model object is in a
+	 *         <code>DELETED</code> status, <code>false</code> otherwise
+	 */
 	boolean isDeleted() {
 		return status == Status.DELETED;
 	}
 
+	/**
+	 * Checks if this model object is ready to be deleted. If it is already
+	 * deleted, this method automatically returns <code>true</code>. Otherwise,
+	 * it checks whether all associations to this object have already been
+	 * unlinked.
+	 * 
+	 * @return <code>true</code> if this model object is ready to be deleted,
+	 *         <code>false</code> otherwise
+	 */
 	boolean isDeletable() {
 		if (isDeleted()) {
 			return true;
@@ -199,8 +215,8 @@ public class ModelClass extends Region implements ModelElement,
 
 	void forceDelete() {
 		if (!isDeletable()) {
-			ModelExecutor.executorErrorLog("Error: model object " + toString()
-					+ " cannot be deleted because of existing associations.");
+			ModelExecutor.executorErrorLog(ErrorMessages
+					.getObjectCannotBeDeletedMessage(this));
 			return;
 		}
 

@@ -1,6 +1,8 @@
 package hu.elte.txtuml.api;
 
-import hu.elte.txtuml.api.backend.problems.MultiplicityException;
+import hu.elte.txtuml.api.backend.MultiplicityException;
+import hu.elte.txtuml.api.backend.logs.ErrorMessages;
+import hu.elte.txtuml.api.backend.logs.WarningMessages;
 import hu.elte.txtuml.api.blocks.BlockBody;
 import hu.elte.txtuml.api.blocks.Condition;
 import hu.elte.txtuml.api.blocks.ParameterizedBlockBody;
@@ -116,8 +118,8 @@ public abstract class Action implements ModelElement {
 			leftObj.addToAssoc(rightEnd, rightObj);
 			rightObj.addToAssoc(leftEnd, leftObj);
 		} catch (MultiplicityException e) {
-			ModelExecutor
-					.executorErrorLog("Error: upper bound of an association end's multiplicity has been offended.");
+			ModelExecutor.executorErrorLog(ErrorMessages
+					.getUpperBoundOfMultiplicityOffendedMessage());
 		}
 	}
 
@@ -133,9 +135,8 @@ public abstract class Action implements ModelElement {
 	 */
 	private static boolean isLinkingDeleted(ModelClass obj) {
 		if (obj.isDeleted()) {
-			ModelExecutor
-					.executorErrorLog("Error: trying to link deleted model object "
-							+ obj.toString() + ".");
+			ModelExecutor.executorErrorLog(ErrorMessages
+					.getLinkingDeletedObjectMessage(obj));
 			return true;
 		}
 		return false;
@@ -175,11 +176,9 @@ public abstract class Action implements ModelElement {
 			if (!leftObj.hasAssoc(rightEnd, rightObj)
 					|| !rightObj.hasAssoc(leftEnd, leftObj)) {
 
-				ModelExecutor
-						.executorErrorLog("Warning: trying to unlink a non-existing association between "
-								+ leftObj.toString()
-								+ " and "
-								+ rightObj.toString() + ".");
+				ModelExecutor.executorErrorLog(WarningMessages
+						.getUnlinkingNonExistingAssociationMessage(leftObj,
+								rightObj));
 
 				return;
 			}
@@ -202,9 +201,8 @@ public abstract class Action implements ModelElement {
 	 */
 	public static void start(ModelClass obj) {
 		if (obj.isDeleted()) {
-			ModelExecutor
-					.executorErrorLog("Error: trying to start deleted model object "
-							+ obj.toString() + ".");
+			ModelExecutor.executorErrorLog(ErrorMessages
+					.getStartingDeletedObjectMessage(obj));
 		}
 
 		obj.start();

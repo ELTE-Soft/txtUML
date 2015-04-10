@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.backend.problems;
+package hu.elte.txtuml.api.backend;
 
 @SuppressWarnings("serial")
 public class MultiplicityException extends Exception {

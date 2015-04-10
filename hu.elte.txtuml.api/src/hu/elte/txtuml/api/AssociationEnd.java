@@ -1,6 +1,6 @@
 package hu.elte.txtuml.api;
 
-import hu.elte.txtuml.api.backend.problems.MultiplicityException;
+import hu.elte.txtuml.api.backend.MultiplicityException;
 
 /**
  * Abstract base class for association ends in the model.
