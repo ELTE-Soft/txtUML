@@ -116,7 +116,7 @@ public class UML2 {
 		}
 		catch(Exception e)
 		{
-			System.out.println("Error: " + e.getMessage());
+			System.err.println("Error: " + e.getMessage());
 		}
 		
 		System.exit(0);

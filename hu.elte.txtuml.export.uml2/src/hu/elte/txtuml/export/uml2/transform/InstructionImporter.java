@@ -37,7 +37,7 @@ import org.eclipse.uml2.uml.Variable;
  * This class is responsible for importing instructions that are not actions (Action.* calls)
  * nor ModelType operations inside method bodies.
  * 
- * @author ÃdÃ¡m Ancsin
+ * @author Ádám Ancsin
  *
  */
 public class InstructionImporter extends AbstractMethodImporter
@@ -47,7 +47,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param target The dummy instance of the target association end.
 	 * @return The dummy instance of the result.
 	 *
-	 * @author ÃdÃ¡m Ancsin
+	 * @author Ádám Ancsin
 	 */
 	static <T extends ModelClass, AE extends hu.elte.txtuml.api.AssociationEnd<T> >
 		T importAssociationEnd_SelectOne(AE target) 
@@ -110,7 +110,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * Imports the creation of a model class instance in a method body.
 	 * @param createdInstance The created dummy instance.
 	 *
-	 * @author ÃdÃ¡m Ancsin
+	 * @author Ádám Ancsin
 	 */
 	static void importInstanceCreation(ModelClass createdInstance)
 	{
@@ -155,7 +155,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @return The dummy instance of the return value.
 	 * @throws ImportException
 	 *
-	 * @author ÃdÃ¡m Ancsin
+	 * @author Ádám Ancsin
 	 */
 	static Object importMethodCall(ModelClass target, String methodName, Object... args) throws ImportException
 	{
@@ -180,7 +180,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param args The dummy instances of the current arguments. 
 	 * @return The dummy instance of the return value.
 	 *
-	 * @author ÃdÃ¡m Ancsin
+	 * @author Ádám Ancsin
 	 */
 	static Object importExternalMethodCall(ExternalClass target, String methodName, Object... args)
 	{
@@ -197,7 +197,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param args The dummy instances of the current arguments. 
 	 * @return The dummy instance of the return value.
 	 *
-	 * @author ÃdÃ¡m Ancsin
+	 * @author Ádám Ancsin
 	 */
 	static Object importExternalStaticMethodCall(Class<?> targetClass, String methodName, Object... args)
 	{
@@ -216,7 +216,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param fieldType The type of the field.
 	 * @return The dummy instance of the field.
 	 *
-	 * @author ÃdÃ¡m Ancsin
+	 * @author Ádám Ancsin
 	 */
 	static Object importModelClassFieldGet(ModelClass target, String fieldName, Class<?> fieldType)
 	{
@@ -230,7 +230,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param fieldType The type of the field.
 	 * @return The dummy instance of the field.
 	 *
-	 * @author ÃdÃ¡m Ancsin
+	 * @author Ádám Ancsin
 	 */
 	static Object importExternalClassFieldGet(ExternalClass target, String fieldName, Class<?> fieldType)
 	{	
@@ -244,7 +244,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param newValue The dummy instance of the new value.
 	 * @return The dummy instance of the field.
 	 *
-	 * @author ÃdÃ¡m Ancsin
+	 * @author Ádám Ancsin
 	 */
 	static Object importModelClassFieldSet(ModelClass target, String fieldName, Object newValue)  
 	{
@@ -272,7 +272,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * Imports the creation of a ModelType literal.
 	 * @param inst The dummy instance representing the literal.
 	 *
-	 * @author ÃdÃ¡m Ancsin
+	 * @author Ádám Ancsin
 	 */
 	static <T> void importModelTypeLiteralCreation(ModelType<T> inst)
 	{
@@ -290,7 +290,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param target The dummy instance of the target transition.
 	 * @return The dummy instance of the trigger signal of the transition.
 	 *
-	 * @author ÃdÃ¡m Ancsin
+	 * @author Ádám Ancsin
 	 */
 	static Signal initAndGetSignalInstanceOfTransition(Transition target)
 	{
@@ -317,7 +317,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param transitionClass The class of the transition.
 	 * @return The created dummy instance. (null if there's no trigger)
 	 *
-	 * @author ÃdÃ¡m Ancsin
+	 * @author Ádám Ancsin
 	 */
 	private static hu.elte.txtuml.api.Signal createSignal(Class<? extends StateMachine.Transition> transitionClass) {
 		Trigger triggerAnnotation = transitionClass.getAnnotation(Trigger.class);
@@ -335,7 +335,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param args The dummy instances of the current arguments.
 	 * @throws ImportException
 	 *
-	 * @author ÃdÃ¡m Ancsin
+	 * @author Ádám Ancsin
 	 */
 	private static void addParamsToCallAction
 		(CallOperationAction callAction, ModelClass target, String methodName,Object[] args) throws ImportException
@@ -362,7 +362,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @return The dummy instance of the return value.
 	 * @throws ImportException
 	 *
-	 * @author ÃdÃ¡m Ancsin
+	 * @author Ádám Ancsin
 	 */
 	private static Object importMethodCallInActivity
 		(ModelClass target, String methodName, Object... args) throws ImportException
@@ -408,7 +408,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param args The dummy instances of the current arguments.
 	 * @return The created expression.
 	 *
-	 * @author ÃdÃ¡m Ancsin
+	 * @author Ádám Ancsin
 	 */
 	private static String createMethodCallExpression(ModelClass target, String methodName, Object... args)
 	{
@@ -443,7 +443,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param args The dummy instances of the current arguments.
 	 * @return The dummy instance of the return value.
 	 *
-	 * @author ÃdÃ¡m Ancsin
+	 * @author Ádám Ancsin
 	 */
 	private static Object importMethodCallInGuardBody(ModelClass target, String methodName, Object... args)
 	{
@@ -474,7 +474,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param target The target association end.
 	 * @return The identifier of the owner.
 	 *
-	 * @author ÃdÃ¡m Ancsin
+	 * @author Ádám Ancsin
 	 */
 	private static <T extends ModelClass, AE extends hu.elte.txtuml.api.AssociationEnd<T> >
 		String getAssociationEndOwner(AE target)
@@ -502,7 +502,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param valueType The value type of the field.
 	 * @return The dummy instance of the field.
 	 *
-	 * @author ÃdÃ¡m Ancsin
+	 * @author Ádám Ancsin
 	 */
 	private static Object initAndGetField(Object target, String fieldName, Class<?> valueType) 
 	{
