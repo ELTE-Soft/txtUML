@@ -127,7 +127,7 @@ public abstract class Region extends StateMachine {
 		}
 
 		if (applicableTransition == null) {
-			// there was no transition which could be used
+			// no applicable transition found
 			return false;
 		}
 
@@ -199,23 +199,27 @@ public abstract class Region extends StateMachine {
 				}
 			}
 		}
-		if (applicableTransition == null) {
-			// there was no transition which could be used
+		if (applicableTransition != null) {
+			// we found an applicable transition
 
+			executeTransition(applicableTransition);
+		} else {
+			// no applicable transition
+			
 			if (elseTransition != null) {
-				// but there was a transition with an else condition
+				// but there is a transition with an else condition
 
 				executeTransition(elseTransition);
 			} else {
+				// no way to move from choice
+				
 				ModelExecutor
 						.executorErrorLog(ErrorMessages.getNoTransitionFromChoiceMessage(currentVertex));
+				return;
 			}
 			
-			return;
 		}
-
-		executeTransition(applicableTransition);
-
+		
 		if (currentVertex instanceof Choice) {
 			findAndExecuteTransitionFromChoice(signal);
 		}
