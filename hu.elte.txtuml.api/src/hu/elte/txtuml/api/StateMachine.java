@@ -4,7 +4,7 @@ import hu.elte.txtuml.layout.lang.elements.LayoutLink;
 import hu.elte.txtuml.layout.lang.elements.LayoutNode;
 
 public abstract class StateMachine extends InnerClassInstancesHolder implements
-		ModelElement, ModelIdentifiedElement {
+		ModelElement {
 
 	StateMachine() {
 	}

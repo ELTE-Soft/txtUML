@@ -201,7 +201,7 @@ class SmartMachineModel extends Model {
 		If(() -> userEndOfAssoc.selectAll(user -> user.id.isEqual(ModelInt.ZERO)).isEmpty(),
 				() -> log("Nobody has an id of 0."));
 		Collection<User> users = new Collection.Empty<>();
-		users.addAll(userEndOfAssoc).selectOne(user -> ModelBool.TRUE).sayHello();
+		users.addAll(userEndOfAssoc).selectOne().sayHello();
 		
 		
 		For(new ModelInt(0), new ModelInt(5),

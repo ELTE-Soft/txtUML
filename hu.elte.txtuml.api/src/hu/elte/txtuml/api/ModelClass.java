@@ -8,7 +8,7 @@ import hu.elte.txtuml.utils.InstanceCreator;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class ModelClass extends Region implements ModelElement,
-		ModelIdentifiedElement, LayoutNode {
+		LayoutNode {
 
 	/*
 	 * The life cycle of a model object consists of steps represented by this

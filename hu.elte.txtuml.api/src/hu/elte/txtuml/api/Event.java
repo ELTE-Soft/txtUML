@@ -32,7 +32,7 @@ package hu.elte.txtuml.api;
  * @see Signal
  * 
  */
-public class Event implements ModelElement, ModelIdentifiedElement {
+public class Event implements ModelElement {
 
 	/**
 	 * Sole constructor of <code>Event</code>.

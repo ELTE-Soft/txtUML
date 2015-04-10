@@ -7,7 +7,6 @@ import hu.elte.txtuml.api.Event;
 import hu.elte.txtuml.api.ExternalClass;
 import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelElement;
-import hu.elte.txtuml.api.ModelIdentifiedElement;
 import hu.elte.txtuml.api.Signal;
 import hu.elte.txtuml.api.StateMachine;
 
@@ -112,7 +111,7 @@ public final class ElementTypeTeller {
 	 */
 	public static boolean isAttribute(Field field)
 	{
-		return ModelIdentifiedElement.class.isAssignableFrom(field.getType());
+		return ModelElement.class.isAssignableFrom(field.getType());
     }
     
 	/**

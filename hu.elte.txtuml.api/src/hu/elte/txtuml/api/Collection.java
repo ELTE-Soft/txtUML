@@ -5,17 +5,53 @@ import hu.elte.txtuml.api.blocks.ParameterizedCondition;
 import java.util.Iterator;
 
 public interface Collection<T extends ModelClass> extends
-		ModelIdentifiedElement, Iterable<T> {
+		Iterable<T> {
 
+	/**
+	 * Checks if this collection is empty.
+	 * <p>
+	 * This method is currently only available in the API, its use is not
+	 * exported to UML2.
+	 * 
+	 * @return a <code>ModelBool</code> representing <code>true</code> if this
+	 *         collection is empty, a <code>ModelBool</code> representing
+	 *         <code>false</code> otherwise
+	 */
 	ModelBool isEmpty();
 
+	/**
+	 * Returns the number of elements in this collection.
+	 * <p>
+	 * This method is currently only available in the API, its use is not
+	 * exported to UML2.
+	 * 
+	 * @return a <code>ModelInt</code> representing the size of this collection
+	 */
 	ModelInt count();
 
+	/**
+	 * Checks whether a certain model object is in this collection.
+	 * <p>
+	 * This method is currently only available in the API, its use is not
+	 * exported to UML2.
+	 * 
+	 * @param object
+	 *            the model object to check
+	 * @return a <code>ModelBool</code> representing <code>true</code> if this
+	 *         collection is contains the specified <code>object</code>, a
+	 *         <code>ModelBool</code> representing <code>false</code> otherwise
+	 */
 	ModelBool contains(ModelClass object);
 
+	/**
+	 * Selects an element of this collection. Nor randomness, nor any iteration
+	 * order is guaranteed, this method is allowed to return the same object
+	 * each time it is called on the same collection.
+	 * 
+	 * @return an element of this collection, <code>null</code> if the
+	 *         collection is empty
+	 */
 	T selectOne();
-
-	T selectOne(ParameterizedCondition<T> cond);
 
 	Collection<T> selectAll(ParameterizedCondition<T> cond);
 
@@ -39,7 +75,8 @@ public interface Collection<T extends ModelClass> extends
 	// - selectAll(ParameterizedCondition<T>)
 	// - add(T)
 
-	public static class Empty<T extends ModelClass> implements Collection<T> {
+	public static final class Empty<T extends ModelClass> implements
+			Collection<T> {
 		@Override
 		public Iterator<T> iterator() {
 			return new Iterator<T>() {
@@ -76,11 +113,6 @@ public interface Collection<T extends ModelClass> extends
 
 		@Override
 		public T selectOne() {
-			return null;
-		}
-
-		@Override
-		public T selectOne(ParameterizedCondition<T> cond) {
 			return null;
 		}
 

@@ -3,7 +3,6 @@ package hu.elte.txtuml.export.uml2.transform;
 import hu.elte.txtuml.api.Event;
 import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelElement;
-import hu.elte.txtuml.api.ModelIdentifiedElement;
 import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
@@ -37,7 +36,7 @@ import org.eclipse.uml2.uml.Variable;
 
 /**
  * Represents an importer that imports methods or instructions/actions/etc. in method bodies.
- * @author Ádám Ancsin
+ * @author ÃdÃ¡m Ancsin
  *
  */
 abstract class AbstractMethodImporter extends AbstractImporter {
@@ -48,7 +47,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param variableType The UML2 type of the variable.
 	 * @return
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	protected static ReadVariableAction createReadVariableAction(String variableName,Type variableType)
 	{
@@ -67,7 +66,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param valueType The UML2 type of the field.
 	 * @return
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	protected static ReadStructuralFeatureAction createReadStructuralFeatureAction
 		(ModelClass targetClass, String fieldName, Type valueType)
@@ -93,9 +92,9 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param target The target dummy instance.
 	 * @param valueExpression The expression of the value to be assigned.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
-	protected static void setVariableValue(ModelIdentifiedElement target, String valueExpression)
+	protected static void setVariableValue(ModelElement target, String valueExpression)
 	{
 		String targetInstanceName=getObjectIdentifier(target);
 		Type type=ModelImporter.importType(target.getClass());
@@ -121,10 +120,10 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param value The dummy instance of the value to be assigned.
 	 * @param valueType The UML2 type of the new value.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	protected static void setStructuralFeatureValue
-		(ModelClass targetClass, String fieldName, ModelIdentifiedElement value, Type valueType) 
+		(ModelClass targetClass, String fieldName, ModelElement value, Type valueType) 
 	{
 		String targetName = getObjectIdentifier(targetClass);
 		String valueExpr = getExpression(value);
@@ -162,9 +161,9 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param instance The dummy instance
 	 * @return The expression.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
-	protected static String getExpression(ModelIdentifiedElement instance)
+	protected static String getExpression(ModelElement instance)
 	{
 		String expression=null;
 		InstanceInformation instInfo=InstanceManager.getInstanceInfo(instance);
@@ -191,9 +190,9 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param instance The dummy instance.
 	 * @return The identifier.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
-	protected static String getObjectIdentifier(ModelIdentifiedElement instance)
+	protected static String getObjectIdentifier(ModelElement instance)
 	{
 		String identifier=null;
 		InstanceInformation instInfo=InstanceManager.getInstanceInfo(instance);
@@ -216,7 +215,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param node2 The second node to fork tSo.
 	 * @return The created fork node.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	protected static ForkNode forkToNodes(String name, ActivityNode node1, ActivityNode node2)
 	{
@@ -234,7 +233,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param node2 The second node to join.
 	 * @return The created join node.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	protected static JoinNode joinNodes(ActivityNode node1,ActivityNode node2)
 	{
@@ -252,7 +251,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param node2 The second node to merge.
 	 * @return The created merge node.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	protected static MergeNode createMergeNode(ActivityNode node1,ActivityNode node2)
 	{
@@ -272,7 +271,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param target The target activity node.
 	 * @return The created activity edge.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	protected static ActivityEdge createEdgeBetweenActivityNodes(ActivityNode source, ActivityNode target)
 	{
@@ -289,7 +288,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param target The target activity node.
 	 * @return The created control flow.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	protected static ActivityEdge createControlFlowBetweenActivityNodes(ActivityNode source,ActivityNode target)
 	{
@@ -323,7 +322,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param target The target activity node.
 	 * @return The created object flow.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	protected static ActivityEdge createObjectFlowBetweenActivityNodes(ActivityNode source,ActivityNode target)
 	{
@@ -346,7 +345,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param expression The expression the created opaque expression is based on.
 	 * @param type The UML2 type of the value represented by the expression.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	protected static void createAndAddOpaqueExpressionToValuePin(ValuePin pin,String expression, Type type)
 	{
@@ -362,9 +361,9 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param pin The value pin.
 	 * @param value The value the expression is based on.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
-	protected static void createAndAddValueExpressionToValuePin(ValuePin pin, ModelIdentifiedElement value)
+	protected static void createAndAddValueExpressionToValuePin(ValuePin pin, ModelElement value)
 	{
 		String expression=getExpression(value);
 		
@@ -395,9 +394,9 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param value The value the expression is based on.
 	 * @param type The UML2 type of the value.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
-	protected static void createAndAddValueExpressionToValuePin(ValuePin pin, ModelIdentifiedElement value, Type type)
+	protected static void createAndAddValueExpressionToValuePin(ValuePin pin, ModelElement value, Type type)
 	{
 		String expression=getExpression(value);
 		
@@ -418,7 +417,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param name The name of the created action.
 	 * @return The created action.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	protected static AddVariableValueAction createAddVarValAction(Variable var, String name)
 	{
@@ -436,7 +435,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param edge The activity edge.
 	 * @param expression The guard expression.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	protected static void addGuardToActivityEdge(ActivityEdge edge, String expression)
 	{
@@ -450,7 +449,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param pin The value pin.
 	 * @param expr The expression which represents the value of the literal string.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	private static void createAndAddLiteralStringToValuePin(ValuePin pin, String expr)
 	{
@@ -469,9 +468,9 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param object The given object.
 	 * @return The "decision".
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
-	private static boolean isStringLiteral(ModelIdentifiedElement object)
+	private static boolean isStringLiteral(ModelElement object)
 	{
 		if(!(object instanceof ModelString)) 
 			return false;
@@ -495,7 +494,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param fieldName The name of the field.
 	 * @return The obtained UML2 property.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	private static Property getClassProperty(ModelClass target, String fieldName)
 	{
@@ -520,7 +519,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 * @param instInfo The instance information of the element.
 	 * @return The obtained expression.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	private static String getLiteralExpression(ModelElement instance, InstanceInformation instInfo)
 	{

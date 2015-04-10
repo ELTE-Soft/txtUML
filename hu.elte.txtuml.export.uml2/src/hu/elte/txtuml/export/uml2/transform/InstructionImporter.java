@@ -3,7 +3,6 @@ package hu.elte.txtuml.export.uml2.transform;
 import hu.elte.txtuml.api.ExternalClass;
 import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelElement;
-import hu.elte.txtuml.api.ModelIdentifiedElement;
 import hu.elte.txtuml.api.ModelType;
 import hu.elte.txtuml.api.Signal;
 import hu.elte.txtuml.api.StateMachine;
@@ -38,7 +37,7 @@ import org.eclipse.uml2.uml.Variable;
  * This class is responsible for importing instructions that are not actions (Action.* calls)
  * nor ModelType operations inside method bodies.
  * 
- * @author Ádám Ancsin
+ * @author ÃdÃ¡m Ancsin
  *
  */
 public class InstructionImporter extends AbstractMethodImporter
@@ -48,7 +47,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param target The dummy instance of the target association end.
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	static <T extends ModelClass, AE extends hu.elte.txtuml.api.AssociationEnd<T> >
 		T importAssociationEnd_SelectOne(AE target) 
@@ -111,7 +110,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * Imports the creation of a model class instance in a method body.
 	 * @param createdInstance The created dummy instance.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	static void importInstanceCreation(ModelClass createdInstance)
 	{
@@ -156,7 +155,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @return The dummy instance of the return value.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	static Object importMethodCall(ModelClass target, String methodName, Object... args) throws ImportException
 	{
@@ -181,7 +180,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param args The dummy instances of the current arguments. 
 	 * @return The dummy instance of the return value.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	static Object importExternalMethodCall(ExternalClass target, String methodName, Object... args)
 	{
@@ -198,7 +197,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param args The dummy instances of the current arguments. 
 	 * @return The dummy instance of the return value.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	static Object importExternalStaticMethodCall(Class<?> targetClass, String methodName, Object... args)
 	{
@@ -217,7 +216,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param fieldType The type of the field.
 	 * @return The dummy instance of the field.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	static Object importModelClassFieldGet(ModelClass target, String fieldName, Class<?> fieldType)
 	{
@@ -231,7 +230,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param fieldType The type of the field.
 	 * @return The dummy instance of the field.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	static Object importExternalClassFieldGet(ExternalClass target, String fieldName, Class<?> fieldType)
 	{	
@@ -245,7 +244,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param newValue The dummy instance of the new value.
 	 * @return The dummy instance of the field.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	static Object importModelClassFieldSet(ModelClass target, String fieldName, Object newValue)  
 	{
@@ -257,7 +256,7 @@ public class InstructionImporter extends AbstractMethodImporter
 			if(currentActivity!=null)			
 			{
 				Type newValType=ModelImporter.importType(newValue.getClass());
-				setStructuralFeatureValue(target,fieldName,(ModelIdentifiedElement)newValue,newValType);
+				setStructuralFeatureValue(target,fieldName,(ModelElement)newValue,newValType);
 			}
 			
 			return fieldObj;
@@ -273,7 +272,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * Imports the creation of a ModelType literal.
 	 * @param inst The dummy instance representing the literal.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	static <T> void importModelTypeLiteralCreation(ModelType<T> inst)
 	{
@@ -291,7 +290,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param target The dummy instance of the target transition.
 	 * @return The dummy instance of the trigger signal of the transition.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	static Signal initAndGetSignalInstanceOfTransition(Transition target)
 	{
@@ -318,7 +317,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param transitionClass The class of the transition.
 	 * @return The created dummy instance. (null if there's no trigger)
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	private static hu.elte.txtuml.api.Signal createSignal(Class<? extends StateMachine.Transition> transitionClass) {
 		Trigger triggerAnnotation = transitionClass.getAnnotation(Trigger.class);
@@ -336,7 +335,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param args The dummy instances of the current arguments.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	private static void addParamsToCallAction
 		(CallOperationAction callAction, ModelClass target, String methodName,Object[] args) throws ImportException
@@ -346,11 +345,11 @@ public class InstructionImporter extends AbstractMethodImporter
 		{
 			Type paramType=ModelImporter.importType(param.getClass());
 			String paramName="arg"+i;
-			if(!(param instanceof ModelIdentifiedElement))
+			if(!(param instanceof ModelElement))
 				throw new ImportException("Illegal argument (position "+(i+1)+ ") passed to method "+target+"."+methodName);
 
 			ValuePin argValuePin=(ValuePin)callAction.createArgument(paramName, paramType, UMLPackage.Literals.VALUE_PIN);
-			createAndAddValueExpressionToValuePin(argValuePin,(ModelIdentifiedElement)param,paramType);
+			createAndAddValueExpressionToValuePin(argValuePin,(ModelElement)param,paramType);
 			++i;
 		}
 	}
@@ -363,7 +362,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @return The dummy instance of the return value.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	private static Object importMethodCallInActivity
 		(ModelClass target, String methodName, Object... args) throws ImportException
@@ -409,7 +408,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param args The dummy instances of the current arguments.
 	 * @return The created expression.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	private static String createMethodCallExpression(ModelClass target, String methodName, Object... args)
 	{
@@ -423,7 +422,7 @@ public class InstructionImporter extends AbstractMethodImporter
 		int argsProcessed=0;
 		for(Object currArg : args)
 		{
-			String currArgExpr=getExpression((ModelIdentifiedElement)currArg);
+			String currArgExpr=getExpression((ModelElement)currArg);
 
 			if(argsProcessed>0)
 				expression.append(",");
@@ -444,7 +443,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param args The dummy instances of the current arguments.
 	 * @return The dummy instance of the return value.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	private static Object importMethodCallInGuardBody(ModelClass target, String methodName, Object... args)
 	{
@@ -475,7 +474,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param target The target association end.
 	 * @return The identifier of the owner.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	private static <T extends ModelClass, AE extends hu.elte.txtuml.api.AssociationEnd<T> >
 		String getAssociationEndOwner(AE target)
@@ -485,7 +484,7 @@ public class InstructionImporter extends AbstractMethodImporter
 		try {
 			method=hu.elte.txtuml.api.AssociationEnd.class.getDeclaredMethod("getOwner");
 			method.setAccessible(true);
-			ret=getObjectIdentifier( (ModelIdentifiedElement) method.invoke(target) );
+			ret=getObjectIdentifier( (ModelElement) method.invoke(target) );
 			method.setAccessible(false);
 		}
 		catch(Exception e)
@@ -503,7 +502,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param valueType The value type of the field.
 	 * @return The dummy instance of the field.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ÃdÃ¡m Ancsin
 	 */
 	private static Object initAndGetField(Object target, String fieldName, Class<?> valueType) 
 	{

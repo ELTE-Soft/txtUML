@@ -2,7 +2,6 @@ package hu.elte.txtuml.export.uml2.transform;
 
 import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelElement;
-import hu.elte.txtuml.api.ModelIdentifiedElement;
 import hu.elte.txtuml.api.StateMachine;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
@@ -243,7 +242,7 @@ class MethodImporter extends AbstractMethodImporter
 		if(returnParam!=null)
 		{
 			Type returnType=returnParam.getType();
-			String expression = getExpression ((ModelIdentifiedElement) returnObj);
+			String expression = getExpression ((ModelElement) returnObj);
 				
 			OpaqueAction returnValProviderAction = (OpaqueAction)
 					currentActivity.createOwnedNode(expression,UMLPackage.Literals.OPAQUE_ACTION);

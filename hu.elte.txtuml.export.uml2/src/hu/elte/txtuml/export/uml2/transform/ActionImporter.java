@@ -2,7 +2,7 @@ package hu.elte.txtuml.export.uml2.transform;
 
 import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelClass;
-import hu.elte.txtuml.api.ModelIdentifiedElement;
+import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.blocks.BlockBody;
 import hu.elte.txtuml.api.blocks.Condition;
@@ -392,8 +392,8 @@ public class ActionImporter extends AbstractMethodImporter {
 
 			try
 			{
-				ModelIdentifiedElement attributeInstance=
-						(ModelIdentifiedElement) FieldValueAccessor.getObjectFieldVal(event,attributeName);
+				ModelElement attributeInstance=
+						(ModelElement) FieldValueAccessor.getObjectFieldVal(event,attributeName);
 						
 				createAndAddValueExpressionToValuePin(argValuePin,attributeInstance,attributeType);	
 			}
