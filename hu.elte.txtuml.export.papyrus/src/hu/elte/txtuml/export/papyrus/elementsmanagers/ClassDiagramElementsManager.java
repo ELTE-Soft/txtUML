@@ -9,15 +9,32 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.InterfaceEditPart;
-import org.eclipse.uml2.uml.*;
+import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.Comment;
+import org.eclipse.uml2.uml.Component;
+import org.eclipse.uml2.uml.Constraint;
+import org.eclipse.uml2.uml.DataType;
+import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Enumeration;
+import org.eclipse.uml2.uml.Generalization;
+import org.eclipse.uml2.uml.InformationItem;
+import org.eclipse.uml2.uml.InstanceSpecification;
+import org.eclipse.uml2.uml.Interface;
+import org.eclipse.uml2.uml.InterfaceRealization;
+import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Package;
+import org.eclipse.uml2.uml.Port;
+import org.eclipse.uml2.uml.PrimitiveType;
+import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.Reception;
+import org.eclipse.uml2.uml.Signal;
 
 /**
  * An abstract class for adding/removing elements to ClassDiagrams.
@@ -159,12 +176,18 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 		addElementsToEditpart(methodsEp, methods);
 	}
 	
+	/**
+	 * Removes the {@link Property Properties} that have {@link Association Associations} from the given list
+	 * @param properties - the list
+	 */
 	private void removeAssociationProperties(List<Element> properties){
 		List<Element> propertiesToRemove = new LinkedList<Element>();
 		for(Element property : properties){
-			Property prop = (Property) property;
-			if(prop.getAssociation() != null){
-				propertiesToRemove.add(property);
+			if(property instanceof Property){
+				Property prop = (Property) property;
+				if(prop.getAssociation() != null){
+					propertiesToRemove.add(property);
+				}
 			}
 		}
 		properties.removeAll(propertiesToRemove);
