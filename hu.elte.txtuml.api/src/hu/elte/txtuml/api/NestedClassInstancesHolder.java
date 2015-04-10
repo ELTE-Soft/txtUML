@@ -4,7 +4,7 @@ import hu.elte.txtuml.api.backend.collections.NestedClassInstancesMap;
 import hu.elte.txtuml.utils.InstanceCreator;
 
 /**
- * An abstract class which contains a map to hold single instances of its nested
+ * An abstract class which contains a mapping to single instances of its nested
  * classes. Can also have mappings to nested classes of its nested classes (in
  * any depth).
  *
