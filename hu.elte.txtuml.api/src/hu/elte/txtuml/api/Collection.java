@@ -4,14 +4,42 @@ import hu.elte.txtuml.api.blocks.ParameterizedCondition;
 
 import java.util.Iterator;
 
-public interface Collection<T extends ModelClass> extends
-		Iterable<T> {
+/**
+ * Base interface for immutable collections of {@link ModelClass} objects.
+ * 
+ * <p>
+ * <b>Represents:</b> a collection of model objects
+ * <p>
+ * <b>Usage:</b>
+ * <p>
+ * 
+ * After having an object implementing this interface, call its methods anywhere
+ * from the model where action language or condition evaluation is written.
+ * 
+ * <p>
+ * <b>Java restrictions:</b>
+ * <ul>
+ * <li><i>Define subtype:</i> disallowed, use its predefined subclasses instead,
+ * like {@link Collection.Empty} or {@link AssociationEnd}</li>
+ * </ul>
+ * 
+ * See the documentation of the {@link hu.elte.txtuml.api} package to get an
+ * overview on modeling in txtUML.
+ *
+ * @author Gabor Ferenc Kovacs
+ *
+ * @param <T>
+ *            the type of model objects to be contained in this collection
+ * @see Collection.Empty
+ * @see AssociationEnd
+ */
+public interface Collection<T extends ModelClass> extends Iterable<T> {
 
 	/**
 	 * Checks if this collection is empty.
 	 * <p>
-	 * This method is currently <b>only available in the API</b>, its use is <b>not
-	 * exported to UML2</b>.
+	 * This method is currently <b>only available in the API</b>, its use is
+	 * <b>not exported to UML2</b>.
 	 * 
 	 * @return a <code>ModelBool</code> representing <code>true</code> if this
 	 *         collection is empty, a <code>ModelBool</code> representing
@@ -22,8 +50,8 @@ public interface Collection<T extends ModelClass> extends
 	/**
 	 * Returns the number of elements in this collection.
 	 * <p>
-	 * This method is currently <b>only available in the API</b>, its use is <b>not
-	 * exported to UML2</b>.
+	 * This method is currently <b>only available in the API</b>, its use is
+	 * <b>not exported to UML2</b>.
 	 * 
 	 * @return a <code>ModelInt</code> representing the size of this collection
 	 */
@@ -32,8 +60,8 @@ public interface Collection<T extends ModelClass> extends
 	/**
 	 * Checks whether a certain model object is in this collection.
 	 * <p>
-	 * This method is currently <b>only available in the API</b>, its use is <b>not
-	 * exported to UML2</b>.
+	 * This method is currently <b>only available in the API</b>, its use is
+	 * <b>not exported to UML2</b>.
 	 * 
 	 * @param object
 	 *            the model object to check
@@ -53,28 +81,97 @@ public interface Collection<T extends ModelClass> extends
 	 */
 	T selectOne();
 
+	/**
+	 * Selects all elements of this collection for which the specified condition
+	 * holds.
+	 * <p>
+	 * This method is currently <b>only available in the API</b>, its use is
+	 * <b>not exported to UML2</b>.
+	 * 
+	 * @param cond
+	 *            a condition to filter the elements of this collection
+	 * @return a new collection containing the selected elements
+	 * @throws NullPointerException
+	 *             if <code>cond</code> is <code>null</code>
+	 */
 	Collection<T> selectAll(ParameterizedCondition<T> cond);
 
+	/**
+	 * Creates a new collection which contains all the elements of this
+	 * collection and also the specified object.
+	 * <p>
+	 * As {@link Collection} is designed to contain only non-null values,
+	 * <code>object</code> should not be <code>null</code>.
+	 * <p>
+	 * This method is currently <b>only available in the API</b>, its use is
+	 * <b>not exported to UML2</b>.
+	 *
+	 * @param object
+	 *            the object to be included in the result collection
+	 * @return a new collection containing the desired elements
+	 */
 	Collection<T> add(T object);
 
+	/**
+	 * Creates a new collection which contains all the elements of this
+	 * collection and also the elements of the given collection.
+	 * <p>
+	 * This method is currently <b>only available in the API</b>, its use is
+	 * <b>not exported to UML2</b>.
+	 *
+	 * @param objects
+	 *            the other collection which's elements are to included in the
+	 *            result
+	 * @return a new collection containing the desired elements
+	 * @throws NullPointerException
+	 *             if <code>objects</code> is <code>null</code>
+	 */
 	Collection<T> addAll(Collection<T> objects);
 
+	/**
+	 * Creates a new collection which contains all the elements of this
+	 * collection without specified object (if it was included in the
+	 * collection).
+	 * <p>
+	 * This method is currently <b>only available in the API</b>, its use is
+	 * <b>not exported to UML2</b>.
+	 *
+	 * @param object
+	 *            the object <i>not</i> to be included in the result collection
+	 * @return a new collection containing the desired elements
+	 */
 	Collection<T> remove(T object);
 
 	/**
 	 * Iterators over collections are purely for API implementation issues, they
-	 * <b>must not</b> be used in the model.
+	 * <b>must not be used in the model</b>.
 	 */
 	@Override
 	public abstract Iterator<T> iterator();
 
-	// Some of the methods above can be calculated with the use of the others.
-	// The minimum needed:
-	// - count()
-	// - selectOne()
-	// - selectAll(ParameterizedCondition<T>)
-	// - add(T)
-
+	/**
+	 * A default implementation for an empty collection.
+	 * 
+	 * <p>
+	 * <b>Represents:</b> an empty collection
+	 * <p>
+	 * <b>Java restrictions:</b>
+	 * <ul>
+	 * <li><i>Instantiate:</i> allowed</li>
+	 * <li><i>Define subtype:</i> disallowed</li>
+	 * </ul>
+	 * This class is currently <b>only available in the API</b>, its use is
+	 * <b>not exported to UML2</b>.
+	 * <p>
+	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
+	 * overview on modeling in txtUML.
+	 *
+	 * @author Gabor Ferenc Kovacs
+	 *
+	 * @param <T>
+	 *            the type of model objects to be contained in this collection
+	 * @see Collection
+	 */
 	public static final class Empty<T extends ModelClass> implements
 			Collection<T> {
 		@Override

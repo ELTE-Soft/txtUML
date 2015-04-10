@@ -3,6 +3,14 @@ package hu.elte.txtuml.api;
 import hu.elte.txtuml.api.backend.collections.NestedClassInstancesMap;
 import hu.elte.txtuml.utils.InstanceCreator;
 
+/**
+ * An abstract class which contains a map to hold single instances of its nested
+ * classes. Can also have mappings to nested classes of its nested classes (in
+ * any depth).
+ *
+ * @author Gabor Ferenc Kovacs
+ *
+ */
 abstract class NestedClassInstancesHolder {
 
 	/**
@@ -22,7 +30,10 @@ abstract class NestedClassInstancesHolder {
 	}
 
 	/**
-	 * Returns an instance of the specified nested class.
+	 * Returns an instance of the specified class. If the map does not hold such
+	 * an instance already, this method creates it with reflection and makes
+	 * sure that it has a correct reference to the same instance of its
+	 * enclosing class which is included in the map.
 	 * <p>
 	 * If the specified class is not a nested class of this class (not even
 	 * through multiple enclosures), the return value of this method is

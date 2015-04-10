@@ -1,7 +1,5 @@
 package hu.elte.txtuml.api;
 
-import hu.elte.txtuml.layout.lang.elements.LayoutLink;
-import hu.elte.txtuml.layout.lang.elements.LayoutNode;
 
 public abstract class StateMachine extends NestedClassInstancesHolder implements
 		ModelElement {
@@ -17,7 +15,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	StateMachine() {
 	}
 
-	public class Vertex implements ModelElement, LayoutNode {
+	public class Vertex implements ModelElement {
 
 		/**
 		 * Sole constructor of <code>Vertex</code>.
@@ -189,7 +187,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 
 	}
 
-	public class Transition implements ModelElement, LayoutLink {
+	public class Transition implements ModelElement {
 
 		/**
 		 * An instance of the class representing this transition's source
