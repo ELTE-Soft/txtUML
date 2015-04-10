@@ -55,8 +55,53 @@ public class ModelBool extends ModelType<Boolean> {
 	 */
 	public static final ModelBool ELSE = new Else();
 
+	/**
+	 * <code>Else</code> is a special {@link ModelBool} which always represents
+	 * <code>true</code>. It might be used as the return value of a transition's
+	 * {@link StateMachine.Transition#guard() guard} to represent an else
+	 * condition in the case of a transition from a choice pseudostate.
+	 * 
+	 * <p>
+	 * <b>Represents:</b> the value of an else condition as a guard on a
+	 * transition
+	 * <p>
+	 * <b>Java restrictions:</b>
+	 * <ul>
+	 * <li><i>Instantiate:</i> disallowed</li>
+	 * <li><i>Define subtype:</i> disallowed</li>
+	 * </ul>
+	 * 
+	 * <p>
+	 * <b>Example:</b>
+	 * <p>
+	 * 
+	 * <pre>
+	 * <code>
+	 * {@literal @}From(ExampleChoice.class) {@literal @}To(TargetVertex.class)
+	 * {@literal /}{@literal /} no {@literal @}Trigger annotation in case of a transition from a choice pseudostate 
+	 * class MyTransition extends Transition {
+	 * 	{@literal @}Override
+	 * 	public ModelBool guard() {
+	 * 		return new ModelBool.Else();
+	 * 	}
+	 * }
+	 * </code>
+	 * </pre>
+	 * 
+	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
+	 * overview on modeling in txtUML.
+	 *
+	 * @author Gabor Ferenc Kovacs
+	 *
+	 */
 	public static final class Else extends ModelBool {
 
+		/**
+		 * Sole constructor of <code>Else</code>.
+		 * <p>
+		 * As a <code>ModelBool</code> instance, this will represent
+		 * <code>true</code>.
+		 */
 		public Else() {
 			super(true);
 		}

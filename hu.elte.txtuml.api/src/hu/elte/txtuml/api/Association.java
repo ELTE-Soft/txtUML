@@ -130,10 +130,20 @@ public class Association implements ModelElement, LayoutLink {
 	public class Many<T extends ModelClass> extends BaseMany<T> implements
 			hu.elte.txtuml.api.semantics.Navigability.Navigable,
 			hu.elte.txtuml.api.semantics.Multiplicity.ZeroToUnlimited {
-		
+
+		/**
+		 * Sole constructor of <code>Many</code>.
+		 * <p>
+		 * <b>Implementation note:</b>
+		 * <p>
+		 * Protected because this class is intended to be inherited from but not
+		 * instantiated. However, <code>Many</code> has to be a non-abstract
+		 * class to make sure that it is instantiatable when that is needed for
+		 * the API or the model exportation.
+		 */
 		protected Many() {
 		}
-		
+
 	}
 
 	/**
@@ -185,10 +195,20 @@ public class Association implements ModelElement, LayoutLink {
 	public class Some<T extends ModelClass> extends BaseSome<T> implements
 			hu.elte.txtuml.api.semantics.Navigability.Navigable,
 			hu.elte.txtuml.api.semantics.Multiplicity.OneToUnlimited {
-		
+
+		/**
+		 * Sole constructor of <code>Some</code>.
+		 * <p>
+		 * <b>Implementation note:</b>
+		 * <p>
+		 * Protected because this class is intended to be inherited from but not
+		 * instantiated. However, <code>Some</code> has to be a non-abstract
+		 * class to make sure that it is instantiatable when that is needed for
+		 * the API or the model exportation.
+		 */
 		protected Some() {
 		}
-		
+
 	}
 
 	/**
@@ -240,10 +260,20 @@ public class Association implements ModelElement, LayoutLink {
 	public class MaybeOne<T extends ModelClass> extends BaseMaybeOne<T>
 			implements hu.elte.txtuml.api.semantics.Navigability.Navigable,
 			hu.elte.txtuml.api.semantics.Multiplicity.ZeroToOne {
-		
+
+		/**
+		 * Sole constructor of <code>MaybeOne</code>.
+		 * <p>
+		 * <b>Implementation note:</b>
+		 * <p>
+		 * Protected because this class is intended to be inherited from but not
+		 * instantiated. However, <code>MaybeOne</code> has to be a non-abstract
+		 * class to make sure that it is instantiatable when that is needed for
+		 * the API or the model exportation.
+		 */
 		protected MaybeOne() {
 		}
-		
+
 	}
 
 	/**
@@ -295,10 +325,20 @@ public class Association implements ModelElement, LayoutLink {
 	public class One<T extends ModelClass> extends BaseOne<T> implements
 			hu.elte.txtuml.api.semantics.Navigability.Navigable,
 			hu.elte.txtuml.api.semantics.Multiplicity.One {
-		
+
+		/**
+		 * Sole constructor of <code>One</code>.
+		 * <p>
+		 * <b>Implementation note:</b>
+		 * <p>
+		 * Protected because this class is intended to be inherited from but not
+		 * instantiated. However, <code>One</code> has to be a non-abstract class
+		 * to make sure that it is instantiatable when that is needed for the API or
+		 * the model exportation.
+		 */
 		protected One() {
 		}
-		
+
 	}
 
 	/**
@@ -351,10 +391,20 @@ public class Association implements ModelElement, LayoutLink {
 	public class HiddenMany<T extends ModelClass> extends BaseMany<T> implements
 			hu.elte.txtuml.api.semantics.Navigability.NonNavigable,
 			hu.elte.txtuml.api.semantics.Multiplicity.ZeroToUnlimited {
-		
+
+		/**
+		 * Sole constructor of <code>HiddenMany</code>.
+		 * <p>
+		 * <b>Implementation note:</b>
+		 * <p>
+		 * Protected because this class is intended to be inherited from but not
+		 * instantiated. However, <code>HiddenMany</code> has to be a non-abstract class
+		 * to make sure that it is instantiatable when that is needed for the API or
+		 * the model exportation.
+		 */
 		protected HiddenMany() {
 		}
-		
+
 	}
 
 	/**
@@ -408,9 +458,19 @@ public class Association implements ModelElement, LayoutLink {
 			hu.elte.txtuml.api.semantics.Navigability.NonNavigable,
 			hu.elte.txtuml.api.semantics.Multiplicity.OneToUnlimited {
 
+		/**
+		 * Sole constructor of <code>HiddenSome</code>.
+		 * <p>
+		 * <b>Implementation note:</b>
+		 * <p>
+		 * Protected because this class is intended to be inherited from but not
+		 * instantiated. However, <code>HiddenSome</code> has to be a non-abstract class
+		 * to make sure that it is instantiatable when that is needed for the API or
+		 * the model exportation.
+		 */
 		protected HiddenSome() {
 		}
-		
+
 	}
 
 	/**
@@ -463,10 +523,20 @@ public class Association implements ModelElement, LayoutLink {
 	public class HiddenMaybeOne<T extends ModelClass> extends BaseMaybeOne<T>
 			implements hu.elte.txtuml.api.semantics.Navigability.NonNavigable,
 			hu.elte.txtuml.api.semantics.Multiplicity.ZeroToOne {
-		
+
+		/**
+		 * Sole constructor of <code>HiddenMaybeOne</code>.
+		 * <p>
+		 * <b>Implementation note:</b>
+		 * <p>
+		 * Protected because this class is intended to be inherited from but not
+		 * instantiated. However, <code>HiddenMaybeOne</code> has to be a non-abstract class
+		 * to make sure that it is instantiatable when that is needed for the API or
+		 * the model exportation.
+		 */
 		protected HiddenMaybeOne() {
 		}
-		
+
 	}
 
 	/**
@@ -518,10 +588,20 @@ public class Association implements ModelElement, LayoutLink {
 	public class HiddenOne<T extends ModelClass> extends BaseOne<T> implements
 			hu.elte.txtuml.api.semantics.Navigability.NonNavigable,
 			hu.elte.txtuml.api.semantics.Multiplicity.One {
-		
+
+		/**
+		 * Sole constructor of <code>HiddenOne</code>.
+		 * <p>
+		 * <b>Implementation note:</b>
+		 * <p>
+		 * Protected because this class is intended to be inherited from but not
+		 * instantiated. However, <code>HiddenOne</code> has to be a non-abstract class
+		 * to make sure that it is instantiatable when that is needed for the API or
+		 * the model exportation.
+		 */
 		protected HiddenOne() {
 		}
-		
+
 	}
 
 }
