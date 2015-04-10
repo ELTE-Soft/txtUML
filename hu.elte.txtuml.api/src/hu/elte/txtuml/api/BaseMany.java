@@ -166,16 +166,6 @@ class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 	}
 
 	@Override
-	public final T selectOne(ParameterizedCondition<T> cond) {
-		for (T obj : coll) {
-			if (cond.check(obj).getValue()) {
-				return obj;
-			}
-		}
-		return null;
-	}
-
-	@Override
 	public final Collection<T> selectAll(ParameterizedCondition<T> cond) {
 		CollectionBuilder<T> builder = new CollectionBuilder<>();
 		for (T obj : coll) {

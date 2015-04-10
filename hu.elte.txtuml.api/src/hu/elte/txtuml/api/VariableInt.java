@@ -1,6 +1,6 @@
 package hu.elte.txtuml.api;
 
-/*
+/**
  * A mutable container of a <code>ModelInt</code> instance.
  * 
  * <p>
@@ -9,16 +9,17 @@ package hu.elte.txtuml.api;
  * <b>Usage:</b>
  * <p>
  * 
+ * See the documentation of {@link VariableType}.
+ * 
  * <p>
  * <b>Java restrictions:</b>
  * <ul>
  * <li><i>Instantiate:</i> allowed</li>
- * <li><i>Define subtype:</i> disallowed
- * </li>
- * </ul>
+ * <li><i>Define subtype:</i> disallowed</li>
+ * </ul> 
  * 
- * See the documentation of the {@link hu.elte.txtuml.api} package to get
- * an overview on modeling in txtUML.
+ * See the documentation of the {@link hu.elte.txtuml.api} package to get an
+ * overview on modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
  *

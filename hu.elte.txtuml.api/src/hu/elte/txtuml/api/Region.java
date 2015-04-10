@@ -29,7 +29,7 @@ public abstract class Region extends StateMachine {
 
 		Class<? extends Initial> initClass = getInitial(getClass());
 		if (initClass != null) {
-			currentVertex = getInnerClassInstance(initClass);
+			currentVertex = getNestedClassInstance(initClass);
 		} else {
 			currentVertex = null;
 		}
@@ -162,7 +162,7 @@ public abstract class Region extends StateMachine {
 			for (Class<?> c : parentClass.getDeclaredClasses()) {
 				if (Transition.class.isAssignableFrom(c)) {
 
-					Transition transition = (Transition) getInnerClassInstance(c);
+					Transition transition = (Transition) getNestedClassInstance(c);
 
 					if (!transition.isFromSource(examinedClass)
 							|| notApplicableTrigger(c, signal)) {
@@ -223,7 +223,7 @@ public abstract class Region extends StateMachine {
 		for (Class<?> c : parentClass.getDeclaredClasses()) {
 			if (Transition.class.isAssignableFrom(c)) {
 
-				Transition transition = (Transition) getInnerClassInstance(c);
+				Transition transition = (Transition) getNestedClassInstance(c);
 
 				if (!transition.isFromSource(examinedChoiceClass)) {
 					// actual transition is from another vertex
@@ -316,7 +316,7 @@ public abstract class Region extends StateMachine {
 			Class<?> currentParentState = currentVertex.getClass()
 					.getEnclosingClass();
 
-			currentVertex = (Vertex) getInnerClassInstance(currentParentState);
+			currentVertex = (Vertex) getNestedClassInstance(currentParentState);
 
 			if (ModelExecutor.Settings.executorLog()) {
 				ModelExecutor.executorLog(toString() + " leaves "
@@ -337,7 +337,7 @@ public abstract class Region extends StateMachine {
 							+ currentVertex.toString());
 				}
 
-				currentVertex = getInnerClassInstance(initClass);
+				currentVertex = getNestedClassInstance(initClass);
 				// no entry action needs to be called: initial pseudostates have
 				// none
 

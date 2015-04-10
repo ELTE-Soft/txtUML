@@ -3,20 +3,42 @@ package hu.elte.txtuml.api;
 import hu.elte.txtuml.layout.lang.elements.LayoutLink;
 import hu.elte.txtuml.layout.lang.elements.LayoutNode;
 
-public abstract class StateMachine extends InnerClassInstancesHolder implements
+public abstract class StateMachine extends NestedClassInstancesHolder implements
 		ModelElement {
 
+	/**
+	 * Sole constructor of <code>StateMachine</code>.
+	 * <p>
+	 * <b>Implementation note:</b>
+	 * <p>
+	 * Package private to make sure that this class is neither instantiated, nor
+	 * directly inherited by the user.
+	 */
 	StateMachine() {
 	}
 
 	public class Vertex implements ModelElement, LayoutNode {
 
+		/**
+		 * Sole constructor of <code>Vertex</code>.
+		 * <p>
+		 * <b>Implementation note:</b>
+		 * <p>
+		 * Package private to make sure that this class is neither instantiated,
+		 * nor directly inherited by the user.
+		 */
 		Vertex() {
 		}
 
+		/**
+		 * Overridable method to implement the entry action of this vertex.
+		 */
 		public void entry() {
 		}
 
+		/**
+		 * Overridable method to implement the exit action of this vertex.
+		 */
 		public void exit() {
 		}
 
@@ -33,13 +55,33 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 	public class Pseudostate extends Vertex {
 
+		/**
+		 * Sole constructor of <code>Pseudostate</code>.
+		 * <p>
+		 * <b>Implementation note:</b>
+		 * <p>
+		 * Package private to make sure that this class is neither instantiated,
+		 * nor directly inherited by the user.
+		 */
 		Pseudostate() {
 		}
 
+		/**
+		 * A final empty method overriding the entry action of {@link Vertex}.
+		 * <p>
+		 * As pseudostates have no entry or exit actions, their
+		 * <code>entry</code> and <code>exit</code> methods must be empty.
+		 */
 		@Override
 		public final void entry() {
 		}
 
+		/**
+		 * A final empty method overriding the exit action of {@link Vertex}.
+		 * <p>
+		 * As pseudostates have no entry or exit actions, their
+		 * <code>entry</code> and <code>exit</code> methods must be empty.
+		 */
 		@Override
 		public final void exit() {
 		}
@@ -53,6 +95,16 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 	public class Initial extends Pseudostate {
 
+		/**
+		 * Sole constructor of <code>Initial</code>.
+		 * <p>
+		 * <b>Implementation note:</b>
+		 * <p>
+		 * Protected because this class is intended to be inherited from but not
+		 * instantiated. However, <code>Initial</code> has to be a non-abstract
+		 * class to make sure that it is instantiatable when that is needed for
+		 * the API or the model exportation.
+		 */
 		protected Initial() {
 		}
 
@@ -65,6 +117,16 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 	public class Choice extends Pseudostate {
 
+		/**
+		 * Sole constructor of <code>Choice</code>.
+		 * <p>
+		 * <b>Implementation note:</b>
+		 * <p>
+		 * Protected because this class is intended to be inherited from but not
+		 * instantiated. However, <code>Choice</code> has to be a non-abstract
+		 * class to make sure that it is instantiatable when that is needed for
+		 * the API or the model exportation.
+		 */
 		protected Choice() {
 		}
 
@@ -77,6 +139,16 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 	public class State extends Vertex {
 
+		/**
+		 * Sole constructor of <code>State</code>.
+		 * <p>
+		 * <b>Implementation note:</b>
+		 * <p>
+		 * Protected because this class is intended to be inherited from but not
+		 * instantiated. However, <code>State</code> has to be a non-abstract
+		 * class to make sure that it is instantiatable when that is needed for
+		 * the API or the model exportation.
+		 */
 		protected State() {
 		}
 
@@ -89,6 +161,16 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 	public class CompositeState extends State {
 
+		/**
+		 * Sole constructor of <code>CompositeState</code>.
+		 * <p>
+		 * <b>Implementation note:</b>
+		 * <p>
+		 * Protected because this class is intended to be inherited from but not
+		 * instantiated. However, <code>CompositeState</code> has to be a
+		 * non-abstract class to make sure that it is instantiatable when that
+		 * is needed for the API or the model exportation.
+		 */
 		protected CompositeState() {
 		}
 
@@ -101,10 +183,37 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 	public class Transition implements ModelElement, LayoutLink {
 
+		/**
+		 * An instance of the class representing this transition's source
+		 * vertex.
+		 */
 		private final Vertex source;
+
+		/**
+		 * An instance of the class representing this transition's target
+		 * vertex.
+		 */
 		private final Vertex target;
+
+		/**
+		 * Before this transition is executed, <code>signal</code> must be set
+		 * to be the actual signal receiving which triggered the transition.
+		 * <p>
+		 * If the transition has no triggers defined, the value of this field is
+		 * unused.
+		 */
 		private Signal signal;
 
+		/**
+		 * Sole constructor of <code>Transition</code>.
+		 * <p>
+		 * <b>Implementation note:</b>
+		 * <p>
+		 * Protected because this class is intended to be inherited from but not
+		 * instantiated. However, <code>Transition</code> has to be a
+		 * non-abstract class to make sure that it is instantiatable when that
+		 * is needed for the API or the model exportation.
+		 */
 		protected Transition() {
 			Class<? extends Transition> cls = getClass();
 
@@ -116,16 +225,72 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 				this.target = null;
 				// TODO show error
 			} else {
-				this.source = getInnerClassInstance(from.value());
-				this.target = getInnerClassInstance(to.value());
+				this.source = getNestedClassInstance(from.value());
+				this.target = getNestedClassInstance(to.value());
 			}
 		}
 
+		/**
+		 * Overridable method to implement the effect of this transition.
+		 * <p>
+		 * Called when this transition is chosen for execution, after calling
+		 * all exit actions from left vertices and before calling any entry
+		 * actions.
+		 * <p>
+		 * If the actual transition has a trigger defined, the
+		 * {@link #getSignal() getSignal} method can be used inside the
+		 * overriding methods to get the triggering signal.
+		 */
 		public void effect() {
 		}
 
+		/**
+		 * Overridable method to implement the guard of this transition. Only
+		 * called after checking that the actual transition is from the current
+		 * vertex or one of its enclosing composite states, and it is triggered
+		 * by the received signal.
+		 * <p>
+		 * Might not be overridden in transition classes that are from initial
+		 * pseudostates.
+		 * <p>
+		 * If overridden, the return value must never be <code>null</code>.
+		 * <p>
+		 * If the overriding method returns a <code>ModelBool</code>
+		 * representing <b><code>false</code></b>, this transition will not be
+		 * chosen to be executed.
+		 * <p>
+		 * If the overriding method returns a <code>ModelBool</code>
+		 * representing <b><code>true</code></b>, this transition might be
+		 * chosen to be executed. Only one such transition may exist at any time
+		 * (for which the two conditions mentioned above, regarding the source
+		 * vertex and the triggering signal, are also met). Two such transitions
+		 * are allowed to exist in one special case:
+		 * <ul>
+		 * <li>the current vertex is a choice pseudostate</li>
+		 * <li>the source of at least one of the transitions is the choice
+		 * pseodostate</li>
+		 * <li>this transition's <code>guard</code> method returns a
+		 * {@link ModelBool.Else} instance which always represents
+		 * <code>true</code></li>
+		 * <li>the other transition's <code>guard</code> method does not return
+		 * a {@link ModelBool.Else} instance</li>
+		 * </ul>
+		 * In this case, the second transition will be executed as the one with
+		 * an else condition is executed only if no other transition might be
+		 * used.
+		 * <p>
+		 * <i>If the overriding method once returns an <code>Else</code>
+		 * instance, it should always do so.</i>
+		 * <p>
+		 * If the actual transition has a trigger defined, the
+		 * {@link #getSignal() getSignal} method can be used inside the
+		 * overriding methods to get the triggering signal.
+		 * 
+		 * @return a <code>ModelBool</code> representing <code>true</code> by
+		 *         default implementation
+		 */
 		public ModelBool guard() {
-			return new ModelBool(true);
+			return ModelBool.TRUE;
 		}
 
 		@SuppressWarnings("unchecked")
@@ -133,18 +298,41 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 			return (T) signal;
 		}
 
+		/**
+		 * 
+		 * TODO
+		 * 
+		 * @param s
+		 */
 		final void setSignal(Signal s) {
 			signal = s;
 		}
 
+		/**
+		 * @return the held instance of the class representing this transition's
+		 *         source vertex
+		 */
 		Vertex getSource() {
 			return source;
 		}
 
+		/**
+		 * @return the held instance of the class representing this transition's
+		 *         target vertex
+		 */
 		Vertex getTarget() {
 			return target;
 		}
 
+		/**
+		 * Checks if the class <code>c</code> is the representing class of this
+		 * transition's source vertex.
+		 *
+		 * @param c
+		 *            the class to check if it is the source of this transition
+		 * @return <code>true</code> if this transition is from <code>c</code>,
+		 *         <code>false</code> otherwise
+		 */
 		boolean isFromSource(Class<?> c) {
 			return source == null ? false : c == source.getClass();
 		}

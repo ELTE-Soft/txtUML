@@ -113,16 +113,11 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 	}
 
 	@Override
-	public final T selectOne(ParameterizedCondition<T> cond) {
-		if (obj == null || cond.check(obj).getValue()) {
-			return obj;
-		}
-		return null;
-	}
-
-	@Override
 	public final Collection<T> selectAll(ParameterizedCondition<T> cond) {
-		return new BaseMaybeOne<T>(selectOne(cond));
+		if (obj == null || cond.check(obj).getValue()) {
+			return new BaseMaybeOne<T>(obj);
+		}
+		return new Collection.Empty<T>();
 	}
 
 	@Override

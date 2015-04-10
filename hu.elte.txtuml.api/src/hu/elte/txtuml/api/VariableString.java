@@ -1,5 +1,29 @@
 package hu.elte.txtuml.api;
 
+/**
+ * A mutable container of a <code>ModelString</code> instance.
+ * 
+ * <p>
+ * <b>Represents:</b> no model element directly
+ * <p>
+ * <b>Usage:</b>
+ * <p>
+ * 
+ * See the documentation of {@link VariableType}.
+ * 
+ * <p>
+ * <b>Java restrictions:</b>
+ * <ul>
+ * <li><i>Instantiate:</i> allowed</li>
+ * <li><i>Define subtype:</i> disallowed</li>
+ * </ul> 
+ * 
+ * See the documentation of the {@link hu.elte.txtuml.api} package to get an
+ * overview on modeling in txtUML.
+ *
+ * @author Gabor Ferenc Kovacs
+ *
+ */
 public class VariableString extends VariableType<String, ModelString> {
 
 	/**
