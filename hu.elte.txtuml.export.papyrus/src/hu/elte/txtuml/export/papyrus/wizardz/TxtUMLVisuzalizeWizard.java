@@ -79,7 +79,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 			UML2.exportModel(txtUMLModelClass, uri);
 		} catch (Exception e) {
 			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-			MessageDialog.openInformation(window.getShell(),"txtUML export Error",e.getMessage());
+			MessageDialog.openInformation(window.getShell(),"txtUML export Error",e.getClass()+":\n"+e.getMessage());
 			e.printStackTrace();
 			return false;
 		}

@@ -2,6 +2,7 @@ package hu.elte.txtuml.project.wizards;
 
 import hu.elte.txtuml.project.ProjectCreator;
 import hu.elte.txtuml.project.ProjectCreator.ProjectSettings;
+import hu.elte.txtuml.project.TxtUMLProjectNature;
 import hu.elte.txtuml.utils.Pair;
 
 import java.io.IOException;
@@ -77,7 +78,9 @@ public class TxtUMLProject extends Wizard implements INewWizard {
 			IProject project = ProjectCreator.createProject(projectName);
 			ProjectCreator.openProject(project);
 			
-			String[] natures = new String[]{JavaCore.NATURE_ID, 
+			String[] natures = new String[]{
+					TxtUMLProjectNature.NATURE_ID,
+					JavaCore.NATURE_ID, 
 					"org.eclipse.ajdt.ui.ajnature",
 					"org.eclipse.pde.PluginNature"};
 			ProjectCreator.addProjectNatures(project, natures);
@@ -124,6 +127,7 @@ public class TxtUMLProject extends Wizard implements INewWizard {
 			project.build(IncrementalProjectBuilder.FULL_BUILD, null);
 			
 			openEditor((IFile) modelFile.getCorrespondingResource());
+			
 		}catch(CoreException | IOException e){
 			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 			MessageDialog.openInformation(window.getShell(),"txtUML Project creation Error",e.getClass()+":\n"+e.getMessage());

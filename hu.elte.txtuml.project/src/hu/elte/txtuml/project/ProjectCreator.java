@@ -77,9 +77,18 @@ public class ProjectCreator {
 	}
 
 	public static void addProjectNatures(IProject project, String[] natures) throws CoreException {
-		IProjectDescription description = project.getDescription();
-		description.setNatureIds(natures);
-		project.setDescription(description, new NullProgressMonitor());
+		for(String nature: natures){
+			if (!project.hasNature(nature)) {
+	            IProjectDescription description = project.getDescription();
+	            String[] prevNatures = description.getNatureIds();
+	            String[] newNatures = new String[prevNatures.length + 1];
+	            System.arraycopy(prevNatures, 0, newNatures, 0, prevNatures.length);
+	            newNatures[prevNatures.length] = nature;
+	            description.setNatureIds(newNatures);
+	 
+	            project.setDescription(description, new NullProgressMonitor());
+	        }
+		}
 	}
 
 	public static void addProjectSettings(IProject project, ProjectSettings settings) throws JavaModelException {

@@ -10,10 +10,29 @@
       <wizard
             category="hu.elte.txtuml.project"
             class="hu.elte.txtuml.project.wizards.TxtUMLProject"
-            icon="icons/sample.gif"
+            icon="icons/txtUML_project.png"
             id="hu.elte.txtuml.project.wizards.TxtUMLProject"
-            name="txtUML Project">
+            name="txtUML Project"
+            project="true">
       </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.ide.projectNatureImages">
+      <image
+            icon="icons/txtUML_project.png"
+            id="hu.elte.txtuml.project.natureimage"
+            natureId="hu.elte.txtuml.project.txtumlprojectNature">
+      </image>
+   </extension>
+   <extension
+         id="hu.elte.txtuml.project.txtumlprojectNature"
+         name="txtUML ProjectNature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="hu.elte.txtuml.project.TxtUMLProjectNature">
+         </run>
+      </runtime>
    </extension>
 
 
