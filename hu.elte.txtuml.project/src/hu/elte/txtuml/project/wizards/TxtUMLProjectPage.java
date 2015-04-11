@@ -22,9 +22,11 @@ import org.eclipse.swt.widgets.Text;
 
 public class TxtUMLProjectPage extends WizardPage {
 	private Text projectName;
-
 	private Text modelName;
 
+	private static final String defaultModelName = "Sample";
+	private static final String defaultProjectName = "SampleProject";
+	
 	/**
 	 * Constructor for SampleNewWizardPage.
 	 * 
@@ -78,8 +80,8 @@ public class TxtUMLProjectPage extends WizardPage {
 	 */
 
 	private void initialize() {
-		projectName.setText("hu.elte.txtuml.examples.sample");
-		modelName.setText("MyModel");
+		projectName.setText(TxtUMLProjectPage.defaultProjectName);
+		modelName.setText(TxtUMLProjectPage.defaultModelName);
 	}
 
 	/**
