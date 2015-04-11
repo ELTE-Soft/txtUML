@@ -1,24 +1,24 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers;
 
-import hu.elte.txtuml.layout.visualizer.model.Point;
-
 /**
  * Class that represents an edge in the graph that the Graph search algorithm
  * uses.
  * 
  * @author Balázs Gregorics
+ * @param <N>
+ *            Type of the nodes that the link connects.
  *
  */
-public class Link
+public class Link<N>
 {
 	/**
 	 * One end of the edge.
 	 */
-	public Point From;
+	public N From;
 	/**
 	 * Other end of the edge.
 	 */
-	public Point To;
+	public N To;
 	
 	/**
 	 * Create edge.
@@ -28,7 +28,7 @@ public class Link
 	 * @param t
 	 *            Other end.
 	 */
-	public Link(Point f, Point t)
+	public Link(N f, N t)
 	{
 		From = f;
 		To = t;

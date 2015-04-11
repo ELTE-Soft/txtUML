@@ -503,6 +503,16 @@ public class LineAssociation
 	
 	// Methods
 	
+	/**
+	 * Function that determines whether this link is reflexive or not.
+	 * 
+	 * @return True if this link is reflexive. False if it's not.
+	 */
+	public boolean isReflexive()
+	{
+		return (_from.equals(_to));
+	}
+	
 	@Override
 	public LineAssociation clone()
 	{

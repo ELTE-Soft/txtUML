@@ -33,7 +33,7 @@ class GraphSearch
 	private Integer _boundary;
 	private Integer _extends;
 	
-	private Graph G;
+	private Graph<Point> G;
 	private Set<Point> Nyilt;
 	private Cost g;
 	private Parent PI;
@@ -166,7 +166,7 @@ class GraphSearch
 		_boundary = (top > 0) ? top : -1;
 		_extends = 0;
 		
-		G = new Graph();
+		G = new Graph<Point>();
 		G.add(_start);
 		
 		Nyilt = new HashSet<Point>();
@@ -218,7 +218,7 @@ class GraphSearch
 					g.set(m, g.get(n) + 1);
 					Nyilt.add(m);
 				}
-				G.addLink(new Link(n, m));
+				G.addLink(new Link<Point>(n, m));
 				G.addNode(m);
 			}
 		}

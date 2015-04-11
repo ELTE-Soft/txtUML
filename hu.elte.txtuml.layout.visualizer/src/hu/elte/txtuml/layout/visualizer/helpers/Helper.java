@@ -42,6 +42,25 @@ public class Helper
 	}
 	
 	/**
+	 * Method to clone a specific Set. A set of Strings.
+	 * 
+	 * @param toClone
+	 *            The set to clone.
+	 * @return A completly cloned set.
+	 */
+	public static Set<String> cloneStringSet(Set<String> toClone)
+	{
+		Set<String> result = new HashSet<String>();
+		
+		for (String s : toClone)
+		{
+			result.add(new String(s));
+		}
+		
+		return result;
+	}
+	
+	/**
 	 * Method to clone a specific map. A map of String and ArrayList\<String\>.
 	 * 
 	 * @param toClone

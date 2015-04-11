@@ -27,7 +27,9 @@ class ArrangeAssociations
 {
 	private Integer _widthOfObjects;
 	private Integer _transformAmount;
+	
 	private ArrayList<LineAssociation> _assocs;
+	private ArrayList<LineAssociation> _reflexives;
 	private HashMap<Pair<String, RouteConfig>, HashSet<Point>> _possibleStarts;
 	
 	/**
@@ -55,6 +57,9 @@ class ArrangeAssociations
 	 *            Associations to arrange on the grid.
 	 * @param stats
 	 *            Statements on associations.
+	 * @param onSameSide
+	 *            Whether the reflexive links should start and end on the same
+	 *            side of the object or not.
 	 * @throws ConversionException
 	 *             Throws if algorithm cannot convert certain StatementType into
 	 *             Direction.
@@ -64,8 +69,8 @@ class ArrangeAssociations
 	 * @throws CannotFindAssociationRouteException
 	 */
 	public ArrangeAssociations(Set<RectangleObject> diagramObjects,
-			Set<LineAssociation> diagramAssocs, ArrayList<Statement> stats)
-			throws ConversionException, InternalException,
+			Set<LineAssociation> diagramAssocs, ArrayList<Statement> stats,
+			boolean onSameSide) throws ConversionException, InternalException,
 			CannotFindAssociationRouteException
 	{
 		if (diagramAssocs == null || diagramAssocs.size() == 0 || diagramAssocs == null
@@ -75,16 +80,26 @@ class ArrangeAssociations
 		_transformAmount = 2;
 		_widthOfObjects = 1;
 		
-		arrange(diagramObjects, diagramAssocs, stats);
+		arrange(diagramObjects, diagramAssocs, stats, onSameSide);
 	}
 	
 	private void arrange(Set<RectangleObject> diagramObjects,
-			Set<LineAssociation> diagramAssocs, ArrayList<Statement> stats)
-			throws ConversionException, InternalException
+			Set<LineAssociation> diagramAssocs, ArrayList<Statement> stats,
+			boolean onSameSide) throws ConversionException, InternalException
 	{
-		_assocs = (ArrayList<LineAssociation>) diagramAssocs.stream().collect(
-				Collectors.toList());
-		// _modifies = new HashMap<Pair<String, RouteConfig>, Point>();
+		// Slpit reflexive and other links
+		_assocs = (ArrayList<LineAssociation>) diagramAssocs.stream()
+				.filter(a -> !a.isReflexive()).collect(Collectors.toList());
+		
+		_reflexives = (ArrayList<LineAssociation>) diagramAssocs.stream()
+				.filter(a -> a.isReflexive()).collect(Collectors.toList());
+		ArrayList<Statement> reflexiveStats = (ArrayList<Statement>) stats
+				.stream()
+				.filter(s -> _reflexives.stream().anyMatch(
+						a -> a.getId().equals(s.getParameter(0))))
+				.collect(Collectors.toList());
+		stats.removeIf(s -> reflexiveStats.contains(s));
+		
 		_possibleStarts = new HashMap<Pair<String, RouteConfig>, HashSet<Point>>();
 		
 		ArrayList<LineAssociation> originalAssocs = Helper.cloneLinkList(_assocs);
@@ -111,10 +126,11 @@ class ArrangeAssociations
 		
 		Boolean repeat = true;
 		
+		// Arrange normal links
 		while (repeat)
 		{
 			// Process statements, priority and direction
-			processStatements(stats, diagramObjects);
+			processStatements(_assocs, stats, diagramObjects);
 			Set<Painted<Point>> occupiedLinks = new HashSet<Painted<Point>>();
 			repeat = false;
 			
@@ -209,6 +225,20 @@ class ArrangeAssociations
 			}
 		}
 		
+		// Arrange reflexive links
+		processStatements(_reflexives, reflexiveStats, diagramObjects);
+		
+		// Find patterns
+		if (onSameSide)
+		{
+			// On the same side.
+			// TODO
+		}
+		else
+		{
+			// Not on the same side.
+			// TODO
+		}
 	}
 	
 	private Integer calculateMaxLinks(ArrayList<LineAssociation> as)
@@ -276,7 +306,8 @@ class ArrangeAssociations
 		return result;
 	}
 	
-	private void processStatements(ArrayList<Statement> stats, Set<RectangleObject> objs)
+	private void processStatements(ArrayList<LineAssociation> links,
+			ArrayList<Statement> stats, Set<RectangleObject> objs)
 			throws ConversionException, InternalException
 	{
 		if (stats != null && stats.size() != 0)
@@ -285,7 +316,7 @@ class ArrangeAssociations
 			HashMap<String, Integer> priorityMap = setPriorityMap(stats);
 			
 			// Order based on priority
-			_assocs.sort((a1, a2) ->
+			links.sort((a1, a2) ->
 			{
 				if (priorityMap.containsKey(a1.getId()))
 				{
@@ -311,7 +342,7 @@ class ArrangeAssociations
 			priorityless.removeIf(s -> s.getType().equals(StatementType.priority));
 			
 			// Set starts/ends for statemented assocs
-			setPossibles(priorityless, objs);
+			setPossibles(links, priorityless, objs);
 		}
 	}
 	
@@ -425,14 +456,15 @@ class ArrangeAssociations
 		return result;
 	}
 	
-	private void setPossibles(ArrayList<Statement> stats, Set<RectangleObject> objs)
+	private void setPossibles(ArrayList<LineAssociation> links,
+			ArrayList<Statement> stats, Set<RectangleObject> objs)
 			throws ConversionException, InternalException
 	{
 		for (Statement s : stats)
 		{
 			try
 			{
-				LineAssociation link = _assocs.stream()
+				LineAssociation link = links.stream()
 						.filter(a -> a.getId().equals(s.getParameter(0))).findFirst()
 						.get();
 				RectangleObject obj = objs.stream()
@@ -459,7 +491,7 @@ class ArrangeAssociations
 								RouteConfig.START);
 					}
 				}
-				else
+				if (link.getTo().equals(obj.getName()))
 				{
 					// RouteConfig.END
 					if (obj.getWidth() == 1)

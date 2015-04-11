@@ -1,7 +1,5 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers;
 
-import hu.elte.txtuml.layout.visualizer.model.Point;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,35 +9,37 @@ import java.util.stream.Collectors;
  * Class that helps the Graph Search algorithm to represent the graph.
  * 
  * @author Balázs Gregorics
+ * @param <N>
+ *            The type of nodes.
  *
  */
-public class Graph
+public class Graph<N>
 {
 	/**
 	 * Nodes of the Graph.
 	 */
-	public Set<Point> Nodes;
+	public Set<N> Nodes;
 	/**
 	 * Links of the Graph.
 	 */
-	public Set<Link> Links;
+	public Set<Link<N>> Links;
 	
 	/**
 	 * Create a Graph.
 	 */
 	public Graph()
 	{
-		Nodes = new HashSet<Point>();
-		Links = new HashSet<Link>();
+		Nodes = new HashSet<N>();
+		Links = new HashSet<Link<N>>();
 	}
 	
 	/**
-	 * Add a link to the graph.
+	 * Add a Link<N> to the graph.
 	 * 
 	 * @param l
-	 *            Link to add.
+	 *            Link<N> to add.
 	 */
-	public void add(Link l)
+	public void add(Link<N> l)
 	{
 		addLink(l);
 	}
@@ -50,7 +50,7 @@ public class Graph
 	 * @param n
 	 *            Node to add.
 	 */
-	public void add(Point n)
+	public void add(N n)
 	{
 		addNode(n);
 	}
@@ -61,18 +61,18 @@ public class Graph
 	 * @param n
 	 *            Node to add.
 	 */
-	public void addNode(Point n)
+	public void addNode(N n)
 	{
 		Nodes.add(n);
 	}
 	
 	/**
-	 * Add a link to the graph.
+	 * Add a Link<N> to the graph.
 	 * 
 	 * @param l
-	 *            Link to add.
+	 *            Link<N> to add.
 	 */
-	public void addLink(Link l)
+	public void addLink(Link<N> l)
 	{
 		Links.add(l);
 	}
@@ -84,7 +84,7 @@ public class Graph
 	 *            Node to search for.
 	 * @return True if the graph contains the node, else False.
 	 */
-	public boolean contains(Point n)
+	public boolean contains(N n)
 	{
 		return containsNode(n);
 	}
@@ -96,9 +96,22 @@ public class Graph
 	 *            Node to search for.
 	 * @return True if the graph contains the node, else False.
 	 */
-	public boolean containsNode(Point n)
+	public boolean containsNode(N n)
 	{
 		return Nodes.contains(n);
+	}
+	
+	/**
+	 * Returns the adjacent nodes of a certain node in the graph.
+	 * 
+	 * @param n
+	 *            The node that we seek the adjacents of.
+	 * @return The set of the adjacent nodes.
+	 */
+	public Set<N> adjacentNodes(N n)
+	{
+		return (Set<N>) Links.stream().filter(l -> l.From.equals(n)).map(l -> l.To)
+				.collect(Collectors.toSet());
 	}
 	
 	@Override
@@ -106,23 +119,11 @@ public class Graph
 	{
 		String result = "";
 		
-		ArrayList<Point> ns = (ArrayList<Point>) Nodes.stream().collect(
-				Collectors.toList());
-		ns.sort((p1, p2) ->
-		{
-			if (p1.getX() < p2.getX())
-				return -1;
-			else if (p1.getX() == p2.getX() && p1.getY() < p2.getY())
-				return -1;
-			else if (p1.getX() == p2.getX() && p1.getY() == p2.getY())
-				return 0;
-			else
-				return 1;
-		});
-		for (Point p : ns)
+		ArrayList<N> ns = (ArrayList<N>) Nodes.stream().collect(Collectors.toList());
+		for (N p : ns)
 		{
 			result += "\n" + p.toString() + ": ";
-			for (Link l : Links)
+			for (Link<N> l : Links)
 			{
 				if (l.From.equals(p))
 				{
