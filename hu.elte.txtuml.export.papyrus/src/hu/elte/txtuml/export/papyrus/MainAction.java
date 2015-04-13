@@ -1,15 +1,15 @@
 package hu.elte.txtuml.export.papyrus;
 
-import static org.eclipse.papyrus.uml.diagram.wizards.Activator.log;
+import hu.elte.txtuml.export.utils.Dialogs;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
@@ -66,8 +66,7 @@ public class MainAction {
 		try {	
 			createAndOpenPapyrusModel();
 		} catch (Exception e) {
-			msgb("Error", e.toString());
-			e.printStackTrace();
+			Dialogs.errorMsgb("Error", e.toString(), e);
 		}
 	}	
 	
@@ -78,7 +77,7 @@ public class MainAction {
 	 */
 	protected void createAndOpenPapyrusModel() throws Exception{
 		papyrusModelCreator.init(Projectname+"/"+Modelname, SourceUMLPath);
-
+		
 		if(!papyrusModelCreator.diExists()){
 			
 			papyrusModelCreator.createPapyrusModel();
@@ -86,7 +85,7 @@ public class MainAction {
 			papyrusModelManager = new PapyrusModelManager(editor);
 			papyrusModelManager.createAndFillDiagrams();
 		}else{
-			msgb("Loading Model", "A Papyrus model with this name already exists in this Project. It'll be loaded");
+			Dialogs.MessageBox("Loading Model", "A Papyrus model with this name already exists in this Project. It'll be loaded");
 			papyrusModelCreator.loadPapyrusModel();
 			openEditor(papyrusModelCreator.getDi());
 		}
@@ -107,18 +106,9 @@ public class MainAction {
 					IEditorInput editorInput = new FileEditorInput(file);
 					ed = IDE.openEditor(page, editorInput, "org.eclipse.papyrus.infra.core.papyrusEditor", true);
 				} catch (PartInitException e) {
-					log.error(e);
+					Dialogs.errorMsgb(null, null, e);
 				}
 			}
 			return ed;
-	}
-	
-	/**
-	 * Opens a MessageBox with the given title and message.
-	 * @param title The title of the MessageBox window
-	 * @param body The Message
-	 */
-	public void msgb(String title, String body){
-		MessageDialog.openInformation(window.getShell(),title,body);
 	}
 }

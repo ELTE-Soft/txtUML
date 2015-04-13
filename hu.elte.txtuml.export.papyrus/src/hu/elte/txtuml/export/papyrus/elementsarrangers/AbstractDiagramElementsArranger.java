@@ -81,7 +81,8 @@ public abstract class AbstractDiagramElementsArranger implements
 					if(!isInstanceOfAny(label, excluding)){
 						ShowHideLabelsRequest request = new ShowHideLabelsRequest(false, ((View) label.getModel()));
 						Command com = connection.getCommand(request);
-						com.execute();
+						if(com != null && com.canExecute())
+							com.execute();
 					}
 				}
 				

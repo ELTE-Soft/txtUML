@@ -1,10 +1,12 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
+import hu.elte.txtuml.export.papyrus.Activator;
 import hu.elte.txtuml.export.papyrus.MainAction;
 import hu.elte.txtuml.export.papyrus.ProjectManager;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.export.uml2.UML2;
 import hu.elte.txtuml.export.utils.ClassLoaderProvider;
+import hu.elte.txtuml.export.utils.Dialogs;
 
 import java.net.URLClassLoader;
 
@@ -13,11 +15,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.CommonPlugin;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 
@@ -78,9 +78,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
     		String uri = URI.createPlatformResourceURI(txtUMLProjectName+"/"+folder, false).toString();
 			UML2.exportModel(txtUMLModelClass, uri);
 		} catch (Exception e) {
-			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-			MessageDialog.openInformation(window.getShell(),"txtUML export Error",e.getClass()+":\n"+e.getMessage());
-			e.printStackTrace();
+			Dialogs.errorMsgb("txtUML export Error", e.getClass()+":\n"+e.getMessage(), e);
 			return false;
 		}
 
@@ -106,9 +104,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard{
 	        MainAction ma  = new MainAction(txtUMLModelName, txtUMLModelName, UmlFile.getRawLocationURI().toString());
 			ma.run();
     	}catch(Exception e){
-    		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-			MessageDialog.openInformation(window.getShell(),"txtUML visualization Error",e.getClass()+":\n"+e.getMessage());
-			e.printStackTrace();
+			Dialogs.errorMsgb("txtUML visualization Error", e.getClass()+":\n"+e.getMessage(), e);
 			return false;
     	}
 		return true;

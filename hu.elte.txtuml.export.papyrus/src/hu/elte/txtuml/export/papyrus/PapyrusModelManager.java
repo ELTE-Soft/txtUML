@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.papyrus;
 
 import hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout.ActivityDiagramElementsGmfArranger;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout.ClassDiagramElementsGmfArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout.StateMachineDiagramElementsGmfArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.ClassDiagramElementsTxtUmlArranger;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager;
@@ -114,7 +115,7 @@ public class PapyrusModelManager {
 			
 			if(diagram.getType().equals("PapyrusUMLClassDiagram")){					
 				diagramElementsManager = new ClassDiagramElementsManager(modelManager, diagep);
-				diagramElementsArranger = new ClassDiagramElementsTxtUmlArranger(diagep);
+				diagramElementsArranger = new ClassDiagramElementsGmfArranger(diagep);
 			}else if(diagram.getType().equals("PapyrusUMLActivityDiagram")){
 				diagramElementsManager = new ActivityDiagramElementsManager(modelManager, diagep);
 				diagramElementsArranger = new ActivityDiagramElementsGmfArranger(diagep);

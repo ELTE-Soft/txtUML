@@ -33,6 +33,7 @@ import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.Port;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.Realization;
 import org.eclipse.uml2.uml.Reception;
 import org.eclipse.uml2.uml.Signal;
 
@@ -98,7 +99,12 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 	 * @return Returns the types of connectors that are to be added 
 	 */
 	private List<java.lang.Class<?>> generateConnectorsToBeAdded() {
-		List<java.lang.Class<?>> connectors = Arrays.asList(Association.class, Generalization.class, InterfaceRealization.class);
+		List<java.lang.Class<?>> connectors = Arrays.asList(
+				Association.class,
+				Generalization.class,
+				InterfaceRealization.class,
+				Realization.class
+		);
 		return connectors;
 	}
 	
