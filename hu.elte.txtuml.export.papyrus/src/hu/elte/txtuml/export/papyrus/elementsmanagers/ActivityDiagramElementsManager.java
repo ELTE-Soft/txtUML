@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
 import hu.elte.txtuml.export.papyrus.ModelManager;
+import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -18,6 +19,8 @@ import org.eclipse.uml2.uml.*;
  */
 public class ActivityDiagramElementsManager extends AbstractDiagramElementsManager{
 	
+	private PreferencesManager preferencesManager;
+	
 	private List<java.lang.Class<?>> NodesToBeAdded;
 	private List<java.lang.Class<?>> ConnectorsToBeAdded;
 	
@@ -28,6 +31,7 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 	 */
 	public ActivityDiagramElementsManager(ModelManager modelManager,DiagramEditPart diagramEditPart) {
 		super(modelManager, diagramEditPart);
+		preferencesManager = new PreferencesManager();
 		NodesToBeAdded = generateNodesToBeAdded();
 		ConnectorsToBeAdded = generateConnectorsToBeAdded(); 
 	}
@@ -37,9 +41,10 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 	 * @return Returns the types of nodes that are to be added
 	 */
 	private List<java.lang.Class<?>> generateNodesToBeAdded() {
-		List<java.lang.Class<?>> nodes = Arrays.asList(
+		List<java.lang.Class<?>> nodes = new LinkedList<java.lang.Class<?>>(Arrays.asList(
 				AcceptEventAction.class,
 				Activity.class,
+				ActivityFinalNode.class,
 				AddStructuralFeatureValueAction.class,
 				AddVariableValueAction.class,
 				BroadcastSignalAction.class,
@@ -49,6 +54,7 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 				DecisionNode.class,
 				DestroyObjectAction.class,
 				FinalNode.class,
+				FlowFinalNode.class,
 				ForkNode.class,
 				InitialNode.class,
 				JoinNode.class,
@@ -60,7 +66,11 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 				SendObjectAction.class,
 				SendSignalAction.class,
 				ValueSpecificationAction.class
-			);
+			));
+		
+		if(preferencesManager.getBoolean(PreferencesManager.ACTIVITY_DIAGRAM_COMMENT_PREF))
+			nodes.add(Comment.class);
+		
 		return nodes;
 	}
 	

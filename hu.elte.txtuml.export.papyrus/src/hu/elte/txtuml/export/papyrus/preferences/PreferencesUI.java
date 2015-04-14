@@ -80,6 +80,9 @@ public class PreferencesUI {
 		checkboxes.put("CDCommentCHBX", new CheckBoxRecord(checkboxes.get("ClassDiagramCHBX").chbx, "Comment",
 								IconsUtil.COMMENT_16, PreferencesManager.CLASS_DIAGRAM_COMMENT_PREF));
 		
+		checkboxes.put("ADCommentCHBX", new CheckBoxRecord(checkboxes.get("ActivityDiagramCHBX").chbx, "Comment",
+								IconsUtil.COMMENT_16, PreferencesManager.ACTIVITY_DIAGRAM_COMMENT_PREF));
+		
 		checkboxes.put("SMDCommentCHBX", new CheckBoxRecord(checkboxes.get("StateMachineDiagramCHBX").chbx, "Comment",
 								IconsUtil.COMMENT_16, PreferencesManager.STATEMACHINE_DIAGRAM_COMMENT_PREF));
 		checkboxes.put("SMDConstraintCHBX", new CheckBoxRecord(checkboxes.get("StateMachineDiagramCHBX").chbx, "Constraint",

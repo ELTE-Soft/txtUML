@@ -28,6 +28,8 @@ public class PreferencesManager{
 	public static String CLASS_DIAGRAM_SIGNAL_PREF = "Class Diagram Signal";
 	public static String CLASS_DIAGRAM_COMMENT_PREF = "Class Diagram Comment";
 	
+	public static String ACTIVITY_DIAGRAM_COMMENT_PREF = "Activity Diagram Comment";
+	
 	public static String STATEMACHINE_DIAGRAM_CONSTRAINT_PREF = "StateMachine Diagram Constraint";
 	public static String STATEMACHINE_DIAGRAM_COMMENT_PREF = "StateMachine Diagram Comment";
 	
@@ -51,6 +53,8 @@ public class PreferencesManager{
 		fieldsWithDefaultValues.put(CLASS_DIAGRAM_SIGNAL_PREF, false);
 		fieldsWithDefaultValues.put(CLASS_DIAGRAM_COMMENT_PREF, true);
 	    
+		fieldsWithDefaultValues.put(ACTIVITY_DIAGRAM_COMMENT_PREF, false);
+		
 		fieldsWithDefaultValues.put(STATEMACHINE_DIAGRAM_CONSTRAINT_PREF, false);
 		fieldsWithDefaultValues.put(STATEMACHINE_DIAGRAM_COMMENT_PREF, true);
 		
