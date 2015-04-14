@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: txtUML Export Utils
-Bundle-SymbolicName: hu.elte.txtuml.export.utils
+Bundle-SymbolicName: hu.elte.txtuml.eclipseutils
 Bundle-Version: 1.0.0.qualifier
 Export-Package: hu.elte.txtuml.export.utils
 Require-Bundle: org.eclipse.core.resources,

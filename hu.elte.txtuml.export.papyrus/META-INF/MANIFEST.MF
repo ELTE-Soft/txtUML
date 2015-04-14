@@ -22,7 +22,7 @@ Require-Bundle: org.eclipse.debug.ui,
  hu.elte.txtuml.layout.export,
  hu.elte.txtuml.api,
  hu.elte.txtuml.export.uml2,
- hu.elte.txtuml.export.utils,
+ hu.elte.txtuml.eclipseutils,
  org.eclipse.uml2.uml,
  hu.elte.txtuml.utils,
  org.eclipse.papyrus.uml.diagram.menu
