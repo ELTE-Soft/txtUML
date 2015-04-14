@@ -1,5 +1,6 @@
 package hu.elte.txtuml.project.wizards;
 
+import hu.elte.txtuml.export.utils.Dialogs;
 import hu.elte.txtuml.project.ProjectCreator;
 import hu.elte.txtuml.project.ProjectCreator.ProjectSettings;
 import hu.elte.txtuml.project.TxtUMLProjectNature;
@@ -18,13 +19,11 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
@@ -129,8 +128,7 @@ public class TxtUMLProject extends Wizard implements INewWizard {
 			openEditor((IFile) modelFile.getCorrespondingResource());
 			
 		}catch(CoreException | IOException e){
-			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-			MessageDialog.openInformation(window.getShell(),"txtUML Project creation Error",e.getClass()+":\n"+e.getMessage());
+			Dialogs.errorMsgb("txtUML Project creation Error", e.getClass()+":\n"+e.getMessage(), e);
 			return false;
 		}
 		return true;
