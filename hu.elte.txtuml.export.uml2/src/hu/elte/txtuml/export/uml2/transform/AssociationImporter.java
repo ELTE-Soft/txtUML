@@ -82,7 +82,10 @@ class AssociationImporter extends AbstractImporter{
 		}
 		catch(IndexOutOfBoundsException e)
 		{
-			throw new ImportException("The following association has less than 2 association ends: "+sourceClass.getCanonicalName());
+			throw new ImportException(
+					"The following association has less than 2 association ends: " + 
+					sourceClass.getCanonicalName()
+				);
 		}
 		
 	}

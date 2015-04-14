@@ -172,14 +172,20 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	protected static String getObjectIdentifier(Object instance)
 	{
 		String identifier=null;
-		InstanceInformation instInfo=InstanceManager.getInstanceInfo(instance);
 		
-		if(instInfo != null && !instInfo.isLiteral() && !instInfo.isCalculated())
-			identifier = instInfo.getExpression();
-		else if(instance instanceof ModelClass)
-			identifier = ((ModelClass) instance).getIdentifier();
+		if(instance == null)
+			identifier = "null";
 		else
-			identifier = "inst_"+System.identityHashCode(instance);
+		{
+			InstanceInformation instInfo=InstanceManager.getInstanceInfo(instance);
+			
+			if(instInfo != null && !instInfo.isLiteral() && !instInfo.isCalculated())
+				identifier = instInfo.getExpression();
+			else if(instance instanceof ModelClass)
+				identifier = ((ModelClass) instance).getIdentifier();
+			else
+				identifier = "inst_"+System.identityHashCode(instance);
+		}
 		
 		return identifier;
 	}
@@ -360,7 +366,6 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 			Type type=ModelImporter.importType(value.getClass());
 			createAndAddOpaqueExpressionToValuePin(pin,expression, type);
 		}
-		
 	}
 
 	/**

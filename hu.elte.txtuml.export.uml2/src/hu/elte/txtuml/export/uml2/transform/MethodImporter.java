@@ -166,6 +166,7 @@ class MethodImporter extends AbstractMethodImporter
 				createSignalParameter();
 		}
 	}
+	
 	/**
 	 * Ends method import.
 	 * 
@@ -182,6 +183,7 @@ class MethodImporter extends AbstractMethodImporter
 		currentParameters=null;
 		currentSignal=null;	
 	}
+	
 	/**
 	 * Creates an activity parameter and parameter node for the trigger signal of an effect method. Should only be used when
 	 * imported method is an effect method of a transition and it has a trigger.
@@ -330,5 +332,4 @@ class MethodImporter extends AbstractMethodImporter
 		createControlFlowBetweenActivityNodes(lastNode,addVarValAction);
 		lastNode=addVarValAction;
 	}
-
 }

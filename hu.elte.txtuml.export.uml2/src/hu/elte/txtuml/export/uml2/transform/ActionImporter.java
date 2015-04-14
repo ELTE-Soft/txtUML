@@ -10,14 +10,13 @@ import hu.elte.txtuml.api.blocks.ParameterizedBlockBody;
 import hu.elte.txtuml.export.uml2.utils.FieldValueAccessor;
 import hu.elte.txtuml.utils.Pair;
 
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Classifier;
-import org.eclipse.uml2.uml.CreateLinkAction;
 import org.eclipse.uml2.uml.DecisionNode;
-import org.eclipse.uml2.uml.DestroyLinkAction;
 import org.eclipse.uml2.uml.DestroyObjectAction;
 import org.eclipse.uml2.uml.LinkAction;
 import org.eclipse.uml2.uml.LinkEndData;
@@ -56,25 +55,28 @@ public class ActionImporter extends AbstractMethodImporter {
 	 */
 	static void importStartObjectAction(ModelClass instance)
 	{
-		String instanceIdentifier = getObjectIdentifier(instance);
-		Classifier classifier=(Classifier) currentModel.getOwnedType(instance.getClass().getSimpleName());
-		
-		StartClassifierBehaviorAction startClassifierBehaviorAction = (StartClassifierBehaviorAction) 
-				currentActivity.createOwnedNode(
-						"startClassifierBehavior_"+instanceIdentifier,
-						UMLPackage.Literals.START_CLASSIFIER_BEHAVIOR_ACTION
-					);
+		if(currentActivity != null)
+		{
+			String instanceIdentifier = getObjectIdentifier(instance);
+			Classifier classifier=(Classifier) currentModel.getOwnedType(instance.getClass().getSimpleName());
+			
+			StartClassifierBehaviorAction startClassifierBehaviorAction = (StartClassifierBehaviorAction) 
+					currentActivity.createOwnedNode(
+							"startClassifierBehavior_"+instanceIdentifier,
+							UMLPackage.Literals.START_CLASSIFIER_BEHAVIOR_ACTION
+						);
 
-		
-		ValuePin valuePin = (ValuePin) 
-				startClassifierBehaviorAction.createObject(
-						startClassifierBehaviorAction.getName()+"_input",
-						classifier,UMLPackage.Literals.VALUE_PIN
-					);
+			
+			ValuePin valuePin = (ValuePin) 
+					startClassifierBehaviorAction.createObject(
+							startClassifierBehaviorAction.getName()+"_input",
+							classifier,UMLPackage.Literals.VALUE_PIN
+						);
 
-		createAndAddOpaqueExpressionToValuePin(valuePin, instanceIdentifier, classifier);
-		
-		lastNode = startClassifierBehaviorAction;
+			createAndAddOpaqueExpressionToValuePin(valuePin, instanceIdentifier, classifier);
+			
+			lastNode = startClassifierBehaviorAction;
+		}
 	}
 	
 	/**
@@ -87,7 +89,14 @@ public class ActionImporter extends AbstractMethodImporter {
 	static void importCreateLinkAction(Class<?> leftEndClass, ModelClass leftEndObj,
 			Class<?> rightEndClass, ModelClass rightEndObj)
 	{
-		ActionImporter.importLinkAction(leftEndClass,leftEndObj,rightEndClass,rightEndObj,LinkActionTypes.CREATE_LINK_LITERAL);
+		if(currentActivity != null)
+			ActionImporter.importLinkAction(
+					leftEndClass,
+					leftEndObj,
+					rightEndClass,
+					rightEndObj,
+					LinkActionTypes.CREATE_LINK_LITERAL
+				);
 	}
 	
 	/**
@@ -102,7 +111,14 @@ public class ActionImporter extends AbstractMethodImporter {
 	static void importDestroyLinkAction(Class<?> leftEndClass, ModelClass leftEndObj,
 			Class<?> rightEndClass, ModelClass rightEndObj)
 	{
-		ActionImporter.importLinkAction(leftEndClass,leftEndObj,rightEndClass,rightEndObj,LinkActionTypes.DESTROY_LINK_LITERAL);
+		if(currentActivity != null)
+			ActionImporter.importLinkAction(
+					leftEndClass,
+					leftEndObj,
+					rightEndClass,
+					rightEndObj,
+					LinkActionTypes.DESTROY_LINK_LITERAL
+				);
 	}
 	
 	/**
@@ -153,24 +169,27 @@ public class ActionImporter extends AbstractMethodImporter {
 	 */
 	static void importWhileStatement(Condition cond, BlockBody body)
 	{
-		String condExpr=importCondition(cond);
-		DecisionNode decisionNode=createNextDecisionNode();
-		createEdgeBetweenActivityNodes(lastNode,decisionNode);
+		if(currentActivity != null)
+		{
+			String condExpr=importCondition(cond);
+			DecisionNode decisionNode=createNextDecisionNode();
+			createEdgeBetweenActivityNodes(lastNode,decisionNode);
 
-		lastNode=decisionNode;
+			lastNode=decisionNode;
 
-		Pair<ActivityNode,ActivityEdge> importThenBodyResult=importBlockBody(body);
-		ActivityEdge thenFirstEdge=importThenBodyResult.getValue();
-		ActivityNode thenLastNode=importThenBodyResult.getKey();
-		
-		if(thenFirstEdge != null)
-			addGuardToActivityEdge(thenFirstEdge, condExpr);
+			Pair<ActivityNode,ActivityEdge> importThenBodyResult=importBlockBody(body);
+			ActivityEdge thenFirstEdge=importThenBodyResult.getValue();
+			ActivityNode thenLastNode=importThenBodyResult.getKey();
+			
+			if(thenFirstEdge != null)
+				addGuardToActivityEdge(thenFirstEdge, condExpr);
 
-		if(thenLastNode != decisionNode)
-			createEdgeBetweenActivityNodes(thenLastNode,decisionNode);
-		
-		unfinishedDecisionNodes.push(decisionNode);
-		lastNode=decisionNode;
+			if(thenLastNode != decisionNode)
+				createEdgeBetweenActivityNodes(thenLastNode,decisionNode);
+			
+			unfinishedDecisionNodes.push(decisionNode);
+			lastNode=decisionNode;
+		}
 	}
 
 	/**
@@ -196,36 +215,39 @@ public class ActionImporter extends AbstractMethodImporter {
 	 */
 	static void importIfStatement(Condition cond, BlockBody thenBody,BlockBody elseBody)
 	{
-		String condExpr=importCondition(cond);
-		DecisionNode decisionNode=createNextDecisionNode();
-		createEdgeBetweenActivityNodes(lastNode,decisionNode);
+		if(currentActivity != null)
+		{
+			String condExpr=importCondition(cond);
+			DecisionNode decisionNode=createNextDecisionNode();
+			createEdgeBetweenActivityNodes(lastNode,decisionNode);
 
-		lastNode=decisionNode;
+			lastNode=decisionNode;
 
-		Pair<ActivityNode,ActivityEdge> importThenBodyResult=importBlockBody(thenBody);
-		ActivityEdge thenFirstEdge=importThenBodyResult.getValue();
-		ActivityNode thenLastNode=importThenBodyResult.getKey();
-	
-		lastNode=decisionNode;
+			Pair<ActivityNode,ActivityEdge> importThenBodyResult=importBlockBody(thenBody);
+			ActivityEdge thenFirstEdge=importThenBodyResult.getValue();
+			ActivityNode thenLastNode=importThenBodyResult.getKey();
+		
+			lastNode=decisionNode;
 
-		Pair<ActivityNode,ActivityEdge> importElseBodyResult=importBlockBody(elseBody);
-		ActivityEdge elseFirstEdge=importElseBodyResult.getValue();
-		ActivityNode elseLastNode=importElseBodyResult.getKey();
-		
-		lastNode=createMergeNode(thenLastNode,elseLastNode);
-		
-		//if the "then" block body was empty, the first edge will be the one that targets the merge node
-		//lastNode is the merge node
-		if(thenFirstEdge == null) 
-			thenFirstEdge = lastNode.getIncomings().get(0);
-				
-		//if the "else" block body was empty, the first edge will be the one that targets the merge node
-		//lastNode is the merge node
-		if(elseFirstEdge == null)
-			elseFirstEdge = lastNode.getIncomings().get(1);
-		
-		addGuardToActivityEdge(thenFirstEdge, condExpr);
-		addGuardToActivityEdge(elseFirstEdge, "else");
+			Pair<ActivityNode,ActivityEdge> importElseBodyResult=importBlockBody(elseBody);
+			ActivityEdge elseFirstEdge=importElseBodyResult.getValue();
+			ActivityNode elseLastNode=importElseBodyResult.getKey();
+			
+			lastNode=createMergeNode(thenLastNode,elseLastNode);
+			
+			//if the "then" block body was empty, the first edge will be the one that targets the merge node
+			//lastNode is the merge node
+			if(thenFirstEdge == null) 
+				thenFirstEdge = lastNode.getIncomings().get(0);
+					
+			//if the "else" block body was empty, the first edge will be the one that targets the merge node
+			//lastNode is the merge node
+			if(elseFirstEdge == null)
+				elseFirstEdge = lastNode.getIncomings().get(1);
+			
+			addGuardToActivityEdge(thenFirstEdge, condExpr);
+			addGuardToActivityEdge(elseFirstEdge, "else");
+		}
 	}
 
 	/**
@@ -238,35 +260,38 @@ public class ActionImporter extends AbstractMethodImporter {
 	 */
 	static void importForStatement(ModelInt from, ModelInt to, ParameterizedBlockBody<ModelInt> body) 
 	{
-		String fromExpression=getExpression(from);
-		String toExpression=getExpression(to);
-		ModelInt loopVar=new ModelInt();
-		String loopVarId=getObjectIdentifier(loopVar);
-		String condExpr=loopVarId+"<="+toExpression;
+		if(currentActivity != null)
+		{
+			String fromExpression=getExpression(from);
+			String toExpression=getExpression(to);
+			ModelInt loopVar=new ModelInt();
+			String loopVarId=getObjectIdentifier(loopVar);
+			String condExpr=loopVarId+"<="+toExpression;
 
-		setVariableValue(loopVar, fromExpression);
+			setVariableValue(loopVar, fromExpression);
 
-		DecisionNode decisionNode=createNextDecisionNode();
-		createEdgeBetweenActivityNodes(lastNode,decisionNode);
+			DecisionNode decisionNode=createNextDecisionNode();
+			createEdgeBetweenActivityNodes(lastNode,decisionNode);
 
-		lastNode=decisionNode;
+			lastNode=decisionNode;
 
-		Pair<ActivityNode,ActivityEdge> importThenBodyResult=importParameterizedBlockBody(body,loopVar);
-		ActivityEdge thenFirstEdge=importThenBodyResult.getValue();
+			Pair<ActivityNode,ActivityEdge> importThenBodyResult=importParameterizedBlockBody(body,loopVar);
+			ActivityEdge thenFirstEdge=importThenBodyResult.getValue();
+			
+			setVariableValue(loopVar, loopVarId+" + 1"); // increment loopVar by 1
+			
+			//if block body was empty, the first edge will be the one that targets the loop variable incrementing node
+			//lastNode is a SetVariableAction that increments the loop variable by 1
+			if(thenFirstEdge==null) 
+				thenFirstEdge = lastNode.getIncomings().get(0);
 		
-		setVariableValue(loopVar, loopVarId+" + 1"); // increment loopVar by 1
-		
-		//if block body was empty, the first edge will be the one that targets the loop variable incrementing node
-		//lastNode is a SetVariableAction that increments the loop variable by 1
-		if(thenFirstEdge==null) 
-			thenFirstEdge = lastNode.getIncomings().get(0);
-	
-		addGuardToActivityEdge(thenFirstEdge, condExpr);
-		
-		createEdgeBetweenActivityNodes(lastNode,decisionNode);
-		
-		unfinishedDecisionNodes.push(decisionNode);
-		lastNode=decisionNode;
+			addGuardToActivityEdge(thenFirstEdge, condExpr);
+			
+			createEdgeBetweenActivityNodes(lastNode,decisionNode);
+			
+			unfinishedDecisionNodes.push(decisionNode);
+			lastNode=decisionNode;
+		}
 	}
 
 	/**
@@ -347,22 +372,22 @@ public class ActionImporter extends AbstractMethodImporter {
 
 			Association association=(Association)currentModel.getOwnedMember(assocName);
 
-			String linkActionName=null;
-			LinkAction linkAction=null;
-
+			String linkActionName="link_"+leftName+"_and_"+rightName;
+			EClass actionEClass = null;
+			
 			switch(linkActionType)
 			{
 				case CREATE_LINK_LITERAL:
-					linkActionName="link_"+leftName+"_and_"+rightName;
-					linkAction	=	(CreateLinkAction) 
-							currentActivity.createOwnedNode(linkActionName, UMLPackage.Literals.CREATE_LINK_ACTION);
+					actionEClass = UMLPackage.Literals.CREATE_LINK_ACTION;
 					break;
 				case DESTROY_LINK_LITERAL:
-					linkActionName="unlink_"+leftName+"_and_"+rightName;
-					linkAction	=	(DestroyLinkAction) 
-							currentActivity.createOwnedNode(linkActionName, UMLPackage.Literals.DESTROY_LINK_ACTION);
+					linkActionName="un"+linkActionName;
+					actionEClass = UMLPackage.Literals.DESTROY_LINK_ACTION;
 					break;
 			}
+			
+			LinkAction linkAction =	(LinkAction) 
+					currentActivity.createOwnedNode(linkActionName, actionEClass);
 
 			addEndToLinkAction(linkAction,association,leftPhrase,leftName,leftEndObj,1);
 			addEndToLinkAction(linkAction,association,rightPhrase,rightName,rightEndObj,2);

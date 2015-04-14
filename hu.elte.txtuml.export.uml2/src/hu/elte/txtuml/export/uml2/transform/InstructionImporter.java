@@ -100,7 +100,6 @@ public class InstructionImporter extends AbstractMethodImporter
 		}
 	}
 
-	
 	/**
 	 * Imports a method call in a method body.
 	 * @param target The target dummy instance.
@@ -121,7 +120,6 @@ public class InstructionImporter extends AbstractMethodImporter
 			returnObj = importMethodCallInGuardBody(target, methodName, args);
 	
 		return returnObj;
-		
 	}
 
 	/**
@@ -138,7 +136,6 @@ public class InstructionImporter extends AbstractMethodImporter
 		Method method=ElementFinder.findMethod(methodName, target.getClass());
 		Class<?> returnType=method.getReturnType();
 		return DummyInstanceCreator.createDummyInstance(returnType);
-		// TODO import calls into UML2 model
 	}
 
 	/**
@@ -156,8 +153,6 @@ public class InstructionImporter extends AbstractMethodImporter
 		Class<?> returnType=method.getReturnType();
 		Object ret=DummyInstanceCreator.createDummyInstance(returnType);
 		return ret;
-	
-		// TODO import calls into UML2 model
 	}
 
 	/**
@@ -214,7 +209,6 @@ public class InstructionImporter extends AbstractMethodImporter
 		}
 		catch(Exception e)
 		{
-			//e.printStackTrace();
 		}
 		return null;
 	}
@@ -340,13 +334,14 @@ public class InstructionImporter extends AbstractMethodImporter
 		createControlFlowBetweenActivityNodes(lastNode,callAction);
 		lastNode=callAction;
 
-		try {
+		try 
+		{
 			Method method = ElementFinder.findMethod(methodName, target.getClass());
 			Class<?> returnType=method.getReturnType();
 			returnObj=DummyInstanceCreator.createDummyInstance(returnType);
-		} catch (SecurityException e1) {
-			// TODO Auto-generated catch block
-			//e1.printStackTrace();
+		} 
+		catch (SecurityException e1)
+		{
 		}
 
 		return returnObj;

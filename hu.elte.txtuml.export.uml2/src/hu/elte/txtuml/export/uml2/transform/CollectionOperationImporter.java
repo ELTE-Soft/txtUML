@@ -30,6 +30,11 @@ import org.eclipse.uml2.uml.Variable;
  */
 public class CollectionOperationImporter extends AbstractMethodImporter {
 
+	private enum SelectTypes
+	{
+		SELECT_ONE_LITERAL,
+		SELECT_ALL_LITERAL
+	}
 	/**
 	 * Imports a select one instruction of a Collection in a method body.
 	 * @param target The dummy instance of the target Collection.
@@ -44,38 +49,26 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 	
 		@SuppressWarnings("unchecked")
 		T result=(T) DummyInstanceCreator.createDummyInstance(typeClass);
-	
-		String resultName=result.getIdentifier();
-	
+
 		String targetExpression = getExpression(target);
 		
-		String expression = targetExpression;
+		String selectExpression;
 		if(MultiplicityProvider.isOne(targetClass) || MultiplicityProvider.isZeroToOne(targetClass))
-			expression = targetExpression;
+			selectExpression = targetExpression;
 		else
-			expression = targetExpression + "->any(true)";
+			selectExpression = targetExpression + "->any(true)";
 		
-		String resultExpression = expression;
+		String resultExpression = selectExpression;
+		
 		if(currentActivity != null)
 		{
-			OpaqueAction selectOneAction=	(OpaqueAction)
-					currentActivity.createOwnedNode("selectOne_"+targetExpression,UMLPackage.Literals.OPAQUE_ACTION);
-			
-			selectOneAction.getBodies().add(expression);
-		
-			createControlFlowBetweenActivityNodes(lastNode, selectOneAction);
-		
-			Type type=ModelImporter.importType(typeClass);
-		
-			OutputPin outputPin=selectOneAction.createOutputValue(selectOneAction.getName()+"_output", type);
-		
-			Variable variable=createVariableForInstance(result,type);
-			AddVariableValueAction setVarAction = createAddVarValAction(variable,"setVar_"+resultName);
-		
-			InputPin inputPin=setVarAction.createValue(setVarAction.getName()+"_input",type);
-		
-			createObjectFlowBetweenActivityNodes(outputPin,inputPin);
-			lastNode=setVarAction;
+			createActivityElementsForSelectAction(
+					targetExpression, 
+					selectExpression, 
+					result, 
+					typeClass,
+					SelectTypes.SELECT_ONE_LITERAL
+				);
 			
 			if(result != null)
 				resultExpression = result.getIdentifier();
@@ -118,34 +111,15 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 		String targetExpression = getExpression(target);
 		String selectExpression = targetExpression +"->select(" + conditionExpression + ")";
 		String resultExpression = selectExpression;
+		
 		if(currentActivity != null)
 		{
-			OpaqueAction selectAllAction=	(OpaqueAction)
-					currentActivity.createOwnedNode("selectAll_"+targetExpression,UMLPackage.Literals.OPAQUE_ACTION);
-		
-			selectAllAction.getBodies().add(selectExpression);
-			
-			createControlFlowBetweenActivityNodes(lastNode, selectAllAction);
-		
-			Type type=ModelImporter.importType(typeClass);
-			
-			Variable variable=createVariableForInstance(result,type);
-			int lowerBound = variable.getLower();
-			int upperBound = variable.getUpper();
-			
-			AddVariableValueAction setVarAction = createAddVarValAction(variable,"setVar_"+resultName);
-			
-			OutputPin outputPin=selectAllAction.createOutputValue(selectAllAction.getName()+"_output", type);
-			outputPin.setLower(lowerBound);
-			outputPin.setUpper(upperBound);
-			
-			InputPin inputPin=setVarAction.createValue(setVarAction.getName()+"_input",type);
-			inputPin.setLower(lowerBound);
-			inputPin.setUpper(upperBound);
-			
-			createObjectFlowBetweenActivityNodes(outputPin,inputPin);
-			lastNode=setVarAction;
-			
+			createActivityElementsForSelectAction(
+					targetExpression, 
+					selectExpression,
+					result, typeClass,
+					SelectTypes.SELECT_ALL_LITERAL
+				);
 			if(result != null)
 				resultExpression = resultName;
 		}
@@ -159,6 +133,54 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 	}
 
 	/**
+	 * 
+	 * Creates the necessary activity elements (activity nodes and edges) for a select action.
+	 * @param targetExpression The expression of the target collection.
+	 * @param selectExpression The select expression.
+	 * @param result The result instance of the selection. (a ModelClass instance or a colleciton)
+	 * @param typeClass The class of the result.
+	 * @param selectType The type of selection. (e.g. selectAll, selectOne)
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private static void createActivityElementsForSelectAction
+		(String targetExpression, String selectExpression, Object result, Class<?> typeClass, SelectTypes selectType)
+	{
+		String resultName=getObjectIdentifier(result);
+		String actionNamePrefix;
+		
+		if(selectType == SelectTypes.SELECT_ALL_LITERAL)
+			actionNamePrefix = "selectAll_";
+		else
+			actionNamePrefix = "selectOne_";
+		
+		OpaqueAction selectAllAction=	(OpaqueAction)
+				currentActivity.createOwnedNode(actionNamePrefix+targetExpression,UMLPackage.Literals.OPAQUE_ACTION);
+	
+		selectAllAction.getBodies().add(selectExpression);
+		
+		createControlFlowBetweenActivityNodes(lastNode, selectAllAction);
+	
+		Type type=ModelImporter.importType(typeClass);
+		
+		Variable variable=createVariableForInstance(result,type);
+		int lowerBound = variable.getLower();
+		int upperBound = variable.getUpper();
+		
+		AddVariableValueAction setVarAction = createAddVarValAction(variable,"setVar_"+resultName);
+		
+		OutputPin outputPin=selectAllAction.createOutputValue(selectAllAction.getName()+"_output", type);
+		outputPin.setLower(lowerBound);
+		outputPin.setUpper(upperBound);
+		
+		InputPin inputPin=setVarAction.createValue(setVarAction.getName()+"_input",type);
+		inputPin.setLower(lowerBound);
+		inputPin.setUpper(upperBound);
+		
+		createObjectFlowBetweenActivityNodes(outputPin,inputPin);
+		lastNode=setVarAction;
+	}
+	/**
 	 * Imports a parameterized condition.
 	 * @param condition The condition.
 	 * @param parameter The parameter of the condition.
@@ -168,7 +190,7 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 	 */
 	private static <T extends ModelClass> String importParameterizedCondition(ParameterizedCondition<T> condition, T parameter)
 	{
-		String parameterTypeName =ModelImporter.importType(parameter.getClass()).getName();
+		String parameterTypeName = ModelImporter.importType(parameter.getClass()).getName();
 		Activity currActivityBackup=currentActivity;
 		currentActivity=null;
 		ModelBool checkedCond=condition.check(parameter);
