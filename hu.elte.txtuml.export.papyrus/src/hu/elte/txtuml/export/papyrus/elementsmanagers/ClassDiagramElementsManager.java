@@ -22,6 +22,7 @@ import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
+import org.eclipse.uml2.uml.ExtensionEnd;
 import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.InformationItem;
 import org.eclipse.uml2.uml.InstanceSpecification;
@@ -115,7 +116,7 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 	 * to the properties compartment of a class 
 	 */
 	private List<java.lang.Class<?>> generatePropertyFieldElementsToBeAdded() {
-		List<java.lang.Class<?>> properties= Arrays.asList(Property.class, Port.class);
+		List<java.lang.Class<?>> properties= Arrays.asList(Property.class, Port.class, ExtensionEnd.class);
 		return properties;
 	}
 	
