@@ -21,13 +21,13 @@ public final class ElementFinder {
 
 	/**
 	 * Searches for a field with the given field name in a specified class.
-	 * @param type The specified class.
 	 * @param fieldName The given field name.
+	 * @param type The specified class.
 	 * @return The field. (null, if not found)
 	 *
 	 * @author Ádám Ancsin
 	 */
-	public static Field findField(Class<?> type,String fieldName) {
+	public static Field findField(String fieldName,Class<?> type) {
 
 	    Class<?> i = type;
 	    while (i != null && i != Object.class) {
@@ -45,13 +45,14 @@ public final class ElementFinder {
 	}
 	/**
 	 * Searches for a method with the given method name in a specified class.
-	 * @param containingClass The specified class.
+	 *
 	 * @param name The given method name.
+	 * @param containingClass The specified class.
 	 * @return The method. (null, if not found)
 	 *
 	 * @author Ádám Ancsin
 	 */
-	public static Method findMethod(Class<?> containingClass, String name)
+	public static Method findMethod(String name, Class<?> containingClass)
 	{
 		for(Method m: containingClass.getDeclaredMethods())
 		{
@@ -73,13 +74,14 @@ public final class ElementFinder {
 
 	/**
 	 * Searches for an UML2 Operation with the given name in the specified UML2 class.
-	 * @param ownerClass The specified UML2 class.
+	 *
 	 * @param name The given UML2 Operation name.
+	 * @param ownerClass The specified UML2 class.
 	 * @return The UML2 Operation (null, if not found)
 	 *
 	 * @author Ádám Ancsin
 	 */
-	public static Operation findOperation(org.eclipse.uml2.uml.Class ownerClass,String name)
+	public static Operation findOperation(String name, org.eclipse.uml2.uml.Class ownerClass)
 	{
 		for(Operation op:ownerClass.getAllOperations())
 		{
@@ -114,13 +116,14 @@ public final class ElementFinder {
 	
 	/**
 	 * Searches for a declared class with the given name in the specified enclosing class.
-	 * @param enclosingClass The specified enclosing class.
+	 *
 	 * @param classToFindName The given name of the class to find.
+	 * @param enclosingClass The specified enclosing class.
 	 * @return The declared class (null, if not found).
 	 *
 	 * @author Ádám Ancsin
 	 */
-	public static Class<?> findDeclaredClass(Class<?> enclosingClass, String classToFindName)
+	public static Class<?> findDeclaredClass(String classToFindName, Class<?> enclosingClass)
 	{
 		for(Class<?> c : enclosingClass.getDeclaredClasses())
 		{
@@ -135,13 +138,14 @@ public final class ElementFinder {
 	
 	/**
 	 * Searches for an UML2 association member end with the given end name of the specified UML2 association.
-	 * @param association The specified UML2 association.
+	 *
 	 * @param endToFindName The given UML2 association member end name.
-	 * @return The UML2 association meber end (null if not found).
+	 * @param association The specified UML2 association.
+	 * @return The UML2 association member end (null if not found).
 	 *
 	 * @author Ádám Ancsin
 	 */
-	public static Property findAssociationMemberEnd(Association association, String endToFindName)
+	public static Property findAssociationMemberEnd(String endToFindName, Association association)
 	{
 		for(Property memberEnd:association.getMemberEnds())
 		{

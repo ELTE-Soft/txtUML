@@ -1,6 +1,6 @@
 package hu.elte.txtuml.export.uml2.transform.aspects;
 
-import hu.elte.txtuml.api.AssociationEnd;
+import hu.elte.txtuml.api.Collection;
 import hu.elte.txtuml.api.ExternalClass;
 import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelClass;
@@ -8,10 +8,13 @@ import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.api.Signal;
 import hu.elte.txtuml.api.StateMachine.Transition;
-
+import hu.elte.txtuml.api.blocks.ParameterizedCondition;
 import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
+import hu.elte.txtuml.export.uml2.transform.CollectionOperationImporter;
 import hu.elte.txtuml.export.uml2.transform.InstructionImporter;
+
+import java.lang.Class;
 
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.SuppressAjWarnings;
@@ -81,21 +84,36 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	}
 	
 	/**
-	 * This advice imports a selectOne call on an association end if called from a txtUML method body
+	 * This advice imports a selectOne call on a Collection if called from a txtUML method body
 	 * during model import.
 	 * 
-	 * @param target The target association end.
+	 * @param target The target collection.
 	 * @return The dummy instance of the result of the call.
 	 *
 	 * @author Ádám Ancsin
 	 */
-	@SuppressWarnings( "rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@SuppressAjWarnings
-	Object around(AssociationEnd target):target(target) && call(ModelClass selectOne()) && isActive()
+	Object around(Collection target):target(target) && call(* selectOne()) && isActive()
 	{
-		return InstructionImporter.importAssociationEnd_SelectOne(target);
+		return CollectionOperationImporter.importSelectOne(target);
 	}
 
+	/**
+	 * This advice imports a selectAll call on a Collection if called from a txtUML method body
+	 * during model import.
+	 * 
+	 * @param target The target collection.
+	 * @return The dummy instance of the result of the call.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressAjWarnings
+	Object around(Collection target):target(target) && call(* selectAll(..)) && isActive()
+	{
+		return CollectionOperationImporter.importSelectAll(target, (ParameterizedCondition) thisJoinPoint.getArgs()[0]);
+	}
 	/**
 	 * This advice imports a ModelClass instance creation in a txtUML method body.
 	 * Runs after the constructor of a subclass of ModelClass is executed (called from a txtUML method body)
@@ -145,6 +163,21 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 			//exc.printStackTrace();
 			return null;
 		}
+	}
+	
+	/**
+	 * This advice an "assoc" call on the specified ModelClass target instance in a txtUML method body
+	 * during model import.
+	 * @param target The target instance of the call
+	 * @return The result of the call (an AssociationEnd).
+	 *
+	 * @author Ádám Ancsin
+	 */
+	@SuppressAjWarnings
+	Object around(ModelClass target): target(target) && isActive() && call(* assoc(..))
+	{
+		Class<?> otherEnd=(Class<?>)(thisJoinPoint.getArgs()[0]);
+		return InstructionImporter.importAssocCall(target,otherEnd);
 	}
 	
 	/**

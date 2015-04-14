@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.uml2.utils;
+package hu.elte.txtuml.export.uml2.transform.backend;
 
 import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 
@@ -23,41 +23,43 @@ import org.eclipse.uml2.uml.resource.UMLResource;
 public final class ProfileCreator {
 
 	/**
-	 * Creates the profile for a model with the specified model name
-	 * in a given output directory path and resource set.
+	 * Creates the profile for a model represented by the specified class with
+	 * the given qualified name in a given output directory path and resource set.
 	 * 
-	 * @param modelName The specified model name.
+	 * @param modelClassQualifiedName The qualified name of the specified class representing a txtUML model.
 	 * @param path The given output directory path.
 	 * @param resourceSet The given resource set.
 	 * @throws ImportException
 	 *
 	 * @author Ádám Ancsin
 	 */
-	public static void createProfileForModel(String modelName, String path, ResourceSet resourceSet) throws ImportException
+	public static void createProfileForModel(String modelClassQualifiedName, String path, ResourceSet resourceSet) 
+			throws ImportException
 	{
-		Profile profile = createProfile(modelName, path);
+		Profile profile = createProfile(modelClassQualifiedName, path);
 		Model umlMetamodel = loadUMLMetamodelAndPrimitiveTypes(profile, resourceSet);
 		createExternalClassStereotypeForProfile(profile, umlMetamodel);
-		defineAndSaveProfile(profile, modelName, resourceSet);
+		defineAndSaveProfile(profile, modelClassQualifiedName, resourceSet);
 	}	
 	
 	/**
 	 * Defines and saves the specified profile.
 	 * 
 	 * @param profile The specified profile.
-	 * @param modelName The name of the model.
+	 * @param modelClassQualifiedName The qualified name of the class representing a txtUML model.
 	 * @param resourceSet The resource set.
 	 * @throws ImportException
 	 *
 	 * @author Ádám Ancsin
 	 */
- 	private static void defineAndSaveProfile(Profile profile,String modelName, ResourceSet resourceSet) throws ImportException
+ 	private static void defineAndSaveProfile(Profile profile,String modelClassQualifiedName, ResourceSet resourceSet) 
+ 			throws ImportException
  	{
  		profile.define();
 		Resource resource = 
 				resourceSet.createResource(
 						URI.createFileURI("").
-						appendSegment("Profile_"+modelName).
+						appendSegment(modelClassQualifiedName).
 						appendFileExtension(UMLResource.PROFILE_FILE_EXTENSION)
 				);
 		
@@ -89,7 +91,7 @@ public final class ProfileCreator {
 
 			profile.createMetaclassReference(classifierMetaclass);
 
-			Stereotype externalStereotype=profile.createOwnedStereotype("ExternalClass", false);
+			Stereotype externalStereotype=profile.createOwnedStereotype(ImporterConfiguration.externalClassStereotypeName, false);
 			externalStereotype.createExtension(classifierMetaclass,false);
 		}
 		catch(Exception e)
@@ -131,22 +133,23 @@ public final class ProfileCreator {
 	}
 	
 	/**
-	 * Creates a profile for the model with the specified model name at the given
-	 * output directory path.
-	 * @param modelName The specified model name.
+	 * Creates the profile for a model represented by the specified class with
+	 * the given qualified name in a given output directory path.
+	 * 
+	 * @param modelClassQualifiedName The qualified name of the specified class representing a txtUML model.
 	 * @param path The given output directory path. 
 	 * 
 	 * @return The created profile-
 	 *
 	 * @author Ádám Ancsin
 	 */
-	private static Profile createProfile(String modelName, String path)
+	private static Profile createProfile(String modelClassQualifiedName, String path)
 	{
 		Profile profile = UMLFactory.eINSTANCE.createProfile();
-		profile.setName("Custom Profile");
+		profile.setName(ImporterConfiguration.profileName);
 		profile.setURI(
 				URI.createFileURI(path).
-				appendSegment("Profile_"+modelName).
+				appendSegment(modelClassQualifiedName).
 				appendFileExtension(UMLResource.PROFILE_FILE_EXTENSION).
 				toString()
 		);

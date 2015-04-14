@@ -318,7 +318,7 @@ class MethodImporter extends AbstractMethodImporter
 	 */
 	private static void addParameterToActivity(Parameter param,String paramName,Type paramType)
 	{
-		Variable paramVar=currentActivity.createVariable(paramName, paramType);
+		Variable paramVar = currentActivity.createVariable(paramName, paramType);
 		
 		ActivityParameterNode paramNode = createParameterNode(param,paramName,paramType);
 		

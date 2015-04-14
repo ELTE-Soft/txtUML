@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.uml2.transform;
 
 import hu.elte.txtuml.export.uml2.transform.backend.AssociationEnd;
 import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
+import hu.elte.txtuml.export.uml2.utils.MultiplicityProvider;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
@@ -67,15 +68,23 @@ class AssociationImporter extends AbstractImporter{
 	 */
 	private Association createAssociation(List<Class<?> > classes) throws ImportException
 	{
-		AssociationEnd end1=importAssociationEnd(classes.get(0));
-	    AssociationEnd end2=importAssociationEnd(classes.get(1));
-	    
-	    Association assoc=end1.getType().createAssociation
-	     		(end2.isNavigable(), end2.getAggregationKind(), end2.getName() ,end2.getLowerBound(), end2.getUpperBound(),
-	      		 end2.getType(), end1.isNavigable(), end1.getAggregationKind(), end1.getName() , end1.getLowerBound(), end1.getUpperBound());
-	    
-	    assoc.setName(sourceClass.getSimpleName());
-	    return assoc;
+		try
+		{
+			AssociationEnd end1=importAssociationEnd(classes.get(0));
+		    AssociationEnd end2=importAssociationEnd(classes.get(1));
+		    
+		    Association assoc=end1.getType().createAssociation
+		     		(end2.isNavigable(), end2.getAggregationKind(), end2.getName() ,end2.getLowerBound(), end2.getUpperBound(),
+		      		 end2.getType(), end1.isNavigable(), end1.getAggregationKind(), end1.getName() , end1.getLowerBound(), end1.getUpperBound());
+		    
+		    assoc.setName(sourceClass.getSimpleName());
+		    return assoc;
+		}
+		catch(IndexOutOfBoundsException e)
+		{
+			throw new ImportException("The following association has less than 2 association ends: "+sourceClass.getCanonicalName());
+		}
+		
 	}
 	
 	/**
@@ -96,28 +105,11 @@ class AssociationImporter extends AbstractImporter{
 	    	    
 	    
 	    String className = genericParameter0.getSimpleName();
-	   
-	    int lowerBound; 
-		int upperBound; 
-	    
-	    if(hu.elte.txtuml.api.semantics.Multiplicity.One.class.isAssignableFrom(sourceClass))
-			lowerBound=upperBound=1;
-		else if(hu.elte.txtuml.api.semantics.Multiplicity.ZeroToOne.class.isAssignableFrom(sourceClass))
-		{
-			lowerBound=0;
-			upperBound=1;
-		}
-		else if(hu.elte.txtuml.api.semantics.Multiplicity.ZeroToUnlimited.class.isAssignableFrom(sourceClass))
-		{
-			lowerBound=0;
-			upperBound= org.eclipse.uml2.uml.LiteralUnlimitedNatural.UNLIMITED;
-		}
-		else if(hu.elte.txtuml.api.semantics.Multiplicity.OneToUnlimited.class.isAssignableFrom(sourceClass))
-		{
-			lowerBound=1;
-			upperBound= org.eclipse.uml2.uml.LiteralUnlimitedNatural.UNLIMITED;
-		}
-		else
+
+		int lowerBound = MultiplicityProvider.getLowerBound(sourceClass);
+		int upperBound = MultiplicityProvider.getUpperBound(sourceClass);
+		
+	    if(MultiplicityProvider.hasInvalidMultiplicity(sourceClass))
 			throw new ImportException("Association end "+sourceClass.getName()+" has invalid multiplicity.");            
 	    
 	    boolean navigable;

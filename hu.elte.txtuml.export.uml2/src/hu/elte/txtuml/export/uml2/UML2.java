@@ -57,40 +57,29 @@ public class UML2 {
 	 */
 	public static void exportModel(Class<?> modelClass, String outputDirectory) throws Exception
 	{
-		try {
-			//import model
-			org.eclipse.uml2.uml. Model m = ModelImporter.importModel(modelClass,outputDirectory);
-			
-			//obtain resource of model
-			ResourceSet resourceSet=ModelImporter.getResourceSet();
-			Resource resource=null;
-			for(Resource r:resourceSet.getResources())
-			{
-				if(r.getContents().contains(m))
-				{
-					resource=r;
-				}
-			}
-			//save model
-            resource.save(null); // no save options needed
-            
-            //create resource for profile and save profile
-            Profile profile=ModelImporter.getProfile();
-            resource = resourceSet.createResource(URI.createURI(outputDirectory).appendSegment("Profile_"+m.getName()).appendFileExtension(UMLResource.PROFILE_FILE_EXTENSION));
-    	    resource.getContents().add(profile);
-    	    resource.save(null);
-    	    
-    	    //delete surplus profile
-    	    if(!outputDirectory.isEmpty())
-    	    {
-    	    	Path path=FileSystems.getDefault().getPath("Profile_"+m.getName()+".profile.uml");
-        	    Files.delete(path);
-    	    }
-		}
-		catch(Exception e) 
-		{
-			throw e;
-		}
+		ModelImporter.importModel(modelClass,outputDirectory); 	//import model
+		
+		ResourceSet resourceSet = ModelImporter.getResourceSet();
+		
+		Resource modelResource = ModelImporter.getModelResource();
+		modelResource.save(null); // no save options needed
+        
+        //create resource for profile and save profile
+        Profile profile=ModelImporter.getProfile();
+        Resource profileResource = resourceSet.createResource(
+        		URI.createURI(outputDirectory).
+        		appendSegment(modelClass.getCanonicalName()).
+        		appendFileExtension(UMLResource.PROFILE_FILE_EXTENSION)
+        	);
+	    profileResource.getContents().add(profile);
+	    profileResource.save(null); // no save options needed
+	    
+	    //delete surplus profile
+	    if(!outputDirectory.isEmpty())
+	    {
+	    	Path path=FileSystems.getDefault().getPath(modelClass.getCanonicalName() + "." + UMLResource.PROFILE_FILE_EXTENSION);
+    	    Files.delete(path);
+	    }
 	}
 	
 	/**
@@ -117,6 +106,7 @@ public class UML2 {
 		catch(Exception e)
 		{
 			System.err.println("Error: " + e.getMessage());
+			System.err.println("Model exportation failed.");
 		}
 		
 		System.exit(0);

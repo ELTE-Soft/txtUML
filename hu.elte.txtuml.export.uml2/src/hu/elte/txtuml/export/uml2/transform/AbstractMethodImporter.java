@@ -8,6 +8,7 @@ import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
 import hu.elte.txtuml.export.uml2.transform.backend.UMLPrimitiveTypesProvider;
+import hu.elte.txtuml.export.uml2.utils.MultiplicityProvider;
 
 import java.lang.reflect.Method;
 import java.util.Stack;
@@ -26,8 +27,6 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.ObjectNode;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Property;
-import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
-import org.eclipse.uml2.uml.ReadVariableAction;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -42,75 +41,53 @@ import org.eclipse.uml2.uml.Variable;
 abstract class AbstractMethodImporter extends AbstractImporter {
 
 	/**
-	 * Creates a read variable action in the current activity for a variable with the given name and type.
-	 * @param variableName The name of the variable.
-	 * @param variableType The UML2 type of the variable.
-	 * @return
+	 * Creates an activity variable for the specified instance with the given UML2 type.
+	 * @param instance The specified instance.
+	 * @param type The given UML2 type of the instance.
+	 * @return The created variable.
 	 *
 	 * @author Ádám Ancsin
 	 */
-	protected static ReadVariableAction createReadVariableAction(String variableName,Type variableType)
+	protected static Variable createVariableForInstance(Object instance, Type type)
 	{
-		ReadVariableAction readVariableAction	=	(ReadVariableAction)
-				currentActivity.createOwnedNode("get_"+variableName,UMLPackage.Literals.READ_VARIABLE_ACTION);
-
-		readVariableAction.setVariable(currentActivity.getVariable(variableName,variableType));
-
-		return readVariableAction;
+		Class<?> typeClass = instance.getClass();
+		int lowerBound = MultiplicityProvider.getLowerBound(typeClass);
+		int upperBound = MultiplicityProvider.getUpperBound(typeClass);
+		Variable variable = currentActivity.createVariable(getObjectIdentifier(instance), type);
+		variable.setLower(lowerBound);
+		variable.setUpper(upperBound);
+		
+		return variable;
 	}
 
 	/**
-	 * Creates a read structural feature value action in the current activity.
-	 * @param targetClass The target class whose structural feature we want to read.
-	 * @param fieldName The name of the field.
-	 * @param valueType The UML2 type of the field.
-	 * @return
-	 *
-	 * @author Ádám Ancsin
-	 */
-	protected static ReadStructuralFeatureAction createReadStructuralFeatureAction
-		(ModelClass targetClass, String fieldName, Type valueType)
-	{
-		String targetName=getObjectIdentifier(targetClass);
-		Type targetType=ModelImporter.importType(targetClass.getClass());
-		String fieldQualifiedName=targetName+"."+fieldName;
-		ReadStructuralFeatureAction readStrFeatAction = (ReadStructuralFeatureAction) 
-				currentActivity.createOwnedNode("get_"+fieldQualifiedName,UMLPackage.Literals.READ_STRUCTURAL_FEATURE_ACTION);
-
-		Property property=getClassProperty(targetClass,fieldName);
-		readStrFeatAction.setStructuralFeature(property);
-
-		ValuePin rsfa_object = (ValuePin)
-				readStrFeatAction.createObject(readStrFeatAction.getName()+"_input",targetType,UMLPackage.Literals.VALUE_PIN);
-		createAndAddOpaqueExpressionToValuePin(rsfa_object,targetName,targetType);
-
-		return readStrFeatAction;
-	}
-
-	/**
-	 * Sets the value of a variable in an activity. If the variable no yet exists, it creates the variable.
+	 * Sets the value of a variable in an activity. If the variable not yet exists, it creates the variable.
 	 * @param target The target dummy instance.
 	 * @param valueExpression The expression of the value to be assigned.
 	 *
 	 * @author Ádám Ancsin
 	 */
-	protected static void setVariableValue(ModelElement target, String valueExpression)
+	protected static void setVariableValue(Object target, String valueExpression)
 	{
-		String targetInstanceName=getObjectIdentifier(target);
+		String targetInstanceName = getObjectIdentifier(target);
+		
 		Type type=ModelImporter.importType(target.getClass());
 
 		Variable variable=currentActivity.getVariable(targetInstanceName, type);
 		if(variable==null)
-			variable=currentActivity.createVariable(targetInstanceName,type);
-
+			variable=createVariableForInstance(target,type);
+	
 		AddVariableValueAction addVarValAction = createAddVarValAction(variable,targetInstanceName+":="+valueExpression);
 
-		ValuePin valuePin = (ValuePin) addVarValAction.createValue(addVarValAction.getName()+"_value",type,UMLPackage.Literals.VALUE_PIN);
+		ValuePin valuePin = (ValuePin) 
+				addVarValAction.createValue(addVarValAction.getName()+"_value",type,UMLPackage.Literals.VALUE_PIN);
+		
+		valuePin.setLower(variable.getLower());
+		valuePin.setUpper(variable.getLower());
 		createAndAddOpaqueExpressionToValuePin(valuePin,valueExpression,type);
 
 		createControlFlowBetweenActivityNodes(lastNode,addVarValAction);
 		lastNode=addVarValAction;
-
 	}
 	
 	/**
@@ -163,7 +140,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 *
 	 * @author Ádám Ancsin
 	 */
-	protected static String getExpression(ModelElement instance)
+	protected static String getExpression(Object instance)
 	{
 		String expression=null;
 		InstanceInformation instInfo=InstanceManager.getInstanceInfo(instance);
@@ -192,7 +169,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 *
 	 * @author Ádám Ancsin
 	 */
-	protected static String getObjectIdentifier(ModelElement instance)
+	protected static String getObjectIdentifier(Object instance)
 	{
 		String identifier=null;
 		InstanceInformation instInfo=InstanceManager.getInstanceInfo(instance);
@@ -349,7 +326,8 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 */
 	protected static void createAndAddOpaqueExpressionToValuePin(ValuePin pin,String expression, Type type)
 	{
-		OpaqueExpression opaqueExpression=(OpaqueExpression) pin.createValue(pin.getName()+"_expression",type,UMLPackage.Literals.OPAQUE_EXPRESSION);
+		OpaqueExpression opaqueExpression = (OpaqueExpression)
+				pin.createValue(pin.getName()+"_expression",type,UMLPackage.Literals.OPAQUE_EXPRESSION);
 		opaqueExpression.getBodies().add(expression);
 	}
 	
@@ -520,7 +498,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	 *
 	 * @author Ádám Ancsin
 	 */
-	private static String getLiteralExpression(ModelElement instance, InstanceInformation instInfo)
+	private static String getLiteralExpression(Object instance, InstanceInformation instInfo)
 	{
 		String expression=null;
 		if(instance instanceof ModelInt)

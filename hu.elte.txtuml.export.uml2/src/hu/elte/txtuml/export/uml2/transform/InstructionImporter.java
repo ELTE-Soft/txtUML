@@ -17,17 +17,13 @@ import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
 import hu.elte.txtuml.utils.InstanceCreator;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 
 import org.eclipse.uml2.uml.AddVariableValueAction;
-import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.CallOperationAction;
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.CreateObjectAction;
 import org.eclipse.uml2.uml.InputPin;
-import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OutputPin;
-import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValuePin;
@@ -35,7 +31,7 @@ import org.eclipse.uml2.uml.Variable;
 
 /**
  * This class is responsible for importing instructions that are not actions (Action.* calls)
- * nor ModelType operations inside method bodies.
+ * nor ModelType/Collection operations inside method bodies.
  * 
  * @author Ádám Ancsin
  *
@@ -43,69 +39,27 @@ import org.eclipse.uml2.uml.Variable;
 public class InstructionImporter extends AbstractMethodImporter
 {
 	/**
-	 * Imports a select one instruction of an association end in a method body.
-	 * @param target The dummy instance of the target association end.
-	 * @return The dummy instance of the result.
+	 * Imports an "assoc" method call of the specified target ModelClass instance in a txtUML method body.
+	 * @param target The specified target instance.
+	 * @param otherEnd The end of the association to be retrieved.
+	 * @return The dummy instance of the retrieved association end.
 	 *
 	 * @author Ádám Ancsin
 	 */
-	static <T extends ModelClass, AE extends hu.elte.txtuml.api.AssociationEnd<T> >
-		T importAssociationEnd_SelectOne(AE target) 
+	static <T extends ModelClass, AE extends hu.elte.txtuml.api.AssociationEnd<T> > AE
+		importAssocCall(ModelClass target, Class<?> otherEnd)
 	{
-
-		ParameterizedType genericSupClass=(ParameterizedType) target.getClass().getGenericSuperclass();
-		String typeName=genericSupClass.getActualTypeArguments()[0].getTypeName();
-
-		Class<?> assocClass=target.getClass().getDeclaringClass();
-		Class<?> resultClass=ElementFinder.findDeclaredClass(modelClass, typeName);
-
+		
 		@SuppressWarnings("unchecked")
-		T result=(T) DummyInstanceCreator.createDummyInstance(resultClass);
+		AE result=(AE) DummyInstanceCreator.createDummyInstance(otherEnd);
 
-		String phrase=target.getClass().getSimpleName();
-		String resultName=result.getIdentifier();
-
-		String startName=getAssociationEndOwner(target);		
-
-		OpaqueAction selectOneAction=	(OpaqueAction)
-				currentActivity.createOwnedNode("selectOne_"+startName+"."+phrase,UMLPackage.Literals.OPAQUE_ACTION);
-		String expression=startName+"."+phrase;
+		String expression = getExpression(target) + "." + otherEnd.getSimpleName();
 		
-		if (!hu.elte.txtuml.api.Association.One.class.isAssignableFrom(target.getClass()) &&
-			!hu.elte.txtuml.api.Association.MaybeOne.class.isAssignableFrom(target.getClass())  )
-		{
-			expression+="->first()";
-		}
-		
-		selectOneAction.getBodies().add(expression);
+		InstanceManager.createLocalInstancesMapEntry(result, InstanceInformation.create(expression));
 
-		createControlFlowBetweenActivityNodes(lastNode, selectOneAction);
-
-		Association association=(Association) currentModel.getOwnedMember(assocClass.getSimpleName());
-		Property memberEnd=ElementFinder.findAssociationMemberEnd(association,phrase);
-		Type type=null;
-		
-		if(memberEnd!=null)
-			type=memberEnd.getType();
-	
-		OutputPin outputPin=selectOneAction.createOutputValue(selectOneAction.getName()+"_output", type);
-
-		Variable variable=currentActivity.createVariable(resultName,type);
-		AddVariableValueAction setVarAction = createAddVarValAction(variable,"setVar_"+resultName);
-
-		InputPin inputPin_AVVA=setVarAction.createValue(setVarAction.getName()+"_input",type);
-
-		createObjectFlowBetweenActivityNodes(outputPin,inputPin_AVVA);
-		lastNode=setVarAction;
-
-		if(result!=null)
-		{
-			InstanceManager.createLocalInstancesMapEntry(result, InstanceInformation.create(result.getIdentifier()));
-			InstanceManager.createLocalFieldsRecursively(result);
-		}
 		return result;
 	}
-	
+
 	/**
 	 * Imports the creation of a model class instance in a method body.
 	 * @param createdInstance The created dummy instance.
@@ -134,7 +88,7 @@ public class InstructionImporter extends AbstractMethodImporter
 
 			//creating a variable for created instance, so it can be referenced later
 			Type type=ModelImporter.importType(createdInstance.getClass());
-			Variable variable=currentActivity.createVariable(instanceName,type);
+			Variable variable = createVariableForInstance(createdInstance,type);
 
 			//creating an Add Variable Value action
 			AddVariableValueAction setVarAction = createAddVarValAction(variable,"setVar_"+instanceName);
@@ -159,15 +113,12 @@ public class InstructionImporter extends AbstractMethodImporter
 	 */
 	static Object importMethodCall(ModelClass target, String methodName, Object... args) throws ImportException
 	{
-		// this method is called at every method call where the target object is of any type that extends ModelClass 
-		// parameters: the target object, the name of the called method and the given parameters
-
 		Object returnObj=null;
 		
 		if(currentActivity!=null)
 			returnObj = importMethodCallInActivity(target, methodName, args);
 		else
-			returnObj= importMethodCallInGuardBody(target, methodName, args);
+			returnObj = importMethodCallInGuardBody(target, methodName, args);
 	
 		return returnObj;
 		
@@ -184,7 +135,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 */
 	static Object importExternalMethodCall(ExternalClass target, String methodName, Object... args)
 	{
-		Method method=ElementFinder.findMethod(target.getClass(), methodName);
+		Method method=ElementFinder.findMethod(methodName, target.getClass());
 		Class<?> returnType=method.getReturnType();
 		return DummyInstanceCreator.createDummyInstance(returnType);
 		// TODO import calls into UML2 model
@@ -201,7 +152,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 */
 	static Object importExternalStaticMethodCall(Class<?> targetClass, String methodName, Object... args)
 	{
-		Method method=ElementFinder.findMethod(targetClass, methodName);
+		Method method=ElementFinder.findMethod(methodName, targetClass);
 		Class<?> returnType=method.getReturnType();
 		Object ret=DummyInstanceCreator.createDummyInstance(returnType);
 		return ret;
@@ -383,14 +334,14 @@ public class InstructionImporter extends AbstractMethodImporter
 
 		createAndAddOpaqueExpressionToValuePin(callTarget,targetName,type);
 
-		callAction.setOperation(ElementFinder.findOperation(targetClass,methodName));
+		callAction.setOperation(ElementFinder.findOperation(methodName, targetClass));
 		addParamsToCallAction(callAction,target,methodName,args);
 
 		createControlFlowBetweenActivityNodes(lastNode,callAction);
 		lastNode=callAction;
 
 		try {
-			Method method = ElementFinder.findMethod(target.getClass(),methodName);
+			Method method = ElementFinder.findMethod(methodName, target.getClass());
 			Class<?> returnType=method.getReturnType();
 			returnObj=DummyInstanceCreator.createDummyInstance(returnType);
 		} catch (SecurityException e1) {
@@ -451,12 +402,12 @@ public class InstructionImporter extends AbstractMethodImporter
 
 		InstanceInformation returnValInfo=InstanceInformation.createCalculated(expression);
 
-		ModelElement returnObj=null;
+		Object returnObj=null;
 		try 
 		{
-			Method method = ElementFinder.findMethod(target.getClass(),methodName);
+			Method method = ElementFinder.findMethod(methodName, target.getClass());
 			Class<?> returnType= method.getReturnType();
-			returnObj=(ModelElement)DummyInstanceCreator.createDummyInstance(returnType);
+			returnObj = DummyInstanceCreator.createDummyInstance(returnType);
 		} 
 		catch (SecurityException e1) 
 		{
@@ -467,31 +418,6 @@ public class InstructionImporter extends AbstractMethodImporter
 		InstanceManager.createLocalInstancesMapEntry(returnObj,returnValInfo);
 
 		return returnObj;
-	}
-	
-	/**
-	 * Gets the identifier of the owner of the given association end.
-	 * @param target The target association end.
-	 * @return The identifier of the owner.
-	 *
-	 * @author Ádám Ancsin
-	 */
-	private static <T extends ModelClass, AE extends hu.elte.txtuml.api.AssociationEnd<T> >
-		String getAssociationEndOwner(AE target)
-	{
-		Method method=null;
-		String ret=null;
-		try {
-			method=hu.elte.txtuml.api.AssociationEnd.class.getDeclaredMethod("getOwner");
-			method.setAccessible(true);
-			ret=getObjectIdentifier( (ModelElement) method.invoke(target) );
-			method.setAccessible(false);
-		}
-		catch(Exception e)
-		{
-			//e.printStackTrace();
-		}
-		return ret;
 	}
 	
 	/**
@@ -516,5 +442,4 @@ public class InstructionImporter extends AbstractMethodImporter
 		
 		return fieldValue;
 	}
-
 }

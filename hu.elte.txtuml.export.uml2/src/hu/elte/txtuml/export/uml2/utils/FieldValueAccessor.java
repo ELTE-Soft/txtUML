@@ -20,7 +20,7 @@ public final class FieldValueAccessor {
 	 */
 	public static void setObjectFieldVal(Object object, String fieldName,Object newVal)
 	{
-		Field field = ElementFinder.findField(object.getClass(),fieldName);
+		Field field = ElementFinder.findField(fieldName,object.getClass());
 		
 		if(field!=null)
 		{
@@ -46,7 +46,7 @@ public final class FieldValueAccessor {
 	 */
 	public static Object getObjectFieldVal(Object object,String fieldName)
 	{	
-		Field field = ElementFinder.findField(object.getClass(),fieldName);
+		Field field = ElementFinder.findField(fieldName,object.getClass());
 		
 		return accessObjectFieldVal(object, field);	
 	}

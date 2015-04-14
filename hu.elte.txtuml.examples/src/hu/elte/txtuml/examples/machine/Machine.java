@@ -79,7 +79,6 @@ class MachineModel extends Model {
 	}
 	
 	class User extends ModelClass {
-		
 		Machine doWork(User param) {
 			Action.log("User: starting to work...");
 			//Machine myMachine = Action.selectOne(this, Usage.class, "usedMachine");
