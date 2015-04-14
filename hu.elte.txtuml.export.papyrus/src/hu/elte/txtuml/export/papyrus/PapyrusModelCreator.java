@@ -4,21 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
-
-import java.nio.file.StandardCopyOption;
-
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.CommonPlugin;
@@ -35,11 +24,8 @@ import org.eclipse.papyrus.infra.core.sasheditor.contentprovider.IPageManager;
 import org.eclipse.papyrus.infra.core.services.ExtensionServicesRegistry;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.infra.core.services.ServicesRegistry;
-import org.eclipse.papyrus.uml.diagram.activity.providers.UMLModelingAssistantProvider;
 import org.eclipse.papyrus.uml.diagram.wizards.category.NewPapyrusModelCommand;
-import org.eclipse.uml2.common.util.UML2Util;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.Profile;
 import org.eclipse.uml2.uml.UMLPackage;
 
