@@ -100,7 +100,7 @@
          unpack="false"/>
 
    <plugin
-         id="hu.elte.txtuml.export.utils"
+         id="hu.elte.txtuml.eclipseutils"
          download-size="0"
          install-size="0"
          version="0.0.0"
