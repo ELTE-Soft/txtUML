@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.uml2.transform;
 import hu.elte.txtuml.api.Collection;
 import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelClass;
+import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.blocks.ParameterizedCondition;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
@@ -30,11 +31,14 @@ import org.eclipse.uml2.uml.Variable;
  */
 public class CollectionOperationImporter extends AbstractMethodImporter {
 
-	private enum SelectTypes
+	private enum OperationTypes
 	{
 		SELECT_ONE_LITERAL,
-		SELECT_ALL_LITERAL
+		SELECT_ALL_LITERAL,
+		ADD_ONE_LITERAL,
+		ADD_ALL_LITERAL, REMOVE_LITERAL
 	}
+	
 	/**
 	 * Imports a select one instruction of a Collection in a method body.
 	 * @param target The dummy instance of the target Collection.
@@ -62,12 +66,12 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 		
 		if(currentActivity != null)
 		{
-			createActivityElementsForSelectAction(
+			createActivityElementsForCollectionOperation(
+					"selectOne_"+targetExpression,
 					targetExpression, 
 					selectExpression, 
 					result, 
-					typeClass,
-					SelectTypes.SELECT_ONE_LITERAL
+					typeClass
 				);
 			
 			if(result != null)
@@ -104,62 +108,191 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 		
 		String conditionExpression = importParameterizedCondition(condition, conditionParameter);
 		
-		@SuppressWarnings("unchecked")
-		Collection<T> result = (Collection<T>) DummyInstanceCreator.createDummyInstance(target.getClass());
-		String resultName=getObjectIdentifier(result);
-		
-		String targetExpression = getExpression(target);
-		String selectExpression = targetExpression +"->select(" + conditionExpression + ")";
-		String resultExpression = selectExpression;
-		
-		if(currentActivity != null)
-		{
-			createActivityElementsForSelectAction(
-					targetExpression, 
-					selectExpression,
-					result, typeClass,
-					SelectTypes.SELECT_ALL_LITERAL
-				);
-			if(result != null)
-				resultExpression = resultName;
-		}
-		
-		if(result!=null)
-		{
-			InstanceManager.createLocalInstancesMapEntry(result, InstanceInformation.create(resultExpression));
-			InstanceManager.createLocalFieldsRecursively(result);
-		}
-		return result;
+		return importOperationResultingACollection(target, conditionExpression, OperationTypes.SELECT_ALL_LITERAL);
 	}
 
+	/**
+	 * Imports the "isEmpty" query of the specified target Collection inside a method body.
+	 * @param target The specified target Collection.
+	 * @return The dummy ModelBool instance of the query result.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	static <T extends ModelClass> ModelBool importIsEmpty(Collection<T> target)
+	{
+		String targetExpression = getExpression(target);
+		String resultExpression = targetExpression+"->isEmpty()";
+		
+		return createAndAssignResultForQuery(ModelBool.class,resultExpression);
+	}
+	
+	/**
+	 * Imports the "contains" query of the specified target Collection inside a method body.
+	 * @param target The specified target Collection.
+	 * @param object The ModelClass object to check.
+	 * @return The dummy ModelBool instance of the query result.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	static <T extends ModelClass> ModelBool importContains(Collection<T> target, ModelClass object)
+	{
+		String targetExpression = getExpression(target);
+		String objectExpression = getExpression(object);
+		String resultExpression = targetExpression + "->includes(" + objectExpression +")";
+		
+		return createAndAssignResultForQuery(ModelBool.class,resultExpression);
+	}
+
+	/**
+	 * Imports the "count" query of the specified target Collection inside a method body.
+	 * @param target The specified target Collection.
+	 * @return The dummy ModelInt instance of the query result.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	static <T extends ModelClass> ModelInt importCount(Collection<T> target)
+	{
+		String targetExpression = getExpression(target);
+		String resultExpression = targetExpression+"->size()";
+		
+		return createAndAssignResultForQuery(ModelInt.class,resultExpression);
+	}
+	
+	/**
+	 * Imports the "add" operation of the specified target Collection inside a method body.
+	 * @param target The specified target Collection.
+	 * @param object The ModelClass object to be added to the collection.
+	 * @return The dummy instance of the result collection.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	static <T extends ModelClass> Collection<T> importAdd(Collection<T> target, ModelClass object)
+	{
+		String objectExpression = getExpression(object);
+		return importOperationResultingACollection(target,objectExpression, OperationTypes.ADD_ONE_LITERAL);
+	}
+	
+	/**
+	 * Imports the "addAll" operation of the specified target Collection inside a method body.
+	 * @param target The specified target Collection.
+	 * @param objects The collection containing the elements to be added to the target collection.
+	 * @return The dummy instance of the result collection.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	static <T extends ModelClass> Collection<T> importAddAll(Collection<T> target, Collection<T> objects)
+	{
+		String objectsExpression = getExpression(objects);
+		return importOperationResultingACollection(target,objectsExpression, OperationTypes.ADD_ALL_LITERAL);
+	}
+	
+	/**
+	 * Imports the "remove" operation of the specified target Collection inside a method body.
+	 * @param target The specified target Collection.
+	 * @param object The object to be removed from the collection.
+	 * @return The dummy instance of the result collection.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	static <T extends ModelClass> Collection<T> importRemove(Collection<T> target, T object)
+	{
+		String objectExpression = getExpression(object);
+		return importOperationResultingACollection(target,objectExpression, OperationTypes.REMOVE_LITERAL);
+	}
+	
+	/**
+	 * Imports a generic collection operation (which's result is another collection of the same element type)
+	 * of the specified target Collection inside a method body.
+	 * @param target The specified target Collection.
+	 * @param paramExpression The expression of the parameter of the operation.
+	 * @param operationType The type of the operation. (e.g. selectAll, add, remove, etc.)
+	 * @return The dummy instance of the result collection.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private static <T extends ModelClass> Collection<T> 
+		importOperationResultingACollection(Collection<T> target, String paramExpression, OperationTypes operationType )
+	{
+		Class<?> typeClass = getCollectionGenericParameterType(target);
+	
+		@SuppressWarnings("unchecked")
+		Collection<T> result = DummyInstanceCreator.createDummyInstance(target.getClass());
+
+		String targetExpression = getExpression(target);
+		String operationName,opaqueActionName;
+
+		switch(operationType)
+		{
+			case ADD_ONE_LITERAL: 
+				operationName = "including";
+				opaqueActionName = "add_"+paramExpression+"_to_"+targetExpression;
+			break;
+			
+			case ADD_ALL_LITERAL:
+				operationName = "addAll";
+				opaqueActionName = "addAll_"+paramExpression+"_to_"+targetExpression;
+			break;
+			
+			case REMOVE_LITERAL:
+				operationName = "excluding";
+				opaqueActionName = "remove_"+paramExpression+"_from_"+targetExpression;
+			break;
+			
+			case SELECT_ALL_LITERAL:
+				operationName = "select";
+				opaqueActionName = "selectAll_"+targetExpression;
+			break;
+			
+			default:
+				operationName = "";
+				opaqueActionName = targetExpression+"->??("+paramExpression+")";
+			break;
+		}
+		
+		String expression = targetExpression + "->" + operationName + "(" + paramExpression +")";
+
+		if(currentActivity != null)
+		{
+			createActivityElementsForCollectionOperation(
+					opaqueActionName,
+					targetExpression, 
+					expression, 
+					result, 
+					typeClass
+				);
+			
+			if(result != null)
+				expression = getObjectIdentifier(result);
+		}
+
+		if(result!=null)
+			InstanceManager.createLocalInstancesMapEntry(result, InstanceInformation.create(expression));
+		
+		return result;
+	}
+	
 	/**
 	 * 
 	 * Creates the necessary activity elements (activity nodes and edges) for a select action.
 	 * @param targetExpression The expression of the target collection.
-	 * @param selectExpression The select expression.
-	 * @param result The result instance of the selection. (a ModelClass instance or a colleciton)
+	 * @param operationExpression The expression of the operation.
+	 * @param result The result instance of the operation. (a ModelClass instance or a collection)
 	 * @param typeClass The class of the result.
-	 * @param selectType The type of selection. (e.g. selectAll, selectOne)
+	 * @param operationType The type of operation. (e.g. selectAll, selectOne, remove, add, etc.)
 	 *
 	 * @author Ádám Ancsin
 	 */
-	private static void createActivityElementsForSelectAction
-		(String targetExpression, String selectExpression, Object result, Class<?> typeClass, SelectTypes selectType)
+	private static void createActivityElementsForCollectionOperation
+		(String opaqueActionName, String targetExpression, String operationExpression, Object result, Class<?> typeClass)
 	{
 		String resultName=getObjectIdentifier(result);
-		String actionNamePrefix;
 		
-		if(selectType == SelectTypes.SELECT_ALL_LITERAL)
-			actionNamePrefix = "selectAll_";
-		else
-			actionNamePrefix = "selectOne_";
-		
-		OpaqueAction selectAllAction=	(OpaqueAction)
-				currentActivity.createOwnedNode(actionNamePrefix+targetExpression,UMLPackage.Literals.OPAQUE_ACTION);
+		OpaqueAction opaqueAction=	(OpaqueAction)
+				currentActivity.createOwnedNode(opaqueActionName,UMLPackage.Literals.OPAQUE_ACTION);
 	
-		selectAllAction.getBodies().add(selectExpression);
+		opaqueAction.getBodies().add(operationExpression);
 		
-		createControlFlowBetweenActivityNodes(lastNode, selectAllAction);
+		createControlFlowBetweenActivityNodes(lastNode, opaqueAction);
 	
 		Type type=ModelImporter.importType(typeClass);
 		
@@ -169,7 +302,7 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 		
 		AddVariableValueAction setVarAction = createAddVarValAction(variable,"setVar_"+resultName);
 		
-		OutputPin outputPin=selectAllAction.createOutputValue(selectAllAction.getName()+"_output", type);
+		OutputPin outputPin=opaqueAction.createOutputValue(opaqueAction.getName()+"_output", type);
 		outputPin.setLower(lowerBound);
 		outputPin.setUpper(upperBound);
 		
@@ -180,6 +313,7 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 		createObjectFlowBetweenActivityNodes(outputPin,inputPin);
 		lastNode=setVarAction;
 	}
+	
 	/**
 	 * Imports a parameterized condition.
 	 * @param condition The condition.
@@ -216,5 +350,31 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 		String typeName=genericSuperclass.getActualTypeArguments()[0].getTypeName();
 	
 		return (Class<? extends ModelClass>) ElementFinder.findDeclaredClass(typeName, modelClass);
+	}
+	
+	/**
+	 * Creates the dummy instance of the result of a query collection operation (e.g. "isEmpty", "contains", etc.) and
+	 * creates a local instances map entry for it.
+	 * If the currently imported method has an activity (it's not a transition guard), creates and sets the value of an
+	 * activity variable associated with the result instance. 
+	 * @param resultType The type class of the result.
+	 * @param resultExpression The result expression.
+	 * @return The created dummy instance of the result.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private static <T> T createAndAssignResultForQuery(Class<T> resultType, String resultExpression)
+	{
+		T result = DummyInstanceCreator.createDummyInstance(resultType);
+		
+		if(currentActivity != null)
+		{
+			InstanceManager.createLocalInstancesMapEntry(result, InstanceInformation.create(resultExpression));
+			setVariableValue(result,resultExpression);
+		}
+		else
+			InstanceManager.createLocalInstancesMapEntry(result, InstanceInformation.createCalculated(resultExpression));
+		
+		return result;
 	}
 }

@@ -1,6 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.aspects;
 
-import hu.elte.txtuml.api.Collection;
 import hu.elte.txtuml.api.ExternalClass;
 import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelClass;
@@ -8,10 +7,7 @@ import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.api.Signal;
 import hu.elte.txtuml.api.StateMachine.Transition;
-import hu.elte.txtuml.api.blocks.ParameterizedCondition;
-import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
-import hu.elte.txtuml.export.uml2.transform.CollectionOperationImporter;
 import hu.elte.txtuml.export.uml2.transform.InstructionImporter;
 
 import java.lang.Class;
@@ -84,37 +80,6 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	}
 	
 	/**
-	 * This advice imports a selectOne call on a Collection if called from a txtUML method body
-	 * during model import.
-	 * 
-	 * @param target The target collection.
-	 * @return The dummy instance of the result of the call.
-	 *
-	 * @author Ádám Ancsin
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@SuppressAjWarnings
-	Object around(Collection target):target(target) && call(* selectOne()) && isActive()
-	{
-		return CollectionOperationImporter.importSelectOne(target);
-	}
-
-	/**
-	 * This advice imports a selectAll call on a Collection if called from a txtUML method body
-	 * during model import.
-	 * 
-	 * @param target The target collection.
-	 * @return The dummy instance of the result of the call.
-	 *
-	 * @author Ádám Ancsin
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@SuppressAjWarnings
-	Object around(Collection target):target(target) && call(* selectAll(..)) && isActive()
-	{
-		return CollectionOperationImporter.importSelectAll(target, (ParameterizedCondition) thisJoinPoint.getArgs()[0]);
-	}
-	/**
 	 * This advice imports a ModelClass instance creation in a txtUML method body.
 	 * Runs after the constructor of a subclass of ModelClass is executed (called from a txtUML method body)
 	 * during model import.
@@ -154,15 +119,7 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	@SuppressAjWarnings
 	Object around(ModelClass target): target(target) && call(* *(..))  && isActive() && !callingAssocMethod()
 	{
-		try
-		{
-			return InstructionImporter.importMethodCall(target, thisJoinPoint.getSignature().getName(),thisJoinPoint.getArgs());
-		}
-		catch(ImportException exc)
-		{
-			//exc.printStackTrace();
-			return null;
-		}
+		return InstructionImporter.importMethodCall(target, thisJoinPoint.getSignature().getName(),thisJoinPoint.getArgs());
 	}
 	
 	/**
@@ -246,11 +203,13 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	@SuppressAjWarnings
 	Object around(ModelClass target) : target(target) && get(* *) && isActive() {
 		Signature signature=thisJoinPoint.getSignature();
-		try {
+		try
+		{
 			return InstructionImporter.importModelClassFieldGet(target,signature.getName(),signature.getDeclaringType().getDeclaredField(signature.getName()).getType());
-		} catch (NoSuchFieldException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
+		} 
+		catch (NoSuchFieldException e) 
+		{
+
 		}
 		return null;
 	}
@@ -267,11 +226,12 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	@SuppressAjWarnings
 	Object around(ExternalClass target) : target(target) && get(* *) && isActive() {
 		Signature signature=thisJoinPoint.getSignature();
-		try {
+		try
+		{
 			return InstructionImporter.importExternalClassFieldGet(target,signature.getName(),signature.getDeclaringType().getDeclaredField(signature.getName()).getType());
-		} catch (NoSuchFieldException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
+		} 
+		catch (NoSuchFieldException e)
+		{
 		}
 		return null;
 	}

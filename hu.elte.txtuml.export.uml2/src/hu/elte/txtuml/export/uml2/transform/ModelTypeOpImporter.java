@@ -1,7 +1,6 @@
 package hu.elte.txtuml.export.uml2.transform;
 
 import hu.elte.txtuml.api.ModelBool;
-import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.api.ModelType;
@@ -291,20 +290,6 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	}
 	
 	/**
-	 * Creates a calculated instance information for a given dummy instance. It also creates a 
-	 * local instances map entry for the instance with the created instance information.
-	 * @param inst The given dummy instance.
-	 * @param expression The value expression for the dummy instance.
-	 *
-	 * @author Ádám Ancsin
-	 */
-	private static void createCalculatedInstanceInfoAndLocalInstancesEntry(ModelElement inst, String expression)
-	{
-		InstanceInformation instInfo=InstanceInformation.createCalculated(expression);
-		InstanceManager.createLocalInstancesMapEntry(inst,instInfo);
-	}
-	
-	/**
 	 * Imports a generic 2-operand ModelType operation.
 	 * @param target The dummy instance of the left operand.
 	 * @param value The dummy instance of the right operand.
@@ -339,7 +324,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 			else if(result instanceof ModelString)
 				result=(ModelType<T>) new ModelString();
 			
-			createCalculatedInstanceInfoAndLocalInstancesEntry(result,valueExpression);
+			InstanceManager.createLocalInstancesMapEntry(result,InstanceInformation.createCalculated(valueExpression));
 		}
 		
 		return result;
@@ -467,7 +452,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 			else if(result instanceof ModelString)
 				result=(ModelType<T>) new ModelBool();
 			
-			createCalculatedInstanceInfoAndLocalInstancesEntry(result,valueExpression);
+			InstanceManager.createLocalInstancesMapEntry(result,InstanceInformation.createCalculated(valueExpression));
 		}
 		return result;
 	}
@@ -523,7 +508,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 		String expression=leftExpr+" "+operator+" "+rightExpr;
 		
 		ModelBool result=new ModelBool();
-		createCalculatedInstanceInfoAndLocalInstancesEntry(result,expression);
+		InstanceManager.createLocalInstancesMapEntry(result,InstanceInformation.createCalculated(expression));
 		
 		return result;
 	}

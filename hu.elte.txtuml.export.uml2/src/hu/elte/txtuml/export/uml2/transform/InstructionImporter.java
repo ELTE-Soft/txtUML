@@ -110,7 +110,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 *
 	 * @author Ádám Ancsin
 	 */
-	static Object importMethodCall(ModelClass target, String methodName, Object... args) throws ImportException
+	static Object importMethodCall(ModelClass target, String methodName, Object... args)
 	{
 		Object returnObj=null;
 		
@@ -278,20 +278,17 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param target The dummy instance of the target model class.
 	 * @param methodName The name of the called method.
 	 * @param args The dummy instances of the current arguments.
-	 * @throws ImportException
 	 *
 	 * @author Ádám Ancsin
 	 */
 	private static void addParamsToCallAction
-		(CallOperationAction callAction, ModelClass target, String methodName,Object[] args) throws ImportException
+		(CallOperationAction callAction, ModelClass target, String methodName,Object[] args)
 	{
 		int i=0;
 		for(Object param: args)
 		{
 			Type paramType=ModelImporter.importType(param.getClass());
 			String paramName="arg"+i;
-			if(!(param instanceof ModelElement))
-				throw new ImportException("Illegal argument (position "+(i+1)+ ") passed to method "+target+"."+methodName);
 
 			ValuePin argValuePin=(ValuePin)callAction.createArgument(paramName, paramType, UMLPackage.Literals.VALUE_PIN);
 			createAndAddValueExpressionToValuePin(argValuePin,(ModelElement)param,paramType);
@@ -310,7 +307,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @author Ádám Ancsin
 	 */
 	private static Object importMethodCallInActivity
-		(ModelClass target, String methodName, Object... args) throws ImportException
+		(ModelClass target, String methodName, Object... args)
 	{
 		Object returnObj=null;
 
@@ -406,8 +403,6 @@ public class InstructionImporter extends AbstractMethodImporter
 		} 
 		catch (SecurityException e1) 
 		{
-			// TODO Auto-generated catch block
-			//e1.printStackTrace();
 		}
 
 		InstanceManager.createLocalInstancesMapEntry(returnObj,returnValInfo);

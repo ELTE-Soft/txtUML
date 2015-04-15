@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.uml2.transform.aspects;
 
 import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.api.Action;
+import hu.elte.txtuml.api.Collection;
 import hu.elte.txtuml.export.uml2.transform.ModelImporter;
 
 import java.lang.reflect.Field;
@@ -24,7 +25,12 @@ public privileged aspect ImporterSupportingAspect extends AbstractImporterAspect
 	 * @author Ádám Ancsin
 	 */
 	@SuppressAjWarnings
-	Object around() : call(* (!ModelElement+).*(..)) && !call(* (java.lang..*).*(..)) && isActive() {
+	Object around() : 
+		call(* (!ModelElement+).*(..)) && 
+		!call(* (java.lang..*).*(..)) &&
+		!call(* (Collection+).*(..)) 
+		&& isActive()
+	{
 		ModelImporter.importWarning(
 				"non-txtUML method call - " +
 				thisJoinPoint.getSignature().getDeclaringType().getName() + 
