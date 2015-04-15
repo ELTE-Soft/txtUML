@@ -328,7 +328,10 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 		Activity currActivityBackup=currentActivity;
 		currentActivity=null;
 		ModelBool checkedCond=condition.check(parameter);
-		String ret= getObjectIdentifier(parameter)+" : "+parameterTypeName+" | "+getExpression(checkedCond);
+		String paramId = getObjectIdentifier(parameter);
+		String simpleCondExpr = getConditionOrConstraintExpression(checkedCond);
+		
+		String ret = paramId +" : "+parameterTypeName+" | "+ simpleCondExpr;
 		currentActivity=currActivityBackup;
 		return ret;
 	}
@@ -368,10 +371,7 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 		T result = DummyInstanceCreator.createDummyInstance(resultType);
 		
 		if(currentActivity != null)
-		{
-			InstanceManager.createLocalInstancesMapEntry(result, InstanceInformation.create(resultExpression));
 			setVariableValue(result,resultExpression);
-		}
 		else
 			InstanceManager.createLocalInstancesMapEntry(result, InstanceInformation.createCalculated(resultExpression));
 		

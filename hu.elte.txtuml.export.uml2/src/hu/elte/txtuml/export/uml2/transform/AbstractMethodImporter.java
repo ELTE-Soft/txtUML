@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.uml2.transform;
 
 import hu.elte.txtuml.api.Event;
+import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.api.ModelInt;
@@ -134,13 +135,38 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 	}
 
 	/**
-	 * Gets the expression of a dummy instance.
-	 * @param instance The dummy instance
+	 * Gets the expression of a dummy instance which does not represent a condition or constraint.
+	 * @param instance The dummy instance.
 	 * @return The expression.
 	 *
 	 * @author Ádám Ancsin
 	 */
 	protected static String getExpression(Object instance)
+	{
+		return getExpression(instance,false);
+	}
+
+	/**
+	 * Gets the expression of a dummy instance representing a condition or a constraint.
+	 * @param instance The dummy instance.
+	 * @return The expression.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	protected static String getConditionOrConstraintExpression(ModelBool instance)
+	{
+		return getExpression(instance,true);
+	}
+	
+	/**
+	 * Gets the expression of a dummy instance.
+	 * @param instance The dummy instance.
+	 * @param condOrConstraint Indicates whether the instance is representing a condition/constraint or not.
+	 * @return The expression.
+	 *
+	 * @author Ádám Ancsin
+	 */
+	private static String getExpression(Object instance, boolean condOrConstraint)
 	{
 		String expression=null;
 		InstanceInformation instInfo=InstanceManager.getInstanceInfo(instance);
@@ -150,7 +176,12 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 			if(instInfo.isLiteral())
 				expression = getLiteralExpression(instance,instInfo);
 			else if(instInfo.isCalculated() && currentActivity == null)
-				expression = "("+instInfo.getExpression()+")";
+			{
+				if(condOrConstraint)
+					expression = instInfo.getExpression();
+				else
+					expression = "("+instInfo.getExpression()+")";
+			}
 			else
 				expression = instInfo.getExpression();
 		}
@@ -161,7 +192,7 @@ abstract class AbstractMethodImporter extends AbstractImporter {
 		
 		return expression;
 	}
-
+	
 	/**
 	 * Gets the identifier of a dummy instance.
 	 * @param instance The dummy instance.

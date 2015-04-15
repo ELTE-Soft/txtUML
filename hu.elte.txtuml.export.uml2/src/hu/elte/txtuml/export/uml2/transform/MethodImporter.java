@@ -49,15 +49,9 @@ class MethodImporter extends AbstractMethodImporter
 		ModelBool guardReturnValue=importGuardBody(transitionInstance);
 		
 		String guardExpression = null;
-		if(guardReturnValue!=null)
-		{				
-			guardExpression=MethodImporter.getExpression(guardReturnValue);
-			
-			if(InstanceManager.isInstanceCalculated(guardReturnValue))
-				guardExpression=guardExpression.substring(1,guardExpression.length()-1);
-					
-		}
-		
+		if(guardReturnValue!=null)			
+			guardExpression=getConditionOrConstraintExpression(guardReturnValue);
+	
 		endGuardImport();
 	
 		return guardExpression;

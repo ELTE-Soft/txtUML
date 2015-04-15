@@ -5,7 +5,6 @@ import java.util.HashSet;
 
 import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelClass;
-import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.Signal;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
@@ -170,7 +169,7 @@ public final class InstanceManager {
 	 *
 	 * @author Ádám Ancsin
 	 */
-	public static boolean isInstanceLiteral(ModelElement instance) 
+	public static boolean isInstanceLiteral(Object instance) 
 	{	
 		InstanceInformation instInfo=getInstanceInfo(instance);
 		return instInfo!=null && instInfo.isLiteral();
@@ -183,7 +182,7 @@ public final class InstanceManager {
 	 *
 	 * @author Ádám Ancsin
 	 */
-	public static boolean isInstanceCalculated(ModelElement instance)
+	public static boolean isInstanceCalculated(Object instance)
 	{
 		InstanceInformation instInfo=getInstanceInfo(instance);
 		boolean calculated;

@@ -2,7 +2,6 @@ package hu.elte.txtuml.export.uml2.transform;
 
 import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelInt;
-import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.api.ModelType;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
@@ -300,7 +299,6 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 *
 	 * @author Ádám Ancsin
 	 */
-	@SuppressWarnings("unchecked")
 	private static <T> ModelType<T> importModelType2OpOperation
 				(ModelType<T> target, ModelType<T> value, ModelType<T> result, String operator, boolean isFunction)
 	{	
@@ -315,17 +313,8 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 		
 		if(currentActivity!=null)
 			setVariableValue(result,valueExpression);
-		else
-		{
-			if(result instanceof ModelInt)
-				result=(ModelType<T>) new ModelInt();			
-			else if(result instanceof ModelBool)
-				result=(ModelType<T>) new ModelBool();
-			else if(result instanceof ModelString)
-				result=(ModelType<T>) new ModelString();
-			
+		else	
 			InstanceManager.createLocalInstancesMapEntry(result,InstanceInformation.createCalculated(valueExpression));
-		}
 		
 		return result;
 	}
@@ -429,7 +418,6 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 *
 	 * @author Ádám Ancsin
 	 */
-	@SuppressWarnings("unchecked")
 	private static <T> ModelType<T> importModelType1OpOperation
 			(ModelType<T> target, ModelType<T> result, String operator, boolean isFunction)
 	{
@@ -443,17 +431,9 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 		
 		if(currentActivity!=null)
 			setVariableValue(result,valueExpression);
-		else
-		{
-			if(result instanceof ModelInt)
-				result=(ModelType<T>) new ModelInt();
-			else if(result instanceof ModelBool)
-				result=(ModelType<T>) new ModelBool();
-			else if(result instanceof ModelString)
-				result=(ModelType<T>) new ModelBool();
-			
+		else			
 			InstanceManager.createLocalInstancesMapEntry(result,InstanceInformation.createCalculated(valueExpression));
-		}
+
 		return result;
 	}
 	

@@ -441,7 +441,7 @@ public class ActionImporter extends AbstractMethodImporter {
 		Activity currActivityBackup=currentActivity;
 		currentActivity=null;
 		ModelBool checkedCond=cond.check();
-		String ret= getExpression(checkedCond);
+		String ret = getConditionOrConstraintExpression(checkedCond);
 		currentActivity=currActivityBackup;
 		return ret;
 	}
