@@ -489,10 +489,11 @@ public class ModelImporter extends AbstractImporter{
     /**
      * Imports the bodies of the member functions of the specified class.
      * @param sourceClass The txtUML class.
-     *
+     * @throws ImportException 
+     * 
      * @author Ádám Ancsin
      */
-    private static void importClassMemberFunctionBodies(Class<?> sourceClass)
+    private static void importClassMemberFunctionBodies(Class<?> sourceClass) throws ImportException
     {
     	org.eclipse.uml2.uml.Class ownerClass=(org.eclipse.uml2.uml.Class) currentModel.getMember(sourceClass.getSimpleName());
     	for(Method method : sourceClass.getDeclaredMethods()) 
@@ -590,10 +591,12 @@ public class ModelImporter extends AbstractImporter{
 	 * @param sourceMethod The txtUML method.
 	 * @return The imported UML2 activity of the operation.
 	 *
+	 * @throws ImportException 
+	 *
 	 * @author Ádám Ancsin
 	 */
 	private static Activity importOperationBody
-		(Operation operation,org.eclipse.uml2.uml.Class ownerClass,Method sourceMethod)
+		(Operation operation,org.eclipse.uml2.uml.Class ownerClass,Method sourceMethod) throws ImportException
 	{
 		Activity activity=(Activity) ownerClass.createOwnedBehavior(sourceMethod.getName(),UMLPackage.Literals.ACTIVITY);
 		activity.setSpecification(operation);

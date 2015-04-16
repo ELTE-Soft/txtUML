@@ -98,14 +98,20 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	 * transition during model import.
 	 * 
 	 * @param target The target transition of the call.
+	 * @param signalClass The class of the signal.
 	 * @return The dummy instance of the trigger signal.
 	 *
 	 * @author Ádám Ancsin
 	 */
+	@SuppressWarnings("unchecked")
 	@SuppressAjWarnings
-	Signal around(Transition target):call(Signal getSignal()) && target(target) &&  importing()
+	Signal around(Transition target):
+		call(Signal getSignal(..)) && 
+		target(target) &&
+		importing()
 	{
-		return InstructionImporter.initAndGetSignalInstanceOfTransition(target);
+		Class<? extends Signal> signalClass = (Class<? extends Signal>) thisJoinPoint.getArgs()[0];
+		return InstructionImporter.initAndGetSignalInstanceOfTransition(target, signalClass);
 	}
 		
 	/**

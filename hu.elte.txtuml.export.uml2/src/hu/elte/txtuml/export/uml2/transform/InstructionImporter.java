@@ -5,8 +5,6 @@ import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.api.ModelType;
 import hu.elte.txtuml.api.Signal;
-import hu.elte.txtuml.api.StateMachine;
-import hu.elte.txtuml.api.Trigger;
 import hu.elte.txtuml.api.StateMachine.Transition;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 import hu.elte.txtuml.export.uml2.utils.FieldValueAccessor;
@@ -14,7 +12,6 @@ import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
-import hu.elte.txtuml.utils.InstanceCreator;
 
 import java.lang.reflect.Method;
 
@@ -233,45 +230,32 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * Initializes (creates a dummy instance and assigns it) the trigger signal of the given transition, if not
 	 * yet initialized. Gets the dummy instance of the trigger signal.
 	 * @param target The dummy instance of the target transition.
+	 * @param signalClass The class of the signal.
 	 * @return The dummy instance of the trigger signal of the transition.
 	 *
 	 * @author Ádám Ancsin
 	 */
-	static Signal initAndGetSignalInstanceOfTransition(Transition target)
+	static Signal initAndGetSignalInstanceOfTransition(Transition target, Class<? extends Signal> signalClass)
 	{
 		Signal signal = (Signal) FieldValueAccessor.getObjectFieldVal(target,"signal");
 		
 		if(signal == null)
 		{
-			signal=createSignal(target.getClass());
+			signal=DummyInstanceCreator.createDummyInstance(signalClass);
 			
 			if(signal != null)
 			{
 				FieldValueAccessor.setObjectFieldVal(target,"signal",signal);
 				
-				String signalName=signal.getClass().getSimpleName();
+				String signalName=signalClass.getSimpleName();
 				InstanceManager.createLocalInstancesMapEntry(signal,InstanceInformation.create(signalName));
 				InstanceManager.createLocalFieldsRecursively(signal);
+				currentSignal = signal;
 			}
 		}
 		return signal;
 	}
 	
-	/**
-	 * Creates a dummy instance of the trigger signal (if there's any) of the given transition.
-	 * @param transitionClass The class of the transition.
-	 * @return The created dummy instance. (null if there's no trigger)
-	 *
-	 * @author Ádám Ancsin
-	 */
-	private static hu.elte.txtuml.api.Signal createSignal(Class<? extends StateMachine.Transition> transitionClass) {
-		Trigger triggerAnnotation = transitionClass.getAnnotation(Trigger.class);
-		if (triggerAnnotation != null) {
-			return InstanceCreator.createInstance(triggerAnnotation.value());
-		}
-		return null;
-	}
-
 	/**
 	 * Adds the parameters of the method call to a CallOperationAction.
 	 * @param callAction The call operation action.

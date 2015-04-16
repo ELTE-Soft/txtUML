@@ -4,6 +4,7 @@ import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.api.StateMachine;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
+import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
@@ -39,10 +40,12 @@ class MethodImporter extends AbstractMethodImporter
 	 * @param sourceMethod The guard method to be imported.
 	 * @param transitionInstance The dummy instance of the transition.
 	 * @return The guard expression represented by the method's return value.
+	 * @throws ImportException
 	 *
 	 * @author Ádám Ancsin
 	 */
-	static String importGuardMethod(Model model, Method sourceMethod,StateMachine.Transition transitionInstance)
+	static String importGuardMethod
+		(Model model, Method sourceMethod,StateMachine.Transition transitionInstance) throws ImportException
 	{
 		initGuardImport(model,sourceMethod,transitionInstance);
 		
@@ -63,32 +66,37 @@ class MethodImporter extends AbstractMethodImporter
 	 * @param activity The UML2 activity of the member function/action (entry/exit/effect).
 	 * @param sourceMethod The method to be imported.
 	 * @param classInstance The dummy instance of the owner class. (model class, state or transition)
+	 * @throws ImportException
 	 *
 	 * @author Ádám Ancsin
 	 */
-	static void importMethod(Model model, Activity activity, Method sourceMethod, ModelElement classInstance) 
+	static void importMethod
+		(Model model, Activity activity, Method sourceMethod, ModelElement classInstance) throws ImportException
 	{
 		initMethodImport(model,activity,sourceMethod,classInstance);
 		importBody(classInstance);
-		endMethodImport();	
+		endMethodImport(classInstance);	
 	}
 
 	/**
 	 * Imports the body of a guard method.
 	 * @param transitionInstance The dummy instance of the transition.
 	 * @return The return value of the guard method.
+	 * @throws ImportException
 	 *
 	 * @author Ádám Ancsin
 	 */
-	private static ModelBool importGuardBody(StateMachine.Transition transitionInstance)
+	private static ModelBool importGuardBody(StateMachine.Transition transitionInstance) throws ImportException
 	{
 		currentMethod.setAccessible(true);
 		ModelBool returnValue = null;
-		try {
+		try 
+		{
 			returnValue = (ModelBool) currentMethod.invoke(transitionInstance);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
+		} 
+		catch (Exception e)
+		{
+			throw new ImportException("Failed to import guard of transition: "+transitionInstance.getClass().getCanonicalName());
 		} 
 		currentMethod.setAccessible(false);
 		
@@ -106,12 +114,10 @@ class MethodImporter extends AbstractMethodImporter
 	private static void initGuardImport(Model model, Method sourceMethod, StateMachine.Transition transitionInstance)
 	{
 		InstanceManager.initLocalInstancesMap();
+		currentSignal = null;
 		currentModel=model;
 		currentMethod=sourceMethod;
 		currentParameters=null;
-	
-		currentSignal=InstructionImporter.initAndGetSignalInstanceOfTransition(transitionInstance);	
-
 	}
 	
 	/**
@@ -122,6 +128,7 @@ class MethodImporter extends AbstractMethodImporter
 	private static void endGuardImport()
 	{
 		InstanceManager.clearLocallInstancesMap();
+		currentSignal = null;
 		currentModel=null;
 	}
 	
@@ -148,26 +155,20 @@ class MethodImporter extends AbstractMethodImporter
 		lastNode=initialNode;
 		
 		loadCurrentParameters();
-		
-		if(ElementTypeTeller.isTransition(classInstance))
-		{
-			currentSignal=InstructionImporter.
-					initAndGetSignalInstanceOfTransition(
-							(StateMachine.Transition)classInstance
-							);		
-			
-			if(currentSignal!=null)
-				createSignalParameter();
-		}
 	}
 	
 	/**
 	 * Ends method import.
 	 * 
+	 * @param classInstance The dummy instance of the owner class. (model class, state or transition)
+	 * 
 	 * @author Ádám Ancsin
 	 */
-	private static void endMethodImport()
+	private static void endMethodImport(ModelElement classInstance)
 	{
+		if(ElementTypeTeller.isTransition(classInstance) && currentSignal != null)
+			createSignalParameter();
+		
 		ActivityNode finalNode=currentActivity.createOwnedNode("finalNode",UMLPackage.Literals.ACTIVITY_FINAL_NODE);
 		createControlFlowBetweenActivityNodes(lastNode,finalNode);
 		
@@ -180,7 +181,7 @@ class MethodImporter extends AbstractMethodImporter
 	
 	/**
 	 * Creates an activity parameter and parameter node for the trigger signal of an effect method. Should only be used when
-	 * imported method is an effect method of a transition and it has a trigger.
+	 * imported method is an effect method of a transition.
 	 * 
 	 * @author Ádám Ancsin
 	 */
@@ -196,11 +197,13 @@ class MethodImporter extends AbstractMethodImporter
 	/**
 	 * Imports the body of a method (member function of a model class or an entry/exit/effect action).
 	 * @param classInstance The dummy instance of the owner class. (model class, state or transition)
+	 * @throws ImportException 
 	 *
 	 * @author Ádám Ancsin
 	 */
-	private static void importBody(ModelElement classInstance)
+	private static void importBody(ModelElement classInstance) throws ImportException
 	{
+		String methodQualifiedName = classInstance.getClass().getCanonicalName()+currentMethod.getName();
 		try 
 		{
 			currentMethod.setAccessible(true);
@@ -213,14 +216,14 @@ class MethodImporter extends AbstractMethodImporter
 				}
 				catch(Exception e)
 				{
-					//e.printStackTrace();
+					throw new ImportException("Failed to import method: "+methodQualifiedName);
 				}
 			}
 			currentMethod.setAccessible(false);
 		}
 		catch(Exception e) 
 		{
-			//e.printStackTrace();
+			throw new ImportException("Failed to import method: "+methodQualifiedName);
 		}
 	}
 	
