@@ -169,49 +169,49 @@ public class GarageModel extends Model {
 		@From(On.class) @To(InAlarm.class) @Trigger(KeyPress.class)
 		class TWrongKey1 extends Transition {
 			@Override public ModelBool guard() {
-				return ((KeyPress)getSignal()).key.isEqual(code).not();
+				return getSignal(KeyPress.class).key.isEqual(code).not();
 			}
 		}
 		@From(On.class) @To(Off.class) @Trigger(KeyPress.class)
 		class TCorrectKey1 extends Transition {
 			@Override public ModelBool guard() {
-				return ((KeyPress)getSignal()).key.isEqual(code);
+				return getSignal(KeyPress.class).key.isEqual(code);
 			}
 		}		
 		@From(ExpectingCode.class) @To(InAlarm.class) @Trigger(KeyPress.class)
 		class TWrongKey2 extends Transition {
 			@Override public ModelBool guard() {
-				return ((KeyPress)getSignal()).key.isEqual(code).not();
+				return getSignal(KeyPress.class).key.isEqual(code).not();
 			}
 		}
 		@From(ExpectingCode.class) @To(Off.class) @Trigger(KeyPress.class)
 		class TCorrectKey2 extends Transition {
 			@Override public ModelBool guard() {
-				return ((KeyPress)getSignal()).key.isEqual(code);
+				return getSignal(KeyPress.class).key.isEqual(code);
 			}
 		}		
 		@From(InAlarm.class) @To(Off.class) @Trigger(KeyPress.class)
 		class TCorrectKey3 extends Transition {
 			@Override public ModelBool guard() {
-				return ((KeyPress)getSignal()).key.isEqual(code);
+				return getSignal(KeyPress.class).key.isEqual(code);
 			}
 		}		
 		@From(ExpectingOldCode.class) @To(ExpectingNewCode.class) @Trigger(KeyPress.class)
 		class TCorrectKey4 extends Transition {
 			@Override public ModelBool guard() {
-				return ((KeyPress)getSignal()).key.isEqual(code);
+				return getSignal(KeyPress.class).key.isEqual(code);
 			}
 		}		
 		@From(ExpectingOldCode.class) @To(Off.class) @Trigger(KeyPress.class)
 		class TWrongKey4 extends Transition {
 			@Override public ModelBool guard() {
-				return ((KeyPress)getSignal()).key.isEqual(code).not();
+				return getSignal(KeyPress.class).key.isEqual(code).not();
 			}
 		}		
 		@From(ExpectingNewCode.class) @To(Off.class) @Trigger(KeyPress.class)
 		class TNewKey extends Transition {
 			@Override public void effect() {
-				code = ((KeyPress)getSignal()).key;
+				code = getSignal(KeyPress.class).key;
 			}
 		}		
 		@From(Off.class) @To(On.class) @Trigger(StarPressed.class)
@@ -250,7 +250,7 @@ public class GarageModel extends Model {
 		class TSpontaneousKeyPress extends Transition {
 			@Override public void effect() {
 				Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).selectOne();
-				Action.send(a, (KeyPress)getSignal());
+				Action.send(a, getSignal(KeyPress.class));
 			}
 		}
 		@From(Idle.class) @To(Waiting.class) @Trigger(WaitForCode.class) 
@@ -275,7 +275,7 @@ public class GarageModel extends Model {
 		class TExpectedKeyPress extends Transition {
 			@Override public void effect() {
 				Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).selectOne();
-				Action.send(a, (KeyPress)getSignal());
+				Action.send(a, getSignal(KeyPress.class));
 			}
 		}
 		@From(Waiting.class) @To(Idle.class) @Trigger(KeyboardTimerExpired.class)

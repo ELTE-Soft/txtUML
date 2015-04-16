@@ -370,6 +370,8 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		}
 
 		/**
+		 * TODO check javadoc
+		 * <p>
 		 * Returns the signal receiving which triggered the execution (or the
 		 * call of the guard) of this transition. The return value is casted to
 		 * any desired type which is a subclass of <code>Signal</code>.
@@ -391,7 +393,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		 *             if the cast might not be performed
 		 */
 		@SuppressWarnings("unchecked")
-		protected final <T extends Signal> T getSignal() {
+		protected final <T extends Signal> T getSignal(Class<T> signalClass) {
 			return (T) signal;
 		}
 

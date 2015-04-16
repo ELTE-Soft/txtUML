@@ -45,7 +45,7 @@ class MachineModel extends Model {
 			@From(Active.class) @To(Active.class) @Trigger(DoTasks.class)
 			class DoActivity extends Transition {
 				@Override public void effect() {
-					DoTasks dTE = getSignal();
+					DoTasks dTE = getSignal(DoTasks.class);
 					Machine.this.tasksTodo = Machine.this.tasksTodo.subtract(dTE.count);	
 					Action.log("\tBecoming active...");
 				}
