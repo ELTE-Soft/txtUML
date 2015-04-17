@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api;
 
+import hu.elte.txtuml.api.backend.logs.ErrorMessages;
+
 import java.io.PrintStream;
 
 /**
@@ -254,7 +256,8 @@ public final class ModelExecutor implements ModelElement {
 				if (Settings.canChangeExecutionTimeMultiplier) {
 					Settings.executionTimeMultiplier = newMultiplier;
 				} else {
-					// TODO show error
+					executorErrorLog(ErrorMessages
+							.getChangingLockedExecutionTimeMultiplierMessage());
 				}
 			}
 		}

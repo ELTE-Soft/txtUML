@@ -1,7 +1,31 @@
 package hu.elte.txtuml.api;
 
-/*
- * TODO how to use variable types 
+/**
+ * A mutable container of a specified <code>ModelType</code> instance.
+ * 
+ * <p>
+ * <b>Represents:</b> no model element directly
+ * <p>
+ * <b>Usage:</b>
+ * <p>
+ * 
+ * TODO using variables
+ * 
+ * <p>
+ * <b>Java restrictions:</b>
+ * <ul>
+ * <li><i>Instantiate:</i> allowed</li>
+ * <li><i>Define subtype:</i> disallowed</li>
+ * </ul>
+ * 
+ * See the documentation of the {@link hu.elte.txtuml.api} package to get an
+ * overview on modeling in txtUML.
+ *
+ * @author Gabor Ferenc Kovacs
+ * @param <T>
+ *            the raw primitive type represented by this variable's value
+ * @param <MT>
+ *            the type of this variable (the type of its value)
  */
 public abstract class VariableType<T, MT extends ModelType<T>> {
 

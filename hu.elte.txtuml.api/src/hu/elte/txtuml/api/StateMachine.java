@@ -1,5 +1,35 @@
 package hu.elte.txtuml.api;
 
+/**
+ * TODO overview
+ * 
+ * <p>
+ * <b>Represents:</b> state machine
+ * <p>
+ * <b>Usage:</b>
+ * <p>
+ * 
+ * TODO usage
+ * 
+ * <p>
+ * <b>Java restrictions:</b>
+ * <ul>
+ * <li><i>Instantiate:</i> disallowed</li>
+ * <li><i>Define subtype:</i> disallowed</li>
+ * </ul>
+ * 
+ * <p>
+ * <b>Example:</b>
+ * <p>
+ * 
+ * TODO examples
+ * 
+ * See the documentation of the {@link hu.elte.txtuml.api} package to get an
+ * overview on modeling in txtUML.
+ *
+ * @author Gabor Ferenc Kovacs
+ *
+ */
 public abstract class StateMachine extends NestedClassInstancesHolder implements
 		ModelElement {
 
@@ -161,6 +191,51 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 
 	}
 
+	/**
+	 * TODO overview
+	 * 
+	 * <p>
+	 * <b>Represents:</b> initial pseudostate
+	 * <p>
+	 * <b>Usage:</b>
+	 * <p>
+	 * 
+	 * TODO usage
+	 * 
+	 * <p>
+	 * <b>Java restrictions:</b>
+	 * <ul>
+	 * <li><i>Instantiate:</i> disallowed</li>
+	 * <li><i>Define subtype:</i> allowed
+	 * <p>
+	 * <b>Subtype requirements:</b>
+	 * <ul>
+	 * <li>TODO requirements</li>
+	 * </ul>
+	 * <p>
+	 * <b>Subtype restrictions:</b>
+	 * <ul>
+	 * <li><i>Be abstract:</i> disallowed</li>
+	 * <li><i>Generic parameters:</i> disallowed</li>
+	 * <li><i>Constructors:</i> disallowed</li>
+	 * <li><i>Initialization blocks:</i> disallowed</li>
+	 * <li><i>Fields:</i> disallowed</li>
+	 * <li><i>Methods:</i> disallowed</li>
+	 * <li><i>Nested interfaces:</i> disallowed</li>
+	 * <li><i>Nested classes:</i> disallowed</li>
+	 * <li><i>Nested enums:</i> disallowed</li>
+	 * </ul>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
+	 * </ul>
+	 * 
+	 * See the documentation of {@link StateMachine} for detailed examples.
+	 * <p>
+	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
+	 * overview on modeling in txtUML.
+	 *
+	 * @author Gabor Ferenc Kovacs
+	 *
+	 */
 	public class Initial extends Pseudostate {
 
 		/**
@@ -183,6 +258,51 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 
 	}
 
+	/**
+	 * TODO overview
+	 * 
+	 * <p>
+	 * <b>Represents:</b> choice pseudostate
+	 * <p>
+	 * <b>Usage:</b>
+	 * <p>
+	 * 
+	 * TODO usage
+	 * 
+	 * <p>
+	 * <b>Java restrictions:</b>
+	 * <ul>
+	 * <li><i>Instantiate:</i> disallowed</li>
+	 * <li><i>Define subtype:</i> allowed
+	 * <p>
+	 * <b>Subtype requirements:</b>
+	 * <ul>
+	 * <li>TODO requirements</li>
+	 * </ul>
+	 * <p>
+	 * <b>Subtype restrictions:</b>
+	 * <ul>
+	 * <li><i>Be abstract:</i> disallowed</li>
+	 * <li><i>Generic parameters:</i> disallowed</li>
+	 * <li><i>Constructors:</i> disallowed</li>
+	 * <li><i>Initialization blocks:</i> disallowed</li>
+	 * <li><i>Fields:</i> disallowed</li>
+	 * <li><i>Methods:</i> disallowed</li>
+	 * <li><i>Nested interfaces:</i> disallowed</li>
+	 * <li><i>Nested classes:</i> disallowed</li>
+	 * <li><i>Nested enums:</i> disallowed</li>
+	 * </ul>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
+	 * </ul>
+	 * 
+	 * See the documentation of {@link StateMachine} for detailed examples.
+	 * <p>
+	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
+	 * overview on modeling in txtUML.
+	 *
+	 * @author Gabor Ferenc Kovacs
+	 *
+	 */
 	public class Choice extends Pseudostate {
 
 		/**
@@ -205,6 +325,51 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 
 	}
 
+	/**
+	 * TODO overview
+	 * 
+	 * <p>
+	 * <b>Represents:</b> state
+	 * <p>
+	 * <b>Usage:</b>
+	 * <p>
+	 * 
+	 * TODO usage
+	 * 
+	 * <p>
+	 * <b>Java restrictions:</b>
+	 * <ul>
+	 * <li><i>Instantiate:</i> disallowed</li>
+	 * <li><i>Define subtype:</i> allowed
+	 * <p>
+	 * <b>Subtype requirements:</b>
+	 * <ul>
+	 * <li>TODO requirements</li>
+	 * </ul>
+	 * <p>
+	 * <b>Subtype restrictions:</b>
+	 * <ul>
+	 * <li><i>Be abstract:</i> disallowed</li>
+	 * <li><i>Generic parameters:</i> disallowed</li>
+	 * <li><i>Constructors:</i> disallowed</li>
+	 * <li><i>Initialization blocks:</i> disallowed</li>
+	 * <li><i>Fields:</i> disallowed</li>
+	 * <li><i>Methods:</i> disallowed</li>
+	 * <li><i>Nested interfaces:</i> disallowed</li>
+	 * <li><i>Nested classes:</i> disallowed</li>
+	 * <li><i>Nested enums:</i> disallowed</li>
+	 * </ul>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
+	 * </ul>
+	 * 
+	 * See the documentation of {@link StateMachine} for detailed examples.
+	 * <p>
+	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
+	 * overview on modeling in txtUML.
+	 *
+	 * @author Gabor Ferenc Kovacs
+	 *
+	 */
 	public class State extends Vertex {
 
 		/**
@@ -227,6 +392,52 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 
 	}
 
+	
+	/**
+	 * TODO overview
+	 * 
+	 * <p>
+	 * <b>Represents:</b> composite state
+	 * <p>
+	 * <b>Usage:</b>
+	 * <p>
+	 * 
+	 * TODO usage
+	 * 
+	 * <p>
+	 * <b>Java restrictions:</b>
+	 * <ul>
+	 * <li><i>Instantiate:</i> disallowed</li>
+	 * <li><i>Define subtype:</i> allowed
+	 * <p>
+	 * <b>Subtype requirements:</b>
+	 * <ul>
+	 * <li>TODO requirements</li>
+	 * </ul>
+	 * <p>
+	 * <b>Subtype restrictions:</b> TODO restrictions
+	 * <ul>
+	 * <li><i>Be abstract:</i> disallowed</li>
+	 * <li><i>Generic parameters:</i> disallowed</li>
+	 * <li><i>Constructors:</i> disallowed</li>
+	 * <li><i>Initialization blocks:</i> disallowed</li>
+	 * <li><i>Fields:</i> disallowed</li>
+	 * <li><i>Methods:</i> disallowed</li>
+	 * <li><i>Nested interfaces:</i> disallowed</li>
+	 * <li><i>Nested classes:</i> disallowed</li>
+	 * <li><i>Nested enums:</i> disallowed</li>
+	 * </ul>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
+	 * </ul>
+	 * 
+	 * See the documentation of {@link StateMachine} for detailed examples.
+	 * <p>
+	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
+	 * overview on modeling in txtUML.
+	 *
+	 * @author Gabor Ferenc Kovacs
+	 *
+	 */
 	public class CompositeState extends State {
 
 		/**
@@ -249,6 +460,51 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 
 	}
 
+	/**
+	 * TODO overview
+	 * 
+	 * <p>
+	 * <b>Represents:</b> transition
+	 * <p>
+	 * <b>Usage:</b>
+	 * <p>
+	 * 
+	 * TODO usage
+	 * 
+	 * <p>
+	 * <b>Java restrictions:</b>
+	 * <ul>
+	 * <li><i>Instantiate:</i> disallowed</li>
+	 * <li><i>Define subtype:</i> allowed
+	 * <p>
+	 * <b>Subtype requirements:</b>
+	 * <ul>
+	 * <li>TODO requirements</li>
+	 * </ul>
+	 * <p>
+	 * <b>Subtype restrictions:</b>
+	 * <ul>
+	 * <li><i>Be abstract:</i> disallowed</li>
+	 * <li><i>Generic parameters:</i> disallowed</li>
+	 * <li><i>Constructors:</i> disallowed</li>
+	 * <li><i>Initialization blocks:</i> disallowed</li>
+	 * <li><i>Fields:</i> disallowed</li>
+	 * <li><i>Methods:</i> disallowed</li>
+	 * <li><i>Nested interfaces:</i> disallowed</li>
+	 * <li><i>Nested classes:</i> disallowed</li>
+	 * <li><i>Nested enums:</i> disallowed</li>
+	 * </ul>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
+	 * </ul>
+	 * 
+	 * See the documentation of {@link StateMachine} for detailed examples.
+	 * <p>
+	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
+	 * overview on modeling in txtUML.
+	 *
+	 * @author Gabor Ferenc Kovacs
+	 *
+	 */
 	public class Transition implements ModelElement {
 
 		/**

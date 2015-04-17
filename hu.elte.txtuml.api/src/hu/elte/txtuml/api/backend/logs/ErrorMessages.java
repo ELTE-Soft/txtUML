@@ -24,9 +24,9 @@ public interface ErrorMessages {
 
 	static String getUnlinkingDeletedObjectMessage(ModelClass obj) {
 		return "Error: trying to unlink deleted model object " + obj.toString()
-				+ ".";		
+				+ ".";
 	}
-	
+
 	static String getStartingDeletedObjectMessage(ModelClass obj) {
 		return "Error: trying to start deleted model object " + obj.toString()
 				+ ".";
@@ -53,6 +53,11 @@ public interface ErrorMessages {
 	static String getNoTransitionFromChoiceMessage(Vertex choice) {
 		return "Error: there was no transition from " + choice.toString()
 				+ " which could be used.";
+	}
+
+	static String getChangingLockedExecutionTimeMultiplierMessage() {
+		return "Error: model execution time multiplier might only be changed"
+				+ "before any time-related events happen during model execution.";
 	}
 
 }
