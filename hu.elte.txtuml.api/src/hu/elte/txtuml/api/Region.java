@@ -21,7 +21,8 @@ import hu.elte.txtuml.api.backend.logs.LogMessages;
  * <b>Java restrictions:</b>
  * <ul>
  * <li><i>Instantiate:</i> disallowed</li>
- * <li><i>Define subtype:</i> disallowed, use its subclass, {@link ModelClass}</li>
+ * <li><i>Define subtype:</i> disallowed, use its subclass, like
+ * {@link ModelClass}</li>
  * </ul>
  * 
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an
@@ -44,7 +45,7 @@ public abstract class Region extends StateMachine {
 	private Vertex currentVertex;
 
 	/**
-	 * @return the unique identifier of this object
+	 * @return a unique identifier of this object
 	 */
 	abstract String getIdentifier();
 
@@ -54,11 +55,10 @@ public abstract class Region extends StateMachine {
 	 * Sets the <code>currentVertex</code> field to an instance of this region's
 	 * initial pseudostate. The initial pseudostate is a nested class of the
 	 * <i>actual region class</i> which is a subclass of
-	 * {@link StateMachine.Initial}.
-	 * <p>
-	 * The <i>actual region class</i> refers to the class represented by the
-	 * <code>java.lang.Class<?></code> object which is returned by the
-	 * <code>getClass</code> method when this constructor is run.
+	 * {@link StateMachine.Initial}. The <i>actual region class</i> refers to
+	 * the class represented by the <code>java.lang.Class<?></code> object which
+	 * is returned by the <code>getClass</code> method when this constructor is
+	 * run.
 	 * <p>
 	 * If two or more initial pseudostates exist in this region (two or more
 	 * nested classes which extend <code>StateMachine.Initial</code>), then an
@@ -83,8 +83,8 @@ public abstract class Region extends StateMachine {
 	 * region. If this method is called when no other methods of this class has
 	 * been called or all of them has already returned, then this method returns
 	 * either <code>null</code> (if this region is inactive) or an instance of a
-	 * state class (an object, for which
-	 * <code>instanceof StateMachine.State</code> returns true).
+	 * state class (an object, for which <code>instanceof
+	 * StateMachine.State</code> returns true).
 	 * 
 	 * @return an object of the currently active vertex in this region
 	 */
@@ -127,7 +127,9 @@ public abstract class Region extends StateMachine {
 
 	/**
 	 * Finds and executes a transition from the current vertex if that is
-	 * <b>not</b> a choice pseudostate.
+	 * <b>not</b> a choice pseudostate. Does not check if the value of
+	 * <code>currentVertex</code> is truly <i>not</i> a choice psuedostate but
+	 * should only be called in this case.
 	 * 
 	 * @param signal
 	 *            the received signal
@@ -192,7 +194,9 @@ public abstract class Region extends StateMachine {
 
 	/**
 	 * Finds and executes a transition from the current vertex if that is a
-	 * choice pseudostate.
+	 * choice pseudostate. Does not check if the value of
+	 * <code>currentVertex</code> is truly a choice psuedostate but should only
+	 * be called in this case.
 	 * 
 	 * @param signal
 	 *            the signal which triggered the original transition (the one
@@ -301,15 +305,15 @@ public abstract class Region extends StateMachine {
 	}
 
 	/**
-	 * Checks whether the given signal's event is <b>not</b> triggering the
-	 * specified transition.
+	 * Checks whether the given signal is <b>not</b> triggering the specified
+	 * transition.
 	 * 
 	 * @param transitionClass
 	 *            the class representing the transition to check
 	 * @param signal
 	 *            the signal to check
-	 * @return <code>true</code> if the signal's event does <b>not</b> trigger
-	 *         the specified transition, <code>false</code> otherwise
+	 * @return <code>true</code> if the signal does <b>not</b> trigger the
+	 *         specified transition, <code>false</code> otherwise
 	 */
 	private boolean notApplicableTrigger(Class<?> transitionClass, Signal signal) {
 		Trigger trigger = transitionClass.getAnnotation(Trigger.class);
@@ -321,13 +325,13 @@ public abstract class Region extends StateMachine {
 	}
 
 	/**
-	 * Calls the exit action of the current vertex and all enclosing composite
-	 * states one by one going higher in the state hierarchy until it reaches
-	 * the specified <code>vertex</code> parameter. It means that the given
-	 * parameter must be either the <code>currentVertex</code> or a composite
-	 * state which contains (directly or non-directly) the current vertex. If
-	 * this condition is not met, calling this method will result in an
-	 * unspecified behavior.
+	 * Calls the exit action of the current vertex and of all enclosing
+	 * composite states one by one going higher in the state hierarchy until it
+	 * reaches the specified <code>vertex</code> parameter. It means that the
+	 * given parameter must be either the <code>currentVertex</code> or a
+	 * composite state which contains (directly or non-directly) the current
+	 * vertex. If this condition is not met, calling this method will result in
+	 * an unspecified behavior.
 	 * 
 	 * @param vertex
 	 *            the top vertex in the state hierarchy to exit

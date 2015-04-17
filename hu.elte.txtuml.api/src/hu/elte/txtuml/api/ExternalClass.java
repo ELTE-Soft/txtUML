@@ -6,7 +6,7 @@ package hu.elte.txtuml.api;
  * features in the model.
  * 
  * <p>
- * <b>Represents:</b> external classes
+ * <b>Represents:</b> external class
  * <p>
  * <b>Usage:</b>
  * <p>
@@ -26,6 +26,7 @@ package hu.elte.txtuml.api;
  * <p>
  * <b>Subtype restrictions:</b>
  * <ul>
+ * <li><i>Be abstract:</i> disallowed</li>
  * <li><i>Generic parameters:</i> allowed</li>
  * <li><i>Constructors:</i> allowed</li>
  * <li><i>Initialization blocks:</i> allowed</li>
@@ -44,7 +45,6 @@ package hu.elte.txtuml.api;
  * @author Gabor Ferenc Kovacs
  *
  */
-@ModelAnnotatedElement
 public class ExternalClass extends Action {
 
 	/**
@@ -63,7 +63,7 @@ public class ExternalClass extends Action {
 	/**
 	 * Convert a <code>ModelType</code> object back to its raw value (the
 	 * primitive value represented by it). May only be used to convert data
-	 * gained from the model in an external component. If any data is sent back
+	 * gained from the model for an external component. If any data is sent back
 	 * to the model, it must be in the form of <code>ModelType</code> objects.
 	 * 
 	 * @param objectToConvert

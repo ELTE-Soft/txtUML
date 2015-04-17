@@ -8,7 +8,7 @@ import java.util.Iterator;
  * Base interface for immutable collections of {@link ModelClass} objects.
  * 
  * <p>
- * <b>Represents:</b> a collection of model objects
+ * <b>Represents:</b> collection of model objects
  * <p>
  * <b>Usage:</b>
  * <p>
@@ -37,9 +37,6 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 
 	/**
 	 * Checks if this collection is empty.
-	 * <p>
-	 * This method is currently <b>only available in the API</b>, its use is
-	 * <b>not exported to UML2</b>.
 	 * 
 	 * @return a <code>ModelBool</code> representing <code>true</code> if this
 	 *         collection is empty, a <code>ModelBool</code> representing
@@ -49,9 +46,6 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 
 	/**
 	 * Returns the number of elements in this collection.
-	 * <p>
-	 * This method is currently <b>only available in the API</b>, its use is
-	 * <b>not exported to UML2</b>.
 	 * 
 	 * @return a <code>ModelInt</code> representing the size of this collection
 	 */
@@ -59,14 +53,11 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 
 	/**
 	 * Checks whether a certain model object is in this collection.
-	 * <p>
-	 * This method is currently <b>only available in the API</b>, its use is
-	 * <b>not exported to UML2</b>.
 	 * 
 	 * @param object
 	 *            the model object to check
 	 * @return a <code>ModelBool</code> representing <code>true</code> if this
-	 *         collection is contains the specified <code>object</code>, a
+	 *         collection contains the specified <code>object</code>, a
 	 *         <code>ModelBool</code> representing <code>false</code> otherwise
 	 */
 	ModelBool contains(ModelClass object);
@@ -84,9 +75,6 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 	/**
 	 * Selects all elements of this collection for which the specified condition
 	 * holds.
-	 * <p>
-	 * This method is currently <b>only available in the API</b>, its use is
-	 * <b>not exported to UML2</b>.
 	 * 
 	 * @param cond
 	 *            a condition to filter the elements of this collection
@@ -99,12 +87,6 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 	/**
 	 * Creates a new collection which contains all the elements of this
 	 * collection and also the specified object.
-	 * <p>
-	 * As {@link Collection} is designed to contain only non-null values,
-	 * <code>object</code> should not be <code>null</code>.
-	 * <p>
-	 * This method is currently <b>only available in the API</b>, its use is
-	 * <b>not exported to UML2</b>.
 	 *
 	 * @param object
 	 *            the object to be included in the result collection
@@ -114,13 +96,10 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 
 	/**
 	 * Creates a new collection which contains all the elements of this
-	 * collection and also the elements of the given collection.
-	 * <p>
-	 * This method is currently <b>only available in the API</b>, its use is
-	 * <b>not exported to UML2</b>.
+	 * collection and also the elements of the specified collection.
 	 *
 	 * @param objects
-	 *            the other collection which's elements are to included in the
+	 *            the other collection which's elements are to be included in the
 	 *            result
 	 * @return a new collection containing the desired elements
 	 * @throws NullPointerException
@@ -130,11 +109,8 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 
 	/**
 	 * Creates a new collection which contains all the elements of this
-	 * collection without specified object (if it was included in the
+	 * collection without the specified object (if it was included in the
 	 * collection).
-	 * <p>
-	 * This method is currently <b>only available in the API</b>, its use is
-	 * <b>not exported to UML2</b>.
 	 *
 	 * @param object
 	 *            the object <i>not</i> to be included in the result collection
@@ -153,7 +129,7 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 	 * A default implementation for an empty collection.
 	 * 
 	 * <p>
-	 * <b>Represents:</b> an empty collection
+	 * <b>Represents:</b> empty collection
 	 * <p>
 	 * <b>Java restrictions:</b>
 	 * <ul>

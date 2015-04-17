@@ -56,8 +56,8 @@ public abstract class AssociationEnd<T extends ModelClass> implements
 	/**
 	 * <code>AssociationEnd</code> is generally immutable but it has the ability
 	 * to be created in an unfinalized state which means it might be changed
-	 * once with the <code>init</code> method. This feature is added for the
-	 * purposes of the API implementation.
+	 * once with the {@link AssociationEnd#init(Collection) init} method. This
+	 * feature is added for the purposes of the API implementation.
 	 */
 	protected boolean isFinal = true;
 
@@ -84,7 +84,7 @@ public abstract class AssociationEnd<T extends ModelClass> implements
 	 * <li>this instance is unfinalized, so the value of its
 	 * <code>isFinal</code> field is <code>false</code>,</li>
 	 * <li>the given collection is of a certain type, see the concrete
-	 * definitions of this method for details</li>
+	 * definitions of this method for details.</li>
 	 * </ul>
 	 * After this method returns (either way), this association end is surely
 	 * finalized, so its <code>isFinal</code> field is set to be

@@ -37,7 +37,7 @@ public class ModelType<T> implements ModelElement {
 	private final T value;
 
 	/**
-	 * Create a new <code>ModelType</code> instance with the specified value.
+	 * Creates a new <code>ModelType</code> instance with the specified value.
 	 * 
 	 * @param val
 	 *            the value the new instance will represent
