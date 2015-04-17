@@ -2,11 +2,40 @@ package hu.elte.txtuml.api;
 
 import java.io.PrintStream;
 
+/**
+ * The class that manages the model execution.
+ * 
+ * <p>
+ * <b>Represents:</b> no model element
+ * <p>
+ * <b>Usage:</b>
+ * <p>
+ * 
+ * See {@link ModelExecutor.Settings} to change settings of the execution.
+ * 
+ * <p>
+ * <b>Java restrictions:</b>
+ * <ul>
+ * <li><i>Instantiate:</i> disallowed</li>
+ * <li><i>Define subtype:</i> disallowed</li>
+ * </ul>
+ * 
+ * <p>
+ * <b>Implementation note:</b>
+ * <p>
+ * Accessed from multiple threads, so must be thread-safe.
+ * <p>
+ * See the documentation of the {@link hu.elte.txtuml.api} package to get an
+ * overview on modeling in txtUML.
+ *
+ * @author Gabor Ferenc Kovacs
+ *
+ */
 public final class ModelExecutor implements ModelElement {
-	/*
-	 * Accessed from multiple threads, so must be thread-safe.
-	 */
 
+	/**
+	 * The thread on which the model execution will run.
+	 */
 	private static final ModelExecutorThread thread = new ModelExecutorThread();
 
 	/**
@@ -18,25 +47,60 @@ public final class ModelExecutor implements ModelElement {
 
 	// SETTINGS
 
+	/**
+	 * This class provides all the global settings of txtUML model execution
+	 * through its static methods.
+	 * 
+	 * <p>
+	 * <b>Represents:</b> no model element
+	 * <p>
+	 * <b>Usage:</b>
+	 * <p>
+	 * 
+	 * Calling its static methods only affect the model execution, they are not
+	 * exported to UML2.
+	 * <p>
+	 * Its static methods might be called from anywhere in the model as they are
+	 * not harmful to the model execution in any way. However, it is strongly
+	 * advised to perform any changes in the settings before the model execution
+	 * is started to prevent confusing and unexpected results.
+	 * 
+	 * <p>
+	 * <b>Java restrictions:</b>
+	 * <ul>
+	 * <li><i>Instantiate:</i> disallowed</li>
+	 * <li><i>Define subtype:</i> disallowed</li>
+	 * </ul>
+	 * 
+	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
+	 * overview on modeling in txtUML.
+	 *
+	 * @author Gabor Ferenc Kovacs
+	 *
+	 */
 	public static final class Settings implements ModelElement {
 
 		/**
-		 * The stream on which the user's non-error log is printed.
+		 * The stream on which the user's non-error log is printed. Is
+		 * {@link System#out} by default.
 		 */
 		private static volatile PrintStream userOutStream = System.out;
 
 		/**
-		 * The stream on which the user's error log is printed.
+		 * The stream on which the user's error log is printed. Is
+		 * {@link System#err} by default.
 		 */
 		private static volatile PrintStream userErrorStream = System.err;
 
 		/**
-		 * The stream on which the executor's non-error log is printed.
+		 * The stream on which the executor's non-error log is printed. Is
+		 * {@link System#out} by default.
 		 */
 		private static volatile PrintStream executorOutStream = System.out;
 
 		/**
-		 * The stream on which the executor's error log is printed.
+		 * The stream on which the executor's error log is printed. Is
+		 * {@link System#err} by default.
 		 */
 		private static volatile PrintStream executorErrorStream = System.err;
 
@@ -56,8 +120,18 @@ public final class ModelExecutor implements ModelElement {
 		 * A lock on {@link Settings#executionTimeMultiplier}.
 		 */
 		private static final Object LOCK_ON_EXECUTION_TIME_MULTIPLIER = new Object();
-		private static long executionTimeMultiplier = 1;
 
+		/**
+		 * The current execution time multiplier which affects how long
+		 * time-related events should take.
+		 */
+		private static float executionTimeMultiplier = 1f;
+
+		/**
+		 * Indicates whether the execution time multiplier can still be changed
+		 * or it has already been locked by calling
+		 * {@link #lockExecutionTimeMultiplier()}.
+		 */
 		private static volatile boolean canChangeExecutionTimeMultiplier = true;
 
 		/**
@@ -147,16 +221,35 @@ public final class ModelExecutor implements ModelElement {
 			Settings.executorLog = newValue;
 		}
 
+		/**
+		 * Sets whether non-necessary dynamic checks should be performed during
+		 * model execution. These checks include checking lower bounds of
+		 * multiplicities, checking whether the guards of two transitions from
+		 * the same vertex are overlapping, etc.
+		 * <p>
+		 * These checks are performed by default.
+		 * 
+		 * @param newValue
+		 *            whether non-necessary dynamic checks should be performed
+		 */
 		public static void setDynamicChecks(boolean newValue) {
 			Settings.dynamicChecks = newValue;
 		}
 
-		/*
-		 * The execution
+		/**
+		 * The model execution time helps testing txtUML models in the following
+		 * way: when any time-related event inside the model is set to take
+		 * <i>ms</i> milliseconds, that event will take <i>ms</i> <code>*</code>
+		 * <i>mul</i> millseconds during model execution, where <i>mul</i> is
+		 * the current execution time multiplier. This way, txtUML models might
+		 * be tested at the desired speed.
+		 * <p>
+		 * Execution time multiplier is 1 by default.
 		 * 
-		 * @return the new execution time multiplier
+		 * @param newMultiplier
+		 *            the new execution time multiplier
 		 */
-		public static void setExecutionTimeMultiplier(long newMultiplier) {
+		public static void setExecutionTimeMultiplier(float newMultiplier) {
 			synchronized (Settings.LOCK_ON_EXECUTION_TIME_MULTIPLIER) {
 				if (Settings.canChangeExecutionTimeMultiplier) {
 					Settings.executionTimeMultiplier = newMultiplier;
@@ -166,14 +259,41 @@ public final class ModelExecutor implements ModelElement {
 			}
 		}
 
-		/*
+		/**
+		 * The model execution time helps testing txtUML models in the following
+		 * way: when any time-related event inside the model is set to take
+		 * <i>ms</i> milliseconds, that event will take <i>ms</i> <code>*</code>
+		 * <i>mul</i> millseconds during model execution, where <i>mul</i> is
+		 * the current execution time multiplier. This way, txtUML models might
+		 * be tested at the desired speed.
+		 * 
 		 * @return the current execution time multiplier
+		 * @see #setExecutionTimeMultiplier(float)
 		 */
-		public static long getExecutionTimeMultiplier() {
-			// Reading a long value is not atomic, so synchronization is needed.
-			synchronized (Settings.LOCK_ON_EXECUTION_TIME_MULTIPLIER) {
-				return Settings.executionTimeMultiplier;
-			}
+		public static float getExecutionTimeMultiplier() {
+			return Settings.executionTimeMultiplier;
+		}
+
+		/**
+		 * Provides a conversion from <i>'real time'</i> to model execution time
+		 * by multiplying its parameter with the execution time multiplier.
+		 * <p>
+		 * The model execution time helps testing txtUML models in the following
+		 * way: when any time-related event inside the model is set to take
+		 * <i>ms</i> milliseconds, that event will take <i>ms</i> <code>*</code>
+		 * <i>mul</i> millseconds during model execution, where <i>mul</i> is
+		 * the current execution time multiplier. This way, txtUML models might
+		 * be tested at the desired speed.
+		 * <p>
+		 * Execution time multiplier is 1 by default.
+		 * 
+		 * @param time
+		 *            the amount of time to be given in model execution time
+		 * @return the specified amount of time in model execution time
+		 * @see #setExecutionTimeMultiplier(float)
+		 */
+		public static long inExecutionTime(long time) {
+			return (long) (time * executionTimeMultiplier);
 		}
 
 		/**
@@ -206,6 +326,7 @@ public final class ModelExecutor implements ModelElement {
 		static boolean dynamicChecks() {
 			return Settings.dynamicChecks;
 		}
+
 	}
 
 	// EXECUTION

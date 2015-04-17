@@ -128,8 +128,8 @@ public class Timer extends ExternalClass {
 		 *         indicate that the delay has already elapsed
 		 */
 		private long queryLong() {
-			return handle.getDelay(TimeUnit.MILLISECONDS)
-					* ModelExecutor.Settings.getExecutionTimeMultiplier();
+			return ModelExecutor.Settings.inExecutionTime(handle
+					.getDelay(TimeUnit.MILLISECONDS));
 		}
 
 		/**
@@ -197,8 +197,7 @@ public class Timer extends ExternalClass {
 		 *            the delay in millisecs
 		 */
 		private void schedule(ModelInt millisecs) {
-			handle = scheduler.schedule(action, ((long) convert(millisecs))
-					/ ModelExecutor.Settings.getExecutionTimeMultiplier(),
+			handle = scheduler.schedule(action, ModelExecutor.Settings.inExecutionTime(convert(millisecs)),
 					TimeUnit.MILLISECONDS);
 		}
 	}

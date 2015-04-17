@@ -5,8 +5,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * The type of threads on which the model execution will run. By the current
  * implementation, this class might be considered singleton as it is
- * instantiated only once by the {@link ModelExecutor} class' singleton
- * instance.
+ * instantiated only once by the {@link ModelExecutor} class.
  * <p>
  * Unusable by the user.
  *

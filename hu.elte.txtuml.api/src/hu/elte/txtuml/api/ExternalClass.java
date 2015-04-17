@@ -3,7 +3,7 @@ package hu.elte.txtuml.api;
 /**
  * Base class for external classes in the model which are classes which's
  * implementation is not part of the model. They might be used to bring external
- * features in the model.
+ * features into the model.
  * 
  * <p>
  * <b>Represents:</b> external class
