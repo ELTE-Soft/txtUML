@@ -5,7 +5,7 @@ package hu.elte.txtuml.api;
  * primitive types is completely disallowed in the model, except for constructor
  * parameters of {@link ModelType} objects.
  * <p>
- * <b>Represents:</b> an integer primitive value
+ * <b>Represents:</b> integer primitive value
  * <p>
  * <b>Usage:</b>
  * <p>
@@ -66,7 +66,7 @@ public class ModelInt extends ModelType<Integer> {
 	 * 
 	 * @param val
 	 *            the long value this new <code>ModelInt</code> instance will
-	 *            represent after conversion to integer
+	 *            represent after casting to integer
 	 */
 	public ModelInt(long val) {
 		super((int) val);

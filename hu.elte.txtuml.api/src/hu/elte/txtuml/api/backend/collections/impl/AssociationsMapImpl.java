@@ -6,11 +6,11 @@ import hu.elte.txtuml.api.backend.collections.AssociationsMap;
 import java.util.HashMap;
 
 /**
- * Default implementation of {@link AssociationsMap}.
+ * Default implementation for {@link AssociationsMap}.
  * <p>
  * Despite being a subclass of the {@link java.io.Serializable} interface
- * through {@link HashMap}, this class does not provide a serialVersionUID
- * because serialization is never used on it.
+ * through {@link HashMap}, this class does not provide a
+ * <code>serialVersionUID</code> because serialization is never used on it.
  */
 @SuppressWarnings("serial")
 public class AssociationsMapImpl extends

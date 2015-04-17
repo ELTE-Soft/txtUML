@@ -7,7 +7,7 @@ import hu.elte.txtuml.api.ModelElement;
  * language.
  * 
  * <p>
- * <b>Represents:</b> a code block
+ * <b>Represents:</b> code block
  * <p>
  * 
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an

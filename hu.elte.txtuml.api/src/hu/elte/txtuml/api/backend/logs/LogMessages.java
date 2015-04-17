@@ -11,6 +11,7 @@ import hu.elte.txtuml.api.StateMachine.Vertex;
  * @author Gabor Ferenc Kovacs
  *
  */
+@SuppressWarnings("javadoc")
 public interface LogMessages {
 
 	static String getProcessingSignalMessage(StateMachine sm, Signal signal) {

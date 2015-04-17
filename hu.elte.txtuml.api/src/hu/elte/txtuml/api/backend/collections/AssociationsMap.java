@@ -25,9 +25,6 @@ public interface AssociationsMap extends
 		return new AssociationsMapImpl();
 	}
 
-	/*
-	 * The toString() method of AssociationsMap should be overridden.
-	 */
 	@Override
 	public String toString();
 

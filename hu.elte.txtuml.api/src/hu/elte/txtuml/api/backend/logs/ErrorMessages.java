@@ -10,6 +10,7 @@ import hu.elte.txtuml.api.StateMachine.Vertex;
  * @author Gabor Ferenc Kovacs
  *
  */
+@SuppressWarnings("javadoc")
 public interface ErrorMessages {
 
 	static String getUpperBoundOfMultiplicityOffendedMessage() {
@@ -21,6 +22,11 @@ public interface ErrorMessages {
 				+ ".";
 	}
 
+	static String getUnlinkingDeletedObjectMessage(ModelClass obj) {
+		return "Error: trying to unlink deleted model object " + obj.toString()
+				+ ".";		
+	}
+	
 	static String getStartingDeletedObjectMessage(ModelClass obj) {
 		return "Error: trying to start deleted model object " + obj.toString()
 				+ ".";

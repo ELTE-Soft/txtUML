@@ -14,7 +14,7 @@ package hu.elte.txtuml.api;
  * directly. As a signal event, it is considered to contain itself as a signal.
  * <p>
  * Signals might be inherited from other signals as well. This is represented in
- * the model by defining a subclass of another signal class. It means, that
+ * the model by defining a subclass of another signal class. It means that
  * because the limitations of the Java language, every signal may have at most
  * one parent signal.
  * 
@@ -31,10 +31,11 @@ package hu.elte.txtuml.api;
  * <p>
  * <b>Subtype restrictions:</b>
  * <ul>
+ * <li><i>Be abstract:</i> disallowed</li>
  * <li><i>Constructors:</i> allowed, containing only simple assignments to set
  * the values of its fields</li>
  * <li><i>Initialization blocks:</i> disallowed</li>
- * <li><i>Fields:</i> allowed to represent parameters of the signal</li>
+ * <li><i>Fields:</i> allowed, to represent parameters of the signal</li>
  * <li><i>Methods:</i> disallowed</li>
  * <li><i>Nested interfaces:</i> disallowed</li>
  * <li><i>Nested classes:</i> disallowed</li>
@@ -65,7 +66,6 @@ package hu.elte.txtuml.api;
  * @author Gabor Ferenc Kovacs
  *
  */
-@ModelAnnotatedElement
 public class Signal extends Event {
 
 	/**

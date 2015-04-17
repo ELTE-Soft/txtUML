@@ -62,8 +62,8 @@ public class VariableBool extends VariableType<Boolean, ModelBool> {
 	 * the specified boolean value.
 	 * 
 	 * @param rawValue
-	 *            the raw value this variable's new <code>ModelBool</code> value
-	 *            will represent
+	 *            the raw boolean value this variable's new
+	 *            <code>ModelBool</code> value will represent
 	 */
 	@Override
 	public void set(Boolean rawValue) {

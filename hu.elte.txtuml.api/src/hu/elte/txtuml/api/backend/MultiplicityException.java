@@ -5,8 +5,8 @@ package hu.elte.txtuml.api.backend;
  * multiplicity bounds have been offended.
  * <p>
  * Despite being a subclass of the {@link java.io.Serializable} interface
- * through {@link Exception}, this class does not provide a serialVersionUID
- * because serialization is never used on it.
+ * through {@link Exception}, this class does not provide a
+ * <code>serialVersionUID</code> because serialization is never used on it.
  * 
  * @author Gabor Ferenc Kovacs
  *

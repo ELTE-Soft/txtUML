@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  * A runtime annotation to define the target vertex of a transition.
  * 
  * <p>
- * <b>Represents:</b> the target property of a transition
+ * <b>Represents:</b> target property of a transition
  * <p>
  * <b>Usage:</b>
  * <p>
@@ -57,7 +57,10 @@ import java.lang.annotation.Target;
  * overview on modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
- *
+ * @see StateMachine.Transition
+ * @see From
+ * @see Trigger
+
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

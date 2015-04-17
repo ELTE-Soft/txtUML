@@ -8,7 +8,7 @@ import hu.elte.txtuml.api.ModelElement;
  * language.
  * 
  * <p>
- * <b>Represents:</b> a condition
+ * <b>Represents:</b> condition
  * <p>
  * 
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an

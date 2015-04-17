@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api;
 
+import java.io.PrintStream;
+
 import hu.elte.txtuml.api.backend.MultiplicityException;
 import hu.elte.txtuml.api.backend.logs.ErrorMessages;
 import hu.elte.txtuml.api.backend.logs.WarningMessages;
@@ -52,8 +54,7 @@ public abstract class Action implements ModelElement {
 	 * Creates a new instance of the specified model class.
 	 * 
 	 * @param classType
-	 *            the model class for which a new instance is wished to be
-	 *            created
+	 *            the model class for which a new instance is to be created
 	 * @return a new instance of <code>classType</code> or <code>null</code> if
 	 *         the creation failed
 	 * @throws NullPointerException
@@ -64,10 +65,9 @@ public abstract class Action implements ModelElement {
 	}
 
 	/**
-	 * Deletes the specified model object.
-	 * <p>
-	 * Might only be called if all associations of the specified model object
-	 * are already unlinked. Shows an error otherwise.
+	 * Deletes the specified model object. Might only be called if all
+	 * associations of the specified model object are already unlinked. Shows an
+	 * error otherwise.
 	 * <p>
 	 * See {@link ModelClass.Status#DELETED DELETED} status of model objects for
 	 * more information about model object deletion.
@@ -82,13 +82,13 @@ public abstract class Action implements ModelElement {
 	}
 
 	/**
-	 * Links two model objects through the specified association. Has no effect
-	 * if the specified association is already linked between the two objects.
+	 * Links two model objects through the specified association. Shows an error
+	 * message if either parameter is in {@link ModelClass.Status#DELETED
+	 * DELETED} status. Has no effect if the specified association is already
+	 * linked between the two objects.
 	 * <p>
 	 * The two specified ends must be the two different ends of the same
-	 * transition.
-	 * <p>
-	 * Non of the parameters should be <code>null</code>.
+	 * transition. Non of the parameters should be <code>null</code>.
 	 * 
 	 * @param leftEnd
 	 *            the left end of the association
@@ -103,12 +103,11 @@ public abstract class Action implements ModelElement {
 	 *             <code>null</code>
 	 * @see Association
 	 * @see AssociationEnd
+	 * @see ModelClass.Status#DELETED
 	 */
-	public static <MODELCLASS1 extends ModelClass, MODELCLASS2 extends ModelClass> void link(
-			Class<? extends AssociationEnd<MODELCLASS1>> leftEnd,
-			MODELCLASS1 leftObj,
-			Class<? extends AssociationEnd<MODELCLASS2>> rightEnd,
-			MODELCLASS2 rightObj) {
+	public static <L extends ModelClass, R extends ModelClass> void link(
+			Class<? extends AssociationEnd<L>> leftEnd, L leftObj,
+			Class<? extends AssociationEnd<R>> rightEnd, R rightObj) {
 
 		if (isLinkingDeleted(leftObj) || isLinkingDeleted(rightObj)) {
 			return;
@@ -124,14 +123,17 @@ public abstract class Action implements ModelElement {
 	}
 
 	/**
-	 * Checks whether the specified model object is deleted. Shows an error
-	 * about a failed linking operation because of the deleted model object
-	 * given as parameter to the link.
+	 * Checks whether the specified model object is deleted. If it is, this
+	 * method shows an error about a failed linking operation because of the
+	 * deleted model object given as parameter to the {@link Action#link link}
+	 * method.
 	 * 
 	 * @param obj
 	 *            the model object which's deleted status is to be checked
 	 * @return <code>true</code> if the object is deleted, <code>false</code>
 	 *         otherwise
+	 * @throws NullPointerException
+	 *             if <code>obj</code> is <code>null</code>
 	 */
 	private static boolean isLinkingDeleted(ModelClass obj) {
 		if (obj.isDeleted()) {
@@ -143,14 +145,13 @@ public abstract class Action implements ModelElement {
 	}
 
 	/**
-	 * Unlinks two model objects through the specified association. If the
-	 * specified association is already unlinked (or was never linked) between
-	 * the two objects, this method shows a warning.
+	 * Unlinks two model objects through the specified association. Shows an
+	 * error message if either parameter is in {@link ModelClass.Status#DELETED
+	 * DELETED} status. If the specified association is already unlinked (or was
+	 * never linked) between the two objects, this method shows a warning.
 	 * <p>
 	 * The two specified ends must be the two different ends of the same
-	 * transition.
-	 * <p>
-	 * Non of the parameters should be <code>null</code>.
+	 * transition. Non of the parameters should be <code>null</code>.
 	 * 
 	 * @param leftEnd
 	 *            the left end of the association
@@ -166,11 +167,13 @@ public abstract class Action implements ModelElement {
 	 * @see Association
 	 * @see AssociationEnd
 	 */
-	public static <MODELCLASS1 extends ModelClass, MODELCLASS2 extends ModelClass> void unlink(
-			Class<? extends AssociationEnd<MODELCLASS1>> leftEnd,
-			MODELCLASS1 leftObj,
-			Class<? extends AssociationEnd<MODELCLASS2>> rightEnd,
-			MODELCLASS2 rightObj) {
+	public static <L extends ModelClass, R extends ModelClass> void unlink(
+			Class<? extends AssociationEnd<L>> leftEnd, L leftObj,
+			Class<? extends AssociationEnd<R>> rightEnd, R rightObj) {
+
+		if (isUnlinkingDeleted(leftObj) || isUnlinkingDeleted(rightObj)) {
+			return;
+		}
 
 		if (ModelExecutor.Settings.dynamicChecks()) {
 			if (!leftObj.hasAssoc(rightEnd, rightObj)
@@ -189,15 +192,36 @@ public abstract class Action implements ModelElement {
 	}
 
 	/**
-	 * Starts the state machine of the specified <code>ModelClass</code> object.
-	 * <p>
-	 * Shows an error message if the parameter is in a deleted status.
+	 * Checks whether the specified model object is deleted. If it is, this
+	 * method shows an error about a failed unlinking operation because of the
+	 * deleted model object given as parameter to the {@link Action#unlink
+	 * unlink} method.
 	 * 
 	 * @param obj
-	 *            the model object the state machine of which has to be started
+	 *            the model object which's deleted status is to be checked
+	 * @return <code>true</code> if the object is deleted, <code>false</code>
+	 *         otherwise
 	 * @throws NullPointerException
 	 *             if <code>obj</code> is <code>null</code>
-	 * @see ModelClass.Status#DELETED
+	 */
+	private static boolean isUnlinkingDeleted(ModelClass obj) {
+		if (obj.isDeleted()) {
+			ModelExecutor.executorErrorLog(ErrorMessages
+					.getUnlinkingDeletedObjectMessage(obj));
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Starts the state machine of the specified model object. Shows an error
+	 * message if the parameter is in {@link ModelClass.Status#DELETED DELETED}
+	 * status.
+	 * 
+	 * @param obj
+	 *            the model object which's state machine has to be started
+	 * @throws NullPointerException
+	 *             if <code>obj</code> is <code>null</code>
 	 */
 	public static void start(ModelClass obj) {
 		if (obj.isDeleted()) {
@@ -399,10 +423,10 @@ public abstract class Action implements ModelElement {
 	 * Logs a message.
 	 * 
 	 * @param message
-	 *            the message to be logged TODO see the settings where the
-	 *            target stream is to be set
+	 *            the message to be logged
+	 * @see ModelExecutor.Settings#setUserOutStream(PrintStream)
 	 */
-	public static void log(String message) { // user log
+	public static void log(String message) {
 		ModelExecutor.log(message);
 	}
 
@@ -410,10 +434,10 @@ public abstract class Action implements ModelElement {
 	 * Logs an error message.
 	 * 
 	 * @param message
-	 *            the message to logged TODO see the settings where the target
-	 *            stream is to be set
+	 *            the error message to logged
+	 * @see ModelExecutor.Settings#setUserErrorStream(PrintStream)
 	 */
-	public static void logError(String message) { // user log
+	public static void logError(String message) {
 		ModelExecutor.logError(message);
 	}
 

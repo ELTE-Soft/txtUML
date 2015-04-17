@@ -58,7 +58,7 @@ class CollectionBuilder<T extends ModelClass> {
 	 * Returns the Java collection in which this builder collected the desired
 	 * objects. When this method is called, this builder is used up, so its Java
 	 * collection is set to <code>null</code>. This way, it is ensured that the
-	 * created Java collection is no more appended which makes it possible for
+	 * created Java collection is no more appended, which makes it possible for
 	 * {@link Collection} implementations to use it directly instead of copying
 	 * it (for optimization).
 	 * 

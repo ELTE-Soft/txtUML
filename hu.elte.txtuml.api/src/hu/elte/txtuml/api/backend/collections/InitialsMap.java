@@ -25,9 +25,6 @@ public interface InitialsMap extends Map<Class<?>, Class<? extends Initial>> {
 		return new InitialsMapImpl();
 	}
 
-	/*
-	 * The toString() method of InitialsMap should be overridden.
-	 */
 	@Override
 	String toString();
 

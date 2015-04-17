@@ -5,7 +5,7 @@ package hu.elte.txtuml.api;
  * primitive types is completely disallowed in the model, except for constructor
  * parameters of {@link ModelType} objects.
  * <p>
- * <b>Represents:</b> a string primitive value
+ * <b>Represents:</b> string primitive value
  * <p>
  * <b>Usage:</b>
  * <p>

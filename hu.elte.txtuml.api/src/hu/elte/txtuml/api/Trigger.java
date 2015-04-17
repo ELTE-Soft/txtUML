@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * A runtime annotation to define the trigger of a transition.
  * 
  * <p>
- * <b>Represents:</b> the trigger of a transition
+ * <b>Represents:</b> trigger of a transition
  * <p>
  * <b>Usage:</b>
  * <p>
@@ -48,7 +48,10 @@ import java.lang.annotation.Target;
  * overview on modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
- *
+ * @see StateMachine.Transition
+ * @see To
+ * @see From
+ * 
  */
 
 @Retention(RetentionPolicy.RUNTIME)

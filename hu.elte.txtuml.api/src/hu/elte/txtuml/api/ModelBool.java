@@ -5,7 +5,7 @@ package hu.elte.txtuml.api;
  * primitive types is completely disallowed in the model, except for constructor
  * parameters of {@link ModelType} objects.
  * <p>
- * <b>Represents:</b> a boolean primitive value
+ * <b>Represents:</b> boolean primitive value
  * <p>
  * <b>Usage:</b>
  * <p>
@@ -67,7 +67,7 @@ public class ModelBool extends ModelType<Boolean> {
 	 * <p>
 	 * <b>Java restrictions:</b>
 	 * <ul>
-	 * <li><i>Instantiate:</i> disallowed</li>
+	 * <li><i>Instantiate:</i> allowed</li>
 	 * <li><i>Define subtype:</i> disallowed</li>
 	 * </ul>
 	 * 

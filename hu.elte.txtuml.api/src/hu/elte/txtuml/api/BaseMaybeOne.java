@@ -10,7 +10,6 @@ import java.util.Iterator;
  * <p>
  * Directly unusable by the user.
  * 
- * 
  * @author Gabor Ferenc Kovacs
  *
  * @param <T>
@@ -26,7 +25,8 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 
 	/**
 	 * Creates an empty, unfinalized <code>BaseMaybeOne</code> instance which
-	 * might be changed once by the <code>init</code> method.
+	 * might be changed once by the {@link BaseMaybeOne#init(Collection) init}
+	 * method.
 	 */
 	public BaseMaybeOne() {
 		isFinal = false;
@@ -38,7 +38,7 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 	 * <ul>
 	 * <li>this instance is unfinalized, so the value of its
 	 * <code>isFinal</code> field is <code>false</code>,</li>
-	 * <li>the given collection is a subclass of <code>BaseMaybeOne</code></li>
+	 * <li>the given collection is a subclass of <code>BaseMaybeOne.</code></li>
 	 * </ul>
 	 * After this method returns (either way), this association end is surely
 	 * finalized, so its <code>isFinal</code> field is set to be
@@ -46,7 +46,9 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 	 * 
 	 * @param other
 	 *            the other collection to copy
+	 * 
 	 * @return this instance
+	 * 
 	 * @throws NullPointerException
 	 *             if <code>other</code> is <code>null</code>
 	 */
@@ -148,7 +150,7 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 		if (object == null) {
 			return (S) this;
 		} else if (this.obj != null && !this.obj.equals(object)) {
-			throw new MultiplicityException(); // TODO set exception message
+			throw new MultiplicityException();
 		}
 		return (S) new BaseMaybeOne<T>(object);
 	}

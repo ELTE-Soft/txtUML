@@ -18,13 +18,13 @@ import java.util.Iterator;
 class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 
 	/**
-	 * A java.lang.Collection to keep the values contained in this object.
+	 * A java.lang.Collection to collect the values contained in this object.
 	 */
 	private JavaCollectionOfMany<T> coll = JavaCollectionOfMany.create();
 
 	/**
 	 * Creates an empty, unfinalized <code>BaseMany</code> instance which might
-	 * be changed once by the <code>init</code> method.
+	 * be changed once by the {@link BaseMany#init(Collection) init} method.
 	 */
 	public BaseMany() {
 		isFinal = false;
@@ -36,7 +36,7 @@ class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 	 * <ul>
 	 * <li>this instance is unfinalized, so the value of its
 	 * <code>isFinal</code> field is <code>false</code>,</li>
-	 * <li>the given collection is a subclass of <code>BaseMany</code></li>
+	 * <li>the given collection is a subclass of <code>BaseMany.</code></li>
 	 * </ul>
 	 * After this method returns (either way), this association end is surely
 	 * finalized, so its <code>isFinal</code> field is set to be
@@ -83,7 +83,7 @@ class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 	 *            a mutable collection builder which's elements are to be
 	 *            included in this collection (the builder will be used up as
 	 *            this constructor calls
-	 *            {@link CollectionBuilder#getJavaCollection()})
+	 *            {@link CollectionBuilder#getJavaCollection()} )
 	 */
 	BaseMany(CollectionBuilder<T> builder) {
 		this.coll = builder.getJavaCollection();

@@ -62,8 +62,8 @@ public class VariableString extends VariableType<String, ModelString> {
 	 * represents the specified string value.
 	 * 
 	 * @param rawValue
-	 *            the raw value this variable's new <code>ModelString</code>
-	 *            value will represent
+	 *            the raw string value this variable's new
+	 *            <code>ModelString</code> value will represent
 	 */
 	@Override
 	public void set(String rawValue) {

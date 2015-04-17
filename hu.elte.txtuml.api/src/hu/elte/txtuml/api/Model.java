@@ -4,7 +4,7 @@ package hu.elte.txtuml.api;
  * Base class of txtUML models.
  * 
  * <p>
- * <b>Represents:</b> a model
+ * <b>Represents:</b> model
  * <p>
  * <b>Usage:</b>
  * <p>
@@ -25,6 +25,7 @@ package hu.elte.txtuml.api;
  * <p>
  * <b>Subtype restrictions:</b>
  * <ul>
+ * <li><i>Be abstract:</i> disallowed</li>
  * <li><i>Generic parameters:</i> disallowed</li>
  * <li><i>Constructors:</i> disallowed</li>
  * <li><i>Initialization blocks:</i> disallowed</li>

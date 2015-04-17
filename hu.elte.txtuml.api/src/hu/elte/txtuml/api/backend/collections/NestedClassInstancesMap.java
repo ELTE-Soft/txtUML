@@ -23,9 +23,6 @@ public interface NestedClassInstancesMap extends Map<Class<?>, Object> {
 		return new NestedClassInstancesMapImpl();
 	}
 
-	/*
-	 * The toString() method of NestedClassInstancesMap should be overridden.
-	 */
 	@Override
 	public String toString();
 

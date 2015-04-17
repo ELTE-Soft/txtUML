@@ -7,7 +7,7 @@ import hu.elte.txtuml.api.ModelElement;
  * A functional interface to implement conditions in the action language.
  * 
  * <p>
- * <b>Represents:</b> a condition
+ * <b>Represents:</b> condition
  * <p>
  * 
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an

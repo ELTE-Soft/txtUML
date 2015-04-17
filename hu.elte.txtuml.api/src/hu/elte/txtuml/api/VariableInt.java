@@ -39,7 +39,7 @@ public class VariableInt extends VariableType<Integer, ModelInt> {
 	 * value.
 	 * 
 	 * @param value
-	 *            the value of the created <code>VariableBool</code> instance
+	 *            the value of the created <code>VariableInt</code> instance
 	 */
 	public VariableInt(ModelInt value) {
 		super(value);
