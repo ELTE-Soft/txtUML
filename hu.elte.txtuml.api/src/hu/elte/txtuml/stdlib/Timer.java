@@ -197,7 +197,7 @@ public class Timer extends ExternalClass {
 		 *            the delay in millisecs
 		 */
 		private void schedule(ModelInt millisecs) {
-			handle = scheduler.schedule(action, ModelExecutor.Settings.inExecutionTime(convert(millisecs)),
+			handle = scheduler.schedule(action, ModelExecutor.Settings.inExecutionTime(convertModelInt(millisecs)),
 					TimeUnit.MILLISECONDS);
 		}
 	}
