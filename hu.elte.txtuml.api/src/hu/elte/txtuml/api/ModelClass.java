@@ -38,8 +38,9 @@ import java.util.concurrent.atomic.AtomicLong;
  * <p>
  * <b>Subtype restrictions:</b>
  * <ul>
+ * <li><i>Be abstract:</i> disallowed</li>
  * <li><i>Generic parameters:</i> disallowed</li>
- * <li><i>Constructors:</i> allowed, with zero parameter, containing only simple
+ * <li><i>Constructors:</i> allowed, with zero parameters, containing only simple
  * assignments to set the default values of its fields</li>
  * <li><i>Initialization blocks:</i> allowed, containing only simple assignments
  * to set the default values of its fields</li>
@@ -111,6 +112,9 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 		 * it. However, sending signal to a <code>READY</code> object is legal
 		 * in the model, therefore no error or warning messages are shown if it
 		 * is done.
+		 * <p>
+		 * See the documentation of the {@link hu.elte.txtuml.api} package to
+		 * get an overview on modeling in txtUML.
 		 * 
 		 * @see Status#ACTIVE
 		 */
@@ -121,6 +125,9 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 		 * <p>
 		 * It may be reached by starting the state machine of this object
 		 * manually with the {@link Action#start(ModelClass)} method.
+		 * <p>
+		 * See the documentation of the {@link hu.elte.txtuml.api} package to
+		 * get an overview on modeling in txtUML.
 		 */
 		ACTIVE,
 		/**
@@ -136,6 +143,9 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 		 * <b>Note:</b> currently there is no way to stop the state machine of a
 		 * model object without deleting it. So the only way to reach this
 		 * status is to implement a model class without a state machine.
+		 * <p>
+		 * See the documentation of the {@link hu.elte.txtuml.api} package to
+		 * get an overview on modeling in txtUML.
 		 */
 		FINALIZED,
 		/**
@@ -146,6 +156,9 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 		 * <p>
 		 * An object may only be in this status when all of its associations are
 		 * unlinked and its state machine is stopped.
+		 * <p>
+		 * See the documentation of the {@link hu.elte.txtuml.api} package to
+		 * get an overview on modeling in txtUML.
 		 * 
 		 * @see Action#delete(ModelClass)
 		 */
@@ -214,9 +227,8 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 
 	/**
 	 * Gets the collection containing the objects in association with this
-	 * object and being on the specified opposite association end.
-	 * <p>
-	 * May only be called with a navigable association end as its parameter.
+	 * object and being on the specified opposite association end. May only be
+	 * called with a navigable association end as its parameter.
 	 * 
 	 * @param otherEnd
 	 *            the opposite association end
@@ -307,8 +319,9 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	 *            the opposite association end
 	 * @param object
 	 *            the object to check in the collection
-	 * @return <code>true</code> if object is included in the collection of
-	 *         <code>otherEnd</code>, <code>false</code> otherwise
+	 * @return <code>true</code> if <code>object</code> is included in the
+	 *         collection related to <code>otherEnd</code>, <code>false</code>
+	 *         otherwise
 	 */
 	<T extends ModelClass, AE extends AssociationEnd<T>> boolean hasAssoc(
 			Class<AE> otherEnd, T object) {
@@ -331,10 +344,10 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	/**
 	 * Starts the state machine of this object.
 	 * <p>
-	 * If this object is not in {@link Status#READY READY} status, this method
-	 * does nothing. Otherwise, it sends an asynchronous request to itself to
-	 * step forward from its initial pseudostate. Also changes its status to
-	 * {@link Status#ACTIVE ACTIVE}</code>.
+	 * If this object is <i>not</i> in {@link Status#READY READY} status, this
+	 * method does nothing. Otherwise, it sends an asynchronous request to
+	 * itself to step forward from its initial pseudostate and also changes its
+	 * status to {@link Status#ACTIVE ACTIVE}</code>.
 	 */
 	void start() {
 		if (status != Status.READY) {
@@ -345,7 +358,7 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	}
 
 	/**
-	 * Sends a signal to this object.
+	 * Sends a signal to this object asynchronously.
 	 * 
 	 * @param signal
 	 *            the signal to send to this object
@@ -355,11 +368,11 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	}
 
 	/**
-	 * Checks whether this model object is in a {@link Status#DELETED DELETED}
+	 * Checks whether this model object is in {@link Status#DELETED DELETED}
 	 * status.
 	 * 
-	 * @return <code>true</code> if this model object is in a
-	 *         <code>DELETED</code> status, <code>false</code> otherwise
+	 * @return <code>true</code> if this model object is in <code>DELETED</code>
+	 *         status, <code>false</code> otherwise
 	 */
 	boolean isDeleted() {
 		return status == Status.DELETED;

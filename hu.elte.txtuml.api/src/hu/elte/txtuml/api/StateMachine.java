@@ -39,8 +39,10 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 * @see State
+	 * @see CompositeState
 	 * @see Pseudostate
-	 *
+	 * @see Initial
+	 * @see Choice
 	 */
 	public class Vertex implements ModelElement {
 
@@ -76,8 +78,8 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		}
 
 		/**
-		 * Returns the identifying string value of the vertex represented by
-		 * this object's dynamic type.
+		 * Returns a string identifier of the vertex represented by this
+		 * object's dynamic type.
 		 * 
 		 * @return the identifying string
 		 */
@@ -93,7 +95,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	}
 
 	/**
-	 * Base class for pseudostate in the model
+	 * Base class for pseudostates in the model.
 	 * 
 	 * <p>
 	 * <b>Represents:</b> pseudostate
@@ -109,16 +111,17 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * <li><i>Instantiate:</i> disallowed</li>
 	 * <li><i>Define subtype:</i> disallowed, use its subclasses</li>
 	 * </ul>
-	 *
+	 * 
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
 	 * overview on modeling in txtUML.
-	 *
+	 * 
 	 * @author Gabor Ferenc Kovacs
+	 * @see Initial
+	 * @see Choice
 	 * @see State
 	 * @see Vertex
-	 *
 	 */
 	public class Pseudostate extends Vertex {
 
@@ -135,7 +138,6 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 
 		/**
 		 * A final empty method overriding the entry action of {@link Vertex}.
-		 * <p>
 		 * As pseudostates have no entry or exit actions, their
 		 * <code>entry</code> and <code>exit</code> methods must be empty.
 		 */
@@ -144,10 +146,9 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		}
 
 		/**
-		 * A final empty method overriding the exit action of {@link Vertex}.
-		 * <p>
-		 * As pseudostates have no entry or exit actions, their
-		 * <code>entry</code> and <code>exit</code> methods must be empty.
+		 * A final empty method overriding the exit action of {@link Vertex}. As
+		 * pseudostates have no entry or exit actions, their <code>entry</code>
+		 * and <code>exit</code> methods must be empty.
 		 */
 		@Override
 		public final void exit() {
@@ -263,9 +264,9 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		private final Vertex target;
 
 		/**
-		 * Before this transition is executed or its guard is called,
-		 * <code>signal</code> must be set to be the actual signal receiving
-		 * which triggered the transition.
+		 * Before this transition is executed or its guard is called, this field
+		 * must be set to be the actual signal receiving which triggered the
+		 * transition.
 		 * <p>
 		 * If the transition has no triggers defined, the value of this field is
 		 * unused.
@@ -306,7 +307,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		 * actions.
 		 * <p>
 		 * If the actual transition has a trigger defined, the
-		 * {@link #getSignal() getSignal} method can be used inside the
+		 * {@link #getSignal(Class) getSignal} method can be used inside the
 		 * overriding methods to get the triggering signal.
 		 * <p>
 		 * Overriding methods may only contain action code. See the
@@ -320,7 +321,9 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		 * Overridable method to implement the guard of this transition. Only
 		 * called after checking that the actual transition is from the current
 		 * vertex or one of its enclosing composite states, and it is triggered
-		 * by the received signal.
+		 * by the received signal. If the current vertex is a choice
+		 * pseudostate, only transitions from the choice and not from its
+		 * enclosing composite states might be used.
 		 * <p>
 		 * Might not be overridden in transition classes that are from initial
 		 * pseudostates.
@@ -339,8 +342,9 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		 * are allowed to exist in one special case:
 		 * <ul>
 		 * <li>the current vertex is a choice pseudostate</li>
-		 * <li>the source of at least one of the transitions is the choice
-		 * pseodostate</li>
+		 * <li>the source of both transitions is the choice pseodostate (other
+		 * transitions are not taken into consideration in the case of a choice
+		 * pseudostate)</li>
 		 * <li>that transition's <code>guard</code> method returns an
 		 * {@link ModelBool.Else Else} instance which always represents
 		 * <code>true</code></li>
@@ -355,7 +359,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		 * it should always do so.
 		 * <p>
 		 * If the actual transition has a trigger defined, the
-		 * {@link #getSignal() getSignal} method can be used inside the
+		 * {@link #getSignal(Class) getSignal} method can be used inside the
 		 * overriding methods to get the triggering signal.
 		 * <p>
 		 * Overriding methods may only contain a condition evaluation. See the
@@ -370,27 +374,25 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		}
 
 		/**
-		 * TODO check javadoc
-		 * <p>
 		 * Returns the signal receiving which triggered the execution (or the
 		 * call of the guard) of this transition. The return value is casted to
-		 * any desired type which is a subclass of <code>Signal</code>.
-		 * <p>
-		 * It is guaranteed for this method to return a non-null value
-		 * successfully if the following conditions are met:
-		 * <ul>
-		 * <li>the actual transition has a trigger defined with a triggering
-		 * signal <code>s</code></li>
-		 * <li>the transition is not from an initial or a choice pseudostate</li>
-		 * <li>a cast to <code>s</code> is asked</li>
-		 * </ul>
-		 * If the transition has no triggers defined, this method should not be
+		 * any desired type which is a subclass of <code>Signal</code>. <p> It
+		 * is guaranteed for this method to return a non-null value successfully
+		 * if the following conditions are met: <ul> <li>the actual transition
+		 * has a trigger defined with a triggering signal <code>s</code></li>
+		 * 
+		 * <p> FIXME case of choice <p>
+		 * 
+		 * <li>the transition is not from an initial or a choice
+		 * pseudostate</li> <li>a cast to <code>s</code> is asked</li> </ul> If
+		 * the transition has no triggers defined, this method should not be
 		 * called.
 		 * 
+		 * @param signalClass the signal class to which the casting should be
+		 * performed
 		 * @return the signal receiving which triggered the execution (or the
-		 *         call of the guard) of this transition
-		 * @throws ClassCastException
-		 *             if the cast might not be performed
+		 * call of the guard) of this transition
+		 * @throws ClassCastException if the cast might not be performed
 		 */
 		@SuppressWarnings("unchecked")
 		protected final <T extends Signal> T getSignal(Class<T> signalClass) {
@@ -398,17 +400,15 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		}
 
 		/**
-		 * Sets the <code>signal</code> field of this transition.
-		 * <p>
-		 * Before this transition is executed or its guard is called,
+		 * Sets the <code>signal</code> field of this transition. <p> Before
+		 * this transition is executed or its guard is called,
 		 * <code>signal</code> must be set to be the actual signal receiving
-		 * which triggered the transition.
-		 * <p>
-		 * If the transition has no triggers defined, the value of the
-		 * <code>signal</code> field is unused.
+		 * which triggered the transition. <p> If the transition has no triggers
+		 * defined, the value of the <code>signal</code> field is unused.
 		 * 
-		 * @param s
-		 *            the new value of the <code>signal</code> field
+		 * <p> FIXME case of choice <p>
+		 * 
+		 * @param s the new value of the <code>signal</code> field
 		 */
 		final void setSignal(Signal s) {
 			signal = s;
@@ -416,7 +416,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 
 		/**
 		 * @return the held instance of the class representing this transition's
-		 *         source vertex
+		 * source vertex
 		 */
 		Vertex getSource() {
 			return source;
@@ -424,7 +424,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 
 		/**
 		 * @return the held instance of the class representing this transition's
-		 *         target vertex
+		 * target vertex
 		 */
 		Vertex getTarget() {
 			return target;
@@ -433,11 +433,10 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		/**
 		 * Checks if the class <code>c</code> is the representing class of this
 		 * transition's source vertex.
-		 *
-		 * @param c
-		 *            the class to check if it is the source of this transition
+		 * 
+		 * @param c the class to check if it is the source of this transition
 		 * @return <code>true</code> if this transition is from <code>c</code>,
-		 *         <code>false</code> otherwise
+		 * <code>false</code> otherwise
 		 */
 		boolean isFromSource(Class<?> c) {
 			return source == null ? false : c == source.getClass();

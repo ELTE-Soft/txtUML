@@ -35,6 +35,7 @@ import hu.elte.txtuml.layout.lang.elements.LayoutLink;
  * <p>
  * <b>Subtype restrictions:</b>
  * <ul>
+ * <li><i>Be abstract:</i> disallowed</li>
  * <li><i>Generic parameters:</i> disallowed</li>
  * <li><i>Constructors:</i> disallowed</li>
  * <li><i>Initialization blocks:</i> disallowed</li>
@@ -108,6 +109,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <p>
 	 * <b>Subtype restrictions:</b>
 	 * <ul>
+	 * <li><i>Be abstract:</i> disallowed</li>
 	 * <li><i>Generic parameters:</i> disallowed</li>
 	 * <li><i>Constructors:</i> disallowed</li>
 	 * <li><i>Initialization blocks:</i> disallowed</li>
@@ -173,6 +175,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <p>
 	 * <b>Subtype restrictions:</b>
 	 * <ul>
+	 * <li><i>Be abstract:</i> disallowed</li>
 	 * <li><i>Generic parameters:</i> disallowed</li>
 	 * <li><i>Constructors:</i> disallowed</li>
 	 * <li><i>Initialization blocks:</i> disallowed</li>
@@ -238,6 +241,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <p>
 	 * <b>Subtype restrictions:</b>
 	 * <ul>
+	 * <li><i>Be abstract:</i> disallowed</li>
 	 * <li><i>Generic parameters:</i> disallowed</li>
 	 * <li><i>Constructors:</i> disallowed</li>
 	 * <li><i>Initialization blocks:</i> disallowed</li>
@@ -303,6 +307,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <p>
 	 * <b>Subtype restrictions:</b>
 	 * <ul>
+	 * <li><i>Be abstract:</i> disallowed</li>
 	 * <li><i>Generic parameters:</i> disallowed</li>
 	 * <li><i>Constructors:</i> disallowed</li>
 	 * <li><i>Initialization blocks:</i> disallowed</li>
@@ -369,6 +374,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <p>
 	 * <b>Subtype restrictions:</b>
 	 * <ul>
+	 * <li><i>Be abstract:</i> disallowed</li>
 	 * <li><i>Generic parameters:</i> disallowed</li>
 	 * <li><i>Constructors:</i> disallowed</li>
 	 * <li><i>Initialization blocks:</i> disallowed</li>
@@ -435,6 +441,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <p>
 	 * <b>Subtype restrictions:</b>
 	 * <ul>
+	 * <li><i>Be abstract:</i> disallowed</li>
 	 * <li><i>Generic parameters:</i> disallowed</li>
 	 * <li><i>Constructors:</i> disallowed</li>
 	 * <li><i>Initialization blocks:</i> disallowed</li>
@@ -501,6 +508,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <p>
 	 * <b>Subtype restrictions:</b>
 	 * <ul>
+	 * <li><i>Be abstract:</i> disallowed</li>
 	 * <li><i>Generic parameters:</i> disallowed</li>
 	 * <li><i>Constructors:</i> disallowed</li>
 	 * <li><i>Initialization blocks:</i> disallowed</li>
@@ -566,6 +574,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <p>
 	 * <b>Subtype restrictions:</b>
 	 * <ul>
+	 * <li><i>Be abstract:</i> disallowed</li>
 	 * <li><i>Generic parameters:</i> disallowed</li>
 	 * <li><i>Constructors:</i> disallowed</li>
 	 * <li><i>Initialization blocks:</i> disallowed</li>

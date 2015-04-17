@@ -45,7 +45,7 @@ package hu.elte.txtuml.api;
  * @author Gabor Ferenc Kovacs
  *
  */
-public class ExternalClass extends Action {
+public class ExternalClass {
 
 	/**
 	 * Sole constructor of <code>ExternalClass</code>.

@@ -37,22 +37,27 @@ public class Timer extends ExternalClass {
 	}
 
 	/**
-	 * Starts a new delayed send operation.
+	 * Starts a new delayed send operation. Sends asynchronously a signal to the
+	 * a target model object after a specified timeout.
 	 * <p>
-	 * Sends asynchronously a signal to the a target model object after a
-	 * specified timeout.
+	 * Calls the
+	 * {@link hu.elte.txtuml.api.ModelExecutor.Settings#lockExecutionTimeMultiplier()
+	 * ModelExecutor.Settings.lockExecutionTimeMultiplier} method in the txtUML
+	 * API to prevent any errors caused by modifying the execution time
+	 * multiplier after the first time-related event happened in the model.
 	 * 
 	 * @param targetObj
-	 *            the target model object of the delayed send
+	 *            the target model object of the delayed send operation
 	 * @param signal
 	 *            the signal which is to be sent after the delay
 	 * @param millisecs
 	 *            the time in millisecs to wait before sending the signal
-	 * @return a handle object to manage this delayed send before it happens
+	 * @return a handle object to manage this delayed send operation before it
+	 *         happens
 	 */
 	public static Handle start(ModelClass targetObj, Signal signal,
 			ModelInt millisecs) {
-		ModelExecutor.Settings.getExecutionTimeMultiplier();
+		ModelExecutor.Settings.lockExecutionTimeMultiplier();
 		return new Handle(targetObj, signal, millisecs);
 	}
 
@@ -76,7 +81,7 @@ public class Timer extends ExternalClass {
 				.newSingleThreadScheduledExecutor();
 
 		/**
-		 * The handle of the event scheduled with the {@link Handle#scheduler
+		 * The handle of the event scheduled with {@link Handle#scheduler
 		 * scheduler}.
 		 */
 		private ScheduledFuture<?> handle;
@@ -87,7 +92,7 @@ public class Timer extends ExternalClass {
 		private final Signal signal;
 
 		/**
-		 * The target of the delayed send.
+		 * The target of the delayed send operation.
 		 */
 		private final ModelClass targetObj;
 
@@ -100,7 +105,7 @@ public class Timer extends ExternalClass {
 		 * Sole constructor of <code>Handle</code>.
 		 * 
 		 * @param obj
-		 *            the target of the delayed send
+		 *            the target of the delayed send operation
 		 * @param s
 		 *            the signal to send after the timeout
 		 * @param millisecs
@@ -137,9 +142,9 @@ public class Timer extends ExternalClass {
 		}
 
 		/**
-		 * The timed event this handle manages is rescheduled to happen after
-		 * the specified time from now. If it has already happened, it will be
-		 * schdeduled for a second time.
+		 * Reschedules the timed event this handle manages to happen after the
+		 * specified time from now. If it has already happened, it will be
+		 * scheduled for a second time.
 		 * 
 		 * @param millisecs
 		 *            new delay in millisecs
@@ -152,9 +157,9 @@ public class Timer extends ExternalClass {
 		}
 
 		/**
-		 * The timed event this handle manages is rescheduled to have a delay
+		 * Reschedules the timed event this handle manages to have a delay
 		 * increased by the specified amount of time. If it has already
-		 * happened, it will be schdeduled for a second time.
+		 * happened, it will be scheduled for a second time.
 		 * 
 		 * @param millisecs
 		 *            the amount of time to add in millisecs
@@ -170,10 +175,10 @@ public class Timer extends ExternalClass {
 		}
 
 		/**
-		 * Cancel the timed event managed by this handle object.
+		 * Cancels the timed event managed by this handle object.
 		 * 
 		 * @return a new <code>ModelBool</code> representing <code>true</code>
-		 *         if the cancel was successful so the timed event managed by
+		 *         if the cancel was successful, so the timed event managed by
 		 *         this handle was <i>not</i> yet cancelled; a new
 		 *         <code>ModelBool</code> representing <code>false</code>
 		 *         otherwise
@@ -185,7 +190,7 @@ public class Timer extends ExternalClass {
 		}
 
 		/**
-		 * Schedule the timed event this handle manages with the specified
+		 * Schedules the timed event this handle manages with the specified
 		 * <code>millisecs</code> delay.
 		 * 
 		 * @param millisecs
