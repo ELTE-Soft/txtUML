@@ -16,7 +16,7 @@ import org.eclipse.uml2.uml.Type;
 
 /**
  * Instances of this class are responsible for importing associations.
- * @author Ádám Ancsin
+ * @author ï¿½dï¿½m Ancsin
  *
  */
 class AssociationImporter extends AbstractImporter{
@@ -36,7 +36,7 @@ class AssociationImporter extends AbstractImporter{
 	 * Gets the current UML2 association.
 	 * @return The current UML2 association.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ï¿½dï¿½m Ancsin
 	 */
 	Association getAssociation()
 	{
@@ -48,7 +48,7 @@ class AssociationImporter extends AbstractImporter{
 	 * @return The imported UML2 association.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author ï¿½dï¿½m Ancsin
 	 */
 	Association importAssociation() throws ImportException
 	{
@@ -64,7 +64,7 @@ class AssociationImporter extends AbstractImporter{
 	 * @return The created UML2 association.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author ï¿½dï¿½m Ancsin
 	 */
 	private Association createAssociation(List<Class<?> > classes) throws ImportException
 	{
@@ -96,7 +96,7 @@ class AssociationImporter extends AbstractImporter{
 	 * @return The imported association end.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author ï¿½dï¿½m Ancsin
 	 */
 	@SuppressWarnings("rawtypes")
 	private  AssociationEnd importAssociationEnd(Class sourceClass) throws ImportException
@@ -117,9 +117,9 @@ class AssociationImporter extends AbstractImporter{
 	    
 	    boolean navigable;
 	    
-	    if(hu.elte.txtuml.api.semantics.Navigability.Navigable.class.isAssignableFrom(sourceClass))
+	    if(hu.elte.txtuml.api.assocends.Navigability.Navigable.class.isAssignableFrom(sourceClass))
 	    	navigable = true;
-	    else if(hu.elte.txtuml.api.semantics.Navigability.NonNavigable.class.isAssignableFrom(sourceClass))
+	    else if(hu.elte.txtuml.api.assocends.Navigability.NonNavigable.class.isAssignableFrom(sourceClass))
 	    	navigable = false;
 	    else
 	    	throw new ImportException("Association end "+sourceClass.getName()+" has invalid navigability.");    

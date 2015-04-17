@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.semantics;
+package hu.elte.txtuml.api.assocends;
 
 /**
  * A base interface to represent the navigability property of association ends.

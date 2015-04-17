@@ -235,7 +235,7 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	 * @return collection containing the objects in association with this object
 	 *         and being on <code>otherEnd</code>
 	 */
-	public <T extends ModelClass, AE extends AssociationEnd<T> & hu.elte.txtuml.api.semantics.Navigability.Navigable> AE assoc(
+	public <T extends ModelClass, AE extends AssociationEnd<T> & hu.elte.txtuml.api.assocends.Navigability.Navigable> AE assoc(
 			Class<AE> otherEnd) {
 
 		return assocPrivate(otherEnd);

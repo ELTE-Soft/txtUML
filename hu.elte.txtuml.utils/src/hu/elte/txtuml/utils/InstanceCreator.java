@@ -4,6 +4,13 @@ import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A utility class to create instances of classes specified by their
+ * representing {@code Class<?>} objects.
+ *
+ * @author Gabor Ferenc Kovacs
+ *
+ */
 public class InstanceCreator {
 
 	public static <T> T createInstance(Class<T> c) {

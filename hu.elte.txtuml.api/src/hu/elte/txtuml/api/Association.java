@@ -131,8 +131,8 @@ public class Association implements ModelElement, LayoutLink {
 	 *            the type of model objects to be contained in this collection
 	 */
 	public class Many<T extends ModelClass> extends BaseMany<T> implements
-			hu.elte.txtuml.api.semantics.Navigability.Navigable,
-			hu.elte.txtuml.api.semantics.Multiplicity.ZeroToUnlimited {
+			hu.elte.txtuml.api.assocends.Navigability.Navigable,
+			hu.elte.txtuml.api.assocends.Multiplicity.ZeroToUnlimited {
 
 		/**
 		 * Sole constructor of <code>Many</code>.
@@ -197,8 +197,8 @@ public class Association implements ModelElement, LayoutLink {
 	 *            the type of model objects to be contained in this collection
 	 */
 	public class Some<T extends ModelClass> extends BaseSome<T> implements
-			hu.elte.txtuml.api.semantics.Navigability.Navigable,
-			hu.elte.txtuml.api.semantics.Multiplicity.OneToUnlimited {
+			hu.elte.txtuml.api.assocends.Navigability.Navigable,
+			hu.elte.txtuml.api.assocends.Multiplicity.OneToUnlimited {
 
 		/**
 		 * Sole constructor of <code>Some</code>.
@@ -263,8 +263,8 @@ public class Association implements ModelElement, LayoutLink {
 	 *            the type of model objects to be contained in this collection
 	 */
 	public class MaybeOne<T extends ModelClass> extends BaseMaybeOne<T>
-			implements hu.elte.txtuml.api.semantics.Navigability.Navigable,
-			hu.elte.txtuml.api.semantics.Multiplicity.ZeroToOne {
+			implements hu.elte.txtuml.api.assocends.Navigability.Navigable,
+			hu.elte.txtuml.api.assocends.Multiplicity.ZeroToOne {
 
 		/**
 		 * Sole constructor of <code>MaybeOne</code>.
@@ -329,8 +329,8 @@ public class Association implements ModelElement, LayoutLink {
 	 *            the type of model objects to be contained in this collection
 	 */
 	public class One<T extends ModelClass> extends BaseOne<T> implements
-			hu.elte.txtuml.api.semantics.Navigability.Navigable,
-			hu.elte.txtuml.api.semantics.Multiplicity.One {
+			hu.elte.txtuml.api.assocends.Navigability.Navigable,
+			hu.elte.txtuml.api.assocends.Multiplicity.One {
 
 		/**
 		 * Sole constructor of <code>One</code>.
@@ -396,8 +396,8 @@ public class Association implements ModelElement, LayoutLink {
 	 *            the type of model objects to be contained in this collection
 	 */
 	public class HiddenMany<T extends ModelClass> extends BaseMany<T> implements
-			hu.elte.txtuml.api.semantics.Navigability.NonNavigable,
-			hu.elte.txtuml.api.semantics.Multiplicity.ZeroToUnlimited {
+			hu.elte.txtuml.api.assocends.Navigability.NonNavigable,
+			hu.elte.txtuml.api.assocends.Multiplicity.ZeroToUnlimited {
 
 		/**
 		 * Sole constructor of <code>HiddenMany</code>.
@@ -463,8 +463,8 @@ public class Association implements ModelElement, LayoutLink {
 	 *            the type of model objects to be contained in this collection
 	 */
 	public class HiddenSome<T extends ModelClass> extends BaseSome<T> implements
-			hu.elte.txtuml.api.semantics.Navigability.NonNavigable,
-			hu.elte.txtuml.api.semantics.Multiplicity.OneToUnlimited {
+			hu.elte.txtuml.api.assocends.Navigability.NonNavigable,
+			hu.elte.txtuml.api.assocends.Multiplicity.OneToUnlimited {
 
 		/**
 		 * Sole constructor of <code>HiddenSome</code>.
@@ -530,8 +530,8 @@ public class Association implements ModelElement, LayoutLink {
 	 *            the type of model objects to be contained in this collection
 	 */
 	public class HiddenMaybeOne<T extends ModelClass> extends BaseMaybeOne<T>
-			implements hu.elte.txtuml.api.semantics.Navigability.NonNavigable,
-			hu.elte.txtuml.api.semantics.Multiplicity.ZeroToOne {
+			implements hu.elte.txtuml.api.assocends.Navigability.NonNavigable,
+			hu.elte.txtuml.api.assocends.Multiplicity.ZeroToOne {
 
 		/**
 		 * Sole constructor of <code>HiddenMaybeOne</code>.
@@ -596,8 +596,8 @@ public class Association implements ModelElement, LayoutLink {
 	 *            the type of model objects to be contained in this collection
 	 */
 	public class HiddenOne<T extends ModelClass> extends BaseOne<T> implements
-			hu.elte.txtuml.api.semantics.Navigability.NonNavigable,
-			hu.elte.txtuml.api.semantics.Multiplicity.One {
+			hu.elte.txtuml.api.assocends.Navigability.NonNavigable,
+			hu.elte.txtuml.api.assocends.Multiplicity.One {
 
 		/**
 		 * Sole constructor of <code>HiddenOne</code>.

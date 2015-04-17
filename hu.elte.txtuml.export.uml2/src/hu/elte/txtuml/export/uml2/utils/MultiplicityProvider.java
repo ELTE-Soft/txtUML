@@ -1,6 +1,6 @@
 package hu.elte.txtuml.export.uml2.utils;
 
-import hu.elte.txtuml.api.semantics.Multiplicity;
+import hu.elte.txtuml.api.assocends.Multiplicity;
 
 public class MultiplicityProvider {
 
@@ -9,7 +9,7 @@ public class MultiplicityProvider {
 	 * @param specifiedClass The specified class representing a txtUML element.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ï¿½dï¿½m Ancsin
 	 */
 	public static boolean isOne(Class<?> specifiedClass)
 	{
@@ -21,7 +21,7 @@ public class MultiplicityProvider {
 	 * @param specifiedClass The specified class representing a txtUML element.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ï¿½dï¿½m Ancsin
 	 */
 	public static boolean isZeroToOne(Class<?> specifiedClass)
 	{
@@ -33,7 +33,7 @@ public class MultiplicityProvider {
 	 * @param specifiedClass The specified class representing a txtUML element.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ï¿½dï¿½m Ancsin
 	 */
 	public static boolean isZeroToUnlimited(Class<?> specifiedClass)
 	{
@@ -45,7 +45,7 @@ public class MultiplicityProvider {
 	 * @param specifiedClass The specified class representing a txtUML element.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ï¿½dï¿½m Ancsin
 	 */
 	public static boolean isOneToUnlimited(Class<?> specifiedClass)
 	{
@@ -57,7 +57,7 @@ public class MultiplicityProvider {
 	 * @param specifiedClass The specified class representing a txtUML element.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ï¿½dï¿½m Ancsin
 	 */
 	public static boolean hasInvalidMultiplicity(Class<?> specifiedClass)
 	{
@@ -72,7 +72,7 @@ public class MultiplicityProvider {
 	 * @param specifiedClass The specified class representing a txtUML element.
 	 * @return The lower bound of the specified element's multiplicity.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ï¿½dï¿½m Ancsin
 	 */
 	public static int getLowerBound(Class<?> specifiedClass)
 	{
@@ -87,7 +87,7 @@ public class MultiplicityProvider {
 	 * @param specifiedClass The specified class representing a txtUML element.
 	 * @return The upper bound of the specified element's multiplicity.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ï¿½dï¿½m Ancsin
 	 */
 	public static int getUpperBound(Class<?> specifiedClass)
 	{
