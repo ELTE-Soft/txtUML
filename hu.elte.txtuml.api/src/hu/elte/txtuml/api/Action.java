@@ -3,8 +3,8 @@ package hu.elte.txtuml.api;
 import java.io.PrintStream;
 
 import hu.elte.txtuml.api.backend.MultiplicityException;
-import hu.elte.txtuml.api.backend.logs.ErrorMessages;
-import hu.elte.txtuml.api.backend.logs.WarningMessages;
+import hu.elte.txtuml.api.backend.messages.ErrorMessages;
+import hu.elte.txtuml.api.backend.messages.WarningMessages;
 import hu.elte.txtuml.api.blocks.BlockBody;
 import hu.elte.txtuml.api.blocks.Condition;
 import hu.elte.txtuml.api.blocks.ParameterizedBlockBody;
@@ -117,8 +117,7 @@ public abstract class Action implements ModelElement {
 			leftObj.addToAssoc(rightEnd, rightObj);
 			rightObj.addToAssoc(leftEnd, leftObj);
 		} catch (MultiplicityException e) {
-			ModelExecutor.executorErrorLog(ErrorMessages
-					.getUpperBoundOfMultiplicityOffendedMessage());
+			ModelExecutor.executorErrorLog(e.getMessage());
 		}
 	}
 

@@ -5,13 +5,15 @@ package hu.elte.txtuml.api;
  * implementation is not part of the model. They might be used to bring external
  * features into the model.
  * 
+ * TODO not exported
+ * 
  * <p>
  * <b>Represents:</b> external class
  * <p>
  * <b>Usage:</b>
  * <p>
  * 
- * TODO
+ * TODO usage
  * 
  * <p>
  * <b>Java restrictions:</b>

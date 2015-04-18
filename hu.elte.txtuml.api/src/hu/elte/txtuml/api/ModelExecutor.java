@@ -1,6 +1,6 @@
 package hu.elte.txtuml.api;
 
-import hu.elte.txtuml.api.backend.logs.ErrorMessages;
+import hu.elte.txtuml.api.backend.messages.ErrorMessages;
 
 import java.io.PrintStream;
 
@@ -344,6 +344,12 @@ public final class ModelExecutor implements ModelElement {
 	 */
 	static void send(ModelClass target, Signal signal) {
 		thread.send(target, signal);
+	}
+
+	public static void checkLowerBoundInNextExecutionStep(ModelClass obj,
+			Class<? extends AssociationEnd<?>> assocEnd) {
+
+		thread.checkLowerBoundOfMultiplcitiy(obj, assocEnd);
 	}
 
 	// LOGGING METHODS

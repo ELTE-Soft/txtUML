@@ -49,9 +49,9 @@ class TrainModel {
 		@From(Forwards.class) @To(Neutral.class) @Trigger(Backward.class)
 		class Forwards_Neutral extends Transition {
 			@Override public void effect() {
-				Engine e = Gearbox.this.assoc(GE.e.class).selectOne();
+				Engine e = Gearbox.this.assoc(GE.e.class).selectAny();
 				Action.send(e, new EngineOff());
-				Lamp l = Gearbox.this.assoc(GL.l.class).selectOne();
+				Lamp l = Gearbox.this.assoc(GL.l.class).selectAny();
 				Action.send(l, new LightOff());
 			}
 		}
@@ -59,7 +59,7 @@ class TrainModel {
 		class Backwards_Neutral extends Forwards_Neutral {} // inherited effect
 		
 		void startEngineOp() {
-			Engine e = Gearbox.this.assoc(GE.e.class).selectOne();
+			Engine e = Gearbox.this.assoc(GE.e.class).selectAny();
 			Action.send(e, new EngineOn());
 		}
 	}
@@ -137,6 +137,7 @@ class Tester extends Thread {
 		Action.link(LE.l.class, l, LE.e.class, e);
 	}
 
+	@Override
 	public void run() {
 		synchronized (this) {
 			try {
@@ -152,7 +153,9 @@ class Tester extends Thread {
 				
 				wait(3 * time); Action.log("");
 				Action.send(g, new Forward());
-				// at this point an overhead can occur because of the initialization of the aspects that watch the method calls inside ModelClass instances
+				// At this point an overhead can occur because of the
+				// initialization of the aspects that watch the method calls 
+				// inside ModelClass instances.
 				
 				wait(time); Action.log("");
 				Action.send(g, new Backward());

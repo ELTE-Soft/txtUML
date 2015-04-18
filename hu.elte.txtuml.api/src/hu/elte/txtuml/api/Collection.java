@@ -70,7 +70,7 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 	 * @return an element of this collection, <code>null</code> if the
 	 *         collection is empty
 	 */
-	T selectOne();
+	T selectAny();
 
 	/**
 	 * Selects all elements of this collection for which the specified condition
@@ -185,7 +185,7 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 		}
 
 		@Override
-		public T selectOne() {
+		public T selectAny() {
 			return null;
 		}
 

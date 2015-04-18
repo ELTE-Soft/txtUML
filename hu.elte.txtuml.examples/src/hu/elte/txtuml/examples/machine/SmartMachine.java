@@ -2,6 +2,7 @@ package hu.elte.txtuml.examples.machine;
 
 import hu.elte.txtuml.api.*;
 import hu.elte.txtuml.stdlib.*;
+import hu.elte.txtuml.examples.machine.SmartMachineModel.*;
 
 class SmartMachineModel extends Model {
 	
@@ -87,7 +88,7 @@ class SmartMachineModel extends Model {
 			Action.log("User: starting to work...");
 			Object o = this.assoc(Usage.usedMachine.class);
 			System.out.println(o.getClass().getSimpleName());
-			Machine myMachine = this.assoc(Usage.usedMachine.class).selectOne();
+			Machine myMachine = this.assoc(Usage.usedMachine.class).selectAny();
 			
 			Action.send(myMachine, new ButtonPress()); // switches the machine on
 			Action.send(myMachine, new ButtonPress()); // tries to switch it off, but fails because of the guard
@@ -173,26 +174,37 @@ class SmartMachineModel extends Model {
 	}
 
 	class DoYourWork extends Signal {}
-	
-	// tester method	
-	public void test() {
+
+}
+
+class SmartMachineTester {
+
+	void test() {
 		ModelExecutor.Settings.setExecutorLog(true);
-		Machine m = new Machine(); 
+	
+		Machine m = Action.create(Machine.class); 
 		
-		User u1 = new User();
-		User u2 = Action.create(User.class); //almost equivalent to 'new User()'
-												//not exactly: with current implementation the object created by Action.create() will have no enclosing Model1 object
-		
-        Action.link(Usage.usedMachine.class, m, Usage.userOfMachine.class, u1);
-        Action.link(Usage.usedMachine.class, m, Usage.userOfMachine.class, u2);
- 
+		User u1 = Action.create(User.class);
+		User u2 = Action.create(User.class);
+
         u1.name = new ModelString("user1");
         u2.name = new ModelString("user2");
         u1.id = new ModelInt(100);
         u2.id = new ModelInt(200);
-		Collection<User> userEndOfAssoc = m.assoc(Usage.userOfMachine.class);
-        For(userEndOfAssoc,user -> user.sayHello());
-        If(() -> userEndOfAssoc.remove(u1).add(u1).count().isEqual(new ModelInt(2)),
+		
+        Action.link(Usage.usedMachine.class, m, Usage.userOfMachine.class, u1);
+        Action.link(Usage.usedMachine.class, m, Usage.userOfMachine.class, u2);
+ 
+		Action.log("Machine and users are starting.");
+		Action.start(m);
+		Action.start(u1);
+		Action.start(u2);
+        
+/*		Collection<User> userEndOfAssoc = m.assoc(Usage.userOfMachine.class);
+        
+		For(userEndOfAssoc, user -> user.sayHello());
+        
+		If(() -> userEndOfAssoc.remove(u1).add(u1).count().isEqual(new ModelInt(2)),
         		() -> Action.log("There are exactly two users."));
         
 		
@@ -201,30 +213,26 @@ class SmartMachineModel extends Model {
 		If(() -> userEndOfAssoc.selectAll(user -> user.id.isEqual(ModelInt.ZERO)).isEmpty(),
 				() -> log("Nobody has an id of 0."));
 		Collection<User> users = new Collection.Empty<>();
-		users.addAll(userEndOfAssoc).selectOne().sayHello();
+		users.addAll(userEndOfAssoc).selectAny().sayHello();
 		
 		
 		For(new ModelInt(0), new ModelInt(5),
 				i -> If( () -> i.isLess(new ModelInt(3)),
 						() -> log("Number lesser than three."),
 						() -> log("Number is not lesser than three.")
-				) );
-			
-		log("Machine and users are starting.");
-		start(m);
-		start(u1);
-		start(u2);
+				) );*/
+					
+		Action.log("One of the users is starting to do his or her work.");
+		User oneOfTheUsers = m.assoc(Usage.userOfMachine.class).selectAny();
+//		Action.send(oneOfTheUsers, new DoYourWork());
 		
-		log("One of the users is starting to do his or her work.");
-		User oneOfTheUsers = m.assoc(Usage.userOfMachine.class).selectOne();
-		send(oneOfTheUsers, new DoYourWork());
-		
-		Timer.start(oneOfTheUsers, new DoYourWork(), new ModelInt(10000));
+//		Timer.start(oneOfTheUsers, new DoYourWork(), new ModelInt(10000));
 	}
+
 }
 
 public class SmartMachine {
 	public static void main(String[] args) {
-		new SmartMachineModel().test();
+		new SmartMachineTester().test();
 	}
 }

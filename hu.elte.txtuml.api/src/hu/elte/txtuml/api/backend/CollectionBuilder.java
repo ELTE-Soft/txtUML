@@ -1,18 +1,18 @@
-package hu.elte.txtuml.api;
+package hu.elte.txtuml.api.backend;
 
+import hu.elte.txtuml.api.Collection;
+import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.backend.collections.JavaCollectionOfMany;
 
 /**
  * A mutable collection builder to build {@link Collection}s faster.
- * <p>
- * Unusable by the user.
  * 
  * @author Gabor Ferenc Kovacs
  *
  * @param <T>
  *            the type of model objects to be contained in the result collection
  */
-class CollectionBuilder<T extends ModelClass> {
+public class CollectionBuilder<T extends ModelClass> {
 
 	/**
 	 * The Java collection in which this builder collects the desired objects.
@@ -30,7 +30,7 @@ class CollectionBuilder<T extends ModelClass> {
 	 * 
 	 * @see #getJavaCollection()
 	 */
-	CollectionBuilder<T> append(T object) {
+	public CollectionBuilder<T> append(T object) {
 		coll.add(object);
 		return this;
 	}
@@ -47,7 +47,7 @@ class CollectionBuilder<T extends ModelClass> {
 	 * 
 	 * @see #getJavaCollection()
 	 */
-	CollectionBuilder<T> append(Collection<T> objects) {
+	public CollectionBuilder<T> append(Collection<T> objects) {
 		for (T object : objects) {
 			coll.add(object);
 		}
@@ -65,7 +65,7 @@ class CollectionBuilder<T extends ModelClass> {
 	 * @return the Java collection in which this builder collected the desired
 	 *         objects
 	 */
-	JavaCollectionOfMany<T> getJavaCollection() {
+	public JavaCollectionOfMany<T> getJavaCollection() {
 		JavaCollectionOfMany<T> tmp = coll;
 		coll = null;
 		return tmp;

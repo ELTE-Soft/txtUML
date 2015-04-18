@@ -548,7 +548,6 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 			if (from == null || to == null) {
 				this.source = null;
 				this.target = null;
-				// TODO show error
 			} else {
 				this.source = getNestedClassInstance(from.value());
 				this.target = getNestedClassInstance(to.value());

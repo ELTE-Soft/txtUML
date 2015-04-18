@@ -1,6 +1,14 @@
 package hu.elte.txtuml.api;
 
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+/*
+ * Multiple classes and interfaces defined in this file.
+ */
+
+// TODO check
 
 /**
  * The type of threads on which the model execution will run. By the current
@@ -15,18 +23,18 @@ import java.util.concurrent.LinkedBlockingQueue;
 class ModelExecutorThread extends Thread {
 
 	/**
-	 * The global mailbox in which the to-be-sent signals are gathered and later
+	 * The mailbox in which the to-be-sent signals are gathered and later
 	 * processed (asynchronously).
 	 */
-	private final LinkedBlockingQueue<QueueEntry> mailbox;
+	private final LinkedBlockingQueue<MailboxEntry> mailbox = new LinkedBlockingQueue<>();
+
+	private final Queue<CheckQueueEntry> checkQueue = new LinkedList<>();
 
 	/**
 	 * Sole constructor of package private <code>ModelExecutorThread</code>.
 	 * Creates and also starts the thread.
 	 */
 	ModelExecutorThread() {
-		this.mailbox = new LinkedBlockingQueue<>();
-
 		start();
 	}
 
@@ -43,9 +51,14 @@ class ModelExecutorThread extends Thread {
 	 */
 	void send(ModelClass target, Signal signal) {
 		try {
-			mailbox.put(new QueueEntry(target, signal));
+			mailbox.put(new MailboxEntry(target, signal));
 		} catch (InterruptedException e) {
 		}
+	}
+
+	void checkLowerBoundOfMultiplcitiy(ModelClass obj,
+			Class<? extends AssociationEnd<?>> assocEnd) {
+		checkQueue.add(new LowerBoundOfMultiplicityCheck(obj, assocEnd));
 	}
 
 	/**
@@ -58,40 +71,89 @@ class ModelExecutorThread extends Thread {
 	public void run() {
 		try {
 			while (true) {
-				QueueEntry entry = mailbox.take();
-				entry.target.process(entry.signal);
+				checkQueue.forEach(entry -> entry.performCheck());
+				mailbox.take().processSignal();
 			}
 		} catch (InterruptedException e) { // do nothing (finish thread)
 		}
 	}
 
+}
+
+/**
+ * The entry type of {@link ModelExecutorThread#mailbox}. Represents a send
+ * operation.
+ * <p>
+ * Unusable by the user.
+ * 
+ * @author Gabor Ferenc Kovacs
+ * 
+ */
+class MailboxEntry {
+
 	/**
-	 * The entry type of {@link ModelExecutorThread#mailbox}. Represents a send
-	 * operation.
+	 * The target object of the represented send operation.
 	 */
-	private static class QueueEntry {
+	private final ModelClass target;
 
-		/**
-		 * The target object of the represented send operation.
-		 */
-		final ModelClass target;
+	/**
+	 * The signal of the represented send operation.
+	 */
+	private final Signal signal;
 
-		/**
-		 * The signal of the represented send operation.
-		 */
-		final Signal signal;
-
-		/**
-		 * Creates a new <code>QueueEntry</code> to represent a send operation.
-		 * 
-		 * @param target
-		 *            the target object of the represented send operation
-		 * @param signal
-		 *            the signal of the represented send operation
-		 */
-		QueueEntry(ModelClass target, Signal signal) {
-			this.target = target;
-			this.signal = signal;
-		}
+	/**
+	 * Creates a new <code>QueueEntry</code> to represent a send operation.
+	 * 
+	 * @param target
+	 *            the target object of the represented send operation
+	 * @param signal
+	 *            the signal of the represented send operation
+	 */
+	MailboxEntry(ModelClass target, Signal signal) {
+		this.target = target;
+		this.signal = signal;
 	}
+
+	void processSignal() {
+		target.process(signal);
+	}
+}
+
+/*
+ * <p>
+ * Unusable by the user.
+ * 
+ * @author Gabor Ferenc Kovacs
+ * 
+ */
+interface CheckQueueEntry {
+
+	void performCheck();
+
+}
+
+/*
+ * <p>
+ * Unusable by the user.
+ * 
+ * @author Gabor Ferenc Kovacs
+ * 
+ */
+class LowerBoundOfMultiplicityCheck implements CheckQueueEntry {
+
+	private final ModelClass obj;
+
+	private final Class<? extends AssociationEnd<?>> assocEnd;
+
+	LowerBoundOfMultiplicityCheck(ModelClass obj,
+			Class<? extends AssociationEnd<?>> assocEnd) {
+		this.obj = obj;
+		this.assocEnd = assocEnd;
+	}
+
+	@Override
+	public void performCheck() {
+		obj.checkLowerBound(assocEnd);
+	}
+
 }

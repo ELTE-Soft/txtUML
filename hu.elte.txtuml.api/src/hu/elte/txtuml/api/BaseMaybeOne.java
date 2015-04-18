@@ -1,6 +1,7 @@
 package hu.elte.txtuml.api;
 
 import hu.elte.txtuml.api.backend.MultiplicityException;
+import hu.elte.txtuml.api.backend.messages.ErrorMessages;
 import hu.elte.txtuml.api.blocks.ParameterizedCondition;
 
 import java.util.Iterator;
@@ -110,7 +111,7 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 	}
 
 	@Override
-	public final T selectOne() {
+	public final T selectAny() {
 		return obj;
 	}
 
@@ -150,7 +151,8 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 		if (object == null) {
 			return (S) this;
 		} else if (this.obj != null && !this.obj.equals(object)) {
-			throw new MultiplicityException();
+			throw new MultiplicityException(ErrorMessages
+					.getUpperBoundOfMultiplicityOffendedMessage(this));
 		}
 		return (S) new BaseMaybeOne<T>(object);
 	}

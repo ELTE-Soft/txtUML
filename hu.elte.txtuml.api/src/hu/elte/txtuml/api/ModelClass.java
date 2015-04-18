@@ -2,15 +2,18 @@ package hu.elte.txtuml.api;
 
 import hu.elte.txtuml.api.backend.MultiplicityException;
 import hu.elte.txtuml.api.backend.collections.AssociationsMap;
-import hu.elte.txtuml.api.backend.logs.ErrorMessages;
-import hu.elte.txtuml.api.backend.logs.WarningMessages;
+import hu.elte.txtuml.api.backend.messages.ErrorMessages;
+import hu.elte.txtuml.api.backend.messages.WarningMessages;
 import hu.elte.txtuml.layout.lang.elements.LayoutNode;
 import hu.elte.txtuml.utils.InstanceCreator;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Base class for classes in the model.
+ * 
  * <p>
  * <b>Represents:</b> class
  * <p>
@@ -40,8 +43,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * <ul>
  * <li><i>Be abstract:</i> disallowed</li>
  * <li><i>Generic parameters:</i> disallowed</li>
- * <li><i>Constructors:</i> allowed, with zero parameters, containing only simple
- * assignments to set the default values of its fields</li>
+ * <li><i>Constructors:</i> allowed, with zero parameters, containing only
+ * simple assignments to set the default values of its fields</li>
  * <li><i>Initialization blocks:</i> allowed, containing only simple assignments
  * to set the default values of its fields</li>
  * <li><i>Fields:</i> allowed, only of types which are subclasses of
@@ -212,6 +215,63 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 		} else {
 			status = Status.READY;
 		}
+
+		if (ModelExecutor.Settings.executorLog()) {
+			initializeAllDefinedAssociationEnds();
+		}
+	}
+
+	// TODO check
+	@SuppressWarnings("unchecked")
+	private void initializeAllDefinedAssociationEnds() {
+		try {
+			Class<?> modelClass = getClass().getEnclosingClass();
+
+			for (Class<?> assocClass : modelClass.getClasses()) {
+				if (assocClass.isAssignableFrom(Association.class)) {
+					Class<?>[] assocEnds = assocClass.getClasses();
+					if (checkIfEndIsFromThisClass(assocEnds[0])) {
+						initializeDefinedAssociationEnd((Class<? extends AssociationEnd<?>>) assocEnds[1]);
+					}
+					if (checkIfEndIsFromThisClass(assocEnds[1])) {
+						initializeDefinedAssociationEnd((Class<? extends AssociationEnd<?>>) assocEnds[0]);
+					}
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(ErrorMessages.getBadModel(), e);
+		}
+	}
+
+	// TODO check
+	private boolean checkIfEndIsFromThisClass(Class<?> assocEnd) {
+		if (assocEnd.isAssignableFrom(AssociationEnd.class)
+				&& getTypeAtAssocEnd(assocEnd) == getClass()) {
+			System.out.println("\t\t" + assocEnd);
+			return true;
+		}
+		return false;
+	}
+
+	// TODO check
+	private Type getTypeAtAssocEnd(Class<?> assocEnd) {
+		return ((ParameterizedType) assocEnd.getGenericSuperclass())
+				.getActualTypeArguments()[0];
+	}
+
+	// TODO check
+	private void initializeDefinedAssociationEnd(
+			Class<? extends AssociationEnd<?>> assocEnd) {
+
+		AssociationEnd<?> value = InstanceCreator
+				.createInstanceWithGivenParams(assocEnd, (Object) null);
+
+		associations.put(assocEnd, value);
+
+		if (ModelExecutor.Settings.dynamicChecks() && !value.checkLowerBound()) {
+			ModelExecutor.checkLowerBoundInNextExecutionStep(this, assocEnd);
+		}
+
 	}
 
 	/**
@@ -281,11 +341,11 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	<T extends ModelClass, AE extends AssociationEnd<T>> void addToAssoc(
 			Class<AE> otherEnd, T object) throws MultiplicityException {
 
-		associations.put(
-				otherEnd,
-				InstanceCreator.createInstanceWithGivenParams(otherEnd,
-						(Object) null).init(
-						assocPrivate(otherEnd).typeKeepingAdd(object)));
+		AssociationEnd<?> newValue = InstanceCreator
+				.createInstanceWithGivenParams(otherEnd, (Object) null).init(
+						assocPrivate(otherEnd).typeKeepingAdd(object));
+
+		associations.put(otherEnd, newValue);
 
 	}
 
@@ -302,11 +362,15 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	<T extends ModelClass, AE extends AssociationEnd<T>> void removeFromAssoc(
 			Class<AE> otherEnd, T object) {
 
-		associations.put(
-				otherEnd,
-				InstanceCreator.createInstanceWithGivenParams(otherEnd,
-						(Object) null).init(
-						assocPrivate(otherEnd).typeKeepingRemove(object)));
+		AssociationEnd<?> newValue = InstanceCreator
+				.createInstanceWithGivenParams(otherEnd, (Object) null).init(
+						assocPrivate(otherEnd).typeKeepingRemove(object));
+
+		associations.put(otherEnd, newValue);
+
+		if (!newValue.checkLowerBound()) {
+			ModelExecutor.checkLowerBoundInNextExecutionStep(object, otherEnd);
+		}
 
 	}
 
@@ -339,6 +403,15 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 			return;
 		}
 		super.process(signal);
+	}
+
+	void checkLowerBound(Class<? extends AssociationEnd<?>> assocEnd) {
+
+		AssociationEnd<?> actualEnd = assocPrivate(assocEnd);
+		if (!actualEnd.checkLowerBound()) {
+			ModelExecutor.logError(ErrorMessages
+					.getLowerBoundOfMultiplicityOffendedMessage(actualEnd));
+		}
 	}
 
 	/**

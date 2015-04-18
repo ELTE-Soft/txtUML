@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.backend.logs;
+package hu.elte.txtuml.api.backend.messages;
 
 import hu.elte.txtuml.api.ModelClass;
 
@@ -8,7 +8,6 @@ import hu.elte.txtuml.api.ModelClass;
  * @author Gabor Ferenc Kovacs
  *
  */
-@SuppressWarnings("javadoc")
 public interface WarningMessages {
 
 	static String getUnlinkingNonExistingAssociationMessage(ModelClass leftObj,

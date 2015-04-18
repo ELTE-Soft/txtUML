@@ -1,5 +1,6 @@
-package hu.elte.txtuml.api.backend.logs;
+package hu.elte.txtuml.api.backend.messages;
 
+import hu.elte.txtuml.api.AssociationEnd;
 import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.StateMachine.Transition;
 import hu.elte.txtuml.api.StateMachine.Vertex;
@@ -10,11 +11,18 @@ import hu.elte.txtuml.api.StateMachine.Vertex;
  * @author Gabor Ferenc Kovacs
  *
  */
-@SuppressWarnings("javadoc")
 public interface ErrorMessages {
 
-	static String getUpperBoundOfMultiplicityOffendedMessage() {
-		return "Error: upper bound of an association end's multiplicity has been offended.";
+	static String getLowerBoundOfMultiplicityOffendedMessage(
+			AssociationEnd<?> assocEnd) {
+		return "Error: lower bound of the multiplicity of "
+				+ assocEnd.toString() + " has been offended.";
+	}
+
+	static String getUpperBoundOfMultiplicityOffendedMessage(
+			AssociationEnd<?> assocEnd) {
+		return "Error: upper bound of the multiplicity of "
+				+ assocEnd.toString() + " has been offended.";
 	}
 
 	static String getLinkingDeletedObjectMessage(ModelClass obj) {
@@ -58,6 +66,10 @@ public interface ErrorMessages {
 	static String getChangingLockedExecutionTimeMultiplierMessage() {
 		return "Error: model execution time multiplier might only be changed"
 				+ "before any time-related events happen during model execution.";
+	}
+
+	static String getBadModel() {
+		return "Model execution failed due to an error in the model.";
 	}
 
 }

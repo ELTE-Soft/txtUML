@@ -1,8 +1,8 @@
 package hu.elte.txtuml.api;
 
 import hu.elte.txtuml.api.backend.collections.InitialsMap;
-import hu.elte.txtuml.api.backend.logs.ErrorMessages;
-import hu.elte.txtuml.api.backend.logs.LogMessages;
+import hu.elte.txtuml.api.backend.messages.ErrorMessages;
+import hu.elte.txtuml.api.backend.messages.LogMessages;
 
 /**
  * Base class for regions in the model.

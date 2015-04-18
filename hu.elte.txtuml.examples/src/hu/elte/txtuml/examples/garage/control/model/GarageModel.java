@@ -31,7 +31,7 @@ public class GarageModel extends Model {
 		class InitDoor extends Initial {}
 		class Enabled extends State {
 			@Override public void entry() {
-				Motor m = Door.this.assoc(MotorMovesDoor.movingMotor.class).selectOne();
+				Motor m = Door.this.assoc(MotorMovesDoor.movingMotor.class).selectAny();
 				Action.send(m,new ReenableMotor());
 			}
 		}
@@ -59,7 +59,7 @@ public class GarageModel extends Model {
 		@From(Enabled.class) @To(Enabled.class) @Trigger(RemoteControlButtonPressed.class)
 		class TAcceptRemoteControl extends Transition {
 			@Override public void effect() {
-				Motor m = Door.this.assoc(MotorMovesDoor.movingMotor.class).selectOne();	
+				Motor m = Door.this.assoc(MotorMovesDoor.movingMotor.class).selectAny();	
 				Action.send(m, new ChangeMotorMode());
 			}
 		}
@@ -103,8 +103,8 @@ public class GarageModel extends Model {
 		@From(MovingDown.class) @To(HeadingUp.class) @Trigger(DoorReachedBottom.class)
 		class TStopAtBottom extends Transition {
 			@Override public void effect() {
-				Door d = Motor.this.assoc(MotorMovesDoor.movedDoor.class).selectOne();
-				Alarm a = d.assoc(DoorSwitchesOnAlarm.SwitchedAlarm.class).selectOne();
+				Door d = Motor.this.assoc(MotorMovesDoor.movedDoor.class).selectAny();
+				Alarm a = d.assoc(DoorSwitchesOnAlarm.SwitchedAlarm.class).selectAny();
 				Action.send(a, new StarPressed());
 			}
 		}
@@ -140,7 +140,7 @@ public class GarageModel extends Model {
 		class ExpectingCode extends State {
 			@Override public void entry() {
 				Glue.getInstance().controlled.codeExpected();
-				Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectOne();
+				Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectAny();
 				Action.send(kb, new WaitForCode());
 			}
 		}
@@ -152,14 +152,14 @@ public class GarageModel extends Model {
 		class ExpectingOldCode extends State {
 			@Override public void entry() {
 				Glue.getInstance().controlled.oldCodeExpected();
-				Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectOne();
+				Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectAny();
 				Action.send(kb, new WaitForCode());
 			}
 		}
 		class ExpectingNewCode extends State {
 			@Override public void entry() {
 				Glue.getInstance().controlled.newCodeExpected();
-				Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectOne();
+				Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectAny();
 				Action.send(kb, new WaitForCode());
 			}
 		}
@@ -249,7 +249,7 @@ public class GarageModel extends Model {
 		@From(Idle.class) @To(Idle.class) @Trigger(KeyPress.class) 
 		class TSpontaneousKeyPress extends Transition {
 			@Override public void effect() {
-				Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).selectOne();
+				Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).selectAny();
 				Action.send(a, getSignal(KeyPress.class));
 			}
 		}
@@ -274,7 +274,7 @@ public class GarageModel extends Model {
 		@From(Waiting.class) @To(Idle.class) @Trigger(KeyPress.class)
 		class TExpectedKeyPress extends Transition {
 			@Override public void effect() {
-				Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).selectOne();
+				Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).selectAny();
 				Action.send(a, getSignal(KeyPress.class));
 			}
 		}
@@ -284,7 +284,7 @@ public class GarageModel extends Model {
 				return keyboardTimerCount.isEqual(keyboardTimerMaxCount);
 			}
 			@Override public void effect() {
-				Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).selectOne();
+				Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).selectAny();
 				Action.send(a, new KeyboardTimeout());
 			}
 		}

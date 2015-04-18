@@ -1,5 +1,6 @@
 package hu.elte.txtuml.api;
 
+import hu.elte.txtuml.api.backend.CollectionBuilder;
 import hu.elte.txtuml.api.backend.collections.JavaCollectionOfMany;
 import hu.elte.txtuml.api.blocks.ParameterizedCondition;
 
@@ -161,7 +162,7 @@ class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 	}
 
 	@Override
-	public final T selectOne() {
+	public final T selectAny() {
 		return coll.iterator().next();
 	}
 
