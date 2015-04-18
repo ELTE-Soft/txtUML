@@ -5,7 +5,7 @@ import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.backend.collections.JavaCollectionOfMany;
 
 /**
- * A mutable collection builder to build {@link Collection}s faster.
+ * A mutable collection builder to build {@link Collection Collections} faster.
  * 
  * @author Gabor Ferenc Kovacs
  *

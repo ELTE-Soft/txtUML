@@ -215,62 +215,6 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 		} else {
 			status = Status.READY;
 		}
-
-		if (ModelExecutor.Settings.dynamicChecks()) {
-			initializeAllDefinedAssociationEnds();
-		}
-	}
-
-	// TODO check
-	@SuppressWarnings("unchecked")
-	private void initializeAllDefinedAssociationEnds() {
-		try {
-			Class<?> modelClass = getClass().getEnclosingClass();
-
-			for (Class<?> assocClass : modelClass.getDeclaredClasses()) {
-				if (Association.class.isAssignableFrom(assocClass)) {
-					Class<?>[] assocEnds = assocClass.getDeclaredClasses();
-					if (checkIfEndIsFromThisClass(assocEnds[0])) {
-						initializeDefinedAssociationEnd((Class<? extends AssociationEnd<?>>) assocEnds[1]);
-					}
-					if (checkIfEndIsFromThisClass(assocEnds[1])) {
-						initializeDefinedAssociationEnd((Class<? extends AssociationEnd<?>>) assocEnds[0]);
-					}
-				}
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(ErrorMessages.getBadModel(), e);
-		}
-	}
-
-	// TODO check
-	private boolean checkIfEndIsFromThisClass(Class<?> assocEnd) {
-		if (AssociationEnd.class.isAssignableFrom(assocEnd)
-				&& getTypeAtAssocEnd(assocEnd) == getClass()) {
-			return true;
-		}
-		return false;
-	}
-
-	// TODO check
-	private Type getTypeAtAssocEnd(Class<?> assocEnd) {
-		return ((ParameterizedType) assocEnd.getGenericSuperclass())
-				.getActualTypeArguments()[0];
-	}
-
-	// TODO check
-	private void initializeDefinedAssociationEnd(
-			Class<? extends AssociationEnd<?>> assocEnd) {
-
-		AssociationEnd<?> value = InstanceCreator
-				.createInstanceWithGivenParams(assocEnd, (Object) null);
-
-		associations.put(assocEnd, value);
-
-		if (!value.checkLowerBound()) {
-			ModelExecutor.checkLowerBoundInNextExecutionStep(this, assocEnd);
-		}
-
 	}
 
 	/**
@@ -430,6 +374,11 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	 * method does nothing. Otherwise, it sends an asynchronous request to
 	 * itself to step forward from its initial pseudostate and also changes its
 	 * status to {@link Status#ACTIVE ACTIVE}</code>.
+	 * <p>
+	 * If the optional dynamic checks are switched on in
+	 * {@link ModelExecutor.Settings}, this method also initializes the defined
+	 * association ends of this model object by calling the
+	 * {@link #initializeAllDefinedAssociationEnds} method.
 	 */
 	void start() {
 		if (status != Status.READY) {
@@ -437,6 +386,103 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 		}
 		send(null); // to move from initial state
 		status = Status.ACTIVE;
+
+		if (ModelExecutor.Settings.dynamicChecks()) {
+			initializeAllDefinedAssociationEnds();
+		}
+	}
+
+	/**
+	 * Looks up all the defined associations of the model class this object is
+	 * an instance of and initializes them by assigning empty {@link Collection
+	 * Collections} to them. If any of them has a lower bound higher than zero,
+	 * then registers that association end to be checked in the next execution step.
+	 * <p>
+	 * Shows an error about a bad model if any exception is thrown during the
+	 * above described process as this method and all the methods this calls,
+	 * assume that the model is well-defined.
+	 */
+	@SuppressWarnings("unchecked")
+	private void initializeAllDefinedAssociationEnds() {
+		try {
+			Class<?> modelClass = getClass().getEnclosingClass();
+
+			for (Class<?> assocClass : modelClass.getDeclaredClasses()) {
+				if (Association.class.isAssignableFrom(assocClass)) {
+					Class<?>[] assocEnds = assocClass.getDeclaredClasses();
+					if (checkIfEndIsOwnedByThisClass(assocEnds[0])) {
+						initializeDefinedAssociationEnd((Class<? extends AssociationEnd<?>>) assocEnds[1]);
+					}
+					if (checkIfEndIsOwnedByThisClass(assocEnds[1])) {
+						initializeDefinedAssociationEnd((Class<? extends AssociationEnd<?>>) assocEnds[0]);
+					}
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(ErrorMessages.getBadModel(), e);
+		}
+	}
+
+	/**
+	 * Checks if the owner of the specified association end is the model class
+	 * this object is an instance of.
+	 * <p>
+	 * Exceptions might be thrown in case of a model error as this method
+	 * assumes that the model is well-defined.
+	 * 
+	 * @param assocEnd
+	 *            the association end to check if its owner is the model class
+	 *            this object is an instance of
+	 * @return whether the owner of <code>assocEnd</code> is the model class
+	 *         this object is an instance of
+	 */
+	private boolean checkIfEndIsOwnedByThisClass(Class<?> assocEnd) {
+		if (AssociationEnd.class.isAssignableFrom(assocEnd)
+				&& getOwnerOfAssocEnd(assocEnd) == getClass()) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Analyzes the specified association end to get its owner
+	 * <code>ModelClass</code> type (its first generic parameter).
+	 * <p>
+	 * Exceptions might be thrown in case of a model error as this method
+	 * assumes that the model is well-defined.
+	 * 
+	 * @param assocEnd
+	 *            the association end the owner of which is sought
+	 * @return the first generic parameter of <code>assocEnd</code>
+	 */
+	private Type getOwnerOfAssocEnd(Class<?> assocEnd) {
+		return ((ParameterizedType) assocEnd.getGenericSuperclass())
+				.getActualTypeArguments()[0];
+	}
+
+	/**
+	 * Initializes the specified association end by assigning an empty
+	 * {@link Collection} to it. If it has a lower bound higher than zero then
+	 * registers that association end to be checked in the next execution step.
+	 * <p>
+	 * Exceptions might be thrown in case of a model error as this method
+	 * assumes that the model is well-defined.
+	 * 
+	 * @param assocEnd
+	 *            the association end to initialize
+	 */
+	private void initializeDefinedAssociationEnd(
+			Class<? extends AssociationEnd<?>> assocEnd) {
+
+		AssociationEnd<?> value = InstanceCreator
+				.createInstanceWithGivenParams(assocEnd, (Object) null);
+
+		associations.put(assocEnd, value);
+
+		if (!value.checkLowerBound()) {
+			ModelExecutor.checkLowerBoundInNextExecutionStep(this, assocEnd);
+		}
+
 	}
 
 	/**
