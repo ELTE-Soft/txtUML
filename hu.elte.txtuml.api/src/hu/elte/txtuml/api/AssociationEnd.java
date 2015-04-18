@@ -15,13 +15,30 @@ import hu.elte.txtuml.api.backend.MultiplicityException;
  * subclass of {@link Association}).
  * <p>
  * When asked for the model objects at an association end (with the
- * <code>assoc</code> method of {@link ModelClass}), an instance of the actual
+ * {@link ModelClass#assoc(Class) assoc} method), an instance of the actual
  * representing class of that certain association end will be returned. As all
  * association ends are implementing the {@link Collection} interface, the
  * contained objects might be accessed through the collection methods.
  * <p>
- * 
- * TODO upgrade doc: checking multiplicity when???
+ * The multiplicity of an association end might only be checked during model
+ * execution. The upper bound is always checked, if it is ever offended, an
+ * error message is shown in the model executor's error log (see the
+ * documentation of the
+ * {@link ModelExecutor.Settings#setExecutorErrorStream(java.io.PrintStream)
+ * ModelExecutor.Settings.setExecutorErrorStream} method). However, this does
+ * not cause the execution to fail. The lower bound might be offended
+ * temporarily, but has to be restored before the current <i>execution step</i>
+ * ends (see below). It is checked at the beginning of the next <i>execution
+ * step</i> and an error message is shown if is still offended. However, as this
+ * check is relatively slow, it might be switched off with other optional checks
+ * with the {@link ModelExecutor.Settings#setDynamicChecks(boolean)
+ * ModelExecutor.Settings.setDynamicChecks} method.
+ * <p>
+ * An <b>execution step</b> starts when an asynchronous event (like a signal
+ * event) is chosen by the executor to be processed and ends when that event and
+ * all the synchronous events caused by it (like a state machine changing state,
+ * entry and exit actions, transition effects, operation calls, etc.), have been
+ * processed.
  * 
  * <p>
  * <b>Java restrictions:</b>

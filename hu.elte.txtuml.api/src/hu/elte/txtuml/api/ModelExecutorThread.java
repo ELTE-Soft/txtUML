@@ -108,8 +108,8 @@ class ModelExecutorThread extends Thread {
 }
 
 /**
- * The entry type of {@link ModelExecutorThread#mailbox}. Stores and prepares a
- * send operation to be executed in the future.
+ * The entry type of {@link ModelExecutorThread}<code>.mailbox</code>. Stores
+ * and prepares a send operation to be executed in the future.
  * <p>
  * Unusable by the user.
  * 
@@ -151,8 +151,8 @@ class MailboxEntry {
 }
 
 /**
- * The entry type of {@link ModelExecutorThread#checkList}. Stores and prepares
- * a check to be performed in the future.
+ * The entry type of {@link ModelExecutorThread}<code>.checkList</code>. Stores
+ * and prepares a check to be performed in the future.
  * <p>
  * Unusable by the user.
  * 
@@ -169,9 +169,9 @@ interface CheckQueueEntry {
 }
 
 /**
- * A kind of entry of {@link ModelExecutorThread#checkList}. Stores a check of
- * the lower bound of an association end's multiplicity to be performed in the
- * future.
+ * A kind of entry of {@link ModelExecutorThread}<code>.checkList</code>. Stores
+ * a check of the lower bound of an association end's multiplicity to be
+ * performed in the future.
  * <p>
  * Unusable by the user.
  * 

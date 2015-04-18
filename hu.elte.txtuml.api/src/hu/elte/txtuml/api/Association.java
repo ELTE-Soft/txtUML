@@ -11,14 +11,15 @@ import hu.elte.txtuml.layout.lang.elements.LayoutLink;
  * <b>Usage:</b>
  * <p>
  * 
- * An association in the model is a subclass of this class, having two inner
- * classes which are both subclasses of {@link AssociationEnd}. These two inner
+ * An association in the model is a subclass of <code>Association</code>, having
+ * two inner classes which both extend {@link AssociationEnd}. These two inner
  * classes will represent the two ends of this association. Their navigability
- * and multiplicity depend on which predefined subclass of association end is
- * extended (it may not be the <code>AssociationEnd</code> class itself).
+ * and multiplicity depend on which predefined subclass of
+ * <code>AssociationEnd</code> is extended (it may not be the
+ * <code>AssociationEnd</code> class itself which is inherited).
  * <p>
  * The two model classes which the association connects are defined by the two
- * association ends' generic parameter.
+ * association ends' generic parameters.
  * 
  * <p>
  * <b>Java restrictions:</b>
@@ -66,6 +67,15 @@ import hu.elte.txtuml.layout.lang.elements.LayoutLink;
  * overview on modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
+ * @see Association
+ * @see Association.Many
+ * @see Association.One
+ * @see Association.MaybeOne
+ * @see Association.Some
+ * @see Association.HiddenMany
+ * @see Association.HiddenOne
+ * @see Association.HiddenMaybeOne
+ * @see Association.HiddenSome
  *
  */
 public class Association implements ModelElement, LayoutLink {

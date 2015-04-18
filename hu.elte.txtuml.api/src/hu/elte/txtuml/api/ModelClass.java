@@ -24,9 +24,10 @@ import java.util.concurrent.atomic.AtomicLong;
  * subclass will represent attributes of the model class, methods will represent
  * operations, while inheritance between subclasses of <code>ModelClass</code>
  * will represent inheritance in the model. That means, due to the restrictions
- * of Java, each model class may have at most one parent.
- *
- * TODO state machine
+ * of Java, each model class may have at most one base class.
+ * <p>
+ * See the documentation of {@link StateMachine} about applying state machines
+ * to model classes.
  * 
  * <p>
  * <b>Java restrictions:</b>
@@ -51,7 +52,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * {@link ModelClass} or {@link ModelType}; they represent attributes of the
  * model class</li>
  * <li><i>Methods:</i> allowed, only with parameters and return values of types
- * which are subclasses of {@link ModelClass} or {@link ModelType}; they
+ * which are subclasses of {@link ModelClass}, {@link ModelType} or Collection<>; they
  * represent operations of the model class</li>
  * <li><i>Nested interfaces:</i> disallowed</li>
  * <li><i>Nested classes:</i> allowed, only non-static and extending either
@@ -396,7 +397,8 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	 * Looks up all the defined associations of the model class this object is
 	 * an instance of and initializes them by assigning empty {@link Collection
 	 * Collections} to them. If any of them has a lower bound higher than zero,
-	 * then registers that association end to be checked in the next execution step.
+	 * then registers that association end to be checked in the next execution
+	 * step.
 	 * <p>
 	 * Shows an error about a bad model if any exception is thrown during the
 	 * above described process as this method and all the methods this calls,

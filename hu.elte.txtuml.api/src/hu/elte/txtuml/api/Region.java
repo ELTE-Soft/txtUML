@@ -21,7 +21,7 @@ import hu.elte.txtuml.api.backend.messages.LogMessages;
  * <b>Java restrictions:</b>
  * <ul>
  * <li><i>Instantiate:</i> disallowed</li>
- * <li><i>Define subtype:</i> disallowed, use its subclass, like
+ * <li><i>Define subtype:</i> disallowed, use its subclasses, like
  * {@link ModelClass}</li>
  * </ul>
  * 

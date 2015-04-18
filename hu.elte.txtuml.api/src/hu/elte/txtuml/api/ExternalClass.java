@@ -1,11 +1,17 @@
 package hu.elte.txtuml.api;
 
 /**
- * Base class for external classes in the model which are classes which's
- * implementation is not part of the model. They might be used to bring external
+ * Base class for external classes in the model. External classes are those
+ * which's implementation is not part of the model, and from the scope of the
+ * model they function as black boxes. They might be used to bring external
  * features into the model.
- * 
- * TODO not exported
+ * <p>
+ * By the current implementation, external classes <b>are not exported</b> to
+ * UML2, with the exception of standard library classes
+ * {@link hu.elte.txtuml.stdlib.Timer Timer} and
+ * {@link hu.elte.txtuml.stdlib.Timer.Handle Timer.Handle}. The planned design
+ * is to include all external classes in the model with an 'external' stereotype
+ * and empty operations.
  * 
  * <p>
  * <b>Represents:</b> external class
@@ -13,7 +19,32 @@ package hu.elte.txtuml.api;
  * <b>Usage:</b>
  * <p>
  * 
- * TODO usage
+ * From outside the model, use external classes according to the rules and
+ * conventions of the Java language. The only restriction is that an external
+ * class may not be abstract because that could cause problems during model
+ * execution or exportation. From the model, use them as any passive model class
+ * (that is, one that may not react to any asynchronous events). Call its
+ * methods as operations or use its fields as attributes. All its fields used
+ * from inside the model must be of a type extending {@link ModelClass},
+ * {@link ModelType} or {@link Collection}. Also all parameter and return types
+ * of methods called from the model must extend one of these three types.
+ * <p>
+ * As the txtUML API uses its own thread for model execution, external classes
+ * probably need synchronization.
+ * <p>
+ * When a method of an external class is called from the model (on the model's
+ * executor thread), it can call back to methods of model classes, get or set
+ * fields before it returns. However, if it is called from a different thread,
+ * it may only communicate with the model through signals or by creating new
+ * model objects, as it might be done from anywhere outside the model. For
+ * details about managing the model from outside, see the documentation of the
+ * {@link hu.elte.txtuml.api} package.
+ * <p>
+ * In case of primitive values, this class has specific protected methods to
+ * convert <code>ModelType</code> objects back to their raw value (the primitive
+ * values represented by them). These methods may only be used to convert data
+ * gained from the model for an external component. If any data is sent back to
+ * the model, it must be in the form of <code>ModelType</code> objects.
  * 
  * <p>
  * <b>Java restrictions:</b>
@@ -41,6 +72,8 @@ package hu.elte.txtuml.api;
  * <li><i>Inherit from the defined subtype:</i> allowed</li></li>
  * </ul>
  * 
+ * As an example, see the
+ * <p>
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an
  * overview on modeling in txtUML.
  *
