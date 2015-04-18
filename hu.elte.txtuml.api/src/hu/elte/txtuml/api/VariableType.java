@@ -9,7 +9,18 @@ package hu.elte.txtuml.api;
  * <b>Usage:</b>
  * <p>
  * 
- * TODO using variables
+ * Variables in the model might be used any place where {@link ModelType}
+ * instances are. The only difference is that variables are mutable whereas
+ * <code>ModelType</code> objects are not. Therefore, they might be used as
+ * variables inside the code blocks and condition evaluations given as
+ * parameters to
+ * {@link Action#If(hu.elte.txtuml.api.blocks.Condition, hu.elte.txtuml.api.blocks.BlockBody, hu.elte.txtuml.api.blocks.BlockBody)
+ * If},
+ * {@link Action#While(hu.elte.txtuml.api.blocks.Condition, hu.elte.txtuml.api.blocks.BlockBody)
+ * While} and
+ * {@link Action#For(ModelInt, ModelInt, hu.elte.txtuml.api.blocks.ParameterizedBlockBody)
+ * For} methods where Java lets the use of local variables of enclosing methods
+ * only if they are final or effectively final.
  * 
  * <p>
  * <b>Java restrictions:</b>
@@ -17,6 +28,20 @@ package hu.elte.txtuml.api;
  * <li><i>Instantiate:</i> allowed</li>
  * <li><i>Define subtype:</i> disallowed</li>
  * </ul>
+ * 
+ * <p>
+ * <b>Example:</b>
+ * <p>
+ * 
+ * <pre>
+ * <code>
+ * 	VariableInt i = new VariableInt(10);
+ * 	Action.While( () -> i.get().isMore(ModelInt.ZERO), () -> { 
+ * 		Action.log("i is decreased by one");
+ * 		i.set(i.get().subtract(ModelInt.ONE));	
+ * 	});
+ * </code>
+ * </pre>
  * 
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an
  * overview on modeling in txtUML.

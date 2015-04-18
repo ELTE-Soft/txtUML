@@ -1,7 +1,5 @@
 package hu.elte.txtuml.api;
 
-import java.io.PrintStream;
-
 import hu.elte.txtuml.api.backend.MultiplicityException;
 import hu.elte.txtuml.api.backend.messages.ErrorMessages;
 import hu.elte.txtuml.api.backend.messages.WarningMessages;
@@ -9,6 +7,8 @@ import hu.elte.txtuml.api.blocks.BlockBody;
 import hu.elte.txtuml.api.blocks.Condition;
 import hu.elte.txtuml.api.blocks.ParameterizedBlockBody;
 import hu.elte.txtuml.utils.InstanceCreator;
+
+import java.io.PrintStream;
 
 /**
  * Class <code>Action</code> provides methods for the user to be used as

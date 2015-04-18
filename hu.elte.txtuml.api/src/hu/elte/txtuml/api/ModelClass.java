@@ -52,8 +52,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * {@link ModelClass} or {@link ModelType}; they represent attributes of the
  * model class</li>
  * <li><i>Methods:</i> allowed, only with parameters and return values of types
- * which are subclasses of {@link ModelClass}, {@link ModelType} or Collection<>; they
- * represent operations of the model class</li>
+ * which are subclasses of {@link ModelClass}, {@link ModelType} or
+ * Collection<>; they represent operations of the model class</li>
  * <li><i>Nested interfaces:</i> disallowed</li>
  * <li><i>Nested classes:</i> allowed, only non-static and extending either
  * {@link StateMachine.Vertex} or {@link StateMachine.Transition}</li>

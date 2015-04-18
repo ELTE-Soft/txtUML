@@ -113,8 +113,8 @@ public final class ModelExecutor implements ModelElement {
 		private static volatile boolean executorLog = false;
 
 		/**
-		 * Indicates whether optional dynamic checks should be performed.
-		 * Is <code>true</code> by default.
+		 * Indicates whether optional dynamic checks should be performed. Is
+		 * <code>true</code> by default.
 		 */
 		private static volatile boolean dynamicChecks = true;
 
@@ -224,8 +224,8 @@ public final class ModelExecutor implements ModelElement {
 		}
 
 		/**
-		 * Sets whether optional dynamic checks should be performed during
-		 * model execution. These checks include checking lower bounds of
+		 * Sets whether optional dynamic checks should be performed during model
+		 * execution. These checks include checking lower bounds of
 		 * multiplicities, checking whether the guards of two transitions from
 		 * the same vertex are overlapping, etc.
 		 * <p>

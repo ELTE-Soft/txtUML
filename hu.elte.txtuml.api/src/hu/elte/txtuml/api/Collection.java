@@ -99,8 +99,8 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 	 * collection and also the elements of the specified collection.
 	 *
 	 * @param objects
-	 *            the other collection which's elements are to be included in the
-	 *            result
+	 *            the other collection which's elements are to be included in
+	 *            the result
 	 * @return a new collection containing the desired elements
 	 * @throws NullPointerException
 	 *             if <code>objects</code> is <code>null</code>

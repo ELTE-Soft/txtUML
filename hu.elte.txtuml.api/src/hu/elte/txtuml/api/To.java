@@ -60,7 +60,7 @@ import java.lang.annotation.Target;
  * @see StateMachine.Transition
  * @see From
  * @see Trigger
-
+ * 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
