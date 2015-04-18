@@ -72,6 +72,7 @@ class ModelExecutorThread extends Thread {
 		try {
 			while (true) {
 				checkQueue.forEach(entry -> entry.performCheck());
+				checkQueue.clear();
 				mailbox.take().processSignal();
 			}
 		} catch (InterruptedException e) { // do nothing (finish thread)

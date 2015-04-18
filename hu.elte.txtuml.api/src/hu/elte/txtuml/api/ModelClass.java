@@ -216,7 +216,7 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 			status = Status.READY;
 		}
 
-		if (ModelExecutor.Settings.executorLog()) {
+		if (ModelExecutor.Settings.dynamicChecks()) {
 			initializeAllDefinedAssociationEnds();
 		}
 	}
@@ -227,9 +227,9 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 		try {
 			Class<?> modelClass = getClass().getEnclosingClass();
 
-			for (Class<?> assocClass : modelClass.getClasses()) {
-				if (assocClass.isAssignableFrom(Association.class)) {
-					Class<?>[] assocEnds = assocClass.getClasses();
+			for (Class<?> assocClass : modelClass.getDeclaredClasses()) {
+				if (Association.class.isAssignableFrom(assocClass)) {
+					Class<?>[] assocEnds = assocClass.getDeclaredClasses();
 					if (checkIfEndIsFromThisClass(assocEnds[0])) {
 						initializeDefinedAssociationEnd((Class<? extends AssociationEnd<?>>) assocEnds[1]);
 					}
@@ -245,9 +245,8 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 
 	// TODO check
 	private boolean checkIfEndIsFromThisClass(Class<?> assocEnd) {
-		if (assocEnd.isAssignableFrom(AssociationEnd.class)
+		if (AssociationEnd.class.isAssignableFrom(assocEnd)
 				&& getTypeAtAssocEnd(assocEnd) == getClass()) {
-			System.out.println("\t\t" + assocEnd);
 			return true;
 		}
 		return false;
@@ -268,7 +267,7 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 
 		associations.put(assocEnd, value);
 
-		if (ModelExecutor.Settings.dynamicChecks() && !value.checkLowerBound()) {
+		if (!value.checkLowerBound()) {
 			ModelExecutor.checkLowerBoundInNextExecutionStep(this, assocEnd);
 		}
 
@@ -368,7 +367,7 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 
 		associations.put(otherEnd, newValue);
 
-		if (!newValue.checkLowerBound()) {
+		if (ModelExecutor.Settings.dynamicChecks() && !newValue.checkLowerBound()) {
 			ModelExecutor.checkLowerBoundInNextExecutionStep(object, otherEnd);
 		}
 
@@ -407,10 +406,10 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 
 	void checkLowerBound(Class<? extends AssociationEnd<?>> assocEnd) {
 
-		AssociationEnd<?> actualEnd = assocPrivate(assocEnd);
-		if (!actualEnd.checkLowerBound()) {
+		AssociationEnd<?> value = assocPrivate(assocEnd);
+		if (!value.checkLowerBound()) {
 			ModelExecutor.logError(ErrorMessages
-					.getLowerBoundOfMultiplicityOffendedMessage(actualEnd));
+					.getLowerBoundOfMultiplicityOffendedMessage(this, assocEnd));
 		}
 	}
 

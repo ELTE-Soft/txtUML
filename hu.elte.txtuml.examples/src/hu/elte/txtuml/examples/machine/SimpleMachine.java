@@ -5,32 +5,34 @@ import hu.elte.txtuml.examples.machine.MachineModel.*;
 
 class MachineModel extends Model {
 
+	// classes
+	
 	class Machine extends ModelClass {
-		ModelInt tasksTodo = new ModelInt(2);
+		ModelInt tasksToDo = new ModelInt(3);
 
 		class Init extends Initial {}
 
 		class Off extends State {
 			@Override
 			public void entry() {
-				Action.log("Machine enters state: 'off'");
+				Action.log("\tMachine enters state: 'off'");
 			}
 
 			@Override
 			public void exit() {
-				Action.log("Machine exits state: 'off'");
+				Action.log("\tMachine exits state: 'off'");
 			}
 		}
 
 		class On extends CompositeState {
 			@Override
 			public void entry() {
-				Action.log("Machine enters state: 'on'");
+				Action.log("\tMachine enters state: 'on'");
 			}
 
 			@Override
 			public void exit() {
-				Action.log("Machine exits state: 'on'");
+				Action.log("\tMachine exits state: 'on'");
 			}
 
 			class Init extends Initial {}
@@ -38,13 +40,13 @@ class MachineModel extends Model {
 			class Active extends State {
 				@Override
 				public void entry() {
-					Action.log("Machine enters state: 'active'");
-					Action.log("tasks to do: " + Machine.this.tasksTodo);
+					Action.log("\tMachine enters state: 'active'");
+					Action.log("\tMachine: tasks to do: " + Machine.this.tasksToDo);
 				}
 
 				@Override
 				public void exit() {
-					Action.log("Machine exits state: 'active'");
+					Action.log("\tMachine exits state: 'active'");
 				}
 			}
 
@@ -56,9 +58,14 @@ class MachineModel extends Model {
 				@Override
 				public void effect() {
 					DoTasks doTasks = getSignal(DoTasks.class);
-					Machine.this.tasksTodo = Machine.this.tasksTodo
+					Machine.this.tasksToDo = Machine.this.tasksToDo
 							.subtract(doTasks.count);
 					Action.log("\tMachine: becoming active...");
+				}
+			
+				@Override
+				public ModelBool guard() {
+					return Machine.this.tasksToDo.isMore(ModelInt.ZERO);
 				}
 			}
 		}
@@ -89,17 +96,38 @@ class MachineModel extends Model {
 
 			@Override
 			public ModelBool guard() {
-				return Machine.this.tasksTodo.isLessEqual(new ModelInt(0));
+				return Machine.this.tasksToDo.isLessEqual(ModelInt.ZERO);
 			}
 		}
 	}
 
 	class User extends ModelClass {
-		Machine doWork(User param) {
-			Action.log("User: starting to work...");
+		
+		class Init extends Initial {}
+		class Ready extends State {}
+		
+		@From(Init.class) @To(Ready.class)
+		class Initialize extends Transition {
+			@Override
+			public void effect() {
+				Action.log("\tUser: initializing...");				
+			}
+		}
+
+		@From(Ready.class) @To(Ready.class) @Trigger(DoYourWork.class)
+		class Working extends Transition {
+			@Override
+			public void effect() {
+				Action.log("\tUser: working...");
+				doWork();
+			}
+		}
+		
+		void doWork() {
+			Action.log("\tUser: starting to work...");
 
 			Machine myMachine = this.assoc(Usage.usedMachine.class).selectAny();
-
+			
 			Action.send(myMachine, new ButtonPress());
 			// Switching the machine on.
 			
@@ -123,16 +151,19 @@ class MachineModel extends Model {
 			Action.send(myMachine, new DoTasks(new ModelInt(1)));
 			// This event has no effect, the machine is switched off.
 
-			Action.log("User: work finished...");
-			return myMachine;
+			Action.log("\tUser: work finished...");
 		}
 	}
 
+	// associations
+	
 	class Usage extends Association {
 		class usedMachine extends One<Machine> {}
-		class userOfMachine extends Many<User> {}
+		class userOfMachine extends HiddenMany<User> {}
 	}
 
+	// signals
+	
 	class ButtonPress extends Signal {
 		ModelString name = new ModelString("ButtonPress");
 	}
@@ -145,33 +176,31 @@ class MachineModel extends Model {
 		}
 	}
 
-	class SpecialDoTasks extends DoTasks {
-
-		SpecialDoTasks(ModelInt count) {
-			super(count);
-		}
-	}
-
+	static class DoYourWork extends Signal {}
+	// Signal classes are allowed to be static for simpler use.
+	
 }
 
 class MachineTester {
 	
 	void test() {
-		ModelExecutor.Settings.setExecutorLog(true);
+		ModelExecutor.Settings.setExecutorLog(false);
 
 		Machine m = Action.create(Machine.class);
-
 		User u1 = Action.create(User.class);
 		User u2 = Action.create(User.class);
 
 		Action.link(Usage.usedMachine.class, m, Usage.userOfMachine.class, u1);
 		Action.link(Usage.usedMachine.class, m, Usage.userOfMachine.class, u2);
 
+		Action.log("Machine and users are starting.");
 		Action.start(m);
+		Action.start(u1);
+		Action.start(u2);
 
-		u1.doWork(u2);
+		Action.send(u1, new DoYourWork());
 	}
-	
+
 }
 
 public class SimpleMachine {

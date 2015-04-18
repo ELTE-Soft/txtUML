@@ -151,8 +151,11 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 		if (object == null) {
 			return (S) this;
 		} else if (this.obj != null && !this.obj.equals(object)) {
-			throw new MultiplicityException(ErrorMessages
-					.getUpperBoundOfMultiplicityOffendedMessage(this));
+			throw new MultiplicityException(
+					ErrorMessages.getUpperBoundOfMultiplicityOffendedMessage(
+							getOwner(),
+							(Class<? extends AssociationEnd<?>>) this
+									.getClass()));
 		}
 		return (S) new BaseMaybeOne<T>(object);
 	}
