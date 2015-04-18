@@ -367,7 +367,8 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 
 		associations.put(otherEnd, newValue);
 
-		if (ModelExecutor.Settings.dynamicChecks() && !newValue.checkLowerBound()) {
+		if (ModelExecutor.Settings.dynamicChecks()
+				&& !newValue.checkLowerBound()) {
 			ModelExecutor.checkLowerBoundInNextExecutionStep(object, otherEnd);
 		}
 
@@ -394,6 +395,24 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 				.getValue();
 	}
 
+	/**
+	 * Checks the lower bound of the specified association end's multiplicity.
+	 * Shows a message in case of an error.
+	 * 
+	 * @param assocEnd
+	 *            the association end to check
+	 */
+	void checkLowerBound(Class<? extends AssociationEnd<?>> assocEnd) {
+
+		if (!assocPrivate(assocEnd).checkLowerBound()) {
+			ModelExecutor
+					.logError(ErrorMessages
+							.getLowerBoundOfMultiplicityOffendedMessage(this,
+									assocEnd));
+		}
+
+	}
+
 	@Override
 	void process(Signal signal) {
 		if (isDeleted()) {
@@ -402,15 +421,6 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 			return;
 		}
 		super.process(signal);
-	}
-
-	void checkLowerBound(Class<? extends AssociationEnd<?>> assocEnd) {
-
-		AssociationEnd<?> value = assocPrivate(assocEnd);
-		if (!value.checkLowerBound()) {
-			ModelExecutor.logError(ErrorMessages
-					.getLowerBoundOfMultiplicityOffendedMessage(this, assocEnd));
-		}
 	}
 
 	/**

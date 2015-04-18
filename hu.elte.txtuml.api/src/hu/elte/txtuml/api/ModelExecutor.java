@@ -346,7 +346,25 @@ public final class ModelExecutor implements ModelElement {
 		thread.send(target, signal);
 	}
 
-	public static void checkLowerBoundInNextExecutionStep(ModelClass obj,
+	/**
+	 * Registers a check of the lower bound of the specified association end's
+	 * multiplicity to be performed in the next execution step.
+	 * <p>
+	 * The lower bound of multiplicities might be offended temporarily but has
+	 * to be restored before returning from the current execution step.
+	 * <p>
+	 * An execution step starts when an asynchronous event (like a signal event)
+	 * is chosen by the executor to be processed and ends when that event and
+	 * all the synchronous events caused by it (like a state machine changing
+	 * state, entry and exit actions, transition effects, operation calls,
+	 * etc.), have been processed.
+	 * 
+	 * @param obj
+	 *            the object on the opposite end of the association
+	 * @param assocEnd
+	 *            the association end which's multiplicity is to be checked
+	 */
+	static void checkLowerBoundInNextExecutionStep(ModelClass obj,
 			Class<? extends AssociationEnd<?>> assocEnd) {
 
 		thread.checkLowerBoundOfMultiplcitiy(obj, assocEnd);
