@@ -23,7 +23,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Variable;
 
 /**
- * This class is responsible for importing operations of Collections (e.g. Collection.selectOne, Collection.selectAll, etc.)
+ * This class is responsible for importing operations of Collections (e.g. Collection.selectAny, Collection.selectAll, etc.)
  * inside method bodies.
  * 
  * @author Ádám Ancsin
@@ -46,7 +46,7 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 	 *
 	 * @author Ádám Ancsin
 	 */
-	static <T extends ModelClass> T importSelectOne(Collection<T> target) 
+	static <T extends ModelClass> T importSelectAny(Collection<T> target) 
 	{
 		Class<?> targetClass = target.getClass();
 		Class<?> typeClass = getCollectionGenericParameterType(target);
@@ -67,7 +67,7 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 		if(currentActivity != null)
 		{
 			createActivityElementsForCollectionOperation(
-					"selectOne_"+targetExpression,
+					"selectAny_"+targetExpression,
 					targetExpression, 
 					selectExpression, 
 					result, 
@@ -278,7 +278,7 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 	 * @param operationExpression The expression of the operation.
 	 * @param result The result instance of the operation. (a ModelClass instance or a collection)
 	 * @param typeClass The class of the result.
-	 * @param operationType The type of operation. (e.g. selectAll, selectOne, remove, add, etc.)
+	 * @param operationType The type of operation. (e.g. selectAll, selectAny, remove, add, etc.)
 	 *
 	 * @author Ádám Ancsin
 	 */

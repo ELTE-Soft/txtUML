@@ -11,7 +11,7 @@ import org.aspectj.lang.annotation.SuppressAjWarnings;
 
 /**
  * This aspect contains advices for importing operations of Collections
- * (e.g. Collection.selectOne, Collection.selectAll, etc.) inside method bodies.
+ * (e.g. Collection.selectAny, Collection.selectAll, etc.) inside method bodies.
  * 
  * @author Ádám Ancsin
  *
@@ -19,7 +19,7 @@ import org.aspectj.lang.annotation.SuppressAjWarnings;
 public privileged aspect CollectionOperationImporterAspect extends AbstractImporterAspect
 {
 	/**
-	 * This advice imports a selectOne call on a Collection if called from a txtUML method body
+	 * This advice imports a selectAny call on a Collection if called from a txtUML method body
 	 * during model import.
 	 * 
 	 * @param target The target collection.
@@ -29,9 +29,9 @@ public privileged aspect CollectionOperationImporterAspect extends AbstractImpor
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@SuppressAjWarnings
-	Object around(Collection target):target(target) && call(* selectOne()) && isActive()
+	Object around(Collection target):target(target) && call(* selectAny()) && isActive()
 	{
-		return CollectionOperationImporter.importSelectOne(target);
+		return CollectionOperationImporter.importSelectAny(target);
 	}
 
 	/**
