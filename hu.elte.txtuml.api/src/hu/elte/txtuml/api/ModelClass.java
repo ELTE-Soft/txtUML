@@ -369,6 +369,7 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	}
 
 	/**
+	 * TODO check doc
 	 * Starts the state machine of this object.
 	 * <p>
 	 * If this object is <i>not</i> in {@link Status#READY READY} status, this
@@ -394,6 +395,7 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	}
 
 	/**
+	 * TODO check doc
 	 * Looks up all the defined associations of the model class this object is
 	 * an instance of and initializes them by assigning empty {@link Collection
 	 * Collections} to them. If any of them has a lower bound higher than zero,
@@ -463,6 +465,7 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	}
 
 	/**
+	 * TODO check doc
 	 * Initializes the specified association end by assigning an empty
 	 * {@link Collection} to it. If it has a lower bound higher than zero then
 	 * registers that association end to be checked in the next execution step.
@@ -476,6 +479,10 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	private void initializeDefinedAssociationEnd(
 			Class<? extends AssociationEnd<?>> assocEnd) {
 
+		if (associations.get(assocEnd) != null) {
+			return;
+		}
+		
 		AssociationEnd<?> value = InstanceCreator
 				.createInstanceWithGivenParams(assocEnd, (Object) null);
 
