@@ -111,7 +111,8 @@ public final class ElementTypeTeller {
 	 */
 	public static boolean isAttribute(Field field)
 	{
-		return ModelElement.class.isAssignableFrom(field.getType());
+		return 	ModelElement.class.isAssignableFrom(field.getType()) || 
+				ExternalClass.class.isAssignableFrom(field.getType());
     }
     
 	/**

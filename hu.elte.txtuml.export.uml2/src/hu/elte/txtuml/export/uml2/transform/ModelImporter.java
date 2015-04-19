@@ -141,9 +141,8 @@ public class ModelImporter extends AbstractImporter{
 	 *
 	 * @author Ádám Ancsin
 	 */
-	static org.eclipse.uml2.uml.Type importType(Class<?> sourceClass) 
+	static org.eclipse.uml2.uml.Type importType(Class<?> sourceClass)
 	{
-		
 		if(sourceClass == ModelInt.class) 
 			return UMLPrimitiveTypesProvider.getInteger();
 		else if(sourceClass == ModelBool.class) 
@@ -151,9 +150,40 @@ public class ModelImporter extends AbstractImporter{
 		else if(sourceClass == ModelString.class) 
 			return UMLPrimitiveTypesProvider.getString();
 		else if(sourceClass == Timer.class)
-			return currentModel.getOwnedType(ImporterConfiguration.timerName);
+		{
+			Type timerType = currentModel.getOwnedType(ImporterConfiguration.timerName);
+			if(timerType == null)
+			{
+				try
+				{
+					TimerCreator.createTimer(currentModel, currentProfile);
+					timerType = currentModel.getOwnedType(ImporterConfiguration.timerName);
+				}
+				catch(ImportException e)
+				{
+					
+				}			
+			}
+			return timerType;
+		}
 		else if(sourceClass.getDeclaringClass() ==  Timer.class)
-			return currentModel.getOwnedType(ImporterConfiguration.timerName+"_"+sourceClass.getSimpleName());
+		{
+			String typeName = ImporterConfiguration.timerName+"_"+sourceClass.getSimpleName();
+			Type type = currentModel.getOwnedType(typeName);
+			if(type == null)
+			{
+				try
+				{
+					TimerCreator.createTimer(currentModel, currentProfile);
+					type = currentModel.getOwnedType(typeName);
+				}
+				catch(ImportException e)
+				{
+					
+				}    
+			}
+			return type;
+		}
 		else if(ElementTypeTeller.isClass(sourceClass))
 			return currentModel.getOwnedType(sourceClass.getSimpleName());
 		else
@@ -184,9 +214,7 @@ public class ModelImporter extends AbstractImporter{
         ProfileCreator.createProfileForModel(className,path,resourceSet);
         loadAndApplyProfile();
         UMLPrimitiveTypesProvider.importFromProfile(currentProfile);
-        
-        TimerCreator.createTimer(currentModel, currentProfile);
-        
+               
         InstanceManager.initGlobalInstancesMap();
 	}
 	

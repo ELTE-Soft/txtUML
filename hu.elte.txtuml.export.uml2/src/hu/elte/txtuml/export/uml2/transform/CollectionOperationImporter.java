@@ -33,14 +33,14 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 
 	private enum OperationTypes
 	{
-		SELECT_ONE_LITERAL,
+		SELECT_ANY_LITERAL,
 		SELECT_ALL_LITERAL,
 		ADD_ONE_LITERAL,
 		ADD_ALL_LITERAL, REMOVE_LITERAL
 	}
 	
 	/**
-	 * Imports a select one instruction of a Collection in a method body.
+	 * Imports a select any instruction of a Collection in a method body.
 	 * @param target The dummy instance of the target Collection.
 	 * @return The dummy instance of the result.
 	 *
