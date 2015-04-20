@@ -70,6 +70,8 @@ public abstract class VariableType<T, MT extends ModelType<T>> {
 	}
 
 	/**
+	 * Returns the <code>ModelType</code> value of this variable instance.
+	 * 
 	 * @return the value of this variable
 	 */
 	public MT get() {

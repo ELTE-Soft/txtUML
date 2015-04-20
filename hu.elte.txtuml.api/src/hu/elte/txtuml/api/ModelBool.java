@@ -126,9 +126,9 @@ public class ModelBool extends ModelType<Boolean> {
 	}
 
 	/**
-	 * Calculates <code>!</code><i>t</i> where <i>t</i> is the boolean value of
-	 * this object. Returns a new <code>ModelBool</code> instance representing
-	 * the result.
+	 * Calculates <code>-</code><i>t</i> (<code>not</code> <i>t</i>) where
+	 * <i>t</i> is the boolean value of this object. Returns a new
+	 * <code>ModelBool</code> instance representing the result.
 	 * 
 	 * @return new <code>ModelBool</code> instance representing the result
 	 */
@@ -201,7 +201,7 @@ public class ModelBool extends ModelType<Boolean> {
 	}
 
 	/**
-	 * Calculates <i>t</i> <code>!=</code> <i>v</i> where <i>t</i> is the
+	 * Calculates <i>t</i> <code>/=</code> <i>v</i> where <i>t</i> is the
 	 * boolean value of this object and <i>v</i> is the boolean value of the
 	 * <code>val</code> parameter. Returns a new <code>ModelBool</code> instance
 	 * representing the result.

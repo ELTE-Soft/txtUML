@@ -50,8 +50,8 @@ public final class ModelExecutor implements ModelElement {
 	// SETTINGS
 
 	/**
-	 * This class provides all the global settings of txtUML model execution
-	 * through its static methods.
+	 * Provides all the global settings of txtUML model execution through its
+	 * static methods.
 	 * 
 	 * <p>
 	 * <b>Represents:</b> no model element

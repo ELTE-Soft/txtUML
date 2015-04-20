@@ -195,7 +195,7 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	/**
 	 * Sole constructor of <code>ModelClass</code>. Creates the unique
 	 * identifier of this object and after setting its current vertex to its
-	 * initial pseudostate (if any), it goes to either {@link Status#READY
+	 * initial pseudostate (if any), it goes into either {@link Status#READY
 	 * READY} or {@link Status#FINALIZED FINALIZED} status depending on whether
 	 * it has any state machine or not (any initial pseudostate or not).
 	 * <p>
@@ -231,8 +231,9 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 
 	/**
 	 * Gets the collection containing the objects in association with this
-	 * object and being on the specified opposite association end. May only be
-	 * called with a navigable association end as its parameter.
+	 * object and being on the specified opposite <i>navigable</i> association
+	 * end. May not be called with a non-navigable association end as its
+	 * parameter.
 	 * 
 	 * @param <T>
 	 *            the type of objects which are on the opposite association end
@@ -252,7 +253,8 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 
 	/**
 	 * Gets the collection containing the objects in association with this
-	 * object and being on the specified opposite association end.
+	 * object and being on the specified opposite (navigable or non-navigable)
+	 * association end.
 	 * 
 	 * @param <T>
 	 *            the type of objects which are on the opposite association end
@@ -478,7 +480,8 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	 * 
 	 * @param assocEnd
 	 *            the association end the owner of which is sought
-	 * @return the first generic parameter of <code>assocEnd</code>
+	 * @return the owner <code>ModelClass</code> type of the specified
+	 *         association end
 	 */
 	private Type getOwnerOfAssocEnd(Class<?> assocEnd) {
 		return ((ParameterizedType) assocEnd.getGenericSuperclass())

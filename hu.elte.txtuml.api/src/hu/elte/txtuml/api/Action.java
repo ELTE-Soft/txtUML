@@ -129,7 +129,7 @@ public abstract class Action implements ModelElement {
 	}
 
 	/**
-	 * Checks whether the specified model object is deleted. If it is, this
+	 * Checks whether the specified model object is deleted; if it is, this
 	 * method shows an error about a failed linking operation because of the
 	 * deleted model object given as parameter to the {@link Action#link link}
 	 * method.
@@ -202,7 +202,7 @@ public abstract class Action implements ModelElement {
 	}
 
 	/**
-	 * Checks whether the specified model object is deleted. If it is, this
+	 * Checks whether the specified model object is deleted; if it is, this
 	 * method shows an error about a failed unlinking operation because of the
 	 * deleted model object given as parameter to the {@link Action#unlink
 	 * unlink} method.
