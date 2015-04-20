@@ -48,13 +48,12 @@ package hu.elte.txtuml.api;
  * 
  * <p>
  * <b>Example:</b>
- * <p>
  * 
  * <pre>
  * <code>
  * class ExampleSignal extends Signal {}
  * 
- * {@literal /}{@literal /} ... somewhere in the action code
+ * {@literal //} somewhere in the action code:
  * 
  * Action.send(obj, new ExampleSignal());
  * </code>

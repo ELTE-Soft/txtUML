@@ -423,7 +423,7 @@ public final class ModelExecutor implements ModelElement {
 	 * @param printStream
 	 *            the stream to print on
 	 * @param message
-	 *            the to print on the given stream
+	 *            the message to print on the given stream
 	 */
 	private static void logOnStream(PrintStream printStream, String message) {
 		synchronized (printStream) {

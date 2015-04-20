@@ -18,6 +18,8 @@ public interface JavaCollectionOfMany<T extends ModelClass> extends
 	/**
 	 * Creates a new <code>JavaCollectionOfMany</code> instance.
 	 * 
+	 * @param <T>
+	 *            the type of model objects to be contained in this collection
 	 * @return the new instance
 	 */
 	static <T extends ModelClass> JavaCollectionOfMany<T> create() {

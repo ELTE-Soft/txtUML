@@ -37,28 +37,26 @@ package hu.elte.txtuml.api;
  * representing a certain model element</li>
  * <li><i>Nested enums:</i> disallowed</li>
  * </ul>
- * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
+ * <li><i>Inherit from the defined subtype:</i> disallowed</li>
  * </ul>
  * 
  * <p>
  * <b>Example:</b>
- * <p>
  * 
  * <pre>
  * <code>
- * 
  * public class ExampleModel extends Model {
  * 	class ExampleClass1 extends ModelClass {
- *  		{@literal /}{@literal /}...
+ *  		//...
  * 	}
  * 
  * 	class ExampleClass2 extends ModelClass {
- *  		{@literal /}{@literal /}...
+ *  		//...
  * 	}
  *  
  * 	public static class ExampleSignal extends Signal {}
  *  
- * 	{@literal /}{@literal /}...
+ * 	//...
  * 
  * }
  * </code>

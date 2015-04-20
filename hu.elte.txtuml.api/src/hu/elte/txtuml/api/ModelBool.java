@@ -21,7 +21,6 @@ package hu.elte.txtuml.api;
  * 
  * <p>
  * <b>Example:</b>
- * <p>
  * 
  * <pre>
  * <code>
@@ -73,12 +72,11 @@ public class ModelBool extends ModelType<Boolean> {
 	 * 
 	 * <p>
 	 * <b>Example:</b>
-	 * <p>
 	 * 
 	 * <pre>
 	 * <code>
-	 * {@literal @}From(ExampleChoice.class) {@literal @}To(TargetVertex.class)
-	 * {@literal /}{@literal /} no {@literal @}Trigger annotation in case of a transition from a choice pseudostate 
+	 * {@literal @From(ExampleChoice.class) @To(TargetVertex.class)}
+	 * // no {@literal @}Trigger annotation in case of a transition from a choice pseudostate 
 	 * class MyTransition extends Transition {
 	 * 	{@literal @}Override
 	 * 	public ModelBool guard() {
@@ -155,8 +153,8 @@ public class ModelBool extends ModelType<Boolean> {
 	}
 
 	/**
-	 * Calculates <i>t</i> <code>&&</code> <i>v</i> where <i>t</i> is the
-	 * boolean value of this object and <i>v</i> is the boolean value of the
+	 * Calculates <i>t</i> <code>{@literal &&}</code> <i>v</i> where <i>t</i> is
+	 * the boolean value of this object and <i>v</i> is the boolean value of the
 	 * <code>val</code> parameter. Returns a new <code>ModelBool</code> instance
 	 * representing the result.
 	 * 

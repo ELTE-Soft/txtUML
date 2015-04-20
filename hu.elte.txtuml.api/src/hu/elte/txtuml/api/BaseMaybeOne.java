@@ -146,10 +146,10 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	final <S extends AssociationEnd<T>> S typeKeepingAdd(T object)
+	final AssociationEnd<T> typeKeepingAdd(T object)
 			throws MultiplicityException {
 		if (object == null) {
-			return (S) this;
+			return this;
 		} else if (this.obj != null && !this.obj.equals(object)) {
 			throw new MultiplicityException(
 					ErrorMessages.getUpperBoundOfMultiplicityOffendedMessage(
@@ -157,16 +157,15 @@ class BaseMaybeOne<T extends ModelClass> extends AssociationEnd<T> {
 							(Class<? extends AssociationEnd<?>>) this
 									.getClass()));
 		}
-		return (S) new BaseMaybeOne<T>(object);
+		return new BaseMaybeOne<T>(object);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	final <S extends AssociationEnd<T>> S typeKeepingRemove(T object) {
+	final AssociationEnd<T> typeKeepingRemove(T object) {
 		if (object == null || !object.equals(this.obj)) {
-			return (S) this;
+			return this;
 		}
-		return (S) new BaseMaybeOne<T>();
+		return new BaseMaybeOne<T>();
 	}
 
 	@Override

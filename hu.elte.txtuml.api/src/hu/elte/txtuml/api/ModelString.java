@@ -21,7 +21,6 @@ package hu.elte.txtuml.api;
  * 
  * <p>
  * <b>Example:</b>
- * <p>
  * 
  * <pre>
  * <code>

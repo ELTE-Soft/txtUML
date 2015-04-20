@@ -47,18 +47,17 @@ import hu.elte.txtuml.layout.lang.elements.LayoutLink;
  * and are subclasses of <code>AssociationEnd</code></li>
  * <li><i>Nested enums:</i> disallowed</li>
  * </ul>
- * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
+ * <li><i>Inherit from the defined subtype:</i> disallowed</li>
  * </ul>
  * 
  * <p>
  * <b>Example:</b>
- * <p>
  * 
  * <pre>
  * <code>
  * class ExampleAssociation extends Association {
- * 	class ExampleEnd1 extends Many{@code <ExampleClass1>} {}
- * 	class ExampleEnd2 extends HiddenOne{@code <ExampleClass2>} {}
+ * 	class ExampleEnd1 extends {@literal Many<ExampleClass1>} {}
+ * 	class ExampleEnd2 extends {@literal HiddenOne<ExampleClass2>} {}
  * }
  * </code>
  * </pre>
@@ -129,7 +128,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
@@ -195,7 +194,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
@@ -261,7 +260,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
@@ -327,7 +326,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
@@ -394,7 +393,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
@@ -461,7 +460,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
@@ -528,7 +527,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
@@ -594,7 +593,7 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an

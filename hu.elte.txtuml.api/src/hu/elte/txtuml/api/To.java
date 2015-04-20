@@ -42,11 +42,10 @@ import java.lang.annotation.Target;
  * 
  * <p>
  * <b>Example:</b>
- * <p>
  * 
  * <pre>
  * <code>
- * {@literal @}From(SourceState.class) {@literal @}To(TargetState.class) {@literal @}Trigger(MySignal.class)
+ * {@literal @From(SourceState.class) @To(TargetState.class) @Trigger(MySignal.class)}
  * class MyTransition extends Transition {}
  * </code>
  * </pre>

@@ -56,8 +56,8 @@ public abstract class Region extends StateMachine {
 	 * initial pseudostate. The initial pseudostate is a nested class of the
 	 * <i>actual region class</i> which is a subclass of
 	 * {@link StateMachine.Initial}. The <i>actual region class</i> refers to
-	 * the class represented by the <code>java.lang.Class<?></code> object which
-	 * is returned by the <code>getClass</code> method when this constructor is
+	 * the class represented by the {@code java.lang.Class<?>} object which is
+	 * returned by the <code>getClass</code> method when this constructor is
 	 * run.
 	 * <p>
 	 * If two or more initial pseudostates exist in this region (two or more

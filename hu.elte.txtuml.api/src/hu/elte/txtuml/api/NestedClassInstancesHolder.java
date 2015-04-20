@@ -39,6 +39,8 @@ abstract class NestedClassInstancesHolder {
 	 * through multiple enclosures), the return value of this method is
 	 * unspecified.
 	 * 
+	 * @param <T>
+	 *            the type for which an instance is required
 	 * @param forWhat
 	 *            the nested class for which an instance is required
 	 * @return <code>null</code> if <code>forWhat</code> is <code>null</code> or

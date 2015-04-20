@@ -31,15 +31,14 @@ package hu.elte.txtuml.api;
  * 
  * <p>
  * <b>Example:</b>
- * <p>
  * 
  * <pre>
  * <code>
- * 	VariableInt i = new VariableInt(10);
- * 	Action.While( () -> i.get().isMore(ModelInt.ZERO), () -> { 
- * 		Action.log("i is decreased by one");
- * 		i.set(i.get().subtract(ModelInt.ONE));	
- * 	});
+ * VariableInt i = new VariableInt(10);
+ * Action.While( () {@literal ->} i.get().isMore(ModelInt.ZERO), () {@literal ->} { 
+ * 	Action.log("i is decreased by one");
+ * 	i.set(i.get().subtract(ModelInt.ONE));	
+ * });
  * </code>
  * </pre>
  * 

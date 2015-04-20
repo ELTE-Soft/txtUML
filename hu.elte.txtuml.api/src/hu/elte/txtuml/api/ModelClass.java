@@ -53,19 +53,18 @@ import java.util.concurrent.atomic.AtomicLong;
  * model class</li>
  * <li><i>Methods:</i> allowed, only with parameters and return values of types
  * which are subclasses of {@link ModelClass}, {@link ModelType} or
- * Collection<>; they represent operations of the model class</li>
+ * {@link Collection}; they represent operations of the model class</li>
  * <li><i>Nested interfaces:</i> disallowed</li>
  * <li><i>Nested classes:</i> allowed, only non-static and extending either
  * {@link StateMachine.Vertex} or {@link StateMachine.Transition}</li>
  * <li><i>Nested enums:</i> disallowed</li>
  * </ul>
  * <li><i>Inherit from the defined subtype:</i> allowed, to represent class
- * inheritance</li></li>
+ * inheritance</li>
  * </ul>
  * 
  * <p>
  * <b>Example:</b>
- * <p>
  * 
  * <pre>
  * <code>
@@ -76,10 +75,10 @@ import java.util.concurrent.atomic.AtomicLong;
  * 	ModelInt id;
  * 
  * 	void work(ModelInt hours, ModelInt payment) {
- * 		{@literal /}{@literal /} ...
- *  	}
+ * 		{@literal //...}
+ * 	}
  *  
- *  {@literal /}{@literal /} ...
+ * 	{@literal //...}
  *  
  * }
  * </code>
@@ -219,8 +218,8 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	}
 
 	/**
-	 * Each model object has a unique identifier created upon the creation of
-	 * the model object.
+	 * Returns a unique identifier of this model object which is created upon
+	 * the creation of this object.
 	 * 
 	 * @return the unique identifier of this model object
 	 */
@@ -234,6 +233,10 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	 * object and being on the specified opposite association end. May only be
 	 * called with a navigable association end as its parameter.
 	 * 
+	 * @param <T>
+	 *            the type of objects which are on the opposite association end
+	 * @param <AE>
+	 *            the type of the opposite association end
 	 * @param otherEnd
 	 *            the opposite association end
 	 * @return collection containing the objects in association with this object
@@ -250,6 +253,10 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	 * Gets the collection containing the objects in association with this
 	 * object and being on the specified opposite association end.
 	 * 
+	 * @param <T>
+	 *            the type of objects which are on the opposite association end
+	 * @param <AE>
+	 *            the type of the opposite association end
 	 * @param otherEnd
 	 *            the opposite association end
 	 * @return collection containing the objects in association with this object
@@ -273,6 +280,10 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	 * association with this object and being on the specified opposite
 	 * association end.
 	 * 
+	 * @param <T>
+	 *            the type of objects which are on the opposite association end
+	 * @param <AE>
+	 *            the type of the opposite association end
 	 * @param otherEnd
 	 *            the opposite association end
 	 * @param object
@@ -298,6 +309,10 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	 * in association with this object and being on the specified opposite
 	 * association end.
 	 * 
+	 * @param <T>
+	 *            the type of objects which are on the opposite association end
+	 * @param <AE>
+	 *            the type of the opposite association end
 	 * @param otherEnd
 	 *            the opposite association end
 	 * @param object
@@ -324,6 +339,10 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	 * the objects in association with this object and being on the specified
 	 * opposite association end.
 	 * 
+	 * @param <T>
+	 *            the type of objects which are on the opposite association end
+	 * @param <AE>
+	 *            the type of the opposite association end
 	 * @param otherEnd
 	 *            the opposite association end
 	 * @param object
@@ -369,13 +388,12 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	}
 
 	/**
-	 * TODO check doc
-	 * Starts the state machine of this object.
+	 * TODO check doc Starts the state machine of this object.
 	 * <p>
 	 * If this object is <i>not</i> in {@link Status#READY READY} status, this
 	 * method does nothing. Otherwise, it sends an asynchronous request to
 	 * itself to step forward from its initial pseudostate and also changes its
-	 * status to {@link Status#ACTIVE ACTIVE}</code>.
+	 * status to {@link Status#ACTIVE ACTIVE}.
 	 * <p>
 	 * If the optional dynamic checks are switched on in
 	 * {@link ModelExecutor.Settings}, this method also initializes the defined
@@ -395,12 +413,11 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	}
 
 	/**
-	 * TODO check doc
-	 * Looks up all the defined associations of the model class this object is
-	 * an instance of and initializes them by assigning empty {@link Collection
-	 * Collections} to them. If any of them has a lower bound higher than zero,
-	 * then registers that association end to be checked in the next execution
-	 * step.
+	 * TODO check doc Looks up all the defined associations of the model class
+	 * this object is an instance of and initializes them by assigning empty
+	 * {@link Collection Collections} to them. If any of them has a lower bound
+	 * higher than zero, then registers that association end to be checked in
+	 * the next execution step.
 	 * <p>
 	 * Shows an error about a bad model if any exception is thrown during the
 	 * above described process as this method and all the methods this calls,
@@ -465,10 +482,10 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	}
 
 	/**
-	 * TODO check doc
-	 * Initializes the specified association end by assigning an empty
-	 * {@link Collection} to it. If it has a lower bound higher than zero then
-	 * registers that association end to be checked in the next execution step.
+	 * TODO check doc Initializes the specified association end by assigning an
+	 * empty {@link Collection} to it. If it has a lower bound higher than zero
+	 * then registers that association end to be checked in the next execution
+	 * step.
 	 * <p>
 	 * Exceptions might be thrown in case of a model error as this method
 	 * assumes that the model is well-defined.
@@ -482,7 +499,7 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 		if (associations.get(assocEnd) != null) {
 			return;
 		}
-		
+
 		AssociationEnd<?> value = InstanceCreator
 				.createInstanceWithGivenParams(assocEnd, (Object) null);
 

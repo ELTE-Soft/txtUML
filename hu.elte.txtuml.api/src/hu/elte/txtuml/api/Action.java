@@ -53,6 +53,8 @@ public abstract class Action implements ModelElement {
 	/**
 	 * Creates a new instance of the specified model class.
 	 * 
+	 * @param <T>
+	 *            the type of the new model object
 	 * @param classType
 	 *            the model class for which a new instance is to be created
 	 * @return a new instance of <code>classType</code> or <code>null</code> if
@@ -88,8 +90,12 @@ public abstract class Action implements ModelElement {
 	 * linked between the two objects.
 	 * <p>
 	 * The two specified ends must be the two different ends of the same
-	 * transition. Non of the parameters should be <code>null</code>.
+	 * transition. None of the parameters should be <code>null</code>.
 	 * 
+	 * @param <L>
+	 *            the type of objects on the left end of the association
+	 * @param <R>
+	 *            the type of objects on the right end of the association
 	 * @param leftEnd
 	 *            the left end of the association
 	 * @param leftObj
@@ -150,8 +156,12 @@ public abstract class Action implements ModelElement {
 	 * never linked) between the two objects, this method shows a warning.
 	 * <p>
 	 * The two specified ends must be the two different ends of the same
-	 * transition. Non of the parameters should be <code>null</code>.
+	 * transition. None of the parameters should be <code>null</code>.
 	 * 
+	 * @param <L>
+	 *            the type of objects on the left end of the association
+	 * @param <R>
+	 *            the type of objects on the right end of the association
 	 * @param leftEnd
 	 *            the left end of the association
 	 * @param leftObj
@@ -254,14 +264,13 @@ public abstract class Action implements ModelElement {
 	 * called instead.
 	 * <p>
 	 * <b>Example:</b>
-	 * <p>
 	 * 
 	 * <pre>
 	 * <code>
 	 * 	ModelInt i = new ModelInt(-1);
-	 * 	Action.If( () -> i.isEqual(ModelInt.ZERO), () -> { 
+	 * 	Action.If( () {@literal ->} i.isEqual(ModelInt.ZERO), () {@literal ->} { 
 	 *  		Action.log("i is zero");	
-	 * 	}, () -> {
+	 * 	}, () {@literal ->} {
 	 *  		Action.log("i is not zero");
 	 * 	});
 	 * </code>
@@ -293,7 +302,7 @@ public abstract class Action implements ModelElement {
 
 	/**
 	 * Equals to calling {@link Action#If(Condition, BlockBody, BlockBody)
-	 * Action.If}<code>(cond, thenBody, () -> {})</code>.
+	 * Action.If}<code>(cond, thenBody, () {@literal ->} {})</code>.
 	 * 
 	 * @param cond
 	 *            the condition of the <code>if</code> statement
@@ -314,12 +323,11 @@ public abstract class Action implements ModelElement {
 	 * method should be called instead.
 	 * <p>
 	 * <b>Example:</b>
-	 * <p>
 	 * 
 	 * <pre>
 	 * <code>
 	 * 	VariableInt i = new VariableInt(10);
-	 * 	Action.While( () -> i.get().isMore(ModelInt.ZERO), () -> { 
+	 * 	Action.While( () {@literal ->} i.get().isMore(ModelInt.ZERO), () {@literal ->} { 
 	 * 		Action.log("i is decreased by one");
 	 * 		i.set(i.get().subtract(ModelInt.ONE));	
 	 * 	});
@@ -354,6 +362,8 @@ public abstract class Action implements ModelElement {
 	 * This method is currently <b>only available in the API</b>, its use is
 	 * <b>not exported to UML2</b>.
 	 * 
+	 * @param <T>
+	 *            the type of objects inside the collection
 	 * @param collection
 	 *            the collection on which this method will iterate
 	 * @param body
@@ -382,14 +392,13 @@ public abstract class Action implements ModelElement {
 	 * called instead.
 	 * <p>
 	 * <b>Example:</b>
-	 * <p>
 	 * 
 	 * <pre>
 	 * <code>
-	 * Action.For( new ModelInt(1), new ModelInt(10), i -> { 
-	 * 	Action.If(() -> i.isLessEqual(new ModelInt(5)), () -> {
+	 * Action.For( new ModelInt(1), new ModelInt(10), i {@literal ->} { 
+	 * 	Action.If(() {@literal ->} i.isLessEqual(new ModelInt(5)), () {@literal ->} {
 	 * 		Action.log("showing this message five times");
-	 * 	}, () -> {
+	 * 	}, () {@literal ->} {
 	 * 		Action.log("showing this other message also five times");		  			
 	 * 	});
 	 * });

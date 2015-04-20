@@ -69,11 +69,9 @@ package hu.elte.txtuml.api;
  * <li><i>Nested classes:</i> allowed</li>
  * <li><i>Nested enums:</i> allowed</li>
  * </ul>
- * <li><i>Inherit from the defined subtype:</i> allowed</li></li>
+ * <li><i>Inherit from the defined subtype:</i> allowed
  * </ul>
  * 
- * As an example, see the
- * <p>
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an
  * overview on modeling in txtUML.
  *
@@ -101,6 +99,8 @@ public class ExternalClass {
 	 * gained from the model for an external component. If any data is sent back
 	 * to the model, it must be in the form of <code>ModelType</code> objects.
 	 * 
+	 * @param <T>
+	 *            the Java type of the primitive type this object represents
 	 * @param objectToConvert
 	 *            the object to be converted
 	 * @return the value represented by <code>objectToConvert</code>

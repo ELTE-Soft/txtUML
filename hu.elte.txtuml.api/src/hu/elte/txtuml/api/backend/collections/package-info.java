@@ -1,5 +1,5 @@
 /**
- * This package, as a subpackage of {@link hu.elte.txtuml.api.backend},
+ * As a subpackage of {@link hu.elte.txtuml.api.backend},
  * provides backend features for the {@link hu.elte.txtuml.api} package to 
  * help in the model execution. Is not part of the public API.
  * <p>

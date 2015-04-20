@@ -1,5 +1,5 @@
 /*
- * This package provides the txtUML model API. 
+ * Provides the txtUML model API. 
  * 
  * TODO overview
  * 

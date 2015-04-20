@@ -165,7 +165,7 @@ public abstract class AssociationEnd<T extends ModelClass> implements
 	 *             if the upper bound of this association end's multiplicity has
 	 *             been offended
 	 */
-	abstract <S extends AssociationEnd<T>> S typeKeepingAdd(T object)
+	abstract AssociationEnd<T> typeKeepingAdd(T object)
 			throws MultiplicityException;
 
 	/**
@@ -184,7 +184,7 @@ public abstract class AssociationEnd<T extends ModelClass> implements
 	 *            the model object to be removed from this association end
 	 * @return the result of the operation
 	 */
-	abstract <S extends AssociationEnd<T>> S typeKeepingRemove(T object);
+	abstract AssociationEnd<T> typeKeepingRemove(T object);
 
 	/**
 	 * Checks whether the upper bound of this association end's multiplicity is

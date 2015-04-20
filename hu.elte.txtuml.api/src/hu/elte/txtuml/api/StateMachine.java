@@ -55,7 +55,7 @@ package hu.elte.txtuml.api;
  * 
  * 	class S1 extends State {}
  * 
- * 	{@literal @}From(Init.class) {@literal @}To(S1.class)
+ * 	{@literal @From(Init.class) @To(S1.class)}
  * 	class Initialize extends Transition {}
  * }
  * </code>
@@ -69,9 +69,9 @@ package hu.elte.txtuml.api;
  * <code>
  * class MyClass2 extends ModelClass {
  * 
- * 	{@literal /}{@literal /}...
+ * 	//...
  * 
- * 	{@literal @}From(SourceState.class) {@literal @}To(TargetState.class) {@literal @}Trigger(MySignal.class)
+ * 	{@literal @From(SourceState.class) @To(TargetState.class) @Trigger(MySignal.class)}
  * 	class MyTransition extends Transition {
  * 		{@literal @}Override
  * 		public void effect() {
@@ -85,7 +85,7 @@ package hu.elte.txtuml.api;
  * 		}
  * 	}
  * 
- * 	{@literal /}{@literal /}...
+ * 	//...
  * 
  * }
  * </code>
@@ -97,7 +97,7 @@ package hu.elte.txtuml.api;
  * <code>
  * class MyClass3 extends ModelClass {
  * 
- * 	{@literal /}{@literal /}...
+ * 	//...
  * 
  * 	class MyState extends State {
  * 		{@literal @}Override
@@ -111,7 +111,7 @@ package hu.elte.txtuml.api;
  * 		}
  * 	}
  * 
- * 	{@literal /}{@literal /}...
+ * 	//...
  * 
  * }
  * </code>
@@ -127,9 +127,9 @@ package hu.elte.txtuml.api;
  * <code>
  * class MyClass4 extends ModelClass {
  * 
- * 	{@literal /}{@literal /}...
+ * 	//...
  * 
- * 	ModelInt i = {@literal /}{@literal /}...
+ * 	ModelInt i = //...
  * 
  * 	class MyCompositeState extends CompositeState {
  * 		class Init extends Initial {}
@@ -137,30 +137,30 @@ package hu.elte.txtuml.api;
  * 		class S1 extends State {}
  * 		class S2 extends State {}
  * 
- * 		{@literal @}From(Init.class) {@literal @}To(MyChoice.class)
+ * 		{@literal @From(Init.class) @To(MyChoice.class)}
  * 		class Initialize extends Transition {}
  * 
- * 		{@literal @}From(MyChoice.class) {@literal @}To(S1.class)
+ * 		{@literal @From(MyChoice.class) @To(S1.class)}
  * 		class FromChoice1 extends Transition {
- *  		{@literal @}Override
+ * 			{@literal @}Override
  * 			public ModelBool guard() {
  * 				return i.isEqual(ModelInt.ZERO);
  * 			}
  * 		}
  * 
- * 		{@literal @}From(MyChoice.class) {@literal @}To(S2.class)
+ * 		{@literal @From(MyChoice.class) @To(S2.class)}
  * 		class FromChoice2 extends Transition {
- *  		{@literal @}Override
+ * 			{@literal @}Override
  * 			public ModelBool guard() {
  * 				return ModelBool.ELSE;
  * 			}
  * 		}
  * 
- * 		{@literal /}{@literal /}...
+ * 		//...
  * 
  * 	}
  * 
- * 	{@literal /}{@literal /}...
+ * 	//...
  * 
  * }
  * </code>
@@ -193,7 +193,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	}
 
 	/**
-	 * Base class for vertices in the model
+	 * Base class for vertices in the model.
 	 * 
 	 * <p>
 	 * <b>Represents:</b> vertex
@@ -391,7 +391,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
 	 * See the documentation of {@link StateMachine} for detailed examples.
@@ -475,7 +475,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
 	 * See the documentation of {@link StateMachine} for detailed examples.
@@ -569,7 +569,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
 	 * See the documentation of {@link StateMachine} for detailed examples.
@@ -618,10 +618,11 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * A composite state differs from a state in that it may contain other
 	 * vertices (subclasses of {@link Vertex}) and transitions (subclasses of
 	 * {@link Transition}) inside it, with an obligatory initial pseudostate and
-	 * initial transition (like in the case of stat machines; see the documentation of {@link Initial} for
-	 * details). After entering a composite state and executing its entry
-	 * action, the container state machine will automatically step forward from
-	 * the initial pseudostate of this composite state.
+	 * initial transition (like in the case of stat machines; see the
+	 * documentation of {@link Initial} for details). After entering a composite
+	 * state and executing its entry action, the container state machine will
+	 * automatically step forward from the initial pseudostate of this composite
+	 * state.
 	 * <p>
 	 * The state machine may only leave a composite state through a transition
 	 * that is from that composite state or any of its enclosing composite
@@ -652,7 +653,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * {@link StateMachine.Vertex} or {@link StateMachine.Transition}</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
 	 * See the documentation of {@link StateMachine} for detailed examples.
@@ -740,7 +741,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
-	 * <li><i>Inherit from the defined subtype:</i> disallowed</li></li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
 	 * See the documentation of {@link StateMachine} for detailed examples.
@@ -900,6 +901,8 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		 * If there are no signals for which the above described conditions are
 		 * met, this method should not be called on the actual transition.
 		 * 
+		 * @param <T>
+		 *            the type to which the casting should be performed
 		 * @param signalClass
 		 *            the signal class to which the casting should be performed
 		 * @return the signal receiving which triggered the execution (or the

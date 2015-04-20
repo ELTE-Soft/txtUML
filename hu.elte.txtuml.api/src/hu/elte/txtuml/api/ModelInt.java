@@ -21,7 +21,6 @@ package hu.elte.txtuml.api;
  * 
  * <p>
  * <b>Example:</b>
- * <p>
  * 
  * <pre>
  * <code>
@@ -193,8 +192,8 @@ public class ModelInt extends ModelType<Integer> {
 	}
 
 	/**
-	 * Calculates <i>t</i> <code><</code> <i>v</i> where <i>t</i> is the integer
-	 * value of this object and <i>v</i> is the integer value of the
+	 * Calculates <i>t</i> <code>{@literal <}</code> <i>v</i> where <i>t</i> is
+	 * the integer value of this object and <i>v</i> is the integer value of the
 	 * <code>val</code> parameter. Returns a new <code>ModelBool</code> instance
 	 * representing the result.
 	 * 
@@ -209,8 +208,8 @@ public class ModelInt extends ModelType<Integer> {
 	}
 
 	/**
-	 * Calculates <i>t</i> <code><=</code> <i>v</i> where <i>t</i> is the
-	 * integer value of this object and <i>v</i> is the integer value of the
+	 * Calculates <i>t</i> <code>{@literal <=}</code> <i>v</i> where <i>t</i> is
+	 * the integer value of this object and <i>v</i> is the integer value of the
 	 * <code>val</code> parameter. Returns a new <code>ModelBool</code> instance
 	 * representing the result.
 	 * 
@@ -225,8 +224,8 @@ public class ModelInt extends ModelType<Integer> {
 	}
 
 	/**
-	 * Calculates <i>t</i> <code>></code> <i>v</i> where <i>t</i> is the integer
-	 * value of this object and <i>v</i> is the integer value of the
+	 * Calculates <i>t</i> <code>{@literal >}</code> <i>v</i> where <i>t</i> is
+	 * the integer value of this object and <i>v</i> is the integer value of the
 	 * <code>val</code> parameter. Returns a new <code>ModelBool</code> instance
 	 * representing the result.
 	 * 
@@ -242,8 +241,8 @@ public class ModelInt extends ModelType<Integer> {
 	}
 
 	/**
-	 * Calculates <i>t</i> <code>>=</code> <i>v</i> where <i>t</i> is the
-	 * integer value of this object and <i>v</i> is the integer value of the
+	 * Calculates <i>t</i> <code>{@literal >=}</code> <i>v</i> where <i>t</i> is
+	 * the integer value of this object and <i>v</i> is the integer value of the
 	 * <code>val</code> parameter. Returns a new <code>ModelBool</code> instance
 	 * representing the result.
 	 * 

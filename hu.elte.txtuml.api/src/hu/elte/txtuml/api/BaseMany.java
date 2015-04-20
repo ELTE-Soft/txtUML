@@ -202,15 +202,13 @@ class BaseMany<T extends ModelClass> extends AssociationEnd<T> {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	final <S extends AssociationEnd<T>> S typeKeepingAdd(T object) {
-		return (S) add(object);
+	final AssociationEnd<T> typeKeepingAdd(T object) {
+		return (AssociationEnd<T>) add(object);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	final <S extends AssociationEnd<T>> S typeKeepingRemove(T object) {
-		return (S) remove(object);
+	final AssociationEnd<T> typeKeepingRemove(T object) {
+		return (AssociationEnd<T>) remove(object);
 	}
 
 	@Override
