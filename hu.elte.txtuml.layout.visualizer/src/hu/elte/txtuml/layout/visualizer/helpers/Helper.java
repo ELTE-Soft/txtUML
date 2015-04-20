@@ -1,5 +1,6 @@
 package hu.elte.txtuml.layout.visualizer.helpers;
 
+import hu.elte.txtuml.layout.visualizer.algorithms.DiagramType;
 import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
@@ -183,6 +184,57 @@ public class Helper
 			default:
 				throw new ConversionException("Cannot convert type " + ty
 						+ " to Direction!");
+		}
+	}
+	
+	/**
+	 * Method to convert {@link Direction} to {@link StatementType}.
+	 * 
+	 * @param dir
+	 *            Dire.ction to convert
+	 * @return The converted StatementType
+	 * @throws ConversionException
+	 *             Throws if the given Direction is cannot be converted to any
+	 *             StatementType.
+	 */
+	public static StatementType asStatementType(Direction dir) throws ConversionException
+	{
+		switch (dir)
+		{
+			case north:
+				return StatementType.north;
+			case south:
+				return StatementType.south;
+			case east:
+				return StatementType.east;
+			case west:
+				return StatementType.west;
+			default:
+				throw new ConversionException("Cannot convert direction " + dir
+						+ " to StatementType!");
+		}
+	}
+	
+	/**
+	 * Detects whether we should arrange reflexive links on an object's same
+	 * side or not, depending on the diagram's type.
+	 * 
+	 * @param type
+	 *            Diagram' type we want to layout.
+	 * @return True if the reflexive links should be on the same side of an
+	 *         object.
+	 */
+	public static boolean isReflexiveOnSameSide(DiagramType type)
+	{
+		switch (type)
+		{
+			case Class:
+				return true;
+			case State:
+			case Activity:
+				return false;
+			default:
+				return true;
 		}
 	}
 	

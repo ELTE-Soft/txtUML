@@ -100,144 +100,166 @@ class ArrangeAssociations
 				.collect(Collectors.toList());
 		stats.removeIf(s -> reflexiveStats.contains(s));
 		
-		_possibleStarts = new HashMap<Pair<String, RouteConfig>, HashSet<Point>>();
-		
-		ArrayList<LineAssociation> originalAssocs = Helper.cloneLinkList(_assocs);
-		
-		// Transform Links' start and end route point
-		transformAssocs();
-		diagramObjects = updateObjects(diagramObjects);
-		
-		// Inflate diagram to start with a object width enough for the maximum
-		// number of links
-		Integer maxLinks = calculateMaxLinks(_assocs);
-		for (int i = 4; i <= maxLinks; i = i + 8)
+		if (_assocs.size() != 0)
 		{
-			if (_widthOfObjects == 1)
-			{
-				i = i - 8;
-			}
-			// Grid * 2, ObjectWidth * 2 + 1
-			_transformAmount = _transformAmount * 2;
-			diagramObjects = enlargeObjects(diagramObjects);
-			_assocs = Helper.cloneLinkList(originalAssocs);
-			transformAssocs();
-		}
-		
-		Boolean repeat = true;
-		
-		// Arrange normal links
-		while (repeat)
-		{
-			// Process statements, priority and direction
-			processStatements(_assocs, stats, diagramObjects);
-			Set<Painted<Point>> occupiedLinks = new HashSet<Painted<Point>>();
-			repeat = false;
+			_possibleStarts = new HashMap<Pair<String, RouteConfig>, HashSet<Point>>();
 			
-			try
+			ArrayList<LineAssociation> originalAssocs = Helper.cloneLinkList(_assocs);
+			
+			// Transform Links' start and end route point
+			transformAssocs();
+			diagramObjects = updateObjects(diagramObjects);
+			
+			// Inflate diagram to start with a object width enough for the
+			// maximum
+			// number of links
+			Integer maxLinks = calculateMaxLinks(_assocs);
+			for (int i = 4; i <= maxLinks; i = i + 8)
 			{
-				// Search for the route of every Link
-				for (int i = 0; i < _assocs.size(); ++i)
+				if (_widthOfObjects == 1)
 				{
-					LineAssociation a = _assocs.get(i);
-					Point START = a.getRoute(LineAssociation.RouteConfig.START);
-					Point END = a.getRoute(LineAssociation.RouteConfig.END);
-					Integer WIDTH = diagramObjects.stream().findFirst().get().getWidth();
-					
-					Set<Point> STARTSET = setStartSet(
-							new Pair<String, RouteConfig>(a.getId(), RouteConfig.START),
-							START, WIDTH, occupiedLinks.stream().map(p -> p.Inner)
-									.collect(Collectors.toSet()));
-					Set<Point> ENDSET = setEndSet(new Pair<String, RouteConfig>(
-							a.getId(), RouteConfig.END), END, WIDTH, occupiedLinks
-							.stream().map(p -> p.Inner).collect(Collectors.toSet()));
-					
-					// Assemble occupied points
-					Set<Painted<Point>> OBJS = new HashSet<Painted<Point>>();
-					OBJS.addAll(occupiedLinks);
-					// Add objects transformed place to occupied list
-					Set<Painted<Point>> occupied = new HashSet<Painted<Point>>();
-					for (RectangleObject obj : diagramObjects)
-					{
-						if (END.equals(obj.getPosition()))
-							continue;
-						
-						if (obj.getName().equals("1Signal"))
-							System.out.println();
-						
-						for (Point p : obj.getPoints())
-							occupied.add(new Painted<Point>(Colors.Red, p));
-					}
-					OBJS.addAll(occupied);
-					
-					// Maximum distance between objects
-					Integer top = Math.max(
-							10 * calcMaxDistance(occupied.stream().map(p -> p.Inner)
-									.collect(Collectors.toSet())), 10);
-					
-					// Search for the route
-					if (STARTSET.size() == 0 || ENDSET.size() == 0)
-					{
-						// Cannot start or end
-						throw new CannotStartAssociationRouteException(
-								"Cannot get out of start, or cannot enter end!");
-					}
-					
-					GraphSearch gs = new GraphSearch(START, STARTSET, END, ENDSET, OBJS,
-							top);
-					a.setRoute(gs.value());
-					a.setTurns(gs.turns());
-					a.setExtends(gs.extendsNum());
-					
-					_assocs.set(i, a);
-					
-					// Update occupied places with the route of this link
-					if (a.getRoute().size() < 3)
-						throw new InternalException("Route is shorter then 3!");
-					
-					for (int ri = 1; ri < a.getRoute().size() - 1; ++ri)
-					{
-						if (!Point.Substract(a.getRoute().get(ri - 1),
-								a.getRoute().get(ri)).equals(
-								Point.Substract(a.getRoute().get(ri),
-										a.getRoute().get(ri + 1))))
-						{
-							occupiedLinks.add(new Painted<Point>(Colors.Red, new Point(a
-									.getRoute().get(ri))));
-						}
-						else
-						{
-							occupiedLinks.add(new Painted<Point>(Colors.Yellow,
-									new Point(a.getRoute().get(ri))));
-						}
-					}
+					i = i - 8;
 				}
-			}
-			catch (CannotStartAssociationRouteException
-					| CannotFindAssociationRouteException e)
-			{
-				repeat = true;
 				// Grid * 2, ObjectWidth * 2 + 1
 				_transformAmount = _transformAmount * 2;
 				diagramObjects = enlargeObjects(diagramObjects);
 				_assocs = Helper.cloneLinkList(originalAssocs);
 				transformAssocs();
 			}
+			
+			Boolean repeat = true;
+			
+			// Arrange normal links
+			while (repeat)
+			{
+				// Process statements, priority and direction
+				processStatements(_assocs, stats, diagramObjects);
+				Set<Painted<Point>> occupiedLinks = new HashSet<Painted<Point>>();
+				repeat = false;
+				
+				try
+				{
+					// Search for the route of every Link
+					for (int i = 0; i < _assocs.size(); ++i)
+					{
+						LineAssociation a = _assocs.get(i);
+						Point START = a.getRoute(LineAssociation.RouteConfig.START);
+						Point END = a.getRoute(LineAssociation.RouteConfig.END);
+						Integer WIDTH = diagramObjects.stream().findFirst().get()
+								.getWidth();
+						
+						Set<Point> STARTSET = setStartSet(
+								new Pair<String, RouteConfig>(a.getId(),
+										RouteConfig.START),
+								START,
+								WIDTH,
+								occupiedLinks.stream().map(p -> p.Inner)
+										.collect(Collectors.toSet()));
+						Set<Point> ENDSET = setEndSet(
+								new Pair<String, RouteConfig>(a.getId(), RouteConfig.END),
+								END, WIDTH, occupiedLinks.stream().map(p -> p.Inner)
+										.collect(Collectors.toSet()));
+						
+						// Assemble occupied points
+						Set<Painted<Point>> OBJS = new HashSet<Painted<Point>>();
+						OBJS.addAll(occupiedLinks);
+						// Add objects transformed place to occupied list
+						Set<Painted<Point>> occupied = new HashSet<Painted<Point>>();
+						for (RectangleObject obj : diagramObjects)
+						{
+							if (END.equals(obj.getPosition()))
+								continue;
+							
+							if (obj.getName().equals("1Signal"))
+								System.out.println();
+							
+							for (Point p : obj.getPoints())
+								occupied.add(new Painted<Point>(Colors.Red, p));
+						}
+						OBJS.addAll(occupied);
+						
+						// Maximum distance between objects
+						Integer top = Math.max(10 * calcMaxDistance(occupied.stream()
+								.map(p -> p.Inner).collect(Collectors.toSet())), 10);
+						
+						// Search for the route
+						if (STARTSET.size() == 0 || ENDSET.size() == 0)
+						{
+							// Cannot start or end
+							throw new CannotStartAssociationRouteException(
+									"Cannot get out of start, or cannot enter end!");
+						}
+						
+						GraphSearch gs = new GraphSearch(START, STARTSET, END, ENDSET,
+								OBJS, top);
+						a.setRoute(gs.value());
+						a.setTurns(gs.turns());
+						a.setExtends(gs.extendsNum());
+						
+						_assocs.set(i, a);
+						
+						// Update occupied places with the route of this link
+						if (a.getRoute().size() < 3)
+							throw new InternalException("Route is shorter then 3!");
+						
+						for (int ri = 1; ri < a.getRoute().size() - 1; ++ri)
+						{
+							if (!Point.Substract(a.getRoute().get(ri - 1),
+									a.getRoute().get(ri)).equals(
+									Point.Substract(a.getRoute().get(ri), a.getRoute()
+											.get(ri + 1))))
+							{
+								occupiedLinks.add(new Painted<Point>(Colors.Red,
+										new Point(a.getRoute().get(ri))));
+							}
+							else
+							{
+								occupiedLinks.add(new Painted<Point>(Colors.Yellow,
+										new Point(a.getRoute().get(ri))));
+							}
+						}
+					}
+				}
+				catch (CannotStartAssociationRouteException
+						| CannotFindAssociationRouteException e)
+				{
+					repeat = true;
+					// Grid * 2, ObjectWidth * 2 + 1
+					_transformAmount = _transformAmount * 2;
+					diagramObjects = enlargeObjects(diagramObjects);
+					_assocs = Helper.cloneLinkList(originalAssocs);
+					transformAssocs();
+				}
+			}
 		}
 		
 		// Arrange reflexive links
+		transformReflexives();
 		processStatements(_reflexives, reflexiveStats, diagramObjects);
 		
 		// Find patterns
 		if (onSameSide)
 		{
 			// On the same side.
+			// We need ad least 2 free points on an object's side.
+			if (_widthOfObjects == 1)
+			{
+				_transformAmount = _transformAmount * 2;
+				diagramObjects = enlargeObjects(diagramObjects);
+			}
+			
 			// TODO
+			// search for 2 consecutive free spots on the same side of an object
+			for (LineAssociation a : _reflexives)
+			{
+				
+			}
 		}
 		else
 		{
 			// Not on the same side.
 			// TODO
+			// search for a free corner on the object
 		}
 	}
 	
@@ -289,6 +311,22 @@ class ArrangeAssociations
 			}
 			mod.setRoute(route);
 			_assocs.set(i, mod);
+		}
+	}
+	
+	private void transformReflexives()
+	{
+		for (int i = 0; i < _reflexives.size(); ++i)
+		{
+			LineAssociation mod = _reflexives.get(i);
+			ArrayList<Point> temp = mod.getRoute();
+			ArrayList<Point> route = new ArrayList<Point>();
+			for (Point p : temp)
+			{
+				route.add(Point.Multiply(p, _transformAmount));
+			}
+			mod.setRoute(route);
+			_reflexives.set(i, mod);
 		}
 	}
 	
@@ -572,7 +610,9 @@ class ArrangeAssociations
 	
 	public Set<LineAssociation> value()
 	{
-		return (Set<LineAssociation>) _assocs.stream().collect(Collectors.toSet());
+		Set<LineAssociation> result = _assocs.stream().collect(Collectors.toSet());
+		result.addAll(_reflexives.stream().collect(Collectors.toSet()));
+		
+		return result;
 	}
-	
 }

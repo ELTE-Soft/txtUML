@@ -17,6 +17,7 @@ public class Statement
 	
 	private StatementType _type;
 	private ArrayList<String> _parameters;
+	private Boolean _isUserDefined;
 	
 	// end Variables
 	
@@ -54,18 +55,19 @@ public class Statement
 		return _parameters.get(i);
 	}
 	
+	/**
+	 * Method to get if this statement is user created or not.
+	 * 
+	 * @return True if this statement was created by the user.
+	 */
+	public Boolean isUserDefined()
+	{
+		return _isUserDefined;
+	}
+	
 	// end Getters, setters
 	
 	// Ctors
-	
-	/***
-	 * Create Layout Statement.
-	 */
-	public Statement()
-	{
-		_type = StatementType.unknown;
-		_parameters = new ArrayList<String>();
-	}
 	
 	/***
 	 * Create Layout Statement.
@@ -84,9 +86,32 @@ public class Statement
 		{
 			_parameters.add(s);
 		}
+		_isUserDefined = true;
 	}
 	
-	/***
+	/**
+	 * Create Layout Statement.
+	 *
+	 * @param t
+	 *            Type of the Statement to create.
+	 * @param userdefined
+	 *            Whether this statement is user created.
+	 * @param params
+	 *            Strings representing the Parameters of the Statement to
+	 *            create.
+	 */
+	public Statement(StatementType t, Boolean userdefined, String... params)
+	{
+		_type = t;
+		_parameters = new ArrayList<String>();
+		for (String s : params)
+		{
+			_parameters.add(s);
+		}
+		_isUserDefined = userdefined;
+	}
+	
+	/**
 	 * Create Layout Statement.
 	 * 
 	 * @param t
@@ -103,6 +128,29 @@ public class Statement
 		{
 			_parameters.add(s);
 		}
+		_isUserDefined = true;
+	}
+	
+	/**
+	 * Create Layout Statement.
+	 * 
+	 * @param t
+	 *            Type of the Statement to create.
+	 * @param userdefined
+	 *            Whether this statement is user created.
+	 * @param params
+	 *            ArrayList of Strings representing the Parameters of the
+	 *            Statement to create.
+	 */
+	public Statement(StatementType t, Boolean userdefined, ArrayList<String> params)
+	{
+		_type = t;
+		_parameters = new ArrayList<String>();
+		for (String s : params)
+		{
+			_parameters.add(s);
+		}
+		_isUserDefined = userdefined;
 	}
 	
 	// end Ctors
@@ -213,6 +261,36 @@ public class Statement
 		{
 			Statement s1 = (Statement) this;
 			Statement s2 = (Statement) obj;
+			return s1._type.equals(s2._type) && s1._parameters.equals(s2._parameters)
+					&& s1._isUserDefined.equals(s2._isUserDefined);
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Indicates whether some object is "equal" to this one beside the fact that
+	 * they were created by user or not.
+	 * 
+	 * @param obj
+	 *            the reference object with which to compare.
+	 * @return true if this object is the same as the obj argument without
+	 *         checking if it's user created or not; false otherwise.
+	 */
+	public boolean equalsByValue(Object obj)
+	{
+		if (obj == this)
+		{
+			return true;
+		}
+		if (obj == null || obj.getClass() != this.getClass())
+		{
+			return false;
+		}
+		if (this instanceof Statement && obj instanceof Statement)
+		{
+			Statement s1 = (Statement) this;
+			Statement s2 = (Statement) obj;
 			return s1._type.equals(s2._type) && s1._parameters.equals(s2._parameters);
 		}
 		
@@ -226,6 +304,7 @@ public class Statement
 		int result = 1;
 		result = prime * result + _type.hashCode();
 		result = prime * result + _parameters.hashCode();
+		result = prime * result + _isUserDefined.hashCode();
 		return result;
 	}
 	
@@ -240,6 +319,8 @@ public class Statement
 			result += p;
 		}
 		result += ")";
+		if (!_isUserDefined)
+			result += "_weak";
 		return result;
 	}
 	

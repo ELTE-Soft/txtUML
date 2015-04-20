@@ -1,8 +1,5 @@
 package hu.elte.txtuml.layout.visualizer.algorithms;
 
-import hu.elte.txtuml.layout.visualizer.algorithms.BreathFirstSearch.LabelType;
-import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Graph;
-import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Link;
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConflictException;
@@ -16,8 +13,6 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -76,9 +71,14 @@ class StatementHelper
 							Integer.parseInt(s.getParameter(1))))
 						continue; // WARNING: Duplicate
 					else
-						throw new ConflictException("Priorities not match: "
-								+ s.toString() + " with older data: "
-								+ tempPrior.get(s.getParameter(0)).toString());
+					{
+						if (!s.isUserDefined())
+							continue;
+						else
+							throw new ConflictException("Priorities not match: "
+									+ s.toString() + " with older data: "
+									+ tempPrior.get(s.getParameter(0)).toString());
+					}
 				}
 				else
 				{
@@ -96,8 +96,13 @@ class StatementHelper
 					if (tempObj.get(pair).equals(Helper.asDirection(s.getType())))
 						continue; // WARNING: Duplicate
 					else
-						throw new ConflictException("Túl sok irány statement a "
-								+ s.getParameter(0) + " linkre!");
+					{
+						if (!s.isUserDefined())
+							continue;
+						else
+							throw new ConflictException("Túl sok irány statement a "
+									+ s.getParameter(0) + " linkre!");
+					}
 				}
 				else
 				{
@@ -122,12 +127,31 @@ class StatementHelper
 	{
 		ArrayList<Statement> result = new ArrayList<Statement>();
 		
+		stats.sort((s1, s2) ->
+		{
+			if (s1.isUserDefined() && !s2.isUserDefined())
+				return -1;
+			else if (!s1.isUserDefined() && s2.isUserDefined())
+				return 1;
+			else
+				return 0;
+		});
+		
 		// Delete duplicates and reverse duplicates
 		for (Statement s : stats)
 		{
+			// Check normal
 			if (result.contains(s))
 				continue;
 			else if (result.contains(opposite(s)))
+				continue;
+			
+			// Check non user defined
+			Statement s2 = new Statement(s.getType(), !s.isUserDefined(),
+					s.getParameters());
+			if (result.contains(s2))
+				continue;
+			else if (result.contains(opposite(s2)))
 				continue;
 			else
 				result.add(s);
@@ -215,7 +239,8 @@ class StatementHelper
 	
 	public static Statement opposite(Statement s)
 	{
-		return new Statement(opposite(s.getType()), s.getParameter(1), s.getParameter(0));
+		return new Statement(opposite(s.getType()), s.isUserDefined(), s.getParameter(1),
+				s.getParameter(0));
 	}
 	
 	public static StatementType opposite(StatementType st)
@@ -243,193 +268,22 @@ class StatementHelper
 		return StatementType.unknown;
 	}
 	
-	public static ArrayList<Statement> defaultStatements(Set<RectangleObject> os,
-			Set<LineAssociation> as) throws InternalException
+	public static Integer getComplexity(Statement s)
 	{
-		ArrayList<Statement> result = new ArrayList<Statement>();
-		
-		HashMap<String, Integer> degrees = new HashMap<String, Integer>();
-		HashMap<String, HashSet<String>> accesses = new HashMap<String, HashSet<String>>();
-		
-		for (LineAssociation a : as)
-		{
-			if (degrees.containsKey(a.getFrom()))
-				degrees.put(a.getFrom(), degrees.get(a.getFrom()) + 1);
-			else
-				degrees.put(a.getFrom(), 1);
-			
-			if (degrees.containsKey(a.getTo()))
-				degrees.put(a.getTo(), degrees.get(a.getTo()) + 1);
-			else
-				degrees.put(a.getTo(), 1);
-			
-			if (accesses.containsKey(a.getFrom()))
-			{
-				HashSet<String> temp = accesses.get(a.getFrom());
-				if (!temp.contains(a.getTo()))
-					temp.add(a.getTo());
-				accesses.put(a.getFrom(), temp);
-			}
-			else
-			{
-				HashSet<String> temp = new HashSet<String>();
-				temp.add(a.getTo());
-				accesses.put(a.getFrom(), temp);
-			}
-			
-			if (accesses.containsKey(a.getTo()))
-			{
-				HashSet<String> temp = accesses.get(a.getTo());
-				if (!temp.contains(a.getFrom()))
-					temp.add(a.getFrom());
-				accesses.put(a.getTo(), temp);
-			}
-			else
-			{
-				HashSet<String> temp = new HashSet<String>();
-				temp.add(a.getFrom());
-				accesses.put(a.getTo(), temp);
-			}
-		}
-		
-		// Detect groups
-		ArrayList<HashSet<String>> groups = new ArrayList<HashSet<String>>();
-		
-		HashSet<String> openToCheck = (HashSet<String>) Helper.cloneStringSet(accesses
-				.keySet());
-		Graph<String> G = buildGraph(accesses);
-		String start = openToCheck.stream().findFirst().get();
-		do
-		{
-			BreathFirstSearch bfs = new BreathFirstSearch(G, start);
-			
-			HashSet<String> oneGroup = (HashSet<String>) bfs.value().entrySet().stream()
-					.filter(entry -> entry.getValue().equals(LabelType.discovered))
-					.map(entry -> entry.getKey()).collect(Collectors.toSet());
-			groups.add(oneGroup);
-			
-			openToCheck.removeAll(oneGroup);
-			
-			if (openToCheck.size() == 0)
-				break;
-			
-			start = openToCheck.stream().findFirst().get();
-			
-		} while (true);
-		
-		// Arrange groups
-		Integer gridSize = (int) Math.pow(Math.ceil(Math.sqrt(groups.size())), 2);
-		
-		for (int i = 0; i < groups.size(); ++i)
-		{
-			if (existsItem(groups, i, gridSize, Direction.west))
-			{
-				result.addAll(generateStatements(groups, i, gridSize, StatementType.west));
-			}
-			if (existsItem(groups, i, gridSize, Direction.east))
-			{
-				result.addAll(generateStatements(groups, i, gridSize, StatementType.east));
-			}
-			if (existsItem(groups, i, gridSize, Direction.north))
-			{
-				result.addAll(generateStatements(groups, i, gridSize, StatementType.north));
-			}
-			if (existsItem(groups, i, gridSize, Direction.south))
-			{
-				result.addAll(generateStatements(groups, i, gridSize, StatementType.south));
-			}
-		}
-		
-		// Arrange in groups
-		// TODO
-		
-		// TODO
-		// groupokra szedni az objecteket, linkek mentén
-		// sok linkel rendelkezõ objectek középre
-		
-		return result;
-	}
-	
-	private static Graph<String> buildGraph(HashMap<String, HashSet<String>> edges)
-	{
-		Graph<String> result = new Graph<String>();
-		
-		for (Entry<String, HashSet<String>> entry : edges.entrySet())
-		{
-			// add Node
-			result.addNode(entry.getKey());
-			
-			// add Link
-			for (String to : entry.getValue())
-			{
-				result.addLink(new Link<String>(entry.getKey(), to));
-				result.addLink(new Link<String>(to, entry.getKey()));
-			}
-		}
-		
-		return result;
-	}
-	
-	private static boolean existsItem(ArrayList<HashSet<String>> groups, Integer i,
-			Integer gridSize, Direction dir)
-	{
-		switch (dir)
+		switch (s.getType())
 		{
 			case north:
-				if (i >= gridSize)
-					return true;
-				break;
-			case east:
-				if (i < (groups.size() - 1) && (i % gridSize) != 2)
-					return true;
-				break;
 			case south:
-				if (i < (groups.size() - gridSize))
-					return true;
-				break;
-			case west:
-				if ((i % gridSize) != 0)
-					return true;
-				break;
-		}
-		
-		return false;
-	}
-	
-	private static Integer getIndex(Integer i, Integer gridSize, StatementType type)
-			throws InternalException
-	{
-		switch (type)
-		{
-			case north:
-				return (i - gridSize);
 			case east:
-				return (i + 1);
-			case south:
-				return (i + gridSize);
 			case west:
-				return (i - 1);
+				return 5;
+			case above:
+			case below:
+			case right:
+			case left:
+				return 10;
 			default:
-				throw new InternalException("The type \'" + type.toString()
-						+ "\' should not get here!");
+				return 100;
 		}
-	}
-	
-	private static ArrayList<Statement> generateStatements(
-			ArrayList<HashSet<String>> groups, Integer i, Integer gridSize,
-			StatementType type) throws InternalException
-	{
-		ArrayList<Statement> result = new ArrayList<Statement>();
-		
-		Integer index = getIndex(i, gridSize, type);
-		for (String move : groups.get(index))
-		{
-			for (String fix : groups.get(i))
-			{
-				result.add(new Statement(type, move, fix));
-			}
-		}
-		
-		return result;
 	}
 }

@@ -57,6 +57,6 @@ public enum Direction
 	 */
 	public static Direction nextDirection(Direction dir)
 	{
-		return Direction.fromInteger((dir.ordinal() - 1) % 4);
+		return Direction.fromInteger((dir.ordinal() + 1) % 4);
 	}
 }

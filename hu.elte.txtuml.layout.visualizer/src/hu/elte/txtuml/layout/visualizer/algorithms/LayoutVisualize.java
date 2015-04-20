@@ -10,6 +10,7 @@ import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.MyException;
 import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
+import hu.elte.txtuml.layout.visualizer.helpers.Helper;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
@@ -45,11 +46,7 @@ public class LayoutVisualize
 	 */
 	private ArrayList<Statement> _assocStatements;
 	
-	/**
-	 * Whether the reflexive links should start and end on the same side of an
-	 * object or not.
-	 */
-	private Boolean _reflexiveLinksOnSameSide;
+	private DiagramType _diagramType;
 	
 	/***
 	 * Get the current set of Objects.
@@ -72,28 +69,47 @@ public class LayoutVisualize
 	}
 	
 	/**
+	 * Get the finishing set of Statements on objects.
+	 * 
+	 * @return List of Statements on objects.
+	 */
+	public ArrayList<Statement> getStatements()
+	{
+		return _statements;
+	}
+	
+	/**
+	 * Get the finishing set of Statements on links.
+	 * 
+	 * @return List of Statements on links.
+	 */
+	public ArrayList<Statement> getAssocStatements()
+	{
+		return _assocStatements;
+	}
+	
+	/**
 	 * Layout algorithm initialize. Use load(), then arrange().
 	 */
 	public LayoutVisualize()
 	{
 		_objects = null;
 		_assocs = null;
-		_reflexiveLinksOnSameSide = true;
+		_diagramType = DiagramType.Class;
 	}
 	
 	/**
 	 * Layout algorithm initialize for setting the reflexive links arrange. Use
 	 * load(), then arrange().
 	 * 
-	 * @param onSameSide
-	 *            Whether the reflexive links should start and end on the same
-	 *            side of the object or not.
+	 * @param type
+	 *            The type of the diagram to arrange.
 	 */
-	public LayoutVisualize(boolean onSameSide)
+	public LayoutVisualize(DiagramType type)
 	{
 		_objects = null;
 		_assocs = null;
-		_reflexiveLinksOnSameSide = onSameSide;
+		_diagramType = type;
 	}
 	
 	/***
@@ -128,10 +144,8 @@ public class LayoutVisualize
 			return;
 		
 		// set default statements
-		if (stats == null || stats.size() == 0)
-		{
-			stats = StatementHelper.defaultStatements(_objects, _assocs);
-		}
+		DefaultStatements ds = new DefaultStatements(_objects, _assocs);
+		stats.addAll(ds.value());
 		
 		// Split statements on assocs
 		_assocStatements = StatementHelper.splitAssocs(stats, _assocs);
@@ -169,8 +183,34 @@ public class LayoutVisualize
 		}
 		
 		// Arrange objects
-		ArrangeObjects ao = new ArrangeObjects(_objects, _statements);
-		_objects = new HashSet<RectangleObject>(ao.value());
+		Boolean isConflicted;
+		do
+		{
+			isConflicted = false;
+			
+			try
+			{
+				ArrangeObjects ao = new ArrangeObjects(_objects, _statements);
+				_objects = new HashSet<RectangleObject>(ao.value());
+			}
+			catch (ConflictException ex)
+			{
+				isConflicted = true;
+				// Remove a weak statement if possible
+				if (_statements.stream().anyMatch(s -> !s.isUserDefined()))
+				{
+					Statement toDelete = _statements
+							.stream()
+							.filter(s -> !s.isUserDefined())
+							.max((s1, s2) ->
+							{
+								return Integer.compare(StatementHelper.getComplexity(s1),
+										StatementHelper.getComplexity(s2));
+							}).get();
+					_statements.remove(toDelete);
+				}
+			}
+		} while (isConflicted);
 		
 		// Set start-end positions for associations
 		for (LineAssociation a : _assocs)
@@ -209,7 +249,7 @@ public class LayoutVisualize
 			return;
 		
 		ArrangeAssociations aa = new ArrangeAssociations(_objects, _assocs,
-				_assocStatements, _reflexiveLinksOnSameSide);
+				_assocStatements, Helper.isReflexiveOnSameSide(_diagramType));
 		_assocs = aa.value();
 		
 		// Transform objects according to link transformation
@@ -285,27 +325,23 @@ public class LayoutVisualize
 			System.out.println("/Set Objects/");
 			
 			Set<RectangleObject> testObjects = new HashSet<RectangleObject>();
-			testObjects.add(new RectangleObject("A1"));
-			testObjects.add(new RectangleObject("A2"));
-			testObjects.add(new RectangleObject("A3"));
-			testObjects.add(new RectangleObject("B1"));
-			testObjects.add(new RectangleObject("B2"));
-			testObjects.add(new RectangleObject("B3"));
-			testObjects.add(new RectangleObject("C1"));
-			testObjects.add(new RectangleObject("C2"));
-			testObjects.add(new RectangleObject("C3"));
+			testObjects.add(new RectangleObject("A"));
+			testObjects.add(new RectangleObject("B"));
+			testObjects.add(new RectangleObject("C"));
+			testObjects.add(new RectangleObject("D"));
+			testObjects.add(new RectangleObject("E"));
+			testObjects.add(new RectangleObject("F"));
 			
 			System.out.println("/Set Assocs/");
 			
 			Set<LineAssociation> testAssocs = new HashSet<LineAssociation>();
 			
-			testAssocs.add(new LineAssociation("LA1", "A1", "A2"));
-			testAssocs.add(new LineAssociation("LA2", "A2", "A3"));
-			testAssocs.add(new LineAssociation("LB1", "B1", "B2"));
-			testAssocs.add(new LineAssociation("LB2", "B2", "B3"));
-			testAssocs.add(new LineAssociation("LC1", "C1", "C2"));
-			testAssocs.add(new LineAssociation("LC2", "C1", "C3"));
-			// testAssocs.add(new LineAssociation("L5", "A1", "C1"));
+			// testAssocs.add(new LineAssociation("reflexive1", "A", "A"));
+			// testAssocs.add(new LineAssociation("reflexive2", "E", "E"));
+			testAssocs.add(new LineAssociation("LG1", "A", "B"));
+			testAssocs.add(new LineAssociation("LG2", "B", "C"));
+			testAssocs.add(new LineAssociation("LF1", "D", "E"));
+			testAssocs.add(new LineAssociation("LF2", "D", "F"));
 			
 			System.out.println("/Load Data/");
 			v.load(testObjects, testAssocs);
@@ -314,16 +350,13 @@ public class LayoutVisualize
 			
 			ArrayList<Statement> stats = new ArrayList<Statement>();
 			
-			/*
-			 * stats.add(Statement.Parse("above(A, B)"));
-			 * stats.add(Statement.Parse("priority(L1, 50)"));
-			 * 
-			 * stats.add(Statement.Parse("north(L3, A)"));
-			 */
+			// stats.add(Statement.Parse("north(A, D)"));
+			// stats.add(new Statement(StatementType.east, false, "A", "B"));
 			
 			System.out.println("/Arrange/");
 			v.arrange(stats);
 			
+			System.out.println("/Output/");
 			ArrayList<RectangleObject> objs = (ArrayList<RectangleObject>) v.getObjects()
 					.stream().collect(Collectors.toList());
 			objs.sort((a, b) ->
@@ -340,6 +373,14 @@ public class LayoutVisualize
 			});
 			for (LineAssociation a : assocs)
 				System.out.println(a.toString());
+			
+			System.out.println("\nObject statements:");
+			for (Statement s : v.getStatements())
+				System.out.println(s.toString());
+			
+			System.out.println("\nLinks statements:");
+			for (Statement s : v.getAssocStatements())
+				System.out.println(s.toString());
 			
 		}
 		catch (Exception e)
