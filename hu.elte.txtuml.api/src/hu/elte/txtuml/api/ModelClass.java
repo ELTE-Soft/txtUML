@@ -59,6 +59,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * {@link StateMachine.Vertex} or {@link StateMachine.Transition}</li>
  * <li><i>Nested enums:</i> disallowed</li>
  * </ul>
+ * </li>
  * <li><i>Inherit from the defined subtype:</i> allowed, to represent class
  * inheritance</li>
  * </ul>
@@ -361,14 +362,16 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 
 	/**
 	 * Checks the lower bound of the specified association end's multiplicity.
-	 * Shows a message in case of an error.
+	 * Shows a message in case of an error. If this object is in
+	 * {@link Status#DELETED DELETED} status, the check is ignored.
 	 * 
 	 * @param assocEnd
 	 *            the association end to check
 	 */
 	void checkLowerBound(Class<? extends AssociationEnd<?>> assocEnd) {
 
-		if (!assocPrivate(assocEnd).checkLowerBound()) {
+		if (status != Status.DELETED
+				&& !assocPrivate(assocEnd).checkLowerBound()) {
 			ModelExecutor
 					.logError(ErrorMessages
 							.getLowerBoundOfMultiplicityOffendedMessage(this,
@@ -388,7 +391,7 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	}
 
 	/**
-	 * TODO check doc Starts the state machine of this object.
+	 * Starts the state machine of this object.
 	 * <p>
 	 * If this object is <i>not</i> in {@link Status#READY READY} status, this
 	 * method does nothing. Otherwise, it sends an asynchronous request to
@@ -413,11 +416,12 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	}
 
 	/**
-	 * TODO check doc Looks up all the defined associations of the model class
-	 * this object is an instance of and initializes them by assigning empty
-	 * {@link Collection Collections} to them. If any of them has a lower bound
-	 * higher than zero, then registers that association end to be checked in
-	 * the next execution step.
+	 * Looks up all the defined associations of the model class this object is
+	 * an instance of and initializes them, if they have not been initialized
+	 * yet, by assigning empty {@link Collection Collections} to them in the
+	 * {@link #associations} map. If any of them has a lower bound which is
+	 * currently offended then registers that association end to be checked in
+	 * the next <i>execution step</i>.
 	 * <p>
 	 * Shows an error about a bad model if any exception is thrown during the
 	 * above described process as this method and all the methods this calls,
@@ -482,10 +486,11 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	}
 
 	/**
-	 * TODO check doc Initializes the specified association end by assigning an
-	 * empty {@link Collection} to it. If it has a lower bound higher than zero
-	 * then registers that association end to be checked in the next execution
-	 * step.
+	 * Initializes the specified association end, if it has not been initialized
+	 * yet, by assigning an empty {@link Collection} to it in the
+	 * {@link #associations} map. If its lower bound is currently offended then
+	 * registers that association end to be checked in the next <i>execution
+	 * step</i>.
 	 * <p>
 	 * Exceptions might be thrown in case of a model error as this method
 	 * assumes that the model is well-defined.

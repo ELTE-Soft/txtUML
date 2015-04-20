@@ -74,6 +74,7 @@ public final class ModelExecutor implements ModelElement {
 	 * <li><i>Define subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
+	 * <p>
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
 	 * overview on modeling in txtUML.
 	 *
@@ -348,16 +349,16 @@ public final class ModelExecutor implements ModelElement {
 
 	/**
 	 * Registers a check of the lower bound of the specified association end's
-	 * multiplicity to be performed in the next execution step.
+	 * multiplicity to be performed in the next <i>execution step</i>.
 	 * <p>
 	 * The lower bound of multiplicities might be offended temporarily but has
-	 * to be restored before returning from the current execution step.
+	 * to be restored before returning from the current <i>execution step</i>.
 	 * <p>
-	 * An execution step starts when an asynchronous event (like a signal event)
-	 * is chosen by the executor to be processed and ends when that event and
-	 * all the synchronous events caused by it (like a state machine changing
-	 * state, entry and exit actions, transition effects, operation calls,
-	 * etc.), have been processed.
+	 * An <b>execution step</b> starts when an asynchronous event (like a signal
+	 * event) is chosen by the executor to be processed and ends when that event
+	 * and all the synchronous events caused by it (like a state machine
+	 * changing state, entry and exit actions, transition effects, operation
+	 * calls, etc.), have been processed.
 	 * 
 	 * @param obj
 	 *            the object on the opposite end of the association

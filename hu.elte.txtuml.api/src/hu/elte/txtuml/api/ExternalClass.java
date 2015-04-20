@@ -22,12 +22,13 @@ package hu.elte.txtuml.api;
  * From outside the model, use external classes according to the rules and
  * conventions of the Java language. The only restriction is that an external
  * class may not be abstract because that could cause problems during model
- * execution or exportation. From the model, use them as any passive model class
- * (that is, one that may not react to any asynchronous events). Call its
- * methods as operations or use its fields as attributes. All its fields used
- * from inside the model must be of a type extending {@link ModelClass},
- * {@link ModelType} or {@link Collection}. Also all parameter and return types
- * of methods called from the model must extend one of these three types.
+ * execution or exportation. From inside the model, use them as any passive
+ * model class (that is, one that may not react to any asynchronous events).
+ * Call its methods as operations or use its fields as attributes. All its
+ * fields used from inside the model must be of a type extending
+ * {@link ModelClass}, {@link ModelType} or {@link Collection}. Also all
+ * parameter and return types of methods called from inside the model must
+ * extend one of these three types.
  * <p>
  * As the txtUML API uses its own thread for model execution, external classes
  * probably need synchronization.
@@ -69,9 +70,11 @@ package hu.elte.txtuml.api;
  * <li><i>Nested classes:</i> allowed</li>
  * <li><i>Nested enums:</i> allowed</li>
  * </ul>
+ * </li>
  * <li><i>Inherit from the defined subtype:</i> allowed
  * </ul>
  * 
+ * <p>
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an
  * overview on modeling in txtUML.
  *

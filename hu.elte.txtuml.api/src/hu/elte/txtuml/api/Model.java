@@ -37,6 +37,7 @@ package hu.elte.txtuml.api;
  * representing a certain model element</li>
  * <li><i>Nested enums:</i> disallowed</li>
  * </ul>
+ * </li>
  * <li><i>Inherit from the defined subtype:</i> disallowed</li>
  * </ul>
  * 

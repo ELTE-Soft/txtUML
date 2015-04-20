@@ -31,6 +31,7 @@ import java.io.PrintStream;
  * <li><i>Define subtype:</i> disallowed</li>
  * </ul>
  * 
+ * <p>
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an
  * overview on modeling in txtUML.
  *

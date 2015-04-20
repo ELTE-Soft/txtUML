@@ -47,6 +47,7 @@ import hu.elte.txtuml.layout.lang.elements.LayoutLink;
  * and are subclasses of <code>AssociationEnd</code></li>
  * <li><i>Nested enums:</i> disallowed</li>
  * </ul>
+ * </li>
  * <li><i>Inherit from the defined subtype:</i> disallowed</li>
  * </ul>
  * 
@@ -128,9 +129,11 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
+	 * </li>
 	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
+	 * <p>
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
 	 * overview on modeling in txtUML.
 	 * 
@@ -194,9 +197,11 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
+	 * </li>
 	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
+	 * <p>
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
 	 * overview on modeling in txtUML.
 	 * 
@@ -260,9 +265,11 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
+	 * </li>
 	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
+	 * <p>
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
 	 * overview on modeling in txtUML.
 	 * 
@@ -326,9 +333,11 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
+	 * </li>
 	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
+	 * <p>
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
 	 * overview on modeling in txtUML.
 	 * 
@@ -393,9 +402,11 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
+	 * </li>
 	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
+	 * <p>
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
 	 * overview on modeling in txtUML.
 	 * 
@@ -460,9 +471,11 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
+	 * </li>
 	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
+	 * <p>
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
 	 * overview on modeling in txtUML.
 	 * 
@@ -527,9 +540,11 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
+	 * </li>
 	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
+	 * <p>
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
 	 * overview on modeling in txtUML.
 	 * 
@@ -593,9 +608,11 @@ public class Association implements ModelElement, LayoutLink {
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
+	 * </li>
 	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
+	 * <p>
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
 	 * overview on modeling in txtUML.
 	 * 

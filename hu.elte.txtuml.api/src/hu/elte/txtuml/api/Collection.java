@@ -23,6 +23,7 @@ import java.util.Iterator;
  * like {@link Collection.Empty} or {@link AssociationEnd}</li>
  * </ul>
  * 
+ * <p>
  * See the documentation of the {@link hu.elte.txtuml.api} package to get an
  * overview on modeling in txtUML.
  *

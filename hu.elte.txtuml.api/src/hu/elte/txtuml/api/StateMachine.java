@@ -210,6 +210,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * <li><i>Define subtype:</i> disallowed, use its subclasses</li>
 	 * </ul>
 	 *
+	 * <p>
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
@@ -290,6 +291,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * <li><i>Define subtype:</i> disallowed, use its subclasses</li>
 	 * </ul>
 	 * 
+	 * <p>
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
@@ -391,9 +393,11 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
+	 * </li>
 	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
+	 * <p>
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
@@ -475,9 +479,11 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
+	 * </li>
 	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
+	 * <p>
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
@@ -569,9 +575,11 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
+	 * </li>
 	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
+	 * <p>
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
@@ -653,9 +661,11 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * {@link StateMachine.Vertex} or {@link StateMachine.Transition}</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
+	 * </li>
 	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
+	 * <p>
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
@@ -741,9 +751,11 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * <li><i>Nested classes:</i> disallowed</li>
 	 * <li><i>Nested enums:</i> disallowed</li>
 	 * </ul>
+	 * </li>
 	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
+	 * <p>
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
