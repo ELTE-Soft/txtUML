@@ -23,6 +23,7 @@ package hu.elte.txtuml.api;
  * overview on modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
+ * @see ModelInt
  *
  */
 public class VariableInt extends VariableType<Integer, ModelInt> {

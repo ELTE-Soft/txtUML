@@ -51,6 +51,11 @@ package hu.elte.txtuml.api;
  *            the raw primitive type represented by this variable's value
  * @param <MT>
  *            the type of this variable (the type of its value)
+ * @see VariableBool
+ * @see VariableInt
+ * @see VariableString
+ * @see ModelType
+ * 
  */
 public abstract class VariableType<T, MT extends ModelType<T>> {
 

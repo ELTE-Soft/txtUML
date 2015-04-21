@@ -23,6 +23,7 @@ package hu.elte.txtuml.api;
  * overview on modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
+ * @see ModelBool
  *
  */
 public class VariableBool extends VariableType<Boolean, ModelBool> {

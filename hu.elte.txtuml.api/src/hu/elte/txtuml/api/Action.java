@@ -361,7 +361,7 @@ public abstract class Action implements ModelElement {
 	 * method should be called instead.
 	 * <p>
 	 * This method is currently <b>only available in the API</b>, its use is
-	 * <b>not exported to UML2</b>.
+	 * <b>not exported to EMF-UML2</b>.
 	 * 
 	 * @param <T>
 	 *            the type of objects inside the collection

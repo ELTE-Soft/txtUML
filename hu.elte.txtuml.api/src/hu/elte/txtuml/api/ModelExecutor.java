@@ -60,7 +60,7 @@ public final class ModelExecutor implements ModelElement {
 	 * <p>
 	 * 
 	 * Calling its static methods only affect the model execution, they are not
-	 * exported to UML2.
+	 * exported to EMF-UML2.
 	 * <p>
 	 * Its static methods might be called from anywhere in the model as they are
 	 * not harmful to the model execution in any way. However, it is strongly

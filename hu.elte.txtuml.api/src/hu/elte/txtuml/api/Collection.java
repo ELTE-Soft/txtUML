@@ -3,6 +3,8 @@ package hu.elte.txtuml.api;
 import hu.elte.txtuml.api.blocks.ParameterizedCondition;
 
 import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 
 /**
  * Base interface for immutable collections of {@link ModelClass} objects.
@@ -13,8 +15,11 @@ import java.util.Iterator;
  * <b>Usage:</b>
  * <p>
  * 
- * After having an object implementing this interface, call its methods anywhere
- * from the model where action language or condition evaluation is written.
+ * After getting an object which implements this interface, call its methods
+ * anywhere from the model where action code or condition evaluation is written.
+ * <p>
+ * See the documentation of the {@link hu.elte.txtuml.api} package for details
+ * about the action language and condition evaluations in the model.
  * 
  * <p>
  * <b>Java restrictions:</b>
@@ -120,11 +125,29 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 	Collection<T> remove(T object);
 
 	/**
-	 * Iterators over collections are purely for API implementation issues, they
-	 * <b>must not be used in the model</b>.
+	 * As iterators over collections are purely for API implementation issues,
+	 * this method <b>must not be used in the model</b>.
 	 */
 	@Override
-	public abstract Iterator<T> iterator();
+	Iterator<T> iterator();
+
+	/**
+	 * As iterators over collections are purely for API implementation issues,
+	 * this method <b>must not be used in the model</b>.
+	 */
+	@Override
+	default Spliterator<T> spliterator() {
+		return ((Iterable<T>) this).spliterator();
+	}
+
+	/**
+	 * As iterators over collections are purely for API implementation issues,
+	 * this method <b>must not be used in the model</b>.
+	 */
+	@Override
+	default void forEach(Consumer<? super T> action) {
+		((Iterable<T>) this).forEach(action);
+	}
 
 	/**
 	 * A default implementation for an empty collection.
@@ -138,7 +161,7 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 	 * <li><i>Define subtype:</i> disallowed</li>
 	 * </ul>
 	 * This class is currently <b>only available in the API</b>, its use is
-	 * <b>not exported to UML2</b>.
+	 * <b>not exported to EMF-UML2</b>.
 	 * <p>
 	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
 	 * overview on modeling in txtUML.

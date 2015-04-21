@@ -4,7 +4,9 @@ package hu.elte.txtuml.api;
  * An immutable class representing strings in the model. Use of the Java
  * primitive types and <code>String</code>s is completely disallowed in the
  * model, except for parameters of constructors and setter methods of
- * {@link ModelType} and {@link VariableType} classes and their subclasses.
+ * {@link ModelType} and {@link VariableType} classes and their subclasses, and
+ * logging methods of {@link Action} ( {@link Action#log(String) log},
+ * {@link Action#logError(String) logError} ).
  * <p>
  * <b>Represents:</b> string primitive value
  * <p>

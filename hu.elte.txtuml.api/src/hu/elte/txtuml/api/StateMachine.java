@@ -626,7 +626,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * A composite state differs from a state in that it may contain other
 	 * vertices (subclasses of {@link Vertex}) and transitions (subclasses of
 	 * {@link Transition}) inside it, with an obligatory initial pseudostate and
-	 * initial transition (like in the case of stat machines; see the
+	 * initial transition (like in the case of state machines; see the
 	 * documentation of {@link Initial} for details). After entering a composite
 	 * state and executing its entry action, the container state machine will
 	 * automatically step forward from the initial pseudostate of this composite
