@@ -7,7 +7,7 @@ import hu.elte.txtuml.api.blocks.ParameterizedCondition;
 import java.util.Iterator;
 
 /**
- * Base class of association ends having a multiplicity of 0..*.
+ * Base class for association ends having a multiplicity of 0..*.
  * <p>
  * Directly unusable by the user.
  *

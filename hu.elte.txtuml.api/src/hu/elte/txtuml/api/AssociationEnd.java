@@ -28,19 +28,15 @@ import hu.elte.txtuml.api.backend.MultiplicityException;
  * ModelExecutor.Settings.setExecutorErrorStream} method). However, this does
  * not cause the execution to fail. The lower bound might be offended
  * temporarily, but has to be restored before the current <i>execution step</i>
- * ends (see below). It is checked at the beginning of the next <i>execution
- * step</i> and an error message is shown if is still offended and the regarding
- * model object is not in {@link ModelClass.Status#DELETED DELETED} status.
- * However, as this check is relatively slow, it might be switched off with
- * other optional checks with the
- * {@link ModelExecutor.Settings#setDynamicChecks(boolean)
+ * ends. It is checked at the beginning of the next <i>execution step</i> and an
+ * error message is shown if it is still offended and the regarding model object
+ * is not in {@link ModelClass.Status#DELETED DELETED} status. However, as this
+ * check is relatively slow, it might be switched off along with other optional
+ * checks with the {@link ModelExecutor.Settings#setDynamicChecks(boolean)
  * ModelExecutor.Settings.setDynamicChecks} method.
  * <p>
- * An <b>execution step</b> starts when an asynchronous event (like a signal
- * event) is chosen by the executor to be processed and ends when that event and
- * all the synchronous events caused by it (like a state machine changing state,
- * entry and exit actions, transition effects, operation calls, etc.), have been
- * processed.
+ * See the documentation of the {@link hu.elte.txtuml.api} package for
+ * information about execution steps.
  * 
  * <p>
  * <b>Java restrictions:</b>

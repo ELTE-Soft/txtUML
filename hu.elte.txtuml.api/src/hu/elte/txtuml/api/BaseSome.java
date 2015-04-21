@@ -1,7 +1,7 @@
 package hu.elte.txtuml.api;
 
 /**
- * Base class of association ends having a multiplicity of 1..*.
+ * Base class for association ends having a multiplicity of 1..*.
  * <p>
  * Inherits its implementation from <code>BaseMany</code>.
  * <p>

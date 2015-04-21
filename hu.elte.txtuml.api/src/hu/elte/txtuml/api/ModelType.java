@@ -2,8 +2,10 @@ package hu.elte.txtuml.api;
 
 /**
  * Base class for immutable classes representing primitive types in the model.
- * Use of the Java primitive types is completely disallowed in the model, except
- * for constructor parameters of <code>ModelType</code> objects.
+ * Use of the Java primitive types and <code>String</code>s is completely
+ * disallowed in the model, except for parameters of constructors and setter
+ * methods of {@link ModelType} and {@link VariableType} classes and their
+ * subclasses.
  * <p>
  * <b>Represents:</b> subclasses represent primitive values
  * <p>

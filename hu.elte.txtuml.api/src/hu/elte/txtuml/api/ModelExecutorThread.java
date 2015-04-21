@@ -30,11 +30,8 @@ class ModelExecutorThread extends Thread {
 	 * A queue of checks which are to be performed at the beginning of the next
 	 * <i>execution step</i>.
 	 * <p>
-	 * An <b>execution step</b> starts when an asynchronous event (like a signal
-	 * event) is chosen by the executor to be processed and ends when that event
-	 * and all the synchronous events caused by it (like a state machine
-	 * changing state, entry and exit actions, transition effects, operation
-	 * calls, etc.), have been processed.
+	 * See the documentation of the {@link hu.elte.txtuml.api} package for
+	 * information about execution steps.
 	 */
 	private final Queue<CheckQueueEntry> checkQueue = new LinkedList<>();
 
@@ -71,11 +68,8 @@ class ModelExecutorThread extends Thread {
 	 * The lower bound of multiplicities might be offended temporarily but has
 	 * to be restored before returning from the current <i>execution step</i>.
 	 * <p>
-	 * An <b>execution step</b> starts when an asynchronous event (like a signal
-	 * event) is chosen by the executor to be processed and ends when that event
-	 * and all the synchronous events caused by it (like a state machine
-	 * changing state, entry and exit actions, transition effects, operation
-	 * calls, etc.), have been processed.
+	 * See the documentation of the {@link hu.elte.txtuml.api} package for
+	 * information about execution steps.
 	 * 
 	 * @param obj
 	 *            the object on the opposite end of the association

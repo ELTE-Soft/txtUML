@@ -2,8 +2,9 @@ package hu.elte.txtuml.api;
 
 /**
  * An immutable class representing booleans in the model. Use of the Java
- * primitive types is completely disallowed in the model, except for constructor
- * parameters of {@link ModelType} objects.
+ * primitive types and <code>String</code>s is completely disallowed in the
+ * model, except for parameters of constructors and setter methods of
+ * {@link ModelType} and {@link VariableType} classes and their subclasses.
  * <p>
  * <b>Represents:</b> boolean primitive value
  * <p>

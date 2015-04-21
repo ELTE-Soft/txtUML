@@ -428,6 +428,9 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	 * Shows an error about a bad model if any exception is thrown during the
 	 * above described process as this method and all the methods this calls,
 	 * assume that the model is well-defined.
+	 * <p>
+	 * See the documentation of the {@link hu.elte.txtuml.api} package for
+	 * information about execution steps.
 	 */
 	@SuppressWarnings("unchecked")
 	private void initializeAllDefinedAssociationEnds() {
