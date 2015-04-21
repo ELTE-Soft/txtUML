@@ -44,7 +44,11 @@ class TrainModel {
 			}
 		}
 		@From(Neutral.class) @To(Backwards.class) @Trigger(Backward.class)
-		class Neutral_Backwards extends Neutral_Forwards {} // inherited effect
+		class Neutral_Backwards extends Transition {
+			@Override public void effect() {
+				startEngineOp();
+			}
+		}
 		
 		@From(Forwards.class) @To(Neutral.class) @Trigger(Backward.class)
 		class Forwards_Neutral extends Transition {
@@ -56,7 +60,14 @@ class TrainModel {
 			}
 		}
 		@From(Backwards.class) @To(Neutral.class) @Trigger(Forward.class)
-		class Backwards_Neutral extends Forwards_Neutral {} // inherited effect
+		class Backwards_Neutral extends Forwards_Neutral {
+			@Override public void effect() {
+				Engine e = Gearbox.this.assoc(GE.e.class).selectAny();
+				Action.send(e, new EngineOff());
+				Lamp l = Gearbox.this.assoc(GL.l.class).selectAny();
+				Action.send(l, new LightOff());
+			}			
+		}
 		
 		void startEngineOp() {
 			Engine e = Gearbox.this.assoc(GE.e.class).selectAny();
