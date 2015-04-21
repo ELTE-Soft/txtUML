@@ -328,20 +328,20 @@ public class LayoutVisualize
 			testObjects.add(new RectangleObject("A"));
 			testObjects.add(new RectangleObject("B"));
 			testObjects.add(new RectangleObject("C"));
-			testObjects.add(new RectangleObject("D"));
-			testObjects.add(new RectangleObject("E"));
-			testObjects.add(new RectangleObject("F"));
+			// testObjects.add(new RectangleObject("D"));
+			// testObjects.add(new RectangleObject("E"));
+			// testObjects.add(new RectangleObject("F"));
 			
 			System.out.println("/Set Assocs/");
 			
 			Set<LineAssociation> testAssocs = new HashSet<LineAssociation>();
 			
-			// testAssocs.add(new LineAssociation("reflexive1", "A", "A"));
+			testAssocs.add(new LineAssociation("reflexive1", "A", "A"));
 			// testAssocs.add(new LineAssociation("reflexive2", "E", "E"));
 			testAssocs.add(new LineAssociation("LG1", "A", "B"));
 			testAssocs.add(new LineAssociation("LG2", "B", "C"));
-			testAssocs.add(new LineAssociation("LF1", "D", "E"));
-			testAssocs.add(new LineAssociation("LF2", "D", "F"));
+			// testAssocs.add(new LineAssociation("LF1", "D", "E"));
+			// testAssocs.add(new LineAssociation("LF2", "D", "F"));
 			
 			System.out.println("/Load Data/");
 			v.load(testObjects, testAssocs);

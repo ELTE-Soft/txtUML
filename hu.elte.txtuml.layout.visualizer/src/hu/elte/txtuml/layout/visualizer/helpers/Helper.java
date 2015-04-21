@@ -238,4 +238,72 @@ public class Helper
 		}
 	}
 	
+	/**
+	 * Converts a Point(Vector) to a Direction.
+	 * 
+	 * @param p
+	 *            Point to convert.
+	 * @return The converted Direction.
+	 * @throws ConversionException
+	 *             Throws if no such Direction exists.
+	 */
+	public static Direction asDirection(Point p) throws ConversionException
+	{
+		if (p.getX() == 0 && p.getY() > 0)
+			return Direction.north;
+		if (p.getX() == 0 && p.getY() < 0)
+			return Direction.south;
+		if (p.getX() > 0 && p.getY() == 0)
+			return Direction.east;
+		if (p.getX() < 0 && p.getY() == 0)
+			return Direction.west;
+		
+		throw new ConversionException("Cannot convert Point [" + p.toString()
+				+ "] to any Direction!");
+	}
+	
+	/**
+	 * Concatenates a list of lists of points to a single list of points.
+	 * 
+	 * @param list
+	 *            List to flatten.
+	 * @return List of points.
+	 */
+	public static ArrayList<Point> concatPointList(ArrayList<ArrayList<Point>> list)
+	{
+		ArrayList<Point> result = new ArrayList<Point>();
+		
+		for (ArrayList<Point> innerlist : list)
+		{
+			for (Point p : innerlist)
+			{
+				result.add(p);
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Concatenates a set of sets of points to a single set of points.
+	 * 
+	 * @param set
+	 *            Set to flatten.
+	 * @return Set of points.
+	 */
+	public static Set<Point> concatPointSet(Set<Set<Point>> set)
+	{
+		Set<Point> result = new HashSet<Point>();
+		
+		for (Set<Point> innerset : set)
+		{
+			for (Point p : innerset)
+			{
+				result.add(p);
+			}
+		}
+		
+		return result;
+	}
+	
 }

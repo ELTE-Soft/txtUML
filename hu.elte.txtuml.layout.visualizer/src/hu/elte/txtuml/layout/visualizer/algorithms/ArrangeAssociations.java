@@ -241,23 +241,12 @@ class ArrangeAssociations
 		if (onSameSide)
 		{
 			// On the same side.
-			// We need ad least 2 free points on an object's side.
-			if (_widthOfObjects == 1)
-			{
-				_transformAmount = _transformAmount * 2;
-				diagramObjects = enlargeObjects(diagramObjects);
-			}
-			
-			// TODO
-			// search for 2 consecutive free spots on the same side of an object
-			for (LineAssociation a : _reflexives)
-			{
-				
-			}
+			arrangeReflexiveOnSameSide(diagramObjects);
 		}
 		else
 		{
 			// Not on the same side.
+			arrangeReflexiveOnDifferentSide(diagramObjects);
 			// TODO
 			// search for a free corner on the object
 		}
@@ -601,6 +590,167 @@ class ArrangeAssociations
 				toModify.getId(), r);
 		
 		_possibleStarts.put(key, points);
+	}
+	
+	private void arrangeReflexiveOnSameSide(Set<RectangleObject> diagramObjects)
+			throws ConversionException
+	{
+		// We need ad least 2 free points on an object's side.
+		if (_widthOfObjects == 1)
+		{
+			_transformAmount = _transformAmount * 2;
+			diagramObjects = enlargeObjects(diagramObjects);
+		}
+		
+		// search for 2 consecutive free spots on the same side of an object
+		Boolean repeat = true;
+		ArrayList<LineAssociation> originalReflexives = Helper.cloneLinkList(_reflexives);
+		while (repeat)
+		{
+			repeat = false;
+			try
+			{
+				for (LineAssociation a : _reflexives)
+				{
+					String objectName = a.getFrom();
+					RectangleObject obj = diagramObjects.stream()
+							.filter(o -> o.getName().equals(objectName)).findFirst()
+							.get();
+					
+					// Try every side of the object
+					Boolean successful = false;
+					for (int c = 0; !successful && c < 4; ++c)
+					{
+						Direction dir = Direction.fromInteger(c);
+						Set<Point> sidePoints = obj.getPoints();
+						sidePoints.removeIf(p -> !obj.getPosition().isInTheDirection(p,
+								dir));
+						
+						// Size of the loop to make.
+						Integer distanceToMake = (int) Math.floor(_widthOfObjects / 2.0);
+						
+						Set<Pair<Point, Point>> tempPairs = getAdjacentPoints(sidePoints,
+								distanceToMake);
+						if (tempPairs.size() != 0)
+						{
+							Set<Point> occupied = new HashSet<Point>();
+							occupied.addAll(Helper
+									.concatPointList((ArrayList<ArrayList<Point>>) _assocs
+											.stream()
+											.map(lambda_a -> lambda_a.getRoute())
+											.collect(Collectors.toList())));
+							occupied.addAll(Helper.concatPointSet(diagramObjects.stream()
+									.map(lambda_o -> lambda_o.getPoints())
+									.collect(Collectors.toSet())));
+							// Try route from these point pairs
+							for (Pair<Point, Point> pair : tempPairs)
+							{
+								Point sp = pair.First;
+								ArrayList<Point> startPoints = new ArrayList<Point>();
+								startPoints.add(sp);
+								Point ep = pair.Second;
+								ArrayList<Point> endPoints = new ArrayList<Point>();
+								endPoints.add(ep);
+								
+								Boolean foundRoute = true;
+								
+								// Check for route paralell, away from object
+								for (int i = 0; i < distanceToMake; ++i)
+								{
+									sp = Point.Add(sp, dir);
+									ep = Point.Add(ep, dir);
+									if (occupied.contains(sp) || occupied.contains(ep))
+									{
+										foundRoute = false;
+										break;
+									}
+									else
+									{
+										startPoints.add(sp);
+										endPoints.add(ep);
+									}
+								}
+								
+								Point mp = startPoints.get(startPoints.size() - 1);
+								Direction directionToFinish = Helper.asDirection(Point
+										.Substract(endPoints.get(endPoints.size() - 1),
+												mp));
+								
+								// Check for route between the two paralell
+								// routes
+								for (int i = 0; foundRoute && i < distanceToMake - 1; ++i)
+								{
+									mp = Point.Add(mp, directionToFinish);
+									if (occupied.contains(mp))
+									{
+										foundRoute = false;
+										break;
+									}
+									else
+									{
+										startPoints.add(mp);
+									}
+								}
+								
+								if (foundRoute)
+								{
+									successful = true;
+									
+									ArrayList<Point> route = Helper
+											.clonePointList(startPoints);
+									for (int i = endPoints.size() - 1; i >= 0; --i)
+										route.add(endPoints.get(i));
+									a.setRoute(route);
+									break;
+								}
+							}
+						}
+					}
+					
+					if (successful)
+						break;
+					else
+						throw new CannotFindAssociationRouteException(
+								"No adjacent n free points on either side of the object!");
+				}
+			}
+			catch (CannotFindAssociationRouteException ex)
+			{
+				repeat = true;
+				_transformAmount = _transformAmount * 2;
+				diagramObjects = enlargeObjects(diagramObjects);
+				_reflexives = Helper.cloneLinkList(originalReflexives);
+				transformReflexives();
+			}
+		}
+	}
+	
+	private void arrangeReflexiveOnDifferentSide(Set<RectangleObject> diagramObjects)
+	{
+		// TODO
+	}
+	
+	private Set<Pair<Point, Point>> getAdjacentPoints(Set<Point> sidePoints,
+			Integer distance)
+	{
+		HashSet<Pair<Point, Point>> result = new HashSet<Pair<Point, Point>>();
+		
+		for (Point p1 : sidePoints)
+		{
+			for (Point p2 : sidePoints)
+			{
+				if (p1 == p2)
+					continue;
+				
+				Double dist = Point.Substract(p1, p2).length();
+				if (dist.equals((double) distance))
+				{
+					result.add(new Pair<Point, Point>(p1, p2));
+				}
+			}
+		}
+		
+		return result;
 	}
 	
 	private Point transformDimension(Point p)
