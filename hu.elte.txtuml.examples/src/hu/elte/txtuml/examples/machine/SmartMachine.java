@@ -265,8 +265,6 @@ class SmartMachineTester {
 
 		Action.link(Usage.usedMachine.class, m, Usage.userOfMachine.class, u1);
 		Action.link(Usage.usedMachine.class, m, Usage.userOfMachine.class, u2);
-		Machine m2 = Action.create(Machine.class);
-		Action.link(Usage.usedMachine.class, m2, Usage.userOfMachine.class, u1);
 
 		Action.log("Machine and users are starting.");
 		Action.start(m);
