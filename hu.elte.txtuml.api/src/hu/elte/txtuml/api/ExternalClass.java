@@ -39,8 +39,8 @@ package hu.elte.txtuml.api;
  * fields before it returns. However, if it is called from a different thread,
  * it may only communicate with the model through signals or by creating new
  * model objects, as it might be done from anywhere outside the model. For
- * details about managing the model from outside, see the documentation of the
- * {@link hu.elte.txtuml.api} package.
+ * details about managing the model from outside, see the documentation of
+ * {@link Model}.
  * <p>
  * In case of primitive values, this class has specific protected methods to
  * convert <code>ModelType</code> objects back to their raw value (the primitive
@@ -76,8 +76,7 @@ package hu.elte.txtuml.api;
  * </ul>
  * 
  * <p>
- * See the documentation of the {@link hu.elte.txtuml.api} package to get an
- * overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
  *

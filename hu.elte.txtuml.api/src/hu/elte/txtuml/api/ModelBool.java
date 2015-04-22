@@ -32,8 +32,7 @@ package hu.elte.txtuml.api;
  * </code>
  * </pre>
  * 
- * See the documentation of the {@link hu.elte.txtuml.api} package to get an
- * overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
  * @see ModelType
@@ -78,9 +77,9 @@ public class ModelBool extends ModelType<Boolean> {
 	 * 
 	 * <pre>
 	 * <code>
-	 * {@literal @From(ExampleChoice.class) @To(TargetVertex.class)}
+	 * {@literal @From(SampleChoice.class) @To(TargetVertex.class)}
 	 * // no {@literal @}Trigger annotation in case of a transition from a choice pseudostate 
-	 * class MyTransition extends Transition {
+	 * class SampleTransition extends Transition {
 	 * 	{@literal @}Override
 	 * 	public ModelBool guard() {
 	 * 		return new ModelBool.Else();
@@ -89,8 +88,8 @@ public class ModelBool extends ModelType<Boolean> {
 	 * </code>
 	 * </pre>
 	 * 
-	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
-	 * overview on modeling in txtUML.
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *

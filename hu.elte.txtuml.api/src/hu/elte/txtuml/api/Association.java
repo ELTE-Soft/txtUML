@@ -56,15 +56,14 @@ import hu.elte.txtuml.layout.lang.elements.LayoutLink;
  * 
  * <pre>
  * <code>
- * class ExampleAssociation extends Association {
- * 	class ExampleEnd1 extends {@literal Many<ExampleClass1>} {}
- * 	class ExampleEnd2 extends {@literal HiddenOne<ExampleClass2>} {}
+ * class SampleAssociation extends Association {
+ * 	class SampleEnd1 extends {@literal Many<SampleClass1>} {}
+ * 	class SampleEnd2 extends {@literal HiddenOne<SampleClass2>} {}
  * }
  * </code>
  * </pre>
  * 
- * See the documentation of the {@link hu.elte.txtuml.api} package to get an
- * overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
  * @see Association
@@ -134,8 +133,8 @@ public class Association implements ModelElement, LayoutLink {
 	 * </ul>
 	 * 
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
-	 * overview on modeling in txtUML.
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 * 
@@ -202,8 +201,8 @@ public class Association implements ModelElement, LayoutLink {
 	 * </ul>
 	 * 
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
-	 * overview on modeling in txtUML.
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 * 
@@ -270,8 +269,8 @@ public class Association implements ModelElement, LayoutLink {
 	 * </ul>
 	 * 
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
-	 * overview on modeling in txtUML.
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 * 
@@ -338,8 +337,8 @@ public class Association implements ModelElement, LayoutLink {
 	 * </ul>
 	 * 
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
-	 * overview on modeling in txtUML.
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 * 
@@ -407,8 +406,8 @@ public class Association implements ModelElement, LayoutLink {
 	 * </ul>
 	 * 
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
-	 * overview on modeling in txtUML.
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 * 
@@ -476,8 +475,8 @@ public class Association implements ModelElement, LayoutLink {
 	 * </ul>
 	 * 
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
-	 * overview on modeling in txtUML.
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 * 
@@ -545,8 +544,8 @@ public class Association implements ModelElement, LayoutLink {
 	 * </ul>
 	 * 
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
-	 * overview on modeling in txtUML.
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 * 
@@ -613,8 +612,8 @@ public class Association implements ModelElement, LayoutLink {
 	 * </ul>
 	 * 
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
-	 * overview on modeling in txtUML.
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 * 

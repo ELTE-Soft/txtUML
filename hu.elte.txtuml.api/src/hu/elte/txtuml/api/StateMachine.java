@@ -49,7 +49,7 @@ package hu.elte.txtuml.api;
  * 
  * <pre>
  * <code>
- * class MyClass extends ModelClass {
+ * class SampleClass extends ModelClass {
  * 
  * 	class Init extends Initial {}
  * 
@@ -62,17 +62,17 @@ package hu.elte.txtuml.api;
  * </pre>
  * 
  * Guards and effects might be applied to transitions. For the example, let us
- * assume that the signal <code>MySignal</code> has a field (a signal parameter)
- * <code>myParam</code> of type <code>ModelInt</code>.
+ * assume that the signal <code>SampleSignal</code> has a field (a signal
+ * parameter) <code>sampleParam</code> of type <code>ModelInt</code>.
  * 
  * <pre>
  * <code>
- * class MyClass2 extends ModelClass {
+ * class SampleClass2 extends ModelClass {
  * 
  * 	//...
  * 
- * 	{@literal @From(SourceState.class) @To(TargetState.class) @Trigger(MySignal.class)}
- * 	class MyTransition extends Transition {
+ * 	{@literal @From(SourceState.class) @To(TargetState.class) @Trigger(SampleSignal.class)}
+ * 	class SampleTransition extends Transition {
  * 		{@literal @}Override
  * 		public void effect() {
  * 			Action.log("Transition effect");
@@ -80,8 +80,8 @@ package hu.elte.txtuml.api;
  * 
  * 		{@literal @}Override
  * 		public ModelBool guard() {
- * 			MySignal sg = getSignal(MySignal.class); 
- * 			return sg.myParam.isEqual(ModelInt.ZERO);
+ * 			SampleSignal sg = getSignal(SampleSignal.class); 
+ * 			return sg.sampleParam.isEqual(ModelInt.ZERO);
  * 		}
  * 	}
  * 
@@ -95,11 +95,11 @@ package hu.elte.txtuml.api;
  * 
  * <pre>
  * <code>
- * class MyClass3 extends ModelClass {
+ * class SampleClass3 extends ModelClass {
  * 
  * 	//...
  * 
- * 	class MyState extends State {
+ * 	class SampleState extends State {
  * 		{@literal @}Override
  * 		public void entry() {
  * 			Action.log("Entry action");
@@ -125,22 +125,22 @@ package hu.elte.txtuml.api;
  * 
  * <pre>
  * <code>
- * class MyClass4 extends ModelClass {
+ * class SampleClass4 extends ModelClass {
  * 
  * 	//...
  * 
  * 	ModelInt i = //...
  * 
- * 	class MyCompositeState extends CompositeState {
+ * 	class SampleCompositeState extends CompositeState {
  * 		class Init extends Initial {}
- * 		class MyChoice extends Choice {}
+ * 		class SampleChoice extends Choice {}
  * 		class S1 extends State {}
  * 		class S2 extends State {}
  * 
- * 		{@literal @From(Init.class) @To(MyChoice.class)}
+ * 		{@literal @From(Init.class) @To(SampleChoice.class)}
  * 		class Initialize extends Transition {}
  * 
- * 		{@literal @From(MyChoice.class) @To(S1.class)}
+ * 		{@literal @From(SampleChoice.class) @To(S1.class)}
  * 		class FromChoice1 extends Transition {
  * 			{@literal @}Override
  * 			public ModelBool guard() {
@@ -148,7 +148,7 @@ package hu.elte.txtuml.api;
  * 			}
  * 		}
  * 
- * 		{@literal @From(MyChoice.class) @To(S2.class)}
+ * 		{@literal @From(SampleChoice.class) @To(S2.class)}
  * 		class FromChoice2 extends Transition {
  * 			{@literal @}Override
  * 			public ModelBool guard() {
@@ -166,8 +166,7 @@ package hu.elte.txtuml.api;
  * </code>
  * </pre>
  * 
- * See the documentation of the {@link hu.elte.txtuml.api} package to get an
- * overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
  * @see Vertex
@@ -213,8 +212,8 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * <p>
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
-	 * overview on modeling in txtUML.
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 * @see State
@@ -240,8 +239,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		 * Overridable method to implement the entry action of this vertex.
 		 * <p>
 		 * Overriding methods may only contain action code. See the
-		 * documentation of the {@link hu.elte.txtuml.api} package for details
-		 * about the action language.
+		 * documentation of {@link Model} for details about the action language.
 		 */
 		public void entry() {
 		}
@@ -250,8 +248,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		 * Overridable method to implement the exit action of this vertex.
 		 * <p>
 		 * Overriding methods may only contain action code. See the
-		 * documentation of the {@link hu.elte.txtuml.api} package for details
-		 * about the action language.
+		 * documentation of {@link Model} for details about the action language.
 		 */
 		public void exit() {
 		}
@@ -294,8 +291,8 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * <p>
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
-	 * overview on modeling in txtUML.
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 * @see Initial
@@ -400,8 +397,8 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * <p>
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
-	 * overview on modeling in txtUML.
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *
@@ -486,8 +483,8 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * <p>
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
-	 * overview on modeling in txtUML.
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *
@@ -582,8 +579,8 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * <p>
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
-	 * overview on modeling in txtUML.
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *
@@ -668,8 +665,8 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * <p>
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
-	 * overview on modeling in txtUML.
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *
@@ -758,8 +755,8 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * <p>
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
-	 * overview on modeling in txtUML.
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *
@@ -825,8 +822,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		 * overriding methods to get the triggering signal.
 		 * <p>
 		 * Overriding methods may only contain action code. See the
-		 * documentation of the {@link hu.elte.txtuml.api} package for details
-		 * about the action language.
+		 * documentation of {@link Model} for details about the action language.
 		 */
 		public void effect() {
 		}
@@ -878,8 +874,8 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		 * overriding methods to get the triggering signal.
 		 * <p>
 		 * Overriding methods may only contain a condition evaluation. See the
-		 * documentation of the {@link hu.elte.txtuml.api} package for details
-		 * about condition evaluations in the model.
+		 * documentation of {@link Model} for details about condition
+		 * evaluations in the model.
 		 * 
 		 * @return a <code>ModelBool</code> representing <code>true</code> by
 		 *         default implementation

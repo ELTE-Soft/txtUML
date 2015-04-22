@@ -5,7 +5,7 @@
  * href="http://txtuml.inf.elte.hu">http://txtuml.inf.elte.hu</a> for more
  * information about txtUML.
  * <p>
- * See the documentation of class {@link hu.elte.txtuml.api.Model Model} for an
+ * See the documentation of {@link hu.elte.txtuml.api.Model Model} for an
  * overview on modeling in txtUML.
  * 
  * @author Gabor Ferenc Kovacs

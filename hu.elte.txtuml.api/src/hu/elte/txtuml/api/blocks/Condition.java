@@ -10,8 +10,8 @@ import hu.elte.txtuml.api.ModelElement;
  * <b>Represents:</b> condition
  * <p>
  * 
- * See the documentation of the {@link hu.elte.txtuml.api} package to get an
- * overview on modeling in txtUML.
+ * See the documentation of {@link hu.elte.txtuml.api.Model} for an overview on
+ * modeling in txtUML.
  * 
  * @author Gabor Ferenc Kovacs
  *
@@ -26,7 +26,7 @@ public interface Condition extends ModelElement {
 	 * Overriding methods may not return a <code>null</code> value.
 	 * <p>
 	 * Overriding methods may only contain a condition evaluation. See the
-	 * documentation of the {@link hu.elte.txtuml.api} package for details about
+	 * documentation of {@link hu.elte.txtuml.api.Model} for details about
 	 * condition evaluations in the model.
 	 * 
 	 * @return a <code>ModelBool</code> representing <code>true</code> if the

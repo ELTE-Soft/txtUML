@@ -51,16 +51,15 @@ package hu.elte.txtuml.api;
  * 
  * <pre>
  * <code>
- * class ExampleSignal extends Signal {}
+ * class SampleSignal extends Signal {}
  * 
  * {@literal //} somewhere in the action code:
  * 
- * Action.send(obj, new ExampleSignal());
+ * Action.send(obj, new SampleSignal());
  * </code>
  * </pre>
  *
- * See the documentation of the {@link hu.elte.txtuml.api} package to get an
- * overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
  *

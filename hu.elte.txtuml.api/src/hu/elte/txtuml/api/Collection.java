@@ -18,8 +18,8 @@ import java.util.function.Consumer;
  * After getting an object which implements this interface, call its methods
  * anywhere from the model where action code or condition evaluation is written.
  * <p>
- * See the documentation of the {@link hu.elte.txtuml.api} package for details
- * about the action language and condition evaluations in the model.
+ * See the documentation of {@link Model} for details about the action language
+ * and condition evaluations in the model.
  * 
  * <p>
  * <b>Java restrictions:</b>
@@ -29,8 +29,7 @@ import java.util.function.Consumer;
  * </ul>
  * 
  * <p>
- * See the documentation of the {@link hu.elte.txtuml.api} package to get an
- * overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
  *
@@ -163,8 +162,8 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 	 * This class is currently <b>only available in the API</b>, its use is
 	 * <b>not exported to EMF-UML2</b>.
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
-	 * overview on modeling in txtUML.
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *

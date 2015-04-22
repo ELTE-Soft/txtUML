@@ -22,8 +22,8 @@ import java.util.concurrent.TimeUnit;
  * signal will be asynchronously sent to the a target model object after a
  * specified timeout.
  * <p>
- * See the documentation of the {@link hu.elte.txtuml.api} package to get an
- * overview on modeling in txtUML.
+ * See the documentation of {@link hu.elte.txtuml.api.Model} for an overview on
+ * modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
  *
@@ -66,8 +66,8 @@ public class Timer extends ExternalClass {
 	 * Until the timed event happens, this handle can be used to manage the
 	 * event.
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
-	 * overview on modeling in txtUML.
+	 * See the documentation of {@link hu.elte.txtuml.api.Model} for an overview
+	 * on modeling in txtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *

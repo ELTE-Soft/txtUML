@@ -25,8 +25,7 @@ package hu.elte.txtuml.api;
  * event, which is represented by referencing its signal directly.
  * <p>
  * 
- * See the documentation of the {@link hu.elte.txtuml.api} package to get an
- * overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
  * @see Signal

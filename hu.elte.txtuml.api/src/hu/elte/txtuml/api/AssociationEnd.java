@@ -35,8 +35,7 @@ import hu.elte.txtuml.api.backend.MultiplicityException;
  * checks with the {@link ModelExecutor.Settings#setDynamicChecks(boolean)
  * ModelExecutor.Settings.setDynamicChecks} method.
  * <p>
- * See the documentation of the {@link hu.elte.txtuml.api} package for
- * information about execution steps.
+ * See the documentation of {@link Model} for information about execution steps.
  * 
  * <p>
  * <b>Java restrictions:</b>
@@ -50,8 +49,7 @@ import hu.elte.txtuml.api.backend.MultiplicityException;
  * See the documentation of {@link Association} for details on defining and
  * using associations.
  * <p>
- * See the documentation of the {@link hu.elte.txtuml.api} package to get an
- * overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
  * @see Association.Many

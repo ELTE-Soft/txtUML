@@ -45,15 +45,14 @@ import java.lang.annotation.Target;
  * 
  * <pre>
  * <code>
- * {@literal @From(SourceState.class) @To(TargetState.class) @Trigger(MySignal.class)}
- * class MyTransition extends Transition {}
+ * {@literal @From(SourceState.class) @To(TargetState.class) @Trigger(SampleSignal.class)}
+ * class SampleTransition extends Transition {}
  * </code>
  * </pre>
  * 
  * See the documentation of {@link StateMachine} for detailed examples.
  * <p>
- * See the documentation of the {@link hu.elte.txtuml.api} package to get an
- * overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
  * @see StateMachine.Transition

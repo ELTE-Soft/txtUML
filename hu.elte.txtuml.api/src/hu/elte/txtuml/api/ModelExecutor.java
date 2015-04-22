@@ -27,8 +27,7 @@ import java.io.PrintStream;
  * <p>
  * Accessed from multiple threads, so must be thread-safe.
  * <p>
- * See the documentation of the {@link hu.elte.txtuml.api} package to get an
- * overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
  *
@@ -75,8 +74,8 @@ public final class ModelExecutor implements ModelElement {
 	 * </ul>
 	 * 
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
-	 * overview on modeling in txtUML.
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *
@@ -354,8 +353,8 @@ public final class ModelExecutor implements ModelElement {
 	 * The lower bound of multiplicities might be offended temporarily but has
 	 * to be restored before returning from the current <i>execution step</i>.
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package for
-	 * information about execution steps.
+	 * See the documentation of {@link Model} for information about execution
+	 * steps.
 	 * 
 	 * @param obj
 	 *            the object on the opposite end of the association

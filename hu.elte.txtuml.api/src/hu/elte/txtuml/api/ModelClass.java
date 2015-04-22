@@ -85,11 +85,10 @@ import java.util.concurrent.atomic.AtomicLong;
  * </code>
  * </pre>
  * 
- * See the documentation of the {@link StateMachine} for detailed examples about
+ * See the documentation of {@link StateMachine} for detailed examples about
  * defining state machines.
  * <p>
- * See the documentation of the {@link hu.elte.txtuml.api} package to get an
- * overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
  *
@@ -100,8 +99,8 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	 * The life cycle of a model object consists of steps represented by the
 	 * constants of this enumeration type.
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package to get an
-	 * overview on modeling in txtUML.
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
 	 * 
 	 * @see Status#READY
 	 * @see Status#ACTIVE
@@ -117,8 +116,8 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 		 * in the model, therefore no error or warning messages are shown if it
 		 * is done.
 		 * <p>
-		 * See the documentation of the {@link hu.elte.txtuml.api} package to
-		 * get an overview on modeling in txtUML.
+		 * See the documentation of {@link Model} for an overview on modeling in
+		 * txtUML.
 		 * 
 		 * @see Status#ACTIVE
 		 */
@@ -130,8 +129,8 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 		 * It may be reached by starting the state machine of this object
 		 * manually with the {@link Action#start(ModelClass)} method.
 		 * <p>
-		 * See the documentation of the {@link hu.elte.txtuml.api} package to
-		 * get an overview on modeling in txtUML.
+		 * See the documentation of {@link Model} for an overview on modeling in
+		 * txtUML.
 		 */
 		ACTIVE,
 		/**
@@ -148,8 +147,8 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 		 * model object without deleting it. So the only way to reach this
 		 * status is to implement a model class without a state machine.
 		 * <p>
-		 * See the documentation of the {@link hu.elte.txtuml.api} package to
-		 * get an overview on modeling in txtUML.
+		 * See the documentation of {@link Model} for an overview on modeling in
+		 * txtUML.
 		 */
 		FINALIZED,
 		/**
@@ -161,8 +160,8 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 		 * An object may only be in this status when all of its associations are
 		 * unlinked and its state machine is stopped.
 		 * <p>
-		 * See the documentation of the {@link hu.elte.txtuml.api} package to
-		 * get an overview on modeling in txtUML.
+		 * See the documentation of {@link Model} for an overview on modeling in
+		 * txtUML.
 		 * 
 		 * @see Action#delete(ModelClass)
 		 */
@@ -429,8 +428,8 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 	 * above described process as this method and all the methods this calls,
 	 * assume that the model is well-defined.
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package for
-	 * information about execution steps.
+	 * See the documentation of {@link Model} for information about execution
+	 * steps.
 	 */
 	@SuppressWarnings("unchecked")
 	private void initializeAllDefinedAssociationEnds() {

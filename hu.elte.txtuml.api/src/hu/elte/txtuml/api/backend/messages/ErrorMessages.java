@@ -16,13 +16,15 @@ public interface ErrorMessages {
 	static String getLowerBoundOfMultiplicityOffendedMessage(ModelClass obj,
 			Class<? extends AssociationEnd<?>> assocEnd) {
 		return "Error: lower bound of the multiplicity of "
-				+ assocEnd.getName() + " has been offended at " + obj.toString() + ".";
+				+ assocEnd.getName() + " has been offended at "
+				+ obj.toString() + ".";
 	}
 
 	static String getUpperBoundOfMultiplicityOffendedMessage(ModelClass obj,
 			Class<? extends AssociationEnd<?>> assocEnd) {
 		return "Error: upper bound of the multiplicity of "
-				+ assocEnd.toString() + " has been offended at " + obj.toString() + ".";
+				+ assocEnd.toString() + " has been offended at "
+				+ obj.toString() + ".";
 	}
 
 	static String getLinkingDeletedObjectMessage(ModelClass obj) {

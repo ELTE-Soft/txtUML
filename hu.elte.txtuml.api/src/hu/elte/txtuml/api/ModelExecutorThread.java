@@ -30,8 +30,8 @@ class ModelExecutorThread extends Thread {
 	 * A queue of checks which are to be performed at the beginning of the next
 	 * <i>execution step</i>.
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package for
-	 * information about execution steps.
+	 * See the documentation of {@link Model} for information about execution
+	 * steps.
 	 */
 	private final Queue<CheckQueueEntry> checkQueue = new LinkedList<>();
 
@@ -68,8 +68,8 @@ class ModelExecutorThread extends Thread {
 	 * The lower bound of multiplicities might be offended temporarily but has
 	 * to be restored before returning from the current <i>execution step</i>.
 	 * <p>
-	 * See the documentation of the {@link hu.elte.txtuml.api} package for
-	 * information about execution steps.
+	 * See the documentation of {@link Model} for information about execution
+	 * steps.
 	 * 
 	 * @param obj
 	 *            the object on the opposite end of the association

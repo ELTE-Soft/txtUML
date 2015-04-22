@@ -27,12 +27,11 @@ package hu.elte.txtuml.api;
  * 
  * <pre>
  * <code>
- * ModelString s = new ModelString("mytext");
+ * ModelString s = new ModelString("sampletext");
  * </code>
  * </pre>
  * 
- * See the documentation of the {@link hu.elte.txtuml.api} package to get an
- * overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
  * @see ModelType

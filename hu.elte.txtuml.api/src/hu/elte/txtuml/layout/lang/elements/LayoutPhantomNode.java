@@ -7,7 +7,8 @@ package hu.elte.txtuml.layout.lang.elements;
  * helps writing the layout description.
  * <p>
  * Should not be extended or implemented directly from outside this package with
- * the exception of the {@link hu.elte.txtuml.layout.lang.Diagram.Phantom Diagram.Phantom} class.
+ * the exception of the {@link hu.elte.txtuml.layout.lang.Diagram.Phantom
+ * Diagram.Phantom} class.
  * 
  * @author Gabor Ferenc Kovacs
  *
