@@ -4,7 +4,8 @@ package hu.elte.txtuml.api;
  * Base class for external classes in the model. External classes are those
  * which's implementation is not part of the model, and from the scope of the
  * model they function as black boxes. They might be used to bring external
- * features into the model.
+ * features into the model or to communicate with components of the program that
+ * are not part of the model.
  * <p>
  * By the current implementation, external classes <b>are not exported</b> to
  * EMF-UML2, with the exception of standard library classes

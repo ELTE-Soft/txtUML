@@ -865,6 +865,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		 * <li>the other transition's <code>guard</code> method does not return
 		 * an <code>Else</code> instance.</li>
 		 * </ul>
+		 * <p>
 		 * In this case, the second transition will be executed as the one with
 		 * an else condition is executed only if no other transition might be
 		 * used.
