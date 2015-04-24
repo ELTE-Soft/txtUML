@@ -313,6 +313,7 @@ package hu.elte.txtuml.api;
  * <li>Creating new {@link ModelType} or {@link Collection} instances with
  * methods of those two types or their subtypes. (As all such instances are
  * immutable, this does not affect the state of the model in any way.)</li>
+ * <li>Calling methods of model objects as operations.</li>
  * </ul>
  * 
  * <h3>Execution step</h3>
