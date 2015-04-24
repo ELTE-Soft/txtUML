@@ -331,7 +331,7 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 
 		if (ModelExecutor.Settings.dynamicChecks()
 				&& !newValue.checkLowerBound()) {
-			ModelExecutor.checkLowerBoundInNextExecutionStep(object, otherEnd);
+			ModelExecutor.checkLowerBoundInNextExecutionStep(this, otherEnd);
 		}
 
 	}
