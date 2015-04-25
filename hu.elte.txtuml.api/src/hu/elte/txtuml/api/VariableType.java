@@ -9,9 +9,15 @@ package hu.elte.txtuml.api;
  * <b>Usage:</b>
  * <p>
  * 
- * Variables in the model might be used any place where {@link ModelType}
- * instances are. The only difference is that variables are mutable whereas
- * <code>ModelType</code> objects are not. Therefore, they might be used as
+ * Variables in the model might be used at almost any place where
+ * {@link ModelType} instances are. The difference comes from a restriction that
+ * a variable type cannot be the type of an attribute, neither be a return or
+ * parameter type of a model class constructor or operation (
+ * <code>VariableType</code> does not implement {@link ModelValue}).
+ * <p>
+ * The practical difference between instances of this class and
+ * <code>ModelType</code> objects is that the former are mutable whereas the
+ * latter are not. Therefore, <code>VariableType</code> instances may be used as
  * variables inside the code blocks and condition evaluations given as
  * parameters to
  * {@link Action#If(hu.elte.txtuml.api.blocks.Condition, hu.elte.txtuml.api.blocks.BlockBody, hu.elte.txtuml.api.blocks.BlockBody)

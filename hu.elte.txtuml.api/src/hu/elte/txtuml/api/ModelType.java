@@ -32,7 +32,7 @@ package hu.elte.txtuml.api;
  * @see ModelString
  *
  */
-public class ModelType<T> implements ModelElement {
+public class ModelType<T> implements ModelValue {
 
 	/**
 	 * The primitive value this immutable instance represents.

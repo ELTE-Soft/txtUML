@@ -27,9 +27,8 @@ package hu.elte.txtuml.api;
  * model class (that is, one that may not react to any asynchronous events).
  * Call its methods as operations or use its fields as attributes. All its
  * fields used from inside the model must be of a type extending
- * {@link ModelClass}, {@link ModelType} or {@link Collection}. Also all
- * parameter and return types of methods called from inside the model must
- * extend one of these three types.
+ * {@link ModelValue}. Also all parameter and return types of methods called
+ * from inside the model must extend <code>ModelValue</code>.
  * <p>
  * As the txtUML API uses its own thread for model execution, external classes
  * probably need synchronization.

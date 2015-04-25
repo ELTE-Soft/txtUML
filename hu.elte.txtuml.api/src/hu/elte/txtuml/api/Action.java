@@ -51,19 +51,31 @@ public abstract class Action implements ModelElement {
 	}
 
 	/**
-	 * Creates a new instance of the specified model class.
+	 * Creates a new instance of the specified model class. Shows an error
+	 * message if the creation failed for any reason.
 	 * 
 	 * @param <T>
 	 *            the type of the new model object
 	 * @param classType
 	 *            the model class for which a new instance is to be created
+	 * @param parameters
+	 *            parameters of the new object
 	 * @return a new instance of <code>classType</code> or <code>null</code> if
 	 *         the creation failed
 	 * @throws NullPointerException
 	 *             if <code>classType</code> is <code>null</code>
 	 */
-	public static <T extends ModelClass> T create(Class<T> classType) {
-		return InstanceCreator.createInstance(classType);
+	public static <T extends ModelClass> T create(Class<T> classType,
+			ModelValue... parameters) {
+		T obj = InstanceCreator.createInstanceWithGivenParams(classType,
+				(Object[]) parameters);
+		if (obj == null) {
+			ModelExecutor
+					.executorErrorLog(ErrorMessages
+							.getModelObjectCreationFailedMessage(classType,
+									parameters));
+		}
+		return obj;
 	}
 
 	/**

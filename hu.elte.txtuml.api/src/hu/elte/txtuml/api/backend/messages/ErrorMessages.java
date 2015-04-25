@@ -2,6 +2,7 @@ package hu.elte.txtuml.api.backend.messages;
 
 import hu.elte.txtuml.api.AssociationEnd;
 import hu.elte.txtuml.api.ModelClass;
+import hu.elte.txtuml.api.ModelValue;
 import hu.elte.txtuml.api.StateMachine.Transition;
 import hu.elte.txtuml.api.StateMachine.Vertex;
 
@@ -70,8 +71,29 @@ public interface ErrorMessages {
 				+ "before any time-related events happen during model execution.";
 	}
 
-	static String getBadModel() {
-		return "Model execution failed due to an error in the model.";
+	static String getBadModelMessage() {
+		return "Error: model execution failed due to an error in the model.";
 	}
 
+	static String getModelObjectCreationFailedMessage(Class<? extends ModelClass> classType,
+			ModelValue[] parameters) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Error: creating a model object of the type ");
+		builder.append(classType.getSimpleName());
+		builder.append(" has failed with the following parameters: ");
+		if (parameters.length == 0) {
+			builder.append("<none>");
+		} else {
+			for (ModelValue param : parameters) {
+				builder.append(param);
+				if (param != null) {
+					builder.append(" (" + param.getClass().getSimpleName() + ")");
+				}
+				builder.append(", ");
+			}
+			builder.delete(builder.length() - 2, builder.length() - 1);
+		}
+		return builder.toString();
+	}
+	
 }

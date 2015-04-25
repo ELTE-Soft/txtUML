@@ -44,16 +44,15 @@ import java.util.concurrent.atomic.AtomicLong;
  * <ul>
  * <li><i>Be abstract:</i> disallowed</li>
  * <li><i>Generic parameters:</i> disallowed</li>
- * <li><i>Constructors:</i> allowed, with zero parameters, containing only
- * simple assignments to set the default values of its fields</li>
+ * <li><i>Constructors:</i> allowed, only with parameters of types which are
+ * subclasses of {@link ModelValue}</li>
  * <li><i>Initialization blocks:</i> allowed, containing only simple assignments
  * to set the default values of its fields</li>
  * <li><i>Fields:</i> allowed, only of types which are subclasses of
- * {@link ModelClass} or {@link ModelType}; they represent attributes of the
- * model class</li>
+ * {@link ModelValue}; they represent attributes of the model class</li>
  * <li><i>Methods:</i> allowed, only with parameters and return values of types
- * which are subclasses of {@link ModelClass}, {@link ModelType} or
- * {@link Collection}; they represent operations of the model class</li>
+ * which are subclasses of {@link ModelValue}; they represent operations of the
+ * model class</li>
  * <li><i>Nested interfaces:</i> disallowed</li>
  * <li><i>Nested classes:</i> allowed, only non-static and extending either
  * {@link StateMachine.Vertex} or {@link StateMachine.Transition}</li>
@@ -93,7 +92,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author Gabor Ferenc Kovacs
  *
  */
-public class ModelClass extends Region implements ModelElement, LayoutNode {
+public class ModelClass extends Region implements ModelValue, LayoutNode {
 
 	/**
 	 * The life cycle of a model object consists of steps represented by the
@@ -448,7 +447,7 @@ public class ModelClass extends Region implements ModelElement, LayoutNode {
 				}
 			}
 		} catch (Exception e) {
-			throw new RuntimeException(ErrorMessages.getBadModel(), e);
+			throw new RuntimeException(ErrorMessages.getBadModelMessage(), e);
 		}
 	}
 
