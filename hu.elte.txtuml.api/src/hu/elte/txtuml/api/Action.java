@@ -67,7 +67,7 @@ public abstract class Action implements ModelElement {
 	 */
 	public static <T extends ModelClass> T create(Class<T> classType,
 			ModelValue... parameters) {
-		T obj = InstanceCreator.createInstanceWithGivenParams(classType,
+		T obj = InstanceCreator.createInstanceWithGivenParamsAsArray(classType,
 				(Object[]) parameters);
 		if (obj == null) {
 			ModelExecutor

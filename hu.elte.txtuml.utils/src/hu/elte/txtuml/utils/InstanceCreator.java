@@ -17,9 +17,14 @@ public class InstanceCreator {
 		return createInstanceRecursively(c, new HashSet<>());
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> T createInstanceWithGivenParams(Class<T> c,
 			Object... givenParams) {
+		return createInstanceWithGivenParamsAsArray(c, givenParams);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T createInstanceWithGivenParamsAsArray(Class<T> c,
+			Object[] givenParams) {
 		Set<Class<?>> ancestors = new HashSet<>();
 		T ret = null;
 		int givenParamsLen = givenParams.length;
@@ -65,8 +70,8 @@ public class InstanceCreator {
 				break;
 				// This type is abstract, so it is not instantiatable.
 			} catch (Exception e) {
-				// Using this ctor failed, 'ret' is null,
-				// loop again if there are more ctors.
+				// Using this constructor failed, 'ret' is null,
+				// loop again if there are more constructors.
 			}
 
 			if (ret != null) {
@@ -114,8 +119,8 @@ public class InstanceCreator {
 				break;
 				// This type is abstract, so it is not instantiatable.
 			} catch (Exception e) {
-				// Using this ctor failed, 'ret' is null,
-				// loop again if there are more ctors.
+				// Using this constructor failed, 'ret' is null,
+				// loop again if there are more constructors.
 			}
 
 			if (ret != null) {
