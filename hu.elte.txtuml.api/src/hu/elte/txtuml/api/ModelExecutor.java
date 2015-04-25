@@ -1,8 +1,11 @@
 package hu.elte.txtuml.api;
 
 import hu.elte.txtuml.api.backend.messages.ErrorMessages;
+import hu.elte.txtuml.api.backend.messages.LogMessages;
 
 import java.io.PrintStream;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * The class that manages the model execution.
@@ -13,6 +16,9 @@ import java.io.PrintStream;
  * <b>Usage:</b>
  * <p>
  * 
+ * The model executor starts automatically when this class is accessed from
+ * code. To shut it down, call either {@link #shutdown} or {@link #shutdownNow}.
+ * <p>
  * See {@link ModelExecutor.Settings} to change settings of the execution.
  * 
  * <p>
@@ -38,6 +44,11 @@ public final class ModelExecutor implements ModelElement {
 	 * The thread on which the model execution will run.
 	 */
 	private static final ModelExecutorThread thread = new ModelExecutorThread();
+
+	/**
+	 * A queue of actions to be performed when the executor is shut down.
+	 */
+	private static final Queue<Runnable> shutdownQueue = new ConcurrentLinkedQueue<>();
 
 	/**
 	 * Sole constructor of <code>ModelExecutor</code>, which is designed to be
@@ -333,6 +344,48 @@ public final class ModelExecutor implements ModelElement {
 	}
 
 	// EXECUTION
+
+	/**
+	 * Sets the model executor to be shut down after the currently running and
+	 * all scheduled actions have been performed and every non-external event
+	 * caused by them have been processed. To shut down the executor instantly,
+	 * call {@link #shutdownNow}.
+	 */
+	public static void shutdown() {
+		thread.shutdown();
+	}
+
+	/**
+	 * Shuts down the model executor without waiting for any currently running
+	 * or scheduled actions to perform. In most cases, {@link #shutdown} should
+	 * be called instead.
+	 */
+	public static void shutdownNow() {
+		thread.interrupt();
+
+		while (true) {
+			Runnable shutdownAction = shutdownQueue.poll();
+			if (shutdownAction == null) {
+				break;
+			}
+			shutdownAction.run();
+		}
+
+		if (Settings.executorLog()) {
+			executorLog(LogMessages.getModelExecutionShutdownMessage());
+		}
+	}
+
+	/**
+	 * Registers the specified {@link Runnable} to be run when the model
+	 * executor is shut down.
+	 * 
+	 * @param shutdownAction
+	 *            the action to be run when the executor is shut down
+	 */
+	public static void addToShutdownQueue(Runnable shutdownAction) {
+		shutdownQueue.add(shutdownAction);
+	}
 
 	/**
 	 * Sends a signal to the specified target object asynchronously.

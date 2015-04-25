@@ -254,6 +254,8 @@ class SmartMachineModel extends Model {
 class SmartMachineTester {
 
 	void test() {
+		ModelExecutor.Settings.setExecutorLog(true);
+		
 		Machine m = Action.create(Machine.class);
 		User u1 = Action.create(User.class);
 		User u2 = Action.create(User.class);
@@ -277,8 +279,10 @@ class SmartMachineTester {
 		// In SimpleMachineModel this cannot be done as userOfMachine
 		// association end is non-navigable in that model.		
 		Action.send(oneOfTheUsers, new DoYourWork());
-
-		Timer.start(oneOfTheUsers, new DoYourWork(), new ModelInt(10000));
+		
+		Timer.start(oneOfTheUsers, new DoYourWork(), new ModelInt(5000));
+		
+		Timer.shutdown();
 	}
 
 }

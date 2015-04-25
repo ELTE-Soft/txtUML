@@ -75,8 +75,8 @@ public interface ErrorMessages {
 		return "Error: model execution failed due to an error in the model.";
 	}
 
-	static String getModelObjectCreationFailedMessage(Class<? extends ModelClass> classType,
-			ModelValue[] parameters) {
+	static String getModelObjectCreationFailedMessage(
+			Class<? extends ModelClass> classType, ModelValue[] parameters) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Error: creating a model object of the type ");
 		builder.append(classType.getSimpleName());
@@ -87,7 +87,8 @@ public interface ErrorMessages {
 			for (ModelValue param : parameters) {
 				builder.append(param);
 				if (param != null) {
-					builder.append(" (" + param.getClass().getSimpleName() + ")");
+					builder.append(" (" + param.getClass().getSimpleName()
+							+ ")");
 				}
 				builder.append(", ");
 			}
@@ -95,5 +96,5 @@ public interface ErrorMessages {
 		}
 		return builder.toString();
 	}
-	
+
 }

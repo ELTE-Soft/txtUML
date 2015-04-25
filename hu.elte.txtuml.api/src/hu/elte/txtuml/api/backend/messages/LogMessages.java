@@ -30,4 +30,8 @@ public interface LogMessages {
 		return sm.toString() + " enters " + vertex.toString();
 	}
 
+	static String getModelExecutionShutdownMessage() {
+		return "Model execution terminated.";
+	}
+
 }

@@ -4,7 +4,7 @@ import hu.elte.txtuml.api.*;
 import hu.elte.txtuml.examples.train.TrainModel.*;
 
 class TrainModel {
-	
+
 	class Gearbox extends ModelClass {
 		class Init extends Initial {}
 		
@@ -125,10 +125,10 @@ class TrainModel {
 	}			
 }
 
-class Tester extends Thread {
-	Tester() {
+class TrainTester extends Thread {
+	TrainTester() {
 		createInstances();
-		start();
+		test();
 	}
 
 	Gearbox g;
@@ -148,96 +148,117 @@ class Tester extends Thread {
 		Action.link(LE.l.class, l, LE.e.class, e);
 	}
 
-	@Override
-	public void run() {
-		synchronized (this) {
-			try {
-				int time = 50;
-				wait(time); Action.log("");
-				Action.send(l,new Light());
+	public void test() {
+		try {
+			int time = 50;
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(l, new Light());
 
-				wait(time); Action.log("");
-				Action.send(l,new Light());
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(l, new Light());
 
-				wait(time); Action.log("");
-				Action.send(l,new Light());
-				
-				wait(3 * time); Action.log("");
-				Action.send(g, new Forward());
-				// At this point an overhead can occur because of the
-				// initialization of the aspects that watch the method calls 
-				// inside ModelClass instances.
-				
-				wait(time); Action.log("");
-				Action.send(g, new Backward());
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(l, new Light());
 
-				wait(time); Action.log("");
-				Action.send(g, new Forward());
-				
-				wait(time); Action.log("");
-				Action.send(g, new Backward());
+			Thread.sleep(3 * time);
+			Action.log("");
+			Action.send(g, new Forward());
 
-				wait(time); Action.log("");
-				Action.send(g, new Forward());
-				
-				wait(time); Action.log("");
-				Action.send(g, new Backward());
-				
-				wait(time); Action.log("");
-				Action.send(g, new Forward());
-				
-				wait(time); Action.log("");
-				Action.send(g, new Backward());
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Backward());
 
-				wait(time); Action.log("");
-				Action.send(g, new Forward());
-				
-				wait(time); Action.log("");
-				Action.send(g, new Backward());
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Forward());
 
-				wait(time); Action.log("");
-				Action.send(g, new Forward());
-				
-				wait(time); Action.log("");
-				Action.send(g, new Backward());
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Backward());
 
-				wait(time); Action.log("");
-				Action.send(g, new Forward());
-				
-				wait(time); Action.log("");
-				Action.send(g, new Backward());
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Forward());
 
-				wait(time); Action.log("");
-				Action.send(g, new Forward());
-				
-				wait(time); Action.log("");
-				Action.send(g, new Backward());
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Backward());
 
-				wait(time); Action.log("");
-				Action.send(g, new Forward());
-				
-				wait(time); Action.log("");
-				Action.send(g, new Backward());
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Forward());
 
-				wait(time); Action.log("");
-				Action.send(g, new Forward());
-				
-				wait(time); Action.log("");
-				Action.send(g, new Backward());
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Backward());
 
-				wait(time); Action.log("");
-				Action.send(g, new Forward());
-				
-				wait(time); Action.log("");
-				Action.send(g, new Backward());
-			} catch (InterruptedException e) {
-			}
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Forward());
+
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Backward());
+
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Forward());
+
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Backward());
+
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Forward());
+
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Backward());
+
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Forward());
+
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Backward());
+
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Forward());
+
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Backward());
+
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Forward());
+
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Backward());
+
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Forward());
+
+			Thread.sleep(time);
+			Action.log("");
+			Action.send(g, new Backward());
+
+			ModelExecutor.shutdown();
+		} catch (InterruptedException e) {
 		}
 	}
 }
 
 public class Train {
 	public static void main(String[] args) {
-		new Tester();
+		new TrainTester();
 	}
 }

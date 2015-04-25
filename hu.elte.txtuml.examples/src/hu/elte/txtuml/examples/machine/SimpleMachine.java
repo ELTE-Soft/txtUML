@@ -182,9 +182,9 @@ class MachineModel extends Model {
 }
 
 class MachineTester {
-	
+
 	void test() {
-		ModelExecutor.Settings.setExecutorLog(false);
+		ModelExecutor.Settings.setExecutorLog(true);
 
 		Machine m = Action.create(Machine.class);
 		User u1 = Action.create(User.class);
@@ -199,6 +199,8 @@ class MachineTester {
 		Action.start(u2);
 
 		Action.send(u1, new DoYourWork());
+
+		ModelExecutor.shutdown();
 	}
 
 }

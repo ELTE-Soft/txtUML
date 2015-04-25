@@ -1,7 +1,7 @@
 package hu.elte.txtuml.api;
 
-import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /*
@@ -24,7 +24,7 @@ class ModelExecutorThread extends Thread {
 	 * The mailbox in which the to-be-sent signals are gathered and later
 	 * processed (asynchronously).
 	 */
-	private final LinkedBlockingQueue<MailboxEntry> mailbox = new LinkedBlockingQueue<>();
+	private final LinkedBlockingQueue<IMailboxEntry> mailbox = new LinkedBlockingQueue<>();
 
 	/**
 	 * A queue of checks which are to be performed at the beginning of the next
@@ -33,7 +33,7 @@ class ModelExecutorThread extends Thread {
 	 * See the documentation of {@link Model} for information about execution
 	 * steps.
 	 */
-	private final Queue<CheckQueueEntry> checkQueue = new LinkedList<>();
+	private final Queue<ICheckQueueEntry> checkQueue = new ConcurrentLinkedQueue<>();
 
 	/**
 	 * Sole constructor of package private <code>ModelExecutorThread</code>.
@@ -57,6 +57,31 @@ class ModelExecutorThread extends Thread {
 	void send(ModelClass target, Signal signal) {
 		try {
 			mailbox.put(new MailboxEntry(target, signal));
+		} catch (InterruptedException e) {
+		}
+	}
+
+	/**
+	 * Sets the model executor to be shut down the moment when {@link #mailbox}
+	 * becomes empty.
+	 */
+	void shutdown() {
+		try {
+			class ShutdownAction implements IMailboxEntry {
+				@Override
+				public void execute() {
+					if (mailbox.isEmpty()) {
+						ModelExecutor.shutdownNow();
+					} else {
+						try {
+							mailbox.put(new ShutdownAction());
+						} catch (InterruptedException e) {
+						}
+					}
+				}
+			}
+
+			mailbox.put(new ShutdownAction());
 		} catch (InterruptedException e) {
 		}
 	}
@@ -91,8 +116,14 @@ class ModelExecutorThread extends Thread {
 	public void run() {
 		try {
 			while (true) {
-				checkQueue.forEach(entry -> entry.performCheck());
-				checkQueue.clear();
+				while (true) {
+					ICheckQueueEntry entry = checkQueue.poll();
+					if (entry == null) {
+						break;
+					}
+					entry.performCheck();
+				}
+
 				mailbox.take().execute();
 			}
 		} catch (InterruptedException e) { // do nothing (finish thread)
@@ -103,14 +134,32 @@ class ModelExecutorThread extends Thread {
 
 /**
  * The entry type of {@link ModelExecutorThread}<code>.mailbox</code>. Stores
- * and prepares a send operation to be executed in the future.
+ * and prepares an asynchronous operation to be executed in the future.
+ * <p>
+ * Unusable by the user.
+ *
+ * @author Gabor Ferenc Kovacs
+ *
+ */
+@FunctionalInterface
+interface IMailboxEntry {
+
+	/**
+	 * Executes the asynchronous operation stored in this entry.
+	 */
+	void execute();
+}
+
+/**
+ * The default implementation of {@link IMailboxEntry}. Stores and prepares a
+ * send operation to be executed in the future.
  * <p>
  * Unusable by the user.
  * 
  * @author Gabor Ferenc Kovacs
  * 
  */
-class MailboxEntry {
+class MailboxEntry implements IMailboxEntry {
 
 	/**
 	 * The target object of the stored send operation.
@@ -139,7 +188,8 @@ class MailboxEntry {
 	/**
 	 * Executes the send operation stored in this entry.
 	 */
-	void execute() {
+	@Override
+	public void execute() {
 		target.process(signal);
 	}
 }
@@ -153,7 +203,8 @@ class MailboxEntry {
  * @author Gabor Ferenc Kovacs
  * 
  */
-interface CheckQueueEntry {
+@FunctionalInterface
+interface ICheckQueueEntry {
 
 	/**
 	 * Performs the prepared check.
@@ -171,7 +222,7 @@ interface CheckQueueEntry {
  * 
  * @author Gabor Ferenc Kovacs
  */
-class LowerBoundOfMultiplicityCheck implements CheckQueueEntry {
+class LowerBoundOfMultiplicityCheck implements ICheckQueueEntry {
 
 	/**
 	 * The object on the opposite end of the association.

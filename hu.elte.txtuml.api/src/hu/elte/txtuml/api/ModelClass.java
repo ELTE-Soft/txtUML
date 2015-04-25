@@ -207,7 +207,7 @@ public class ModelClass extends Region implements ModelValue, LayoutNode {
 	protected ModelClass() {
 		super();
 
-		this.identifier = "obj_" + counter.addAndGet(1);
+		this.identifier = "obj_" + counter.incrementAndGet();
 
 		if (getCurrentVertex() == null) {
 			status = Status.FINALIZED;

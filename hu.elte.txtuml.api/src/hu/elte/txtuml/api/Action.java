@@ -10,7 +10,6 @@ import hu.elte.txtuml.utils.InstanceCreator;
 
 import java.io.PrintStream;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 
 /**
  * Class <code>Action</code> provides methods for the user to be used as
@@ -79,8 +78,8 @@ public abstract class Action implements ModelElement {
 				params[i + 1] = parameters[i];
 			}
 		}
-		T obj = InstanceCreator.createInstanceWithGivenParams(classType,
-				params);
+		T obj = InstanceCreator
+				.createInstanceWithGivenParams(classType, params);
 		if (obj == null) {
 			ModelExecutor
 					.executorErrorLog(ErrorMessages

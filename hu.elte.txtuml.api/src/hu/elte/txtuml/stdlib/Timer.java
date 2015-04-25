@@ -12,15 +12,24 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * An external class which enhances the model with the ability of using timed
- * events.
+ * An external class which enhances the txtUML models with the ability of using
+ * timed events.
  * <p>
  * By calling the {@link Timer#start(ModelClass, Signal, ModelInt) start}
  * method, a new delayed send operation can be started, which means that a
  * signal will be asynchronously sent to the a target model object after a
  * specified timeout.
+ * <p>
+ * When using timers, calling {@link Timer#shutdown} to shut down the model
+ * executor is recommended instead of {@link ModelExecutor#shutdown} or
+ * {@link ModelExecutor#shutdownNow} as those two methods do not take timed
+ * events into consideration.
+ * <p>
+ * <b>Warning:</b> starting timers after the model executor is shut down will
+ * result in errors.
  * <p>
  * See the documentation of {@link hu.elte.txtuml.api.Model} for an overview on
  * modeling in txtUML.
@@ -29,6 +38,11 @@ import java.util.concurrent.TimeUnit;
  *
  */
 public class Timer extends ExternalClass {
+
+	/**
+	 * Indicates whether the shutdown process was initiated.
+	 */
+	private static volatile boolean shutdownInitiated = false;
 
 	/**
 	 * Sole constructor of <code>Timer</code>.
@@ -45,6 +59,9 @@ public class Timer extends ExternalClass {
 	 * ModelExecutor.Settings.lockExecutionTimeMultiplier} method in the txtUML
 	 * API to prevent any errors caused by modifying the execution time
 	 * multiplier after the first time-related event happened in the model.
+	 * <p>
+	 * <b>Warning:</b> starting timers after the model executor is shut down
+	 * will result in errors.
 	 * 
 	 * @param targetObj
 	 *            the target model object of the delayed send operation
@@ -62,9 +79,22 @@ public class Timer extends ExternalClass {
 	}
 
 	/**
+	 * Initiates a shutdown process of the model executor which calls
+	 * {@link ModelExecutor#shutdown()} the moment when no actions are currently
+	 * scheduled. This means that all currently scheduled actions will be
+	 * performed, and also every other one that is scheduled while waiting for
+	 * the delay of other (previously shceduled) actions to end.
+	 * <p>
+	 * Calling this method is recommended when using timers instead of methods
+	 * {@link ModelExecutor#shutdown} or {@link ModelExecutor#shutdownNow}.
+	 */
+	public static void shutdown() {
+		shutdownInitiated = true;
+	}
+
+	/**
 	 * The handle of a certain timed event created by the {@link Timer} class.
-	 * Until the timed event happens, this handle can be used to manage the
-	 * event.
+	 * This handle object can be used to manage the event.
 	 * <p>
 	 * See the documentation of {@link hu.elte.txtuml.api.Model} for an overview
 	 * on modeling in txtUML.
@@ -73,6 +103,11 @@ public class Timer extends ExternalClass {
 	 *
 	 */
 	public static class Handle extends ExternalClass {
+
+		/**
+		 * The count of currently scheduled events.
+		 */
+		private static final AtomicInteger scheduledEvents = new AtomicInteger();
 
 		/**
 		 * The scheduler used by this class to schedule timed events.
@@ -102,6 +137,13 @@ public class Timer extends ExternalClass {
 		private final Runnable action;
 
 		/**
+		 * 
+		 */
+		static {
+			ModelExecutor.addToShutdownQueue(() -> scheduler.shutdownNow());
+		}
+
+		/**
 		 * Sole constructor of <code>Handle</code>.
 		 * 
 		 * @param obj
@@ -114,12 +156,14 @@ public class Timer extends ExternalClass {
 		Handle(ModelClass obj, Signal s, ModelInt millisecs) {
 			this.signal = s;
 			this.targetObj = obj;
-			this.action = new Runnable() {
-				@Override
-				public void run() {
-					Action.send(targetObj, signal);
+			this.action = () -> {
+				Action.send(targetObj, signal);
+				int currentCount = scheduledEvents.decrementAndGet();
+				if (currentCount == 0 && shutdownInitiated) {
+					ModelExecutor.shutdown();
 				}
 			};
+			scheduledEvents.incrementAndGet();
 			schedule(millisecs);
 		}
 
@@ -151,8 +195,11 @@ public class Timer extends ExternalClass {
 		 * @throws NullPointerException
 		 *             if <code>millisecs</code> is <code>null</code>
 		 */
-		public synchronized void reset(ModelInt millisecs) {
-			handle.cancel(false);
+		public void reset(ModelInt millisecs) {
+			boolean wasCancelled = handle.cancel(false);
+			if (wasCancelled) {
+				scheduledEvents.incrementAndGet();
+			}
 			schedule(millisecs);
 		}
 
@@ -166,7 +213,7 @@ public class Timer extends ExternalClass {
 		 * @throws NullPointerException
 		 *             if <code>millisecs</code> is <code>null</code>
 		 */
-		public synchronized void add(ModelInt millisecs) {
+		public void add(ModelInt millisecs) {
 			long delay = queryLong();
 			if (delay < 0) {
 				delay = 0;
@@ -179,14 +226,14 @@ public class Timer extends ExternalClass {
 		 * 
 		 * @return a new <code>ModelBool</code> representing <code>true</code>
 		 *         if the cancel was successful, so the timed event managed by
-		 *         this handle was <i>not</i> yet cancelled; a new
+		 *         this handle was <i>not</i> yet cancelled or performed; a new
 		 *         <code>ModelBool</code> representing <code>false</code>
 		 *         otherwise
 		 */
 		public ModelBool cancel() {
-			boolean wasCancelled = handle.isCancelled();
-			handle.cancel(false);
-			return new ModelBool(!wasCancelled);
+			boolean cancelledNow = handle.cancel(false);
+			scheduledEvents.decrementAndGet();
+			return new ModelBool(cancelledNow);
 		}
 
 		/**
