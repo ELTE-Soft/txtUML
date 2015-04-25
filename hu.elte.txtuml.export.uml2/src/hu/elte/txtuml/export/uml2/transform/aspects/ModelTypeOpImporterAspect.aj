@@ -8,7 +8,7 @@ import hu.elte.txtuml.export.uml2.transform.ModelTypeOpImporter;
 
 /**
  * This aspect contains advices for importing ModelType operations.
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspect {
@@ -22,7 +22,7 @@ public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspec
 
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	ModelInt around(ModelInt target): target(target) && isActive() && call(ModelInt ModelInt.add(ModelInt))
@@ -38,7 +38,7 @@ public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspec
 
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	ModelInt around(ModelInt target): target(target) && isActive() && call(ModelInt ModelInt.subtract(ModelInt))
@@ -54,7 +54,7 @@ public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspec
 
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	ModelInt around(ModelInt target): target(target) && isActive() && call(ModelInt ModelInt.multiply(ModelInt))
@@ -70,7 +70,7 @@ public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspec
 
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	ModelInt around(ModelInt target): target(target) && isActive() && call(ModelInt ModelInt.divide(ModelInt))
@@ -86,7 +86,7 @@ public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspec
 
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	ModelInt around(ModelInt target): target(target) && isActive() && call(ModelInt ModelInt.remainder(ModelInt))
@@ -102,7 +102,7 @@ public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspec
 
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	ModelInt around(ModelInt target): target(target) && isActive() && call(ModelInt ModelInt.abs())
@@ -118,7 +118,7 @@ public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspec
 
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	ModelInt around(ModelInt target): target(target) && isActive() && call(ModelInt ModelInt.signum())
@@ -134,7 +134,7 @@ public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspec
 
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	ModelInt around(ModelInt target): target(target) && isActive() && call(ModelInt ModelInt.negate())
@@ -150,7 +150,7 @@ public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspec
 
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	ModelBool around(ModelBool target): target(target) && isActive() && call(ModelBool ModelBool.and(ModelBool))
@@ -166,7 +166,7 @@ public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspec
 
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	ModelBool around(ModelBool target): target(target) && isActive() && call(ModelBool ModelBool.or(ModelBool))
@@ -182,7 +182,7 @@ public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspec
 
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	ModelBool around(ModelBool target): target(target) && isActive() && call(ModelBool ModelBool.xor(ModelBool))
@@ -198,7 +198,7 @@ public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspec
 
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	ModelBool around(ModelBool target): target(target) && isActive() && call(ModelBool ModelBool.equ(ModelBool))
@@ -214,7 +214,7 @@ public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspec
 
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	ModelBool around(ModelBool target): target(target) && isActive() && call(ModelBool ModelBool.notEqu(ModelBool))
@@ -230,7 +230,7 @@ public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspec
 
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	ModelBool around(ModelBool target): target(target) && isActive() && call(ModelBool ModelBool.not())
@@ -246,7 +246,7 @@ public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspec
 
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	ModelBool around(ModelInt target): target(target) && isActive() && call(ModelBool ModelInt.isEqual(ModelInt))
@@ -262,7 +262,7 @@ public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspec
 
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	ModelBool around(ModelInt target): target(target) && isActive() && call(ModelBool ModelInt.isLessEqual(ModelInt))
@@ -278,7 +278,7 @@ public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspec
 
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	ModelBool around(ModelInt target): target(target) && isActive() && call(ModelBool ModelInt.isMoreEqual(ModelInt))
@@ -294,7 +294,7 @@ public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspec
 
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	ModelBool around(ModelInt target): target(target) && isActive() && call(ModelBool ModelInt.isLess(ModelInt))
@@ -310,7 +310,7 @@ public privileged aspect ModelTypeOpImporterAspect extends AbstractImporterAspec
 
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	ModelBool around(ModelInt target): target(target) && isActive() && call(ModelBool ModelInt.isMore(ModelInt))

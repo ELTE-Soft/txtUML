@@ -8,7 +8,7 @@ import org.eclipse.uml2.uml.Profile;
 
 /**
  * This class is responsible for creating a txtUML timer in a model.
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public class TimerCreator {
@@ -19,7 +19,7 @@ public class TimerCreator {
 	 * @param profile The given profile.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static void createTimer(Model model, Profile profile) throws ImportException
 	{

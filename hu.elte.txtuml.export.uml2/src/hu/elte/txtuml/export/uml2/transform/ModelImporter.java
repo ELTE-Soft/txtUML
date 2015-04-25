@@ -41,7 +41,7 @@ import org.eclipse.uml2.uml.resource.UMLResource;
 /**
  * This class is responsible for generating Eclipse UML2 model from a txtUML model.
  *
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public class ModelImporter extends AbstractImporter{
@@ -53,7 +53,7 @@ public class ModelImporter extends AbstractImporter{
 	 * @return The imported UML2 model.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static Model importModel(Class<?> modelClass, String path) throws ImportException
 	{
@@ -72,7 +72,7 @@ public class ModelImporter extends AbstractImporter{
 	 * @return The imported UML2 model.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static Model importModel(String modelClassName, String path) throws ImportException
 	{
@@ -83,7 +83,7 @@ public class ModelImporter extends AbstractImporter{
 	 * Gets the resource set.
 	 * @return The resource set.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static ResourceSet getResourceSet()
 	{
@@ -94,7 +94,7 @@ public class ModelImporter extends AbstractImporter{
 	 * Gets the resource containing the currently imported model.
 	 * @return The resource containing the currently imported model.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static Resource getModelResource() 
 	{
@@ -105,7 +105,7 @@ public class ModelImporter extends AbstractImporter{
 	 * Gets the class of the txtUML model being imported.
 	 * @return The class of the txtUML model being imported.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static Class<?> getModelClass() 
 	{
@@ -116,7 +116,7 @@ public class ModelImporter extends AbstractImporter{
 	 * Gets the UML profile.
 	 * @return The UML profile.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static Profile getProfile()
 	{
@@ -127,7 +127,7 @@ public class ModelImporter extends AbstractImporter{
 	 * Decides if model import is in progress.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isImporting()
 	{
@@ -139,7 +139,7 @@ public class ModelImporter extends AbstractImporter{
 	 * @param sourceClass The specified class.
 	 * @return The imported type.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static org.eclipse.uml2.uml.Type importType(Class<?> sourceClass)
 	{
@@ -195,7 +195,7 @@ public class ModelImporter extends AbstractImporter{
 	 * @param path The path of the output directory. (needed for resource handling)
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void initModelImport(String path) throws ImportException
 	{
@@ -223,7 +223,7 @@ public class ModelImporter extends AbstractImporter{
 	 * @param modelClassQualifiedName The qualified name of the class representing the currently imported model.
 	 * @param outputPath The output path of the resource.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void createAndInitModelResource(String modelClassQualifiedName, String outputPath) 
 	{
@@ -236,7 +236,7 @@ public class ModelImporter extends AbstractImporter{
 	 * Imports the model elements of the txtUML model.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void importModelElements() throws ImportException
 	{
@@ -251,7 +251,7 @@ public class ModelImporter extends AbstractImporter{
 	/**
 	 * Ends the model import in progress. 
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void endModelImport()
 	{
@@ -262,7 +262,7 @@ public class ModelImporter extends AbstractImporter{
 	/**
 	 * Loads the UML profile and applies it to the model.
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void loadAndApplyProfile()
 	{
@@ -280,7 +280,7 @@ public class ModelImporter extends AbstractImporter{
 	 * Imports all generalizations of the model.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void importGeneralizations() throws ImportException 
 	{
@@ -298,7 +298,7 @@ public class ModelImporter extends AbstractImporter{
 	 * @param specific The specific (super) classifier.
 	 * @param general The general (sub) classifier.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void createGeneralization(Class<?> specific, Class<?> general)
 	{
@@ -316,7 +316,7 @@ public class ModelImporter extends AbstractImporter{
 	 * @param sourceClass The class representing the classifier.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void importClassifier(Class<?> sourceClass) throws ImportException
 	{
@@ -357,7 +357,7 @@ public class ModelImporter extends AbstractImporter{
 	 * Imports the classes and signals of the model.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void importClassesAndSignals() throws ImportException 
 	{	
@@ -375,7 +375,7 @@ public class ModelImporter extends AbstractImporter{
 	 * 
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void importAssociations() throws ImportException
 	{
@@ -394,7 +394,7 @@ public class ModelImporter extends AbstractImporter{
 	 * @param sourceClass The class representing the signal in the txtUML model.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void createSignalAndSignalEvent(Class<?> sourceClass) throws ImportException
 	{
@@ -411,7 +411,7 @@ public class ModelImporter extends AbstractImporter{
 	 * Imports the attributes of all classifiers in the model.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
     private static void importAttributesOfAllClassifiers() throws ImportException
     {
@@ -429,7 +429,7 @@ public class ModelImporter extends AbstractImporter{
      * @param classifier The specified txtUML classifier.
      * @throws ImportException
      *
-     * @author Ádám Ancsin
+     * @author Adam Ancsin
      */
     private static void importClassifierAttributes(Class<?> classifier) throws ImportException
     {
@@ -449,7 +449,7 @@ public class ModelImporter extends AbstractImporter{
      * @param field The Java field representing the attribute in the txtUML model.
      * @throws ImportException
      *
-     * @author Ádám Ancsin
+     * @author Adam Ancsin
      */
     private static void importAttribute(Classifier owner, Field field) throws ImportException
     {
@@ -472,7 +472,7 @@ public class ModelImporter extends AbstractImporter{
      * Import the skeletons (no body) of class member functions.
      * @throws ImportException
      *
-     * @author Ádám Ancsin
+     * @author Adam Ancsin
      */
     private static void importMemberFunctionSkeletons() throws ImportException
     {
@@ -489,7 +489,7 @@ public class ModelImporter extends AbstractImporter{
      * Creates member function skeletons for the specified class.
      * @param sourceClass The txtUML class.
      *
-     * @author Ádám Ancsin
+     * @author Adam Ancsin
      */
     private static void createClassMemberFunctionSkeletons(Class<?> sourceClass)
     {
@@ -503,7 +503,7 @@ public class ModelImporter extends AbstractImporter{
      * @param sourceClass The txtUML class.
      * @param ownerClass The imported class.
      *
-     * @author Ádám Ancsin
+     * @author Adam Ancsin
      */
     private static void createClassMemberFunctionSkeletons(Class<?> sourceClass, org.eclipse.uml2.uml.Class ownerClass)
     {
@@ -519,7 +519,7 @@ public class ModelImporter extends AbstractImporter{
      * @param sourceClass The txtUML class.
      * @throws ImportException 
      * 
-     * @author Ádám Ancsin
+     * @author Adam Ancsin
      */
     private static void importClassMemberFunctionBodies(Class<?> sourceClass) throws ImportException
     {
@@ -534,7 +534,7 @@ public class ModelImporter extends AbstractImporter{
      * Imports the member function bodies, state machines and nested signals of all model classes in the model.
      * @throws ImportException
      *
-     * @author Ádám Ancsin
+     * @author Adam Ancsin
      */
  	private static void importClassMemberFunctionBodiesStateMachinesAndNestedSignals() throws ImportException
  	{
@@ -566,7 +566,7 @@ public class ModelImporter extends AbstractImporter{
  	 * @param sourceClass The txtUML class.
  	 * @throws ImportException
  	 *
- 	 * @author Ádám Ancsin
+ 	 * @author Adam Ancsin
  	 */
   	private static void importNestedSignals(Class<?> sourceClass) throws ImportException
   	{
@@ -588,7 +588,7 @@ public class ModelImporter extends AbstractImporter{
   	 * @return The imported UML2 state machine.
   	 * @throws ImportException
   	 *
-  	 * @author Ádám Ancsin
+  	 * @author Adam Ancsin
   	 */
 	private static StateMachine importStateMachine(org.eclipse.uml2.uml.Class ownerClass,Class<?> sourceClass) 
 											throws ImportException
@@ -621,7 +621,7 @@ public class ModelImporter extends AbstractImporter{
 	 *
 	 * @throws ImportException 
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static Activity importOperationBody
 		(Operation operation,org.eclipse.uml2.uml.Class ownerClass,Method sourceMethod) throws ImportException
@@ -638,7 +638,7 @@ public class ModelImporter extends AbstractImporter{
 	 * @param operation The specified operation.
 	 * @param sourceMethod The txtUML method.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void createOperationReturnResult(Operation operation,Method sourceMethod)
 	{
@@ -656,7 +656,7 @@ public class ModelImporter extends AbstractImporter{
 	 * @param sourceMethod The txtUML method.
 	 * @return The created UML2 operation.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static Operation createOwnedOperation(org.eclipse.uml2.uml.Class ownerClass,Method sourceMethod)
 	{
@@ -682,7 +682,7 @@ public class ModelImporter extends AbstractImporter{
 	 * @param sourceMethod The txtUML method.
 	 * @return The imported operation skeleton.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static Operation importOperationSkeleton
 		(org.eclipse.uml2.uml.Class ownerClass,Class<?> sourceClass,Method sourceMethod)

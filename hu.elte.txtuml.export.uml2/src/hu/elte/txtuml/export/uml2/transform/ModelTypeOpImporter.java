@@ -8,14 +8,14 @@ import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
 
 /**
  * This class is responsible for importing ModelType operations in method bodies.
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public class ModelTypeOpImporter extends AbstractMethodImporter {
 
 	/**
 	 * Enumerates the different types of ModelInt operations.
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 *
 	 */
 	private enum ModelIntOperationType
@@ -32,7 +32,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	
 	/**
 	 * Enumerates the different types of ModelBool operations.
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 *
 	 */
 	private enum ModelBoolOperationType
@@ -51,7 +51,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param val The dummy instance of the right operand.
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static ModelInt importModelIntAddOp(ModelInt target, ModelInt val)  
 	{
@@ -64,7 +64,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param val The dummy instance of the right operand.
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static ModelInt importModelIntSubtractOp(ModelInt target, ModelInt val)
 	{
@@ -77,7 +77,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param val The dummy instance of the right operand.
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static ModelInt importModelIntMultiplyOp(ModelInt target, ModelInt val) 
 	{
@@ -90,7 +90,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param val The dummy instance of the right operand.
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static ModelInt importModelIntDivideOp(ModelInt target, ModelInt val)
 	{
@@ -103,7 +103,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param val The dummy instance of the right operand.
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static ModelInt importModelIntRemainderOp(ModelInt target, ModelInt val)
 	{
@@ -115,7 +115,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param target The dummy instance of the operand
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static ModelInt importModelIntNegateOp(ModelInt target)  
 	{
@@ -127,7 +127,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param target The dummy instance of the operand
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static ModelInt importModelIntAbsOp(ModelInt target) 
 	{
@@ -139,7 +139,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param target The dummy instance of the operand
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static ModelInt importModelIntSignumOp(ModelInt target)
 	{
@@ -151,7 +151,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param target The dummy instance of the operand
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static ModelBool importModelBoolNotOp(ModelBool target)
 	{
@@ -164,7 +164,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param val The dummy instance of the right operand.
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static ModelBool importModelBoolOrOp(ModelBool target, ModelBool val) 
 	{
@@ -177,7 +177,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param val The dummy instance of the right operand.
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static ModelBool importModelBoolXorOp(ModelBool target, ModelBool val)
 	{
@@ -190,7 +190,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param val The dummy instance of the right operand.
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static ModelBool importModelBoolAndOp(ModelBool target, ModelBool val)
 	{
@@ -203,7 +203,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param val The dummy instance of the right operand.
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static ModelBool importModelBoolEqualOp(ModelBool target, ModelBool val) 
 	{
@@ -216,7 +216,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param val The dummy instance of the right operand.
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static ModelBool importModelBoolNotEqOp(ModelBool target, ModelBool val) 
 	{
@@ -229,7 +229,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param val The dummy instance of the right operand.
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static ModelBool importModelIntIsEqualOp(ModelInt left, ModelInt right) 
 	{
@@ -242,7 +242,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param val The dummy instance of the right operand.
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static ModelBool importModelIntIsLessEqualOp(ModelInt left, ModelInt right) 
 	{
@@ -255,7 +255,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param val The dummy instance of the right operand.
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static ModelBool importModelIntIsLessOp(ModelInt left, ModelInt right)
 	{
@@ -268,7 +268,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param val The dummy instance of the right operand.
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static ModelBool importModelIntIsMoreEqualOp(ModelInt left, ModelInt right)
 	{
@@ -281,7 +281,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param val The dummy instance of the right operand.
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static ModelBool importModelIntIsMoreOp(ModelInt left, ModelInt right)	
 	{
@@ -297,7 +297,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param isFunction Marks that the operation is a function or not.
 	 * @return The dummy instance of the operation result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static <T> ModelType<T> importModelType2OpOperation
 				(ModelType<T> target, ModelType<T> value, ModelType<T> result, String operator, boolean isFunction)
@@ -326,7 +326,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param operationType The type of the operation. (e.g. add, subtract, multiply, etc.)
 	 * @return The dummy instance of the result of the operation.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressWarnings("incomplete-switch")
 	private static ModelInt importModelInt2OpOperation(ModelInt target, ModelInt value, ModelIntOperationType operationType) 
@@ -371,7 +371,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param operationType The type of the operation. (e.g. and, or, xor, etc.)
 	 * @return The dummy instance of the result of the operation.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressWarnings("incomplete-switch")
 	private static ModelBool importModelBool2OpOperation(ModelBool target, ModelBool value, ModelBoolOperationType operationType) 
@@ -416,7 +416,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param isFunction Marks that the operation is a function or not.
 	 * @return The dummy instance of the operation result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static <T> ModelType<T> importModelType1OpOperation
 			(ModelType<T> target, ModelType<T> result, String operator, boolean isFunction)
@@ -443,7 +443,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param operationType The type of the operation. (e.g. add, subtract, multiply, etc.)
 	 * @return The dummy instance of the result of the operation.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressWarnings("incomplete-switch")
 	private static ModelInt importModelInt1OpOperation(ModelInt target,ModelIntOperationType operationType)  {
@@ -479,7 +479,7 @@ public class ModelTypeOpImporter extends AbstractMethodImporter {
 	 * @param operator The comparing operator.
 	 * @return The dummy instance of the result of the operation.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static ModelBool compareModelInts(ModelInt left, ModelInt right, String operator)
 	{

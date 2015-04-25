@@ -14,7 +14,7 @@ import hu.elte.txtuml.export.uml2.transform.ActionImporter;
 
 /**
  * This aspect contains advices for importing actions.
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
@@ -22,7 +22,7 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 	/**
 	 * This advice imports a "for" statement if Action.For is called from a txtUML method body during model import.
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	void around():call(void Action.For(ModelInt, ModelInt, ParameterizedBlockBody<ModelInt>) ) && isActive()
@@ -37,7 +37,7 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 	/**
 	 * This advice imports a "while" statement if Action.While is called from a txtUML method body during model import.
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	void around():call(void Action.While(Condition,BlockBody)) && isActive()
@@ -51,7 +51,7 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 	 * This advice imports an "if" (with no else block) statement if Action.If (2 params) is called
 	 * from a txtUML method body during model import.
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	void around():call(void Action.If(Condition,BlockBody)) && isActive()
@@ -65,7 +65,7 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 	 * This advice imports an "if" (with else block) statement if Action.If (3 params) is called
 	 * from a txtUML method body during model import.
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	void around():call(void Action.If(Condition,BlockBody , BlockBody)) && isActive()
@@ -79,7 +79,7 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 	/**
 	 * This advice imports a create link action if Action.link is called from a txtUML method body during model import.
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	void around(): call(void Action.link(..)) && isActive()
@@ -94,7 +94,7 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 	/**
 	 * This advice imports a destroy link action if Action.unlink is called from a txtUML method body during model import.
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	void around(): call(void Action.unlink(..)) && isActive()
@@ -109,7 +109,7 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 	/**
 	 * This advice imports a send signal action if Action.send is called from a txtUML method body during model import.
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	void around(): call(void Action.send(ModelClass, Signal)) && isActive()
@@ -124,7 +124,7 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 	/**
 	 * This advice imports a destroy instance action if Action.destroy is called from a txtUML method body during model import.
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	void around(): call(void Action.delete(ModelClass)) && isActive()
@@ -137,7 +137,7 @@ public privileged aspect ActionImporterAspect extends AbstractImporterAspect {
 	 * This advice imports a start object action if Action.start is called from a txtUML method body
 	 * during model import.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	void around(): call(void Action.start(ModelClass)) && isActive()

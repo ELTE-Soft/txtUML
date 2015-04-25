@@ -6,7 +6,7 @@ import java.util.Map;
  * Represents a map for storing information for dummy instances.
  * Key: the dummy instance
  * Value: instance information for the dummy instance
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public interface InstancesMap extends
@@ -16,7 +16,7 @@ public interface InstancesMap extends
 	 * Factory method for creating an InstancesMapImpl instance.
 	 * @return The created map.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static InstancesMapImpl create()
 	{

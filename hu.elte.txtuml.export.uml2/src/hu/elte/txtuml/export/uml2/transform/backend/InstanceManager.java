@@ -12,7 +12,7 @@ import hu.elte.txtuml.export.uml2.utils.FieldValueAccessor;
 
 /**
  * This class is responsible for managing dummy instances during model import.
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public final class InstanceManager {
@@ -20,7 +20,7 @@ public final class InstanceManager {
 	/**
 	 * Initializes the global instances map. Creates map entries for global constants.
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static void initGlobalInstancesMap() 
 	{
@@ -38,7 +38,7 @@ public final class InstanceManager {
 	 * model class, the latter's fields are also instantiated, and so on)
 	 * @param sourceClass The specified class.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static void createClassAndFieldInstancesAndInitClassAndFieldInstancesMap(Class<?> sourceClass) 
 	{	
@@ -53,7 +53,7 @@ public final class InstanceManager {
 	 * @param instance The specified instance.
 	 * @param instanceInfo The given instance information for the specified instance.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static void createLocalInstancesMapEntry(Object instance, InstanceInformation instanceInfo)
 	{
@@ -63,7 +63,7 @@ public final class InstanceManager {
 	/**
 	 * Initializes the local instances map.
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static void initLocalInstancesMap()
 	{
@@ -76,7 +76,7 @@ public final class InstanceManager {
 	 * of the specified classifier instance's fields recursively.
 	 * @param classifier The specified classifier.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static void createLocalFieldsRecursively(Object classifier)
 	{
@@ -88,7 +88,7 @@ public final class InstanceManager {
 	 * of the specified classifier instance's fields recursively.
 	 * @param classifier The specified classifier.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static void createNonLocalFieldsRecursively(Object classifier)
 	{
@@ -98,7 +98,7 @@ public final class InstanceManager {
 	/**
 	 * Clears the global instances map. 
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static void clearGlobalInstancesMap()
 	{
@@ -108,7 +108,7 @@ public final class InstanceManager {
 	/**
 	 * Clears the local instance map.
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static void clearLocallInstancesMap()
 	{
@@ -118,7 +118,7 @@ public final class InstanceManager {
 	/**
 	 * Clears the class and field instances map.
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static void clearClassAndFieldInstancesMap()
 	{
@@ -129,7 +129,7 @@ public final class InstanceManager {
 	 * Gets the "self" instance.
 	 * @return The "self" instance.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static ModelClass getSelfInstance()
 	{
@@ -141,7 +141,7 @@ public final class InstanceManager {
 	 * @param instance The specified instance.
 	 * @return Instance information for the specified instance. Null, if not found in records.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static InstanceInformation getInstanceInfo(Object instance)
 	{
@@ -167,7 +167,7 @@ public final class InstanceManager {
 	 * @param instance The specified instance.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isInstanceLiteral(Object instance) 
 	{	
@@ -180,7 +180,7 @@ public final class InstanceManager {
 	 * @param instance The specified instance.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isInstanceCalculated(Object instance)
 	{
@@ -201,7 +201,7 @@ public final class InstanceManager {
 	 * @param classifierInstance The specified classifier instance.
 	 * @param local Indicates that the instances will be local or non-local.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void createFieldsRecursively(Object classifierInstance, boolean local)
 	{
@@ -241,7 +241,7 @@ public final class InstanceManager {
 	 * @param specifiedClass The specified class representing a txtUML classifier.
 	 * @return All declared txtUML fields of the specified class, including inherited ones.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static HashSet<Field> getAllDeclaredFields(Class<?> specifiedClass)
 	{

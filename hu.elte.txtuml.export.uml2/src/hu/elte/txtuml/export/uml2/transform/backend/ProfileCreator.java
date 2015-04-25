@@ -17,7 +17,7 @@ import org.eclipse.uml2.uml.resource.UMLResource;
 
 /**
  * This class provides utilities for creating an UML profile for a model.
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public final class ProfileCreator {
@@ -31,7 +31,7 @@ public final class ProfileCreator {
 	 * @param resourceSet The given resource set.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static void createProfileForModel(String modelClassQualifiedName, String path, ResourceSet resourceSet) 
 			throws ImportException
@@ -50,7 +50,7 @@ public final class ProfileCreator {
 	 * @param resourceSet The resource set.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
  	private static void defineAndSaveProfile(Profile profile,String modelClassQualifiedName, ResourceSet resourceSet) 
  			throws ImportException
@@ -79,7 +79,7 @@ public final class ProfileCreator {
  	 * @param profile The specified profile.
  	 * @param umlMetamodel The given UML metamodel.
  	 *
- 	 * @author Ádám Ancsin
+ 	 * @author Adam Ancsin
  	 */
 	private static void createExternalClassStereotypeForProfile(Profile profile, Model umlMetamodel)
 	{
@@ -106,7 +106,7 @@ public final class ProfileCreator {
 	 * @param resourceSet The given resource set.
 	 * @return The UML metamodel.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static Model loadUMLMetamodelAndPrimitiveTypes(Profile profile,ResourceSet resourceSet)
 	{
@@ -141,7 +141,7 @@ public final class ProfileCreator {
 	 * 
 	 * @return The created profile-
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static Profile createProfile(String modelClassQualifiedName, String path)
 	{
@@ -163,7 +163,7 @@ public final class ProfileCreator {
 	 * @param resourceSet The given resource set.
 	 * @return The loaded package.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static org.eclipse.uml2.uml.Package loadResource(URI uri, ResourceSet resourceSet)
 	{

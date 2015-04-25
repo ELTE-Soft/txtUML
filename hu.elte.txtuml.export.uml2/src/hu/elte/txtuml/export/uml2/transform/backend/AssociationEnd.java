@@ -4,7 +4,7 @@ import org.eclipse.uml2.uml.AggregationKind;
 
 /**
  * Instances of this class represent an association end.
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public class AssociationEnd
@@ -104,7 +104,7 @@ public class AssociationEnd
 	 * Gets the UML2 type of the association end.
 	 * @return The UML2 type of the association end.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public org.eclipse.uml2.uml.Type getType()
 	{
@@ -115,7 +115,7 @@ public class AssociationEnd
 	 * Gets the name of the association end.
 	 * @return The name of the association end.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public String getName()
 	{
@@ -126,7 +126,7 @@ public class AssociationEnd
 	 * Decides if the association end is navigable or not.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public boolean isNavigable()
 	{
@@ -137,7 +137,7 @@ public class AssociationEnd
 	 * Gets the aggregation kind of the association end.
 	 * @return The aggregation kind of the association end.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public AggregationKind getAggregationKind()
 	{
@@ -148,7 +148,7 @@ public class AssociationEnd
 	 * Gets the lower bound of the end's multiplicity.
 	 * @return The lower bound of the end's multiplicity.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public int getLowerBound()
 	{
@@ -159,7 +159,7 @@ public class AssociationEnd
 	 * Gets the upper bound of the end's multiplicity.
 	 * @return The upper bound of the end's multiplicity.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public int getUpperBound()
 	{

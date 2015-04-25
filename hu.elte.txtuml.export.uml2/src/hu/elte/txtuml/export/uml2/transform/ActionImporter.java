@@ -31,14 +31,14 @@ import org.eclipse.uml2.uml.ValuePin;
 /**
  * This class is responsible for importing actions (Action.* calls) in method bodies.
  * 
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public class ActionImporter extends AbstractMethodImporter {
 
 	/**
 	 * Enumerates the types of link actions: there are create and destroy link actions.
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 *
 	 */
 	private enum LinkActionTypes 
@@ -51,7 +51,7 @@ public class ActionImporter extends AbstractMethodImporter {
 	 * Imports a start object action (Action.start) in a method body.
 	 * @param instance The instance which's behavior is to be started.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static void importStartObjectAction(ModelClass instance)
 	{
@@ -106,7 +106,7 @@ public class ActionImporter extends AbstractMethodImporter {
 	 * @param rightEndClass The class of the right association end.
 	 * @param rightEndObj The right end dummy instance of the link you want to destroy.
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static void importDestroyLinkAction(Class<?> leftEndClass, ModelClass leftEndObj,
 			Class<?> rightEndClass, ModelClass rightEndObj)
@@ -126,7 +126,7 @@ public class ActionImporter extends AbstractMethodImporter {
 	 * @param receiver The dummy instance of the receiving model class.
 	 * @param event The dummy instance of the event to be sent.
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static void importSendSignalAction(ModelClass receiver, hu.elte.txtuml.api.Signal event) 
 	{
@@ -165,7 +165,7 @@ public class ActionImporter extends AbstractMethodImporter {
 	 * @param cond The loop condition.
 	 * @param body The loop body.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static void importWhileStatement(Condition cond, BlockBody body)
 	{
@@ -197,7 +197,7 @@ public class ActionImporter extends AbstractMethodImporter {
 	 * @param cond The condition.
 	 * @param thenBody The body of the "then" block.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static void importIfStatement(Condition cond, BlockBody thenBody)
 	{
@@ -211,7 +211,7 @@ public class ActionImporter extends AbstractMethodImporter {
 	 * @param thenBody The body of the "then" block.
 	 * @param elseBody The body of the "else" block.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static void importIfStatement(Condition cond, BlockBody thenBody,BlockBody elseBody)
 	{
@@ -256,7 +256,7 @@ public class ActionImporter extends AbstractMethodImporter {
 	 * @param to The dummy instance of the target value of the counter.
 	 * @param body The loop body.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static void importForStatement(ModelInt from, ModelInt to, ParameterizedBlockBody<ModelInt> body) 
 	{
@@ -298,7 +298,7 @@ public class ActionImporter extends AbstractMethodImporter {
 	 * Imports a delete object action.
 	 * @param obj The object to be deleted.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static void importDeleteObjectAction(ModelClass obj) 
 	{
@@ -329,7 +329,7 @@ public class ActionImporter extends AbstractMethodImporter {
 	 * @param obj The dummy instance on the end.
 	 * @param endNum Number of the association end. (1 or 2)
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void addEndToLinkAction(LinkAction linkAction, Association association, 
 			String phrase, String instName,ModelClass obj,int endNum)
@@ -356,7 +356,7 @@ public class ActionImporter extends AbstractMethodImporter {
 	 * @param rightEndObj The right end dummy instance of the link you want to create/destroy.
 	 * @param linkActionType The type of the link action (create/destroy).
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void importLinkAction(Class<?> leftEndClass, ModelClass leftEndObj,
 			Class<?> rightEndClass, ModelClass rightEndObj, LinkActionTypes linkActionType)
@@ -402,7 +402,7 @@ public class ActionImporter extends AbstractMethodImporter {
 	 * @param event The dummy instance of the txtUML event.
 	 * @param signalToSend The UML2 signal to be sent.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void addArgumentsToSendSignalAction
 		(SendSignalAction sendSignalAction, hu.elte.txtuml.api.Signal event, Signal signalToSend)
@@ -434,7 +434,7 @@ public class ActionImporter extends AbstractMethodImporter {
 	 * @param cond The condition.
 	 * @return The condition converted to an expression.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static String importCondition(Condition cond)
 	{
@@ -450,7 +450,7 @@ public class ActionImporter extends AbstractMethodImporter {
 	 * Creates the return value of the importBlockBody method
 	 * @return The created return value.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static Pair<ActivityNode,ActivityEdge> createImportBlockBodyRetVal()
 	{
@@ -469,7 +469,7 @@ public class ActionImporter extends AbstractMethodImporter {
 	 * @param body The block body.
 	 * @return A pair containing the last activity node (left) and the first activity edge (right) of the imported block. 
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static Pair<ActivityNode,ActivityEdge> importBlockBody(BlockBody body)
 	{
@@ -488,7 +488,7 @@ public class ActionImporter extends AbstractMethodImporter {
 	 * @param param Dummy instance of the parameter of the block.
 	 * @return A pair containing the last activity node (left) and the first activity edge (right) of the imported block. 
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static <T> Pair<ActivityNode,ActivityEdge> importParameterizedBlockBody(ParameterizedBlockBody<T> body, T param)
 	{
@@ -505,7 +505,7 @@ public class ActionImporter extends AbstractMethodImporter {
 	 * Creates the next decision node in the current activity.
 	 * @return The created decision node.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static DecisionNode createNextDecisionNode()
 	{

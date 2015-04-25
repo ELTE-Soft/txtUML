@@ -13,7 +13,7 @@ import hu.elte.txtuml.api.StateMachine;
 
 /**
  * This class provides utilities for telling the types of txtUML model elements.
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public final class ElementTypeTeller {
@@ -23,7 +23,7 @@ public final class ElementTypeTeller {
 	 * @param specifiedClass The specified class.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isModelElement(Class<?> specifiedClass)
 	{ 
@@ -35,7 +35,7 @@ public final class ElementTypeTeller {
 	 * @param specifiedClass The specified class.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isModelClass(Class<?> specifiedClass) 
 	{
@@ -47,7 +47,7 @@ public final class ElementTypeTeller {
 	 * @param specifiedClass The specified class.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isExternalClass(Class<?> specifiedClass)
 	{
@@ -59,7 +59,7 @@ public final class ElementTypeTeller {
 	 * @param specifiedClass The specified class.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isClass(Class<?> specifiedClass)
 	{
@@ -71,7 +71,7 @@ public final class ElementTypeTeller {
 	 * @param specifiedClass The specified class.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isEvent(Class<?> specifiedClass) 
 	{
@@ -83,7 +83,7 @@ public final class ElementTypeTeller {
 	 * @param specifiedClass The specified class.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isClassifier(Class<?> specifiedClass)
 	{
@@ -95,7 +95,7 @@ public final class ElementTypeTeller {
 	 * @param specifiedClass The specified class.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isAssociation(Class<?> specifiedClass)
 	{
@@ -107,7 +107,7 @@ public final class ElementTypeTeller {
 	 * @param field The specified field.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isAttribute(Field field)
 	{
@@ -120,7 +120,7 @@ public final class ElementTypeTeller {
 	 * @param specifiedClass The specified class.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isVertex(Class<?> specifiedClass)
 	{
@@ -132,7 +132,7 @@ public final class ElementTypeTeller {
 	 * @param specifiedClass The specified class.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isState(Class<?> specifiedClass)
 	{
@@ -144,7 +144,7 @@ public final class ElementTypeTeller {
 	 * @param specifiedClass The specified class.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isInitial(Class<?> specifiedClass)
 	{
@@ -156,7 +156,7 @@ public final class ElementTypeTeller {
 	 * @param specifiedClass The specified class.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isCompositeState(Class<?> specifiedClass)
 	{
@@ -168,7 +168,7 @@ public final class ElementTypeTeller {
 	 * @param specifiedClass The specified class.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isChoice(Class<?> specifiedClass)
 	{
@@ -180,7 +180,7 @@ public final class ElementTypeTeller {
 	 * @param specifiedClass The specified class.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isTransition(Class<?> specifiedClass)
 	{
@@ -192,7 +192,7 @@ public final class ElementTypeTeller {
 	 * @param element The specified model element.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isModelClass(ModelElement element)
 	{
@@ -204,7 +204,7 @@ public final class ElementTypeTeller {
 	 * @param element The specified model element.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isExternalClass(ModelElement element)
 	{
@@ -216,7 +216,7 @@ public final class ElementTypeTeller {
 	 * @param element The specified model element.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isClass(ModelElement element)
 	{
@@ -228,7 +228,7 @@ public final class ElementTypeTeller {
 	 * @param element The specified model element.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isEvent(ModelElement element)
 	{
@@ -240,7 +240,7 @@ public final class ElementTypeTeller {
 	 * @param element The specified model element.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isClassifier(ModelElement element)
 	{
@@ -252,7 +252,7 @@ public final class ElementTypeTeller {
 	 * @param element The specified model element.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isAssociation(ModelElement element) 
 	{
@@ -264,7 +264,7 @@ public final class ElementTypeTeller {
 	 * @param element The specified model element.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isVertex(ModelElement element) 
 	{
@@ -276,7 +276,7 @@ public final class ElementTypeTeller {
 	 * @param element The specified model element.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isState(ModelElement element)
 	{
@@ -288,7 +288,7 @@ public final class ElementTypeTeller {
 	 * @param element The specified model element.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isInitial(ModelElement element)
 	{
@@ -300,7 +300,7 @@ public final class ElementTypeTeller {
 	 * @param element The specified model element.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isCompositeState(ModelElement element) 
 	{
@@ -312,7 +312,7 @@ public final class ElementTypeTeller {
 	 * @param element The specified model element.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isChoice(ModelElement element)
 	{
@@ -324,7 +324,7 @@ public final class ElementTypeTeller {
 	 * @param element The specified model element.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isTransition(ModelElement element)
 	{
@@ -336,7 +336,7 @@ public final class ElementTypeTeller {
 	 * @param specifiedClass The specified class.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isSpecificClassifier(Class<?> specifiedClass)
 	{

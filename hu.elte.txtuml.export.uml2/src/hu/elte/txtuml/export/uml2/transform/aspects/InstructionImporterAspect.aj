@@ -20,20 +20,20 @@ import org.aspectj.lang.annotation.SuppressAjWarnings;
  * This aspect contains advices (and some pointcuts) for importing instructions that are not actions (Action.* calls)
  * nor ModelType operations.
  * 
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  */
 public privileged aspect InstructionImporterAspect extends AbstractImporterAspect {
 
 	/**
 	 * This pointcut indicates that dummy instance creation is in progress. 
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private pointcut creatingDummyInstance() : if(DummyInstanceCreator.isCreating());
 	
 	/**
 	 * This pointcut indicates that "assoc" is being called.
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private pointcut callingAssocMethod(): if(thisJoinPoint.getSignature().getName().equals("assoc"));
 	
@@ -43,7 +43,7 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	 * of ModelInt returns with the created instance.
 	 * @param created The created instance. 
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	after() returning(ModelInt created) : call((ModelInt).new(int)) && isActive() && !creatingDummyInstance()
@@ -57,7 +57,7 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	 * of ModelBool returns with the created instance.
 	 * @param created The created instance. 
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	after() returning(ModelBool created) : call((ModelBool).new(boolean)) && isActive() && !creatingDummyInstance()
@@ -71,7 +71,7 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	 * of ModelString returns with the created instance.
 	 * @param created The created instance. 
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	after() returning(ModelString created) : call((ModelString).new(String)) && isActive() && !creatingDummyInstance()
@@ -85,7 +85,7 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	 * during model import.
 	 * @param created The created instance.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	after(ModelClass created): execution((ModelClass+).new(..)) && isActive() && target(created)
@@ -101,7 +101,7 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	 * @param signalClass The class of the signal.
 	 * @return The dummy instance of the trigger signal.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressWarnings("unchecked")
 	@SuppressAjWarnings
@@ -120,7 +120,7 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	 * @param target The target ModelClass (dummy) instance.
 	 * @return The dummy instance of the return value of the method.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	Object around(ModelClass target): target(target) && call(* *(..))  && isActive() && !callingAssocMethod()
@@ -134,7 +134,7 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	 * @param target The target instance of the call
 	 * @return The result of the call (an AssociationEnd).
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	Object around(ModelClass target): target(target) && isActive() && call(* assoc(..))
@@ -149,7 +149,7 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	 * @param target The target ExternalClass (dummy) instance.
 	 * @return The dummy instance of the return value of the called method.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	Object around(ExternalClass target) : target(target) && call(* (ExternalClass+).*(..)) && isActive() {
@@ -166,7 +166,7 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	 *
 	 * @return The dummy instance of the return value of the called method.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	Object around() : call(static * (ExternalClass+).*(..)) && isActive() {
@@ -185,7 +185,7 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	 * @param newValue The new value to be assigned to the field.
 	 * @return The dummy instance of the field.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	Object around(ModelClass target, Object newValue) : target(target) &&
@@ -204,7 +204,7 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	 * @param target The ModelClass (dummy) instance
 	 * @return The dummy instance of the field.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	Object around(ModelClass target) : target(target) && get(* *) && isActive() {
@@ -227,7 +227,7 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 	 * @param target The ExternalClass (dummy) instance
 	 * @return The dummy instance of the field.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressAjWarnings
 	Object around(ExternalClass target) : target(target) && get(* *) && isActive() {

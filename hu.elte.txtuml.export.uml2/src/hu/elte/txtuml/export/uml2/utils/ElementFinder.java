@@ -14,7 +14,7 @@ import org.eclipse.uml2.uml.Property;
 
 /**
  * This class provides utilities for finding elements.
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public final class ElementFinder {
@@ -25,7 +25,7 @@ public final class ElementFinder {
 	 * @param type The specified class.
 	 * @return The field. (null, if not found)
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static Field findField(String fieldName,Class<?> type) {
 
@@ -50,7 +50,7 @@ public final class ElementFinder {
 	 * @param containingClass The specified class.
 	 * @return The method. (null, if not found)
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static Method findMethod(String name, Class<?> containingClass)
 	{
@@ -79,7 +79,7 @@ public final class ElementFinder {
 	 * @param ownerClass The specified UML2 class.
 	 * @return The UML2 Operation (null, if not found)
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static Operation findOperation(String name, org.eclipse.uml2.uml.Class ownerClass)
 	{
@@ -99,7 +99,7 @@ public final class ElementFinder {
 	 * @param activity The specified UML2 Activity.
 	 * @return The UML2 parameter (null, if not found).
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static Parameter findParameterInActivity(String paramName, Activity activity)
 	{
@@ -121,7 +121,7 @@ public final class ElementFinder {
 	 * @param enclosingClass The specified enclosing class.
 	 * @return The declared class (null, if not found).
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static Class<?> findDeclaredClass(String classToFindName, Class<?> enclosingClass)
 	{
@@ -143,7 +143,7 @@ public final class ElementFinder {
 	 * @param association The specified UML2 association.
 	 * @return The UML2 association member end (null if not found).
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static Property findAssociationMemberEnd(String endToFindName, Association association)
 	{
@@ -164,7 +164,7 @@ public final class ElementFinder {
 	 * @return The class of the txtUML model (null, if not found).
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static Class<?> findModel(String className) throws ImportException 
 	{

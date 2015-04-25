@@ -26,7 +26,7 @@ import org.eclipse.uml2.uml.Variable;
  * This class is responsible for importing operations of Collections (e.g. Collection.selectAny, Collection.selectAll, etc.)
  * inside method bodies.
  * 
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public class CollectionOperationImporter extends AbstractMethodImporter {
@@ -44,7 +44,7 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 	 * @param target The dummy instance of the target Collection.
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static <T extends ModelClass> T importSelectAny(Collection<T> target) 
 	{
@@ -92,7 +92,7 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 	 * @param condition The condition of the select all instruction.
 	 * @return The dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static <T extends ModelClass> Collection<T> importSelectAll(Collection<T> target, ParameterizedCondition<T> condition)
 	{
@@ -116,7 +116,7 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 	 * @param target The specified target Collection.
 	 * @return The dummy ModelBool instance of the query result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static <T extends ModelClass> ModelBool importIsEmpty(Collection<T> target)
 	{
@@ -132,7 +132,7 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 	 * @param object The ModelClass object to check.
 	 * @return The dummy ModelBool instance of the query result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static <T extends ModelClass> ModelBool importContains(Collection<T> target, ModelClass object)
 	{
@@ -148,7 +148,7 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 	 * @param target The specified target Collection.
 	 * @return The dummy ModelInt instance of the query result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static <T extends ModelClass> ModelInt importCount(Collection<T> target)
 	{
@@ -164,7 +164,7 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 	 * @param object The ModelClass object to be added to the collection.
 	 * @return The dummy instance of the result collection.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static <T extends ModelClass> Collection<T> importAdd(Collection<T> target, ModelClass object)
 	{
@@ -178,7 +178,7 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 	 * @param objects The collection containing the elements to be added to the target collection.
 	 * @return The dummy instance of the result collection.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static <T extends ModelClass> Collection<T> importAddAll(Collection<T> target, Collection<T> objects)
 	{
@@ -192,7 +192,7 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 	 * @param object The object to be removed from the collection.
 	 * @return The dummy instance of the result collection.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static <T extends ModelClass> Collection<T> importRemove(Collection<T> target, T object)
 	{
@@ -208,7 +208,7 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 	 * @param operationType The type of the operation. (e.g. selectAll, add, remove, etc.)
 	 * @return The dummy instance of the result collection.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static <T extends ModelClass> Collection<T> 
 		importOperationResultingACollection(Collection<T> target, String paramExpression, OperationTypes operationType )
@@ -280,7 +280,7 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 	 * @param typeClass The class of the result.
 	 * @param operationType The type of operation. (e.g. selectAll, selectAny, remove, add, etc.)
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void createActivityElementsForCollectionOperation
 		(String opaqueActionName, String targetExpression, String operationExpression, Object result, Class<?> typeClass)
@@ -320,7 +320,7 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 	 * @param parameter The parameter of the condition.
 	 * @return The condition converted to an expression.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static <T extends ModelClass> String importParameterizedCondition(ParameterizedCondition<T> condition, T parameter)
 	{
@@ -341,7 +341,7 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 	 * @param collection The specified collection.
 	 * @return The specified collection's generic parameter type.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressWarnings("unchecked")
 	private static <T extends ModelClass> Class<? extends ModelClass>
@@ -364,7 +364,7 @@ public class CollectionOperationImporter extends AbstractMethodImporter {
 	 * @param resultExpression The result expression.
 	 * @return The created dummy instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static <T> T createAndAssignResultForQuery(Class<T> resultType, String resultExpression)
 	{

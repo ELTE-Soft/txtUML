@@ -2,7 +2,7 @@ package hu.elte.txtuml.export.uml2.transform.backend;
 
 /**
  * Exception used by the importer.
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 @SuppressWarnings("serial")
@@ -11,7 +11,7 @@ public class ImportException extends Exception {
 	/**
 	 * Creates an ImportException instance with the given error message.
 	 * @param msg The error message.
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public ImportException(String msg) {
 		message = msg;
@@ -19,7 +19,7 @@ public class ImportException extends Exception {
 	/**
 	 * Gets the error message.
 	 * @return The error message.
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public String getMessage() {
 		return message;

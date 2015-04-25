@@ -8,7 +8,7 @@ import org.eclipse.uml2.uml.Region;
 
 /**
  * Represents an importer. Every importer must extend this class or one of it's subclasses.
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 abstract class AbstractImporter {
@@ -17,7 +17,7 @@ abstract class AbstractImporter {
 	 * Writes an import warning with the given warning message to the standard output.
 	 * @param msg The warning message.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	protected static void importWarning(String msg)
 	{
@@ -29,7 +29,7 @@ abstract class AbstractImporter {
 	 * @param sourceClass The given class.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	protected static boolean containsStateMachine(Class<?> sourceClass)
 	{
@@ -46,7 +46,7 @@ abstract class AbstractImporter {
 	 * @param region The region.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	protected static boolean containsInitial(Region region)
 	{

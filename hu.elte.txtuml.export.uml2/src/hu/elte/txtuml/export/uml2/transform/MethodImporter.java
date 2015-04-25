@@ -29,7 +29,7 @@ import org.eclipse.uml2.uml.Variable;
 
 /**
  * This class is responsible for importing methods and their parameters, bodies and return values.
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 class MethodImporter extends AbstractMethodImporter 
@@ -42,7 +42,7 @@ class MethodImporter extends AbstractMethodImporter
 	 * @return The guard expression represented by the method's return value.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static String importGuardMethod
 		(Model model, Method sourceMethod,StateMachine.Transition transitionInstance) throws ImportException
@@ -68,7 +68,7 @@ class MethodImporter extends AbstractMethodImporter
 	 * @param classInstance The dummy instance of the owner class. (model class, state or transition)
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static void importMethod
 		(Model model, Activity activity, Method sourceMethod, ModelElement classInstance) throws ImportException
@@ -84,7 +84,7 @@ class MethodImporter extends AbstractMethodImporter
 	 * @return The return value of the guard method.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static ModelBool importGuardBody(StateMachine.Transition transitionInstance) throws ImportException
 	{
@@ -109,7 +109,7 @@ class MethodImporter extends AbstractMethodImporter
 	 * @param sourceMethod The guard method to be imported.
 	 * @param transitionInstance The dummy instance of the transition.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void initGuardImport(Model model, Method sourceMethod, StateMachine.Transition transitionInstance)
 	{
@@ -123,7 +123,7 @@ class MethodImporter extends AbstractMethodImporter
 	/**
 	 * Ends guard import.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void endGuardImport()
 	{
@@ -139,7 +139,7 @@ class MethodImporter extends AbstractMethodImporter
 	 * @param sourceMethod The method to be imported.
 	 * @param classInstance The dummy instance of the owner class. (model class, state or transition)
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void initMethodImport(Model model, Activity activity, Method sourceMethod, ModelElement classInstance)
 	{
@@ -162,7 +162,7 @@ class MethodImporter extends AbstractMethodImporter
 	 * 
 	 * @param classInstance The dummy instance of the owner class. (model class, state or transition)
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void endMethodImport(ModelElement classInstance)
 	{
@@ -183,7 +183,7 @@ class MethodImporter extends AbstractMethodImporter
 	 * Creates an activity parameter and parameter node for the trigger signal of an effect method. Should only be used when
 	 * imported method is an effect method of a transition.
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void createSignalParameter()
 	{
@@ -199,7 +199,7 @@ class MethodImporter extends AbstractMethodImporter
 	 * @param classInstance The dummy instance of the owner class. (model class, state or transition)
 	 * @throws ImportException 
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void importBody(ModelElement classInstance) throws ImportException
 	{
@@ -232,7 +232,7 @@ class MethodImporter extends AbstractMethodImporter
 	 * @param returnObj The return value object.
 	 * @throws Exception
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void assignReturnValue(Object returnObj) throws Exception
 	{
@@ -267,7 +267,7 @@ class MethodImporter extends AbstractMethodImporter
 	 * @param paramType The UML2 type of the parameter.
 	 * @return The created activity parameter node.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static ActivityParameterNode createParameterNode(Parameter param,String paramName,Type paramType)
 	{
@@ -283,7 +283,7 @@ class MethodImporter extends AbstractMethodImporter
 	/**
 	 * Loads the parameters of the imported method to currentParameters.
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void loadCurrentParameters()
 	{
@@ -313,7 +313,7 @@ class MethodImporter extends AbstractMethodImporter
 	 * @param paramName The name of the parameter.
 	 * @param paramType The UML2 type of the parameter.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void addParameterToActivity(Parameter param,String paramName,Type paramType)
 	{

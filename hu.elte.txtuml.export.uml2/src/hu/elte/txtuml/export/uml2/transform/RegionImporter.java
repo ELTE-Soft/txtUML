@@ -27,7 +27,7 @@ import org.eclipse.uml2.uml.Vertex;
 
 /**
  * Instances of this class are responsible for importing state machine regions.
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 class RegionImporter extends AbstractImporter {
@@ -53,7 +53,7 @@ class RegionImporter extends AbstractImporter {
 	 * @return The imported UML2 region.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	Region importRegion() throws ImportException
 	{
@@ -66,7 +66,7 @@ class RegionImporter extends AbstractImporter {
 	 * Gets the UML2 region.
 	 * @return The UML2 region.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	Region getRegion()
 	{
@@ -77,7 +77,7 @@ class RegionImporter extends AbstractImporter {
 	 * Imports the vertices (states and pseudostates) of the region.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private void importVertices() throws ImportException
 	{
@@ -98,7 +98,7 @@ class RegionImporter extends AbstractImporter {
 	 * @return The imported sub-region.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private Region importSubRegion(Class<?> txtUMLVertexClass, StateMachine.Vertex txtUMLVertexInstance, Vertex uml2Vertex) 
 			throws ImportException
@@ -121,7 +121,7 @@ class RegionImporter extends AbstractImporter {
 	 * @return The imported UML2 vertex.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private  Vertex importVertex(Class<?> txtUMLVertexClass) throws ImportException
 	{
@@ -159,7 +159,7 @@ class RegionImporter extends AbstractImporter {
 	 *
 	 * @throws ImportException
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private void importStateEntryAction
 		(Class<?> txtUMLStateClass,State importedState, StateMachine.State stateInstance) throws ImportException
@@ -191,7 +191,7 @@ class RegionImporter extends AbstractImporter {
 	 *
 	 * @throws ImportException
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private void importStateExitAction
 		(Class<?> stateClass,State importedState, StateMachine.State stateInstance) throws ImportException
@@ -219,7 +219,7 @@ class RegionImporter extends AbstractImporter {
 	 * Imports the transitions of the region.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private  void importTransitions() throws ImportException
 	{
@@ -248,7 +248,7 @@ class RegionImporter extends AbstractImporter {
 	 * @return The created vertex.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private Vertex createVertex(Class<?> txtUMLVertexClass) throws ImportException
 	{	
@@ -270,7 +270,7 @@ class RegionImporter extends AbstractImporter {
 	 * @param txtUMLVertexClass The class of the txtUML vertex.
 	 * @return The created UML2 initial pseudostate.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private Vertex createInitial(Class<?> txtUMLVertexClass)
 	{
@@ -282,7 +282,7 @@ class RegionImporter extends AbstractImporter {
 	 * @param txtUMLVertexClass The class of the txtUML vertex.
 	 * @return The created UML2 choice pseudostate.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private Pseudostate createChoice(Class<?> txtUMLVertexClass)
 	{
@@ -298,7 +298,7 @@ class RegionImporter extends AbstractImporter {
 	 *
 	 * @throws ImportException
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private org.eclipse.uml2.uml.Transition importTransition(Class<?> txtUMLTransitionClass) throws ImportException
 	{
@@ -330,7 +330,7 @@ class RegionImporter extends AbstractImporter {
 	 * @param triggerAnnotation The @Trigget annotation of the txtUML transition class.
 	 * @param importedTransition The imported UML2 transition.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private void importTrigger( hu.elte.txtuml.api.Trigger triggerAnnotation,org.eclipse.uml2.uml.Transition importedTransition)
 	{
@@ -350,7 +350,7 @@ class RegionImporter extends AbstractImporter {
 	 *
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private void importEffectAction(
 			Class<?> txtUMLTransitionClass,
@@ -383,7 +383,7 @@ class RegionImporter extends AbstractImporter {
 	 *
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private void importGuard(
 			Class<?> txtUMLTransitionClass,
@@ -419,7 +419,7 @@ class RegionImporter extends AbstractImporter {
 	 * @param target The target UML2 vertex.
 	 * @return The created UML2 transition.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private org.eclipse.uml2.uml.Transition createTransitionBetweenVertices(String name,Vertex source, Vertex target)
 	{

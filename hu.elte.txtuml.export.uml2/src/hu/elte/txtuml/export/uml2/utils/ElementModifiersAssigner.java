@@ -13,7 +13,7 @@ import org.eclipse.uml2.uml.VisibilityKind;
 
 /**
  * This class provides utilities for assigning modifiers (e.g. static, setting visibility, etc.) to imported model elements.
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public final class ElementModifiersAssigner {
@@ -23,7 +23,7 @@ public final class ElementModifiersAssigner {
 	 * @param element The specified named element.
 	 * @param modifiers The modifiers given by Java Reflection.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
     private static void setVisibilityBasedOnModifiersGivenByReflection(NamedElement element,int modifiers)
 	{
@@ -49,7 +49,7 @@ public final class ElementModifiersAssigner {
 	 * @param element The specified named element.
 	 * @param modifiers The modifiers given by Java Reflection.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void setElementModifiersBasedOnModifiersGivenByReflection(NamedElement element,int modifiers)
 	{
@@ -75,7 +75,7 @@ public final class ElementModifiersAssigner {
 	 * @param importedElement The specified imported element.
 	 * @param sourceClass The class representing the specified imported element in the txtUML model.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static void setModifiers(NamedElement importedElement,Class<?> sourceClass)
 	{
@@ -87,7 +87,7 @@ public final class ElementModifiersAssigner {
 	 * @param importedElement The specified imported element.
 	 * @param sourceMethod The method representing the specified imported element in the txtUML model.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static void setModifiers(NamedElement importedElement, Method sourceMethod)
 	{
@@ -99,7 +99,7 @@ public final class ElementModifiersAssigner {
 	 * @param importedElement The specified imported element.
 	 * @param sourceField The field representing the specified imported element in the txtUML model.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static void setModifiers(NamedElement importedElement,Field sourceField)
 	{

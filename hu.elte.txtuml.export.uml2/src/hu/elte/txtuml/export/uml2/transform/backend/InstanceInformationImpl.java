@@ -4,7 +4,7 @@ package hu.elte.txtuml.export.uml2.transform.backend;
  * An implementation of the InstanceInformation interface.
  * Instances of this class store and provide information of dummy instances
  * needed by the importer.
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 class InstanceInformationImpl implements InstanceInformation {

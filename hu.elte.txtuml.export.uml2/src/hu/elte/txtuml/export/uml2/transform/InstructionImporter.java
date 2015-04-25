@@ -30,7 +30,7 @@ import org.eclipse.uml2.uml.Variable;
  * This class is responsible for importing instructions that are not actions (Action.* calls)
  * nor ModelType/Collection operations inside method bodies.
  * 
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public class InstructionImporter extends AbstractMethodImporter
@@ -41,7 +41,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param otherEnd The end of the association to be retrieved.
 	 * @return The dummy instance of the retrieved association end.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static <T extends ModelClass, AE extends hu.elte.txtuml.api.AssociationEnd<T> > AE
 		importAssocCall(ModelClass target, Class<?> otherEnd)
@@ -61,7 +61,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * Imports the creation of a model class instance in a method body.
 	 * @param createdInstance The created dummy instance.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static void importInstanceCreation(ModelClass createdInstance)
 	{
@@ -105,7 +105,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @return The dummy instance of the return value.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static Object importMethodCall(ModelClass target, String methodName, Object... args)
 	{
@@ -126,7 +126,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param args The dummy instances of the current arguments. 
 	 * @return The dummy instance of the return value.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static Object importExternalMethodCall(ExternalClass target, String methodName, Object... args)
 	{
@@ -142,7 +142,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param args The dummy instances of the current arguments. 
 	 * @return The dummy instance of the return value.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static Object importExternalStaticMethodCall(Class<?> targetClass, String methodName, Object... args)
 	{
@@ -159,7 +159,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param fieldType The type of the field.
 	 * @return The dummy instance of the field.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static Object importModelClassFieldGet(ModelClass target, String fieldName, Class<?> fieldType)
 	{
@@ -173,7 +173,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param fieldType The type of the field.
 	 * @return The dummy instance of the field.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static Object importExternalClassFieldGet(ExternalClass target, String fieldName, Class<?> fieldType)
 	{	
@@ -187,7 +187,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param newValue The dummy instance of the new value.
 	 * @return The dummy instance of the field.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static Object importModelClassFieldSet(ModelClass target, String fieldName, Object newValue)  
 	{
@@ -214,7 +214,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * Imports the creation of a ModelType literal.
 	 * @param inst The dummy instance representing the literal.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static <T> void importModelTypeLiteralCreation(ModelType<T> inst)
 	{
@@ -233,7 +233,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param signalClass The class of the signal.
 	 * @return The dummy instance of the trigger signal of the transition.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static Signal initAndGetSignalInstanceOfTransition(Transition target, Class<? extends Signal> signalClass)
 	{
@@ -263,7 +263,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param methodName The name of the called method.
 	 * @param args The dummy instances of the current arguments.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static void addParamsToCallAction
 		(CallOperationAction callAction, ModelClass target, String methodName,Object[] args)
@@ -288,7 +288,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @return The dummy instance of the return value.
 	 * @throws ImportException
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static Object importMethodCallInActivity
 		(ModelClass target, String methodName, Object... args)
@@ -335,7 +335,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param args The dummy instances of the current arguments.
 	 * @return The created expression.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static String createMethodCallExpression(ModelClass target, String methodName, Object... args)
 	{
@@ -370,7 +370,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param args The dummy instances of the current arguments.
 	 * @return The dummy instance of the return value.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static Object importMethodCallInGuardBody(ModelClass target, String methodName, Object... args)
 	{
@@ -402,7 +402,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param valueType The value type of the field.
 	 * @return The dummy instance of the field.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static Object initAndGetField(Object target, String fieldName, Class<?> valueType) 
 	{

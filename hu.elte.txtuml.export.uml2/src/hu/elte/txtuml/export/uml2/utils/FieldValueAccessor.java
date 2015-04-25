@@ -6,7 +6,7 @@ import java.lang.reflect.Field;
  * Provides utilities for accessing (getting or setting) the field value of any field (with any visibility)
  * of an object.
  * 
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  */
 public final class FieldValueAccessor {
 
@@ -16,7 +16,7 @@ public final class FieldValueAccessor {
 	 * @param fieldName The given field name.
 	 * @param newVal The new value of the field.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static void setObjectFieldVal(Object object, String fieldName,Object newVal)
 	{
@@ -42,7 +42,7 @@ public final class FieldValueAccessor {
 	 * @param fieldName The given field name.
 	 * @return The value.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static Object getObjectFieldVal(Object object,String fieldName)
 	{	
@@ -57,7 +57,7 @@ public final class FieldValueAccessor {
 	 * @param field The given field-
 	 * @return The value.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	private static Object accessObjectFieldVal(Object object, Field field)
 	{

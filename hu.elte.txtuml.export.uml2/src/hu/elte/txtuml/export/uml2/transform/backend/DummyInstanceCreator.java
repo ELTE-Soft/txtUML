@@ -4,7 +4,7 @@ import hu.elte.txtuml.utils.InstanceCreator;
 
 /**
  * This class provides means for creating dummy instances.
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public final class DummyInstanceCreator {
@@ -23,7 +23,7 @@ public final class DummyInstanceCreator {
 	 * Decides if dummy instance creation is in progress.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static boolean isCreating()
 	{
@@ -35,7 +35,7 @@ public final class DummyInstanceCreator {
 	 * @param typeClass The class of the specified type.
 	 * @return The created dummy instance.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T createDummyInstance(Class<T> typeClass)
@@ -66,7 +66,7 @@ public final class DummyInstanceCreator {
 	 * @param owner The owner instance.
 	 * @return The created dummy instance.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T createDummyInstance(Class<T> typeClass, Object owner)

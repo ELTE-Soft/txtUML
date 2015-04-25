@@ -6,7 +6,7 @@ import java.util.IdentityHashMap;
  * Implementation of the InstancesMap interface.
  * An IdentityHashMap for storing instance information for dummy instances
  * during model import.
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 @SuppressWarnings("serial")

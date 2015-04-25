@@ -13,7 +13,7 @@ import org.aspectj.lang.annotation.SuppressAjWarnings;
  * This aspect contains advices for importing operations of Collections
  * (e.g. Collection.selectAny, Collection.selectAll, etc.) inside method bodies.
  * 
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public privileged aspect CollectionOperationImporterAspect extends AbstractImporterAspect
@@ -25,7 +25,7 @@ public privileged aspect CollectionOperationImporterAspect extends AbstractImpor
 	 * @param target The target collection.
 	 * @return The dummy instance of the result of the call.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@SuppressAjWarnings
@@ -42,7 +42,7 @@ public privileged aspect CollectionOperationImporterAspect extends AbstractImpor
 	 * @param condition The condition of the selection.
 	 * @return The dummy instance of the result of the call.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@SuppressAjWarnings
@@ -61,7 +61,7 @@ public privileged aspect CollectionOperationImporterAspect extends AbstractImpor
 	 * @param target The target collection.
 	 * @return The dummy ModelBool instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@SuppressAjWarnings
@@ -77,7 +77,7 @@ public privileged aspect CollectionOperationImporterAspect extends AbstractImpor
 	 * @param object The ModelClass object to check.
 	 * @return The dummy ModelBool instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@SuppressAjWarnings
@@ -96,7 +96,7 @@ public privileged aspect CollectionOperationImporterAspect extends AbstractImpor
 	 * @param target The target collection.
 	 * @return The dummy ModelInt instance of the result.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@SuppressAjWarnings
@@ -112,7 +112,7 @@ public privileged aspect CollectionOperationImporterAspect extends AbstractImpor
 	 * @param object The ModelClass object to be added to the Collection.
 	 * @return The dummy instance of the result collection.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@SuppressAjWarnings
@@ -132,7 +132,7 @@ public privileged aspect CollectionOperationImporterAspect extends AbstractImpor
 	 * @param object The collection containing the elements to be added to the target collection..
 	 * @return The dummy instance of the result collection.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@SuppressAjWarnings
@@ -152,7 +152,7 @@ public privileged aspect CollectionOperationImporterAspect extends AbstractImpor
 	 * @param object The ModelClass object to be removed from the Collection.
 	 * @return The dummy instance of the result collection.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@SuppressAjWarnings

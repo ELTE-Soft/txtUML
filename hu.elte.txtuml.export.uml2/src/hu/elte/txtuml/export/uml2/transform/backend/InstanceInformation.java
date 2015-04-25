@@ -3,7 +3,7 @@ package hu.elte.txtuml.export.uml2.transform.backend;
 
 /**
  * Represents information of a dummy instance needed by the importer.
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public interface InstanceInformation {
@@ -13,7 +13,7 @@ public interface InstanceInformation {
 	 * @param expression The expression of the dummy instance.
 	 * @return The created instance information.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static InstanceInformation createLiteral(String expression)
 	{
@@ -25,7 +25,7 @@ public interface InstanceInformation {
 	 * @param expression The expression of the dummy instance.
 	 * @return The created instance information.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static InstanceInformation createCalculated(String expression)
 	{
@@ -38,7 +38,7 @@ public interface InstanceInformation {
 	 * @param expression The expression of the dummy instance.
 	 * @return The created instance information.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	static InstanceInformation create(String expression)
 	{
@@ -49,7 +49,7 @@ public interface InstanceInformation {
 	 * Gets the expression of the dummy instance.
 	 * @return The expression of the dummy instance.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	String getExpression();
 
@@ -57,7 +57,7 @@ public interface InstanceInformation {
 	 * Decides if the dummy instance is a literal.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	boolean isLiteral();
 
@@ -65,7 +65,7 @@ public interface InstanceInformation {
 	 * Decides if the dummy instance is a calculated instance.
 	 * @return The decision.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	boolean isCalculated();
 }

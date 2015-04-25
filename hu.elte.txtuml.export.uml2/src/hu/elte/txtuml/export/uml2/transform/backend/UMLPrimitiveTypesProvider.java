@@ -5,7 +5,7 @@ import org.eclipse.uml2.uml.Profile;
 
 /**
  * This class is responsible for providing the UML primitive types.
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public final class UMLPrimitiveTypesProvider 
@@ -39,7 +39,7 @@ public final class UMLPrimitiveTypesProvider
 	 * Imports the UML primitive type from the specified profile.
 	 * @param profile The specified profile.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static void importFromProfile(Profile profile)
 	{
@@ -54,7 +54,7 @@ public final class UMLPrimitiveTypesProvider
 	 * Gets the UML2 Integer primitive type.
 	 * @return The UML2 Integer primitive type.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static PrimitiveType getInteger()
 	{
@@ -65,7 +65,7 @@ public final class UMLPrimitiveTypesProvider
 	 * Gets the UML2 Boolean primitive type.
 	 * @return The UML2 Boolean primitive type.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static PrimitiveType getBoolean()
 	{
@@ -76,7 +76,7 @@ public final class UMLPrimitiveTypesProvider
 	 * Gets the UML2 Real primitive type.
 	 * @return The UML2 Real primitive type.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static PrimitiveType getReal()
 	{
@@ -87,7 +87,7 @@ public final class UMLPrimitiveTypesProvider
 	 * Gets the UML2 String primitive type.
 	 * @return The UML2 String primitive type.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static PrimitiveType getString()
 	{
@@ -98,7 +98,7 @@ public final class UMLPrimitiveTypesProvider
 	 * Gets the UML2 UnlimitedNatural primitive type.
 	 * @return The UML2 UnlimitedNatural primitive type.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static PrimitiveType getUnlimitedNatural()
 	{

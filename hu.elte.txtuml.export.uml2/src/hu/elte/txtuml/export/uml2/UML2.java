@@ -16,7 +16,7 @@ import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 /**
  * This class is responsible for exporting Eclipse UML2 model generated from a txtUML model.
  * 
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public class UML2 {
@@ -30,7 +30,7 @@ public class UML2 {
 	 * 						 	(relative to the path of the project containing the txtUML model)
 	 * @throws Exception
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static void exportModel(String modelClassName, String outputDirectory) throws Exception
 	{
@@ -53,7 +53,7 @@ public class UML2 {
 	 * 						 	(relative to the path of the project containing the txtUML model)
 	 * @throws Exception
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static void exportModel(Class<?> modelClass, String outputDirectory) throws Exception
 	{
@@ -88,7 +88,7 @@ public class UML2 {
 	 * 				1st argument: modelClassName <br/>
 	 * 				2nd argument: outputDirectory <br/>
 	 * 				(see exportModel method)
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	public static void main(String[] args) {
 		if(args.length != 2) {

@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 /**
  * An InvocationHandler for handling method invocation of mocked interfaces
  * (Java Reflection proxies) during model import.
- * @author Ádám Ancsin
+ * @author Adam Ancsin
  *
  */
 public final class InterfaceMethodInvocationHandler implements InvocationHandler 
@@ -22,7 +22,7 @@ public final class InterfaceMethodInvocationHandler implements InvocationHandler
 	 * 
 	 * @return Dummy return value for the method.
 	 * 
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args)
