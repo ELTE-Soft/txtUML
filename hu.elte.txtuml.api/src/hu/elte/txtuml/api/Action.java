@@ -9,6 +9,8 @@ import hu.elte.txtuml.api.blocks.ParameterizedBlockBody;
 import hu.elte.txtuml.utils.InstanceCreator;
 
 import java.io.PrintStream;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
 
 /**
  * Class <code>Action</code> provides methods for the user to be used as
@@ -67,8 +69,18 @@ public abstract class Action implements ModelElement {
 	 */
 	public static <T extends ModelClass> T create(Class<T> classType,
 			ModelValue... parameters) {
-		T obj = InstanceCreator.createInstanceWithGivenParamsAsArray(classType,
-				(Object[]) parameters);
+		Object[] params;
+		if (Modifier.isStatic(classType.getModifiers())) {
+			params = parameters;
+		} else {
+			params = new Object[parameters.length + 1];
+			params[0] = null;
+			for (int i = 0; i < parameters.length; ++i) {
+				params[i + 1] = parameters[i];
+			}
+		}
+		T obj = InstanceCreator.createInstanceWithGivenParams(classType,
+				params);
 		if (obj == null) {
 			ModelExecutor
 					.executorErrorLog(ErrorMessages

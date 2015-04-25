@@ -17,14 +17,9 @@ public class InstanceCreator {
 		return createInstanceRecursively(c, new HashSet<>());
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> T createInstanceWithGivenParams(Class<T> c,
 			Object... givenParams) {
-		return createInstanceWithGivenParamsAsArray(c, givenParams);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static <T> T createInstanceWithGivenParamsAsArray(Class<T> c,
-			Object[] givenParams) {
 		Set<Class<?>> ancestors = new HashSet<>();
 		T ret = null;
 		int givenParamsLen = givenParams.length;
