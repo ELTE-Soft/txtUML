@@ -24,7 +24,6 @@ package hu.elte.txtuml.api;
  * 
  * @author Gabor Ferenc Kovacs
  * @see ModelClass
- * @see Collection
  * @see ModelType
  *
  */
