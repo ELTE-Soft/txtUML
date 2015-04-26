@@ -201,6 +201,9 @@ package hu.elte.txtuml.api;
  * <code>abstract</code> methods.</li>
  * <li>Using the <code>instanceof</code> or the ternary <code>? :</code>
  * operator.</li>
+ * <li>Equality checks with operators <code>==</code> or <code>!=</code>,
+ * including null-checking (<code>null</code> values should be avoided in the
+ * model).</li>
  * <li>Overriding or explicitly using the methods of
  * <code>java.lang.Object</code>, with the exception of the use of the
  * <code>toString</code> method which might be used only for logging.</li>
