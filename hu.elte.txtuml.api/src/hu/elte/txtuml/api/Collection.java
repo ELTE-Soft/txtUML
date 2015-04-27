@@ -38,7 +38,7 @@ import java.util.function.Consumer;
  * @see Collection.Empty
  * @see AssociationEnd
  */
-public interface Collection<T extends ModelClass> Iterable<T> {
+public interface Collection<T extends ModelClass> extends Iterable<T> {
 
 	/**
 	 * Checks if this collection is empty.
