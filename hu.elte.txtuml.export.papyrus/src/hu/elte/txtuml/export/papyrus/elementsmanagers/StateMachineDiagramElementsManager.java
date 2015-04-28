@@ -48,7 +48,7 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 				Arrays.asList(
 						FinalState.class,
 						State.class,
-						Pseudostate.class
+						Pseudostate.class						
 				));
 		
 		if(preferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_CONSTRAINT_PREF))
