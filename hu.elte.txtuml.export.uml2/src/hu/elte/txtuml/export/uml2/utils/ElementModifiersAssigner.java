@@ -4,8 +4,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import org.eclipse.uml2.uml.BehavioralFeature;
 import org.eclipse.uml2.uml.Classifier;
-import org.eclipse.uml2.uml.Feature;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Property;
@@ -55,17 +55,19 @@ public final class ElementModifiersAssigner {
 	{
 		setVisibilityBasedOnModifiersGivenByReflection(element,modifiers);
 		
+		boolean isAbstract = Modifier.isAbstract(modifiers);
+		boolean isStatic = Modifier.isStatic(modifiers);
+		
 		if(element instanceof Classifier)
 		{
-			boolean isAbstract = Modifier.isAbstract(modifiers);
 			Classifier classifierElem=(Classifier) element;
 			classifierElem.setIsAbstract(isAbstract);
 		}
-		if(element instanceof Feature)
+		if(element instanceof BehavioralFeature)
 		{
-			boolean isStatic = Modifier.isStatic(modifiers);
-			Feature featureElem = (Feature) element;
+			BehavioralFeature featureElem = (BehavioralFeature) element;
 			featureElem.setIsStatic(isStatic);
+			featureElem.setIsAbstract(isAbstract);
 		}
 		
 	}
