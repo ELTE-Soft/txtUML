@@ -247,17 +247,11 @@ class ArrangeObjects
 					break;
 				case vertical:
 				{
-					int i = _indices.get(s.getParameter(1));
-					int j = _indices.get(s.getParameter(0));
-					result.add(new Triple<Integer, Integer, Integer>(i, j, 0));
-					result.add(new Triple<Integer, Integer, Integer>(j, i, 0));
+					// TODO
 				}
 				case horizontal:
 				{
-					int i = _indices.get(s.getParameter(1)) + n;
-					int j = _indices.get(s.getParameter(0)) + n;
-					result.add(new Triple<Integer, Integer, Integer>(i, j, 0));
-					result.add(new Triple<Integer, Integer, Integer>(j, i, 0));
+					// TODO
 				}
 				case above:
 				{

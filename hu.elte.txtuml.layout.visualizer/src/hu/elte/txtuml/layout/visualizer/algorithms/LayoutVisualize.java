@@ -561,6 +561,81 @@ public class LayoutVisualize
 	}
 	
 	/**
+	 * Test function.
+	 */
+	public static void test3()
+	{
+		System.out.println("--START--");
+		
+		try
+		{
+			LayoutVisualize v = new LayoutVisualize();
+			
+			System.out.println("/Set Objects/");
+			
+			Set<RectangleObject> testObjects = new HashSet<RectangleObject>();
+			testObjects.add(new RectangleObject("A"));
+			testObjects.add(new RectangleObject("B"));
+			testObjects.add(new RectangleObject("C"));
+			
+			System.out.println("/Set Assocs/");
+			
+			Set<LineAssociation> testAssocs = new HashSet<LineAssociation>();
+			
+			System.out.println("/Load Data/");
+			v.load(testObjects, testAssocs);
+			
+			System.out.println("/Set Statements/");
+			
+			ArrayList<Statement> stats = new ArrayList<Statement>();
+			
+			stats.add(Statement.Parse("above(A, B)"));
+			// stats.add(Statement.Parse("east(C, A)"));
+			// stats.add(Statement.Parse("east(C, B)"));
+			stats.add(Statement.Parse("horizontal(C, B)"));
+			
+			System.out.println("/Arrange/");
+			v.arrange(stats);
+			
+			System.out.println("/Output/");
+			ArrayList<RectangleObject> objs = (ArrayList<RectangleObject>) v.getObjects()
+					.stream().collect(Collectors.toList());
+			objs.sort((a, b) ->
+			{
+				return a.getName().compareTo(b.getName());
+			});
+			for (RectangleObject o : objs)
+				System.out.println(o.toString());
+			ArrayList<LineAssociation> assocs = (ArrayList<LineAssociation>) v
+					.getAssocs().stream().collect(Collectors.toList());
+			assocs.sort((a, b) ->
+			{
+				return a.getId().compareTo(b.getId());
+			});
+			for (LineAssociation a : assocs)
+				System.out.println(a.toString());
+			
+			System.out.println("\nObject statements:");
+			for (Statement s : v.getStatements())
+				System.out.println(s.toString());
+			
+			System.out.println("\nLinks statements:");
+			for (Statement s : v.getAssocStatements())
+				System.out.println(s.toString());
+			
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		catch (MyException e)
+		{
+			System.out.println(e.getMessage());
+		}
+		System.out.println("--END--");
+	}
+	
+	/**
 	 * Test Reflexive links
 	 * 
 	 * @throws StatementTypeMatchException
