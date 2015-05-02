@@ -51,5 +51,13 @@ public enum StatementType
 	/**
 	 * Phantom
 	 */
-	phantom
+	phantom,
+	/**
+	 * Vertical
+	 */
+	vertical,
+	/**
+	 * Horizontal
+	 */
+	horizontal
 }

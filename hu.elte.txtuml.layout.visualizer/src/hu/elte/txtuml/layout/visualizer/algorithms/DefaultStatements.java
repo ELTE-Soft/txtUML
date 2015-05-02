@@ -4,6 +4,7 @@ import hu.elte.txtuml.layout.visualizer.algorithms.BreathFirstSearch.LabelType;
 import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Graph;
 import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Link;
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
+import hu.elte.txtuml.layout.visualizer.annotations.StatementLevel;
 import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
@@ -67,11 +68,15 @@ public class DefaultStatements
 	private void defaults(Set<RectangleObject> os, Set<LineAssociation> as)
 			throws InternalException, ConversionException
 	{
+		// Count degrees
 		HashMap<String, Integer> degrees = new HashMap<String, Integer>();
 		HashMap<String, HashSet<String>> accesses = new HashMap<String, HashSet<String>>();
 		
 		for (LineAssociation a : as)
 		{
+			if (a.isReflexive())
+				continue;
+			
 			if (degrees.containsKey(a.getFrom()))
 				degrees.put(a.getFrom(), degrees.get(a.getFrom()) + 1);
 			else
@@ -174,6 +179,15 @@ public class DefaultStatements
 				return (i + gridSize);
 			case west:
 				return (i - 1);
+			case above:
+			case below:
+			case horizontal:
+			case left:
+			case phantom:
+			case priority:
+			case right:
+			case unknown:
+			case vertical:
 			default:
 				throw new InternalException("The type \'" + type.toString()
 						+ "\' should not get here!");
@@ -191,7 +205,7 @@ public class DefaultStatements
 		{
 			for (String fix : groups.get(i))
 			{
-				result.add(new Statement(type, false, move, fix));
+				result.add(new Statement(type, StatementLevel.Medium, move, fix));
 			}
 		}
 		
@@ -209,24 +223,29 @@ public class DefaultStatements
 		HashSet<String> openToCheck = (HashSet<String>) Helper.cloneStringSet(accesses
 				.keySet());
 		Graph<String> G = buildGraph(accesses);
-		String start = openToCheck.stream().findFirst().get();
-		do
+		
+		if (openToCheck.size() != 0)
 		{
-			BreathFirstSearch bfs = new BreathFirstSearch(G, start);
-			
-			HashSet<String> oneGroup = (HashSet<String>) bfs.value().entrySet().stream()
-					.filter(entry -> entry.getValue().equals(LabelType.discovered))
-					.map(entry -> entry.getKey()).collect(Collectors.toSet());
-			groups.add(oneGroup);
-			
-			openToCheck.removeAll(oneGroup);
-			
-			if (openToCheck.size() == 0)
-				break;
-			
-			start = openToCheck.stream().findFirst().get();
-			
-		} while (true);
+			String start = openToCheck.stream().findFirst().get();
+			do
+			{
+				BreathFirstSearch bfs = new BreathFirstSearch(G, start);
+				
+				HashSet<String> oneGroup = (HashSet<String>) bfs.value().entrySet()
+						.stream()
+						.filter(entry -> entry.getValue().equals(LabelType.discovered))
+						.map(entry -> entry.getKey()).collect(Collectors.toSet());
+				groups.add(oneGroup);
+				
+				openToCheck.removeAll(oneGroup);
+				
+				if (openToCheck.size() == 0)
+					break;
+				
+				start = openToCheck.stream().findFirst().get();
+				
+			} while (true);
+		}
 		
 		// Arrange groups
 		Integer gridSize = (int) Math.ceil(Math.sqrt(groups.size()));
@@ -255,7 +274,8 @@ public class DefaultStatements
 			}
 			
 			// Arrange in groups
-			result.addAll(arrangeInGroup(groups.get(i), degrees, accesses, as));
+			// result.addAll(arrangeInGroup(groups.get(i), degrees, accesses,
+			// as));
 		}
 		
 		return result;
@@ -451,37 +471,37 @@ public class DefaultStatements
 				// Above
 				if (i > 0 && g[i - 1][j] != null)
 				{
-					result.add(new Statement(StatementType.below, false, g[i][j],
-							g[i - 1][j]));
-					result.add(new Statement(StatementType.south, false, g[i][j],
-							g[i - 1][j]));
+					result.add(new Statement(StatementType.below, StatementLevel.High,
+							g[i][j], g[i - 1][j]));
+					result.add(new Statement(StatementType.south, StatementLevel.High,
+							g[i][j], g[i - 1][j]));
 				}
 				
 				// Right
 				if (j < (g.length - 1) && g[i][j + 1] != null)
 				{
-					result.add(new Statement(StatementType.left, false, g[i][j],
-							g[i][j + 1]));
-					result.add(new Statement(StatementType.west, false, g[i][j],
-							g[i][j + 1]));
+					result.add(new Statement(StatementType.left, StatementLevel.High,
+							g[i][j], g[i][j + 1]));
+					result.add(new Statement(StatementType.west, StatementLevel.High,
+							g[i][j], g[i][j + 1]));
 				}
 				
 				// Below
 				if (i < (g.length - 1) && g[i + 1][j] != null)
 				{
-					result.add(new Statement(StatementType.above, false, g[i][j],
-							g[i + 1][j]));
-					result.add(new Statement(StatementType.north, false, g[i][j],
-							g[i + 1][j]));
+					result.add(new Statement(StatementType.above, StatementLevel.High,
+							g[i][j], g[i + 1][j]));
+					result.add(new Statement(StatementType.north, StatementLevel.High,
+							g[i][j], g[i + 1][j]));
 				}
 				
 				// Left
 				if (j > 0 && g[i][j - 1] != null)
 				{
-					result.add(new Statement(StatementType.right, false, g[i][j],
-							g[i][j - 1]));
-					result.add(new Statement(StatementType.east, false, g[i][j],
-							g[i][j - 1]));
+					result.add(new Statement(StatementType.right, StatementLevel.High,
+							g[i][j], g[i][j - 1]));
+					result.add(new Statement(StatementType.east, StatementLevel.High,
+							g[i][j], g[i][j - 1]));
 				}
 			}
 		}

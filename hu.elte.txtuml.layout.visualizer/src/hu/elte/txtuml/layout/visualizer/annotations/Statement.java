@@ -17,7 +17,7 @@ public class Statement
 	
 	private StatementType _type;
 	private ArrayList<String> _parameters;
-	private Boolean _isUserDefined;
+	private StatementLevel _level;
 	
 	// end Variables
 	
@@ -56,13 +56,39 @@ public class Statement
 	}
 	
 	/**
+	 * Setter for a particular element in the parameters of a statement.
+	 * 
+	 * @param i
+	 *            Index of the parameter.
+	 * @param value
+	 *            Value to set.
+	 */
+	public void setParameter(Integer i, String value)
+	{
+		if (_parameters.size() > i)
+		{
+			_parameters.set(i, value);
+		}
+	}
+	
+	/**
 	 * Method to get if this statement is user created or not.
 	 * 
 	 * @return True if this statement was created by the user.
 	 */
 	public Boolean isUserDefined()
 	{
-		return _isUserDefined;
+		return _level.equals(StatementLevel.User);
+	}
+	
+	/**
+	 * Getter for the level of the statement.
+	 * 
+	 * @return The level of the Statement.
+	 */
+	public StatementLevel getLevel()
+	{
+		return _level;
 	}
 	
 	// end Getters, setters
@@ -86,7 +112,7 @@ public class Statement
 		{
 			_parameters.add(s);
 		}
-		_isUserDefined = true;
+		_level = StatementLevel.User;
 	}
 	
 	/**
@@ -94,13 +120,13 @@ public class Statement
 	 *
 	 * @param t
 	 *            Type of the Statement to create.
-	 * @param userdefined
-	 *            Whether this statement is user created.
+	 * @param level
+	 *            The level of the statement.
 	 * @param params
 	 *            Strings representing the Parameters of the Statement to
 	 *            create.
 	 */
-	public Statement(StatementType t, Boolean userdefined, String... params)
+	public Statement(StatementType t, StatementLevel level, String... params)
 	{
 		_type = t;
 		_parameters = new ArrayList<String>();
@@ -108,7 +134,7 @@ public class Statement
 		{
 			_parameters.add(s);
 		}
-		_isUserDefined = userdefined;
+		_level = level;
 	}
 	
 	/**
@@ -128,7 +154,7 @@ public class Statement
 		{
 			_parameters.add(s);
 		}
-		_isUserDefined = true;
+		_level = StatementLevel.User;
 	}
 	
 	/**
@@ -136,13 +162,13 @@ public class Statement
 	 * 
 	 * @param t
 	 *            Type of the Statement to create.
-	 * @param userdefined
-	 *            Whether this statement is user created.
+	 * @param level
+	 *            The level of the statement.
 	 * @param params
 	 *            ArrayList of Strings representing the Parameters of the
 	 *            Statement to create.
 	 */
-	public Statement(StatementType t, Boolean userdefined, ArrayList<String> params)
+	public Statement(StatementType t, StatementLevel level, ArrayList<String> params)
 	{
 		_type = t;
 		_parameters = new ArrayList<String>();
@@ -150,7 +176,7 @@ public class Statement
 		{
 			_parameters.add(s);
 		}
-		_isUserDefined = userdefined;
+		_level = level;
 	}
 	
 	// end Ctors
@@ -214,6 +240,8 @@ public class Statement
 			case below:
 			case right:
 			case left:
+			case horizontal:
+			case vertical:
 			case priority:
 				if (p.length == 2)
 					return true;
@@ -222,6 +250,7 @@ public class Statement
 				if (p.length == 1)
 					return true;
 				break;
+			case unknown:
 			default:
 				break;
 		}
@@ -262,7 +291,7 @@ public class Statement
 			Statement s1 = (Statement) this;
 			Statement s2 = (Statement) obj;
 			return s1._type.equals(s2._type) && s1._parameters.equals(s2._parameters)
-					&& s1._isUserDefined.equals(s2._isUserDefined);
+					&& s1._level.equals(s2._level);
 		}
 		
 		return false;
@@ -304,7 +333,7 @@ public class Statement
 		int result = 1;
 		result = prime * result + _type.hashCode();
 		result = prime * result + _parameters.hashCode();
-		result = prime * result + _isUserDefined.hashCode();
+		result = prime * result + _level.hashCode();
 		return result;
 	}
 	
@@ -319,8 +348,8 @@ public class Statement
 			result += p;
 		}
 		result += ")";
-		if (!_isUserDefined)
-			result += "_weak";
+		if (!_level.equals(StatementLevel.User))
+			result += "_weak(" + _level.toString() + ")";
 		return result;
 	}
 	

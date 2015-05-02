@@ -32,6 +32,7 @@ class GraphSearch
 	private Set<Painted<Point>> _objects;
 	private Integer _boundary;
 	private Integer _extends;
+	private Integer _widthOfObject;
 	
 	private Graph<Point> G;
 	private Set<Point> Nyilt;
@@ -131,7 +132,7 @@ class GraphSearch
 	 * }
 	 */
 	
-	/***
+	/**
 	 * Creates a graph to find a route in it from start to end. Route length is
 	 * minimal. Route cornering is minimal.
 	 * 
@@ -147,6 +148,8 @@ class GraphSearch
 	 *            Points we have to skip (already occupied).
 	 * @param top
 	 *            Upper bound of the maximum width of the graph to search in.
+	 * @param width
+	 *            The width of the objects.
 	 * @throws CannotFindAssociationRouteException
 	 *             Throws if there is no route from start->end.
 	 * @throws CannotStartAssociationRouteException
@@ -154,7 +157,7 @@ class GraphSearch
 	 *             start.
 	 */
 	public GraphSearch(Point s, Set<Point> ss, Point e, Set<Point> es,
-			Set<Painted<Point>> os, Integer top)
+			Set<Painted<Point>> os, Integer top, Integer width)
 			throws CannotFindAssociationRouteException,
 			CannotStartAssociationRouteException
 	{
@@ -165,6 +168,7 @@ class GraphSearch
 		_objects = os;
 		_boundary = (top > 0) ? top : -1;
 		_extends = 0;
+		_widthOfObject = width;
 		
 		G = new Graph<Point>();
 		G.add(_start);
@@ -202,8 +206,12 @@ class GraphSearch
 			
 			Point n = minf();
 			
-			if (_end.equals(n))
+			if (_endSet.contains(n))
 			{
+				PI.set(_end, n);
+				g.set(_end, g.get(n) + 1);
+				G.addLink(new Link<Point>(n, _end));
+				G.addNode(_end);
 				return true;
 			}
 			
@@ -247,7 +255,6 @@ class GraphSearch
 	}
 	
 	// Kiértékelõ függvény
-	
 	private Integer f(Point p)
 	{
 		// TODO
@@ -255,14 +262,17 @@ class GraphSearch
 		Double weightTurns = 1.0;
 		Double weightDistance = 1.2;
 		Double weightRemainingTurns = 1.0;
+		Double weightYellowPoints = 1.5;
 		
 		Integer cost = g.get(p);
 		Integer turns = countOfTurns(p);
-		Integer distance = manhattanDistance(p, _end);
-		Integer remainingTurns = manhattanLeastTurnsCheckingOccupied(p, _end);
+		Integer distance = manhattanDistance(p);
+		Integer remainingTurns = manhattanLeastTurnsCheckingOccupied(p);
+		Integer yellowPoints = countOfYellows(p);
 		
 		Integer result = (int) (weightCost * cost + weightTurns * turns
-				+ weightRemainingTurns * remainingTurns + weightDistance * distance);
+				+ weightRemainingTurns * remainingTurns + weightDistance * distance + weightYellowPoints
+				* yellowPoints);
 		
 		return result;
 	}
@@ -306,12 +316,32 @@ class GraphSearch
 		return count;
 	}
 	
-	private Integer manhattanDistance(Point a, Point b)
+	private Integer countOfYellows(Point current)
 	{
-		double dx = Math.abs(a.getX() - b.getX());
-		double dy = Math.abs(a.getY() - b.getY());
-		double result = dx + dy;
-		return (int) result;
+		ArrayList<Point> route = getCurrentRoute(current);
+		
+		int count = 0;
+		
+		for (Point point : route)
+		{
+			if (_objects.stream().anyMatch(p -> p.Inner.equals(point))
+					&& _objects.stream().filter(p -> p.Inner.equals(point)).findFirst()
+							.get().Color.equals(Colors.Yellow))
+			{
+				++count;
+			}
+		}
+		
+		return count;
+	}
+	
+	private Integer manhattanDistance(Point a)
+	{
+		double dx = Math.abs(a.getX() - _end.getX());
+		double dy = Math.abs(a.getY() - _end.getY());
+		double tempResult = dx + dy - (_widthOfObject / 2);
+		
+		return (int) tempResult;
 	}
 	
 	@SuppressWarnings("unused")
@@ -326,14 +356,14 @@ class GraphSearch
 		return 0;
 	}
 	
-	private Integer manhattanLeastTurnsCheckingOccupied(Point a, Point b)
+	private Integer manhattanLeastTurnsCheckingOccupied(Point a)
 	{
 		Integer penalizeTurns = 3;
 		
-		double dx = Math.abs(a.getX() - b.getX());
-		double sx = b.getX() - a.getX();
-		double dy = Math.abs(a.getY() - b.getY());
-		double sy = b.getY() - a.getY();
+		double dx = Math.abs(a.getX() - _end.getX());
+		double sx = _end.getX() - a.getX();
+		double dy = Math.abs(a.getY() - _end.getY());
+		double sy = _end.getY() - a.getY();
 		Integer result = 0;
 		Integer result2 = 0;
 		
@@ -344,7 +374,7 @@ class GraphSearch
 		}
 		
 		Point tempP = a;
-		Point tempP2 = b;
+		Point tempP2 = _end;
 		for (int i = 0; i < dx; ++i)
 		{
 			if (sx > 0)
@@ -358,14 +388,18 @@ class GraphSearch
 				tempP2 = Point.Add(tempP2, Direction.east);
 			}
 			
+			Painted<Point> temp1 = new Painted<Point>(Colors.Red, tempP);
+			Painted<Point> temp2 = new Painted<Point>(Colors.Red, tempP2);
 			if (!tempP.equals(_end)
-					&& (_objects.contains(tempP) || _objects.contains(tempP2)))
+					&& (_objects.contains(temp1) || _objects.contains(temp2)))
 				result = result + penalizeTurns;
 			if (!tempP2.equals(_end)
-					&& (_objects.contains(tempP) || _objects.contains(tempP2)))
+					&& (_objects.contains(temp1) || _objects.contains(temp2)))
 				result2 = result2 + penalizeTurns;
 		}
 		
+		tempP = a;
+		tempP2 = _end;
 		for (int i = 0; i < dy; ++i)
 		{
 			if (sy > 0)
@@ -379,11 +413,13 @@ class GraphSearch
 				tempP2 = Point.Add(tempP2, Direction.north);
 			}
 			
+			Painted<Point> temp1 = new Painted<Point>(Colors.Red, tempP);
+			Painted<Point> temp2 = new Painted<Point>(Colors.Red, tempP2);
 			if (!tempP.equals(_end)
-					&& (_objects.contains(tempP) || _objects.contains(tempP2)))
+					&& (_objects.contains(temp1) || _objects.contains(temp2)))
 				result = result + penalizeTurns;
 			if (!tempP2.equals(_end)
-					&& (_objects.contains(tempP) || _objects.contains(tempP2)))
+					&& (_objects.contains(temp1) || _objects.contains(temp2)))
 				result2 = result2 + penalizeTurns;
 		}
 		
@@ -445,15 +481,26 @@ class GraphSearch
 				toberemoved.add(n);
 			else if (_objects.stream().anyMatch(p -> p.Inner.equals(n)))
 			{
+				// -> Red
 				if (_objects.stream().filter(p -> p.Inner.equals(n)).findFirst().get().Color
 						.equals(Colors.Red))
 				{
 					toberemoved.add(n);
 				}
-				else if (_objects.stream().filter(p -> p.Inner.equals(n)).findFirst()
-						.get().Color.equals(Colors.Yellow)
-						&& _objects.stream().filter(p -> p.Inner.equals(n)).findFirst()
-								.get().Color.equals(Colors.Yellow))
+				// Yellow -> Yellow
+				if (_objects.stream().anyMatch(p -> p.Inner.equals(parent)))
+				{
+					if (_objects.stream().filter(p -> p.Inner.equals(parent)).findFirst()
+							.get().Color.equals(Colors.Yellow)
+							&& _objects.stream().filter(p -> p.Inner.equals(n))
+									.findFirst().get().Color.equals(Colors.Yellow))
+					{
+						toberemoved.add(n);
+					}
+				}
+				// -> Blue
+				if (_objects.stream().filter(p -> p.Inner.equals(n)).findFirst().get().Color
+						.equals(Colors.Blue))
 				{
 					toberemoved.add(n);
 				}

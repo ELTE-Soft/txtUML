@@ -1,6 +1,7 @@
 package hu.elte.txtuml.layout.visualizer.algorithms;
 
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
+import hu.elte.txtuml.layout.visualizer.annotations.StatementLevel;
 import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
@@ -13,6 +14,7 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,6 +40,14 @@ class StatementHelper
 			case west:
 			case priority:
 				return true;
+			case above:
+			case below:
+			case horizontal:
+			case left:
+			case phantom:
+			case right:
+			case unknown:
+			case vertical:
 			default:
 				break;
 		}
@@ -91,6 +101,11 @@ class StatementHelper
 				// Direction conflict check
 				Pair<String, String> pair = new Pair<String, String>(s.getParameter(0),
 						s.getParameter(1));
+				if (s.getParameters().size() == 3)
+				{
+					pair.Second += "_" + s.getParameter(2);
+				}
+				
 				if (tempObj.containsKey(pair))
 				{
 					if (tempObj.get(pair).equals(Helper.asDirection(s.getType())))
@@ -100,8 +115,8 @@ class StatementHelper
 						if (!s.isUserDefined())
 							continue;
 						else
-							throw new ConflictException("Túl sok irány statement a "
-									+ s.getParameter(0) + " linkre!");
+							throw new ConflictException("Too many statements on "
+									+ s.getParameter(0) + " link!");
 					}
 				}
 				else
@@ -145,14 +160,6 @@ class StatementHelper
 				continue;
 			else if (result.contains(opposite(s)))
 				continue;
-			
-			// Check non user defined
-			Statement s2 = new Statement(s.getType(), !s.isUserDefined(),
-					s.getParameters());
-			if (result.contains(s2))
-				continue;
-			else if (result.contains(opposite(s2)))
-				continue;
 			else
 				result.add(s);
 		}
@@ -183,6 +190,8 @@ class StatementHelper
 			case below:
 			case right:
 			case left:
+			case horizontal:
+			case vertical:
 				// csak obejct lehet
 				if (ob.stream().anyMatch(o -> o.getName().equals(st.getParameter(0)))
 						&& ob.stream().anyMatch(
@@ -199,6 +208,7 @@ class StatementHelper
 				if (ob.stream().anyMatch(o -> o.getName().equals(st.getParameter(0))))
 					return true;
 				break;
+			case unknown:
 			default:
 				throw new InternalException("This statement should not reach this code: "
 						+ st.toString() + "!");
@@ -209,6 +219,11 @@ class StatementHelper
 	public static ArrayList<Statement> transformAssocs(ArrayList<Statement> stats,
 			Set<LineAssociation> assocs)
 	{
+		// Object parent -> [Object childs]
+		HashMap<String, HashSet<String>> parents = new HashMap<String, HashSet<String>>();
+		
+		// TODO
+		
 		ArrayList<Statement> result = new ArrayList<Statement>();
 		
 		for (LineAssociation a : assocs)
@@ -216,20 +231,15 @@ class StatementHelper
 			switch (a.getType())
 			{
 				case generalization:
-					// If it would mean a conflict, we don't add it
-					if (!stats.contains(new Statement(StatementType.south, a.getTo(), a
-							.getFrom())))
-						result.add(new Statement(StatementType.north, a.getFrom(), a
-								.getTo()));
+					result.add(new Statement(StatementType.north, StatementLevel.Low, a
+							.getFrom(), a.getTo()));
+					result.add(new Statement(StatementType.vertical, StatementLevel.High,
+							a.getFrom(), a.getTo()));
 					break;
 				case aggregation:
-					
-					break;
 				case composition:
-					
-					break;
+				case normal:
 				default:
-					
 					break;
 			}
 		}
@@ -239,7 +249,7 @@ class StatementHelper
 	
 	public static Statement opposite(Statement s)
 	{
-		return new Statement(opposite(s.getType()), s.isUserDefined(), s.getParameter(1),
+		return new Statement(opposite(s.getType()), s.getLevel(), s.getParameter(1),
 				s.getParameter(0));
 	}
 	
@@ -270,20 +280,44 @@ class StatementHelper
 	
 	public static Integer getComplexity(Statement s)
 	{
+		Integer result = 0;
+		
+		switch (s.getLevel())
+		{
+			case User:
+				result = -100;
+				break;
+			case High:
+				result = 100;
+				break;
+			case Medium:
+				result = 50;
+				break;
+			case Low:
+				result = 10;
+				break;
+		}
+		
 		switch (s.getType())
 		{
 			case north:
 			case south:
 			case east:
 			case west:
-				return 5;
+				return result + 5;
 			case above:
 			case below:
 			case right:
 			case left:
-				return 10;
+				return result + 10;
+			case horizontal:
+			case vertical:
+				return result + 15;
+			case phantom:
+			case priority:
+			case unknown:
 			default:
-				return 100;
+				return result + 100;
 		}
 	}
 }

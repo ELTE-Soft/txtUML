@@ -29,6 +29,15 @@ public class Pair<T1, T2>
 	// Ctors
 	
 	/**
+	 * Create a default pair with null values.
+	 */
+	public Pair()
+	{
+		First = null;
+		Second = null;
+	}
+	
+	/**
 	 * Create a pair.
 	 * 
 	 * @param f

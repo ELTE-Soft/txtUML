@@ -75,7 +75,31 @@ public class RectangleObject
 		return result;
 	}
 	
-	/***
+	/**
+	 * Returns all the points on the perimiter of the {@link RectangleObject}.
+	 * 
+	 * @return Set of {@link Point}s.
+	 */
+	public Set<Point> getPerimiterPoints()
+	{
+		Set<Point> result = new HashSet<Point>();
+		
+		Point tl = getTopLeft();
+		Point br = getBottomRight();
+		result.add(tl);
+		result.add(br);
+		for (int i = 1; i < _width; ++i)
+		{
+			result.add(Point.Add(tl, Point.Multiply(Direction.east, i)));
+			result.add(Point.Add(tl, Point.Multiply(Direction.south, i)));
+			result.add(Point.Add(br, Point.Multiply(Direction.north, i)));
+			result.add(Point.Add(br, Point.Multiply(Direction.west, i)));
+		}
+		
+		return result;
+	}
+	
+	/**
 	 * Getter for the top left point of the object.
 	 * 
 	 * @return Point of the top left corner.

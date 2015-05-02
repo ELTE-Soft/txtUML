@@ -6,6 +6,7 @@ import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Point;
+import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -181,6 +182,15 @@ public class Helper
 				return Direction.east;
 			case west:
 				return Direction.west;
+			case above:
+			case below:
+			case horizontal:
+			case left:
+			case phantom:
+			case priority:
+			case right:
+			case unknown:
+			case vertical:
 			default:
 				throw new ConversionException("Cannot convert type " + ty
 						+ " to Direction!");
@@ -304,6 +314,21 @@ public class Helper
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Returns whether the Point p is the corner point of the Object obj.
+	 * 
+	 * @param p
+	 *            Point to check.
+	 * @param obj
+	 *            Object to check.
+	 * @return True if p is a corner point of obj.
+	 */
+	public static Boolean isCornerPoint(Point p, RectangleObject obj)
+	{
+		return Math.abs(p.getX() - obj.getPosition().getX()) == Math.abs(p.getY()
+				- obj.getPosition().getY());
 	}
 	
 }

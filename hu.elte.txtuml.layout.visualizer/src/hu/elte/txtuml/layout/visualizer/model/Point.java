@@ -58,6 +58,22 @@ public class Point
 		_y = v;
 	}
 	
+	/**
+	 * Getter for the coordinate of the point which is horizontal to the
+	 * direction.
+	 * 
+	 * @param dir
+	 *            Direction which's coordinate we want.
+	 * @return Value of the coordinate.
+	 */
+	public Integer get(Direction dir)
+	{
+		if (dir.equals(Direction.east) || dir.equals(Direction.west))
+			return getX();
+		else
+			return getY();
+	}
+	
 	// end Getters, setters
 	
 	// Ctors

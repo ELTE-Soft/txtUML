@@ -206,7 +206,7 @@ public class LineAssociation
 	 */
 	public void setRoute(ArrayList<Point> value)
 	{
-		_route = value;
+		_route = Helper.clonePointList(value);
 	}
 	
 	/***
@@ -448,18 +448,36 @@ public class LineAssociation
 	
 	// Statics
 	
-	/***
-	 * Equality comparison for two LineAssociation objects.
+	/**
+	 * Equality comparison for two {@link LineAssociation} objects.
 	 * 
 	 * @param a1
-	 *            First LineAssociation to compare.
+	 *            First {@link LineAssociation} to compare.
 	 * @param a2
-	 *            Second LineAssociation to compare.
-	 * @return Boolean value of a1 equals a2.
+	 *            Second {@link LineAssociation} to compare.
+	 * @return {@link Boolean} value of a1 equals a2.
 	 */
 	public static boolean Equals(LineAssociation a1, LineAssociation a2)
 	{
 		return a1.equals(a2);
+	}
+	
+	/**
+	 * Parse a string to get a {@link LineAssociation}.
+	 * 
+	 * @param line
+	 *            {@link String} to parse.
+	 * @return Parsed {@link LineAssociation}.
+	 */
+	public static LineAssociation Parse(String line)
+	{
+		String id = line.split(":")[0];
+		String from = line.split("\\(")[1].split("-")[0].trim();
+		String to = line.split("\\)")[0].split("-")[1].trim();
+		AssociationType type = AssociationType
+				.valueOf(line.split("\\(")[2].split("\\)")[0]);
+		
+		return new LineAssociation(id, from, to, type);
 	}
 	
 	// End Statics
@@ -511,6 +529,16 @@ public class LineAssociation
 	public boolean isReflexive()
 	{
 		return (_from.equals(_to));
+	}
+	
+	/**
+	 * Returns true if this Link has already got a properly placed path/line.
+	 * 
+	 * @return True if this Link has already got a properly placed path/line.
+	 */
+	public boolean isPlaced()
+	{
+		return _route.size() > 2;
 	}
 	
 	@Override

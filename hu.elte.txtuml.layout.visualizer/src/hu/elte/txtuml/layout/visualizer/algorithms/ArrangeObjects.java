@@ -245,6 +245,20 @@ class ArrangeObjects
 					result.add(new Triple<Integer, Integer, Integer>(i, j, -1));
 				}
 					break;
+				case vertical:
+				{
+					int i = _indices.get(s.getParameter(1));
+					int j = _indices.get(s.getParameter(0));
+					result.add(new Triple<Integer, Integer, Integer>(i, j, 0));
+					result.add(new Triple<Integer, Integer, Integer>(j, i, 0));
+				}
+				case horizontal:
+				{
+					int i = _indices.get(s.getParameter(1)) + n;
+					int j = _indices.get(s.getParameter(0)) + n;
+					result.add(new Triple<Integer, Integer, Integer>(i, j, 0));
+					result.add(new Triple<Integer, Integer, Integer>(j, i, 0));
+				}
 				case above:
 				{
 					int i = _indices.get(s.getParameter(1));
@@ -293,6 +307,9 @@ class ArrangeObjects
 					result.add(new Triple<Integer, Integer, Integer>(j, i, 0));
 				}
 					break;
+				case phantom:
+				case priority:
+				case unknown:
 				default:
 					throw new InternalException(
 							"This statement should not reach this point: " + s.toString());
