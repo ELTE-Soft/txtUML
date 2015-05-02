@@ -5,7 +5,9 @@ import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 import hu.elte.txtuml.export.uml2.utils.ElementModifiersAssigner;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
+import hu.elte.txtuml.export.uml2.utils.ImportWarningProvider;
 import hu.elte.txtuml.export.uml2.utils.ResourceSetFactory;
+import hu.elte.txtuml.export.uml2.utils.StateMachineUtils;
 import hu.elte.txtuml.export.uml2.transform.backend.ProfileCreator;
 import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 import hu.elte.txtuml.export.uml2.transform.backend.ImporterConfiguration;
@@ -242,10 +244,10 @@ public class ModelImporter extends AbstractImporter{
 	{
 		importClassesAndSignals();
 		importAssociations();
-		importGeneralizations();
-		importAttributesOfAllClassifiers();
+		importGeneralizations(modelClass);
+		importAttributesOfAllClassifiers(modelClass);
 		importMemberFunctionSkeletons();
-		importClassMemberFunctionBodiesStateMachinesAndNestedSignals();
+		importClassMemberFunctionBodiesAndStateMachines();
 	}
 
 	/**
@@ -277,19 +279,23 @@ public class ModelImporter extends AbstractImporter{
 	}
 	
 	/**
-	 * Imports all generalizations of the model.
+	 * Imports generalizations of the classes and signals declared in the specified enclosingClass
+	 * @param enclosingClass The specified enclosingClass
 	 * @throws ImportException
 	 *
-	 * @author Adam Ancsin
+	 * @author Ádám Ancsin
 	 */
-	private static void importGeneralizations() throws ImportException 
+	private static void importGeneralizations(Class<?> enclosingClass) throws ImportException 
 	{
-		for(Class<?> c : modelClass.getDeclaredClasses())
+		for(Class<?> c : enclosingClass.getDeclaredClasses())
 		{
 			if(!ElementTypeTeller.isModelElement(c))
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
 			else if(ElementTypeTeller.isSpecificClassifier(c))	 
 				createGeneralization(c,c.getSuperclass());
+			
+			if(ElementTypeTeller.isClass(c))
+				importGeneralizations(c);
 		}
 	}
 	
@@ -328,6 +334,7 @@ public class ModelImporter extends AbstractImporter{
 					sourceClass.getSimpleName(),Modifier.isAbstract(sourceClass.getModifiers())
 				);
 			
+			importNestedSignals(sourceClass);
 			if(ElementTypeTeller.isExternalClass(sourceClass))
 			{
 				try
@@ -408,19 +415,25 @@ public class ModelImporter extends AbstractImporter{
 	}
 		
 	/**
-	 * Imports the attributes of all classifiers in the model.
+	 * Imports the attributes of all classifiers declared in the specified enclosing class.
+	 * @param enclosingClass The specified enclosing class.
 	 * @throws ImportException
 	 *
-	 * @author Adam Ancsin
+	 * @author Ádám Ancsin
 	 */
-    private static void importAttributesOfAllClassifiers() throws ImportException
+    private static void importAttributesOfAllClassifiers(Class<?> enclosingClass) throws ImportException
     {
-		for(Class<?> c : modelClass.getDeclaredClasses()) 
+		for(Class<?> c : enclosingClass.getDeclaredClasses()) 
 		{
 			if(!ElementTypeTeller.isModelElement(c))
 				throw new ImportException(c.getName()+" is a non-txtUML class found in model.");
 			else if(ElementTypeTeller.isClassifier(c)) 
+			{
 				importClassifierAttributes(c);
+				if(ElementTypeTeller.isClass(c))
+					importAttributesOfAllClassifiers(c);
+			}
+				
 		}
     }
     
@@ -536,7 +549,7 @@ public class ModelImporter extends AbstractImporter{
      *
      * @author Adam Ancsin
      */
- 	private static void importClassMemberFunctionBodiesStateMachinesAndNestedSignals() throws ImportException
+ 	private static void importClassMemberFunctionBodiesAndStateMachines() throws ImportException
  	{
  		for(Class<?> c : modelClass.getDeclaredClasses()) 
 		{
@@ -546,12 +559,10 @@ public class ModelImporter extends AbstractImporter{
 			if(ElementTypeTeller.isModelClass(c)) 
 			{
 				org.eclipse.uml2.uml.Class currClass = (org.eclipse.uml2.uml.Class) currentModel.getOwnedMember(c.getSimpleName());
-				
-				importNestedSignals(c);
 			
 				InstanceManager.createClassAndFieldInstancesAndInitClassAndFieldInstancesMap(c);
 				
-				if(containsStateMachine(c))
+				if(StateMachineUtils.containsStateMachine(c))
 					importStateMachine(currClass,c);
 				
 				importClassMemberFunctionBodies(c);
@@ -574,10 +585,7 @@ public class ModelImporter extends AbstractImporter{
 		{
 			//innerClass is an event and no signal in the model has the same name
 			if(ElementTypeTeller.isEvent(innerClass) && currentModel.getOwnedType(innerClass.getSimpleName())==null)
-			{
 				createSignalAndSignalEvent(innerClass);
-				importClassifierAttributes(innerClass);
-			}
 		}
   	}
 
@@ -601,9 +609,9 @@ public class ModelImporter extends AbstractImporter{
         		(sourceClass,InstanceManager.getSelfInstance(),currentModel,stateMachine.createRegion(stateMachine.getName()))
         		.importRegion();
         
-        if(region.getSubvertices().size() != 0 && !containsInitial(region)) 
+        if(region.getSubvertices().size() != 0 && !StateMachineUtils.containsInitial(region)) 
         {
-        	importWarning(
+        	ImportWarningProvider.createWarning(
         			sourceClass.getName() +
         			" has one or more vertices but no initial pseudostate (state machine will not be created)"
         		);

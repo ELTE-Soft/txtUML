@@ -6,6 +6,8 @@ import hu.elte.txtuml.api.StateMachine;
 import hu.elte.txtuml.api.StateMachine.Transition;
 import hu.elte.txtuml.api.To;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
+import hu.elte.txtuml.export.uml2.utils.ImportWarningProvider;
+import hu.elte.txtuml.export.uml2.utils.StateMachineUtils;
 import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 
@@ -133,9 +135,9 @@ class RegionImporter extends AbstractImporter {
 		if(ElementTypeTeller.isCompositeState(txtUMLVertexClass))
 		{
 			Region subRegion = importSubRegion(txtUMLVertexClass, vertexInstance, vertex);
-			if(subRegion.getSubvertices().size() != 0 && !containsInitial(subRegion)) 
+			if(subRegion.getSubvertices().size() != 0 && !StateMachineUtils.containsInitial(subRegion)) 
 			{
-				importWarning(
+				ImportWarningProvider.createWarning(
 						txtUMLVertexClass.getName() +
 						" has one or more vertices but no initial pseudostate (state machine will not be created)"
 					);
@@ -254,7 +256,7 @@ class RegionImporter extends AbstractImporter {
 	{	
 		if(ElementTypeTeller.isInitial(txtUMLVertexClass))
         {
-			if (containsInitial(region)) 
+			if (StateMachineUtils.containsInitial(region)) 
             	throw new ImportException(ownerClass.getName() + " has two initial pseudostates");
 
 			return createInitial(txtUMLVertexClass);

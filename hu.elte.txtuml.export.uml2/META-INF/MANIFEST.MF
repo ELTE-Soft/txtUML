@@ -9,7 +9,6 @@ Export-Package: hu.elte.txtuml.export.uml2,
 Require-Bundle: org.eclipse.uml2.uml,
  org.eclipse.uml2.uml.resources,
  hu.elte.txtuml.api,
- hu.elte.txtuml.utils,
- org.aspectj.runtime
+ hu.elte.txtuml.utils
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: ELTE
