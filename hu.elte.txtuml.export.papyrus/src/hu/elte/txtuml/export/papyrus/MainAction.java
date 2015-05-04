@@ -76,8 +76,8 @@ public class MainAction {
 	 * @throws Exception Any kind of Exception that could be thrown  
 	 */
 	protected void createAndOpenPapyrusModel() throws Exception{
-		papyrusModelCreator.init(Projectname+"/"+Modelname, SourceUMLPath);
-		
+		papyrusModelCreator.init(Projectname+"/"+Modelname);
+		papyrusModelCreator.setUpUML(SourceUMLPath);
 		if(!papyrusModelCreator.diExists()){
 			
 			papyrusModelCreator.createPapyrusModel();

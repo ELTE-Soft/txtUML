@@ -25,7 +25,8 @@ Require-Bundle: org.eclipse.debug.ui,
  hu.elte.txtuml.eclipseutils,
  org.eclipse.uml2.uml,
  hu.elte.txtuml.utils,
- org.eclipse.papyrus.uml.diagram.menu
+ org.eclipse.papyrus.uml.diagram.menu,
+ org.junit;bundle-version="4.11.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: hu.elte.txtuml.export.papyrus,

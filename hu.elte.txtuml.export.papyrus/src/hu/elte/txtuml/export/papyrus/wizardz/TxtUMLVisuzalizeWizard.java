@@ -6,6 +6,8 @@ import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.export.uml2.UML2;
 import hu.elte.txtuml.export.utils.ClassLoaderProvider;
 import hu.elte.txtuml.export.utils.Dialogs;
+import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.layout.export.DiagramExporter;
 
 import java.net.URLClassLoader;
 
@@ -19,6 +21,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
+import hu.elte.txtuml.layout.lang.Diagram;
 
 /**
  * Wizard for visualization of txtUML models
@@ -79,9 +82,8 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 				PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL,
 				txtUMLModelName);
 
-		try {
-			URLClassLoader loader = ClassLoaderProvider
-					.getClassLoaderForProject(txtUMLProjectName, parentClassLoader);
+		try (URLClassLoader loader = ClassLoaderProvider
+					.getClassLoaderForProject(txtUMLProjectName, parentClassLoader)){
 			Class<?> txtUMLModelClass = loader.loadClass(txtUMLModelName);
 			String uri = URI.createPlatformResourceURI(
 					txtUMLProjectName + "/" + folder, false).toString();
@@ -91,7 +93,22 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 					e.getClass() + ":\n" + e.getMessage(), e);
 			return false;
 		}
+		
 
+		try (URLClassLoader loader = ClassLoaderProvider
+					.getClassLoaderForProject(txtUMLProjectName, parentClassLoader)){
+			Class<?> txtUMLLayoutClass = loader.loadClass("example.model.ClassDiagram");  
+            DiagramExporter exporter= DiagramExporter.create((Class<? extends Diagram>) txtUMLLayoutClass); 
+            DiagramExportationReport  report = exporter.export(); 
+            System.out.println("Statements: "+report.getStatements());
+            System.out.println("Nodes: "+report.getNodes());
+            System.out.println("Links: "+report.getLinks());
+		} catch (Exception e) {
+			Dialogs.errorMsgb("txtUML export Error",
+					e.getClass() + ":\n" + e.getMessage(), e);
+			return false;
+		}
+		
 		try {
 			URI umlFileURI = URI.createFileURI(txtUMLProjectName + "/" + folder
 					+ "/" + txtUMLModelName + ".uml");

@@ -64,17 +64,19 @@ public class PapyrusModelCreator {
 	 * @throws CoreException
 	 * @throws IOException 
 	 */
-	public void init(String modelpath, String sourceUMLPath) throws CoreException, IOException {
+	public void init(String modelpath) throws CoreException {
 		diFilePath = modelpath+".di";
 		umlFilePath = modelpath+".uml";
 		
 		diFile = fileFromPath(diFilePath);
 		umlFile = fileFromPath(umlFilePath);
+	}
+	
+	public void setUpUML( String sourceUMLPath) throws CoreException, IOException{
 		if(!umlFile.exists()){
 			setUpUMLFile(sourceUMLPath);
 		}
 	}
-	
 	/**
 	 * Copies the content of the sourceUMLPath to the umlFile
 	 * The referenced Profile files will be also copied
