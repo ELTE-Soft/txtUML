@@ -43,7 +43,7 @@ public class Main
 		// Algorithm.LayoutVisualize.usage();
 		// hu.elte.txtuml.layout.visualizer.algorithms.LayoutVisualize.test();
 		// hu.elte.txtuml.layout.visualizer.algorithms.LayoutVisualize.test2();
-		hu.elte.txtuml.layout.visualizer.algorithms.LayoutVisualize.test3();
+		// hu.elte.txtuml.layout.visualizer.algorithms.LayoutVisualize.test3();
 		// hu.elte.txtuml.layout.visualizer.algorithms.LayoutVisualize.testReflexive();
 		long endTime = System.nanoTime();
 		System.out.println("Took " + ((endTime - startTime) / 1000000000.0) + " sec(s).");

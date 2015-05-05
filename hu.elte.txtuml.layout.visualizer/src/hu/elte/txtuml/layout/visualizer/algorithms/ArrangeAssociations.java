@@ -21,7 +21,6 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -132,8 +131,8 @@ class ArrangeAssociations
 			Integer maxLinks = calculateMaxLinks(_assocs, 1);
 			Integer maxReflexives = transformReflexiveCount(calculateMaxLinks(
 					_reflexives, 1));
-			Integer maxSide = Math.max(maxLinks, maxReflexives);
-			for (int i = 4; i <= maxSide || _widthOfObjects < 3; i = i + 8)
+			for (int i = 4; i <= maxLinks || _widthOfObjects < 3
+					|| _widthOfObjects < maxReflexives; i = i + 8)
 			{
 				if (_widthOfObjects == 1)
 				{
@@ -161,8 +160,7 @@ class ArrangeAssociations
 				
 				try
 				{
-					// TODO
-					for (int i = 0; false && i < _reflexives.size(); ++i)
+					for (int i = 0; i < _reflexives.size(); ++i)
 					{
 						LineAssociation refl = _reflexives.get(i);
 						
@@ -174,7 +172,10 @@ class ArrangeAssociations
 								.filter(a -> a.isPlaced()
 										&& a.getFrom().equals(refl.getFrom()))
 								.collect(Collectors.toSet());
-						refl.setRoute(arrangeReflexive(refl, diagramObjects, myReflexives));
+						ArrangeReflexiveAssociations ara = new ArrangeReflexiveAssociations(
+								_reflexives);
+						refl.setRoute(ara.arrangeReflexive(refl, diagramObjects,
+								myReflexives));
 						
 						System.err.println("DONE!");
 						
@@ -432,30 +433,6 @@ class ArrangeAssociations
 		}
 		
 		return result;
-	}
-	
-	private HashMap<Direction, Integer> getLeastPopulatedDirection(RectangleObject obj,
-			Set<RectangleObject> diagramObjects)
-	{
-		HashMap<Direction, Integer> arrangement = new HashMap<Direction, Integer>();
-		
-		for (Direction dir : Direction.values())
-		{
-			arrangement.put(dir, 0);
-		}
-		
-		for (RectangleObject o : diagramObjects)
-		{
-			for (Direction dir : Direction.values())
-			{
-				if (Point.isInTheDirection(obj.getPosition(), o.getPosition(), dir))
-				{
-					arrangement.put(dir, arrangement.get(dir) + 1);
-				}
-			}
-		}
-		
-		return arrangement;
 	}
 	
 	private ArrayList<LineAssociation> processStatements(
@@ -736,241 +713,6 @@ class ArrangeAssociations
 		_possibleStarts.put(key, points);
 	}
 	
-	private ArrayList<Point> arrangeReflexive(LineAssociation refl,
-			Set<RectangleObject> diagramObjects, Set<LineAssociation> myReflexives)
-			throws CannotFindAssociationRouteException
-	{
-		RectangleObject obj = diagramObjects.stream()
-				.filter(o -> o.getName().equals(refl.getFrom())).findFirst().get();
-		
-		// get direction to put
-		HashMap<Direction, Integer> directionPopulations = getLeastPopulatedDirection(
-				obj, diagramObjects);
-		
-		// Compute direction to draw
-		ArrayList<Entry<Direction, Integer>> sortedDirections = (ArrayList<Entry<Direction, Integer>>) directionPopulations
-				.entrySet().stream().collect(Collectors.toList());
-		sortedDirections.sort((e1, e2) ->
-		{
-			return Integer.compare(e1.getValue(), e2.getValue());
-		});
-		
-		for (Direction dir : sortedDirections.stream().map(e -> e.getKey())
-				.collect(Collectors.toList()))
-		{
-			ArrayList<Point> possibleStarts = new ArrayList<Point>();
-			
-			switch (dir)
-			{
-				case north:
-					for (int i = 0; i < obj.getWidth(); ++i)
-						possibleStarts.add(Point.Add(obj.getTopLeft(),
-								Point.Multiply(Direction.east, i)));
-					break;
-				case east:
-					for (int i = 0; i < obj.getWidth(); ++i)
-						possibleStarts.add(Point.Add(obj.getBottomRight(),
-								Point.Multiply(Direction.north, i)));
-					break;
-				case south:
-					for (int i = 0; i < obj.getWidth(); ++i)
-						possibleStarts.add(Point.Add(obj.getBottomRight(),
-								Point.Multiply(Direction.west, i)));
-					break;
-				case west:
-					for (int i = 0; i < obj.getWidth(); ++i)
-						possibleStarts.add(Point.Add(obj.getTopLeft(),
-								Point.Multiply(Direction.south, i)));
-					break;
-			}
-			possibleStarts.removeIf(p -> myReflexives.stream().anyMatch(
-					a -> a.getRoute().contains(p)));
-			
-			for (int i = 0; i < possibleStarts.size(); ++i)
-			{
-				Point p = possibleStarts.get(i);
-				// assamble end points, compute end point and end direction
-				Pair<Point, Direction> ends = getEndPointDirectionForReflexive(p, obj,
-						dir, myReflexives);
-				if (ends == null)
-					continue;
-				
-				try
-				{
-					return tryDrawReflexive(p, ends.First, dir, ends.Second,
-							diagramObjects);
-				}
-				catch (CannotFindAssociationRouteException e)
-				{
-					
-				}
-			}
-		}
-		
-		throw new CannotFindAssociationRouteException(
-				"Cannot find route for reflexive link: " + refl.toString() + "!");
-	}
-	
-	private Pair<Point, Direction> getEndPointDirectionForReflexive(Point p,
-			RectangleObject obj, Direction startDir, Set<LineAssociation> myReflexives)
-	{
-		for (Direction dir : Direction.values())
-		{
-			if (dir.equals(startDir))
-				continue;
-			
-			if (Point.isInTheDirection(obj.getPosition(), p, dir))
-			{
-				// dir is the end side
-				ArrayList<Point> possibleEnds = new ArrayList<Point>();
-				switch (dir)
-				{
-					case north:
-						for (int i = 0; i < obj.getWidth(); ++i)
-							possibleEnds.add(Point.Add(obj.getTopLeft(),
-									Point.Multiply(Direction.east, i)));
-						break;
-					case east:
-						for (int i = 0; i < obj.getWidth(); ++i)
-							possibleEnds.add(Point.Add(obj.getBottomRight(),
-									Point.Multiply(Direction.north, i)));
-						break;
-					case south:
-						for (int i = 0; i < obj.getWidth(); ++i)
-							possibleEnds.add(Point.Add(obj.getBottomRight(),
-									Point.Multiply(Direction.west, i)));
-						break;
-					case west:
-						for (int i = 0; i < obj.getWidth(); ++i)
-							possibleEnds.add(Point.Add(obj.getTopLeft(),
-									Point.Multiply(Direction.south, i)));
-						break;
-				}
-				possibleEnds.removeIf(p_lambda -> !Point.isInTheDirection(
-						obj.getPosition(), p_lambda, startDir));
-				possibleEnds.removeIf(p_lambda -> myReflexives.stream().anyMatch(
-						a_lambda -> a_lambda.getRoute().contains(p_lambda)));
-				
-				for (Point poi : possibleEnds)
-				{
-					if (Point.Substract(p, obj.getPosition()).length() == Point
-							.Substract(poi, obj.getPosition()).length())
-					{
-						return new Pair<Point, Direction>(poi, dir);
-					}
-				}
-			}
-		}
-		
-		return null;
-	}
-	
-	private ArrayList<Point> tryDrawReflexive(Point from, Point to, Direction startDir,
-			Direction endDir, Set<RectangleObject> objects)
-			throws CannotFindAssociationRouteException
-	{
-		ArrayList<Point> route1 = new ArrayList<Point>();
-		ArrayList<Point> route2 = new ArrayList<Point>();
-		route1.add(from);
-		route2.add(to);
-		Integer outDistance = 0;
-		Boolean movingForward1 = true;
-		Boolean movingForward2 = true;
-		
-		while (movingForward1 && movingForward2)
-		{
-			Point tempTurn = Point.Add(from, endDir);
-			if (!_reflexives.stream().anyMatch(a -> a.getRoute().contains(tempTurn))
-					&& !objects.stream().anyMatch(o -> o.getPoints().contains(tempTurn)))
-			{
-				movingForward1 = false;
-				from = tempTurn;
-				route1.add(from);
-			}
-			else
-			{
-				Point tempForward = Point.Add(from, startDir);
-				if (!_reflexives.stream().anyMatch(
-						a -> a.getRoute().contains(tempForward))
-						&& !objects.stream().anyMatch(
-								o -> o.getPoints().contains(tempForward)))
-				{
-					movingForward1 = true;
-					from = tempForward;
-					route1.add(from);
-					
-					++outDistance;
-				}
-				else
-					throw new CannotFindAssociationRouteException(
-							"Cannot draw reflexive link!");
-			}
-			
-			Point tempTurn2 = Point.Add(to, startDir);
-			if (!_reflexives.stream().anyMatch(a -> a.getRoute().contains(tempTurn2))
-					&& !objects.stream().anyMatch(o -> o.getPoints().contains(tempTurn2)))
-			{
-				movingForward2 = false;
-				to = tempTurn2;
-				route2.add(to);
-			}
-			else
-			{
-				Point tempForward2 = Point.Add(to, endDir);
-				if (!_reflexives.stream().anyMatch(
-						a -> a.getRoute().contains(tempForward2))
-						&& !objects.stream().anyMatch(
-								o -> o.getPoints().contains(tempForward2)))
-				{
-					movingForward2 = true;
-					to = tempForward2;
-					route2.add(to);
-				}
-				else
-					throw new CannotFindAssociationRouteException(
-							"Cannot draw reflexive link!");
-			}
-		}
-		
-		if (!movingForward1.equals(movingForward2))
-			throw new CannotFindAssociationRouteException("Cannot draw reflexive link!");
-		
-		for (int i = 0; i < (outDistance * 2) - 1; ++i)
-		{
-			Point tempForward = Point.Add(from, endDir);
-			if (!_reflexives.stream().anyMatch(a -> a.getRoute().contains(tempForward))
-					&& !objects.stream().anyMatch(
-							o -> o.getPoints().contains(tempForward)))
-			{
-				from = tempForward;
-				route1.add(from);
-			}
-			else
-				throw new CannotFindAssociationRouteException(
-						"Cannot draw reflexive link!");
-			
-			Point tempForward2 = Point.Add(to, startDir);
-			if (!_reflexives.stream().anyMatch(a -> a.getRoute().contains(tempForward2))
-					&& !objects.stream().anyMatch(
-							o -> o.getPoints().contains(tempForward2)))
-			{
-				to = tempForward2;
-				route2.add(to);
-			}
-			else
-				throw new CannotFindAssociationRouteException(
-						"Cannot draw reflexive link!");
-		}
-		
-		// Unite the routes
-		for (int i = (route2.size() - 2); i >= 0; --i)
-		{
-			route1.add(route2.get(i));
-		}
-		
-		return route1;
-	}
-	
 	private void arrangeLinks(Set<RectangleObject> diagramObjects)
 			throws CannotStartAssociationRouteException,
 			CannotFindAssociationRouteException, InternalException
@@ -1093,6 +835,8 @@ class ArrangeAssociations
 	
 	private Integer transformReflexiveCount(Integer count)
 	{
+		count = count / 2;
+		
 		Integer sideSize = 3;
 		for (int i = 2; i < count; i = i + 4)
 		{

@@ -14,7 +14,6 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -219,11 +218,6 @@ class StatementHelper
 	public static ArrayList<Statement> transformAssocs(ArrayList<Statement> stats,
 			Set<LineAssociation> assocs)
 	{
-		// Object parent -> [Object childs]
-		HashMap<String, HashSet<String>> parents = new HashMap<String, HashSet<String>>();
-		
-		// TODO
-		
 		ArrayList<Statement> result = new ArrayList<Statement>();
 		
 		for (LineAssociation a : assocs)

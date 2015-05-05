@@ -227,7 +227,26 @@ public class Point
 	 */
 	public static boolean isInTheDirection(Point p1, Point p2, Direction dir)
 	{
-		return p1.isInTheDirection(p2, dir);
+		return isInTheDirection(p1, p2, dir, false);
+	}
+	
+	/**
+	 * Check if p2 is in the dir direction of p1.
+	 * 
+	 * @param p1
+	 *            The point to relate to.
+	 * @param p2
+	 *            The point to check.
+	 * @param dir
+	 *            The direction to check in.
+	 * @param inLineCounts
+	 *            Whether to allow points that are in line with p1.
+	 * @return Boolean of p2 is in the dir direction of p1.
+	 */
+	public static boolean isInTheDirection(Point p1, Point p2, Direction dir,
+			Boolean inLineCounts)
+	{
+		return p1.isInTheDirection(p2, dir, inLineCounts);
 	}
 	
 	// end Statics
@@ -289,6 +308,34 @@ public class Point
 		if (dv.getY() > 0 && dir.equals(Direction.north))
 			return true;
 		if (dv.getY() < 0 && dir.equals(Direction.south))
+			return true;
+		
+		return false;
+	}
+	
+	/**
+	 * Checks if a point is in the given direction from this point.
+	 * 
+	 * @param p
+	 *            The point to check.
+	 * @param dir
+	 *            The direction to check.
+	 * @param inLineCounts
+	 *            Whether to allow {@link Point}s that are in line with this
+	 *            point.
+	 * @return True if p is in the dir direction of this.
+	 */
+	public boolean isInTheDirection(Point p, Direction dir, Boolean inLineCounts)
+	{
+		Point dv = Point.Substract(p, this);
+		
+		if (dv.getX() >= 0 && dir.equals(Direction.east))
+			return true;
+		if (dv.getX() <= 0 && dir.equals(Direction.west))
+			return true;
+		if (dv.getY() >= 0 && dir.equals(Direction.north))
+			return true;
+		if (dv.getY() <= 0 && dir.equals(Direction.south))
 			return true;
 		
 		return false;

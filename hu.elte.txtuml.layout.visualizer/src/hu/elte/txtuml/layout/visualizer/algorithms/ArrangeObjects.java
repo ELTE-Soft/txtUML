@@ -54,11 +54,13 @@ class ArrangeObjects
 		
 		_indices = new BiMap<String, Integer>();
 		// Set indices
-		Integer index = 1;
-		for (RectangleObject o : _objects)
 		{
-			_indices.put(o.getName(), index);
-			++index;
+			Integer index = 1;
+			for (RectangleObject o : _objects)
+			{
+				_indices.put(o.getName(), index);
+				++index;
+			}
 		}
 		
 		int n = _objects.size();
@@ -247,12 +249,20 @@ class ArrangeObjects
 					break;
 				case vertical:
 				{
-					// TODO
+					int i = _indices.get(s.getParameter(1));
+					int j = _indices.get(s.getParameter(0));
+					result.add(new Triple<Integer, Integer, Integer>(i, j, 0));
+					result.add(new Triple<Integer, Integer, Integer>(j, i, 0));
 				}
+					break;
 				case horizontal:
 				{
-					// TODO
+					int i = _indices.get(s.getParameter(1)) + n;
+					int j = _indices.get(s.getParameter(0)) + n;
+					result.add(new Triple<Integer, Integer, Integer>(i, j, 0));
+					result.add(new Triple<Integer, Integer, Integer>(j, i, 0));
 				}
+					break;
 				case above:
 				{
 					int i = _indices.get(s.getParameter(1));
