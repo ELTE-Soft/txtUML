@@ -399,11 +399,10 @@ public class ModelImporter extends AbstractImporter{
 	 * Creates a signal and a signal event in the UML2 model based on the specified class
 	 * representing a signal in the txtUML model.
 	 * @param sourceClass The class representing the signal in the txtUML model.
-	 * @throws ImportException
 	 *
 	 * @author Adam Ancsin
 	 */
-	private static void createSignalAndSignalEvent(Class<?> sourceClass) throws ImportException
+	private static void createSignalAndSignalEvent(Class<?> sourceClass)
 	{
 		Signal signal = (Signal)
 				currentModel.createOwnedType(sourceClass.getSimpleName(),UMLPackage.Literals.SIGNAL);
@@ -530,11 +529,10 @@ public class ModelImporter extends AbstractImporter{
     /**
      * Imports the bodies of the member functions of the specified class.
      * @param sourceClass The txtUML class.
-     * @throws ImportException 
      * 
      * @author Adam Ancsin
      */
-    private static void importClassMemberFunctionBodies(Class<?> sourceClass) throws ImportException
+    private static void importClassMemberFunctionBodies(Class<?> sourceClass)
     {
     	org.eclipse.uml2.uml.Class ownerClass=(org.eclipse.uml2.uml.Class) currentModel.getMember(sourceClass.getSimpleName());
     	for(Method method : sourceClass.getDeclaredMethods()) 
@@ -575,11 +573,10 @@ public class ModelImporter extends AbstractImporter{
  	/**
  	 * Imports the nested signals of the specified class.
  	 * @param sourceClass The txtUML class.
- 	 * @throws ImportException
  	 *
  	 * @author Adam Ancsin
  	 */
-  	private static void importNestedSignals(Class<?> sourceClass) throws ImportException
+  	private static void importNestedSignals(Class<?> sourceClass)
   	{
 		for(Class<?> innerClass:sourceClass.getDeclaredClasses())
 		{
@@ -625,14 +622,13 @@ public class ModelImporter extends AbstractImporter{
 	 * @param operation The specified operation.
 	 * @param ownerClass The owner UML2 class of the operation.
 	 * @param sourceMethod The txtUML method.
+	 * 
 	 * @return The imported UML2 activity of the operation.
-	 *
-	 * @throws ImportException 
 	 *
 	 * @author Adam Ancsin
 	 */
 	private static Activity importOperationBody
-		(Operation operation,org.eclipse.uml2.uml.Class ownerClass,Method sourceMethod) throws ImportException
+		(Operation operation,org.eclipse.uml2.uml.Class ownerClass,Method sourceMethod)
 	{
 		Activity activity=(Activity) ownerClass.createOwnedBehavior(sourceMethod.getName(),UMLPackage.Literals.ACTIVITY);
 		activity.setSpecification(operation);

@@ -42,7 +42,7 @@ class RegionImporter extends AbstractImporter {
 	 * @param currentRegion The UML2 region.
 	 * @throws ImportException
 	 */
-	RegionImporter(Class<?> ownerClass,ModelElement ownerInstance,Model currentModel,Region currentRegion) throws ImportException
+	RegionImporter(Class<?> ownerClass, ModelElement ownerInstance, Model currentModel, Region currentRegion) throws ImportException
 	{
 		this.ownerClass=ownerClass;
 		this.ownerInstance=ownerInstance;
@@ -158,13 +158,11 @@ class RegionImporter extends AbstractImporter {
 	 * @param txtUMLStateClass The class of the txtUML state.
 	 * @param importedState The imported UML2 state.
 	 * @param stateInstance The dummy instance of the txtUML state.
-	 *
-	 * @throws ImportException
 	 * 
 	 * @author Adam Ancsin
 	 */
 	private void importStateEntryAction
-		(Class<?> txtUMLStateClass,State importedState, StateMachine.State stateInstance) throws ImportException
+		(Class<?> txtUMLStateClass, State importedState, StateMachine.State stateInstance)
 	{
 		
 		try 
@@ -175,7 +173,7 @@ class RegionImporter extends AbstractImporter {
 							importedState.getName()+"_entry",
 							UMLPackage.Literals.ACTIVITY
 						);
-			MethodImporter.importMethod(currentModel,activity, entryMethod, stateInstance);
+			MethodImporter.importMethod(currentModel, activity, entryMethod, stateInstance);
 			
 		}
 		catch (NoSuchMethodException e) 
@@ -190,13 +188,11 @@ class RegionImporter extends AbstractImporter {
 	 * @param txtUMLStateClass The class of the txtUML state.
 	 * @param importedState The imported UML2 state.
 	 * @param stateInstance The dummy instance of the txtUML state.
-	 *
-	 * @throws ImportException
 	 * 
 	 * @author Adam Ancsin
 	 */
 	private void importStateExitAction
-		(Class<?> stateClass,State importedState, StateMachine.State stateInstance) throws ImportException
+		(Class<?> stateClass, State importedState, StateMachine.State stateInstance)
 	{
 		
 		try 
@@ -207,7 +203,7 @@ class RegionImporter extends AbstractImporter {
 							importedState.getName()+"_exit",
 							UMLPackage.Literals.ACTIVITY
 						);
-			MethodImporter.importMethod(currentModel,activity, exitMethod, stateInstance);
+			MethodImporter.importMethod(currentModel, activity, exitMethod, stateInstance);
 
 		}
 		catch (NoSuchMethodException e)
@@ -297,12 +293,10 @@ class RegionImporter extends AbstractImporter {
 	 * Imports a transition.
 	 * @param txtUMLTransitionClass The class of the txtUML transition.
 	 * @return The imported UML2 transition.
-	 *
-	 * @throws ImportException
 	 * 
 	 * @author Adam Ancsin
 	 */
-	private org.eclipse.uml2.uml.Transition importTransition(Class<?> txtUMLTransitionClass) throws ImportException
+	private org.eclipse.uml2.uml.Transition importTransition(Class<?> txtUMLTransitionClass)
 	{
 		String transitionName = txtUMLTransitionClass.getSimpleName();
         From fromAnnotation = txtUMLTransitionClass.getAnnotation(From.class);
@@ -334,7 +328,7 @@ class RegionImporter extends AbstractImporter {
 	 *
 	 * @author Adam Ancsin
 	 */
-	private void importTrigger( hu.elte.txtuml.api.Trigger triggerAnnotation,org.eclipse.uml2.uml.Transition importedTransition)
+	private void importTrigger( hu.elte.txtuml.api.Trigger triggerAnnotation, org.eclipse.uml2.uml.Transition importedTransition)
 	{
 		 if(triggerAnnotation!=null)
 	     {
@@ -350,15 +344,13 @@ class RegionImporter extends AbstractImporter {
 	 * @param importedTransition The imported UML2 transition.
 	 * @param txtUMLTransitionInstance The dummy instance of the txtUML transition.
 	 *
-	 * @throws ImportException
-	 *
 	 * @author Adam Ancsin
 	 */
 	private void importEffectAction(
 			Class<?> txtUMLTransitionClass,
 			org.eclipse.uml2.uml.Transition importedTransition, 
 			StateMachine.Transition txtUMLTransitionInstance
-		) throws ImportException
+		)
 	{
 		try 
 		{
@@ -383,15 +375,13 @@ class RegionImporter extends AbstractImporter {
 	 * @param importedTransition The imported UML2 transition.
 	 * @param txtUMLTransitionInstance The dummy instance of the txtUML transition.
 	 *
-	 * @throws ImportException
-	 *
 	 * @author Adam Ancsin
 	 */
 	private void importGuard(
 			Class<?> txtUMLTransitionClass,
 			org.eclipse.uml2.uml.Transition importedTransition, 
 			StateMachine.Transition txtUMLTransitionInstance
-		) throws ImportException
+		)
 	{
 		try
 		{
@@ -423,7 +413,7 @@ class RegionImporter extends AbstractImporter {
 	 *
 	 * @author Adam Ancsin
 	 */
-	private org.eclipse.uml2.uml.Transition createTransitionBetweenVertices(String name,Vertex source, Vertex target)
+	private org.eclipse.uml2.uml.Transition createTransitionBetweenVertices(String name, Vertex source, Vertex target)
 	{
 		org.eclipse.uml2.uml.Transition transition=region.createTransition(name);
         transition.setSource(source);

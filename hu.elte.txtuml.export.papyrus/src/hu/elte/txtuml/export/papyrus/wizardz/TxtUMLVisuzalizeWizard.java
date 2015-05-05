@@ -73,8 +73,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		final String folder = preferncesManager
 				.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
 
-		ClassLoader parentClassLoader = this.getClass().getClassLoader();
-
+		ClassLoader parentClassLoader = hu.elte.txtuml.export.uml2.UML2.class.getClassLoader();
 		preferncesManager.setValue(
 				PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT,
 				txtUMLProjectName);
@@ -95,7 +94,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		}
 		
 
-		try (URLClassLoader loader = ClassLoaderProvider
+		/*try (URLClassLoader loader = ClassLoaderProvider
 					.getClassLoaderForProject(txtUMLProjectName, parentClassLoader)){
 			Class<?> txtUMLLayoutClass = loader.loadClass("example.model.ClassDiagram");  
             DiagramExporter exporter= DiagramExporter.create((Class<? extends Diagram>) txtUMLLayoutClass); 
@@ -108,7 +107,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 					e.getClass() + ":\n" + e.getMessage(), e);
 			return false;
 		}
-		
+		*/
 		try {
 			URI umlFileURI = URI.createFileURI(txtUMLProjectName + "/" + folder
 					+ "/" + txtUMLModelName + ".uml");

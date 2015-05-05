@@ -211,7 +211,11 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 		Signature signature=thisJoinPoint.getSignature();
 		try
 		{
-			return InstructionImporter.importModelClassFieldGet(target,signature.getName(),signature.getDeclaringType().getDeclaredField(signature.getName()).getType());
+			return InstructionImporter.importModelClassFieldGet(
+					target,
+					signature.getName(),
+					signature.getDeclaringType().getDeclaredField(signature.getName()).getType()
+				);
 		} 
 		catch (NoSuchFieldException e) 
 		{
@@ -234,7 +238,11 @@ public privileged aspect InstructionImporterAspect extends AbstractImporterAspec
 		Signature signature=thisJoinPoint.getSignature();
 		try
 		{
-			return InstructionImporter.importExternalClassFieldGet(target,signature.getName(),signature.getDeclaringType().getDeclaredField(signature.getName()).getType());
+			return InstructionImporter.importExternalClassFieldGet(
+					target,
+					signature.getName(),
+					signature.getDeclaringType().getDeclaredField(signature.getName()).getType()
+				);
 		} 
 		catch (NoSuchFieldException e)
 		{

@@ -103,7 +103,6 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param methodName The name of the method.
 	 * @param args The dummy instances of the current arguments.
 	 * @return The dummy instance of the return value.
-	 * @throws ImportException
 	 *
 	 * @author Adam Ancsin
 	 */
@@ -286,7 +285,6 @@ public class InstructionImporter extends AbstractMethodImporter
 	 * @param methodName The name of the called method.
 	 * @param args The dummy instances of the current arguments.
 	 * @return The dummy instance of the return value.
-	 * @throws ImportException
 	 *
 	 * @author Adam Ancsin
 	 */

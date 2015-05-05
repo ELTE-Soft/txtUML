@@ -9,6 +9,7 @@ import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
+import hu.elte.txtuml.export.uml2.utils.ImportWarningProvider;
 
 import java.lang.reflect.Method;
 import java.util.Stack;
@@ -40,12 +41,11 @@ class MethodImporter extends AbstractMethodImporter
 	 * @param sourceMethod The guard method to be imported.
 	 * @param transitionInstance The dummy instance of the transition.
 	 * @return The guard expression represented by the method's return value.
-	 * @throws ImportException
 	 *
 	 * @author Adam Ancsin
 	 */
 	static String importGuardMethod
-		(Model model, Method sourceMethod,StateMachine.Transition transitionInstance) throws ImportException
+		(Model model, Method sourceMethod,StateMachine.Transition transitionInstance)
 	{
 		initGuardImport(model,sourceMethod,transitionInstance);
 		
@@ -66,12 +66,11 @@ class MethodImporter extends AbstractMethodImporter
 	 * @param activity The UML2 activity of the member function/action (entry/exit/effect).
 	 * @param sourceMethod The method to be imported.
 	 * @param classInstance The dummy instance of the owner class. (model class, state or transition)
-	 * @throws ImportException
 	 *
 	 * @author Adam Ancsin
 	 */
 	static void importMethod
-		(Model model, Activity activity, Method sourceMethod, ModelElement classInstance) throws ImportException
+		(Model model, Activity activity, Method sourceMethod, ModelElement classInstance)
 	{
 		initMethodImport(model,activity,sourceMethod,classInstance);
 		importBody(classInstance);
@@ -82,11 +81,10 @@ class MethodImporter extends AbstractMethodImporter
 	 * Imports the body of a guard method.
 	 * @param transitionInstance The dummy instance of the transition.
 	 * @return The return value of the guard method.
-	 * @throws ImportException
 	 *
 	 * @author Adam Ancsin
 	 */
-	private static ModelBool importGuardBody(StateMachine.Transition transitionInstance) throws ImportException
+	private static ModelBool importGuardBody(StateMachine.Transition transitionInstance) 
 	{
 		currentMethod.setAccessible(true);
 		ModelBool returnValue = null;
@@ -96,7 +94,10 @@ class MethodImporter extends AbstractMethodImporter
 		} 
 		catch (Exception e)
 		{
-			throw new ImportException("Failed to import guard of transition: "+transitionInstance.getClass().getCanonicalName());
+			ImportWarningProvider.createWarning(
+					"Failed to import guard of transition: " +
+					transitionInstance.getClass().getCanonicalName()
+				);
 		} 
 		currentMethod.setAccessible(false);
 		
@@ -197,11 +198,10 @@ class MethodImporter extends AbstractMethodImporter
 	/**
 	 * Imports the body of a method (member function of a model class or an entry/exit/effect action).
 	 * @param classInstance The dummy instance of the owner class. (model class, state or transition)
-	 * @throws ImportException 
 	 *
 	 * @author Adam Ancsin
 	 */
-	private static void importBody(ModelElement classInstance) throws ImportException
+	private static void importBody(ModelElement classInstance)
 	{
 		String methodQualifiedName = classInstance.getClass().getCanonicalName()+currentMethod.getName();
 		try 
@@ -216,14 +216,14 @@ class MethodImporter extends AbstractMethodImporter
 				}
 				catch(Exception e)
 				{
-					throw new ImportException("Failed to import method: "+methodQualifiedName);
+					ImportWarningProvider.createWarning("Failed to import method: "+methodQualifiedName);
 				}
 			}
 			currentMethod.setAccessible(false);
 		}
 		catch(Exception e) 
 		{
-			throw new ImportException("Failed to import method: "+methodQualifiedName);
+			ImportWarningProvider.createWarning("Failed to import method: "+methodQualifiedName);
 		}
 	}
 	
