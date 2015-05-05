@@ -45,6 +45,25 @@ public class Timer extends ExternalClass {
 	private static volatile boolean shutdownInitiated = false;
 
 	/**
+	 * The count of currently scheduled events.
+	 */
+	private static final AtomicInteger scheduledEvents = new AtomicInteger();
+
+	/**
+	 * The scheduler used by this class to schedule timed events.
+	 */
+	private static final ScheduledExecutorService scheduler = Executors
+			.newSingleThreadScheduledExecutor();
+
+	/**
+	 * Makes sure that the scheduler used to schedule timed events is shut down
+	 * along with the model executor.
+	 */
+	static {
+		ModelExecutor.addToShutdownQueue(() -> scheduler.shutdownNow());
+	}
+
+	/**
 	 * Sole constructor of <code>Timer</code>.
 	 */
 	private Timer() {
@@ -90,6 +109,9 @@ public class Timer extends ExternalClass {
 	 */
 	public static void shutdown() {
 		shutdownInitiated = true;
+		if (scheduledEvents.get() == 0) {
+			ModelExecutor.shutdown();
+		}
 	}
 
 	/**
@@ -105,18 +127,7 @@ public class Timer extends ExternalClass {
 	public static class Handle extends ExternalClass {
 
 		/**
-		 * The count of currently scheduled events.
-		 */
-		private static final AtomicInteger scheduledEvents = new AtomicInteger();
-
-		/**
-		 * The scheduler used by this class to schedule timed events.
-		 */
-		private static final ScheduledExecutorService scheduler = Executors
-				.newSingleThreadScheduledExecutor();
-
-		/**
-		 * The handle of the event scheduled with {@link Handle#scheduler
+		 * The handle of the event scheduled with {@link Timer#scheduler
 		 * scheduler}.
 		 */
 		private ScheduledFuture<?> handle;
@@ -135,13 +146,6 @@ public class Timer extends ExternalClass {
 		 * An action of the send operation to be performed after the timeout.
 		 */
 		private final Runnable action;
-
-		/**
-		 * 
-		 */
-		static {
-			ModelExecutor.addToShutdownQueue(() -> scheduler.shutdownNow());
-		}
 
 		/**
 		 * Sole constructor of <code>Handle</code>.
@@ -244,6 +248,9 @@ public class Timer extends ExternalClass {
 		 *            the delay in millisecs
 		 */
 		private void schedule(ModelInt millisecs) {
+			if (scheduler.isShutdown()) {
+				return;
+			}
 			handle = scheduler.schedule(action, ModelExecutor.Settings
 					.inExecutionTime(convertModelInt(millisecs)),
 					TimeUnit.MILLISECONDS);

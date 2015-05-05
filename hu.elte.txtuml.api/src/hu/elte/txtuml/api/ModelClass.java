@@ -407,12 +407,13 @@ public class ModelClass extends Region implements ModelValue, LayoutNode {
 		if (status != Status.READY) {
 			return;
 		}
-		send(null); // to move from initial state
 		status = Status.ACTIVE;
 
 		if (ModelExecutor.Settings.dynamicChecks()) {
 			initializeAllDefinedAssociationEnds();
 		}
+
+		send(null); // to move from initial state
 	}
 
 	/**
