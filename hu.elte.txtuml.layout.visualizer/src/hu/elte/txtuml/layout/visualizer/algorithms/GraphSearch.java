@@ -259,7 +259,7 @@ class GraphSearch
 	{
 		// TODO
 		Double weightCost = 1.0;
-		Double weightTurns = 1.0;
+		Double weightTurns = 1.5;
 		Double weightDistance = 1.2;
 		Double weightRemainingTurns = 1.0;
 		Double weightYellowPoints = 1.5;
@@ -337,11 +337,25 @@ class GraphSearch
 	
 	private Integer manhattanDistance(Point a)
 	{
-		double dx = Math.abs(a.getX() - _end.getX());
-		double dy = Math.abs(a.getY() - _end.getY());
-		double tempResult = dx + dy - (_widthOfObject / 2);
+		return (int) Math.floor(_endSet.stream().map(p ->
+		{
+			double dx = Math.abs(a.getX() - p.getX());
+			double dy = Math.abs(a.getY() - p.getY());
+			double tempResult = dx + dy;
+			
+			return tempResult;
+		}).min((d1, d2) ->
+		{
+			return Double.compare(d1, d2);
+		}).get());
 		
-		return (int) tempResult;
+		/*
+		 * double dx = Math.abs(a.getX() - _end.getX());
+		 * double dy = Math.abs(a.getY() - _end.getY());
+		 * double tempResult = dx + dy - (_widthOfObject / 2);
+		 * 
+		 * return (int) tempResult;
+		 */
 	}
 	
 	@SuppressWarnings("unused")

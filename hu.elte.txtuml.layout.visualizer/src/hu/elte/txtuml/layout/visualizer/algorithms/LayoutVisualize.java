@@ -198,14 +198,19 @@ public class LayoutVisualize
 				// Remove a weak statement if possible
 				if (_statements.stream().anyMatch(s -> !s.isUserDefined()))
 				{
-					Statement toDelete = _statements
-							.stream()
-							.filter(s -> !s.isUserDefined())
-							.max((s1, s2) ->
-							{
-								return Integer.compare(StatementHelper.getComplexity(s1),
+					ArrayList<Statement> toDeletes = (ArrayList<Statement>) _statements
+							.stream().filter(s -> !s.isUserDefined())
+							.collect(Collectors.toList());
+					toDeletes.sort((s1, s2) ->
+					{
+						return -1
+								* Integer.compare(StatementHelper.getComplexity(s1),
 										StatementHelper.getComplexity(s2));
-							}).get();
+					});
+					Integer maxValue = StatementHelper.getComplexity(toDeletes.get(0));
+					toDeletes.removeIf(s -> StatementHelper.getComplexity(s) < maxValue);
+					
+					Statement toDelete = toDeletes.stream().findAny().get();
 					_statements.remove(toDelete);
 					System.err.println("Weak(" + toDelete.toString()
 							+ ") statement deleted!");

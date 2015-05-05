@@ -131,13 +131,9 @@ class ArrangeAssociations
 			Integer maxLinks = calculateMaxLinks(_assocs, 1);
 			Integer maxReflexives = transformReflexiveCount(calculateMaxLinks(
 					_reflexives, 1));
-			for (int i = 4; i <= maxLinks || _widthOfObjects < 3
-					|| _widthOfObjects < maxReflexives; i = i + 8)
+			while (_widthOfObjects < 3 || _widthOfObjects < maxReflexives
+					|| (_widthOfObjects * 4 - 8) < maxLinks)
 			{
-				if (_widthOfObjects == 1)
-				{
-					i = i - 8;
-				}
 				// Grid * 2, ObjectWidth * 2 + 1
 				_transformAmount = _transformAmount * 2;
 				diagramObjects = enlargeObjects(diagramObjects);
@@ -374,7 +370,7 @@ class ArrangeAssociations
 				.stream().collect(Collectors.toList());
 		orderedAssocs.sort((a1, a2) ->
 		{
-			return -1 * Double.compare(distanceOfEnds(a1), distanceOfEnds(a2));
+			return Double.compare(distanceOfEnds(a1), distanceOfEnds(a2));
 		});
 		for (LineAssociation a : orderedAssocs)
 		{
