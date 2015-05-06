@@ -233,10 +233,11 @@ package hu.elte.txtuml.api;
  * 
  * <ul>
  * <li>Create model objects (instances of subclasses of {@link ModelClass}) by
- * either calling their constructors or using the {@link Action#create(Class)
- * Action.create} method. Instantiating the model class <i>m</i> (the subclass
- * of <code>Model</code> which encloses the whole model) is also allowed but is
- * not required, neither has any effect on a well-defined model.</li>
+ * either calling their constructors or using the
+ * {@link Action#create(Class, ModelValue...) Action.create} method.
+ * Instantiating the model class <i>m</i> (the subclass of <code>Model</code>
+ * which encloses the whole model) is also allowed but is not required, neither
+ * has any effect on a well-defined model.</li>
  * <li>Use the static methods of the <code>Action</code> class to
  * {@link Action#link(Class, ModelClass, Class, ModelClass) link},
  * {@link Action#unlink(Class, ModelClass, Class, ModelClass) unlink},
