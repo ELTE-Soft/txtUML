@@ -74,7 +74,7 @@ public class ActionImporter extends AbstractMethodImporter {
 						);
 
 			createAndAddOpaqueExpressionToValuePin(valuePin, instanceIdentifier, classifier);
-			
+			createControlFlowBetweenActivityNodes(lastNode, startClassifierBehaviorAction);
 			lastNode = startClassifierBehaviorAction;
 		}
 	}
@@ -152,7 +152,6 @@ public class ActionImporter extends AbstractMethodImporter {
 						);
 
 			createAndAddOpaqueExpressionToValuePin(target,instanceName,instanceType);
-
 			addArgumentsToSendSignalAction(sendSignalAction,event,signalToSend);
 			createControlFlowBetweenActivityNodes(lastNode,sendSignalAction);
 
@@ -226,25 +225,23 @@ public class ActionImporter extends AbstractMethodImporter {
 			Pair<ActivityNode,ActivityEdge> importThenBodyResult=importBlockBody(thenBody);
 			ActivityEdge thenFirstEdge=importThenBodyResult.getValue();
 			ActivityNode thenLastNode=importThenBodyResult.getKey();
-		
 			lastNode=decisionNode;
 
 			Pair<ActivityNode,ActivityEdge> importElseBodyResult=importBlockBody(elseBody);
 			ActivityEdge elseFirstEdge=importElseBodyResult.getValue();
 			ActivityNode elseLastNode=importElseBodyResult.getKey();
-			
 			lastNode=createMergeNode(thenLastNode,elseLastNode);
 			
 			//if the "then" block body was empty, the first edge will be the one that targets the merge node
 			//lastNode is the merge node
 			if(thenFirstEdge == null) 
 				thenFirstEdge = lastNode.getIncomings().get(0);
-					
+			
 			//if the "else" block body was empty, the first edge will be the one that targets the merge node
 			//lastNode is the merge node
 			if(elseFirstEdge == null)
 				elseFirstEdge = lastNode.getIncomings().get(1);
-			
+		
 			addGuardToActivityEdge(thenFirstEdge, condExpr);
 			addGuardToActivityEdge(elseFirstEdge, "else");
 		}
@@ -304,10 +301,10 @@ public class ActionImporter extends AbstractMethodImporter {
 	{
 	    if(currentActivity != null) 
 	    {
-	       	DestroyObjectAction destroyAction=	(DestroyObjectAction) 
-					currentActivity.createOwnedNode("delete_"+obj.getIdentifier(),UMLPackage.Literals.DESTROY_OBJECT_ACTION);
-	
-			String instanceName=getObjectIdentifier(obj);
+	    	String instanceName=getObjectIdentifier(obj);
+	    	
+	    	DestroyObjectAction destroyAction=	(DestroyObjectAction) 
+					currentActivity.createOwnedNode("delete_" + instanceName,UMLPackage.Literals.DESTROY_OBJECT_ACTION);
 	
 			Type type= currentModel.getOwnedType(obj.getClass().getSimpleName());
 	

@@ -4,7 +4,6 @@ import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.api.StateMachine;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
-import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
@@ -144,9 +143,9 @@ class MethodImporter extends AbstractMethodImporter
 	 */
 	private static void initMethodImport(Model model, Activity activity, Method sourceMethod, ModelElement classInstance)
 	{
-		currentModel=model;
+		currentModel = model;
 		currentActivity = activity;
-		currentMethod=sourceMethod;
+		currentMethod = sourceMethod;
 		cntBlockBodiesBeingImported=0;
 		blockBodyFirstEdges=new Stack<ActivityEdge>();
 		cntDecisionNodes=0;

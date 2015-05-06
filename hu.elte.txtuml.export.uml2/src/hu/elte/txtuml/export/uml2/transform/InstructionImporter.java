@@ -8,7 +8,6 @@ import hu.elte.txtuml.api.Signal;
 import hu.elte.txtuml.api.StateMachine.Transition;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 import hu.elte.txtuml.export.uml2.utils.FieldValueAccessor;
-import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;

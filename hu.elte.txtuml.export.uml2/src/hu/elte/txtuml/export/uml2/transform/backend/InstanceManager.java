@@ -6,6 +6,7 @@ import java.util.HashSet;
 import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.api.ModelInt;
+import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.api.Signal;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.export.uml2.utils.FieldValueAccessor;
@@ -30,6 +31,7 @@ public final class InstanceManager {
 		globalInstances.put(ModelBool.TRUE, InstanceInformation.createLiteral("true"));
 		globalInstances.put(ModelBool.FALSE, InstanceInformation.createLiteral("false"));
 		globalInstances.put(ModelBool.ELSE, InstanceInformation.createLiteral("else"));
+		globalInstances.put(ModelString.EMPTY, InstanceInformation.createLiteral(""));
 	}
 
 	/**
