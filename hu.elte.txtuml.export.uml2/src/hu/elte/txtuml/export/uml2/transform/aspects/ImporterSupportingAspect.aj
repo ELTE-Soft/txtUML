@@ -97,9 +97,8 @@ public privileged aspect ImporterSupportingAspect extends AbstractImporterAspect
 		(
 			call(void Action.log(..)) || 
 			call(void Action.logError(..)) ||
-			call(void Action.executorLog(..)) ||
-			call(void Action.executorFormattedLog(..)) ||
-			call(void Action.executorErrorLog(..))
+			call(void ModelExecutor.executorLog(..)) ||
+			call(void ModelExecutor.executorErrorLog(..))
 		)
 		&& isActive()
 	{
