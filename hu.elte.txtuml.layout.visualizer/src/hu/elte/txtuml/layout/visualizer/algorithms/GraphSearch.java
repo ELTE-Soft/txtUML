@@ -372,7 +372,7 @@ class GraphSearch
 	
 	private Integer manhattanLeastTurnsCheckingOccupied(Point a)
 	{
-		Integer penalizeTurns = 3;
+		Integer penalizeTurns = 2;
 		
 		double dx = Math.abs(a.getX() - _end.getX());
 		double sx = _end.getX() - a.getX();
@@ -406,10 +406,16 @@ class GraphSearch
 			Painted<Point> temp2 = new Painted<Point>(Colors.Red, tempP2);
 			if (!tempP.equals(_end)
 					&& (_objects.contains(temp1) || _objects.contains(temp2)))
+			{
 				result = result + penalizeTurns;
+				break;
+			}
 			if (!tempP2.equals(_end)
 					&& (_objects.contains(temp1) || _objects.contains(temp2)))
+			{
 				result2 = result2 + penalizeTurns;
+				break;
+			}
 		}
 		
 		tempP = a;
@@ -431,10 +437,16 @@ class GraphSearch
 			Painted<Point> temp2 = new Painted<Point>(Colors.Red, tempP2);
 			if (!tempP.equals(_end)
 					&& (_objects.contains(temp1) || _objects.contains(temp2)))
+			{
 				result = result + penalizeTurns;
+				break;
+			}
 			if (!tempP2.equals(_end)
 					&& (_objects.contains(temp1) || _objects.contains(temp2)))
+			{
 				result2 = result2 + penalizeTurns;
+				break;
+			}
 		}
 		
 		return Math.min(result, result2);
