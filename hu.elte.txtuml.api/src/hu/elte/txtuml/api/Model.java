@@ -199,6 +199,7 @@ package hu.elte.txtuml.api;
  * <code>abstract class</code>es.</li>
  * <li>Defining <code>synchronized</code>, <code>native</code> or
  * <code>abstract</code> methods.</li>
+ * <li>Defining local classes.</li>
  * <li>Using the <code>instanceof</code> or the ternary <code>? :</code>
  * operator.</li>
  * <li>Equality checks with operators <code>==</code> or <code>!=</code>,
