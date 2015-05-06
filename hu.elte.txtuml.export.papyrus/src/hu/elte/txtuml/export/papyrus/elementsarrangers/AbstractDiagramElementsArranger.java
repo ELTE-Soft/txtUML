@@ -167,8 +167,10 @@ public abstract class AbstractDiagramElementsArranger implements
 		ChangeBoundsRequest move_req = new ChangeBoundsRequest(RequestConstants.REQ_MOVE);
 		move_req.setMoveDelta(new Point(new_X-figurebounds.x(), new_Y-figurebounds.y()));
 		move_req.setEditParts(graphEP);
+		
+		
 		Command cmd = graphEP.getCommand(move_req);
-		if(cmd != null)
+		if(cmd != null && cmd.canExecute())
 			cmd.execute();
 	}
 }
