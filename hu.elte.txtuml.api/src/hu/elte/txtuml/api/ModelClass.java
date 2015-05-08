@@ -178,7 +178,7 @@ public class ModelClass extends Region implements ModelValue, LayoutNode {
 	 * 
 	 * @see Status
 	 */
-	private Status status;
+	private volatile Status status;
 
 	/**
 	 * A unique identifier of this object.
