@@ -61,7 +61,7 @@ public abstract class AbstractDiagramElementsManager{
 	
 	/**
 	 * Calls the {@link RemoveCommand} on an EditPart. 
-	 * @param editingDomain - the domain required by {@link RemoveCommand#create(EditingDomain, Object)} 
+	 * @param editingDomain - the domain required by {@link RemoveCommand#create(EditingDomain, Object)}. It is the EditingDomain of the {@link DiagramEditPart}
 	 * @param editParts - the EditParts that are to be removed
 	 */
 	protected void removeEditParts(EditingDomain editingDomain, List<EditPart> editParts) {

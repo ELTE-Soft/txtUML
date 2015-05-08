@@ -114,11 +114,11 @@ public abstract class AbstractDiagramElementsArranger implements
 	 */
 	protected void setConnectionAnchors(ConnectionNodeEditPart connection, String src, String trg){
 		TransactionalEditingDomain editingDomain = connection.getEditingDomain();
-		SetConnectionAnchorsCommand asd = new SetConnectionAnchorsCommand(editingDomain, "Rearrange Anchor");
-		asd.setEdgeAdaptor(new EObjectAdapter(connection.getNotationView()));
-		asd.setNewSourceTerminal(src);
-		asd.setNewTargetTerminal(trg);
-		Command proxy =  new ICommandProxy(asd);
+		SetConnectionAnchorsCommand cmd = new SetConnectionAnchorsCommand(editingDomain, "Rearrange Anchor");
+		cmd.setEdgeAdaptor(new EObjectAdapter(connection.getNotationView()));
+		cmd.setNewSourceTerminal(src);
+		cmd.setNewTargetTerminal(trg);
+		Command proxy =  new ICommandProxy(cmd);
 		proxy.execute();
 	}
 	
@@ -127,7 +127,7 @@ public abstract class AbstractDiagramElementsArranger implements
 	 * @param connection - The connection
 	 * @param bendpoints - The BendPoints
 	 */
-	protected void SetConnectionBendpoints(ConnectionNodeEditPart connection, List<Point> bendpoints){
+	protected void setConnectionBendpoints(ConnectionNodeEditPart connection, List<Point> bendpoints){
 		TransactionalEditingDomain editingDomain = connection.getEditingDomain();
 		SetConnectionBendpointsCommand cmd = new SetConnectionBendpointsCommand(editingDomain);
 		cmd.setEdgeAdapter(new EObjectAdapter(connection.getNotationView()));
@@ -167,7 +167,6 @@ public abstract class AbstractDiagramElementsArranger implements
 		ChangeBoundsRequest move_req = new ChangeBoundsRequest(RequestConstants.REQ_MOVE);
 		move_req.setMoveDelta(new Point(new_X-figurebounds.x(), new_Y-figurebounds.y()));
 		move_req.setEditParts(graphEP);
-		
 		
 		Command cmd = graphEP.getCommand(move_req);
 		if(cmd != null && cmd.canExecute())

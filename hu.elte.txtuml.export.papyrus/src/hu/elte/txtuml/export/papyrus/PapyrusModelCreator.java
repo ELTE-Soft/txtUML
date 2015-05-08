@@ -72,6 +72,12 @@ public class PapyrusModelCreator {
 		umlFile = fileFromPath(umlFilePath);
 	}
 	
+	/**
+	 * sets the UML file of the papyrus model that will be created.
+	 * @param sourceUMLPath
+	 * @throws CoreException
+	 * @throws IOException
+	 */
 	public void setUpUML( String sourceUMLPath) throws CoreException, IOException{
 		if(!umlFile.exists()){
 			setUpUMLFile(sourceUMLPath);

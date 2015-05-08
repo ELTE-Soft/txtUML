@@ -75,7 +75,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		        	super.setConnectionAnchors(connection, anchors[0], anchors[1]);
 		        	bendpoints.remove(0);
 		        	bendpoints.remove(bendpoints.size()-1);
-		        	super.SetConnectionBendpoints(connection, bendpoints);
+		        	super.setConnectionBendpoints(connection, bendpoints);
 		        }
 		    }
 		    

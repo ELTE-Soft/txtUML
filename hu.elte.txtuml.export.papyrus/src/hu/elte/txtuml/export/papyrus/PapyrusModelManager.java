@@ -97,20 +97,20 @@ public class PapyrusModelManager {
 	 * Adds the elements to the diagrams
 	 * @throws ServiceException
 	 */
-	protected void addElementsToDiagrams() throws ServiceException{
+	private void addElementsToDiagrams() throws ServiceException{
 		
 		List<Diagram> diags =  diagramManager.getDiagrams();
 		
 		for(Diagram diag : diags){
 			Diagram diagram = (Diagram) diag;
 			
-			EObject container = diagramManager.getDiagramContainer(diagram);
+			Element container = diagramManager.getDiagramContainer(diagram);
 			diagramManager.openDiagram(diagram);
 			DiagramEditPart diagep = diagramManager.getActiveDiagramEditPart();
 			AbstractDiagramElementsManager diagramElementsManager;
 			IDiagramElementsArranger diagramElementsArranger;  
 			
-			List<Element> baseElements = modelManager.getAllChildrenOfPackage((Element) container);
+			List<Element> baseElements = modelManager.getAllChildrenOfPackage(container);
 			
 			if(diagram.getType().equals("PapyrusUMLClassDiagram")){					
 				diagramElementsManager = new ClassDiagramElementsManager(modelManager, diagep);

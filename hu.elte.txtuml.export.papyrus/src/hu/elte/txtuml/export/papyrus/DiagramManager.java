@@ -73,7 +73,7 @@ public class DiagramManager {
 	 * @param diagram - The Diagram
 	 * @return Container of the diagram
 	 */
-	public EObject getDiagramContainer(Diagram diagram){
+	public Element getDiagramContainer(Diagram diagram){
 		try {
 			openDiagram(diagram);
 		} catch (ServiceException e) {
@@ -83,7 +83,7 @@ public class DiagramManager {
 		DiagramEditPart ep = getActiveDiagramEditPart();
 		ViewImpl mod = (ViewImpl) ep.getModel();
 		EObject element = mod.getElement();
-		return element;
+		return (Element) element;
 	}
 	
 	/**

@@ -31,6 +31,7 @@ public class ModelManager {
 	 * @throws ServiceException
 	 * @throws NotFoundException
 	 */
+	//TODO: It would be nicer if this class would get a UmlModel, not an Editor
 	public ModelManager(IMultiDiagramEditor editor) throws ServiceException, NotFoundException{
 		this.editor = editor;
 		modelMap = buildUpMap();
@@ -42,8 +43,8 @@ public class ModelManager {
 	 * @throws NotFoundException
 	 * @throws ServiceException
 	 */
-	private MultiMap<Class<?>, Element> buildUpMap() throws NotFoundException, ServiceException {
-		MultiMap<Class<?>, Element> result = new MultiMap<Class<?>, Element>(); 
+	private MultiMap<java.lang.Class<?>, Element> buildUpMap() throws NotFoundException, ServiceException {
+		MultiMap<java.lang.Class<?>, Element> result = new MultiMap<Class<?>, Element>(); 
 		Element root = getRoot();
 		Queue<Element> queue = new LinkedList<Element>();
 		queue.add(root);

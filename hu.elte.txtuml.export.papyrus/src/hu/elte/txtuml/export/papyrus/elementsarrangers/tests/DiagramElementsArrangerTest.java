@@ -108,9 +108,9 @@ public class DiagramElementsArrangerTest {
 		}
 		
 		@Override
-		public void SetConnectionBendpoints(
+		public void setConnectionBendpoints(
 				ConnectionNodeEditPart connection, List<Point> bendpoints) {
-			super.SetConnectionBendpoints(connection, bendpoints);
+			super.setConnectionBendpoints(connection, bendpoints);
 		}
 	}
 	
@@ -305,7 +305,7 @@ public class DiagramElementsArrangerTest {
 		ConnectionEditPart assoc = conns.get(0);
 		
 		List<Point> bendpointslist = Arrays.asList(new Point(10, 10), new Point(150, 200), new Point(400, 300));
-		diagramElementsArranger.SetConnectionBendpoints(assoc, bendpointslist);
+		diagramElementsArranger.setConnectionBendpoints(assoc, bendpointslist);
 		
 		Connection connfig = assoc.getConnectionFigure();
 		PointList points = connfig.getPoints();

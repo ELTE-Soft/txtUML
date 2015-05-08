@@ -75,7 +75,7 @@ public class MainAction {
 	 * If the Model already exists, then loads it.
 	 * @throws Exception Any kind of Exception that could be thrown  
 	 */
-	protected void createAndOpenPapyrusModel() throws Exception{
+	private void createAndOpenPapyrusModel() throws Exception{
 		papyrusModelCreator.init(Projectname+"/"+Modelname);
 		papyrusModelCreator.setUpUML(SourceUMLPath);
 		if(!papyrusModelCreator.diExists()){
@@ -98,7 +98,7 @@ public class MainAction {
 	 * @return The EditorPart of the editor
 	 * @throws PartInitException
 	 */
-	public final IEditorPart openEditor(final IFile file) throws PartInitException {
+	private final IEditorPart openEditor(final IFile file) throws PartInitException {
 			IEditorPart ed = null;
 			IWorkbenchPage page = window.getActivePage();
 			if(page != null) {
