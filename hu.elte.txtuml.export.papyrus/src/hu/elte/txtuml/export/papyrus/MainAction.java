@@ -98,7 +98,7 @@ public class MainAction {
 	 * @return The EditorPart of the editor
 	 * @throws PartInitException
 	 */
-	private final IEditorPart openEditor(final IFile file) throws PartInitException {
+	private final IEditorPart openEditor(final IFile file){
 			IEditorPart ed = null;
 			IWorkbenchPage page = window.getActivePage();
 			if(page != null) {

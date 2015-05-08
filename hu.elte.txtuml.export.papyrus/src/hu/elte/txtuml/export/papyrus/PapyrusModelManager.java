@@ -60,7 +60,7 @@ public class PapyrusModelManager {
 	 * @throws NotFoundException
 	 * @throws ServiceException
 	 */
-	public void createAndFillDiagrams() throws NotFoundException, ServiceException {
+	public void createAndFillDiagrams() throws ServiceException {
 		createDiagrams();	
 		addElementsToDiagrams();
 		editor.doSave(new NullProgressMonitor());
@@ -74,7 +74,7 @@ public class PapyrusModelManager {
 	 * @throws ExecutionException
 	 * @throws NotFoundException
 	 */
-	private void createDiagrams() throws ServiceException{
+	private void createDiagrams(){
 		
 		if(preferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_PREF)){
 			List<Element> packages = modelManager.getElementsOfTypes(Arrays.asList(Model.class, Package.class));

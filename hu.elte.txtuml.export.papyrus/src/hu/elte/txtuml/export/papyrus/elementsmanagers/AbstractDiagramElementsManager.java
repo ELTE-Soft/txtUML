@@ -12,7 +12,6 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.requests.DropObjectsRequest;
-import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.uml2.uml.Element;
 
 /**
@@ -80,7 +79,6 @@ public abstract class AbstractDiagramElementsManager{
 	/**
 	 * Adds the Elements to the diagram handled by the instance.
 	 * @param elements - The Elements that are to be added
-	 * @throws ServiceException
 	 */
-	public abstract void addElementsToDiagram(List<Element> elements) throws ServiceException;
+	public abstract void addElementsToDiagram(List<Element> elements);
 }

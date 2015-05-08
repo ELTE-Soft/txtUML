@@ -136,7 +136,7 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 	 * @see hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager#addElementsToDiagram(java.util.List)
 	 */
 	@Override
-	public void addElementsToDiagram(List<Element> elements) throws ServiceException {
+	public void addElementsToDiagram(List<Element> elements){
 		List<java.lang.Class<?>> types = new LinkedList<java.lang.Class<?>>();
 		
 		types.addAll(elementsToBeAdded);
@@ -165,7 +165,7 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 	 * @param ep - The EditPart of the class or interface
 	 * @throws ServiceException
 	 */
-	private void addSubElements(EditPart ep) throws ServiceException{
+	private void addSubElements(EditPart ep){
 		EObject parent = ((View) ep.getModel()).getElement();
 		@SuppressWarnings("unchecked")
 		List<EditPart> parentEditParts = ep.getChildren();

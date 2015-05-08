@@ -88,7 +88,7 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 	 * @see hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager#addElementsToDiagram(java.util.List)
 	 */
 	@Override
-	public void addElementsToDiagram(List<Element> elements) throws ServiceException {
+	public void addElementsToDiagram(List<Element> elements) {
 		List<java.lang.Class<?>> types = new LinkedList<java.lang.Class<?>>();
 		types.addAll(NodesToBeAdded);
 		types.addAll(ConnectorsToBeAdded);

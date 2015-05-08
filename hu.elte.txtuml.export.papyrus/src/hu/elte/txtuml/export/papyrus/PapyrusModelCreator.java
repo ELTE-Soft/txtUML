@@ -18,6 +18,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.transaction.RecordingCommand;
+import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.papyrus.infra.core.resource.ModelMultiException;
 import org.eclipse.papyrus.infra.core.resource.ModelSet;
 import org.eclipse.papyrus.infra.core.sasheditor.contentprovider.IPageManager;
@@ -64,7 +65,7 @@ public class PapyrusModelCreator {
 	 * @throws CoreException
 	 * @throws IOException 
 	 */
-	public void init(String modelpath) throws CoreException {
+	public void init(String modelpath){
 		diFilePath = modelpath+".di";
 		umlFilePath = modelpath+".uml";
 		
@@ -87,10 +88,10 @@ public class PapyrusModelCreator {
 	 * Copies the content of the sourceUMLPath to the umlFile
 	 * The referenced Profile files will be also copied
 	 * @param sourceUMLPath - The path of the source .uml File
+	 * @throws FileNotFoundException
 	 * @throws CoreException
-	 * @throws IOException 
 	 */
-	private void setUpUMLFile(String sourceUMLPath) throws CoreException, IOException {
+	private void setUpUMLFile(String sourceUMLPath) throws CoreException, FileNotFoundException {
 			copyFile(sourceUMLPath, umlFile);
 			
 			Model m = loadModel(URI.createPlatformResourceURI(umlFilePath, false));
