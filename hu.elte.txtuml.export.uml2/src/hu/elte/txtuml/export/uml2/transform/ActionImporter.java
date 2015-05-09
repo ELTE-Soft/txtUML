@@ -180,12 +180,13 @@ public class ActionImporter extends AbstractMethodImporter {
 			ActivityEdge thenFirstEdge=importThenBodyResult.getValue();
 			ActivityNode thenLastNode=importThenBodyResult.getKey();
 			
-			if(thenFirstEdge != null)
-				addGuardToActivityEdge(thenFirstEdge, condExpr);
-
-			if(thenLastNode != decisionNode)
-				createEdgeBetweenActivityNodes(thenLastNode,decisionNode);
+			ActivityEdge lastEdge = createEdgeBetweenActivityNodes(thenLastNode,decisionNode);
 			
+			if(thenFirstEdge == null)
+				thenFirstEdge = lastEdge;
+			
+			addGuardToActivityEdge(thenFirstEdge, condExpr);
+	
 			unfinishedDecisionNodes.push(decisionNode);
 			lastNode=decisionNode;
 		}

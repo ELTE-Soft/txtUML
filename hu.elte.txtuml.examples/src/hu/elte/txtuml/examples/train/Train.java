@@ -3,7 +3,7 @@ package hu.elte.txtuml.examples.train;
 import hu.elte.txtuml.api.*;
 import hu.elte.txtuml.examples.train.TrainModel.*;
 
-class TrainModel {
+class TrainModel extends Model{
 
 	class Gearbox extends ModelClass {
 		class Init extends Initial {}
@@ -258,7 +258,7 @@ class TrainTester extends Thread {
 }
 
 public class Train {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		new TrainTester();
 	}
 }

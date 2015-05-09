@@ -25,6 +25,7 @@ import org.junit.Test;
 import hu.elte.txtuml.api.*;
 import hu.elte.txtuml.api.blocks.BlockBody;
 import hu.elte.txtuml.api.blocks.Condition;
+import hu.elte.txtuml.api.blocks.ParameterizedBlockBody;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
@@ -200,11 +201,65 @@ public class ActionImporterTest {
 
 	@Test
 	public void testImportWhileStatement() {
-		fail("Not yet implemented");
+		/*While(
+			() -> ModelBool.TRUE.and(ModelInt.ONE.isMore(ModelInt.ZERO),
+			() -> {}
+		)
+		*/
+		ActionImporter.importWhileStatement(
+				new TestModelAccessories().cond, 
+				() -> {}
+			);
+		assertEquals(ActionImporter.currentActivity.getOwnedNodes().size(), 6);
+		
+		DecisionNode decisionNode = (DecisionNode) ActionImporter.currentActivity.getOwnedNode("decision1");
+		
+		assertEquals(decisionNode.getIncomings().size(),2);
+		assertEquals(decisionNode.getOutgoings().size(),1);
+		
+		ActivityEdge edge = decisionNode.getOutgoings().get(0);
+		OpaqueExpression edgeGuard = (OpaqueExpression) edge.getGuard();
+	
+		assertEquals(edge.getTarget(), decisionNode);
+		String edgeGuardExpr = edgeGuard.getBodies().get(0);
+		
+		assertEquals(edgeGuardExpr, "true and (1 > 0)");
+				
+		
+		/*While(
+			() -> ModelBool.TRUE.and(ModelInt.ONE.isMore(ModelInt.ZERO),
+			() -> Action.send(new Class1(),new Signal1(ModelInt.ZERO, ModelBool.FALSE,ModelString.EMPTY))
+		)
+		 */
+		ActionImporter.importWhileStatement(
+				new TestModelAccessories().cond, 
+				new TestModelAccessories().body1
+			);
+		
+		assertEquals(decisionNode.getOutgoings().size(),2);
+		assertEquals(ActionImporter.currentActivity.getOwnedNodes().size(), 10);
+		edge = decisionNode.getOutgoings().get(1);
+		edgeGuard = (OpaqueExpression) edge.getGuard();
+		edgeGuardExpr = edgeGuard.getBodies().get(0);
+		assertEquals(edgeGuardExpr, "else");
+		
+		decisionNode = (DecisionNode) ActionImporter.currentActivity.getOwnedNode("decision2");
+		assertEquals(edge.getTarget(), decisionNode);
+		assertEquals(decisionNode.getIncomings().size(),2);
+		assertEquals(decisionNode.getOutgoings().size(),1);
+		
+		edge = decisionNode.getOutgoings().get(0);
+		edgeGuard = (OpaqueExpression) edge.getGuard();
+	
+		assertEquals(edge.getTarget().eClass(), UMLPackage.Literals.CREATE_OBJECT_ACTION);
+		edgeGuardExpr = edgeGuard.getBodies().get(0);
+		
+		assertEquals(edgeGuardExpr, "true and (1 > 0)");
 	}
 
 	@Test
 	public void testImportIfStatementConditionBlockBody() {
+		
 		/*If(
 			() -> ModelBool.TRUE.and(ModelInt.ONE.isMore(ModelInt.ZERO),
 			() -> {}
@@ -386,7 +441,72 @@ public class ActionImporterTest {
 
 	@Test
 	public void testImportForStatement() {
-		fail("Not yet implemented");
+		TestModel.Class1 instance = (TestModel.Class1) DummyInstanceCreator.createDummyInstance(txtUMLOwnerClass);
+		InstanceManager.createLocalInstancesMapEntry(instance, InstanceInformation.create("instance"));
+		/*
+		 * For(ModelInt.ZERO, new ModelInt(5), i -> Action.send(instance, new Signal1(i, ModelBool.FALSE, ModelString.EMPTY));
+		 */
+		ActionImporter.importForStatement(
+				ModelInt.ZERO, 
+				new TestModelAccessories().forTo(), 
+				new TestModelAccessories().forBody(instance)
+			);
+		assertEquals(ActionImporter.currentActivity.getOwnedNodes().size(),9);
+		
+		DecisionNode decisionNode = (DecisionNode) ActionImporter.currentActivity.getOwnedNode("decision1");
+		
+		assertEquals(decisionNode.getIncomings().size(),2);
+		assertEquals(decisionNode.getOutgoings().size(),1);
+		
+		assertEquals(decisionNode.getIncomings().get(0).getSource().eClass(),UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION);
+		assertEquals(decisionNode.getIncomings().get(1).getSource().eClass(),UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION);
+		
+		ActivityEdge edge = decisionNode.getOutgoings().get(0);
+		OpaqueExpression edgeGuard = (OpaqueExpression) edge.getGuard();
+	
+		assertEquals(edge.getTarget().eClass(), UMLPackage.Literals.SEND_SIGNAL_ACTION);
+		
+		String edgeGuardExpr = edgeGuard.getBodies().get(0);
+		
+		assertTrue(edgeGuardExpr.startsWith("inst_"));
+		assertTrue(edgeGuardExpr.endsWith("<=5"));
+		assertEquals(ActionImporter.unfinishedDecisionNodes.peek(), decisionNode);
+
+		/*
+		 * For(ModelInt.ZERO, new ModelInt(5), i -> {});
+		 */
+		
+		ActionImporter.importForStatement(
+				ModelInt.ZERO, 
+				new TestModelAccessories().forTo(), 
+				i -> {}
+			);
+		assertEquals(ActionImporter.currentActivity.getOwnedNodes().size(),12);
+		
+		assertEquals(decisionNode.getOutgoings().size(),2);
+		edge = decisionNode.getOutgoings().get(1);
+		edgeGuard = (OpaqueExpression) edge.getGuard();
+		edgeGuardExpr = edgeGuard.getBodies().get(0);
+		assertEquals(edgeGuardExpr, "else");
+		
+		decisionNode = (DecisionNode) ActionImporter.currentActivity.getOwnedNode("decision2");
+		
+		assertEquals(decisionNode.getIncomings().size(),2);
+		assertEquals(decisionNode.getOutgoings().size(),1);
+		
+		assertEquals(decisionNode.getIncomings().get(0).getSource().eClass(),UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION);
+		assertEquals(decisionNode.getIncomings().get(1).getSource().eClass(),UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION);
+		
+		edge = decisionNode.getOutgoings().get(0);
+		edgeGuard = (OpaqueExpression) edge.getGuard();
+	
+		assertEquals(edge.getTarget().eClass(), UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION);
+		
+		edgeGuardExpr = edgeGuard.getBodies().get(0);
+		
+		assertTrue(edgeGuardExpr.startsWith("inst_"));
+		assertTrue(edgeGuardExpr.endsWith("<=5"));
+		assertEquals(ActionImporter.unfinishedDecisionNodes.peek(), decisionNode);	
 	}
 
 	@Test
@@ -450,6 +570,14 @@ public class ActionImporterTest {
 		BlockBody body2(TestModel.Class1 instance)
 		{
 			return () -> Action.delete(instance);
+		}
+		ParameterizedBlockBody<ModelInt> forBody(TestModel.Class1 instance)
+		{
+			return i -> Action.send(instance, new TestModel().new Signal1(i,ModelBool.FALSE,ModelString.EMPTY));
+		}
+		ModelInt forTo()
+		{
+			return new ModelInt(5);
 		}
 	}
 }
