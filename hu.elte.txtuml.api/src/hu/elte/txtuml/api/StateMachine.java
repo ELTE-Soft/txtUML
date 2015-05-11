@@ -442,7 +442,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * <p>
 	 * A choice pseudostate might be the source and target of any number of
 	 * transitions. Outgoing transitions must be unlabeled (that is, have no
-	 * {@link Trigger} annotations). Any time the state machine enters the a
+	 * {@link Trigger} annotations). Any time the state machine enters a
 	 * choice pseudostate, exactly one of the {@link Transition#guard guards} of
 	 * the outgoing transitions should evaluate to a <code>ModelBool</code>
 	 * representing <code>true</code>. The only exception is when one of the
