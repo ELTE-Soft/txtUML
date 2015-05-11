@@ -67,14 +67,43 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
+/**
+ * Unit Tests for {@link AbstractDiagramElementsArranger}
+ * @author András Dobreff
+ */
 public class DiagramElementsArrangerTest {
 	
+	/**
+	 * The DiagramElementsArranger concrete class that we test, because the {@link AbstractDiagramElementsArranger} is abstract.
+	 */
 	DiagramElementsArranger diagramElementsArranger;
+	
+	/**
+	 * The Editor for the Test Models
+	 */
 	IMultiDiagramEditor editor;
+	
+	/**
+	 * The {@link ProjectManager} which handles the Test Projects
+	 */
 	ProjectManager pm;
+	
+	/**
+	 * The Test Project
+	 */
 	IProject project;
 	
+	/**
+	 * The DiagramElementsArranger concrete class that we test, because the {@link AbstractDiagramElementsArranger} is abstract
+	 *
+	 * @author András Dobreff
+	 */
 	class DiagramElementsArranger extends AbstractDiagramElementsArranger{
+		
+		/**
+		 * The constructor
+		 * @param diagramEditPart
+		 */
 		public DiagramElementsArranger(DiagramEditPart diagramEditPart) {
 			super(diagramEditPart);
 		}
@@ -114,6 +143,11 @@ public class DiagramElementsArrangerTest {
 		}
 	}
 	
+	/** 
+	 * Test initializing function. It builds up the Papyrus model for the Test
+	 * @param objects
+	 * @param links
+	 */
 	public void init(List<Pair<String, java.lang.Class<?>>> objects,
 			List<Pair<Pair<String, Class<?>>, Pair<String, Class<?>>>> links ){	
 		
@@ -173,7 +207,7 @@ public class DiagramElementsArrangerTest {
 						String nameB = pairB.getKey();
 						
 						org.eclipse.uml2.uml.Class classA = nodes.get(nameA);
-						org.eclipse.uml2.uml.Class classB = nodes.get(nameA);
+						org.eclipse.uml2.uml.Class classB = nodes.get(nameB);
 						
 						classA.createAssociation(false, AggregationKind.NONE_LITERAL, "", 1, 1, classB, true, AggregationKind.NONE_LITERAL, "", 1, 1);
 					}
@@ -181,8 +215,6 @@ public class DiagramElementsArrangerTest {
 			});
 			
 			manager.createAndFillDiagrams();
-			
-			IEditorPart ied = editor.getActiveEditor();
 			
 			DiagramEditPart diagEp = getDiagramEditPart();
 			diagramElementsArranger = new DiagramElementsArranger(diagEp);
@@ -194,6 +226,9 @@ public class DiagramElementsArrangerTest {
 	}
 
 	
+	/**
+	 * @return The Active {@link DiagramEditPart}
+	 */
 	protected DiagramEditPart getDiagramEditPart()
 	{
 		IEditorPart ied = editor.getActiveEditor();
@@ -202,19 +237,26 @@ public class DiagramElementsArrangerTest {
 
 	}
 	
+	/**
+	 * TearDown method
+	 */
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().closeEditor(editor, false);
 		if(pm != null){
 			pm.deleteProject(project);
 		}
 	}
 
+	/**
+	 *  Test for moveGraphicalEditPart
+	 */
 	@Test
 	public void moveGraphicalEditPartTest(){
 		
-		List<Pair<String, Class<?>>> objects = Arrays.asList(new Pair("ClassA", org.eclipse.uml2.uml.Class.class));
+		List<Pair<String, Class<?>>> objects = Arrays.asList(new Pair<String, Class<?>>("ClassA", org.eclipse.uml2.uml.Class.class));
 		init(objects, Arrays.asList());
+		@SuppressWarnings("unchecked")
 		List<EditPart> eps = getDiagramEditPart().getChildren();
 		ClassEditPart classEp = (ClassEditPart) eps.get(0);
 		
@@ -229,6 +271,10 @@ public class DiagramElementsArrangerTest {
 		Assert.assertEquals(new_y, ((BoundsImpl) layoutConstraint).getY());
 	}
 
+	
+	/**
+	 * Test for  resizeGraphicalEditPart
+	 */
 	@Test
 	public void resizeGraphicalEditPartTest(){
 		
@@ -253,6 +299,9 @@ public class DiagramElementsArrangerTest {
 		Assert.assertEquals(new_height, ((BoundsImpl) layoutConstraint).getHeight());
 	}
 	
+	/**
+	 * Test for  setConnectionAnchors
+	 */
 	@Test
 	public void setConnectionAnchorsTest(){
 		Pair<String, Class<?>> A = new Pair<String, Class<?>>("ClassA", org.eclipse.uml2.uml.Class.class);
@@ -285,6 +334,9 @@ public class DiagramElementsArrangerTest {
 		Assert.assertEquals(new PrecisionPoint(0, 0.5), targetAnchor);
 	}
 
+	/**
+	 * Test for setConnectionBendpoints
+	 */
 	@Test
 	public void setConnectionBendpointsTest(){
 		Pair<String, Class<?>> A = new Pair<String, Class<?>>("ClassA", org.eclipse.uml2.uml.Class.class);
@@ -318,6 +370,9 @@ public class DiagramElementsArrangerTest {
 		Assert.assertTrue(true); //I dont't know what is expected. But works, cuz It can be seen on the diagrams
 	}
 	
+	/**
+	 * Test for hideConnectionLabelsforEdtiparts
+	 */
 	@Test
 	public void hideConnectionLabelsforEdtipartsTest(){
 		Pair<String, Class<?>> A = new Pair<String, Class<?>>("ClassA", org.eclipse.uml2.uml.Class.class);
@@ -341,6 +396,7 @@ public class DiagramElementsArrangerTest {
 		List<ConnectionEditPart> connsA = (List<ConnectionEditPart>) classAEp.getSourceConnections();
 		ConnectionEditPart assoc1 = connsA.get(0);
 		
+		@SuppressWarnings("unchecked")
 		List<ConnectionEditPart> connsC = (List<ConnectionEditPart>) classCEp.getSourceConnections();
 		ConnectionEditPart assoc2 = connsC.get(0);
 		
