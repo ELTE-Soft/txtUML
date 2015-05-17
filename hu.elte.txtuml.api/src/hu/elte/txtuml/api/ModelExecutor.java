@@ -361,8 +361,10 @@ public final class ModelExecutor implements ModelElement {
 	 * be called instead.
 	 */
 	public static void shutdownNow() {
-		thread.interrupt();
-
+		if (Settings.executorLog()) {
+			executorLog(LogMessages.getModelExecutionShutdownMessage());
+		}
+		
 		while (true) {
 			Runnable shutdownAction = shutdownQueue.poll();
 			if (shutdownAction == null) {
@@ -370,10 +372,8 @@ public final class ModelExecutor implements ModelElement {
 			}
 			shutdownAction.run();
 		}
-
-		if (Settings.executorLog()) {
-			executorLog(LogMessages.getModelExecutionShutdownMessage());
-		}
+		
+		thread.interrupt();
 	}
 
 	/**
