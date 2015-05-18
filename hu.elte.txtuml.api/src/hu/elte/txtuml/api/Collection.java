@@ -136,7 +136,7 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 	 */
 	@Override
 	default Spliterator<T> spliterator() {
-		return ((Iterable<T>) this).spliterator();
+		return Iterable.super.spliterator();
 	}
 
 	/**
@@ -145,7 +145,7 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 	 */
 	@Override
 	default void forEach(Consumer<? super T> action) {
-		((Iterable<T>) this).forEach(action);
+		Iterable.super.forEach(action);
 	}
 
 	/**
