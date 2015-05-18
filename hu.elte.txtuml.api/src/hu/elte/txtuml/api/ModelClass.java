@@ -373,7 +373,7 @@ public class ModelClass extends Region implements ModelValue, LayoutNode {
 		if (status != Status.DELETED
 				&& !assocPrivate(assocEnd).checkLowerBound()) {
 			ModelExecutor
-					.logError(ErrorMessages
+					.executorErrorLog(ErrorMessages
 							.getLowerBoundOfMultiplicityOffendedMessage(this,
 									assocEnd));
 		}
