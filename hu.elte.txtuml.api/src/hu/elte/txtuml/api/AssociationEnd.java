@@ -73,7 +73,7 @@ public abstract class AssociationEnd<T extends ModelClass> implements
 	 * once with the {@link AssociationEnd#init(Collection) init} method. This
 	 * feature is added for the purposes of the API implementation.
 	 */
-	protected boolean isFinal = true;
+	boolean isFinal = true;
 
 	/**
 	 * The owner model object of this association end.
