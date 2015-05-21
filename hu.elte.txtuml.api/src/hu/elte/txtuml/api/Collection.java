@@ -194,7 +194,7 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 
 		@Override
 		public ModelBool isEmpty() {
-			return ModelBool.FALSE;
+			return ModelBool.TRUE;
 		}
 
 		@Override
