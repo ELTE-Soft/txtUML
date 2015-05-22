@@ -118,7 +118,7 @@ public class TxtUMLProject extends Wizard implements INewWizard {
 			ProjectCreator.addManifest(metainf, settings.manifest);
 			ProjectCreator.createBuildProps(project, src, bin);
 			
-			ICompilationUnit modelFile = ProjectCreator.addTxtUMLModel(project, src, project.getName(), modelName);
+			ICompilationUnit modelFile = ProjectCreator.addTxtUMLModel(project, src, modelName, modelName);
 			
 			project.refreshLocal(IResource.DEPTH_INFINITE, null);
 			project.build(IncrementalProjectBuilder.FULL_BUILD, null);

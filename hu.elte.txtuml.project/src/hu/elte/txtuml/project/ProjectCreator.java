@@ -144,10 +144,10 @@ public class ProjectCreator {
 	
 	public static ICompilationUnit addTxtUMLModel(IProject project, IFolder sourceFolder, String packageName, String modelName) throws JavaModelException {
 		IJavaProject javaProject = JavaCore.create(project);
-		IPackageFragment pack = javaProject.getPackageFragmentRoot(sourceFolder).createPackageFragment(packageName, false, null);
+		IPackageFragment pack = javaProject.getPackageFragmentRoot(sourceFolder).createPackageFragment(packageName.toLowerCase(), false, null);
 		
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("package " + pack.getElementName() + ";\n");
+		buffer.append("package " + pack.getElementName().toLowerCase() + ";\n");
 		buffer.append("\n");
 		buffer.append("import hu.elte.txtuml.api.*;\n");
 		buffer.append("\n");
@@ -155,8 +155,14 @@ public class ProjectCreator {
 		buffer.append("class "+modelName+"Model extends Model {\n\n}\n");
 		buffer.append("\n");
 		buffer.append("//This class executes your model\n");
-		buffer.append("public class "+modelName+"{\n");
-		buffer.append("\tpublic static void main(String[] args){\n\n\t}\n");
+		buffer.append("class "+modelName+"Tester {\n");
+		buffer.append("\tvoid test(){\n");
+		buffer.append("\t\t//Write here the model execution process\n\t}\n");
+		buffer.append("}\n\n");
+		buffer.append("public class "+modelName+" {\n");
+		buffer.append("\tpublic static void main(String[] args) {\n");
+		buffer.append("\t\tnew "+modelName+"Tester().test();\n");
+		buffer.append("\t}\n");
 		buffer.append("}\n");
 		
 		ICompilationUnit cu = pack.createCompilationUnit(modelName+".java", buffer.toString(), false, null);
