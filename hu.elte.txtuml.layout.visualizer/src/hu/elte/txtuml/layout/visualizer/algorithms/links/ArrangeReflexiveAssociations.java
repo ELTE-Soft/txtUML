@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.algorithms;
+package hu.elte.txtuml.layout.visualizer.algorithms.links;
 
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.helpers.Helper;

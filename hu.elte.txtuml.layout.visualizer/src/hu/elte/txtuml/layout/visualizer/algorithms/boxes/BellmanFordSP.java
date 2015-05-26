@@ -1,9 +1,9 @@
-package hu.elte.txtuml.layout.visualizer.algorithms;
+package hu.elte.txtuml.layout.visualizer.algorithms.boxes;
 
-import hu.elte.txtuml.layout.visualizer.algorithms.bellmanfordhelpers.DirectedEdge;
-import hu.elte.txtuml.layout.visualizer.algorithms.bellmanfordhelpers.EdgeWeightedDigraph;
-import hu.elte.txtuml.layout.visualizer.algorithms.bellmanfordhelpers.EdgeWeightedDirectedCycle;
-import hu.elte.txtuml.layout.visualizer.algorithms.bellmanfordhelpers.Queue;
+import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.DirectedEdge;
+import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.EdgeWeightedDigraph;
+import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.EdgeWeightedDirectedCycle;
+import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.Queue;
 
 import java.util.Stack;
 

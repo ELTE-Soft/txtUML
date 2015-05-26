@@ -1,7 +1,7 @@
 package hu.elte.txtuml.layout.visualizer.algorithms;
 
-import hu.elte.txtuml.layout.visualizer.algorithms.bellmanfordhelpers.Queue;
-import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Graph;
+import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.Queue;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Graph;
 
 import java.util.HashMap;
 

@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers;
+package hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers;
 
 /**
  * Class that represents an edge in the graph that the Graph search algorithm

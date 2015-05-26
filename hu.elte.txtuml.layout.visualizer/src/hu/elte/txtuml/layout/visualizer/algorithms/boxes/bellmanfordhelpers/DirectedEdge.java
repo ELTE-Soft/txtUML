@@ -1,4 +1,6 @@
-package hu.elte.txtuml.layout.visualizer.algorithms.bellmanfordhelpers;
+package hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers;
+
+import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 
 /**
  * The <tt>DirectedEdge</tt> class represents a weighted edge in an
@@ -16,9 +18,11 @@ package hu.elte.txtuml.layout.visualizer.algorithms.bellmanfordhelpers;
 
 public class DirectedEdge
 {
+	
 	private final int v;
 	private final int w;
 	private final double weight;
+	private final Statement s;
 	
 	/**
 	 * Initializes a directed edge from vertex <tt>v</tt> to vertex <tt>w</tt>
@@ -30,12 +34,14 @@ public class DirectedEdge
 	 *            the head vertex
 	 * @param weight
 	 *            the weight of the directed edge
+	 * @param stat
+	 *            the statement associated with this edge.
 	 * @throws java.lang.IndexOutOfBoundsException
 	 *             if either <tt>v</tt> or <tt>w</tt> is a negative integer
 	 * @throws IllegalArgumentException
 	 *             if <tt>weight</tt> is <tt>NaN</tt>
 	 */
-	public DirectedEdge(int v, int w, double weight)
+	public DirectedEdge(int v, int w, double weight, Statement stat)
 	{
 		if (v < 0)
 			throw new IndexOutOfBoundsException(
@@ -48,6 +54,7 @@ public class DirectedEdge
 		this.v = v;
 		this.w = w;
 		this.weight = weight;
+		this.s = stat;
 	}
 	
 	/**
@@ -78,6 +85,16 @@ public class DirectedEdge
 	public double weight()
 	{
 		return weight;
+	}
+	
+	/**
+	 * Returns the statement associated with this edge.
+	 * 
+	 * @return the statement associated with this edge.
+	 */
+	public Statement stat()
+	{
+		return s;
 	}
 	
 	/**

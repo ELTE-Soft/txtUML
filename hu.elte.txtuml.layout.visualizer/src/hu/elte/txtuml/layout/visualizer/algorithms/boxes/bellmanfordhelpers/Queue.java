@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.algorithms.bellmanfordhelpers;
+package hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;

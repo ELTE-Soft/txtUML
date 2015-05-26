@@ -1,5 +1,6 @@
 package hu.elte.txtuml.layout.visualizer.annotations;
 
+import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ public class Statement
 	private StatementType _type;
 	private ArrayList<String> _parameters;
 	private StatementLevel _level;
+	private Integer _group;
 	
 	// end Variables
 	
@@ -91,6 +93,16 @@ public class Statement
 		return _level;
 	}
 	
+	/**
+	 * Getter for the id of the group this statement is in.
+	 * 
+	 * @return Id of the statement group.
+	 */
+	public Integer getGroupId()
+	{
+		return _group;
+	}
+	
 	// end Getters, setters
 	
 	// Ctors
@@ -113,6 +125,7 @@ public class Statement
 			_parameters.add(s);
 		}
 		_level = StatementLevel.User;
+		_group = null;
 	}
 	
 	/**
@@ -125,8 +138,12 @@ public class Statement
 	 * @param params
 	 *            Strings representing the Parameters of the Statement to
 	 *            create.
+	 * @throws InternalException
+	 *             Throws if the level is set to non-user but no group id is
+	 *             set.
 	 */
 	public Statement(StatementType t, StatementLevel level, String... params)
+			throws InternalException
 	{
 		_type = t;
 		_parameters = new ArrayList<String>();
@@ -135,6 +152,42 @@ public class Statement
 			_parameters.add(s);
 		}
 		_level = level;
+		if (!_level.equals(StatementLevel.User))
+			throw new InternalException("This statement should have group Id: "
+					+ this.toString() + "!");
+		_group = null;
+	}
+	
+	/**
+	 * Create Layout Statement.
+	 *
+	 * @param t
+	 *            Type of the Statement to create.
+	 * @param level
+	 *            The level of the statement.
+	 * @param id
+	 *            Statement Group Id.
+	 * @param params
+	 *            Strings representing the Parameters of the Statement to
+	 *            create.
+	 * @throws InternalException
+	 *             Throws if the level is set to non-user but no group id is
+	 *             set.
+	 */
+	public Statement(StatementType t, StatementLevel level, Integer id, String... params)
+			throws InternalException
+	{
+		_type = t;
+		_parameters = new ArrayList<String>();
+		for (String s : params)
+		{
+			_parameters.add(s);
+		}
+		_level = level;
+		_group = id;
+		if (!_level.equals(StatementLevel.User) && _group == null)
+			throw new InternalException("This statement should have group Id: "
+					+ this.toString() + "!");
 	}
 	
 	/**
@@ -155,6 +208,7 @@ public class Statement
 			_parameters.add(s);
 		}
 		_level = StatementLevel.User;
+		_group = null;
 	}
 	
 	/**
@@ -167,8 +221,12 @@ public class Statement
 	 * @param params
 	 *            ArrayList of Strings representing the Parameters of the
 	 *            Statement to create.
+	 * @throws InternalException
+	 *             Throws if the level is set to non-user but no group id is
+	 *             set.
 	 */
 	public Statement(StatementType t, StatementLevel level, ArrayList<String> params)
+			throws InternalException
 	{
 		_type = t;
 		_parameters = new ArrayList<String>();
@@ -177,6 +235,42 @@ public class Statement
 			_parameters.add(s);
 		}
 		_level = level;
+		if (!_level.equals(StatementLevel.User))
+			throw new InternalException("This statement should have group Id: "
+					+ this.toString() + "!");
+		_group = null;
+	}
+	
+	/**
+	 * Create Layout Statement.
+	 * 
+	 * @param t
+	 *            Type of the Statement to create.
+	 * @param level
+	 *            The level of the statement.
+	 * @param id
+	 *            Statement group Id.
+	 * @param params
+	 *            ArrayList of Strings representing the Parameters of the
+	 *            Statement to create.
+	 * @throws InternalException
+	 *             Throws if the level is set to non-user but no group id is
+	 *             set.
+	 */
+	public Statement(StatementType t, StatementLevel level, Integer id,
+			ArrayList<String> params) throws InternalException
+	{
+		_type = t;
+		_parameters = new ArrayList<String>();
+		for (String s : params)
+		{
+			_parameters.add(s);
+		}
+		_level = level;
+		_group = id;
+		if (!_level.equals(StatementLevel.User) && _group == null)
+			throw new InternalException("This statement should have group Id: "
+					+ this.toString() + "!");
 	}
 	
 	// end Ctors
@@ -349,7 +443,8 @@ public class Statement
 		}
 		result += ")";
 		if (!_level.equals(StatementLevel.User))
-			result += "_weak(" + _level.toString() + ")";
+			result += "_weak(" + _level.toString() + ","
+					+ ((_group != null) ? _group.toString() : "0") + ")";
 		return result;
 	}
 	

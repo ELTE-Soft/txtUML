@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers;
+package hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers;
 
 /**
  * This class is used to add additional information to other classes using

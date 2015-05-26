@@ -1,17 +1,18 @@
-package hu.elte.txtuml.layout.visualizer.algorithms;
+package hu.elte.txtuml.layout.visualizer.algorithms.links;
 
-import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Cost;
-import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Graph;
-import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Link;
-import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Painted;
-import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Painted.Colors;
-import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Parent;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Cost;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Graph;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Link;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Painted;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Painted.Colors;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Parent;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotStartAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,105 +33,18 @@ class GraphSearch
 	private Set<Painted<Point>> _objects;
 	private Integer _boundary;
 	private Integer _extends;
-	private Integer _widthOfObject;
 	
 	private Graph<Point> G;
 	private Set<Point> Nyilt;
 	private Cost g;
 	private Parent PI;
 	
+	private HashMap<Point, Integer> _manhattanDistance;
+	private HashMap<Point, Integer> _leastTurns;
+	
 	// end Variables
 	
 	// Ctors
-	
-	/*
-	 * public GraphSearch(Point s, Point e, Set<Point> os)
-	 * throws CannotFindAssociationRouteException
-	 * {
-	 * _start = s;
-	 * _end = e;
-	 * _objects = os;
-	 * _korlat = -1;
-	 * _kiterjesztesek = 0;
-	 * 
-	 * G = new Graph();
-	 * G.add(_start);
-	 * 
-	 * Nyilt = new HashSet<Point>();
-	 * Nyilt.add(_start);
-	 * 
-	 * g = new Cost();
-	 * g.set(_start, 0);
-	 * 
-	 * PI = new Parent();
-	 * PI.set(_start, null);
-	 * 
-	 * if (!search())
-	 * throw new CannotFindAssociationRouteException("No Route from " +
-	 * s.toString()
-	 * + " to " + e.toString() + "!");
-	 * }
-	 * 
-	 * public GraphSearch(Point s, Point e, Set<Point> os, Point beforeS, Point
-	 * afterE)
-	 * throws CannotFindAssociationRouteException
-	 * {
-	 * _start = s;
-	 * _end = e;
-	 * _objects = os;
-	 * _korlat = -1;
-	 * _kiterjesztesek = 0;
-	 * 
-	 * G = new Graph();
-	 * G.add(_start);
-	 * 
-	 * Nyilt = new HashSet<Point>();
-	 * Nyilt.add(_start);
-	 * 
-	 * g = new Cost();
-	 * g.set(_start, 0);
-	 * 
-	 * _before = beforeS;
-	 * _after = afterE;
-	 * 
-	 * PI = new Parent();
-	 * PI.set(_before, null);
-	 * PI.set(_start, _before);
-	 * PI.set(_after, _end);
-	 * 
-	 * if (!search())
-	 * throw new CannotFindAssociationRouteException("No Route from " +
-	 * s.toString()
-	 * + " to " + e.toString() + "!");
-	 * }
-	 * 
-	 * public GraphSearch(Point s, Point e, Set<Point> os, Integer k)
-	 * throws CannotFindAssociationRouteException
-	 * {
-	 * _start = s;
-	 * _end = e;
-	 * _objects = os;
-	 * _korlat = (k > 0) ? k : -1;
-	 * _kiterjesztesek = 0;
-	 * 
-	 * G = new Graph();
-	 * G.add(_start);
-	 * 
-	 * Nyilt = new HashSet<Point>();
-	 * Nyilt.add(_start);
-	 * 
-	 * g = new Cost();
-	 * g.set(_start, 0);
-	 * 
-	 * PI = new Parent();
-	 * PI.set(_start, null);
-	 * 
-	 * if (!search())
-	 * throw new CannotFindAssociationRouteException("No Route from " +
-	 * s.toString()
-	 * + " to " + e.toString() + "!");
-	 * }
-	 */
 	
 	/**
 	 * Creates a graph to find a route in it from start to end. Route length is
@@ -148,8 +62,6 @@ class GraphSearch
 	 *            Points we have to skip (already occupied).
 	 * @param top
 	 *            Upper bound of the maximum width of the graph to search in.
-	 * @param width
-	 *            The width of the objects.
 	 * @throws CannotFindAssociationRouteException
 	 *             Throws if there is no route from start->end.
 	 * @throws CannotStartAssociationRouteException
@@ -157,7 +69,7 @@ class GraphSearch
 	 *             start.
 	 */
 	public GraphSearch(Point s, Set<Point> ss, Point e, Set<Point> es,
-			Set<Painted<Point>> os, Integer top, Integer width)
+			Set<Painted<Point>> os, Integer top)
 			throws CannotFindAssociationRouteException,
 			CannotStartAssociationRouteException
 	{
@@ -168,7 +80,8 @@ class GraphSearch
 		_objects = os;
 		_boundary = (top > 0) ? top : -1;
 		_extends = 0;
-		_widthOfObject = width;
+		_manhattanDistance = new HashMap<Point, Integer>();
+		_leastTurns = new HashMap<Point, Integer>();
 		
 		G = new Graph<Point>();
 		G.add(_start);
@@ -260,13 +173,15 @@ class GraphSearch
 		// TODO
 		Double weightCost = 1.0;
 		Double weightTurns = 1.5;
-		Double weightDistance = 1.2;
+		Double weightDistance = 1.0;
 		Double weightRemainingTurns = 1.0;
 		Double weightYellowPoints = 1.5;
 		
 		Integer cost = g.get(p);
 		Integer turns = countOfTurns(p);
+		// Quickened with memory
 		Integer distance = manhattanDistance(p);
+		// Quickened with memory
 		Integer remainingTurns = manhattanLeastTurnsCheckingOccupied(p);
 		Integer yellowPoints = countOfYellows(p);
 		
@@ -337,7 +252,10 @@ class GraphSearch
 	
 	private Integer manhattanDistance(Point a)
 	{
-		return (int) Math.floor(_endSet.stream().map(p ->
+		if (_manhattanDistance.containsKey(a))
+			return _manhattanDistance.get(a);
+		
+		Integer temp = (int) Math.floor(_endSet.stream().map(p ->
 		{
 			double dx = Math.abs(a.getX() - p.getX());
 			double dy = Math.abs(a.getY() - p.getY());
@@ -348,6 +266,8 @@ class GraphSearch
 		{
 			return Double.compare(d1, d2);
 		}).get());
+		_manhattanDistance.put(a, temp);
+		return temp;
 		
 		/*
 		 * double dx = Math.abs(a.getX() - _end.getX());
@@ -372,84 +292,95 @@ class GraphSearch
 	
 	private Integer manhattanLeastTurnsCheckingOccupied(Point a)
 	{
+		if (_leastTurns.containsKey(a))
+			return _leastTurns.get(a);
+		
 		Integer penalizeTurns = 2;
+		Integer min = Integer.MAX_VALUE;
 		
-		double dx = Math.abs(a.getX() - _end.getX());
-		double sx = _end.getX() - a.getX();
-		double dy = Math.abs(a.getY() - _end.getY());
-		double sy = _end.getY() - a.getY();
-		Integer result = 0;
-		Integer result2 = 0;
-		
-		if (dx > 0 && dy > 0)
+		for (Point ending : _endSet)
 		{
-			++result;
-			++result2;
-		}
-		
-		Point tempP = a;
-		Point tempP2 = _end;
-		for (int i = 0; i < dx; ++i)
-		{
-			if (sx > 0)
+			double dx = Math.abs(a.getX() - ending.getX());
+			double sx = ending.getX() - a.getX();
+			double dy = Math.abs(a.getY() - ending.getY());
+			double sy = ending.getY() - a.getY();
+			Integer result = 0;
+			Integer result2 = 0;
+			
+			if (dx > 0 && dy > 0)
 			{
-				tempP = Point.Add(tempP, Direction.east);
-				tempP2 = Point.Add(tempP2, Direction.west);
-			}
-			else if (sx < 0)
-			{
-				tempP = Point.Add(tempP, Direction.west);
-				tempP2 = Point.Add(tempP2, Direction.east);
+				++result;
+				++result2;
 			}
 			
-			Painted<Point> temp1 = new Painted<Point>(Colors.Red, tempP);
-			Painted<Point> temp2 = new Painted<Point>(Colors.Red, tempP2);
-			if (!tempP.equals(_end)
-					&& (_objects.contains(temp1) || _objects.contains(temp2)))
+			Point tempP = a;
+			Point tempP2 = ending;
+			for (int i = 0; i < dx; ++i)
 			{
-				result = result + penalizeTurns;
-				break;
-			}
-			if (!tempP2.equals(_end)
-					&& (_objects.contains(temp1) || _objects.contains(temp2)))
-			{
-				result2 = result2 + penalizeTurns;
-				break;
-			}
-		}
-		
-		tempP = a;
-		tempP2 = _end;
-		for (int i = 0; i < dy; ++i)
-		{
-			if (sy > 0)
-			{
-				tempP = Point.Add(tempP, Direction.north);
-				tempP2 = Point.Add(tempP2, Direction.south);
-			}
-			else if (sy < 0)
-			{
-				tempP = Point.Add(tempP, Direction.south);
-				tempP2 = Point.Add(tempP2, Direction.north);
+				if (sx > 0)
+				{
+					tempP = Point.Add(tempP, Direction.east);
+					tempP2 = Point.Add(tempP2, Direction.west);
+				}
+				else if (sx < 0)
+				{
+					tempP = Point.Add(tempP, Direction.west);
+					tempP2 = Point.Add(tempP2, Direction.east);
+				}
+				
+				Painted<Point> temp1 = new Painted<Point>(Colors.Red, tempP);
+				Painted<Point> temp2 = new Painted<Point>(Colors.Red, tempP2);
+				if (!tempP.equals(ending)
+						&& (_objects.contains(temp1) || _objects.contains(temp2)))
+				{
+					result = result + penalizeTurns;
+					break;
+				}
+				if (!tempP2.equals(ending)
+						&& (_objects.contains(temp1) || _objects.contains(temp2)))
+				{
+					result2 = result2 + penalizeTurns;
+					break;
+				}
 			}
 			
-			Painted<Point> temp1 = new Painted<Point>(Colors.Red, tempP);
-			Painted<Point> temp2 = new Painted<Point>(Colors.Red, tempP2);
-			if (!tempP.equals(_end)
-					&& (_objects.contains(temp1) || _objects.contains(temp2)))
+			tempP = a;
+			tempP2 = ending;
+			for (int i = 0; i < dy; ++i)
 			{
-				result = result + penalizeTurns;
-				break;
+				if (sy > 0)
+				{
+					tempP = Point.Add(tempP, Direction.north);
+					tempP2 = Point.Add(tempP2, Direction.south);
+				}
+				else if (sy < 0)
+				{
+					tempP = Point.Add(tempP, Direction.south);
+					tempP2 = Point.Add(tempP2, Direction.north);
+				}
+				
+				Painted<Point> temp1 = new Painted<Point>(Colors.Red, tempP);
+				Painted<Point> temp2 = new Painted<Point>(Colors.Red, tempP2);
+				if (!tempP.equals(ending)
+						&& (_objects.contains(temp1) || _objects.contains(temp2)))
+				{
+					result = result + penalizeTurns;
+					break;
+				}
+				if (!tempP2.equals(ending)
+						&& (_objects.contains(temp1) || _objects.contains(temp2)))
+				{
+					result2 = result2 + penalizeTurns;
+					break;
+				}
 			}
-			if (!tempP2.equals(_end)
-					&& (_objects.contains(temp1) || _objects.contains(temp2)))
-			{
-				result2 = result2 + penalizeTurns;
-				break;
-			}
+			
+			min = Math.min(min, result);
+			min = Math.min(min, result2);
 		}
 		
-		return Math.min(result, result2);
+		_leastTurns.put(a, min);
+		return min;
 	}
 	
 	@SuppressWarnings("unused")

@@ -1,7 +1,10 @@
 package hu.elte.txtuml.layout.visualizer.algorithms;
 
+import hu.elte.txtuml.layout.visualizer.algorithms.boxes.ArrangeObjects;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.ArrangeAssociations;
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
+import hu.elte.txtuml.layout.visualizer.exceptions.BoxArrangeConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotPositionObjectException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConflictException;
@@ -9,13 +12,14 @@ import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
-import hu.elte.txtuml.layout.visualizer.helpers.Helper;
+import hu.elte.txtuml.layout.visualizer.helpers.Pair;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,7 +49,10 @@ public class LayoutVisualize
 	 */
 	private ArrayList<Statement> _assocStatements;
 	
+	@SuppressWarnings("unused")
 	private DiagramType _diagramType;
+	
+	private Boolean _logging;
 	
 	/***
 	 * Get the current set of Objects.
@@ -95,6 +102,7 @@ public class LayoutVisualize
 		_objects = null;
 		_assocs = null;
 		_diagramType = DiagramType.Class;
+		_logging = true;
 	}
 	
 	/**
@@ -109,6 +117,7 @@ public class LayoutVisualize
 		_objects = null;
 		_assocs = null;
 		_diagramType = type;
+		_logging = true;
 	}
 	
 	/***
@@ -143,8 +152,16 @@ public class LayoutVisualize
 			return;
 		
 		// set default statements
-		DefaultStatements ds = new DefaultStatements(_objects, _assocs);
+		Optional<Integer> tempMax = stats.stream().filter(s -> s.getGroupId() != null)
+				.map(s -> s.getGroupId()).max((a, b) ->
+				{
+					return Integer.compare(a, b);
+				});
+		Integer maxGroupId = tempMax.isPresent() ? tempMax.get() : 0;
+		
+		DefaultStatements ds = new DefaultStatements(_objects, _assocs, maxGroupId);
 		stats.addAll(ds.value());
+		maxGroupId = ds.getGroupId();
 		
 		// Split statements on assocs
 		_assocStatements = StatementHelper.splitAssocs(stats, _assocs);
@@ -152,7 +169,10 @@ public class LayoutVisualize
 		_assocStatements = StatementHelper.reduceAssocs(_assocStatements);
 		
 		// Transform special associations into statements
-		stats.addAll(StatementHelper.transformAssocs(stats, _assocs));
+		Pair<ArrayList<Statement>, Integer> tempPair = StatementHelper.transformAssocs(
+				stats, _assocs, maxGroupId);
+		stats.addAll(tempPair.First);
+		maxGroupId = tempPair.Second;
 		
 		// Transform Phantom statements into Objects
 		Set<String> phantoms = new HashSet<String>();
@@ -166,20 +186,7 @@ public class LayoutVisualize
 		// Remove duplicates
 		_statements = StatementHelper.reduceObjects(stats, _objects);
 		
-		// Check Obejct Statement Types
-		for (Statement s : _statements)
-		{
-			if (!StatementHelper.isTypeChecked(s, _objects, _assocs))
-				throw new StatementTypeMatchException("Types not match at statement: "
-						+ s.toString() + "!");
-		}
-		// Check Association Statement Types
-		for (Statement s : _assocStatements)
-		{
-			if (!StatementHelper.isTypeChecked(s, _objects, _assocs))
-				throw new StatementTypeMatchException("Types not match at statement: "
-						+ s.toString() + "!");
-		}
+		StatementHelper.checkTypes(_statements, _assocStatements, _objects, _assocs);
 		
 		// Arrange objects
 		Boolean isConflicted;
@@ -189,31 +196,74 @@ public class LayoutVisualize
 			
 			try
 			{
-				ArrangeObjects ao = new ArrangeObjects(_objects, _statements);
+				ArrangeObjects ao = new ArrangeObjects(_objects, _statements, _logging);
 				_objects = new HashSet<RectangleObject>(ao.value());
 			}
-			catch (ConflictException ex)
+			catch (BoxArrangeConflictException ex)
 			{
 				isConflicted = true;
 				// Remove a weak statement if possible
-				if (_statements.stream().anyMatch(s -> !s.isUserDefined()))
+				if (ex.ConflictStatement.stream().anyMatch(s -> !s.isUserDefined()))
 				{
-					ArrayList<Statement> toDeletes = (ArrayList<Statement>) _statements
+					ArrayList<Statement> possibleDeletes = (ArrayList<Statement>) ex.ConflictStatement
 							.stream().filter(s -> !s.isUserDefined())
 							.collect(Collectors.toList());
-					toDeletes.sort((s1, s2) ->
-					{
-						return -1
-								* Integer.compare(StatementHelper.getComplexity(s1),
-										StatementHelper.getComplexity(s2));
-					});
-					Integer maxValue = StatementHelper.getComplexity(toDeletes.get(0));
-					toDeletes.removeIf(s -> StatementHelper.getComplexity(s) < maxValue);
+					Statement max = possibleDeletes
+							.stream()
+							.max((s1, s2) ->
+							{
+								return -1
+										* Integer.compare(
+												StatementHelper.getComplexity(s1),
+												StatementHelper.getComplexity(s2));
+							}).get();
 					
-					Statement toDelete = toDeletes.stream().findAny().get();
-					_statements.remove(toDelete);
-					System.err.println("Weak(" + toDelete.toString()
-							+ ") statement deleted!");
+					ArrayList<Statement> toDeletes = new ArrayList<Statement>();
+					toDeletes.addAll(_statements
+							.stream()
+							.filter(s -> s.getGroupId() != null
+									&& s.getGroupId().equals(max.getGroupId()))
+							.collect(Collectors.toList()));
+					
+					_statements.removeAll(toDeletes);
+					if (_logging.equals(true))
+					{
+						for (Statement stat : toDeletes)
+						{
+							System.err.println("Weak(" + stat.toString()
+									+ ") statement deleted!");
+						}
+					}
+				}
+				else if (_statements.stream().anyMatch(s -> !s.isUserDefined()))
+				{
+					ArrayList<Statement> possibleDeletes = (ArrayList<Statement>) _statements
+							.stream().filter(s -> !s.isUserDefined())
+							.collect(Collectors.toList());
+					Statement max = possibleDeletes
+							.stream()
+							.max((s1, s2) ->
+							{
+								return -1
+										* Integer.compare(
+												StatementHelper.getComplexity(s1),
+												StatementHelper.getComplexity(s2));
+							}).get();
+					
+					ArrayList<Statement> toDeletes = new ArrayList<Statement>();
+					toDeletes.addAll(_statements.stream()
+							.filter(s -> s.getGroupId().equals(max.getGroupId()))
+							.collect(Collectors.toList()));
+					
+					_statements.removeAll(toDeletes);
+					if (_logging.equals(true))
+					{
+						for (Statement stat : toDeletes)
+						{
+							System.err.println("Weak(" + stat.toString()
+									+ ") statement deleted!");
+						}
+					}
 				}
 				else
 					throw ex;
@@ -258,17 +308,9 @@ public class LayoutVisualize
 			return;
 		
 		ArrangeAssociations aa = new ArrangeAssociations(_objects, _assocs,
-				_assocStatements, Helper.isReflexiveOnSameSide(_diagramType));
+				_assocStatements, maxGroupId, _logging);
 		_assocs = aa.value();
-		
-		// Transform objects according to link transformation
-		Integer transformAmount = aa.getTransformAmount();
-		Integer widthAmount = aa.getWidthAmount();
-		for (RectangleObject o : _objects)
-		{
-			o.setPosition(Point.Multiply(o.getPosition(), transformAmount));
-			o.setWidth(widthAmount);
-		}
+		_objects = aa.objects();
 	}
 	
 	/***

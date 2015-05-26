@@ -1,12 +1,13 @@
-package hu.elte.txtuml.layout.visualizer.algorithms;
+package hu.elte.txtuml.layout.visualizer.algorithms.boxes;
 
-import hu.elte.txtuml.layout.visualizer.algorithms.bellmanfordhelpers.EdgeWeightedDigraph;
+import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.DirectedEdge;
+import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.EdgeWeightedDigraph;
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
+import hu.elte.txtuml.layout.visualizer.exceptions.BoxArrangeConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotPositionObjectException;
-import hu.elte.txtuml.layout.visualizer.exceptions.ConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.helpers.BiMap;
-import hu.elte.txtuml.layout.visualizer.helpers.Triple;
+import hu.elte.txtuml.layout.visualizer.helpers.Quadraple;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
@@ -17,27 +18,68 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-class ArrangeObjects
+/**
+ * This class arranges the boxes in the diagram using mainly a Bellman-Ford
+ * shortest path algorithm.
+ * 
+ * @author Balázs Gregorics
+ *
+ */
+public class ArrangeObjects
 {
 	private Set<RectangleObject> _objects;
 	private BiMap<String, Integer> _indices;
+	private Boolean _logging;
 	
 	private Integer _transformAmount;
 	
+	/**
+	 * Getter for the transform amount.
+	 * 
+	 * @return the transform amount.
+	 */
 	public Integer getTransformAmount()
 	{
 		return _transformAmount;
 	}
 	
+	/**
+	 * Setter for the transform amount.
+	 * 
+	 * @param value
+	 *            the transform amount.
+	 */
 	public void setTransformAmount(Integer value)
 	{
 		_transformAmount = value;
 	}
 	
-	public ArrangeObjects(Set<RectangleObject> obj, ArrayList<Statement> stats)
-			throws ConflictException, CannotPositionObjectException, InternalException
+	/**
+	 * Class that arranges the boxes on the diagram.
+	 * 
+	 * @param obj
+	 *            Set of objects/boxes to arrange.
+	 * @param stats
+	 *            List of statements on the boxes.
+	 * @param log
+	 *            Whether to print out logging msgs.
+	 * @throws BoxArrangeConflictException
+	 *             Throws when a conflict appears during the arrangement of the
+	 *             boxes.
+	 * @throws CannotPositionObjectException
+	 *             Throws if the algorithm cannot position a box for some
+	 *             reason.
+	 * @throws InternalException
+	 *             Throws if some algorithm related error happens. Contact
+	 *             programmer for more details.
+	 */
+	public ArrangeObjects(Set<RectangleObject> obj, ArrayList<Statement> stats,
+			Boolean log) throws BoxArrangeConflictException,
+			CannotPositionObjectException, InternalException
 	
 	{
+		_logging = log;
+		
 		// Nothing to arrange
 		if (obj.size() == 0)
 			return;
@@ -65,7 +107,8 @@ class ArrangeObjects
 		
 		int n = _objects.size();
 		int startNode = 0;
-		ArrayList<Triple<Integer, Integer, Integer>> l = buildEdges(n, stats);
+		ArrayList<Quadraple<Integer, Integer, Integer, Statement>> l = buildEdges(n,
+				stats);
 		
 		EdgeWeightedDigraph G = new EdgeWeightedDigraph((2 * n) + 1, l);
 		
@@ -74,7 +117,12 @@ class ArrangeObjects
 		if (sp.hasNegativeCycle())
 		{
 			// Nincs megoldás, ellentmondás
-			throw new ConflictException(
+			ArrayList<Statement> excparam = new ArrayList<Statement>();
+			for (DirectedEdge e : sp.negativeCycle())
+			{
+				excparam.add(e.stat());
+			}
+			throw new BoxArrangeConflictException(excparam,
 					"There were conflicts in the statements (cyclic, unsolvable)!");
 		}
 		else
@@ -140,6 +188,9 @@ class ArrangeObjects
 	
 	private void arrangeOverlapping()
 	{
+		if (_logging)
+			System.err.print("Arranging overlaps...");
+		
 		HashMap<Point, Integer> overlaps = new HashMap<Point, Integer>();
 		Integer max = new Integer(0);
 		
@@ -160,7 +211,7 @@ class ArrangeObjects
 			// Nothing to do!
 			return;
 		}
-		_transformAmount = (int) Math.floor((Math.ceil(Math.sqrt(max)) / 2) + 1);
+		_transformAmount = (int) Math.floor((Math.ceil(Math.sqrt(max))) + 1);
 		
 		// Multiply coordinates by _transformAmount
 		for (RectangleObject o : _objects)
@@ -177,6 +228,9 @@ class ArrangeObjects
 						entry.getValue());
 			}
 		}
+		
+		if (_logging)
+			System.err.println("DONE!");
 	}
 	
 	private void overlapRemove(Point p, Integer c)
@@ -205,14 +259,14 @@ class ArrangeObjects
 		}
 	}
 	
-	private ArrayList<Triple<Integer, Integer, Integer>> buildEdges(Integer n,
-			ArrayList<Statement> stats) throws InternalException
+	private ArrayList<Quadraple<Integer, Integer, Integer, Statement>> buildEdges(
+			Integer n, ArrayList<Statement> stats) throws InternalException
 	{
-		ArrayList<Triple<Integer, Integer, Integer>> result = new ArrayList<Triple<Integer, Integer, Integer>>();
+		ArrayList<Quadraple<Integer, Integer, Integer, Statement>> result = new ArrayList<Quadraple<Integer, Integer, Integer, Statement>>();
 		
 		for (int i = 0; i < (2 * n) + 1; ++i)
 		{
-			result.add(new Triple<Integer, Integer, Integer>(0, i, 0));
+			result.add(new Quadraple<Integer, Integer, Integer, Statement>(0, i, 0, null));
 		}
 		
 		for (Statement s : stats)
@@ -223,92 +277,116 @@ class ArrangeObjects
 				{
 					int i = _indices.get(s.getParameter(0)) + n;
 					int j = _indices.get(s.getParameter(1)) + n;
-					result.add(new Triple<Integer, Integer, Integer>(i, j, -1));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+							-1, s));
 				}
 					break;
 				case south:
 				{
 					int i = _indices.get(s.getParameter(1)) + n;
 					int j = _indices.get(s.getParameter(0)) + n;
-					result.add(new Triple<Integer, Integer, Integer>(i, j, -1));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+							-1, s));
 				}
 					break;
 				case east:
 				{
 					int i = _indices.get(s.getParameter(0));
 					int j = _indices.get(s.getParameter(1));
-					result.add(new Triple<Integer, Integer, Integer>(i, j, -1));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+							-1, s));
 				}
 					break;
 				case west:
 				{
 					int i = _indices.get(s.getParameter(1));
 					int j = _indices.get(s.getParameter(0));
-					result.add(new Triple<Integer, Integer, Integer>(i, j, -1));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+							-1, s));
 				}
 					break;
 				case vertical:
 				{
 					int i = _indices.get(s.getParameter(1));
 					int j = _indices.get(s.getParameter(0));
-					result.add(new Triple<Integer, Integer, Integer>(i, j, 0));
-					result.add(new Triple<Integer, Integer, Integer>(j, i, 0));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+							0, s));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(j, i,
+							0, s));
 				}
 					break;
 				case horizontal:
 				{
 					int i = _indices.get(s.getParameter(1)) + n;
 					int j = _indices.get(s.getParameter(0)) + n;
-					result.add(new Triple<Integer, Integer, Integer>(i, j, 0));
-					result.add(new Triple<Integer, Integer, Integer>(j, i, 0));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+							0, s));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(j, i,
+							0, s));
 				}
 					break;
 				case above:
 				{
 					int i = _indices.get(s.getParameter(1));
 					int j = _indices.get(s.getParameter(0));
-					result.add(new Triple<Integer, Integer, Integer>(i, j, 0));
-					result.add(new Triple<Integer, Integer, Integer>(j, i, 0));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+							0, s));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(j, i,
+							0, s));
 					i = i + n;
 					j = j + n;
-					result.add(new Triple<Integer, Integer, Integer>(i, j, 1));
-					result.add(new Triple<Integer, Integer, Integer>(j, i, -1));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+							1, s));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(j, i,
+							-1, s));
 				}
 					break;
 				case below:
 				{
 					int i = _indices.get(s.getParameter(1));
 					int j = _indices.get(s.getParameter(0));
-					result.add(new Triple<Integer, Integer, Integer>(i, j, 0));
-					result.add(new Triple<Integer, Integer, Integer>(j, i, 0));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+							0, s));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(j, i,
+							0, s));
 					i = i + n;
 					j = j + n;
-					result.add(new Triple<Integer, Integer, Integer>(i, j, -1));
-					result.add(new Triple<Integer, Integer, Integer>(j, i, 1));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+							-1, s));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(j, i,
+							1, s));
 				}
 					break;
 				case right:
 				{
 					int i = _indices.get(s.getParameter(1));
 					int j = _indices.get(s.getParameter(0));
-					result.add(new Triple<Integer, Integer, Integer>(i, j, 1));
-					result.add(new Triple<Integer, Integer, Integer>(j, i, -1));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+							1, s));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(j, i,
+							-1, s));
 					i = i + n;
 					j = j + n;
-					result.add(new Triple<Integer, Integer, Integer>(i, j, 0));
-					result.add(new Triple<Integer, Integer, Integer>(j, i, 0));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+							0, s));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(j, i,
+							0, s));
 				}
 					break;
 				case left:
 				{
 					int i = _indices.get(s.getParameter(1));
 					int j = _indices.get(s.getParameter(0));
-					result.add(new Triple<Integer, Integer, Integer>(i, j, -1));
-					result.add(new Triple<Integer, Integer, Integer>(j, i, 1));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+							-1, s));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(j, i,
+							1, s));
 					i = i + n;
 					j = j + n;
-					result.add(new Triple<Integer, Integer, Integer>(i, j, 0));
-					result.add(new Triple<Integer, Integer, Integer>(j, i, 0));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+							0, s));
+					result.add(new Quadraple<Integer, Integer, Integer, Statement>(j, i,
+							0, s));
 				}
 					break;
 				case phantom:
@@ -368,6 +446,11 @@ class ArrangeObjects
 		return result;
 	}
 	
+	/**
+	 * Returns the value of the arrangement.
+	 * 
+	 * @return the value of the arrangement.
+	 */
 	public Set<RectangleObject> value()
 	{
 		return _objects;

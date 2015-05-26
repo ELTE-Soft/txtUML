@@ -185,7 +185,7 @@ public class Point
 		}
 	}
 	
-	/***
+	/**
 	 * Multiplication of a Point.
 	 * 
 	 * @param p1
@@ -197,6 +197,20 @@ public class Point
 	public static Point Multiply(Point p1, Integer m)
 	{
 		return new Point(p1._x * m, p1._y * m);
+	}
+	
+	/**
+	 * Divide a Point.
+	 * 
+	 * @param p1
+	 *            Point to divide
+	 * @param m
+	 *            Amount of division.
+	 * @return A Point from the division of (p1 / m).
+	 */
+	public static Point Divide(Point p1, Integer m)
+	{
+		return new Point(p1._x / m, p1._y / m);
 	}
 	
 	/***

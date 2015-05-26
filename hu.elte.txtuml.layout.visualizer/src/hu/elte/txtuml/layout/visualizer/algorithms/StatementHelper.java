@@ -6,6 +6,7 @@ import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
+import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
 import hu.elte.txtuml.layout.visualizer.helpers.Helper;
 import hu.elte.txtuml.layout.visualizer.helpers.Pair;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
@@ -27,6 +28,29 @@ class StatementHelper
 				.filter(s -> isAssocType(s.getType())
 						&& isAssocParams(s.getParameters(), assocs))
 				.collect(Collectors.toList());
+	}
+	
+	public static boolean checkTypes(ArrayList<Statement> stats,
+			ArrayList<Statement> astats, Set<RectangleObject> objs,
+			Set<LineAssociation> assocs) throws StatementTypeMatchException,
+			InternalException
+	{
+		// Check Obejct Statement Types
+		for (Statement s : stats)
+		{
+			if (!StatementHelper.isTypeChecked(s, objs, assocs))
+				throw new StatementTypeMatchException("Types not match at statement: "
+						+ s.toString() + "!");
+		}
+		// Check Association Statement Types
+		for (Statement s : astats)
+		{
+			if (!StatementHelper.isTypeChecked(s, objs, assocs))
+				throw new StatementTypeMatchException("Types not match at statement: "
+						+ s.toString() + "!");
+		}
+		
+		return true;
 	}
 	
 	private static boolean isAssocType(StatementType t)
@@ -137,7 +161,7 @@ class StatementHelper
 	}
 	
 	public static ArrayList<Statement> reduceObjects(ArrayList<Statement> stats,
-			Set<RectangleObject> objs)
+			Set<RectangleObject> objs) throws InternalException
 	{
 		ArrayList<Statement> result = new ArrayList<Statement>();
 		
@@ -215,8 +239,9 @@ class StatementHelper
 		return false;
 	}
 	
-	public static ArrayList<Statement> transformAssocs(ArrayList<Statement> stats,
-			Set<LineAssociation> assocs)
+	public static Pair<ArrayList<Statement>, Integer> transformAssocs(
+			ArrayList<Statement> stats, Set<LineAssociation> assocs, Integer gid)
+			throws InternalException
 	{
 		ArrayList<Statement> result = new ArrayList<Statement>();
 		
@@ -225,10 +250,9 @@ class StatementHelper
 			switch (a.getType())
 			{
 				case generalization:
-					result.add(new Statement(StatementType.north, StatementLevel.Low, a
-							.getFrom(), a.getTo()));
-					result.add(new Statement(StatementType.vertical, StatementLevel.High,
-							a.getFrom(), a.getTo()));
+					++gid;
+					result.add(new Statement(StatementType.north, StatementLevel.Low,
+							gid, a.getFrom(), a.getTo()));
 					break;
 				case aggregation:
 				case composition:
@@ -238,13 +262,13 @@ class StatementHelper
 			}
 		}
 		
-		return result;
+		return new Pair<ArrayList<Statement>, Integer>(result, gid);
 	}
 	
-	public static Statement opposite(Statement s)
+	public static Statement opposite(Statement s) throws InternalException
 	{
-		return new Statement(opposite(s.getType()), s.getLevel(), s.getParameter(1),
-				s.getParameter(0));
+		return new Statement(opposite(s.getType()), s.getLevel(), s.getGroupId(),
+				s.getParameter(1), s.getParameter(0));
 	}
 	
 	public static StatementType opposite(StatementType st)

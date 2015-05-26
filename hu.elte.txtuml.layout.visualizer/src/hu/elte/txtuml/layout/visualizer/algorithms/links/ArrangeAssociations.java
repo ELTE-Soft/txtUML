@@ -1,9 +1,8 @@
-package hu.elte.txtuml.layout.visualizer.algorithms;
+package hu.elte.txtuml.layout.visualizer.algorithms.links;
 
-import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Painted;
-import hu.elte.txtuml.layout.visualizer.algorithms.graphsearchhelpers.Painted.Colors;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Painted;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Painted.Colors;
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
-import hu.elte.txtuml.layout.visualizer.annotations.StatementLevel;
 import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotStartAssociationRouteException;
@@ -22,30 +21,33 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-class ArrangeAssociations
+/**
+ * This class arranges the lines of links.
+ * 
+ * @author Balázs Gregorics
+ *
+ */
+public class ArrangeAssociations
 {
 	private Integer _widthOfObjects;
+	
+	private Set<RectangleObject> _objects;
+	private ArrayList<LineAssociation> _assocs;
+	private HashMap<Pair<String, RouteConfig>, HashSet<Point>> _possibleStarts;
 	private Integer _transformAmount;
 	
-	private ArrayList<LineAssociation> _assocs;
-	private ArrayList<LineAssociation> _reflexives;
-	private HashMap<Pair<String, RouteConfig>, HashSet<Point>> _possibleStarts;
+	private Integer _gId;
+	private Boolean _logging;
 	
 	/**
-	 * Gets the maximum amount which the diagram was enlarged during the arrange
-	 * of the associations.
+	 * Gets the final width of the boxes, that was computed during the running
+	 * of the ArrangeAssociation algo.rithm
 	 * 
-	 * @return Integer of the amount.
+	 * @return Integer number of the width of boxes.
 	 */
-	public Integer getTransformAmount()
-	{
-		return _transformAmount;
-	}
-	
 	public Integer getWidthAmount()
 	{
 		return _widthOfObjects;
@@ -60,9 +62,10 @@ class ArrangeAssociations
 	 *            Associations to arrange on the grid.
 	 * @param stats
 	 *            Statements on associations.
-	 * @param onSameSide
-	 *            Whether the reflexive links should start and end on the same
-	 *            side of the object or not.
+	 * @param gid
+	 *            The max group id yet existing.
+	 * @param log
+	 *            Whether to print out logging msgs.
 	 * @throws ConversionException
 	 *             Throws if algorithm cannot convert certain StatementType into
 	 *             Direction.
@@ -75,10 +78,13 @@ class ArrangeAssociations
 	 *             Throws if some unkown statements are found during processing.
 	 */
 	public ArrangeAssociations(Set<RectangleObject> diagramObjects,
-			Set<LineAssociation> diagramAssocs, ArrayList<Statement> stats,
-			boolean onSameSide) throws ConversionException, InternalException,
+			Set<LineAssociation> diagramAssocs, ArrayList<Statement> stats, Integer gid,
+			Boolean log) throws ConversionException, InternalException,
 			CannotFindAssociationRouteException, UnknownStatementException
 	{
+		_gId = gid;
+		_logging = log;
+		
 		if (diagramAssocs == null || diagramAssocs.size() == 0 || diagramAssocs == null
 				|| diagramAssocs.size() == 0)
 			return;
@@ -86,154 +92,138 @@ class ArrangeAssociations
 		_transformAmount = 2;
 		_widthOfObjects = 1;
 		
-		arrange(diagramObjects, diagramAssocs, stats, onSameSide);
+		arrange(diagramObjects, diagramAssocs, stats);
 	}
 	
 	private void arrange(Set<RectangleObject> diagramObjects,
-			Set<LineAssociation> diagramAssocs, ArrayList<Statement> stats,
-			boolean onSameSide) throws ConversionException, InternalException,
-			UnknownStatementException
+			Set<LineAssociation> diagramAssocs, ArrayList<Statement> stats)
+			throws ConversionException, InternalException, UnknownStatementException
 	{
+		_possibleStarts = new HashMap<Pair<String, RouteConfig>, HashSet<Point>>();
+		_objects = diagramObjects;
+		_assocs = Helper.cloneLinkList((ArrayList<LineAssociation>) diagramAssocs
+				.stream().collect(Collectors.toList()));
 		
-		if (diagramAssocs.size() != 0)
+		// Inflate diagram to start with a object width enough for the
+		// maximum number of links
+		Integer maxLinks = calculateMaxLinks(_assocs);
+		diagramObjects = defaultGrid(maxLinks, diagramObjects);
+		
+		// Pre-define priorities
+		DefaultAssocStatements das = new DefaultAssocStatements(_gId, stats, _assocs);
+		stats = das.value();
+		_gId = das.getGroupId();
+		
+		Boolean repeat = true;
+		
+		// Arrange until ok
+		Integer maxTryCount = 100;
+		while (repeat && maxTryCount >= 0)
 		{
-			_possibleStarts = new HashMap<Pair<String, RouteConfig>, HashSet<Point>>();
+			--maxTryCount;
 			
-			// Slpit reflexive and other links
-			// exception reflexives: have two direction statements
-			Set<String> exceptionReflexives = getExceptionReflexives(stats);
+			// Process statements, priority and direction
+			_assocs = processStatements(_assocs, stats, diagramObjects);
+			repeat = false;
 			
-			_reflexives = (ArrayList<LineAssociation>) diagramAssocs
-					.stream()
-					.filter(a -> !exceptionReflexives.contains(a.getId())
-							&& a.isReflexive()).collect(Collectors.toList());
-			ArrayList<Statement> reflexiveStats = (ArrayList<Statement>) stats
-					.stream()
-					.filter(s -> _reflexives.stream().anyMatch(
-							a -> a.getId().equals(s.getParameter(0))))
-					.collect(Collectors.toList());
-			stats.removeIf(s -> reflexiveStats.contains(s));
-			_assocs = Helper.cloneLinkList((ArrayList<LineAssociation>) diagramAssocs
-					.stream().collect(Collectors.toList()));
-			_assocs.removeIf(a -> _reflexives.contains(a));
-			
-			ArrayList<LineAssociation> originalAssocs = Helper.cloneLinkList(_assocs);
-			ArrayList<LineAssociation> originalReflexives = Helper
-					.cloneLinkList(_reflexives);
-			
-			// Transform Links' start and end route point
-			transformAssocs();
-			transformReflexives();
-			diagramObjects = updateObjects(diagramObjects);
-			
-			// Inflate diagram to start with a object width enough for the
-			// maximum number of links
-			Integer maxLinks = calculateMaxLinks(_assocs, 1);
-			Integer maxReflexives = transformReflexiveCount(calculateMaxLinks(
-					_reflexives, 1));
-			while (_widthOfObjects < 3 || _widthOfObjects < maxReflexives
-					|| (_widthOfObjects * 4 - 8) < maxLinks)
+			try
 			{
-				// Grid * 2, ObjectWidth * 2 + 1
-				_transformAmount = _transformAmount * 2;
-				diagramObjects = enlargeObjects(diagramObjects);
-				_assocs = Helper.cloneLinkList(originalAssocs);
-				_reflexives = Helper.cloneLinkList(originalReflexives);
-				transformAssocs();
-				transformReflexives();
-				System.err.println("(Default) Expanding Grid!");
+				// Search for the route of every Link
+				arrangeLinks(diagramObjects);
 			}
-			
-			// Pre-define priorities
-			stats = predefinePriorities(stats);
-			
-			Boolean repeat = true;
-			
-			// Arrange normal links
-			while (repeat)
+			catch (CannotStartAssociationRouteException
+					| CannotFindAssociationRouteException e)
 			{
-				// Arrange reflexive links
-				
-				try
-				{
-					for (int i = 0; i < _reflexives.size(); ++i)
-					{
-						LineAssociation refl = _reflexives.get(i);
-						
-						System.err.print((i + 1) + "/" + _reflexives.size() + ": "
-								+ refl.getId() + " ... ");
-						
-						Set<LineAssociation> myReflexives = _reflexives
-								.stream()
-								.filter(a -> a.isPlaced()
-										&& a.getFrom().equals(refl.getFrom()))
-								.collect(Collectors.toSet());
-						ArrangeReflexiveAssociations ara = new ArrangeReflexiveAssociations(
-								_reflexives);
-						refl.setRoute(ara.arrangeReflexive(refl, diagramObjects,
-								myReflexives));
-						
-						System.err.println("DONE!");
-						
-						_reflexives.set(i, refl);
-					}
-				}
-				catch (CannotFindAssociationRouteException e)
-				{
-					System.err.println("(Reflexive) Expanding grid!");
-					repeat = true;
-					// Grid * 2, ObjectWidth * 2 + 1
-					_transformAmount = _transformAmount * 2;
-					diagramObjects = enlargeObjects(diagramObjects);
-					_assocs = Helper.cloneLinkList(originalAssocs);
-					_reflexives = Helper.cloneLinkList(originalReflexives);
-					transformAssocs();
-					transformReflexives();
-					continue;
-				}
-				
-				// Process statements, priority and direction
-				_assocs = processStatements(_assocs, stats, diagramObjects);
-				repeat = false;
-				
-				try
-				{
-					// Search for the route of every Link
-					arrangeLinks(diagramObjects);
-				}
-				catch (CannotStartAssociationRouteException
-						| CannotFindAssociationRouteException e)
-				{
+				if (_logging)
 					System.err.println("(Normal) Expanding grid!");
-					repeat = true;
-					// Grid * 2, ObjectWidth * 2 + 1
-					_transformAmount = _transformAmount * 2;
-					diagramObjects = enlargeObjects(diagramObjects);
-					_assocs = Helper.cloneLinkList(originalAssocs);
-					_reflexives = Helper.cloneLinkList(originalReflexives);
-					transformAssocs();
-					transformReflexives();
-					continue;
-				}
+				
+				repeat = true;
+				// Grid * 2
+				diagramObjects = expandGrid(diagramObjects);
+				continue;
 			}
 		}
-	}
-	
-	private Double distanceOfEnds(LineAssociation a)
-	{
-		Point from = a.getRoute(RouteConfig.START);
-		Point to = a.getRoute(RouteConfig.END);
 		
-		return Point.Substract(from, to).length();
+		_objects = diagramObjects;
 	}
 	
-	private Integer calculateMaxLinks(ArrayList<LineAssociation> as, Integer countAs)
+	private Set<RectangleObject> defaultGrid(Integer k, Set<RectangleObject> objs)
 	{
-		return calculateMaxLinks(as, countAs, null);
+		Set<RectangleObject> result = new HashSet<RectangleObject>();
+		_widthOfObjects = ((k % 2 == 0) ? (k + 1) : k) + 2;
+		_transformAmount = 2;
+		
+		for (RectangleObject o : objs)
+		{
+			RectangleObject mod = new RectangleObject(o);
+			mod.setPosition(Point.Multiply(o.getPosition(), _transformAmount
+					* _widthOfObjects));
+			mod.setWidth(_widthOfObjects);
+			result.add(mod);
+		}
+		
+		for (int i = 0; i < _assocs.size(); ++i)
+		{
+			LineAssociation mod = _assocs.get(i);
+			ArrayList<Point> route = new ArrayList<Point>();
+			route.add(result.stream().filter(o -> o.getName().equals(mod.getFrom()))
+					.findFirst().get().getPosition());
+			route.add(result.stream().filter(o -> o.getName().equals(mod.getTo()))
+					.findFirst().get().getPosition());
+			mod.setRoute(route);
+			_assocs.set(i, mod);
+		}
+		
+		if (_logging)
+			System.err.println("(Default) Expanding Grid!");
+		
+		return result;
 	}
 	
-	private Integer calculateMaxLinks(ArrayList<LineAssociation> as, Integer countAs,
-			Set<String> exceptions)
+	private Set<RectangleObject> expandGrid(Set<RectangleObject> objs)
+			throws ConversionException
+	{
+		Set<RectangleObject> result = new HashSet<RectangleObject>();
+		
+		for (RectangleObject o : objs)
+		{
+			RectangleObject mod = new RectangleObject(o);
+			mod.setPosition(Point.Divide(mod.getPosition(), _transformAmount));
+			mod.setPosition(Point.Multiply(mod.getPosition(), _transformAmount + 1));
+			result.add(mod);
+		}
+		
+		for (int i = 0; i < _assocs.size(); ++i)
+		{
+			LineAssociation mod = _assocs.get(i);
+			ArrayList<Point> route = new ArrayList<Point>();
+			for (int j = 0; j < mod.getRoute().size(); ++j)
+			{
+				Point p = new Point(mod.getRoute().get(j));
+				
+				Point temp = Point.Divide(p, _transformAmount);
+				temp = Point.Multiply(temp, _transformAmount + 1);
+				
+				if (mod.isPlaced() && j > 0)
+				{
+					Direction beforeDirection = Helper.asDirection(Point.Substract(mod
+							.getRoute().get(j - 1), mod.getRoute().get(j)));
+					Point before = Point.Add(temp, beforeDirection);
+					route.add(before);
+				}
+				
+				route.add(temp);
+			}
+			
+			mod.setRoute(route);
+			_assocs.set(i, mod);
+		}
+		
+		++_transformAmount;
+		return result;
+	}
+	
+	private Integer calculateMaxLinks(ArrayList<LineAssociation> as)
 	{
 		if (as.size() == 0)
 			return 0;
@@ -243,9 +233,7 @@ class ArrangeAssociations
 		
 		for (LineAssociation a : as)
 		{
-			Integer countMod = countAs;
-			if (exceptions != null && exceptions.contains(a))
-				countMod = 2;
+			Integer countMod = 1;
 			
 			// From
 			if (data.containsKey(a.getFrom()))
@@ -273,162 +261,6 @@ class ArrangeAssociations
 				.getValue();
 		
 		return max;
-	}
-	
-	private Set<String> getExceptionReflexives(ArrayList<Statement> stats)
-			throws InternalException, UnknownStatementException
-	{
-		Set<String> result = new HashSet<String>();
-		
-		HashMap<String, Integer> data = new HashMap<String, Integer>();
-		for (Statement s : stats)
-		{
-			if (s.getParameters().size() < 3)
-				continue;
-			
-			if (data.containsKey(s.getParameter(0)))
-			{
-				if (data.get(s.getParameter(0)) == 1)
-				{
-					if (s.getParameter(2).toLowerCase().equals("end"))
-					{
-						data.put(s.getParameter(0), 3);
-						result.add(s.getParameter(0));
-					}
-					else
-						throw new InternalException("Too many direction statements on "
-								+ s.getParameter(0) + "!");
-				}
-				else if (data.get(s.getParameter(0)) == 2)
-				{
-					if (s.getParameter(2).toLowerCase().equals("start"))
-					{
-						data.put(s.getParameter(0), 3);
-						result.add(s.getParameter(0));
-					}
-					else
-						throw new InternalException("Too many direction statements on "
-								+ s.getParameter(0) + "!");
-				}
-				else
-					throw new InternalException("Too many direction statements on "
-							+ s.getParameter(0) + "!");
-			}
-			else
-			{
-				if (s.getParameter(2).toLowerCase().equals("start"))
-				{
-					data.put(s.getParameter(0), 1);
-				}
-				else if (s.getParameter(2).toLowerCase().equals("end"))
-				{
-					data.put(s.getParameter(0), 2);
-				}
-				else
-					throw new UnknownStatementException("Unknown statement parameter: "
-							+ s.toString() + "!");
-			}
-		}
-		
-		return result;
-	}
-	
-	private ArrayList<Statement> predefinePriorities(ArrayList<Statement> stats)
-	{
-		ArrayList<Statement> result = stats;
-		
-		// select min priority
-		Set<Statement> priorities = result.stream()
-				.filter(s -> s.getType().equals(StatementType.priority))
-				.collect(Collectors.toSet());
-		Optional<Integer> minPriority = result.stream()
-				.filter(s -> s.getType().equals(StatementType.priority))
-				.map(s -> Integer.valueOf(s.getParameter(1))).min((i, j) ->
-				{
-					return Integer.compare(i, j);
-				});
-		if (minPriority.isPresent())
-		{
-			Integer min = minPriority.get();
-			if ((_assocs.size() - priorities.size()) >= min)
-			{
-				// not good, ++ every prior
-				Integer alterAmount = (_assocs.size() - priorities.size());
-				for (Statement s : result)
-				{
-					if (s.getType().equals(StatementType.priority))
-					{
-						s.setParameter(1, ""
-								+ (Integer.valueOf(s.getParameter(1)) + alterAmount));
-					}
-				}
-			}
-		}
-		
-		Integer actPrior = 0;
-		ArrayList<LineAssociation> orderedAssocs = (ArrayList<LineAssociation>) _assocs
-				.stream().collect(Collectors.toList());
-		orderedAssocs.sort((a1, a2) ->
-		{
-			return Double.compare(distanceOfEnds(a1), distanceOfEnds(a2));
-		});
-		for (LineAssociation a : orderedAssocs)
-		{
-			if (!priorities.stream().anyMatch(s -> s.getParameter(0).equals(a.getId())))
-			{
-				result.add(new Statement(StatementType.priority, StatementLevel.Low, a
-						.getId(), actPrior.toString()));
-				++actPrior;
-			}
-		}
-		
-		return result;
-	}
-	
-	private void transformAssocs()
-	{
-		for (int i = 0; i < _assocs.size(); ++i)
-		{
-			LineAssociation mod = _assocs.get(i);
-			ArrayList<Point> temp = mod.getRoute();
-			ArrayList<Point> route = new ArrayList<Point>();
-			for (Point p : temp)
-			{
-				route.add(Point.Multiply(p, _transformAmount));
-			}
-			mod.setRoute(route);
-			_assocs.set(i, mod);
-		}
-	}
-	
-	private void transformReflexives()
-	{
-		for (int i = 0; i < _reflexives.size(); ++i)
-		{
-			LineAssociation mod = _reflexives.get(i);
-			ArrayList<Point> temp = mod.getRoute();
-			ArrayList<Point> route = new ArrayList<Point>();
-			for (Point p : temp)
-			{
-				route.add(Point.Multiply(p, _transformAmount));
-			}
-			mod.setRoute(route);
-			_reflexives.set(i, mod);
-		}
-	}
-	
-	private Set<RectangleObject> updateObjects(Set<RectangleObject> objs)
-	{
-		Set<RectangleObject> result = new HashSet<RectangleObject>();
-		
-		for (RectangleObject o : objs)
-		{
-			RectangleObject temp = new RectangleObject(o);
-			temp.setPosition(transformDimension(o.getPosition()));
-			result.add(temp);
-		}
-		
-		return result;
 	}
 	
 	private ArrayList<LineAssociation> processStatements(
@@ -532,22 +364,6 @@ class ArrangeAssociations
 		result.removeIf(p -> occupied.contains(p));
 		// Corners
 		result.removeIf(p -> Helper.isCornerPoint(p, temp));
-		
-		return result;
-	}
-	
-	private Set<RectangleObject> enlargeObjects(Set<RectangleObject> objs)
-	{
-		Set<RectangleObject> result = new HashSet<RectangleObject>();
-		
-		for (RectangleObject o : objs)
-		{
-			RectangleObject temp = new RectangleObject(o);
-			_widthOfObjects = o.getWidth() + 2;
-			temp.setPosition(Point.Multiply(o.getPosition(), 2));
-			temp.setWidth(_widthOfObjects);
-			result.add(temp);
-		}
 		
 		return result;
 	}
@@ -719,7 +535,9 @@ class ArrangeAssociations
 		{
 			LineAssociation a = _assocs.get(i);
 			
-			System.err.print((i + 1) + "/" + _assocs.size() + ": " + a.getId() + " ... ");
+			if (_logging)
+				System.err.print((i + 1) + "/" + _assocs.size() + ": " + a.getId()
+						+ " ... ");
 			
 			Point START = a.getRoute(LineAssociation.RouteConfig.START);
 			Point END = a.getRoute(LineAssociation.RouteConfig.END);
@@ -797,13 +615,13 @@ class ArrangeAssociations
 						"Cannot get out of start, or cannot enter end!");
 			}
 			
-			GraphSearch gs = new GraphSearch(START, STARTSET, END, ENDSET, OBJS, top,
-					_widthOfObjects);
+			GraphSearch gs = new GraphSearch(START, STARTSET, END, ENDSET, OBJS, top);
 			a.setRoute(gs.value());
 			a.setTurns(gs.turns());
 			a.setExtends(gs.extendsNum());
 			
-			System.err.println("DONE!");
+			if (_logging)
+				System.err.println("DONE!");
 			
 			_assocs.set(i, a);
 			
@@ -829,29 +647,26 @@ class ArrangeAssociations
 		}
 	}
 	
-	private Integer transformReflexiveCount(Integer count)
-	{
-		count = count / 2;
-		
-		Integer sideSize = 3;
-		for (int i = 2; i < count; i = i + 4)
-		{
-			sideSize = sideSize + 2;
-		}
-		
-		return sideSize;
-	}
-	
-	private Point transformDimension(Point p)
-	{
-		return Point.Multiply(p, _transformAmount);
-	}
-	
+	/**
+	 * Returns the final value of the lines of links.
+	 * 
+	 * @return Set of the arranged lines of links.
+	 */
 	public Set<LineAssociation> value()
 	{
 		Set<LineAssociation> result = _assocs.stream().collect(Collectors.toSet());
-		result.addAll(_reflexives.stream().collect(Collectors.toSet()));
 		
 		return result;
 	}
+	
+	/**
+	 * Returns the final positions and width of the boxes.
+	 * 
+	 * @return the final positions and width of the boxes.
+	 */
+	public Set<RectangleObject> objects()
+	{
+		return _objects;
+	}
+	
 }
