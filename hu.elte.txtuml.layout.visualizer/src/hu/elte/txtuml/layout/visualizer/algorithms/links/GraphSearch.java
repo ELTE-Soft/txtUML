@@ -45,6 +45,7 @@ class GraphSearch
 	private Set<Painted<Point>> _objects;
 	private Integer _boundary;
 	private Integer _extends;
+	private Set<Integer> _batches;
 	
 	private Graph<Node> G;
 	private Set<Node> Nyilt;
@@ -70,6 +71,8 @@ class GraphSearch
 	 *            Nodes we have to skip (already occupied).
 	 * @param top
 	 *            Upper bound of the maximum width of the graph to search in.
+	 * @param bs
+	 *            Set of ids of the batches.
 	 * @throws CannotFindAssociationRouteException
 	 *             Throws if there is no route from start->end.
 	 * @throws CannotStartAssociationRouteException
@@ -78,8 +81,8 @@ class GraphSearch
 	 * @throws ConversionException
 	 * @throws InternalException
 	 */
-	public GraphSearch(Set<Node> ss, Set<Node> es, Set<Painted<Point>> os, Integer top)
-			throws CannotFindAssociationRouteException,
+	public GraphSearch(Set<Node> ss, Set<Node> es, Set<Painted<Point>> os, Integer top,
+			Set<Integer> bs) throws CannotFindAssociationRouteException,
 			CannotStartAssociationRouteException, ConversionException, InternalException
 	{
 		_end = new Node(new Point(), new Point());
@@ -88,6 +91,7 @@ class GraphSearch
 		_objects = os;
 		_boundary = (top > 0) ? top : -1;
 		_extends = 0;
+		_batches = bs;
 		_manhattanDistance = new HashMap<Node, Integer>();
 		_leastTurns = new HashMap<Node, Integer>();
 		
@@ -329,12 +333,15 @@ class GraphSearch
 		
 		// Add possible neighbors
 		if (!_objects.stream().anyMatch(
-				pp -> pp.Color.equals(Colors.Red) && pp.Inner.equals(parent.getTo())))
+				pp -> pp.Inner.equals(parent.getTo())
+						&& !pp.Batch.stream().anyMatch(b -> _batches.contains(b))
+						&& pp.Color.equals(Colors.Red)))
 		{
 			Direction sub = Point.directionOf(parent.getTo(), parent.getFrom());
 			if (_objects.stream().anyMatch(
-					pp -> pp.Color.equals(Colors.Yellow)
-							&& pp.Inner.equals(parent.getTo())))
+					pp -> pp.Inner.equals(parent.getTo())
+							&& !pp.Batch.stream().anyMatch(b -> _batches.contains(b))
+							&& pp.Color.equals(Colors.Yellow)))
 			{
 				// straight, crossing
 				result.add(new Pair<Node, Double>(new Node(parent.getTo(), Point.Add(

@@ -12,6 +12,7 @@ import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
 import hu.elte.txtuml.layout.visualizer.helpers.Helper;
 import hu.elte.txtuml.layout.visualizer.helpers.Pair;
+import hu.elte.txtuml.layout.visualizer.model.AssociationType;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation.RouteConfig;
@@ -38,8 +39,10 @@ public class ArrangeAssociations
 	private Set<RectangleObject> _objects;
 	private ArrayList<LineAssociation> _assocs;
 	private HashMap<Pair<String, RouteConfig>, HashSet<Point>> _possibleStarts;
+	private HashMap<String, HashSet<Integer>> _batches;
 	
 	private Integer _gId;
+	private Boolean _batching;
 	private Boolean _logging;
 	
 	/**
@@ -64,6 +67,8 @@ public class ArrangeAssociations
 	 *            Statements on associations.
 	 * @param gid
 	 *            The max group id yet existing.
+	 * @param batch
+	 *            Whether to use batching or not.
 	 * @param log
 	 *            Whether to print out logging msgs.
 	 * @throws ConversionException
@@ -79,10 +84,11 @@ public class ArrangeAssociations
 	 */
 	public ArrangeAssociations(Set<RectangleObject> diagramObjects,
 			Set<LineAssociation> diagramAssocs, ArrayList<Statement> stats, Integer gid,
-			Boolean log) throws ConversionException, InternalException,
+			Boolean batch, Boolean log) throws ConversionException, InternalException,
 			CannotFindAssociationRouteException, UnknownStatementException
 	{
 		_gId = gid;
+		_batching = batch;
 		_logging = log;
 		
 		if (diagramAssocs == null || diagramAssocs.size() == 0 || diagramAssocs == null
@@ -102,6 +108,7 @@ public class ArrangeAssociations
 		_objects = diagramObjects;
 		_assocs = Helper.cloneLinkList((ArrayList<LineAssociation>) diagramAssocs
 				.stream().collect(Collectors.toList()));
+		_batches = setBatches();
 		
 		// Inflate diagram to start with a object width enough for the
 		// maximum number of links
@@ -145,6 +152,54 @@ public class ArrangeAssociations
 		}
 		
 		_objects = diagramObjects;
+	}
+	
+	private HashMap<String, HashSet<Integer>> setBatches()
+	{
+		HashMap<String, HashSet<Integer>> result = new HashMap<String, HashSet<Integer>>();
+		
+		Integer id = 1;
+		
+		for (LineAssociation a : _assocs)
+		{
+			if (!result.containsKey(a.getId()))
+			{
+				HashSet<LineAssociation> sameKinds = new HashSet<LineAssociation>();
+				sameKinds.add(a);
+				if (_batching)
+				{
+					sameKinds.addAll(_assocs
+							.stream()
+							.filter(as -> !as.isReflexive()
+									&& !as.getType().equals(AssociationType.normal)
+									&& as.getType().equals(a.getType())
+									&& (as.getFrom().equals(a.getFrom())
+											|| as.getTo().equals(a.getTo())
+											|| as.getTo().equals(a.getFrom()) || as
+											.getFrom().equals(a.getTo())))
+							.collect(Collectors.toSet()));
+				}
+				
+				for (LineAssociation same : sameKinds)
+				{
+					if (result.containsKey(same.getId()))
+					{
+						HashSet<Integer> temp = result.get(same.getId());
+						temp.add(id);
+						result.put(same.getId(), temp);
+					}
+					else
+					{
+						HashSet<Integer> temp = new HashSet<Integer>();
+						temp.add(id);
+						result.put(same.getId(), temp);
+					}
+				}
+				++id;
+			}
+		}
+		
+		return result;
 	}
 	
 	private Set<RectangleObject> defaultGrid(Integer k, Set<RectangleObject> objs)
@@ -225,10 +280,9 @@ public class ArrangeAssociations
 		// Gather data
 		HashMap<String, Integer> data = new HashMap<String, Integer>();
 		
+		Integer countMod = 1;
 		for (LineAssociation a : as)
 		{
-			Integer countMod = 1;
-			
 			// From
 			if (data.containsKey(a.getFrom()))
 			{
@@ -238,6 +292,9 @@ public class ArrangeAssociations
 			{
 				data.put(a.getFrom(), countMod);
 			}
+			
+			if (a.isReflexive())
+				continue;
 			// To
 			if (data.containsKey(a.getTo()))
 			{
@@ -300,7 +357,7 @@ public class ArrangeAssociations
 	}
 	
 	private Set<Node> setStartSet(Pair<String, RouteConfig> key, Point start,
-			Integer width, Set<Point> occupied)
+			Integer width, Set<Point> occupied, Boolean isReflexive)
 	{
 		Set<Point> result = new HashSet<Point>();
 		
@@ -330,6 +387,25 @@ public class ArrangeAssociations
 		// Remove corner points
 		result.removeIf(p -> Helper.isCornerPoint(p, tempObj));
 		
+		if (isReflexive)
+		{
+			Point northern = Point.Add(start, new Point(0, (width - 1) / 2));
+			result.removeIf(p -> p.getY().equals(northern.getY())
+					&& Point.isInTheDirection(northern, p, Direction.east));
+			
+			Point eastern = Point.Add(start, new Point((width - 1) / 2, 0));
+			result.removeIf(p -> p.getX().equals(eastern.getX())
+					&& Point.isInTheDirection(eastern, p, Direction.south));
+			
+			Point southern = Point.Add(start, new Point(0, -1 * (width - 1) / 2));
+			result.removeIf(p -> p.getY().equals(southern.getY())
+					&& Point.isInTheDirection(southern, p, Direction.west));
+			
+			Point western = Point.Add(start, new Point(-1 * (width - 1) / 2, 0));
+			result.removeIf(p -> p.getX().equals(western.getX())
+					&& Point.isInTheDirection(western, p, Direction.north));
+		}
+		
 		Set<Point> result2 = new HashSet<Point>();
 		for (Point p : result)
 		{
@@ -354,7 +430,7 @@ public class ArrangeAssociations
 	}
 	
 	private Set<Node> setEndSet(Pair<String, RouteConfig> key, Point end, Integer width,
-			Set<Point> occupied)
+			Set<Point> occupied, Boolean isReflexive)
 	{
 		Set<Point> result = _possibleStarts.get(key);
 		
@@ -371,6 +447,25 @@ public class ArrangeAssociations
 		result.removeIf(p -> occupied.contains(p));
 		// Corners
 		result.removeIf(p -> Helper.isCornerPoint(p, temp));
+		
+		if (isReflexive)
+		{
+			Point northern = Point.Add(end, new Point(0, (width - 1) / 2));
+			result.removeIf(p -> p.getY().equals(northern.getY())
+					&& Point.isInTheDirection(northern, p, Direction.west));
+			
+			Point eastern = Point.Add(end, new Point((width - 1) / 2, 0));
+			result.removeIf(p -> p.getX().equals(eastern.getX())
+					&& Point.isInTheDirection(eastern, p, Direction.north));
+			
+			Point southern = Point.Add(end, new Point(0, -1 * (width - 1) / 2));
+			result.removeIf(p -> p.getY().equals(southern.getY())
+					&& Point.isInTheDirection(southern, p, Direction.east));
+			
+			Point western = Point.Add(end, new Point(-1 * (width - 1) / 2, 0));
+			result.removeIf(p -> p.getX().equals(western.getX())
+					&& Point.isInTheDirection(western, p, Direction.south));
+		}
 		
 		return convertToInvertedNodes(result, end);
 	}
@@ -567,19 +662,28 @@ public class ArrangeAssociations
 			Point START = a.getRoute(LineAssociation.RouteConfig.START);
 			Point END = a.getRoute(LineAssociation.RouteConfig.END);
 			Integer WIDTH = diagramObjects.stream().findFirst().get().getWidth();
+			Set<Integer> myBatch = _batches.get(a.getId());
 			
 			Set<Node> STARTSET = setStartSet(
 					new Pair<String, RouteConfig>(a.getId(), RouteConfig.START),
 					START,
 					WIDTH,
-					occupiedLinks.stream().filter(pp -> pp.Color.equals(Colors.Red))
-							.map(p -> p.Inner).collect(Collectors.toSet()));
+					occupiedLinks
+							.stream()
+							.filter(pp -> pp.Color.equals(Colors.Red)
+									&& !pp.Batch.stream().anyMatch(
+											b -> myBatch.contains(b))).map(p -> p.Inner)
+							.collect(Collectors.toSet()), a.isReflexive());
 			Set<Node> ENDSET = setEndSet(
 					new Pair<String, RouteConfig>(a.getId(), RouteConfig.END),
 					END,
 					WIDTH,
-					occupiedLinks.stream().filter(pp -> pp.Color.equals(Colors.Red))
-							.map(p -> p.Inner).collect(Collectors.toSet()));
+					occupiedLinks
+							.stream()
+							.filter(pp -> pp.Color.equals(Colors.Red)
+									&& !pp.Batch.stream().anyMatch(
+											b -> myBatch.contains(b))).map(p -> p.Inner)
+							.collect(Collectors.toSet()), a.isReflexive());
 			
 			// Assemble occupied points
 			Set<Painted<Point>> OBJS = new HashSet<Painted<Point>>();
@@ -611,7 +715,8 @@ public class ArrangeAssociations
 						"Cannot get out of start, or cannot enter end!");
 			}
 			
-			GraphSearch gs = new GraphSearch(STARTSET, ENDSET, OBJS, top);
+			GraphSearch gs = new GraphSearch(STARTSET, ENDSET, OBJS, top, _batches.get(a
+					.getId()));
 			a.setRoute(convertFromNodes(gs.value(), START, END));
 			a.setExtends(gs.extendsNum());
 			
@@ -629,12 +734,12 @@ public class ArrangeAssociations
 								a.getRoute().get(ri + 1))))
 				{
 					occupiedLinks.add(new Painted<Point>(Colors.Red, new Point(a
-							.getRoute().get(ri))));
+							.getRoute().get(ri)), _batches.get(a.getId())));
 				}
 				else
 				{
 					occupiedLinks.add(new Painted<Point>(Colors.Yellow, new Point(a
-							.getRoute().get(ri))));
+							.getRoute().get(ri)), _batches.get(a.getId())));
 				}
 			}
 		}

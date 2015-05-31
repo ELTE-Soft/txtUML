@@ -264,11 +264,11 @@ public class LineAssociation
 		
 		int count = 0;
 		
-		for (int i = 2; i < _route.size(); ++i)
+		for (int i = 2; i < _route.size() - 2; ++i)
 		{
-			Point a = _route.get(i - 2);
-			Point b = _route.get(i - 1);
-			Point c = _route.get(i);
+			Point a = _route.get(i - 1);
+			Point b = _route.get(i);
+			Point c = _route.get(i + 1);
 			
 			if (!Point.Substract(a, b).equals(Point.Substract(b, c)))
 			{
@@ -565,7 +565,7 @@ public class LineAssociation
 		result += " (" + _type.toString() + ")";
 		if (_route != null && _route.size() > 0)
 		{
-			result += ", #Turns: " + _turns + ", #Extends: " + _extends;
+			result += ", #Turns: " + getTurns() + ", #Extends: " + _extends;
 			result += ", Route(" + (_route.size() - 1) + "): ";
 			for (Point p : _route)
 				result += p.toString() + "->";

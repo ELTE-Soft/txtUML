@@ -52,7 +52,7 @@ public class LayoutVisualize
 	
 	@SuppressWarnings("unused")
 	private DiagramType _diagramType;
-	
+	private Boolean _batching;
 	private Boolean _logging;
 	
 	/***
@@ -103,7 +103,8 @@ public class LayoutVisualize
 		_objects = null;
 		_assocs = null;
 		_diagramType = DiagramType.Class;
-		_logging = true;
+		_batching = false;
+		_logging = false;
 	}
 	
 	/**
@@ -117,6 +118,7 @@ public class LayoutVisualize
 		_objects = null;
 		_assocs = null;
 		_diagramType = DiagramType.Class;
+		_batching = false;
 		_logging = isLog;
 	}
 	
@@ -126,12 +128,15 @@ public class LayoutVisualize
 	 * 
 	 * @param type
 	 *            The type of the diagram to arrange.
+	 * @param batch
+	 *            Whether to use batching during link arrange or not.
 	 */
-	public LayoutVisualize(DiagramType type)
+	public LayoutVisualize(DiagramType type, Boolean batch)
 	{
 		_objects = null;
 		_assocs = null;
 		_diagramType = type;
+		_batching = batch;
 		_logging = true;
 	}
 	
@@ -144,12 +149,15 @@ public class LayoutVisualize
 	 * 
 	 * @param type
 	 *            The type of the diagram to arrange.
+	 * @param batch
+	 *            Whether to use batching during link arrange or not.
 	 */
-	public LayoutVisualize(boolean isLog, DiagramType type)
+	public LayoutVisualize(boolean isLog, DiagramType type, Boolean batch)
 	{
 		_objects = null;
 		_assocs = null;
 		_diagramType = type;
+		_batching = false;
 		_logging = isLog;
 	}
 	
@@ -183,6 +191,9 @@ public class LayoutVisualize
 	{
 		if (_objects == null)
 			return;
+		
+		if (_logging)
+			System.err.println("Starting arrange...");
 		
 		// set default statements
 		Optional<Integer> tempMax = stats.stream().filter(s -> s.getGroupId() != null)
@@ -220,6 +231,9 @@ public class LayoutVisualize
 		_statements = Helper.cloneStatementList(stats);
 		
 		StatementHelper.checkTypes(_statements, _assocStatements, _objects, _assocs);
+		
+		if (_logging)
+			System.err.println("> Starting box arrange...");
 		
 		// Arrange objects
 		Boolean isConflicted;
@@ -259,11 +273,11 @@ public class LayoutVisualize
 							.collect(Collectors.toList()));
 					
 					_statements.removeAll(toDeletes);
-					if (_logging.equals(true))
+					if (_logging)
 					{
 						for (Statement stat : toDeletes)
 						{
-							System.err.println("Weak(" + stat.toString()
+							System.err.println("> > Weak(" + stat.toString()
 									+ ") statement deleted!");
 						}
 					}
@@ -293,15 +307,21 @@ public class LayoutVisualize
 					{
 						for (Statement stat : toDeletes)
 						{
-							System.err.println("Weak(" + stat.toString()
+							System.err.println("> > Weak(" + stat.toString()
 									+ ") statement deleted!");
 						}
 					}
 				}
 				else
 					throw ex;
+				
+				if (_logging)
+					System.err.println("> > ReTrying box arrange!");
 			}
 		} while (isConflicted);
+		
+		if (_logging)
+			System.err.println("> Box arrange DONE!");
 		
 		// Set start-end positions for associations
 		for (LineAssociation a : _assocs)
@@ -340,10 +360,16 @@ public class LayoutVisualize
 		if (_assocs.size() <= 0)
 			return;
 		
+		if (_logging)
+			System.err.println("> Starting link arrange...");
+		
 		ArrangeAssociations aa = new ArrangeAssociations(_objects, _assocs,
-				_assocStatements, maxGroupId, _logging);
+				_assocStatements, maxGroupId, _batching, _logging);
 		_assocs = aa.value();
 		_objects = aa.objects();
+		
+		if (_logging)
+			System.err.println("> Link arrange DONE!");
 	}
 	
 	/***

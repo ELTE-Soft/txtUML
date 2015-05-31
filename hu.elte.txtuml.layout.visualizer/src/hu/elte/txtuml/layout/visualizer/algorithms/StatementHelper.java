@@ -170,7 +170,7 @@ class StatementHelper
 			case south:
 			case east:
 			case west:
-				// 2 féle is lehet
+				// both type
 				if (ob.stream().anyMatch(o -> o.getName().equals(st.getParameter(0)))
 						&& ob.stream().anyMatch(
 								o -> o.getName().equals(st.getParameter(1))))
@@ -186,14 +186,14 @@ class StatementHelper
 			case left:
 			case horizontal:
 			case vertical:
-				// csak obejct lehet
+				// only object/box
 				if (ob.stream().anyMatch(o -> o.getName().equals(st.getParameter(0)))
 						&& ob.stream().anyMatch(
 								o -> o.getName().equals(st.getParameter(1))))
 					return true;
 				break;
 			case priority:
-				// csak assoc lehet
+				// only assoc/link
 				if (as.stream().anyMatch(a -> a.getId().equals(st.getParameter(0)))
 						&& Helper.tryParseInt(st.getParameter(1)))
 					return true;
@@ -236,6 +236,9 @@ class StatementHelper
 					}
 					++gid;
 					result.add(new Statement(StatementType.north, StatementLevel.Low,
+							gid, a.getFrom(), a.getTo()));
+					++gid;
+					result.add(new Statement(StatementType.above, StatementLevel.Low,
 							gid, a.getFrom(), a.getTo()));
 					break;
 				case aggregation:
