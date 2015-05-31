@@ -139,14 +139,10 @@ public class ArrangeObjects
 						
 						RectangleObject mod = _objects.stream()
 								.filter(o -> o.getName().equals(nameOfTheObject))
-								.collect(Collectors.toList()).get(0);
-						
-						_objects.remove(mod);
+								.findFirst().get();
 						
 						mod.setPosition(new Point(mod.getPosition().getX(), (int) sp
 								.distTo(v)));
-						
-						_objects.add(mod);
 					}
 					else
 					{
@@ -155,14 +151,9 @@ public class ArrangeObjects
 						
 						RectangleObject mod = _objects.stream()
 								.filter(o -> o.getName().equals(nameOfTheObject))
-								.collect(Collectors.toList()).get(0);
-						
-						_objects.remove(mod);
-						
+								.findFirst().get();
 						mod.setPosition(new Point((int) sp.distTo(v), mod.getPosition()
 								.getY()));
-						
-						_objects.add(mod);
 					}
 				}
 				else
@@ -192,7 +183,7 @@ public class ArrangeObjects
 			System.err.print("Arranging overlaps...");
 		
 		HashMap<Point, Integer> overlaps = new HashMap<Point, Integer>();
-		Integer max = new Integer(0);
+		Integer max = 0;
 		
 		for (RectangleObject o : _objects)
 		{
@@ -209,8 +200,11 @@ public class ArrangeObjects
 		if (max <= 1)
 		{
 			// Nothing to do!
+			if (_logging)
+				System.err.println("NOTHING TO DO!");
 			return;
 		}
+		
 		_transformAmount = (int) Math.floor((Math.ceil(Math.sqrt(max))) + 1);
 		
 		// Multiply coordinates by _transformAmount

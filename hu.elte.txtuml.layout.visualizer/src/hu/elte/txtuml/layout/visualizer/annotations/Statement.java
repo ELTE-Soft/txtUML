@@ -2,6 +2,7 @@ package hu.elte.txtuml.layout.visualizer.annotations;
 
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
+import hu.elte.txtuml.layout.visualizer.helpers.Helper;
 
 import java.util.ArrayList;
 
@@ -81,6 +82,20 @@ public class Statement
 	public Boolean isUserDefined()
 	{
 		return _level.equals(StatementLevel.User);
+	}
+	
+	/**
+	 * Returns whether this {@link Statement} is strict or not.
+	 * 
+	 * @return whether this {@link Statement} is strict or not.
+	 */
+	public Boolean isStrict()
+	{
+		if (_type.equals(StatementType.above) || _type.equals(StatementType.below)
+				|| _type.equals(StatementType.right) || _type.equals(StatementType.left))
+			return true;
+		
+		return false;
 	}
 	
 	/**
@@ -271,6 +286,20 @@ public class Statement
 		if (!_level.equals(StatementLevel.User) && _group == null)
 			throw new InternalException("This statement should have group Id: "
 					+ this.toString() + "!");
+	}
+	
+	/**
+	 * Creates Layout Statement based on another Statement.
+	 * 
+	 * @param s
+	 *            Statement to copy.
+	 */
+	public Statement(Statement s)
+	{
+		this._type = s._type;
+		this._parameters = Helper.cloneStringList(s._parameters);
+		this._level = s._level;
+		this._group = s._group;
 	}
 	
 	// end Ctors

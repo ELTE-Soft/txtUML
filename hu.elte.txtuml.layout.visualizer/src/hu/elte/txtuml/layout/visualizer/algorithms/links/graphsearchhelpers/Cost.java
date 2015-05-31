@@ -1,7 +1,5 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers;
 
-import hu.elte.txtuml.layout.visualizer.model.Point;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,29 +7,31 @@ import java.util.Map;
  * Class that helps the Graph search algorithm to store the costs of each point.
  * 
  * @author Balázs Gregorics
+ * @param <T>
+ *            Type of the Nodes.
  *
  */
-public class Cost
+public class Cost<T>
 {
-	private Map<Point, Integer> _c;
+	private Map<T, Double> _c;
 	
 	/**
 	 * Create Cost.
 	 */
 	public Cost()
 	{
-		_c = new HashMap<Point, Integer>();
+		_c = new HashMap<T, Double>();
 	}
 	
 	/**
 	 * Set cost of a point.
 	 * 
 	 * @param p
-	 *            Point to set the cost of.
+	 *            T to set the cost of.
 	 * @param i
 	 *            Cost to set.
 	 */
-	public void set(Point p, Integer i)
+	public void set(T p, Double i)
 	{
 		_c.put(p, i);
 	}
@@ -40,10 +40,10 @@ public class Cost
 	 * Get the cost of a point.
 	 * 
 	 * @param p
-	 *            Point to get the cost of.
+	 *            T to get the cost of.
 	 * @return The cost of the point.
 	 */
-	public Integer get(Point p)
+	public Double get(T p)
 	{
 		return _c.get(p);
 	}

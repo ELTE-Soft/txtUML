@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class DefaultAssocStatements
+class DefaultAssocStatements
 {
 	
 	private ArrayList<Statement> _result;
@@ -54,10 +54,11 @@ public class DefaultAssocStatements
 		if (minPriority.isPresent())
 		{
 			Integer min = minPriority.get();
-			if ((assocs.size() - priorities.size()) >= min)
+			Integer freeLinkCount = (assocs.size() - priorities.size());
+			if (freeLinkCount >= min)
 			{
 				// not good, ++ every prior
-				Integer alterAmount = (assocs.size() - priorities.size());
+				Integer alterAmount = freeLinkCount;
 				for (Statement s : _result)
 				{
 					if (s.getType().equals(StatementType.priority))
@@ -69,7 +70,7 @@ public class DefaultAssocStatements
 			}
 		}
 		
-		Integer actPrior = 0;
+		Integer actPrior = 1;
 		ArrayList<LineAssociation> orderedAssocs = (ArrayList<LineAssociation>) assocs
 				.stream().collect(Collectors.toList());
 		orderedAssocs.sort((a1, a2) ->
@@ -78,9 +79,9 @@ public class DefaultAssocStatements
 		});
 		for (LineAssociation a : orderedAssocs)
 		{
-			++_gId;
 			if (!priorities.stream().anyMatch(s -> s.getParameter(0).equals(a.getId())))
 			{
+				++_gId;
 				_result.add(new Statement(StatementType.priority, StatementLevel.Low,
 						_gId, a.getId(), actPrior.toString()));
 				++actPrior;

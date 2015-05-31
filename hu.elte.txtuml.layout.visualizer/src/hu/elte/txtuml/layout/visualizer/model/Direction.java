@@ -59,4 +59,28 @@ public enum Direction
 	{
 		return Direction.fromInteger((dir.ordinal() + 1) % 4);
 	}
+	
+	/**
+	 * Returns the oposite {@link Direction} of the given dir.
+	 * 
+	 * @param dir
+	 *            the {@link Direction} you want the opposite of.
+	 * @return the oposite {@link Direction} of the given dir.
+	 */
+	public static Direction opposite(Direction dir)
+	{
+		switch (dir)
+		{
+			case north:
+				return south;
+			case east:
+				return west;
+			case south:
+				return north;
+			case west:
+				return east;
+		}
+		return null;
+	}
+	
 }

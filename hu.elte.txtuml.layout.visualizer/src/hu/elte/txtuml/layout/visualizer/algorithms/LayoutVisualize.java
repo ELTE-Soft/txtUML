@@ -12,6 +12,7 @@ import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
+import hu.elte.txtuml.layout.visualizer.helpers.Helper;
 import hu.elte.txtuml.layout.visualizer.helpers.Pair;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Point;
@@ -106,6 +107,20 @@ public class LayoutVisualize
 	}
 	
 	/**
+	 * Layout algorithm initialize. Use load(), then arrange().
+	 * 
+	 * @param isLog
+	 *            Whether to print out logging messages.
+	 */
+	public LayoutVisualize(boolean isLog)
+	{
+		_objects = null;
+		_assocs = null;
+		_diagramType = DiagramType.Class;
+		_logging = isLog;
+	}
+	
+	/**
 	 * Layout algorithm initialize for setting the reflexive links arrange. Use
 	 * load(), then arrange().
 	 * 
@@ -118,6 +133,24 @@ public class LayoutVisualize
 		_assocs = null;
 		_diagramType = type;
 		_logging = true;
+	}
+	
+	/**
+	 * Layout algorithm initialize for setting the reflexive links arrange. Use
+	 * load(), then arrange().
+	 * 
+	 * @param isLog
+	 *            Whether to print out logging messages.
+	 * 
+	 * @param type
+	 *            The type of the diagram to arrange.
+	 */
+	public LayoutVisualize(boolean isLog, DiagramType type)
+	{
+		_objects = null;
+		_assocs = null;
+		_diagramType = type;
+		_logging = isLog;
 	}
 	
 	/***
@@ -184,7 +217,7 @@ public class LayoutVisualize
 				.collect(Collectors.toSet()));
 		
 		// Remove duplicates
-		_statements = StatementHelper.reduceObjects(stats, _objects);
+		_statements = Helper.cloneStatementList(stats);
 		
 		StatementHelper.checkTypes(_statements, _assocStatements, _objects, _assocs);
 		

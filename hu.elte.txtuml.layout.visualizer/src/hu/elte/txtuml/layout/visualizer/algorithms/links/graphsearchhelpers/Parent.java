@@ -1,7 +1,5 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers;
 
-import hu.elte.txtuml.layout.visualizer.model.Point;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,18 +9,20 @@ import java.util.Map.Entry;
  * graph.
  * 
  * @author Balázs Gregorics
+ * @param <T>
+ *            Type of the Nodes.
  *
  */
-public class Parent
+public class Parent<T>
 {
-	private Map<Point, Point> _pi;
+	private Map<T, T> _pi;
 	
 	/**
 	 * Create Parent.
 	 */
 	public Parent()
 	{
-		_pi = new HashMap<Point, Point>();
+		_pi = new HashMap<T, T>();
 	}
 	
 	/**
@@ -33,7 +33,7 @@ public class Parent
 	 * @param parent
 	 *            Parent.
 	 */
-	public void set(Point child, Point parent)
+	public void set(T child, T parent)
 	{
 		_pi.put(child, parent);
 	}
@@ -45,7 +45,7 @@ public class Parent
 	 *            Child.
 	 * @return parent of the child.
 	 */
-	public Point get(Point child)
+	public T get(T child)
 	{
 		return _pi.get(child);
 	}
@@ -57,14 +57,13 @@ public class Parent
 	 *            Parent to search for.
 	 * @return True if the given parent has a child, else false.
 	 */
-	public Boolean hasChild(Point parent)
+	public Boolean hasChild(T parent)
 	{
-		for (Entry<Point, Point> entry : _pi.entrySet())
+		for (Entry<T, T> entry : _pi.entrySet())
 		{
-			if (entry.getValue() != null)
+			if (entry.getValue() != null && entry.getValue().equals(parent))
 			{
-				if (entry.getValue().equals(parent) && entry.getKey() != null)
-					return true;
+				return true;
 			}
 		}
 		

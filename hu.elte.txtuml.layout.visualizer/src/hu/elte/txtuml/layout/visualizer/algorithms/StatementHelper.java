@@ -160,36 +160,6 @@ class StatementHelper
 				.map(s -> s.getParameter(0)).collect(Collectors.toSet());
 	}
 	
-	public static ArrayList<Statement> reduceObjects(ArrayList<Statement> stats,
-			Set<RectangleObject> objs) throws InternalException
-	{
-		ArrayList<Statement> result = new ArrayList<Statement>();
-		
-		stats.sort((s1, s2) ->
-		{
-			if (s1.isUserDefined() && !s2.isUserDefined())
-				return -1;
-			else if (!s1.isUserDefined() && s2.isUserDefined())
-				return 1;
-			else
-				return 0;
-		});
-		
-		// Delete duplicates and reverse duplicates
-		for (Statement s : stats)
-		{
-			// Check normal
-			if (result.contains(s))
-				continue;
-			else if (result.contains(opposite(s)))
-				continue;
-			else
-				result.add(s);
-		}
-		
-		return result;
-	}
-	
 	public static boolean isTypeChecked(Statement st, Set<RectangleObject> ob,
 			Set<LineAssociation> as) throws InternalException
 	{

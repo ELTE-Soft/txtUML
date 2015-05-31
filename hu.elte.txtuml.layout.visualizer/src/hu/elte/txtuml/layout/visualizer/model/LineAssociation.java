@@ -207,6 +207,7 @@ public class LineAssociation
 	public void setRoute(ArrayList<Point> value)
 	{
 		_route = Helper.clonePointList(value);
+		_turns = -1;
 	}
 	
 	/***
@@ -258,18 +259,25 @@ public class LineAssociation
 	 */
 	public Integer getTurns()
 	{
+		if (_turns != -1)
+			return _turns;
+		
+		int count = 0;
+		
+		for (int i = 2; i < _route.size(); ++i)
+		{
+			Point a = _route.get(i - 2);
+			Point b = _route.get(i - 1);
+			Point c = _route.get(i);
+			
+			if (!Point.Substract(a, b).equals(Point.Substract(b, c)))
+			{
+				++count;
+			}
+		}
+		
+		_turns = count;
 		return _turns;
-	}
-	
-	/***
-	 * Setter for the turns the link makes during it's route.
-	 * 
-	 * @param value
-	 *            Number of turns.
-	 */
-	public void setTurns(Integer value)
-	{
-		_turns = value;
 	}
 	
 	/***
@@ -315,7 +323,7 @@ public class LineAssociation
 		_from = f;
 		_to = t;
 		_route = new ArrayList<Point>();
-		_turns = 0;
+		_turns = -1;
 		_extends = 0;
 		_type = AssociationType.normal;
 	}
@@ -356,7 +364,7 @@ public class LineAssociation
 		_route = new ArrayList<Point>();
 		_route.add(f.getPosition());
 		_route.add(t.getPosition());
-		_turns = 0;
+		_turns = -1;
 		_extends = 0;
 		_type = AssociationType.normal;
 	}
@@ -402,7 +410,7 @@ public class LineAssociation
 		_route = new ArrayList<Point>();
 		_route.add(s);
 		_route.add(e);
-		_turns = 0;
+		_turns = -1;
 		_extends = 0;
 		_type = AssociationType.normal;
 	}

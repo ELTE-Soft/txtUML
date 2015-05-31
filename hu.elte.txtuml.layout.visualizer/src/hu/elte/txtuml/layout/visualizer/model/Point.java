@@ -263,6 +263,44 @@ public class Point
 		return p1.isInTheDirection(p2, dir, inLineCounts);
 	}
 	
+	/**
+	 * Method to compute in which {@link Direction} does relative is from p.
+	 * 
+	 * @param p
+	 *            {@link Point} to check.
+	 * @param relative
+	 *            {@link Point} to relate.
+	 * @return the {@link Direction} of p from relative.
+	 */
+	public static Direction directionOf(Point p, Point relative)
+	{
+		Point temp = Point.Substract(p, relative);
+		if (Math.abs(temp.getX()) > Math.abs(temp.getY()))
+		{
+			if (temp.getX() > 0)
+			{
+				return Direction.east;
+			}
+			else if (temp.getX() < 0)
+			{
+				return Direction.west;
+			}
+		}
+		else if (Math.abs(temp.getX()) < Math.abs(temp.getY()))
+		{
+			if (temp.getY() > 0)
+			{
+				return Direction.north;
+			}
+			else if (temp.getY() < 0)
+			{
+				return Direction.south;
+			}
+		}
+		
+		return null;
+	}
+	
 	// end Statics
 	
 	// Equality

@@ -1,6 +1,7 @@
 package hu.elte.txtuml.layout.visualizer.helpers;
 
 import hu.elte.txtuml.layout.visualizer.algorithms.DiagramType;
+import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
@@ -25,7 +26,7 @@ public class Helper
 {
 	
 	/**
-	 * Method to clone a specific Set. A set of Points.
+	 * Method to clone a specific Set. A set of {@link Point}s.
 	 * 
 	 * @param toClone
 	 *            The set to clone.
@@ -38,6 +39,25 @@ public class Helper
 		for (Point p : toClone)
 		{
 			result.add(p.clone());
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Method to clone a specific List. A list of {@link Statement}s.
+	 * 
+	 * @param toClone
+	 *            List of {@link Statement}s
+	 * @return The cloned list.
+	 */
+	public static ArrayList<Statement> cloneStatementList(ArrayList<Statement> toClone)
+	{
+		ArrayList<Statement> result = new ArrayList<Statement>();
+		
+		for (Statement s : toClone)
+		{
+			result.add(new Statement(s));
 		}
 		
 		return result;
@@ -268,8 +288,8 @@ public class Helper
 		if (p.getX() < 0 && p.getY() == 0)
 			return Direction.west;
 		
-		throw new ConversionException("Cannot convert Point [" + p.toString()
-				+ "] to any Direction!");
+		throw new ConversionException("Cannot convert Point " + p.toString()
+				+ " to any Direction!");
 	}
 	
 	/**
