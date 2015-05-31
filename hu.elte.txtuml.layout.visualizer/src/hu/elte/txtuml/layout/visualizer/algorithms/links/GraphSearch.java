@@ -32,7 +32,7 @@ class GraphSearch
 	
 	private final Double _weightLength = 1.0;
 	private final Double _weightTurns = 2.0;
-	private final Double _weightCrossing = 1.0;
+	private final Double _weightCrossing = 2.0;
 	private final Integer _penalizeTurns = 2;
 	
 	// end Constants

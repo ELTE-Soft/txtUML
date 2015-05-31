@@ -15,6 +15,7 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -214,12 +215,25 @@ class StatementHelper
 			throws InternalException
 	{
 		ArrayList<Statement> result = new ArrayList<Statement>();
+		HashMap<String, ArrayList<String>> generalizationMap = new HashMap<String, ArrayList<String>>();
 		
 		for (LineAssociation a : assocs)
 		{
 			switch (a.getType())
 			{
 				case generalization:
+					if (generalizationMap.containsKey(a.getFrom()))
+					{
+						ArrayList<String> temp = generalizationMap.get(a.getFrom());
+						temp.add(a.getTo());
+						generalizationMap.put(a.getFrom(), temp);
+					}
+					else
+					{
+						ArrayList<String> temp = new ArrayList<String>();
+						temp.add(a.getTo());
+						generalizationMap.put(a.getFrom(), temp);
+					}
 					++gid;
 					result.add(new Statement(StatementType.north, StatementLevel.Low,
 							gid, a.getFrom(), a.getTo()));
@@ -229,6 +243,26 @@ class StatementHelper
 				case normal:
 				default:
 					break;
+			}
+		}
+		
+		// Arrange generalization children
+		for (Entry<String, ArrayList<String>> entry : generalizationMap.entrySet())
+		{
+			if (entry.getValue().size() > 1)
+			{
+				++gid;
+				for (int i = 0; i < entry.getValue().size() - 1; ++i)
+				{
+					String s1 = entry.getValue().get(i);
+					for (int j = i + 1; j < entry.getValue().size(); ++j)
+					{
+						String s2 = entry.getValue().get(j);
+						
+						result.add(new Statement(StatementType.horizontal,
+								StatementLevel.Low, gid, s1, s2));
+					}
+				}
 			}
 		}
 		
