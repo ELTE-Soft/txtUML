@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="hu.elte.txtuml.export.papyrus.handlers.InstantHandler"
+            id="hu.elte.txtuml.export.papyrus.InstantCommand"
+            name="InstantCommand">
+      </command>
+      <command
+            defaultHandler="hu.elte.txtuml.export.papyrus.handlers.WizardHandler"
+            id="hu.elte.txtuml.export.papyrus.WizardCommand"
+            name="WizardCommand">
+      </command>
+      <command
+            defaultHandler="hu.elte.txtuml.export.papyrus.handlers.PreferencesPageHandler"
+            id="hu.elte.txtuml.export.papyrus.PreferencePageCommand"
+            name="PreferencePageCommand">
+      </command>
+      <command
+            defaultHandler="hu.elte.txtuml.export.papyrus.handlers.TxtUMLVisualizeHandler"
+            id="hu.elte.txtuml.export.papyrus.txtUMLVisualize"
+            name="txtUMLVisualize">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions">
+         <command
+               commandId="hu.elte.txtuml.export.papyrus.InstantCommand"
+               icon="icons/sample.png"
+               label="*.uml to Papyrus"
+               style="push"
+               tooltip="Generates a papyrus model from the uml file">
+            <visibleWhen
+                  checkEnabled="false">
+                  <with
+                    variable="selection">
+                 <iterate
+                       ifEmpty="false"
+                       operator="or">
+                    <adapt
+                          type="org.eclipse.core.resources.IResource">
+                          <test
+                                property="org.eclipse.core.resources.extension"
+                                value="uml">
+                          </test>
+                 	</adapt>
+                 </iterate>
+              </with>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:org.eclipse.ui.main.menu">
+         <menu
+               label="txtUML">
+            <command
+                  commandId="hu.elte.txtuml.export.papyrus.txtUMLVisualize"
+                  icon="icons/sample.png"
+                  label="Visualize txtUML Model"
+                  style="push">
+            </command>
+            <command
+                  commandId="hu.elte.txtuml.export.papyrus.WizardCommand"
+                  icon="icons/sample.png"
+                  label="uml to Papyrus"
+                  style="push">
+            </command>
+            <separator
+                  name="separator"
+                  visible="true">
+            </separator>
+            <command
+                  commandId="hu.elte.txtuml.export.papyrus.PreferencePageCommand"
+                  label="Preferences"
+                  style="push">
+            </command>
+         </menu>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="hu.elte.txtuml.export.papyrus.preferences.PreferencesPage"
+            id="hu.elte.txtuml.export.papyrus.preferences1"
+            name="txtUML Diagram generation">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="hu.elte.txtuml.export.papyrus.preferences.PreferencesInitializer">
+      </initializer>
+   </extension>
+
+</plugin>

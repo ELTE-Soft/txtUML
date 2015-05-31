@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests
+Bundle-SymbolicName: hu.elte.txtuml.export.uml2.tests
+Bundle-Version: 1.0.0.qualifier
+Export-Package: hu.elte.txtuml.export.uml2.transform
+Require-Bundle: hu.elte.txtuml.api,
+ hu.elte.txtuml.export.uml2,
+ org.eclipse.uml2.uml,
+ org.eclipse.uml2.uml.resources
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
