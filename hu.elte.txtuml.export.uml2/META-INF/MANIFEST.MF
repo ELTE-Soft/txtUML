@@ -1,8 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: txtUML Export to Uml2
+Bundle-Name: txtUML Export to UML2
 Bundle-SymbolicName: hu.elte.txtuml.export.uml2
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 0.1.0.qualifier
+Bundle-Vendor: ELTE
 Export-Package: hu.elte.txtuml.export.uml2,
  hu.elte.txtuml.export.uml2.transform,
  hu.elte.txtuml.export.uml2.transform.aspects
@@ -12,4 +13,3 @@ Require-Bundle: hu.elte.txtuml.api,
  hu.elte.txtuml.utils,
  org.aspectj.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-Vendor: ELTE

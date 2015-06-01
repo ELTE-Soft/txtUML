@@ -2,7 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: txtUML Papyrus Visualizer
 Bundle-SymbolicName: hu.elte.txtuml.export.papyrus;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 0.1.0.qualifier
+Bundle-Vendor: ELTE
 Bundle-Activator: hu.elte.txtuml.export.papyrus.Activator
 Require-Bundle: org.eclipse.debug.ui,
  org.eclipse.jdt.core,
