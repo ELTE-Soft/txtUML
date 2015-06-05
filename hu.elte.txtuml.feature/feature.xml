@@ -5,12 +5,15 @@
       version="0.1.0.qualifier"
       provider-name="ELTE">
 
-   <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+   <description url="http://txtuml.inf.elte.hu">
+      The txtUML project provides a Java API to build executable UML
+models. Visualization of class and state diagrams is possible
+in the Papyrus UML editor and a model compiler to C++ is also
+included.
    </description>
 
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
+   <copyright>
+      Eötvös Loránd University, Faculty of Informatics, 2014-2015
    </copyright>
 
    <license url="https://eclipse.org/org/documents/epl-v10.php">

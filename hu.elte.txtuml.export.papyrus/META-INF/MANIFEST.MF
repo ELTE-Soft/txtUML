@@ -41,4 +41,3 @@ Export-Package: hu.elte.txtuml.export.papyrus,
  hu.elte.txtuml.export.papyrus.handlers,
  hu.elte.txtuml.export.papyrus.preferences,
  hu.elte.txtuml.export.papyrus.wizardz
-Bundle-Vendor: ELTE
