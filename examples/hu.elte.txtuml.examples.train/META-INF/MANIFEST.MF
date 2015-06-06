@@ -1,0 +1,15 @@
+Bundle-SymbolicName: hu.elte.txtuml.examples.train
+Bundle-Version: 1.0.0.qualifier
+Bundle-Name: hu.elte.txtuml.train
+Require-Bundle:  hu.elte.txtuml.api,
+ hu.elte.txtuml.export.papyrus,
+ hu.elte.txtuml.export.uml2,
+ hu.elte.txtuml.layout.export,
+ hu.elte.txtuml.layout.visualizer,
+ hu.elte.txtuml.utils,
+ org.aspectj.runtime,
+ org.eclipse.uml2.uml,
+ org.eclipse.uml2.uml.resources
+Bundle-ManifestVersion: 2
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Manifest-Version: 1.0
