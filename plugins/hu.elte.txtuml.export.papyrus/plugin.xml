@@ -34,9 +34,9 @@
          <command
                commandId="hu.elte.txtuml.export.papyrus.InstantCommand"
                icon="icons/sample.png"
-               label="*.uml to Papyrus"
+               label="Generate diagrams from UML"
                style="push"
-               tooltip="Generates a papyrus model from the uml file">
+               tooltip="Generates Papyrus diagrams from the .uml file">
             <visibleWhen
                   checkEnabled="false">
                   <with
@@ -64,13 +64,13 @@
             <command
                   commandId="hu.elte.txtuml.export.papyrus.txtUMLVisualize"
                   icon="icons/sample.png"
-                  label="Visualize txtUML Model"
+                  label="Generate diagrams from txtUML"
                   style="push">
             </command>
             <command
                   commandId="hu.elte.txtuml.export.papyrus.WizardCommand"
                   icon="icons/sample.png"
-                  label="uml to Papyrus"
+                  label="Generate diagrams from UML"
                   style="push">
             </command>
             <separator
