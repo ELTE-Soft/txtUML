@@ -5,7 +5,7 @@ import hu.elte.txtuml.layout.export.interfaces.NodeMap;
 import hu.elte.txtuml.layout.lang.elements.LayoutNode;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,13 +16,15 @@ import java.util.Set;
  *
  */
 @SuppressWarnings("serial")
-public class NodeMapImpl extends HashMap<Class<? extends LayoutNode>, NodeInfo> implements NodeMap {
+public class NodeMapImpl extends LinkedHashMap<Class<? extends LayoutNode>, NodeInfo> implements NodeMap {
 
 	@Override
 	public Set<RectangleObject> convert() {
 		Set<RectangleObject> set = new HashSet<>();
 		this.forEach( (k, v) -> {
-			set.add(v.convert());
+		    if (!v.isPhantom()) {
+		        set.add(v.convert());
+		    }
 		});
 
 		return set;

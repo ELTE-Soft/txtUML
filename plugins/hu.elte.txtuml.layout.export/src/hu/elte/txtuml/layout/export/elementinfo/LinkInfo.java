@@ -21,7 +21,13 @@ public interface LinkInfo extends ElementInfo {
 	static LinkInfo create(Class<? extends LayoutElement> elementClass,
 			DiagramType diagType, String asString, NodeInfo start, NodeInfo end) {
 		
-		return new LinkInfoImpl(elementClass, diagType, asString, start, end);
+		return new LinkInfoImpl(elementClass, diagType, asString, start, end, false);
+	}
+	
+	static LinkInfo createGeneralization(Class<? extends LayoutElement> elementClass,
+            String asString, NodeInfo start, NodeInfo end) {
+	    
+	    return new LinkInfoImpl(elementClass, DiagramType.Class, asString, start, end, true);
 	}
 
 	/**

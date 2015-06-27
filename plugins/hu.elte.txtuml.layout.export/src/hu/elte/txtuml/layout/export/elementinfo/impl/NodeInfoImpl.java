@@ -32,5 +32,10 @@ public class NodeInfoImpl extends ElementInfoImpl implements NodeInfo {
 	public RectangleObject convert() {
 		return new RectangleObject(toString());
 	}
+	
+	@Override
+	public boolean isPhantom() {
+	    return toString().startsWith("#phantom_");
+	}
 
 }

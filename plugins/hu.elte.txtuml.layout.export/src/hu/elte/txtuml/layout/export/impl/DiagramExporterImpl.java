@@ -4,16 +4,16 @@ import java.lang.annotation.Annotation;
 
 import hu.elte.txtuml.layout.export.DiagramExporter;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.layout.export.elementinfo.NodeGroupInfo;
 import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
-import hu.elte.txtuml.layout.export.interfaces.LinkMap;
-import hu.elte.txtuml.layout.export.interfaces.NodeMap;
 import hu.elte.txtuml.layout.export.interfaces.StatementExporter;
-import hu.elte.txtuml.layout.export.interfaces.StatementList;
 import hu.elte.txtuml.layout.export.problems.ErrorMessages;
 import hu.elte.txtuml.layout.export.problems.WarningMessages;
 import hu.elte.txtuml.layout.lang.Diagram;
 import hu.elte.txtuml.layout.lang.Diagram.Layout;
-import hu.elte.txtuml.layout.lang.elements.LayoutGroup;
+import hu.elte.txtuml.layout.lang.elements.LayoutLinkGroup;
+import hu.elte.txtuml.layout.lang.elements.LayoutNodeGroup;
+import hu.elte.txtuml.layout.lang.elements.LayoutPhantomNode;
 import hu.elte.txtuml.layout.lang.statements.*;
 import hu.elte.txtuml.layout.lang.statements.containers.*;
 
@@ -27,9 +27,6 @@ public class DiagramExporterImpl implements DiagramExporter {
 
 	private final DiagramExportationReport report;
 	private final Class<? extends Diagram> diagClass;
-	private final StatementList statements;
-	private final NodeMap nodes;
-	private final LinkMap links;
 	private final ElementExporter elementExporter;
 	private final StatementExporter statementExporter;
 
@@ -47,11 +44,8 @@ public class DiagramExporterImpl implements DiagramExporter {
 		}
 
 		this.diagClass = diagClass;
-		this.statements = StatementList.create();
-		this.nodes = NodeMap.create();
-		this.links = LinkMap.create();
-		this.elementExporter = ElementExporter.create(nodes, links);
-		this.statementExporter = StatementExporter.create(statements, elementExporter);
+		this.elementExporter = ElementExporter.create();
+		this.statementExporter = StatementExporter.create(elementExporter);
 
 	}
 
@@ -61,9 +55,9 @@ public class DiagramExporterImpl implements DiagramExporter {
 
 		if (report.isSuccessful()) {
 			report.setType(elementExporter.getDiagramTypeBasedOnElements());
-			report.setStatements(statements);
-			report.setNodes(nodes.convert());
-			report.setLinks(links.convert());
+			report.setStatements(statementExporter.getStatements());
+			report.setNodes(elementExporter.getNodesAsObjects());
+			report.setLinks(elementExporter.getLinksAsLines());
 		}
 
 		return report;
@@ -77,12 +71,24 @@ public class DiagramExporterImpl implements DiagramExporter {
 
 		for (Class<?> innerClass : diagClass.getDeclaredClasses()) {
 
-			if (isGroup(innerClass)) {
-				// TODO currently removed
-				/*
-				Class<? extends LayoutGroup> groupClass = (Class<? extends LayoutGroup>) innerClass;
-				exportGroup(groupClass);
-				*/
+			if (isNodeGroup(innerClass)) {
+			    NodeGroupInfo info = elementExporter.exportNodeGroup((Class<? extends LayoutNodeGroup>) innerClass).asNodeGroupInfo();
+			    
+			    if (info == null) {
+			        // TODO show error
+			        continue;
+			    }
+			    
+			    if (info.getAlignment() != null) {
+			        statementExporter.exportAlignment(info);
+			    }
+			    
+			} else if (isLinkGroup(innerClass)) {
+			    elementExporter.exportLinkGroup((Class<? extends LayoutLinkGroup>) innerClass);
+			    
+			} else if (isPhantom(innerClass)) {
+			    elementExporter.exportPhantom((Class<? extends LayoutPhantomNode>) innerClass);
+			    
 			} else if (isLayout(innerClass)) {
 
 				if (layoutClass != null) {
@@ -105,32 +111,42 @@ public class DiagramExporterImpl implements DiagramExporter {
 			exportLayout(layoutClass);
 		}
 	}
-
-	private boolean isGroup(Class<?> cls) { // TODO split groups into node and link groups
-		return LayoutGroup.class.isAssignableFrom(cls);
+	
+	private boolean isNodeGroup(Class<?> cls) {
+	    return LayoutNodeGroup.class.isAssignableFrom(cls);
+	}
+	
+	private boolean isLinkGroup(Class<?> cls) {
+	    return LayoutLinkGroup.class.isAssignableFrom(cls);
 	}
 
 	private boolean isLayout(Class<?> cls) {
 		return Layout.class.isAssignableFrom(cls);
 	}
 	
-	@SuppressWarnings("unused") // TODO remove when used
-	private void exportGroup(Class<? extends LayoutGroup> groupClass) {
-		for (Annotation annot : groupClass.getAnnotations()) {
-			if (isOfType(Contains.class, annot)) {
-				statementExporter.exportContains(groupClass, (Contains) annot);
-				
-			} else if (isOfType(Alignment.class, annot)) {
-				statementExporter
-						.exportAlignment(groupClass, (Alignment) annot);
-				
-			} else {
-				
-				report.warning(WarningMessages.unknownStatementOnLayoutGroup(groupClass, annot));
-				
-			}
-		}
+	private boolean isPhantom(Class<?> cls) {
+	    return LayoutPhantomNode.class.isAssignableFrom(cls);
 	}
+	
+	/*
+    	@SuppressWarnings("unused") // TODO remove when used
+    	private void exportGroup(Class<? extends LayoutGroup> groupClass) {
+    		for (Annotation annot : groupClass.getAnnotations()) {
+    			if (isOfType(Contains.class, annot)) {
+    				statementExporter.exportContains(groupClass, (Contains) annot);
+    				
+    			} else if (isOfType(Alignment.class, annot)) {
+    				statementExporter
+    						.exportAlignment(groupClass, (Alignment) annot);
+    				
+    			} else {
+    				
+    				report.warning(WarningMessages.unknownStatementOnLayoutGroup(groupClass, annot));
+    				
+    			}
+    		}
+    	}
+	*/
 
 	private void exportLayout(Class<? extends Layout> layoutClass) {
 		for (Annotation annot : layoutClass.getAnnotations()) {
@@ -224,18 +240,20 @@ public class DiagramExporterImpl implements DiagramExporter {
 			} else if (isOfType(DiamondContainer.class, annot)) {
 				statementExporter.exportDiamondContainer((DiamondContainer) annot);
 			
-			} else {
-				
+			} else {				
 				report.warning(WarningMessages.unknownStatementOnLayout(layoutClass, annot));
 				
 			}
 			
 		}
-	
+		
+		// exportation finalizers 
+		statementExporter.resolveMosts();
+		statementExporter.exportPhantoms();
+		elementExporter.exportImpliedLinks();
 	}
 
-	private boolean isOfType(Class<? extends Annotation> annotationClass,
-			Annotation annot) {
+	private boolean isOfType(Class<? extends Annotation> annotationClass, Annotation annot) {
 		return annot.annotationType() == annotationClass;
 	}
 

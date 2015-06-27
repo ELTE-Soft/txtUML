@@ -1,13 +1,11 @@
 package hu.elte.txtuml.layout.export.interfaces;
 
+import hu.elte.txtuml.layout.export.elementinfo.NodeGroupInfo;
 import hu.elte.txtuml.layout.export.impl.StatementExporterImpl;
-import hu.elte.txtuml.layout.lang.elements.LayoutGroup;
 import hu.elte.txtuml.layout.lang.statements.Above;
-import hu.elte.txtuml.layout.lang.statements.Alignment;
 import hu.elte.txtuml.layout.lang.statements.Below;
 import hu.elte.txtuml.layout.lang.statements.BottomMost;
 import hu.elte.txtuml.layout.lang.statements.Column;
-import hu.elte.txtuml.layout.lang.statements.Contains;
 import hu.elte.txtuml.layout.lang.statements.Diamond;
 import hu.elte.txtuml.layout.lang.statements.East;
 import hu.elte.txtuml.layout.lang.statements.Left;
@@ -42,15 +40,15 @@ import hu.elte.txtuml.layout.lang.statements.containers.WestContainer;
  */
 public interface StatementExporter {
 
-	static StatementExporter create(StatementList statements, ElementExporter elementExporter) {
-		return new StatementExporterImpl(statements, elementExporter);
-	}
+    static StatementExporter create(ElementExporter elementExporter) {
+        return new StatementExporterImpl(elementExporter);
+    }
 
+    StatementList getStatements();
+    
 	// statement exporters
 	
-	void exportAlignment(Class<? extends LayoutGroup> group, Alignment annot);
-
-	void exportContains(Class<? extends LayoutGroup> group, Contains annot);
+	void exportAlignment(NodeGroupInfo info);
 
 	void exportAbove(Above annot);
 
@@ -113,5 +111,11 @@ public interface StatementExporter {
 	void exportRowContainer(RowContainer annot);
 	
 	void exportDiamondContainer(DiamondContainer annot);
+	
+	// exportation finalizers
+	
+	void resolveMosts();
+	
+	void exportPhantoms();
 
 }

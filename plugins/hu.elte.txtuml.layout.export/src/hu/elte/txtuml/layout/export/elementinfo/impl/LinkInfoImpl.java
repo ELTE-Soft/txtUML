@@ -5,6 +5,7 @@ import hu.elte.txtuml.layout.export.elementinfo.ElementType;
 import hu.elte.txtuml.layout.export.elementinfo.LinkInfo;
 import hu.elte.txtuml.layout.export.elementinfo.NodeInfo;
 import hu.elte.txtuml.layout.lang.elements.LayoutElement;
+import hu.elte.txtuml.layout.visualizer.model.AssociationType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 
 /**
@@ -17,13 +18,15 @@ public class LinkInfoImpl extends ElementInfoImpl implements LinkInfo {
 
 	private final NodeInfo start;
 	private final NodeInfo end;
+	private final boolean isGeneralization;
 	
 	public LinkInfoImpl(Class<? extends LayoutElement> elementClass,
-			DiagramType diagType, String asString, NodeInfo start, NodeInfo end) {
+			DiagramType diagType, String asString, NodeInfo start, NodeInfo end, boolean isGeneralization) {
 
 		super(elementClass, diagType, asString);
 		this.start = start;
 		this.end = end;
+		this.isGeneralization = isGeneralization;
 	}
 
 	@Override
@@ -38,7 +41,11 @@ public class LinkInfoImpl extends ElementInfoImpl implements LinkInfo {
 
 	@Override
 	public LineAssociation convert() {
-		return new LineAssociation(toString(), start.toString(), end.toString());
+	    if (isGeneralization) {
+	        return new LineAssociation(toString(), start.toString(), end.toString(), AssociationType.generalization);
+	    } else {
+	        return new LineAssociation(toString(), start.toString(), end.toString());
+	    }
 	}
 
 }

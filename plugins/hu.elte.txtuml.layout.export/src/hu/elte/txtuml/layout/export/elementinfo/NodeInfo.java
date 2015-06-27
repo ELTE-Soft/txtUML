@@ -18,8 +18,7 @@ public interface NodeInfo extends ElementInfo {
 	 * 
 	 * @return The new instance.
 	 */
-	static NodeInfo create(Class<? extends LayoutElement> elementClass, DiagramType diagType, String asString) {
-		
+	static NodeInfo create(Class<? extends LayoutElement> elementClass, DiagramType diagType, String asString) {	
 		return new NodeInfoImpl(elementClass, diagType, asString);
 	}
 	
@@ -27,5 +26,7 @@ public interface NodeInfo extends ElementInfo {
 	 * @return The <code>RectangleObject</code> representation of the node this object holds info about.
 	 */
 	RectangleObject convert();
+	
+	boolean isPhantom();
 	
 }
