@@ -30,22 +30,35 @@ public class MainAction {
 	private String Modelname;
 	private String SourceUMLPath;
 	private PapyrusModelCreator papyrusModelCreator;
-	private PapyrusModelManager papyrusModelManager;
+	private AbstractPapyrusModelManager papyrusModelManager;
 	private ProjectManager projectManager;
+	private Object layoutDescriptor;
 	
 	/**
 	 * The constructor.
 	 * @param projectName - The name of the project in which the Papyrus Model will be created.
 	 * @param modelName - The Name of the Papyrus Model
 	 * @param sourceUMLpath - Sourcepath of the Eclipse UML2 model 
+	 * @param layoutDescripton  - A descriptor file which adds constraints to the layout and diagram generation
 	 */
-	public MainAction(String projectName, String modelName, String sourceUMLpath) {
-		Projectname = projectName;
-		Modelname = modelName;
-		SourceUMLPath = sourceUMLpath;
-		window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		projectManager = new ProjectManager();
-		papyrusModelCreator = new PapyrusModelCreator();
+	public MainAction(String projectName, String modelName,
+			String sourceUMLpath, Object layoutDescripton) {
+		this.Projectname = projectName;
+		this.Modelname = modelName;
+		this.SourceUMLPath = sourceUMLpath;
+		this.window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		this.projectManager = new ProjectManager();
+		this.papyrusModelCreator = new PapyrusModelCreator();
+		this.layoutDescriptor = layoutDescripton;
+	}
+	
+	/**
+	 * @param projectName
+	 * @param modelName
+	 * @param sourceUMLpath
+	 */
+	public MainAction(String projectName, String modelName, String sourceUMLpath){
+		this(projectName, modelName, sourceUMLpath, null);
 	}
 	
 	/**
@@ -82,7 +95,12 @@ public class MainAction {
 			
 			papyrusModelCreator.createPapyrusModel();
 			IMultiDiagramEditor editor = (IMultiDiagramEditor) openEditor(papyrusModelCreator.getDi());
-			papyrusModelManager = new PapyrusModelManager(editor);
+			if(this.layoutDescriptor instanceof TxtUMLLayoutDescriptor){
+				papyrusModelManager = new PapyrusTxtUMLModelManager(editor, (TxtUMLLayoutDescriptor) this.layoutDescriptor);
+			}else{
+				papyrusModelManager = new PapyrusDefaultModelManager(editor);
+			}
+			
 			papyrusModelManager.createAndFillDiagrams();
 		}else{
 			Dialogs.MessageBox("Loading Model", "A Papyrus model with this name already exists in this Project. It'll be loaded");

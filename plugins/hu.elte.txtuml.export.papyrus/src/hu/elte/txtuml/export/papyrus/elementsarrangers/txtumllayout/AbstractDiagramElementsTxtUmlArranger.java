@@ -1,9 +1,9 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
+import hu.elte.txtuml.export.papyrus.TxtUMLElementsFinder;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutTransformer.OrigoConstraint;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,13 +11,10 @@ import java.util.Map.Entry;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
-import org.eclipse.gmf.runtime.notation.View;
 
 /**
  * An abstract class for arranging the elements with the txtUML arranging algorithm. 
@@ -26,12 +23,16 @@ import org.eclipse.gmf.runtime.notation.View;
  */
 public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDiagramElementsArranger{
 	
+	private TxtUMLElementsFinder finder;
+	
 	/**
 	 * The Constructor 
 	 * @param diagramEditPart - The EditPart of the diagram which elements is to arranged.
+	 * @param finder 
 	 */
-	public AbstractDiagramElementsTxtUmlArranger(DiagramEditPart diagramEditPart) {
+	public AbstractDiagramElementsTxtUmlArranger(DiagramEditPart diagramEditPart, TxtUMLElementsFinder finder) {
 		super(diagramEditPart);
+		this.finder = finder;
 	}
 
 	/**
@@ -42,12 +43,10 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		if(!elements.isEmpty()){
 			int maxWidth = getMaxWidth(elements);
 			int maxHeight = getMaxHeight(elements);
-			int gapX = 20;
-			int gapY = 20;
-			
-			List<String> statementsList = Arrays.asList();		
+			int gapX = 10;
+			int gapY = 10;
 					
-			LayoutVisualizerManager vismanager = new LayoutVisualizerManager(elements, statementsList);
+			LayoutVisualizerManager vismanager = new LayoutVisualizerManager(elements, this.finder);
 			vismanager.arrange();
 			
 			Map<EditPart, Rectangle> nodeMap = vismanager.getNodesAndCoordinates();
@@ -82,16 +81,6 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		}
 	}
 
-	/**
-	 * Gets the XmiId of the Model elment of an EditPart
-	 * @param editPart - The EditPart
-	 * @return The XmiId
-	 */
-	protected String getXmiId(EditPart editPart){
-		EObject object = ((View) editPart.getModel()).getElement();
-	    return ((XMLResource) object.eResource()).getID(object);
-	}
-	
 	/**
 	 * Gets the maximum width of the given EditParts 
 	 * @param editParts - The EditParts

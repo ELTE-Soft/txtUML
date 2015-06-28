@@ -169,7 +169,7 @@ public class LayoutTransformer {
 	
 	/**
 	 * Multiplies the y coordinates of the objects with -1. From now on they can be handled
-	 *  as the Y axis would be flipped
+	 *  as if the Y axis would be flipped
 	 * @param objects - The object that's y coordinates are to be multiplied
 	 * @param connections - The connections that's y coordinates are to be multiplied
 	 */

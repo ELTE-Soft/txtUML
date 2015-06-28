@@ -12,9 +12,7 @@ import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
@@ -23,7 +21,6 @@ import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.uml.diagram.activity.CreateActivityDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.clazz.CreateClassDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.statemachine.CreateStateMachineDiagramCommand;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Model;
@@ -35,47 +32,19 @@ import org.eclipse.uml2.uml.StateMachine;
  *
  * @author András Dobreff
  */
-public class PapyrusModelManager {
+public class PapyrusDefaultModelManager extends AbstractPapyrusModelManager{
 	
-	private DiagramManager diagramManager;
-	private ModelManager modelManager;
-	private PreferencesManager preferencesManager;
-	private IEditorPart editor;
-
 	/**
-	 * The Constructor
-	 * @param editor - The Editor to which the PapyrusModelManager will be attached
+	 * @param editor
 	 * @throws ServiceException
 	 * @throws NotFoundException
 	 */
-	public PapyrusModelManager(IMultiDiagramEditor editor) throws ServiceException, NotFoundException {
-		preferencesManager = new PreferencesManager();
-		modelManager = new ModelManager(editor);
-		diagramManager = new DiagramManager(editor);
-		this.editor = editor;
+	public PapyrusDefaultModelManager(IMultiDiagramEditor editor) throws ServiceException, NotFoundException {
+		super(editor);
 	}
 
-	/**
-	 * Creates the diagrams and adds the elements to them
-	 * @throws NotFoundException
-	 * @throws ServiceException
-	 */
-	public void createAndFillDiagrams() throws ServiceException {
-		createDiagrams();	
-		addElementsToDiagrams();
-		editor.doSave(new NullProgressMonitor());
-	}
-
-	
-
-	/**
-	 * Creates the Papyrus Diagrams for every suitable element of the Model 
-	 * @throws ServiceException
-	 * @throws ExecutionException
-	 * @throws NotFoundException
-	 */
-	private void createDiagrams(){
-		
+	@Override
+	protected void createDiagrams(){
 		if(preferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_PREF)){
 			List<Element> packages = modelManager.getElementsOfTypes(Arrays.asList(Model.class, Package.class));
 			diagramManager.createDiagrams(packages, new CreateClassDiagramCommand());
@@ -97,7 +66,7 @@ public class PapyrusModelManager {
 	 * Adds the elements to the diagrams
 	 * @throws ServiceException
 	 */
-	private void addElementsToDiagrams() throws ServiceException{
+	protected void addElementsToDiagrams() throws ServiceException{
 		
 		List<Diagram> diags =  diagramManager.getDiagrams();
 		
@@ -128,7 +97,5 @@ public class PapyrusModelManager {
 			diagramElementsManager.addElementsToDiagram(baseElements);	
 			diagramElementsArranger.arrange();
 		}
-		
 	}
-	
 }

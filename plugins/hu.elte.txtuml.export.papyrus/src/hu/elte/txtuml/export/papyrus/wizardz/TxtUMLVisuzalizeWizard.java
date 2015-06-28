@@ -2,10 +2,15 @@ package hu.elte.txtuml.export.papyrus.wizardz;
 
 import hu.elte.txtuml.export.papyrus.MainAction;
 import hu.elte.txtuml.export.papyrus.ProjectManager;
+import hu.elte.txtuml.export.papyrus.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.export.uml2.UML2;
 import hu.elte.txtuml.export.utils.ClassLoaderProvider;
 import hu.elte.txtuml.export.utils.Dialogs;
+import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.layout.export.DiagramExporter;
+import hu.elte.txtuml.layout.lang.Diagram;
+
 import java.net.URLClassLoader;
 
 import org.eclipse.core.resources.IFile;
@@ -64,11 +69,13 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 	@Override
 	public boolean performFinish() {
 		PreferencesManager preferncesManager = new PreferencesManager();
-		final String txtUMLModelName = selectTxtUmlPage.getTxtUmlModelClass();
-		final String txtUMLProjectName = selectTxtUmlPage.getTxtUmlProject();
-		final String folder = preferncesManager
+		String txtUMLModelName = selectTxtUmlPage.getTxtUmlModelClass();
+		String txtUMLLayout = selectTxtUmlPage.getTxtUmlLayout();
+		String txtUMLProjectName = selectTxtUmlPage.getTxtUmlProject();
+		String folder = preferncesManager
 				.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
-
+		TxtUMLLayoutDescriptor layoutDesriptor;
+		
 		ClassLoader parentClassLoader = hu.elte.txtuml.export.uml2.UML2.class.getClassLoader();
 		preferncesManager.setValue(
 				PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT,
@@ -76,6 +83,9 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		preferncesManager.setValue(
 				PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL,
 				txtUMLModelName);
+		preferncesManager.setValue(
+				PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT,
+				txtUMLLayout);
 
 		try (URLClassLoader loader = ClassLoaderProvider
 					.getClassLoaderForProject(txtUMLProjectName, parentClassLoader)){
@@ -88,22 +98,20 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 					e.getClass() + ":\n" + e.getMessage(), e);
 			return false;
 		}
-		
 
-		/*try (URLClassLoader loader = ClassLoaderProvider
+		try (URLClassLoader loader = ClassLoaderProvider
 					.getClassLoaderForProject(txtUMLProjectName, parentClassLoader)){
-			Class<?> txtUMLLayoutClass = loader.loadClass("example.model.ClassDiagram");  
-            DiagramExporter exporter= DiagramExporter.create((Class<? extends Diagram>) txtUMLLayoutClass); 
-            DiagramExportationReport  report = exporter.export(); 
-            System.out.println("Statements: "+report.getStatements());
-            System.out.println("Nodes: "+report.getNodes());
-            System.out.println("Links: "+report.getLinks());
+			Class<?> txtUMLLayoutClass = loader.loadClass(txtUMLLayout);  
+            @SuppressWarnings("unchecked")
+			DiagramExporter exporter= DiagramExporter.create((Class<? extends Diagram>) txtUMLLayoutClass); 
+            DiagramExportationReport report = exporter.export(); 
+            layoutDesriptor = new TxtUMLLayoutDescriptor(txtUMLModelName, report);
 		} catch (Exception e) {
 			Dialogs.errorMsgb("txtUML export Error",
 					e.getClass() + ":\n" + e.getMessage(), e);
 			return false;
 		}
-		*/
+		
 		try {
 			URI umlFileURI = URI.createFileURI(txtUMLProjectName + "/" + folder
 					+ "/" + txtUMLModelName + ".uml");
@@ -131,7 +139,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 			projectManager.deleteProjectbyName(txtUMLModelName);
 
 			MainAction ma = new MainAction(txtUMLModelName, txtUMLModelName,
-					UmlFile.getRawLocationURI().toString());
+					UmlFile.getRawLocationURI().toString(), layoutDesriptor);
 			ma.run();
 		} catch (Exception e) {
 			Dialogs.errorMsgb("txtUML visualization Error", e.getClass()

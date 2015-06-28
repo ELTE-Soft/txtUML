@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Text;
 public class VisualizeTxtUMLPage extends WizardPage {
 	private Composite container;
 	private Text txtUMLModel;
+	private Text txtUMLLayout;
 	private Text txtUMLProject;
 	private PreferencesManager preferencesManager;
 	
@@ -52,9 +53,15 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	    txtUMLModel = new Text(container, SWT.BORDER | SWT.SINGLE);
 	    txtUMLModel.setText(preferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL));
 	    
+	    Label label3 = new Label(container, SWT.NONE);
+	    label3.setText("txtUML Model Layout: ");
+	    txtUMLLayout = new Text(container, SWT.BORDER | SWT.SINGLE);
+	    txtUMLLayout.setText(preferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT));
+	    
 	    GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 	    txtUMLModel.setLayoutData(gd);
 	    txtUMLProject.setLayoutData(gd);
+	    txtUMLLayout.setLayoutData(gd);
 	    
 	    setControl(container);
 	    setPageComplete(true);
@@ -74,5 +81,13 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	   */
 	public String getTxtUmlProject(){
 		return txtUMLProject.getText();
+	}
+
+	/**
+	 * Returns the txtUML model layout
+	 * @return
+	 */
+	public String getTxtUmlLayout() {
+		return txtUMLLayout.getText();
 	}
 }

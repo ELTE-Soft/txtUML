@@ -17,6 +17,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 @SuppressWarnings("javadoc")
 public class PreferencesManager{
 	
+	
 	private IPreferenceStore store;
 	private Map<String, Object> fieldsWithDefaultValues;
 	
