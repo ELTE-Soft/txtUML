@@ -12,7 +12,6 @@ public interface WarningMessages {
 		return layoutClass.getName() + " has an annotation which is of type " + annot.annotationType().getName() + ". This annotation type is either not a layout description statement or is not applicable for a layout definition. Therefore it is omitted during the interpretation of the diagram description.";
 	}
 
-	
 	static String unknownStatementOnLayoutGroup(Class<?> groupClass, Annotation annot) {
 		return groupClass.getName() + " has an annotation which is of type " + annot.annotationType().getName() + ". This annotation type is either not a layout description statement or is not applicable for a layout group definition. Therefore it is omitted during the interpretation of the diagram description.";
 	}

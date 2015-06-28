@@ -10,5 +10,4 @@ public interface ErrorMessages {
 		return "Diagram class " +  diagClass.getName() + " has no inner class which is subclass of Diagram.Layout.";
 	}
 	
-	
 }

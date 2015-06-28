@@ -81,6 +81,8 @@ public interface ElementExporter {
 	
 	NodeInfo createPhantom();
 	
+	// exportation finalizer
+	
 	void exportImpliedLinks();
 
 }

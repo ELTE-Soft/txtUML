@@ -23,7 +23,7 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 class Model1 extends Model {
 	class A extends ModelClass {}
 	
-	class B extends ModelClass {}
+	class B extends A {}
 	
 	class C extends ModelClass {}
 	
@@ -60,7 +60,7 @@ class Model1 extends Model {
 
 class Diagram1 extends Diagram {
 
-    @Contains({A.class, B.class})
+    @Contains({A.class, B.class, NG1.class})
     class NG1 extends NodeGroup {}
 
     @Contains({NG1.class, C.class}) // NodeGroup NG1 as parameter

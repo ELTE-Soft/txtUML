@@ -55,8 +55,8 @@ public class NodeGroupInfoImpl extends ElementInfoImpl implements NodeGroupInfo 
     
     @Override
     @SuppressWarnings("unchecked")
-    public void addNode(NodeInfo link) {
-        nodes.put((Class<? extends LayoutNode>) link.getElementClass(), link);
+    public void addNode(NodeInfo node) {
+        nodes.put((Class<? extends LayoutNode>) node.getElementClass(), node);
     }
 
     @Override

@@ -49,12 +49,12 @@ public class ElementExporterImpl implements ElementExporter {
 	// field. If this field's value is Unknown, set it to the element's value.
 	// If it is not Unknown, and also unequal to the element's type, an has to
 	// be shown.
-	private final NodeMap nodes;
+	private final NodeMap nodes;            // includes user defined phantoms
 	private final LinkMap links;
 	private final NodeGroupMap nodeGroups;
 	private final LinkGroupMap linkGroups;
-	private final NodeList phantoms;
-	private final LinkList generalizations;
+	private final NodeList phantoms;        // internal & user defined phantoms
+	private final LinkList generalizations; // separate container since the lack of element class
 	
 	private AtomicLong phantomCounter = new AtomicLong(0);
 
@@ -113,6 +113,7 @@ public class ElementExporterImpl implements ElementExporter {
 	
 	@Override
 	public Set<RectangleObject> getNodesAsObjects() {
+	    // for efficiency purposes, phantoms are handled in NodeMap's convert() method
 	    return nodes.convert();
 	}
 	
@@ -299,6 +300,11 @@ public class ElementExporterImpl implements ElementExporter {
 
         info = nodeGroups.get(nodeGroupClass);
         if (info != null) {
+            if (info.asNodeGroupInfo().beingExported()) {
+                // TODO show error
+                return ElementInfo.createInvalid(nodeGroupClass);
+            }
+            
             return info;
         }
 
@@ -316,6 +322,11 @@ public class ElementExporterImpl implements ElementExporter {
 
         info = linkGroups.get(linkGroupClass);
         if (info != null) {
+            if (info.asLinkGroupInfo().beingExported()) {
+                // TODO show error
+                return ElementInfo.createInvalid(linkGroupClass);
+            }
+            
             return info;
         }
 
@@ -328,20 +339,20 @@ public class ElementExporterImpl implements ElementExporter {
     }
 	
     @Override
-    public ElementInfo exportPhantom(Class<? extends LayoutPhantomNode> phantom) {
+    public ElementInfo exportPhantom(Class<? extends LayoutPhantomNode> phantomClass) {
         ElementInfo info;
 
-        info = nodes.get(phantom);
+        info = nodes.get(phantomClass);
         if (info != null) {
             return info;
         }
 
-        info = exportNewPhantom(phantom);
+        info = exportNewPhantom(phantomClass);
         if (info != null) {
             return info;
         }
 
-        return ElementInfo.createInvalid(phantom);
+        return ElementInfo.createInvalid(phantomClass);
     }
     
     @Override
@@ -515,9 +526,13 @@ public class ElementExporterImpl implements ElementExporter {
     @Override
     public void exportImpliedLinks() {
         ClassDiagramExporter classDiagramExporter = new ClassDiagramExporter(this);
-        for (NodeInfo info : nodes.values()) {
-            classDiagramExporter.exportAssociationsStartingFromThisNode(info.getElementClass());
-        }
+        
+        // including phantoms would be unnecessary (but not erroneous)
+        nodes.forEach((elementClass, node) -> {
+            if (!node.isPhantom()) {
+                classDiagramExporter.exportAssociationsStartingFromThisNode(elementClass);
+            }
+        });
     }
 	
 	// helper functions

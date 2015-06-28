@@ -18,13 +18,14 @@ import hu.elte.txtuml.utils.Pair;
 /**
  * 
  * @author Gábor Ferenc Kovács
+ * @author Dávid János Németh
  *
  */
 public class ClassDiagramExporter {
     
     private final ElementExporter elementExporter;
     private Class<? extends Model> model;
-    private List<Class<?>> links;
+    private List<Class<?>> links; // user defined links in the current model
     
     public ClassDiagramExporter(ElementExporter elementExporter) {
         this.elementExporter = elementExporter;
@@ -79,12 +80,13 @@ public class ClassDiagramExporter {
             return;
         }
 	        
-	    NodeMap nodeMap = elementExporter.getNodes();    
+	    NodeMap nodes = elementExporter.getNodes();    
 	    for (Class<?> link : links) {
 	        Pair<Class<? extends LayoutNode>, Class<? extends LayoutNode>> p = startAndEndOfLink(link);
-	            
-            if ((p.getKey().equals(node) && nodeMap.containsKey(p.getValue())) 
-                    || ((p.getValue().equals(node) && nodeMap.containsKey(p.getKey()))))
+	        
+	        // nodes.containsKey(node) is guaranteed here
+            if ((p.getKey().equals(node) && nodes.containsKey(p.getValue())) 
+                    || ((p.getValue().equals(node) && nodes.containsKey(p.getKey()))))
             {
                 elementExporter.exportLink((Class<? extends LayoutLink>) link);
             }
@@ -92,7 +94,7 @@ public class ClassDiagramExporter {
 	    
 	    if (elementExporter.getDiagramTypeBasedOnElements() == DiagramType.Class) {
 	        Class<?> base = node.getSuperclass();
-	        if (base != null && nodeMap.containsKey(base)) {
+	        if (base != null && nodes.containsKey(base)) {
 	            elementExporter.exportGeneralization((Class<? extends LayoutNode>) base,
 	                    (Class<? extends LayoutNode>) node);
 	        } 
