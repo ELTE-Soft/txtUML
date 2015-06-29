@@ -3,6 +3,12 @@ package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 import hu.elte.txtuml.export.papyrus.TxtUMLElementsFinder;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutTransformer.OrigoConstraint;
+import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
+import hu.elte.txtuml.layout.visualizer.exceptions.ConflictException;
+import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
+import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
+import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
+import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
@@ -45,8 +51,14 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 	/**
 	 * Arranges the children of an EditPart with the txtUML arranging algorithm 
 	 * @param parent - The children of this EditPart will be arranged
+	 * @throws UnknownStatementException 
+	 * @throws CannotFindAssociationRouteException 
+	 * @throws StatementTypeMatchException 
+	 * @throws ConversionException 
+	 * @throws ConflictException 
+	 * @throws InternalException 
 	 */
-	protected void arrangeChildren(EditPart EP, List<EditPart> elements) {
+	protected void arrangeChildren(EditPart EP, List<EditPart> elements) throws InternalException, ConflictException, ConversionException, StatementTypeMatchException, CannotFindAssociationRouteException, UnknownStatementException {
 		if(!elements.isEmpty()){
 			int maxWidth = getMaxWidth(elements);
 			int maxHeight = getMaxHeight(elements);
@@ -125,41 +137,6 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 					}
 				}
 			});
-			
-			
-					/*
-			LayoutVisualizerManager vismanager = new LayoutVisualizerManager(elements, this.finder);
-			vismanager.arrange();
-			
-			Map<EditPart, Rectangle> nodeMap = vismanager.getNodesAndCoordinates();
-			Map<ConnectionNodeEditPart, List<Point>> connectionMap = vismanager.getConnectionsAndRoutes();
-			
-			LayoutTransformer layoutTransformer = new LayoutTransformer(maxWidth, maxHeight);
-			layoutTransformer.setOrigo(OrigoConstraint.UpperLeft);
-			layoutTransformer.flipYAxis();
-			layoutTransformer.doTranformations(nodeMap, connectionMap);
-			
-			for(Entry<EditPart, Rectangle> e : nodeMap.entrySet()) {
-		        EditPart ep = e.getKey();
-		        if(ep != null)
-		        	super.moveGraphicalEditPart((GraphicalEditPart) ep, e.getValue().getTopLeft());
-		    }
-			
-			for(Entry<ConnectionNodeEditPart, List<Point>> e : connectionMap.entrySet()) {
-		        ConnectionNodeEditPart connection = e.getKey();
-		        String[] anchors;
-		        if(connection != null){
-		        	List<Point> bendpoints = e.getValue();
-		        	anchors = defineAnchors(bendpoints);
-		        	super.setConnectionAnchors(connection, anchors[0], anchors[1]);
-		        	bendpoints.remove(0);
-		        	bendpoints.remove(bendpoints.size()-1);
-		        	super.setConnectionBendpoints(connection, bendpoints);
-		        }
-		    }
-		    */
-			
-			
 		}
 	}
 

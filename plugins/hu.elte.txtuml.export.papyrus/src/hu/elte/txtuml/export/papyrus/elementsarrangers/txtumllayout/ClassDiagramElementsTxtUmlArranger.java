@@ -1,6 +1,13 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
 import hu.elte.txtuml.export.papyrus.TxtUMLElementsFinder;
+import hu.elte.txtuml.export.utils.Dialogs;
+import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
+import hu.elte.txtuml.layout.visualizer.exceptions.ConflictException;
+import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
+import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
+import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
+import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +42,15 @@ public class ClassDiagramElementsTxtUmlArranger extends AbstractDiagramElementsT
 	public void arrange() {
 		@SuppressWarnings("unchecked")
 		List<EditPart> listEp = diagep.getChildren();
-		super.arrangeChildren(diagep, listEp);
+		try {
+			super.arrangeChildren(diagep, listEp);
+		} catch (InternalException | ConflictException | ConversionException
+				| StatementTypeMatchException
+				| CannotFindAssociationRouteException
+				| UnknownStatementException e) {
+			
+			Dialogs.errorMsgb("txtUML Layout Error", e.toString(), e);
+		}
 		super.hideConnectionLabelsForEditParts(listEp, Arrays.asList(
 				AssociationNameEditPart.class,
 				AssociationMultiplicityTargetEditPart.class,

@@ -37,20 +37,19 @@ public class LayoutVisualizerManager {
 	
 	/**
 	 * Arranging command
+	 * @throws UnknownStatementException 
+	 * @throws CannotFindAssociationRouteException 
+	 * @throws StatementTypeMatchException 
+	 * @throws ConversionException 
+	 * @throws ConflictException 
+	 * @throws InternalException 
 	 */
-	public void arrange() {
+	public void arrange() throws InternalException, ConflictException, ConversionException,
+									StatementTypeMatchException, CannotFindAssociationRouteException,
+									UnknownStatementException {
 		LayoutVisualize v = new LayoutVisualize();
 		v.load(objects, associations);
-
-			try {
-				v.arrange(new ArrayList<Statement>(statementsSet));
-			} catch (InternalException | ConflictException
-					| ConversionException | StatementTypeMatchException
-					| CannotFindAssociationRouteException
-					| UnknownStatementException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		v.arrange(new ArrayList<Statement>(statementsSet));
 		
 		objects = v.getObjects();
 		associations = v.getAssocs();
