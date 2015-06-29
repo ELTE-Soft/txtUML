@@ -5,21 +5,53 @@ import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Grap
 
 import java.util.HashMap;
 
-class BreathFirstSearch
+/**
+ * This class provides an implementation to the Breath-First search algorithm.
+ * 
+ * @author Balázs Gregorics
+ * @param <T>
+ *            Type of the graph nodes.
+ *
+ */
+class BreathFirstSearch<T>
 {
+	/**
+	 * Types of discovery property.
+	 * 
+	 * @author Balázs Gregorics
+	 *
+	 */
 	public enum LabelType
 	{
+		/**
+		 * Not yet discovered.
+		 */
 		not_discovered,
+		/**
+		 * Already discovered.
+		 */
 		discovered
 	}
 	
-	private HashMap<String, LabelType> _labels;
+	/**
+	 * The map representing which nodes are discovered and which are not.
+	 */
+	private HashMap<T, LabelType> _labels;
 	
-	public BreathFirstSearch(Graph<String> G, String start)
+	/**
+	 * Method to initialize and run the Breath-First search algorithm.
+	 * 
+	 * @param G
+	 *            the {@link Graph} to search in.
+	 * @param start
+	 *            the node to start from.
+	 */
+	public BreathFirstSearch(Graph<T> G, T start)
 	{
-		Queue<String> Q = new Queue<String>();
-		_labels = new HashMap<String, BreathFirstSearch.LabelType>();
-		for (String node : G.Nodes)
+		// Init
+		Queue<T> Q = new Queue<T>();
+		_labels = new HashMap<T, BreathFirstSearch.LabelType>();
+		for (T node : G.Nodes)
 		{
 			_labels.put(node, LabelType.not_discovered);
 		}
@@ -27,10 +59,11 @@ class BreathFirstSearch
 		Q.enqueue(start);
 		_labels.put(start, LabelType.discovered);
 		
+		// Start
 		while (!Q.isEmpty())
 		{
-			String v = Q.dequeue();
-			for (String w : G.adjacentNodes(v))
+			T v = Q.dequeue();
+			for (T w : G.adjacentNodes(v))
 			{
 				if (_labels.get(w).equals(LabelType.not_discovered))
 				{
@@ -41,7 +74,14 @@ class BreathFirstSearch
 		}
 	}
 	
-	public HashMap<String, LabelType> value()
+	/**
+	 * Returns a {@link HashMap} of nodes and their access property from start
+	 * node.
+	 * 
+	 * @return a {@link HashMap} of nodes and their access property from start
+	 *         node.
+	 */
+	public HashMap<T, LabelType> value()
 	{
 		return _labels;
 	}

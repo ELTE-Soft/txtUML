@@ -59,5 +59,35 @@ public enum StatementType
 	/**
 	 * Horizontal
 	 */
-	horizontal
+	horizontal;
+	
+	/**
+	 * Returns whether {@link StatementType} st is appliable on Objects/Boxes.
+	 * 
+	 * @param st
+	 *            {@link StatementType} to check.
+	 * @return whether {@link StatementType} st is appliable on Objects/Boxes.
+	 */
+	public static boolean isOnObjects(StatementType st)
+	{
+		switch (st)
+		{
+			case above:
+			case below:
+			case right:
+			case left:
+			case north:
+			case south:
+			case east:
+			case west:
+				return true;
+			case horizontal:
+			case phantom:
+			case priority:
+			case unknown:
+			case vertical:
+			default:
+				return false;
+		}
+	}
 }

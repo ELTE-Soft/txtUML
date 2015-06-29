@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.algorithms;
+package hu.elte.txtuml.layout.visualizer.helpers;
 
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 import hu.elte.txtuml.layout.visualizer.annotations.StatementLevel;
@@ -7,8 +7,6 @@ import hu.elte.txtuml.layout.visualizer.exceptions.ConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
-import hu.elte.txtuml.layout.visualizer.helpers.Helper;
-import hu.elte.txtuml.layout.visualizer.helpers.Pair;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
@@ -19,8 +17,24 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-class StatementHelper
+/**
+ * This static class handles a variety of {@link Statement} related support
+ * features.
+ * 
+ * @author Balázs Gregorics
+ *
+ */
+public class StatementHelper
 {
+	/**
+	 * Returns the {@link Statement}s defined on {@link LineAssociation}s.
+	 * 
+	 * @param stats
+	 *            the {@link Statement}s to check.
+	 * @param assocs
+	 *            the {@link LineAssociation}s to check.
+	 * @return the {@link Statement}s defined on {@link LineAssociation}s.
+	 */
 	public static ArrayList<Statement> splitAssocs(ArrayList<Statement> stats,
 			Set<LineAssociation> assocs)
 	{
@@ -31,12 +45,32 @@ class StatementHelper
 				.collect(Collectors.toList());
 	}
 	
+	/**
+	 * Checks the parameter types of the {@link Statement}s provided.
+	 * 
+	 * @param stats
+	 *            list of {@link Statement}s on objects/boxes to check.
+	 * @param astats
+	 *            list of {@link Statement}s on links to check.
+	 * @param objs
+	 *            set of objects/boxes in the diagram.
+	 * @param assocs
+	 *            set of links in the diagram.
+	 * @return true if all of the {@link Statement}s have correctly typed
+	 *         parameters according to the elements in the diagram.
+	 * @throws StatementTypeMatchException
+	 *             Throws if one of the {@link Statement}s have incorrect
+	 *             parameters.
+	 * @throws InternalException
+	 *             Throws if something bad happens, but it should not be allowed
+	 *             to happen.
+	 */
 	public static boolean checkTypes(ArrayList<Statement> stats,
 			ArrayList<Statement> astats, Set<RectangleObject> objs,
 			Set<LineAssociation> assocs) throws StatementTypeMatchException,
 			InternalException
 	{
-		// Check Obejct Statement Types
+		// Check Object Statement Types
 		for (Statement s : stats)
 		{
 			if (!StatementHelper.isTypeChecked(s, objs, assocs))
@@ -84,6 +118,18 @@ class StatementHelper
 		return as.stream().anyMatch(a -> a.getId().equals(p.get(0)));
 	}
 	
+	/**
+	 * Method that removes duplicate {@link Statement}s and checks for direct
+	 * conflicts.
+	 * 
+	 * @param stats
+	 *            list of {@link Statement}s to check.
+	 * @return list of duplicate-free {@link Statement}s.
+	 * @throws ConflictException
+	 *             Throws if a direct conflict is found in the user statements.
+	 * @throws ConversionException
+	 *             Throws if some value cannot be converted to another value.
+	 */
 	public static ArrayList<Statement> reduceAssocs(ArrayList<Statement> stats)
 			throws ConflictException, ConversionException
 	{
@@ -154,13 +200,34 @@ class StatementHelper
 		return result;
 	}
 	
+	/**
+	 * Returns a {@link Set} of the names of phantom objects/boxes.
+	 * 
+	 * @param stats
+	 *            list of {@link Statement}s to search in.
+	 * @return a {@link Set} of the names of phantom objects/boxes.
+	 */
 	public static Set<String> extractPhantoms(ArrayList<Statement> stats)
 	{
-		return stats.stream()
-				.filter(s -> s.getType().equals(StatementType.phantom))
+		return stats.stream().filter(s -> s.getType().equals(StatementType.phantom))
 				.map(s -> s.getParameter(0)).collect(Collectors.toSet());
 	}
 	
+	/**
+	 * Returns whether a specific {@link Statement} has correct parameters
+	 * according to the diagram or not.
+	 * 
+	 * @param st
+	 *            {@link Statement} to check.
+	 * @param ob
+	 *            set of objects/boxes in the diagram.
+	 * @param as
+	 *            set of links in the diagram.
+	 * @return true if the {@link Statement} st has correct parameters.
+	 * @throws InternalException
+	 *             Throws if something bad happens, which should not be allowed
+	 *             to happen.
+	 */
 	public static boolean isTypeChecked(Statement st, Set<RectangleObject> ob,
 			Set<LineAssociation> as) throws InternalException
 	{
@@ -210,10 +277,24 @@ class StatementHelper
 		return false;
 	}
 	
+	/**
+	 * Returns a {@link Pair} of generated {@link Statement}s based on
+	 * {@link LineAssociation}s and the latest Group Id used.
+	 * 
+	 * @param assocs
+	 *            set of {@link LineAssociation}s to check.
+	 * @param par_gid
+	 *            latest Group Id number used.
+	 * @return a {@link Pair} of generated {@link Statement}s and the latest
+	 *         Group Id used.
+	 * @throws InternalException
+	 *             Throws if something bad happens, which is not allowed to
+	 *             happen.
+	 */
 	public static Pair<ArrayList<Statement>, Integer> transformAssocs(
-			ArrayList<Statement> stats, Set<LineAssociation> assocs, Integer gid)
-			throws InternalException
+			Set<LineAssociation> assocs, Integer par_gid) throws InternalException
 	{
+		Integer gid = par_gid;
 		ArrayList<Statement> result = new ArrayList<Statement>();
 		HashMap<String, ArrayList<String>> generalizationMap = new HashMap<String, ArrayList<String>>();
 		
@@ -236,9 +317,6 @@ class StatementHelper
 					}
 					++gid;
 					result.add(new Statement(StatementType.north, StatementLevel.Low,
-							gid, a.getFrom(), a.getTo()));
-					++gid;
-					result.add(new Statement(StatementType.above, StatementLevel.Low,
 							gid, a.getFrom(), a.getTo()));
 					break;
 				case aggregation:
@@ -272,37 +350,13 @@ class StatementHelper
 		return new Pair<ArrayList<Statement>, Integer>(result, gid);
 	}
 	
-	public static Statement opposite(Statement s) throws InternalException
-	{
-		return new Statement(opposite(s.getType()), s.getLevel(), s.getGroupId(),
-				s.getParameter(1), s.getParameter(0));
-	}
-	
-	public static StatementType opposite(StatementType st)
-	{
-		if (st.equals(StatementType.north))
-			return StatementType.south;
-		if (st.equals(StatementType.south))
-			return StatementType.north;
-		
-		if (st.equals(StatementType.east))
-			return StatementType.west;
-		if (st.equals(StatementType.west))
-			return StatementType.east;
-		
-		if (st.equals(StatementType.above))
-			return StatementType.below;
-		if (st.equals(StatementType.below))
-			return StatementType.above;
-		
-		if (st.equals(StatementType.right))
-			return StatementType.left;
-		if (st.equals(StatementType.left))
-			return StatementType.right;
-		
-		return StatementType.unknown;
-	}
-	
+	/**
+	 * Returns the abstract complexity value of a {@link Statement}.
+	 * 
+	 * @param s
+	 *            {@link Statement} to check.
+	 * @return the abstract complexity value of a {@link Statement}.
+	 */
 	public static Integer getComplexity(Statement s)
 	{
 		Integer result = 0;

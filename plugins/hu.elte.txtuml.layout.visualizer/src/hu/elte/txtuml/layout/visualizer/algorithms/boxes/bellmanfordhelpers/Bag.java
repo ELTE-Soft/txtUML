@@ -8,10 +8,8 @@ import java.util.NoSuchElementException;
  * supports insertion and iterating over the items in arbitrary order.
  * <p>
  * This implementation uses a singly-linked list with a static nested class
- * Node. See {@link LinkedBag} for the version from the textbook that uses a
- * non-static nested class. The <em>add</em>, <em>isEmpty</em>, and
- * <em>size</em> operations take constant time. Iteration takes time
- * proportional to the number of items.
+ * Node. The <em>add</em>, <em>isEmpty</em>, and <em>size</em> operations take
+ * constant time. Iteration takes time proportional to the number of items.
  * <p>
  * For additional documentation, see <a
  * href="http://algs4.cs.princeton.edu/13stacks">Section 1.3</a> of
@@ -19,8 +17,9 @@ import java.util.NoSuchElementException;
  *
  * @author Robert Sedgewick
  * @author Kevin Wayne
+ * @param <Item>
+ *            Type to put into {@link Bag}.
  */
-@SuppressWarnings("all")
 class Bag<Item> implements Iterable<Item>
 {
 	private int N; // number of elements in bag

@@ -100,10 +100,13 @@ public class ArrangeAssociations
 		arrange(diagramObjects, diagramAssocs, stats);
 	}
 	
-	private void arrange(Set<RectangleObject> diagramObjects,
-			Set<LineAssociation> diagramAssocs, ArrayList<Statement> stats)
-			throws ConversionException, InternalException, UnknownStatementException
+	private void arrange(Set<RectangleObject> par_objects,
+			Set<LineAssociation> diagramAssocs, ArrayList<Statement> par_statements)
+			throws ConversionException, InternalException
 	{
+		Set<RectangleObject> diagramObjects = new HashSet<RectangleObject>(par_objects);
+		ArrayList<Statement> statements = new ArrayList<Statement>(par_statements);
+		
 		_possibleStarts = new HashMap<Pair<String, RouteConfig>, HashSet<Point>>();
 		_objects = diagramObjects;
 		_assocs = Helper.cloneLinkList((ArrayList<LineAssociation>) diagramAssocs
@@ -117,8 +120,8 @@ public class ArrangeAssociations
 		
 		// Pre-define priorities
 		
-		DefaultAssocStatements das = new DefaultAssocStatements(_gId, stats, _assocs);
-		stats = das.value();
+		DefaultAssocStatements das = new DefaultAssocStatements(_gId, statements, _assocs);
+		statements = das.value();
 		_gId = das.getGroupId();
 		
 		Boolean repeat = true;
@@ -130,7 +133,7 @@ public class ArrangeAssociations
 			--maxTryCount;
 			
 			// Process statements, priority and direction
-			_assocs = processStatements(_assocs, stats, diagramObjects);
+			_assocs = processStatements(_assocs, statements, diagramObjects);
 			repeat = false;
 			
 			try
@@ -154,6 +157,15 @@ public class ArrangeAssociations
 		_objects = diagramObjects;
 	}
 	
+	/**
+	 * Create the {@link HashMap} which determines which {@link LineAssociation}
+	 * s can go
+	 * batched together.
+	 * 
+	 * @return the {@link HashMap} which determines which
+	 *         {@link LineAssociation}s can go
+	 *         batched together.
+	 */
 	private HashMap<String, HashSet<Integer>> setBatches()
 	{
 		HashMap<String, HashSet<Integer>> result = new HashMap<String, HashSet<Integer>>();
@@ -173,10 +185,7 @@ public class ArrangeAssociations
 							.filter(as -> !as.isReflexive()
 									&& !as.getType().equals(AssociationType.normal)
 									&& as.getType().equals(a.getType())
-									&& (as.getFrom().equals(a.getFrom())
-											|| as.getTo().equals(a.getTo())
-											|| as.getTo().equals(a.getFrom()) || as
-											.getFrom().equals(a.getTo())))
+									&& as.getFrom().equals(a.getFrom()))
 							.collect(Collectors.toSet()));
 				}
 				
@@ -717,7 +726,7 @@ public class ArrangeAssociations
 			
 			GraphSearch gs = new GraphSearch(STARTSET, ENDSET, OBJS, top, _batches.get(a
 					.getId()));
-			a.setRoute(convertFromNodes(gs.value(), START, END));
+			a.setRoute(convertFromNodes(gs.value()));
 			a.setExtends(gs.extendsNum());
 			
 			if (_logging)
@@ -745,8 +754,7 @@ public class ArrangeAssociations
 		}
 	}
 	
-	private ArrayList<Point> convertFromNodes(ArrayList<Node> nodes, Point start,
-			Point end) throws InternalException
+	private ArrayList<Point> convertFromNodes(ArrayList<Node> nodes)
 	{
 		ArrayList<Point> result = new ArrayList<Point>();
 		

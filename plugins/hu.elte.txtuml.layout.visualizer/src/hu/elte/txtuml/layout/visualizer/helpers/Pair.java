@@ -65,7 +65,8 @@ public class Pair<T1, T2>
 		if (obj instanceof Pair<?, ?>)
 		{
 			Pair<T1, T2> p1 = this;
-			Pair<?, ?> p2 = (Pair<?, ?>) obj;
+			@SuppressWarnings("unchecked")
+			Pair<T1, T2> p2 = (Pair<T1, T2>) obj; // Checked
 			return p1.First.equals(p2.First) && p1.Second.equals(p2.Second);
 		}
 		

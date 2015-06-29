@@ -4,9 +4,7 @@ import hu.elte.txtuml.layout.visualizer.algorithms.boxes.ArrangeObjects;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.ArrangeAssociations;
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
-import hu.elte.txtuml.layout.visualizer.exceptions.BoxArrangeConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
-import hu.elte.txtuml.layout.visualizer.exceptions.CannotPositionObjectException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
@@ -14,6 +12,7 @@ import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
 import hu.elte.txtuml.layout.visualizer.helpers.Helper;
 import hu.elte.txtuml.layout.visualizer.helpers.Pair;
+import hu.elte.txtuml.layout.visualizer.helpers.StatementHelper;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
@@ -50,9 +49,18 @@ public class LayoutVisualize
 	 */
 	private ArrayList<Statement> _assocStatements;
 	
+	/**
+	 * The type of the diagram to arrange.
+	 */
 	@SuppressWarnings("unused")
 	private DiagramType _diagramType;
+	/**
+	 * Whether to allow batching of links during link arrange or not.
+	 */
 	private Boolean _batching;
+	/**
+	 * Whether to print log messages.
+	 */
 	private Boolean _logging;
 	
 	/***
@@ -146,7 +154,6 @@ public class LayoutVisualize
 	 * 
 	 * @param isLog
 	 *            Whether to print out logging messages.
-	 * 
 	 * @param type
 	 *            The type of the diagram to arrange.
 	 * @param batch
@@ -157,17 +164,17 @@ public class LayoutVisualize
 		_objects = null;
 		_assocs = null;
 		_diagramType = type;
-		_batching = false;
+		_batching = batch;
 		_logging = isLog;
 	}
 	
-	/***
-	 * Arranges the previously loaded model with the given statements.
+	/**
+	 * Arranges the previously loaded model with the given {@link Statement}s.
 	 * 
-	 * @param stats
-	 *            List of statements.
+	 * @param par_stats
+	 *            List of {@link Statement}s.
 	 * @throws UnknownStatementException
-	 *             Throws if an unknown statement is provided.
+	 *             Throws if an unknown {@link Statement} is provided.
 	 * @throws ConversionException
 	 *             Throws if algorithm cannot convert certain type into
 	 *             other type (Missing Statement upgrade?).
@@ -177,17 +184,14 @@ public class LayoutVisualize
 	 *             Throws if any of the statements are not in correct format.
 	 * @throws InternalException
 	 *             Throws if any error occurs which should not happen. Contact
-	 *             developer!
-	 * @throws CannotPositionObjectException
-	 *             Throws if the algorithm cannot find the place of an object.
+	 *             developer for more details!
 	 * @throws CannotFindAssociationRouteException
 	 *             Throws if the algorithm cannot find the route for a
 	 *             association.
 	 */
-	public void arrange(ArrayList<Statement> stats) throws UnknownStatementException,
-			ConflictException, ConversionException, InternalException,
-			CannotPositionObjectException, CannotFindAssociationRouteException,
-			StatementTypeMatchException
+	public void arrange(ArrayList<Statement> par_stats) throws InternalException,
+			ConflictException, ConversionException, StatementTypeMatchException,
+			CannotFindAssociationRouteException, UnknownStatementException
 	{
 		if (_objects == null)
 			return;
@@ -195,40 +199,42 @@ public class LayoutVisualize
 		if (_logging)
 			System.err.println("Starting arrange...");
 		
-		// set default statements
-		Optional<Integer> tempMax = stats.stream().filter(s -> s.getGroupId() != null)
-				.map(s -> s.getGroupId()).max((a, b) ->
+		_statements = Helper.cloneStatementList(par_stats);
+		
+		// Set next Group Id
+		Optional<Integer> tempMax = _statements.stream()
+				.filter(s -> s.getGroupId() != null).map(s -> s.getGroupId())
+				.max((a, b) ->
 				{
 					return Integer.compare(a, b);
 				});
 		Integer maxGroupId = tempMax.isPresent() ? tempMax.get() : 0;
 		
-		DefaultStatements ds = new DefaultStatements(_objects, _assocs, maxGroupId);
-		stats.addAll(ds.value());
-		maxGroupId = ds.getGroupId();
-		
 		// Split statements on assocs
-		_assocStatements = StatementHelper.splitAssocs(stats, _assocs);
-		stats.removeAll(_assocStatements);
+		_assocStatements = StatementHelper.splitAssocs(_statements, _assocs);
+		_statements.removeAll(_assocStatements);
 		_assocStatements = StatementHelper.reduceAssocs(_assocStatements);
 		
 		// Transform special associations into statements
 		Pair<ArrayList<Statement>, Integer> tempPair = StatementHelper.transformAssocs(
-				stats, _assocs, maxGroupId);
-		stats.addAll(tempPair.First);
+				_assocs, maxGroupId);
+		_statements.addAll(tempPair.First);
 		maxGroupId = tempPair.Second;
 		
 		// Transform Phantom statements into Objects
 		Set<String> phantoms = new HashSet<String>();
-		phantoms.addAll(StatementHelper.extractPhantoms(stats));
+		phantoms.addAll(StatementHelper.extractPhantoms(_statements));
 		for (String p : phantoms)
 			_objects.add(new RectangleObject(p));
-		stats.removeAll(stats.stream()
+		_statements.removeAll(_statements.stream()
 				.filter(s -> s.getType().equals(StatementType.phantom))
 				.collect(Collectors.toSet()));
 		
-		// Remove duplicates
-		_statements = Helper.cloneStatementList(stats);
+		// Set Default Statements
+		DefaultStatements ds = new DefaultStatements(_objects, _assocs, _statements,
+				maxGroupId);
+		_statements.addAll(ds.value());
+		maxGroupId = ds.getGroupId();
 		
 		StatementHelper.checkTypes(_statements, _assocStatements, _objects, _assocs);
 		
@@ -236,89 +242,11 @@ public class LayoutVisualize
 			System.err.println("> Starting box arrange...");
 		
 		// Arrange objects
-		Boolean isConflicted;
-		do
-		{
-			isConflicted = false;
-			
-			try
-			{
-				ArrangeObjects ao = new ArrangeObjects(_objects, _statements, _logging);
-				_objects = new HashSet<RectangleObject>(ao.value());
-			}
-			catch (BoxArrangeConflictException ex)
-			{
-				isConflicted = true;
-				// Remove a weak statement if possible
-				if (ex.ConflictStatement.stream().anyMatch(s -> !s.isUserDefined()))
-				{
-					ArrayList<Statement> possibleDeletes = (ArrayList<Statement>) ex.ConflictStatement
-							.stream().filter(s -> !s.isUserDefined())
-							.collect(Collectors.toList());
-					Statement max = possibleDeletes
-							.stream()
-							.max((s1, s2) ->
-							{
-								return -1
-										* Integer.compare(
-												StatementHelper.getComplexity(s1),
-												StatementHelper.getComplexity(s2));
-							}).get();
-					
-					ArrayList<Statement> toDeletes = new ArrayList<Statement>();
-					toDeletes.addAll(_statements
-							.stream()
-							.filter(s -> s.getGroupId() != null
-									&& s.getGroupId().equals(max.getGroupId()))
-							.collect(Collectors.toList()));
-					
-					_statements.removeAll(toDeletes);
-					if (_logging)
-					{
-						for (Statement stat : toDeletes)
-						{
-							System.err.println("> > Weak(" + stat.toString()
-									+ ") statement deleted!");
-						}
-					}
-				}
-				else if (_statements.stream().anyMatch(s -> !s.isUserDefined()))
-				{
-					ArrayList<Statement> possibleDeletes = (ArrayList<Statement>) _statements
-							.stream().filter(s -> !s.isUserDefined())
-							.collect(Collectors.toList());
-					Statement max = possibleDeletes
-							.stream()
-							.max((s1, s2) ->
-							{
-								return -1
-										* Integer.compare(
-												StatementHelper.getComplexity(s1),
-												StatementHelper.getComplexity(s2));
-							}).get();
-					
-					ArrayList<Statement> toDeletes = new ArrayList<Statement>();
-					toDeletes.addAll(_statements.stream()
-							.filter(s -> s.getGroupId().equals(max.getGroupId()))
-							.collect(Collectors.toList()));
-					
-					_statements.removeAll(toDeletes);
-					if (_logging.equals(true))
-					{
-						for (Statement stat : toDeletes)
-						{
-							System.err.println("> > Weak(" + stat.toString()
-									+ ") statement deleted!");
-						}
-					}
-				}
-				else
-					throw ex;
-				
-				if (_logging)
-					System.err.println("> > ReTrying box arrange!");
-			}
-		} while (isConflicted);
+		ArrangeObjects ao = new ArrangeObjects(_objects, _statements, maxGroupId,
+				_logging);
+		_objects = new HashSet<RectangleObject>(ao.value());
+		_statements = ao.statements();
+		maxGroupId = ao.getGId();
 		
 		if (_logging)
 			System.err.println("> Box arrange DONE!");

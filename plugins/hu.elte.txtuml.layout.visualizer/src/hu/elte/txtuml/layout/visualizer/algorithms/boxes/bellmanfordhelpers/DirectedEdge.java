@@ -15,7 +15,7 @@ import hu.elte.txtuml.layout.visualizer.annotations.Statement;
  * @author Robert Sedgewick
  * @author Kevin Wayne
  */
-@SuppressWarnings("all")
+
 public class DirectedEdge
 {
 	

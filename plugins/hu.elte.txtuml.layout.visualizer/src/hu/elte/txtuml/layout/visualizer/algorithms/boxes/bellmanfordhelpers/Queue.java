@@ -24,7 +24,6 @@ import java.util.NoSuchElementException;
  * @param <Item>
  *            Type to store.
  */
-@SuppressWarnings("all")
 public class Queue<Item> implements Iterable<Item>
 {
 	private int N; // number of elements on queue

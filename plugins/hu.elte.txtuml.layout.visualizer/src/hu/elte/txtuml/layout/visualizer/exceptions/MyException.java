@@ -12,6 +12,7 @@ public class MyException extends Throwable
 	 * Default Serial Version ID
 	 */
 	private static final long serialVersionUID = 1L;
+	private String _message;
 	
 	/**
 	 * Create MyException.
@@ -29,6 +30,11 @@ public class MyException extends Throwable
 	 */
 	public MyException(String m)
 	{
-		super(m);
+		_message = m;
+	}
+	
+	public String getMessage()
+	{
+		return _message;
 	}
 }

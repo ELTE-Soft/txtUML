@@ -3,17 +3,22 @@ package hu.elte.txtuml.layout.visualizer.algorithms.boxes;
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.DirectedEdge;
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.EdgeWeightedDigraph;
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
+import hu.elte.txtuml.layout.visualizer.annotations.StatementLevel;
 import hu.elte.txtuml.layout.visualizer.exceptions.BoxArrangeConflictException;
-import hu.elte.txtuml.layout.visualizer.exceptions.CannotPositionObjectException;
+import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
+import hu.elte.txtuml.layout.visualizer.exceptions.MyException;
 import hu.elte.txtuml.layout.visualizer.helpers.BiMap;
+import hu.elte.txtuml.layout.visualizer.helpers.Helper;
 import hu.elte.txtuml.layout.visualizer.helpers.Quadraple;
+import hu.elte.txtuml.layout.visualizer.helpers.StatementHelper;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,7 +33,9 @@ import java.util.stream.Collectors;
 public class ArrangeObjects
 {
 	private Set<RectangleObject> _objects;
+	private ArrayList<Statement> _statements;
 	private BiMap<String, Integer> _indices;
+	private Integer _gid;
 	private Boolean _logging;
 	
 	private Integer _transformAmount;
@@ -59,52 +66,211 @@ public class ArrangeObjects
 	 * 
 	 * @param obj
 	 *            Set of objects/boxes to arrange.
-	 * @param stats
+	 * @param par_stats
 	 *            List of statements on the boxes.
+	 * @param gid
+	 *            The previously used group id.
 	 * @param log
 	 *            Whether to print out logging msgs.
 	 * @throws BoxArrangeConflictException
 	 *             Throws when a conflict appears during the arrangement of the
 	 *             boxes.
-	 * @throws CannotPositionObjectException
-	 *             Throws if the algorithm cannot position a box for some
-	 *             reason.
 	 * @throws InternalException
 	 *             Throws if some algorithm related error happens. Contact
 	 *             programmer for more details.
+	 * @throws ConversionException
+	 *             Throws if the algorithm could not convert a specific value.
 	 */
-	public ArrangeObjects(Set<RectangleObject> obj, ArrayList<Statement> stats,
-			Boolean log) throws BoxArrangeConflictException,
-			CannotPositionObjectException, InternalException
+	public ArrangeObjects(Set<RectangleObject> obj, ArrayList<Statement> par_stats,
+			Integer gid, Boolean log) throws BoxArrangeConflictException,
+			InternalException, ConversionException
 	
 	{
 		_logging = log;
+		_gid = gid;
 		
 		// Nothing to arrange
 		if (obj.size() == 0)
 			return;
 		
-		_objects = obj;
+		_statements = Helper.cloneStatementList(par_stats);
+		_objects = new HashSet<RectangleObject>(obj);
 		_transformAmount = 1;
 		
-		// Default, auto-layout
-		if (stats.size() == 0)
-		{
-			defaultLayout();
-			return;
-		}
+		// Arrange, arrange overlaps
+		setIndices();
+		arrangeUntilNotConflicted();
 		
-		_indices = new BiMap<String, Integer>();
-		// Set indices
+		if (isThereOverlapping())
 		{
-			Integer index = 1;
-			for (RectangleObject o : _objects)
+			removeOverlaps();
+		}
+	}
+	
+	private void arrangeUntilNotConflicted() throws InternalException,
+			BoxArrangeConflictException
+	{
+		Boolean isConflicted = false;
+		do
+		{
+			isConflicted = false;
+			try
 			{
-				_indices.put(o.getName(), index);
-				++index;
+				arrange(_statements);
 			}
-		}
+			catch (BoxArrangeConflictException ex)
+			{
+				isConflicted = true;
+				// Remove a weak statement if possible
+				if (ex.ConflictStatement.stream().anyMatch(s -> !s.isUserDefined()))
+				{
+					ArrayList<Statement> possibleDeletes = (ArrayList<Statement>) ex.ConflictStatement
+							.stream().filter(s -> !s.isUserDefined())
+							.collect(Collectors.toList());
+					Statement max = possibleDeletes
+							.stream()
+							.max((s1, s2) ->
+							{
+								return -1
+										* Integer.compare(
+												StatementHelper.getComplexity(s1),
+												StatementHelper.getComplexity(s2));
+							}).get();
+					
+					ArrayList<Statement> toDeletes = new ArrayList<Statement>();
+					toDeletes.addAll(_statements
+							.stream()
+							.filter(s -> s.getGroupId() != null
+									&& s.getGroupId().equals(max.getGroupId()))
+							.collect(Collectors.toList()));
+					
+					_statements.removeAll(toDeletes);
+					if (_logging)
+					{
+						for (Statement stat : toDeletes)
+						{
+							System.err.println("> > Weak(" + stat.toString()
+									+ ") statement deleted!");
+						}
+					}
+				}
+				else if (_statements.stream().anyMatch(s -> !s.isUserDefined()))
+				{
+					ArrayList<Statement> possibleDeletes = (ArrayList<Statement>) _statements
+							.stream().filter(s -> !s.isUserDefined())
+							.collect(Collectors.toList());
+					Statement max = possibleDeletes
+							.stream()
+							.max((s1, s2) ->
+							{
+								return -1
+										* Integer.compare(
+												StatementHelper.getComplexity(s1),
+												StatementHelper.getComplexity(s2));
+							}).get();
+					
+					ArrayList<Statement> toDeletes = new ArrayList<Statement>();
+					toDeletes.addAll(_statements
+							.stream()
+							.filter(s -> s.getGroupId() != null
+									&& s.getGroupId().equals(max.getGroupId()))
+							.collect(Collectors.toList()));
+					
+					_statements.removeAll(toDeletes);
+					if (_logging.equals(true))
+					{
+						for (Statement stat : toDeletes)
+						{
+							System.err.println("> > Weak(" + stat.toString()
+									+ ") statement deleted!");
+						}
+					}
+				}
+				else
+					throw ex;
+				
+				if (_logging)
+					System.err.println("> > ReTrying box arrange!");
+			}
+		} while (isConflicted);
+	}
+	
+	private void removeOverlaps() throws InternalException, ConversionException
+	{
+		if (_logging)
+			System.err.println("Starting overlap arrange...");
 		
+		Boolean wasExtension = false;
+		do
+		{
+			wasExtension = false;
+			if (_logging)
+				System.err.println(" > Round of overlap arrange...");
+			
+			for (RectangleObject boxA : _objects)
+			{
+				if (!isThereOverlapping())
+					break;
+				
+				for (RectangleObject boxB : _objects)
+				{
+					if (!isThereOverlapping())
+						break;
+					
+					if (boxA.getName().equals(boxB.getName()))
+						continue;
+					
+					if (boxA.getPosition().equals(boxB.getPosition()))
+					{
+						for (Direction dir : Direction.values())
+						{
+							Integer prevOverlapCount = overlappingCount();
+							if (!isThereOverlapping(prevOverlapCount))
+								break;
+							
+							ArrayList<Statement> newStats = Helper
+									.cloneStatementList(_statements);
+							++_gid;
+							newStats.add(new Statement(Helper.asStatementType(dir),
+									StatementLevel.Medium, _gid, boxA.getName(), boxB
+											.getName()));
+							
+							try
+							{
+								arrange(newStats);
+								Integer currOverlapCount = overlappingCount();
+								if (currOverlapCount < prevOverlapCount)
+								{
+									_statements = Helper.cloneStatementList(newStats);
+									wasExtension = true;
+									
+									if (_logging)
+										System.err.println("Found a possible solution "
+												+ currOverlapCount + "<"
+												+ prevOverlapCount + "!");
+								}
+								else
+									--_gid;
+							}
+							catch (MyException ex)
+							{
+								--_gid;
+								if (_logging)
+									System.err.println("Retrying to resolve overlaps...");
+							}
+						}
+					}
+				}
+			}
+		} while (wasExtension);
+		
+		if (_logging)
+			System.err.println("Ending overlap arrange...");
+	}
+	
+	private void arrange(ArrayList<Statement> stats) throws InternalException,
+			BoxArrangeConflictException
+	{
 		int n = _objects.size();
 		int startNode = 0;
 		ArrayList<Quadraple<Integer, Integer, Integer, Statement>> l = buildEdges(n,
@@ -140,7 +306,6 @@ public class ArrangeObjects
 						RectangleObject mod = _objects.stream()
 								.filter(o -> o.getName().equals(nameOfTheObject))
 								.findFirst().get();
-						
 						mod.setPosition(new Point(mod.getPosition().getX(), (int) sp
 								.distTo(v)));
 					}
@@ -158,99 +323,70 @@ public class ArrangeObjects
 				}
 				else
 				{
-					throw new CannotPositionObjectException(
+					throw new InternalException(
 							"Certain elements are not connected to the others!");
 				}
 			}
 		}
 		
-		arrangeOverlapping();
+		// arrangeOverlapping(stats);
 	}
 	
-	private void defaultLayout()
+	private void setIndices()
 	{
-		for (RectangleObject o : _objects)
+		_indices = new BiMap<String, Integer>();
+		// Set indices
 		{
-			o.setPosition(new Point(0, 0));
+			Integer index = 1;
+			for (RectangleObject o : _objects)
+			{
+				_indices.put(o.getName(), index);
+				++index;
+			}
 		}
-		
-		arrangeOverlapping();
 	}
 	
-	private void arrangeOverlapping()
+	private boolean isThereOverlapping()
 	{
-		if (_logging)
-			System.err.print("Arranging overlaps...");
-		
-		HashMap<Point, Integer> overlaps = new HashMap<Point, Integer>();
-		Integer max = 0;
+		return isThereOverlapping(overlappingCount());
+	}
+	
+	private boolean isThereOverlapping(Integer oc)
+	{
+		return oc > 1;
+	}
+	
+	private Integer overlappingCount()
+	{
+		HashMap<Point, HashSet<String>> overlaps = new HashMap<Point, HashSet<String>>();
 		
 		for (RectangleObject o : _objects)
 		{
 			if (overlaps.containsKey(o.getPosition()))
 			{
-				overlaps.put(o.getPosition(), overlaps.get(o.getPosition()) + 1);
-				if (overlaps.get(o.getPosition()) > max)
-					max = overlaps.get(o.getPosition());
+				HashSet<String> temp = overlaps.get(o.getPosition());
+				temp.add(o.getName());
+				
+				overlaps.put(o.getPosition(), temp);
 			}
 			else
-				overlaps.put(o.getPosition(), 1);
-		}
-		
-		if (max <= 1)
-		{
-			// Nothing to do!
-			if (_logging)
-				System.err.println("NOTHING TO DO!");
-			return;
-		}
-		
-		_transformAmount = (int) Math.floor((Math.ceil(Math.sqrt(max))) + 1);
-		
-		// Multiply coordinates by _transformAmount
-		for (RectangleObject o : _objects)
-		{
-			o.setPosition(Point.Multiply(o.getPosition(), _transformAmount));
-		}
-		
-		// maxvalue-tõl van valamerre gyökn * gyökn terület
-		for (Entry<Point, Integer> entry : overlaps.entrySet())
-		{
-			if (entry.getValue() > 1)
 			{
-				overlapRemove(Point.Multiply(entry.getKey(), _transformAmount),
-						entry.getValue());
+				HashSet<String> temp = new HashSet<String>();
+				temp.add(o.getName());
+				overlaps.put(o.getPosition(), temp);
 			}
 		}
 		
-		if (_logging)
-			System.err.println("DONE!");
-	}
-	
-	private void overlapRemove(Point p, Integer c)
-	{
-		ArrayList<RectangleObject> objectsToModify = (ArrayList<RectangleObject>) _objects
-				.stream().filter(o -> o.getPosition().equals(p))
-				.collect(Collectors.toList());
-		
-		// First remains at p, (n-1) arranges around it
-		Integer radius = 1;
-		Integer num = 1;
-		for (int i = 1; i < c; ++i)
+		Integer count = 0;
+		for (Entry<Point, HashSet<String>> entry : overlaps.entrySet())
 		{
-			RectangleObject tempObj = objectsToModify.get(i);
-			// _objects.remove(tempObj);
-			tempObj.setPosition(newPointAtRadius(p, radius, num));
-			// _objects.add(tempObj);
-			
-			if (num.equals((radius * 4)))
+			if (entry.getValue().size() > 1)
 			{
-				++radius;
-				num = 1;
+				count += entry.getValue().size();
 			}
-			else
-				++num;
 		}
+		
+		return count;
 	}
 	
 	private ArrayList<Quadraple<Integer, Integer, Integer, Statement>> buildEdges(
@@ -395,51 +531,6 @@ public class ArrangeObjects
 		return result;
 	}
 	
-	private Point newPointAtRadius(Point p, Integer radius, Integer num)
-	{
-		Point result = p;
-		
-		for (int i = 0; i < radius; ++i)
-		{
-			result = Point.Add(result, Direction.north);
-		}
-		
-		// Down right
-		for (int dr = 0; dr < radius; ++dr)
-		{
-			if (num.equals(0))
-				return result;
-			result = Point.Add(result, new Point(1, -1));
-			--num;
-		}
-		// Down left
-		for (int dl = 0; dl < radius; ++dl)
-		{
-			if (num.equals(0))
-				return result;
-			result = Point.Add(result, new Point(-1, -1));
-			--num;
-		}
-		// Up left
-		for (int ul = 0; ul < radius; ++ul)
-		{
-			if (num.equals(0))
-				return result;
-			result = Point.Add(result, new Point(-1, 1));
-			--num;
-		}
-		// Up right
-		for (int ur = 0; ur < radius; ++ur)
-		{
-			if (num.equals(0))
-				return result;
-			result = Point.Add(result, new Point(1, 1));
-			--num;
-		}
-		
-		return result;
-	}
-	
 	/**
 	 * Returns the value of the arrangement.
 	 * 
@@ -448,6 +539,26 @@ public class ArrangeObjects
 	public Set<RectangleObject> value()
 	{
 		return _objects;
+	}
+	
+	/**
+	 * Returns the modified {@link Statement} list.
+	 * 
+	 * @return the modified {@link Statement} list.
+	 */
+	public ArrayList<Statement> statements()
+	{
+		return _statements;
+	}
+	
+	/**
+	 * Returns the latest used Group Id number.
+	 * 
+	 * @return the latest used Group Id number.
+	 */
+	public Integer getGId()
+	{
+		return _gid;
 	}
 	
 }

@@ -30,9 +30,9 @@ class GraphSearch
 	
 	// Constants
 	
-	private final Double _weightLength = 1.0;
-	private final Double _weightTurns = 2.0;
-	private final Double _weightCrossing = 2.0;
+	private final Double _weightLength = 2.9;
+	private final Double _weightTurns = 2.7;
+	private final Double _weightCrossing = 1.0;
 	private final Integer _penalizeTurns = 2;
 	
 	// end Constants
@@ -79,7 +79,11 @@ class GraphSearch
 	 *             Throws if the alogirthm cannot even start the route from
 	 *             start.
 	 * @throws ConversionException
+	 *             Throws if the algorithm cannot convert a {@link Point} to a
+	 *             {@link Direction} or vica versa.
 	 * @throws InternalException
+	 *             Throws if the algorithm encounters something which it should
+	 *             not have.
 	 */
 	public GraphSearch(Set<Node> ss, Set<Node> es, Set<Painted<Point>> os, Integer top,
 			Set<Integer> bs) throws CannotFindAssociationRouteException,
@@ -121,7 +125,7 @@ class GraphSearch
 	
 	// Methods
 	
-	private boolean search() throws ConversionException, InternalException
+	private boolean search()
 	{
 		while (true)
 		{
@@ -214,6 +218,7 @@ class GraphSearch
 		{
 			return Integer.compare(d1, d2);
 		}).get());
+		
 		_manhattanDistance.put(a, temp);
 		return temp;
 	}
@@ -322,7 +327,7 @@ class GraphSearch
 	
 	// Methods
 	
-	private Set<Pair<Node, Double>> Gamma(Node parent) throws ConversionException
+	private Set<Pair<Node, Double>> Gamma(Node parent)
 	{
 		if (_boundary != -1
 				&& (Math.abs(parent.getTo().getX()) > _boundary || Math.abs(parent
@@ -369,6 +374,11 @@ class GraphSearch
 		return result;
 	}
 	
+	/**
+	 * Returns the route from start to end.
+	 * 
+	 * @return the route from start to end.
+	 */
 	public ArrayList<Node> value()
 	{
 		ArrayList<Node> result = new ArrayList<Node>();
@@ -392,6 +402,11 @@ class GraphSearch
 		return result2;
 	}
 	
+	/**
+	 * Returns the number of node extensions completed during the path search.
+	 * 
+	 * @return the number of node extensions completed during the path search.
+	 */
 	public Integer extendsNum()
 	{
 		return _extends;

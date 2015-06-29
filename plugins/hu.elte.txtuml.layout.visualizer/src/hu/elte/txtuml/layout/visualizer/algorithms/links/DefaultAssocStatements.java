@@ -13,12 +13,38 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * This class generates {@link Statement}s automatically for the
+ * {@link LineAssociation}s.
+ * 
+ * @author Balázs Gregorics
+ *
+ */
 class DefaultAssocStatements
 {
-	
+	/**
+	 * Generated {@link Statement}s.
+	 */
 	private ArrayList<Statement> _result;
+	/**
+	 * Previously used Group Id.
+	 */
 	private Integer _gId;
 	
+	/**
+	 * Constructor and run command for the generation of automatic
+	 * {@link Statement}s on {@link LineAssociation}s.
+	 * 
+	 * @param gid
+	 *            previously used group id.
+	 * @param stat
+	 *            list of {@link Statement}s.
+	 * @param assocs
+	 *            list of {@link LineAssociation}s.
+	 * @throws InternalException
+	 *             Throws if the algorithm encounters a value that should not
+	 *             have reached that part. Contact programmer for more details.
+	 */
 	public DefaultAssocStatements(Integer gid, ArrayList<Statement> stat,
 			ArrayList<LineAssociation> assocs) throws InternalException
 	{
@@ -28,11 +54,21 @@ class DefaultAssocStatements
 		predefinePriorities(assocs);
 	}
 	
+	/**
+	 * Returns the previously used Group Id.
+	 * 
+	 * @return the previously used Group Id.
+	 */
 	public Integer getGroupId()
 	{
 		return _gId;
 	}
 	
+	/**
+	 * Returns the generated {@link Statement}s.
+	 * 
+	 * @return the generated {@link Statement}s.
+	 */
 	public ArrayList<Statement> value()
 	{
 		return _result;

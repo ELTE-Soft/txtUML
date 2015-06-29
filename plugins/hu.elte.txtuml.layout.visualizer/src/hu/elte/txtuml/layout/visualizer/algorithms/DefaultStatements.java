@@ -28,7 +28,13 @@ import java.util.stream.Collectors;
 public class DefaultStatements
 {
 	
+	/**
+	 * List of generated {@link Statement}s.
+	 */
 	private ArrayList<Statement> _statements;
+	/**
+	 * The previously used Group Id of a {@link Statement}.
+	 */
 	private Integer _gId;
 	
 	/**
@@ -38,19 +44,21 @@ public class DefaultStatements
 	 *            Set of objects in the diagram.
 	 * @param as
 	 *            Set of links in the diagram.
+	 * @param ss
+	 *            List of statements.
 	 * @param gid
 	 *            The last used group id.
 	 * @throws InternalException
 	 *             Throws if some algorithm related error occurs. Contact with
 	 *             your programmer in the nearest zoo for more details.
 	 */
-	public DefaultStatements(Set<RectangleObject> os, Set<LineAssociation> as, Integer gid)
-			throws InternalException
+	public DefaultStatements(Set<RectangleObject> os, Set<LineAssociation> as,
+			ArrayList<Statement> ss, Integer gid) throws InternalException
 	{
 		_statements = new ArrayList<Statement>();
 		_gId = gid;
 		
-		defaults(os, as);
+		defaults(os, as, ss);
 	}
 	
 	/**
@@ -73,50 +81,80 @@ public class DefaultStatements
 		return _statements;
 	}
 	
-	private void defaults(Set<RectangleObject> os, Set<LineAssociation> as)
-			throws InternalException
+	/**
+	 * Run command for the generation of default statements.
+	 * 
+	 * @param os
+	 *            Set of objects in the diagram.
+	 * @param as
+	 *            Set of links in the diagram.
+	 * @param ss
+	 *            List of statements.
+	 * @throws InternalException
+	 *             Throws if some algorithm related error occurs. Contact with
+	 *             your programmer in the nearest zoo for more details.
+	 */
+	private void defaults(Set<RectangleObject> os, Set<LineAssociation> as,
+			ArrayList<Statement> ss) throws InternalException
 	{
-		// Count degrees
+		// Assamble access table
 		HashMap<String, HashSet<String>> accesses = new HashMap<String, HashSet<String>>();
+		for (RectangleObject o : os)
+		{
+			accesses.put(o.getName(), new HashSet<String>());
+		}
 		
 		for (LineAssociation a : as)
 		{
-			if (a.isReflexive())
+			// if (a.isReflexive())
+			// continue;
+			
+			HashSet<String> tempF = accesses.get(a.getFrom());
+			if (!tempF.contains(a.getTo()))
+			{
+				tempF.add(a.getTo());
+				accesses.put(a.getFrom(), tempF);
+			}
+			
+			HashSet<String> tempT = accesses.get(a.getTo());
+			if (!tempT.contains(a.getFrom()))
+			{
+				tempT.add(a.getFrom());
+				accesses.put(a.getTo(), tempT);
+			}
+		}
+		
+		for (Statement s : ss)
+		{
+			if (!StatementType.isOnObjects(s.getType()))
 				continue;
 			
-			if (accesses.containsKey(a.getFrom()))
+			HashSet<String> tempF = accesses.get(s.getParameter(0));
+			if (!tempF.contains(s.getParameter(1)))
 			{
-				HashSet<String> temp = accesses.get(a.getFrom());
-				if (!temp.contains(a.getTo()))
-					temp.add(a.getTo());
-				accesses.put(a.getFrom(), temp);
-			}
-			else
-			{
-				HashSet<String> temp = new HashSet<String>();
-				temp.add(a.getTo());
-				accesses.put(a.getFrom(), temp);
+				tempF.add(s.getParameter(1));
+				accesses.put(s.getParameter(0), tempF);
 			}
 			
-			if (accesses.containsKey(a.getTo()))
+			HashSet<String> tempT = accesses.get(s.getParameter(1));
+			if (!tempT.contains(s.getParameter(0)))
 			{
-				HashSet<String> temp = accesses.get(a.getTo());
-				if (!temp.contains(a.getFrom()))
-					temp.add(a.getFrom());
-				accesses.put(a.getTo(), temp);
-			}
-			else
-			{
-				HashSet<String> temp = new HashSet<String>();
-				temp.add(a.getFrom());
-				accesses.put(a.getTo(), temp);
+				tempT.add(s.getParameter(0));
+				accesses.put(s.getParameter(1), tempT);
 			}
 		}
 		
 		// Detect groups, arrange groups, arrange in groups
-		_statements.addAll(detectGroups(accesses, as));
+		_statements.addAll(detectGroups(accesses));
 	}
 	
+	/**
+	 * Method to construct the {@link Graph} we want to search in.
+	 * 
+	 * @param edges
+	 *            the accesses from one Box.
+	 * @return the {@link Graph} to search in.
+	 */
 	private Graph<String> buildGraph(HashMap<String, HashSet<String>> edges)
 	{
 		Graph<String> result = new Graph<String>();
@@ -137,8 +175,8 @@ public class DefaultStatements
 		return result;
 	}
 	
-	private ArrayList<Statement> detectGroups(HashMap<String, HashSet<String>> accesses,
-			Set<LineAssociation> as) throws InternalException
+	private ArrayList<Statement> detectGroups(HashMap<String, HashSet<String>> accesses)
+			throws InternalException
 	{
 		ArrayList<Statement> result = new ArrayList<Statement>();
 		
@@ -153,7 +191,7 @@ public class DefaultStatements
 			String start = openToCheck.stream().findFirst().get();
 			do
 			{
-				BreathFirstSearch bfs = new BreathFirstSearch(G, start);
+				BreathFirstSearch<String> bfs = new BreathFirstSearch<String>(G, start);
 				
 				HashSet<String> oneGroup = (HashSet<String>) bfs.value().entrySet()
 						.stream()

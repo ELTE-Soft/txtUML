@@ -27,7 +27,6 @@ import java.util.Stack;
  * @author Robert Sedgewick
  * @author Kevin Wayne
  */
-@SuppressWarnings("all")
 public class EdgeWeightedDigraph
 {
 	private final int V;
@@ -52,7 +51,7 @@ public class EdgeWeightedDigraph
 					"Number of vertices in a Digraph must be nonnegative");
 		this.V = V;
 		this.E = 0;
-		adj = (Bag<DirectedEdge>[]) new Bag[V];
+		adj = new Bag[V];
 		for (int v = 0; v < V; v++)
 			adj[v] = new Bag<DirectedEdge>();
 	}

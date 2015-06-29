@@ -9,7 +9,13 @@ public class Point
 {
 	// Variables
 	
+	/**
+	 * Coordinate X.
+	 */
 	private Integer _x;
+	/**
+	 * Coordinate Y.
+	 */
 	private Integer _y;
 	
 	// end Variables
@@ -19,7 +25,7 @@ public class Point
 	/***
 	 * Getter for the X coordinate.
 	 * 
-	 * @return Integer of X coordinate.
+	 * @return {@link Integer} of X coordinate.
 	 */
 	public Integer getX()
 	{
@@ -30,7 +36,7 @@ public class Point
 	 * Setter for the X coordinate.
 	 * 
 	 * @param v
-	 *            Integer value of X coordinate to be set.
+	 *            {@link Integer} value of X coordinate to be set.
 	 */
 	public void setX(Integer v)
 	{
@@ -40,7 +46,7 @@ public class Point
 	/***
 	 * Getter for the Y coordinate.
 	 * 
-	 * @return Integer of Y coordinate.
+	 * @return {@link Integer} of Y coordinate.
 	 */
 	public Integer getY()
 	{
@@ -51,7 +57,7 @@ public class Point
 	 * Setter for the Y coordinate.
 	 * 
 	 * @param v
-	 *            Integer value of Y coordinate to be set.
+	 *            {@link Integer} value of Y coordinate to be set.
 	 */
 	public void setY(Integer v)
 	{
@@ -59,11 +65,11 @@ public class Point
 	}
 	
 	/**
-	 * Getter for the coordinate of the point which is horizontal to the
-	 * direction.
+	 * Getter for the coordinate of the {@link Point} which is horizontal to the
+	 * {@link Direction}.
 	 * 
 	 * @param dir
-	 *            Direction which's coordinate we want.
+	 *            {@link Direction} which's coordinate we want.
 	 * @return Value of the coordinate.
 	 */
 	public Integer get(Direction dir)
@@ -79,7 +85,7 @@ public class Point
 	// Ctors
 	
 	/***
-	 * Create a Point with (0, 0).
+	 * Create a {@link Point} with (0, 0).
 	 */
 	public Point()
 	{
@@ -88,7 +94,7 @@ public class Point
 	}
 	
 	/***
-	 * Create a Point with (x, y).
+	 * Create a {@link Point} with (x, y).
 	 * 
 	 * @param x
 	 *            X coordinate.
@@ -102,10 +108,10 @@ public class Point
 	}
 	
 	/***
-	 * Create a Point copying p.
+	 * Create a {@link Point} copying p.
 	 * 
 	 * @param p
-	 *            Point to copy.
+	 *            {@link Point} to copy.
 	 */
 	public Point(Point p)
 	{
@@ -117,14 +123,14 @@ public class Point
 	
 	// Statics
 	
-	/***
-	 * Addition of two Points.
+	/**
+	 * Addition of two {@link Point}s.
 	 * 
 	 * @param p1
 	 *            First argument to add.
 	 * @param p2
 	 *            Second argument to add.
-	 * @return A Point from the addition of p1 and p2.
+	 * @return A {@link Point} from the addition of p1 and p2.
 	 */
 	public static Point Add(Point p1, Point p2)
 	{
@@ -132,13 +138,13 @@ public class Point
 	}
 	
 	/***
-	 * Substraction of two Points.
+	 * Substraction of two {@link Point}s.
 	 * 
 	 * @param p1
 	 *            First argument to substract.
 	 * @param p2
 	 *            Second argument to substract.
-	 * @return A Point from the substraction of p1 and p2.
+	 * @return A {@link Point} from the substraction of p1 and p2.
 	 */
 	public static Point Substract(Point p1, Point p2)
 	{
@@ -146,7 +152,7 @@ public class Point
 	}
 	
 	/***
-	 * Equality of two Points.
+	 * Equality of two {@link Point}s.
 	 * 
 	 * @param p1
 	 *            First argument to compare.
@@ -160,13 +166,13 @@ public class Point
 	}
 	
 	/***
-	 * Addition of a Point and a Direction
+	 * Addition of a {@link Point} and a {@link Direction}.
 	 * 
 	 * @param p1
-	 *            Point to add.
+	 *            {@link Point} to add.
 	 * @param dir
-	 *            Direction to add.
-	 * @return A Point from the addition of p1 and dir.
+	 *            {@link Direction} to add.
+	 * @return A {@link Point} from the addition of p1 and dir.
 	 */
 	public static Point Add(Point p1, Direction dir)
 	{
@@ -186,13 +192,13 @@ public class Point
 	}
 	
 	/**
-	 * Multiplication of a Point.
+	 * Multiplication of a {@link Point}.
 	 * 
 	 * @param p1
-	 *            Point to multiply.
+	 *            {@link Point} to multiply.
 	 * @param m
 	 *            Amount of multiplication.
-	 * @return A Point from the multiplication of (p1 * m).
+	 * @return A {@link Point} from the multiplication of (p1 * m).
 	 */
 	public static Point Multiply(Point p1, Integer m)
 	{
@@ -200,13 +206,13 @@ public class Point
 	}
 	
 	/**
-	 * Divide a Point.
+	 * Divide a {@link Point}.
 	 * 
 	 * @param p1
-	 *            Point to divide
+	 *            {@link Point} to divide
 	 * @param m
 	 *            Amount of division.
-	 * @return A Point from the division of (p1 / m).
+	 * @return A {@link Point} from the division of (p1 / m).
 	 */
 	public static Point Divide(Point p1, Integer m)
 	{
@@ -214,13 +220,14 @@ public class Point
 	}
 	
 	/***
-	 * Multiply a Direction by an Integer amount to get a Point.
+	 * Multiply a {@link Direction} by an {@link Integer} amount to get a
+	 * {@link Point}.
 	 * 
 	 * @param dir
-	 *            Direction to multiply.
+	 *            {@link Direction} to multiply.
 	 * @param m
 	 *            Amount of multiplication.
-	 * @return A Point from the multiplication
+	 * @return A {@link Point} from the multiplication
 	 */
 	public static Point Multiply(Direction dir, Integer m)
 	{
@@ -229,15 +236,15 @@ public class Point
 	}
 	
 	/**
-	 * Check if p2 is in the dir direction of p1.
+	 * Check if p2 is in the dir {@link Direction} of p1.
 	 * 
 	 * @param p1
-	 *            The point to relate to.
+	 *            The {@link Point} to relate to.
 	 * @param p2
-	 *            The point to check.
+	 *            The {@link Point} to check.
 	 * @param dir
-	 *            The direction to check in.
-	 * @return Boolean of p2 is in the dir direction of p1.
+	 *            The {@link Direction} to check in.
+	 * @return Boolean of p2 is in the dir {@link Direction} of p1.
 	 */
 	public static boolean isInTheDirection(Point p1, Point p2, Direction dir)
 	{
@@ -245,17 +252,17 @@ public class Point
 	}
 	
 	/**
-	 * Check if p2 is in the dir direction of p1.
+	 * Check if p2 is in the dir {@link Direction} of p1.
 	 * 
 	 * @param p1
-	 *            The point to relate to.
+	 *            The {@link Point} to relate to.
 	 * @param p2
-	 *            The point to check.
+	 *            The {@link Point} to check.
 	 * @param dir
-	 *            The direction to check in.
+	 *            The {@link Direction} to check in.
 	 * @param inLineCounts
-	 *            Whether to allow points that are in line with p1.
-	 * @return Boolean of p2 is in the dir direction of p1.
+	 *            Whether to allow {@link Point}s that are in line with p1.
+	 * @return Boolean of p2 is in the dir {@link Direction} of p1.
 	 */
 	public static boolean isInTheDirection(Point p1, Point p2, Direction dir,
 			Boolean inLineCounts)
@@ -341,13 +348,14 @@ public class Point
 	// Methods
 	
 	/**
-	 * Checks if a point is in the given direction from this point.
+	 * Checks if a {@link Point} is in the given {@link Direction} from this
+	 * point.
 	 * 
 	 * @param p
-	 *            The point to check.
+	 *            The {@link Point} to check.
 	 * @param dir
-	 *            The direction to check.
-	 * @return True if p is in the dir direction of this.
+	 *            The {@link Direction} to check.
+	 * @return True if p is in the dir {@link Direction} of this.
 	 */
 	public boolean isInTheDirection(Point p, Direction dir)
 	{
@@ -366,16 +374,17 @@ public class Point
 	}
 	
 	/**
-	 * Checks if a point is in the given direction from this point.
+	 * Checks if a point is in the given {@link Direction} from this
+	 * {@link Point}.
 	 * 
 	 * @param p
-	 *            The point to check.
+	 *            The {@link Point} to check.
 	 * @param dir
-	 *            The direction to check.
+	 *            The {@link Direction} to check.
 	 * @param inLineCounts
 	 *            Whether to allow {@link Point}s that are in line with this
 	 *            point.
-	 * @return True if p is in the dir direction of this.
+	 * @return True if p is in the dir {@link Direction} of this.
 	 */
 	public boolean isInTheDirection(Point p, Direction dir, Boolean inLineCounts)
 	{
@@ -394,9 +403,9 @@ public class Point
 	}
 	
 	/**
-	 * Returns the traditional euklidean length of the Point (Vector).
+	 * Returns the traditional euklidean length of the {@link Point} (Vector).
 	 * 
-	 * @return The length of the Point.
+	 * @return The length of the {@link Point}.
 	 */
 	public Double length()
 	{

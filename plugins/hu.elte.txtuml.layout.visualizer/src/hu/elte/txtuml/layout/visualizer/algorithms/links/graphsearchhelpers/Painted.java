@@ -115,9 +115,10 @@ public class Painted<Item>
 	}
 	
 	/**
-	 * Copy constructor
+	 * Copy constructor.
 	 * 
 	 * @param p
+	 *            {@link Painted} to copy.
 	 */
 	public Painted(Painted<Item> p)
 	{

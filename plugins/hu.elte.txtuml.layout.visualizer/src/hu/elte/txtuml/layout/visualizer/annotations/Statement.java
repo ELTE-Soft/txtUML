@@ -309,18 +309,18 @@ public class Statement
 	/***
 	 * Function to parse String form of a Statement.
 	 * 
-	 * @param input
+	 * @param par_input
 	 *            String input to parse.
 	 * @return The Statement, parsed.
 	 * @throws UnknownStatementException
 	 *             Throws if any error occurs.
 	 */
-	public static Statement Parse(String input) throws UnknownStatementException
+	public static Statement Parse(String par_input) throws UnknownStatementException
 	{
 		StatementType type = StatementType.unknown;
 		String[] params;
 		
-		input = input.replaceAll(" ", "");
+		String input = par_input.replaceAll(" ", "");
 		
 		Integer parOpen = input.indexOf("(");
 		Integer parClose = input.lastIndexOf(")");
@@ -392,6 +392,58 @@ public class Statement
 	public static boolean Equals(Statement s1, Statement s2)
 	{
 		return s1.equals(s2);
+	}
+	
+	/**
+	 * Returns the opposite {@link Statement} of the given 's' {@link Statement}
+	 * .
+	 * 
+	 * @param s
+	 *            the {@link Statement} we want the opposite of.
+	 * @return the opposite {@link Statement} of the given 's' {@link Statement}
+	 *         .
+	 * @throws InternalException
+	 *             Throws if the algorithm try to set a statement with no
+	 *             GroupId when it should have.
+	 */
+	public static Statement opposite(Statement s) throws InternalException
+	{
+		return new Statement(opposite(s.getType()), s.getLevel(), s.getGroupId(),
+				s.getParameter(1), s.getParameter(0));
+	}
+	
+	/**
+	 * Returns the opposite {@link StatementType} of the given st
+	 * {@link StatementType}.
+	 * 
+	 * @param st
+	 *            the {@link StatementType} we want the opposite of.
+	 * @return the opposite {@link StatementType} of the given st
+	 *         {@link StatementType}.
+	 */
+	public static StatementType opposite(StatementType st)
+	{
+		if (st.equals(StatementType.north))
+			return StatementType.south;
+		if (st.equals(StatementType.south))
+			return StatementType.north;
+		
+		if (st.equals(StatementType.east))
+			return StatementType.west;
+		if (st.equals(StatementType.west))
+			return StatementType.east;
+		
+		if (st.equals(StatementType.above))
+			return StatementType.below;
+		if (st.equals(StatementType.below))
+			return StatementType.above;
+		
+		if (st.equals(StatementType.right))
+			return StatementType.left;
+		if (st.equals(StatementType.left))
+			return StatementType.right;
+		
+		return StatementType.unknown;
 	}
 	
 	// end Statics

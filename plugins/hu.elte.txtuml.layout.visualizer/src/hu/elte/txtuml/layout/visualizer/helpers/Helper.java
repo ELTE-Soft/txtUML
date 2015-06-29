@@ -195,20 +195,20 @@ public class Helper
 		switch (ty)
 		{
 			case north:
+			case above:
 				return Direction.north;
 			case south:
+			case below:
 				return Direction.south;
 			case east:
+			case right:
 				return Direction.east;
 			case west:
-				return Direction.west;
-			case above:
-			case below:
-			case horizontal:
 			case left:
+				return Direction.west;
+			case horizontal:
 			case phantom:
 			case priority:
-			case right:
 			case unknown:
 			case vertical:
 			default:
