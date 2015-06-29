@@ -8,61 +8,44 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
 /**
- * Represents a Transformer, considering the unity scale.
- * Applies transformations on the given Objects' coordinates
+ * The transformer class which transforms the object coordinates to fit the GMF diagram
  * @author András Dobreff
  */
 public class LayoutTransformer {
-
+	
 	/**
-	 * Constraints to the Position of the Origo
+	 * Defines where should the origin be form the diagram elements 
 	 * @author András Dobreff
 	 */
 	@SuppressWarnings("javadoc")
 	public enum OrigoConstraint{
-		UpperLeft, UpperRight, BottomLeft,BottomRight, None
+		UpperLeft, UpperRight, 
+		BottomLeft,BottomRight, None
 	}
-
+	
 	private int scaleX;
 	private int scaleY;
-	private int gapX;
-	private int gapY;
+
 	private OrigoConstraint origoConstaint;
 	private boolean flipXAxis;
 	private boolean flipYAxis;
+	
 	/**
 	 * Constructor for {@link LayoutTransformer}
 	 * @param scaleX - Multiplier of the X coordinates
 	 * @param scaleY - Multiplier of the Y coordinates
+	 * @param gridDesity - Defines how many partitions an object has
 	 */
-	public LayoutTransformer(int scaleX, int scaleY) {
-		this.scaleX = scaleX;
-		this.scaleY = scaleY;
+	public LayoutTransformer(int scaleX, int scaleY, int gridDesity) {
+		this.scaleX = Math.round((float) scaleX/(float) gridDesity);
+		this.scaleY = Math.round((float) scaleY/(float) gridDesity);
 		init();
 	}
 	
 	private void init(){
-		this.gapX = 0;
-		this.gapY = 0;
 		this.origoConstaint = OrigoConstraint.None;
 		this.flipXAxis = false;
 		this.flipYAxis = false;
-	}
-
-	/**
-	 * Sets the vertical gap between objects in neighborhood
-	 * @param gapX
-	 */
-	public void setGapX(int gapX) {
-		this.gapX = gapX;
-	}
-	
-	/**
-	 * Sets the horizontal gap between objects in neighborhood
-	 * @param gapY
-	 */
-	public void setGapY(int gapY) {
-		this.gapY = gapY;
 	}
 	
 	/**
@@ -103,6 +86,7 @@ public class LayoutTransformer {
 		scaleUpObjects(objects, connections);
 	}
 	
+	
 	/**
 	 * Scales the objects according to the scales and gaps
 	 * @param objects - The object that are to be scaled 
@@ -110,20 +94,18 @@ public class LayoutTransformer {
 	 */
 	private void scaleUpObjects(Map<?, Rectangle> objects, Map<?, List<Point>> connections) {
 		for(Rectangle rect : objects.values()){
-			int shiftToCenterX = Math.abs(scaleX-rect.width())/2;
-			int shiftToCenterY = Math.abs(scaleY-rect.height())/2;
-			rect.setX(rect.x()*(this.scaleX+this.gapX)+shiftToCenterX);
-			rect.setY(rect.y()*(this.scaleY+this.gapY)+shiftToCenterY);
+			rect.setX(rect.x()*(this.scaleX));
+			rect.setY(rect.y()*(this.scaleY));
 		}
 		
 		for(List<Point> pointlist: connections.values()){
 			for(Point p : pointlist){
-				p.setX(p.x()*(this.scaleX+this.gapX)+this.scaleX/2);
-				p.setY(p.y()*(this.scaleY+this.gapY)+this.scaleY/2);
+				p.setX(p.x()*this.scaleX);
+				p.setY(p.y()*this.scaleY);
 			}
 		}
 	}
-
+	
 	/**
 	 * Translates the objects to fit the origoConstraint
 	 * @param objects - The object that are to be translated 
@@ -166,6 +148,7 @@ public class LayoutTransformer {
 			}
 		}
 	}
+	
 	
 	/**
 	 * Multiplies the y coordinates of the objects with -1. From now on they can be handled

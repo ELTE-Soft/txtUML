@@ -3,10 +3,15 @@ package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 import hu.elte.txtuml.export.papyrus.TxtUMLElementsFinder;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutTransformer.OrigoConstraint;
+import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
+import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.function.BiConsumer;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
@@ -15,6 +20,8 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
+import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.uml2.uml.Element;
 
 /**
  * An abstract class for arranging the elements with the txtUML arranging algorithm. 
@@ -28,7 +35,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 	/**
 	 * The Constructor 
 	 * @param diagramEditPart - The EditPart of the diagram which elements is to arranged.
-	 * @param finder 
+	 * @param finder - The {@link TxtUMLElementsFinder} which specifies the layout
 	 */
 	public AbstractDiagramElementsTxtUmlArranger(DiagramEditPart diagramEditPart, TxtUMLElementsFinder finder) {
 		super(diagramEditPart);
@@ -43,9 +50,84 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		if(!elements.isEmpty()){
 			int maxWidth = getMaxWidth(elements);
 			int maxHeight = getMaxHeight(elements);
-			int gapX = 10;
-			int gapY = 10;
-					
+			
+			List<ConnectionNodeEditPart> connections = new LinkedList<ConnectionNodeEditPart>();
+			for (EditPart editpart : elements) {
+				@SuppressWarnings("unchecked")
+				List<ConnectionNodeEditPart> conns = ((GraphicalEditPart) editpart).getSourceConnections();
+				connections.addAll(conns);
+			}
+			
+			LayoutVisualizerManager vm = new LayoutVisualizerManager(finder);
+			vm.arrange();
+			
+			Collection<RectangleObject> objects = vm.getObjects();
+			Collection<LineAssociation> links = vm.getAssociations();
+			
+			Map<String, Rectangle> objects2 = new HashMap<String, Rectangle>();
+			Map<String, List<Point>> links2 = new HashMap<String, List<Point>>(); 
+			
+			for(RectangleObject obj:objects){
+				objects2.put(obj.getName(), new Rectangle(obj.getTopLeft().getX(), obj.getTopLeft().getY(), 0, 0));
+			}
+			
+			
+			for(LineAssociation la : links){
+				List<Point> route = new LinkedList<Point>();
+				//The point of the route have opposite order in the two representations
+				List<hu.elte.txtuml.layout.visualizer.model.Point> layoutRoute = la.getMinimalRoute();
+						for(int i = layoutRoute.size()-1; i >= 0; i--){
+							route.add(new Point(layoutRoute.get(i).getX(),layoutRoute.get(i).getY()));
+						}
+				links2.put(la.getId(), route);
+			}
+			
+			
+			int gridDensity = objects.iterator().next().getWidth()-1;
+			
+			LayoutTransformer trans = new LayoutTransformer(maxWidth, maxHeight, gridDensity);
+			trans.setOrigo(OrigoConstraint.UpperLeft);
+			trans.flipYAxis();
+			trans.doTranformations(objects2, links2);
+			
+			
+			objects2.forEach(new BiConsumer<String, Rectangle>() {
+				@Override
+				public void accept(String name, Rectangle position) {
+					Element e = finder.findElement(name);
+					if(e != null){
+						EditPart ep = getEditPartOfModelElement(elements, e);
+						if(ep != null){
+							AbstractDiagramElementsTxtUmlArranger.super
+								.moveGraphicalEditPart((GraphicalEditPart) ep, position.getTopLeft());
+						}
+					}
+				}
+				
+			});
+		
+			
+			links2.forEach(new BiConsumer<String , List<Point>>() {
+				@Override
+				public void accept(String Id, List<Point> route) {
+					Element e = finder.findAssociation(Id);
+					if(e == null) e = finder.findGeneralization(Id);
+					if(e != null){
+						ConnectionNodeEditPart connection = (ConnectionNodeEditPart) getEditPartOfModelElement(connections, e);
+						String[] anchors;
+						if(connection != null){
+							anchors = defineAnchors(route);
+				        	AbstractDiagramElementsTxtUmlArranger.super.setConnectionAnchors(connection, anchors[0], anchors[1]);
+				        	route.remove(0);
+				        	route.remove(route.size()-1);
+				        	AbstractDiagramElementsTxtUmlArranger.super.setConnectionBendpoints(connection, route);
+						}
+					}
+				}
+			});
+			
+			
+					/*
 			LayoutVisualizerManager vismanager = new LayoutVisualizerManager(elements, this.finder);
 			vismanager.arrange();
 			
@@ -53,8 +135,6 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			Map<ConnectionNodeEditPart, List<Point>> connectionMap = vismanager.getConnectionsAndRoutes();
 			
 			LayoutTransformer layoutTransformer = new LayoutTransformer(maxWidth, maxHeight);
-			layoutTransformer.setGapX(gapX);
-			layoutTransformer.setGapY(gapY);
 			layoutTransformer.setOrigo(OrigoConstraint.UpperLeft);
 			layoutTransformer.flipYAxis();
 			layoutTransformer.doTranformations(nodeMap, connectionMap);
@@ -77,7 +157,9 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		        	super.setConnectionBendpoints(connection, bendpoints);
 		        }
 		    }
-		    
+		    */
+			
+			
 		}
 	}
 
@@ -153,5 +235,16 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		result[0] = (vec.x/length+1)/2;
 		result[1] = (vec.y/length+1)/2;
 		return result;
+	}
+	
+	/* TODO Maybe this function could have been also used somewhere else - Future refactor needed */
+	private EditPart getEditPartOfModelElement(Collection<? extends EditPart> editParts, Element element) {
+		if(element == null) return null;
+		for (EditPart ep : editParts) {
+			Element actual = (Element) ((View) ep.getModel()).getElement();
+			if(actual.equals(element))
+				return ep;
+		}
+		return null;
 	}
 }
