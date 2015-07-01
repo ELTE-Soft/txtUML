@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus;
+package hu.elte.txtuml.export.papyrus.layout.txtuml;
 
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 

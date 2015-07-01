@@ -20,7 +20,7 @@ import org.eclipse.uml2.uml.Package;
  *
  * @author András Dobreff
  */
-public class ModelManager {
+public class UMLModelManager {
 	
 	private IMultiDiagramEditor editor;
 	private MultiMap<Class<?>, Element> modelMap;
@@ -28,11 +28,9 @@ public class ModelManager {
 	/**
 	 * The Constructor.
 	 * @param editor - The editor to the instance will be attached.
-	 * @throws ServiceException
-	 * @throws NotFoundException
 	 */
 	//TODO: It would be nicer if this class would get a UmlModel, not an Editor
-	public ModelManager(IMultiDiagramEditor editor) throws ServiceException, NotFoundException{
+	public UMLModelManager(IMultiDiagramEditor editor){
 		this.editor = editor;
 		modelMap = buildUpMap();
 	}
@@ -40,10 +38,8 @@ public class ModelManager {
 	/**
 	 * Builds up a {@link MultiMap}. Hashes the Model Elements by their eClass
 	 * @return The model elements in a MultiMap
-	 * @throws NotFoundException
-	 * @throws ServiceException
 	 */
-	private MultiMap<java.lang.Class<?>, Element> buildUpMap() throws NotFoundException, ServiceException {
+	private MultiMap<java.lang.Class<?>, Element> buildUpMap(){
 		MultiMap<java.lang.Class<?>, Element> result = new MultiMap<Class<?>, Element>(); 
 		Element root = getRoot();
 		Queue<Element> queue = new LinkedList<Element>();
@@ -69,21 +65,23 @@ public class ModelManager {
 	/**
 	 * Returns the root Element of the model
 	 * @return - Root element
-	 * @throws ServiceException
-	 * @throws NotFoundException
 	 */
-	public Element getRoot() throws ServiceException, NotFoundException{
-		ModelSet modelSet = editor.getServicesRegistry().getService(ModelSet.class);
-		UmlModel umlModel = (UmlModel) modelSet.getModel(UmlModel.MODEL_ID);
-		Element root = (Element) umlModel.lookupRoot();
-		return root;
+	public Element getRoot(){
+		try{
+			ModelSet modelSet = editor.getServicesRegistry().getService(ModelSet.class);
+			UmlModel umlModel = (UmlModel) modelSet.getModel(UmlModel.MODEL_ID);
+			Element root = (Element) umlModel.lookupRoot();
+			return root;
+		}catch(NotFoundException | ServiceException e){
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
 	 * Returns the the Elements with the same type from the model. 
 	 * The Elements of different types will be added sequentially. 
 	 * @param types
-	 * @return
+	 * @return The Elements with same type
 	 */
 	public List<Element> getElementsOfTypes(List<java.lang.Class<?>> types){
 		List<Element> elements = new LinkedList<Element>();

@@ -1,11 +1,11 @@
-package hu.elte.txtuml.export.papyrus;
+package hu.elte.txtuml.export.papyrus.papyrusmodelmanagers;
 
+import hu.elte.txtuml.export.papyrus.DiagramManager;
+import hu.elte.txtuml.export.papyrus.UMLModelManager;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
-import org.eclipse.papyrus.infra.core.resource.NotFoundException;
-import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.ui.IEditorPart;
 
 /**
@@ -23,7 +23,7 @@ public abstract class AbstractPapyrusModelManager {
 	/**
 	 * The ModelManager controls the model elements
 	 */
-	protected ModelManager modelManager;
+	protected UMLModelManager modelManager;
 	
 	/**
 	 * The PereferecesManager gives information what the Diagrams and Elements should be seen
@@ -38,32 +38,27 @@ public abstract class AbstractPapyrusModelManager {
 	/**
 	 * The Constructor
 	 * @param editor - The Editor to which the PapyrusModelManager will be attached
-	 * @throws ServiceException
-	 * @throws NotFoundException
 	 */
-	public AbstractPapyrusModelManager(IMultiDiagramEditor editor) throws ServiceException, NotFoundException {
-		preferencesManager = new PreferencesManager();
-		modelManager = new ModelManager(editor);
-		diagramManager = new DiagramManager(editor);
+	public AbstractPapyrusModelManager(IMultiDiagramEditor editor){
+		this.preferencesManager = new PreferencesManager();
+		this.modelManager = new UMLModelManager(editor);
+		this.diagramManager = new DiagramManager(editor);
 		this.editor = editor;
 	}
 
 	/**
 	 * Creates the diagrams and adds the elements to them
-	 * @throws NotFoundException
-	 * @throws ServiceException
 	 */
-	public void createAndFillDiagrams() throws ServiceException {
+	public void createAndFillDiagrams(){
 		createDiagrams();	
 		addElementsToDiagrams();
-		editor.doSave(new NullProgressMonitor());
+		this.editor.doSave(new NullProgressMonitor());
 	}
 
 	/**
 	 * Adds the elements to the diagrams
-	 * @throws ServiceException 
 	 */
-	protected abstract void addElementsToDiagrams() throws ServiceException;
+	protected abstract void addElementsToDiagrams();
 
 	/**
 	 * Creates the Papyrus Diagrams for every suitable element of the Model

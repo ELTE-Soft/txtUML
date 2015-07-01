@@ -1,6 +1,6 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
-import hu.elte.txtuml.export.papyrus.MainAction;
+import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 
 import java.io.File;
 
@@ -52,7 +52,7 @@ public class UmlToPapyrusWizard extends Wizard {
   public boolean performFinish() {
 	preferencesPage.setPreferences();
 	File f = new File(selectUmlPage.getUMLPath()); 
-    MainAction ma = new MainAction(selectUmlPage.getProjectName(), getFileNameWithOutExtension(f), f.toURI().toString());
+    PapyrusVisualizer ma = new PapyrusVisualizer(selectUmlPage.getProjectName(), getFileNameWithOutExtension(f), f.toURI().toString());
 	ma.run();
     return true;
   }

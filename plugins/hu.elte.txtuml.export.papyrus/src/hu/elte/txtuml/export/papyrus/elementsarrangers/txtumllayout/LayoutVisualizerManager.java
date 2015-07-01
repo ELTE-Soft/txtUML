@@ -1,6 +1,6 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
-import hu.elte.txtuml.export.papyrus.TxtUMLElementsFinder;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
 import hu.elte.txtuml.layout.visualizer.algorithms.LayoutVisualize;
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
@@ -27,12 +27,12 @@ public class LayoutVisualizerManager {
 	
 	/**
 	 * The Constructor
-	 * @param finder - The TxtUMLElementsFinder that connects the model elements with txtUML names  
+	 * @param txtUmlRegistry - The TxtUMLElementsFinder that connects the model elements with txtUML names  
 	 */
-	public LayoutVisualizerManager(TxtUMLElementsFinder finder) {
-		this.objects = finder.getDescriptor().report.getNodes();
-		this.associations = finder.getDescriptor().report.getLinks();
-		this.statementsSet = finder.getDescriptor().report.getStatements();
+	public LayoutVisualizerManager(TxtUMLElementsRegistry txtUmlRegistry) {
+		this.objects = txtUmlRegistry.getDescriptor().report.getNodes();
+		this.associations = txtUmlRegistry.getDescriptor().report.getLinks();
+		this.statementsSet = txtUmlRegistry.getDescriptor().report.getStatements();
 	}
 	
 	/**
@@ -50,7 +50,7 @@ public class LayoutVisualizerManager {
 		LayoutVisualize v = new LayoutVisualize();
 		v.load(objects, associations);
 		v.arrange(new ArrayList<Statement>(statementsSet));
-		
+
 		objects = v.getObjects();
 		associations = v.getAssocs();
 	}

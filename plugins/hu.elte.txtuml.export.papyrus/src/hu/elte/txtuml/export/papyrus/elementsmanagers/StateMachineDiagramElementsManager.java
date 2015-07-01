@@ -1,6 +1,6 @@
 package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
-import hu.elte.txtuml.export.papyrus.ModelManager;
+import hu.elte.txtuml.export.papyrus.UMLModelManager;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
 import java.util.Arrays;
@@ -31,7 +31,7 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	 * @param modelManager - The ModelManager which serves the model elements
 	 * @param diagramEditPart - The DiagramEditPart of the diagram which is to be handled
 	 */
-	public StateMachineDiagramElementsManager(ModelManager modelManager,DiagramEditPart diagramEditPart) {
+	public StateMachineDiagramElementsManager(UMLModelManager modelManager,DiagramEditPart diagramEditPart) {
 		super(modelManager, diagramEditPart);
 		preferencesManager = new PreferencesManager();
 		elementsToBeAdded = generateElementsToBeAdded();

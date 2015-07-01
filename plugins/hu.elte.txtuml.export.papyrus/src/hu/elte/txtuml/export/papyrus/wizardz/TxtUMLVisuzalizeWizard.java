@@ -1,8 +1,8 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
-import hu.elte.txtuml.export.papyrus.MainAction;
-import hu.elte.txtuml.export.papyrus.ProjectManager;
-import hu.elte.txtuml.export.papyrus.TxtUMLLayoutDescriptor;
+import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
+import hu.elte.txtuml.export.papyrus.ProjectUtils;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.export.uml2.UML2;
 import hu.elte.txtuml.export.utils.ClassLoaderProvider;
@@ -134,11 +134,14 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 				PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 						.getActivePage().closeEditor(editor, false);
 			}
+			
+			String[] modellnamesplit = txtUMLModelName.split("\\.");
+			String[] layoutnamesplit = txtUMLLayout.split("\\.");
+			String projectName = modellnamesplit[modellnamesplit.length-1]+"_"+
+											layoutnamesplit[layoutnamesplit.length-1];
+			ProjectUtils.deleteProjectbyName(projectName);
 
-			ProjectManager projectManager = new ProjectManager();
-			projectManager.deleteProjectbyName(txtUMLModelName);
-
-			MainAction ma = new MainAction(txtUMLModelName, txtUMLModelName,
+			PapyrusVisualizer ma = new PapyrusVisualizer(projectName, txtUMLModelName,
 					UmlFile.getRawLocationURI().toString(), layoutDesriptor);
 			ma.run();
 		} catch (Exception e) {

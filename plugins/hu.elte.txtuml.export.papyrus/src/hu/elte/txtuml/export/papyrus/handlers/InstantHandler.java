@@ -1,6 +1,6 @@
 package hu.elte.txtuml.export.papyrus.handlers;
 
-import hu.elte.txtuml.export.papyrus.MainAction;
+import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -21,7 +21,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 public class InstantHandler extends AbstractHandler implements IHandler {
 	
 	/**
-	 * Collects the parameters and calls the {@link MainAction#run()}
+	 * Collects the parameters and calls the {@link PapyrusVisualizer#run()}
 	 */
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -34,7 +34,7 @@ public class InstantHandler extends AbstractHandler implements IHandler {
 		IProject project = file.getProject();
 
 		
-		MainAction ma = new MainAction(project.getName(), getFileNameWithOutExtension(file), file.getRawLocationURI().toString());
+		PapyrusVisualizer ma = new PapyrusVisualizer(project.getName(), getFileNameWithOutExtension(file), file.getRawLocationURI().toString());
 		ma.run();
 		return null;
 	}

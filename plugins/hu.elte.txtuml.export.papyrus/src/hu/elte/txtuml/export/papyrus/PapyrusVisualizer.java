@@ -1,5 +1,9 @@
 package hu.elte.txtuml.export.papyrus;
 
+import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
+import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
+import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.PapyrusDefaultModelManager;
+import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.PapyrusTxtUMLModelManager;
 import hu.elte.txtuml.export.utils.Dialogs;
 
 import org.eclipse.core.resources.IFile;
@@ -24,14 +28,13 @@ import org.eclipse.ui.part.FileEditorInput;
  * @param <ViewPrototype>
  * @see IWorkbenchWindowActionDelegate
  */
-public class MainAction {
+public class PapyrusVisualizer {
 	private IWorkbenchWindow window;
 	private String Projectname;
 	private String Modelname;
 	private String SourceUMLPath;
 	private PapyrusModelCreator papyrusModelCreator;
 	private AbstractPapyrusModelManager papyrusModelManager;
-	private ProjectManager projectManager;
 	private Object layoutDescriptor;
 	
 	/**
@@ -41,13 +44,12 @@ public class MainAction {
 	 * @param sourceUMLpath - Sourcepath of the Eclipse UML2 model 
 	 * @param layoutDescripton  - A descriptor file which adds constraints to the layout and diagram generation
 	 */
-	public MainAction(String projectName, String modelName,
+	public PapyrusVisualizer(String projectName, String modelName,
 			String sourceUMLpath, Object layoutDescripton) {
 		this.Projectname = projectName;
 		this.Modelname = modelName;
 		this.SourceUMLPath = sourceUMLpath;
 		this.window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		this.projectManager = new ProjectManager();
 		this.papyrusModelCreator = new PapyrusModelCreator();
 		this.layoutDescriptor = layoutDescripton;
 	}
@@ -57,7 +59,7 @@ public class MainAction {
 	 * @param modelName
 	 * @param sourceUMLpath
 	 */
-	public MainAction(String projectName, String modelName, String sourceUMLpath){
+	public PapyrusVisualizer(String projectName, String modelName, String sourceUMLpath){
 		this(projectName, modelName, sourceUMLpath, null);
 	}
 	
@@ -66,8 +68,8 @@ public class MainAction {
 	 * Creates the project (if not exists) and sets up the Papyrus Model
 	 */
 	public void run() {
-		IProject project = projectManager.createProject(Projectname);
-		projectManager.openProject(project);
+		IProject project = ProjectUtils.createProject(Projectname);
+		ProjectUtils.openProject(project);
 		createPapyrusProject();
 	}
 	
@@ -86,13 +88,11 @@ public class MainAction {
 	/**
 	 * Creates the Papyrus Model and fills the diagrams.
 	 * If the Model already exists, then loads it.
-	 * @throws Exception Any kind of Exception that could be thrown  
 	 */
-	private void createAndOpenPapyrusModel() throws Exception{
+	private void createAndOpenPapyrusModel(){
 		papyrusModelCreator.init(Projectname+"/"+Modelname);
 		papyrusModelCreator.setUpUML(SourceUMLPath);
 		if(!papyrusModelCreator.diExists()){
-			
 			papyrusModelCreator.createPapyrusModel();
 			IMultiDiagramEditor editor = (IMultiDiagramEditor) openEditor(papyrusModelCreator.getDi());
 			if(this.layoutDescriptor instanceof TxtUMLLayoutDescriptor){

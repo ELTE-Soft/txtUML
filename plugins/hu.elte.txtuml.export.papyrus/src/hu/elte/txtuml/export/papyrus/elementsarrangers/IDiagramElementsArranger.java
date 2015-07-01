@@ -9,6 +9,7 @@ public interface IDiagramElementsArranger {
 	
 	/**
 	 * Arranges the elements of the diagram
+	 * @throws Throwable - The arranging algorithms may throw exceptions
 	 */
-	public void arrange();
+	public void arrange() throws Throwable;
 }

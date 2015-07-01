@@ -1,6 +1,6 @@
 package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
-import hu.elte.txtuml.export.papyrus.ModelManager;
+import hu.elte.txtuml.export.papyrus.UMLModelManager;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +24,7 @@ public abstract class AbstractDiagramElementsManager{
 	/**
 	 * The ModelManager which serves the model elements
 	 */
-	protected ModelManager modelManager;
+	protected UMLModelManager modelManager;
 	
 	/**
 	 * The DiagramEditPart of the diagram which is to be handled
@@ -36,7 +36,7 @@ public abstract class AbstractDiagramElementsManager{
 	 * @param modelManager - The ModelManager which serves the model elements
 	 * @param diagramEditPart - The DiagramEditPart of the diagram which is to be handled
 	 */
-	public AbstractDiagramElementsManager(ModelManager modelManager, DiagramEditPart diagramEditPart) {
+	public AbstractDiagramElementsManager(UMLModelManager modelManager, DiagramEditPart diagramEditPart) {
 		this.modelManager = modelManager;
 		this.diagramEditPart = diagramEditPart;
 	}

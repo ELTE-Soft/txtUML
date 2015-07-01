@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus;
+package hu.elte.txtuml.export.papyrus.papyrusmodelmanagers;
 
 import hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout.ActivityDiagramElementsGmfArranger;
@@ -9,6 +9,7 @@ import hu.elte.txtuml.export.papyrus.elementsmanagers.ActivityDiagramElementsMan
 import hu.elte.txtuml.export.papyrus.elementsmanagers.ClassDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.StateMachineDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.export.utils.Dialogs;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,8 +17,6 @@ import java.util.List;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
-import org.eclipse.papyrus.infra.core.resource.NotFoundException;
-import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.uml.diagram.activity.CreateActivityDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.clazz.CreateClassDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.statemachine.CreateStateMachineDiagramCommand;
@@ -35,11 +34,10 @@ import org.eclipse.uml2.uml.StateMachine;
 public class PapyrusDefaultModelManager extends AbstractPapyrusModelManager{
 	
 	/**
+	 * The Constructor
 	 * @param editor
-	 * @throws ServiceException
-	 * @throws NotFoundException
 	 */
-	public PapyrusDefaultModelManager(IMultiDiagramEditor editor) throws ServiceException, NotFoundException {
+	public PapyrusDefaultModelManager(IMultiDiagramEditor editor){
 		super(editor);
 	}
 
@@ -64,9 +62,9 @@ public class PapyrusDefaultModelManager extends AbstractPapyrusModelManager{
 
 	/**
 	 * Adds the elements to the diagrams
-	 * @throws ServiceException
 	 */
-	protected void addElementsToDiagrams() throws ServiceException{
+	@Override
+	protected void addElementsToDiagrams(){
 		
 		List<Diagram> diags =  diagramManager.getDiagrams();
 		
@@ -95,7 +93,11 @@ public class PapyrusDefaultModelManager extends AbstractPapyrusModelManager{
 			}
 			
 			diagramElementsManager.addElementsToDiagram(baseElements);	
-			diagramElementsArranger.arrange();
+			try{
+				diagramElementsArranger.arrange();
+			}catch(Throwable e){
+				Dialogs.errorMsgb("Arrange error", e.toString(), e);
+			}
 		}
 	}
 }

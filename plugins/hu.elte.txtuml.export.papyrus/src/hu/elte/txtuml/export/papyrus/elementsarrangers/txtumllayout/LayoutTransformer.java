@@ -37,8 +37,13 @@ public class LayoutTransformer {
 	 * @param gridDesity - Defines how many partitions an object has
 	 */
 	public LayoutTransformer(int scaleX, int scaleY, int gridDesity) {
-		this.scaleX = Math.round((float) scaleX/(float) gridDesity);
-		this.scaleY = Math.round((float) scaleY/(float) gridDesity);
+		if(gridDesity == 0){
+			this.scaleX = scaleX;
+			this.scaleY = scaleY;
+		}else{
+			this.scaleX = Math.round((float) scaleX/(float) gridDesity);
+			this.scaleY = Math.round((float) scaleY/(float) gridDesity);
+		}
 		init();
 	}
 	

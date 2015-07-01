@@ -3,6 +3,8 @@ package hu.elte.txtuml.export.papyrus;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+
+
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
@@ -61,8 +63,6 @@ public class PapyrusModelCreator {
 	 * Initializes the instance	
 	 * @param modelpath - The path of the Papyrus model (at the end is the name of the Papyrus model)
 	 * @param sourceUMLPath - The path of the source .uml File
-	 * @throws CoreException
-	 * @throws IOException 
 	 */
 	public void init(String modelpath){
 		diFilePath = modelpath+".di";
@@ -75,10 +75,8 @@ public class PapyrusModelCreator {
 	/**
 	 * sets the UML file of the papyrus model that will be created.
 	 * @param sourceUMLPath
-	 * @throws CoreException
-	 * @throws IOException
 	 */
-	public void setUpUML( String sourceUMLPath) throws CoreException, IOException{
+	public void setUpUML( String sourceUMLPath){
 		if(!umlFile.exists()){
 			setUpUMLFile(sourceUMLPath);
 		}
@@ -87,10 +85,8 @@ public class PapyrusModelCreator {
 	 * Copies the content of the sourceUMLPath to the umlFile
 	 * The referenced Profile files will be also copied
 	 * @param sourceUMLPath - The path of the source .uml File
-	 * @throws FileNotFoundException
-	 * @throws CoreException
 	 */
-	private void setUpUMLFile(String sourceUMLPath) throws CoreException, FileNotFoundException {
+	private void setUpUMLFile(String sourceUMLPath){
 			copyFile(sourceUMLPath, umlFile);
 			
 			Model m = loadModel(URI.createPlatformResourceURI(umlFilePath, false));
@@ -118,63 +114,79 @@ public class PapyrusModelCreator {
 		return model;
 	}
 	
-	private void copyFile(String sourcepath, IFile newFile) throws FileNotFoundException, CoreException{
-		File oldFile = new File(java.net.URI.create(sourcepath));
-		FileInputStream is2 = new FileInputStream(oldFile);
-		newFile.create(null, true, null);
-		newFile.setContents(is2, true, false, new NullProgressMonitor());
+	private void copyFile(String sourcepath, IFile newFile){
+		try{
+			File oldFile = new File(java.net.URI.create(sourcepath));
+			FileInputStream is2 = new FileInputStream(oldFile);
+			newFile.create(null, true, null);
+			newFile.setContents(is2, true, false, new NullProgressMonitor());
+		}catch(CoreException | FileNotFoundException e){
+			throw new RuntimeException(e);
+		}
 	}
 
 	
 	/**
 	 * Creates an empty Papyrus Model
-	 * @throws ServiceException
-	 * @throws IOException
 	 */
-	public void createPapyrusModel() throws ServiceException, IOException{
+	public void createPapyrusModel(){
 		ModelSet modelSet = getModelSet();
 		URI diPResURI =  URI.createPlatformResourceURI(diFilePath, true);
 		RecordingCommand command = new NewPapyrusModelCommand(modelSet, diPResURI);
 		modelSet.getTransactionalEditingDomain().getCommandStack().execute(command);
 		initRegistry(registry);
-		modelSet.save(new NullProgressMonitor());
+		
+		try {
+			modelSet.save(new NullProgressMonitor());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	/**
 	 * Loads a Papyrus Model 
-	 * @throws ServiceException
-	 * @throws ModelMultiException
 	 */
-	public void loadPapyrusModel() throws ServiceException, ModelMultiException{
+	public void loadPapyrusModel(){
 		ModelSet modelSet = getModelSet();
 		URI diPResURI = URI.createPlatformResourceURI(umlFilePath, true);
-		modelSet.loadModels(diPResURI);
+		try{
+			modelSet.loadModels(diPResURI);
+		}catch(ModelMultiException e){
+			throw new RuntimeException(e);
+		}
 	}
 	
 	/**
 	 * Gets the ModelSet
 	 * @return The ModelSet
-	 * @throws ServiceException
 	 */
-	private ModelSet getModelSet() throws ServiceException{
-		registry = createServicesRegistry();
-		ModelSet modelSet = registry.getService(ModelSet.class);
-		return modelSet;
+	private ModelSet getModelSet(){
+		try{
+			registry = createServicesRegistry();
+			ModelSet modelSet = registry.getService(ModelSet.class);
+			return modelSet;
+		}catch(ServiceException e){
+			throw new RuntimeException(e);
+		}
 	}
 	
 	/**
 	 * Initializes a registry
 	 * @param registry - The ServiceRegistry to be Initialized 
-	 * @throws ServiceException
 	 */
-	private void initRegistry(ServicesRegistry registry) throws ServiceException{
+	private void initRegistry(ServicesRegistry registry){
 		try {
 			registry.startRegistry();
 		} catch (ServiceException ex) {
 			// Ignore this exception: some services may not have been loaded,
 			// which is probably normal at this point
 		}
-		registry.getService(IPageManager.class);
+		
+		try{
+			registry.getService(IPageManager.class);
+		}catch (ServiceException e){
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**

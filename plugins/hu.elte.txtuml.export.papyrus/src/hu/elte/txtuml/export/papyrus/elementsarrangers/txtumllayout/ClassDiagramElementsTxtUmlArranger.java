@@ -1,13 +1,6 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
-import hu.elte.txtuml.export.papyrus.TxtUMLElementsFinder;
-import hu.elte.txtuml.export.utils.Dialogs;
-import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
-import hu.elte.txtuml.layout.visualizer.exceptions.ConflictException;
-import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
-import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
-import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
-import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,34 +21,26 @@ public class ClassDiagramElementsTxtUmlArranger extends AbstractDiagramElementsT
 	/**
 	 * Arranges the children of an {@link EditPart} with the txtUML arranging algorithm 
 	 * @param diagramEditPart - The children of this EditPart will be arranged
-	 * @param finder - The {@link TxtUMLElementsFinder} which specifies the layout
+	 * @param txtUmlRegistry - The {@link TxtUMLElementsRegistry} which specifies the layout
 	 */
-	public ClassDiagramElementsTxtUmlArranger(DiagramEditPart diagramEditPart, TxtUMLElementsFinder finder) {
-		super(diagramEditPart, finder);
+	public ClassDiagramElementsTxtUmlArranger(DiagramEditPart diagramEditPart, TxtUMLElementsRegistry txtUmlRegistry) {
+		super(diagramEditPart, txtUmlRegistry);
 	}
+
 
 	/*
 	 * (non-Javadoc)
 	 * @see hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger#arrange()
 	 */
 	@Override
-	public void arrange() {
+	public void arrange() throws Throwable {
+		super.arrangeChildren(this.diagep);
 		@SuppressWarnings("unchecked")
-		List<EditPart> listEp = diagep.getChildren();
-		try {
-			super.arrangeChildren(diagep, listEp);
-		} catch (InternalException | ConflictException | ConversionException
-				| StatementTypeMatchException
-				| CannotFindAssociationRouteException
-				| UnknownStatementException e) {
-			
-			Dialogs.errorMsgb("txtUML Layout Error", e.toString(), e);
-		}
-		super.hideConnectionLabelsForEditParts(listEp, Arrays.asList(
+		List<EditPart> children = this.diagep.getChildren();
+		super.hideConnectionLabelsForEditParts(children, Arrays.asList(
 				AssociationNameEditPart.class,
 				AssociationMultiplicityTargetEditPart.class,
 				AssociationMultiplicitySourceEditPart.class
 				));
 	}
-	
 }

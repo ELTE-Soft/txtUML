@@ -11,7 +11,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
  *
  * @author András Dobreff
  */
-public class ProjectManager {
+public class ProjectUtils {
 
 	/**
 	 * Creates project or returns the existing.
@@ -19,7 +19,7 @@ public class ProjectManager {
 	 * @return Existing or created project
 	 */
 	
-	public IProject createProject(String name){
+	public static IProject createProject(String name){
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		final IProject project = root.getProject(name);
         if (!project.exists()){
@@ -36,7 +36,7 @@ public class ProjectManager {
 	 * Opens a project 
 	 * @param project - The Project to be opened
 	 */
-	public void openProject(IProject project){
+	public static void openProject(IProject project){
 		try {
 			project.open(new NullProgressMonitor());
 		} catch (CoreException e) {
@@ -48,7 +48,7 @@ public class ProjectManager {
 	 * Deletes a project
 	 * @param project - The Project to be deleted
 	 */
-	public void deleteProject(IProject project){
+	public static void deleteProject(IProject project){
 		 if (project.exists()){
 			try{
 				project.delete(true, true, new NullProgressMonitor());
@@ -62,7 +62,7 @@ public class ProjectManager {
 	 * Deletes a Project by Name
 	 * @param projectname - The Name of the Project to be deleted
 	 */
-	public void deleteProjectbyName(String projectname){
+	public static void deleteProjectbyName(String projectname){
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IProject project = root.getProject(projectname);
 		deleteProject(project);

@@ -1,8 +1,8 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
-import hu.elte.txtuml.export.papyrus.TxtUMLElementsFinder;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutTransformer.OrigoConstraint;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
@@ -36,16 +36,16 @@ import org.eclipse.uml2.uml.Element;
  */
 public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDiagramElementsArranger{
 	
-	private TxtUMLElementsFinder finder;
+	private TxtUMLElementsRegistry txtUmlRegistry;
 	
 	/**
 	 * The Constructor 
 	 * @param diagramEditPart - The EditPart of the diagram which elements is to arranged.
-	 * @param finder - The {@link TxtUMLElementsFinder} which specifies the layout
+	 * @param txtUmlRegistry - The {@link TxtUMLElementsRegistry} which specifies the layout
 	 */
-	public AbstractDiagramElementsTxtUmlArranger(DiagramEditPart diagramEditPart, TxtUMLElementsFinder finder) {
+	public AbstractDiagramElementsTxtUmlArranger(DiagramEditPart diagramEditPart, TxtUMLElementsRegistry txtUmlRegistry) {
 		super(diagramEditPart);
-		this.finder = finder;
+		this.txtUmlRegistry = txtUmlRegistry;
 	}
 
 	/**
@@ -58,7 +58,9 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 	 * @throws ConflictException 
 	 * @throws InternalException 
 	 */
-	protected void arrangeChildren(EditPart EP, List<EditPart> elements) throws InternalException, ConflictException, ConversionException, StatementTypeMatchException, CannotFindAssociationRouteException, UnknownStatementException {
+	protected void arrangeChildren(EditPart parent) throws InternalException, ConflictException, ConversionException, StatementTypeMatchException, CannotFindAssociationRouteException, UnknownStatementException {
+		@SuppressWarnings("unchecked")
+		List<EditPart> elements = parent.getChildren();
 		if(!elements.isEmpty()){
 			int maxWidth = getMaxWidth(elements);
 			int maxHeight = getMaxHeight(elements);
@@ -70,7 +72,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 				connections.addAll(conns);
 			}
 			
-			LayoutVisualizerManager vm = new LayoutVisualizerManager(finder);
+			LayoutVisualizerManager vm = new LayoutVisualizerManager(txtUmlRegistry);
 			vm.arrange();
 			
 			Collection<RectangleObject> objects = vm.getObjects();
@@ -95,7 +97,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			}
 			
 			
-			int gridDensity = objects.iterator().next().getWidth()-1;
+			int gridDensity = objects.isEmpty() ? 0 : objects.iterator().next().getWidth()-1;
 			
 			LayoutTransformer trans = new LayoutTransformer(maxWidth, maxHeight, gridDensity);
 			trans.setOrigo(OrigoConstraint.UpperLeft);
@@ -106,7 +108,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			objects2.forEach(new BiConsumer<String, Rectangle>() {
 				@Override
 				public void accept(String name, Rectangle position) {
-					Element e = finder.findElement(name);
+					Element e = txtUmlRegistry.findElement(name);
 					if(e != null){
 						EditPart ep = getEditPartOfModelElement(elements, e);
 						if(ep != null){
@@ -122,12 +124,12 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			links2.forEach(new BiConsumer<String , List<Point>>() {
 				@Override
 				public void accept(String Id, List<Point> route) {
-					Element e = finder.findAssociation(Id);
-					if(e == null) e = finder.findGeneralization(Id);
+					Element e = txtUmlRegistry.findAssociation(Id);
+					if(e == null) e = txtUmlRegistry.findGeneralization(Id);
 					if(e != null){
 						ConnectionNodeEditPart connection = (ConnectionNodeEditPart) getEditPartOfModelElement(connections, e);
 						String[] anchors;
-						if(connection != null){
+						if(connection != null && route.size() >= 2){
 							anchors = defineAnchors(route);
 				        	AbstractDiagramElementsTxtUmlArranger.super.setConnectionAnchors(connection, anchors[0], anchors[1]);
 				        	route.remove(0);

@@ -44,28 +44,30 @@ public class DiagramManager {
 	 * @param diagramCreationCommand - the Command that will be executed.
 	 */
 	public void createDiagrams(List<Element> containers, ICreationCommand diagramCreationCommand){
-		ModelSet ms;
 		try {
-			ms = editor.getServicesRegistry().getService(ModelSet.class);
+			ModelSet ms = this.editor.getServicesRegistry().getService(ModelSet.class);
 			for(Element container : containers){
 				diagramCreationCommand.createDiagram(ms, container, ((NamedElement)container).getName());
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (ServiceException e) {
+			throw new RuntimeException(e);
 		}
 	}
 	
 	/**
 	 * Gets the previously created diagrams.
 	 * @return The list of the the Diagrams
-	 * @throws ServiceException
 	 */
-	public List<Diagram> getDiagrams() throws ServiceException{
-		Resource notationResource;
-		notationResource = NotationUtils.getNotationModel(editor.getServicesRegistry().getService(ModelSet.class)).getResource();
-		@SuppressWarnings("unchecked")
-		List<Diagram> list = (List<Diagram>)(List<?>) notationResource.getContents();
-		return list;
+	public List<Diagram> getDiagrams(){
+		try{
+			Resource notationResource;
+			notationResource = NotationUtils.getNotationModel(this.editor.getServicesRegistry().getService(ModelSet.class)).getResource();
+			@SuppressWarnings("unchecked")
+			List<Diagram> list = (List<Diagram>)(List<?>) notationResource.getContents();
+			return list;
+		}catch(ServiceException e){
+			throw new RuntimeException(e);
+		}
 	}
 	
 	/**
@@ -74,12 +76,7 @@ public class DiagramManager {
 	 * @return Container of the diagram
 	 */
 	public Element getDiagramContainer(Diagram diagram){
-		try {
-			openDiagram(diagram);
-		} catch (ServiceException e) {
-			e.printStackTrace();
-		}
-		
+		openDiagram(diagram);
 		DiagramEditPart ep = getActiveDiagramEditPart();
 		ViewImpl mod = (ViewImpl) ep.getModel();
 		EObject element = mod.getElement();
@@ -89,11 +86,14 @@ public class DiagramManager {
 	/**
 	 * Opens the tab of diagram in the editor
 	 * @param diag - The diagram is to be opened
-	 * @throws ServiceException
 	 */
-	public void openDiagram(Diagram diag)  throws ServiceException{
-		TransactionalEditingDomain editingDomain = editor.getServicesRegistry().getService(TransactionalEditingDomain.class);
-		editingDomain.getCommandStack().execute(new GMFtoEMFCommandWrapper(new OpenDiagramCommand(editingDomain, diag)));
+	public void openDiagram(Diagram diag){
+		try{
+			TransactionalEditingDomain editingDomain = this.editor.getServicesRegistry().getService(TransactionalEditingDomain.class);
+			editingDomain.getCommandStack().execute(new GMFtoEMFCommandWrapper(new OpenDiagramCommand(editingDomain, diag)));
+		}catch(ServiceException e){
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class DiagramManager {
 	 * @return Returns the DiagramEditPart or null if the editor is not an {@link IDiagramWorkbenchPart}
 	 */
 	public DiagramEditPart getActiveDiagramEditPart(){
-		IEditorPart ied = editor.getActiveEditor();
+		IEditorPart ied = this.editor.getActiveEditor();
 		
 		if(ied instanceof IDiagramWorkbenchPart){
 			return ((IDiagramWorkbenchPart) ied).getDiagramEditPart();

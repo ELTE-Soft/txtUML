@@ -30,9 +30,9 @@ public class ClassDiagramElementsGmfArranger extends AbstractDiagramElementsGmfA
 	 */
 	@Override
 	public void arrange() {
-		super.arrangeChildren(diagep);
+		super.arrangeChildren(this.diagep);
 		@SuppressWarnings("unchecked")
-		List<EditPart> listEp = diagep.getChildren();
+		List<EditPart> listEp = this.diagep.getChildren();
 		super.hideConnectionLabelsForEditParts(listEp, Arrays.asList(
 				AssociationNameEditPart.class,
 				AssociationMultiplicityTargetEditPart.class,
