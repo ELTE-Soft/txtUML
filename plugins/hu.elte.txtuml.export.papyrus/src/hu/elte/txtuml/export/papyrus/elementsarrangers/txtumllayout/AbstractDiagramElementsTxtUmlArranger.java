@@ -64,6 +64,8 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		if(!elements.isEmpty()){
 			int maxWidth = getMaxWidth(elements);
 			int maxHeight = getMaxHeight(elements);
+			int gapX = 6;
+			int gapY = 6;
 			
 			List<ConnectionNodeEditPart> connections = new LinkedList<ConnectionNodeEditPart>();
 			for (EditPart editpart : elements) {
@@ -78,65 +80,64 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			Collection<RectangleObject> objects = vm.getObjects();
 			Collection<LineAssociation> links = vm.getAssociations();
 			
-			Map<String, Rectangle> objects2 = new HashMap<String, Rectangle>();
-			Map<String, List<Point>> links2 = new HashMap<String, List<Point>>(); 
+			Map<GraphicalEditPart, Rectangle> objectsTransform = new HashMap<GraphicalEditPart, Rectangle>();
+			Map<ConnectionNodeEditPart, List<Point>> linksTransform = new HashMap<ConnectionNodeEditPart, List<Point>>(); 
 			
 			for(RectangleObject obj:objects){
-				objects2.put(obj.getName(), new Rectangle(obj.getTopLeft().getX(), obj.getTopLeft().getY(), 0, 0));
+				Element e = txtUmlRegistry.findElement(obj.getName());
+				if(e != null){
+					GraphicalEditPart ep = (GraphicalEditPart) getEditPartOfModelElement(elements, e);
+					if(ep != null){
+						objectsTransform.put(ep, new Rectangle(obj.getTopLeft().getX(),
+										obj.getTopLeft().getY(), getSize(ep).width(), getSize(ep).height()));
+					}
+				}
 			}
 			
+			int gridDensity = objects.isEmpty() ? 0 : objects.iterator().next().getWidth();
 			
 			for(LineAssociation la : links){
 				List<Point> route = new LinkedList<Point>();
 				//The point of the route have opposite order in the two representations
 				List<hu.elte.txtuml.layout.visualizer.model.Point> layoutRoute = la.getMinimalRoute();
-						for(int i = layoutRoute.size()-1; i >= 0; i--){
-							route.add(new Point(layoutRoute.get(i).getX(),layoutRoute.get(i).getY()));
-						}
-				links2.put(la.getId(), route);
+				
+				for(int i = layoutRoute.size()-1; i >= 0; i--){
+					route.add(new Point(layoutRoute.get(i).getX(),layoutRoute.get(i).getY()));
+				}
+				
+				Element e = txtUmlRegistry.findAssociation(la.getId());
+				if(e == null) e = txtUmlRegistry.findGeneralization(la.getId());
+				if(e != null){
+					ConnectionNodeEditPart connection = (ConnectionNodeEditPart) getEditPartOfModelElement(connections, e);
+					linksTransform.put(connection, route);
+				}
 			}
 			
 			
-			int gridDensity = objects.isEmpty() ? 0 : objects.iterator().next().getWidth()-1;
-			
-			LayoutTransformer trans = new LayoutTransformer(maxWidth, maxHeight, gridDensity);
+			LayoutTransformer trans = new LayoutTransformer(maxWidth, maxHeight, gapX, gapY, gridDensity-1);
 			trans.setOrigo(OrigoConstraint.UpperLeft);
 			trans.flipYAxis();
-			trans.doTranformations(objects2, links2);
+			trans.doTranformations(objectsTransform, linksTransform);
 			
 			
-			objects2.forEach(new BiConsumer<String, Rectangle>() {
+			objectsTransform.forEach(new BiConsumer<GraphicalEditPart, Rectangle>() {
 				@Override
-				public void accept(String name, Rectangle position) {
-					Element e = txtUmlRegistry.findElement(name);
-					if(e != null){
-						EditPart ep = getEditPartOfModelElement(elements, e);
-						if(ep != null){
-							AbstractDiagramElementsTxtUmlArranger.super
-								.moveGraphicalEditPart((GraphicalEditPart) ep, position.getTopLeft());
-						}
-					}
+				public void accept(GraphicalEditPart ep, Rectangle position) {
+					AbstractDiagramElementsTxtUmlArranger.super
+						.moveGraphicalEditPart((GraphicalEditPart) ep, position.getTopLeft());
 				}
-				
 			});
 		
 			
-			links2.forEach(new BiConsumer<String , List<Point>>() {
+			linksTransform.forEach(new BiConsumer<ConnectionNodeEditPart , List<Point>>() {
 				@Override
-				public void accept(String Id, List<Point> route) {
-					Element e = txtUmlRegistry.findAssociation(Id);
-					if(e == null) e = txtUmlRegistry.findGeneralization(Id);
-					if(e != null){
-						ConnectionNodeEditPart connection = (ConnectionNodeEditPart) getEditPartOfModelElement(connections, e);
-						String[] anchors;
+				public void accept(ConnectionNodeEditPart connection, List<Point> route) {
 						if(connection != null && route.size() >= 2){
-							anchors = defineAnchors(route);
-				        	AbstractDiagramElementsTxtUmlArranger.super.setConnectionAnchors(connection, anchors[0], anchors[1]);
+				        	AbstractDiagramElementsTxtUmlArranger.super.setConnectionAnchors(connection, "(0.5,0.5)", "(0.5,0.5)");
 				        	route.remove(0);
 				        	route.remove(route.size()-1);
 				        	AbstractDiagramElementsTxtUmlArranger.super.setConnectionBendpoints(connection, route);
 						}
-					}
 				}
 			});
 		}
@@ -181,39 +182,6 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 	 */
 	protected Dimension getSize(GraphicalEditPart editpart){
 		return 	editpart.getFigure().getPreferredSize();
-	}
-	
-	/**
-	 * Gets the anchors from a route
-	 * @param route - The route
-	 * @return A String array width two values. The first
-	 *  is the source anchor, the second is the target
-	 */
-	protected  String[] defineAnchors(List<Point> route){
-		String[] result = new String[2];
-		
-		if(route.size() >= 2){
-			double[] source = defineAnchor(route.get(1), route.get(0));
-			double[] target = defineAnchor(route.get(route.size()-1), route.get(route.size()-2));
-			result[0] = "("+source[0]+", "+source[1]+")";
-			result[1] = "("+target[0]+", "+target[1]+")";
-		}
-		return result;
-	}
-	
-	/**
-	 * Gets an anchor from the given Points
-	 * @param a - The first Point
-	 * @param b - The second Point
-	 * @return The anchor
-	 */
-	private double[] defineAnchor(Point a, Point b){
-		Point vec = new Point(a.x-b.x, a.y-b.y);
-		double length = Math.sqrt(vec.x*vec.x+vec.y*vec.y);
-		double[] result = new double[2];
-		result[0] = (vec.x/length+1)/2;
-		result[1] = (vec.y/length+1)/2;
-		return result;
 	}
 	
 	/* TODO Maybe this function could have been also used somewhere else - Future refactor needed */

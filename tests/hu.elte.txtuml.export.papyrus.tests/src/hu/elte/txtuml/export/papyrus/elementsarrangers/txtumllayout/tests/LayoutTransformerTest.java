@@ -16,8 +16,7 @@ public class LayoutTransformerTest {
 	
 	@Test
 	public void testGapX(){
-		LayoutTransformer layoutTransformer = new LayoutTransformer(1, 1);
-		layoutTransformer.setGapX(20);
+		LayoutTransformer layoutTransformer = new LayoutTransformer(1, 1, 0, 20, 0);
 
 		Map<String, Rectangle> objects = new HashMap<String, Rectangle>();
 		Map<String, List<Point>> connections = new HashMap<String, List<Point>>();
@@ -44,8 +43,7 @@ public class LayoutTransformerTest {
 	
 	@Test
 	public void testGapY(){
-		LayoutTransformer layoutTransformer = new LayoutTransformer(1, 1);
-		layoutTransformer.setGapY(20);
+		LayoutTransformer layoutTransformer = new LayoutTransformer(1, 1, 0, 0,20);
 
 		Map<String, Rectangle> objects = new HashMap<String, Rectangle>();
 		Map<String, List<Point>> connections = new HashMap<String, List<Point>>();
@@ -72,7 +70,7 @@ public class LayoutTransformerTest {
 
 	@Test
 	public void testFlipXAxis() {
-		LayoutTransformer layoutTransformer = new LayoutTransformer(1, 1);
+		LayoutTransformer layoutTransformer = new LayoutTransformer(1, 1, 0, 0, 0);
 		layoutTransformer.flipXAxis();
 		
 		Map<String, Rectangle> objects = new HashMap<String, Rectangle>();
@@ -97,7 +95,7 @@ public class LayoutTransformerTest {
 
 	@Test
 	public void testFlipYAxis() {
-		LayoutTransformer layoutTransformer = new LayoutTransformer(1, 1);
+		LayoutTransformer layoutTransformer = new LayoutTransformer(1, 1,0, 0, 0);
 		layoutTransformer.flipYAxis();
 		
 		Map<String, Rectangle> objects = new HashMap<String, Rectangle>();
@@ -122,7 +120,7 @@ public class LayoutTransformerTest {
 
 	@Test
 	public void testSetOrigoToUpperLeft() {
-		LayoutTransformer layoutTransformer = new LayoutTransformer(1, 1);
+		LayoutTransformer layoutTransformer = new LayoutTransformer(1, 1, 0, 0, 0);
 		layoutTransformer.setOrigo(LayoutTransformer.OrigoConstraint.UpperLeft);
 		
 		Map<String, Rectangle> objects = new HashMap<String, Rectangle>();
@@ -172,7 +170,7 @@ public class LayoutTransformerTest {
 	
 	@Test
 	public void testSetOrigoToUpperRight() {
-		LayoutTransformer layoutTransformer = new LayoutTransformer(1, 1);
+		LayoutTransformer layoutTransformer = new LayoutTransformer(1, 1, 0, 0, 0);
 		layoutTransformer.setOrigo(LayoutTransformer.OrigoConstraint.UpperRight);
 		
 		Map<String, Rectangle> objects = new HashMap<String, Rectangle>();
@@ -223,7 +221,7 @@ public class LayoutTransformerTest {
 	
 	@Test
 	public void testSetOrigoToBottomLeft() {
-		LayoutTransformer layoutTransformer = new LayoutTransformer(1, 1);
+		LayoutTransformer layoutTransformer = new LayoutTransformer(1, 1, 0, 0, 0);
 		layoutTransformer.setOrigo(LayoutTransformer.OrigoConstraint.BottomLeft);
 		
 		Map<String, Rectangle> objects = new HashMap<String, Rectangle>();
@@ -273,7 +271,7 @@ public class LayoutTransformerTest {
 	
 	@Test
 	public void testSetOrigoToBottomRight() {
-		LayoutTransformer layoutTransformer = new LayoutTransformer(1, 1);
+		LayoutTransformer layoutTransformer = new LayoutTransformer(1, 1, 0 , 0, 0);
 		layoutTransformer.setOrigo(LayoutTransformer.OrigoConstraint.BottomRight);
 		
 		Map<String, Rectangle> objects = new HashMap<String, Rectangle>();
@@ -323,7 +321,7 @@ public class LayoutTransformerTest {
 	
 	@Test
 	public void testScaleX(){
-		LayoutTransformer layoutTransformer = new LayoutTransformer(100, 1);
+		LayoutTransformer layoutTransformer = new LayoutTransformer(100, 1, 0, 0, 0);
 
 		Map<String, Rectangle> objects = new HashMap<String, Rectangle>();
 		Map<String, List<Point>> connections = new HashMap<String, List<Point>>();
@@ -358,7 +356,7 @@ public class LayoutTransformerTest {
 	
 	@Test
 	public void testScaleY(){
-		LayoutTransformer layoutTransformer = new LayoutTransformer(1, 100);
+		LayoutTransformer layoutTransformer = new LayoutTransformer(1, 100, 0, 0, 0);
 
 		Map<String, Rectangle> objects = new HashMap<String, Rectangle>();
 		Map<String, List<Point>> connections = new HashMap<String, List<Point>>();

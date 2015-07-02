@@ -2,12 +2,11 @@ package hu.elte.txtuml.export.papyrus.elementsarrangers.tests;
 
 import static org.junit.Assert.fail;
 import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
-import hu.elte.txtuml.export.papyrus.PapyrusModelManager;
-import hu.elte.txtuml.export.papyrus.ProjectManager;
+import hu.elte.txtuml.export.papyrus.ProjectUtils;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsArranger;
+import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.PapyrusDefaultModelManager;
 import hu.elte.txtuml.utils.Pair;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +14,6 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.geometry.Point;
@@ -33,12 +31,9 @@ import org.eclipse.gmf.runtime.gef.ui.figures.SlidableAnchor;
 import org.eclipse.gmf.runtime.notation.LayoutConstraint;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.gmf.runtime.notation.impl.BoundsImpl;
-import org.eclipse.papyrus.infra.core.editor.BackboneException;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.infra.core.extension.commands.IModelCreationCommand;
 import org.eclipse.papyrus.infra.core.resource.ModelSet;
-import org.eclipse.papyrus.infra.core.resource.NotFoundException;
-import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.infra.gmfdiag.common.editpart.ConnectionEditPart;
 import org.eclipse.papyrus.infra.gmfdiag.css.CSSShapeImpl;
 import org.eclipse.papyrus.uml.diagram.clazz.custom.edit.part.AssociationEndSourceEditPart;
@@ -77,11 +72,6 @@ public class DiagramElementsArrangerTest {
 	 * The Editor for the Test Models
 	 */
 	IMultiDiagramEditor editor;
-	
-	/**
-	 * The {@link ProjectManager} which handles the Test Projects
-	 */
-	ProjectManager pm;
 	
 	/**
 	 * The Test Project
@@ -146,10 +136,9 @@ public class DiagramElementsArrangerTest {
 	public void init(List<Pair<String, java.lang.Class<?>>> objects,
 			List<Pair<Pair<String, Class<?>>, Pair<String, Class<?>>>> links ){	
 		
-		pm = new ProjectManager();
 		String projectname = "testproject";
-		project = pm.createProject(projectname);
-		pm.openProject(project);
+		project = ProjectUtils.createProject(projectname);
+		ProjectUtils.openProject(project);
 		
 		PapyrusModelCreator pmc = new PapyrusModelCreator();
 		try {
@@ -173,7 +162,7 @@ public class DiagramElementsArrangerTest {
 			IModelCreationCommand creationCommand = categories.get("uml").getCommand();
 			creationCommand.createModel(modelSet);
 			
-			PapyrusModelManager manager = new PapyrusModelManager(editor);
+			PapyrusDefaultModelManager manager = new PapyrusDefaultModelManager(editor);
 			
 			EObject model = UmlUtils.getUmlModel().lookupRoot();
 			org.eclipse.uml2.uml.Package modelpackage = (org.eclipse.uml2.uml.Package) model;
@@ -216,7 +205,7 @@ public class DiagramElementsArrangerTest {
 			diagramElementsArranger = new DiagramElementsArranger(diagEp);
 			editor.doSave(new NullProgressMonitor());
 			
-		} catch (ServiceException | NotFoundException | IOException | CoreException | BackboneException e) {
+		} catch (Throwable e) {
 			fail("Initialization Error");
 		}
 	}
@@ -239,9 +228,7 @@ public class DiagramElementsArrangerTest {
 	@After
 	public void tearDown() {
 		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().closeEditor(editor, false);
-		if(pm != null){
-			pm.deleteProject(project);
-		}
+		ProjectUtils.deleteProject(project);
 	}
 
 	/**

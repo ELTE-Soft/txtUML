@@ -62,9 +62,18 @@ public class ProjectUtils {
 	 * Deletes a Project by Name
 	 * @param projectname - The Name of the Project to be deleted
 	 */
-	public static void deleteProjectbyName(String projectname){
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		IProject project = root.getProject(projectname);
+	public static void deleteProject(String projectname){
+		IProject project = getProject(projectname);
 		deleteProject(project);
+	}
+	
+	/**
+	 * @param projectName - Name of the project
+	 * @return a project resource handle 
+	 * @see IWorkspaceRoot#getProject(String)
+	 */
+	public static IProject getProject(String projectName){
+		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+		return root.getProject(projectName);
 	}
 }

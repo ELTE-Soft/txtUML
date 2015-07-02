@@ -25,6 +25,8 @@ public class LayoutTransformer {
 	
 	private int scaleX;
 	private int scaleY;
+	private int gridWidth;
+	private int gridHeight;
 
 	private OrigoConstraint origoConstaint;
 	private boolean flipXAxis;
@@ -32,18 +34,23 @@ public class LayoutTransformer {
 	
 	/**
 	 * Constructor for {@link LayoutTransformer}
-	 * @param scaleX - Multiplier of the X coordinates
-	 * @param scaleY - Multiplier of the Y coordinates
+	 * @param boxWidth - The width of the surrounding box (typically the greatest width)
+	 * @param boxHeight - The height of the surrounding box (typically the greatest height)
+	 * @param gapX - vertical gap between boxes
+	 * @param gapY - horizontal gap between boxes
 	 * @param gridDesity - Defines how many partitions an object has
 	 */
-	public LayoutTransformer(int scaleX, int scaleY, int gridDesity) {
+	public LayoutTransformer(int boxWidth, int boxHeight, int gapX, int gapY, int gridDesity) {
+		this.gridWidth = boxWidth+gapX;
+		this.gridHeight = boxHeight+gapY;
 		if(gridDesity == 0){
-			this.scaleX = scaleX;
-			this.scaleY = scaleY;
+			this.scaleX = this.gridWidth;
+			this.scaleY = this.gridHeight;
 		}else{
-			this.scaleX = Math.round((float) scaleX/(float) gridDesity);
-			this.scaleY = Math.round((float) scaleY/(float) gridDesity);
+			this.scaleX = Math.round((float) this.gridWidth/(float) gridDesity);
+			this.scaleY = Math.round((float) this.gridHeight/(float) gridDesity);
 		}
+
 		init();
 	}
 	
@@ -76,9 +83,10 @@ public class LayoutTransformer {
 	}
 
 	/**
-	 * Transforms the Points with the given settings (scaling, gap, axisflipping)
-	 * @param objects
-	 * @param connections 
+	 * Transforms the positions of objects and connections with the given settings (scaling, gap, axisflipping)
+	 * @param objects - Map of objects and the representing Rectangular shapes which position
+	 *  is to be modified, but the width and height have the real values  
+	 * @param connections  -  Map of connections and the representing List of Points
 	 */
 	public void doTranformations(Map<?, Rectangle> objects, Map<?, List<Point>> connections) {
 		translateOrigo(objects, connections);
@@ -99,8 +107,10 @@ public class LayoutTransformer {
 	 */
 	private void scaleUpObjects(Map<?, Rectangle> objects, Map<?, List<Point>> connections) {
 		for(Rectangle rect : objects.values()){
-			rect.setX(rect.x()*(this.scaleX));
-			rect.setY(rect.y()*(this.scaleY));
+			int shiftToCenterX = (this.gridWidth-rect.width())/2;
+			int shiftToCenterY = (this.gridHeight-rect.height())/2;
+			rect.setX(rect.x()*(this.scaleX)+shiftToCenterX);
+			rect.setY(rect.y()*(this.scaleY)+shiftToCenterY);
 		}
 		
 		for(List<Point> pointlist: connections.values()){

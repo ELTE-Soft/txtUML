@@ -74,7 +74,15 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		String txtUMLProjectName = selectTxtUmlPage.getTxtUmlProject();
 		String folder = preferncesManager
 				.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
+
+		String[] modellnamesplit = txtUMLModelName.split("\\.");
+		String[] layoutnamesplit = txtUMLLayout.split("\\.");
+		String projectName = modellnamesplit[modellnamesplit.length-1]+"_"+
+										layoutnamesplit[layoutnamesplit.length-1];
+		
+		
 		TxtUMLLayoutDescriptor layoutDesriptor;
+		
 		
 		ClassLoader parentClassLoader = hu.elte.txtuml.export.uml2.UML2.class.getClassLoader();
 		preferncesManager.setValue(
@@ -119,7 +127,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 			IFile UmlFile = ResourcesPlugin.getWorkspace().getRoot()
 					.getFile(new Path(UmlFileResURI.toFileString()));
 
-			URI diFileURI = URI.createFileURI(txtUMLModelName + "/"
+			URI diFileURI = URI.createFileURI(projectName + "/"
 					+ txtUMLModelName + ".di");
 			URI diFileResURI = CommonPlugin.resolve(diFileURI);
 			IFile diFile = ResourcesPlugin.getWorkspace().getRoot()
@@ -133,14 +141,10 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 			if (editor != null) {
 				PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 						.getActivePage().closeEditor(editor, false);
+				
 			}
-			
-			String[] modellnamesplit = txtUMLModelName.split("\\.");
-			String[] layoutnamesplit = txtUMLLayout.split("\\.");
-			String projectName = modellnamesplit[modellnamesplit.length-1]+"_"+
-											layoutnamesplit[layoutnamesplit.length-1];
-			ProjectUtils.deleteProjectbyName(projectName);
 
+			ProjectUtils.deleteProject(projectName);
 			PapyrusVisualizer ma = new PapyrusVisualizer(projectName, txtUMLModelName,
 					UmlFile.getRawLocationURI().toString(), layoutDesriptor);
 			ma.run();
