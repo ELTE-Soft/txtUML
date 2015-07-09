@@ -1,20 +1,28 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
-import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLExporter;
+import hu.elte.txtuml.export.papyrus.ProjectUtils;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.export.uml2.UML2;
+import hu.elte.txtuml.export.utils.ClassLoaderProvider;
 import hu.elte.txtuml.export.utils.Dialogs;
+import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.layout.export.DiagramExporter;
+import hu.elte.txtuml.layout.lang.Diagram;
 
-import java.lang.reflect.InvocationTargetException;
+import java.net.URLClassLoader;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.CommonPlugin;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.progress.IProgressService;
+import org.eclipse.ui.part.FileEditorInput;
 
 /**
  * Wizard for visualization of txtUML models
@@ -73,6 +81,9 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 										layoutnamesplit[layoutnamesplit.length-1];
 		
 		
+		TxtUMLLayoutDescriptor layoutDesriptor;
+		
+		
 		ClassLoader parentClassLoader = hu.elte.txtuml.export.uml2.UML2.class.getClassLoader();
 		preferncesManager.setValue(
 				PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT,
@@ -83,59 +94,66 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		preferncesManager.setValue(
 				PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT,
 				txtUMLLayout);
-		
-		IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
-		
-		try {
-			progressService.runInUI(
-					progressService,
-				      new IRunnableWithProgress() {
-				         public void run(IProgressMonitor monitor) throws InterruptedException {
-				        	monitor.beginTask("Visualization", 100);
-				        	
-				        	TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName, projectName,
-				        			folder, txtUMLModelName, txtUMLLayout, parentClassLoader);
-				     		
-				        	monitor.subTask("Exporting txtUML Model to UML2 model...");
-				        	try{
-				        		exporter.exportTxtUMLModelToUML2();
-				        		monitor.worked(10);
-				    		} catch (Exception e) {
-				    			Dialogs.errorMsgb("txtUML export Error",
-				    					e.getClass() + ":\n" + e.getMessage(), e);
-				    			monitor.done();
-				    			throw new InterruptedException();
-				    		}
-				     		
-				     		
-				     		monitor.subTask("Generating txtUML layout description...");
-				     		TxtUMLLayoutDescriptor layoutDesriptor = null;
-				     		try{
-				     			layoutDesriptor = exporter.exportTxtUMLLayout();
-				     			monitor.worked(5);
-				     		}catch(Exception e){
-				     			Dialogs.errorMsgb("txtUML layout export Error",
-				    					e.getClass() + ":\n" + e.getMessage(), e);
-				    			monitor.done();
-				    			throw new InterruptedException();
-				     		}
-				     		
-				     		try{
-					     		PapyrusVisualizer pv = exporter.createVisualizer(layoutDesriptor);
-					            pv.run(new SubProgressMonitor(monitor,85));
-				     		}catch(Exception e){
-				     			Dialogs.errorMsgb("txtUML visualization Error", e.getClass()
-				    					+ ":\n" + e.getMessage(), e);
-				     			monitor.done();
-				     			throw new InterruptedException();
-				     		}
-				         }
-				      },
-				      ResourcesPlugin.getWorkspace().getRoot());
-			return true;
-		} catch (InvocationTargetException | InterruptedException e) {
+
+		try (URLClassLoader loader = ClassLoaderProvider
+					.getClassLoaderForProject(txtUMLProjectName, parentClassLoader)){
+			Class<?> txtUMLModelClass = loader.loadClass(txtUMLModelName);
+			String uri = URI.createPlatformResourceURI(
+					txtUMLProjectName + "/" + folder, false).toString();
+			UML2.exportModel(txtUMLModelClass, uri);
+		} catch (Exception e) {
+			Dialogs.errorMsgb("txtUML export Error",
+					e.getClass() + ":\n" + e.getMessage(), e);
 			return false;
 		}
+
+		try (URLClassLoader loader = ClassLoaderProvider
+					.getClassLoaderForProject(txtUMLProjectName, parentClassLoader)){
+			Class<?> txtUMLLayoutClass = loader.loadClass(txtUMLLayout);  
+            @SuppressWarnings("unchecked")
+			DiagramExporter exporter= DiagramExporter.create((Class<? extends Diagram>) txtUMLLayoutClass); 
+            DiagramExportationReport report = exporter.export(); 
+            layoutDesriptor = new TxtUMLLayoutDescriptor(txtUMLModelName, report);
+		} catch (Exception e) {
+			Dialogs.errorMsgb("txtUML export Error",
+					e.getClass() + ":\n" + e.getMessage(), e);
+			return false;
+		}
+		
+		try {
+			URI umlFileURI = URI.createFileURI(txtUMLProjectName + "/" + folder
+					+ "/" + txtUMLModelName + ".uml");
+			URI UmlFileResURI = CommonPlugin.resolve(umlFileURI);
+			IFile UmlFile = ResourcesPlugin.getWorkspace().getRoot()
+					.getFile(new Path(UmlFileResURI.toFileString()));
+
+			URI diFileURI = URI.createFileURI(projectName + "/"
+					+ txtUMLModelName + ".di");
+			URI diFileResURI = CommonPlugin.resolve(diFileURI);
+			IFile diFile = ResourcesPlugin.getWorkspace().getRoot()
+					.getFile(new Path(diFileResURI.toFileString()));
+
+			IEditorInput input = new FileEditorInput(diFile);
+
+			IEditorPart editor = PlatformUI.getWorkbench()
+					.getActiveWorkbenchWindow().getActivePage()
+					.findEditor(input);
+			if (editor != null) {
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+						.getActivePage().closeEditor(editor, false);
+				
+			}
+
+			ProjectUtils.deleteProject(projectName);
+			PapyrusVisualizer ma = new PapyrusVisualizer(projectName, txtUMLModelName,
+					UmlFile.getRawLocationURI().toString(), layoutDesriptor);
+			ma.run();
+		} catch (Exception e) {
+			Dialogs.errorMsgb("txtUML visualization Error", e.getClass()
+					+ ":\n" + e.getMessage(), e);
+			return false;
+		}
+		return true;
 	}
 
 }

@@ -60,41 +60,54 @@ class Model1 extends Model {
 
 class Diagram1 extends Diagram {
 
-    @Contains({A.class, B.class, NG1.class})
+    @Contains({A.class, B.class})
     class NG1 extends NodeGroup {}
 
     @Contains({NG1.class, C.class}) // NodeGroup NG1 as parameter
     @Alignment(AlignmentType.TopToBottom)
     class NG2 extends NodeGroup {}
-
     
-    @Contains({A.class, B.class, D.class})
+    @Contains({A.class, NG1.class, D.class})
     class NG51 extends NodeGroup {}
     
-    @Contains({C.class, NG1.class, F.class})
+    @Contains({C.class, NG52.class, F.class})
     class NG52 extends NodeGroup {}
     
-    @Contains({NG3.class, A.class, B.class})
+    @Contains({NGB.class})
+    class NGA extends NodeGroup {}
+    
+    @Contains({NGC.class})
+    class NGB extends NodeGroup {}
+    
+    @Contains({NGA.class})
+    class NGC extends NodeGroup {}
+    
     class NG3 extends NodeGroup {}
     
-    @Contains({Q.class, R.class})
+    @Alignment(AlignmentType.TopToBottom)
     class LG1 extends LinkGroup {}
+    
+    class MyClass {}
     
     class F extends Phantom {}
     class G extends Phantom {}
     
-    @Contains({A.class, B.class, C.class, D.class}) // {C.class, D.class} is an anonymous NodeGroup
+    @Deprecated
+    @Contains({}) // {C.class, D.class} is an anonymous NodeGroup
     class NG extends NodeGroup {}
     
     @Diamond(top = A.class, right = B.class, bottom = C.class, left = D.class)
     @Diamond(top = D.class, bottom = E.class, right = A.class, left = D.class)
     @North(val = {A.class, B.class, NG1.class}, from = B.class)
-    @Show(F.class)
-    @North(val = P.class, from = A.class, end = LinkEnd.Start)
-    @TopMost(A.class)
+    @Show({})
+    @Row({NG52.class})
+    @North(val = {NG52.class}, from = A.class, end = LinkEnd.End)
+    @TopMost({NG52.class})
     @BottomMost({B.class, C.class})
-    @Priority(val = P.class, prior = 100)
+    @Priority(val = {LG1.class}, prior = 100)
     @Row({A.class, B.class, NG1.class})
+    @North(val = NGA.class, from = NG52.class)
+    @Deprecated
 	class L extends Layout {}
     
 }
@@ -104,17 +117,32 @@ public class Test {
 		DiagramExporter exporter = DiagramExporter.create(Diagram1.class);
 		DiagramExportationReport report = exporter.export();
         
-		System.out.println("\nSTATEMENTS");		
+		System.out.println("Warnings:");
+		for (String warning : report.getWarnings()) {
+		    System.out.println(warning);
+		}
+		
+		System.out.println("\nErrors:");
+		for (String error : report.getErrors()) {
+		    System.out.println(error);
+		}
+		
+		if (!report.isSuccessful()) {
+		    System.out.println("\nThe exportation wasn't successful.");
+		    return;
+		}
+		
+		System.out.println("\nStatements:");		
 		for (Statement st : report.getStatements()) {
 			System.out.println(st);
 		}
 		
-		System.out.println("\nNODES");
+		System.out.println("\nNodes:");
 		for (RectangleObject n : report.getNodes()) {
 			System.out.println(n);
 		}
 		
-		System.out.println("\nLINKS");
+		System.out.println("\nLinks:");
 		for (LineAssociation l : report.getLinks()) {
 			System.out.println(l);
 		}		

@@ -54,7 +54,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	    txtUMLModel.setText(preferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL));
 	    
 	    Label label3 = new Label(container, SWT.NONE);
-	    label3.setText("txtUML Model Diagram: ");
+	    label3.setText("txtUML Model Layout: ");
 	    txtUMLLayout = new Text(container, SWT.BORDER | SWT.SINGLE);
 	    txtUMLLayout.setText(preferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT));
 	    

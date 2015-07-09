@@ -14,8 +14,6 @@ import hu.elte.txtuml.export.utils.Dialogs;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
@@ -44,10 +42,7 @@ public class PapyrusDefaultModelManager extends AbstractPapyrusModelManager{
 	}
 
 	@Override
-	protected void createDiagrams(IProgressMonitor monitor){
-		monitor.beginTask("Generating empty diagrams", 100);
-		monitor.subTask("Creating empty diagrams...");
-		
+	protected void createDiagrams(){
 		if(preferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_PREF)){
 			List<Element> packages = modelManager.getElementsOfTypes(Arrays.asList(Model.class, Package.class));
 			diagramManager.createDiagrams(packages, new CreateClassDiagramCommand());
@@ -62,22 +57,19 @@ public class PapyrusDefaultModelManager extends AbstractPapyrusModelManager{
 			List<Element> statemachines = modelManager.getElementsOfTypes(Arrays.asList(StateMachine.class));
 			diagramManager.createDiagrams(statemachines, new CreateStateMachineDiagramCommand());
 		}
-		monitor.worked(100);
+	
 	}
 
 	/**
 	 * Adds the elements to the diagrams
 	 */
 	@Override
-	protected void addElementsToDiagrams(IProgressMonitor monitor){
+	protected void addElementsToDiagrams(){
 		
 		List<Diagram> diags =  diagramManager.getDiagrams();
-		int diagNum = diags.size();
-		monitor.beginTask("Filling diagrams", diagNum*2);
 		
-		for(int i=0; i<diagNum*2; i=i+2){
-			monitor.subTask("Filling diagrams "+(i+2)/2+"/"+diagNum);
-			Diagram diagram = diags.get(i/2);
+		for(Diagram diag : diags){
+			Diagram diagram = diag;
 			
 			Element container = diagramManager.getDiagramContainer(diagram);
 			diagramManager.openDiagram(diagram);
@@ -101,13 +93,11 @@ public class PapyrusDefaultModelManager extends AbstractPapyrusModelManager{
 			}
 			
 			diagramElementsManager.addElementsToDiagram(baseElements);	
-			monitor.worked(1);
 			try{
-				diagramElementsArranger.arrange(new SubProgressMonitor(monitor, 1));
+				diagramElementsArranger.arrange();
 			}catch(Throwable e){
 				Dialogs.errorMsgb("Arrange error", e.toString(), e);
 			}
-			
 		}
 	}
 }

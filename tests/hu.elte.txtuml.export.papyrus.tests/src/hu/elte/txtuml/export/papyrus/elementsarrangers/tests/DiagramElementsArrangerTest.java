@@ -14,7 +14,6 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.geometry.Point;
@@ -95,7 +94,7 @@ public class DiagramElementsArrangerTest {
 		}
 
 		@Override
-		public void arrange(IProgressMonitor monitor) {
+		public void arrange() {
 			//do nothing
 		}
 		
@@ -200,7 +199,7 @@ public class DiagramElementsArrangerTest {
 				}
 			});
 			
-			manager.createAndFillDiagrams(new NullProgressMonitor());
+			manager.createAndFillDiagrams();
 			
 			DiagramEditPart diagEp = getDiagramEditPart();
 			diagramElementsArranger = new DiagramElementsArranger(diagEp);

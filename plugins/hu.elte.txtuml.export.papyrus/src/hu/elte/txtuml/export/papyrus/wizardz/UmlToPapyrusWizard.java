@@ -3,15 +3,8 @@ package hu.elte.txtuml.export.papyrus.wizardz;
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.progress.IProgressService;
 
 /**
  * Wizard for visualizing Eclipse UML2 file from local filesystem
@@ -59,25 +52,8 @@ public class UmlToPapyrusWizard extends Wizard {
   public boolean performFinish() {
 	preferencesPage.setPreferences();
 	File f = new File(selectUmlPage.getUMLPath()); 
-	
-	
-    PapyrusVisualizer pv = new PapyrusVisualizer(selectUmlPage.getProjectName(), getFileNameWithOutExtension(f), f.toURI().toString());
-	pv.run(new NullProgressMonitor());
-	IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
-	try {
-		progressService.runInUI(
-				progressService,
-			      new IRunnableWithProgress() {
-			         public void run(IProgressMonitor monitor) {
-			            pv.run(monitor);
-			         }
-			      },
-			      ResourcesPlugin.getWorkspace().getRoot());
-	} catch (InvocationTargetException | InterruptedException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-	
+    PapyrusVisualizer ma = new PapyrusVisualizer(selectUmlPage.getProjectName(), getFileNameWithOutExtension(f), f.toURI().toString());
+	ma.run();
     return true;
   }
   

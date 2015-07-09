@@ -6,6 +6,7 @@ import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.elementinfo.ElementInfo;
 import hu.elte.txtuml.layout.export.elementinfo.NodeInfo;
 import hu.elte.txtuml.layout.export.impl.ElementExporterImpl;
+import hu.elte.txtuml.layout.export.problems.ProblemReporter;
 import hu.elte.txtuml.layout.lang.elements.LayoutAbstractNode;
 import hu.elte.txtuml.layout.lang.elements.LayoutElement;
 import hu.elte.txtuml.layout.lang.elements.LayoutGroup;
@@ -25,8 +26,8 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
  */
 public interface ElementExporter {
 
-    static ElementExporter create() {
-        return new ElementExporterImpl();
+    static ElementExporter create(ProblemReporter problemReporter) {
+        return new ElementExporterImpl(problemReporter);
     }
 
 	DiagramType getDiagramTypeBasedOnElements();

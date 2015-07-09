@@ -104,7 +104,7 @@ public class TxtUMLElementsRegistry {
 		if(this.descriptor.report.isSuccessful()){
 			for(LineAssociation association : this.descriptor.report.getLinks()){
 				if(association.getType() == AssociationType.generalization){
-					elem = findGeneralization(association.getFrom(), association.getTo());
+					elem = findGeneralization(association.getId());
 				}else{
 					elem = findAssociation(association.getId());
 				}
@@ -132,13 +132,14 @@ public class TxtUMLElementsRegistry {
 	
 	/**
 	 * Finds an {@link Generalization} that matches the given ID
-	 * @param from - Id of the starting object 
-	 * @param to - Id of the ending object
+	 * @param generalizationId - the TxtUML ID of the generalization.
+	 * 	This ID looks like: nameofsuperclass_nameofsubclass
 	 * @return The Generalization model Element
 	 */
-	public Generalization findGeneralization(String from, String to){
-		Element superclass = findElement(from);
-		Element subclass = findElement(to);
+	public Generalization findGeneralization(String generalizationId){
+		String[] genid = generalizationId.split("_");
+		Element superclass = findElement(genid[0]);
+		Element subclass = findElement(genid[1]);
 		
 		if(superclass == null || subclass == null) return null;
 		

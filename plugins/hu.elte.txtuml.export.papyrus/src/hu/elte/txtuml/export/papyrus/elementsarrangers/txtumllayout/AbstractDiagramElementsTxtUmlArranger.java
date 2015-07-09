@@ -1,9 +1,14 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
 import hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsArranger;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutTransformer.OrigoConstraint;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
+import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
+import hu.elte.txtuml.layout.visualizer.exceptions.ConflictException;
+import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
+import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
+import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
+import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
@@ -14,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -47,15 +51,21 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 	/**
 	 * Arranges the children of an EditPart with the txtUML arranging algorithm 
 	 * @param parent - The children of this EditPart will be arranged
-	 * @throws ArrangeException 
+	 * @throws UnknownStatementException 
+	 * @throws CannotFindAssociationRouteException 
+	 * @throws StatementTypeMatchException 
+	 * @throws ConversionException 
+	 * @throws ConflictException 
+	 * @throws InternalException 
 	 */
-	protected void arrangeChildren(EditPart parent, IProgressMonitor monitor) throws ArrangeException{
+	protected void arrangeChildren(EditPart parent) throws InternalException, ConflictException, ConversionException, StatementTypeMatchException, CannotFindAssociationRouteException, UnknownStatementException {
 		@SuppressWarnings("unchecked")
 		List<EditPart> elements = parent.getChildren();
 		if(!elements.isEmpty()){
-			int cellSize = Math.max(getMaxWidth(elements), getMaxHeight(elements));
-			int gapX = 0;
-			int gapY = 0;
+			int maxWidth = getMaxWidth(elements);
+			int maxHeight = getMaxHeight(elements);
+			int gapX = 6;
+			int gapY = 6;
 			
 			List<ConnectionNodeEditPart> connections = new LinkedList<ConnectionNodeEditPart>();
 			for (EditPart editpart : elements) {
@@ -65,7 +75,6 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			}
 			
 			LayoutVisualizerManager vm = new LayoutVisualizerManager(txtUmlRegistry);
-			vm.addProgressMonitor(monitor);
 			vm.arrange();
 			
 			Collection<RectangleObject> objects = vm.getObjects();
@@ -80,7 +89,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 					GraphicalEditPart ep = (GraphicalEditPart) getEditPartOfModelElement(elements, e);
 					if(ep != null){
 						objectsTransform.put(ep, new Rectangle(obj.getTopLeft().getX(),
-										obj.getTopLeft().getY(), cellSize, cellSize));
+										obj.getTopLeft().getY(), getSize(ep).width(), getSize(ep).height()));
 					}
 				}
 			}
@@ -97,14 +106,15 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 				}
 				
 				Element e = txtUmlRegistry.findAssociation(la.getId());
-				if(e == null) e = txtUmlRegistry.findGeneralization(la.getFrom(), la.getTo());
+				if(e == null) e = txtUmlRegistry.findGeneralization(la.getId());
 				if(e != null){
 					ConnectionNodeEditPart connection = (ConnectionNodeEditPart) getEditPartOfModelElement(connections, e);
 					linksTransform.put(connection, route);
 				}
 			}
 			
-			LayoutTransformer trans = new LayoutTransformer(cellSize, cellSize, gapX, gapY, gridDensity-1);
+			
+			LayoutTransformer trans = new LayoutTransformer(maxWidth, maxHeight, gapX, gapY, gridDensity-1);
 			trans.setOrigo(OrigoConstraint.UpperLeft);
 			trans.flipYAxis();
 			trans.doTranformations(objectsTransform, linksTransform);
@@ -113,8 +123,6 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			objectsTransform.forEach(new BiConsumer<GraphicalEditPart, Rectangle>() {
 				@Override
 				public void accept(GraphicalEditPart ep, Rectangle position) {
-					AbstractDiagramElementsTxtUmlArranger.super
-						.resizeGraphicalEditPart((GraphicalEditPart) ep, cellSize, cellSize);
 					AbstractDiagramElementsTxtUmlArranger.super
 						.moveGraphicalEditPart((GraphicalEditPart) ep, position.getTopLeft());
 				}
@@ -125,13 +133,9 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 				@Override
 				public void accept(ConnectionNodeEditPart connection, List<Point> route) {
 						if(connection != null && route.size() >= 2){
-				        	String anchor_start = getAnchor(objectsTransform.get(connection.getSource()).getTopLeft(), route.get(0), cellSize);
-				        	String anchor_end = getAnchor(objectsTransform.get(connection.getTarget()).getTopLeft(), route.get(route.size()-1), cellSize);
+				        	AbstractDiagramElementsTxtUmlArranger.super.setConnectionAnchors(connection, "(0.5,0.5)", "(0.5,0.5)");
 				        	route.remove(0);
 				        	route.remove(route.size()-1);
-				        	connection.getSource();
-				        	
-				        	AbstractDiagramElementsTxtUmlArranger.super.setConnectionAnchors(connection, anchor_start, anchor_end);
 				        	AbstractDiagramElementsTxtUmlArranger.super.setConnectionBendpoints(connection, route);
 						}
 				}
@@ -169,18 +173,6 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 				max = height;
 		}
 		return max;
-	}
-
-	/**
-	 * @param center
-	 * @param edge
-	 * @return
-	 */
-	protected String getAnchor(Point topleft, Point edge, int objectSize){
-		Point relativeEdge = edge.getTranslated(topleft.getNegated());
-		double anchor_x = ((float) relativeEdge.x())/((float) objectSize);
-		double anchor_y = ((float) relativeEdge.y())/((float) objectSize);
-		return new String("("+anchor_x+", "+anchor_y+")");
 	}
 	
 	/**
