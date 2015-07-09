@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
@@ -40,12 +42,15 @@ public class PapyrusTxtUMLModelManager extends AbstractPapyrusModelManager {
 	}
 
 	@Override
-	protected void addElementsToDiagrams(){
-		
+	protected void addElementsToDiagrams(IProgressMonitor monitor){
+
 		List<Diagram> diags =  diagramManager.getDiagrams();
+		int diagNum = diags.size();
+		monitor.beginTask("Filling diagrams", diagNum*2);
 		
-		for(Diagram diag : diags){
-			Diagram diagram = diag;
+		for(int i=0; i<diagNum*2; i=i+2){
+			monitor.subTask("Filling diagrams "+(i+2)/2+"/"+diagNum);
+			Diagram diagram = diags.get(i/2);
 			
 			diagramManager.openDiagram(diagram);
 			DiagramEditPart diagep = diagramManager.getActiveDiagramEditPart();
@@ -66,21 +71,27 @@ public class PapyrusTxtUMLModelManager extends AbstractPapyrusModelManager {
 				continue;
 			}
 			
-			diagramElementsManager.addElementsToDiagram(baseElements);	
+			diagramElementsManager.addElementsToDiagram(baseElements);
+			monitor.worked(1);
 			try {
-				diagramElementsArranger.arrange();
+				diagramElementsArranger.arrange(new SubProgressMonitor(monitor, 1));
 			} catch (Throwable e) {
 				Dialogs.errorMsgb("Arrange error", e.toString(), e);
 			}
+			
 		}
 	}
 
 	@Override
-	protected void createDiagrams() {
+	protected void createDiagrams(IProgressMonitor monitor) {
+		monitor.beginTask("Generating empty diagrams", 100);
+		monitor.subTask("Creating empty diagrams...");
+		
 		if(preferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_PREF)){
 			List<Element> packages = modelManager.getElementsOfTypes(Arrays.asList(Model.class));
 			diagramManager.createDiagrams(packages, new CreateClassDiagramCommand());
 		}
+		monitor.worked(100);
 	}
 
 }
