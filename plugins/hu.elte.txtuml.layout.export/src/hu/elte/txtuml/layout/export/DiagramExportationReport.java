@@ -1,5 +1,6 @@
 package hu.elte.txtuml.layout.export;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -21,9 +22,11 @@ public class DiagramExportationReport {
 	private StatementList statements;
 	private Set<RectangleObject> nodes;
 	private Set<LineAssociation> links;
-	private int errors;
-	private int warnings;
-
+	private int errorCount;
+	private int warningCount;
+    private List<String> errors;
+	private List<String> warnings;
+	
 	public DiagramExportationReport() {
 		clear();
 	}
@@ -33,21 +36,21 @@ public class DiagramExportationReport {
 	 * successful if no errors have occurred.
 	 */
 	public final boolean isSuccessful() {
-		return errors == 0;
+		return errorCount == 0;
 	}
 
 	/**
 	 * @return the number of errors occurred during exportation
 	 */
 	public final int getErrorCount() {
-		return errors;
+		return errorCount;
 	}
 
 	/**
 	 * @return the number of warnings occurred during exportation
 	 */
 	public final int getWarningCount() {
-		return warnings;
+		return warningCount;
 	}
 
 	/**
@@ -93,6 +96,14 @@ public class DiagramExportationReport {
 	public final Set<LineAssociation> getLinks() {
 		return links;
 	}
+	
+	public final List<String> getErrors() {
+	    return errors;
+	}
+	
+	public final List<String> getWarnings() {
+	    return warnings;
+	}
 
 	/**
 	 * Overridable method to log a warning. Called for every warning during
@@ -102,7 +113,7 @@ public class DiagramExportationReport {
 	 *            the message to show
 	 */
 	protected void logWarning(String message) {
-		System.err.println("Warning: " + message);
+		warnings.add(message);
 	}
 
 	/**
@@ -113,7 +124,7 @@ public class DiagramExportationReport {
 	 *            the message to show
 	 */
 	protected void logError(String message) {
-		System.err.println("Error: " + message);
+		errors.add(message);
 	}
 
 	/**
@@ -123,8 +134,10 @@ public class DiagramExportationReport {
 	 */
 	public final void clear() {
 		type = DiagramType.Unknown;
-		errors = 0;
-		warnings = 0;
+		errorCount = 0;
+		warningCount = 0;
+		errors = new ArrayList<String>();
+		warnings = new ArrayList<String>();
 		statements = null;
 		nodes = null;
 		links = null;
@@ -176,7 +189,7 @@ public class DiagramExportationReport {
 	 * Registers and logs a new warning.
 	 */
 	public final void warning(String message) {
-		++warnings;
+		++warningCount;
 		logWarning(message);
 	}
 
@@ -186,7 +199,7 @@ public class DiagramExportationReport {
 	 * Registers and logs a new error.
 	 */
 	public final void error(String message) {
-		++errors;
+		++errorCount;
 		logError(message);
 	}
 

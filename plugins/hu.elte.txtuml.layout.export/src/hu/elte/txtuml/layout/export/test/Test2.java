@@ -118,20 +118,37 @@ public class Test2 {
         DiagramExporter exporter = DiagramExporter.create(Diagram2.class);
         DiagramExportationReport report = exporter.export();
         
-        System.out.println("\nSTATEMENTS");     
+        System.out.println("Warnings:");
+        for (String warning : report.getWarnings()) {
+            System.out.println(warning);
+        }
+        
+        System.out.println("\nErrors:");
+        for (String error : report.getErrors()) {
+            System.out.println(error);
+        }
+        
+        if (!report.isSuccessful()) {
+            System.out.println("\nThe exportation wasn't successful.");
+            return;
+        }
+        
+        System.out.println("\nThe exportation was successful.");
+        
+        System.out.println("\nStatements:");        
         for (Statement st : report.getStatements()) {
             System.out.println(st);
         }
         
-        System.out.println("\nNODES");
+        System.out.println("\nNodes:");
         for (RectangleObject n : report.getNodes()) {
             System.out.println(n);
         }
         
-        System.out.println("\nLINKS");
+        System.out.println("\nLinks:");
         for (LineAssociation l : report.getLinks()) {
             System.out.println(l);
-        }       
+        }
     }
-    
+
 }

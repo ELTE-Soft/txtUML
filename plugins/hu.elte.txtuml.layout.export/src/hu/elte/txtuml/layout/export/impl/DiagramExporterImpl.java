@@ -7,8 +7,7 @@ import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.export.elementinfo.NodeGroupInfo;
 import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
 import hu.elte.txtuml.layout.export.interfaces.StatementExporter;
-import hu.elte.txtuml.layout.export.problems.ErrorMessages;
-import hu.elte.txtuml.layout.export.problems.WarningMessages;
+import hu.elte.txtuml.layout.export.problems.*;
 import hu.elte.txtuml.layout.lang.Diagram;
 import hu.elte.txtuml.layout.lang.Diagram.Layout;
 import hu.elte.txtuml.layout.lang.elements.LayoutLinkGroup;
@@ -26,6 +25,7 @@ import hu.elte.txtuml.layout.lang.statements.containers.*;
 public class DiagramExporterImpl implements DiagramExporter {
 
 	private final DiagramExportationReport report;
+	private final ProblemReporter problemReporter;
 	private final Class<? extends Diagram> diagClass;
 	private final ElementExporter elementExporter;
 	private final StatementExporter statementExporter;
@@ -43,10 +43,10 @@ public class DiagramExporterImpl implements DiagramExporter {
 			this.report = report;
 		}
 
+		this.problemReporter = new ProblemReporter(this.report);
 		this.diagClass = diagClass;
-		this.elementExporter = ElementExporter.create();
-		this.statementExporter = StatementExporter.create(elementExporter);
-
+		this.elementExporter = ElementExporter.create(problemReporter);
+		this.statementExporter = StatementExporter.create(elementExporter, problemReporter);
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class DiagramExporterImpl implements DiagramExporter {
 			    NodeGroupInfo info = elementExporter.exportNodeGroup((Class<? extends LayoutNodeGroup>) innerClass).asNodeGroupInfo();
 			    
 			    if (info == null) {
-			        // TODO show error
+			        // error report is not necessary
 			        continue;
 			    }
 			    
@@ -90,23 +90,21 @@ public class DiagramExporterImpl implements DiagramExporter {
 			    elementExporter.exportPhantom((Class<? extends LayoutPhantomNode>) innerClass);
 			    
 			} else if (isLayout(innerClass)) {
-
 				if (layoutClass != null) {
-					report.error(ErrorMessages
-							.moreThanOneLayoutInnerClassOfDiagram(diagClass,
-									layoutClass, innerClass));
+					problemReporter.moreThanOneLayoutClass(layoutClass, innerClass);
+				} else {
+				    layoutClass = (Class<? extends Layout>) innerClass;    
 				}
-				layoutClass = (Class<? extends Layout>) innerClass;
 
 			} else {
-				report.warning(WarningMessages
-						.unknownInnerClassOfDiagram(innerClass));
+				problemReporter.unknownInnerClassOfDiagram(innerClass);
+			
 			}
 
 		}
 
 		if (layoutClass == null) {
-			report.error(ErrorMessages.noLayoutInnerClassOfDiagram(diagClass));
+			problemReporter.noLayoutClass();
 		} else {
 			exportLayout(layoutClass);
 		}
@@ -127,26 +125,6 @@ public class DiagramExporterImpl implements DiagramExporter {
 	private boolean isPhantom(Class<?> cls) {
 	    return LayoutPhantomNode.class.isAssignableFrom(cls);
 	}
-	
-	/*
-    	@SuppressWarnings("unused") // TODO remove when used
-    	private void exportGroup(Class<? extends LayoutGroup> groupClass) {
-    		for (Annotation annot : groupClass.getAnnotations()) {
-    			if (isOfType(Contains.class, annot)) {
-    				statementExporter.exportContains(groupClass, (Contains) annot);
-    				
-    			} else if (isOfType(Alignment.class, annot)) {
-    				statementExporter
-    						.exportAlignment(groupClass, (Alignment) annot);
-    				
-    			} else {
-    				
-    				report.warning(WarningMessages.unknownStatementOnLayoutGroup(groupClass, annot));
-    				
-    			}
-    		}
-    	}
-	*/
 
 	private void exportLayout(Class<? extends Layout> layoutClass) {
 		for (Annotation annot : layoutClass.getAnnotations()) {
@@ -241,7 +219,7 @@ public class DiagramExporterImpl implements DiagramExporter {
 				statementExporter.exportDiamondContainer((DiamondContainer) annot);
 			
 			} else {				
-				report.warning(WarningMessages.unknownStatementOnLayout(layoutClass, annot));
+			    problemReporter.unknownAnnotationOnClass(annot, layoutClass);
 				
 			}
 			

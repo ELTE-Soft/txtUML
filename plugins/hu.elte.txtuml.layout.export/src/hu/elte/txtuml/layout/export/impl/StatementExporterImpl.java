@@ -13,6 +13,7 @@ import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
 import hu.elte.txtuml.layout.export.interfaces.NodeMap;
 import hu.elte.txtuml.layout.export.interfaces.StatementExporter;
 import hu.elte.txtuml.layout.export.interfaces.StatementList;
+import hu.elte.txtuml.layout.export.problems.ProblemReporter;
 import hu.elte.txtuml.layout.lang.LinkEnd;
 import hu.elte.txtuml.layout.lang.elements.LayoutAbstractLink;
 import hu.elte.txtuml.layout.lang.elements.LayoutAbstractNode;
@@ -61,21 +62,15 @@ public class StatementExporterImpl implements StatementExporter {
 
 	private final StatementList statements;
 	private final ElementExporter elementExporter;
+	private final ProblemReporter problemReporter;
 	private final Map<Class<? extends Annotation>, NodeGroupInfo> mostMap;
 
-	public StatementExporterImpl(ElementExporter elementExporter) {
+	public StatementExporterImpl(ElementExporter elementExporter, ProblemReporter problemReporter) {
 	    this.statements = StatementList.create();
 	    this.elementExporter = elementExporter;
+	    this.problemReporter = problemReporter;
 	    this.mostMap = new HashMap<Class<? extends Annotation>, NodeGroupInfo>();
 	}
-	
-	// unused constructor
-	// TODO check if additional constructors are needed
-	
-	/*public StatementExporterImpl(StatementList statements, ElementExporter elementExporter) {
-		this.statements = statements;
-		this.elementExporter = elementExporter;
-	}*/
 	
 	public StatementList getStatements() {
 	    return statements;
@@ -172,6 +167,11 @@ public class StatementExporterImpl implements StatementExporter {
 
 	@Override
 	public void exportPriority(Priority annot) {
+	    if (annot.val().length == 0) {
+	        problemReporter.priorityStatementWithEmptyArguments(annot.val(), annot.prior());
+	        return;
+	    }
+	    
 		for (Class<? extends LayoutAbstractLink> link : annot.val()) {
 		    ElementInfo info = elementExporter.exportElement(link);
 		    ElementType type = info.getType();
@@ -188,59 +188,49 @@ public class StatementExporterImpl implements StatementExporter {
 
 	@Override
 	public void exportShow(Show annot) {
-		for (Class<? extends LayoutNonGroupElement> element : annot.value()) {
-			elementExporter.exportNonGroupElement(element);
+		if (annot.value().length == 0) {
+		    problemReporter.sugarStatementWithEmptyArguments("show");
+		    return;
 		}
-		// TODO show warning if empty
+		
+        for (Class<? extends LayoutNonGroupElement> element : annot.value()) {
+            elementExporter.exportNonGroupElement(element);
+        }		
 	}
 
 	@Override
 	public void exportColumn(Column annot) {
-        NodeGroupInfo info = elementExporter.exportAnonNodeGroup(annot.value()).asNodeGroupInfo();
-        
-        if (info == null) {
-            // TODO show error
-            return;
-        }
-        
-        exportAlignmentWithGivenStatement(info, StatementType.above);	
+        exportLineStatement(StatementType.above, annot.value());	
 	}
 
 	@Override
 	public void exportRow(Row annot) {
-        NodeGroupInfo info = elementExporter.exportAnonNodeGroup(annot.value()).asNodeGroupInfo();
-        
-        if (info == null) {
-            // TODO show error
-            return;
-        }
-        
-        exportAlignmentWithGivenStatement(info, StatementType.left);
+	    exportLineStatement(StatementType.left, annot.value());
 	}
 
 	@Override
 	public void exportDiamond(Diamond annot) {		
-		NodeInfo top = elementExporter.exportNode(annot.top()).asNodeInfo();
+	    NodeInfo top = elementExporter.exportNode(annot.top()).asNodeInfo();
 		if (top == null) {
-		    // show error
+		    problemReporter.diamondStatementExportationFailed(annot.top(), annot.right(), annot.bottom(), annot.left());
 		    return;
 		}
 		
 		NodeInfo right = elementExporter.exportNode(annot.right()).asNodeInfo();
 		if (right == null) {
-		    // show error
+		    problemReporter.diamondStatementExportationFailed(annot.top(), annot.right(), annot.bottom(), annot.left());
 		    return;
 		}
 		
 		NodeInfo bottom = elementExporter.exportNode(annot.bottom()).asNodeInfo();
 		if (bottom == null) {
-		    // show error
+		    problemReporter.diamondStatementExportationFailed(annot.top(), annot.right(), annot.bottom(), annot.left());
 		    return;
 		}
 		
 		NodeInfo left = elementExporter.exportNode(annot.left()).asNodeInfo();
 		if (left == null) {
-		    // show error
+		    problemReporter.diamondStatementExportationFailed(annot.top(), annot.right(), annot.bottom(), annot.left());
 		    return;
 		}
 		
@@ -364,7 +354,7 @@ public class StatementExporterImpl implements StatementExporter {
 
         NodeGroupInfo leftMostInfo = mostMap.get(LeftMost.class);
         if (leftMostInfo != null) {
-            exportMostStatement(StatementType.south, leftMostInfo);
+            exportMostStatement(StatementType.west, leftMostInfo);
         }
     }
     
@@ -375,7 +365,7 @@ public class StatementExporterImpl implements StatementExporter {
         }
     }
     
-    // inner exporter methods
+    // private exporter methods
 
     private void newStatementWithLinkEndCheck(StatementType type, String param1, String param2, LinkEnd end) {
         if (end == LinkEnd.Default) {
@@ -385,13 +375,33 @@ public class StatementExporterImpl implements StatementExporter {
         }
     }
     
+    private void exportLineStatement(StatementType type, Class<? extends LayoutAbstractNode>[] nodes) {
+        String name = (type == StatementType.above ? "column" : "row");
+        
+        if (nodes.length == 0) {
+            problemReporter.sugarStatementWithEmptyArguments(name);
+            return;
+        }
+        
+        NodeGroupInfo info = elementExporter.exportAnonNodeGroup(nodes).asNodeGroupInfo();
+        
+        if (info == null) {
+            problemReporter.lineStatementExportationFailed(name, nodes);
+            return;
+        }
+        
+        exportAlignmentWithGivenStatement(info, type);   
+    }
+    
     private void exportAdjacencyStatement(StatementType type, Class<? extends LayoutNode> val, Class<? extends LayoutNode> from) {
         NodeInfo valInfo = elementExporter.exportNode(val).asNodeInfo();
         NodeInfo fromInfo = elementExporter.exportNode(from).asNodeInfo();
+        
         if (valInfo == null || fromInfo == null) {
-            // TODO show error
+            problemReporter.adjacencyStatementExportationFailed(type, val, from);
             return;
         }
+        
         statements.addNew(type, valInfo.toString(), fromInfo.toString());
     }
     
@@ -401,7 +411,7 @@ public class StatementExporterImpl implements StatementExporter {
             LinkEnd end)
     {
         if (val.length == 0 || from.length == 0) {
-            // TODO show error
+            problemReporter.cardinalStatementWithEmptyArguments(type, val, from, end);
             return;
         }
         
@@ -462,7 +472,7 @@ public class StatementExporterImpl implements StatementExporter {
                 }
                 
                 else {
-                    // TODO show error
+                    problemReporter.cardinalStatementExportationFailed(type, val, from, end);
                 }
             }
         }
@@ -470,14 +480,19 @@ public class StatementExporterImpl implements StatementExporter {
     
     private void processMostStatement(Class<? extends Annotation> type, Class<? extends LayoutAbstractNode>[] val) {
         if (mostMap.containsKey(type)) {
-            // TODO show error
+            problemReporter.multipleMostStatement(type, val);
             return;
         }
 
+        if (val.length == 0) {
+            problemReporter.mostStatementWithEmptyArguments(type, val);
+            return;
+        }
+        
         NodeGroupInfo info = elementExporter.exportAnonNodeGroup(val).asNodeGroupInfo();
         
         if (info == null) {
-            // TODO show error
+            problemReporter.mostStatementExportationFailed(type, val);
             return;
         }
         
