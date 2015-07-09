@@ -3,10 +3,10 @@ package hu.elte.txtuml.layout.visualizer.helpers;
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 import hu.elte.txtuml.layout.visualizer.annotations.StatementLevel;
 import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
-import hu.elte.txtuml.layout.visualizer.exceptions.ConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
+import hu.elte.txtuml.layout.visualizer.exceptions.StatementsConflictException;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
@@ -14,6 +14,7 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -125,13 +126,13 @@ public class StatementHelper
 	 * @param stats
 	 *            list of {@link Statement}s to check.
 	 * @return list of duplicate-free {@link Statement}s.
-	 * @throws ConflictException
-	 *             Throws if a direct conflict is found in the user statements.
 	 * @throws ConversionException
 	 *             Throws if some value cannot be converted to another value.
+	 * @throws StatementsConflictException
+	 *             Throws if a direct conflict is found in the user statements.
 	 */
 	public static ArrayList<Statement> reduceAssocs(ArrayList<Statement> stats)
-			throws ConflictException, ConversionException
+			throws ConversionException, StatementsConflictException
 	{
 		ArrayList<Statement> result = new ArrayList<Statement>();
 		
@@ -155,9 +156,10 @@ public class StatementHelper
 						if (!s.isUserDefined())
 							continue;
 						else
-							throw new ConflictException("Priorities not match: "
-									+ s.toString() + " with older data: "
-									+ tempPrior.get(s.getParameter(0)).toString());
+							throw new StatementsConflictException(
+									"Priorities not match: " + s.toString()
+											+ " with older data: "
+											+ tempPrior.get(s.getParameter(0)).toString());
 					}
 				}
 				else
@@ -185,8 +187,9 @@ public class StatementHelper
 						if (!s.isUserDefined())
 							continue;
 						else
-							throw new ConflictException("Too many statements on "
-									+ s.getParameter(0) + " link!");
+							throw new StatementsConflictException(
+									"Too many statements on " + s.getParameter(0)
+											+ " link!");
 					}
 				}
 				else
@@ -318,6 +321,9 @@ public class StatementHelper
 					++gid;
 					result.add(new Statement(StatementType.north, StatementLevel.Low,
 							gid, a.getFrom(), a.getTo()));
+					++gid;
+					result.add(new Statement(StatementType.south, StatementLevel.Low,
+							gid, a.getId(), a.getFrom()));
 					break;
 				case aggregation:
 				case composition:
@@ -345,6 +351,20 @@ public class StatementHelper
 					}
 				}
 			}
+			
+			++gid;
+			Integer index;
+			if (entry.getValue().size() > 1)
+			{
+				Random r = new Random();
+				index = r.nextInt(entry.getValue().size() - 1);
+			}
+			else
+			{
+				index = 0;
+			}
+			result.add(new Statement(StatementType.above, StatementLevel.Medium, gid,
+					entry.getKey(), entry.getValue().get(index)));
 		}
 		
 		return new Pair<ArrayList<Statement>, Integer>(result, gid);

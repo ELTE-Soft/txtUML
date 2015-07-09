@@ -30,9 +30,9 @@ class GraphSearch
 	
 	// Constants
 	
-	private final Double _weightLength = 2.9;
-	private final Double _weightTurns = 2.7;
-	private final Double _weightCrossing = 1.0;
+	private final Double _weightLength = 1.0;// 2.9
+	private final Double _weightTurns = 2.7;// 2.7
+	private final Double _weightCrossing = 2.0;
 	private final Integer _penalizeTurns = 2;
 	
 	// end Constants
@@ -52,8 +52,7 @@ class GraphSearch
 	private Cost<Node> g;
 	private Parent<Node> PI;
 	
-	private HashMap<Node, Integer> _manhattanDistance;
-	private HashMap<Node, Integer> _leastTurns;
+	private HashMap<Node, Double> _heuristic;
 	
 	// end Variables
 	
@@ -96,8 +95,7 @@ class GraphSearch
 		_boundary = (top > 0) ? top : -1;
 		_extends = 0;
 		_batches = bs;
-		_manhattanDistance = new HashMap<Node, Integer>();
-		_leastTurns = new HashMap<Node, Integer>();
+		_heuristic = new HashMap<Node, Double>();
 		
 		G = new Graph<Node>();
 		
@@ -110,9 +108,9 @@ class GraphSearch
 		// Extend StartSet
 		for (Node p : _startSet)
 		{
-			Nyilt.add(p);
-			g.set(p, 2 * _weightLength);
 			PI.set(p, null);
+			g.set(p, 2 * _weightLength);
+			Nyilt.add(p);
 		}
 		
 		if (!search())
@@ -192,22 +190,23 @@ class GraphSearch
 	
 	private Double h(Node p)
 	{
-		// Quickened with memory
-		Double distance = (double) manhattanDistance(p);
-		// Quickened with memory
-		Double remainingTurns = (double) manhattanLeastTurnsCheckingOccupied(p);
+		if (_heuristic.containsKey(p))
+			return _heuristic.get(p);
 		
-		return (_weightTurns * remainingTurns + _weightLength * distance);
+		Double distance = (double) manhattanDistance(p);
+		Double remainingTurns = (double) manhattanLeastTurns(p);
+		Double result = (_weightTurns * remainingTurns + _weightLength * distance);
+		
+		_heuristic.put(p, result);
+		
+		return result;
 	}
 	
 	// Metrics
 	
 	private Integer manhattanDistance(Node a)
 	{
-		if (_manhattanDistance.containsKey(a))
-			return _manhattanDistance.get(a);
-		
-		Integer temp = (int) Math.floor(_endSet.stream().map(p ->
+		return (int) Math.floor(_endSet.stream().map(p ->
 		{
 			Integer dx = Math.abs(a.getTo().getX() - p.getFrom().getX());
 			Integer dy = Math.abs(a.getTo().getY() - p.getFrom().getY());
@@ -218,16 +217,34 @@ class GraphSearch
 		{
 			return Integer.compare(d1, d2);
 		}).get());
-		
-		_manhattanDistance.put(a, temp);
-		return temp;
 	}
 	
+	private Integer manhattanLeastTurns(Node a)
+	{
+		Node closest = _endSet.stream().map(p ->
+		{
+			Integer dx = Math.abs(a.getTo().getX() - p.getTo().getX());
+			Integer dy = Math.abs(a.getTo().getY() - p.getTo().getY());
+			Integer tempResult = dx + dy;
+			
+			return new Pair<Node, Integer>(p, tempResult);
+		}).min((d1, d2) ->
+		{
+			return Integer.compare(d1.Second, d2.Second);
+		}).get().First;
+		
+		if (!closest.getTo().getX().equals(a.getTo().getX())
+				&& !closest.getTo().getY().equals(a.getTo().getY()))
+		{
+			return 1;
+		}
+		
+		return 0;
+	}
+	
+	@SuppressWarnings("unused")
 	private Integer manhattanLeastTurnsCheckingOccupied(Node a)
 	{
-		if (_leastTurns.containsKey(a))
-			return _leastTurns.get(a);
-		
 		Integer min = Integer.MAX_VALUE;
 		
 		for (Node endnode : _endSet)
@@ -319,7 +336,6 @@ class GraphSearch
 			min = Math.min(min, tempMin);
 		}
 		
-		_leastTurns.put(a, min);
 		return min;
 	}
 	
@@ -365,8 +381,8 @@ class GraphSearch
 					else
 						w = _weightLength + _weightTurns;
 					
-					result.add(new Pair<Node, Double>(new Node(parent.getTo(), Point.Add(
-							parent.getTo(), dir)), w));
+					Point p = Point.Add(parent.getTo(), dir);
+					result.add(new Pair<Node, Double>(new Node(parent.getTo(), p), w));
 				}
 			}
 		}

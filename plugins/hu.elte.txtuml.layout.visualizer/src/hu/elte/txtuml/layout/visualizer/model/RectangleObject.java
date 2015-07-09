@@ -33,7 +33,7 @@ public class RectangleObject
 	}
 	
 	/***
-	 * Gett for the position of the object.
+	 * Getter for the top-left position of the object.
 	 * 
 	 * @return Point of the object.
 	 */
@@ -53,22 +53,12 @@ public class RectangleObject
 		
 		result.add(new Point(_position));
 		
-		Integer toBounds = (_width - 1) / 2;
-		
-		for (int i = 0; i <= toBounds; ++i)
+		for (int i = 0; i < _width; ++i)
 		{
-			for (int j = 0; j <= toBounds; ++j)
+			Point temp = Point.Add(_position, Point.Multiply(Direction.east, i));
+			for (int j = 1; j < _width; ++j)
 			{
-				Point eastP = Point.Multiply(Direction.east, i);
-				Point westP = Point.Multiply(Direction.west, i);
-				result.add(Point.Add(Point.Add(_position, eastP),
-						Point.Multiply(Direction.north, j)));
-				result.add(Point.Add(Point.Add(_position, eastP),
-						Point.Multiply(Direction.south, j)));
-				result.add(Point.Add(Point.Add(_position, westP),
-						Point.Multiply(Direction.north, j)));
-				result.add(Point.Add(Point.Add(_position, westP),
-						Point.Multiply(Direction.south, j)));
+				result.add(Point.Add(temp, Point.Multiply(Direction.south, j)));
 			}
 		}
 		
@@ -84,7 +74,7 @@ public class RectangleObject
 	{
 		Set<Point> result = new HashSet<Point>();
 		
-		Point tl = getTopLeft();
+		Point tl = new Point(_position);
 		Point br = getBottomRight();
 		result.add(tl);
 		result.add(br);
@@ -100,33 +90,23 @@ public class RectangleObject
 	}
 	
 	/**
-	 * Getter for the top left point of the object.
+	 * Getter for the top left point of the objects.
 	 * 
 	 * @return Point of the top left corner.
 	 */
 	public Point getTopLeft()
 	{
-		Set<Point> occupied = this.getPoints();
-		Integer left = occupied.stream().map(p -> p.getX())
-				.min((p1, p2) -> Integer.compare(p1, p2)).get();
-		Integer top = occupied.stream().map(p -> p.getY())
-				.max((p1, p2) -> Integer.compare(p1, p2)).get();
-		return new Point(left, top);
+		return new Point(_position);
 	}
 	
-	/***
+	/**
 	 * Getter for the bottom right point of the objects.
 	 * 
 	 * @return Point of the bottom right corner.
 	 */
 	public Point getBottomRight()
 	{
-		Set<Point> occupied = this.getPoints();
-		Integer right = occupied.stream().map(p -> p.getX())
-				.max((p1, p2) -> Integer.compare(p1, p2)).get();
-		Integer bottom = occupied.stream().map(p -> p.getY())
-				.min((p1, p2) -> Integer.compare(p1, p2)).get();
-		return new Point(right, bottom);
+		return new Point(_position.getX() + (_width - 1), _position.getY() - (_width - 1));
 	}
 	
 	/***

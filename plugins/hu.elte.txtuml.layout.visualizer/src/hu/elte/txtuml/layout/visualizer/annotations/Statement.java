@@ -326,7 +326,8 @@ public class Statement
 		Integer parClose = input.lastIndexOf(")");
 		
 		if (parOpen == -1 || parClose == -1)
-			throw new UnknownStatementException("No (not enough) parentheisis found!");
+			throw new UnknownStatementException("No (not enough) parentheisis found!",
+					input);
 		
 		try
 		{
@@ -336,14 +337,14 @@ public class Statement
 		catch (IllegalArgumentException e)
 		{
 			throw new UnknownStatementException("No known statement such as: "
-					+ input.substring(0, parOpen) + "!");
+					+ input.substring(0, parOpen) + "!", input);
 		}
 		
 		params = input.substring(parOpen + 1, parClose).split(",");
 		
 		if (!enoughParametersForType(type, params))
 			throw new UnknownStatementException(
-					"Not enough / Too many parameters for type!");
+					"Not enough / Too many parameters for type!", input);
 		
 		return new Statement(type, params);
 	}

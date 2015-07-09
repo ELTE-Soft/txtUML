@@ -4,7 +4,9 @@ import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.Dire
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.EdgeWeightedDigraph;
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 import hu.elte.txtuml.layout.visualizer.annotations.StatementLevel;
+import hu.elte.txtuml.layout.visualizer.events.ProgressManager;
 import hu.elte.txtuml.layout.visualizer.exceptions.BoxArrangeConflictException;
+import hu.elte.txtuml.layout.visualizer.exceptions.BoxOverlapConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.MyException;
@@ -37,6 +39,7 @@ public class ArrangeObjects
 	private BiMap<String, Integer> _indices;
 	private Integer _gid;
 	private Boolean _logging;
+	private Boolean _arrangeOverlaps;
 	
 	private Integer _transformAmount;
 	
@@ -72,6 +75,8 @@ public class ArrangeObjects
 	 *            The previously used group id.
 	 * @param log
 	 *            Whether to print out logging msgs.
+	 * @param arrangeoverlaps
+	 *            Whether to arrange overlapping elements.
 	 * @throws BoxArrangeConflictException
 	 *             Throws when a conflict appears during the arrangement of the
 	 *             boxes.
@@ -80,30 +85,44 @@ public class ArrangeObjects
 	 *             programmer for more details.
 	 * @throws ConversionException
 	 *             Throws if the algorithm could not convert a specific value.
+	 * @throws BoxOverlapConflictException
+	 *             Throws if the algorithm encounters an unsolvable overlap
+	 *             during the arrangement of the boxes.
 	 */
 	public ArrangeObjects(Set<RectangleObject> obj, ArrayList<Statement> par_stats,
-			Integer gid, Boolean log) throws BoxArrangeConflictException,
-			InternalException, ConversionException
+			Integer gid, Boolean log, Boolean arrangeoverlaps)
+			throws BoxArrangeConflictException, InternalException, ConversionException,
+			BoxOverlapConflictException
 	
 	{
-		_logging = log;
-		_gid = gid;
-		
 		// Nothing to arrange
-		if (obj.size() == 0)
+		if (obj == null || obj.size() == 0)
 			return;
+		
+		_logging = log;
+		_arrangeOverlaps = arrangeoverlaps;
+		_gid = gid;
 		
 		_statements = Helper.cloneStatementList(par_stats);
 		_objects = new HashSet<RectangleObject>(obj);
 		_transformAmount = 1;
 		
+		// Emit Event
+		ProgressManager.getEmitter().OnBoxArrangeStart();
+		
 		// Arrange, arrange overlaps
 		setIndices();
 		arrangeUntilNotConflicted();
 		
-		if (isThereOverlapping())
+		if (_arrangeOverlaps && isThereOverlapping())
 		{
+			// Emit Event
+			ProgressManager.getEmitter().OnBoxOverlapArrangeStart();
+			
 			removeOverlaps();
+			
+			// Emit Event
+			ProgressManager.getEmitter().OnBoxOverlapArrangeEnd();
 		}
 	}
 	
@@ -122,69 +141,13 @@ public class ArrangeObjects
 			{
 				isConflicted = true;
 				// Remove a weak statement if possible
-				if (ex.ConflictStatement.stream().anyMatch(s -> !s.isUserDefined()))
+				if (ex.ConflictStatements.stream().anyMatch(s -> !s.isUserDefined()))
 				{
-					ArrayList<Statement> possibleDeletes = (ArrayList<Statement>) ex.ConflictStatement
-							.stream().filter(s -> !s.isUserDefined())
-							.collect(Collectors.toList());
-					Statement max = possibleDeletes
-							.stream()
-							.max((s1, s2) ->
-							{
-								return -1
-										* Integer.compare(
-												StatementHelper.getComplexity(s1),
-												StatementHelper.getComplexity(s2));
-							}).get();
-					
-					ArrayList<Statement> toDeletes = new ArrayList<Statement>();
-					toDeletes.addAll(_statements
-							.stream()
-							.filter(s -> s.getGroupId() != null
-									&& s.getGroupId().equals(max.getGroupId()))
-							.collect(Collectors.toList()));
-					
-					_statements.removeAll(toDeletes);
-					if (_logging)
-					{
-						for (Statement stat : toDeletes)
-						{
-							System.err.println("> > Weak(" + stat.toString()
-									+ ") statement deleted!");
-						}
-					}
+					existsAddedConflictingStatement(ex.ConflictStatements);
 				}
 				else if (_statements.stream().anyMatch(s -> !s.isUserDefined()))
 				{
-					ArrayList<Statement> possibleDeletes = (ArrayList<Statement>) _statements
-							.stream().filter(s -> !s.isUserDefined())
-							.collect(Collectors.toList());
-					Statement max = possibleDeletes
-							.stream()
-							.max((s1, s2) ->
-							{
-								return -1
-										* Integer.compare(
-												StatementHelper.getComplexity(s1),
-												StatementHelper.getComplexity(s2));
-							}).get();
-					
-					ArrayList<Statement> toDeletes = new ArrayList<Statement>();
-					toDeletes.addAll(_statements
-							.stream()
-							.filter(s -> s.getGroupId() != null
-									&& s.getGroupId().equals(max.getGroupId()))
-							.collect(Collectors.toList()));
-					
-					_statements.removeAll(toDeletes);
-					if (_logging.equals(true))
-					{
-						for (Statement stat : toDeletes)
-						{
-							System.err.println("> > Weak(" + stat.toString()
-									+ ") statement deleted!");
-						}
-					}
+					existsAddedStatement();
 				}
 				else
 					throw ex;
@@ -195,10 +158,77 @@ public class ArrangeObjects
 		} while (isConflicted);
 	}
 	
-	private void removeOverlaps() throws InternalException, ConversionException
+	private void existsAddedConflictingStatement(ArrayList<Statement> conflicts)
+	{
+		ArrayList<Statement> possibleDeletes = (ArrayList<Statement>) conflicts.stream()
+				.filter(s -> !s.isUserDefined()).collect(Collectors.toList());
+		Statement max = possibleDeletes
+				.stream()
+				.max((s1, s2) ->
+				{
+					return -1
+							* Integer.compare(StatementHelper.getComplexity(s1),
+									StatementHelper.getComplexity(s2));
+				}).get();
+		
+		ArrayList<Statement> toDeletes = new ArrayList<Statement>();
+		toDeletes.addAll(_statements
+				.stream()
+				.filter(s -> s.getGroupId() != null
+						&& s.getGroupId().equals(max.getGroupId()))
+				.collect(Collectors.toList()));
+		
+		_statements.removeAll(toDeletes);
+		if (_logging)
+		{
+			for (Statement stat : toDeletes)
+			{
+				System.err
+						.println("> > Weak(" + stat.toString() + ") statement deleted!");
+			}
+		}
+	}
+	
+	private void existsAddedStatement()
+	{
+		ArrayList<Statement> possibleDeletes = (ArrayList<Statement>) _statements
+				.stream().filter(s -> !s.isUserDefined()).collect(Collectors.toList());
+		Statement max = possibleDeletes
+				.stream()
+				.max((s1, s2) ->
+				{
+					return -1
+							* Integer.compare(StatementHelper.getComplexity(s1),
+									StatementHelper.getComplexity(s2));
+				}).get();
+		
+		ArrayList<Statement> toDeletes = new ArrayList<Statement>();
+		toDeletes.addAll(_statements
+				.stream()
+				.filter(s -> s.getGroupId() != null
+						&& s.getGroupId().equals(max.getGroupId()))
+				.collect(Collectors.toList()));
+		
+		_statements.removeAll(toDeletes);
+		if (_logging.equals(true))
+		{
+			for (Statement stat : toDeletes)
+			{
+				System.err
+						.println("> > Weak(" + stat.toString() + ") statement deleted!");
+			}
+		}
+	}
+	
+	private void removeOverlaps() throws InternalException, ConversionException,
+			BoxOverlapConflictException
 	{
 		if (_logging)
 			System.err.println("Starting overlap arrange...");
+		
+		// Fixes the layout of the diagram by giving statements preserving the
+		// current state
+		fixCurrentState();
 		
 		Boolean wasExtension = false;
 		do
@@ -207,6 +237,7 @@ public class ArrangeObjects
 			if (_logging)
 				System.err.println(" > Round of overlap arrange...");
 			
+			// for every overlapping box pairs
 			for (RectangleObject boxA : _objects)
 			{
 				if (!isThereOverlapping())
@@ -222,50 +253,90 @@ public class ArrangeObjects
 					
 					if (boxA.getPosition().equals(boxB.getPosition()))
 					{
-						for (Direction dir : Direction.values())
-						{
-							Integer prevOverlapCount = overlappingCount();
-							if (!isThereOverlapping(prevOverlapCount))
-								break;
-							
-							ArrayList<Statement> newStats = Helper
-									.cloneStatementList(_statements);
-							++_gid;
-							newStats.add(new Statement(Helper.asStatementType(dir),
-									StatementLevel.Medium, _gid, boxA.getName(), boxB
-											.getName()));
-							
-							try
-							{
-								arrange(newStats);
-								Integer currOverlapCount = overlappingCount();
-								if (currOverlapCount < prevOverlapCount)
-								{
-									_statements = Helper.cloneStatementList(newStats);
-									wasExtension = true;
-									
-									if (_logging)
-										System.err.println("Found a possible solution "
-												+ currOverlapCount + "<"
-												+ prevOverlapCount + "!");
-								}
-								else
-									--_gid;
-							}
-							catch (MyException ex)
-							{
-								--_gid;
-								if (_logging)
-									System.err.println("Retrying to resolve overlaps...");
-							}
-						}
+						// try add a statement to resolve overlap
+						wasExtension = tryAddStatement(boxA, boxB);
 					}
 				}
 			}
 		} while (wasExtension);
 		
+		// If the cycle stopped but there remained overlapped elements
+		if (isThereOverlapping())
+		{
+			throw new BoxOverlapConflictException(overlaps().entrySet().stream()
+					.map(e -> e.getValue()).max((x, y) ->
+					{
+						return Integer.compare(x.size(), y.size());
+					}).get().stream().collect(Collectors.toList()),
+					"There were unsolvable overlappings in the diagram!");
+		}
+		
 		if (_logging)
 			System.err.println("Ending overlap arrange...");
+	}
+	
+	private void fixCurrentState() throws ConversionException, InternalException
+	{
+		for (RectangleObject o1 : _objects)
+		{
+			for (RectangleObject o2 : _objects)
+			{
+				if (o1.equals(o2) || o1.getPosition().equals(o2.getPosition()))
+					continue;
+				
+				for (Direction dir : Point.directionOfAll(o1.getPosition(),
+						o2.getPosition()))
+				{
+					Statement s = new Statement(Helper.asStatementType(dir),
+							StatementLevel.Low, _gid, o1.getName(), o2.getName());
+					if (!_statements.contains(s))
+						_statements.add(s);
+				}
+			}
+		}
+	}
+	
+	private Boolean tryAddStatement(RectangleObject boxA, RectangleObject boxB)
+			throws InternalException, ConversionException
+	{
+		Boolean wasExtension = false;
+		
+		for (Direction dir : Direction.values())
+		{
+			Integer prevOverlapCount = overlappingCount();
+			if (!isThereOverlapping(prevOverlapCount))
+				break;
+			
+			ArrayList<Statement> newStats = Helper.cloneStatementList(_statements);
+			++_gid;
+			newStats.add(new Statement(Helper.asStatementType(dir),
+					StatementLevel.Medium, _gid, boxA.getName(), boxB.getName()));
+			
+			try
+			{
+				arrange(newStats);
+				Integer currOverlapCount = overlappingCount();
+				if (currOverlapCount < prevOverlapCount)
+				{
+					_statements = Helper.cloneStatementList(newStats);
+					wasExtension = true;
+					
+					if (_logging)
+						System.err.println("Found a possible solution "
+								+ currOverlapCount + "<" + prevOverlapCount + "!");
+				}
+				else
+					--_gid;
+			}
+			catch (MyException ex)
+			{
+				--_gid;
+				if (_logging)
+					System.err.println("Retrying to resolve overlaps...");
+			}
+		}
+		
+		return wasExtension;
 	}
 	
 	private void arrange(ArrayList<Statement> stats) throws InternalException,
@@ -328,8 +399,6 @@ public class ArrangeObjects
 				}
 			}
 		}
-		
-		// arrangeOverlapping(stats);
 	}
 	
 	private void setIndices()
@@ -356,7 +425,7 @@ public class ArrangeObjects
 		return oc > 1;
 	}
 	
-	private Integer overlappingCount()
+	private HashMap<Point, HashSet<String>> overlaps()
 	{
 		HashMap<Point, HashSet<String>> overlaps = new HashMap<Point, HashSet<String>>();
 		
@@ -377,8 +446,13 @@ public class ArrangeObjects
 			}
 		}
 		
+		return overlaps;
+	}
+	
+	private Integer overlappingCount()
+	{
 		Integer count = 0;
-		for (Entry<Point, HashSet<String>> entry : overlaps.entrySet())
+		for (Entry<Point, HashSet<String>> entry : overlaps().entrySet())
 		{
 			if (entry.getValue().size() > 1)
 			{
@@ -394,11 +468,13 @@ public class ArrangeObjects
 	{
 		ArrayList<Quadraple<Integer, Integer, Integer, Statement>> result = new ArrayList<Quadraple<Integer, Integer, Integer, Statement>>();
 		
+		// Set the edges from node 0 to ALL
 		for (int i = 0; i < (2 * n) + 1; ++i)
 		{
 			result.add(new Quadraple<Integer, Integer, Integer, Statement>(0, i, 0, null));
 		}
 		
+		// Set edges based on statement constraints
 		for (Statement s : stats)
 		{
 			switch (s.getType())

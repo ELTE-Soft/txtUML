@@ -1,5 +1,8 @@
 package hu.elte.txtuml.layout.visualizer.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * The class representing an abstract Integer Point.
  * 
@@ -306,6 +309,34 @@ public class Point
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Method to compute in which {@link Direction}s does relative is from p.
+	 * 
+	 * @param p
+	 *            {@link Point} to check.
+	 * @param relative
+	 *            {@link Point} to relate.
+	 * @return the {@link Direction}s of p from relative.
+	 */
+	public static Set<Direction> directionOfAll(Point p, Point relative)
+	{
+		Set<Direction> result = new HashSet<Direction>();
+		
+		Point temp = Point.Substract(p, relative);
+		
+		if (temp.getX() > 0)
+			result.add(Direction.east);
+		else if (temp.getX() < 0)
+			result.add(Direction.west);
+		
+		if (temp.getY() > 0)
+			result.add(Direction.north);
+		else if (temp.getY() < 0)
+			result.add(Direction.south);
+		
+		return result;
 	}
 	
 	// end Statics

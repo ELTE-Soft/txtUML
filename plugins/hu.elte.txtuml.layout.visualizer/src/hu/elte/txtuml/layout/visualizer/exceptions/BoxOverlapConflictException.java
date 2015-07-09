@@ -1,16 +1,15 @@
 package hu.elte.txtuml.layout.visualizer.exceptions;
 
-import hu.elte.txtuml.layout.visualizer.annotations.Statement;
-
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Exception indicating that conflicts were detected as a result of the user
- * statements during Box arrangement.
+ * Exception indicating that the algorithm encountered an unsolvable conflict
+ * during the arrangement of overlapping boxes.
  * 
  * @author Balázs Gregorics
  */
-public class BoxArrangeConflictException extends MyException
+public class BoxOverlapConflictException extends MyException
 {
 	/**
 	 * Default serial version ID
@@ -20,7 +19,7 @@ public class BoxArrangeConflictException extends MyException
 	/**
 	 * Gets or sets the Statement that caused conflict.
 	 */
-	public ArrayList<Statement> ConflictStatements;
+	public ArrayList<String> OverlappingBoxes;
 	
 	/**
 	 * Create ConflictException.
@@ -28,10 +27,10 @@ public class BoxArrangeConflictException extends MyException
 	 * @param m
 	 *            Message to show.
 	 */
-	public BoxArrangeConflictException(String m)
+	public BoxOverlapConflictException(String m)
 	{
 		super(m);
-		ConflictStatements = null;
+		OverlappingBoxes = null;
 	}
 	
 	/**
@@ -40,10 +39,10 @@ public class BoxArrangeConflictException extends MyException
 	 * @param s
 	 *            Statement that caused conflict.
 	 */
-	public BoxArrangeConflictException(ArrayList<Statement> s)
+	public BoxOverlapConflictException(List<String> s)
 	{
 		super();
-		ConflictStatements = s;
+		OverlappingBoxes = (ArrayList<String>) s;
 	}
 	
 	/**
@@ -54,9 +53,9 @@ public class BoxArrangeConflictException extends MyException
 	 * @param m
 	 *            Message to show.
 	 */
-	public BoxArrangeConflictException(ArrayList<Statement> s, String m)
+	public BoxOverlapConflictException(List<String> s, String m)
 	{
 		super(m);
-		ConflictStatements = s;
+		OverlappingBoxes = (ArrayList<String>) s;
 	}
 }

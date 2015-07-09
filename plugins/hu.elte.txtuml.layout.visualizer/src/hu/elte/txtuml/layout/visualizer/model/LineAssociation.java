@@ -116,20 +116,23 @@ public class LineAssociation
 	 */
 	public ArrayList<Point> getMinimalRoute()
 	{
-		ArrayList<Point> result = Helper.clonePointList(_route);
+		ArrayList<Point> result = new ArrayList<Point>();
 		
-		if (result.size() < 2)
-			return result;
+		result.add(_route.get(1));
 		
-		for (int i = 1; i < result.size() - 1; i++)
+		for (int i = 2; i < _route.size() - 2; ++i)
 		{
-			while (i < result.size() - 1
-					&& (result.get(i - 1).getX() == result.get(i + 1).getX() || result
-							.get(i - 1).getY() == result.get(i + 1).getY()))
+			Point a = _route.get(i - 1);
+			Point b = _route.get(i);
+			Point c = _route.get(i + 1);
+			
+			if (!Point.Substract(a, b).equals(Point.Substract(b, c)))
 			{
-				result.remove(i);
+				result.add(new Point(b));
 			}
 		}
+		
+		result.add(_route.get(_route.size() - 2));
 		
 		return result;
 	}
@@ -226,18 +229,15 @@ public class LineAssociation
 		
 		Point first;
 		Point second;
-		Integer toBounds = (objectWidth == 1) ? 1 : (objectWidth - 1) / 2;
 		
 		switch (conf)
 		{
 			case START:
-				first = Point
-						.Substract(_route.get(0), new Point(-1 * toBounds, toBounds));
+				first = _route.get(0);
 				second = _route.get(1);
 				break;
 			case END:
-				first = Point.Substract(_route.get(_route.size() - 1), new Point(-1
-						* toBounds, toBounds));
+				first = _route.get(_route.size() - 1);
 				second = _route.get(_route.size() - 2);
 				break;
 			default:
@@ -245,7 +245,7 @@ public class LineAssociation
 		}
 		
 		Point vec = Point.Substract(first, second);
-		double length = Math.sqrt(vec.getX() * vec.getX() + vec.getY() * vec.getY());
+		double length = vec.length();
 		result[0] = (vec.getX() / length + 1) / 2;
 		result[1] = (vec.getY() / length + 1) / 2;
 		

@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * 
  * @author Balázs Gregorics
  */
-public class StatementsConflictException extends ConflictException
+public class StatementsConflictException extends MyException
 {
 	/**
 	 * Default serial version ID

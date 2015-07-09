@@ -4,11 +4,15 @@ import hu.elte.txtuml.layout.visualizer.algorithms.boxes.ArrangeObjects;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.ArrangeAssociations;
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
+import hu.elte.txtuml.layout.visualizer.events.ProgressEmitter;
+import hu.elte.txtuml.layout.visualizer.events.ProgressManager;
+import hu.elte.txtuml.layout.visualizer.exceptions.BoxArrangeConflictException;
+import hu.elte.txtuml.layout.visualizer.exceptions.BoxOverlapConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
-import hu.elte.txtuml.layout.visualizer.exceptions.ConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
+import hu.elte.txtuml.layout.visualizer.exceptions.StatementsConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
 import hu.elte.txtuml.layout.visualizer.helpers.Helper;
 import hu.elte.txtuml.layout.visualizer.helpers.Pair;
@@ -19,6 +23,7 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Observer;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -62,6 +67,12 @@ public class LayoutVisualize
 	 * Whether to print log messages.
 	 */
 	private Boolean _logging;
+	/**
+	 * Whether to arrange overlapping elements or not.
+	 */
+	private Boolean _arrangeOverlaps;
+	
+	private Integer _corridorPercent;
 	
 	/***
 	 * Get the current set of Objects.
@@ -104,68 +115,101 @@ public class LayoutVisualize
 	}
 	
 	/**
+	 * Returns the ProgressEmitter class.
+	 * 
+	 * @return the ProgressEmitter class.
+	 */
+	public ProgressEmitter getProgressEmitter()
+	{
+		return ProgressManager.getEmitter();
+	}
+	
+	/**
+	 * Adds an observer to the Event Emitter.
+	 * 
+	 * @param o
+	 *            Observer to add.
+	 */
+	public void addObserver(Observer o)
+	{
+		ProgressManager.addObserver(o);
+	}
+	
+	/**
+	 * Setter for logging property.
+	 * 
+	 * @param value
+	 *            Whether to enable or disable this feature.
+	 */
+	public void setLogging(Boolean value)
+	{
+		_logging = value;
+	}
+	
+	/**
+	 * Setter for arrange overlapping boxes property.
+	 * 
+	 * @param value
+	 *            Whether to enable or disable this feature.
+	 */
+	public void setArrangeOverlaps(Boolean value)
+	{
+		_arrangeOverlaps = value;
+	}
+	
+	/**
+	 * Setter for batching of special links property.
+	 * 
+	 * @param value
+	 *            Whether to enable or disable this feature.
+	 */
+	public void setBatching(Boolean value)
+	{
+		_batching = value;
+	}
+	
+	/**
+	 * Setter for the percent of the corridors' width relative to boxes' width.
+	 * 
+	 * @param percent
+	 *            The amount of percent.
+	 */
+	public void setCorridor(Integer percent)
+	{
+		_corridorPercent = percent;
+	}
+	
+	/**
 	 * Layout algorithm initialize. Use load(), then arrange().
 	 */
 	public LayoutVisualize()
 	{
-		_objects = null;
-		_assocs = null;
 		_diagramType = DiagramType.Class;
-		_batching = false;
-		_logging = false;
+		setDefaults();
 	}
 	
 	/**
 	 * Layout algorithm initialize. Use load(), then arrange().
 	 * 
-	 * @param isLog
-	 *            Whether to print out logging messages.
+	 * @param type
+	 *            Type of the diagram to arrange.
 	 */
-	public LayoutVisualize(boolean isLog)
+	public LayoutVisualize(DiagramType type)
 	{
+		_diagramType = type;
+		setDefaults();
+	}
+	
+	private void setDefaults()
+	{
+		ProgressManager.start();
+		
 		_objects = null;
 		_assocs = null;
-		_diagramType = DiagramType.Class;
 		_batching = false;
-		_logging = isLog;
-	}
-	
-	/**
-	 * Layout algorithm initialize for setting the reflexive links arrange. Use
-	 * load(), then arrange().
-	 * 
-	 * @param type
-	 *            The type of the diagram to arrange.
-	 * @param batch
-	 *            Whether to use batching during link arrange or not.
-	 */
-	public LayoutVisualize(DiagramType type, Boolean batch)
-	{
-		_objects = null;
-		_assocs = null;
-		_diagramType = type;
-		_batching = batch;
-		_logging = true;
-	}
-	
-	/**
-	 * Layout algorithm initialize for setting the reflexive links arrange. Use
-	 * load(), then arrange().
-	 * 
-	 * @param isLog
-	 *            Whether to print out logging messages.
-	 * @param type
-	 *            The type of the diagram to arrange.
-	 * @param batch
-	 *            Whether to use batching during link arrange or not.
-	 */
-	public LayoutVisualize(boolean isLog, DiagramType type, Boolean batch)
-	{
-		_objects = null;
-		_assocs = null;
-		_diagramType = type;
-		_batching = batch;
-		_logging = isLog;
+		_arrangeOverlaps = true;
+		_logging = false;
+		_corridorPercent = 100;
 	}
 	
 	/**
@@ -177,21 +221,31 @@ public class LayoutVisualize
 	 *             Throws if an unknown {@link Statement} is provided.
 	 * @throws ConversionException
 	 *             Throws if algorithm cannot convert certain type into
-	 *             other type (Missing Statement upgrade?).
-	 * @throws ConflictException
-	 *             Throws if there are some conflicts in the user statements.
+	 *             other type.
+	 * @throws BoxArrangeConflictException
+	 *             Throws if there are some conflicts during the layout of
+	 *             boxes.
 	 * @throws StatementTypeMatchException
-	 *             Throws if any of the statements are not in correct format.
+	 *             Throws if any of the {@link Statement}s are not in correct
+	 *             format.
+	 * @throws CannotFindAssociationRouteException
+	 *             Throws if the algorithm cannot find the route for a
+	 *             {@link LineAssociation}.
+	 * @throws StatementsConflictException
+	 *             Thorws if there are some conflicts in the {@link Statement}s
+	 *             given by the user.
+	 * @throws BoxOverlapConflictException
+	 *             Throws if the algorithm encounters an unsolvable overlap
+	 *             during the arrangement of the boxes.
 	 * @throws InternalException
 	 *             Throws if any error occurs which should not happen. Contact
 	 *             developer for more details!
-	 * @throws CannotFindAssociationRouteException
-	 *             Throws if the algorithm cannot find the route for a
-	 *             association.
 	 */
 	public void arrange(ArrayList<Statement> par_stats) throws InternalException,
-			ConflictException, ConversionException, StatementTypeMatchException,
-			CannotFindAssociationRouteException, UnknownStatementException
+			BoxArrangeConflictException, ConversionException,
+			StatementTypeMatchException, CannotFindAssociationRouteException,
+			UnknownStatementException, BoxOverlapConflictException,
+			StatementsConflictException
 	{
 		if (_objects == null)
 			return;
@@ -199,59 +253,114 @@ public class LayoutVisualize
 		if (_logging)
 			System.err.println("Starting arrange...");
 		
+		// Clone statements into local working copy
 		_statements = Helper.cloneStatementList(par_stats);
 		
 		// Set next Group Id
+		Integer maxGroupId = getGroupId();
+		
+		// Transform special associations into statements
+		maxGroupId = transformAssocsIntoStatements(maxGroupId);
+		
+		// Split statements on assocs
+		splitStatements();
+		
+		// Transform Phantom statements into Objects
+		Set<String> phantoms = addPhantoms();
+		
+		// Set Default Statements
+		maxGroupId = addDefaultStatements(maxGroupId);
+		
+		// Check the types of Statements
+		StatementHelper.checkTypes(_statements, _assocStatements, _objects, _assocs);
+		
+		// Box arrange
+		maxGroupId = boxArrange(maxGroupId);
+		
+		// Set start-end positions for associations
+		updateAssocsEnd();
+		
+		// Remove phantom objects
+		removePhantoms(phantoms);
+		
+		// Arrange associations between objects
+		maxGroupId = linkArrange(maxGroupId);
+		
+		if (_logging)
+			System.err.println("End of arrange!");
+		
+		ProgressManager.end();
+	}
+	
+	private Integer getGroupId()
+	{
 		Optional<Integer> tempMax = _statements.stream()
 				.filter(s -> s.getGroupId() != null).map(s -> s.getGroupId())
 				.max((a, b) ->
 				{
 					return Integer.compare(a, b);
 				});
-		Integer maxGroupId = tempMax.isPresent() ? tempMax.get() : 0;
-		
-		// Split statements on assocs
+		return tempMax.isPresent() ? tempMax.get() : 0;
+	}
+	
+	private void splitStatements() throws ConversionException,
+			StatementsConflictException
+	{
 		_assocStatements = StatementHelper.splitAssocs(_statements, _assocs);
 		_statements.removeAll(_assocStatements);
 		_assocStatements = StatementHelper.reduceAssocs(_assocStatements);
-		
-		// Transform special associations into statements
+	}
+	
+	private Integer transformAssocsIntoStatements(Integer maxGroupId)
+			throws InternalException
+	{
 		Pair<ArrayList<Statement>, Integer> tempPair = StatementHelper.transformAssocs(
 				_assocs, maxGroupId);
 		_statements.addAll(tempPair.First);
-		maxGroupId = tempPair.Second;
-		
-		// Transform Phantom statements into Objects
-		Set<String> phantoms = new HashSet<String>();
-		phantoms.addAll(StatementHelper.extractPhantoms(_statements));
-		for (String p : phantoms)
+		return tempPair.Second;
+	}
+	
+	private Set<String> addPhantoms()
+	{
+		Set<String> result = new HashSet<String>();
+		result.addAll(StatementHelper.extractPhantoms(_statements));
+		for (String p : result)
 			_objects.add(new RectangleObject(p));
 		_statements.removeAll(_statements.stream()
 				.filter(s -> s.getType().equals(StatementType.phantom))
 				.collect(Collectors.toSet()));
 		
-		// Set Default Statements
+		return result;
+	}
+	
+	private Integer addDefaultStatements(Integer maxGroupId) throws InternalException
+	{
 		DefaultStatements ds = new DefaultStatements(_objects, _assocs, _statements,
 				maxGroupId);
 		_statements.addAll(ds.value());
-		maxGroupId = ds.getGroupId();
-		
-		StatementHelper.checkTypes(_statements, _assocStatements, _objects, _assocs);
-		
+		return ds.getGroupId();
+	}
+	
+	private Integer boxArrange(Integer maxGroupId) throws BoxArrangeConflictException,
+			InternalException, ConversionException, BoxOverlapConflictException
+	{
 		if (_logging)
 			System.err.println("> Starting box arrange...");
 		
 		// Arrange objects
 		ArrangeObjects ao = new ArrangeObjects(_objects, _statements, maxGroupId,
-				_logging);
+				_logging, _arrangeOverlaps);
 		_objects = new HashSet<RectangleObject>(ao.value());
 		_statements = ao.statements();
-		maxGroupId = ao.getGId();
 		
 		if (_logging)
 			System.err.println("> Box arrange DONE!");
 		
-		// Set start-end positions for associations
+		return ao.getGId();
+	}
+	
+	private void updateAssocsEnd()
+	{
 		for (LineAssociation a : _assocs)
 		{
 			ArrayList<Point> al = new ArrayList<Point>();
@@ -278,26 +387,34 @@ public class LayoutVisualize
 			al.add(endend);
 			a.setRoute(al);
 		}
-		
-		// Remove phantom objects
+	}
+	
+	private void removePhantoms(Set<String> phantoms)
+	{
 		Set<RectangleObject> toDeleteSet = _objects.stream()
 				.filter(o -> phantoms.contains(o.getName())).collect(Collectors.toSet());
 		_objects.removeAll(toDeleteSet);
-		
-		// Arrange associations between objects
+	}
+	
+	private Integer linkArrange(Integer maxGroupId) throws ConversionException,
+			InternalException, CannotFindAssociationRouteException,
+			UnknownStatementException
+	{
 		if (_assocs.size() <= 0)
-			return;
+			return maxGroupId;
 		
 		if (_logging)
 			System.err.println("> Starting link arrange...");
 		
 		ArrangeAssociations aa = new ArrangeAssociations(_objects, _assocs,
-				_assocStatements, maxGroupId, _batching, _logging);
+				_assocStatements, maxGroupId, _corridorPercent, _batching, _logging);
 		_assocs = aa.value();
 		_objects = aa.objects();
 		
 		if (_logging)
 			System.err.println("> Link arrange DONE!");
+		
+		return aa.getGId();
 	}
 	
 	/***

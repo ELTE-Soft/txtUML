@@ -5,6 +5,7 @@ import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Pain
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Painted.Colors;
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
+import hu.elte.txtuml.layout.visualizer.events.ProgressManager;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotStartAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
@@ -44,6 +45,7 @@ public class ArrangeAssociations
 	private Integer _gId;
 	private Boolean _batching;
 	private Boolean _logging;
+	private Integer _corridorPercent;
 	
 	/**
 	 * Gets the final width of the boxes, that was computed during the running
@@ -57,6 +59,16 @@ public class ArrangeAssociations
 	}
 	
 	/**
+	 * Returns the last use Group Id number.
+	 * 
+	 * @return the last use Group Id number.
+	 */
+	public Integer getGId()
+	{
+		return _gId;
+	}
+	
+	/**
 	 * Arranges associations between objects, on the grid.
 	 * 
 	 * @param diagramObjects
@@ -67,6 +79,8 @@ public class ArrangeAssociations
 	 *            Statements on associations.
 	 * @param gid
 	 *            The max group id yet existing.
+	 * @param corridor
+	 *            THe percent of corridor's with relative to boxes.
 	 * @param batch
 	 *            Whether to use batching or not.
 	 * @param log
@@ -84,20 +98,28 @@ public class ArrangeAssociations
 	 */
 	public ArrangeAssociations(Set<RectangleObject> diagramObjects,
 			Set<LineAssociation> diagramAssocs, ArrayList<Statement> stats, Integer gid,
-			Boolean batch, Boolean log) throws ConversionException, InternalException,
-			CannotFindAssociationRouteException, UnknownStatementException
+			Integer corridor, Boolean batch, Boolean log) throws ConversionException,
+			InternalException, CannotFindAssociationRouteException,
+			UnknownStatementException
 	{
+		// Nothing to arrange
+		if (diagramAssocs == null || diagramAssocs.size() == 0)
+			return;
+		
 		_gId = gid;
 		_batching = batch;
 		_logging = log;
-		
-		if (diagramAssocs == null || diagramAssocs.size() == 0 || diagramAssocs == null
-				|| diagramAssocs.size() == 0)
-			return;
+		_corridorPercent = corridor;
 		
 		_widthOfObjects = 1;
 		
+		// Emit Event
+		ProgressManager.getEmitter().OnLinkArrangeStart();
+		
 		arrange(diagramObjects, diagramAssocs, stats);
+		
+		// Emit Event
+		ProgressManager.getEmitter().OnLinkArrangeEnd();
 	}
 	
 	private void arrange(Set<RectangleObject> par_objects,
@@ -214,12 +236,15 @@ public class ArrangeAssociations
 	private Set<RectangleObject> defaultGrid(Integer k, Set<RectangleObject> objs)
 	{
 		Set<RectangleObject> result = new HashSet<RectangleObject>();
-		_widthOfObjects = ((k % 2 == 0) ? (k + 1) : k) + 2;
+		_widthOfObjects = k + 2;
 		
 		for (RectangleObject o : objs)
 		{
 			RectangleObject mod = new RectangleObject(o);
-			mod.setPosition(Point.Multiply(o.getPosition(), 2 * _widthOfObjects));
+			mod.setPosition(Point.Multiply(
+					o.getPosition(),
+					2 + (int) Math.floor((double) k * ((double) _corridorPercent / 100.0)
+							* 2.0)));
 			mod.setWidth(_widthOfObjects);
 			result.add(mod);
 		}
@@ -251,7 +276,7 @@ public class ArrangeAssociations
 		{
 			RectangleObject mod = new RectangleObject(o);
 			mod.setPosition(Point.Multiply(mod.getPosition(), 2));
-			mod.setWidth(((mod.getWidth() - 1) * 2) + 1);
+			mod.setWidth(mod.getWidth() * 2);
 			result.add(mod);
 		}
 		
@@ -374,15 +399,6 @@ public class ArrangeAssociations
 		if (_possibleStarts.containsKey(key))
 			result.addAll(_possibleStarts.get(key));
 		
-		// special case
-		if (result.size() == 0 && width == 1)
-		{
-			result.add(Point.Add(start, Direction.north));
-			result.add(Point.Add(start, Direction.east));
-			result.add(Point.Add(start, Direction.south));
-			result.add(Point.Add(start, Direction.west));
-		}
-		
 		// Add Object's points
 		RectangleObject tempObj = new RectangleObject("TEMP", start);
 		tempObj.setWidth(width);
@@ -398,41 +414,42 @@ public class ArrangeAssociations
 		
 		if (isReflexive)
 		{
-			Point northern = Point.Add(start, new Point(0, (width - 1) / 2));
+			Integer halfway = ((width % 2) == 0) ? ((width / 2) - 1) : ((width - 1) / 2);
+			Point northern = Point.Add(start, new Point(halfway, 0));
 			result.removeIf(p -> p.getY().equals(northern.getY())
-					&& Point.isInTheDirection(northern, p, Direction.east));
+					&& p.getX() > northern.getX());
 			
-			Point eastern = Point.Add(start, new Point((width - 1) / 2, 0));
+			Point eastern = Point.Add(tempObj.getBottomRight(), new Point(0, halfway));
 			result.removeIf(p -> p.getX().equals(eastern.getX())
-					&& Point.isInTheDirection(eastern, p, Direction.south));
+					&& p.getY() < eastern.getY());
 			
-			Point southern = Point.Add(start, new Point(0, -1 * (width - 1) / 2));
+			Point southern = Point.Add(tempObj.getBottomRight(), new Point(-1 * halfway,
+					0));
 			result.removeIf(p -> p.getY().equals(southern.getY())
-					&& Point.isInTheDirection(southern, p, Direction.west));
+					&& p.getX() < southern.getX());
 			
-			Point western = Point.Add(start, new Point(-1 * (width - 1) / 2, 0));
+			Point western = Point.Add(start, new Point(0, -1 * halfway));
 			result.removeIf(p -> p.getX().equals(western.getX())
-					&& Point.isInTheDirection(western, p, Direction.north));
+					&& p.getY() > western.getY());
 		}
 		
-		Set<Point> result2 = new HashSet<Point>();
-		for (Point p : result)
-		{
-			result2.add(Point.Add(p, Point.directionOf(p, start)));
-		}
-		// Remove occupied points
-		result2.removeIf(p -> occupied.contains(p));
-		
-		return convertToNodes(result2, start);
+		return convertToNodes(result, start, tempObj.getBottomRight());
 	}
 	
-	private Set<Node> convertToNodes(Set<Point> ps, Point center)
+	private Set<Node> convertToNodes(Set<Point> ps, Point topleft, Point bottomright)
 	{
 		Set<Node> result = new HashSet<Node>();
 		
 		for (Point p : ps)
 		{
-			result.add(new Node(center, p));
+			if (topleft.getX().equals(p.getX()))
+				result.add(new Node(p, Point.Add(p, Direction.west)));
+			else if (topleft.getY().equals(p.getY()))
+				result.add(new Node(p, Point.Add(p, Direction.north)));
+			else if (bottomright.getX().equals(p.getX()))
+				result.add(new Node(p, Point.Add(p, Direction.east)));
+			else if (bottomright.getY().equals(p.getY()))
+				result.add(new Node(p, Point.Add(p, Direction.south)));
 		}
 		
 		return result;
@@ -443,49 +460,59 @@ public class ArrangeAssociations
 	{
 		Set<Point> result = _possibleStarts.get(key);
 		
-		RectangleObject temp = new RectangleObject("TEMP", end);
-		temp.setWidth(width);
+		RectangleObject tempObj = new RectangleObject("TEMP", end);
+		tempObj.setWidth(width);
 		
 		if (result == null || result.size() == 0)
 		{
 			result = new HashSet<Point>();
-			result.addAll(temp.getPerimiterPoints());
+			result.addAll(tempObj.getPerimiterPoints());
 		}
 		
 		// Other link's points
 		result.removeIf(p -> occupied.contains(p));
 		// Corners
-		result.removeIf(p -> Helper.isCornerPoint(p, temp));
+		result.removeIf(p -> Helper.isCornerPoint(p, tempObj));
 		
 		if (isReflexive)
 		{
-			Point northern = Point.Add(end, new Point(0, (width - 1) / 2));
+			Integer halfway = ((width % 2) == 0) ? ((width / 2) - 1) : ((width - 1) / 2);
+			Point northern = Point.Add(end, new Point(halfway, 0));
 			result.removeIf(p -> p.getY().equals(northern.getY())
-					&& Point.isInTheDirection(northern, p, Direction.west));
+					&& p.getX() > northern.getX());
 			
-			Point eastern = Point.Add(end, new Point((width - 1) / 2, 0));
+			Point eastern = Point.Add(tempObj.getBottomRight(), new Point(0, halfway));
 			result.removeIf(p -> p.getX().equals(eastern.getX())
-					&& Point.isInTheDirection(eastern, p, Direction.north));
+					&& p.getY() < eastern.getY());
 			
-			Point southern = Point.Add(end, new Point(0, -1 * (width - 1) / 2));
+			Point southern = Point.Add(tempObj.getBottomRight(), new Point(-1 * halfway,
+					0));
 			result.removeIf(p -> p.getY().equals(southern.getY())
-					&& Point.isInTheDirection(southern, p, Direction.east));
+					&& p.getX() < southern.getX());
 			
-			Point western = Point.Add(end, new Point(-1 * (width - 1) / 2, 0));
+			Point western = Point.Add(end, new Point(0, -1 * halfway));
 			result.removeIf(p -> p.getX().equals(western.getX())
-					&& Point.isInTheDirection(western, p, Direction.south));
+					&& p.getY() > western.getY());
 		}
 		
-		return convertToInvertedNodes(result, end);
+		return convertToInvertedNodes(result, end, tempObj.getBottomRight());
 	}
 	
-	private Set<Node> convertToInvertedNodes(Set<Point> ps, Point center)
+	private Set<Node> convertToInvertedNodes(Set<Point> ps, Point topleft,
+			Point bottomright)
 	{
 		Set<Node> result = new HashSet<Node>();
 		
 		for (Point p : ps)
 		{
-			result.add(new Node(p, center));
+			if (topleft.getX().equals(p.getX()))
+				result.add(new Node(Point.Add(p, Direction.west), p));
+			else if (topleft.getY().equals(p.getY()))
+				result.add(new Node(Point.Add(p, Direction.north), p));
+			else if (bottomright.getX().equals(p.getX()))
+				result.add(new Node(Point.Add(p, Direction.east), p));
+			else if (bottomright.getY().equals(p.getY()))
+				result.add(new Node(Point.Add(p, Direction.south), p));
 		}
 		
 		return result;
@@ -545,46 +572,22 @@ public class ArrangeAssociations
 								.toLowerCase().equals("start")))
 				{
 					// RouteConfig.START
-					if (obj.getWidth() == 1)
-					{
-						Pair<String, RouteConfig> tempKey = new Pair<String, RouteConfig>(
-								link.getId(), RouteConfig.START);
-						HashSet<Point> tempSet = new HashSet<Point>();
-						tempSet.add(Point.Add(obj.getPosition(),
-								Helper.asDirection(s.getType())));
-						_possibleStarts.put(tempKey, tempSet);
-					}
-					else
-					{
-						Point startPoint = getStartingPoint(
-								Helper.asDirection(s.getType()), obj);
-						Direction moveDir = getMoveDirection(s.getType());
-						generatePossiblePoints(link, obj, startPoint, moveDir,
-								RouteConfig.START);
-					}
+					Point startPoint = getStartingPoint(Helper.asDirection(s.getType()),
+							obj);
+					Direction moveDir = getMoveDirection(s.getType());
+					generatePossiblePoints(link, obj, startPoint, moveDir,
+							RouteConfig.START);
 				}
 				if (link.getTo().equals(obj.getName())
 						&& (s.getParameters().size() == 2 || s.getParameter(2)
 								.toLowerCase().equals("end")))
 				{
 					// RouteConfig.END
-					if (obj.getWidth() == 1)
-					{
-						Pair<String, RouteConfig> tempKey = new Pair<String, RouteConfig>(
-								link.getId(), RouteConfig.END);
-						HashSet<Point> tempSet = new HashSet<Point>();
-						tempSet.add(Point.Add(obj.getPosition(),
-								Helper.asDirection(s.getType())));
-						_possibleStarts.put(tempKey, tempSet);
-					}
-					else
-					{
-						Point startPoint = getStartingPoint(
-								Helper.asDirection(s.getType()), obj);
-						Direction moveDir = getMoveDirection(s.getType());
-						generatePossiblePoints(link, obj, startPoint, moveDir,
-								RouteConfig.END);
-					}
+					Point startPoint = getStartingPoint(Helper.asDirection(s.getType()),
+							obj);
+					Direction moveDir = getMoveDirection(s.getType());
+					generatePossiblePoints(link, obj, startPoint, moveDir,
+							RouteConfig.END);
 				}
 			}
 			catch (NoSuchElementException e)
@@ -599,7 +602,7 @@ public class ArrangeAssociations
 			throws InternalException
 	{
 		if (dir.equals(Direction.north) || dir.equals(Direction.west))
-			return o.getTopLeft();
+			return o.getPosition();
 		else if (dir.equals(Direction.south) || dir.equals(Direction.east))
 			return o.getBottomRight();
 		else
@@ -726,7 +729,7 @@ public class ArrangeAssociations
 			
 			GraphSearch gs = new GraphSearch(STARTSET, ENDSET, OBJS, top, _batches.get(a
 					.getId()));
-			a.setRoute(convertFromNodes(gs.value()));
+			a.setRoute(convertFromNodes(gs.value(), START, END));
 			a.setExtends(gs.extendsNum());
 			
 			if (_logging)
@@ -754,13 +757,18 @@ public class ArrangeAssociations
 		}
 	}
 	
-	private ArrayList<Point> convertFromNodes(ArrayList<Node> nodes)
+	private ArrayList<Point> convertFromNodes(ArrayList<Node> nodes, Point start,
+			Point end)
 	{
 		ArrayList<Point> result = new ArrayList<Point>();
 		
+		result.add(start);
 		result.add(new Point(nodes.get(0).getFrom()));
-		result.add(new Point(Point.Add(nodes.get(0).getTo(), Direction.opposite(Point
-				.directionOf(nodes.get(0).getTo(), nodes.get(0).getFrom())))));
+		/*
+		 * result.add(new Point(Point.Add(nodes.get(0).getTo(),
+		 * Direction.opposite(Point
+		 * .directionOf(nodes.get(0).getTo(), nodes.get(0).getFrom())))));
+		 */
 		
 		for (int i = 1; i < nodes.size(); ++i)
 		{
@@ -768,6 +776,7 @@ public class ArrangeAssociations
 		}
 		
 		result.add(new Point(nodes.get(nodes.size() - 1).getTo()));
+		result.add(end);
 		
 		return result;
 	}

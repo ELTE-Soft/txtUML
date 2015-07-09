@@ -15,6 +15,11 @@ public class UnknownStatementException extends MyException
 	private static final long serialVersionUID = 1L;
 	
 	/**
+	 * Unknown statement string.
+	 */
+	public String Statement;
+	
+	/**
 	 * Create UnknownStatementException.
 	 */
 	public UnknownStatementException()
@@ -27,9 +32,12 @@ public class UnknownStatementException extends MyException
 	 * 
 	 * @param m
 	 *            Message of the exception.
+	 * @param str
+	 *            The string of the unknown statement.
 	 */
-	public UnknownStatementException(String m)
+	public UnknownStatementException(String m, String str)
 	{
 		super(m);
+		Statement = str;
 	}
 }

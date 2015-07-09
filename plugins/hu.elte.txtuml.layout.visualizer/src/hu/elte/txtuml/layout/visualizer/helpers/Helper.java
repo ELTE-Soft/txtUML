@@ -347,8 +347,16 @@ public class Helper
 	 */
 	public static Boolean isCornerPoint(Point p, RectangleObject obj)
 	{
-		return Math.abs(p.getX() - obj.getPosition().getX()) == Math.abs(p.getY()
-				- obj.getPosition().getY());
+		if (p.equals(obj.getPosition())
+				|| p.equals(Point.Add(obj.getPosition(),
+						Point.Multiply(Direction.east, obj.getWidth() - 1)))
+				|| p.equals(Point.Add(obj.getPosition(),
+						Point.Multiply(Direction.south, obj.getWidth() - 1)))
+				|| p.equals(obj.getBottomRight()))
+		{
+			return true;
+		}
+		
+		return false;
 	}
-	
 }
