@@ -8,6 +8,10 @@ import hu.elte.txtuml.export.utils.Dialogs;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -66,20 +70,28 @@ public class PapyrusVisualizer {
 	/**
 	 * Executes the visualization process. 
 	 * Creates the project (if not exists) and sets up the Papyrus Model
+	 * @param monitor 
+	 * @return 
 	 */
-	public void run() {
+	public IStatus run(IProgressMonitor monitor) {
+		monitor.beginTask("Visualization", 100);
+		
+		monitor.subTask("Creating new Papyrus project...");
 		IProject project = ProjectUtils.createProject(Projectname);
 		ProjectUtils.openProject(project);
-		createPapyrusProject();
+		monitor.worked(20);
+		
+		createPapyrusProject(new SubProgressMonitor(monitor, 80));
+		return Status.OK_STATUS;
 	}
 	
 	/**
 	 * Creates a Papyrus Model in the opened project or handles the Exceptions 
 	 * with a messagebox.
 	 */
-	private void createPapyrusProject() {
+	private void createPapyrusProject(IProgressMonitor monitor) {
 		try {	
-			createAndOpenPapyrusModel();
+			createAndOpenPapyrusModel(monitor);
 		} catch (Exception e) {
 			Dialogs.errorMsgb("Error", e.toString(), e);
 		}
@@ -89,10 +101,13 @@ public class PapyrusVisualizer {
 	 * Creates the Papyrus Model and fills the diagrams.
 	 * If the Model already exists, then loads it.
 	 */
-	private void createAndOpenPapyrusModel(){
+	private void createAndOpenPapyrusModel(IProgressMonitor monitor){
+		monitor.beginTask("Generating Papyrus Model", 100);
 		papyrusModelCreator.init(Projectname+"/"+Modelname);
 		papyrusModelCreator.setUpUML(SourceUMLPath);
 		if(!papyrusModelCreator.diExists()){
+			
+			monitor.subTask("Generating Papyrus model...");
 			papyrusModelCreator.createPapyrusModel();
 			IMultiDiagramEditor editor = (IMultiDiagramEditor) openEditor(papyrusModelCreator.getDi());
 			if(this.layoutDescriptor instanceof TxtUMLLayoutDescriptor){
@@ -100,12 +115,14 @@ public class PapyrusVisualizer {
 			}else{
 				papyrusModelManager = new PapyrusDefaultModelManager(editor);
 			}
+			monitor.worked(10);
 			
-			papyrusModelManager.createAndFillDiagrams();
+			papyrusModelManager.createAndFillDiagrams(new SubProgressMonitor(monitor, 90));
 		}else{
 			Dialogs.MessageBox("Loading Model", "A Papyrus model with this name already exists in this Project. It'll be loaded");
 			papyrusModelCreator.loadPapyrusModel();
 			openEditor(papyrusModelCreator.getDi());
+			monitor.worked(100);
 		}
 	}
 

@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationMultiplicitySourceEditPart;
@@ -29,7 +30,9 @@ public class ClassDiagramElementsGmfArranger extends AbstractDiagramElementsGmfA
 	 * @see hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger#arrange()
 	 */
 	@Override
-	public void arrange() {
+	public void arrange(IProgressMonitor monitor) {
+		monitor.beginTask("Arrange", 1);
+		monitor.subTask("Arranging elements...");
 		super.arrangeChildren(this.diagep);
 		@SuppressWarnings("unchecked")
 		List<EditPart> listEp = this.diagep.getChildren();
@@ -38,6 +41,7 @@ public class ClassDiagramElementsGmfArranger extends AbstractDiagramElementsGmfA
 				AssociationMultiplicityTargetEditPart.class,
 				AssociationMultiplicitySourceEditPart.class
 				));
+		monitor.worked(1);
 	}
 	
 }

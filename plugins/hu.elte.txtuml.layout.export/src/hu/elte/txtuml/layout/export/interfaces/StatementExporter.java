@@ -2,7 +2,6 @@ package hu.elte.txtuml.layout.export.interfaces;
 
 import hu.elte.txtuml.layout.export.elementinfo.NodeGroupInfo;
 import hu.elte.txtuml.layout.export.impl.StatementExporterImpl;
-import hu.elte.txtuml.layout.export.problems.ProblemReporter;
 import hu.elte.txtuml.layout.lang.statements.Above;
 import hu.elte.txtuml.layout.lang.statements.Below;
 import hu.elte.txtuml.layout.lang.statements.BottomMost;
@@ -41,8 +40,8 @@ import hu.elte.txtuml.layout.lang.statements.containers.WestContainer;
  */
 public interface StatementExporter {
 
-    static StatementExporter create(ElementExporter elementExporter, ProblemReporter problemReporter) {
-        return new StatementExporterImpl(elementExporter, problemReporter);
+    static StatementExporter create(ElementExporter elementExporter) {
+        return new StatementExporterImpl(elementExporter);
     }
 
     StatementList getStatements();

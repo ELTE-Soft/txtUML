@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
@@ -31,11 +32,14 @@ public class StateMachineDiagramElementsGmfArranger extends
 	 * @see hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger#arrange()
 	 */
 	@Override
-	public void arrange() {
+	public void arrange(IProgressMonitor monitor) {
+		monitor.beginTask("Arrange", 1);
+		monitor.subTask("Arranging elements...");
 		CustomStateMachineEditPart stateMachineEP = (CustomStateMachineEditPart) diagep.getChildren().get(0);
 		super.resizeGraphicalEditPart(stateMachineEP, 400, 200);
 		arrange_recurively(stateMachineEP);
 		arrange_and_resize_recursively(stateMachineEP);
+		monitor.worked(1);
 	}
 	
 	/**

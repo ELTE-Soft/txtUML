@@ -4,7 +4,9 @@ import hu.elte.txtuml.export.papyrus.DiagramManager;
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.ui.IEditorPart;
 
@@ -48,20 +50,22 @@ public abstract class AbstractPapyrusModelManager {
 
 	/**
 	 * Creates the diagrams and adds the elements to them
+	 * @param monitor - The monitor that listens the progress
 	 */
-	public void createAndFillDiagrams(){
-		createDiagrams();	
-		addElementsToDiagrams();
+	public void createAndFillDiagrams(IProgressMonitor monitor){
+		monitor.beginTask("Generating Diagrams", 100);
+		createDiagrams(new SubProgressMonitor(monitor, 20));	
+		addElementsToDiagrams(new SubProgressMonitor(monitor, 80));
 		this.editor.doSave(new NullProgressMonitor());
 	}
 
 	/**
 	 * Adds the elements to the diagrams
 	 */
-	protected abstract void addElementsToDiagrams();
+	protected abstract void addElementsToDiagrams(IProgressMonitor monitor);
 
 	/**
 	 * Creates the Papyrus Diagrams for every suitable element of the Model
 	 */
-	protected abstract void createDiagrams();
+	protected abstract void createDiagrams(IProgressMonitor monitor);
 }

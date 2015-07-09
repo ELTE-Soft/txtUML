@@ -20,7 +20,6 @@ import hu.elte.txtuml.layout.export.interfaces.LinkMap;
 import hu.elte.txtuml.layout.export.interfaces.NodeGroupMap;
 import hu.elte.txtuml.layout.export.interfaces.NodeList;
 import hu.elte.txtuml.layout.export.interfaces.NodeMap;
-import hu.elte.txtuml.layout.export.problems.ProblemReporter;
 import hu.elte.txtuml.layout.lang.elements.LayoutAbstractNode;
 import hu.elte.txtuml.layout.lang.elements.LayoutElement;
 import hu.elte.txtuml.layout.lang.elements.LayoutGroup;
@@ -56,12 +55,10 @@ public class ElementExporterImpl implements ElementExporter {
 	private final LinkGroupMap linkGroups;
 	private final NodeList phantoms;        // internal & user defined phantoms
 	private final LinkList generalizations; // separate container since the lack of element class
-	private final ProblemReporter problemReporter;
-	private final Set<Class<? extends LayoutElement>> failedGroups;
 	
 	private AtomicLong phantomCounter = new AtomicLong(0);
 
-	public ElementExporterImpl(ProblemReporter problemReporter) {
+	public ElementExporterImpl() {
 	    this.nodes = NodeMap.create();
 	    this.links = LinkMap.create();
 	    this.nodeGroups = NodeGroupMap.create();
@@ -69,9 +66,22 @@ public class ElementExporterImpl implements ElementExporter {
 	    this.phantoms = NodeList.create();
 	    this.generalizations = LinkList.create();
 	    this.diagramType = DiagramType.Class;
-	    this.problemReporter = problemReporter;
-	    this.failedGroups = new HashSet<Class<? extends LayoutElement>>();
 	}
+	
+	// unused constructors
+    // TODO check if additional constructors are needed
+	
+	/*public ElementExporterImpl(NodeMap nodes, LinkMap links, NodeGroupMap nodeGroups, LinkGroupMap linkGroups) {
+		this(nodes, links, nodeGroups, linkGroups, DiagramType.Unknown);
+	}
+
+	public ElementExporterImpl(NodeMap nodes, LinkMap links, NodeGroupMap nodeGroups, LinkGroupMap linkGroups, DiagramType type) {
+		this.nodes = nodes;
+		this.links = links;
+		this.nodeGroups = nodeGroups;
+		this.linkGroups = linkGroups;
+		this.diagramType = type;
+	}*/
 	
 	@Override
 	public DiagramType getDiagramTypeBasedOnElements() {
@@ -121,11 +131,7 @@ public class ElementExporterImpl implements ElementExporter {
 	
 	@Override
 	public ElementInfo exportElement(Class<? extends LayoutElement> elementClass) {
-        if (failedGroups.contains(elementClass)) {
-            return ElementInfo.createInvalid(elementClass);
-        }
-	    
-	    ElementInfo info;
+        ElementInfo info;
 
         info = nodes.get(elementClass);
         if (info != null) {
@@ -140,7 +146,7 @@ public class ElementExporterImpl implements ElementExporter {
         info = nodeGroups.get(elementClass);
         if (info != null) {
             if (info.asNodeGroupInfo().beingExported()) {
-                problemReporter.selfContainment(elementClass);
+                // TODO show error
                 return ElementInfo.createInvalid(elementClass);
             }
             
@@ -150,7 +156,7 @@ public class ElementExporterImpl implements ElementExporter {
         info = linkGroups.get(elementClass);
         if (info != null) {
             if (info.asLinkGroupInfo().beingExported()) {
-                problemReporter.selfContainment(elementClass);
+                // TODO show error
                 return ElementInfo.createInvalid(elementClass);
             }
             
@@ -186,8 +192,8 @@ public class ElementExporterImpl implements ElementExporter {
 	}
 
 	@Override
-	public ElementInfo exportNonGroupElement(Class<? extends LayoutNonGroupElement> elementClass) {	    
-	    ElementInfo info;
+	public ElementInfo exportNonGroupElement(Class<? extends LayoutNonGroupElement> elementClass) {
+		ElementInfo info;
 
 		info = nodes.get(elementClass);
 		if (info != null) {
@@ -219,16 +225,12 @@ public class ElementExporterImpl implements ElementExporter {
 	
     @Override
     public ElementInfo exportGroupElement(Class<? extends LayoutGroup> elementClass) {
-        if (failedGroups.contains(elementClass)) {
-            return ElementInfo.createInvalid(elementClass);
-        }
-        
         ElementInfo info;
 
         info = nodeGroups.get(elementClass);
         if (info != null) {
             if (info.asNodeGroupInfo().beingExported()) {
-                problemReporter.selfContainment(elementClass);
+                // TODO show error
                 return ElementInfo.createInvalid(elementClass);
             }
             
@@ -238,7 +240,7 @@ public class ElementExporterImpl implements ElementExporter {
         info = linkGroups.get(elementClass);
         if (info != null) {
             if (info.asLinkGroupInfo().beingExported()) {
-                problemReporter.selfContainment(elementClass);
+                // TODO show error
                 return ElementInfo.createInvalid(elementClass);
             }
             
@@ -260,7 +262,7 @@ public class ElementExporterImpl implements ElementExporter {
 
 	@Override
 	public ElementInfo exportNode(Class<? extends LayoutNode> nodeClass) {
-	    ElementInfo info;
+		ElementInfo info;
 
 		info = nodes.get(nodeClass);
 		if (info != null) {
@@ -294,16 +296,12 @@ public class ElementExporterImpl implements ElementExporter {
     
     @Override
     public ElementInfo exportNodeGroup(Class<? extends LayoutNodeGroup> nodeGroupClass) {
-        if (failedGroups.contains(nodeGroupClass)) {
-            return ElementInfo.createInvalid(nodeGroupClass);
-        }
-        
         ElementInfo info;
 
         info = nodeGroups.get(nodeGroupClass);
         if (info != null) {
             if (info.asNodeGroupInfo().beingExported()) {
-                problemReporter.selfContainment(nodeGroupClass);
+                // TODO show error
                 return ElementInfo.createInvalid(nodeGroupClass);
             }
             
@@ -320,16 +318,12 @@ public class ElementExporterImpl implements ElementExporter {
 
     @Override
     public ElementInfo exportLinkGroup(Class<? extends LayoutLinkGroup> linkGroupClass) {
-        if (failedGroups.contains(linkGroupClass)) {
-            return ElementInfo.createInvalid(linkGroupClass);
-        }
-        
         ElementInfo info;
 
         info = linkGroups.get(linkGroupClass);
         if (info != null) {
             if (info.asLinkGroupInfo().beingExported()) {
-                problemReporter.selfContainment(linkGroupClass);
+                // TODO show error
                 return ElementInfo.createInvalid(linkGroupClass);
             }
             
@@ -378,9 +372,8 @@ public class ElementExporterImpl implements ElementExporter {
                 }
            
             } else {
-                problemReporter.invalidAnonGroup(abstractNodes, abstractNode);
+                // TODO show error
                 return ElementInfo.createInvalid(null);
-                
             }
         }
 
@@ -422,7 +415,6 @@ public class ElementExporterImpl implements ElementExporter {
 					asString(cls), exportNode(p.getKey()).asNodeInfo(),
 					exportNode(p.getValue()).asNodeInfo());
 			links.put((Class<? extends LayoutLink>) cls, info);
-			
 			return info;
 		}
 		// TODO add more diag types
@@ -436,17 +428,10 @@ public class ElementExporterImpl implements ElementExporter {
 	        nodeGroups.put((Class<? extends LayoutNodeGroup>) cls, info);
 	        info.setBeingExported(true);
 	        
-	        boolean containsAnnotPresent = false;
             for (Annotation annot : cls.getAnnotations()) {
                 if (isOfType(Contains.class, annot)) {
-                    containsAnnotPresent = true;
                     
-                    Contains containsAnnot = (Contains) annot;
-                    if (containsAnnot.value().length == 0) {
-                        problemReporter.emptyGroup(cls);
-                    }
-                    
-                    for (Class<? extends LayoutElement> containedClass : containsAnnot.value()) {
+                    for (Class<? extends LayoutElement> containedClass : cls.getAnnotation(Contains.class).value()) {
                         ElementInfo innerInfo = exportElement(containedClass);
                         ElementType innerType = innerInfo.getType();
                         
@@ -459,10 +444,7 @@ public class ElementExporterImpl implements ElementExporter {
                             }
                             
                         } else {
-                            failedGroups.add(cls);
-                            problemReporter.invalidGroup(cls, containedClass);
-                            return ElementInfo.createInvalid(cls).asNodeGroupInfo();
-                            
+                            // TODO show error
                         }
                     }
                     
@@ -470,13 +452,8 @@ public class ElementExporterImpl implements ElementExporter {
                     info.setAlignment(((Alignment) annot).value());
                 
                 } else {
-                    problemReporter.unknownAnnotationOnClass(annot, cls);
-                    
+                    // TODO show warning
                 }
-            }
-            
-            if (!containsAnnotPresent) {
-                problemReporter.groupWithoutContainsAnnotation(cls);
             }
 	        
             info.setBeingExported(false);
@@ -493,17 +470,10 @@ public class ElementExporterImpl implements ElementExporter {
             linkGroups.put((Class<? extends LayoutLinkGroup>) cls, info);
             info.setBeingExported(true);
             
-            boolean containsAnnotPresent = false;
             for (Annotation annot : cls.getAnnotations()) {
-                if (isOfType(Contains.class, annot)) {
-                    containsAnnotPresent = true;
-                    
-                    Contains containsAnnot = (Contains) annot;
-                    if (containsAnnot.value().length == 0) {
-                        problemReporter.emptyGroup(cls);
-                    }
-                    
-                    for (Class<? extends LayoutElement> containedClass : containsAnnot.value()) {
+                
+                if (isOfType(Contains.class, annot)) {    
+                    for (Class<? extends LayoutElement> containedClass : cls.getAnnotation(Contains.class).value()) {
                         ElementInfo innerInfo = exportElement(containedClass);
                         ElementType innerType = innerInfo.getType();
                         
@@ -516,19 +486,13 @@ public class ElementExporterImpl implements ElementExporter {
                             }
                             
                         } else {
-                            failedGroups.add(cls);
-                            problemReporter.invalidGroup(cls, containedClass);
-                            return ElementInfo.createInvalid(cls).asLinkGroupInfo();
+                            // TODO show error
                         }
                     }
                     
                 } else {
-                    problemReporter.unknownAnnotationOnClass(annot, cls);
+                    // TODO show warning
                 }
-            }
-            
-            if (!containsAnnotPresent) {
-                problemReporter.groupWithoutContainsAnnotation(cls);
             }
             
             info.setBeingExported(false);
