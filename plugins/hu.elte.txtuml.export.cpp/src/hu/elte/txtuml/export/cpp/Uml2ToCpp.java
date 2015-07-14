@@ -44,7 +44,7 @@ public class Uml2ToCpp
 	private static final String RuntimeFolder=GenerationTemplates.RuntimePath;
 	private static final String RuntimeCppFileLocation=CppFileLocation+RuntimeFolder;
 	private static final String RuntimeLibName="libsmrt.a";
-	private static final String DefaultMakeFileName="make";
+	private static final String DefaultMakeFileName="Makefile";
 	private static final String DefaultModelName="main";
 	
 	
@@ -233,7 +233,7 @@ public class Uml2ToCpp
 					"runtime:\n\t$(CC) -Wall -c "+RuntimeFolder+"runtime.cpp "+RuntimeFolder+"statemachineI.cpp "+RuntimeFolder+"threadpool.cpp -std=c++11";
 		}
 		
-		Shared.writeOutSource(path_, makefileName_+".makefile", makeFile);
+		Shared.writeOutSource(path_, makefileName_, makeFile);
 	}
 
 	private static String createEventSource(EList<Element> elements_)

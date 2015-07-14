@@ -51,7 +51,7 @@ public class ClassExporter
 	private Map<String,Pair<String,String>> _exitMap;//<name,<state,func>>
 	private Map<String,Pair<String,Region>> _submachineMap;// <stateName,<machinename,behavior>>
 	private List<String> _subSubMachines;
-	private enum FuncTypeEnum {Entry,Exit}
+	private enum FuncTypeEnum {Entry,Exit};
 	
 	public ClassExporter()
 	{

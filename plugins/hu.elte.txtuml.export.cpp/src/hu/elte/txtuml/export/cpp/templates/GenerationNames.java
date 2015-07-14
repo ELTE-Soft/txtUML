@@ -122,6 +122,7 @@ class GenerationNames
 					"{\n"+
 						"if((it->second).first(*this,"+EventFParamName+"))//Guard call\n"+
 						"{\n"+
+							ExitName+"();\n"+
 							"(it->second).second(*this,"+EventFParamName+");//Action Call\n"+
 							"handled=true;\n"+
 							"break;\n"+
@@ -134,14 +135,13 @@ class GenerationNames
 	
 	public static String SimpleSetStateDef(String className_)
 	{ 
-		return NoReturn+" "+className_+"::"+setStateFuncName+"(int "+GenerationNames.StateParamName+"){"+ExitName+"();"+CurrentStateName+"="+GenerationNames.StateParamName+";"+EntryName+"();}\n";
+		return NoReturn+" "+className_+"::"+setStateFuncName+"(int "+GenerationNames.StateParamName+"){"+CurrentStateName+"="+GenerationNames.StateParamName+";"+EntryName+"();}\n";
 	}
 	
 	public static String HierachicalSetStateDef(String className_)
 	{ 
 		return NoReturn+" "+className_+"::"+setStateFuncName+"(int "+GenerationNames.StateParamName+")\n"+
 				"{\n"+
-					ExitName+"();\n"+
 					"auto it="+CompositeStateMapName+".find("+GenerationNames.StateParamName+");\n"+
 					"if(it!="+CompositeStateMapName+".end())\n"+
 					"{\n"+

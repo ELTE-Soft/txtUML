@@ -358,7 +358,7 @@ public class ActivityExport
 		}
 		else if(node_.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION))
 		{
-			source=_objectMap.get(node_);
+			source=_objectMap.get((CreateObjectAction)node_);
 		}
 		else if(node_.eClass().equals(UMLPackage.Literals.READ_SELF_ACTION))
 		{
