@@ -1,5 +1,5 @@
 Bundle-SymbolicName: hu.elte.txtuml.examples.train
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 0.1.1.qualifier
 Bundle-Name: hu.elte.txtuml.train
 Require-Bundle:  hu.elte.txtuml.api,
  hu.elte.txtuml.export.papyrus,

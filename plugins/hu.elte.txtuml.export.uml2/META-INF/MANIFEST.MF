@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: txtUML Export to UML2
 Bundle-SymbolicName: hu.elte.txtuml.export.uml2
-Bundle-Version: 0.1.0.qualifier
+Bundle-Version: 0.1.1.qualifier
 Bundle-Vendor: ELTE
 Export-Package: hu.elte.txtuml.export.uml2,
  hu.elte.txtuml.export.uml2.transform,

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Tests
 Bundle-SymbolicName: hu.elte.txtuml.export.papyrus.tests
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 0.1.1.qualifier
 Export-Package: hu.elte.txtuml.export.papyrus.elementsarrangers.tests,
  hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.tests
 Require-Bundle: org.eclipse.debug.ui,
