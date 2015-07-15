@@ -3,7 +3,6 @@ package hu.elte.txtuml.export.papyrus.handlers;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.IHandler;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
@@ -12,7 +11,7 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
  *
  * @author András Dobreff
  */
-public class PreferencesPageHandler extends AbstractHandler implements IHandler {
+public class PreferencesPageHandler extends AbstractHandler{
 
 	/**
 	 * Opens the perferences page 

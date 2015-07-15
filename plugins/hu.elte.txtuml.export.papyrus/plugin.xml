@@ -60,6 +60,7 @@
             allPopups="false"
             locationURI="menu:org.eclipse.ui.main.menu">
          <menu
+               id="hu.elte.txtuml.export.menu"
                label="txtUML">
             <command
                   commandId="hu.elte.txtuml.export.papyrus.txtUMLVisualize"

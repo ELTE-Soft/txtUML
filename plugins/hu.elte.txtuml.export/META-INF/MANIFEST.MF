@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: txtUML Export
+Bundle-SymbolicName: hu.elte.txtuml.export
+Bundle-Version: 0.1.1.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Vendor: ELTE
+Require-Bundle: org.eclipse.core.resources,
+ hu.elte.txtuml.eclipseutils,
+ hu.elte.txtuml.api,
+ hu.elte.txtuml.export.uml2,
+ hu.elte.txtuml.layout.export,
+ org.eclipse.emf.common
+Export-Package: hu.elte.txtuml.export

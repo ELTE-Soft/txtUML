@@ -5,7 +5,6 @@ import hu.elte.txtuml.export.papyrus.wizardz.UmlToPapyrusWizard;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.IHandler;
 import org.eclipse.jface.wizard.WizardDialog;
 
 /**
@@ -13,7 +12,7 @@ import org.eclipse.jface.wizard.WizardDialog;
  *
  * @author András Dobreff
  */
-public class WizardHandler extends AbstractHandler implements IHandler {
+public class WizardHandler extends AbstractHandler{
 	/**
 	 * Opens a UmlToPapyrus wizard
 	 */

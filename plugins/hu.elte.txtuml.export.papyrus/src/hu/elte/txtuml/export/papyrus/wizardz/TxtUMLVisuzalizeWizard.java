@@ -1,10 +1,10 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
+import hu.elte.txtuml.export.ExportUtils;
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLExporter;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
-import hu.elte.txtuml.export.uml2.UML2;
 import hu.elte.txtuml.export.utils.Dialogs;
 
 import java.lang.reflect.InvocationTargetException;
@@ -93,11 +93,12 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 				        	monitor.beginTask("Visualization", 100);
 				        	
 				        	TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName, projectName,
-				        			folder, txtUMLModelName, txtUMLLayout, UML2.class.getClassLoader());
+				        			folder, txtUMLModelName, txtUMLLayout);
 				     		
 				        	monitor.subTask("Exporting txtUML Model to UML2 model...");
 				        	try{
-				        		exporter.exportTxtUMLModelToUML2();
+				        		ExportUtils.exportTxtUMLModelToUML2(txtUMLProjectName, txtUMLModelName,
+				        				txtUMLProjectName+"/"+folder);
 				        		monitor.worked(10);
 				    		} catch (Exception e) {
 				    			Dialogs.errorMsgb("txtUML export Error",

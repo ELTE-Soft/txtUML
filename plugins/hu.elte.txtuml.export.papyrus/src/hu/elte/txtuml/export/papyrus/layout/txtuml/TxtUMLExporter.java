@@ -1,14 +1,9 @@
 package hu.elte.txtuml.export.papyrus.layout.txtuml;
 
+import hu.elte.txtuml.export.ExportUtils;
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 import hu.elte.txtuml.export.papyrus.ProjectUtils;
-import hu.elte.txtuml.export.uml2.UML2;
-import hu.elte.txtuml.export.utils.ClassLoaderProvider;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
-import hu.elte.txtuml.layout.export.DiagramExporter;
-import hu.elte.txtuml.layout.lang.Diagram;
-
-import java.net.URLClassLoader;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -30,7 +25,6 @@ public class TxtUMLExporter {
 	private String targetProject;
 	private String umlFolder;
 	private String txtUMLModelName;
-	private ClassLoader parent;
 	private String txtUMLLayout;
 	
 	/**
@@ -43,30 +37,13 @@ public class TxtUMLExporter {
 	 * @param parent - the parent ClassLoader
 	 */
 	public TxtUMLExporter(String sourceProject, String targetProject, String umlFolder,
-			String txtUMLModelName, String txtUMLLayout, ClassLoader parent) {
+			String txtUMLModelName, String txtUMLLayout) {
 		
 		this.sourceProject = sourceProject;
 		this.targetProject = targetProject;
 		this.umlFolder = umlFolder;
 		this.txtUMLModelName = txtUMLModelName;
 		this.txtUMLLayout = txtUMLLayout;
-		this.parent = parent;
-	}
-	
-	/**
-	 * Calls the txtUML to UML2 exportation method
-	 * @throws Exception
-	 */
-	public void exportTxtUMLModelToUML2() throws Exception{
-		try(URLClassLoader loader = ClassLoaderProvider
-				.getClassLoaderForProject(this.sourceProject, parent)){
-			Class<?> txtUMLModelClass = loader.loadClass(this.txtUMLModelName);
-			String uri = URI.createPlatformResourceURI(
-					this.sourceProject + "/" + this.umlFolder, false).toString();
-			UML2.exportModel(txtUMLModelClass, uri);
-		}catch(Exception e){
-			throw e;
-		}
 	}
 	
 	/**
@@ -75,13 +52,10 @@ public class TxtUMLExporter {
 	 * @throws Exception
 	 */
 	public TxtUMLLayoutDescriptor exportTxtUMLLayout() throws Exception{
-		try (URLClassLoader loader = ClassLoaderProvider
-				.getClassLoaderForProject(this.sourceProject, parent)){
-			Class<?> txtUMLLayoutClass = loader.loadClass(this.txtUMLLayout);  
-	        @SuppressWarnings("unchecked")
-			DiagramExporter exporter= DiagramExporter.create((Class<? extends Diagram>) txtUMLLayoutClass); 
-	        DiagramExportationReport report = exporter.export();
-	        	
+		ExportUtils.exportTxtUMLLayout(this.sourceProject, txtUMLLayout);
+		
+		try {
+			DiagramExportationReport report = ExportUtils.exportTxtUMLLayout(sourceProject, txtUMLLayout);
 	        if(!report.isSuccessful()){
 	        	StringBuilder errorMessages = new StringBuilder("Errors occured during layout exportation:\n");
 	        	for(Object error : report.getErrors()){

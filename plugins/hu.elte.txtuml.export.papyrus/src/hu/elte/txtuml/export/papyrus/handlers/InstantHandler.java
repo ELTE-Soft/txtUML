@@ -7,7 +7,6 @@ import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -25,7 +24,7 @@ import org.eclipse.ui.progress.IProgressService;
  *
  * @author András Dobreff
  */
-public class InstantHandler extends AbstractHandler implements IHandler {
+public class InstantHandler extends AbstractHandler {
 	
 	/**
 	 * Collects the parameters and calls the {@link PapyrusVisualizer#run()}

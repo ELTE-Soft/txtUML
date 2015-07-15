@@ -22,13 +22,13 @@ Require-Bundle: org.eclipse.debug.ui,
  hu.elte.txtuml.layout.visualizer,
  hu.elte.txtuml.layout.export,
  hu.elte.txtuml.api,
- hu.elte.txtuml.export.uml2,
  hu.elte.txtuml.eclipseutils,
  org.eclipse.uml2.uml,
  hu.elte.txtuml.utils,
  org.eclipse.papyrus.uml.diagram.menu,
  org.eclipse.papyrus.editor,
- org.eclipse.papyrus.infra.gmfdiag.css
+ org.eclipse.papyrus.infra.gmfdiag.css,
+ hu.elte.txtuml.export
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: hu.elte.txtuml.export.papyrus,
