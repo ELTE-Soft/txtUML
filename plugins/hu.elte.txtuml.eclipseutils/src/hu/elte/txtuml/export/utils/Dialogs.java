@@ -14,6 +14,11 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.PlatformUI;
 
+/**
+ * 
+ *
+ * @author András Dobreff
+ */
 public class Dialogs {
 	/**
 	 * Opens an {@link Dialogs}
@@ -60,5 +65,11 @@ public class Dialogs {
 	 */
 	public static void MessageBox(String title, String body){
 		MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),title,body);
+	}
+	
+	public static boolean WarningConfirm(String title, String body){
+		MessageDialog dialog = new MessageDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+				title, null,  body, MessageDialog.WARNING, new String[] { "Yes", "No"}, 0);
+		return dialog.open() == 0;
 	}
 }

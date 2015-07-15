@@ -80,7 +80,18 @@ public class TxtUMLExporter {
 			Class<?> txtUMLLayoutClass = loader.loadClass(this.txtUMLLayout);  
 	        @SuppressWarnings("unchecked")
 			DiagramExporter exporter= DiagramExporter.create((Class<? extends Diagram>) txtUMLLayoutClass); 
-	        DiagramExportationReport report = exporter.export(); 
+	        DiagramExportationReport report = exporter.export();
+	        	
+	        if(!report.isSuccessful()){
+	        	StringBuilder errorMessages = new StringBuilder("Errors occured during layout exportation:\n");
+	        	for(Object error : report.getErrors()){
+	        		errorMessages.append(error).append(errorMessages);
+	        		errorMessages.append(System.lineSeparator());
+	        	}
+	        	errorMessages.append(System.lineSeparator()+"The exportation was't successfull.");
+	        	throw new LayoutExportException(errorMessages.toString());
+	        }
+	        
 	        return new TxtUMLLayoutDescriptor(this.txtUMLModelName, report);
 		} catch (Exception e) {
 			throw e;

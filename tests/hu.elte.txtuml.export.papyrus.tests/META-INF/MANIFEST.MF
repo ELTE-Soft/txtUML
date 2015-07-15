@@ -29,5 +29,6 @@ Require-Bundle: org.eclipse.debug.ui,
  org.eclipse.papyrus.uml.diagram.menu,
  org.eclipse.papyrus.editor,
  org.eclipse.papyrus.infra.gmfdiag.css,
+ org.junit,
  hu.elte.txtuml.export.papyrus
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

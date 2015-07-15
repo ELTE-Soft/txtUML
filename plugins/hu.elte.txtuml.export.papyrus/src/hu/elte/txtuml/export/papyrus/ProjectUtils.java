@@ -18,7 +18,6 @@ public class ProjectUtils {
 	 * @param name - The Name of the Project
 	 * @return Existing or created project
 	 */
-	
 	public static IProject createProject(String name){
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		final IProject project = root.getProject(name);

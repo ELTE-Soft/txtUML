@@ -76,7 +76,7 @@ public class PapyrusModelCreator {
 	 * sets the UML file of the papyrus model that will be created.
 	 * @param sourceUMLPath
 	 */
-	public void setUpUML( String sourceUMLPath){
+	public void setUpUML(String sourceUMLPath){
 		if(!umlFile.exists()){
 			setUpUMLFile(sourceUMLPath);
 		}
@@ -145,15 +145,12 @@ public class PapyrusModelCreator {
 	
 	/**
 	 * Loads a Papyrus Model 
+	 * @throws ModelMultiException 
 	 */
-	public void loadPapyrusModel(){
+	public void loadPapyrusModel() throws ModelMultiException{
 		ModelSet modelSet = getModelSet();
-		URI diPResURI = URI.createPlatformResourceURI(umlFilePath, true);
-		try{
-			modelSet.loadModels(diPResURI);
-		}catch(ModelMultiException e){
-			throw new RuntimeException(e);
-		}
+		URI diPResURI = URI.createPlatformResourceURI(diFilePath, true);
+		modelSet.loadModels(diPResURI);
 	}
 	
 	/**

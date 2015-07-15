@@ -2,19 +2,17 @@ package hu.elte.txtuml.export.papyrus;
 
 import java.util.List;
 
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.parts.IDiagramWorkbenchPart;
 import org.eclipse.gmf.runtime.notation.Diagram;
-import org.eclipse.gmf.runtime.notation.impl.ViewImpl;
 import org.eclipse.papyrus.commands.ICreationCommand;
-import org.eclipse.papyrus.commands.OpenDiagramCommand;
-import org.eclipse.papyrus.commands.wrappers.GMFtoEMFCommandWrapper;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.infra.core.resource.ModelSet;
+import org.eclipse.papyrus.infra.core.sasheditor.contentprovider.IPageManager;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
+import org.eclipse.papyrus.infra.core.services.ServicesRegistry;
+import org.eclipse.papyrus.infra.core.utils.ServiceUtils;
 import org.eclipse.papyrus.infra.gmfdiag.common.model.NotationUtils;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.uml2.uml.Element;
@@ -71,16 +69,12 @@ public class DiagramManager {
 	}
 	
 	/**
-	 * Gets the EObjects thats children is on the diagram 
+	 * Gets the {@link Element} that is the container of the diagram
 	 * @param diagram - The Diagram
 	 * @return Container of the diagram
 	 */
 	public Element getDiagramContainer(Diagram diagram){
-		openDiagram(diagram);
-		DiagramEditPart ep = getActiveDiagramEditPart();
-		ViewImpl mod = (ViewImpl) ep.getModel();
-		EObject element = mod.getElement();
-		return (Element) element;
+		return (Element) diagram.getElement();
 	}
 	
 	/**
@@ -88,9 +82,11 @@ public class DiagramManager {
 	 * @param diag - The diagram is to be opened
 	 */
 	public void openDiagram(Diagram diag){
+		this.editor.getActiveEditor(); //Some kind of magic, but has to be done at least once before selecting different diagrams
 		try{
-			TransactionalEditingDomain editingDomain = this.editor.getServicesRegistry().getService(TransactionalEditingDomain.class);
-			editingDomain.getCommandStack().execute(new GMFtoEMFCommandWrapper(new OpenDiagramCommand(editingDomain, diag)));
+			ServicesRegistry serviceRegistry = this.editor.getServicesRegistry();
+			IPageManager pageMngr = ServiceUtils.getInstance().getIPageManager(serviceRegistry);
+			pageMngr.selectPage(diag);
 		}catch(ServiceException e){
 			throw new RuntimeException(e);
 		}

@@ -13,10 +13,10 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
+import org.eclipse.papyrus.infra.core.resource.ModelMultiException;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -33,7 +33,6 @@ import org.eclipse.ui.part.FileEditorInput;
  * @see IWorkbenchWindowActionDelegate
  */
 public class PapyrusVisualizer {
-	private IWorkbenchWindow window;
 	private String Projectname;
 	private String Modelname;
 	private String SourceUMLPath;
@@ -53,7 +52,6 @@ public class PapyrusVisualizer {
 		this.Projectname = projectName;
 		this.Modelname = modelName;
 		this.SourceUMLPath = sourceUMLpath;
-		this.window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		this.papyrusModelCreator = new PapyrusModelCreator();
 		this.layoutDescriptor = layoutDescripton;
 	}
@@ -100,8 +98,9 @@ public class PapyrusVisualizer {
 	/**
 	 * Creates the Papyrus Model and fills the diagrams.
 	 * If the Model already exists, then loads it.
+	 * @throws ModelMultiException - If the loading of existing model fails
 	 */
-	private void createAndOpenPapyrusModel(IProgressMonitor monitor){
+	private void createAndOpenPapyrusModel(IProgressMonitor monitor) throws ModelMultiException{
 		monitor.beginTask("Generating Papyrus Model", 100);
 		papyrusModelCreator.init(Projectname+"/"+Modelname);
 		papyrusModelCreator.setUpUML(SourceUMLPath);
@@ -133,9 +132,9 @@ public class PapyrusVisualizer {
 	 * @return The EditorPart of the editor
 	 * @throws PartInitException
 	 */
-	private final IEditorPart openEditor(final IFile file){
+	public static final IEditorPart openEditor(final IFile file){
 			IEditorPart ed = null;
-			IWorkbenchPage page = window.getActivePage();
+			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 			if(page != null) {
 				try {
 					IEditorInput editorInput = new FileEditorInput(file);

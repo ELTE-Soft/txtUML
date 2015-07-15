@@ -4,6 +4,7 @@ import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLExporter;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.export.uml2.UML2;
 import hu.elte.txtuml.export.utils.Dialogs;
 
 import java.lang.reflect.InvocationTargetException;
@@ -72,8 +73,6 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		String projectName = modellnamesplit[modellnamesplit.length-1]+"_"+
 										layoutnamesplit[layoutnamesplit.length-1];
 		
-		
-		ClassLoader parentClassLoader = hu.elte.txtuml.export.uml2.UML2.class.getClassLoader();
 		preferncesManager.setValue(
 				PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT,
 				txtUMLProjectName);
@@ -84,9 +83,9 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 				PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT,
 				txtUMLLayout);
 		
-		IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
-		
 		try {
+			IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
+			
 			progressService.runInUI(
 					progressService,
 				      new IRunnableWithProgress() {
@@ -94,7 +93,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 				        	monitor.beginTask("Visualization", 100);
 				        	
 				        	TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName, projectName,
-				        			folder, txtUMLModelName, txtUMLLayout, parentClassLoader);
+				        			folder, txtUMLModelName, txtUMLLayout, UML2.class.getClassLoader());
 				     		
 				        	monitor.subTask("Exporting txtUML Model to UML2 model...");
 				        	try{
@@ -102,7 +101,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 				        		monitor.worked(10);
 				    		} catch (Exception e) {
 				    			Dialogs.errorMsgb("txtUML export Error",
-				    					e.getClass() + ":\n" + e.getMessage(), e);
+				    					e.getClass() + ":"+System.lineSeparator() + e.getMessage(), e);
 				    			monitor.done();
 				    			throw new InterruptedException();
 				    		}
@@ -112,12 +111,27 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 				     		TxtUMLLayoutDescriptor layoutDesriptor = null;
 				     		try{
 				     			layoutDesriptor = exporter.exportTxtUMLLayout();
+				     			
+				     			if(layoutDesriptor.report.getWarningCount() != 0){
+				     				StringBuilder warnings = new StringBuilder("Warnings:"+System.lineSeparator());
+				     				warnings.append(String.join(System.lineSeparator(), layoutDesriptor.report.getWarnings()));
+				     				warnings.append(System.lineSeparator()+System.lineSeparator()+"Do you want to continue?");
+				     				
+				     				if(!Dialogs.WarningConfirm("Warnings about layout description", warnings.toString())){
+					     				throw new InterruptedException();
+					     			}
+				     			}
+				     			
 				     			monitor.worked(5);
 				     		}catch(Exception e){
-				     			Dialogs.errorMsgb("txtUML layout export Error",
-				    					e.getClass() + ":\n" + e.getMessage(), e);
-				    			monitor.done();
-				    			throw new InterruptedException();
+				     			if(e instanceof InterruptedException){
+				     				throw (InterruptedException) e;
+				     			}else{
+					     			Dialogs.errorMsgb("txtUML layout export Error",
+					    					e.getClass() + ":"+System.lineSeparator() + e.getMessage(), e);
+					    			monitor.done();
+					    			throw new InterruptedException();
+				     			}
 				     		}
 				     		
 				     		try{
@@ -125,7 +139,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 					            pv.run(new SubProgressMonitor(monitor,85));
 				     		}catch(Exception e){
 				     			Dialogs.errorMsgb("txtUML visualization Error", e.getClass()
-				    					+ ":\n" + e.getMessage(), e);
+				    					+ ":"+System.lineSeparator() + e.getMessage(), e);
 				     			monitor.done();
 				     			throw new InterruptedException();
 				     		}

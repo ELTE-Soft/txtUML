@@ -4,6 +4,7 @@ import static org.junit.Assert.fail;
 import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
 import hu.elte.txtuml.export.papyrus.ProjectUtils;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsArranger;
+import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.PapyrusDefaultModelManager;
 import hu.elte.txtuml.utils.Pair;
 
@@ -61,6 +62,11 @@ import org.junit.Test;
 /**
  * Unit Tests for {@link AbstractDiagramElementsArranger}
  * @author András Dobreff
+ * 
+ * <p>
+ * <b>Attention:</b>
+ * This test should be run as a JUnit Plug-in test
+ * </p>
  */
 public class DiagramElementsArrangerTest {
 	
@@ -145,7 +151,7 @@ public class DiagramElementsArrangerTest {
 		try {
 			pmc.init(projectname+"/model");
 			pmc.createPapyrusModel();
-			
+			//System.out.println();
 			HashMap<String, org.eclipse.uml2.uml.Class> nodes = new  HashMap<String, org.eclipse.uml2.uml.Class>();
 			
 			IFile diFile = pmc.getDi(); 
@@ -163,7 +169,7 @@ public class DiagramElementsArrangerTest {
 			IModelCreationCommand creationCommand = categories.get("uml").getCommand();
 			creationCommand.createModel(modelSet);
 			
-			PapyrusDefaultModelManager manager = new PapyrusDefaultModelManager(editor);
+			AbstractPapyrusModelManager manager = new PapyrusDefaultModelManager(editor);
 			
 			EObject model = UmlUtils.getUmlModel().lookupRoot();
 			org.eclipse.uml2.uml.Package modelpackage = (org.eclipse.uml2.uml.Package) model;
@@ -207,6 +213,7 @@ public class DiagramElementsArrangerTest {
 			editor.doSave(new NullProgressMonitor());
 			
 		} catch (Throwable e) {
+			e.printStackTrace();
 			fail("Initialization Error");
 		}
 	}
@@ -303,7 +310,7 @@ public class DiagramElementsArrangerTest {
 		ClassEditPart classBEp = (ClassEditPart) eps.get(1);
 
 		@SuppressWarnings("unchecked")
-		List<ConnectionEditPart> conns = classAEp.getSourceConnections();
+		List<ConnectionEditPart> conns = classBEp.getSourceConnections();
 		ConnectionEditPart assoc = conns.get(0);
 		diagramElementsArranger.setConnectionAnchors(assoc, "(1, 0.5)", "(0, 0.5)");
 		
@@ -337,7 +344,7 @@ public class DiagramElementsArrangerTest {
 		ClassEditPart classAEp = (ClassEditPart) eps.get(0);
 
 		@SuppressWarnings("unchecked")
-		List<ConnectionEditPart> conns = classAEp.getSourceConnections();
+		List<ConnectionEditPart> conns = classAEp.getTargetConnections();
 		ConnectionEditPart assoc = conns.get(0);
 		
 		List<Point> bendpointslist = Arrays.asList(new Point(10, 10), new Point(150, 200), new Point(400, 300));
@@ -368,11 +375,20 @@ public class DiagramElementsArrangerTest {
 
 		@SuppressWarnings("unchecked")
 		List<ConnectionEditPart> connsA = classAEp.getSourceConnections();
-		ConnectionEditPart assoc1 = connsA.get(0);
+		Assert.assertTrue(connsA.size() == 0);
+		
+		@SuppressWarnings("unchecked")
+		List<ConnectionEditPart> connsB = classBEp.getSourceConnections();
+		
+		Assert.assertTrue(connsB.size() == 1);
+		ConnectionEditPart assoc1 = connsB.get(0);
 		
 		@SuppressWarnings("unchecked")
 		List<ConnectionEditPart> connsC = classCEp.getSourceConnections();
+		
+		Assert.assertTrue(connsB.size() == 1);
 		ConnectionEditPart assoc2 = connsC.get(0);
+		
 		
 		diagramElementsArranger
 			.hideConnectionLabelsForEditParts(Arrays.asList(classAEp, classBEp), Arrays.asList());
