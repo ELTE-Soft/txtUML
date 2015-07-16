@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
+import hu.elte.txtuml.export.papyrus.api.ElementsManagerUtils;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
 import java.util.Arrays;
@@ -99,7 +100,7 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 		for(java.lang.Class<?> type : types){
 			List<Element> listofTypes = modelManager.getElementsOfTypeFromList(elements, type);
 			if(!listofTypes.isEmpty()){
-				super.addElementsToEditpart(activityContentEditpart, listofTypes);
+				ElementsManagerUtils.addElementsToEditpart(activityContentEditpart, listofTypes);
 			}
 		}
 	}

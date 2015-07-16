@@ -27,6 +27,7 @@ import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.infra.gmfdiag.common.model.NotationUtils;
 import org.eclipse.papyrus.uml.diagram.clazz.CreateClassDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.statemachine.CreateStateMachineDiagramCommand;
+import org.eclipse.papyrus.uml.tools.model.UmlModel;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -70,9 +71,7 @@ public class DiagramManagerTest {
 		project = ProjectUtils.createProject(projectname);
 		ProjectUtils.openProject(project);
 		
-		PapyrusModelCreator pmc = new PapyrusModelCreator();
-		pmc.init(projectname+"/"+modelname);
-		
+		PapyrusModelCreator pmc = new PapyrusModelCreator(projectname+"/"+modelname);
 		
 		IProject sourceproject = ProjectUtils.createProject("sourceProject");
 		String modelFilename = "dummy";
@@ -91,14 +90,14 @@ public class DiagramManagerTest {
 		
 		IEditorInput editorInput = new FileEditorInput(diFile);
 		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		IEditorPart ed = null;
-		ed = IDE.openEditor(window.getActivePage(),
+		IEditorPart ed =  IDE.openEditor(window.getActivePage(),
 				editorInput, "org.eclipse.papyrus.infra.core.papyrusEditor", true);
 	
 		editor = (IMultiDiagramEditor) ed;
-		
 		diagramManager = new DiagramManager(editor);
-		modelManager = new UMLModelManager(editor);
+		UmlModel umlModel = (UmlModel) editor.getServicesRegistry().getService(ModelSet.class)
+											.getModel(UmlModel.MODEL_ID);
+		modelManager = new UMLModelManager(umlModel);
 	}
 	
 	private void cleanWorkspace() throws Exception {

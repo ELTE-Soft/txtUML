@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
+import org.eclipse.papyrus.uml.tools.model.UmlModel;
 import org.eclipse.ui.IEditorPart;
 
 /**
@@ -40,10 +41,11 @@ public abstract class AbstractPapyrusModelManager {
 	/**
 	 * The Constructor
 	 * @param editor - The Editor to which the PapyrusModelManager will be attached
+	 * @param model 
 	 */
-	public AbstractPapyrusModelManager(IMultiDiagramEditor editor){
+	public AbstractPapyrusModelManager(IMultiDiagramEditor editor, UmlModel model){
 		this.preferencesManager = new PreferencesManager();
-		this.modelManager = new UMLModelManager(editor);
+		this.modelManager = new UMLModelManager(model);
 		this.diagramManager = new DiagramManager(editor);
 		this.editor = editor;
 	}

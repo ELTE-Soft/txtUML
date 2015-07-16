@@ -33,7 +33,7 @@
             locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions">
          <command
                commandId="hu.elte.txtuml.export.papyrus.InstantCommand"
-               icon="icons/sample.png"
+               icon="icons/uml_papyrus.png"
                label="Generate diagrams from UML"
                style="push"
                tooltip="Generates Papyrus diagrams from the .uml file">
@@ -64,13 +64,13 @@
                label="txtUML">
             <command
                   commandId="hu.elte.txtuml.export.papyrus.txtUMLVisualize"
-                  icon="icons/sample.png"
+                  icon="icons/txtUML_papyrus.png"
                   label="Generate diagrams from txtUML"
                   style="push">
             </command>
             <command
                   commandId="hu.elte.txtuml.export.papyrus.WizardCommand"
-                  icon="icons/sample.png"
+                  icon="icons/uml_papyrus.png"
                   label="Generate diagrams from UML"
                   style="push">
             </command>

@@ -5,7 +5,7 @@ import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
 import hu.elte.txtuml.export.papyrus.ProjectUtils;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
-import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.PapyrusDefaultModelManager;
+import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;
 import hu.elte.txtuml.utils.Pair;
 
 import java.util.Arrays;
@@ -47,6 +47,7 @@ import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationNameEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassEditPart;
 import org.eclipse.papyrus.uml.diagram.wizards.category.DiagramCategoryDescriptor;
 import org.eclipse.papyrus.uml.diagram.wizards.category.DiagramCategoryRegistry;
+import org.eclipse.papyrus.uml.tools.model.UmlModel;
 import org.eclipse.papyrus.uml.tools.model.UmlUtils;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -147,9 +148,8 @@ public class DiagramElementsArrangerTest {
 		project = ProjectUtils.createProject(projectname);
 		ProjectUtils.openProject(project);
 		
-		PapyrusModelCreator pmc = new PapyrusModelCreator();
+		PapyrusModelCreator pmc = new PapyrusModelCreator(projectname+"/model");
 		try {
-			pmc.init(projectname+"/model");
 			pmc.createPapyrusModel();
 			//System.out.println();
 			HashMap<String, org.eclipse.uml2.uml.Class> nodes = new  HashMap<String, org.eclipse.uml2.uml.Class>();
@@ -168,8 +168,8 @@ public class DiagramElementsArrangerTest {
 			Map<String, DiagramCategoryDescriptor> categories = DiagramCategoryRegistry.getInstance().getDiagramCategoryMap();
 			IModelCreationCommand creationCommand = categories.get("uml").getCommand();
 			creationCommand.createModel(modelSet);
-			
-			AbstractPapyrusModelManager manager = new PapyrusDefaultModelManager(editor);
+			UmlModel umlModel = (UmlModel) modelSet.getModel(UmlModel.MODEL_ID);
+			AbstractPapyrusModelManager manager = new DefaultPapyrusModelManager(editor, umlModel);
 			
 			EObject model = UmlUtils.getUmlModel().lookupRoot();
 			org.eclipse.uml2.uml.Package modelpackage = (org.eclipse.uml2.uml.Package) model;

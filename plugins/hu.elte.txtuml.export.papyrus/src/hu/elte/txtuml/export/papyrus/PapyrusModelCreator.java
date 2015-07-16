@@ -1,10 +1,10 @@
 package hu.elte.txtuml.export.papyrus;
 
+import hu.elte.txtuml.export.Uml2Utils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-
-
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
@@ -16,11 +16,7 @@ import org.eclipse.emf.common.CommonPlugin;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.transaction.RecordingCommand;
-import org.eclipse.papyrus.infra.core.resource.ModelMultiException;
 import org.eclipse.papyrus.infra.core.resource.ModelSet;
 import org.eclipse.papyrus.infra.core.sasheditor.contentprovider.IPageManager;
 import org.eclipse.papyrus.infra.core.services.ExtensionServicesRegistry;
@@ -29,7 +25,6 @@ import org.eclipse.papyrus.infra.core.services.ServicesRegistry;
 import org.eclipse.papyrus.uml.diagram.wizards.category.NewPapyrusModelCommand;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Profile;
-import org.eclipse.uml2.uml.UMLPackage;
 
 /**
  * Controls the creation of a Papyrus Model
@@ -43,6 +38,18 @@ public class PapyrusModelCreator {
 	private String umlFilePath;
 	private ServicesRegistry registry;
 
+	/**
+	 * The Constructor
+	 * @param modelpath
+	 */
+	public PapyrusModelCreator(String modelpath){
+		diFilePath = modelpath+".di";
+		umlFilePath = modelpath+".uml";
+		
+		diFile = fileFromPath(diFilePath);
+		umlFile = fileFromPath(umlFilePath);
+	}
+	
 	/**
 	 * Checks if the .di file exists
 	 * @return Returns true if the .di exists
@@ -59,19 +66,6 @@ public class PapyrusModelCreator {
 		return diFile;
 	}
 
-	/**
-	 * Initializes the instance	
-	 * @param modelpath - The path of the Papyrus model (at the end is the name of the Papyrus model)
-	 * @param sourceUMLPath - The path of the source .uml File
-	 */
-	public void init(String modelpath){
-		diFilePath = modelpath+".di";
-		umlFilePath = modelpath+".uml";
-		
-		diFile = fileFromPath(diFilePath);
-		umlFile = fileFromPath(umlFilePath);
-	}
-	
 	/**
 	 * sets the UML file of the papyrus model that will be created.
 	 * @param sourceUMLPath
@@ -107,11 +101,7 @@ public class PapyrusModelCreator {
 	}
 	
 	private Model loadModel(URI uri) {
-		ResourceSetImpl RESOURCE_SET = new ResourceSetImpl();
-		Resource resource = RESOURCE_SET.getResource(uri, true);
-
-		Model model = (Model) EcoreUtil.getObjectByType(resource.getContents(), UMLPackage.Literals.MODEL);
-		return model;
+		return Uml2Utils.loadModel(uri);
 	}
 	
 	private void copyFile(String sourcepath, IFile newFile){
@@ -130,7 +120,7 @@ public class PapyrusModelCreator {
 	 * Creates an empty Papyrus Model
 	 */
 	public void createPapyrusModel(){
-		ModelSet modelSet = getModelSet();
+		ModelSet modelSet = createModelSet();
 		URI diPResURI =  URI.createPlatformResourceURI(diFilePath, true);
 		RecordingCommand command = new NewPapyrusModelCommand(modelSet, diPResURI);
 		modelSet.getTransactionalEditingDomain().getCommandStack().execute(command);
@@ -144,24 +134,12 @@ public class PapyrusModelCreator {
 	}
 	
 	/**
-	 * Loads a Papyrus Model 
-	 * @throws ModelMultiException 
-	 */
-	public void loadPapyrusModel() throws ModelMultiException{
-		ModelSet modelSet = getModelSet();
-		URI diPResURI = URI.createPlatformResourceURI(diFilePath, true);
-		modelSet.loadModels(diPResURI);
-	}
-	
-	/**
 	 * Gets the ModelSet
-	 * @return The ModelSet
 	 */
-	private ModelSet getModelSet(){
+	private ModelSet createModelSet(){
 		try{
 			registry = createServicesRegistry();
-			ModelSet modelSet = registry.getService(ModelSet.class);
-			return modelSet;
+			return registry.getService(ModelSet.class);
 		}catch(ServiceException e){
 			throw new RuntimeException(e);
 		}

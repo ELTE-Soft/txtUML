@@ -7,10 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
-import org.eclipse.papyrus.infra.core.resource.ModelSet;
 import org.eclipse.papyrus.infra.core.resource.NotFoundException;
-import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.uml.tools.model.UmlModel;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Package;
@@ -22,16 +19,15 @@ import org.eclipse.uml2.uml.Package;
  */
 public class UMLModelManager {
 	
-	private IMultiDiagramEditor editor;
+	private UmlModel model;
 	private MultiMap<Class<?>, Element> modelMap;
 	
 	/**
 	 * The Constructor.
-	 * @param editor - The editor to the instance will be attached.
+	 * @param model - The model to be handeled
 	 */
-	//TODO: It would be nicer if this class would get a UmlModel, not an Editor
-	public UMLModelManager(IMultiDiagramEditor editor){
-		this.editor = editor;
+	public UMLModelManager(UmlModel model){
+		this.model = model;
 		modelMap = buildUpMap();
 	}
 
@@ -63,16 +59,14 @@ public class UMLModelManager {
 
 
 	/**
-	 * Returns the root Element of the model
-	 * @return - Root element
+	 * Returns the root of the UML model
+	 * @return The root element
 	 */
 	public Element getRoot(){
 		try{
-			ModelSet modelSet = editor.getServicesRegistry().getService(ModelSet.class);
-			UmlModel umlModel = (UmlModel) modelSet.getModel(UmlModel.MODEL_ID);
-			Element root = (Element) umlModel.lookupRoot();
+			Element root = (Element) this.model.lookupRoot();
 			return root;
-		}catch(NotFoundException | ServiceException e){
+		}catch(NotFoundException e){
 			throw new RuntimeException(e);
 		}
 	}

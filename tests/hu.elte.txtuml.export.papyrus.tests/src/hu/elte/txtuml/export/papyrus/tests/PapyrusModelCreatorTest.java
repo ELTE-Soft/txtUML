@@ -3,7 +3,6 @@ package hu.elte.txtuml.export.papyrus.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
 import hu.elte.txtuml.export.papyrus.ProjectUtils;
 
@@ -19,7 +18,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.papyrus.infra.core.resource.ModelMultiException;
 import org.eclipse.papyrus.infra.gmfdiag.common.model.NotationModel;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.UMLFactory;
@@ -50,8 +48,7 @@ public class PapyrusModelCreatorTest {
 		project = ProjectUtils.createProject("TestProject");
 		ProjectUtils.openProject(project);
 		
-		creator = new PapyrusModelCreator();
-		creator.init(modelPath);
+		creator = new PapyrusModelCreator(modelPath);
 	}
 
 	
@@ -153,22 +150,4 @@ public class PapyrusModelCreatorTest {
 		assertEquals("test.di", Difile.getName());
 		assertEquals("test.notation", Notationfile.getName());
 	}
-
-	@Test
-	public void testLoadPapyrusModel() {
-		try{
-			creator.loadPapyrusModel();
-			fail("Should throw ModelMultiException");
-		}catch(Exception e){
-			assertTrue(e instanceof ModelMultiException);
-		}
-		
-		creator.createPapyrusModel();
-		try {
-			creator.loadPapyrusModel();
-		} catch (ModelMultiException e) {
-			fail("ModelMultiException is thrown: "+e.getMessage());
-		}
-	}
-
 }

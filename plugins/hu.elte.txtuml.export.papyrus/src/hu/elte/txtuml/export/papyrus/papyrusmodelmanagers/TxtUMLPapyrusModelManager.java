@@ -19,6 +19,7 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.uml.diagram.clazz.CreateClassDiagramCommand;
+import org.eclipse.papyrus.uml.tools.model.UmlModel;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Model;
 
@@ -27,17 +28,18 @@ import org.eclipse.uml2.uml.Model;
  *
  * @author András Dobreff
  */
-public class PapyrusTxtUMLModelManager extends AbstractPapyrusModelManager {
+public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 
 	private TxtUMLLayoutDescriptor descriptor;
 	
 	/**
 	 * @param editor
+	 * @param model 
 	 * @param descriptor 
 	 * @param report
 	 */
-	public PapyrusTxtUMLModelManager(IMultiDiagramEditor editor, TxtUMLLayoutDescriptor descriptor){
-		super(editor);
+	public TxtUMLPapyrusModelManager(IMultiDiagramEditor editor, UmlModel model, TxtUMLLayoutDescriptor descriptor){
+		super(editor, model);
 		this.descriptor = descriptor;
 	}
 

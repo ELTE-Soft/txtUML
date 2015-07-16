@@ -22,6 +22,7 @@ import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.uml.diagram.activity.CreateActivityDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.clazz.CreateClassDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.statemachine.CreateStateMachineDiagramCommand;
+import org.eclipse.papyrus.uml.tools.model.UmlModel;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Model;
@@ -33,14 +34,15 @@ import org.eclipse.uml2.uml.StateMachine;
  *
  * @author András Dobreff
  */
-public class PapyrusDefaultModelManager extends AbstractPapyrusModelManager{
+public class DefaultPapyrusModelManager extends AbstractPapyrusModelManager{
 	
 	/**
 	 * The Constructor
 	 * @param editor
+	 * @param model 
 	 */
-	public PapyrusDefaultModelManager(IMultiDiagramEditor editor){
-		super(editor);
+	public DefaultPapyrusModelManager(IMultiDiagramEditor editor, UmlModel model){
+		super(editor, model);
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package hu.elte.txtuml.export.papyrus.tests;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import hu.elte.txtuml.export.papyrus.ProjectUtils;
@@ -57,7 +56,6 @@ public class ProjectUtilsTest {
 	public void testOpenProject() {
 		ProjectUtils.createProject("TestProject");
 		IProject p = root.getProject("TestProject");
-		assertFalse(p.isOpen());
 		ProjectUtils.openProject(p);
 		assertTrue(p.isOpen());
 	}

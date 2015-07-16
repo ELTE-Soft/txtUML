@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
+import hu.elte.txtuml.export.papyrus.api.ElementsManagerUtils;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
 import java.util.Arrays;
@@ -80,8 +81,8 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 		View smModel = (View) stateMachineEditpart.getModel();
 		Element smElement = (Element) smModel.getElement();
 		
-		super.removeEditParts(diagramEditPart.getEditingDomain(), Arrays.asList(stateMachineEditpart));
-		super.addElementsToEditpart(diagramEditPart, Arrays.asList(smElement));
+		ElementsManagerUtils.removeEditParts(diagramEditPart.getEditingDomain(), Arrays.asList(stateMachineEditpart));
+		ElementsManagerUtils.addElementsToEditpart(diagramEditPart, Arrays.asList(smElement));
 		
 		stateMachineEditpart = (EditPart) diagramEditPart.getChildren().get(0);
 		fillState(stateMachineEditpart);
@@ -115,8 +116,8 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 		List<Element> nodes = modelManager.getElementsOfTypesFromList(list, elementsToBeAdded);
 		List<Element> transitions = modelManager.getElementsOfTypesFromList(list, edgesToBeAdded);
 	
-		addElementsToEditpart(ep, nodes);
-		addElementsToEditpart(ep, transitions);
+		ElementsManagerUtils.addElementsToEditpart(ep, nodes);
+		ElementsManagerUtils.addElementsToEditpart(ep, transitions);
 
 		@SuppressWarnings("unchecked")
 		List<EditPart> subEPs = ep.getChildren();

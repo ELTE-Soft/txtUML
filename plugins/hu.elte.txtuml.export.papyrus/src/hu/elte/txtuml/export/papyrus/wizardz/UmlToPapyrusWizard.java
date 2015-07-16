@@ -7,7 +7,6 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.PlatformUI;
@@ -62,7 +61,6 @@ public class UmlToPapyrusWizard extends Wizard {
 	
 	
     PapyrusVisualizer pv = new PapyrusVisualizer(selectUmlPage.getProjectName(), getFileNameWithOutExtension(f), f.toURI().toString());
-	pv.run(new NullProgressMonitor());
 	IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
 	try {
 		progressService.runInUI(
@@ -74,8 +72,7 @@ public class UmlToPapyrusWizard extends Wizard {
 			      },
 			      ResourcesPlugin.getWorkspace().getRoot());
 	} catch (InvocationTargetException | InterruptedException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+		return false;
 	}
 	
     return true;

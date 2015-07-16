@@ -10,5 +10,7 @@ Require-Bundle: org.eclipse.core.resources,
  hu.elte.txtuml.api,
  hu.elte.txtuml.export.uml2,
  hu.elte.txtuml.layout.export,
- org.eclipse.emf.common
+ org.eclipse.emf.common,
+ org.eclipse.uml2.uml,
+ org.eclipse.uml2.uml.resources
 Export-Package: hu.elte.txtuml.export

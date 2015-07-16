@@ -1,6 +1,8 @@
 package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
+import hu.elte.txtuml.export.papyrus.api.ElementsController;
+import hu.elte.txtuml.export.papyrus.api.ElementsManagerUtils;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
 import java.util.Arrays;
@@ -14,6 +16,7 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.InterfaceEditPart;
+import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ModelEditPart;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Comment;
@@ -145,7 +148,7 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 		for(java.lang.Class<?> type : types){
 			List<Element> listofTypes = modelManager.getElementsOfTypeFromList(elements, type);
 			if(!listofTypes.isEmpty()){
-				super.addElementsToEditpart(diagramEditPart, listofTypes);
+				ElementsController.addElementsToClassDiagram((ModelEditPart) diagramEditPart, listofTypes);
 			}
 		}
 		
@@ -177,10 +180,10 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 		removeAssociationProperties(properties);
 		
 		EditPart parametersEp = parentEditParts.get(1);
-		addElementsToEditpart(parametersEp, properties);
+		ElementsManagerUtils.addElementsToEditpart(parametersEp, properties);
 	
 		EditPart methodsEp = parentEditParts.get(2);
-		addElementsToEditpart(methodsEp, methods);
+		ElementsManagerUtils.addElementsToEditpart(methodsEp, methods);
 	}
 	
 	/**

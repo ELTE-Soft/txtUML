@@ -32,6 +32,7 @@ Require-Bundle: org.eclipse.debug.ui,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: hu.elte.txtuml.export.papyrus,
+ hu.elte.txtuml.export.papyrus.api,
  hu.elte.txtuml.export.papyrus.elementsarrangers,
  hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout,
  hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout,
