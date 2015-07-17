@@ -1,6 +1,5 @@
 package hu.elte.txtuml.layout.visualizer.exceptions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,7 +18,7 @@ public class BoxOverlapConflictException extends MyException
 	/**
 	 * Gets or sets the Statement that caused conflict.
 	 */
-	public ArrayList<String> OverlappingBoxes;
+	public List<String> OverlappingBoxes;
 	
 	/**
 	 * Create ConflictException.
@@ -41,8 +40,8 @@ public class BoxOverlapConflictException extends MyException
 	 */
 	public BoxOverlapConflictException(List<String> s)
 	{
-		super();
-		OverlappingBoxes = (ArrayList<String>) s;
+		super("The layout of the following overlapping boxes could not be resolved!");
+		OverlappingBoxes = s;
 	}
 	
 	/**
@@ -56,6 +55,6 @@ public class BoxOverlapConflictException extends MyException
 	public BoxOverlapConflictException(List<String> s, String m)
 	{
 		super(m);
-		OverlappingBoxes = (ArrayList<String>) s;
+		OverlappingBoxes = s;
 	}
 }

@@ -3,6 +3,7 @@ package hu.elte.txtuml.layout.visualizer.model;
 import hu.elte.txtuml.layout.visualizer.helpers.Helper;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /***
  * Class representing a link in a diagram. The abstract model consists of the
@@ -19,7 +20,7 @@ public class LineAssociation
 	private String _from;
 	private String _to;
 	private AssociationType _type;
-	private ArrayList<Point> _route;
+	private List<Point> _route;
 	private Integer _turns;
 	private Integer _extends;
 	
@@ -112,11 +113,11 @@ public class LineAssociation
 	/**
 	 * Getter for a simplyfied route. (Removed straight points)
 	 * 
-	 * @return ArrayList of points.
+	 * @return List of points.
 	 */
-	public ArrayList<Point> getMinimalRoute()
+	public List<Point> getMinimalRoute()
 	{
-		ArrayList<Point> result = new ArrayList<Point>();
+		List<Point> result = new ArrayList<Point>();
 		
 		result.add(_route.get(1));
 		
@@ -140,9 +141,9 @@ public class LineAssociation
 	/***
 	 * Getter for the Link's Route of Points.
 	 * 
-	 * @return ArrayList of Points.
+	 * @return List of Points.
 	 */
-	public ArrayList<Point> getRoute()
+	public List<Point> getRoute()
 	{
 		return _route;
 	}
@@ -205,9 +206,9 @@ public class LineAssociation
 	 * Setter for modifying the route of the link.
 	 * 
 	 * @param value
-	 *            ArrayList of Points of the route.
+	 *            List of Points of the route.
 	 */
-	public void setRoute(ArrayList<Point> value)
+	public void setRoute(List<Point> value)
 	{
 		_route = Helper.clonePointList(value);
 		_turns = -1;

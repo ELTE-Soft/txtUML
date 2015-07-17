@@ -7,12 +7,14 @@ import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
 import hu.elte.txtuml.layout.visualizer.exceptions.StatementsConflictException;
+import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
@@ -36,10 +38,10 @@ public class StatementHelper
 	 *            the {@link LineAssociation}s to check.
 	 * @return the {@link Statement}s defined on {@link LineAssociation}s.
 	 */
-	public static ArrayList<Statement> splitAssocs(ArrayList<Statement> stats,
+	public static List<Statement> splitAssocs(List<Statement> stats,
 			Set<LineAssociation> assocs)
 	{
-		return (ArrayList<Statement>) stats
+		return stats
 				.stream()
 				.filter(s -> isAssocType(s.getType())
 						&& isAssocParams(s.getParameters(), assocs))
@@ -66,10 +68,9 @@ public class StatementHelper
 	 *             Throws if something bad happens, but it should not be allowed
 	 *             to happen.
 	 */
-	public static boolean checkTypes(ArrayList<Statement> stats,
-			ArrayList<Statement> astats, Set<RectangleObject> objs,
-			Set<LineAssociation> assocs) throws StatementTypeMatchException,
-			InternalException
+	public static boolean checkTypes(List<Statement> stats, List<Statement> astats,
+			Set<RectangleObject> objs, Set<LineAssociation> assocs)
+			throws StatementTypeMatchException, InternalException
 	{
 		// Check Object Statement Types
 		for (Statement s : stats)
@@ -114,7 +115,7 @@ public class StatementHelper
 		return false;
 	}
 	
-	private static boolean isAssocParams(ArrayList<String> p, Set<LineAssociation> as)
+	private static boolean isAssocParams(List<String> p, Set<LineAssociation> as)
 	{
 		return as.stream().anyMatch(a -> a.getId().equals(p.get(0)));
 	}
@@ -131,10 +132,10 @@ public class StatementHelper
 	 * @throws StatementsConflictException
 	 *             Throws if a direct conflict is found in the user statements.
 	 */
-	public static ArrayList<Statement> reduceAssocs(ArrayList<Statement> stats)
+	public static List<Statement> reduceAssocs(List<Statement> stats)
 			throws ConversionException, StatementsConflictException
 	{
-		ArrayList<Statement> result = new ArrayList<Statement>();
+		List<Statement> result = new ArrayList<Statement>();
 		
 		// Link name, End name, Direction value
 		HashMap<Pair<String, String>, Direction> tempObj = new HashMap<Pair<String, String>, Direction>();
@@ -210,7 +211,7 @@ public class StatementHelper
 	 *            list of {@link Statement}s to search in.
 	 * @return a {@link Set} of the names of phantom objects/boxes.
 	 */
-	public static Set<String> extractPhantoms(ArrayList<Statement> stats)
+	public static Set<String> extractPhantoms(List<Statement> stats)
 	{
 		return stats.stream().filter(s -> s.getType().equals(StatementType.phantom))
 				.map(s -> s.getParameter(0)).collect(Collectors.toSet());
@@ -282,8 +283,14 @@ public class StatementHelper
 	
 	/**
 	 * Returns a {@link Pair} of generated {@link Statement}s based on
-	 * {@link LineAssociation}s and the latest Group Id used.
+	 * {@link LineAssociation}s, {@link RectangleObject}s and the latest Group
+	 * Id used.
 	 * 
+	 * @param type
+	 *            type of the diagrams.
+	 * 
+	 * @param objs
+	 *            set of {@link RectangleObject}s to check.
 	 * @param assocs
 	 *            set of {@link LineAssociation}s to check.
 	 * @param par_gid
@@ -294,12 +301,28 @@ public class StatementHelper
 	 *             Throws if something bad happens, which is not allowed to
 	 *             happen.
 	 */
-	public static Pair<ArrayList<Statement>, Integer> transformAssocs(
+	public static Pair<List<Statement>, Integer> transformAssocs(DiagramType type,
+			Set<RectangleObject> objs, Set<LineAssociation> assocs, Integer par_gid)
+			throws InternalException
+	{
+		switch (type)
+		{
+			case Class:
+				return transformAssocs_ClassDiagram(assocs, par_gid);
+			case Activity:
+			case State:
+			default:
+				throw new InternalException("This diagram type is not supported");
+		}
+	}
+	
+	private static Pair<List<Statement>, Integer> transformAssocs_ClassDiagram(
 			Set<LineAssociation> assocs, Integer par_gid) throws InternalException
 	{
 		Integer gid = par_gid;
-		ArrayList<Statement> result = new ArrayList<Statement>();
-		HashMap<String, ArrayList<String>> generalizationMap = new HashMap<String, ArrayList<String>>();
+		List<Statement> result = new ArrayList<Statement>();
+		
+		HashMap<String, List<String>> generalizationMap = new HashMap<String, List<String>>();
 		
 		for (LineAssociation a : assocs)
 		{
@@ -308,13 +331,13 @@ public class StatementHelper
 				case generalization:
 					if (generalizationMap.containsKey(a.getFrom()))
 					{
-						ArrayList<String> temp = generalizationMap.get(a.getFrom());
+						List<String> temp = generalizationMap.get(a.getFrom());
 						temp.add(a.getTo());
 						generalizationMap.put(a.getFrom(), temp);
 					}
 					else
 					{
-						ArrayList<String> temp = new ArrayList<String>();
+						List<String> temp = new ArrayList<String>();
 						temp.add(a.getTo());
 						generalizationMap.put(a.getFrom(), temp);
 					}
@@ -334,7 +357,7 @@ public class StatementHelper
 		}
 		
 		// Arrange generalization children
-		for (Entry<String, ArrayList<String>> entry : generalizationMap.entrySet())
+		for (Entry<String, List<String>> entry : generalizationMap.entrySet())
 		{
 			if (entry.getValue().size() > 1)
 			{
@@ -367,7 +390,7 @@ public class StatementHelper
 					entry.getKey(), entry.getValue().get(index)));
 		}
 		
-		return new Pair<ArrayList<Statement>, Integer>(result, gid);
+		return new Pair<List<Statement>, Integer>(result, gid);
 	}
 	
 	/**

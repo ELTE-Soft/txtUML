@@ -18,6 +18,7 @@ import hu.elte.txtuml.layout.visualizer.model.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 /**
@@ -48,7 +49,7 @@ class GraphSearch
 	private Set<Integer> _batches;
 	
 	private Graph<Node> G;
-	private Set<Node> Nyilt;
+	private PriorityQueue<Node> AvailableNodes;
 	private Cost<Node> g;
 	private Parent<Node> PI;
 	
@@ -99,7 +100,7 @@ class GraphSearch
 		
 		G = new Graph<Node>();
 		
-		Nyilt = new HashSet<Node>();
+		AvailableNodes = new PriorityQueue<Node>((x, y) -> nodeComparator(x, y));
 		
 		g = new Cost<Node>();
 		
@@ -110,7 +111,7 @@ class GraphSearch
 		{
 			PI.set(p, null);
 			g.set(p, 2 * _weightLength);
-			Nyilt.add(p);
+			AvailableNodes.add(p);
 		}
 		
 		if (!search())
@@ -127,10 +128,11 @@ class GraphSearch
 	{
 		while (true)
 		{
-			if (Nyilt.isEmpty())
+			if (AvailableNodes.isEmpty())
 				return false;
 			
-			Node n = minf();
+			Node n = AvailableNodes.poll();
+			// Node n = minf();
 			
 			if (_endSet.stream().anyMatch(node -> node.getFrom().equals(n.getTo())))
 			{
@@ -142,7 +144,7 @@ class GraphSearch
 				return true;
 			}
 			
-			Nyilt.remove(n);
+			// AvailableNodes.remove(n);
 			
 			++_extends;
 			for (Pair<Node, Double> pair : Gamma(n))
@@ -153,7 +155,7 @@ class GraphSearch
 				{
 					PI.set(m, n);
 					g.set(m, newCost);
-					Nyilt.add(m);
+					AvailableNodes.add(m);
 				}
 				G.addNode(m);
 				G.addLink(new Link<Node>(n, m));
@@ -161,12 +163,18 @@ class GraphSearch
 		}
 	}
 	
+	private Integer nodeComparator(Node a, Node b)
+	{
+		return Double.compare(f(a), f(b));
+	}
+	
+	@SuppressWarnings("unused")
 	private Node minf()
 	{
 		Node min = null;
 		Double minval = Double.MAX_VALUE;
 		
-		for (Node p : Nyilt)
+		for (Node p : AvailableNodes)
 		{
 			Double f = f(p);
 			if (f < minval)
@@ -193,9 +201,10 @@ class GraphSearch
 		if (_heuristic.containsKey(p))
 			return _heuristic.get(p);
 		
-		Double distance = (double) manhattanDistance(p);
-		Double remainingTurns = (double) manhattanLeastTurns(p);
-		Double result = (_weightTurns * remainingTurns + _weightLength * distance);
+		Pair<Double, Node> distance = manhattanDistance(p);
+		Double remainingTurns = manhattanLeastTurns(p);
+		// manhattanLeastTurnsCheckingOccupied(p, distance.Second);
+		Double result = (_weightTurns * remainingTurns + _weightLength * distance.First);
 		
 		_heuristic.put(p, result);
 		
@@ -204,22 +213,24 @@ class GraphSearch
 	
 	// Metrics
 	
-	private Integer manhattanDistance(Node a)
+	private Pair<Double, Node> manhattanDistance(Node a)
 	{
-		return (int) Math.floor(_endSet.stream().map(p ->
+		Pair<Integer, Node> result = _endSet.stream().map(p ->
 		{
 			Integer dx = Math.abs(a.getTo().getX() - p.getFrom().getX());
 			Integer dy = Math.abs(a.getTo().getY() - p.getFrom().getY());
 			Integer tempResult = dx + dy;
 			
-			return tempResult;
-		}).min((d1, d2) ->
+			return new Pair<Integer, Node>(tempResult, p);
+		}).min((p1, p2) ->
 		{
-			return Integer.compare(d1, d2);
-		}).get());
+			return Integer.compare(p1.First, p2.First);
+		}).get();
+		
+		return new Pair<Double, Node>((double) result.First, result.Second);
 	}
 	
-	private Integer manhattanLeastTurns(Node a)
+	private Double manhattanLeastTurns(Node a)
 	{
 		Node closest = _endSet.stream().map(p ->
 		{
@@ -236,107 +247,104 @@ class GraphSearch
 		if (!closest.getTo().getX().equals(a.getTo().getX())
 				&& !closest.getTo().getY().equals(a.getTo().getY()))
 		{
-			return 1;
+			return 1.0;
 		}
 		
-		return 0;
+		return 0.0;
 	}
 	
 	@SuppressWarnings("unused")
-	private Integer manhattanLeastTurnsCheckingOccupied(Node a)
+	private Double manhattanLeastTurnsCheckingOccupied(Node from, Node to)
 	{
 		Integer min = Integer.MAX_VALUE;
 		
-		for (Node endnode : _endSet)
+		Point ending = to.getTo();
+		double dx = Math.abs(from.getTo().getX() - ending.getX());
+		double sx = ending.getX() - from.getTo().getX();
+		double dy = Math.abs(from.getTo().getY() - ending.getY());
+		double sy = ending.getY() - from.getTo().getY();
+		Integer resultF = 0;
+		Integer resultB = 0;
+		
+		if (dx > 0 && dy > 0)
 		{
-			Point ending = endnode.getFrom();
-			double dx = Math.abs(a.getTo().getX() - ending.getX());
-			double sx = ending.getX() - a.getTo().getX();
-			double dy = Math.abs(a.getTo().getY() - ending.getY());
-			double sy = ending.getY() - a.getTo().getY();
-			Integer resultF = 0;
-			Integer resultB = 0;
-			
-			if (dx > 0 && dy > 0)
-			{
-				++resultF;
-				++resultB;
-			}
-			
-			// elejérõl és végérõl nézzük egyszerre a két külön utat
-			// X tengely mentén
-			Point tempF = new Point(a.getTo());
-			Point tempB = new Point(ending);
-			for (int i = 0; i < dx; ++i)
-			{
-				if (sx > 0)
-				{
-					tempF = Point.Add(tempF, Direction.east);
-					tempB = Point.Add(tempF, Direction.west);
-				}
-				else if (sx < 0)
-				{
-					tempF = Point.Add(tempF, Direction.west);
-					tempB = Point.Add(tempF, Direction.east);
-				}
-				
-				// tempF nem a vége és nem piros pont
-				// tempB nem az eleje és nem piros pont
-				Point tF = new Point(tempF);
-				if (resultF <= 1
-						&& !tempF.equals(ending)
-						&& (_objects.stream().anyMatch(pp -> pp.Color.equals(Colors.Red)
-								&& pp.Inner.equals(tF))))
-				{
-					resultF = resultF + _penalizeTurns;
-				}
-				Point tB = new Point(tempB);
-				if (resultB <= 1
-						&& !tempB.equals(a)
-						&& (_objects.stream().anyMatch(pp -> pp.Color.equals(Colors.Red)
-								&& pp.Inner.equals(tB))))
-				{
-					resultB = resultB + _penalizeTurns;
-				}
-			}
-			
-			// Y tengely mentén
-			for (int i = 0; i < dy; ++i)
-			{
-				if (sy > 0)
-				{
-					tempF = Point.Add(tempF, Direction.north);
-					tempB = Point.Add(tempB, Direction.south);
-				}
-				else if (sy < 0)
-				{
-					tempF = Point.Add(tempF, Direction.south);
-					tempB = Point.Add(tempB, Direction.north);
-				}
-				
-				Point tF = new Point(tempF);
-				if (resultF <= 1
-						&& !tempF.equals(ending)
-						&& (_objects.stream().anyMatch(pp -> pp.Color.equals(Colors.Red)
-								&& pp.Inner.equals(tF))))
-				{
-					resultF = resultF + _penalizeTurns;
-				}
-				Point tB = new Point(tempB);
-				if (resultB <= 1
-						&& !tempB.equals(a)
-						&& (_objects.stream().anyMatch(pp -> pp.Color.equals(Colors.Red)
-								&& pp.Inner.equals(tB))))
-				{
-					resultB = resultB + _penalizeTurns;
-				}
-			}
-			
-			Integer tempMin = Math.min(resultF, resultB);
-			min = Math.min(min, tempMin);
+			++resultF;
+			++resultB;
 		}
 		
-		return min;
+		// elejérõl és végérõl nézzük egyszerre a két külön utat
+		// X tengely mentén
+		Point tempF = new Point(from.getTo());
+		Point tempB = new Point(ending);
+		for (int i = 0; i < dx; ++i)
+		{
+			if (sx > 0)
+			{
+				tempF = Point.Add(tempF, Direction.east);
+				tempB = Point.Add(tempF, Direction.west);
+			}
+			else if (sx < 0)
+			{
+				tempF = Point.Add(tempF, Direction.west);
+				tempB = Point.Add(tempF, Direction.east);
+			}
+			
+			// tempF nem a vége és nem piros pont
+			// tempB nem az eleje és nem piros pont
+			Point tF = new Point(tempF);
+			if (resultF <= 1
+					&& !tempF.equals(ending)
+					&& (_objects.stream().anyMatch(pp -> pp.Color.equals(Colors.Red)
+							&& pp.Inner.equals(tF))))
+			{
+				resultF = resultF + _penalizeTurns;
+			}
+			Point tB = new Point(tempB);
+			if (resultB <= 1
+					&& !tempB.equals(from)
+					&& (_objects.stream().anyMatch(pp -> pp.Color.equals(Colors.Red)
+							&& pp.Inner.equals(tB))))
+			{
+				resultB = resultB + _penalizeTurns;
+			}
+		}
+		
+		// Y tengely mentén
+		for (int i = 0; i < dy; ++i)
+		{
+			if (sy > 0)
+			{
+				tempF = Point.Add(tempF, Direction.north);
+				tempB = Point.Add(tempB, Direction.south);
+			}
+			else if (sy < 0)
+			{
+				tempF = Point.Add(tempF, Direction.south);
+				tempB = Point.Add(tempB, Direction.north);
+			}
+			
+			Point tF = new Point(tempF);
+			if (resultF <= 1
+					&& !tempF.equals(ending)
+					&& (_objects.stream().anyMatch(pp -> pp.Color.equals(Colors.Red)
+							&& pp.Inner.equals(tF))))
+			{
+				resultF = resultF + _penalizeTurns;
+			}
+			Point tB = new Point(tempB);
+			if (resultB <= 1
+					&& !tempB.equals(from)
+					&& (_objects.stream().anyMatch(pp -> pp.Color.equals(Colors.Red)
+							&& pp.Inner.equals(tB))))
+			{
+				resultB = resultB + _penalizeTurns;
+			}
+		}
+		
+		Integer tempMin = Math.min(resultF, resultB);
+		min = Math.min(min, tempMin);
+		
+		return (double) min;
 	}
 	
 	// end Metrics

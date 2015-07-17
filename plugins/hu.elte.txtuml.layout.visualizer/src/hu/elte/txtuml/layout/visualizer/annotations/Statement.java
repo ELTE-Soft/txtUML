@@ -297,7 +297,7 @@ public class Statement
 	public Statement(Statement s)
 	{
 		this._type = s._type;
-		this._parameters = Helper.cloneStringList(s._parameters);
+		this._parameters = (ArrayList<String>) Helper.cloneStringList(s._parameters);
 		this._level = s._level;
 		this._group = s._group;
 	}

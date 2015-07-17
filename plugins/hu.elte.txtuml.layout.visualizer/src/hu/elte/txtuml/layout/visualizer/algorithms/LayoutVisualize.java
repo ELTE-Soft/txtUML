@@ -17,12 +17,15 @@ import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
 import hu.elte.txtuml.layout.visualizer.helpers.Helper;
 import hu.elte.txtuml.layout.visualizer.helpers.Pair;
 import hu.elte.txtuml.layout.visualizer.helpers.StatementHelper;
+import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
+import hu.elte.txtuml.layout.visualizer.model.OverlapArrangeMode;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Observer;
 import java.util.Optional;
 import java.util.Set;
@@ -48,16 +51,15 @@ public class LayoutVisualize
 	 * Statements which arrange.
 	 * Later the statements on the objects.
 	 */
-	private ArrayList<Statement> _statements;
+	private List<Statement> _statements;
 	/***
 	 * Statements on links.
 	 */
-	private ArrayList<Statement> _assocStatements;
+	private List<Statement> _assocStatements;
 	
 	/**
 	 * The type of the diagram to arrange.
 	 */
-	@SuppressWarnings("unused")
 	private DiagramType _diagramType;
 	/**
 	 * Whether to allow batching of links during link arrange or not.
@@ -70,7 +72,7 @@ public class LayoutVisualize
 	/**
 	 * Whether to arrange overlapping elements or not.
 	 */
-	private Boolean _arrangeOverlaps;
+	private OverlapArrangeMode _arrangeOverlaps;
 	
 	private Integer _corridorPercent;
 	
@@ -99,7 +101,7 @@ public class LayoutVisualize
 	 * 
 	 * @return List of Statements on objects.
 	 */
-	public ArrayList<Statement> getStatements()
+	public List<Statement> getStatements()
 	{
 		return _statements;
 	}
@@ -109,7 +111,7 @@ public class LayoutVisualize
 	 * 
 	 * @return List of Statements on links.
 	 */
-	public ArrayList<Statement> getAssocStatements()
+	public List<Statement> getAssocStatements()
 	{
 		return _assocStatements;
 	}
@@ -152,7 +154,7 @@ public class LayoutVisualize
 	 * @param value
 	 *            Whether to enable or disable this feature.
 	 */
-	public void setArrangeOverlaps(Boolean value)
+	public void setArrangeOverlaps(OverlapArrangeMode value)
 	{
 		_arrangeOverlaps = value;
 	}
@@ -207,7 +209,7 @@ public class LayoutVisualize
 		_objects = null;
 		_assocs = null;
 		_batching = false;
-		_arrangeOverlaps = true;
+		_arrangeOverlaps = OverlapArrangeMode.one;
 		_logging = false;
 		_corridorPercent = 100;
 	}
@@ -314,8 +316,8 @@ public class LayoutVisualize
 	private Integer transformAssocsIntoStatements(Integer maxGroupId)
 			throws InternalException
 	{
-		Pair<ArrayList<Statement>, Integer> tempPair = StatementHelper.transformAssocs(
-				_assocs, maxGroupId);
+		Pair<List<Statement>, Integer> tempPair = StatementHelper.transformAssocs(
+				_diagramType, _objects, _assocs, maxGroupId);
 		_statements.addAll(tempPair.First);
 		return tempPair.Second;
 	}
@@ -335,9 +337,10 @@ public class LayoutVisualize
 	
 	private Integer addDefaultStatements(Integer maxGroupId) throws InternalException
 	{
-		DefaultStatements ds = new DefaultStatements(_objects, _assocs, _statements,
-				maxGroupId);
+		DefaultStatements ds = new DefaultStatements(_diagramType, _objects, _assocs,
+				_statements, maxGroupId);
 		_statements.addAll(ds.value());
+		
 		return ds.getGroupId();
 	}
 	

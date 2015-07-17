@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.algorithms;
+package hu.elte.txtuml.layout.visualizer.model;
 
 /**
  * Enumeration representing the diagram's type we want to layout.

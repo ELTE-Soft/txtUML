@@ -2,7 +2,7 @@ package hu.elte.txtuml.layout.visualizer.exceptions;
 
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Exception indicating that conflicts were detected as a result of the user
@@ -20,7 +20,7 @@ public class BoxArrangeConflictException extends MyException
 	/**
 	 * Gets or sets the Statement that caused conflict.
 	 */
-	public ArrayList<Statement> ConflictStatements;
+	public List<Statement> ConflictStatements;
 	
 	/**
 	 * Create ConflictException.
@@ -40,7 +40,7 @@ public class BoxArrangeConflictException extends MyException
 	 * @param s
 	 *            Statement that caused conflict.
 	 */
-	public BoxArrangeConflictException(ArrayList<Statement> s)
+	public BoxArrangeConflictException(List<Statement> s)
 	{
 		super();
 		ConflictStatements = s;
@@ -54,7 +54,7 @@ public class BoxArrangeConflictException extends MyException
 	 * @param m
 	 *            Message to show.
 	 */
-	public BoxArrangeConflictException(ArrayList<Statement> s, String m)
+	public BoxArrangeConflictException(List<Statement> s, String m)
 	{
 		super(m);
 		ConflictStatements = s;

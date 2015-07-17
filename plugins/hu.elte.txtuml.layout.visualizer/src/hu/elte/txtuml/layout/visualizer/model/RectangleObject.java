@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * The class that represents an object in a diagram.
+ * The class that represents a box in a diagram.
  * 
  * @author Balázs Gregorics
  */
@@ -23,9 +23,9 @@ public class RectangleObject
 	// Getters, setters
 	
 	/***
-	 * Getter for the name of the object.
+	 * Getter for the name of the {@link RectangleObject}.
 	 * 
-	 * @return Name of the object.
+	 * @return Name of the {@link RectangleObject}.
 	 */
 	public String getName()
 	{
@@ -33,9 +33,9 @@ public class RectangleObject
 	}
 	
 	/***
-	 * Getter for the top-left position of the object.
+	 * Getter for the top-left position of the {@link RectangleObject}.
 	 * 
-	 * @return Point of the object.
+	 * @return top-left position of the {@link RectangleObject}.
 	 */
 	public Point getPosition()
 	{
@@ -43,9 +43,10 @@ public class RectangleObject
 	}
 	
 	/***
-	 * Getter for the area that the object covers.
+	 * Getter for the area that the {@link RectangleObject} covers.
 	 * 
-	 * @return Set of Points about the area the object occupies.
+	 * @return Set of {@link Point}s about the area the {@link RectangleObject}
+	 *         occupies.
 	 */
 	public Set<Point> getPoints()
 	{
@@ -56,7 +57,7 @@ public class RectangleObject
 		for (int i = 0; i < _width; ++i)
 		{
 			Point temp = Point.Add(_position, Point.Multiply(Direction.east, i));
-			for (int j = 1; j < _width; ++j)
+			for (int j = 0; j < _width; ++j)
 			{
 				result.add(Point.Add(temp, Point.Multiply(Direction.south, j)));
 			}
@@ -66,7 +67,8 @@ public class RectangleObject
 	}
 	
 	/**
-	 * Returns all the points on the perimiter of the {@link RectangleObject}.
+	 * Returns all the {@link Point}s on the perimiter of the
+	 * {@link RectangleObject}.
 	 * 
 	 * @return Set of {@link Point}s.
 	 */

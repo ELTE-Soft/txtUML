@@ -1,9 +1,9 @@
 package hu.elte.txtuml.layout.visualizer.helpers;
 
-import hu.elte.txtuml.layout.visualizer.algorithms.DiagramType;
 import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
+import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Point;
@@ -12,6 +12,7 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -51,9 +52,9 @@ public class Helper
 	 *            List of {@link Statement}s
 	 * @return The cloned list.
 	 */
-	public static ArrayList<Statement> cloneStatementList(ArrayList<Statement> toClone)
+	public static List<Statement> cloneStatementList(List<Statement> toClone)
 	{
-		ArrayList<Statement> result = new ArrayList<Statement>();
+		List<Statement> result = new ArrayList<Statement>();
 		
 		for (Statement s : toClone)
 		{
@@ -83,18 +84,18 @@ public class Helper
 	}
 	
 	/**
-	 * Method to clone a specific map. A map of String and ArrayList\<String\>.
+	 * Method to clone a specific map. A map of String and List\<String\>.
 	 * 
 	 * @param toClone
 	 *            The map to clone.
 	 * @return A completly cloned map.
 	 */
-	public static HashMap<String, ArrayList<String>> cloneMap(
-			HashMap<String, ArrayList<String>> toClone)
+	public static HashMap<String, List<String>> cloneMap(
+			HashMap<String, List<String>> toClone)
 	{
-		HashMap<String, ArrayList<String>> result = new HashMap<String, ArrayList<String>>();
+		HashMap<String, List<String>> result = new HashMap<String, List<String>>();
 		
-		for (Entry<String, ArrayList<String>> entry : toClone.entrySet())
+		for (Entry<String, List<String>> entry : toClone.entrySet())
 		{
 			result.put(new String(entry.getKey()), cloneStringList(entry.getValue()));
 		}
@@ -109,9 +110,9 @@ public class Helper
 	 *            The list to clone.
 	 * @return A completly cloned list.
 	 */
-	public static ArrayList<String> cloneStringList(ArrayList<String> toClone)
+	public static List<String> cloneStringList(List<String> toClone)
 	{
-		ArrayList<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<String>();
 		
 		for (String s : toClone)
 		{
@@ -128,9 +129,9 @@ public class Helper
 	 *            The list to clone.
 	 * @return A completly cloned list.
 	 */
-	public static ArrayList<Point> clonePointList(ArrayList<Point> toClone)
+	public static List<Point> clonePointList(List<Point> toClone)
 	{
-		ArrayList<Point> result = new ArrayList<Point>();
+		List<Point> result = new ArrayList<Point>();
 		
 		for (Point p : toClone)
 		{
@@ -147,10 +148,9 @@ public class Helper
 	 *            The list to clone.
 	 * @return A completly cloned list.
 	 */
-	public static ArrayList<LineAssociation> cloneLinkList(
-			ArrayList<LineAssociation> toClone)
+	public static List<LineAssociation> cloneLinkList(List<LineAssociation> toClone)
 	{
-		ArrayList<LineAssociation> result = new ArrayList<LineAssociation>();
+		List<LineAssociation> result = new ArrayList<LineAssociation>();
 		
 		for (LineAssociation a : toClone)
 		{
@@ -299,11 +299,11 @@ public class Helper
 	 *            List to flatten.
 	 * @return List of points.
 	 */
-	public static ArrayList<Point> concatPointList(ArrayList<ArrayList<Point>> list)
+	public static List<Point> concatPointList(List<List<Point>> list)
 	{
-		ArrayList<Point> result = new ArrayList<Point>();
+		List<Point> result = new ArrayList<Point>();
 		
-		for (ArrayList<Point> innerlist : list)
+		for (List<Point> innerlist : list)
 		{
 			for (Point p : innerlist)
 			{

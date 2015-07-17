@@ -23,6 +23,7 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,7 +39,7 @@ public class ArrangeAssociations
 	private Integer _widthOfObjects;
 	
 	private Set<RectangleObject> _objects;
-	private ArrayList<LineAssociation> _assocs;
+	private List<LineAssociation> _assocs;
 	private HashMap<Pair<String, RouteConfig>, HashSet<Point>> _possibleStarts;
 	private HashMap<String, HashSet<Integer>> _batches;
 	
@@ -97,7 +98,7 @@ public class ArrangeAssociations
 	 *             Throws if some unkown statements are found during processing.
 	 */
 	public ArrangeAssociations(Set<RectangleObject> diagramObjects,
-			Set<LineAssociation> diagramAssocs, ArrayList<Statement> stats, Integer gid,
+			Set<LineAssociation> diagramAssocs, List<Statement> stats, Integer gid,
 			Integer corridor, Boolean batch, Boolean log) throws ConversionException,
 			InternalException, CannotFindAssociationRouteException,
 			UnknownStatementException
@@ -123,16 +124,16 @@ public class ArrangeAssociations
 	}
 	
 	private void arrange(Set<RectangleObject> par_objects,
-			Set<LineAssociation> diagramAssocs, ArrayList<Statement> par_statements)
+			Set<LineAssociation> diagramAssocs, List<Statement> par_statements)
 			throws ConversionException, InternalException
 	{
 		Set<RectangleObject> diagramObjects = new HashSet<RectangleObject>(par_objects);
-		ArrayList<Statement> statements = new ArrayList<Statement>(par_statements);
+		List<Statement> statements = new ArrayList<Statement>(par_statements);
 		
 		_possibleStarts = new HashMap<Pair<String, RouteConfig>, HashSet<Point>>();
 		_objects = diagramObjects;
-		_assocs = Helper.cloneLinkList((ArrayList<LineAssociation>) diagramAssocs
-				.stream().collect(Collectors.toList()));
+		_assocs = Helper.cloneLinkList(diagramAssocs.stream()
+				.collect(Collectors.toList()));
 		_batches = setBatches();
 		
 		// Inflate diagram to start with a object width enough for the
@@ -306,7 +307,7 @@ public class ArrangeAssociations
 		return result;
 	}
 	
-	private Integer calculateMaxLinks(ArrayList<LineAssociation> as)
+	private Integer calculateMaxLinks(List<LineAssociation> as)
 	{
 		if (as.size() == 0)
 			return 0;
@@ -348,9 +349,9 @@ public class ArrangeAssociations
 		return max;
 	}
 	
-	private ArrayList<LineAssociation> processStatements(
-			ArrayList<LineAssociation> links, ArrayList<Statement> stats,
-			Set<RectangleObject> objs) throws ConversionException, InternalException
+	private List<LineAssociation> processStatements(List<LineAssociation> links,
+			List<Statement> stats, Set<RectangleObject> objs) throws ConversionException,
+			InternalException
 	{
 		if (stats != null && stats.size() != 0)
 		{
@@ -390,8 +391,8 @@ public class ArrangeAssociations
 		return links;
 	}
 	
-	private Set<Node> setStartSet(Pair<String, RouteConfig> key, Point start,
-			Integer width, Set<Point> occupied, Boolean isReflexive)
+	private Set<Node> setSet(Pair<String, RouteConfig> key, Point start, Integer width,
+			Set<Point> occupied, Boolean isReflexive, Boolean isStart)
 	{
 		Set<Point> result = new HashSet<Point>();
 		
@@ -406,112 +407,101 @@ public class ArrangeAssociations
 		if (result.size() == 0)
 		{
 			result.addAll(tempObj.getPerimiterPoints());
+			if (isReflexive)
+			{
+				if (isStart)
+					result = setReflexiveSet(result, tempObj, true);
+				else
+					result = setReflexiveSet(result, tempObj, false);
+			}
 		}
+		
 		// Remove occupied points
 		result.removeIf(p -> occupied.contains(p));
 		// Remove corner points
 		result.removeIf(p -> Helper.isCornerPoint(p, tempObj));
 		
-		if (isReflexive)
-		{
-			Integer halfway = ((width % 2) == 0) ? ((width / 2) - 1) : ((width - 1) / 2);
-			Point northern = Point.Add(start, new Point(halfway, 0));
-			result.removeIf(p -> p.getY().equals(northern.getY())
-					&& p.getX() > northern.getX());
-			
-			Point eastern = Point.Add(tempObj.getBottomRight(), new Point(0, halfway));
-			result.removeIf(p -> p.getX().equals(eastern.getX())
-					&& p.getY() < eastern.getY());
-			
-			Point southern = Point.Add(tempObj.getBottomRight(), new Point(-1 * halfway,
-					0));
-			result.removeIf(p -> p.getY().equals(southern.getY())
-					&& p.getX() < southern.getX());
-			
-			Point western = Point.Add(start, new Point(0, -1 * halfway));
-			result.removeIf(p -> p.getX().equals(western.getX())
-					&& p.getY() > western.getY());
-		}
-		
-		return convertToNodes(result, start, tempObj.getBottomRight());
+		if (isStart)
+			return convertToNodes(result, tempObj);
+		else
+			return convertToInvertedNodes(result, tempObj);
 	}
 	
-	private Set<Node> convertToNodes(Set<Point> ps, Point topleft, Point bottomright)
+	private Set<Point> setReflexiveSet(Set<Point> fromSet, RectangleObject obj,
+			Boolean isStart)
+	{
+		Set<Point> result = new HashSet<Point>(fromSet);
+		
+		Integer halfway = ((obj.getWidth() % 2) == 0) ? ((obj.getWidth() / 2) - 1)
+				: ((obj.getWidth() - 1) / 2);
+		
+		Point northern = Point.Add(obj.getPosition(), new Point(halfway, 0));
+		if (isStart)
+			result.removeIf(p -> p.getY().equals(northern.getY())
+					&& p.getX() >= northern.getX());
+		else
+			result.removeIf(p -> p.getY().equals(northern.getY())
+					&& p.getX() <= northern.getX());
+		
+		Point eastern = Point.Add(obj.getBottomRight(), new Point(0, halfway));
+		if (isStart)
+			result.removeIf(p -> p.getX().equals(eastern.getX())
+					&& p.getY() <= eastern.getY());
+		else
+			result.removeIf(p -> p.getX().equals(eastern.getX())
+					&& p.getY() >= eastern.getY());
+		
+		Point southern = Point.Add(obj.getBottomRight(), new Point(-1 * halfway, 0));
+		if (isStart)
+			result.removeIf(p -> p.getY().equals(southern.getY())
+					&& p.getX() <= southern.getX());
+		else
+			result.removeIf(p -> p.getY().equals(southern.getY())
+					&& p.getX() >= southern.getX());
+		
+		Point western = Point.Add(obj.getPosition(), new Point(0, -1 * halfway));
+		if (isStart)
+			result.removeIf(p -> p.getX().equals(western.getX())
+					&& p.getY() >= western.getY());
+		else
+			result.removeIf(p -> p.getX().equals(western.getX())
+					&& p.getY() <= western.getY());
+		
+		return result;
+	}
+	
+	private Set<Node> convertToNodes(Set<Point> ps, RectangleObject obj)
 	{
 		Set<Node> result = new HashSet<Node>();
 		
 		for (Point p : ps)
 		{
-			if (topleft.getX().equals(p.getX()))
+			if (obj.getTopLeft().getX().equals(p.getX()))
 				result.add(new Node(p, Point.Add(p, Direction.west)));
-			else if (topleft.getY().equals(p.getY()))
+			else if (obj.getTopLeft().getY().equals(p.getY()))
 				result.add(new Node(p, Point.Add(p, Direction.north)));
-			else if (bottomright.getX().equals(p.getX()))
+			else if (obj.getBottomRight().getX().equals(p.getX()))
 				result.add(new Node(p, Point.Add(p, Direction.east)));
-			else if (bottomright.getY().equals(p.getY()))
+			else if (obj.getBottomRight().getY().equals(p.getY()))
 				result.add(new Node(p, Point.Add(p, Direction.south)));
 		}
 		
 		return result;
 	}
 	
-	private Set<Node> setEndSet(Pair<String, RouteConfig> key, Point end, Integer width,
-			Set<Point> occupied, Boolean isReflexive)
-	{
-		Set<Point> result = _possibleStarts.get(key);
-		
-		RectangleObject tempObj = new RectangleObject("TEMP", end);
-		tempObj.setWidth(width);
-		
-		if (result == null || result.size() == 0)
-		{
-			result = new HashSet<Point>();
-			result.addAll(tempObj.getPerimiterPoints());
-		}
-		
-		// Other link's points
-		result.removeIf(p -> occupied.contains(p));
-		// Corners
-		result.removeIf(p -> Helper.isCornerPoint(p, tempObj));
-		
-		if (isReflexive)
-		{
-			Integer halfway = ((width % 2) == 0) ? ((width / 2) - 1) : ((width - 1) / 2);
-			Point northern = Point.Add(end, new Point(halfway, 0));
-			result.removeIf(p -> p.getY().equals(northern.getY())
-					&& p.getX() > northern.getX());
-			
-			Point eastern = Point.Add(tempObj.getBottomRight(), new Point(0, halfway));
-			result.removeIf(p -> p.getX().equals(eastern.getX())
-					&& p.getY() < eastern.getY());
-			
-			Point southern = Point.Add(tempObj.getBottomRight(), new Point(-1 * halfway,
-					0));
-			result.removeIf(p -> p.getY().equals(southern.getY())
-					&& p.getX() < southern.getX());
-			
-			Point western = Point.Add(end, new Point(0, -1 * halfway));
-			result.removeIf(p -> p.getX().equals(western.getX())
-					&& p.getY() > western.getY());
-		}
-		
-		return convertToInvertedNodes(result, end, tempObj.getBottomRight());
-	}
-	
-	private Set<Node> convertToInvertedNodes(Set<Point> ps, Point topleft,
-			Point bottomright)
+	private Set<Node> convertToInvertedNodes(Set<Point> ps, RectangleObject obj)
 	{
 		Set<Node> result = new HashSet<Node>();
 		
 		for (Point p : ps)
 		{
-			if (topleft.getX().equals(p.getX()))
+			if (obj.getTopLeft().getX().equals(p.getX()))
 				result.add(new Node(Point.Add(p, Direction.west), p));
-			else if (topleft.getY().equals(p.getY()))
+			else if (obj.getTopLeft().getY().equals(p.getY()))
 				result.add(new Node(Point.Add(p, Direction.north), p));
-			else if (bottomright.getX().equals(p.getX()))
+			else if (obj.getBottomRight().getX().equals(p.getX()))
 				result.add(new Node(Point.Add(p, Direction.east), p));
-			else if (bottomright.getY().equals(p.getY()))
+			else if (obj.getBottomRight().equals(p.getY()))
 				result.add(new Node(Point.Add(p, Direction.south), p));
 		}
 		
@@ -538,7 +528,7 @@ public class ArrangeAssociations
 		return maxval;
 	}
 	
-	private HashMap<String, Integer> setPriorityMap(ArrayList<Statement> stats)
+	private HashMap<String, Integer> setPriorityMap(List<Statement> stats)
 	{
 		HashMap<String, Integer> result = new HashMap<String, Integer>();
 		
@@ -553,9 +543,8 @@ public class ArrangeAssociations
 		return result;
 	}
 	
-	private void setPossibles(ArrayList<LineAssociation> links,
-			ArrayList<Statement> stats, Set<RectangleObject> objs)
-			throws ConversionException, InternalException
+	private void setPossibles(List<LineAssociation> links, List<Statement> stats,
+			Set<RectangleObject> objs) throws ConversionException, InternalException
 	{
 		for (Statement s : stats)
 		{
@@ -676,7 +665,7 @@ public class ArrangeAssociations
 			Integer WIDTH = diagramObjects.stream().findFirst().get().getWidth();
 			Set<Integer> myBatch = _batches.get(a.getId());
 			
-			Set<Node> STARTSET = setStartSet(
+			Set<Node> STARTSET = setSet(
 					new Pair<String, RouteConfig>(a.getId(), RouteConfig.START),
 					START,
 					WIDTH,
@@ -685,8 +674,8 @@ public class ArrangeAssociations
 							.filter(pp -> pp.Color.equals(Colors.Red)
 									&& !pp.Batch.stream().anyMatch(
 											b -> myBatch.contains(b))).map(p -> p.Inner)
-							.collect(Collectors.toSet()), a.isReflexive());
-			Set<Node> ENDSET = setEndSet(
+							.collect(Collectors.toSet()), a.isReflexive(), true);
+			Set<Node> ENDSET = setSet(
 					new Pair<String, RouteConfig>(a.getId(), RouteConfig.END),
 					END,
 					WIDTH,
@@ -695,7 +684,7 @@ public class ArrangeAssociations
 							.filter(pp -> pp.Color.equals(Colors.Red)
 									&& !pp.Batch.stream().anyMatch(
 											b -> myBatch.contains(b))).map(p -> p.Inner)
-							.collect(Collectors.toSet()), a.isReflexive());
+							.collect(Collectors.toSet()), a.isReflexive(), false);
 			
 			// Assemble occupied points
 			Set<Painted<Point>> OBJS = new HashSet<Painted<Point>>();
@@ -704,14 +693,9 @@ public class ArrangeAssociations
 			Set<Painted<Point>> occupied = new HashSet<Painted<Point>>();
 			for (RectangleObject obj : diagramObjects)
 			{
-				// add all except startset and/or endset
-				for (Point p : obj.getPoints())
-				{
-					if (ENDSET.contains(p))
-						continue;
-					
-					occupied.add(new Painted<Point>(Colors.Red, p));
-				}
+				occupied.addAll(obj.getPoints().stream()
+						.map(p -> new Painted<Point>(Colors.Red, p))
+						.collect(Collectors.toSet()));
 			}
 			OBJS.addAll(occupied);
 			

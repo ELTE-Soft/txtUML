@@ -9,6 +9,7 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation.RouteConfig;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,7 +26,7 @@ class DefaultAssocStatements
 	/**
 	 * Generated {@link Statement}s.
 	 */
-	private ArrayList<Statement> _result;
+	private List<Statement> _result;
 	/**
 	 * Previously used Group Id.
 	 */
@@ -45,8 +46,8 @@ class DefaultAssocStatements
 	 *             Throws if the algorithm encounters a value that should not
 	 *             have reached that part. Contact programmer for more details.
 	 */
-	public DefaultAssocStatements(Integer gid, ArrayList<Statement> stat,
-			ArrayList<LineAssociation> assocs) throws InternalException
+	public DefaultAssocStatements(Integer gid, List<Statement> stat,
+			List<LineAssociation> assocs) throws InternalException
 	{
 		_result = stat;
 		_gId = gid;
@@ -69,12 +70,12 @@ class DefaultAssocStatements
 	 * 
 	 * @return the generated {@link Statement}s.
 	 */
-	public ArrayList<Statement> value()
+	public List<Statement> value()
 	{
 		return _result;
 	}
 	
-	private void predefinePriorities(ArrayList<LineAssociation> assocs)
+	private void predefinePriorities(List<LineAssociation> assocs)
 			throws InternalException
 	{
 		// select min priority

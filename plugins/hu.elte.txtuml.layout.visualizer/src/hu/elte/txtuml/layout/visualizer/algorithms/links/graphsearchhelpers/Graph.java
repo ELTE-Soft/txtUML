@@ -1,7 +1,7 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -119,7 +119,7 @@ public class Graph<N>
 	{
 		String result = "";
 		
-		ArrayList<N> ns = (ArrayList<N>) Nodes.stream().collect(Collectors.toList());
+		List<N> ns = Nodes.stream().collect(Collectors.toList());
 		for (N p : ns)
 		{
 			result += "\n" + p.toString() + ": ";

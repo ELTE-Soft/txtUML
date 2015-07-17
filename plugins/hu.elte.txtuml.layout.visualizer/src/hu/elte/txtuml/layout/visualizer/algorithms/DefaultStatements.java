@@ -8,12 +8,14 @@ import hu.elte.txtuml.layout.visualizer.annotations.StatementLevel;
 import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.helpers.Helper;
+import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,14 +33,20 @@ public class DefaultStatements
 	/**
 	 * List of generated {@link Statement}s.
 	 */
-	private ArrayList<Statement> _statements;
+	private List<Statement> _statements;
 	/**
 	 * The previously used Group Id of a {@link Statement}.
 	 */
 	private Integer _gId;
 	
+	@SuppressWarnings("unused")
+	private DiagramType _diagramType;
+	
 	/**
 	 * Constructor and run command for the generation of default statements.
+	 * 
+	 * @param type
+	 *            type of the Diagram.
 	 * 
 	 * @param os
 	 *            Set of objects in the diagram.
@@ -52,9 +60,11 @@ public class DefaultStatements
 	 *             Throws if some algorithm related error occurs. Contact with
 	 *             your programmer in the nearest zoo for more details.
 	 */
-	public DefaultStatements(Set<RectangleObject> os, Set<LineAssociation> as,
-			ArrayList<Statement> ss, Integer gid) throws InternalException
+	public DefaultStatements(DiagramType type, Set<RectangleObject> os,
+			Set<LineAssociation> as, List<Statement> ss, Integer gid)
+			throws InternalException
 	{
+		_diagramType = type;
 		_statements = new ArrayList<Statement>();
 		_gId = gid;
 		
@@ -76,7 +86,7 @@ public class DefaultStatements
 	 * 
 	 * @return List of default statements.
 	 */
-	public ArrayList<Statement> value()
+	public List<Statement> value()
 	{
 		return _statements;
 	}
@@ -95,7 +105,7 @@ public class DefaultStatements
 	 *             your programmer in the nearest zoo for more details.
 	 */
 	private void defaults(Set<RectangleObject> os, Set<LineAssociation> as,
-			ArrayList<Statement> ss) throws InternalException
+			List<Statement> ss) throws InternalException
 	{
 		// Assamble access table
 		HashMap<String, HashSet<String>> accesses = new HashMap<String, HashSet<String>>();
