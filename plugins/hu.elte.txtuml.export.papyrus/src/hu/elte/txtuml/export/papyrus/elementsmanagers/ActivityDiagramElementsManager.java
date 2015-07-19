@@ -1,16 +1,43 @@
 package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
-import hu.elte.txtuml.export.papyrus.api.ElementsManagerUtils;
+import hu.elte.txtuml.export.papyrus.api.ActivityDiagramElementsController;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
-import org.eclipse.uml2.uml.*;
+import org.eclipse.papyrus.uml.diagram.activity.edit.parts.ActivityDiagramEditPart;
+import org.eclipse.uml2.uml.AcceptEventAction;
+import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.ActivityFinalNode;
+import org.eclipse.uml2.uml.AddStructuralFeatureValueAction;
+import org.eclipse.uml2.uml.AddVariableValueAction;
+import org.eclipse.uml2.uml.BroadcastSignalAction;
+import org.eclipse.uml2.uml.CallBehaviorAction;
+import org.eclipse.uml2.uml.CallOperationAction;
+import org.eclipse.uml2.uml.Comment;
+import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.CreateObjectAction;
+import org.eclipse.uml2.uml.DecisionNode;
+import org.eclipse.uml2.uml.DestroyObjectAction;
+import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.FinalNode;
+import org.eclipse.uml2.uml.FlowFinalNode;
+import org.eclipse.uml2.uml.ForkNode;
+import org.eclipse.uml2.uml.InitialNode;
+import org.eclipse.uml2.uml.JoinNode;
+import org.eclipse.uml2.uml.MergeNode;
+import org.eclipse.uml2.uml.ObjectFlow;
+import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.ReadSelfAction;
+import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
+import org.eclipse.uml2.uml.ReadVariableAction;
+import org.eclipse.uml2.uml.SendObjectAction;
+import org.eclipse.uml2.uml.SendSignalAction;
+import org.eclipse.uml2.uml.ValueSpecificationAction;
 
 /**
  * An abstract class for adding/removing elements to ActivityDiagrams.
@@ -21,8 +48,8 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 	
 	private PreferencesManager preferencesManager;
 	
-	private List<java.lang.Class<?>> NodesToBeAdded;
-	private List<java.lang.Class<?>> ConnectorsToBeAdded;
+	private List<java.lang.Class<? extends Element>> nodesToBeAdded;
+	private List<java.lang.Class<? extends Element>> connectorsToBeAdded;
 	
 	/**
 	 * The Constructor
@@ -32,16 +59,16 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 	public ActivityDiagramElementsManager(UMLModelManager modelManager,DiagramEditPart diagramEditPart) {
 		super(modelManager, diagramEditPart);
 		preferencesManager = new PreferencesManager();
-		NodesToBeAdded = generateNodesToBeAdded();
-		ConnectorsToBeAdded = generateConnectorsToBeAdded(); 
+		nodesToBeAdded = generateNodesToBeAdded();
+		connectorsToBeAdded = generateConnectorsToBeAdded(); 
 	}
 
 	/**
 	 * Returns the types of nodes that are to be added
 	 * @return Returns the types of nodes that are to be added
 	 */
-	private List<java.lang.Class<?>> generateNodesToBeAdded() {
-		List<java.lang.Class<?>> nodes = new LinkedList<java.lang.Class<?>>(Arrays.asList(
+	private List<java.lang.Class<? extends Element>> generateNodesToBeAdded() {
+		List<java.lang.Class<? extends Element>> nodes = new LinkedList<>(Arrays.asList(
 				AcceptEventAction.class,
 				Activity.class,
 				ActivityFinalNode.class,
@@ -78,8 +105,8 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 	 * Returns the types of connectors that are to be added
 	 * @return Returns the types of connectors that are to be added 
 	 */
-	private List<java.lang.Class<?>> generateConnectorsToBeAdded() {
-		List<java.lang.Class<?>> connectors = Arrays.asList(ControlFlow.class, ObjectFlow.class);
+	private List<java.lang.Class<? extends Element>> generateConnectorsToBeAdded() {
+		List<java.lang.Class<? extends Element>> connectors = Arrays.asList(ControlFlow.class, ObjectFlow.class);
 		return connectors;
 	}
 
@@ -89,19 +116,10 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 	 */
 	@Override
 	public void addElementsToDiagram(List<Element> elements) {
-		List<java.lang.Class<?>> types = new LinkedList<java.lang.Class<?>>();
-		types.addAll(NodesToBeAdded);
-		types.addAll(ConnectorsToBeAdded);
-		
-		
-		EditPart activityEditpart = (EditPart) diagramEditPart.getChildren().get(0);
-		EditPart activityContentEditpart = (EditPart) activityEditpart.getChildren().get(5);
-		
-		for(java.lang.Class<?> type : types){
-			List<Element> listofTypes = modelManager.getElementsOfTypeFromList(elements, type);
-			if(!listofTypes.isEmpty()){
-				ElementsManagerUtils.addElementsToEditpart(activityContentEditpart, listofTypes);
-			}
-		}
+		List<Element> diagramelements = modelManager.getElementsOfTypesFromList(elements, nodesToBeAdded);
+		List<Element> diagramconnections = modelManager.getElementsOfTypesFromList(elements, connectorsToBeAdded);
+
+		ActivityDiagramElementsController.addElementsToActivityDiagram((ActivityDiagramEditPart) diagramEditPart, diagramelements);
+		ActivityDiagramElementsController.addElementsToActivityDiagram((ActivityDiagramEditPart) diagramEditPart, diagramconnections);
 	}
 }

@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.api;
+package hu.elte.txtuml.export.papyrus.utils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,11 +34,12 @@ public class ElementsManagerUtils {
 	 * @param EP - The EditPart that is to be added to
 	 * @param diagramElements - The Elements that are to be added
 	 */
-	public static void addElementsToEditpart(EditPart EP, Collection<Element> diagramElements) {
+	@SuppressWarnings("unchecked")
+	public static void addElementsToEditpart(EditPart EP, Collection<? extends Element> diagramElements) {
 		List<Element> diagramElementsList;
 		
 		if(!(diagramElements instanceof List<?>)){
-			diagramElementsList = createList(diagramElements);
+			diagramElementsList = (List<Element>) createList(diagramElements);
 		}else{
 			diagramElementsList = (List<Element>) diagramElements;
 		}

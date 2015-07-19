@@ -1,19 +1,26 @@
 package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
-import hu.elte.txtuml.export.papyrus.api.ElementsManagerUtils;
+import hu.elte.txtuml.export.papyrus.api.StateMachineDiagramElementsController;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.RegionEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateEditPart;
-import org.eclipse.uml2.uml.*;
+import org.eclipse.uml2.uml.Comment;
+import org.eclipse.uml2.uml.Constraint;
+import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.FinalState;
+import org.eclipse.uml2.uml.Pseudostate;
+import org.eclipse.uml2.uml.State;
+import org.eclipse.uml2.uml.Transition;
 
 /**
  * An abstract class for adding/removing elements to StateMachineDiagrams.
@@ -24,9 +31,6 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 
 	private PreferencesManager preferencesManager;
 	
-	private List<java.lang.Class<?>> elementsToBeAdded;
-	private List<java.lang.Class<?>> edgesToBeAdded;
-
 	/**
 	 * The Constructor
 	 * @param modelManager - The ModelManager which serves the model elements
@@ -35,38 +39,8 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	public StateMachineDiagramElementsManager(UMLModelManager modelManager,DiagramEditPart diagramEditPart) {
 		super(modelManager, diagramEditPart);
 		preferencesManager = new PreferencesManager();
-		elementsToBeAdded = generateElementsToBeAdded();
-		edgesToBeAdded = generateEdgesToBeAdded();
 	}
 	
-	/**
-	 * Returns the types of elements that are to be added
-	 * @return Returns the types of elements that are to be added
-	 */
-	private List<java.lang.Class<?>> generateElementsToBeAdded() {
-		List<java.lang.Class<?>> nodes = new LinkedList<java.lang.Class<?>>(
-				Arrays.asList(
-						FinalState.class,
-						State.class,
-						Pseudostate.class						
-				));
-		
-		if(preferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_CONSTRAINT_PREF))
-			nodes.add(Constraint.class);
-		if(preferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_COMMENT_PREF))
-			nodes.add(Comment.class);
-		
-		return nodes;
-	}
-	
-	/**
-	 * Returns the types of connectors that are to be added
-	 * @return Returns the types of connectors that are to be added
-	 */
-	private List<java.lang.Class<?>> generateEdgesToBeAdded() {
-		List<java.lang.Class<?>> edges = Arrays.asList(Transition.class);
-		return edges;
-	}
 	
 	/*
 	 * (non-Javadoc)
@@ -96,31 +70,45 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	private void fillState(EditPart state){
 		EditPart stateCompartmentEditPart = (EditPart) state.getChildren().get(1);
 		@SuppressWarnings("unchecked")
-		List<EditPart> regions = stateCompartmentEditPart.getChildren();
+		List<RegionEditPart> regions = stateCompartmentEditPart.getChildren();
 		
-		for(EditPart region : regions){
-			EditPart regionCompartment = (EditPart) region.getChildren().get(0);
-			this.addSubElements(regionCompartment);
+		for(RegionEditPart region : regions){
+			this.addSubElements(region);
 		}
 	}
 	
 	/**
 	 * Adds the subElements to an EditPart. Then calls the {@link #fillState(EditPart)}
 	 * for every state. 
-	 * @param ep - The EditPart
+	 * @param region - The EditPart
 	 */
-	private void addSubElements(EditPart ep){
-		EObject parent = ((View) ep.getModel()).getElement();
+	private void addSubElements(RegionEditPart region){
+		EObject parent = ((View) region.getModel()).getElement();
 		List<Element> list = ((Element) parent).getOwnedElements();
 		
-		List<Element> nodes = modelManager.getElementsOfTypesFromList(list, elementsToBeAdded);
-		List<Element> transitions = modelManager.getElementsOfTypesFromList(list, edgesToBeAdded);
+		List<State> states = modelManager.getElementsOfTypeFromList(list, State.class);
+		List<Pseudostate> pseudostates = modelManager.getElementsOfTypeFromList(list, Pseudostate.class);
+		List<FinalState> finalstates = modelManager.getElementsOfTypeFromList(list, FinalState.class);
+		List<Transition> transitions = modelManager.getElementsOfTypeFromList(list, Transition.class);
 	
-		ElementsManagerUtils.addElementsToEditpart(ep, nodes);
-		ElementsManagerUtils.addElementsToEditpart(ep, transitions);
-
+		StateMachineDiagramElementsController.addPseudostatesToRegion(region, pseudostates);
+		StateMachineDiagramElementsController.addStatesToRegion(region, states);
+		StateMachineDiagramElementsController.addFinalStatesToRegion(region, finalstates);
+		StateMachineDiagramElementsController.addTransitionsToRegion(region, transitions);
+	
+		if(preferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_CONSTRAINT_PREF)){
+			List<Constraint> constraints = modelManager.getElementsOfTypeFromList(list, Constraint.class);
+			StateMachineDiagramElementsController.addElementsToRegion(region, constraints);
+		}
+		
+		if(preferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_COMMENT_PREF)){
+			List<Comment> comments = modelManager.getElementsOfTypeFromList(list, Comment.class);
+			StateMachineDiagramElementsController.addElementsToRegion(region, comments);
+		}
+		
 		@SuppressWarnings("unchecked")
-		List<EditPart> subEPs = ep.getChildren();
+		List<EditPart> subEPs = StateMachineDiagramElementsController.getRegionCompatementEditPart(region).getChildren();
+		
 		for(EditPart subEP : subEPs){
 			if(subEP instanceof StateEditPart){
 				fillState(subEP);

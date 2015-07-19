@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.papyrus;
 
 import hu.elte.txtuml.utils.MultiMap;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -114,15 +115,17 @@ public class UMLModelManager {
 	
 	/**
 	 * Collects the {@link Element}s of same type form a list 
+	 * @param <T>
 	 * @param elements - List of elements
 	 * @param type - The type that is searched
 	 * @return Returns the Elements of same type 
 	 */
-	public List<Element> getElementsOfTypeFromList(List<Element> elements, java.lang.Class<?> type){
-		List<Element> result = new LinkedList<Element>(); 
+	@SuppressWarnings("unchecked")
+	public <T extends Element> List<T> getElementsOfTypeFromList(List<Element> elements, java.lang.Class<T> type){
+		List<T> result = new LinkedList<T>(); 
 		for(Element element : elements){
 			if (isElementOfType(element, type)){
-				result.add(element);
+				result.add((T) element);
 			}
 		}
 		return result;
@@ -131,13 +134,15 @@ public class UMLModelManager {
 	/**
 	 * Collects the {@link Element}s of same type form a list.
 	 * Elements of same type will be collected at one go
+	 * @param <T>
 	 * @param elements - List of elements
-	 * @param types - The List of types that is searched
+	 * @param types - The Collection of types that is searched
 	 * @return Returns the Elements of types
 	 */
-	public List<Element> getElementsOfTypesFromList(List<Element> elements, List<java.lang.Class<?>> types){
+	public List<Element> getElementsOfTypesFromList(List<Element> elements,
+								Collection<java.lang.Class<? extends Element>> types){
 		List<Element> all = new LinkedList<Element>();
-		for(java.lang.Class<?> type : types){
+		for(java.lang.Class<? extends Element> type : types){
 			all.addAll(getElementsOfTypeFromList(elements, type));
 		}
 		return all;
@@ -145,11 +150,12 @@ public class UMLModelManager {
 	
 	/**
 	 * Checks if an {@link Element} is of type
+	 * @param <T>
 	 * @param element - Element that is to be analyzed   
 	 * @param type - The type
 	 * @return Returns true if the Element is of type 
 	 */
-	private boolean isElementOfType(Element element, java.lang.Class<?> type){
+	private boolean isElementOfType(Element element, java.lang.Class<? extends Element> type){
 		return element.eClass().getInstanceClass() == type;
 	}
 }

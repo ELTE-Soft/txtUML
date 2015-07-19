@@ -28,7 +28,8 @@ Require-Bundle: org.eclipse.debug.ui,
  org.eclipse.papyrus.uml.diagram.menu,
  org.eclipse.papyrus.editor,
  org.eclipse.papyrus.infra.gmfdiag.css,
- hu.elte.txtuml.export
+ hu.elte.txtuml.export,
+ org.eclipse.emf.ecore
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: hu.elte.txtuml.export.papyrus,
@@ -42,4 +43,5 @@ Export-Package: hu.elte.txtuml.export.papyrus,
  hu.elte.txtuml.export.papyrus.layout.txtuml,
  hu.elte.txtuml.export.papyrus.papyrusmodelmanagers,
  hu.elte.txtuml.export.papyrus.preferences,
+ hu.elte.txtuml.export.papyrus.utils,
  hu.elte.txtuml.export.papyrus.wizardz

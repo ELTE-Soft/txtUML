@@ -27,7 +27,7 @@ public class Uml2Utils {
 	
 	  public static Model loadModel(String modelUri) throws WrappedException
 	  {
-	    return loadModel(URI.createURI(modelUri));
+	    return loadModel(URI.createPlatformResourceURI(modelUri, false));
 	  }
 	  
 	  public static Model loadModel(URI modelUri) throws WrappedException

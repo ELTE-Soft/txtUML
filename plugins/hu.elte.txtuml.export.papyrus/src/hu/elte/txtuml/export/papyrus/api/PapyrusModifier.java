@@ -1,6 +1,9 @@
 package hu.elte.txtuml.export.papyrus.api;
 
+import hu.elte.txtuml.export.papyrus.DiagramManager;
 import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
+import hu.elte.txtuml.export.papyrus.utils.EditPartFinder;
+import hu.elte.txtuml.export.papyrus.utils.EditorOpener;
 
 import java.util.List;
 
@@ -12,6 +15,7 @@ import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Model;
 
 /**
  *
@@ -21,6 +25,7 @@ public class PapyrusModifier {
 
 	private PapyrusModelCreator papyrusModelCreator;
 	private IMultiDiagramEditor editor;
+	private DiagramManager diagramManager;
 	
 	/**
 	 * Instantiates the Papyrus model modifier class with a project and model 
@@ -32,7 +37,16 @@ public class PapyrusModifier {
 
 		if(papyrusModelCreator.diExists()){
 			editor = EditorOpener.openPapyrusEditor(papyrusModelCreator.getDi());
+			diagramManager = new DiagramManager(editor);
 		}
+	}
+	
+	/**
+	 * Returns the {@link Model} handled by the PapyrusModel 
+	 * @return the uml Model
+	 */
+	public Model getUmlModel(){
+		return papyrusModelCreator.getUmlModel();
 	}
 	
 	/**
@@ -48,19 +62,40 @@ public class PapyrusModifier {
 		}
 	}
 	
+	/**
+	 * Returns every diagram of the Papyrus model
+	 * @return List of Diagrams
+	 */
 	public List<Diagram> getDiagrams(){
-		//TODO: Implement
-		throw new UnsupportedOperationException("This operaation is not supported yet!");
+		return diagramManager.getDiagrams();
 	}
 	
+	/**
+	 * Opens the given diagram
+	 * @param diag
+	 */
+	public void openDiagram(Diagram diag){
+		diagramManager.openDiagram(diag);
+	}
+	
+	/**
+	 * Opens the diagram and returns it's EditPart
+	 * @param diagram
+	 * @return The DiagramEditPart
+	 */
 	public DiagramEditPart getDiagramEditPart(Diagram diagram){
-		//TODO: Implement
-		throw new UnsupportedOperationException("This operaation is not supported yet!");
+		diagramManager.openDiagram(diagram);
+		DiagramEditPart diagep = diagramManager.getActiveDiagramEditPart();
+		return diagep;
 	}
 	
-	public EditPart getEditPartOfElementOnActiveDiagram(Element element){
-		//TODO: Implement
-		throw new UnsupportedOperationException("This operaation is not supported yet!");
+	/**
+	 * Searches the specified EditPart on the active diagram which holds reference to the Model Element
+	 * @param element
+	 * @return The EditPart which holds reference to the Model Element or <i>null</i> if it's on the diagram 
+	 */
+	public EditPart getEditPartOfElement(Element element){
+		return EditPartFinder.getEditPartofElement(diagramManager.getActiveDiagramEditPart(), element);
 	}
 	
 	/**

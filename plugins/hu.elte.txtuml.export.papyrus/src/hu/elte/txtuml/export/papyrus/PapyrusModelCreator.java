@@ -83,7 +83,7 @@ public class PapyrusModelCreator {
 	private void setUpUMLFile(String sourceUMLPath){
 			copyFile(sourceUMLPath, umlFile);
 			
-			Model m = loadModel(URI.createPlatformResourceURI(umlFilePath, false));
+			Model m = getUmlModel();
 			EList<Profile> profiles = m.getAllAppliedProfiles();
 			for(Profile profile : profiles){
 						String filestring = ((BasicEObjectImpl) profile).eProxyURI().toPlatformString(false);
@@ -100,8 +100,12 @@ public class PapyrusModelCreator {
 			}
 	}
 	
-	private Model loadModel(URI uri) {
-		return Uml2Utils.loadModel(uri);
+	/**
+	 * Returns the UML model handled by the instance
+	 * @return The {@link Model}
+	 */
+	public Model getUmlModel(){
+		return Uml2Utils.loadModel(URI.createPlatformResourceURI(umlFilePath, false));
 	}
 	
 	private void copyFile(String sourcepath, IFile newFile){

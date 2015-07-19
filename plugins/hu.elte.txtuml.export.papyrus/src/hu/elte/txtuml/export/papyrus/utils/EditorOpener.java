@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.api;
+package hu.elte.txtuml.export.papyrus.utils;
 
 import hu.elte.txtuml.export.utils.Dialogs;
 
