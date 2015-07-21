@@ -1,8 +1,8 @@
 package hu.elte.txtuml.export.papyrus.layout.txtuml;
 
+import hu.elte.txtuml.eclipseutils.ProjectUtils;
 import hu.elte.txtuml.export.ExportUtils;
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
-import hu.elte.txtuml.export.papyrus.ProjectUtils;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 
 import org.eclipse.core.resources.IFile;

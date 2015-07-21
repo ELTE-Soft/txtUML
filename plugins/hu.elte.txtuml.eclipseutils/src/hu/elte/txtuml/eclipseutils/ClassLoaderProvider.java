@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.utils;
+package hu.elte.txtuml.eclipseutils;
 
 import java.net.MalformedURLException;
 import java.net.URL;

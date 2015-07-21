@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus;
+package hu.elte.txtuml.eclipseutils;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;

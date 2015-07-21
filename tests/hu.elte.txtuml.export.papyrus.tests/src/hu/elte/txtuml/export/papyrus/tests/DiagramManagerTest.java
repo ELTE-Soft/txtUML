@@ -1,9 +1,9 @@
 package hu.elte.txtuml.export.papyrus.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import hu.elte.txtuml.eclipseutils.ProjectUtils;
 import hu.elte.txtuml.export.papyrus.DiagramManager;
 import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
-import hu.elte.txtuml.export.papyrus.ProjectUtils;
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
 
 import java.io.IOException;

@@ -3,8 +3,8 @@ package hu.elte.txtuml.export.papyrus.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import hu.elte.txtuml.eclipseutils.ProjectUtils;
 import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
-import hu.elte.txtuml.export.papyrus.ProjectUtils;
 
 import java.io.IOException;
 

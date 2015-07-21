@@ -1,8 +1,8 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.tests;
 
 import static org.junit.Assert.fail;
+import hu.elte.txtuml.eclipseutils.ProjectUtils;
 import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
-import hu.elte.txtuml.export.papyrus.ProjectUtils;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;

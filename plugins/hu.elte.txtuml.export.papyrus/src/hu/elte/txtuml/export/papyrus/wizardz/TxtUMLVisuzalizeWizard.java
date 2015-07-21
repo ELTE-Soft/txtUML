@@ -1,11 +1,11 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
+import hu.elte.txtuml.eclipseutils.Dialogs;
 import hu.elte.txtuml.export.ExportUtils;
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLExporter;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
-import hu.elte.txtuml.export.utils.Dialogs;
 
 import java.lang.reflect.InvocationTargetException;
 

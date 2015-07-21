@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.papyrus.papyrusmodelmanagers;
 
+import hu.elte.txtuml.eclipseutils.Dialogs;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.ClassDiagramElementsTxtUmlArranger;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager;
@@ -7,7 +8,6 @@ import hu.elte.txtuml.export.papyrus.elementsmanagers.ClassDiagramElementsManage
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
-import hu.elte.txtuml.export.utils.Dialogs;
 
 import java.util.ArrayList;
 import java.util.Arrays;

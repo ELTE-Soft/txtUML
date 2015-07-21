@@ -1,7 +1,7 @@
 package hu.elte.txtuml.export;
 
+import hu.elte.txtuml.eclipseutils.ClassLoaderProvider;
 import hu.elte.txtuml.export.uml2.UML2;
-import hu.elte.txtuml.export.utils.ClassLoaderProvider;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.export.DiagramExporter;
 import hu.elte.txtuml.layout.lang.Diagram;

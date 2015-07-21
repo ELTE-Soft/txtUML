@@ -1,6 +1,6 @@
 package hu.elte.txtuml.export.papyrus.utils;
 
-import hu.elte.txtuml.export.utils.Dialogs;
+import hu.elte.txtuml.eclipseutils.Dialogs;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;

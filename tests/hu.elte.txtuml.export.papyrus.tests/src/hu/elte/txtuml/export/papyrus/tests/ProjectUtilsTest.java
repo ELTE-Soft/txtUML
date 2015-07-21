@@ -2,7 +2,7 @@ package hu.elte.txtuml.export.papyrus.tests;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import hu.elte.txtuml.export.papyrus.ProjectUtils;
+import hu.elte.txtuml.eclipseutils.ProjectUtils;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
