@@ -209,7 +209,7 @@ public class LayoutVisualize
 		_objects = null;
 		_assocs = null;
 		_batching = false;
-		_arrangeOverlaps = OverlapArrangeMode.one;
+		_arrangeOverlaps = OverlapArrangeMode.few;
 		_logging = false;
 		_corridorPercent = 100;
 	}

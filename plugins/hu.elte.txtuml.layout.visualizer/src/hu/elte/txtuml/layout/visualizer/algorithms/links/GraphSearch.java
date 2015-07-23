@@ -31,16 +31,16 @@ class GraphSearch
 	
 	// Constants
 	
-	private final Double _weightLength = 1.0;// 2.9
-	private final Double _weightTurns = 2.7;// 2.7
-	private final Double _weightCrossing = 2.0;
+	private final Double _weightLength = 1.0; // 2.9
+	private final Double _weightTurns = 3.0; // 2.7
+	private final Double _weightCrossing = 3.0; //2.0
 	private final Integer _penalizeTurns = 2;
 	
 	// end Constants
 	
 	// Variables
 	
-	private Set<Node> _startSet;
+	//private Set<Node> _startSet;
 	private Node _end;
 	private Set<Node> _endSet;
 	private Set<Painted<Point>> _objects;
@@ -90,7 +90,7 @@ class GraphSearch
 			CannotStartAssociationRouteException, ConversionException, InternalException
 	{
 		_end = new Node(new Point(), new Point());
-		_startSet = new HashSet<Node>(ss);
+		//_startSet = new HashSet<Node>(ss);
 		_endSet = new HashSet<Node>(es);
 		_objects = os;
 		_boundary = (top > 0) ? top : -1;
@@ -107,7 +107,7 @@ class GraphSearch
 		PI = new Parent<Node>();
 		
 		// Extend StartSet
-		for (Node p : _startSet)
+		for (Node p : ss/*_startSet*/)
 		{
 			PI.set(p, null);
 			g.set(p, 2 * _weightLength);
@@ -217,8 +217,8 @@ class GraphSearch
 	{
 		Pair<Integer, Node> result = _endSet.stream().map(p ->
 		{
-			Integer dx = Math.abs(a.getTo().getX() - p.getFrom().getX());
-			Integer dy = Math.abs(a.getTo().getY() - p.getFrom().getY());
+			Integer dx = Math.abs(a.getTo().getX() - p.getTo().getX());
+			Integer dy = Math.abs(a.getTo().getY() - p.getTo().getY());
 			Integer tempResult = dx + dy;
 			
 			return new Pair<Integer, Node>(tempResult, p);
@@ -387,7 +387,9 @@ class GraphSearch
 					else if (dir.equals(Direction.opposite(sub)))
 						continue;
 					else
+					{
 						w = _weightLength + _weightTurns;
+					}
 					
 					Point p = Point.Add(parent.getTo(), dir);
 					result.add(new Pair<Node, Double>(new Node(parent.getTo(), p), w));

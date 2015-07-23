@@ -112,7 +112,7 @@ class DefaultAssocStatements
 				.stream().collect(Collectors.toList());
 		orderedAssocs.sort((a1, a2) ->
 		{
-			return Double.compare(distanceOfEnds(a1), distanceOfEnds(a2));
+			return -1 * Double.compare(distanceOfEnds(a1), distanceOfEnds(a2));
 		});
 		for (LineAssociation a : orderedAssocs)
 		{
@@ -131,6 +131,6 @@ class DefaultAssocStatements
 		Point one = a.getRoute(RouteConfig.START);
 		Point two = a.getRoute(RouteConfig.END);
 		
-		return (Point.Substract(one, two)).length();
+		return (Point.Substract(two, one)).length();
 	}
 }

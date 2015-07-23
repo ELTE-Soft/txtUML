@@ -20,6 +20,15 @@ public class ProgressEmitter extends Observable
 	}
 	
 	/**
+	 * Emits an event at the half of the arrangement of boxes.
+	 */
+	public void OnBoxArrangeHalf()
+	{
+		setChanged();
+		notifyObservers(20);
+	}
+	
+	/**
 	 * Emits an event at the start of the arrangement of overlapped boxes.
 	 */
 	public void OnBoxOverlapArrangeStart()
@@ -44,6 +53,33 @@ public class ProgressEmitter extends Observable
 	{
 		setChanged();
 		notifyObservers(60);
+	}
+	
+	/**
+	 * Emits an event at the first quarter of the arrangement of links.
+	 */
+	public void OnLinkArrangeFirstQuarter()
+	{
+		setChanged();
+		notifyObservers(70);
+	}
+	
+	/**
+	 * Emits an event at the half of the arrangement of links.
+	 */
+	public void OnLinkArrangeHalf()
+	{
+		setChanged();
+		notifyObservers(80);
+	}
+	
+	/**
+	 * Emits an event at the third quarter of the arrangement of links.
+	 */
+	public void OnLinkArrangeThirdQuarter()
+	{
+		setChanged();
+		notifyObservers(90);
 	}
 	
 	/**

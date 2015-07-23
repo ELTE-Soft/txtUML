@@ -69,13 +69,13 @@ public class EdgeWeightedDigraph
 	{
 		this(ns);
 		
-		int E = es.size();
+		this.E = es.size() - 1;
 		if (E < 0)
 			throw new IllegalArgumentException("Number of edges must be nonnegative");
 		
-		for (int i = 0; i < E; i++)
+		for (Quadraple<Integer, Integer, Integer, Statement> el : es)
 		{
-			Quadraple<Integer, Integer, Integer, Statement> el = es.get(i);
+			//Quadraple<Integer, Integer, Integer, Statement> el = es.get(i);
 			int v = el.First;
 			int w = el.Second;
 			if (v < 0 || v >= V)
@@ -220,6 +220,7 @@ public class EdgeWeightedDigraph
 	 *         edges <em>E</em>, followed by the <em>V</em> adjacency lists of
 	 *         edges
 	 */
+	@Override
 	public String toString()
 	{
 		String NEWLINE = System.getProperty("line.separator");

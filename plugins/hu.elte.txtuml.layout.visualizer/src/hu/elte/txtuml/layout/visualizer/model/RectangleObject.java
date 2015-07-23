@@ -52,8 +52,6 @@ public class RectangleObject
 	{
 		Set<Point> result = new HashSet<Point>();
 		
-		result.add(new Point(_position));
-		
 		for (int i = 0; i < _width; ++i)
 		{
 			Point temp = Point.Add(_position, Point.Multiply(Direction.east, i));
@@ -76,11 +74,10 @@ public class RectangleObject
 	{
 		Set<Point> result = new HashSet<Point>();
 		
-		Point tl = new Point(_position);
+		Point tl = getTopLeft();
 		Point br = getBottomRight();
-		result.add(tl);
-		result.add(br);
-		for (int i = 1; i < _width; ++i)
+
+		for (int i = 0; i < _width; ++i)
 		{
 			result.add(Point.Add(tl, Point.Multiply(Direction.east, i)));
 			result.add(Point.Add(tl, Point.Multiply(Direction.south, i)));

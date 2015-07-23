@@ -291,8 +291,8 @@ public class ArrangeObjects
 		}
 		catch (BoxArrangeConflictException e)
 		{
-			throw new BoxOverlapConflictException(
-					"The layout of the following overlapping boxes could not be resolved!");
+			throw new BoxOverlapConflictException(overlaps().entrySet().stream()
+					.findFirst().get().getValue().stream().collect(Collectors.toList()));
 		}
 		
 	}
@@ -346,6 +346,12 @@ public class ArrangeObjects
 	private void removeOverlapsWithFew() throws InternalException, ConversionException,
 			BoxOverlapConflictException
 	{
+		List<RectangleObject> SortedObjects = new ArrayList<RectangleObject>(_objects);
+		SortedObjects.sort((box1, box2) ->
+		{
+			return box1.getName().compareTo(box2.getName());
+		});
+		
 		// Fixes the layout of the diagram by giving statements preserving the
 		// current state
 		fixCurrentState();
@@ -358,12 +364,12 @@ public class ArrangeObjects
 				System.err.println(" > [FEW] Round of overlap arrange...");
 			
 			// for every overlapping box pairs
-			for (RectangleObject boxA : _objects)
+			for (RectangleObject boxA : SortedObjects)
 			{
 				if (!isThereOverlapping())
 					break;
 				
-				for (RectangleObject boxB : _objects)
+				for (RectangleObject boxB : SortedObjects)
 				{
 					if (!isThereOverlapping())
 						break;
@@ -374,7 +380,7 @@ public class ArrangeObjects
 					if (boxA.getPosition().equals(boxB.getPosition()))
 					{
 						// try add a statement to resolve overlap
-						wasExtension = tryAddStatement(boxA, boxB);
+						wasExtension = wasExtension || tryAddStatement(boxA, boxB);
 					}
 				}
 			}

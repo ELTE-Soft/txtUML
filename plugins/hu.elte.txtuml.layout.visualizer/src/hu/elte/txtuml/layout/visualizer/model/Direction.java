@@ -27,11 +27,11 @@ public enum Direction
 	west;
 	
 	/**
-	 * Returns the oposite {@link Direction} of the given dir.
+	 * Returns the opposite {@link Direction} of the given dir.
 	 * 
 	 * @param dir
 	 *            the {@link Direction} you want the opposite of.
-	 * @return the oposite {@link Direction} of the given dir.
+	 * @return the opposite {@link Direction} of the given dir.
 	 */
 	public static Direction opposite(Direction dir)
 	{
@@ -48,4 +48,5 @@ public enum Direction
 		}
 		return null;
 	}
+	
 }

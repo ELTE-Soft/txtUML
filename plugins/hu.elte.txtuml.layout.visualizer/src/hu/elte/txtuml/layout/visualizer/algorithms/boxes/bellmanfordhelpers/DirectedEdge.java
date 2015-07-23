@@ -102,6 +102,7 @@ public class DirectedEdge
 	 * 
 	 * @return a string representation of the directed edge
 	 */
+	@Override
 	public String toString()
 	{
 		return v + "->" + w + " " + String.format("%5.2f", weight);

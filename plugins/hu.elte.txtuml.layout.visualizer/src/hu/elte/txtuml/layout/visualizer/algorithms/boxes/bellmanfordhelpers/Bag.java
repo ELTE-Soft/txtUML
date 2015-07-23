@@ -83,6 +83,7 @@ class Bag<Item> implements Iterable<Item>
 	 * @return an iterator that iterates over the items in the bag in arbitrary
 	 *         order
 	 */
+	@Override
 	public Iterator<Item> iterator()
 	{
 		return new ListIterator<Item>(first);
@@ -99,16 +100,19 @@ class Bag<Item> implements Iterable<Item>
 			current = first;
 		}
 		
+		@Override
 		public boolean hasNext()
 		{
 			return current != null;
 		}
 		
+		@Override
 		public void remove()
 		{
 			throw new UnsupportedOperationException();
 		}
 		
+		@Override
 		public Item next()
 		{
 			if (!hasNext())

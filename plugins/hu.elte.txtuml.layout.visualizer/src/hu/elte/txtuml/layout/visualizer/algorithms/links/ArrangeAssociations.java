@@ -142,7 +142,6 @@ public class ArrangeAssociations
 		diagramObjects = defaultGrid(maxLinks, diagramObjects);
 		
 		// Pre-define priorities
-		
 		DefaultAssocStatements das = new DefaultAssocStatements(_gId, statements, _assocs);
 		statements = das.value();
 		_gId = das.getGroupId();
@@ -392,7 +391,7 @@ public class ArrangeAssociations
 	}
 	
 	private Set<Node> setSet(Pair<String, RouteConfig> key, Point start, Integer width,
-			Set<Point> occupied, Boolean isReflexive, Boolean isStart)
+			Set<Point> occupied, Boolean isReflexive, Boolean isStart) throws InternalException
 	{
 		Set<Point> result = new HashSet<Point>();
 		
@@ -470,7 +469,7 @@ public class ArrangeAssociations
 		return result;
 	}
 	
-	private Set<Node> convertToNodes(Set<Point> ps, RectangleObject obj)
+	private Set<Node> convertToNodes(Set<Point> ps, RectangleObject obj) throws InternalException
 	{
 		Set<Node> result = new HashSet<Node>();
 		
@@ -484,12 +483,14 @@ public class ArrangeAssociations
 				result.add(new Node(p, Point.Add(p, Direction.east)));
 			else if (obj.getBottomRight().getY().equals(p.getY()))
 				result.add(new Node(p, Point.Add(p, Direction.south)));
+			else
+				throw new InternalException("BOOM1!");
 		}
 		
 		return result;
 	}
 	
-	private Set<Node> convertToInvertedNodes(Set<Point> ps, RectangleObject obj)
+	private Set<Node> convertToInvertedNodes(Set<Point> ps, RectangleObject obj) throws InternalException
 	{
 		Set<Node> result = new HashSet<Node>();
 		
@@ -501,8 +502,10 @@ public class ArrangeAssociations
 				result.add(new Node(Point.Add(p, Direction.north), p));
 			else if (obj.getBottomRight().getX().equals(p.getX()))
 				result.add(new Node(Point.Add(p, Direction.east), p));
-			else if (obj.getBottomRight().equals(p.getY()))
+			else if (obj.getBottomRight().getY().equals(p.getY()))
 				result.add(new Node(Point.Add(p, Direction.south), p));
+			else
+				throw new InternalException("BOOM2!");
 		}
 		
 		return result;
@@ -657,32 +660,37 @@ public class ArrangeAssociations
 			{
 				if (_logging)
 					System.err.println("NOTHING TO DO!");
+				
+				occupiedLinks.addAll(getRoutePaintedPoints(a));
 				continue;
 			}
 			
 			Point START = a.getRoute(LineAssociation.RouteConfig.START);
 			Point END = a.getRoute(LineAssociation.RouteConfig.END);
-			Integer WIDTH = diagramObjects.stream().findFirst().get().getWidth();
+			Integer STARTWIDTH = diagramObjects.stream()
+					.filter(o -> o.getName().equals(a.getFrom())).findFirst().get()
+					.getWidth();
+			Integer ENDWIDTH = diagramObjects.stream()
+					.filter(o -> o.getName().equals(a.getTo())).findFirst().get()
+					.getWidth();
 			Set<Integer> myBatch = _batches.get(a.getId());
 			
 			Set<Node> STARTSET = setSet(
 					new Pair<String, RouteConfig>(a.getId(), RouteConfig.START),
 					START,
-					WIDTH,
+					STARTWIDTH,
 					occupiedLinks
 							.stream()
-							.filter(pp -> pp.Color.equals(Colors.Red)
-									&& !pp.Batch.stream().anyMatch(
+							.filter(pp -> !pp.Batch.stream().anyMatch(
 											b -> myBatch.contains(b))).map(p -> p.Inner)
 							.collect(Collectors.toSet()), a.isReflexive(), true);
 			Set<Node> ENDSET = setSet(
 					new Pair<String, RouteConfig>(a.getId(), RouteConfig.END),
 					END,
-					WIDTH,
+					ENDWIDTH,
 					occupiedLinks
 							.stream()
-							.filter(pp -> pp.Color.equals(Colors.Red)
-									&& !pp.Batch.stream().anyMatch(
+							.filter(pp -> !pp.Batch.stream().anyMatch(
 											b -> myBatch.contains(b))).map(p -> p.Inner)
 							.collect(Collectors.toSet()), a.isReflexive(), false);
 			
@@ -723,22 +731,44 @@ public class ArrangeAssociations
 			if (a.getRoute().size() < 3)
 				throw new InternalException("Route is shorter then 3!");
 			
-			for (int ri = 1; ri < a.getRoute().size() - 1; ++ri)
+			occupiedLinks.addAll(getRoutePaintedPoints(a));
+			
+			if (_assocs.indexOf(a) == (int) (_assocs.size() * 25.0 / 100.0))
 			{
-				if (!Point.Substract(a.getRoute().get(ri - 1), a.getRoute().get(ri))
-						.equals(Point.Substract(a.getRoute().get(ri),
-								a.getRoute().get(ri + 1))))
-				{
-					occupiedLinks.add(new Painted<Point>(Colors.Red, new Point(a
-							.getRoute().get(ri)), _batches.get(a.getId())));
-				}
-				else
-				{
-					occupiedLinks.add(new Painted<Point>(Colors.Yellow, new Point(a
-							.getRoute().get(ri)), _batches.get(a.getId())));
-				}
+				ProgressManager.getEmitter().OnLinkArrangeFirstQuarter();
+			}
+			else if (_assocs.indexOf(a) == (int) (_assocs.size() * 50.0 / 100.0))
+			{
+				ProgressManager.getEmitter().OnLinkArrangeHalf();
+			}
+			else if (_assocs.indexOf(a) == (int) (_assocs.size() * 75.0 / 100.0))
+			{
+				ProgressManager.getEmitter().OnLinkArrangeThirdQuarter();
 			}
 		}
+	}
+	
+	private Set<Painted<Point>> getRoutePaintedPoints(LineAssociation link)
+	{
+		Set<Painted<Point>> result = new HashSet<Painted<Point>>();
+		
+		for (int ri = 1; ri < link.getRoute().size() - 1; ++ri)
+		{
+			if (!Point.Substract(link.getRoute().get(ri - 1), link.getRoute().get(ri))
+					.equals(Point.Substract(link.getRoute().get(ri),
+							link.getRoute().get(ri + 1))))
+			{
+				result.add(new Painted<Point>(Colors.Red, new Point(link
+						.getRoute().get(ri)), _batches.get(link.getId())));
+			}
+			else
+			{
+				result.add(new Painted<Point>(Colors.Yellow, new Point(link
+						.getRoute().get(ri)), _batches.get(link.getId())));
+			}
+		}
+		
+		return result;
 	}
 	
 	private ArrayList<Point> convertFromNodes(ArrayList<Node> nodes, Point start,
@@ -754,12 +784,11 @@ public class ArrangeAssociations
 		 * .directionOf(nodes.get(0).getTo(), nodes.get(0).getFrom())))));
 		 */
 		
-		for (int i = 1; i < nodes.size(); ++i)
+		for (int i = 0; i < nodes.size(); ++i)
 		{
-			result.add(new Point(nodes.get(i).getFrom()));
+			result.add(new Point(nodes.get(i).getTo()));
 		}
 		
-		result.add(new Point(nodes.get(nodes.size() - 1).getTo()));
 		result.add(end);
 		
 		return result;

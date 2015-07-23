@@ -124,6 +124,7 @@ public class Queue<Item> implements Iterable<Item>
 	 * 
 	 * @return the sequence of items in FIFO order, separated by spaces
 	 */
+	@Override
 	public String toString()
 	{
 		StringBuilder s = new StringBuilder();
@@ -139,6 +140,7 @@ public class Queue<Item> implements Iterable<Item>
 	 * @return an iterator that iterates over the items in this queue in FIFO
 	 *         order
 	 */
+	@Override
 	public Iterator<Item> iterator()
 	{
 		return new ListIterator<Item>(first);
@@ -155,16 +157,19 @@ public class Queue<Item> implements Iterable<Item>
 			current = first;
 		}
 		
+		@Override
 		public boolean hasNext()
 		{
 			return current != null;
 		}
 		
+		@Override
 		public void remove()
 		{
 			throw new UnsupportedOperationException();
 		}
 		
+		@Override
 		public Item next()
 		{
 			if (!hasNext())
