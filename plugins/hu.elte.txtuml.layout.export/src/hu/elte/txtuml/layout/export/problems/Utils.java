@@ -11,14 +11,18 @@ import java.lang.annotation.Annotation;
 
 public class Utils {
     
+    public static String classAsString(Class<?> cls) {
+        return cls.getCanonicalName();
+    }
+    
     public static String classArrayAsString(Class<?>[] clss) {
         String result = "";
         for (int i = 0; i < clss.length - 1; ++i) {
-            result += clss[i].getCanonicalName() + ", ";
+            result += classAsString(clss[i]) + ", ";
         }
         
         if (clss.length > 0) {
-            result += clss[clss.length - 1].getCanonicalName();
+            result += classAsString(clss[clss.length - 1]);
         }
         
         return result;
@@ -31,15 +35,15 @@ public class Utils {
     public static String diamondStatementAsString(Class<? extends LayoutNode> top, Class<? extends LayoutNode> right,
         Class<? extends LayoutNode> bottom, Class<? extends LayoutNode> left)
     {
-        return "diamond(top = " + top.getCanonicalName() + ", right = " + right.getCanonicalName() +
-            ", bottom = " + bottom.getCanonicalName() + ", left = " + left.getCanonicalName();
+        return "diamond(top = " + classAsString(top) + ", right = " + classAsString(right) +
+            ", bottom = " + classAsString(bottom) + ", left = " + classAsString(left);
     }
     
     public static String adjacencyStatementAsString(StatementType type, Class<? extends LayoutNode> val,
         Class<? extends LayoutNode> from)
     {
-        return type.toString().toLowerCase() + "(val = " + val.getCanonicalName()
-            + ", from = " + from.getCanonicalName() + ")";
+        return type.toString().toLowerCase() + "(val = " + classAsString(val)
+            + ", from = " + classAsString(from) + ")";
     }
     
     public static String cardinalStatementAsString(StatementType type,

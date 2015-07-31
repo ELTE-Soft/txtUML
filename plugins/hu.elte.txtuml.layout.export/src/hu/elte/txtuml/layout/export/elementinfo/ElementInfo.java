@@ -53,7 +53,7 @@ public interface ElementInfo {
 	 * @return the element type this object holds info about
 	 */
 	Class<? extends LayoutElement> getElementClass();
-
+	
 	/**
 	 * @return the string representation of the element this object holds info
 	 *         about

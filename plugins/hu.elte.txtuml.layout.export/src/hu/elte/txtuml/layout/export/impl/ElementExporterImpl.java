@@ -50,6 +50,8 @@ public class ElementExporterImpl implements ElementExporter {
 	// field. If this field's value is Unknown, set it to the element's value.
 	// If it is not Unknown, and also unequal to the element's type, an has to
 	// be shown.
+	private Class<?> rootElement;
+	
 	private final NodeMap nodes;            // includes user defined phantoms
 	private final LinkMap links;
 	private final NodeGroupMap nodeGroups;
@@ -62,6 +64,7 @@ public class ElementExporterImpl implements ElementExporter {
 	private AtomicLong phantomCounter = new AtomicLong(0);
 
 	public ElementExporterImpl(ProblemReporter problemReporter) {
+	    this.rootElement = null;
 	    this.nodes = NodeMap.create();
 	    this.links = LinkMap.create();
 	    this.nodeGroups = NodeGroupMap.create();
@@ -76,6 +79,11 @@ public class ElementExporterImpl implements ElementExporter {
 	@Override
 	public DiagramType getDiagramTypeBasedOnElements() {
 		return diagramType;
+	}
+	
+	@Override
+	public String getRootElementAsString() {
+	    return rootElement != null ? rootElement.getCanonicalName() : null;
 	}
 	
 	@Override
@@ -389,7 +397,7 @@ public class ElementExporterImpl implements ElementExporter {
     
 	@SuppressWarnings("unchecked")
 	private NodeInfo exportNewNode(Class<? extends LayoutElement> cls) {
-		if (ClassDiagramExporter.isNode(cls)) {
+		if (ClassDiagramExporter.isNode(cls) && hasValidDeclaringClass(cls)) {
 			NodeInfo info = NodeInfo.create(cls, DiagramType.Class,
 					asString(cls));
 			nodes.put((Class<? extends LayoutNode>) cls, info);
@@ -414,7 +422,7 @@ public class ElementExporterImpl implements ElementExporter {
 
 	@SuppressWarnings("unchecked")
 	private LinkInfo exportNewLink(Class<? extends LayoutElement> cls) {
-		if (ClassDiagramExporter.isLink(cls)) {
+		if (ClassDiagramExporter.isLink(cls) && hasValidDeclaringClass(cls)) {
 			Pair<Class<? extends LayoutNode>, Class<? extends LayoutNode>> p = ClassDiagramExporter
 					.startAndEndOfLink(cls);
 
@@ -561,7 +569,7 @@ public class ElementExporterImpl implements ElementExporter {
     
     @Override
     public void exportImpliedLinks() {
-        ClassDiagramExporter classDiagramExporter = new ClassDiagramExporter(this);
+        ClassDiagramExporter classDiagramExporter = new ClassDiagramExporter(this, rootElement);
         
         // including phantoms would be unnecessary (but not erroneous)
         nodes.forEach((elementClass, node) -> {
@@ -591,6 +599,27 @@ public class ElementExporterImpl implements ElementExporter {
 
     private boolean isOfType(Class<? extends Annotation> annotationClass, Annotation annot) {
         return annot.annotationType() == annotationClass;
+    }
+    
+    private boolean hasValidDeclaringClass(Class<? extends LayoutElement> cls) {        
+        Class<?> declaringClass = cls.getDeclaringClass();
+        
+        // TODO additional checks will be needed when packages became implemented in the api
+        if (!ClassDiagramExporter.isModel(declaringClass)) {
+            problemReporter.hasInvalidDeclaringClass(cls);
+            return false;
+        }
+        
+        if (this.rootElement == null) {
+            this.rootElement = declaringClass;
+        }
+        
+        if (declaringClass != this.rootElement) {
+            problemReporter.hasInvalidDeclaringClass(cls);
+            return false;
+        }
+        
+        return true;
     }
     
 }

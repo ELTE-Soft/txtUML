@@ -14,11 +14,13 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
  * Provides important information about the exportation, including its results.
  * 
  * @author Gábor Ferenc Kovács
+ * @author Dávid János Németh
  *
  */
 public class DiagramExportationReport {
 
 	private DiagramType type;
+	private String rootElementAsString;
 	private StatementList statements;
 	private Set<RectangleObject> nodes;
 	private Set<LineAssociation> links;
@@ -30,7 +32,7 @@ public class DiagramExportationReport {
 	public DiagramExportationReport() {
 		clear();
 	}
-
+	
 	/**
 	 * Returns whether the exportation was successful or not. The exportation is
 	 * successful if no errors have occurred.
@@ -39,6 +41,22 @@ public class DiagramExportationReport {
 		return errorCount == 0;
 	}
 
+    /**
+     * Returns the string representation of the root element
+     * (a subclass of Model in the current implementation)
+     * which the exported diagram belongs to.
+     * <p>
+     * If the root element couldn't been determined (eg. the
+     * diagram description was empty), the return value is
+     * <code>null</code>. If the <code>isSuccessful</code>
+     * method returns <code>false</code>, the return value of
+     * this method should not be used (it is probably
+     * <code>null</code>).
+     */
+    public String getRootElementAsString() {
+        return rootElementAsString;
+    }
+	
 	/**
 	 * @return the number of errors occurred during exportation
 	 */
@@ -54,7 +72,7 @@ public class DiagramExportationReport {
 	}
 
 	/**
-	 * If the <code>isSuccesful</code> method returns <code>false</code>, the
+	 * If the <code>isSuccessful</code> method returns <code>false</code>, the
 	 * return value of this method should not be used (it is probably
 	 * <code>Unknown</code>).
 	 * 
@@ -65,7 +83,7 @@ public class DiagramExportationReport {
 	}
 
 	/**
-	 * If the <code>isSuccesful</code> method returns <code>false</code>, the
+	 * If the <code>isSuccessful</code> method returns <code>false</code>, the
 	 * return value of this method should not be used (it is probably
 	 * <code>null</code>).
 	 * 
@@ -76,7 +94,7 @@ public class DiagramExportationReport {
 	}
 
 	/**
-	 * If the <code>isSuccesful</code> method returns <code>false</code>, the
+	 * If the <code>isSuccessful</code> method returns <code>false</code>, the
 	 * return value of this method should not be used (it is probably
 	 * <code>null</code>).
 	 * 
@@ -87,7 +105,7 @@ public class DiagramExportationReport {
 	}
 
 	/**
-	 * If the <code>isSuccesful</code> method returns <code>false</code>, the
+	 * If the <code>isSuccessful</code> method returns <code>false</code>, the
 	 * return value of this method should not be used (it is probably
 	 * <code>null</code>).
 	 * 
@@ -97,10 +115,16 @@ public class DiagramExportationReport {
 		return links;
 	}
 	
+	/**
+	 *  @return the (possibly empty) list of errors occurred during the exportation
+	 */
 	public final List<String> getErrors() {
 	    return errors;
 	}
 	
+	 /**
+     *  @return the (possibly empty) list of warnings occurred during the exportation
+     */
 	public final List<String> getWarnings() {
 	    return warnings;
 	}
@@ -133,6 +157,7 @@ public class DiagramExportationReport {
 	 * Resets fields to their default value;
 	 */
 	public final void clear() {
+	    rootElementAsString = null;
 		type = DiagramType.Unknown;
 		errorCount = 0;
 		warningCount = 0;
@@ -141,6 +166,16 @@ public class DiagramExportationReport {
 		statements = null;
 		nodes = null;
 		links = null;
+	}
+	
+	/**
+	 * Should be called only by the diagram exporter.
+	 * 
+	 * @param rootElement
+	 *             string representation of the diagram's root element
+	 */
+	public final void setRootElementAsString(String rootElementAsString) {
+	    this.rootElementAsString = rootElementAsString;
 	}
 
 	/**

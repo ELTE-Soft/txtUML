@@ -32,6 +32,8 @@ public interface ElementExporter {
 
 	DiagramType getDiagramTypeBasedOnElements();
 	
+	String getRootElementAsString();
+	
 	NodeMap getNodes();
 	
 	NodeList getPhantoms();

@@ -21,7 +21,7 @@ public class ProblemReporter {
     // Errors
     
     public void moreThanOneLayoutClass(Class<?> layoutCls, Class<?> otherLayoutCls) {
-        report.error("Layout classes " + layoutCls.getCanonicalName() + " and " + otherLayoutCls.getCanonicalName() +
+        report.error("Layout classes " + Utils.classAsString(layoutCls) + " and " + Utils.classAsString(otherLayoutCls) +
             " are subclasses of the same diagram class. Only one layout class per diagram is allowed.");
     }
     
@@ -62,29 +62,34 @@ public class ProblemReporter {
     }
     
     public void invalidGroup(Class<? extends LayoutElement> groupClass, Class<? extends LayoutElement> elementClass) {
-        report.error("Exportation of group " + groupClass.getCanonicalName() + " failed, as at least one of its elements (" +
-            elementClass.getCanonicalName() + ") is invalid.");
+        report.error("Exportation of group " + Utils.classAsString(groupClass) + " failed, as at least one of its elements (" +
+            Utils.classAsString(elementClass) + ") is invalid.");
     }
     
     public void invalidAnonGroup(Class<? extends LayoutElement>[] elementClasses, Class<? extends LayoutElement> elementClass) {
         report.error("Exportation of anonymous group {" + Utils.classArrayAsString(elementClasses) +
-            "} failed, as at least one of its elements (" + elementClass.getCanonicalName() + ") is invalid.");       
+            "} failed, as at least one of its elements (" + Utils.classAsString(elementClass) + ") is invalid.");       
     }
     
     public void selfContainment(Class<? extends LayoutElement> groupClass) {
-        report.error("Group " + groupClass.getCanonicalName() + " contains itself.");
+        report.error("Group " + Utils.classAsString(groupClass) + " contains itself.");
+    }
+    
+    public void hasInvalidDeclaringClass(Class<? extends LayoutElement> elementClass) {
+        report.error("Model element " + Utils.classAsString(elementClass)
+            + " is invalid due to its declaring class. Model elements present in a diagram description should be declared in the same subclass of Model.");
     }
     
     // Warnings
     
     public void unknownInnerClassOfDiagram(Class<?> cls) {
-        report.warning("Class " + cls.getCanonicalName() +
+        report.warning("Class " + Utils.classAsString(cls) +
             " should not be present in a diagram description, therefore it is ignored. Only subclasses of Diagram.Layout, Diagram.Phantom, Diagram.NodeGroup and Diagram.LinkGroup are allowed as inner classes of a diagram class.");       
     }
     
     public void unknownAnnotationOnClass(Annotation annot, Class<?> cls) {
         report.warning("Annotation " + annot.toString() + " does not represent a valid description element on class " +
-           cls.getCanonicalName() + ", therefore it is ignored.");
+            Utils.classAsString(cls) + ", therefore it is ignored.");
     }
     
     public void sugarStatementWithEmptyArguments(String name) {
@@ -108,11 +113,11 @@ public class ProblemReporter {
     }
     
     public void emptyGroup(Class<? extends LayoutElement> groupClass) {
-        report.warning("Group " + groupClass.getCanonicalName() + " is empty, therefore it has no effect on the arrangement.");
+        report.warning("Group " + Utils.classAsString(groupClass) + " is empty, therefore it has no effect on the arrangement.");
     }
     
     public void groupWithoutContainsAnnotation(Class<? extends LayoutElement> groupClass) {
-        report.warning("Group class " + groupClass.getCanonicalName() +
+        report.warning("Group class " + Utils.classAsString(groupClass) +
             " has no Contains annotation, therefore it acts as an empty group, which has no effect on the arrangement.");
     }
     

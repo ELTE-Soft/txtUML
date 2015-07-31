@@ -24,13 +24,15 @@ import hu.elte.txtuml.utils.Pair;
 public class ClassDiagramExporter {
     
     private final ElementExporter elementExporter;
-    private Class<? extends Model> model;
+    private Class<?> rootElement;
     private List<Class<?>> links; // user defined links in the current model
     
-    public ClassDiagramExporter(ElementExporter elementExporter) {
+    public ClassDiagramExporter(ElementExporter elementExporter, Class<?> rootElement) {
         this.elementExporter = elementExporter;
-        this.model = null;
+        this.rootElement = rootElement;
         this.links = new LinkedList<Class<?>>();
+        
+        loadLinks();
     }
 	
 	public static boolean isNode(Class<?> cls) {
@@ -60,33 +62,13 @@ public class ClassDiagramExporter {
 	
 	@SuppressWarnings("unchecked")
     public void exportAssociationsStartingFromThisNode(Class<?> node) {
-	    Class<?> declaringClass = node.getDeclaringClass();
-        if (!isModel(declaringClass)) {
-            // show error
-            return;
-        }
-        
-	    if (model == null) {        	                
-	        model = (Class<? extends Model>) declaringClass;	        
-	        for (Class<?> innerClass : model.getDeclaredClasses()) {
-	            if (isLink(innerClass)) {
-	                links.add(innerClass);
-	            }
-	        }         
-	    }
-	    
-        if (declaringClass != model) {
-            // show error
-            return;
-        }
-	        
 	    NodeMap nodes = elementExporter.getNodes();    
 	    for (Class<?> link : links) {
 	        Pair<Class<? extends LayoutNode>, Class<? extends LayoutNode>> p = startAndEndOfLink(link);
 	        
-	        // nodes.containsKey(node) is guaranteed here
+	        // nodes.containsKey(node) should be guaranteed here
             if ((p.getKey().equals(node) && nodes.containsKey(p.getValue())) 
-                    || ((p.getValue().equals(node) && nodes.containsKey(p.getKey()))))
+                || ((p.getValue().equals(node) && nodes.containsKey(p.getKey()))))
             {
                 elementExporter.exportLink((Class<? extends LayoutLink>) link);
             }
@@ -96,7 +78,7 @@ public class ClassDiagramExporter {
 	        Class<?> base = node.getSuperclass();
 	        if (base != null && nodes.containsKey(base)) {
 	            elementExporter.exportGeneralization((Class<? extends LayoutNode>) base,
-	                    (Class<? extends LayoutNode>) node);
+	                (Class<? extends LayoutNode>) node);
 	        } 
 	    }
 	}
@@ -111,6 +93,18 @@ public class ClassDiagramExporter {
 		} catch (Exception e) {
 		}
 		return null;
+	}
+	
+	private void loadLinks() {
+	    if (rootElement == null) {
+	        return;
+	    }
+	    
+	    for (Class<?> innerClass : rootElement.getDeclaredClasses()) {
+            if (isLink(innerClass)) {
+                links.add(innerClass);
+            }
+        }
 	}
 	
 }
