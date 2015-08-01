@@ -1,6 +1,5 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -64,10 +63,6 @@ public class Painted<Item>
 	 */
 	public Colors Color;
 	/**
-	 * Id of the batch.
-	 */
-	public Set<Integer> Batch;
-	/**
 	 * Inner item.
 	 */
 	public Item Inner;
@@ -94,7 +89,6 @@ public class Painted<Item>
 	{
 		Color = c;
 		Inner = i;
-		Batch = new HashSet<Integer>();
 	}
 	
 	/**
@@ -111,7 +105,6 @@ public class Painted<Item>
 	{
 		Color = c;
 		Inner = i;
-		Batch = bs;
 	}
 	
 	/**
@@ -124,7 +117,6 @@ public class Painted<Item>
 	{
 		Color = p.Color;
 		Inner = p.Inner;
-		Batch = p.Batch;
 	}
 	
 	// end Ctors
@@ -153,7 +145,6 @@ public class Painted<Item>
 		String result;
 		
 		result = "Color: " + Color.toString();
-		result += "[Batch: " + Batch.toString() + "]";
 		result += ", Inner: " + Inner.toString() + ".";
 		
 		return result;

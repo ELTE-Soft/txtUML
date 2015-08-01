@@ -1,12 +1,12 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.links;
 
-import hu.elte.txtuml.layout.visualizer.annotations.Statement;
-import hu.elte.txtuml.layout.visualizer.annotations.StatementLevel;
-import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation.RouteConfig;
 import hu.elte.txtuml.layout.visualizer.model.Point;
+import hu.elte.txtuml.layout.visualizer.statements.Statement;
+import hu.elte.txtuml.layout.visualizer.statements.StatementLevel;
+import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 import java.util.ArrayList;
 import java.util.List;

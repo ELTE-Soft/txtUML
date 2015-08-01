@@ -1,5 +1,6 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.links;
 
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Boundary;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Cost;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Graph;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Link;
@@ -33,20 +34,18 @@ class GraphSearch
 	
 	private final Double _weightLength = 1.0; // 2.9
 	private final Double _weightTurns = 3.0; // 2.7
-	private final Double _weightCrossing = 3.0; //2.0
+	private final Double _weightCrossing = 3.0; // 2.0
 	private final Integer _penalizeTurns = 2;
 	
 	// end Constants
 	
 	// Variables
 	
-	//private Set<Node> _startSet;
 	private Node _end;
 	private Set<Node> _endSet;
 	private Set<Painted<Point>> _objects;
-	private Integer _boundary;
+	private Boundary _boundary;
 	private Integer _extends;
-	private Set<Integer> _batches;
 	
 	private Graph<Node> G;
 	private PriorityQueue<Node> AvailableNodes;
@@ -69,10 +68,8 @@ class GraphSearch
 	 *            Set of end Nodes to reach.
 	 * @param os
 	 *            Nodes we have to skip (already occupied).
-	 * @param top
-	 *            Upper bound of the maximum width of the graph to search in.
-	 * @param bs
-	 *            Set of ids of the batches.
+	 * @param bounds
+	 *            Bounds of the maximum width of the graph to search in.
 	 * @throws CannotFindAssociationRouteException
 	 *             Throws if there is no route from start->end.
 	 * @throws CannotStartAssociationRouteException
@@ -85,17 +82,16 @@ class GraphSearch
 	 *             Throws if the algorithm encounters something which it should
 	 *             not have.
 	 */
-	public GraphSearch(Set<Node> ss, Set<Node> es, Set<Painted<Point>> os, Integer top,
-			Set<Integer> bs) throws CannotFindAssociationRouteException,
-			CannotStartAssociationRouteException, ConversionException, InternalException
+	public GraphSearch(Set<Node> ss, Set<Node> es, Set<Painted<Point>> os,
+			Boundary bounds) throws CannotFindAssociationRouteException,
+			CannotStartAssociationRouteException, ConversionException,
+			InternalException
 	{
 		_end = new Node(new Point(), new Point());
-		//_startSet = new HashSet<Node>(ss);
 		_endSet = new HashSet<Node>(es);
 		_objects = os;
-		_boundary = (top > 0) ? top : -1;
+		_boundary = bounds;
 		_extends = 0;
-		_batches = bs;
 		_heuristic = new HashMap<Node, Double>();
 		
 		G = new Graph<Node>();
@@ -107,7 +103,7 @@ class GraphSearch
 		PI = new Parent<Node>();
 		
 		// Extend StartSet
-		for (Node p : ss/*_startSet*/)
+		for (Node p : ss/* _startSet */)
 		{
 			PI.set(p, null);
 			g.set(p, 2 * _weightLength);
@@ -116,7 +112,8 @@ class GraphSearch
 		
 		if (!search())
 		{
-			throw new CannotFindAssociationRouteException("No Route from START to END!");
+			throw new CannotFindAssociationRouteException(
+					"No Route from START to END!");
 		}
 	}
 	
@@ -132,19 +129,17 @@ class GraphSearch
 				return false;
 			
 			Node n = AvailableNodes.poll();
-			// Node n = minf();
 			
-			if (_endSet.stream().anyMatch(node -> node.getFrom().equals(n.getTo())))
+			if (_endSet.stream().anyMatch(node -> node.getFrom()
+					.equals(n.getTo())))
 			{
 				Node e = _endSet.stream()
-						.filter(node -> node.getFrom().equals(n.getTo())).findFirst()
-						.get();
+						.filter(node -> node.getFrom().equals(n.getTo()))
+						.findFirst().get();
 				PI.set(e, n);
 				PI.set(_end, e);
 				return true;
 			}
-			
-			// AvailableNodes.remove(n);
 			
 			++_extends;
 			for (Pair<Node, Double> pair : Gamma(n))
@@ -204,7 +199,8 @@ class GraphSearch
 		Pair<Double, Node> distance = manhattanDistance(p);
 		Double remainingTurns = manhattanLeastTurns(p);
 		// manhattanLeastTurnsCheckingOccupied(p, distance.Second);
-		Double result = (_weightTurns * remainingTurns + _weightLength * distance.First);
+		Double result = (_weightTurns * remainingTurns + _weightLength
+				* distance.First);
 		
 		_heuristic.put(p, result);
 		
@@ -294,16 +290,16 @@ class GraphSearch
 			Point tF = new Point(tempF);
 			if (resultF <= 1
 					&& !tempF.equals(ending)
-					&& (_objects.stream().anyMatch(pp -> pp.Color.equals(Colors.Red)
-							&& pp.Inner.equals(tF))))
+					&& (_objects.stream().anyMatch(pp -> pp.Color
+							.equals(Colors.Red) && pp.Inner.equals(tF))))
 			{
 				resultF = resultF + _penalizeTurns;
 			}
 			Point tB = new Point(tempB);
 			if (resultB <= 1
 					&& !tempB.equals(from)
-					&& (_objects.stream().anyMatch(pp -> pp.Color.equals(Colors.Red)
-							&& pp.Inner.equals(tB))))
+					&& (_objects.stream().anyMatch(pp -> pp.Color
+							.equals(Colors.Red) && pp.Inner.equals(tB))))
 			{
 				resultB = resultB + _penalizeTurns;
 			}
@@ -326,16 +322,16 @@ class GraphSearch
 			Point tF = new Point(tempF);
 			if (resultF <= 1
 					&& !tempF.equals(ending)
-					&& (_objects.stream().anyMatch(pp -> pp.Color.equals(Colors.Red)
-							&& pp.Inner.equals(tF))))
+					&& (_objects.stream().anyMatch(pp -> pp.Color
+							.equals(Colors.Red) && pp.Inner.equals(tF))))
 			{
 				resultF = resultF + _penalizeTurns;
 			}
 			Point tB = new Point(tempB);
 			if (resultB <= 1
 					&& !tempB.equals(from)
-					&& (_objects.stream().anyMatch(pp -> pp.Color.equals(Colors.Red)
-							&& pp.Inner.equals(tB))))
+					&& (_objects.stream().anyMatch(pp -> pp.Color
+							.equals(Colors.Red) && pp.Inner.equals(tB))))
 			{
 				resultB = resultB + _penalizeTurns;
 			}
@@ -353,28 +349,24 @@ class GraphSearch
 	
 	private Set<Pair<Node, Double>> Gamma(Node parent)
 	{
-		if (_boundary != -1
-				&& (Math.abs(parent.getTo().getX()) > _boundary || Math.abs(parent
-						.getTo().getY()) > _boundary))
+		if (!_boundary.isIn(parent.getTo()))
 			return new HashSet<Pair<Node, Double>>();
 		
 		Set<Pair<Node, Double>> result = new HashSet<Pair<Node, Double>>();
 		
 		// Add possible neighbors
-		if (!_objects.stream().anyMatch(
-				pp -> pp.Inner.equals(parent.getTo())
-						&& !pp.Batch.stream().anyMatch(b -> _batches.contains(b))
-						&& pp.Color.equals(Colors.Red)))
+		if (!_objects.stream().anyMatch(pp -> pp.Inner.equals(parent.getTo())
+				&& pp.Color.equals(Colors.Red)))
 		{
 			Direction sub = Point.directionOf(parent.getTo(), parent.getFrom());
-			if (_objects.stream().anyMatch(
-					pp -> pp.Inner.equals(parent.getTo())
-							&& !pp.Batch.stream().anyMatch(b -> _batches.contains(b))
+			if (_objects.stream()
+					.anyMatch(pp -> pp.Inner.equals(parent.getTo())
 							&& pp.Color.equals(Colors.Yellow)))
 			{
 				// straight, crossing
-				result.add(new Pair<Node, Double>(new Node(parent.getTo(), Point.Add(
-						parent.getTo(), sub)), _weightLength + _weightCrossing));
+				result.add(new Pair<Node, Double>(new Node(parent.getTo(),
+						Point.Add(parent.getTo(), sub)), _weightLength
+						+ _weightCrossing));
 			}
 			else
 			{
@@ -392,7 +384,8 @@ class GraphSearch
 					}
 					
 					Point p = Point.Add(parent.getTo(), dir);
-					result.add(new Pair<Node, Double>(new Node(parent.getTo(), p), w));
+					result.add(new Pair<Node, Double>(new Node(parent.getTo(),
+							p), w));
 				}
 			}
 		}

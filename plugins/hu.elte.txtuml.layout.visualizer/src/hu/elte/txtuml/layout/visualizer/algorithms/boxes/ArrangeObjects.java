@@ -2,9 +2,6 @@ package hu.elte.txtuml.layout.visualizer.algorithms.boxes;
 
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.DirectedEdge;
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.EdgeWeightedDigraph;
-import hu.elte.txtuml.layout.visualizer.annotations.Statement;
-import hu.elte.txtuml.layout.visualizer.annotations.StatementLevel;
-import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
 import hu.elte.txtuml.layout.visualizer.events.ProgressManager;
 import hu.elte.txtuml.layout.visualizer.exceptions.BoxArrangeConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.BoxOverlapConflictException;
@@ -13,19 +10,21 @@ import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.MyException;
 import hu.elte.txtuml.layout.visualizer.helpers.BiMap;
 import hu.elte.txtuml.layout.visualizer.helpers.Helper;
+import hu.elte.txtuml.layout.visualizer.helpers.Pair;
 import hu.elte.txtuml.layout.visualizer.helpers.Quadraple;
 import hu.elte.txtuml.layout.visualizer.helpers.StatementHelper;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.OverlapArrangeMode;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.layout.visualizer.statements.Statement;
+import hu.elte.txtuml.layout.visualizer.statements.StatementLevel;
+import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -37,7 +36,7 @@ import java.util.stream.Collectors;
  */
 public class ArrangeObjects
 {
-	private Set<RectangleObject> _objects;
+	private List<RectangleObject> _objects;
 	private List<Statement> _statements;
 	private BiMap<String, Integer> _indices;
 	private Integer _gid;
@@ -92,7 +91,7 @@ public class ArrangeObjects
 	 *             Throws if the algorithm encounters an unsolvable overlap
 	 *             during the arrangement of the boxes.
 	 */
-	public ArrangeObjects(Set<RectangleObject> obj, List<Statement> par_stats,
+	public ArrangeObjects(List<RectangleObject> obj, List<Statement> par_stats,
 			Integer gid, Boolean log, OverlapArrangeMode arrangeoverlaps)
 			throws BoxArrangeConflictException, InternalException, ConversionException,
 			BoxOverlapConflictException
@@ -107,7 +106,11 @@ public class ArrangeObjects
 		_gid = gid;
 		
 		_statements = Helper.cloneStatementList(par_stats);
-		_objects = new HashSet<RectangleObject>(obj);
+		_objects = new ArrayList<RectangleObject>(obj);
+		_objects.sort((box1, box2) ->
+		{
+			return box1.getName().compareTo(box2.getName());
+		});
 		_transformAmount = 1;
 		
 		// Emit Event
@@ -117,7 +120,7 @@ public class ArrangeObjects
 		setIndices();
 		arrangeUntilNotConflicted();
 		
-		if (isThereOverlapping())
+		if (OverlapHelper.isThereOverlapping(_objects))
 			arrangeOverlaps();
 	}
 	
@@ -236,13 +239,11 @@ public class ArrangeObjects
 				removeOverlapsWithFew();
 				break;
 			case limited:
-				// removeOverlaps(100);
-				throw new InternalException("Not Implemented Exception!");
-				// break;
+				removeOverlaps(100);
+				break;
 			case full:
-				// removeOverlaps(-1);
-				throw new InternalException("Not Implemented Exception!");
-				// break;
+				removeOverlaps(1);
+				break;
 		}
 		
 		if (_logging)
@@ -257,9 +258,13 @@ public class ArrangeObjects
 	{
 		// Fixes the layout of the diagram by giving statements preserving the
 		// current state
-		fixCurrentState();
+		Pair<List<Statement>, Integer> pair = OverlapHelper.fixCurrentState(_objects,
+				_statements, _gid);
+		_statements.addAll(pair.First);
+		_gid = pair.Second;
 		
-		for (Entry<Point, HashSet<String>> entry : overlaps().entrySet())
+		for (Entry<Point, HashSet<String>> entry : OverlapHelper.overlaps(_objects)
+				.entrySet())
 		{
 			if (entry.getValue().size() > 1)
 			{
@@ -291,8 +296,9 @@ public class ArrangeObjects
 		}
 		catch (BoxArrangeConflictException e)
 		{
-			throw new BoxOverlapConflictException(overlaps().entrySet().stream()
-					.findFirst().get().getValue().stream().collect(Collectors.toList()));
+			throw new BoxOverlapConflictException(OverlapHelper.overlaps(_objects)
+					.entrySet().stream().findFirst().get().getValue().stream()
+					.collect(Collectors.toList()));
 		}
 		
 	}
@@ -322,27 +328,6 @@ public class ArrangeObjects
 		}
 	}
 	
-	private void fixCurrentState() throws ConversionException, InternalException
-	{
-		for (RectangleObject o1 : _objects)
-		{
-			for (RectangleObject o2 : _objects)
-			{
-				if (o1.equals(o2) || o1.getPosition().equals(o2.getPosition()))
-					continue;
-				
-				for (Direction dir : Point.directionOfAll(o1.getPosition(),
-						o2.getPosition()))
-				{
-					Statement s = new Statement(Helper.asStatementType(dir),
-							StatementLevel.Low, _gid, o1.getName(), o2.getName());
-					if (!_statements.contains(s))
-						_statements.add(s);
-				}
-			}
-		}
-	}
-	
 	private void removeOverlapsWithFew() throws InternalException, ConversionException,
 			BoxOverlapConflictException
 	{
@@ -354,7 +339,10 @@ public class ArrangeObjects
 		
 		// Fixes the layout of the diagram by giving statements preserving the
 		// current state
-		fixCurrentState();
+		Pair<List<Statement>, Integer> pair = OverlapHelper.fixCurrentState(_objects,
+				_statements, _gid);
+		_statements.addAll(pair.First);
+		_gid = pair.Second;
 		
 		Boolean wasExtension = false;
 		do
@@ -366,12 +354,12 @@ public class ArrangeObjects
 			// for every overlapping box pairs
 			for (RectangleObject boxA : SortedObjects)
 			{
-				if (!isThereOverlapping())
+				if (!OverlapHelper.isThereOverlapping(_objects))
 					break;
 				
 				for (RectangleObject boxB : SortedObjects)
 				{
-					if (!isThereOverlapping())
+					if (!OverlapHelper.isThereOverlapping(_objects))
 						break;
 					
 					if (boxA.getName().equals(boxB.getName()))
@@ -387,10 +375,10 @@ public class ArrangeObjects
 		} while (wasExtension);
 		
 		// If the cycle stopped but there remained overlapped elements
-		if (isThereOverlapping())
+		if (OverlapHelper.isThereOverlapping(_objects))
 		{
-			throw new BoxOverlapConflictException(overlaps().entrySet().stream()
-					.map(e -> e.getValue()).max((x, y) ->
+			throw new BoxOverlapConflictException(OverlapHelper.overlaps(_objects)
+					.entrySet().stream().map(e -> e.getValue()).max((x, y) ->
 					{
 						return Integer.compare(x.size(), y.size());
 					}).get().stream().collect(Collectors.toList()));
@@ -405,8 +393,8 @@ public class ArrangeObjects
 		
 		for (Direction dir : Direction.values())
 		{
-			Integer prevOverlapCount = overlappingCount();
-			if (!isThereOverlapping(prevOverlapCount))
+			Integer prevOverlapCount = OverlapHelper.overlappingCount(_objects);
+			if (!OverlapHelper.isThereOverlapping(prevOverlapCount))
 				break;
 			
 			List<Statement> newStats = Helper.cloneStatementList(_statements);
@@ -417,7 +405,7 @@ public class ArrangeObjects
 			try
 			{
 				arrange(newStats);
-				Integer currOverlapCount = overlappingCount();
+				Integer currOverlapCount = OverlapHelper.overlappingCount(_objects);
 				if (currOverlapCount < prevOverlapCount)
 				{
 					_statements = Helper.cloneStatementList(newStats);
@@ -441,6 +429,83 @@ public class ArrangeObjects
 		return wasExtension;
 	}
 	
+	private void removeOverlaps(Integer limit) throws InternalException,
+			BoxOverlapConflictException, ConversionException
+	{
+		Integer c = OverlapHelper.pairsCount(_objects);
+		Integer firstStep = ((c / limit) == 0) ? 1 : (c / limit);
+		
+		for (int i = 1; i <= c; i = i + firstStep)
+		{
+			if (_logging)
+				System.err.println("[FULL] List of Pairs of " + i);
+			
+			if (!OverlapHelper.isThereOverlapping(_objects))
+				break;
+			
+			Integer secondStep = ((OverlapHelper.selectPairs(i).size() / limit) == 0) ? 1
+					: (OverlapHelper.selectPairs(i).size() / limit);
+			
+			for (int comb = 0; comb < OverlapHelper.selectPairs(i).size(); comb = comb
+					+ secondStep)
+			{
+				if (_logging)
+					System.err.println("[FULL] > " + (comb+1) + "/"
+							+ OverlapHelper.selectPairs(i).size() + ".");
+				
+				if (!OverlapHelper.isThereOverlapping(_objects))
+					break;
+				
+				for (FourNumber fn = FourNumber.Zero(OverlapHelper.selectPairs(i)
+						.get(comb).size()); fn.isLessThanOrEqual(FourNumber
+						.Max(OverlapHelper.selectPairs(i).get(comb).size())); fn.next())
+				{
+					if (!OverlapHelper.isThereOverlapping(_objects))
+						break;
+					
+					List<Statement> newStats = Helper.cloneStatementList(_statements);
+					newStats.addAll(OverlapHelper.getStatementsForPairs(OverlapHelper
+							.selectPairs(i).get(comb), fn, _gid));
+					
+					List<RectangleObject> originalObjects = new ArrayList<RectangleObject>(
+							_objects);
+					
+					try
+					{
+						arrange(newStats);
+						if (OverlapHelper.isThereOverlapping(_objects))
+						{
+							throw new BoxOverlapConflictException(null);
+						}
+						else
+						{
+							if (_logging)
+								System.err.println("[FULL] Found solution!");
+							
+							_statements = newStats;
+							break;
+						}
+					}
+					catch (MyException e)
+					{
+						_objects = new ArrayList<RectangleObject>(originalObjects);
+					}
+				}
+			}
+		}
+		
+		// If the cycle stopped but there remained overlapped elements
+		if (OverlapHelper.isThereOverlapping(_objects))
+		{
+			throw new BoxOverlapConflictException(OverlapHelper.overlaps(_objects)
+					.entrySet().stream().map(e -> e.getValue()).max((x, y) ->
+					{
+						return Integer.compare(x.size(), y.size());
+					}).get().stream().collect(Collectors.toList()));
+		}
+		
+	}
+	
 	private void arrange(List<Statement> stats) throws InternalException,
 			BoxArrangeConflictException
 	{
@@ -455,7 +520,7 @@ public class ArrangeObjects
 		
 		if (sp.hasNegativeCycle())
 		{
-			// Nincs megoldás, ellentmondás
+			// No solution, Conflict
 			ArrayList<Statement> excparam = new ArrayList<Statement>();
 			for (DirectedEdge e : sp.negativeCycle())
 			{
@@ -515,54 +580,6 @@ public class ArrangeObjects
 				++index;
 			}
 		}
-	}
-	
-	private boolean isThereOverlapping()
-	{
-		return isThereOverlapping(overlappingCount());
-	}
-	
-	private boolean isThereOverlapping(Integer oc)
-	{
-		return oc > 1;
-	}
-	
-	private HashMap<Point, HashSet<String>> overlaps()
-	{
-		HashMap<Point, HashSet<String>> overlaps = new HashMap<Point, HashSet<String>>();
-		
-		for (RectangleObject o : _objects)
-		{
-			if (overlaps.containsKey(o.getPosition()))
-			{
-				HashSet<String> temp = overlaps.get(o.getPosition());
-				temp.add(o.getName());
-				
-				overlaps.put(o.getPosition(), temp);
-			}
-			else
-			{
-				HashSet<String> temp = new HashSet<String>();
-				temp.add(o.getName());
-				overlaps.put(o.getPosition(), temp);
-			}
-		}
-		
-		return overlaps;
-	}
-	
-	private Integer overlappingCount()
-	{
-		Integer count = 0;
-		for (Entry<Point, HashSet<String>> entry : overlaps().entrySet())
-		{
-			if (entry.getValue().size() > 1)
-			{
-				count += entry.getValue().size();
-			}
-		}
-		
-		return count;
 	}
 	
 	private ArrayList<Quadraple<Integer, Integer, Integer, Statement>> buildEdges(
@@ -714,7 +731,7 @@ public class ArrangeObjects
 	 * 
 	 * @return the value of the arrangement.
 	 */
-	public Set<RectangleObject> value()
+	public List<RectangleObject> value()
 	{
 		return _objects;
 	}

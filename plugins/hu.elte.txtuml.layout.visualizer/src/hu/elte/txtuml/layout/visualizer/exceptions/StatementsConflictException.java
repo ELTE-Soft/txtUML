@@ -1,6 +1,6 @@
 package hu.elte.txtuml.layout.visualizer.exceptions;
 
-import hu.elte.txtuml.layout.visualizer.annotations.Statement;
+import hu.elte.txtuml.layout.visualizer.statements.Statement;
 
 import java.util.List;
 

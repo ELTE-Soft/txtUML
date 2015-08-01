@@ -1,5 +1,6 @@
 package hu.elte.txtuml.layout.visualizer.model;
 
+import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 
 /**
  * Enumeration for Directions.
@@ -47,6 +48,33 @@ public enum Direction
 				return east;
 		}
 		return null;
+	}
+	
+	/**
+	 * Returns the {@link Direction} equivalent of an {@link Integer}.
+	 * 
+	 * @param i the {@link Integer} to convert.
+	 * @return the {@link Direction} equivalent of an {@link Integer}.
+	 * @throws ConversionException
+	 *             Throws if the {@link Integer} can not be converted into
+	 *             {@link Direction}.
+	 */
+	public static Direction fromInteger(Integer i) throws ConversionException
+	{
+		switch (i)
+		{
+			case 0:
+				return Direction.north;
+			case 1:
+				return Direction.east;
+			case 2:
+				return Direction.south;
+			case 3:
+				return Direction.west;
+		}
+		
+		throw new ConversionException("Cannot convert Integer " + i.toString()
+				+ " to Direction!");
 	}
 	
 }

@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.annotations;
+package hu.elte.txtuml.layout.visualizer.statements;
 
 /**
  * Enumeration that represents the level of a statement.

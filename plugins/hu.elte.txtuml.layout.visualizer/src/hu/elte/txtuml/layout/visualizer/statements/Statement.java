@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.annotations;
+package hu.elte.txtuml.layout.visualizer.statements;
 
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;

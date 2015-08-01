@@ -15,6 +15,7 @@ public class RectangleObject
 	private String _name;
 	private Point _position;
 	private Integer _width;
+	private Integer _height;
 	
 	// private Set<Point> _points;
 	
@@ -55,7 +56,7 @@ public class RectangleObject
 		for (int i = 0; i < _width; ++i)
 		{
 			Point temp = Point.Add(_position, Point.Multiply(Direction.east, i));
-			for (int j = 0; j < _width; ++j)
+			for (int j = 0; j < _height; ++j)
 			{
 				result.add(Point.Add(temp, Point.Multiply(Direction.south, j)));
 			}
@@ -80,9 +81,13 @@ public class RectangleObject
 		for (int i = 0; i < _width; ++i)
 		{
 			result.add(Point.Add(tl, Point.Multiply(Direction.east, i)));
+			result.add(Point.Add(br, Point.Multiply(Direction.west, i)));
+		}
+		
+		for(int i = 0; i < _height; ++i)
+		{
 			result.add(Point.Add(tl, Point.Multiply(Direction.south, i)));
 			result.add(Point.Add(br, Point.Multiply(Direction.north, i)));
-			result.add(Point.Add(br, Point.Multiply(Direction.west, i)));
 		}
 		
 		return result;
@@ -105,7 +110,7 @@ public class RectangleObject
 	 */
 	public Point getBottomRight()
 	{
-		return new Point(_position.getX() + (_width - 1), _position.getY() - (_width - 1));
+		return new Point(_position.getX() + (_width - 1), _position.getY() - (_height - 1));
 	}
 	
 	/***
@@ -119,7 +124,7 @@ public class RectangleObject
 		_position = p;
 	}
 	
-	/***
+	/**
 	 * Getter for the width of the object.
 	 * 
 	 * @return Integer of the grid-width of the object.
@@ -129,7 +134,7 @@ public class RectangleObject
 		return _width;
 	}
 	
-	/***
+	/**
 	 * Setter for the width of the object.
 	 * 
 	 * @param value
@@ -140,6 +145,30 @@ public class RectangleObject
 		if (value >= 1)
 		{
 			_width = value;
+		}
+	}
+	
+	/**
+	 * Getter for the height of the object.
+	 * 
+	 * @return Integer of the grid-height of the object.
+	 */
+	public Integer getHeight()
+	{
+		return _height;
+	}
+	
+	/**
+	 * Setter for the height of the object.
+	 * 
+	 * @param value
+	 *            Amount which the object's height should be set.
+	 */
+	public void setHeight(Integer value)
+	{
+		if (value >= 1)
+		{
+			_height = value;
 		}
 	}
 	
@@ -158,6 +187,7 @@ public class RectangleObject
 		_name = n;
 		_position = new Point();
 		_width = 1;
+		_height = 1;
 	}
 	
 	/***
@@ -173,6 +203,7 @@ public class RectangleObject
 		_name = n;
 		_position = p;
 		_width = 1;
+		_height = 1;
 	}
 	
 	/***
@@ -186,6 +217,7 @@ public class RectangleObject
 		_name = new String(o._name);
 		_position = new Point(o._position);
 		_width = new Integer(o._width);
+		_height = new Integer(o._height);
 	}
 	
 	// end Ctors
@@ -256,7 +288,7 @@ public class RectangleObject
 	@Override
 	public String toString()
 	{
-		return _name + ": " + _position.toString() + "[" + _width.toString() + "]";
+		return _name + ": " + _position.toString() + "[w:" + _width.toString() + ", h:" + _height.toString() + "]";
 	}
 	
 	// end Methods

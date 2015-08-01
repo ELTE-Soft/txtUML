@@ -3,14 +3,14 @@ package hu.elte.txtuml.layout.visualizer.algorithms;
 import hu.elte.txtuml.layout.visualizer.algorithms.BreathFirstSearch.LabelType;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Graph;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Link;
-import hu.elte.txtuml.layout.visualizer.annotations.Statement;
-import hu.elte.txtuml.layout.visualizer.annotations.StatementLevel;
-import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.helpers.Helper;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.layout.visualizer.statements.Statement;
+import hu.elte.txtuml.layout.visualizer.statements.StatementLevel;
+import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 import java.util.ArrayList;
 import java.util.HashMap;

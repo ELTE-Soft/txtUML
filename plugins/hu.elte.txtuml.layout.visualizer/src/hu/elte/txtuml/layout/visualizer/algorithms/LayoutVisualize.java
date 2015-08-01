@@ -2,8 +2,6 @@ package hu.elte.txtuml.layout.visualizer.algorithms;
 
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.ArrangeObjects;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.ArrangeAssociations;
-import hu.elte.txtuml.layout.visualizer.annotations.Statement;
-import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
 import hu.elte.txtuml.layout.visualizer.events.ProgressEmitter;
 import hu.elte.txtuml.layout.visualizer.events.ProgressManager;
 import hu.elte.txtuml.layout.visualizer.exceptions.BoxArrangeConflictException;
@@ -22,6 +20,8 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.OverlapArrangeMode;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.layout.visualizer.statements.Statement;
+import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -61,10 +61,6 @@ public class LayoutVisualize
 	 * The type of the diagram to arrange.
 	 */
 	private DiagramType _diagramType;
-	/**
-	 * Whether to allow batching of links during link arrange or not.
-	 */
-	private Boolean _batching;
 	/**
 	 * Whether to print log messages.
 	 */
@@ -160,17 +156,6 @@ public class LayoutVisualize
 	}
 	
 	/**
-	 * Setter for batching of special links property.
-	 * 
-	 * @param value
-	 *            Whether to enable or disable this feature.
-	 */
-	public void setBatching(Boolean value)
-	{
-		_batching = value;
-	}
-	
-	/**
 	 * Setter for the percent of the corridors' width relative to boxes' width.
 	 * 
 	 * @param percent
@@ -208,7 +193,6 @@ public class LayoutVisualize
 		
 		_objects = null;
 		_assocs = null;
-		_batching = false;
 		_arrangeOverlaps = OverlapArrangeMode.few;
 		_logging = false;
 		_corridorPercent = 100;
@@ -243,11 +227,11 @@ public class LayoutVisualize
 	 *             Throws if any error occurs which should not happen. Contact
 	 *             developer for more details!
 	 */
-	public void arrange(ArrayList<Statement> par_stats) throws InternalException,
-			BoxArrangeConflictException, ConversionException,
-			StatementTypeMatchException, CannotFindAssociationRouteException,
-			UnknownStatementException, BoxOverlapConflictException,
-			StatementsConflictException
+	public void arrange(ArrayList<Statement> par_stats)
+			throws InternalException, BoxArrangeConflictException,
+			ConversionException, StatementTypeMatchException,
+			CannotFindAssociationRouteException, UnknownStatementException,
+			BoxOverlapConflictException, StatementsConflictException
 	{
 		if (_objects == null)
 			return;
@@ -257,6 +241,10 @@ public class LayoutVisualize
 		
 		// Clone statements into local working copy
 		_statements = Helper.cloneStatementList(par_stats);
+		_statements.sort((s1, s2) ->
+		{
+			return s1.getType().compareTo(s2.getType());
+		});
 		
 		// Set next Group Id
 		Integer maxGroupId = getGroupId();
@@ -274,7 +262,8 @@ public class LayoutVisualize
 		maxGroupId = addDefaultStatements(maxGroupId);
 		
 		// Check the types of Statements
-		StatementHelper.checkTypes(_statements, _assocStatements, _objects, _assocs);
+		StatementHelper.checkTypes(_statements, _assocStatements, _objects,
+				_assocs);
 		
 		// Box arrange
 		maxGroupId = boxArrange(maxGroupId);
@@ -316,8 +305,8 @@ public class LayoutVisualize
 	private Integer transformAssocsIntoStatements(Integer maxGroupId)
 			throws InternalException
 	{
-		Pair<List<Statement>, Integer> tempPair = StatementHelper.transformAssocs(
-				_diagramType, _objects, _assocs, maxGroupId);
+		Pair<List<Statement>, Integer> tempPair = StatementHelper
+				.transformAssocs(_diagramType, _objects, _assocs, maxGroupId);
 		_statements.addAll(tempPair.First);
 		return tempPair.Second;
 	}
@@ -335,24 +324,27 @@ public class LayoutVisualize
 		return result;
 	}
 	
-	private Integer addDefaultStatements(Integer maxGroupId) throws InternalException
+	private Integer addDefaultStatements(Integer maxGroupId)
+			throws InternalException
 	{
-		DefaultStatements ds = new DefaultStatements(_diagramType, _objects, _assocs,
-				_statements, maxGroupId);
+		DefaultStatements ds = new DefaultStatements(_diagramType, _objects,
+				_assocs, _statements, maxGroupId);
 		_statements.addAll(ds.value());
 		
 		return ds.getGroupId();
 	}
 	
-	private Integer boxArrange(Integer maxGroupId) throws BoxArrangeConflictException,
-			InternalException, ConversionException, BoxOverlapConflictException
+	private Integer boxArrange(Integer maxGroupId)
+			throws BoxArrangeConflictException, InternalException,
+			ConversionException, BoxOverlapConflictException
 	{
 		if (_logging)
 			System.err.println("> Starting box arrange...");
 		
 		// Arrange objects
-		ArrangeObjects ao = new ArrangeObjects(_objects, _statements, maxGroupId,
-				_logging, _arrangeOverlaps);
+		ArrangeObjects ao = new ArrangeObjects(_objects.stream().collect(
+				Collectors.toList()), _statements, maxGroupId, _logging,
+				_arrangeOverlaps);
 		_objects = new HashSet<RectangleObject>(ao.value());
 		_statements = ao.statements();
 		
@@ -395,7 +387,8 @@ public class LayoutVisualize
 	private void removePhantoms(Set<String> phantoms)
 	{
 		Set<RectangleObject> toDeleteSet = _objects.stream()
-				.filter(o -> phantoms.contains(o.getName())).collect(Collectors.toSet());
+				.filter(o -> phantoms.contains(o.getName()))
+				.collect(Collectors.toSet());
 		_objects.removeAll(toDeleteSet);
 	}
 	
@@ -410,7 +403,7 @@ public class LayoutVisualize
 			System.err.println("> Starting link arrange...");
 		
 		ArrangeAssociations aa = new ArrangeAssociations(_objects, _assocs,
-				_assocStatements, maxGroupId, _corridorPercent, _batching, _logging);
+				_assocStatements, maxGroupId, _corridorPercent, _logging);
 		_assocs = aa.value();
 		_objects = aa.objects();
 		

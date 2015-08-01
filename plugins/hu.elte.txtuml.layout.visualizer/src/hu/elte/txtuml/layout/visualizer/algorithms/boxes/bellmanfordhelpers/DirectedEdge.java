@@ -1,6 +1,6 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers;
 
-import hu.elte.txtuml.layout.visualizer.annotations.Statement;
+import hu.elte.txtuml.layout.visualizer.statements.Statement;
 
 /**
  * The <tt>DirectedEdge</tt> class represents a weighted edge in an

@@ -1,7 +1,7 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers;
 
-import hu.elte.txtuml.layout.visualizer.annotations.Statement;
 import hu.elte.txtuml.layout.visualizer.helpers.Quadraple;
+import hu.elte.txtuml.layout.visualizer.statements.Statement;
 
 import java.util.ArrayList;
 import java.util.Stack;
