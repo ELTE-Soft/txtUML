@@ -2,15 +2,33 @@ package hu.elte.txtuml.layout.visualizer.algorithms.boxes;
 
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 
+/**
+ * This is a base-4 numeral system's number.
+ * 
+ * @author Balázs Gregorics
+ *
+ */
 class FourNumber
 {
 	private Integer[] _num;
 	
+	/**
+	 * Creates a base-4 number.
+	 * 
+	 * @param decimals
+	 *            maximum number of digits.
+	 */
 	public FourNumber(Integer decimals)
 	{
 		_num = new Integer[decimals + 1];
 	}
 	
+	/**
+	 * Increases the number by one (operator ++).
+	 * 
+	 * @throws InternalException
+	 *             Throws if the number overflows.
+	 */
 	public void next() throws InternalException
 	{
 		_num[0] = _num[0] + 1;
@@ -38,6 +56,17 @@ class FourNumber
 		}
 	}
 	
+	/**
+	 * Returns whether this number is less than or equal to another base-4
+	 * number.
+	 * 
+	 * @param other
+	 *            the other base-4 number.
+	 * @return whether this number is less than or equal to another base-4
+	 *         number.
+	 * @throws InternalException
+	 *             Throws if the two numbers cannot be compared.
+	 */
 	public boolean isLessThanOrEqual(FourNumber other) throws InternalException
 	{
 		if (_num.length != other._num.length)
@@ -45,18 +74,32 @@ class FourNumber
 		
 		for (int i = _num.length - 1; i >= 0; --i)
 		{
-			if(_num[i] > other._num[i])
+			if (_num[i] > other._num[i])
 				return false;
 		}
 		
 		return true;
 	}
 	
+	/**
+	 * Returns the specific digit of the number.
+	 * 
+	 * @param i
+	 *            the position of the digit we want.
+	 * @return the specific digit of the number.
+	 */
 	public Integer getBit(Integer i)
 	{
 		return _num[i];
 	}
 	
+	/**
+	 * Returns the base-4 zero number.
+	 * 
+	 * @param decimals
+	 *            maximum number of digits.
+	 * @return the base-4 zero number.
+	 */
 	public static FourNumber Zero(Integer decimals)
 	{
 		FourNumber result = new FourNumber(decimals);
@@ -69,6 +112,13 @@ class FourNumber
 		return result;
 	}
 	
+	/**
+	 * Returns the base-4 maximum available number.
+	 * 
+	 * @param decimals
+	 *            maximum number of digits.
+	 * @return the base-4 maximum available number.
+	 */
 	public static FourNumber Max(Integer decimals)
 	{
 		FourNumber result = new FourNumber(decimals);
@@ -81,14 +131,19 @@ class FourNumber
 		
 		return result;
 	}
-
+	
+	/**
+	 * Returns the converted value of the base-4 number to decimal value.
+	 * 
+	 * @return the converted value of the base-4 number to decimal value.
+	 */
 	public Integer decimalValue()
 	{
 		Integer result = 0;
 		
-		for(int i = 0; i < _num.length; ++i)
+		for (int i = 0; i < _num.length; ++i)
 		{
-			result += _num[i] * (int)Math.pow(4, i);
+			result += _num[i] * (int) Math.pow(4, i);
 		}
 		
 		return result;
@@ -108,6 +163,5 @@ class FourNumber
 		
 		return result;
 	}
-
-
+	
 }

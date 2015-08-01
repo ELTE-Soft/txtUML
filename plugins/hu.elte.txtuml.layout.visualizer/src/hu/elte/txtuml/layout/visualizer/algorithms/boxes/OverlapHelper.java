@@ -1,12 +1,5 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.boxes;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.helpers.Helper;
@@ -16,6 +9,14 @@ import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementLevel;
+import hu.elte.txtuml.layout.visualizer.statements.StatementType;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * The class that provides helping functions in the process of Overlap
@@ -44,9 +45,9 @@ class OverlapHelper
 	 * @throws InternalException
 	 *             See your programmer for more detail.
 	 */
-	public static Pair<List<Statement>, Integer> fixCurrentState(
-			List<RectangleObject> objs, List<Statement> old, Integer p_gid)
-			throws ConversionException, InternalException
+	public static Pair<List<Statement>, Integer> fixCurrentState(List<RectangleObject> objs,
+			List<Statement> old,
+			Integer p_gid) throws ConversionException, InternalException
 	{
 		List<Statement> result = new ArrayList<Statement>();
 		Integer gid = p_gid;
@@ -160,7 +161,8 @@ class OverlapHelper
 	 * @throws InternalException
 	 *             Throws if something is not supposed to happen.
 	 */
-	public static Integer pairsCount(List<RectangleObject> objs) throws InternalException
+	public static Integer pairsCount(List<RectangleObject> objs)
+			throws InternalException
 	{
 		if (_pairs != null)
 			return _pairs.size();
@@ -173,8 +175,8 @@ class OverlapHelper
 			{
 				if (objs.get(i).getPosition().equals(objs.get(j).getPosition()))
 				{
-					_pairs.add(new Pair<String, String>(objs.get(i).getName(), objs
-							.get(j).getName()));
+					_pairs.add(new Pair<String, String>(objs.get(i).getName(),
+							objs.get(j).getName()));
 				}
 			}
 		}
@@ -182,8 +184,18 @@ class OverlapHelper
 		return _pairs.size();
 	}
 	
+	/**
+	 * All of the possible combinations.
+	 */
 	private static List<List<Pair<String, String>>> _combinations;
 	
+	/**
+	 * Returns the list of pairs of num amount of boxes.
+	 * 
+	 * @param num
+	 *            The number of boxes to make pairs of.
+	 * @return the list of pairs of num amount of boxes.
+	 */
 	public static List<List<Pair<String, String>>> selectPairs(Integer num)
 	{
 		if (_combinations != null)
@@ -221,8 +233,26 @@ class OverlapHelper
 				.collect(Collectors.toList());
 	}
 	
+	/**
+	 * Returns a list of statement for the given pairs and given directions.
+	 * 
+	 * @param pairs
+	 *            list of pairs to make the statements on.
+	 * @param fn
+	 *            a base-4 number representing the directions of the statements
+	 *            to make.
+	 * @param p_gid
+	 *            the previously used group id.
+	 * @return a list of statement for the given pairs and given directions.
+	 * @throws InternalException
+	 *             Throws if something bad happened.
+	 * @throws ConversionException
+	 *             Throws if a {@link Direction} could not be converted into
+	 *             {@link StatementType}.
+	 */
 	public static List<Statement> getStatementsForPairs(List<Pair<String, String>> pairs,
-			FourNumber fn, Integer p_gid) throws InternalException, ConversionException
+			FourNumber fn,
+			Integer p_gid) throws InternalException, ConversionException
 	{
 		List<Statement> result = new ArrayList<Statement>();
 		Integer gid = new Integer(p_gid);
@@ -230,9 +260,9 @@ class OverlapHelper
 		for (int i = 0; i < pairs.size(); ++i)
 		{
 			++gid;
-			result.add(new Statement(Helper.asStatementType(Direction.fromInteger(fn
-					.getBit(i))), StatementLevel.Medium, gid, pairs.get(i).First, pairs
-					.get(i).Second));
+			result.add(new Statement(Helper.asStatementType(Direction
+					.fromInteger(fn.getBit(i))), StatementLevel.Medium, gid,
+					pairs.get(i).First, pairs.get(i).Second));
 		}
 		
 		return result;

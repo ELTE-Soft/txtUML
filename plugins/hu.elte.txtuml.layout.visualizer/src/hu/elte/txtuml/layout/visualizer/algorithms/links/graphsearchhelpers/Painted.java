@@ -12,56 +12,10 @@ import java.util.Set;
  */
 public class Painted<Item>
 {
-	
-	/**
-	 * Enumeration for available colors.
-	 * 
-	 * @author Balázs Gregorics
-	 */
-	public enum Colors
-	{
-		/**
-		 * White color.
-		 */
-		White,
-		/**
-		 * Gray color.
-		 */
-		Gray,
-		/**
-		 * Black color.
-		 */
-		Black,
-		/**
-		 * Red color.
-		 */
-		Red,
-		/**
-		 * Blue color.
-		 */
-		Blue,
-		/**
-		 * Green color.
-		 */
-		Green,
-		/**
-		 * Purple color.
-		 */
-		Purple,
-		/**
-		 * Yellow color.
-		 */
-		Yellow,
-		/**
-		 * Brown color.
-		 */
-		Brown
-	}
-	
 	/**
 	 * Color of the item.
 	 */
-	public Colors Color;
+	public Color Color;
 	/**
 	 * Inner item.
 	 */
@@ -85,7 +39,7 @@ public class Painted<Item>
 	 * @param i
 	 *            Inner Item to paint.
 	 */
-	public Painted(Colors c, Item i)
+	public Painted(Color c, Item i)
 	{
 		Color = c;
 		Inner = i;
@@ -101,7 +55,7 @@ public class Painted<Item>
 	 * @param bs
 	 *            Set of Ids of the batch.
 	 */
-	public Painted(Colors c, Item i, Set<Integer> bs)
+	public Painted(Color c, Item i, Set<Integer> bs)
 	{
 		Color = c;
 		Inner = i;

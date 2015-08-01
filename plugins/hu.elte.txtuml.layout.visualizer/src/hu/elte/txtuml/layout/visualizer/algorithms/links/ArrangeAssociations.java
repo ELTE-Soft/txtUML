@@ -1,9 +1,8 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.links;
 
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Boundary;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Color;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Node;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Painted;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Painted.Colors;
 import hu.elte.txtuml.layout.visualizer.events.ProgressManager;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotStartAssociationRouteException;
@@ -24,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -172,15 +172,16 @@ public class ArrangeAssociations
 			{
 				// Maximum distance between objects
 				Boundary bounds = calculateBoundary(diagramObjects);
-				bounds.addError(20);
+				bounds.addError(20, _widthOfObjects);
 				
 				// Add objects transformed place to occupied list
-				Set<Painted<Point>> occupied = new HashSet<Painted<Point>>();
+				Map<Point, Color> occupied = new HashMap<Point, Color>();
 				for (RectangleObject obj : diagramObjects)
 				{
-					occupied.addAll(obj.getPoints().stream()
-							.map(p -> new Painted<Point>(Colors.Red, p))
-							.collect(Collectors.toSet()));
+					for (Point p : obj.getPoints())
+					{
+						occupied.put(p, Color.Red);
+					}
 				}
 				
 				// Search for the route of every Link
@@ -258,6 +259,13 @@ public class ArrangeAssociations
 		
 		for (LineAssociation mod : _assocs)
 		{
+			RectangleObject fromBox = result.stream()
+					.filter(box -> box.getName().equals(mod.getFrom()))
+					.findFirst().get();
+			RectangleObject toBox = result.stream()
+					.filter(box -> box.getName().equals(mod.getTo()))
+					.findFirst().get();
+			
 			ArrayList<Point> route = new ArrayList<Point>();
 			for (int j = 0; j < mod.getRoute().size(); ++j)
 			{
@@ -271,10 +279,19 @@ public class ArrangeAssociations
 							.Substract(mod.getRoute().get(j - 1), mod
 									.getRoute().get(j)));
 					Point before = Point.Add(temp, beforeDirection);
-					route.add(before);
+					
+					if (fromBox.getPerimiterPoints().contains(before)
+							|| toBox.getPerimiterPoints().contains(before)
+							|| (!fromBox.getPoints().contains(before) && !toBox
+									.getPoints().contains(before)))
+						route.add(before);
 				}
 				
-				route.add(temp);
+				if (fromBox.getPerimiterPoints().contains(temp)
+						|| toBox.getPerimiterPoints().contains(temp)
+						|| (!fromBox.getPoints().contains(temp) && !toBox
+								.getPoints().contains(temp)))
+					route.add(temp);
 			}
 			
 			mod.setRoute(route);
@@ -661,12 +678,12 @@ public class ArrangeAssociations
 	}
 	
 	private void arrangeLinks(Set<RectangleObject> diagramObjects,
-			Set<Painted<Point>> occupied,
+			Map<Point, Color> occupied,
 			Boundary bounds) throws CannotStartAssociationRouteException,
 			CannotFindAssociationRouteException, InternalException,
 			ConversionException
 	{
-		Set<Painted<Point>> occupiedLinks = new HashSet<Painted<Point>>();
+		Map<Point, Color> occupiedLinks = new HashMap<Point, Color>();
 		
 		Integer c = 0;
 		for (LineAssociation a : _assocs)
@@ -681,9 +698,9 @@ public class ArrangeAssociations
 				if (_logging)
 					System.err.println("NOTHING TO DO!");
 				
-				Set<Painted<Point>> routePoints = getRoutePaintedPoints(a);
-				occupiedLinks.addAll(routePoints);
-				occupied.addAll(routePoints);
+				Map<Point, Color> routePoints = getRoutePaintedPoints(a);
+				occupiedLinks.putAll(routePoints);
+				occupied.putAll(routePoints);
 				continue;
 			}
 			
@@ -696,9 +713,9 @@ public class ArrangeAssociations
 				throw new InternalException("Route is shorter then 3!");
 			
 			// Update occupied places with the route of this link
-			Set<Painted<Point>> routePoints = getRoutePaintedPoints(a);
-			occupiedLinks.addAll(routePoints);
-			occupied.addAll(routePoints);
+			Map<Point, Color> routePoints = getRoutePaintedPoints(a);
+			occupiedLinks.putAll(routePoints);
+			occupied.putAll(routePoints);
 			
 			if (_assocs.indexOf(a) == (int) (_assocs.size() * 25.0 / 100.0))
 			{
@@ -716,8 +733,8 @@ public class ArrangeAssociations
 	}
 	
 	private void doGraphSearch(Set<RectangleObject> diagramObjects,
-			Set<Painted<Point>> occupiedLinks,
-			Set<Painted<Point>> occupied,
+			Map<Point, Color> occupiedLinks,
+			Map<Point, Color> occupied,
 			Boundary bounds,
 			LineAssociation a) throws InternalException,
 			CannotStartAssociationRouteException,
@@ -733,8 +750,7 @@ public class ArrangeAssociations
 				STARTBOX.getPosition(),
 				STARTBOX.getWidth(),
 				STARTBOX.getHeight(),
-				occupiedLinks.stream().map(p -> p.Inner)
-						.collect(Collectors.toSet()),
+				occupiedLinks.keySet(),
 				a.isReflexive(),
 				true);
 		
@@ -743,8 +759,7 @@ public class ArrangeAssociations
 				ENDBOX.getPosition(),
 				ENDBOX.getWidth(),
 				STARTBOX.getHeight(),
-				occupiedLinks.stream().map(p -> p.Inner)
-						.collect(Collectors.toSet()),
+				occupiedLinks.keySet(),
 				a.isReflexive(),
 				false);
 		
@@ -764,9 +779,9 @@ public class ArrangeAssociations
 		a.setExtends(gs.extendsNum());
 	}
 	
-	private Set<Painted<Point>> getRoutePaintedPoints(LineAssociation link)
+	private Map<Point, Color> getRoutePaintedPoints(LineAssociation link)
 	{
-		Set<Painted<Point>> result = new HashSet<Painted<Point>>();
+		Map<Point, Color> result = new HashMap<Point, Color>();
 		
 		for (int ri = 1; ri < link.getRoute().size() - 1; ++ri)
 		{
@@ -774,13 +789,11 @@ public class ArrangeAssociations
 					link.getRoute().get(ri)).equals(Point.Substract(link
 					.getRoute().get(ri), link.getRoute().get(ri + 1))))
 			{
-				result.add(new Painted<Point>(Colors.Red, new Point(link
-						.getRoute().get(ri))));
+				result.put(new Point(link.getRoute().get(ri)), Color.Red);
 			}
 			else
 			{
-				result.add(new Painted<Point>(Colors.Yellow, new Point(link
-						.getRoute().get(ri))));
+				result.put(new Point(link.getRoute().get(ri)), Color.Yellow);
 			}
 		}
 		

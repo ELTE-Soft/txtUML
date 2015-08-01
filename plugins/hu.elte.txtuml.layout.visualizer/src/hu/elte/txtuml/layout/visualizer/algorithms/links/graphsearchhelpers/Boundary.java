@@ -127,11 +127,17 @@ public class Boundary
 	 * 
 	 * @param percent
 	 *            error percent to add, relative to current bounds.
+	 * @param fallback
+	 *            value to expand the boundary by minimum
 	 */
-	public void addError(Integer percent)
+	public void addError(Integer percent, Integer fallback)
 	{
 		Integer extraWidth = (int) ((_right - _left) * (percent / 100.0));
+		if (extraWidth < fallback)
+			extraWidth = fallback;
 		Integer extraHeight = (int) ((_top - _bottom) * (percent / 100.0));
+		if (extraHeight < fallback)
+			extraHeight = fallback;
 		
 		_top = _top + extraHeight;
 		_bottom = _bottom - extraHeight;

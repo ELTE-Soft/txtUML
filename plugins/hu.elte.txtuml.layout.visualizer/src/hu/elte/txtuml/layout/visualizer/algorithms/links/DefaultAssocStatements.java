@@ -88,10 +88,11 @@ class DefaultAssocStatements
 				{
 					return Integer.compare(i, j);
 				});
+		
+		Integer freeLinkCount = (assocs.size() - priorities.size());
 		if (minPriority.isPresent())
 		{
 			Integer min = minPriority.get();
-			Integer freeLinkCount = (assocs.size() - priorities.size());
 			if (freeLinkCount >= min)
 			{
 				// not good, ++ every prior
@@ -100,27 +101,32 @@ class DefaultAssocStatements
 				{
 					if (s.getType().equals(StatementType.priority))
 					{
-						s.setParameter(1, ""
-								+ (Integer.valueOf(s.getParameter(1)) + alterAmount));
+						s.setParameter(1,
+								""
+										+ (Integer.valueOf(s.getParameter(1)) + (alterAmount * 2)));
 					}
 				}
 			}
 		}
 		
-		Integer actPrior = 1;
+		Integer actPrior = 1 + freeLinkCount;
 		ArrayList<LineAssociation> orderedAssocs = (ArrayList<LineAssociation>) assocs
 				.stream().collect(Collectors.toList());
 		orderedAssocs.sort((a1, a2) ->
 		{
-			return -1 * Double.compare(distanceOfEnds(a1), distanceOfEnds(a2));
+			return Double.compare(distanceOfEnds(a1), distanceOfEnds(a2));
 		});
 		for (LineAssociation a : orderedAssocs)
 		{
-			if (!priorities.stream().anyMatch(s -> s.getParameter(0).equals(a.getId())))
+			if (!priorities.stream().anyMatch(s -> s.getParameter(0)
+					.equals(a.getId())))
 			{
 				++_gId;
-				_result.add(new Statement(StatementType.priority, StatementLevel.Low,
-						_gId, a.getId(), actPrior.toString()));
+				Integer parameterValue = a.isReflexive() ? (actPrior - freeLinkCount)
+						: actPrior;
+				_result.add(new Statement(StatementType.priority,
+						StatementLevel.Low, _gId, a.getId(), parameterValue
+								.toString()));
 				++actPrior;
 			}
 		}

@@ -1,12 +1,11 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.links;
 
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Boundary;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Color;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Cost;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Graph;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Link;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Node;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Painted;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Painted.Colors;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Parent;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotStartAssociationRouteException;
@@ -19,6 +18,7 @@ import hu.elte.txtuml.layout.visualizer.model.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 
@@ -35,6 +35,7 @@ class GraphSearch
 	private final Double _weightLength = 1.0; // 2.9
 	private final Double _weightTurns = 3.0; // 2.7
 	private final Double _weightCrossing = 3.0; // 2.0
+	@SuppressWarnings("unused")
 	private final Integer _penalizeTurns = 2;
 	
 	// end Constants
@@ -43,7 +44,7 @@ class GraphSearch
 	
 	private Node _end;
 	private Set<Node> _endSet;
-	private Set<Painted<Point>> _objects;
+	private Map<Point, Color> _colors;
 	private Boundary _boundary;
 	private Integer _extends;
 	
@@ -66,30 +67,30 @@ class GraphSearch
 	 *            Set of start Nodes.
 	 * @param es
 	 *            Set of end Nodes to reach.
-	 * @param os
+	 * @param cols
 	 *            Nodes we have to skip (already occupied).
 	 * @param bounds
 	 *            Bounds of the maximum width of the graph to search in.
 	 * @throws CannotFindAssociationRouteException
 	 *             Throws if there is no route from start->end.
 	 * @throws CannotStartAssociationRouteException
-	 *             Throws if the alogirthm cannot even start the route from
+	 *             Throws if the algorithm cannot even start the route from
 	 *             start.
 	 * @throws ConversionException
 	 *             Throws if the algorithm cannot convert a {@link Point} to a
-	 *             {@link Direction} or vica versa.
+	 *             {@link Direction} or vice versa.
 	 * @throws InternalException
 	 *             Throws if the algorithm encounters something which it should
 	 *             not have.
 	 */
-	public GraphSearch(Set<Node> ss, Set<Node> es, Set<Painted<Point>> os,
+	public GraphSearch(Set<Node> ss, Set<Node> es, Map<Point, Color> cols,
 			Boundary bounds) throws CannotFindAssociationRouteException,
 			CannotStartAssociationRouteException, ConversionException,
 			InternalException
 	{
 		_end = new Node(new Point(), new Point());
 		_endSet = new HashSet<Node>(es);
-		_objects = os;
+		_colors = cols;
 		_boundary = bounds;
 		_extends = 0;
 		_heuristic = new HashMap<Node, Double>();
@@ -130,22 +131,23 @@ class GraphSearch
 			
 			Node n = AvailableNodes.poll();
 			
-			if (_endSet.stream().anyMatch(node -> node.getFrom()
-					.equals(n.getTo())))
+			if (_endSet.contains(n))
 			{
-				Node e = _endSet.stream()
-						.filter(node -> node.getFrom().equals(n.getTo()))
-						.findFirst().get();
-				PI.set(e, n);
-				PI.set(_end, e);
+				// Node e = _endSet.stream()
+				// .filter(node -> node.getFrom().equals(n.getTo()))
+				// .findFirst().get();
+				// PI.set(e, n);
+				PI.set(_end, n);
 				return true;
 			}
 			
 			++_extends;
-			for (Pair<Node, Double> pair : Gamma(n))
+			Set<Pair<Node, Double>> childs = Gamma(n);
+			for (Pair<Node, Double> pair : childs)
 			{
 				Node m = pair.First;
 				Double newCost = (g.get(n) + pair.Second);
+				
 				if (!G.contains(m) || newCost < g.get(m))
 				{
 					PI.set(m, n);
@@ -252,95 +254,51 @@ class GraphSearch
 	@SuppressWarnings("unused")
 	private Double manhattanLeastTurnsCheckingOccupied(Node from, Node to)
 	{
-		Integer min = Integer.MAX_VALUE;
+		/*
+		 * Integer min = Integer.MAX_VALUE;
+		 * 
+		 * Point ending = to.getTo(); double dx = Math.abs(from.getTo().getX() -
+		 * ending.getX()); double sx = ending.getX() - from.getTo().getX();
+		 * double dy = Math.abs(from.getTo().getY() - ending.getY()); double sy
+		 * = ending.getY() - from.getTo().getY(); Integer resultF = 0; Integer
+		 * resultB = 0;
+		 * 
+		 * if (dx > 0 && dy > 0) { ++resultF; ++resultB; }
+		 * 
+		 * // elejérõl és végérõl nézzük egyszerre a két külön utat // X tengely
+		 * mentén Point tempF = new Point(from.getTo()); Point tempB = new
+		 * Point(ending); for (int i = 0; i < dx; ++i) { if (sx > 0) { tempF =
+		 * Point.Add(tempF, Direction.east); tempB = Point.Add(tempF,
+		 * Direction.west); } else if (sx < 0) { tempF = Point.Add(tempF,
+		 * Direction.west); tempB = Point.Add(tempF, Direction.east); }
+		 * 
+		 * // tempF nem a vége és nem piros pont // tempB nem az eleje és nem
+		 * piros pont Point tF = new Point(tempF); if (resultF <= 1 &&
+		 * !tempF.equals(ending) && (_objects.stream().anyMatch(pp -> pp.Color
+		 * .equals(Colors.Red) && pp.Inner.equals(tF)))) { resultF = resultF +
+		 * _penalizeTurns; } Point tB = new Point(tempB); if (resultB <= 1 &&
+		 * !tempB.equals(from) && (_objects.stream().anyMatch(pp -> pp.Color
+		 * .equals(Colors.Red) && pp.Inner.equals(tB)))) { resultB = resultB +
+		 * _penalizeTurns; } }
+		 * 
+		 * // Y tengely mentén for (int i = 0; i < dy; ++i) { if (sy > 0) {
+		 * tempF = Point.Add(tempF, Direction.north); tempB = Point.Add(tempB,
+		 * Direction.south); } else if (sy < 0) { tempF = Point.Add(tempF,
+		 * Direction.south); tempB = Point.Add(tempB, Direction.north); }
+		 * 
+		 * Point tF = new Point(tempF); if (resultF <= 1 &&
+		 * !tempF.equals(ending) && (_objects.stream().anyMatch(pp -> pp.Color
+		 * .equals(Colors.Red) && pp.Inner.equals(tF)))) { resultF = resultF +
+		 * _penalizeTurns; } Point tB = new Point(tempB); if (resultB <= 1 &&
+		 * !tempB.equals(from) && (_objects.stream().anyMatch(pp -> pp.Color
+		 * .equals(Colors.Red) && pp.Inner.equals(tB)))) { resultB = resultB +
+		 * _penalizeTurns; } }
+		 * 
+		 * Integer tempMin = Math.min(resultF, resultB); min = Math.min(min,
+		 * tempMin);
+		 */
 		
-		Point ending = to.getTo();
-		double dx = Math.abs(from.getTo().getX() - ending.getX());
-		double sx = ending.getX() - from.getTo().getX();
-		double dy = Math.abs(from.getTo().getY() - ending.getY());
-		double sy = ending.getY() - from.getTo().getY();
-		Integer resultF = 0;
-		Integer resultB = 0;
-		
-		if (dx > 0 && dy > 0)
-		{
-			++resultF;
-			++resultB;
-		}
-		
-		// elejérõl és végérõl nézzük egyszerre a két külön utat
-		// X tengely mentén
-		Point tempF = new Point(from.getTo());
-		Point tempB = new Point(ending);
-		for (int i = 0; i < dx; ++i)
-		{
-			if (sx > 0)
-			{
-				tempF = Point.Add(tempF, Direction.east);
-				tempB = Point.Add(tempF, Direction.west);
-			}
-			else if (sx < 0)
-			{
-				tempF = Point.Add(tempF, Direction.west);
-				tempB = Point.Add(tempF, Direction.east);
-			}
-			
-			// tempF nem a vége és nem piros pont
-			// tempB nem az eleje és nem piros pont
-			Point tF = new Point(tempF);
-			if (resultF <= 1
-					&& !tempF.equals(ending)
-					&& (_objects.stream().anyMatch(pp -> pp.Color
-							.equals(Colors.Red) && pp.Inner.equals(tF))))
-			{
-				resultF = resultF + _penalizeTurns;
-			}
-			Point tB = new Point(tempB);
-			if (resultB <= 1
-					&& !tempB.equals(from)
-					&& (_objects.stream().anyMatch(pp -> pp.Color
-							.equals(Colors.Red) && pp.Inner.equals(tB))))
-			{
-				resultB = resultB + _penalizeTurns;
-			}
-		}
-		
-		// Y tengely mentén
-		for (int i = 0; i < dy; ++i)
-		{
-			if (sy > 0)
-			{
-				tempF = Point.Add(tempF, Direction.north);
-				tempB = Point.Add(tempB, Direction.south);
-			}
-			else if (sy < 0)
-			{
-				tempF = Point.Add(tempF, Direction.south);
-				tempB = Point.Add(tempB, Direction.north);
-			}
-			
-			Point tF = new Point(tempF);
-			if (resultF <= 1
-					&& !tempF.equals(ending)
-					&& (_objects.stream().anyMatch(pp -> pp.Color
-							.equals(Colors.Red) && pp.Inner.equals(tF))))
-			{
-				resultF = resultF + _penalizeTurns;
-			}
-			Point tB = new Point(tempB);
-			if (resultB <= 1
-					&& !tempB.equals(from)
-					&& (_objects.stream().anyMatch(pp -> pp.Color
-							.equals(Colors.Red) && pp.Inner.equals(tB))))
-			{
-				resultB = resultB + _penalizeTurns;
-			}
-		}
-		
-		Integer tempMin = Math.min(resultF, resultB);
-		min = Math.min(min, tempMin);
-		
-		return (double) min;
+		return (double) 0;// min;
 	}
 	
 	// end Metrics
@@ -349,45 +307,39 @@ class GraphSearch
 	
 	private Set<Pair<Node, Double>> Gamma(Node parent)
 	{
-		if (!_boundary.isIn(parent.getTo()))
-			return new HashSet<Pair<Node, Double>>();
-		
 		Set<Pair<Node, Double>> result = new HashSet<Pair<Node, Double>>();
 		
+		if (!_boundary.isIn(parent.getTo()))
+			return result;
+		
 		// Add possible neighbors
-		if (!_objects.stream().anyMatch(pp -> pp.Inner.equals(parent.getTo())
-				&& pp.Color.equals(Colors.Red)))
+		if (!_colors.containsKey(parent.getTo()))
 		{
 			Direction sub = Point.directionOf(parent.getTo(), parent.getFrom());
-			if (_objects.stream()
-					.anyMatch(pp -> pp.Inner.equals(parent.getTo())
-							&& pp.Color.equals(Colors.Yellow)))
+			
+			// ~0.5ms
+			for (Direction dir : Direction.values())
 			{
-				// straight, crossing
-				result.add(new Pair<Node, Double>(new Node(parent.getTo(),
-						Point.Add(parent.getTo(), sub)), _weightLength
-						+ _weightCrossing));
+				Double w = 0.0;
+				
+				if (dir.equals(sub))
+					w = _weightLength;
+				else if (dir.equals(Direction.opposite(sub)))
+					continue;
+				else
+					w = _weightLength + _weightTurns;
+				
+				Point p = Point.Add(parent.getTo(), dir);
+				result.add(new Pair<Node, Double>(new Node(parent.getTo(), p),
+						w));
 			}
-			else
-			{
-				for (Direction dir : Direction.values())
-				{
-					Double w = 0.0;
-					
-					if (dir.equals(sub))
-						w = _weightLength;
-					else if (dir.equals(Direction.opposite(sub)))
-						continue;
-					else
-					{
-						w = _weightLength + _weightTurns;
-					}
-					
-					Point p = Point.Add(parent.getTo(), dir);
-					result.add(new Pair<Node, Double>(new Node(parent.getTo(),
-							p), w));
-				}
-			}
+		}
+		else if (_colors.get(parent.getTo()).equals(Color.Yellow))
+		{
+			Direction sub = Point.directionOf(parent.getTo(), parent.getFrom());
+			// straight, crossing
+			result.add(new Pair<Node, Double>(new Node(parent.getTo(), Point
+					.Add(parent.getTo(), sub)), _weightLength + _weightCrossing));
 		}
 		
 		return result;
