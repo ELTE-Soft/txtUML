@@ -50,7 +50,7 @@ import hu.elte.txtuml.layout.lang.statements.containers.RowContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.ShowContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.SouthContainer;
 import hu.elte.txtuml.layout.lang.statements.containers.WestContainer;
-import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
+import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 /**
  * Default implementation for {@link StatementExporter}.

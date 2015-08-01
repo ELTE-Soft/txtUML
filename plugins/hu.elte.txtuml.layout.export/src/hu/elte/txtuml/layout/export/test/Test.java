@@ -16,7 +16,7 @@ import hu.elte.txtuml.layout.lang.statements.Priority;
 import hu.elte.txtuml.layout.lang.statements.Row;
 import hu.elte.txtuml.layout.lang.statements.Show;
 import hu.elte.txtuml.layout.lang.statements.TopMost;
-import hu.elte.txtuml.layout.visualizer.annotations.Statement;
+import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 

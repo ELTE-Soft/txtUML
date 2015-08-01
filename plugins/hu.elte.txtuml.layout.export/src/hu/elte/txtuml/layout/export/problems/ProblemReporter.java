@@ -8,7 +8,7 @@ import hu.elte.txtuml.layout.lang.elements.LayoutAbstractLink;
 import hu.elte.txtuml.layout.lang.elements.LayoutAbstractNode;
 import hu.elte.txtuml.layout.lang.elements.LayoutElement;
 import hu.elte.txtuml.layout.lang.elements.LayoutNode;
-import hu.elte.txtuml.layout.visualizer.annotations.StatementType;
+import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 public class ProblemReporter {
     

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import hu.elte.txtuml.layout.export.interfaces.StatementList;
-import hu.elte.txtuml.layout.visualizer.annotations.Statement;
+import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 

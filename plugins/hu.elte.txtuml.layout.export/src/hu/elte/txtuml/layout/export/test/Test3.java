@@ -6,7 +6,7 @@ import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.layout.lang.Diagram;
 import hu.elte.txtuml.layout.lang.LinkEnd;
 import hu.elte.txtuml.layout.lang.statements.*;
-import hu.elte.txtuml.layout.visualizer.annotations.Statement;
+import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
