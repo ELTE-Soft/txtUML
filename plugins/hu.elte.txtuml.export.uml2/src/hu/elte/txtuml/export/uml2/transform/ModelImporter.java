@@ -2,18 +2,20 @@ package hu.elte.txtuml.export.uml2.transform;
 import hu.elte.txtuml.api.ModelBool;
 import hu.elte.txtuml.api.ModelInt;
 import hu.elte.txtuml.api.ModelString;
+import hu.elte.txtuml.export.uml2.mapping.ModelMapCollector;
+import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
+import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
+import hu.elte.txtuml.export.uml2.transform.backend.ImporterConfiguration;
+import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
+import hu.elte.txtuml.export.uml2.transform.backend.ProfileCreator;
+import hu.elte.txtuml.export.uml2.transform.backend.TimerCreator;
+import hu.elte.txtuml.export.uml2.transform.backend.UMLPrimitiveTypesProvider;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 import hu.elte.txtuml.export.uml2.utils.ElementModifiersAssigner;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.export.uml2.utils.ImportWarningProvider;
 import hu.elte.txtuml.export.uml2.utils.ResourceSetFactory;
 import hu.elte.txtuml.export.uml2.utils.StateMachineUtils;
-import hu.elte.txtuml.export.uml2.transform.backend.ProfileCreator;
-import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
-import hu.elte.txtuml.export.uml2.transform.backend.ImporterConfiguration;
-import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
-import hu.elte.txtuml.export.uml2.transform.backend.TimerCreator;
-import hu.elte.txtuml.export.uml2.transform.backend.UMLPrimitiveTypesProvider;
 import hu.elte.txtuml.stdlib.Timer;
 
 import java.lang.reflect.Field;
@@ -62,7 +64,7 @@ public class ModelImporter extends AbstractImporter{
 		ModelImporter.modelClass = modelClass;
 		initModelImport(path);
 		importModelElements();	
-		endModelImport();
+		endModelImport(path);
 		
    		return currentModel; 
 	}
@@ -212,7 +214,8 @@ public class ModelImporter extends AbstractImporter{
         
         resourceSet = ResourceSetFactory.createAndInitResourceSet();
         createAndInitModelResource(className, path);
-        
+        mapping = new ModelMapCollector(modelResource.getURI());
+
         ProfileCreator.createProfileForModel(className,path,resourceSet);
         loadAndApplyProfile();
         UMLPrimitiveTypesProvider.importFromProfile(currentProfile);
@@ -230,7 +233,7 @@ public class ModelImporter extends AbstractImporter{
 	private static void createAndInitModelResource(String modelClassQualifiedName, String outputPath) 
 	{
 		URI uri = URI.createURI(outputPath).appendSegment(modelClassQualifiedName).appendFileExtension(UMLResource.FILE_EXTENSION);
-    	modelResource = resourceSet.createResource(uri);
+		modelResource = resourceSet.createResource(uri);
         modelResource.getContents().add(currentModel);
 	}
 	
@@ -255,10 +258,15 @@ public class ModelImporter extends AbstractImporter{
 	 * 
 	 * @author Adam Ancsin
 	 */
-	private static void endModelImport()
+	private static void endModelImport(String path)
 	{
 		InstanceManager.clearGlobalInstancesMap();
 		importing=false;
+		try {
+			mapping.save(URI.createURI(path), ModelImporter.modelClass.getCanonicalName());
+		} catch (ModelMapException e) {
+			System.out.println("Faild to save model mapping.");
+		}
 	}
 	
 	/**
@@ -702,4 +710,5 @@ public class ModelImporter extends AbstractImporter{
     private static Resource modelResource=null;
 	private static Model currentModel = null;
 	private static boolean importing = false;
+	static ModelMapCollector mapping = null;
 }

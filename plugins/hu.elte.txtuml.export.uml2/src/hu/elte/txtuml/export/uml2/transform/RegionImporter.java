@@ -5,11 +5,11 @@ import hu.elte.txtuml.api.ModelElement;
 import hu.elte.txtuml.api.StateMachine;
 import hu.elte.txtuml.api.StateMachine.Transition;
 import hu.elte.txtuml.api.To;
+import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
+import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.export.uml2.utils.ImportWarningProvider;
 import hu.elte.txtuml.export.uml2.utils.StateMachineUtils;
-import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
-import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 
 import java.lang.reflect.Method;
 
@@ -150,6 +150,8 @@ class RegionImporter extends AbstractImporter {
 			importStateEntryAction(txtUMLVertexClass, (State) vertex, (StateMachine.State) vertexInstance);
 			importStateExitAction(txtUMLVertexClass, (State) vertex, (StateMachine.State) vertexInstance);
 		}
+		
+		ModelImporter.mapping.put(txtUMLVertexClass, vertex);
 		return vertex;
 	}
 	
@@ -317,7 +319,8 @@ class RegionImporter extends AbstractImporter {
         importTrigger(triggerAnnotation,importedTransition);
         importEffectAction(txtUMLTransitionClass,importedTransition,transitionInstance);
         importGuard(txtUMLTransitionClass,importedTransition,transitionInstance);
-        
+
+		ModelImporter.mapping.put(txtUMLTransitionClass, importedTransition);
         return importedTransition;
     }   
 	
