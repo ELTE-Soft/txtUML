@@ -1,9 +1,9 @@
 package hu.elte.txtuml.layout.export.elementinfo;
 
-import hu.elte.txtuml.api.layout.elements.LayoutElement;
 import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.elementinfo.impl.ElementInfoImpl;
 import hu.elte.txtuml.layout.export.elementinfo.impl.InvalidElementInfoImpl;
+import hu.elte.txtuml.layout.lang.elements.LayoutElement;
 
 /**
  * General information holder about a diagram layout description element.

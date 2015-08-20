@@ -1,7 +1,7 @@
 package hu.elte.txtuml.export.uml2.transform.backend;
 
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
-import hu.elte.txtuml.api.stdlib.Timer;
+import hu.elte.txtuml.stdlib.Timer;
 
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Profile;

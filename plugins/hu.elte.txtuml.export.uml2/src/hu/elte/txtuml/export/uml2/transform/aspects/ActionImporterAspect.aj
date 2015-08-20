@@ -2,13 +2,14 @@ package hu.elte.txtuml.export.uml2.transform.aspects;
 
 import org.aspectj.lang.annotation.SuppressAjWarnings;
 
-import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.ModelInt;
-import hu.elte.txtuml.api.model.Signal;
-import hu.elte.txtuml.api.model.blocks.BlockBody;
-import hu.elte.txtuml.api.model.blocks.Condition;
-import hu.elte.txtuml.api.model.blocks.ParameterizedBlockBody;
+import hu.elte.txtuml.api.Action;
+import hu.elte.txtuml.api.ModelClass;
+import hu.elte.txtuml.api.ModelInt;
+import hu.elte.txtuml.api.Signal;
+import hu.elte.txtuml.api.blocks.BlockBody;
+import hu.elte.txtuml.api.blocks.Condition;
+import hu.elte.txtuml.api.blocks.ParameterizedBlockBody;
+
 import hu.elte.txtuml.export.uml2.transform.ActionImporter;
 
 /**

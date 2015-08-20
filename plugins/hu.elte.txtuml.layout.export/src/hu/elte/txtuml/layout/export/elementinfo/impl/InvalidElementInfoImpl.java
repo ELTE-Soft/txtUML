@@ -1,8 +1,8 @@
 package hu.elte.txtuml.layout.export.elementinfo.impl;
 
-import hu.elte.txtuml.api.layout.elements.LayoutElement;
 import hu.elte.txtuml.layout.export.elementinfo.ElementInfo;
 import hu.elte.txtuml.layout.export.elementinfo.ElementType;
+import hu.elte.txtuml.layout.lang.elements.LayoutElement;
 
 /**
  * An {@link ElementInfo} implementation to show that the type of the

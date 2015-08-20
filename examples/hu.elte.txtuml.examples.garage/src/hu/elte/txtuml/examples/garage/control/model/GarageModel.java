@@ -1,7 +1,7 @@
 package hu.elte.txtuml.examples.garage.control.model;
 
-import hu.elte.txtuml.api.model.*;
-import hu.elte.txtuml.api.stdlib.*;
+import hu.elte.txtuml.api.*;
+import hu.elte.txtuml.stdlib.*;
 
 public class GarageModel extends Model {
 	// Signals from external origin

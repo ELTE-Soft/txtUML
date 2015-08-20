@@ -1,11 +1,11 @@
 package hu.elte.txtuml.export.uml2.transform;
 
-import hu.elte.txtuml.api.model.Event;
-import hu.elte.txtuml.api.model.ModelBool;
-import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.ModelElement;
-import hu.elte.txtuml.api.model.ModelInt;
-import hu.elte.txtuml.api.model.ModelString;
+import hu.elte.txtuml.api.Event;
+import hu.elte.txtuml.api.ModelBool;
+import hu.elte.txtuml.api.ModelClass;
+import hu.elte.txtuml.api.ModelElement;
+import hu.elte.txtuml.api.ModelInt;
+import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
 import hu.elte.txtuml.export.uml2.transform.backend.UMLPrimitiveTypesProvider;

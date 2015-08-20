@@ -1,12 +1,12 @@
 package hu.elte.txtuml.layout.export.elementinfo.impl;
 
-import hu.elte.txtuml.api.layout.elements.LayoutElement;
-import hu.elte.txtuml.api.layout.elements.LayoutLink;
 import hu.elte.txtuml.layout.export.elementinfo.impl.ElementInfoImpl;
 import hu.elte.txtuml.layout.export.elementinfo.ElementType;
 import hu.elte.txtuml.layout.export.elementinfo.LinkGroupInfo;
 import hu.elte.txtuml.layout.export.elementinfo.LinkInfo;
 import hu.elte.txtuml.layout.export.interfaces.LinkMap;
+import hu.elte.txtuml.layout.lang.elements.LayoutElement;
+import hu.elte.txtuml.layout.lang.elements.LayoutLink;
 import hu.elte.txtuml.layout.export.DiagramType;
 
 /**

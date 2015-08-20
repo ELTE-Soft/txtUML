@@ -1,8 +1,8 @@
 package hu.elte.txtuml.export.uml2.transform;
 
-import hu.elte.txtuml.api.model.ModelBool;
-import hu.elte.txtuml.api.model.ModelElement;
-import hu.elte.txtuml.api.model.StateMachine;
+import hu.elte.txtuml.api.ModelBool;
+import hu.elte.txtuml.api.ModelElement;
+import hu.elte.txtuml.api.StateMachine;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceManager;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;

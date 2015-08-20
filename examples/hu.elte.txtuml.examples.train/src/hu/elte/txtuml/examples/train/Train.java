@@ -1,6 +1,6 @@
 package hu.elte.txtuml.examples.train;
 
-import hu.elte.txtuml.api.model.*;
+import hu.elte.txtuml.api.*;
 import hu.elte.txtuml.examples.train.TrainModel.*;
 
 class TrainModel extends Model{

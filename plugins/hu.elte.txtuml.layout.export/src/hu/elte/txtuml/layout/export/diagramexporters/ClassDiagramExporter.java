@@ -4,15 +4,15 @@ import java.lang.reflect.ParameterizedType;
 import java.util.LinkedList;
 import java.util.List;
 
-import hu.elte.txtuml.api.layout.elements.LayoutLink;
-import hu.elte.txtuml.api.layout.elements.LayoutNode;
-import hu.elte.txtuml.api.model.Association;
-import hu.elte.txtuml.api.model.AssociationEnd;
-import hu.elte.txtuml.api.model.Model;
-import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.Association;
+import hu.elte.txtuml.api.AssociationEnd;
+import hu.elte.txtuml.api.Model;
+import hu.elte.txtuml.api.ModelClass;
 import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
 import hu.elte.txtuml.layout.export.interfaces.NodeMap;
+import hu.elte.txtuml.layout.lang.elements.LayoutLink;
+import hu.elte.txtuml.layout.lang.elements.LayoutNode;
 import hu.elte.txtuml.utils.Pair;
 
 /**

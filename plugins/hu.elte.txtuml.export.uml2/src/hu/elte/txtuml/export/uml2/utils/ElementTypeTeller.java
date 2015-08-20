@@ -2,13 +2,13 @@ package hu.elte.txtuml.export.uml2.utils;
 
 import java.lang.reflect.Field;
 
-import hu.elte.txtuml.api.model.Association;
-import hu.elte.txtuml.api.model.Event;
-import hu.elte.txtuml.api.model.ExternalClass;
-import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.ModelElement;
-import hu.elte.txtuml.api.model.Signal;
-import hu.elte.txtuml.api.model.StateMachine;
+import hu.elte.txtuml.api.Association;
+import hu.elte.txtuml.api.Event;
+import hu.elte.txtuml.api.ExternalClass;
+import hu.elte.txtuml.api.ModelClass;
+import hu.elte.txtuml.api.ModelElement;
+import hu.elte.txtuml.api.Signal;
+import hu.elte.txtuml.api.StateMachine;
 
 
 /**

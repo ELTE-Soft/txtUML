@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: txtUML API
+Bundle-SymbolicName: hu.elte.txtuml.api
+Bundle-Version: 0.1.1.qualifier
+Bundle-Vendor: ELTE
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: hu.elte.txtuml.utils
+Export-Package: hu.elte.txtuml.api,
+ hu.elte.txtuml.api.blocks,
+ hu.elte.txtuml.api.assocends,
+ hu.elte.txtuml.layout.lang,
+ hu.elte.txtuml.layout.lang.elements,
+ hu.elte.txtuml.layout.lang.statements,
+ hu.elte.txtuml.layout.lang.statements.containers,
+ hu.elte.txtuml.stdlib

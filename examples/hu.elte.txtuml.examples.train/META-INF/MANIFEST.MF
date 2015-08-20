@@ -1,10 +1,7 @@
 Bundle-SymbolicName: hu.elte.txtuml.examples.train
 Bundle-Version: 0.1.1.qualifier
 Bundle-Name: hu.elte.txtuml.train
-Bundle-Vendor: ELTE
-Require-Bundle: hu.elte.txtuml.api.model,
- hu.elte.txtuml.api.layout,
- hu.elte.txtuml.api.stdlib,
+Require-Bundle:  hu.elte.txtuml.api,
  hu.elte.txtuml.export.papyrus,
  hu.elte.txtuml.export.uml2,
  hu.elte.txtuml.layout.export,

@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import hu.elte.txtuml.api.layout.elements.LayoutLink;
 import hu.elte.txtuml.layout.export.elementinfo.LinkInfo;
 import hu.elte.txtuml.layout.export.interfaces.LinkMap;
+import hu.elte.txtuml.layout.lang.elements.LayoutLink;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 
 /**

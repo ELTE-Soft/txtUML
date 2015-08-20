@@ -1,10 +1,10 @@
 package hu.elte.txtuml.export.uml2.transform.aspects;
 
-import hu.elte.txtuml.api.model.Collection;
-import hu.elte.txtuml.api.model.ModelBool;
-import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.ModelInt;
-import hu.elte.txtuml.api.model.blocks.ParameterizedCondition;
+import hu.elte.txtuml.api.Collection;
+import hu.elte.txtuml.api.ModelBool;
+import hu.elte.txtuml.api.ModelClass;
+import hu.elte.txtuml.api.ModelInt;
+import hu.elte.txtuml.api.blocks.ParameterizedCondition;
 import hu.elte.txtuml.export.uml2.transform.CollectionOperationImporter;
 
 import org.aspectj.lang.annotation.SuppressAjWarnings;

@@ -1,11 +1,11 @@
 package hu.elte.txtuml.export.uml2.transform;
 
-import hu.elte.txtuml.api.model.ExternalClass;
-import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.ModelElement;
-import hu.elte.txtuml.api.model.ModelType;
-import hu.elte.txtuml.api.model.Signal;
-import hu.elte.txtuml.api.model.StateMachine.Transition;
+import hu.elte.txtuml.api.ExternalClass;
+import hu.elte.txtuml.api.ModelClass;
+import hu.elte.txtuml.api.ModelElement;
+import hu.elte.txtuml.api.ModelType;
+import hu.elte.txtuml.api.Signal;
+import hu.elte.txtuml.api.StateMachine.Transition;
 import hu.elte.txtuml.export.uml2.utils.ElementFinder;
 import hu.elte.txtuml.export.uml2.utils.FieldValueAccessor;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
@@ -42,7 +42,7 @@ public class InstructionImporter extends AbstractMethodImporter
 	 *
 	 * @author Adam Ancsin
 	 */
-	static <T extends ModelClass, AE extends hu.elte.txtuml.api.model.AssociationEnd<T> > AE
+	static <T extends ModelClass, AE extends hu.elte.txtuml.api.AssociationEnd<T> > AE
 		importAssocCall(ModelClass target, Class<?> otherEnd)
 	{
 		

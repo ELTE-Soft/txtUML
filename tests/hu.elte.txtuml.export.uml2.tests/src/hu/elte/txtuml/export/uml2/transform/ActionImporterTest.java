@@ -22,10 +22,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import hu.elte.txtuml.api.model.*;
-import hu.elte.txtuml.api.model.blocks.BlockBody;
-import hu.elte.txtuml.api.model.blocks.Condition;
-import hu.elte.txtuml.api.model.blocks.ParameterizedBlockBody;
+import hu.elte.txtuml.api.*;
+import hu.elte.txtuml.api.blocks.BlockBody;
+import hu.elte.txtuml.api.blocks.Condition;
+import hu.elte.txtuml.api.blocks.ParameterizedBlockBody;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 import hu.elte.txtuml.export.uml2.transform.backend.InstanceInformation;

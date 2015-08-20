@@ -1,12 +1,12 @@
 package hu.elte.txtuml.export.uml2.transform;
 
-import hu.elte.txtuml.api.model.ModelBool;
-import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.ModelElement;
-import hu.elte.txtuml.api.model.ModelInt;
-import hu.elte.txtuml.api.model.blocks.BlockBody;
-import hu.elte.txtuml.api.model.blocks.Condition;
-import hu.elte.txtuml.api.model.blocks.ParameterizedBlockBody;
+import hu.elte.txtuml.api.ModelBool;
+import hu.elte.txtuml.api.ModelClass;
+import hu.elte.txtuml.api.ModelElement;
+import hu.elte.txtuml.api.ModelInt;
+import hu.elte.txtuml.api.blocks.BlockBody;
+import hu.elte.txtuml.api.blocks.Condition;
+import hu.elte.txtuml.api.blocks.ParameterizedBlockBody;
 import hu.elte.txtuml.export.uml2.utils.FieldValueAccessor;
 import hu.elte.txtuml.utils.Pair;
 
@@ -128,7 +128,7 @@ public class ActionImporter extends AbstractMethodImporter {
 	 * 
 	 * @author Adam Ancsin
 	 */
-	static void importSendSignalAction(ModelClass receiver, hu.elte.txtuml.api.model.Signal event) 
+	static void importSendSignalAction(ModelClass receiver, hu.elte.txtuml.api.Signal event) 
 	{
 		if(currentActivity != null) 
 		{
@@ -403,7 +403,7 @@ public class ActionImporter extends AbstractMethodImporter {
 	 * @author Adam Ancsin
 	 */
 	private static void addArgumentsToSendSignalAction
-		(SendSignalAction sendSignalAction, hu.elte.txtuml.api.model.Signal event, Signal signalToSend)
+		(SendSignalAction sendSignalAction, hu.elte.txtuml.api.Signal event, Signal signalToSend)
 	{
 		for(Property signalAttribute:signalToSend.getAllAttributes())
 		{

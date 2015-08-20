@@ -1,7 +1,7 @@
 package hu.elte.txtuml.examples.machine;
 
-import hu.elte.txtuml.api.model.*;
-import hu.elte.txtuml.api.stdlib.*;
+import hu.elte.txtuml.api.*;
+import hu.elte.txtuml.stdlib.*;
 import hu.elte.txtuml.examples.machine.SmartMachineModel.*;
 
 class SmartMachineModel extends Model {

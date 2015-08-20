@@ -1,4 +1,7 @@
 package hu.elte.txtuml.export.uml2.transform;
+import hu.elte.txtuml.api.ModelBool;
+import hu.elte.txtuml.api.ModelInt;
+import hu.elte.txtuml.api.ModelString;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapCollector;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
 import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
@@ -13,10 +16,7 @@ import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.export.uml2.utils.ImportWarningProvider;
 import hu.elte.txtuml.export.uml2.utils.ResourceSetFactory;
 import hu.elte.txtuml.export.uml2.utils.StateMachineUtils;
-import hu.elte.txtuml.api.model.ModelBool;
-import hu.elte.txtuml.api.model.ModelInt;
-import hu.elte.txtuml.api.model.ModelString;
-import hu.elte.txtuml.api.stdlib.Timer;
+import hu.elte.txtuml.stdlib.Timer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

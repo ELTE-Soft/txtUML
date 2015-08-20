@@ -7,7 +7,7 @@ import org.eclipse.uml2.uml.UMLFactory;
 import org.junit.Before;
 import org.junit.Test;
 
-import hu.elte.txtuml.api.model.*;
+import hu.elte.txtuml.api.*;
 import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 
 public class AssociationImporterTest {

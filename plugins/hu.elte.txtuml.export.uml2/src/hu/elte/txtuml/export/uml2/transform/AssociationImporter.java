@@ -114,9 +114,9 @@ class AssociationImporter extends AbstractImporter{
 	    
 	    boolean navigable;
 	    
-	    if(hu.elte.txtuml.api.model.assocends.Navigability.Navigable.class.isAssignableFrom(sourceClass))
+	    if(hu.elte.txtuml.api.assocends.Navigability.Navigable.class.isAssignableFrom(sourceClass))
 	    	navigable = true;
-	    else if(hu.elte.txtuml.api.model.assocends.Navigability.NonNavigable.class.isAssignableFrom(sourceClass))
+	    else if(hu.elte.txtuml.api.assocends.Navigability.NonNavigable.class.isAssignableFrom(sourceClass))
 	    	navigable = false;
 	    else
 	    	throw new ImportException("Association end "+sourceClass.getName()+" has invalid navigability.");    

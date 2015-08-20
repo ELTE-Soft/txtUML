@@ -1,10 +1,10 @@
 package hu.elte.txtuml.export.uml2.transform;
 
-import hu.elte.txtuml.api.model.From;
-import hu.elte.txtuml.api.model.ModelElement;
-import hu.elte.txtuml.api.model.StateMachine;
-import hu.elte.txtuml.api.model.To;
-import hu.elte.txtuml.api.model.StateMachine.Transition;
+import hu.elte.txtuml.api.From;
+import hu.elte.txtuml.api.ModelElement;
+import hu.elte.txtuml.api.StateMachine;
+import hu.elte.txtuml.api.StateMachine.Transition;
+import hu.elte.txtuml.api.To;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
@@ -129,7 +129,7 @@ class RegionImporter extends AbstractImporter {
 	{
 		Vertex vertex=createVertex(txtUMLVertexClass);
 
-		StateMachine.Vertex vertexInstance=(hu.elte.txtuml.api.model.StateMachine.Vertex) 
+		StateMachine.Vertex vertexInstance=(hu.elte.txtuml.api.StateMachine.Vertex) 
 				DummyInstanceCreator.createDummyInstance(txtUMLVertexClass,ownerInstance);
 		
 		if(ElementTypeTeller.isCompositeState(txtUMLVertexClass))
@@ -303,7 +303,7 @@ class RegionImporter extends AbstractImporter {
 		String transitionName = txtUMLTransitionClass.getSimpleName();
         From fromAnnotation = txtUMLTransitionClass.getAnnotation(From.class);
         To toAnnotation = txtUMLTransitionClass.getAnnotation(To.class);
-        hu.elte.txtuml.api.model.Trigger triggerAnnotation=txtUMLTransitionClass.getAnnotation(hu.elte.txtuml.api.model.Trigger.class);
+        hu.elte.txtuml.api.Trigger triggerAnnotation=txtUMLTransitionClass.getAnnotation(hu.elte.txtuml.api.Trigger.class);
         
         String sourceName = fromAnnotation.value().getSimpleName();
         String targetName = toAnnotation.value().getSimpleName();
@@ -331,7 +331,7 @@ class RegionImporter extends AbstractImporter {
 	 *
 	 * @author Adam Ancsin
 	 */
-	private void importTrigger( hu.elte.txtuml.api.model.Trigger triggerAnnotation, org.eclipse.uml2.uml.Transition importedTransition)
+	private void importTrigger( hu.elte.txtuml.api.Trigger triggerAnnotation, org.eclipse.uml2.uml.Transition importedTransition)
 	{
 		 if(triggerAnnotation!=null)
 	     {
