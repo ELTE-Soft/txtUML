@@ -2,7 +2,7 @@ package hu.elte.txtuml.api.model.backend.log;
 
 import hu.elte.txtuml.api.model.Region;
 import hu.elte.txtuml.api.model.Signal;
-import hu.elte.txtuml.api.model.StateMachine.CompositeState;
+import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.report.ModelExecutionEventsListener;
 
@@ -24,13 +24,13 @@ class ModelExecutionEventsListenerImpl extends BaseListenerImpl
 	}
 
 	@Override
-	public void enteringCompositeState(Region region, CompositeState state) {
-		out(region + " enters " + state);
+	public void enteringVertex(Region region, Vertex vertex) {
+		out(region + " enters " + vertex);
 	}
 
 	@Override
-	public void leavingCompositeState(Region region, CompositeState state) {
-		out(region + " leaves " + state);
+	public void leavingVertex(Region region, Vertex vertex) {
+		out(region + " leaves " + vertex);
 	}
 	
 	@Override

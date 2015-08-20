@@ -293,8 +293,8 @@ public abstract class Region extends StateMachine {
 	 *            the transition to be executed
 	 */
 	private void executeTransition(Transition transition) {
-		Report.event.forEach(x -> x.usingTransition(this, transition));
 		callExitAction(transition.getSource());
+		Report.event.forEach(x -> x.usingTransition(this, transition));
 		transition.effect();
 		currentVertex = transition.getTarget();
 	}
@@ -332,19 +332,19 @@ public abstract class Region extends StateMachine {
 	 *            the top vertex in the state hierarchy to exit
 	 */
 	private void callExitAction(Vertex vertex) {
-		while (currentVertex != vertex) {
-
+		while (true) {
 			currentVertex.exit();
+			Report.event.forEach(x -> x.leavingVertex(this, currentVertex));
 
+			if (currentVertex == vertex) {
+				break;
+			}
+			
 			Class<?> currentParentState = currentVertex.getClass()
 					.getEnclosingClass();
 
 			currentVertex = (Vertex) getNestedClassInstance(currentParentState);
-
-			Report.event.forEach(x -> x.leavingCompositeState(this,
-					(CompositeState) currentVertex));
 		}
-		currentVertex.exit();
 	}
 
 	/**
@@ -356,15 +356,15 @@ public abstract class Region extends StateMachine {
 	 * vertex that is neither a pseudostate, nor a compositie state.
 	 */
 	private void callEntryAction() {
+		Report.event.forEach(x -> x.enteringVertex(this, currentVertex));
 		currentVertex.entry();
 		if (currentVertex instanceof CompositeState) {
 			Class<? extends Initial> initClass = getInitial(currentVertex
 					.getClass());
 			if (initClass != null) {
-				Report.event.forEach(x -> x.enteringCompositeState(this,
-						(CompositeState) currentVertex));
 
 				currentVertex = getNestedClassInstance(initClass);
+				Report.event.forEach(x -> x.enteringVertex(this, currentVertex));
 				// no entry action needs to be called: initial pseudostates have
 				// none
 
