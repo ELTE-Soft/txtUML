@@ -1,7 +1,10 @@
 Bundle-SymbolicName: hu.elte.txtuml.examples.machine
 Bundle-Version: 0.1.1.qualifier
 Bundle-Name: hu.elte.txtuml.machine
-Require-Bundle:  hu.elte.txtuml.api,
+Bundle-Vendor: ELTE
+Require-Bundle: hu.elte.txtuml.api.model,
+ hu.elte.txtuml.api.layout,
+ hu.elte.txtuml.api.stdlib,
  hu.elte.txtuml.export.papyrus,
  hu.elte.txtuml.export.uml2,
  hu.elte.txtuml.layout.export,

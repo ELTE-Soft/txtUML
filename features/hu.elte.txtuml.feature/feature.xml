@@ -139,6 +139,27 @@ This Agreement is governed by the laws of the State of New York and the intellec
    </requires>
 
    <plugin
+         id="hu.elte.txtuml.api.layout"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="hu.elte.txtuml.api.model"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="hu.elte.txtuml.api.stdlib"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="hu.elte.txtuml.export.cpp"
          download-size="0"
          install-size="0"
@@ -175,13 +196,6 @@ This Agreement is governed by the laws of the State of New York and the intellec
 
    <plugin
          id="hu.elte.txtuml.utils"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="hu.elte.txtuml.api"
          download-size="0"
          install-size="0"
          version="0.0.0"

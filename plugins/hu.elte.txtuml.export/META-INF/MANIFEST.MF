@@ -7,7 +7,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: ELTE
 Require-Bundle: org.eclipse.core.resources,
  hu.elte.txtuml.eclipseutils,
- hu.elte.txtuml.api,
+ hu.elte.txtuml.api.model,
+ hu.elte.txtuml.api.layout,
  hu.elte.txtuml.export.uml2,
  hu.elte.txtuml.layout.export,
  org.eclipse.emf.common,

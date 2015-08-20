@@ -1,6 +1,6 @@
 package hu.elte.txtuml.export.uml2.utils;
 
-import hu.elte.txtuml.api.Model;
+import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
 
 import java.lang.reflect.Field;

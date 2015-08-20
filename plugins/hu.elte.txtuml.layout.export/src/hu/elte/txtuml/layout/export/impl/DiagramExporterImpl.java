@@ -2,19 +2,19 @@ package hu.elte.txtuml.layout.export.impl;
 
 import java.lang.annotation.Annotation;
 
+import hu.elte.txtuml.api.layout.Diagram;
+import hu.elte.txtuml.api.layout.Diagram.Layout;
+import hu.elte.txtuml.api.layout.elements.LayoutLinkGroup;
+import hu.elte.txtuml.api.layout.elements.LayoutNodeGroup;
+import hu.elte.txtuml.api.layout.elements.LayoutPhantomNode;
+import hu.elte.txtuml.api.layout.statements.*;
+import hu.elte.txtuml.api.layout.statements.containers.*;
 import hu.elte.txtuml.layout.export.DiagramExporter;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.export.elementinfo.NodeGroupInfo;
 import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
 import hu.elte.txtuml.layout.export.interfaces.StatementExporter;
 import hu.elte.txtuml.layout.export.problems.*;
-import hu.elte.txtuml.layout.lang.Diagram;
-import hu.elte.txtuml.layout.lang.Diagram.Layout;
-import hu.elte.txtuml.layout.lang.elements.LayoutLinkGroup;
-import hu.elte.txtuml.layout.lang.elements.LayoutNodeGroup;
-import hu.elte.txtuml.layout.lang.elements.LayoutPhantomNode;
-import hu.elte.txtuml.layout.lang.statements.*;
-import hu.elte.txtuml.layout.lang.statements.containers.*;
 
 /**
  * Default implementation for {@link DiagramExporter}.

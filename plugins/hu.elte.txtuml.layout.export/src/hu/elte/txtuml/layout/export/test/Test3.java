@@ -1,11 +1,11 @@
 package hu.elte.txtuml.layout.export.test;
 
-import hu.elte.txtuml.api.Association;
-import hu.elte.txtuml.api.Model;
-import hu.elte.txtuml.api.ModelClass;
-import hu.elte.txtuml.layout.lang.Diagram;
-import hu.elte.txtuml.layout.lang.LinkEnd;
-import hu.elte.txtuml.layout.lang.statements.*;
+import hu.elte.txtuml.api.layout.Diagram;
+import hu.elte.txtuml.api.layout.LinkEnd;
+import hu.elte.txtuml.api.layout.statements.*;
+import hu.elte.txtuml.api.model.Association;
+import hu.elte.txtuml.api.model.Model;
+import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
