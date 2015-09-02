@@ -1,8 +1,9 @@
-package hu.elte.txtuml.export.papyrus.elementsarrangers.tests;
+package hu.elte.txtuml.export.papyrus.api.tests;
 
 import static org.junit.Assert.fail;
 import hu.elte.txtuml.eclipseutils.ProjectUtils;
 import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
+import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;
@@ -15,7 +16,6 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.geometry.Point;
@@ -25,9 +25,7 @@ import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.gef.EditPart;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.parts.IDiagramWorkbenchPart;
 import org.eclipse.gmf.runtime.gef.ui.figures.SlidableAnchor;
 import org.eclipse.gmf.runtime.notation.LayoutConstraint;
@@ -69,13 +67,7 @@ import org.junit.Test;
  * This test should be run as a JUnit Plug-in test
  * </p>
  */
-public class DiagramElementsArrangerTest {
-	
-	/**
-	 * The DiagramElementsArranger concrete class that we test, because the {@link AbstractDiagramElementsArranger} is abstract.
-	 */
-	DiagramElementsArranger diagramElementsArranger;
-	
+public class DiagramElementsModifierTest {
 	/**
 	 * The Editor for the Test Models
 	 */
@@ -85,56 +77,6 @@ public class DiagramElementsArrangerTest {
 	 * The Test Project
 	 */
 	IProject project;
-	
-	/**
-	 * The DiagramElementsArranger concrete class that we test, because the {@link AbstractDiagramElementsArranger} is abstract
-	 *
-	 * @author András Dobreff
-	 */
-	class DiagramElementsArranger extends AbstractDiagramElementsArranger{
-		
-		/**
-		 * The constructor
-		 * @param diagramEditPart
-		 */
-		public DiagramElementsArranger(DiagramEditPart diagramEditPart) {
-			super(diagramEditPart);
-		}
-
-		@Override
-		public void arrange(IProgressMonitor monitor) {
-			//do nothing
-		}
-		
-		@Override
-		public void hideConnectionLabelsForEditParts(
-				List<EditPart> elements, List<Class<?>> excluding) {
-			super.hideConnectionLabelsForEditParts(elements, excluding);
-		}
-		
-		@Override
-		public void moveGraphicalEditPart(GraphicalEditPart graphEp, Point p) {
-			super.moveGraphicalEditPart(graphEp, p);
-		}
-		
-		@Override
-		public void resizeGraphicalEditPart(GraphicalEditPart graphEP,
-				int new_width, int new_height) {
-			super.resizeGraphicalEditPart(graphEP, new_width, new_height);
-		}
-		
-		@Override
-		public void setConnectionAnchors(ConnectionNodeEditPart connection,
-				String src, String trg) {
-			super.setConnectionAnchors(connection, src, trg);
-		}
-		
-		@Override
-		public void setConnectionBendpoints(
-				ConnectionNodeEditPart connection, List<Point> bendpoints) {
-			super.setConnectionBendpoints(connection, bendpoints);
-		}
-	}
 	
 	/** 
 	 * Test initializing function. It builds up the Papyrus model for the Test
@@ -207,9 +149,6 @@ public class DiagramElementsArrangerTest {
 			});
 			
 			manager.createAndFillDiagrams(new NullProgressMonitor());
-			
-			DiagramEditPart diagEp = getDiagramEditPart();
-			diagramElementsArranger = new DiagramElementsArranger(diagEp);
 			editor.doSave(new NullProgressMonitor());
 			
 		} catch (Throwable e) {
@@ -253,7 +192,7 @@ public class DiagramElementsArrangerTest {
 		
 		int new_x = 250;
 		int new_y = 150;
-		diagramElementsArranger.moveGraphicalEditPart(classEp, new Point(new_x, new_y));
+		DiagramElementsModifier.moveGraphicalEditPart(classEp, new Point(new_x, new_y));
 
 		Assert.assertTrue(classEp.getModel() instanceof CSSShapeImpl);
 		LayoutConstraint layoutConstraint = ((CSSShapeImpl) classEp.getModel()).getLayoutConstraint();
@@ -279,7 +218,7 @@ public class DiagramElementsArrangerTest {
 		
 		int new_width = 200;
 		int new_height = 600;
-		diagramElementsArranger.resizeGraphicalEditPart(classEp, new_width, new_height);
+		DiagramElementsModifier.resizeGraphicalEditPart(classEp, new_width, new_height);
 
 		Assert.assertTrue(classEp.getModel() instanceof CSSShapeImpl);
 		LayoutConstraint layoutConstraint = ((CSSShapeImpl) classEp.getModel()).getLayoutConstraint();
@@ -312,7 +251,7 @@ public class DiagramElementsArrangerTest {
 		@SuppressWarnings("unchecked")
 		List<ConnectionEditPart> conns = classBEp.getSourceConnections();
 		ConnectionEditPart assoc = conns.get(0);
-		diagramElementsArranger.setConnectionAnchors(assoc, "(1, 0.5)", "(0, 0.5)");
+		DiagramElementsModifier.setConnectionAnchors(assoc, "(1, 0.5)", "(0, 0.5)");
 		
 		ConnectionAnchor source = classAEp.getSourceConnectionAnchor(assoc);
 		ConnectionAnchor target = classBEp.getTargetConnectionAnchor(assoc);
@@ -348,7 +287,7 @@ public class DiagramElementsArrangerTest {
 		ConnectionEditPart assoc = conns.get(0);
 		
 		List<Point> bendpointslist = Arrays.asList(new Point(10, 10), new Point(150, 200), new Point(400, 300));
-		diagramElementsArranger.setConnectionBendpoints(assoc, bendpointslist);
+		DiagramElementsModifier.setConnectionBendpoints(assoc, bendpointslist);
 	}
 	
 	/**
@@ -390,9 +329,9 @@ public class DiagramElementsArrangerTest {
 		ConnectionEditPart assoc2 = connsC.get(0);
 		
 		
-		diagramElementsArranger
+		DiagramElementsModifier
 			.hideConnectionLabelsForEditParts(Arrays.asList(classAEp, classBEp), Arrays.asList());
-		diagramElementsArranger
+		DiagramElementsModifier
 			.hideConnectionLabelsForEditParts(Arrays.asList(classCEp), Arrays.asList(AssociationNameEditPart.class));
 		
 		Assert.assertTrue(assoc1.getChildren().get(0) instanceof AppliedStereotypeAssociationEditPart);
