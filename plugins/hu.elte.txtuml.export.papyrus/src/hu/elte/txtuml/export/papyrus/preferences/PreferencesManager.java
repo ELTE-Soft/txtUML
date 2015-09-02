@@ -18,8 +18,8 @@ import org.eclipse.jface.preference.IPreferenceStore;
 public class PreferencesManager{
 	
 	
-	private IPreferenceStore store;
-	private Map<String, Object> fieldsWithDefaultValues;
+	private static IPreferenceStore store = Activator.getDefault().getPreferenceStore() ;
+	private static Map<String, Object> fieldsWithDefaultValues;
 	
 	public static String CLASS_DIAGRAM_PREF = "Class Diagram";
 	public static String ACTIVITY_DIAGRAM_PREF = "Activity Diagram";
@@ -39,11 +39,7 @@ public class PreferencesManager{
 	public static String TXTUML_VISUALIZE_DESTINATION_FOLDER = "txtUML Visualize Destination Folder";
 	public static String TXTUML_VISUALIZE_TXTUML_LAYOUT = "txtUML Visualize txtUML Layout";
 	
-	/**
-	 * The constructor
-	 */
-	public PreferencesManager() {
-		store = Activator.getDefault().getPreferenceStore();
+	static{
 		fieldsWithDefaultValues = new HashMap<String, Object>();
 		
 		fieldsWithDefaultValues.put(CLASS_DIAGRAM_PREF, true);
@@ -66,7 +62,7 @@ public class PreferencesManager{
 	/**
 	 * Sets the default values for each preference
 	 */
-	public void setDefaults(){
+	public static void setDefaults(){
 		Iterator<Map.Entry<String, Object>> it = fieldsWithDefaultValues.entrySet().iterator();
 		while (it.hasNext()) {
 	        Map.Entry<String, Object> pairs = it.next();
@@ -93,7 +89,7 @@ public class PreferencesManager{
 	/**
 	 * Sets all preferences to the default
 	 */
-	public void resetDefaults(){
+	public static void resetDefaults(){
 		Iterator<Entry<String, Object>> it = fieldsWithDefaultValues.entrySet().iterator();
 		while (it.hasNext()) {
 	        Map.Entry<String, Object> pairs = it.next();
@@ -105,7 +101,7 @@ public class PreferencesManager{
 	 * Sets the values for preferences
 	 * @param mp - A map with Preference-Value keys
 	 */
-	public void setValues(Map<String, Object> mp){
+	public static void setValues(Map<String, Object> mp){
 		Iterator<Map.Entry<String, Object>> it = mp.entrySet().iterator();
 		
 		while (it.hasNext()) {
@@ -115,17 +111,17 @@ public class PreferencesManager{
 	        Object Value = pairs.getValue();
 	        
 	        if(Value instanceof Integer){
-	        	this.setValue(Key, (Integer) Value);
+	        	setValue(Key, (Integer) Value);
 	        }else if(Value instanceof Boolean){
-	        	this.setValue(Key, (Boolean) Value);
+	        	setValue(Key, (Boolean) Value);
 	        }else if(Value instanceof Double){
-	        	this.setValue(Key, (Double) Value);
+	        	setValue(Key, (Double) Value);
 	        }else if(Value instanceof Float){
-	        	this.setValue(Key, (Float) Value);
+	        	setValue(Key, (Float) Value);
 	        }else if(Value instanceof Long){
-	        	this.setValue(Key, (Long) Value);
+	        	setValue(Key, (Long) Value);
 	        }else if(Value instanceof String){
-	        	this.setValue(Key, (String) Value);
+	        	setValue(Key, (String) Value);
 	        }
 	    }
 	}
@@ -135,7 +131,7 @@ public class PreferencesManager{
 	 * @param name - The preference
 	 * @param value - The value
 	 */
-	public void setValue(String name, boolean value){
+	public static void setValue(String name, boolean value){
 		store.setValue(name, value);
 	}
 	
@@ -144,7 +140,7 @@ public class PreferencesManager{
 	 * @param name - The preference
 	 * @param value - The value
 	 */
-	public void setValue(String name, double value){
+	public static void setValue(String name, double value){
 		store.setValue(name, value);
 	}
 	
@@ -153,7 +149,7 @@ public class PreferencesManager{
 	 * @param name - The preference
 	 * @param value - The value
 	 */
-	public void setValue(String name, float value){
+	public static void setValue(String name, float value){
 		store.setValue(name, value);
 	}
 	
@@ -162,7 +158,7 @@ public class PreferencesManager{
 	 * @param name - The preference
 	 * @param value - The value
 	 */
-	public void setValue(String name, int value){
+	public static void setValue(String name, int value){
 		store.setValue(name, value);
 	}
 	
@@ -171,7 +167,7 @@ public class PreferencesManager{
 	 * @param name - The preference
 	 * @param value - The value
 	 */
-	public void setValue(String name, long value){
+	public static void setValue(String name, long value){
 		store.setValue(name, value);
 	}
 	
@@ -180,7 +176,7 @@ public class PreferencesManager{
 	 * @param name - The preference
 	 * @param value - The value
 	 */
-	public void setValue(String name, String value){
+	public static void setValue(String name, String value){
 		store.setValue(name, value);
 	}
 	
@@ -188,7 +184,7 @@ public class PreferencesManager{
 	 * Gets the value of a preference
 	 * @param name - The preference
 	 */
-	public String getString(String name){
+	public static String getString(String name){
 		return store.getString(name);
 	}
 	
@@ -196,7 +192,7 @@ public class PreferencesManager{
 	 * Gets the value of a preference
 	 * @param name - The preference
 	 */
-	public boolean getBoolean(String name){
+	public static boolean getBoolean(String name){
 		return store.getBoolean(name);
 	}
 
@@ -204,7 +200,7 @@ public class PreferencesManager{
 	 * Gets the value of a preference
 	 * @param name - The preference
 	 */
-	public int getInt(String name){
+	public static int getInt(String name){
 		return store.getInt(name);
 	}
 	
@@ -212,7 +208,7 @@ public class PreferencesManager{
 	 * Gets the value of a preference
 	 * @param name - The preference
 	 */
-	public double getDouble(String name){
+	public static double getDouble(String name){
 		return store.getDouble(name);
 	}
 	
@@ -220,7 +216,7 @@ public class PreferencesManager{
 	 * Gets the value of a preference
 	 * @param name - The preference
 	 */
-	public float getFloat(String name){
+	public static float getFloat(String name){
 		return store.getFloat(name);
 	}
 
@@ -228,7 +224,7 @@ public class PreferencesManager{
 	 * Gets the value of a preference
 	 * @param name - The preference
 	 */
-	public long getLong(String name){
+	public static long getLong(String name){
 		return store.getLong(name);
 	}
 }

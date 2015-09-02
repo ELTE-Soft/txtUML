@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
+import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
 
@@ -39,7 +40,7 @@ public class ClassDiagramElementsTxtUmlArranger extends AbstractDiagramElementsT
 		super.arrangeChildren(this.diagep, monitor);
 		@SuppressWarnings("unchecked")
 		List<EditPart> children = this.diagep.getChildren();
-		super.hideConnectionLabelsForEditParts(children, Arrays.asList(
+		DiagramElementsModifier.hideConnectionLabelsForEditParts(children, Arrays.asList(
 				AssociationNameEditPart.class,
 				AssociationMultiplicityTargetEditPart.class,
 				AssociationMultiplicitySourceEditPart.class

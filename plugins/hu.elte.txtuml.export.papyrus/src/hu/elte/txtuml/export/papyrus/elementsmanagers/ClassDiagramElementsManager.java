@@ -46,9 +46,7 @@ import org.eclipse.uml2.uml.Signal;
  * @author András Dobreff
  */
 public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
-	
-	private PreferencesManager preferencesManager;
-	
+
 	private List<java.lang.Class<? extends Element>> elementsToBeAdded;
 	private List<java.lang.Class<? extends Element>> connectorsToBeAdded;
 	
@@ -59,7 +57,6 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 	 */
 	public ClassDiagramElementsManager(UMLModelManager modelManager,DiagramEditPart diagramEditPart) {
 		super(modelManager, diagramEditPart);
-		preferencesManager = new PreferencesManager();
 		elementsToBeAdded = generateElementsToBeAdded();
 		connectorsToBeAdded = generateConnectorsToBeAdded();
 	}
@@ -82,11 +79,11 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 				PrimitiveType.class
 		));
 		
-		if(preferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_CONSTRAINT_PREF))
+		if(PreferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_CONSTRAINT_PREF))
 			nodes.add(Constraint.class);
-		if(preferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_COMMENT_PREF))
+		if(PreferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_COMMENT_PREF))
 			nodes.add(Comment.class);
-		if(preferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_SIGNAL_PREF))
+		if(PreferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_SIGNAL_PREF))
 			nodes.add(Signal.class);
 		
 		return nodes;

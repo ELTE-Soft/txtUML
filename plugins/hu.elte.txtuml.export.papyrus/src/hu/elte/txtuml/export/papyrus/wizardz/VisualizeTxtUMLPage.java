@@ -2,10 +2,14 @@ package hu.elte.txtuml.export.papyrus.wizardz;
 
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -18,9 +22,9 @@ import org.eclipse.swt.widgets.Text;
 public class VisualizeTxtUMLPage extends WizardPage {
 	private Composite container;
 	private Text txtUMLModel;
-	private Text txtUMLLayout;
+	private List<Text> txtUMLLayout = new LinkedList<>();
 	private Text txtUMLProject;
-	private PreferencesManager preferencesManager;
+	private Button generateSMDs;
 	
 	/**
 	 * The Constructor
@@ -29,7 +33,6 @@ public class VisualizeTxtUMLPage extends WizardPage {
 		super("Visualize txtUML Page");
 		setTitle("Visualize txtUML page");
 	    setDescription("Give your txtUML project and model class to be visualized");
-	    preferencesManager = new PreferencesManager();
 	}
 	
 	/*
@@ -46,22 +49,64 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	    Label label1 = new Label(container, SWT.NONE);
 	    label1.setText("txtUML Project: ");
 	    txtUMLProject = new Text(container, SWT.BORDER | SWT.SINGLE);
-	    txtUMLProject.setText(preferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT));
+	    txtUMLProject.setText(PreferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT));
 	
 	    Label label2 = new Label(container, SWT.NONE);
 	    label2.setText("txtUML Model: ");
 	    txtUMLModel = new Text(container, SWT.BORDER | SWT.SINGLE);
-	    txtUMLModel.setText(preferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL));
+	    txtUMLModel.setText(PreferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL));
 	    
+	    /** Future impovement - adding multiple descriptons **
+	     *
+	    Button addDiagrambtn = new Button(container, SWT.NONE);
+	    addDiagrambtn.setText("Add txtUML diagram description");
+	    addDiagrambtn.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Label label = new Label(container, SWT.NONE);
+                label.setText("Name");
+                Control[] children = container.getChildren();
+                label.moveAbove(children[children.length-2]);
+                container.layout(new Control[] {label});
+                
+                Text text = new Text(container, SWT.BORDER);
+                GridData gd_text = new GridData(GridData.FILL_HORIZONTAL);
+                text.setLayoutData(gd_text);
+                children = container.getChildren();
+                text.moveAbove(children[children.length-2]);
+                container.layout(new Control[] {text});
+                
+                txtUMLLayout.add(text);
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+	    
+	    /**
+	    ** Future impovement - adding multiple descriptons **/
+	    
+	    /**/
+
 	    Label label3 = new Label(container, SWT.NONE);
-	    label3.setText("txtUML Model Diagram: ");
-	    txtUMLLayout = new Text(container, SWT.BORDER | SWT.SINGLE);
-	    txtUMLLayout.setText(preferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT));
+	    label3.setText("txtUML Layout Diagram: ");
+	    Text diagram = new Text(container, SWT.BORDER | SWT.SINGLE);
+	    diagram.setText(PreferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT));
+	    txtUMLLayout.add(diagram);
+	    
+	    generateSMDs = new Button(container, SWT.CHECK);
+	    generateSMDs.setText(" generate StateMachine Diagrams automatically");
+	    //*/
+	    
+	    
 	    
 	    GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 	    txtUMLModel.setLayoutData(gd);
 	    txtUMLProject.setLayoutData(gd);
-	    txtUMLLayout.setLayoutData(gd);
+	    txtUMLLayout.forEach( (text) -> text.setLayoutData(gd) );
+	    generateSMDs.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 2,1));
+	    //addDiagrambtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 2,1)); //adding multiple descriptions
 	    
 	    setControl(container);
 	    setPageComplete(true);
@@ -87,7 +132,19 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	 * Returns the txtUML model layout
 	 * @return
 	 */
-	public String getTxtUmlLayout() {
-		return txtUMLLayout.getText();
+	public List<String> getTxtUmlLayout() {
+		List<String> result = new LinkedList<String>();
+		for(Text t: txtUMLLayout){
+			result.add(t.getText());
+		}
+		return result;
+	}
+	
+	/**
+	 * Returns true if the user wants to generate StateMachines automatically
+	 * @return
+	 */
+	public boolean getGenerateSMDs() {
+		return generateSMDs.getSelection();
 	}
 }

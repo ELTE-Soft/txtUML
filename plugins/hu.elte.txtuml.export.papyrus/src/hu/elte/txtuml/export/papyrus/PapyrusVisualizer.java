@@ -2,10 +2,7 @@ package hu.elte.txtuml.export.papyrus;
 
 import hu.elte.txtuml.eclipseutils.Dialogs;
 import hu.elte.txtuml.eclipseutils.ProjectUtils;
-import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
-import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;
-import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.TxtUMLPapyrusModelManager;
 import hu.elte.txtuml.export.papyrus.utils.EditorOpener;
 
 import org.eclipse.core.resources.IProject;
@@ -75,6 +72,7 @@ public class PapyrusVisualizer {
 		monitor.worked(20);
 		
 		createPapyrusProject(new SubProgressMonitor(monitor, 80));
+		SettingsRegistry.clear();
 		return Status.OK_STATUS;
 	}
 	
@@ -108,12 +106,9 @@ public class PapyrusVisualizer {
 			
 			UmlModel umlModel = (UmlModel) editor.getServicesRegistry().getService(ModelSet.class)
 												.getModel(UmlModel.MODEL_ID);
-			
-			if(this.layoutDescriptor instanceof TxtUMLLayoutDescriptor){
-				papyrusModelManager = new TxtUMLPapyrusModelManager(editor, umlModel, (TxtUMLLayoutDescriptor) this.layoutDescriptor);
-			}else{
-				papyrusModelManager = new DefaultPapyrusModelManager(editor, umlModel);
-			}
+
+			papyrusModelManager = SettingsRegistry.getPapyrusModelManager(editor, umlModel);
+			papyrusModelManager.setLayoutController(layoutDescriptor);
 			monitor.worked(10);
 			
 			papyrusModelManager.createAndFillDiagrams(new SubProgressMonitor(monitor, 90));
@@ -123,4 +118,13 @@ public class PapyrusVisualizer {
 			monitor.worked(100);
 		}
 	}
+	
+	/**
+	 * Registers the Implementation for the PapyrusModelManager
+	 * @param manager
+	 */
+	public void registerPayprusModelManager(Class<? extends AbstractPapyrusModelManager> manager){
+		SettingsRegistry.setPapyrusModelManager(manager);
+	}
+
 }

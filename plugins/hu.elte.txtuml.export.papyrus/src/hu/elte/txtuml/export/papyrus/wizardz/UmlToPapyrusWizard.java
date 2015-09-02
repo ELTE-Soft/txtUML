@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
+import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -61,7 +62,8 @@ public class UmlToPapyrusWizard extends Wizard {
 	
 	
     PapyrusVisualizer pv = new PapyrusVisualizer(selectUmlPage.getProjectName(), getFileNameWithOutExtension(f), f.toURI().toString());
-	IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
+	pv.registerPayprusModelManager(DefaultPapyrusModelManager.class);
+    IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
 	try {
 		progressService.runInUI(
 				progressService,

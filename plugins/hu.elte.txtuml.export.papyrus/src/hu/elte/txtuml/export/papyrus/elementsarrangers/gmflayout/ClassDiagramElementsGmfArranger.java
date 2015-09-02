@@ -1,5 +1,7 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout;
 
+import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,7 +38,7 @@ public class ClassDiagramElementsGmfArranger extends AbstractDiagramElementsGmfA
 		super.arrangeChildren(this.diagep);
 		@SuppressWarnings("unchecked")
 		List<EditPart> listEp = this.diagep.getChildren();
-		super.hideConnectionLabelsForEditParts(listEp, Arrays.asList(
+		DiagramElementsModifier.hideConnectionLabelsForEditParts(listEp, Arrays.asList(
 				AssociationNameEditPart.class,
 				AssociationMultiplicityTargetEditPart.class,
 				AssociationMultiplicitySourceEditPart.class

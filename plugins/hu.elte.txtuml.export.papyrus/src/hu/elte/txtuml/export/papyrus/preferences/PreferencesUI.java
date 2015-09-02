@@ -43,10 +43,7 @@ public class PreferencesUI {
 			this.preference = preference;
 		}
 	}
-	
-	
-	
-	private PreferencesManager preferencesManager;
+
 	private Map<String, CheckBoxRecord> checkboxes; 
 
 	/**
@@ -61,9 +58,7 @@ public class PreferencesUI {
 	 * @param parent - The parent of the controls
 	 * @param preferencesManager - The PreferencesManager where the preferences are get/set
 	 */
-	public void init(Composite parent, PreferencesManager preferencesManager){
-		this.preferencesManager = preferencesManager;
-		
+	public void init(Composite parent){
 		final Tree tree = new Tree(parent, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL);
 		
 		checkboxes.put("ClassDiagramCHBX", new CheckBoxRecord(tree, "Class Diagram",
@@ -119,9 +114,7 @@ public class PreferencesUI {
 		while (it.hasNext()) {
 	        Map.Entry<String, CheckBoxRecord> pairs = it.next();
 	        CheckBoxRecord rec = pairs.getValue();
-	        if(preferencesManager != null){
-	        	rec.chbx.setChecked(preferencesManager.getBoolean(rec.preference));
-	        }
+        	rec.chbx.setChecked(PreferencesManager.getBoolean(rec.preference));
 	    }
 	}
 }

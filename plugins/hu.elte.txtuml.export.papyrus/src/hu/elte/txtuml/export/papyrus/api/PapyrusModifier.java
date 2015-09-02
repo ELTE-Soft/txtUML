@@ -34,7 +34,6 @@ public class PapyrusModifier {
 	 */
 	public PapyrusModifier(String projectName, String modelName){
 		papyrusModelCreator = new PapyrusModelCreator(projectName+"/"+modelName);
-
 		if(papyrusModelCreator.diExists()){
 			editor = EditorOpener.openPapyrusEditor(papyrusModelCreator.getDi());
 			diagramManager = new DiagramManager(editor);

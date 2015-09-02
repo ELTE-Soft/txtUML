@@ -1,5 +1,7 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout;
 
+import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,7 +38,7 @@ public class StateMachineDiagramElementsGmfArranger extends
 		monitor.beginTask("Arrange", 1);
 		monitor.subTask("Arranging elements...");
 		CustomStateMachineEditPart stateMachineEP = (CustomStateMachineEditPart) diagep.getChildren().get(0);
-		super.resizeGraphicalEditPart(stateMachineEP, 400, 200);
+		DiagramElementsModifier.resizeGraphicalEditPart(stateMachineEP, 400, 200);
 		arrange_recurively(stateMachineEP);
 		arrange_and_resize_recursively(stateMachineEP);
 		monitor.worked(1);
@@ -94,7 +96,7 @@ public class StateMachineDiagramElementsGmfArranger extends
 				}
 			}
 			super.arrangeChildren(regioncompartement);
-			super.hideConnectionLabelsForEditParts(listEp, Arrays.asList(CustomTransitionGuardEditPart.class));	
+			DiagramElementsModifier.hideConnectionLabelsForEditParts(listEp, Arrays.asList(CustomTransitionGuardEditPart.class));	
 		}
 	}
 	

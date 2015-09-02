@@ -1,5 +1,7 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout;
 
+import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,7 +39,7 @@ public class ActivityDiagramElementsGmfArranger extends AbstractDiagramElementsG
 		super.arrangeChildren(activityContentEditpart);
 		@SuppressWarnings("unchecked")
 		List<EditPart> listEp =  activityContentEditpart.getChildren();
-		super.hideConnectionLabelsForEditParts(listEp, Arrays.asList(ObjectFlowGuardEditPart.class, ControlFlowGuardEditPart.class));
+		DiagramElementsModifier.hideConnectionLabelsForEditParts(listEp, Arrays.asList(ObjectFlowGuardEditPart.class, ControlFlowGuardEditPart.class));
 		monitor.worked(1);
 	}	
 }

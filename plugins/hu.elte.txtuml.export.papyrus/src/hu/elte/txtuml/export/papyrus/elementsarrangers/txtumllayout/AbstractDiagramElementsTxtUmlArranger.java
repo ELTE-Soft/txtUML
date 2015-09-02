@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
+import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutTransformer.OrigoConstraint;
@@ -64,7 +65,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 				connections.addAll(conns);
 			}
 			
-			LayoutVisualizerManager vm = new LayoutVisualizerManager(txtUmlRegistry);
+			LayoutVisualizerManager vm = new LayoutVisualizerManager(txtUmlRegistry.getDescriptor().getReports().get(0)); //TODO
 			vm.addProgressMonitor(monitor);
 			vm.arrange();
 			
@@ -113,10 +114,8 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			objectsTransform.forEach(new BiConsumer<GraphicalEditPart, Rectangle>() {
 				@Override
 				public void accept(GraphicalEditPart ep, Rectangle position) {
-					AbstractDiagramElementsTxtUmlArranger.super
-						.resizeGraphicalEditPart((GraphicalEditPart) ep, cellSize, cellSize);
-					AbstractDiagramElementsTxtUmlArranger.super
-						.moveGraphicalEditPart((GraphicalEditPart) ep, position.getTopLeft());
+					DiagramElementsModifier.resizeGraphicalEditPart((GraphicalEditPart) ep, cellSize, cellSize);
+					DiagramElementsModifier.moveGraphicalEditPart((GraphicalEditPart) ep, position.getTopLeft());
 				}
 			});
 		
@@ -131,8 +130,8 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 				        	route.remove(route.size()-1);
 				        	connection.getSource();
 				        	
-				        	AbstractDiagramElementsTxtUmlArranger.super.setConnectionAnchors(connection, anchor_start, anchor_end);
-				        	AbstractDiagramElementsTxtUmlArranger.super.setConnectionBendpoints(connection, route);
+				        	DiagramElementsModifier.setConnectionAnchors(connection, anchor_start, anchor_end);
+				        	DiagramElementsModifier.setConnectionBendpoints(connection, route);
 						}
 				}
 			});

@@ -29,8 +29,6 @@ import org.eclipse.uml2.uml.Transition;
  */
 public class StateMachineDiagramElementsManager extends AbstractDiagramElementsManager {
 
-	private PreferencesManager preferencesManager;
-	
 	/**
 	 * The Constructor
 	 * @param modelManager - The ModelManager which serves the model elements
@@ -38,7 +36,6 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	 */
 	public StateMachineDiagramElementsManager(UMLModelManager modelManager,DiagramEditPart diagramEditPart) {
 		super(modelManager, diagramEditPart);
-		preferencesManager = new PreferencesManager();
 	}
 	
 	
@@ -96,12 +93,12 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 		StateMachineDiagramElementsController.addFinalStatesToRegion(region, finalstates);
 		StateMachineDiagramElementsController.addTransitionsToRegion(region, transitions);
 	
-		if(preferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_CONSTRAINT_PREF)){
+		if(PreferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_CONSTRAINT_PREF)){
 			List<Constraint> constraints = modelManager.getElementsOfTypeFromList(list, Constraint.class);
 			StateMachineDiagramElementsController.addElementsToRegion(region, constraints);
 		}
 		
-		if(preferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_COMMENT_PREF)){
+		if(PreferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_COMMENT_PREF)){
 			List<Comment> comments = modelManager.getElementsOfTypeFromList(list, Comment.class);
 			StateMachineDiagramElementsController.addElementsToRegion(region, comments);
 		}

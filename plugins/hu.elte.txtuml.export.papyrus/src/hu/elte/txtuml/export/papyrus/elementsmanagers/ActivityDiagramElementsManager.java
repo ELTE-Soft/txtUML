@@ -46,8 +46,6 @@ import org.eclipse.uml2.uml.ValueSpecificationAction;
  */
 public class ActivityDiagramElementsManager extends AbstractDiagramElementsManager{
 	
-	private PreferencesManager preferencesManager;
-	
 	private List<java.lang.Class<? extends Element>> nodesToBeAdded;
 	private List<java.lang.Class<? extends Element>> connectorsToBeAdded;
 	
@@ -58,7 +56,6 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 	 */
 	public ActivityDiagramElementsManager(UMLModelManager modelManager,DiagramEditPart diagramEditPart) {
 		super(modelManager, diagramEditPart);
-		preferencesManager = new PreferencesManager();
 		nodesToBeAdded = generateNodesToBeAdded();
 		connectorsToBeAdded = generateConnectorsToBeAdded(); 
 	}
@@ -95,7 +92,7 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 				ValueSpecificationAction.class
 			));
 		
-		if(preferencesManager.getBoolean(PreferencesManager.ACTIVITY_DIAGRAM_COMMENT_PREF))
+		if(PreferencesManager.getBoolean(PreferencesManager.ACTIVITY_DIAGRAM_COMMENT_PREF))
 			nodes.add(Comment.class);
 		
 		return nodes;

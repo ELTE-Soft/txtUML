@@ -5,9 +5,13 @@ import hu.elte.txtuml.export.ExportUtils;
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLExporter;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
+import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.TxtUMLPapyrusModelManager;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.layout.export.DiagramExportationReport;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -61,28 +65,26 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 	 */
 	@Override
 	public boolean performFinish() {
-		PreferencesManager preferncesManager = new PreferencesManager();
 		String txtUMLModelName = selectTxtUmlPage.getTxtUmlModelClass();
-		String txtUMLLayout = selectTxtUmlPage.getTxtUmlLayout();
+		List<String> txtUMLLayout = selectTxtUmlPage.getTxtUmlLayout();
 		String txtUMLProjectName = selectTxtUmlPage.getTxtUmlProject();
-		String folder = preferncesManager
+		String folder = PreferencesManager
 				.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
 
-		String[] modellnamesplit = txtUMLModelName.split("\\.");
-		String[] layoutnamesplit = txtUMLLayout.split("\\.");
-		String projectName = modellnamesplit[modellnamesplit.length-1]+"_"+
-										layoutnamesplit[layoutnamesplit.length-1];
+		String projectName = txtUMLModelName;
 		
-		preferncesManager.setValue(
+		PreferencesManager.setValue(
 				PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT,
 				txtUMLProjectName);
-		preferncesManager.setValue(
+		PreferencesManager.setValue(
 				PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL,
 				txtUMLModelName);
-		preferncesManager.setValue(
+		/*
+		 * TODO
+		PreferencesManager.setValue(
 				PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT,
 				txtUMLLayout);
-		
+		*/
 		try {
 			IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
 			
@@ -113,12 +115,19 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 				     		try{
 				     			layoutDesriptor = exporter.exportTxtUMLLayout();
 				     			
-				     			if(layoutDesriptor.report.getWarningCount() != 0){
-				     				StringBuilder warnings = new StringBuilder("Warnings:"+System.lineSeparator());
-				     				warnings.append(String.join(System.lineSeparator(), layoutDesriptor.report.getWarnings()));
-				     				warnings.append(System.lineSeparator()+System.lineSeparator()+"Do you want to continue?");
+				     			List<String> warnings = new LinkedList<String>();
+				     			for( DiagramExportationReport report : layoutDesriptor.getReports()){
+				     				warnings.addAll(report.getWarnings());
+				     			}
+				     			
+				     			layoutDesriptor.generateSMDs = selectTxtUmlPage.getGenerateSMDs();
+				     			
+				     			if(warnings.size() != 0){
+				     				StringBuilder warningMessages = new StringBuilder("Warnings:"+System.lineSeparator());
+				     				warningMessages.append(String.join(System.lineSeparator(), warnings));
+				     				warningMessages.append(System.lineSeparator()+System.lineSeparator()+"Do you want to continue?");
 				     				
-				     				if(!Dialogs.WarningConfirm("Warnings about layout description", warnings.toString())){
+				     				if(!Dialogs.WarningConfirm("Warnings about layout description", warningMessages.toString())){
 					     				throw new InterruptedException();
 					     			}
 				     			}
@@ -137,6 +146,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 				     		
 				     		try{
 					     		PapyrusVisualizer pv = exporter.createVisualizer(layoutDesriptor);
+					     		pv.registerPayprusModelManager(TxtUMLPapyrusModelManager.class);
 					            pv.run(new SubProgressMonitor(monitor,85));
 				     		}catch(Exception e){
 				     			Dialogs.errorMsgb("txtUML visualization Error", e.getClass()

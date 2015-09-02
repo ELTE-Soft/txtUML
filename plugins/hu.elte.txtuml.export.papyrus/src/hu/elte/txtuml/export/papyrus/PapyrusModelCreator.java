@@ -96,7 +96,7 @@ public class PapyrusModelCreator {
 						String newFileName = umlFilePath.substring(0, index)+Path.SEPARATOR+profileFilepath.toFile().getName();
 						IFile newFile = fileFromPath(newFileName);
 						
-						copyFile(oldFileName, newFile);	
+						copyFile(oldFileName, newFile);
 			}
 	}
 	
@@ -105,7 +105,7 @@ public class PapyrusModelCreator {
 	 * @return The {@link Model}
 	 */
 	public Model getUmlModel(){
-		return Uml2Utils.loadModel(URI.createPlatformResourceURI(umlFilePath, false));
+		return Uml2Utils.loadModel(umlFilePath);
 	}
 	
 	private void copyFile(String sourcepath, IFile newFile){

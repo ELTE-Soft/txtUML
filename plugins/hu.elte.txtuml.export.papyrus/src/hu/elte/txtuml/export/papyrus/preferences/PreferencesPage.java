@@ -16,7 +16,6 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 public class PreferencesPage extends PreferencePage implements IWorkbenchPreferencePage{
 
 	private PreferencesUI preferencesUI;
-	private PreferencesManager preferencesManager;
 	
 	/*
 	 * (non-Javadoc)
@@ -24,7 +23,6 @@ public class PreferencesPage extends PreferencePage implements IWorkbenchPrefere
 	 */
 	@Override
 	public void init(IWorkbench workbench) {
-		preferencesManager = new PreferencesManager();
 	}
 
 	/*
@@ -36,7 +34,7 @@ public class PreferencesPage extends PreferencePage implements IWorkbenchPrefere
 		Composite container = new Composite(parent, SWT.NONE);
 		container.setLayout(new FillLayout());
 		preferencesUI = new PreferencesUI();
-		preferencesUI.init(container, preferencesManager);
+		preferencesUI.init(container);
 		return container;
 	}
 	
@@ -47,7 +45,7 @@ public class PreferencesPage extends PreferencePage implements IWorkbenchPrefere
 	@Override
 	public boolean performOk() {
 		if(preferencesUI != null){
-			preferencesManager.setValues(preferencesUI.getValues());
+			PreferencesManager.setValues(preferencesUI.getValues());
 		}
 		return super.performOk();
 	}
@@ -58,7 +56,7 @@ public class PreferencesPage extends PreferencePage implements IWorkbenchPrefere
 	 */
 	@Override
 	protected void performDefaults(){
-		preferencesManager.resetDefaults();
+		PreferencesManager.resetDefaults();
 		preferencesUI.refresh();
 		super.performDefaults();
 	}

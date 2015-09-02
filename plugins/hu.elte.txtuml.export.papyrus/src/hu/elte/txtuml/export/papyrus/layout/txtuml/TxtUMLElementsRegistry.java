@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.papyrus.layout.txtuml;
 
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
+import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.model.AssociationType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
@@ -82,14 +83,18 @@ public class TxtUMLElementsRegistry {
 	public List<Element> getNodes(){
 		List<Element> elements = new LinkedList<Element>();
 		Element elem;
-		if(this.descriptor.report.isSuccessful()){
-			for(RectangleObject rectangle : this.descriptor.report.getNodes()){
-				elem = findElement(rectangle.getName());
-				if(elem != null){
-					elements.add(elem);
+		/* TODO: This works only if there is one dscription */
+		for(DiagramExportationReport report : this.descriptor.getReports()){
+			if(report.isSuccessful()){
+				for(RectangleObject rectangle : report.getNodes()){
+					elem = findElement(rectangle.getName());
+					if(elem != null){
+						elements.add(elem);
+					}
 				}
-			}
+			}	
 		}
+		
 		return elements;
 		
 	}
@@ -101,8 +106,10 @@ public class TxtUMLElementsRegistry {
 	public List<Element> getConnections(){
 		List<Element> elements = new LinkedList<Element>();
 		Element elem;
-		if(this.descriptor.report.isSuccessful()){
-			for(LineAssociation association : this.descriptor.report.getLinks()){
+		/* TODO: This works only if there is one dscription */
+		for(DiagramExportationReport report : this.descriptor.getReports())
+		if(report.isSuccessful()){
+			for(LineAssociation association : report.getLinks()){
 				if(association.getType() == AssociationType.generalization){
 					elem = findGeneralization(association.getFrom(), association.getTo());
 				}else{
@@ -114,6 +121,7 @@ public class TxtUMLElementsRegistry {
 				}
 			}
 		}
+		
 		return elements;
 	}
 	

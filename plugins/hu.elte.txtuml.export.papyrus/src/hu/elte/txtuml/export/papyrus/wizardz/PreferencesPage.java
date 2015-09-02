@@ -17,7 +17,6 @@ import org.eclipse.swt.widgets.Composite;
 public class PreferencesPage extends WizardPage{
 
 	private PreferencesUI preferencesUI;
-	private PreferencesManager preferencesManager;
 	
 	/**
 	 * The Contructor
@@ -26,7 +25,6 @@ public class PreferencesPage extends WizardPage{
 		super("Plugin Preferences Page");
 		setTitle("Preferences page");
 	    setDescription("Select which diagrams and components you want to be generated automatically!");
-	    preferencesManager = new PreferencesManager();
 	}
 	
 	/*
@@ -38,7 +36,7 @@ public class PreferencesPage extends WizardPage{
 		Composite container = new Composite(parent, SWT.NONE);
 		container.setLayout(new FillLayout());
 		preferencesUI = new PreferencesUI();
-		preferencesUI.init(container, preferencesManager);
+		preferencesUI.init(container);
 		setControl(container);
 	}
 
@@ -47,7 +45,7 @@ public class PreferencesPage extends WizardPage{
 	 */
 	public void setPreferences(){
 		if(preferencesUI != null){
-			preferencesManager.setValues(preferencesUI.getValues());
+			PreferencesManager.setValues(preferencesUI.getValues());
 		}
 	}
 }
