@@ -1,7 +1,7 @@
 package hu.elte.txtuml.layout.export.impl;
 
-import hu.elte.txtuml.api.layout.statements.Alignment;
-import hu.elte.txtuml.api.layout.statements.Contains;
+import hu.elte.txtuml.api.layout.Alignment;
+import hu.elte.txtuml.api.layout.Contains;
 import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.diagramexporters.ClassDiagramExporter;
 import hu.elte.txtuml.layout.export.elementinfo.ConcreteElementInfo;

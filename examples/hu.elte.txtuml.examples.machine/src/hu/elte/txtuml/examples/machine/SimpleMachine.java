@@ -1,7 +1,7 @@
 package hu.elte.txtuml.examples.machine;
 
 import hu.elte.txtuml.api.layout.Diagram;
-import hu.elte.txtuml.api.layout.statements.Right;
+import hu.elte.txtuml.api.layout.Right;
 import hu.elte.txtuml.api.model.*;
 import hu.elte.txtuml.examples.machine.MachineModel.*;
 

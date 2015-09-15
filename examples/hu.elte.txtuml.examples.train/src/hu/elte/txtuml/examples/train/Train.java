@@ -1,7 +1,7 @@
 package hu.elte.txtuml.examples.train;
 
 import hu.elte.txtuml.api.layout.Diagram;
-import hu.elte.txtuml.api.layout.statements.Diamond;
+import hu.elte.txtuml.api.layout.Diamond;
 import hu.elte.txtuml.api.model.*;
 import hu.elte.txtuml.examples.train.TrainModel.*;
 

@@ -1,16 +1,16 @@
 package hu.elte.txtuml.layout.export.test;
 
+import hu.elte.txtuml.api.layout.Alignment;
 import hu.elte.txtuml.api.layout.AlignmentType;
+import hu.elte.txtuml.api.layout.Contains;
 import hu.elte.txtuml.api.layout.Diagram;
+import hu.elte.txtuml.api.layout.Diamond;
+import hu.elte.txtuml.api.layout.East;
 import hu.elte.txtuml.api.layout.LinkEnd;
-import hu.elte.txtuml.api.layout.statements.Alignment;
-import hu.elte.txtuml.api.layout.statements.Contains;
-import hu.elte.txtuml.api.layout.statements.Diamond;
-import hu.elte.txtuml.api.layout.statements.East;
-import hu.elte.txtuml.api.layout.statements.Priority;
-import hu.elte.txtuml.api.layout.statements.Row;
-import hu.elte.txtuml.api.layout.statements.Show;
-import hu.elte.txtuml.api.layout.statements.West;
+import hu.elte.txtuml.api.layout.Priority;
+import hu.elte.txtuml.api.layout.Row;
+import hu.elte.txtuml.api.layout.Show;
+import hu.elte.txtuml.api.layout.West;
 import hu.elte.txtuml.api.model.Association;
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.ModelClass;
