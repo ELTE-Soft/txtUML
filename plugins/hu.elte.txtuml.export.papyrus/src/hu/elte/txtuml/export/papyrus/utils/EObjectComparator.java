@@ -10,6 +10,7 @@ import org.eclipse.emf.ecore.EObject;
  * 	reference: http://jorgemanrubia.net/blog/wp-content/uploads/2008/07/emfcomparator.java
  */
 public class EObjectComparator implements Comparator<EObject> {
+	@Override
 	public int compare(EObject object1, EObject object2) {
 		String targetString1 = extractComparisonString(object1);
 		String targetString2 = extractComparisonString(object2);

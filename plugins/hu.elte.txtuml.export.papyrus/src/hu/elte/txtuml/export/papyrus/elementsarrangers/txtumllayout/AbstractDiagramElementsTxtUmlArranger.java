@@ -114,8 +114,8 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			objectsTransform.forEach(new BiConsumer<GraphicalEditPart, Rectangle>() {
 				@Override
 				public void accept(GraphicalEditPart ep, Rectangle position) {
-					DiagramElementsModifier.resizeGraphicalEditPart((GraphicalEditPart) ep, cellSize, cellSize);
-					DiagramElementsModifier.moveGraphicalEditPart((GraphicalEditPart) ep, position.getTopLeft());
+					DiagramElementsModifier.resizeGraphicalEditPart(ep, cellSize, cellSize);
+					DiagramElementsModifier.moveGraphicalEditPart(ep, position.getTopLeft());
 				}
 			});
 		

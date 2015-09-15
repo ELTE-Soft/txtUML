@@ -48,7 +48,8 @@ public class InstantHandler extends AbstractHandler {
 			progressService.runInUI(
 					progressService,
 				      new IRunnableWithProgress() {
-				         public void run(IProgressMonitor monitor) {
+				         @Override
+						public void run(IProgressMonitor monitor) {
 				            pv.run(monitor);
 				         }
 				      },

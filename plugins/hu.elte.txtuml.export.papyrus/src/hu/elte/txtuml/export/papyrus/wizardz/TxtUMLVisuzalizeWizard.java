@@ -89,6 +89,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 
 			progressService.runInUI(progressService,
 					new IRunnableWithProgress() {
+						@Override
 						public void run(IProgressMonitor monitor)
 								throws InterruptedException {
 							monitor.beginTask("Visualization", 100);

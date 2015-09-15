@@ -136,7 +136,7 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 		List<Element> list = ((Element) parent).getOwnedElements();
 		
 		List<Property> properties = modelManager.getElementsOfTypeFromList(list, Property.class);
-		List<Port> ports = (List<Port>) modelManager.getElementsOfTypeFromList(list, Port.class);
+		List<Port> ports = modelManager.getElementsOfTypeFromList(list, Port.class);
 		List<ExtensionEnd> extensionEnds = modelManager.getElementsOfTypeFromList(list, ExtensionEnd.class);
 		
 		List<Operation> operations = modelManager.getElementsOfTypeFromList(list, Operation.class);

@@ -52,6 +52,7 @@ public class Animator {
 					URI uri = URI.createFileURI(mappingFolder.getLocation().toOSString());
 					if (mappingDirectory.exists() && mappingDirectory.isDirectory() && mappingDirectory.canRead()) {
 						for (String mappingFilename : mappingDirectory.list(new FilenameFilter() {
+							@Override
 							public boolean accept(File dir, String name) {
 								return name.endsWith(MAPPING_FILE_EXTENSION_TOKEN);
 							}})) {

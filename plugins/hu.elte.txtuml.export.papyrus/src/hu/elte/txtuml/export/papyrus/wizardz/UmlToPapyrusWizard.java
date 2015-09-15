@@ -68,7 +68,8 @@ public class UmlToPapyrusWizard extends Wizard {
 		progressService.runInUI(
 				progressService,
 			      new IRunnableWithProgress() {
-			         public void run(IProgressMonitor monitor) {
+			         @Override
+					public void run(IProgressMonitor monitor) {
 			            pv.run(monitor);
 			         }
 			      },

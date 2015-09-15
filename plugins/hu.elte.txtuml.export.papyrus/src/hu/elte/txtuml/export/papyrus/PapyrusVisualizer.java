@@ -102,7 +102,7 @@ public class PapyrusVisualizer {
 			
 			monitor.subTask("Generating Papyrus model...");
 			papyrusModelCreator.createPapyrusModel();
-			IMultiDiagramEditor editor = (IMultiDiagramEditor) EditorOpener.openPapyrusEditor(papyrusModelCreator.getDi());
+			IMultiDiagramEditor editor = EditorOpener.openPapyrusEditor(papyrusModelCreator.getDi());
 			
 			UmlModel umlModel = (UmlModel) editor.getServicesRegistry().getService(ModelSet.class)
 												.getModel(UmlModel.MODEL_ID);
