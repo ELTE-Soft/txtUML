@@ -18,8 +18,8 @@ public class TxtUMLProjectPage extends WizardPage {
 	private Text modelName;
 
 	private static final String defaultModelName = "Sample";
-	private static final String defaultProjectName = "SampleProject";
-	
+	private static final String defaultProjectName = "project.sample";
+
 	/**
 	 * Constructor for SampleNewWizardPage.
 	 * 
@@ -92,15 +92,15 @@ public class TxtUMLProjectPage extends WizardPage {
 		}
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		final IProject project = root.getProject(projectname);
-        if (project.exists()){
+		if (project.exists()) {
 			updateStatus("This project already exists");
 			return;
 		}
 		if (getModelName().length() == 0) {
-			updateStatus("Model name Must be specified");
+			updateStatus("Model name must be specified");
 			return;
 		}
-		
+
 		updateStatus(null);
 	}
 
