@@ -19,11 +19,8 @@ public class UnlinkingDeletedTest extends SimpleModelTestsBase {
 		
 		stopModelExecution();
 
-		/*
-		Assert.assertArrayEquals(
-				new String[] { ErrorMessages.getUnlinkingDeletedObjectMessage(a) },
-				executorErrorStream.getOutputAsArray());
-		*/
+		executionAsserter.assertErrors( x -> x.unlinkingDeletedObject(a));
+
 	}
 
 }

@@ -7,7 +7,7 @@ import java.util.Map;
 
 /**
  * A mapping of classes to subclasses of {@link Initial}. Intended for the
- * {@link hu.elte.txtuml.api.Region} class where it is used to cache the classes representing the
+ * {@link hu.elte.txtuml.api.model.Region} class where it is used to cache the classes representing the
  * initial pseudostates of regions and composite states.
  *
  * @author Gabor Ferenc Kovacs

@@ -6,7 +6,7 @@ import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.report.RuntimeErrorsListener;
 
-class RuntimeErrorsListenerImpl extends BaseListenerImpl implements
+final class RuntimeErrorsListenerImpl extends BaseListenerImpl implements
 		RuntimeErrorsListener {
 
 	RuntimeErrorsListenerImpl(ExecutorLog log) {

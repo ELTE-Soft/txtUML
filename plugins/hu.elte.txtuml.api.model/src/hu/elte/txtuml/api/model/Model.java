@@ -130,17 +130,17 @@ package hu.elte.txtuml.api.model;
  * <li>boolean, integer, string primitive types ( {@link ModelInt},
  * {@link ModelBool}, {@link ModelString} )</li>
  * <li>control structures and variables to use inside them (
- * {@link Action#If(hu.elte.txtuml.api.blocks.Condition, hu.elte.txtuml.api.blocks.BlockBody, hu.elte.txtuml.api.blocks.BlockBody)
+ * {@link Action#If(hu.elte.txtuml.api.model.blocks.Condition, hu.elte.txtuml.api.model.blocks.BlockBody, hu.elte.txtuml.api.model.blocks.BlockBody)
  * Action.If},
- * {@link Action#While(hu.elte.txtuml.api.blocks.Condition, hu.elte.txtuml.api.blocks.BlockBody)
+ * {@link Action#While(hu.elte.txtuml.api.model.blocks.Condition, hu.elte.txtuml.api.model.blocks.BlockBody)
  * Action.While},
- * {@link Action#For(ModelInt, ModelInt, hu.elte.txtuml.api.blocks.ParameterizedBlockBody)
+ * {@link Action#For(ModelInt, ModelInt, hu.elte.txtuml.api.model.blocks.ParameterizedBlockBody)
  * Action.For}, {@link VariableType} )</li>
  * <li>logging ( {@link Action#log(String) log}, {@link Action#logError(String)
  * logError} ),</li>
  * <li>changeable timers through the standard library (
- * {@link hu.elte.txtuml.stdlib.Timer Timer},
- * {@link hu.elte.txtuml.stdlib.Timer.Handle Handle} ).
+ * {@link hu.elte.txtuml.api.stdlib.Timer Timer},
+ * {@link hu.elte.txtuml.api.stdlib.Timer.Handle Handle} ).
  * </ul>
  *
  * <h3>Executor features</h3>
@@ -174,7 +174,7 @@ package hu.elte.txtuml.api.model;
  * 
  * <ul>
  * <li>Using and extending classes, interfaces, enums and annotations of this
- * package and the {@link hu.elte.txtuml.api.blocks} package, if the opposite is
+ * package and the {@link hu.elte.txtuml.api.model.blocks} package, if the opposite is
  * not stated on the corresponding pages of this documentation.</li>
  * <li>Using Java primitive types and <code>String</code>s but only as
  * parameters of constructors and setter methods of {@link ModelType} and
@@ -182,7 +182,7 @@ package hu.elte.txtuml.api.model;
  * {@link Action} ( {@link Action#log(String) log},
  * {@link Action#logError(String) logError} ).</li>
  * <li>Using subclasses of <code>ExternalClass</code>, like the classes of the
- * {@link hu.elte.txtuml.stdlib} package. See the documentation of
+ * {@link hu.elte.txtuml.api.stdlib} package. See the documentation of
  * {@link ExternalClass} for details.</li>
  * </ul>
  * 
@@ -303,9 +303,9 @@ package hu.elte.txtuml.api.model;
  * <p>
  * Condition evaluations in txtUML include
  * {@link StateMachine.Transition#guard() guards} of transitions, conditions of
- * {@link Action#If(hu.elte.txtuml.api.blocks.Condition, hu.elte.txtuml.api.blocks.BlockBody, hu.elte.txtuml.api.blocks.BlockBody)
+ * {@link Action#If(hu.elte.txtuml.api.model.blocks.Condition, hu.elte.txtuml.api.model.blocks.BlockBody, hu.elte.txtuml.api.model.blocks.BlockBody)
  * If} statements and certain <code>Collection</code> methods (
- * {@link Collection#selectAll(hu.elte.txtuml.api.blocks.ParameterizedCondition)
+ * {@link Collection#selectAll(hu.elte.txtuml.api.model.blocks.ParameterizedCondition)
  * selectAll} ).
  * <p>
  * A condition evaluation is exported to EMF-UML2 as a single model query, so it

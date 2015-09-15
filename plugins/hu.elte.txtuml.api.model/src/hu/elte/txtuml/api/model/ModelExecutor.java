@@ -54,7 +54,7 @@ public final class ModelExecutor implements ModelElement {
 	private static final Queue<Runnable> shutdownQueue = new ConcurrentLinkedQueue<>();
 
 	private static final ExecutorLog executorLog = new ExecutorLog();
-
+	
 	/**
 	 * Sole constructor of <code>ModelExecutor</code>, which is designed to be
 	 * an uninstantiatable class.
@@ -304,7 +304,7 @@ public final class ModelExecutor implements ModelElement {
 		 * times, this method does nothing after the first call.
 		 * <p>
 		 * For example, the
-		 * {@link hu.elte.txtuml.stdlib.Timer#start(ModelClass, Signal, ModelInt)
+		 * {@link hu.elte.txtuml.api.stdlib.Timer#start(ModelClass, Signal, ModelInt)
 		 * Timer.start} method calls this method as it operates with timed
 		 * events.
 		 */

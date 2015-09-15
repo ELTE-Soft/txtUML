@@ -6,7 +6,7 @@ import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.report.ModelExecutionEventsListener;
 
-class ModelExecutionEventsListenerImpl extends BaseListenerImpl
+final class ModelExecutionEventsListenerImpl extends BaseListenerImpl
 		implements ModelExecutionEventsListener {
 
 	ModelExecutionEventsListenerImpl(ExecutorLog log) {

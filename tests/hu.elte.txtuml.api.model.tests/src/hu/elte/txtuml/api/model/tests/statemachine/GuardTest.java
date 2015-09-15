@@ -12,28 +12,25 @@ import org.junit.runner.RunWith;
 public class GuardTest extends TransitionsModelTestsBase {
 
 	@Test
-	public void test() { 
+	public void test() {
 		Action.send(a, new Sig3());
 		Action.send(a, new Sig3());
 		Action.send(a, new Sig3());
 		Action.send(a, new Sig3());
 
 		stopModelExecution();
-		
-		/*
-		Assert.assertArrayEquals(
-				new String[] { 
-						LogMessages.getUsingTransitionMessage(a, a.new Initialize()),
-						LogMessages.getProcessingSignalMessage(a, new Sig3()),
-						LogMessages.getUsingTransitionMessage(a, a.new T3()),
-						LogMessages.getProcessingSignalMessage(a, new Sig3()),
-						LogMessages.getUsingTransitionMessage(a, a.new T4()),
-						LogMessages.getProcessingSignalMessage(a, new Sig3()),
-						LogMessages.getUsingTransitionMessage(a, a.new T3()),
-						LogMessages.getProcessingSignalMessage(a, new Sig3()),
-						LogMessages.getUsingTransitionMessage(a, a.new T4()),
-						LogMessages.getModelExecutionShutdownMessage() },
-				executorStream.getOutputAsArray());
-		*/
+
+		executionAsserter.assertEvents(x -> {
+			transition(x, a, a.new Initialize());
+			x.processingSignal(a, new Sig3());
+			transition(x, a, a.new T3());
+			x.processingSignal(a, new Sig3());
+			transition(x, a, a.new T4());
+			x.processingSignal(a, new Sig3());
+			transition(x, a, a.new T3());
+			x.processingSignal(a, new Sig3());
+			transition(x, a, a.new T4());
+			x.executionTerminated();
+		});
 	}
 }

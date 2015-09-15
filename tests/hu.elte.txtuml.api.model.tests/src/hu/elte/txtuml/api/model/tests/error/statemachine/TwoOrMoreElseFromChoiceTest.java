@@ -28,11 +28,8 @@ public class TwoOrMoreElseFromChoiceTest extends TestsBase {
 		
 		stopModelExecution();
 
-		/*
-		Assert.assertArrayEquals(
-				new String[] { ErrorMessages.getMoreThanOneElseTransitionsFromChoiceMessage(a.new C()) },
-				executorErrorStream.getOutputAsArray());
-		*/
+		executionAsserter.assertErrors( x -> x.moreThanOneElseTransitionsFromChoice(a.new C()));
+
 	}
 
 	static class TwoOrMoreElseFromChoiceModel extends Model {

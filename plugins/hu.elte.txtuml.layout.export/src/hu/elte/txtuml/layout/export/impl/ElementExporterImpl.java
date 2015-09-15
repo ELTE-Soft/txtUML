@@ -1,25 +1,12 @@
 package hu.elte.txtuml.layout.export.impl;
 
-import java.lang.annotation.Annotation;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
-
-import hu.elte.txtuml.api.layout.elements.LayoutAbstractNode;
-import hu.elte.txtuml.api.layout.elements.LayoutElement;
-import hu.elte.txtuml.api.layout.elements.LayoutGroup;
-import hu.elte.txtuml.api.layout.elements.LayoutLink;
-import hu.elte.txtuml.api.layout.elements.LayoutLinkGroup;
-import hu.elte.txtuml.api.layout.elements.LayoutNode;
-import hu.elte.txtuml.api.layout.elements.LayoutNodeGroup;
-import hu.elte.txtuml.api.layout.elements.LayoutNonGroupElement;
-import hu.elte.txtuml.api.layout.elements.LayoutPhantomNode;
 import hu.elte.txtuml.api.layout.statements.Alignment;
 import hu.elte.txtuml.api.layout.statements.Contains;
 import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.diagramexporters.ClassDiagramExporter;
+import hu.elte.txtuml.layout.export.elementinfo.ConcreteElementInfo;
 import hu.elte.txtuml.layout.export.elementinfo.ElementInfo;
-import hu.elte.txtuml.layout.export.elementinfo.ElementType;
+import hu.elte.txtuml.layout.export.elementinfo.GroupInfo;
 import hu.elte.txtuml.layout.export.elementinfo.LinkGroupInfo;
 import hu.elte.txtuml.layout.export.elementinfo.LinkInfo;
 import hu.elte.txtuml.layout.export.elementinfo.NodeGroupInfo;
@@ -31,15 +18,21 @@ import hu.elte.txtuml.layout.export.interfaces.LinkMap;
 import hu.elte.txtuml.layout.export.interfaces.NodeGroupMap;
 import hu.elte.txtuml.layout.export.interfaces.NodeList;
 import hu.elte.txtuml.layout.export.interfaces.NodeMap;
+import hu.elte.txtuml.layout.export.problems.ElementExportationException;
 import hu.elte.txtuml.layout.export.problems.ProblemReporter;
+import hu.elte.txtuml.layout.export.problems.Utils;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.utils.Pair;
 
+import java.lang.annotation.Annotation;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Default implementation for {@link ElementExporter}.
  * 
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  *
  */
 public class ElementExporterImpl implements ElementExporter {
@@ -51,151 +44,151 @@ public class ElementExporterImpl implements ElementExporter {
 	// If it is not Unknown, and also unequal to the element's type, an has to
 	// be shown.
 	private Class<?> rootElement;
-	
-	private final NodeMap nodes;            // includes user defined phantoms
+
+	private final NodeMap nodes; // includes user defined phantoms
 	private final LinkMap links;
 	private final NodeGroupMap nodeGroups;
 	private final LinkGroupMap linkGroups;
-	private final NodeList phantoms;        // internal & user defined phantoms
-	private final LinkList generalizations; // separate container since the lack of element class
+	private final NodeList phantoms; // internal & user defined phantoms
+	private final LinkList generalizations; // separate container since the lack
+											// of element class
 	private final ProblemReporter problemReporter;
-	private final Set<Class<? extends LayoutElement>> failedGroups;
-	
-	private AtomicLong phantomCounter = new AtomicLong(0);
+	private final Set<Class<?>> failedGroups;
+
+	private long phantomCounter = 0;
 
 	public ElementExporterImpl(ProblemReporter problemReporter) {
-	    this.rootElement = null;
-	    this.nodes = NodeMap.create();
-	    this.links = LinkMap.create();
-	    this.nodeGroups = NodeGroupMap.create();
-	    this.linkGroups = LinkGroupMap.create();
-	    this.phantoms = NodeList.create();
-	    this.generalizations = LinkList.create();
-	    this.diagramType = DiagramType.Class;
-	    this.problemReporter = problemReporter;
-	    this.failedGroups = new HashSet<Class<? extends LayoutElement>>();
+		this.nodes = NodeMap.create();
+		this.links = LinkMap.create();
+		this.nodeGroups = NodeGroupMap.create();
+		this.linkGroups = LinkGroupMap.create();
+		this.phantoms = NodeList.create();
+		this.generalizations = LinkList.create();
+		this.diagramType = DiagramType.Class;
+		this.problemReporter = problemReporter;
+		this.failedGroups = new HashSet<Class<?>>();
 	}
-	
+
 	@Override
 	public DiagramType getDiagramTypeBasedOnElements() {
 		return diagramType;
 	}
-	
+
 	@Override
 	public String getRootElementAsString() {
-	    return rootElement != null ? rootElement.getCanonicalName() : null;
+		return rootElement == null ? null : rootElement.getCanonicalName();
 	}
-	
+
 	@Override
 	public NodeMap getNodes() {
-	    NodeMap result = NodeMap.create();
-	    
-	    nodes.forEach((k, v) -> {
-	        if (!v.isPhantom()) {
-	            result.put(k, v);
-	        }
-	    });
-	    
-	    return result;
+		NodeMap result = NodeMap.create();
+
+		nodes.forEach((k, v) -> {
+			if (!v.isPhantom()) {
+				result.put(k, v);
+			}
+		});
+
+		return result;
 	}
-	
+
 	@Override
 	public NodeList getPhantoms() {
-	    return phantoms;
+		return phantoms;
 	}
-	
+
 	@Override
 	public LinkMap getLinks() {
-	    return links;
+		return links;
 	}
-	
+
 	@Override
 	public Set<RectangleObject> getNodesAsObjects() {
-	    // for efficiency purposes, phantoms are handled in NodeMap's convert() method
-	    return nodes.convert();
-	}
-	
-    @Override
-    public Set<LineAssociation> getLinksAsLines() {
-        Set<LineAssociation> res = new HashSet<>();
-        
-        res.addAll(links.convert());
-        for (LinkInfo gen : generalizations) {
-            res.add(gen.convert());
-        }
-        
-        return res;
-    }	
-	
-	@Override
-	public ElementInfo exportElement(Class<? extends LayoutElement> elementClass) {
-        if (failedGroups.contains(elementClass)) {
-            return ElementInfo.createInvalid(elementClass);
-        }
-	    
-	    ElementInfo info;
-
-        info = nodes.get(elementClass);
-        if (info != null) {
-            return info;
-        }
-
-        info = links.get(elementClass);
-        if (info != null) {
-            return info;
-        }
-
-        info = nodeGroups.get(elementClass);
-        if (info != null) {
-            if (info.asNodeGroupInfo().beingExported()) {
-                problemReporter.selfContainment(elementClass);
-                return ElementInfo.createInvalid(elementClass);
-            }
-            
-            return info;
-        }
-
-        info = linkGroups.get(elementClass);
-        if (info != null) {
-            if (info.asLinkGroupInfo().beingExported()) {
-                problemReporter.selfContainment(elementClass);
-                return ElementInfo.createInvalid(elementClass);
-            }
-            
-            return info;
-        }    
-        
-        info = exportNewNode(elementClass);
-        if (info != null) {
-            return info;
-        }
-
-        info = exportNewPhantom(elementClass);
-        if (info != null) {
-            return info;
-        }
-        
-        info = exportNewLink(elementClass);
-        if (info != null) {
-            return info;
-        }
-        
-        info = exportNewNodeGroup(elementClass);
-        if (info != null) {
-            return info;
-        }
-
-        info = exportNewLinkGroup(elementClass);
-        if (info != null) {
-            return info;
-        }    
-
-        return ElementInfo.createInvalid(elementClass);
+		// for efficiency purposes, phantoms are handled in NodeMap's convert()
+		// method
+		return nodes.convert();
 	}
 
 	@Override
-	public ElementInfo exportNonGroupElement(Class<? extends LayoutNonGroupElement> elementClass) {	    
-	    ElementInfo info;
+	public Set<LineAssociation> getLinksAsLines() {
+		Set<LineAssociation> res = links.convert();
+
+		generalizations.forEach(gen -> res.add(gen.convert()));
+
+		return res;
+	}
+
+	@Override
+	public ElementInfo exportElement(Class<?> elementClass)
+			throws ElementExportationException {
+		if (failedGroups.contains(elementClass)) {
+			throw new ElementExportationException();
+		}
+
+		ElementInfo info;
+
+		info = nodes.get(elementClass);
+		if (info != null) {
+			return info;
+		}
+
+		info = links.get(elementClass);
+		if (info != null) {
+			return info;
+		}
+
+		info = nodeGroups.get(elementClass);
+		if (info != null) {
+			if (info.beingExported()) {
+				problemReporter.selfContainment(elementClass);
+				throw new ElementExportationException();
+			}
+
+			return info;
+		}
+
+		info = linkGroups.get(elementClass);
+		if (info != null) {
+			if (info.beingExported()) {
+				problemReporter.selfContainment(elementClass);
+				throw new ElementExportationException();
+			}
+
+			return info;
+		}
+
+		info = exportNewNode(elementClass);
+		if (info != null) {
+			return info;
+		}
+
+		info = exportNewPhantom(elementClass);
+		if (info != null) {
+			return info;
+		}
+
+		info = exportNewLink(elementClass);
+		if (info != null) {
+			return info;
+		}
+
+		info = exportNewNodeGroup(elementClass);
+		if (info != null) {
+			return info;
+		}
+
+		info = exportNewLinkGroup(elementClass);
+		if (info != null) {
+			return info;
+		}
+
+		throw new ElementExportationException();
+	}
+
+	@Override
+	public ConcreteElementInfo exportConcreteElement(Class<?> elementClass)
+			throws ElementExportationException {
+		ConcreteElementInfo info;
 
 		info = nodes.get(elementClass);
 		if (info != null) {
@@ -212,63 +205,65 @@ public class ElementExporterImpl implements ElementExporter {
 			return info;
 		}
 
-        info = exportNewPhantom(elementClass);
-        if (info != null) {
-            return info;
-        }
-		
+		info = exportNewPhantom(elementClass);
+		if (info != null) {
+			return info;
+		}
+
 		info = exportNewLink(elementClass);
 		if (info != null) {
 			return info;
 		}
 
-		return ElementInfo.createInvalid(elementClass);
+		throw new ElementExportationException();
 	}
-	
-    @Override
-    public ElementInfo exportGroupElement(Class<? extends LayoutGroup> elementClass) {
-        if (failedGroups.contains(elementClass)) {
-            return ElementInfo.createInvalid(elementClass);
-        }
-        
-        ElementInfo info;
-
-        info = nodeGroups.get(elementClass);
-        if (info != null) {
-            if (info.asNodeGroupInfo().beingExported()) {
-                problemReporter.selfContainment(elementClass);
-                return ElementInfo.createInvalid(elementClass);
-            }
-            
-            return info;
-        }
-
-        info = linkGroups.get(elementClass);
-        if (info != null) {
-            if (info.asLinkGroupInfo().beingExported()) {
-                problemReporter.selfContainment(elementClass);
-                return ElementInfo.createInvalid(elementClass);
-            }
-            
-            return info;
-        }
-
-        info = exportNewNodeGroup(elementClass);
-        if (info != null) {
-            return info;
-        }
-
-        info = exportNewLinkGroup(elementClass);
-        if (info != null) {
-            return info;
-        }
-
-        return ElementInfo.createInvalid(elementClass);
-    }
 
 	@Override
-	public ElementInfo exportNode(Class<? extends LayoutNode> nodeClass) {
-	    ElementInfo info;
+	public GroupInfo exportGroupElement(Class<?> elementClass)
+			throws ElementExportationException {
+		if (failedGroups.contains(elementClass)) {
+			throw new ElementExportationException();
+		}
+
+		GroupInfo info;
+
+		info = nodeGroups.get(elementClass);
+		if (info != null) {
+			if (info.beingExported()) {
+				problemReporter.selfContainment(elementClass);
+				throw new ElementExportationException();
+			}
+
+			return info;
+		}
+
+		info = linkGroups.get(elementClass);
+		if (info != null) {
+			if (info.beingExported()) {
+				problemReporter.selfContainment(elementClass);
+				throw new ElementExportationException();
+			}
+
+			return info;
+		}
+
+		info = exportNewNodeGroup(elementClass);
+		if (info != null) {
+			return info;
+		}
+
+		info = exportNewLinkGroup(elementClass);
+		if (info != null) {
+			return info;
+		}
+
+		throw new ElementExportationException();
+	}
+
+	@Override
+	public NodeInfo exportNode(Class<?> nodeClass)
+			throws ElementExportationException {
+		NodeInfo info;
 
 		info = nodes.get(nodeClass);
 		if (info != null) {
@@ -280,346 +275,337 @@ public class ElementExporterImpl implements ElementExporter {
 			return info;
 		}
 
-		return ElementInfo.createInvalid(nodeClass);
+		throw new ElementExportationException();
 	}
 
-    @Override
-    public ElementInfo exportLink(Class<? extends LayoutLink> linkClass) {
-        ElementInfo info;
+	@Override
+	public LinkInfo exportLink(Class<?> linkClass)
+			throws ElementExportationException {
+		LinkInfo info;
 
-        info = links.get(linkClass);
-        if (info != null) {
-            return info;
-        }
+		info = links.get(linkClass);
+		if (info != null) {
+			return info;
+		}
 
-        info = exportNewLink(linkClass);
-        if (info != null) {
-            return info;
-        }
+		info = exportNewLink(linkClass);
+		if (info != null) {
+			return info;
+		}
 
-        return ElementInfo.createInvalid(linkClass);
-    }
-    
-    @Override
-    public ElementInfo exportNodeGroup(Class<? extends LayoutNodeGroup> nodeGroupClass) {
-        if (failedGroups.contains(nodeGroupClass)) {
-            return ElementInfo.createInvalid(nodeGroupClass);
-        }
-        
-        ElementInfo info;
+		throw new ElementExportationException();
+	}
 
-        info = nodeGroups.get(nodeGroupClass);
-        if (info != null) {
-            if (info.asNodeGroupInfo().beingExported()) {
-                problemReporter.selfContainment(nodeGroupClass);
-                return ElementInfo.createInvalid(nodeGroupClass);
-            }
-            
-            return info;
-        }
+	@Override
+	public NodeGroupInfo exportNodeGroup(Class<?> nodeGroupClass)
+			throws ElementExportationException {
+		if (failedGroups.contains(nodeGroupClass)) {
+			throw new ElementExportationException();
+		}
 
-        info = exportNewNodeGroup(nodeGroupClass);
-        if (info != null) {
-            return info;
-        }
+		NodeGroupInfo info;
 
-        return ElementInfo.createInvalid(nodeGroupClass);
-    }
+		info = nodeGroups.get(nodeGroupClass);
+		if (info != null) {
+			if (info.beingExported()) {
+				problemReporter.selfContainment(nodeGroupClass);
+				throw new ElementExportationException();
+			}
 
-    @Override
-    public ElementInfo exportLinkGroup(Class<? extends LayoutLinkGroup> linkGroupClass) {
-        if (failedGroups.contains(linkGroupClass)) {
-            return ElementInfo.createInvalid(linkGroupClass);
-        }
-        
-        ElementInfo info;
+			return info;
+		}
 
-        info = linkGroups.get(linkGroupClass);
-        if (info != null) {
-            if (info.asLinkGroupInfo().beingExported()) {
-                problemReporter.selfContainment(linkGroupClass);
-                return ElementInfo.createInvalid(linkGroupClass);
-            }
-            
-            return info;
-        }
+		info = exportNewNodeGroup(nodeGroupClass);
+		if (info != null) {
+			return info;
+		}
 
-        info = exportNewLinkGroup(linkGroupClass);
-        if (info != null) {
-            return info;
-        }
+		throw new ElementExportationException();
+	}
 
-        return ElementInfo.createInvalid(linkGroupClass);
-    }
-	
-    @Override
-    public ElementInfo exportPhantom(Class<? extends LayoutPhantomNode> phantomClass) {
-        ElementInfo info;
+	@Override
+	public LinkGroupInfo exportLinkGroup(Class<?> linkGroupClass)
+			throws ElementExportationException {
+		if (failedGroups.contains(linkGroupClass)) {
+			throw new ElementExportationException();
+		}
 
-        info = nodes.get(phantomClass);
-        if (info != null) {
-            return info;
-        }
+		LinkGroupInfo info;
 
-        info = exportNewPhantom(phantomClass);
-        if (info != null) {
-            return info;
-        }
+		info = linkGroups.get(linkGroupClass);
+		if (info != null) {
+			if (info.beingExported()) {
+				problemReporter.selfContainment(linkGroupClass);
+				throw new ElementExportationException();
+			}
 
-        return ElementInfo.createInvalid(phantomClass);
-    }
-    
-    @Override
-    public ElementInfo exportAnonNodeGroup(Class<? extends LayoutAbstractNode>[] abstractNodes) {
-        NodeGroupInfo info = NodeGroupInfo.create(null, null, null);
-        
-        for (Class<? extends LayoutAbstractNode> abstractNode : abstractNodes) {
-            ElementInfo innerInfo = exportElement(abstractNode);
-            ElementType innerType = innerInfo.getType();
-            
-            if (innerType.equals(ElementType.Node)) {
-                info.addNode(innerInfo.asNodeInfo());
-            
-            } else if (innerType.equals(ElementType.NodeGroup)) {
-                for (NodeInfo innerNode : innerInfo.asNodeGroupInfo().getAllNodes().values()) {
-                    info.addNode(innerNode);
-                }
-           
-            } else {
-                problemReporter.invalidAnonGroup(abstractNodes, abstractNode);
-                return ElementInfo.createInvalid(null);
-                
-            }
-        }
+			return info;
+		}
 
-        return info;
-    }
-    
-	@SuppressWarnings("unchecked")
-	private NodeInfo exportNewNode(Class<? extends LayoutElement> cls) {
+		info = exportNewLinkGroup(linkGroupClass);
+		if (info != null) {
+			return info;
+		}
+
+		throw new ElementExportationException();
+	}
+
+	@Override
+	public NodeInfo exportPhantom(Class<?> phantomClass)
+			throws ElementExportationException {
+		NodeInfo info;
+
+		info = nodes.get(phantomClass);
+		if (info != null) {
+			return info;
+		}
+
+		info = exportNewPhantom(phantomClass);
+		if (info != null) {
+			return info;
+		}
+
+		throw new ElementExportationException();
+	}
+
+	@Override
+	public NodeGroupInfo exportAnonymousNodeGroup(Class<?>[] abstractNodes)
+			throws ElementExportationException {
+		NodeGroupInfo info = NodeGroupInfo.create(null, null, null);
+
+		for (Class<?> abstractNode : abstractNodes) {
+			ElementInfo innerInfo = exportElement(abstractNode);
+
+			if (innerInfo instanceof NodeInfo) {
+				info.addNode((NodeInfo) innerInfo);
+
+			} else if (innerInfo instanceof NodeGroupInfo) {
+				for (NodeInfo innerNode : ((NodeGroupInfo) innerInfo)
+						.getAllNodes().values()) {
+					info.addNode(innerNode);
+				}
+
+			} else {
+				problemReporter.invalidAnonymousGroup(abstractNodes,
+						abstractNode);
+				throw new ElementExportationException();
+
+			}
+		}
+
+		return info;
+	}
+
+	private NodeInfo exportNewNode(Class<?> cls) {
 		if (ClassDiagramExporter.isNode(cls) && hasValidDeclaringClass(cls)) {
 			NodeInfo info = NodeInfo.create(cls, DiagramType.Class,
-					asString(cls));
-			nodes.put((Class<? extends LayoutNode>) cls, info);
+					Utils.classAsString(cls));
+			nodes.put(cls, info);
 			return info;
 		}
 		// TODO add more diag types
 		return null;
 	}
-	
-    @SuppressWarnings("unchecked")
-    private NodeInfo exportNewPhantom(Class<? extends LayoutElement> cls) {
-        if (isPhantom(cls)) {
-            NodeInfo info = NodeInfo.create(cls, DiagramType.Class, "#phantom_" + phantomCounter.addAndGet(1));
-            nodes.put((Class<? extends LayoutNode>) cls, info);
-            phantoms.add(info);
-            
-            return info;
-        }
-        
-        return null;
-    }	
 
-	@SuppressWarnings("unchecked")
-	private LinkInfo exportNewLink(Class<? extends LayoutElement> cls) {
+	private NodeInfo exportNewPhantom(Class<?> cls) {
+		if (ElementExporter.isPhantom(cls)) {
+			NodeInfo info = NodeInfo.create(cls, DiagramType.Class, "#phantom_"
+					+ ++phantomCounter);
+			nodes.put(cls, info);
+			phantoms.add(info);
+
+			return info;
+		}
+
+		return null;
+	}
+
+	private LinkInfo exportNewLink(Class<?> cls)
+			throws ElementExportationException {
 		if (ClassDiagramExporter.isLink(cls) && hasValidDeclaringClass(cls)) {
-			Pair<Class<? extends LayoutNode>, Class<? extends LayoutNode>> p = ClassDiagramExporter
+			Pair<Class<?>, Class<?>> p = ClassDiagramExporter
 					.startAndEndOfLink(cls);
 
 			LinkInfo info = LinkInfo.create(cls, DiagramType.Class,
-					asString(cls), exportNode(p.getKey()).asNodeInfo(),
-					exportNode(p.getValue()).asNodeInfo());
-			links.put((Class<? extends LayoutLink>) cls, info);
-			
+					Utils.classAsString(cls), exportNode(p.getKey()),
+					exportNode(p.getValue()));
+			links.put(cls, info);
 			return info;
 		}
 		// TODO add more diag types
 		return null;
 	}
-	
-	@SuppressWarnings("unchecked")
-	private NodeGroupInfo exportNewNodeGroup(Class<? extends LayoutElement> cls) {
-	    if (isNodeGroup(cls)) {
-	        NodeGroupInfo info = NodeGroupInfo.create(cls, DiagramType.Class, asString(cls));
-	        nodeGroups.put((Class<? extends LayoutNodeGroup>) cls, info);
-	        info.setBeingExported(true);
-	        
-	        boolean containsAnnotPresent = false;
-            for (Annotation annot : cls.getAnnotations()) {
-                if (isOfType(Contains.class, annot)) {
-                    containsAnnotPresent = true;
-                    
-                    Contains containsAnnot = (Contains) annot;
-                    if (containsAnnot.value().length == 0) {
-                        problemReporter.emptyGroup(cls);
-                    }
-                    
-                    for (Class<? extends LayoutElement> containedClass : containsAnnot.value()) {
-                        ElementInfo innerInfo = exportElement(containedClass);
-                        ElementType innerType = innerInfo.getType();
-                        
-                        if (innerType.equals(ElementType.Node)) {
-                            info.addNode(innerInfo.asNodeInfo());
-                            
-                        } else if (innerType.equals(ElementType.NodeGroup)) {                            
-                            for (NodeInfo node : innerInfo.asNodeGroupInfo().getAllNodes().values()) {
-                                info.addNode(node);
-                            }
-                            
-                        } else {
-                            failedGroups.add(cls);
-                            problemReporter.invalidGroup(cls, containedClass);
-                            return ElementInfo.createInvalid(cls).asNodeGroupInfo();
-                            
-                        }
-                    }
-                    
-                } else if (isOfType(Alignment.class, annot)) {
-                    info.setAlignment(((Alignment) annot).value());
-                
-                } else {
-                    problemReporter.unknownAnnotationOnClass(annot, cls);
-                    
-                }
-            }
-            
-            if (!containsAnnotPresent) {
-                problemReporter.groupWithoutContainsAnnotation(cls);
-            }
-	        
-            info.setBeingExported(false);
-	        return info;
-	    }
-	    
-	    return null;
-	}
-	
-	@SuppressWarnings("unchecked")
-    private LinkGroupInfo exportNewLinkGroup(Class<? extends LayoutElement> cls) {
-        if (isLinkGroup(cls)) {
-            LinkGroupInfo info = LinkGroupInfo.create(cls, DiagramType.Class, asString(cls));
-            linkGroups.put((Class<? extends LayoutLinkGroup>) cls, info);
-            info.setBeingExported(true);
-            
-            boolean containsAnnotPresent = false;
-            for (Annotation annot : cls.getAnnotations()) {
-                if (isOfType(Contains.class, annot)) {
-                    containsAnnotPresent = true;
-                    
-                    Contains containsAnnot = (Contains) annot;
-                    if (containsAnnot.value().length == 0) {
-                        problemReporter.emptyGroup(cls);
-                    }
-                    
-                    for (Class<? extends LayoutElement> containedClass : containsAnnot.value()) {
-                        ElementInfo innerInfo = exportElement(containedClass);
-                        ElementType innerType = innerInfo.getType();
-                        
-                        if (innerType.equals(ElementType.Link)) {
-                            info.addLink(innerInfo.asLinkInfo());
-                            
-                        } else if (innerType.equals(ElementType.LinkGroup)) {
-                            for (LinkInfo link : innerInfo.asLinkGroupInfo().getAllLinks().values()) {
-                                info.addLink(link);
-                            }
-                            
-                        } else {
-                            failedGroups.add(cls);
-                            problemReporter.invalidGroup(cls, containedClass);
-                            return ElementInfo.createInvalid(cls).asLinkGroupInfo();
-                        }
-                    }
-                    
-                } else {
-                    problemReporter.unknownAnnotationOnClass(annot, cls);
-                }
-            }
-            
-            if (!containsAnnotPresent) {
-                problemReporter.groupWithoutContainsAnnotation(cls);
-            }
-            
-            info.setBeingExported(false);
-            return info;
-        }
-        
-        return null;
-    }
-	
-    @Override
-    public NodeInfo createPhantom() {
-        NodeInfo newPhantom = NodeInfo.create(null, null, "#phantom_" + phantomCounter.addAndGet(1));
-        phantoms.add(newPhantom);
-        
-        return newPhantom;
-    }
-    
-    @Override
-    public void exportGeneralization(Class<? extends LayoutNode> base,
-            Class<? extends LayoutNode> derived)
-    {   
-        NodeInfo baseInfo = exportNode(base).asNodeInfo();
-        NodeInfo derivedInfo = exportNode(derived).asNodeInfo();
-        
-        LinkInfo info = LinkInfo.createGeneralization(null, baseInfo.toString() + "#" + derivedInfo.toString(),
-            baseInfo, derivedInfo);
-        
-        generalizations.add(info);
-    }
-    
-    @Override
-    public void exportImpliedLinks() {
-        ClassDiagramExporter classDiagramExporter = new ClassDiagramExporter(this, rootElement);
-        
-        // including phantoms would be unnecessary (but not erroneous)
-        nodes.forEach((elementClass, node) -> {
-            if (!node.isPhantom()) {
-                classDiagramExporter.exportAssociationsStartingFromThisNode(elementClass);
-            }
-        });
-    }
-	
-	// helper functions
-    
-    private String asString(Class<?> cls) {
-        return cls.getCanonicalName();
-    }
-	
-	private boolean isPhantom(Class<?> cls) {
-	    return LayoutPhantomNode.class.isAssignableFrom(cls);
-	}
-	
-    private boolean isNodeGroup(Class<?> cls) {
-        return LayoutNodeGroup.class.isAssignableFrom(cls);
-    }
-    
-    private boolean isLinkGroup(Class<?> cls) {
-        return LayoutLinkGroup.class.isAssignableFrom(cls);
-    }
 
-    private boolean isOfType(Class<? extends Annotation> annotationClass, Annotation annot) {
-        return annot.annotationType() == annotationClass;
-    }
-    
-    private boolean hasValidDeclaringClass(Class<? extends LayoutElement> cls) {        
-        Class<?> declaringClass = cls.getDeclaringClass();
-        
-        // TODO additional checks will be needed when packages became implemented in the api
-        if (!ClassDiagramExporter.isModel(declaringClass)) {
-            problemReporter.hasInvalidDeclaringClass(cls);
-            return false;
-        }
-        
-        if (this.rootElement == null) {
-            this.rootElement = declaringClass;
-        }
-        
-        if (declaringClass != this.rootElement) {
-            problemReporter.hasInvalidDeclaringClass(cls);
-            return false;
-        }
-        
-        return true;
-    }
-    
+	private NodeGroupInfo exportNewNodeGroup(Class<?> cls) throws ElementExportationException {
+		if (!ElementExporter.isNodeGroup(cls)) {
+			return null;
+		}
+		NodeGroupInfo info = NodeGroupInfo.create(cls, DiagramType.Class,
+				Utils.classAsString(cls));
+		nodeGroups.put(cls, info);
+		info.setBeingExported(true);
+
+		boolean containsAnnotPresent = false;
+		for (Annotation annot : cls.getAnnotations()) {
+			if (isOfType(Contains.class, annot)) {
+				containsAnnotPresent = true;
+
+				Contains containsAnnot = (Contains) annot;
+				if (containsAnnot.value().length == 0) {
+					problemReporter.emptyGroup(cls);
+				}
+
+				for (Class<?> containedClass : containsAnnot.value()) {
+					ElementInfo innerInfo = exportElement(containedClass);
+
+					if (innerInfo instanceof NodeInfo) {
+						info.addNode((NodeInfo) innerInfo);
+
+					} else if (innerInfo instanceof NodeGroupInfo) {
+						for (NodeInfo node : ((NodeGroupInfo) innerInfo)
+								.getAllNodes().values()) {
+							info.addNode(node);
+						}
+
+					} else {
+						failedGroups.add(cls);
+						problemReporter.invalidGroup(cls, containedClass);
+						throw new ElementExportationException();
+
+					}
+				}
+
+			} else if (isOfType(Alignment.class, annot)) {
+				info.setAlignment(((Alignment) annot).value());
+
+			} else {
+				problemReporter.unknownAnnotationOnClass(annot, cls);
+
+			}
+		}
+
+		if (!containsAnnotPresent) {
+			problemReporter.groupWithoutContainsAnnotation(cls);
+		}
+
+		info.setBeingExported(false);
+		return info;
+	}
+
+	private LinkGroupInfo exportNewLinkGroup(Class<?> cls)
+			throws ElementExportationException {
+		if (!ElementExporter.isLinkGroup(cls)) {
+			return null;
+		}
+		LinkGroupInfo info = LinkGroupInfo.create(cls, DiagramType.Class,
+				Utils.classAsString(cls));
+		linkGroups.put(cls, info);
+		info.setBeingExported(true);
+
+		boolean containsAnnotPresent = false;
+		for (Annotation annot : cls.getAnnotations()) {
+			if (isOfType(Contains.class, annot)) {
+				containsAnnotPresent = true;
+
+				Contains containsAnnot = (Contains) annot;
+				if (containsAnnot.value().length == 0) {
+					problemReporter.emptyGroup(cls);
+				}
+
+				for (Class<?> containedClass : containsAnnot.value()) {
+					ElementInfo innerInfo = exportElement(containedClass);
+
+					if (innerInfo instanceof LinkInfo) {
+						info.addLink((LinkInfo) innerInfo);
+
+					} else if (innerInfo instanceof LinkGroupInfo) {
+						for (LinkInfo link : ((LinkGroupInfo) innerInfo)
+								.getAllLinks().values()) {
+							info.addLink(link);
+						}
+
+					} else {
+						failedGroups.add(cls);
+						problemReporter.invalidGroup(cls, containedClass);
+						throw new ElementExportationException();
+					}
+				}
+
+			} else {
+				problemReporter.unknownAnnotationOnClass(annot, cls);
+			}
+		}
+
+		if (!containsAnnotPresent) {
+			problemReporter.groupWithoutContainsAnnotation(cls);
+		}
+
+		info.setBeingExported(false);
+		return info;
+	}
+
+	@Override
+	public NodeInfo createPhantom() {
+		NodeInfo newPhantom = NodeInfo.create(null, null, "#phantom_"
+				+ ++phantomCounter);
+		phantoms.add(newPhantom);
+
+		return newPhantom;
+	}
+
+	@Override
+	public void exportGeneralization(Class<?> base, Class<?> derived)
+			throws ElementExportationException {
+		NodeInfo baseInfo = exportNode(base);
+		NodeInfo derivedInfo = exportNode(derived);
+
+		LinkInfo info = LinkInfo.createGeneralization(null, baseInfo.toString()
+				+ "#" + derivedInfo.toString(), baseInfo, derivedInfo);
+
+		generalizations.add(info);
+	}
+
+	@Override
+	public void exportImpliedLinks() {
+		ClassDiagramExporter classDiagramExporter = new ClassDiagramExporter(
+				this, rootElement);
+
+		// including phantoms would be unnecessary (but not erroneous)
+		nodes.forEach((elementClass, node) -> {
+			if (!node.isPhantom()) {
+				classDiagramExporter
+						.exportAssociationsStartingFromThisNode(elementClass);
+			}
+		});
+	}
+
+	// helper functions
+
+	private static boolean isOfType(
+			Class<? extends Annotation> annotationClass, Annotation annot) {
+		return annot.annotationType() == annotationClass;
+	}
+
+	private boolean hasValidDeclaringClass(Class<?> cls) {
+		Class<?> declaringClass = cls.getDeclaringClass();
+
+		// TODO additional checks will be needed when packages became
+		// implemented in the api
+		if (!ClassDiagramExporter.isModel(declaringClass)) {
+			problemReporter.hasInvalidDeclaringClass(cls);
+			return false;
+		}
+
+		if (this.rootElement == null) {
+			this.rootElement = declaringClass;
+		}
+
+		if (declaringClass != this.rootElement) {
+			problemReporter.hasInvalidDeclaringClass(cls);
+			return false;
+		}
+
+		return true;
+	}
+
 }

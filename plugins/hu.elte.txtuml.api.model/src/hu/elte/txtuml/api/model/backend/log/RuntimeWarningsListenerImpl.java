@@ -3,7 +3,7 @@ package hu.elte.txtuml.api.model.backend.log;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.report.RuntimeWarningsListener;
 
-class RuntimeWarningsListenerImpl extends BaseListenerImpl implements RuntimeWarningsListener {
+final class RuntimeWarningsListenerImpl extends BaseListenerImpl implements RuntimeWarningsListener {
 
 	RuntimeWarningsListenerImpl(ExecutorLog log) {
 		super(log);

@@ -1,6 +1,5 @@
 package hu.elte.txtuml.api.model.backend.log;
 
-
 class BaseListenerImpl {
 
 	private final ExecutorLog log;

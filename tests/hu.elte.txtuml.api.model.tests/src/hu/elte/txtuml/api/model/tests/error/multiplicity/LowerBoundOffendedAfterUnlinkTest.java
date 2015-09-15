@@ -16,14 +16,12 @@ public class LowerBoundOffendedAfterUnlinkTest extends SimpleModelTestsBase {
 		Action.link(A_B.a.class, a, A_B.b.class, b);
 		Action.unlink(A_B.a.class, a, A_B.b.class, b);
 		Action.start(a);
-		
+
 		stopModelExecution();
 
-		/*
-		Assert.assertArrayEquals(
-				new String[] { ErrorMessages.getLowerBoundOfMultiplicityOffendedMessage(a, A_B.b.class) },
-				executorErrorStream.getOutputAsArray());
-		*/
+		executionAsserter.assertErrors(x -> x.lowerBoundOfMultiplicityOffended(
+				a, A_B.b.class));
+
 	}
 
 }

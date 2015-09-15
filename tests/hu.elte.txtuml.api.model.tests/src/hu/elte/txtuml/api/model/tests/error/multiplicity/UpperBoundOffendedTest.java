@@ -20,10 +20,7 @@ public class UpperBoundOffendedTest extends SimpleModelTestsBase {
 		
 		stopModelExecution();
 
-		/*
-		Assert.assertArrayEquals(
-				new String[] { ErrorMessages.getUpperBoundOfMultiplicityOffendedMessage(a, A_B.b.class) },
-				executorErrorStream.getOutputAsArray());
-		*/
+		executionAsserter.assertErrors( x -> x.upperBoundOfMultiplicityOffended(a, A_B.b.class));
+
 	}
 }

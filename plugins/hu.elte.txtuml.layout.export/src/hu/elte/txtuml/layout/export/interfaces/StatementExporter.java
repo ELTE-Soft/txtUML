@@ -36,7 +36,7 @@ import hu.elte.txtuml.layout.export.problems.ProblemReporter;
 
 /**
  * 
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  *
  */
 public interface StatementExporter {

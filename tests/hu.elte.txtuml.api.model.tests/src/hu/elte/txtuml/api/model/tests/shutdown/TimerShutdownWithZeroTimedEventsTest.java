@@ -25,11 +25,7 @@ public class TimerShutdownWithZeroTimedEventsTest extends SimpleModelTestsBase {
 		});
 		Assert.assertEquals(true, actionPerformed.value);
 
-		/*
-		Assert.assertArrayEquals(
-				new String[] { LogMessages.getModelExecutionShutdownMessage() },
-				executorStream.getOutputAsArray());
-		*/
+		executionAsserter.assertEvents(x -> x.executionTerminated());
 	}
 
 }

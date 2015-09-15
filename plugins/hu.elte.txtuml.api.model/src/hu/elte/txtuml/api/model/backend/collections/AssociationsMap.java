@@ -7,7 +7,7 @@ import java.util.Map;
 
 /**
  * A mapping of classes representing association ends to instances of those
- * association ends. Used as the type of a private field of {@link hu.elte.txtuml.api.ModelClass}.
+ * association ends. Used as the type of a private field of {@link hu.elte.txtuml.api.model.ModelClass}.
  *
  * @author Gabor Ferenc Kovacs
  *

@@ -1,6 +1,5 @@
 package hu.elte.txtuml.api.model;
 
-import hu.elte.txtuml.api.layout.elements.LayoutNode;
 import hu.elte.txtuml.api.model.ModelExecutor.Report;
 import hu.elte.txtuml.api.model.backend.MultiplicityException;
 import hu.elte.txtuml.api.model.backend.collections.AssociationsMap;
@@ -91,7 +90,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author Gabor Ferenc Kovacs
  *
  */
-public class ModelClass extends Region implements ModelValue, LayoutNode {
+public class ModelClass extends Region implements ModelValue {
 
 	/**
 	 * The life cycle of a model object consists of steps represented by the

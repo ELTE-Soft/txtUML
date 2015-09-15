@@ -5,7 +5,7 @@ package hu.elte.txtuml.api.model.assocends;
  * Association ends might have a multiplicity of {@link One}, {@link ZeroToOne},
  * {@link ZeroToUnlimited} or {@link OneToUnlimited}.
  * <p>
- * See the documentation of {@link hu.elte.txtuml.api.Model} for an overview on
+ * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an overview on
  * modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
@@ -17,7 +17,7 @@ public interface Multiplicity {
 	 * Implementing classes of this interface represent association ends in the
 	 * model which have a multiplicity of 1.
 	 * <p>
-	 * See the documentation of {@link hu.elte.txtuml.api.Model} for an overview
+	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an overview
 	 * on modeling in txtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
@@ -30,7 +30,7 @@ public interface Multiplicity {
 	 * Implementing classes of this interface represent association ends in the
 	 * model which have a multiplicity of 0..1.
 	 * <p>
-	 * See the documentation of {@link hu.elte.txtuml.api.Model} for an overview
+	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an overview
 	 * on modeling in txtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
@@ -43,7 +43,7 @@ public interface Multiplicity {
 	 * Implementing classes of this interface represent association ends in the
 	 * model which have a multiplicity of 0..*.
 	 * <p>
-	 * See the documentation of {@link hu.elte.txtuml.api.Model} for an overview
+	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an overview
 	 * on modeling in txtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
@@ -56,7 +56,7 @@ public interface Multiplicity {
 	 * Implementing classes of this interface represent association ends in the
 	 * model which have a multiplicity of 1..*.
 	 * <p>
-	 * See the documentation of {@link hu.elte.txtuml.api.Model} for an overview
+	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an overview
 	 * on modeling in txtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs

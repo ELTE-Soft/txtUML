@@ -19,11 +19,8 @@ public class SignalArrivingToDeletedTest extends SimpleModelTestsBase {
 		
 		stopModelExecution();
 
-		/*
-		Assert.assertArrayEquals(
-				new String[] { WarningMessages.getSignalArrivedToDeletedObjectMessage(a) },
-				executorErrorStream.getOutputAsArray());
-		*/
+		executionAsserter.assertWarnings( x -> x.signalArrivedToDeletedObject(a));
+
 	}
 
 }

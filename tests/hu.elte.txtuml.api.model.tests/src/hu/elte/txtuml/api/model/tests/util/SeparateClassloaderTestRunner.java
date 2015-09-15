@@ -30,7 +30,7 @@ public class SeparateClassloaderTestRunner extends BlockJUnit4ClassRunner {
 
 		@Override
 		public Class<?> loadClass(String name) throws ClassNotFoundException {
-			if (name.startsWith("hu.elte.txtuml.")) {
+			if (name.startsWith("hu.elte.txtuml.api.")) {
 				return super.findClass(name);
 			}
 			return super.loadClass(name);

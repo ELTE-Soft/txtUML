@@ -13,8 +13,6 @@ import hu.elte.txtuml.api.model.tests.error.statemachine.OverlappingGuardsTest.O
 import hu.elte.txtuml.api.model.tests.error.statemachine.OverlappingGuardsTest.OverlappingGuardsModel.Sig;
 import hu.elte.txtuml.api.model.tests.util.SeparateClassloaderTestRunner;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,25 +29,14 @@ public class OverlappingGuardsTest extends TestsBase {
 		
 		stopModelExecution();
 
-		Assert.assertEquals(1, executorErrorStream.getOutputAsArray().length);
-		Assert.assertThat(executorErrorStream.getOutputAsArray()[0], new BaseMatcher<String>() {
-
-			@Override
-			public boolean matches(Object item) {
-				/*
-				if (ErrorMessages.getGuardsOfTransitionsAreOverlappingMessage(a.new T1(), a.new T2(), a.new S1()).equals(item) || ErrorMessages.getGuardsOfTransitionsAreOverlappingMessage(a.new T2(), a.new T1(), a.new S1()).equals(item)) {
-					return true;
-				}
-				return false;
-				*/
-				return true;
-			}
-
-			@Override
-			public void describeTo(Description description) {
-			}
-			
-		});
+		boolean msg1 = executionAsserter.checkErrors(x ->
+				x.guardsOfTransitionsAreOverlapping(a.new T1(), a.new T2(),
+						a.new S1()));
+		boolean msg2 = executionAsserter.checkErrors(x ->
+				x.guardsOfTransitionsAreOverlapping(a.new T2(), a.new T1(),
+						a.new S1()));
+		
+		Assert.assertTrue(msg1 || msg2);
 
 	}
 

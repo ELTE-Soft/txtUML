@@ -12,17 +12,13 @@ public class StartingDeletedTest extends SimpleModelTestsBase {
 
 	@Test
 	public void test() {
-		
+
 		Action.delete(a);
 		Action.start(a);
-		
+
 		stopModelExecution();
 
-		/*
-		Assert.assertArrayEquals(
-				new String[] { ErrorMessages.getStartingDeletedObjectMessage(a) },
-				executorErrorStream.getOutputAsArray());
-		*/
-	}
+		executionAsserter.assertErrors(x -> x.startingDeletedObject(a));
 
+	}
 }

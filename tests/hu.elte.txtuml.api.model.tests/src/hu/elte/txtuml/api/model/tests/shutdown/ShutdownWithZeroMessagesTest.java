@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(SeparateClassloaderTestRunner.class)
-public class ShutdownWithZeroMessageTest extends SimpleModelTestsBase {
+public class ShutdownWithZeroMessagesTest extends SimpleModelTestsBase {
 
 	@Test
 	public void test() {
@@ -20,15 +20,11 @@ public class ShutdownWithZeroMessageTest extends SimpleModelTestsBase {
 		Assert.assertEquals(false, actionPerformed.value);
 		stopModelExecution(() -> {
 			ModelExecutor.shutdown();
-			Assert.assertEquals(false, actionPerformed.value);			
+			Assert.assertEquals(false, actionPerformed.value);
 		});
 		Assert.assertEquals(true, actionPerformed.value);
 
-		/*
-		Assert.assertArrayEquals(
-				new String[] { LogMessages.getModelExecutionShutdownMessage() },
-				executorStream.getOutputAsArray());
-		*/
+		executionAsserter.assertEvents(x -> x.executionTerminated());
 	}
 
 }

@@ -13,17 +13,14 @@ public class LinkingDeletedTest extends SimpleModelTestsBase {
 
 	@Test
 	public void test() {
-		
+
 		Action.delete(a);
 		Action.link(A_B.a.class, a, A_B.b.class, b);
-		
+
 		stopModelExecution();
 
-		/*
-		Assert.assertArrayEquals(
-				new String[] { ErrorMessages.getLinkingDeletedObjectMessage(a) },
-				executorErrorStream.getOutputAsArray());
-		*/
+		executionAsserter.assertErrors(x -> x.linkingDeletedObject(a));
+
 	}
 
 }

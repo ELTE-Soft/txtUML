@@ -20,25 +20,20 @@ public class CompositeStateTest extends HierarchicalModelTestsBase {
 		
 		stopModelExecution();
 		
-		/*
-		Assert.assertArrayEquals(
-				new String[] { 
-						LogMessages.getUsingTransitionMessage(a, a.new Initialize()),
-						LogMessages.getProcessingSignalMessage(a, new Sig0()),
-						LogMessages.getUsingTransitionMessage(a, a.new S1_CS1()),
-						LogMessages.getEnteringVertexMessage(a, a.new CS1()),
-						LogMessages.getUsingTransitionMessage(a, a.new CS1().new Initialize()),
-						LogMessages.getProcessingSignalMessage(a, new Sig0()),
-						LogMessages.getUsingTransitionMessage(a, a.new CS1().new S2_CS2()),
-						LogMessages.getEnteringVertexMessage(a, a.new CS1().new CS2()),
-						LogMessages.getUsingTransitionMessage(a, a.new CS1().new CS2().new Initialize()),
-						LogMessages.getProcessingSignalMessage(a, new Sig1()),
-						LogMessages.getUsingTransitionMessage(a, a.new CS1_S1()),
-						LogMessages.getLeavingVertexMessage(a, a.new CS1().new CS2()),
-						LogMessages.getLeavingVertexMessage(a, a.new CS1()),
-						LogMessages.getModelExecutionShutdownMessage() },
-				executorStream.getOutputAsArray());
-		*/
+		executionAsserter.assertEvents(x -> {
+						transition(x, a, a.new Initialize());
+						x.processingSignal(a, new Sig0());
+						transition(x, a, a.new S1_CS1());
+						x.enteringVertex(a, a.new CS1().new Init());
+						transition(x, a, a.new CS1().new Initialize());
+						x.processingSignal(a, new Sig0());
+						transition(x, a, a.new CS1().new S2_CS2());
+						x.enteringVertex(a, a.new CS1().new CS2().new Init());
+						transition(x, a, a.new CS1().new CS2().new Initialize());
+						x.processingSignal(a, new Sig1());
+						x.leavingVertex(a, a.new CS1().new CS2().new S3());
+						x.leavingVertex(a, a.new CS1().new CS2());
+						transition(x, a, a.new CS1_S1());
+						x.executionTerminated(); });
 	}
-	
 }

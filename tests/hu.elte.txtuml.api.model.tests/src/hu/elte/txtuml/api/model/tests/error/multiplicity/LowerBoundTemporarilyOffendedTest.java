@@ -5,7 +5,6 @@ import hu.elte.txtuml.api.model.tests.base.SimpleModelTestsBase;
 import hu.elte.txtuml.api.model.tests.models.SimpleModel.A_B;
 import hu.elte.txtuml.api.model.tests.util.SeparateClassloaderTestRunner;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -21,9 +20,6 @@ public class LowerBoundTemporarilyOffendedTest extends SimpleModelTestsBase {
 		
 		stopModelExecution();
 
-		Assert.assertArrayEquals(
-				new String[] { },
-				executorErrorStream.getOutputAsArray());
-
+		executionAsserter.assertErrors( x -> {} );
 	}
 }

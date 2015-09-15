@@ -1,8 +1,5 @@
 package hu.elte.txtuml.layout.export.test;
 
-import hu.elte.txtuml.layout.export.DiagramExportationReport;
-import hu.elte.txtuml.layout.export.DiagramExporter;
-import hu.elte.txtuml.layout.export.test.Model1.*;
 import hu.elte.txtuml.api.layout.AlignmentType;
 import hu.elte.txtuml.api.layout.Diagram;
 import hu.elte.txtuml.api.layout.LinkEnd;
@@ -15,10 +12,19 @@ import hu.elte.txtuml.api.layout.statements.Priority;
 import hu.elte.txtuml.api.layout.statements.Row;
 import hu.elte.txtuml.api.layout.statements.Show;
 import hu.elte.txtuml.api.layout.statements.TopMost;
-import hu.elte.txtuml.api.model.*;
-import hu.elte.txtuml.layout.visualizer.statements.Statement;
+import hu.elte.txtuml.api.model.Association;
+import hu.elte.txtuml.api.model.Model;
+import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.layout.export.DiagramExporter;
+import hu.elte.txtuml.layout.export.test.Model1.A;
+import hu.elte.txtuml.layout.export.test.Model1.B;
+import hu.elte.txtuml.layout.export.test.Model1.C;
+import hu.elte.txtuml.layout.export.test.Model1.D;
+import hu.elte.txtuml.layout.export.test.Model1.E;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.layout.visualizer.statements.Statement;
 
 class Model1 extends Model {
 	class A extends ModelClass {}

@@ -1,19 +1,19 @@
 package hu.elte.txtuml.layout.export;
 
+import hu.elte.txtuml.layout.export.interfaces.StatementList;
+import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
+import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.layout.visualizer.statements.Statement;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import hu.elte.txtuml.layout.export.interfaces.StatementList;
-import hu.elte.txtuml.layout.visualizer.statements.Statement;
-import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
-import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 /**
  * The type to be returned by the exportation of a diagram layout description.
  * Provides important information about the exportation, including its results.
  * 
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  * @author Dávid János Németh
  *
  */

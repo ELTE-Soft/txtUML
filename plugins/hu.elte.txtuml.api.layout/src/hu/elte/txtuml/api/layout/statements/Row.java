@@ -1,6 +1,5 @@
 package hu.elte.txtuml.api.layout.statements;
 
-import hu.elte.txtuml.api.layout.elements.LayoutAbstractNode;
 import hu.elte.txtuml.api.layout.statements.containers.RowContainer;
 
 import java.lang.annotation.ElementType;
@@ -13,6 +12,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Repeatable(RowContainer.class)
 public @interface Row {
-	Class<? extends LayoutAbstractNode>[] value();
+	Class<?>[] value();
 
 }

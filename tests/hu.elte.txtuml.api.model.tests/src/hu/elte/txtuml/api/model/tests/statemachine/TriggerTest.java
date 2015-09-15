@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 public class TriggerTest extends TransitionsModelTestsBase {
 
 	@Test
-	public void test() { 
+	public void test() {
 		Action.send(a, new Sig1());
 		Action.send(a, new Sig2());
 		Action.send(a, new Sig1());
@@ -22,25 +22,22 @@ public class TriggerTest extends TransitionsModelTestsBase {
 		Action.send(a, new Sig2());
 
 		stopModelExecution();
-		
-		/*
-		Assert.assertArrayEquals(
-				new String[] { 
-						LogMessages.getUsingTransitionMessage(a, a.new Initialize()),
-						LogMessages.getProcessingSignalMessage(a, new Sig1()),
-						LogMessages.getUsingTransitionMessage(a, a.new T1()),
-						LogMessages.getProcessingSignalMessage(a, new Sig2()),
-						LogMessages.getUsingTransitionMessage(a, a.new T2()),
-						LogMessages.getProcessingSignalMessage(a, new Sig1()),
-						LogMessages.getUsingTransitionMessage(a, a.new T1()),
-						LogMessages.getProcessingSignalMessage(a, new Sig1()),
-						LogMessages.getUsingTransitionMessage(a, a.new T1()),
-						LogMessages.getProcessingSignalMessage(a, new Sig1()),
-						LogMessages.getUsingTransitionMessage(a, a.new T1()),
-						LogMessages.getProcessingSignalMessage(a, new Sig2()),
-						LogMessages.getUsingTransitionMessage(a, a.new T2()),
-						LogMessages.getModelExecutionShutdownMessage() },
-				executorStream.getOutputAsArray());
-		*/
+
+		executionAsserter.assertEvents(x -> {
+			transition(x, a, a.new Initialize());
+			x.processingSignal(a, new Sig1());
+			transition(x, a, a.new T1());
+			x.processingSignal(a, new Sig2());
+			transition(x, a, a.new T2());
+			x.processingSignal(a, new Sig1());
+			transition(x, a, a.new T1());
+			x.processingSignal(a, new Sig1());
+			transition(x, a, a.new T1());
+			x.processingSignal(a, new Sig1());
+			transition(x, a, a.new T1());
+			x.processingSignal(a, new Sig2());
+			transition(x, a, a.new T2());
+			x.executionTerminated();
+		});
 	}
 }

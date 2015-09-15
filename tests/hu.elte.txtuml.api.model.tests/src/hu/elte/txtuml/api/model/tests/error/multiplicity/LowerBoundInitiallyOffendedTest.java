@@ -2,6 +2,7 @@ package hu.elte.txtuml.api.model.tests.error.multiplicity;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.tests.base.SimpleModelTestsBase;
+import hu.elte.txtuml.api.model.tests.models.SimpleModel.A_B;
 import hu.elte.txtuml.api.model.tests.util.SeparateClassloaderTestRunner;
 
 import org.junit.Test;
@@ -16,11 +17,9 @@ public class LowerBoundInitiallyOffendedTest extends SimpleModelTestsBase {
 		
 		stopModelExecution();
 
-		/*
-		Assert.assertArrayEquals(
-				new String[] { ErrorMessages.getLowerBoundOfMultiplicityOffendedMessage(a, A_B.b.class) },
-				executorErrorStream.getOutputAsArray());
-		*/
+		executionAsserter.assertErrors( x -> 
+x.lowerBoundOfMultiplicityOffended(a, A_B.b.class));
+
 	}
 
 }

@@ -1,14 +1,10 @@
 package hu.elte.txtuml.layout.export.elementinfo.impl;
 
 import hu.elte.txtuml.api.layout.AlignmentType;
-import hu.elte.txtuml.api.layout.elements.LayoutElement;
-import hu.elte.txtuml.api.layout.elements.LayoutNode;
-import hu.elte.txtuml.layout.export.elementinfo.impl.ElementInfoImpl;
-import hu.elte.txtuml.layout.export.elementinfo.ElementType;
+import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.elementinfo.NodeGroupInfo;
 import hu.elte.txtuml.layout.export.elementinfo.NodeInfo;
 import hu.elte.txtuml.layout.export.interfaces.NodeMap;
-import hu.elte.txtuml.layout.export.DiagramType;
 
 /**
  * 
@@ -21,21 +17,11 @@ public class NodeGroupInfoImpl extends ElementInfoImpl implements NodeGroupInfo 
     private AlignmentType alignment;
     private boolean beingExported;
     
-    public NodeGroupInfoImpl(Class<? extends LayoutElement> elementClass, DiagramType diagType, String asString) {
+    public NodeGroupInfoImpl(Class<?> elementClass, DiagramType diagType, String asString) {
         super(elementClass, diagType, asString);
         nodes = NodeMap.create();
         alignment = null;
         beingExported = false;
-    }
-    
-    @Override
-    public ElementType getType() {
-        return ElementType.NodeGroup;
-    }
-
-    @Override
-    public NodeGroupInfo asNodeGroupInfo() {
-        return this;
     }
     
     @Override
@@ -54,9 +40,8 @@ public class NodeGroupInfoImpl extends ElementInfoImpl implements NodeGroupInfo 
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     public void addNode(NodeInfo node) {
-        nodes.put((Class<? extends LayoutNode>) node.getElementClass(), node);
+        nodes.put(node.getElementClass(), node);
     }
 
     @Override

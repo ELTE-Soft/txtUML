@@ -1,6 +1,5 @@
 package hu.elte.txtuml.layout.export.elementinfo;
 
-import hu.elte.txtuml.api.layout.elements.LayoutElement;
 import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.elementinfo.impl.NodeInfoImpl;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
@@ -8,17 +7,12 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 /**
  * Information holder about a node in a diagram layout description.
  * 
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  *
  */
-public interface NodeInfo extends ElementInfo {
+public interface NodeInfo extends ConcreteElementInfo {
 
-	/**
-	 * Creates new instance.
-	 * 
-	 * @return The new instance.
-	 */
-	static NodeInfo create(Class<? extends LayoutElement> elementClass, DiagramType diagType, String asString) {	
+	static NodeInfo create(Class<?> elementClass, DiagramType diagType, String asString) {	
 		return new NodeInfoImpl(elementClass, diagType, asString);
 	}
 	

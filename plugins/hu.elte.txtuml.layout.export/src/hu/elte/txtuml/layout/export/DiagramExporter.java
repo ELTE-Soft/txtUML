@@ -7,7 +7,7 @@ import hu.elte.txtuml.layout.export.impl.DiagramExporterImpl;
  * Public interface to export diagram layout descriptions from their Java
  * format.
  * 
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  *
  */
 public interface DiagramExporter {
@@ -20,7 +20,6 @@ public interface DiagramExporter {
 	 * @return the new exporter instance
 	 */
 	static DiagramExporter create(Class<? extends Diagram> diagClass) {
-
 		return new DiagramExporterImpl(diagClass);
 	}
 

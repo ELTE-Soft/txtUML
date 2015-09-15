@@ -1,10 +1,6 @@
 package hu.elte.txtuml.layout.export.problems;
 
 import hu.elte.txtuml.api.layout.LinkEnd;
-import hu.elte.txtuml.api.layout.elements.LayoutAbstractLink;
-import hu.elte.txtuml.api.layout.elements.LayoutAbstractNode;
-import hu.elte.txtuml.api.layout.elements.LayoutElement;
-import hu.elte.txtuml.api.layout.elements.LayoutNode;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 import java.lang.annotation.Annotation;
@@ -28,39 +24,43 @@ public class Utils {
         return result;
     }
     
-    public static String lineStatementAsString(String name, Class <? extends LayoutAbstractNode>[] nodes) {
+    public static String lineStatementAsString(String name, Class <?>[] nodes) {
         return name + "({" + classArrayAsString(nodes) + "})";
     }
     
-    public static String diamondStatementAsString(Class<? extends LayoutNode> top, Class<? extends LayoutNode> right,
-        Class<? extends LayoutNode> bottom, Class<? extends LayoutNode> left)
+    public static String diamondStatementAsString(Class<?> top, Class<?> right,
+        Class<?> bottom, Class<?> left)
     {
         return "diamond(top = " + classAsString(top) + ", right = " + classAsString(right) +
             ", bottom = " + classAsString(bottom) + ", left = " + classAsString(left);
     }
     
-    public static String adjacencyStatementAsString(StatementType type, Class<? extends LayoutNode> val,
-        Class<? extends LayoutNode> from)
+    public static String adjacencyStatementAsString(StatementType type, Class<?> val,
+        Class<?> from)
     {
         return type.toString().toLowerCase() + "(val = " + classAsString(val)
             + ", from = " + classAsString(from) + ")";
     }
     
     public static String cardinalStatementAsString(StatementType type,
-        Class<? extends LayoutElement>[] val,
-        Class<? extends LayoutElement>[] from,
+        Class<?>[] val,
+        Class<?>[] from,
         LinkEnd end)
     {       
         return type.toString().toLowerCase() + "(val = {" + classArrayAsString(val) + "}, from = {" +
             classArrayAsString(from) + "}" + (end != LinkEnd.Default ? ", " + end.toString().toLowerCase() : "") + ")";
     }
 
-    public static String mostStatementAsString(Class<? extends Annotation> type, Class<? extends LayoutAbstractNode>[] val) {
+    public static String mostStatementAsString(Class<? extends Annotation> type, Class<?>[] val) {
         return type.getSimpleName().toLowerCase() + "({" + classArrayAsString(val) + "})";
     }
     
-    public static String priorityStatementAsString(Class<? extends LayoutAbstractLink>[] val, int prior) {
+    public static String priorityStatementAsString(Class<?>[] val, int prior) {
         return "priority(val = {" + classArrayAsString(val) + "}, prior = " + Integer.toString(prior) + ")";
     }
+
+	public static String showStatementAsString(Class<?>[] value) {
+		return "show({" + classArrayAsString(value) + "})";
+	}
     
 }

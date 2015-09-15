@@ -1,10 +1,10 @@
 /**
- * As a subpackage of {@link hu.elte.txtuml.api.backend},
- * provides backend features for the {@link hu.elte.txtuml.api} package to 
+ * As a subpackage of {@link hu.elte.txtuml.api.model.backend},
+ * provides backend features for the {@link hu.elte.txtuml.api.model} package to 
  * help in the model execution. Is not part of the public API.
  * <p>
  * To be specific, this package contains default implementations of the
- * interfaces defined in the {@link hu.elte.txtuml.api.backend.collections}
+ * interfaces defined in the {@link hu.elte.txtuml.api.model.backend.collections}
  * package.
  *
  * @author Gabor Ferenc Kovacs

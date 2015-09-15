@@ -1,6 +1,5 @@
 package hu.elte.txtuml.api.layout.statements;
 
-import hu.elte.txtuml.api.layout.elements.LayoutNode;
 import hu.elte.txtuml.api.layout.statements.containers.RightContainer;
 
 import java.lang.annotation.ElementType;
@@ -13,8 +12,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Repeatable(RightContainer.class)
 public @interface Right {
-	Class<? extends LayoutNode> val();
+	Class<?> val();
 
-	Class<? extends LayoutNode> from();
+	Class<?> from();
 
 }

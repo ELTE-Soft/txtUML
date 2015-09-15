@@ -18,11 +18,7 @@ public class UnlinkingNonExistingAssociationTest extends SimpleModelTestsBase {
 
 		stopModelExecution();
 
-		/*
-		Assert.assertArrayEquals(new String[] { WarningMessages
-				.getUnlinkingNonExistingAssociationMessage(a, b) },
-				executorErrorStream.getOutputAsArray());
-		*/
+		executionAsserter.assertWarnings( x -> x.unlinkingNonExistingAssociation(a, b));
 	}
 
 }

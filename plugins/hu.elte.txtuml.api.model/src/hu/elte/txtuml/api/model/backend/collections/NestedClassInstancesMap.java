@@ -6,7 +6,7 @@ import java.util.Map;
 
 /**
  * A mapping used in the <code>NestedClassInstancesHolder</code> package private
- * class in the {@link hu.elte.txtuml.api} package. It maps classes to their
+ * class in the {@link hu.elte.txtuml.api.model} package. It maps classes to their
  * single instances.
  *
  * @author Gabor Ferenc Kovacs

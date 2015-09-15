@@ -1,7 +1,6 @@
 package hu.elte.txtuml.api.layout.statements;
 
 import hu.elte.txtuml.api.layout.LinkEnd;
-import hu.elte.txtuml.api.layout.elements.LayoutElement;
 import hu.elte.txtuml.api.layout.statements.containers.WestContainer;
 
 import java.lang.annotation.ElementType;
@@ -14,9 +13,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Repeatable(WestContainer.class)
 public @interface West {
-	Class<? extends LayoutElement>[] val();
+	Class<?>[] val();
 
-	Class<? extends LayoutElement>[] from();
+	Class<?>[] from();
 
 	LinkEnd end() default LinkEnd.Default;
 

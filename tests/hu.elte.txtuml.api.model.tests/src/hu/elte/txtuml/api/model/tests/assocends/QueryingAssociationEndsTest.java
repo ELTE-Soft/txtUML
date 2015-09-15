@@ -1,14 +1,17 @@
 package hu.elte.txtuml.api.model.tests.assocends;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.Collection;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.tests.base.TestsBase;
-import hu.elte.txtuml.api.model.tests.models.AssociationsModel.*;
+import hu.elte.txtuml.api.model.tests.models.AssociationsModel.A;
+import hu.elte.txtuml.api.model.tests.models.AssociationsModel.Assoc1;
+import hu.elte.txtuml.api.model.tests.models.AssociationsModel.B;
+import hu.elte.txtuml.api.model.tests.models.AssociationsModel.Refl;
 import hu.elte.txtuml.api.model.tests.util.SeparateClassloaderTestRunner;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;

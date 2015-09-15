@@ -23,6 +23,6 @@ public class EntryExitEffectTest extends TransitionsModelTestsBase {
 		Assert.assertArrayEquals(
 				new String[] { 
 						"entry", "exit", "T1", "entry", "exit", "T2", "entry" },
-				userStream.getOutputAsArray());
+				userOutStream.getOutputAsArray());
 	}
 }

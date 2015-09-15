@@ -184,6 +184,7 @@ public abstract class Region extends StateMachine {
 		executeTransition(applicableTransition);
 
 		if (currentVertex instanceof Choice) {
+			Report.event.forEach(x -> x.enteringVertex(this, currentVertex));
 			findAndExecuteTransitionFromChoice(signal);
 		}
 

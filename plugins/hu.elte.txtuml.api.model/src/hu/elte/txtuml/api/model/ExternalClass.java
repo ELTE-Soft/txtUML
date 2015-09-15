@@ -9,8 +9,8 @@ package hu.elte.txtuml.api.model;
  * <p>
  * By the current implementation, external classes <b>are not exported</b> to
  * EMF-UML2, with the exception of standard library classes
- * {@link hu.elte.txtuml.stdlib.Timer Timer} and
- * {@link hu.elte.txtuml.stdlib.Timer.Handle Timer.Handle}. The planned design
+ * {@link hu.elte.txtuml.api.stdlib.Timer Timer} and
+ * {@link hu.elte.txtuml.api.stdlib.Timer.Handle Timer.Handle}. The planned design
  * is to include all external classes in the model with an 'external' stereotype
  * and empty operations.
  * 

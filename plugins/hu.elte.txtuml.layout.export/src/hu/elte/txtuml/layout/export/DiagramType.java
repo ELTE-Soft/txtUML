@@ -3,7 +3,7 @@ package hu.elte.txtuml.layout.export;
 /**
  * Possible types of a diagram.
  * 
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  *
  */
 public enum DiagramType {

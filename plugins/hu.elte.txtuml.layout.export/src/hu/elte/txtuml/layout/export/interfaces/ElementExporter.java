@@ -1,91 +1,159 @@
 package hu.elte.txtuml.layout.export.interfaces;
 
-import java.util.Set;
-
-import hu.elte.txtuml.api.layout.elements.LayoutAbstractNode;
-import hu.elte.txtuml.api.layout.elements.LayoutElement;
-import hu.elte.txtuml.api.layout.elements.LayoutGroup;
-import hu.elte.txtuml.api.layout.elements.LayoutLink;
-import hu.elte.txtuml.api.layout.elements.LayoutLinkGroup;
-import hu.elte.txtuml.api.layout.elements.LayoutNode;
-import hu.elte.txtuml.api.layout.elements.LayoutNodeGroup;
-import hu.elte.txtuml.api.layout.elements.LayoutNonGroupElement;
-import hu.elte.txtuml.api.layout.elements.LayoutPhantomNode;
+import hu.elte.txtuml.api.layout.Diagram.LinkGroup;
+import hu.elte.txtuml.api.layout.Diagram.NodeGroup;
+import hu.elte.txtuml.api.layout.Diagram.Phantom;
 import hu.elte.txtuml.layout.export.DiagramType;
+import hu.elte.txtuml.layout.export.elementinfo.ConcreteElementInfo;
 import hu.elte.txtuml.layout.export.elementinfo.ElementInfo;
+import hu.elte.txtuml.layout.export.elementinfo.GroupInfo;
+import hu.elte.txtuml.layout.export.elementinfo.LinkGroupInfo;
+import hu.elte.txtuml.layout.export.elementinfo.LinkInfo;
+import hu.elte.txtuml.layout.export.elementinfo.NodeGroupInfo;
 import hu.elte.txtuml.layout.export.elementinfo.NodeInfo;
 import hu.elte.txtuml.layout.export.impl.ElementExporterImpl;
+import hu.elte.txtuml.layout.export.problems.ElementExportationException;
 import hu.elte.txtuml.layout.export.problems.ProblemReporter;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
+import java.util.Set;
+
 /**
  * 
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  *
  */
 public interface ElementExporter {
 
-    static ElementExporter create(ProblemReporter problemReporter) {
-        return new ElementExporterImpl(problemReporter);
-    }
+	static ElementExporter create(ProblemReporter problemReporter) {
+		return new ElementExporterImpl(problemReporter);
+	}
 
 	DiagramType getDiagramTypeBasedOnElements();
-	
+
 	String getRootElementAsString();
-	
+
 	NodeMap getNodes();
-	
+
 	NodeList getPhantoms();
-	
+
 	LinkMap getLinks();
-	
+
 	Set<RectangleObject> getNodesAsObjects();
-	
+
 	Set<LineAssociation> getLinksAsLines();
-	
+
 	/**
 	 * Get info about the given element and register it if its of a valid type.
+	 * 
+	 * @throws ElementExportationException
 	 */
-	ElementInfo exportElement(Class<? extends LayoutElement> element);
+	ElementInfo exportElement(Class<?> element)
+			throws ElementExportationException;
 
 	/**
 	 * Specialization to the <code>exportElement</code> method. Using
 	 * <code>exportElement</code> is always sufficient, but this method might be
 	 * more efficient.
+	 * 
+	 * @throws ElementExportationException
 	 */
-	ElementInfo exportNonGroupElement(
-			Class<? extends LayoutNonGroupElement> element);
-	
-	ElementInfo exportGroupElement(Class<? extends LayoutGroup> element);
+	ConcreteElementInfo exportConcreteElement(Class<?> element)
+			throws ElementExportationException;
 
 	/**
 	 * Specialization to the <code>exportElement</code> method. Using
 	 * <code>exportElement</code> is always sufficient, but this method might be
 	 * more efficient.
+	 * 
+	 * @throws ElementExportationException
 	 */
-	ElementInfo exportNode(Class<? extends LayoutNode> node);
-	
-	ElementInfo exportPhantom(Class<? extends LayoutPhantomNode> phantom);
-	
-	ElementInfo exportLink(Class<? extends LayoutLink> link);
-    
+	GroupInfo exportGroupElement(Class<?> element)
+			throws ElementExportationException;
+
 	/**
-     * Should be called only by an instance of class {@link hu.elte.txtuml.layout.export.diagramexporters.ClassDiagramExporter DiagramExporter}.
-     * Checking the diagram type is not necessary since it's checked by the caller.
-     */
-	void exportGeneralization(Class<? extends LayoutNode> base, Class<? extends LayoutNode> derived);
-	
-	ElementInfo exportNodeGroup(Class<? extends LayoutNodeGroup> nodeGroup);
-	
-	ElementInfo exportLinkGroup(Class<? extends LayoutLinkGroup> linkGroup);
-		
-	ElementInfo exportAnonNodeGroup(Class<? extends LayoutAbstractNode>[] abstractNodes);
-	
+	 * Specialization to the <code>exportElement</code> method. Using
+	 * <code>exportElement</code> is always sufficient, but this method might be
+	 * more efficient.
+	 * 
+	 * @throws ElementExportationException
+	 */
+	NodeInfo exportNode(Class<?> node) throws ElementExportationException;
+
+	/**
+	 * Specialization to the <code>exportElement</code> method. Using
+	 * <code>exportElement</code> is always sufficient, but this method might be
+	 * more efficient.
+	 * 
+	 * @throws ElementExportationException
+	 */
+	NodeInfo exportPhantom(Class<?> phantom)
+			throws ElementExportationException;
+
+	/**
+	 * Specialization to the <code>exportElement</code> method. Using
+	 * <code>exportElement</code> is always sufficient, but this method might be
+	 * more efficient.
+	 * 
+	 * @throws ElementExportationException
+	 */
+	LinkInfo exportLink(Class<?> link) throws ElementExportationException;
+
+	/**
+	 * Should be called only by an instance of class
+	 * {@link hu.elte.txtuml.layout.export.diagramexporters.ClassDiagramExporter
+	 * ClassDiagramExporter}. Checking the diagram type is not necessary since
+	 * it's checked by the caller.
+	 * @throws ElementExportationException 
+	 */
+	void exportGeneralization(Class<?> base, Class<?> derived) throws ElementExportationException;
+
+	/**
+	 * Specialization to the <code>exportElement</code> method. Using
+	 * <code>exportElement</code> is always sufficient, but this method might be
+	 * more efficient.
+	 * 
+	 * @throws ElementExportationException
+	 */
+	NodeGroupInfo exportNodeGroup(Class<?> nodeGroup)
+			throws ElementExportationException;
+
+	/**
+	 * Specialization to the <code>exportElement</code> method. Using
+	 * <code>exportElement</code> is always sufficient, but this method might be
+	 * more efficient.
+	 * 
+	 * @throws ElementExportationException
+	 */
+	LinkGroupInfo exportLinkGroup(Class<?> linkGroup)
+			throws ElementExportationException;
+
+	/**
+	 * Specialization to the <code>exportElement</code> method. Using
+	 * <code>exportElement</code> is always sufficient, but this method might be
+	 * more efficient.
+	 * 
+	 * @throws ElementExportationException
+	 */
+	NodeGroupInfo exportAnonymousNodeGroup(Class<?>[] abstractNodes)
+			throws ElementExportationException;
+
 	NodeInfo createPhantom();
-	
-	// exportation finalizer
-	
-	void exportImpliedLinks();
 
+	static boolean isPhantom(Class<?> cls) {
+		return Phantom.class.isAssignableFrom(cls);
+	}
+
+	static boolean isNodeGroup(Class<?> cls) {
+		return NodeGroup.class.isAssignableFrom(cls);
+	}
+
+	static boolean isLinkGroup(Class<?> cls) {
+		return LinkGroup.class.isAssignableFrom(cls);
+	}
+
+	// exportation finalizer
+
+	void exportImpliedLinks();
 }

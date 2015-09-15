@@ -1,28 +1,25 @@
 package hu.elte.txtuml.layout.export.elementinfo.impl;
 
-import hu.elte.txtuml.api.layout.elements.LayoutElement;
 import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.elementinfo.ElementInfo;
-import hu.elte.txtuml.layout.export.elementinfo.ElementType;
 
 /**
- * Default implementation for {@link ElementInfo}. Shows that the type of the
- * element is <code>Unknown</code>.
+ * Default implementation for {@link ElementInfo}.
  * 
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  *
  */
-public class ElementInfoImpl implements ElementInfo {
+abstract class ElementInfoImpl implements ElementInfo {
 
-	private final Class<? extends LayoutElement> elementClass;
+	private final Class<?> elementClass;
 	private final DiagramType diagType;
 	private final String asString;
 
-	public ElementInfoImpl(Class<? extends LayoutElement> elementClass) {
+	public ElementInfoImpl(Class<?> elementClass) {
 		this(elementClass, DiagramType.Unknown, "");
 	}
 
-	public ElementInfoImpl(Class<? extends LayoutElement> elementClass,
+	public ElementInfoImpl(Class<?> elementClass,
 			DiagramType diagType, String asString) {
 		this.elementClass = elementClass;
 		this.diagType = diagType;
@@ -30,8 +27,8 @@ public class ElementInfoImpl implements ElementInfo {
 	}
 
 	@Override
-	public ElementType getType() {
-		return ElementType.Unknown;
+	public boolean beingExported() {
+		return false;
 	}
 
 	@Override
@@ -40,7 +37,7 @@ public class ElementInfoImpl implements ElementInfo {
 	}
 
 	@Override
-	public Class<? extends LayoutElement> getElementClass() {
+	public Class<?> getElementClass() {
 		return elementClass;
 	}
 

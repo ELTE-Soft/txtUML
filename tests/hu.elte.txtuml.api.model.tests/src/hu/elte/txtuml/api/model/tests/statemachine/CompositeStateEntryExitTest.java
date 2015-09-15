@@ -23,7 +23,7 @@ public class CompositeStateEntryExitTest extends HierarchicalModelTestsBase {
 
 		Assert.assertArrayEquals(new String[]
 				{ "CS1 entry", "CS2 entry",	"S3 entry", "S3 exit", "CS2 exit", "CS1 exit" },
-				userStream.getOutputAsArray());
+				userOutStream.getOutputAsArray());
 	}
 
 }

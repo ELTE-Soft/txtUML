@@ -13,17 +13,13 @@ public class CannotBeDeletedTest extends SimpleModelTestsBase {
 
 	@Test
 	public void test() {
-		
+
 		Action.link(A_B.a.class, a, A_B.b.class, b);
 		Action.delete(a);
-		
+
 		stopModelExecution();
-		/*
-		Assert.assertArrayEquals(
-				new String[] { ErrorMessages.getObjectCannotBeDeletedMessage(a) },
-				executorErrorStream.getOutputAsArray());
-		*/
+
+		executionAsserter.assertErrors(x -> x.objectCannotBeDeleted(a));
 
 	}
-
 }

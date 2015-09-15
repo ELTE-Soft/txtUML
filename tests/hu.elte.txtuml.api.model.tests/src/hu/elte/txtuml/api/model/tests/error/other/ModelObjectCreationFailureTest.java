@@ -2,6 +2,7 @@ package hu.elte.txtuml.api.model.tests.error.other;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.ModelInt;
+import hu.elte.txtuml.api.model.ModelValue;
 import hu.elte.txtuml.api.model.tests.base.SimpleModelTestsBase;
 import hu.elte.txtuml.api.model.tests.models.SimpleModel.A;
 import hu.elte.txtuml.api.model.tests.util.SeparateClassloaderTestRunner;
@@ -19,12 +20,8 @@ public class ModelObjectCreationFailureTest extends SimpleModelTestsBase {
 
 		stopModelExecution();
 
-		/*
-		Assert.assertArrayEquals(new String[] { ErrorMessages
-				.getModelObjectCreationFailedMessage(A.class,
-						new ModelValue[] { new ModelInt(100) }) },
-				executorErrorStream.getOutputAsArray());
-		*/
+		executionAsserter.assertErrors( x -> x.modelObjectCreationFailed(A.class,
+						new ModelValue[] { new ModelInt(100) }));
 	}
 
 }

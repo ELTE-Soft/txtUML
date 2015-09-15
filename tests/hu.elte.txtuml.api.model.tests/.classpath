@@ -6,5 +6,6 @@
 	<classpathentry kind="src" path="/hu.elte.txtuml.api.model"/>
 	<classpathentry kind="src" path="/hu.elte.txtuml.api.stdlib"/>
 	<classpathentry kind="src" path="/hu.elte.txtuml.api.layout"/>
+	<classpathentry kind="src" path="/hu.elte.txtuml.utils"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

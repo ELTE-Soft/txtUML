@@ -14,11 +14,10 @@ public class ShutdownNowTest extends SimpleModelTestsBase {
 	public void test() {
 		ModelExecutor.shutdownNow();
 
-		/*
-		Assert.assertArrayEquals(
-				new String[] { LogMessages.getModelExecutionShutdownMessage() },
-				executorStream.getOutputAsArray());
-		*/
+		executionAsserter.assertEvents(x -> {
+			x.executionTerminated();
+		});
+
 	}
 
 }

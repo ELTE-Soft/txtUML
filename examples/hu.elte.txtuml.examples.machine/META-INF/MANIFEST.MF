@@ -4,7 +4,6 @@ Bundle-Name: hu.elte.txtuml.machine
 Bundle-Vendor: ELTE
 Require-Bundle: hu.elte.txtuml.api.diagnostics,
  hu.elte.txtuml.api.model,
- hu.elte.txtuml.api.layout,
  hu.elte.txtuml.api.stdlib,
  hu.elte.txtuml.export.papyrus,
  hu.elte.txtuml.export.uml2,

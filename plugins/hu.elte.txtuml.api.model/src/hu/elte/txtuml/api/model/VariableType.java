@@ -20,11 +20,11 @@ package hu.elte.txtuml.api.model;
  * latter are not. Therefore, <code>VariableType</code> instances may be used as
  * variables inside the code blocks and condition evaluations given as
  * parameters to
- * {@link Action#If(hu.elte.txtuml.api.blocks.Condition, hu.elte.txtuml.api.blocks.BlockBody, hu.elte.txtuml.api.blocks.BlockBody)
+ * {@link Action#If(hu.elte.txtuml.api.model.blocks.Condition, hu.elte.txtuml.api.model.blocks.BlockBody, hu.elte.txtuml.api.model.blocks.BlockBody)
  * If},
- * {@link Action#While(hu.elte.txtuml.api.blocks.Condition, hu.elte.txtuml.api.blocks.BlockBody)
+ * {@link Action#While(hu.elte.txtuml.api.model.blocks.Condition, hu.elte.txtuml.api.model.blocks.BlockBody)
  * While} and
- * {@link Action#For(ModelInt, ModelInt, hu.elte.txtuml.api.blocks.ParameterizedBlockBody)
+ * {@link Action#For(ModelInt, ModelInt, hu.elte.txtuml.api.model.blocks.ParameterizedBlockBody)
  * For} methods where Java lets the use of local variables of enclosing methods
  * only if they are final or effectively final.
  * 

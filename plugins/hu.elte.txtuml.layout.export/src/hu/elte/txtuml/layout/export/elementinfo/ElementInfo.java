@@ -1,46 +1,14 @@
 package hu.elte.txtuml.layout.export.elementinfo;
 
-import hu.elte.txtuml.api.layout.elements.LayoutElement;
 import hu.elte.txtuml.layout.export.DiagramType;
-import hu.elte.txtuml.layout.export.elementinfo.impl.ElementInfoImpl;
-import hu.elte.txtuml.layout.export.elementinfo.impl.InvalidElementInfoImpl;
 
 /**
  * General information holder about a diagram layout description element.
  * 
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  *
  */
 public interface ElementInfo {
-
-	/**
-	 * Creates a default info holder for the given element. The info holder will
-	 * show that the type of the element is <code>Unknown</code>.
-	 */
-	static ElementInfo createDefault(Class<? extends LayoutElement> elementClass) {
-		return new ElementInfoImpl(elementClass);
-	}
-
-	/**
-	 * Creates an info holder for the given element. The info holder will show
-	 * that the type of the element is <code>Invalid</code>.
-	 */
-	static ElementInfo createInvalid(Class<? extends LayoutElement> elementClass) {
-		return new InvalidElementInfoImpl(elementClass);
-	}
-
-	/**
-	 * @return whether <code>getType</code> method returns anything different
-	 *         from <code>Invalid</code>
-	 */
-	default boolean isValid() {
-		return getType() != ElementType.Invalid;
-	}
-
-	/**
-	 * @return the type of the element this object holds info about
-	 */
-	ElementType getType();
 
 	/**
 	 * @return the diagram type in which the element this object holds info
@@ -52,8 +20,8 @@ public interface ElementInfo {
 	/**
 	 * @return the element type this object holds info about
 	 */
-	Class<? extends LayoutElement> getElementClass();
-	
+	Class<?> getElementClass();
+
 	/**
 	 * @return the string representation of the element this object holds info
 	 *         about
@@ -62,52 +30,15 @@ public interface ElementInfo {
 	String toString();
 
 	/**
-	 * Casts to <code>LinkInfo</code>.
-	 * 
-	 * @return this object casted to LinkInfo. Is <code>null</code> if
-	 *         <code>getType</code> method does not return
-	 *         <code>ElementType.Link</code>.
+	 * @return whether the group this object holds info about is currently being
+	 *         exported; in case of non-group elements (nodes or links), it
+	 *         always returns false
 	 */
-	default LinkInfo asLinkInfo() {
-		return null;
-	}
-
-	/**
-	 * Casts to <code>LinkGroupInfo</code>.
-	 * 
-	 * @return this object casted to LinkGroupInfo. Is <code>null</code> if
-	 *         <code>getType</code> method does not return
-	 *         <code>LinkGroup</code>.
-	 */
-	default LinkGroupInfo asLinkGroupInfo() {
-		return null;
-	}
-
-	/**
-	 * Casts to <code>NodeInfo</code>.
-	 * 
-	 * @return this object casted to NodeInfo. Is <code>null</code> if
-	 *         <code>getType</code> method does not return <code>Node</code>.
-	 */
-	default NodeInfo asNodeInfo() {
-		return null;
-	}
-
-	/**
-	 * Casts to <code>NodeGroupInfo</code>.
-	 * 
-	 * @return this object casted to NodeGroupInfo. Is <code>null</code> if
-	 *         <code>getType</code> method does not return
-	 *         <code>NodeGroup</code>.
-	 */
-	default NodeGroupInfo asNodeGroupInfo() {
-		return null;
-	}
+	boolean beingExported();
 
 	/**
 	 * Two <code>ElementInfo</code> objects equal if they hold information about
-	 * the same diagram layout description element. As an abstraction, this
-	 * object will
+	 * the same diagram layout description element.
 	 * 
 	 * @param obj
 	 *            the other object to be compared with this info holder

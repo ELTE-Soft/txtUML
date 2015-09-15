@@ -1,18 +1,14 @@
 package hu.elte.txtuml.api.layout;
 
-import hu.elte.txtuml.api.layout.elements.LayoutLinkGroup;
-import hu.elte.txtuml.api.layout.elements.LayoutNodeGroup;
-import hu.elte.txtuml.api.layout.elements.LayoutPhantomNode;
-
 public abstract class Diagram {
 
-	public abstract class Phantom implements LayoutPhantomNode {
+	public abstract class Phantom {
 	}
 
-	public abstract class NodeGroup implements LayoutNodeGroup {
+	public abstract class NodeGroup {
 	}
 
-	public abstract class LinkGroup implements LayoutLinkGroup {
+	public abstract class LinkGroup {
 	}
 
 	public abstract class Layout {

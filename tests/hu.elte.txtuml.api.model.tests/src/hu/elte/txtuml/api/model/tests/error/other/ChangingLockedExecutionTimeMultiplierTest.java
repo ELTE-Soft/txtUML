@@ -28,11 +28,7 @@ public class ChangingLockedExecutionTimeMultiplierTest extends
 
 		stopModelExecution(() -> Timer.shutdown());
 
-		/*
-		Assert.assertArrayEquals(new String[] { ErrorMessages
-				.getChangingLockedExecutionTimeMultiplierMessage() },
-				executorErrorStream.getOutputAsArray());
-		*/
+		executionAsserter.assertErrors( x -> x.changingLockedExecutionTimeMultiplier());
 
 	}
 

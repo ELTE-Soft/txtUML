@@ -1,7 +1,5 @@
 package hu.elte.txtuml.api.model;
 
-import hu.elte.txtuml.api.layout.elements.LayoutLink;
-
 /**
  * A base class for associations in the model.
  * 
@@ -77,7 +75,7 @@ import hu.elte.txtuml.api.layout.elements.LayoutLink;
  * @see Association.HiddenSome
  *
  */
-public class Association implements ModelElement, LayoutLink {
+public class Association implements ModelElement {
 
 	/**
 	 * Sole constructor of <code>Association</code>.

@@ -28,11 +28,8 @@ public class NoTransitionsFromChoiceTest extends TestsBase {
 		Action.send(a, new Sig(new ModelInt(2)));
 		
 		stopModelExecution();
-		/*
-		Assert.assertArrayEquals(
-				new String[] { ErrorMessages.getNoTransitionFromChoiceMessage(a.new C()) },
-				executorErrorStream.getOutputAsArray());
-		*/
+
+		executionAsserter.assertErrors( x -> x.noTransitionFromChoice(a.new C()));
 	}
 
 	static class NoTransitionsFromChoiceModel extends Model {

@@ -1,6 +1,5 @@
 package hu.elte.txtuml.api.layout.statements;
 
-import hu.elte.txtuml.api.layout.elements.LayoutAbstractLink;
 import hu.elte.txtuml.api.layout.statements.containers.PriorityContainer;
 
 import java.lang.annotation.ElementType;
@@ -13,7 +12,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Repeatable(PriorityContainer.class)
 public @interface Priority {
-	Class<? extends LayoutAbstractLink>[] val();
+	Class<?>[] val();
 
 	int prior();
 

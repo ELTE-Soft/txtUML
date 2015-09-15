@@ -2,16 +2,26 @@ package hu.elte.txtuml.layout.export.test;
 
 import hu.elte.txtuml.api.layout.Diagram;
 import hu.elte.txtuml.api.layout.LinkEnd;
-import hu.elte.txtuml.api.layout.statements.*;
+import hu.elte.txtuml.api.layout.statements.Above;
+import hu.elte.txtuml.api.layout.statements.Row;
+import hu.elte.txtuml.api.layout.statements.Show;
+import hu.elte.txtuml.api.layout.statements.South;
+import hu.elte.txtuml.api.layout.statements.West;
 import hu.elte.txtuml.api.model.Association;
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.layout.visualizer.statements.Statement;
-import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
-import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.export.DiagramExporter;
-import hu.elte.txtuml.layout.export.test.PublicationModel.*;
+import hu.elte.txtuml.layout.export.test.PublicationModel.Author;
+import hu.elte.txtuml.layout.export.test.PublicationModel.CoAuthor;
+import hu.elte.txtuml.layout.export.test.PublicationModel.Conference;
+import hu.elte.txtuml.layout.export.test.PublicationModel.MainConference;
+import hu.elte.txtuml.layout.export.test.PublicationModel.Paper;
+import hu.elte.txtuml.layout.export.test.PublicationModel.Reviewer;
+import hu.elte.txtuml.layout.export.test.PublicationModel.Workshop;
+import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
+import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.layout.visualizer.statements.Statement;
 
 class PublicationModel extends Model {
 

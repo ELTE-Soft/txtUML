@@ -3,7 +3,6 @@ Bundle-Version: 0.1.1.qualifier
 Bundle-Name: hu.elte.txtuml.examples.garage
 Bundle-Vendor: ELTE
 Require-Bundle: hu.elte.txtuml.api.model,
- hu.elte.txtuml.api.layout,
  hu.elte.txtuml.api.stdlib,
  hu.elte.txtuml.export.papyrus,
  hu.elte.txtuml.export.uml2,

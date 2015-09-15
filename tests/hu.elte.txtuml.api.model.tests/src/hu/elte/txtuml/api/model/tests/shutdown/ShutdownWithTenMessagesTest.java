@@ -27,38 +27,34 @@ public class ShutdownWithTenMessagesTest extends SimpleModelTestsBase {
 		Assert.assertEquals(false, actionPerformed.value);
 		stopModelExecution(() -> {
 			ModelExecutor.shutdown();
-			Assert.assertEquals(false, actionPerformed.value);			
+			Assert.assertEquals(false, actionPerformed.value);
 		});
 		Assert.assertEquals(true, actionPerformed.value);
 
-		/*
-		Assert.assertArrayEquals(
-				new String[] {
-						LogMessages.getUsingTransitionMessage(a,
-								a.new Initialize()),
-						LogMessages.getProcessingSignalMessage(a, new Sig()),
-						LogMessages.getUsingTransitionMessage(a, a.new S1_S2()),
-						LogMessages.getProcessingSignalMessage(a, new Sig()),
-						LogMessages.getUsingTransitionMessage(a, a.new S2_S1()),
-						LogMessages.getProcessingSignalMessage(a, new Sig()),
-						LogMessages.getUsingTransitionMessage(a, a.new S1_S2()),
-						LogMessages.getProcessingSignalMessage(a, new Sig()),
-						LogMessages.getUsingTransitionMessage(a, a.new S2_S1()),
-						LogMessages.getProcessingSignalMessage(a, new Sig()),
-						LogMessages.getUsingTransitionMessage(a, a.new S1_S2()),
-						LogMessages.getProcessingSignalMessage(a, new Sig()),
-						LogMessages.getUsingTransitionMessage(a, a.new S2_S1()),
-						LogMessages.getProcessingSignalMessage(a, new Sig()),
-						LogMessages.getUsingTransitionMessage(a, a.new S1_S2()),
-						LogMessages.getProcessingSignalMessage(a, new Sig()),
-						LogMessages.getUsingTransitionMessage(a, a.new S2_S1()),
-						LogMessages.getProcessingSignalMessage(a, new Sig()),
-						LogMessages.getUsingTransitionMessage(a, a.new S1_S2()),
-						LogMessages.getProcessingSignalMessage(a, new Sig()),
-						LogMessages.getUsingTransitionMessage(a, a.new S2_S1()),
-						LogMessages.getModelExecutionShutdownMessage() },
-				executorStream.getOutputAsArray());
-		*/
+		executionAsserter.assertEvents(x -> {
+			transition(x, a, a.new Initialize());
+			x.processingSignal(a, new Sig());
+			transition(x, a, a.new S1_S2());
+			x.processingSignal(a, new Sig());
+			transition(x, a, a.new S2_S1());
+			x.processingSignal(a, new Sig());
+			transition(x, a, a.new S1_S2());
+			x.processingSignal(a, new Sig());
+			transition(x, a, a.new S2_S1());
+			x.processingSignal(a, new Sig());
+			transition(x, a, a.new S1_S2());
+			x.processingSignal(a, new Sig());
+			transition(x, a, a.new S2_S1());
+			x.processingSignal(a, new Sig());
+			transition(x, a, a.new S1_S2());
+			x.processingSignal(a, new Sig());
+			transition(x, a, a.new S2_S1());
+			x.processingSignal(a, new Sig());
+			transition(x, a, a.new S1_S2());
+			x.processingSignal(a, new Sig());
+			transition(x, a, a.new S2_S1());
+			x.executionTerminated();
+		});
 	}
 
 }

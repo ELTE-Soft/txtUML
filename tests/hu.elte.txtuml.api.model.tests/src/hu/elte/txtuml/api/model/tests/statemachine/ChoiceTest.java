@@ -20,22 +20,19 @@ public class ChoiceTest extends ChoiceModelTestsBase {
 		
 		stopModelExecution();
 		
-		/*
-		Assert.assertArrayEquals(
-				new String[] { 
-						LogMessages.getUsingTransitionMessage(a, a.new Initialize()),
-						LogMessages.getProcessingSignalMessage(a, new Sig()),
-						LogMessages.getUsingTransitionMessage(a, a.new S1_C()),
-						LogMessages.getUsingTransitionMessage(a, a.new T1()),
-						LogMessages.getProcessingSignalMessage(a, new Sig()),
-						LogMessages.getUsingTransitionMessage(a, a.new S1_C()),
-						LogMessages.getUsingTransitionMessage(a, a.new T2()),
-						LogMessages.getProcessingSignalMessage(a, new Sig()),
-						LogMessages.getUsingTransitionMessage(a, a.new S1_C()),
-						LogMessages.getUsingTransitionMessage(a, a.new T3()),
-						LogMessages.getModelExecutionShutdownMessage() },
-				executorStream.getOutputAsArray());
-		*/
+		executionAsserter.assertEvents( x -> {
+			transition(x, a, a.new Initialize());
+			x.processingSignal(a, new Sig());
+			transition(x, a, a.new S1_C());
+			transition(x, a, a.new T1());
+			x.processingSignal(a, new Sig());
+			transition(x, a, a.new S1_C());
+			transition(x, a, a.new T2());
+			x.processingSignal(a, new Sig());
+			transition(x, a, a.new S1_C());
+			transition(x, a, a.new T3());
+			x.executionTerminated();
+		});
+
 	}
-	
 }

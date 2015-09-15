@@ -7,9 +7,7 @@ import java.io.PrintStream;
 public final class ExecutorLog {
 
 	private volatile PrintStream out = System.out;
-
 	private volatile PrintStream err = System.err;
-
 	private volatile boolean logEvents = false;
 
 	public ExecutorLog() {

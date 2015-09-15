@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * 
- * @author Gábor Ferenc Kovács
+ * @author Gabor Ferenc Kovacs
  *
  */
 public interface StatementList extends List<Statement> {

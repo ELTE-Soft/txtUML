@@ -11,7 +11,7 @@ import hu.elte.txtuml.api.model.ModelElement;
  * <b>Represents:</b> condition
  * <p>
  * 
- * See the documentation of {@link hu.elte.txtuml.api.Model} for an overview on
+ * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an overview on
  * modeling in txtUML.
  * 
  * @author Gabor Ferenc Kovacs
@@ -29,7 +29,7 @@ public interface ParameterizedCondition<T> extends ModelElement {
 	 * Overriding methods may not return a <code>null</code> value.
 	 * <p>
 	 * Overriding methods may only contain a condition evaluation. See the
-	 * documentation of {@link hu.elte.txtuml.api.Model} for details about
+	 * documentation of {@link hu.elte.txtuml.api.model.Model} for details about
 	 * condition evaluations in the model.
 	 * 
 	 * @param param
