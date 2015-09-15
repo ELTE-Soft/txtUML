@@ -5,6 +5,7 @@
    
    <extension
          point="org.eclipse.ui.commands">
+<!--
       <command
             defaultHandler="hu.elte.txtuml.export.papyrus.handlers.InstantHandler"
             id="hu.elte.txtuml.export.papyrus.InstantCommand"
@@ -15,6 +16,7 @@
             id="hu.elte.txtuml.export.papyrus.WizardCommand"
             name="WizardCommand">
       </command>
+-->
       <command
             defaultHandler="hu.elte.txtuml.export.papyrus.handlers.PreferencesPageHandler"
             id="hu.elte.txtuml.export.papyrus.PreferencePageCommand"
@@ -28,6 +30,7 @@
    </extension>
    <extension
          point="org.eclipse.ui.menus">
+<!--
       <menuContribution
             allPopups="false"
             locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions">
@@ -56,6 +59,7 @@
             </visibleWhen>
          </command>
       </menuContribution>
+-->
       <menuContribution
             allPopups="false"
             locationURI="menu:org.eclipse.ui.main.menu">
@@ -68,12 +72,14 @@
                   label="Generate diagrams from txtUML"
                   style="push">
             </command>
+<!--
             <command
                   commandId="hu.elte.txtuml.export.papyrus.WizardCommand"
                   icon="icons/uml_papyrus.png"
                   label="Generate diagrams from UML"
                   style="push">
             </command>
+-->
             <separator
                   name="separator"
                   visible="true">

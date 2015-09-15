@@ -2,9 +2,9 @@ package hu.elte.txtuml.layout.export.interfaces;
 
 import java.util.Map;
 
+import hu.elte.txtuml.api.layout.elements.LayoutLinkGroup;
 import hu.elte.txtuml.layout.export.elementinfo.LinkGroupInfo;
 import hu.elte.txtuml.layout.export.impl.LinkGroupMapImpl;
-import hu.elte.txtuml.layout.lang.elements.LayoutLinkGroup;
 
 /**
  * 

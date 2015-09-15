@@ -18,13 +18,22 @@ import org.eclipse.ui.IEditorPart;
 /**
  * Controls the Papyrus Model
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public abstract class AbstractPapyrusModelManager {
 
 	
+	/**
+	 * TODO add doc
+	 */
 	protected final static String diagramType_CD = "PapyrusUMLClassDiagram";
+	/**
+	 * TODO add doc
+	 */
 	protected final static String diagramType_SMD = "PapyrusUMLStateMachineDiagram";
+	/**
+	 * TODO add doc
+	 */
 	protected final static String diagramType_AD = "PapyrusUMLActivityDiagram";
 	
 	/**

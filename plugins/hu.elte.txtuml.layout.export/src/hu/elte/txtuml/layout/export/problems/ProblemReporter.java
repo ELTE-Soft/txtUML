@@ -2,12 +2,12 @@ package hu.elte.txtuml.layout.export.problems;
 
 import java.lang.annotation.Annotation;
 
+import hu.elte.txtuml.api.layout.LinkEnd;
+import hu.elte.txtuml.api.layout.elements.LayoutAbstractLink;
+import hu.elte.txtuml.api.layout.elements.LayoutAbstractNode;
+import hu.elte.txtuml.api.layout.elements.LayoutElement;
+import hu.elte.txtuml.api.layout.elements.LayoutNode;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
-import hu.elte.txtuml.layout.lang.LinkEnd;
-import hu.elte.txtuml.layout.lang.elements.LayoutAbstractLink;
-import hu.elte.txtuml.layout.lang.elements.LayoutAbstractNode;
-import hu.elte.txtuml.layout.lang.elements.LayoutElement;
-import hu.elte.txtuml.layout.lang.elements.LayoutNode;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 public class ProblemReporter {

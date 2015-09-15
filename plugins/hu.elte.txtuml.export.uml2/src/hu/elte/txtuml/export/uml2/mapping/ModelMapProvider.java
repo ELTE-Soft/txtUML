@@ -1,6 +1,5 @@
 package hu.elte.txtuml.export.uml2.mapping;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -21,9 +20,11 @@ import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
  * @see hu.elte.txtuml.export.uml2.mapping.ModelMapCollector
  */
 public class ModelMapProvider {
+	public static final String MAPPING_FILE_EXTENSION = ModelMapUtils.MAPPING_FILE_EXTENSION;
+
 	private Map<String,String> map;
 	private Resource resource;
-	private static final String INVALID_MAPPING_FILE_CONTENT = "Mapping file content is ivalid.";
+	private static final String INVALID_MAPPING_FILE_CONTENT = "Mapping file content is invalid.";
 	private static final String CANNOT_LOAD_MODEL = "UML model cannot be loaded.";
 
 	/**
@@ -82,6 +83,16 @@ public class ModelMapProvider {
 	 */
 	public EObject get(Class<?> clazz) {
 		String className = clazz.getCanonicalName();
+		return getByName(className);
+	}
+	
+	/**
+	 * Maps a Java class name representing a txtUML model element
+	 * to the corresponding EMF-UML2 model element.  
+	 * @param className Java class canonical name of the txtUML model element.
+	 * @return The corresponding EObject of the EMF-UML2 model (or null if such cannot be found).
+	 */
+	public EObject getByName(String className) {
 		String uriFragment = map.get(className);
 		if(uriFragment == null || resource == null) {
 			return null;

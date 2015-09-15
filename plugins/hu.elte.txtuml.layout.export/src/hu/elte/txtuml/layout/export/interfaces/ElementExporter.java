@@ -2,20 +2,20 @@ package hu.elte.txtuml.layout.export.interfaces;
 
 import java.util.Set;
 
+import hu.elte.txtuml.api.layout.elements.LayoutAbstractNode;
+import hu.elte.txtuml.api.layout.elements.LayoutElement;
+import hu.elte.txtuml.api.layout.elements.LayoutGroup;
+import hu.elte.txtuml.api.layout.elements.LayoutLink;
+import hu.elte.txtuml.api.layout.elements.LayoutLinkGroup;
+import hu.elte.txtuml.api.layout.elements.LayoutNode;
+import hu.elte.txtuml.api.layout.elements.LayoutNodeGroup;
+import hu.elte.txtuml.api.layout.elements.LayoutNonGroupElement;
+import hu.elte.txtuml.api.layout.elements.LayoutPhantomNode;
 import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.elementinfo.ElementInfo;
 import hu.elte.txtuml.layout.export.elementinfo.NodeInfo;
 import hu.elte.txtuml.layout.export.impl.ElementExporterImpl;
 import hu.elte.txtuml.layout.export.problems.ProblemReporter;
-import hu.elte.txtuml.layout.lang.elements.LayoutAbstractNode;
-import hu.elte.txtuml.layout.lang.elements.LayoutElement;
-import hu.elte.txtuml.layout.lang.elements.LayoutGroup;
-import hu.elte.txtuml.layout.lang.elements.LayoutLink;
-import hu.elte.txtuml.layout.lang.elements.LayoutLinkGroup;
-import hu.elte.txtuml.layout.lang.elements.LayoutNode;
-import hu.elte.txtuml.layout.lang.elements.LayoutNodeGroup;
-import hu.elte.txtuml.layout.lang.elements.LayoutNonGroupElement;
-import hu.elte.txtuml.layout.lang.elements.LayoutPhantomNode;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 

@@ -1,9 +1,9 @@
 package hu.elte.txtuml.layout.export.elementinfo.impl;
 
+import hu.elte.txtuml.api.layout.elements.LayoutElement;
 import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.elementinfo.ElementType;
 import hu.elte.txtuml.layout.export.elementinfo.NodeInfo;
-import hu.elte.txtuml.layout.lang.elements.LayoutElement;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 /**

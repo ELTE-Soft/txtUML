@@ -1,8 +1,8 @@
 package hu.elte.txtuml.export.uml2.transform.aspects;
 
-import hu.elte.txtuml.api.ModelElement;
-import hu.elte.txtuml.api.Action;
-import hu.elte.txtuml.api.Collection;
+import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.Collection;
+import hu.elte.txtuml.api.model.ModelElement;
 import hu.elte.txtuml.export.uml2.utils.ImportWarningProvider;
 
 import java.lang.reflect.Field;

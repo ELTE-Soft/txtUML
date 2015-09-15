@@ -2,7 +2,6 @@ package hu.elte.txtuml.export.papyrus.papyrusmodelmanagers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
@@ -30,7 +29,7 @@ import org.eclipse.uml2.uml.StateMachine;
 /**
  * 
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 

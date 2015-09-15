@@ -1,12 +1,12 @@
 package hu.elte.txtuml.export.uml2.transform.aspects;
 
-import hu.elte.txtuml.api.ExternalClass;
-import hu.elte.txtuml.api.ModelBool;
-import hu.elte.txtuml.api.ModelClass;
-import hu.elte.txtuml.api.ModelInt;
-import hu.elte.txtuml.api.ModelString;
-import hu.elte.txtuml.api.Signal;
-import hu.elte.txtuml.api.StateMachine.Transition;
+import hu.elte.txtuml.api.model.ExternalClass;
+import hu.elte.txtuml.api.model.ModelBool;
+import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.ModelInt;
+import hu.elte.txtuml.api.model.ModelString;
+import hu.elte.txtuml.api.model.Signal;
+import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.export.uml2.transform.backend.DummyInstanceCreator;
 import hu.elte.txtuml.export.uml2.transform.InstructionImporter;
 

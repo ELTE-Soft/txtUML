@@ -24,7 +24,7 @@ import org.eclipse.ui.progress.IProgressService;
 /**
  * Wizard for visualization of txtUML models
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public class TxtUMLVisuzalizeWizard extends Wizard {
 
@@ -68,11 +68,9 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		String txtUMLModelName = selectTxtUmlPage.getTxtUmlModelClass();
 		List<String> txtUMLLayout = selectTxtUmlPage.getTxtUmlLayout();
 		String txtUMLProjectName = selectTxtUmlPage.getTxtUmlProject();
-		String folder = PreferencesManager
+		String generatedFolderName = PreferencesManager
 				.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
 
-		String projectName = txtUMLModelName;
-		
 		PreferencesManager.setValue(
 				PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT,
 				txtUMLProjectName);
@@ -86,77 +84,99 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 				txtUMLLayout);
 		*/
 		try {
-			IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
-			
-			progressService.runInUI(
-					progressService,
-				      new IRunnableWithProgress() {
-				         public void run(IProgressMonitor monitor) throws InterruptedException {
-				        	monitor.beginTask("Visualization", 100);
-				        	
-				        	TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName, projectName,
-				        			folder, txtUMLModelName, txtUMLLayout);
-				     		
-				        	monitor.subTask("Exporting txtUML Model to UML2 model...");
-				        	try{
-				        		ExportUtils.exportTxtUMLModelToUML2(txtUMLProjectName, txtUMLModelName,
-				        				txtUMLProjectName+"/"+folder);
-				        		monitor.worked(10);
-				    		} catch (Exception e) {
-				    			Dialogs.errorMsgb("txtUML export Error",
-				    					e.getClass() + ":"+System.lineSeparator() + e.getMessage(), e);
-				    			monitor.done();
-				    			throw new InterruptedException();
-				    		}
-				     		
-				     		
-				     		monitor.subTask("Generating txtUML layout description...");
-				     		TxtUMLLayoutDescriptor layoutDesriptor = null;
-				     		try{
-				     			layoutDesriptor = exporter.exportTxtUMLLayout();
-				     			
-				     			List<String> warnings = new LinkedList<String>();
-				     			for( DiagramExportationReport report : layoutDesriptor.getReports()){
-				     				warnings.addAll(report.getWarnings());
-				     			}
-				     			
-				     			layoutDesriptor.generateSMDs = selectTxtUmlPage.getGenerateSMDs();
-				     			
-				     			if(warnings.size() != 0){
-				     				StringBuilder warningMessages = new StringBuilder("Warnings:"+System.lineSeparator());
-				     				warningMessages.append(String.join(System.lineSeparator(), warnings));
-				     				warningMessages.append(System.lineSeparator()+System.lineSeparator()+"Do you want to continue?");
-				     				
-				     				if(!Dialogs.WarningConfirm("Warnings about layout description", warningMessages.toString())){
-					     				throw new InterruptedException();
-					     			}
-				     			}
-				     			
-				     			monitor.worked(5);
-				     		}catch(Exception e){
-				     			if(e instanceof InterruptedException){
-				     				throw (InterruptedException) e;
-				     			}else{
-					     			Dialogs.errorMsgb("txtUML layout export Error",
-					    					e.getClass() + ":"+System.lineSeparator() + e.getMessage(), e);
-					    			monitor.done();
-					    			throw new InterruptedException();
-				     			}
-				     		}
-				     		
-				     		try{
-					     		PapyrusVisualizer pv = exporter.createVisualizer(layoutDesriptor);
-					     		pv.registerPayprusModelManager(TxtUMLPapyrusModelManager.class);
-					            pv.run(new SubProgressMonitor(monitor,85));
-				     		}catch(Exception e){
-				     			Dialogs.errorMsgb("txtUML visualization Error", e.getClass()
-				    					+ ":"+System.lineSeparator() + e.getMessage(), e);
-				     			monitor.done();
-				     			throw new InterruptedException();
-				     		}
-				         }
-				      },
-				      ResourcesPlugin.getWorkspace().getRoot());
+			IProgressService progressService = PlatformUI.getWorkbench()
+					.getProgressService();
+
+			progressService.runInUI(progressService,
+					new IRunnableWithProgress() {
+						public void run(IProgressMonitor monitor)
+								throws InterruptedException {
+							monitor.beginTask("Visualization", 100);
+
+							TxtUMLExporter exporter = new TxtUMLExporter(
+									txtUMLProjectName, generatedFolderName,
+									txtUMLModelName, txtUMLLayout);
+
+							monitor.subTask("Exporting txtUML Model to UML2 model...");
+							try {
+								ExportUtils.exportTxtUMLModelToUML2(
+										txtUMLProjectName, txtUMLModelName,
+										txtUMLProjectName + "/" + generatedFolderName);
+								monitor.worked(10);
+							} catch (Exception e) {
+								Dialogs.errorMsgb(
+										"txtUML export Error",
+										e.getClass() + ":"
+												+ System.lineSeparator()
+												+ e.getMessage(), e);
+								monitor.done();
+								throw new InterruptedException();
+							}
+
+							monitor.subTask("Generating txtUML layout description...");
+							TxtUMLLayoutDescriptor layoutDescriptor = null;
+							try {
+								layoutDescriptor = exporter.exportTxtUMLLayout();
+
+								List<String> warnings = new LinkedList<String>();
+								for (DiagramExportationReport report : layoutDescriptor
+										.getReports()) {
+									warnings.addAll(report.getWarnings());
+								}
+
+								layoutDescriptor.generateSMDs = selectTxtUmlPage
+										.getGenerateSMDs();
+
+								if (warnings.size() != 0) {
+									StringBuilder warningMessages = new StringBuilder(
+											"Warnings:"
+													+ System.lineSeparator());
+									warningMessages.append(String.join(
+											System.lineSeparator(), warnings));
+									warningMessages.append(System
+											.lineSeparator()
+											+ System.lineSeparator()
+											+ "Do you want to continue?");
+
+									if (!Dialogs
+											.WarningConfirm(
+													"Warnings about layout description",
+													warningMessages.toString())) {
+										throw new InterruptedException();
+									}
+								}
+
+								monitor.worked(5);
+							} catch (Exception e) {
+								if (e instanceof InterruptedException) {
+									throw (InterruptedException) e;
+								} else {
+									Dialogs.errorMsgb(
+											"txtUML layout export Error",
+											e.getClass() + ":"
+													+ System.lineSeparator()
+													+ e.getMessage(), e);
+									monitor.done();
+									throw new InterruptedException();
+								}
+							}
+
+							try {
+								PapyrusVisualizer pv = exporter
+										.createVisualizer(layoutDescriptor);
+								pv.registerPayprusModelManager(TxtUMLPapyrusModelManager.class);
+								pv.run(new SubProgressMonitor(monitor, 85));
+							} catch (Exception e) {
+								Dialogs.errorMsgb(
+										"txtUML visualization Error",
+										e.getClass() + ":"
+												+ System.lineSeparator()
+												+ e.getMessage(), e);
+								monitor.done();
+								throw new InterruptedException();
+							}
+						}
+					}, ResourcesPlugin.getWorkspace().getRoot());
 			return true;
 		} catch (InvocationTargetException | InterruptedException e) {
 			return false;

@@ -112,7 +112,6 @@ public class EdgeWeightedDirectedCycle
 	}
 	
 	// certify that digraph is either acyclic or has a directed cycle
-	@SuppressWarnings("null")
 	private boolean check()
 	{
 		

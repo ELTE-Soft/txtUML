@@ -27,9 +27,9 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
  * @see IWorkbenchWindowActionDelegate
  */
 public class PapyrusVisualizer {
-	private String Projectname;
-	private String Modelname;
-	private String SourceUMLPath;
+	private String projectName;
+	private String modelName;
+	private String sourceUMLPath;
 	private AbstractPapyrusModelManager papyrusModelManager;
 	private Object layoutDescriptor;
 	
@@ -42,9 +42,9 @@ public class PapyrusVisualizer {
 	 */
 	public PapyrusVisualizer(String projectName, String modelName,
 			String sourceUMLpath, Object layoutDescripton) {
-		this.Projectname = projectName;
-		this.Modelname = modelName;
-		this.SourceUMLPath = sourceUMLpath;
+		this.projectName = projectName;
+		this.modelName = modelName;
+		this.sourceUMLPath = sourceUMLpath;
 		this.layoutDescriptor = layoutDescripton;
 	}
 	
@@ -67,7 +67,7 @@ public class PapyrusVisualizer {
 		monitor.beginTask("Visualization", 100);
 		
 		monitor.subTask("Creating new Papyrus project...");
-		IProject project = ProjectUtils.createProject(Projectname);
+		IProject project = ProjectUtils.createProject(projectName);
 		ProjectUtils.openProject(project);
 		monitor.worked(20);
 		
@@ -94,10 +94,10 @@ public class PapyrusVisualizer {
 	 * @throws ModelMultiException - If the loading of existing model fails
 	 * @throws ServiceException 
 	 */
-	private void createAndOpenPapyrusModel(IProgressMonitor monitor) throws ModelMultiException, ServiceException{
+	private void createAndOpenPapyrusModel(IProgressMonitor monitor) throws ModelMultiException, ServiceException {
 		monitor.beginTask("Generating Papyrus Model", 100);
-		PapyrusModelCreator papyrusModelCreator = new PapyrusModelCreator(Projectname+"/"+Modelname);
-		papyrusModelCreator.setUpUML(SourceUMLPath);
+		PapyrusModelCreator papyrusModelCreator = new PapyrusModelCreator(projectName + "/" + modelName);
+		papyrusModelCreator.setUpUML(sourceUMLPath);
 		if(!papyrusModelCreator.diExists()){
 			
 			monitor.subTask("Generating Papyrus model...");

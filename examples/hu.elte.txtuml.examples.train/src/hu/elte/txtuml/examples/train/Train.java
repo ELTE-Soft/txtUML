@@ -1,6 +1,8 @@
 package hu.elte.txtuml.examples.train;
 
-import hu.elte.txtuml.api.*;
+import hu.elte.txtuml.api.layout.Diagram;
+import hu.elte.txtuml.api.layout.statements.Diamond;
+import hu.elte.txtuml.api.model.*;
 import hu.elte.txtuml.examples.train.TrainModel.*;
 
 class TrainModel extends Model{
@@ -255,6 +257,14 @@ class TrainTester extends Thread {
 		} catch (InterruptedException e) {
 		}
 	}
+}
+
+class TrainDiagram extends Diagram {
+	class Phantom01 extends Phantom{}
+
+	@Diamond(bottom = Lamp.class, left = Engine.class,
+			right = Gearbox.class, top = Phantom01.class)
+	class TrainLayout extends Layout {}
 }
 
 public class Train {

@@ -1,7 +1,6 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
-import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.algorithms.LayoutVisualize;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
@@ -28,7 +27,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 
 /**
  * The instance of this class handles the layout algorithm
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public class LayoutVisualizerManager {
 	private Set<RectangleObject> objects;
@@ -38,6 +37,7 @@ public class LayoutVisualizerManager {
 	
 	/**
 	 * The Constructor
+	 * @param report - DiagramExportationReport
 	 * @param txtUmlRegistry - The TxtUMLElementsFinder that connects the model elements with txtUML names  
 	 */
 	public LayoutVisualizerManager(DiagramExportationReport report) {

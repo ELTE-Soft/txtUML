@@ -1,6 +1,6 @@
 package hu.elte.txtuml.export.uml2.utils;
 
-import hu.elte.txtuml.api.assocends.Multiplicity;
+import hu.elte.txtuml.api.model.assocends.Multiplicity;
 
 public class MultiplicityProvider {
 

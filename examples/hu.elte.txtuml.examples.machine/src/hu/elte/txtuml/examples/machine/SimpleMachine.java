@@ -1,6 +1,8 @@
 package hu.elte.txtuml.examples.machine;
 
-import hu.elte.txtuml.api.*;
+import hu.elte.txtuml.api.layout.Diagram;
+import hu.elte.txtuml.api.layout.statements.Right;
+import hu.elte.txtuml.api.model.*;
 import hu.elte.txtuml.examples.machine.MachineModel.*;
 
 class MachineModel extends Model {
@@ -203,6 +205,11 @@ class MachineTester {
 		ModelExecutor.shutdown();
 	}
 
+}
+
+class MachineDiagram extends Diagram {
+	@Right(from = Machine.class, val = User.class)
+	class MachineLayout extends Layout {}
 }
 
 public class SimpleMachine {
