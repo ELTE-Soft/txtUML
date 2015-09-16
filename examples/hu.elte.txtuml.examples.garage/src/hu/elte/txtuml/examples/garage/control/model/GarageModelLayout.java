@@ -1,11 +1,11 @@
 package hu.elte.txtuml.examples.garage.control.model;
 
 import hu.elte.txtuml.examples.garage.control.model.GarageModel.*;
-import hu.elte.txtuml.layout.lang.Diagram;
-import hu.elte.txtuml.layout.lang.statements.*;
+import hu.elte.txtuml.api.layout.Diagram;
+import hu.elte.txtuml.api.layout.*;
 
-class GarageDiagram extends Diagram
-{
+class GarageDiagram extends Diagram {
+
 	/*@Contains({RemoteControlButtonPressed.class, MotionSensorActivated.class,
 		AlarmSensorActivated.class, DoorReachedTop.class, DoorReachedBottom.class,
 		KeyPress.class, StarPressed.class, HashPressed.class})

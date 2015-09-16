@@ -1,7 +1,10 @@
 Bundle-SymbolicName: hu.elte.txtuml.examples.printer
 Bundle-Version: 0.1.1.qualifier
 Bundle-Name: hu.elte.txtuml.examples.printer
-Require-Bundle:  hu.elte.txtuml.api,
+Require-Bundle: hu.elte.txtuml.api.model,
+ hu.elte.txtuml.api.layout,
+ hu.elte.txtuml.api.stdlib,
+ hu.elte.txtuml.api.diagnostics,
  hu.elte.txtuml.export.papyrus,
  hu.elte.txtuml.export.uml2,
  hu.elte.txtuml.layout.export,

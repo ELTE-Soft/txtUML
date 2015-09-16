@@ -1,10 +1,26 @@
 package hu.elte.txtuml.examples.printer;
 
+import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.Association;
+import hu.elte.txtuml.api.model.From;
+import hu.elte.txtuml.api.model.Model;
+import hu.elte.txtuml.api.model.ModelBool;
+import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.ModelExecutor;
+import hu.elte.txtuml.api.model.ModelInt;
+import hu.elte.txtuml.api.model.Signal;
+import hu.elte.txtuml.api.model.To;
+import hu.elte.txtuml.api.model.Trigger;
+import hu.elte.txtuml.examples.printer.PrinterModel.Human;
+import hu.elte.txtuml.examples.printer.PrinterModel.PrinterBackend;
+import hu.elte.txtuml.examples.printer.PrinterModel.PrinterFrontend;
+import hu.elte.txtuml.examples.printer.PrinterModel.PrinterSystem;
+import hu.elte.txtuml.examples.printer.PrinterModel.RestockPaper;
+import hu.elte.txtuml.examples.printer.PrinterModel.Usage;
+import hu.elte.txtuml.examples.printer.PrinterModel.WantToPrint;
+
 import java.util.LinkedList;
 import java.util.Queue;
-
-import hu.elte.txtuml.api.*;
-import hu.elte.txtuml.examples.printer.PrinterModel.*;
 
 class PrinterModel extends Model
 {

@@ -1,13 +1,28 @@
 package hu.elte.txtuml.examples.producer_consumer;
 
+import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.Association;
+import hu.elte.txtuml.api.model.From;
+import hu.elte.txtuml.api.model.Model;
+import hu.elte.txtuml.api.model.ModelBool;
+import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.ModelExecutor;
+import hu.elte.txtuml.api.model.ModelInt;
+import hu.elte.txtuml.api.model.Signal;
+import hu.elte.txtuml.api.model.To;
+import hu.elte.txtuml.api.model.Trigger;
+import hu.elte.txtuml.examples.producer_consumer.Producer_consumerModel.Consumation;
+import hu.elte.txtuml.examples.producer_consumer.Producer_consumerModel.ConsumeJob;
+import hu.elte.txtuml.examples.producer_consumer.Producer_consumerModel.Consumer;
+import hu.elte.txtuml.examples.producer_consumer.Producer_consumerModel.ProduceJob;
+import hu.elte.txtuml.examples.producer_consumer.Producer_consumerModel.Producer;
+import hu.elte.txtuml.examples.producer_consumer.Producer_consumerModel.Production;
+import hu.elte.txtuml.examples.producer_consumer.Producer_consumerModel.Storage;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import hu.elte.txtuml.api.*;
-import hu.elte.txtuml.examples.producer_consumer.Producer_consumerModel.*;
-
-class Producer_consumerModel extends Model
-{
+class Producer_consumerModel extends Model {
 	
 	// Classes
 	
@@ -22,13 +37,11 @@ class Producer_consumerModel extends Model
 		class Init extends Initial{}
 		
 		@From(Init.class) @To(ProduceItem.class) @Trigger(ProduceJob.class)
-		class Initialize extends Transition{}
+		class Initialize extends Transition {}
 		
-		class ProduceItem extends State
-		{
+		class ProduceItem extends State {
 			@Override
-			public void entry() 
-			{
+			public void entry() {
 				Storage store = Producer.this.assoc(Production.store.class).selectAny();
 				
 				Item it = Action.create(Item.class);

@@ -1,8 +1,10 @@
 package hu.elte.txtuml.examples.train;
 
-import hu.elte.txtuml.examples.train.TrainModel.*;
-import hu.elte.txtuml.layout.lang.Diagram;
-import hu.elte.txtuml.layout.lang.statements.*;
+import hu.elte.txtuml.api.layout.Diagram;
+import hu.elte.txtuml.api.layout.Diamond;
+import hu.elte.txtuml.examples.train.TrainModel.Engine;
+import hu.elte.txtuml.examples.train.TrainModel.Gearbox;
+import hu.elte.txtuml.examples.train.TrainModel.Lamp;
 
 class TrainDiagram extends Diagram
 {

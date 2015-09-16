@@ -1,8 +1,28 @@
 package hu.elte.txtuml.examples.microwave;
 
-import hu.elte.txtuml.api.*;
-import hu.elte.txtuml.examples.microwave.MicrowaveModel.*;
-import hu.elte.txtuml.stdlib.Timer;
+import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.Association;
+import hu.elte.txtuml.api.model.From;
+import hu.elte.txtuml.api.model.Model;
+import hu.elte.txtuml.api.model.ModelBool;
+import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.ModelExecutor;
+import hu.elte.txtuml.api.model.ModelInt;
+import hu.elte.txtuml.api.model.Signal;
+import hu.elte.txtuml.api.model.To;
+import hu.elte.txtuml.api.model.Trigger;
+import hu.elte.txtuml.api.stdlib.Timer;
+import hu.elte.txtuml.examples.microwave.MicrowaveModel.Close;
+import hu.elte.txtuml.examples.microwave.MicrowaveModel.Food;
+import hu.elte.txtuml.examples.microwave.MicrowaveModel.Get;
+import hu.elte.txtuml.examples.microwave.MicrowaveModel.Human;
+import hu.elte.txtuml.examples.microwave.MicrowaveModel.Open;
+import hu.elte.txtuml.examples.microwave.MicrowaveModel.Put;
+import hu.elte.txtuml.examples.microwave.MicrowaveModel.SetIntensity;
+import hu.elte.txtuml.examples.microwave.MicrowaveModel.SetTime;
+import hu.elte.txtuml.examples.microwave.MicrowaveModel.Start;
+import hu.elte.txtuml.examples.microwave.MicrowaveModel.Stop;
+import hu.elte.txtuml.examples.microwave.MicrowaveModel.Usage;
 
 class MicrowaveModel extends Model
 {

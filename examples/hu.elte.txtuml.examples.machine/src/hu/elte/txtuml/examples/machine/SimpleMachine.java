@@ -1,24 +1,23 @@
 package hu.elte.txtuml.examples.machine;
 
-import hu.elte.txtuml.api.Action;
-import hu.elte.txtuml.api.Association;
-import hu.elte.txtuml.api.From;
-import hu.elte.txtuml.api.Model;
-import hu.elte.txtuml.api.ModelBool;
-import hu.elte.txtuml.api.ModelClass;
-import hu.elte.txtuml.api.ModelExecutor;
-import hu.elte.txtuml.api.ModelInt;
-import hu.elte.txtuml.api.ModelString;
-import hu.elte.txtuml.api.Signal;
-import hu.elte.txtuml.api.To;
-import hu.elte.txtuml.api.Trigger;
+import hu.elte.txtuml.api.layout.Diagram;
+import hu.elte.txtuml.api.layout.Right;
+import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.Association;
+import hu.elte.txtuml.api.model.From;
+import hu.elte.txtuml.api.model.Model;
+import hu.elte.txtuml.api.model.ModelBool;
+import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.ModelExecutor;
+import hu.elte.txtuml.api.model.ModelInt;
+import hu.elte.txtuml.api.model.ModelString;
+import hu.elte.txtuml.api.model.Signal;
+import hu.elte.txtuml.api.model.To;
+import hu.elte.txtuml.api.model.Trigger;
 import hu.elte.txtuml.examples.machine.MachineModel.DoYourWork;
 import hu.elte.txtuml.examples.machine.MachineModel.Machine;
 import hu.elte.txtuml.examples.machine.MachineModel.Usage;
 import hu.elte.txtuml.examples.machine.MachineModel.User;
-import hu.elte.txtuml.layout.lang.Diagram;
-import hu.elte.txtuml.layout.lang.Diagram.Layout;
-import hu.elte.txtuml.layout.lang.statements.Right;
 
 class MachineModel extends Model {
 
@@ -225,11 +224,6 @@ class MachineTester {
 		ModelExecutor.shutdown();
 	}
 
-}
-
-class MachineDiagram extends Diagram {
-	@Right(from = Machine.class, val = User.class)
-	class MachineLayout extends Layout {}
 }
 
 public class SimpleMachine {
