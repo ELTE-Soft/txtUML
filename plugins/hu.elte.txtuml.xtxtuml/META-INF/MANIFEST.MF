@@ -1,0 +1,32 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: XtxtUML Runtime
+Bundle-Vendor: ELTE
+Bundle-Version: 0.1.1.qualifier
+Bundle-SymbolicName: hu.elte.txtuml.xtxtuml; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.xtext;visibility:=reexport,
+ org.eclipse.equinox.common;bundle-version="3.5.0",
+ org.eclipse.xtext.util,
+ org.eclipse.emf.ecore,
+ org.eclipse.emf.common,
+ org.eclipse.xtext.xbase.lib,
+ org.antlr.runtime,
+ org.eclipse.xtext.common.types,
+ org.objectweb.asm;bundle-version="[5.0.1,6.0.0)";resolution:=optional,
+ org.eclipse.xtext.xbase,
+ hu.elte.txtuml.xtxtuml.lib;bundle-version="0.1.1",
+ hu.elte.txtuml.api.model;bundle-version="0.1.1"
+Import-Package: org.apache.log4j
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: hu.elte.txtuml.xtxtuml,
+ hu.elte.txtuml.xtxtuml.services,
+ hu.elte.txtuml.xtxtuml.xtxtUML,
+ hu.elte.txtuml.xtxtuml.xtxtUML.impl,
+ hu.elte.txtuml.xtxtuml.xtxtUML.util,
+ hu.elte.txtuml.xtxtuml.serializer,
+ hu.elte.txtuml.xtxtuml.parser.antlr,
+ hu.elte.txtuml.xtxtuml.parser.antlr.internal,
+ hu.elte.txtuml.xtxtuml.validation,
+ hu.elte.txtuml.xtxtuml.formatting,
+ hu.elte.txtuml.xtxtuml.jvmmodel

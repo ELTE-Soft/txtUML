@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/hu.elte.txtuml.xtxtuml/src-gen" editDirectory="/hu.elte.txtuml.xtxtuml.edit/src"
+    editorDirectory="/hu.elte.txtuml.xtxtuml.editor/src" modelPluginID="hu.elte.txtuml.xtxtuml"
+    forceOverwrite="true" modelName="XtxtUML" updateClasspath="false" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    complianceLevel="6.0" copyrightFields="false" editPluginID="hu.elte.txtuml.xtxtuml.edit"
+    editorPluginID="hu.elte.txtuml.xtxtuml.editor" runtimeVersion="2.10" usedGenPackages="platform:/resource/org.eclipse.xtext.common.types/model/JavaVMTypes.genmodel#//types platform:/resource/org.eclipse.xtext.xbase/model/Xbase.genmodel#//xbase platform:/resource/org.eclipse.xtext.xbase/model/Xbase.genmodel#//xtype">
+  <genPackages prefix="XtxtUML" basePackage="hu.elte.txtuml.xtxtuml" disposableProviderFactory="true"
+      fileExtensions="txtuml,xtxtuml" ecorePackage="XtxtUML.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="XtxtUML.ecore#//TUStateType">
+      <genEnumLiterals ecoreEnumLiteral="XtxtUML.ecore#//TUStateType/PLAIN"/>
+      <genEnumLiterals ecoreEnumLiteral="XtxtUML.ecore#//TUStateType/INITIAL"/>
+      <genEnumLiterals ecoreEnumLiteral="XtxtUML.ecore#//TUStateType/CHOICE"/>
+      <genEnumLiterals ecoreEnumLiteral="XtxtUML.ecore#//TUStateType/COMPOSITE"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="XtxtUML.ecore#//TUVisibility">
+      <genEnumLiterals ecoreEnumLiteral="XtxtUML.ecore#//TUVisibility/PACKAGE"/>
+      <genEnumLiterals ecoreEnumLiteral="XtxtUML.ecore#//TUVisibility/PRIVATE"/>
+      <genEnumLiterals ecoreEnumLiteral="XtxtUML.ecore#//TUVisibility/PROTECTED"/>
+      <genEnumLiterals ecoreEnumLiteral="XtxtUML.ecore#//TUVisibility/PUBLIC"/>
+    </genEnums>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUFile">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUFile/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUFile/importSection"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUFile/elements"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUFileElement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUFileElement/name"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUModel">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUModel/elements"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUExecution">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUExecution/body"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUModelElement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUModelElement/name"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUSignal">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUSignal/attributes"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUClass">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUClass/superClass"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUClass/members"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUAssociation">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUAssociation/ends"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUSignalAttribute">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUSignalAttribute/visibility"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUSignalAttribute/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUSignalAttribute/name"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUClassMember"/>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUConstructor">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUConstructor/visibility"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUConstructor/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUConstructor/parameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUConstructor/body"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUAttributeOrOperationDeclarationPrefix">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUAttributeOrOperationDeclarationPrefix/visibility"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUAttributeOrOperationDeclarationPrefix/type"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUState">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUState/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUState/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUState/members"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUStateMember"/>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUEntryOrExitActivity">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUEntryOrExitActivity/entry"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUEntryOrExitActivity/exit"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUEntryOrExitActivity/body"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUTransition">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUTransition/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUTransition/members"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUTransitionMember"/>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUTransitionTrigger">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUTransitionTrigger/trigger"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUTransitionVertex">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUTransitionVertex/from"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUTransitionVertex/vertex"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUTransitionEffect">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUTransitionEffect/body"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUTransitionGuard">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUTransitionGuard/expression"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUAssociationEnd">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUAssociationEnd/visibility"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUAssociationEnd/notNavigable"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUAssociationEnd/multiplicity"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUAssociationEnd/endClass"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUAssociationEnd/name"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUMultiplicity">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUMultiplicity/lower"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUMultiplicity/upperSet"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUMultiplicity/upper"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUMultiplicity/upperInf"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUMultiplicity/any"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUAttribute">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUAttribute/prefix"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUAttribute/name"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUOperation">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUOperation/prefix"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUOperation/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUOperation/parameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUOperation/body"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//RAlfSendSignalExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//RAlfSendSignalExpression/signal"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//RAlfSendSignalExpression/target"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//RAlfDeleteObjectExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//RAlfDeleteObjectExpression/object"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//RAlfAssocNavExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//RAlfAssocNavExpression/left"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//RAlfAssocNavExpression/right"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

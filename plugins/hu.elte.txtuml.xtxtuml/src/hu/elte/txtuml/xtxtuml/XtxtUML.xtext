@@ -1,0 +1,525 @@
+grammar hu.elte.txtuml.xtxtuml.XtxtUML with org.eclipse.xtext.xbase.Xbase
+generate xtxtUML "http://www.elte.hu/txtuml/xtxtuml/XtxtUML"
+
+import "http://www.eclipse.org/xtext/common/JavaVMTypes" as types
+import "http://www.eclipse.org/xtext/xbase/Xbase" as xbase
+import "http://www.eclipse.org/xtext/xbase/Xtype" as xtype
+
+// Start rule
+
+TUFile :
+	('package' name=QualifiedName ';'?)?
+	importSection=XImportSection?
+	elements+=TUFileElement*
+;
+
+// File level
+
+TUFileElement :
+	TUModel | TUExecution
+;
+
+TUModel : 
+	'model' name=ValidID ('{'
+		elements+=TUModelElement*
+	'}' ';'? | ';')
+;
+
+TUExecution :
+	'execution' name=ValidID
+		body=XBlockExpression
+;
+
+// Model level
+
+TUModelElement :
+	TUSignal | TUClass | TUAssociation
+;
+
+TUSignal :
+	'signal' name=ValidID ('{'
+		attributes+=TUSignalAttribute*
+	'}' ';'? | ';')
+;
+
+TUClass : 
+	'class' name=ValidID ('extends' superClass=[TUClass|QualifiedName])? ('{'
+		members+=TUClassMember*
+	'}' ';'? | ';')
+;
+
+TUAssociation :
+	'association' name=ValidID '{'
+		ends+=TUAssociationEnd*
+	'}'
+;
+
+// Inner element level
+
+// Signal- and Class-related
+
+/*
+ * TODO replace with general TUAttribute
+ */
+TUSignalAttribute :
+	visibility=TUVisibility? type=JvmTypeReference name=ValidID ';'
+;
+
+/*
+ * TODO left-factoring is no longer necessary
+ */
+TUClassMember
+	: TUConstructor
+	| TUAttributeOrOperationDeclarationPrefix (
+		{TUAttribute.prefix=current} name=ValidID ';' |
+		{TUOperation.prefix=current} name=ValidID '(' (parameters+=FullJvmFormalParameter (',' parameters+=FullJvmFormalParameter)*)? ')'
+			body=XBlockExpression ';'?
+	  )
+	| TUState
+	| TUTransition
+;
+
+TUConstructor :
+	visibility=TUVisibility? name=ValidID '(' (parameters+=FullJvmFormalParameter (',' parameters+=FullJvmFormalParameter)*)? ')'
+		body=XBlockExpression ';'?
+;
+
+TUAttributeOrOperationDeclarationPrefix :
+	visibility=TUVisibility? type=JvmTypeReference
+;
+
+TUState :
+	type=TUStateType name=ValidID ('{'
+		members+=TUStateMember* 
+	'}' ';'? | ';')
+;
+
+enum TUStateType :
+	PLAIN = 'state' | INITIAL = 'initial' | CHOICE = 'choice' | COMPOSITE = 'composite'
+;
+
+TUStateMember :
+	TUState | TUEntryOrExitActivity
+;
+
+TUEntryOrExitActivity :
+	(entry?='entry' | exit?='exit')
+		body=XBlockExpression ';'?
+;
+
+TUTransition :
+	'transition' name=ValidID '{'
+		members+=TUTransitionMember*
+	'}' ';'?
+;
+
+TUTransitionMember :
+	TUTransitionTrigger | TUTransitionVertex | TUTransitionEffect | TUTransitionGuard
+;
+
+TUTransitionTrigger :
+	'trigger' trigger=[TUSignal|QualifiedName] ';'
+;
+
+TUTransitionVertex :
+	(from?='from' | 'to') vertex=[TUState|QualifiedName] ';'
+;
+
+TUTransitionEffect :
+	'effect' body=XBlockExpression ';'?
+;
+
+TUTransitionGuard :
+	'guard' '(' expression=XExpression ')' ';'?
+;
+
+// Association-related
+
+TUAssociationEnd :
+	visibility=TUVisibility? notNavigable?='hidden'?
+		multiplicity=TUMultiplicity endClass=[TUClass|QualifiedName] name=ValidID ';'
+;
+
+TUMultiplicity :
+	lower=INT (upperSet?='..' (upper=INT | upperInf?='*'))? | any?='*'
+;
+
+// Commons
+
+enum TUVisibility :
+	PACKAGE = "package" | PRIVATE = "private" | PROTECTED = "protected" | PUBLIC = "public"
+;
+
+// rAlf
+
+RAlfSendSignalExpression returns xbase::XExpression :
+	{RAlfSendSignalExpression}
+	'send' signal=XExpression 'to' target=XExpression
+;
+
+RAlfDeleteObjectExpression returns xbase::XExpression :
+	{RAlfDeleteObjectExpression}
+	'delete' object=XExpression
+;
+
+/*
+ * currently unused
+ */
+RAlfAssocNavExpression returns xbase::XExpression : 
+	XPrimaryExpression (=>({RAlfAssocNavExpression.left=current} '->') right=XPrimaryExpression)+
+;
+
+// Added rAlf-Xbase rules
+
+/*
+ * only for readibility reasons
+ */ 
+XRAlfStatement returns xbase::XExpression :
+	XRAlfStatementSemicolonNeeded | XRAlfStatementSemicolonNotNeeded
+;
+
+XRAlfStatementSemicolonNotNeeded returns xbase::XExpression
+	: XIfExpression
+	| XForLoopExpression
+	| XBasicForLoopExpression
+	| XWhileExpression
+	| XSwitchExpression
+	| XBlockExpression
+	| XVariableDeclaration // semicolon included in rule
+;
+
+XRAlfStatementSemicolonNeeded returns xbase::XExpression
+	: XReturnExpression
+	| XDoWhileExpression
+	| XExpression
+	| RAlfSendSignalExpression
+	| RAlfDeleteObjectExpression
+;
+
+XParenthesizedRAlfExpression returns xbase::XExpression :
+	'(' XExpression ')'
+;
+
+// Overridden Xbase rules
+
+/*
+ * Changes:
+ * <ul>
+ *     <li>
+ *         Removed:
+ *         <ul>
+ *             <li>XCollectionLiteral</li>
+ *             <li>XClosure</li>
+ *             <li>XTypeLiteral</li>
+ *         </ul>
+ *     </li>
+ * </ul>
+ */
+XLiteral returns xbase::XExpression
+	: XBooleanLiteral
+	| XNumberLiteral
+	| XNullLiteral
+	| XStringLiteral
+;
+
+/*
+ * Changes:
+ * <ul>
+ *     <li>
+ *         Removed: 
+ *         <ul>
+ *             <li>XBlockExpression</li>
+ *             <li>XSwitchExpression</li>
+ *             <li>XSynchronizedExpression</li>
+ *             <li>XIfExpression</li>
+ *             <li>XForLoopExpression</li>
+ *             <li>XBasicForLoopExpression</li>
+ *             <li>XWhileExpression</li>
+ *             <li>XDoWhileExpression</li>
+ *             <li>XThrowExpression</li>
+ *             <li>XReturnExpression</li>
+ *             <li>XTryCatchFinallyExpression</li>
+ *             <li>XParenthesizedExpression</li>
+ *         </ul>
+ *     </li>
+ *     <li>
+ *         Added:
+ *         <ul>
+ *             <li>XParenthesizedRAlfExpression</li>
+ *         </ul>
+ *     </li>
+ * </ul>
+ */
+XPrimaryExpression returns xbase::XExpression
+	: XConstructorCall
+	| XFeatureCall
+	| XLiteral
+	| XParenthesizedRAlfExpression
+;
+
+/*
+ * Changes:
+ * <ul>
+ *     <li>at most one "simple" type argument</li>
+ *     <li>parentheses are mandatory</li>
+ *     <li>no XShortClosure in arguments</li>
+ *     <li>no XClosure after the parameter list</li>
+ * </ul>
+ */
+XConstructorCall returns xbase::XExpression :
+	{xbase::XConstructorCall}
+	'new' constructor=[types::JvmConstructor|QualifiedName] (
+		=>'<' typeArguments+=JvmSimpleTypeReference '>'
+	)?
+	=>explicitConstructorCall?='(' (arguments+=XExpression (',' arguments+=XExpression)*)? ')'
+;
+
+/*
+ * Changes:
+ * <ul>
+ *     <li>restructured contained expressions</li>
+ * </ul>
+ */
+XBlockExpression returns xbase::XExpression : 
+	{xbase::XBlockExpression}
+	'{' 
+		(expressions+=XRAlfStatementSemicolonNotNeeded | expressions+=XRAlfStatementSemicolonNeeded ';' )*
+	'}'
+;
+
+/* 
+ * Changes:
+ * <ul>
+ *     <li>predicate is an XExpression instead of XExpression</li>
+ *     <li>body is an XBlockExpression instead of XExpression</li>
+ * </ul>
+ */
+XWhileExpression returns xbase::XExpression :
+	{xbase::XWhileExpression}
+	'while' '(' predicate=XExpression ')'
+		body=XBlockExpression
+;
+
+/* 
+ * Changes:
+ * <ul>
+ *     <li>predicate is an XExpression instead of XExpression</li>
+ *     <li>body is an XBlockExpression instead of XExpression</li>
+ * </ul>
+ */
+XDoWhileExpression returns xbase::XExpression :
+	{xbase::XDoWhileExpression}
+	'do'
+		body=XBlockExpression
+	'while' '(' predicate=XExpression ')'
+;
+
+/*
+ * Changes:
+ * <ul>
+ *     <li>no closures after parentheses</li>
+ *     <li>no type parameters</li>
+ *     <li>XExpression -> XExpression</li>
+ * </ul>
+ */
+XFeatureCall returns xbase::XExpression :
+	{xbase::XFeatureCall}
+	feature=[types::JvmIdentifiableElement|IdOrSuper] (
+		=>explicitOperationCall?='(' (
+			  featureCallArguments+=XShortClosure
+			| featureCallArguments+=XExpression (',' featureCallArguments+=XExpression)*
+		)? ')'
+	)?
+;
+
+/*
+ * Changes:
+ * <ul>
+ *     <li>XBlockExpression is mandatory, except for an "else if" construct</li>
+ *     <li>XExpression -> XExpression</li>
+ * </ul>
+ * 
+ */
+XIfExpression returns xbase::XExpression :
+	{xbase::XIfExpression}
+	'if' '(' if=XExpression ')'
+		then=XBlockExpression
+	(=>'else' else=(XIfExpression | XBlockExpression))?
+;
+
+/*
+ * Changes:
+ * <ul>
+ *     <li>'in' instead of ':'</li>
+ *     <li>JvmFormalParameter -> FullJvmFormalParameter (type is mandatory)</li>
+ *     <li>XBlockExpression is mandatory</li>
+ *     <li>XExpression -> XExpression</li>
+ * </ul>
+ */
+XForLoopExpression returns xbase::XExpression :
+	=>({xbase::XForLoopExpression}
+	'for' '(' declaredParam=FullJvmFormalParameter 'in') forExpression=XExpression ')'
+		eachExpression=XBlockExpression
+;
+
+/*
+ * Changes:
+ * <ul>
+ *     <li>no variable declaration allowed</li>
+ *     <li>parentheses are mandatory</li>
+ *     <li>XExpression -> XExpression</li>
+ *     <li>default has to be a block</li>
+ * </ul>
+ */
+XSwitchExpression returns xbase::XExpression :
+	{xbase::XSwitchExpression}
+	'switch' '(' switch=XExpression ')' '{'
+		cases+=XCasePart*
+		('default' ':' default=XBlockExpression)?
+	'}'
+;
+
+/*
+ * Changes:
+ * <ul>
+ *     <li>removed type guards (thus 'case' is mandatory)</li>
+ *     <li>XExpression -> XExpression</li>
+ *     <li>then attribute can only be a block</li>
+ * </ul>
+ */
+XCasePart returns xbase::XCasePart :
+	{xbase::XCasePart}
+	'case' case=XExpression (':' then=XBlockExpression | fallThrough?=',')
+;
+
+/*
+ * Changes:
+ * <ul>
+ *     <li>only one init and update expression is allowed</li>
+ *     <li>changed Xbase expressions to corresponding RAlf-Xbase expressions</li>
+ *     <li>XBlockExpression is mandatory</li>
+ * </ul>
+ */
+XBasicForLoopExpression returns xbase::XBasicForLoopExpression : 
+	{xbase::XBasicForLoopExpression}
+	'for' '(' (initExpressions+=XExpression ';' | initExpressions+=XVariableDeclaration | ';') 
+		expression=XExpression? ';' (updateExpressions+=XExpression)? ')'
+			eachExpression=XBlockExpression
+;
+
+/*
+ * Changes:
+ * <ul>
+ *     <li>removed 'var' and 'val' keywords</li>
+ *     <li>type is mandatory</li>
+ *     <li>XExpression as initializiation</li>
+ * </ul>
+ */
+XVariableDeclaration returns xbase::XExpression :
+	=>({xbase::XVariableDeclaration} type=JvmTypeReference name=ValidID)
+		('=' right=XExpression)? writeable?=';'
+;
+
+/*
+ * Changes:
+ * <ul>
+ *     <li>only delegates to XAdditiveExpression</li>
+ * </ul>
+ */
+XOtherOperatorExpression returns xbase::XExpression :
+	XAdditiveExpression
+;
+
+/*
+ * Changes:
+ * <ul>
+ *     <li>XExpression -> XExpression</li>
+ * </ul>
+ */
+XReturnExpression returns xbase::XExpression :
+	{xbase::XReturnExpression}
+	'return' (->expression=XExpression)?
+;
+
+/*
+ * Changes:
+ * <ul>
+ *     <li>no nullsafe feature call keyword</li>
+ *     <li>no type arguments for features</li>
+ *     <li>no closure after parenthesis</li>
+ *     <li>XExpression -> XExpression in call arguments</li>
+ * </ul>
+ */
+XMemberFeatureCall returns xbase::XExpression :
+	XPrimaryExpression
+	(
+		=>(
+			{xbase::XAssignment.assignable=current} ('.' | explicitStatic?="::")
+			feature=[types::JvmIdentifiableElement|FeatureCallID] OpSingleAssign
+		)
+		value=XAssignment
+	| 
+		=>(
+			{xbase::XMemberFeatureCall.memberCallTarget=current} ("." | explicitStatic?="::")
+		) 
+		feature=[types::JvmIdentifiableElement|IdOrSuper] (
+			=>explicitOperationCall?='(' (
+				  memberCallArguments+=XShortClosure
+				| memberCallArguments+=XExpression (',' memberCallArguments+=XExpression)*
+			)? ')'
+		)?
+	)*
+;
+
+// New Xtype rules
+
+JvmSimpleTypeReference returns types::JvmParameterizedTypeReference :
+	{types::JvmParameterizedTypeReference} type=[types::JvmType|QualifiedName]
+;
+
+// Overridden Xtype rules
+
+/*
+ * Changes:
+ * <ul>
+ *     <li>
+ *         Removed:
+ *         <ul>
+ *             <li>JvmGenericArrayTypeReference</li>
+ * 	           <li>XFunctionTypeRef</li>
+ *         </ul>
+ *     </li>
+ *     <li>
+ *         Added:
+ *         <ul>
+ *             <li>JvmSimpleTypeReference</li>
+ *         </ul>
+ *     </li>
+ * </ul> 
+ */
+JvmTypeReference returns types::JvmTypeReference :
+	JvmParameterizedTypeReference | JvmSimpleTypeReference
+;
+
+/*
+ * Changes:
+ * <ul>
+ *     <li>exactly one "simple" type argument</li>
+ * </ul>
+ */
+JvmParameterizedTypeReference returns types::JvmParameterizedTypeReference :
+	=>(type=[types::JvmType|QualifiedName] '<') arguments+=JvmSimpleTypeReference '>'
+;
+
+/*
+ * Changes:
+ * <ul>
+ *     <li>removed extension imports</li>
+ * </ul>
+ */
+XImportDeclaration returns xtype::XImportDeclaration : 
+	'import' (
+		(static?='static' importedType=[types::JvmDeclaredType|QualifiedNameInStaticImport] (wildcard?='*' | memberName=ValidID)) 
+		| importedType=[types::JvmDeclaredType|QualifiedName] 
+		| importedNamespace=QualifiedNameWithWildcard) ';'?
+;
