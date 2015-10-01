@@ -9,10 +9,11 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import org.eclipse.xtext.ui.editor.outline.impl.DocumentRootNode
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionEffect
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionGuard
 
 /**
  * Customization of the default outline structure.
@@ -48,12 +49,16 @@ class XtxtUMLOutlineTreeProvider extends org.eclipse.xtext.ui.editor.outline.imp
 	def _isLeaf(TUEntryOrExitActivity act) {
 		true
 	}
-	
-	def _isLeaf(TUTransition trans) { // TODO refine
+
+	def _isLeaf(TUAssociationEnd assocEnd) {
 		true
 	}
-
-	def _isLeaf(TUAssociationEnd transEnd) {
+	
+	def _isLeaf(TUTransitionEffect effect) {
+		true
+	}
+	
+	def _isLeaf(TUTransitionGuard guard) {
 		true
 	}
 	

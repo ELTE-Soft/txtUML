@@ -2,10 +2,8 @@ package hu.elte.txtuml.api.stdlib;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.ExternalClass;
-import hu.elte.txtuml.api.model.ModelBool;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelExecutor;
-import hu.elte.txtuml.api.model.ModelInt;
 import hu.elte.txtuml.api.model.Signal;
 
 import java.util.concurrent.Executors;
@@ -18,10 +16,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * An external class which enhances the txtUML models with the ability of using
  * timed events.
  * <p>
- * By calling the {@link Timer#start(ModelClass, Signal, ModelInt) start}
- * method, a new delayed send operation can be started, which means that a
- * signal will be asynchronously sent to the a target model object after a
- * specified timeout.
+ * By calling the {@link Timer#start(ModelClass, Signal, int) start} method, a
+ * new delayed send operation can be started, which means that a signal will be
+ * asynchronously sent to the a target model object after a specified timeout.
  * <p>
  * When using timers, calling {@link Timer#shutdown} to shut down the model
  * executor is recommended instead of {@link ModelExecutor#shutdown} or
@@ -92,7 +89,7 @@ public class Timer extends ExternalClass {
 	 *         happens
 	 */
 	public static Handle start(ModelClass targetObj, Signal signal,
-			ModelInt millisecs) {
+			int millisecs) {
 		ModelExecutor.Settings.lockExecutionTimeMultiplier();
 		return new Handle(targetObj, signal, millisecs);
 	}
@@ -102,7 +99,7 @@ public class Timer extends ExternalClass {
 	 * {@link ModelExecutor#shutdown()} the moment when no actions are currently
 	 * scheduled. This means that all currently scheduled actions will be
 	 * performed, and also every other one that is scheduled while waiting for
-	 * the delay of other (previously shceduled) actions to end.
+	 * the delay of other (previously scheduled) actions to end.
 	 * <p>
 	 * Calling this method is recommended when using timers instead of methods
 	 * {@link ModelExecutor#shutdown} or {@link ModelExecutor#shutdownNow}.
@@ -133,16 +130,6 @@ public class Timer extends ExternalClass {
 		private ScheduledFuture<?> handle;
 
 		/**
-		 * The signal to send after the timeout.
-		 */
-		private final Signal signal;
-
-		/**
-		 * The target of the delayed send operation.
-		 */
-		private final ModelClass targetObj;
-
-		/**
 		 * An action of the send operation to be performed after the timeout.
 		 */
 		private final Runnable action;
@@ -157,9 +144,7 @@ public class Timer extends ExternalClass {
 		 * @param millisecs
 		 *            millisecs to wait before the timeout
 		 */
-		Handle(ModelClass obj, Signal s, ModelInt millisecs) {
-			this.signal = s;
-			this.targetObj = obj;
+		Handle(ModelClass targetObj, Signal signal, int millisecs) {
 			this.action = () -> {
 				Action.send(targetObj, signal);
 				int currentCount = scheduledEvents.decrementAndGet();
@@ -175,18 +160,9 @@ public class Timer extends ExternalClass {
 		 * @return the remaining delay in millisecs; zero or negative values
 		 *         indicate that the delay has already elapsed
 		 */
-		private long queryLong() {
+		public long query() {
 			return ModelExecutor.Settings.inExecutionTime(handle
 					.getDelay(TimeUnit.MILLISECONDS));
-		}
-
-		/**
-		 * @return a new <code>ModelInt</code> representing the remaining delay
-		 *         in millisecs; zero or negative values indicate that the delay
-		 *         has already elapsed
-		 */
-		public ModelInt query() {
-			return new ModelInt(queryLong());
 		}
 
 		/**
@@ -199,7 +175,7 @@ public class Timer extends ExternalClass {
 		 * @throws NullPointerException
 		 *             if <code>millisecs</code> is <code>null</code>
 		 */
-		public void reset(ModelInt millisecs) {
+		public void reset(long millisecs) {
 			boolean wasCancelled = handle.cancel(false);
 			if (wasCancelled) {
 				scheduledEvents.incrementAndGet();
@@ -217,27 +193,25 @@ public class Timer extends ExternalClass {
 		 * @throws NullPointerException
 		 *             if <code>millisecs</code> is <code>null</code>
 		 */
-		public void add(ModelInt millisecs) {
-			long delay = queryLong();
+		public void add(int millisecs) {
+			long delay = query();
 			if (delay < 0) {
 				delay = 0;
 			}
-			reset(new ModelInt(delay).add(millisecs));
+			reset(delay + millisecs);
 		}
 
 		/**
 		 * Cancels the timed event managed by this handle object.
 		 * 
-		 * @return a new <code>ModelBool</code> representing <code>true</code>
-		 *         if the cancel was successful, so the timed event managed by
-		 *         this handle was <i>not</i> yet cancelled or performed; a new
-		 *         <code>ModelBool</code> representing <code>false</code>
-		 *         otherwise
+		 * @return <code>true</code> if the cancel was successful, so the timed
+		 *         event managed by this handle was <i>not</i> yet cancelled or
+		 *         performed; <code>false</code> otherwise
 		 */
-		public ModelBool cancel() {
+		public boolean cancel() {
 			boolean cancelledNow = handle.cancel(false);
 			scheduledEvents.decrementAndGet();
-			return new ModelBool(cancelledNow);
+			return cancelledNow;
 		}
 
 		/**
@@ -247,12 +221,12 @@ public class Timer extends ExternalClass {
 		 * @param millisecs
 		 *            the delay in millisecs
 		 */
-		private void schedule(ModelInt millisecs) {
+		private void schedule(long millisecs) {
 			if (scheduler.isShutdown()) {
 				return;
 			}
-			handle = scheduler.schedule(action, ModelExecutor.Settings
-					.inExecutionTime(convertModelInt(millisecs)),
+			handle = scheduler.schedule(action,
+					ModelExecutor.Settings.inExecutionTime(millisecs),
 					TimeUnit.MILLISECONDS);
 		}
 	}

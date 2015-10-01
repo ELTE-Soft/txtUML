@@ -66,7 +66,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 	@Override
 	public boolean performFinish() {
 		String txtUMLModelName = selectTxtUmlPage.getTxtUmlModelClass();
-		List<String> txtUMLLayout = selectTxtUmlPage.getTxtUmlLayout();
+		String txtUMLLayout = selectTxtUmlPage.getTxtUmlLayout();
 		String txtUMLProjectName = selectTxtUmlPage.getTxtUmlProject();
 		String generatedFolderName = PreferencesManager
 				.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
@@ -77,12 +77,9 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		PreferencesManager.setValue(
 				PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL,
 				txtUMLModelName);
-		/*
-		 * TODO
 		PreferencesManager.setValue(
 				PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT,
 				txtUMLLayout);
-		*/
 		try {
 			IProgressService progressService = PlatformUI.getWorkbench()
 					.getProgressService();

@@ -3,7 +3,6 @@ package hu.elte.txtuml.api.model.tests.error.statemachine;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.Model;
-import hu.elte.txtuml.api.model.ModelBool;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.To;
@@ -51,8 +50,8 @@ public class TwoOrMoreElseFromChoiceTest extends TestsBase {
 			class T1 extends Transition {
 				
 				@Override
-				public ModelBool guard() {
-					return new ModelBool.Else();
+				public boolean guard() {
+					return Else();
 				}
 				
 			}
@@ -61,8 +60,8 @@ public class TwoOrMoreElseFromChoiceTest extends TestsBase {
 			class T2 extends Transition {
 				
 				@Override
-				public ModelBool guard() {
-					return new ModelBool.Else();
+				public boolean guard() {
+					return Else();
 				}
 				
 			}

@@ -43,14 +43,15 @@ import java.util.concurrent.atomic.AtomicLong;
  * <li><i>Be abstract:</i> disallowed</li>
  * <li><i>Generic parameters:</i> disallowed</li>
  * <li><i>Constructors:</i> allowed, only with parameters of types which are
- * subclasses of {@link ModelValue}</li>
+ * subclasses of <code>ModelClass</code> or primitives (including String)</li>
  * <li><i>Initialization blocks:</i> allowed, containing only simple assignments
  * to set the default values of its fields</li>
  * <li><i>Fields:</i> allowed, only of types which are subclasses of
- * {@link ModelValue}; they represent attributes of the model class</li>
+ * <code>ModelClass</code> or primitives (including String); they represent
+ * attributes of the model class</li>
  * <li><i>Methods:</i> allowed, only with parameters and return values of types
- * which are subclasses of {@link ModelValue}; they represent operations of the
- * model class</li>
+ * which are subclasses of <code>ModelClass</code> or primitives (including
+ * String); they represent operations of the model class</li>
  * <li><i>Nested interfaces:</i> disallowed</li>
  * <li><i>Nested classes:</i> allowed, only non-static and extending either
  * {@link StateMachine.Vertex} or {@link StateMachine.Transition}</li>
@@ -68,11 +69,11 @@ import java.util.concurrent.atomic.AtomicLong;
  * <code>
  * class Employee extends ModelClass {
  * 
- * 	ModelString name;
+ * 	String name;
  * 
- * 	ModelInt id;
+ * 	int id;
  * 
- * 	void work(ModelInt hours, ModelInt payment) {
+ * 	void work(int hours, int payment) {
  * 		{@literal //...}
  * 	}
  *  
@@ -90,7 +91,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author Gabor Ferenc Kovacs
  *
  */
-public class ModelClass extends Region implements ModelValue {
+public class ModelClass extends Region {
 
 	/**
 	 * The life cycle of a model object consists of steps represented by the
@@ -169,7 +170,7 @@ public class ModelClass extends Region implements ModelValue {
 	 * A static counter to give different identifiers to each created model
 	 * object instance.
 	 */
-	private static AtomicLong counter = new AtomicLong(0);
+	private static final AtomicLong counter = new AtomicLong(0);
 
 	/**
 	 * The current status of this model object.
@@ -221,7 +222,7 @@ public class ModelClass extends Region implements ModelValue {
 	 * @return the unique identifier of this model object
 	 */
 	@Override
-	public String getIdentifier() {
+	public final String getIdentifier() {
 		return "obj_" + identifier;
 	}
 
@@ -267,10 +268,10 @@ public class ModelClass extends Region implements ModelValue {
 		@SuppressWarnings("unchecked")
 		AE ret = (AE) associations.get(otherEnd);
 		if (ret == null) {
-			ret = InstanceCreator.createInstance(otherEnd);
+			ret = InstanceCreator.createInstanceWithGivenParams(otherEnd,
+					(Object) null);
 			associations.put(otherEnd, ret);
 		}
-		ret.setOwner(this);
 		return ret;
 	}
 
@@ -354,8 +355,7 @@ public class ModelClass extends Region implements ModelValue {
 			Class<AE> otherEnd, T object) {
 
 		AssociationEnd<?> actualOtherEnd = associations.get(otherEnd);
-		return actualOtherEnd == null ? false : actualOtherEnd.contains(object)
-				.getValue();
+		return actualOtherEnd == null ? false : actualOtherEnd.contains(object);
 	}
 
 	/**
@@ -397,6 +397,7 @@ public class ModelClass extends Region implements ModelValue {
 	 * association ends of this model object by calling the
 	 * {@link #initializeAllDefinedAssociationEnds} method.
 	 */
+	@Override
 	void start() {
 		if (status != Status.READY) {
 			return;
@@ -407,7 +408,7 @@ public class ModelClass extends Region implements ModelValue {
 			initializeAllDefinedAssociationEnds();
 		}
 
-		send(null); // to move from initial state
+		super.start();
 	}
 
 	/**
@@ -516,16 +517,6 @@ public class ModelClass extends Region implements ModelValue {
 	}
 
 	/**
-	 * Sends a signal to this object asynchronously.
-	 * 
-	 * @param signal
-	 *            the signal to send to this object
-	 */
-	void send(Signal signal) {
-		ModelExecutor.send(this, signal);
-	}
-
-	/**
 	 * Checks whether this model object is in {@link Status#DELETED DELETED}
 	 * status.
 	 * 
@@ -550,7 +541,7 @@ public class ModelClass extends Region implements ModelValue {
 			return true;
 		}
 		for (AssociationEnd<?> assocEnd : this.associations.values()) {
-			if (!assocEnd.isEmpty().getValue()) {
+			if (!assocEnd.isEmpty()) {
 				return false;
 			}
 		}

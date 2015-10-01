@@ -31,11 +31,10 @@ public class ModelMapCollector {
 
 	/**
 	 * Add a new pair of elements to the map.
-	 * @param clazz		The Java class of the txtUML model element.
+	 * @param className	Fully qualified name of the txtUML model element.
 	 * @param eObject	The EObject representing the same model element in the EMF-UML2 model.
 	 */
-	public void put(Class<?> clazz, EObject eObject) {
-		String className = clazz.getCanonicalName();
+	public void put(String className, EObject eObject) {
 		String uriFragment = eObject.eResource().getURIFragment(eObject);
 		map.put(className, uriFragment);
 	}

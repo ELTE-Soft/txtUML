@@ -18,13 +18,16 @@ import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
  */
 public final class ResourceSetFactory {
 
+	public ResourceSetFactory() {
+	}
+	
 	/**
 	 * Creates and initializes a resource set.
 	 * @return The created and initialized resource set.
 	 * 
 	 * @author Adam Ancsin
 	 */
-	public static ResourceSet createAndInitResourceSet()
+	public ResourceSet createAndInitResourceSet()
     {
     	ResourceSet resourceSet = new ResourceSetImpl();
      

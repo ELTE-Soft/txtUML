@@ -3,7 +3,6 @@ package hu.elte.txtuml.utils;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -16,7 +15,7 @@ import java.util.Set;
  */
 public final class MultiMap<K,V>
 {
-	HashMap<K, HashSet<V>> map = new HashMap<K, HashSet<V>>();
+	private final HashMap<K, HashSet<V>> map = new HashMap<K, HashSet<V>>();
 	
 	/**
 	 * Removes all of the mappings. The map will be empty after this call returns.
@@ -43,14 +42,12 @@ public final class MultiMap<K,V>
 	 * @return
 	 */
 	public boolean containsValue(V value) {
-		boolean contains = false;
-		Collection<HashSet<V>> sets = map.values();
-		Iterator<HashSet<V>> it = sets.iterator();
-		while(!contains && it.hasNext()){
-			HashSet<V> set = it.next();
-			contains = set.contains(value);
+		for (HashSet<V> set : map.values()) {
+			if (set.contains(value)) {
+				return true;
+			}
 		}
-		return contains;
+		return false;
 	}
 
 	/**
@@ -93,15 +90,12 @@ public final class MultiMap<K,V>
 	 * @param value - value to be associated with the specified key
 	 */
 	public void put(K key, V value) {
-		if(containsKey(key)){
-			HashSet<V> set = map.get(key);
-			set.add(value);
-		}else{
-			HashSet<V> set = new HashSet<V>();
-			set.add(value);
+		HashSet<V> set = map.get(key);
+		if (set == null) {
+			set = new HashSet<V>();
 			map.put(key, set);
 		}
-		
+		set.add(value);
 	}
 
 	/**
@@ -110,11 +104,13 @@ public final class MultiMap<K,V>
 	 * @param values - value to be associated with the specified key
 	 */
 	public void putAll(K key, Collection<V> values) {
-		for(V value : values){
-			put(key, value);
+		HashSet<V> set = map.get(key);
+		if (set == null) {
+			set = new HashSet<V>();
+			map.put(key, set);
 		}
+		values.forEach(set::add);
 	}
-
 
 	/**
 	 * Removes the mapping for a key from this map if it is present.
@@ -140,12 +136,9 @@ public final class MultiMap<K,V>
 	 * @param value - The value to be removed
 	 */
 	public void removeValue(V value) {
-		Collection<HashSet<V>> sets = map.values();
-		Iterator<HashSet<V>> it = sets.iterator();
-		while(it.hasNext()){
-			HashSet<V> set = it.next();
+		map.values().forEach(set -> {
 			set.remove(value);
-		}
+		});
 	}
 
 	/**

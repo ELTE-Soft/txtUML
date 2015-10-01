@@ -4,10 +4,8 @@ import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.Association;
 import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.Model;
-import hu.elte.txtuml.api.model.ModelBool;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelExecutor;
-import hu.elte.txtuml.api.model.ModelInt;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
@@ -30,9 +28,9 @@ class MicrowaveModel extends Model
 	// Classes
 	class Consumable extends ModelClass
 	{
-		ModelInt timeNeeded;
-		ModelInt timeToExplode;
-		ModelInt heatLevel;
+		int timeNeeded;
+		int timeToExplode;
+		int heatLevel;
 	}
 	
 	class Food extends Consumable
@@ -45,8 +43,8 @@ class MicrowaveModel extends Model
 	
 	class Microwave extends ModelClass
 	{
-		ModelInt intensity = new ModelInt(1);
-		ModelInt time = new ModelInt(0);
+		int intensity = 1;
+		int time = 0;
 		Consumable content;
 		
 		class Init extends Initial
@@ -59,8 +57,8 @@ class MicrowaveModel extends Model
 			public void entry()
 			{
 				Action.log("Microwave: enterring idle opened. Resetting values.");
-				intensity = new ModelInt(1);
-				time = new ModelInt(0);
+				intensity = 1;
+				time = 0;
 			}
 			
 			class Init extends Initial
@@ -90,9 +88,9 @@ class MicrowaveModel extends Model
 			class Initialize1 extends Transition
 			{
 				@Override
-				public ModelBool guard()
+				public boolean guard()
 				{
-					return new ModelBool(content != null);
+					return content != null;
 				}
 			}
 			
@@ -101,9 +99,9 @@ class MicrowaveModel extends Model
 			class Initialize2 extends Transition
 			{
 				@Override
-				public ModelBool guard()
+				public boolean guard()
 				{
-					return new ModelBool(content == null);
+					return content == null;
 				}
 			}
 			
@@ -169,9 +167,9 @@ class MicrowaveModel extends Model
 			class Initialize1 extends Transition
 			{
 				@Override
-				public ModelBool guard()
+				public boolean guard()
 				{
-					return new ModelBool(content != null);
+					return content != null;
 				}
 			}
 			
@@ -180,9 +178,9 @@ class MicrowaveModel extends Model
 			class Initialize2 extends Transition
 			{
 				@Override
-				public ModelBool guard()
+				public boolean guard()
 				{
-					return new ModelBool(content == null);
+					return content == null;
 				}
 			}
 			
@@ -244,13 +242,11 @@ class MicrowaveModel extends Model
 				@Override
 				public void entry()
 				{
-					time = time.subtract(new ModelInt(1));
-					content.heatLevel = content.heatLevel.add(intensity);
-					Action.log("Microwave: remaining time: " + time.toString()
-							+ " second(s).");
+					--time;
+					content.heatLevel += intensity;
+					Action.log("Microwave: remaining time: " + time + " second(s).");
 					
-					Timer.start(Microwave.this, new TimedOut(), new ModelInt(
-							1000));
+					Timer.start(Microwave.this, new TimedOut(), 1000);
 				}
 			}
 			
@@ -278,9 +274,9 @@ class MicrowaveModel extends Model
 			class Loop extends Transition
 			{
 				@Override
-				public ModelBool guard()
+				public boolean guard()
 				{
-					return time.isMore(new ModelInt(0));
+					return time > 0;
 				}
 				
 				@Override
@@ -296,9 +292,9 @@ class MicrowaveModel extends Model
 			class LoopQuit extends Transition
 			{
 				@Override
-				public ModelBool guard()
+				public boolean guard()
 				{
-					return time.isEqual(new ModelInt(0));
+					return time == 0;
 				}
 			}
 			
@@ -336,8 +332,8 @@ class MicrowaveModel extends Model
 			@Override
 			public void effect()
 			{
-				intensity = new ModelInt(1);
-				time = new ModelInt(0);
+				intensity = 1;
+				time = 0;
 			}
 		}
 		
@@ -349,8 +345,8 @@ class MicrowaveModel extends Model
 			@Override
 			public void effect()
 			{
-				intensity = new ModelInt(1);
-				time = new ModelInt(0);
+				intensity = 1;
+				time = 0;
 			}
 		}
 		
@@ -421,21 +417,21 @@ class MicrowaveModel extends Model
 	
 	static class SetIntensity extends Signal
 	{
-		ModelInt value;
+		int value;
 		
-		public SetIntensity(ModelInt v)
+		public SetIntensity(int value)
 		{
-			value = v;
+			this.value = value;
 		}
 	}
 	
 	static class SetTime extends Signal
 	{
-		ModelInt value;
+		int value;
 		
-		public SetTime(ModelInt v)
+		public SetTime(int value)
 		{
-			value = v;
+			this.value = value;
 		}
 	}
 	
@@ -502,12 +498,12 @@ class MicrowaveTester
 				case "setintensity":
 					System.out.println("  Intensity Level (1-5): ");
 					Integer i = Integer.parseInt(System.console().readLine());
-					Action.send(m, new SetIntensity(new ModelInt(i)));
+					Action.send(m, new SetIntensity(i));
 					break;
 				case "settime":
 					System.out.println("  Time in sec(s): ");
 					Integer t = Integer.parseInt(System.console().readLine());
-					Action.send(m, new SetTime(new ModelInt(t)));
+					Action.send(m, new SetTime(t));
 					break;
 				case "start":
 					Action.send(m, new Start());

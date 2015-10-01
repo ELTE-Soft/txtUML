@@ -1,5 +1,6 @@
 package hu.elte.txtuml.api.model;
 
+import hu.elte.txtuml.api.model.backend.ElseException;
 import hu.elte.txtuml.api.model.ModelExecutor.Report;
 import hu.elte.txtuml.api.model.backend.collections.InitialsMap;
 
@@ -30,7 +31,7 @@ import hu.elte.txtuml.api.model.backend.collections.InitialsMap;
  * @author Gabor Ferenc Kovacs
  *
  */
-public abstract class Region extends StateMachine {
+public class Region extends StateMachine {
 
 	/**
 	 * A static map to cache the initial pseudostates of regions and composite
@@ -44,15 +45,10 @@ public abstract class Region extends StateMachine {
 	private Vertex currentVertex;
 
 	/**
-	 * @return a unique identifier of this object
-	 */
-	public abstract String getIdentifier();
-
-	/**
 	 * The sole constructor of <code>Region</code>.
 	 * <p>
 	 * Sets the <code>currentVertex</code> field to an instance of this region's
-	 * initial pseudostate. The initial pseudostate is a nested class of the
+	 * initial pseudostate. The initial pseudostate is an inner class of the
 	 * <i>actual region class</i> which is a subclass of
 	 * {@link StateMachine.Initial}. The <i>actual region class</i> refers to
 	 * the class represented by the {@code java.lang.Class<?>} object which is
@@ -70,10 +66,17 @@ public abstract class Region extends StateMachine {
 
 		Class<? extends Initial> initClass = getInitial(getClass());
 		if (initClass != null) {
-			currentVertex = getNestedClassInstance(initClass);
+			currentVertex = getInnerClassInstance(initClass);
 		} else {
 			currentVertex = null;
 		}
+	}
+
+	/**
+	 * @return a unique identifier of this object
+	 */
+	public String getIdentifier() {
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -83,7 +86,7 @@ public abstract class Region extends StateMachine {
 	 * been called or all of them has already returned, then this method returns
 	 * either <code>null</code> (if this region is inactive) or an instance of a
 	 * state class (an object, for which <code>instanceof
-	 * StateMachine.State</code> returns true).
+	 * StateMachine.State</code> would return true).
 	 * 
 	 * @return an object of the currently active vertex in this region
 	 */
@@ -97,6 +100,20 @@ public abstract class Region extends StateMachine {
 	 */
 	final void inactivate() {
 		currentVertex = null;
+	}
+
+	/**
+	 * Sends a signal to this object asynchronously.
+	 * 
+	 * @param signal
+	 *            the signal to send to this object
+	 */
+	void send(Signal signal) {
+		ModelExecutor.send(this, signal);
+	}
+
+	void start() {
+		send(null);
 	}
 
 	/**
@@ -119,7 +136,7 @@ public abstract class Region extends StateMachine {
 			Report.event.forEach(x -> x.processingSignal(this, signal));
 		}
 		if (findAndExecuteTransition(signal)) {
-			callEntryAction();
+			callEntryAction(signal);
 		}
 	}
 
@@ -139,13 +156,14 @@ public abstract class Region extends StateMachine {
 		Transition applicableTransition = null;
 
 		for (Class<?> examinedClass = currentVertex.getClass(), parentClass = examinedClass
-				.getEnclosingClass(); parentClass != null; examinedClass = parentClass, parentClass = examinedClass
+				.getEnclosingClass(); parentClass != null
+				&& Vertex.class.isAssignableFrom(examinedClass); examinedClass = parentClass, parentClass = examinedClass
 				.getEnclosingClass()) {
 
 			for (Class<?> c : parentClass.getDeclaredClasses()) {
 				if (Transition.class.isAssignableFrom(c)) {
 
-					Transition transition = (Transition) getNestedClassInstance(c);
+					Transition transition = (Transition) getInnerClassInstance(c);
 
 					if (!transition.isFromSource(examinedClass)
 							|| notApplicableTrigger(c, signal)) {
@@ -154,8 +172,12 @@ public abstract class Region extends StateMachine {
 
 					transition.setSignal(signal);
 
-					if (!transition.guard().getValue()) { // checking guard
-						continue;
+					try {
+						if (!transition.guard()) { // check guard
+							continue;
+						}
+					} catch (ElseException e) {
+						// TODO show warning/error
 					}
 
 					if (applicableTransition != null) {
@@ -212,7 +234,7 @@ public abstract class Region extends StateMachine {
 		for (Class<?> c : parentClass.getDeclaredClasses()) {
 			if (Transition.class.isAssignableFrom(c)) {
 
-				Transition transition = (Transition) getNestedClassInstance(c);
+				Transition transition = (Transition) getInnerClassInstance(c);
 
 				if (!transition.isFromSource(examinedChoiceClass)) {
 					// actual transition is from another vertex
@@ -220,13 +242,12 @@ public abstract class Region extends StateMachine {
 				}
 
 				transition.setSignal(signal);
-				ModelBool resultOfGuard = transition.guard();
 
-				if (!resultOfGuard.getValue()) { // check guard
-					continue;
-				}
-
-				if (resultOfGuard instanceof ModelBool.Else) {
+				try {
+					if (!transition.guard()) { // check guard
+						continue;
+					}
+				} catch (ElseException e) {
 					// transition with else condition
 
 					if (elseTransition != null) {
@@ -294,7 +315,8 @@ public abstract class Region extends StateMachine {
 	 *            the transition to be executed
 	 */
 	private void executeTransition(Transition transition) {
-		callExitAction(transition.getSource());
+		callExitAction(transition.getSource(),
+				transition.getSignal(Signal.class));
 		Report.event.forEach(x -> x.usingTransition(this, transition));
 		transition.effect();
 		currentVertex = transition.getTarget();
@@ -331,20 +353,24 @@ public abstract class Region extends StateMachine {
 	 * 
 	 * @param vertex
 	 *            the top vertex in the state hierarchy to exit
+	 * @param signal
+	 *            the signal which triggered the transition
 	 */
-	private void callExitAction(Vertex vertex) {
+	private void callExitAction(Vertex vertex, Signal signal) {
 		while (true) {
+
+			currentVertex.setSignal(signal);
 			currentVertex.exit();
 			Report.event.forEach(x -> x.leavingVertex(this, currentVertex));
 
 			if (currentVertex == vertex) {
 				break;
 			}
-			
+
 			Class<?> currentParentState = currentVertex.getClass()
 					.getEnclosingClass();
 
-			currentVertex = (Vertex) getNestedClassInstance(currentParentState);
+			currentVertex = (Vertex) getInnerClassInstance(currentParentState);
 		}
 	}
 
@@ -355,17 +381,22 @@ public abstract class Region extends StateMachine {
 	 * with a <code>null</code> parameter to step forward from the initial
 	 * pseudostate. This will result in a recursion which ends when it reaches a
 	 * vertex that is neither a pseudostate, nor a compositie state.
+	 *
+	 * @param signal
+	 *            the signal which triggered the transition
 	 */
-	private void callEntryAction() {
+	private void callEntryAction(Signal signal) {
 		Report.event.forEach(x -> x.enteringVertex(this, currentVertex));
+		currentVertex.setSignal(signal);
 		currentVertex.entry();
 		if (currentVertex instanceof CompositeState) {
 			Class<? extends Initial> initClass = getInitial(currentVertex
 					.getClass());
 			if (initClass != null) {
 
-				currentVertex = getNestedClassInstance(initClass);
-				Report.event.forEach(x -> x.enteringVertex(this, currentVertex));
+				currentVertex = getInnerClassInstance(initClass);
+				Report.event
+						.forEach(x -> x.enteringVertex(this, currentVertex));
 				// no entry action needs to be called: initial pseudostates have
 				// none
 
@@ -379,10 +410,9 @@ public abstract class Region extends StateMachine {
 	 * represented by <code>forWhat</code>. It uses the {@link Region#initials
 	 * initials} static field's value to cache the results.
 	 * <p>
-	 * If <code>forWhat</code> has no nested class which is a subclass of
+	 * If <code>forWhat</code> has no inner class which is a subclass of
 	 * {@link StateMachine.Initial Initial}, this method returns
 	 * <code>null</code>.
-	 * 
 	 * 
 	 * @param forWhat
 	 *            the class representing the region or composite state which's
@@ -407,9 +437,15 @@ public abstract class Region extends StateMachine {
 					return ret;
 				}
 			}
-			initials.put(forWhat, null);
-			return null;
+			Class<?> parentClass = forWhat.getSuperclass();
+			if (StateMachine.class.isAssignableFrom(parentClass)) {
+				Class<? extends Initial> ret = getInitial(parentClass);
+				initials.put(forWhat, ret);
+				return ret;
+			} else {
+				initials.put(forWhat, null);
+				return null;
+			}
 		}
 	}
-
 }

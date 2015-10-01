@@ -146,7 +146,6 @@
   <eClassifiers xsi:type="ecore:EClass" name="RAlfAssocNavExpression" eSuperTypes="platform:/resource/org.eclipse.xtext.xbase/model/Xbase.ecore#//XExpression">
     <eStructuralFeatures xsi:type="ecore:EReference" name="left" eType="ecore:EClass platform:/resource/org.eclipse.xtext.xbase/model/Xbase.ecore#//XExpression"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="right" eType="ecore:EClass platform:/resource/org.eclipse.xtext.xbase/model/Xbase.ecore#//XExpression"
-        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="right" eType="#//TUAssociationEnd"/>
   </eClassifiers>
 </ecore:EPackage>

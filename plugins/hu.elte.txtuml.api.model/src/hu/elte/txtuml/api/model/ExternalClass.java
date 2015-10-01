@@ -6,13 +6,6 @@ package hu.elte.txtuml.api.model;
  * model they function as black boxes. They might be used to bring external
  * features into the model or to communicate with components of the program that
  * are not part of the model.
- * <p>
- * By the current implementation, external classes <b>are not exported</b> to
- * EMF-UML2, with the exception of standard library classes
- * {@link hu.elte.txtuml.api.stdlib.Timer Timer} and
- * {@link hu.elte.txtuml.api.stdlib.Timer.Handle Timer.Handle}. The planned design
- * is to include all external classes in the model with an 'external' stereotype
- * and empty operations.
  * 
  * <p>
  * <b>Represents:</b> external class
@@ -27,8 +20,9 @@ package hu.elte.txtuml.api.model;
  * model class (that is, one that may not react to any asynchronous events).
  * Call its methods as operations or use its fields as attributes. All its
  * fields used from inside the model must be of a type extending
- * {@link ModelValue}. Also all parameter and return types of methods called
- * from inside the model must extend <code>ModelValue</code>.
+ * {@link ModelClass} or primitives (including String). Also all parameter and
+ * return types of methods called from inside the model must extend
+ * <code>ModelClass</code> or be primitives (including <code>String</code>).
  * <p>
  * As the txtUML API uses its own thread for model execution, external classes
  * probably need synchronization.
@@ -40,12 +34,6 @@ package hu.elte.txtuml.api.model;
  * model objects, as it might be done from anywhere outside the model. For
  * details about managing the model from outside, see the documentation of
  * {@link Model}.
- * <p>
- * In case of primitive values, this class has specific protected methods to
- * convert <code>ModelType</code> objects back to their raw value (the primitive
- * values represented by them). These methods may only be used to convert data
- * gained from the model for an external component. If any data is sent back to
- * the model, it must be in the form of <code>ModelType</code> objects.
  * 
  * <p>
  * <b>Java restrictions:</b>
@@ -93,64 +81,6 @@ public class ExternalClass {
 	 * needed for the API or the model exportation.
 	 */
 	protected ExternalClass() {
-	}
-
-	/**
-	 * Convert a <code>ModelType</code> object back to its raw value (the
-	 * primitive value represented by it). May only be used to convert data
-	 * gained from the model for an external component. If any data is sent back
-	 * to the model, it must be in the form of <code>ModelType</code> objects.
-	 * 
-	 * @param <T>
-	 *            the Java type of the primitive type this object represents
-	 * @param objectToConvert
-	 *            the object to be converted
-	 * @return the value represented by <code>objectToConvert</code>
-	 */
-	protected final static <T> T convert(ModelType<T> objectToConvert) {
-		return objectToConvert.getValue();
-	}
-
-	/**
-	 * Convert a <code>ModelBool</code> object back to its raw value (the
-	 * boolean value represented by it). May only be used to convert data gained
-	 * from the model in an external component. If any data is sent back to the
-	 * model, it must be in the form of <code>ModelType</code> objects.
-	 * 
-	 * @param boolToConvert
-	 *            the object to be converted
-	 * @return the value represented by <code>boolToConvert</code>
-	 */
-	protected final static Boolean convertModelBool(ModelBool boolToConvert) {
-		return convert(boolToConvert);
-	}
-
-	/**
-	 * Convert a <code>ModelInt</code> object back to its raw value (the integer
-	 * value represented by it). May only be used to convert data gained from
-	 * the model in an external component. If any data is sent back to the
-	 * model, it must be in the form of <code>ModelType</code> objects.
-	 * 
-	 * @param intToConvert
-	 *            the object to be converted
-	 * @return the value represented by <code>intToConvert</code>
-	 */
-	protected final static Integer convertModelInt(ModelInt intToConvert) {
-		return convert(intToConvert);
-	}
-
-	/**
-	 * Convert a <code>ModelString</code> object back to its raw value (the
-	 * string value represented by it). May only be used to convert data gained
-	 * from the model in an external component. If any data is sent back to the
-	 * model, it must be in the form of <code>ModelType</code> objects.
-	 * 
-	 * @param stringToConvert
-	 *            the object to be converted
-	 * @return the value represented by <code>stringToConvert</code>
-	 */
-	protected final static String convertModelString(ModelString stringToConvert) {
-		return convert(stringToConvert);
 	}
 
 }

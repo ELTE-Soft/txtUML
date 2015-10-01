@@ -4,6 +4,26 @@
 package hu.elte.txtuml.xtxtuml.ui.labeling
 
 import com.google.inject.Inject
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUModel
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
+import org.eclipse.jface.viewers.StyledString
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionEffect
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionGuard
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionTrigger
 
 /**
  * Provides labels for EObjects.
@@ -17,13 +37,160 @@ class XtxtUMLLabelProvider extends org.eclipse.xtext.xbase.ui.labeling.XbaseLabe
 		super(delegate);
 	}
 
-	// Labels and icons can be computed like this:
+	def image(TUFile file) {
+		"uml2/Package.gif"
+	}
 	
-//	def text(Greeting ele) {
-//		'A greeting to ' + ele.name
-//	}
-//
-//	def image(Greeting ele) {
-//		'Greeting.gif'
-//	}
+	def image(TUModel model) {
+		"uml2/Model.gif"
+	}
+	
+	def image(TUExecution exec) {
+		"execution.gif"
+	}
+	
+	def image(TUClass clazz) {
+		"uml2/Class.gif"
+	}
+	
+	def image(TUSignal signal) {
+		"uml2/Signal.gif"
+	}
+	
+	def image(TUSignalAttribute sAttr) {
+		"uml2/Property.gif"
+	}
+	
+	def text(TUSignalAttribute sAttr) {
+		new StyledString(sAttr.name).append(new StyledString(
+			" : " + sAttr.type.simpleName,
+			StyledString::DECORATIONS_STYLER
+		))
+	}
+	
+	def image(TUAssociation assoc) {
+		"uml2/Association.gif"
+	}
+	
+	def image(TUAssociationEnd assocEnd) {
+		"uml2/Property.gif"
+	}
+	
+	def text(TUAssociationEnd assocEnd) {
+		new StyledString(assocEnd.name).append(new StyledString(
+			" : " + assocEnd.multiplicity.asString + " " + assocEnd.endClass.name,
+			StyledString::DECORATIONS_STYLER
+		))
+	}
+	
+	def image(TUAttribute attr) {
+		"uml2/Property.gif"
+	}
+	
+	def text(TUAttribute attr) {
+		new StyledString(attr.name).append(new StyledString(
+			" : " + attr.prefix.type.simpleName,
+			StyledString::DECORATIONS_STYLER
+		))
+	}
+	
+	def image(TUConstructor ctor) {
+		"uml2/Operation.gif"
+	}
+	
+	def text(TUConstructor ctor) {
+		val parameterList = if (ctor.parameters.empty) {
+			"()"
+		} else {
+			ctor.parameters.join("(", ", ", ")", [parameterType.simpleName])
+		}
+		
+		return new StyledString(ctor.name + parameterList)
+	}
+	
+	def image(TUOperation op) {
+		"uml2/Operation.gif"
+	}
+	
+	def text(TUOperation op) {
+		val parameterList = if (op.parameters.empty) {
+			"()"
+		} else {
+			op.parameters.join("(", ", ", ")", [parameterType.simpleName])
+		}
+		
+		new StyledString(op.name + parameterList)
+			.append(new StyledString(" : " + op.prefix.type.simpleName, StyledString::DECORATIONS_STYLER))
+	}
+	
+	def image(TUState state) {
+		switch (state.type) {
+			case PLAIN, case COMPOSITE : "uml2/State.gif"
+			case INITIAL: "uml2/Pseudostate_initial.gif"
+			case CHOICE: "uml2/Pseudostate_choice.gif"		
+		}
+	}
+	
+	def image(TUEntryOrExitActivity act) {
+		"uml2/Activity.gif"
+	}
+	
+	def text(TUEntryOrExitActivity act) {
+		if (act.entry) "entry" else "exit"
+	}
+	
+	def image(TUTransition trans) {
+		"uml2/Transition.gif"
+	}
+	
+	def image(TUTransitionEffect effect) {
+		"uml2/Activity.gif"
+	}
+	
+	def text(TUTransitionEffect effect) {
+		"effect"
+	}
+	
+	def image(TUTransitionGuard guard) {
+		"uml2/Constraint.gif"
+	}
+	
+	def text(TUTransitionGuard guard) {
+		"guard"
+	}
+	
+	def image(TUTransitionVertex vertex) {
+		"uml2/Property.gif"
+	}
+	
+	def text(TUTransitionVertex vertex) {
+		new StyledString(if (vertex.from) "from" else "to").append(new StyledString(
+			" : " + vertex.vertex.name,
+			StyledString::DECORATIONS_STYLER
+		))
+	}
+	
+	def image(TUTransitionTrigger trigger) {
+		"uml2/Trigger.gif"
+	}
+	
+	def text(TUTransitionTrigger trigger) {
+		new StyledString("trigger").append(new StyledString(
+			" : " + trigger.trigger.name,
+			StyledString::DECORATIONS_STYLER
+		))
+	}
+	
+	def private asString(TUMultiplicity multi) {
+		if (multi.any) {
+			"*"
+		} else {
+			multi.lower + if (multi.isUpperSet) {
+				".." + if (multi.isUpperInf) "*" else multi.upper
+			} else {
+				""
+			}
+		}
+	}
+	
 }

@@ -26,7 +26,7 @@ public class TxtUMLExporter {
 	private String projectName;
 	private String outputFolder;
 	private String txtUMLModelName;
-	private List<String> txtUMLLayout;
+	private String txtUMLLayout;
 	
 	/**
 	 * The Constructor
@@ -37,7 +37,7 @@ public class TxtUMLExporter {
 	 * @param parent - the parent ClassLoader
 	 */
 	public TxtUMLExporter(String projectName, String outputFolder,
-			String txtUMLModelName, List<String> txtUMLLayout) {
+			String txtUMLModelName, String txtUMLLayout) {
 		
 		this.projectName = projectName;
 		this.outputFolder = outputFolder;
@@ -53,23 +53,21 @@ public class TxtUMLExporter {
 	public TxtUMLLayoutDescriptor exportTxtUMLLayout() throws Exception{
 		List<DiagramExportationReport> reports = new LinkedList<DiagramExportationReport>();
 		
-		for(String layout : txtUMLLayout){
-			try {
-				DiagramExportationReport report = ExportUtils.exportTxtUMLLayout(projectName, layout);
-		        if(!report.isSuccessful()){
-		        	StringBuilder errorMessages = new StringBuilder("Errors occured during layout exportation:\n");
-		        	for(Object error : report.getErrors()){
-		        		errorMessages.append(error).append(errorMessages);
-		        		errorMessages.append(System.lineSeparator());
-		        	}
-		        	errorMessages.append(System.lineSeparator()+"The exportation was't successfull.");
-		        	throw new LayoutExportException(errorMessages.toString());
-		        }
-		        
-		        reports.add(report);
-			} catch (Exception e) {
-				throw e;
-			}
+		try {
+			DiagramExportationReport report = ExportUtils.exportTxtUMLLayout(projectName, txtUMLLayout);
+	        if(!report.isSuccessful()){
+	        	StringBuilder errorMessages = new StringBuilder("Errors occured during layout exportation:\n");
+	        	for(Object error : report.getErrors()){
+	        		errorMessages.append(error).append(errorMessages);
+	        		errorMessages.append(System.lineSeparator());
+	        	}
+	        	errorMessages.append(System.lineSeparator()+"The exportation was't successfull.");
+	        	throw new LayoutExportException(errorMessages.toString());
+	        }
+	        
+	        reports.add(report);
+		} catch (Exception e) {
+			throw e;
 		}
 		return new TxtUMLLayoutDescriptor(txtUMLModelName, reports); 
 	}

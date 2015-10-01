@@ -1483,7 +1483,7 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
 
     initEClass(rAlfAssocNavExpressionEClass, RAlfAssocNavExpression.class, "RAlfAssocNavExpression", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEReference(getRAlfAssocNavExpression_Left(), theXbasePackage.getXExpression(), null, "left", null, 0, 1, RAlfAssocNavExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getRAlfAssocNavExpression_Right(), theXbasePackage.getXExpression(), null, "right", null, 0, 1, RAlfAssocNavExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getRAlfAssocNavExpression_Right(), this.getTUAssociationEnd(), null, "right", null, 0, 1, RAlfAssocNavExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     // Initialize enums and add enum literals
     initEEnum(tuStateTypeEEnum, TUStateType.class, "TUStateType");

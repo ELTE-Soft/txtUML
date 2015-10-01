@@ -48,9 +48,7 @@ public class CollectionBuilder<T extends ModelClass> {
 	 * @see #getJavaCollection()
 	 */
 	public CollectionBuilder<T> append(Collection<T> objects) {
-		for (T object : objects) {
-			coll.add(object);
-		}
+		objects.forEach(coll::add);
 		return this;
 	}
 

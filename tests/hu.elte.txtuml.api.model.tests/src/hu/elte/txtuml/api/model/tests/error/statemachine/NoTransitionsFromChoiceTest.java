@@ -3,9 +3,7 @@ package hu.elte.txtuml.api.model.tests.error.statemachine;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.Model;
-import hu.elte.txtuml.api.model.ModelBool;
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.ModelInt;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
@@ -25,7 +23,7 @@ public class NoTransitionsFromChoiceTest extends TestsBase {
 		
 		A a = new A();
 		Action.start(a);
-		Action.send(a, new Sig(new ModelInt(2)));
+		Action.send(a, new Sig(2));
 		
 		stopModelExecution();
 
@@ -35,13 +33,13 @@ public class NoTransitionsFromChoiceTest extends TestsBase {
 	static class NoTransitionsFromChoiceModel extends Model {
 		
 		static class Sig extends Signal {
-			ModelInt value;
+			int value;
 
 			Sig() {
-				this(new ModelInt(0));
+				this(0);
 			}
 
-			Sig(ModelInt value) {
+			Sig(int value) {
 				this.value = value;
 			}
 		}
@@ -61,9 +59,9 @@ public class NoTransitionsFromChoiceTest extends TestsBase {
 			class T1 extends Transition {
 				
 				@Override
-				public ModelBool guard() {
+				public boolean guard() {
 					Sig s = getSignal(Sig.class);
-					return s.value.isEqual(new ModelInt(0));
+					return s.value == 0;
 				}
 				
 			}
@@ -72,9 +70,9 @@ public class NoTransitionsFromChoiceTest extends TestsBase {
 			class T2 extends Transition {
 				
 				@Override
-				public ModelBool guard() {
+				public boolean guard() {
 					Sig s = getSignal(Sig.class);
-					return s.value.isEqual(new ModelInt(1));
+					return s.value == 1;
 				}
 				
 			}

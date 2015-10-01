@@ -25,9 +25,9 @@ import java.lang.annotation.Target;
  * <li><i>t</i> is a subclass of <code>Transition</code> and not
  * <code>Transition</code> itself,</li>
  * <li><i>v</i> is a subclass of <code>Vertex</code> and not <code>Vertex</code>
- * itself or any subclasses of <code>Vertex</code> defined as nested classes of
+ * itself or any subclasses of <code>Vertex</code> defined as inner classes of
  * {@link StateMachine},
- * <li><i>t</i> and <i>v</i> must be nested classes of the same enclosing class,
+ * <li><i>t</i> and <i>v</i> must be inner classes of the same enclosing class,
  * either a subclass of {@link Region} or {@link StateMachine.CompositeState},
  * <p>
  * <b>Note:</b> {@link ModelClass} is a subclass of <code>Region</code>.</li>

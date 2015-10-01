@@ -24,14 +24,14 @@ public class Pair<L, R> {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (o == null)
+	public boolean equals(Object obj) {
+		if (obj == null)
 			return false;
-		if (!(o instanceof Pair))
+		if (!(obj instanceof Pair))
 			return false;
-		Pair<?, ?> pairo = (Pair<?, ?>) o;
-		return this.left.equals(pairo.getKey())
-				&& this.right.equals(pairo.getValue());
+		Pair<?, ?> other = (Pair<?, ?>) obj;
+		return this.left.equals(other.getKey())
+				&& this.right.equals(other.getValue());
 	}
 
 }

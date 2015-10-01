@@ -3,7 +3,6 @@ package hu.elte.txtuml.api.model.tests.models;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.Model;
-import hu.elte.txtuml.api.model.ModelBool;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.To;
@@ -17,7 +16,7 @@ public class TransitionsModel extends Model {
 
 	public static class A extends ModelClass {
 
-		public ModelBool value = new ModelBool(true);
+		public boolean value = true;
 		
 		public class Init extends Initial {}
 		public class S extends State {
@@ -49,25 +48,25 @@ public class TransitionsModel extends Model {
 
 		@From(S.class) @To(S.class) @Trigger(Sig3.class)
 		public class T3 extends Transition {
-			@Override public ModelBool guard() {
+			@Override public boolean guard() {
 				return value;
 			}
 			
 			@Override public void effect() {
 				Action.log("T3");
-				value = new ModelBool(false);
+				value = false;
 			}
 		}
 
 		@From(S.class) @To(S.class) @Trigger(Sig3.class)
 		public class T4 extends Transition {
-			@Override public ModelBool guard() {
-				return value.not();
+			@Override public boolean guard() {
+				return !value;
 			}
 			
 			@Override public void effect() {
 				Action.log("T4");
-				value = new ModelBool(true);
+				value = true;
 			}
 		}
 

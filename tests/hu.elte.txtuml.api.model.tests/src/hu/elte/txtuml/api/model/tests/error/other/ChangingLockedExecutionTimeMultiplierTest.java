@@ -2,7 +2,6 @@ package hu.elte.txtuml.api.model.tests.error.other;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.ModelExecutor;
-import hu.elte.txtuml.api.model.ModelInt;
 import hu.elte.txtuml.api.model.tests.base.SimpleModelTestsBase;
 import hu.elte.txtuml.api.model.tests.models.SimpleModel.A_B;
 import hu.elte.txtuml.api.model.tests.models.SimpleModel.Sig;
@@ -23,7 +22,7 @@ public class ChangingLockedExecutionTimeMultiplierTest extends
 		
 		Action.start(a);
 		
-		Timer.start(a, new Sig(), new ModelInt(10));
+		Timer.start(a, new Sig(), 10);
 		ModelExecutor.Settings.setExecutionTimeMultiplier(1.0f);
 
 		stopModelExecution(() -> Timer.shutdown());

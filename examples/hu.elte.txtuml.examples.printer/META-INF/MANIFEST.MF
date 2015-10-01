@@ -10,7 +10,6 @@ Require-Bundle: hu.elte.txtuml.api.model,
  hu.elte.txtuml.layout.export,
  hu.elte.txtuml.layout.visualizer,
  hu.elte.txtuml.utils,
- org.aspectj.runtime,
  org.eclipse.uml2.uml,
  org.eclipse.uml2.uml.resources
 Bundle-ManifestVersion: 2

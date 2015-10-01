@@ -1196,21 +1196,20 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 		private final Action cRAlfAssocNavExpressionLeftAction_1_0_0_0 = (Action)cGroup_1_0_0.eContents().get(0);
 		private final Keyword cHyphenMinusGreaterThanSignKeyword_1_0_0_1 = (Keyword)cGroup_1_0_0.eContents().get(1);
 		private final Assignment cRightAssignment_1_1 = (Assignment)cGroup_1.eContents().get(1);
-		private final RuleCall cRightXPrimaryExpressionParserRuleCall_1_1_0 = (RuleCall)cRightAssignment_1_1.eContents().get(0);
+		private final CrossReference cRightTUAssociationEndCrossReference_1_1_0 = (CrossReference)cRightAssignment_1_1.eContents().get(0);
+		private final RuleCall cRightTUAssociationEndQualifiedNameParserRuleCall_1_1_0_1 = (RuleCall)cRightTUAssociationEndCrossReference_1_1_0.eContents().get(1);
 		
-		/// *
-		// * currently unused
-		// * / RAlfAssocNavExpression returns xbase::XExpression:
-		//	XPrimaryExpression (=> ({RAlfAssocNavExpression.left=current} "->") right=XPrimaryExpression)+;
+		//RAlfAssocNavExpression returns xbase::XExpression:
+		//	XPrimaryExpression (=> ({RAlfAssocNavExpression.left=current} "->") right=[TUAssociationEnd|QualifiedName])*;
 		@Override public ParserRule getRule() { return rule; }
 
-		//XPrimaryExpression (=> ({RAlfAssocNavExpression.left=current} "->") right=XPrimaryExpression)+
+		//XPrimaryExpression (=> ({RAlfAssocNavExpression.left=current} "->") right=[TUAssociationEnd|QualifiedName])*
 		public Group getGroup() { return cGroup; }
 
 		//XPrimaryExpression
 		public RuleCall getXPrimaryExpressionParserRuleCall_0() { return cXPrimaryExpressionParserRuleCall_0; }
 
-		//(=> ({RAlfAssocNavExpression.left=current} "->") right=XPrimaryExpression)+
+		//(=> ({RAlfAssocNavExpression.left=current} "->") right=[TUAssociationEnd|QualifiedName])*
 		public Group getGroup_1() { return cGroup_1; }
 
 		//=> ({RAlfAssocNavExpression.left=current} "->")
@@ -1225,11 +1224,14 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 		//"->"
 		public Keyword getHyphenMinusGreaterThanSignKeyword_1_0_0_1() { return cHyphenMinusGreaterThanSignKeyword_1_0_0_1; }
 
-		//right=XPrimaryExpression
+		//right=[TUAssociationEnd|QualifiedName]
 		public Assignment getRightAssignment_1_1() { return cRightAssignment_1_1; }
 
-		//XPrimaryExpression
-		public RuleCall getRightXPrimaryExpressionParserRuleCall_1_1_0() { return cRightXPrimaryExpressionParserRuleCall_1_1_0; }
+		//[TUAssociationEnd|QualifiedName]
+		public CrossReference getRightTUAssociationEndCrossReference_1_1_0() { return cRightTUAssociationEndCrossReference_1_1_0; }
+
+		//QualifiedName
+		public RuleCall getRightTUAssociationEndQualifiedNameParserRuleCall_1_1_0_1() { return cRightTUAssociationEndQualifiedNameParserRuleCall_1_1_0_1; }
 	}
 
 	public class XRAlfStatementElements extends AbstractParserRuleElementFinder {
@@ -2331,7 +2333,7 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 	public class XMemberFeatureCallElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "XMemberFeatureCall");
 		private final Group cGroup = (Group)rule.eContents().get(1);
-		private final RuleCall cXPrimaryExpressionParserRuleCall_0 = (RuleCall)cGroup.eContents().get(0);
+		private final RuleCall cRAlfAssocNavExpressionParserRuleCall_0 = (RuleCall)cGroup.eContents().get(0);
 		private final Alternatives cAlternatives_1 = (Alternatives)cGroup.eContents().get(1);
 		private final Group cGroup_1_0 = (Group)cAlternatives_1.eContents().get(0);
 		private final Group cGroup_1_0_0 = (Group)cGroup_1_0.eContents().get(0);
@@ -2355,6 +2357,7 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 		private final Keyword cFullStopKeyword_1_1_0_0_1_0 = (Keyword)cAlternatives_1_1_0_0_1.eContents().get(0);
 		private final Assignment cExplicitStaticAssignment_1_1_0_0_1_1 = (Assignment)cAlternatives_1_1_0_0_1.eContents().get(1);
 		private final Keyword cExplicitStaticColonColonKeyword_1_1_0_0_1_1_0 = (Keyword)cExplicitStaticAssignment_1_1_0_0_1_1.eContents().get(0);
+		private final Keyword cEqualsSignGreaterThanSignKeyword_1_1_0_0_1_2 = (Keyword)cAlternatives_1_1_0_0_1.eContents().get(2);
 		private final Assignment cFeatureAssignment_1_1_1 = (Assignment)cGroup_1_1.eContents().get(1);
 		private final CrossReference cFeatureJvmIdentifiableElementCrossReference_1_1_1_0 = (CrossReference)cFeatureAssignment_1_1_1.eContents().get(0);
 		private final RuleCall cFeatureJvmIdentifiableElementIdOrSuperParserRuleCall_1_1_1_0_1 = (RuleCall)cFeatureJvmIdentifiableElementCrossReference_1_1_1_0.eContents().get(1);
@@ -2382,26 +2385,26 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 		// *     <li>XExpression -> XExpression in call arguments</li>
 		// * </ul>
 		// * / XMemberFeatureCall returns xbase::XExpression:
-		//	XPrimaryExpression (=> ({xbase::XAssignment.assignable=current} ("." | explicitStatic?="::")
+		//	RAlfAssocNavExpression (=> ({xbase::XAssignment.assignable=current} ("." | explicitStatic?="::")
 		//	feature=[types::JvmIdentifiableElement|FeatureCallID] OpSingleAssign) value=XAssignment | =>
-		//	({xbase::XMemberFeatureCall.memberCallTarget=current} ("." | explicitStatic?="::"))
+		//	({xbase::XMemberFeatureCall.memberCallTarget=current} ("." | explicitStatic?="::" | "=>"))
 		//	feature=[types::JvmIdentifiableElement|IdOrSuper] (=> explicitOperationCall?="(" (memberCallArguments+=XShortClosure
 		//	| memberCallArguments+=XExpression ("," memberCallArguments+=XExpression)*)? ")")?)*;
 		@Override public ParserRule getRule() { return rule; }
 
-		//XPrimaryExpression (=> ({xbase::XAssignment.assignable=current} ("." | explicitStatic?="::")
+		//RAlfAssocNavExpression (=> ({xbase::XAssignment.assignable=current} ("." | explicitStatic?="::")
 		//feature=[types::JvmIdentifiableElement|FeatureCallID] OpSingleAssign) value=XAssignment | =>
-		//({xbase::XMemberFeatureCall.memberCallTarget=current} ("." | explicitStatic?="::"))
+		//({xbase::XMemberFeatureCall.memberCallTarget=current} ("." | explicitStatic?="::" | "=>"))
 		//feature=[types::JvmIdentifiableElement|IdOrSuper] (=> explicitOperationCall?="(" (memberCallArguments+=XShortClosure |
 		//memberCallArguments+=XExpression ("," memberCallArguments+=XExpression)*)? ")")?)*
 		public Group getGroup() { return cGroup; }
 
-		//XPrimaryExpression
-		public RuleCall getXPrimaryExpressionParserRuleCall_0() { return cXPrimaryExpressionParserRuleCall_0; }
+		//RAlfAssocNavExpression
+		public RuleCall getRAlfAssocNavExpressionParserRuleCall_0() { return cRAlfAssocNavExpressionParserRuleCall_0; }
 
 		//(=> ({xbase::XAssignment.assignable=current} ("." | explicitStatic?="::")
 		//feature=[types::JvmIdentifiableElement|FeatureCallID] OpSingleAssign) value=XAssignment | =>
-		//({xbase::XMemberFeatureCall.memberCallTarget=current} ("." | explicitStatic?="::"))
+		//({xbase::XMemberFeatureCall.memberCallTarget=current} ("." | explicitStatic?="::" | "=>"))
 		//feature=[types::JvmIdentifiableElement|IdOrSuper] (=> explicitOperationCall?="(" (memberCallArguments+=XShortClosure |
 		//memberCallArguments+=XExpression ("," memberCallArguments+=XExpression)*)? ")")?)*
 		public Alternatives getAlternatives_1() { return cAlternatives_1; }
@@ -2451,21 +2454,21 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 		//XAssignment
 		public RuleCall getValueXAssignmentParserRuleCall_1_0_1_0() { return cValueXAssignmentParserRuleCall_1_0_1_0; }
 
-		//=> ({xbase::XMemberFeatureCall.memberCallTarget=current} ("." | explicitStatic?="::"))
+		//=> ({xbase::XMemberFeatureCall.memberCallTarget=current} ("." | explicitStatic?="::" | "=>"))
 		//feature=[types::JvmIdentifiableElement|IdOrSuper] (=> explicitOperationCall?="(" (memberCallArguments+=XShortClosure |
 		//memberCallArguments+=XExpression ("," memberCallArguments+=XExpression)*)? ")")?
 		public Group getGroup_1_1() { return cGroup_1_1; }
 
-		//=> ({xbase::XMemberFeatureCall.memberCallTarget=current} ("." | explicitStatic?="::"))
+		//=> ({xbase::XMemberFeatureCall.memberCallTarget=current} ("." | explicitStatic?="::" | "=>"))
 		public Group getGroup_1_1_0() { return cGroup_1_1_0; }
 
-		//{xbase::XMemberFeatureCall.memberCallTarget=current} ("." | explicitStatic?="::")
+		//{xbase::XMemberFeatureCall.memberCallTarget=current} ("." | explicitStatic?="::" | "=>")
 		public Group getGroup_1_1_0_0() { return cGroup_1_1_0_0; }
 
 		//{xbase::XMemberFeatureCall.memberCallTarget=current}
 		public Action getXMemberFeatureCallMemberCallTargetAction_1_1_0_0_0() { return cXMemberFeatureCallMemberCallTargetAction_1_1_0_0_0; }
 
-		//"." | explicitStatic?="::"
+		//"." | explicitStatic?="::" | "=>"
 		public Alternatives getAlternatives_1_1_0_0_1() { return cAlternatives_1_1_0_0_1; }
 
 		//"."
@@ -2476,6 +2479,9 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 
 		//"::"
 		public Keyword getExplicitStaticColonColonKeyword_1_1_0_0_1_1_0() { return cExplicitStaticColonColonKeyword_1_1_0_0_1_1_0; }
+
+		//"=>"
+		public Keyword getEqualsSignGreaterThanSignKeyword_1_1_0_0_1_2() { return cEqualsSignGreaterThanSignKeyword_1_1_0_0_1_2; }
 
 		//feature=[types::JvmIdentifiableElement|IdOrSuper]
 		public Assignment getFeatureAssignment_1_1_1() { return cFeatureAssignment_1_1_1; }
@@ -3267,10 +3273,8 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 		return getRAlfDeleteObjectExpressionAccess().getRule();
 	}
 
-	/// *
-	// * currently unused
-	// * / RAlfAssocNavExpression returns xbase::XExpression:
-	//	XPrimaryExpression (=> ({RAlfAssocNavExpression.left=current} "->") right=XPrimaryExpression)+;
+	//RAlfAssocNavExpression returns xbase::XExpression:
+	//	XPrimaryExpression (=> ({RAlfAssocNavExpression.left=current} "->") right=[TUAssociationEnd|QualifiedName])*;
 	public RAlfAssocNavExpressionElements getRAlfAssocNavExpressionAccess() {
 		return pRAlfAssocNavExpression;
 	}
@@ -3618,9 +3622,9 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 	// *     <li>XExpression -> XExpression in call arguments</li>
 	// * </ul>
 	// * / XMemberFeatureCall returns xbase::XExpression:
-	//	XPrimaryExpression (=> ({xbase::XAssignment.assignable=current} ("." | explicitStatic?="::")
+	//	RAlfAssocNavExpression (=> ({xbase::XAssignment.assignable=current} ("." | explicitStatic?="::")
 	//	feature=[types::JvmIdentifiableElement|FeatureCallID] OpSingleAssign) value=XAssignment | =>
-	//	({xbase::XMemberFeatureCall.memberCallTarget=current} ("." | explicitStatic?="::"))
+	//	({xbase::XMemberFeatureCall.memberCallTarget=current} ("." | explicitStatic?="::" | "=>"))
 	//	feature=[types::JvmIdentifiableElement|IdOrSuper] (=> explicitOperationCall?="(" (memberCallArguments+=XShortClosure
 	//	| memberCallArguments+=XExpression ("," memberCallArguments+=XExpression)*)? ")")?)*;
 	public XMemberFeatureCallElements getXMemberFeatureCallAccess() {

@@ -371,7 +371,7 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 	
 	/**
 	 * Constraint:
-	 *     (left=RAlfAssocNavExpression_RAlfAssocNavExpression_1_0_0_0 right=XPrimaryExpression)
+	 *     (left=RAlfAssocNavExpression_RAlfAssocNavExpression_1_0_0_0 right=[TUAssociationEnd|QualifiedName])
 	 */
 	protected void sequence_RAlfAssocNavExpression(EObject context, RAlfAssocNavExpression semanticObject) {
 		if(errorAcceptor != null) {
@@ -383,7 +383,7 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 		INodesForEObjectProvider nodes = createNodeProvider(semanticObject);
 		SequenceFeeder feeder = createSequencerFeeder(semanticObject, nodes);
 		feeder.accept(grammarAccess.getRAlfAssocNavExpressionAccess().getRAlfAssocNavExpressionLeftAction_1_0_0_0(), semanticObject.getLeft());
-		feeder.accept(grammarAccess.getRAlfAssocNavExpressionAccess().getRightXPrimaryExpressionParserRuleCall_1_1_0(), semanticObject.getRight());
+		feeder.accept(grammarAccess.getRAlfAssocNavExpressionAccess().getRightTUAssociationEndQualifiedNameParserRuleCall_1_1_0_1(), semanticObject.getRight());
 		feeder.finish();
 	}
 	

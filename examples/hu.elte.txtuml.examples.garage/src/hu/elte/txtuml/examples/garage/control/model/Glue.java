@@ -40,8 +40,8 @@ public class Glue extends ExternalClass implements IControl {
 		return instance;
 	}
 	
-	public void progress(ModelInt percent) {
-		controlled.progress(convertModelInt(percent));
+	public void progress(int percent) {
+		controlled.progress(percent);
 	}
 	
 	// IControl implementation
@@ -69,7 +69,7 @@ public class Glue extends ExternalClass implements IControl {
 
 	@Override
 	public void keyPress(int nr) {
-		Action.send(keyboard, gmodel.new KeyPress(new ModelInt(nr)));
+		Action.send(keyboard, gmodel.new KeyPress(nr));
 	}
 
 	@Override

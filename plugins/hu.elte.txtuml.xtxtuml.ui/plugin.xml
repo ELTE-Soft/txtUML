@@ -6,13 +6,14 @@
     <extension
             point="org.eclipse.ui.editors">
         <editor
-            class="hu.elte.txtuml.xtxtuml.ui.XtxtUMLExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
-            contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
-            default="true"
-            extensions="txtuml,xtxtuml"
-            id="hu.elte.txtuml.xtxtuml.XtxtUML"
-            matchingStrategy="hu.elte.txtuml.xtxtuml.ui.XtxtUMLExecutableExtensionFactory:org.eclipse.xtext.xbase.ui.editor.JavaEditorInputMatcher"
-            name="XtxtUML Editor">
+              class="hu.elte.txtuml.xtxtuml.ui.XtxtUMLExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
+              contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
+              default="true"
+              extensions="txtuml,xtxtuml"
+              icon="icons/xtxtuml_file.gif"
+              id="hu.elte.txtuml.xtxtuml.XtxtUML"
+              matchingStrategy="hu.elte.txtuml.xtxtuml.ui.XtxtUMLExecutableExtensionFactory:org.eclipse.xtext.xbase.ui.editor.JavaEditorInputMatcher"
+              name="XtxtUML Editor">
         </editor>
     </extension>
     <extension

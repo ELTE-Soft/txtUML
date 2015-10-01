@@ -3,6 +3,7 @@
 package hu.elte.txtuml.xtxtuml.xtxtUML.impl;
 
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfAssocNavExpression;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd;
 import hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage;
 
 import org.eclipse.emf.common.notify.Notification;
@@ -44,14 +45,14 @@ public class RAlfAssocNavExpressionImpl extends XExpressionImpl implements RAlfA
   protected XExpression left;
 
   /**
-   * The cached value of the '{@link #getRight() <em>Right</em>}' containment reference.
+   * The cached value of the '{@link #getRight() <em>Right</em>}' reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @see #getRight()
    * @generated
    * @ordered
    */
-  protected XExpression right;
+  protected TUAssociationEnd right;
 
   /**
    * <!-- begin-user-doc -->
@@ -127,7 +128,27 @@ public class RAlfAssocNavExpressionImpl extends XExpressionImpl implements RAlfA
    * <!-- end-user-doc -->
    * @generated
    */
-  public XExpression getRight()
+  public TUAssociationEnd getRight()
+  {
+    if (right != null && right.eIsProxy())
+    {
+      InternalEObject oldRight = (InternalEObject)right;
+      right = (TUAssociationEnd)eResolveProxy(oldRight);
+      if (right != oldRight)
+      {
+        if (eNotificationRequired())
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, XtxtUMLPackage.RALF_ASSOC_NAV_EXPRESSION__RIGHT, oldRight, right));
+      }
+    }
+    return right;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public TUAssociationEnd basicGetRight()
   {
     return right;
   }
@@ -137,37 +158,12 @@ public class RAlfAssocNavExpressionImpl extends XExpressionImpl implements RAlfA
    * <!-- end-user-doc -->
    * @generated
    */
-  public NotificationChain basicSetRight(XExpression newRight, NotificationChain msgs)
+  public void setRight(TUAssociationEnd newRight)
   {
-    XExpression oldRight = right;
+    TUAssociationEnd oldRight = right;
     right = newRight;
     if (eNotificationRequired())
-    {
-      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, XtxtUMLPackage.RALF_ASSOC_NAV_EXPRESSION__RIGHT, oldRight, newRight);
-      if (msgs == null) msgs = notification; else msgs.add(notification);
-    }
-    return msgs;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public void setRight(XExpression newRight)
-  {
-    if (newRight != right)
-    {
-      NotificationChain msgs = null;
-      if (right != null)
-        msgs = ((InternalEObject)right).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - XtxtUMLPackage.RALF_ASSOC_NAV_EXPRESSION__RIGHT, null, msgs);
-      if (newRight != null)
-        msgs = ((InternalEObject)newRight).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - XtxtUMLPackage.RALF_ASSOC_NAV_EXPRESSION__RIGHT, null, msgs);
-      msgs = basicSetRight(newRight, msgs);
-      if (msgs != null) msgs.dispatch();
-    }
-    else if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, XtxtUMLPackage.RALF_ASSOC_NAV_EXPRESSION__RIGHT, newRight, newRight));
+      eNotify(new ENotificationImpl(this, Notification.SET, XtxtUMLPackage.RALF_ASSOC_NAV_EXPRESSION__RIGHT, oldRight, right));
   }
 
   /**
@@ -182,8 +178,6 @@ public class RAlfAssocNavExpressionImpl extends XExpressionImpl implements RAlfA
     {
       case XtxtUMLPackage.RALF_ASSOC_NAV_EXPRESSION__LEFT:
         return basicSetLeft(null, msgs);
-      case XtxtUMLPackage.RALF_ASSOC_NAV_EXPRESSION__RIGHT:
-        return basicSetRight(null, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
   }
@@ -201,7 +195,8 @@ public class RAlfAssocNavExpressionImpl extends XExpressionImpl implements RAlfA
       case XtxtUMLPackage.RALF_ASSOC_NAV_EXPRESSION__LEFT:
         return getLeft();
       case XtxtUMLPackage.RALF_ASSOC_NAV_EXPRESSION__RIGHT:
-        return getRight();
+        if (resolve) return getRight();
+        return basicGetRight();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -220,7 +215,7 @@ public class RAlfAssocNavExpressionImpl extends XExpressionImpl implements RAlfA
         setLeft((XExpression)newValue);
         return;
       case XtxtUMLPackage.RALF_ASSOC_NAV_EXPRESSION__RIGHT:
-        setRight((XExpression)newValue);
+        setRight((TUAssociationEnd)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -240,7 +235,7 @@ public class RAlfAssocNavExpressionImpl extends XExpressionImpl implements RAlfA
         setLeft((XExpression)null);
         return;
       case XtxtUMLPackage.RALF_ASSOC_NAV_EXPRESSION__RIGHT:
-        setRight((XExpression)null);
+        setRight((TUAssociationEnd)null);
         return;
     }
     super.eUnset(featureID);

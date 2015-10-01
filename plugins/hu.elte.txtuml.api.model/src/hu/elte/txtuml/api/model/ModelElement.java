@@ -20,12 +20,6 @@ package hu.elte.txtuml.api.model;
  * <p>
  * See the documentation of {@link Model} for an overview on modeling in txtUML.
  * 
- * <p>
- * <b>Implementation note:</b>
- * <p>
- * It is needed for AspectJ to work well. All types that are used in the model
- * should implement this interface (not directly but through inheritance).
- * 
  * @author Gabor Ferenc Kovacs
  *
  */

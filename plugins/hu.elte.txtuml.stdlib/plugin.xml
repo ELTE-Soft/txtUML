@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.emf.ecore.uri_mapping">
+      <mapping
+            source="pathmap://TXTUML_STDLIB/"
+            target="platform:/plugin/hu.elte.txtuml.stdlib/src/hu/elte/txtuml/stdlib/">
+      </mapping>
+   </extension>
+   <extension
+         point="org.eclipse.papyrus.uml.extensionpoints.UMLLibrary">
+      <library
+            description="Model of the txtUML Standard Library"
+            name="txtUML Standard Library"
+            path="pathmap://TXTUML_STDLIB/stdlib.uml"
+            provider="ELTE">
+      </library>
+   </extension>
+
+</plugin>

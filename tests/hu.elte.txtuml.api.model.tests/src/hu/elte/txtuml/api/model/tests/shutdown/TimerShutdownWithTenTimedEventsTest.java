@@ -2,7 +2,6 @@ package hu.elte.txtuml.api.model.tests.shutdown;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.ModelExecutor;
-import hu.elte.txtuml.api.model.ModelInt;
 import hu.elte.txtuml.api.model.tests.base.SimpleModelTestsBase;
 import hu.elte.txtuml.api.model.tests.models.SimpleModel.Sig;
 import hu.elte.txtuml.api.model.tests.util.MutableBoolean;
@@ -23,7 +22,7 @@ public class TimerShutdownWithTenTimedEventsTest extends SimpleModelTestsBase {
 
 		Action.start(a);
 		for (int i = 0; i < 10; ++i) {
-			Timer.start(a, new Sig(), new ModelInt(i * 10));
+			Timer.start(a, new Sig(), i * 10);
 		}
 
 		Assert.assertEquals(false, actionPerformed.value);

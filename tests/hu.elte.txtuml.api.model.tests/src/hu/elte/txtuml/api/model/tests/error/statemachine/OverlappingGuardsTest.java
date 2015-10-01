@@ -3,7 +3,6 @@ package hu.elte.txtuml.api.model.tests.error.statemachine;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.Model;
-import hu.elte.txtuml.api.model.ModelBool;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.To;
@@ -55,16 +54,16 @@ public class OverlappingGuardsTest extends TestsBase {
 			@From(S1.class) @To(S2.class) @Trigger(Sig.class)
 			class T1 extends Transition {
 				@Override
-				public ModelBool guard() {
-					return new ModelBool(true);
+				public boolean guard() {
+					return true;
 				}
 			}
 
 			@From(S1.class) @To(S2.class) @Trigger(Sig.class)
 			class T2 extends Transition {
 				@Override
-				public ModelBool guard() {
-					return new ModelBool(true);
+				public boolean guard() {
+					return true;
 				}
 			}
 		}

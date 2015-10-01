@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api.model;
 
+import hu.elte.txtuml.api.model.backend.ElseException;
+
 /**
  * Base class for state machines in the model.
  * 
@@ -63,7 +65,7 @@ package hu.elte.txtuml.api.model;
  * 
  * Guards and effects might be applied to transitions. For the example, let us
  * assume that the signal <code>SampleSignal</code> has a field (a signal
- * parameter) <code>sampleParam</code> of type <code>ModelInt</code>.
+ * parameter) <code>sampleParam</code> of type int.
  * 
  * <pre>
  * <code>
@@ -79,9 +81,9 @@ package hu.elte.txtuml.api.model;
  * 		}
  * 
  * 		{@literal @}Override
- * 		public ModelBool guard() {
+ * 		public boolean guard() {
  * 			SampleSignal sg = getSignal(SampleSignal.class); 
- * 			return sg.sampleParam.isEqual(ModelInt.ZERO);
+ * 			return sg.sampleParam == 0;
  * 		}
  * 	}
  * 
@@ -129,7 +131,7 @@ package hu.elte.txtuml.api.model;
  * 
  * 	//...
  * 
- * 	ModelInt i = //...
+ * 	int i = //...
  * 
  * 	class SampleCompositeState extends CompositeState {
  * 		class Init extends Initial {}
@@ -143,16 +145,16 @@ package hu.elte.txtuml.api.model;
  * 		{@literal @From(SampleChoice.class) @To(S1.class)}
  * 		class FromChoice1 extends Transition {
  * 			{@literal @}Override
- * 			public ModelBool guard() {
- * 				return i.isEqual(ModelInt.ZERO);
+ * 			public boolean guard() {
+ * 				return i == 0;
  * 			}
  * 		}
  * 
  * 		{@literal @From(SampleChoice.class) @To(S2.class)}
  * 		class FromChoice2 extends Transition {
  * 			{@literal @}Override
- * 			public ModelBool guard() {
- * 				return ModelBool.ELSE;
+ * 			public boolean guard() {
+ * 				return Else();
  * 			}
  * 		}
  * 
@@ -177,7 +179,7 @@ package hu.elte.txtuml.api.model;
  * @see CompositeState
  *
  */
-public abstract class StateMachine extends NestedClassInstancesHolder implements
+public abstract class StateMachine extends InnerClassInstancesHolder implements
 		ModelElement {
 
 	/**
@@ -251,6 +253,9 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		 * documentation of {@link Model} for details about the action language.
 		 */
 		public void exit() {
+		}
+
+		void setSignal(Signal s) {
 		}
 
 		/**
@@ -442,12 +447,12 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * <p>
 	 * A choice pseudostate might be the source and target of any number of
 	 * transitions. Outgoing transitions must be unlabeled (that is, have no
-	 * {@link Trigger} annotations). Any time the state machine enters a
-	 * choice pseudostate, exactly one of the {@link Transition#guard guards} of
-	 * the outgoing transitions should evaluate to a <code>ModelBool</code>
-	 * representing <code>true</code>. The only exception is when one of the
-	 * guards evaluate to an {@link ModelBool.Else Else} instance. See the
-	 * documentation of the {@link Transition#guard guard} method for details.
+	 * {@link Trigger} annotations). Any time the state machine enters a choice
+	 * pseudostate, exactly one of the {@link Transition#guard guards} of the
+	 * outgoing transitions should evaluate to <code>true</code>. The only
+	 * exception is when one of the guards evaluate to an
+	 * {@link Transition#Else Else} condition. See the documentation of the
+	 * {@link Transition#guard guard} method for details.
 	 * <p>
 	 * The state machine leaves a choice pseudostate right after it enters that,
 	 * without any delay.
@@ -538,10 +543,10 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * annotation of <i>t</i>.</li>
 	 * </ul>
 	 * If all the preceding conditions hold, the guard of <i>t</i> is evaluated.
-	 * If it is evaluated to a <code>ModelBool</code> representing
-	 * <code>true</code>, the state machine uses <i>t</i> to change to another
-	 * vertex, exiting all inner states if <i>t</i> is from a composite state.
-	 * Otherwise, it searches for another transition that can be used.
+	 * If it is evaluated to <code>true</code>, the state machine uses <i>t</i>
+	 * to change to another vertex, exiting all inner states if <i>t</i> is from
+	 * a composite state. Otherwise, it searches for another transition that can
+	 * be used.
 	 * <p>
 	 * There might exist <b>at most one</b> such <i>t</i> at a time.
 	 * <p>
@@ -587,6 +592,8 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 */
 	public class State extends Vertex {
 
+		private Signal signal;
+
 		/**
 		 * Sole constructor of <code>State</code>.
 		 * <p>
@@ -598,6 +605,16 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		 * the API or the model exportation.
 		 */
 		protected State() {
+		}
+
+		@SuppressWarnings("unchecked")
+		protected final <T extends Signal> T getSignal(Class<T> signalClass) {
+			return (T) signal;
+		}
+
+		@Override
+		final void setSignal(Signal s) {
+			signal = s;
 		}
 
 		@Override
@@ -693,6 +710,44 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 
 	}
 
+	static class TransitionBase implements ModelElement {
+
+		/**
+		 * In the {@link Transition#guard guard}s of transitions which are from
+		 * {@link Choice} pseudostates, <i>else</i> conditions might be given,
+		 * for the corresponding transitions to be used when all other
+		 * potentially usable transitions' guards are evaluated to <i>true</i>.
+		 * <p>
+		 * To define an <i>else</i> condition, simply override the
+		 * {@link Transition#guard guard} of a transition to return with the
+		 * value returned by this method:
+		 * 
+		 * <pre>
+		 * <code>
+		 * {@literal @}Override
+		 * public boolean guard() {
+		 * 	return Else();
+		 * }
+		 * </code>
+		 * </pre>
+		 * 
+		 * For the sake of the implementation, this method in fact returns
+		 * nothing but throws a special exception instead, which might be caught
+		 * then by the API. Therefore, it is important that this method is only
+		 * called in an overridden <code>guard</code> method when the actual
+		 * transition is from a choice pseudostate.
+		 * 
+		 * @return an <i>else</i> condition; in fact, this method always throws
+		 *         a special exception which is caught by the API to represent
+		 *         an <i>else</i> condition
+		 * @see Transition#guard
+		 */
+		protected static final boolean Else() throws ElseException {
+			throw new ElseException();
+		}
+
+	}
+
 	/**
 	 * Base class for transitions in the model.
 	 * 
@@ -720,9 +775,8 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * An {@link #effect} of the transition might be defined which is executed
 	 * when the state machine uses that transition. Its {@link #guard} is
 	 * evaluated each time the state machine tries to use the transition, and
-	 * only uses it if the <code>guard</code> is evaluated to a
-	 * <code>ModelBool</code> representing <code>true</code>. See the
-	 * documentation of those methods for details.
+	 * only uses it if the <code>guard</code> is evaluated to <code>true</code>.
+	 * See the documentation of those methods for details.
 	 * 
 	 * <p>
 	 * <b>Java restrictions:</b>
@@ -761,7 +815,7 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 	 * @author Gabor Ferenc Kovacs
 	 *
 	 */
-	public class Transition implements ModelElement {
+	public class Transition extends TransitionBase {
 
 		/**
 		 * An instance of the class representing this transition's source
@@ -801,12 +855,12 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 			From from = cls.getAnnotation(From.class);
 			To to = cls.getAnnotation(To.class);
 
-			if (from == null || to == null) {
+			if (from == null || to == null) { // TODO
 				this.source = null;
 				this.target = null;
 			} else {
-				this.source = getNestedClassInstance(from.value());
-				this.target = getNestedClassInstance(to.value());
+				this.source = getInnerClassInstance(from.value());
+				this.target = getInnerClassInstance(to.value());
 			}
 		}
 
@@ -840,34 +894,31 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		 * <p>
 		 * If overridden, the return value must never be <code>null</code>.
 		 * <p>
-		 * If the overriding method returns a <code>ModelBool</code>
-		 * representing <b><code>false</code></b>, this transition will not be
-		 * chosen to be executed.
+		 * If the overriding method returns <b><code>false</code></b>, this
+		 * transition will not be chosen to be executed.
 		 * <p>
-		 * If the overriding method returns a <code>ModelBool</code>
-		 * representing <b><code>true</code></b>, this transition might be
-		 * chosen to be executed. Only one such transition may exist at any time
-		 * (for which the two conditions mentioned above, regarding the source
-		 * vertex and the triggering signal, are also met). Two such transitions
-		 * are allowed to exist in one special case:
+		 * If the overriding method returns <b><code>true</code></b>, this
+		 * transition might be chosen to be executed. Only one such transition
+		 * may exist at any time (for which the two conditions mentioned above,
+		 * regarding the source vertex and the triggering signal, are also met).
+		 * Two such transitions are allowed to exist in one special case:
 		 * <ul>
 		 * <li>the current vertex is a choice pseudostate,</li>
 		 * <li>the source of both transitions is the choice pseodostate (other
 		 * transitions are not taken into consideration in the case of a choice
 		 * pseudostate),</li>
 		 * <li>that transition's <code>guard</code> method returns an
-		 * {@link ModelBool.Else Else} instance which always represents
-		 * <code>true</code>,</li>
+		 * {@link #Else} condition,</li>
 		 * <li>the other transition's <code>guard</code> method does not return
-		 * an <code>Else</code> instance.</li>
+		 * an {@link #Else} condition.</li>
 		 * </ul>
 		 * <p>
 		 * In this case, the second transition will be executed as the one with
 		 * an else condition is executed only if no other transition might be
 		 * used.
 		 * <p>
-		 * If the overriding method once returns an <code>Else</code> instance,
-		 * it should always do so.
+		 * If the overriding method once returns an {@link #Else} condition, it
+		 * should always do so.
 		 * <p>
 		 * If the actual transition has a trigger defined, the
 		 * {@link #getSignal(Class) getSignal} method can be used inside the
@@ -877,11 +928,10 @@ public abstract class StateMachine extends NestedClassInstancesHolder implements
 		 * documentation of {@link Model} for details about condition
 		 * evaluations in the model.
 		 * 
-		 * @return a <code>ModelBool</code> representing <code>true</code> by
-		 *         default implementation
+		 * @return <code>true</code> by default implementation
 		 */
-		public ModelBool guard() {
-			return ModelBool.TRUE;
+		public boolean guard() {
+			return true;
 		}
 
 		/**

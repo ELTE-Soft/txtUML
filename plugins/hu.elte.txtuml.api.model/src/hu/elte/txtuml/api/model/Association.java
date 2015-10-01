@@ -69,11 +69,12 @@ package hu.elte.txtuml.api.model;
  * @see Association.One
  * @see Association.MaybeOne
  * @see Association.Some
+ * @see Association.Multiple
  * @see Association.HiddenMany
  * @see Association.HiddenOne
  * @see Association.HiddenMaybeOne
  * @see Association.HiddenSome
- *
+ * @see Association.HiddenMultiple
  */
 public class Association implements ModelElement {
 
@@ -110,7 +111,7 @@ public class Association implements ModelElement {
 	 * <p>
 	 * <b>Subtype requirements:</b>
 	 * <ul>
-	 * <li>must be the nested class of an association class (a subclass of
+	 * <li>must be the inner class of an association class (a subclass of
 	 * {@link Association})</li>
 	 * </ul>
 	 * <p>
@@ -139,7 +140,7 @@ public class Association implements ModelElement {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class Many<T extends ModelClass> extends BaseMany<T> implements
+	public class Many<T extends ModelClass> extends ManyBase<T> implements
 			hu.elte.txtuml.api.model.assocends.Navigability.Navigable,
 			hu.elte.txtuml.api.model.assocends.Multiplicity.ZeroToUnlimited {
 
@@ -178,7 +179,7 @@ public class Association implements ModelElement {
 	 * <p>
 	 * <b>Subtype requirements:</b>
 	 * <ul>
-	 * <li>must be the nested class of an association class (a subclass of
+	 * <li>must be the inner class of an association class (a subclass of
 	 * {@link Association})</li>
 	 * </ul>
 	 * <p>
@@ -207,7 +208,7 @@ public class Association implements ModelElement {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class Some<T extends ModelClass> extends BaseSome<T> implements
+	public class Some<T extends ModelClass> extends SomeBase<T> implements
 			hu.elte.txtuml.api.model.assocends.Navigability.Navigable,
 			hu.elte.txtuml.api.model.assocends.Multiplicity.OneToUnlimited {
 
@@ -246,7 +247,7 @@ public class Association implements ModelElement {
 	 * <p>
 	 * <b>Subtype requirements:</b>
 	 * <ul>
-	 * <li>must be the nested class of an association class (a subclass of
+	 * <li>must be the inner class of an association class (a subclass of
 	 * {@link Association})</li>
 	 * </ul>
 	 * <p>
@@ -275,8 +276,9 @@ public class Association implements ModelElement {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class MaybeOne<T extends ModelClass> extends BaseMaybeOne<T>
-			implements hu.elte.txtuml.api.model.assocends.Navigability.Navigable,
+	public class MaybeOne<T extends ModelClass> extends MaybeOneBase<T>
+			implements
+			hu.elte.txtuml.api.model.assocends.Navigability.Navigable,
 			hu.elte.txtuml.api.model.assocends.Multiplicity.ZeroToOne {
 
 		/**
@@ -314,7 +316,7 @@ public class Association implements ModelElement {
 	 * <p>
 	 * <b>Subtype requirements:</b>
 	 * <ul>
-	 * <li>must be the nested class of an association class (a subclass of
+	 * <li>must be the inner class of an association class (a subclass of
 	 * {@link Association})</li>
 	 * </ul>
 	 * <p>
@@ -343,7 +345,7 @@ public class Association implements ModelElement {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class One<T extends ModelClass> extends BaseOne<T> implements
+	public class One<T extends ModelClass> extends OneBase<T> implements
 			hu.elte.txtuml.api.model.assocends.Navigability.Navigable,
 			hu.elte.txtuml.api.model.assocends.Multiplicity.One {
 
@@ -358,6 +360,88 @@ public class Association implements ModelElement {
 		 * the API or the model exportation.
 		 */
 		protected One() {
+		}
+
+	}
+
+	/**
+	 * An immutable collection which contains the elements of a navigable
+	 * association end with a user-defined multiplicity.
+	 * 
+	 * <p>
+	 * <b>Represents:</b> navigable association end with a user-defined
+	 * multiplicity
+	 * <p>
+	 * <b>Usage:</b>
+	 * <p>
+	 * 
+	 * For general information about association ends, see the documentation of
+	 * {@link AssociationEnd}.
+	 * <p>
+	 * A class that extends <code>Multiple</code> (or its non-navigable
+	 * counterpart, {@link HiddenMultiple}), represents an association end that
+	 * may have a custom, user-specified multiplicity by applying the
+	 * {@link Min} and/or {@link Max} annotations on the class. <code>Min</code>
+	 * sets the lower, <code>Max</code> the upper bound of the multiplicity. If
+	 * one of the annotations is not present, that means that there is no lower
+	 * and/or upper bound. Therefore, an omitted <code>Min</code> equals to an
+	 * explicitly specified lower bound of zero, whereas a missing
+	 * <code>Max</code> shows that any number of object might be present at the
+	 * association end (if their count satisfies the lower bound).
+	 * 
+	 * <p>
+	 * <b>Java restrictions:</b>
+	 * <ul>
+	 * <li><i>Instantiate:</i> disallowed</li>
+	 * <li><i>Define subtype:</i> allowed
+	 * <p>
+	 * <b>Subtype requirements:</b>
+	 * <ul>
+	 * <li>must be the inner class of an association class (a subclass of
+	 * {@link Association})</li>
+	 * </ul>
+	 * <p>
+	 * <b>Subtype restrictions:</b>
+	 * <ul>
+	 * <li><i>Be abstract:</i> disallowed</li>
+	 * <li><i>Generic parameters:</i> disallowed</li>
+	 * <li><i>Constructors:</i> disallowed</li>
+	 * <li><i>Initialization blocks:</i> disallowed</li>
+	 * <li><i>Fields:</i> disallowed</li>
+	 * <li><i>Methods:</i> disallowed</li>
+	 * <li><i>Nested interfaces:</i> disallowed</li>
+	 * <li><i>Nested classes:</i> disallowed</li>
+	 * <li><i>Nested enums:</i> disallowed</li>
+	 * </ul>
+	 * </li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
+	 * </ul>
+	 * 
+	 * <p>
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
+	 * 
+	 * @author Gabor Ferenc Kovacs
+	 * 
+	 * @param <T>
+	 *            the type of model objects to be contained in this collection
+	 */
+	public class Multiple<T extends ModelClass> extends MultipleBase<T>
+			implements
+			hu.elte.txtuml.api.model.assocends.Navigability.Navigable,
+			hu.elte.txtuml.api.model.assocends.Multiplicity.MinToMax {
+
+		/**
+		 * Sole constructor of <code>Multiple</code>.
+		 * <p>
+		 * <b>Implementation note:</b>
+		 * <p>
+		 * Protected because this class is intended to be inherited from but not
+		 * instantiated. However, <code>Multiple</code> has to be a non-abstract
+		 * class to make sure that it is instantiatable when that is needed for
+		 * the API or the model exportation.
+		 */
+		protected Multiple() {
 		}
 
 	}
@@ -383,7 +467,7 @@ public class Association implements ModelElement {
 	 * <p>
 	 * <b>Subtype requirements:</b>
 	 * <ul>
-	 * <li>must be the nested class of an association class (a subclass of
+	 * <li>must be the inner class of an association class (a subclass of
 	 * {@link Association})</li>
 	 * </ul>
 	 * <p>
@@ -412,7 +496,7 @@ public class Association implements ModelElement {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class HiddenMany<T extends ModelClass> extends BaseMany<T> implements
+	public class HiddenMany<T extends ModelClass> extends ManyBase<T> implements
 			hu.elte.txtuml.api.model.assocends.Navigability.NonNavigable,
 			hu.elte.txtuml.api.model.assocends.Multiplicity.ZeroToUnlimited {
 
@@ -452,7 +536,7 @@ public class Association implements ModelElement {
 	 * <p>
 	 * <b>Subtype requirements:</b>
 	 * <ul>
-	 * <li>must be the nested class of an association class (a subclass of
+	 * <li>must be the inner class of an association class (a subclass of
 	 * {@link Association})</li>
 	 * </ul>
 	 * <p>
@@ -481,7 +565,7 @@ public class Association implements ModelElement {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class HiddenSome<T extends ModelClass> extends BaseSome<T> implements
+	public class HiddenSome<T extends ModelClass> extends SomeBase<T> implements
 			hu.elte.txtuml.api.model.assocends.Navigability.NonNavigable,
 			hu.elte.txtuml.api.model.assocends.Multiplicity.OneToUnlimited {
 
@@ -521,7 +605,7 @@ public class Association implements ModelElement {
 	 * <p>
 	 * <b>Subtype requirements:</b>
 	 * <ul>
-	 * <li>must be the nested class of an association class (a subclass of
+	 * <li>must be the inner class of an association class (a subclass of
 	 * {@link Association})</li>
 	 * </ul>
 	 * <p>
@@ -550,8 +634,9 @@ public class Association implements ModelElement {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class HiddenMaybeOne<T extends ModelClass> extends BaseMaybeOne<T>
-			implements hu.elte.txtuml.api.model.assocends.Navigability.NonNavigable,
+	public class HiddenMaybeOne<T extends ModelClass> extends MaybeOneBase<T>
+			implements
+			hu.elte.txtuml.api.model.assocends.Navigability.NonNavigable,
 			hu.elte.txtuml.api.model.assocends.Multiplicity.ZeroToOne {
 
 		/**
@@ -589,7 +674,7 @@ public class Association implements ModelElement {
 	 * <p>
 	 * <b>Subtype requirements:</b>
 	 * <ul>
-	 * <li>must be the nested class of an association class (a subclass of
+	 * <li>must be the inner class of an association class (a subclass of
 	 * {@link Association})</li>
 	 * </ul>
 	 * <p>
@@ -618,7 +703,7 @@ public class Association implements ModelElement {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class HiddenOne<T extends ModelClass> extends BaseOne<T> implements
+	public class HiddenOne<T extends ModelClass> extends OneBase<T> implements
 			hu.elte.txtuml.api.model.assocends.Navigability.NonNavigable,
 			hu.elte.txtuml.api.model.assocends.Multiplicity.One {
 
@@ -637,4 +722,73 @@ public class Association implements ModelElement {
 
 	}
 
+	/**
+	 * An immutable collection which contains the elements of a non-navigable
+	 * association end with a user-defined multiplicity.
+	 * 
+	 * <p>
+	 * <b>Represents:</b> non-navigable association end with a user-defined
+	 * multiplicity.
+	 * <p>
+	 * <b>Usage:</b>
+	 * <p>
+	 * 
+	 * See the documentation of {@link Multiple} and {@link AssociationEnd}.
+	 * 
+	 * <p>
+	 * <b>Java restrictions:</b>
+	 * <ul>
+	 * <li><i>Instantiate:</i> disallowed</li>
+	 * <li><i>Define subtype:</i> allowed
+	 * <p>
+	 * <b>Subtype requirements:</b>
+	 * <ul>
+	 * <li>must be the inner class of an association class (a subclass of
+	 * {@link Association})</li>
+	 * </ul>
+	 * <p>
+	 * <b>Subtype restrictions:</b>
+	 * <ul>
+	 * <li><i>Be abstract:</i> disallowed</li>
+	 * <li><i>Generic parameters:</i> disallowed</li>
+	 * <li><i>Constructors:</i> disallowed</li>
+	 * <li><i>Initialization blocks:</i> disallowed</li>
+	 * <li><i>Fields:</i> disallowed</li>
+	 * <li><i>Methods:</i> disallowed</li>
+	 * <li><i>Nested interfaces:</i> disallowed</li>
+	 * <li><i>Nested classes:</i> disallowed</li>
+	 * <li><i>Nested enums:</i> disallowed</li>
+	 * </ul>
+	 * </li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
+	 * </ul>
+	 * 
+	 * <p>
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * txtUML.
+	 * 
+	 * @author Gabor Ferenc Kovacs
+	 * 
+	 * @param <T>
+	 *            the type of model objects to be contained in this collection
+	 */
+	public class HiddenMultiple<T extends ModelClass> extends MultipleBase<T>
+			implements
+			hu.elte.txtuml.api.model.assocends.Navigability.NonNavigable,
+			hu.elte.txtuml.api.model.assocends.Multiplicity.MinToMax {
+
+		/**
+		 * Sole constructor of <code>HiddenMultiple</code>.
+		 * <p>
+		 * <b>Implementation note:</b>
+		 * <p>
+		 * Protected because this class is intended to be inherited from but not
+		 * instantiated. However, <code>HiddenMultiple</code> has to be a
+		 * non-abstract class to make sure that it is instantiatable when that
+		 * is needed for the API or the model exportation.
+		 */
+		protected HiddenMultiple() {
+		}
+
+	}
 }

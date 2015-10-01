@@ -7,7 +7,6 @@ import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.export.DiagramExporter;
 
 import java.net.URLClassLoader;
-
 import org.eclipse.emf.common.util.URI;
 
 /**
@@ -17,7 +16,6 @@ import org.eclipse.emf.common.util.URI;
  */
 public class ExportUtils {
 	
-	private static final ClassLoader exportParent = UML2.class.getClassLoader();
 	private static final ClassLoader layoutparent = DiagramExporter.class.getClassLoader();
 	
 	/**
@@ -29,14 +27,8 @@ public class ExportUtils {
 	 */
 	public static void exportTxtUMLModelToUML2(String sourceProject, String modelName,
 										String folder) throws Exception{
-		
-		try(URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(sourceProject, exportParent)){
-			Class<?> txtUMLModelClass = loader.loadClass(modelName);
-			String uri = URI.createPlatformResourceURI(folder, false).toString();
-			UML2.exportModel(txtUMLModelClass, uri);
-		}catch(Exception e){
-			throw e;
-		}
+		String uri = URI.createPlatformResourceURI(folder, false).toString();
+		UML2.exportModel(sourceProject, modelName, uri);
 	}
 
 	/**

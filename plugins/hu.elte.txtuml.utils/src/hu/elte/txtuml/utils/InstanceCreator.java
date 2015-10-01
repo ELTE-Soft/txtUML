@@ -11,7 +11,7 @@ import java.util.Set;
  * @author Gabor Ferenc Kovacs
  *
  */
-public class InstanceCreator {
+public final class InstanceCreator {
 
 	public static <T> T createInstance(Class<T> c) {
 		return createInstanceRecursively(c, new HashSet<>());
@@ -20,6 +20,13 @@ public class InstanceCreator {
 	@SuppressWarnings("unchecked")
 	public static <T> T createInstanceWithGivenParams(Class<T> c,
 			Object... givenParams) {
+		if (c.isPrimitive()) {
+			if (givenParams.length == 0) {
+				return createPrimitiveInstance(c);
+			} else {
+				return null;
+			}
+		}
 		Set<Class<?>> ancestors = new HashSet<>();
 		T ret = null;
 		int givenParamsLen = givenParams.length;
@@ -82,6 +89,9 @@ public class InstanceCreator {
 		if (ancestors.contains(c)) {
 			return null;
 		}
+		if (c.isPrimitive()) {
+			return createPrimitiveInstance(c);
+		}
 		ancestors.add(c);
 
 		T ret = null;
@@ -125,6 +135,29 @@ public class InstanceCreator {
 
 		ancestors.remove(c);
 		return ret;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> T createPrimitiveInstance(Class<?> c) {
+		// The 8 primitive types of Java, with the more common ones in front.
+		if (c == boolean.class) {
+			return (T) new Boolean(false);
+		} else if (c == int.class) {
+			return (T) new Integer(0);
+		} else if (c == long.class) {
+			return (T) new Long(0L);
+		} else if (c == double.class) {
+			return (T) new Double(0.0d);
+		} else if (c == float.class) {
+			return (T) new Float(0.0f);
+		} else if (c == short.class) {
+			return (T) new Short((short) 0);
+		} else if (c == byte.class) {
+			return (T) new Byte((byte) 0);
+		} else if (c == char.class) {
+			return (T) new Character('\u0000');
+		}
+		return null;
 	}
 
 }

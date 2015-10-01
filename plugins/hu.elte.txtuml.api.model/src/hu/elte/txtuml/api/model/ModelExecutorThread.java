@@ -24,7 +24,7 @@ class ModelExecutorThread extends Thread {
 	 * The mailbox in which the to-be-sent signals are gathered and later
 	 * processed (asynchronously).
 	 */
-	private final LinkedBlockingQueue<IMailboxEntry> mailbox = new LinkedBlockingQueue<>();
+	private final LinkedBlockingQueue<MailboxEntry> mailbox = new LinkedBlockingQueue<>();
 
 	/**
 	 * A queue of checks which are to be performed at the beginning of the next
@@ -33,7 +33,7 @@ class ModelExecutorThread extends Thread {
 	 * See the documentation of {@link Model} for information about execution
 	 * steps.
 	 */
-	private final Queue<ICheckQueueEntry> checkQueue = new ConcurrentLinkedQueue<>();
+	private final Queue<CheckQueueEntry> checkQueue = new ConcurrentLinkedQueue<>();
 
 	/**
 	 * Sole constructor of package private <code>ModelExecutorThread</code>.
@@ -54,9 +54,13 @@ class ModelExecutorThread extends Thread {
 	 * @param signal
 	 *            the signal to send
 	 */
-	void send(ModelClass target, Signal signal) {
+	void send(Region target, Signal signal) {
+		newMailboxEntry(() -> target.process(signal));
+	}
+
+	private void newMailboxEntry(MailboxEntry entry) {
 		try {
-			mailbox.put(new MailboxEntry(target, signal));
+			mailbox.put(entry);
 		} catch (InterruptedException e) {
 		}
 	}
@@ -67,7 +71,7 @@ class ModelExecutorThread extends Thread {
 	 */
 	void shutdown() {
 		try {
-			class ShutdownAction implements IMailboxEntry {
+			class ShutdownAction implements MailboxEntry {
 				@Override
 				public void execute() {
 					if (mailbox.isEmpty()) {
@@ -103,7 +107,7 @@ class ModelExecutorThread extends Thread {
 	 */
 	void checkLowerBoundOfMultiplcitiy(ModelClass obj,
 			Class<? extends AssociationEnd<?>> assocEnd) {
-		checkQueue.add(new LowerBoundOfMultiplicityCheck(obj, assocEnd));
+		checkQueue.add(() -> obj.checkLowerBound(assocEnd));
 	}
 
 	/**
@@ -117,7 +121,7 @@ class ModelExecutorThread extends Thread {
 		try {
 			while (true) {
 				while (true) {
-					ICheckQueueEntry entry = checkQueue.poll();
+					CheckQueueEntry entry = checkQueue.poll();
 					if (entry == null) {
 						break;
 					}
@@ -142,56 +146,12 @@ class ModelExecutorThread extends Thread {
  *
  */
 @FunctionalInterface
-interface IMailboxEntry {
+interface MailboxEntry {
 
 	/**
 	 * Executes the asynchronous operation stored in this entry.
 	 */
 	void execute();
-}
-
-/**
- * The default implementation of {@link IMailboxEntry}. Stores and prepares a
- * send operation to be executed in the future.
- * <p>
- * Unusable by the user.
- * 
- * @author Gabor Ferenc Kovacs
- * 
- */
-class MailboxEntry implements IMailboxEntry {
-
-	/**
-	 * The target object of the stored send operation.
-	 */
-	private final ModelClass target;
-
-	/**
-	 * The signal of the stored send operation.
-	 */
-	private final Signal signal;
-
-	/**
-	 * Creates a new <code>QueueEntry</code> to store a send operation for
-	 * future execution.
-	 * 
-	 * @param target
-	 *            the target object of the stored send operation
-	 * @param signal
-	 *            the signal of the stored send operation
-	 */
-	MailboxEntry(ModelClass target, Signal signal) {
-		this.target = target;
-		this.signal = signal;
-	}
-
-	/**
-	 * Executes the send operation stored in this entry.
-	 */
-	@Override
-	public void execute() {
-		target.process(signal);
-	}
 }
 
 /**
@@ -204,57 +164,11 @@ class MailboxEntry implements IMailboxEntry {
  * 
  */
 @FunctionalInterface
-interface ICheckQueueEntry {
+interface CheckQueueEntry {
 
 	/**
 	 * Performs the prepared check.
 	 */
 	void performCheck();
-
-}
-
-/**
- * A kind of entry of {@link ModelExecutorThread}<code>.checkList</code>. Stores
- * a check of the lower bound of an association end's multiplicity to be
- * performed in the future.
- * <p>
- * Unusable by the user.
- * 
- * @author Gabor Ferenc Kovacs
- */
-class LowerBoundOfMultiplicityCheck implements ICheckQueueEntry {
-
-	/**
-	 * The object on the opposite end of the association.
-	 */
-	private final ModelClass obj;
-
-	/**
-	 * The association end which's multiplicity is to be checked.
-	 */
-	private final Class<? extends AssociationEnd<?>> assocEnd;
-
-	/**
-	 * Creates a new instance which stores a check of the lower bound of an
-	 * association end's multiplicity to be performed in the future.
-	 * 
-	 * @param obj
-	 *            the object on the opposite end of the association
-	 * @param assocEnd
-	 *            the association end which's multiplicity is to be checked
-	 */
-	LowerBoundOfMultiplicityCheck(ModelClass obj,
-			Class<? extends AssociationEnd<?>> assocEnd) {
-		this.obj = obj;
-		this.assocEnd = assocEnd;
-	}
-
-	/**
-	 * Performs the prepared lower bound check.
-	 */
-	@Override
-	public void performCheck() {
-		obj.checkLowerBound(assocEnd);
-	}
 
 }

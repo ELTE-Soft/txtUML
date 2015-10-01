@@ -18,8 +18,8 @@ public class TxtUMLProjectPage extends WizardPage {
 	private Text modelName;
 
 	private static final String defaultModelName = "Sample";
-	private static final String defaultProjectName = "project.sample";
-
+	private static final String defaultProjectName = "sample";
+	
 	/**
 	 * Constructor for SampleNewWizardPage.
 	 * 

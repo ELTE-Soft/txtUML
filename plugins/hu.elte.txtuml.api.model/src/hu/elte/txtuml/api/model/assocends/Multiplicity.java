@@ -3,7 +3,8 @@ package hu.elte.txtuml.api.model.assocends;
 /**
  * A base interface to represent the multiplicity property of association ends.
  * Association ends might have a multiplicity of {@link One}, {@link ZeroToOne},
- * {@link ZeroToUnlimited} or {@link OneToUnlimited}.
+ * {@link ZeroToUnlimited}, {@link OneToUnlimited} or {@link MinToMax} to
+ * represent custom multiplicity.
  * <p>
  * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an overview on
  * modeling in txtUML.
@@ -63,6 +64,18 @@ public interface Multiplicity {
 	 *
 	 */
 	public interface OneToUnlimited extends Multiplicity {
+	}
+
+	/**
+	 * Implementing classes of this interface represent association ends in the
+	 * model which have a user-defined multiplicity with two specified bounds.
+	 * <p>
+	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an overview
+	 * on modeling in txtUML.
+	 * 
+	 * @author Gabor Ferenc Kovacs
+	 */
+	public interface MinToMax extends Multiplicity {
 	}
 
 }

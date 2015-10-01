@@ -3,8 +3,8 @@ package hu.elte.txtuml.api.model;
 import hu.elte.txtuml.api.model.blocks.ParameterizedCondition;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Spliterator;
-import java.util.function.Consumer;
 
 /**
  * Base interface for immutable collections of {@link ModelClass} objects.
@@ -38,34 +38,33 @@ import java.util.function.Consumer;
  * @see Collection.Empty
  * @see AssociationEnd
  */
-public interface Collection<T extends ModelClass> extends Iterable<T> {
+public interface Collection<T extends ModelClass> extends Iterable<T>,
+		ModelElement {
 
 	/**
 	 * Checks if this collection is empty.
 	 * 
-	 * @return a <code>ModelBool</code> representing <code>true</code> if this
-	 *         collection is empty, a <code>ModelBool</code> representing
-	 *         <code>false</code> otherwise
+	 * @return <code>true</code> if this collection is empty; <code>false</code>
+	 *         otherwise
 	 */
-	ModelBool isEmpty();
+	boolean isEmpty();
 
 	/**
 	 * Returns the number of elements in this collection.
 	 * 
-	 * @return a <code>ModelInt</code> representing the size of this collection
+	 * @return the size of this collection
 	 */
-	ModelInt count();
+	int count();
 
 	/**
 	 * Checks whether a certain model object is in this collection.
 	 * 
 	 * @param object
 	 *            the model object to check
-	 * @return a <code>ModelBool</code> representing <code>true</code> if this
-	 *         collection contains the specified <code>object</code>, a
-	 *         <code>ModelBool</code> representing <code>false</code> otherwise
+	 * @return <code>true</code> if this collection contains the specified
+	 *         <code>object</code>; <code>false</code> otherwise
 	 */
-	ModelBool contains(ModelClass object);
+	boolean contains(ModelClass object);
 
 	/**
 	 * Selects an element of this collection. Nor randomness, nor any iteration
@@ -124,28 +123,11 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 	Collection<T> remove(T object);
 
 	/**
-	 * As iterators over collections are purely for API implementation issues,
-	 * this method <b>must not be used in the model</b>.
-	 */
-	@Override
-	Iterator<T> iterator();
-
-	/**
-	 * As iterators over collections are purely for API implementation issues,
-	 * this method <b>must not be used in the model</b>.
+	 * This method <b>must not be used in the model</b>.
 	 */
 	@Override
 	default Spliterator<T> spliterator() {
 		return Iterable.super.spliterator();
-	}
-
-	/**
-	 * As iterators over collections are purely for API implementation issues,
-	 * this method <b>must not be used in the model</b>.
-	 */
-	@Override
-	default void forEach(Consumer<? super T> action) {
-		Iterable.super.forEach(action);
 	}
 
 	/**
@@ -159,8 +141,6 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 	 * <li><i>Instantiate:</i> allowed</li>
 	 * <li><i>Define subtype:</i> disallowed</li>
 	 * </ul>
-	 * This class is currently <b>only available in the API</b>, its use is
-	 * <b>not exported to EMF-UML2</b>.
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * txtUML.
@@ -183,28 +163,29 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 
 				@Override
 				public T next() {
-					return null;
+					throw new NoSuchElementException();
 				}
 
 				@Override
 				public void remove() {
+					throw new UnsupportedOperationException();
 				}
 			};
 		}
 
 		@Override
-		public ModelBool isEmpty() {
-			return ModelBool.TRUE;
+		public boolean isEmpty() {
+			return true;
 		}
 
 		@Override
-		public ModelInt count() {
-			return ModelInt.ZERO;
+		public int count() {
+			return 0;
 		}
 
 		@Override
-		public ModelBool contains(ModelClass object) {
-			return ModelBool.FALSE;
+		public boolean contains(ModelClass object) {
+			return false;
 		}
 
 		@Override
@@ -219,12 +200,12 @@ public interface Collection<T extends ModelClass> extends Iterable<T> {
 
 		@Override
 		public Collection<T> add(T object) {
-			return new BaseMaybeOne<T>(object);
+			return new MaybeOneBase<T>(object);
 		}
 
 		@Override
 		public Collection<T> addAll(Collection<T> objects) {
-			return new BaseMany<T>(objects);
+			return new ManyBase<T>(objects);
 		}
 
 		@Override

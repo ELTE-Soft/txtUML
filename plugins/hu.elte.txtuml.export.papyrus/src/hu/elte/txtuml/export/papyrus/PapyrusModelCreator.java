@@ -29,13 +29,15 @@ import org.eclipse.uml2.uml.Profile;
 /**
  * Controls the creation of a Papyrus Model
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public class PapyrusModelCreator {
 	private IFile diFile;
 	private IFile umlFile;
+	private IFile notationFile;
 	private String diFilePath;
 	private String umlFilePath;
+	private String notationFilePath;
 	private ServicesRegistry registry;
 
 	/**
@@ -45,9 +47,11 @@ public class PapyrusModelCreator {
 	public PapyrusModelCreator(String modelpath){
 		diFilePath = modelpath+".di";
 		umlFilePath = modelpath+".uml";
+		notationFilePath = modelpath+".notation";
 		
 		diFile = fileFromPath(diFilePath);
 		umlFile = fileFromPath(umlFilePath);
+		notationFile = fileFromPath(notationFilePath);
 	}
 	
 	/**
@@ -66,6 +70,36 @@ public class PapyrusModelCreator {
 		return diFile;
 	}
 
+	/**
+	 * Checks if the .notation file exists
+	 * @return Returns true if the .notation exists
+	 */
+	public boolean notationExists(){
+		return notationFile.exists();
+	}
+	
+	/**
+	 * Returns the .notation File
+	 * @return Returns the .notation File 
+	 */
+	public IFile getNotation(){
+		return notationFile;
+	}
+
+	/**
+	 * Deletes the .di and .notation files.
+	 * 
+	 * @throws CoreException
+	 */
+	public void cleanup() throws CoreException {
+		if(diExists()) {
+			getDi().delete(true, null);
+		}
+		if(notationExists()) {
+			getNotation().delete(true, null);
+		}
+	}
+	
 	/**
 	 * sets the UML file of the papyrus model that will be created.
 	 * @param sourceUMLPath

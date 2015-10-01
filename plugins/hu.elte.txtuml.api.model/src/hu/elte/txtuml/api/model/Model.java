@@ -10,7 +10,7 @@ package hu.elte.txtuml.api.model;
  * <b>Usage:</b>
  * <p>
  * 
- * Every element of the model must be nested classes of the same subclass of
+ * All elements of the model must be nested classes of the same subclass of
  * <code>Model</code>.
  * 
  * <p>
@@ -77,11 +77,6 @@ package hu.elte.txtuml.api.model;
  * is the only source of information about model validity. Offending these rules
  * may cause unexpected behavior or errors without proper explanation or error
  * messages.
- * <p>
- * <b>Note:</b> many of these rules of writing txtUML models are only in the
- * service of model exportation to EMF-UML2. Therefore, it is possible for a
- * non-valid model to be executed correctly through the API, but produce errors
- * when exporting that model to EMF-UML2.
  *
  * <h2>Main structure of a model</h2>
  * 
@@ -127,15 +122,6 @@ package hu.elte.txtuml.api.model;
  * ),</li>
  * <li>external classes to call out to native Java code ( {@link ExternalClass}
  * ),</li>
- * <li>boolean, integer, string primitive types ( {@link ModelInt},
- * {@link ModelBool}, {@link ModelString} )</li>
- * <li>control structures and variables to use inside them (
- * {@link Action#If(hu.elte.txtuml.api.model.blocks.Condition, hu.elte.txtuml.api.model.blocks.BlockBody, hu.elte.txtuml.api.model.blocks.BlockBody)
- * Action.If},
- * {@link Action#While(hu.elte.txtuml.api.model.blocks.Condition, hu.elte.txtuml.api.model.blocks.BlockBody)
- * Action.While},
- * {@link Action#For(ModelInt, ModelInt, hu.elte.txtuml.api.model.blocks.ParameterizedBlockBody)
- * Action.For}, {@link VariableType} )</li>
  * <li>logging ( {@link Action#log(String) log}, {@link Action#logError(String)
  * logError} ),</li>
  * <li>changeable timers through the standard library (
@@ -176,11 +162,7 @@ package hu.elte.txtuml.api.model;
  * <li>Using and extending classes, interfaces, enums and annotations of this
  * package and the {@link hu.elte.txtuml.api.model.blocks} package, if the opposite is
  * not stated on the corresponding pages of this documentation.</li>
- * <li>Using Java primitive types and <code>String</code>s but only as
- * parameters of constructors and setter methods of {@link ModelType} and
- * {@link VariableType} classes and their subclasses, and logging methods of
- * {@link Action} ( {@link Action#log(String) log},
- * {@link Action#logError(String) logError} ).</li>
+ * <li>Using Java primitive types and <code>String</code>s.</li>
  * <li>Using subclasses of <code>ExternalClass</code>, like the classes of the
  * {@link hu.elte.txtuml.api.stdlib} package. See the documentation of
  * {@link ExternalClass} for details.</li>
@@ -191,23 +173,11 @@ package hu.elte.txtuml.api.model;
  * <ul>
  * <li>Using or extending any type not included in the preceding list, including
  * Java built-in types (with the exception of <code>java.lang.Object</code>).</li>
- * <li>Any kind of control structures (<code>if</code>, <code>while</code>,
- * <code>do</code> <code>for</code>, <code>synchronized</code>,
- * <code>switch</code> statements).</li>
  * <li>Exception handling.</li>
- * <li>Defining <code>enum</code>s, <code>interface</code>s or
- * <code>abstract class</code>es.</li>
+ * <li>Defining <code>abstract class</code>es.</li>
  * <li>Defining <code>synchronized</code>, <code>native</code> or
- * <code>abstract</code> methods.</li>
+ * <code>abstract</code> methods, using <code>synchronized</code> blocks.</li>
  * <li>Defining local classes.</li>
- * <li>Using the <code>instanceof</code> or the ternary <code>? :</code>
- * operator.</li>
- * <li>Equality checks with operators <code>==</code> or <code>!=</code>,
- * including null-checking (<code>null</code> values should be avoided in the
- * model).</li>
- * <li>Overriding or explicitly using the methods of
- * <code>java.lang.Object</code>, with the exception of the use of the
- * <code>toString</code> method which might be used only for logging.</li>
  * <li>Creating or managing threads.</li>
  * </ul>
  * 
@@ -234,10 +204,10 @@ package hu.elte.txtuml.api.model;
  * <ul>
  * <li>Create model objects (instances of subclasses of {@link ModelClass}) by
  * either calling their constructors or using the
- * {@link Action#create(Class, ModelValue...) Action.create} method.
- * Instantiating the model class <i>m</i> (the subclass of <code>Model</code>
- * which encloses the whole model) is also allowed but is not required, neither
- * has any effect on a well-defined model.</li>
+ * {@link Action#create(Class, Object...) Action.create} method. Instantiating
+ * the model class <i>m</i> (the subclass of <code>Model</code> which encloses
+ * the whole model) is also allowed but is not required, neither has any effect
+ * on a well-defined model.</li>
  * <li>Use the static methods of the <code>Action</code> class to
  * {@link Action#link(Class, ModelClass, Class, ModelClass) link},
  * {@link Action#unlink(Class, ModelClass, Class, ModelClass) unlink},
@@ -297,27 +267,26 @@ package hu.elte.txtuml.api.model;
  * 
  * <p>
  * A condition evaluation in txtUML is a Java code block which aims to create a
- * {@link ModelBool} value that represents either <code>true</code> or
- * <code>false</code> whether a certain condition about the model (which
- * condition the block represents) holds or not.
+ * <code>boolean</code> value that represents whether a certain condition about
+ * the model (which condition the block represents) holds or not.
  * <p>
  * Condition evaluations in txtUML include
- * {@link StateMachine.Transition#guard() guards} of transitions, conditions of
- * {@link Action#If(hu.elte.txtuml.api.model.blocks.Condition, hu.elte.txtuml.api.model.blocks.BlockBody, hu.elte.txtuml.api.model.blocks.BlockBody)
- * If} statements and certain <code>Collection</code> methods (
+ * {@link StateMachine.Transition#guard() guards} of transitions and conditions
+ * of certain <code>Collection</code> methods (
  * {@link Collection#selectAll(hu.elte.txtuml.api.model.blocks.ParameterizedCondition)
  * selectAll} ).
  * <p>
- * A condition evaluation is exported to EMF-UML2 as a single model query, so it
- * <b>may include only the following actions</b>:
+ * A condition evaluation is exported as a single model query, so it <b>may
+ * include only the following actions</b>:
  * <ul>
  * <li>Defining, modifying local variables.</li>
  * <li>Getting (but <i>not</i> setting) fields of model objects and signals.</li>
  * <li>Querying association ends with the {@link ModelClass#assoc(Class)
  * ModelClass.assoc} method.</li>
- * <li>Creating new {@link ModelType} or {@link Collection} instances with
- * methods of those two types or their subtypes. (As all such instances are
- * immutable, this does not affect the state of the model in any way.)</li>
+ * <li>Using primitives (including <code>Sting</code>).</li>
+ * <li>Creating {@link Collection} instances with methods of that type or its
+ * subtypes. (As all such instances are immutable, this does not affect the
+ * state of the model in any way.)</li>
  * <li>Calling methods of model objects as operations.</li>
  * </ul>
  * 

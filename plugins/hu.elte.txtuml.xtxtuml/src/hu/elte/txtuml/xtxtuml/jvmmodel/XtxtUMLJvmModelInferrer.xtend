@@ -93,17 +93,19 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				members += attr.toJvmMember;
 			}
 			
-			members += signal.toConstructor [
-				for (attr : signal.attributes) {
-					parameters += attr.toParameter(attr.name, attr.type);
-				}	
-				
-				body = '''
-				«FOR attr : signal.attributes»
-					this.«attr.name» = «attr.name»;
-				«ENDFOR»
-				'''
-			]
+			if (!signal.attributes.isEmpty) {
+				members += signal.toConstructor [
+					for (attr : signal.attributes) {
+						parameters += attr.toParameter(attr.name, attr.type);
+					}	
+					
+					body = '''
+					«FOR attr : signal.attributes»
+						this.«attr.name» = «attr.name»;
+					«ENDFOR»
+					'''
+				]
+			}
 		]
 	}
 	
@@ -248,7 +250,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	}
 	
 	def dispatch private toJvmMember(TUTransitionGuard guard) {
-		guard.toMethod("guard", hu.elte.txtuml.api.model.ModelBool.typeRef) [
+		guard.toMethod("guard", Boolean.TYPE.typeRef) [
 			visibility = JvmVisibility.PUBLIC;
 			annotations += annotationRef(java.lang.Override);
 			body = guard.expression;

@@ -1105,7 +1105,7 @@ public interface XtxtUMLPackage extends EPackage
   int RALF_ASSOC_NAV_EXPRESSION__LEFT = XbasePackage.XEXPRESSION_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Right</b></em>' containment reference.
+   * The feature id for the '<em><b>Right</b></em>' reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
@@ -2007,10 +2007,10 @@ public interface XtxtUMLPackage extends EPackage
   EReference getRAlfAssocNavExpression_Left();
 
   /**
-   * Returns the meta object for the containment reference '{@link hu.elte.txtuml.xtxtuml.xtxtUML.RAlfAssocNavExpression#getRight <em>Right</em>}'.
+   * Returns the meta object for the reference '{@link hu.elte.txtuml.xtxtuml.xtxtUML.RAlfAssocNavExpression#getRight <em>Right</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Right</em>'.
+   * @return the meta object for the reference '<em>Right</em>'.
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.RAlfAssocNavExpression#getRight()
    * @see #getRAlfAssocNavExpression()
    * @generated
@@ -2765,7 +2765,7 @@ public interface XtxtUMLPackage extends EPackage
     EReference RALF_ASSOC_NAV_EXPRESSION__LEFT = eINSTANCE.getRAlfAssocNavExpression_Left();
 
     /**
-     * The meta object literal for the '<em><b>Right</b></em>' containment reference feature.
+     * The meta object literal for the '<em><b>Right</b></em>' reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated

@@ -6,16 +6,18 @@ Bundle-Version: 0.1.1.qualifier
 Bundle-Vendor: ELTE
 Export-Package: hu.elte.txtuml.export.uml2,
  hu.elte.txtuml.export.uml2.mapping,
- hu.elte.txtuml.export.uml2.transform,
- hu.elte.txtuml.export.uml2.transform.aspects
+ hu.elte.txtuml.export.uml2.transform.importers,
+ hu.elte.txtuml.export.uml2.utils
 Require-Bundle: hu.elte.txtuml.api.model,
  hu.elte.txtuml.api.stdlib,
  hu.elte.txtuml.utils,
  org.eclipse.uml2.uml,
  org.eclipse.uml2.uml.resources,
- org.aspectj.runtime,
+ org.eclipse.jdt.core,
  org.eclipse.core.resources,
- org.eclipse.emf.ecore,
- org.eclipse.core.filesystem
+ org.eclipse.core.runtime,
+ org.eclipse.emf.common,
+ org.eclipse.papyrus.infra.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: org.eclipse.core.runtime
+Import-Package: com.sun.mirror.declaration,
+ com.sun.mirror.type

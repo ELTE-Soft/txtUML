@@ -4,10 +4,8 @@ import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.Association;
 import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.Model;
-import hu.elte.txtuml.api.model.ModelBool;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelExecutor;
-import hu.elte.txtuml.api.model.ModelInt;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
@@ -30,8 +28,8 @@ class PrinterModel extends Model
 	class PrinterFrontend extends ModelClass
 	{
 		Queue<Document> queue;
-		ModelInt paperCount;
-		ModelBool lock;
+		int paperCount;
+		boolean lock;
 		
 		class Init extends Initial{}
 		
@@ -42,7 +40,7 @@ class PrinterModel extends Model
 			public void effect()
 			{
 				queue = new LinkedList<Document>();
-				lock = ModelBool.FALSE;
+				lock = false;
 			}
 		}
 		
@@ -51,24 +49,25 @@ class PrinterModel extends Model
 			@Override
 			public void entry()
 			{
-				Action.If(() -> new ModelBool(queue.size() > 0), () ->
+				if (queue.size() > 0)
 				{
 					PrinterBackend pb = PrinterFrontend.this.assoc(PrinterSystem.backend.class)
 							.selectAny();
-					Action.If(() -> lock.not(), () ->
+					if (!lock)
 					{
-						lock = ModelBool.TRUE;
+						lock = true;
 						Document doc = queue.peek();
-						Action.If(() -> paperCount.isMoreEqual(doc.sideCount).not(), () ->
+						if( paperCount < doc.sideCount )
 						{
 							Action.send(PrinterFrontend.this, new OutOfPaperSignal());
-						}, () ->
+						}
+						else 
 						{
 							Action.send(pb, new Print(doc));
-							paperCount = paperCount.subtract(doc.sideCount);
-						});
-					});
-				});
+							paperCount -= doc.sideCount;
+						};
+					};
+				};
 				
 				Action.log("PrinterFrontend: the printer is waiting for documents.");
 			}
@@ -81,7 +80,7 @@ class PrinterModel extends Model
 			public void effect()
 			{
 				queue.poll();
-				lock = ModelBool.FALSE;
+				lock = false;
 				Action.log("PrinterFrontend: the printing of a document has finished. Remaining: " + queue.size() + ". Papers: " + paperCount + ".");
 			}
 		}
@@ -115,8 +114,8 @@ class PrinterModel extends Model
 			@Override
 			public void effect()
 			{
-				lock = ModelBool.FALSE;
-				paperCount = paperCount.add(getSignal(RestockPaper.class).amount);
+				lock = false;
+				paperCount += getSignal(RestockPaper.class).amount;
 				Action.log("PrinterFrontend: restocking paper.");
 			}
 		}
@@ -126,7 +125,7 @@ class PrinterModel extends Model
 	class PrinterBackend extends ModelClass
 	{
 		Document beingPrinted;
-		ModelInt tonerPercent;
+		int tonerPercent;
 		
 		class Init extends Initial{}
 		
@@ -136,7 +135,7 @@ class PrinterModel extends Model
 			@Override
 			public void effect()
 			{
-				tonerPercent = new ModelInt(100);
+				tonerPercent = 100;
 			}
 		}
 		
@@ -146,9 +145,9 @@ class PrinterModel extends Model
 		class RecievedJob extends Transition
 		{
 			@Override
-			public ModelBool guard()
+			public boolean guard()
 			{
-				return tonerPercent.isMoreEqual(getSignal(Print.class).Document.sideCount);
+				return tonerPercent >= getSignal(Print.class).Document.sideCount;
 			}
 			
 			@Override
@@ -162,9 +161,9 @@ class PrinterModel extends Model
 		class RecievedJobError extends Transition
 		{
 			@Override
-			public ModelBool guard()
+			public boolean guard()
 			{
-				return tonerPercent.isMoreEqual(getSignal(Print.class).Document.sideCount).not();
+				return tonerPercent < getSignal(Print.class).Document.sideCount;
 			}
 		}
 		
@@ -174,7 +173,7 @@ class PrinterModel extends Model
 			public void entry()
 			{
 				Action.log("PrinterBackend: started printing.");
-				Action.For(new ModelInt(1), beingPrinted.sideCount, i ->
+				for (int i = 0; i < beingPrinted.sideCount; ++i)
 				{
 					try
 					{
@@ -185,8 +184,8 @@ class PrinterModel extends Model
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-				});
-				tonerPercent = tonerPercent.subtract(beingPrinted.sideCount);
+				};
+				tonerPercent -= beingPrinted.sideCount;
 				Action.log("PrinterBackend: finished printing.");
 				Action.send(PrinterBackend.this, new FinishedPrinting());
 			}
@@ -218,14 +217,14 @@ class PrinterModel extends Model
 	
 	class Document extends ModelClass
 	{
-		ModelInt sideCount;
+		int sideCount;
 	}
 	
 	class Human extends ModelClass
 	{
-		ModelInt count;
+		int count;
 		
-		public Human(ModelInt c)
+		public Human(int c)
 		{
 			count = c;
 		}
@@ -289,9 +288,9 @@ class PrinterModel extends Model
 	
 	static class RestockPaper extends Signal
 	{
-		ModelInt amount;
+		int amount;
 		
-		public RestockPaper(ModelInt am)
+		public RestockPaper(int am)
 		{
 			amount = am;
 		}
@@ -310,12 +309,12 @@ class PrinterTester
 		
 		PrinterFrontend p = Action.create(PrinterFrontend.class);
 		PrinterBackend pb = Action.create(PrinterBackend.class);
-		p.paperCount = new ModelInt(2);
+		p.paperCount = 2;
 		
-		Human h1 = Action.create(Human.class, new ModelInt(2));
-		Human h2 = Action.create(Human.class, new ModelInt(2));
-		Human h3 = Action.create(Human.class, new ModelInt(2));
-		Human h4 = Action.create(Human.class, new ModelInt(2));
+		Human h1 = Action.create(Human.class, 2);
+		Human h2 = Action.create(Human.class, 2);
+		Human h3 = Action.create(Human.class, 2);
+		Human h4 = Action.create(Human.class, 2);
 		
 		//building links
 		Action.link(PrinterSystem.frontend.class, p, 
@@ -349,7 +348,7 @@ class PrinterTester
 		Thread.sleep(500);
 		Action.send(h1, new WantToPrint()); //2
 		Thread.sleep(2000);
-		Action.send(p, new RestockPaper(new ModelInt(20)));
+		Action.send(p, new RestockPaper(20));
 		
 		Thread.sleep(24000);
 		

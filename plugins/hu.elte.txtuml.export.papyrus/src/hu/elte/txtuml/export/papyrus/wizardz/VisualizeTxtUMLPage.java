@@ -2,9 +2,6 @@ package hu.elte.txtuml.export.papyrus.wizardz;
 
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -22,7 +19,7 @@ import org.eclipse.swt.widgets.Text;
 public class VisualizeTxtUMLPage extends WizardPage {
 	private Composite container;
 	private Text txtUMLModel;
-	private List<Text> txtUMLLayout = new LinkedList<>();
+	private Text txtUMLLayout;
 	private Text txtUMLProject;
 	private Button generateSMDs;
 	
@@ -93,7 +90,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	    label3.setText("txtUML Layout Diagram: ");
 	    Text diagram = new Text(container, SWT.BORDER | SWT.SINGLE);
 	    diagram.setText(PreferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT));
-	    txtUMLLayout.add(diagram);
+	    txtUMLLayout = diagram;
 	    
 	    generateSMDs = new Button(container, SWT.CHECK);
 	    generateSMDs.setText(" generate StateMachine Diagrams automatically");
@@ -104,7 +101,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	    GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 	    txtUMLModel.setLayoutData(gd);
 	    txtUMLProject.setLayoutData(gd);
-	    txtUMLLayout.forEach( (text) -> text.setLayoutData(gd) );
+	    txtUMLLayout.setLayoutData(gd);
 	    generateSMDs.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 2,1));
 	    //addDiagrambtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 2,1)); //adding multiple descriptions
 	    
@@ -132,12 +129,8 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	 * Returns the txtUML model layout
 	 * @return
 	 */
-	public List<String> getTxtUmlLayout() {
-		List<String> result = new LinkedList<String>();
-		for(Text t: txtUMLLayout){
-			result.add(t.getText());
-		}
-		return result;
+	public String getTxtUmlLayout() {
+		return txtUMLLayout.getText();
 	}
 	
 	/**

@@ -40,6 +40,7 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 	protected AbstractElementAlias match_XExpressionInClosure_SemicolonKeyword_1_1_q;
 	protected AbstractElementAlias match_XFunctionTypeRef___LeftParenthesisKeyword_0_0_RightParenthesisKeyword_0_2__q;
 	protected AbstractElementAlias match_XImportDeclaration_SemicolonKeyword_2_q;
+	protected AbstractElementAlias match_XMemberFeatureCall_EqualsSignGreaterThanSignKeyword_1_1_0_0_1_2_or_FullStopKeyword_1_1_0_0_1_0;
 	protected AbstractElementAlias match_XParenthesizedRAlfExpression_LeftParenthesisKeyword_0_a;
 	protected AbstractElementAlias match_XParenthesizedRAlfExpression_LeftParenthesisKeyword_0_p;
 	
@@ -64,6 +65,7 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 		match_XExpressionInClosure_SemicolonKeyword_1_1_q = new TokenAlias(false, true, grammarAccess.getXExpressionInClosureAccess().getSemicolonKeyword_1_1());
 		match_XFunctionTypeRef___LeftParenthesisKeyword_0_0_RightParenthesisKeyword_0_2__q = new GroupAlias(false, true, new TokenAlias(false, false, grammarAccess.getXFunctionTypeRefAccess().getLeftParenthesisKeyword_0_0()), new TokenAlias(false, false, grammarAccess.getXFunctionTypeRefAccess().getRightParenthesisKeyword_0_2()));
 		match_XImportDeclaration_SemicolonKeyword_2_q = new TokenAlias(false, true, grammarAccess.getXImportDeclarationAccess().getSemicolonKeyword_2());
+		match_XMemberFeatureCall_EqualsSignGreaterThanSignKeyword_1_1_0_0_1_2_or_FullStopKeyword_1_1_0_0_1_0 = new AlternativeAlias(false, false, new TokenAlias(false, false, grammarAccess.getXMemberFeatureCallAccess().getEqualsSignGreaterThanSignKeyword_1_1_0_0_1_2()), new TokenAlias(false, false, grammarAccess.getXMemberFeatureCallAccess().getFullStopKeyword_1_1_0_0_1_0()));
 		match_XParenthesizedRAlfExpression_LeftParenthesisKeyword_0_a = new TokenAlias(true, true, grammarAccess.getXParenthesizedRAlfExpressionAccess().getLeftParenthesisKeyword_0());
 		match_XParenthesizedRAlfExpression_LeftParenthesisKeyword_0_p = new TokenAlias(true, false, grammarAccess.getXParenthesizedRAlfExpressionAccess().getLeftParenthesisKeyword_0());
 	}
@@ -128,6 +130,8 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 				emit_XFunctionTypeRef___LeftParenthesisKeyword_0_0_RightParenthesisKeyword_0_2__q(semanticObject, getLastNavigableState(), syntaxNodes);
 			else if(match_XImportDeclaration_SemicolonKeyword_2_q.equals(syntax))
 				emit_XImportDeclaration_SemicolonKeyword_2_q(semanticObject, getLastNavigableState(), syntaxNodes);
+			else if(match_XMemberFeatureCall_EqualsSignGreaterThanSignKeyword_1_1_0_0_1_2_or_FullStopKeyword_1_1_0_0_1_0.equals(syntax))
+				emit_XMemberFeatureCall_EqualsSignGreaterThanSignKeyword_1_1_0_0_1_2_or_FullStopKeyword_1_1_0_0_1_0(semanticObject, getLastNavigableState(), syntaxNodes);
 			else if(match_XParenthesizedRAlfExpression_LeftParenthesisKeyword_0_a.equals(syntax))
 				emit_XParenthesizedRAlfExpression_LeftParenthesisKeyword_0_a(semanticObject, getLastNavigableState(), syntaxNodes);
 			else if(match_XParenthesizedRAlfExpression_LeftParenthesisKeyword_0_p.equals(syntax))
@@ -344,6 +348,17 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 	
 	/**
 	 * Ambiguous syntax:
+	 *     '.' | '=>'
+	 *
+	 * This ambiguous syntax occurs at:
+	 *     {XMemberFeatureCall.memberCallTarget=} (ambiguity) feature=[JvmIdentifiableElement|IdOrSuper]
+	 */
+	protected void emit_XMemberFeatureCall_EqualsSignGreaterThanSignKeyword_1_1_0_0_1_2_or_FullStopKeyword_1_1_0_0_1_0(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
+		acceptNodes(transition, nodes);
+	}
+	
+	/**
+	 * Ambiguous syntax:
 	 *     '('*
 	 *
 	 * This ambiguous syntax occurs at:
@@ -356,6 +371,7 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *     (rule start) '(' (ambiguity) isTrue?='true'
 	 *     (rule start) '(' (ambiguity) value=Number
 	 *     (rule start) '(' (ambiguity) value=STRING
+	 *     (rule start) '(' (ambiguity) {RAlfAssocNavExpression.left=}
 	 *     (rule start) '(' (ambiguity) {XAssignment.assignable=}
 	 *     (rule start) '(' (ambiguity) {XBinaryOperation.leftOperand=}
 	 *     (rule start) '(' (ambiguity) {XCastedExpression.target=}
@@ -371,6 +387,7 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *     (rule start) (ambiguity) isTrue?='true'
 	 *     (rule start) (ambiguity) value=Number
 	 *     (rule start) (ambiguity) value=STRING
+	 *     (rule start) (ambiguity) {RAlfAssocNavExpression.left=}
 	 *     (rule start) (ambiguity) {XAssignment.assignable=}
 	 *     (rule start) (ambiguity) {XBinaryOperation.leftOperand=}
 	 *     (rule start) (ambiguity) {XCastedExpression.target=}
@@ -396,6 +413,7 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *     (rule start) (ambiguity) isTrue?='true'
 	 *     (rule start) (ambiguity) value=Number
 	 *     (rule start) (ambiguity) value=STRING
+	 *     (rule start) (ambiguity) {RAlfAssocNavExpression.left=}
 	 *     (rule start) (ambiguity) {XAssignment.assignable=}
 	 *     (rule start) (ambiguity) {XBinaryOperation.leftOperand=}
 	 *     (rule start) (ambiguity) {XCastedExpression.target=}

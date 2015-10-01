@@ -11,8 +11,8 @@ public class GarageModel extends Model {
 	class DoorReachedTop extends Signal {}
 	class DoorReachedBottom extends Signal {}
 	class KeyPress extends Signal {
-		ModelInt key;
-		KeyPress(ModelInt k) {
+		int key;
+		KeyPress(int k) {
 			this.key = k;
 		}
 	}
@@ -45,13 +45,13 @@ public class GarageModel extends Model {
 		@From(Enabled.class) @To(Disabled.class) @Trigger(MotionSensorActivated.class)
 		class TDisable extends Transition {
 			@Override public void effect() {
-				doorTimer = Timer.start(Door.this, new DoorTimerExpired(), new ModelInt(2000));
+				doorTimer = Timer.start(Door.this, new DoorTimerExpired(), 2000);
 			}
 		}
 		@From(Disabled.class) @To(Disabled.class) @Trigger(MotionSensorActivated.class)
 		class TKeepDisabled extends Transition {
 			@Override public void effect() {
-				doorTimer.reset(new ModelInt(2000));
+				doorTimer.reset(2000);
 			}			
 		}
 		@From(Disabled.class) @To(Enabled.class) @Trigger(DoorTimerExpired.class)
@@ -120,7 +120,7 @@ public class GarageModel extends Model {
 	}
 	
 	class Alarm extends ModelClass {
-		ModelInt code = new ModelInt(8);
+		int code = 8;
 		
 		class InitAlarm extends Initial {}
 		@From(InitAlarm.class) @To(On.class)
@@ -168,44 +168,44 @@ public class GarageModel extends Model {
 		class TActivate extends Transition {}
 		@From(On.class) @To(InAlarm.class) @Trigger(KeyPress.class)
 		class TWrongKey1 extends Transition {
-			@Override public ModelBool guard() {
-				return getSignal(KeyPress.class).key.isEqual(code).not();
+			@Override public boolean guard() {
+				return getSignal(KeyPress.class).key != code;
 			}
 		}
 		@From(On.class) @To(Off.class) @Trigger(KeyPress.class)
 		class TCorrectKey1 extends Transition {
-			@Override public ModelBool guard() {
-				return getSignal(KeyPress.class).key.isEqual(code);
+			@Override public boolean guard() {
+				return getSignal(KeyPress.class).key == code;
 			}
 		}		
 		@From(ExpectingCode.class) @To(InAlarm.class) @Trigger(KeyPress.class)
 		class TWrongKey2 extends Transition {
-			@Override public ModelBool guard() {
-				return getSignal(KeyPress.class).key.isEqual(code).not();
+			@Override public boolean guard() {
+				return getSignal(KeyPress.class).key != code;
 			}
 		}
 		@From(ExpectingCode.class) @To(Off.class) @Trigger(KeyPress.class)
 		class TCorrectKey2 extends Transition {
-			@Override public ModelBool guard() {
-				return getSignal(KeyPress.class).key.isEqual(code);
+			@Override public boolean guard() {
+				return getSignal(KeyPress.class).key == code;
 			}
 		}		
 		@From(InAlarm.class) @To(Off.class) @Trigger(KeyPress.class)
 		class TCorrectKey3 extends Transition {
-			@Override public ModelBool guard() {
-				return getSignal(KeyPress.class).key.isEqual(code);
+			@Override public boolean guard() {
+				return getSignal(KeyPress.class).key == code;
 			}
 		}		
 		@From(ExpectingOldCode.class) @To(ExpectingNewCode.class) @Trigger(KeyPress.class)
 		class TCorrectKey4 extends Transition {
-			@Override public ModelBool guard() {
-				return getSignal(KeyPress.class).key.isEqual(code);
+			@Override public boolean guard() {
+				return getSignal(KeyPress.class).key == code;
 			}
 		}		
 		@From(ExpectingOldCode.class) @To(Off.class) @Trigger(KeyPress.class)
 		class TWrongKey4 extends Transition {
-			@Override public ModelBool guard() {
-				return getSignal(KeyPress.class).key.isEqual(code).not();
+			@Override public boolean guard() {
+				return getSignal(KeyPress.class).key != code;
 			}
 		}		
 		@From(ExpectingNewCode.class) @To(Off.class) @Trigger(KeyPress.class)
@@ -233,15 +233,15 @@ public class GarageModel extends Model {
 	
 	class Keyboard extends ModelClass {
 		Timer.Handle keyboardTimer;
-		ModelInt keyboardTimerCount;
-		ModelInt keyboardTimerMaxCount = new ModelInt(100);
+		int keyboardTimerCount;
+		int keyboardTimerMaxCount = 100;
 		
 		class InitKeyboard extends Initial {}
 		@From(InitKeyboard.class) @To(Idle.class)
 		class TInitKeyboard extends Transition {}
 		class Idle extends State {
 			@Override public void entry() {
-				keyboardTimerCount = new ModelInt(0);
+				keyboardTimerCount = 0;
 			}
 		}
 		class Waiting extends State {}
@@ -256,19 +256,19 @@ public class GarageModel extends Model {
 		@From(Idle.class) @To(Waiting.class) @Trigger(WaitForCode.class) 
 		class TWaitForCode extends Transition {
 			@Override public void effect() {
-				keyboardTimerCount = keyboardTimerCount.add(new ModelInt(0));
-				keyboardTimer = Timer.start(Keyboard.this, new KeyboardTimerExpired(), new ModelInt(50));
+				keyboardTimerCount += 0;
+				keyboardTimer = Timer.start(Keyboard.this, new KeyboardTimerExpired(), 50);
 			}
 		}
 		@From(Waiting.class) @To(Waiting.class) @Trigger(KeyboardTimerExpired.class)
 		class TRefreshProgress extends Transition {
-			@Override public ModelBool guard() {
-				return keyboardTimerCount.isLess(keyboardTimerMaxCount);
+			@Override public boolean guard() {
+				return keyboardTimerCount < keyboardTimerMaxCount;
 			}
 			@Override public void effect() {
-				keyboardTimerCount = keyboardTimerCount.add(new ModelInt(1));
+				keyboardTimerCount += 1;
 				Glue.getInstance().progress(keyboardTimerCount);
-				keyboardTimer.reset(new ModelInt(50));
+				keyboardTimer.reset(50);
 			}
 		}	
 		@From(Waiting.class) @To(Idle.class) @Trigger(KeyPress.class)
@@ -280,8 +280,8 @@ public class GarageModel extends Model {
 		}
 		@From(Waiting.class) @To(Idle.class) @Trigger(KeyboardTimerExpired.class)
 		class TTimeout extends Transition {
-			@Override public ModelBool guard() {
-				return keyboardTimerCount.isEqual(keyboardTimerMaxCount);
+			@Override public boolean guard() {
+				return keyboardTimerCount == keyboardTimerMaxCount;
 			}
 			@Override public void effect() {
 				Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).selectAny();

@@ -6,6 +6,7 @@ import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelMa
 import hu.elte.txtuml.export.papyrus.utils.EditorOpener;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -98,26 +99,28 @@ public class PapyrusVisualizer {
 		monitor.beginTask("Generating Papyrus Model", 100);
 		PapyrusModelCreator papyrusModelCreator = new PapyrusModelCreator(projectName + "/" + modelName);
 		papyrusModelCreator.setUpUML(sourceUMLPath);
-		if(!papyrusModelCreator.diExists()){
-			
+
+		try {
+			// TODO: The following cleanup is a quick fix to improve user experience. Should be reviewed.
+			papyrusModelCreator.cleanup();
 			monitor.subTask("Generating Papyrus model...");
 			papyrusModelCreator.createPapyrusModel();
 			IMultiDiagramEditor editor = EditorOpener.openPapyrusEditor(papyrusModelCreator.getDi());
 			
 			UmlModel umlModel = (UmlModel) editor.getServicesRegistry().getService(ModelSet.class)
 												.getModel(UmlModel.MODEL_ID);
-
+	
 			papyrusModelManager = SettingsRegistry.getPapyrusModelManager(editor, umlModel);
 			papyrusModelManager.setLayoutController(layoutDescriptor);
 			monitor.worked(10);
 			
 			papyrusModelManager.createAndFillDiagrams(new SubProgressMonitor(monitor, 90));
-		}else{
-			Dialogs.MessageBox("Loading Model", "A Papyrus model with this name already exists in this Project. It'll be loaded");
-			EditorOpener.openPapyrusEditor(papyrusModelCreator.getDi());
-			monitor.worked(100);
-		}
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 	}
+
+}
 	
 	/**
 	 * Registers the Implementation for the PapyrusModelManager

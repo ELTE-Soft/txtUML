@@ -75,7 +75,7 @@ public final class ModelExecutor implements ModelElement {
 	 * <p>
 	 * 
 	 * Calling its static methods only affect the model execution, they are not
-	 * exported to EMF-UML2.
+	 * exported.
 	 * <p>
 	 * Its static methods might be called from anywhere in the model as they are
 	 * not harmful to the model execution in any way. However, it is strongly
@@ -266,6 +266,8 @@ public final class ModelExecutor implements ModelElement {
 		 * <i>mul</i> millseconds during model execution, where <i>mul</i> is
 		 * the current execution time multiplier. This way, txtUML models might
 		 * be tested at the desired speed.
+		 * <p>
+		 * Execution time multiplier is 1 by default.
 		 * 
 		 * @return the current execution time multiplier
 		 * @see #setExecutionTimeMultiplier(float)
@@ -304,7 +306,7 @@ public final class ModelExecutor implements ModelElement {
 		 * times, this method does nothing after the first call.
 		 * <p>
 		 * For example, the
-		 * {@link hu.elte.txtuml.api.stdlib.Timer#start(ModelClass, Signal, ModelInt)
+		 * {@link hu.elte.txtuml.api.stdlib.Timer#start(ModelClass, Signal, int)
 		 * Timer.start} method calls this method as it operates with timed
 		 * events.
 		 */
@@ -410,7 +412,7 @@ public final class ModelExecutor implements ModelElement {
 	 * @param signal
 	 *            the signal to send
 	 */
-	static void send(ModelClass target, Signal signal) {
+	static void send(Region target, Signal signal) {
 		thread.send(target, signal);
 	}
 
@@ -444,7 +446,7 @@ public final class ModelExecutor implements ModelElement {
 	 *            the message to print in the log
 	 * @see Settings#setUserOutStream(PrintStream)
 	 */
-	static void log(String message) {
+	static void userLog(String message) {
 		logOnStream(Settings.userOutStream, message);
 	}
 
@@ -455,7 +457,7 @@ public final class ModelExecutor implements ModelElement {
 	 *            the message to print in the log
 	 * @see Settings#setUserErrorStream(PrintStream)
 	 */
-	static void logError(String message) {
+	static void userErrorLog(String message) {
 		logOnStream(Settings.userErrorStream, message);
 	}
 

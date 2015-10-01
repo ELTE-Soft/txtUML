@@ -39,6 +39,7 @@ public class Animator {
 	private NavigableMap<String, ModelMapProvider> modelMapProviders = new TreeMap<String, ModelMapProvider>();
 	private Map<String, String> classToInstance = new HashMap<String, String>();
 	private int faultTolerance = 37;
+	private Map<String,EObject> animated = new HashMap<String,EObject>();
 	
 	Animator(String projectName) {
 		animationUtils = AnimationUtils.getInstance();
@@ -81,6 +82,7 @@ public class Animator {
 		modelMapProviders = null;
 		classToInstance.clear();
 		classToInstance = null;
+		animated = null;
 	}
 	
 	void animate(ModelEvent event) {
@@ -104,9 +106,11 @@ public class Animator {
 		
 		if (modelMapProvider != null) {
 			EObject eobject = modelMapProvider.getByName(event.eventTargetClassName);
-			animationUtils.removeAllAnimationMarker();
+			removeMarkerFromClass(event.modelClassName);
+			// animationUtils.removeAllAnimationMarker();
 			if (eobject != null) {
 				animationUtils.addAnimationMarker(eobject);
+				animated.put(event.modelClassName, eobject);
 			} else {
 				if (faultTolerance > 0) {
 					Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "Mapping failure for element " + event.eventTargetClassName + " " + event.messageType));
@@ -132,4 +136,12 @@ public class Animator {
 	private static String getUniqueInstanceID(ModelEvent event) {
 		return event.modelClassInstanceID + "@" + event.clientID;
 	}
+	
+	private void removeMarkerFromClass(String modelClassName) {
+		EObject animatedObj = animated.get(modelClassName); 
+		if(animatedObj != null) {
+			animationUtils.removeAnimationMarker(animatedObj);
+		}
+	}
+
 }

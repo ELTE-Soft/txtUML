@@ -4,10 +4,8 @@ import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.Association;
 import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.Model;
-import hu.elte.txtuml.api.model.ModelBool;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelExecutor;
-import hu.elte.txtuml.api.model.ModelInt;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
@@ -46,7 +44,7 @@ class Producer_consumerModel extends Model {
 				
 				Item it = Action.create(Item.class);
 				
-				Action.While(() -> store.isFull(), () -> 
+				while ( store.isFull() ) 
 				{
 					Action.log("Producer: storage is full, retrying later...");
 					try {
@@ -55,7 +53,7 @@ class Producer_consumerModel extends Model {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-				});
+				};
 				
 				Action.log("Producer: creating item.");
 				Action.send(store, new PutItem(it));
@@ -90,17 +88,17 @@ class Producer_consumerModel extends Model {
 	class Storage extends ModelClass
 	{
 		List<Item> items;
-		ModelInt top;
+		int top;
 		
-		public Storage(ModelInt top)
+		public Storage(int top)
 		{
 			this.top = top;
 			items = new ArrayList<Item>();
 		}
 		
-		public ModelBool isFull()
+		public boolean isFull()
 		{
-			return top.isEqual(new ModelInt(items.size()));
+			return top == items.size();
 		}
 		
 		class Init extends Initial{}
@@ -141,9 +139,9 @@ class Producer_consumerModel extends Model {
 		class Put2 extends Transition
 		{
 			@Override
-			public ModelBool guard() 
+			public boolean guard() 
 			{
-				return new ModelInt(items.size()).isLess(top.subtract(ModelInt.ONE));
+				return items.size() < top - 1;
 			}
 			
 			@Override
@@ -158,9 +156,9 @@ class Producer_consumerModel extends Model {
 		class Put3 extends Transition
 		{
 			@Override
-			public ModelBool guard() 
+			public boolean guard() 
 			{
-				return new ModelInt(items.size()).isEqual(top.subtract(ModelInt.ONE));
+				return items.size() == top - 1;
 			}
 			
 			@Override
@@ -175,9 +173,9 @@ class Producer_consumerModel extends Model {
 		class Get extends Transition
 		{
 			@Override
-			public ModelBool guard() 
+			public boolean guard() 
 			{
-				return new ModelInt(items.size()).isEqual(ModelInt.ONE);
+				return items.size() == 1;
 			}
 			
 			@Override
@@ -193,9 +191,9 @@ class Producer_consumerModel extends Model {
 		class Get2 extends Transition
 		{
 			@Override
-			public ModelBool guard() 
+			public boolean guard() 
 			{
-				return new ModelInt(items.size()).isMore(ModelInt.ONE);
+				return items.size() > 1;
 			}
 			
 			@Override
@@ -324,7 +322,7 @@ class Producer_consumerTester
 		
 		Action.log("-- Starting test --");
 		
-		Storage store = Action.create(Storage.class, new ModelInt(5));
+		Storage store = Action.create(Storage.class, 5);
 		
 		Producer p1 = Action.create(Producer.class);
 		Producer p2 = Action.create(Producer.class);

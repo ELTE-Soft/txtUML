@@ -2,7 +2,6 @@ package hu.elte.txtuml.api.model.tests.error.statemachine;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.From;
-import hu.elte.txtuml.api.model.ModelBool;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.To;
@@ -57,8 +56,8 @@ public class OverlappingGuardsFromChoiceTest extends TestsBase {
 			class T1 extends Transition {
 				
 				@Override
-				public ModelBool guard() {
-					return new ModelBool(true);
+				public boolean guard() {
+					return true;
 				}
 				
 			}
@@ -67,8 +66,8 @@ public class OverlappingGuardsFromChoiceTest extends TestsBase {
 			class T2 extends Transition {
 				
 				@Override
-				public ModelBool guard() {
-					return new ModelBool(true);
+				public boolean guard() {
+					return true;
 				}
 				
 			}

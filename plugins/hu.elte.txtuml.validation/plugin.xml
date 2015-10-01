@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.jdt.core.compilationParticipant">
+      <compilationParticipant
+            class="hu.elte.txtuml.validation.JtxtUMLCompilationParticipant"
+            createsProblems="true"
+            id="hu.elte.txtuml.validation.compilationParticipant"
+            modifiesEnvironment="false">
+         <managedMarker
+               markerType="hu.elte.txtuml.validation.jtxtumlmarker">
+         </managedMarker>
+      </compilationParticipant>
+   </extension>
+   <extension
+         id="jtxtumlmarker"
+         name="JtxtUML Problem"
+         point="org.eclipse.core.resources.markers">
+	  <persistent value="true"/>
+      <super type="org.eclipse.core.resources.problemmarker"/> 
+      <super type="org.eclipse.core.resources.textmarker"/> 
+   </extension>
+
+</plugin>

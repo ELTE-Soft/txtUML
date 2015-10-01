@@ -70,10 +70,11 @@ public class TxtUMLProject extends Wizard implements INewWizard {
 		try {
 			IProject project = ProjectCreator.createProject(projectName);
 			ProjectCreator.openProject(project);
-
-			String[] natures = new String[] { TxtUMLProjectNature.NATURE_ID,
-					JavaCore.NATURE_ID, "org.eclipse.ajdt.ui.ajnature",
-					"org.eclipse.pde.PluginNature" };
+			
+			String[] natures = new String[]{
+					TxtUMLProjectNature.NATURE_ID,
+					JavaCore.NATURE_ID, 
+					"org.eclipse.pde.PluginNature"};
 			ProjectCreator.addProjectNatures(project, natures);
 
 			IFolder metainf = ProjectCreator.createFolder(project, "META-INF");
@@ -84,10 +85,7 @@ public class TxtUMLProject extends Wizard implements INewWizard {
 			settings.executionEnviromentID = "JavaSE-1.8";
 			settings.output = bin;
 			settings.source = src;
-			settings.pluginDepAttributes = new ArrayList<Pair<String, String>>();
-			settings.pluginDepAttributes.add(new Pair<String, String>(
-					"org.eclipse.ajdt.aspectpath",
-					"org.eclipse.ajdt.aspectpath"));
+			settings.pluginDepAttributes = new ArrayList<Pair<String,String>>();
 			settings.manifest = new Manifest();
 			settings.manifest.getMainAttributes().put(
 					Attributes.Name.MANIFEST_VERSION, "1.0");
@@ -113,7 +111,6 @@ public class TxtUMLProject extends Wizard implements INewWizard {
 			requireBundles.append(" hu.elte.txtuml.layout.export,\n");
 			requireBundles.append(" hu.elte.txtuml.layout.visualizer,\n");
 			requireBundles.append(" hu.elte.txtuml.utils,\n");
-			requireBundles.append(" org.aspectj.runtime,\n");
 			requireBundles.append(" org.eclipse.uml2.uml,\n");
 			requireBundles.append(" org.eclipse.uml2.uml.resources");
 			settings.manifest.getMainAttributes().putValue(
