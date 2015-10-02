@@ -101,4 +101,10 @@ final class RuntimeErrorsListenerImpl extends BaseListenerImpl implements
 		err("Error: trying to start deleted model object " + obj + ".");
 	}
 
+	@Override
+	public void elseGuardFromNonChoiceVertex(Transition transition) {
+		err("Error: the transition "
+		+ transition.toString()
+		+ " has an 'else' guard but its source is not a choice pseudostate.");
+	}
 }

@@ -15,10 +15,11 @@ import java.lang.annotation.Target;
  * <b>Usage:</b>
  * <p>
  * 
- * Use on a subclass of {@link StateMachine.Transition} and set the value of the
- * {@link #value() value} element to reference the representing class of the
- * desired signal (as a signal event). The current implementation does not
- * support any other kind of events on triggers.
+ * Use on a subclass of {@link hu.elte.txtuml.api.model.StateMachine.Transition
+ * Transition} and set the value of the {@link #value() value} element to
+ * reference the representing class of the desired signal (as a signal event).
+ * The current implementation does not support any other kind of events on
+ * triggers.
  * <p>
  * Only one trigger might be applied to a transition.
  * <p>

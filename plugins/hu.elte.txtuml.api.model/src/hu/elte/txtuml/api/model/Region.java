@@ -177,7 +177,8 @@ public class Region extends StateMachine {
 							continue;
 						}
 					} catch (ElseException e) {
-						// TODO show warning/error
+						Report.error.forEach(x -> x.elseGuardFromNonChoiceVertex(transition));
+						continue;
 					}
 
 					if (applicableTransition != null) {

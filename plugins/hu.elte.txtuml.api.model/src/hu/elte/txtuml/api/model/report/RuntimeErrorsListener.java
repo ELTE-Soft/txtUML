@@ -47,4 +47,7 @@ public interface RuntimeErrorsListener {
 			Class<? extends ModelClass> classType, Object[] parameters) {
 	}
 
+	default void elseGuardFromNonChoiceVertex(Transition transition) {
+	}
+
 }

@@ -15,9 +15,9 @@ import java.lang.annotation.Target;
  * <b>Usage:</b>
  * <p>
  * 
- * Use on a subclass of {@link StateMachine.Transition} and set the value of the
- * {@link #value() value} element to reference the representing class of the
- * desired vertex.
+ * Use on a subclass of {@link hu.elte.txtuml.api.model.StateMachine.Transition
+ * Transition} and set the value of the {@link #value() value} element to
+ * reference the representing class of the desired vertex.
  * <p>
  * If used on class <i>t</i> with the value referencing class <i>v</i>, the
  * following conditions must be met:
@@ -28,7 +28,8 @@ import java.lang.annotation.Target;
  * itself or any subclasses of <code>Vertex</code> defined as inner classes of
  * {@link StateMachine},
  * <li><i>t</i> and <i>v</i> must be inner classes of the same enclosing class,
- * either a subclass of {@link Region} or {@link StateMachine.CompositeState},
+ * either a subclass of {@link Region} or
+ * {@link hu.elte.txtuml.api.model.StateMachine.CompositeState CompositeState},
  * <p>
  * <b>Note:</b> {@link ModelClass} is a subclass of <code>Region</code>.</li>
  * <li>neither of <i>t</i> or <i>v</i> is abstract.

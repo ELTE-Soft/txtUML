@@ -33,7 +33,7 @@ import java.lang.reflect.Modifier;
  * @author Gabor Ferenc Kovacs
  *
  */
-public abstract class Action implements ModelElement {
+public class Action implements ModelElement {
 
 	/**
 	 * Sole constructor of <code>Action</code>.

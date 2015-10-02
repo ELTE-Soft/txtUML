@@ -32,7 +32,7 @@ public class TxtUMLProjectPage extends WizardPage {
 	}
 
 	/**
-	 * @see IDialogPage#createControl(Composite)
+	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(Composite)
 	 */
 	@Override
 	public void createControl(Composite parent) {

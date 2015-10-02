@@ -356,7 +356,12 @@ class ManyBase<T extends ModelClass> extends AssociationEnd<T> {
 
 	@Override
 	public final T selectAny() {
-		return coll.iterator().next();
+		Iterator<T> it = coll.iterator();
+		if (it.hasNext()) {
+			return it.next();
+		} else {
+			return null;
+		}
 	}
 
 	@Override
