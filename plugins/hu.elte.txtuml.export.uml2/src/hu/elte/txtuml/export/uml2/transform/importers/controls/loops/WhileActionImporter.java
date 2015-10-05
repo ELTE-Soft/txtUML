@@ -73,7 +73,9 @@ public class WhileActionImporter extends AbstractLoopImporter implements
 		
 		--AbstractActionCodeImporter.blockBodiesBeingImported;
 		
-		this.setLastNode(this.currentNode);	
+		this.methodBodyImporter.getBodyNode().getExecutableNodes().add(this.currentNode);
+		
+		//this.setLastNode(this.currentNode);	
 	}
 
 }

@@ -45,6 +45,15 @@ public class ForEachActionImporter extends AbstractControlStructureImporter impl
 		Type exprType = this.getExpressionType(expression);
 		String expr = this.getExpressionString(expression);
 		
+		ExpansionNode currentNode = (ExpansionNode)this.activity.createOwnedNode("LOOP_NODE_FOREACH_" + this.hashCode(), UMLPackage.Literals.EXPANSION_NODE);
+		
+		ExpansionRegion currentRegion = (ExpansionRegion)this.activity.createOwnedNode("LOOP_REGION_FOREACH_" + this.hashCode(), UMLPackage.Literals.EXPANSION_REGION );
+		
+		currentNode.setRegionAsInput(currentRegion);
+		currentNode.setRegionAsOutput(currentRegion);
+		
+		this.currentNode = currentRegion;
+		
 		Variable loopVar = this.currentNode.createVariable("LOOP_VAR_" + this.currentNode.getName(), exprType);
 		AddVariableValueAction writeVar = (AddVariableValueAction)this.currentNode.createNode("INIT_LOOP_VAR_" + this.currentNode.getName(), UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION);
 		
@@ -56,24 +65,15 @@ public class ForEachActionImporter extends AbstractControlStructureImporter impl
 		this.createEdgeBetweenActivityNodes(this.getLastNode(), writeVar);
 		this.setLastNode(writeVar);
 		
-		ExpansionNode currentNode = (ExpansionNode)this.activity.createOwnedNode("LOOP_NODE_FOREACH_" + this.hashCode(), UMLPackage.Literals.EXPANSION_NODE);
-		
-		ExpansionRegion currentRegion = (ExpansionRegion)this.activity.createOwnedNode("LOOP_REGION_FOREACH_" + this.hashCode(), UMLPackage.Literals.EXPANSION_REGION );
-		
-		currentNode.setRegionAsInput(currentRegion);
-		currentNode.setRegionAsOutput(currentRegion);
-		
-		this.currentNode = currentRegion;
-		
 		++AbstractActionCodeImporter.blockBodiesBeingImported;
 		
 		this.importBodyFromStatement(forEachBody);
 		
 		--AbstractActionCodeImporter.blockBodiesBeingImported;
 		
-		this.setLastNode(this.currentNode);
+		this.methodBodyImporter.getBodyNode().getExecutableNodes().add(this.currentNode);
 		
-		
+		//this.setLastNode(this.currentNode);
 	}
 	
 	@Override
@@ -81,17 +81,9 @@ public class ForEachActionImporter extends AbstractControlStructureImporter impl
 	{
 		MethodBodyImporter imp = super.importBodyFromStatement(statement);
 			
-		EList<ActivityNode> bodies = this.currentNode.getContainedNodes();
-			
 		SequenceNode seqNode = imp.getBodyNode();
-			
-		EList<ExecutableNode> currentSeqBody = seqNode.getExecutableNodes();
-			
-		//Adding last node of the action to the Clause
-		currentSeqBody.add(currentNode);
 		
-		//Adding body to Clause
-		bodies.add(seqNode);
+		this.currentNode.getNodes().add(seqNode);
 		
 		Action lastAction = (Action)seqNode.getExecutableNodes().get(seqNode.getExecutableNodes().size() - 1);
 		

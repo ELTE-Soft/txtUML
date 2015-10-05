@@ -1,5 +1,7 @@
 package hu.elte.txtuml.export.uml2.transform.importers.controls;
 
+import org.eclipse.jdt.core.dom.ArrayAccess;
+import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
@@ -27,9 +29,19 @@ public class NewActionImporter extends AbstractControlStructureImporter
 	public void importControlStructure(Statement statement) {
 		ExpressionStatement expStatement = (ExpressionStatement)statement;
 		Assignment creationAssignment = (Assignment)expStatement.getExpression();
-		VariableDeclarationFragment instanceFragment = (VariableDeclarationFragment)( (VariableDeclarationExpression)creationAssignment.getLeftHandSide() ).fragments().get(0);
 		
-		String instanceName = instanceFragment.getName().toString();
+		String instanceName;
+		
+		if(creationAssignment.getLeftHandSide() instanceof ArrayAccess)
+		{
+			instanceName = (( (ArrayAccess)creationAssignment.getLeftHandSide() ).getArray().toString());
+		}
+		else
+		{
+			VariableDeclarationFragment instanceFragment = (VariableDeclarationFragment)( (VariableDeclarationExpression)creationAssignment.getLeftHandSide() ).fragments().get(0);
+			instanceName = instanceFragment.getName().toString();
+		}
+		
 		
 		ClassInstanceCreation creationExp = (ClassInstanceCreation)creationAssignment.getRightHandSide();
 		

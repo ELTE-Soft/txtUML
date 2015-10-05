@@ -5,6 +5,7 @@ import hu.elte.txtuml.export.uml2.transform.importers.MethodBodyImporter;
 import hu.elte.txtuml.export.uml2.transform.visitors.BlockVisitor;
 import hu.elte.txtuml.export.uml2.transform.visitors.ExpressionVisitor;
 
+import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.Statement;
@@ -46,13 +47,15 @@ public abstract class AbstractControlStructureImporter extends AbstractActionCod
 	
 	protected MethodBodyImporter importBodyFromStatement(Statement statement)
 	{
+		Block block = (Block) statement;
+		
 		MethodBodyImporter imp = new MethodBodyImporter(this.activity,this.typeImporter, this.importedModel);
 		
 		BlockVisitor vis = new BlockVisitor(imp);
 		
-		if(statement != null)
+		if(block != null)
 		{
-			statement.accept(vis);
+			block.accept(vis);
 		}
 		
 		return imp;

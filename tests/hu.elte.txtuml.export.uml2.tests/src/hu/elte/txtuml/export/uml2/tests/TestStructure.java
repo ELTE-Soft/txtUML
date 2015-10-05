@@ -12,6 +12,8 @@ import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ConditionalNode;
 import org.eclipse.uml2.uml.CreateObjectAction;
 import org.eclipse.uml2.uml.DestroyObjectAction;
+import org.eclipse.uml2.uml.ExpansionNode;
+import org.eclipse.uml2.uml.ExpansionRegion;
 import org.eclipse.uml2.uml.InputPin;
 import org.eclipse.uml2.uml.LinkAction;
 import org.eclipse.uml2.uml.LinkEndCreationData;
@@ -570,7 +572,20 @@ public class TestStructure {
 	
 		EList<?> nodesList = behav.getNodes();
 		
-		assertEquals(6,nodesList.size());
+		assertEquals(5,nodesList.size());
+		
+		SequenceNode body = (SequenceNode) nodesList.get(1);
+		
+		LoopNode creator = (LoopNode)body.getExecutableNodes().get(0);
+		LoopNode deleter = (LoopNode)body.getExecutableNodes().get(1);
+		
+		OutputPin createOutput = creator.getBodyOutputs().get(0);
+		
+		SequenceNode deleteSeq = (SequenceNode)deleter.getBodyParts().get(0);
+		DestroyObjectAction act = (DestroyObjectAction)deleteSeq.getExecutableNodes().get(0);
+		
+		assertEquals(c.getName(),createOutput.getType().getName());
+		assertEquals(c.getName(),act.getTarget().getType().getName());
 	}
 	
 	@Test
@@ -578,7 +593,7 @@ public class TestStructure {
 	{
 		org.eclipse.uml2.uml.Model model = ModelExportTestUtils.export("hu.elte.txtuml.export.uml2.tests.models.TestForEachControlModel");
 		assertNotNull(model);
-		Class c = (Class)model.getMember("TestModelClass");
+		Class c = (Class)model.getMember("A");
 		assertNotNull(c);
 		StateMachine sm = (StateMachine)c.getClassifierBehavior();
 		assertNotNull(sm);
@@ -593,6 +608,14 @@ public class TestStructure {
 	
 		EList<?> nodesList = behav.getNodes();
 		
-		assertEquals(6,nodesList.size());
+		assertEquals(5,nodesList.size());
+		
+		SequenceNode body = (SequenceNode) nodesList.get(1);
+
+		ExpansionRegion forEachLoop = (ExpansionRegion) body.getExecutableNodes().get(1);
+		SequenceNode forEachBody = (SequenceNode) forEachLoop.getNodes().get(1);
+		System.out.println(forEachBody.getExecutableNodes());
+		
+		assertEquals(1,forEachBody.getExecutableNodes().size());		
 	}
 }

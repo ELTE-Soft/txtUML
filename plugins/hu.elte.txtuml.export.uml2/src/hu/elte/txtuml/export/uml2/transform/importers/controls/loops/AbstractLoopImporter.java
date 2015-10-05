@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.uml2.transform.importers.controls.loops;
 
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.AddVariableValueAction;
@@ -47,24 +48,26 @@ public abstract class AbstractLoopImporter extends
 	@Override
 	protected MethodBodyImporter importBodyFromStatement(Statement statement)
 	{
-		MethodBodyImporter imp = super.importBodyFromStatement(statement);
+		Block body = (Block) statement; 
+		
+		MethodBodyImporter imp = super.importBodyFromStatement(body);
 		
 		EList<ExecutableNode> bodies = this.currentNode.getBodyParts();
 		
 		SequenceNode seqNode = imp.getBodyNode();
-		seqNode.setName("For_control_Body_" + this.currentNode.getName());
-		EList<ExecutableNode> currentSeqBody = seqNode.getExecutableNodes();
-
+		seqNode.setName("Control_Body_" + this.currentNode.getName());
+		
 		//Adding body to Clause
 		bodies.add(seqNode);
+			
+		if(seqNode.getExecutableNodes().size() != 0)
+		{
+			Action lastAction = (Action)seqNode.getExecutableNodes().get(seqNode.getExecutableNodes().size() - 1);
+			
+			this.currentNode.getBodyOutputs().addAll(lastAction.getOutputs());
+		}
 		
-		Action lastAction = (Action)seqNode.getExecutableNodes().get(seqNode.getExecutableNodes().size() - 1);
-		
-		System.out.println(lastAction);
-		
-		this.currentNode.getBodyOutputs().addAll(lastAction.getOutputs());
 		this.loopBody = seqNode;
-		
 		return imp;
 	}
 }
