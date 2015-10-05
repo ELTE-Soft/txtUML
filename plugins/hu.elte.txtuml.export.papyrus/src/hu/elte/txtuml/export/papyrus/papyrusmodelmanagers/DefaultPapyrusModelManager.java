@@ -21,7 +21,6 @@ import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.uml.diagram.activity.CreateActivityDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.clazz.CreateClassDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.statemachine.CreateStateMachineDiagramCommand;
-import org.eclipse.papyrus.uml.tools.model.UmlModel;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Model;
@@ -40,8 +39,8 @@ public class DefaultPapyrusModelManager extends AbstractPapyrusModelManager {
 	 * @param editor - The editor
 	 * @param model - The Uml Model
 	 */
-	public DefaultPapyrusModelManager(IMultiDiagramEditor editor, UmlModel model) {
-		super(editor, model);
+	public DefaultPapyrusModelManager(IMultiDiagramEditor editor) {
+		super(editor);
 	}
 	
 
@@ -108,11 +107,11 @@ public class DefaultPapyrusModelManager extends AbstractPapyrusModelManager {
 		AbstractDiagramElementsManager diagramElementsManager;
 		DiagramEditPart diagep = diagramManager.getActiveDiagramEditPart();
 		if(diagram.getType().equals("PapyrusUMLClassDiagram")){					
-			diagramElementsManager = new ClassDiagramElementsManager(modelManager, diagep);
+			diagramElementsManager = new ClassDiagramElementsManager(diagep);
 		}else if(diagram.getType().equals("PapyrusUMLActivityDiagram")){
-			diagramElementsManager = new ActivityDiagramElementsManager(modelManager, diagep);
+			diagramElementsManager = new ActivityDiagramElementsManager(diagep);
 		}else if(diagram.getType().equals("PapyrusUMLStateMachineDiagram")){
-			diagramElementsManager = new StateMachineDiagramElementsManager(modelManager, diagep);
+			diagramElementsManager = new StateMachineDiagramElementsManager(diagep);
 		}else{
 			return;
 		}

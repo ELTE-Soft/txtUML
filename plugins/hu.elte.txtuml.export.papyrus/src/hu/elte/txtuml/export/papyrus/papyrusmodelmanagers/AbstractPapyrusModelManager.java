@@ -12,6 +12,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
+import org.eclipse.papyrus.infra.core.resource.ModelSet;
+import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.uml.tools.model.UmlModel;
 import org.eclipse.ui.IEditorPart;
 
@@ -52,14 +54,26 @@ public abstract class AbstractPapyrusModelManager {
 	protected IEditorPart editor;
 	
 	/**
+	 * The resource were the elements are stored
+	 */
+	protected UmlModel model;
+	
+	/**
 	 * The Constructor
 	 * @param editor - The Editor to which the PapyrusModelManager will be attached
 	 * @param model - The Uml Model manager
 	 */
-	public AbstractPapyrusModelManager(IMultiDiagramEditor editor, UmlModel model){
-		this.modelManager = new UMLModelManager(model);
-		this.diagramManager = new DiagramManager(editor);
-		this.editor = editor;
+	public AbstractPapyrusModelManager(IMultiDiagramEditor editor){
+		try{
+			this.model = (UmlModel) editor.getServicesRegistry().getService(ModelSet.class)
+					.getModel(UmlModel.MODEL_ID);
+			this.modelManager = new UMLModelManager(model);
+			this.diagramManager = new DiagramManager(editor);
+			this.editor = editor;
+		}catch(ServiceException e){
+			throw new RuntimeException(e);
+		}
+		
 	}
 	
 	/**

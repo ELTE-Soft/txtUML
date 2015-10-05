@@ -6,7 +6,6 @@ import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelMan
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
-import org.eclipse.papyrus.uml.tools.model.UmlModel;
 
 /**
  * A simple registry for registering implementation for the diagram creation process
@@ -34,13 +33,12 @@ public class SettingsRegistry {
 	 * Returns an instance of the registered Papyrus model manager. If there were no registration
 	 * an instance of {@link DefaultPapyrusModelManager} will be returned.
 	 * @param editor - Constructor parameter of manager
-	 * @param model - Constructor parameter of manager
 	 * @return Instance of the registered derivateive of {@link AbstractPapyrusModelManager}
 	 */
-	public static AbstractPapyrusModelManager getPapyrusModelManager(IMultiDiagramEditor editor, UmlModel model){
-		if(manager == null) return new DefaultPapyrusModelManager(editor, model);	
+	public static AbstractPapyrusModelManager getPapyrusModelManager(IMultiDiagramEditor editor){
+		if(manager == null) return new DefaultPapyrusModelManager(editor);	
 		try {
-			return manager.getConstructor(IMultiDiagramEditor.class, UmlModel.class).newInstance(editor, model);
+			return manager.getConstructor(IMultiDiagramEditor.class).newInstance(editor);
 		} catch (InstantiationException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {

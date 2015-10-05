@@ -1,14 +1,17 @@
 package hu.elte.txtuml.export.papyrus.layout.txtuml;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import hu.elte.txtuml.export.ExportUtils;
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.utils.Pair;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.CommonPlugin;
 import org.eclipse.emf.common.util.URI;
@@ -26,7 +29,7 @@ public class TxtUMLExporter {
 	private String projectName;
 	private String outputFolder;
 	private String txtUMLModelName;
-	private String txtUMLLayout;
+	private List<String> txtUMLLayout;
 	
 	/**
 	 * The Constructor
@@ -37,7 +40,7 @@ public class TxtUMLExporter {
 	 * @param parent - the parent ClassLoader
 	 */
 	public TxtUMLExporter(String projectName, String outputFolder,
-			String txtUMLModelName, String txtUMLLayout) {
+			String txtUMLModelName, List<String> txtUMLLayout) {
 		
 		this.projectName = projectName;
 		this.outputFolder = outputFolder;
@@ -51,23 +54,25 @@ public class TxtUMLExporter {
 	 * @throws Exception
 	 */
 	public TxtUMLLayoutDescriptor exportTxtUMLLayout() throws Exception{
-		List<DiagramExportationReport> reports = new LinkedList<DiagramExportationReport>();
+		List<Pair<String, DiagramExportationReport>> reports = new ArrayList<>();
 		
-		try {
-			DiagramExportationReport report = ExportUtils.exportTxtUMLLayout(projectName, txtUMLLayout);
-	        if(!report.isSuccessful()){
-	        	StringBuilder errorMessages = new StringBuilder("Errors occured during layout exportation:\n");
-	        	for(Object error : report.getErrors()){
-	        		errorMessages.append(error).append(errorMessages);
-	        		errorMessages.append(System.lineSeparator());
-	        	}
-	        	errorMessages.append(System.lineSeparator()+"The exportation was't successfull.");
-	        	throw new LayoutExportException(errorMessages.toString());
-	        }
-	        
-	        reports.add(report);
-		} catch (Exception e) {
-			throw e;
+		for(String layout : txtUMLLayout){
+			try {
+				DiagramExportationReport report = ExportUtils.exportTxtUMLLayout(projectName, layout);
+		        if(!report.isSuccessful()){
+		        	StringBuilder errorMessages = new StringBuilder("Errors occured during layout exportation:\n");
+		        	for(Object error : report.getErrors()){
+		        		errorMessages.append(error).append(errorMessages);
+		        		errorMessages.append(System.lineSeparator());
+		        	}
+		        	errorMessages.append(System.lineSeparator()+"The exportation was't successfull.");
+		        	throw new LayoutExportException(errorMessages.toString());
+		        }
+		        
+		        reports.add(new Pair<>(layout,report));
+			} catch (Exception e) {
+				throw e;
+			}
 		}
 		return new TxtUMLLayoutDescriptor(txtUMLModelName, reports); 
 	}
@@ -84,11 +89,42 @@ public class TxtUMLExporter {
 		IFile UmlFile = ResourcesPlugin.getWorkspace().getRoot()
 				.getFile(new Path(UmlFileResURI.toFileString()));
 
-		URI diFileURI = URI.createFileURI(projectName + "/" + this.outputFolder
-				+ "/" + this.txtUMLModelName + ".di");
-		URI diFileResURI = CommonPlugin.resolve(diFileURI);
+		PapyrusVisualizer pv = new PapyrusVisualizer(projectName,
+				this.outputFolder + "/" + this.txtUMLModelName,
+				UmlFile.getRawLocationURI().toString(), layoutDescriptor);
+		return pv;
+	}
+	
+	
+	/**
+	 * Closes the editor and deletes the files that are have the same name as the generated ones will have
+	 * @throws CoreException if this method fails. Reasons include: 
+		<ul>
+		<li>This resource could not be deleted for some reason.</li> 
+		<li>This resource or one of its descendents is out of sync with
+		 the local file system and force is false. </li> 
+		<li>Resource changes are disallowed during certain types of
+		 resource change event notification. See IResourceChangeEvent for more details.</li> 
+		</ul>
+	 */
+	public void cleanBeforeVisualization() throws CoreException{
+		String location  = projectName + "/" + this.outputFolder + "/" + this.txtUMLModelName;
+		URI diFileURI = URI.createFileURI(location+".di");
+		URI umlFileURI = URI.createFileURI(location+".uml");
+		URI profileFileURI = URI.createFileURI(location+".profile.uml");
+		URI mappingFileURI = URI.createFileURI(location+".mapping");
+		URI notationFileURI = URI.createFileURI(location+".notation");
+		
 		IFile diFile = ResourcesPlugin.getWorkspace().getRoot()
-				.getFile(new Path(diFileResURI.toFileString()));
+				.getFile(new Path(CommonPlugin.resolve(diFileURI).toFileString()));
+		IFile umlFile = ResourcesPlugin.getWorkspace().getRoot()
+				.getFile(new Path(CommonPlugin.resolve(umlFileURI).toFileString()));
+		IFile profileFile = ResourcesPlugin.getWorkspace().getRoot()
+				.getFile(new Path(CommonPlugin.resolve(profileFileURI).toFileString()));
+		IFile mappingFile = ResourcesPlugin.getWorkspace().getRoot()
+				.getFile(new Path(CommonPlugin.resolve(mappingFileURI).toFileString()));
+		IFile notationFile = ResourcesPlugin.getWorkspace().getRoot()
+				.getFile(new Path(CommonPlugin.resolve(notationFileURI).toFileString()));
 
 		IEditorInput input = new FileEditorInput(diFile);
 
@@ -100,10 +136,11 @@ public class TxtUMLExporter {
 					.getActivePage().closeEditor(editor, false);
 			
 		}
-
-		PapyrusVisualizer pv = new PapyrusVisualizer(projectName,
-				this.outputFolder + "/" + this.txtUMLModelName,
-				UmlFile.getRawLocationURI().toString(), layoutDescriptor);
-		return pv;
+		
+		diFile.delete(true, new NullProgressMonitor());
+		umlFile.delete(true, new NullProgressMonitor());
+		profileFile.delete(true, new NullProgressMonitor());
+		mappingFile.delete(true, new NullProgressMonitor());
+		notationFile.delete(true, new NullProgressMonitor());
 	}
 }

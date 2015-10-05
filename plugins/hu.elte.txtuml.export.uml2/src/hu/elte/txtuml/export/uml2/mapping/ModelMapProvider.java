@@ -1,17 +1,12 @@
 package hu.elte.txtuml.export.uml2.mapping;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
@@ -21,10 +16,8 @@ import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
  */
 public class ModelMapProvider {
 	public static final String MAPPING_FILE_EXTENSION = ModelMapUtils.MAPPING_FILE_EXTENSION;
-
-	private Map<String,String> map;
+	private URIFragmentMapper uriFragmentMapper;
 	private Resource resource;
-	private static final String INVALID_MAPPING_FILE_CONTENT = "Mapping file content is invalid.";
 	private static final String CANNOT_LOAD_MODEL = "UML model cannot be loaded.";
 
 	/**
@@ -36,36 +29,11 @@ public class ModelMapProvider {
 	 * @throws ClassNotFoundException
 	 */
 	public ModelMapProvider(URI directory, String filename) throws ModelMapException {
-		URI mappingURI = ModelMapUtils.createMappingURI(directory,filename);
-		String modelPath;
-		try {
-			InputStream in = new ExtensibleURIConverterImpl().createInputStream(mappingURI);
-			ObjectInputStream stream = new ObjectInputStream(in);
-			Object modelPathObject = stream.readObject();
-			Object mapObject = stream.readObject();
-			if(modelPathObject == null || !(modelPathObject instanceof String)
-					|| mapObject == null || !(mapObject instanceof Map<?,?>)) {
-				throw new ModelMapException(INVALID_MAPPING_FILE_CONTENT);
-			}
-			modelPath = (String)modelPathObject;
-			/* The 'if' above verifies that the map has been successfully retrieved
-			 * from the file and it is really a map. However, key and value types are
-			 * not verified. It seems unnecessary overhead to check those as well
-			 * and to construct a new, type-safe map, therefore the warning is suppressed.
-			 * The localMap variable is only needed to make the scope of the suppression
-			 * minimal.
-			 */
-			@SuppressWarnings("unchecked")
-			Map<String,String> localMap = (Map<String,String>)mapObject;
-			map = localMap;
-			stream.close();
-		} catch(IOException | ClassNotFoundException e) {
-			throw new ModelMapException(e);
-		}
+		uriFragmentMapper = new URIFragmentMapper(directory, filename);
 
 		ResourceSet resourceSet = new ResourceSetImpl();
 		UMLResourcesUtil.init(resourceSet);
-		URI modelURI = URI.createURI(modelPath);
+		URI modelURI = URI.createURI(uriFragmentMapper.getModelPath());
 		if(modelURI == null) {
 			throw new ModelMapException(CANNOT_LOAD_MODEL);
 		}
@@ -74,6 +42,27 @@ public class ModelMapProvider {
 			throw new ModelMapException(CANNOT_LOAD_MODEL);
 		}
 	}
+	
+	/**
+	 * @param directory Directory of the saved mapping.
+	 * @param filename	File name of the saved mapping (without extension) the 
+	 * @param resource the resource where UML2 model is to be find
+	 * @throws ModelMapException 
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	public ModelMapProvider(URI directory, String filename, Resource resource) throws ModelMapException {
+		uriFragmentMapper = new URIFragmentMapper(directory, filename);
+		
+		if(resource == null) {
+			throw new ModelMapException(CANNOT_LOAD_MODEL);
+		}else{
+			this.resource = resource;
+		}
+	}
+	
+	
 	
 	/**
 	 * Maps a Java class representing a txtUML model element
@@ -93,7 +82,7 @@ public class ModelMapProvider {
 	 * @return The corresponding EObject of the EMF-UML2 model (or null if such cannot be found).
 	 */
 	public EObject getByName(String className) {
-		String uriFragment = map.get(className);
+		String uriFragment = uriFragmentMapper.get(className);
 		if(uriFragment == null || resource == null) {
 			return null;
 		}
@@ -105,10 +94,6 @@ public class ModelMapProvider {
 	 */
 	public void dump() {
 		System.out.println("Model URI: " + resource.getURI());
-		Iterator<Entry<String, String>> it = map.entrySet().iterator();
-	    while (it.hasNext()) {
-	        Map.Entry<String, String> pair = it.next();
-	        System.out.println(pair.getKey() + " = " + pair.getValue());
-	    }
+		System.out.println(uriFragmentMapper.toString());
 	}
 }

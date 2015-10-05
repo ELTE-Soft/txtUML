@@ -42,15 +42,28 @@ public class DiagramManager {
 	 * @param diagramCreationCommand - the Command that will be executed.
 	 */
 	public void createDiagrams(List<Element> containers, ICreationCommand diagramCreationCommand){
+		for(Element container : containers){
+			this.createDiagram(container, ((NamedElement)container).getName(), diagramCreationCommand);
+		}
+	}
+	
+	/**
+	 * Calls the createDiagram method of the {@link ICreationCommand} with the container.
+	 * The ModelSet will be the ModelSet that is attached to the editor of the DiagramManager.
+	 * 
+	 * @param container - the {@link Element} thats children will be placed on the diagram.
+	 * @param diagramName - The name of the new Diagram
+	 * @param diagramCreationCommand - the Command that will be executed.
+	 */
+	public void createDiagram(Element container, String diagramName, ICreationCommand diagramCreationCommand){
 		try {
 			ModelSet ms = this.editor.getServicesRegistry().getService(ModelSet.class);
-			for(Element container : containers){
-				diagramCreationCommand.createDiagram(ms, container, ((NamedElement)container).getName());
-			}
+			diagramCreationCommand.createDiagram(ms, container, diagramName);
 		} catch (ServiceException e) {
 			throw new RuntimeException(e);
 		}
 	}
+	
 	
 	/**
 	 * Gets the previously created diagrams.

@@ -6,16 +6,13 @@ import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelMa
 import hu.elte.txtuml.export.papyrus.utils.EditorOpener;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.infra.core.resource.ModelMultiException;
-import org.eclipse.papyrus.infra.core.resource.ModelSet;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
-import org.eclipse.papyrus.uml.tools.model.UmlModel;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 
 /**
@@ -99,28 +96,19 @@ public class PapyrusVisualizer {
 		monitor.beginTask("Generating Papyrus Model", 100);
 		PapyrusModelCreator papyrusModelCreator = new PapyrusModelCreator(projectName + "/" + modelName);
 		papyrusModelCreator.setUpUML(sourceUMLPath);
-
-		try {
-			// TODO: The following cleanup is a quick fix to improve user experience. Should be reviewed.
-			papyrusModelCreator.cleanup();
+		if(!papyrusModelCreator.diExists()){
+			
 			monitor.subTask("Generating Papyrus model...");
 			papyrusModelCreator.createPapyrusModel();
 			IMultiDiagramEditor editor = EditorOpener.openPapyrusEditor(papyrusModelCreator.getDi());
 			
-			UmlModel umlModel = (UmlModel) editor.getServicesRegistry().getService(ModelSet.class)
-												.getModel(UmlModel.MODEL_ID);
-	
-			papyrusModelManager = SettingsRegistry.getPapyrusModelManager(editor, umlModel);
+			papyrusModelManager = SettingsRegistry.getPapyrusModelManager(editor);
 			papyrusModelManager.setLayoutController(layoutDescriptor);
 			monitor.worked(10);
 			
 			papyrusModelManager.createAndFillDiagrams(new SubProgressMonitor(monitor, 90));
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} 
 	}
-
-}
 	
 	/**
 	 * Registers the Implementation for the PapyrusModelManager

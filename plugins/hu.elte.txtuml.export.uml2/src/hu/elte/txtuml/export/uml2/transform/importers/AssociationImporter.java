@@ -70,7 +70,9 @@ public class AssociationImporter extends AbstractImporter{
 	    		sourceClass.getName().getFullyQualifiedName(), UMLPackage.eINSTANCE.getAssociation()); 
 		importAssociationEnd(classes.get(0));
 	    importAssociationEnd(classes.get(1));
-		    
+		
+	    ModelImporter.mapping.put(SharedUtils.qualifiedName(this.sourceClass), this.importedAssociation);
+	    
 	    return importedAssociation;
 	}
 	

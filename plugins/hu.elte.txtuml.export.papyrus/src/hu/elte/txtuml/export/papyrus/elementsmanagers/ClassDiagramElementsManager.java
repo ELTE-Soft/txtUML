@@ -55,8 +55,8 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 	 * @param modelManager - The ModelManager which serves the model elements
 	 * @param diagramEditPart - The DiagramEditPart of the diagram which is to be handled
 	 */
-	public ClassDiagramElementsManager(UMLModelManager modelManager,DiagramEditPart diagramEditPart) {
-		super(modelManager, diagramEditPart);
+	public ClassDiagramElementsManager(DiagramEditPart diagramEditPart) {
+		super(diagramEditPart);
 		elementsToBeAdded = generateElementsToBeAdded();
 		connectorsToBeAdded = generateConnectorsToBeAdded();
 	}
@@ -110,8 +110,8 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 	 */
 	@Override
 	public void addElementsToDiagram(List<Element> elements){
-		List<Element> diagramelements = modelManager.getElementsOfTypesFromList(elements, elementsToBeAdded);
-		List<Element> diagramconnections = modelManager.getElementsOfTypesFromList(elements, connectorsToBeAdded);
+		List<Element> diagramelements = UMLModelManager.getElementsOfTypesFromList(elements, elementsToBeAdded);
+		List<Element> diagramconnections = UMLModelManager.getElementsOfTypesFromList(elements, connectorsToBeAdded);
 		
 		ClassDiagramElementsController.addElementsToClassDiagram((ModelEditPart) diagramEditPart, diagramelements);
 		ClassDiagramElementsController.addElementsToClassDiagram((ModelEditPart) diagramEditPart, diagramconnections);
@@ -135,12 +135,12 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 		EObject parent = ((View) ep.getModel()).getElement();
 		List<Element> list = ((Element) parent).getOwnedElements();
 		
-		List<Property> properties = modelManager.getElementsOfTypeFromList(list, Property.class);
-		List<Port> ports = modelManager.getElementsOfTypeFromList(list, Port.class);
-		List<ExtensionEnd> extensionEnds = modelManager.getElementsOfTypeFromList(list, ExtensionEnd.class);
+		List<Property> properties = UMLModelManager.getElementsOfTypeFromList(list, Property.class);
+		List<Port> ports = UMLModelManager.getElementsOfTypeFromList(list, Port.class);
+		List<ExtensionEnd> extensionEnds = UMLModelManager.getElementsOfTypeFromList(list, ExtensionEnd.class);
 		
-		List<Operation> operations = modelManager.getElementsOfTypeFromList(list, Operation.class);
-		List<Reception> receptions = modelManager.getElementsOfTypeFromList(list, Reception.class);
+		List<Operation> operations = UMLModelManager.getElementsOfTypeFromList(list, Operation.class);
+		List<Reception> receptions = UMLModelManager.getElementsOfTypeFromList(list, Reception.class);
 		
 		removeAssociationProperties(properties);
 		

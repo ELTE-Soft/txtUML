@@ -34,8 +34,8 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	 * @param modelManager - The ModelManager which serves the model elements
 	 * @param diagramEditPart - The DiagramEditPart of the diagram which is to be handled
 	 */
-	public StateMachineDiagramElementsManager(UMLModelManager modelManager,DiagramEditPart diagramEditPart) {
-		super(modelManager, diagramEditPart);
+	public StateMachineDiagramElementsManager(DiagramEditPart diagramEditPart) {
+		super(diagramEditPart);
 	}
 	
 	
@@ -83,10 +83,10 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 		EObject parent = ((View) region.getModel()).getElement();
 		List<Element> list = ((Element) parent).getOwnedElements();
 		
-		List<State> states = modelManager.getElementsOfTypeFromList(list, State.class);
-		List<Pseudostate> pseudostates = modelManager.getElementsOfTypeFromList(list, Pseudostate.class);
-		List<FinalState> finalstates = modelManager.getElementsOfTypeFromList(list, FinalState.class);
-		List<Transition> transitions = modelManager.getElementsOfTypeFromList(list, Transition.class);
+		List<State> states = UMLModelManager.getElementsOfTypeFromList(list, State.class);
+		List<Pseudostate> pseudostates = UMLModelManager.getElementsOfTypeFromList(list, Pseudostate.class);
+		List<FinalState> finalstates = UMLModelManager.getElementsOfTypeFromList(list, FinalState.class);
+		List<Transition> transitions = UMLModelManager.getElementsOfTypeFromList(list, Transition.class);
 	
 		StateMachineDiagramElementsController.addPseudostatesToRegion(region, pseudostates);
 		StateMachineDiagramElementsController.addStatesToRegion(region, states);
@@ -94,12 +94,12 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 		StateMachineDiagramElementsController.addTransitionsToRegion(region, transitions);
 	
 		if(PreferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_CONSTRAINT_PREF)){
-			List<Constraint> constraints = modelManager.getElementsOfTypeFromList(list, Constraint.class);
+			List<Constraint> constraints = UMLModelManager.getElementsOfTypeFromList(list, Constraint.class);
 			StateMachineDiagramElementsController.addElementsToRegion(region, constraints);
 		}
 		
 		if(PreferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_COMMENT_PREF)){
-			List<Comment> comments = modelManager.getElementsOfTypeFromList(list, Comment.class);
+			List<Comment> comments = UMLModelManager.getElementsOfTypeFromList(list, Comment.class);
 			StateMachineDiagramElementsController.addElementsToRegion(region, comments);
 		}
 		

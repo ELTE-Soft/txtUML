@@ -2,6 +2,8 @@ package hu.elte.txtuml.export.papyrus.preferences;
 
 import hu.elte.txtuml.export.papyrus.Activator;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -20,24 +22,25 @@ public class PreferencesManager{
 	
 	private static IPreferenceStore store = Activator.getDefault().getPreferenceStore() ;
 	private static Map<String, Object> fieldsWithDefaultValues;
+	private static final String STRING_DELIMITER = "__#010#__"; 
 	
-	public static String CLASS_DIAGRAM_PREF = "Class Diagram";
-	public static String ACTIVITY_DIAGRAM_PREF = "Activity Diagram";
-	public static String STATEMACHINE_DIAGRAM_PREF = "StateMachine Diagram";
+	public static final String CLASS_DIAGRAM_PREF = "Class Diagram";
+	public static final String ACTIVITY_DIAGRAM_PREF = "Activity Diagram";
+	public static final String STATEMACHINE_DIAGRAM_PREF = "StateMachine Diagram";
 	
-	public static String CLASS_DIAGRAM_CONSTRAINT_PREF = "Class Diagram Constraint";
-	public static String CLASS_DIAGRAM_SIGNAL_PREF = "Class Diagram Signal";
-	public static String CLASS_DIAGRAM_COMMENT_PREF = "Class Diagram Comment";
+	public static final String CLASS_DIAGRAM_CONSTRAINT_PREF = "Class Diagram Constraint";
+	public static final String CLASS_DIAGRAM_SIGNAL_PREF = "Class Diagram Signal";
+	public static final String CLASS_DIAGRAM_COMMENT_PREF = "Class Diagram Comment";
 	
-	public static String ACTIVITY_DIAGRAM_COMMENT_PREF = "Activity Diagram Comment";
+	public static final String ACTIVITY_DIAGRAM_COMMENT_PREF = "Activity Diagram Comment";
 	
-	public static String STATEMACHINE_DIAGRAM_CONSTRAINT_PREF = "StateMachine Diagram Constraint";
-	public static String STATEMACHINE_DIAGRAM_COMMENT_PREF = "StateMachine Diagram Comment";
+	public static final String STATEMACHINE_DIAGRAM_CONSTRAINT_PREF = "StateMachine Diagram Constraint";
+	public static final String STATEMACHINE_DIAGRAM_COMMENT_PREF = "StateMachine Diagram Comment";
 	
-	public static String TXTUML_VISUALIZE_TXTUML_MODEL = "txtUML Visualize txtUML Model";
-	public static String TXTUML_VISUALIZE_TXTUML_PROJECT = "txtUML Visualize txtUML Project";
-	public static String TXTUML_VISUALIZE_DESTINATION_FOLDER = "txtUML Visualize Destination Folder";
-	public static String TXTUML_VISUALIZE_TXTUML_LAYOUT = "txtUML Visualize txtUML Layout";
+	public static final String TXTUML_VISUALIZE_TXTUML_MODEL = "txtUML Visualize txtUML Model";
+	public static final String TXTUML_VISUALIZE_TXTUML_PROJECT = "txtUML Visualize txtUML Project";
+	public static final String TXTUML_VISUALIZE_DESTINATION_FOLDER = "txtUML Visualize Destination Folder";
+	public static final String TXTUML_VISUALIZE_TXTUML_LAYOUT = "txtUML Visualize txtUML Layout";
 	
 	static{
 		fieldsWithDefaultValues = new HashMap<String, Object>();
@@ -101,6 +104,7 @@ public class PreferencesManager{
 	 * Sets the values for preferences
 	 * @param mp - A map with Preference-Value keys
 	 */
+	@SuppressWarnings("unchecked")
 	public static void setValues(Map<String, Object> mp){
 		Iterator<Map.Entry<String, Object>> it = mp.entrySet().iterator();
 		
@@ -122,6 +126,8 @@ public class PreferencesManager{
 	        	setValue(Key, (Long) Value);
 	        }else if(Value instanceof String){
 	        	setValue(Key, (String) Value);
+	        }else if(Value instanceof Collection<?>){
+	        	setValue(Key, (Collection<String>) Value);
 	        }
 	    }
 	}
@@ -180,6 +186,11 @@ public class PreferencesManager{
 		store.setValue(name, value);
 	}
 	
+	public static void setValue(String name, Collection<String> collection){
+		String value = String.join(STRING_DELIMITER, collection);
+		setValue(name, value);
+	}
+	
 	/**
 	 * Gets the value of a preference
 	 * @param name - The preference
@@ -226,5 +237,11 @@ public class PreferencesManager{
 	 */
 	public static long getLong(String name){
 		return store.getLong(name);
+	}
+	
+	public static Collection<String> getStrings(String name){
+		String storedString = store.getString(name);
+		String[] values = storedString.split(STRING_DELIMITER);
+		return Arrays.asList(values);
 	}
 }

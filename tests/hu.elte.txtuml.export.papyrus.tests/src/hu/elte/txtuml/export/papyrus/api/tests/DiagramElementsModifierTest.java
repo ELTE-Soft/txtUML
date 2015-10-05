@@ -45,7 +45,6 @@ import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationNameEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassEditPart;
 import org.eclipse.papyrus.uml.diagram.wizards.category.DiagramCategoryDescriptor;
 import org.eclipse.papyrus.uml.diagram.wizards.category.DiagramCategoryRegistry;
-import org.eclipse.papyrus.uml.tools.model.UmlModel;
 import org.eclipse.papyrus.uml.tools.model.UmlUtils;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -110,8 +109,7 @@ public class DiagramElementsModifierTest {
 			Map<String, DiagramCategoryDescriptor> categories = DiagramCategoryRegistry.getInstance().getDiagramCategoryMap();
 			IModelCreationCommand creationCommand = categories.get("uml").getCommand();
 			creationCommand.createModel(modelSet);
-			UmlModel umlModel = (UmlModel) modelSet.getModel(UmlModel.MODEL_ID);
-			AbstractPapyrusModelManager manager = new DefaultPapyrusModelManager(editor, umlModel);
+			AbstractPapyrusModelManager manager = new DefaultPapyrusModelManager(editor);
 			
 			EObject model = UmlUtils.getUmlModel().lookupRoot();
 			org.eclipse.uml2.uml.Package modelpackage = (org.eclipse.uml2.uml.Package) model;

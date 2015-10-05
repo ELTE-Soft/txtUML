@@ -78,6 +78,7 @@ public class ModelImporter {
 			throws ImportException {
 		initModelImport(txtUMLModelName, path);
 		importModelElements();
+		ModelImporter.mapping.put(txtUMLModelName, getImportedModel());
 		endModelImport(txtUMLModelName, path);
 
 		return this.importedModel;

@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -66,7 +67,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 	@Override
 	public boolean performFinish() {
 		String txtUMLModelName = selectTxtUmlPage.getTxtUmlModelClass();
-		String txtUMLLayout = selectTxtUmlPage.getTxtUmlLayout();
+		List<String> txtUMLLayout = selectTxtUmlPage.getTxtUmlLayout();
 		String txtUMLProjectName = selectTxtUmlPage.getTxtUmlProject();
 		String generatedFolderName = PreferencesManager
 				.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
@@ -80,6 +81,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		PreferencesManager.setValue(
 				PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT,
 				txtUMLLayout);
+		
 		try {
 			IProgressService progressService = PlatformUI.getWorkbench()
 					.getProgressService();
@@ -91,10 +93,17 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 								throws InterruptedException {
 							monitor.beginTask("Visualization", 100);
 
+							
 							TxtUMLExporter exporter = new TxtUMLExporter(
 									txtUMLProjectName, generatedFolderName,
 									txtUMLModelName, txtUMLLayout);
-
+							try {
+								exporter.cleanBeforeVisualization();
+							} catch (CoreException e) {
+								Dialogs.errorMsgb("txtUML export Error", e.getClass() + ":" + System.lineSeparator()
+										+ e.getMessage(), e);
+								throw new InterruptedException();
+							}
 							monitor.subTask("Exporting txtUML Model to UML2 model...");
 							try {
 								ExportUtils.exportTxtUMLModelToUML2(
@@ -102,10 +111,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 										txtUMLProjectName + "/" + generatedFolderName);
 								monitor.worked(10);
 							} catch (Exception e) {
-								Dialogs.errorMsgb(
-										"txtUML export Error",
-										e.getClass() + ":"
-												+ System.lineSeparator()
+								Dialogs.errorMsgb("txtUML export Error", e.getClass() + ":" + System.lineSeparator()
 												+ e.getMessage(), e);
 								monitor.done();
 								throw new InterruptedException();
@@ -124,7 +130,9 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 
 								layoutDescriptor.generateSMDs = selectTxtUmlPage
 										.getGenerateSMDs();
-
+								layoutDescriptor.mappingFolder = generatedFolderName;
+								layoutDescriptor.projectName = txtUMLProjectName; 
+								
 								if (warnings.size() != 0) {
 									StringBuilder warningMessages = new StringBuilder(
 											"Warnings:"

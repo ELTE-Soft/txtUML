@@ -54,8 +54,8 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 	 * @param modelManager - The ModelManager which serves the model elements
 	 * @param diagramEditPart - The DiagramEditPart of the diagram which is to be handled
 	 */
-	public ActivityDiagramElementsManager(UMLModelManager modelManager,DiagramEditPart diagramEditPart) {
-		super(modelManager, diagramEditPart);
+	public ActivityDiagramElementsManager(DiagramEditPart diagramEditPart) {
+		super(diagramEditPart);
 		nodesToBeAdded = generateNodesToBeAdded();
 		connectorsToBeAdded = generateConnectorsToBeAdded(); 
 	}
@@ -113,8 +113,8 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 	 */
 	@Override
 	public void addElementsToDiagram(List<Element> elements) {
-		List<Element> diagramelements = modelManager.getElementsOfTypesFromList(elements, nodesToBeAdded);
-		List<Element> diagramconnections = modelManager.getElementsOfTypesFromList(elements, connectorsToBeAdded);
+		List<Element> diagramelements = UMLModelManager.getElementsOfTypesFromList(elements, nodesToBeAdded);
+		List<Element> diagramconnections = UMLModelManager.getElementsOfTypesFromList(elements, connectorsToBeAdded);
 
 		ActivityDiagramElementsController.addElementsToActivityDiagram((ActivityDiagramEditPart) diagramEditPart, diagramelements);
 		ActivityDiagramElementsController.addElementsToActivityDiagram((ActivityDiagramEditPart) diagramEditPart, diagramconnections);

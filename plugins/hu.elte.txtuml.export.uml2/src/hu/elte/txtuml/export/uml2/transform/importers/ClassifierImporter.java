@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.uml2.transform.importers;
 
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
+import hu.elte.txtuml.export.uml2.utils.SharedUtils;
 
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.uml2.uml.Signal;
@@ -16,7 +17,12 @@ public class ClassifierImporter {
 	
 	public org.eclipse.uml2.uml.Class importClass(TypeDeclaration typeDeclaration) {
 		String name = typeDeclaration.getName().getFullyQualifiedName();
-		return this.modelImporter.getImportedModel().createOwnedClass(name, ElementTypeTeller.isAbstract(typeDeclaration));
+		org.eclipse.uml2.uml.Class clazz =   this.modelImporter.getImportedModel()
+												.createOwnedClass(name,
+														ElementTypeTeller
+														.isAbstract(typeDeclaration));
+		ModelImporter.mapping.put(SharedUtils.qualifiedName(typeDeclaration), clazz);
+		return clazz;
 	}
 
 	public Signal importSignal(TypeDeclaration typeDeclaration) {

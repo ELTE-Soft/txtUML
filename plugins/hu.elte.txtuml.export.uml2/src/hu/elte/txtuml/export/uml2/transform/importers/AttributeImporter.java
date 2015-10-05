@@ -49,6 +49,8 @@ public class AttributeImporter {
 			Property property = createClassifierAttribute(name, type);
 			ElementModifiersAssigner.assignModifiersForElementBasedOnDeclaration(property, fieldDeclaration);
 			importedAttributes.add(property);
+			
+			ModelImporter.mapping.put(name, property);
 		});
 		
 		return importedAttributes;

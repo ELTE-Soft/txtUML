@@ -121,7 +121,7 @@ public class UMLModelManager {
 	 * @return Returns the Elements of same type 
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends Element> List<T> getElementsOfTypeFromList(List<Element> elements, java.lang.Class<T> type){
+	public static <T extends Element> List<T> getElementsOfTypeFromList(List<Element> elements, java.lang.Class<T> type){
 		List<T> result = new LinkedList<T>(); 
 		for(Element element : elements){
 			if (isElementOfType(element, type)){
@@ -139,7 +139,7 @@ public class UMLModelManager {
 	 * @param types - The Collection of types that is searched
 	 * @return Returns the Elements of types
 	 */
-	public List<Element> getElementsOfTypesFromList(List<Element> elements,
+	public static List<Element> getElementsOfTypesFromList(List<Element> elements,
 								Collection<java.lang.Class<? extends Element>> types){
 		List<Element> all = new LinkedList<Element>();
 		for(java.lang.Class<? extends Element> type : types){
@@ -155,7 +155,7 @@ public class UMLModelManager {
 	 * @param type - The type
 	 * @return Returns true if the Element is of type 
 	 */
-	private boolean isElementOfType(Element element, java.lang.Class<? extends Element> type){
+	private static boolean isElementOfType(Element element, java.lang.Class<? extends Element> type){
 		return element.eClass().getInstanceClass() == type;
 	}
 }

@@ -5,6 +5,8 @@ import hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsAr
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutTransformer.OrigoConstraint;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
+import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.layout.visualizer.model.AssociationType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
@@ -13,6 +15,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -64,8 +67,9 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 				List<ConnectionNodeEditPart> conns = ((GraphicalEditPart) editpart).getSourceConnections();
 				connections.addAll(conns);
 			}
-			
-			LayoutVisualizerManager vm = new LayoutVisualizerManager(txtUmlRegistry.getDescriptor().getReports().get(0)); //TODO
+
+			DiagramExportationReport report = txtUmlRegistry.getDescriptor().getReport(this.diagep.getDiagramView().getName());
+			LayoutVisualizerManager vm = new LayoutVisualizerManager(report);
 			vm.addProgressMonitor(monitor);
 			vm.arrange();
 			
@@ -76,9 +80,9 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			Map<ConnectionNodeEditPart, List<Point>> linksTransform = new HashMap<ConnectionNodeEditPart, List<Point>>(); 
 			
 			for(RectangleObject obj:objects){
-				Element e = txtUmlRegistry.findElement(obj.getName());
-				if(e != null){
-					GraphicalEditPart ep = (GraphicalEditPart) getEditPartOfModelElement(elements, e);
+				Optional<Element> e = txtUmlRegistry.findElement(obj.getName());
+				if(e.isPresent()){
+					GraphicalEditPart ep = (GraphicalEditPart) getEditPartOfModelElement(elements, e.get());
 					if(ep != null){
 						objectsTransform.put(ep, new Rectangle(obj.getTopLeft().getX(),
 										obj.getTopLeft().getY(), cellSize, cellSize));
@@ -90,17 +94,23 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			
 			for(LineAssociation la : links){
 				List<Point> route = new LinkedList<Point>();
-				//The point of the route have opposite order in the two representations
+
 				List<hu.elte.txtuml.layout.visualizer.model.Point> layoutRoute = la.getMinimalRoute();
 				
-				for(int i = layoutRoute.size()-1; i >= 0; i--){
-					route.add(new Point(layoutRoute.get(i).getX(),layoutRoute.get(i).getY()));
+				for(int i = 0; i < layoutRoute.size(); i++){
+					int index = i;
+					if(la.getType() == AssociationType.generalization){ //ugly workaround: some connections have opposite direction while others don't
+						index = layoutRoute.size()-i-1;
+					}
+					
+					route.add(new Point(layoutRoute.get(index).getX(),layoutRoute.get(index).getY()));
 				}
 				
-				Element e = txtUmlRegistry.findAssociation(la.getId());
-				if(e == null) e = txtUmlRegistry.findGeneralization(la.getFrom(), la.getTo());
-				if(e != null){
-					ConnectionNodeEditPart connection = (ConnectionNodeEditPart) getEditPartOfModelElement(connections, e);
+				Optional<? extends Element> e = txtUmlRegistry.findAssociation(la.getId());
+				if(!e.isPresent()) e = txtUmlRegistry.findGeneralization(la.getFrom(), la.getTo());
+				
+				if(e.isPresent()){
+					ConnectionNodeEditPart connection = (ConnectionNodeEditPart) getEditPartOfModelElement(connections, e.get());
 					linksTransform.put(connection, route);
 				}
 			}
