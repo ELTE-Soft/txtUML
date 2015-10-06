@@ -92,7 +92,7 @@ public class DiagramElementsModifierTest {
 		PapyrusModelCreator pmc = new PapyrusModelCreator(projectname+"/model");
 		try {
 			pmc.createPapyrusModel();
-			//System.out.println();
+			
 			HashMap<String, org.eclipse.uml2.uml.Class> nodes = new  HashMap<String, org.eclipse.uml2.uml.Class>();
 			
 			IFile diFile = pmc.getDi(); 

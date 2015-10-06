@@ -51,8 +51,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 		sc = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		container = new Composite(sc, SWT.NONE);
 		
-		GridLayout layout = new GridLayout();
-	    layout.numColumns = 3;
+		GridLayout layout = new GridLayout(3,false);
 	    container.setLayout(layout);
 	    
 	    
@@ -85,7 +84,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	    generateSMDs.setText(" generate StateMachine Diagrams automatically");
 	    generateSMDs.setSelection(true);
 	    
-	    GridData gd = new GridData(SWT.FILL, SWT.FILL, false, false, 2,1);
+	    GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false, 2,1);
 	    txtUMLModel.setLayoutData(gd);
 	    txtUMLProject.setLayoutData(gd);
 	    txtUMLLayout.forEach( (text) -> text.setLayoutData(GridData.FILL_HORIZONTAL) );

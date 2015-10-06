@@ -30,6 +30,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.xtext.ui.XtextProjectHelper;
 import org.osgi.framework.Constants;
 
 public class TxtUMLProject extends Wizard implements INewWizard {
@@ -74,7 +75,9 @@ public class TxtUMLProject extends Wizard implements INewWizard {
 			String[] natures = new String[]{
 					TxtUMLProjectNature.NATURE_ID,
 					JavaCore.NATURE_ID, 
-					"org.eclipse.pde.PluginNature"};
+					XtextProjectHelper.NATURE_ID,
+					"org.eclipse.pde.PluginNature"
+					};
 			ProjectCreator.addProjectNatures(project, natures);
 
 			IFolder metainf = ProjectCreator.createFolder(project, "META-INF");
