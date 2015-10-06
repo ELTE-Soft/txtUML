@@ -1,14 +1,11 @@
 package hu.elte.txtuml.export.uml2.transform.importers.controls.loops;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.uml2.uml.Action;
-import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.AddVariableValueAction;
-import org.eclipse.uml2.uml.ExecutableNode;
 import org.eclipse.uml2.uml.ExpansionNode;
 import org.eclipse.uml2.uml.ExpansionRegion;
 import org.eclipse.uml2.uml.Model;

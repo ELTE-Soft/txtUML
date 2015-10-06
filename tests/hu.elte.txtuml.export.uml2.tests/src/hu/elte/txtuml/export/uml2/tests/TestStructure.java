@@ -12,7 +12,6 @@ import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ConditionalNode;
 import org.eclipse.uml2.uml.CreateObjectAction;
 import org.eclipse.uml2.uml.DestroyObjectAction;
-import org.eclipse.uml2.uml.ExpansionNode;
 import org.eclipse.uml2.uml.ExpansionRegion;
 import org.eclipse.uml2.uml.InputPin;
 import org.eclipse.uml2.uml.LinkAction;

@@ -1,14 +1,12 @@
 package hu.elte.txtuml.export.uml2.transform.importers.controls;
 
 import org.eclipse.jdt.core.dom.ArrayAccess;
-import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
-import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CreateObjectAction;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Type;
@@ -52,7 +50,7 @@ public class NewActionImporter extends AbstractControlStructureImporter
 	
     	createAction.createResult("result_" + instanceName + "_" + this.hashCode(),classType);
     	
-		ActivityNode lastNode = this.getLastNode();
+		/*ActivityNode lastNode =*/ this.getLastNode();
 		
 		this.methodBodyImporter.getBodyNode().getExecutableNodes().add(createAction);
 		

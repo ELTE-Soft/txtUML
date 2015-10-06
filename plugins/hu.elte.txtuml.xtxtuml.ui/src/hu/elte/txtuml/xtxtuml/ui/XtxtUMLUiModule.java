@@ -13,6 +13,7 @@ public class XtxtUMLUiModule extends hu.elte.txtuml.xtxtuml.ui.AbstractXtxtUMLUi
 		super(plugin);
 	}
     
+    @Override
     public Class<? extends ISemanticHighlightingCalculator> bindISemanticHighlightingCalculator() {
         return XtxtUMLHighlightingCalculator.class;
     }

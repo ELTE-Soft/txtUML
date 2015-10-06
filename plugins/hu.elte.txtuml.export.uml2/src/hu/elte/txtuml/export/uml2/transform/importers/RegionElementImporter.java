@@ -173,7 +173,7 @@ public class RegionElementImporter{
 				.findMethodDeclarationByName(stateDeclaration, "exit");
 
 		if (exitMethodDeclaration != null) {
-			Activity activity = (Activity) importedState.createExit(
+			/*Activity activity = (Activity)*/ importedState.createExit(
 					importedState.getName() + "_exit",
 					UMLPackage.Literals.ACTIVITY);
 			//TODO: import body
@@ -318,7 +318,7 @@ public class RegionElementImporter{
 		MethodDeclaration effectMethodDeclaration = 
 				SharedUtils.findMethodDeclarationByName(transitionDeclaration, "effect");
 		if(effectMethodDeclaration != null) {
-			Activity activity = (Activity) importedTransition.createEffect(
+			/*Activity activity = (Activity)*/ importedTransition.createEffect(
 					importedTransition.getName() + "_effect",
 					UMLPackage.Literals.ACTIVITY);
 			
