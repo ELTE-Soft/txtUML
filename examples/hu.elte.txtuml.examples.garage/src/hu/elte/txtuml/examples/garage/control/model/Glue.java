@@ -1,11 +1,12 @@
 package hu.elte.txtuml.examples.garage.control.model;
 
 import hu.elte.txtuml.api.model.*;
+import hu.elte.txtuml.api.model.external.ExternalClass;
 import hu.elte.txtuml.examples.garage.interfaces.IControl;
 import hu.elte.txtuml.examples.garage.interfaces.IControlled;
 
 // This class is the glue code between the UI and the control model
-public class Glue extends ExternalClass implements IControl {
+public class Glue implements ExternalClass, IControl {
 	// Model instantiation
 	GarageModel gmodel = new GarageModel();
 	GarageModel.Door door = gmodel.new Door();

@@ -1,10 +1,10 @@
 package hu.elte.txtuml.api.stdlib;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.ExternalClass;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelExecutor;
 import hu.elte.txtuml.api.model.Signal;
+import hu.elte.txtuml.api.model.external.ExternalClass;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Gabor Ferenc Kovacs
  *
  */
-public class Timer extends ExternalClass {
+public class Timer implements ExternalClass {
 
 	/**
 	 * Indicates whether the shutdown process was initiated.
@@ -121,7 +121,7 @@ public class Timer extends ExternalClass {
 	 * @author Gabor Ferenc Kovacs
 	 *
 	 */
-	public static class Handle extends ExternalClass {
+	public static class Handle implements ExternalClass {
 
 		/**
 		 * The handle of the event scheduled with {@link Timer#scheduler

@@ -8,6 +8,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: hu.elte.txtuml.api.model,
  hu.elte.txtuml.api.model.assocends,
  hu.elte.txtuml.api.model.blocks,
+ hu.elte.txtuml.api.model.external,
  hu.elte.txtuml.api.model.report
 Require-Bundle: hu.elte.txtuml.api.diagnostics,
  hu.elte.txtuml.utils

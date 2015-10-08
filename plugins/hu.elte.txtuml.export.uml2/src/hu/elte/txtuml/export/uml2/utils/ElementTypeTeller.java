@@ -1,7 +1,6 @@
 package hu.elte.txtuml.export.uml2.utils;
 
 import hu.elte.txtuml.api.model.Association;
-import hu.elte.txtuml.api.model.ExternalClass;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.StateMachine.Choice;
@@ -10,6 +9,7 @@ import hu.elte.txtuml.api.model.StateMachine.Initial;
 import hu.elte.txtuml.api.model.StateMachine.State;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
+import hu.elte.txtuml.api.model.external.ExternalClass;
 
 import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.ITypeBinding;

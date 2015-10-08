@@ -1,7 +1,10 @@
-package hu.elte.txtuml.api.model;
+package hu.elte.txtuml.api.model.external;
+
+import hu.elte.txtuml.api.model.Model;
+import hu.elte.txtuml.api.model.ModelClass;
 
 /**
- * Base class for external classes in the model. External classes are those
+ * Base type for external classes in the model. External classes are those
  * which's implementation is not part of the model, and from the scope of the
  * model they function as black boxes. They might be used to bring external
  * features into the model or to communicate with components of the program that
@@ -20,7 +23,7 @@ package hu.elte.txtuml.api.model;
  * model class (that is, one that may not react to any asynchronous events).
  * Call its methods as operations or use its fields as attributes. All its
  * fields used from inside the model must be of a type extending
- * {@link ModelClass} or primitives (including String). Also all parameter and
+ * {@link ModelClass} or primitives (including <code>String</code>). Also all parameter and
  * return types of methods called from inside the model must extend
  * <code>ModelClass</code> or be primitives (including <code>String</code>).
  * <p>
@@ -68,19 +71,6 @@ package hu.elte.txtuml.api.model;
  * @author Gabor Ferenc Kovacs
  *
  */
-public class ExternalClass {
-
-	/**
-	 * Sole constructor of <code>ExternalClass</code>.
-	 * <p>
-	 * <b>Implementation note:</b>
-	 * <p>
-	 * Protected because this class is intended to be inherited from but not
-	 * instantiated. However, <code>ExternalClass</code> has to be a
-	 * non-abstract class to make sure that it is instantiatable when that is
-	 * needed for the API or the model exportation.
-	 */
-	protected ExternalClass() {
-	}
+public interface ExternalClass extends ExternalType {
 
 }

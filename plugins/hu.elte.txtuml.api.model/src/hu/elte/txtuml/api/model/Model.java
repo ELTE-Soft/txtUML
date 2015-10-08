@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api.model;
 
+import hu.elte.txtuml.api.model.external.ExternalClass;
+
 /**
  * Base class of txtUML models. Read this documentation page further for an
  * overview on modeling in txtUML.
