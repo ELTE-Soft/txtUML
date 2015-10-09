@@ -15,20 +15,15 @@ import org.eclipse.swt.widgets.Text;
 
 public class TxtUMLProjectPage extends WizardPage {
 	private Text projectName;
-	private Text modelName;
-
-	private static final String defaultModelName = "Sample";
-	private static final String defaultProjectName = "sample";
-	
 	/**
 	 * Constructor for SampleNewWizardPage.
 	 * 
 	 * @param pageName
 	 */
 	public TxtUMLProjectPage() {
-		super("txtUML Project creation page");
+		super(TxtUMLProjectWizard.TITLE);
 		setTitle("Creating txtUML Project");
-		setDescription("Give the name of the new Project and the name of your txtUML model!");
+		setDescription("Give the name of the new txtUML Project!");
 	}
 
 	/**
@@ -54,31 +49,10 @@ public class TxtUMLProjectPage extends WizardPage {
 			}
 		});
 
-		label = new Label(container, SWT.NULL);
-		label.setText("&Model Name:");
-
-		modelName = new Text(container, SWT.BORDER | SWT.SINGLE);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		modelName.setLayoutData(gd);
-		modelName.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				dialogChanged();
-			}
-		});
-		initialize();
-		dialogChanged();
+		setPageComplete(false);
 		setControl(container);
 	}
 
-	/**
-	 * Tests if the current workbench selection is a suitable container to use.
-	 */
-
-	private void initialize() {
-		projectName.setText(TxtUMLProjectPage.defaultProjectName);
-		modelName.setText(TxtUMLProjectPage.defaultModelName);
-	}
 
 	/**
 	 * Ensures that both text fields are set.
@@ -96,10 +70,6 @@ public class TxtUMLProjectPage extends WizardPage {
 			updateStatus("This project already exists");
 			return;
 		}
-		if (getModelName().length() == 0) {
-			updateStatus("Model name must be specified");
-			return;
-		}
 
 		updateStatus(null);
 	}
@@ -113,7 +83,4 @@ public class TxtUMLProjectPage extends WizardPage {
 		return projectName.getText();
 	}
 
-	public String getModelName() {
-		return modelName.getText();
-	}
 }

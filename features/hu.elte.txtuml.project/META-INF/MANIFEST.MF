@@ -13,4 +13,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.launching,
  hu.elte.txtuml.utils,
  hu.elte.txtuml.eclipseutils,
- org.eclipse.xtext.xtext.ui
+ org.eclipse.xtext.xtext.ui,
+ org.eclipse.jdt.ui

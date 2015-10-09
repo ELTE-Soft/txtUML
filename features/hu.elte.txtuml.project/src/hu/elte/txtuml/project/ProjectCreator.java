@@ -40,6 +40,7 @@ public class ProjectCreator {
 		public IFolder source;
 		public List<Pair<String, String>> pluginDepAttributes;
 		public Manifest manifest;
+		public IFolder sourcegen;
 	}
 
 	public static IProject createProject(String name) throws CoreException {
@@ -108,6 +109,9 @@ public class ProjectCreator {
 
 		IPackageFragmentRoot packageRoot = javaProject
 				.getPackageFragmentRoot(settings.source);
+		
+		IPackageFragmentRoot packageRootSrcGen = javaProject
+				.getPackageFragmentRoot(settings.sourcegen);
 
 		IClasspathAttribute atts[] = new IClasspathAttribute[settings.pluginDepAttributes
 				.size()];
@@ -123,6 +127,8 @@ public class ProjectCreator {
 				new IAccessRule[] {}, atts, false);
 		entries.add(plugindependences);
 		entries.add(JavaCore.newSourceEntry(packageRoot.getPath()));
+		entries.add(JavaCore.newSourceEntry(packageRootSrcGen.getPath()));
+
 		javaProject.setRawClasspath(
 				entries.toArray(new IClasspathEntry[entries.size()]), null);
 		javaProject.setOutputLocation(settings.output.getFullPath(), null);
@@ -143,13 +149,16 @@ public class ProjectCreator {
 	}
 
 	public static void createBuildProps(IProject project, IFolder srcFolder,
-			IFolder outFolder) throws IOException {
+			IFolder srcgenFolder, IFolder outFolder) throws IOException {
 		StringBuilder bpContent = new StringBuilder("source.. = ");
-		bpContent.append(srcFolder.getName()).append("\n");
+		bpContent.append(srcFolder.getName())
+		.append(",\\")
+		.append(System.lineSeparator());
+		bpContent.append(srcgenFolder.getName()).append(System.lineSeparator());
 		bpContent.append("output.. = ");
-		bpContent.append(outFolder.getName()).append("\n");
-		bpContent.append("\n");
-		bpContent.append("bin.includes = META-INF/,.\n");
+		bpContent.append(outFolder.getName()).append(System.lineSeparator());
+		bpContent.append(System.lineSeparator());
+		bpContent.append("bin.includes = META-INF/,."+System.lineSeparator());
 
 		createFile(project, "build.properties", bpContent.toString());
 	}
