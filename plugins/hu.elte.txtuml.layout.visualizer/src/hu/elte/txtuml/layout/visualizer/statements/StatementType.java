@@ -59,7 +59,15 @@ public enum StatementType
 	/**
 	 * Horizontal
 	 */
-	horizontal;
+	horizontal,
+	/**
+	 * Corridor size.
+	 */
+	corridorsize,
+	/**
+	 * Overlap arrange mode.
+	 */
+	overlaparrange;
 	
 	/**
 	 * Returns whether {@link StatementType} st is appliable on Objects/Boxes.
@@ -86,6 +94,8 @@ public enum StatementType
 			case priority:
 			case unknown:
 			case vertical:
+			case corridorsize:
+			case overlaparrange:
 			default:
 				return false;
 		}

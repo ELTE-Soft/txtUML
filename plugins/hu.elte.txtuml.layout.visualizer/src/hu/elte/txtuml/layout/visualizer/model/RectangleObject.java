@@ -16,6 +16,8 @@ public class RectangleObject
 	private Point _position;
 	private Integer _width;
 	private Integer _height;
+	private Integer _pixelWidth;
+	private Integer _pixelHeight;
 	
 	// private Set<Point> _points;
 	
@@ -77,14 +79,14 @@ public class RectangleObject
 		
 		Point tl = getTopLeft();
 		Point br = getBottomRight();
-
+		
 		for (int i = 0; i < _width; ++i)
 		{
 			result.add(Point.Add(tl, Point.Multiply(Direction.east, i)));
 			result.add(Point.Add(br, Point.Multiply(Direction.west, i)));
 		}
 		
-		for(int i = 0; i < _height; ++i)
+		for (int i = 0; i < _height; ++i)
 		{
 			result.add(Point.Add(tl, Point.Multiply(Direction.south, i)));
 			result.add(Point.Add(br, Point.Multiply(Direction.north, i)));
@@ -110,7 +112,8 @@ public class RectangleObject
 	 */
 	public Point getBottomRight()
 	{
-		return new Point(_position.getX() + (_width - 1), _position.getY() - (_height - 1));
+		return new Point(_position.getX() + (_width - 1), _position.getY()
+				- (_height - 1));
 	}
 	
 	/***
@@ -172,6 +175,58 @@ public class RectangleObject
 		}
 	}
 	
+	/**
+	 * Getter for the width amount of the rectangle in pixels.
+	 * 
+	 * @return the width in pixels.
+	 */
+	public Integer getPixelWidth()
+	{
+		return new Integer(_pixelWidth);
+	}
+	
+	/**
+	 * Setter for the width of the rectangle in pixels.
+	 * 
+	 * @param value
+	 *            the width in pixels.
+	 */
+	public void setPixelWidth(Integer value)
+	{
+		_pixelWidth = new Integer(value);
+	}
+	
+	/**
+	 * Getter for the height amount of the rectangle in pixels.
+	 * 
+	 * @return the height in pixels.
+	 */
+	public Integer getPixelHeight()
+	{
+		return new Integer(_pixelHeight);
+	}
+	
+	/**
+	 * Setter for the height of the rectangle in pixels.
+	 * 
+	 * @param value
+	 *            the height in pixels.
+	 */
+	public void setPixelHeight(Integer value)
+	{
+		_pixelHeight = new Integer(value);
+	}
+	
+	/**
+	 * Returns the area of this box.
+	 * 
+	 * @return the area of this box.
+	 */
+	public Integer getPixelArea()
+	{
+		return new Integer(_pixelWidth * _pixelHeight);
+	}
+	
 	// end Getters, setters
 	
 	// Ctors
@@ -188,6 +243,8 @@ public class RectangleObject
 		_position = new Point();
 		_width = 1;
 		_height = 1;
+		_pixelWidth = 1;
+		_pixelHeight = 1;
 	}
 	
 	/***
@@ -204,6 +261,8 @@ public class RectangleObject
 		_position = p;
 		_width = 1;
 		_height = 1;
+		_pixelWidth = 1;
+		_pixelHeight = 1;
 	}
 	
 	/***
@@ -218,6 +277,8 @@ public class RectangleObject
 		_position = new Point(o._position);
 		_width = new Integer(o._width);
 		_height = new Integer(o._height);
+		_pixelWidth = new Integer(o._pixelWidth);
+		_pixelHeight = new Integer(o._pixelHeight);
 	}
 	
 	// end Ctors
@@ -288,7 +349,9 @@ public class RectangleObject
 	@Override
 	public String toString()
 	{
-		return _name + ": " + _position.toString() + "[w:" + _width.toString() + ", h:" + _height.toString() + "]";
+		return _name + ": " + _position.toString() + "[w:" + _width.toString() + "("
+				+ _pixelWidth.toString() + "), h:" + _height.toString() + "("
+				+ _pixelHeight.toString() + ")]";
 	}
 	
 	// end Methods

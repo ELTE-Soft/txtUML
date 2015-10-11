@@ -13,6 +13,7 @@ import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
 import hu.elte.txtuml.layout.visualizer.exceptions.StatementsConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
 import hu.elte.txtuml.layout.visualizer.helpers.Helper;
+import hu.elte.txtuml.layout.visualizer.helpers.Options;
 import hu.elte.txtuml.layout.visualizer.helpers.Pair;
 import hu.elte.txtuml.layout.visualizer.helpers.StatementHelper;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
@@ -48,29 +49,17 @@ public class LayoutVisualize
 	private Set<LineAssociation> _assocs;
 	
 	/***
-	 * Statements which arrange.
-	 * Later the statements on the objects.
+	 * Statements which arrange. Later the statements on the objects.
 	 */
 	private List<Statement> _statements;
 	/***
 	 * Statements on links.
 	 */
 	private List<Statement> _assocStatements;
-	
 	/**
-	 * The type of the diagram to arrange.
+	 * Options.
 	 */
-	private DiagramType _diagramType;
-	/**
-	 * Whether to print log messages.
-	 */
-	private Boolean _logging;
-	/**
-	 * Whether to arrange overlapping elements or not.
-	 */
-	private OverlapArrangeMode _arrangeOverlaps;
-	
-	private Integer _corridorPercent;
+	private Options _options;
 	
 	/***
 	 * Get the current set of Objects.
@@ -141,29 +130,7 @@ public class LayoutVisualize
 	 */
 	public void setLogging(Boolean value)
 	{
-		_logging = value;
-	}
-	
-	/**
-	 * Setter for arrange overlapping boxes property.
-	 * 
-	 * @param value
-	 *            Whether to enable or disable this feature.
-	 */
-	public void setArrangeOverlaps(OverlapArrangeMode value)
-	{
-		_arrangeOverlaps = value;
-	}
-	
-	/**
-	 * Setter for the percent of the corridors' width relative to boxes' width.
-	 * 
-	 * @param percent
-	 *            The amount of percent.
-	 */
-	public void setCorridor(Integer percent)
-	{
-		_corridorPercent = percent;
+		_options.Logging = value;
 	}
 	
 	/**
@@ -171,7 +138,8 @@ public class LayoutVisualize
 	 */
 	public LayoutVisualize()
 	{
-		_diagramType = DiagramType.Class;
+		_options = new Options();
+		_options.DiagramType = DiagramType.Class;
 		setDefaults();
 	}
 	
@@ -183,7 +151,8 @@ public class LayoutVisualize
 	 */
 	public LayoutVisualize(DiagramType type)
 	{
-		_diagramType = type;
+		_options = new Options();
+		_options.DiagramType = type;
 		setDefaults();
 	}
 	
@@ -193,9 +162,9 @@ public class LayoutVisualize
 		
 		_objects = null;
 		_assocs = null;
-		_arrangeOverlaps = OverlapArrangeMode.few;
-		_logging = false;
-		_corridorPercent = 100;
+		_options.ArrangeOverlaps = OverlapArrangeMode.few;
+		_options.Logging = false;
+		_options.CorridorRatio = 1.0;
 	}
 	
 	/**
@@ -206,8 +175,8 @@ public class LayoutVisualize
 	 * @throws UnknownStatementException
 	 *             Throws if an unknown {@link Statement} is provided.
 	 * @throws ConversionException
-	 *             Throws if algorithm cannot convert certain type into
-	 *             other type.
+	 *             Throws if algorithm cannot convert certain type into other
+	 *             type.
 	 * @throws BoxArrangeConflictException
 	 *             Throws if there are some conflicts during the layout of
 	 *             boxes.
@@ -227,17 +196,14 @@ public class LayoutVisualize
 	 *             Throws if any error occurs which should not happen. Contact
 	 *             developer for more details!
 	 */
-	public void arrange(ArrayList<Statement> par_stats)
-			throws InternalException, BoxArrangeConflictException,
-			ConversionException, StatementTypeMatchException,
-			CannotFindAssociationRouteException, UnknownStatementException,
-			BoxOverlapConflictException, StatementsConflictException
+	public void arrange(ArrayList<Statement> par_stats) throws InternalException,
+			BoxArrangeConflictException, ConversionException,
+			StatementTypeMatchException, CannotFindAssociationRouteException,
+			UnknownStatementException, BoxOverlapConflictException,
+			StatementsConflictException
 	{
 		if (_objects == null)
 			return;
-		
-		if (_logging)
-			System.err.println("Starting arrange...");
 		
 		// Clone statements into local working copy
 		_statements = Helper.cloneStatementList(par_stats);
@@ -245,6 +211,12 @@ public class LayoutVisualize
 		{
 			return s1.getType().compareTo(s2.getType());
 		});
+		
+		// Get options from statements
+		getOptions();
+		
+		if (_options.Logging)
+			System.err.println("Starting arrange...");
 		
 		// Set next Group Id
 		Integer maxGroupId = getGroupId();
@@ -262,8 +234,7 @@ public class LayoutVisualize
 		maxGroupId = addDefaultStatements(maxGroupId);
 		
 		// Check the types of Statements
-		StatementHelper.checkTypes(_statements, _assocStatements, _objects,
-				_assocs);
+		StatementHelper.checkTypes(_statements, _assocStatements, _objects, _assocs);
 		
 		// Box arrange
 		maxGroupId = boxArrange(maxGroupId);
@@ -277,10 +248,45 @@ public class LayoutVisualize
 		// Arrange associations between objects
 		maxGroupId = linkArrange(maxGroupId);
 		
-		if (_logging)
+		if (_options.Logging)
 			System.err.println("End of arrange!");
 		
 		ProgressManager.end();
+	}
+	
+	private void getOptions()
+	{
+		// Remove corridorsize, overlaparrange from statements
+		
+		List<Statement> tempList = _statements.stream()
+				.filter(s -> s.getType().equals(StatementType.corridorsize))
+				.collect(Collectors.toList());
+		
+		if (tempList.size() > 0)
+		{
+			_options.CorridorRatio = Double.parseDouble(tempList.get(0).getParameter(0));
+			
+			if (_options.Logging)
+				System.err.println("Found Corridor size option setting ("
+						+ _options.CorridorRatio.toString() + ")!");
+		}
+		
+		tempList = _statements.stream()
+				.filter(s -> s.getType().equals(StatementType.overlaparrange))
+				.collect(Collectors.toList());
+		
+		if (tempList.size() > 0)
+		{
+			_options.ArrangeOverlaps = Enum.valueOf(OverlapArrangeMode.class, tempList
+					.get(0).getParameter(0));
+			
+			if (_options.Logging)
+				System.err.println("Found Overlap arrange mode option setting ("
+						+ _options.ArrangeOverlaps.toString() + ")!");
+		}
+		
+		_statements.removeIf(s -> s.getType().equals(StatementType.corridorsize)
+				|| s.getType().equals(StatementType.overlaparrange));
 	}
 	
 	private Integer getGroupId()
@@ -305,8 +311,8 @@ public class LayoutVisualize
 	private Integer transformAssocsIntoStatements(Integer maxGroupId)
 			throws InternalException
 	{
-		Pair<List<Statement>, Integer> tempPair = StatementHelper
-				.transformAssocs(_diagramType, _objects, _assocs, maxGroupId);
+		Pair<List<Statement>, Integer> tempPair = StatementHelper.transformAssocs(
+				_options.DiagramType, _objects, _assocs, maxGroupId);
 		_statements.addAll(tempPair.First);
 		return tempPair.Second;
 	}
@@ -324,31 +330,28 @@ public class LayoutVisualize
 		return result;
 	}
 	
-	private Integer addDefaultStatements(Integer maxGroupId)
-			throws InternalException
+	private Integer addDefaultStatements(Integer maxGroupId) throws InternalException
 	{
-		DefaultStatements ds = new DefaultStatements(_diagramType, _objects,
+		DefaultStatements ds = new DefaultStatements(_options.DiagramType, _objects,
 				_assocs, _statements, maxGroupId);
 		_statements.addAll(ds.value());
 		
 		return ds.getGroupId();
 	}
 	
-	private Integer boxArrange(Integer maxGroupId)
-			throws BoxArrangeConflictException, InternalException,
-			ConversionException, BoxOverlapConflictException
+	private Integer boxArrange(Integer maxGroupId) throws BoxArrangeConflictException,
+			InternalException, ConversionException, BoxOverlapConflictException
 	{
-		if (_logging)
+		if (_options.Logging)
 			System.err.println("> Starting box arrange...");
 		
 		// Arrange objects
 		ArrangeObjects ao = new ArrangeObjects(_objects.stream().collect(
-				Collectors.toList()), _statements, maxGroupId, _logging,
-				_arrangeOverlaps);
+				Collectors.toList()), _statements, maxGroupId, _options);
 		_objects = new HashSet<RectangleObject>(ao.value());
 		_statements = ao.statements();
 		
-		if (_logging)
+		if (_options.Logging)
 			System.err.println("> Box arrange DONE!");
 		
 		return ao.getGId();
@@ -387,8 +390,7 @@ public class LayoutVisualize
 	private void removePhantoms(Set<String> phantoms)
 	{
 		Set<RectangleObject> toDeleteSet = _objects.stream()
-				.filter(o -> phantoms.contains(o.getName()))
-				.collect(Collectors.toSet());
+				.filter(o -> phantoms.contains(o.getName())).collect(Collectors.toSet());
 		_objects.removeAll(toDeleteSet);
 	}
 	
@@ -399,15 +401,15 @@ public class LayoutVisualize
 		if (_assocs.size() <= 0)
 			return maxGroupId;
 		
-		if (_logging)
+		if (_options.Logging)
 			System.err.println("> Starting link arrange...");
 		
 		ArrangeAssociations aa = new ArrangeAssociations(_objects, _assocs,
-				_assocStatements, maxGroupId, _corridorPercent, _logging);
+				_assocStatements, maxGroupId, _options);
 		_assocs = aa.value();
 		_objects = aa.objects();
 		
-		if (_logging)
+		if (_options.Logging)
 			System.err.println("> Link arrange DONE!");
 		
 		return aa.getGId();

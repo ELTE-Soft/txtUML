@@ -211,6 +211,8 @@ public class Helper
 			case priority:
 			case unknown:
 			case vertical:
+			case corridorsize:
+			case overlaparrange:
 			default:
 				throw new ConversionException("Cannot convert type " + ty
 						+ " to Direction!");
@@ -359,4 +361,22 @@ public class Helper
 		
 		return false;
 	}
+	
+	/**
+	 * Checks if two {@link Double} values are close enough to each other to a
+	 * certain error value so they can be handled as equal.
+	 * 
+	 * @param a
+	 *            first value.
+	 * @param b
+	 *            second value.
+	 * @param error
+	 *            error value.
+	 * @return true if ( |a-b|<error )
+	 */
+	public static Boolean isAlmostEqual(Double a, Double b, Double error)
+	{
+		return Math.abs(a - b) < error;
+	}
+	
 }

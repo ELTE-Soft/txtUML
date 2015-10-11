@@ -83,38 +83,43 @@ class GraphSearch
 	 *             Throws if the algorithm encounters something which it should
 	 *             not have.
 	 */
-	public GraphSearch(Set<Node> ss, Set<Node> es, Map<Point, Color> cols,
-			Boundary bounds) throws CannotFindAssociationRouteException,
-			CannotStartAssociationRouteException, ConversionException,
-			InternalException
+	public GraphSearch(Set<Pair<Node, Double>> ss, Set<Pair<Node, Double>> es,
+			Map<Point, Color> cols, Boundary bounds)
+			throws CannotFindAssociationRouteException,
+			CannotStartAssociationRouteException, ConversionException, InternalException
 	{
+		// Initialize
+		G = new Graph<Node>(); // Graph
+		AvailableNodes = new PriorityQueue<Node>((x, y) -> nodeComparator(x, y)); // 'Open'
+																					// nodes
+		g = new Cost<Node>(); // Cost function
+		PI = new Parent<Node>(); // Parent relation
 		_end = new Node(new Point(), new Point());
-		_endSet = new HashSet<Node>(es);
+		_endSet = new HashSet<Node>();
 		_colors = cols;
 		_boundary = bounds;
 		_extends = 0;
 		_heuristic = new HashMap<Node, Double>();
 		
-		G = new Graph<Node>();
-		
-		AvailableNodes = new PriorityQueue<Node>((x, y) -> nodeComparator(x, y));
-		
-		g = new Cost<Node>();
-		
-		PI = new Parent<Node>();
+		// Set up End Set
+		for (Pair<Node, Double> pair : es)
+		{
+			_endSet.add(pair.First);
+			g.set(pair.First, pair.Second);
+			// TODO
+		}
 		
 		// Extend StartSet
-		for (Node p : ss/* _startSet */)
+		for (Pair<Node, Double> pair : ss)
 		{
-			PI.set(p, null);
-			g.set(p, 2 * _weightLength);
-			AvailableNodes.add(p);
+			PI.set(pair.First, null);
+			g.set(pair.First, 2 * _weightLength + pair.Second);
+			AvailableNodes.add(pair.First);
 		}
 		
 		if (!search())
 		{
-			throw new CannotFindAssociationRouteException(
-					"No Route from START to END!");
+			throw new CannotFindAssociationRouteException("No Route from START to END!");
 		}
 	}
 	
@@ -201,8 +206,7 @@ class GraphSearch
 		Pair<Double, Node> distance = manhattanDistance(p);
 		Double remainingTurns = manhattanLeastTurns(p);
 		// manhattanLeastTurnsCheckingOccupied(p, distance.Second);
-		Double result = (_weightTurns * remainingTurns + _weightLength
-				* distance.First);
+		Double result = (_weightTurns * remainingTurns + _weightLength * distance.First);
 		
 		_heuristic.put(p, result);
 		
@@ -330,16 +334,15 @@ class GraphSearch
 					w = _weightLength + _weightTurns;
 				
 				Point p = Point.Add(parent.getTo(), dir);
-				result.add(new Pair<Node, Double>(new Node(parent.getTo(), p),
-						w));
+				result.add(new Pair<Node, Double>(new Node(parent.getTo(), p), w));
 			}
 		}
 		else if (_colors.get(parent.getTo()).equals(Color.Yellow))
 		{
 			Direction sub = Point.directionOf(parent.getTo(), parent.getFrom());
 			// straight, crossing
-			result.add(new Pair<Node, Double>(new Node(parent.getTo(), Point
-					.Add(parent.getTo(), sub)), _weightLength + _weightCrossing));
+			result.add(new Pair<Node, Double>(new Node(parent.getTo(), Point.Add(
+					parent.getTo(), sub)), _weightLength + _weightCrossing));
 		}
 		
 		return result;

@@ -10,11 +10,11 @@ import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.MyException;
 import hu.elte.txtuml.layout.visualizer.helpers.BiMap;
 import hu.elte.txtuml.layout.visualizer.helpers.Helper;
+import hu.elte.txtuml.layout.visualizer.helpers.Options;
 import hu.elte.txtuml.layout.visualizer.helpers.Pair;
 import hu.elte.txtuml.layout.visualizer.helpers.Quadraple;
 import hu.elte.txtuml.layout.visualizer.helpers.StatementHelper;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
-import hu.elte.txtuml.layout.visualizer.model.OverlapArrangeMode;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
@@ -40,8 +40,7 @@ public class ArrangeObjects
 	private List<Statement> _statements;
 	private BiMap<String, Integer> _indices;
 	private Integer _gid;
-	private Boolean _logging;
-	private OverlapArrangeMode _arrangeOverlaps;
+	private Options _options;
 	
 	private Integer _transformAmount;
 	
@@ -75,10 +74,8 @@ public class ArrangeObjects
 	 *            List of statements on the boxes.
 	 * @param gid
 	 *            The previously used group id.
-	 * @param log
-	 *            Whether to print out logging msgs.
-	 * @param arrangeoverlaps
-	 *            Whether to arrange overlapping elements.
+	 * @param opt
+	 *            Options of the algorithm.
 	 * @throws BoxArrangeConflictException
 	 *             Throws when a conflict appears during the arrangement of the
 	 *             boxes.
@@ -92,17 +89,15 @@ public class ArrangeObjects
 	 *             during the arrangement of the boxes.
 	 */
 	public ArrangeObjects(List<RectangleObject> obj, List<Statement> par_stats,
-			Integer gid, Boolean log, OverlapArrangeMode arrangeoverlaps)
-			throws BoxArrangeConflictException, InternalException, ConversionException,
-			BoxOverlapConflictException
+			Integer gid, Options opt) throws BoxArrangeConflictException,
+			InternalException, ConversionException, BoxOverlapConflictException
 	
 	{
 		// Nothing to arrange
 		if (obj == null || obj.size() == 0)
 			return;
 		
-		_logging = log;
-		_arrangeOverlaps = arrangeoverlaps;
+		_options = opt;
 		_gid = gid;
 		
 		_statements = Helper.cloneStatementList(par_stats);
@@ -150,7 +145,7 @@ public class ArrangeObjects
 				else
 					throw ex;
 				
-				if (_logging)
+				if (_options.Logging)
 					System.err.println("> > ReTrying box arrange!");
 			}
 		} while (isConflicted);
@@ -177,7 +172,7 @@ public class ArrangeObjects
 				.collect(Collectors.toList()));
 		
 		_statements.removeAll(toDeletes);
-		if (_logging)
+		if (_options.Logging)
 		{
 			for (Statement stat : toDeletes)
 			{
@@ -208,7 +203,7 @@ public class ArrangeObjects
 				.collect(Collectors.toList()));
 		
 		_statements.removeAll(toDeletes);
-		if (_logging.equals(true))
+		if (_options.Logging.equals(true))
 		{
 			for (Statement stat : toDeletes)
 			{
@@ -221,13 +216,13 @@ public class ArrangeObjects
 	private void arrangeOverlaps() throws ConversionException, InternalException,
 			BoxOverlapConflictException
 	{
-		if (_logging)
+		if (_options.Logging)
 			System.err.println("Starting overlap arrange...");
 		
 		// Emit Event
 		ProgressManager.getEmitter().OnBoxOverlapArrangeStart();
 		
-		switch (_arrangeOverlaps)
+		switch (_options.ArrangeOverlaps)
 		{
 			case none:
 				// Nothing to do
@@ -246,7 +241,7 @@ public class ArrangeObjects
 				break;
 		}
 		
-		if (_logging)
+		if (_options.Logging)
 			System.err.println("Ending overlap arrange...");
 		
 		// Emit Event
@@ -348,7 +343,7 @@ public class ArrangeObjects
 		do
 		{
 			wasExtension = false;
-			if (_logging)
+			if (_options.Logging)
 				System.err.println(" > [FEW] Round of overlap arrange...");
 			
 			// for every overlapping box pairs
@@ -411,7 +406,7 @@ public class ArrangeObjects
 					_statements = Helper.cloneStatementList(newStats);
 					wasExtension = true;
 					
-					if (_logging)
+					if (_options.Logging)
 						System.err.println("[FEW] Found a possible solution "
 								+ currOverlapCount + "<" + prevOverlapCount + "!");
 				}
@@ -421,7 +416,7 @@ public class ArrangeObjects
 			catch (MyException ex)
 			{
 				--_gid;
-				if (_logging)
+				if (_options.Logging)
 					System.err.println("[FEW] Retrying to resolve overlaps...");
 			}
 		}
@@ -437,7 +432,7 @@ public class ArrangeObjects
 		
 		for (int i = 1; i <= c; i = i + firstStep)
 		{
-			if (_logging)
+			if (_options.Logging)
 				System.err.println("[FULL] List of Pairs of " + i);
 			
 			if (!OverlapHelper.isThereOverlapping(_objects))
@@ -449,8 +444,8 @@ public class ArrangeObjects
 			for (int comb = 0; comb < OverlapHelper.selectPairs(i).size(); comb = comb
 					+ secondStep)
 			{
-				if (_logging)
-					System.err.println("[FULL] > " + (comb+1) + "/"
+				if (_options.Logging)
+					System.err.println("[FULL] > " + (comb + 1) + "/"
 							+ OverlapHelper.selectPairs(i).size() + ".");
 				
 				if (!OverlapHelper.isThereOverlapping(_objects))
@@ -479,7 +474,7 @@ public class ArrangeObjects
 						}
 						else
 						{
-							if (_logging)
+							if (_options.Logging)
 								System.err.println("[FULL] Found solution!");
 							
 							_statements = newStats;
@@ -717,6 +712,8 @@ public class ArrangeObjects
 				case phantom:
 				case priority:
 				case unknown:
+				case corridorsize:
+				case overlaparrange:
 				default:
 					throw new InternalException(
 							"This statement should not reach this point: " + s.toString());

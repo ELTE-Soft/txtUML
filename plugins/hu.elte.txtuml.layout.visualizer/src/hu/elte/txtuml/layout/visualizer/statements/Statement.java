@@ -91,8 +91,10 @@ public class Statement
 	 */
 	public Boolean isStrict()
 	{
-		if (_type.equals(StatementType.above) || _type.equals(StatementType.below)
-				|| _type.equals(StatementType.right) || _type.equals(StatementType.left))
+		if (_type.equals(StatementType.above)
+				|| _type.equals(StatementType.below)
+				|| _type.equals(StatementType.right)
+				|| _type.equals(StatementType.left))
 			return true;
 		
 		return false;
@@ -189,8 +191,8 @@ public class Statement
 	 *             Throws if the level is set to non-user but no group id is
 	 *             set.
 	 */
-	public Statement(StatementType t, StatementLevel level, Integer id, String... params)
-			throws InternalException
+	public Statement(StatementType t, StatementLevel level, Integer id,
+			String... params) throws InternalException
 	{
 		_type = t;
 		_parameters = new ArrayList<String>();
@@ -240,8 +242,8 @@ public class Statement
 	 *             Throws if the level is set to non-user but no group id is
 	 *             set.
 	 */
-	public Statement(StatementType t, StatementLevel level, ArrayList<String> params)
-			throws InternalException
+	public Statement(StatementType t, StatementLevel level,
+			ArrayList<String> params) throws InternalException
 	{
 		_type = t;
 		_parameters = new ArrayList<String>();
@@ -297,7 +299,8 @@ public class Statement
 	public Statement(Statement s)
 	{
 		this._type = s._type;
-		this._parameters = (ArrayList<String>) Helper.cloneStringList(s._parameters);
+		this._parameters = (ArrayList<String>) Helper
+				.cloneStringList(s._parameters);
 		this._level = s._level;
 		this._group = s._group;
 	}
@@ -315,7 +318,8 @@ public class Statement
 	 * @throws UnknownStatementException
 	 *             Throws if any error occurs.
 	 */
-	public static Statement Parse(String par_input) throws UnknownStatementException
+	public static Statement Parse(String par_input)
+			throws UnknownStatementException
 	{
 		StatementType type = StatementType.unknown;
 		String[] params;
@@ -326,13 +330,13 @@ public class Statement
 		Integer parClose = input.lastIndexOf(")");
 		
 		if (parOpen == -1 || parClose == -1)
-			throw new UnknownStatementException("No (not enough) parentheisis found!",
-					input);
+			throw new UnknownStatementException(
+					"No (not enough) parentheisis found!", input);
 		
 		try
 		{
-			type = Enum.valueOf(StatementType.class, input.substring(0, parOpen)
-					.toLowerCase());
+			type = Enum.valueOf(StatementType.class, input
+					.substring(0, parOpen).toLowerCase());
 		}
 		catch (IllegalArgumentException e)
 		{
@@ -374,6 +378,11 @@ public class Statement
 				if (p.length == 1)
 					return true;
 				break;
+			case corridorsize:
+			case overlaparrange:
+				if (p.length == 1)
+					return true;
+				break;
 			case unknown:
 			default:
 				break;
@@ -409,8 +418,8 @@ public class Statement
 	 */
 	public static Statement opposite(Statement s) throws InternalException
 	{
-		return new Statement(opposite(s.getType()), s.getLevel(), s.getGroupId(),
-				s.getParameter(1), s.getParameter(0));
+		return new Statement(opposite(s.getType()), s.getLevel(),
+				s.getGroupId(), s.getParameter(1), s.getParameter(0));
 	}
 	
 	/**
@@ -466,7 +475,8 @@ public class Statement
 		{
 			Statement s1 = this;
 			Statement s2 = (Statement) obj;
-			return s1._type.equals(s2._type) && s1._parameters.equals(s2._parameters)
+			return s1._type.equals(s2._type)
+					&& s1._parameters.equals(s2._parameters)
 					&& s1._level.equals(s2._level);
 		}
 		
@@ -496,7 +506,8 @@ public class Statement
 		{
 			Statement s1 = this;
 			Statement s2 = (Statement) obj;
-			return s1._type.equals(s2._type) && s1._parameters.equals(s2._parameters);
+			return s1._type.equals(s2._type)
+					&& s1._parameters.equals(s2._parameters);
 		}
 		
 		return false;
@@ -519,7 +530,8 @@ public class Statement
 		String result = _type.toString() + "(";
 		for (String p : _parameters)
 		{
-			if (!result.substring(result.length() - 1, result.length()).equals("("))
+			if (!result.substring(result.length() - 1, result.length())
+					.equals("("))
 				result += ", ";
 			result += p;
 		}

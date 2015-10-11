@@ -68,23 +68,25 @@ public class StatementHelper
 	 *             Throws if something bad happens, but it should not be allowed
 	 *             to happen.
 	 */
-	public static boolean checkTypes(List<Statement> stats, List<Statement> astats,
-			Set<RectangleObject> objs, Set<LineAssociation> assocs)
-			throws StatementTypeMatchException, InternalException
+	public static boolean checkTypes(List<Statement> stats,
+			List<Statement> astats,
+			Set<RectangleObject> objs,
+			Set<LineAssociation> assocs) throws StatementTypeMatchException,
+			InternalException
 	{
 		// Check Object Statement Types
 		for (Statement s : stats)
 		{
 			if (!StatementHelper.isTypeChecked(s, objs, assocs))
-				throw new StatementTypeMatchException("Types not match at statement: "
-						+ s.toString() + "!");
+				throw new StatementTypeMatchException(
+						"Types not match at statement: " + s.toString() + "!");
 		}
 		// Check Association Statement Types
 		for (Statement s : astats)
 		{
 			if (!StatementHelper.isTypeChecked(s, objs, assocs))
-				throw new StatementTypeMatchException("Types not match at statement: "
-						+ s.toString() + "!");
+				throw new StatementTypeMatchException(
+						"Types not match at statement: " + s.toString() + "!");
 		}
 		
 		return true;
@@ -108,6 +110,8 @@ public class StatementHelper
 			case right:
 			case unknown:
 			case vertical:
+			case corridorsize:
+			case overlaparrange:
 			default:
 				break;
 		}
@@ -149,8 +153,8 @@ public class StatementHelper
 			{
 				if (tempPrior.containsKey(s.getParameter(0)))
 				{
-					if (tempPrior.get(s.getParameter(0)).equals(
-							Integer.parseInt(s.getParameter(1))))
+					if (tempPrior.get(s.getParameter(0))
+							.equals(Integer.parseInt(s.getParameter(1))))
 						continue; // WARNING: Duplicate
 					else
 					{
@@ -158,22 +162,25 @@ public class StatementHelper
 							continue;
 						else
 							throw new StatementsConflictException(
-									"Priorities not match: " + s.toString()
+									"Priorities not match: "
+											+ s.toString()
 											+ " with older data: "
-											+ tempPrior.get(s.getParameter(0)).toString());
+											+ tempPrior.get(s.getParameter(0))
+													.toString());
 					}
 				}
 				else
 				{
-					tempPrior.put(s.getParameter(0), Integer.parseInt(s.getParameter(1)));
+					tempPrior.put(s.getParameter(0),
+							Integer.parseInt(s.getParameter(1)));
 					result.add(s);
 				}
 			}
 			else
 			{
 				// Direction conflict check
-				Pair<String, String> pair = new Pair<String, String>(s.getParameter(0),
-						s.getParameter(1));
+				Pair<String, String> pair = new Pair<String, String>(
+						s.getParameter(0), s.getParameter(1));
 				if (s.getParameters().size() == 3)
 				{
 					pair.Second += "_" + s.getParameter(2);
@@ -181,7 +188,8 @@ public class StatementHelper
 				
 				if (tempObj.containsKey(pair))
 				{
-					if (tempObj.get(pair).equals(Helper.asDirection(s.getType())))
+					if (tempObj.get(pair)
+							.equals(Helper.asDirection(s.getType())))
 						continue; // WARNING: Duplicate
 					else
 					{
@@ -189,8 +197,8 @@ public class StatementHelper
 							continue;
 						else
 							throw new StatementsConflictException(
-									"Too many statements on " + s.getParameter(0)
-											+ " link!");
+									"Too many statements on "
+											+ s.getParameter(0) + " link!");
 					}
 				}
 				else
@@ -213,7 +221,8 @@ public class StatementHelper
 	 */
 	public static Set<String> extractPhantoms(List<Statement> stats)
 	{
-		return stats.stream().filter(s -> s.getType().equals(StatementType.phantom))
+		return stats.stream()
+				.filter(s -> s.getType().equals(StatementType.phantom))
 				.map(s -> s.getParameter(0)).collect(Collectors.toSet());
 	}
 	
@@ -232,7 +241,8 @@ public class StatementHelper
 	 *             Throws if something bad happens, which should not be allowed
 	 *             to happen.
 	 */
-	public static boolean isTypeChecked(Statement st, Set<RectangleObject> ob,
+	public static boolean isTypeChecked(Statement st,
+			Set<RectangleObject> ob,
 			Set<LineAssociation> as) throws InternalException
 	{
 		switch (st.getType())
@@ -242,13 +252,15 @@ public class StatementHelper
 			case east:
 			case west:
 				// both type
-				if (ob.stream().anyMatch(o -> o.getName().equals(st.getParameter(0)))
-						&& ob.stream().anyMatch(
-								o -> o.getName().equals(st.getParameter(1))))
+				if (ob.stream().anyMatch(o -> o.getName()
+						.equals(st.getParameter(0)))
+						&& ob.stream().anyMatch(o -> o.getName()
+								.equals(st.getParameter(1))))
 					return true;
-				else if (as.stream().anyMatch(a -> a.getId().equals(st.getParameter(0)))
-						&& ob.stream().anyMatch(
-								o -> o.getName().equals(st.getParameter(1))))
+				else if (as.stream().anyMatch(a -> a.getId()
+						.equals(st.getParameter(0)))
+						&& ob.stream().anyMatch(o -> o.getName()
+								.equals(st.getParameter(1))))
 					return true;
 				break;
 			case above:
@@ -258,25 +270,31 @@ public class StatementHelper
 			case horizontal:
 			case vertical:
 				// only object/box
-				if (ob.stream().anyMatch(o -> o.getName().equals(st.getParameter(0)))
-						&& ob.stream().anyMatch(
-								o -> o.getName().equals(st.getParameter(1))))
+				if (ob.stream().anyMatch(o -> o.getName()
+						.equals(st.getParameter(0)))
+						&& ob.stream().anyMatch(o -> o.getName()
+								.equals(st.getParameter(1))))
 					return true;
 				break;
 			case priority:
 				// only assoc/link
-				if (as.stream().anyMatch(a -> a.getId().equals(st.getParameter(0)))
+				if (as.stream().anyMatch(a -> a.getId()
+						.equals(st.getParameter(0)))
 						&& Helper.tryParseInt(st.getParameter(1)))
 					return true;
 				break;
 			case phantom:
-				if (ob.stream().anyMatch(o -> o.getName().equals(st.getParameter(0))))
+				if (ob.stream().anyMatch(o -> o.getName()
+						.equals(st.getParameter(0))))
 					return true;
 				break;
 			case unknown:
+			case corridorsize:
+			case overlaparrange:
 			default:
-				throw new InternalException("This statement should not reach this code: "
-						+ st.toString() + "!");
+				throw new InternalException(
+						"This statement should not reach this code: "
+								+ st.toString() + "!");
 		}
 		return false;
 	}
@@ -302,8 +320,9 @@ public class StatementHelper
 	 *             happen.
 	 */
 	public static Pair<List<Statement>, Integer> transformAssocs(DiagramType type,
-			Set<RectangleObject> objs, Set<LineAssociation> assocs, Integer par_gid)
-			throws InternalException
+			Set<RectangleObject> objs,
+			Set<LineAssociation> assocs,
+			Integer par_gid) throws InternalException
 	{
 		switch (type)
 		{
@@ -312,12 +331,13 @@ public class StatementHelper
 			case Activity:
 			case State:
 			default:
-				throw new InternalException("This diagram type is not supported");
+				throw new InternalException(
+						"This diagram type is not supported");
 		}
 	}
 	
-	private static Pair<List<Statement>, Integer> transformAssocs_ClassDiagram(
-			Set<LineAssociation> assocs, Integer par_gid) throws InternalException
+	private static Pair<List<Statement>, Integer> transformAssocs_ClassDiagram(Set<LineAssociation> assocs,
+			Integer par_gid) throws InternalException
 	{
 		Integer gid = par_gid;
 		List<Statement> result = new ArrayList<Statement>();
@@ -342,11 +362,11 @@ public class StatementHelper
 						generalizationMap.put(a.getFrom(), temp);
 					}
 					++gid;
-					result.add(new Statement(StatementType.north, StatementLevel.Low,
-							gid, a.getFrom(), a.getTo()));
+					result.add(new Statement(StatementType.north,
+							StatementLevel.Low, gid, a.getFrom(), a.getTo()));
 					++gid;
-					result.add(new Statement(StatementType.south, StatementLevel.Low,
-							gid, a.getId(), a.getFrom()));
+					result.add(new Statement(StatementType.south,
+							StatementLevel.Low, gid, a.getId(), a.getFrom()));
 					break;
 				case aggregation:
 				case composition:
@@ -386,8 +406,9 @@ public class StatementHelper
 			{
 				index = 0;
 			}
-			result.add(new Statement(StatementType.above, StatementLevel.Medium, gid,
-					entry.getKey(), entry.getValue().get(index)));
+			result.add(new Statement(StatementType.above,
+					StatementLevel.Medium, gid, entry.getKey(), entry
+							.getValue().get(index)));
 		}
 		
 		return new Pair<List<Statement>, Integer>(result, gid);
@@ -438,6 +459,8 @@ public class StatementHelper
 			case phantom:
 			case priority:
 			case unknown:
+			case corridorsize:
+			case overlaparrange:
 			default:
 				return result + 100;
 		}
