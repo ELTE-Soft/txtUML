@@ -17,9 +17,6 @@ import hu.elte.txtuml.examples.producer_consumer.Producer_consumerModel.Producer
 import hu.elte.txtuml.examples.producer_consumer.Producer_consumerModel.Production;
 import hu.elte.txtuml.examples.producer_consumer.Producer_consumerModel.Storage;
 
-import java.util.ArrayList;
-import java.util.List;
-
 class Producer_consumerModel extends Model {
 	
 	// Classes
@@ -56,7 +53,7 @@ class Producer_consumerModel extends Model {
 				};
 				
 				Action.log("Producer: creating item.");
-				Action.send(store, new PutItem(it));
+				store.PutItem(it);
 			}
 		}
 		
@@ -65,40 +62,44 @@ class Producer_consumerModel extends Model {
 		
 	}
 	
-	class PutItem extends Signal
-	{
-		Item item;
-		
-		public PutItem(Item it)
-		{
-			item = it;
-		}
-	}
+	
+	
+	class PutItem extends Signal{}
 
-	class GetItem extends Signal
+	class GetItem extends Signal{}
+	
+	class ItemsInStorage extends Association
 	{
-		Consumer needer;
-		
-		public GetItem(Consumer cons)
-		{
-			needer = cons;
-		}
+		class Items extends Many<Item>{}
+		class Store extends HiddenOne<Storage>{}
 	}
 	
 	class Storage extends ModelClass
 	{
-		List<Item> items;
 		int top;
 		
 		public Storage(int top)
 		{
 			this.top = top;
-			items = new ArrayList<Item>();
 		}
 		
 		public boolean isFull()
 		{
-			return top == items.size();
+			return top == Storage.this.assoc(ItemsInStorage.Items.class).count();
+		}
+		
+		public void PutItem(Item it)
+		{
+			Action.link(ItemsInStorage.Store.class, Storage.this, ItemsInStorage.Items.class, it);
+			Action.send(Storage.this, new PutItem());
+		}
+		
+		public Item GetItem()
+		{
+			Item it = Storage.this.assoc(ItemsInStorage.Items.class).selectAny();
+			Action.unlink(ItemsInStorage.Store.class, Storage.this, ItemsInStorage.Items.class, it);
+			Action.send(Storage.this, new GetItem());
+			return it;
 		}
 		
 		class Init extends Initial{}
@@ -121,8 +122,7 @@ class Producer_consumerModel extends Model {
 			@Override
 			public void effect() 
 			{
-				Item it = getSignal(PutItem.class).item;
-				items.add(it);
+				Action.log("Storage: 1 item in list.");
 			}
 		}
 		
@@ -131,7 +131,7 @@ class Producer_consumerModel extends Model {
 			@Override
 			public void entry() 
 			{
-				Action.log("Storage: has some items (" + items.size() + ").");
+				Action.log("Storage: has some items (" + Storage.this.assoc(ItemsInStorage.Items.class).count() + ").");
 			}
 		}
 		
@@ -141,14 +141,13 @@ class Producer_consumerModel extends Model {
 			@Override
 			public boolean guard() 
 			{
-				return items.size() < top - 1;
+				return (Storage.this.assoc(ItemsInStorage.Items.class).count()) < top - 1;
 			}
 			
 			@Override
 			public void effect() 
 			{
-				Item it = getSignal(PutItem.class).item;
-				items.add(it);
+				Action.log("Storage: More items in list.");
 			}
 		}
 		
@@ -158,14 +157,13 @@ class Producer_consumerModel extends Model {
 			@Override
 			public boolean guard() 
 			{
-				return items.size() == top - 1;
+				return Storage.this.assoc(ItemsInStorage.Items.class).count() == top - 1;
 			}
 			
 			@Override
 			public void effect() 
 			{
-				Item it = getSignal(PutItem.class).item;
-				items.add(it);
+				Action.log("Storage: Full list of items.");
 			}
 		}
 		
@@ -175,15 +173,13 @@ class Producer_consumerModel extends Model {
 			@Override
 			public boolean guard() 
 			{
-				return items.size() == 1;
+				return Storage.this.assoc(ItemsInStorage.Items.class).count() == 1;
 			}
 			
 			@Override
 			public void effect() 
 			{
-				Item it = items.remove(0);
-			
-				Action.send(getSignal(GetItem.class).needer, new ConsumeItem(it));
+				Action.log("Storage: 1 item given away. 0 left.");
 			}
 		}
 		
@@ -193,15 +189,13 @@ class Producer_consumerModel extends Model {
 			@Override
 			public boolean guard() 
 			{
-				return items.size() > 1;
+				return Storage.this.assoc(ItemsInStorage.Items.class).count() > 1;
 			}
 			
 			@Override
 			public void effect() 
 			{
-				Item it = items.remove(0);
-			
-				Action.send(getSignal(GetItem.class).needer, new ConsumeItem(it));
+				Action.log("Storage: 1 item given away. Many left.");
 			}
 		}
 		
@@ -220,22 +214,10 @@ class Producer_consumerModel extends Model {
 			@Override
 			public void effect() 
 			{
-				Item it = items.remove(0);
-			
-				Action.send(getSignal(GetItem.class).needer, new ConsumeItem(it));
+				Action.log("Storage: 1 item given away. Many left.");
 			}
 		}
 		
-	}
-	
-	class ConsumeItem extends Signal
-	{
-		Item item;
-		
-		public ConsumeItem(Item it)
-		{
-			this.item = it;
-		}
 	}
 	
 	static class ConsumeJob extends Signal{}
@@ -263,17 +245,7 @@ class Producer_consumerModel extends Model {
 			{
 				Storage store = Consumer.this.assoc(Consumation.store.class).selectAny();
 				
-				Action.send(store, new GetItem(Consumer.this));
-			}
-		}
-		
-		@From(Waiting.class) @To(Waiting.class) @Trigger(ConsumeItem.class)
-		class Received extends Transition
-		{
-			@Override
-			public void effect()
-			{
-				Item it = getSignal(ConsumeItem.class).item;
+				Item it = store.GetItem();
 				
 				Action.log("Consumer: received item, starting to consume.");
 				

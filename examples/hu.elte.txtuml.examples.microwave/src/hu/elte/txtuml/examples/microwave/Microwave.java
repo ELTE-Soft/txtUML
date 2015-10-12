@@ -11,7 +11,6 @@ import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
 import hu.elte.txtuml.api.stdlib.Timer;
 import hu.elte.txtuml.examples.microwave.MicrowaveModel.Close;
-import hu.elte.txtuml.examples.microwave.MicrowaveModel.Food;
 import hu.elte.txtuml.examples.microwave.MicrowaveModel.Get;
 import hu.elte.txtuml.examples.microwave.MicrowaveModel.Human;
 import hu.elte.txtuml.examples.microwave.MicrowaveModel.Open;
@@ -26,26 +25,11 @@ class MicrowaveModel extends Model
 {
 	
 	// Classes
-	class Consumable extends ModelClass
-	{
-		int timeNeeded;
-		int timeToExplode;
-		int heatLevel;
-	}
-	
-	class Food extends Consumable
-	{
-	}
-	
-	class Drink extends Consumable
-	{
-	}
 	
 	class Microwave extends ModelClass
 	{
 		int intensity = 1;
 		int time = 0;
-		Consumable content;
 		
 		class Init extends Initial
 		{
@@ -85,25 +69,11 @@ class MicrowaveModel extends Model
 			
 			@From(Init.class)
 			@To(HasContent.class)
-			class Initialize1 extends Transition
-			{
-				@Override
-				public boolean guard()
-				{
-					return content != null;
-				}
-			}
+			class Initialize1 extends Transition{}
 			
 			@From(Init.class)
 			@To(HasNoContent.class)
-			class Initialize2 extends Transition
-			{
-				@Override
-				public boolean guard()
-				{
-					return content == null;
-				}
-			}
+			class Initialize2 extends Transition{}
 			
 			@From(HasContent.class)
 			@To(HasNoContent.class)
@@ -113,7 +83,6 @@ class MicrowaveModel extends Model
 				@Override
 				public void effect()
 				{
-					content = null;
 					Action.log("Microwave: content removed.");
 				}
 			}
@@ -126,7 +95,6 @@ class MicrowaveModel extends Model
 				@Override
 				public void effect()
 				{
-					content = getSignal(Put.class).item;
 					Action.log("Microwave: content put in.");
 				}
 			}
@@ -164,25 +132,11 @@ class MicrowaveModel extends Model
 			
 			@From(Init.class)
 			@To(HasContent.class)
-			class Initialize1 extends Transition
-			{
-				@Override
-				public boolean guard()
-				{
-					return content != null;
-				}
-			}
+			class Initialize1 extends Transition{}
 			
 			@From(Init.class)
 			@To(HasNoContent.class)
-			class Initialize2 extends Transition
-			{
-				@Override
-				public boolean guard()
-				{
-					return content == null;
-				}
-			}
+			class Initialize2 extends Transition{}
 			
 			@From(HasContent.class)
 			@To(HasContent.class)
@@ -243,7 +197,6 @@ class MicrowaveModel extends Model
 				public void entry()
 				{
 					--time;
-					content.heatLevel += intensity;
 					Action.log("Microwave: remaining time: " + time + " second(s).");
 					
 					Timer.start(Microwave.this, new TimedOut(), 1000);
@@ -308,7 +261,6 @@ class MicrowaveModel extends Model
 			public void effect()
 			{
 				Action.log("\tMicrowave: initializing...");
-				content = null;
 			}
 		}
 		
@@ -401,15 +353,7 @@ class MicrowaveModel extends Model
 	{
 	}
 	
-	static class Put extends Signal
-	{
-		Consumable item;
-		
-		public Put(Consumable it)
-		{
-			item = it;
-		}
-	}
+	static class Put extends Signal{}
 	
 	static class Get extends Signal
 	{
@@ -488,9 +432,7 @@ class MicrowaveTester
 					Action.send(m, new Close());
 					break;
 				case "put":
-					Food f = Action.create(Food.class);
-					
-					Action.send(m, new Put(f));
+					Action.send(m, new Put());
 					break;
 				case "get":
 					Action.send(m, new Get());

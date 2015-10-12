@@ -16,6 +16,7 @@ import hu.elte.txtuml.examples.printer.PrinterModel.PrinterSystem;
 import hu.elte.txtuml.examples.printer.PrinterModel.RestockPaper;
 import hu.elte.txtuml.examples.printer.PrinterModel.Usage;
 import hu.elte.txtuml.examples.printer.PrinterModel.WantToPrint;
+import hu.elte.txtuml.examples.printer.PrinterModel.DocumentBeingPrinted.beingPrinted;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -63,8 +64,10 @@ class PrinterModel extends Model
 						}
 						else 
 						{
-							Action.send(pb, new Print(doc));
+							Action.link(DocumentBeingPrinted.beingPrinted.class, doc, DocumentBeingPrinted.PrinterBackEnd.class, pb);
+							Action.send(pb, new Print());
 							paperCount -= doc.sideCount;
+							Action.unlink(DocumentToPrint.toPrint.class, doc, DocumentToPrint.PrinterFrontEnd.class, PrinterFrontend.this);
 						};
 					};
 				};
@@ -80,6 +83,7 @@ class PrinterModel extends Model
 			public void effect()
 			{
 				queue.poll();
+				
 				lock = false;
 				Action.log("PrinterFrontend: the printing of a document has finished. Remaining: " + queue.size() + ". Papers: " + paperCount + ".");
 			}
@@ -91,7 +95,8 @@ class PrinterModel extends Model
 			@Override
 			public void effect()
 			{
-				queue.add(getSignal(Print.class).Document);
+				Document doc = PrinterFrontend.this.assoc(DocumentToPrint.toPrint.class).selectAny();
+				queue.add(doc);
 				Action.log("PrinterFrontend: Document recieved. Queue size: " + queue.size() + ".");
 			}
 		}
@@ -122,9 +127,20 @@ class PrinterModel extends Model
 		
 	}
 	
+	class DocumentToPrint extends Association
+	{
+		class toPrint extends Many<Document>{}
+		class PrinterFrontEnd extends HiddenOne<PrinterFrontend>{}
+	}
+	
+	class DocumentBeingPrinted extends Association
+	{
+		class beingPrinted extends One<Document>{}
+		class PrinterBackEnd extends HiddenOne<PrinterBackend>{}
+	}
+	
 	class PrinterBackend extends ModelClass
 	{
-		Document beingPrinted;
 		int tonerPercent;
 		
 		class Init extends Initial{}
@@ -147,13 +163,14 @@ class PrinterModel extends Model
 			@Override
 			public boolean guard()
 			{
-				return tonerPercent >= getSignal(Print.class).Document.sideCount;
+				Document doc = PrinterBackend.this.assoc(DocumentBeingPrinted.beingPrinted.class).selectAny();
+				return tonerPercent >= doc.sideCount;
 			}
 			
 			@Override
 			public void effect()
 			{
-				beingPrinted = getSignal(Print.class).Document;
+				Action.log("PrinterBackend: Recieved document to print. Has enough papers to do it.");
 			}
 		}
 		
@@ -163,7 +180,14 @@ class PrinterModel extends Model
 			@Override
 			public boolean guard()
 			{
-				return tonerPercent < getSignal(Print.class).Document.sideCount;
+				Document doc = PrinterBackend.this.assoc(DocumentBeingPrinted.beingPrinted.class).selectAny();
+				return tonerPercent < doc.sideCount;
+			}
+			
+			@Override
+			public void effect()
+			{
+				Action.log("PrinterBackend: Recieved document to print. Not enough paper to do it.");
 			}
 		}
 		
@@ -173,7 +197,8 @@ class PrinterModel extends Model
 			public void entry()
 			{
 				Action.log("PrinterBackend: started printing.");
-				for (int i = 0; i < beingPrinted.sideCount; ++i)
+				Document doc = PrinterBackend.this.assoc(DocumentBeingPrinted.beingPrinted.class).selectAny();
+				for (int i = 0; i < doc.sideCount; ++i)
 				{
 					try
 					{
@@ -185,7 +210,7 @@ class PrinterModel extends Model
 						e.printStackTrace();
 					}
 				};
-				tonerPercent -= beingPrinted.sideCount;
+				tonerPercent -= doc.sideCount;
 				Action.log("PrinterBackend: finished printing.");
 				Action.send(PrinterBackend.this, new FinishedPrinting());
 			}
@@ -197,7 +222,8 @@ class PrinterModel extends Model
 			@Override
 			public void effect()
 			{
-				beingPrinted = null;
+				Document doc = PrinterBackend.this.assoc(DocumentBeingPrinted.beingPrinted.class).selectAny();
+				Action.unlink(DocumentBeingPrinted.beingPrinted.class, doc, DocumentBeingPrinted.PrinterBackEnd.class, PrinterBackend.this);
 				PrinterFrontend pf = PrinterBackend.this.assoc(PrinterSystem.frontend.class)
 						.selectAny();
 				Action.send(pf, new FinishedPrinting());
@@ -242,7 +268,8 @@ class PrinterModel extends Model
 				Document doc = Action.create(Document.class);
 				doc.sideCount = count;
 				
-				Action.send(p, new Print(doc));
+				Action.link(DocumentToPrint.toPrint.class, doc, DocumentToPrint.PrinterFrontEnd.class, p);
+				Action.send(p, new Print());
 			}
 		}
 		
@@ -273,14 +300,7 @@ class PrinterModel extends Model
 	
 	static class WantToPrint extends Signal{}
 	
-	static class Print extends Signal{
-		Document Document;
-		
-		public Print(Document d)
-		{
-			Document = d;
-		}
-	}
+	static class Print extends Signal{}
 	
 	static class FinishedPrinting extends Signal{}
 	
