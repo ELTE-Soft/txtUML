@@ -57,7 +57,7 @@ public class TxtUMLLayoutDescriptor {
 	}
 	
 	/**
-	 * Returns the reports
+	 * Returns all reports
 	 * @return list of {@link DiagramExportationReport}
 	 */
 	public Collection<DiagramExportationReport> getReports(){

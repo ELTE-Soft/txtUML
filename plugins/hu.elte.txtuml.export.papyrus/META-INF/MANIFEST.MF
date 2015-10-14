@@ -29,7 +29,8 @@ Require-Bundle: org.eclipse.debug.ui,
  org.eclipse.papyrus.editor,
  org.eclipse.papyrus.infra.gmfdiag.css,
  org.eclipse.emf.ecore,
- hu.elte.txtuml.export
+ hu.elte.txtuml.export,
+ org.eclipse.jdt.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: hu.elte.txtuml.export.papyrus,
