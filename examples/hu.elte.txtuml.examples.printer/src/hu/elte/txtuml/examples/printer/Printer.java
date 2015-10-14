@@ -16,8 +16,6 @@ import hu.elte.txtuml.examples.printer.PrinterModel.PrinterSystem;
 import hu.elte.txtuml.examples.printer.PrinterModel.RestockPaper;
 import hu.elte.txtuml.examples.printer.PrinterModel.Usage;
 import hu.elte.txtuml.examples.printer.PrinterModel.WantToPrint;
-import hu.elte.txtuml.examples.printer.PrinterModel.DocumentBeingPrinted.beingPrinted;
-
 import java.util.LinkedList;
 import java.util.Queue;
 
