@@ -18,78 +18,87 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 /**
  * This class provides utilities for telling the types of txtUML model elements.
+ * 
  * @author Adam Ancsin
  *
  */
 public final class ElementTypeTeller {
 
-	private ElementTypeTeller() {}
-	
+	private ElementTypeTeller() {
+	}
+
 	public static boolean isVertex(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Vertex.class); 
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Vertex.class);
 	}
-	
+
 	public static boolean isInitialPseudoState(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Initial.class); 
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Initial.class);
 	}
-	
+
 	public static boolean isChoicePseudoState(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Choice.class); 
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Choice.class);
 	}
-	
+
 	public static boolean isState(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration, State.class); 
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, State.class);
 	}
-	
+
 	public static boolean isCompositeState(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration, CompositeState.class); 
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
+				CompositeState.class);
 	}
-	
+
 	public static boolean isSimpleState(TypeDeclaration typeDeclaration) {
 		return isState(typeDeclaration) && !isCompositeState(typeDeclaration);
 	}
-	
+
 	public static boolean isTransition(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Transition.class);
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
+				Transition.class);
 	}
-	
+
 	public static boolean isModelClass(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ModelClass.class);
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
+				ModelClass.class);
 	}
-	
+
 	public static boolean isSignal(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Signal.class);
 	}
-	
+
 	public static boolean isAssociation(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Association.class);
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
+				Association.class);
 	}
-	
-	public static boolean isSpecificClassifier(TypeDeclaration classifierDeclaration) {
-		ITypeBinding superclassBinding = classifierDeclaration.resolveBinding().getSuperclass();
+
+	public static boolean isSpecificClassifier(
+			TypeDeclaration classifierDeclaration) {
+		ITypeBinding superclassBinding = classifierDeclaration.resolveBinding()
+				.getSuperclass();
 		String superclassQualifiedName = superclassBinding.getQualifiedName();
-		boolean extendsModelClass = superclassQualifiedName.equals(ModelClass.class.getCanonicalName()); 
-		boolean extendsSignal = superclassQualifiedName.equals(Signal.class.getCanonicalName()); 
-		
+		boolean extendsModelClass = superclassQualifiedName
+				.equals(ModelClass.class.getCanonicalName());
+		boolean extendsSignal = superclassQualifiedName.equals(Signal.class
+				.getCanonicalName());
+
 		return !extendsModelClass && !extendsSignal;
 	}
 
 	public static boolean isAbstract(TypeDeclaration typeDeclaration) {
-		for(Object elem : typeDeclaration.modifiers()) {
+		for (Object elem : typeDeclaration.modifiers()) {
 			IExtendedModifier extendedModifier = (IExtendedModifier) elem;
-			if(extendedModifier.isModifier()) {
+			if (extendedModifier.isModifier()) {
 				Modifier modifier = (Modifier) extendedModifier;
-				if(modifier.isAbstract()) {
+				if (modifier.isAbstract()) {
 					return true;
 				}
 			}
 		}
 		return false;
 	}
-	
+
 	public static boolean isExternalClass(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ExternalClass.class);
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
+				ExternalClass.class);
 	}
 }
-
-	

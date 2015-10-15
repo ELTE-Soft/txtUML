@@ -33,12 +33,12 @@ public final class ProfileCreator {
 	 *            The given output directory path.
 	 * @param resourceSet
 	 *            The given resource set.
-	 * @throws ImportException
+	 * @throws ExportException
 	 *
 	 * @author Adam Ancsin
 	 */
 	public static void createProfileForModel(String modelClassQualifiedName,
-			String path, ResourceSet resourceSet) throws ImportException {
+			String path, ResourceSet resourceSet) throws ExportException {
 		Profile profile = createProfile(modelClassQualifiedName, path);
 		Model umlMetamodel = loadUMLMetamodelAndPrimitiveTypes(profile,
 				resourceSet);
@@ -55,13 +55,13 @@ public final class ProfileCreator {
 	 *            The qualified name of the class representing a txtUML model.
 	 * @param resourceSet
 	 *            The resource set.
-	 * @throws ImportException
+	 * @throws ExportException
 	 *
 	 * @author Adam Ancsin
 	 */
 	private static void defineAndSaveProfile(Profile profile,
 			String modelClassQualifiedName, ResourceSet resourceSet)
-			throws ImportException {
+			throws ExportException {
 		profile.define();
 		Resource resource = resourceSet.createResource(URI.createFileURI("")
 				.appendSegment(modelClassQualifiedName)
@@ -71,8 +71,8 @@ public final class ProfileCreator {
 		try {
 			resource.save(null);
 		} catch (IOException ioe) {
-			throw new ImportException(
-					"I/O error occured during model import. Cannot save UML profile.");
+			throw new ExportException(
+					"I/O error occured during model exportation. Cannot save UML profile.");
 		}
 	}
 
@@ -96,8 +96,10 @@ public final class ProfileCreator {
 
 			profile.createMetaclassReference(classifierMetaclass);
 
-			Stereotype externalStereotype = profile.createOwnedStereotype(
-					ImporterConfiguration.externalClassStereotypeName, false);
+			Stereotype externalStereotype = profile
+					.createOwnedStereotype(
+							ExporterConfiguration.EXTERNAL_CLASS_STEREOTYPE_NAME,
+							false);
 			externalStereotype.createExtension(classifierMetaclass, false);
 		} catch (Exception e) {
 
@@ -153,7 +155,7 @@ public final class ProfileCreator {
 	private static Profile createProfile(String modelClassQualifiedName,
 			String path) {
 		Profile profile = UMLFactory.eINSTANCE.createProfile();
-		profile.setName(ImporterConfiguration.profileName);
+		profile.setName(ExporterConfiguration.PROFILE_NAME);
 		profile.setURI(URI.createFileURI(path)
 				.appendSegment(modelClassQualifiedName)
 				.appendFileExtension(UMLResource.PROFILE_FILE_EXTENSION)

@@ -1,8 +1,5 @@
 package hu.elte.txtuml.api.model.external;
 
-import hu.elte.txtuml.api.model.Model;
-import hu.elte.txtuml.api.model.ModelClass;
-
 /**
  * Base type for external classes in the model. External classes are those
  * which's implementation is not part of the model, and from the scope of the
@@ -23,9 +20,10 @@ import hu.elte.txtuml.api.model.ModelClass;
  * model class (that is, one that may not react to any asynchronous events).
  * Call its methods as operations or use its fields as attributes. All its
  * fields used from inside the model must be of a type extending
- * {@link ModelClass} or primitives (including <code>String</code>). Also all parameter and
- * return types of methods called from inside the model must extend
- * <code>ModelClass</code> or be primitives (including <code>String</code>).
+ * {@link hu.elte.txtuml.api.model.ModelClass ModelClass} or primitives
+ * (including <code>String</code>). Also all parameter and return types of
+ * methods called from inside the model must extend <code>ModelClass</code> or
+ * be primitives (including <code>String</code>).
  * <p>
  * As the txtUML API uses its own thread for model execution, external classes
  * probably need synchronization.
@@ -36,7 +34,7 @@ import hu.elte.txtuml.api.model.ModelClass;
  * it may only communicate with the model through signals or by creating new
  * model objects, as it might be done from anywhere outside the model. For
  * details about managing the model from outside, see the documentation of
- * {@link Model}.
+ * {@link hu.elte.txtuml.api.model.Model Model}.
  * 
  * <p>
  * <b>Java restrictions:</b>
@@ -66,7 +64,8 @@ import hu.elte.txtuml.api.model.ModelClass;
  * </ul>
  * 
  * <p>
- * See the documentation of {@link Model} for an overview on modeling in txtUML.
+ * See the documentation of {@link hu.elte.txtuml.api.model.Model Model} for an
+ * overview on modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
  *

@@ -5,6 +5,10 @@ public class Pair<L, R> {
 	private final L left;
 	private final R right;
 
+	public static <L, R> Pair<L, R> create(L left, R right) {
+		return new Pair<L, R>(left, right);
+	}
+	
 	public Pair(L left, R right) {
 		this.left = left;
 		this.right = right;

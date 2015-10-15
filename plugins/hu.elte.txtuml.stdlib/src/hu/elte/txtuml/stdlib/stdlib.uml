@@ -1,63 +1,415 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_fZIaUFfxEeWSUeDrCPYt7w" name="TxtUMLStdLib">
-  <packageImport xmi:type="uml:PackageImport" xmi:id="_fZIaUVfxEeWSUeDrCPYt7w">
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_DE5UMHLCEeWVx4ZuxFlarQ" name="hu.elte.txtuml.stdlib.StdLib">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_DHR50HLCEeWVx4ZuxFlarQ">
     <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
   </packageImport>
-  <packagedElement xmi:type="uml:Class" xmi:id="_vClbcFfxEeWSUeDrCPYt7w" name="IntegerOperations">
-    <ownedOperation xmi:type="uml:Operation" xmi:id="_xsmKoFfxEeWSUeDrCPYt7w" name="add" isStatic="true">
-      <ownedParameter xmi:type="uml:Parameter" xmi:id="_579YwFfxEeWSUeDrCPYt7w" name="left">
+  <packagedElement xmi:type="uml:Class" xmi:id="_DHR50XLCEeWVx4ZuxFlarQ" name="IntegerOperations">
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHR53XLCEeWVx4ZuxFlarQ" name="add_opaqueBehavior" specification="_DHR52XLCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  return left + right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHR54nLCEeWVx4ZuxFlarQ" name="sub_opaqueBehavior" specification="_DHR53nLCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  return left - right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHR553LCEeWVx4ZuxFlarQ" name="mul_opaqueBehavior" specification="_DHR543LCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  return left * right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHR57HLCEeWVx4ZuxFlarQ" name="div_opaqueBehavior" specification="_DHR56HLCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  return left / right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHR58XLCEeWVx4ZuxFlarQ" name="mod_opaqueBehavior" specification="_DHR57XLCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  return left % right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHR59XLCEeWVx4ZuxFlarQ" name="inc_opaqueBehavior" specification="_DHR58nLCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  arg=arg + 1;
+  return arg;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHR5-XLCEeWVx4ZuxFlarQ" name="dec_opaqueBehavior" specification="_DHR59nLCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  arg=arg - 1;
+  return arg;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHR5_XLCEeWVx4ZuxFlarQ" name="delayedInc_opaqueBehavior" specification="_DHR5-nLCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  int tmp=arg;
+  arg=arg + 1;
+  return tmp;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHR6AXLCEeWVx4ZuxFlarQ" name="delayedDec_opaqueBehavior" specification="_DHR5_nLCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  int tmp=arg;
+  arg=arg - 1;
+  return tmp;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHYAcnLCEeWVx4ZuxFlarQ" name="id_opaqueBehavior" specification="_DHR6AnLCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  return arg;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHYAdnLCEeWVx4ZuxFlarQ" name="neg_opaqueBehavior" specification="_DHYAc3LCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  return -arg;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHYAe3LCEeWVx4ZuxFlarQ" name="lt_opaqueBehavior" specification="_DHYAd3LCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  return left &lt; right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHYAgHLCEeWVx4ZuxFlarQ" name="gt_opaqueBehavior" specification="_DHYAfHLCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  return left > right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHYAhXLCEeWVx4ZuxFlarQ" name="leq_opaqueBehavior" specification="_DHYAgXLCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  return left &lt;= right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHYAinLCEeWVx4ZuxFlarQ" name="geq_opaqueBehavior" specification="_DHYAhnLCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  return left >= right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHYAj3LCEeWVx4ZuxFlarQ" name="eq_opaqueBehavior" specification="_DHYAi3LCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  return left == right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHYAlHLCEeWVx4ZuxFlarQ" name="neq_opaqueBehavior" specification="_DHYAkHLCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  return left != right;
+}
+</body>
+    </ownedBehavior>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHR52XLCEeWVx4ZuxFlarQ" name="add" visibility="public" isStatic="true" method="_DHR53XLCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR52nLCEeWVx4ZuxFlarQ" name="left">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
       </ownedParameter>
-      <ownedParameter xmi:type="uml:Parameter" xmi:id="_8xpMcFfxEeWSUeDrCPYt7w" name="right">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR523LCEeWVx4ZuxFlarQ" name="right">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
       </ownedParameter>
-      <ownedParameter xmi:type="uml:Parameter" xmi:id="_D4sHoFfyEeWSUeDrCPYt7w" name="result" direction="return">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR53HLCEeWVx4ZuxFlarQ" name="return" direction="return">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
       </ownedParameter>
     </ownedOperation>
-    <ownedOperation xmi:type="uml:Operation" xmi:id="_M1MvoFfyEeWSUeDrCPYt7w" name="sub" isStatic="true">
-      <ownedParameter xmi:type="uml:Parameter" xmi:id="_T3-14FfyEeWSUeDrCPYt7w" name="left">
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHR53nLCEeWVx4ZuxFlarQ" name="sub" visibility="public" isStatic="true" method="_DHR54nLCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR533LCEeWVx4ZuxFlarQ" name="left">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
       </ownedParameter>
-      <ownedParameter xmi:type="uml:Parameter" xmi:id="_cRih0FfyEeWSUeDrCPYt7w" name="right">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR54HLCEeWVx4ZuxFlarQ" name="right">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
       </ownedParameter>
-      <ownedParameter xmi:type="uml:Parameter" xmi:id="_ph6LsFfyEeWSUeDrCPYt7w" name="result" direction="return">
-        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
-      </ownedParameter>
-    </ownedOperation>
-    <ownedOperation xmi:type="uml:Operation" xmi:id="_uts7IFfyEeWSUeDrCPYt7w" name="mul" isStatic="true">
-      <ownedParameter xmi:type="uml:Parameter" xmi:id="_KHFHEFfzEeWSUeDrCPYt7w" name="left">
-        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
-      </ownedParameter>
-      <ownedParameter xmi:type="uml:Parameter" xmi:id="_NzsiwFfzEeWSUeDrCPYt7w" name="right">
-        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
-      </ownedParameter>
-      <ownedParameter xmi:type="uml:Parameter" xmi:id="_ULl48FfzEeWSUeDrCPYt7w" name="result" direction="return">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR54XLCEeWVx4ZuxFlarQ" name="return" direction="return">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
       </ownedParameter>
     </ownedOperation>
-    <ownedOperation xmi:type="uml:Operation" xmi:id="_VqwloFfzEeWSUeDrCPYt7w" name="div" isStatic="true">
-      <ownedParameter xmi:type="uml:Parameter" xmi:id="_cm87sFfzEeWSUeDrCPYt7w" name="left">
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHR543LCEeWVx4ZuxFlarQ" name="mul" visibility="public" isStatic="true" method="_DHR553LCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR55HLCEeWVx4ZuxFlarQ" name="left">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
       </ownedParameter>
-      <ownedParameter xmi:type="uml:Parameter" xmi:id="_sHeqUFfzEeWSUeDrCPYt7w" name="right">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR55XLCEeWVx4ZuxFlarQ" name="right">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
       </ownedParameter>
-      <ownedParameter xmi:type="uml:Parameter" xmi:id="_urffMFfzEeWSUeDrCPYt7w" name="result" direction="return">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR55nLCEeWVx4ZuxFlarQ" name="return" direction="return">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
       </ownedParameter>
     </ownedOperation>
-    <ownedOperation xmi:type="uml:Operation" xmi:id="_vssdgFfzEeWSUeDrCPYt7w" name="mod" isStatic="true">
-      <ownedParameter xmi:type="uml:Parameter" xmi:id="_9FK6gFfzEeWSUeDrCPYt7w" name="left">
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHR56HLCEeWVx4ZuxFlarQ" name="div" visibility="public" isStatic="true" method="_DHR57HLCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR56XLCEeWVx4ZuxFlarQ" name="left">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
       </ownedParameter>
-      <ownedParameter xmi:type="uml:Parameter" xmi:id="__kkVIFfzEeWSUeDrCPYt7w" name="right">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR56nLCEeWVx4ZuxFlarQ" name="right">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
       </ownedParameter>
-      <ownedParameter xmi:type="uml:Parameter" xmi:id="_PP8o4Ff0EeWSUeDrCPYt7w" name="result" direction="return">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR563LCEeWVx4ZuxFlarQ" name="return" direction="return">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHR57XLCEeWVx4ZuxFlarQ" name="mod" visibility="public" isStatic="true" method="_DHR58XLCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR57nLCEeWVx4ZuxFlarQ" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR573LCEeWVx4ZuxFlarQ" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR58HLCEeWVx4ZuxFlarQ" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHR58nLCEeWVx4ZuxFlarQ" name="inc" visibility="public" isStatic="true" method="_DHR59XLCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR583LCEeWVx4ZuxFlarQ" name="arg" direction="inout">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR59HLCEeWVx4ZuxFlarQ" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHR59nLCEeWVx4ZuxFlarQ" name="dec" visibility="public" isStatic="true" method="_DHR5-XLCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR593LCEeWVx4ZuxFlarQ" name="arg" direction="inout">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR5-HLCEeWVx4ZuxFlarQ" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHR5-nLCEeWVx4ZuxFlarQ" name="delayedInc" visibility="public" isStatic="true" method="_DHR5_XLCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR5-3LCEeWVx4ZuxFlarQ" name="arg" direction="inout">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR5_HLCEeWVx4ZuxFlarQ" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHR5_nLCEeWVx4ZuxFlarQ" name="delayedDec" visibility="public" isStatic="true" method="_DHR6AXLCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR5_3LCEeWVx4ZuxFlarQ" name="arg" direction="inout">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR6AHLCEeWVx4ZuxFlarQ" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHR6AnLCEeWVx4ZuxFlarQ" name="id" visibility="public" isStatic="true" method="_DHYAcnLCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAcHLCEeWVx4ZuxFlarQ" name="arg">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAcXLCEeWVx4ZuxFlarQ" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHYAc3LCEeWVx4ZuxFlarQ" name="neg" visibility="public" isStatic="true" method="_DHYAdnLCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAdHLCEeWVx4ZuxFlarQ" name="arg">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAdXLCEeWVx4ZuxFlarQ" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHYAd3LCEeWVx4ZuxFlarQ" name="lt" visibility="public" isStatic="true" method="_DHYAe3LCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAeHLCEeWVx4ZuxFlarQ" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAeXLCEeWVx4ZuxFlarQ" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAenLCEeWVx4ZuxFlarQ" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHYAfHLCEeWVx4ZuxFlarQ" name="gt" visibility="public" isStatic="true" method="_DHYAgHLCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAfXLCEeWVx4ZuxFlarQ" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAfnLCEeWVx4ZuxFlarQ" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAf3LCEeWVx4ZuxFlarQ" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHYAgXLCEeWVx4ZuxFlarQ" name="leq" visibility="public" isStatic="true" method="_DHYAhXLCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAgnLCEeWVx4ZuxFlarQ" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAg3LCEeWVx4ZuxFlarQ" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAhHLCEeWVx4ZuxFlarQ" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHYAhnLCEeWVx4ZuxFlarQ" name="geq" visibility="public" isStatic="true" method="_DHYAinLCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAh3LCEeWVx4ZuxFlarQ" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAiHLCEeWVx4ZuxFlarQ" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAiXLCEeWVx4ZuxFlarQ" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHYAi3LCEeWVx4ZuxFlarQ" name="eq" visibility="public" isStatic="true" method="_DHYAj3LCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAjHLCEeWVx4ZuxFlarQ" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAjXLCEeWVx4ZuxFlarQ" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAjnLCEeWVx4ZuxFlarQ" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHYAkHLCEeWVx4ZuxFlarQ" name="neq" visibility="public" isStatic="true" method="_DHYAlHLCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAkXLCEeWVx4ZuxFlarQ" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAknLCEeWVx4ZuxFlarQ" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAk3LCEeWVx4ZuxFlarQ" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
       </ownedParameter>
     </ownedOperation>
   </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_DHR50nLCEeWVx4ZuxFlarQ" name="BooleanOperations">
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHYAmXLCEeWVx4ZuxFlarQ" name="and_opaqueBehavior" specification="_DHYAlXLCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  return left &amp;&amp; right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHYAnnLCEeWVx4ZuxFlarQ" name="or_opaqueBehavior" specification="_DHYAmnLCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  return left || right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHYAonLCEeWVx4ZuxFlarQ" name="id_opaqueBehavior" specification="_DHYAn3LCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{&#xD;
+  return arg;&#xD;
+}&#xD;
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHYApnLCEeWVx4ZuxFlarQ" name="not_opaqueBehavior" specification="_DHYAo3LCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  return !arg;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHYAq3LCEeWVx4ZuxFlarQ" name="fork_opaqueBehavior" specification="_DHYAp3LCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{&#xD;
+  copy1=arg;&#xD;
+  copy2=arg;&#xD;
+}&#xD;
+</body>
+    </ownedBehavior>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHYAlXLCEeWVx4ZuxFlarQ" name="and" visibility="public" isStatic="true" method="_DHYAmXLCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAlnLCEeWVx4ZuxFlarQ" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAl3LCEeWVx4ZuxFlarQ" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAmHLCEeWVx4ZuxFlarQ" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHYAmnLCEeWVx4ZuxFlarQ" name="or" visibility="public" isStatic="true" method="_DHYAnnLCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAm3LCEeWVx4ZuxFlarQ" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAnHLCEeWVx4ZuxFlarQ" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAnXLCEeWVx4ZuxFlarQ" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHYAn3LCEeWVx4ZuxFlarQ" name="id" visibility="public" isStatic="true" method="_DHYAonLCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAoHLCEeWVx4ZuxFlarQ" name="arg">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAoXLCEeWVx4ZuxFlarQ" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHYAo3LCEeWVx4ZuxFlarQ" name="not" visibility="public" isStatic="true" method="_DHYApnLCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYApHLCEeWVx4ZuxFlarQ" name="arg">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYApXLCEeWVx4ZuxFlarQ" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHYAp3LCEeWVx4ZuxFlarQ" name="fork" visibility="public" isStatic="true" method="_DHYAq3LCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAqHLCEeWVx4ZuxFlarQ" name="arg">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAqXLCEeWVx4ZuxFlarQ" name="copy1" direction="out">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHYAqnLCEeWVx4ZuxFlarQ" name="copy2" direction="out">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_DHR503LCEeWVx4ZuxFlarQ" name="StringOperations">
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DHR52HLCEeWVx4ZuxFlarQ" name="concat_opaqueBehavior" specification="_DHR51HLCEeWVx4ZuxFlarQ">
+      <language>JtxtUML</language>
+      <body>{
+  return left + right;
+}
+</body>
+    </ownedBehavior>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_DHR51HLCEeWVx4ZuxFlarQ" name="concat" visibility="public" isStatic="true" method="_DHR52HLCEeWVx4ZuxFlarQ">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR51XLCEeWVx4ZuxFlarQ" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR51nLCEeWVx4ZuxFlarQ" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR513LCEeWVx4ZuxFlarQ" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedParameter>
+    </ownedOperation>
+  </packagedElement>
+  <profileApplication xmi:type="uml:ProfileApplication" xmi:id="_DHLzQ3LCEeWVx4ZuxFlarQ">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_DHLzRHLCEeWVx4ZuxFlarQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
+      <references xmi:type="ecore:EPackage" href="hu.elte.txtuml.stdlib.StdLib.profile.uml#_DHLzMnLCEeWVx4ZuxFlarQ"/>
+    </eAnnotations>
+    <appliedProfile xmi:type="uml:Profile" href="hu.elte.txtuml.stdlib.StdLib.profile.uml#_DHLzMHLCEeWVx4ZuxFlarQ"/>
+  </profileApplication>
 </uml:Model>

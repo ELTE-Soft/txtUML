@@ -855,7 +855,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 			From from = cls.getAnnotation(From.class);
 			To to = cls.getAnnotation(To.class);
 
-			if (from == null || to == null) { // TODO
+			if (from == null || to == null) {
 				this.source = null;
 				this.target = null;
 			} else {

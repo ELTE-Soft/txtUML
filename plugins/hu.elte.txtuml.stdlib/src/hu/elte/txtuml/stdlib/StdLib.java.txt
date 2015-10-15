@@ -1,0 +1,116 @@
+package hu.elte.txtuml.stdlib;
+
+import hu.elte.txtuml.api.model.*;
+
+class StdLib extends Model {
+
+	static class IntegerOperations extends ModelClass {
+
+		public static int add(int left, int right) {
+			return left + right;
+		}
+
+		public static int sub(int left, int right) {
+			return left - right;
+		}
+
+		public static int mul(int left, int right) {
+			return left * right;
+		}
+
+		public static int div(int left, int right) {
+			return left / right;
+		}
+
+		public static int mod(int left, int right) {
+			return left % right;
+		}
+
+		public static int inc(/* inout */int arg) {
+			arg = arg + 1;
+			return arg;
+		}
+
+		public static int dec(/* inout */int arg) {
+			arg = arg - 1;
+			return arg;
+		}
+
+		public static int delayedInc(/* inout */int arg) {
+			int tmp = arg;
+			arg = arg + 1;
+			return tmp;
+		}
+
+		public static int delayedDec(/* inout */int arg) {
+			int tmp = arg;
+			arg = arg - 1;
+			return tmp;
+		}
+
+		public static int neg(int arg) {
+			return -arg;
+		}
+
+		// logical
+
+		public static boolean lt(int left, int right) {
+			return left < right;
+		}
+
+		public static boolean gt(int left, int right) {
+			return left > right;
+		}
+
+		public static boolean leq(int left, int right) {
+			return left <= right;
+		}
+
+		public static boolean geq(int left, int right) {
+			return left >= right;
+		}
+
+		public static boolean eq(int left, int right) {
+			return left == right;
+		}
+
+		public static boolean neq(int left, int right) {
+			return left != right;
+		}
+
+	}
+
+	static class BooleanOperations extends ModelClass {
+
+		public static boolean and(boolean left, boolean right) {
+			return left && right;
+		}
+
+		public static boolean or(boolean left, boolean right) {
+			return left || right;
+		}
+
+		public static boolean id(boolean arg) {
+			return arg;
+		}
+
+		public static boolean not(boolean arg) {
+			return !arg;
+		}
+
+		public static void fork(boolean arg, /*out*/boolean copy1, /* out */boolean copy2) {
+			copy1 = arg;
+			copy2 = arg;
+		}
+
+	}
+
+	static class StringOperations extends ModelClass {
+
+		public static String concat(String left, String right) {
+			return left + right;
+		}
+
+	}
+
+}

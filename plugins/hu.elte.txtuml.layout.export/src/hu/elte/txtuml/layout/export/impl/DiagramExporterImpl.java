@@ -48,7 +48,7 @@ import java.lang.annotation.Annotation;
  * @author Gabor Ferenc Kovacs
  *
  */
-public class DiagramExporterImpl implements DiagramExporter { // FIXME
+public class DiagramExporterImpl implements DiagramExporter {
 
 	private final DiagramExportationReport report;
 	private final ProblemReporter problemReporter;

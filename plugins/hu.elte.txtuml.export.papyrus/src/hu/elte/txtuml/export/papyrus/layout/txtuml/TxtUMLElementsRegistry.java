@@ -121,7 +121,7 @@ public class TxtUMLElementsRegistry {
 				}
 				
 				if(elem.isPresent()){
-					elements.add((Element) elem.get());
+					elements.add(elem.get());
 				}
 			}
 		}

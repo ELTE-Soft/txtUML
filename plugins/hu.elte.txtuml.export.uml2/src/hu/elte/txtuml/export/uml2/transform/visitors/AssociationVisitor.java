@@ -1,52 +1,51 @@
 package hu.elte.txtuml.export.uml2.transform.visitors;
 
-import hu.elte.txtuml.export.uml2.transform.backend.ImportException;
-import hu.elte.txtuml.export.uml2.transform.importers.AssociationImporter;
-import hu.elte.txtuml.export.uml2.transform.importers.ModelImporter;
+import hu.elte.txtuml.export.uml2.mapping.ModelMapCollector;
+import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
+import hu.elte.txtuml.export.uml2.transform.backend.RuntimeExportException;
+import hu.elte.txtuml.export.uml2.transform.exporters.AssociationExporter;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.uml2.uml.Model;
 
 /**
  * Instances of this class visit associations in a source txtUML model.
+ * 
+ * @throws RuntimeException
+ *             When applied to an <code>ASTNode</code>, methods of this visitor
+ *             may throw this kind of exception.
  * @author Ádám Ancsin
  *
  */
-public class AssociationVisitor extends ASTVisitor{
-	/**
-	 * The model importer used.
-	 */
-	private ModelImporter modelImporter;
-	
-	/**
-	 * Creates an <code>AssociationVisitor</code> instance.
-	 * 
-	 * @param modelImporter
-	 *            The model importer used for importing.
-	 */
-	public AssociationVisitor(ModelImporter modelImporter) {
-		super();
-		this.modelImporter = modelImporter;
+public class AssociationVisitor extends ASTVisitor {
+
+	private final ModelMapCollector mapping;
+	private final Model exportedModel;
+
+	public AssociationVisitor(ModelMapCollector mapping, Model exportedModel) {
+		this.mapping = mapping;
+		this.exportedModel = exportedModel;
 	}
-	
+
 	/**
 	 * Visits a TypeDeclaration ASTNode in the AST. If it represents a txtUML
-	 * association, imports it and does not continue the visit on it's child
+	 * association, exports it and does not continue the visit on it's child
 	 * nodes. Otherwise, it ignores the node and continues the visit.
 	 */
 	@Override
 	public boolean visit(TypeDeclaration typeDeclaration) {
-		if(ElementTypeTeller.isAssociation(typeDeclaration)) {
+		if (ElementTypeTeller.isAssociation(typeDeclaration)) {
 			try {
-				new AssociationImporter(typeDeclaration, this.modelImporter.getImportedModel()).importAssociation();
+				new AssociationExporter(typeDeclaration, mapping, exportedModel)
+						.exportAssociation();
 				return false;
-			} catch (ImportException e) {
-				// TODO: error-handling - cannot throw exception from this method
-				// because original implementation does not throw Exception
+			} catch (ExportException e) {
+				throw new RuntimeExportException(e);
 			}
 		}
-		
+
 		return true;
 	}
 }

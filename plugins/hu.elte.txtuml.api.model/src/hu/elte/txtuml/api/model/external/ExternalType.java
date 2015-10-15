@@ -1,6 +1,5 @@
 package hu.elte.txtuml.api.model.external;
 
-import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.ModelElement;
 
 /**
@@ -26,7 +25,7 @@ import hu.elte.txtuml.api.model.ModelElement;
  * </ul>
  * 
  * <p>
- * See the documentation of {@link Model} for an overview on modeling in txtUML.
+ * See the documentation of {@link hu.elte.txtuml.api.model.Model Model} for an overview on modeling in txtUML.
  *
  * @author Gabor Ferenc Kovacs
  *

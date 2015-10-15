@@ -1,25 +1,27 @@
 package hu.elte.txtuml.export.uml2.transform.visitors;
 
-import hu.elte.txtuml.export.uml2.transform.importers.AttributeImporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.AttributeExporter;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 public class AttributeVisitor extends ASTVisitor {
-	private AttributeImporter attributeImporter;
-	private TypeDeclaration classifierDeclaration;
-	
-	public AttributeVisitor(AttributeImporter attributeImporter, TypeDeclaration classifierDeclaration) {
-		super();
-		this.attributeImporter = attributeImporter;
+
+	private final AttributeExporter attributeExporter;
+	private final TypeDeclaration classifierDeclaration;
+
+	public AttributeVisitor(AttributeExporter attributeExporter,
+			TypeDeclaration classifierDeclaration) {
+		this.attributeExporter = attributeExporter;
 		this.classifierDeclaration = classifierDeclaration;
 	}
-	
+
 	@Override
 	public boolean visit(FieldDeclaration fieldDeclaration) {
-		if(fieldDeclaration.getParent().equals(this.classifierDeclaration)) {
-			this.attributeImporter.importClassifierAttributesFromFieldDeclaration(fieldDeclaration);
+		if (fieldDeclaration.getParent().equals(this.classifierDeclaration)) {
+			this.attributeExporter
+					.exportClassifierAttributesFromFieldDeclaration(fieldDeclaration);
 		}
 		return false;
 	}

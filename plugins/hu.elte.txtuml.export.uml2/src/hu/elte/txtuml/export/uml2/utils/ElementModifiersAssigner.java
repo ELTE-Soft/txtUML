@@ -13,31 +13,30 @@ public final class ElementModifiersAssigner {
 
 	private ElementModifiersAssigner() {
 	}
-	
-	public static void assignModifiersForElementBasedOnDeclaration(NamedElement element, BodyDeclaration declaration) {
+
+	public static void assignModifiersForElementBasedOnDeclaration(
+			NamedElement element, BodyDeclaration declaration) {
 		int modifiers = declaration.getModifiers();
-		VisibilityKind visibility = VisibilityProvider.getVisibilityOfNamedElementFromModifiers(element, modifiers);
+		VisibilityKind visibility = VisibilityProvider
+				.getVisibilityOfNamedElementFromModifiers(element, modifiers);
 		element.setVisibility(visibility);
-		
+
 		boolean isAbstract = Modifier.isAbstract(modifiers);
 		boolean isStatic = Modifier.isStatic(modifiers);
-		
-		if(element instanceof Classifier)
-		{
-			Classifier classifierElem=(Classifier) element;
+
+		if (element instanceof Classifier) {
+			Classifier classifierElem = (Classifier) element;
 			classifierElem.setIsAbstract(isAbstract);
 		}
-		if(element instanceof BehavioralFeature)
-		{
+		if (element instanceof BehavioralFeature) {
 			BehavioralFeature featureElem = (BehavioralFeature) element;
 			featureElem.setIsStatic(isStatic);
 			featureElem.setIsAbstract(isAbstract);
 		}
-		if(element instanceof Property)
-		{
+		if (element instanceof Property) {
 			Property propertyElem = (Property) element;
 			propertyElem.setIsStatic(isStatic);
 		}
 	}
-	
+
 }

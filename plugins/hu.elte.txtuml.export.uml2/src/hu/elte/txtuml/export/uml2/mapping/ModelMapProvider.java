@@ -11,7 +11,9 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
 /**
- * ModelMapProvider provides a mapping from txtUML model elements to EMF-UML2 model elements. 
+ * ModelMapProvider provides a mapping from txtUML model elements to EMF-UML2
+ * model elements.
+ * 
  * @see hu.elte.txtuml.export.uml2.mapping.ModelMapCollector
  */
 public class ModelMapProvider {
@@ -21,69 +23,80 @@ public class ModelMapProvider {
 	private static final String CANNOT_LOAD_MODEL = "UML model cannot be loaded.";
 
 	/**
-	 * @param directory Directory of the saved mapping.
-	 * @param filename	File name of the saved mapping (without extension).
-	 * @throws ModelMapException 
+	 * @param directory
+	 *            Directory of the saved mapping.
+	 * @param filename
+	 *            File name of the saved mapping (without extension).
+	 * @throws ModelMapException
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public ModelMapProvider(URI directory, String filename) throws ModelMapException {
+	public ModelMapProvider(URI directory, String filename)
+			throws ModelMapException {
 		uriFragmentMapper = new URIFragmentMapper(directory, filename);
 
 		ResourceSet resourceSet = new ResourceSetImpl();
 		UMLResourcesUtil.init(resourceSet);
 		URI modelURI = URI.createURI(uriFragmentMapper.getModelPath());
-		if(modelURI == null) {
+		if (modelURI == null) {
 			throw new ModelMapException(CANNOT_LOAD_MODEL);
 		}
 		resource = resourceSet.getResource(modelURI, true);
-		if(resource == null) {
+		if (resource == null) {
 			throw new ModelMapException(CANNOT_LOAD_MODEL);
 		}
 	}
-	
+
 	/**
-	 * @param directory Directory of the saved mapping.
-	 * @param filename	File name of the saved mapping (without extension) the 
-	 * @param resource the resource where UML2 model is to be find
-	 * @throws ModelMapException 
+	 * @param directory
+	 *            Directory of the saved mapping.
+	 * @param filename
+	 *            File name of the saved mapping (without extension) the
+	 * @param resource
+	 *            the resource where UML2 model is to be find
+	 * @throws ModelMapException
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public ModelMapProvider(URI directory, String filename, Resource resource) throws ModelMapException {
+	public ModelMapProvider(URI directory, String filename, Resource resource)
+			throws ModelMapException {
 		uriFragmentMapper = new URIFragmentMapper(directory, filename);
-		
-		if(resource == null) {
+
+		if (resource == null) {
 			throw new ModelMapException(CANNOT_LOAD_MODEL);
-		}else{
+		} else {
 			this.resource = resource;
 		}
 	}
-	
-	
-	
+
 	/**
-	 * Maps a Java class representing a txtUML model element
-	 * to the corresponding EMF-UML2 model element.  
-	 * @param clazz	Java class of the txtUML model element.
-	 * @return The corresponding EObject of the EMF-UML2 model (or null if such cannot be found).
+	 * Maps a Java class representing a txtUML model element to the
+	 * corresponding EMF-UML2 model element.
+	 * 
+	 * @param clazz
+	 *            Java class of the txtUML model element.
+	 * @return The corresponding EObject of the EMF-UML2 model (or null if such
+	 *         cannot be found).
 	 */
 	public EObject get(Class<?> clazz) {
 		String className = clazz.getCanonicalName();
 		return getByName(className);
 	}
-	
+
 	/**
-	 * Maps a Java class name representing a txtUML model element
-	 * to the corresponding EMF-UML2 model element.  
-	 * @param className Java class canonical name of the txtUML model element.
-	 * @return The corresponding EObject of the EMF-UML2 model (or null if such cannot be found).
+	 * Maps a Java class name representing a txtUML model element to the
+	 * corresponding EMF-UML2 model element.
+	 * 
+	 * @param className
+	 *            Java class canonical name of the txtUML model element.
+	 * @return The corresponding EObject of the EMF-UML2 model (or null if such
+	 *         cannot be found).
 	 */
 	public EObject getByName(String className) {
 		String uriFragment = uriFragmentMapper.get(className);
-		if(uriFragment == null || resource == null) {
+		if (uriFragment == null || resource == null) {
 			return null;
 		}
 		return resource.getEObject(uriFragment);
