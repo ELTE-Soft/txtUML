@@ -16,7 +16,7 @@ public abstract class ValidationErrorBase extends CategorizedProblem {
 	public ValidationErrorBase(SourceInfo sourceInfo, ASTNode node) {
 		this.sourceInfo = sourceInfo;
 		this.sourceStart = node.getStartPosition();
-		this.sourceEnd = node.getStartPosition() + node.getLength();
+		this.sourceEnd = node.getStartPosition() + node.getLength() - 1;
 		this.lineNumber = sourceInfo.getSourceLineNumber(getSourceEnd());
 	}
 	

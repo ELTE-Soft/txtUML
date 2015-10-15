@@ -38,7 +38,7 @@ public class ModelClassVisitor extends VisitorBase {
 	
 	@Override
 	public boolean visit(FieldDeclaration elem) {
-		boolean valid = Utils.isAllowedBasicType(elem.getType());
+		boolean valid = Utils.isAllowedBasicType(elem.getType(), false);
 		collector.setProblemStatus(!valid, new InvalidTypeWithClassNotAllowed(collector.getSourceInfo(), elem.getType()));
 		if(valid) {
 			Utils.checkModifiers(collector, elem);
@@ -48,10 +48,19 @@ public class ModelClassVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(MethodDeclaration elem) {
+	    if (!elem.isConstructor()) {
+	        boolean hasValidReturnType
+	            = Utils.isAllowedBasicTypeOrModelClass(elem.getReturnType2(), true);
+	        collector
+	            .setProblemStatus(!hasValidReturnType,
+	                new InvalidTypeWithClassAllowed(collector.getSourceInfo(),
+	                    elem.getReturnType2()));
+	    }
+	    
 		Utils.checkModifiers(collector, elem);
 		for(Object obj : elem.parameters()) {
 			SingleVariableDeclaration param = (SingleVariableDeclaration)obj;
-			boolean valid = Utils.isAllowedBasicTypeOrModelClass(param.getType());
+			boolean valid = Utils.isAllowedBasicTypeOrModelClass(param.getType(), false);
 			collector.setProblemStatus(!valid, new InvalidTypeWithClassAllowed(collector.getSourceInfo(), param.getType()));
 		}
 		// TODO: check body

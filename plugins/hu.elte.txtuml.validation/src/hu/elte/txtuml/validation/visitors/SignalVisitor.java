@@ -23,7 +23,7 @@ public class SignalVisitor extends VisitorBase {
 	
 	@Override
 	public boolean visit(FieldDeclaration elem) {
-		boolean valid = Utils.isAllowedBasicType(elem.getType());
+		boolean valid = Utils.isAllowedBasicType(elem.getType(), false);
 		collector.setProblemStatus(!valid, new InvalidTypeWithClassNotAllowed(collector.getSourceInfo(), elem.getType()));
 
 		if(valid) {
@@ -46,7 +46,7 @@ public class SignalVisitor extends VisitorBase {
 	private void checkConstructor(MethodDeclaration elem) {
 		for(Object obj : elem.parameters()) {
 			SingleVariableDeclaration param = (SingleVariableDeclaration)obj;
-			boolean valid = Utils.isAllowedBasicType(param.getType());
+			boolean valid = Utils.isAllowedBasicType(param.getType(), false);
 			collector.setProblemStatus(!valid, new InvalidTypeWithClassNotAllowed(collector.getSourceInfo(), param.getType()));
 		}
 		// TODO: check constructor body

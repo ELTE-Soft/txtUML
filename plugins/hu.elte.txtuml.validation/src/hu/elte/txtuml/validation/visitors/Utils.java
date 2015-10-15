@@ -48,12 +48,13 @@ public class Utils {
 		}
 	}
 	
-	public static boolean isAllowedBasicType(Type type) {
+	public static boolean isAllowedBasicType(Type type, boolean isVoidAllowed) {
 		if(type.isPrimitiveType()) {
 			PrimitiveType.Code code = ((PrimitiveType)type).getPrimitiveTypeCode(); 
 			return (code == PrimitiveType.BOOLEAN ||
 			   code == PrimitiveType.DOUBLE ||
-			   code == PrimitiveType.INT);
+			   code == PrimitiveType.INT ||
+			   (code == PrimitiveType.VOID && isVoidAllowed));
 		}
 		
 		if(type.isSimpleType()) {
@@ -64,8 +65,8 @@ public class Utils {
 		return false;
 	}
 	
-	public static boolean isAllowedBasicTypeOrModelClass(Type type) {
-		if(isAllowedBasicType(type)) {
+	public static boolean isAllowedBasicTypeOrModelClass(Type type, boolean isVoidAllowed) {
+		if(isAllowedBasicType(type, isVoidAllowed)) {
 			return true;
 		}
 		
