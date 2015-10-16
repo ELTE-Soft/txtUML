@@ -68,7 +68,7 @@ public class MethodSkeletonExporter {
 
 			}
 		}
-
+		
 		Type returnType = obtainReturnType(methodDeclaration);
 		if (methodDeclaration.isConstructor()) {
 			returnType = owner;

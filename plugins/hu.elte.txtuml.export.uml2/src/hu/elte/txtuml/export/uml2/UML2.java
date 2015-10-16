@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.uml2;
 
 import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
+import hu.elte.txtuml.export.uml2.transform.backend.RuntimeExportException;
 import hu.elte.txtuml.export.uml2.transform.exporters.ModelExporter;
 import hu.elte.txtuml.export.uml2.transform.visitors.ModelObtainer;
 import hu.elte.txtuml.export.uml2.utils.SharedUtils;
@@ -102,28 +103,32 @@ public class UML2 {
 		ModelExporter modelExporter = new ModelExporter(
 				obtainModelFromCompilationUnit(compilationUnit),
 				txtUMLModelName, outputDirectory);
-		Model model = modelExporter.exportModel();
+		try {
+			Model model = modelExporter.exportModel();
 
-		ResourceSet resourceSet = modelExporter.getResourceSet();
+			ResourceSet resourceSet = modelExporter.getResourceSet();
 
-		Resource modelResource = modelExporter.getModelResource();
-		modelResource.save(null); // no save options needed
+			Resource modelResource = modelExporter.getModelResource();
+			modelResource.save(null); // no save options needed
 
-		// create resource for profile and save profile
-		Profile profile = modelExporter.getProfile();
-		Resource profileResource = resourceSet.createResource(URI
-				.createURI(outputDirectory)
-				.appendSegment(model.getQualifiedName())
-				.appendFileExtension(UMLResource.PROFILE_FILE_EXTENSION));
-		profileResource.getContents().add(profile);
-		profileResource.save(null); // no save options needed
+			// create resource for profile and save profile
+			Profile profile = modelExporter.getProfile();
+			Resource profileResource = resourceSet.createResource(URI
+					.createURI(outputDirectory)
+					.appendSegment(model.getQualifiedName())
+					.appendFileExtension(UMLResource.PROFILE_FILE_EXTENSION));
+			profileResource.getContents().add(profile);
+			profileResource.save(null); // no save options needed
 
-		// delete surplus profile
-		if (!outputDirectory.isEmpty()) {
-			Path path = FileSystems.getDefault().getPath(
-					model.getQualifiedName() + "."
-							+ UMLResource.PROFILE_FILE_EXTENSION);
-			Files.delete(path);
+			// delete surplus profile
+			if (!outputDirectory.isEmpty()) {
+				Path path = FileSystems.getDefault().getPath(
+						model.getQualifiedName() + "."
+								+ UMLResource.PROFILE_FILE_EXTENSION);
+				Files.delete(path);
+			}
+		} catch (RuntimeExportException e) {
+			throw e.getCause();
 		}
 
 	}

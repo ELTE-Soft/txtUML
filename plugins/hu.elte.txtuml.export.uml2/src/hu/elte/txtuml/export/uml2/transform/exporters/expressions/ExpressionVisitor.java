@@ -9,16 +9,25 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.ArrayAccess;
+import org.eclipse.jdt.core.dom.ArrayCreation;
+import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.BooleanLiteral;
+import org.eclipse.jdt.core.dom.CastExpression;
 import org.eclipse.jdt.core.dom.CharacterLiteral;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
+import org.eclipse.jdt.core.dom.ConditionalExpression;
+import org.eclipse.jdt.core.dom.CreationReference;
 import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.ExpressionMethodReference;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.InfixExpression;
+import org.eclipse.jdt.core.dom.InstanceofExpression;
+import org.eclipse.jdt.core.dom.LambdaExpression;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
@@ -30,8 +39,12 @@ import org.eclipse.jdt.core.dom.PrefixExpression;
 import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.StringLiteral;
+import org.eclipse.jdt.core.dom.SuperFieldAccess;
+import org.eclipse.jdt.core.dom.SuperMethodInvocation;
+import org.eclipse.jdt.core.dom.SuperMethodReference;
 import org.eclipse.jdt.core.dom.ThisExpression;
 import org.eclipse.jdt.core.dom.TypeLiteral;
+import org.eclipse.jdt.core.dom.TypeMethodReference;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralInteger;
@@ -42,23 +55,7 @@ import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.UMLFactory;
 
 /**
- * TODO ExpressionVisitor
- * <p>
- * {@link org.eclipse.jdt.core.dom.Annotation},
- * {@link org.eclipse.jdt.core.dom.ArrayAccess},
- * {@link org.eclipse.jdt.core.dom.ArrayCreation},
- * {@link org.eclipse.jdt.core.dom.ArrayInitializer},
- * {@link org.eclipse.jdt.core.dom.CastExpression},
- * {@link org.eclipse.jdt.core.dom.ConditionalExpression},
- * {@link org.eclipse.jdt.core.dom.CreationReference},
- * {@link org.eclipse.jdt.core.dom.ExpressionMethodReference},
- * {@link org.eclipse.jdt.core.dom.InstanceofExpression},
- * {@link org.eclipse.jdt.core.dom.LambdaExpression},
- * {@link org.eclipse.jdt.core.dom.MethodReference},
- * {@link org.eclipse.jdt.core.dom.SuperFieldAccess},
- * {@link org.eclipse.jdt.core.dom.SuperMethodInvocation},
- * {@link org.eclipse.jdt.core.dom.SuperMethodReference},
- * {@link org.eclipse.jdt.core.dom.TypeMethodReference},
+ * TODO {@link org.eclipse.jdt.core.dom.Annotation}
  */
 class ExpressionVisitor extends ASTVisitor {
 
@@ -158,6 +155,12 @@ class ExpressionVisitor extends ASTVisitor {
 	}
 
 	@Override
+	public boolean visit(LambdaExpression node) {
+		// TODO LambdaExpression
+		return false;
+	}
+
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(MethodInvocation node) {
 		IMethodBinding binding = node.resolveMethodBinding();
@@ -181,10 +184,17 @@ class ExpressionVisitor extends ASTVisitor {
 			}
 		}
 
-		result = expressionExporter.createCallOperationAction(
-				typeExporter.exportMethodAsOperation(binding, args), target,
+		Operation operation = typeExporter.exportMethodAsOperation(binding,
 				args);
 
+		if (operation == null) { // TODO unknown operation
+			result = expressionExporter.createOpaqueAction(node.toString(),
+					node.resolveTypeBinding(), target, args);
+			return false;
+		}
+
+		result = expressionExporter.createCallOperationAction(operation,
+				target, args);
 		return false;
 	}
 
@@ -291,6 +301,78 @@ class ExpressionVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(VariableDeclarationExpression node) {
 		expressionExporter.exportVariableDeclaration(node.getType(), node);
+		return false;
+	}
+
+	@Override
+	public boolean visit(ArrayAccess node) {
+		// TODO ArrayAccess
+		return false;
+	}
+
+	@Override
+	public boolean visit(ArrayCreation node) {
+		// TODO ArrayCreation
+		return false;
+	}
+
+	@Override
+	public boolean visit(ArrayInitializer node) {
+		// TODO ArrayInitializer
+		return false;
+	}
+
+	@Override
+	public boolean visit(CastExpression node) {
+		// TODO CastExpression
+		return false;
+	}
+
+	@Override
+	public boolean visit(ConditionalExpression node) {
+		// TODO ConditionalExpression
+		return false;
+	}
+
+	@Override
+	public boolean visit(CreationReference node) {
+		// TODO CreationReference
+		return false;
+	}
+
+	@Override
+	public boolean visit(ExpressionMethodReference node) {
+		// TODO ExpressionMethodReference
+		return false;
+	}
+
+	@Override
+	public boolean visit(InstanceofExpression node) {
+		// TODO InstanceofExpression
+		return false;
+	}
+
+	@Override
+	public boolean visit(SuperFieldAccess node) {
+		// TODO SuperFieldAccess
+		return false;
+	}
+
+	@Override
+	public boolean visit(SuperMethodInvocation node) {
+		// TODO SuperMethodInvocation
+		return false;
+	}
+
+	@Override
+	public boolean visit(SuperMethodReference node) {
+		// TODO SuperMethodReference
+		return false;
+	}
+
+	@Override
+	public boolean visit(TypeMethodReference node) {
+		// TODO TypeMethodReference
 		return false;
 	}
 

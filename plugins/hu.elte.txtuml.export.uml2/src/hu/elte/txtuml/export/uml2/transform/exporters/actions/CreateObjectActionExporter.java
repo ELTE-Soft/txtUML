@@ -26,7 +26,7 @@ public class CreateObjectActionExporter {
 		Expr type = it.next();
 		it.remove();
 		CreateObjectAction createAction = (CreateObjectAction) expressionExporter
-				.createExecutableNode("create " + type.getName(),
+				.createExecutableNode("instantiate " + type.getName(),
 						UMLPackage.Literals.CREATE_OBJECT_ACTION);
 		Expr target = Expr.ofPin(
 				createAction.createResult("new " + type.getName(),
@@ -35,8 +35,13 @@ public class CreateObjectActionExporter {
 		Operation constructor = expressionExporter.getTypeExporter()
 				.exportMethodAsOperation((Classifier) type.getType(),
 						type.getName(), type.getType(), args);
+		
+		if (constructor == null) { // in case of default constructor
+			return target;
+		} else {
+			return expressionExporter.createCallOperationAction(constructor,
+					target, args);			
+		}
 
-		return expressionExporter.createCallOperationAction(constructor,
-				target, args);
 	}
 }

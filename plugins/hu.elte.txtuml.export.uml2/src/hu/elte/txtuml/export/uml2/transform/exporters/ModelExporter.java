@@ -166,10 +166,11 @@ public class ModelExporter {
 	 * 
 	 * @return The exported UML2 model.
 	 * @throws ExportException
+	 * @throws RuntimeExportException
 	 *
 	 * @author Adam Ancsin
 	 */
-	public Model exportModel() throws ExportException {
+	public Model exportModel() throws ExportException, RuntimeExportException {
 
 		// export model elements
 		exportClassifiers();
@@ -311,7 +312,8 @@ public class ModelExporter {
 				.createClassifierBehavior(ownerClass.getName(),
 						UMLPackage.Literals.STATE_MACHINE);
 		Region region = stateMachine.createRegion(ownerClass.getName());
-		regionExporter.exportRegion(classifierDeclaration, region);
+		regionExporter
+				.exportRegion(classifierDeclaration, stateMachine, region);
 	}
 
 	private void exportMethodBodiesOfEveryClassifier() {

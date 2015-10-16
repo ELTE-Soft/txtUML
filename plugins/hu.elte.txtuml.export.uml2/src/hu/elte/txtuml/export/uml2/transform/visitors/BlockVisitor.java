@@ -8,6 +8,7 @@ import hu.elte.txtuml.export.uml2.transform.exporters.controls.WhileActionExport
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Block;
+import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
@@ -48,6 +49,12 @@ public class BlockVisitor extends ASTVisitor {
 		return false;
 	}
 
+	@Override
+	public boolean visit(CatchClause node) {
+		// TODO catch clause
+		return false;
+	}
+	
 	@Override
 	public boolean visit(ConstructorInvocation node) {
 		// TODO ConstructorInvocation

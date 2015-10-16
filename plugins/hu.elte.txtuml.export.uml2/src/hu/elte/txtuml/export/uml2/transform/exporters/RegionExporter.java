@@ -5,6 +5,7 @@ import hu.elte.txtuml.export.uml2.transform.visitors.VertexVisitor;
 
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.uml2.uml.Region;
+import org.eclipse.uml2.uml.StateMachine;
 
 public class RegionExporter {
 
@@ -14,21 +15,24 @@ public class RegionExporter {
 		this.modelExporter = modelExporter;
 	}
 
-	public void exportRegion(TypeDeclaration ownerDeclaration, Region region) {
-		exportVertices(ownerDeclaration, region);
-		exportTransitions(ownerDeclaration, region);
+	public void exportRegion(TypeDeclaration ownerDeclaration,
+			StateMachine stateMachine, Region region) {
+		exportVertices(ownerDeclaration, stateMachine, region);
+		exportTransitions(ownerDeclaration, stateMachine, region);
 	}
 
-	private void exportVertices(TypeDeclaration ownerDeclaration, Region region) {
+	private void exportVertices(TypeDeclaration ownerDeclaration,
+			StateMachine stateMachine, Region region) {
 		VertexVisitor visitor = new VertexVisitor(new VertexExporter(
-				modelExporter, region), ownerDeclaration);
+				modelExporter, stateMachine, region), ownerDeclaration);
 		ownerDeclaration.accept(visitor);
 	}
 
 	private void exportTransitions(TypeDeclaration ownerDeclaration,
-			Region region) {
+			StateMachine stateMachine, Region region) {
 		TransitionVisitor visitor = new TransitionVisitor(
-				new TransitionExporter(modelExporter, region), ownerDeclaration);
+				new TransitionExporter(modelExporter, stateMachine, region),
+				ownerDeclaration);
 		ownerDeclaration.accept(visitor);
 	}
 

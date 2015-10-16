@@ -12,16 +12,19 @@ import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.PseudostateKind;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.State;
+import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
 public class VertexExporter {
 
 	private final ModelExporter modelExporter;
+	private final StateMachine stateMachine;
 	private final Region region;
 
-	public VertexExporter(ModelExporter modelExporter, Region region) {
+	public VertexExporter(ModelExporter modelExporter,StateMachine stateMachine, Region region) {
 		this.modelExporter = modelExporter;
+		this.stateMachine = stateMachine;
 		this.region = region;
 	}
 
@@ -61,7 +64,7 @@ public class VertexExporter {
 	 */
 	private void exportSubRegion(TypeDeclaration stateDeclaration, State state) {
 		Region subRegion = state.createRegion(state.getName());
-		modelExporter.getRegionExporter().exportRegion(stateDeclaration,
+		modelExporter.getRegionExporter().exportRegion(stateDeclaration, stateMachine,
 				subRegion);
 
 		subRegion.setState(state);

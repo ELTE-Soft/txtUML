@@ -17,6 +17,7 @@ import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.ParameterDirectionKind;
 import org.eclipse.uml2.uml.Region;
+import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.Transition;
 import org.eclipse.uml2.uml.Trigger;
 import org.eclipse.uml2.uml.UMLFactory;
@@ -26,10 +27,13 @@ import org.eclipse.uml2.uml.Vertex;
 public class TransitionExporter {
 
 	private final ModelExporter modelExporter;
+	private final StateMachine stateMachine;
 	private final Region region;
 
-	public TransitionExporter(ModelExporter modelExporter, Region region) {
+	public TransitionExporter(ModelExporter modelExporter,
+			StateMachine stateMachine, Region region) {
 		this.modelExporter = modelExporter;
+		this.stateMachine = stateMachine;
 		this.region = region;
 	}
 
@@ -147,8 +151,10 @@ public class TransitionExporter {
 				.findMethodDeclarationByName(transitionDeclaration, "guard");
 
 		if (guardDeclaration != null) {
-			Activity activity = UMLFactory.eINSTANCE.createActivity();
-			activity.setName(exportedTransition.getName() + "_guard");
+			// TODO decide guard container
+			Activity activity = (Activity) stateMachine.createOwnedBehavior(
+					exportedTransition.getName() + "_guard",
+					UMLPackage.Literals.ACTIVITY);
 
 			Parameter ret = UMLFactory.eINSTANCE.createParameter();
 			ret.setDirection(ParameterDirectionKind.RETURN_LITERAL);

@@ -14,6 +14,7 @@ import hu.elte.txtuml.export.uml2.transform.exporters.actions.LinkActionExporter
 import hu.elte.txtuml.export.uml2.transform.exporters.actions.SendActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.actions.StartActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.actions.UnlinkActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.TypeExpr;
 import hu.elte.txtuml.export.uml2.utils.ControlStructureEditor;
 import hu.elte.txtuml.utils.Pair;
 
@@ -36,6 +37,7 @@ import org.eclipse.uml2.uml.AddVariableValueAction;
 import org.eclipse.uml2.uml.CallOperationAction;
 import org.eclipse.uml2.uml.ExecutableNode;
 import org.eclipse.uml2.uml.InputPin;
+import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.Parameter;
@@ -90,7 +92,16 @@ public class ExpressionExporter extends ControlStructureEditor {
 
 	public Expr export(Expression expression) {
 		expression.accept(visitor);
-		return visitor.getResult();
+		Expr result = visitor.getResult();
+
+		if (result == null) {
+			if (!TypeExporter.isVoid(expression.resolveTypeBinding())) {
+				// TODO unexported expression
+				return createOpaqueAction(expression.toString(),
+						expression.resolveTypeBinding(), null, null);
+			}
+		}
+		return result;
 	}
 
 	public void exportReturnStatement(Expression expression) {
@@ -133,8 +144,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 		} else if (actionName.equals("link")) {
 			new LinkActionExporter(this).export(args);
 		} else if (actionName.equals("unlink")) {
-			new UnlinkActionExporter(this)
-					.export(args);
+			new UnlinkActionExporter(this).export(args);
 		} else if (actionName.equals("start")) {
 			new StartActionExporter(this).export(args);
 		} else if (actionName.equals("send")) {
@@ -347,6 +357,44 @@ public class ExpressionExporter extends ControlStructureEditor {
 		value.setType(type);
 		action.setValue(value);
 		return Expr.ofPin(action.createResult(name, type), name);
+	}
+
+	/**
+	 * For currently unexported features.
+	 * 
+	 * @param target
+	 */
+	Expr createOpaqueAction(String stringValue, ITypeBinding returnType,
+			Expr target, List<Expr> args) {
+		OpaqueAction action = (OpaqueAction) createExecutableNode("unkonwn < "
+				+ stringValue + " >", UMLPackage.Literals.OPAQUE_ACTION);
+
+		action.getLanguages().add("JtxtUML");
+		action.getBodies().add(stringValue);
+
+		if (target != null) {
+			action.createInputValue("target " + target.getName(),
+					target.getType());
+		}
+
+		if (args != null) {
+			args.forEach(arg -> {
+				InputPin input = action.createInputValue(arg.getName(),
+						arg.getType());
+
+				if (!(arg instanceof TypeExpr)) {
+					createObjectFlowBetweenActivityNodes(arg.evaluate()
+							.getObjectNode(), input);
+				}
+			});
+		}
+
+		if (returnType == null || TypeExporter.isVoid(returnType)) {
+			return null;
+		}
+		return Expr.ofPin(
+				action.createOutputValue(stringValue,
+						typeExporter.exportType(returnType)), stringValue);
 	}
 
 	public ParameterMap getParams() {

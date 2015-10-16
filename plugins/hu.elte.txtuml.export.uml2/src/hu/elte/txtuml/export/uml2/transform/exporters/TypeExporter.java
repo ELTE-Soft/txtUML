@@ -92,6 +92,7 @@ public class TypeExporter {
 		if (ret == null) {
 			ret = exportNonPrimitiveType(sourceType);
 		}
+
 		return ret;
 	}
 
@@ -140,6 +141,10 @@ public class TypeExporter {
 
 		Classifier exportedOwner = (Classifier) exportNonPrimitiveType(field
 				.getDeclaringClass());
+		
+		if (exportedOwner == null) { // TODO unknown type of field owner
+			return null;
+		}
 
 		return exportedOwner.getAttribute(field.getName(),
 				exportType(field.getType()));
@@ -153,16 +158,21 @@ public class TypeExporter {
 
 		ITypeBinding returnType = method.getReturnType();
 		Type exportedReturnType = null;
-		
+
 		if (!isVoid(returnType)) {
 			exportedReturnType = exportType(returnType);
 		}
-		return exportMethodAsOperation(exportedOwner, method.getName(), exportedReturnType, args);
+		return exportMethodAsOperation(exportedOwner, method.getName(),
+				exportedReturnType, args);
 	}
 
 	public Operation exportMethodAsOperation(Classifier exportedOwner,
 			String name, Type returnType, List<Expr> args) {
 
+		if (exportedOwner == null) { // TODO unknown type of method owner
+			return null;
+		}
+		
 		EList<Type> typeList = new BasicEList<>();
 
 		args.forEach(arg -> {

@@ -28,6 +28,7 @@ public class GarageModel extends Model {
 
 	class Door extends ModelClass {
 		Timer.Handle doorTimer;
+
 		class InitDoor extends Initial {}
 		class Enabled extends State {
 			@Override public void entry() {
@@ -37,7 +38,7 @@ public class GarageModel extends Model {
 		}
 		class Disabled extends State {		
 			@Override public void entry() {
-				Glue.getInstance().controlled.stopDoor();
+				Glue.getInstance().stopDoor();
 			}
 		}
 		@From(InitDoor.class) @To(Enabled.class)
@@ -72,22 +73,22 @@ public class GarageModel extends Model {
 		}
 		class MovingUp extends State {
 			@Override public void entry() {
-				Glue.getInstance().controlled.startDoorUp();
+				Glue.getInstance().startDoorUp();
 			}
 		}
 		class MovingDown extends State {
 			@Override public void entry() {
-				Glue.getInstance().controlled.startDoorDown();
+				Glue.getInstance().startDoorDown();
 			}
 		}
 		class HeadingUp extends State {
 			@Override public void entry() {
-				Glue.getInstance().controlled.stopDoor();
+				Glue.getInstance().stopDoor();
 			}
 		}
 		class HeadingDown extends State {
 			@Override public void entry() {
-				Glue.getInstance().controlled.stopDoor();
+				Glue.getInstance().stopDoor();
 			}
 		}
 		@From(MovingUp.class) @To(HeadingDown.class) @Trigger(ChangeMotorMode.class)
@@ -128,37 +129,37 @@ public class GarageModel extends Model {
 
 		class Off extends State {
 			@Override public void entry() {
-				Glue.getInstance().controlled.stopSiren();
-				Glue.getInstance().controlled.alarmOff();
+				Glue.getInstance().stopSiren();
+				Glue.getInstance().alarmOff();
 			}
 		}
 		class On extends State {
 			@Override public void entry() {
-				Glue.getInstance().controlled.alarmOn();
+				Glue.getInstance().alarmOn();
 			}
 		}
 		class ExpectingCode extends State {
 			@Override public void entry() {
-				Glue.getInstance().controlled.codeExpected();
+				Glue.getInstance().codeExpected();
 				Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectAny();
 				Action.send(kb, new WaitForCode());
 			}
 		}
 		class InAlarm extends State {
 			@Override public void entry() {
-				Glue.getInstance().controlled.startSiren();
+				Glue.getInstance().startSiren();
 			}
 		}
 		class ExpectingOldCode extends State {
 			@Override public void entry() {
-				Glue.getInstance().controlled.oldCodeExpected();
+				Glue.getInstance().oldCodeExpected();
 				Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectAny();
 				Action.send(kb, new WaitForCode());
 			}
 		}
 		class ExpectingNewCode extends State {
 			@Override public void entry() {
-				Glue.getInstance().controlled.newCodeExpected();
+				Glue.getInstance().newCodeExpected();
 				Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectAny();
 				Action.send(kb, new WaitForCode());
 			}

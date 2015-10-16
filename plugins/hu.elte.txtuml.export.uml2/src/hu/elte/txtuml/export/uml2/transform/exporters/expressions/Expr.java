@@ -75,11 +75,9 @@ public interface Expr {
 	}
 
 	public interface StructuralFeatureExpr extends AssignableExpr {
-
 	}
 
 	interface TypeExpr extends Expr {
-
 	}
 
 	static Expr ofPin(OutputPin pin, String byName) {
@@ -307,7 +305,7 @@ public interface Expr {
 			public OutputPin getOutputPin() {
 				throw new UnsupportedOperationException();
 			}
-			
+
 		};
 	}
 

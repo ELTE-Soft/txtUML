@@ -6,7 +6,7 @@ import hu.elte.txtuml.examples.garage.interfaces.IControl;
 import hu.elte.txtuml.examples.garage.interfaces.IControlled;
 
 // This class is the glue code between the UI and the control model
-public class Glue implements ExternalClass, IControl {
+public class Glue implements ExternalClass, IControl, IControlled {
 	// Model instantiation
 	GarageModel gmodel = new GarageModel();
 	GarageModel.Door door = gmodel.new Door();
@@ -15,19 +15,23 @@ public class Glue implements ExternalClass, IControl {
 	GarageModel.Keyboard keyboard = gmodel.new Keyboard();
 
 	// Linkage to the UI
-	public IControlled controlled;
+	IControlled controlled;
+
 	public void setControlled(IControlled ctd) {
 		controlled = ctd;
 	}
-	
+
 	// Singleton pattern
 	static Glue instance = null;
-	
+
 	private Glue() {
 		// Initialize links and start object instances
-		Action.link(GarageModel.MotorMovesDoor.movedDoor.class, door, GarageModel.MotorMovesDoor.movingMotor.class, motor);
-		Action.link(GarageModel.DoorSwitchesOnAlarm.SwitchingDoor.class, door, GarageModel.DoorSwitchesOnAlarm.SwitchedAlarm.class, alarm);
-		Action.link(GarageModel.KeyboardProvidesCode.Provider.class, keyboard, GarageModel.KeyboardProvidesCode.Receiver.class, alarm);
+		Action.link(GarageModel.MotorMovesDoor.movedDoor.class, door,
+				GarageModel.MotorMovesDoor.movingMotor.class, motor);
+		Action.link(GarageModel.DoorSwitchesOnAlarm.SwitchingDoor.class, door,
+				GarageModel.DoorSwitchesOnAlarm.SwitchedAlarm.class, alarm);
+		Action.link(GarageModel.KeyboardProvidesCode.Provider.class, keyboard,
+				GarageModel.KeyboardProvidesCode.Receiver.class, alarm);
 		Action.start(door);
 		Action.start(motor);
 		Action.start(alarm);
@@ -35,26 +39,76 @@ public class Glue implements ExternalClass, IControl {
 	}
 
 	public static synchronized Glue getInstance() {
-		if(instance == null) {
+		if (instance == null) {
 			instance = new Glue();
 		}
 		return instance;
 	}
-	
+
 	public void progress(int percent) {
 		controlled.progress(percent);
 	}
-	
-	// IControl implementation
-	@Override public void remoteControlButtonPressed() {
-		Action.send(door,gmodel.new RemoteControlButtonPressed());
+
+	public void stopDoor() {
+		controlled.stopDoor();
 	}
 
-	@Override public void motionSensorActivated() {
+	public void startDoorUp() {
+		controlled.startDoorUp();
+	}
+
+	public void startDoorDown() {
+		controlled.startDoorDown();
+	}
+
+	@Override
+	public void startSiren() {
+		controlled.startSiren();
+	}
+
+	@Override
+	public void stopSiren() {
+		controlled.stopSiren();
+	}
+
+	@Override
+	public void codeExpected() {
+		controlled.codeExpected();
+	}
+
+	@Override
+	public void oldCodeExpected() {
+		controlled.oldCodeExpected();
+	}
+
+	@Override
+	public void newCodeExpected() {
+		controlled.newCodeExpected();
+	}
+
+	@Override
+	public void alarmOff() {
+		controlled.alarmOff();
+	}
+
+	@Override
+	public void alarmOn() {
+		controlled.alarmOn();
+	}
+
+	// IControl implementation
+	@Override
+	public void remoteControlButtonPressed() {
+		Action.send(door, gmodel.new RemoteControlButtonPressed());
+	}
+
+	@Override
+	public void motionSensorActivated() {
 		Action.send(door, gmodel.new MotionSensorActivated());
 	}
 
-	@Override public void alarmSensorActivated() {
+	@Override
+	public void alarmSensorActivated() {
 		Action.send(alarm, gmodel.new AlarmSensorActivated());
 	}
 
@@ -82,5 +136,5 @@ public class Glue implements ExternalClass, IControl {
 	public void hashPressed() {
 		Action.send(alarm, gmodel.new HashPressed());
 	}
+
 }
-	
