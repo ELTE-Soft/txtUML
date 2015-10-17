@@ -119,7 +119,10 @@ public class TxtUMLProjectWizard extends Wizard implements INewWizard {
 							Constants.BUNDLE_SYMBOLICNAME, project.getName());
 	
 					StringBuilder requireBundles = new StringBuilder();
-					requireBundles.append("hu.elte.txtuml.api.model,\n");
+					requireBundles.append("org.eclipse.uml2.uml,\n");
+					requireBundles.append(" org.eclipse.uml2.uml.resources,\n");
+					requireBundles.append(" org.eclipse.xtext.xbase.lib,\n");
+					requireBundles.append(" hu.elte.txtuml.api.model,\n");
 					requireBundles.append(" hu.elte.txtuml.api.layout,\n");
 					requireBundles.append(" hu.elte.txtuml.api.stdlib,\n");
 					requireBundles.append(" hu.elte.txtuml.api.diagnostics,\n");
@@ -128,8 +131,9 @@ public class TxtUMLProjectWizard extends Wizard implements INewWizard {
 					requireBundles.append(" hu.elte.txtuml.layout.export,\n");
 					requireBundles.append(" hu.elte.txtuml.layout.visualizer,\n");
 					requireBundles.append(" hu.elte.txtuml.utils,\n");
-					requireBundles.append(" org.eclipse.uml2.uml,\n");
-					requireBundles.append(" org.eclipse.uml2.uml.resources");
+					requireBundles.append(" hu.elte.txtuml.xtxtuml.lib,\n");
+					requireBundles.append(" hu.elte.txtuml.xtxtuml,\n");
+					requireBundles.append(" hu.elte.txtuml.xtxtuml.ui");
 					settings.manifest.getMainAttributes().putValue(
 							Constants.REQUIRE_BUNDLE, requireBundles.toString());
 
