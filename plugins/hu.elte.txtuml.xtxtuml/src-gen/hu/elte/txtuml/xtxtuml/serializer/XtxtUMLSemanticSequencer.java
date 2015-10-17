@@ -259,7 +259,7 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 			}
 		else if(semanticObject.eClass().getEPackage() == XtxtUMLPackage.eINSTANCE) switch(semanticObject.eClass().getClassifierID()) {
 			case XtxtUMLPackage.RALF_ASSOC_NAV_EXPRESSION:
-				sequence_RAlfAssocNavExpression(context, (RAlfAssocNavExpression) semanticObject); 
+				sequence_XMemberFeatureCall(context, (RAlfAssocNavExpression) semanticObject); 
 				return; 
 			case XtxtUMLPackage.RALF_DELETE_OBJECT_EXPRESSION:
 				sequence_RAlfDeleteObjectExpression(context, (RAlfDeleteObjectExpression) semanticObject); 
@@ -366,25 +366,6 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 	 */
 	protected void sequence_JvmSimpleTypeReference(EObject context, JvmParameterizedTypeReference semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
-	}
-	
-	
-	/**
-	 * Constraint:
-	 *     (left=RAlfAssocNavExpression_RAlfAssocNavExpression_1_0_0_0 right=[TUAssociationEnd|QualifiedName])
-	 */
-	protected void sequence_RAlfAssocNavExpression(EObject context, RAlfAssocNavExpression semanticObject) {
-		if(errorAcceptor != null) {
-			if(transientValues.isValueTransient(semanticObject, XtxtUMLPackage.Literals.RALF_ASSOC_NAV_EXPRESSION__LEFT) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, XtxtUMLPackage.Literals.RALF_ASSOC_NAV_EXPRESSION__LEFT));
-			if(transientValues.isValueTransient(semanticObject, XtxtUMLPackage.Literals.RALF_ASSOC_NAV_EXPRESSION__RIGHT) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, XtxtUMLPackage.Literals.RALF_ASSOC_NAV_EXPRESSION__RIGHT));
-		}
-		INodesForEObjectProvider nodes = createNodeProvider(semanticObject);
-		SequenceFeeder feeder = createSequencerFeeder(semanticObject, nodes);
-		feeder.accept(grammarAccess.getRAlfAssocNavExpressionAccess().getRAlfAssocNavExpressionLeftAction_1_0_0_0(), semanticObject.getLeft());
-		feeder.accept(grammarAccess.getRAlfAssocNavExpressionAccess().getRightTUAssociationEndQualifiedNameParserRuleCall_1_1_0_1(), semanticObject.getRight());
-		feeder.finish();
 	}
 	
 	
@@ -796,6 +777,25 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 	 */
 	protected void sequence_XImportDeclaration(EObject context, XImportDeclaration semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Constraint:
+	 *     (left=XMemberFeatureCall_RAlfAssocNavExpression_1_2_0_0_0 right=[TUAssociationEnd|TUAssocEndName])
+	 */
+	protected void sequence_XMemberFeatureCall(EObject context, RAlfAssocNavExpression semanticObject) {
+		if(errorAcceptor != null) {
+			if(transientValues.isValueTransient(semanticObject, XtxtUMLPackage.Literals.RALF_ASSOC_NAV_EXPRESSION__LEFT) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, XtxtUMLPackage.Literals.RALF_ASSOC_NAV_EXPRESSION__LEFT));
+			if(transientValues.isValueTransient(semanticObject, XtxtUMLPackage.Literals.RALF_ASSOC_NAV_EXPRESSION__RIGHT) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, XtxtUMLPackage.Literals.RALF_ASSOC_NAV_EXPRESSION__RIGHT));
+		}
+		INodesForEObjectProvider nodes = createNodeProvider(semanticObject);
+		SequenceFeeder feeder = createSequencerFeeder(semanticObject, nodes);
+		feeder.accept(grammarAccess.getXMemberFeatureCallAccess().getRAlfAssocNavExpressionLeftAction_1_2_0_0_0(), semanticObject.getLeft());
+		feeder.accept(grammarAccess.getXMemberFeatureCallAccess().getRightTUAssociationEndTUAssocEndNameParserRuleCall_1_2_1_0_1(), semanticObject.getRight());
+		feeder.finish();
 	}
 	
 	

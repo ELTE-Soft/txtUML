@@ -23,43 +23,32 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		val childState = state.withoutRootExpectation;
 
 		// left child
-		val leftChild = navExpr.left;
-		if (leftChild instanceof RAlfAssocNavExpression) {
-			leftChild.computeTypes(childState);
-		} else {
-			super.computeTypes(leftChild, childState);
-		}
+		childState.computeTypes(navExpr.left);
 		
+		// right child
 		val rightChild = navExpr.right;
-		
 		// if the reference couldn't be resolved
 		if (rightChild.name == null) {
 			return;
 		}
 
-		val assocEndType = navExpr.right.endClass.getPrimaryJvmElement as JvmType;
+		val assocEndType = rightChild.endClass.getPrimaryJvmElement as JvmType;
 		val rightTypeRef = state.referenceOwner.toLightweightTypeReference(assocEndType);
-		
-		val actualType = if (navExpr.eContainer instanceof RAlfAssocNavExpression) {
-			rightTypeRef; // assocendtype
-		} else { 
-			val collectionOfRightTypesRef = hu.elte.txtuml.api.model.Collection
-				.getTypeForName(state).rawTypeReference;
-			(collectionOfRightTypesRef as ParameterizedTypeReference).addTypeArgument(rightTypeRef);
-			collectionOfRightTypesRef; // collection<assocendtype>
-		}
-		
-		state.acceptActualType(actualType);
+		val collectionOfRightTypesRef = hu.elte.txtuml.api.model.Collection
+			.getTypeForName(state).rawTypeReference;
+			
+		(collectionOfRightTypesRef as ParameterizedTypeReference).addTypeArgument(rightTypeRef);
+		state.acceptActualType(collectionOfRightTypesRef);
 	}
 
 	def dispatch computeTypes(RAlfDeleteObjectExpression deleteExpr, ITypeComputationState state) {
-		super.computeTypes(deleteExpr.object, state);
+		state.computeTypes(deleteExpr.object);
 		state.acceptActualType(state.getPrimitiveVoid);
 	}
 
 	def dispatch computeTypes(RAlfSendSignalExpression sendExpr, ITypeComputationState state) {
-		super.computeTypes(sendExpr.signal, state);
-		super.computeTypes(sendExpr.target, state);
+		state.computeTypes(sendExpr.signal);
+		state.computeTypes(sendExpr.target);
 		state.acceptActualType(state.getPrimitiveVoid);
 	}
 

@@ -1,11 +1,13 @@
 package hu.elte.txtuml.xtxtuml;
 
 import hu.elte.txtuml.xtxtuml.compiler.XtxtUMLCompiler;
+import hu.elte.txtuml.xtxtuml.naming.XtxtUMLQualifiedNameConverter;
 import hu.elte.txtuml.xtxtuml.scoping.XtxtUMLImplicitlyImportedFeatures;
 import hu.elte.txtuml.xtxtuml.scoping.XtxtUMLXImportSectionNamespaceScopeProvider;
 import hu.elte.txtuml.xtxtuml.typesystem.XtxtUMLEarlyExitComputer;
 import hu.elte.txtuml.xtxtuml.typesystem.XtxtUMLTypeComputer;
 
+import org.eclipse.xtext.naming.IQualifiedNameConverter;
 import org.eclipse.xtext.scoping.IScopeProvider;
 import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider;
 import org.eclipse.xtext.xbase.compiler.XbaseCompiler;
@@ -41,6 +43,10 @@ public class XtxtUMLRuntimeModule extends AbstractXtxtUMLRuntimeModule {
     
     public Class<? extends ExtendedEarlyExitComputer> bindExtendedEarlyExitComputer() {
         return XtxtUMLEarlyExitComputer.class;
+    }
+    
+    public Class<? extends IQualifiedNameConverter> bindIQualifiedNameConverter() {
+        return XtxtUMLQualifiedNameConverter.class;
     }
     
 }

@@ -1,13 +1,13 @@
 package hu.elte.txtuml.xtxtuml.compiler
 
-import org.eclipse.xtext.xbase.compiler.XbaseCompiler;
-import org.eclipse.xtext.xbase.XExpression
-import org.eclipse.xtext.xbase.compiler.output.ITreeAppendable
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfAssocNavExpression
 import com.google.inject.Inject
+import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfAssocNavExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
 import org.eclipse.xtext.common.types.JvmType
+import org.eclipse.xtext.xbase.XExpression
+import org.eclipse.xtext.xbase.compiler.XbaseCompiler
+import org.eclipse.xtext.xbase.compiler.output.ITreeAppendable
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
 
 class XtxtUMLCompiler extends XbaseCompiler {
@@ -26,62 +26,41 @@ class XtxtUMLCompiler extends XbaseCompiler {
 		}
 	}
 	
-	def dispatch toJavaStatement(RAlfAssocNavExpression navExpr, ITreeAppendable builder) {
-		navExpr.internalToJavaExpression(builder);
+	def dispatch toJavaStatement(RAlfAssocNavExpression navExpr, ITreeAppendable it) {
+		// intentionally left empty
 	}
 	
-	def dispatch toJavaStatement(RAlfDeleteObjectExpression deleteExpr, ITreeAppendable builder) {
-		builder.newLine;
-		builder.append(hu.elte.txtuml.api.model.Action);
-		builder.append(".delete(")
-		deleteExpr.object.internalToJavaExpression(builder);
-		builder.append(");");
+	def dispatch toJavaStatement(RAlfDeleteObjectExpression deleteExpr, ITreeAppendable it) {	
+		newLine;
+		append(hu.elte.txtuml.api.model.Action);
+		append(".delete(")
+		deleteExpr.object.internalToJavaExpression(it);
+		append(");");
 	}
 	
-	def dispatch toJavaStatement(RAlfSendSignalExpression sendExpr, ITreeAppendable builder) {
-		builder.newLine;
-		builder.append(hu.elte.txtuml.api.model.Action)
-		builder.append(".send(");
-		sendExpr.target.internalToJavaExpression(builder);
-		builder.append(", ");
-		sendExpr.signal.internalToJavaExpression(builder);
-		builder.append(");");
+	def dispatch toJavaStatement(RAlfSendSignalExpression sendExpr, ITreeAppendable it) {
+		newLine;
+		append(hu.elte.txtuml.api.model.Action)
+		append(".send(");
+		sendExpr.target.internalToJavaExpression(it);
+		append(", ");
+		sendExpr.signal.internalToJavaExpression(it);
+		append(");");
 	}
 	
-	override protected internalToConvertedExpression(XExpression obj, ITreeAppendable builder) {
+	override protected internalToConvertedExpression(XExpression obj, ITreeAppendable it) {
 		if (obj instanceof RAlfAssocNavExpression) {
-			obj.toJavaExpression(builder);
+			obj.toJavaExpression(it);
 		} else {
-			super.internalToConvertedExpression(obj, builder);
+			super.internalToConvertedExpression(obj, it);
 		}
 	}
 	
-	def toJavaExpression(RAlfAssocNavExpression navExpr, ITreeAppendable builder) {
-		if (builder.hasName(navExpr)) {
-			builder.append(builder.getName(navExpr));
-			return;
-		}
+	def toJavaExpression(RAlfAssocNavExpression navExpr, ITreeAppendable it) {
+		navExpr.left.internalToConvertedExpression(it);
+		append(".assoc(");
+		append(navExpr.right.getPrimaryJvmElement as JvmType);
+		append(".class)");
+	}
 		
-		declareFreshLocalVariable(navExpr, builder, [
-			var expr = navExpr; // parameter is final
-
-			while (expr.left instanceof RAlfAssocNavExpression) {
-				expr = expr.left as RAlfAssocNavExpression;
-			}
-			
-			expr.left.internalToJavaExpression(builder);
-			
-			while (expr != navExpr) {
-				builder.append(".assoc(");
-				builder.append(expr.right.getPrimaryJvmElement as JvmType)
-				builder.append(".class).selectAny()");
-				expr = expr.eContainer as RAlfAssocNavExpression;
-			}
-			
-			builder.append(".assoc(");
-			builder.append(expr.right.getPrimaryJvmElement as JvmType)
-			builder.append(".class)");
-		])
-	}
-	
 }

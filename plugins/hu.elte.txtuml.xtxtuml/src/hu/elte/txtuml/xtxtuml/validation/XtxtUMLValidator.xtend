@@ -1,16 +1,27 @@
 package hu.elte.txtuml.xtxtuml.validation
 
 import com.google.inject.Inject
+import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfAssocNavExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUFileElement
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModel
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelElement
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
 import hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage
 import java.util.HashSet
+import org.eclipse.xtext.common.types.JvmFormalParameter
 import org.eclipse.xtext.common.types.JvmOperation
+import org.eclipse.xtext.common.types.JvmTypeReference
+import org.eclipse.xtext.common.types.TypesPackage
 import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.validation.Check
 import org.eclipse.xtext.xbase.XAbstractFeatureCall
@@ -20,13 +31,6 @@ import org.eclipse.xtext.xbase.XFeatureCall
 import org.eclipse.xtext.xbase.XMemberFeatureCall
 import org.eclipse.xtext.xbase.XbasePackage
 import org.eclipse.xtext.xbase.typesystem.util.ExtendedEarlyExitComputer
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUFileElement
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
 
 class XtxtUMLValidator extends AbstractXtxtUMLValidator {
 	
@@ -197,45 +201,40 @@ class XtxtUMLValidator extends AbstractXtxtUMLValidator {
 		}
 	}
 	
-	// @Check
-	/*
-	 * Currently unused.
-	 */
-	def checkTUAttributeType(TUAttributeOrOperationDeclarationPrefix prefix) {
-		val fullTypeName = prefix.type.type.qualifiedName;
-		var container = prefix.eContainer;
-		var containerName = "this context";
-		var isTUAttribute = false;
+	@Check
+	def checkTypeReference(JvmTypeReference typeRef) {
+		var isPartOfSignalAttribute = false;
 		
-		switch (container) {
-			TUAttribute : {
-				isTUAttribute = true;
-				val attr = (container as TUAttribute);
-				container = attr;
-				if (attr.name != null) {
-					containerName = "attribute " + attr.name;
+		val isValid =
+			switch (container : typeRef.eContainer) {
+				TUSignalAttribute : {
+					isPartOfSignalAttribute = true;
+					typeRef.isAllowedBasictype(false)
 				}
+				
+				TUAttributeOrOperationDeclarationPrefix : {
+					typeRef.isAllowedBasictype(container.eContainer instanceof TUOperation) ||
+					typeRef.isConformantWith(hu.elte.txtuml.api.model.ModelClass)
+				}
+				
+				JvmFormalParameter : {
+					typeRef.isAllowedBasictype(false) ||
+					typeRef.isConformantWith(hu.elte.txtuml.api.model.ModelClass)
+				}
+				
+				// TODO check types inside XBlockExpression
+				default : true
 			}
 			
-			TUOperation : {
-				val op = (container as TUOperation);
-				container = op;
-				if (op.name != null) {
-					containerName = "operation " + op.name;
-				}
-			}
-		}
-		
-		if (!allowedTypes.contains(fullTypeName)) {
+		if (!isValid) {
 			error(
-				fullTypeName + " is not an allowed type for " + containerName,
-				XtxtUMLPackage::eINSTANCE.TUAttributeOrOperationDeclarationPrefix_Type
-			);
-		} else if (isTUAttribute && fullTypeName == "void") {
-			error(
-				"void is not an allowed type for " + containerName,
-				XtxtUMLPackage::eINSTANCE.TUAttributeOrOperationDeclarationPrefix_Type
-			);
+				if (isPartOfSignalAttribute) {
+					"Invalid type. Only boolean, double, int and String are allowed."
+				} else {
+					"Invalid type. Only boolean, double, int, String and model class types are allowed."
+				},
+				TypesPackage::eINSTANCE.jvmParameterizedTypeReference_Type
+			)
 		}
 	}
 	
@@ -282,14 +281,14 @@ class XtxtUMLValidator extends AbstractXtxtUMLValidator {
 	
 	@Check
 	def checkSendSignalExpressionTypes(RAlfSendSignalExpression sendExpr) {
-		if (!sendExpr.signal.isConformantWith(hu.elte.txtuml.api.model.Signal)) {
+		if (!sendExpr.signal.isConformantWith(hu.elte.txtuml.api.model.Signal, false)) {
 			error(
 				typeMismatch("Signal"),
 				XtxtUMLPackage::eINSTANCE.RAlfSendSignalExpression_Signal
 			);
 		}
 		
-		if (!sendExpr.target.isConformantWith(hu.elte.txtuml.api.model.ModelClass)) {
+		if (!sendExpr.target.isConformantWith(hu.elte.txtuml.api.model.ModelClass, false)) {
 			error(
 				typeMismatch("Class"),
 				XtxtUMLPackage::eINSTANCE.RAlfSendSignalExpression_Target
@@ -299,7 +298,7 @@ class XtxtUMLValidator extends AbstractXtxtUMLValidator {
 	
 	@Check
 	def checkDeleteObjectExpressionTypes(RAlfDeleteObjectExpression deleteExpr) {
-		if (!deleteExpr.object.isConformantWith(hu.elte.txtuml.api.model.ModelClass)) {
+		if (!deleteExpr.object.isConformantWith(hu.elte.txtuml.api.model.ModelClass, false)) {
 			error(
 				typeMismatch("Class"),
 				XtxtUMLPackage::eINSTANCE.RAlfDeleteObjectExpression_Object
@@ -307,12 +306,39 @@ class XtxtUMLValidator extends AbstractXtxtUMLValidator {
 		}
 	}
 	
+	@Check
+	def checkAssocNavExpressionTypes(RAlfAssocNavExpression navExpr) {
+		// TODO modify when empty collections are available in the api
+		if (!navExpr.left.isConformantWith(hu.elte.txtuml.api.model.ModelClass, false)) {
+			error(
+				typeMismatch("Class"),
+				XtxtUMLPackage::eINSTANCE.RAlfAssocNavExpression_Left
+			)
+		}
+	}
+	
+	// Overriden Xbase validation methods
+	
+	override isValueExpectedRecursive(XExpression expr) {
+		val container = expr.eContainer;
+		switch (container) {
+			RAlfSendSignalExpression,
+			RAlfDeleteObjectExpression : true
+			
+			XBlockExpression : false
+			default : super.isValueExpectedRecursive(expr)
+		}
+	}
+	
 	// Helpers
-
-	static val allowedTypes = #[
-		"int", "boolean", "void", "java.lang.Integer", "java.lang.Boolean",
-		"java.lang.String"
-	];
+	
+	def private isAllowedBasictype(JvmTypeReference typeRef, boolean isVoidAllowed) {
+		typeRef.isType(Integer.TYPE) ||
+		typeRef.isType(Boolean.TYPE) ||
+		typeRef.isType(Double.TYPE) ||
+		typeRef.isType(String) ||
+		typeRef.isType(Void.TYPE) && isVoidAllowed
+	}
 	
 	def private parameterTypeList(TUOperation op) {
 		op.parameters.map[parameterType.type.fullyQualifiedName]
@@ -335,25 +361,25 @@ class XtxtUMLValidator extends AbstractXtxtUMLValidator {
 		}
 	}
 	
-	def private isConformantWith(XExpression expr, Class<?> expectedType) {
-		expr.actualType.isSubtypeOf(expectedType)
+	def private isType(JvmTypeReference typeRef, Class<?> expectedType) {
+		typeRef.toLightweightTypeReference.isType(expectedType);
+	}
+	
+	def private isConformantWith(JvmTypeReference typeRef, Class<?> expectedType) {
+		typeRef.toLightweightTypeReference.isSubtypeOf(expectedType);
+	}
+	
+	def private isConformantWith(XExpression expr, Class<?> expectedType, boolean isNullAllowed) {
+		expr.actualType.isSubtypeOf(expectedType) &&
+		(isNullAllowed || !isNullLiteral(expr))
+	}
+	
+	def private isNullLiteral(XExpression expr) {
+		expr.actualType.canonicalName == "null";
 	}
 	
 	def private typeMismatch(String expectedType) {
 		"Type mismatch: cannot convert the expression to " + expectedType
-	}
-	
-	// Overriden Xbase validation methods
-	
-	override isValueExpectedRecursive(XExpression expr) {
-		val container = expr.eContainer;
-		switch (container) {
-			RAlfSendSignalExpression,
-			RAlfDeleteObjectExpression : true
-			
-			XBlockExpression : false
-			default : super.isValueExpectedRecursive(expr)
-		}
 	}
 
 }

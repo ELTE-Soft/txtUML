@@ -128,10 +128,6 @@ public class XtxtUMLParser extends AbstractContentAssistParser {
 					put(grammarAccess.getTUMultiplicityAccess().getGroup_0_1(), "rule__TUMultiplicity__Group_0_1__0");
 					put(grammarAccess.getRAlfSendSignalExpressionAccess().getGroup(), "rule__RAlfSendSignalExpression__Group__0");
 					put(grammarAccess.getRAlfDeleteObjectExpressionAccess().getGroup(), "rule__RAlfDeleteObjectExpression__Group__0");
-					put(grammarAccess.getRAlfAssocNavExpressionAccess().getGroup(), "rule__RAlfAssocNavExpression__Group__0");
-					put(grammarAccess.getRAlfAssocNavExpressionAccess().getGroup_1(), "rule__RAlfAssocNavExpression__Group_1__0");
-					put(grammarAccess.getRAlfAssocNavExpressionAccess().getGroup_1_0(), "rule__RAlfAssocNavExpression__Group_1_0__0");
-					put(grammarAccess.getRAlfAssocNavExpressionAccess().getGroup_1_0_0(), "rule__RAlfAssocNavExpression__Group_1_0_0__0");
 					put(grammarAccess.getXParenthesizedRAlfExpressionAccess().getGroup(), "rule__XParenthesizedRAlfExpression__Group__0");
 					put(grammarAccess.getXConstructorCallAccess().getGroup(), "rule__XConstructorCall__Group__0");
 					put(grammarAccess.getXConstructorCallAccess().getGroup_3(), "rule__XConstructorCall__Group_3__0");
@@ -171,6 +167,11 @@ public class XtxtUMLParser extends AbstractContentAssistParser {
 					put(grammarAccess.getXMemberFeatureCallAccess().getGroup_1_1_2(), "rule__XMemberFeatureCall__Group_1_1_2__0");
 					put(grammarAccess.getXMemberFeatureCallAccess().getGroup_1_1_2_1_1(), "rule__XMemberFeatureCall__Group_1_1_2_1_1__0");
 					put(grammarAccess.getXMemberFeatureCallAccess().getGroup_1_1_2_1_1_1(), "rule__XMemberFeatureCall__Group_1_1_2_1_1_1__0");
+					put(grammarAccess.getXMemberFeatureCallAccess().getGroup_1_2(), "rule__XMemberFeatureCall__Group_1_2__0");
+					put(grammarAccess.getXMemberFeatureCallAccess().getGroup_1_2_0(), "rule__XMemberFeatureCall__Group_1_2_0__0");
+					put(grammarAccess.getXMemberFeatureCallAccess().getGroup_1_2_0_0(), "rule__XMemberFeatureCall__Group_1_2_0_0__0");
+					put(grammarAccess.getTUAssocEndNameAccess().getGroup(), "rule__TUAssocEndName__Group__0");
+					put(grammarAccess.getTUAssocEndNameAccess().getGroup_1(), "rule__TUAssocEndName__Group_1__0");
 					put(grammarAccess.getJvmSimpleTypeReferenceAccess().getGroup(), "rule__JvmSimpleTypeReference__Group__0");
 					put(grammarAccess.getJvmParameterizedTypeReferenceAccess().getGroup(), "rule__JvmParameterizedTypeReference__Group__0");
 					put(grammarAccess.getJvmParameterizedTypeReferenceAccess().getGroup_0(), "rule__JvmParameterizedTypeReference__Group_0__0");
@@ -340,7 +341,6 @@ public class XtxtUMLParser extends AbstractContentAssistParser {
 					put(grammarAccess.getRAlfSendSignalExpressionAccess().getSignalAssignment_2(), "rule__RAlfSendSignalExpression__SignalAssignment_2");
 					put(grammarAccess.getRAlfSendSignalExpressionAccess().getTargetAssignment_4(), "rule__RAlfSendSignalExpression__TargetAssignment_4");
 					put(grammarAccess.getRAlfDeleteObjectExpressionAccess().getObjectAssignment_2(), "rule__RAlfDeleteObjectExpression__ObjectAssignment_2");
-					put(grammarAccess.getRAlfAssocNavExpressionAccess().getRightAssignment_1_1(), "rule__RAlfAssocNavExpression__RightAssignment_1_1");
 					put(grammarAccess.getXConstructorCallAccess().getConstructorAssignment_2(), "rule__XConstructorCall__ConstructorAssignment_2");
 					put(grammarAccess.getXConstructorCallAccess().getTypeArgumentsAssignment_3_1(), "rule__XConstructorCall__TypeArgumentsAssignment_3_1");
 					put(grammarAccess.getXConstructorCallAccess().getExplicitConstructorCallAssignment_4(), "rule__XConstructorCall__ExplicitConstructorCallAssignment_4");
@@ -388,6 +388,7 @@ public class XtxtUMLParser extends AbstractContentAssistParser {
 					put(grammarAccess.getXMemberFeatureCallAccess().getMemberCallArgumentsAssignment_1_1_2_1_0(), "rule__XMemberFeatureCall__MemberCallArgumentsAssignment_1_1_2_1_0");
 					put(grammarAccess.getXMemberFeatureCallAccess().getMemberCallArgumentsAssignment_1_1_2_1_1_0(), "rule__XMemberFeatureCall__MemberCallArgumentsAssignment_1_1_2_1_1_0");
 					put(grammarAccess.getXMemberFeatureCallAccess().getMemberCallArgumentsAssignment_1_1_2_1_1_1_1(), "rule__XMemberFeatureCall__MemberCallArgumentsAssignment_1_1_2_1_1_1_1");
+					put(grammarAccess.getXMemberFeatureCallAccess().getRightAssignment_1_2_1(), "rule__XMemberFeatureCall__RightAssignment_1_2_1");
 					put(grammarAccess.getJvmSimpleTypeReferenceAccess().getTypeAssignment_1(), "rule__JvmSimpleTypeReference__TypeAssignment_1");
 					put(grammarAccess.getJvmParameterizedTypeReferenceAccess().getTypeAssignment_0_0_0(), "rule__JvmParameterizedTypeReference__TypeAssignment_0_0_0");
 					put(grammarAccess.getJvmParameterizedTypeReferenceAccess().getArgumentsAssignment_1(), "rule__JvmParameterizedTypeReference__ArgumentsAssignment_1");

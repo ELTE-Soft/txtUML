@@ -162,10 +162,6 @@ RAlfDeleteObjectExpression returns xbase::XExpression :
 	'delete' object=XExpression
 ;
 
-RAlfAssocNavExpression returns xbase::XExpression : 
-	XPrimaryExpression (=>({RAlfAssocNavExpression.left=current} '->') right=[TUAssociationEnd|QualifiedName])* 
-;
-
 // Added rAlf-Xbase rules
 
 /*
@@ -448,7 +444,7 @@ XReturnExpression returns xbase::XExpression :
  * </ul>
  */
 XMemberFeatureCall returns xbase::XExpression :
-	RAlfAssocNavExpression
+	XPrimaryExpression
 	(
 		=>(
 			{xbase::XAssignment.assignable=current} ('.' | explicitStatic?="::")
@@ -457,7 +453,7 @@ XMemberFeatureCall returns xbase::XExpression :
 		value=XAssignment
 	| 
 		=>(
-			{xbase::XMemberFeatureCall.memberCallTarget=current} ("." | explicitStatic?="::" | '=>')
+			{xbase::XMemberFeatureCall.memberCallTarget=current} ("." | explicitStatic?="::")
 		) 
 		feature=[types::JvmIdentifiableElement|IdOrSuper] (
 			=>explicitOperationCall?='(' (
@@ -465,7 +461,13 @@ XMemberFeatureCall returns xbase::XExpression :
 				| memberCallArguments+=XExpression (',' memberCallArguments+=XExpression)*
 			)? ')'
 		)?
+	| 
+		=>({RAlfAssocNavExpression.left=current} '->') right=[TUAssociationEnd|TUAssocEndName]
 	)*
+;
+
+TUAssocEndName :
+	ValidID (=>'::' ValidID)*
 ;
 
 // New Xtype rules
