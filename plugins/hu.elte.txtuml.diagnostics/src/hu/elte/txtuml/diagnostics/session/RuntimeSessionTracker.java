@@ -7,25 +7,29 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IProcess;
 
 /**
- * Tracks the launched VM under running and shuts down diagnostics back-end in sync with it
+ * Tracks the launched VM run and shuts down DiagnosticsPlugin in sync with it
  * @author gerazo
  */
 public class RuntimeSessionTracker implements IDebugEventSetListener {
 
 	private ILaunch trackedLaunch;
 	private int liveProcessCount = 0;
-	private IBackend managedBackend;
+	private IDisposable managedPlugin;
 
-	public RuntimeSessionTracker(ILaunch trackedLaunch, IBackend managedBackend) {
+	public RuntimeSessionTracker(ILaunch trackedLaunch, IDisposable managedPlugin) {
 		this.trackedLaunch = trackedLaunch;
-		this.managedBackend = managedBackend;
-		DebugPlugin.getDefault().addDebugEventListener(this);
+		this.managedPlugin = managedPlugin;
+		if (trackedLaunch != null) { // use without a real launch for testing purposes
+			DebugPlugin.getDefault().addDebugEventListener(this);
+		}
 	}
 	
-	void dispose() {
-		DebugPlugin.getDefault().removeDebugEventListener(this);
-		managedBackend.shutdown();
-		managedBackend = null;
+	private void dispose() {
+		if (trackedLaunch != null) {
+			DebugPlugin.getDefault().removeDebugEventListener(this);
+		}
+		managedPlugin.dispose();
+		managedPlugin = null;
 		trackedLaunch = null;
 	}
 	

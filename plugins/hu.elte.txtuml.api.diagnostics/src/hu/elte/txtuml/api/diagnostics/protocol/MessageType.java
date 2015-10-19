@@ -1,15 +1,31 @@
 package hu.elte.txtuml.api.diagnostics.protocol;
 
 /**
- * Helps non-java serialization for clients lacking RTTI.
+ * Helps non-java serialization for compiled code lacking RTTI.
  * @author gerazo
  */
 public enum MessageType {
 	ACKNOWLEDGED,
 	CHECKIN,
 	CHECKOUT,
-	PROCESSING_SIGNAL,
-	USING_TRANSITION,
-	ENTERING_VERTEX,
-	LEAVING_VERTEX
+	INSTANCE_CREATION,
+	INSTANCE_DESTRUCTION,
+	PROCESSING_SIGNAL(true),
+	USING_TRANSITION(true),
+	ENTERING_VERTEX(true),
+	LEAVING_VERTEX(true);
+	
+	private final boolean ackNeeded;
+	
+	private MessageType() {
+		this.ackNeeded = false;
+	}
+
+	private MessageType(boolean ackNeeded) {
+		this.ackNeeded = ackNeeded;
+	}
+	
+	public boolean isAckNeeded() {
+		return ackNeeded;
+	}
 }

@@ -1,6 +1,6 @@
 package hu.elte.txtuml.api.model.backend;
 
-import hu.elte.txtuml.api.diagnostics.DiagnosticsClient;
+import hu.elte.txtuml.api.diagnostics.DiagnosticsService;
 import hu.elte.txtuml.api.diagnostics.protocol.MessageType;
 import hu.elte.txtuml.api.model.ModelExecutor;
 import hu.elte.txtuml.api.model.Region;
@@ -9,20 +9,20 @@ import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.report.ModelExecutionEventsListener;
 
-public final class DiagnosticsClientConnector implements ModelExecutionEventsListener {
+public final class DiagnosticsServiceConnector implements ModelExecutionEventsListener {
 
-	private static DiagnosticsClientConnector instance;
+	private static DiagnosticsServiceConnector instance;
 
-	private DiagnosticsClientConnector() {
-		if (DiagnosticsClient.getInstance().addTerminationListener(DiagnosticsClientConnector::shutdown)) {
-			ModelExecutor.addToShutdownQueue(DiagnosticsClient::shutdownInstance);
+	private DiagnosticsServiceConnector() {
+		if (DiagnosticsService.getInstance().addTerminationListener(DiagnosticsServiceConnector::shutdown)) {
+			ModelExecutor.addToShutdownQueue(DiagnosticsService::shutdownInstance);
 			ModelExecutor.Report.addModelExecutionEventsListener(this);		
 		}
 	}
 	
-	public static synchronized DiagnosticsClientConnector startAndGetInstance() {
+	public static synchronized DiagnosticsServiceConnector startAndGetInstance() {
 		if (instance == null) {
-			instance = new DiagnosticsClientConnector();
+			instance = new DiagnosticsServiceConnector();
 		}
 		return instance;
 	}
@@ -34,30 +34,30 @@ public final class DiagnosticsClientConnector implements ModelExecutionEventsLis
 	
 	@Override
 	public void processingSignal(Region region, Signal signal) {
-		DiagnosticsClient.getInstance().sendNewModelEvent(MessageType.PROCESSING_SIGNAL,
+		DiagnosticsService.getInstance().sendNewModelEvent(MessageType.PROCESSING_SIGNAL,
 				region.getClass().getCanonicalName(), region.getIdentifier(),
-				signal.getClass().getCanonicalName(), true);
+				signal.getClass().getCanonicalName());
 	}
 
 	@Override
 	public void usingTransition(Region region, Transition transition) {
-		DiagnosticsClient.getInstance().sendNewModelEvent(MessageType.USING_TRANSITION,
+		DiagnosticsService.getInstance().sendNewModelEvent(MessageType.USING_TRANSITION,
 				region.getClass().getCanonicalName(), region.getIdentifier(),
-				transition.getClass().getCanonicalName(), true);
+				transition.getClass().getCanonicalName());
 	}
 
 	@Override
 	public void enteringVertex(Region region, Vertex vertex) {
-		DiagnosticsClient.getInstance().sendNewModelEvent(MessageType.ENTERING_VERTEX,
+		DiagnosticsService.getInstance().sendNewModelEvent(MessageType.ENTERING_VERTEX,
 				region.getClass().getCanonicalName(), region.getIdentifier(),
-				vertex.getClass().getCanonicalName(), true);
+				vertex.getClass().getCanonicalName());
 	}
 
 	@Override
 	public void leavingVertex(Region region, Vertex vertex) {
-		DiagnosticsClient.getInstance().sendNewModelEvent(MessageType.LEAVING_VERTEX,
+		DiagnosticsService.getInstance().sendNewModelEvent(MessageType.LEAVING_VERTEX,
 				region.getClass().getCanonicalName(), region.getIdentifier(),
-				vertex.getClass().getCanonicalName(), true);
+				vertex.getClass().getCanonicalName());
 	}
 
 }

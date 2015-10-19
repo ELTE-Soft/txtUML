@@ -1,6 +1,5 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
-import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
 import java.util.Collection;
@@ -38,7 +37,7 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 /**
  * The Page for txtUML visualization.
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 @SuppressWarnings("restriction")
 public class VisualizeTxtUMLPage extends WizardPage {

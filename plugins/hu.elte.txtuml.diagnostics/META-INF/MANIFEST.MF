@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: txtUML Diagnostic Extensions
+Bundle-Name: txtUML Diagnostics Plugin
 Bundle-SymbolicName: hu.elte.txtuml.diagnostics;singleton:=true
 Bundle-Version: 0.1.0.qualifier
 Bundle-Activator: hu.elte.txtuml.diagnostics.Activator
@@ -19,3 +19,5 @@ Bundle-ActivationPolicy: lazy
 Import-Package: hu.elte.txtuml.api.diagnostics.protocol,
  hu.elte.txtuml.export.papyrus.preferences,
  hu.elte.txtuml.export.uml2.mapping
+Export-Package: hu.elte.txtuml.diagnostics,
+ hu.elte.txtuml.diagnostics.session

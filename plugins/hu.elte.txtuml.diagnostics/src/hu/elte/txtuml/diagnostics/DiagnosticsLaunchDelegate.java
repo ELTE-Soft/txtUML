@@ -14,13 +14,13 @@ import org.eclipse.jdt.launching.JavaLaunchDelegate;
 import org.eclipse.jdt.launching.SocketUtil;
 
 import hu.elte.txtuml.api.diagnostics.protocol.GlobalSettings;
-import hu.elte.txtuml.diagnostics.session.DiagnosticsBackend;
-import hu.elte.txtuml.diagnostics.session.IBackend;
+import hu.elte.txtuml.diagnostics.session.DiagnosticsPlugin;
+import hu.elte.txtuml.diagnostics.session.IDisposable;
 import hu.elte.txtuml.diagnostics.session.RuntimeSessionTracker;
 
 /**
  * Launches txtUML apps with all debugging aids.
- * Makes sure client knows about the backend diagnostics port.
+ * Makes sure client service knows about the plugin diagnostics port.
  * It should cease to exist after the process was launched.
  * @author gerazo
  */
@@ -44,9 +44,9 @@ public class DiagnosticsLaunchDelegate extends JavaLaunchDelegate {
 				diagnosticsPort = Integer.decode(strPort).intValue();
 			}
 		} catch (CoreException ex) {
-			Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Failed to acquire VM arguments for " + GlobalSettings.TXTUML_DIAGNOSTICS_PORT_KEY));
+			PluginLogWrapper.getInstance().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Failed to acquire VM arguments for " + GlobalSettings.TXTUML_DIAGNOSTICS_PORT_KEY));
 		} catch (NumberFormatException ex) {
-			Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "VM argument problem, use " + TXTUML_DIAGNOSTICS_PORT_TOKEN + "<portNumber> as VM argument"));
+			PluginLogWrapper.getInstance().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "VM argument problem, use " + TXTUML_DIAGNOSTICS_PORT_TOKEN + "<portNumber> as VM argument"));
 		}
 		
 		if (diagnosticsPort == 0) {
@@ -58,75 +58,20 @@ public class DiagnosticsLaunchDelegate extends JavaLaunchDelegate {
 						+ " " + TXTUML_DIAGNOSTICS_PORT_TOKEN + diagnosticsPort);
 				configuration = workingCopy;
 			} catch (CoreException | IllegalArgumentException | SecurityException ex) {
-				Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Cannot set VM arguments: " + ex));
+				PluginLogWrapper.getInstance().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Cannot set VM arguments: " + ex));
 				throw ex;
 			}
 		}
 		
-		IBackend backend;
+		IDisposable diagnosticsPlugin;
 		try {
-			backend = new DiagnosticsBackend(diagnosticsPort,
+			diagnosticsPlugin = new DiagnosticsPlugin(diagnosticsPort,
 					configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""),
 					configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, "."));
 		} catch (IOException ex) {
-			throw new CoreException(new BackendErrorStatus(ex));
+			throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, -1, "Launching txtUML DiagnosticsPlugin failed miserably", ex));
 		}
-		new RuntimeSessionTracker(launch, backend);
+		new RuntimeSessionTracker(launch, diagnosticsPlugin);
 		super.launch(configuration, mode, launch, monitor);
 	}
-
-	private class BackendErrorStatus implements IStatus {		
-		
-		private final Throwable cause;
-		
-		public BackendErrorStatus(Throwable cause) {
-			this.cause = cause;
-		}
-		
-		@Override
-		public IStatus[] getChildren() {
-			return new IStatus[0];
-		}
-		
-		@Override
-		public int getCode() {
-			return -1;
-		}
-		
-		@Override
-		public Throwable getException() {
-			return cause;
-		}
-		
-		@Override
-		public String getMessage() {
-			return "Launching txtUML Diagnostics back-end failed miserably";
-		}
-		
-		@Override
-		public String getPlugin() {
-			return Activator.PLUGIN_ID;
-		}
-
-		@Override
-		public int getSeverity() {
-			return IStatus.ERROR;
-		}
-
-		@Override
-		public boolean isMultiStatus() {
-			return false;
-		}
-
-		@Override
-		public boolean isOK() {
-			return false;
-		}
-
-		@Override
-		public boolean matches(int severityMask) {
-			return (IStatus.ERROR & severityMask) != 0;
-		}
-	}
-
 }

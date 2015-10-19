@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: txtUML Embedded Diagnostics Client
+Bundle-Name: txtUML Embedded Diagnostics Service
 Bundle-SymbolicName: hu.elte.txtuml.api.diagnostics
 Bundle-Version: 0.1.0.qualifier
 Bundle-Vendor: ELTE

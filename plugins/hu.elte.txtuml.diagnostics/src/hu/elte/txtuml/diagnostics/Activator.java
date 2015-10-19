@@ -13,10 +13,7 @@ public class Activator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static Activator plugin;
-	
-	/**
-	 * The constructor
-	 */
+
 	public Activator() {
 	}
 
@@ -28,6 +25,7 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		PluginLogWrapper.pluginStarted(this);
 	}
 
 	/*
@@ -36,6 +34,7 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	@Override
 	public void stop(BundleContext context) throws Exception {
+		PluginLogWrapper.pluginStopped();
 		plugin = null;
 		super.stop(context);
 	}
@@ -48,5 +47,4 @@ public class Activator extends AbstractUIPlugin {
 	public static Activator getDefault() {
 		return plugin;
 	}
-
 }

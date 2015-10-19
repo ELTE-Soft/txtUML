@@ -1,6 +1,6 @@
 package hu.elte.txtuml.api.model;
 
-import hu.elte.txtuml.api.model.backend.DiagnosticsClientConnector;
+import hu.elte.txtuml.api.model.backend.DiagnosticsServiceConnector;
 import hu.elte.txtuml.api.model.backend.log.ExecutorLog;
 import hu.elte.txtuml.api.model.report.ModelExecutionEventsListener;
 import hu.elte.txtuml.api.model.report.RuntimeErrorsListener;
@@ -334,7 +334,7 @@ public final class ModelExecutor implements ModelElement {
 		static final Queue<RuntimeWarningsListener> warning = new ConcurrentLinkedQueue<>();
 
 		static {
-			DiagnosticsClientConnector.startAndGetInstance();
+			DiagnosticsServiceConnector.startAndGetInstance();
 		}
 
 		public static void addModelExecutionEventsListener(ModelExecutionEventsListener listener) {
