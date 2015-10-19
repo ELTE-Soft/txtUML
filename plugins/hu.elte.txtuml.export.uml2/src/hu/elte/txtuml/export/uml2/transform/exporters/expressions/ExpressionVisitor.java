@@ -6,7 +6,6 @@ import hu.elte.txtuml.utils.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;

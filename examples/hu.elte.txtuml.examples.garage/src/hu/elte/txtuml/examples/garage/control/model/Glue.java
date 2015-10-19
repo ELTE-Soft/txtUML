@@ -45,18 +45,22 @@ public class Glue implements ExternalClass, IControl, IControlled {
 		return instance;
 	}
 
+	@Override
 	public void progress(int percent) {
 		controlled.progress(percent);
 	}
 
+	@Override
 	public void stopDoor() {
 		controlled.stopDoor();
 	}
 
+	@Override
 	public void startDoorUp() {
 		controlled.startDoorUp();
 	}
 
+	@Override
 	public void startDoorDown() {
 		controlled.startDoorDown();
 	}
