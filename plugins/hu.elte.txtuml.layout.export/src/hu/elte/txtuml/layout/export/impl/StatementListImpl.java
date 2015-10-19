@@ -4,7 +4,7 @@ import hu.elte.txtuml.layout.export.interfaces.StatementList;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 /**
  * Default implementation for {@link StatementList}.
@@ -13,7 +13,7 @@ import java.util.LinkedList;
  *
  */
 @SuppressWarnings("serial")
-public class StatementListImpl extends LinkedList<Statement> implements StatementList {
+public class StatementListImpl extends ArrayList<Statement> implements StatementList {
 
 	@Override
 	public void addNew(StatementType type, String... params) {

@@ -3,7 +3,7 @@ package hu.elte.txtuml.export.uml2.transform.exporters.expressions;
 import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
 import hu.elte.txtuml.utils.Pair;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.Expression;
@@ -20,7 +20,7 @@ public class OperatorExporter {
 
 	public Pair<Operation, Expr> exportRaw(String operator,
 			List<Expression> arguments) {
-		List<Expr> args = new LinkedList<>();
+		List<Expr> args = new ArrayList<>();
 		arguments.forEach(a -> args.add(expressionExporter.export(a)));
 		return export(operator, args);
 	}

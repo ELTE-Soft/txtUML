@@ -4,6 +4,7 @@ import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.actions.CreateObjectActionExporter;
 import hu.elte.txtuml.utils.Pair;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -102,7 +103,7 @@ class ExpressionVisitor extends ASTVisitor {
 	@SuppressWarnings("unchecked")
 	public boolean visit(ClassInstanceCreation node) {
 
-		List<Expr> args = new LinkedList<>();
+		List<Expr> args = new ArrayList<>();
 		args.add(Expr.type(node.getType().resolveBinding(), typeExporter));
 		node.arguments().forEach(
 				o -> args.add(expressionExporter.export((Expression) o)));
@@ -165,7 +166,7 @@ class ExpressionVisitor extends ASTVisitor {
 	public boolean visit(MethodInvocation node) {
 		IMethodBinding binding = node.resolveMethodBinding();
 
-		List<Expr> args = new LinkedList<>();
+		List<Expr> args = new ArrayList<>();
 		node.arguments().forEach(
 				o -> args.add(expressionExporter.export((Expression) o)));
 

@@ -11,7 +11,7 @@ import hu.elte.txtuml.layout.export.problems.ElementExportationException;
 import hu.elte.txtuml.utils.Pair;
 
 import java.lang.reflect.ParameterizedType;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,7 +30,7 @@ public class ClassDiagramExporter {
 			Class<?> rootElement) {
 		this.elementExporter = elementExporter;
 		this.rootElement = rootElement;
-		this.links = new LinkedList<Class<?>>();
+		this.links = new ArrayList<Class<?>>();
 
 		loadLinks();
 	}

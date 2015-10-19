@@ -1,11 +1,11 @@
 package hu.elte.txtuml.utils;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class NotifierOfTermination {
 
-	private final Queue<Runnable> queue = new LinkedList<>();
+	private final List<Runnable> list = new ArrayList<>();
 	private boolean terminated = false;
 
 	public synchronized boolean isAlreadyTerminated() {
@@ -16,12 +16,12 @@ public abstract class NotifierOfTermination {
 		if (terminated) {
 			return false;
 		}
-		queue.add(r);
+		list.add(r);
 		return true;
 	}
 
 	public synchronized void removeTerminationListener(Runnable r) {
-		queue.remove(r);
+		list.remove(r);
 	}
 
 	protected synchronized void notifyAllOfTermination() {
@@ -29,8 +29,8 @@ public abstract class NotifierOfTermination {
 			return;
 		}
 		terminated = true;
-		queue.forEach(Runnable::run);
-		queue.clear();
+		list.forEach(Runnable::run);
+		list.clear();
 	}
 
 }

@@ -18,8 +18,8 @@ import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.TypeExpr;
 import hu.elte.txtuml.export.uml2.utils.ControlStructureEditor;
 import hu.elte.txtuml.utils.Pair;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
@@ -110,7 +110,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 
 	public void exportVariableDeclaration(org.eclipse.jdt.core.dom.Type type,
 			ASTNode node) {
-		final List<Pair<String, Expression>> vars = new LinkedList<>();
+		final List<Pair<String, Expression>> vars = new ArrayList<>();
 		node.accept(new ASTVisitor() {
 			@Override
 			public boolean visit(VariableDeclarationFragment node) {

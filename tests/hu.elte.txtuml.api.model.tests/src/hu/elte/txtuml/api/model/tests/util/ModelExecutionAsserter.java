@@ -8,17 +8,17 @@ import hu.elte.txtuml.api.model.report.RuntimeWarningsListener;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.Assert;
 
 public final class ModelExecutionAsserter {
 
-	private final List<ListenerInvocation> events = new LinkedList<>();
-	private final List<ListenerInvocation> errors = new LinkedList<>();
-	private final List<ListenerInvocation> warnings = new LinkedList<>();
+	private final List<ListenerInvocation> events = new ArrayList<>();
+	private final List<ListenerInvocation> errors = new ArrayList<>();
+	private final List<ListenerInvocation> warnings = new ArrayList<>();
 
 	public ModelExecutionAsserter() {
 		ModelExecutor.Report.addModelExecutionEventsListener(createListener(
@@ -57,7 +57,7 @@ public final class ModelExecutionAsserter {
 
 	private static <L> void privateAssert(Class<L> listenerClass,
 			ExpectedsGenerator<L> generator, List<ListenerInvocation> actuals) {
-		List<ListenerInvocation> expecteds = new LinkedList<>();
+		List<ListenerInvocation> expecteds = new ArrayList<>();
 		generator.generate(createListener(listenerClass, expecteds));
 
 		Assert.assertArrayEquals(expecteds.toArray(), actuals.toArray());
@@ -81,7 +81,7 @@ public final class ModelExecutionAsserter {
 
 	private static <L> boolean privateCheck(Class<L> listenerClass,
 			ExpectedsGenerator<L> generator, List<ListenerInvocation> actuals) {
-		List<ListenerInvocation> expecteds = new LinkedList<>();
+		List<ListenerInvocation> expecteds = new ArrayList<>();
 		generator.generate(createListener(listenerClass, expecteds));
 
 		return Arrays.equals(expecteds.toArray(), actuals.toArray());

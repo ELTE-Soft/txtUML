@@ -3,7 +3,7 @@ package hu.elte.txtuml.api.model.tests.util;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class MemorizingPrintStream extends PrintStream {
 
-	private List<String> lines = new LinkedList<>();
+	private List<String> lines = new ArrayList<>();
 
 	public MemorizingPrintStream() {
 		super(new OutputStream() {
