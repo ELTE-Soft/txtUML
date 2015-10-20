@@ -33,7 +33,7 @@ public class OperatorExporter {
 		Expr ret = expressionExporter.createCallOperationAction(operation,
 				null, arguments);
 
-		return Pair.create(operation, ret);
+		return Pair.of(operation, ret);
 	}
 
 	private Operation getOperation(TypeExporter typeExporter, Type type,

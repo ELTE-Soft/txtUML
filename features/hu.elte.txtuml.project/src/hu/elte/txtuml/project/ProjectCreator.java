@@ -118,8 +118,8 @@ public class ProjectCreator {
 		for (int i = 0; i < settings.pluginDepAttributes.size(); i++) {
 			Pair<String, String> attribute = settings.pluginDepAttributes
 					.get(i);
-			atts[i] = JavaCore.newClasspathAttribute(attribute.getKey(),
-					attribute.getValue());
+			atts[i] = JavaCore.newClasspathAttribute(attribute.getFirst(),
+					attribute.getSecond());
 		}
 
 		IClasspathEntry plugindependences = JavaCore.newContainerEntry(
