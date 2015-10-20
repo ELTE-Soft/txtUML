@@ -15,7 +15,6 @@ import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.PrimitiveType;
-import org.eclipse.uml2.uml.Profile;
 import org.eclipse.uml2.uml.StructuralFeature;
 import org.eclipse.uml2.uml.Type;
 
@@ -39,20 +38,23 @@ public class TypeExporter {
 	private final Class booleanOperations;
 	private final Class stringOperations;
 
-	public TypeExporter(ModelExporter modelExporter, Profile profile) {
+	public TypeExporter(ModelExporter modelExporter) {
 		this.modelExporter = modelExporter;
+		Model exportedModel = modelExporter.getExportedModel();
 
-		UML2Integer = (PrimitiveType) profile.getImportedMember("Integer");
-		UML2Boolean = (PrimitiveType) profile.getImportedMember("Boolean");
-		UML2String = (PrimitiveType) profile.getImportedMember("String");
-		UML2Real = (PrimitiveType) profile.getImportedMember("Real");
-		UML2UnlimitedNatural = (PrimitiveType) profile
+		UML2Integer = (PrimitiveType) exportedModel
+				.getImportedMember("Integer");
+		UML2Boolean = (PrimitiveType) exportedModel
+				.getImportedMember("Boolean");
+		UML2String = (PrimitiveType) exportedModel.getImportedMember("String");
+		UML2Real = (PrimitiveType) exportedModel.getImportedMember("Real");
+		UML2UnlimitedNatural = (PrimitiveType) exportedModel
 				.getImportedMember("UnlimitedNatural");
-		integerOperations = (Class) modelExporter.getExportedModel()
+		integerOperations = (Class) exportedModel
 				.getImportedMember("IntegerOperations");
-		booleanOperations = (Class) modelExporter.getExportedModel()
+		booleanOperations = (Class) exportedModel
 				.getImportedMember("BooleanOperations");
-		stringOperations = (Class) modelExporter.getExportedModel()
+		stringOperations = (Class) exportedModel
 				.getImportedMember("StringOperations");
 	}
 
@@ -141,7 +143,7 @@ public class TypeExporter {
 
 		Classifier exportedOwner = (Classifier) exportNonPrimitiveType(field
 				.getDeclaringClass());
-		
+
 		if (exportedOwner == null) { // TODO unknown type of field owner
 			return null;
 		}
@@ -172,7 +174,7 @@ public class TypeExporter {
 		if (exportedOwner == null) { // TODO unknown type of method owner
 			return null;
 		}
-		
+
 		EList<Type> typeList = new BasicEList<>();
 
 		args.forEach(arg -> {
