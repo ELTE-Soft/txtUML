@@ -29,8 +29,8 @@ public class Pair<F, S> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null)
-			return false;
+		if (obj == this)
+			return true;
 		if (!(obj instanceof Pair))
 			return false;
 		Pair<?, ?> other = (Pair<?, ?>) obj;
