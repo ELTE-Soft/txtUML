@@ -1,0 +1,6 @@
+
+model ErrorReportingModel {
+	class A {
+		
+	}
+}
