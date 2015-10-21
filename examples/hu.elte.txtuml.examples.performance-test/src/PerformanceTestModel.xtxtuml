@@ -1,0 +1,191 @@
+
+
+import java.util.Collection
+
+model PerformanceTestModel {
+	
+	class Test {
+				
+		public void test() {
+			create(A,10000);
+		}
+		
+	}
+	
+	class A {
+		
+		int remainingCycles;
+		int numForward;
+		
+		public A(int numCycles) {
+			remainingCycles = numCycles;
+			numForward = 0;
+		}
+		
+		initial init;
+		state A1 {
+			entry {
+				
+			}
+		};
+		state A2;
+		state A3;
+		state A4;
+		
+		private void createChild() {
+			// B b = new B();
+			PerformanceTestModel.B b = new PerformanceTestModel.B();
+			link(AB.a, this, AB.b, b);
+		}
+		
+		private void childTerminated() {
+			send new Backward() to this;
+		}
+		
+		transition init_A1 {
+			from init;
+			to A1;
+			trigger Forward;
+			effect {
+				// send new Forward(++numForward) to this;
+				send new Forward(numForward) to PerformanceTestModel.A.this;
+			}
+		}
+		
+		// forward
+		
+		transition A1_A2 {
+			from A1;
+			to A2;
+			trigger Forward;
+			effect {
+//				PerformanceTestModel.Forward sig = getSignal(PerformanceTestModel.Forward);
+//				if ((this->PerformanceTestModel.AB.b).isEmpty()) {				
+//				} else {
+//					send new Forward(0) to this->PerformanceTestModel.AB.b;
+//				}
+			}
+		}
+		
+		transition A2_A3 {
+			from A2;
+			to A3;
+			trigger Forward;
+			effect {
+			}
+		}
+		
+		transition A3_A4 {
+			from A3;
+			to A4;
+			trigger Forward;
+			effect {
+			}
+		}
+				
+		transition A4_A1 {
+			from A4;
+			to A1;
+			trigger Forward;
+			effect {
+			}
+		}
+		
+		// backward
+		
+		transition A1_A4 {
+			from A1;
+			to A4;
+			trigger Backward;
+			effect {
+			}
+		}
+		
+		transition A2_A1 {
+			from A2;
+			to A1;
+			trigger Backward;
+			effect {
+			}
+		}
+		
+		transition A3_A2 {
+			from A3;
+			to A2;
+			trigger Backward;
+			effect {
+			}
+		}
+		
+		transition A4_A3 {
+			from A4;
+			to A3;
+			trigger Backward;
+			effect {
+			}
+		}
+		
+	}
+	
+	class B {
+		initial init;
+		state B1;
+		state B2;
+		state B3;
+		state B4;
+		state finalstate {
+			entry {
+				if ((this->PerformanceTestModel.AB.a).isEmpty()) {
+				} else {
+					PerformanceTestModel.A a = (this->PerformanceTestModel.AB.a).selectAny();
+					unlink(PerformanceTestModel.AB.a, a, AB.b, PerformanceTestModel.B.this);
+					a.childTerminated();
+				}
+				delete(PerformanceTestModel.B.this);
+			}
+		}
+		
+		transition init_B1 {
+			from init;
+			to B1;
+			trigger Forward;
+		}
+		
+		transition B1_B2 {
+			from B1;
+			to B2;
+			trigger Forward;
+		}
+		
+		transition B2_B3 {
+			from B2;
+			to B3;
+			trigger Forward;
+		}
+		
+		transition B3_B4 {
+			from B3;
+			to B4;
+			trigger Forward;
+		}
+				
+		transition B4_B1 {
+			from B4;
+			to B1;
+			trigger Forward;
+		}
+		
+	}
+	
+	association AB {
+		public 1 A a;
+		public * B b;
+	}
+	
+	signal Forward {
+		int nf;
+	}
+	
+	signal Backward;
+	
+}
