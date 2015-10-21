@@ -54,6 +54,7 @@ public class OperatorExporter {
 					getStringOperationName(operator), null, null);
 		}
 
+		// TODO give better support for object equality and inequality checks
 		return typeExporter.getObjectOperations().getOperation(
 				getObjectOperationName(operator), null, null);
 	}
