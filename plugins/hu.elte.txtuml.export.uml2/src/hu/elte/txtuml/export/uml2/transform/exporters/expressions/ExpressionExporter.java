@@ -366,7 +366,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 	 */
 	Expr createOpaqueAction(String stringValue, ITypeBinding returnType,
 			Expr target, List<Expr> args) {
-		OpaqueAction action = (OpaqueAction) createExecutableNode("unkonwn < "
+		OpaqueAction action = (OpaqueAction) createExecutableNode("unknown < "
 				+ stringValue + " >", UMLPackage.Literals.OPAQUE_ACTION);
 
 		action.getLanguages().add("JtxtUML");
