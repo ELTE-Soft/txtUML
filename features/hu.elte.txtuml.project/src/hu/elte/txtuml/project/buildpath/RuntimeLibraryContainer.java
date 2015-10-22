@@ -1,5 +1,6 @@
 package hu.elte.txtuml.project.buildpath;
 
+import hu.elte.txtuml.diagnostics.PluginLogWrapper;
 import hu.elte.txtuml.project.Messages;
 
 import java.io.IOException;
@@ -71,9 +72,9 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 				path = new Path(FileLocator.getBundleFile(bundle)
 						.getAbsolutePath());
 			} catch (IOException e) {
-				System.err
-						.println("Can't resolve path '" + bundle.getSymbolicName() + "'"); //$NON-NLS-1$ //$NON-NLS-2$
-				e.printStackTrace();
+				String message = "Can't resolve path '"
+						+ bundle.getSymbolicName() + "'"; //$NON-NLS-1$ //$NON-NLS-2$
+				PluginLogWrapper.logError(message, e);
 			}
 		}
 		return path;
@@ -87,9 +88,9 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 				URL binFolderFileURL = FileLocator.toFileURL(binFolderURL);
 				return new Path(binFolderFileURL.getPath()).makeAbsolute();
 			} catch (IOException e) {
-				System.err
-						.println("Can't resolve path '" + bundle.getSymbolicName() + "'"); //$NON-NLS-1$ //$NON-NLS-2$
-				e.printStackTrace();
+				String message = "Can't resolve path '"
+						+ bundle.getSymbolicName() + "'"; //$NON-NLS-1$ //$NON-NLS-2$
+				PluginLogWrapper.logError(message, e);
 			}
 		}
 		return null;
