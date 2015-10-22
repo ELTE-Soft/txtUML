@@ -91,7 +91,7 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 			extension = ".xtxtuml";
 			content = "".equals(pack) ? "" : "package "+pack+";"+System.lineSeparator();
 			content += System.lineSeparator()
-					+"model "+getTypeName()+"{"+System.lineSeparator()
+					+"model "+getTypeName()+" {"+System.lineSeparator()
 					+"\t"+System.lineSeparator()
 					+"}";
 		}else{
@@ -100,7 +100,7 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 			content += System.lineSeparator()
 					+"import hu.elte.txtuml.api.model.*;"+System.lineSeparator()
 					+System.lineSeparator()
-					+"class "+getTypeName()+" extends Model{"+System.lineSeparator()
+					+"class "+getTypeName()+" extends Model {"+System.lineSeparator()
 					+"\t"+System.lineSeparator()
 					+"}";
 		}

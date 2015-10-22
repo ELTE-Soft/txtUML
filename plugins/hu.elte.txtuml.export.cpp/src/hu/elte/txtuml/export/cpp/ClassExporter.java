@@ -77,7 +77,7 @@ public class ClassExporter
 			for(Map.Entry<String, Pair<String, Region>> entry:_submachineMap.entrySet())
 			{
 				ClassExporter classExporter=new ClassExporter();
-				classExporter.createSubSmSource(entry.getValue().getKey(),class_.getName(),entry.getValue().getValue(),dest_);
+				classExporter.createSubSmSource(entry.getValue().getFirst(),class_.getName(),entry.getValue().getSecond(),dest_);
 				_subSubMachines.addAll(classExporter.getSubmachines());
 			}
 		}
@@ -95,7 +95,7 @@ public class ClassExporter
 		{
 			for(Map.Entry<String, Pair<String, Region>> entry:_submachineMap.entrySet())
 			{
-				ret.add(entry.getValue().getKey());
+				ret.add(entry.getValue().getFirst());
 			}
 			ret.addAll(_subSubMachines);
 		}
@@ -111,7 +111,7 @@ public class ClassExporter
 		
 		for(Map.Entry<String, Pair<String, Region>> entry:_submachineMap.entrySet())
 		{
-			createSubSmSource(entry.getValue().getKey(),parentClass_,entry.getValue().getValue(),dest_);
+			createSubSmSource(entry.getValue().getFirst(),parentClass_,entry.getValue().getSecond(),dest_);
 		}
 		
 		source=createSubSmClassHeaderSource(className_,parentClass_,region_);
@@ -419,7 +419,7 @@ public class ClassExporter
 		{
 			for(Map.Entry<String,Pair<String,Region>> entry:_submachineMap.entrySet())
 			{
-				types.add(entry.getValue().getKey());
+				types.add(entry.getValue().getFirst());
 			}
 		}
 		
@@ -644,7 +644,7 @@ public class ClassExporter
 		Map<String, String> ret=new HashMap<String, String>();
 		for(Map.Entry<String, Pair<String, Region>> entry:_submachineMap.entrySet())
 		{
-			ret.put(entry.getKey(), entry.getValue().getKey());
+			ret.put(entry.getKey(), entry.getValue().getFirst());
 		}
 		return ret;
 	}
@@ -654,7 +654,7 @@ public class ClassExporter
 		Map<String,String> ret=new HashMap<String,String>();
 		for(Map.Entry<String,Pair<String, String>> entry:map_.entrySet())
 		{
-			ret.put(entry.getValue().getKey(), entry.getKey());
+			ret.put(entry.getValue().getFirst(), entry.getKey());
 		}
 		return ret;
 	}
@@ -664,7 +664,7 @@ public class ClassExporter
 		String source="";
 		for(Map.Entry<String,Pair<String, String>> entry:_entryMap.entrySet())
 		{
-			source+=GenerationTemplates.FunctionDef(className_,entry.getKey(),entry.getValue().getValue());
+			source+=GenerationTemplates.FunctionDef(className_,entry.getKey(),entry.getValue().getSecond());
 		}
 		return source;
 	}
@@ -674,7 +674,7 @@ public class ClassExporter
 		String source="";
 		for(Map.Entry<String,Pair<String, String>> entry:_exitMap.entrySet())
 		{
-			source+=GenerationTemplates.FunctionDef(className_,entry.getKey(),entry.getValue().getValue());
+			source+=GenerationTemplates.FunctionDef(className_,entry.getKey(),entry.getValue().getSecond());
 		}
 		return source;
 	}
@@ -779,7 +779,7 @@ public class ClassExporter
 		Map<String,Pair<String,Region>> submachineMap=getSubMachines(region_);
 		for(Map.Entry<String,Pair<String,Region>> entry:submachineMap.entrySet())
 		{
-			eventList.addAll(getEventList(entry.getValue().getValue()));
+			eventList.addAll(getEventList(entry.getValue().getSecond()));
 		}
 			
 		return eventList;

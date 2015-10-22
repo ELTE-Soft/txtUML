@@ -51,7 +51,7 @@ public class TxtUMLLayoutDescriptor {
 	public TxtUMLLayoutDescriptor(String modelName, List<Pair<String, DiagramExportationReport>> reports) {
 		this.modelName = modelName;
 		for(Pair<String, DiagramExportationReport> pair : reports){
-			this.reports.put(pair.getKey(), pair.getValue());
+			this.reports.put(pair.getFirst(), pair.getSecond());
 		}
 		
 	}

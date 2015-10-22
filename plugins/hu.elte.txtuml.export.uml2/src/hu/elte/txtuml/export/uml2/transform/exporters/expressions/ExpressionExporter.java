@@ -114,13 +114,13 @@ public class ExpressionExporter extends ControlStructureEditor {
 		node.accept(new ASTVisitor() {
 			@Override
 			public boolean visit(VariableDeclarationFragment node) {
-				vars.add(Pair.create(node.getName().getIdentifier(),
+				vars.add(Pair.of(node.getName().getIdentifier(),
 						node.getInitializer()));
 				return false;
 			}
 		});
-		vars.forEach(pair -> exportVariable(type, pair.getKey(),
-				pair.getValue()));
+		vars.forEach(pair -> exportVariable(type, pair.getFirst(),
+				pair.getSecond()));
 	}
 
 	private void exportVariable(org.eclipse.jdt.core.dom.Type type,
@@ -366,7 +366,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 	 */
 	Expr createOpaqueAction(String stringValue, ITypeBinding returnType,
 			Expr target, List<Expr> args) {
-		OpaqueAction action = (OpaqueAction) createExecutableNode("unkonwn < "
+		OpaqueAction action = (OpaqueAction) createExecutableNode("unknown < "
 				+ stringValue + " >", UMLPackage.Literals.OPAQUE_ACTION);
 
 		action.getLanguages().add("JtxtUML");
