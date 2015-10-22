@@ -6,6 +6,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 
 /**
  * Access plugin logging through this class!
@@ -39,6 +40,10 @@ public class PluginLogWrapper {
 			instance = new PluginLogWrapper();
 		}
 		return instance;
+	}
+	
+	public static void logError(String message, Throwable exception) {
+		getInstance().log(new Status(Status.ERROR, "hu.elte.txtuml.diagnostics", Status.OK, message, exception));
 	}
 	
 	private PluginLogWrapper(Activator activator) {
