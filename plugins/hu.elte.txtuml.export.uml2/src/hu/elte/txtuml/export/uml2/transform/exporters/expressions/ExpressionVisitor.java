@@ -141,13 +141,13 @@ class ExpressionVisitor extends ASTVisitor {
 				.getOperator().toString(), Arrays.asList(node.getLeftOperand(),
 				node.getRightOperand()));
 
-		result = pair.getValue();
+		result = pair.getSecond();
 
 		for (Object o : node.extendedOperands()) {
 			Expression operand = (Expression) o;
 
 			result = expressionExporter.createCallOperationAction(
-					pair.getKey(), null,
+					pair.getFirst(), null,
 					Arrays.asList(result, expressionExporter.export(operand)));
 		}
 
@@ -237,7 +237,7 @@ class ExpressionVisitor extends ASTVisitor {
 	public boolean visit(PostfixExpression node) {
 		String operator = "_" + node.getOperator().toString();
 		result = operatorExporter.exportRaw(operator,
-				Arrays.asList(node.getOperand())).getValue();
+				Arrays.asList(node.getOperand())).getSecond();
 
 		return false;
 	}
@@ -246,7 +246,7 @@ class ExpressionVisitor extends ASTVisitor {
 	public boolean visit(PrefixExpression node) {
 		String operator = node.getOperator().toString() + "_";
 		result = operatorExporter.exportRaw(operator,
-				Arrays.asList(node.getOperand())).getValue();
+				Arrays.asList(node.getOperand())).getSecond();
 
 		return false;
 	}

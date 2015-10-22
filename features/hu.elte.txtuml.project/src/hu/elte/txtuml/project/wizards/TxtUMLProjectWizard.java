@@ -5,12 +5,8 @@ import hu.elte.txtuml.project.Activator;
 import hu.elte.txtuml.project.ProjectCreator;
 import hu.elte.txtuml.project.ProjectCreator.ProjectSettings;
 import hu.elte.txtuml.project.TxtUMLProjectNature;
-import hu.elte.txtuml.utils.Pair;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -28,12 +24,20 @@ import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.xtext.ui.XtextProjectHelper;
-import org.osgi.framework.Constants;
 
 public class TxtUMLProjectWizard extends Wizard implements INewWizard {
 
-	public static final String WizardImage = "icons/txtuml_model_wizard.png";
+	private static final String[] PROJECT_NATURE_IDS = new String[] {
+			TxtUMLProjectNature.NATURE_ID, JavaCore.NATURE_ID,
+			XtextProjectHelper.NATURE_ID };
+	
+	private static final String BIN_DIR = "bin";
+	private static final String GENERATED_SOURCE_FOLDER_DIR = "src-gen";
+	private static final String SOURCE_FOLDER_DIR = "src";
+	
+	public static final String WIZARD_IMAGE = "icons/txtuml_model_wizard.png";
 	public static final String TITLE = "New txtUML Project";
+	
 	private TxtUMLProjectPage page;
 
 	/**
@@ -42,7 +46,7 @@ public class TxtUMLProjectWizard extends Wizard implements INewWizard {
 	public TxtUMLProjectWizard() {
 		super();
 		setWindowTitle(TITLE);
-		ImageDescriptor descriptor = Activator.getImageDescriptor(WizardImage);
+		ImageDescriptor descriptor = Activator.getImageDescriptor(WIZARD_IMAGE);
 		setDefaultPageImageDescriptor(descriptor);
 		setNeedsProgressMonitor(true);
 	}
@@ -68,7 +72,6 @@ public class TxtUMLProjectWizard extends Wizard implements INewWizard {
 		return success;
 	}
 
-	@SuppressWarnings("deprecation")
 	private boolean setUptxtUMLProject(String projectName) {
 		IRunnableWithProgress op = new WorkspaceModifyOperation() {
 			
@@ -84,69 +87,27 @@ public class TxtUMLProjectWizard extends Wizard implements INewWizard {
 					IProject project = ProjectCreator.createProject(projectName);
 					ProjectCreator.openProject(project);
 					
-					String[] natures = new String[]{
-							TxtUMLProjectNature.NATURE_ID,
-							JavaCore.NATURE_ID, 
-							XtextProjectHelper.NATURE_ID,
-							"org.eclipse.pde.PluginNature"
-							};
-					ProjectCreator.addProjectNatures(project, natures);
+					ProjectCreator.addProjectNatures(project, PROJECT_NATURE_IDS);
 	
-					IFolder metainf = ProjectCreator.createFolder(project, "META-INF");
-					IFolder src = ProjectCreator.createFolder(project, "src");
-					IFolder srcgen = ProjectCreator.createFolder(project, "src-gen");
-					IFolder bin = ProjectCreator.createFolder(project, "bin");
+					IFolder src = ProjectCreator.createFolder(project, SOURCE_FOLDER_DIR);
+					IFolder srcgen = ProjectCreator.createFolder(project, GENERATED_SOURCE_FOLDER_DIR);
+					IFolder bin = ProjectCreator.createFolder(project, BIN_DIR);
 	
 					ProjectSettings settings = new ProjectSettings();
 					settings.executionEnviromentID = "JavaSE-1.8";
 					settings.output = bin;
 					settings.source = src;
 					settings.sourcegen = srcgen;
-					settings.pluginDepAttributes = new ArrayList<Pair<String,String>>();
-					settings.manifest = new Manifest();
-					settings.manifest.getMainAttributes().put(
-							Attributes.Name.MANIFEST_VERSION, "1.0");
-					settings.manifest.getMainAttributes().putValue(
-							Constants.BUNDLE_VERSION, "1.0.0.qualifier");
-					settings.manifest.getMainAttributes().putValue(
-							Constants.BUNDLE_MANIFESTVERSION, "2");
-					settings.manifest.getMainAttributes()
-							.putValue(Constants.BUNDLE_REQUIREDEXECUTIONENVIRONMENT,
-									"JavaSE-1.8");
-					settings.manifest.getMainAttributes().putValue(
-							Constants.BUNDLE_NAME, project.getName());
-					settings.manifest.getMainAttributes().putValue(
-							Constants.BUNDLE_SYMBOLICNAME, project.getName());
 	
-					StringBuilder requireBundles = new StringBuilder();
-					requireBundles.append("org.eclipse.uml2.uml,\n");
-					requireBundles.append(" org.eclipse.uml2.uml.resources,\n");
-					requireBundles.append(" org.eclipse.xtext.xbase.lib,\n");
-					requireBundles.append(" hu.elte.txtuml.api.model,\n");
-					requireBundles.append(" hu.elte.txtuml.api.layout,\n");
-					requireBundles.append(" hu.elte.txtuml.api.stdlib,\n");
-					requireBundles.append(" hu.elte.txtuml.api.diagnostics,\n");
-					requireBundles.append(" hu.elte.txtuml.export.papyrus,\n");
-					requireBundles.append(" hu.elte.txtuml.export.uml2,\n");
-					requireBundles.append(" hu.elte.txtuml.layout.export,\n");
-					requireBundles.append(" hu.elte.txtuml.layout.visualizer,\n");
-					requireBundles.append(" hu.elte.txtuml.utils,\n");
-					requireBundles.append(" hu.elte.txtuml.xtxtuml.lib,\n");
-					requireBundles.append(" hu.elte.txtuml.xtxtuml,\n");
-					requireBundles.append(" hu.elte.txtuml.xtxtuml.ui");
-					settings.manifest.getMainAttributes().putValue(
-							Constants.REQUIRE_BUNDLE, requireBundles.toString());
-
 					ProjectCreator.addProjectSettings(project, settings);
 
-					ProjectCreator.addManifest(metainf, settings.manifest);
-					ProjectCreator.createBuildProps(project, src,srcgen, bin);
 					project.refreshLocal(IResource.DEPTH_INFINITE, null);
+					
 				} catch (OperationCanceledException e) {
 					throw new InterruptedException();
 				} catch (Exception e) {
 					throw new InvocationTargetException(e);
-				}finally{
+				} finally {
 					monitor.done();
 				}
 			}

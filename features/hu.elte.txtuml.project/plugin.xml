@@ -41,6 +41,20 @@
          </run>
       </runtime>
    </extension>
-
+   <extension
+         point="org.eclipse.jdt.core.classpathContainerInitializer">
+      <classpathContainerInitializer
+            class="hu.elte.txtuml.project.buildpath.RuntimeLibraryContainerInitializer"
+            id="hu.elte.txtuml.project.runtimeClasspathInitializer">
+      </classpathContainerInitializer>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.ui.classpathContainerPage">
+      <classpathContainerPage
+            class="hu.elte.txtuml.project.buildpath.RuntimeLibraryContainerWizardPage"
+            id="hu.elte.txtuml.project.runtimeClasspathInitializer"
+            name="%runtime.library.name">
+      </classpathContainerPage>
+   </extension>
 
 </plugin>

@@ -261,7 +261,7 @@ public class ActivityExport
 		for(ActivityEdge edge:branches_)
 		{
 			Pair<String,String> tmp=new Pair<String,String>(getGuard(edge),createActivityPartCode(edge.getTarget(),ifEndNode_,finishedNodes,rt_));
-			if(tmp.getKey().isEmpty() || tmp.getKey().equals("else"))
+			if(tmp.getFirst().isEmpty() || tmp.getFirst().equals("else"))
 			{
 				elseBranch=tmp;
 			}
@@ -270,7 +270,7 @@ public class ActivityExport
 				condsAndBodies.add(tmp);
 			}
 		}
-		if(elseBranch != null && !elseBranch.getValue().isEmpty())
+		if(elseBranch != null && !elseBranch.getSecond().isEmpty())
 		{
 			condsAndBodies.add(elseBranch);
 		}

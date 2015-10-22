@@ -98,6 +98,14 @@ class StdLib extends Model {
 			return !arg;
 		}
 
+		public static boolean eq(boolean left, boolean right) {
+			return left == right;
+		}
+
+		public static boolean neq(boolean left, boolean right) {
+			return left != right;
+		}
+
 		public static void fork(boolean arg, /*out*/boolean copy1, /* out */boolean copy2) {
 			copy1 = arg;
 			copy2 = arg;
@@ -111,6 +119,18 @@ class StdLib extends Model {
 			return left + right;
 		}
 
+	}
+	
+	static class ObjectOperations extends ModelClass {
+	
+		public static boolean eq(Object left, Object right) {
+			return left == right;
+		}
+
+		public static boolean neq(Object left, Object right) {
+			return left != right;
+		}
+	
 	}
 
 }

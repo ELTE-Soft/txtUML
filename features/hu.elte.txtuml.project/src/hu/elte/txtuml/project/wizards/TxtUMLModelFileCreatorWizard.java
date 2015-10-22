@@ -21,7 +21,7 @@ public class TxtUMLModelFileCreatorWizard extends Wizard implements INewWizard {
 	
 	public TxtUMLModelFileCreatorWizard() {
 		setWindowTitle(TITLE);
-		ImageDescriptor descriptor = Activator.getImageDescriptor(TxtUMLProjectWizard.WizardImage);
+		ImageDescriptor descriptor = Activator.getImageDescriptor(TxtUMLProjectWizard.WIZARD_IMAGE);
 		setDefaultPageImageDescriptor(descriptor);
 	}
 	

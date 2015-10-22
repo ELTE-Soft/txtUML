@@ -1,16 +1,9 @@
 package hu.elte.txtuml.project;
 
-import hu.elte.txtuml.utils.Pair;
+import hu.elte.txtuml.project.buildpath.RuntimeLibraryContainerInitializer;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
@@ -21,8 +14,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jdt.core.IAccessRule;
-import org.eclipse.jdt.core.IClasspathAttribute;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
@@ -38,8 +29,6 @@ public class ProjectCreator {
 		public String executionEnviromentID;
 		public IFolder output;
 		public IFolder source;
-		public List<Pair<String, String>> pluginDepAttributes;
-		public Manifest manifest;
 		public IFolder sourcegen;
 	}
 
@@ -113,64 +102,15 @@ public class ProjectCreator {
 		IPackageFragmentRoot packageRootSrcGen = javaProject
 				.getPackageFragmentRoot(settings.sourcegen);
 
-		IClasspathAttribute atts[] = new IClasspathAttribute[settings.pluginDepAttributes
-				.size()];
-		for (int i = 0; i < settings.pluginDepAttributes.size(); i++) {
-			Pair<String, String> attribute = settings.pluginDepAttributes
-					.get(i);
-			atts[i] = JavaCore.newClasspathAttribute(attribute.getKey(),
-					attribute.getValue());
-		}
-
-		IClasspathEntry plugindependences = JavaCore.newContainerEntry(
-				new Path("org.eclipse.pde.core.requiredPlugins"),
-				new IAccessRule[] {}, atts, false);
-		entries.add(plugindependences);
+		IClasspathEntry containerEntry = JavaCore
+				.newContainerEntry(RuntimeLibraryContainerInitializer.LIBRARY_PATH);
+		entries.add(containerEntry);
 		entries.add(JavaCore.newSourceEntry(packageRoot.getPath()));
 		entries.add(JavaCore.newSourceEntry(packageRootSrcGen.getPath()));
 
 		javaProject.setRawClasspath(
 				entries.toArray(new IClasspathEntry[entries.size()]), null);
 		javaProject.setOutputLocation(settings.output.getFullPath(), null);
-	}
-
-	public static void addManifest(IFolder folder, Manifest manifest)
-			throws IOException {
-		Attributes attrs = manifest.getMainAttributes();
-		Iterator<Entry<Object, Object>> it = attrs.entrySet().iterator();
-		StringBuilder manifestStrBuilder = new StringBuilder();
-		while (it.hasNext()) {
-			Entry<Object, Object> entry = it.next();
-			manifestStrBuilder.append(entry.getKey()).append(": ")
-					.append(entry.getValue()).append("\n");
-		}
-
-		createFile(folder, "MANIFEST.MF", manifestStrBuilder.toString());
-	}
-
-	public static void createBuildProps(IProject project, IFolder srcFolder,
-			IFolder srcgenFolder, IFolder outFolder) throws IOException {
-		StringBuilder bpContent = new StringBuilder("source.. = ");
-		bpContent.append(srcFolder.getName())
-		.append(",\\")
-		.append(System.lineSeparator());
-		bpContent.append(srcgenFolder.getName()).append(System.lineSeparator());
-		bpContent.append("output.. = ");
-		bpContent.append(outFolder.getName()).append(System.lineSeparator());
-		bpContent.append(System.lineSeparator());
-		bpContent.append("bin.includes = META-INF/,."+System.lineSeparator());
-
-		createFile(project, "build.properties", bpContent.toString());
-	}
-
-	private static void createFile(IContainer container,
-			String fileNameWithExtension, String content)
-			throws FileNotFoundException {
-		String path = container.getLocation().append(fileNameWithExtension)
-				.toString();
-		PrintWriter writer = new PrintWriter(path);
-		writer.print(content);
-		writer.close();
 	}
 
 }

@@ -30,10 +30,11 @@ public class OperatorExporter {
 		Type type = arguments.get(0).getType();
 
 		Operation operation = getOperation(typeExporter, type, operator);
+
 		Expr ret = expressionExporter.createCallOperationAction(operation,
 				null, arguments);
 
-		return Pair.create(operation, ret);
+		return Pair.of(operation, ret);
 	}
 
 	private Operation getOperation(TypeExporter typeExporter, Type type,
@@ -53,7 +54,9 @@ public class OperatorExporter {
 					getStringOperationName(operator), null, null);
 		}
 
-		return null;
+		// TODO give better support for object equality and inequality checks
+		return typeExporter.getObjectOperations().getOperation(
+				getObjectOperationName(operator), null, null);
 	}
 
 	private String getIntegerOperationName(String operator) {
@@ -104,6 +107,10 @@ public class OperatorExporter {
 			return "or";
 		case "!_":
 			return "not";
+		case "==":
+			return "eq";
+		case "!=":
+			return "neq";
 		}
 		return operator;
 	}
@@ -112,6 +119,16 @@ public class OperatorExporter {
 		switch (operator) {
 		case "+":
 			return "concat";
+		}
+		return operator;
+	}
+
+	private String getObjectOperationName(String operator) {
+		switch (operator) {
+		case "==":
+			return "eq";
+		case "!=":
+			return "neq";
 		}
 		return operator;
 	}
