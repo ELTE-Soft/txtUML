@@ -1,3 +1,2 @@
-bin/
-gen/
-src-gen/
+bin
+src-gen

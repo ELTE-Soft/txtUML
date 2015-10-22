@@ -1,9 +1,6 @@
 package hu.elte.txtuml.export.papyrus;
 
-import hu.elte.txtuml.utils.MultiMap;
-
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -13,6 +10,9 @@ import org.eclipse.papyrus.uml.tools.model.UmlModel;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Package;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+
 /**
  * Controls the Eclipse UML2 Model.
  *
@@ -21,7 +21,7 @@ import org.eclipse.uml2.uml.Package;
 public class UMLModelManager {
 	
 	private UmlModel model;
-	private MultiMap<Class<?>, Element> modelMap;
+	private Multimap<Class<?>, Element> modelMap;
 	
 	/**
 	 * The Constructor.
@@ -33,11 +33,11 @@ public class UMLModelManager {
 	}
 
 	/**
-	 * Builds up a {@link MultiMap}. Hashes the Model Elements by their eClass
+	 * Builds up a multimap. Hashes the Model Elements by their eClass
 	 * @return The model elements in a MultiMap
 	 */
-	private MultiMap<java.lang.Class<?>, Element> buildUpMap(){
-		MultiMap<java.lang.Class<?>, Element> result = new MultiMap<Class<?>, Element>(); 
+	private Multimap<java.lang.Class<?>, Element> buildUpMap(){
+		Multimap<java.lang.Class<?>, Element> result = HashMultimap.create(); 
 		Element root = getRoot();
 		Queue<Element> queue = new LinkedList<Element>();
 		queue.add(root);
@@ -45,7 +45,7 @@ public class UMLModelManager {
 		return result;
 	}
 
-		private void runThroughModelRecursive(Queue<Element> queue, MultiMap<Class<?>, Element> map) {
+		private void runThroughModelRecursive(Queue<Element> queue, Multimap<Class<?>, Element> map) {
 			if(!queue.isEmpty()){
 				Element head = queue.poll();
 				List<Element> children = head.getOwnedElements();
@@ -81,9 +81,7 @@ public class UMLModelManager {
 	public List<Element> getElementsOfTypes(List<java.lang.Class<?>> types){
 		List<Element> elements = new LinkedList<Element>();
 		for(java.lang.Class<?> type : types){
-			HashSet<Element> elementsoftype = modelMap.get(type);
-			if(elementsoftype != null)
-				elements.addAll(elementsoftype);
+			elements.addAll(modelMap.get(type));
 		}
 		return elements;
 	}
