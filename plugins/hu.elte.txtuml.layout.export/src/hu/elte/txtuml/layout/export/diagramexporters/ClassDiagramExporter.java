@@ -68,9 +68,9 @@ public class ClassDiagramExporter {
 				Pair<Class<?>, Class<?>> p = startAndEndOfLink(link);
 
 				// nodes.containsKey(node) should be guaranteed here
-				if ((p.getKey().equals(node) && nodes.containsKey(p.getValue()))
-						|| ((p.getValue().equals(node) && nodes.containsKey(p
-								.getKey())))) {
+				if ((p.getFirst().equals(node) && nodes.containsKey(p.getSecond()))
+						|| ((p.getSecond().equals(node) && nodes.containsKey(p
+								.getFirst())))) {
 					elementExporter.exportLink(link);
 				}
 			} catch (ElementExportationException e) {

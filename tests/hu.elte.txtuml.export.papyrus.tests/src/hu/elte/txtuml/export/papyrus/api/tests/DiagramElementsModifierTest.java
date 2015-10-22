@@ -128,27 +128,27 @@ public class DiagramElementsModifierTest {
 				@Override
 				protected void doExecute() {
 					for (Pair<String, java.lang.Class<?>> pair : objects) {
-						java.lang.Class<?> type = pair.getValue();
+						java.lang.Class<?> type = pair.getSecond();
 						if (type.isAssignableFrom(org.eclipse.uml2.uml.Class.class)) {
 							org.eclipse.uml2.uml.Class created = modelpackage
-									.createOwnedClass(pair.getKey(), false);
-							nodes.put(pair.getKey(), created);
+									.createOwnedClass(pair.getFirst(), false);
+							nodes.put(pair.getFirst(), created);
 						} else if (type
 								.isAssignableFrom(org.eclipse.uml2.uml.Package.class)) {
-							modelpackage.createNestedPackage(pair.getKey());
+							modelpackage.createNestedPackage(pair.getFirst());
 						} else if (type
 								.isAssignableFrom(org.eclipse.uml2.uml.Interface.class)) {
-							modelpackage.createOwnedInterface(pair.getKey());
+							modelpackage.createOwnedInterface(pair.getFirst());
 						}
 
 					}
 
 					for (Pair<Pair<String, Class<?>>, Pair<String, Class<?>>> link : links) {
-						Pair<String, Class<?>> pairA = link.getKey();
-						Pair<String, Class<?>> pairB = link.getValue();
+						Pair<String, Class<?>> pairA = link.getFirst();
+						Pair<String, Class<?>> pairB = link.getSecond();
 
-						String nameA = pairA.getKey();
-						String nameB = pairB.getKey();
+						String nameA = pairA.getFirst();
+						String nameB = pairB.getFirst();
 
 						org.eclipse.uml2.uml.Class classA = nodes.get(nameA);
 						org.eclipse.uml2.uml.Class classB = nodes.get(nameB);
