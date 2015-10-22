@@ -15,7 +15,6 @@ import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.PrimitiveType;
-import org.eclipse.uml2.uml.Profile;
 import org.eclipse.uml2.uml.StructuralFeature;
 import org.eclipse.uml2.uml.Type;
 
@@ -28,6 +27,17 @@ import org.eclipse.uml2.uml.Type;
  */
 public class TypeExporter {
 
+	public static final String UML2_INTEGER_NAME = "Integer";
+	public static final String UML2_BOOLEAN_NAME = "Boolean";
+	public static final String UML2_STRING_NAME = "String";
+	public static final String UML2_REAL_NAME = "Real";
+	public static final String UML2_UNLIMITED_NATURAL_NAME = "UnlimitedNatural";
+
+	public static final String INTEGER_OPERATIONS_NAME = "IntegerOperations";
+	public static final String BOOLEAN_OPERATIONS_NAME = "BooleanOperations";
+	public static final String STRING_OPERATIONS_NAME = "StringOperations";
+	public static final String OBJECT_OPERATIONS_NAME = "ObjectOperations";
+
 	private final ModelExporter modelExporter;
 
 	private final PrimitiveType UML2Integer;
@@ -38,22 +48,30 @@ public class TypeExporter {
 	private final Class integerOperations;
 	private final Class booleanOperations;
 	private final Class stringOperations;
+	private final Class objectOperations;
 
-	public TypeExporter(ModelExporter modelExporter, Profile profile) {
+	public TypeExporter(ModelExporter modelExporter) {
 		this.modelExporter = modelExporter;
+		Model exportedModel = modelExporter.getExportedModel();
 
-		UML2Integer = (PrimitiveType) profile.getImportedMember("Integer");
-		UML2Boolean = (PrimitiveType) profile.getImportedMember("Boolean");
-		UML2String = (PrimitiveType) profile.getImportedMember("String");
-		UML2Real = (PrimitiveType) profile.getImportedMember("Real");
-		UML2UnlimitedNatural = (PrimitiveType) profile
-				.getImportedMember("UnlimitedNatural");
-		integerOperations = (Class) modelExporter.getExportedModel()
-				.getImportedMember("IntegerOperations");
-		booleanOperations = (Class) modelExporter.getExportedModel()
-				.getImportedMember("BooleanOperations");
-		stringOperations = (Class) modelExporter.getExportedModel()
-				.getImportedMember("StringOperations");
+		UML2Integer = (PrimitiveType) exportedModel
+				.getImportedMember(UML2_INTEGER_NAME);
+		UML2Boolean = (PrimitiveType) exportedModel
+				.getImportedMember(UML2_BOOLEAN_NAME);
+		UML2String = (PrimitiveType) exportedModel
+				.getImportedMember(UML2_STRING_NAME);
+		UML2Real = (PrimitiveType) exportedModel
+				.getImportedMember(UML2_REAL_NAME);
+		UML2UnlimitedNatural = (PrimitiveType) exportedModel
+				.getImportedMember(UML2_UNLIMITED_NATURAL_NAME);
+		integerOperations = (Class) exportedModel
+				.getImportedMember(INTEGER_OPERATIONS_NAME);
+		booleanOperations = (Class) exportedModel
+				.getImportedMember(BOOLEAN_OPERATIONS_NAME);
+		stringOperations = (Class) exportedModel
+				.getImportedMember(STRING_OPERATIONS_NAME);
+		objectOperations = (Class) exportedModel
+				.getImportedMember(OBJECT_OPERATIONS_NAME);
 	}
 
 	/**
@@ -141,7 +159,7 @@ public class TypeExporter {
 
 		Classifier exportedOwner = (Classifier) exportNonPrimitiveType(field
 				.getDeclaringClass());
-		
+
 		if (exportedOwner == null) { // TODO unknown type of field owner
 			return null;
 		}
@@ -172,7 +190,7 @@ public class TypeExporter {
 		if (exportedOwner == null) { // TODO unknown type of method owner
 			return null;
 		}
-		
+
 		EList<Type> typeList = new BasicEList<>();
 
 		args.forEach(arg -> {
@@ -197,6 +215,10 @@ public class TypeExporter {
 
 	public Class getStringOperations() {
 		return stringOperations;
+	}
+
+	public Class getObjectOperations() {
+		return objectOperations;
 	}
 
 	/**
