@@ -74,7 +74,7 @@ public class IfActionExporter extends AbstractControlStructureExporter {
 				conditionalNode, elseClause.getTests()));
 
 		Expr output = operatorExporter.export("!_",
-				Arrays.asList(elseExpr.get())).getValue();
+				Arrays.asList(elseExpr.get())).getSecond();
 
 		/*
 		 * Calling 'evaluate' is unnecessary as in this case, the Expr instances

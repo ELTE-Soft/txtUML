@@ -3,7 +3,6 @@ package hu.elte.txtuml.export.uml2.transform.exporters;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapCollector;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
 import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
-import hu.elte.txtuml.export.uml2.transform.backend.ProfileCreator;
 import hu.elte.txtuml.export.uml2.transform.backend.RuntimeExportException;
 import hu.elte.txtuml.export.uml2.transform.visitors.AssociationVisitor;
 import hu.elte.txtuml.export.uml2.transform.visitors.AttributeVisitor;
@@ -29,7 +28,6 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.PackageImport;
-import org.eclipse.uml2.uml.Profile;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.UMLFactory;
@@ -51,7 +49,6 @@ public class ModelExporter {
 	private final String outputDirectory;
 	private final Model exportedModel;
 	private final TypeDeclaration sourceModel;
-	private final Profile profile;
 	private final ResourceSet resourceSet;
 	private final Resource modelResource;
 	private final TypeExporter typeExporter;
@@ -75,36 +72,11 @@ public class ModelExporter {
 				outputDirectory, resourceSet, exportedModel);
 		this.mapping = new ModelMapCollector(modelResource.getURI());
 
-		ProfileCreator.createProfileForModel(txtUMLModelName, outputDirectory,
-				resourceSet);
-		this.profile = loadAndApplyProfile(resourceSet, exportedModel);
 		importStandardLibrary(resourceSet, exportedModel);
 
-		this.typeExporter = new TypeExporter(this, this.profile);
+		this.typeExporter = new TypeExporter(this);
 		this.regionExporter = new RegionExporter(this);
 		this.methods = new HashMap<>();
-	}
-
-	/**
-	 * Loads the UML profile and applies it to the exported model.
-	 * 
-	 * @param resourceSet
-	 *            The used resource set.
-	 * @param exportedModel
-	 *            The EMF-UML2 model.
-	 * @return
-	 *
-	 * @author Adam Ancsin
-	 */
-	private static Profile loadAndApplyProfile(ResourceSet resourceSet,
-			Model exportedModel) {
-		Resource resource = resourceSet.getResource(URI.createFileURI("")
-				.appendSegment(exportedModel.getQualifiedName())
-				.appendFileExtension(UMLResource.PROFILE_FILE_EXTENSION), true);
-		Profile profile = (Profile) EcoreUtil.getObjectByType(
-				resource.getContents(), UMLPackage.Literals.PROFILE);
-		exportedModel.applyProfile(profile);
-		return profile;
 	}
 
 	/**
@@ -363,15 +335,6 @@ public class ModelExporter {
 	 */
 	public Resource getModelResource() {
 		return this.modelResource;
-	}
-
-	/**
-	 * @return The UML profile.
-	 *
-	 * @author Adam Ancsin
-	 */
-	public Profile getProfile() {
-		return this.profile;
 	}
 
 	/**

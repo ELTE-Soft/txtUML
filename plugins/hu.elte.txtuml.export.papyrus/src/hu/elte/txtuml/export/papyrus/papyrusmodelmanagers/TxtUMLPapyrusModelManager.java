@@ -59,7 +59,7 @@ public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 			List<Pair<String, Element>> classDiagramRoots = txtumlregistry.getDiagramRootsWithDiagramNames();
 			CreateClassDiagramCommand cmd = new CreateClassDiagramCommand();
 			for(Pair<String, Element> classDiagramRoot : classDiagramRoots){
-				diagramManager.createDiagram(classDiagramRoot.getValue(), classDiagramRoot.getKey(), cmd);
+				diagramManager.createDiagram(classDiagramRoot.getSecond(), classDiagramRoot.getFirst(), cmd);
 			}
 		 }
 		 

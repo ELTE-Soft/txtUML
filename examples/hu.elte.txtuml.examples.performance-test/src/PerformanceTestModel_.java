@@ -26,7 +26,7 @@ public class PerformanceTestModel_ extends Model {
 
 		int numForward;
 
-		public A(final Integer numCycles) {
+		public A(final int numCycles) {
 			this.remainingCycles = numCycles;
 			this.numForward = 0;
 		}

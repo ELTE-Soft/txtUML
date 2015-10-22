@@ -123,15 +123,15 @@ public class ActivityTemplates
 		{
 			if(i == 1)
 			{
-				source+=SimpleIf(part.getKey(),part.getValue());
+				source+=SimpleIf(part.getFirst(),part.getSecond());
 			}
-			else if(i == branches_.size() && (part.getKey().isEmpty() || part.getKey().equals("else")))
+			else if(i == branches_.size() && (part.getFirst().isEmpty() || part.getFirst().equals("else")))
 			{
-				source+="else\n{\n"+part.getValue()+"}\n";
+				source+="else\n{\n"+part.getSecond()+"}\n";
 			}
 			else
 			{
-				source+=SimpleCondControlStruct("else if", part.getKey(), part.getValue());
+				source+=SimpleCondControlStruct("else if", part.getFirst(), part.getSecond());
 			}
 			++i;
 		}
