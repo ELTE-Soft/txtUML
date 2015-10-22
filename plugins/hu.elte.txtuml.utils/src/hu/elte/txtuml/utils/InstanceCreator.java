@@ -38,15 +38,23 @@ public final class InstanceCreator {
 			if (len < givenParamsLen) {
 				continue;
 			}
-			Object[] params = new Object[len];
 
+			Object[] params = new Object[len];
 			{
 				int i;
 				for (i = 0; i < givenParamsLen; ++i) {
 					try {
 						params[i] = paramTypes[i].cast(givenParams[i]);
 					} catch (ClassCastException e) {
-						break;
+
+						if (paramTypes[i].isPrimitive()
+								&& checkPrimitive(paramTypes[i],
+										givenParams[i].getClass())) {
+							params[i] = givenParams[i];
+						} else {
+							break;
+						}
+
 					}
 				}
 				if (i < givenParamsLen) { // one of the parameters could not be
@@ -95,8 +103,7 @@ public final class InstanceCreator {
 		ancestors.add(c);
 
 		T ret = null;
-		Constructor<?>[] ctors = c.getDeclaredConstructors();
-		for (Constructor<?> ctor : ctors) {
+		for (Constructor<?> ctor : c.getDeclaredConstructors()) {
 			ctor.setAccessible(true);
 			Class<?>[] paramTypes = ctor.getParameterTypes();
 			int len = paramTypes.length;
@@ -158,6 +165,27 @@ public final class InstanceCreator {
 			return (T) new Character('\u0000');
 		}
 		return null;
+	}
+
+	private static boolean checkPrimitive(Class<?> expected, Class<?> actual) {
+		if (expected == boolean.class) {
+			return actual == Boolean.class;
+		} else if (expected == int.class) {
+			return actual == Integer.class;
+		} else if (expected == long.class) {
+			return actual == Long.class;
+		} else if (expected == double.class) {
+			return actual == Double.class;
+		} else if (expected == float.class) {
+			return actual == Float.class;
+		} else if (expected == short.class) {
+			return actual == Short.class;
+		} else if (expected == byte.class) {
+			return actual == Byte.class;
+		} else if (expected == char.class) {
+			return actual == Character.class;
+		}
+		return false;
 	}
 
 }
