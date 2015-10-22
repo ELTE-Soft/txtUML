@@ -35,7 +35,7 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 			"hu.elte.txtuml.xtxtuml.ui" }; //$NON-NLS-1$
 
 	private final IPath containerPath;
-	private IClasspathEntry[] classPathEnries;
+	private IClasspathEntry[] classPathEntries;
 
 	public RuntimeLibraryContainer(IPath containerPath) {
 		this.containerPath = containerPath;
@@ -43,14 +43,14 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 
 	@Override
 	public IClasspathEntry[] getClasspathEntries() {
-		if (classPathEnries == null) {
+		if (classPathEntries == null) {
 			List<IClasspathEntry> cpEntries = new ArrayList<IClasspathEntry>();
 			for (String bundleId : BUNDLE_IDS_TO_INCLUDE) {
 				addEntry(cpEntries, bundleId);
 			}
-			classPathEnries = cpEntries.toArray(new IClasspathEntry[] {});
+			classPathEntries = cpEntries.toArray(new IClasspathEntry[] {});
 		}
-		return classPathEnries;
+		return classPathEntries;
 	}
 
 	private void addEntry(final List<IClasspathEntry> cpEntries,
