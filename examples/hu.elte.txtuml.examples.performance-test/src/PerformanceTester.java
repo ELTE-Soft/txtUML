@@ -15,14 +15,11 @@ public class PerformanceTester {
 	}
 
 	public static void main(String[] args) {
-		// ModelExecutor.Settings.setExecutorLog(true);
+		 ModelExecutor.Settings.setExecutorLog(true);
 		
 		long start = System.currentTimeMillis();
 		
 		ModelExecutor.Settings.setDynamicChecks(false);
-
-		ModelExecutor.Settings.setExecutorErrorStream(new PrintStream(
-				new NullOutputStream(), false));
 
 		PerformanceTestModel_.Test m = Action
 				.create(PerformanceTestModel_.Test.class);
