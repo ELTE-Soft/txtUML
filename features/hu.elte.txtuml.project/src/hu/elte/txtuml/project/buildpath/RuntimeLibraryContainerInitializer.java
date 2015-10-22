@@ -16,7 +16,7 @@ public class RuntimeLibraryContainerInitializer extends
 		ClasspathContainerInitializer {
 
 	public static final Path LIBRARY_PATH = new Path(
-			"hu.eltesoft.modelexecution.ide.runtimeClasspathInitializer"); //$NON-NLS-1$
+			"hu.elte.txtuml.project.runtimeClasspathInitializer"); //$NON-NLS-1$
 
 	@Override
 	public void initialize(IPath containerPath, IJavaProject project)
