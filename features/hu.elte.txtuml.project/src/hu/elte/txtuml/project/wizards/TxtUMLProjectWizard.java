@@ -115,8 +115,10 @@ public class TxtUMLProjectWizard extends Wizard implements INewWizard {
 		try {
 			getContainer().run(true, true, op);
 		} catch (Exception e) {
-			Dialogs.errorMsgb("txtUML Project creation Error", e.getClass()
-					+ ":\n" + e.getMessage(), e);
+			Dialogs.errorMsgb("txtUML Project creation Error", 
+					"Error occured during project creation."
+					+System.lineSeparator()
+					+e.getClass().getName()+" thrown.", e);
 			return false;
 		}
 		return true;

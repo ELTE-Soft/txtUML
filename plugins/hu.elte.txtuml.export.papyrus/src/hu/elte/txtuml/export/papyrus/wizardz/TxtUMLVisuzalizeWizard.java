@@ -100,8 +100,10 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 							try {
 								exporter.cleanBeforeVisualization();
 							} catch (CoreException e) {
-								Dialogs.errorMsgb("txtUML export Error", e.getClass() + ":" + System.lineSeparator()
-										+ e.getMessage(), e);
+								Dialogs.errorMsgb("txtUML export Error - cleaning resources", 
+										"Error occured when cleaning resources."
+											+System.lineSeparator()
+											+e.getClass().getName()+" thrown.", e);
 								throw new InterruptedException();
 							}
 							monitor.subTask("Exporting txtUML Model to UML2 model...");
@@ -111,8 +113,10 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 										txtUMLProjectName + "/" + generatedFolderName);
 								monitor.worked(10);
 							} catch (Exception e) {
-								Dialogs.errorMsgb("txtUML export Error", e.getClass() + ":" + System.lineSeparator()
-												+ e.getMessage(), e);
+								Dialogs.errorMsgb("txtUML export Error", 
+										"Error occured during the UML2 exportation."
+											+System.lineSeparator()
+											+e.getClass().getName()+" thrown.", e);
 								monitor.done();
 								throw new InterruptedException();
 							}
@@ -159,9 +163,9 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 								} else {
 									Dialogs.errorMsgb(
 											"txtUML layout export Error",
-											e.getClass() + ":"
-													+ System.lineSeparator()
-													+ e.getMessage(), e);
+											"Error occured during the diagram layout interpretation."
+													+System.lineSeparator()
+													+e.getClass().getName()+" thrown.", e);
 									monitor.done();
 									throw new InterruptedException();
 								}
@@ -175,9 +179,9 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 							} catch (Exception e) {
 								Dialogs.errorMsgb(
 										"txtUML visualization Error",
-										e.getClass() + ":"
-												+ System.lineSeparator()
-												+ e.getMessage(), e);
+										"Error occured during the visualization process."
+											+System.lineSeparator()
+											+e.getClass().getName()+" thrown.", e);
 								monitor.done();
 								throw new InterruptedException();
 							}
