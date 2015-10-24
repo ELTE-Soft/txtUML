@@ -69,7 +69,7 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 	    group1.setLayout(new RowLayout(SWT.VERTICAL));
 	    group1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 3,1));
 	    txt = new Button(group1, SWT.RADIO);
-	    txt.setText("JTxtUML (Java syntax)");
+	    txt.setText("JtxtUML (Java syntax)");
 	    txt.setSelection(true);
 	    xtxt = new Button(group1, SWT.RADIO);
 	    xtxt.setText("XtxtUML (custom syntax)");
