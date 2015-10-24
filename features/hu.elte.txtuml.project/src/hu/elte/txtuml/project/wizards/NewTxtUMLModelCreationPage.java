@@ -15,6 +15,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.ui.dialogs.StatusInfo;
+import org.eclipse.jdt.internal.ui.wizards.NewWizardMessages;
 import org.eclipse.jdt.ui.wizards.NewTypeWizardPage;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
@@ -26,6 +28,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
+@SuppressWarnings("restriction")
 public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 	protected static final int COLS = 4;
 	protected Button txt;
@@ -62,14 +65,14 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 
 	private void createFileTypeChoice(Composite composite, int cols2) {
 		Group group1 = new Group(composite, SWT.SHADOW_IN);
-	    group1.setText("Type of Model");
+	    group1.setText("Model syntax");
 	    group1.setLayout(new RowLayout(SWT.VERTICAL));
 	    group1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 3,1));
 	    txt = new Button(group1, SWT.RADIO);
-	    txt.setText("standard txtUML Model (Pure Java representation)");
+	    txt.setText("JTxtUML (Java syntax)");
 	    txt.setSelection(true);
 	    xtxt = new Button(group1, SWT.RADIO);
-	    xtxt.setText("XtxtUML Model (Custom modelling syntax)");
+	    xtxt.setText("XtxtUML (custom syntax)");
 	}
 
 	protected void doStatusUpdate() {
@@ -163,5 +166,14 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 
 	private void setResource(IResource resource) {
 		this.resource = resource;
+	}
+	
+	@Override
+	protected IStatus typeNameChanged() {
+		IStatus status = super.typeNameChanged();
+		if(status.getMessage() != null && status.getMessage().equals(NewWizardMessages.NewTypeWizardPage_error_EnterTypeName)){
+			((StatusInfo) status).setError("Model name is empty");
+		}
+		return status;
 	}
 }
