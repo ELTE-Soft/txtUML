@@ -3,7 +3,6 @@ package hu.elte.txtuml.export.papyrus.handlers;
 import hu.elte.txtuml.eclipseutils.Dialogs;
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;
-import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.TxtUMLPapyrusModelManager;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -14,7 +13,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.ISelectionService;

@@ -140,9 +140,9 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 								if (warnings.size() != 0) {
 									StringBuilder warningMessages = new StringBuilder(
 											"Warnings:"
-													+ System.lineSeparator());
+													+ System.lineSeparator()+ System.lineSeparator()+"- ");
 									warningMessages.append(String.join(
-											System.lineSeparator(), warnings));
+											System.lineSeparator()+System.lineSeparator()+"- ", warnings));
 									warningMessages.append(System
 											.lineSeparator()
 											+ System.lineSeparator()
