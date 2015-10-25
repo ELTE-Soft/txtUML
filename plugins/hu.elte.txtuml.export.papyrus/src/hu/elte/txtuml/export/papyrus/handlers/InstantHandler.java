@@ -56,9 +56,7 @@ public class InstantHandler extends AbstractHandler {
 							} catch (Exception e) {
 								Dialogs.errorMsgb(
 										"txtUML visualization Error",
-										"Error occured during the visualization process."
-											+System.lineSeparator()
-											+e.getClass().getName()+" thrown.", e);
+										"Error occured during the visualization process.", e);
 								monitor.done();
 							}
 				         }

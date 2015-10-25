@@ -101,9 +101,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 								exporter.cleanBeforeVisualization();
 							} catch (CoreException e) {
 								Dialogs.errorMsgb("txtUML export Error - cleaning resources", 
-										"Error occured when cleaning resources."
-											+System.lineSeparator()
-											+e.getClass().getName()+" thrown.", e);
+										"Error occured when cleaning resources.", e);
 								throw new InterruptedException();
 							}
 							monitor.subTask("Exporting txtUML Model to UML2 model...");
@@ -114,9 +112,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 								monitor.worked(10);
 							} catch (Exception e) {
 								Dialogs.errorMsgb("txtUML export Error", 
-										"Error occured during the UML2 exportation."
-											+System.lineSeparator()
-											+e.getClass().getName()+" thrown.", e);
+										"Error occured during the UML2 exportation.", e);
 								monitor.done();
 								throw new InterruptedException();
 							}
@@ -163,9 +159,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 								} else {
 									Dialogs.errorMsgb(
 											"txtUML layout export Error",
-											"Error occured during the diagram layout interpretation."
-													+System.lineSeparator()
-													+e.getClass().getName()+" thrown.", e);
+											"Error occured during the diagram layout interpretation.", e);
 									monitor.done();
 									throw new InterruptedException();
 								}
@@ -179,9 +173,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 							} catch (Exception e) {
 								Dialogs.errorMsgb(
 										"txtUML visualization Error",
-										"Error occured during the visualization process."
-											+System.lineSeparator()
-											+e.getClass().getName()+" thrown.", e);
+										"Error occured during the visualization process.", e);
 								monitor.done();
 								throw new InterruptedException();
 							}

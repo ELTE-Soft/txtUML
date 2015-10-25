@@ -160,9 +160,7 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 		} catch (InvocationTargetException e) {
 			Throwable realException = e.getTargetException();
 			Dialogs.errorMsgb("File Creation error", 
-								"Error occured during file creation. "
-								+System.lineSeparator()
-								+realException.getClass().getName()+ " thrown.", realException);
+								"Error occured during file creation. ", realException);
 		}
 		return true;
 	}
