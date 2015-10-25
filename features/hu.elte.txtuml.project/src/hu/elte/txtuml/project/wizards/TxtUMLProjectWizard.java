@@ -12,6 +12,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -68,11 +69,13 @@ public class TxtUMLProjectWizard extends Wizard implements INewWizard {
 	@Override
 	public boolean performFinish() {
 		String projectName = page.getProjectName();
-		boolean success = setUptxtUMLProject(projectName);
+		IPath projectLocation = page.getLocationPath();
+		projectLocation = projectLocation.append(projectName);
+		boolean success = setUptxtUMLProject(projectLocation, projectName);
 		return success;
 	}
 
-	private boolean setUptxtUMLProject(String projectName) {
+	private boolean setUptxtUMLProject(IPath projectLocation, String projectName) {
 		IRunnableWithProgress op = new WorkspaceModifyOperation() {
 			
 			@Override
@@ -84,7 +87,7 @@ public class TxtUMLProjectWizard extends Wizard implements INewWizard {
 				}
 				
 				try {				
-					IProject project = ProjectCreator.createProject(projectName);
+					IProject project = ProjectCreator.createProjectOnLocation(projectLocation, projectName);
 					ProjectCreator.openProject(project);
 					
 					ProjectCreator.addProjectNatures(project, PROJECT_NATURE_IDS);

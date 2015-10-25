@@ -12,6 +12,7 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
@@ -36,6 +37,15 @@ public class ProjectCreator {
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		final IProject project = root.getProject(name);
 		project.create(new NullProgressMonitor());
+		return project;
+	}
+	
+	public static IProject createProjectOnLocation(IPath baseDirectory, String projectName)
+			throws CoreException{
+		IProjectDescription description = ResourcesPlugin.getWorkspace().newProjectDescription(projectName);
+		description.setLocation(baseDirectory);
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(description.getName());
+		project.create(description, null);
 		return project;
 	}
 
