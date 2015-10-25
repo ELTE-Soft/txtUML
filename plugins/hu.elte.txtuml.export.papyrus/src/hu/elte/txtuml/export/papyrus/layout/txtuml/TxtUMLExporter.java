@@ -60,9 +60,9 @@ public class TxtUMLExporter {
 			try {
 				DiagramExportationReport report = ExportUtils.exportTxtUMLLayout(projectName, layout);
 		        if(!report.isSuccessful()){
-		        	StringBuilder errorMessages = new StringBuilder("Errors occured during layout exportation:"+System.lineSeparator()+System.lineSeparator());
+		        	StringBuilder errorMessages = new StringBuilder("Errors occured during layout exportation:"+System.lineSeparator());
 		        	for(Object error : report.getErrors()){
-		        		errorMessages.append("- "+error+System.lineSeparator()+System.lineSeparator());
+		        		errorMessages.append("- "+error+System.lineSeparator());
 		        	}
 		        	errorMessages.append("The exportation was't successfull.");
 		        	throw new LayoutExportException(errorMessages.toString());
