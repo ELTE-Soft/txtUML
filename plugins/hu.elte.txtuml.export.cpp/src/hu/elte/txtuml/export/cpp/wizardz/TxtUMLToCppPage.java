@@ -36,7 +36,7 @@ public class TxtUMLToCppPage extends WizardPage {
 	protected TxtUMLToCppPage(){
 		super("Generate C++ Code Page");
 		setTitle("Generate C++ Code Page");
-		setDescription("Give your txtUML project and model class to creat C++ code!");
+		super.setDescription("Give your txtUML project and model class to creat C++ code!");
 		
 		
 	}
@@ -93,7 +93,7 @@ public class TxtUMLToCppPage extends WizardPage {
 		return txtUMLModel.getText();
 	}
 	
-	public String getDescription(){
+	public String getThreadDescription(){
 		return threadManagerDescription.getText();
 	}
 	

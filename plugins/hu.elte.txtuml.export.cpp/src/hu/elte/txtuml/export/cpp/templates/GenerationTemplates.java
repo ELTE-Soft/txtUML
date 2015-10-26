@@ -81,8 +81,8 @@ public class GenerationTemplates
 		String body="{}\n";
 		for(Pair<String, String> param:params_)
 		{
-			source+=","+param.getValue()+"("+GenerationNames.FormatIncomignParamName(param.getValue())+")";
-			body+=PrivateFunctionalTemplates.CppType(param.getKey())+" "+param.getValue()+";\n";
+			source+=","+param.getSecond()+"("+GenerationNames.FormatIncomignParamName(param.getSecond())+")";
+			body+=PrivateFunctionalTemplates.CppType(param.getFirst())+" "+param.getSecond()+";\n";
 		}
 		return source+body+"};\n\n";
 	}

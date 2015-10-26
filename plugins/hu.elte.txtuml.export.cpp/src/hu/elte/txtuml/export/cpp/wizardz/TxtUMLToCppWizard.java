@@ -49,7 +49,7 @@ public class TxtUMLToCppWizard extends Wizard{
 			
 			String txtUMLProject = createCppCodePage.getProject();
 			String txtUMLModel = createCppCodePage.getModel();
-			String threadManagmentDescription = createCppCodePage.getDescription();
+			String threadManagmentDescription = createCppCodePage.getThreadDescription();
 			
 			TxtUMLToCppPage.PROJECT_NAME = txtUMLProject;
 			TxtUMLToCppPage.MODEL_NAME = txtUMLModel;

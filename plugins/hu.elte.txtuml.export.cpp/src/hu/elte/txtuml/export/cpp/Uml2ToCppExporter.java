@@ -276,9 +276,9 @@ public class Uml2ToCppExporter
 		
 		for(Pair<String,String> param:allParam)
 		{
-			if(!Shared.isBasicType(param.getKey()))
+			if(!Shared.isBasicType(param.getFirst()))
 			{
-				String tmp=GenerationTemplates.ForwardDeclaration(param.getKey());
+				String tmp=GenerationTemplates.ForwardDeclaration(param.getFirst());
 				if(!forwardDecl.contains(tmp))
 				{
 					forwardDecl+=tmp;	
