@@ -19,6 +19,7 @@ public class ActivityTemplates
 	public static final String ReplaceCompositTypeOp=ReplaceSimpleTypeOp;
 	public static final String Self="this";
 	public static final String AccessOperatorForSets=GenerationNames.SimpleAccess;
+	
 		
 	public static String GeneralSetValue(String leftValueName_,String rightValueName_,String operator_)
 	{
@@ -123,15 +124,15 @@ public class ActivityTemplates
 		{
 			if(i == 1)
 			{
-				source+=SimpleIf(part.getFirst(),part.getSecond());
+				source+=SimpleIf(part.getKey(),part.getValue());
 			}
-			else if(i == branches_.size() && (part.getFirst().isEmpty() || part.getFirst().equals("else")))
+			else if(i == branches_.size() && (part.getKey().isEmpty() || part.getKey().equals("else")))
 			{
-				source+="else\n{\n"+part.getSecond()+"}\n";
+				source+="else\n{\n"+part.getValue()+"}\n";
 			}
 			else
 			{
-				source+=SimpleCondControlStruct("else if", part.getFirst(), part.getSecond());
+				source+=SimpleCondControlStruct("else if", part.getKey(), part.getValue());
 			}
 			++i;
 		}
@@ -150,13 +151,20 @@ public class ActivityTemplates
 		
 	public static String CreateObject(String typenName_,String objName_,Boolean rt_,Boolean isSm_)
 	{
-		String source=GenerationNames.PointerType(typenName_)+" "+objName_+"= "+GenerationNames.MemoryAllocator+" "+typenName_+"();\n";
+		String source;
 		if(rt_ && isSm_)
 		{
-			source+=RuntimeTemplates.CreateObject(objName_);
+			source = GenerationNames.PointerType(typenName_)+" "+objName_+"= "+GenerationNames.MemoryAllocator+" "+typenName_+"(" + RuntimeTemplates.RuntimeVarName + ");\n";
+			source += objName_ + GenerationNames.PointerAccess +  "startSM();\n";
+			//source+=RuntimeTemplates.CreateObject(objName_);
+		}
+		else{
+			source=GenerationNames.PointerType(typenName_)+" "+objName_+"= "+GenerationNames.MemoryAllocator+" "+typenName_+"();\n";
 		}
 		return source;
 	}
+	
+	
 	
 	public static String getOperationFromType(boolean isMultivalued_, boolean isReplace_) 
 	{

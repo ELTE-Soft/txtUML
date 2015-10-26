@@ -14,6 +14,9 @@ import java.util.Set;
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.State;
 
+
+
+
 import hu.elte.txtuml.utils.Pair;
 
 public class GenerationTemplates 
@@ -24,6 +27,10 @@ public class GenerationTemplates
 	public static String RuntimeHeader=RuntimeTemplates.RuntimeHeaderName;
 	public static String RuntimePath=RuntimeTemplates.RTPath;
 	public static String StandardIOinclude=GenerationNames.StandardIOinclude;
+	public static String RuntimeName = RuntimeTemplates.RuntimeIterfaceName;
+	public static String RuntimePointer = RuntimeTemplates.RuntimeIterfaceName + "*";
+	
+	public static String InitSignal = GenerationNames.InitialEventName;
 	
 	public static String EventBase()
 	{
@@ -74,8 +81,8 @@ public class GenerationTemplates
 		String body="{}\n";
 		for(Pair<String, String> param:params_)
 		{
-			source+=","+param.getSecond()+"("+GenerationNames.FormatIncomignParamName(param.getSecond())+")";
-			body+=PrivateFunctionalTemplates.CppType(param.getFirst())+" "+param.getSecond()+";\n";
+			source+=","+param.getValue()+"("+GenerationNames.FormatIncomignParamName(param.getValue())+")";
+			body+=PrivateFunctionalTemplates.CppType(param.getKey())+" "+param.getValue()+";\n";
 		}
 		return source+body+"};\n\n";
 	}
@@ -87,6 +94,7 @@ public class GenerationTemplates
 			return "";
 		}
 		String EventList = "enum Events{";
+		EventList += GenerationNames.EventEnumName("InitSignal") + ",";
 		for(SignalEvent item: events_)
 		{
 			EventList+=GenerationNames.EventEnumName(item.getSignal().getName())+",";
@@ -235,7 +243,7 @@ public class GenerationTemplates
 	
 	public static String ConstructorDef(String className_)//TODO too simple ....
 	{
-		return className_+"::"+className_+"()+{}\n\n";
+		return className_+"::"+className_+"(){}\n\n";
 	}
 
 	public static String TransitionActionDecl(String transitionActionName_)
@@ -321,8 +329,18 @@ public class GenerationTemplates
 	 * */
 	public static String SimpleStateMachineClassConstructor(String className_,Map<Pair<String,String>,Pair<String,String>> machine_,String intialState_,Boolean rt_)
 	{
-		String source=className_+"::"+className_+"():"+GenerationNames.DefaultStateInitialization+"\n{\n"+PrivateFunctionalTemplates.StateMachineClassConstructorSharedBody(className_, machine_, intialState_)+"}\n\n";
-		return source+PrivateFunctionalTemplates.SimpleStateMachineClassConstructorSharedBody(className_, machine_, intialState_, rt_);
+		if(Options.Runtime()){
+			String source=className_+"::"+className_+"(" + RuntimePointer + " rt):"+GenerationNames.DefaultStateInitialization +
+					"\n{\n"+PrivateFunctionalTemplates.StateMachineClassConstructorSharedBody(className_, machine_, intialState_)+"}\n\n";
+						return source+PrivateFunctionalTemplates.SimpleStateMachineClassConstructorSharedBody(className_, machine_, intialState_, rt_);
+		}
+		else{
+			String source=className_+"::"+className_+"():"+GenerationNames.DefaultStateInitialization +
+					"\n{\n"+PrivateFunctionalTemplates.StateMachineClassConstructorSharedBody(className_, machine_, intialState_)+"}\n\n";
+						return source+PrivateFunctionalTemplates.SimpleStateMachineClassConstructorSharedBody(className_, machine_, intialState_, rt_);
+		}
+			
+		
 	}
 	
 	public static String GuardFunction(String guardFunctionName_,String constraint_,String eventName_)
@@ -361,9 +379,11 @@ public class GenerationTemplates
 	
 
 	
-	public static String StateEnum(Iterable<State> states_) 
+	public static String StateEnum(Iterable<State> states_, String initialState) 
 	{
 		String StateList = "enum States{";
+		
+		StateList+=GenerationNames.StateEnumName(initialState)+",";
 		for(State item: states_)
 		{
 			StateList+=GenerationNames.StateEnumName(item.getName())+",";
@@ -405,6 +425,13 @@ public class GenerationTemplates
 	public static String EventParamUsage(String eventName_, String body_)
 	{
 		return body_.replaceAll((eventName_+"\\"+GenerationNames.SimpleAccess), (GenerationNames.RealEventName+GenerationNames.SimpleAccess));
+	}
+	
+	public static String CreateObject(String typeName,String objName){
+		String source;
+		source = GenerationNames.PointerType(typeName)+" "+objName+"= "+GenerationNames.MemoryAllocator+" "+typeName+"();\n";
+		return source;
+		
 	}
 	
 }

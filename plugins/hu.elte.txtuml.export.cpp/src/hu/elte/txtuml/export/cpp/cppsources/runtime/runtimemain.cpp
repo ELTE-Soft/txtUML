@@ -7,6 +7,7 @@ int main()
   //RuntimeI* rt=new SingleThreadRT();
   //RuntimeI* rt=new SeparateThreadRT();
   //RuntimeI* rt=new ThreadPoolRT();
+  //RuntimeI* rt=new ConfiguredThreadPoolsRT();
 
   //Class obj;
   //rt->setupObject(&obj);//emplace the object into the runtime

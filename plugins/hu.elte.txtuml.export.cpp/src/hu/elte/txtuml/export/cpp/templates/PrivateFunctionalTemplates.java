@@ -9,6 +9,8 @@ package hu.elte.txtuml.export.cpp.templates;
 import java.util.List;
 import java.util.Map;
 
+import hu.elte.txtuml.export.cpp.description.ThreadPoolConfiguration;
+import hu.elte.txtuml.export.cpp.thread.ThreadHandlingManager;
 import hu.elte.txtuml.utils.Pair;
 
 class PrivateFunctionalTemplates
@@ -46,7 +48,8 @@ class PrivateFunctionalTemplates
 		if(rt_)
 		{
 			source+=RuntimeTemplates.RTFunctionDecl(className_);
-		}		
+		}
+		
 		return source+GenerationNames.SimpleProcessEventDef(className_)+"\n"+
 				GenerationNames.SimpleSetStateDef(className_)+"\n"+
 				PrivateFunctionalTemplates.SetInitialState(className_,intialState_)+"\n";
@@ -67,16 +70,34 @@ class PrivateFunctionalTemplates
 			{
 				source+=parentClassName_+"::";
 			}
-			source+=GenerationNames.EventEnumName(entry.getKey().getFirst())+","+GenerationNames.StateEnumName(entry.getKey().getSecond())+"),";
+			source+=GenerationNames.EventEnumName(entry.getKey().getKey())+","+GenerationNames.StateEnumName(entry.getKey().getValue())+"),";
 			String guardName=GenerationNames.DefaultGuardName;
-			if(entry.getValue().getFirst() != null)
+			if(entry.getValue().getKey() != null)
 			{
-				guardName=entry.getValue().getFirst();
+				guardName=entry.getValue().getKey();
 			}		
 			source+=GenerationNames.GuardActionName+"("+GenerationNames.GuardFuncTypeName+"(&"+className_+"::"+guardName+"),"
-					+GenerationNames.FunctionPtrTypeName+"(&"+className_+"::"+entry.getValue().getSecond()+")));\n";
+					+GenerationNames.FunctionPtrTypeName+"(&"+className_+"::"+entry.getValue().getValue()+")));\n";
 		
 		}
+		
+		if(Options.ThreadManagement() && Options.Runtime()){
+			ThreadPoolConfiguration config = ThreadHandlingManager.Description().get(className_);
+			if(config == null){
+				source += "\n" + GenerationNames.PoolIdSetter + "(" + 0 + ");\n";
+			}
+			else{
+				source += "\n" + GenerationNames.PoolIdSetter + "(" + ThreadHandlingManager.Description().get(className_).getId() + ");\n";
+			}
+			
+		}
+		
+		if(Options.Runtime()){
+			source += "\n" + RuntimeTemplates.RuntimeSetter + "(rt); \n";
+			source += RuntimeTemplates.InitStateMachineForRuntime();
+		}
+		
+		
 		source+=GenerationNames.SetInitialStateName+"();\n";
 		
 		return source;
@@ -177,7 +198,7 @@ class PrivateFunctionalTemplates
 		String source="";
 		for(Pair<String,String> item:params_)
 		{
-			source+=PrivateFunctionalTemplates.CppType(item.getFirst())+" "+GenerationNames.FormatIncomignParamName(item.getSecond())+",";
+			source+=PrivateFunctionalTemplates.CppType(item.getKey())+" "+GenerationNames.FormatIncomignParamName(item.getValue())+",";
 		}
 		return source.substring(0,source.length()-1);
 	}
@@ -234,7 +255,9 @@ class PrivateFunctionalTemplates
 	
 	public static String SetInitialState(String className_,String initialState_)
 	{
-		return GenerationNames.NoReturn+" "+className_+"::"+GenerationNames.SetInitialStateName+"(){"+GenerationNames.setStateFuncName+"("+GenerationNames.StateEnumName(initialState_)+");}\n";
+		
+		return GenerationNames.NoReturn+" "+className_+"::"+GenerationNames.SetInitialStateName+"(){"+ 
+			GenerationNames.setStateFuncName+"("+GenerationNames.StateEnumName(initialState_)+");}\n";
 	}
 	
 	public static String SubStateMachineClassFixPrivateParts(String parentclass_) 

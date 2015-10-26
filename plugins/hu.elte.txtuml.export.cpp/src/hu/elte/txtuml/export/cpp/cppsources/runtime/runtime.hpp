@@ -3,11 +3,17 @@
 
 #include <thread>
 #include <atomic>
+#include <mutex>
+#include <list>
+#include <map>
 
 #include "runtimetypes.hpp"
 #include "statemachineI.hpp"
 #include "threadpool.hpp"
 #include "eventI.hpp"
+#include "threadpoolmanager.hpp"
+#include "runtimetypes.hpp"
+
 
 class RuntimeI
 {
@@ -19,7 +25,9 @@ public:
 
   virtual void startObject(StateMachineI* sm_)=0;
   virtual void run()=0;
+  virtual void removeObject(StateMachineI* sm_) {sm_->setRuntime(nullptr);}
   void stop();
+  virtual void stopUponCompletion() = 0;
 
 protected:
   virtual void setupObjectVirtual(StateMachineI*){}
@@ -43,11 +51,15 @@ public:
   SingleThreadRT();
   void startObject(StateMachineI* sm_){sm_->startSM();}
   void run();
+  void stopUponCompletion();
 
 private:
   void setupObjectVirtual(StateMachineI* sm_){sm_->setMessageQueue(_messageQueue);}
 
   std::shared_ptr<MessageQueueType> _messageQueue;
+  
+  std::atomic_bool waiting;
+  std::condition_variable waiting_empty_cond;
 };
 
 class ThreadPoolRT:public RuntimeI
@@ -56,11 +68,30 @@ public:
   ThreadPoolRT(size_t threads_= defaultThreadCount,int workTime_= defaultWorkTime);
   void startObject(StateMachineI* sm_){sm_->startSM();}
   void run();
+  void stopUponCompletion() {_pool.stopUponCompletion();}
 
 private:
   void setupObjectVirtual(StateMachineI* sm_){sm_->setPool(&_pool);}
 
   StateMachineThreadPool _pool;
+};
+
+class ConfiguredThreadPoolsRT: public RuntimeI
+{
+public:
+	ConfiguredThreadPoolsRT();
+	
+	void startObject(StateMachineI* sm_){sm_->startSM();}
+	void run();
+	void removeObject(StateMachineI*);
+	void stopUponCompletion();
+private:
+	void setupObjectVirtual(StateMachineI*);
+	
+	std::map<id_type,int> number_of_objects;
+	std::list<id_type> pool_ides;
+	
+	ThreadPoolManager* pool_manager;
 };
 
 

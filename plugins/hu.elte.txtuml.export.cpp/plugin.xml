@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:org.eclipse.ui.main.menu">
+         <menu
+               id="hu.elte.txtuml.export.menu"
+               label="txtUML">
+            <command
+                  commandId="hu.elte.txtuml.export.cpp.translate"
+                  label="Generate C++ code from txtUML"
+                  style="push">
+            </command>
+            
+             <command
+                  commandId="hu.elte.txtuml.export.cpp.UMLToCpp"
+                  label="Generate C++ code from UML"
+                  style="push">
+            </command>
+         </menu>
+      </menuContribution>
+   </extension>
+   
+   
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="hu.elte.txtuml.export.cpp.handlers.TxtUMLToCppHandler"
+            id="hu.elte.txtuml.export.cpp.translate"
+            name="Generate cpp code from TxtUML">
+      </command>
+      
+      <command
+            defaultHandler="hu.elte.txtuml.export.cpp.handlers.UMLToCppHandler"
+            id="hu.elte.txtuml.export.cpp.UMLToCpp"
+            name="Generate cpp code from UML">
+      </command>
+   </extension>
+   
+   
+</plugin>

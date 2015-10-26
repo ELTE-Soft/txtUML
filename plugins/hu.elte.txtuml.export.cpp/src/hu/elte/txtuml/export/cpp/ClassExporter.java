@@ -31,6 +31,7 @@ import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.Transition;
 import org.eclipse.uml2.uml.Trigger;
+import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
@@ -53,8 +54,11 @@ public class ClassExporter
 	private List<String> _subSubMachines;
 	private enum FuncTypeEnum {Entry,Exit}
 	
-	public ClassExporter()
-	{
+	public ClassExporter(){
+		reiniIialize();
+	}
+	
+	public void reiniIialize(){
 		_guardMap=new HashMap<String, String>();
 		_entryMap= null;
 		_exitMap=null;
@@ -77,7 +81,7 @@ public class ClassExporter
 			for(Map.Entry<String, Pair<String, Region>> entry:_submachineMap.entrySet())
 			{
 				ClassExporter classExporter=new ClassExporter();
-				classExporter.createSubSmSource(entry.getValue().getFirst(),class_.getName(),entry.getValue().getSecond(),dest_);
+				classExporter.createSubSmSource(entry.getValue().getKey(),class_.getName(),entry.getValue().getValue(),dest_);
 				_subSubMachines.addAll(classExporter.getSubmachines());
 			}
 		}
@@ -95,7 +99,7 @@ public class ClassExporter
 		{
 			for(Map.Entry<String, Pair<String, Region>> entry:_submachineMap.entrySet())
 			{
-				ret.add(entry.getValue().getFirst());
+				ret.add(entry.getValue().getKey());
 			}
 			ret.addAll(_subSubMachines);
 		}
@@ -111,7 +115,7 @@ public class ClassExporter
 		
 		for(Map.Entry<String, Pair<String, Region>> entry:_submachineMap.entrySet())
 		{
-			createSubSmSource(entry.getValue().getFirst(),parentClass_,entry.getValue().getSecond(),dest_);
+			createSubSmSource(entry.getValue().getKey(),parentClass_,entry.getValue().getValue(),dest_);
 		}
 		
 		source=createSubSmClassHeaderSource(className_,parentClass_,region_);
@@ -142,12 +146,17 @@ public class ClassExporter
 			privateParts+=createEntryFunctionsDecl(region) + createExitFunctionsDecl(region) +
 					   createGuardFunctions(region)+
 					   createTransitionFunctionDecl(region);
-			publicParts+=GenerationTemplates.StateEnum(getStateList(region))+
+			publicParts+=GenerationTemplates.StateEnum(getStateList(region),getInitState(region))+
 					   	GenerationTemplates.EventEnum(getEventList(region));
 			
 			if(_submachineMap.isEmpty())
 			{
-				source=GenerationTemplates.SimpleStateMachineClassHeader(dependency,class_.getName(),publicParts,protectedParts,privateParts,Options.Runtime());
+				List<String> constructorParams = new ArrayList<String>();
+				if(Options.Runtime()){
+					constructorParams.add(GenerationTemplates.RuntimeName);
+				}
+				
+				source=GenerationTemplates.SimpleStateMachineClassHeader(dependency,class_.getName(),constructorParams,publicParts,protectedParts,privateParts,Options.Runtime());
 			}
 			else
 			{
@@ -170,7 +179,7 @@ public class ClassExporter
 				   GenerationTemplates.formatSubSmFunctions(createGuardFunctions(region_))+
 				   createTransitionFunctionDecl(region_);
 		String protectedParts="";
-		String publicParts=GenerationTemplates.StateEnum(getStateList(region_));
+		String publicParts=GenerationTemplates.StateEnum(getStateList(region_),getInitState(region_));
 		
 		if(_submachineMap.isEmpty())
 		{
@@ -389,6 +398,7 @@ public class ClassExporter
 		String source="";
 		List<String> types=new ArrayList<String>();
 		
+		
 		//collecting each item type for dependency analysis
 		for(Operation item:class_.getAllOperations())
 		{
@@ -404,7 +414,9 @@ public class ClassExporter
 		{
 			if(item.getType() != null )
 			{
-				types.add(item.getType().getName());
+				
+				Type attr = item.getType();
+				types.add(attr.getName());
 				if( (item.getUpper() > 1 || item.getUpper() == _UMLMany ) && !multip)
 				{
 					multip=true;
@@ -419,7 +431,7 @@ public class ClassExporter
 		{
 			for(Map.Entry<String,Pair<String,Region>> entry:_submachineMap.entrySet())
 			{
-				types.add(entry.getValue().getFirst());
+				types.add(entry.getValue().getKey());
 			}
 		}
 		
@@ -644,7 +656,7 @@ public class ClassExporter
 		Map<String, String> ret=new HashMap<String, String>();
 		for(Map.Entry<String, Pair<String, Region>> entry:_submachineMap.entrySet())
 		{
-			ret.put(entry.getKey(), entry.getValue().getFirst());
+			ret.put(entry.getKey(), entry.getValue().getKey());
 		}
 		return ret;
 	}
@@ -654,7 +666,7 @@ public class ClassExporter
 		Map<String,String> ret=new HashMap<String,String>();
 		for(Map.Entry<String,Pair<String, String>> entry:map_.entrySet())
 		{
-			ret.put(entry.getValue().getFirst(), entry.getKey());
+			ret.put(entry.getValue().getKey(), entry.getKey());
 		}
 		return ret;
 	}
@@ -664,7 +676,7 @@ public class ClassExporter
 		String source="";
 		for(Map.Entry<String,Pair<String, String>> entry:_entryMap.entrySet())
 		{
-			source+=GenerationTemplates.FunctionDef(className_,entry.getKey(),entry.getValue().getSecond());
+			source+=GenerationTemplates.FunctionDef(className_,entry.getKey(),entry.getValue().getValue());
 		}
 		return source;
 	}
@@ -674,7 +686,7 @@ public class ClassExporter
 		String source="";
 		for(Map.Entry<String,Pair<String, String>> entry:_exitMap.entrySet())
 		{
-			source+=GenerationTemplates.FunctionDef(className_,entry.getKey(),entry.getValue().getSecond());
+			source+=GenerationTemplates.FunctionDef(className_,entry.getKey(),entry.getValue().getValue());
 		}
 		return source;
 	}
@@ -693,15 +705,34 @@ public class ClassExporter
 	private String getInitialState(Region region_)
 	{
 		String source="NO_INITIAL_STATE";
-		for(Transition item:region_.getTransitions())
+		for(Vertex item:region_.getSubvertices())
+		{
+			if(item.eClass().equals(UMLPackage.Literals.PSEUDOSTATE))
+			{
+				source = item.getName();
+			}
+		}
+		/*for(Transition item:region_.getTransitions())
 		{
 			if(item.getSource().eClass().equals(UMLPackage.Literals.PSEUDOSTATE))
 			{
 				source=item.getTarget().getName();//TODO only works if the end is a state (not choice,etc..)!!!!
 				break;
 			}
-		}
+		}*/
 		return source;
+	}
+	
+	private String getInitState(Region region){
+		String ret = "";
+		for(Vertex item:region.getSubvertices())
+		{
+			if(item.eClass().equals(UMLPackage.Literals.PSEUDOSTATE))
+			{
+				ret = item.getName();
+			}
+		}
+		return ret;
 	}
 
 	/*
@@ -714,6 +745,11 @@ public class ClassExporter
 		for(Transition item:region_.getTransitions())
 		{
 			Pair<String,String> eventSignalPair=null;
+			
+			if(item.getTriggers().isEmpty()){
+				eventSignalPair = new Pair<String,String>(GenerationTemplates.InitSignal,item.getSource().getName());
+			}
+			
 			for(Trigger tri:item.getTriggers())
 			{
 				Event e=tri.getEvent();
@@ -779,7 +815,7 @@ public class ClassExporter
 		Map<String,Pair<String,Region>> submachineMap=getSubMachines(region_);
 		for(Map.Entry<String,Pair<String,Region>> entry:submachineMap.entrySet())
 		{
-			eventList.addAll(getEventList(entry.getValue().getSecond()));
+			eventList.addAll(getEventList(entry.getValue().getValue()));
 		}
 			
 		return eventList;

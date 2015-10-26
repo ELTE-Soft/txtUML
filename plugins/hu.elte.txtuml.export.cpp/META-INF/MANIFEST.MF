@@ -1,11 +1,19 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: txtUML C++ model compiler
-Bundle-SymbolicName: hu.elte.txtuml.export.cpp
+Bundle-SymbolicName: hu.elte.txtuml.export.cpp;singleton:=true
 Bundle-Version: 0.1.1.qualifier
 Bundle-Vendor: ELTE
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.uml2.uml;bundle-version="5.0.1",
  org.eclipse.uml2.uml.resources;bundle-version="5.0.0",
  hu.elte.txtuml.export.uml2,
- hu.elte.txtuml.utils
+ hu.elte.txtuml.utils,
+ org.eclipse.jface,
+ org.eclipse.core.resources,
+ hu.elte.txtuml.export,
+ hu.elte.txtuml.eclipseutils,
+ org.eclipse.equinox.registry,
+ org.eclipse.osgi,
+ org.eclipse.core.runtime;bundle-version="3.10.0",
+ hu.elte.txtuml.api.model
