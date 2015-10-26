@@ -1,7 +1,7 @@
 # txtUML
 Textual, eXecutable, Translatable UML
 
-See http://txtuml.inf.elte.hu for details!
+See the documentation and installation instructions on http://txtuml.inf.elte.hu
 
 
 
