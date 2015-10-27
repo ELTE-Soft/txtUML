@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.uml2.transform.exporters;
 import hu.elte.txtuml.export.uml2.transform.backend.ParameterMap;
 import hu.elte.txtuml.export.uml2.utils.ActivityEditor;
 
+import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityNode;
@@ -43,9 +44,14 @@ public class MethodBodyExporter extends ActivityEditor {
 		ActivityNode initialNode = createInitialNode("initial_node");
 		ActivityNode finalNode = createFinalNode("final_node");
 
-		SequenceNode bodyNode = BlockExporter.exportBody(this, methodDeclaration.getBody());
-		createControlFlowBetweenActivityNodes(initialNode, bodyNode);
-		createControlFlowBetweenActivityNodes(bodyNode, finalNode);
+		Block body = methodDeclaration.getBody();
+		if(body != null) {
+			SequenceNode bodyNode = BlockExporter.exportBody(this, body);
+			createControlFlowBetweenActivityNodes(initialNode, bodyNode);
+			createControlFlowBetweenActivityNodes(bodyNode, finalNode);
+		} else {
+			createControlFlowBetweenActivityNodes(initialNode, finalNode);
+		}	
 	}
 	
 	public ParameterMap getParameters() {

@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.uml2.transform.exporters.expressions;
 
+import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
 import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.actions.CreateObjectActionExporter;
 import hu.elte.txtuml.utils.Pair;
@@ -179,7 +180,12 @@ class ExpressionVisitor extends ASTVisitor {
 			}
 		} else {
 			if (TypeExporter.isAction(binding)) {
-				result = expressionExporter.exportAction(binding, args);
+				try {
+					result = expressionExporter.exportAction(binding, args);
+				} catch (ExportException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				return false;
 			}
 		}

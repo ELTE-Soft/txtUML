@@ -4,6 +4,7 @@ import static org.eclipse.uml2.uml.ParameterDirectionKind.INOUT_LITERAL;
 import static org.eclipse.uml2.uml.ParameterDirectionKind.IN_LITERAL;
 import static org.eclipse.uml2.uml.ParameterDirectionKind.OUT_LITERAL;
 import static org.eclipse.uml2.uml.ParameterDirectionKind.RETURN_LITERAL;
+import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
 import hu.elte.txtuml.export.uml2.transform.backend.ParameterMap;
 import hu.elte.txtuml.export.uml2.transform.backend.VariableMap;
 import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
@@ -134,7 +135,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 		}
 	}
 
-	public Expr exportAction(IMethodBinding binding, List<Expr> args) {
+	public Expr exportAction(IMethodBinding binding, List<Expr> args) throws ExportException {
 		String actionName = binding.getName();
 
 		if (actionName.equals("create")) {
