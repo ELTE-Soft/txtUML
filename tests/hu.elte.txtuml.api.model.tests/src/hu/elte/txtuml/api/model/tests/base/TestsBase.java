@@ -30,9 +30,9 @@ public class TestsBase {
 		Class<? extends Vertex> from = t.getClass().getAnnotation(From.class).value();
 		Class<? extends Vertex> to = t.getClass().getAnnotation(To.class).value();
 		
-		x.leavingVertex(r, InstanceCreator.createInstance(from));
+		x.leavingVertex(r, InstanceCreator.create(from));
 		x.usingTransition(r, t);
-		x.enteringVertex(r, InstanceCreator.createInstance(to));
+		x.enteringVertex(r, InstanceCreator.create(to));
 	}
 	
 	public static void stopModelExecution() {
