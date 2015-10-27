@@ -107,7 +107,9 @@ This Agreement is governed by the laws of the State of New York and the intellec
    </license>
 
    <url>
-      <discovery label="Official txtUML website" url="http://txtuml.inf.elte.hu"/>
+      <update label="txtUML Update Site" url="http://txtuml.inf.elte.hu/releases/latest/"/>
+      <discovery label="XText Update Site" url="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases"/>
+      <discovery label="Papyrus Extras Update Site" url="http://download.eclipse.org/modeling/mdt/papyrus/updates/releases/luna/extra"/>
    </url>
 
    <requires>
