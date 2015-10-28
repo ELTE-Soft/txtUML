@@ -19,11 +19,11 @@ public class PerformanceTester {
 		
 		ModelExecutor.Settings.setDynamicChecks(false);
 
-		PerformanceTestModel_.Test m = Action
-				.create(PerformanceTestModel_.Test.class);
+//		PerformanceTestModel_.Test m = Action
+//				.create(PerformanceTestModel_.Test.class);
 
-//		PerformanceTestModel.Test m = Action
-//				.create(PerformanceTestModel.Test.class);
+		PerformanceTestModel.Test m = Action
+				.create(PerformanceTestModel.Test.class);
 		
 		m.test();
 		
