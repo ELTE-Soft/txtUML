@@ -1,9 +1,7 @@
 package hu.elte.txtuml.examples.machine;
 
-import XMachine1.*;
-
 model XMachine1 {
-		// classes
+	// classes
 	
 	class Machine {
 		initial Init;
@@ -91,8 +89,8 @@ model XMachine1 {
 	// associations
 	
 	association Usage {
-		public 1 Machine usedMachine;
-		public hidden * User userOfMachine;
+		1 Machine usedMachine;
+		hidden * User userOfMachine;
 	}
 
 	// signals
