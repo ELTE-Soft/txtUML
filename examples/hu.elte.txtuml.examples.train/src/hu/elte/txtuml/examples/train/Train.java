@@ -140,116 +140,34 @@ class TrainTester extends Thread {
 		g = Action.create(Gearbox.class);
 		e = Action.create(Engine.class);
 		l = Action.create(Lamp.class);
-		Action.start(g);
-		Action.start(e);
-		Action.start(l);
 		Action.link(GE.g.class, g, GE.e.class, e);
 		Action.link(GL.g.class, g, GL.l.class, l);
 		Action.link(LE.l.class, l, LE.e.class, e);
+		Action.start(g);
+		Action.start(e);
+		Action.start(l);
 	}
 
 	public void test() {
 		try {
 			int time = 50;
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(l, new Light());
+			for(int i=0; i<3; i++) {
+				Thread.sleep(time);
+				Action.log("");
+				Action.send(l, new Light());
+			}
 
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(l, new Light());
+			Thread.sleep(2 * time);
 
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(l, new Light());
-
-			Thread.sleep(3 * time);
-			Action.log("");
-			Action.send(g, new Forward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Backward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Forward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Backward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Forward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Backward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Forward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Backward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Forward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Backward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Forward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Backward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Forward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Backward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Forward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Backward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Forward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Backward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Forward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Backward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Forward());
-
-			Thread.sleep(time);
-			Action.log("");
-			Action.send(g, new Backward());
+			for(int i=0; i<11; i++) {
+				Thread.sleep(3 * time);
+				Action.log("");
+				Action.send(g, new Forward());
+	
+				Thread.sleep(time);
+				Action.log("");
+				Action.send(g, new Backward());
+			}
 
 			ModelExecutor.shutdown();
 		} catch (InterruptedException e) {
