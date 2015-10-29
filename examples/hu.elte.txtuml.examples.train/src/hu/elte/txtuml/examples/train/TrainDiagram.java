@@ -8,9 +8,9 @@ import hu.elte.txtuml.examples.train.TrainModel.Lamp;
 
 class TrainDiagram extends Diagram
 {
-	class Phantom01 extends Phantom{}
+	class TopPhantom extends Phantom{}
 	
 	@Diamond(bottom = Lamp.class, left = Engine.class,
-			right = Gearbox.class, top = Phantom01.class)
+			right = Gearbox.class, top = TopPhantom.class)
     class TrainLayout extends Layout {}
 }
