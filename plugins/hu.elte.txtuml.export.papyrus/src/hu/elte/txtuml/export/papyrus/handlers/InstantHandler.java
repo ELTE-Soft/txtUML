@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.papyrus.handlers;
 
+import hu.elte.txtuml.eclipseutils.Dialogs;
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;
 
@@ -50,7 +51,14 @@ public class InstantHandler extends AbstractHandler {
 				      new IRunnableWithProgress() {
 				         @Override
 						public void run(IProgressMonitor monitor) {
-				            pv.run(monitor);
+				            try {
+								pv.run(monitor);
+							} catch (Exception e) {
+								Dialogs.errorMsgb(
+										"txtUML visualization Error",
+										"Error occured during the visualization process.", e);
+								monitor.done();
+							}
 				         }
 				      },
 				      ResourcesPlugin.getWorkspace().getRoot());

@@ -107,7 +107,9 @@ This Agreement is governed by the laws of the State of New York and the intellec
    </license>
 
    <url>
-      <discovery label="Official txtUML website" url="http://txtuml.inf.elte.hu"/>
+      <update label="txtUML Update Site" url="http://txtuml.inf.elte.hu/releases/latest/"/>
+      <discovery label="Xtext Update Site" url="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
+      <discovery label="Papyrus Extras Update Site" url="http://download.eclipse.org/modeling/mdt/papyrus/updates/releases/luna/extra/"/>
    </url>
 
    <requires>
@@ -136,24 +138,24 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <import plugin="org.eclipse.jdt.core" version="3.10.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jface"/>
       <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.xtext"/>
+      <import plugin="org.eclipse.xtext" version="2.8" match="greaterOrEqual"/>
       <import plugin="org.eclipse.equinox.common" version="3.5.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.xtext.util"/>
+      <import plugin="org.eclipse.xtext.util" version="2.8" match="greaterOrEqual"/>
       <import plugin="org.eclipse.emf.common"/>
-      <import plugin="org.eclipse.xtext.xbase.lib"/>
+      <import plugin="org.eclipse.xtext.xbase.lib" version="2.8" match="greaterOrEqual"/>
       <import plugin="org.antlr.runtime"/>
-      <import plugin="org.eclipse.xtext.common.types"/>
-      <import plugin="org.eclipse.xtext.xbase"/>
+      <import plugin="org.eclipse.xtext.common.types" version="2.8" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.xtext.xbase" version="2.8" match="greaterOrEqual"/>
       <import plugin="org.apache.log4j"/>
-      <import plugin="org.eclipse.xtext.ui"/>
+      <import plugin="org.eclipse.xtext.ui" version="2.8" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.editors" version="3.5.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.ide" version="3.5.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.xtext.ui.shared"/>
-      <import plugin="org.eclipse.xtext.xbase.ui"/>
-      <import plugin="org.eclipse.xtext.builder"/>
-      <import plugin="org.eclipse.xtext.common.types.ui"/>
+      <import plugin="org.eclipse.xtext.ui.shared" version="2.8" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.xtext.xbase.ui" version="2.8" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.xtext.builder" version="2.8" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.xtext.common.types.ui" version="2.8" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt.debug.ui"/>
-      <import plugin="org.eclipse.xtext.ui.codetemplates.ui"/>
+      <import plugin="org.eclipse.xtext.ui.codetemplates.ui" version="2.8" match="greaterOrEqual"/>
       <import plugin="org.eclipse.compare"/>
       <import plugin="com.google.guava"/>
       <import plugin="org.eclipse.xtend.lib"/>

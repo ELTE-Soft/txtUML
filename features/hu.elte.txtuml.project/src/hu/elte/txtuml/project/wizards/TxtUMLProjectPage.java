@@ -1,20 +1,13 @@
 package hu.elte.txtuml.project.wizards;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
+import hu.elte.txtuml.project.Messages;
 
-public class TxtUMLProjectPage extends WizardPage {
-	private Text projectName;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jdt.core.JavaConventions;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
+
+public class TxtUMLProjectPage extends WizardNewProjectCreationPage {
 	/**
 	 * Constructor for SampleNewWizardPage.
 	 * 
@@ -26,61 +19,23 @@ public class TxtUMLProjectPage extends WizardPage {
 		setDescription("Give the name of the new txtUML Project!");
 	}
 
-	/**
-	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(Composite)
-	 */
 	@Override
-	public void createControl(Composite parent) {
-		Composite container = new Composite(parent, SWT.NULL);
-		GridLayout layout = new GridLayout();
-		container.setLayout(layout);
-		layout.numColumns = 2;
-		layout.verticalSpacing = 9;
-		Label label = new Label(container, SWT.NULL);
-		label.setText("&Project Name:");
-
-		projectName = new Text(container, SWT.BORDER | SWT.SINGLE);
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		projectName.setLayoutData(gd);
-		projectName.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				dialogChanged();
+	protected boolean validatePage() {
+		if (!super.validatePage())
+			return false;
+		IStatus status = JavaConventions.validatePackageName(getProjectName(), JavaCore.VERSION_1_5,
+				JavaCore.VERSION_1_5);
+		if (!status.isOK()) {
+			if(status.matches(IStatus.WARNING)){
+				setMessage(status.getMessage(), IStatus.WARNING);
+				return true;
 			}
-		});
-
-		setPageComplete(false);
-		setControl(container);
-	}
-
-
-	/**
-	 * Ensures that both text fields are set.
-	 */
-
-	private void dialogChanged() {
-		String projectname = getProjectName();
-		if (projectname.length() == 0) {
-			updateStatus("Project name must be specified");
-			return;
+			setErrorMessage(Messages.WizardNewtxtUMLProjectCreationPage_ErrorMessageProjectName + status.getMessage());
+			return false;
 		}
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		final IProject project = root.getProject(projectname);
-		if (project.exists()) {
-			updateStatus("This project already exists");
-			return;
-		}
-
-		updateStatus(null);
-	}
-
-	private void updateStatus(String message) {
-		setErrorMessage(message);
-		setPageComplete(message == null);
-	}
-
-	public String getProjectName() {
-		return projectName.getText();
+		setErrorMessage(null);
+		setMessage(null);
+		return true;
 	}
 
 }

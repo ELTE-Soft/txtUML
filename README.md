@@ -1,11 +1,12 @@
 # txtUML
-Textual, eXecutable, Translatable UML
+Textual, eXecutable, Translatable UML - 
+an open source project to make model driven development easier
 
-See http://txtuml.inf.elte.hu for details!
+See the user documentation and installation at http://txtuml.inf.elte.hu
+
+For developer documentation see the [txtUML wiki](https://github.com/ELTE-Soft/txtUML/wiki)
 
 
-
-The name txtUML stands for textual, executable and translatable UML. It is an open source project with the goal to make model driven development easier.
 
 ## Textual
 Experience shows that graphical diagrams are valuable for understanding software. On the other hand, writing software in text is usually far more efficient than drawing diagrams in a modeling IDE. The txtUML project aims at combining the advantages of these two approaches: creating models textually and still have possibility to visualize it on graphical diagrams.
