@@ -3,7 +3,7 @@ model PerformanceTestModel {
 	class Test {
 				
 		public void test() {
-			A a = create(A, 10000);
+			PerformanceTestModel.A a = create(A, 10000);
 			start(a);
 		}
 		
@@ -23,7 +23,7 @@ model PerformanceTestModel {
 		state A1 {
 			entry {
 				if (remainingCycles-- <= 0) {
-					for (B b in A.this->AB::b) {
+					for (PerformanceTestModel.B b in A.this->PerformanceTestModel::AB::b) {
 						unlink(AB.a, A.this, AB.b, b);
 					}
 					delete A.this;
@@ -36,7 +36,7 @@ model PerformanceTestModel {
 		
 		private void createChild() {
 			// B b = new B();
-			B b = new B();
+			PerformanceTestModel.B b = new PerformanceTestModel.B();
 			link(AB.a, this, AB.b, b);
 			start(b);
 		}
@@ -63,12 +63,12 @@ model PerformanceTestModel {
 			trigger Forward;
 			effect {
 				// log("A1->A2");
-				Forward sig = getSignal(Forward);
+				PerformanceTestModel.Forward sig = getSignal(PerformanceTestModel.Forward);
 				if (sig.nf % 4 == 0) {
 					createChild();
 				}
-				if (!A.this->AB::b.isEmpty()) {
-					send new Forward(0) to A.this->AB::b.selectAny();
+				if (!A.this->PerformanceTestModel::AB::b.isEmpty()) {
+					send new Forward(0) to A.this->PerformanceTestModel::AB::b.selectAny();
 				}
 				numForward++;
 				send new Forward(numForward) to A.this;
@@ -81,12 +81,12 @@ model PerformanceTestModel {
 			trigger Forward;
 			effect {
 				// log("A2->A3");
-				Forward sig = getSignal(Forward);
+				PerformanceTestModel.Forward sig = getSignal(PerformanceTestModel.Forward);
 				if (sig.nf % 4 == 0) {
 					createChild();
 				}
-				if (!A.this->AB::b.isEmpty()) {
-					send new Forward(0) to A.this->AB::b.selectAny();
+				if (!A.this->PerformanceTestModel::AB::b.isEmpty()) {
+					send new Forward(0) to A.this->PerformanceTestModel::AB::b.selectAny();
 				}
 				numForward++;
 				send new Forward(numForward) to A.this;
@@ -99,12 +99,12 @@ model PerformanceTestModel {
 			trigger Forward;
 			effect {
 				// log("A3->A4");
-				Forward sig = getSignal(Forward);
+				PerformanceTestModel.Forward sig = getSignal(PerformanceTestModel.Forward);
 				if (sig.nf % 4 == 0) {
 					createChild();
 				}
-				if (!A.this->AB::b.isEmpty()) {
-					send new Forward(0) to A.this->AB::b.selectAny();
+				if (!A.this->PerformanceTestModel::AB::b.isEmpty()) {
+					send new Forward(0) to A.this->PerformanceTestModel::AB::b.selectAny();
 				}
 				numForward++;
 				send new Forward(numForward) to A.this;
@@ -117,12 +117,12 @@ model PerformanceTestModel {
 			trigger Forward;
 			effect {
 				// log("A4->A1");
-				Forward sig = getSignal(Forward);
+				PerformanceTestModel.Forward sig = getSignal(PerformanceTestModel.Forward);
 				if (sig.nf % 4 == 0) {
 					createChild();
 				}
-				if (!A.this->AB::b.isEmpty()) {
-					send new Forward(0) to A.this->AB::b.selectAny();
+				if (!A.this->PerformanceTestModel::AB::b.isEmpty()) {
+					send new Forward(0) to A.this->PerformanceTestModel::AB::b.selectAny();
 				}
 				numForward++;
 				send new Forward(numForward) to A.this;
@@ -173,10 +173,10 @@ model PerformanceTestModel {
 		state B4;
 		state finalstate {
 			entry {
-				if (B.this->AB::a.isEmpty()) {
+				if (B.this->PerformanceTestModel::AB::a.isEmpty()) {
 				} else {
-					A a = B.this->AB::a.selectAny();
-					unlink(AB.a, a, AB.b, B.this);
+					PerformanceTestModel.A a = B.this->PerformanceTestModel::AB::a.selectAny();
+					unlink(PerformanceTestModel.AB.a, a, AB.b, PerformanceTestModel.B.this);
 					a.childTerminated();
 				}
 				delete B.this;
