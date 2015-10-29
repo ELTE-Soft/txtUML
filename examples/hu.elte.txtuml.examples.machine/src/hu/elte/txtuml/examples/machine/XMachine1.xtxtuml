@@ -1,5 +1,11 @@
 package hu.elte.txtuml.examples.machine;
 
+import hu.elte.txtuml.api.^model.ModelExecutor;
+import hu.elte.txtuml.examples.machine.XMachine1.Machine;
+import hu.elte.txtuml.examples.machine.XMachine1.User;
+import hu.elte.txtuml.examples.machine.XMachine1.Usage;
+import hu.elte.txtuml.examples.machine.XMachine1.DoYourWork;
+
 model XMachine1 {
 	// classes
 	
@@ -78,7 +84,7 @@ model XMachine1 {
 		
 		void doWork() {
 			log("\tUser: starting to work...");
-			XMachine1.Machine myMachine = this->Usage::usedMachine.selectAny();
+			XMachine1.Machine myMachine = this->hu::elte::txtuml::examples::machine::XMachine1::Usage::usedMachine.selectAny();
 			send new ButtonPress() to myMachine;
 			send new ButtonPress() to myMachine;
 			send new ButtonPress() to myMachine;
@@ -97,4 +103,23 @@ model XMachine1 {
 	
 	signal ButtonPress;
 	signal DoYourWork;
+}
+
+execution XMachine1Tester {
+	ModelExecutor.Settings.setExecutorLog(false);
+	Machine m = create(Machine);
+	User u1 = create(User);
+	User u2 = create(User);
+
+	link(Usage.usedMachine, m, Usage.userOfMachine, u1);
+	link(Usage.usedMachine, m, Usage.userOfMachine, u2);
+
+	log("Machine and users are starting.");
+	start(m);
+	start(u1);
+	start(u2);
+
+	send new DoYourWork() to u1;
+
+	ModelExecutor.shutdown();
 }
