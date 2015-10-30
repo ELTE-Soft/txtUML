@@ -179,7 +179,7 @@ model XMachine2 {
 execution XMachine2Tester {
 	ModelExecutor.Settings.setExecutorLog(true);
 
-	Machine m = create(Machine);
+	Machine m = create(Machine,3);
 	User u1 = create(User);
 	User u2 = create(User);
 
