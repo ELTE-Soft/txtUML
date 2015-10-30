@@ -1,7 +1,5 @@
 package hu.elte.txtuml.examples.machine;
 
-import hu.elte.txtuml.api.layout.Diagram;
-import hu.elte.txtuml.api.layout.Right;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.Association;
 import hu.elte.txtuml.api.model.From;
@@ -189,11 +187,6 @@ class Machine2Model extends Model {
 	static class DoYourWork extends Signal {}
 	// Signal classes are allowed to be static for simpler use.
 	
-}
-
-class Machine2Diagram extends Diagram {
-	@Right(from = Machine.class, val = User.class)
-	class MachineLayout extends Layout {} 
 }
 
 class MachineTester {

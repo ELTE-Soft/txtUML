@@ -1,0 +1,197 @@
+package hu.elte.txtuml.examples.machine;
+
+import hu.elte.txtuml.api.^model.ModelExecutor;
+import hu.elte.txtuml.examples.machine.XMachine2.Machine;
+import hu.elte.txtuml.examples.machine.XMachine2.User;
+import hu.elte.txtuml.examples.machine.XMachine2.Usage;
+import hu.elte.txtuml.examples.machine.XMachine2.DoTasks;
+import hu.elte.txtuml.examples.machine.XMachine2.DoYourWork;
+
+model XMachine2 {
+
+	// classes
+	
+	class Machine {
+		int tasksToDo;
+
+		Machine(int tasksToDo) {
+			this.tasksToDo = tasksToDo;
+		}
+
+		initial Init;
+
+		state Off {
+			entry {
+				log("\tMachine enters state: 'off'");
+			}
+
+			exit {
+				log("\tMachine exits state: 'off'");
+			}
+		}
+
+		composite On {
+			entry {
+				log("\tMachine enters state: 'on'");
+			}
+
+			exit {
+				log("\tMachine exits state: 'on'");
+			}
+
+			initial Init;
+
+			state Active {
+				entry {
+					log("\tMachine enters state: 'active'");
+					log("\tMachine: tasks to do: " + Machine.this.tasksToDo);
+				}
+
+				exit {
+					log("\tMachine exits state: 'active'");
+				}
+			}
+		}
+
+		transition NestedInitialize {
+			from hu.elte.txtuml.examples.machine.XMachine2.Machine.On.Init;
+			to hu.elte.txtuml.examples.machine.XMachine2.Machine.On.Active;
+		}
+
+		transition DoActivity {
+			from hu.elte.txtuml.examples.machine.XMachine2.Machine.On.Active;
+			to hu.elte.txtuml.examples.machine.XMachine2.Machine.On.Active;
+			trigger DoTasks;
+
+			effect {
+				DoTasks doTasks = getSignal(DoTasks);
+				Machine.this.tasksToDo -= doTasks.count;
+				log("\tMachine: becoming active...");
+			}
+			
+			guard(Machine.this.tasksToDo > 0);
+		}
+
+		transition Initialize {
+			from Init;
+			to Off;
+			effect {
+				log("\tMachine: initializing...");
+			}
+		}
+
+		transition SwitchOn {
+			from Off;
+			to On;
+			trigger ButtonPress;
+
+			effect {
+				log("\tMachine: switching on...");
+			}
+		}
+
+		transition SwitchOff {
+			from On;
+			to Off;
+			trigger ButtonPress;
+			
+			effect {
+				log("\tMachine: switching off...");
+			}
+
+			guard(Machine.this.tasksToDo <= 0);
+		}
+	}
+
+	class User {
+		initial Init;
+		state Ready;
+		
+		transition Initialize {
+			from Init;
+			to Ready;
+
+			effect {
+				log("\tUser: initializing...");				
+			}
+		}
+
+		transition Working {
+			from Ready;
+			to Ready;
+			trigger DoYourWork;
+			
+			effect {
+				log("\tUser: working...");
+				doWork();
+			}
+		}
+		
+		void doWork() {
+			log("\tUser: starting to work...");
+
+			Machine myMachine = User.this->hu::elte::txtuml::examples::machine::XMachine2::Usage::usedMachine.selectAny();
+			
+			send new ButtonPress() to myMachine;
+			// Switching the machine on.
+			
+			send new ButtonPress() to myMachine;
+			// Trying to switch it off but fails because of the guard.
+
+			send new DoTasks(1) to myMachine;
+			// The machine becomes active and decreases its tasks-to-do count
+			// by 1.
+
+			send new ButtonPress() to myMachine;
+			// Trying to switch it off but fails again.
+			
+			send new DoTasks(1) to myMachine;
+			// The machine becomes active again and decreases its tasks-to-do
+			// count by 1.
+
+			send new ButtonPress() to myMachine;
+			// Trying to switch it off but fails again.
+
+			send new DoTasks(1) to myMachine;
+			// This event has no effect, the machine is switched off.
+
+			log("\tUser: work finished...");
+		}
+	}
+
+	// associations
+	
+	association Usage {
+		1 Machine usedMachine;
+		hidden * User userOfMachine;
+	}
+
+	// signals
+	
+	signal ButtonPress;
+	signal DoTasks {
+		int count;
+	}
+
+	signal DoYourWork;
+}
+
+execution XMachine2Tester {
+	ModelExecutor.Settings.setExecutorLog(true);
+
+	Machine m = create(Machine);
+	User u1 = create(User);
+	User u2 = create(User);
+
+	link(Usage.usedMachine, m, Usage.userOfMachine, u1);
+	link(Usage.usedMachine, m, Usage.userOfMachine, u2);
+
+	log("Machine and users are starting.");
+	start(m);
+	start(u1);
+	start(u2);
+
+	send new DoYourWork() to u1;
+
+	ModelExecutor.shutdown();
+}
