@@ -13,25 +13,33 @@ import java.lang.reflect.Parameter;
  */
 public final class InstanceCreator {
 
-	public static <T> T create(Class<T> c, Object... givenParams) {
-		if (c.isPrimitive()) {
+	/**
+	 * Creates a new instance of the given representation of a class or
+	 * primitive type. If a class representation is given, its first constructor
+	 * will be used that accepts the given parameters.
+	 */
+	public static <T> T create(Class<T> toInstantiate, Object... givenParams) {
+		if (toInstantiate.isPrimitive()) {
 			if (givenParams.length == 0) {
-				return getDefaultPrimitiveValue(c);
+				return getDefaultPrimitiveValue(toInstantiate);
 			} else {
-				return null;
+				throw new RuntimeException(
+						"Primitive values cannot be instantiated with parameters");
 			}
 		}
 		T ret = null;
 
 		// contains the default constructor if no constructor is defined
-		Constructor<?>[] ctors = c.getDeclaredConstructors();
+		Constructor<?>[] ctors = toInstantiate.getDeclaredConstructors();
 		for (Constructor<?> ctor : ctors) {
 			ret = tryCreateWithConstructor(ctor, givenParams);
 			if (ret != null) {
 				return ret;
 			}
 		}
-		return ret;
+		throw new RuntimeException(
+				"No constructors could be applied to create an instance of "
+						+ toInstantiate);
 	}
 
 	/**
@@ -55,9 +63,7 @@ public final class InstanceCreator {
 			return (T) ctor.newInstance(actualParams);
 		} catch (InvocationTargetException e) {
 			// exception raised by the constructor
-			System.err.println("Fatal error during execution:");
-			e.printStackTrace();
-			System.exit(1);
+			throw new RuntimeException("Error while calling constructor", e);
 		} catch (IllegalArgumentException | InstantiationException
 				| IllegalAccessException e) {
 			// constructor is not applicable, null will be returned
