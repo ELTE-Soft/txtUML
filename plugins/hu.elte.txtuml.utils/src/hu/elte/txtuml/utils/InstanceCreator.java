@@ -7,12 +7,23 @@ import java.lang.reflect.Parameter;
 /**
  * A utility class to create instances of classes specified by their
  * representing {@code Class<?>} objects.
- *
- * @author Gabor Ferenc Kovacs
- *
+ * <p>
+ * Can also create a primitive type instance.
  */
 public final class InstanceCreator {
 
+	/**
+	 * Creates instance of a class specified by its representing
+	 * {@code Class<?>} object.
+	 * <p>
+	 * Can also create a primitive type instance.
+	 * 
+	 * @param c
+	 *            the class to instantiate
+	 * @param givenParams
+	 *            the constructor parameters
+	 * @return the new instance or {@code null} in case of any error
+	 */
 	public static <T> T create(Class<T> c, Object... givenParams) {
 		if (c.isPrimitive()) {
 			if (givenParams.length == 0) {
@@ -52,7 +63,7 @@ public final class InstanceCreator {
 		}
 
 		ctor.setAccessible(true);
-		
+
 		try {
 			return (T) ctor.newInstance(actualParams);
 		} catch (InvocationTargetException e) {
