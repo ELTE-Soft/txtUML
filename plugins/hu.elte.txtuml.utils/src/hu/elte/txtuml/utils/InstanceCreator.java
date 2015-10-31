@@ -7,20 +7,21 @@ import java.lang.reflect.Parameter;
 /**
  * A utility class to create instances of classes specified by their
  * representing {@code Class<?>} objects.
- *
- * @author Gabor Ferenc Kovacs
- *
+ * <p>
+ * Can also create a primitive type instance.
  */
 public final class InstanceCreator {
 
 	/**
-	 * Creates a new instance of the given representation of a class or
-	 * primitive type. If a class representation is given, its first constructor
-	 * will be used that accepts the given parameters.
+	 * Creates instance of a class or primitive type specified by its
+	 * representing {@code Class<?>} object. If multiple constructors are
+	 * applicable there is no guarantee which one will be used. Will throw an
+	 * exception if no constructors can be applied.
 	 */
-	public static <T> T create(Class<T> toInstantiate, Object... givenParams) {
+	public static <T> T create(Class<T> toInstantiate,
+			Object... constructorParams) {
 		if (toInstantiate.isPrimitive()) {
-			if (givenParams.length == 0) {
+			if (constructorParams.length == 0) {
 				return getDefaultPrimitiveValue(toInstantiate);
 			} else {
 				throw new RuntimeException(
@@ -32,7 +33,7 @@ public final class InstanceCreator {
 		// contains the default constructor if no constructor is defined
 		Constructor<?>[] ctors = toInstantiate.getDeclaredConstructors();
 		for (Constructor<?> ctor : ctors) {
-			ret = tryCreateWithConstructor(ctor, givenParams);
+			ret = tryCreateWithConstructor(ctor, constructorParams);
 			if (ret != null) {
 				return ret;
 			}
@@ -58,6 +59,13 @@ public final class InstanceCreator {
 				actualParams[i] = givenParams[givenParamInd++];
 			}
 		}
+
+		// more parameters were given than how many this constructor has
+		if (givenParamInd < givenParams.length) {
+			return null;
+		}
+
+		ctor.setAccessible(true);
 
 		try {
 			return (T) ctor.newInstance(actualParams);
