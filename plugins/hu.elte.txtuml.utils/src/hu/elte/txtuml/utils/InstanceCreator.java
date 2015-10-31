@@ -62,6 +62,11 @@ public final class InstanceCreator {
 			}
 		}
 
+		// more parameters were given than how many this constructor has
+		if (givenParamInd < givenParams.length) {
+			return null;
+		}
+
 		ctor.setAccessible(true);
 
 		try {
