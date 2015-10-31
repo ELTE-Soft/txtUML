@@ -62,7 +62,8 @@ public class InstanceCreatorTests extends Assert {
 	 */
 	@Test
 	public void testInstantaitionOfPackagePrivateClass() {
-		PackagePrivateTestClass inst = InstanceCreator.create(PackagePrivateTestClass.class);
+		PackagePrivateTestClass inst = InstanceCreator
+				.create(PackagePrivateTestClass.class);
 
 		assertTrue(inst != null);
 	}
@@ -148,4 +149,38 @@ public class InstanceCreatorTests extends Assert {
 		}
 	}
 
+	@Test
+	public void testInstantiationWithTooManyGivenParameters() {
+
+		TestClassWithNoConstructorsDefined inst = InstanceCreator.create(
+				TestClassWithNoConstructorsDefined.class, 0);
+		
+		// creation should fail, inst should be null
+		
+		assertTrue(inst == null);
+	}
+
+	@Test
+	public void testInstantiationWithNotEnoughGivenParameters() {
+
+		TestClassWithIntParamConstructor inst = InstanceCreator.create(
+				TestClassWithIntParamConstructor.class);
+		
+		// creation should fail, inst should be null
+		
+		assertTrue(inst == null);
+	}
+	
+	@Test
+	public void testInstantiationWithWrongGivenParameters() {
+
+		TestClassWithIntParamConstructor inst = InstanceCreator.create(
+				TestClassWithIntParamConstructor.class, true);
+		
+		// creation should fail, inst should be null
+		
+		assertTrue(inst == null);
+	}
+
+	
 }
