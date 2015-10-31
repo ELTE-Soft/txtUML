@@ -1,6 +1,8 @@
 package hu.elte.txtuml.api.model.tests.base;
 
 import hu.elte.txtuml.api.model.From;
+import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.ModelElement;
 import hu.elte.txtuml.api.model.ModelExecutor;
 import hu.elte.txtuml.api.model.Region;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
@@ -17,7 +19,7 @@ public class TestsBase {
 
 	protected final MemorizingPrintStream userOutStream = new MemorizingPrintStream();
 	protected final ModelExecutionAsserter executionAsserter = new ModelExecutionAsserter();
-	
+
 	@Before
 	public void settings() {
 		ModelExecutor.Settings.setUserOutStream(userOutStream);
@@ -26,15 +28,23 @@ public class TestsBase {
 		ModelExecutor.Settings.setExecutorLog(true);
 	}
 
-	public static void transition(ModelExecutionEventsListener x, Region r, Transition t) {
-		Class<? extends Vertex> from = t.getClass().getAnnotation(From.class).value();
-		Class<? extends Vertex> to = t.getClass().getAnnotation(To.class).value();
-		
-		x.leavingVertex(r, InstanceCreator.create(from));
-		x.usingTransition(r, t);
-		x.enteringVertex(r, InstanceCreator.create(to));
+	public static void transition(ModelExecutionEventsListener x,
+			ModelClass cls, Transition t) {
+		transition(x, cls, cls, t);
 	}
-	
+
+	public static void transition(ModelExecutionEventsListener x,
+			Region r, ModelElement enclosing, Transition t) {
+		Class<? extends Vertex> from = t.getClass().getAnnotation(From.class)
+				.value();
+		Class<? extends Vertex> to = t.getClass().getAnnotation(To.class)
+				.value();
+		
+		x.leavingVertex(r, InstanceCreator.create(from, enclosing));
+		x.usingTransition(r, t);
+		x.enteringVertex(r, InstanceCreator.create(to, enclosing));
+	}
+
 	public static void stopModelExecution() {
 		stopModelExecution(() -> ModelExecutor.shutdown());
 	}
@@ -49,7 +59,7 @@ public class TestsBase {
 		});
 
 		shutdownProcess.run();
-		
+
 		synchronized (currentThread) {
 			try {
 				currentThread.wait();
