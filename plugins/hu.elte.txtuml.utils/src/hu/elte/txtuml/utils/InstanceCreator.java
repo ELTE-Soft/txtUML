@@ -51,6 +51,8 @@ public final class InstanceCreator {
 			}
 		}
 
+		ctor.setAccessible(true);
+		
 		try {
 			return (T) ctor.newInstance(actualParams);
 		} catch (InvocationTargetException e) {
