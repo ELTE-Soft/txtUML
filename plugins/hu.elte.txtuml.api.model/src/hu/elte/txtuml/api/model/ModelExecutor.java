@@ -5,6 +5,7 @@ import hu.elte.txtuml.api.model.backend.log.ExecutorLog;
 import hu.elte.txtuml.api.model.report.ModelExecutionEventsListener;
 import hu.elte.txtuml.api.model.report.RuntimeErrorsListener;
 import hu.elte.txtuml.api.model.report.RuntimeWarningsListener;
+import hu.elte.txtuml.utils.NotifierOfTermination.TerminationManager;
 
 import java.io.PrintStream;
 import java.util.Queue;
@@ -49,12 +50,12 @@ public final class ModelExecutor implements ModelElement {
 	private static final ModelExecutorThread thread = new ModelExecutorThread();
 
 	/**
-	 * A queue of actions to be performed when the executor is shut down.
+	 * An object to manage termination notifications.
 	 */
-	private static final Queue<Runnable> shutdownQueue = new ConcurrentLinkedQueue<>();
+	private static final TerminationManager terminationManager = new TerminationManager();
 
 	private static final ExecutorLog executorLog = new ExecutorLog();
-	
+
 	/**
 	 * Sole constructor of <code>ModelExecutor</code>, which is designed to be
 	 * an uninstantiatable class.
@@ -254,7 +255,8 @@ public final class ModelExecutor implements ModelElement {
 				if (Settings.canChangeExecutionTimeMultiplier) {
 					Settings.executionTimeMultiplier = newMultiplier;
 				} else {
-					Report.error.forEach(x -> x.changingLockedExecutionTimeMultiplier());
+					Report.error.forEach(x -> x
+							.changingLockedExecutionTimeMultiplier());
 				}
 			}
 		}
@@ -328,7 +330,7 @@ public final class ModelExecutor implements ModelElement {
 	public static final class Report {
 
 		static final Queue<ModelExecutionEventsListener> event = new ConcurrentLinkedQueue<>();
-		
+
 		static final Queue<RuntimeErrorsListener> error = new ConcurrentLinkedQueue<>();
 
 		static final Queue<RuntimeWarningsListener> warning = new ConcurrentLinkedQueue<>();
@@ -337,27 +339,33 @@ public final class ModelExecutor implements ModelElement {
 			DiagnosticsServiceConnector.startAndGetInstance();
 		}
 
-		public static void addModelExecutionEventsListener(ModelExecutionEventsListener listener) {
+		public static void addModelExecutionEventsListener(
+				ModelExecutionEventsListener listener) {
 			event.add(listener);
 		}
-		
-		public static void addRuntimeErrorsListener(RuntimeErrorsListener listener) {
+
+		public static void addRuntimeErrorsListener(
+				RuntimeErrorsListener listener) {
 			error.add(listener);
 		}
-		
-		public static void addRuntimeWarningsListener(RuntimeWarningsListener listener) {
+
+		public static void addRuntimeWarningsListener(
+				RuntimeWarningsListener listener) {
 			warning.add(listener);
 		}
-		
-		public static void removeModelExecutionEventsListener(ModelExecutionEventsListener listener) {
+
+		public static void removeModelExecutionEventsListener(
+				ModelExecutionEventsListener listener) {
 			event.remove(listener);
 		}
-		
-		public static void removeRuntimeErrorsListener(RuntimeErrorsListener listener) {
+
+		public static void removeRuntimeErrorsListener(
+				RuntimeErrorsListener listener) {
 			error.remove(listener);
 		}
-		
-		public static void removeRuntimeWarningsListener(RuntimeWarningsListener listener) {
+
+		public static void removeRuntimeWarningsListener(
+				RuntimeWarningsListener listener) {
 			warning.remove(listener);
 		}
 	}
@@ -382,13 +390,7 @@ public final class ModelExecutor implements ModelElement {
 	public static void shutdownNow() {
 		Report.event.forEach(x -> x.executionTerminated());
 
-		while (true) {
-			Runnable shutdownAction = shutdownQueue.poll();
-			if (shutdownAction == null) {
-				break;
-			}
-			shutdownAction.run();
-		}
+		terminationManager.notifyAllOfTermination();
 
 		thread.interrupt();
 	}
@@ -401,7 +403,9 @@ public final class ModelExecutor implements ModelElement {
 	 *            the action to be run when the executor is shut down
 	 */
 	public static void addToShutdownQueue(Runnable shutdownAction) {
-		shutdownQueue.add(shutdownAction);
+		if (!terminationManager.addTerminationListener(shutdownAction)) {
+			shutdownAction.run();
+		}
 	}
 
 	/**
