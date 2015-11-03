@@ -17,6 +17,12 @@ public final class InstanceCreator {
 	 * representing {@code Class<?>} object. If multiple constructors are
 	 * applicable there is no guarantee which one will be used. Will throw an
 	 * exception if no constructors can be applied.
+	 * 
+	 * @throws IllegalArgumentException
+	 *             if the specified type cannot be instantiated or has no
+	 *             constructors that has the given count and type of parameters
+	 * @throws RuntimeInvocationTargetException
+	 *             if the called constructor throws an exception
 	 */
 	public static <T> T create(Class<T> toInstantiate,
 			Object... constructorParams) {
@@ -24,7 +30,7 @@ public final class InstanceCreator {
 			if (constructorParams.length == 0) {
 				return getDefaultPrimitiveValue(toInstantiate);
 			} else {
-				throw new RuntimeException(
+				throw new IllegalArgumentException(
 						"Primitive values cannot be instantiated with parameters");
 			}
 		}
@@ -38,7 +44,7 @@ public final class InstanceCreator {
 				return ret;
 			}
 		}
-		throw new RuntimeException(
+		throw new IllegalArgumentException(
 				"No constructors could be applied to create an instance of "
 						+ toInstantiate);
 	}
@@ -71,7 +77,8 @@ public final class InstanceCreator {
 			return (T) ctor.newInstance(actualParams);
 		} catch (InvocationTargetException e) {
 			// exception raised by the constructor
-			throw new RuntimeException("Error while calling constructor", e);
+			throw new RuntimeInvocationTargetException(
+					"Error while calling constructor", e);
 		} catch (IllegalArgumentException | InstantiationException
 				| IllegalAccessException e) {
 			// constructor is not applicable, null will be returned
@@ -101,5 +108,4 @@ public final class InstanceCreator {
 		}
 		return null;
 	}
-
 }
