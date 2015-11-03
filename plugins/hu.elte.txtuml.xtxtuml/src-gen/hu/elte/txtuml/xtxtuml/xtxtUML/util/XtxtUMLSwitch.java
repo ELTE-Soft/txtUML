@@ -194,6 +194,7 @@ public class XtxtUMLSwitch<T> extends Switch<T>
         TUTransition tuTransition = (TUTransition)theEObject;
         T result = caseTUTransition(tuTransition);
         if (result == null) result = caseTUClassMember(tuTransition);
+        if (result == null) result = caseTUStateMember(tuTransition);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }

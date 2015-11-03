@@ -3057,6 +3057,12 @@ rule__TUStateMember__Alternatives
 { after(grammarAccess.getTUStateMemberAccess().getTUEntryOrExitActivityParserRuleCall_1()); }
 )
 
+    |(
+{ before(grammarAccess.getTUStateMemberAccess().getTUTransitionParserRuleCall_2()); }
+	ruleTUTransition
+{ after(grammarAccess.getTUStateMemberAccess().getTUTransitionParserRuleCall_2()); }
+)
+
 ;
 finally {
 	restoreStackSize(stackSize);
