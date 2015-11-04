@@ -1,6 +1,6 @@
 package hu.elte.txtuml.api.model.backend;
 
-/** XXX
+/**
  * An exception raised and also caught in the model which indicates that some
  * multiplicity bounds have been offended.
  * <p>
@@ -14,7 +14,7 @@ package hu.elte.txtuml.api.model.backend;
 @SuppressWarnings("serial")
 public class MultiplicityException extends Exception {
 
-	/** XXX
+	/**
 	 * Creates a new <code>MultiplicityException</code> without a message.
 	 */
 	public MultiplicityException() {
