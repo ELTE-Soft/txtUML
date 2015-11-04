@@ -5,8 +5,8 @@ import hu.elte.txtuml.api.model.report.RuntimeWarningsListener;
 
 final class RuntimeWarningsListenerImpl extends BaseListenerImpl implements RuntimeWarningsListener {
 
-	RuntimeWarningsListenerImpl(ExecutorLog log) {
-		super(log);
+	RuntimeWarningsListenerImpl(ExecutorLog owner) {
+		super(owner);
 	}
 
 	@Override
