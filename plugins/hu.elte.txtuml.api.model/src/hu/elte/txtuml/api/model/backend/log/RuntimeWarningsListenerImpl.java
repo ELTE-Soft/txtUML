@@ -1,6 +1,7 @@
 package hu.elte.txtuml.api.model.backend.log;
 
 import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.report.RuntimeWarningsListener;
 
 final class RuntimeWarningsListenerImpl extends BaseListenerImpl implements RuntimeWarningsListener {
@@ -10,9 +11,9 @@ final class RuntimeWarningsListenerImpl extends BaseListenerImpl implements Runt
 	}
 
 	@Override
-	public void signalArrivedToDeletedObject(ModelClass obj) {
+	public void signalArrivedToDeletedObject(ModelClass obj, Signal signal) {
 		warn("Warning: signal arrived to deleted model object "
-				+ obj.toString() + ".");
+				+ obj.toString() + ". The signal was: " + signal);
 	}
 	
 	@Override
