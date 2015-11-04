@@ -220,7 +220,16 @@ class MaybeOneBase<T extends ModelClass> extends
  */
 class MultipleBase<T extends ModelClass> extends ManyBase<T> {
 
+	/**
+	 * The actual lower bound of this association end.
+	 */
 	private final int min;
+	
+	/**
+	 * The actual upper bound of this association end.
+	 * <p>
+	 * -1 means an infinite bound.
+	 */
 	private final int max;
 
 	{
@@ -238,7 +247,7 @@ class MultipleBase<T extends ModelClass> extends ManyBase<T> {
 
 	@Override
 	void add(T object) throws MultiplicityException {
-		if (collection.count() >= max) {
+		if (max != -1 && collection.count() >= max) {
 			throw new MultiplicityException();
 		}
 		super.add(object);
