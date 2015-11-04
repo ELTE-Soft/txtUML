@@ -159,7 +159,7 @@ class TrainTester extends Thread {
 
 			Thread.sleep(2 * time);
 
-			for(int i=0; i<11; i++) {
+			for(int i=0; i<3; i++) {
 				Thread.sleep(3 * time);
 				Action.log("");
 				Action.send(g, new Forward());

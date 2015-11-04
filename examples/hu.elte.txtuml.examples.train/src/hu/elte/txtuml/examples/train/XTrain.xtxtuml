@@ -20,46 +20,46 @@ model XTrain {
 			initial FInit;
 			state F1;
 			state F2;
-		}
 
-		transition FInit_F1 {
-			from hu.elte.txtuml.examples.train.XTrain.Gearbox.Forwards.FInit;
-			to hu.elte.txtuml.examples.train.XTrain.Gearbox.Forwards.F1;
-		}
-
-		transition F1_F2 {
-			from hu.elte.txtuml.examples.train.XTrain.Gearbox.Forwards.F1;
-			to hu.elte.txtuml.examples.train.XTrain.Gearbox.Forwards.F2;
-			trigger Forward;
-		}
-
-		transition F2_F1 {
-			from hu.elte.txtuml.examples.train.XTrain.Gearbox.Forwards.F2;
-			to hu.elte.txtuml.examples.train.XTrain.Gearbox.Forwards.F1;
-			trigger Forward;
+			transition FInit_F1 {
+				from FInit;
+				to F1;
+			}
+	
+			transition F1_F2 {
+				from F1;
+				to F2;
+				trigger Forward;
+			}
+	
+			transition F2_F1 {
+				from F2;
+				to F1;
+				trigger Forward;
+			}
 		}
 
 		composite Backwards {
 			initial BInit;
 			state B1;
 			state B2;
-		}
-		
-		transition BInit_B1 {
-			from hu.elte.txtuml.examples.train.XTrain.Gearbox.Backwards.BInit;
-			to hu.elte.txtuml.examples.train.XTrain.Gearbox.Backwards.B1;
-		}
-		
-		transition B1_B2 {
-			from hu.elte.txtuml.examples.train.XTrain.Gearbox.Backwards.B1;
-			to hu.elte.txtuml.examples.train.XTrain.Gearbox.Backwards.B2;
-			trigger Backward;
-		}
 
-		transition B2_B1 {
-			from hu.elte.txtuml.examples.train.XTrain.Gearbox.Backwards.B2;
-			to hu.elte.txtuml.examples.train.XTrain.Gearbox.Backwards.B1;
-			trigger hu.elte.txtuml.examples.train.XTrain.Backward;
+			transition BInit_B1 {
+				from BInit;
+				to B1;
+			}
+			
+			transition B1_B2 {
+				from B1;
+				to B2;
+				trigger Backward;
+			}
+	
+			transition B2_B1 {
+				from B2;
+				to B1;
+				trigger Backward;
+			}
 		}
 
 		transition Init_Neutral {

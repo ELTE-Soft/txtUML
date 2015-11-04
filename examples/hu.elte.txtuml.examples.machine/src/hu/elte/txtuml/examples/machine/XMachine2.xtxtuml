@@ -51,25 +51,26 @@ model XMachine2 {
 					log("\tMachine exits state: 'active'");
 				}
 			}
-		}
-
-		transition NestedInitialize {
-			from hu.elte.txtuml.examples.machine.XMachine2.Machine.On.Init;
-			to hu.elte.txtuml.examples.machine.XMachine2.Machine.On.Active;
-		}
-
-		transition DoActivity {
-			from hu.elte.txtuml.examples.machine.XMachine2.Machine.On.Active;
-			to hu.elte.txtuml.examples.machine.XMachine2.Machine.On.Active;
-			trigger DoTasks;
-
-			effect {
-				DoTasks doTasks = getSignal(DoTasks);
-				Machine.this.tasksToDo -= doTasks.count;
-				log("\tMachine: becoming active...");
+			
+			transition Initialize {
+				from Init;
+				to Active;
+			}
+	
+			transition DoActivity {
+				from Active;
+				to Active;
+				trigger DoTasks;
+	
+				effect {
+					DoTasks doTasks = getSignal(DoTasks);
+					Machine.this.tasksToDo -= doTasks.count;
+					log("\tMachine: becoming active...");
+				}
+				
+				guard(Machine.this.tasksToDo > 0);
 			}
 			
-			guard(Machine.this.tasksToDo > 0);
 		}
 
 		transition Initialize {
