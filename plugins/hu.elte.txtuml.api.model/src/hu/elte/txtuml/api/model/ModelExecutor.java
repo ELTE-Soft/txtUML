@@ -432,7 +432,7 @@ public final class ModelExecutor implements ModelElement {
 	 *            the association end which's multiplicity is to be checked
 	 */
 	static void checkLowerBoundInNextExecutionStep(ModelClass obj,
-			Class<? extends AssociationEnd<?>> assocEnd) {
+			Class<? extends AssociationEnd<?, ?>> assocEnd) {
 
 		thread.checkLowerBoundOfMultiplcitiy(obj, assocEnd);
 	}

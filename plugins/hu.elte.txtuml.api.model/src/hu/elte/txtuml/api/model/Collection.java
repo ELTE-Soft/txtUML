@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api.model;
 
+import hu.elte.txtuml.api.model.backend.ManyCollection;
+import hu.elte.txtuml.api.model.backend.SingleItemCollection;
 import hu.elte.txtuml.api.model.blocks.ParameterizedCondition;
 
 import java.util.Iterator;
@@ -7,10 +9,10 @@ import java.util.NoSuchElementException;
 import java.util.Spliterator;
 
 /**
- * Base interface for immutable collections of {@link ModelClass} objects.
+ * Base interface for immutable collections.
  * 
  * <p>
- * <b>Represents:</b> collection of model objects
+ * <b>Represents:</b> collection
  * <p>
  * <b>Usage:</b>
  * <p>
@@ -34,12 +36,11 @@ import java.util.Spliterator;
  * @author Gabor Ferenc Kovacs
  *
  * @param <T>
- *            the type of model objects to be contained in this collection
+ *            the type of objects to be contained in this collection
  * @see Collection.Empty
  * @see AssociationEnd
  */
-public interface Collection<T extends ModelClass> extends Iterable<T>,
-		ModelElement {
+public interface Collection<T> extends Iterable<T>, ModelElement {
 
 	/**
 	 * Checks if this collection is empty.
@@ -47,7 +48,9 @@ public interface Collection<T extends ModelClass> extends Iterable<T>,
 	 * @return <code>true</code> if this collection is empty; <code>false</code>
 	 *         otherwise
 	 */
-	boolean isEmpty();
+	default boolean isEmpty() {
+		return count() == 0;
+	}
 
 	/**
 	 * Returns the number of elements in this collection.
@@ -64,7 +67,7 @@ public interface Collection<T extends ModelClass> extends Iterable<T>,
 	 * @return <code>true</code> if this collection contains the specified
 	 *         <code>object</code>; <code>false</code> otherwise
 	 */
-	boolean contains(ModelClass object);
+	boolean contains(Object element);
 
 	/**
 	 * Selects an element of this collection. Nor randomness, nor any iteration
@@ -96,7 +99,7 @@ public interface Collection<T extends ModelClass> extends Iterable<T>,
 	 *            the object to be included in the result collection
 	 * @return a new collection containing the desired elements
 	 */
-	Collection<T> add(T object);
+	Collection<T> add(T element);
 
 	/**
 	 * Creates a new collection which contains all the elements of this
@@ -120,7 +123,7 @@ public interface Collection<T extends ModelClass> extends Iterable<T>,
 	 *            the object <i>not</i> to be included in the result collection
 	 * @return a new collection containing the desired elements
 	 */
-	Collection<T> remove(T object);
+	Collection<T> remove(Object element);
 
 	/**
 	 * This method <b>must not be used in the model</b>.
@@ -148,11 +151,10 @@ public interface Collection<T extends ModelClass> extends Iterable<T>,
 	 * @author Gabor Ferenc Kovacs
 	 *
 	 * @param <T>
-	 *            the type of model objects to be contained in this collection
+	 *            the type of objects to be contained in this collection
 	 * @see Collection
 	 */
-	public static final class Empty<T extends ModelClass> implements
-			Collection<T> {
+	public static final class Empty<T> implements Collection<T> {
 		@Override
 		public Iterator<T> iterator() {
 			return new Iterator<T>() {
@@ -184,7 +186,7 @@ public interface Collection<T extends ModelClass> extends Iterable<T>,
 		}
 
 		@Override
-		public boolean contains(ModelClass object) {
+		public boolean contains(Object object) {
 			return false;
 		}
 
@@ -200,16 +202,16 @@ public interface Collection<T extends ModelClass> extends Iterable<T>,
 
 		@Override
 		public Collection<T> add(T object) {
-			return new MaybeOneBase<T>(object);
+			return new SingleItemCollection<T>(object);
 		}
 
 		@Override
 		public Collection<T> addAll(Collection<T> objects) {
-			return new ManyBase<T>(objects);
+			return new ManyCollection<T>(objects);
 		}
 
 		@Override
-		public Collection<T> remove(ModelClass object) {
+		public Collection<T> remove(Object object) {
 			return this;
 		}
 	}
