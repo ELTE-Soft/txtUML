@@ -36,28 +36,8 @@ public class TestsBase {
 	}
 	
 	public static void stopModelExecution() {
-		stopModelExecution(() -> ModelExecutor.shutdown());
-	}
-
-	public static void stopModelExecution(Runnable shutdownProcess) {
-		Thread currentThread = Thread.currentThread();
-
-		ModelExecutor.addToShutdownQueue(() -> {
-			synchronized (currentThread) {
-				currentThread.notify();
-			}
-		});
-
-		shutdownProcess.run();
-		
-		synchronized (currentThread) {
-			try {
-				currentThread.wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-
+		ModelExecutor.shutdown();
+		ModelExecutor.awaitTermination();
 	}
 
 }
