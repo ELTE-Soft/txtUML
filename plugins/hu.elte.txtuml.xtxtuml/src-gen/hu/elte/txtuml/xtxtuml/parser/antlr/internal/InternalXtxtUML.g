@@ -1191,6 +1191,16 @@ ruleTUStateMember returns [EObject current=null]
         $current = $this_TUEntryOrExitActivity_1.current; 
         afterParserOrEnumRuleCall();
     }
+
+    |
+    { 
+        newCompositeNode(grammarAccess.getTUStateMemberAccess().getTUTransitionParserRuleCall_2()); 
+    }
+    this_TUTransition_2=ruleTUTransition
+    { 
+        $current = $this_TUTransition_2.current; 
+        afterParserOrEnumRuleCall();
+    }
 )
 ;
 
