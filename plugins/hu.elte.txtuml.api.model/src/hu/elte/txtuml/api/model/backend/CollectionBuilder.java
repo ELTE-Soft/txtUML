@@ -4,7 +4,7 @@ import hu.elte.txtuml.api.model.Collection;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.backend.collections.JavaCollectionOfMany;
 
-/** XXX
+/**
  * A mutable collection builder to build {@link Collection Collections} faster.
  * 
  * @author Gabor Ferenc Kovacs
@@ -14,12 +14,12 @@ import hu.elte.txtuml.api.model.backend.collections.JavaCollectionOfMany;
  */
 public class CollectionBuilder<T extends ModelClass> {
 
-	/** XXX
+	/**
 	 * The Java collection in which this builder collects the desired objects.
 	 */
 	private JavaCollectionOfMany<T> coll = JavaCollectionOfMany.create();
 
-	/** XXX
+	/**
 	 * Appends this builder.
 	 * 
 	 * @param object
@@ -35,7 +35,7 @@ public class CollectionBuilder<T extends ModelClass> {
 		return this;
 	}
 
-	/** XXX
+	/**
 	 * Appends this builder.
 	 * 
 	 * @param objects
@@ -52,7 +52,7 @@ public class CollectionBuilder<T extends ModelClass> {
 		return this;
 	}
 
-	/** XXX
+	/**
 	 * Returns the Java collection in which this builder collected the desired
 	 * objects. When this method is called, this builder is used up, so its Java
 	 * collection is set to <code>null</code>. This way, it is ensured that the
