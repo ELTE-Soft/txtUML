@@ -10,6 +10,7 @@ import hu.elte.txtuml.utils.NotifierOfTermination.TerminationManager;
 import java.io.PrintStream;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * The class that manages the model execution.
@@ -377,8 +378,16 @@ public final class ModelExecutor implements ModelElement {
 	 * all scheduled actions have been performed and every non-external event
 	 * caused by them have been processed. To shut down the executor instantly,
 	 * call {@link #shutdownNow}.
+	 * <p>
+	 * This method <b>does not</b> await the termination of the executor, it
+	 * returns instantly.
+	 * 
+	 * @see #awaitTermination
 	 */
 	public static void shutdown() {
+		if (isTerminated()) {
+			return;
+		}
 		thread.shutdown();
 	}
 
@@ -390,9 +399,36 @@ public final class ModelExecutor implements ModelElement {
 	public static void shutdownNow() {
 		Report.event.forEach(x -> x.executionTerminated());
 
-		terminationManager.notifyAllOfTermination();
-
 		thread.interrupt();
+
+		terminationManager.notifyAllOfTermination();
+	}
+
+	/**
+	 * Sets the model executor to be shut down after the currently running and
+	 * all scheduled actions have been performed and every non-external event
+	 * caused by them have been processed. To shut down the executor instantly,
+	 * call {@link #shutdownNow}.
+	 * 
+	 * @return whether the model execution is already shut down
+	 */
+	public static boolean isTerminated() {
+		return terminationManager.isTerminated();
+	}
+
+	/**
+	 * This method awaits the model execution to terminate and only returns
+	 * after (or when the current thread is interrupted).
+	 */
+	public static void awaitTermination() {
+		CountDownLatch countDown = new CountDownLatch(1);
+
+		addToShutdownQueue(() -> countDown.countDown());
+
+		try {
+			countDown.await();
+		} catch (InterruptedException e) {
+		}
 	}
 
 	/**
