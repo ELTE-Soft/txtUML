@@ -15,6 +15,12 @@ class XtxtUMLImportNormalizer extends NestedTypeAwareImportNormalizerWithDotSepa
 	}
 	
 	override deresolve(QualifiedName fullyQualifiedName) {
+		if (!fullyQualifiedName.toString.replace('$', '.').startsWith(
+			getImportedNamespacePrefix().toString.replace('$', '.')
+		)) {
+			return super.deresolve(fullyQualifiedName);
+		}
+		
 		var oldSegments = fullyQualifiedName.segments;
 		var newSegments = new ArrayList<String>();
 		
@@ -46,7 +52,7 @@ class XtxtUMLImportNormalizer extends NestedTypeAwareImportNormalizerWithDotSepa
 		}
 
 		newSegments.addAll(oldSegments);
-		super.deresolve(QualifiedName::create(newSegments));
+		return super.deresolve(QualifiedName::create(newSegments));
 	}
 	
 }
