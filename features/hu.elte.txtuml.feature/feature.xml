@@ -6,10 +6,7 @@
       provider-name="ELTE">
 
    <description url="http://txtuml.inf.elte.hu">
-      The txtUML project provides a Java API to build executable UML
-models. Visualization of class and state diagrams is possible
-in the Papyrus UML editor and a model compiler to C++ is also
-included.
+      Textual, executable, translatable UML.
    </description>
 
    <copyright>
