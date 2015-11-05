@@ -125,7 +125,7 @@ class TrainModel extends Model{
 	}			
 }
 
-class TrainTester extends Thread {
+class TrainTester {
 	TrainTester() {
 		createInstances();
 		test();
