@@ -13,8 +13,8 @@ package hu.elte.txtuml.api.model;
  * two inner classes which both extend {@link AssociationEnd}. These two inner
  * classes will represent the two ends of this association. Their navigability
  * and multiplicity depend on which predefined subclass of
- * <code>AssociationEnd</code> is extended (it may not be the
- * <code>AssociationEnd</code> class itself which).
+ * <code>AssociationEnd</code> is extended ({@code AssociationEnd} itself may
+ * not be extended).
  * <p>
  * The two model classes which the association connects are defined by the two
  * association ends' generic parameters.
@@ -61,7 +61,8 @@ package hu.elte.txtuml.api.model;
  * </code>
  * </pre>
  * 
- * See the documentation of {@link Model} for an overview on modeling in JtxtUML.
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  * @see Association
