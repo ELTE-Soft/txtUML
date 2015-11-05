@@ -1,13 +1,10 @@
-
-
-import java.util.Collection
-
 model PerformanceTestModel {
 	
 	class Test {
 				
 		public void test() {
-			create(A,10000);
+			PerformanceTestModel.A a = create(A, 10000);
+			start(a);
 		}
 		
 	}
@@ -25,7 +22,12 @@ model PerformanceTestModel {
 		initial init;
 		state A1 {
 			entry {
-				
+				if (remainingCycles-- <= 0) {
+					for (PerformanceTestModel.B b in A.this->PerformanceTestModel::AB::b) {
+						unlink(AB.a, A.this, AB.b, b);
+					}
+					delete A.this;
+				}
 			}
 		};
 		state A2;
@@ -36,6 +38,7 @@ model PerformanceTestModel {
 			// B b = new B();
 			PerformanceTestModel.B b = new PerformanceTestModel.B();
 			link(AB.a, this, AB.b, b);
+			start(b);
 		}
 		
 		private void childTerminated() {
@@ -45,10 +48,10 @@ model PerformanceTestModel {
 		transition init_A1 {
 			from init;
 			to A1;
-			trigger Forward;
 			effect {
-				// send new Forward(++numForward) to this;
-				send new Forward(numForward) to PerformanceTestModel.A.this;
+				// log("initial transition");
+				numForward++;
+				send new Forward(numForward) to A.this;
 			}
 		}
 		
@@ -59,11 +62,16 @@ model PerformanceTestModel {
 			to A2;
 			trigger Forward;
 			effect {
-//				PerformanceTestModel.Forward sig = getSignal(PerformanceTestModel.Forward);
-//				if ((this->PerformanceTestModel.AB.b).isEmpty()) {				
-//				} else {
-//					send new Forward(0) to this->PerformanceTestModel.AB.b;
-//				}
+				// log("A1->A2");
+				PerformanceTestModel.Forward sig = getSignal(PerformanceTestModel.Forward);
+				if (sig.nf % 4 == 0) {
+					createChild();
+				}
+				if (!A.this->PerformanceTestModel::AB::b.isEmpty()) {
+					send new Forward(0) to A.this->PerformanceTestModel::AB::b.selectAny();
+				}
+				numForward++;
+				send new Forward(numForward) to A.this;
 			}
 		}
 		
@@ -72,6 +80,16 @@ model PerformanceTestModel {
 			to A3;
 			trigger Forward;
 			effect {
+				// log("A2->A3");
+				PerformanceTestModel.Forward sig = getSignal(PerformanceTestModel.Forward);
+				if (sig.nf % 4 == 0) {
+					createChild();
+				}
+				if (!A.this->PerformanceTestModel::AB::b.isEmpty()) {
+					send new Forward(0) to A.this->PerformanceTestModel::AB::b.selectAny();
+				}
+				numForward++;
+				send new Forward(numForward) to A.this;
 			}
 		}
 		
@@ -80,6 +98,16 @@ model PerformanceTestModel {
 			to A4;
 			trigger Forward;
 			effect {
+				// log("A3->A4");
+				PerformanceTestModel.Forward sig = getSignal(PerformanceTestModel.Forward);
+				if (sig.nf % 4 == 0) {
+					createChild();
+				}
+				if (!A.this->PerformanceTestModel::AB::b.isEmpty()) {
+					send new Forward(0) to A.this->PerformanceTestModel::AB::b.selectAny();
+				}
+				numForward++;
+				send new Forward(numForward) to A.this;
 			}
 		}
 				
@@ -88,6 +116,16 @@ model PerformanceTestModel {
 			to A1;
 			trigger Forward;
 			effect {
+				// log("A4->A1");
+				PerformanceTestModel.Forward sig = getSignal(PerformanceTestModel.Forward);
+				if (sig.nf % 4 == 0) {
+					createChild();
+				}
+				if (!A.this->PerformanceTestModel::AB::b.isEmpty()) {
+					send new Forward(0) to A.this->PerformanceTestModel::AB::b.selectAny();
+				}
+				numForward++;
+				send new Forward(numForward) to A.this;
 			}
 		}
 		
@@ -135,20 +173,19 @@ model PerformanceTestModel {
 		state B4;
 		state finalstate {
 			entry {
-				if ((this->PerformanceTestModel.AB.a).isEmpty()) {
+				if (B.this->PerformanceTestModel::AB::a.isEmpty()) {
 				} else {
-					PerformanceTestModel.A a = (this->PerformanceTestModel.AB.a).selectAny();
+					PerformanceTestModel.A a = B.this->PerformanceTestModel::AB::a.selectAny();
 					unlink(PerformanceTestModel.AB.a, a, AB.b, PerformanceTestModel.B.this);
 					a.childTerminated();
 				}
-				delete(PerformanceTestModel.B.this);
+				delete B.this;
 			}
 		}
 		
 		transition init_B1 {
 			from init;
 			to B1;
-			trigger Forward;
 		}
 		
 		transition B1_B2 {
@@ -169,9 +206,9 @@ model PerformanceTestModel {
 			trigger Forward;
 		}
 				
-		transition B4_B1 {
+		transition B4_finalstate {
 			from B4;
-			to B1;
+			to finalstate;
 			trigger Forward;
 		}
 		

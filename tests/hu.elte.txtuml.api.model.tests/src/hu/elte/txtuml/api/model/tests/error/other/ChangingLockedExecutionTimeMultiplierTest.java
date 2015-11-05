@@ -25,7 +25,8 @@ public class ChangingLockedExecutionTimeMultiplierTest extends
 		Timer.start(a, new Sig(), 10);
 		ModelExecutor.Settings.setExecutionTimeMultiplier(1.0f);
 
-		stopModelExecution(() -> Timer.shutdown());
+		Timer.shutdown();
+		ModelExecutor.awaitTermination();
 
 		executionAsserter.assertErrors( x -> x.changingLockedExecutionTimeMultiplier());
 

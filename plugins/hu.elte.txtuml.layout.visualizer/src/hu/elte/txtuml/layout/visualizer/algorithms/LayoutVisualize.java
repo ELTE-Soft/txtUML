@@ -320,9 +320,15 @@ public class LayoutVisualize
 	private Set<String> addPhantoms()
 	{
 		Set<String> result = new HashSet<String>();
+		
 		result.addAll(StatementHelper.extractPhantoms(_statements));
 		for (String p : result)
-			_objects.add(new RectangleObject(p));
+		{
+			RectangleObject tempObj = new RectangleObject(p);
+			tempObj.setPhantom(true);
+			_objects.add(tempObj);
+		}
+		
 		_statements.removeAll(_statements.stream()
 				.filter(s -> s.getType().equals(StatementType.phantom))
 				.collect(Collectors.toSet()));
@@ -398,9 +404,6 @@ public class LayoutVisualize
 			InternalException, CannotFindAssociationRouteException,
 			UnknownStatementException
 	{
-		if (_assocs.size() <= 0)
-			return maxGroupId;
-		
 		if (_options.Logging)
 			System.err.println("> Starting link arrange...");
 		

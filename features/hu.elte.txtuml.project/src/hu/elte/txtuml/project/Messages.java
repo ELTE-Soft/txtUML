@@ -8,6 +8,8 @@ public class Messages extends NLS {
 	public static String RuntimeLibraryContainerWizardPage_classpathLibraryDescription;
 	public static String RuntimeLibraryContainerWizardPage_classpathLibraryText;
 	public static String RuntimeLibraryContainerWizardPage_classpathLibraryTitle;
+	public static String WizardNewtxtUMLProjectCreationPage_ErrorMessageProjectName;
+	
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

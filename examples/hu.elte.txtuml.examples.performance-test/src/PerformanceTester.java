@@ -1,7 +1,5 @@
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.ObjectInputStream.GetField;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.ModelExecutor;
@@ -23,8 +21,12 @@ public class PerformanceTester {
 
 		PerformanceTestModel_.Test m = Action
 				.create(PerformanceTestModel_.Test.class);
-		m.test();
 
+//		PerformanceTestModel.Test m = Action
+//				.create(PerformanceTestModel.Test.class);
+		
+		m.test();
+		
 		ModelExecutor.shutdown();
 		
 		System.out.println(System.currentTimeMillis() - start);

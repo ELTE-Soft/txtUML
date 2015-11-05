@@ -21,7 +21,7 @@ import org.eclipse.emf.common.util.EList;
  * @model
  * @generated
  */
-public interface TUTransition extends TUClassMember
+public interface TUTransition extends TUClassMember, TUStateMember
 {
   /**
    * Returns the value of the '<em><b>Name</b></em>' attribute.

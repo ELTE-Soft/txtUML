@@ -100,8 +100,8 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 							try {
 								exporter.cleanBeforeVisualization();
 							} catch (CoreException e) {
-								Dialogs.errorMsgb("txtUML export Error", e.getClass() + ":" + System.lineSeparator()
-										+ e.getMessage(), e);
+								Dialogs.errorMsgb("txtUML export Error - cleaning resources", 
+										"Error occured when cleaning resources.", e);
 								throw new InterruptedException();
 							}
 							monitor.subTask("Exporting txtUML Model to UML2 model...");
@@ -111,8 +111,8 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 										txtUMLProjectName + "/" + generatedFolderName);
 								monitor.worked(10);
 							} catch (Exception e) {
-								Dialogs.errorMsgb("txtUML export Error", e.getClass() + ":" + System.lineSeparator()
-												+ e.getMessage(), e);
+								Dialogs.errorMsgb("txtUML export Error", 
+										"Error occured during the UML2 exportation.", e);
 								monitor.done();
 								throw new InterruptedException();
 							}
@@ -136,9 +136,9 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 								if (warnings.size() != 0) {
 									StringBuilder warningMessages = new StringBuilder(
 											"Warnings:"
-													+ System.lineSeparator());
+													+ System.lineSeparator()+ System.lineSeparator()+"- ");
 									warningMessages.append(String.join(
-											System.lineSeparator(), warnings));
+											System.lineSeparator()+System.lineSeparator()+"- ", warnings));
 									warningMessages.append(System
 											.lineSeparator()
 											+ System.lineSeparator()
@@ -159,9 +159,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 								} else {
 									Dialogs.errorMsgb(
 											"txtUML layout export Error",
-											e.getClass() + ":"
-													+ System.lineSeparator()
-													+ e.getMessage(), e);
+											"Error occured during the diagram layout interpretation.", e);
 									monitor.done();
 									throw new InterruptedException();
 								}
@@ -175,9 +173,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 							} catch (Exception e) {
 								Dialogs.errorMsgb(
 										"txtUML visualization Error",
-										e.getClass() + ":"
-												+ System.lineSeparator()
-												+ e.getMessage(), e);
+										"Error occured during the visualization process.", e);
 								monitor.done();
 								throw new InterruptedException();
 							}
