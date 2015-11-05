@@ -131,7 +131,7 @@ model XMachine2 {
 		void doWork() {
 			log("\tUser: starting to work...");
 
-			Machine myMachine = User.this->hu::elte::txtuml::examples::machine::XMachine2::Usage::usedMachine.selectAny();
+			Machine myMachine = User.this->Usage::usedMachine.selectAny();
 			
 			send new ButtonPress() to myMachine;
 			// Switching the machine on.

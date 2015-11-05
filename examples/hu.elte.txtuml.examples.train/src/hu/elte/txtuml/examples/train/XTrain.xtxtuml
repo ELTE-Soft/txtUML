@@ -90,9 +90,9 @@ model XTrain {
 			to Neutral;
 			trigger Backward;
 			effect {
-				hu.elte.txtuml.examples.train.XTrain.Engine e = Gearbox.this->hu::elte::txtuml::examples::train::XTrain::GE::e.selectAny();
+				Engine e = Gearbox.this->GE::e.selectAny();
 				send new EngineOff() to e;
-				hu.elte.txtuml.examples.train.XTrain.Lamp l = Gearbox.this->hu::elte::txtuml::examples::train::XTrain::GL::l.selectAny();
+				Lamp l = Gearbox.this->GL::l.selectAny();
 				send new LightOff() to l;
 			}
 		}
@@ -102,15 +102,15 @@ model XTrain {
 			to Neutral;
 			trigger Forward;
 			effect {
-				hu.elte.txtuml.examples.train.XTrain.Engine e = Gearbox.this->hu::elte::txtuml::examples::train::XTrain::GE::e.selectAny();
+				Engine e = Gearbox.this->GE::e.selectAny();
 				send new EngineOff() to e;
-				hu.elte.txtuml.examples.train.XTrain.Lamp l = Gearbox.this->hu::elte::txtuml::examples::train::XTrain::GL::l.selectAny();
+				Lamp l = Gearbox.this->GL::l.selectAny();
 				send new LightOff() to l;
 			}			
 		}
 		
 		void startEngineOp() {
-			hu.elte.txtuml.examples.train.XTrain.Engine e = Gearbox.this->hu::elte::txtuml::examples::train::XTrain::GE::e.selectAny();
+			Engine e = Gearbox.this->GE::e.selectAny();
 			send new EngineOn() to e;
 		}
 	}

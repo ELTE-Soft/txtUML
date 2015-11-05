@@ -159,7 +159,7 @@ model XMachine3 {
 
 			log("\t" + name.toString() + ": analyzing machine...");
 
-			Collection<User> usersOfM = m->hu::elte::txtuml::examples::machine::XMachine3::Usage::userOfMachine;
+			Collection<User> usersOfM = m->Usage::userOfMachine;
  			
  			log("\t\tI found its users!");
 			log("");
@@ -209,7 +209,7 @@ model XMachine3 {
 		void doWork() {
 			log("\t" + name.toString() + ": starting to work...");
 
-			Machine myMachine = User.this->hu::elte::txtuml::examples::machine::XMachine3::Usage::usedMachine.selectAny();
+			Machine myMachine = User.this->Usage::usedMachine.selectAny();
 			
 			User otherUser = findOtherUser(myMachine);
 
@@ -274,8 +274,8 @@ execution XMachine3Tester {
 
 	log("One of the users is starting to do his or her work.");
 	
-	User oneOfTheUsers = m->hu::elte::txtuml::examples::machine::XMachine3::Usage::userOfMachine.selectAny();
-	// In SimpleMachineModel this cannot be done as userOfMachine
+	User oneOfTheUsers = m->Usage::userOfMachine.selectAny();
+	// In Machine1 model this cannot be done as userOfMachine
 	// association end is non-navigable in that model.		
 	send new DoYourWork() to oneOfTheUsers;
 	

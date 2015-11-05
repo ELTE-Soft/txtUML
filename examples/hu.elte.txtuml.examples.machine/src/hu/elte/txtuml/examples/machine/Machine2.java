@@ -19,8 +19,12 @@ class Machine2Model extends Model {
 	// classes
 	
 	class Machine extends ModelClass {
-		int tasksToDo = 3;
+		int tasksToDo;
 
+		Machine(int tasksToDo) {
+			this.tasksToDo = tasksToDo;
+		}
+		
 		class Init extends Initial {}
 
 		class Off extends State {
@@ -194,7 +198,7 @@ class MachineTester {
 	void test() {
 		ModelExecutor.Settings.setExecutorLog(true);
 
-		Machine m = Action.create(Machine.class);
+		Machine m = Action.create(Machine.class, 3);
 		User u1 = Action.create(User.class);
 		User u2 = Action.create(User.class);
 

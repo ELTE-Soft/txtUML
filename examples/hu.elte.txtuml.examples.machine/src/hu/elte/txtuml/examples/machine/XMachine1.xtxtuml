@@ -68,7 +68,7 @@ model XMachine1 {
 			from Init;
 			to Ready;
 			effect {
-				log("\tUser: initializing...");				
+				log("\tUser: initializing...");
 			}
 		}
 
@@ -84,7 +84,7 @@ model XMachine1 {
 		
 		void doWork() {
 			log("\tUser: starting to work...");
-			XMachine1.Machine myMachine = this->hu::elte::txtuml::examples::machine::XMachine1::Usage::usedMachine.selectAny();
+			XMachine1.Machine myMachine = this->Usage::usedMachine.selectAny();
 			send new ButtonPress() to myMachine;
 			send new ButtonPress() to myMachine;
 			send new ButtonPress() to myMachine;
@@ -106,7 +106,7 @@ model XMachine1 {
 }
 
 execution XMachine1Tester {
-	ModelExecutor.Settings.setExecutorLog(false);
+	ModelExecutor.Settings.setExecutorLog(true);
 	Machine m = create(Machine);
 	User u1 = create(User);
 	User u2 = create(User);
