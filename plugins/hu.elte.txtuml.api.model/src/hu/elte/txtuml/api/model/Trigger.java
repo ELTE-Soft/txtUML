@@ -26,9 +26,6 @@ import java.lang.annotation.Target;
  * Transitions are only allowed to have no triggers if they are from an initial
  * pseudostate or a choice pseudostate. Therefore, transitions not included in
  * these two cases must have exactly one trigger defined.
- * <p>
- * <b>Note:</b> using this annotation on any type except for subclasses of
- * <code>Transition</code> has no effect on the model.
  * 
  * <p>
  * <b>Example:</b>
@@ -42,7 +39,8 @@ import java.lang.annotation.Target;
  * 
  * See the documentation of {@link StateMachine} for detailed examples.
  * <p>
- * See the documentation of {@link Model} for an overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  * @see StateMachine.Transition
@@ -57,11 +55,7 @@ import java.lang.annotation.Target;
 public @interface Trigger {
 
 	/**
-	 * The annotation type element to set the triggering signal event of the
-	 * transition this annotation is used on.
-	 * 
-	 * @return the class representing the signal receiving which will trigger
-	 *         the transition
+	 * The triggering signal of the transition this annotation is used on.
 	 */
 	Class<? extends Signal> value();
 

@@ -26,7 +26,8 @@ import hu.elte.txtuml.api.model.backend.collections.InitialsMap;
  * </ul>
  * 
  * <p>
- * See the documentation of {@link Model} for an overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  *
@@ -73,6 +74,8 @@ public class Region extends StateMachine {
 	}
 
 	/**
+	 * 
+	 * 
 	 * @return a unique identifier of this object
 	 */
 	public String getIdentifier() {
@@ -112,6 +115,9 @@ public class Region extends StateMachine {
 		ModelExecutor.send(this, signal);
 	}
 
+	/**
+	 * Starts this region by stepping forward from its initial pseudostate.
+	 */
 	void start() {
 		send(null);
 	}
@@ -177,7 +183,8 @@ public class Region extends StateMachine {
 							continue;
 						}
 					} catch (ElseException e) {
-						Report.error.forEach(x -> x.elseGuardFromNonChoiceVertex(transition));
+						Report.error.forEach(x -> x
+								.elseGuardFromNonChoiceVertex(transition));
 						continue;
 					}
 

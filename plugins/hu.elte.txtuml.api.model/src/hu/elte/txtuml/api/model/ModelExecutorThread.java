@@ -58,6 +58,12 @@ class ModelExecutorThread extends Thread {
 		newMailboxEntry(() -> target.process(signal));
 	}
 
+	/**
+	 * Puts the specified entry into the {@code mailbox}.
+	 * 
+	 * @param entry
+	 *            the entry to put into the {@code mailbox}.
+	 */
 	private void newMailboxEntry(MailboxEntry entry) {
 		try {
 			mailbox.put(entry);

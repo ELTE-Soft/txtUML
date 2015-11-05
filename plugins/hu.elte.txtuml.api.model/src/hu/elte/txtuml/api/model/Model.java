@@ -3,8 +3,8 @@ package hu.elte.txtuml.api.model;
 import hu.elte.txtuml.api.model.external.ExternalClass;
 
 /**
- * Base class of txtUML models. Read this documentation page further for an
- * overview on modeling in txtUML.
+ * Base class of JtxtUML models. Read this documentation page further for an
+ * overview on modeling in JtxtUML.
  * 
  * <p>
  * <b>Represents:</b> model
@@ -67,23 +67,21 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * </code>
  * </pre>
  * 
- * <h1>Modeling in txtUML</h1>
+ * <h1>Modeling in JtxtUML</h1>
  * 
  * <h2>About Java restrictions</h2>
  * 
  * <p>
- * A txtUML model is always a valid Java source but it must apply to other
+ * A JtxtUML model is always a valid Java source but it must apply to other
  * restrictions and requirements as well. All these special rules are detailed
- * at the corresponding pages of this documentation. Read it carefully as
- * currently no model validator is implemented for txtUML so the documentation
- * is the only source of information about model validity. Offending these rules
- * may cause unexpected behavior or errors without proper explanation or error
+ * at the corresponding pages of this documentation. Offending these rules may
+ * cause unexpected behavior or errors without proper explanation or error
  * messages.
  *
  * <h2>Main structure of a model</h2>
  * 
  * <p>
- * A txtUML model consists of a single class <i>m</i> which has to be the
+ * A JtxtUML model consists of a single class <i>m</i> which has to be the
  * subclass of <code>Model</code>. All parts of the model must be implemented as
  * nested classes of <i>m</i>. As a general rule, the model <b>may not</b> refer
  * to or use <i>any</i> code in <i>any</i> way that is from outside <i>m</i>,
@@ -162,8 +160,8 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * 
  * <ul>
  * <li>Using and extending classes, interfaces, enums and annotations of this
- * package and the {@link hu.elte.txtuml.api.model.blocks} package, if the opposite is
- * not stated on the corresponding pages of this documentation.</li>
+ * package and the {@link hu.elte.txtuml.api.model.blocks} package, if the
+ * opposite is not stated on the corresponding pages of this documentation.</li>
  * <li>Using Java primitive types and <code>String</code>s.</li>
  * <li>Using subclasses of <code>ExternalClass</code>, like the classes of the
  * {@link hu.elte.txtuml.api.stdlib} package. See the documentation of
@@ -186,7 +184,7 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * <h2>Communicating with the 'outside world'</h2>
  *
  * <p>
- * A txtUML model may never run by itself. It has to be managed or at least
+ * A JtxtUML model may never run by itself. It has to be managed or at least
  * started from the outside. As {@link ModelExecutor} (the class which is
  * responsible for executing models) uses its own thread, there are two main
  * cases of accessing the model from the outside:
@@ -236,17 +234,17 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * <h2>Definitions</h2>
  * 
  * <p>
- * This section is for some important definitions about txtUML which are
+ * This section is for some important definitions about JtxtUML which are
  * referenced throughout this documentation.
  * 
  * <h3>Action code</h3>
  * 
  * <p>
- * Java code blocks that contain txtUML action code may contain any Java code
+ * Java code blocks that contain JtxtUML action code may contain any Java code
  * that follows the rules set in the 'Global Java restrictions' section.
  * <p>
- * The most important features of the txtUML action language (the following list
- * is <i>not</i> restrictive):
+ * The most important features of the JtxtUML action language (the following
+ * list is <i>not</i> restrictive):
  * <ul>
  * <li>Using the {@link Action} class and its static methods to
  * <ul>
@@ -268,11 +266,11 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * <h3>Condition evaluation</h3>
  * 
  * <p>
- * A condition evaluation in txtUML is a Java code block which aims to create a
+ * A condition evaluation in JtxtUML is a Java code block which aims to create a
  * <code>boolean</code> value that represents whether a certain condition about
  * the model (which condition the block represents) holds or not.
  * <p>
- * Condition evaluations in txtUML include
+ * Condition evaluations in JtxtUML include
  * {@link StateMachine.Transition#guard() guards} of transitions and conditions
  * of certain <code>Collection</code> methods (
  * {@link Collection#selectAll(hu.elte.txtuml.api.model.blocks.ParameterizedCondition)
@@ -310,13 +308,6 @@ public class Model extends Action {
 
 	/**
 	 * Sole constructor of <code>Model</code>.
-	 * <p>
-	 * <b>Implementation note:</b>
-	 * <p>
-	 * Protected because this class is intended to be inherited from but not
-	 * instantiated. However, <code>Model</code> has to be a non-abstract class
-	 * to make sure that it is instantiatable when that is needed for the API or
-	 * the model exportation.
 	 */
 	protected Model() {
 	}

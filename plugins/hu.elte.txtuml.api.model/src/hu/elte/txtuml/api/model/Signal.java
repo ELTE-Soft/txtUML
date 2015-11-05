@@ -10,7 +10,7 @@ package hu.elte.txtuml.api.model;
  * <p>
  * 
  * Inherit signals from this class. To keep modeling simple, a signal is also a
- * signal event in txtUML so it can be used as a trigger of transitions
+ * signal event in JtxtUML so it can be used as a trigger of transitions
  * directly. As a signal event, it is considered to contain itself as a signal.
  * <p>
  * Signals might be inherited from other signals as well. This is represented in
@@ -35,8 +35,8 @@ package hu.elte.txtuml.api.model;
  * <li><i>Constructors:</i> allowed, containing only simple assignments to set
  * the values of its fields</li>
  * <li><i>Initialization blocks:</i> disallowed</li>
- * <li><i>Fields:</i> allowed, only of types extending ModelClass or primitives
- * (including String) to represent parameters of the signal</li>
+ * <li><i>Fields:</i> allowed, only of primitive types (including String) to
+ * represent parameters of the signal</li>
  * <li><i>Methods:</i> disallowed</li>
  * <li><i>Nested interfaces:</i> disallowed</li>
  * <li><i>Nested classes:</i> disallowed</li>
@@ -60,7 +60,7 @@ package hu.elte.txtuml.api.model;
  * </code>
  * </pre>
  *
- * See the documentation of {@link Model} for an overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  *
@@ -69,13 +69,6 @@ public class Signal extends Event {
 
 	/**
 	 * Sole constructor of <code>Signal</code>.
-	 * <p>
-	 * <b>Implementation note:</b>
-	 * <p>
-	 * Protected because this class is intended to be inherited from but not
-	 * instantiated. However, <code>Signal</code> has to be a non-abstract class
-	 * to make sure that it is instantiatable when that is needed for the API or
-	 * the model exportation.
 	 */
 	protected Signal() {
 	}

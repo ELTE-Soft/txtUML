@@ -38,7 +38,8 @@ import java.util.concurrent.CountDownLatch;
  * <p>
  * Accessed from multiple threads, so must be thread-safe.
  * <p>
- * See the documentation of {@link Model} for an overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  *
@@ -55,6 +56,9 @@ public final class ModelExecutor implements ModelElement {
 	 */
 	private static final TerminationManager terminationManager = new TerminationManager();
 
+	/**
+	 * The object which prints the runtime log of the executor.
+	 */
 	private static final ExecutorLog executorLog = new ExecutorLog();
 
 	/**
@@ -93,7 +97,7 @@ public final class ModelExecutor implements ModelElement {
 	 * 
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *
@@ -269,8 +273,6 @@ public final class ModelExecutor implements ModelElement {
 		 * <i>mul</i> millseconds during model execution, where <i>mul</i> is
 		 * the current execution time multiplier. This way, txtUML models might
 		 * be tested at the desired speed.
-		 * <p>
-		 * Execution time multiplier is 1 by default.
 		 * 
 		 * @return the current execution time multiplier
 		 * @see #setExecutionTimeMultiplier(float)
@@ -289,8 +291,6 @@ public final class ModelExecutor implements ModelElement {
 		 * <i>mul</i> millseconds during model execution, where <i>mul</i> is
 		 * the current execution time multiplier. This way, txtUML models might
 		 * be tested at the desired speed.
-		 * <p>
-		 * Execution time multiplier is 1 by default.
 		 * 
 		 * @param time
 		 *            the amount of time to be given in model execution time
@@ -328,12 +328,48 @@ public final class ModelExecutor implements ModelElement {
 
 	// REPORT
 
+	/**
+	 * A special class to manage runtime reports about the model execution.
+	 * 
+	 * <p>
+	 * <b>Represents:</b> no model element
+	 * <p>
+	 * <b>Usage:</b>
+	 * <p>
+	 * 
+	 * Calling its static methods only affect the model execution, they are not
+	 * exported.
+	 * 
+	 * <p>
+	 * <b>Java restrictions:</b>
+	 * <ul>
+	 * <li><i>Instantiate:</i> disallowed</li>
+	 * <li><i>Define subtype:</i> disallowed</li>
+	 * </ul>
+	 * 
+	 * <p>
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * JtxtUML.
+	 *
+	 * @author Gabor Ferenc Kovacs
+	 * 
+	 *
+	 */
 	public static final class Report {
 
+		/**
+		 * Registered {@link ModelExecutionEventsListener}s.
+		 */
 		static final Queue<ModelExecutionEventsListener> event = new ConcurrentLinkedQueue<>();
 
+		/**
+		 * Registered {@link RuntimeErrorsListener}s.
+		 */
 		static final Queue<RuntimeErrorsListener> error = new ConcurrentLinkedQueue<>();
 
+		/**
+		 * Registered {@link RuntimeWarningsListener}s.
+		 */
 		static final Queue<RuntimeWarningsListener> warning = new ConcurrentLinkedQueue<>();
 
 		static {
