@@ -62,7 +62,7 @@ abstract class InnerClassInstancesHolder {
 				parent = getInnerClassInstance(enclosing);
 			}
 			ret = InstanceCreator
-					.createInstanceWithGivenParams(forWhat, parent);
+					.create(forWhat, parent);
 			innerClassInstances.put(forWhat, ret);
 		}
 		return ret;

@@ -268,7 +268,7 @@ public class ModelClass extends Region {
 		@SuppressWarnings("unchecked")
 		AE ret = (AE) associations.get(otherEnd);
 		if (ret == null) {
-			ret = InstanceCreator.createInstanceWithGivenParams(otherEnd,
+			ret = InstanceCreator.create(otherEnd,
 					(Object) null);
 			associations.put(otherEnd, ret);
 		}
@@ -297,7 +297,7 @@ public class ModelClass extends Region {
 			Class<AE> otherEnd, T object) throws MultiplicityException {
 
 		AssociationEnd<?> newValue = InstanceCreator
-				.createInstanceWithGivenParams(otherEnd, (Object) null).init(
+				.create(otherEnd, (Object) null).init(
 						assocPrivate(otherEnd).typeKeepingAdd(object));
 
 		associations.put(otherEnd, newValue);
@@ -322,7 +322,7 @@ public class ModelClass extends Region {
 			Class<AE> otherEnd, T object) {
 
 		AssociationEnd<?> newValue = InstanceCreator
-				.createInstanceWithGivenParams(otherEnd, (Object) null).init(
+				.create(otherEnd, (Object) null).init(
 						assocPrivate(otherEnd).typeKeepingRemove(object));
 
 		associations.put(otherEnd, newValue);
@@ -506,7 +506,7 @@ public class ModelClass extends Region {
 		}
 
 		AssociationEnd<?> value = InstanceCreator
-				.createInstanceWithGivenParams(assocEnd, (Object) null);
+				.create(assocEnd, (Object) null);
 
 		associations.put(assocEnd, value);
 

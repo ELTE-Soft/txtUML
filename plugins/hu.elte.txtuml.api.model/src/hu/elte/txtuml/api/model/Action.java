@@ -74,7 +74,7 @@ public class Action implements ModelElement {
 			}
 		}
 		T obj = InstanceCreator
-				.createInstanceWithGivenParams(classType, params);
+				.create(classType, params);
 		if (obj == null) {
 			Report.error.forEach(x -> x.modelObjectCreationFailed(classType,
 					parameters));
