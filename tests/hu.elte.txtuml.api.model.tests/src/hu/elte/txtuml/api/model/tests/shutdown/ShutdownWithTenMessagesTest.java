@@ -25,10 +25,7 @@ public class ShutdownWithTenMessagesTest extends SimpleModelTestsBase {
 		}
 
 		Assert.assertEquals(false, actionPerformed.value);
-		stopModelExecution(() -> {
-			ModelExecutor.shutdown();
-			Assert.assertEquals(false, actionPerformed.value);
-		});
+		stopModelExecution();
 		Assert.assertEquals(true, actionPerformed.value);
 
 		executionAsserter.assertEvents(x -> {
