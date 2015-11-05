@@ -1,9 +1,9 @@
 package hu.elte.txtuml.examples.producer_consumer;
 
 import hu.elte.txtuml.api.layout.*;
-import hu.elte.txtuml.examples.producer_consumer.ProducerConsumer.*;
+import hu.elte.txtuml.examples.producer_consumer.XProducerConsumer.*;
 
-class ProducerConsumerDiagram extends Diagram
+class XProducerConsumerDiagram extends Diagram
 {
 	@Row({Producer.class, Storage.class, Consumer.class})
 	@South(val = Item.class, from = Storage.class)

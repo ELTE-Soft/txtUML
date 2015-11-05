@@ -1,9 +1,9 @@
 package hu.elte.txtuml.examples.train;
 
 import hu.elte.txtuml.api.layout.*;
-import hu.elte.txtuml.examples.train.TrainModel.*;
+import hu.elte.txtuml.examples.train.XTrain.*;
 
-class TrainDiagram extends Diagram
+class XTrainDiagram extends Diagram
 {
 	class TopPhantom extends Phantom{}
 	
