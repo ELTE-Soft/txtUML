@@ -2,14 +2,11 @@
 <feature
       id="hu.elte.txtuml.feature"
       label="txtUML"
-      version="0.1.1.qualifier"
+      version="0.2.0.qualifier"
       provider-name="ELTE">
 
    <description url="http://txtuml.inf.elte.hu">
-      The txtUML project provides a Java API to build executable UML
-models. Visualization of class and state diagrams is possible
-in the Papyrus UML editor and a model compiler to C++ is also
-included.
+      Textual, executable, translatable UML.
    </description>
 
    <copyright>

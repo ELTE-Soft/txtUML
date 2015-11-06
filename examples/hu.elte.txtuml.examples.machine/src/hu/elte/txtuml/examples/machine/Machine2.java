@@ -1,7 +1,5 @@
 package hu.elte.txtuml.examples.machine;
 
-import hu.elte.txtuml.api.layout.Diagram;
-import hu.elte.txtuml.api.layout.Right;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.Association;
 import hu.elte.txtuml.api.model.From;
@@ -21,8 +19,12 @@ class Machine2Model extends Model {
 	// classes
 	
 	class Machine extends ModelClass {
-		int tasksToDo = 3;
+		int tasksToDo;
 
+		Machine(int tasksToDo) {
+			this.tasksToDo = tasksToDo;
+		}
+		
 		class Init extends Initial {}
 
 		class Off extends State {
@@ -191,17 +193,12 @@ class Machine2Model extends Model {
 	
 }
 
-class Machine2Diagram extends Diagram {
-	@Right(from = Machine.class, val = User.class)
-	class MachineLayout extends Layout {} 
-}
-
 class MachineTester {
 
 	void test() {
 		ModelExecutor.Settings.setExecutorLog(true);
 
-		Machine m = Action.create(Machine.class);
+		Machine m = Action.create(Machine.class, 3);
 		User u1 = Action.create(User.class);
 		User u2 = Action.create(User.class);
 

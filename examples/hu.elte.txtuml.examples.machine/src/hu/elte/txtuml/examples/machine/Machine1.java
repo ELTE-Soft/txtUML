@@ -1,20 +1,7 @@
 package hu.elte.txtuml.examples.machine;
 
-import hu.elte.txtuml.api.layout.Diagram;
-import hu.elte.txtuml.api.layout.Right;
-import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.Association;
-import hu.elte.txtuml.api.model.From;
-import hu.elte.txtuml.api.model.Model;
-import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.ModelExecutor;
-import hu.elte.txtuml.api.model.Signal;
-import hu.elte.txtuml.api.model.To;
-import hu.elte.txtuml.api.model.Trigger;
-import hu.elte.txtuml.examples.machine.Machine1Model.DoYourWork;
-import hu.elte.txtuml.examples.machine.Machine1Model.Machine;
-import hu.elte.txtuml.examples.machine.Machine1Model.Usage;
-import hu.elte.txtuml.examples.machine.Machine1Model.User;
+import hu.elte.txtuml.api.model.*;
+import hu.elte.txtuml.examples.machine.Machine1Model.*;
 
 class Machine1Model extends Model {
 
@@ -121,11 +108,6 @@ class Machine1Model extends Model {
 	static class DoYourWork extends Signal {}
 	// Signal classes are allowed to be static for simpler use.
 	
-}
-
-class Machine1Diagram extends Diagram {
-	@Right(from = Machine.class, val = User.class)
-	class MachineLayout extends Layout {} 
 }
 
 class Machine1Tester {

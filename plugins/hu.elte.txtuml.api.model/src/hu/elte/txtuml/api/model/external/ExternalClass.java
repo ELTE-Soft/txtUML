@@ -65,7 +65,7 @@ package hu.elte.txtuml.api.model.external;
  * 
  * <p>
  * See the documentation of {@link hu.elte.txtuml.api.model.Model Model} for an
- * overview on modeling in txtUML.
+ * overview on modeling in JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  *

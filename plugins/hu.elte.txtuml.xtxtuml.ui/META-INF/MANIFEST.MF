@@ -2,10 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: XtxtUML Eclipse UI Support
 Bundle-Vendor: ELTE
-Bundle-Version: 0.1.1.qualifier
+Bundle-Version: 0.2.0.qualifier
 Bundle-SymbolicName: hu.elte.txtuml.xtxtuml.ui; singleton:=true
 Bundle-ActivationPolicy: lazy
-Require-Bundle: hu.elte.txtuml.xtxtuml;visibility:=reexport,
+Require-Bundle: hu.elte.txtuml.xtxtuml;visibility:=reexport;bundle-version="0.2.0",
  org.eclipse.xtext.ui,
  org.eclipse.ui.editors;bundle-version="3.5.0",
  org.eclipse.ui.ide;bundle-version="3.5.0",

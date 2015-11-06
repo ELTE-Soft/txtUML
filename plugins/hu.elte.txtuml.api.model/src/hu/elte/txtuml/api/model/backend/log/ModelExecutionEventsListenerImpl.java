@@ -9,8 +9,8 @@ import hu.elte.txtuml.api.model.report.ModelExecutionEventsListener;
 final class ModelExecutionEventsListenerImpl extends BaseListenerImpl
 		implements ModelExecutionEventsListener {
 
-	ModelExecutionEventsListenerImpl(ExecutorLog log) {
-		super(log);
+	ModelExecutionEventsListenerImpl(ExecutorLog owner) {
+		super(owner);
 	}
 
 	@Override

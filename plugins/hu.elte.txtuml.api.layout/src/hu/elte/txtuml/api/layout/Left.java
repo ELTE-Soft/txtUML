@@ -8,6 +8,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * A diagram layout statement which sets that a node ({@link #val}) is directly
+ * left to another node ({@link #from}).
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Repeatable(LeftContainer.class)

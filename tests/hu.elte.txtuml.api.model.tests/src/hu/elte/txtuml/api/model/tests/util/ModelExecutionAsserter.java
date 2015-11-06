@@ -129,8 +129,8 @@ public final class ModelExecutionAsserter {
 			}
 			for (int i = 0; i < params.length; ++i) {
 				if (params[i] != other.params[i]
-						&& !params[i].toString().equals(
-								other.params[i].toString())) {
+						&& !String.valueOf(params[i]).equals(
+								String.valueOf(other.params[i]))) {
 					if (params[i] instanceof Object[]
 							&& other.params[i] instanceof Object[]
 							&& Arrays
