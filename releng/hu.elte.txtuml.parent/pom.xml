@@ -17,6 +17,38 @@
 		<url>https://github.com/ELTE-Soft/txtUML</url>
 	</scm>
 
+	<modules>
+		<module>../../features/hu.elte.txtuml.feature</module>
+		<module>../../features/hu.elte.txtuml.project</module>
+
+		<module>../../plugins/hu.elte.txtuml.api.diagnostics</module>
+		<module>../../plugins/hu.elte.txtuml.api.layout</module>
+		<module>../../plugins/hu.elte.txtuml.api.model</module>
+		<module>../../plugins/hu.elte.txtuml.api.stdlib</module>
+		<module>../../plugins/hu.elte.txtuml.diagnostics</module>
+		<module>../../plugins/hu.elte.txtuml.eclipseutils</module>
+		<module>../../plugins/hu.elte.txtuml.export</module>
+		<module>../../plugins/hu.elte.txtuml.export.cpp</module>
+		<module>../../plugins/hu.elte.txtuml.export.papyrus</module>
+		<module>../../plugins/hu.elte.txtuml.export.uml2</module>
+		<module>../../plugins/hu.elte.txtuml.importing.uml2</module>
+		<module>../../plugins/hu.elte.txtuml.layout.export</module>
+		<module>../../plugins/hu.elte.txtuml.layout.visualizer</module>
+		<module>../../plugins/hu.elte.txtuml.stdlib</module>
+		<module>../../plugins/hu.elte.txtuml.utils</module>
+		<module>../../plugins/hu.elte.txtuml.validation</module>
+		<module>../../plugins/hu.elte.txtuml.xtxtuml</module>
+		<module>../../plugins/hu.elte.txtuml.xtxtuml.lib</module>
+		<module>../../plugins/hu.elte.txtuml.xtxtuml.ui</module>
+
+		<module>../../tests/hu.elte.txtuml.diagnostics.tests</module>
+		<module>../../tests/hu.elte.txtuml.export.papyrus.tests</module>
+		<module>../../tests/hu.elte.txtuml.export.uml2.tests</module>
+		<module>../../tests/hu.elte.txtuml.export.uml2.tests.models</module>
+		<module>../../tests/hu.elte.txtuml.xtxtuml.tests</module>
+
+		<module>../../releng/hu.elte.txtuml.target</module>
+	</modules>
 
 	<!-- Tycho requires Maven 3 -->
 	<prerequisites>
