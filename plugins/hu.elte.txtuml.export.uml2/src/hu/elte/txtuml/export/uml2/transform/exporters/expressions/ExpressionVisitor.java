@@ -181,7 +181,7 @@ class ExpressionVisitor extends ASTVisitor {
 		} else {
 			if (TypeExporter.isAction(binding)) {
 				try {
-					result = expressionExporter.exportAction(binding, args);
+					result = expressionExporter.exportAction(node, args);
 				} catch (ExportException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

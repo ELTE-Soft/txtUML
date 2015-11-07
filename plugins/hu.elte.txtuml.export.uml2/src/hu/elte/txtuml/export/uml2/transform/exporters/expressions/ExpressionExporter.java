@@ -31,6 +31,7 @@ import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.uml2.uml.AddStructuralFeatureValueAction;
@@ -135,17 +136,18 @@ public class ExpressionExporter extends ControlStructureEditor {
 		}
 	}
 
-	public Expr exportAction(IMethodBinding binding, List<Expr> args) throws ExportException {
+	public Expr exportAction(MethodInvocation methodInvocation, List<Expr> args) throws ExportException {
+		IMethodBinding binding = methodInvocation.resolveMethodBinding();
 		String actionName = binding.getName();
-
+	
 		if (actionName.equals("create")) {
 			return new CreateObjectActionExporter(this).export(args);
 		} else if (actionName.equals("delete")) {
 			new DeleteObjectActionExporter(this).export(args);
 		} else if (actionName.equals("link")) {
-			new LinkActionExporter(this).export(args);
+			new LinkActionExporter(this).export(methodInvocation, args);
 		} else if (actionName.equals("unlink")) {
-			new UnlinkActionExporter(this).export(args);
+			new UnlinkActionExporter(this).export(methodInvocation, args);
 		} else if (actionName.equals("start")) {
 			new StartActionExporter(this).export(args);
 		} else if (actionName.equals("send")) {
