@@ -1364,6 +1364,7 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
     tuStateEClass.getESuperTypes().add(this.getTUStateMember());
     tuEntryOrExitActivityEClass.getESuperTypes().add(this.getTUStateMember());
     tuTransitionEClass.getESuperTypes().add(this.getTUClassMember());
+    tuTransitionEClass.getESuperTypes().add(this.getTUStateMember());
     tuTransitionTriggerEClass.getESuperTypes().add(this.getTUTransitionMember());
     tuTransitionVertexEClass.getESuperTypes().add(this.getTUTransitionMember());
     tuTransitionEffectEClass.getESuperTypes().add(this.getTUTransitionMember());

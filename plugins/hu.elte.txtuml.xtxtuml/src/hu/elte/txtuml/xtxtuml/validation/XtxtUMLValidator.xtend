@@ -161,8 +161,14 @@ class XtxtUMLValidator extends AbstractXtxtUMLValidator {
 	
 	@Check
 	def checkNoDuplicateTransition(TUTransition trans) {
-		val containingClass = trans.eContainer as TUClass;
-		if (containingClass.members.exists[
+		val container = trans.eContainer;
+		val siblingsAndSelf = if (container instanceof TUClass) {
+			(container as TUClass).members
+		} else {
+			(container as TUState).members
+		}
+		
+		if (siblingsAndSelf.exists[
 			it instanceof TUTransition && (it as TUTransition).name == trans.name && it != trans ||
 			it instanceof TUState && (it as TUState).name == trans.name
 		]) {
