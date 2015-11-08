@@ -26,13 +26,13 @@ public class DiagramExportationReport {
 	private Set<LineAssociation> links;
 	private int errorCount;
 	private int warningCount;
-    private List<String> errors;
+	private List<String> errors;
 	private List<String> warnings;
-	
+
 	public DiagramExportationReport() {
 		clear();
 	}
-	
+
 	/**
 	 * Returns whether the exportation was successful or not. The exportation is
 	 * successful if no errors have occurred.
@@ -41,22 +41,21 @@ public class DiagramExportationReport {
 		return errorCount == 0;
 	}
 
-    /**
-     * Returns the string representation of the root element
-     * (a subclass of Model in the current implementation)
-     * which the exported diagram belongs to.
-     * <p>
-     * If the root element couldn't been determined (eg. the
-     * diagram description was empty), the return value is
-     * <code>null</code>. If the <code>isSuccessful</code>
-     * method returns <code>false</code>, the return value of
-     * this method should not be used (it is probably
-     * <code>null</code>).
-     */
-    public String getRootElementAsString() {
-        return rootElementAsString;
-    }
-	
+	/**
+	 * Returns the string representation of the root element (a subclass of
+	 * Model in the current implementation) which the exported diagram belongs
+	 * to.
+	 * <p>
+	 * If the root element couldn't be determined (eg. the diagram description
+	 * was empty), the return value is <code>null</code>. If the
+	 * <code>isSuccessful</code> method returns <code>false</code>, the return
+	 * value of this method should not be used (it is probably <code>null</code>
+	 * ).
+	 */
+	public final String getRootElementAsString() {
+		return rootElementAsString;
+	}
+
 	/**
 	 * @return the number of errors occurred during exportation
 	 */
@@ -114,19 +113,21 @@ public class DiagramExportationReport {
 	public final Set<LineAssociation> getLinks() {
 		return links;
 	}
-	
+
 	/**
-	 *  @return the (possibly empty) list of errors occurred during the exportation
+	 * @return the (possibly empty) list of errors occurred during the
+	 *         exportation
 	 */
 	public final List<String> getErrors() {
-	    return errors;
+		return errors;
 	}
-	
-	 /**
-     *  @return the (possibly empty) list of warnings occurred during the exportation
-     */
+
+	/**
+	 * @return the (possibly empty) list of warnings occurred during the
+	 *         exportation
+	 */
 	public final List<String> getWarnings() {
-	    return warnings;
+		return warnings;
 	}
 
 	/**
@@ -157,7 +158,7 @@ public class DiagramExportationReport {
 	 * Resets fields to their default value;
 	 */
 	public final void clear() {
-	    rootElementAsString = null;
+		rootElementAsString = null;
 		type = DiagramType.Unknown;
 		errorCount = 0;
 		warningCount = 0;
@@ -167,15 +168,15 @@ public class DiagramExportationReport {
 		nodes = null;
 		links = null;
 	}
-	
+
 	/**
 	 * Should be called only by the diagram exporter.
 	 * 
 	 * @param rootElement
-	 *             string representation of the diagram's root element
+	 *            string representation of the diagram's root element
 	 */
 	public final void setRootElementAsString(String rootElementAsString) {
-	    this.rootElementAsString = rootElementAsString;
+		this.rootElementAsString = rootElementAsString;
 	}
 
 	/**
