@@ -371,7 +371,7 @@ public class ElementExporterImpl implements ElementExporter {
 	@Override
 	public NodeGroupInfo exportAnonymousNodeGroup(Class<?>[] abstractNodes)
 			throws ElementExportationException {
-		NodeGroupInfo info = NodeGroupInfo.create(null, null, null);
+		NodeGroupInfo info = NodeGroupInfo.create(null, null);
 
 		for (Class<?> abstractNode : abstractNodes) {
 			ElementInfo innerInfo = exportElement(abstractNode);
@@ -398,7 +398,7 @@ public class ElementExporterImpl implements ElementExporter {
 
 	private NodeInfo exportNewNode(Class<?> cls) {
 		if (ClassDiagramExporter.isNode(cls) && hasValidDeclaringClass(cls)) {
-			NodeInfo info = NodeInfo.create(cls, DiagramType.Class,
+			NodeInfo info = NodeInfo.create(cls,
 					Utils.classAsString(cls));
 			nodes.put(cls, info);
 			return info;
@@ -409,7 +409,7 @@ public class ElementExporterImpl implements ElementExporter {
 
 	private NodeInfo exportNewPhantom(Class<?> cls) {
 		if (ElementExporter.isPhantom(cls)) {
-			NodeInfo info = NodeInfo.create(cls, DiagramType.Class, "#phantom_"
+			NodeInfo info = NodeInfo.create(cls, "#phantom_"
 					+ ++phantomCounter);
 			nodes.put(cls, info);
 			phantoms.add(info);
@@ -426,7 +426,7 @@ public class ElementExporterImpl implements ElementExporter {
 			Pair<Class<?>, Class<?>> p = ClassDiagramExporter
 					.startAndEndOfLink(cls);
 
-			LinkInfo info = LinkInfo.create(cls, DiagramType.Class,
+			LinkInfo info = LinkInfo.create(cls,
 					Utils.classAsString(cls), exportNode(p.getFirst()),
 					exportNode(p.getSecond()));
 			links.put(cls, info);
@@ -440,7 +440,7 @@ public class ElementExporterImpl implements ElementExporter {
 		if (!ElementExporter.isNodeGroup(cls)) {
 			return null;
 		}
-		NodeGroupInfo info = NodeGroupInfo.create(cls, DiagramType.Class,
+		NodeGroupInfo info = NodeGroupInfo.create(cls,
 				Utils.classAsString(cls));
 		nodeGroups.put(cls, info);
 		info.setBeingExported(true);
@@ -497,7 +497,7 @@ public class ElementExporterImpl implements ElementExporter {
 		if (!ElementExporter.isLinkGroup(cls)) {
 			return null;
 		}
-		LinkGroupInfo info = LinkGroupInfo.create(cls, DiagramType.Class,
+		LinkGroupInfo info = LinkGroupInfo.create(cls,
 				Utils.classAsString(cls));
 		linkGroups.put(cls, info);
 		info.setBeingExported(true);
@@ -546,7 +546,7 @@ public class ElementExporterImpl implements ElementExporter {
 
 	@Override
 	public NodeInfo createPhantom() {
-		NodeInfo newPhantom = NodeInfo.create(null, null, "#phantom_"
+		NodeInfo newPhantom = NodeInfo.create(null, "#phantom_"
 				+ ++phantomCounter);
 		phantoms.add(newPhantom);
 
