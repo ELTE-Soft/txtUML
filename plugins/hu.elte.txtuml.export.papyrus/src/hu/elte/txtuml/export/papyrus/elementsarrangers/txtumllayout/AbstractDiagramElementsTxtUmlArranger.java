@@ -93,24 +93,28 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			int gridDensity = objects.isEmpty() ? 0 : objects.iterator().next().getWidth();
 			
 			for(LineAssociation la : links){
-				List<Point> route = new LinkedList<Point>();
-
-				List<hu.elte.txtuml.layout.visualizer.model.Point> layoutRoute = la.getMinimalRoute();
-				
-				for(int i = 0; i < layoutRoute.size(); i++){
-					int index = i;
-					if(la.getType() == AssociationType.generalization){ //ugly workaround: some connections have opposite direction while others don't
-						index = layoutRoute.size()-i-1;
-					}
-					
-					route.add(new Point(layoutRoute.get(index).getX(),layoutRoute.get(index).getY()));
-				}
 				
 				Optional<? extends Element> e = txtUmlRegistry.findAssociation(la.getId());
 				if(!e.isPresent()) e = txtUmlRegistry.findGeneralization(la.getFrom(), la.getTo());
 				
 				if(e.isPresent()){
 					ConnectionNodeEditPart connection = (ConnectionNodeEditPart) getEditPartOfModelElement(connections, e.get());
+					Element from = txtUmlRegistry.findElement(la.getFrom()).get();
+					Element to = txtUmlRegistry.findElement(la.getTo()).get();
+					Element source = (Element) ((View)connection.getSource().getModel()).getElement();
+					Element target = (Element) ((View)connection.getTarget().getModel()).getElement();
+					List<Point> route = new LinkedList<Point>();
+
+					List<hu.elte.txtuml.layout.visualizer.model.Point> layoutRoute = la.getMinimalRoute();
+					
+					for(int i = 0; i < layoutRoute.size(); i++){
+						int index = i;
+						if(la.getType() == AssociationType.generalization || (from == target && to == source)){
+							index = layoutRoute.size()-i-1;
+						}
+						
+						route.add(new Point(layoutRoute.get(index).getX(),layoutRoute.get(index).getY()));
+					}
 					linksTransform.put(connection, route);
 				}
 			}
