@@ -3,7 +3,8 @@ package hu.elte.txtuml.layout.export.impl;
 import hu.elte.txtuml.api.layout.Alignment;
 import hu.elte.txtuml.api.layout.Contains;
 import hu.elte.txtuml.layout.export.DiagramType;
-import hu.elte.txtuml.layout.export.diagramexporters.ClassDiagramExporter;
+import hu.elte.txtuml.layout.export.diagramexporters.ModelId;
+import hu.elte.txtuml.layout.export.diagramexporters.SourceExporter;
 import hu.elte.txtuml.layout.export.elementinfo.ConcreteElementInfo;
 import hu.elte.txtuml.layout.export.elementinfo.ElementInfo;
 import hu.elte.txtuml.layout.export.elementinfo.GroupInfo;
@@ -37,21 +38,31 @@ import java.util.Set;
  */
 public class ElementExporterImpl implements ElementExporter {
 
+	private final SourceExporter classDiagramExporter = null; // FIXME
+
 	private DiagramType diagramType;
 	// TODO check diagram type: when a new element is found, and it is of a
 	// certain type (a node or a link), check if that type equals with this
 	// field. If this field's value is Unknown, set it to the element's value.
 	// If it is not Unknown, and also unequal to the element's type, an has to
 	// be shown.
-	private Class<?> rootElement;
+	private ModelId containingModel;
 
-	private final NodeMap nodes; // includes user defined phantoms
+	/**
+	 * All nodes, including user defined phantoms.
+	 */
+	private final NodeMap nodes;
 	private final LinkMap links;
 	private final NodeGroupMap nodeGroups;
 	private final LinkGroupMap linkGroups;
-	private final NodeList phantoms; // internal & user defined phantoms
-	private final LinkList generalizations; // separate container since the lack
-											// of element class
+	/**
+	 * Internal and user defined phantoms.
+	 */
+	private final NodeList phantoms;
+	/**
+	 * Separate container since the lack of element class.
+	 */
+	private final LinkList generalizations;
 	private final ProblemReporter problemReporter;
 	private final Set<Class<?>> failedGroups;
 
@@ -76,7 +87,7 @@ public class ElementExporterImpl implements ElementExporter {
 
 	@Override
 	public String getRootElementAsString() {
-		return rootElement == null ? null : rootElement.getCanonicalName();
+		return containingModel == null ? null : containingModel.getName();
 	}
 
 	@Override
@@ -397,9 +408,8 @@ public class ElementExporterImpl implements ElementExporter {
 	}
 
 	private NodeInfo exportNewNode(Class<?> cls) {
-		if (ClassDiagramExporter.isNode(cls) && hasValidDeclaringClass(cls)) {
-			NodeInfo info = NodeInfo.create(cls,
-					Utils.classAsString(cls));
+		if (classDiagramExporter.isNode(cls) && checkModelOf(cls)) {
+			NodeInfo info = NodeInfo.create(cls, Utils.classAsString(cls));
 			nodes.put(cls, info);
 			return info;
 		}
@@ -409,8 +419,8 @@ public class ElementExporterImpl implements ElementExporter {
 
 	private NodeInfo exportNewPhantom(Class<?> cls) {
 		if (ElementExporter.isPhantom(cls)) {
-			NodeInfo info = NodeInfo.create(cls, "#phantom_"
-					+ ++phantomCounter);
+			NodeInfo info = NodeInfo
+					.create(cls, "#phantom_" + ++phantomCounter);
 			nodes.put(cls, info);
 			phantoms.add(info);
 
@@ -422,13 +432,12 @@ public class ElementExporterImpl implements ElementExporter {
 
 	private LinkInfo exportNewLink(Class<?> cls)
 			throws ElementExportationException {
-		if (ClassDiagramExporter.isLink(cls) && hasValidDeclaringClass(cls)) {
-			Pair<Class<?>, Class<?>> p = ClassDiagramExporter
-					.startAndEndOfLink(cls);
+		if (classDiagramExporter.isLink(cls) && checkModelOf(cls)) {
+			Pair<Class<?>, Class<?>> p = classDiagramExporter
+					.getStartAndEndOfLink(cls);
 
-			LinkInfo info = LinkInfo.create(cls,
-					Utils.classAsString(cls), exportNode(p.getFirst()),
-					exportNode(p.getSecond()));
+			LinkInfo info = LinkInfo.create(cls, Utils.classAsString(cls),
+					exportNode(p.getFirst()), exportNode(p.getSecond()));
 			links.put(cls, info);
 			return info;
 		}
@@ -436,12 +445,13 @@ public class ElementExporterImpl implements ElementExporter {
 		return null;
 	}
 
-	private NodeGroupInfo exportNewNodeGroup(Class<?> cls) throws ElementExportationException {
+	private NodeGroupInfo exportNewNodeGroup(Class<?> cls)
+			throws ElementExportationException {
 		if (!ElementExporter.isNodeGroup(cls)) {
 			return null;
 		}
-		NodeGroupInfo info = NodeGroupInfo.create(cls,
-				Utils.classAsString(cls));
+		NodeGroupInfo info = NodeGroupInfo
+				.create(cls, Utils.classAsString(cls));
 		nodeGroups.put(cls, info);
 		info.setBeingExported(true);
 
@@ -497,8 +507,8 @@ public class ElementExporterImpl implements ElementExporter {
 		if (!ElementExporter.isLinkGroup(cls)) {
 			return null;
 		}
-		LinkGroupInfo info = LinkGroupInfo.create(cls,
-				Utils.classAsString(cls));
+		LinkGroupInfo info = LinkGroupInfo
+				.create(cls, Utils.classAsString(cls));
 		linkGroups.put(cls, info);
 		info.setBeingExported(true);
 
@@ -567,16 +577,7 @@ public class ElementExporterImpl implements ElementExporter {
 
 	@Override
 	public void exportImpliedLinks() {
-		ClassDiagramExporter classDiagramExporter = new ClassDiagramExporter(
-				this, rootElement);
-
-		// including phantoms would be unnecessary (but not erroneous)
-		nodes.forEach((elementClass, node) -> {
-			if (!node.isPhantom()) {
-				classDiagramExporter
-						.exportAssociationsStartingFromThisNode(elementClass);
-			}
-		});
+		classDiagramExporter.exportImpliedLinks(containingModel, this);
 	}
 
 	// helper functions
@@ -586,26 +587,23 @@ public class ElementExporterImpl implements ElementExporter {
 		return annot.annotationType() == annotationClass;
 	}
 
-	private boolean hasValidDeclaringClass(Class<?> cls) {
-		Class<?> declaringClass = cls.getDeclaringClass();
-
-		// TODO additional checks will be needed when packages became
-		// implemented in the api
-		if (!ClassDiagramExporter.isModel(declaringClass)) {
-			problemReporter.hasInvalidDeclaringClass(cls);
+	private boolean checkModelOf(Class<?> cls) {
+		try {
+			ModelId containerOfCls = classDiagramExporter.getModelOf(cls);
+			if (!containerOfCls.equals(containingModel)) {
+				if (containingModel == null) {
+					containingModel = containerOfCls;
+				} else {
+					problemReporter.elementFromAnotherModels(containingModel,
+							containerOfCls, cls);
+					return false;
+				}
+			}
+			return true;
+		} catch (ElementExportationException e) {
+			problemReporter.unknownContainingModel(cls);
 			return false;
 		}
-
-		if (this.rootElement == null) {
-			this.rootElement = declaringClass;
-		}
-
-		if (declaringClass != this.rootElement) {
-			problemReporter.hasInvalidDeclaringClass(cls);
-			return false;
-		}
-
-		return true;
 	}
 
 }
