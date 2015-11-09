@@ -87,7 +87,7 @@ public class ElementExporterImpl implements ElementExporter {
 	}
 
 	@Override
-	public String getRootElementAsString() {
+	public String getModelName() {
 		return containingModel == null ? null : containingModel.getName();
 	}
 

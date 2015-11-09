@@ -32,7 +32,7 @@ public interface ElementExporter {
 
 	DiagramType getDiagramTypeBasedOnElements();
 
-	String getRootElementAsString();
+	String getModelName();
 
 	NodeMap getNodes();
 

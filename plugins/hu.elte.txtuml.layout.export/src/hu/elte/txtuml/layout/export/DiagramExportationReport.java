@@ -20,7 +20,7 @@ import java.util.Set;
 public class DiagramExportationReport {
 
 	private DiagramType type;
-	private String rootElementAsString;
+	private String modelName;
 	private StatementList statements;
 	private Set<RectangleObject> nodes;
 	private Set<LineAssociation> links;
@@ -52,8 +52,8 @@ public class DiagramExportationReport {
 	 * value of this method should not be used (it is probably <code>null</code>
 	 * ).
 	 */
-	public final String getRootElementAsString() {
-		return rootElementAsString;
+	public final String getModelName() {
+		return modelName;
 	}
 
 	/**
@@ -158,7 +158,7 @@ public class DiagramExportationReport {
 	 * Resets fields to their default value;
 	 */
 	public final void clear() {
-		rootElementAsString = null;
+		modelName = null;
 		type = DiagramType.Unknown;
 		errorCount = 0;
 		warningCount = 0;
@@ -175,8 +175,8 @@ public class DiagramExportationReport {
 	 * @param rootElement
 	 *            string representation of the diagram's root element
 	 */
-	public final void setRootElementAsString(String rootElementAsString) {
-		this.rootElementAsString = rootElementAsString;
+	public final void setModelName(String modelName) {
+		this.modelName = modelName;
 	}
 
 	/**
