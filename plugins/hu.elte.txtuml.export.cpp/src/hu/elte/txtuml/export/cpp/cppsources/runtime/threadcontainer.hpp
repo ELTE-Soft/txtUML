@@ -15,6 +15,7 @@ class ThreadContainer
 		void addThread(std::thread*);
 		void removeThread(std::thread::id);
 		void removeAll();
+		void reduceActiveThreads();
 		
 		void setExpectedThreads(int e) {expected_threads = e;}
 		bool isTooManyWorkes() {return (expected_threads < active_threads);}
