@@ -5,6 +5,7 @@ import hu.elte.txtuml.xtxtuml.naming.XtxtUMLQualifiedNameConverter;
 import hu.elte.txtuml.xtxtuml.scoping.XtxtUMLImplicitlyImportedFeatures;
 import hu.elte.txtuml.xtxtuml.scoping.XtxtUMLXImportSectionNamespaceScopeProvider;
 import hu.elte.txtuml.xtxtuml.typesystem.XtxtUMLEarlyExitComputer;
+import hu.elte.txtuml.xtxtuml.typesystem.XtxtUMLReentrantTypeResolver;
 import hu.elte.txtuml.xtxtuml.typesystem.XtxtUMLTypeComputer;
 
 import org.eclipse.xtext.naming.IQualifiedNameConverter;
@@ -13,6 +14,7 @@ import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider;
 import org.eclipse.xtext.xbase.compiler.XbaseCompiler;
 import org.eclipse.xtext.xbase.scoping.batch.ImplicitlyImportedFeatures;
 import org.eclipse.xtext.xbase.typesystem.computation.ITypeComputer;
+import org.eclipse.xtext.xbase.typesystem.internal.DefaultReentrantTypeResolver;
 import org.eclipse.xtext.xbase.typesystem.util.ExtendedEarlyExitComputer;
 
 import com.google.inject.Binder;
@@ -27,6 +29,7 @@ public class XtxtUMLRuntimeModule extends AbstractXtxtUMLRuntimeModule {
         return XtxtUMLImplicitlyImportedFeatures.class;
     }
     
+    @Override
     public void configureIScopeProviderDelegate(Binder binder) {
         binder.bind(IScopeProvider.class)
             .annotatedWith(Names.named(AbstractDeclarativeScopeProvider.NAMED_DELEGATE))
@@ -45,8 +48,14 @@ public class XtxtUMLRuntimeModule extends AbstractXtxtUMLRuntimeModule {
         return XtxtUMLEarlyExitComputer.class;
     }
     
+    @Override
     public Class<? extends IQualifiedNameConverter> bindIQualifiedNameConverter() {
         return XtxtUMLQualifiedNameConverter.class;
+    }
+    
+    @Override
+    public Class<? extends DefaultReentrantTypeResolver> bindDefaultReentrantTypeResolver() {
+        return XtxtUMLReentrantTypeResolver.class;
     }
     
 }
