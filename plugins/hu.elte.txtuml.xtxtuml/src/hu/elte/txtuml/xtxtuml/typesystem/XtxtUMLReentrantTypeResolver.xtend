@@ -38,7 +38,7 @@ class XtxtUMLReentrantTypeResolver extends LogicalContainerAwareReentrantTypeRes
 			}
 		} else {
 			thisMaybeModelClassType = thisType;
-			superMaybeModelClassType = superType;
+			superMaybeModelClassType = null;
 		}
 		
 		// end of customization
