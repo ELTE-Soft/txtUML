@@ -3,6 +3,7 @@ package hu.elte.txtuml.layout.export.impl;
 import hu.elte.txtuml.api.layout.Alignment;
 import hu.elte.txtuml.api.layout.Contains;
 import hu.elte.txtuml.layout.export.DiagramType;
+import hu.elte.txtuml.layout.export.diagramexporters.ClassDiagramExporter;
 import hu.elte.txtuml.layout.export.diagramexporters.ModelId;
 import hu.elte.txtuml.layout.export.diagramexporters.SourceExporter;
 import hu.elte.txtuml.layout.export.elementinfo.ConcreteElementInfo;
@@ -38,7 +39,7 @@ import java.util.Set;
  */
 public class ElementExporterImpl implements ElementExporter {
 
-	private final SourceExporter classDiagramExporter = null; // FIXME
+	private final SourceExporter classDiagramExporter = new ClassDiagramExporter(); // FIXME
 
 	private DiagramType diagramType;
 	// TODO check diagram type: when a new element is found, and it is of a
