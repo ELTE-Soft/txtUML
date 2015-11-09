@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Tests
+Bundle-Name: txtUML API for model creation Tests
 Bundle-SymbolicName: hu.elte.txtuml.api.model.tests
 Bundle-Version: 0.2.0.qualifier
 Fragment-Host: hu.elte.txtuml.api.model
