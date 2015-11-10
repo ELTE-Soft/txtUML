@@ -582,17 +582,10 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 	
 	/**
 	 * Constraint:
-	 *     expression=XExpression
+	 *     (else?='else' | expression=XExpression)
 	 */
 	protected void sequence_TUTransitionGuard(EObject context, TUTransitionGuard semanticObject) {
-		if(errorAcceptor != null) {
-			if(transientValues.isValueTransient(semanticObject, XtxtUMLPackage.Literals.TU_TRANSITION_GUARD__EXPRESSION) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, XtxtUMLPackage.Literals.TU_TRANSITION_GUARD__EXPRESSION));
-		}
-		INodesForEObjectProvider nodes = createNodeProvider(semanticObject);
-		SequenceFeeder feeder = createSequencerFeeder(semanticObject, nodes);
-		feeder.accept(grammarAccess.getTUTransitionGuardAccess().getExpressionXExpressionParserRuleCall_2_0(), semanticObject.getExpression());
-		feeder.finish();
+		genericSequencer.createSequence(context, semanticObject);
 	}
 	
 	

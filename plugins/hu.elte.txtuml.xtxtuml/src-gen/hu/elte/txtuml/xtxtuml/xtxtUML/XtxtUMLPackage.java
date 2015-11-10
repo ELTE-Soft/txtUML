@@ -783,13 +783,22 @@ public interface XtxtUMLPackage extends EPackage
   int TU_TRANSITION_GUARD = 20;
 
   /**
+   * The feature id for the '<em><b>Else</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TU_TRANSITION_GUARD__ELSE = TU_TRANSITION_MEMBER_FEATURE_COUNT + 0;
+
+  /**
    * The feature id for the '<em><b>Expression</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int TU_TRANSITION_GUARD__EXPRESSION = TU_TRANSITION_MEMBER_FEATURE_COUNT + 0;
+  int TU_TRANSITION_GUARD__EXPRESSION = TU_TRANSITION_MEMBER_FEATURE_COUNT + 1;
 
   /**
    * The number of structural features of the '<em>TU Transition Guard</em>' class.
@@ -798,7 +807,7 @@ public interface XtxtUMLPackage extends EPackage
    * @generated
    * @ordered
    */
-  int TU_TRANSITION_GUARD_FEATURE_COUNT = TU_TRANSITION_MEMBER_FEATURE_COUNT + 1;
+  int TU_TRANSITION_GUARD_FEATURE_COUNT = TU_TRANSITION_MEMBER_FEATURE_COUNT + 2;
 
   /**
    * The meta object id for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUAssociationEndImpl <em>TU Association End</em>}' class.
@@ -1706,6 +1715,17 @@ public interface XtxtUMLPackage extends EPackage
   EClass getTUTransitionGuard();
 
   /**
+   * Returns the meta object for the attribute '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionGuard#isElse <em>Else</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Else</em>'.
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionGuard#isElse()
+   * @see #getTUTransitionGuard()
+   * @generated
+   */
+  EAttribute getTUTransitionGuard_Else();
+
+  /**
    * Returns the meta object for the containment reference '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionGuard#getExpression <em>Expression</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -2525,6 +2545,14 @@ public interface XtxtUMLPackage extends EPackage
      * @generated
      */
     EClass TU_TRANSITION_GUARD = eINSTANCE.getTUTransitionGuard();
+
+    /**
+     * The meta object literal for the '<em><b>Else</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute TU_TRANSITION_GUARD__ELSE = eINSTANCE.getTUTransitionGuard_Else();
 
     /**
      * The meta object literal for the '<em><b>Expression</b></em>' containment reference feature.

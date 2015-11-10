@@ -869,9 +869,19 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  public EAttribute getTUTransitionGuard_Else()
+  {
+    return (EAttribute)tuTransitionGuardEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   public EReference getTUTransitionGuard_Expression()
   {
-    return (EReference)tuTransitionGuardEClass.getEStructuralFeatures().get(0);
+    return (EReference)tuTransitionGuardEClass.getEStructuralFeatures().get(1);
   }
 
   /**
@@ -1277,6 +1287,7 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
     createEReference(tuTransitionEffectEClass, TU_TRANSITION_EFFECT__BODY);
 
     tuTransitionGuardEClass = createEClass(TU_TRANSITION_GUARD);
+    createEAttribute(tuTransitionGuardEClass, TU_TRANSITION_GUARD__ELSE);
     createEReference(tuTransitionGuardEClass, TU_TRANSITION_GUARD__EXPRESSION);
 
     tuAssociationEndEClass = createEClass(TU_ASSOCIATION_END);
@@ -1449,6 +1460,7 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
     initEReference(getTUTransitionEffect_Body(), theXbasePackage.getXExpression(), null, "body", null, 0, 1, TUTransitionEffect.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(tuTransitionGuardEClass, TUTransitionGuard.class, "TUTransitionGuard", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getTUTransitionGuard_Else(), ecorePackage.getEBoolean(), "else", null, 0, 1, TUTransitionGuard.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getTUTransitionGuard_Expression(), theXbasePackage.getXExpression(), null, "expression", null, 0, 1, TUTransitionGuard.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(tuAssociationEndEClass, TUAssociationEnd.class, "TUAssociationEnd", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);

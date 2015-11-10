@@ -130,7 +130,7 @@ TUTransitionEffect :
 ;
 
 TUTransitionGuard :
-	'guard' '(' expression=XExpression ')' ';'?
+	'guard' '(' (else?='else' | expression=XExpression) ')' ';'?
 ;
 
 // Association-related

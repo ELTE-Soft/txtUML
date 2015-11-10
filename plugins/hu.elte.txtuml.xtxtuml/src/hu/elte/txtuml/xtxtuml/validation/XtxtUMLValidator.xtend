@@ -31,6 +31,9 @@ import org.eclipse.xtext.xbase.XFeatureCall
 import org.eclipse.xtext.xbase.XMemberFeatureCall
 import org.eclipse.xtext.xbase.XbasePackage
 import org.eclipse.xtext.xbase.typesystem.util.ExtendedEarlyExitComputer
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionGuard
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
 
 class XtxtUMLValidator extends AbstractXtxtUMLValidator {
 	
@@ -319,6 +322,22 @@ class XtxtUMLValidator extends AbstractXtxtUMLValidator {
 			error(
 				typeMismatch("Class"),
 				XtxtUMLPackage::eINSTANCE.RAlfAssocNavExpression_Left
+			)
+		}
+	}
+	
+	@Check
+	def checkElseGuard(TUTransitionGuard guard) {
+		if (guard.^else && guard.eContainer instanceof TUTransition &&
+			(guard.eContainer as TUTransition).members.exists[
+				it instanceof TUTransitionVertex &&
+				(it as TUTransitionVertex).from &&
+				(it as TUTransitionVertex).vertex.type != TUStateType.CHOICE
+			]
+		) {
+			error(
+				"'else' condition can be used only if the source of the transition is a choice pseudostate",
+				XtxtUMLPackage::eINSTANCE.TUTransitionGuard_Else
 			)
 		}
 	}

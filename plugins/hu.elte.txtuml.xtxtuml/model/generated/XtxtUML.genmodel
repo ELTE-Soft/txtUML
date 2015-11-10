@@ -89,6 +89,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUTransitionEffect/body"/>
     </genClasses>
     <genClasses ecoreClass="XtxtUML.ecore#//TUTransitionGuard">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUTransitionGuard/else"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUTransitionGuard/expression"/>
     </genClasses>
     <genClasses ecoreClass="XtxtUML.ecore#//TUAssociationEnd">

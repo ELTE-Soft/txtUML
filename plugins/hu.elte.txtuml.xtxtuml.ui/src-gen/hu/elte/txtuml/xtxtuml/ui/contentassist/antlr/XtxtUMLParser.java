@@ -49,6 +49,7 @@ public class XtxtUMLParser extends AbstractContentAssistParser {
 					put(grammarAccess.getTUEntryOrExitActivityAccess().getAlternatives_0(), "rule__TUEntryOrExitActivity__Alternatives_0");
 					put(grammarAccess.getTUTransitionMemberAccess().getAlternatives(), "rule__TUTransitionMember__Alternatives");
 					put(grammarAccess.getTUTransitionVertexAccess().getAlternatives_0(), "rule__TUTransitionVertex__Alternatives_0");
+					put(grammarAccess.getTUTransitionGuardAccess().getAlternatives_2(), "rule__TUTransitionGuard__Alternatives_2");
 					put(grammarAccess.getTUMultiplicityAccess().getAlternatives(), "rule__TUMultiplicity__Alternatives");
 					put(grammarAccess.getTUMultiplicityAccess().getAlternatives_0_1_1(), "rule__TUMultiplicity__Alternatives_0_1_1");
 					put(grammarAccess.getXRAlfStatementAccess().getAlternatives(), "rule__XRAlfStatement__Alternatives");
@@ -327,7 +328,8 @@ public class XtxtUMLParser extends AbstractContentAssistParser {
 					put(grammarAccess.getTUTransitionVertexAccess().getFromAssignment_0_0(), "rule__TUTransitionVertex__FromAssignment_0_0");
 					put(grammarAccess.getTUTransitionVertexAccess().getVertexAssignment_1(), "rule__TUTransitionVertex__VertexAssignment_1");
 					put(grammarAccess.getTUTransitionEffectAccess().getBodyAssignment_1(), "rule__TUTransitionEffect__BodyAssignment_1");
-					put(grammarAccess.getTUTransitionGuardAccess().getExpressionAssignment_2(), "rule__TUTransitionGuard__ExpressionAssignment_2");
+					put(grammarAccess.getTUTransitionGuardAccess().getElseAssignment_2_0(), "rule__TUTransitionGuard__ElseAssignment_2_0");
+					put(grammarAccess.getTUTransitionGuardAccess().getExpressionAssignment_2_1(), "rule__TUTransitionGuard__ExpressionAssignment_2_1");
 					put(grammarAccess.getTUAssociationEndAccess().getVisibilityAssignment_0(), "rule__TUAssociationEnd__VisibilityAssignment_0");
 					put(grammarAccess.getTUAssociationEndAccess().getNotNavigableAssignment_1(), "rule__TUAssociationEnd__NotNavigableAssignment_1");
 					put(grammarAccess.getTUAssociationEndAccess().getMultiplicityAssignment_2(), "rule__TUAssociationEnd__MultiplicityAssignment_2");

@@ -287,6 +287,7 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *     ';'?
 	 *
 	 * This ambiguous syntax occurs at:
+	 *     else?='else' ')' (ambiguity) (rule end)
 	 *     expression=XExpression ')' (ambiguity) (rule end)
 	 */
 	protected void emit_TUTransitionGuard_SemicolonKeyword_4_q(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {

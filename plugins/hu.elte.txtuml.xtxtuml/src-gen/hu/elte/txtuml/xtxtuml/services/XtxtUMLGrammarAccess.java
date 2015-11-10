@@ -963,16 +963,19 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 		private final Group cGroup = (Group)rule.eContents().get(1);
 		private final Keyword cGuardKeyword_0 = (Keyword)cGroup.eContents().get(0);
 		private final Keyword cLeftParenthesisKeyword_1 = (Keyword)cGroup.eContents().get(1);
-		private final Assignment cExpressionAssignment_2 = (Assignment)cGroup.eContents().get(2);
-		private final RuleCall cExpressionXExpressionParserRuleCall_2_0 = (RuleCall)cExpressionAssignment_2.eContents().get(0);
+		private final Alternatives cAlternatives_2 = (Alternatives)cGroup.eContents().get(2);
+		private final Assignment cElseAssignment_2_0 = (Assignment)cAlternatives_2.eContents().get(0);
+		private final Keyword cElseElseKeyword_2_0_0 = (Keyword)cElseAssignment_2_0.eContents().get(0);
+		private final Assignment cExpressionAssignment_2_1 = (Assignment)cAlternatives_2.eContents().get(1);
+		private final RuleCall cExpressionXExpressionParserRuleCall_2_1_0 = (RuleCall)cExpressionAssignment_2_1.eContents().get(0);
 		private final Keyword cRightParenthesisKeyword_3 = (Keyword)cGroup.eContents().get(3);
 		private final Keyword cSemicolonKeyword_4 = (Keyword)cGroup.eContents().get(4);
 		
 		//TUTransitionGuard:
-		//	"guard" "(" expression=XExpression ")" ";"?;
+		//	"guard" "(" (else?="else" | expression=XExpression) ")" ";"?;
 		@Override public ParserRule getRule() { return rule; }
 
-		//"guard" "(" expression=XExpression ")" ";"?
+		//"guard" "(" (else?="else" | expression=XExpression) ")" ";"?
 		public Group getGroup() { return cGroup; }
 
 		//"guard"
@@ -981,11 +984,20 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 		//"("
 		public Keyword getLeftParenthesisKeyword_1() { return cLeftParenthesisKeyword_1; }
 
+		//else?="else" | expression=XExpression
+		public Alternatives getAlternatives_2() { return cAlternatives_2; }
+
+		//else?="else"
+		public Assignment getElseAssignment_2_0() { return cElseAssignment_2_0; }
+
+		//"else"
+		public Keyword getElseElseKeyword_2_0_0() { return cElseElseKeyword_2_0_0; }
+
 		//expression=XExpression
-		public Assignment getExpressionAssignment_2() { return cExpressionAssignment_2; }
+		public Assignment getExpressionAssignment_2_1() { return cExpressionAssignment_2_1; }
 
 		//XExpression
-		public RuleCall getExpressionXExpressionParserRuleCall_2_0() { return cExpressionXExpressionParserRuleCall_2_0; }
+		public RuleCall getExpressionXExpressionParserRuleCall_2_1_0() { return cExpressionXExpressionParserRuleCall_2_1_0; }
 
 		//")"
 		public Keyword getRightParenthesisKeyword_3() { return cRightParenthesisKeyword_3; }
@@ -3225,7 +3237,7 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 	}
 
 	//TUTransitionGuard:
-	//	"guard" "(" expression=XExpression ")" ";"?;
+	//	"guard" "(" (else?="else" | expression=XExpression) ")" ";"?;
 	public TUTransitionGuardElements getTUTransitionGuardAccess() {
 		return pTUTransitionGuard;
 	}
