@@ -152,7 +152,7 @@ public class ElementExporterImpl implements ElementExporter {
 		info = nodeGroups.get(elementClass);
 		if (info != null) {
 			if (info.beingExported()) {
-				problemReporter.selfContainment(elementClass);
+				reportSelfContainment(elementClass);
 				throw new ElementExportationException();
 			}
 
@@ -162,7 +162,7 @@ public class ElementExporterImpl implements ElementExporter {
 		info = linkGroups.get(elementClass);
 		if (info != null) {
 			if (info.beingExported()) {
-				problemReporter.selfContainment(elementClass);
+				reportSelfContainment(elementClass);
 				throw new ElementExportationException();
 			}
 
@@ -242,7 +242,7 @@ public class ElementExporterImpl implements ElementExporter {
 		info = nodeGroups.get(elementClass);
 		if (info != null) {
 			if (info.beingExported()) {
-				problemReporter.selfContainment(elementClass);
+				reportSelfContainment(elementClass);
 				throw new ElementExportationException();
 			}
 
@@ -252,7 +252,7 @@ public class ElementExporterImpl implements ElementExporter {
 		info = linkGroups.get(elementClass);
 		if (info != null) {
 			if (info.beingExported()) {
-				problemReporter.selfContainment(elementClass);
+				reportSelfContainment(elementClass);
 				throw new ElementExportationException();
 			}
 
@@ -320,7 +320,7 @@ public class ElementExporterImpl implements ElementExporter {
 		info = nodeGroups.get(nodeGroupClass);
 		if (info != null) {
 			if (info.beingExported()) {
-				problemReporter.selfContainment(nodeGroupClass);
+				reportSelfContainment(nodeGroupClass);
 				throw new ElementExportationException();
 			}
 
@@ -347,7 +347,7 @@ public class ElementExporterImpl implements ElementExporter {
 		info = linkGroups.get(linkGroupClass);
 		if (info != null) {
 			if (info.beingExported()) {
-				problemReporter.selfContainment(linkGroupClass);
+				reportSelfContainment(linkGroupClass);
 				throw new ElementExportationException();
 			}
 
@@ -583,6 +583,11 @@ public class ElementExporterImpl implements ElementExporter {
 	}
 
 	// helper functions
+
+	private void reportSelfContainment(Class<?> cls) {
+		failedGroups.add(cls);
+		problemReporter.selfContainment(cls);
+	}
 
 	private boolean callOnSourceExporter(Function<SourceExporter, Boolean> func) {
 		if (sourceExporter != null) {

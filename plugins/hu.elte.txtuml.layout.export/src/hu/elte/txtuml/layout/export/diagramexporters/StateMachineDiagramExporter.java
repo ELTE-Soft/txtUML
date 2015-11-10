@@ -45,9 +45,10 @@ public class StateMachineDiagramExporter extends AbstractSourceExporter {
 	protected List<Class<?>> loadAllLinksFromModel(Class<?> model) {		
 		List<Class<?>> links = new ArrayList<>();
 		for (Class<?> cls : model.getDeclaredClasses()) {
-			if (ModelClass.class.isAssignableFrom(model) ||
-					CompositeState.class.isAssignableFrom(model)) {
+			if (ModelClass.class.isAssignableFrom(cls) ||
+					CompositeState.class.isAssignableFrom(cls)) {
 				links.addAll(loadAllLinksFromModel(cls));
+				continue;
 			}
 			if (isLink(cls)) {
 				links.add(cls);
