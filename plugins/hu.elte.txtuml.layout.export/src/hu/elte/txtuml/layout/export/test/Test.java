@@ -22,9 +22,6 @@ import hu.elte.txtuml.layout.export.test.Model1.B;
 import hu.elte.txtuml.layout.export.test.Model1.C;
 import hu.elte.txtuml.layout.export.test.Model1.D;
 import hu.elte.txtuml.layout.export.test.Model1.E;
-import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
-import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
-import hu.elte.txtuml.layout.visualizer.statements.Statement;
 
 class Model1 extends Model {
 	class A extends ModelClass {}
@@ -137,20 +134,5 @@ public class Test {
 		    System.out.println("\nThe exportation wasn't successful.");
 		    return;
 		}
-		
-		System.out.println("\nStatements:");		
-		for (Statement st : report.getStatements()) {
-			System.out.println(st);
-		}
-		
-		System.out.println("\nNodes:");
-		for (RectangleObject n : report.getNodes()) {
-			System.out.println(n);
-		}
-		
-		System.out.println("\nLinks:");
-		for (LineAssociation l : report.getLinks()) {
-			System.out.println(l);
-		}		
 	}
 }

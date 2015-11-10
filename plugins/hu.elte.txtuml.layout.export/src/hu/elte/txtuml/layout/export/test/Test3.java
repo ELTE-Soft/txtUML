@@ -90,6 +90,8 @@ public class Test3 {
         
         System.out.println("\nThe exportation was successful.");
         
+        System.out.println("\nDiagram type: " + report.getType().name());
+        
         System.out.println("\nStatements:");        
         for (Statement st : report.getStatements()) {
             System.out.println(st);

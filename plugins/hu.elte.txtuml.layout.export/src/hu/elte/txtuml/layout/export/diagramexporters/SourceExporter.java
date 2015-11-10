@@ -5,6 +5,9 @@ import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
 import hu.elte.txtuml.layout.export.problems.ElementExportationException;
 import hu.elte.txtuml.utils.Pair;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Implementations of this interface are used by the diagram exportation to get
  * information about the source model for which the diagram is defined. A single
@@ -15,6 +18,8 @@ import hu.elte.txtuml.utils.Pair;
  */
 public interface SourceExporter {
 
+	List<SourceExporter> ALL = Arrays.asList(new ClassDiagramExporter());
+	
 	DiagramType getType();
 
 	boolean isNode(Class<?> cls);

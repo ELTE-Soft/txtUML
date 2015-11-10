@@ -3,7 +3,6 @@ package hu.elte.txtuml.layout.export.impl;
 import hu.elte.txtuml.api.layout.Alignment;
 import hu.elte.txtuml.api.layout.Contains;
 import hu.elte.txtuml.layout.export.DiagramType;
-import hu.elte.txtuml.layout.export.diagramexporters.ClassDiagramExporter;
 import hu.elte.txtuml.layout.export.diagramexporters.ModelId;
 import hu.elte.txtuml.layout.export.diagramexporters.SourceExporter;
 import hu.elte.txtuml.layout.export.elementinfo.ConcreteElementInfo;
@@ -30,6 +29,7 @@ import hu.elte.txtuml.utils.Pair;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Default implementation for {@link ElementExporter}.
@@ -39,15 +39,15 @@ import java.util.Set;
  */
 public class ElementExporterImpl implements ElementExporter {
 
-	private final SourceExporter classDiagramExporter = new ClassDiagramExporter(); // FIXME
+	/**
+	 * Can be null.
+	 */
+	private SourceExporter sourceExporter;
 
-	private DiagramType diagramType;
-	// TODO check diagram type: when a new element is found, and it is of a
-	// certain type (a node or a link), check if that type equals with this
-	// field. If this field's value is Unknown, set it to the element's value.
-	// If it is not Unknown, and also unequal to the element's type, an has to
-	// be shown.
-	private ModelId containingModel;
+	/**
+	 * Can be null.
+	 */
+	private ModelId containingModel = null;
 
 	/**
 	 * All nodes, including user defined phantoms.
@@ -76,14 +76,14 @@ public class ElementExporterImpl implements ElementExporter {
 		this.linkGroups = LinkGroupMap.create();
 		this.phantoms = NodeList.create();
 		this.generalizations = LinkList.create();
-		this.diagramType = DiagramType.Class;
 		this.problemReporter = problemReporter;
 		this.failedGroups = new HashSet<Class<?>>();
 	}
 
 	@Override
 	public DiagramType getDiagramTypeBasedOnElements() {
-		return diagramType;
+		return sourceExporter == null ? DiagramType.Unknown : sourceExporter
+				.getType();
 	}
 
 	@Override
@@ -409,12 +409,11 @@ public class ElementExporterImpl implements ElementExporter {
 	}
 
 	private NodeInfo exportNewNode(Class<?> cls) {
-		if (classDiagramExporter.isNode(cls) && checkModelOf(cls)) {
+		if (callOnSourceExporter(se -> se.isNode(cls)) && checkModelOf(cls)) {
 			NodeInfo info = NodeInfo.create(cls, Utils.classAsString(cls));
 			nodes.put(cls, info);
 			return info;
 		}
-		// TODO add more diag types
 		return null;
 	}
 
@@ -433,8 +432,9 @@ public class ElementExporterImpl implements ElementExporter {
 
 	private LinkInfo exportNewLink(Class<?> cls)
 			throws ElementExportationException {
-		if (classDiagramExporter.isLink(cls) && checkModelOf(cls)) {
-			Pair<Class<?>, Class<?>> p = classDiagramExporter
+		if (callOnSourceExporter(se -> se.isLink(cls)) && checkModelOf(cls)) {
+			// sourceExporter cannot be null at this point
+			Pair<Class<?>, Class<?>> p = sourceExporter
 					.getStartAndEndOfLink(cls);
 
 			LinkInfo info = LinkInfo.create(cls, Utils.classAsString(cls),
@@ -442,7 +442,6 @@ public class ElementExporterImpl implements ElementExporter {
 			links.put(cls, info);
 			return info;
 		}
-		// TODO add more diag types
 		return null;
 	}
 
@@ -578,11 +577,27 @@ public class ElementExporterImpl implements ElementExporter {
 
 	@Override
 	public void exportImpliedLinks() {
-		classDiagramExporter.exportImpliedLinks(containingModel, this);
+		if (sourceExporter != null) {
+			sourceExporter.exportImpliedLinks(containingModel, this);
+		}
 	}
 
 	// helper functions
 
+	private boolean callOnSourceExporter(Function<SourceExporter, Boolean> func) {
+		if (sourceExporter != null) {
+			return func.apply(sourceExporter);
+		} else {
+			for (SourceExporter se : SourceExporter.ALL) {
+				if (func.apply(se)) {
+					sourceExporter = se;
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	private static boolean isOfType(
 			Class<? extends Annotation> annotationClass, Annotation annot) {
 		return annot.annotationType() == annotationClass;
@@ -590,7 +605,8 @@ public class ElementExporterImpl implements ElementExporter {
 
 	private boolean checkModelOf(Class<?> cls) {
 		try {
-			ModelId containerOfCls = classDiagramExporter.getModelOf(cls);
+			// sourceExporter cannot be null when this method is called
+			ModelId containerOfCls = sourceExporter.getModelOf(cls);
 			if (!containerOfCls.equals(containingModel)) {
 				if (containingModel == null) {
 					containingModel = containerOfCls;
