@@ -19,6 +19,7 @@ public class ShutdownQueueTest extends SimpleModelTestsBase {
 
 		Assert.assertEquals(false, actionPerformed.value);
 		ModelExecutor.shutdownNow();
+		ModelExecutor.awaitTermination();
 		Assert.assertEquals(true, actionPerformed.value);
 	}
 
