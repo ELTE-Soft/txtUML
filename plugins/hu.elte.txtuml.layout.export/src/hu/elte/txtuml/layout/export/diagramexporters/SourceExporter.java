@@ -18,8 +18,9 @@ import java.util.List;
  */
 public interface SourceExporter {
 
-	List<SourceExporter> ALL = Arrays.asList(new ClassDiagramExporter());
-	
+	List<SourceExporter> ALL = Arrays.asList(new ClassDiagramExporter(),
+			new StateMachineDiagramExporter());
+
 	DiagramType getType();
 
 	boolean isNode(Class<?> cls);
