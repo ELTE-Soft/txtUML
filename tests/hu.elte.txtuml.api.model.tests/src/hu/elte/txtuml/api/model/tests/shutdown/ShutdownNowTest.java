@@ -13,7 +13,7 @@ public class ShutdownNowTest extends SimpleModelTestsBase {
 	@Test
 	public void test() {
 		ModelExecutor.shutdownNow();
-
+		ModelExecutor.awaitTermination();
 		executionAsserter.assertEvents(x -> {
 			x.executionTerminated();
 		});

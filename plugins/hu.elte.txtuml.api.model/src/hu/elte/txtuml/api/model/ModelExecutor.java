@@ -5,7 +5,6 @@ import hu.elte.txtuml.api.model.backend.log.ExecutorLog;
 import hu.elte.txtuml.api.model.report.ModelExecutionEventsListener;
 import hu.elte.txtuml.api.model.report.RuntimeErrorsListener;
 import hu.elte.txtuml.api.model.report.RuntimeWarningsListener;
-import hu.elte.txtuml.utils.NotifierOfTermination.TerminationManager;
 
 import java.io.PrintStream;
 import java.util.Queue;
@@ -52,11 +51,6 @@ public final class ModelExecutor implements ModelElement {
 	private static final ModelExecutorThread thread = new ModelExecutorThread();
 
 	/**
-	 * An object to manage termination notifications.
-	 */
-	private static final TerminationManager terminationManager = new TerminationManager();
-
-	/**
 	 * The object which prints the runtime log of the executor.
 	 */
 	private static final ExecutorLog executorLog = new ExecutorLog();
@@ -66,6 +60,7 @@ public final class ModelExecutor implements ModelElement {
 	 * an uninstantiatable class.
 	 */
 	private ModelExecutor() {
+		thread.start();
 	}
 
 	// SETTINGS
@@ -421,9 +416,6 @@ public final class ModelExecutor implements ModelElement {
 	 * @see #awaitTermination
 	 */
 	public static void shutdown() {
-		if (isTerminated()) {
-			return;
-		}
 		thread.shutdown();
 	}
 
@@ -431,25 +423,14 @@ public final class ModelExecutor implements ModelElement {
 	 * Shuts down the model executor without waiting for any currently running
 	 * or scheduled actions to perform. In most cases, {@link #shutdown} should
 	 * be called instead.
+	 * 
+	 * This method <b>does not</b> await the termination of the executor, it
+	 * returns instantly.
+	 * 
+	 * @see #awaitTermination
 	 */
 	public static void shutdownNow() {
-		Report.event.forEach(x -> x.executionTerminated());
-
-		thread.interrupt();
-
-		terminationManager.notifyAllOfTermination();
-	}
-
-	/**
-	 * Sets the model executor to be shut down after the currently running and
-	 * all scheduled actions have been performed and every non-external event
-	 * caused by them have been processed. To shut down the executor instantly,
-	 * call {@link #shutdownNow}.
-	 * 
-	 * @return whether the model execution is already shut down
-	 */
-	public static boolean isTerminated() {
-		return terminationManager.isTerminated();
+		thread.shutdownImmediately();
 	}
 
 	/**
@@ -458,9 +439,7 @@ public final class ModelExecutor implements ModelElement {
 	 */
 	public static void awaitTermination() {
 		CountDownLatch countDown = new CountDownLatch(1);
-
 		addToShutdownQueue(() -> countDown.countDown());
-
 		try {
 			countDown.await();
 		} catch (InterruptedException e) {
@@ -475,9 +454,7 @@ public final class ModelExecutor implements ModelElement {
 	 *            the action to be run when the executor is shut down
 	 */
 	public static void addToShutdownQueue(Runnable shutdownAction) {
-		if (!terminationManager.addTerminationListener(shutdownAction)) {
-			shutdownAction.run();
-		}
+		thread.addToShutdownQueue(shutdownAction);
 	}
 
 	/**
