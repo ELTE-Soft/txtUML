@@ -9,8 +9,8 @@ import hu.elte.txtuml.api.model.report.RuntimeErrorsListener;
 final class RuntimeErrorsListenerImpl extends BaseListenerImpl implements
 		RuntimeErrorsListener {
 
-	RuntimeErrorsListenerImpl(ExecutorLog log) {
-		super(log);
+	RuntimeErrorsListenerImpl(ExecutorLog owner) {
+		super(owner);
 	}
 
 	@Override

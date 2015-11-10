@@ -31,7 +31,7 @@ import java.util.Spliterator;
  * </ul>
  * 
  * <p>
- * See the documentation of {@link Model} for an overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  *
@@ -146,7 +146,7 @@ public interface Collection<T> extends Iterable<T>, ModelElement {
 	 * </ul>
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *

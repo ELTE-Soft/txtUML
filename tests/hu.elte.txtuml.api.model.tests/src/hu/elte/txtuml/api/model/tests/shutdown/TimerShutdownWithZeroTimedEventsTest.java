@@ -19,10 +19,8 @@ public class TimerShutdownWithZeroTimedEventsTest extends SimpleModelTestsBase {
 		ModelExecutor.addToShutdownQueue(() -> actionPerformed.value = true);
 
 		Assert.assertEquals(false, actionPerformed.value);
-		stopModelExecution(() -> {
-			Timer.shutdown();
-			Assert.assertEquals(false, actionPerformed.value);			
-		});
+		Timer.shutdown();
+		ModelExecutor.awaitTermination();
 		Assert.assertEquals(true, actionPerformed.value);
 
 		executionAsserter.assertEvents(x -> x.executionTerminated());

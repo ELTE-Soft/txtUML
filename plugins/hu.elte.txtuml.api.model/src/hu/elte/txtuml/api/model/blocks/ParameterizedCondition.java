@@ -10,8 +10,8 @@ import hu.elte.txtuml.api.model.ModelElement;
  * <b>Represents:</b> condition
  * <p>
  * 
- * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an overview on
- * modeling in txtUML.
+ * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
+ * overview on modeling in JtxtUML.
  * 
  * @author Gabor Ferenc Kovacs
  * @param <T>

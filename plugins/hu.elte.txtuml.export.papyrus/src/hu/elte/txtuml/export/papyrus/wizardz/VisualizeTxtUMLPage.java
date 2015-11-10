@@ -157,7 +157,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	    
 	    generateSMDs = new Button(container, SWT.CHECK);
 	    generateSMDs.setText(" generate StateMachine Diagrams automatically");
-	    generateSMDs.setSelection(true);
+	    generateSMDs.setSelection(PreferencesManager.getBoolean(PreferencesManager.GENERATE_STATEMACHINES_AUTOMATICALLY));
 	    
 	    GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false, 2,1);
 	    txtUMLModel.setLayoutData(gd);

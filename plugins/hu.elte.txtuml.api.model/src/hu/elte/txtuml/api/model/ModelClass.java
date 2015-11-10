@@ -44,15 +44,16 @@ import java.util.concurrent.atomic.AtomicLong;
  * <li><i>Be abstract:</i> disallowed</li>
  * <li><i>Generic parameters:</i> disallowed</li>
  * <li><i>Constructors:</i> allowed, only with parameters of types which are
- * subclasses of <code>ModelClass</code> or primitives (including String)</li>
+ * subclasses of <code>ModelClass</code> or primitives (including {@code String}
+ * )</li>
  * <li><i>Initialization blocks:</i> allowed, containing only simple assignments
  * to set the default values of its fields</li>
  * <li><i>Fields:</i> allowed, only of types which are subclasses of
- * <code>ModelClass</code> or primitives (including String); they represent
- * attributes of the model class</li>
+ * <code>ModelClass</code> or primitives (including {@code String}); they
+ * represent attributes of the model class</li>
  * <li><i>Methods:</i> allowed, only with parameters and return values of types
  * which are subclasses of <code>ModelClass</code> or primitives (including
- * String); they represent operations of the model class</li>
+ * {@code String}); they represent operations of the model class</li>
  * <li><i>Nested interfaces:</i> disallowed</li>
  * <li><i>Nested classes:</i> allowed, only non-static and extending either
  * {@link StateMachine.Vertex} or {@link StateMachine.Transition}</li>
@@ -87,7 +88,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * See the documentation of {@link StateMachine} for detailed examples about
  * defining state machines.
  * <p>
- * See the documentation of {@link Model} for an overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  *
@@ -99,7 +101,7 @@ public class ModelClass extends Region {
 	 * constants of this enumeration type.
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 * 
 	 * @see Status#READY
 	 * @see Status#ACTIVE
@@ -108,33 +110,33 @@ public class ModelClass extends Region {
 	 */
 	public enum Status {
 		/**
-		 * This status of a <code>ModelClass</code> object indicates that the
-		 * represented model object's state machine is not yet started. It will
-		 * not react to any asynchronous events, for example, sending signals to
-		 * it. However, sending signal to a <code>READY</code> object is legal
-		 * in the model, therefore no error or warning messages are shown if it
-		 * is done.
+		 * This status of a <code>ModelClass</code> object indicates that
+		 * the represented model object's state machine is not yet started. It
+		 * will not react to any asynchronous events, for example, sending
+		 * signals to it. However, sending signal to a <code>READY</code> object
+		 * is legal in the model, therefore no error or warning messages are
+		 * shown if it is done.
 		 * <p>
 		 * See the documentation of {@link Model} for an overview on modeling in
-		 * txtUML.
+		 * JtxtUML.
 		 * 
 		 * @see Status#ACTIVE
 		 */
 		READY,
 		/**
-		 * This status of a <code>ModelClass</code> object indicates that the
-		 * represented model object's state machine is currently running.
+		 * This status of a <code>ModelClass</code> object indicates that
+		 * the represented model object's state machine is currently running.
 		 * <p>
 		 * It may be reached by starting the state machine of this object
 		 * manually with the {@link Action#start(ModelClass)} method.
 		 * <p>
 		 * See the documentation of {@link Model} for an overview on modeling in
-		 * txtUML.
+		 * JtxtUML.
 		 */
 		ACTIVE,
 		/**
-		 * This status of a <code>ModelClass</code> object indicates that the
-		 * represented model object either has no state machine or its state
+		 * This status of a <code>ModelClass</code> object indicates that
+		 * the represented model object either has no state machine or its state
 		 * machine is already stopped but the object itself is not yet deleted
 		 * from the model. Its fields and methods might be used but it will not
 		 * react to any asynchronous events, for example, sending signals to it.
@@ -147,20 +149,21 @@ public class ModelClass extends Region {
 		 * status is to implement a model class without a state machine.
 		 * <p>
 		 * See the documentation of {@link Model} for an overview on modeling in
-		 * txtUML.
+		 * JtxtUML.
 		 */
 		FINALIZED,
 		/**
-		 * This status of a <code>ModelClass</code> object indicates that the
-		 * represented model object is deleted. No further use of this object is
-		 * allowed, however, using its fields or methods do not result in any
-		 * error messages because of the limitations of the Java language.
+		 * This status of a <code>ModelClass</code> object indicates that
+		 * the represented model object is deleted. No further use of this
+		 * object is allowed, however, using its fields or methods do not result
+		 * in any error messages because of the limitations of the Java
+		 * language.
 		 * <p>
 		 * An object may only be in this status when all of its associations are
 		 * unlinked and its state machine is stopped.
 		 * <p>
 		 * See the documentation of {@link Model} for an overview on modeling in
-		 * txtUML.
+		 * JtxtUML.
 		 * 
 		 * @see Action#delete(ModelClass)
 		 */
@@ -175,8 +178,6 @@ public class ModelClass extends Region {
 
 	/**
 	 * The current status of this model object.
-	 * 
-	 * @see Status
 	 */
 	private volatile Status status;
 
@@ -196,13 +197,6 @@ public class ModelClass extends Region {
 	 * initial pseudostate (if any), it goes into either {@link Status#READY
 	 * READY} or {@link Status#FINALIZED FINALIZED} status depending on whether
 	 * it has any state machine or not (any initial pseudostate or not).
-	 * <p>
-	 * <b>Implementation note:</b>
-	 * <p>
-	 * Protected because this class is intended to be inherited from but not
-	 * instantiated. However, <code>ModelClass</code> has to be a non-abstract
-	 * class to make sure that it is instantiatable when that is needed for the
-	 * API or the model exportation.
 	 */
 	protected ModelClass() {
 		super();
@@ -217,8 +211,8 @@ public class ModelClass extends Region {
 	}
 
 	/**
-	 * Returns a unique identifier of this model object which is created upon
-	 * the creation of this object.
+	 * Returns a unique identifier of this model object which is created
+	 * upon the creation of this object.
 	 * 
 	 * @return the unique identifier of this model object
 	 */
@@ -269,7 +263,7 @@ public class ModelClass extends Region {
 		@SuppressWarnings("unchecked")
 		AE ret = (AE) associations.get(otherEnd);
 		if (ret == null) {
-			ret = InstanceCreator.createInstanceWithGivenParams(otherEnd,
+			ret = InstanceCreator.create(otherEnd,
 					(Object) null);
 			associations.put(otherEnd, ret);
 		}
@@ -301,9 +295,9 @@ public class ModelClass extends Region {
 	}
 
 	/**
-	 * Removes the specified object from the collection containing the objects
-	 * in association with this object and being on the specified opposite
-	 * association end.
+	 * Removes the specified object from the collection containing the
+	 * objects in association with this object and being on the specified
+	 * opposite association end.
 	 * 
 	 * @param <T>
 	 *            the type of objects which are on the opposite association end
@@ -328,9 +322,9 @@ public class ModelClass extends Region {
 	}
 
 	/**
-	 * Checks if the specified object is element of the collection containing
-	 * the objects in association with this object and being on the specified
-	 * opposite association end.
+	 * Checks if the specified object is element of the collection
+	 * containing the objects in association with this object and being on the
+	 * specified opposite association end.
 	 * 
 	 * @param <T>
 	 *            the type of objects which are on the opposite association end
@@ -354,8 +348,8 @@ public class ModelClass extends Region {
 	}
 
 	/**
-	 * Checks the lower bound of the specified association end's multiplicity.
-	 * Shows a message in case of an error. If this object is in
+	 * Checks the lower bound of the specified association end's
+	 * multiplicity. Shows a message in case of an error. If this object is in
 	 * {@link Status#DELETED DELETED} status, the check is ignored.
 	 * 
 	 * @param assocEnd
@@ -408,8 +402,8 @@ public class ModelClass extends Region {
 	}
 
 	/**
-	 * Looks up all the defined associations of the model class this object is
-	 * an instance of and initializes them, if they have not been initialized
+	 * Looks up all the defined associations of the model class this object
+	 * is an instance of and initializes them, if they have not been initialized
 	 * yet, by assigning empty {@link Collection Collections} to them in the
 	 * {@link #associations} map. If any of them has a lower bound which is
 	 * currently offended then registers that association end to be checked in
@@ -444,8 +438,8 @@ public class ModelClass extends Region {
 	}
 
 	/**
-	 * Checks if the owner of the specified association end is the model class
-	 * this object is an instance of.
+	 * Checks if the owner of the specified association end is the model
+	 * class this object is an instance of.
 	 * <p>
 	 * Exceptions might be thrown in case of a model error as this method
 	 * assumes that the model is well-defined.
@@ -482,8 +476,8 @@ public class ModelClass extends Region {
 	}
 
 	/**
-	 * Initializes the specified association end, if it has not been initialized
-	 * yet, by assigning an empty {@link Collection} to it in the
+	 * Initializes the specified association end, if it has not been
+	 * initialized yet, by assigning an empty {@link Collection} to it in the
 	 * {@link #associations} map. If its lower bound is currently offended then
 	 * registers that association end to be checked in the next <i>execution
 	 * step</i>.
@@ -502,7 +496,7 @@ public class ModelClass extends Region {
 		}
 
 		AssociationEnd<?, ?> value = InstanceCreator
-				.createInstanceWithGivenParams(assocEnd, (Object) null);
+				.create(assocEnd, (Object) null);
 
 		associations.put(assocEnd, value);
 

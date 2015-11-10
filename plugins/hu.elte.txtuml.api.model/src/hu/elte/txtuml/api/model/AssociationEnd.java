@@ -55,7 +55,7 @@ import hu.elte.txtuml.api.model.backend.SingleItemCollection;
  * See the documentation of {@link Association} for details on defining and
  * using associations.
  * <p>
- * See the documentation of {@link Model} for an overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  * @see Association.Many
@@ -79,11 +79,6 @@ public abstract class AssociationEnd<T extends ModelClass, C> implements
 
 	/**
 	 * Sole constructor of <code>AssociationEnd</code>.
-	 * <p>
-	 * <b>Implementation note:</b>
-	 * <p>
-	 * Package private to make sure that this class is not directly inherited by
-	 * the user.
 	 */
 	AssociationEnd() {
 	}
