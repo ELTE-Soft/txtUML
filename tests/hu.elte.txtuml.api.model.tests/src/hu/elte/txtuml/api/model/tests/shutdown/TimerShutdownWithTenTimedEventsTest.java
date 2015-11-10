@@ -26,10 +26,8 @@ public class TimerShutdownWithTenTimedEventsTest extends SimpleModelTestsBase {
 		}
 
 		Assert.assertEquals(false, actionPerformed.value);
-		stopModelExecution(() -> {
-			Timer.shutdown();
-			Assert.assertEquals(false, actionPerformed.value);
-		});
+		Timer.shutdown();
+		ModelExecutor.awaitTermination();
 		Assert.assertEquals(true, actionPerformed.value);
 
 		executionAsserter.assertEvents(x -> {

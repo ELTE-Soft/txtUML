@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * result in errors.
  * <p>
  * See the documentation of {@link hu.elte.txtuml.api.Model} for an overview on
- * modeling in txtUML.
+ * modeling in JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  *
@@ -116,7 +116,7 @@ public class Timer implements ExternalClass {
 	 * This handle object can be used to manage the event.
 	 * <p>
 	 * See the documentation of {@link hu.elte.txtuml.api.Model} for an overview
-	 * on modeling in txtUML.
+	 * on modeling in JtxtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *
