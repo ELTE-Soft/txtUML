@@ -15,6 +15,6 @@ import org.junit.runners.Suite.SuiteClasses;
 	RuntimeSessionTrackerTest.class,
 	UniqueInstanceTest.class
 	})
-public class AllTests {
+public class UnitTests {
 
 }

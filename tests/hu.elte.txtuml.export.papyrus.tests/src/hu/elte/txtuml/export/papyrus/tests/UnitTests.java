@@ -10,6 +10,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({ DiagramManagerTest.class, PapyrusModelCreatorTest.class,
 		ProjectUtilsTest.class, DiagramElementsModifierTest.class, LayoutTransformerTest.class })
-public class AllTests {
+public class UnitTests {
 
 }

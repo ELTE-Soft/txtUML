@@ -17,5 +17,5 @@ import org.junit.runners.Suite.SuiteClasses;
 		AllStateMachineTests.class, AllDeletionErrorTests.class,
 		AllStateMachineErrorTests.class, AllAssociationEndErrorTests.class,
 		AllOtherErrorTests.class })
-public class AllTests {
+public class UnitTests {
 }
