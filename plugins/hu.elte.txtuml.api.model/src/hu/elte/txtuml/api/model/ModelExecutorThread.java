@@ -32,7 +32,7 @@ class ModelExecutorThread extends Thread {
 	/**
 	 * An object to manage termination notifications.
 	 */
-	private static final TerminationManager terminationManager = new TerminationManager();
+	private final TerminationManager terminationManager = new TerminationManager();
 
 	/**
 	 * A queue of checks which are to be performed at the beginning of the next
@@ -110,7 +110,7 @@ class ModelExecutorThread extends Thread {
 	 * @param assocEnd
 	 *            the association end which's multiplicity is to be checked
 	 */
-	void checkLowerBoundOfMultiplcitiy(ModelClass obj,
+	void checkLowerBoundOfMultiplicity(ModelClass obj,
 			Class<? extends AssociationEnd<?, ?>> assocEnd) {
 		checkQueue.add(() -> obj.checkLowerBound(assocEnd));
 	}
@@ -148,6 +148,11 @@ class ModelExecutorThread extends Thread {
 		if (!terminationManager.addTerminationListener(shutdownAction)) {
 			shutdownAction.run();
 		}
+	}
+
+	public ModelExecutorThread autoStart() {
+		start();
+		return this;
 	}
 }
 
