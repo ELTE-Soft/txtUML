@@ -7,5 +7,8 @@
 	<classpathentry kind="src" path="/hu.elte.txtuml.api.stdlib"/>
 	<classpathentry kind="src" path="/hu.elte.txtuml.api.layout"/>
 	<classpathentry kind="src" path="/hu.elte.txtuml.utils"/>
+	<classpathentry kind="lib" path="libs/hamcrest-all-1.1.jar"/>
+	<classpathentry kind="lib" path="libs/mockito-core-1.10.19.jar"/>
+	<classpathentry kind="lib" path="libs/objenesis-2.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

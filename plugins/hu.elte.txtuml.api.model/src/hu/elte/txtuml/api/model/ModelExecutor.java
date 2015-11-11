@@ -9,7 +9,6 @@ import hu.elte.txtuml.api.model.report.RuntimeWarningsListener;
 import java.io.PrintStream;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * The class that manages the model execution.
@@ -48,7 +47,7 @@ public final class ModelExecutor implements ModelElement {
 	/**
 	 * The thread on which the model execution will run.
 	 */
-	private static final ModelExecutorThread thread = new ModelExecutorThread();
+	private static final ModelExecutorThread thread = new ModelExecutorThread().autoStart();
 
 	/**
 	 * The object which prints the runtime log of the executor.
@@ -60,7 +59,6 @@ public final class ModelExecutor implements ModelElement {
 	 * an uninstantiatable class.
 	 */
 	private ModelExecutor() {
-		thread.start();
 	}
 
 	// SETTINGS
@@ -438,11 +436,11 @@ public final class ModelExecutor implements ModelElement {
 	 * after (or when the current thread is interrupted).
 	 */
 	public static void awaitTermination() {
-		CountDownLatch countDown = new CountDownLatch(1);
-		addToShutdownQueue(() -> countDown.countDown());
 		try {
-			countDown.await();
+			thread.join();
 		} catch (InterruptedException e) {
+			// TODO: error logging
+			e.printStackTrace();
 		}
 	}
 
@@ -487,7 +485,7 @@ public final class ModelExecutor implements ModelElement {
 	static void checkLowerBoundInNextExecutionStep(ModelClass obj,
 			Class<? extends AssociationEnd<?>> assocEnd) {
 
-		thread.checkLowerBoundOfMultiplcitiy(obj, assocEnd);
+		thread.checkLowerBoundOfMultiplicity(obj, assocEnd);
 	}
 
 	// LOGGING METHODS
