@@ -43,8 +43,8 @@ class ModelExecutorThread extends Thread {
 	 */
 	private final Queue<CheckQueueEntry> checkQueue = new ConcurrentLinkedQueue<>();
 
-	private boolean shutdownWhenEmpty = false;
-	private boolean shutdownImmediately = false;
+	private volatile boolean shutdownWhenEmpty = false;
+	private volatile boolean shutdownImmediately = false;
 
 	/**
 	 * Sole constructor of package private <code>ModelExecutorThread</code>.
