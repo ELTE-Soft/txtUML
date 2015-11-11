@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.export.diagramexporters;
+package hu.elte.txtuml.layout.export.source;
 
 import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;

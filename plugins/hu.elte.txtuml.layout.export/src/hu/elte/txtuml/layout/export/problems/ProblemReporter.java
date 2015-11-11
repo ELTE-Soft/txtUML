@@ -2,7 +2,7 @@ package hu.elte.txtuml.layout.export.problems;
 
 import hu.elte.txtuml.api.layout.LinkEnd;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
-import hu.elte.txtuml.layout.export.diagramexporters.ModelId;
+import hu.elte.txtuml.layout.export.source.ModelId;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 import java.lang.annotation.Annotation;
