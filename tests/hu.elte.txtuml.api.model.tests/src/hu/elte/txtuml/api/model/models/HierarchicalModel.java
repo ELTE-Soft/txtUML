@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.model.tests.models;
+package hu.elte.txtuml.api.model.models;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.From;

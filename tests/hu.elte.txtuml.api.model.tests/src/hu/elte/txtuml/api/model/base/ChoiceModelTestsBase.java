@@ -1,7 +1,7 @@
-package hu.elte.txtuml.api.model.tests.base;
+package hu.elte.txtuml.api.model.base;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.tests.models.ChoiceModel.A;
+import hu.elte.txtuml.api.model.models.ChoiceModel.A;
 
 import org.junit.Before;
 

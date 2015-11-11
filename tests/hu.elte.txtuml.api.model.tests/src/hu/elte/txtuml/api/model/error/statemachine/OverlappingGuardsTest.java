@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.model.tests.error.statemachine;
+package hu.elte.txtuml.api.model.error.statemachine;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.From;
@@ -7,10 +7,10 @@ import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
-import hu.elte.txtuml.api.model.tests.base.TestsBase;
-import hu.elte.txtuml.api.model.tests.error.statemachine.OverlappingGuardsTest.OverlappingGuardsModel.A;
-import hu.elte.txtuml.api.model.tests.error.statemachine.OverlappingGuardsTest.OverlappingGuardsModel.Sig;
-import hu.elte.txtuml.api.model.tests.util.SeparateClassloaderTestRunner;
+import hu.elte.txtuml.api.model.base.TestsBase;
+import hu.elte.txtuml.api.model.error.statemachine.OverlappingGuardsTest.OverlappingGuardsModel.A;
+import hu.elte.txtuml.api.model.error.statemachine.OverlappingGuardsTest.OverlappingGuardsModel.Sig;
+import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
 
 import org.junit.Assert;
 import org.junit.Test;

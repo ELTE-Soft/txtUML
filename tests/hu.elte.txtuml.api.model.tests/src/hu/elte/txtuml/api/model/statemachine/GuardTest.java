@@ -1,9 +1,9 @@
-package hu.elte.txtuml.api.model.tests.statemachine;
+package hu.elte.txtuml.api.model.statemachine;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.tests.base.TransitionsModelTestsBase;
-import hu.elte.txtuml.api.model.tests.models.TransitionsModel.Sig3;
-import hu.elte.txtuml.api.model.tests.util.SeparateClassloaderTestRunner;
+import hu.elte.txtuml.api.model.base.TransitionsModelTestsBase;
+import hu.elte.txtuml.api.model.models.TransitionsModel.Sig3;
+import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

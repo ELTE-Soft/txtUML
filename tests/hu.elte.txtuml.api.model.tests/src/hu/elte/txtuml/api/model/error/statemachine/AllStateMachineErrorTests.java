@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.model.tests.error.statemachine;
+package hu.elte.txtuml.api.model.error.statemachine;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

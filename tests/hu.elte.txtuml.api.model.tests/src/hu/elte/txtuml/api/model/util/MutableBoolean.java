@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.model.tests.util;
+package hu.elte.txtuml.api.model.util;
 
 public class MutableBoolean {
 

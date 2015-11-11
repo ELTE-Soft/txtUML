@@ -1,9 +1,9 @@
-package hu.elte.txtuml.api.model.tests.error.other;
+package hu.elte.txtuml.api.model.error.other;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.tests.base.SimpleModelTestsBase;
-import hu.elte.txtuml.api.model.tests.models.SimpleModel.A;
-import hu.elte.txtuml.api.model.tests.util.SeparateClassloaderTestRunner;
+import hu.elte.txtuml.api.model.base.SimpleModelTestsBase;
+import hu.elte.txtuml.api.model.models.SimpleModel.A;
+import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

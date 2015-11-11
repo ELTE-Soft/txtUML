@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.model.tests.base;
+package hu.elte.txtuml.api.model.base;
 
 import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
@@ -9,8 +9,8 @@ import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.report.ModelExecutionEventsListener;
-import hu.elte.txtuml.api.model.tests.util.MemorizingPrintStream;
-import hu.elte.txtuml.api.model.tests.util.ModelExecutionAsserter;
+import hu.elte.txtuml.api.model.util.MemorizingPrintStream;
+import hu.elte.txtuml.api.model.util.ModelExecutionAsserter;
 import hu.elte.txtuml.utils.InstanceCreator;
 
 import org.junit.Before;

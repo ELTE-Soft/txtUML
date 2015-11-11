@@ -1,11 +1,11 @@
-package hu.elte.txtuml.api.model.tests.shutdown;
+package hu.elte.txtuml.api.model.shutdown;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.ModelExecutor;
-import hu.elte.txtuml.api.model.tests.base.SimpleModelTestsBase;
-import hu.elte.txtuml.api.model.tests.models.SimpleModel.Sig;
-import hu.elte.txtuml.api.model.tests.util.MutableBoolean;
-import hu.elte.txtuml.api.model.tests.util.SeparateClassloaderTestRunner;
+import hu.elte.txtuml.api.model.base.SimpleModelTestsBase;
+import hu.elte.txtuml.api.model.models.SimpleModel.Sig;
+import hu.elte.txtuml.api.model.util.MutableBoolean;
+import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
 
 import org.junit.Assert;
 import org.junit.Test;

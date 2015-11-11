@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.model.tests.util;
+package hu.elte.txtuml.api.model.util;
 
 import java.io.IOException;
 import java.io.OutputStream;

@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.model.tests.shutdown;
+package hu.elte.txtuml.api.model.shutdown;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

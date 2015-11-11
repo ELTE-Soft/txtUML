@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.model.tests.assocends;
+package hu.elte.txtuml.api.model.assocends;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

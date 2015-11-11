@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.model.tests.error.multiplicity;
+package hu.elte.txtuml.api.model.error.multiplicity;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

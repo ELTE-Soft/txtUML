@@ -1,12 +1,12 @@
-package hu.elte.txtuml.api.model.tests;
+package hu.elte.txtuml.api.model;
 
-import hu.elte.txtuml.api.model.tests.assocends.AllAssociationEndTests;
-import hu.elte.txtuml.api.model.tests.error.deletion.AllDeletionErrorTests;
-import hu.elte.txtuml.api.model.tests.error.multiplicity.AllAssociationEndErrorTests;
-import hu.elte.txtuml.api.model.tests.error.other.AllOtherErrorTests;
-import hu.elte.txtuml.api.model.tests.error.statemachine.AllStateMachineErrorTests;
-import hu.elte.txtuml.api.model.tests.shutdown.AllShutdownTests;
-import hu.elte.txtuml.api.model.tests.statemachine.AllStateMachineTests;
+import hu.elte.txtuml.api.model.assocends.AllAssociationEndTests;
+import hu.elte.txtuml.api.model.error.deletion.AllDeletionErrorTests;
+import hu.elte.txtuml.api.model.error.multiplicity.AllAssociationEndErrorTests;
+import hu.elte.txtuml.api.model.error.other.AllOtherErrorTests;
+import hu.elte.txtuml.api.model.error.statemachine.AllStateMachineErrorTests;
+import hu.elte.txtuml.api.model.shutdown.AllShutdownTests;
+import hu.elte.txtuml.api.model.statemachine.AllStateMachineTests;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

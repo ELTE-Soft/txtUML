@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.model.tests.error.other;
+package hu.elte.txtuml.api.model.error.other;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

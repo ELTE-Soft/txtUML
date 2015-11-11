@@ -1,10 +1,10 @@
-package hu.elte.txtuml.api.model.tests.statemachine;
+package hu.elte.txtuml.api.model.statemachine;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.tests.base.HierarchicalModelTestsBase;
-import hu.elte.txtuml.api.model.tests.models.HierarchicalModel.Sig0;
-import hu.elte.txtuml.api.model.tests.models.HierarchicalModel.Sig1;
-import hu.elte.txtuml.api.model.tests.util.SeparateClassloaderTestRunner;
+import hu.elte.txtuml.api.model.base.HierarchicalModelTestsBase;
+import hu.elte.txtuml.api.model.models.HierarchicalModel.Sig0;
+import hu.elte.txtuml.api.model.models.HierarchicalModel.Sig1;
+import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
 
 import org.junit.Assert;
 import org.junit.Test;
