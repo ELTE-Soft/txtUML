@@ -10,4 +10,23 @@
   </parent>
   <artifactId>hu.elte.txtuml.xtxtuml</artifactId>
   <packaging>eclipse-plugin</packaging>
+
+	<build>
+		<!-- enable Xtend -->
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.xtend</groupId>
+				<artifactId>xtend-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>
