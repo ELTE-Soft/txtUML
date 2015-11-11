@@ -60,7 +60,6 @@ public final class ModelExecutor implements ModelElement {
 	 * an uninstantiatable class.
 	 */
 	private ModelExecutor() {
-		thread.start();
 	}
 
 	// SETTINGS

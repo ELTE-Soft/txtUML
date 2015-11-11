@@ -47,6 +47,14 @@ class ModelExecutorThread extends Thread {
 	private boolean shutdownImmediately = false;
 
 	/**
+	 * Sole constructor of package private <code>ModelExecutorThread</code>.
+	 * Creates and also starts the thread.
+	 */
+	ModelExecutorThread() {
+		start();
+	}
+
+	/**
 	 * Sends the specified signal to the specified target object asynchronously.
 	 * This method puts the signal into its global
 	 * {@link ModelExecutorThread#mailbox mailbox} from where it will be taken
@@ -81,7 +89,8 @@ class ModelExecutorThread extends Thread {
 	void shutdown() {
 		shutdownWhenEmpty = true;
 		// wake up if waiting with an empty message
-		mailbox.add(() -> {});
+		mailbox.add(() -> {
+		});
 	}
 
 	/**
@@ -92,7 +101,8 @@ class ModelExecutorThread extends Thread {
 	void shutdownImmediately() {
 		shutdownImmediately = true;
 		// wake up if waiting with an empty message
-		mailbox.add(() -> {});
+		mailbox.add(() -> {
+		});
 	}
 
 	/**
