@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.papyrus;
 
-import hu.elte.txtuml.export.Uml2Utils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -25,6 +23,8 @@ import org.eclipse.papyrus.infra.core.services.ServicesRegistry;
 import org.eclipse.papyrus.uml.diagram.wizards.category.NewPapyrusModelCommand;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Profile;
+
+import hu.elte.txtuml.export.Uml2Utils;
 
 /**
  * Controls the creation of a Papyrus Model

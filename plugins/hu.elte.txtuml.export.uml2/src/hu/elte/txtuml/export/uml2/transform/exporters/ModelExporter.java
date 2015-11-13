@@ -151,7 +151,7 @@ public class ModelExporter {
 		exportAttributesOfEveryClassifier();
 		exportMethodSkeletonsOfEveryClassifier();
 		exportStateMachinesOfEveryClass();
-		exportMethodBodiesOfEveryClassifier();
+//		exportMethodBodiesOfEveryClassifier();
 
 		this.mapping.put(txtUMLModelName, exportedModel);
 		finishModelExport();
@@ -288,6 +288,7 @@ public class ModelExporter {
 				.exportRegion(classifierDeclaration, stateMachine, region);
 	}
 
+	@SuppressWarnings("unused")
 	private void exportMethodBodiesOfEveryClassifier() {
 		classifiers.forEach((declaration, classifier) -> {
 			if (classifier instanceof Class) {
