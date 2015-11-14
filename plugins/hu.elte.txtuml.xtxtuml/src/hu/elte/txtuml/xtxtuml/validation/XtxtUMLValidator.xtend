@@ -354,9 +354,18 @@ class XtxtUMLValidator extends AbstractXtxtUMLValidator {
 			container = container.eContainer;
 		}
 		
-		if (container == null) {
+		if (container == null ||
+			container instanceof TUState && (
+				(container as TUState).type == TUStateType.INITIAL ||
+				(container as TUState).type == TUStateType.CHOICE
+			) ||
+			container instanceof TUTransition &&
+			((container as TUTransition).members.findFirst[
+				it instanceof TUTransitionVertex && (it as TUTransitionVertex).from
+			] as TUTransitionVertex)?.vertex.type == TUStateType.INITIAL
+		) {
 			error(
-				"The 'sigdata' expression can be used only in action code inside transitions or states",
+				"'sigdata' cannot be used here",
 				XtxtUMLPackage::eINSTANCE.RAlfSignalAccessExpression_Sigdata
 			)
 		}
