@@ -12,7 +12,7 @@ package hu.elte.txtuml.api.model.assocends;
  * @author Gabor Ferenc Kovacs
  *
  */
-public interface Multiplicity {
+public interface Multiplicity<T extends Multiplicity<T>> {
 
 	/**
 	 * Implementing classes represent association ends with a multiplicity of
@@ -24,7 +24,7 @@ public interface Multiplicity {
 	 * @author Gabor Ferenc Kovacs
 	 *
 	 */
-	public interface One extends Multiplicity {
+	public interface One extends Multiplicity<One> {
 	}
 
 	/**
@@ -37,7 +37,7 @@ public interface Multiplicity {
 	 * @author Gabor Ferenc Kovacs
 	 *
 	 */
-	public interface ZeroToOne extends Multiplicity {
+	public interface ZeroToOne extends Multiplicity<ZeroToOne> {
 	}
 
 	/**
@@ -50,7 +50,7 @@ public interface Multiplicity {
 	 * @author Gabor Ferenc Kovacs
 	 *
 	 */
-	public interface ZeroToUnlimited extends Multiplicity {
+	public interface ZeroToUnlimited extends Multiplicity<ZeroToUnlimited> {
 	}
 
 	/**
@@ -63,7 +63,7 @@ public interface Multiplicity {
 	 * @author Gabor Ferenc Kovacs
 	 *
 	 */
-	public interface OneToUnlimited extends Multiplicity {
+	public interface OneToUnlimited extends Multiplicity<OneToUnlimited> {
 	}
 
 	/**
@@ -75,7 +75,7 @@ public interface Multiplicity {
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 */
-	public interface MinToMax extends Multiplicity {
+	public interface MinToMax extends Multiplicity<MinToMax> {
 	}
 
 }
