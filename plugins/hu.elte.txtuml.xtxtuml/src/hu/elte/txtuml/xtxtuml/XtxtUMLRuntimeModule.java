@@ -7,6 +7,7 @@ import hu.elte.txtuml.xtxtuml.scoping.XtxtUMLXImportSectionNamespaceScopeProvide
 import hu.elte.txtuml.xtxtuml.typesystem.XtxtUMLEarlyExitComputer;
 import hu.elte.txtuml.xtxtuml.typesystem.XtxtUMLReentrantTypeResolver;
 import hu.elte.txtuml.xtxtuml.typesystem.XtxtUMLTypeComputer;
+import hu.elte.txtuml.xtxtuml.validation.XtxtUMLExpressionHelper;
 
 import org.eclipse.xtext.naming.IQualifiedNameConverter;
 import org.eclipse.xtext.scoping.IScopeProvider;
@@ -16,6 +17,7 @@ import org.eclipse.xtext.xbase.scoping.batch.ImplicitlyImportedFeatures;
 import org.eclipse.xtext.xbase.typesystem.computation.ITypeComputer;
 import org.eclipse.xtext.xbase.typesystem.internal.DefaultReentrantTypeResolver;
 import org.eclipse.xtext.xbase.typesystem.util.ExtendedEarlyExitComputer;
+import org.eclipse.xtext.xbase.util.XExpressionHelper;
 
 import com.google.inject.Binder;
 import com.google.inject.name.Names;
@@ -56,6 +58,10 @@ public class XtxtUMLRuntimeModule extends AbstractXtxtUMLRuntimeModule {
     @Override
     public Class<? extends DefaultReentrantTypeResolver> bindDefaultReentrantTypeResolver() {
         return XtxtUMLReentrantTypeResolver.class;
+    }
+    
+    public Class<? extends XExpressionHelper> bindXExpressionHelper() {
+        return XtxtUMLExpressionHelper.class;
     }
     
 }
