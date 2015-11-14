@@ -123,6 +123,9 @@
     <genClasses ecoreClass="XtxtUML.ecore#//RAlfDeleteObjectExpression">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//RAlfDeleteObjectExpression/object"/>
     </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//RAlfSignalAccessExpression">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//RAlfSignalAccessExpression/sigdata"/>
+    </genClasses>
     <genClasses ecoreClass="XtxtUML.ecore#//RAlfAssocNavExpression">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//RAlfAssocNavExpression/left"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//RAlfAssocNavExpression/right"/>

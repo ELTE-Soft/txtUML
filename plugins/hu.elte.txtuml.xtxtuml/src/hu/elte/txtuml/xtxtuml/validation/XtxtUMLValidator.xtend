@@ -34,6 +34,7 @@ import org.eclipse.xtext.xbase.typesystem.util.ExtendedEarlyExitComputer
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionGuard
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
+import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression
 
 class XtxtUMLValidator extends AbstractXtxtUMLValidator {
 	
@@ -342,16 +343,39 @@ class XtxtUMLValidator extends AbstractXtxtUMLValidator {
 		}
 	}
 	
+	@Check
+	def checkSignalAccessExpression(RAlfSignalAccessExpression sigExpr) {
+		var container = sigExpr.eContainer;
+		while (
+			container != null &&
+			!(container instanceof TUState) &&
+			!(container instanceof TUTransition)
+		) {
+			container = container.eContainer;
+		}
+		
+		if (container == null) {
+			error(
+				"The 'sigdata' expression can be used only in action code inside transitions or states",
+				XtxtUMLPackage::eINSTANCE.RAlfSignalAccessExpression_Sigdata
+			)
+		}
+	}
+	
 	// Overriden Xbase validation methods
 	
 	override isValueExpectedRecursive(XExpression expr) {
 		val container = expr.eContainer;
-		switch (container) {
+		return switch (container) {
 			RAlfSendSignalExpression,
-			RAlfDeleteObjectExpression : true
+			RAlfDeleteObjectExpression
+				: true
 			
-			XBlockExpression : false
-			default : super.isValueExpectedRecursive(expr)
+			XBlockExpression
+				: false
+			
+			default
+				: super.isValueExpectedRecursive(expr)
 		}
 	}
 	

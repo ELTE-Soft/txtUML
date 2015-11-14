@@ -355,6 +355,7 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *     (rule start) '(' (ambiguity) feature=[JvmIdentifiableElement|IdOrSuper]
 	 *     (rule start) '(' (ambiguity) feature=[JvmIdentifiableElement|OpUnary]
 	 *     (rule start) '(' (ambiguity) isTrue?='true'
+	 *     (rule start) '(' (ambiguity) sigdata='sigdata'
 	 *     (rule start) '(' (ambiguity) value=Number
 	 *     (rule start) '(' (ambiguity) value=STRING
 	 *     (rule start) '(' (ambiguity) {RAlfAssocNavExpression.left=}
@@ -371,6 +372,7 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *     (rule start) (ambiguity) feature=[JvmIdentifiableElement|IdOrSuper]
 	 *     (rule start) (ambiguity) feature=[JvmIdentifiableElement|OpUnary]
 	 *     (rule start) (ambiguity) isTrue?='true'
+	 *     (rule start) (ambiguity) sigdata='sigdata'
 	 *     (rule start) (ambiguity) value=Number
 	 *     (rule start) (ambiguity) value=STRING
 	 *     (rule start) (ambiguity) {RAlfAssocNavExpression.left=}
@@ -397,6 +399,7 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *     (rule start) (ambiguity) feature=[JvmIdentifiableElement|IdOrSuper]
 	 *     (rule start) (ambiguity) feature=[JvmIdentifiableElement|OpUnary]
 	 *     (rule start) (ambiguity) isTrue?='true'
+	 *     (rule start) (ambiguity) sigdata='sigdata'
 	 *     (rule start) (ambiguity) value=Number
 	 *     (rule start) (ambiguity) value=STRING
 	 *     (rule start) (ambiguity) {RAlfAssocNavExpression.left=}

@@ -129,6 +129,7 @@ public class XtxtUMLParser extends AbstractContentAssistParser {
 					put(grammarAccess.getTUMultiplicityAccess().getGroup_0_1(), "rule__TUMultiplicity__Group_0_1__0");
 					put(grammarAccess.getRAlfSendSignalExpressionAccess().getGroup(), "rule__RAlfSendSignalExpression__Group__0");
 					put(grammarAccess.getRAlfDeleteObjectExpressionAccess().getGroup(), "rule__RAlfDeleteObjectExpression__Group__0");
+					put(grammarAccess.getRAlfSignalAccessExpressionAccess().getGroup(), "rule__RAlfSignalAccessExpression__Group__0");
 					put(grammarAccess.getXParenthesizedRAlfExpressionAccess().getGroup(), "rule__XParenthesizedRAlfExpression__Group__0");
 					put(grammarAccess.getXConstructorCallAccess().getGroup(), "rule__XConstructorCall__Group__0");
 					put(grammarAccess.getXConstructorCallAccess().getGroup_3(), "rule__XConstructorCall__Group_3__0");
@@ -343,6 +344,7 @@ public class XtxtUMLParser extends AbstractContentAssistParser {
 					put(grammarAccess.getRAlfSendSignalExpressionAccess().getSignalAssignment_2(), "rule__RAlfSendSignalExpression__SignalAssignment_2");
 					put(grammarAccess.getRAlfSendSignalExpressionAccess().getTargetAssignment_4(), "rule__RAlfSendSignalExpression__TargetAssignment_4");
 					put(grammarAccess.getRAlfDeleteObjectExpressionAccess().getObjectAssignment_2(), "rule__RAlfDeleteObjectExpression__ObjectAssignment_2");
+					put(grammarAccess.getRAlfSignalAccessExpressionAccess().getSigdataAssignment_1(), "rule__RAlfSignalAccessExpression__SigdataAssignment_1");
 					put(grammarAccess.getXConstructorCallAccess().getConstructorAssignment_2(), "rule__XConstructorCall__ConstructorAssignment_2");
 					put(grammarAccess.getXConstructorCallAccess().getTypeArgumentsAssignment_3_1(), "rule__XConstructorCall__TypeArgumentsAssignment_3_1");
 					put(grammarAccess.getXConstructorCallAccess().getExplicitConstructorCallAssignment_4(), "rule__XConstructorCall__ExplicitConstructorCallAssignment_4");

@@ -5,6 +5,7 @@ package hu.elte.txtuml.xtxtuml.xtxtUML.impl;
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfAssocNavExpression;
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression;
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression;
+import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute;
@@ -245,6 +246,13 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
    * @generated
    */
   private EClass rAlfDeleteObjectExpressionEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass rAlfSignalAccessExpressionEClass = null;
 
   /**
    * <!-- begin-user-doc -->
@@ -1139,6 +1147,26 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  public EClass getRAlfSignalAccessExpression()
+  {
+    return rAlfSignalAccessExpressionEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getRAlfSignalAccessExpression_Sigdata()
+  {
+    return (EAttribute)rAlfSignalAccessExpressionEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   public EClass getRAlfAssocNavExpression()
   {
     return rAlfAssocNavExpressionEClass;
@@ -1321,6 +1349,9 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
     rAlfDeleteObjectExpressionEClass = createEClass(RALF_DELETE_OBJECT_EXPRESSION);
     createEReference(rAlfDeleteObjectExpressionEClass, RALF_DELETE_OBJECT_EXPRESSION__OBJECT);
 
+    rAlfSignalAccessExpressionEClass = createEClass(RALF_SIGNAL_ACCESS_EXPRESSION);
+    createEAttribute(rAlfSignalAccessExpressionEClass, RALF_SIGNAL_ACCESS_EXPRESSION__SIGDATA);
+
     rAlfAssocNavExpressionEClass = createEClass(RALF_ASSOC_NAV_EXPRESSION);
     createEReference(rAlfAssocNavExpressionEClass, RALF_ASSOC_NAV_EXPRESSION__LEFT);
     createEReference(rAlfAssocNavExpressionEClass, RALF_ASSOC_NAV_EXPRESSION__RIGHT);
@@ -1384,6 +1415,7 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
     tuOperationEClass.getESuperTypes().add(this.getTUClassMember());
     rAlfSendSignalExpressionEClass.getESuperTypes().add(theXbasePackage.getXExpression());
     rAlfDeleteObjectExpressionEClass.getESuperTypes().add(theXbasePackage.getXExpression());
+    rAlfSignalAccessExpressionEClass.getESuperTypes().add(theXbasePackage.getXExpression());
     rAlfAssocNavExpressionEClass.getESuperTypes().add(theXbasePackage.getXExpression());
 
     // Initialize classes and features; add operations and parameters
@@ -1493,6 +1525,9 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
 
     initEClass(rAlfDeleteObjectExpressionEClass, RAlfDeleteObjectExpression.class, "RAlfDeleteObjectExpression", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEReference(getRAlfDeleteObjectExpression_Object(), theXbasePackage.getXExpression(), null, "object", null, 0, 1, RAlfDeleteObjectExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(rAlfSignalAccessExpressionEClass, RAlfSignalAccessExpression.class, "RAlfSignalAccessExpression", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getRAlfSignalAccessExpression_Sigdata(), ecorePackage.getEString(), "sigdata", null, 0, 1, RAlfSignalAccessExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(rAlfAssocNavExpressionEClass, RAlfAssocNavExpression.class, "RAlfAssocNavExpression", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEReference(getRAlfAssocNavExpression_Left(), theXbasePackage.getXExpression(), null, "left", null, 0, 1, RAlfAssocNavExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

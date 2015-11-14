@@ -757,6 +757,34 @@ finally {
 
 
 
+// Entry rule entryRuleRAlfSignalAccessExpression
+entryRuleRAlfSignalAccessExpression 
+:
+{ before(grammarAccess.getRAlfSignalAccessExpressionRule()); }
+	 ruleRAlfSignalAccessExpression
+{ after(grammarAccess.getRAlfSignalAccessExpressionRule()); } 
+	 EOF 
+;
+
+// Rule RAlfSignalAccessExpression
+ruleRAlfSignalAccessExpression
+    @init {
+		int stackSize = keepStackSize();
+    }
+	:
+(
+{ before(grammarAccess.getRAlfSignalAccessExpressionAccess().getGroup()); }
+(rule__RAlfSignalAccessExpression__Group__0)
+{ after(grammarAccess.getRAlfSignalAccessExpressionAccess().getGroup()); }
+)
+
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+
+
 
 
 // Entry rule entryRuleXRAlfStatementSemicolonNotNeeded
@@ -3368,6 +3396,12 @@ rule__XPrimaryExpression__Alternatives
 { before(grammarAccess.getXPrimaryExpressionAccess().getXParenthesizedRAlfExpressionParserRuleCall_3()); }
 	ruleXParenthesizedRAlfExpression
 { after(grammarAccess.getXPrimaryExpressionAccess().getXParenthesizedRAlfExpressionParserRuleCall_3()); }
+)
+
+    |(
+{ before(grammarAccess.getXPrimaryExpressionAccess().getRAlfSignalAccessExpressionParserRuleCall_4()); }
+	ruleRAlfSignalAccessExpression
+{ after(grammarAccess.getXPrimaryExpressionAccess().getRAlfSignalAccessExpressionParserRuleCall_4()); }
 )
 
 ;
@@ -8048,6 +8082,69 @@ finally {
 }
 
 
+
+
+
+
+
+
+rule__RAlfSignalAccessExpression__Group__0
+    @init {
+		int stackSize = keepStackSize();
+    }
+:
+	rule__RAlfSignalAccessExpression__Group__0__Impl
+	rule__RAlfSignalAccessExpression__Group__1
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+rule__RAlfSignalAccessExpression__Group__0__Impl
+    @init {
+		int stackSize = keepStackSize();
+    }
+:
+(
+{ before(grammarAccess.getRAlfSignalAccessExpressionAccess().getRAlfSignalAccessExpressionAction_0()); }
+(
+
+)
+{ after(grammarAccess.getRAlfSignalAccessExpressionAccess().getRAlfSignalAccessExpressionAction_0()); }
+)
+
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+
+rule__RAlfSignalAccessExpression__Group__1
+    @init {
+		int stackSize = keepStackSize();
+    }
+:
+	rule__RAlfSignalAccessExpression__Group__1__Impl
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+rule__RAlfSignalAccessExpression__Group__1__Impl
+    @init {
+		int stackSize = keepStackSize();
+    }
+:
+(
+{ before(grammarAccess.getRAlfSignalAccessExpressionAccess().getSigdataAssignment_1()); }
+(rule__RAlfSignalAccessExpression__SigdataAssignment_1)
+{ after(grammarAccess.getRAlfSignalAccessExpressionAccess().getSigdataAssignment_1()); }
+)
+
+;
+finally {
+	restoreStackSize(stackSize);
+}
 
 
 
@@ -18761,6 +18858,29 @@ rule__RAlfDeleteObjectExpression__ObjectAssignment_2
 (
 { before(grammarAccess.getRAlfDeleteObjectExpressionAccess().getObjectXExpressionParserRuleCall_2_0()); }
 	ruleXExpression{ after(grammarAccess.getRAlfDeleteObjectExpressionAccess().getObjectXExpressionParserRuleCall_2_0()); }
+)
+
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+rule__RAlfSignalAccessExpression__SigdataAssignment_1
+    @init {
+		int stackSize = keepStackSize();
+    }
+:
+(
+{ before(grammarAccess.getRAlfSignalAccessExpressionAccess().getSigdataSigdataKeyword_1_0()); }
+(
+{ before(grammarAccess.getRAlfSignalAccessExpressionAccess().getSigdataSigdataKeyword_1_0()); }
+
+	'sigdata' 
+
+{ after(grammarAccess.getRAlfSignalAccessExpressionAccess().getSigdataSigdataKeyword_1_0()); }
+)
+
+{ after(grammarAccess.getRAlfSignalAccessExpressionAccess().getSigdataSigdataKeyword_1_0()); }
 )
 
 ;

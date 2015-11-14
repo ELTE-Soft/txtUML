@@ -162,6 +162,14 @@ RAlfDeleteObjectExpression returns xbase::XExpression :
 	'delete' object=XExpression
 ;
 
+RAlfSignalAccessExpression returns xbase::XExpression :
+	{RAlfSignalAccessExpression}
+	sigdata='sigdata'
+	// the sole purpose of the sigdata feature
+	// is to provide a feature for validation
+	// to put a marker on
+;
+
 // Added rAlf-Xbase rules
 
 /*
@@ -248,6 +256,7 @@ XPrimaryExpression returns xbase::XExpression
 	| XFeatureCall
 	| XLiteral
 	| XParenthesizedRAlfExpression
+	| RAlfSignalAccessExpression
 ;
 
 /*

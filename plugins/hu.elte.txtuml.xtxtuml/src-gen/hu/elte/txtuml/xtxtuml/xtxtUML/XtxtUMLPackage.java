@@ -1095,6 +1095,34 @@ public interface XtxtUMLPackage extends EPackage
   int RALF_DELETE_OBJECT_EXPRESSION_FEATURE_COUNT = XbasePackage.XEXPRESSION_FEATURE_COUNT + 1;
 
   /**
+   * The meta object id for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.RAlfSignalAccessExpressionImpl <em>RAlf Signal Access Expression</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.RAlfSignalAccessExpressionImpl
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getRAlfSignalAccessExpression()
+   * @generated
+   */
+  int RALF_SIGNAL_ACCESS_EXPRESSION = 27;
+
+  /**
+   * The feature id for the '<em><b>Sigdata</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int RALF_SIGNAL_ACCESS_EXPRESSION__SIGDATA = XbasePackage.XEXPRESSION_FEATURE_COUNT + 0;
+
+  /**
+   * The number of structural features of the '<em>RAlf Signal Access Expression</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int RALF_SIGNAL_ACCESS_EXPRESSION_FEATURE_COUNT = XbasePackage.XEXPRESSION_FEATURE_COUNT + 1;
+
+  /**
    * The meta object id for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.RAlfAssocNavExpressionImpl <em>RAlf Assoc Nav Expression</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -1102,7 +1130,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getRAlfAssocNavExpression()
    * @generated
    */
-  int RALF_ASSOC_NAV_EXPRESSION = 27;
+  int RALF_ASSOC_NAV_EXPRESSION = 28;
 
   /**
    * The feature id for the '<em><b>Left</b></em>' containment reference.
@@ -1139,7 +1167,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUStateType()
    * @generated
    */
-  int TU_STATE_TYPE = 28;
+  int TU_STATE_TYPE = 29;
 
   /**
    * The meta object id for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUVisibility <em>TU Visibility</em>}' enum.
@@ -1149,7 +1177,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUVisibility()
    * @generated
    */
-  int TU_VISIBILITY = 29;
+  int TU_VISIBILITY = 30;
 
 
   /**
@@ -2006,6 +2034,27 @@ public interface XtxtUMLPackage extends EPackage
   EReference getRAlfDeleteObjectExpression_Object();
 
   /**
+   * Returns the meta object for class '{@link hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression <em>RAlf Signal Access Expression</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>RAlf Signal Access Expression</em>'.
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression
+   * @generated
+   */
+  EClass getRAlfSignalAccessExpression();
+
+  /**
+   * Returns the meta object for the attribute '{@link hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression#getSigdata <em>Sigdata</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Sigdata</em>'.
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression#getSigdata()
+   * @see #getRAlfSignalAccessExpression()
+   * @generated
+   */
+  EAttribute getRAlfSignalAccessExpression_Sigdata();
+
+  /**
    * Returns the meta object for class '{@link hu.elte.txtuml.xtxtuml.xtxtUML.RAlfAssocNavExpression <em>RAlf Assoc Nav Expression</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -2773,6 +2822,24 @@ public interface XtxtUMLPackage extends EPackage
      * @generated
      */
     EReference RALF_DELETE_OBJECT_EXPRESSION__OBJECT = eINSTANCE.getRAlfDeleteObjectExpression_Object();
+
+    /**
+     * The meta object literal for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.RAlfSignalAccessExpressionImpl <em>RAlf Signal Access Expression</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.RAlfSignalAccessExpressionImpl
+     * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getRAlfSignalAccessExpression()
+     * @generated
+     */
+    EClass RALF_SIGNAL_ACCESS_EXPRESSION = eINSTANCE.getRAlfSignalAccessExpression();
+
+    /**
+     * The meta object literal for the '<em><b>Sigdata</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute RALF_SIGNAL_ACCESS_EXPRESSION__SIGDATA = eINSTANCE.getRAlfSignalAccessExpression_Sigdata();
 
     /**
      * The meta object literal for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.RAlfAssocNavExpressionImpl <em>RAlf Assoc Nav Expression</em>}' class.
