@@ -373,7 +373,7 @@ public class ModelClass extends Region {
 	@Override
 	void process(Signal signal) {
 		if (isDeleted()) {
-			Report.warning.forEach(x -> x.signalArrivedToDeletedObject(this));
+			Report.warning.forEach(x -> x.signalArrivedToDeletedObject(this, signal));
 			return;
 		}
 		super.process(signal);
