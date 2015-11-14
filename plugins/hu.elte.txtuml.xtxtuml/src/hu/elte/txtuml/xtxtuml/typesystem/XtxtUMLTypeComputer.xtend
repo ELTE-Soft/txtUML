@@ -22,6 +22,8 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionTrigger
 import hu.elte.txtuml.api.model.Signal
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
+import java.util.HashSet
 
 class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 
@@ -55,16 +57,26 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		var container = sigExpr.eContainer;
 		while (
 			container != null &&
-			!(container instanceof TUState) &&
+			!(container instanceof TUEntryOrExitActivity) &&
 			!(container instanceof TUTransition)
 		) {
 			container = container.eContainer;
 		}
 		
+		var visitedStates = new HashSet<TUState>();
 		var type = switch (container) {
-			TUState,
+			TUEntryOrExitActivity
+				: if (container.eContainer instanceof TUState) {
+					getCommonSignalSuperType(
+						container.eContainer as TUState, state,
+						container.entry, visitedStates
+					)
+				} else {
+					getTypeForName(Signal, state)
+				}
+				
 			TUTransition
-				: getCommonSignalSuperType(container, state)
+				: getCommonSignalSuperType(container, state, visitedStates)
 			
 			default
 				: getTypeForName(Signal, state)
@@ -73,9 +85,10 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		state.acceptActualType(type);
 	}
 	
-	def dispatch private LightweightTypeReference getCommonSignalSuperType(
+	def private LightweightTypeReference getCommonSignalSuperType(
 		TUTransition trans,
-		ITypeComputationState cState
+		ITypeComputationState cState,
+		HashSet<TUState> visitedStates
 	) {
 		var trigger = (trans.members.findFirst[
 			it instanceof TUTransitionTrigger
@@ -95,16 +108,22 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		] as TUTransitionVertex)?.vertex;
 	
 		if (from != null && from.type == TUStateType.CHOICE) {
-			return getCommonSignalSuperType(from, cState);
+			return getCommonSignalSuperType(from, cState, true, visitedStates);
 		}
 	
 		return getTypeForName(Signal, cState);
 	}
 	
-	def dispatch private LightweightTypeReference getCommonSignalSuperType(
+	def private LightweightTypeReference getCommonSignalSuperType(
 		TUState state,
-		ITypeComputationState cState
+		ITypeComputationState cState,
+		boolean toState,
+		HashSet<TUState> visitedStates
 	) {
+		if (!visitedStates.add(state)) {
+			return getTypeForName(Signal, cState);
+		}
+		
 		val siblingsAndSelf = switch (c : state.eContainer) {
 			TUState : c.members
 			TUClass : c.members
@@ -114,11 +133,13 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		for (siblingOrSelf : siblingsAndSelf) {
 			if (siblingOrSelf instanceof TUTransition &&
 				((siblingOrSelf as TUTransition).members.findFirst[
-					it instanceof TUTransitionVertex && !(it as TUTransitionVertex).from
+					it instanceof TUTransitionVertex && toState != (it as TUTransitionVertex).from
 				] as TUTransitionVertex)?.vertex == state
 			) {
 				signalCandidates.add(
-					getCommonSignalSuperType(siblingOrSelf as TUTransition, cState)
+					getCommonSignalSuperType(
+						siblingOrSelf as TUTransition, cState, visitedStates
+					)
 				);
 			}
 		}
