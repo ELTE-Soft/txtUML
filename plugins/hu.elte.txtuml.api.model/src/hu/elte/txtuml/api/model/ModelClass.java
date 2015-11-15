@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * <p>
  * <b>Subtype requirements:</b>
  * <ul>
- * <li><i>none</i></li>
+ * <li>must be a top level class (not a nested or local class)</li>
  * </ul>
  * <p>
  * <b>Subtype restrictions:</b>
