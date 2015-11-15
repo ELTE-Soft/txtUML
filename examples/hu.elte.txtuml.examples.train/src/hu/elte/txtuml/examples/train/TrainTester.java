@@ -12,8 +12,8 @@ import hu.elte.txtuml.examples.train.model.signals.Backward;
 import hu.elte.txtuml.examples.train.model.signals.Forward;
 import hu.elte.txtuml.examples.train.model.signals.SwitchLight;
 
-public class Train {
-	Train() {
+public class TrainTester {
+	TrainTester() {
 		createInstances();
 		test();
 	}
@@ -62,6 +62,6 @@ public class Train {
 	}
 
 	public static void main(String[] args) throws Exception {
-		new Train();
+		new TrainTester();
 	}
 }
