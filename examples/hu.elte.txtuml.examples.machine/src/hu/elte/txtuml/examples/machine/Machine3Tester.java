@@ -8,7 +8,7 @@ import hu.elte.txtuml.examples.machine.model3.User;
 import hu.elte.txtuml.examples.machine.model3.associations.Usage;
 import hu.elte.txtuml.examples.machine.model3.signals.DoYourWork;
 
-public class Machine3 {
+public class Machine3Tester {
 
 	void test() {
 		ModelExecutor.Settings.setExecutorLog(true);
@@ -43,7 +43,7 @@ public class Machine3 {
 	}
 
 	public static void main(String[] args) {
-		new Machine3().test();
+		new Machine3Tester().test();
 	}
 
 }

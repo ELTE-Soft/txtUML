@@ -2,17 +2,17 @@ package hu.elte.txtuml.examples.machine;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.ModelExecutor;
-import hu.elte.txtuml.examples.machine.model1.Machine;
-import hu.elte.txtuml.examples.machine.model1.User;
-import hu.elte.txtuml.examples.machine.model1.associations.Usage;
-import hu.elte.txtuml.examples.machine.model1.signals.DoYourWork;
+import hu.elte.txtuml.examples.machine.model2.Machine;
+import hu.elte.txtuml.examples.machine.model2.User;
+import hu.elte.txtuml.examples.machine.model2.associations.Usage;
+import hu.elte.txtuml.examples.machine.model2.signals.DoYourWork;
 
-public class Machine1 {
+public class Machine2Tester {
 
 	void test() {
 		ModelExecutor.Settings.setExecutorLog(true);
 
-		Machine m = Action.create(Machine.class);
+		Machine m = Action.create(Machine.class, 3);
 		User u1 = Action.create(User.class);
 		User u2 = Action.create(User.class);
 
@@ -30,7 +30,7 @@ public class Machine1 {
 	}
 
 	public static void main(String[] args) {
-		new Machine1().test();
+		new Machine2Tester().test();
 	}
 
 }
