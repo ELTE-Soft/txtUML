@@ -144,7 +144,8 @@ public class VisualizeTxtUMLPage extends WizardPage {
 				PackageSelectionDialog dialog = new PackageSelectionDialog(
 						getShell(), getContainer(),
 						PackageSelectionDialog.F_HIDE_DEFAULT_PACKAGE
-								& PackageSelectionDialog.F_REMOVE_DUPLICATES,
+								| PackageSelectionDialog.F_REMOVE_DUPLICATES
+								| PackageSelectionDialog.F_HIDE_EMPTY_INNER,
 						scope);
 
 				dialog.setTitle("Project Selection");
