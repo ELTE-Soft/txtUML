@@ -264,6 +264,6 @@ public @interface Model {
 	/**
 	 * Sets the name of the model.
 	 */
-	String value();
+	String value() default "";
 
 }
