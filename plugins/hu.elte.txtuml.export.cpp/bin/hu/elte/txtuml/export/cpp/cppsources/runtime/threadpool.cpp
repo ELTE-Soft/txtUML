@@ -7,7 +7,8 @@
 
 
 StateMachineThreadPool::StateMachineThreadPool(size_t threads_,int messages_to_procces_)
-    :   stop(true),worker_threads(0),threads(threads_),messages_to_procces(messages_to_procces_), delta(10) {}
+    :   stop(true),worker_threads(0),threads(threads_),messages_to_procces(messages_to_procces_), delta(10), 
+		future_getter_thread(new std::thread(&StateMachineThreadPool::futureGetter,this) ) {}
 	
 void StateMachineThreadPool::stopPool()
 {
@@ -34,19 +35,27 @@ void StateMachineThreadPool::task()
 {	
 	while(!this->stop)
     {
-		//check if there are too many threads..
+		
 		std::unique_lock<std::mutex> mlock(mu);
+		
+		//check if there are too many threads..
+		std::unique_lock<std::mutex> fmlock(future_mu);
 		if(workers.isTooManyWorkes())
 		{
-			
-			std::thread remover(&ThreadContainer::removeThread, std::this_thread::get_id(), std::ref(workers)); // async
-			remover.detach();
+			f = std::async(&ThreadContainer::removeThread, &workers, std::this_thread::get_id());
+			workers.reduceActiveThreads();
+			future_cond.notify_one();
 			return;
+		}
+		else
+		{
+			fmlock.unlock();
 		}
 		
 		StateMachineI* sm = nullptr;
 		while(!sm && !this->stop)
 		{
+			
 			if(!stateMachines.empty())
 			{
 				incrementWorkers();
@@ -96,9 +105,24 @@ void StateMachineThreadPool::task()
 	
 }
 
+void StateMachineThreadPool::futureGetter()
+{
+	std::unique_lock<std::mutex> fmlock(future_mu);
+	while(!this->stop)
+	{
+		future_cond.wait(fmlock);
+		if(!this->stop)
+		{
+			f.get();
+		}
+		
+	}
+}
+
 void StateMachineThreadPool::startPool()
 {
 	std::unique_lock<std::mutex> mlock(start_mu);
+	
 	stop = false;
 	workers.setExpectedThreads(threads);
 	for(size_t i = 0;i<threads;++i)
@@ -120,8 +144,6 @@ void StateMachineThreadPool::modifiedThreads(int n)
 		workers.addThread(new std::thread(&StateMachineThreadPool::task,this));	
 	}
 	
-	
-	mlock.unlock();
 }
 
 
@@ -150,6 +172,7 @@ StateMachineThreadPool::~StateMachineThreadPool()
 {
     stopPool();
 	workers.removeAll();
-
-        
+	
+    future_getter_thread->join();
+	delete future_getter_thread;
 }

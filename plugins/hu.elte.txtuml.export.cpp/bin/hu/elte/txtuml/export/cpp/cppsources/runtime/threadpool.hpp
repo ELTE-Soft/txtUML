@@ -34,7 +34,8 @@ public:
 	void modifiedThreads(int);
     ~StateMachineThreadPool();
 private:
-
+	void futureGetter();
+	
 	ThreadContainer workers;
 	
 	int delta;
@@ -54,6 +55,12 @@ private:
 	std::mutex worker_mu;
 	std::mutex complite_mu;
 	std::mutex start_mu;
+	
+	//synchronize remove threads
+	std::future<void> f;
+	std::condition_variable future_cond;
+	std::mutex future_mu;
+	std::thread* future_getter_thread;
 };
 
 

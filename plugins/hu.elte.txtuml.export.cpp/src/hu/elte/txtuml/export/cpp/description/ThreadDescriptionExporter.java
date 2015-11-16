@@ -49,15 +49,9 @@ public class ThreadDescriptionExporter {
 					
 					Group g = (Group) annotation;
 					ThreadPoolConfiguration config = null;
-					if(g.function().length == 2){
-						config = new ThreadPoolConfiguration(numberOfConfigurations, g.function()[0],(int)g.function()[1]);
-					}
-					else{
-						errorList.add("Linear function rquires two parameter!");
-					}
 					
-					checkEmptyGroup(g.val());
-					for(Class<? extends ModelClass> cls: g.val()){
+					checkEmptyGroup(g.contains());
+					for(Class<? extends ModelClass> cls: g.contains()){
 						if(!exportedClasses.contains(cls.getSimpleName())){
 							configMap.put(cls.getSimpleName(), config);
 						}

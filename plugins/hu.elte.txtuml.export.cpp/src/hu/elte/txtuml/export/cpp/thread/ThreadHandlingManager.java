@@ -49,9 +49,10 @@ public class ThreadHandlingManager {
 	
 	private List<Class> classList;
 	
-	public ThreadHandlingManager(Model model, Map<String, ThreadPoolConfiguration > threadDescription ){
+	public ThreadHandlingManager(Model model,  Map<String, ThreadPoolConfiguration > description){
 		this.model = model;
-		ThreadHandlingManager.threadDescription = threadDescription;
+		ThreadHandlingManager.threadDescription = description;
+		
 		
 		numberOfThreads = threadDescription.size();
 		

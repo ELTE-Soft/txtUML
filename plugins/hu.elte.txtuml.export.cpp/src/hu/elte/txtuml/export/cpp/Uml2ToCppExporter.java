@@ -48,8 +48,8 @@ public class Uml2ToCppExporter
 	private static final String DefaultCompiler = "g++";
 	private static final String GCCDebugSymbolOn = "-D_DEBUG"; //the symbol located in GenerationNames
 	//private static final String CppFileLocation= "hu.elte.txtuml.export.cpp" + File.separator + "src" +File.separator+"hu"+File.separator+"elte"+File.separator+"txtuml"+File.separator+"export"+File.separator+"cpp"+File.separator+"cppsources"+File.separator;
-	private static final String RuntimeFolder= GenerationTemplates.RuntimePath;
 	//private static final String RuntimeCppFileLocation = CppFileLocation + RuntimeFolder;
+	private static final String RuntimeFolder= GenerationTemplates.RuntimePath;
 	private static final String RuntimeLibName = "libsmrt.a";
 	private static final String DefaultMakeFileName = "Makefile";
 	private static final String DefaultModelName = "main";
@@ -92,12 +92,11 @@ public class Uml2ToCppExporter
 		}
 		if(threadManagement){
 			Options.setThreadManagement();
-			threadManager = new ThreadHandlingManager(model, threadDescription);
+			threadManager = new ThreadHandlingManager(model,threadDescription);
 		}
 		else{
 			Options.setThreadManagement(false);
 		}
-		
 		
 	}
 	
@@ -146,10 +145,7 @@ public class Uml2ToCppExporter
 	private void copyPreWrittenCppFiles(String destination) throws IOException 
 	{
 		
-		Bundle bundle = Platform.getBundle("hu.elte.txtuml.export.cpp");
-		URL fileURL = bundle.getEntry("src" +File.separator+"hu"+File.separator+"elte"+File.separator+"txtuml"+File.separator+"export"+File.separator+"cpp"+File.separator+"cppsources");
-		File f = new File(FileLocator.toFileURL(fileURL).getPath());
-		String absCppFilesLoc = f.getAbsolutePath() + File.separator;
+		String absoluteCppFilesLocation = seekCppFilesColcations();
 		
 		try
 		{
@@ -163,12 +159,12 @@ public class Uml2ToCppExporter
 			e.printStackTrace();
 		}
 		
-		Files.copy(Paths.get(absCppFilesLoc + GenerationTemplates.StateMachineBaseHeader),
+		Files.copy(Paths.get(absoluteCppFilesLocation + GenerationTemplates.StateMachineBaseHeader),
 				Paths.get(destination+File.separator+GenerationTemplates.StateMachineBaseHeader), StandardCopyOption.REPLACE_EXISTING);
 		if(Options.Runtime())
 		{
 			
-			File sourceRuntimeDir = new File(absCppFilesLoc + RuntimeFolder);
+			File sourceRuntimeDir = new File(absoluteCppFilesLocation + RuntimeFolder);
 			File outputRuntimeDir = new File(destination + File.separator +  RuntimeFolder);
 			if(!outputRuntimeDir.exists()){
 				outputRuntimeDir.mkdirs();
@@ -182,10 +178,24 @@ public class Uml2ToCppExporter
 		}
 		else
 		{
-			Files.copy(Paths.get(absCppFilesLoc + "main.cpp"),
+			Files.copy(Paths.get(absoluteCppFilesLocation + "main.cpp"),
 					Paths.get(destination + File.separator+"main.cpp"), StandardCopyOption.REPLACE_EXISTING);
 		}
 		
+	}
+	
+	private String seekCppFilesColcations(){
+		
+		Bundle bundle = Platform.getBundle("hu.elte.txtuml.export.cpp");
+		URL fileURL = bundle.getEntry("src" +File.separator+"hu"+File.separator+"elte"+File.separator+"txtuml"+File.separator+"export"+File.separator+"cpp"+File.separator+"cppsources");
+		File f = null;
+		try {
+			f = new File(FileLocator.toFileURL(fileURL).getPath());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return f.getAbsolutePath() + File.separator;
 	}
 
 	private void copyFolder(File sourceRuntimeDir, File outputRuntimeDir, Map<String, String> fileNamesMap) {
@@ -239,14 +249,14 @@ public class Uml2ToCppExporter
 		{
 			makeFile+=" "+GCCDebugSymbolOn;
 		}
-		makeFile+=" -Wall -o "+outputName_+fileList+" -std=c++11";
+		makeFile+=" -Wall -o "+outputName_+fileList+" -std=gnu++11";
 
 		if(Options.Runtime())
 		{
-			makeFile+=" -I "+RuntimeFolder+" -LC "+RuntimeLibName+"\n\n"+RuntimeLibName+": runtime runtime.o statemachineI.o threadpool.o\n"+
-					"\tar rcs "+RuntimeLibName+" runtime.o statemachineI.o threadpool.o\n\n"+
+			makeFile+=" -I "+RuntimeFolder+" -LC "+RuntimeLibName+"\n\n"+RuntimeLibName+": runtime runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o\n"+
+					"\tar rcs "+RuntimeLibName+" runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o\n\n"+
 					".PHONY:runtime\n"+
-					"runtime:\n\t$(CC) -Wall -c "+RuntimeFolder+"runtime.cpp "+RuntimeFolder+"statemachineI.cpp "+RuntimeFolder+"threadpool.cpp " + RuntimeFolder+"threadpoolmanager.cpp -std=c++11";
+					"runtime:\n\t$(CC) -Wall -c "+RuntimeFolder+"runtime.cpp "+RuntimeFolder+"statemachineI.cpp "+RuntimeFolder+"threadpool.cpp " + RuntimeFolder+"threadpoolmanager.cpp -std=gnu++11";
 		}
 		
 		Shared.writeOutSource(path_, makefileName_, makeFile);

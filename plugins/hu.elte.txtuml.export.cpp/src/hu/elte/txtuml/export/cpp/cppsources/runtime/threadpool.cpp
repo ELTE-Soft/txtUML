@@ -111,13 +111,18 @@ void StateMachineThreadPool::futureGetter()
 	while(!this->stop)
 	{
 		future_cond.wait(fmlock);
-		f.get();
+		if(!this->stop)
+		{
+			f.get();
+		}
+		
 	}
 }
 
 void StateMachineThreadPool::startPool()
 {
 	std::unique_lock<std::mutex> mlock(start_mu);
+	
 	stop = false;
 	workers.setExpectedThreads(threads);
 	for(size_t i = 0;i<threads;++i)
@@ -167,5 +172,7 @@ StateMachineThreadPool::~StateMachineThreadPool()
 {
     stopPool();
 	workers.removeAll();
-   
+	
+    future_getter_thread->join();
+	delete future_getter_thread;
 }
