@@ -1,7 +1,7 @@
 package hu.elte.txtuml.api.model.tests.base;
 
-import hu.elte.txtuml.api.model.tests.models.SimpleModel.A;
-import hu.elte.txtuml.api.model.tests.models.SimpleModel.B;
+import hu.elte.txtuml.api.model.tests.models.simple.A;
+import hu.elte.txtuml.api.model.tests.models.simple.B;
 
 import org.junit.Before;
 

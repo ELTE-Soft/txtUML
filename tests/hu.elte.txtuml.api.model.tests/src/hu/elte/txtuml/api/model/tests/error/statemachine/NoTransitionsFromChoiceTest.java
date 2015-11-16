@@ -20,18 +20,19 @@ public class NoTransitionsFromChoiceTest extends TestsBase {
 
 	@Test
 	public void test() {
-		
+
 		A a = new A();
 		Action.start(a);
 		Action.send(a, new Sig(2));
-		
+
 		stopModelExecution();
 
-		executionAsserter.assertErrors( x -> x.noTransitionFromChoice(a.new C()));
+		executionAsserter
+				.assertErrors(x -> x.noTransitionFromChoice(a.new C()));
 	}
 
 	static class NoTransitionsFromChoiceModel extends Model {
-		
+
 		static class Sig extends Signal {
 			int value;
 
@@ -43,38 +44,53 @@ public class NoTransitionsFromChoiceTest extends TestsBase {
 				this.value = value;
 			}
 		}
-		
+
 		static class A extends ModelClass {
-		
-			class Init extends Initial {}
-			class S1 extends State {}
-			class C extends Choice {}
-		
-			@From(Init.class) @To(S1.class)
-			class Initialize extends Transition {}
-			@From(S1.class) @To(C.class) @Trigger(Sig.class)
-			class S1_C extends Transition {}
-			
-			@From(C.class) @To(S1.class) @Trigger(Sig.class)
+
+			class Init extends Initial {
+			}
+
+			class S1 extends State {
+			}
+
+			class C extends Choice {
+			}
+
+			@From(Init.class)
+			@To(S1.class)
+			class Initialize extends Transition {
+			}
+
+			@From(S1.class)
+			@To(C.class)
+			@Trigger(Sig.class)
+			class S1_C extends Transition {
+			}
+
+			@From(C.class)
+			@To(S1.class)
+			@Trigger(Sig.class)
 			class T1 extends Transition {
-				
+
 				@Override
 				public boolean guard() {
 					Sig s = getSignal(Sig.class);
 					return s.value == 0;
 				}
-				
+
 			}
-		
-			@From(C.class) @To(S1.class) @Trigger(Sig.class)
+
+			@From(C.class)
+			@To(S1.class)
+			@Trigger(Sig.class)
 			class T2 extends Transition {
-				
+
 				@Override
 				public boolean guard() {
 					Sig s = getSignal(Sig.class);
 					return s.value == 1;
 				}
-				
+
 			}
 		}
 	}

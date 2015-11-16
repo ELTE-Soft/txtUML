@@ -20,50 +20,67 @@ public class TwoOrMoreElseFromChoiceTest extends TestsBase {
 
 	@Test
 	public void test() {
-		
+
 		A a = new A();
 		Action.start(a);
 		Action.send(a, new Sig());
-		
+
 		stopModelExecution();
 
-		executionAsserter.assertErrors( x -> x.moreThanOneElseTransitionsFromChoice(a.new C()));
+		executionAsserter.assertErrors(x -> x
+				.moreThanOneElseTransitionsFromChoice(a.new C()));
 
 	}
 
 	static class TwoOrMoreElseFromChoiceModel extends Model {
-		
-		static class Sig extends Signal {}
-		
+
+		static class Sig extends Signal {
+		}
+
 		static class A extends ModelClass {
-		
-			class Init extends Initial {}
-			class S1 extends State {}
-			class C extends Choice {}
-		
-			@From(Init.class) @To(S1.class)
-			class Initialize extends Transition {}
-			@From(S1.class) @To(C.class) @Trigger(Sig.class)
-			class S1_C extends Transition {}
-			
-			@From(C.class) @To(S1.class) @Trigger(Sig.class)
-			class T1 extends Transition {
-				
-				@Override
-				public boolean guard() {
-					return Else();
-				}
-				
+
+			class Init extends Initial {
 			}
-		
-			@From(C.class) @To(S1.class) @Trigger(Sig.class)
-			class T2 extends Transition {
-				
+
+			class S1 extends State {
+			}
+
+			class C extends Choice {
+			}
+
+			@From(Init.class)
+			@To(S1.class)
+			class Initialize extends Transition {
+			}
+
+			@From(S1.class)
+			@To(C.class)
+			@Trigger(Sig.class)
+			class S1_C extends Transition {
+			}
+
+			@From(C.class)
+			@To(S1.class)
+			@Trigger(Sig.class)
+			class T1 extends Transition {
+
 				@Override
 				public boolean guard() {
 					return Else();
 				}
-				
+
+			}
+
+			@From(C.class)
+			@To(S1.class)
+			@Trigger(Sig.class)
+			class T2 extends Transition {
+
+				@Override
+				public boolean guard() {
+					return Else();
+				}
+
 			}
 		}
 	}

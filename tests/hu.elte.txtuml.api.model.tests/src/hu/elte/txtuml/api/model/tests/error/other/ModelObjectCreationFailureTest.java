@@ -2,7 +2,7 @@ package hu.elte.txtuml.api.model.tests.error.other;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.tests.base.SimpleModelTestsBase;
-import hu.elte.txtuml.api.model.tests.models.SimpleModel.A;
+import hu.elte.txtuml.api.model.tests.models.simple.A;
 import hu.elte.txtuml.api.model.tests.util.SeparateClassloaderTestRunner;
 
 import org.junit.Test;
@@ -18,8 +18,8 @@ public class ModelObjectCreationFailureTest extends SimpleModelTestsBase {
 
 		stopModelExecution();
 
-		executionAsserter.assertErrors( x -> x.modelObjectCreationFailed(A.class,
-						new Object[] { 100 }));
+		executionAsserter.assertErrors(x -> x.modelObjectCreationFailed(
+				A.class, new Object[] { 100 }));
 	}
 
 }

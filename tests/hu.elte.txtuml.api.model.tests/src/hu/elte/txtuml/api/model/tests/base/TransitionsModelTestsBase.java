@@ -1,7 +1,7 @@
 package hu.elte.txtuml.api.model.tests.base;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.tests.models.TransitionsModel.A;
+import hu.elte.txtuml.api.model.tests.models.transitions.A;
 
 import org.junit.Before;
 

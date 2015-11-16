@@ -2,7 +2,7 @@ package hu.elte.txtuml.api.model.tests.statemachine;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.tests.base.ChoiceModelTestsBase;
-import hu.elte.txtuml.api.model.tests.models.ChoiceModel.Sig;
+import hu.elte.txtuml.api.model.tests.models.choice.Sig;
 import hu.elte.txtuml.api.model.tests.util.SeparateClassloaderTestRunner;
 
 import org.junit.Test;
@@ -16,10 +16,10 @@ public class ChoiceTest extends ChoiceModelTestsBase {
 		Action.send(a, new Sig(0));
 		Action.send(a, new Sig(1));
 		Action.send(a, new Sig(2));
-		
+
 		stopModelExecution();
-		
-		executionAsserter.assertEvents( x -> {
+
+		executionAsserter.assertEvents(x -> {
 			transition(x, a, a.new Initialize());
 			x.processingSignal(a, new Sig());
 			transition(x, a, a.new S1_C());

@@ -2,8 +2,8 @@ package hu.elte.txtuml.api.model.tests.statemachine;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.tests.base.HierarchicalModelTestsBase;
-import hu.elte.txtuml.api.model.tests.models.HierarchicalModel.Sig0;
-import hu.elte.txtuml.api.model.tests.models.HierarchicalModel.Sig1;
+import hu.elte.txtuml.api.model.tests.models.hierarchical.Sig0;
+import hu.elte.txtuml.api.model.tests.models.hierarchical.Sig1;
 import hu.elte.txtuml.api.model.tests.util.SeparateClassloaderTestRunner;
 
 import org.junit.Assert;
@@ -21,8 +21,8 @@ public class CompositeStateEntryExitTest extends HierarchicalModelTestsBase {
 
 		stopModelExecution();
 
-		Assert.assertArrayEquals(new String[]
-				{ "CS1 entry", "CS2 entry",	"S3 entry", "S3 exit", "CS2 exit", "CS1 exit" },
+		Assert.assertArrayEquals(new String[] { "CS1 entry", "CS2 entry",
+				"S3 entry", "S3 exit", "CS2 exit", "CS1 exit" },
 				userOutStream.getOutputAsArray());
 	}
 

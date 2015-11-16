@@ -1,7 +1,7 @@
 package hu.elte.txtuml.api.model.tests.base;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.tests.models.ChoiceModel.A;
+import hu.elte.txtuml.api.model.tests.models.choice.A;
 
 import org.junit.Before;
 
@@ -15,4 +15,3 @@ public class ChoiceModelTestsBase extends TestsBase {
 		Action.start(a);
 	}
 }
-

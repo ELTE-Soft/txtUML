@@ -3,7 +3,7 @@ package hu.elte.txtuml.api.model.tests.shutdown;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.ModelExecutor;
 import hu.elte.txtuml.api.model.tests.base.SimpleModelTestsBase;
-import hu.elte.txtuml.api.model.tests.models.SimpleModel.Sig;
+import hu.elte.txtuml.api.model.tests.models.simple.Sig;
 import hu.elte.txtuml.api.model.tests.util.MutableBoolean;
 import hu.elte.txtuml.api.model.tests.util.SeparateClassloaderTestRunner;
 

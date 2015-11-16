@@ -2,7 +2,7 @@ package hu.elte.txtuml.api.model.tests.statemachine;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.tests.base.TransitionsModelTestsBase;
-import hu.elte.txtuml.api.model.tests.models.TransitionsModel.Sig3;
+import hu.elte.txtuml.api.model.tests.models.transitions.Sig3;
 import hu.elte.txtuml.api.model.tests.util.SeparateClassloaderTestRunner;
 
 import org.junit.Test;

@@ -21,37 +21,48 @@ public class OverlappingGuardsTest extends TestsBase {
 
 	@Test
 	public void test() {
-		
+
 		A a = new A();
 		Action.start(a);
 		Action.send(a, new Sig());
-		
+
 		stopModelExecution();
 
-		boolean msg1 = executionAsserter.checkErrors(x ->
-				x.guardsOfTransitionsAreOverlapping(a.new T1(), a.new T2(),
+		boolean msg1 = executionAsserter.checkErrors(x -> x
+				.guardsOfTransitionsAreOverlapping(a.new T1(), a.new T2(),
 						a.new S1()));
-		boolean msg2 = executionAsserter.checkErrors(x ->
-				x.guardsOfTransitionsAreOverlapping(a.new T2(), a.new T1(),
+		boolean msg2 = executionAsserter.checkErrors(x -> x
+				.guardsOfTransitionsAreOverlapping(a.new T2(), a.new T1(),
 						a.new S1()));
-		
+
 		Assert.assertTrue(msg1 || msg2);
 
 	}
 
 	static class OverlappingGuardsModel extends Model {
 
-		static class Sig extends Signal {}
+		static class Sig extends Signal {
+		}
 
 		static class A extends ModelClass {
 
-			class Init extends Initial {}
-			class S1 extends State {}
-			class S2 extends State {}
+			class Init extends Initial {
+			}
 
-			@From(Init.class) @To(S1.class)
-			class T0 extends Transition {}
-			@From(S1.class) @To(S2.class) @Trigger(Sig.class)
+			class S1 extends State {
+			}
+
+			class S2 extends State {
+			}
+
+			@From(Init.class)
+			@To(S1.class)
+			class T0 extends Transition {
+			}
+
+			@From(S1.class)
+			@To(S2.class)
+			@Trigger(Sig.class)
 			class T1 extends Transition {
 				@Override
 				public boolean guard() {
@@ -59,7 +70,9 @@ public class OverlappingGuardsTest extends TestsBase {
 				}
 			}
 
-			@From(S1.class) @To(S2.class) @Trigger(Sig.class)
+			@From(S1.class)
+			@To(S2.class)
+			@Trigger(Sig.class)
 			class T2 extends Transition {
 				@Override
 				public boolean guard() {
