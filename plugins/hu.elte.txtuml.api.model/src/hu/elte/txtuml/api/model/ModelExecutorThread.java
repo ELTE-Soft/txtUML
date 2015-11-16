@@ -112,7 +112,7 @@ class ModelExecutorThread extends Thread {
 	 *            the association end which's multiplicity is to be checked
 	 */
 	void checkLowerBoundOfMultiplcitiy(ModelClass obj,
-			Class<? extends AssociationEnd<?>> assocEnd) {
+			Class<? extends AssociationEnd<?, ?>> assocEnd) {
 		checkQueue.add(() -> obj.checkLowerBound(assocEnd));
 	}
 
