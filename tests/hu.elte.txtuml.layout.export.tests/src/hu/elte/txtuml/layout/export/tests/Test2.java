@@ -11,171 +11,33 @@ import hu.elte.txtuml.api.layout.Priority;
 import hu.elte.txtuml.api.layout.Row;
 import hu.elte.txtuml.api.layout.Show;
 import hu.elte.txtuml.api.layout.West;
-import hu.elte.txtuml.api.model.Association;
-import hu.elte.txtuml.api.model.Model;
-import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.layout.export.DiagramType;
-import hu.elte.txtuml.layout.export.tests.Model2.BaseOfColumnTop;
-import hu.elte.txtuml.layout.export.tests.Model2.BaseOfDiamond;
-import hu.elte.txtuml.layout.export.tests.Model2.BetweenBases;
-import hu.elte.txtuml.layout.export.tests.Model2.ColumnBottom;
-import hu.elte.txtuml.layout.export.tests.Model2.ColumnBottom_ColumnBottom;
-import hu.elte.txtuml.layout.export.tests.Model2.ColumnMiddle;
-import hu.elte.txtuml.layout.export.tests.Model2.ColumnMiddle_ColumnBottom;
-import hu.elte.txtuml.layout.export.tests.Model2.ColumnTop;
-import hu.elte.txtuml.layout.export.tests.Model2.ColumnTop_ColumnMiddle;
-import hu.elte.txtuml.layout.export.tests.Model2.DiamondBottom;
-import hu.elte.txtuml.layout.export.tests.Model2.DiamondBottom_DiamondLeft;
-import hu.elte.txtuml.layout.export.tests.Model2.DiamondBottom_DiamondRight;
-import hu.elte.txtuml.layout.export.tests.Model2.DiamondLeft;
-import hu.elte.txtuml.layout.export.tests.Model2.DiamondLeft_DiamondRight;
-import hu.elte.txtuml.layout.export.tests.Model2.DiamondRight;
-import hu.elte.txtuml.layout.export.tests.Model2.DiamondTop;
-import hu.elte.txtuml.layout.export.tests.Model2.DiamondTop_DiamondBottom;
-import hu.elte.txtuml.layout.export.tests.Model2.DiamondTop_DiamondLeft;
-import hu.elte.txtuml.layout.export.tests.Model2.DiamondTop_DiamondRight;
-import hu.elte.txtuml.layout.export.tests.Model2.Random;
-import hu.elte.txtuml.layout.export.tests.Model2.Random_BaseOfColumnTop;
-import hu.elte.txtuml.layout.export.tests.Model2.Random_BaseOfDiamond;
-import hu.elte.txtuml.layout.export.tests.Model2.Random_BetweenBases;
+import hu.elte.txtuml.layout.export.tests.model2.BaseOfColumnTop;
+import hu.elte.txtuml.layout.export.tests.model2.BaseOfDiamond;
+import hu.elte.txtuml.layout.export.tests.model2.BetweenBases;
+import hu.elte.txtuml.layout.export.tests.model2.ColumnBottom;
+import hu.elte.txtuml.layout.export.tests.model2.ColumnMiddle;
+import hu.elte.txtuml.layout.export.tests.model2.ColumnTop;
+import hu.elte.txtuml.layout.export.tests.model2.DiamondBottom;
+import hu.elte.txtuml.layout.export.tests.model2.DiamondLeft;
+import hu.elte.txtuml.layout.export.tests.model2.DiamondRight;
+import hu.elte.txtuml.layout.export.tests.model2.DiamondTop;
+import hu.elte.txtuml.layout.export.tests.model2.Random;
+import hu.elte.txtuml.layout.export.tests.model2.associations.ColumnBottom_ColumnBottom;
+import hu.elte.txtuml.layout.export.tests.model2.associations.ColumnMiddle_ColumnBottom;
+import hu.elte.txtuml.layout.export.tests.model2.associations.ColumnTop_ColumnMiddle;
+import hu.elte.txtuml.layout.export.tests.model2.associations.DiamondBottom_DiamondLeft;
+import hu.elte.txtuml.layout.export.tests.model2.associations.DiamondBottom_DiamondRight;
+import hu.elte.txtuml.layout.export.tests.model2.associations.DiamondLeft_DiamondRight;
+import hu.elte.txtuml.layout.export.tests.model2.associations.DiamondTop_DiamondBottom;
+import hu.elte.txtuml.layout.export.tests.model2.associations.DiamondTop_DiamondLeft;
+import hu.elte.txtuml.layout.export.tests.model2.associations.DiamondTop_DiamondRight;
+import hu.elte.txtuml.layout.export.tests.model2.associations.Random_BaseOfColumnTop;
+import hu.elte.txtuml.layout.export.tests.model2.associations.Random_BaseOfDiamond;
+import hu.elte.txtuml.layout.export.tests.model2.associations.Random_BetweenBases;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 import org.junit.Test;
-
-class Model2 extends Model {
-
-	// Classes
-	class Random extends ModelClass {
-	}
-
-	class BaseOfColumnTop extends ModelClass {
-	}
-
-	class ColumnTop extends BaseOfColumnTop {
-	}
-
-	class ColumnMiddle extends ModelClass {
-	}
-
-	class ColumnBottom extends ModelClass {
-	}
-
-	class BetweenBases extends ModelClass {
-	}
-
-	class BaseOfDiamond extends ModelClass {
-	}
-
-	class DiamondTop extends BaseOfDiamond {
-	}
-
-	class DiamondLeft extends BaseOfDiamond {
-	}
-
-	class DiamondBottom extends BaseOfDiamond {
-	}
-
-	class DiamondRight extends BaseOfDiamond {
-	}
-
-	// Associations
-	class ColumnTop_ColumnMiddle extends Association {
-		class end1 extends One<ColumnTop> {
-		}
-
-		class end2 extends One<ColumnMiddle> {
-		}
-	}
-
-	class ColumnMiddle_ColumnBottom extends Association {
-		class end1 extends One<ColumnMiddle> {
-		}
-
-		class end2 extends One<ColumnBottom> {
-		}
-	}
-
-	class ColumnBottom_ColumnBottom extends Association {
-		class end1 extends One<ColumnBottom> {
-		}
-
-		class end2 extends One<ColumnBottom> {
-		}
-	}
-
-	class DiamondTop_DiamondLeft extends Association {
-		class end1 extends One<DiamondTop> {
-		}
-
-		class end2 extends One<DiamondLeft> {
-		}
-	}
-
-	class DiamondTop_DiamondBottom extends Association {
-		class end1 extends One<DiamondTop> {
-		}
-
-		class end2 extends One<DiamondBottom> {
-		}
-	}
-
-	class DiamondTop_DiamondRight extends Association {
-		class end1 extends One<DiamondTop> {
-		}
-
-		class end2 extends One<DiamondRight> {
-		}
-	}
-
-	class DiamondLeft_DiamondRight extends Association {
-		class end1 extends One<DiamondLeft> {
-		}
-
-		class end2 extends One<DiamondRight> {
-		}
-	}
-
-	class DiamondBottom_DiamondLeft extends Association {
-		class end1 extends One<DiamondBottom> {
-		}
-
-		class end2 extends One<DiamondLeft> {
-		}
-	}
-
-	class DiamondBottom_DiamondRight extends Association {
-		class end1 extends One<DiamondBottom> {
-		}
-
-		class end2 extends One<DiamondRight> {
-		}
-	}
-
-	class Random_BaseOfColumnTop extends Association {
-		class end1 extends One<Random> {
-		}
-
-		class end2 extends One<BaseOfColumnTop> {
-		}
-	}
-
-	class Random_BetweenBases extends Association {
-		class end1 extends One<Random> {
-		}
-
-		class end2 extends One<BetweenBases> {
-		}
-	}
-
-	class Random_BaseOfDiamond extends Association {
-		class end1 extends One<Random> {
-		}
-
-		class end2 extends One<BaseOfDiamond> {
-		}
-	}
-
-}
 
 class Diagram2 extends Diagram {
 
