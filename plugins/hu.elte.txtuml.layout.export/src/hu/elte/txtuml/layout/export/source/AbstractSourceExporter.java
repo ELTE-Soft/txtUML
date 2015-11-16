@@ -8,17 +8,27 @@ import hu.elte.txtuml.layout.export.problems.ElementExportationException;
 import hu.elte.txtuml.utils.Pair;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Stream;
 
 public abstract class AbstractSourceExporter implements SourceExporter {
 
 	@Override
-	public ModelId getModelOf(Class<?> element) throws ElementExportationException {
+	public ModelId getModelOf(Class<?> element)
+			throws ElementExportationException {
 		try {
-			while (!Model.class.isAssignableFrom(element)) {
-				element = element.getEnclosingClass();
+			Package ownPackage = element.getPackage();
+			if (ownPackage.getAnnotation(Model.class) != null) {
+				return new ModelIdImpl(ownPackage);
 			}
-			return new ModelIdImpl(element);
-		} catch (NullPointerException e) {
+			String ownPackageName = ownPackage.getName();
+
+			return new ModelIdImpl(Stream.of(Package.getPackages())
+					.filter(p -> ownPackageName.startsWith(p.getName() + "."))
+					.sorted((p1, p2) -> p1.getName().compareTo(p2.getName()))
+					.findFirst().get());
+
+		} catch (NoSuchElementException e) {
 			throw new ElementExportationException();
 		}
 	}
@@ -28,13 +38,15 @@ public abstract class AbstractSourceExporter implements SourceExporter {
 			ElementExporter elementExporter) {
 
 		if (modelId != null && modelId instanceof ModelIdImpl) {
-			Class<?> model = ((ModelIdImpl) modelId).getCls();
 
-			List<Class<?>> links = loadAllLinksFromModel(model);
-
-			elementExporter.getNodes().forEach(
-					(cls, node) -> exportImpliedLinksFromSpecifiedNode(model,
-							elementExporter, links, node.getElementClass()));
+			// TODO export implied links
+			
+			// Package topPackage = ((ModelIdImpl) modelId).getPackage();
+			// List<Class<?>> links = loadAllLinksFromModel(model);
+			//
+			// elementExporter.getNodes().forEach( (cls, node) ->
+			// exportImpliedLinksFromSpecifiedNode(model, elementExporter,
+			// links, node.getElementClass()));
 
 		}
 
