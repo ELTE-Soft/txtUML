@@ -1,6 +1,5 @@
 package hu.elte.txtuml.layout.export.elementinfo;
 
-import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.elementinfo.impl.NodeInfoImpl;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
@@ -12,15 +11,16 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
  */
 public interface NodeInfo extends ConcreteElementInfo {
 
-	static NodeInfo create(Class<?> elementClass, DiagramType diagType, String asString) {	
-		return new NodeInfoImpl(elementClass, diagType, asString);
+	static NodeInfo create(Class<?> elementClass, String asString) {
+		return new NodeInfoImpl(elementClass, asString);
 	}
-	
+
 	/**
-	 * @return The <code>RectangleObject</code> representation of the node this object holds info about.
+	 * @return The <code>RectangleObject</code> representation of the node this
+	 *         object holds info about.
 	 */
 	RectangleObject convert();
-	
+
 	boolean isPhantom();
-	
+
 }

@@ -1,6 +1,5 @@
 package hu.elte.txtuml.layout.export.elementinfo.impl;
 
-import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.elementinfo.ElementInfo;
 
 /**
@@ -12,28 +11,20 @@ import hu.elte.txtuml.layout.export.elementinfo.ElementInfo;
 abstract class ElementInfoImpl implements ElementInfo {
 
 	private final Class<?> elementClass;
-	private final DiagramType diagType;
 	private final String asString;
 
 	public ElementInfoImpl(Class<?> elementClass) {
-		this(elementClass, DiagramType.Unknown, "");
+		this(elementClass, "");
 	}
 
-	public ElementInfoImpl(Class<?> elementClass,
-			DiagramType diagType, String asString) {
+	public ElementInfoImpl(Class<?> elementClass, String asString) {
 		this.elementClass = elementClass;
-		this.diagType = diagType;
 		this.asString = asString;
 	}
 
 	@Override
 	public boolean beingExported() {
 		return false;
-	}
-
-	@Override
-	public DiagramType getDiagType() {
-		return diagType;
 	}
 
 	@Override
