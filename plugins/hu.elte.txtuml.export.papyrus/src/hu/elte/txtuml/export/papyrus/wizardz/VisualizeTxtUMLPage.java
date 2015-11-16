@@ -1,5 +1,8 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
+import hu.elte.txtuml.eclipseutils.NotFoundException;
+import hu.elte.txtuml.eclipseutils.PackageUtils;
+import hu.elte.txtuml.eclipseutils.ProjectUtils;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
 import java.util.Collection;
@@ -13,10 +16,16 @@ import java.util.NoSuchElementException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.search.IJavaSearchConstants;
 import org.eclipse.jdt.core.search.SearchEngine;
 import org.eclipse.jdt.internal.core.SourceType;
+import org.eclipse.jdt.internal.core.search.JavaSearchScope;
 import org.eclipse.jdt.internal.ui.dialogs.FilteredTypesSelectionDialog;
+import org.eclipse.jdt.internal.ui.dialogs.PackageSelectionDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -122,16 +131,28 @@ public class VisualizeTxtUMLPage extends WizardPage {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FilteredTypesSelectionDialog dialog=
-						new FilteredTypesSelectionDialog(container.getShell(),false,
-								PlatformUI.getWorkbench().getProgressService(),
-								SearchEngine.createWorkspaceScope(),
-								IJavaSearchConstants.CLASS_AND_INTERFACE);
+				JavaSearchScope scope = new JavaSearchScope();
+				try {
+					IJavaProject javaProject = ProjectUtils
+							.findJavaProject(txtUMLProject.getText());
+					for (IPackageFragmentRoot root : PackageUtils
+							.getPackageFragmentRoots(javaProject)) {
+						scope.add(root);
+					}
+				} catch (JavaModelException | NotFoundException ex) {
+				}
+				PackageSelectionDialog dialog = new PackageSelectionDialog(
+						getShell(), getContainer(),
+						PackageSelectionDialog.F_HIDE_DEFAULT_PACKAGE
+								& PackageSelectionDialog.F_REMOVE_DUPLICATES,
+						scope);
+
+				dialog.setTitle("Project Selection");
 				dialog.open();
 				Object[] result = dialog.getResult();
-				if(result != null && result.length > 0 && result[0] instanceof SourceType){
-					SourceType item = (SourceType) result[0];
-					txtUMLModel.setText(item.getFullyQualifiedName());
+				if (result != null && result.length > 0) {
+					txtUMLModel.setText(((IPackageFragment) result[0])
+							.getElementName());
 				}
 			}
 			
