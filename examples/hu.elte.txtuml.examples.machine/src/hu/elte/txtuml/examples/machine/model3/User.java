@@ -14,8 +14,8 @@ import hu.elte.txtuml.examples.machine.model3.signals.DoYourWork;
 
 public class User extends ModelClass {
 
-	String name;
-	int id;
+	public String name;
+	public int id;
 	int workToDo = 7;
 
 	class Init extends Initial {
