@@ -19,7 +19,7 @@ public class SignalArrivingToDeletedTest extends SimpleModelTestsBase {
 		
 		stopModelExecution();
 
-		executionAsserter.assertWarnings( x -> x.signalArrivedToDeletedObject(a));
+		executionAsserter.assertWarnings( x -> x.signalArrivedToDeletedObject(a, new Sig()));
 
 	}
 
