@@ -37,6 +37,10 @@ public class ModelVisitor extends VisitorBase {
 		} else if(ElementTypeTeller.isAssociation(elem)) {
 			Utils.checkTemplate(collector, elem);
 			Utils.checkModifiers(collector, elem);
+			if(ElementTypeTeller.isComposition(elem)) {
+				CompositionVisitor visitor = new CompositionVisitor(collector);
+				elem.accept(visitor);
+			}
 			// TODO: check association content
 		}
 		return false;
