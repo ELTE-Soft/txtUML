@@ -12,9 +12,6 @@ import hu.elte.txtuml.api.layout.Priority;
 import hu.elte.txtuml.api.layout.Row;
 import hu.elte.txtuml.api.layout.Show;
 import hu.elte.txtuml.api.layout.TopMost;
-import hu.elte.txtuml.api.model.Association;
-import hu.elte.txtuml.api.model.Model;
-import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.layout.export.tests.Diagram1.L;
 import hu.elte.txtuml.layout.export.tests.Diagram1.LG1;
 import hu.elte.txtuml.layout.export.tests.Diagram1.MyClass;
@@ -24,71 +21,15 @@ import hu.elte.txtuml.layout.export.tests.Diagram1.NG52;
 import hu.elte.txtuml.layout.export.tests.Diagram1.NGA;
 import hu.elte.txtuml.layout.export.tests.Diagram1.NGB;
 import hu.elte.txtuml.layout.export.tests.Diagram1.NGC;
-import hu.elte.txtuml.layout.export.tests.Model1.A;
-import hu.elte.txtuml.layout.export.tests.Model1.B;
-import hu.elte.txtuml.layout.export.tests.Model1.C;
-import hu.elte.txtuml.layout.export.tests.Model1.D;
-import hu.elte.txtuml.layout.export.tests.Model1.E;
+import hu.elte.txtuml.layout.export.tests.model1.A;
+import hu.elte.txtuml.layout.export.tests.model1.B;
+import hu.elte.txtuml.layout.export.tests.model1.C;
+import hu.elte.txtuml.layout.export.tests.model1.D;
+import hu.elte.txtuml.layout.export.tests.model1.E;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 import org.junit.Test;
 
-class Model1 extends Model {
-	class A extends ModelClass {
-	}
-
-	class B extends A {
-	}
-
-	class C extends ModelClass {
-	}
-
-	class D extends ModelClass {
-	}
-
-	class E extends ModelClass {
-	}
-
-	class P extends Association {
-		class e1 extends Many<A> {
-		}
-
-		class e2 extends One<B> {
-		}
-	}
-
-	class Q extends Association {
-		class e1 extends Many<A> {
-		}
-
-		class e2 extends One<B> {
-		}
-	}
-
-	class R extends Association {
-		class e1 extends Many<A> {
-		}
-
-		class e2 extends One<B> {
-		}
-	}
-
-	class S extends Association {
-		class e1 extends Many<A> {
-		}
-
-		class e2 extends One<B> {
-		}
-	}
-
-	class T extends Association {
-		class e1 extends Many<A> {
-		}
-
-		class e2 extends One<B> {
-		}
-	}
-}
 
 class Diagram1 extends Diagram {
 
