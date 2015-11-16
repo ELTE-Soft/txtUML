@@ -1,6 +1,8 @@
 package hu.elte.txtuml.export.uml2.utils;
 
 import hu.elte.txtuml.api.model.Association;
+import hu.elte.txtuml.api.model.Composition;
+import hu.elte.txtuml.api.model.Container;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.StateMachine.Choice;
@@ -69,6 +71,16 @@ public final class ElementTypeTeller {
 	public static boolean isAssociation(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
 				Association.class);
+	}
+	
+	public static boolean isComposition(TypeDeclaration typeDeclaration) {
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
+				Composition.class);
+	}
+	
+	public static boolean isContainer(TypeDeclaration typeDeclaration) {
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
+				Container.class);
 	}
 
 	public static boolean isSpecificClassifier(

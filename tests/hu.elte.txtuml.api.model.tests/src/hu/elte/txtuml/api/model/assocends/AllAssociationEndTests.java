@@ -5,6 +5,6 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ QueryingAssociationEndsTest.class })
+@SuiteClasses({ QueryingAssociationEndsTest.class, CompositionTest.class })
 public class AllAssociationEndTests {
 }
