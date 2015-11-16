@@ -1,7 +1,6 @@
 package hu.elte.txtuml.api.model.backend;
 
 import hu.elte.txtuml.api.model.Collection;
-import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.backend.collections.JavaCollectionOfMany;
 
 /**
@@ -12,7 +11,7 @@ import hu.elte.txtuml.api.model.backend.collections.JavaCollectionOfMany;
  * @param <T>
  *            the type of model objects to be contained in the result collection
  */
-public class CollectionBuilder<T extends ModelClass> {
+public class CollectionBuilder<T> {
 
 	/**
 	 * The Java collection in which this builder collects the desired objects.
