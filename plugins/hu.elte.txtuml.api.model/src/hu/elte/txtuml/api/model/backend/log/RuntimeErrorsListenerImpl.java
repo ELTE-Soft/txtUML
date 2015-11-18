@@ -78,14 +78,14 @@ final class RuntimeErrorsListenerImpl extends BaseListenerImpl implements
 
 	@Override
 	public void upperBoundOfMultiplicityOffended(ModelClass obj,
-			Class<? extends AssociationEnd<?>> assocEnd) {
+			Class<? extends AssociationEnd<?, ?>> assocEnd) {
 		err("Error: upper bound of the multiplicity of " + assocEnd.toString()
 				+ " has been offended at " + obj + ".");
 	}
 
 	@Override
 	public void lowerBoundOfMultiplicityOffended(ModelClass obj,
-			Class<? extends AssociationEnd<?>> assocEnd) {
+			Class<? extends AssociationEnd<?, ?>> assocEnd) {
 		err("Error: lower bound of the multiplicity of " + assocEnd.getName()
 				+ " has been offended at " + obj + ".");
 	}

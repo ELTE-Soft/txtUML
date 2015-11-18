@@ -75,7 +75,7 @@ public class Signal extends Event {
 
 	@Override
 	public String toString() {
-		return "signal_" + super.toString();
+		return "signal:" + getClass().getSimpleName();
 	}
 
 }
