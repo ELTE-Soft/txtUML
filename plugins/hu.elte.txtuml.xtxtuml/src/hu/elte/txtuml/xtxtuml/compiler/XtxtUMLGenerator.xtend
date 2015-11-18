@@ -1,13 +1,17 @@
 package hu.elte.txtuml.xtxtuml.compiler
 
+import hu.elte.txtuml.api.model.Model
 import org.eclipse.xtext.common.types.JvmDeclaredType
 import org.eclipse.xtext.xbase.compiler.GeneratorConfig
 import org.eclipse.xtext.xbase.compiler.ImportManager
 import org.eclipse.xtext.xbase.compiler.JvmModelGenerator
-import hu.elte.txtuml.api.model.Model
 
 class XtxtUMLGenerator extends JvmModelGenerator {
 
+	/**
+	 * Extends default behavior to implement generation of package-info files.
+	 * @see XtxtUMLModelPackageInfoAdapter
+	 */
 	override CharSequence generateType(JvmDeclaredType type, GeneratorConfig config) {
 		val modelAdapter = type.eAdapters.filter(XtxtUMLModelPackageInfoAdapter).head
 		if (null == modelAdapter) {
