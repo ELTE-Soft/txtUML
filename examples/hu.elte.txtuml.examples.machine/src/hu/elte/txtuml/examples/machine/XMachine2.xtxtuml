@@ -1,12 +1,8 @@
 package hu.elte.txtuml.examples.machine;
 
-import hu.elte.txtuml.api.^model.ModelExecutor;
-import hu.elte.txtuml.examples.machine.XMachine2.Machine;
-import hu.elte.txtuml.examples.machine.XMachine2.User;
-import hu.elte.txtuml.examples.machine.XMachine2.Usage;
-import hu.elte.txtuml.examples.machine.XMachine2.DoTasks;
-import hu.elte.txtuml.examples.machine.XMachine2.DoYourWork;
-
+/**
+ * XtxtUML XMachine2 example model.
+ */
 model XMachine2 {
 
 	// classes
@@ -175,24 +171,4 @@ model XMachine2 {
 	}
 
 	signal DoYourWork;
-}
-
-execution XMachine2Tester {
-	ModelExecutor.Settings.setExecutorLog(true);
-
-	Machine m = create(Machine,3);
-	User u1 = create(User);
-	User u2 = create(User);
-
-	link(Usage.usedMachine, m, Usage.userOfMachine, u1);
-	link(Usage.usedMachine, m, Usage.userOfMachine, u2);
-
-	log("Machine and users are starting.");
-	start(m);
-	start(u1);
-	start(u2);
-
-	send new DoYourWork() to u1;
-
-	ModelExecutor.shutdown();
 }
