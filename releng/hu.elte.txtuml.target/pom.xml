@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>hu.elte.txtuml</groupId>
+		<artifactId>hu.elte.txtuml.parent</artifactId>
+		<version>0.2.0-SNAPSHOT</version>
+		<relativePath>../../releng/hu.elte.txtuml.parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>hu.elte.txtuml.target</artifactId>
+	<packaging>pom</packaging>
+	<name>txtUML Target Platform Project</name>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-artifacts</id>
+						<phase>package</phase>
+						<goals>
+							<goal>attach-artifact</goal>
+						</goals>
+						<configuration>
+							<artifacts>
+								<artifact>
+									<file>release.target</file>
+									<type>target</type>
+									<classifier>release</classifier>
+								</artifact>
+								<artifact>
+									<file>mirrors.target</file>
+									<type>target</type>
+									<classifier>mirrors</classifier>
+								</artifact>
+							</artifacts>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
