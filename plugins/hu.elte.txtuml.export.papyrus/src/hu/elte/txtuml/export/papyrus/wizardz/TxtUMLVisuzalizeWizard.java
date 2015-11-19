@@ -69,9 +69,10 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		String txtUMLModelName = selectTxtUmlPage.getTxtUmlModelClass();
 		List<String> txtUMLLayout = selectTxtUmlPage.getTxtUmlLayout();
 		String txtUMLProjectName = selectTxtUmlPage.getTxtUmlProject();
+		boolean generateSMsAutomatically = selectTxtUmlPage.getGenerateSMDs();
 		String generatedFolderName = PreferencesManager
 				.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
-
+		
 		PreferencesManager.setValue(
 				PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT,
 				txtUMLProjectName);
@@ -81,6 +82,9 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		PreferencesManager.setValue(
 				PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT,
 				txtUMLLayout);
+		PreferencesManager.setValue(
+				PreferencesManager.GENERATE_STATEMACHINES_AUTOMATICALLY,
+				generateSMsAutomatically);
 		
 		try {
 			IProgressService progressService = PlatformUI.getWorkbench()
@@ -128,8 +132,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 									warnings.addAll(report.getWarnings());
 								}
 
-								layoutDescriptor.generateSMDs = selectTxtUmlPage
-										.getGenerateSMDs();
+								layoutDescriptor.generateSMDs = generateSMsAutomatically;
 								layoutDescriptor.mappingFolder = generatedFolderName;
 								layoutDescriptor.projectName = txtUMLProjectName; 
 								

@@ -14,7 +14,7 @@ import java.util.Map;
  *
  */
 public interface AssociationsMap extends
-		Map<Class<? extends AssociationEnd<?>>, AssociationEnd<?>> {
+		Map<Class<? extends AssociationEnd<?, ?>>, AssociationEnd<?, ?>> {
 
 	/**
 	 * Creates a new instance of <code>AssociationsMap</code>.
