@@ -28,7 +28,7 @@ import org.eclipse.xtext.xbase.XExpression;
  *
  * @generated
  */
-public class TUExecutionImpl extends TUFileElementImpl implements TUExecution
+public class TUExecutionImpl extends TUModelElementImpl implements TUExecution
 {
   /**
    * The cached value of the '{@link #getBody() <em>Body</em>}' containment reference.

@@ -1,6 +1,5 @@
 package hu.elte.txtuml.xtxtuml.jvmmodel;
 
-// Guice
 import com.google.inject.Inject
 import hu.elte.txtuml.api.model.Association
 import hu.elte.txtuml.api.model.From
@@ -11,6 +10,7 @@ import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.api.model.StateMachine
 import hu.elte.txtuml.api.model.To
 import hu.elte.txtuml.api.model.Trigger
+import hu.elte.txtuml.xtxtuml.naming.IPackageNameCalculator
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
@@ -18,7 +18,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUModel
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
@@ -43,14 +43,16 @@ import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
 class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
 	// Helper extensions
-	@Inject extension XtxtUMLTypesBuilder;
-	@Inject extension IJvmModelAssociations;
-	@Inject extension IQualifiedNameProvider;
+	@Inject extension XtxtUMLTypesBuilder
+	@Inject extension IJvmModelAssociations
+	@Inject extension IQualifiedNameProvider
+	@Inject extension IPackageNameCalculator
 
-	// Main inferrer methods, called automatically by the framework
-	def dispatch void infer(TUModel model, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		acceptor.accept(model.toPackageInfo(model.fullyQualifiedName, model.name))
-		model.elements.forEach[internalInfer(acceptor, isPreIndexingPhase)]
+	def dispatch void infer(TUModelDeclaration decl, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+		val packageName = decl.expectedPackageName
+		if (null != packageName) {
+			acceptor.accept(decl.toPackageInfo(packageName, decl.name))
+		}
 	}
 
 	def dispatch void infer(TUExecution exec, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
@@ -61,14 +63,14 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				documentation = exec.documentation
 				parameters += exec.toParameter("args", String.typeRef.addArrayTypeDimension)
 				varArgs = true;
+
 				static = true;
 				body = exec.body;
 			]
 		]
 	}
 
-	// Internal inferrer methods
-	def dispatch void internalInfer(TUAssociation assoc, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+	def dispatch void infer(TUAssociation assoc, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		acceptor.accept(assoc.toClass(assoc.fullyQualifiedName) [
 			documentation = assoc.documentation
 			superTypes += Association.typeRef;
@@ -79,32 +81,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		])
 	}
 
-	def dispatch void internalInfer(TUClass tUClass, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		acceptor.accept(tUClass.toClass(tUClass.fullyQualifiedName)) [
-			documentation = tUClass.documentation
-			if (tUClass.superClass != null) {
-				superTypes += (tUClass.superClass.getPrimaryJvmElement as JvmDeclaredType).typeRef;
-			} else {
-				superTypes += ModelClass.typeRef;
-			}
-
-			for (member : tUClass.members) {
-				if (member instanceof TUState) {
-					// just use the element which was inferred earlier
-					members += member.getPrimaryJvmElement as JvmMember;
-				} else {
-					members += member.toJvmMember;
-				}
-			}
-		]
-
-		tUClass.members.filter[s|s instanceof TUState].forEach [ s |
-			// enforce early inference of sub-states
-			earlyInfer(s as TUState, acceptor, isPreIndexingPhase)
-		]
-	}
-
-	def dispatch void internalInfer(TUSignal signal, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+	def dispatch void infer(TUSignal signal, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		acceptor.accept(signal.toClass(signal.fullyQualifiedName)) [
 			documentation = signal.documentation
 			superTypes += Signal.typeRef;
@@ -126,6 +103,31 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 					'''
 				]
 			}
+		]
+	}
+
+	def dispatch void infer(TUClass tUClass, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+		acceptor.accept(tUClass.toClass(tUClass.fullyQualifiedName)) [
+			documentation = tUClass.documentation
+			if (tUClass.superClass != null) {
+				superTypes += (tUClass.superClass.getPrimaryJvmElement as JvmDeclaredType).typeRef;
+			} else {
+				superTypes += ModelClass.typeRef;
+			}
+
+			for (member : tUClass.members) {
+				if (member instanceof TUState) {
+					// just use the element which was inferred earlier
+					members += member.getPrimaryJvmElement as JvmMember;
+				} else {
+					members += member.toJvmMember;
+				}
+			}
+		]
+
+		tUClass.members.filter[s|s instanceof TUState].forEach [ s |
+			// enforce early inference of sub-states
+			earlyInfer(s as TUState, acceptor, isPreIndexingPhase)
 		]
 	}
 

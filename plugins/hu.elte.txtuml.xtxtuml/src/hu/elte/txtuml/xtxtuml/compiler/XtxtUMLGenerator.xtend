@@ -20,7 +20,10 @@ class XtxtUMLGenerator extends JvmModelGenerator {
 
 		val appendable = createAppendable(type, new ImportManager(), config)
 		type.generateJavaDoc(appendable, config)
-		appendable.append('@Model("').append(modelAdapter.modelName).append('")')
+		appendable.append("@Model")
+		if (null != modelAdapter.modelName) {
+			appendable.append('("').append(modelAdapter.modelName).append('")')
+		}
 		appendable.newLine
 		appendable.append("package ").append(type.packageName).append(";");
 		appendable.newLine.newLine
