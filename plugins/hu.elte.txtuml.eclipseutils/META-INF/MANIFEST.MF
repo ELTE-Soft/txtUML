@@ -9,6 +9,6 @@ Require-Bundle: org.eclipse.core.resources,
  org.eclipse.core.runtime;bundle-version="3.10.0",
  org.eclipse.jdt.core;bundle-version="3.10.0",
  org.eclipse.jdt.launching,
- org.eclipse.jface
+ org.eclipse.jface,
+ org.eclipse.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: org.eclipse.ui
