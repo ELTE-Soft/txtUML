@@ -44,6 +44,7 @@ public class VertexExporter {
 		}
 
 		if (ElementTypeTeller.isState(vertexDeclaration)) {
+// TODO: Uncomment this	when activity export gets fixed.	
 //			exportStateEntryAction(vertexDeclaration, (State) vertex);
 //			exportStateExitAction(vertexDeclaration, (State) vertex);
 		}
