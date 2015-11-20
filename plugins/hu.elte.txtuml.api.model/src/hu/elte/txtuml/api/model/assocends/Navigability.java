@@ -10,7 +10,7 @@ package hu.elte.txtuml.api.model.assocends;
  * @author Gabor Ferenc Kovacs
  *
  */
-public interface Navigability {
+public interface Navigability<T extends Navigability<T>> {
 
 	/**
 	 * Implementing classes of this interface represent navigable association
@@ -22,7 +22,7 @@ public interface Navigability {
 	 * @author Gabor Ferenc Kovacs
 	 *
 	 */
-	public interface Navigable extends Navigability {
+	public interface Navigable extends Navigability<Navigable> {
 	}
 
 	/**
@@ -35,7 +35,7 @@ public interface Navigability {
 	 * @author Gabor Ferenc Kovacs
 	 *
 	 */
-	public interface NonNavigable extends Navigability {
+	public interface NonNavigable extends Navigability<NonNavigable> {
 	}
 
 }

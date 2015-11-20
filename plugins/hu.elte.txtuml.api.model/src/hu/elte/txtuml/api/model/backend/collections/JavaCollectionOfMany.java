@@ -1,19 +1,17 @@
 package hu.elte.txtuml.api.model.backend.collections;
 
-import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.backend.collections.impl.JavaCollectionOfManyImpl;
 
 /**
- * A Java collection of {@link ModelClass} objects for implementations of
- * association ends having a multiplicity of <i>'many'</i> (0..*).
+ * A Java collection for implementations of txtUML collections having a
+ * multiplicity of <i>'many'</i> (0..*).
  *
  * @author Gabor Ferenc Kovacs
  *
  * @param <T>
  *            the type of model objects to be contained in this collection
  */
-public interface JavaCollectionOfMany<T extends ModelClass> extends
-		java.util.Collection<T> {
+public interface JavaCollectionOfMany<T> extends java.util.Collection<T> {
 
 	/**
 	 * Creates a new <code>JavaCollectionOfMany</code> instance.
@@ -22,7 +20,7 @@ public interface JavaCollectionOfMany<T extends ModelClass> extends
 	 *            the type of model objects to be contained in this collection
 	 * @return the new instance
 	 */
-	static <T extends ModelClass> JavaCollectionOfMany<T> create() {
+	static <T> JavaCollectionOfMany<T> create() {
 		return new JavaCollectionOfManyImpl<>();
 	}
 
