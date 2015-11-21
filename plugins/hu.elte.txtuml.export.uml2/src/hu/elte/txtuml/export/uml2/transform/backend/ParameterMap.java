@@ -49,7 +49,12 @@ public interface ParameterMap {
 			@Override
 			public ParameterExpr get(String name,
 					ExpressionExporter expressionExporter) {
-				return createExpr(super.get(name), expressionExporter);
+				ActivityParameterNode paramNode = super.get(name);
+				if(paramNode != null) {
+					return createExpr(paramNode, expressionExporter);
+				} else {
+					return null;
+				}
 			}
 
 			@Override

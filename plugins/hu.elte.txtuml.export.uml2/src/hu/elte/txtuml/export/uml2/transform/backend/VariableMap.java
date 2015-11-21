@@ -23,7 +23,12 @@ public interface VariableMap {
 			@Override
 			public VariableExpr get(String name,
 					ExpressionExporter expressionExporter) {
-				return Expr.var(super.get(name), expressionExporter);
+				Variable variable = super.get(name); 
+				if(variable != null) {
+					return Expr.var(variable, expressionExporter);
+				} else {
+					return null;
+				}
 			}
 			
 			@Override

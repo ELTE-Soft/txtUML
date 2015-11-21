@@ -15,7 +15,9 @@ import hu.elte.txtuml.export.uml2.transform.exporters.actions.LinkActionExporter
 import hu.elte.txtuml.export.uml2.transform.exporters.actions.SendActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.actions.StartActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.actions.UnlinkActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.ParameterExpr;
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.TypeExpr;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.VariableExpr;
 import hu.elte.txtuml.export.uml2.utils.ControlStructureEditor;
 import hu.elte.txtuml.utils.Pair;
 
@@ -157,11 +159,12 @@ public class ExpressionExporter extends ControlStructureEditor {
 		return null;
 	}
 
-	public Expr autoFillTarget(IBinding binding) {
+	public Expr autoFillTarget(IBinding binding, String qualifiedName) {
 		if (Modifier.isStatic(binding.getModifiers())) {
 			return null;
 		}
 		ITypeBinding type;
+		
 		if (binding.getKind() == IBinding.VARIABLE) {
 			type = ((IVariableBinding) binding).getDeclaringClass();
 		} else if (binding.getKind() == IBinding.METHOD) {
@@ -170,9 +173,27 @@ public class ExpressionExporter extends ControlStructureEditor {
 			return null;
 		}
 
-		return Expr.thisExpression(typeExporter.exportType(type), this);
-
-		// TODO other targets than self
+		String simpleName = binding.getName();
+		if(simpleName.equals(qualifiedName)) {
+			return Expr.thisExpression(typeExporter.exportType(type), this);
+		}
+		else {
+			String ownerName = qualifiedName.substring(0, qualifiedName.length() - simpleName.length() - 1);
+	
+			ParameterExpr paramExpr = params.get(ownerName, this);
+			//owner is a parameter
+			if(paramExpr != null) {
+				return paramExpr;
+			}
+	
+			VariableExpr varExpr = vars.get(ownerName, this);
+			//owner is a variable
+			if(varExpr != null) {
+				return varExpr;
+			} 			
+			
+			return Expr.thisExpression(typeExporter.exportType(type), this);
+		}
 	}
 
 	public OutputPin createReadVariableAction(Variable var) {

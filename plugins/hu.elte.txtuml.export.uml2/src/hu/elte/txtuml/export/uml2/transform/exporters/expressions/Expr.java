@@ -311,8 +311,12 @@ public interface Expr {
 
 	static Expr ofName(IVariableBinding binding,
 			ExpressionExporter expressionExporter) {
+		return ofName(binding, binding.getName(), expressionExporter);
+	}
+	
+	static Expr ofName(IVariableBinding binding, String qualifiedName, ExpressionExporter expressionExporter) {
 		if (binding.isField()) {
-			return Expr.field(expressionExporter.autoFillTarget(binding),
+			return Expr.field(expressionExporter.autoFillTarget(binding, qualifiedName),
 					binding, expressionExporter);
 		} else if (binding.isParameter()) {
 			return expressionExporter.getParams().get(binding.getName(),

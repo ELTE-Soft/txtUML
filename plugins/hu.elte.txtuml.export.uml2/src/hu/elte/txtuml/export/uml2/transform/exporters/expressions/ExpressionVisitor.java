@@ -176,7 +176,7 @@ class ExpressionVisitor extends ASTVisitor {
 			if (expression != null) {
 				target = expressionExporter.export(expression);
 			} else {
-				target = expressionExporter.autoFillTarget(binding);
+				target = expressionExporter.autoFillTarget(binding, binding.getName());
 			}
 		} else {
 			if (TypeExporter.isAction(binding)) {

@@ -33,7 +33,7 @@ class LeftHandSideOfAssignmentVisitor extends ASTVisitor {
 		IVariableBinding binding = (IVariableBinding) node.resolveBinding();
 		// As the left hand side of an assignment, it must be a variable.
 
-		Expr.ofName(binding, expressionExporter).setValue(rightHandSide);
+		Expr.ofName(binding, node.getFullyQualifiedName(), expressionExporter).setValue(rightHandSide);
 
 		return super.visit(node);
 	}
