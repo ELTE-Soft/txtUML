@@ -2,8 +2,7 @@ package hu.elte.txtuml.api.model;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import hu.elte.txtuml.api.model.tests.models.SimpleModel.Sig;
-import hu.elte.txtuml.api.model.tests.util.MutableBoolean;
+import hu.elte.txtuml.api.model.util.MutableBoolean;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -100,7 +99,7 @@ public class ModelExecutorThreadTest {
 		ModelClass mock = Mockito.mock(ModelClass.class);
 
 		for (int i = 0; i < 10; ++i) {
-			thread.send(mock, new Sig());
+			thread.send(mock, new Signal());
 		}
 
 		Assert.assertEquals(false, actionPerformed.value);

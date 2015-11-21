@@ -48,10 +48,8 @@ class ModelExecutorThread extends Thread {
 
 	/**
 	 * Sole constructor of package private <code>ModelExecutorThread</code>.
-	 * Creates and also starts the thread.
 	 */
 	ModelExecutorThread() {
-		start();
 	}
 
 	/**
