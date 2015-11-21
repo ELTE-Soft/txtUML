@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.model.tests.assocends;
+package hu.elte.txtuml.api.model.assocends;
 
 import static org.junit.Assert.*;
 
@@ -8,8 +8,8 @@ import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.Composition;
 import hu.elte.txtuml.api.model.Container;
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.tests.assocends.CompositionTest.MyComposition.MyContainer;
-import hu.elte.txtuml.api.model.tests.assocends.CompositionTest.MyComposition.MyPart;
+import hu.elte.txtuml.api.model.assocends.CompositionTest.MyComposition.MyContainer;
+import hu.elte.txtuml.api.model.assocends.CompositionTest.MyComposition.MyPart;
 
 public class CompositionTest {
 
