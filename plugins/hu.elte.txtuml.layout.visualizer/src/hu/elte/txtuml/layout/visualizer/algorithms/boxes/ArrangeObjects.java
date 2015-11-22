@@ -8,7 +8,6 @@ import hu.elte.txtuml.layout.visualizer.exceptions.BoxOverlapConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.MyException;
-import hu.elte.txtuml.layout.visualizer.helpers.BiMap;
 import hu.elte.txtuml.layout.visualizer.helpers.Helper;
 import hu.elte.txtuml.layout.visualizer.helpers.Options;
 import hu.elte.txtuml.layout.visualizer.helpers.StatementHelper;
@@ -26,6 +25,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 /**
  * This class arranges the boxes in the diagram using mainly a Bellman-Ford
@@ -534,7 +536,7 @@ public class ArrangeObjects
 					if (v > n)
 					{
 						// set Y coordinate
-						nameOfTheObject = _indices.getKey(v - n);
+						nameOfTheObject = _indices.inverse().get(v - n);
 						
 						RectangleObject mod = _objects.stream()
 								.filter(o -> o.getName().equals(nameOfTheObject))
@@ -545,7 +547,7 @@ public class ArrangeObjects
 					else
 					{
 						// set X coordinate
-						nameOfTheObject = _indices.getKey(v);
+						nameOfTheObject = _indices.inverse().get(v);
 						
 						RectangleObject mod = _objects.stream()
 								.filter(o -> o.getName().equals(nameOfTheObject))
@@ -565,7 +567,7 @@ public class ArrangeObjects
 	
 	private void setIndices()
 	{
-		_indices = new BiMap<String, Integer>();
+		_indices =  HashBiMap.create(_objects.size());
 		// Set indices
 		{
 			Integer index = 1;

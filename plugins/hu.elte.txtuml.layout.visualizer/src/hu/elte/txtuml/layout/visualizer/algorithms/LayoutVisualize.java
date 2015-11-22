@@ -187,7 +187,7 @@ public class LayoutVisualize
 	 *             Throws if the algorithm cannot find the route for a
 	 *             {@link LineAssociation}.
 	 * @throws StatementsConflictException
-	 *             Thorws if there are some conflicts in the {@link Statement}s
+	 *             Throws if there are some conflicts in the {@link Statement}s
 	 *             given by the user.
 	 * @throws BoxOverlapConflictException
 	 *             Throws if the algorithm encounters an unsolvable overlap
