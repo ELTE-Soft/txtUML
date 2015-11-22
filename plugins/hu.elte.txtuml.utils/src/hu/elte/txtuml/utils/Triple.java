@@ -50,33 +50,6 @@ public class Triple<T1, T2, T3> {
 		return _third;
 	}
 
-	/**
-	 * Get First and Second value as a Pair.
-	 * 
-	 * @return Pair of First and Second.
-	 */
-	public Pair<T1, T2> ToFirstPair() {
-		return new Pair<T1, T2>(_first, _second);
-	}
-
-	/**
-	 * Get Second and Third value as a Pair.
-	 * 
-	 * @return Pair of Second and Third.
-	 */
-	public Pair<T2, T3> ToSecondPair() {
-		return new Pair<T2, T3>(_second, _third);
-	}
-
-	/**
-	 * Get First and Third value as a Pair.
-	 * 
-	 * @return Pair of First and Third.
-	 */
-	public Pair<T1, T3> ToThirdPair() {
-		return new Pair<T1, T3>(_first, _third);
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 10007;
