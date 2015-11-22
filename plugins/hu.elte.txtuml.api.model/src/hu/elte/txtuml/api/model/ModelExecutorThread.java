@@ -58,6 +58,12 @@ class ModelExecutorThread extends Thread {
 		newMailboxEntry(() -> target.process(signal));
 	}
 
+	/**
+	 * Puts the specified entry into the {@code mailbox}.
+	 * 
+	 * @param entry
+	 *            the entry to put into the {@code mailbox}.
+	 */
 	private void newMailboxEntry(MailboxEntry entry) {
 		try {
 			mailbox.put(entry);
@@ -106,7 +112,7 @@ class ModelExecutorThread extends Thread {
 	 *            the association end which's multiplicity is to be checked
 	 */
 	void checkLowerBoundOfMultiplcitiy(ModelClass obj,
-			Class<? extends AssociationEnd<?>> assocEnd) {
+			Class<? extends AssociationEnd<?, ?>> assocEnd) {
 		checkQueue.add(() -> obj.checkLowerBound(assocEnd));
 	}
 

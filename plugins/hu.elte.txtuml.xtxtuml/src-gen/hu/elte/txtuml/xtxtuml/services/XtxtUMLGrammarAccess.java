@@ -719,12 +719,13 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
 		private final RuleCall cTUStateParserRuleCall_0 = (RuleCall)cAlternatives.eContents().get(0);
 		private final RuleCall cTUEntryOrExitActivityParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
+		private final RuleCall cTUTransitionParserRuleCall_2 = (RuleCall)cAlternatives.eContents().get(2);
 		
 		//TUStateMember:
-		//	TUState | TUEntryOrExitActivity;
+		//	TUState | TUEntryOrExitActivity | TUTransition;
 		@Override public ParserRule getRule() { return rule; }
 
-		//TUState | TUEntryOrExitActivity
+		//TUState | TUEntryOrExitActivity | TUTransition
 		public Alternatives getAlternatives() { return cAlternatives; }
 
 		//TUState
@@ -732,6 +733,9 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 
 		//TUEntryOrExitActivity
 		public RuleCall getTUEntryOrExitActivityParserRuleCall_1() { return cTUEntryOrExitActivityParserRuleCall_1; }
+
+		//TUTransition
+		public RuleCall getTUTransitionParserRuleCall_2() { return cTUTransitionParserRuleCall_2; }
 	}
 
 	public class TUEntryOrExitActivityElements extends AbstractParserRuleElementFinder {
@@ -3151,7 +3155,7 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 	}
 
 	//TUStateMember:
-	//	TUState | TUEntryOrExitActivity;
+	//	TUState | TUEntryOrExitActivity | TUTransition;
 	public TUStateMemberElements getTUStateMemberAccess() {
 		return pTUStateMember;
 	}

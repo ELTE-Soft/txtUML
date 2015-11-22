@@ -3,7 +3,7 @@
  * association end properties, like navigability and multiplicity.
  * <p>
  * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
- * overview on modeling in txtUML.
+ * overview on modeling in JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  *

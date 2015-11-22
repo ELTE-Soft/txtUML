@@ -404,9 +404,6 @@ public class LayoutVisualize
 			InternalException, CannotFindAssociationRouteException,
 			UnknownStatementException
 	{
-		if (_assocs.size() <= 0)
-			return maxGroupId;
-		
 		if (_options.Logging)
 			System.err.println("> Starting link arrange...");
 		

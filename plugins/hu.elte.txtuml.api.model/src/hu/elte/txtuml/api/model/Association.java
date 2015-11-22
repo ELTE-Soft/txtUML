@@ -13,8 +13,8 @@ package hu.elte.txtuml.api.model;
  * two inner classes which both extend {@link AssociationEnd}. These two inner
  * classes will represent the two ends of this association. Their navigability
  * and multiplicity depend on which predefined subclass of
- * <code>AssociationEnd</code> is extended (it may not be the
- * <code>AssociationEnd</code> class itself which is inherited).
+ * <code>AssociationEnd</code> is extended ({@code AssociationEnd} itself may
+ * not be extended).
  * <p>
  * The two model classes which the association connects are defined by the two
  * association ends' generic parameters.
@@ -61,7 +61,8 @@ package hu.elte.txtuml.api.model;
  * </code>
  * </pre>
  * 
- * See the documentation of {@link Model} for an overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  * @see Association
@@ -80,13 +81,6 @@ public class Association implements ModelElement {
 
 	/**
 	 * Sole constructor of <code>Association</code>.
-	 * <p>
-	 * <b>Implementation note:</b>
-	 * <p>
-	 * Protected because this class is intended to be inherited from but not
-	 * instantiated. However, <code>Association</code> has to be a non-abstract
-	 * class to make sure that it is instantiatable when that is needed for the
-	 * API or the model exportation.
 	 */
 	protected Association() {
 	}
@@ -133,7 +127,7 @@ public class Association implements ModelElement {
 	 * 
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 * 
@@ -146,13 +140,6 @@ public class Association implements ModelElement {
 
 		/**
 		 * Sole constructor of <code>Many</code>.
-		 * <p>
-		 * <b>Implementation note:</b>
-		 * <p>
-		 * Protected because this class is intended to be inherited from but not
-		 * instantiated. However, <code>Many</code> has to be a non-abstract
-		 * class to make sure that it is instantiatable when that is needed for
-		 * the API or the model exportation.
 		 */
 		protected Many() {
 		}
@@ -201,7 +188,7 @@ public class Association implements ModelElement {
 	 * 
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 * 
@@ -214,13 +201,6 @@ public class Association implements ModelElement {
 
 		/**
 		 * Sole constructor of <code>Some</code>.
-		 * <p>
-		 * <b>Implementation note:</b>
-		 * <p>
-		 * Protected because this class is intended to be inherited from but not
-		 * instantiated. However, <code>Some</code> has to be a non-abstract
-		 * class to make sure that it is instantiatable when that is needed for
-		 * the API or the model exportation.
 		 */
 		protected Some() {
 		}
@@ -269,7 +249,7 @@ public class Association implements ModelElement {
 	 * 
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 * 
@@ -283,13 +263,6 @@ public class Association implements ModelElement {
 
 		/**
 		 * Sole constructor of <code>MaybeOne</code>.
-		 * <p>
-		 * <b>Implementation note:</b>
-		 * <p>
-		 * Protected because this class is intended to be inherited from but not
-		 * instantiated. However, <code>MaybeOne</code> has to be a non-abstract
-		 * class to make sure that it is instantiatable when that is needed for
-		 * the API or the model exportation.
 		 */
 		protected MaybeOne() {
 		}
@@ -338,7 +311,7 @@ public class Association implements ModelElement {
 	 * 
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 * 
@@ -351,13 +324,6 @@ public class Association implements ModelElement {
 
 		/**
 		 * Sole constructor of <code>One</code>.
-		 * <p>
-		 * <b>Implementation note:</b>
-		 * <p>
-		 * Protected because this class is intended to be inherited from but not
-		 * instantiated. However, <code>One</code> has to be a non-abstract
-		 * class to make sure that it is instantiatable when that is needed for
-		 * the API or the model exportation.
 		 */
 		protected One() {
 		}
@@ -419,7 +385,7 @@ public class Association implements ModelElement {
 	 * 
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 * 
@@ -433,13 +399,6 @@ public class Association implements ModelElement {
 
 		/**
 		 * Sole constructor of <code>Multiple</code>.
-		 * <p>
-		 * <b>Implementation note:</b>
-		 * <p>
-		 * Protected because this class is intended to be inherited from but not
-		 * instantiated. However, <code>Multiple</code> has to be a non-abstract
-		 * class to make sure that it is instantiatable when that is needed for
-		 * the API or the model exportation.
 		 */
 		protected Multiple() {
 		}
@@ -489,7 +448,7 @@ public class Association implements ModelElement {
 	 * 
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 * 
@@ -502,13 +461,6 @@ public class Association implements ModelElement {
 
 		/**
 		 * Sole constructor of <code>HiddenMany</code>.
-		 * <p>
-		 * <b>Implementation note:</b>
-		 * <p>
-		 * Protected because this class is intended to be inherited from but not
-		 * instantiated. However, <code>HiddenMany</code> has to be a
-		 * non-abstract class to make sure that it is instantiatable when that
-		 * is needed for the API or the model exportation.
 		 */
 		protected HiddenMany() {
 		}
@@ -558,7 +510,7 @@ public class Association implements ModelElement {
 	 * 
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 * 
@@ -571,13 +523,6 @@ public class Association implements ModelElement {
 
 		/**
 		 * Sole constructor of <code>HiddenSome</code>.
-		 * <p>
-		 * <b>Implementation note:</b>
-		 * <p>
-		 * Protected because this class is intended to be inherited from but not
-		 * instantiated. However, <code>HiddenSome</code> has to be a
-		 * non-abstract class to make sure that it is instantiatable when that
-		 * is needed for the API or the model exportation.
 		 */
 		protected HiddenSome() {
 		}
@@ -627,7 +572,7 @@ public class Association implements ModelElement {
 	 * 
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 * 
@@ -641,13 +586,6 @@ public class Association implements ModelElement {
 
 		/**
 		 * Sole constructor of <code>HiddenMaybeOne</code>.
-		 * <p>
-		 * <b>Implementation note:</b>
-		 * <p>
-		 * Protected because this class is intended to be inherited from but not
-		 * instantiated. However, <code>HiddenMaybeOne</code> has to be a
-		 * non-abstract class to make sure that it is instantiatable when that
-		 * is needed for the API or the model exportation.
 		 */
 		protected HiddenMaybeOne() {
 		}
@@ -696,7 +634,7 @@ public class Association implements ModelElement {
 	 * 
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 * 
@@ -709,13 +647,6 @@ public class Association implements ModelElement {
 
 		/**
 		 * Sole constructor of <code>HiddenOne</code>.
-		 * <p>
-		 * <b>Implementation note:</b>
-		 * <p>
-		 * Protected because this class is intended to be inherited from but not
-		 * instantiated. However, <code>HiddenOne</code> has to be a
-		 * non-abstract class to make sure that it is instantiatable when that
-		 * is needed for the API or the model exportation.
 		 */
 		protected HiddenOne() {
 		}
@@ -765,7 +696,7 @@ public class Association implements ModelElement {
 	 * 
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 * 
@@ -779,13 +710,6 @@ public class Association implements ModelElement {
 
 		/**
 		 * Sole constructor of <code>HiddenMultiple</code>.
-		 * <p>
-		 * <b>Implementation note:</b>
-		 * <p>
-		 * Protected because this class is intended to be inherited from but not
-		 * instantiated. However, <code>HiddenMultiple</code> has to be a
-		 * non-abstract class to make sure that it is instantiatable when that
-		 * is needed for the API or the model exportation.
 		 */
 		protected HiddenMultiple() {
 		}

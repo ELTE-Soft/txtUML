@@ -6,76 +6,76 @@ package hu.elte.txtuml.api.model.assocends;
  * {@link ZeroToUnlimited}, {@link OneToUnlimited} or {@link MinToMax} to
  * represent custom multiplicity.
  * <p>
- * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an overview on
- * modeling in txtUML.
+ * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
+ * overview on modeling in JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  *
  */
-public interface Multiplicity {
+public interface Multiplicity<T extends Multiplicity<T>> {
 
 	/**
-	 * Implementing classes of this interface represent association ends in the
-	 * model which have a multiplicity of 1.
+	 * Implementing classes represent association ends with a multiplicity of
+	 * 1..1.
 	 * <p>
-	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an overview
-	 * on modeling in txtUML.
+	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
+	 * overview on modeling in JtxtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *
 	 */
-	public interface One extends Multiplicity {
+	public interface One extends Multiplicity<One> {
 	}
 
 	/**
-	 * Implementing classes of this interface represent association ends in the
-	 * model which have a multiplicity of 0..1.
+	 * Implementing classes represent association ends with a multiplicity of
+	 * 0..1.
 	 * <p>
-	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an overview
-	 * on modeling in txtUML.
+	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
+	 * overview on modeling in JtxtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *
 	 */
-	public interface ZeroToOne extends Multiplicity {
+	public interface ZeroToOne extends Multiplicity<ZeroToOne> {
 	}
 
 	/**
-	 * Implementing classes of this interface represent association ends in the
-	 * model which have a multiplicity of 0..*.
+	 * Implementing classes represent association ends with a multiplicity of
+	 * 0..*.
 	 * <p>
-	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an overview
-	 * on modeling in txtUML.
+	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
+	 * overview on modeling in JtxtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *
 	 */
-	public interface ZeroToUnlimited extends Multiplicity {
+	public interface ZeroToUnlimited extends Multiplicity<ZeroToUnlimited> {
 	}
 
 	/**
-	 * Implementing classes of this interface represent association ends in the
-	 * model which have a multiplicity of 1..*.
+	 * Implementing classes represent association ends with a multiplicity of
+	 * 1..*.
 	 * <p>
-	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an overview
-	 * on modeling in txtUML.
+	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
+	 * overview on modeling in JtxtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *
 	 */
-	public interface OneToUnlimited extends Multiplicity {
+	public interface OneToUnlimited extends Multiplicity<OneToUnlimited> {
 	}
 
 	/**
-	 * Implementing classes of this interface represent association ends in the
-	 * model which have a user-defined multiplicity with two specified bounds.
+	 * Implementing classes represent association ends which have a user-defined
+	 * multiplicity with two specified bounds.
 	 * <p>
-	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an overview
-	 * on modeling in txtUML.
+	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
+	 * overview on modeling in JtxtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 */
-	public interface MinToMax extends Multiplicity {
+	public interface MinToMax extends Multiplicity<MinToMax> {
 	}
 
 }

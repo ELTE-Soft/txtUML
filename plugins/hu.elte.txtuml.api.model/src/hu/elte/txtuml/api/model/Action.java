@@ -8,7 +8,7 @@ import java.lang.reflect.Modifier;
 
 /**
  * Class <code>Action</code> provides methods for the user to be used as
- * statements of the action language of the model.
+ * statements of the action language.
  * 
  * <p>
  * <b>Represents:</b> no model element directly, its static methods are part of the
@@ -28,7 +28,7 @@ import java.lang.reflect.Modifier;
  * </ul>
  * 
  * <p>
- * See the documentation of {@link Model} for an overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  *
@@ -74,7 +74,7 @@ public class Action implements ModelElement {
 			}
 		}
 		T obj = InstanceCreator
-				.createInstanceWithGivenParams(classType, params);
+				.create(classType, params);
 		if (obj == null) {
 			Report.error.forEach(x -> x.modelObjectCreationFailed(classType,
 					parameters));
@@ -128,8 +128,8 @@ public class Action implements ModelElement {
 	 * @see ModelClass.Status#DELETED
 	 */
 	public static <L extends ModelClass, R extends ModelClass> void link(
-			Class<? extends AssociationEnd<L>> leftEnd, L leftObj,
-			Class<? extends AssociationEnd<R>> rightEnd, R rightObj) {
+			Class<? extends AssociationEnd<L, ?>> leftEnd, L leftObj,
+			Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj) {
 
 		if (isLinkingDeleted(leftObj) || isLinkingDeleted(rightObj)) {
 			return;
@@ -200,8 +200,8 @@ public class Action implements ModelElement {
 	 * @see AssociationEnd
 	 */
 	public static <L extends ModelClass, R extends ModelClass> void unlink(
-			Class<? extends AssociationEnd<L>> leftEnd, L leftObj,
-			Class<? extends AssociationEnd<R>> rightEnd, R rightObj) {
+			Class<? extends AssociationEnd<L, ?>> leftEnd, L leftObj,
+			Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj) {
 
 		if (isUnlinkingDeleted(leftObj) || isUnlinkingDeleted(rightObj)) {
 			return;
@@ -264,7 +264,7 @@ public class Action implements ModelElement {
 	 * Asynchronously sends the specified signal to the specified target object.
 	 * <p>
 	 * Does not check whether the target object is deleted, it is only checked
-	 * when the signal arrives to the target object.
+	 * when the signal arrives to the object.
 	 * 
 	 * @param target
 	 *            the model object which will receive the signal

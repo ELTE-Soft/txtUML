@@ -2,26 +2,12 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: XtxtUML Unit Tests
 Bundle-Vendor: ELTE
-Bundle-Version: 0.1.1.qualifier
-Bundle-SymbolicName: hu.elte.txtuml.xtxtuml.tests; singleton:=true
-Bundle-ActivationPolicy: lazy
-Require-Bundle: hu.elte.txtuml.xtxtuml,
- hu.elte.txtuml.xtxtuml.ui,
- org.eclipse.core.runtime,
- org.eclipse.xtext.junit4,
- org.eclipse.xtext.xbase.lib,
- org.eclipse.ui.workbench;resolution:=optional,
- org.objectweb.asm;bundle-version="[5.0.1,6.0.0)";resolution:=optional,
- org.eclipse.xtext.xbase.junit;bundle-version="2.8.3",
- org.eclipse.jdt.core;bundle-version="3.10.2",
- hu.elte.txtuml.api.model;bundle-version="0.1.1"
-Import-Package: org.apache.log4j,
- org.junit;version="4.5.0",
- org.junit.runner;version="4.5.0",
- org.junit.runner.manipulation;version="4.5.0",
- org.junit.runner.notification;version="4.5.0",
- org.junit.runners;version="4.5.0",
- org.junit.runners.model;version="4.5.0",
- org.hamcrest.core
+Bundle-Version: 0.2.0.qualifier
+Bundle-SymbolicName: hu.elte.txtuml.xtxtuml.tests
+Fragment-Host: hu.elte.txtuml.xtxtuml
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: hu.elte.txtuml.xtxtuml
+Require-Bundle: org.junit,
+ org.eclipse.xtext.junit4,
+ org.eclipse.xtext.xbase.junit,
+ org.eclipse.ui.workbench,
+ hu.elte.txtuml.xtxtuml.ui

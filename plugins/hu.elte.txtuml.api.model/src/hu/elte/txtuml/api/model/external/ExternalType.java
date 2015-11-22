@@ -21,11 +21,12 @@ import hu.elte.txtuml.api.model.ModelElement;
  * <b>Java restrictions:</b>
  * <ul>
  * <li><i>Instantiate:</i> disallowed</li>
- * <li><i>Define subtype:</i> disallowed </li>
+ * <li><i>Define subtype:</i> disallowed</li>
  * </ul>
  * 
  * <p>
- * See the documentation of {@link hu.elte.txtuml.api.model.Model Model} for an overview on modeling in txtUML.
+ * See the documentation of {@link hu.elte.txtuml.api.model.Model Model} for an
+ * overview on modeling in JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  *

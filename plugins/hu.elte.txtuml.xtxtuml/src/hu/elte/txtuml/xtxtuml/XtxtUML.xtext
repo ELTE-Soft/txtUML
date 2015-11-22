@@ -99,7 +99,7 @@ enum TUStateType :
 ;
 
 TUStateMember :
-	TUState | TUEntryOrExitActivity
+	TUState | TUEntryOrExitActivity | TUTransition
 ;
 
 TUEntryOrExitActivity :

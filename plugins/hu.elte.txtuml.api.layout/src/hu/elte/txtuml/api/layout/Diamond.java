@@ -8,6 +8,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * A diagram layout statement which sets that four nodes ({@link #top},
+ * {@link #bottom}, {@link #right}, {@link #left}) are placed in a diamond
+ * shape.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Repeatable(DiamondContainer.class)

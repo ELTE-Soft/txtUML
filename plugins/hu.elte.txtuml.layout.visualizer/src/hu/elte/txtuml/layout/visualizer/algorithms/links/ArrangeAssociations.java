@@ -111,7 +111,7 @@ public class ArrangeAssociations
 			CannotFindAssociationRouteException, UnknownStatementException
 	{
 		// Nothing to arrange
-		if (diagramAssocs == null || diagramAssocs.size() == 0)
+		if (diagramAssocs == null)
 			return;
 		
 		_gId = gid;
@@ -206,14 +206,19 @@ public class ArrangeAssociations
 		_heightOfCells = k;
 		
 		// Get the smallest of boxes to compute the grid dimensions
-		RectangleObject smallestBox = objs.stream().min((o1, o2) ->
+		Integer smallestPixelWidth = objs.stream().min((o1, o2) ->
 		{
-			return Integer.compare(o1.getPixelArea(), o2.getPixelArea());
-		}).get();
+			return Integer.compare(o1.getPixelWidth(), o2.getPixelWidth());
+		}).get().getPixelWidth();
+		Integer smallestPixelHeight = objs.stream().min((o1, o2) ->
+		{
+			return Integer.compare(o1.getPixelHeight(), o2.getPixelHeight());
+		}).get().getPixelHeight();
 		
-		Double pixelPerGridWidth = smallestBox.getPixelWidth() / (k + 2.0);
-		Double pixelPerGridHeight = smallestBox.getPixelHeight() / (k + 2.0);
+		Double pixelPerGridWidth = smallestPixelWidth / (k + 2.0);
+		Double pixelPerGridHeight = smallestPixelHeight / (k + 2.0);
 		
+		// Set the grid sizes of boxes based on their pixel sizes
 		for (RectangleObject obj : objs)
 		{
 			RectangleObject mod = new RectangleObject(obj);
@@ -235,9 +240,9 @@ public class ArrangeAssociations
 			
 			// Calculate the position of the cell
 			tempPos.setX(o.getPosition().getX()
-					* (int) Math.floor(_widthOfCells * _options.CorridorRatio * 2.0));
+					* (int) Math.floor(_widthOfCells * (_options.CorridorRatio + 1.0)));
 			tempPos.setY(o.getPosition().getY()
-					* (int) Math.floor(_heightOfCells * _options.CorridorRatio * 2.0));
+					* (int) Math.floor(_heightOfCells * (_options.CorridorRatio + 1.0)));
 			_cellPositions.put(o.getName(), new Point(tempPos));
 			
 			// Calculate the position of the box in the cell

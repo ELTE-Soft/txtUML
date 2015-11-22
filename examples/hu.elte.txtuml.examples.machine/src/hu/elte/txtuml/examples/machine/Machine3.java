@@ -20,7 +20,11 @@ class Machine3Model extends Model {
 	// classes
 
 	class Machine extends ModelClass {
-		int tasksToDo = 3;
+		int tasksToDo;
+
+		Machine(int tasksToDo) {
+			this.tasksToDo = tasksToDo;
+		}
 
 		class Init extends Initial {}
 
@@ -264,7 +268,7 @@ class Machine3Tester {
 	void test() {
 		ModelExecutor.Settings.setExecutorLog(true);
 		
-		Machine m = Action.create(Machine.class);
+		Machine m = Action.create(Machine.class,3);
 		User u1 = Action.create(User.class);
 		User u2 = Action.create(User.class);
 
@@ -284,7 +288,7 @@ class Machine3Tester {
 		Action.log("One of the users is starting to do his or her work.");
 		
 		User oneOfTheUsers = m.assoc(Usage.userOfMachine.class).selectAny();
-		// In SimpleMachineModel this cannot be done as userOfMachine
+		// In Machine1Model this cannot be done as userOfMachine
 		// association end is non-navigable in that model.		
 		Action.send(oneOfTheUsers, new DoYourWork());
 		

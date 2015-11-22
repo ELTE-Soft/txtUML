@@ -1,6 +1,5 @@
 package hu.elte.txtuml.api.model.backend.collections.impl;
 
-import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.backend.collections.JavaCollectionOfMany;
 
 import java.util.ArrayList;
@@ -16,6 +15,6 @@ import java.util.ArrayList;
  *            the type of model objects to be contained in this collection
  */
 @SuppressWarnings("serial")
-public class JavaCollectionOfManyImpl<T extends ModelClass> extends
+public class JavaCollectionOfManyImpl<T> extends
 		ArrayList<T> implements JavaCollectionOfMany<T> {
 }
