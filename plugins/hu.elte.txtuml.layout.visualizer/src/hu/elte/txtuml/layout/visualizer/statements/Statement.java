@@ -415,10 +415,17 @@ public class Statement
 	 * @throws InternalException
 	 *             Throws if the algorithm try to set a statement with no
 	 *             GroupId when it should have.
+	 * @throws UnknownStatementException 
 	 */
-	public static Statement opposite(Statement s) throws InternalException
+	public static Statement opposite(Statement s) throws InternalException, UnknownStatementException
 	{
-		return new Statement(opposite(s.getType()), s.getLevel(),
+		StatementType type = opposite(s.getType());
+		
+		if(type.equals(StatementType.unknown))
+			throw new UnknownStatementException("Couldn't generate the opposite of the statement!",
+					"Opposite of " + s.toString());
+		
+		return new Statement(type, s.getLevel(),
 				s.getGroupId(), s.getParameter(1), s.getParameter(0));
 	}
 	
