@@ -27,7 +27,7 @@ public class RuntimeSessionTrackerTest {
 	class FakeProcess implements IProcess {
 
 		@Override
-		public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
+		public <T> T getAdapter(Class<T> adapter) {
 			return null;
 		}
 
