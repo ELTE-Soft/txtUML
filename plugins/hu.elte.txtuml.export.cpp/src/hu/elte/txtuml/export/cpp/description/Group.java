@@ -16,6 +16,6 @@ import hu.elte.txtuml.export.cpp.description.GroupContainer;
 @Repeatable(GroupContainer.class)
 public @interface Group{
 	Class<? extends ModelClass>[] contains();
-	double gradiend() default 0;
+	double gradient() default 0;
 	int constant() default 1;
 }

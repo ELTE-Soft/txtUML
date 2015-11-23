@@ -48,7 +48,7 @@ public class ThreadDescriptionExporter {
 					numberOfConfigurations = numberOfConfigurations + 1;
 					
 					Group g = (Group) annotation;
-					ThreadPoolConfiguration config = null;
+					ThreadPoolConfiguration config = new ThreadPoolConfiguration(numberOfConfigurations,g.gradient(),g.constant());
 					
 					checkEmptyGroup(g.contains());
 					for(Class<? extends ModelClass> cls: g.contains()){
