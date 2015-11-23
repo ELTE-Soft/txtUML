@@ -1,10 +1,5 @@
 package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
-import hu.elte.txtuml.export.papyrus.UMLModelManager;
-import hu.elte.txtuml.export.papyrus.api.StateMachineDiagramElementsController;
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
-import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,6 +16,11 @@ import org.eclipse.uml2.uml.FinalState;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.Transition;
+
+import hu.elte.txtuml.export.papyrus.UMLModelManager;
+import hu.elte.txtuml.export.papyrus.api.StateMachineDiagramElementsController;
+import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
 
 /**
  * An abstract class for adding/removing elements to StateMachineDiagrams.
@@ -53,7 +53,7 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 		Element smElement = (Element) smModel.getElement();
 		
 		ElementsManagerUtils.removeEditParts(diagramEditPart.getEditingDomain(), Arrays.asList(stateMachineEditpart));
-		ElementsManagerUtils.addElementsToEditpart(diagramEditPart, Arrays.asList(smElement));
+		ElementsManagerUtils.addElementsToEditPart(diagramEditPart, Arrays.asList(smElement));
 		
 		stateMachineEditpart = (EditPart) diagramEditPart.getChildren().get(0);
 		fillState(stateMachineEditpart);
@@ -65,9 +65,15 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	 * @param state - The state
 	 */
 	private void fillState(EditPart state){
-		EditPart stateCompartmentEditPart = (EditPart) state.getChildren().get(1);
+		EditPart ep = StateMachineDiagramElementsController.getStateCompartmentEditPart(state);
+		if(ep == null) {
+			ep = StateMachineDiagramElementsController.getCustomStateMachineCompartmentEditPart(state);
+		}
+		if(ep == null) {
+			return;
+		}
 		@SuppressWarnings("unchecked")
-		List<RegionEditPart> regions = stateCompartmentEditPart.getChildren();
+		List<RegionEditPart> regions = ep.getChildren();
 		
 		for(RegionEditPart region : regions){
 			this.addSubElements(region);
