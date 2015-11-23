@@ -1,7 +1,7 @@
 package hu.elte.txtuml.export.cpp;
 
 /***********************************************************
- * Author: Hack János
+ * Author: Hack Jï¿½nos
  * Version 0.9 2014.02.25
  * Email:zodiakus (at) elte.hu
  **********************************************************/
@@ -225,7 +225,10 @@ public class ClassExporter
 		for(Operation item:class_.getAllOperations())
 		{
 			String returnType=getReturnType(item.getReturnResult());
-			Behavior behavior=item.getMethods().get(0);
+			
+			
+			
+			/*Behavior behavior=item.getMethods().get(0);
 			String funcBody="";
 			if(behavior.eClass().equals(UMLPackage.Literals.ACTIVITY))
 			{
@@ -234,12 +237,16 @@ public class ClassExporter
 			else
 			{
 				//TODO exception, unknown for me, need the model
-			}
+			}*/
 			
-			source+=GenerationTemplates.FunctionDef(class_.getName(),
+			/*source+=GenerationTemplates.FunctionDef(class_.getName(),
 													returnType,
 													item.getName(),getOperationParams(item),
-													funcBody);
+													funcBody);*/
+			source+=GenerationTemplates.FunctionDef(class_.getName(),
+					returnType,
+					item.getName(),getOperationParams(item),
+					GenerationTemplates.GetDefaultReturn(returnType));
 		}
 		return source;
 	}
@@ -315,7 +322,7 @@ public class ClassExporter
 
 				if(behavior!= null)
 				{
-					if(behavior.eClass().equals(UMLPackage.Literals.ACTIVITY))
+					/*if(behavior.eClass().equals(UMLPackage.Literals.ACTIVITY))
 					{
 						source=ActivityExport.createfunctionBody((Activity)behavior,rt_);
 						name = behavior.getName();
@@ -324,7 +331,7 @@ public class ClassExporter
 							name=item.getName()+"_"+unknownName;
 						}
 						map.put(name,new Pair<String, String>(item.getName(),source));
-					}
+					}*/
 				}
 			}
 			
@@ -489,7 +496,7 @@ public class ClassExporter
 		for(Transition item:region_.getTransitions())
 		{
 			String body="";
-			String eventName=parameterisedEventTrigger(item);
+			/*String eventName=parameterisedEventTrigger(item);
 			
 			Behavior b=item.getEffect();
 			if(b != null && b.eClass().equals(UMLPackage.Literals.ACTIVITY))
@@ -500,7 +507,7 @@ public class ClassExporter
 			if(!eventName.isEmpty() && !body.isEmpty())
 			{
 				body=GenerationTemplates.GetRealEvent(eventName)+GenerationTemplates.EventParamUsage(eventName,body);
-			}
+			}*/
 			
 			source+=GenerationTemplates.TransitionActionDef(className_,item.getName(),body+createSetState(item)+"\n");
 		}

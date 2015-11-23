@@ -14,12 +14,6 @@
                   label="Generate C++ code from txtUML"
                   style="push">
             </command>
-            
-             <command
-                  commandId="hu.elte.txtuml.export.cpp.UMLToCpp"
-                  label="Generate C++ code from UML"
-                  style="push">
-            </command>
          </menu>
       </menuContribution>
    </extension>
@@ -33,11 +27,6 @@
             name="Generate cpp code from TxtUML">
       </command>
       
-      <command
-            defaultHandler="hu.elte.txtuml.export.cpp.handlers.UMLToCppHandler"
-            id="hu.elte.txtuml.export.cpp.UMLToCpp"
-            name="Generate cpp code from UML">
-      </command>
    </extension>
    
    

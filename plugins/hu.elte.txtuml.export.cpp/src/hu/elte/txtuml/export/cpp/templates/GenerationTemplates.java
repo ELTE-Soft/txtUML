@@ -1,7 +1,7 @@
 package hu.elte.txtuml.export.cpp.templates;
 
 /***********************************************************
- * Author: Hack János
+ * Author: Hack Jï¿½nos
  * Version 0.9 2014.02.25
  * Email:zodiakus (at) elte.hu
  **********************************************************/
@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.State;
+
 
 
 
@@ -432,6 +433,26 @@ public class GenerationTemplates
 		source = GenerationNames.PointerType(typeName)+" "+objName+"= "+GenerationNames.MemoryAllocator+" "+typeName+"();\n";
 		return source;
 		
+	}
+	
+	public static String GetDefaultReturn(String returnType){
+		
+		
+	
+		if (returnType == null) {
+			return "\n";
+		}
+		
+		else {
+			switch(PrivateFunctionalTemplates.CppType(returnType)) {
+				case "int": return "return 0;\n";
+				case "double": return "return 0;\n";
+				case "bool": return "return true;\n";
+				case GenerationNames.cppString: return "return \"\";\n";
+				default : return "return 0;\n";
+				
+			}
+		}
 	}
 	
 }

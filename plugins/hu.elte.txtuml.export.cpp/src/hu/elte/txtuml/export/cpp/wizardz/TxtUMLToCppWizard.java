@@ -23,6 +23,8 @@ import hu.elte.txtuml.export.Uml2Utils;
 
 public class TxtUMLToCppWizard extends Wizard{
 	
+	private final String genericFolder = "gen";
+	
 	private TxtUMLToCppPage createCppCodePage;
 	
 	public TxtUMLToCppWizard(){
@@ -36,6 +38,7 @@ public class TxtUMLToCppWizard extends Wizard{
 		return "Generate C++ code from txtUML Model";
 	}
 	
+	@Override
 	public void addPages(){
 		createCppCodePage = new TxtUMLToCppPage();
 		addPage(createCppCodePage);
@@ -59,9 +62,7 @@ public class TxtUMLToCppWizard extends Wizard{
 			boolean debugOption = createCppCodePage.selectDebugOption();
 			
 			
-			
-			
-			String genFolder = txtUMLProject + File.separator +  "gen";
+			String genFolder = txtUMLProject + File.separator +  genericFolder;
 			String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation().toFile().getAbsolutePath();
 			
 			String splitModelName[] = txtUMLModel.split("\\.");
@@ -70,7 +71,7 @@ public class TxtUMLToCppWizard extends Wizard{
 			String umlFilesFolder = genFolder + File.separator + "uml_files" + File.separator + simpleModelName;
 			String umlFileLocation = umlFilesFolder + File.separator + txtUMLModel + ".uml";
 			
-			String cppFilesFolder = "gen" + File.separator + "cpp_codes" + File.separator + simpleModelName;
+			String cppFilesFolder = genericFolder + File.separator + "cpp_codes" + File.separator + simpleModelName;
 						
 			try{
 				ExportUtils.exportTxtUMLModelToUML2(txtUMLProject, txtUMLModel,
@@ -83,6 +84,7 @@ public class TxtUMLToCppWizard extends Wizard{
 			
 			Model model = Uml2Utils.loadModel(URI.createPlatformResourceURI(umlFileLocation, false));
 			Uml2ToCppExporter cppExporter;
+			
 			if(threadManagmentDescription.isEmpty()){
 				
 				cppExporter = new Uml2ToCppExporter(model,null,false,runtimeOption,debugOption);
