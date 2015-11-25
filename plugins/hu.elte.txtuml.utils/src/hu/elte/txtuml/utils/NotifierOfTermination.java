@@ -8,10 +8,6 @@ public abstract class NotifierOfTermination {
 	private final List<Runnable> list = new ArrayList<>();
 	private boolean terminated = false;
 
-	public synchronized boolean isTerminated() {
-		return terminated;
-	}
-
 	/**
 	 * @return true if this object was not already terminated; false otherwise
 	 */
