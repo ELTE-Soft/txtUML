@@ -6,8 +6,8 @@ import org.junit.runner.RunWith;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.base.HierarchicalModelTestsBase;
-import hu.elte.txtuml.api.model.tests.models.hierarchical.Sig0;
-import hu.elte.txtuml.api.model.tests.models.hierarchical.Sig1;
+import hu.elte.txtuml.api.model.models.hierarchical.Sig0;
+import hu.elte.txtuml.api.model.models.hierarchical.Sig1;
 import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
 
 @RunWith(SeparateClassloaderTestRunner.class)

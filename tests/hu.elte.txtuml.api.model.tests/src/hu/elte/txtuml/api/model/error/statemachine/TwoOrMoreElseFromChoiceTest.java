@@ -5,8 +5,8 @@ import org.junit.runner.RunWith;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.base.TestsBase;
-import hu.elte.txtuml.api.model.tests.models.erronous.multipleelse.A;
-import hu.elte.txtuml.api.model.tests.models.erronous.multipleelse.Sig;
+import hu.elte.txtuml.api.model.models.erronous.multipleelse.A;
+import hu.elte.txtuml.api.model.models.erronous.multipleelse.Sig;
 import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
 
 @RunWith(SeparateClassloaderTestRunner.class)

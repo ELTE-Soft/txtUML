@@ -6,8 +6,8 @@ import org.junit.runner.RunWith;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.base.TransitionsModelTestsBase;
-import hu.elte.txtuml.api.model.tests.models.transitions.Sig1;
-import hu.elte.txtuml.api.model.tests.models.transitions.Sig2;
+import hu.elte.txtuml.api.model.models.transitions.Sig1;
+import hu.elte.txtuml.api.model.models.transitions.Sig2;
 import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
 
 @RunWith(SeparateClassloaderTestRunner.class)

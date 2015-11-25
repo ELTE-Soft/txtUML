@@ -11,10 +11,10 @@ import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.Collection;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.base.TestsBase;
-import hu.elte.txtuml.api.model.tests.models.associations.A;
-import hu.elte.txtuml.api.model.tests.models.associations.Assoc1;
-import hu.elte.txtuml.api.model.tests.models.associations.B;
-import hu.elte.txtuml.api.model.tests.models.associations.Refl;
+import hu.elte.txtuml.api.model.models.associations.A;
+import hu.elte.txtuml.api.model.models.associations.Assoc1;
+import hu.elte.txtuml.api.model.models.associations.B;
+import hu.elte.txtuml.api.model.models.associations.Refl;
 import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
 
 @RunWith(SeparateClassloaderTestRunner.class)

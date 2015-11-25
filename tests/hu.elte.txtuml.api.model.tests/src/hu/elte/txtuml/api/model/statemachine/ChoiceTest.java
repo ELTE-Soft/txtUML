@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.base.ChoiceModelTestsBase;
-import hu.elte.txtuml.api.model.tests.models.choice.Sig;
+import hu.elte.txtuml.api.model.models.choice.Sig;
 import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
 
 @RunWith(SeparateClassloaderTestRunner.class)

@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.base.SimpleModelTestsBase;
-import hu.elte.txtuml.api.model.tests.models.simple.A;
+import hu.elte.txtuml.api.model.models.simple.A;
 import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
 
 @RunWith(SeparateClassloaderTestRunner.class)

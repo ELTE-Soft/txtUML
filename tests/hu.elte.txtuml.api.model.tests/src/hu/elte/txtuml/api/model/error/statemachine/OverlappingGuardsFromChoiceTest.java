@@ -6,8 +6,8 @@ import org.junit.runner.RunWith;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.base.TestsBase;
-import hu.elte.txtuml.api.model.tests.models.erronous.overlappingfromchoice.A;
-import hu.elte.txtuml.api.model.tests.models.erronous.overlappingfromchoice.Sig;
+import hu.elte.txtuml.api.model.models.erronous.overlappingfromchoice.A;
+import hu.elte.txtuml.api.model.models.erronous.overlappingfromchoice.Sig;
 import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
 
 @RunWith(SeparateClassloaderTestRunner.class)
