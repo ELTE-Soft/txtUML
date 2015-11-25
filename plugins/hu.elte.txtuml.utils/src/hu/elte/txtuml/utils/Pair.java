@@ -24,18 +24,35 @@ public class Pair<F, S> {
 
 	@Override
 	public int hashCode() {
-		return first.hashCode() ^ second.hashCode();
+		final int prime = 10007;
+		int result = prime + ((first == null) ? 0 : first.hashCode());
+		result = prime * result + ((second == null) ? 0 : second.hashCode());
+		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == this)
+		if (this == obj) {
 			return true;
-		if (!(obj instanceof Pair))
+		}
+		if (!(obj instanceof Pair)) {
 			return false;
+		}
 		Pair<?, ?> other = (Pair<?, ?>) obj;
-		return this.first.equals(other.getFirst())
-				&& this.second.equals(other.getSecond());
+		if (first == null ? other.first != null : !first
+				.equals(other.first)) {
+			return false;
+		}
+		if (second == null ? other.second != null : !second
+				.equals(other.second)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "<" + first + ", " + second + ">";
 	}
 
 }

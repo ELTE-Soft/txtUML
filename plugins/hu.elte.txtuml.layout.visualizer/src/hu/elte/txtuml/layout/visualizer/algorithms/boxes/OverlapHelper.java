@@ -3,13 +3,13 @@ package hu.elte.txtuml.layout.visualizer.algorithms.boxes;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.helpers.Helper;
-import hu.elte.txtuml.layout.visualizer.helpers.Pair;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementLevel;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
+import hu.elte.txtuml.utils.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -263,8 +263,8 @@ class OverlapHelper
 		{
 			++gid;
 			result.add(new Statement(Helper.asStatementType(Direction.fromInteger(fn
-					.getBit(i))), StatementLevel.Medium, gid, pairs.get(i).First, pairs
-					.get(i).Second));
+					.getBit(i))), StatementLevel.Medium, gid, pairs.get(i).getFirst(), pairs
+					.get(i).getSecond()));
 		}
 		
 		return result;
