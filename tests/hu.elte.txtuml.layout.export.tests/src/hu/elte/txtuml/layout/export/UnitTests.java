@@ -6,5 +6,6 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ Test1.class, Test2.class, Test3.class })
-public class AllTests {
+public class UnitTests {
+
 }
