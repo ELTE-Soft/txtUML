@@ -819,13 +819,22 @@ public interface XtxtUMLPackage extends EPackage
   int TU_ASSOCIATION_END__MULTIPLICITY = 2;
 
   /**
+   * The feature id for the '<em><b>Container</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TU_ASSOCIATION_END__CONTAINER = 3;
+
+  /**
    * The feature id for the '<em><b>End Class</b></em>' reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int TU_ASSOCIATION_END__END_CLASS = 3;
+  int TU_ASSOCIATION_END__END_CLASS = 4;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -834,7 +843,7 @@ public interface XtxtUMLPackage extends EPackage
    * @generated
    * @ordered
    */
-  int TU_ASSOCIATION_END__NAME = 4;
+  int TU_ASSOCIATION_END__NAME = 5;
 
   /**
    * The number of structural features of the '<em>TU Association End</em>' class.
@@ -843,7 +852,7 @@ public interface XtxtUMLPackage extends EPackage
    * @generated
    * @ordered
    */
-  int TU_ASSOCIATION_END_FEATURE_COUNT = 5;
+  int TU_ASSOCIATION_END_FEATURE_COUNT = 6;
 
   /**
    * The meta object id for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUMultiplicityImpl <em>TU Multiplicity</em>}' class.
@@ -910,6 +919,43 @@ public interface XtxtUMLPackage extends EPackage
   int TU_MULTIPLICITY_FEATURE_COUNT = 5;
 
   /**
+   * The meta object id for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUCompositionImpl <em>TU Composition</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUCompositionImpl
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUComposition()
+   * @generated
+   */
+  int TU_COMPOSITION = 22;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TU_COMPOSITION__NAME = TU_ASSOCIATION__NAME;
+
+  /**
+   * The feature id for the '<em><b>Ends</b></em>' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TU_COMPOSITION__ENDS = TU_ASSOCIATION__ENDS;
+
+  /**
+   * The number of structural features of the '<em>TU Composition</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TU_COMPOSITION_FEATURE_COUNT = TU_ASSOCIATION_FEATURE_COUNT + 0;
+
+  /**
    * The meta object id for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUAttributeImpl <em>TU Attribute</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -917,7 +963,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUAttribute()
    * @generated
    */
-  int TU_ATTRIBUTE = 22;
+  int TU_ATTRIBUTE = 23;
 
   /**
    * The feature id for the '<em><b>Prefix</b></em>' containment reference.
@@ -954,7 +1000,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUOperation()
    * @generated
    */
-  int TU_OPERATION = 23;
+  int TU_OPERATION = 24;
 
   /**
    * The feature id for the '<em><b>Prefix</b></em>' containment reference.
@@ -1009,7 +1055,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getRAlfSendSignalExpression()
    * @generated
    */
-  int RALF_SEND_SIGNAL_EXPRESSION = 24;
+  int RALF_SEND_SIGNAL_EXPRESSION = 25;
 
   /**
    * The feature id for the '<em><b>Signal</b></em>' containment reference.
@@ -1046,7 +1092,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getRAlfDeleteObjectExpression()
    * @generated
    */
-  int RALF_DELETE_OBJECT_EXPRESSION = 25;
+  int RALF_DELETE_OBJECT_EXPRESSION = 26;
 
   /**
    * The feature id for the '<em><b>Object</b></em>' containment reference.
@@ -1074,7 +1120,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getRAlfAssocNavExpression()
    * @generated
    */
-  int RALF_ASSOC_NAV_EXPRESSION = 26;
+  int RALF_ASSOC_NAV_EXPRESSION = 27;
 
   /**
    * The feature id for the '<em><b>Left</b></em>' containment reference.
@@ -1111,7 +1157,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUStateType()
    * @generated
    */
-  int TU_STATE_TYPE = 27;
+  int TU_STATE_TYPE = 28;
 
   /**
    * The meta object id for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUVisibility <em>TU Visibility</em>}' enum.
@@ -1121,7 +1167,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUVisibility()
    * @generated
    */
-  int TU_VISIBILITY = 28;
+  int TU_VISIBILITY = 29;
 
 
   /**
@@ -1709,6 +1755,17 @@ public interface XtxtUMLPackage extends EPackage
   EReference getTUAssociationEnd_Multiplicity();
 
   /**
+   * Returns the meta object for the attribute '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd#isContainer <em>Container</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Container</em>'.
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd#isContainer()
+   * @see #getTUAssociationEnd()
+   * @generated
+   */
+  EAttribute getTUAssociationEnd_Container();
+
+  /**
    * Returns the meta object for the reference '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd#getEndClass <em>End Class</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -1794,6 +1851,16 @@ public interface XtxtUMLPackage extends EPackage
    * @generated
    */
   EAttribute getTUMultiplicity_Any();
+
+  /**
+   * Returns the meta object for class '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition <em>TU Composition</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>TU Composition</em>'.
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
+   * @generated
+   */
+  EClass getTUComposition();
 
   /**
    * Returns the meta object for class '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute <em>TU Attribute</em>}'.
@@ -2492,6 +2559,14 @@ public interface XtxtUMLPackage extends EPackage
     EReference TU_ASSOCIATION_END__MULTIPLICITY = eINSTANCE.getTUAssociationEnd_Multiplicity();
 
     /**
+     * The meta object literal for the '<em><b>Container</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute TU_ASSOCIATION_END__CONTAINER = eINSTANCE.getTUAssociationEnd_Container();
+
+    /**
      * The meta object literal for the '<em><b>End Class</b></em>' reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -2556,6 +2631,16 @@ public interface XtxtUMLPackage extends EPackage
      * @generated
      */
     EAttribute TU_MULTIPLICITY__ANY = eINSTANCE.getTUMultiplicity_Any();
+
+    /**
+     * The meta object literal for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUCompositionImpl <em>TU Composition</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUCompositionImpl
+     * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUComposition()
+     * @generated
+     */
+    EClass TU_COMPOSITION = eINSTANCE.getTUComposition();
 
     /**
      * The meta object literal for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUAttributeImpl <em>TU Attribute</em>}' class.

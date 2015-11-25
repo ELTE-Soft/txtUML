@@ -11,11 +11,11 @@ import org.eclipse.xtext.xbase.XExpression;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression#getSignal <em>Signal</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression#getTarget <em>Target</em>}</li>
  * </ul>
- * </p>
  *
  * @see hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage#getRAlfSendSignalExpression()
  * @model

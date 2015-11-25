@@ -14,6 +14,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution;
@@ -282,6 +283,9 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 			case XtxtUMLPackage.TU_CLASS:
 				sequence_TUClass(context, (TUClass) semanticObject); 
 				return; 
+			case XtxtUMLPackage.TU_COMPOSITION:
+				sequence_TUAssociation(context, (TUComposition) semanticObject); 
+				return; 
 			case XtxtUMLPackage.TU_CONSTRUCTOR:
 				sequence_TUConstructor(context, (TUConstructor) semanticObject); 
 				return; 
@@ -406,7 +410,14 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 	
 	/**
 	 * Constraint:
-	 *     (visibility=TUVisibility? notNavigable?='hidden'? multiplicity=TUMultiplicity endClass=[TUClass|QualifiedName] name=ValidID)
+	 *     (
+	 *         visibility=TUVisibility? 
+	 *         notNavigable?='hidden'? 
+	 *         multiplicity=TUMultiplicity? 
+	 *         container?='container'? 
+	 *         endClass=[TUClass|QualifiedName] 
+	 *         name=ValidID
+	 *     )
 	 */
 	protected void sequence_TUAssociationEnd(EObject context, TUAssociationEnd semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -418,6 +429,15 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 	 *     (name=ValidID ends+=TUAssociationEnd*)
 	 */
 	protected void sequence_TUAssociation(EObject context, TUAssociation semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Constraint:
+	 *     (name=ValidID ends+=TUAssociationEnd*)
+	 */
+	protected void sequence_TUAssociation(EObject context, TUComposition semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
 	}
 	

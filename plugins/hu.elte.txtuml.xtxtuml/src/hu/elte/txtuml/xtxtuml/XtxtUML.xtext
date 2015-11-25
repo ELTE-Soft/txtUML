@@ -42,8 +42,8 @@ TUClass :
 	'}' ';'? | ';')
 ;
 
-TUAssociation :
-	'association' name=ValidID '{'
+TUAssociation returns TUAssociation:
+	({TUAssociation} 'association' | {TUComposition} 'composition') name=ValidID '{'
 		ends+=TUAssociationEnd*
 	'}'
 ;
@@ -131,7 +131,8 @@ TUTransitionGuard :
 
 TUAssociationEnd :
 	visibility=TUVisibility? notNavigable?='hidden'?
-		multiplicity=TUMultiplicity endClass=[TUClass|QualifiedName] name=ValidID ';'
+		multiplicity=TUMultiplicity? container?='container'?
+		endClass=[TUClass|QualifiedName] name=ValidID ';'
 ;
 
 TUMultiplicity :

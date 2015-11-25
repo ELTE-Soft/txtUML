@@ -2,26 +2,26 @@
  */
 package hu.elte.txtuml.xtxtuml.xtxtUML.impl;
 
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition;
 import hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage;
 
 import org.eclipse.emf.ecore.EClass;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>TU Model Declaration</b></em>'.
+ * An implementation of the model object '<em><b>TU Composition</b></em>'.
  * <!-- end-user-doc -->
  *
  * @generated
  */
-public class TUModelDeclarationImpl extends TUFileImpl implements TUModelDeclaration
+public class TUCompositionImpl extends TUAssociationImpl implements TUComposition
 {
   /**
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    */
-  protected TUModelDeclarationImpl()
+  protected TUCompositionImpl()
   {
     super();
   }
@@ -34,7 +34,7 @@ public class TUModelDeclarationImpl extends TUFileImpl implements TUModelDeclara
   @Override
   protected EClass eStaticClass()
   {
-    return XtxtUMLPackage.Literals.TU_MODEL_DECLARATION;
+    return XtxtUMLPackage.Literals.TU_COMPOSITION;
   }
 
-} //TUModelDeclarationImpl
+} //TUCompositionImpl

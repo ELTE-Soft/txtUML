@@ -520,53 +520,70 @@ ruleTUAssociation returns [EObject current=null]
     @init { enterRule(); 
     }
     @after { leaveRule(); }:
-(	otherlv_0='association' 
+((((
     {
-    	newLeafNode(otherlv_0, grammarAccess.getTUAssociationAccess().getAssociationKeyword_0());
+        $current = forceCreateModelElement(
+            grammarAccess.getTUAssociationAccess().getTUAssociationAction_0_0_0(),
+            $current);
     }
-(
+)	otherlv_1='association' 
+    {
+    	newLeafNode(otherlv_1, grammarAccess.getTUAssociationAccess().getAssociationKeyword_0_0_1());
+    }
+)
+    |((
+    {
+        $current = forceCreateModelElement(
+            grammarAccess.getTUAssociationAccess().getTUCompositionAction_0_1_0(),
+            $current);
+    }
+)	otherlv_3='composition' 
+    {
+    	newLeafNode(otherlv_3, grammarAccess.getTUAssociationAccess().getCompositionKeyword_0_1_1());
+    }
+))(
 (
 		{ 
 	        newCompositeNode(grammarAccess.getTUAssociationAccess().getNameValidIDParserRuleCall_1_0()); 
 	    }
-		lv_name_1_0=ruleValidID		{
+		lv_name_4_0=ruleValidID		{
 	        if ($current==null) {
 	            $current = createModelElementForParent(grammarAccess.getTUAssociationRule());
 	        }
        		set(
        			$current, 
        			"name",
-        		lv_name_1_0, 
+        		lv_name_4_0, 
         		"ValidID");
 	        afterParserOrEnumRuleCall();
 	    }
 
 )
-)	otherlv_2='{' 
+)	otherlv_5='{' 
     {
-    	newLeafNode(otherlv_2, grammarAccess.getTUAssociationAccess().getLeftCurlyBracketKeyword_2());
+    	newLeafNode(otherlv_5, grammarAccess.getTUAssociationAccess().getLeftCurlyBracketKeyword_2());
     }
 (
 (
 		{ 
 	        newCompositeNode(grammarAccess.getTUAssociationAccess().getEndsTUAssociationEndParserRuleCall_3_0()); 
 	    }
-		lv_ends_3_0=ruleTUAssociationEnd		{
+		lv_ends_6_0=ruleTUAssociationEnd		{
 	        if ($current==null) {
 	            $current = createModelElementForParent(grammarAccess.getTUAssociationRule());
 	        }
        		add(
        			$current, 
        			"ends",
-        		lv_ends_3_0, 
+        		lv_ends_6_0, 
         		"TUAssociationEnd");
 	        afterParserOrEnumRuleCall();
 	    }
 
 )
-)*	otherlv_4='}' 
+)*	otherlv_7='}' 
     {
-    	newLeafNode(otherlv_4, grammarAccess.getTUAssociationAccess().getRightCurlyBracketKeyword_4());
+    	newLeafNode(otherlv_7, grammarAccess.getTUAssociationAccess().getRightCurlyBracketKeyword_4());
     }
 )
 ;
@@ -1641,7 +1658,22 @@ ruleTUAssociationEnd returns [EObject current=null]
 	    }
 
 )
-)(
+)?(
+(
+		lv_container_3_0=	'container' 
+    {
+        newLeafNode(lv_container_3_0, grammarAccess.getTUAssociationEndAccess().getContainerContainerKeyword_3_0());
+    }
+ 
+	    {
+	        if ($current==null) {
+	            $current = createModelElement(grammarAccess.getTUAssociationEndRule());
+	        }
+       		setWithLastConsumed($current, "container", true, "container");
+	    }
+
+)
+)?(
 (
 		{
 			if ($current==null) {
@@ -1649,7 +1681,7 @@ ruleTUAssociationEnd returns [EObject current=null]
 	        }
         }
 		{ 
-	        newCompositeNode(grammarAccess.getTUAssociationEndAccess().getEndClassTUClassCrossReference_3_0()); 
+	        newCompositeNode(grammarAccess.getTUAssociationEndAccess().getEndClassTUClassCrossReference_4_0()); 
 	    }
 		ruleQualifiedName		{ 
 	        afterParserOrEnumRuleCall();
@@ -1659,24 +1691,24 @@ ruleTUAssociationEnd returns [EObject current=null]
 )(
 (
 		{ 
-	        newCompositeNode(grammarAccess.getTUAssociationEndAccess().getNameValidIDParserRuleCall_4_0()); 
+	        newCompositeNode(grammarAccess.getTUAssociationEndAccess().getNameValidIDParserRuleCall_5_0()); 
 	    }
-		lv_name_4_0=ruleValidID		{
+		lv_name_5_0=ruleValidID		{
 	        if ($current==null) {
 	            $current = createModelElementForParent(grammarAccess.getTUAssociationEndRule());
 	        }
        		set(
        			$current, 
        			"name",
-        		lv_name_4_0, 
+        		lv_name_5_0, 
         		"ValidID");
 	        afterParserOrEnumRuleCall();
 	    }
 
 )
-)	otherlv_5=';' 
+)	otherlv_6=';' 
     {
-    	newLeafNode(otherlv_5, grammarAccess.getTUAssociationEndAccess().getSemicolonKeyword_5());
+    	newLeafNode(otherlv_6, grammarAccess.getTUAssociationEndAccess().getSemicolonKeyword_6());
     }
 )
 ;

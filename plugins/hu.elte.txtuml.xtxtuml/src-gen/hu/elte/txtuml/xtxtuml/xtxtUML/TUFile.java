@@ -15,12 +15,12 @@ import org.eclipse.xtext.xtype.XImportSection;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUFile#getName <em>Name</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUFile#getImportSection <em>Import Section</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUFile#getElements <em>Elements</em>}</li>
  * </ul>
- * </p>
  *
  * @see hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage#getTUFile()
  * @model

@@ -33,7 +33,7 @@ import org.eclipse.xtext.xbase.XbasePackage
 import org.eclipse.xtext.xbase.typesystem.util.ExtendedEarlyExitComputer
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
 
-class XtxtUMLValidator extends AbstractXtxtUMLValidator {
+class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 
 	@Inject extension ExtendedEarlyExitComputer;
 	@Inject extension IQualifiedNameProvider;

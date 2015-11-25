@@ -39,6 +39,9 @@ import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
+import hu.elte.txtuml.api.model.Composition
+import hu.elte.txtuml.api.model.Container
 
 class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
@@ -73,7 +76,10 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch void infer(TUAssociation assoc, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		acceptor.accept(assoc.toClass(assoc.fullyQualifiedName) [
 			documentation = assoc.documentation
-			superTypes += Association.typeRef;
+			superTypes += switch assoc {
+				TUComposition: Composition
+				default: Association
+			}.typeRef
 
 			for (end : assoc.ends) {
 				members += end.toJvmMember;
@@ -310,6 +316,11 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	}
 
 	def private calculateApiSuperType(TUAssociationEnd it) {
+		val endClassTypeParam = (endClass.getPrimaryJvmElement as JvmDeclaredType).typeRef
+		if (isContainer) {
+			return Container.typeRef(endClassTypeParam) -> null
+		}
+
 		val optionalHidden = if(notNavigable) "Hidden" else "";
 		var Pair<Integer, Integer> explicitMultiplicities = null;
 		val apiBoundTypeName = if (multiplicity.any) // *
@@ -336,8 +347,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				}
 			}
 
-		val endClassRefParam = (endClass.getPrimaryJvmElement as JvmDeclaredType).typeRef
 		val endClassImpl = "hu.elte.txtuml.api.model.Association$" + optionalHidden + apiBoundTypeName
-		return endClassImpl.typeRef(endClassRefParam) -> explicitMultiplicities;
+		return endClassImpl.typeRef(endClassTypeParam) -> explicitMultiplicities;
 	}
 }
