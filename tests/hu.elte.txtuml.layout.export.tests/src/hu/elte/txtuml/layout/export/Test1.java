@@ -23,11 +23,11 @@ import hu.elte.txtuml.layout.export.Diagram1.NG52;
 import hu.elte.txtuml.layout.export.Diagram1.NGA;
 import hu.elte.txtuml.layout.export.Diagram1.NGB;
 import hu.elte.txtuml.layout.export.Diagram1.NGC;
-import hu.elte.txtuml.layout.export.tests.model1.A;
-import hu.elte.txtuml.layout.export.tests.model1.B;
-import hu.elte.txtuml.layout.export.tests.model1.C;
-import hu.elte.txtuml.layout.export.tests.model1.D;
-import hu.elte.txtuml.layout.export.tests.model1.E;
+import hu.elte.txtuml.layout.export.model1.A;
+import hu.elte.txtuml.layout.export.model1.B;
+import hu.elte.txtuml.layout.export.model1.C;
+import hu.elte.txtuml.layout.export.model1.D;
+import hu.elte.txtuml.layout.export.model1.E;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 

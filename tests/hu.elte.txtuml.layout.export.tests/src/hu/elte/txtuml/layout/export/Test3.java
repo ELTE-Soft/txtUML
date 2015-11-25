@@ -5,11 +5,11 @@ import hu.elte.txtuml.api.layout.North;
 import hu.elte.txtuml.api.layout.Priority;
 import hu.elte.txtuml.api.layout.West;
 import hu.elte.txtuml.layout.export.DiagramType;
-import hu.elte.txtuml.layout.export.tests.model3.C1.Init;
-import hu.elte.txtuml.layout.export.tests.model3.C1.S1;
-import hu.elte.txtuml.layout.export.tests.model3.C1.S2;
-import hu.elte.txtuml.layout.export.tests.model3.C1.T1;
-import hu.elte.txtuml.layout.export.tests.model3.C1.T2;
+import hu.elte.txtuml.layout.export.model3.C1.Init;
+import hu.elte.txtuml.layout.export.model3.C1.S1;
+import hu.elte.txtuml.layout.export.model3.C1.S2;
+import hu.elte.txtuml.layout.export.model3.C1.T1;
+import hu.elte.txtuml.layout.export.model3.C1.T2;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 import org.junit.Test;
