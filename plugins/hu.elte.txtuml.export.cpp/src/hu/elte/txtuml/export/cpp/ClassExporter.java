@@ -775,6 +775,7 @@ public class ClassExporter
 				if(item.getGuard() != null)
 				{
 					guardTransitionPair=new Pair<String, String>(_guardMap.get(Shared.getGuard(item.getGuard())),item.getName());
+					
 				}
 				else
 				{

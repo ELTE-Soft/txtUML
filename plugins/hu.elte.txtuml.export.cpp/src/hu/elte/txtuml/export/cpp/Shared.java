@@ -1,7 +1,7 @@
 package hu.elte.txtuml.export.cpp;
 
 /***********************************************************
- * Author: Hack János
+ * Author: Hack Jï¿½nos
  * Version 0.9 2014.02.25
  * Email:zodiakus (at) elte.hu
  **********************************************************/
@@ -60,7 +60,8 @@ public class Shared
 		}
 		else if(guard_.eClass().equals(UMLPackage.Literals.CONSTRAINT))
 		{
-			source=getGuardFromValueSpecification(guard_.getSpecification());
+			//source=getGuardFromValueSpecification(guard_.getSpecification());
+			source = "true";
 		}
 		return source;
 	}

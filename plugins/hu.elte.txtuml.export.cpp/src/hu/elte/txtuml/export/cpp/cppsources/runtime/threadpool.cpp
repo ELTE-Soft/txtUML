@@ -29,6 +29,8 @@ void StateMachineThreadPool::stopUponCompletion()
 		
 	stopPool();
 	
+
+
 }
 
 void StateMachineThreadPool::task()
