@@ -1,21 +1,21 @@
 package hu.elte.txtuml.api.model.assocends;
 
-import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.Collection;
-import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.base.TestsBase;
-import hu.elte.txtuml.api.model.models.AssociationsModel.A;
-import hu.elte.txtuml.api.model.models.AssociationsModel.Assoc1;
-import hu.elte.txtuml.api.model.models.AssociationsModel.B;
-import hu.elte.txtuml.api.model.models.AssociationsModel.Refl;
-import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
-
 import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.Collection;
+import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.base.TestsBase;
+import hu.elte.txtuml.api.model.models.associations.A;
+import hu.elte.txtuml.api.model.models.associations.Assoc1;
+import hu.elte.txtuml.api.model.models.associations.B;
+import hu.elte.txtuml.api.model.models.associations.Refl;
+import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
 
 @RunWith(SeparateClassloaderTestRunner.class)
 public class QueryingAssociationEndsTest extends TestsBase {

@@ -24,17 +24,12 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUFile/importSection"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUFile/elements"/>
     </genClasses>
-    <genClasses ecoreClass="XtxtUML.ecore#//TUFileElement">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUFileElement/name"/>
-    </genClasses>
-    <genClasses ecoreClass="XtxtUML.ecore#//TUModel">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUModel/elements"/>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUModelDeclaration"/>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUModelElement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUModelElement/name"/>
     </genClasses>
     <genClasses ecoreClass="XtxtUML.ecore#//TUExecution">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUExecution/body"/>
-    </genClasses>
-    <genClasses ecoreClass="XtxtUML.ecore#//TUModelElement">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUModelElement/name"/>
     </genClasses>
     <genClasses ecoreClass="XtxtUML.ecore#//TUSignal">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUSignal/attributes"/>

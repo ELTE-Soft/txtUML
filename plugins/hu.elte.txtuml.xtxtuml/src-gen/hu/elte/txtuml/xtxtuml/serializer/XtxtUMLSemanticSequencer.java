@@ -18,7 +18,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile;
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUModel;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal;
@@ -294,8 +294,8 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 			case XtxtUMLPackage.TU_FILE:
 				sequence_TUFile(context, (TUFile) semanticObject); 
 				return; 
-			case XtxtUMLPackage.TU_MODEL:
-				sequence_TUModel(context, (TUModel) semanticObject); 
+			case XtxtUMLPackage.TU_MODEL_DECLARATION:
+				sequence_TUModelDeclaration(context, (TUModelDeclaration) semanticObject); 
 				return; 
 			case XtxtUMLPackage.TU_MULTIPLICITY:
 				sequence_TUMultiplicity(context, (TUMultiplicity) semanticObject); 
@@ -497,8 +497,8 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 	 */
 	protected void sequence_TUExecution(EObject context, TUExecution semanticObject) {
 		if(errorAcceptor != null) {
-			if(transientValues.isValueTransient(semanticObject, XtxtUMLPackage.Literals.TU_FILE_ELEMENT__NAME) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, XtxtUMLPackage.Literals.TU_FILE_ELEMENT__NAME));
+			if(transientValues.isValueTransient(semanticObject, XtxtUMLPackage.Literals.TU_MODEL_ELEMENT__NAME) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, XtxtUMLPackage.Literals.TU_MODEL_ELEMENT__NAME));
 			if(transientValues.isValueTransient(semanticObject, XtxtUMLPackage.Literals.TU_EXECUTION__BODY) == ValueTransient.YES)
 				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, XtxtUMLPackage.Literals.TU_EXECUTION__BODY));
 		}
@@ -512,7 +512,7 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 	
 	/**
 	 * Constraint:
-	 *     (name=QualifiedName? importSection=XImportSection? elements+=TUFileElement*)
+	 *     (name=QualifiedName? importSection=XImportSection? elements+=TUModelElement*)
 	 */
 	protected void sequence_TUFile(EObject context, TUFile semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -521,9 +521,9 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 	
 	/**
 	 * Constraint:
-	 *     (name=ValidID elements+=TUModelElement*)
+	 *     (name=STRING?)
 	 */
-	protected void sequence_TUModel(EObject context, TUModel semanticObject) {
+	protected void sequence_TUModelDeclaration(EObject context, TUModelDeclaration semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
 	}
 	

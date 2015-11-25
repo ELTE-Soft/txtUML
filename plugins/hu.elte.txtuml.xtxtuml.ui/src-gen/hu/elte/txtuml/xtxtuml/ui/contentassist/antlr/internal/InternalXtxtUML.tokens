@@ -48,7 +48,7 @@
 'effect'=66
 'else'=74
 'entry'=93
-'execution'=57
+'execution'=55
 'exit'=94
 'extends'=40
 'extension'=43
@@ -71,7 +71,7 @@
 'public'=53
 'return'=81
 'send'=68
-'signal'=58
+'signal'=56
 'state'=46
 'static'=41
 'super'=44
@@ -81,10 +81,10 @@
 'trigger'=65
 'true'=99
 'while'=71
-'{'=55
+'{'=57
 '|'=98
 '||'=14
-'}'=56
+'}'=58
 RULE_ANY_OTHER=12
 RULE_DECIMAL=7
 RULE_HEX=5

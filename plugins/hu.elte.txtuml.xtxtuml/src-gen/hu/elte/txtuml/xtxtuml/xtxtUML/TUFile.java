@@ -82,7 +82,7 @@ public interface TUFile extends EObject
 
   /**
    * Returns the value of the '<em><b>Elements</b></em>' containment reference list.
-   * The list contents are of type {@link hu.elte.txtuml.xtxtuml.xtxtUML.TUFileElement}.
+   * The list contents are of type {@link hu.elte.txtuml.xtxtuml.xtxtUML.TUModelElement}.
    * <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Elements</em>' containment reference list isn't clear,
@@ -94,6 +94,6 @@ public interface TUFile extends EObject
    * @model containment="true"
    * @generated
    */
-  EList<TUFileElement> getElements();
+  EList<TUModelElement> getElements();
 
 } // TUFile

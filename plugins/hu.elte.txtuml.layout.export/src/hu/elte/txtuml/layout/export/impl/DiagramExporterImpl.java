@@ -81,8 +81,8 @@ public class DiagramExporterImpl implements DiagramExporter {
 		exportDiagram();
 
 		if (report.isSuccessful()) {
-			report.setRootElementAsString(elementExporter
-					.getRootElementAsString());
+			report.setModelName(elementExporter
+					.getModelName());
 			report.setType(elementExporter.getDiagramTypeBasedOnElements());
 			report.setStatements(statementExporter.getStatements());
 			report.setNodes(elementExporter.getNodesAsObjects());

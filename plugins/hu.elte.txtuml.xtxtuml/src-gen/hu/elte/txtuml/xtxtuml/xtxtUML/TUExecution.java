@@ -20,7 +20,7 @@ import org.eclipse.xtext.xbase.XExpression;
  * @model
  * @generated
  */
-public interface TUExecution extends TUFileElement
+public interface TUExecution extends TUModelElement
 {
   /**
    * Returns the value of the '<em><b>Body</b></em>' containment reference.
