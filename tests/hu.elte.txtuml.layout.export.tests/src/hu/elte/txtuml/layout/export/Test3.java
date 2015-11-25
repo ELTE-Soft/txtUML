@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.export.tests;
+package hu.elte.txtuml.layout.export;
 
 import hu.elte.txtuml.api.layout.Diagram;
 import hu.elte.txtuml.api.layout.North;
@@ -11,11 +11,11 @@ import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
 import hu.elte.txtuml.layout.export.DiagramType;
-import hu.elte.txtuml.layout.export.tests.Model3.C1.Init;
-import hu.elte.txtuml.layout.export.tests.Model3.C1.S1;
-import hu.elte.txtuml.layout.export.tests.Model3.C1.S2;
-import hu.elte.txtuml.layout.export.tests.Model3.C1.T1;
-import hu.elte.txtuml.layout.export.tests.Model3.C1.T2;
+import hu.elte.txtuml.layout.export.Model3.C1.Init;
+import hu.elte.txtuml.layout.export.Model3.C1.S1;
+import hu.elte.txtuml.layout.export.Model3.C1.S2;
+import hu.elte.txtuml.layout.export.Model3.C1.T1;
+import hu.elte.txtuml.layout.export.Model3.C1.T2;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 import org.junit.Test;

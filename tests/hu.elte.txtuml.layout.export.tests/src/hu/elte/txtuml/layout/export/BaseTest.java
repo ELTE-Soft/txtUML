@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.export.tests;
+package hu.elte.txtuml.layout.export;
 
 import hu.elte.txtuml.api.layout.Diagram;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
