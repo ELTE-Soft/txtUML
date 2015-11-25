@@ -2,6 +2,7 @@ package hu.elte.txtuml.api.model.base;
 
 import org.junit.Before;
 
+import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.models.choice.A;
 
 public class ChoiceModelTestsBase extends TestsBase {
@@ -11,5 +12,6 @@ public class ChoiceModelTestsBase extends TestsBase {
 	@Before
 	public void initializeModel() {
 		a = new A();
+		Action.start(a);
 	}
 }
