@@ -1,4 +1,4 @@
-package hu.elte.txtuml.examples.producer_consumer;
+package hu.elte.txtuml.examples.producer_consumer.model;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.From;

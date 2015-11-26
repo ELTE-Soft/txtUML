@@ -1,4 +1,4 @@
-package hu.elte.txtuml.examples.xproducer_consumer;
+package hu.elte.txtuml.examples.producer_consumer.xmodel;
 
 import hu.elte.txtuml.api.^model.ModelExecutor;
 
