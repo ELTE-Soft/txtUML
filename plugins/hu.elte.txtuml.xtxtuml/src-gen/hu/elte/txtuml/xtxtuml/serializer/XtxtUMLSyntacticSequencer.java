@@ -287,6 +287,7 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *     ';'?
 	 *
 	 * This ambiguous syntax occurs at:
+	 *     else?='else' ')' (ambiguity) (rule end)
 	 *     expression=XExpression ')' (ambiguity) (rule end)
 	 */
 	protected void emit_TUTransitionGuard_SemicolonKeyword_4_q(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
@@ -354,6 +355,7 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *     (rule start) '(' (ambiguity) feature=[JvmIdentifiableElement|IdOrSuper]
 	 *     (rule start) '(' (ambiguity) feature=[JvmIdentifiableElement|OpUnary]
 	 *     (rule start) '(' (ambiguity) isTrue?='true'
+	 *     (rule start) '(' (ambiguity) sigdata='sigdata'
 	 *     (rule start) '(' (ambiguity) value=Number
 	 *     (rule start) '(' (ambiguity) value=STRING
 	 *     (rule start) '(' (ambiguity) {RAlfAssocNavExpression.left=}
@@ -370,6 +372,7 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *     (rule start) (ambiguity) feature=[JvmIdentifiableElement|IdOrSuper]
 	 *     (rule start) (ambiguity) feature=[JvmIdentifiableElement|OpUnary]
 	 *     (rule start) (ambiguity) isTrue?='true'
+	 *     (rule start) (ambiguity) sigdata='sigdata'
 	 *     (rule start) (ambiguity) value=Number
 	 *     (rule start) (ambiguity) value=STRING
 	 *     (rule start) (ambiguity) {RAlfAssocNavExpression.left=}
@@ -396,6 +399,7 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *     (rule start) (ambiguity) feature=[JvmIdentifiableElement|IdOrSuper]
 	 *     (rule start) (ambiguity) feature=[JvmIdentifiableElement|OpUnary]
 	 *     (rule start) (ambiguity) isTrue?='true'
+	 *     (rule start) (ambiguity) sigdata='sigdata'
 	 *     (rule start) (ambiguity) value=Number
 	 *     (rule start) (ambiguity) value=STRING
 	 *     (rule start) (ambiguity) {RAlfAssocNavExpression.left=}
