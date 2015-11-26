@@ -1,4 +1,4 @@
-package hu.elte.txtuml.examples.machine.xmodel1;
+package hu.elte.txtuml.examples.machine;
 
 import hu.elte.txtuml.api.layout.Diagram;
 import hu.elte.txtuml.api.layout.Right;
