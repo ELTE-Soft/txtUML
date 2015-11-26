@@ -2,7 +2,7 @@
  */
 package hu.elte.txtuml.xtxtuml.xtxtUML.impl;
 
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelElement;
+import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression;
 import hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage;
 
 import org.eclipse.emf.common.notify.Notification;
@@ -10,49 +10,50 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
+
+import org.eclipse.xtext.xbase.impl.XExpressionImpl;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>TU Model Element</b></em>'.
+ * An implementation of the model object '<em><b>RAlf Signal Access Expression</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUModelElementImpl#getName <em>Name</em>}</li>
+ *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.RAlfSignalAccessExpressionImpl#getSigdata <em>Sigdata</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class TUModelElementImpl extends MinimalEObjectImpl.Container implements TUModelElement
+public class RAlfSignalAccessExpressionImpl extends XExpressionImpl implements RAlfSignalAccessExpression
 {
   /**
-   * The default value of the '{@link #getName() <em>Name</em>}' attribute.
+   * The default value of the '{@link #getSigdata() <em>Sigdata</em>}' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see #getName()
+   * @see #getSigdata()
    * @generated
    * @ordered
    */
-  protected static final String NAME_EDEFAULT = null;
+  protected static final String SIGDATA_EDEFAULT = null;
 
   /**
-   * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
+   * The cached value of the '{@link #getSigdata() <em>Sigdata</em>}' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see #getName()
+   * @see #getSigdata()
    * @generated
    * @ordered
    */
-  protected String name = NAME_EDEFAULT;
+  protected String sigdata = SIGDATA_EDEFAULT;
 
   /**
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    */
-  protected TUModelElementImpl()
+  protected RAlfSignalAccessExpressionImpl()
   {
     super();
   }
@@ -65,7 +66,7 @@ public class TUModelElementImpl extends MinimalEObjectImpl.Container implements 
   @Override
   protected EClass eStaticClass()
   {
-    return XtxtUMLPackage.Literals.TU_MODEL_ELEMENT;
+    return XtxtUMLPackage.Literals.RALF_SIGNAL_ACCESS_EXPRESSION;
   }
 
   /**
@@ -73,9 +74,9 @@ public class TUModelElementImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
-  public String getName()
+  public String getSigdata()
   {
-    return name;
+    return sigdata;
   }
 
   /**
@@ -83,12 +84,12 @@ public class TUModelElementImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setName(String newName)
+  public void setSigdata(String newSigdata)
   {
-    String oldName = name;
-    name = newName;
+    String oldSigdata = sigdata;
+    sigdata = newSigdata;
     if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, XtxtUMLPackage.TU_MODEL_ELEMENT__NAME, oldName, name));
+      eNotify(new ENotificationImpl(this, Notification.SET, XtxtUMLPackage.RALF_SIGNAL_ACCESS_EXPRESSION__SIGDATA, oldSigdata, sigdata));
   }
 
   /**
@@ -101,8 +102,8 @@ public class TUModelElementImpl extends MinimalEObjectImpl.Container implements 
   {
     switch (featureID)
     {
-      case XtxtUMLPackage.TU_MODEL_ELEMENT__NAME:
-        return getName();
+      case XtxtUMLPackage.RALF_SIGNAL_ACCESS_EXPRESSION__SIGDATA:
+        return getSigdata();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -117,8 +118,8 @@ public class TUModelElementImpl extends MinimalEObjectImpl.Container implements 
   {
     switch (featureID)
     {
-      case XtxtUMLPackage.TU_MODEL_ELEMENT__NAME:
-        setName((String)newValue);
+      case XtxtUMLPackage.RALF_SIGNAL_ACCESS_EXPRESSION__SIGDATA:
+        setSigdata((String)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -134,8 +135,8 @@ public class TUModelElementImpl extends MinimalEObjectImpl.Container implements 
   {
     switch (featureID)
     {
-      case XtxtUMLPackage.TU_MODEL_ELEMENT__NAME:
-        setName(NAME_EDEFAULT);
+      case XtxtUMLPackage.RALF_SIGNAL_ACCESS_EXPRESSION__SIGDATA:
+        setSigdata(SIGDATA_EDEFAULT);
         return;
     }
     super.eUnset(featureID);
@@ -151,8 +152,8 @@ public class TUModelElementImpl extends MinimalEObjectImpl.Container implements 
   {
     switch (featureID)
     {
-      case XtxtUMLPackage.TU_MODEL_ELEMENT__NAME:
-        return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
+      case XtxtUMLPackage.RALF_SIGNAL_ACCESS_EXPRESSION__SIGDATA:
+        return SIGDATA_EDEFAULT == null ? sigdata != null : !SIGDATA_EDEFAULT.equals(sigdata);
     }
     return super.eIsSet(featureID);
   }
@@ -168,10 +169,10 @@ public class TUModelElementImpl extends MinimalEObjectImpl.Container implements 
     if (eIsProxy()) return super.toString();
 
     StringBuffer result = new StringBuffer(super.toString());
-    result.append(" (name: ");
-    result.append(name);
+    result.append(" (sigdata: ");
+    result.append(sigdata);
     result.append(')');
     return result.toString();
   }
 
-} //TUModelElementImpl
+} //RAlfSignalAccessExpressionImpl

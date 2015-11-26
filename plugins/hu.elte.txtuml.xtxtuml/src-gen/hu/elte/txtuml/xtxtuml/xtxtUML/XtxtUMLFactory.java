@@ -257,6 +257,15 @@ public interface XtxtUMLFactory extends EFactory
   RAlfDeleteObjectExpression createRAlfDeleteObjectExpression();
 
   /**
+   * Returns a new object of class '<em>RAlf Signal Access Expression</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>RAlf Signal Access Expression</em>'.
+   * @generated
+   */
+  RAlfSignalAccessExpression createRAlfSignalAccessExpression();
+
+  /**
    * Returns a new object of class '<em>RAlf Assoc Nav Expression</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->

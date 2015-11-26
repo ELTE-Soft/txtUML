@@ -207,6 +207,11 @@ public class XtxtUMLAdapterFactory extends AdapterFactoryImpl
         return createRAlfDeleteObjectExpressionAdapter();
       }
       @Override
+      public Adapter caseRAlfSignalAccessExpression(RAlfSignalAccessExpression object)
+      {
+        return createRAlfSignalAccessExpressionAdapter();
+      }
+      @Override
       public Adapter caseRAlfAssocNavExpression(RAlfAssocNavExpression object)
       {
         return createRAlfAssocNavExpressionAdapter();
@@ -624,6 +629,21 @@ public class XtxtUMLAdapterFactory extends AdapterFactoryImpl
    * @generated
    */
   public Adapter createRAlfDeleteObjectExpressionAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression <em>RAlf Signal Access Expression</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression
+   * @generated
+   */
+  public Adapter createRAlfSignalAccessExpressionAdapter()
   {
     return null;
   }

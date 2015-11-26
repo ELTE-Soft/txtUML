@@ -124,7 +124,7 @@ TUTransitionEffect :
 ;
 
 TUTransitionGuard :
-	'guard' '(' expression=XExpression ')' ';'?
+	'guard' '(' (else?='else' | expression=XExpression) ')' ';'?
 ;
 
 // Association-related
@@ -154,6 +154,14 @@ RAlfSendSignalExpression returns xbase::XExpression :
 RAlfDeleteObjectExpression returns xbase::XExpression :
 	{RAlfDeleteObjectExpression}
 	'delete' object=XExpression
+;
+
+RAlfSignalAccessExpression returns xbase::XExpression :
+	{RAlfSignalAccessExpression}
+	sigdata='sigdata'
+	// the sole purpose of the sigdata feature
+	// is to provide a feature for validation
+	// to put a marker on
 ;
 
 // Added rAlf-Xbase rules
@@ -242,6 +250,7 @@ XPrimaryExpression returns xbase::XExpression
 	| XFeatureCall
 	| XLiteral
 	| XParenthesizedRAlfExpression
+	| RAlfSignalAccessExpression
 ;
 
 /*

@@ -245,8 +245,13 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		guard.toMethod("guard", Boolean.TYPE.typeRef) [
 			documentation = guard.documentation
 			visibility = JvmVisibility.PUBLIC;
+
 			annotations += annotationRef(Override);
-			body = guard.expression;
+			if (guard.^else) {
+				body = '''return Else();''';
+			} else {
+				body = guard.expression;
+			}
 		]
 	}
 

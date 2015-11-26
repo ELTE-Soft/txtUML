@@ -31,13 +31,13 @@ import org.eclipse.xtext.xbase.XExpression;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUOperationImpl#getPrefix <em>Prefix</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUOperationImpl#getName <em>Name</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUOperationImpl#getParameters <em>Parameters</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUOperationImpl#getBody <em>Body</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

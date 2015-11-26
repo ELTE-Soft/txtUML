@@ -6,16 +6,21 @@ import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfAssocNavExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelElement
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionGuard
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
 import hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage
 import java.util.HashSet
 import org.eclipse.xtext.common.types.JvmFormalParameter
@@ -31,7 +36,6 @@ import org.eclipse.xtext.xbase.XFeatureCall
 import org.eclipse.xtext.xbase.XMemberFeatureCall
 import org.eclipse.xtext.xbase.XbasePackage
 import org.eclipse.xtext.xbase.typesystem.util.ExtendedEarlyExitComputer
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
 
 class XtxtUMLValidator extends AbstractXtxtUMLValidator {
 
@@ -305,10 +309,42 @@ class XtxtUMLValidator extends AbstractXtxtUMLValidator {
 		}
 	}
 
+	@Check
+	def checkElseGuard(TUTransitionGuard guard) {
+		if (guard.^else && guard.eContainer instanceof TUTransition && (guard.eContainer as TUTransition).members.exists [
+			it instanceof TUTransitionVertex && (it as TUTransitionVertex).from &&
+				(it as TUTransitionVertex).vertex.type != TUStateType.CHOICE
+		]) {
+			error(
+				"'else' condition can be used only if the source of the transition is a choice pseudostate",
+				XtxtUMLPackage::eINSTANCE.TUTransitionGuard_Else
+			)
+		}
+	}
+
+	@Check
+	def checkSignalAccessExpression(RAlfSignalAccessExpression sigExpr) {
+		var container = sigExpr.eContainer;
+		while (container != null && !(container instanceof TUState) && !(container instanceof TUTransition)) {
+			container = container.eContainer;
+		}
+
+		if (container == null || container instanceof TUState && (
+				(container as TUState).type == TUStateType.INITIAL || (container as TUState).type == TUStateType.CHOICE
+			) || container instanceof TUTransition && ((container as TUTransition).members.findFirst [
+			it instanceof TUTransitionVertex && (it as TUTransitionVertex).from
+		] as TUTransitionVertex)?.vertex.type == TUStateType.INITIAL) {
+			error(
+				"'sigdata' cannot be used here",
+				XtxtUMLPackage::eINSTANCE.RAlfSignalAccessExpression_Sigdata
+			)
+		}
+	}
+
 	// Overriden Xbase validation methods
 	override isValueExpectedRecursive(XExpression expr) {
 		val container = expr.eContainer;
-		switch (container) {
+		return switch (container) {
 			RAlfSendSignalExpression,
 			RAlfDeleteObjectExpression: true
 			XBlockExpression: false

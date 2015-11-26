@@ -4,7 +4,7 @@
     editorDirectory="/hu.elte.txtuml.xtxtuml.editor/src" modelPluginID="hu.elte.txtuml.xtxtuml"
     forceOverwrite="true" modelName="XtxtUML" updateClasspath="false" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
     complianceLevel="6.0" copyrightFields="false" editPluginID="hu.elte.txtuml.xtxtuml.edit"
-    editorPluginID="hu.elte.txtuml.xtxtuml.editor" runtimeVersion="2.10" usedGenPackages="platform:/resource/org.eclipse.xtext.common.types/model/JavaVMTypes.genmodel#//types platform:/resource/org.eclipse.xtext.xbase/model/Xbase.genmodel#//xbase platform:/resource/org.eclipse.xtext.xbase/model/Xbase.genmodel#//xtype">
+    editorPluginID="hu.elte.txtuml.xtxtuml.editor" runtimeVersion="2.11" usedGenPackages="platform:/resource/org.eclipse.xtext.common.types/model/JavaVMTypes.genmodel#//types platform:/resource/org.eclipse.xtext.xbase/model/Xbase.genmodel#//xbase platform:/resource/org.eclipse.xtext.xbase/model/Xbase.genmodel#//xtype">
   <genPackages prefix="XtxtUML" basePackage="hu.elte.txtuml.xtxtuml" disposableProviderFactory="true"
       fileExtensions="txtuml,xtxtuml" ecorePackage="XtxtUML.ecore#/">
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="XtxtUML.ecore#//TUStateType">
@@ -84,6 +84,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUTransitionEffect/body"/>
     </genClasses>
     <genClasses ecoreClass="XtxtUML.ecore#//TUTransitionGuard">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUTransitionGuard/else"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUTransitionGuard/expression"/>
     </genClasses>
     <genClasses ecoreClass="XtxtUML.ecore#//TUAssociationEnd">
@@ -116,6 +117,9 @@
     </genClasses>
     <genClasses ecoreClass="XtxtUML.ecore#//RAlfDeleteObjectExpression">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//RAlfDeleteObjectExpression/object"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//RAlfSignalAccessExpression">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//RAlfSignalAccessExpression/sigdata"/>
     </genClasses>
     <genClasses ecoreClass="XtxtUML.ecore#//RAlfAssocNavExpression">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//RAlfAssocNavExpression/left"/>
