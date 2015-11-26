@@ -2,6 +2,11 @@ package hu.elte.txtuml.examples.producer_consumer;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.ModelExecutor;
+import hu.elte.txtuml.examples.producer_consumer.model.Consumer;
+import hu.elte.txtuml.examples.producer_consumer.model.Consumption;
+import hu.elte.txtuml.examples.producer_consumer.model.Producer;
+import hu.elte.txtuml.examples.producer_consumer.model.Production;
+import hu.elte.txtuml.examples.producer_consumer.model.Storage;
 
 public class ProducerConsumerTester {
 
