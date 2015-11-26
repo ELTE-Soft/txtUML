@@ -25,7 +25,9 @@ public final class InstanceCreator {
 	 *             if the called constructor throws an exception
 	 */
 	public static <T> T create(Class<T> toInstantiate,
-			Object... constructorParams) {
+			Object... constructorParams) throws IllegalArgumentException,
+			RuntimeInvocationTargetException {
+
 		if (toInstantiate.isPrimitive()) {
 			if (constructorParams.length == 0) {
 				return getDefaultPrimitiveValue(toInstantiate);
@@ -55,7 +57,7 @@ public final class InstanceCreator {
 	 */
 	@SuppressWarnings("unchecked")
 	private static <T> T tryCreateWithConstructor(Constructor<?> ctor,
-			Object... givenParams) {
+			Object... givenParams) throws RuntimeInvocationTargetException {
 		Parameter[] params = ctor.getParameters();
 		Object[] actualParams = new Object[params.length];
 
