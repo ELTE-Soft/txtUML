@@ -1,6 +1,7 @@
 package hu.elte.txtuml.api.model;
 
 import hu.elte.txtuml.api.model.ModelExecutor.Report;
+import hu.elte.txtuml.api.model.assocends.Navigability;
 import hu.elte.txtuml.api.model.backend.MultiplicityException;
 import hu.elte.txtuml.api.model.backend.collections.AssociationsMap;
 import hu.elte.txtuml.utils.InstanceCreator;
@@ -235,10 +236,10 @@ public class ModelClass extends Region {
 	 * @return collection containing the objects in association with this object
 	 *         and being on <code>otherEnd</code>
 	 */
-	public <T extends ModelClass, AE extends AssociationEnd<T> & hu.elte.txtuml.api.model.assocends.Navigability.Navigable> AE assoc(
+	public <T extends ModelClass, C, AE extends AssociationEnd<T, C> & Navigability.Navigable> C assoc(
 			Class<AE> otherEnd) {
 
-		return assocPrivate(otherEnd);
+		return assocPrivate(otherEnd).getCollection();
 
 	}
 
@@ -256,7 +257,7 @@ public class ModelClass extends Region {
 	 * @return collection containing the objects in association with this object
 	 *         and being on <code>otherEnd</code>
 	 */
-	private <T extends ModelClass, AE extends AssociationEnd<T>> AE assocPrivate(
+	<T extends ModelClass, C, AE extends AssociationEnd<T, C>> AE assocPrivate(
 			Class<AE> otherEnd) {
 
 		@SuppressWarnings("unchecked")
@@ -287,15 +288,10 @@ public class ModelClass extends Region {
 	 *             if the upper bound of the multiplicity of the opposite
 	 *             association end is offended
 	 */
-	<T extends ModelClass, AE extends AssociationEnd<T>> void addToAssoc(
+	<T extends ModelClass, C, AE extends AssociationEnd<T, C>> void addToAssoc(
 			Class<AE> otherEnd, T object) throws MultiplicityException {
 
-		AssociationEnd<?> newValue = InstanceCreator
-				.create(otherEnd, (Object) null).init(
-						assocPrivate(otherEnd).typeKeepingAdd(object));
-
-		associations.put(otherEnd, newValue);
-
+		assocPrivate(otherEnd).add(object);
 	}
 
 	/**
@@ -312,17 +308,14 @@ public class ModelClass extends Region {
 	 * @param object
 	 *            the object to remove from the collection
 	 */
-	<T extends ModelClass, AE extends AssociationEnd<T>> void removeFromAssoc(
+	<T extends ModelClass, C, AE extends AssociationEnd<T, C>> void removeFromAssoc(
 			Class<AE> otherEnd, T object) {
 
-		AssociationEnd<?> newValue = InstanceCreator
-				.create(otherEnd, (Object) null).init(
-						assocPrivate(otherEnd).typeKeepingRemove(object));
-
-		associations.put(otherEnd, newValue);
+		AE assocEnd = assocPrivate(otherEnd);
+		assocEnd.remove(object);
 
 		if (ModelExecutor.Settings.dynamicChecks()
-				&& !newValue.checkLowerBound()) {
+				&& !assocEnd.checkLowerBound()) {
 			ModelExecutor.checkLowerBoundInNextExecutionStep(this, otherEnd);
 		}
 
@@ -345,10 +338,12 @@ public class ModelClass extends Region {
 	 *         collection related to <code>otherEnd</code>, <code>false</code>
 	 *         otherwise
 	 */
-	<T extends ModelClass, AE extends AssociationEnd<T>> boolean hasAssoc(
+	<T extends ModelClass, AE extends AssociationEnd<T, ?>> boolean hasAssoc(
 			Class<AE> otherEnd, T object) {
 
-		AssociationEnd<?> actualOtherEnd = associations.get(otherEnd);
+		@SuppressWarnings("unchecked")
+		AssociationEnd<T, ?> actualOtherEnd = (AssociationEnd<T, ?>) associations
+				.get(otherEnd);
 		return actualOtherEnd == null ? false : actualOtherEnd.contains(object);
 	}
 
@@ -360,7 +355,7 @@ public class ModelClass extends Region {
 	 * @param assocEnd
 	 *            the association end to check
 	 */
-	void checkLowerBound(Class<? extends AssociationEnd<?>> assocEnd) {
+	void checkLowerBound(Class<? extends AssociationEnd<?, ?>> assocEnd) {
 
 		if (status != Status.DELETED
 				&& !assocPrivate(assocEnd).checkLowerBound()) {
@@ -373,7 +368,7 @@ public class ModelClass extends Region {
 	@Override
 	void process(Signal signal) {
 		if (isDeleted()) {
-			Report.warning.forEach(x -> x.signalArrivedToDeletedObject(this));
+			Report.warning.forEach(x -> x.signalArrivedToDeletedObject(this, signal));
 			return;
 		}
 		super.process(signal);
@@ -430,10 +425,10 @@ public class ModelClass extends Region {
 				if (Association.class.isAssignableFrom(assocClass)) {
 					Class<?>[] assocEnds = assocClass.getDeclaredClasses();
 					if (checkIfEndIsOwnedByThisClass(assocEnds[0])) {
-						initializeDefinedAssociationEnd((Class<? extends AssociationEnd<?>>) assocEnds[1]);
+						initializeDefinedAssociationEnd((Class<? extends AssociationEnd<?, ?>>) assocEnds[1]);
 					}
 					if (checkIfEndIsOwnedByThisClass(assocEnds[1])) {
-						initializeDefinedAssociationEnd((Class<? extends AssociationEnd<?>>) assocEnds[0]);
+						initializeDefinedAssociationEnd((Class<? extends AssociationEnd<?, ?>>) assocEnds[0]);
 					}
 				}
 			}
@@ -494,13 +489,13 @@ public class ModelClass extends Region {
 	 *            the association end to initialize
 	 */
 	private void initializeDefinedAssociationEnd(
-			Class<? extends AssociationEnd<?>> assocEnd) {
+			Class<? extends AssociationEnd<?, ?>> assocEnd) {
 
 		if (associations.get(assocEnd) != null) {
 			return;
 		}
 
-		AssociationEnd<?> value = InstanceCreator
+		AssociationEnd<?, ?> value = InstanceCreator
 				.create(assocEnd, (Object) null);
 
 		associations.put(assocEnd, value);
@@ -535,7 +530,7 @@ public class ModelClass extends Region {
 		if (isDeleted()) {
 			return true;
 		}
-		for (AssociationEnd<?> assocEnd : this.associations.values()) {
+		for (AssociationEnd<?, ?> assocEnd : this.associations.values()) {
 			if (!assocEnd.isEmpty()) {
 				return false;
 			}

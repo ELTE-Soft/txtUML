@@ -11,9 +11,9 @@ import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteExc
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotStartAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
-import hu.elte.txtuml.layout.visualizer.helpers.Pair;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.Point;
+import hu.elte.txtuml.utils.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -104,17 +104,17 @@ class GraphSearch
 		// Set up End Set
 		for (Pair<Node, Double> pair : es)
 		{
-			_endSet.add(pair.First);
-			g.set(pair.First, pair.Second);
+			_endSet.add(pair.getFirst());
+			g.set(pair.getFirst(), pair.getSecond());
 			// TODO
 		}
 		
 		// Extend StartSet
 		for (Pair<Node, Double> pair : ss)
 		{
-			PI.set(pair.First, null);
-			g.set(pair.First, 2 * _weightLength + pair.Second);
-			AvailableNodes.add(pair.First);
+			PI.set(pair.getFirst(), null);
+			g.set(pair.getFirst(), 2 * _weightLength + pair.getSecond());
+			AvailableNodes.add(pair.getFirst());
 		}
 		
 		if (!search())
@@ -150,8 +150,8 @@ class GraphSearch
 			Set<Pair<Node, Double>> childs = Gamma(n);
 			for (Pair<Node, Double> pair : childs)
 			{
-				Node m = pair.First;
-				Double newCost = (g.get(n) + pair.Second);
+				Node m = pair.getFirst();
+				Double newCost = (g.get(n) + pair.getSecond());
 				
 				if (!G.contains(m) || newCost < g.get(m))
 				{
@@ -205,8 +205,8 @@ class GraphSearch
 		
 		Pair<Double, Node> distance = manhattanDistance(p);
 		Double remainingTurns = manhattanLeastTurns(p);
-		// manhattanLeastTurnsCheckingOccupied(p, distance.Second);
-		Double result = (_weightTurns * remainingTurns + _weightLength * distance.First);
+		// manhattanLeastTurnsCheckingOccupied(p, distance.getSecond());
+		Double result = (_weightTurns * remainingTurns + _weightLength * distance.getFirst());
 		
 		_heuristic.put(p, result);
 		
@@ -226,10 +226,10 @@ class GraphSearch
 			return new Pair<Integer, Node>(tempResult, p);
 		}).min((p1, p2) ->
 		{
-			return Integer.compare(p1.First, p2.First);
+			return Integer.compare(p1.getFirst(), p2.getFirst());
 		}).get();
 		
-		return new Pair<Double, Node>((double) result.First, result.Second);
+		return new Pair<Double, Node>((double) result.getFirst(), result.getSecond());
 	}
 	
 	private Double manhattanLeastTurns(Node a)
@@ -243,8 +243,8 @@ class GraphSearch
 			return new Pair<Node, Integer>(p, tempResult);
 		}).min((d1, d2) ->
 		{
-			return Integer.compare(d1.Second, d2.Second);
-		}).get().First;
+			return Integer.compare(d1.getSecond(), d2.getSecond());
+		}).get().getFirst();
 		
 		if (!closest.getTo().getX().equals(a.getTo().getX())
 				&& !closest.getTo().getY().equals(a.getTo().getY()))

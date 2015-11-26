@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: txtUML Utils Tests
+Bundle-SymbolicName: hu.elte.txtuml.utils.tests
+Bundle-Version: 0.2.0.qualifier
+Fragment-Host: hu.elte.txtuml.utils
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.junit

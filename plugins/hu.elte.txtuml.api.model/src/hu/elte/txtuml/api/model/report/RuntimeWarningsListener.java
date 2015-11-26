@@ -1,6 +1,7 @@
 package hu.elte.txtuml.api.model.report;
 
 import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.Signal;
 
 /**
  * A listener interface that listens to runtime warnings of the model execution.
@@ -13,6 +14,7 @@ public interface RuntimeWarningsListener {
 			ModelClass rightObj) {
 	}
 
-	default void signalArrivedToDeletedObject(ModelClass obj) {
+	default void signalArrivedToDeletedObject(ModelClass obj, Signal signal) {
 	}
+
 }

@@ -128,8 +128,8 @@ public class Action implements ModelElement {
 	 * @see ModelClass.Status#DELETED
 	 */
 	public static <L extends ModelClass, R extends ModelClass> void link(
-			Class<? extends AssociationEnd<L>> leftEnd, L leftObj,
-			Class<? extends AssociationEnd<R>> rightEnd, R rightObj) {
+			Class<? extends AssociationEnd<L, ?>> leftEnd, L leftObj,
+			Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj) {
 
 		if (isLinkingDeleted(leftObj) || isLinkingDeleted(rightObj)) {
 			return;
@@ -200,8 +200,8 @@ public class Action implements ModelElement {
 	 * @see AssociationEnd
 	 */
 	public static <L extends ModelClass, R extends ModelClass> void unlink(
-			Class<? extends AssociationEnd<L>> leftEnd, L leftObj,
-			Class<? extends AssociationEnd<R>> rightEnd, R rightObj) {
+			Class<? extends AssociationEnd<L, ?>> leftEnd, L leftObj,
+			Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj) {
 
 		if (isUnlinkingDeleted(leftObj) || isUnlinkingDeleted(rightObj)) {
 			return;
