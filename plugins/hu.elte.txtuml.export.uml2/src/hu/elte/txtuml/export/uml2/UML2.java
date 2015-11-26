@@ -99,7 +99,7 @@ public class UML2 {
 
 		Stream<ICompilationUnit> packageInfo = Stream.of(packageFragments)
 				.filter(pf -> pf.getElementName().equals(packageName))
-				.map(pf -> pf.getCompilationUnit("package-info.java"))
+				.map(pf -> pf.getCompilationUnit(PackageUtils.PACKAGE_INFO))
 				.filter(ICompilationUnit::exists);
 
 		Optional<String> JtxtUMLModelName = obtainModelFromCompilationUnits(
