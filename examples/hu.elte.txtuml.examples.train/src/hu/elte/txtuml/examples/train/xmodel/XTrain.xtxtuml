@@ -1,4 +1,4 @@
-package hu.elte.txtuml.examples.xtrain;
+package hu.elte.txtuml.examples.train.xmodel;
 
 import hu.elte.txtuml.api.^model.ModelExecutor;
 
