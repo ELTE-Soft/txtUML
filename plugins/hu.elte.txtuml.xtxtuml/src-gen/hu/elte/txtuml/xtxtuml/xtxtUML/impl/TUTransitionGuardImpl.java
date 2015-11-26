@@ -23,6 +23,7 @@ import org.eclipse.xtext.xbase.XExpression;
  * The following features are implemented:
  * </p>
  * <ul>
+ *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUTransitionGuardImpl#isElse <em>Else</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUTransitionGuardImpl#getExpression <em>Expression</em>}</li>
  * </ul>
  *
@@ -30,6 +31,26 @@ import org.eclipse.xtext.xbase.XExpression;
  */
 public class TUTransitionGuardImpl extends TUTransitionMemberImpl implements TUTransitionGuard
 {
+  /**
+   * The default value of the '{@link #isElse() <em>Else</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isElse()
+   * @generated
+   * @ordered
+   */
+  protected static final boolean ELSE_EDEFAULT = false;
+
+  /**
+   * The cached value of the '{@link #isElse() <em>Else</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isElse()
+   * @generated
+   * @ordered
+   */
+  protected boolean else_ = ELSE_EDEFAULT;
+
   /**
    * The cached value of the '{@link #getExpression() <em>Expression</em>}' containment reference.
    * <!-- begin-user-doc -->
@@ -59,6 +80,29 @@ public class TUTransitionGuardImpl extends TUTransitionMemberImpl implements TUT
   protected EClass eStaticClass()
   {
     return XtxtUMLPackage.Literals.TU_TRANSITION_GUARD;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public boolean isElse()
+  {
+    return else_;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public void setElse(boolean newElse)
+  {
+    boolean oldElse = else_;
+    else_ = newElse;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, XtxtUMLPackage.TU_TRANSITION_GUARD__ELSE, oldElse, else_));
   }
 
   /**
@@ -135,6 +179,8 @@ public class TUTransitionGuardImpl extends TUTransitionMemberImpl implements TUT
   {
     switch (featureID)
     {
+      case XtxtUMLPackage.TU_TRANSITION_GUARD__ELSE:
+        return isElse();
       case XtxtUMLPackage.TU_TRANSITION_GUARD__EXPRESSION:
         return getExpression();
     }
@@ -151,6 +197,9 @@ public class TUTransitionGuardImpl extends TUTransitionMemberImpl implements TUT
   {
     switch (featureID)
     {
+      case XtxtUMLPackage.TU_TRANSITION_GUARD__ELSE:
+        setElse((Boolean)newValue);
+        return;
       case XtxtUMLPackage.TU_TRANSITION_GUARD__EXPRESSION:
         setExpression((XExpression)newValue);
         return;
@@ -168,6 +217,9 @@ public class TUTransitionGuardImpl extends TUTransitionMemberImpl implements TUT
   {
     switch (featureID)
     {
+      case XtxtUMLPackage.TU_TRANSITION_GUARD__ELSE:
+        setElse(ELSE_EDEFAULT);
+        return;
       case XtxtUMLPackage.TU_TRANSITION_GUARD__EXPRESSION:
         setExpression((XExpression)null);
         return;
@@ -185,10 +237,29 @@ public class TUTransitionGuardImpl extends TUTransitionMemberImpl implements TUT
   {
     switch (featureID)
     {
+      case XtxtUMLPackage.TU_TRANSITION_GUARD__ELSE:
+        return else_ != ELSE_EDEFAULT;
       case XtxtUMLPackage.TU_TRANSITION_GUARD__EXPRESSION:
         return expression != null;
     }
     return super.eIsSet(featureID);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public String toString()
+  {
+    if (eIsProxy()) return super.toString();
+
+    StringBuffer result = new StringBuffer(super.toString());
+    result.append(" (else: ");
+    result.append(else_);
+    result.append(')');
+    return result.toString();
   }
 
 } //TUTransitionGuardImpl

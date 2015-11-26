@@ -954,16 +954,19 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 		private final Group cGroup = (Group)rule.eContents().get(1);
 		private final Keyword cGuardKeyword_0 = (Keyword)cGroup.eContents().get(0);
 		private final Keyword cLeftParenthesisKeyword_1 = (Keyword)cGroup.eContents().get(1);
-		private final Assignment cExpressionAssignment_2 = (Assignment)cGroup.eContents().get(2);
-		private final RuleCall cExpressionXExpressionParserRuleCall_2_0 = (RuleCall)cExpressionAssignment_2.eContents().get(0);
+		private final Alternatives cAlternatives_2 = (Alternatives)cGroup.eContents().get(2);
+		private final Assignment cElseAssignment_2_0 = (Assignment)cAlternatives_2.eContents().get(0);
+		private final Keyword cElseElseKeyword_2_0_0 = (Keyword)cElseAssignment_2_0.eContents().get(0);
+		private final Assignment cExpressionAssignment_2_1 = (Assignment)cAlternatives_2.eContents().get(1);
+		private final RuleCall cExpressionXExpressionParserRuleCall_2_1_0 = (RuleCall)cExpressionAssignment_2_1.eContents().get(0);
 		private final Keyword cRightParenthesisKeyword_3 = (Keyword)cGroup.eContents().get(3);
 		private final Keyword cSemicolonKeyword_4 = (Keyword)cGroup.eContents().get(4);
 		
 		//TUTransitionGuard:
-		//	"guard" "(" expression=XExpression ")" ";"?;
+		//	"guard" "(" (else?="else" | expression=XExpression) ")" ";"?;
 		@Override public ParserRule getRule() { return rule; }
 
-		//"guard" "(" expression=XExpression ")" ";"?
+		//"guard" "(" (else?="else" | expression=XExpression) ")" ";"?
 		public Group getGroup() { return cGroup; }
 
 		//"guard"
@@ -972,11 +975,20 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 		//"("
 		public Keyword getLeftParenthesisKeyword_1() { return cLeftParenthesisKeyword_1; }
 
+		//else?="else" | expression=XExpression
+		public Alternatives getAlternatives_2() { return cAlternatives_2; }
+
+		//else?="else"
+		public Assignment getElseAssignment_2_0() { return cElseAssignment_2_0; }
+
+		//"else"
+		public Keyword getElseElseKeyword_2_0_0() { return cElseElseKeyword_2_0_0; }
+
 		//expression=XExpression
-		public Assignment getExpressionAssignment_2() { return cExpressionAssignment_2; }
+		public Assignment getExpressionAssignment_2_1() { return cExpressionAssignment_2_1; }
 
 		//XExpression
-		public RuleCall getExpressionXExpressionParserRuleCall_2_0() { return cExpressionXExpressionParserRuleCall_2_0; }
+		public RuleCall getExpressionXExpressionParserRuleCall_2_1_0() { return cExpressionXExpressionParserRuleCall_2_1_0; }
 
 		//")"
 		public Keyword getRightParenthesisKeyword_3() { return cRightParenthesisKeyword_3; }
@@ -1189,6 +1201,33 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 		public RuleCall getObjectXExpressionParserRuleCall_2_0() { return cObjectXExpressionParserRuleCall_2_0; }
 	}
 
+	public class RAlfSignalAccessExpressionElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "RAlfSignalAccessExpression");
+		private final Group cGroup = (Group)rule.eContents().get(1);
+		private final Action cRAlfSignalAccessExpressionAction_0 = (Action)cGroup.eContents().get(0);
+		private final Assignment cSigdataAssignment_1 = (Assignment)cGroup.eContents().get(1);
+		private final Keyword cSigdataSigdataKeyword_1_0 = (Keyword)cSigdataAssignment_1.eContents().get(0);
+		
+		//// the sole purpose of the sigdata feature
+		//// is to provide a feature for validation
+		//// to put a marker on
+		//RAlfSignalAccessExpression returns xbase::XExpression:
+		//	{RAlfSignalAccessExpression} sigdata="sigdata";
+		@Override public ParserRule getRule() { return rule; }
+
+		//{RAlfSignalAccessExpression} sigdata="sigdata"
+		public Group getGroup() { return cGroup; }
+
+		//{RAlfSignalAccessExpression}
+		public Action getRAlfSignalAccessExpressionAction_0() { return cRAlfSignalAccessExpressionAction_0; }
+
+		//sigdata="sigdata"
+		public Assignment getSigdataAssignment_1() { return cSigdataAssignment_1; }
+
+		//"sigdata"
+		public Keyword getSigdataSigdataKeyword_1_0() { return cSigdataSigdataKeyword_1_0; }
+	}
+
 	public class XRAlfStatementElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "XRAlfStatement");
 		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
@@ -1360,6 +1399,7 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cXFeatureCallParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
 		private final RuleCall cXLiteralParserRuleCall_2 = (RuleCall)cAlternatives.eContents().get(2);
 		private final RuleCall cXParenthesizedRAlfExpressionParserRuleCall_3 = (RuleCall)cAlternatives.eContents().get(3);
+		private final RuleCall cRAlfSignalAccessExpressionParserRuleCall_4 = (RuleCall)cAlternatives.eContents().get(4);
 		
 		/// *
 		// * Changes:
@@ -1389,10 +1429,10 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 		// *     </li>
 		// * </ul>
 		// * / XPrimaryExpression returns xbase::XExpression:
-		//	XConstructorCall | XFeatureCall | XLiteral | XParenthesizedRAlfExpression;
+		//	XConstructorCall | XFeatureCall | XLiteral | XParenthesizedRAlfExpression | RAlfSignalAccessExpression;
 		@Override public ParserRule getRule() { return rule; }
 
-		//XConstructorCall | XFeatureCall | XLiteral | XParenthesizedRAlfExpression
+		//XConstructorCall | XFeatureCall | XLiteral | XParenthesizedRAlfExpression | RAlfSignalAccessExpression
 		public Alternatives getAlternatives() { return cAlternatives; }
 
 		//XConstructorCall
@@ -1406,6 +1446,9 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 
 		//XParenthesizedRAlfExpression
 		public RuleCall getXParenthesizedRAlfExpressionParserRuleCall_3() { return cXParenthesizedRAlfExpressionParserRuleCall_3; }
+
+		//RAlfSignalAccessExpression
+		public RuleCall getRAlfSignalAccessExpressionParserRuleCall_4() { return cRAlfSignalAccessExpressionParserRuleCall_4; }
 	}
 
 	public class XConstructorCallElements extends AbstractParserRuleElementFinder {
@@ -2884,6 +2927,7 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 	private final TUVisibilityElements unknownRuleTUVisibility;
 	private final RAlfSendSignalExpressionElements pRAlfSendSignalExpression;
 	private final RAlfDeleteObjectExpressionElements pRAlfDeleteObjectExpression;
+	private final RAlfSignalAccessExpressionElements pRAlfSignalAccessExpression;
 	private final XRAlfStatementElements pXRAlfStatement;
 	private final XRAlfStatementSemicolonNotNeededElements pXRAlfStatementSemicolonNotNeeded;
 	private final XRAlfStatementSemicolonNeededElements pXRAlfStatementSemicolonNeeded;
@@ -2945,6 +2989,7 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 		this.unknownRuleTUVisibility = new TUVisibilityElements();
 		this.pRAlfSendSignalExpression = new RAlfSendSignalExpressionElements();
 		this.pRAlfDeleteObjectExpression = new RAlfDeleteObjectExpressionElements();
+		this.pRAlfSignalAccessExpression = new RAlfSignalAccessExpressionElements();
 		this.pXRAlfStatement = new XRAlfStatementElements();
 		this.pXRAlfStatementSemicolonNotNeeded = new XRAlfStatementSemicolonNotNeededElements();
 		this.pXRAlfStatementSemicolonNeeded = new XRAlfStatementSemicolonNeededElements();
@@ -3211,7 +3256,7 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 	}
 
 	//TUTransitionGuard:
-	//	"guard" "(" expression=XExpression ")" ";"?;
+	//	"guard" "(" (else?="else" | expression=XExpression) ")" ";"?;
 	public TUTransitionGuardElements getTUTransitionGuardAccess() {
 		return pTUTransitionGuard;
 	}
@@ -3272,6 +3317,19 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 	
 	public ParserRule getRAlfDeleteObjectExpressionRule() {
 		return getRAlfDeleteObjectExpressionAccess().getRule();
+	}
+
+	//// the sole purpose of the sigdata feature
+	//// is to provide a feature for validation
+	//// to put a marker on
+	//RAlfSignalAccessExpression returns xbase::XExpression:
+	//	{RAlfSignalAccessExpression} sigdata="sigdata";
+	public RAlfSignalAccessExpressionElements getRAlfSignalAccessExpressionAccess() {
+		return pRAlfSignalAccessExpression;
+	}
+	
+	public ParserRule getRAlfSignalAccessExpressionRule() {
+		return getRAlfSignalAccessExpressionAccess().getRule();
 	}
 
 	//// Added rAlf-Xbase rules
@@ -3370,7 +3428,7 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 	// *     </li>
 	// * </ul>
 	// * / XPrimaryExpression returns xbase::XExpression:
-	//	XConstructorCall | XFeatureCall | XLiteral | XParenthesizedRAlfExpression;
+	//	XConstructorCall | XFeatureCall | XLiteral | XParenthesizedRAlfExpression | RAlfSignalAccessExpression;
 	public XPrimaryExpressionElements getXPrimaryExpressionAccess() {
 		return pXPrimaryExpression;
 	}

@@ -84,6 +84,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUTransitionEffect/body"/>
     </genClasses>
     <genClasses ecoreClass="XtxtUML.ecore#//TUTransitionGuard">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUTransitionGuard/else"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUTransitionGuard/expression"/>
     </genClasses>
     <genClasses ecoreClass="XtxtUML.ecore#//TUAssociationEnd">
@@ -118,6 +119,9 @@
     </genClasses>
     <genClasses ecoreClass="XtxtUML.ecore#//RAlfDeleteObjectExpression">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//RAlfDeleteObjectExpression/object"/>
+    </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//RAlfSignalAccessExpression">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//RAlfSignalAccessExpression/sigdata"/>
     </genClasses>
     <genClasses ecoreClass="XtxtUML.ecore#//RAlfAssocNavExpression">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//RAlfAssocNavExpression/left"/>

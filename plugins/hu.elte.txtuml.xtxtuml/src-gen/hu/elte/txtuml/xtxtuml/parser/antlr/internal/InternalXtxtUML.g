@@ -1560,31 +1560,47 @@ ruleTUTransitionGuard returns [EObject current=null]
     {
     	newLeafNode(otherlv_1, grammarAccess.getTUTransitionGuardAccess().getLeftParenthesisKeyword_1());
     }
+((
 (
+		lv_else_2_0=	'else' 
+    {
+        newLeafNode(lv_else_2_0, grammarAccess.getTUTransitionGuardAccess().getElseElseKeyword_2_0_0());
+    }
+ 
+	    {
+	        if ($current==null) {
+	            $current = createModelElement(grammarAccess.getTUTransitionGuardRule());
+	        }
+       		setWithLastConsumed($current, "else", true, "else");
+	    }
+
+)
+)
+    |(
 (
 		{ 
-	        newCompositeNode(grammarAccess.getTUTransitionGuardAccess().getExpressionXExpressionParserRuleCall_2_0()); 
+	        newCompositeNode(grammarAccess.getTUTransitionGuardAccess().getExpressionXExpressionParserRuleCall_2_1_0()); 
 	    }
-		lv_expression_2_0=ruleXExpression		{
+		lv_expression_3_0=ruleXExpression		{
 	        if ($current==null) {
 	            $current = createModelElementForParent(grammarAccess.getTUTransitionGuardRule());
 	        }
        		set(
        			$current, 
        			"expression",
-        		lv_expression_2_0, 
+        		lv_expression_3_0, 
         		"XExpression");
 	        afterParserOrEnumRuleCall();
 	    }
 
 )
-)	otherlv_3=')' 
+))	otherlv_4=')' 
     {
-    	newLeafNode(otherlv_3, grammarAccess.getTUTransitionGuardAccess().getRightParenthesisKeyword_3());
+    	newLeafNode(otherlv_4, grammarAccess.getTUTransitionGuardAccess().getRightParenthesisKeyword_3());
     }
-(	otherlv_4=';' 
+(	otherlv_5=';' 
     {
-    	newLeafNode(otherlv_4, grammarAccess.getTUTransitionGuardAccess().getSemicolonKeyword_4());
+    	newLeafNode(otherlv_5, grammarAccess.getTUTransitionGuardAccess().getSemicolonKeyword_4());
     }
 )?)
 ;
@@ -1941,6 +1957,48 @@ ruleRAlfDeleteObjectExpression returns [EObject current=null]
 
 
 
+// Entry rule entryRuleRAlfSignalAccessExpression
+entryRuleRAlfSignalAccessExpression returns [EObject current=null] 
+	:
+	{ newCompositeNode(grammarAccess.getRAlfSignalAccessExpressionRule()); }
+	 iv_ruleRAlfSignalAccessExpression=ruleRAlfSignalAccessExpression 
+	 { $current=$iv_ruleRAlfSignalAccessExpression.current; } 
+	 EOF 
+;
+
+// Rule RAlfSignalAccessExpression
+ruleRAlfSignalAccessExpression returns [EObject current=null] 
+    @init { enterRule(); 
+    }
+    @after { leaveRule(); }:
+((
+    {
+        $current = forceCreateModelElement(
+            grammarAccess.getRAlfSignalAccessExpressionAccess().getRAlfSignalAccessExpressionAction_0(),
+            $current);
+    }
+)(
+(
+		lv_sigdata_1_0=	'sigdata' 
+    {
+        newLeafNode(lv_sigdata_1_0, grammarAccess.getRAlfSignalAccessExpressionAccess().getSigdataSigdataKeyword_1_0());
+    }
+ 
+	    {
+	        if ($current==null) {
+	            $current = createModelElement(grammarAccess.getRAlfSignalAccessExpressionRule());
+	        }
+       		setWithLastConsumed($current, "sigdata", lv_sigdata_1_0, "sigdata");
+	    }
+
+)
+))
+;
+
+
+
+
+
 
 
 // Entry rule entryRuleXRAlfStatementSemicolonNotNeeded
@@ -2269,6 +2327,16 @@ ruleXPrimaryExpression returns [EObject current=null]
     this_XParenthesizedRAlfExpression_3=ruleXParenthesizedRAlfExpression
     { 
         $current = $this_XParenthesizedRAlfExpression_3.current; 
+        afterParserOrEnumRuleCall();
+    }
+
+    |
+    { 
+        newCompositeNode(grammarAccess.getXPrimaryExpressionAccess().getRAlfSignalAccessExpressionParserRuleCall_4()); 
+    }
+    this_RAlfSignalAccessExpression_4=ruleRAlfSignalAccessExpression
+    { 
+        $current = $this_RAlfSignalAccessExpression_4.current; 
         afterParserOrEnumRuleCall();
     }
 )
@@ -3533,6 +3601,7 @@ ruleXReturnExpression returns [EObject current=null]
  | 	'true' 
  | 	'null' 
  | 	'(' 
+ | 	'sigdata' 
  | 	RULE_ID | 	RULE_HEX | 	RULE_INT | 	RULE_DECIMAL | 	RULE_STRING)=>
 (
 		{ 

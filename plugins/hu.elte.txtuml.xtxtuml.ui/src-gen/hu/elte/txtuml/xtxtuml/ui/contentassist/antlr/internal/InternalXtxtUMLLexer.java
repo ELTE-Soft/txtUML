@@ -60,6 +60,7 @@ public class InternalXtxtUMLLexer extends Lexer {
     public static final int T__100=100;
     public static final int T__92=92;
     public static final int T__93=93;
+    public static final int T__102=102;
     public static final int T__94=94;
     public static final int T__101=101;
     public static final int T__90=90;
@@ -1935,10 +1936,11 @@ public class InternalXtxtUMLLexer extends Lexer {
         try {
             int _type = T__100;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:98:8: ( '|' )
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:98:10: '|'
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:98:8: ( 'sigdata' )
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:98:10: 'sigdata'
             {
-            match('|'); 
+            match("sigdata"); 
+
 
             }
 
@@ -1955,8 +1957,28 @@ public class InternalXtxtUMLLexer extends Lexer {
         try {
             int _type = T__101;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:99:8: ( 'true' )
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:99:10: 'true'
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:99:8: ( '|' )
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:99:10: '|'
+            {
+            match('|'); 
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__101"
+
+    // $ANTLR start "T__102"
+    public final void mT__102() throws RecognitionException {
+        try {
+            int _type = T__102;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:100:8: ( 'true' )
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:100:10: 'true'
             {
             match("true"); 
 
@@ -1969,17 +1991,17 @@ public class InternalXtxtUMLLexer extends Lexer {
         finally {
         }
     }
-    // $ANTLR end "T__101"
+    // $ANTLR end "T__102"
 
     // $ANTLR start "RULE_HEX"
     public final void mRULE_HEX() throws RecognitionException {
         try {
             int _type = RULE_HEX;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20535:10: ( ( '0x' | '0X' ) ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' | '_' )+ ( '#' ( ( 'b' | 'B' ) ( 'i' | 'I' ) | ( 'l' | 'L' ) ) )? )
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20535:12: ( '0x' | '0X' ) ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' | '_' )+ ( '#' ( ( 'b' | 'B' ) ( 'i' | 'I' ) | ( 'l' | 'L' ) ) )?
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20700:10: ( ( '0x' | '0X' ) ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' | '_' )+ ( '#' ( ( 'b' | 'B' ) ( 'i' | 'I' ) | ( 'l' | 'L' ) ) )? )
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20700:12: ( '0x' | '0X' ) ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' | '_' )+ ( '#' ( ( 'b' | 'B' ) ( 'i' | 'I' ) | ( 'l' | 'L' ) ) )?
             {
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20535:12: ( '0x' | '0X' )
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20700:12: ( '0x' | '0X' )
             int alt1=2;
             int LA1_0 = input.LA(1);
 
@@ -2007,7 +2029,7 @@ public class InternalXtxtUMLLexer extends Lexer {
             }
             switch (alt1) {
                 case 1 :
-                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20535:13: '0x'
+                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20700:13: '0x'
                     {
                     match("0x"); 
 
@@ -2015,7 +2037,7 @@ public class InternalXtxtUMLLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20535:18: '0X'
+                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20700:18: '0X'
                     {
                     match("0X"); 
 
@@ -2025,7 +2047,7 @@ public class InternalXtxtUMLLexer extends Lexer {
 
             }
 
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20535:24: ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' | '_' )+
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20700:24: ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' | '_' )+
             int cnt2=0;
             loop2:
             do {
@@ -2063,7 +2085,7 @@ public class InternalXtxtUMLLexer extends Lexer {
                 cnt2++;
             } while (true);
 
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20535:58: ( '#' ( ( 'b' | 'B' ) ( 'i' | 'I' ) | ( 'l' | 'L' ) ) )?
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20700:58: ( '#' ( ( 'b' | 'B' ) ( 'i' | 'I' ) | ( 'l' | 'L' ) ) )?
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -2072,10 +2094,10 @@ public class InternalXtxtUMLLexer extends Lexer {
             }
             switch (alt4) {
                 case 1 :
-                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20535:59: '#' ( ( 'b' | 'B' ) ( 'i' | 'I' ) | ( 'l' | 'L' ) )
+                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20700:59: '#' ( ( 'b' | 'B' ) ( 'i' | 'I' ) | ( 'l' | 'L' ) )
                     {
                     match('#'); 
-                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20535:63: ( ( 'b' | 'B' ) ( 'i' | 'I' ) | ( 'l' | 'L' ) )
+                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20700:63: ( ( 'b' | 'B' ) ( 'i' | 'I' ) | ( 'l' | 'L' ) )
                     int alt3=2;
                     int LA3_0 = input.LA(1);
 
@@ -2093,7 +2115,7 @@ public class InternalXtxtUMLLexer extends Lexer {
                     }
                     switch (alt3) {
                         case 1 :
-                            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20535:64: ( 'b' | 'B' ) ( 'i' | 'I' )
+                            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20700:64: ( 'b' | 'B' ) ( 'i' | 'I' )
                             {
                             if ( input.LA(1)=='B'||input.LA(1)=='b' ) {
                                 input.consume();
@@ -2117,7 +2139,7 @@ public class InternalXtxtUMLLexer extends Lexer {
                             }
                             break;
                         case 2 :
-                            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20535:84: ( 'l' | 'L' )
+                            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20700:84: ( 'l' | 'L' )
                             {
                             if ( input.LA(1)=='L'||input.LA(1)=='l' ) {
                                 input.consume();
@@ -2156,11 +2178,11 @@ public class InternalXtxtUMLLexer extends Lexer {
         try {
             int _type = RULE_INT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20537:10: ( '0' .. '9' ( '0' .. '9' | '_' )* )
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20537:12: '0' .. '9' ( '0' .. '9' | '_' )*
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20702:10: ( '0' .. '9' ( '0' .. '9' | '_' )* )
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20702:12: '0' .. '9' ( '0' .. '9' | '_' )*
             {
             matchRange('0','9'); 
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20537:21: ( '0' .. '9' | '_' )*
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20702:21: ( '0' .. '9' | '_' )*
             loop5:
             do {
                 int alt5=2;
@@ -2209,11 +2231,11 @@ public class InternalXtxtUMLLexer extends Lexer {
         try {
             int _type = RULE_DECIMAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20539:14: ( RULE_INT ( ( 'e' | 'E' ) ( '+' | '-' )? RULE_INT )? ( ( 'b' | 'B' ) ( 'i' | 'I' | 'd' | 'D' ) | ( 'l' | 'L' | 'd' | 'D' | 'f' | 'F' ) )? )
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20539:16: RULE_INT ( ( 'e' | 'E' ) ( '+' | '-' )? RULE_INT )? ( ( 'b' | 'B' ) ( 'i' | 'I' | 'd' | 'D' ) | ( 'l' | 'L' | 'd' | 'D' | 'f' | 'F' ) )?
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20704:14: ( RULE_INT ( ( 'e' | 'E' ) ( '+' | '-' )? RULE_INT )? ( ( 'b' | 'B' ) ( 'i' | 'I' | 'd' | 'D' ) | ( 'l' | 'L' | 'd' | 'D' | 'f' | 'F' ) )? )
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20704:16: RULE_INT ( ( 'e' | 'E' ) ( '+' | '-' )? RULE_INT )? ( ( 'b' | 'B' ) ( 'i' | 'I' | 'd' | 'D' ) | ( 'l' | 'L' | 'd' | 'D' | 'f' | 'F' ) )?
             {
             mRULE_INT(); 
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20539:25: ( ( 'e' | 'E' ) ( '+' | '-' )? RULE_INT )?
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20704:25: ( ( 'e' | 'E' ) ( '+' | '-' )? RULE_INT )?
             int alt7=2;
             int LA7_0 = input.LA(1);
 
@@ -2222,7 +2244,7 @@ public class InternalXtxtUMLLexer extends Lexer {
             }
             switch (alt7) {
                 case 1 :
-                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20539:26: ( 'e' | 'E' ) ( '+' | '-' )? RULE_INT
+                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20704:26: ( 'e' | 'E' ) ( '+' | '-' )? RULE_INT
                     {
                     if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                         input.consume();
@@ -2233,7 +2255,7 @@ public class InternalXtxtUMLLexer extends Lexer {
                         recover(mse);
                         throw mse;}
 
-                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20539:36: ( '+' | '-' )?
+                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20704:36: ( '+' | '-' )?
                     int alt6=2;
                     int LA6_0 = input.LA(1);
 
@@ -2266,7 +2288,7 @@ public class InternalXtxtUMLLexer extends Lexer {
 
             }
 
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20539:58: ( ( 'b' | 'B' ) ( 'i' | 'I' | 'd' | 'D' ) | ( 'l' | 'L' | 'd' | 'D' | 'f' | 'F' ) )?
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20704:58: ( ( 'b' | 'B' ) ( 'i' | 'I' | 'd' | 'D' ) | ( 'l' | 'L' | 'd' | 'D' | 'f' | 'F' ) )?
             int alt8=3;
             int LA8_0 = input.LA(1);
 
@@ -2278,7 +2300,7 @@ public class InternalXtxtUMLLexer extends Lexer {
             }
             switch (alt8) {
                 case 1 :
-                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20539:59: ( 'b' | 'B' ) ( 'i' | 'I' | 'd' | 'D' )
+                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20704:59: ( 'b' | 'B' ) ( 'i' | 'I' | 'd' | 'D' )
                     {
                     if ( input.LA(1)=='B'||input.LA(1)=='b' ) {
                         input.consume();
@@ -2302,7 +2324,7 @@ public class InternalXtxtUMLLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20539:87: ( 'l' | 'L' | 'd' | 'D' | 'f' | 'F' )
+                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20704:87: ( 'l' | 'L' | 'd' | 'D' | 'f' | 'F' )
                     {
                     if ( input.LA(1)=='D'||input.LA(1)=='F'||input.LA(1)=='L'||input.LA(1)=='d'||input.LA(1)=='f'||input.LA(1)=='l' ) {
                         input.consume();
@@ -2335,10 +2357,10 @@ public class InternalXtxtUMLLexer extends Lexer {
         try {
             int _type = RULE_ID;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20541:9: ( ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' | '0' .. '9' )* )
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20541:11: ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' | '0' .. '9' )*
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20706:9: ( ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' | '0' .. '9' )* )
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20706:11: ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' | '0' .. '9' )*
             {
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20541:11: ( '^' )?
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20706:11: ( '^' )?
             int alt9=2;
             int LA9_0 = input.LA(1);
 
@@ -2347,7 +2369,7 @@ public class InternalXtxtUMLLexer extends Lexer {
             }
             switch (alt9) {
                 case 1 :
-                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20541:11: '^'
+                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20706:11: '^'
                     {
                     match('^'); 
 
@@ -2365,7 +2387,7 @@ public class InternalXtxtUMLLexer extends Lexer {
                 recover(mse);
                 throw mse;}
 
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20541:44: ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' | '0' .. '9' )*
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20706:44: ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' | '0' .. '9' )*
             loop10:
             do {
                 int alt10=2;
@@ -2414,10 +2436,10 @@ public class InternalXtxtUMLLexer extends Lexer {
         try {
             int _type = RULE_STRING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20543:13: ( ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* ( '\"' )? | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* ( '\\'' )? ) )
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20543:15: ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* ( '\"' )? | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* ( '\\'' )? )
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20708:13: ( ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* ( '\"' )? | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* ( '\\'' )? ) )
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20708:15: ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* ( '\"' )? | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* ( '\\'' )? )
             {
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20543:15: ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* ( '\"' )? | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* ( '\\'' )? )
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20708:15: ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* ( '\"' )? | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* ( '\\'' )? )
             int alt15=2;
             int LA15_0 = input.LA(1);
 
@@ -2435,10 +2457,10 @@ public class InternalXtxtUMLLexer extends Lexer {
             }
             switch (alt15) {
                 case 1 :
-                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20543:16: '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* ( '\"' )?
+                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20708:16: '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* ( '\"' )?
                     {
                     match('\"'); 
-                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20543:20: ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )*
+                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20708:20: ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )*
                     loop11:
                     do {
                         int alt11=3;
@@ -2454,7 +2476,7 @@ public class InternalXtxtUMLLexer extends Lexer {
 
                         switch (alt11) {
                     	case 1 :
-                    	    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20543:21: '\\\\' .
+                    	    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20708:21: '\\\\' .
                     	    {
                     	    match('\\'); 
                     	    matchAny(); 
@@ -2462,7 +2484,7 @@ public class InternalXtxtUMLLexer extends Lexer {
                     	    }
                     	    break;
                     	case 2 :
-                    	    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20543:28: ~ ( ( '\\\\' | '\"' ) )
+                    	    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20708:28: ~ ( ( '\\\\' | '\"' ) )
                     	    {
                     	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='!')||(input.LA(1)>='#' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
                     	        input.consume();
@@ -2482,7 +2504,7 @@ public class InternalXtxtUMLLexer extends Lexer {
                         }
                     } while (true);
 
-                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20543:44: ( '\"' )?
+                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20708:44: ( '\"' )?
                     int alt12=2;
                     int LA12_0 = input.LA(1);
 
@@ -2491,7 +2513,7 @@ public class InternalXtxtUMLLexer extends Lexer {
                     }
                     switch (alt12) {
                         case 1 :
-                            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20543:44: '\"'
+                            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20708:44: '\"'
                             {
                             match('\"'); 
 
@@ -2504,10 +2526,10 @@ public class InternalXtxtUMLLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20543:49: '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* ( '\\'' )?
+                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20708:49: '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* ( '\\'' )?
                     {
                     match('\''); 
-                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20543:54: ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )*
+                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20708:54: ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )*
                     loop13:
                     do {
                         int alt13=3;
@@ -2523,7 +2545,7 @@ public class InternalXtxtUMLLexer extends Lexer {
 
                         switch (alt13) {
                     	case 1 :
-                    	    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20543:55: '\\\\' .
+                    	    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20708:55: '\\\\' .
                     	    {
                     	    match('\\'); 
                     	    matchAny(); 
@@ -2531,7 +2553,7 @@ public class InternalXtxtUMLLexer extends Lexer {
                     	    }
                     	    break;
                     	case 2 :
-                    	    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20543:62: ~ ( ( '\\\\' | '\\'' ) )
+                    	    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20708:62: ~ ( ( '\\\\' | '\\'' ) )
                     	    {
                     	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
                     	        input.consume();
@@ -2551,7 +2573,7 @@ public class InternalXtxtUMLLexer extends Lexer {
                         }
                     } while (true);
 
-                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20543:79: ( '\\'' )?
+                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20708:79: ( '\\'' )?
                     int alt14=2;
                     int LA14_0 = input.LA(1);
 
@@ -2560,7 +2582,7 @@ public class InternalXtxtUMLLexer extends Lexer {
                     }
                     switch (alt14) {
                         case 1 :
-                            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20543:79: '\\''
+                            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20708:79: '\\''
                             {
                             match('\''); 
 
@@ -2591,12 +2613,12 @@ public class InternalXtxtUMLLexer extends Lexer {
         try {
             int _type = RULE_ML_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20545:17: ( '/*' ( options {greedy=false; } : . )* '*/' )
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20545:19: '/*' ( options {greedy=false; } : . )* '*/'
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20710:17: ( '/*' ( options {greedy=false; } : . )* '*/' )
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20710:19: '/*' ( options {greedy=false; } : . )* '*/'
             {
             match("/*"); 
 
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20545:24: ( options {greedy=false; } : . )*
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20710:24: ( options {greedy=false; } : . )*
             loop16:
             do {
                 int alt16=2;
@@ -2621,7 +2643,7 @@ public class InternalXtxtUMLLexer extends Lexer {
 
                 switch (alt16) {
             	case 1 :
-            	    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20545:52: .
+            	    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20710:52: .
             	    {
             	    matchAny(); 
 
@@ -2651,12 +2673,12 @@ public class InternalXtxtUMLLexer extends Lexer {
         try {
             int _type = RULE_SL_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20547:17: ( '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )? )
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20547:19: '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )?
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20712:17: ( '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )? )
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20712:19: '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )?
             {
             match("//"); 
 
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20547:24: (~ ( ( '\\n' | '\\r' ) ) )*
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20712:24: (~ ( ( '\\n' | '\\r' ) ) )*
             loop17:
             do {
                 int alt17=2;
@@ -2669,7 +2691,7 @@ public class InternalXtxtUMLLexer extends Lexer {
 
                 switch (alt17) {
             	case 1 :
-            	    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20547:24: ~ ( ( '\\n' | '\\r' ) )
+            	    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20712:24: ~ ( ( '\\n' | '\\r' ) )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='\t')||(input.LA(1)>='\u000B' && input.LA(1)<='\f')||(input.LA(1)>='\u000E' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
@@ -2689,7 +2711,7 @@ public class InternalXtxtUMLLexer extends Lexer {
                 }
             } while (true);
 
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20547:40: ( ( '\\r' )? '\\n' )?
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20712:40: ( ( '\\r' )? '\\n' )?
             int alt19=2;
             int LA19_0 = input.LA(1);
 
@@ -2698,9 +2720,9 @@ public class InternalXtxtUMLLexer extends Lexer {
             }
             switch (alt19) {
                 case 1 :
-                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20547:41: ( '\\r' )? '\\n'
+                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20712:41: ( '\\r' )? '\\n'
                     {
-                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20547:41: ( '\\r' )?
+                    // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20712:41: ( '\\r' )?
                     int alt18=2;
                     int LA18_0 = input.LA(1);
 
@@ -2709,7 +2731,7 @@ public class InternalXtxtUMLLexer extends Lexer {
                     }
                     switch (alt18) {
                         case 1 :
-                            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20547:41: '\\r'
+                            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20712:41: '\\r'
                             {
                             match('\r'); 
 
@@ -2741,10 +2763,10 @@ public class InternalXtxtUMLLexer extends Lexer {
         try {
             int _type = RULE_WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20549:9: ( ( ' ' | '\\t' | '\\r' | '\\n' )+ )
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20549:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20714:9: ( ( ' ' | '\\t' | '\\r' | '\\n' )+ )
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20714:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
             {
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20549:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20714:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
             int cnt20=0;
             loop20:
             do {
@@ -2798,8 +2820,8 @@ public class InternalXtxtUMLLexer extends Lexer {
         try {
             int _type = RULE_ANY_OTHER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20551:16: ( . )
-            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20551:18: .
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20716:16: ( . )
+            // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:20716:18: .
             {
             matchAny(); 
 
@@ -2814,8 +2836,8 @@ public class InternalXtxtUMLLexer extends Lexer {
     // $ANTLR end "RULE_ANY_OTHER"
 
     public void mTokens() throws RecognitionException {
-        // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:8: ( T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | RULE_HEX | RULE_INT | RULE_DECIMAL | RULE_ID | RULE_STRING | RULE_ML_COMMENT | RULE_SL_COMMENT | RULE_WS | RULE_ANY_OTHER )
-        int alt21=98;
+        // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:8: ( T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | RULE_HEX | RULE_INT | RULE_DECIMAL | RULE_ID | RULE_STRING | RULE_ML_COMMENT | RULE_SL_COMMENT | RULE_WS | RULE_ANY_OTHER )
+        int alt21=99;
         alt21 = dfa21.predict(input);
         switch (alt21) {
             case 1 :
@@ -3442,63 +3464,70 @@ public class InternalXtxtUMLLexer extends Lexer {
                 }
                 break;
             case 90 :
-                // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:546: RULE_HEX
+                // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:546: T__102
+                {
+                mT__102(); 
+
+                }
+                break;
+            case 91 :
+                // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:553: RULE_HEX
                 {
                 mRULE_HEX(); 
 
                 }
                 break;
-            case 91 :
-                // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:555: RULE_INT
+            case 92 :
+                // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:562: RULE_INT
                 {
                 mRULE_INT(); 
 
                 }
                 break;
-            case 92 :
-                // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:564: RULE_DECIMAL
+            case 93 :
+                // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:571: RULE_DECIMAL
                 {
                 mRULE_DECIMAL(); 
 
                 }
                 break;
-            case 93 :
-                // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:577: RULE_ID
+            case 94 :
+                // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:584: RULE_ID
                 {
                 mRULE_ID(); 
 
                 }
                 break;
-            case 94 :
-                // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:585: RULE_STRING
+            case 95 :
+                // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:592: RULE_STRING
                 {
                 mRULE_STRING(); 
 
                 }
                 break;
-            case 95 :
-                // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:597: RULE_ML_COMMENT
+            case 96 :
+                // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:604: RULE_ML_COMMENT
                 {
                 mRULE_ML_COMMENT(); 
 
                 }
                 break;
-            case 96 :
-                // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:613: RULE_SL_COMMENT
+            case 97 :
+                // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:620: RULE_SL_COMMENT
                 {
                 mRULE_SL_COMMENT(); 
 
                 }
                 break;
-            case 97 :
-                // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:629: RULE_WS
+            case 98 :
+                // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:636: RULE_WS
                 {
                 mRULE_WS(); 
 
                 }
                 break;
-            case 98 :
-                // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:637: RULE_ANY_OTHER
+            case 99 :
+                // ../hu.elte.txtuml.xtxtuml.ui/src-gen/hu/elte/txtuml/xtxtuml/ui/contentassist/antlr/internal/InternalXtxtUML.g:1:644: RULE_ANY_OTHER
                 {
                 mRULE_ANY_OTHER(); 
 
@@ -3517,22 +3546,22 @@ public class InternalXtxtUMLLexer extends Lexer {
         "\1\70\4\uffff\1\70\2\175\1\56\5\uffff\1\u0082\6\uffff\1\u0083\1"+
         "\70\23\uffff\1\u0088\4\uffff\12\70\1\u0097\1\u0098\13\70\2\uffff"+
         "\1\u00a8\3\uffff\2\70\1\u00ac\3\70\2\uffff\1\70\4\uffff\1\70\1\uffff"+
-        "\1\175\7\uffff\3\70\2\uffff\16\70\2\uffff\1\70\1\u00c4\15\70\1\uffff"+
-        "\3\70\1\uffff\1\u00d5\6\70\1\u00dc\2\70\1\u00df\1\70\1\u00e1\4\70"+
-        "\1\u00e7\5\70\1\uffff\1\u00ed\4\70\1\u00f2\12\70\1\uffff\1\u00fd"+
-        "\5\70\1\uffff\2\70\1\uffff\1\70\1\uffff\1\u0107\1\70\1\u0109\1\u010a"+
-        "\1\70\1\uffff\4\70\1\u0110\1\uffff\3\70\1\u0114\1\uffff\1\u0115"+
-        "\4\70\1\u011a\1\70\1\u011c\2\70\1\uffff\1\u011f\7\70\1\u0127\1\uffff"+
-        "\1\u0128\2\uffff\1\u0129\1\u012a\1\u012b\2\70\1\uffff\1\u012e\2"+
-        "\70\2\uffff\3\70\1\u0134\1\uffff\1\70\1\uffff\1\u0136\1\70\1\uffff"+
-        "\1\u0138\1\u0139\1\70\1\u013b\1\u013c\2\70\5\uffff\1\u013f\1\70"+
-        "\1\uffff\2\70\1\u0143\1\u0144\1\70\1\uffff\1\70\1\uffff\1\u0147"+
-        "\2\uffff\1\70\2\uffff\2\70\1\uffff\3\70\2\uffff\2\70\1\uffff\1\70"+
-        "\1\u0152\1\u0153\1\70\1\u0155\1\70\1\u0157\1\u0158\1\70\1\u015a"+
-        "\2\uffff\1\u015b\1\uffff\1\70\2\uffff\1\70\2\uffff\1\u015e\1\u015f"+
+        "\1\175\7\uffff\3\70\2\uffff\16\70\2\uffff\1\70\1\u00c5\15\70\1\uffff"+
+        "\3\70\1\uffff\1\u00d6\6\70\1\u00dd\2\70\1\u00e0\1\70\1\u00e2\5\70"+
+        "\1\u00e9\5\70\1\uffff\1\u00ef\4\70\1\u00f4\12\70\1\uffff\1\u00ff"+
+        "\5\70\1\uffff\2\70\1\uffff\1\70\1\uffff\1\u0109\1\70\1\u010b\1\u010c"+
+        "\2\70\1\uffff\4\70\1\u0113\1\uffff\3\70\1\u0117\1\uffff\1\u0118"+
+        "\4\70\1\u011d\1\70\1\u011f\2\70\1\uffff\1\u0122\7\70\1\u012a\1\uffff"+
+        "\1\u012b\2\uffff\1\u012c\1\70\1\u012e\1\u012f\2\70\1\uffff\1\u0132"+
+        "\2\70\2\uffff\3\70\1\u0138\1\uffff\1\70\1\uffff\1\u013a\1\70\1\uffff"+
+        "\1\u013c\1\u013d\1\70\1\u013f\1\u0140\2\70\3\uffff\1\u0143\2\uffff"+
+        "\1\u0144\1\70\1\uffff\2\70\1\u0148\1\u0149\1\70\1\uffff\1\70\1\uffff"+
+        "\1\u014c\2\uffff\1\70\2\uffff\2\70\2\uffff\3\70\2\uffff\2\70\1\uffff"+
+        "\1\70\1\u0157\1\u0158\1\70\1\u015a\1\70\1\u015c\1\u015d\1\70\1\u015f"+
+        "\2\uffff\1\u0160\1\uffff\1\70\2\uffff\1\70\2\uffff\1\u0163\1\u0164"+
         "\2\uffff";
     static final String DFA21_eofS =
-        "\u0160\uffff";
+        "\u0165\uffff";
     static final String DFA21_minS =
         "\1\0\1\75\1\174\1\46\1\uffff\1\157\1\56\1\53\1\55\2\52\3\75\1\uffff"+
         "\1\146\1\145\1\146\3\141\1\157\2\uffff\1\163\3\uffff\1\165\2\145"+
@@ -3542,23 +3571,24 @@ public class InternalXtxtUMLLexer extends Lexer {
         "\1\163\1\143\1\151\1\142\1\144\2\uffff\1\44\3\uffff\1\141\1\146"+
         "\1\44\1\167\1\154\1\151\2\uffff\1\164\4\uffff\1\144\1\uffff\1\60"+
         "\7\uffff\1\156\1\147\1\145\2\uffff\1\145\1\143\1\164\2\145\1\162"+
-        "\1\164\1\145\1\156\1\144\1\164\1\157\2\164\2\uffff\1\163\1\44\1"+
-        "\155\1\151\1\160\1\164\1\163\1\145\1\143\1\153\1\166\1\164\1\154"+
-        "\1\145\1\157\1\uffff\1\162\1\145\1\141\1\uffff\1\44\2\154\1\165"+
-        "\1\144\1\163\1\147\1\44\1\156\1\165\1\44\1\143\1\44\1\171\1\145"+
-        "\1\162\1\141\1\44\1\143\1\162\1\151\1\141\1\145\1\uffff\1\44\1\143"+
-        "\1\157\1\141\1\163\1\44\1\150\2\141\1\145\1\151\1\154\1\143\1\144"+
-        "\1\164\1\165\1\uffff\1\44\1\145\1\162\1\145\1\151\1\145\1\uffff"+
-        "\1\144\1\164\1\uffff\1\164\1\uffff\1\44\1\143\2\44\1\154\1\uffff"+
+        "\1\164\1\145\2\144\1\164\1\157\2\164\2\uffff\1\163\1\44\1\155\1"+
+        "\151\1\160\1\164\1\163\1\145\1\143\1\153\1\166\1\164\1\154\1\145"+
+        "\1\157\1\uffff\1\162\1\145\1\141\1\uffff\1\44\2\154\1\165\1\144"+
+        "\1\163\1\147\1\44\1\156\1\165\1\44\1\143\1\44\1\171\1\145\1\162"+
+        "\2\141\1\44\1\143\1\162\1\151\1\141\1\145\1\uffff\1\44\1\143\1\157"+
+        "\1\141\1\163\1\44\1\150\2\141\1\145\1\151\1\154\1\143\1\144\1\164"+
+        "\1\165\1\uffff\1\44\1\145\1\162\1\145\1\151\1\145\1\uffff\1\144"+
+        "\1\164\1\uffff\1\164\1\uffff\1\44\1\143\2\44\1\154\1\164\1\uffff"+
         "\1\150\1\164\1\141\1\156\1\44\1\uffff\1\145\1\163\1\151\1\44\1\uffff"+
         "\1\44\1\147\1\164\2\143\1\44\1\151\1\44\1\145\1\154\1\uffff\1\44"+
-        "\2\156\1\164\1\162\1\163\2\151\1\44\1\uffff\1\44\2\uffff\3\44\1"+
-        "\154\1\143\1\uffff\1\44\1\151\1\156\2\uffff\2\145\1\164\1\44\1\uffff"+
-        "\1\141\1\uffff\1\44\1\164\1\uffff\2\44\1\151\2\44\2\157\5\uffff"+
-        "\1\44\1\145\1\uffff\1\164\1\145\2\44\1\145\1\uffff\1\164\1\uffff"+
-        "\1\44\2\uffff\1\157\2\uffff\2\156\1\uffff\1\157\1\145\1\162\2\uffff"+
-        "\1\144\1\151\1\uffff\1\156\2\44\1\146\1\44\1\157\2\44\1\157\1\44"+
-        "\2\uffff\1\44\1\uffff\1\156\2\uffff\1\156\2\uffff\2\44\2\uffff";
+        "\2\156\1\164\1\162\1\163\2\151\1\44\1\uffff\1\44\2\uffff\1\44\1"+
+        "\141\2\44\1\154\1\143\1\uffff\1\44\1\151\1\156\2\uffff\2\145\1\164"+
+        "\1\44\1\uffff\1\141\1\uffff\1\44\1\164\1\uffff\2\44\1\151\2\44\2"+
+        "\157\3\uffff\1\44\2\uffff\1\44\1\145\1\uffff\1\164\1\145\2\44\1"+
+        "\145\1\uffff\1\164\1\uffff\1\44\2\uffff\1\157\2\uffff\2\156\2\uffff"+
+        "\1\157\1\145\1\162\2\uffff\1\144\1\151\1\uffff\1\156\2\44\1\146"+
+        "\1\44\1\157\2\44\1\157\1\44\2\uffff\1\44\1\uffff\1\156\2\uffff\1"+
+        "\156\2\uffff\2\44\2\uffff";
     static final String DFA21_maxS =
         "\1\uffff\1\75\1\174\1\46\1\uffff\1\162\1\56\1\75\1\76\5\75\1\uffff"+
         "\1\170\1\167\1\156\1\162\1\157\1\165\1\157\2\uffff\1\163\3\uffff"+
@@ -3572,39 +3602,39 @@ public class InternalXtxtUMLLexer extends Lexer {
         "\2\uffff\1\163\1\172\1\155\1\151\1\160\1\164\1\163\1\145\1\143\1"+
         "\153\1\166\1\164\1\154\1\145\1\157\1\uffff\1\162\1\145\1\141\1\uffff"+
         "\1\172\2\154\1\165\1\144\1\163\1\147\1\172\1\156\1\165\1\172\1\143"+
-        "\1\172\1\171\1\151\1\162\1\141\1\172\1\143\1\162\1\151\1\141\1\145"+
+        "\1\172\1\171\1\151\1\162\2\141\1\172\1\143\1\162\1\151\1\141\1\145"+
         "\1\uffff\1\172\1\143\1\157\1\141\1\163\1\172\1\150\2\141\1\145\1"+
         "\151\1\154\1\143\1\144\1\164\1\165\1\uffff\1\172\1\145\1\162\1\145"+
         "\1\151\1\145\1\uffff\1\163\1\164\1\uffff\1\164\1\uffff\1\172\1\143"+
-        "\2\172\1\154\1\uffff\1\150\1\164\1\141\1\156\1\172\1\uffff\1\145"+
-        "\1\163\1\151\1\172\1\uffff\1\172\1\147\1\164\2\143\1\172\1\151\1"+
-        "\172\1\145\1\154\1\uffff\1\172\2\156\1\164\1\162\1\163\2\151\1\172"+
-        "\1\uffff\1\172\2\uffff\3\172\1\154\1\143\1\uffff\1\172\1\151\1\156"+
-        "\2\uffff\2\145\1\164\1\172\1\uffff\1\141\1\uffff\1\172\1\164\1\uffff"+
-        "\2\172\1\151\2\172\2\157\5\uffff\1\172\1\145\1\uffff\1\164\1\145"+
-        "\2\172\1\145\1\uffff\1\164\1\uffff\1\172\2\uffff\1\157\2\uffff\2"+
-        "\156\1\uffff\1\157\1\151\1\162\2\uffff\1\144\1\151\1\uffff\1\156"+
-        "\2\172\1\146\1\172\1\157\2\172\1\157\1\172\2\uffff\1\172\1\uffff"+
-        "\1\156\2\uffff\1\156\2\uffff\2\172\2\uffff";
+        "\2\172\1\154\1\164\1\uffff\1\150\1\164\1\141\1\156\1\172\1\uffff"+
+        "\1\145\1\163\1\151\1\172\1\uffff\1\172\1\147\1\164\2\143\1\172\1"+
+        "\151\1\172\1\145\1\154\1\uffff\1\172\2\156\1\164\1\162\1\163\2\151"+
+        "\1\172\1\uffff\1\172\2\uffff\1\172\1\141\2\172\1\154\1\143\1\uffff"+
+        "\1\172\1\151\1\156\2\uffff\2\145\1\164\1\172\1\uffff\1\141\1\uffff"+
+        "\1\172\1\164\1\uffff\2\172\1\151\2\172\2\157\3\uffff\1\172\2\uffff"+
+        "\1\172\1\145\1\uffff\1\164\1\145\2\172\1\145\1\uffff\1\164\1\uffff"+
+        "\1\172\2\uffff\1\157\2\uffff\2\156\2\uffff\1\157\1\151\1\162\2\uffff"+
+        "\1\144\1\151\1\uffff\1\156\2\172\1\146\1\172\1\157\2\172\1\157\1"+
+        "\172\2\uffff\1\172\1\uffff\1\156\2\uffff\1\156\2\uffff\2\172\2\uffff";
     static final String DFA21_acceptS =
         "\4\uffff\1\4\11\uffff\1\22\7\uffff\1\55\1\56\1\uffff\1\62\1\63"+
-        "\1\64\6\uffff\1\113\1\114\1\115\1\120\4\uffff\1\135\2\136\1\141"+
-        "\1\142\1\uffff\1\1\1\2\1\130\1\3\1\121\1\4\2\uffff\1\135\1\127\1"+
-        "\6\1\7\1\32\1\23\1\10\1\33\1\107\1\24\1\11\1\26\1\25\1\12\1\137"+
-        "\1\140\1\27\1\13\1\30\1\uffff\1\31\1\20\1\21\1\22\27\uffff\1\55"+
+        "\1\64\6\uffff\1\113\1\114\1\115\1\120\4\uffff\1\136\2\137\1\142"+
+        "\1\143\1\uffff\1\1\1\2\1\131\1\3\1\121\1\4\2\uffff\1\136\1\127\1"+
+        "\6\1\7\1\32\1\23\1\10\1\33\1\107\1\24\1\11\1\26\1\25\1\12\1\140"+
+        "\1\141\1\27\1\13\1\30\1\uffff\1\31\1\20\1\21\1\22\27\uffff\1\55"+
         "\1\56\1\uffff\1\62\1\63\1\64\6\uffff\1\110\1\104\1\uffff\1\113\1"+
-        "\114\1\115\1\120\1\uffff\1\132\1\uffff\1\133\1\134\1\136\1\141\1"+
+        "\114\1\115\1\120\1\uffff\1\133\1\uffff\1\134\1\135\1\137\1\142\1"+
         "\16\1\14\1\5\3\uffff\1\17\1\15\16\uffff\1\101\1\76\17\uffff\1\112"+
-        "\3\uffff\1\75\27\uffff\1\100\20\uffff\1\73\6\uffff\1\131\2\uffff"+
-        "\1\123\1\uffff\1\77\5\uffff\1\71\5\uffff\1\124\4\uffff\1\105\12"+
-        "\uffff\1\116\11\uffff\1\122\1\uffff\1\42\1\40\5\uffff\1\41\3\uffff"+
+        "\3\uffff\1\75\30\uffff\1\100\20\uffff\1\73\6\uffff\1\132\2\uffff"+
+        "\1\123\1\uffff\1\77\6\uffff\1\71\5\uffff\1\124\4\uffff\1\105\12"+
+        "\uffff\1\116\11\uffff\1\122\1\uffff\1\42\1\40\6\uffff\1\41\3\uffff"+
         "\1\57\1\117\4\uffff\1\52\1\uffff\1\70\2\uffff\1\74\7\uffff\1\67"+
-        "\1\35\1\54\1\102\1\36\2\uffff\1\44\5\uffff\1\51\1\uffff\1\72\1\uffff"+
-        "\1\106\1\125\1\uffff\1\66\1\34\2\uffff\1\43\3\uffff\1\46\1\47\2"+
-        "\uffff\1\103\12\uffff\1\37\1\53\1\uffff\1\45\1\uffff\1\126\1\50"+
-        "\1\uffff\1\65\1\111\2\uffff\1\61\1\60";
+        "\1\35\1\54\1\uffff\1\102\1\36\2\uffff\1\44\5\uffff\1\51\1\uffff"+
+        "\1\72\1\uffff\1\106\1\125\1\uffff\1\66\1\34\2\uffff\1\130\1\43\3"+
+        "\uffff\1\46\1\47\2\uffff\1\103\12\uffff\1\37\1\53\1\uffff\1\45\1"+
+        "\uffff\1\126\1\50\1\uffff\1\65\1\111\2\uffff\1\61\1\60";
     static final String DFA21_specialS =
-        "\1\0\u015f\uffff}>";
+        "\1\0\u0164\uffff}>";
     static final String[] DFA21_transitionS = {
             "\11\56\2\55\2\56\1\55\22\56\1\55\1\14\1\53\1\42\1\52\1\13\1"+
             "\3\1\54\1\31\1\32\1\11\1\7\1\33\1\10\1\6\1\12\1\47\11\50\1\40"+
@@ -3765,18 +3795,17 @@ public class InternalXtxtUMLLexer extends Lexer {
             "\1\u00ba",
             "\1\u00bb",
             "\1\u00bc",
-            "\1\u00bd",
-            "\1\u00be",
+            "\1\u00be\11\uffff\1\u00bd",
             "\1\u00bf",
             "\1\u00c0",
             "\1\u00c1",
             "\1\u00c2",
-            "",
-            "",
             "\1\u00c3",
+            "",
+            "",
+            "\1\u00c4",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
-            "\1\u00c5",
             "\1\u00c6",
             "\1\u00c7",
             "\1\u00c8",
@@ -3789,50 +3818,50 @@ public class InternalXtxtUMLLexer extends Lexer {
             "\1\u00cf",
             "\1\u00d0",
             "\1\u00d1",
-            "",
             "\1\u00d2",
+            "",
             "\1\u00d3",
             "\1\u00d4",
+            "\1\u00d5",
             "",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
-            "\1\u00d6",
             "\1\u00d7",
             "\1\u00d8",
             "\1\u00d9",
             "\1\u00da",
             "\1\u00db",
+            "\1\u00dc",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
-            "\1\u00dd",
             "\1\u00de",
+            "\1\u00df",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
-            "\1\u00e0",
+            "\1\u00e1",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
-            "\1\u00e2",
-            "\1\u00e4\3\uffff\1\u00e3",
-            "\1\u00e5",
+            "\1\u00e3",
+            "\1\u00e5\3\uffff\1\u00e4",
             "\1\u00e6",
+            "\1\u00e7",
+            "\1\u00e8",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
-            "\1\u00e8",
-            "\1\u00e9",
             "\1\u00ea",
             "\1\u00eb",
             "\1\u00ec",
+            "\1\u00ed",
+            "\1\u00ee",
             "",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
-            "\1\u00ee",
-            "\1\u00ef",
             "\1\u00f0",
             "\1\u00f1",
+            "\1\u00f2",
+            "\1\u00f3",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
-            "\1\u00f3",
-            "\1\u00f4",
             "\1\u00f5",
             "\1\u00f6",
             "\1\u00f7",
@@ -3841,65 +3870,68 @@ public class InternalXtxtUMLLexer extends Lexer {
             "\1\u00fa",
             "\1\u00fb",
             "\1\u00fc",
+            "\1\u00fd",
+            "\1\u00fe",
             "",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
-            "\1\u00fe",
-            "\1\u00ff",
             "\1\u0100",
             "\1\u0101",
             "\1\u0102",
+            "\1\u0103",
+            "\1\u0104",
             "",
-            "\1\u0103\16\uffff\1\u0104",
-            "\1\u0105",
+            "\1\u0105\16\uffff\1\u0106",
+            "\1\u0107",
             "",
-            "\1\u0106",
-            "",
-            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
-            "\70",
             "\1\u0108",
-            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
-            "\70",
-            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
-            "\70",
-            "\1\u010b",
             "",
-            "\1\u010c",
+            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
+            "\70",
+            "\1\u010a",
+            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
+            "\70",
+            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
+            "\70",
             "\1\u010d",
             "\1\u010e",
-            "\1\u010f",
-            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
-            "\70",
             "",
+            "\1\u010f",
+            "\1\u0110",
             "\1\u0111",
             "\1\u0112",
-            "\1\u0113",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
             "",
-            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
-            "\70",
+            "\1\u0114",
+            "\1\u0115",
             "\1\u0116",
-            "\1\u0117",
-            "\1\u0118",
-            "\1\u0119",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
-            "\1\u011b",
-            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
-            "\70",
-            "\1\u011d",
-            "\1\u011e",
             "",
+            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
+            "\70",
+            "\1\u0119",
+            "\1\u011a",
+            "\1\u011b",
+            "\1\u011c",
+            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
+            "\70",
+            "\1\u011e",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
             "\1\u0120",
             "\1\u0121",
-            "\1\u0122",
+            "",
+            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
+            "\70",
             "\1\u0123",
             "\1\u0124",
             "\1\u0125",
             "\1\u0126",
+            "\1\u0127",
+            "\1\u0128",
+            "\1\u0129",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
             "",
@@ -3909,87 +3941,83 @@ public class InternalXtxtUMLLexer extends Lexer {
             "",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
-            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
-            "\70",
-            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
-            "\70",
-            "\1\u012c",
             "\1\u012d",
-            "",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
-            "\1\u012f",
+            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
+            "\70",
             "\1\u0130",
-            "",
-            "",
             "\1\u0131",
-            "\1\u0132",
-            "\1\u0133",
+            "",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
+            "\1\u0133",
+            "\1\u0134",
+            "",
             "",
             "\1\u0135",
-            "",
-            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
-            "\70",
+            "\1\u0136",
             "\1\u0137",
+            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
+            "\70",
+            "",
+            "\1\u0139",
+            "",
+            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
+            "\70",
+            "\1\u013b",
             "",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
-            "\1\u013a",
-            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
-            "\70",
-            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
-            "\70",
-            "\1\u013d",
             "\1\u013e",
-            "",
-            "",
-            "",
-            "",
-            "",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
-            "\1\u0140",
-            "",
+            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
+            "\70",
             "\1\u0141",
             "\1\u0142",
+            "",
+            "",
+            "",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
+            "",
+            "",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
             "\1\u0145",
             "",
             "\1\u0146",
-            "",
+            "\1\u0147",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
-            "",
-            "",
-            "\1\u0148",
-            "",
-            "",
-            "\1\u0149",
+            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
+            "\70",
             "\1\u014a",
             "",
             "\1\u014b",
-            "\1\u014c\3\uffff\1\u014d",
+            "",
+            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
+            "\70",
+            "",
+            "",
+            "\1\u014d",
+            "",
+            "",
             "\1\u014e",
-            "",
-            "",
             "\1\u014f",
-            "\1\u0150",
             "",
-            "\1\u0151",
-            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
-            "\70",
-            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
-            "\70",
+            "",
+            "\1\u0150",
+            "\1\u0151\3\uffff\1\u0152",
+            "\1\u0153",
+            "",
+            "",
             "\1\u0154",
-            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
-            "\70",
+            "\1\u0155",
+            "",
             "\1\u0156",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
@@ -3998,15 +4026,23 @@ public class InternalXtxtUMLLexer extends Lexer {
             "\1\u0159",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
+            "\1\u015b",
+            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
+            "\70",
+            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
+            "\70",
+            "\1\u015e",
+            "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
+            "\70",
             "",
             "",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
             "\70",
             "",
-            "\1\u015c",
+            "\1\u0161",
             "",
             "",
-            "\1\u015d",
+            "\1\u0162",
             "",
             "",
             "\1\70\13\uffff\12\70\7\uffff\32\70\4\uffff\1\70\1\uffff\32"+
@@ -4047,7 +4083,7 @@ public class InternalXtxtUMLLexer extends Lexer {
             this.transition = DFA21_transition;
         }
         public String getDescription() {
-            return "1:1: Tokens : ( T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | RULE_HEX | RULE_INT | RULE_DECIMAL | RULE_ID | RULE_STRING | RULE_ML_COMMENT | RULE_SL_COMMENT | RULE_WS | RULE_ANY_OTHER );";
+            return "1:1: Tokens : ( T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | RULE_HEX | RULE_INT | RULE_DECIMAL | RULE_ID | RULE_STRING | RULE_ML_COMMENT | RULE_SL_COMMENT | RULE_WS | RULE_ANY_OTHER );";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             IntStream input = _input;
