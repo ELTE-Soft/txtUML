@@ -63,7 +63,7 @@ model PerformanceTestModel {
 			trigger Forward;
 			effect {
 				// log("A1->A2");
-				PerformanceTestModel.Forward sig = getSignal(PerformanceTestModel.Forward);
+				PerformanceTestModel.Forward sig = sigdata;
 				if (sig.nf % 4 == 0) {
 					createChild();
 				}
@@ -81,7 +81,7 @@ model PerformanceTestModel {
 			trigger Forward;
 			effect {
 				// log("A2->A3");
-				PerformanceTestModel.Forward sig = getSignal(PerformanceTestModel.Forward);
+				PerformanceTestModel.Forward sig = sigdata;
 				if (sig.nf % 4 == 0) {
 					createChild();
 				}
@@ -99,7 +99,7 @@ model PerformanceTestModel {
 			trigger Forward;
 			effect {
 				// log("A3->A4");
-				PerformanceTestModel.Forward sig = getSignal(PerformanceTestModel.Forward);
+				PerformanceTestModel.Forward sig = sigdata;
 				if (sig.nf % 4 == 0) {
 					createChild();
 				}
@@ -117,7 +117,7 @@ model PerformanceTestModel {
 			trigger Forward;
 			effect {
 				// log("A4->A1");
-				PerformanceTestModel.Forward sig = getSignal(PerformanceTestModel.Forward);
+				PerformanceTestModel.Forward sig = sigdata;
 				if (sig.nf % 4 == 0) {
 					createChild();
 				}

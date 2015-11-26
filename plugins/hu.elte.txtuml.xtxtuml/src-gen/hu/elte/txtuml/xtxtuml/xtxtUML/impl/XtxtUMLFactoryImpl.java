@@ -92,6 +92,7 @@ public class XtxtUMLFactoryImpl extends EFactoryImpl implements XtxtUMLFactory
       case XtxtUMLPackage.TU_OPERATION: return createTUOperation();
       case XtxtUMLPackage.RALF_SEND_SIGNAL_EXPRESSION: return createRAlfSendSignalExpression();
       case XtxtUMLPackage.RALF_DELETE_OBJECT_EXPRESSION: return createRAlfDeleteObjectExpression();
+      case XtxtUMLPackage.RALF_SIGNAL_ACCESS_EXPRESSION: return createRAlfSignalAccessExpression();
       case XtxtUMLPackage.RALF_ASSOC_NAV_EXPRESSION: return createRAlfAssocNavExpression();
       default:
         throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
@@ -431,6 +432,17 @@ public class XtxtUMLFactoryImpl extends EFactoryImpl implements XtxtUMLFactory
   {
     RAlfDeleteObjectExpressionImpl rAlfDeleteObjectExpression = new RAlfDeleteObjectExpressionImpl();
     return rAlfDeleteObjectExpression;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public RAlfSignalAccessExpression createRAlfSignalAccessExpression()
+  {
+    RAlfSignalAccessExpressionImpl rAlfSignalAccessExpression = new RAlfSignalAccessExpressionImpl();
+    return rAlfSignalAccessExpression;
   }
 
   /**
