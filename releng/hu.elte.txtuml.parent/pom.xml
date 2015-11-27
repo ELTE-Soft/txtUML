@@ -51,6 +51,7 @@
 		<module>../../tests/hu.elte.txtuml.xtxtuml.tests</module>
 
 		<module>../../releng/hu.elte.txtuml.target</module>
+		<module>../../releng/hu.elte.txtuml.updatesite</module>
 	</modules>
 
 	<!-- Tycho requires Maven 3 -->
