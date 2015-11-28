@@ -9,6 +9,7 @@ import hu.elte.txtuml.xtxtuml.services.XtxtUMLGrammarAccess;
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfAssocNavExpression;
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression;
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression;
+import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute;
@@ -267,6 +268,9 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 			case XtxtUMLPackage.RALF_SEND_SIGNAL_EXPRESSION:
 				sequence_RAlfSendSignalExpression(context, (RAlfSendSignalExpression) semanticObject); 
 				return; 
+			case XtxtUMLPackage.RALF_SIGNAL_ACCESS_EXPRESSION:
+				sequence_RAlfSignalAccessExpression(context, (RAlfSignalAccessExpression) semanticObject); 
+				return; 
 			case XtxtUMLPackage.TU_ASSOCIATION:
 				sequence_TUAssociation(context, (TUAssociation) semanticObject); 
 				return; 
@@ -400,6 +404,22 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 		SequenceFeeder feeder = createSequencerFeeder(semanticObject, nodes);
 		feeder.accept(grammarAccess.getRAlfSendSignalExpressionAccess().getSignalXExpressionParserRuleCall_2_0(), semanticObject.getSignal());
 		feeder.accept(grammarAccess.getRAlfSendSignalExpressionAccess().getTargetXExpressionParserRuleCall_4_0(), semanticObject.getTarget());
+		feeder.finish();
+	}
+	
+	
+	/**
+	 * Constraint:
+	 *     sigdata='sigdata'
+	 */
+	protected void sequence_RAlfSignalAccessExpression(EObject context, RAlfSignalAccessExpression semanticObject) {
+		if(errorAcceptor != null) {
+			if(transientValues.isValueTransient(semanticObject, XtxtUMLPackage.Literals.RALF_SIGNAL_ACCESS_EXPRESSION__SIGDATA) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, XtxtUMLPackage.Literals.RALF_SIGNAL_ACCESS_EXPRESSION__SIGDATA));
+		}
+		INodesForEObjectProvider nodes = createNodeProvider(semanticObject);
+		SequenceFeeder feeder = createSequencerFeeder(semanticObject, nodes);
+		feeder.accept(grammarAccess.getRAlfSignalAccessExpressionAccess().getSigdataSigdataKeyword_1_0(), semanticObject.getSigdata());
 		feeder.finish();
 	}
 	
@@ -582,17 +602,10 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 	
 	/**
 	 * Constraint:
-	 *     expression=XExpression
+	 *     (else?='else' | expression=XExpression)
 	 */
 	protected void sequence_TUTransitionGuard(EObject context, TUTransitionGuard semanticObject) {
-		if(errorAcceptor != null) {
-			if(transientValues.isValueTransient(semanticObject, XtxtUMLPackage.Literals.TU_TRANSITION_GUARD__EXPRESSION) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, XtxtUMLPackage.Literals.TU_TRANSITION_GUARD__EXPRESSION));
-		}
-		INodesForEObjectProvider nodes = createNodeProvider(semanticObject);
-		SequenceFeeder feeder = createSequencerFeeder(semanticObject, nodes);
-		feeder.accept(grammarAccess.getTUTransitionGuardAccess().getExpressionXExpressionParserRuleCall_2_0(), semanticObject.getExpression());
-		feeder.finish();
+		genericSequencer.createSequence(context, semanticObject);
 	}
 	
 	

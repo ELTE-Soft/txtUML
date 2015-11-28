@@ -65,7 +65,7 @@ model XMachine3 {
 				trigger DoTasks;
 	
 				effect {
-					DoTasks doTasks = getSignal(DoTasks);
+					DoTasks doTasks = sigdata;
 					Machine.this.tasksToDo -= doTasks.count;
 					log("\tMachine: becoming active...");
 				}

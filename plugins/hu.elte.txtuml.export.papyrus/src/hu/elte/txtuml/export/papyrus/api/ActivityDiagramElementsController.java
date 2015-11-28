@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.papyrus.api;
 
-import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
-
 import java.util.Collection;
 
 import org.eclipse.core.runtime.Assert;
@@ -10,9 +8,10 @@ import org.eclipse.papyrus.uml.diagram.activity.edit.parts.ActivityDiagramEditPa
 import org.eclipse.papyrus.uml.diagram.activity.edit.parts.ActivityEditPart;
 import org.eclipse.uml2.uml.Element;
 
+import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
+
 /**
  *
- * @author András Dobreff
  */
 public class ActivityDiagramElementsController {
 	
@@ -37,6 +36,6 @@ public class ActivityDiagramElementsController {
 		ActivityEditPart activityEditpart = (ActivityEditPart) diagramEditPart.getChildren().get(0);
 		Assert.isTrue(activityEditpart.getChildren().get(5) instanceof CustomActivityActivityContentCompartmentEditPart);
 		CustomActivityActivityContentCompartmentEditPart activityContentEditpart = (CustomActivityActivityContentCompartmentEditPart) activityEditpart.getChildren().get(5);
-		ElementsManagerUtils.addElementsToEditpart(activityContentEditpart, elements);
+		ElementsManagerUtils.addElementsToEditPart(activityContentEditpart, elements);
 	}
 }

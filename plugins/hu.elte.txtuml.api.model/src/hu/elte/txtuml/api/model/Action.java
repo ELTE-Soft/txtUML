@@ -3,6 +3,7 @@ package hu.elte.txtuml.api.model;
 import hu.elte.txtuml.api.model.ModelExecutor.Report;
 import hu.elte.txtuml.api.model.backend.MultiplicityException;
 import hu.elte.txtuml.utils.InstanceCreator;
+import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
 
 import java.lang.reflect.Modifier;
 
@@ -11,8 +12,8 @@ import java.lang.reflect.Modifier;
  * statements of the action language.
  * 
  * <p>
- * <b>Represents:</b> no model element directly, its static methods are part of the
- * action language
+ * <b>Represents:</b> no model element directly, its static methods are part of
+ * the action language
  * <p>
  * <b>Usage:</b>
  * <p>
@@ -28,7 +29,8 @@ import java.lang.reflect.Modifier;
  * </ul>
  * 
  * <p>
- * See the documentation of {@link Model} for an overview on modeling in JtxtUML.
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  *
@@ -73,13 +75,13 @@ public class Action implements ModelElement {
 				params[i + 1] = parameters[i];
 			}
 		}
-		T obj = InstanceCreator
-				.create(classType, params);
-		if (obj == null) {
+		try {
+			return InstanceCreator.create(classType, params);
+		} catch (IllegalArgumentException | RuntimeInvocationTargetException e) {
 			Report.error.forEach(x -> x.modelObjectCreationFailed(classType,
 					parameters));
+			return null;
 		}
-		return obj;
 	}
 
 	/**
