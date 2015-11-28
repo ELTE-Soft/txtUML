@@ -1,13 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: txtUML C++ model compiler
-<<<<<<< HEAD
 Bundle-SymbolicName: hu.elte.txtuml.export.cpp;singleton:=true
 Bundle-Version: 0.1.1.qualifier
-=======
-Bundle-SymbolicName: hu.elte.txtuml.export.cpp
-Bundle-Version: 0.3.0.qualifier
->>>>>>> refs/remotes/origin/master
 Bundle-Vendor: ELTE
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.uml2.uml;bundle-version="5.0.1",
