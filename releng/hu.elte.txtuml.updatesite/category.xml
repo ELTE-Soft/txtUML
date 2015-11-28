@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+	<feature url="features/hu.elte.txtuml.feature_0.3.0.qualifier.jar" id="hu.elte.txtuml.feature" version="0.3.0.qualifier">
+		<category name="hu.elte.txtuml.category" />
+	</feature>
+	<category-def name="hu.elte.txtuml.category" label="txtUML">
+		<description>
+			Textual, eXecutable, Translatable UML
+		</description>
+	</category-def>
+</site>
