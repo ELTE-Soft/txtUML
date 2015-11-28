@@ -56,9 +56,8 @@ public class TransitionExporter {
 				transitionName, sourceVertex, targetVertex);
 
 		exportTrigger(transitionDeclaration, exportedTransition);
-// TODO: Uncomment this	when activity export gets fixed.	
-//		exportEffectAction(transitionDeclaration, exportedTransition);
-//		exportGuard(transitionDeclaration, exportedTransition);
+		exportEffectAction(transitionDeclaration, exportedTransition);
+		exportGuard(transitionDeclaration, exportedTransition);
 
 		modelExporter.getMapping().put(
 				SharedUtils.qualifiedName(transitionDeclaration),

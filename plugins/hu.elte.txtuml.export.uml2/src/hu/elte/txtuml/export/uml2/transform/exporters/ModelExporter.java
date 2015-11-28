@@ -151,8 +151,7 @@ public class ModelExporter {
 		exportAttributesOfEveryClassifier();
 		exportMethodSkeletonsOfEveryClassifier();
 		exportStateMachinesOfEveryClass();
-// TODO: Uncomment this	when activity export gets fixed.	
-//		exportMethodBodiesOfEveryClassifier();
+		exportMethodBodiesOfEveryClassifier();
 
 		this.mapping.put(txtUMLModelName, exportedModel);
 		finishModelExport();
