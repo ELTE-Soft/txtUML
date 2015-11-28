@@ -783,13 +783,22 @@ public interface XtxtUMLPackage extends EPackage
   int TU_TRANSITION_GUARD = 20;
 
   /**
+   * The feature id for the '<em><b>Else</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TU_TRANSITION_GUARD__ELSE = TU_TRANSITION_MEMBER_FEATURE_COUNT + 0;
+
+  /**
    * The feature id for the '<em><b>Expression</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int TU_TRANSITION_GUARD__EXPRESSION = TU_TRANSITION_MEMBER_FEATURE_COUNT + 0;
+  int TU_TRANSITION_GUARD__EXPRESSION = TU_TRANSITION_MEMBER_FEATURE_COUNT + 1;
 
   /**
    * The number of structural features of the '<em>TU Transition Guard</em>' class.
@@ -798,7 +807,7 @@ public interface XtxtUMLPackage extends EPackage
    * @generated
    * @ordered
    */
-  int TU_TRANSITION_GUARD_FEATURE_COUNT = TU_TRANSITION_MEMBER_FEATURE_COUNT + 1;
+  int TU_TRANSITION_GUARD_FEATURE_COUNT = TU_TRANSITION_MEMBER_FEATURE_COUNT + 2;
 
   /**
    * The meta object id for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUAssociationEndImpl <em>TU Association End</em>}' class.
@@ -1086,6 +1095,34 @@ public interface XtxtUMLPackage extends EPackage
   int RALF_DELETE_OBJECT_EXPRESSION_FEATURE_COUNT = XbasePackage.XEXPRESSION_FEATURE_COUNT + 1;
 
   /**
+   * The meta object id for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.RAlfSignalAccessExpressionImpl <em>RAlf Signal Access Expression</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.RAlfSignalAccessExpressionImpl
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getRAlfSignalAccessExpression()
+   * @generated
+   */
+  int RALF_SIGNAL_ACCESS_EXPRESSION = 27;
+
+  /**
+   * The feature id for the '<em><b>Sigdata</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int RALF_SIGNAL_ACCESS_EXPRESSION__SIGDATA = XbasePackage.XEXPRESSION_FEATURE_COUNT + 0;
+
+  /**
+   * The number of structural features of the '<em>RAlf Signal Access Expression</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int RALF_SIGNAL_ACCESS_EXPRESSION_FEATURE_COUNT = XbasePackage.XEXPRESSION_FEATURE_COUNT + 1;
+
+  /**
    * The meta object id for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.RAlfAssocNavExpressionImpl <em>RAlf Assoc Nav Expression</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -1093,7 +1130,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getRAlfAssocNavExpression()
    * @generated
    */
-  int RALF_ASSOC_NAV_EXPRESSION = 27;
+  int RALF_ASSOC_NAV_EXPRESSION = 28;
 
   /**
    * The feature id for the '<em><b>Left</b></em>' containment reference.
@@ -1130,7 +1167,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUStateType()
    * @generated
    */
-  int TU_STATE_TYPE = 28;
+  int TU_STATE_TYPE = 29;
 
   /**
    * The meta object id for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUVisibility <em>TU Visibility</em>}' enum.
@@ -1140,7 +1177,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUVisibility()
    * @generated
    */
-  int TU_VISIBILITY = 29;
+  int TU_VISIBILITY = 30;
 
 
   /**
@@ -1706,6 +1743,17 @@ public interface XtxtUMLPackage extends EPackage
   EClass getTUTransitionGuard();
 
   /**
+   * Returns the meta object for the attribute '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionGuard#isElse <em>Else</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Else</em>'.
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionGuard#isElse()
+   * @see #getTUTransitionGuard()
+   * @generated
+   */
+  EAttribute getTUTransitionGuard_Else();
+
+  /**
    * Returns the meta object for the containment reference '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionGuard#getExpression <em>Expression</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -1984,6 +2032,27 @@ public interface XtxtUMLPackage extends EPackage
    * @generated
    */
   EReference getRAlfDeleteObjectExpression_Object();
+
+  /**
+   * Returns the meta object for class '{@link hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression <em>RAlf Signal Access Expression</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>RAlf Signal Access Expression</em>'.
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression
+   * @generated
+   */
+  EClass getRAlfSignalAccessExpression();
+
+  /**
+   * Returns the meta object for the attribute '{@link hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression#getSigdata <em>Sigdata</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Sigdata</em>'.
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression#getSigdata()
+   * @see #getRAlfSignalAccessExpression()
+   * @generated
+   */
+  EAttribute getRAlfSignalAccessExpression_Sigdata();
 
   /**
    * Returns the meta object for class '{@link hu.elte.txtuml.xtxtuml.xtxtUML.RAlfAssocNavExpression <em>RAlf Assoc Nav Expression</em>}'.
@@ -2527,6 +2596,14 @@ public interface XtxtUMLPackage extends EPackage
     EClass TU_TRANSITION_GUARD = eINSTANCE.getTUTransitionGuard();
 
     /**
+     * The meta object literal for the '<em><b>Else</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute TU_TRANSITION_GUARD__ELSE = eINSTANCE.getTUTransitionGuard_Else();
+
+    /**
      * The meta object literal for the '<em><b>Expression</b></em>' containment reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -2745,6 +2822,24 @@ public interface XtxtUMLPackage extends EPackage
      * @generated
      */
     EReference RALF_DELETE_OBJECT_EXPRESSION__OBJECT = eINSTANCE.getRAlfDeleteObjectExpression_Object();
+
+    /**
+     * The meta object literal for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.RAlfSignalAccessExpressionImpl <em>RAlf Signal Access Expression</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.RAlfSignalAccessExpressionImpl
+     * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getRAlfSignalAccessExpression()
+     * @generated
+     */
+    EClass RALF_SIGNAL_ACCESS_EXPRESSION = eINSTANCE.getRAlfSignalAccessExpression();
+
+    /**
+     * The meta object literal for the '<em><b>Sigdata</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute RALF_SIGNAL_ACCESS_EXPRESSION__SIGDATA = eINSTANCE.getRAlfSignalAccessExpression_Sigdata();
 
     /**
      * The meta object literal for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.RAlfAssocNavExpressionImpl <em>RAlf Assoc Nav Expression</em>}' class.

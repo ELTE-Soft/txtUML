@@ -2,12 +2,12 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JtxtUML Validation
 Bundle-SymbolicName: hu.elte.txtuml.validation;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 0.3.0.qualifier
 Bundle-Activator: hu.elte.txtuml.validation.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.core,
- hu.elte.txtuml.export.uml2,
+ hu.elte.txtuml.export.uml2;bundle-version="0.3.0",
  org.eclipse.core.resources,
- hu.elte.txtuml.api.model;bundle-version="0.1.1"
+ hu.elte.txtuml.api.model;bundle-version="0.3.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

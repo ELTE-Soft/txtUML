@@ -20,12 +20,7 @@ package hu.elte.txtuml.api.model;
  * subclasses, like {@link Signal}</li>
  * </ul>
  * 
- * <p>
- * <b>Note:</b> the only event type currently implemented in txtUML is a signal
- * event, which is represented by referencing its signal directly.
- * <p>
- * 
- * See the documentation of {@link Model} for an overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  * @see Signal
@@ -35,11 +30,6 @@ public class Event implements ModelElement {
 
 	/**
 	 * Sole constructor of <code>Event</code>.
-	 * <p>
-	 * <b>Implementation note:</b>
-	 * <p>
-	 * Package private to make sure that this class is neither instantiated, nor
-	 * directly inherited by the user.
 	 */
 	Event() {
 	}

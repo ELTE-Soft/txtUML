@@ -5,14 +5,19 @@ import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
 
+/**
+ * A listener interface that listens to runtime errors of the model execution.
+ * 
+ * @author Gabor Ferenc Kovacs
+ */
 public interface RuntimeErrorsListener {
 
 	default void lowerBoundOfMultiplicityOffended(ModelClass obj,
-			Class<? extends AssociationEnd<?>> assocEnd) {
+			Class<? extends AssociationEnd<?, ?>> assocEnd) {
 	}
 
 	default void upperBoundOfMultiplicityOffended(ModelClass obj,
-			Class<? extends AssociationEnd<?>> assocEnd) {
+			Class<? extends AssociationEnd<?, ?>> assocEnd) {
 	}
 
 	default void linkingDeletedObject(ModelClass obj) {

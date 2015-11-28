@@ -427,8 +427,8 @@ public class ElementExporterImpl implements ElementExporter {
 					.startAndEndOfLink(cls);
 
 			LinkInfo info = LinkInfo.create(cls, DiagramType.Class,
-					Utils.classAsString(cls), exportNode(p.getKey()),
-					exportNode(p.getValue()));
+					Utils.classAsString(cls), exportNode(p.getFirst()),
+					exportNode(p.getSecond()));
 			links.put(cls, info);
 			return info;
 		}

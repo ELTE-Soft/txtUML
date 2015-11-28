@@ -10,7 +10,7 @@ import hu.elte.txtuml.api.model.ModelElement;
  * <p>
  * 
  * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an overview on
- * modeling in txtUML.
+ * modeling in JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  *

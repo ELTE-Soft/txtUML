@@ -14,7 +14,6 @@ import hu.elte.txtuml.layout.visualizer.exceptions.StatementsConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
 import hu.elte.txtuml.layout.visualizer.helpers.Helper;
 import hu.elte.txtuml.layout.visualizer.helpers.Options;
-import hu.elte.txtuml.layout.visualizer.helpers.Pair;
 import hu.elte.txtuml.layout.visualizer.helpers.StatementHelper;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
@@ -23,6 +22,7 @@ import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
+import hu.elte.txtuml.utils.Pair;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -187,7 +187,7 @@ public class LayoutVisualize
 	 *             Throws if the algorithm cannot find the route for a
 	 *             {@link LineAssociation}.
 	 * @throws StatementsConflictException
-	 *             Thorws if there are some conflicts in the {@link Statement}s
+	 *             Throws if there are some conflicts in the {@link Statement}s
 	 *             given by the user.
 	 * @throws BoxOverlapConflictException
 	 *             Throws if the algorithm encounters an unsolvable overlap
@@ -313,16 +313,22 @@ public class LayoutVisualize
 	{
 		Pair<List<Statement>, Integer> tempPair = StatementHelper.transformAssocs(
 				_options.DiagramType, _objects, _assocs, maxGroupId);
-		_statements.addAll(tempPair.First);
-		return tempPair.Second;
+		_statements.addAll(tempPair.getFirst());
+		return tempPair.getSecond();
 	}
 	
 	private Set<String> addPhantoms()
 	{
 		Set<String> result = new HashSet<String>();
+		
 		result.addAll(StatementHelper.extractPhantoms(_statements));
 		for (String p : result)
-			_objects.add(new RectangleObject(p));
+		{
+			RectangleObject tempObj = new RectangleObject(p);
+			tempObj.setPhantom(true);
+			_objects.add(tempObj);
+		}
+		
 		_statements.removeAll(_statements.stream()
 				.filter(s -> s.getType().equals(StatementType.phantom))
 				.collect(Collectors.toSet()));
@@ -398,9 +404,6 @@ public class LayoutVisualize
 			InternalException, CannotFindAssociationRouteException,
 			UnknownStatementException
 	{
-		if (_assocs.size() <= 0)
-			return maxGroupId;
-		
 		if (_options.Logging)
 			System.err.println("> Starting link arrange...");
 		

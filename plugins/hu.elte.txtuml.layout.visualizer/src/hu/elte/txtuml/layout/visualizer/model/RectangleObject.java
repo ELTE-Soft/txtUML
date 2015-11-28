@@ -18,6 +18,7 @@ public class RectangleObject
 	private Integer _height;
 	private Integer _pixelWidth;
 	private Integer _pixelHeight;
+	private Boolean _phantom;
 	
 	// private Set<Point> _points;
 	
@@ -227,6 +228,27 @@ public class RectangleObject
 		return new Integer(_pixelWidth * _pixelHeight);
 	}
 	
+	/**
+	 * Returns whether this box is a phantom box or not.
+	 * 
+	 * @return whether this box is a phantom box or not.
+	 */
+	public Boolean isPhantom()
+	{
+		return _phantom;
+	}
+	
+	/**
+	 * Sets the box to phantom or not.
+	 * 
+	 * @param value
+	 *            whether this box should be a phantom or not.
+	 */
+	public void setPhantom(Boolean value)
+	{
+		_phantom = value;
+	}
+	
 	// end Getters, setters
 	
 	// Ctors
@@ -245,6 +267,7 @@ public class RectangleObject
 		_height = 1;
 		_pixelWidth = 1;
 		_pixelHeight = 1;
+		_phantom = false;
 	}
 	
 	/***
@@ -263,6 +286,7 @@ public class RectangleObject
 		_height = 1;
 		_pixelWidth = 1;
 		_pixelHeight = 1;
+		_phantom = false;
 	}
 	
 	/***
@@ -279,6 +303,7 @@ public class RectangleObject
 		_height = new Integer(o._height);
 		_pixelWidth = new Integer(o._pixelWidth);
 		_pixelHeight = new Integer(o._pixelHeight);
+		_phantom = new Boolean(o._phantom);
 	}
 	
 	// end Ctors

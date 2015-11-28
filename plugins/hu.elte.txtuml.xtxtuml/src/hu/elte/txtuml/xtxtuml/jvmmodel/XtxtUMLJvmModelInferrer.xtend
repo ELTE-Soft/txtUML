@@ -19,24 +19,24 @@ import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer;
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor;
 
 // XtxtUML
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUModel
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUVisibility
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionGuard
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionEffect
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionTrigger
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUModel;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUState;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUVisibility;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionGuard;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionEffect;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionTrigger;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex;
 
 class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
@@ -253,14 +253,29 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		guard.toMethod("guard", Boolean.TYPE.typeRef) [
 			visibility = JvmVisibility.PUBLIC;
 			annotations += annotationRef(java.lang.Override);
-			body = guard.expression;
+			if (guard.^else) {
+				body = '''return Else();''';
+			} else {
+				body = guard.expression;
+			}
 		]
 	}
 	
 	def dispatch private toJvmMember(TUAssociationEnd end) {
 		end.toClass(end.fullyQualifiedName) [
 			visibility = JvmVisibility.PUBLIC;
-			superTypes += end.calculateApiSuperType;
+			
+			val calcApiSuperTypeResult = end.calculateApiSuperType
+			superTypes += calcApiSuperTypeResult.key;
+			
+			if (calcApiSuperTypeResult.value != null) {
+				annotations += calcApiSuperTypeResult.value.key
+					.toAnnotationRef(hu.elte.txtuml.api.model.Min);
+				if (!end.multiplicity.isUpperInf) {
+					annotations += calcApiSuperTypeResult.value.value
+						.toAnnotationRef(hu.elte.txtuml.api.model.Max);
+				}
+			}
 		]
 	}
 	
@@ -298,17 +313,28 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			]
 		]
 	}
+	
+	def private toAnnotationRef(int i, java.lang.Class<?> annotationType) {
+		annotationRef(annotationType) => [
+			explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
+				values += i;
+			]
+		]
+	}
 
 	def private calculateApiSuperType(TUAssociationEnd it) {
 		val optionalHidden = if (notNavigable) "Hidden" else "";
+		var Pair<Integer, Integer> explicitMultiplicities = null;
 		val apiBoundTypeName
 		 = 	if (multiplicity.any) // *
 		 		"Many"
 		 	else if (!multiplicity.upperSet) { // <lower> (exact)
 		 		if (multiplicity.lower == 1)
 		 			"One"
-		 		else
-		 			"Many"
+		 		else {
+		 			explicitMultiplicities = multiplicity.lower -> multiplicity.lower;
+		 			"Multiple"
+		 		}		
 		 	} else { // <lower> .. <upper>
 		 		if (multiplicity.lower == 0 && multiplicity.upper == 1)
 					"MaybeOne"
@@ -318,13 +344,14 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 					"Many"
 				else if (multiplicity.lower == 1 && multiplicity.upperInf)
 					"Some"
-				else
-					"Many"
+				else {
+					explicitMultiplicities = multiplicity.lower -> multiplicity.upper;
+					"Multiple"
+				}
 		 	}
 		
-		return ("hu.elte.txtuml.api.model.Association$" + optionalHidden + apiBoundTypeName)
-			.typeRef((endClass.getPrimaryJvmElement as JvmDeclaredType).typeRef);
+		return new Pair(("hu.elte.txtuml.api.model.Association$" + optionalHidden + apiBoundTypeName)
+			.typeRef((endClass.getPrimaryJvmElement as JvmDeclaredType).typeRef), explicitMultiplicities);
 	}
 
 }
-

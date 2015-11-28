@@ -1,41 +1,58 @@
 package hu.elte.txtuml.utils;
 
-public class Pair<L, R> {
+public class Pair<F, S> {
 
-	private final L left;
-	private final R right;
+	private final F first;
+	private final S second;
 
-	public static <L, R> Pair<L, R> create(L left, R right) {
-		return new Pair<L, R>(left, right);
+	public static <F, S> Pair<F, S> of(F first, S second) {
+		return new Pair<F, S>(first, second);
 	}
 	
-	public Pair(L left, R right) {
-		this.left = left;
-		this.right = right;
+	public Pair(F first, S second) {
+		this.first = first;
+		this.second = second;
 	}
 
-	public L getKey() {
-		return left;
+	public F getFirst() {
+		return first;
 	}
 
-	public R getValue() {
-		return right;
+	public S getSecond() {
+		return second;
 	}
 
 	@Override
 	public int hashCode() {
-		return left.hashCode() ^ right.hashCode();
+		final int prime = 10007;
+		int result = prime + ((first == null) ? 0 : first.hashCode());
+		result = prime * result + ((second == null) ? 0 : second.hashCode());
+		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null)
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof Pair)) {
 			return false;
-		if (!(obj instanceof Pair))
-			return false;
+		}
 		Pair<?, ?> other = (Pair<?, ?>) obj;
-		return this.left.equals(other.getKey())
-				&& this.right.equals(other.getValue());
+		if (first == null ? other.first != null : !first
+				.equals(other.first)) {
+			return false;
+		}
+		if (second == null ? other.second != null : !second
+				.equals(other.second)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "<" + first + ", " + second + ">";
 	}
 
 }

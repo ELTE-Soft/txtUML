@@ -125,7 +125,7 @@ public interface Expr {
 					OperatorExporter operatorExporter = new OperatorExporter(
 							expressionExporter);
 					return operatorExporter.export("id", Arrays.asList(this))
-							.getValue().evaluate().getOutputPin();
+							.getSecond().evaluate().getOutputPin();
 				}
 				throw new UnsupportedOperationException();
 			}

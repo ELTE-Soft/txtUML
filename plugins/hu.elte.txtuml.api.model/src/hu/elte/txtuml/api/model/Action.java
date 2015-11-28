@@ -3,16 +3,17 @@ package hu.elte.txtuml.api.model;
 import hu.elte.txtuml.api.model.ModelExecutor.Report;
 import hu.elte.txtuml.api.model.backend.MultiplicityException;
 import hu.elte.txtuml.utils.InstanceCreator;
+import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
 
 import java.lang.reflect.Modifier;
 
 /**
  * Class <code>Action</code> provides methods for the user to be used as
- * statements of the action language of the model.
+ * statements of the action language.
  * 
  * <p>
- * <b>Represents:</b> no model element directly, its static methods are part of the
- * action language
+ * <b>Represents:</b> no model element directly, its static methods are part of
+ * the action language
  * <p>
  * <b>Usage:</b>
  * <p>
@@ -28,7 +29,8 @@ import java.lang.reflect.Modifier;
  * </ul>
  * 
  * <p>
- * See the documentation of {@link Model} for an overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  *
@@ -73,13 +75,13 @@ public class Action implements ModelElement {
 				params[i + 1] = parameters[i];
 			}
 		}
-		T obj = InstanceCreator
-				.createInstanceWithGivenParams(classType, params);
-		if (obj == null) {
+		try {
+			return InstanceCreator.create(classType, params);
+		} catch (IllegalArgumentException | RuntimeInvocationTargetException e) {
 			Report.error.forEach(x -> x.modelObjectCreationFailed(classType,
 					parameters));
+			return null;
 		}
-		return obj;
 	}
 
 	/**
@@ -128,8 +130,8 @@ public class Action implements ModelElement {
 	 * @see ModelClass.Status#DELETED
 	 */
 	public static <L extends ModelClass, R extends ModelClass> void link(
-			Class<? extends AssociationEnd<L>> leftEnd, L leftObj,
-			Class<? extends AssociationEnd<R>> rightEnd, R rightObj) {
+			Class<? extends AssociationEnd<L, ?>> leftEnd, L leftObj,
+			Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj) {
 
 		if (isLinkingDeleted(leftObj) || isLinkingDeleted(rightObj)) {
 			return;
@@ -200,8 +202,8 @@ public class Action implements ModelElement {
 	 * @see AssociationEnd
 	 */
 	public static <L extends ModelClass, R extends ModelClass> void unlink(
-			Class<? extends AssociationEnd<L>> leftEnd, L leftObj,
-			Class<? extends AssociationEnd<R>> rightEnd, R rightObj) {
+			Class<? extends AssociationEnd<L, ?>> leftEnd, L leftObj,
+			Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj) {
 
 		if (isUnlinkingDeleted(leftObj) || isUnlinkingDeleted(rightObj)) {
 			return;
@@ -264,7 +266,7 @@ public class Action implements ModelElement {
 	 * Asynchronously sends the specified signal to the specified target object.
 	 * <p>
 	 * Does not check whether the target object is deleted, it is only checked
-	 * when the signal arrives to the target object.
+	 * when the signal arrives to the object.
 	 * 
 	 * @param target
 	 *            the model object which will receive the signal

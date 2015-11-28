@@ -36,7 +36,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * <p>
  * Accessed from multiple threads, so must be thread-safe.
  * <p>
- * See the documentation of {@link Model} for an overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  *
@@ -46,15 +47,13 @@ public final class ModelExecutor implements ModelElement {
 	/**
 	 * The thread on which the model execution will run.
 	 */
-	private static final ModelExecutorThread thread = new ModelExecutorThread();
+	private static final ModelExecutorThread thread = new ModelExecutorThread().autoStart();
 
 	/**
-	 * A queue of actions to be performed when the executor is shut down.
+	 * The object which prints the runtime log of the executor.
 	 */
-	private static final Queue<Runnable> shutdownQueue = new ConcurrentLinkedQueue<>();
-
 	private static final ExecutorLog executorLog = new ExecutorLog();
-	
+
 	/**
 	 * Sole constructor of <code>ModelExecutor</code>, which is designed to be
 	 * an uninstantiatable class.
@@ -91,7 +90,7 @@ public final class ModelExecutor implements ModelElement {
 	 * 
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *
@@ -254,7 +253,8 @@ public final class ModelExecutor implements ModelElement {
 				if (Settings.canChangeExecutionTimeMultiplier) {
 					Settings.executionTimeMultiplier = newMultiplier;
 				} else {
-					Report.error.forEach(x -> x.changingLockedExecutionTimeMultiplier());
+					Report.error.forEach(x -> x
+							.changingLockedExecutionTimeMultiplier());
 				}
 			}
 		}
@@ -266,8 +266,6 @@ public final class ModelExecutor implements ModelElement {
 		 * <i>mul</i> millseconds during model execution, where <i>mul</i> is
 		 * the current execution time multiplier. This way, txtUML models might
 		 * be tested at the desired speed.
-		 * <p>
-		 * Execution time multiplier is 1 by default.
 		 * 
 		 * @return the current execution time multiplier
 		 * @see #setExecutionTimeMultiplier(float)
@@ -286,8 +284,6 @@ public final class ModelExecutor implements ModelElement {
 		 * <i>mul</i> millseconds during model execution, where <i>mul</i> is
 		 * the current execution time multiplier. This way, txtUML models might
 		 * be tested at the desired speed.
-		 * <p>
-		 * Execution time multiplier is 1 by default.
 		 * 
 		 * @param time
 		 *            the amount of time to be given in model execution time
@@ -325,39 +321,81 @@ public final class ModelExecutor implements ModelElement {
 
 	// REPORT
 
+	/**
+	 * A special class to manage runtime reports about the model execution.
+	 * 
+	 * <p>
+	 * <b>Represents:</b> no model element
+	 * <p>
+	 * <b>Usage:</b>
+	 * <p>
+	 * 
+	 * Calling its static methods only affect the model execution, they are not
+	 * exported.
+	 * 
+	 * <p>
+	 * <b>Java restrictions:</b>
+	 * <ul>
+	 * <li><i>Instantiate:</i> disallowed</li>
+	 * <li><i>Define subtype:</i> disallowed</li>
+	 * </ul>
+	 * 
+	 * <p>
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * JtxtUML.
+	 *
+	 * @author Gabor Ferenc Kovacs
+	 * 
+	 *
+	 */
 	public static final class Report {
 
+		/**
+		 * Registered {@link ModelExecutionEventsListener}s.
+		 */
 		static final Queue<ModelExecutionEventsListener> event = new ConcurrentLinkedQueue<>();
-		
+
+		/**
+		 * Registered {@link RuntimeErrorsListener}s.
+		 */
 		static final Queue<RuntimeErrorsListener> error = new ConcurrentLinkedQueue<>();
 
+		/**
+		 * Registered {@link RuntimeWarningsListener}s.
+		 */
 		static final Queue<RuntimeWarningsListener> warning = new ConcurrentLinkedQueue<>();
 
 		static {
 			DiagnosticsServiceConnector.startAndGetInstance();
 		}
 
-		public static void addModelExecutionEventsListener(ModelExecutionEventsListener listener) {
+		public static void addModelExecutionEventsListener(
+				ModelExecutionEventsListener listener) {
 			event.add(listener);
 		}
-		
-		public static void addRuntimeErrorsListener(RuntimeErrorsListener listener) {
+
+		public static void addRuntimeErrorsListener(
+				RuntimeErrorsListener listener) {
 			error.add(listener);
 		}
-		
-		public static void addRuntimeWarningsListener(RuntimeWarningsListener listener) {
+
+		public static void addRuntimeWarningsListener(
+				RuntimeWarningsListener listener) {
 			warning.add(listener);
 		}
-		
-		public static void removeModelExecutionEventsListener(ModelExecutionEventsListener listener) {
+
+		public static void removeModelExecutionEventsListener(
+				ModelExecutionEventsListener listener) {
 			event.remove(listener);
 		}
-		
-		public static void removeRuntimeErrorsListener(RuntimeErrorsListener listener) {
+
+		public static void removeRuntimeErrorsListener(
+				RuntimeErrorsListener listener) {
 			error.remove(listener);
 		}
-		
-		public static void removeRuntimeWarningsListener(RuntimeWarningsListener listener) {
+
+		public static void removeRuntimeWarningsListener(
+				RuntimeWarningsListener listener) {
 			warning.remove(listener);
 		}
 	}
@@ -369,6 +407,11 @@ public final class ModelExecutor implements ModelElement {
 	 * all scheduled actions have been performed and every non-external event
 	 * caused by them have been processed. To shut down the executor instantly,
 	 * call {@link #shutdownNow}.
+	 * <p>
+	 * This method <b>does not</b> await the termination of the executor, it
+	 * returns instantly.
+	 * 
+	 * @see #awaitTermination
 	 */
 	public static void shutdown() {
 		thread.shutdown();
@@ -378,19 +421,27 @@ public final class ModelExecutor implements ModelElement {
 	 * Shuts down the model executor without waiting for any currently running
 	 * or scheduled actions to perform. In most cases, {@link #shutdown} should
 	 * be called instead.
+	 * 
+	 * This method <b>does not</b> await the termination of the executor, it
+	 * returns instantly.
+	 * 
+	 * @see #awaitTermination
 	 */
 	public static void shutdownNow() {
-		Report.event.forEach(x -> x.executionTerminated());
+		thread.shutdownImmediately();
+	}
 
-		while (true) {
-			Runnable shutdownAction = shutdownQueue.poll();
-			if (shutdownAction == null) {
-				break;
-			}
-			shutdownAction.run();
+	/**
+	 * This method awaits the model execution to terminate and only returns
+	 * after (or when the current thread is interrupted).
+	 */
+	public static void awaitTermination() {
+		try {
+			thread.join();
+		} catch (InterruptedException e) {
+			// TODO: error logging
+			e.printStackTrace();
 		}
-
-		thread.interrupt();
 	}
 
 	/**
@@ -401,7 +452,7 @@ public final class ModelExecutor implements ModelElement {
 	 *            the action to be run when the executor is shut down
 	 */
 	public static void addToShutdownQueue(Runnable shutdownAction) {
-		shutdownQueue.add(shutdownAction);
+		thread.addToShutdownQueue(shutdownAction);
 	}
 
 	/**
@@ -432,9 +483,9 @@ public final class ModelExecutor implements ModelElement {
 	 *            the association end which's multiplicity is to be checked
 	 */
 	static void checkLowerBoundInNextExecutionStep(ModelClass obj,
-			Class<? extends AssociationEnd<?>> assocEnd) {
+			Class<? extends AssociationEnd<?, ?>> assocEnd) {
 
-		thread.checkLowerBoundOfMultiplcitiy(obj, assocEnd);
+		thread.checkLowerBoundOfMultiplicity(obj, assocEnd);
 	}
 
 	// LOGGING METHODS

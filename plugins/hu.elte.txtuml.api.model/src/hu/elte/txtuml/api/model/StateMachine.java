@@ -16,7 +16,7 @@ import hu.elte.txtuml.api.model.backend.ElseException;
  * every model class may have an implicit state machine by defining vertices and
  * transitions as its inner classes.
  * <p>
- * A txtUML state machine consists of inner classes of a subclass of
+ * A JtxtUML state machine consists of inner classes of a subclass of
  * <code>StateMachine</code>, all of which inner classes extend either
  * {@link StateMachine.Vertex Vertex} or {@link StateMachine.Transition
  * Transition}. A single initial pseudostate (a subclass of
@@ -28,7 +28,7 @@ import hu.elte.txtuml.api.model.backend.ElseException;
  * classes extending <code>Vertex</code> or <code>Transition</code>).
  * <p>
  * Apart from the obligatory initial pseudostate and initial transition, a
- * txtUML state machine may contain any number of states (subclasses of
+ * JtxtUML state machine may contain any number of states (subclasses of
  * {@link State}), choice pseudostates (subclasses of {@link Choice}), composite
  * states (subclasses of {@link CompositeState}) to implement hierarchical state
  * machines, and transitions (subclasses of {@link Transition}). For details
@@ -168,7 +168,8 @@ import hu.elte.txtuml.api.model.backend.ElseException;
  * </code>
  * </pre>
  * 
- * See the documentation of {@link Model} for an overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  * @see Vertex
@@ -184,11 +185,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 	/**
 	 * Sole constructor of <code>StateMachine</code>.
-	 * <p>
-	 * <b>Implementation note:</b>
-	 * <p>
-	 * Package private to make sure that this class is neither instantiated, nor
-	 * directly inherited by the user.
 	 */
 	StateMachine() {
 	}
@@ -215,7 +211,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 * @see State
@@ -228,11 +224,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 		/**
 		 * Sole constructor of <code>Vertex</code>.
-		 * <p>
-		 * <b>Implementation note:</b>
-		 * <p>
-		 * Package private to make sure that this class is neither instantiated,
-		 * nor directly inherited by the user.
 		 */
 		Vertex() {
 		}
@@ -255,6 +246,12 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		public void exit() {
 		}
 
+		/**
+		 * Gives this object the reference of the actual triggering signal.
+		 * 
+		 * @param s
+		 *            the actual triggering signal
+		 */
 		void setSignal(Signal s) {
 		}
 
@@ -297,7 +294,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 * 
 	 * @author Gabor Ferenc Kovacs
 	 * @see Initial
@@ -309,11 +306,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 		/**
 		 * Sole constructor of <code>Pseudostate</code>.
-		 * <p>
-		 * <b>Implementation note:</b>
-		 * <p>
-		 * Package private to make sure that this class is neither instantiated,
-		 * nor directly inherited by the user.
 		 */
 		Pseudostate() {
 		}
@@ -403,7 +395,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *
@@ -412,13 +404,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 		/**
 		 * Sole constructor of <code>Initial</code>.
-		 * <p>
-		 * <b>Implementation note:</b>
-		 * <p>
-		 * Protected because this class is intended to be inherited from but not
-		 * instantiated. However, <code>Initial</code> has to be a non-abstract
-		 * class to make sure that it is instantiatable when that is needed for
-		 * the API or the model exportation.
 		 */
 		protected Initial() {
 		}
@@ -489,7 +474,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *
@@ -498,13 +483,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 		/**
 		 * Sole constructor of <code>Choice</code>.
-		 * <p>
-		 * <b>Implementation note:</b>
-		 * <p>
-		 * Protected because this class is intended to be inherited from but not
-		 * instantiated. However, <code>Choice</code> has to be a non-abstract
-		 * class to make sure that it is instantiatable when that is needed for
-		 * the API or the model exportation.
 		 */
 		protected Choice() {
 		}
@@ -585,28 +563,61 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *
 	 */
 	public class State extends Vertex {
 
+		/**
+		 * Before the entry or exit action of this state is called, this field
+		 * must be set to be the actual signal receiving which triggered the
+		 * transition.
+		 */
 		private Signal signal;
 
 		/**
 		 * Sole constructor of <code>State</code>.
-		 * <p>
-		 * <b>Implementation note:</b>
-		 * <p>
-		 * Protected because this class is intended to be inherited from but not
-		 * instantiated. However, <code>State</code> has to be a non-abstract
-		 * class to make sure that it is instantiatable when that is needed for
-		 * the API or the model exportation.
 		 */
 		protected State() {
 		}
 
+		/**
+		 * Returns the signal receiving which triggered the execution of the
+		 * actually performed transition. The return value is casted to any
+		 * desired type which is a subclass of <code>Signal</code>.
+		 * <p>
+		 * It is guaranteed for this method to return a non-null value
+		 * successfully if the following conditions are met for the actually
+		 * performed transition <i>t</i> and a signal <i>s</i>:
+		 * <ul>
+		 * <li>tr(<i>t</i>, <i>s</i>) (<i>t</i> is triggered by <i>s</i>)
+		 * <b>and</b></li>
+		 * <li>a cast to <i>s</i> is asked.</li>
+		 * </ul>
+		 * 
+		 * For any transition <i>t</i> and signal <i>s</i>, tr(<i>t</i>,
+		 * <i>s</i>) if either
+		 * <ul>
+		 * <li><i>t</i> has a {@link Trigger} annotation defined which's value
+		 * is set to <i>s</i> or any of its supertypes, <b>or</b></li>
+		 * <li><i>t</i> is from a choice pseudostate <i>c</i> and for all
+		 * transitions <i>t'</i> to <i>c</i>: tr(<i>t'</i>, <i>s</i>)</li>
+		 * </ul>
+		 * 
+		 * If there are no signals for which the above described conditions are
+		 * met, this method should not be called on the actual transition.
+		 * 
+		 * @param <T>
+		 *            the type to which the casting should be performed
+		 * @param signalClass
+		 *            the signal class to which the casting should be performed
+		 * @return the signal receiving which triggered the execution (or the
+		 *         call of the guard) of this transition
+		 * @throws ClassCastException
+		 *             if the cast might not be performed
+		 */
 		@SuppressWarnings("unchecked")
 		protected final <T extends Signal> T getSignal(Class<T> signalClass) {
 			return (T) signal;
@@ -683,7 +694,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *
@@ -692,13 +703,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 
 		/**
 		 * Sole constructor of <code>CompositeState</code>.
-		 * <p>
-		 * <b>Implementation note:</b>
-		 * <p>
-		 * Protected because this class is intended to be inherited from but not
-		 * instantiated. However, <code>CompositeState</code> has to be a
-		 * non-abstract class to make sure that it is instantiatable when that
-		 * is needed for the API or the model exportation.
 		 */
 		protected CompositeState() {
 		}
@@ -740,6 +744,9 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		 * @return an <i>else</i> condition; in fact, this method always throws
 		 *         a special exception which is caught by the API to represent
 		 *         an <i>else</i> condition
+		 * @throws ElseException
+		 *             always, due to implementation issues; should <b>not be
+		 *             caught</b> by user code.
 		 * @see Transition#guard
 		 */
 		protected static final boolean Else() throws ElseException {
@@ -810,7 +817,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * See the documentation of {@link StateMachine} for detailed examples.
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 *
@@ -833,21 +840,11 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		 * Before this transition is executed or its guard is called, this field
 		 * must be set to be the actual signal receiving which triggered the
 		 * transition.
-		 * <p>
-		 * If the transition has no triggers defined, the value of this field is
-		 * unused.
 		 */
 		private Signal signal;
 
 		/**
 		 * Sole constructor of <code>Transition</code>.
-		 * <p>
-		 * <b>Implementation note:</b>
-		 * <p>
-		 * Protected because this class is intended to be inherited from but not
-		 * instantiated. However, <code>Transition</code> has to be a
-		 * non-abstract class to make sure that it is instantiatable when that
-		 * is needed for the API or the model exportation.
 		 */
 		protected Transition() {
 			Class<? extends Transition> cls = getClass();

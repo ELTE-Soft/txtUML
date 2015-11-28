@@ -1,7 +1,9 @@
 package hu.elte.txtuml.api.model;
 
-import hu.elte.txtuml.api.model.backend.collections.InnerClassInstancesMap;
 import hu.elte.txtuml.utils.InstanceCreator;
+
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.MutableClassToInstanceMap;
 
 /**
  * An abstract class which contains a mapping to single instances of its inner
@@ -17,7 +19,7 @@ abstract class InnerClassInstancesHolder {
 	/**
 	 * The map which contains instances of the inner classes.
 	 */
-	private final InnerClassInstancesMap innerClassInstances = InnerClassInstancesMap
+	private final ClassToInstanceMap<Object> innerClassInstances = MutableClassToInstanceMap
 			.create();
 
 	/**
@@ -51,8 +53,7 @@ abstract class InnerClassInstancesHolder {
 		if (forWhat == null) {
 			return null;
 		}
-		@SuppressWarnings("unchecked")
-		T ret = (T) innerClassInstances.get(forWhat);
+		T ret = innerClassInstances.getInstance(forWhat);
 		if (ret == null) {
 			Object parent;
 			Class<?> enclosing = forWhat.getEnclosingClass();
@@ -61,9 +62,8 @@ abstract class InnerClassInstancesHolder {
 			} else {
 				parent = getInnerClassInstance(enclosing);
 			}
-			ret = InstanceCreator
-					.createInstanceWithGivenParams(forWhat, parent);
-			innerClassInstances.put(forWhat, ret);
+			ret = InstanceCreator.create(forWhat, parent);
+			innerClassInstances.putInstance(forWhat, ret);
 		}
 		return ret;
 	}

@@ -1,144 +1,95 @@
 package hu.elte.txtuml.utils;
 
 import java.lang.reflect.Constructor;
-import java.util.HashSet;
-import java.util.Set;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Parameter;
 
 /**
  * A utility class to create instances of classes specified by their
  * representing {@code Class<?>} objects.
- *
- * @author Gabor Ferenc Kovacs
- *
+ * <p>
+ * Can also create a primitive type instance.
  */
 public final class InstanceCreator {
 
-	public static <T> T createInstance(Class<T> c) {
-		return createInstanceRecursively(c, new HashSet<>());
-	}
+	/**
+	 * Creates instance of a class or primitive type specified by its
+	 * representing {@code Class<?>} object. If multiple constructors are
+	 * applicable there is no guarantee which one will be used. Will throw an
+	 * exception if no constructors can be applied.
+	 * 
+	 * @throws IllegalArgumentException
+	 *             if the specified type cannot be instantiated or has no
+	 *             constructors that has the given count and type of parameters
+	 * @throws RuntimeInvocationTargetException
+	 *             if the called constructor throws an exception
+	 */
+	public static <T> T create(Class<T> toInstantiate,
+			Object... constructorParams) throws IllegalArgumentException,
+			RuntimeInvocationTargetException {
 
-	@SuppressWarnings("unchecked")
-	public static <T> T createInstanceWithGivenParams(Class<T> c,
-			Object... givenParams) {
-		if (c.isPrimitive()) {
-			if (givenParams.length == 0) {
-				return createPrimitiveInstance(c);
+		if (toInstantiate.isPrimitive()) {
+			if (constructorParams.length == 0) {
+				return getDefaultPrimitiveValue(toInstantiate);
 			} else {
-				return null;
+				throw new IllegalArgumentException(
+						"Primitive values cannot be instantiated with parameters");
 			}
 		}
-		Set<Class<?>> ancestors = new HashSet<>();
 		T ret = null;
-		int givenParamsLen = givenParams.length;
-		Constructor<?>[] ctors = c.getDeclaredConstructors();
+
+		// contains the default constructor if no constructor is defined
+		Constructor<?>[] ctors = toInstantiate.getDeclaredConstructors();
 		for (Constructor<?> ctor : ctors) {
-			ctor.setAccessible(true);
-			Class<?>[] paramTypes = ctor.getParameterTypes();
-			int len = paramTypes.length;
-			if (len < givenParamsLen) {
-				continue;
-			}
-			Object[] params = new Object[len];
-
-			{
-				int i;
-				for (i = 0; i < givenParamsLen; ++i) {
-					try {
-						params[i] = paramTypes[i].cast(givenParams[i]);
-					} catch (ClassCastException e) {
-						break;
-					}
-				}
-				if (i < givenParamsLen) { // one of the parameters could not be
-											// casted
-					continue;
-				}
-				for (; i < len; ++i) {
-					Object param = createInstanceRecursively(paramTypes[i],
-							ancestors);
-					if (param == null) {
-						break;
-					}
-					params[i] = param;
-				}
-				if (i < len) { // one of the parameters could not be created
-					continue;
-				}
-			}
-
-			try {
-				ret = (T) ctor.newInstance(params);
-			} catch (InstantiationException e) {
-				break;
-				// This type is abstract, so it is not instantiatable.
-			} catch (Exception e) {
-				// Using this constructor failed, 'ret' is null,
-				// loop again if there are more constructors.
-			}
-
+			ret = tryCreateWithConstructor(ctor, constructorParams);
 			if (ret != null) {
-				break;
+				return ret;
 			}
 		}
-		return ret;
+		throw new IllegalArgumentException(
+				"No constructors could be applied to create an instance of "
+						+ toInstantiate);
 	}
 
+	/**
+	 * Tries to create the instance using the given constructor. Omits the
+	 * implicit parameters. Checks are left for the newInstance call.
+	 */
 	@SuppressWarnings("unchecked")
-	private static <T> T createInstanceRecursively(Class<T> c,
-			Set<Class<?>> ancestors) {
-		if (ancestors.contains(c)) {
+	private static <T> T tryCreateWithConstructor(Constructor<?> ctor,
+			Object... givenParams) throws RuntimeInvocationTargetException {
+		Parameter[] params = ctor.getParameters();
+		Object[] actualParams = new Object[params.length];
+
+		int givenParamInd = 0;
+		for (int i = 0; i < params.length && givenParamInd < givenParams.length; ++i) {
+			if (!params[i].isImplicit() && !params[i].isSynthetic()) {
+				actualParams[i] = givenParams[givenParamInd++];
+			}
+		}
+
+		// more parameters were given than how many this constructor has
+		if (givenParamInd < givenParams.length) {
 			return null;
 		}
-		if (c.isPrimitive()) {
-			return createPrimitiveInstance(c);
+
+		ctor.setAccessible(true);
+
+		try {
+			return (T) ctor.newInstance(actualParams);
+		} catch (InvocationTargetException e) {
+			// exception raised by the constructor
+			throw new RuntimeInvocationTargetException(
+					"Error while calling constructor", e);
+		} catch (IllegalArgumentException | InstantiationException
+				| IllegalAccessException e) {
+			// constructor is not applicable, null will be returned
 		}
-		ancestors.add(c);
-
-		T ret = null;
-		Constructor<?>[] ctors = c.getDeclaredConstructors();
-		for (Constructor<?> ctor : ctors) {
-			ctor.setAccessible(true);
-			Class<?>[] paramTypes = ctor.getParameterTypes();
-			int len = paramTypes.length;
-			Object[] params = new Object[len];
-
-			{
-				int i; // we use variable 'i' after the loop to check whether it
-						// finished with 'break' command.
-				for (i = 0; i < len; ++i) {
-					Object param = createInstanceRecursively(paramTypes[i],
-							ancestors);
-					if (param == null) {
-						break;
-					}
-					params[i] = param;
-				}
-				if (i < len) { // one of the parameters could not be created
-					continue;
-				}
-			}
-
-			try {
-				ret = (T) ctor.newInstance(params);
-			} catch (InstantiationException e) {
-				break;
-				// This type is abstract, so it is not instantiatable.
-			} catch (Exception e) {
-				// Using this constructor failed, 'ret' is null,
-				// loop again if there are more constructors.
-			}
-
-			if (ret != null) {
-				break;
-			}
-		}
-
-		ancestors.remove(c);
-		return ret;
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T> T createPrimitiveInstance(Class<?> c) {
+	private static <T> T getDefaultPrimitiveValue(Class<?> c) {
 		// The 8 primitive types of Java, with the more common ones in front.
 		if (c == boolean.class) {
 			return (T) new Boolean(false);
@@ -159,5 +110,4 @@ public final class InstanceCreator {
 		}
 		return null;
 	}
-
 }

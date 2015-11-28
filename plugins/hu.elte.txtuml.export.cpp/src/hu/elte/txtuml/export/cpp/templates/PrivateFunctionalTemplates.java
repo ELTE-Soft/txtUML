@@ -67,14 +67,14 @@ class PrivateFunctionalTemplates
 			{
 				source+=parentClassName_+"::";
 			}
-			source+=GenerationNames.EventEnumName(entry.getKey().getKey())+","+GenerationNames.StateEnumName(entry.getKey().getValue())+"),";
+			source+=GenerationNames.EventEnumName(entry.getKey().getFirst())+","+GenerationNames.StateEnumName(entry.getKey().getSecond())+"),";
 			String guardName=GenerationNames.DefaultGuardName;
-			if(entry.getValue().getKey() != null)
+			if(entry.getValue().getFirst() != null)
 			{
-				guardName=entry.getValue().getKey();
+				guardName=entry.getValue().getFirst();
 			}		
 			source+=GenerationNames.GuardActionName+"("+GenerationNames.GuardFuncTypeName+"(&"+className_+"::"+guardName+"),"
-					+GenerationNames.FunctionPtrTypeName+"(&"+className_+"::"+entry.getValue().getValue()+")));\n";
+					+GenerationNames.FunctionPtrTypeName+"(&"+className_+"::"+entry.getValue().getSecond()+")));\n";
 		
 		}
 		source+=GenerationNames.SetInitialStateName+"();\n";
@@ -177,7 +177,7 @@ class PrivateFunctionalTemplates
 		String source="";
 		for(Pair<String,String> item:params_)
 		{
-			source+=PrivateFunctionalTemplates.CppType(item.getKey())+" "+GenerationNames.FormatIncomignParamName(item.getValue())+",";
+			source+=PrivateFunctionalTemplates.CppType(item.getFirst())+" "+GenerationNames.FormatIncomignParamName(item.getSecond())+",";
 		}
 		return source.substring(0,source.length()-1);
 	}

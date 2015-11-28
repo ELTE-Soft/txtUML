@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="hu.elte.txtuml.project"
+            name="txtUML">
+      </category>
+      <wizard
+            category="hu.elte.txtuml.project"
+            class="hu.elte.txtuml.project.wizards.TxtUMLProjectWizard"
+            icon="icons/txtUML_project.png"
+            id="hu.elte.txtuml.project.wizards.TxtUMLProject"
+            name="txtUML Project"
+            project="true">
+      </wizard>
+      <wizard
+            category="hu.elte.txtuml.project"
+            class="hu.elte.txtuml.project.wizards.TxtUMLModelFileCreatorWizard"
+            icon="icons/txtuml_model.png"
+            id="hu.elte.txtuml.project.newtxtumlfile"
+            name="txtUML Model">
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.ide.projectNatureImages">
+      <image
+            icon="icons/txtUML_project.png"
+            id="hu.elte.txtuml.project.natureimage"
+            natureId="hu.elte.txtuml.project.txtumlprojectNature">
+      </image>
+   </extension>
+   <extension
+         id="hu.elte.txtuml.project.txtumlprojectNature"
+         name="txtUML ProjectNature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="hu.elte.txtuml.project.TxtUMLProjectNature">
+         </run>
+      </runtime>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.core.classpathContainerInitializer">
+      <classpathContainerInitializer
+            class="hu.elte.txtuml.project.buildpath.RuntimeLibraryContainerInitializer"
+            id="hu.elte.txtuml.project.runtimeClasspathInitializer">
+      </classpathContainerInitializer>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.ui.classpathContainerPage">
+      <classpathContainerPage
+            class="hu.elte.txtuml.project.buildpath.RuntimeLibraryContainerWizardPage"
+            id="hu.elte.txtuml.project.runtimeClasspathInitializer"
+            name="%runtime.library.name">
+      </classpathContainerPage>
+   </extension>
+
+</plugin>

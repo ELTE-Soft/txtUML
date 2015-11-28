@@ -1,6 +1,7 @@
 package hu.elte.txtuml.api.model;
 
 import hu.elte.txtuml.api.model.ModelExecutor.Report;
+import hu.elte.txtuml.api.model.assocends.Navigability;
 import hu.elte.txtuml.api.model.backend.MultiplicityException;
 import hu.elte.txtuml.api.model.backend.collections.AssociationsMap;
 import hu.elte.txtuml.utils.InstanceCreator;
@@ -43,15 +44,16 @@ import java.util.concurrent.atomic.AtomicLong;
  * <li><i>Be abstract:</i> disallowed</li>
  * <li><i>Generic parameters:</i> disallowed</li>
  * <li><i>Constructors:</i> allowed, only with parameters of types which are
- * subclasses of <code>ModelClass</code> or primitives (including String)</li>
+ * subclasses of <code>ModelClass</code> or primitives (including {@code String}
+ * )</li>
  * <li><i>Initialization blocks:</i> allowed, containing only simple assignments
  * to set the default values of its fields</li>
  * <li><i>Fields:</i> allowed, only of types which are subclasses of
- * <code>ModelClass</code> or primitives (including String); they represent
- * attributes of the model class</li>
+ * <code>ModelClass</code> or primitives (including {@code String}); they
+ * represent attributes of the model class</li>
  * <li><i>Methods:</i> allowed, only with parameters and return values of types
  * which are subclasses of <code>ModelClass</code> or primitives (including
- * String); they represent operations of the model class</li>
+ * {@code String}); they represent operations of the model class</li>
  * <li><i>Nested interfaces:</i> disallowed</li>
  * <li><i>Nested classes:</i> allowed, only non-static and extending either
  * {@link StateMachine.Vertex} or {@link StateMachine.Transition}</li>
@@ -86,7 +88,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * See the documentation of {@link StateMachine} for detailed examples about
  * defining state machines.
  * <p>
- * See the documentation of {@link Model} for an overview on modeling in txtUML.
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
  *
@@ -98,7 +101,7 @@ public class ModelClass extends Region {
 	 * constants of this enumeration type.
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
-	 * txtUML.
+	 * JtxtUML.
 	 * 
 	 * @see Status#READY
 	 * @see Status#ACTIVE
@@ -107,33 +110,33 @@ public class ModelClass extends Region {
 	 */
 	public enum Status {
 		/**
-		 * This status of a <code>ModelClass</code> object indicates that the
-		 * represented model object's state machine is not yet started. It will
-		 * not react to any asynchronous events, for example, sending signals to
-		 * it. However, sending signal to a <code>READY</code> object is legal
-		 * in the model, therefore no error or warning messages are shown if it
-		 * is done.
+		 * This status of a <code>ModelClass</code> object indicates that
+		 * the represented model object's state machine is not yet started. It
+		 * will not react to any asynchronous events, for example, sending
+		 * signals to it. However, sending signal to a <code>READY</code> object
+		 * is legal in the model, therefore no error or warning messages are
+		 * shown if it is done.
 		 * <p>
 		 * See the documentation of {@link Model} for an overview on modeling in
-		 * txtUML.
+		 * JtxtUML.
 		 * 
 		 * @see Status#ACTIVE
 		 */
 		READY,
 		/**
-		 * This status of a <code>ModelClass</code> object indicates that the
-		 * represented model object's state machine is currently running.
+		 * This status of a <code>ModelClass</code> object indicates that
+		 * the represented model object's state machine is currently running.
 		 * <p>
 		 * It may be reached by starting the state machine of this object
 		 * manually with the {@link Action#start(ModelClass)} method.
 		 * <p>
 		 * See the documentation of {@link Model} for an overview on modeling in
-		 * txtUML.
+		 * JtxtUML.
 		 */
 		ACTIVE,
 		/**
-		 * This status of a <code>ModelClass</code> object indicates that the
-		 * represented model object either has no state machine or its state
+		 * This status of a <code>ModelClass</code> object indicates that
+		 * the represented model object either has no state machine or its state
 		 * machine is already stopped but the object itself is not yet deleted
 		 * from the model. Its fields and methods might be used but it will not
 		 * react to any asynchronous events, for example, sending signals to it.
@@ -146,20 +149,21 @@ public class ModelClass extends Region {
 		 * status is to implement a model class without a state machine.
 		 * <p>
 		 * See the documentation of {@link Model} for an overview on modeling in
-		 * txtUML.
+		 * JtxtUML.
 		 */
 		FINALIZED,
 		/**
-		 * This status of a <code>ModelClass</code> object indicates that the
-		 * represented model object is deleted. No further use of this object is
-		 * allowed, however, using its fields or methods do not result in any
-		 * error messages because of the limitations of the Java language.
+		 * This status of a <code>ModelClass</code> object indicates that
+		 * the represented model object is deleted. No further use of this
+		 * object is allowed, however, using its fields or methods do not result
+		 * in any error messages because of the limitations of the Java
+		 * language.
 		 * <p>
 		 * An object may only be in this status when all of its associations are
 		 * unlinked and its state machine is stopped.
 		 * <p>
 		 * See the documentation of {@link Model} for an overview on modeling in
-		 * txtUML.
+		 * JtxtUML.
 		 * 
 		 * @see Action#delete(ModelClass)
 		 */
@@ -174,8 +178,6 @@ public class ModelClass extends Region {
 
 	/**
 	 * The current status of this model object.
-	 * 
-	 * @see Status
 	 */
 	private volatile Status status;
 
@@ -195,13 +197,6 @@ public class ModelClass extends Region {
 	 * initial pseudostate (if any), it goes into either {@link Status#READY
 	 * READY} or {@link Status#FINALIZED FINALIZED} status depending on whether
 	 * it has any state machine or not (any initial pseudostate or not).
-	 * <p>
-	 * <b>Implementation note:</b>
-	 * <p>
-	 * Protected because this class is intended to be inherited from but not
-	 * instantiated. However, <code>ModelClass</code> has to be a non-abstract
-	 * class to make sure that it is instantiatable when that is needed for the
-	 * API or the model exportation.
 	 */
 	protected ModelClass() {
 		super();
@@ -216,8 +211,8 @@ public class ModelClass extends Region {
 	}
 
 	/**
-	 * Returns a unique identifier of this model object which is created upon
-	 * the creation of this object.
+	 * Returns a unique identifier of this model object which is created
+	 * upon the creation of this object.
 	 * 
 	 * @return the unique identifier of this model object
 	 */
@@ -241,10 +236,10 @@ public class ModelClass extends Region {
 	 * @return collection containing the objects in association with this object
 	 *         and being on <code>otherEnd</code>
 	 */
-	public <T extends ModelClass, AE extends AssociationEnd<T> & hu.elte.txtuml.api.model.assocends.Navigability.Navigable> AE assoc(
+	public <T extends ModelClass, C, AE extends AssociationEnd<T, C> & Navigability.Navigable> C assoc(
 			Class<AE> otherEnd) {
 
-		return assocPrivate(otherEnd);
+		return assocPrivate(otherEnd).getCollection();
 
 	}
 
@@ -262,13 +257,13 @@ public class ModelClass extends Region {
 	 * @return collection containing the objects in association with this object
 	 *         and being on <code>otherEnd</code>
 	 */
-	private <T extends ModelClass, AE extends AssociationEnd<T>> AE assocPrivate(
+	<T extends ModelClass, C, AE extends AssociationEnd<T, C>> AE assocPrivate(
 			Class<AE> otherEnd) {
 
 		@SuppressWarnings("unchecked")
 		AE ret = (AE) associations.get(otherEnd);
 		if (ret == null) {
-			ret = InstanceCreator.createInstanceWithGivenParams(otherEnd,
+			ret = InstanceCreator.create(otherEnd,
 					(Object) null);
 			associations.put(otherEnd, ret);
 		}
@@ -293,21 +288,16 @@ public class ModelClass extends Region {
 	 *             if the upper bound of the multiplicity of the opposite
 	 *             association end is offended
 	 */
-	<T extends ModelClass, AE extends AssociationEnd<T>> void addToAssoc(
+	<T extends ModelClass, C, AE extends AssociationEnd<T, C>> void addToAssoc(
 			Class<AE> otherEnd, T object) throws MultiplicityException {
 
-		AssociationEnd<?> newValue = InstanceCreator
-				.createInstanceWithGivenParams(otherEnd, (Object) null).init(
-						assocPrivate(otherEnd).typeKeepingAdd(object));
-
-		associations.put(otherEnd, newValue);
-
+		assocPrivate(otherEnd).add(object);
 	}
 
 	/**
-	 * Removes the specified object from the collection containing the objects
-	 * in association with this object and being on the specified opposite
-	 * association end.
+	 * Removes the specified object from the collection containing the
+	 * objects in association with this object and being on the specified
+	 * opposite association end.
 	 * 
 	 * @param <T>
 	 *            the type of objects which are on the opposite association end
@@ -318,26 +308,23 @@ public class ModelClass extends Region {
 	 * @param object
 	 *            the object to remove from the collection
 	 */
-	<T extends ModelClass, AE extends AssociationEnd<T>> void removeFromAssoc(
+	<T extends ModelClass, C, AE extends AssociationEnd<T, C>> void removeFromAssoc(
 			Class<AE> otherEnd, T object) {
 
-		AssociationEnd<?> newValue = InstanceCreator
-				.createInstanceWithGivenParams(otherEnd, (Object) null).init(
-						assocPrivate(otherEnd).typeKeepingRemove(object));
-
-		associations.put(otherEnd, newValue);
+		AE assocEnd = assocPrivate(otherEnd);
+		assocEnd.remove(object);
 
 		if (ModelExecutor.Settings.dynamicChecks()
-				&& !newValue.checkLowerBound()) {
+				&& !assocEnd.checkLowerBound()) {
 			ModelExecutor.checkLowerBoundInNextExecutionStep(this, otherEnd);
 		}
 
 	}
 
 	/**
-	 * Checks if the specified object is element of the collection containing
-	 * the objects in association with this object and being on the specified
-	 * opposite association end.
+	 * Checks if the specified object is element of the collection
+	 * containing the objects in association with this object and being on the
+	 * specified opposite association end.
 	 * 
 	 * @param <T>
 	 *            the type of objects which are on the opposite association end
@@ -351,26 +338,29 @@ public class ModelClass extends Region {
 	 *         collection related to <code>otherEnd</code>, <code>false</code>
 	 *         otherwise
 	 */
-	<T extends ModelClass, AE extends AssociationEnd<T>> boolean hasAssoc(
+	<T extends ModelClass, AE extends AssociationEnd<T, ?>> boolean hasAssoc(
 			Class<AE> otherEnd, T object) {
 
-		AssociationEnd<?> actualOtherEnd = associations.get(otherEnd);
+		@SuppressWarnings("unchecked")
+		AssociationEnd<T, ?> actualOtherEnd = (AssociationEnd<T, ?>) associations
+				.get(otherEnd);
 		return actualOtherEnd == null ? false : actualOtherEnd.contains(object);
 	}
 
 	/**
-	 * Checks the lower bound of the specified association end's multiplicity.
-	 * Shows a message in case of an error. If this object is in
+	 * Checks the lower bound of the specified association end's
+	 * multiplicity. Shows a message in case of an error. If this object is in
 	 * {@link Status#DELETED DELETED} status, the check is ignored.
 	 * 
 	 * @param assocEnd
 	 *            the association end to check
 	 */
-	void checkLowerBound(Class<? extends AssociationEnd<?>> assocEnd) {
+	void checkLowerBound(Class<? extends AssociationEnd<?, ?>> assocEnd) {
 
 		if (status != Status.DELETED
 				&& !assocPrivate(assocEnd).checkLowerBound()) {
-			Report.error.forEach(x -> x.lowerBoundOfMultiplicityOffended(this, assocEnd));
+			Report.error.forEach(x -> x.lowerBoundOfMultiplicityOffended(this,
+					assocEnd));
 		}
 
 	}
@@ -378,7 +368,7 @@ public class ModelClass extends Region {
 	@Override
 	void process(Signal signal) {
 		if (isDeleted()) {
-			Report.warning.forEach(x -> x.signalArrivedToDeletedObject(this));
+			Report.warning.forEach(x -> x.signalArrivedToDeletedObject(this, signal));
 			return;
 		}
 		super.process(signal);
@@ -412,8 +402,8 @@ public class ModelClass extends Region {
 	}
 
 	/**
-	 * Looks up all the defined associations of the model class this object is
-	 * an instance of and initializes them, if they have not been initialized
+	 * Looks up all the defined associations of the model class this object
+	 * is an instance of and initializes them, if they have not been initialized
 	 * yet, by assigning empty {@link Collection Collections} to them in the
 	 * {@link #associations} map. If any of them has a lower bound which is
 	 * currently offended then registers that association end to be checked in
@@ -435,10 +425,10 @@ public class ModelClass extends Region {
 				if (Association.class.isAssignableFrom(assocClass)) {
 					Class<?>[] assocEnds = assocClass.getDeclaredClasses();
 					if (checkIfEndIsOwnedByThisClass(assocEnds[0])) {
-						initializeDefinedAssociationEnd((Class<? extends AssociationEnd<?>>) assocEnds[1]);
+						initializeDefinedAssociationEnd((Class<? extends AssociationEnd<?, ?>>) assocEnds[1]);
 					}
 					if (checkIfEndIsOwnedByThisClass(assocEnds[1])) {
-						initializeDefinedAssociationEnd((Class<? extends AssociationEnd<?>>) assocEnds[0]);
+						initializeDefinedAssociationEnd((Class<? extends AssociationEnd<?, ?>>) assocEnds[0]);
 					}
 				}
 			}
@@ -448,8 +438,8 @@ public class ModelClass extends Region {
 	}
 
 	/**
-	 * Checks if the owner of the specified association end is the model class
-	 * this object is an instance of.
+	 * Checks if the owner of the specified association end is the model
+	 * class this object is an instance of.
 	 * <p>
 	 * Exceptions might be thrown in case of a model error as this method
 	 * assumes that the model is well-defined.
@@ -486,8 +476,8 @@ public class ModelClass extends Region {
 	}
 
 	/**
-	 * Initializes the specified association end, if it has not been initialized
-	 * yet, by assigning an empty {@link Collection} to it in the
+	 * Initializes the specified association end, if it has not been
+	 * initialized yet, by assigning an empty {@link Collection} to it in the
 	 * {@link #associations} map. If its lower bound is currently offended then
 	 * registers that association end to be checked in the next <i>execution
 	 * step</i>.
@@ -499,14 +489,14 @@ public class ModelClass extends Region {
 	 *            the association end to initialize
 	 */
 	private void initializeDefinedAssociationEnd(
-			Class<? extends AssociationEnd<?>> assocEnd) {
+			Class<? extends AssociationEnd<?, ?>> assocEnd) {
 
 		if (associations.get(assocEnd) != null) {
 			return;
 		}
 
-		AssociationEnd<?> value = InstanceCreator
-				.createInstanceWithGivenParams(assocEnd, (Object) null);
+		AssociationEnd<?, ?> value = InstanceCreator
+				.create(assocEnd, (Object) null);
 
 		associations.put(assocEnd, value);
 
@@ -540,7 +530,7 @@ public class ModelClass extends Region {
 		if (isDeleted()) {
 			return true;
 		}
-		for (AssociationEnd<?> assocEnd : this.associations.values()) {
+		for (AssociationEnd<?, ?> assocEnd : this.associations.values()) {
 			if (!assocEnd.isEmpty()) {
 				return false;
 			}

@@ -1,6 +1,5 @@
 package hu.elte.txtuml.export.papyrus;
 
-import hu.elte.txtuml.eclipseutils.Dialogs;
 import hu.elte.txtuml.eclipseutils.ProjectUtils;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
 import hu.elte.txtuml.export.papyrus.utils.EditorOpener;
@@ -60,8 +59,10 @@ public class PapyrusVisualizer {
 	 * Creates the project (if not exists) and sets up the Papyrus Model
 	 * @param monitor 
 	 * @return 
+	 * @throws ServiceException 
+	 * @throws ModelMultiException 
 	 */
-	public IStatus run(IProgressMonitor monitor) {
+	public IStatus run(IProgressMonitor monitor) throws ModelMultiException, ServiceException {
 		monitor.beginTask("Visualization", 100);
 		
 		monitor.subTask("Creating new Papyrus project...");
@@ -69,22 +70,11 @@ public class PapyrusVisualizer {
 		ProjectUtils.openProject(project);
 		monitor.worked(20);
 		
-		createPapyrusProject(new SubProgressMonitor(monitor, 80));
+		createAndOpenPapyrusModel(new SubProgressMonitor(monitor, 80));
 		SettingsRegistry.clear();
 		return Status.OK_STATUS;
 	}
 	
-	/**
-	 * Creates a Papyrus Model in the opened project or handles the Exceptions 
-	 * with a messagebox.
-	 */
-	private void createPapyrusProject(IProgressMonitor monitor) {
-		try {	
-			createAndOpenPapyrusModel(monitor);
-		} catch (Exception e) {
-			Dialogs.errorMsgb("Error", e.toString(), e);
-		}
-	}	
 	
 	/**
 	 * Creates the Papyrus Model and fills the diagrams.

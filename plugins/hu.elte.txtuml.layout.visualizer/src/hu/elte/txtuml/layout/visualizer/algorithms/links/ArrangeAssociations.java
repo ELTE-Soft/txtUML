@@ -11,7 +11,6 @@ import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
 import hu.elte.txtuml.layout.visualizer.helpers.Helper;
 import hu.elte.txtuml.layout.visualizer.helpers.Options;
-import hu.elte.txtuml.layout.visualizer.helpers.Pair;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation.RouteConfig;
@@ -19,6 +18,7 @@ import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
+import hu.elte.txtuml.utils.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -111,7 +111,7 @@ public class ArrangeAssociations
 			CannotFindAssociationRouteException, UnknownStatementException
 	{
 		// Nothing to arrange
-		if (diagramAssocs == null || diagramAssocs.size() == 0)
+		if (diagramAssocs == null)
 			return;
 		
 		_gId = gid;
@@ -206,14 +206,19 @@ public class ArrangeAssociations
 		_heightOfCells = k;
 		
 		// Get the smallest of boxes to compute the grid dimensions
-		RectangleObject smallestBox = objs.stream().min((o1, o2) ->
+		Integer smallestPixelWidth = objs.stream().min((o1, o2) ->
 		{
-			return Integer.compare(o1.getPixelArea(), o2.getPixelArea());
-		}).get();
+			return Integer.compare(o1.getPixelWidth(), o2.getPixelWidth());
+		}).get().getPixelWidth();
+		Integer smallestPixelHeight = objs.stream().min((o1, o2) ->
+		{
+			return Integer.compare(o1.getPixelHeight(), o2.getPixelHeight());
+		}).get().getPixelHeight();
 		
-		Double pixelPerGridWidth = smallestBox.getPixelWidth() / (k + 2.0);
-		Double pixelPerGridHeight = smallestBox.getPixelHeight() / (k + 2.0);
+		Double pixelPerGridWidth = smallestPixelWidth / (k + 2.0);
+		Double pixelPerGridHeight = smallestPixelHeight / (k + 2.0);
 		
+		// Set the grid sizes of boxes based on their pixel sizes
 		for (RectangleObject obj : objs)
 		{
 			RectangleObject mod = new RectangleObject(obj);
@@ -235,9 +240,9 @@ public class ArrangeAssociations
 			
 			// Calculate the position of the cell
 			tempPos.setX(o.getPosition().getX()
-					* (int) Math.floor(_widthOfCells * _options.CorridorRatio * 2.0));
+					* (int) Math.floor(_widthOfCells * (_options.CorridorRatio + 1.0)));
 			tempPos.setY(o.getPosition().getY()
-					* (int) Math.floor(_heightOfCells * _options.CorridorRatio * 2.0));
+					* (int) Math.floor(_heightOfCells * (_options.CorridorRatio + 1.0)));
 			_cellPositions.put(o.getName(), new Point(tempPos));
 			
 			// Calculate the position of the box in the cell
@@ -453,19 +458,19 @@ public class ArrangeAssociations
 		}
 		
 		// Remove occupied points
-		result.removeIf(p -> occupied.contains(p.First));
+		result.removeIf(p -> occupied.contains(p.getFirst()));
 		// Remove corner points
-		result.removeIf(p -> Helper.isCornerPoint(p.First, tempObj));
+		result.removeIf(p -> Helper.isCornerPoint(p.getFirst(), tempObj));
 		
 		// Set the weights of nodes.
 		// TODO
 		for (Pair<Point, Double> pair : result)
 		{
-			if (pair.Second < 0.0)
+			if (pair.getSecond() < 0.0)
 			{
-				Double distance1 = Point.Substract(pair.First, tempObj.getTopLeft())
+				Double distance1 = Point.Substract(pair.getFirst(), tempObj.getTopLeft())
 						.length();
-				Double distance2 = Point.Substract(pair.First, tempObj.getBottomRight())
+				Double distance2 = Point.Substract(pair.getFirst(), tempObj.getBottomRight())
 						.length();
 				
 				Double w = p_width / 2.0;
@@ -476,11 +481,11 @@ public class ArrangeAssociations
 						|| Helper.isAlmostEqual(distance2, w, 0.8)
 						|| Helper.isAlmostEqual(distance2, h, 0.8))
 				{
-					pair.Second = 0.0;
+					pair = new Pair<Point, Double>(pair.getFirst(), 0.0);
 				}
 				else
 				{
-					pair.Second = 1.0;
+					pair = new Pair<Point, Double>(pair.getFirst(), 1.0);
 				}
 			}
 		}
@@ -503,40 +508,40 @@ public class ArrangeAssociations
 		
 		Point northern = Point.Add(obj.getPosition(), new Point(halfwayH, 0));
 		if (isStart)
-			result.removeIf(p -> p.First.getY().equals(northern.getY())
-					&& p.First.getX() >= northern.getX());
+			result.removeIf(p -> p.getFirst().getY().equals(northern.getY())
+					&& p.getFirst().getX() >= northern.getX());
 		else
-			result.removeIf(p -> p.First.getY().equals(northern.getY())
-					&& p.First.getX() <= northern.getX());
+			result.removeIf(p -> p.getFirst().getY().equals(northern.getY())
+					&& p.getFirst().getX() <= northern.getX());
 		
 		Point eastern = Point.Add(obj.getBottomRight(), new Point(0, halfwayV));
 		if (isStart)
-			result.removeIf(p -> p.First.getX().equals(eastern.getX())
-					&& p.First.getY() <= eastern.getY());
+			result.removeIf(p -> p.getFirst().getX().equals(eastern.getX())
+					&& p.getFirst().getY() <= eastern.getY());
 		else
-			result.removeIf(p -> p.First.getX().equals(eastern.getX())
-					&& p.First.getY() >= eastern.getY());
+			result.removeIf(p -> p.getFirst().getX().equals(eastern.getX())
+					&& p.getFirst().getY() >= eastern.getY());
 		
 		Point southern = Point.Add(obj.getBottomRight(), new Point(-1 * halfwayH, 0));
 		if (isStart)
-			result.removeIf(p -> p.First.getY().equals(southern.getY())
-					&& p.First.getX() <= southern.getX());
+			result.removeIf(p -> p.getFirst().getY().equals(southern.getY())
+					&& p.getFirst().getX() <= southern.getX());
 		else
-			result.removeIf(p -> p.First.getY().equals(southern.getY())
-					&& p.First.getX() >= southern.getX());
+			result.removeIf(p -> p.getFirst().getY().equals(southern.getY())
+					&& p.getFirst().getX() >= southern.getX());
 		
 		Point western = Point.Add(obj.getPosition(), new Point(0, -1 * halfwayV));
 		if (isStart)
-			result.removeIf(p -> p.First.getX().equals(western.getX())
-					&& p.First.getY() >= western.getY());
+			result.removeIf(p -> p.getFirst().getX().equals(western.getX())
+					&& p.getFirst().getY() >= western.getY());
 		else
-			result.removeIf(p -> p.First.getX().equals(western.getX())
-					&& p.First.getY() <= western.getY());
+			result.removeIf(p -> p.getFirst().getX().equals(western.getX())
+					&& p.getFirst().getY() <= western.getY());
 		
 		// Set the weights of points
 		for (Pair<Point, Double> pair : result)
 		{
-			pair.Second = 0.0;
+			pair = new Pair<Point, Double>(pair.getFirst(), 0.0);
 		}
 		
 		return result;
@@ -549,18 +554,18 @@ public class ArrangeAssociations
 		
 		for (Pair<Point, Double> pair : ps)
 		{
-			if (obj.getTopLeft().getX().equals(pair.First.getX()))
-				result.add(new Pair<Node, Double>(new Node(pair.First, Point.Add(
-						pair.First, Direction.west)), pair.Second));
-			else if (obj.getTopLeft().getY().equals(pair.First.getY()))
-				result.add(new Pair<Node, Double>(new Node(pair.First, Point.Add(
-						pair.First, Direction.north)), pair.Second));
-			else if (obj.getBottomRight().getX().equals(pair.First.getX()))
-				result.add(new Pair<Node, Double>(new Node(pair.First, Point.Add(
-						pair.First, Direction.east)), pair.Second));
-			else if (obj.getBottomRight().getY().equals(pair.First.getY()))
-				result.add(new Pair<Node, Double>(new Node(pair.First, Point.Add(
-						pair.First, Direction.south)), pair.Second));
+			if (obj.getTopLeft().getX().equals(pair.getFirst().getX()))
+				result.add(new Pair<Node, Double>(new Node(pair.getFirst(), Point.Add(
+						pair.getFirst(), Direction.west)), pair.getSecond()));
+			else if (obj.getTopLeft().getY().equals(pair.getFirst().getY()))
+				result.add(new Pair<Node, Double>(new Node(pair.getFirst(), Point.Add(
+						pair.getFirst(), Direction.north)), pair.getSecond()));
+			else if (obj.getBottomRight().getX().equals(pair.getFirst().getX()))
+				result.add(new Pair<Node, Double>(new Node(pair.getFirst(), Point.Add(
+						pair.getFirst(), Direction.east)), pair.getSecond()));
+			else if (obj.getBottomRight().getY().equals(pair.getFirst().getY()))
+				result.add(new Pair<Node, Double>(new Node(pair.getFirst(), Point.Add(
+						pair.getFirst(), Direction.south)), pair.getSecond()));
 			else
 				throw new InternalException("BOOM1!");
 		}
@@ -575,18 +580,18 @@ public class ArrangeAssociations
 		
 		for (Pair<Point, Double> pair : ps)
 		{
-			if (obj.getTopLeft().getX().equals(pair.First.getX()))
-				result.add(new Pair<Node, Double>(new Node(Point.Add(pair.First,
-						Direction.west), pair.First), pair.Second));
-			else if (obj.getTopLeft().getY().equals(pair.First.getY()))
-				result.add(new Pair<Node, Double>(new Node(Point.Add(pair.First,
-						Direction.north), pair.First), pair.Second));
-			else if (obj.getBottomRight().getX().equals(pair.First.getX()))
-				result.add(new Pair<Node, Double>(new Node(Point.Add(pair.First,
-						Direction.east), pair.First), pair.Second));
-			else if (obj.getBottomRight().getY().equals(pair.First.getY()))
-				result.add(new Pair<Node, Double>(new Node(Point.Add(pair.First,
-						Direction.south), pair.First), pair.Second));
+			if (obj.getTopLeft().getX().equals(pair.getFirst().getX()))
+				result.add(new Pair<Node, Double>(new Node(Point.Add(pair.getFirst(),
+						Direction.west), pair.getFirst()), pair.getSecond()));
+			else if (obj.getTopLeft().getY().equals(pair.getFirst().getY()))
+				result.add(new Pair<Node, Double>(new Node(Point.Add(pair.getFirst(),
+						Direction.north), pair.getFirst()), pair.getSecond()));
+			else if (obj.getBottomRight().getX().equals(pair.getFirst().getX()))
+				result.add(new Pair<Node, Double>(new Node(Point.Add(pair.getFirst(),
+						Direction.east), pair.getFirst()), pair.getSecond()));
+			else if (obj.getBottomRight().getY().equals(pair.getFirst().getY()))
+				result.add(new Pair<Node, Double>(new Node(Point.Add(pair.getFirst(),
+						Direction.south), pair.getFirst()), pair.getSecond()));
 			else
 				throw new InternalException("BOOM2!");
 		}
