@@ -32,7 +32,7 @@ public interface ElementExporter {
 
 	DiagramType getDiagramTypeBasedOnElements();
 
-	String getRootElementAsString();
+	String getModelName();
 
 	NodeMap getNodes();
 
@@ -102,7 +102,7 @@ public interface ElementExporter {
 
 	/**
 	 * Should be called only by an instance of class
-	 * {@link hu.elte.txtuml.layout.export.diagramexporters.ClassDiagramExporter
+	 * {@link hu.elte.txtuml.layout.export.source.ClassDiagramExporter
 	 * ClassDiagramExporter}. Checking the diagram type is not necessary since
 	 * it's checked by the caller.
 	 * @throws ElementExportationException 
