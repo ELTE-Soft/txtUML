@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Standard Library Model
 Bundle-SymbolicName: hu.elte.txtuml.stdlib;singleton:=true
-Bundle-Version: 0.2.0.qualifier
+Bundle-Version: 0.3.0.qualifier
 Bundle-Activator: hu.elte.txtuml.stdlib.Activator
 Bundle-Vendor: ELTE
 Require-Bundle: org.eclipse.ui,

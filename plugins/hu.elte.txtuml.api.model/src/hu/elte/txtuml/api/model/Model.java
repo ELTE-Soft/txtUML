@@ -1,5 +1,11 @@
 package hu.elte.txtuml.api.model;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import hu.elte.txtuml.api.model.external.ExternalClass;
 
 /**
@@ -259,6 +265,9 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * @see Signal
  * 
  */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PACKAGE)
+@Documented
 public @interface Model {
 
 	/**

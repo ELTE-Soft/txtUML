@@ -1,28 +1,25 @@
 package hu.elte.txtuml.export.uml2;
 
-import hu.elte.txtuml.eclipseutils.NotFoundException;
-import hu.elte.txtuml.eclipseutils.PackageUtils;
-import hu.elte.txtuml.eclipseutils.ProjectUtils;
-import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
-import hu.elte.txtuml.export.uml2.transform.backend.RuntimeExportException;
-import hu.elte.txtuml.export.uml2.transform.exporters.ModelExporter;
-import hu.elte.txtuml.export.uml2.transform.visitors.ModelObtainer;
-import hu.elte.txtuml.export.uml2.utils.SharedUtils;
-import hu.elte.txtuml.utils.Sneaky;
-
-import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.eclipse.core.resources.IResource;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+
+import hu.elte.txtuml.eclipseutils.NotFoundException;
+import hu.elte.txtuml.eclipseutils.PackageUtils;
+import hu.elte.txtuml.eclipseutils.ProjectUtils;
+import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
+import hu.elte.txtuml.export.uml2.transform.backend.RuntimeExportException;
+import hu.elte.txtuml.export.uml2.transform.exporters.ModelExporter;
+import hu.elte.txtuml.export.uml2.utils.ModelUtils;
+import hu.elte.txtuml.export.uml2.utils.SharedUtils;
+import hu.elte.txtuml.utils.Sneaky;
 
 /**
  * This class is responsible for exporting Eclipse UML2 model generated from a
@@ -57,11 +54,21 @@ public class UML2 {
 	 *            The specified compilation unit.
 	 * @return The type declaration of the txtUML model.
 	 *
-	 * @author Ádám Ancsin
+	 * @author Adam Ancsin
 	 */
-	private static Optional<String> obtainModelFromCompilationUnit(
+	private static Optional<String> obtainModelFromCompilationUnits(
 			String packageName, CompilationUnit[] compilationUnits) {
-		return new ModelObtainer(packageName, compilationUnits).getModelName();
+
+		Optional<String> ret;
+		
+		for (CompilationUnit cu : compilationUnits) {
+			ret = ModelUtils.findModelNameInTopPackage(cu);
+			if (ret.isPresent()) {
+				return ret;
+			}
+		}
+
+		return Optional.empty();
 	}
 
 	/**
@@ -92,11 +99,11 @@ public class UML2 {
 
 		Stream<ICompilationUnit> packageInfo = Stream.of(packageFragments)
 				.filter(pf -> pf.getElementName().equals(packageName))
-				.map(pf -> pf.getCompilationUnit("package-info.java"))
+				.map(pf -> pf.getCompilationUnit(PackageUtils.PACKAGE_INFO))
 				.filter(ICompilationUnit::exists);
 
-		Optional<String> JtxtUMLModelName = obtainModelFromCompilationUnit(
-				packageName, toCompilationUnits(packageInfo, javaProject));
+		Optional<String> JtxtUMLModelName = obtainModelFromCompilationUnits(
+				packageName, SharedUtils.parseICompilationUnitStream(packageInfo, javaProject));
 
 		if (!JtxtUMLModelName.isPresent()) {
 			throw new ExportException("Package '" + packageName
@@ -107,7 +114,7 @@ public class UML2 {
 		Stream<ICompilationUnit> all = Stream.of(packageFragments).flatMap(
 				Sneaky.unchecked(pf -> Stream.of(pf.getCompilationUnits())));
 
-		ModelExporter modelExporter = new ModelExporter(toCompilationUnits(all,
+		ModelExporter modelExporter = new ModelExporter(SharedUtils.parseICompilationUnitStream(all,
 				javaProject), JtxtUMLModelName.get(), packageName, outputDirectory);
 		try {
 			modelExporter.exportModel();
@@ -120,18 +127,4 @@ public class UML2 {
 
 	}
 
-	private static CompilationUnit[] toCompilationUnits(
-			Stream<ICompilationUnit> stream, IJavaProject javaProject)
-			throws IOException, JavaModelException {
-
-		// Sneaky.<JavaModelException> Throw();
-		// Sneaky.<IOException> Throw();
-		return stream
-				.map(ICompilationUnit::getResource)
-				.map(IResource::getLocationURI)
-				.map(File::new)
-				.map(Sneaky.unchecked(f -> SharedUtils.parseJavaSource(f,
-						javaProject))).filter(Objects::nonNull)
-				.toArray(CompilationUnit[]::new);
-	}
 }

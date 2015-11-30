@@ -4,6 +4,7 @@ import hu.elte.txtuml.api.model.ModelExecutor.Report;
 import hu.elte.txtuml.api.model.backend.MultipleContainerException;
 import hu.elte.txtuml.api.model.backend.MultiplicityException;
 import hu.elte.txtuml.utils.InstanceCreator;
+import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
 
 /**
  * Class <code>Action</code> provides methods for the user to be used as
@@ -63,12 +64,13 @@ public class Action implements ModelElement {
 	 */
 	public static <T extends ModelClass> T create(Class<T> classType,
 			Object... parameters) {
-		T obj = InstanceCreator.create(classType, parameters);
-		if (obj == null) {
+		try {
+			return InstanceCreator.create(classType, parameters);
+		} catch (IllegalArgumentException | RuntimeInvocationTargetException e) {
 			Report.error.forEach(x -> x.modelObjectCreationFailed(classType,
 					parameters));
+			return null;
 		}
-		return obj;
 	}
 
 	/**

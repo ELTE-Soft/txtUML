@@ -11,15 +11,15 @@ public interface ModelId {
 
 class ModelIdImpl implements ModelId {
 
-	private final Package topPackage;
+	private final String topPackage;
 
-	public ModelIdImpl(Package topPackage) {
-		this.topPackage = topPackage;
+	public ModelIdImpl(String topPackage) {
+		this.topPackage = topPackage.intern();
 	}
 
 	@Override
 	public String getName() {
-		return topPackage.getName();
+		return topPackage;
 	}
 
 	@Override
@@ -35,7 +35,7 @@ class ModelIdImpl implements ModelId {
 		return false;
 	}
 
-	Package getPackage() {
+	String getPackage() {
 		return topPackage;
 	}
 
