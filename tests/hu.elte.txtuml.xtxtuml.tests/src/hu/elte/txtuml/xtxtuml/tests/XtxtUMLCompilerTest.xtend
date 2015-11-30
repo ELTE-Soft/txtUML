@@ -22,12 +22,12 @@ class XtxtUMLCompilerTest {
 	@Inject extension CompilationTestHelper
 	
 	@Test
-	def test() {
+	def testEmptyModel() {
 		'''
 			model M {
 			}
 		'''.assertCompilesTo('''
-			import hu.elte.txtuml.api.Model;
+			import hu.elte.txtuml.api.model.Model;
 
 			@SuppressWarnings("all")
 			public class M extends Model {

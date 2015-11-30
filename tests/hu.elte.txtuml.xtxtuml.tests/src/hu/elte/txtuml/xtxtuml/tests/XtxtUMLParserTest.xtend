@@ -29,7 +29,7 @@ class XtxtUMLParserTest {
 	// Test methods
 	
 	@Test
-	def testDuplicates() {
+	def testEmptyModel() {
 		'''	
 			model M {}
 		'''.parse.assertNoErrors;
