@@ -13,3 +13,4 @@ Require-Bundle: org.eclipse.core.runtime,
  hu.elte.txtuml.api.layout;bundle-version="0.3.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
+Export-Package: hu.elte.txtuml.validation

@@ -4,6 +4,7 @@ import org.eclipse.xtext.generator.IGenerator;
 import org.eclipse.xtext.naming.IQualifiedNameConverter;
 import org.eclipse.xtext.scoping.IScopeProvider;
 import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider;
+import org.eclipse.xtext.validation.ConfigurableIssueCodesProvider;
 import org.eclipse.xtext.xbase.compiler.XbaseCompiler;
 import org.eclipse.xtext.xbase.scoping.batch.ImplicitlyImportedFeatures;
 import org.eclipse.xtext.xbase.typesystem.computation.ITypeComputer;
@@ -25,6 +26,7 @@ import hu.elte.txtuml.xtxtuml.scoping.XtxtUMLXImportSectionNamespaceScopeProvide
 import hu.elte.txtuml.xtxtuml.typesystem.XtxtUMLEarlyExitComputer;
 import hu.elte.txtuml.xtxtuml.typesystem.XtxtUMLReentrantTypeResolver;
 import hu.elte.txtuml.xtxtuml.typesystem.XtxtUMLTypeComputer;
+import hu.elte.txtuml.xtxtuml.validation.XtxtUMLConfigurableIssueCodes;
 import hu.elte.txtuml.xtxtuml.validation.XtxtUMLExpressionHelper;
 
 /**
@@ -77,5 +79,10 @@ public class XtxtUMLRuntimeModule extends AbstractXtxtUMLRuntimeModule {
 
 	public Class<? extends XExpressionHelper> bindXExpressionHelper() {
 		return XtxtUMLExpressionHelper.class;
+	}
+
+	@Override
+	public Class<? extends ConfigurableIssueCodesProvider> bindConfigurableIssueCodesProvider() {
+		return XtxtUMLConfigurableIssueCodes.class;
 	}
 }

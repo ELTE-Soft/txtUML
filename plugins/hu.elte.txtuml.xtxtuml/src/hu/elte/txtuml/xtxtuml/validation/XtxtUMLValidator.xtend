@@ -42,9 +42,6 @@ class XtxtUMLValidator extends AbstractXtxtUMLValidator {
 	@Inject extension ExtendedEarlyExitComputer;
 	@Inject extension IQualifiedNameProvider;
 
-	// Issues
-	public static val CLASS_HIERARCHY_CYCLE = "hu.elte.txtuml.xtxtuml.issues.ClassHierarchyCycle";
-
 	// Checks
 	@Check
 	def checkModelDeclarationIsInModelInfoFile(TUModelDeclaration modelDeclaration) {
@@ -185,7 +182,7 @@ class XtxtUMLValidator extends AbstractXtxtUMLValidator {
 				error(
 					"Cycle in hierarchy of class " + tUClass.name + " reaching " + currentClass.name,
 					XtxtUMLPackage::eINSTANCE.TUClass_SuperClass,
-					CLASS_HIERARCHY_CYCLE,
+					IssueCodes.CLASS_HIERARCHY_CYCLE,
 					currentClass.name
 				);
 
