@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer;
+package hu.elte.txtuml.layout.visualizer.tests;
 
 import hu.elte.txtuml.layout.visualizer.tests.algorithms.DefaultStatementTest;
 import hu.elte.txtuml.layout.visualizer.tests.algorithms.links.GraphSearchTest;
