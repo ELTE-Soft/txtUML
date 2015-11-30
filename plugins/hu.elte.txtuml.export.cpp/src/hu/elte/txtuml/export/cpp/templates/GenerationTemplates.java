@@ -300,6 +300,7 @@ public class GenerationTemplates
 
 	public static String HierarchicalSubStateMachineClassConstructor(String className_,String parentClassName_,Map<Pair<String,String>,Pair<String,String>> machine_,Map<String,String> subMachines_,String intialState_)
 	{
+		
 		String parentParamName=GenerationNames.FormatIncomignParamName(GenerationNames.ParentSmName);
 		String source=className_+"::"+className_+"("+GenerationNames.PointerType(parentClassName_)+" "+parentParamName+"):"+GenerationNames.DefaultStateInitialization+","+GenerationNames.CurrentMachineName+"("+GenerationNames.NullPtr+"),"+
 				GenerationNames.ParentSmMemberName+"("+parentParamName+")"+"\n{\n";
@@ -308,6 +309,11 @@ public class GenerationTemplates
 	
 	public static String HierarchicalStateMachineClassConstructor(String className_,Map<Pair<String,String>,Pair<String,String>> machine_,Map<String,String> subMachines_,String intialState_,Boolean rt_)
 	{
+		if(Options.Runtime()){
+			String source= className_+"::"+className_+"(" + RuntimePointer + " rt):"+GenerationNames.DefaultStateInitialization+","+GenerationNames.CurrentMachineName+"("+GenerationNames.NullPtr+")\n{\n";
+			return source+PrivateFunctionalTemplates.HierarchicalStateMachineClassConstructorSharedBody(className_, "this", machine_, subMachines_, intialState_, rt_);
+		}
+		
 		String source= className_+"::"+className_+"():"+GenerationNames.DefaultStateInitialization+","+GenerationNames.CurrentMachineName+"("+GenerationNames.NullPtr+")\n{\n";
 		return source+PrivateFunctionalTemplates.HierarchicalStateMachineClassConstructorSharedBody(className_, "this", machine_, subMachines_, intialState_, rt_);
 	}
