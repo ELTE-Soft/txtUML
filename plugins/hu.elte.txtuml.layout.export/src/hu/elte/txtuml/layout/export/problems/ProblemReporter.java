@@ -2,6 +2,7 @@ package hu.elte.txtuml.layout.export.problems;
 
 import hu.elte.txtuml.api.layout.LinkEnd;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.layout.export.source.ModelId;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 import java.lang.annotation.Annotation;
@@ -81,20 +82,31 @@ public class ProblemReporter {
 				+ " contains itself.");
 	}
 
-	public void hasInvalidDeclaringClass(Class<?> elementClass) {
+	public void elementFromAnotherModels(ModelId model,
+			ModelId otherModel, Class<?> element) {
 		report.error("Model element "
-				+ Utils.classAsString(elementClass)
-				+ " is invalid due to its declaring class. Model elements present in a diagram description should be declared in the same subclass of Model.");
+				+ Utils.classAsString(element)
+				+ " is invalid because it is part of the model "
+				+ otherModel.getName()
+				+ ". The current diagram definition belongs to the model "
+				+ model
+				+ " (as that is the container of the first found element inside the definition).");
 	}
 
-	public void priorityStatementWithInvalidElement(Class<?> cls, Class<?>[] val,
-			int prior) {
-		invalidElement(cls, Utils.priorityStatementAsString(val, prior), "link or link group");
+	public void priorityStatementWithInvalidElement(Class<?> cls,
+			Class<?>[] val, int prior) {
+		invalidElement(cls, Utils.priorityStatementAsString(val, prior),
+				"link or link group");
 	}
 
-	public void showStatementWithInvalidElement(Class<?> cls,
-			Class<?>[] value) {
+	public void showStatementWithInvalidElement(Class<?> cls, Class<?>[] value) {
 		invalidElement(cls, Utils.showStatementAsString(value), "node or link");
+	}
+
+	public void unknownContainingModel(Class<?> cls) {
+		report.error("Model element "
+				+ Utils.classAsString(cls)
+				+ " is invalid because it is part of an unknown model (its container could not be retrieved).");
 	}
 
 	// Warnings

@@ -7,7 +7,7 @@ package hu.elte.txtuml.layout.export.elementinfo;
  *
  */
 public interface GroupInfo extends ElementInfo {
-    
-    void setBeingExported(boolean val);
-    
+
+	void setBeingExported(boolean val);
+
 }
