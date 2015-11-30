@@ -1,7 +1,5 @@
 package hu.elte.txtuml.examples.train.xmodel;
 
-import hu.elte.txtuml.api.^model.ModelExecutor;
-
 class Gearbox {
 	initial Init;
 	
@@ -178,38 +176,4 @@ association GL {
 association LE {
 	1 Lamp l;
 	1 Engine e;
-}
-
-execution XTrainTester {
-	ModelExecutor.Settings.setExecutorLog(true);
-	Gearbox g = create(Gearbox);
-	Engine e = create(Engine);
-	Lamp l = create(Lamp);
-	link(GE.g, g, GE.e, e);
-	link(GL.g, g, GL.l, l);
-	link(LE.l, l, LE.e, e);
-	start(g);
-	start(e);
-	start(l);
-
-	int time = 50;
-	for(int i=0; i<3; i++) {
-		Thread.sleep(time);
-		log("");
-		send new Light() to l;
-	}
-
-	Thread.sleep(2 * time);
-	
-	for(int i=0; i<3; i++) {
-		Thread.sleep(3 * time);
-		log("");
-		send new Forward() to g;
-
-		Thread.sleep(time);
-		log("");
-		send new Backward() to g;
-	}
-
-	ModelExecutor.shutdown();
 }

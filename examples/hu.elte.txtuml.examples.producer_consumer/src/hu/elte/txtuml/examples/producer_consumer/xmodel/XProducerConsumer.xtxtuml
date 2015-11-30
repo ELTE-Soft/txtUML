@@ -1,7 +1,5 @@
 package hu.elte.txtuml.examples.producer_consumer.xmodel;
 
-import hu.elte.txtuml.api.^model.ModelExecutor;
-
 signal DoWork;
 signal Acknowledgement;
 
@@ -200,28 +198,3 @@ association InStore {
 	0..1 Storage storage;
 }
 
-execution XProducerConsumerTester {
-	ModelExecutor.Settings.setExecutorLog(true);
-
-	Storage storage = create(Storage,2);
-	Producer p1 = create(Producer,3);
-	Producer p2 = create(Producer,3);
-	Consumer c1 = create(Consumer,2);
-	Consumer c2 = create(Consumer,2);
-	Consumer c3 = create(Consumer,2);
-
-	link(Production.producer, p1, Production.storage, storage);
-	link(Production.producer, p2, Production.storage, storage);
-	link(Consumption.consumer, c1, Consumption.storage, storage);
-	link(Consumption.consumer, c2, Consumption.storage, storage);
-	link(Consumption.consumer, c3, Consumption.storage, storage);
-
-	start(storage);
-	start(p1);
-	start(p2);
-	start(c1);
-	start(c2);
-	start(c3);
-
-	ModelExecutor.shutdown();
-}
