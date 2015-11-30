@@ -7,6 +7,8 @@ Bundle-SymbolicName: hu.elte.txtuml.xtxtuml.tests
 Fragment-Host: hu.elte.txtuml.xtxtuml
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit,
+ org.eclipse.jdt.core,
+ org.eclipse.ui.workbench,
  org.eclipse.xtext.junit4,
  org.eclipse.xtext.xbase.junit,
  org.eclipse.ui.workbench;resolution:=optional,
