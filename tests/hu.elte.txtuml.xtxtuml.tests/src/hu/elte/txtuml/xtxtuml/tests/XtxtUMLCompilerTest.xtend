@@ -1,38 +1,29 @@
 package hu.elte.txtuml.xtxtuml.tests
 
-// Junit
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-// Guice
-import com.google.inject.Inject;
-
-// Xtext / Xbase
-import org.eclipse.xtext.junit4.InjectWith;
-import org.eclipse.xtext.junit4.XtextRunner;
-import org.eclipse.xtext.xbase.compiler.CompilationTestHelper;
-
-// XtxtUML 
-import hu.elte.txtuml.xtxtuml.XtxtUMLInjectorProvider;
+import com.google.inject.Inject
+import org.eclipse.xtext.junit4.InjectWith
+import org.eclipse.xtext.junit4.XtextRunner
+import org.eclipse.xtext.xbase.compiler.CompilationTestHelper
+import org.junit.Test
+import org.junit.runner.RunWith
 
 @RunWith(XtextRunner)
-@InjectWith(XtxtUMLInjectorProvider)
+@InjectWith(CustomXtxtUMLInjectorProvider)
 class XtxtUMLCompilerTest {
-	
-	@Inject extension CompilationTestHelper
-	
-	@Test
-	def testEmptyModel() {
-		'''
-			model M {
-			}
-		'''.assertCompilesTo('''
-			import hu.elte.txtuml.api.model.Model;
 
-			@SuppressWarnings("all")
-			public class M extends Model {
-			}
+	@Inject extension CompilationTestHelper
+
+	@Test
+	def testModelDeclarationCompilesToProperPackageInfo() {
+		PackageNameCalculatorStubProvider.setPackageName("model", "declaration", "test")
+
+		'''
+			model "Test";
+		'''.assertCompilesTo('''
+			@Model("Test")
+			package model.declaration.test;
+			
+			import hu.elte.txtuml.api.model.Model;
 		''')
 	}
-	
 }

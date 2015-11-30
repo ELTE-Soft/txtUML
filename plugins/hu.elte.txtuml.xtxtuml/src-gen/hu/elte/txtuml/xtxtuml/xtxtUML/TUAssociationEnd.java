@@ -11,6 +11,7 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd#getVisibility <em>Visibility</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd#isNotNavigable <em>Not Navigable</em>}</li>
@@ -18,7 +19,6 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd#getEndClass <em>End Class</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd#getName <em>Name</em>}</li>
  * </ul>
- * </p>
  *
  * @see hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage#getTUAssociationEnd()
  * @model

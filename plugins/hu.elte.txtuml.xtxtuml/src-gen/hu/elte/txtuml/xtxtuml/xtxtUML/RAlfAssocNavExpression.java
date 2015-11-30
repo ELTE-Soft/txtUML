@@ -11,11 +11,11 @@ import org.eclipse.xtext.xbase.XExpression;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.RAlfAssocNavExpression#getLeft <em>Left</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.RAlfAssocNavExpression#getRight <em>Right</em>}</li>
  * </ul>
- * </p>
  *
  * @see hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage#getRAlfAssocNavExpression()
  * @model

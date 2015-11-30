@@ -8,32 +8,26 @@ import "http://www.eclipse.org/xtext/xbase/Xtype" as xtype
 // Start rule
 
 TUFile :
-	('package' name=QualifiedName ';'?)?
+	TUModelDeclaration |
+	(('package' name=QualifiedName ';'?)?
 	importSection=XImportSection?
-	elements+=TUFileElement*
+	elements+=TUModelElement*)
 ;
 
-// File level
-
-TUFileElement :
-	TUModel | TUExecution
-;
-
-TUModel : 
-	'model' name=ValidID ('{'
-		elements+=TUModelElement*
-	'}' ';'? | ';')
-;
-
-TUExecution :
-	'execution' name=ValidID
-		body=XBlockExpression
+TUModelDeclaration :
+	{TUModelDeclaration}
+	'model' (name=STRING)? ';'
 ;
 
 // Model level
 
 TUModelElement :
-	TUSignal | TUClass | TUAssociation
+	TUExecution | TUSignal | TUClass | TUAssociation
+;
+
+TUExecution :
+	'execution' name=ValidID
+		body=XBlockExpression
 ;
 
 TUSignal :
