@@ -4,13 +4,16 @@ import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout.StateMachineDiagramElementsGmfArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.ClassDiagramElementsTxtUmlArranger;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.StateMachineDiagramElementsTxtUmlArranger;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.ClassDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.StateMachineDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.utils.Pair;
+import hu.elte.txtuml.utils.Triple;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,18 +58,32 @@ public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 		 monitor.beginTask("Generating empty diagrams", 100);
 		 monitor.subTask("Creating empty diagrams...");
 		 
-		 if(PreferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_PREF)){
-			List<Pair<String, Element>> classDiagramRoots = txtumlregistry.getDiagramRootsWithDiagramNames();
-			CreateClassDiagramCommand cmd = new CreateClassDiagramCommand();
-			for(Pair<String, Element> classDiagramRoot : classDiagramRoots){
-				diagramManager.createDiagram(classDiagramRoot.getSecond(), classDiagramRoot.getFirst(), cmd);
+			List<Triple<DiagramType, String, Element>> diagramRoots = txtumlregistry.getDiagramRootsWithDiagramNames();
+			modelManager.getElementsOfTypes(Arrays.asList(org.eclipse.uml2.uml.Class.class));
+			
+			for(Triple<DiagramType, String, Element> diagramRoot : diagramRoots){
+				if(PreferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_PREF) 
+						&& diagramRoot.getFirst().equals(DiagramType.Class))
+				{
+					diagramManager.createDiagram(diagramRoot.getThird(), 
+						diagramRoot.getSecond(), 
+						new CreateClassDiagramCommand());
+				}
+				
+				if(PreferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_PREF) 
+						&& diagramRoot.getFirst().equals(DiagramType.StateMachine))
+				{
+					diagramManager.createDiagram(diagramRoot.getThird(), 
+						diagramRoot.getSecond(), 
+						new CreateStateMachineDiagramCommand());
+				}
 			}
-		 }
 		 
-		 if(txtumlregistry.getDescriptor().generateSMDs){
+		 
+		 /*if(txtumlregistry.getDescriptor().generateSMDs){
 			 List<Element> statemachines = modelManager.getElementsOfTypes(Arrays.asList(StateMachine.class));
 			 diagramManager.createDiagrams(statemachines, new CreateStateMachineDiagramCommand());
-		 }
+		 }*/
 		 monitor.worked(100);
 	}
 	
@@ -99,7 +116,7 @@ public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 		if(diagram.getType().equals(diagramType_CD)){                                 
 			diagramElementsArranger = new ClassDiagramElementsTxtUmlArranger(diagep, txtumlregistry);
 		}else if(diagram.getType().equals(diagramType_SMD)){                                 
-			diagramElementsArranger = new StateMachineDiagramElementsGmfArranger(diagep);
+			diagramElementsArranger = new StateMachineDiagramElementsTxtUmlArranger(diagep, txtumlregistry);
 		}else{
 			return;
 		}

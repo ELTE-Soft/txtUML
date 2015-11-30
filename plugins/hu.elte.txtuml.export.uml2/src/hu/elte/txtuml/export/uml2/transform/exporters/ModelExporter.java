@@ -10,6 +10,7 @@ import hu.elte.txtuml.export.uml2.transform.visitors.ClassifierVisitor;
 import hu.elte.txtuml.export.uml2.transform.visitors.MethodSkeletonVisitor;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.export.uml2.utils.ResourceSetFactory;
+import hu.elte.txtuml.export.uml2.utils.SharedUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -287,6 +288,9 @@ public class ModelExporter {
 		Region region = stateMachine.createRegion(ownerClass.getName());
 		regionExporter
 				.exportRegion(classifierDeclaration, stateMachine, region);
+		
+		mapping.put(ownerClass.getName(), stateMachine);
+		mapping.put(ownerClass.getName(), region);
 	}
 
 	@SuppressWarnings("unused")

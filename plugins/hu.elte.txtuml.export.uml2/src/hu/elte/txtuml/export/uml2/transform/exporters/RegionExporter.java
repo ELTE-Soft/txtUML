@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.uml2.transform.exporters;
 
 import hu.elte.txtuml.export.uml2.transform.visitors.TransitionVisitor;
 import hu.elte.txtuml.export.uml2.transform.visitors.VertexVisitor;
+import hu.elte.txtuml.export.uml2.utils.SharedUtils;
 
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.uml2.uml.Region;
@@ -26,6 +27,7 @@ public class RegionExporter {
 		VertexVisitor visitor = new VertexVisitor(new VertexExporter(
 				modelExporter, stateMachine, region), ownerDeclaration);
 		ownerDeclaration.accept(visitor);
+		
 	}
 
 	private void exportTransitions(TypeDeclaration ownerDeclaration,

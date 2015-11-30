@@ -4,10 +4,12 @@ import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapUtils;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.AssociationType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.utils.Pair;
+import hu.elte.txtuml.utils.Triple;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -24,7 +26,7 @@ import org.eclipse.uml2.uml.Generalization;
 /**
  * Finds the org.eclipse.uml2 element from a model according to the txtUML name 
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public class TxtUMLElementsRegistry {
 	
@@ -59,13 +61,14 @@ public class TxtUMLElementsRegistry {
 	 * Returns the roots elements of all reports 
 	 * @return
 	 */
-	public List<Pair<String, Element>> getDiagramRootsWithDiagramNames(){
-		List<Pair<String, Element>> roots = new ArrayList<>();
+	public List<Triple<DiagramType, String, Element>> getDiagramRootsWithDiagramNames(){
+		List<Triple<DiagramType, String, Element>> roots = new ArrayList<>();
 		for(Pair<String, DiagramExportationReport> pair : this.descriptor.getReportsWithDiagramNames()){
 			DiagramExportationReport report = pair.getSecond();
 			String name = report.getModelName();
+			DiagramType type = report.getType();
 			findElement(name).ifPresent(
-						e -> roots.add(new Pair<>(pair.getFirst(), e))
+						e -> roots.add(new Triple<>(type, pair.getFirst(), e))
 					);
 		}
 		return roots;
