@@ -13,6 +13,11 @@
 		<relativePath>../../releng/hu.elte.txtuml.parent/pom.xml</relativePath>
 	</parent>
 
+	<properties>
+		<content.jar.path>${project.build.directory}/repository/content.jar</content.jar.path>
+		<content.xml.path>${project.build.directory}/repository/content.xml</content.xml.path>
+	</properties>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -24,9 +29,66 @@
 					<includeAllDependencies>false</includeAllDependencies>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<configuration>
+							<tasks>
+								<echo>---- ANT: ${content.jar.path}</echo>
+								<if>
+									<available file="${content.jar.path}" type="file" />
+									<then>
+										<unzip src="${content.jar.path}" dest="${content.xml.path}" />
+										<!-- <delete file="${content.jar.path}" /> -->
+									</then>
+								</if>
+								<!-- SCRIPT FROM: http://divby0.blogspot.hu/2011/02/simplifying-p2-process-part-3-associate.html
+								<var name="associate.sites.0" value="" />
+								<for param="associate.site" list="${associate.sites}"
+									delimiter=",">
+									<sequential>
+										<var name="associate.sites.0" value="${associate.sites.0}00" />
+									</sequential>
+								</for>
+								<length property="associate.sites.length" string="${associate.sites.0}" />
+								<loadfile srcfile="${update.site.source.dir}/content.xml"
+									property="content.xml">
+									<filterchain>
+										<tailfilter lines="-1" skip="1" />
+									</filterchain>
+								</loadfile>
+								<echo file="${update.site.source.dir}/content.xml" message="${content.xml}" />
+								<echo file="${update.site.source.dir}/content.xml" append="true">
+									&lt;references size='${associate.sites.length}'&gt; </echo>
+								<for param="associate.site" list="${associate.sites}"
+									delimiter=",">
+									<sequential>
+										<echo file="${update.site.source.dir}/content.xml"
+											append="true">
+											<repository uri='@{associate.site}' url='@{associate.site}'
+												type='0' options='1' />
+											<repository uri='@{associate.site}' url='@{associate.site}'
+												type='1' options='1' />
+										</echo>
+									</sequential>
+								</for>
+								<echo file="${update.site.source.dir}/content.xml" append="true">
+									&lt;/references&gt;
+									&lt;/repository&gt; </echo>
+								<zip destfile="${update.site.source.dir}/content.jar" basedir="${update.site.source.dir}" includes="content.xml" />
+								-->
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
-
-	<!-- TODO: use maven resource filtering to fill and copy compositeArtifacts, compositeContent and p2.index -->
-	<!-- TODO: package a composite repository using the meta-data descriptors and the update site compiled above -->
 </project>
