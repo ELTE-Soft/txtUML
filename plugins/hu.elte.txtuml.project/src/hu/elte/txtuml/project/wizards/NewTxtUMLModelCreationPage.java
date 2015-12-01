@@ -11,11 +11,15 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.dialogs.StatusInfo;
 import org.eclipse.jdt.internal.ui.wizards.NewWizardMessages;
-import org.eclipse.jdt.ui.wizards.NewClassWizardPage;
+import org.eclipse.jdt.ui.wizards.NewTypeWizardPage;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -30,7 +34,7 @@ import hu.elte.txtuml.diagnostics.PluginLogWrapper;
 import hu.elte.txtuml.eclipseutils.Dialogs;
 
 @SuppressWarnings("restriction")
-public class NewTxtUMLModelCreationPage extends NewClassWizardPage {
+public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 	protected static final int COLS = 4;
 	protected Button txt;
 	protected Button xtxt;
@@ -38,6 +42,7 @@ public class NewTxtUMLModelCreationPage extends NewClassWizardPage {
 	private IResource resource;
 
 	protected NewTxtUMLModelCreationPage() {
+		super(false, TxtUMLModelFileCreatorWizard.TITLE);
 		this.setTitle(TxtUMLModelFileCreatorWizard.TITLE);
 		this.setDescription(TxtUMLModelFileCreatorWizard.DESCRIPTION);
 	}
@@ -76,6 +81,22 @@ public class NewTxtUMLModelCreationPage extends NewClassWizardPage {
 	protected void doStatusUpdate() {
 		IStatus[] status = new IStatus[] { fContainerStatus };
 		updateStatus(status);
+	}
+
+	public void init(IStructuredSelection selection) {
+		IJavaElement jelem = getInitialJavaElement(selection);
+		if (jelem instanceof IPackageFragmentRoot) {
+			setPackageFragmentRoot((IPackageFragmentRoot) jelem, true);
+		} else if (jelem instanceof IPackageFragment) {
+			IPackageFragment pack = (IPackageFragment) jelem;
+			setPackageFragment(pack, true);
+			while (jelem instanceof IPackageFragment) {
+				jelem = jelem.getParent();
+			}
+			if (jelem instanceof IPackageFragmentRoot) {
+				setPackageFragmentRoot((IPackageFragmentRoot) jelem, true);
+			}
+		}
 	}
 
 	@Override

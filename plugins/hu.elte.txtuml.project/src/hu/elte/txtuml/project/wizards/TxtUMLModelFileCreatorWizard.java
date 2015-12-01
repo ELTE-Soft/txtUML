@@ -1,7 +1,5 @@
 package hu.elte.txtuml.project.wizards;
 
-import hu.elte.txtuml.project.Activator;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -11,13 +9,16 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 
+import hu.elte.txtuml.project.Activator;
+
 public class TxtUMLModelFileCreatorWizard extends Wizard implements INewWizard {
 	
 	private IWorkbench workbench;
 	private NewTxtUMLModelCreationPage _pageOne;
 	
 	public static final String TITLE = "New txtUML model";
-	public static final String DESCRIPTION = "Create new txtUML Model"; 
+	public static final String DESCRIPTION = "Create new txtUML Model";
+	private IStructuredSelection selection; 
 	
 	public TxtUMLModelFileCreatorWizard() {
 		setWindowTitle(TITLE);
@@ -28,6 +29,7 @@ public class TxtUMLModelFileCreatorWizard extends Wizard implements INewWizard {
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		this.workbench = workbench;
+		this.selection = selection;
 	}
 
 	@Override
@@ -53,6 +55,7 @@ public class TxtUMLModelFileCreatorWizard extends Wizard implements INewWizard {
 	    super.addPages();
 	 
 	    _pageOne = new NewTxtUMLModelCreationPage();
+	    _pageOne.init(selection);
 	 
 	    addPage(_pageOne);
 	}
