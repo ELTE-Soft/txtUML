@@ -1,8 +1,5 @@
 package hu.elte.txtuml.project.wizards;
 
-
-import hu.elte.txtuml.eclipseutils.Dialogs;
-
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 
@@ -17,7 +14,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.dialogs.StatusInfo;
 import org.eclipse.jdt.internal.ui.wizards.NewWizardMessages;
-import org.eclipse.jdt.ui.wizards.NewTypeWizardPage;
+import org.eclipse.jdt.ui.wizards.NewClassWizardPage;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -28,16 +25,19 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
+import hu.elte.txtuml.api.model.Model;
+import hu.elte.txtuml.diagnostics.PluginLogWrapper;
+import hu.elte.txtuml.eclipseutils.Dialogs;
+
 @SuppressWarnings("restriction")
-public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
+public class NewTxtUMLModelCreationPage extends NewClassWizardPage {
 	protected static final int COLS = 4;
 	protected Button txt;
 	protected Button xtxt;
 	protected boolean xtxtuml;
 	private IResource resource;
-	
+
 	protected NewTxtUMLModelCreationPage() {
-		super(false, TxtUMLModelFileCreatorWizard.TITLE);
 		this.setTitle(TxtUMLModelFileCreatorWizard.TITLE);
 		this.setDescription(TxtUMLModelFileCreatorWizard.DESCRIPTION);
 	}
@@ -56,30 +56,28 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 		composite.setLayout(layout);
 		createContainerControls(composite, COLS);
 		createPackageControls(composite, COLS);
-		createSeparator(composite, COLS);
 		createTypeNameControls(composite, COLS);
-		createSeparator(composite, COLS);
 		createFileTypeChoice(composite, COLS);
 		return composite;
 	}
 
 	private void createFileTypeChoice(Composite composite, int cols2) {
 		Group group1 = new Group(composite, SWT.SHADOW_IN);
-	    group1.setText("Model syntax");
-	    group1.setLayout(new RowLayout(SWT.VERTICAL));
-	    group1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 3,1));
-	    txt = new Button(group1, SWT.RADIO);
-	    txt.setText("JtxtUML (Java syntax)");
-	    txt.setSelection(true);
-	    xtxt = new Button(group1, SWT.RADIO);
-	    xtxt.setText("XtxtUML (custom syntax)");
+		group1.setText("Model syntax");
+		group1.setLayout(new RowLayout(SWT.VERTICAL));
+		group1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 3, 1));
+		txt = new Button(group1, SWT.RADIO);
+		txt.setText("JtxtUML (Java syntax)");
+		txt.setSelection(true);
+		xtxt = new Button(group1, SWT.RADIO);
+		xtxt.setText("XtxtUML (custom syntax)");
 	}
 
 	protected void doStatusUpdate() {
-		IStatus[] status = new IStatus[] { fContainerStatus, fPackageStatus, fTypeNameStatus };
+		IStatus[] status = new IStatus[] { fContainerStatus };
 		updateStatus(status);
 	}
-	
+
 	@Override
 	protected void handleFieldChanged(String fieldName) {
 		super.handleFieldChanged(fieldName);
@@ -87,48 +85,49 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 	}
 
 	public IFile createNewFile() {
-		String extension;
-		String content;
-		String pack = getPackageFragment().getElementName();
-		if(xtxt.getSelection()){
-			extension = ".xtxtuml";
-			content = "".equals(pack) ? "" : "package "+pack+";"+System.lineSeparator();
-			content += System.lineSeparator()
-					+"model "+getTypeName()+" {"+System.lineSeparator()
-					+"\t"+System.lineSeparator()
-					+"}";
-		}else{
-			extension = ".java";
-			content = "".equals(pack) ? "" : "package "+pack+";"+System.lineSeparator();
-			content += System.lineSeparator()
-					+"import hu.elte.txtuml.api.model.*;"+System.lineSeparator()
-					+System.lineSeparator()
-					+"class "+getTypeName()+" extends Model {"+System.lineSeparator()
-					+"\t"+System.lineSeparator()
-					+"}";
+		try {
+			String filename;
+			StringBuilder contentBuilder = new StringBuilder();
+			if (xtxt.getSelection()) {
+				filename = "model-info.xtxtuml";
+				contentBuilder.append("model \"");
+				contentBuilder.append(getTypeName());
+				contentBuilder.append("\";");
+			} else {
+				filename = "package-info.java";
+				contentBuilder.append("@Model(\"");
+				contentBuilder.append(getTypeName());
+				contentBuilder.append("\")\npackage ");
+				contentBuilder.append(getPackageText());
+				contentBuilder.append(";\n\n");
+				contentBuilder.append("import ");
+				contentBuilder.append(Model.class.getCanonicalName());
+				contentBuilder.append(";");
+			}
+
+			if (createFile(contentBuilder.toString(), filename)) {
+				return (IFile) getResource();
+			}
+		} catch (Throwable e) {
+			PluginLogWrapper.logError("Error while creating package/model-info file", e);
 		}
-		
-		if(createFile(content, extension)){
-			return (IFile) getResource();
-		}else{
-			return null;
-		}
+		return null;
 	}
-	
+
 	private IResource getResource() {
 		return this.resource;
 	}
 
-	private boolean createFile(String content, String extension){
+	private boolean createFile(String content, String filename) {
 		IRunnableWithProgress op = new WorkspaceModifyOperation() {
-			
+
 			@Override
-			protected void execute(IProgressMonitor monitor) throws CoreException,
-					InvocationTargetException, InterruptedException {
+			protected void execute(IProgressMonitor monitor)
+					throws CoreException, InvocationTargetException, InterruptedException {
 				if (monitor == null) {
 					monitor = new NullProgressMonitor();
 				}
-				
+
 				try {
 					if (!getPackageFragment().exists()) {
 						try {
@@ -139,7 +138,7 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 						}
 					}
 					IResource res = getPackageFragment().getResource();
-					IFile txtUMLFile = ((IFolder) res).getFile(getTypeName() + extension); //$NON-NLS-1$
+					IFile txtUMLFile = ((IFolder) res).getFile(filename);
 					txtUMLFile.create(new ByteArrayInputStream(content.getBytes()), true, monitor);
 					setResource(txtUMLFile);
 				} catch (OperationCanceledException e) {
@@ -159,8 +158,7 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 			return false;
 		} catch (InvocationTargetException e) {
 			Throwable realException = e.getTargetException();
-			Dialogs.errorMsgb("File Creation error", 
-								"Error occured during file creation. ", realException);
+			Dialogs.errorMsgb("File Creation error", "Error occured during file creation. ", realException);
 		}
 		return true;
 	}
@@ -168,11 +166,12 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 	private void setResource(IResource resource) {
 		this.resource = resource;
 	}
-	
+
 	@Override
 	protected IStatus typeNameChanged() {
 		IStatus status = super.typeNameChanged();
-		if(status.getMessage() != null && status.getMessage().equals(NewWizardMessages.NewTypeWizardPage_error_EnterTypeName)){
+		if (status.getMessage() != null
+				&& status.getMessage().equals(NewWizardMessages.NewTypeWizardPage_error_EnterTypeName)) {
 			((StatusInfo) status).setError("Model name is empty");
 		}
 		return status;
