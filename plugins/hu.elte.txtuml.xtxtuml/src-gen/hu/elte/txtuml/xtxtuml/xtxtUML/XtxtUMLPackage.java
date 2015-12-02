@@ -106,14 +106,14 @@ public interface XtxtUMLPackage extends EPackage
   int TU_FILE_FEATURE_COUNT = 3;
 
   /**
-   * The meta object id for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUFileElementImpl <em>TU File Element</em>}' class.
+   * The meta object id for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUModelDeclarationImpl <em>TU Model Declaration</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUFileElementImpl
-   * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUFileElement()
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUModelDeclarationImpl
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUModelDeclaration()
    * @generated
    */
-  int TU_FILE_ELEMENT = 1;
+  int TU_MODEL_DECLARATION = 1;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -122,35 +122,16 @@ public interface XtxtUMLPackage extends EPackage
    * @generated
    * @ordered
    */
-  int TU_FILE_ELEMENT__NAME = 0;
+  int TU_MODEL_DECLARATION__NAME = TU_FILE__NAME;
 
   /**
-   * The number of structural features of the '<em>TU File Element</em>' class.
+   * The feature id for the '<em><b>Import Section</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int TU_FILE_ELEMENT_FEATURE_COUNT = 1;
-
-  /**
-   * The meta object id for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUModelImpl <em>TU Model</em>}' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUModelImpl
-   * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUModel()
-   * @generated
-   */
-  int TU_MODEL = 2;
-
-  /**
-   * The feature id for the '<em><b>Name</b></em>' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int TU_MODEL__NAME = TU_FILE_ELEMENT__NAME;
+  int TU_MODEL_DECLARATION__IMPORT_SECTION = TU_FILE__IMPORT_SECTION;
 
   /**
    * The feature id for the '<em><b>Elements</b></em>' containment reference list.
@@ -159,53 +140,16 @@ public interface XtxtUMLPackage extends EPackage
    * @generated
    * @ordered
    */
-  int TU_MODEL__ELEMENTS = TU_FILE_ELEMENT_FEATURE_COUNT + 0;
+  int TU_MODEL_DECLARATION__ELEMENTS = TU_FILE__ELEMENTS;
 
   /**
-   * The number of structural features of the '<em>TU Model</em>' class.
+   * The number of structural features of the '<em>TU Model Declaration</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int TU_MODEL_FEATURE_COUNT = TU_FILE_ELEMENT_FEATURE_COUNT + 1;
-
-  /**
-   * The meta object id for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUExecutionImpl <em>TU Execution</em>}' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUExecutionImpl
-   * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUExecution()
-   * @generated
-   */
-  int TU_EXECUTION = 3;
-
-  /**
-   * The feature id for the '<em><b>Name</b></em>' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int TU_EXECUTION__NAME = TU_FILE_ELEMENT__NAME;
-
-  /**
-   * The feature id for the '<em><b>Body</b></em>' containment reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int TU_EXECUTION__BODY = TU_FILE_ELEMENT_FEATURE_COUNT + 0;
-
-  /**
-   * The number of structural features of the '<em>TU Execution</em>' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int TU_EXECUTION_FEATURE_COUNT = TU_FILE_ELEMENT_FEATURE_COUNT + 1;
+  int TU_MODEL_DECLARATION_FEATURE_COUNT = TU_FILE_FEATURE_COUNT + 0;
 
   /**
    * The meta object id for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUModelElementImpl <em>TU Model Element</em>}' class.
@@ -215,7 +159,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUModelElement()
    * @generated
    */
-  int TU_MODEL_ELEMENT = 4;
+  int TU_MODEL_ELEMENT = 2;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -236,6 +180,43 @@ public interface XtxtUMLPackage extends EPackage
   int TU_MODEL_ELEMENT_FEATURE_COUNT = 1;
 
   /**
+   * The meta object id for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUExecutionImpl <em>TU Execution</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUExecutionImpl
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUExecution()
+   * @generated
+   */
+  int TU_EXECUTION = 3;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TU_EXECUTION__NAME = TU_MODEL_ELEMENT__NAME;
+
+  /**
+   * The feature id for the '<em><b>Body</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TU_EXECUTION__BODY = TU_MODEL_ELEMENT_FEATURE_COUNT + 0;
+
+  /**
+   * The number of structural features of the '<em>TU Execution</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TU_EXECUTION_FEATURE_COUNT = TU_MODEL_ELEMENT_FEATURE_COUNT + 1;
+
+  /**
    * The meta object id for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUSignalImpl <em>TU Signal</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -243,7 +224,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUSignal()
    * @generated
    */
-  int TU_SIGNAL = 5;
+  int TU_SIGNAL = 4;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -280,7 +261,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUClass()
    * @generated
    */
-  int TU_CLASS = 6;
+  int TU_CLASS = 5;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -326,7 +307,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUAssociation()
    * @generated
    */
-  int TU_ASSOCIATION = 7;
+  int TU_ASSOCIATION = 6;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -363,7 +344,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUSignalAttribute()
    * @generated
    */
-  int TU_SIGNAL_ATTRIBUTE = 8;
+  int TU_SIGNAL_ATTRIBUTE = 7;
 
   /**
    * The feature id for the '<em><b>Visibility</b></em>' attribute.
@@ -409,7 +390,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUClassMember()
    * @generated
    */
-  int TU_CLASS_MEMBER = 9;
+  int TU_CLASS_MEMBER = 8;
 
   /**
    * The number of structural features of the '<em>TU Class Member</em>' class.
@@ -428,7 +409,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUConstructor()
    * @generated
    */
-  int TU_CONSTRUCTOR = 10;
+  int TU_CONSTRUCTOR = 9;
 
   /**
    * The feature id for the '<em><b>Visibility</b></em>' attribute.
@@ -483,7 +464,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUAttributeOrOperationDeclarationPrefix()
    * @generated
    */
-  int TU_ATTRIBUTE_OR_OPERATION_DECLARATION_PREFIX = 11;
+  int TU_ATTRIBUTE_OR_OPERATION_DECLARATION_PREFIX = 10;
 
   /**
    * The feature id for the '<em><b>Visibility</b></em>' attribute.
@@ -520,7 +501,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUState()
    * @generated
    */
-  int TU_STATE = 12;
+  int TU_STATE = 11;
 
   /**
    * The feature id for the '<em><b>Type</b></em>' attribute.
@@ -566,7 +547,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUStateMember()
    * @generated
    */
-  int TU_STATE_MEMBER = 13;
+  int TU_STATE_MEMBER = 12;
 
   /**
    * The number of structural features of the '<em>TU State Member</em>' class.
@@ -585,7 +566,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUEntryOrExitActivity()
    * @generated
    */
-  int TU_ENTRY_OR_EXIT_ACTIVITY = 14;
+  int TU_ENTRY_OR_EXIT_ACTIVITY = 13;
 
   /**
    * The feature id for the '<em><b>Entry</b></em>' attribute.
@@ -631,7 +612,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUTransition()
    * @generated
    */
-  int TU_TRANSITION = 15;
+  int TU_TRANSITION = 14;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -668,7 +649,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUTransitionMember()
    * @generated
    */
-  int TU_TRANSITION_MEMBER = 16;
+  int TU_TRANSITION_MEMBER = 15;
 
   /**
    * The number of structural features of the '<em>TU Transition Member</em>' class.
@@ -687,7 +668,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUTransitionTrigger()
    * @generated
    */
-  int TU_TRANSITION_TRIGGER = 17;
+  int TU_TRANSITION_TRIGGER = 16;
 
   /**
    * The feature id for the '<em><b>Trigger</b></em>' reference.
@@ -715,7 +696,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUTransitionVertex()
    * @generated
    */
-  int TU_TRANSITION_VERTEX = 18;
+  int TU_TRANSITION_VERTEX = 17;
 
   /**
    * The feature id for the '<em><b>From</b></em>' attribute.
@@ -752,7 +733,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUTransitionEffect()
    * @generated
    */
-  int TU_TRANSITION_EFFECT = 19;
+  int TU_TRANSITION_EFFECT = 18;
 
   /**
    * The feature id for the '<em><b>Body</b></em>' containment reference.
@@ -780,7 +761,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUTransitionGuard()
    * @generated
    */
-  int TU_TRANSITION_GUARD = 20;
+  int TU_TRANSITION_GUARD = 19;
 
   /**
    * The feature id for the '<em><b>Else</b></em>' attribute.
@@ -817,7 +798,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUAssociationEnd()
    * @generated
    */
-  int TU_ASSOCIATION_END = 21;
+  int TU_ASSOCIATION_END = 20;
 
   /**
    * The feature id for the '<em><b>Visibility</b></em>' attribute.
@@ -881,7 +862,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUMultiplicity()
    * @generated
    */
-  int TU_MULTIPLICITY = 22;
+  int TU_MULTIPLICITY = 21;
 
   /**
    * The feature id for the '<em><b>Lower</b></em>' attribute.
@@ -945,7 +926,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUAttribute()
    * @generated
    */
-  int TU_ATTRIBUTE = 23;
+  int TU_ATTRIBUTE = 22;
 
   /**
    * The feature id for the '<em><b>Prefix</b></em>' containment reference.
@@ -982,7 +963,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUOperation()
    * @generated
    */
-  int TU_OPERATION = 24;
+  int TU_OPERATION = 23;
 
   /**
    * The feature id for the '<em><b>Prefix</b></em>' containment reference.
@@ -1037,7 +1018,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getRAlfSendSignalExpression()
    * @generated
    */
-  int RALF_SEND_SIGNAL_EXPRESSION = 25;
+  int RALF_SEND_SIGNAL_EXPRESSION = 24;
 
   /**
    * The feature id for the '<em><b>Signal</b></em>' containment reference.
@@ -1074,7 +1055,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getRAlfDeleteObjectExpression()
    * @generated
    */
-  int RALF_DELETE_OBJECT_EXPRESSION = 26;
+  int RALF_DELETE_OBJECT_EXPRESSION = 25;
 
   /**
    * The feature id for the '<em><b>Object</b></em>' containment reference.
@@ -1102,7 +1083,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getRAlfSignalAccessExpression()
    * @generated
    */
-  int RALF_SIGNAL_ACCESS_EXPRESSION = 27;
+  int RALF_SIGNAL_ACCESS_EXPRESSION = 26;
 
   /**
    * The feature id for the '<em><b>Sigdata</b></em>' attribute.
@@ -1130,7 +1111,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getRAlfAssocNavExpression()
    * @generated
    */
-  int RALF_ASSOC_NAV_EXPRESSION = 28;
+  int RALF_ASSOC_NAV_EXPRESSION = 27;
 
   /**
    * The feature id for the '<em><b>Left</b></em>' containment reference.
@@ -1167,7 +1148,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUStateType()
    * @generated
    */
-  int TU_STATE_TYPE = 29;
+  int TU_STATE_TYPE = 28;
 
   /**
    * The meta object id for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUVisibility <em>TU Visibility</em>}' enum.
@@ -1177,7 +1158,7 @@ public interface XtxtUMLPackage extends EPackage
    * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUVisibility()
    * @generated
    */
-  int TU_VISIBILITY = 30;
+  int TU_VISIBILITY = 29;
 
 
   /**
@@ -1224,67 +1205,14 @@ public interface XtxtUMLPackage extends EPackage
   EReference getTUFile_Elements();
 
   /**
-   * Returns the meta object for class '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUFileElement <em>TU File Element</em>}'.
+   * Returns the meta object for class '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration <em>TU Model Declaration</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for class '<em>TU File Element</em>'.
-   * @see hu.elte.txtuml.xtxtuml.xtxtUML.TUFileElement
+   * @return the meta object for class '<em>TU Model Declaration</em>'.
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
    * @generated
    */
-  EClass getTUFileElement();
-
-  /**
-   * Returns the meta object for the attribute '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUFileElement#getName <em>Name</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Name</em>'.
-   * @see hu.elte.txtuml.xtxtuml.xtxtUML.TUFileElement#getName()
-   * @see #getTUFileElement()
-   * @generated
-   */
-  EAttribute getTUFileElement_Name();
-
-  /**
-   * Returns the meta object for class '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUModel <em>TU Model</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for class '<em>TU Model</em>'.
-   * @see hu.elte.txtuml.xtxtuml.xtxtUML.TUModel
-   * @generated
-   */
-  EClass getTUModel();
-
-  /**
-   * Returns the meta object for the containment reference list '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUModel#getElements <em>Elements</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Elements</em>'.
-   * @see hu.elte.txtuml.xtxtuml.xtxtUML.TUModel#getElements()
-   * @see #getTUModel()
-   * @generated
-   */
-  EReference getTUModel_Elements();
-
-  /**
-   * Returns the meta object for class '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution <em>TU Execution</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for class '<em>TU Execution</em>'.
-   * @see hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
-   * @generated
-   */
-  EClass getTUExecution();
-
-  /**
-   * Returns the meta object for the containment reference '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution#getBody <em>Body</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference '<em>Body</em>'.
-   * @see hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution#getBody()
-   * @see #getTUExecution()
-   * @generated
-   */
-  EReference getTUExecution_Body();
+  EClass getTUModelDeclaration();
 
   /**
    * Returns the meta object for class '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUModelElement <em>TU Model Element</em>}'.
@@ -1306,6 +1234,27 @@ public interface XtxtUMLPackage extends EPackage
    * @generated
    */
   EAttribute getTUModelElement_Name();
+
+  /**
+   * Returns the meta object for class '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution <em>TU Execution</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>TU Execution</em>'.
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
+   * @generated
+   */
+  EClass getTUExecution();
+
+  /**
+   * Returns the meta object for the containment reference '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution#getBody <em>Body</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Body</em>'.
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution#getBody()
+   * @see #getTUExecution()
+   * @generated
+   */
+  EReference getTUExecution_Body();
 
   /**
    * Returns the meta object for class '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal <em>TU Signal</em>}'.
@@ -2164,58 +2113,14 @@ public interface XtxtUMLPackage extends EPackage
     EReference TU_FILE__ELEMENTS = eINSTANCE.getTUFile_Elements();
 
     /**
-     * The meta object literal for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUFileElementImpl <em>TU File Element</em>}' class.
+     * The meta object literal for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUModelDeclarationImpl <em>TU Model Declaration</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUFileElementImpl
-     * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUFileElement()
+     * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUModelDeclarationImpl
+     * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUModelDeclaration()
      * @generated
      */
-    EClass TU_FILE_ELEMENT = eINSTANCE.getTUFileElement();
-
-    /**
-     * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EAttribute TU_FILE_ELEMENT__NAME = eINSTANCE.getTUFileElement_Name();
-
-    /**
-     * The meta object literal for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUModelImpl <em>TU Model</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUModelImpl
-     * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUModel()
-     * @generated
-     */
-    EClass TU_MODEL = eINSTANCE.getTUModel();
-
-    /**
-     * The meta object literal for the '<em><b>Elements</b></em>' containment reference list feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference TU_MODEL__ELEMENTS = eINSTANCE.getTUModel_Elements();
-
-    /**
-     * The meta object literal for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUExecutionImpl <em>TU Execution</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUExecutionImpl
-     * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUExecution()
-     * @generated
-     */
-    EClass TU_EXECUTION = eINSTANCE.getTUExecution();
-
-    /**
-     * The meta object literal for the '<em><b>Body</b></em>' containment reference feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference TU_EXECUTION__BODY = eINSTANCE.getTUExecution_Body();
+    EClass TU_MODEL_DECLARATION = eINSTANCE.getTUModelDeclaration();
 
     /**
      * The meta object literal for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUModelElementImpl <em>TU Model Element</em>}' class.
@@ -2234,6 +2139,24 @@ public interface XtxtUMLPackage extends EPackage
      * @generated
      */
     EAttribute TU_MODEL_ELEMENT__NAME = eINSTANCE.getTUModelElement_Name();
+
+    /**
+     * The meta object literal for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUExecutionImpl <em>TU Execution</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUExecutionImpl
+     * @see hu.elte.txtuml.xtxtuml.xtxtUML.impl.XtxtUMLPackageImpl#getTUExecution()
+     * @generated
+     */
+    EClass TU_EXECUTION = eINSTANCE.getTUExecution();
+
+    /**
+     * The meta object literal for the '<em><b>Body</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference TU_EXECUTION__BODY = eINSTANCE.getTUExecution_Body();
 
     /**
      * The meta object literal for the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUSignalImpl <em>TU Signal</em>}' class.

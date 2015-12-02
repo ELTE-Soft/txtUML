@@ -6,8 +6,6 @@ import hu.elte.txtuml.api.model.backend.MultiplicityException;
 import hu.elte.txtuml.api.model.backend.collections.AssociationsMap;
 import hu.elte.txtuml.utils.InstanceCreator;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -36,7 +34,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * <p>
  * <b>Subtype requirements:</b>
  * <ul>
- * <li>must be the nested class of a subclass of {@link Model}</li>
+ * <li>must be a top level class (not a nested or local class)</li>
  * </ul>
  * <p>
  * <b>Subtype restrictions:</b>
@@ -416,94 +414,8 @@ public class ModelClass extends Region {
 	 * See the documentation of {@link Model} for information about execution
 	 * steps.
 	 */
-	@SuppressWarnings("unchecked")
 	private void initializeAllDefinedAssociationEnds() {
-		try {
-			Class<?> modelClass = getClass().getEnclosingClass();
-
-			for (Class<?> assocClass : modelClass.getDeclaredClasses()) {
-				if (Association.class.isAssignableFrom(assocClass)) {
-					Class<?>[] assocEnds = assocClass.getDeclaredClasses();
-					if (checkIfEndIsOwnedByThisClass(assocEnds[0])) {
-						initializeDefinedAssociationEnd((Class<? extends AssociationEnd<?, ?>>) assocEnds[1]);
-					}
-					if (checkIfEndIsOwnedByThisClass(assocEnds[1])) {
-						initializeDefinedAssociationEnd((Class<? extends AssociationEnd<?, ?>>) assocEnds[0]);
-					}
-				}
-			}
-		} catch (Exception e) {
-			Report.error.forEach(x -> x.badModel());
-		}
-	}
-
-	/**
-	 * Checks if the owner of the specified association end is the model
-	 * class this object is an instance of.
-	 * <p>
-	 * Exceptions might be thrown in case of a model error as this method
-	 * assumes that the model is well-defined.
-	 * 
-	 * @param assocEnd
-	 *            the association end to check if its owner is the model class
-	 *            this object is an instance of
-	 * @return whether the owner of <code>assocEnd</code> is the model class
-	 *         this object is an instance of
-	 */
-	private boolean checkIfEndIsOwnedByThisClass(Class<?> assocEnd) {
-		if (AssociationEnd.class.isAssignableFrom(assocEnd)
-				&& getOwnerOfAssocEnd(assocEnd) == getClass()) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Analyzes the specified association end to get its owner
-	 * <code>ModelClass</code> type (its first generic parameter).
-	 * <p>
-	 * Exceptions might be thrown in case of a model error as this method
-	 * assumes that the model is well-defined.
-	 * 
-	 * @param assocEnd
-	 *            the association end the owner of which is sought
-	 * @return the owner <code>ModelClass</code> type of the specified
-	 *         association end
-	 */
-	private Type getOwnerOfAssocEnd(Class<?> assocEnd) {
-		return ((ParameterizedType) assocEnd.getGenericSuperclass())
-				.getActualTypeArguments()[0];
-	}
-
-	/**
-	 * Initializes the specified association end, if it has not been
-	 * initialized yet, by assigning an empty {@link Collection} to it in the
-	 * {@link #associations} map. If its lower bound is currently offended then
-	 * registers that association end to be checked in the next <i>execution
-	 * step</i>.
-	 * <p>
-	 * Exceptions might be thrown in case of a model error as this method
-	 * assumes that the model is well-defined.
-	 * 
-	 * @param assocEnd
-	 *            the association end to initialize
-	 */
-	private void initializeDefinedAssociationEnd(
-			Class<? extends AssociationEnd<?, ?>> assocEnd) {
-
-		if (associations.get(assocEnd) != null) {
-			return;
-		}
-
-		AssociationEnd<?, ?> value = InstanceCreator
-				.create(assocEnd, (Object) null);
-
-		associations.put(assocEnd, value);
-
-		if (!value.checkLowerBound()) {
-			ModelExecutor.checkLowerBoundInNextExecutionStep(this, assocEnd);
-		}
-
+		// TODO Implement initialization of defined association ends.
 	}
 
 	/**

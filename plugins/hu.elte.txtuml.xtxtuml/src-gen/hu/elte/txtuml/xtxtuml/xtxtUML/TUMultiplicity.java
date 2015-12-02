@@ -11,6 +11,7 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity#getLower <em>Lower</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity#isUpperSet <em>Upper Set</em>}</li>
@@ -18,7 +19,6 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity#isUpperInf <em>Upper Inf</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity#isAny <em>Any</em>}</li>
  * </ul>
- * </p>
  *
  * @see hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage#getTUMultiplicity()
  * @model

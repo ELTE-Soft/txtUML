@@ -1,17 +1,5 @@
 package hu.elte.txtuml.layout.export;
 
-import hu.elte.txtuml.api.layout.Diagram;
-import hu.elte.txtuml.layout.export.DiagramExportationReport;
-import hu.elte.txtuml.layout.export.DiagramExporter;
-import hu.elte.txtuml.layout.export.DiagramType;
-import hu.elte.txtuml.layout.export.problems.ProblemReporter;
-import hu.elte.txtuml.layout.export.problems.Utils;
-import hu.elte.txtuml.layout.visualizer.model.AssociationType;
-import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
-import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
-import hu.elte.txtuml.layout.visualizer.statements.Statement;
-import hu.elte.txtuml.layout.visualizer.statements.StatementType;
-
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,8 +14,19 @@ import org.junit.Before;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 
+import hu.elte.txtuml.api.layout.Diagram;
+import hu.elte.txtuml.layout.export.problems.ProblemReporter;
+import hu.elte.txtuml.layout.export.problems.Utils;
+import hu.elte.txtuml.layout.visualizer.model.AssociationType;
+import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
+import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.layout.visualizer.statements.Statement;
+import hu.elte.txtuml.layout.visualizer.statements.StatementType;
+
 public class BaseTest {
 
+	private static final String PROJECT_NAME = "hu.elte.txtuml.layout.export.tests"; 
+	
 	private DiagramExportationReport expectedReport;
 	protected ProblemReporter problems;
 	protected DiagramType type;
@@ -47,7 +46,7 @@ public class BaseTest {
 
 	protected final void testForFailure(Class<? extends Diagram> diag) {
 
-		DiagramExporter exporter = DiagramExporter.create(diag);
+		DiagramExporter exporter = DiagramExporter.create(PROJECT_NAME, diag);
 		DiagramExportationReport report = exporter.export();
 
 		assertEqualsAsMultisets(expectedReport.getErrors(), report.getErrors());
@@ -57,7 +56,7 @@ public class BaseTest {
 
 	protected final void testForSuccess(Class<? extends Diagram> diag) {
 
-		DiagramExporter exporter = DiagramExporter.create(diag);
+		DiagramExporter exporter = DiagramExporter.create(PROJECT_NAME, diag);
 		DiagramExportationReport report = exporter.export();
 
 		Assert.assertTrue(report.isSuccessful());

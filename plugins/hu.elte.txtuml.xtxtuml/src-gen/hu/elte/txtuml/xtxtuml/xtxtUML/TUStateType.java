@@ -146,6 +146,8 @@ public enum TUStateType implements Enumerator
    * Returns the '<em><b>TU State Type</b></em>' literal with the specified literal value.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
+   * @param literal the literal.
+   * @return the matching enumerator or <code>null</code>.
    * @generated
    */
   public static TUStateType get(String literal)
@@ -165,6 +167,8 @@ public enum TUStateType implements Enumerator
    * Returns the '<em><b>TU State Type</b></em>' literal with the specified name.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
+   * @param name the name.
+   * @return the matching enumerator or <code>null</code>.
    * @generated
    */
   public static TUStateType getByName(String name)
@@ -184,6 +188,8 @@ public enum TUStateType implements Enumerator
    * Returns the '<em><b>TU State Type</b></em>' literal with the specified integer value.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
+   * @param value the integer value.
+   * @return the matching enumerator or <code>null</code>.
    * @generated
    */
   public static TUStateType get(int value)

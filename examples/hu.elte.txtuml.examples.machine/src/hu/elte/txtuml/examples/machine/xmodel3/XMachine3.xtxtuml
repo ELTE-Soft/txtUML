@@ -1,0 +1,244 @@
+package hu.elte.txtuml.examples.machine.xmodel3;
+
+import hu.elte.txtuml.api.^model.Collection
+import hu.elte.txtuml.api.stdlib.Timer
+
+// classes
+
+class Machine {
+	int tasksToDo;
+
+	Machine(int tasksToDo) {
+		this.tasksToDo = tasksToDo;
+	}
+
+	initial Init;
+
+	state Off {
+		entry {
+			log("\tMachine enters state: 'off'");
+		}
+
+		exit {
+			log("\tMachine exits state: 'off'");
+		}
+	}
+
+	composite On {
+		entry {
+			log("\tMachine enters state: 'on'");
+		}
+
+		exit {
+			log("\tMachine exits state: 'on'");
+		}
+
+		initial Init;
+
+		state Active {
+			entry {
+				log("\tMachine enters state: 'active'");
+				log("\tMachine: tasks to do: " + Machine.this.tasksToDo);
+			}
+
+			exit {
+				log("\tMachine exits state: 'active'");
+			}
+		}
+		
+		transition Initialize {
+			from Init;
+			to Active;
+		}
+
+		transition DoActivity {
+			from Active;
+			to Active;
+			trigger DoTasks;
+
+			effect {
+				DoTasks doTasks = sigdata;
+				Machine.this.tasksToDo -= doTasks.count;
+				log("\tMachine: becoming active...");
+			}
+			
+			guard(Machine.this.tasksToDo > 0);
+		}
+		
+	}
+
+	transition Initialize {
+		from Init;
+		to Off;
+		effect {
+			log("\tMachine: initializing...");
+		}
+	}
+
+	transition SwitchOn {
+		from Off;
+		to On;
+		trigger ButtonPress;
+
+		effect {
+			log("\tMachine: switching on...");
+		}
+	}
+
+	transition SwitchOff {
+		from On;
+		to Off;
+		trigger ButtonPress;
+		
+		effect {
+			log("\tMachine: switching off...");
+		}
+
+		guard(Machine.this.tasksToDo <= 0);
+	}
+}
+
+class User {
+
+	public String name;
+	public int id;
+	int workToDo;
+
+	User() {
+		this.workToDo = 7;
+	}
+
+	initial Init;
+	state NotWorking;
+	choice WhereToGo;
+
+	transition Initialize {
+		from Init;
+		to NotWorking;
+		effect {
+			log("\t" + name.toString() + ": initializing...");				
+		}
+	}
+
+	transition NW_WTG {
+		from NotWorking;
+		to WhereToGo;
+		trigger DoYourWork;
+	}
+
+	transition NoWork {
+		from WhereToGo;
+		to NotWorking;
+		guard (workToDo == 0);
+
+		effect {
+			log("\t" + name.toString() + ": I have no work to do!");
+		}
+	}
+
+	transition HasWork  {
+		from WhereToGo;
+		to NotWorking;
+		guard(workToDo != 0);
+
+		effect {
+			log("\t" + name.toString() + ": I am doing my work now...");
+			doWork();
+		}
+	}
+
+	User findOtherUser(Machine m) {
+
+		log("\t" + name.toString() + ": analyzing machine...");
+
+		Collection<User> usersOfM = m->Usage::userOfMachine;
+		
+		log("\t\tI found its users!");
+		log("");
+		
+		for(User user in usersOfM) {
+			user.sayHello();
+		}
+		log("");
+
+	 	if (usersOfM.contains(this)) {
+ 			log("\t\tI am a user of this machine.");
+	 	}
+
+		boolean id0 = false;
+		for(User user in usersOfM) {
+			if(user.id == 0) {
+				id0 = true;
+			}
+		}
+		if(!id0) {
+ 			log("\t\tNo user of this machine has an id of 0.");				
+		}
+
+	 	Collection<User> otherUsers = usersOfM.remove(this);
+	 	
+	 	if (otherUsers.count() == 1) {
+	 		log("\t\tThere is exactly one other person who is user of this machine.");
+	 	}
+	 	
+	  	return otherUsers.selectAny();
+	}
+	
+	void sayHello() {
+		log("\t\tHello, I am " + name.toString() + ".");
+	}
+	
+	void newWork() {
+		workToDo++;
+		log("\t" + name.toString() + ": I got some new work to do.");
+	}
+	
+	void workDone() {
+		workToDo--;
+		log("\t" + name.toString() + ": I am done with some of my work.");
+	}
+	
+	void doWork() {
+		log("\t" + name.toString() + ": starting to work...");
+
+		Machine myMachine = User.this->Usage::usedMachine.selectAny();
+		
+		User otherUser = findOtherUser(myMachine);
+
+		log("\t" + name.toString() + ": giving some of my work to other user...");
+		
+	 	for (int i = 0; i < 3; i++) {
+	 		log("\t" + name.toString() + ": giving work to other user (" + i +")");
+	 		otherUser.newWork();
+	 		this.workDone();
+	 	}
+	 			 	
+		send new ButtonPress() to myMachine;
+		// Switching the machine on.
+		
+		log("\t" + name.toString() + ": finishing my work...");
+		
+		send new DoTasks(workToDo) to myMachine;
+
+		Timer.start(myMachine, new ButtonPress(), 2000);
+		// Switching off the machine with some delay.
+		
+		log("\t" + name.toString() + ": work finished...");
+	}
+}
+
+// associations
+
+association Usage {
+	1 Machine usedMachine;
+	* User userOfMachine;
+}
+
+// signals
+
+signal ButtonPress;
+signal DoTasks {
+	int count;
+}
+
+signal DoYourWork;

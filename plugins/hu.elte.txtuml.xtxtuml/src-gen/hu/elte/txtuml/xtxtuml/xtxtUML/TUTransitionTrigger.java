@@ -10,10 +10,10 @@ package hu.elte.txtuml.xtxtuml.xtxtUML;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionTrigger#getTrigger <em>Trigger</em>}</li>
  * </ul>
- * </p>
  *
  * @see hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage#getTUTransitionTrigger()
  * @model

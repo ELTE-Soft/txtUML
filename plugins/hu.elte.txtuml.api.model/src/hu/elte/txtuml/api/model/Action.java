@@ -5,8 +5,6 @@ import hu.elte.txtuml.api.model.backend.MultiplicityException;
 import hu.elte.txtuml.utils.InstanceCreator;
 import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
 
-import java.lang.reflect.Modifier;
-
 /**
  * Class <code>Action</code> provides methods for the user to be used as
  * statements of the action language.
@@ -65,18 +63,8 @@ public class Action implements ModelElement {
 	 */
 	public static <T extends ModelClass> T create(Class<T> classType,
 			Object... parameters) {
-		Object[] params;
-		if (Modifier.isStatic(classType.getModifiers())) {
-			params = parameters;
-		} else {
-			params = new Object[parameters.length + 1];
-			params[0] = null;
-			for (int i = 0; i < parameters.length; ++i) {
-				params[i + 1] = parameters[i];
-			}
-		}
 		try {
-			return InstanceCreator.create(classType, params);
+			return InstanceCreator.create(classType, parameters);
 		} catch (IllegalArgumentException | RuntimeInvocationTargetException e) {
 			Report.error.forEach(x -> x.modelObjectCreationFailed(classType,
 					parameters));

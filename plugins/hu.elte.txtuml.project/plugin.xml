@@ -10,7 +10,7 @@
       <wizard
             category="hu.elte.txtuml.project"
             class="hu.elte.txtuml.project.wizards.TxtUMLProjectWizard"
-            icon="icons/txtUML_project.png"
+            icon="icons/txtuml_project.png"
             id="hu.elte.txtuml.project.wizards.TxtUMLProject"
             name="txtUML Project"
             project="true">
@@ -26,7 +26,7 @@
    <extension
          point="org.eclipse.ui.ide.projectNatureImages">
       <image
-            icon="icons/txtUML_project.png"
+            icon="icons/txtuml_project.png"
             id="hu.elte.txtuml.project.natureimage"
             natureId="hu.elte.txtuml.project.txtumlprojectNature">
       </image>

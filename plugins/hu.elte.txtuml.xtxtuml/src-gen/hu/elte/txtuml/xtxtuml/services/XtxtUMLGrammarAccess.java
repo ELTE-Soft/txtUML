@@ -21,128 +21,120 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 	
 	public class TUFileElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "TUFile");
-		private final Group cGroup = (Group)rule.eContents().get(1);
-		private final Group cGroup_0 = (Group)cGroup.eContents().get(0);
-		private final Keyword cPackageKeyword_0_0 = (Keyword)cGroup_0.eContents().get(0);
-		private final Assignment cNameAssignment_0_1 = (Assignment)cGroup_0.eContents().get(1);
-		private final RuleCall cNameQualifiedNameParserRuleCall_0_1_0 = (RuleCall)cNameAssignment_0_1.eContents().get(0);
-		private final Keyword cSemicolonKeyword_0_2 = (Keyword)cGroup_0.eContents().get(2);
-		private final Assignment cImportSectionAssignment_1 = (Assignment)cGroup.eContents().get(1);
-		private final RuleCall cImportSectionXImportSectionParserRuleCall_1_0 = (RuleCall)cImportSectionAssignment_1.eContents().get(0);
-		private final Assignment cElementsAssignment_2 = (Assignment)cGroup.eContents().get(2);
-		private final RuleCall cElementsTUFileElementParserRuleCall_2_0 = (RuleCall)cElementsAssignment_2.eContents().get(0);
+		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
+		private final RuleCall cTUModelDeclarationParserRuleCall_0 = (RuleCall)cAlternatives.eContents().get(0);
+		private final Group cGroup_1 = (Group)cAlternatives.eContents().get(1);
+		private final Group cGroup_1_0 = (Group)cGroup_1.eContents().get(0);
+		private final Keyword cPackageKeyword_1_0_0 = (Keyword)cGroup_1_0.eContents().get(0);
+		private final Assignment cNameAssignment_1_0_1 = (Assignment)cGroup_1_0.eContents().get(1);
+		private final RuleCall cNameQualifiedNameParserRuleCall_1_0_1_0 = (RuleCall)cNameAssignment_1_0_1.eContents().get(0);
+		private final Keyword cSemicolonKeyword_1_0_2 = (Keyword)cGroup_1_0.eContents().get(2);
+		private final Assignment cImportSectionAssignment_1_1 = (Assignment)cGroup_1.eContents().get(1);
+		private final RuleCall cImportSectionXImportSectionParserRuleCall_1_1_0 = (RuleCall)cImportSectionAssignment_1_1.eContents().get(0);
+		private final Assignment cElementsAssignment_1_2 = (Assignment)cGroup_1.eContents().get(2);
+		private final RuleCall cElementsTUModelElementParserRuleCall_1_2_0 = (RuleCall)cElementsAssignment_1_2.eContents().get(0);
 		
 		//// Start rule
 		//TUFile:
-		//	("package" name=QualifiedName ";"?)? importSection=XImportSection? elements+=TUFileElement*;
+		//	TUModelDeclaration | ("package" name=QualifiedName ";"?)? importSection=XImportSection? elements+=TUModelElement*;
 		@Override public ParserRule getRule() { return rule; }
 
-		//("package" name=QualifiedName ";"?)? importSection=XImportSection? elements+=TUFileElement*
-		public Group getGroup() { return cGroup; }
-
-		//("package" name=QualifiedName ";"?)?
-		public Group getGroup_0() { return cGroup_0; }
-
-		//"package"
-		public Keyword getPackageKeyword_0_0() { return cPackageKeyword_0_0; }
-
-		//name=QualifiedName
-		public Assignment getNameAssignment_0_1() { return cNameAssignment_0_1; }
-
-		//QualifiedName
-		public RuleCall getNameQualifiedNameParserRuleCall_0_1_0() { return cNameQualifiedNameParserRuleCall_0_1_0; }
-
-		//";"?
-		public Keyword getSemicolonKeyword_0_2() { return cSemicolonKeyword_0_2; }
-
-		//importSection=XImportSection?
-		public Assignment getImportSectionAssignment_1() { return cImportSectionAssignment_1; }
-
-		//XImportSection
-		public RuleCall getImportSectionXImportSectionParserRuleCall_1_0() { return cImportSectionXImportSectionParserRuleCall_1_0; }
-
-		//elements+=TUFileElement*
-		public Assignment getElementsAssignment_2() { return cElementsAssignment_2; }
-
-		//TUFileElement
-		public RuleCall getElementsTUFileElementParserRuleCall_2_0() { return cElementsTUFileElementParserRuleCall_2_0; }
-	}
-
-	public class TUFileElementElements extends AbstractParserRuleElementFinder {
-		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "TUFileElement");
-		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
-		private final RuleCall cTUModelParserRuleCall_0 = (RuleCall)cAlternatives.eContents().get(0);
-		private final RuleCall cTUExecutionParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
-		
-		//// File level
-		//TUFileElement:
-		//	TUModel | TUExecution;
-		@Override public ParserRule getRule() { return rule; }
-
-		//TUModel | TUExecution
+		//TUModelDeclaration | ("package" name=QualifiedName ";"?)? importSection=XImportSection? elements+=TUModelElement*
 		public Alternatives getAlternatives() { return cAlternatives; }
 
-		//TUModel
-		public RuleCall getTUModelParserRuleCall_0() { return cTUModelParserRuleCall_0; }
+		//TUModelDeclaration
+		public RuleCall getTUModelDeclarationParserRuleCall_0() { return cTUModelDeclarationParserRuleCall_0; }
 
-		//TUExecution
-		public RuleCall getTUExecutionParserRuleCall_1() { return cTUExecutionParserRuleCall_1; }
-	}
+		//("package" name=QualifiedName ";"?)? importSection=XImportSection? elements+=TUModelElement*
+		public Group getGroup_1() { return cGroup_1; }
 
-	public class TUModelElements extends AbstractParserRuleElementFinder {
-		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "TUModel");
-		private final Group cGroup = (Group)rule.eContents().get(1);
-		private final Keyword cModelKeyword_0 = (Keyword)cGroup.eContents().get(0);
-		private final Assignment cNameAssignment_1 = (Assignment)cGroup.eContents().get(1);
-		private final RuleCall cNameValidIDParserRuleCall_1_0 = (RuleCall)cNameAssignment_1.eContents().get(0);
-		private final Alternatives cAlternatives_2 = (Alternatives)cGroup.eContents().get(2);
-		private final Group cGroup_2_0 = (Group)cAlternatives_2.eContents().get(0);
-		private final Keyword cLeftCurlyBracketKeyword_2_0_0 = (Keyword)cGroup_2_0.eContents().get(0);
-		private final Assignment cElementsAssignment_2_0_1 = (Assignment)cGroup_2_0.eContents().get(1);
-		private final RuleCall cElementsTUModelElementParserRuleCall_2_0_1_0 = (RuleCall)cElementsAssignment_2_0_1.eContents().get(0);
-		private final Keyword cRightCurlyBracketKeyword_2_0_2 = (Keyword)cGroup_2_0.eContents().get(2);
-		private final Keyword cSemicolonKeyword_2_0_3 = (Keyword)cGroup_2_0.eContents().get(3);
-		private final Keyword cSemicolonKeyword_2_1 = (Keyword)cAlternatives_2.eContents().get(1);
-		
-		//TUModel:
-		//	"model" name=ValidID ("{" elements+=TUModelElement* "}" ";"? | ";");
-		@Override public ParserRule getRule() { return rule; }
+		//("package" name=QualifiedName ";"?)?
+		public Group getGroup_1_0() { return cGroup_1_0; }
 
-		//"model" name=ValidID ("{" elements+=TUModelElement* "}" ";"? | ";")
-		public Group getGroup() { return cGroup; }
+		//"package"
+		public Keyword getPackageKeyword_1_0_0() { return cPackageKeyword_1_0_0; }
 
-		//"model"
-		public Keyword getModelKeyword_0() { return cModelKeyword_0; }
+		//name=QualifiedName
+		public Assignment getNameAssignment_1_0_1() { return cNameAssignment_1_0_1; }
 
-		//name=ValidID
-		public Assignment getNameAssignment_1() { return cNameAssignment_1; }
-
-		//ValidID
-		public RuleCall getNameValidIDParserRuleCall_1_0() { return cNameValidIDParserRuleCall_1_0; }
-
-		//"{" elements+=TUModelElement* "}" ";"? | ";"
-		public Alternatives getAlternatives_2() { return cAlternatives_2; }
-
-		//"{" elements+=TUModelElement* "}" ";"?
-		public Group getGroup_2_0() { return cGroup_2_0; }
-
-		//"{"
-		public Keyword getLeftCurlyBracketKeyword_2_0_0() { return cLeftCurlyBracketKeyword_2_0_0; }
-
-		//elements+=TUModelElement*
-		public Assignment getElementsAssignment_2_0_1() { return cElementsAssignment_2_0_1; }
-
-		//TUModelElement
-		public RuleCall getElementsTUModelElementParserRuleCall_2_0_1_0() { return cElementsTUModelElementParserRuleCall_2_0_1_0; }
-
-		//"}"
-		public Keyword getRightCurlyBracketKeyword_2_0_2() { return cRightCurlyBracketKeyword_2_0_2; }
+		//QualifiedName
+		public RuleCall getNameQualifiedNameParserRuleCall_1_0_1_0() { return cNameQualifiedNameParserRuleCall_1_0_1_0; }
 
 		//";"?
-		public Keyword getSemicolonKeyword_2_0_3() { return cSemicolonKeyword_2_0_3; }
+		public Keyword getSemicolonKeyword_1_0_2() { return cSemicolonKeyword_1_0_2; }
+
+		//importSection=XImportSection?
+		public Assignment getImportSectionAssignment_1_1() { return cImportSectionAssignment_1_1; }
+
+		//XImportSection
+		public RuleCall getImportSectionXImportSectionParserRuleCall_1_1_0() { return cImportSectionXImportSectionParserRuleCall_1_1_0; }
+
+		//elements+=TUModelElement*
+		public Assignment getElementsAssignment_1_2() { return cElementsAssignment_1_2; }
+
+		//TUModelElement
+		public RuleCall getElementsTUModelElementParserRuleCall_1_2_0() { return cElementsTUModelElementParserRuleCall_1_2_0; }
+	}
+
+	public class TUModelDeclarationElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "TUModelDeclaration");
+		private final Group cGroup = (Group)rule.eContents().get(1);
+		private final Action cTUModelDeclarationAction_0 = (Action)cGroup.eContents().get(0);
+		private final Keyword cModelKeyword_1 = (Keyword)cGroup.eContents().get(1);
+		private final Assignment cNameAssignment_2 = (Assignment)cGroup.eContents().get(2);
+		private final RuleCall cNameSTRINGTerminalRuleCall_2_0 = (RuleCall)cNameAssignment_2.eContents().get(0);
+		private final Keyword cSemicolonKeyword_3 = (Keyword)cGroup.eContents().get(3);
+		
+		//TUModelDeclaration:
+		//	{TUModelDeclaration} "model" name=STRING? ";";
+		@Override public ParserRule getRule() { return rule; }
+
+		//{TUModelDeclaration} "model" name=STRING? ";"
+		public Group getGroup() { return cGroup; }
+
+		//{TUModelDeclaration}
+		public Action getTUModelDeclarationAction_0() { return cTUModelDeclarationAction_0; }
+
+		//"model"
+		public Keyword getModelKeyword_1() { return cModelKeyword_1; }
+
+		//name=STRING?
+		public Assignment getNameAssignment_2() { return cNameAssignment_2; }
+
+		//STRING
+		public RuleCall getNameSTRINGTerminalRuleCall_2_0() { return cNameSTRINGTerminalRuleCall_2_0; }
 
 		//";"
-		public Keyword getSemicolonKeyword_2_1() { return cSemicolonKeyword_2_1; }
+		public Keyword getSemicolonKeyword_3() { return cSemicolonKeyword_3; }
+	}
+
+	public class TUModelElementElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "TUModelElement");
+		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
+		private final RuleCall cTUExecutionParserRuleCall_0 = (RuleCall)cAlternatives.eContents().get(0);
+		private final RuleCall cTUSignalParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
+		private final RuleCall cTUClassParserRuleCall_2 = (RuleCall)cAlternatives.eContents().get(2);
+		private final RuleCall cTUAssociationParserRuleCall_3 = (RuleCall)cAlternatives.eContents().get(3);
+		
+		//// Model level
+		//TUModelElement:
+		//	TUExecution | TUSignal | TUClass | TUAssociation;
+		@Override public ParserRule getRule() { return rule; }
+
+		//TUExecution | TUSignal | TUClass | TUAssociation
+		public Alternatives getAlternatives() { return cAlternatives; }
+
+		//TUExecution
+		public RuleCall getTUExecutionParserRuleCall_0() { return cTUExecutionParserRuleCall_0; }
+
+		//TUSignal
+		public RuleCall getTUSignalParserRuleCall_1() { return cTUSignalParserRuleCall_1; }
+
+		//TUClass
+		public RuleCall getTUClassParserRuleCall_2() { return cTUClassParserRuleCall_2; }
+
+		//TUAssociation
+		public RuleCall getTUAssociationParserRuleCall_3() { return cTUAssociationParserRuleCall_3; }
 	}
 
 	public class TUExecutionElements extends AbstractParserRuleElementFinder {
@@ -175,31 +167,6 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 
 		//XBlockExpression
 		public RuleCall getBodyXBlockExpressionParserRuleCall_2_0() { return cBodyXBlockExpressionParserRuleCall_2_0; }
-	}
-
-	public class TUModelElementElements extends AbstractParserRuleElementFinder {
-		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "TUModelElement");
-		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
-		private final RuleCall cTUSignalParserRuleCall_0 = (RuleCall)cAlternatives.eContents().get(0);
-		private final RuleCall cTUClassParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
-		private final RuleCall cTUAssociationParserRuleCall_2 = (RuleCall)cAlternatives.eContents().get(2);
-		
-		//// Model level
-		//TUModelElement:
-		//	TUSignal | TUClass | TUAssociation;
-		@Override public ParserRule getRule() { return rule; }
-
-		//TUSignal | TUClass | TUAssociation
-		public Alternatives getAlternatives() { return cAlternatives; }
-
-		//TUSignal
-		public RuleCall getTUSignalParserRuleCall_0() { return cTUSignalParserRuleCall_0; }
-
-		//TUClass
-		public RuleCall getTUClassParserRuleCall_1() { return cTUClassParserRuleCall_1; }
-
-		//TUAssociation
-		public RuleCall getTUAssociationParserRuleCall_2() { return cTUAssociationParserRuleCall_2; }
 	}
 
 	public class TUSignalElements extends AbstractParserRuleElementFinder {
@@ -2903,10 +2870,9 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	private final TUFileElements pTUFile;
-	private final TUFileElementElements pTUFileElement;
-	private final TUModelElements pTUModel;
-	private final TUExecutionElements pTUExecution;
+	private final TUModelDeclarationElements pTUModelDeclaration;
 	private final TUModelElementElements pTUModelElement;
+	private final TUExecutionElements pTUExecution;
 	private final TUSignalElements pTUSignal;
 	private final TUClassElements pTUClass;
 	private final TUAssociationElements pTUAssociation;
@@ -2966,10 +2932,9 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 		this.grammar = internalFindGrammar(grammarProvider);
 		this.gaXbase = gaXbase;
 		this.pTUFile = new TUFileElements();
-		this.pTUFileElement = new TUFileElementElements();
-		this.pTUModel = new TUModelElements();
-		this.pTUExecution = new TUExecutionElements();
+		this.pTUModelDeclaration = new TUModelDeclarationElements();
 		this.pTUModelElement = new TUModelElementElements();
+		this.pTUExecution = new TUExecutionElements();
 		this.pTUSignal = new TUSignalElements();
 		this.pTUClass = new TUClassElements();
 		this.pTUAssociation = new TUAssociationElements();
@@ -3049,7 +3014,7 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 	
 	//// Start rule
 	//TUFile:
-	//	("package" name=QualifiedName ";"?)? importSection=XImportSection? elements+=TUFileElement*;
+	//	TUModelDeclaration | ("package" name=QualifiedName ";"?)? importSection=XImportSection? elements+=TUModelElement*;
 	public TUFileElements getTUFileAccess() {
 		return pTUFile;
 	}
@@ -3058,25 +3023,25 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 		return getTUFileAccess().getRule();
 	}
 
-	//// File level
-	//TUFileElement:
-	//	TUModel | TUExecution;
-	public TUFileElementElements getTUFileElementAccess() {
-		return pTUFileElement;
+	//TUModelDeclaration:
+	//	{TUModelDeclaration} "model" name=STRING? ";";
+	public TUModelDeclarationElements getTUModelDeclarationAccess() {
+		return pTUModelDeclaration;
 	}
 	
-	public ParserRule getTUFileElementRule() {
-		return getTUFileElementAccess().getRule();
+	public ParserRule getTUModelDeclarationRule() {
+		return getTUModelDeclarationAccess().getRule();
 	}
 
-	//TUModel:
-	//	"model" name=ValidID ("{" elements+=TUModelElement* "}" ";"? | ";");
-	public TUModelElements getTUModelAccess() {
-		return pTUModel;
+	//// Model level
+	//TUModelElement:
+	//	TUExecution | TUSignal | TUClass | TUAssociation;
+	public TUModelElementElements getTUModelElementAccess() {
+		return pTUModelElement;
 	}
 	
-	public ParserRule getTUModelRule() {
-		return getTUModelAccess().getRule();
+	public ParserRule getTUModelElementRule() {
+		return getTUModelElementAccess().getRule();
 	}
 
 	//TUExecution:
@@ -3087,17 +3052,6 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 	
 	public ParserRule getTUExecutionRule() {
 		return getTUExecutionAccess().getRule();
-	}
-
-	//// Model level
-	//TUModelElement:
-	//	TUSignal | TUClass | TUAssociation;
-	public TUModelElementElements getTUModelElementAccess() {
-		return pTUModelElement;
-	}
-	
-	public ParserRule getTUModelElementRule() {
-		return getTUModelElementAccess().getRule();
 	}
 
 	//TUSignal:

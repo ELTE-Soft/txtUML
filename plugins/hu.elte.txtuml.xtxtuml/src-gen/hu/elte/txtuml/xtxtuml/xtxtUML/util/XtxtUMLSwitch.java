@@ -52,7 +52,7 @@ public class XtxtUMLSwitch<T> extends Switch<T>
    * Checks whether this is a switch for the given package.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @parameter ePackage the package in question.
+   * @param ePackage the package in question.
    * @return whether this is a switch for the given package.
    * @generated
    */
@@ -81,26 +81,11 @@ public class XtxtUMLSwitch<T> extends Switch<T>
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
-      case XtxtUMLPackage.TU_FILE_ELEMENT:
+      case XtxtUMLPackage.TU_MODEL_DECLARATION:
       {
-        TUFileElement tuFileElement = (TUFileElement)theEObject;
-        T result = caseTUFileElement(tuFileElement);
-        if (result == null) result = defaultCase(theEObject);
-        return result;
-      }
-      case XtxtUMLPackage.TU_MODEL:
-      {
-        TUModel tuModel = (TUModel)theEObject;
-        T result = caseTUModel(tuModel);
-        if (result == null) result = caseTUFileElement(tuModel);
-        if (result == null) result = defaultCase(theEObject);
-        return result;
-      }
-      case XtxtUMLPackage.TU_EXECUTION:
-      {
-        TUExecution tuExecution = (TUExecution)theEObject;
-        T result = caseTUExecution(tuExecution);
-        if (result == null) result = caseTUFileElement(tuExecution);
+        TUModelDeclaration tuModelDeclaration = (TUModelDeclaration)theEObject;
+        T result = caseTUModelDeclaration(tuModelDeclaration);
+        if (result == null) result = caseTUFile(tuModelDeclaration);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -108,6 +93,14 @@ public class XtxtUMLSwitch<T> extends Switch<T>
       {
         TUModelElement tuModelElement = (TUModelElement)theEObject;
         T result = caseTUModelElement(tuModelElement);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case XtxtUMLPackage.TU_EXECUTION:
+      {
+        TUExecution tuExecution = (TUExecution)theEObject;
+        T result = caseTUExecution(tuExecution);
+        if (result == null) result = caseTUModelElement(tuExecution);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -320,49 +313,17 @@ public class XtxtUMLSwitch<T> extends Switch<T>
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>TU File Element</em>'.
+   * Returns the result of interpreting the object as an instance of '<em>TU Model Declaration</em>'.
    * <!-- begin-user-doc -->
    * This implementation returns null;
    * returning a non-null result will terminate the switch.
    * <!-- end-user-doc -->
    * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>TU File Element</em>'.
+   * @return the result of interpreting the object as an instance of '<em>TU Model Declaration</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
-  public T caseTUFileElement(TUFileElement object)
-  {
-    return null;
-  }
-
-  /**
-   * Returns the result of interpreting the object as an instance of '<em>TU Model</em>'.
-   * <!-- begin-user-doc -->
-   * This implementation returns null;
-   * returning a non-null result will terminate the switch.
-   * <!-- end-user-doc -->
-   * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>TU Model</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseTUModel(TUModel object)
-  {
-    return null;
-  }
-
-  /**
-   * Returns the result of interpreting the object as an instance of '<em>TU Execution</em>'.
-   * <!-- begin-user-doc -->
-   * This implementation returns null;
-   * returning a non-null result will terminate the switch.
-   * <!-- end-user-doc -->
-   * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>TU Execution</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseTUExecution(TUExecution object)
+  public T caseTUModelDeclaration(TUModelDeclaration object)
   {
     return null;
   }
@@ -379,6 +340,22 @@ public class XtxtUMLSwitch<T> extends Switch<T>
    * @generated
    */
   public T caseTUModelElement(TUModelElement object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>TU Execution</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>TU Execution</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseTUExecution(TUExecution object)
   {
     return null;
   }
