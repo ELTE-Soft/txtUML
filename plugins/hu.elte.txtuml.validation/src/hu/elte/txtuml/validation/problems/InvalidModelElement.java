@@ -17,7 +17,7 @@ public class InvalidModelElement extends ValidationErrorBase {
 
 	@Override
 	public String getMessage() {
-		return "Invalid element in model. Only model classes, associations and signals are allowed.";
+		return "Invalid element in model. Only model classes, associations, signals and diagram definitions are allowed.";
 	}
 
 }

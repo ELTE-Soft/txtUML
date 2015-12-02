@@ -1,12 +1,12 @@
 package hu.elte.txtuml.api.model.error.other;
 
-import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.base.SimpleModelTestsBase;
-import hu.elte.txtuml.api.model.models.SimpleModel.A_B;
-import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.base.SimpleModelTestsBase;
+import hu.elte.txtuml.api.model.models.simple.A_B;
+import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
 
 @RunWith(SeparateClassloaderTestRunner.class)
 public class UnlinkingNonExistingAssociationTest extends SimpleModelTestsBase {
@@ -18,7 +18,8 @@ public class UnlinkingNonExistingAssociationTest extends SimpleModelTestsBase {
 
 		stopModelExecution();
 
-		executionAsserter.assertWarnings( x -> x.unlinkingNonExistingAssociation(a, b));
+		executionAsserter.assertWarnings(x -> x
+				.unlinkingNonExistingAssociation(a, b));
 	}
 
 }

@@ -1,0 +1,40 @@
+package hu.elte.txtuml.examples.machine;
+
+import hu.elte.txtuml.api.^model.ModelExecutor
+import hu.elte.txtuml.api.stdlib.Timer
+import hu.elte.txtuml.examples.machine.xmodel3.DoYourWork
+import hu.elte.txtuml.examples.machine.xmodel3.Machine
+import hu.elte.txtuml.examples.machine.xmodel3.Usage
+import hu.elte.txtuml.examples.machine.xmodel3.User
+
+execution XMachine3Tester {
+	ModelExecutor.Settings.setExecutorLog(true);
+
+	Machine m = create(Machine,3);
+	User u1 = create(User);
+	User u2 = create(User);
+
+	u1.name = "user1";
+	u2.name = "user2";
+	u1.id = 1;
+	u2.id = 2;
+
+	link(Usage.usedMachine, m, Usage.userOfMachine, u1);
+	link(Usage.usedMachine, m, Usage.userOfMachine, u2);
+
+	log("Machine and users are starting.");
+	start(m);
+	start(u1);
+	start(u2);
+
+	log("One of the users is starting to do his or her work.");
+	
+	User oneOfTheUsers = m->Usage::userOfMachine.selectAny();
+	// In Machine1 model this cannot be done as userOfMachine
+	// association end is non-navigable in that model.		
+	send new DoYourWork() to oneOfTheUsers;
+	
+	Timer.start(oneOfTheUsers, new DoYourWork(), 5000);
+	
+	Timer.shutdown();
+}

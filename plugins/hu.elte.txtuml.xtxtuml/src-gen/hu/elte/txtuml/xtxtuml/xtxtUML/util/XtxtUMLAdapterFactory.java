@@ -82,24 +82,19 @@ public class XtxtUMLAdapterFactory extends AdapterFactoryImpl
         return createTUFileAdapter();
       }
       @Override
-      public Adapter caseTUFileElement(TUFileElement object)
+      public Adapter caseTUModelDeclaration(TUModelDeclaration object)
       {
-        return createTUFileElementAdapter();
-      }
-      @Override
-      public Adapter caseTUModel(TUModel object)
-      {
-        return createTUModelAdapter();
-      }
-      @Override
-      public Adapter caseTUExecution(TUExecution object)
-      {
-        return createTUExecutionAdapter();
+        return createTUModelDeclarationAdapter();
       }
       @Override
       public Adapter caseTUModelElement(TUModelElement object)
       {
         return createTUModelElementAdapter();
+      }
+      @Override
+      public Adapter caseTUExecution(TUExecution object)
+      {
+        return createTUExecutionAdapter();
       }
       @Override
       public Adapter caseTUSignal(TUSignal object)
@@ -192,6 +187,11 @@ public class XtxtUMLAdapterFactory extends AdapterFactoryImpl
         return createTUMultiplicityAdapter();
       }
       @Override
+      public Adapter caseTUComposition(TUComposition object)
+      {
+        return createTUCompositionAdapter();
+      }
+      @Override
       public Adapter caseTUAttribute(TUAttribute object)
       {
         return createTUAttributeAdapter();
@@ -264,46 +264,16 @@ public class XtxtUMLAdapterFactory extends AdapterFactoryImpl
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUFileElement <em>TU File Element</em>}'.
+   * Creates a new adapter for an object of class '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration <em>TU Model Declaration</em>}'.
    * <!-- begin-user-doc -->
    * This default implementation returns null so that we can easily ignore cases;
    * it's useful to ignore a case when inheritance will catch all the cases anyway.
    * <!-- end-user-doc -->
    * @return the new adapter.
-   * @see hu.elte.txtuml.xtxtuml.xtxtUML.TUFileElement
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
    * @generated
    */
-  public Adapter createTUFileElementAdapter()
-  {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUModel <em>TU Model</em>}'.
-   * <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases;
-   * it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
-   * @return the new adapter.
-   * @see hu.elte.txtuml.xtxtuml.xtxtUML.TUModel
-   * @generated
-   */
-  public Adapter createTUModelAdapter()
-  {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution <em>TU Execution</em>}'.
-   * <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases;
-   * it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
-   * @return the new adapter.
-   * @see hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
-   * @generated
-   */
-  public Adapter createTUExecutionAdapter()
+  public Adapter createTUModelDeclarationAdapter()
   {
     return null;
   }
@@ -319,6 +289,21 @@ public class XtxtUMLAdapterFactory extends AdapterFactoryImpl
    * @generated
    */
   public Adapter createTUModelElementAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution <em>TU Execution</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
+   * @generated
+   */
+  public Adapter createTUExecutionAdapter()
   {
     return null;
   }
@@ -589,6 +574,21 @@ public class XtxtUMLAdapterFactory extends AdapterFactoryImpl
    * @generated
    */
   public Adapter createTUMultiplicityAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition <em>TU Composition</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
+   * @generated
+   */
+  public Adapter createTUCompositionAdapter()
   {
     return null;
   }

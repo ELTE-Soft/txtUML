@@ -26,7 +26,7 @@ package hu.elte.txtuml.api.model;
  * <p>
  * <b>Subtype requirements:</b>
  * <ul>
- * <li>must be the nested class of a subclass of {@link Model}</li>
+ * <li><i>none</i></li>
  * </ul>
  * <p>
  * <b>Subtype restrictions:</b>

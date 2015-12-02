@@ -1,76 +1,58 @@
 package hu.elte.txtuml.layout.export.source;
 
+import java.io.IOException;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.stream.Stream;
+
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.IPackageBinding;
+import org.eclipse.jdt.core.dom.PackageDeclaration;
+
 import hu.elte.txtuml.api.model.Model;
-import hu.elte.txtuml.layout.export.DiagramType;
+import hu.elte.txtuml.eclipseutils.NotFoundException;
+import hu.elte.txtuml.eclipseutils.PackageUtils;
+import hu.elte.txtuml.eclipseutils.ProjectUtils;
+import hu.elte.txtuml.export.uml2.utils.ModelUtils;
+import hu.elte.txtuml.export.uml2.utils.SharedUtils;
 import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
-import hu.elte.txtuml.layout.export.interfaces.NodeMap;
 import hu.elte.txtuml.layout.export.problems.ElementExportationException;
-import hu.elte.txtuml.utils.Pair;
 
-import java.util.List;
-
-public abstract class AbstractSourceExporter implements SourceExporter {
+abstract class AbstractSourceExporter implements SourceExporter {
 
 	@Override
-	public ModelId getModelOf(Class<?> element) throws ElementExportationException {
+	public ModelId getModelOf(Class<?> element, ElementExporter elementExporter) throws ElementExportationException {
 		try {
-			while (!Model.class.isAssignableFrom(element)) {
-				element = element.getEnclosingClass();
+			Package ownPackage = element.getPackage();
+
+			if (ownPackage.getAnnotation(Model.class) != null) {
+				return new ModelIdImpl(ownPackage.getName());
 			}
-			return new ModelIdImpl(element);
-		} catch (NullPointerException e) {
+			String ownPackageName = ownPackage.getName();
+
+			IJavaProject javaProject = ProjectUtils.findJavaProject(elementExporter.getSourceProjectName());
+
+			Stream<ICompilationUnit> stream = PackageUtils.findAllPackageFragmentsAsStream(javaProject)
+					.filter(p -> ownPackageName.startsWith(p.getElementName() + "."))
+					.map(pf -> pf.getCompilationUnit(PackageUtils.PACKAGE_INFO)).filter(ICompilationUnit::exists);
+
+			String topPackageName = Stream.of(SharedUtils.parseICompilationUnitStream(stream, javaProject))
+					.map(CompilationUnit::getPackage).filter(Objects::nonNull).map(PackageDeclaration::resolveBinding)
+					.filter(Objects::nonNull).filter(pb -> ModelUtils.findModelNameInTopPackage(pb).isPresent())
+					.map(IPackageBinding::getName).findFirst().get();
+
+			return new ModelIdImpl(topPackageName);
+
+		} catch (NotFoundException | JavaModelException | IOException | NoSuchElementException e) {
+			e.printStackTrace();
 			throw new ElementExportationException();
 		}
 	}
 
 	@Override
-	public void exportImpliedLinks(ModelId modelId,
-			ElementExporter elementExporter) {
-
-		if (modelId != null && modelId instanceof ModelIdImpl) {
-			Class<?> model = ((ModelIdImpl) modelId).getCls();
-
-			List<Class<?>> links = loadAllLinksFromModel(model);
-
-			elementExporter.getNodes().forEach(
-					(cls, node) -> exportImpliedLinksFromSpecifiedNode(model,
-							elementExporter, links, node.getElementClass()));
-
-		}
-
-	}
-
-	protected abstract List<Class<?>> loadAllLinksFromModel(Class<?> model);
-
-	protected void exportImpliedLinksFromSpecifiedNode(Class<?> model,
-			ElementExporter elementExporter, List<Class<?>> links, Class<?> node) {
-		NodeMap nodes = elementExporter.getNodes();
-		for (Class<?> link : links) {
-			try {
-				Pair<Class<?>, Class<?>> p = getStartAndEndOfLink(link);
-
-				// nodes.containsKey(node) should be guaranteed here
-				if ((p.getFirst().equals(node) && nodes.containsKey(p
-						.getSecond()))
-						|| ((p.getSecond().equals(node) && nodes.containsKey(p
-								.getFirst())))) {
-					elementExporter.exportLink(link);
-				}
-			} catch (ElementExportationException e) {
-				// do nothing (step to next link)
-			}
-		}
-
-		if (elementExporter.getDiagramTypeBasedOnElements() == DiagramType.Class) {
-			Class<?> base = node.getSuperclass();
-			if (base != null && nodes.containsKey(base)) {
-				try {
-					elementExporter.exportGeneralization(base, node);
-				} catch (ElementExportationException e) {
-					// do nothing
-				}
-			}
-		}
-	}
+	public abstract void exportImpliedLinks(ModelId modelId, ElementExporter elementExporter);
 
 }

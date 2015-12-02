@@ -1,13 +1,13 @@
 package hu.elte.txtuml.validation.visitors;
 
+import org.eclipse.jdt.core.dom.BodyDeclaration;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
+
+import hu.elte.txtuml.api.layout.Diagram;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
+import hu.elte.txtuml.export.uml2.utils.SharedUtils;
 import hu.elte.txtuml.validation.ProblemCollector;
 import hu.elte.txtuml.validation.problems.InvalidModelElement;
-
-import org.eclipse.jdt.core.dom.BodyDeclaration;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 public class ModelVisitor extends VisitorBase {
 
@@ -18,7 +18,7 @@ public class ModelVisitor extends VisitorBase {
 	@Override
 	public boolean visit(TypeDeclaration elem) {
 		boolean valid = ElementTypeTeller.isModelClass(elem) || ElementTypeTeller.isSignal(elem)
-				|| ElementTypeTeller.isAssociation(elem);
+				|| ElementTypeTeller.isAssociation(elem) || SharedUtils.typeIsAssignableFrom(elem, Diagram.class);
 		collector.setProblemStatus(!valid, new InvalidModelElement(collector.getSourceInfo(), elem.getName()));
 
 		if (ElementTypeTeller.isModelClass(elem)) {
@@ -36,20 +36,13 @@ public class ModelVisitor extends VisitorBase {
 		} else if (ElementTypeTeller.isAssociation(elem)) {
 			Utils.checkTemplate(collector, elem);
 			Utils.checkModifiers(collector, elem);
+			if(ElementTypeTeller.isComposition(elem)) {
+				CompositionVisitor visitor = new CompositionVisitor(collector);
+				elem.accept(visitor);
+			}
 			// TODO: check association content
 		}
 		return false;
 	}
 
-	@Override
-	public boolean visit(FieldDeclaration elem) {
-		collector.setProblemStatus(true, new InvalidModelElement(collector.getSourceInfo(), elem));
-		return false;
 	}
-
-	@Override
-	public boolean visit(MethodDeclaration elem) {
-		collector.setProblemStatus(true, new InvalidModelElement(collector.getSourceInfo(), elem.getName()));
-		return false;
-	}
-}

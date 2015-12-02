@@ -11,4 +11,5 @@
 	</parent>
 	<artifactId>hu.elte.txtuml.layout.export.tests</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
+	
 </project>

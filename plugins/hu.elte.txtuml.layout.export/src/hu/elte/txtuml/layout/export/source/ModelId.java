@@ -11,32 +11,32 @@ public interface ModelId {
 
 class ModelIdImpl implements ModelId {
 
-	private final Class<?> cls;
+	private final String topPackage;
 
-	public ModelIdImpl(Class<?> cls) {
-		this.cls = cls;
+	public ModelIdImpl(String topPackage) {
+		this.topPackage = topPackage.intern();
 	}
 
 	@Override
 	public String getName() {
-		return cls.getCanonicalName();
+		return topPackage;
 	}
 
 	@Override
 	public int hashCode() {
-		return cls.hashCode();
+		return topPackage.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof ModelIdImpl) {
-			return cls == ((ModelIdImpl) obj).cls;
+			return topPackage == ((ModelIdImpl) obj).topPackage;
 		}
 		return false;
 	}
 
-	Class<?> getCls() {
-		return cls;
+	String getPackage() {
+		return topPackage;
 	}
 
 }

@@ -3,7 +3,7 @@
 package hu.elte.txtuml.xtxtuml.xtxtUML.impl;
 
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile;
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUFileElement;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelElement;
 import hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage;
 
 import java.util.Collection;
@@ -30,12 +30,12 @@ import org.eclipse.xtext.xtype.XImportSection;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUFileImpl#getName <em>Name</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUFileImpl#getImportSection <em>Import Section</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUFileImpl#getElements <em>Elements</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -79,7 +79,7 @@ public class TUFileImpl extends MinimalEObjectImpl.Container implements TUFile
    * @generated
    * @ordered
    */
-  protected EList<TUFileElement> elements;
+  protected EList<TUModelElement> elements;
 
   /**
    * <!-- begin-user-doc -->
@@ -178,11 +178,11 @@ public class TUFileImpl extends MinimalEObjectImpl.Container implements TUFile
    * <!-- end-user-doc -->
    * @generated
    */
-  public EList<TUFileElement> getElements()
+  public EList<TUModelElement> getElements()
   {
     if (elements == null)
     {
-      elements = new EObjectContainmentEList<TUFileElement>(TUFileElement.class, this, XtxtUMLPackage.TU_FILE__ELEMENTS);
+      elements = new EObjectContainmentEList<TUModelElement>(TUModelElement.class, this, XtxtUMLPackage.TU_FILE__ELEMENTS);
     }
     return elements;
   }
@@ -244,7 +244,7 @@ public class TUFileImpl extends MinimalEObjectImpl.Container implements TUFile
         return;
       case XtxtUMLPackage.TU_FILE__ELEMENTS:
         getElements().clear();
-        getElements().addAll((Collection<? extends TUFileElement>)newValue);
+        getElements().addAll((Collection<? extends TUModelElement>)newValue);
         return;
     }
     super.eSet(featureID, newValue);

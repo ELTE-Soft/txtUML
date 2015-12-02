@@ -12,12 +12,12 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassMember;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile;
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUFileElement;
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUModel;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelElement;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation;
@@ -70,21 +70,7 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  private EClass tuFileElementEClass = null;
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  private EClass tuModelEClass = null;
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  private EClass tuExecutionEClass = null;
+  private EClass tuModelDeclarationEClass = null;
 
   /**
    * <!-- begin-user-doc -->
@@ -92,6 +78,13 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
    * @generated
    */
   private EClass tuModelElementEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass tuExecutionEClass = null;
 
   /**
    * <!-- begin-user-doc -->
@@ -218,6 +211,13 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
    * @generated
    */
   private EClass tuMultiplicityEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass tuCompositionEClass = null;
 
   /**
    * <!-- begin-user-doc -->
@@ -387,59 +387,9 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EClass getTUFileElement()
+  public EClass getTUModelDeclaration()
   {
-    return tuFileElementEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EAttribute getTUFileElement_Name()
-  {
-    return (EAttribute)tuFileElementEClass.getEStructuralFeatures().get(0);
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EClass getTUModel()
-  {
-    return tuModelEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EReference getTUModel_Elements()
-  {
-    return (EReference)tuModelEClass.getEStructuralFeatures().get(0);
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EClass getTUExecution()
-  {
-    return tuExecutionEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EReference getTUExecution_Body()
-  {
-    return (EReference)tuExecutionEClass.getEStructuralFeatures().get(0);
+    return tuModelDeclarationEClass;
   }
 
   /**
@@ -460,6 +410,26 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
   public EAttribute getTUModelElement_Name()
   {
     return (EAttribute)tuModelElementEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getTUExecution()
+  {
+    return tuExecutionEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getTUExecution_Body()
+  {
+    return (EReference)tuExecutionEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -937,9 +907,19 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  public EAttribute getTUAssociationEnd_Container()
+  {
+    return (EAttribute)tuAssociationEndEClass.getEStructuralFeatures().get(3);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   public EReference getTUAssociationEnd_EndClass()
   {
-    return (EReference)tuAssociationEndEClass.getEStructuralFeatures().get(3);
+    return (EReference)tuAssociationEndEClass.getEStructuralFeatures().get(4);
   }
 
   /**
@@ -949,7 +929,7 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
    */
   public EAttribute getTUAssociationEnd_Name()
   {
-    return (EAttribute)tuAssociationEndEClass.getEStructuralFeatures().get(4);
+    return (EAttribute)tuAssociationEndEClass.getEStructuralFeatures().get(5);
   }
 
   /**
@@ -1010,6 +990,16 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
   public EAttribute getTUMultiplicity_Any()
   {
     return (EAttribute)tuMultiplicityEClass.getEStructuralFeatures().get(4);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getTUComposition()
+  {
+    return tuCompositionEClass;
   }
 
   /**
@@ -1247,17 +1237,13 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
     createEReference(tuFileEClass, TU_FILE__IMPORT_SECTION);
     createEReference(tuFileEClass, TU_FILE__ELEMENTS);
 
-    tuFileElementEClass = createEClass(TU_FILE_ELEMENT);
-    createEAttribute(tuFileElementEClass, TU_FILE_ELEMENT__NAME);
-
-    tuModelEClass = createEClass(TU_MODEL);
-    createEReference(tuModelEClass, TU_MODEL__ELEMENTS);
-
-    tuExecutionEClass = createEClass(TU_EXECUTION);
-    createEReference(tuExecutionEClass, TU_EXECUTION__BODY);
+    tuModelDeclarationEClass = createEClass(TU_MODEL_DECLARATION);
 
     tuModelElementEClass = createEClass(TU_MODEL_ELEMENT);
     createEAttribute(tuModelElementEClass, TU_MODEL_ELEMENT__NAME);
+
+    tuExecutionEClass = createEClass(TU_EXECUTION);
+    createEReference(tuExecutionEClass, TU_EXECUTION__BODY);
 
     tuSignalEClass = createEClass(TU_SIGNAL);
     createEReference(tuSignalEClass, TU_SIGNAL__ATTRIBUTES);
@@ -1322,6 +1308,7 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
     createEAttribute(tuAssociationEndEClass, TU_ASSOCIATION_END__VISIBILITY);
     createEAttribute(tuAssociationEndEClass, TU_ASSOCIATION_END__NOT_NAVIGABLE);
     createEReference(tuAssociationEndEClass, TU_ASSOCIATION_END__MULTIPLICITY);
+    createEAttribute(tuAssociationEndEClass, TU_ASSOCIATION_END__CONTAINER);
     createEReference(tuAssociationEndEClass, TU_ASSOCIATION_END__END_CLASS);
     createEAttribute(tuAssociationEndEClass, TU_ASSOCIATION_END__NAME);
 
@@ -1331,6 +1318,8 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
     createEAttribute(tuMultiplicityEClass, TU_MULTIPLICITY__UPPER);
     createEAttribute(tuMultiplicityEClass, TU_MULTIPLICITY__UPPER_INF);
     createEAttribute(tuMultiplicityEClass, TU_MULTIPLICITY__ANY);
+
+    tuCompositionEClass = createEClass(TU_COMPOSITION);
 
     tuAttributeEClass = createEClass(TU_ATTRIBUTE);
     createEReference(tuAttributeEClass, TU_ATTRIBUTE__PREFIX);
@@ -1395,8 +1384,8 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
     // Set bounds for type parameters
 
     // Add supertypes to classes
-    tuModelEClass.getESuperTypes().add(this.getTUFileElement());
-    tuExecutionEClass.getESuperTypes().add(this.getTUFileElement());
+    tuModelDeclarationEClass.getESuperTypes().add(this.getTUFile());
+    tuExecutionEClass.getESuperTypes().add(this.getTUModelElement());
     tuSignalEClass.getESuperTypes().add(this.getTUModelElement());
     tuClassEClass.getESuperTypes().add(this.getTUModelElement());
     tuAssociationEClass.getESuperTypes().add(this.getTUModelElement());
@@ -1411,6 +1400,7 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
     tuTransitionVertexEClass.getESuperTypes().add(this.getTUTransitionMember());
     tuTransitionEffectEClass.getESuperTypes().add(this.getTUTransitionMember());
     tuTransitionGuardEClass.getESuperTypes().add(this.getTUTransitionMember());
+    tuCompositionEClass.getESuperTypes().add(this.getTUAssociation());
     tuAttributeEClass.getESuperTypes().add(this.getTUClassMember());
     tuOperationEClass.getESuperTypes().add(this.getTUClassMember());
     rAlfSendSignalExpressionEClass.getESuperTypes().add(theXbasePackage.getXExpression());
@@ -1422,19 +1412,15 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
     initEClass(tuFileEClass, TUFile.class, "TUFile", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getTUFile_Name(), ecorePackage.getEString(), "name", null, 0, 1, TUFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getTUFile_ImportSection(), theXtypePackage.getXImportSection(), null, "importSection", null, 0, 1, TUFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getTUFile_Elements(), this.getTUFileElement(), null, "elements", null, 0, -1, TUFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getTUFile_Elements(), this.getTUModelElement(), null, "elements", null, 0, -1, TUFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-    initEClass(tuFileElementEClass, TUFileElement.class, "TUFileElement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getTUFileElement_Name(), ecorePackage.getEString(), "name", null, 0, 1, TUFileElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
-    initEClass(tuModelEClass, TUModel.class, "TUModel", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getTUModel_Elements(), this.getTUModelElement(), null, "elements", null, 0, -1, TUModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
-    initEClass(tuExecutionEClass, TUExecution.class, "TUExecution", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getTUExecution_Body(), theXbasePackage.getXExpression(), null, "body", null, 0, 1, TUExecution.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEClass(tuModelDeclarationEClass, TUModelDeclaration.class, "TUModelDeclaration", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
     initEClass(tuModelElementEClass, TUModelElement.class, "TUModelElement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getTUModelElement_Name(), ecorePackage.getEString(), "name", null, 0, 1, TUModelElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(tuExecutionEClass, TUExecution.class, "TUExecution", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getTUExecution_Body(), theXbasePackage.getXExpression(), null, "body", null, 0, 1, TUExecution.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(tuSignalEClass, TUSignal.class, "TUSignal", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEReference(getTUSignal_Attributes(), this.getTUSignalAttribute(), null, "attributes", null, 0, -1, TUSignal.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1499,6 +1485,7 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
     initEAttribute(getTUAssociationEnd_Visibility(), this.getTUVisibility(), "visibility", null, 0, 1, TUAssociationEnd.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getTUAssociationEnd_NotNavigable(), ecorePackage.getEBoolean(), "notNavigable", null, 0, 1, TUAssociationEnd.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getTUAssociationEnd_Multiplicity(), this.getTUMultiplicity(), null, "multiplicity", null, 0, 1, TUAssociationEnd.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getTUAssociationEnd_Container(), ecorePackage.getEBoolean(), "container", null, 0, 1, TUAssociationEnd.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getTUAssociationEnd_EndClass(), this.getTUClass(), null, "endClass", null, 0, 1, TUAssociationEnd.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getTUAssociationEnd_Name(), ecorePackage.getEString(), "name", null, 0, 1, TUAssociationEnd.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
@@ -1508,6 +1495,8 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
     initEAttribute(getTUMultiplicity_Upper(), ecorePackage.getEInt(), "upper", null, 0, 1, TUMultiplicity.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getTUMultiplicity_UpperInf(), ecorePackage.getEBoolean(), "upperInf", null, 0, 1, TUMultiplicity.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getTUMultiplicity_Any(), ecorePackage.getEBoolean(), "any", null, 0, 1, TUMultiplicity.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(tuCompositionEClass, TUComposition.class, "TUComposition", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
     initEClass(tuAttributeEClass, TUAttribute.class, "TUAttribute", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEReference(getTUAttribute_Prefix(), this.getTUAttributeOrOperationDeclarationPrefix(), null, "prefix", null, 0, 1, TUAttribute.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

@@ -11,12 +11,12 @@ import org.eclipse.xtext.xbase.XExpression;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity#isEntry <em>Entry</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity#isExit <em>Exit</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity#getBody <em>Body</em>}</li>
  * </ul>
- * </p>
  *
  * @see hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage#getTUEntryOrExitActivity()
  * @model
