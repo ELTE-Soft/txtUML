@@ -24,6 +24,7 @@ import org.osgi.framework.Bundle;
 public class RuntimeLibraryContainer implements IClasspathContainer {
 
 	private static final String BIN_FOLDER_IN_PLUGIN = "bin"; //$NON-NLS-1$
+	private static final String SRC_FOLDER_IN_PLUGIN = "src"; //$NON-NLS-1$
 
 	public static final String[] BUNDLE_IDS_TO_INCLUDE = { "com.google.guava", //$NON-NLS-1$
 			"org.eclipse.uml2.uml", "org.eclipse.uml2.uml.resources", //$NON-NLS-1$ //$NON-NLS-2$
@@ -58,9 +59,9 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 			final String bundleId) {
 		Bundle bundle = Platform.getBundle(bundleId);
 		if (bundle != null) {
-			IPath bundlePath = bundlePath(bundle);
-			cpEntries.add(JavaCore.newLibraryEntry(bundlePath, null, null,
-					new IAccessRule[] {}, null, false));
+			cpEntries.add(JavaCore
+					.newLibraryEntry(bundlePath(bundle), sourcePath(bundle),
+							null, new IAccessRule[] {}, null, false));
 		}
 	}
 
@@ -83,6 +84,38 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 	private IPath binFolderPath(Bundle bundle) {
 		URL binFolderURL = FileLocator.find(bundle, new Path(
 				BIN_FOLDER_IN_PLUGIN), null);
+		if (binFolderURL != null) {
+			try {
+				URL binFolderFileURL = FileLocator.toFileURL(binFolderURL);
+				return new Path(binFolderFileURL.getPath()).makeAbsolute();
+			} catch (IOException e) {
+				String message = "Can't resolve path '"
+						+ bundle.getSymbolicName() + "'"; //$NON-NLS-1$ //$NON-NLS-2$
+				PluginLogWrapper.logError(message, e);
+			}
+		}
+		return null;
+	}
+
+	private IPath sourcePath(Bundle bundle) {
+		IPath path = srcFolderPath(bundle);
+		if (path == null) {
+			// common jar file case, no bin folder
+			try {
+				path = new Path(FileLocator.getBundleFile(bundle)
+						.getAbsolutePath());
+			} catch (IOException e) {
+				String message = "Can't resolve path '"
+						+ bundle.getSymbolicName() + "'"; //$NON-NLS-1$ //$NON-NLS-2$
+				PluginLogWrapper.logError(message, e);
+			}
+		}
+		return path;
+	}
+
+	private IPath srcFolderPath(Bundle bundle) {
+		URL binFolderURL = FileLocator.find(bundle, new Path(
+				SRC_FOLDER_IN_PLUGIN), null);
 		if (binFolderURL != null) {
 			try {
 				URL binFolderFileURL = FileLocator.toFileURL(binFolderURL);
