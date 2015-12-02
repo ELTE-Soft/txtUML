@@ -1,14 +1,15 @@
 package hu.elte.txtuml.api.model;
 
+import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicLong;
+
+import hu.elte.txtuml.api.model.Composition.Container;
 import hu.elte.txtuml.api.model.ModelExecutor.Report;
 import hu.elte.txtuml.api.model.assocends.Navigability;
 import hu.elte.txtuml.api.model.backend.MultipleContainerException;
 import hu.elte.txtuml.api.model.backend.MultiplicityException;
 import hu.elte.txtuml.api.model.backend.collections.AssociationsMap;
 import hu.elte.txtuml.utils.InstanceCreator;
-
-import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Base class for classes in the model.

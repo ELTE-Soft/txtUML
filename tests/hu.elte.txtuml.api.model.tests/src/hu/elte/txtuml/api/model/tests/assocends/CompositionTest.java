@@ -1,12 +1,11 @@
 package hu.elte.txtuml.api.model.tests.assocends;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.Composition;
-import hu.elte.txtuml.api.model.Container;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.tests.assocends.CompositionTest.MyComposition.MyContainer;
 import hu.elte.txtuml.api.model.tests.assocends.CompositionTest.MyComposition.MyPart;

@@ -1,18 +1,14 @@
 package hu.elte.txtuml.api.model;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.Composition;
-import hu.elte.txtuml.api.model.Container;
-import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.backend.MultipleContainerException;
 import hu.elte.txtuml.api.model.CompositionTest.MyComposition.MyContainer;
 import hu.elte.txtuml.api.model.CompositionTest.MyComposition.MyPart;
 import hu.elte.txtuml.api.model.CompositionTest.MyComposition2.MyContainer2;
 import hu.elte.txtuml.api.model.CompositionTest.MyComposition2.MyPart2;
+import hu.elte.txtuml.api.model.backend.MultipleContainerException;
 
 public class CompositionTest {
 

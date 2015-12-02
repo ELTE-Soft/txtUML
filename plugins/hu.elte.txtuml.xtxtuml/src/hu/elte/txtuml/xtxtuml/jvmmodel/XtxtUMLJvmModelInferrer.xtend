@@ -2,6 +2,8 @@ package hu.elte.txtuml.xtxtuml.jvmmodel;
 
 import com.google.inject.Inject
 import hu.elte.txtuml.api.model.Association
+import hu.elte.txtuml.api.model.Composition
+import hu.elte.txtuml.api.model.Composition.Container
 import hu.elte.txtuml.api.model.From
 import hu.elte.txtuml.api.model.Max
 import hu.elte.txtuml.api.model.Min
@@ -15,6 +17,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
@@ -39,9 +42,6 @@ import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
-import hu.elte.txtuml.api.model.Composition
-import hu.elte.txtuml.api.model.Container
 
 class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
