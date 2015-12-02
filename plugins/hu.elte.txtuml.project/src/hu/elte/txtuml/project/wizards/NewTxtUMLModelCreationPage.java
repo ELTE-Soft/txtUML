@@ -1,16 +1,7 @@
 package hu.elte.txtuml.project.wizards;
 
-import java.io.ByteArrayInputStream;
-import java.lang.reflect.InvocationTargetException;
-
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -22,7 +13,6 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.dialogs.StatusInfo;
 import org.eclipse.jdt.internal.ui.wizards.NewWizardMessages;
 import org.eclipse.jdt.ui.wizards.NewTypeWizardPage;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -31,11 +21,10 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.diagnostics.PluginLogWrapper;
-import hu.elte.txtuml.eclipseutils.Dialogs;
+import hu.elte.txtuml.project.ModelCreator;
 
 /**
  * This dialog uses source container, package and type name inputs from
@@ -50,7 +39,7 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 	protected Button txt;
 	protected Button xtxt;
 	protected boolean xtxtuml;
-	private IResource resource;
+	private ModelCreator modelCreator = new ModelCreator();
 
 	protected NewTxtUMLModelCreationPage() {
 		super(false, TxtUMLModelFileCreatorWizard.TITLE);
@@ -89,11 +78,6 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 		xtxt.setText("XtxtUML (custom syntax)");
 	}
 
-	protected void doStatusUpdate() {
-		IStatus[] status = new IStatus[] { fContainerStatus, fPackageStatus, fTypeNameStatus };
-		updateStatus(status);
-	}
-
 	/**
 	 * Tries to guess the values of container and package from the selected
 	 * element. The selected package is assumed to be the model root.
@@ -114,101 +98,32 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 		}
 	}
 
-	@Override
-	protected void handleFieldChanged(String fieldName) {
-		super.handleFieldChanged(fieldName);
-		// update the status message when a field is changed
-		doStatusUpdate();
-	}
+
 
 	public IFile createNewFile() {
-		try {
-			String filename;
-			StringBuilder contentBuilder = new StringBuilder();
-			if (xtxt.getSelection()) {
-				filename = "model-info.xtxtuml";
-				contentBuilder.append("model \"");
-				contentBuilder.append(getTypeName());
-				contentBuilder.append("\";");
-			} else {
-				filename = "package-info.java";
-				contentBuilder.append("@Model(\"");
-				contentBuilder.append(getTypeName());
-				contentBuilder.append("\")\npackage ");
-				contentBuilder.append(getPackageText());
-				contentBuilder.append(";\n\n");
-				contentBuilder.append("import ");
-				contentBuilder.append(Model.class.getCanonicalName());
-				contentBuilder.append(";");
-			}
-
-			if (createFile(contentBuilder.toString(), filename)) {
-				return (IFile) getResource();
-			}
-		} catch (Throwable e) {
-			PluginLogWrapper.logError("Error while creating package/model-info file", e);
-		}
-		return null;
+		return modelCreator.createModelFile(getContainer(), getPackageFragmentRoot(), getPackageFragment(),
+				getTypeName(), xtxt.getSelection());
 	}
-
-	private IResource getResource() {
-		return this.resource;
-	}
-
-	private boolean createFile(String content, String filename) {
-		IRunnableWithProgress op = new WorkspaceModifyOperation() {
-
-			@Override
-			protected void execute(IProgressMonitor monitor)
-					throws CoreException, InvocationTargetException, InterruptedException {
-				if (monitor == null) {
-					monitor = new NullProgressMonitor();
-				}
-
-				try {
-					if (!getPackageFragment().exists()) {
-						try {
-							getPackageFragmentRoot().createPackageFragment(getPackageFragment().getElementName(), true,
-									monitor);
-						} catch (JavaModelException e) {
-							e.printStackTrace();
-						}
-					}
-					IResource res = getPackageFragment().getResource();
-					IFile txtUMLFile = ((IFolder) res).getFile(filename);
-					txtUMLFile.create(new ByteArrayInputStream(content.getBytes()), true, monitor);
-					setResource(txtUMLFile);
-				} catch (OperationCanceledException e) {
-					throw new InterruptedException();
-				} catch (Exception e) {
-					throw new InvocationTargetException(e);
-				} finally {
-					monitor.done();
-				}
-			}
-
-		};
-		try {
-			getContainer().run(true, true, op);
-		} catch (InterruptedException e) {
-			// cancelled by user
-			return false;
-		} catch (InvocationTargetException e) {
-			Throwable realException = e.getTargetException();
-			Dialogs.errorMsgb("File Creation error", "Error occured during file creation. ", realException);
-		}
-		return true;
-	}
-
-	private void setResource(IResource resource) {
-		this.resource = resource;
-	}
+	
+	// validation
 
 	@Override
 	public void setVisible(boolean visible) {
 		super.setVisible(visible);
 		// show error status messages
 		doStatusUpdate();
+	}
+	
+	@Override
+	protected void handleFieldChanged(String fieldName) {
+		super.handleFieldChanged(fieldName);
+		// update the status message when a field is changed
+		doStatusUpdate();
+	}
+	
+	protected void doStatusUpdate() {
+		IStatus[] status = new IStatus[] { fContainerStatus, fPackageStatus, fTypeNameStatus };
+		updateStatus(status);
 	}
 
 	@Override
@@ -249,6 +164,11 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 		return false;
 	}
 
+	/**
+	 * Checks a package if it belong to an existing model. Searches for a
+	 * package-info.java compilation unit in the package or one of the ancestor
+	 * packages and checks if it has the {@link Model} annotation.
+	 */
 	private static boolean isModelPackage(IPackageFragmentRoot pfRoot, String packageName) throws JavaModelException {
 		IPackageFragment pack;
 		while (!packageName.isEmpty()) {
@@ -280,6 +200,9 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 	private static boolean checkPackageInfo(ICompilationUnit compUnit) throws JavaModelException {
 		for (IPackageDeclaration packDecl : compUnit.getPackageDeclarations()) {
 			for (IAnnotation annot : packDecl.getAnnotations()) {
+				// Because names are not resolved in IJavaElement AST
+				// representation, we have to manually check if a given
+				// annotation is really the Model annotation.
 				if (isImportedNameResolvedTo(compUnit, annot.getElementName(), Model.class.getCanonicalName())) {
 					return true;
 				}
