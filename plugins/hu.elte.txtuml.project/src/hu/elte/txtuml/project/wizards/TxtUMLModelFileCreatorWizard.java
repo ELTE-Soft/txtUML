@@ -1,15 +1,12 @@
 package hu.elte.txtuml.project.wizards;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
-
-import hu.elte.txtuml.project.Activator;
 
 public class TxtUMLModelFileCreatorWizard extends Wizard implements INewWizard {
 	
@@ -22,8 +19,6 @@ public class TxtUMLModelFileCreatorWizard extends Wizard implements INewWizard {
 	
 	public TxtUMLModelFileCreatorWizard() {
 		setWindowTitle(TITLE);
-		ImageDescriptor descriptor = Activator.getImageDescriptor(TxtUMLProjectWizard.WIZARD_IMAGE);
-		setDefaultPageImageDescriptor(descriptor);
 	}
 	
 	@Override

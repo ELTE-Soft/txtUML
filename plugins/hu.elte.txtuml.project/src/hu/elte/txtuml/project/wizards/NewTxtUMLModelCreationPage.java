@@ -11,7 +11,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.jdt.core.IAnnotation;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
@@ -33,6 +37,13 @@ import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.diagnostics.PluginLogWrapper;
 import hu.elte.txtuml.eclipseutils.Dialogs;
 
+/**
+ * This dialog uses source container, package and type name inputs from
+ * {@linkplain NewTypeWizardPage}.
+ * 
+ * @noextend This class should not be subclassed, subclass
+ *           {@linkplain NewTypeWizardPage} instead.
+ */
 @SuppressWarnings("restriction")
 public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 	protected static final int COLS = 4;
@@ -79,10 +90,14 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 	}
 
 	protected void doStatusUpdate() {
-		IStatus[] status = new IStatus[] { fContainerStatus };
+		IStatus[] status = new IStatus[] { fContainerStatus, fPackageStatus, fTypeNameStatus };
 		updateStatus(status);
 	}
 
+	/**
+	 * Tries to guess the values of container and package from the selected
+	 * element. The selected package is assumed to be the model root.
+	 */
 	public void init(IStructuredSelection selection) {
 		IJavaElement jelem = getInitialJavaElement(selection);
 		if (jelem instanceof IPackageFragmentRoot) {
@@ -102,6 +117,7 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 	@Override
 	protected void handleFieldChanged(String fieldName) {
 		super.handleFieldChanged(fieldName);
+		// update the status message when a field is changed
 		doStatusUpdate();
 	}
 
@@ -189,6 +205,13 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 	}
 
 	@Override
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		// show error status messages
+		doStatusUpdate();
+	}
+
+	@Override
 	protected IStatus typeNameChanged() {
 		IStatus status = super.typeNameChanged();
 		if (status.getMessage() != null
@@ -196,5 +219,85 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 			((StatusInfo) status).setError("Model name is empty");
 		}
 		return status;
+	}
+
+	@Override
+	protected IStatus packageChanged() {
+		IStatus status = super.packageChanged();
+		if (status.isOK()) {
+			if (isModelPackage(getPackageFragment())) {
+				((StatusInfo) status).setError("The selected package is already a model package");
+			}
+		}
+		return status;
+	}
+
+	public static boolean isModelPackage(IPackageFragment pack) {
+		try {
+			IJavaProject javaProject = pack.getJavaProject();
+			String packageName = pack.getElementName();
+			for (IPackageFragmentRoot pfRoot : javaProject.getPackageFragmentRoots()) {
+				if (!pfRoot.isExternal()) {
+					if (isModelPackage(pfRoot, packageName)) {
+						return true;
+					}
+				}
+			}
+		} catch (JavaModelException e) {
+			PluginLogWrapper.logError("Error while checking compilation unit", e);
+		}
+		return false;
+	}
+
+	private static boolean isModelPackage(IPackageFragmentRoot pfRoot, String packageName) throws JavaModelException {
+		IPackageFragment pack;
+		while (!packageName.isEmpty()) {
+			pack = pfRoot.getPackageFragment(packageName);
+			if (pack.exists() && isModelRootPackage(pack)) {
+				return true;
+			}
+			int lastDot = packageName.lastIndexOf(".");
+			if (lastDot == -1) {
+				lastDot = 0;
+			}
+			packageName = packageName.substring(0, lastDot);
+		}
+		return false;
+	}
+
+	private static boolean isModelRootPackage(IPackageFragment pack) throws JavaModelException {
+		ICompilationUnit[] compilationUnits = pack.getCompilationUnits();
+		for (ICompilationUnit compUnit : compilationUnits) {
+			if (compUnit.getElementName().equals("package-info.java")) {
+				if (checkPackageInfo(compUnit)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private static boolean checkPackageInfo(ICompilationUnit compUnit) throws JavaModelException {
+		for (IPackageDeclaration packDecl : compUnit.getPackageDeclarations()) {
+			for (IAnnotation annot : packDecl.getAnnotations()) {
+				if (isImportedNameResolvedTo(compUnit, annot.getElementName(), Model.class.getCanonicalName())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private static boolean isImportedNameResolvedTo(ICompilationUnit compUnit, String elementName,
+			String qualifiedName) {
+		if (qualifiedName.equals(elementName)) {
+			return true;
+		}
+		if (!qualifiedName.endsWith(elementName)) {
+			return false;
+		}
+		int lastSection = qualifiedName.lastIndexOf(".");
+		String pack = qualifiedName.substring(0, lastSection);
+		return (compUnit.getImport(qualifiedName).exists() || compUnit.getImport(pack + ".*").exists());
 	}
 }
