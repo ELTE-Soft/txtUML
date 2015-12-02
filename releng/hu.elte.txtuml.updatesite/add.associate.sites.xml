@@ -4,7 +4,17 @@
 <project name="hu.elte.txtuml.updatesite" default="add.associate.sites" basedir="." xmlns:ac="antlib:net.sf.antcontrib">
 
 <target name="add.associate.sites">
-<property file="associate.sites.properties" />
+
+<!-- Load associate sites list depending on build profile -->
+<ac:if>
+	<equals arg1="${release}" arg2="true" />
+	<ac:then>
+		<property file="associate.sites.release.properties" />
+	</ac:then>
+	<ac:else>
+		<property file="associate.sites.mirrors.properties" />
+	</ac:else>
+</ac:if>
 
 <ac:if>
 	<available file="${content.jar.path}" type="file" />
@@ -21,14 +31,16 @@
 			</filterchain>
 		</loadfile>
 		<echo file="${content.xml.path}" message="${content.xml}" />
-		
+
 		<!-- Print start tag of references -->
+		<ac:math result="associate.sites.length.twice" operand1="${associate.sites.length}" operation="*" operand2="2" datatype="int" />
 		<echo file="${content.xml.path}" append="true">
-  &lt;references size='${associate.sites.length}'&gt;</echo>
+  &lt;references size='${associate.sites.length.twice}'&gt;</echo>
 
 		<!-- Print sites -->
-		<ac:for param="associate.site" list="${associate.sites}" delimiter=",">
+		<ac:for param="associate.site" list="${associate.sites}" delimiter=", ">
 			<sequential>
+				<echo>Adding associate site: @{associate.site}</echo>
 				<echo file="${content.xml.path}" append="true">
     &lt;repository uri='@{associate.site}' url='@{associate.site}' type='0' options='1'/&gt;
     &lt;repository uri='@{associate.site}' url='@{associate.site}' type='1' options='1'/&gt;</echo>
