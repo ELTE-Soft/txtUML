@@ -1,13 +1,15 @@
 package hu.elte.txtuml.validation.visitors;
 
-import org.eclipse.jdt.core.dom.BodyDeclaration;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
-import hu.elte.txtuml.api.model.Association;
-import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.validation.ProblemCollector;
+import hu.elte.txtuml.validation.problems.InvalidTypeInModel;
 
 public class ModelVisitor extends VisitorBase {
 
@@ -17,11 +19,16 @@ public class ModelVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(TypeDeclaration elem) {
-		checkChildren(elem, ModelClass.class, Signal.class, Association.class);
+		collector.setProblemStatus(
+				!ElementTypeTeller.isSignal(elem) && !ElementTypeTeller.isAssociation(elem)
+						&& !ElementTypeTeller.isModelClass(elem),
+				new InvalidTypeInModel(collector.getSourceInfo(), elem));
+
 		if (ElementTypeTeller.isSignal(elem)) {
 			Utils.checkTemplate(collector, elem);
 			Utils.checkModifiers(collector, elem);
 			acceptChildren(elem, new SignalVisitor(collector));
+			checkChildren(elem, "signal", FieldDeclaration.class, MethodDeclaration.class, SimpleName.class, SimpleType.class, Modifier.class);
 		} else if (ElementTypeTeller.isAssociation(elem)) {
 			Utils.checkTemplate(collector, elem);
 			Utils.checkModifiers(collector, elem);
@@ -30,14 +37,12 @@ public class ModelVisitor extends VisitorBase {
 			} else {
 				acceptChildren(elem, new AssociationVisitor(elem, collector));
 			}
+			checkChildren(elem, "association", TypeDeclaration.class, SimpleName.class, SimpleType.class, Modifier.class);
+		} else if (ElementTypeTeller.isModelClass(elem)) {
+			acceptChildren(elem, new ModelClassVisitor(collector));
+			checkChildren(elem, "class", TypeDeclaration.class, FieldDeclaration.class, MethodDeclaration.class, SimpleName.class, SimpleType.class, Modifier.class);
 		}
 		return false;
-	}
-
-	private void acceptChildren(TypeDeclaration elem, VisitorBase visitor) {
-		for (Object decl : elem.bodyDeclarations()) {
-			((BodyDeclaration) decl).accept(visitor);
-		}
 	}
 
 }

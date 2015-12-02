@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.validation.ProblemCollector;
 import hu.elte.txtuml.validation.problems.InvalidChildrenElement;
@@ -17,19 +19,21 @@ public class VisitorBase extends ASTVisitor {
 		this.collector = collector;
 	}
 
-	protected void checkChildren(ASTNode node, Class<?>... allowedChildrenTypes) {
+	protected void checkChildren(ASTNode node, String nodeStr, Class<?>... allowedChildrenTypes) {
 		List<?> strProp = node.structuralPropertiesForType();
 		for (Object prop : strProp) {
 			StructuralPropertyDescriptor spd = (StructuralPropertyDescriptor) prop;
 			if (spd.isChildListProperty()) {
 				for (Object child : ((List<?>) node.getStructuralProperty(spd))) {
-					collector.setProblemStatus(childAllowed(child, allowedChildrenTypes), new InvalidChildrenElement(
-							collector.getSourceInfo(), node, (ASTNode) child, allowedChildrenTypes));
+					collector.setProblemStatus(childAllowed(child, allowedChildrenTypes),
+							new InvalidChildrenElement(collector.getSourceInfo(), nodeStr, (ASTNode) child));
 				}
 			} else if (spd.isChildProperty()) {
 				Object child = node.getStructuralProperty(spd);
-				collector.setProblemStatus(childAllowed(child, allowedChildrenTypes), new InvalidChildrenElement(
-						collector.getSourceInfo(), node, (ASTNode) child, allowedChildrenTypes));
+				if (child != null) {
+					collector.setProblemStatus(childAllowed(child, allowedChildrenTypes),
+							new InvalidChildrenElement(collector.getSourceInfo(), nodeStr, (ASTNode) child));
+				}
 			}
 
 		}
@@ -45,6 +49,12 @@ public class VisitorBase extends ASTVisitor {
 	}
 
 	public void check() {
+	}
+
+	protected void acceptChildren(TypeDeclaration elem, VisitorBase visitor) {
+		for (Object decl : elem.bodyDeclarations()) {
+			((BodyDeclaration) decl).accept(visitor);
+		}
 	}
 
 }

@@ -8,6 +8,9 @@ import hu.elte.txtuml.validation.problems.InvalidTypeWithClassNotAllowed;
 
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
@@ -26,7 +29,8 @@ public class ModelClassVisitor extends VisitorBase {
 		collector.setProblemStatus(!valid, new InvalidModelClassElement(collector.getSourceInfo(), elem.getName()));
 		if(valid) {
 			if(ElementTypeTeller.isState(elem)) {
-				// TODO: check state
+				checkChildren(elem, "state", MethodDeclaration.class, SimpleName.class, SimpleType.class, Modifier.class);
+				acceptChildren(elem, new StateVisitor(collector));
 			} else if(ElementTypeTeller.isInitialPseudoState(elem)) {
 				// TODO: check state
 			} else if(ElementTypeTeller.isTransition(elem)) {

@@ -15,6 +15,7 @@ import org.eclipse.jdt.core.compiler.ReconcileContext;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 import hu.elte.txtuml.diagnostics.PluginLogWrapper;
+import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.export.uml2.utils.SharedUtils;
 
 /**
@@ -46,12 +47,17 @@ public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler
 	@Override
 	public void reconcile(ReconcileContext context) {
 		try {
+			if (validator == null) {
+				validator = new JtxtUMLValidator(context.getDelta().getElement().getJavaProject()); 
+			}
 			IMarker[] markers = context.getWorkingCopy().getResource().findMarkers(JTXTUML_MARKER_TYPE, true,
 					IResource.DEPTH_ZERO);
 			CompilationUnit unit = context.getAST8();
 			ProblemCollectorForReconcile collector = new ProblemCollectorForReconcile(context, markers);
-			validator.validate(unit, collector);
-		} catch (CoreException e) {
+			if (ElementTypeTeller.isModelElement(unit)) {
+				validator.validate(unit, collector);
+			}
+		} catch (Exception e) {
 			PluginLogWrapper.logError("Error while checking for problems", e);
 		}
 	}
@@ -77,7 +83,7 @@ public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler
 				// Validation is not possible, return.
 				return;
 			}
-			if (unit == null) {
+			if (unit == null || !ElementTypeTeller.isModelElement(unit)) {
 				// Validation is not possible, return.
 				return;
 			}
@@ -91,6 +97,6 @@ public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler
 	@Override
 	public void buildFinished(IJavaProject project) {
 		validator = null;
-}
+	}
 
 }

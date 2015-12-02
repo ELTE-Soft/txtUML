@@ -1,24 +1,17 @@
 package hu.elte.txtuml.validation.visitors;
 
-import hu.elte.txtuml.validation.ProblemCollector;
-import hu.elte.txtuml.validation.problems.InvalidSignalContent;
-import hu.elte.txtuml.validation.problems.InvalidTypeWithClassNotAllowed;
-
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
+
+import hu.elte.txtuml.validation.ProblemCollector;
+import hu.elte.txtuml.validation.problems.InvalidSignalContent;
+import hu.elte.txtuml.validation.problems.InvalidTypeWithClassNotAllowed;
 
 public class SignalVisitor extends VisitorBase {
 
 	public SignalVisitor(ProblemCollector collector) {
 		super(collector);
-	}
-	
-	@Override
-	public boolean visit(TypeDeclaration elem) {
-		collector.setProblemStatus(true, new InvalidSignalContent(collector.getSourceInfo(), elem.getName()));
-		return false;
 	}
 	
 	@Override

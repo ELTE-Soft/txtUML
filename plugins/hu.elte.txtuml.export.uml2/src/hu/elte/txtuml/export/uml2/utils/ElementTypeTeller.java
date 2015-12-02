@@ -2,8 +2,11 @@ package hu.elte.txtuml.export.uml2.utils;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
@@ -38,16 +41,28 @@ public final class ElementTypeTeller {
 	}
 
 	public static boolean isModelElement(CompilationUnit unit) {
+		ITypeRoot typeRoot = unit.getTypeRoot();
+		if (typeRoot instanceof ICompilationUnit) {
+			if (typeRoot.getParent() instanceof IPackageFragment) {
+				return isModelPackage((IPackageFragment) typeRoot.getParent());
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Checks a package if it belong to an existing model. Searches for a
+	 * package-info.java compilation unit in the package or one of the ancestor
+	 * packages and checks if it has the {@link Model} annotation.
+	 */
+	public static boolean isModelPackage(IPackageFragment pack) {
 		try {
-			IJavaElement javaElement = unit.getJavaElement();
-			IPackageFragment pack;
-			if (javaElement instanceof ICompilationUnit) {
-				pack = (IPackageFragment) javaElement.getParent();
-				for (IJavaElement element : pack.getChildren()) {
-					if (element instanceof IAnnotation) {
-						if (((IAnnotation) element).getElementName().equals(Model.class.getCanonicalName())) {
-							return true;
-						}
+			IJavaProject javaProject = pack.getJavaProject();
+			String packageName = pack.getElementName();
+			for (IPackageFragmentRoot pfRoot : javaProject.getPackageFragmentRoots()) {
+				if (!pfRoot.isExternal()) {
+					if (isModelPackage(pfRoot, packageName)) {
+						return true;
 					}
 				}
 			}
@@ -56,6 +71,65 @@ public final class ElementTypeTeller {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	public static boolean isModelPackage(IPackageFragmentRoot pfRoot, String packageName) throws JavaModelException {
+		IPackageFragment pack;
+		while (!packageName.isEmpty()) {
+			pack = pfRoot.getPackageFragment(packageName);
+			if (pack.exists() && isModelRootPackage(pack)) {
+				return true;
+			}
+			int lastDot = packageName.lastIndexOf(".");
+			if (lastDot == -1) {
+				lastDot = 0;
+			}
+			packageName = packageName.substring(0, lastDot);
+		}
+		return false;
+	}
+
+	private static boolean isModelRootPackage(IPackageFragment pack) throws JavaModelException {
+		ICompilationUnit[] compilationUnits = pack.getCompilationUnits();
+		for (ICompilationUnit compUnit : compilationUnits) {
+			if (compUnit.getElementName().equals("package-info.java")) {
+				if (checkPackageInfo(compUnit)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private static boolean checkPackageInfo(ICompilationUnit compUnit) throws JavaModelException {
+		for (IPackageDeclaration packDecl : compUnit.getPackageDeclarations()) {
+			for (IAnnotation annot : packDecl.getAnnotations()) {
+				// Because names are not resolved in IJavaElement AST
+				// representation, we have to manually check if a given
+				// annotation is really the Model annotation.
+				if (isImportedNameResolvedTo(compUnit, annot.getElementName(), Model.class.getCanonicalName())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private static boolean isImportedNameResolvedTo(ICompilationUnit compUnit, String elementName,
+			String qualifiedName) {
+		if (qualifiedName.equals(elementName)) {
+			return true;
+		}
+		if (!qualifiedName.endsWith(elementName)) {
+			return false;
+		}
+		int lastSection = qualifiedName.lastIndexOf(".");
+		String pack = qualifiedName.substring(0, lastSection);
+		return (compUnit.getImport(qualifiedName).exists() || compUnit.getImport(pack + ".*").exists());
+	}
+	
+	public static boolean isModelClass(TypeDeclaration typeDeclaration) {
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ModelClass.class);
 	}
 
 	public static boolean isVertex(TypeDeclaration typeDeclaration) {
