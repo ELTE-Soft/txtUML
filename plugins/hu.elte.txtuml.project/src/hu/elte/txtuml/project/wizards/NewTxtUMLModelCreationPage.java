@@ -98,13 +98,11 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 		}
 	}
 
-
-
 	public IFile createNewFile() {
 		return modelCreator.createModelFile(getContainer(), getPackageFragmentRoot(), getPackageFragment(),
 				getTypeName(), xtxt.getSelection());
 	}
-	
+
 	// validation
 
 	@Override
@@ -113,14 +111,14 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 		// show error status messages
 		doStatusUpdate();
 	}
-	
+
 	@Override
 	protected void handleFieldChanged(String fieldName) {
 		super.handleFieldChanged(fieldName);
 		// update the status message when a field is changed
 		doStatusUpdate();
 	}
-	
+
 	protected void doStatusUpdate() {
 		IStatus[] status = new IStatus[] { fContainerStatus, fPackageStatus, fTypeNameStatus };
 		updateStatus(status);
