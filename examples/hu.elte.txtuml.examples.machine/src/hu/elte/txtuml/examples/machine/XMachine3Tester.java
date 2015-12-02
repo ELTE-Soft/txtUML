@@ -43,7 +43,7 @@ public class XMachine3Tester {
 	}
 
 	public static void main(String[] args) {
-		new Machine3Tester().test();
+		new XMachine3Tester().test();
 	}
 
 }

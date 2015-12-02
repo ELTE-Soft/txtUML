@@ -62,6 +62,6 @@ public class XTrainTester {
 	}
 
 	public static void main(String[] args) throws Exception {
-		new TrainTester();
+		new XTrainTester();
 	}
 }

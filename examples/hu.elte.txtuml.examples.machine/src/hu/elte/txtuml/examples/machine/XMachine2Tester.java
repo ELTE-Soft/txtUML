@@ -30,7 +30,7 @@ public class XMachine2Tester {
 	}
 
 	public static void main(String[] args) {
-		new Machine2Tester().test();
+		new XMachine2Tester().test();
 	}
 
 }
