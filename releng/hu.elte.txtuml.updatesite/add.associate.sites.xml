@@ -1,0 +1,51 @@
+
+<!-- WARNING: Do not auto-format this file! -->
+
+<project name="hu.elte.txtuml.updatesite" default="add.associate.sites" basedir="." xmlns:ac="antlib:net.sf.antcontrib">
+
+<target name="add.associate.sites">
+<property file="associate.sites.properties" />
+
+<ac:if>
+	<available file="${content.jar.path}" type="file" />
+	<ac:then>
+		<!-- Unzip content metadata -->
+		<delete file="${repository.target.path}" />
+		<unzip src="${content.jar.path}" dest="${repository.source.path}" />
+		<delete file="${content.jar.path}" />
+
+		<!-- Remove closing of XML root tag -->
+		<loadfile srcfile="${content.xml.path}" property="content.xml">
+			<filterchain>
+				<tailfilter lines="-1" skip="1" />
+			</filterchain>
+		</loadfile>
+		<echo file="${content.xml.path}" message="${content.xml}" />
+		
+		<!-- Print start tag of references -->
+		<echo file="${content.xml.path}" append="true">
+  &lt;references size='${associate.sites.length}'&gt;</echo>
+
+		<!-- Print sites -->
+		<ac:for param="associate.site" list="${associate.sites}" delimiter=",">
+			<sequential>
+				<echo file="${content.xml.path}" append="true">
+    &lt;repository uri='@{associate.site}' url='@{associate.site}' type='0' options='1'/&gt;
+    &lt;repository uri='@{associate.site}' url='@{associate.site}' type='1' options='1'/&gt;</echo>
+			</sequential>
+		</ac:for>
+
+		<!-- Close references and the root tag -->
+		<echo file="${content.xml.path}" append="true">
+  &lt;/references&gt;
+&lt;/repository&gt;</echo>
+
+		<!-- Re-assemble update site with modified metadata -->
+		<zip destfile="${content.jar.path}" basedir="${repository.source.path}" includes="content.xml" />
+		<delete file="${content.xml.path}" />
+		<zip destfile="${repository.target.path}" basedir="${repository.source.path}" />
+	</ac:then>
+</ac:if>
+</target>
+
+</project>

@@ -14,8 +14,10 @@
 	</parent>
 
 	<properties>
-		<content.jar.path>${project.build.directory}/repository/content.jar</content.jar.path>
-		<content.xml.path>${project.build.directory}/repository/content.xml</content.xml.path>
+		<repository.target.path>${project.build.directory}/${project.artifactId}-${project.version}.zip</repository.target.path>
+		<repository.source.path>${project.build.directory}/repository</repository.source.path>
+		<content.jar.path>${repository.source.path}/content.jar</content.jar.path>
+		<content.xml.path>${repository.source.path}/content.xml</content.xml.path>
 	</properties>
 
 	<build>
@@ -30,58 +32,35 @@
 				</configuration>
 			</plugin>
 
+			<!-- Modify update site metadata and inject associate sites -->
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<version>1.8</version>
+				<dependencies>
+					<dependency>
+						<groupId>ant-contrib</groupId>
+						<artifactId>ant-contrib</artifactId>
+						<version>1.0b3</version>
+						<exclusions>
+							<exclusion>
+								<groupId>ant</groupId>
+								<artifactId>ant</artifactId>
+							</exclusion>
+						</exclusions>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant-nodeps</artifactId>
+						<version>1.8.1</version>
+					</dependency>
+				</dependencies>
 				<executions>
 					<execution>
 						<phase>package</phase>
 						<configuration>
-							<tasks>
-								<echo>---- ANT: ${content.jar.path}</echo>
-								<if>
-									<available file="${content.jar.path}" type="file" />
-									<then>
-										<unzip src="${content.jar.path}" dest="${content.xml.path}" />
-										<!-- <delete file="${content.jar.path}" /> -->
-									</then>
-								</if>
-								<!-- SCRIPT FROM: http://divby0.blogspot.hu/2011/02/simplifying-p2-process-part-3-associate.html
-								<var name="associate.sites.0" value="" />
-								<for param="associate.site" list="${associate.sites}"
-									delimiter=",">
-									<sequential>
-										<var name="associate.sites.0" value="${associate.sites.0}00" />
-									</sequential>
-								</for>
-								<length property="associate.sites.length" string="${associate.sites.0}" />
-								<loadfile srcfile="${update.site.source.dir}/content.xml"
-									property="content.xml">
-									<filterchain>
-										<tailfilter lines="-1" skip="1" />
-									</filterchain>
-								</loadfile>
-								<echo file="${update.site.source.dir}/content.xml" message="${content.xml}" />
-								<echo file="${update.site.source.dir}/content.xml" append="true">
-									&lt;references size='${associate.sites.length}'&gt; </echo>
-								<for param="associate.site" list="${associate.sites}"
-									delimiter=",">
-									<sequential>
-										<echo file="${update.site.source.dir}/content.xml"
-											append="true">
-											<repository uri='@{associate.site}' url='@{associate.site}'
-												type='0' options='1' />
-											<repository uri='@{associate.site}' url='@{associate.site}'
-												type='1' options='1' />
-										</echo>
-									</sequential>
-								</for>
-								<echo file="${update.site.source.dir}/content.xml" append="true">
-									&lt;/references&gt;
-									&lt;/repository&gt; </echo>
-								<zip destfile="${update.site.source.dir}/content.jar" basedir="${update.site.source.dir}" includes="content.xml" />
-								-->
-							</tasks>
+							<target>
+								<ant antfile="${basedir}/add.associate.sites.xml" target="add.associate.sites" />
+							</target>
 						</configuration>
 						<goals>
 							<goal>run</goal>
