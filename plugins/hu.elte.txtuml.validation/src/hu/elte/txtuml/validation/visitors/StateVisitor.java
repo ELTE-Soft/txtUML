@@ -3,9 +3,9 @@ package hu.elte.txtuml.validation.visitors;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 
 import hu.elte.txtuml.validation.ProblemCollector;
-import hu.elte.txtuml.validation.problems.StateMethodNonVoidReturn;
-import hu.elte.txtuml.validation.problems.StateMethodParameters;
-import hu.elte.txtuml.validation.problems.UnknownStateMethod;
+import hu.elte.txtuml.validation.problems.state.StateMethodNonVoidReturn;
+import hu.elte.txtuml.validation.problems.state.StateMethodParameters;
+import hu.elte.txtuml.validation.problems.state.UnknownStateMethod;
 
 public class StateVisitor extends VisitorBase {
 

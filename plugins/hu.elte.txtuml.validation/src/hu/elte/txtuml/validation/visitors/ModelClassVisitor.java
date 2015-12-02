@@ -32,9 +32,10 @@ public class ModelClassVisitor extends VisitorBase {
 				checkChildren(elem, "state", MethodDeclaration.class, SimpleName.class, SimpleType.class, Modifier.class);
 				acceptChildren(elem, new StateVisitor(collector));
 			} else if(ElementTypeTeller.isInitialPseudoState(elem)) {
-				// TODO: check state
+				checkChildren(elem, "initial state", SimpleName.class, SimpleType.class, Modifier.class);
 			} else if(ElementTypeTeller.isTransition(elem)) {
-				// TODO: check transition
+				checkChildren(elem, "transition", MethodDeclaration.class, SimpleName.class, SimpleType.class, Modifier.class);
+				acceptChildren(elem, new TransitionVisitor(collector));
 			}
 		}
 		return false;

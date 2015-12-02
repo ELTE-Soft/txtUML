@@ -1,8 +1,10 @@
-package hu.elte.txtuml.validation.problems;
+package hu.elte.txtuml.validation.problems.state;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import hu.elte.txtuml.validation.SourceInfo;
+import hu.elte.txtuml.validation.problems.ValidationErrorBase;
+import hu.elte.txtuml.validation.problems.ValidationErrorCatalog;
 
 public class UnknownStateMethod extends ValidationErrorBase {
 
@@ -12,7 +14,7 @@ public class UnknownStateMethod extends ValidationErrorBase {
 
 	@Override
 	public int getID() {
-		return ValidationErrorCatalog.UNKNOWN_STATE_METHOD.ordinal();
+		return ValidationErrorCatalog.UNKNOWN_TRANSITION_METHOD.ordinal();
 	}
 
 	@Override
