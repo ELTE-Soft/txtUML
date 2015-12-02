@@ -12,7 +12,7 @@ public class WrongCompositionEnds extends ValidationErrorBase {
 
 	@Override
 	public int getID() {
-		return 9;
+		return ValidationErrorCatalog.WRONG_COMPOSITION_ENDS.ordinal();
 	}
 
 	@Override

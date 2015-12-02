@@ -14,7 +14,7 @@ public class InvalidModelClassElement extends ValidationErrorBase {
 	
 	@Override
 	public int getID() {
-		return 4;
+		return ValidationErrorCatalog.INVALID_MODEL_CLASS_ELEMENT.ordinal();
 	}
 
 	@Override

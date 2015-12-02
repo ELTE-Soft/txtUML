@@ -12,7 +12,7 @@ public class InvalidModifier extends ValidationErrorBase {
 	
 	@Override
 	public int getID() {
-		return 5;
+		return ValidationErrorCatalog.INVALID_MODIFIER.ordinal();
 	}
 
 	@Override

@@ -12,7 +12,7 @@ public class InvalidTemplate extends ValidationErrorBase {
 	
 	@Override
 	public int getID() {
-		return 1;
+		return ValidationErrorCatalog.INVALID_TEMPLATE.ordinal();
 	}
 
 	@Override

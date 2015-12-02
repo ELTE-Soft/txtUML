@@ -12,7 +12,7 @@ public class InvalidSignalContent extends ValidationErrorBase {
 	
 	@Override
 	public int getID() {
-		return 2;
+		return ValidationErrorCatalog.INVALID_SIGNAL_CONTENT.ordinal();
 	}
 
 	@Override

@@ -14,7 +14,7 @@ public class InvalidTypeWithClassAllowed extends ValidationErrorBase {
 	
 	@Override
 	public int getID() {
-		return 3;
+		return ValidationErrorCatalog.INVALID_TYPE_WITH_CLASS_ALLOWED.ordinal();
 	}
 
 	@Override
