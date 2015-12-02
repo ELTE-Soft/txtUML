@@ -1,5 +1,16 @@
 package hu.elte.txtuml.export.uml2.utils;
 
+import org.eclipse.jdt.core.IAnnotation;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.IExtendedModifier;
+import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
+
 import hu.elte.txtuml.api.model.Association;
 import hu.elte.txtuml.api.model.AssociationEnd;
 import hu.elte.txtuml.api.model.Composition;
@@ -14,18 +25,6 @@ import hu.elte.txtuml.api.model.StateMachine.State;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.external.ExternalClass;
-import hu.elte.txtuml.diagnostics.PluginLogWrapper;
-
-import org.eclipse.jdt.core.IAnnotation;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IPackageFragment;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.IExtendedModifier;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.Modifier;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 /**
  * This class provides utilities for telling the types of txtUML model elements.
@@ -53,7 +52,8 @@ public final class ElementTypeTeller {
 				}
 			}
 		} catch (JavaModelException e) {
-			PluginLogWrapper.logError("Error while checking compilation unit", e);
+			// TODO: use PluginLogWrapper
+			e.printStackTrace();
 		}
 		return false;
 	}
