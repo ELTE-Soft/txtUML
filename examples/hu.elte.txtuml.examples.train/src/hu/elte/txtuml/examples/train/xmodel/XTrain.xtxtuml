@@ -139,13 +139,13 @@ class Lamp {
 	transition Dark_Light {
 		from Dark;
 		to Light;
-		trigger Light;
+		trigger SwitchLight;
 	}
 
 	transition Light_Dark {
 		from Light;
 		to Dark;
-		trigger Light;
+		trigger SwitchLight;
 	}
 
 	transition Light_Dark2 {
@@ -157,7 +157,7 @@ class Lamp {
 
 signal Forward;
 signal Backward;
-signal Light;
+signal SwitchLight;
 
 signal LightOff;
 signal EngineOn;
