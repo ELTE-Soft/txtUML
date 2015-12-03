@@ -1,6 +1,9 @@
 package hu.elte.txtuml.validation.visitors;
 
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SimpleType;
 
 import hu.elte.txtuml.validation.ProblemCollector;
 import hu.elte.txtuml.validation.problems.transition.TransitionMethodNonVoidReturn;
@@ -8,6 +11,9 @@ import hu.elte.txtuml.validation.problems.transition.TransitionMethodParameters;
 import hu.elte.txtuml.validation.problems.transition.UnknownTransitionMethod;
 
 public class TransitionVisitor extends VisitorBase {
+
+	public static final Class<?>[] ALLOWED_TRANSITION_DECLARATIONS = new Class<?>[] { MethodDeclaration.class,
+		SimpleName.class, SimpleType.class, Modifier.class };
 
 	public TransitionVisitor(ProblemCollector collector) {
 		super(collector);

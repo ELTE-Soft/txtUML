@@ -1,10 +1,5 @@
 package hu.elte.txtuml.validation.visitors;
 
-import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.Modifier;
-import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.diagnostics.PluginLogWrapper;
@@ -37,9 +32,8 @@ public class ModelVisitor extends VisitorBase {
 		if (ElementTypeTeller.isSignal(elem)) {
 			Utils.checkTemplate(collector, elem);
 			Utils.checkModifiers(collector, elem);
+			checkChildren(elem, "signal", SignalVisitor.ALLOWED_SIGNAL_DECLARATIONS);
 			acceptChildren(elem, new SignalVisitor(collector));
-			checkChildren(elem, "signal", FieldDeclaration.class, MethodDeclaration.class, SimpleName.class,
-					SimpleType.class, Modifier.class);
 		} else if (ElementTypeTeller.isAssociation(elem)) {
 			Utils.checkTemplate(collector, elem);
 			Utils.checkModifiers(collector, elem);
@@ -48,12 +42,10 @@ public class ModelVisitor extends VisitorBase {
 			} else {
 				acceptChildren(elem, new AssociationVisitor(elem, collector));
 			}
-			checkChildren(elem, "association", TypeDeclaration.class, SimpleName.class, SimpleType.class,
-					Modifier.class);
+			checkChildren(elem, "association", AssociationVisitor.ALLOWED_ASSOCIATION_DECLARATIONS);
 		} else if (ElementTypeTeller.isModelClass(elem)) {
+			checkChildren(elem, "class", ModelClassVisitor.ALLOWED_MODEL_CLASS_DECLARATIONS);
 			acceptChildren(elem, new ModelClassVisitor(collector));
-			checkChildren(elem, "class", TypeDeclaration.class, FieldDeclaration.class, MethodDeclaration.class,
-					SimpleName.class, SimpleType.class, Modifier.class);
 		}
 		return false;
 	}

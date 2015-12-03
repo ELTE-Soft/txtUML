@@ -1,12 +1,5 @@
 package hu.elte.txtuml.validation.visitors;
 
-import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
-import hu.elte.txtuml.validation.ProblemCollector;
-import hu.elte.txtuml.validation.problems.InvalidModelClassElement;
-import hu.elte.txtuml.validation.problems.InvalidTypeWithClassAllowed;
-import hu.elte.txtuml.validation.problems.InvalidTypeWithClassNotAllowed;
-
-import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
@@ -15,7 +8,16 @@ import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
+import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
+import hu.elte.txtuml.validation.ProblemCollector;
+import hu.elte.txtuml.validation.problems.InvalidModelClassElement;
+import hu.elte.txtuml.validation.problems.InvalidTypeWithClassAllowed;
+import hu.elte.txtuml.validation.problems.InvalidTypeWithClassNotAllowed;
+
 public class ModelClassVisitor extends VisitorBase {
+
+	public static final Class<?>[] ALLOWED_MODEL_CLASS_DECLARATIONS = new Class<?>[] { TypeDeclaration.class,
+			FieldDeclaration.class, MethodDeclaration.class, SimpleName.class, SimpleType.class, Modifier.class };
 
 	public ModelClassVisitor(ProblemCollector collector) {
 		super(collector);
@@ -28,14 +30,12 @@ public class ModelClassVisitor extends VisitorBase {
 		collector.setProblemStatus(!valid, new InvalidModelClassElement(collector.getSourceInfo(), elem.getName()));
 		if (valid) {
 			if (ElementTypeTeller.isState(elem)) {
-				checkChildren(elem, "state", MethodDeclaration.class, SimpleName.class, SimpleType.class,
-						Modifier.class);
+				checkChildren(elem, "state", StateVisitor.ALLOWED_STATE_DECLARATIONS);
 				acceptChildren(elem, new StateVisitor(collector));
 			} else if (ElementTypeTeller.isInitialPseudoState(elem)) {
-				checkChildren(elem, "initial state", SimpleName.class, SimpleType.class, Modifier.class);
+				checkChildren(elem, "initial state", StateVisitor.ALLOWED_INITIAL_STATE_DECLARATIONS);
 			} else if (ElementTypeTeller.isTransition(elem)) {
-				checkChildren(elem, "transition", MethodDeclaration.class, SimpleName.class, SimpleType.class,
-						Modifier.class, Annotation.class);
+				checkChildren(elem, "transition", TransitionVisitor.ALLOWED_TRANSITION_DECLARATIONS);
 				acceptChildren(elem, new TransitionVisitor(collector));
 			}
 		}
