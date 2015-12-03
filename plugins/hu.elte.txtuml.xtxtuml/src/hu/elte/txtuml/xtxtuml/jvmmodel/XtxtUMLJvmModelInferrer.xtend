@@ -324,12 +324,14 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def private calculateApiSuperType(TUAssociationEnd it) {
 		val endClassTypeParam = (endClass.getPrimaryJvmElement as JvmDeclaredType).typeRef
 		if (isContainer) {
-			val endClassImpl = if (notNavigable) {
-					HiddenContainer
-				} else {
-					Container
-				}
-			return endClassImpl.typeRef(endClassTypeParam) -> null
+			// Do not try to simplify the code here, as it breaks standalone builds.
+			// The inferred type will be Class<? extend MaybeOneBase>, which is invalid,
+			// as MaybeOneBase is a package private class in its own package.
+			if (notNavigable) {
+				return HiddenContainer.typeRef(endClassTypeParam) -> null
+			} else {
+				return Container.typeRef(endClassTypeParam) -> null
+			}
 		}
 
 		val optionalHidden = if(notNavigable) "Hidden" else "";
