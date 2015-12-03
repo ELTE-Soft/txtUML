@@ -66,10 +66,9 @@ public class XtxtUMLFactoryImpl extends EFactoryImpl implements XtxtUMLFactory
     switch (eClass.getClassifierID())
     {
       case XtxtUMLPackage.TU_FILE: return createTUFile();
-      case XtxtUMLPackage.TU_FILE_ELEMENT: return createTUFileElement();
-      case XtxtUMLPackage.TU_MODEL: return createTUModel();
-      case XtxtUMLPackage.TU_EXECUTION: return createTUExecution();
+      case XtxtUMLPackage.TU_MODEL_DECLARATION: return createTUModelDeclaration();
       case XtxtUMLPackage.TU_MODEL_ELEMENT: return createTUModelElement();
+      case XtxtUMLPackage.TU_EXECUTION: return createTUExecution();
       case XtxtUMLPackage.TU_SIGNAL: return createTUSignal();
       case XtxtUMLPackage.TU_CLASS: return createTUClass();
       case XtxtUMLPackage.TU_ASSOCIATION: return createTUAssociation();
@@ -88,10 +87,12 @@ public class XtxtUMLFactoryImpl extends EFactoryImpl implements XtxtUMLFactory
       case XtxtUMLPackage.TU_TRANSITION_GUARD: return createTUTransitionGuard();
       case XtxtUMLPackage.TU_ASSOCIATION_END: return createTUAssociationEnd();
       case XtxtUMLPackage.TU_MULTIPLICITY: return createTUMultiplicity();
+      case XtxtUMLPackage.TU_COMPOSITION: return createTUComposition();
       case XtxtUMLPackage.TU_ATTRIBUTE: return createTUAttribute();
       case XtxtUMLPackage.TU_OPERATION: return createTUOperation();
       case XtxtUMLPackage.RALF_SEND_SIGNAL_EXPRESSION: return createRAlfSendSignalExpression();
       case XtxtUMLPackage.RALF_DELETE_OBJECT_EXPRESSION: return createRAlfDeleteObjectExpression();
+      case XtxtUMLPackage.RALF_SIGNAL_ACCESS_EXPRESSION: return createRAlfSignalAccessExpression();
       case XtxtUMLPackage.RALF_ASSOC_NAV_EXPRESSION: return createRAlfAssocNavExpression();
       default:
         throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
@@ -152,32 +153,10 @@ public class XtxtUMLFactoryImpl extends EFactoryImpl implements XtxtUMLFactory
    * <!-- end-user-doc -->
    * @generated
    */
-  public TUFileElement createTUFileElement()
+  public TUModelDeclaration createTUModelDeclaration()
   {
-    TUFileElementImpl tuFileElement = new TUFileElementImpl();
-    return tuFileElement;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public TUModel createTUModel()
-  {
-    TUModelImpl tuModel = new TUModelImpl();
-    return tuModel;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public TUExecution createTUExecution()
-  {
-    TUExecutionImpl tuExecution = new TUExecutionImpl();
-    return tuExecution;
+    TUModelDeclarationImpl tuModelDeclaration = new TUModelDeclarationImpl();
+    return tuModelDeclaration;
   }
 
   /**
@@ -189,6 +168,17 @@ public class XtxtUMLFactoryImpl extends EFactoryImpl implements XtxtUMLFactory
   {
     TUModelElementImpl tuModelElement = new TUModelElementImpl();
     return tuModelElement;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public TUExecution createTUExecution()
+  {
+    TUExecutionImpl tuExecution = new TUExecutionImpl();
+    return tuExecution;
   }
 
   /**
@@ -394,6 +384,17 @@ public class XtxtUMLFactoryImpl extends EFactoryImpl implements XtxtUMLFactory
    * <!-- end-user-doc -->
    * @generated
    */
+  public TUComposition createTUComposition()
+  {
+    TUCompositionImpl tuComposition = new TUCompositionImpl();
+    return tuComposition;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   public TUAttribute createTUAttribute()
   {
     TUAttributeImpl tuAttribute = new TUAttributeImpl();
@@ -431,6 +432,17 @@ public class XtxtUMLFactoryImpl extends EFactoryImpl implements XtxtUMLFactory
   {
     RAlfDeleteObjectExpressionImpl rAlfDeleteObjectExpression = new RAlfDeleteObjectExpressionImpl();
     return rAlfDeleteObjectExpression;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public RAlfSignalAccessExpression createRAlfSignalAccessExpression()
+  {
+    RAlfSignalAccessExpressionImpl rAlfSignalAccessExpression = new RAlfSignalAccessExpressionImpl();
+    return rAlfSignalAccessExpression;
   }
 
   /**

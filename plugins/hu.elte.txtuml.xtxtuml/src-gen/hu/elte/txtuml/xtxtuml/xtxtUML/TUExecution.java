@@ -11,16 +11,16 @@ import org.eclipse.xtext.xbase.XExpression;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution#getBody <em>Body</em>}</li>
  * </ul>
- * </p>
  *
  * @see hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage#getTUExecution()
  * @model
  * @generated
  */
-public interface TUExecution extends TUFileElement
+public interface TUExecution extends TUModelElement
 {
   /**
    * Returns the value of the '<em><b>Body</b></em>' containment reference.

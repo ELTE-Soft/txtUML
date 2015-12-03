@@ -1,13 +1,13 @@
 package hu.elte.txtuml.api.model.statemachine;
 
-import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.base.TransitionsModelTestsBase;
-import hu.elte.txtuml.api.model.models.TransitionsModel.Sig1;
-import hu.elte.txtuml.api.model.models.TransitionsModel.Sig2;
-import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.base.TransitionsModelTestsBase;
+import hu.elte.txtuml.api.model.models.transitions.Sig1;
+import hu.elte.txtuml.api.model.models.transitions.Sig2;
+import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
 
 @RunWith(SeparateClassloaderTestRunner.class)
 public class TriggerTest extends TransitionsModelTestsBase {

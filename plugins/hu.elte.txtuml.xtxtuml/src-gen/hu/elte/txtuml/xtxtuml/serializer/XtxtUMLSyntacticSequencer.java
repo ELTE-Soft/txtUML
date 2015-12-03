@@ -27,9 +27,7 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 	protected AbstractElementAlias match_TUClass_SemicolonKeyword_3_1_or___LeftCurlyBracketKeyword_3_0_0_RightCurlyBracketKeyword_3_0_2_SemicolonKeyword_3_0_3_q__;
 	protected AbstractElementAlias match_TUConstructor_SemicolonKeyword_6_q;
 	protected AbstractElementAlias match_TUEntryOrExitActivity_SemicolonKeyword_2_q;
-	protected AbstractElementAlias match_TUFile_SemicolonKeyword_0_2_q;
-	protected AbstractElementAlias match_TUModel_SemicolonKeyword_2_0_3_q;
-	protected AbstractElementAlias match_TUModel_SemicolonKeyword_2_1_or___LeftCurlyBracketKeyword_2_0_0_RightCurlyBracketKeyword_2_0_2_SemicolonKeyword_2_0_3_q__;
+	protected AbstractElementAlias match_TUFile_SemicolonKeyword_1_0_2_q;
 	protected AbstractElementAlias match_TUSignal_SemicolonKeyword_2_0_3_q;
 	protected AbstractElementAlias match_TUSignal_SemicolonKeyword_2_1_or___LeftCurlyBracketKeyword_2_0_0_RightCurlyBracketKeyword_2_0_2_SemicolonKeyword_2_0_3_q__;
 	protected AbstractElementAlias match_TUState_SemicolonKeyword_2_0_3_q;
@@ -51,9 +49,7 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 		match_TUClass_SemicolonKeyword_3_1_or___LeftCurlyBracketKeyword_3_0_0_RightCurlyBracketKeyword_3_0_2_SemicolonKeyword_3_0_3_q__ = new AlternativeAlias(false, false, new GroupAlias(false, false, new TokenAlias(false, false, grammarAccess.getTUClassAccess().getLeftCurlyBracketKeyword_3_0_0()), new TokenAlias(false, false, grammarAccess.getTUClassAccess().getRightCurlyBracketKeyword_3_0_2()), new TokenAlias(false, true, grammarAccess.getTUClassAccess().getSemicolonKeyword_3_0_3())), new TokenAlias(false, false, grammarAccess.getTUClassAccess().getSemicolonKeyword_3_1()));
 		match_TUConstructor_SemicolonKeyword_6_q = new TokenAlias(false, true, grammarAccess.getTUConstructorAccess().getSemicolonKeyword_6());
 		match_TUEntryOrExitActivity_SemicolonKeyword_2_q = new TokenAlias(false, true, grammarAccess.getTUEntryOrExitActivityAccess().getSemicolonKeyword_2());
-		match_TUFile_SemicolonKeyword_0_2_q = new TokenAlias(false, true, grammarAccess.getTUFileAccess().getSemicolonKeyword_0_2());
-		match_TUModel_SemicolonKeyword_2_0_3_q = new TokenAlias(false, true, grammarAccess.getTUModelAccess().getSemicolonKeyword_2_0_3());
-		match_TUModel_SemicolonKeyword_2_1_or___LeftCurlyBracketKeyword_2_0_0_RightCurlyBracketKeyword_2_0_2_SemicolonKeyword_2_0_3_q__ = new AlternativeAlias(false, false, new GroupAlias(false, false, new TokenAlias(false, false, grammarAccess.getTUModelAccess().getLeftCurlyBracketKeyword_2_0_0()), new TokenAlias(false, false, grammarAccess.getTUModelAccess().getRightCurlyBracketKeyword_2_0_2()), new TokenAlias(false, true, grammarAccess.getTUModelAccess().getSemicolonKeyword_2_0_3())), new TokenAlias(false, false, grammarAccess.getTUModelAccess().getSemicolonKeyword_2_1()));
+		match_TUFile_SemicolonKeyword_1_0_2_q = new TokenAlias(false, true, grammarAccess.getTUFileAccess().getSemicolonKeyword_1_0_2());
 		match_TUSignal_SemicolonKeyword_2_0_3_q = new TokenAlias(false, true, grammarAccess.getTUSignalAccess().getSemicolonKeyword_2_0_3());
 		match_TUSignal_SemicolonKeyword_2_1_or___LeftCurlyBracketKeyword_2_0_0_RightCurlyBracketKeyword_2_0_2_SemicolonKeyword_2_0_3_q__ = new AlternativeAlias(false, false, new GroupAlias(false, false, new TokenAlias(false, false, grammarAccess.getTUSignalAccess().getLeftCurlyBracketKeyword_2_0_0()), new TokenAlias(false, false, grammarAccess.getTUSignalAccess().getRightCurlyBracketKeyword_2_0_2()), new TokenAlias(false, true, grammarAccess.getTUSignalAccess().getSemicolonKeyword_2_0_3())), new TokenAlias(false, false, grammarAccess.getTUSignalAccess().getSemicolonKeyword_2_1()));
 		match_TUState_SemicolonKeyword_2_0_3_q = new TokenAlias(false, true, grammarAccess.getTUStateAccess().getSemicolonKeyword_2_0_3());
@@ -102,12 +98,8 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 				emit_TUConstructor_SemicolonKeyword_6_q(semanticObject, getLastNavigableState(), syntaxNodes);
 			else if(match_TUEntryOrExitActivity_SemicolonKeyword_2_q.equals(syntax))
 				emit_TUEntryOrExitActivity_SemicolonKeyword_2_q(semanticObject, getLastNavigableState(), syntaxNodes);
-			else if(match_TUFile_SemicolonKeyword_0_2_q.equals(syntax))
-				emit_TUFile_SemicolonKeyword_0_2_q(semanticObject, getLastNavigableState(), syntaxNodes);
-			else if(match_TUModel_SemicolonKeyword_2_0_3_q.equals(syntax))
-				emit_TUModel_SemicolonKeyword_2_0_3_q(semanticObject, getLastNavigableState(), syntaxNodes);
-			else if(match_TUModel_SemicolonKeyword_2_1_or___LeftCurlyBracketKeyword_2_0_0_RightCurlyBracketKeyword_2_0_2_SemicolonKeyword_2_0_3_q__.equals(syntax))
-				emit_TUModel_SemicolonKeyword_2_1_or___LeftCurlyBracketKeyword_2_0_0_RightCurlyBracketKeyword_2_0_2_SemicolonKeyword_2_0_3_q__(semanticObject, getLastNavigableState(), syntaxNodes);
+			else if(match_TUFile_SemicolonKeyword_1_0_2_q.equals(syntax))
+				emit_TUFile_SemicolonKeyword_1_0_2_q(semanticObject, getLastNavigableState(), syntaxNodes);
 			else if(match_TUSignal_SemicolonKeyword_2_0_3_q.equals(syntax))
 				emit_TUSignal_SemicolonKeyword_2_0_3_q(semanticObject, getLastNavigableState(), syntaxNodes);
 			else if(match_TUSignal_SemicolonKeyword_2_1_or___LeftCurlyBracketKeyword_2_0_0_RightCurlyBracketKeyword_2_0_2_SemicolonKeyword_2_0_3_q__.equals(syntax))
@@ -198,32 +190,10 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *
 	 * This ambiguous syntax occurs at:
 	 *     name=QualifiedName (ambiguity) (rule end)
-	 *     name=QualifiedName (ambiguity) elements+=TUFileElement
+	 *     name=QualifiedName (ambiguity) elements+=TUModelElement
 	 *     name=QualifiedName (ambiguity) importSection=XImportSection
 	 */
-	protected void emit_TUFile_SemicolonKeyword_0_2_q(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
-		acceptNodes(transition, nodes);
-	}
-	
-	/**
-	 * Ambiguous syntax:
-	 *     ';'?
-	 *
-	 * This ambiguous syntax occurs at:
-	 *     elements+=TUModelElement '}' (ambiguity) (rule end)
-	 */
-	protected void emit_TUModel_SemicolonKeyword_2_0_3_q(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
-		acceptNodes(transition, nodes);
-	}
-	
-	/**
-	 * Ambiguous syntax:
-	 *     ';' | ('{' '}' ';'?)
-	 *
-	 * This ambiguous syntax occurs at:
-	 *     name=ValidID (ambiguity) (rule end)
-	 */
-	protected void emit_TUModel_SemicolonKeyword_2_1_or___LeftCurlyBracketKeyword_2_0_0_RightCurlyBracketKeyword_2_0_2_SemicolonKeyword_2_0_3_q__(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
+	protected void emit_TUFile_SemicolonKeyword_1_0_2_q(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
 		acceptNodes(transition, nodes);
 	}
 	
@@ -287,6 +257,7 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *     ';'?
 	 *
 	 * This ambiguous syntax occurs at:
+	 *     else?='else' ')' (ambiguity) (rule end)
 	 *     expression=XExpression ')' (ambiguity) (rule end)
 	 */
 	protected void emit_TUTransitionGuard_SemicolonKeyword_4_q(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
@@ -354,6 +325,7 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *     (rule start) '(' (ambiguity) feature=[JvmIdentifiableElement|IdOrSuper]
 	 *     (rule start) '(' (ambiguity) feature=[JvmIdentifiableElement|OpUnary]
 	 *     (rule start) '(' (ambiguity) isTrue?='true'
+	 *     (rule start) '(' (ambiguity) sigdata='sigdata'
 	 *     (rule start) '(' (ambiguity) value=Number
 	 *     (rule start) '(' (ambiguity) value=STRING
 	 *     (rule start) '(' (ambiguity) {RAlfAssocNavExpression.left=}
@@ -370,6 +342,7 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *     (rule start) (ambiguity) feature=[JvmIdentifiableElement|IdOrSuper]
 	 *     (rule start) (ambiguity) feature=[JvmIdentifiableElement|OpUnary]
 	 *     (rule start) (ambiguity) isTrue?='true'
+	 *     (rule start) (ambiguity) sigdata='sigdata'
 	 *     (rule start) (ambiguity) value=Number
 	 *     (rule start) (ambiguity) value=STRING
 	 *     (rule start) (ambiguity) {RAlfAssocNavExpression.left=}
@@ -396,6 +369,7 @@ public class XtxtUMLSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *     (rule start) (ambiguity) feature=[JvmIdentifiableElement|IdOrSuper]
 	 *     (rule start) (ambiguity) feature=[JvmIdentifiableElement|OpUnary]
 	 *     (rule start) (ambiguity) isTrue?='true'
+	 *     (rule start) (ambiguity) sigdata='sigdata'
 	 *     (rule start) (ambiguity) value=Number
 	 *     (rule start) (ambiguity) value=STRING
 	 *     (rule start) (ambiguity) {RAlfAssocNavExpression.left=}

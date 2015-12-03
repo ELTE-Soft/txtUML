@@ -2,36 +2,37 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: txtUML Papyrus Visualizer
 Bundle-SymbolicName: hu.elte.txtuml.export.papyrus;singleton:=true
-Bundle-Version: 0.2.0.qualifier
+Bundle-Version: 0.3.0.qualifier
 Bundle-Vendor: ELTE
 Bundle-Activator: hu.elte.txtuml.export.papyrus.Activator
 Require-Bundle: org.eclipse.debug.ui,
  org.eclipse.jdt.core,
  org.eclipse.jdt.launching,
- org.eclipse.papyrus.uml.tools,
- org.eclipse.papyrus.infra.gmfdiag.common,
- org.eclipse.papyrus.infra.core,
- org.eclipse.papyrus.infra.gmfdiag.commands,
- org.eclipse.papyrus.uml.diagram.wizards,
- org.eclipse.papyrus.uml.diagram.common,
- org.eclipse.papyrus.uml.diagram.clazz,
- org.eclipse.papyrus.uml.diagram.activity,
- org.eclipse.papyrus.uml.diagram.statemachine,
- org.eclipse.papyrus.infra.core.log,
+ org.eclipse.papyrus.uml.tools;bundle-version="1.1.2",
+ org.eclipse.papyrus.infra.gmfdiag.common;bundle-version="1.1.2",
+ org.eclipse.papyrus.infra.core;bundle-version="1.1.2",
+ org.eclipse.papyrus.infra.gmfdiag.commands;bundle-version="1.1.2",
+ org.eclipse.papyrus.uml.diagram.wizards;bundle-version="1.1.2",
+ org.eclipse.papyrus.uml.diagram.common;bundle-version="1.1.2",
+ org.eclipse.papyrus.uml.diagram.clazz;bundle-version="1.1.2",
+ org.eclipse.papyrus.uml.diagram.activity;bundle-version="1.1.2",
+ org.eclipse.papyrus.uml.diagram.statemachine;bundle-version="1.1.2",
+ org.eclipse.papyrus.infra.core.log;bundle-version="1.1.2",
  org.eclipse.ui.ide,
- hu.elte.txtuml.layout.visualizer;bundle-version="0.2.0",
- hu.elte.txtuml.layout.export;bundle-version="0.2.0",
- hu.elte.txtuml.api.model;bundle-version="0.2.0",
- hu.elte.txtuml.eclipseutils;bundle-version="0.2.0",
+ hu.elte.txtuml.layout.visualizer;bundle-version="0.3.0",
+ hu.elte.txtuml.layout.export;bundle-version="0.3.0",
+ hu.elte.txtuml.api.model;bundle-version="0.3.0",
+ hu.elte.txtuml.eclipseutils;bundle-version="0.3.0",
  org.eclipse.uml2.uml,
- hu.elte.txtuml.utils;bundle-version="0.2.0",
- org.eclipse.papyrus.uml.diagram.menu,
- org.eclipse.papyrus.editor,
- org.eclipse.papyrus.infra.gmfdiag.css,
+ hu.elte.txtuml.utils;bundle-version="0.3.0",
+ org.eclipse.papyrus.uml.diagram.menu;bundle-version="1.1.2",
+ org.eclipse.papyrus.editor;bundle-version="1.1.2",
+ org.eclipse.papyrus.infra.gmfdiag.css;bundle-version="1.1.2",
  org.eclipse.emf.ecore,
- hu.elte.txtuml.export;bundle-version="0.2.0",
+ hu.elte.txtuml.export;bundle-version="0.3.0",
  org.eclipse.jdt.ui,
- com.google.guava;bundle-version="15.0.0"
+ com.google.guava;bundle-version="15.0.0",
+ org.eclipse.gmf.tooling.runtime;bundle-version="3.3.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: hu.elte.txtuml.export.papyrus,

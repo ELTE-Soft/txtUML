@@ -63,7 +63,7 @@ public class TxtUMLElementsRegistry {
 		List<Pair<String, Element>> roots = new ArrayList<>();
 		for(Pair<String, DiagramExportationReport> pair : this.descriptor.getReportsWithDiagramNames()){
 			DiagramExportationReport report = pair.getSecond();
-			String name = report.getRootElementAsString();
+			String name = report.getModelName();
 			findElement(name).ifPresent(
 						e -> roots.add(new Pair<>(pair.getFirst(), e))
 					);
