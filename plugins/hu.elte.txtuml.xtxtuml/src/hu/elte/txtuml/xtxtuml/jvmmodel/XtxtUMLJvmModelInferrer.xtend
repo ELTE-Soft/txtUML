@@ -4,6 +4,7 @@ import com.google.inject.Inject
 import hu.elte.txtuml.api.model.Association
 import hu.elte.txtuml.api.model.Composition
 import hu.elte.txtuml.api.model.Composition.Container
+import hu.elte.txtuml.api.model.Composition.HiddenContainer
 import hu.elte.txtuml.api.model.From
 import hu.elte.txtuml.api.model.Max
 import hu.elte.txtuml.api.model.Min
@@ -323,7 +324,14 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def private calculateApiSuperType(TUAssociationEnd it) {
 		val endClassTypeParam = (endClass.getPrimaryJvmElement as JvmDeclaredType).typeRef
 		if (isContainer) {
-			return Container.typeRef(endClassTypeParam) -> null
+			// Do not try to simplify the code here, as it breaks standalone builds.
+			// The inferred type will be Class<? extend MaybeOneBase>, which is invalid,
+			// as MaybeOneBase is a package private class in its own package.
+			if (notNavigable) {
+				return HiddenContainer.typeRef(endClassTypeParam) -> null
+			} else {
+				return Container.typeRef(endClassTypeParam) -> null
+			}
 		}
 
 		val optionalHidden = if(notNavigable) "Hidden" else "";

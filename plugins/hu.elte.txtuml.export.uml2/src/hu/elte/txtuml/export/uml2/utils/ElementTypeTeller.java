@@ -7,7 +7,6 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.api.model.Association;
 import hu.elte.txtuml.api.model.Composition;
-import hu.elte.txtuml.api.model.Composition.Container;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.StateMachine.Choice;
@@ -16,6 +15,7 @@ import hu.elte.txtuml.api.model.StateMachine.Initial;
 import hu.elte.txtuml.api.model.StateMachine.State;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
+import hu.elte.txtuml.api.model.assocends.Aggregation;
 import hu.elte.txtuml.api.model.external.ExternalClass;
 
 /**
@@ -80,7 +80,7 @@ public final class ElementTypeTeller {
 	
 	public static boolean isContainer(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
-				Container.class);
+				Aggregation.Composite.class);
 	}
 
 	public static boolean isSpecificClassifier(

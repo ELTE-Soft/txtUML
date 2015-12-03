@@ -36,7 +36,7 @@ public class CompositionTest {
 	}
 	
 	class MyComposition2 extends Composition {
-		class MyContainer2 extends Container<A> {
+		class MyContainer2 extends HiddenContainer<A> {
 		}
 
 		class MyPart2 extends Many<B> {
