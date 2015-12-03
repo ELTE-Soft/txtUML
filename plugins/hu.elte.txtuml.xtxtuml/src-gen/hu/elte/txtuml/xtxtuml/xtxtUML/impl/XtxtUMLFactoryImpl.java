@@ -87,6 +87,7 @@ public class XtxtUMLFactoryImpl extends EFactoryImpl implements XtxtUMLFactory
       case XtxtUMLPackage.TU_TRANSITION_GUARD: return createTUTransitionGuard();
       case XtxtUMLPackage.TU_ASSOCIATION_END: return createTUAssociationEnd();
       case XtxtUMLPackage.TU_MULTIPLICITY: return createTUMultiplicity();
+      case XtxtUMLPackage.TU_COMPOSITION: return createTUComposition();
       case XtxtUMLPackage.TU_ATTRIBUTE: return createTUAttribute();
       case XtxtUMLPackage.TU_OPERATION: return createTUOperation();
       case XtxtUMLPackage.RALF_SEND_SIGNAL_EXPRESSION: return createRAlfSendSignalExpression();
@@ -376,6 +377,17 @@ public class XtxtUMLFactoryImpl extends EFactoryImpl implements XtxtUMLFactory
   {
     TUMultiplicityImpl tuMultiplicity = new TUMultiplicityImpl();
     return tuMultiplicity;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public TUComposition createTUComposition()
+  {
+    TUCompositionImpl tuComposition = new TUCompositionImpl();
+    return tuComposition;
   }
 
   /**

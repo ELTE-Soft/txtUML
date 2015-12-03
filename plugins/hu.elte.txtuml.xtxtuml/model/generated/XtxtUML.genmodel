@@ -91,6 +91,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUAssociationEnd/visibility"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUAssociationEnd/notNavigable"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUAssociationEnd/multiplicity"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUAssociationEnd/container"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUAssociationEnd/endClass"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUAssociationEnd/name"/>
     </genClasses>
@@ -101,6 +102,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUMultiplicity/upperInf"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUMultiplicity/any"/>
     </genClasses>
+    <genClasses ecoreClass="XtxtUML.ecore#//TUComposition"/>
     <genClasses ecoreClass="XtxtUML.ecore#//TUAttribute">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference XtxtUML.ecore#//TUAttribute/prefix"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute XtxtUML.ecore#//TUAttribute/name"/>

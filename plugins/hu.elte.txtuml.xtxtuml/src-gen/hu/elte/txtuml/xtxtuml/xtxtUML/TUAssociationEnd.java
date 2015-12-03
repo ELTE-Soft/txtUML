@@ -16,6 +16,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd#getVisibility <em>Visibility</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd#isNotNavigable <em>Not Navigable</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd#getMultiplicity <em>Multiplicity</em>}</li>
+ *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd#isContainer <em>Container</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd#getEndClass <em>End Class</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd#getName <em>Name</em>}</li>
  * </ul>
@@ -106,6 +107,32 @@ public interface TUAssociationEnd extends EObject
    * @generated
    */
   void setMultiplicity(TUMultiplicity value);
+
+  /**
+   * Returns the value of the '<em><b>Container</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Container</em>' attribute isn't clear,
+   * there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Container</em>' attribute.
+   * @see #setContainer(boolean)
+   * @see hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage#getTUAssociationEnd_Container()
+   * @model
+   * @generated
+   */
+  boolean isContainer();
+
+  /**
+   * Sets the value of the '{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd#isContainer <em>Container</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>Container</em>' attribute.
+   * @see #isContainer()
+   * @generated
+   */
+  void setContainer(boolean value);
 
   /**
    * Returns the value of the '<em><b>End Class</b></em>' reference.

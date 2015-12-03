@@ -18,7 +18,8 @@ public class ModelVisitor extends VisitorBase {
 	@Override
 	public boolean visit(TypeDeclaration elem) {
 		boolean valid = ElementTypeTeller.isModelClass(elem) || ElementTypeTeller.isSignal(elem)
-				|| ElementTypeTeller.isAssociation(elem) || SharedUtils.typeIsAssignableFrom(elem, Diagram.class);
+				|| ElementTypeTeller.isAssociation(elem) || ElementTypeTeller.isComposition(elem)
+				|| SharedUtils.typeIsAssignableFrom(elem, Diagram.class);
 		collector.setProblemStatus(!valid, new InvalidModelElement(collector.getSourceInfo(), elem.getName()));
 
 		if (ElementTypeTeller.isModelClass(elem)) {
@@ -36,6 +37,10 @@ public class ModelVisitor extends VisitorBase {
 		} else if (ElementTypeTeller.isAssociation(elem)) {
 			Utils.checkTemplate(collector, elem);
 			Utils.checkModifiers(collector, elem);
+			if(ElementTypeTeller.isComposition(elem)) {
+				CompositionVisitor visitor = new CompositionVisitor(collector);
+				elem.accept(visitor);
+			}
 			// TODO: check association content
 		}
 		return false;

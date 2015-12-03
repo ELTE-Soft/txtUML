@@ -221,6 +221,15 @@ public interface XtxtUMLFactory extends EFactory
   TUMultiplicity createTUMultiplicity();
 
   /**
+   * Returns a new object of class '<em>TU Composition</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>TU Composition</em>'.
+   * @generated
+   */
+  TUComposition createTUComposition();
+
+  /**
    * Returns a new object of class '<em>TU Attribute</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
