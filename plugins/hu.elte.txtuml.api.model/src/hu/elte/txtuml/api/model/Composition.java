@@ -1,6 +1,8 @@
 package hu.elte.txtuml.api.model;
 
-import hu.elte.txtuml.api.model.assocends.Navigability.Navigable;
+import hu.elte.txtuml.api.model.assocends.Aggregation;
+import hu.elte.txtuml.api.model.assocends.Multiplicity;
+import hu.elte.txtuml.api.model.assocends.Navigability;
 
 /**
  * A base class for a composition associations in the model.
@@ -80,11 +82,11 @@ public class Composition extends Association {
 	}
 
 	/**
-	 * Abstract base class for the container end of a composition association
-	 * which is a special association end with 0..1 multiplicity.
+	 * Abstract base class for the navigable container end of a composition
+	 * association which is a special association end with 0..1 multiplicity.
 	 * 
 	 * <p>
-	 * <b>Represents:</b> container end of a composition association
+	 * <b>Represents:</b> navigable container end of a composition association
 	 * <p>
 	 * <b>Usage:</b>
 	 * <p>
@@ -99,8 +101,28 @@ public class Composition extends Association {
 	 * <b>Java restrictions:</b>
 	 * <ul>
 	 * <li><i>Instantiate:</i> disallowed</li>
-	 * <li><i>Define subtype:</i> disallowed, inherit from its predefined
-	 * subclasses instead (see the inner classes of {@link Association})</li>
+	 * <li><i>Define subtype:</i> allowed
+	 * <p>
+	 * <b>Subtype requirements:</b>
+	 * <ul>
+	 * <li>must be the inner class of an association class (a subclass of
+	 * {@link Association})</li>
+	 * </ul>
+	 * <p>
+	 * <b>Subtype restrictions:</b>
+	 * <ul>
+	 * <li><i>Be abstract:</i> disallowed</li>
+	 * <li><i>Generic parameters:</i> disallowed</li>
+	 * <li><i>Constructors:</i> disallowed</li>
+	 * <li><i>Initialization blocks:</i> disallowed</li>
+	 * <li><i>Fields:</i> disallowed</li>
+	 * <li><i>Methods:</i> disallowed</li>
+	 * <li><i>Nested interfaces:</i> disallowed</li>
+	 * <li><i>Nested classes:</i> disallowed</li>
+	 * <li><i>Nested enums:</i> disallowed</li>
+	 * </ul>
+	 * </li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
 	 * <p>
@@ -117,7 +139,68 @@ public class Composition extends Association {
 	 *            the type of model objects to be contained in this collection
 	 */
 	public abstract class Container<T extends ModelClass> extends MaybeOneBase<T>
-			implements hu.elte.txtuml.api.model.assocends.Multiplicity.ZeroToOne, Navigable {
+			implements Multiplicity.ZeroToOne, Navigability.Navigable, Aggregation.Composite {
+	}
+
+	/**
+	 * Abstract base class for the non-navigable container end of a composition
+	 * association which is a special association end with 0..1 multiplicity.
+	 * 
+	 * <p>
+	 * <b>Represents:</b> non-navigable container end of a composition association
+	 * <p>
+	 * <b>Usage:</b>
+	 * <p>
+	 * 
+	 * The container end should be defined as inner class of a composition (a
+	 * subclass of {@link Composition}).
+	 * <p>
+	 * Apart from this, container ends should be used like any other association
+	 * end. See the documentation of {@link AssociationEnd} for details.
+	 * 
+	 * <p>
+	 * <b>Java restrictions:</b>
+	 * <ul>
+	 * <li><i>Instantiate:</i> disallowed</li>
+	 * <li><i>Define subtype:</i> allowed
+	 * <p>
+	 * <b>Subtype requirements:</b>
+	 * <ul>
+	 * <li>must be the inner class of an association class (a subclass of
+	 * {@link Association})</li>
+	 * </ul>
+	 * <p>
+	 * <b>Subtype restrictions:</b>
+	 * <ul>
+	 * <li><i>Be abstract:</i> disallowed</li>
+	 * <li><i>Generic parameters:</i> disallowed</li>
+	 * <li><i>Constructors:</i> disallowed</li>
+	 * <li><i>Initialization blocks:</i> disallowed</li>
+	 * <li><i>Fields:</i> disallowed</li>
+	 * <li><i>Methods:</i> disallowed</li>
+	 * <li><i>Nested interfaces:</i> disallowed</li>
+	 * <li><i>Nested classes:</i> disallowed</li>
+	 * <li><i>Nested enums:</i> disallowed</li>
+	 * </ul>
+	 * </li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
+	 * </ul>
+	 * 
+	 * <p>
+	 * See the documentation of {@link Association} for details on defining and
+	 * using associations and {@link Composition} for associations structurally
+	 * containing the associated values.
+	 * <p>
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * JtxtUML.
+	 *
+	 * @author Gabor Ferenc Kovacs
+	 * 
+	 * @param <T>
+	 *            the type of model objects to be contained in this collection
+	 */
+	public abstract class HiddenContainer<T extends ModelClass> extends MaybeOneBase<T>
+			implements Multiplicity.ZeroToOne, Navigability.NonNavigable, Aggregation.Composite {
 	}
 
 }
