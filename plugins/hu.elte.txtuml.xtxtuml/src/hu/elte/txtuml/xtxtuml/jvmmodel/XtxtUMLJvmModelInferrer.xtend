@@ -4,6 +4,7 @@ import com.google.inject.Inject
 import hu.elte.txtuml.api.model.Association
 import hu.elte.txtuml.api.model.Composition
 import hu.elte.txtuml.api.model.Composition.Container
+import hu.elte.txtuml.api.model.Composition.HiddenContainer
 import hu.elte.txtuml.api.model.From
 import hu.elte.txtuml.api.model.Max
 import hu.elte.txtuml.api.model.Min
@@ -42,7 +43,6 @@ import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
-import hu.elte.txtuml.api.model.Composition.HiddenContainer
 
 class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
