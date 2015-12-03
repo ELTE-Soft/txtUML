@@ -26,6 +26,13 @@ public class TestMonitoring {
 		Action.start(aggregator);
 		Action.start(alert);
 
+		System.out.println("Testing monitoring example.");
+		System.out.println("\tq - quit");
+		System.out.println("\tr - read");
+		System.out.println("\tw - write");
+		System.out.println("\tc - close");
+		System.out.println("\tx - print report");		
+		
 		try {
 			char c = (char)System.in.read();
 			while(c != 'q') {
