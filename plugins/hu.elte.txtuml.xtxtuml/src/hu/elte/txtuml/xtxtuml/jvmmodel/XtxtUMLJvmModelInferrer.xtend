@@ -42,6 +42,7 @@ import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
+import hu.elte.txtuml.api.model.Composition.HiddenContainer
 
 class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
@@ -323,7 +324,12 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def private calculateApiSuperType(TUAssociationEnd it) {
 		val endClassTypeParam = (endClass.getPrimaryJvmElement as JvmDeclaredType).typeRef
 		if (isContainer) {
-			return Container.typeRef(endClassTypeParam) -> null
+			val endClassImpl = if (notNavigable) {
+					HiddenContainer
+				} else {
+					Container
+				}
+			return endClassImpl.typeRef(endClassTypeParam) -> null
 		}
 
 		val optionalHidden = if(notNavigable) "Hidden" else "";
