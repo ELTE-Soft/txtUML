@@ -80,7 +80,8 @@ public class Composition extends Association {
 	}
 
 	/**
-	 * Abstract base class for the container end of a composition association.
+	 * Abstract base class for the container end of a composition association
+	 * which is a special association end with 0..1 multiplicity.
 	 * 
 	 * <p>
 	 * <b>Represents:</b> container end of a composition association
@@ -115,8 +116,8 @@ public class Composition extends Association {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public abstract class Container<T extends ModelClass> extends OneBase<T>
-			implements hu.elte.txtuml.api.model.assocends.Multiplicity.One, Navigable {
+	public abstract class Container<T extends ModelClass> extends MaybeOneBase<T>
+			implements hu.elte.txtuml.api.model.assocends.Multiplicity.ZeroToOne, Navigable {
 	}
 
 }
