@@ -2,6 +2,8 @@ package hu.elte.txtuml.xtxtuml.jvmmodel;
 
 import com.google.inject.Inject
 import hu.elte.txtuml.api.model.Association
+import hu.elte.txtuml.api.model.Composition
+import hu.elte.txtuml.api.model.Composition.Container
 import hu.elte.txtuml.api.model.From
 import hu.elte.txtuml.api.model.Max
 import hu.elte.txtuml.api.model.Min
@@ -15,6 +17,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
@@ -73,7 +76,10 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch void infer(TUAssociation assoc, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		acceptor.accept(assoc.toClass(assoc.fullyQualifiedName) [
 			documentation = assoc.documentation
-			superTypes += Association.typeRef;
+			superTypes += switch assoc {
+				TUComposition: Composition
+				default: Association
+			}.typeRef
 
 			for (end : assoc.ends) {
 				members += end.toJvmMember;
@@ -315,6 +321,11 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	}
 
 	def private calculateApiSuperType(TUAssociationEnd it) {
+		val endClassTypeParam = (endClass.getPrimaryJvmElement as JvmDeclaredType).typeRef
+		if (isContainer) {
+			return Container.typeRef(endClassTypeParam) -> null
+		}
+
 		val optionalHidden = if(notNavigable) "Hidden" else "";
 		var Pair<Integer, Integer> explicitMultiplicities = null;
 		val apiBoundTypeName = if (multiplicity.any) // *
@@ -341,8 +352,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				}
 			}
 
-		val endClassRefParam = (endClass.getPrimaryJvmElement as JvmDeclaredType).typeRef
 		val endClassImpl = "hu.elte.txtuml.api.model.Association$" + optionalHidden + apiBoundTypeName
-		return endClassImpl.typeRef(endClassRefParam) -> explicitMultiplicities;
+		return endClassImpl.typeRef(endClassTypeParam) -> explicitMultiplicities;
 	}
 }

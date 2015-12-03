@@ -12,6 +12,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassMember;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution;
@@ -210,6 +211,13 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
    * @generated
    */
   private EClass tuMultiplicityEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass tuCompositionEClass = null;
 
   /**
    * <!-- begin-user-doc -->
@@ -899,9 +907,19 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  public EAttribute getTUAssociationEnd_Container()
+  {
+    return (EAttribute)tuAssociationEndEClass.getEStructuralFeatures().get(3);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   public EReference getTUAssociationEnd_EndClass()
   {
-    return (EReference)tuAssociationEndEClass.getEStructuralFeatures().get(3);
+    return (EReference)tuAssociationEndEClass.getEStructuralFeatures().get(4);
   }
 
   /**
@@ -911,7 +929,7 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
    */
   public EAttribute getTUAssociationEnd_Name()
   {
-    return (EAttribute)tuAssociationEndEClass.getEStructuralFeatures().get(4);
+    return (EAttribute)tuAssociationEndEClass.getEStructuralFeatures().get(5);
   }
 
   /**
@@ -972,6 +990,16 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
   public EAttribute getTUMultiplicity_Any()
   {
     return (EAttribute)tuMultiplicityEClass.getEStructuralFeatures().get(4);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getTUComposition()
+  {
+    return tuCompositionEClass;
   }
 
   /**
@@ -1280,6 +1308,7 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
     createEAttribute(tuAssociationEndEClass, TU_ASSOCIATION_END__VISIBILITY);
     createEAttribute(tuAssociationEndEClass, TU_ASSOCIATION_END__NOT_NAVIGABLE);
     createEReference(tuAssociationEndEClass, TU_ASSOCIATION_END__MULTIPLICITY);
+    createEAttribute(tuAssociationEndEClass, TU_ASSOCIATION_END__CONTAINER);
     createEReference(tuAssociationEndEClass, TU_ASSOCIATION_END__END_CLASS);
     createEAttribute(tuAssociationEndEClass, TU_ASSOCIATION_END__NAME);
 
@@ -1289,6 +1318,8 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
     createEAttribute(tuMultiplicityEClass, TU_MULTIPLICITY__UPPER);
     createEAttribute(tuMultiplicityEClass, TU_MULTIPLICITY__UPPER_INF);
     createEAttribute(tuMultiplicityEClass, TU_MULTIPLICITY__ANY);
+
+    tuCompositionEClass = createEClass(TU_COMPOSITION);
 
     tuAttributeEClass = createEClass(TU_ATTRIBUTE);
     createEReference(tuAttributeEClass, TU_ATTRIBUTE__PREFIX);
@@ -1369,6 +1400,7 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
     tuTransitionVertexEClass.getESuperTypes().add(this.getTUTransitionMember());
     tuTransitionEffectEClass.getESuperTypes().add(this.getTUTransitionMember());
     tuTransitionGuardEClass.getESuperTypes().add(this.getTUTransitionMember());
+    tuCompositionEClass.getESuperTypes().add(this.getTUAssociation());
     tuAttributeEClass.getESuperTypes().add(this.getTUClassMember());
     tuOperationEClass.getESuperTypes().add(this.getTUClassMember());
     rAlfSendSignalExpressionEClass.getESuperTypes().add(theXbasePackage.getXExpression());
@@ -1453,6 +1485,7 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
     initEAttribute(getTUAssociationEnd_Visibility(), this.getTUVisibility(), "visibility", null, 0, 1, TUAssociationEnd.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getTUAssociationEnd_NotNavigable(), ecorePackage.getEBoolean(), "notNavigable", null, 0, 1, TUAssociationEnd.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getTUAssociationEnd_Multiplicity(), this.getTUMultiplicity(), null, "multiplicity", null, 0, 1, TUAssociationEnd.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getTUAssociationEnd_Container(), ecorePackage.getEBoolean(), "container", null, 0, 1, TUAssociationEnd.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getTUAssociationEnd_EndClass(), this.getTUClass(), null, "endClass", null, 0, 1, TUAssociationEnd.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getTUAssociationEnd_Name(), ecorePackage.getEString(), "name", null, 0, 1, TUAssociationEnd.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
@@ -1462,6 +1495,8 @@ public class XtxtUMLPackageImpl extends EPackageImpl implements XtxtUMLPackage
     initEAttribute(getTUMultiplicity_Upper(), ecorePackage.getEInt(), "upper", null, 0, 1, TUMultiplicity.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getTUMultiplicity_UpperInf(), ecorePackage.getEBoolean(), "upperInf", null, 0, 1, TUMultiplicity.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getTUMultiplicity_Any(), ecorePackage.getEBoolean(), "any", null, 0, 1, TUMultiplicity.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(tuCompositionEClass, TUComposition.class, "TUComposition", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
     initEClass(tuAttributeEClass, TUAttribute.class, "TUAttribute", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEReference(getTUAttribute_Prefix(), this.getTUAttributeOrOperationDeclarationPrefix(), null, "prefix", null, 0, 1, TUAttribute.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

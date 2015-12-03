@@ -1,13 +1,14 @@
 package hu.elte.txtuml.api.model.backend.log;
 
+import java.text.MessageFormat;
+
 import hu.elte.txtuml.api.model.AssociationEnd;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.report.RuntimeErrorsListener;
 
-final class RuntimeErrorsListenerImpl extends BaseListenerImpl implements
-		RuntimeErrorsListener {
+final class RuntimeErrorsListenerImpl extends BaseListenerImpl implements RuntimeErrorsListener {
 
 	RuntimeErrorsListenerImpl(ExecutorLog owner) {
 		super(owner);
@@ -19,8 +20,7 @@ final class RuntimeErrorsListenerImpl extends BaseListenerImpl implements
 	}
 
 	@Override
-	public void modelObjectCreationFailed(
-			Class<? extends ModelClass> classType, Object[] parameters) {
+	public void modelObjectCreationFailed(Class<? extends ModelClass> classType, Object[] parameters) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Error: creating a model object of the type ");
 		builder.append(classType.getSimpleName());
@@ -31,8 +31,7 @@ final class RuntimeErrorsListenerImpl extends BaseListenerImpl implements
 			for (Object param : parameters) {
 				builder.append(param);
 				if (param != null) {
-					builder.append(" (" + param.getClass().getSimpleName()
-							+ ")");
+					builder.append(" (" + param.getClass().getSimpleName() + ")");
 				}
 				builder.append(", ");
 			}
@@ -48,22 +47,18 @@ final class RuntimeErrorsListenerImpl extends BaseListenerImpl implements
 	}
 
 	@Override
-	public void guardsOfTransitionsAreOverlapping(Transition transition1,
-			Transition transition2, Vertex vertex) {
-		err("Error: guards of " + transition1 + " and " + transition2
-				+ " from vertex " + vertex + " are overlapping.");
+	public void guardsOfTransitionsAreOverlapping(Transition transition1, Transition transition2, Vertex vertex) {
+		err("Error: guards of " + transition1 + " and " + transition2 + " from vertex " + vertex + " are overlapping.");
 	}
 
 	@Override
 	public void moreThanOneElseTransitionsFromChoice(Vertex choice) {
-		err("Error: there are more than one transitions from " + choice
-				+ " with an 'else' condition.");
+		err("Error: there are more than one transitions from " + choice + " with an 'else' condition.");
 	}
 
 	@Override
 	public void noTransitionFromChoice(Vertex choice) {
-		err("Error: there was no transition from " + choice
-				+ " which could be used.");
+		err("Error: there was no transition from " + choice + " which could be used.");
 	}
 
 	@Override
@@ -77,23 +72,18 @@ final class RuntimeErrorsListenerImpl extends BaseListenerImpl implements
 	}
 
 	@Override
-	public void upperBoundOfMultiplicityOffended(ModelClass obj,
-			Class<? extends AssociationEnd<?, ?>> assocEnd) {
-		err("Error: upper bound of the multiplicity of " + assocEnd.toString()
-				+ " has been offended at " + obj + ".");
+	public void upperBoundOfMultiplicityOffended(ModelClass obj, Class<? extends AssociationEnd<?, ?>> assocEnd) {
+		err("Error: upper bound of the multiplicity of " + assocEnd.toString() + " has been offended at " + obj + ".");
 	}
 
 	@Override
-	public void lowerBoundOfMultiplicityOffended(ModelClass obj,
-			Class<? extends AssociationEnd<?, ?>> assocEnd) {
-		err("Error: lower bound of the multiplicity of " + assocEnd.getName()
-				+ " has been offended at " + obj + ".");
+	public void lowerBoundOfMultiplicityOffended(ModelClass obj, Class<? extends AssociationEnd<?, ?>> assocEnd) {
+		err("Error: lower bound of the multiplicity of " + assocEnd.getName() + " has been offended at " + obj + ".");
 	}
 
 	@Override
 	public void objectCannotBeDeleted(ModelClass obj) {
-		err("Error: model object " + obj
-				+ " cannot be deleted because of existing associations.");
+		err("Error: model object " + obj + " cannot be deleted because of existing associations.");
 	}
 
 	@Override
@@ -103,8 +93,14 @@ final class RuntimeErrorsListenerImpl extends BaseListenerImpl implements
 
 	@Override
 	public void elseGuardFromNonChoiceVertex(Transition transition) {
-		err("Error: the transition "
-		+ transition.toString()
-		+ " has an 'else' guard but its source is not a choice pseudostate.");
+		err("Error: the transition " + transition.toString()
+				+ " has an 'else' guard but its source is not a choice pseudostate.");
+	}
+
+	@Override
+	public void multipleContainerForAnObject(ModelClass leftObj, Class<? extends AssociationEnd<?, ?>> rightEnd) {
+		err(MessageFormat.format(
+				"Error: Model object {0} cannot be put into container {1}, because it is already inside another container.",
+				leftObj, rightEnd.getName()));
 	}
 }
