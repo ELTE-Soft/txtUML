@@ -74,7 +74,7 @@ public class Utils {
 
 	public static boolean isVoid(Type type) {
 		if (type instanceof PrimitiveType) {
-			return ((SimpleType) type).getName().toString().equals("void");
+			return ((PrimitiveType) type).getPrimitiveTypeCode().equals(PrimitiveType.VOID);
 		} else {
 			return false;
 		}

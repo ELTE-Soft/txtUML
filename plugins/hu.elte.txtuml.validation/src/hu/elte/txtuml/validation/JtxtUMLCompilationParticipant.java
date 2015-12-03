@@ -17,6 +17,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import hu.elte.txtuml.diagnostics.PluginLogWrapper;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.export.uml2.utils.SharedUtils;
+import hu.elte.txtuml.validation.visitors.ModelVisitor;
 
 /**
  * Compilation participant for JtxtUML validation.
@@ -25,8 +26,6 @@ import hu.elte.txtuml.export.uml2.utils.SharedUtils;
 public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler.CompilationParticipant {
 	private static final String TXTUML_NATURE_ID = "hu.elte.txtuml.project.txtumlprojectNature";
 	public static final String JTXTUML_MARKER_TYPE = "hu.elte.txtuml.validation.jtxtumlmarker";
-
-	private JtxtUMLValidator validator;
 
 	@Override
 	public boolean isActive(IJavaProject project) {
@@ -40,22 +39,18 @@ public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler
 
 	@Override
 	public int aboutToBuild(IJavaProject project) {
-		validator = new JtxtUMLValidator(project);
 		return READY_FOR_BUILD;
 	}
 
 	@Override
 	public void reconcile(ReconcileContext context) {
 		try {
-			if (validator == null) {
-				validator = new JtxtUMLValidator(context.getDelta().getElement().getJavaProject()); 
-			}
 			IMarker[] markers = context.getWorkingCopy().getResource().findMarkers(JTXTUML_MARKER_TYPE, true,
 					IResource.DEPTH_ZERO);
 			CompilationUnit unit = context.getAST8();
 			ProblemCollectorForReconcile collector = new ProblemCollectorForReconcile(context, markers);
 			if (ElementTypeTeller.isModelElement(unit)) {
-				validator.validate(unit, collector);
+				unit.accept(new ModelVisitor(collector));
 			}
 		} catch (Exception e) {
 			PluginLogWrapper.logError("Error while checking for problems", e);
@@ -89,14 +84,9 @@ public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler
 			}
 
 			ProblemCollectorForBuild collector = new ProblemCollectorForBuild(unit);
-			validator.validate(unit, collector);
+			unit.accept(new ModelVisitor(collector));
 			file.recordNewProblems(collector.getProblems());
 		}
-	}
-
-	@Override
-	public void buildFinished(IJavaProject project) {
-		validator = null;
 	}
 
 }

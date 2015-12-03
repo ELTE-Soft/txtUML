@@ -7,6 +7,7 @@ import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
+import hu.elte.txtuml.diagnostics.PluginLogWrapper;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.validation.ProblemCollector;
 import hu.elte.txtuml.validation.problems.InvalidTypeInModel;
@@ -15,6 +16,15 @@ public class ModelVisitor extends VisitorBase {
 
 	public ModelVisitor(ProblemCollector collector) {
 		super(collector);
+	}
+
+	@Override
+	protected void acceptChildren(TypeDeclaration elem, VisitorBase visitor) {
+		try {
+			super.acceptChildren(elem, visitor);
+		} catch (Exception e) {
+			PluginLogWrapper.logError("Error while traversing the AST", e);
+		}
 	}
 
 	@Override
@@ -28,7 +38,8 @@ public class ModelVisitor extends VisitorBase {
 			Utils.checkTemplate(collector, elem);
 			Utils.checkModifiers(collector, elem);
 			acceptChildren(elem, new SignalVisitor(collector));
-			checkChildren(elem, "signal", FieldDeclaration.class, MethodDeclaration.class, SimpleName.class, SimpleType.class, Modifier.class);
+			checkChildren(elem, "signal", FieldDeclaration.class, MethodDeclaration.class, SimpleName.class,
+					SimpleType.class, Modifier.class);
 		} else if (ElementTypeTeller.isAssociation(elem)) {
 			Utils.checkTemplate(collector, elem);
 			Utils.checkModifiers(collector, elem);
@@ -37,10 +48,12 @@ public class ModelVisitor extends VisitorBase {
 			} else {
 				acceptChildren(elem, new AssociationVisitor(elem, collector));
 			}
-			checkChildren(elem, "association", TypeDeclaration.class, SimpleName.class, SimpleType.class, Modifier.class);
+			checkChildren(elem, "association", TypeDeclaration.class, SimpleName.class, SimpleType.class,
+					Modifier.class);
 		} else if (ElementTypeTeller.isModelClass(elem)) {
 			acceptChildren(elem, new ModelClassVisitor(collector));
-			checkChildren(elem, "class", TypeDeclaration.class, FieldDeclaration.class, MethodDeclaration.class, SimpleName.class, SimpleType.class, Modifier.class);
+			checkChildren(elem, "class", TypeDeclaration.class, FieldDeclaration.class, MethodDeclaration.class,
+					SimpleName.class, SimpleType.class, Modifier.class);
 		}
 		return false;
 	}
