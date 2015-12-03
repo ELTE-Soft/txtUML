@@ -19,7 +19,11 @@ public class VisitorBase extends ASTVisitor {
 		this.collector = collector;
 	}
 
-	protected void checkChildren(ASTNode node, String nodeStr, Class<?>... allowedChildrenTypes) {
+	/**
+	 * Checks all the structural properties of a node if they are from the given
+	 * classes.
+	 */
+	protected void checkChildren(ASTNode node, String nodeStr, Class<?>[] allowedChildrenTypes) {
 		List<?> strProp = node.structuralPropertiesForType();
 		for (Object prop : strProp) {
 			StructuralPropertyDescriptor spd = (StructuralPropertyDescriptor) prop;

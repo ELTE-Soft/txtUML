@@ -6,7 +6,6 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
-import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
@@ -41,13 +40,7 @@ public final class ElementTypeTeller {
 	}
 
 	public static boolean isModelElement(CompilationUnit unit) {
-		ITypeRoot typeRoot = unit.getTypeRoot();
-		if (typeRoot instanceof ICompilationUnit) {
-			if (typeRoot.getParent() instanceof IPackageFragment) {
-				return isModelPackage((IPackageFragment) typeRoot.getParent());
-			}
-		}
-		return false;
+		return isModelPackage((IPackageFragment) unit.getPackage().resolveBinding().getJavaElement());
 	}
 
 	/**

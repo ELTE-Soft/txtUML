@@ -60,33 +60,37 @@ public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler
 	@Override
 	public void buildStarting(BuildContext[] files, boolean isBatch) {
 		for (BuildContext file : files) {
-			java.io.File systemFile = null;
-			IPath location = file.getFile().getLocation();
-			if (location != null) {
-				systemFile = location.toFile();
-			}
-			if (systemFile == null) {
-				return;
-			}
-
-			IProject project = file.getFile().getProject();
-			IJavaProject javaProject = JavaCore.create(project);
-			CompilationUnit unit = null;
-			try {
-				unit = SharedUtils.parseJavaSource(systemFile, javaProject);
-			} catch (IOException | JavaModelException e) {
-				// Validation is not possible, return.
-				return;
-			}
-			if (unit == null || !ElementTypeTeller.isModelElement(unit)) {
-				// Validation is not possible, return.
-				return;
-			}
-
-			ProblemCollectorForBuild collector = new ProblemCollectorForBuild(unit);
-			unit.accept(new ModelVisitor(collector));
-			file.recordNewProblems(collector.getProblems());
+			validateFile(file);
 		}
+	}
+
+	private void validateFile(BuildContext file) {
+		java.io.File systemFile = null;
+		IPath location = file.getFile().getLocation();
+		if (location != null) {
+			systemFile = location.toFile();
+		}
+		if (systemFile == null) {
+			return;
+		}
+
+		IProject project = file.getFile().getProject();
+		IJavaProject javaProject = JavaCore.create(project);
+		CompilationUnit unit = null;
+		try {
+			unit = SharedUtils.parseJavaSource(systemFile, javaProject);
+		} catch (IOException | JavaModelException e) {
+			// Validation is not possible, return.
+			return;
+		}
+		if (unit == null || !ElementTypeTeller.isModelElement(unit)) {
+			// Validation is not possible, return.
+			return;
+		}
+
+		ProblemCollectorForBuild collector = new ProblemCollectorForBuild(unit);
+		unit.accept(new ModelVisitor(collector));
+		file.recordNewProblems(collector.getProblems());
 	}
 
 }
