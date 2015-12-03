@@ -7,6 +7,7 @@ import hu.elte.txtuml.api.model.ModelExecutor;
 import hu.elte.txtuml.examples.monitoring.model.Aggregator;
 import hu.elte.txtuml.examples.monitoring.model.Alert;
 import hu.elte.txtuml.examples.monitoring.model.Close;
+import hu.elte.txtuml.examples.monitoring.model.PrintReport;
 import hu.elte.txtuml.examples.monitoring.model.Read;
 import hu.elte.txtuml.examples.monitoring.model.ResourceMonitor;
 import hu.elte.txtuml.examples.monitoring.model.ToAggregator;
@@ -35,7 +36,7 @@ public class TestMonitoring {
 				} else if(c == 'c') {
 					Action.send(monitor, new Close());
 				} else if(c == 'x') {
-					aggregator.report();
+					Action.send(aggregator, new PrintReport());
 				}
 				c = (char)System.in.read();				
 			}

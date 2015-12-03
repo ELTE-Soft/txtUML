@@ -2,6 +2,7 @@ package hu.elte.txtuml.examples.monitoring.^model;
 
 signal ReadError;
 signal WriteError;
+signal PrintReport;
 
 class Aggregator {
 	int writeErrorNum;
@@ -38,7 +39,12 @@ class Aggregator {
 		}		
 	}
 	
-	public void report() {
-		log("# read errors: " + readErrorNum + ", # write errors: " + writeErrorNum);
+	transition TPrintReport {
+		from Aggregate;
+		to Aggregate;
+		trigger PrintReport;
+		effect {
+			log("# read errors: " + readErrorNum + ", # write errors: " + writeErrorNum);
+		}
 	}
 }
