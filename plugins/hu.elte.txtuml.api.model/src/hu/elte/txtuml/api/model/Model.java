@@ -59,6 +59,7 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * <ul>
  * <li>classes ( {@link ModelClass} ),</li>
  * <li>associations ( {@link Association} ),</li>
+ * <li>compositions ( {@link Composition} ),</li>
  * <li>navigable and non-navigable association ends with different
  * multiplicities ( {@link AssociationEnd} ),</li>
  * <li>collections of model objects ( {@link Collection} ),</li>

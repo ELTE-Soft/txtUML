@@ -16,8 +16,8 @@ import hu.elte.txtuml.api.model.assocends.Navigability;
  * A composition in the model is a subclass of <code>Composition</code>, having
  * two inner classes which both extend {@link AssociationEnd}. One of these ends
  * must be the container of the members at the other end. The container must be
- * a subclass of <code>Container</code>. The other end can be a subclass of any
- * <code>AssociationEnd</code> (but not a <code>Container</code>).
+ * a subclass of <code>Container</code> or <code>HiddenContainer</code>. The
+ * other end can be a subclass of any non-composite <code>AssociationEnd</code>.
  * <p>
  * The two model classes which the association connects are defined by the two
  * association ends' generic parameters.
@@ -71,6 +71,8 @@ import hu.elte.txtuml.api.model.assocends.Navigability;
  *
  * @author Gabor Ferenc Kovacs
  * @see Association
+ * @see Container
+ * @see HiddenContainer
  */
 public class Composition extends Association {
 
@@ -93,6 +95,10 @@ public class Composition extends Association {
 	 * 
 	 * The container end should be defined as inner class of a composition (a
 	 * subclass of {@link Composition}).
+	 * <p>
+	 * Container ends have an implicit 0..1 multiplicity. They also have a
+	 * <b>global restriction</b>: any model object at any time might be
+	 * connected through its compositions to at most one container object.
 	 * <p>
 	 * Apart from this, container ends should be used like any other association
 	 * end. See the documentation of {@link AssociationEnd} for details.
@@ -147,16 +153,13 @@ public class Composition extends Association {
 	 * association which is a special association end with 0..1 multiplicity.
 	 * 
 	 * <p>
-	 * <b>Represents:</b> non-navigable container end of a composition association
+	 * <b>Represents:</b> non-navigable container end of a composition
+	 * association
 	 * <p>
 	 * <b>Usage:</b>
 	 * <p>
 	 * 
-	 * The container end should be defined as inner class of a composition (a
-	 * subclass of {@link Composition}).
-	 * <p>
-	 * Apart from this, container ends should be used like any other association
-	 * end. See the documentation of {@link AssociationEnd} for details.
+	 * See the documentation of {@link Container}.
 	 * 
 	 * <p>
 	 * <b>Java restrictions:</b>

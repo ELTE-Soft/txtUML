@@ -69,7 +69,7 @@ import hu.elte.txtuml.api.model.assocends.Navigability;
  * JtxtUML.
  *
  * @author Gabor Ferenc Kovacs
- * @see Association
+ * @see Composition
  * @see Association.Many
  * @see Association.One
  * @see Association.MaybeOne
