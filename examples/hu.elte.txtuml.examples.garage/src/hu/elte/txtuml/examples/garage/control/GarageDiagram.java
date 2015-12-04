@@ -1,7 +1,11 @@
-package hu.elte.txtuml.examples.garage.control.model;
+package hu.elte.txtuml.examples.garage.control;
 
 import hu.elte.txtuml.api.layout.Diagram;
 import hu.elte.txtuml.api.layout.Diamond;
+import hu.elte.txtuml.examples.garage.control.model.Alarm;
+import hu.elte.txtuml.examples.garage.control.model.Door;
+import hu.elte.txtuml.examples.garage.control.model.Keyboard;
+import hu.elte.txtuml.examples.garage.control.model.Motor;
 
 class GarageDiagram extends Diagram {
 

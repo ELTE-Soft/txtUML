@@ -7,10 +7,12 @@ import hu.elte.txtuml.validation.SourceInfo;
 public class InvalidChildrenElement extends ValidationErrorBase {
 
 	private String nodeStr;
+	private ASTNode child;
 
 	public InvalidChildrenElement(SourceInfo sourceInfo, String nodeStr, ASTNode child) {
 		super(sourceInfo, child);
 		this.nodeStr = nodeStr;
+		this.child = child;
 	}
 
 	@Override
@@ -23,6 +25,8 @@ public class InvalidChildrenElement extends ValidationErrorBase {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Invalid element in ");
 		sb.append(nodeStr);
+		sb.append(" : ");
+		sb.append(child.getClass().getSimpleName());
 		sb.append(".");
 		return sb.toString();
 	}

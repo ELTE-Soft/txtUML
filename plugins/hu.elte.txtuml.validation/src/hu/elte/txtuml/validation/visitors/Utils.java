@@ -80,4 +80,12 @@ public class Utils {
 		}
 	}
 
+	public static boolean isBoolean(Type type) {
+		if (type instanceof PrimitiveType) {
+			return ((PrimitiveType) type).getPrimitiveTypeCode().equals(PrimitiveType.BOOLEAN);
+		} else {
+			return false;
+		}
+	}
+
 }

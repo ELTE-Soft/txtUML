@@ -1,5 +1,6 @@
 package hu.elte.txtuml.validation.visitors;
 
+import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
@@ -17,7 +18,8 @@ import hu.elte.txtuml.validation.problems.InvalidTypeWithClassNotAllowed;
 public class ModelClassVisitor extends VisitorBase {
 
 	public static final Class<?>[] ALLOWED_MODEL_CLASS_DECLARATIONS = new Class<?>[] { TypeDeclaration.class,
-			FieldDeclaration.class, MethodDeclaration.class, SimpleName.class, SimpleType.class, Modifier.class };
+			FieldDeclaration.class, MethodDeclaration.class, SimpleName.class, SimpleType.class, Modifier.class,
+			Annotation.class };
 
 	public ModelClassVisitor(ProblemCollector collector) {
 		super(collector);
@@ -29,15 +31,7 @@ public class ModelClassVisitor extends VisitorBase {
 				|| ElementTypeTeller.isTransition(elem) || ElementTypeTeller.isChoicePseudoState(elem);
 		collector.setProblemStatus(!valid, new InvalidModelClassElement(collector.getSourceInfo(), elem.getName()));
 		if (valid) {
-			if (ElementTypeTeller.isState(elem)) {
-				checkChildren(elem, "state", StateVisitor.ALLOWED_STATE_DECLARATIONS);
-				acceptChildren(elem, new StateVisitor(collector));
-			} else if (ElementTypeTeller.isInitialPseudoState(elem)) {
-				checkChildren(elem, "initial state", StateVisitor.ALLOWED_INITIAL_STATE_DECLARATIONS);
-			} else if (ElementTypeTeller.isTransition(elem)) {
-				checkChildren(elem, "transition", TransitionVisitor.ALLOWED_TRANSITION_DECLARATIONS);
-				acceptChildren(elem, new TransitionVisitor(collector));
-			}
+			handleStateMachineElements(elem);
 		}
 		return false;
 	}

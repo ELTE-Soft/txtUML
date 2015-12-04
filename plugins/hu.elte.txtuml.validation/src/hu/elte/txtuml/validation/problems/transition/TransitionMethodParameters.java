@@ -19,7 +19,7 @@ public class TransitionMethodParameters extends ValidationErrorBase {
 
 	@Override
 	public String getMessage() {
-		return "A transition effect action cannot have parameters";
+		return "A transition effect or guard method cannot have parameters";
 	}
 
 }

@@ -1,5 +1,6 @@
 package hu.elte.txtuml.validation.visitors;
 
+import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
@@ -14,7 +15,7 @@ import hu.elte.txtuml.validation.problems.InvalidTypeWithClassNotAllowed;
 public class SignalVisitor extends VisitorBase {
 
 	public static final Class<?>[] ALLOWED_SIGNAL_DECLARATIONS = new Class<?>[] { FieldDeclaration.class,
-			MethodDeclaration.class, SimpleName.class, SimpleType.class, Modifier.class };
+			MethodDeclaration.class, SimpleName.class, SimpleType.class, Modifier.class, Annotation.class };
 
 	public SignalVisitor(ProblemCollector collector) {
 		super(collector);

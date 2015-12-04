@@ -10,6 +10,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
@@ -198,4 +199,13 @@ public final class ElementTypeTeller {
 	public static boolean isExternalClass(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ExternalClass.class);
 	}
+	
+	public static boolean isEffect(MethodDeclaration method) {
+		return method.getName().toString().equals("effect");
+	}
+	
+	public static boolean isGuard(MethodDeclaration method) {
+		return method.getName().toString().equals("guard");
+	}
+	
 }
