@@ -1,6 +1,7 @@
 package hu.elte.txtuml.api.model;
 
 import hu.elte.txtuml.api.model.ModelExecutor.Report;
+import hu.elte.txtuml.api.model.backend.MultipleContainerException;
 import hu.elte.txtuml.api.model.backend.MultiplicityException;
 import hu.elte.txtuml.utils.InstanceCreator;
 import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
@@ -125,20 +126,23 @@ public class Action implements ModelElement {
 			return;
 		}
 
+		tryAddToAssoc(leftObj, rightEnd, rightObj, () -> {});
+		tryAddToAssoc(rightObj, leftEnd, leftObj, () -> leftObj.removeFromAssoc(rightEnd, rightObj));
+	}
+	
+	private static <R extends ModelClass, L extends ModelClass> void tryAddToAssoc(L leftObj,
+			Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj, Runnable rollBack) {
 		try {
 			leftObj.addToAssoc(rightEnd, rightObj);
+			return;
 		} catch (MultiplicityException e) {
 			Report.error.forEach(x -> x.upperBoundOfMultiplicityOffended(
 					leftObj, rightEnd));
+		} catch (MultipleContainerException e) {
+			Report.error.forEach(x -> x.multipleContainerForAnObject(
+					leftObj, rightEnd));
 		}
-
-		try {
-			rightObj.addToAssoc(leftEnd, leftObj);
-		} catch (MultiplicityException e) {
-			leftObj.removeFromAssoc(rightEnd, rightObj);
-			Report.error.forEach(x -> x.upperBoundOfMultiplicityOffended(
-					rightObj, leftEnd));
-		}
+		rollBack.run();
 	}
 
 	/**

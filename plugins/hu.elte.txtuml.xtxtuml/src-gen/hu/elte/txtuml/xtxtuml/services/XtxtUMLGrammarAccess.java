@@ -304,7 +304,13 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 	public class TUAssociationElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "TUAssociation");
 		private final Group cGroup = (Group)rule.eContents().get(1);
-		private final Keyword cAssociationKeyword_0 = (Keyword)cGroup.eContents().get(0);
+		private final Alternatives cAlternatives_0 = (Alternatives)cGroup.eContents().get(0);
+		private final Group cGroup_0_0 = (Group)cAlternatives_0.eContents().get(0);
+		private final Action cTUAssociationAction_0_0_0 = (Action)cGroup_0_0.eContents().get(0);
+		private final Keyword cAssociationKeyword_0_0_1 = (Keyword)cGroup_0_0.eContents().get(1);
+		private final Group cGroup_0_1 = (Group)cAlternatives_0.eContents().get(1);
+		private final Action cTUCompositionAction_0_1_0 = (Action)cGroup_0_1.eContents().get(0);
+		private final Keyword cCompositionKeyword_0_1_1 = (Keyword)cGroup_0_1.eContents().get(1);
 		private final Assignment cNameAssignment_1 = (Assignment)cGroup.eContents().get(1);
 		private final RuleCall cNameValidIDParserRuleCall_1_0 = (RuleCall)cNameAssignment_1.eContents().get(0);
 		private final Keyword cLeftCurlyBracketKeyword_2 = (Keyword)cGroup.eContents().get(2);
@@ -313,14 +319,32 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 		private final Keyword cRightCurlyBracketKeyword_4 = (Keyword)cGroup.eContents().get(4);
 		
 		//TUAssociation:
-		//	"association" name=ValidID "{" ends+=TUAssociationEnd* "}";
+		//	({TUAssociation} "association" | {TUComposition} "composition") name=ValidID "{" ends+=TUAssociationEnd* "}";
 		@Override public ParserRule getRule() { return rule; }
 
-		//"association" name=ValidID "{" ends+=TUAssociationEnd* "}"
+		//({TUAssociation} "association" | {TUComposition} "composition") name=ValidID "{" ends+=TUAssociationEnd* "}"
 		public Group getGroup() { return cGroup; }
 
+		//{TUAssociation} "association" | {TUComposition} "composition"
+		public Alternatives getAlternatives_0() { return cAlternatives_0; }
+
+		//{TUAssociation} "association"
+		public Group getGroup_0_0() { return cGroup_0_0; }
+
+		//{TUAssociation}
+		public Action getTUAssociationAction_0_0_0() { return cTUAssociationAction_0_0_0; }
+
 		//"association"
-		public Keyword getAssociationKeyword_0() { return cAssociationKeyword_0; }
+		public Keyword getAssociationKeyword_0_0_1() { return cAssociationKeyword_0_0_1; }
+
+		//{TUComposition} "composition"
+		public Group getGroup_0_1() { return cGroup_0_1; }
+
+		//{TUComposition}
+		public Action getTUCompositionAction_0_1_0() { return cTUCompositionAction_0_1_0; }
+
+		//"composition"
+		public Keyword getCompositionKeyword_0_1_1() { return cCompositionKeyword_0_1_1; }
 
 		//name=ValidID
 		public Assignment getNameAssignment_1() { return cNameAssignment_1; }
@@ -982,21 +1006,23 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 		private final Keyword cNotNavigableHiddenKeyword_1_0 = (Keyword)cNotNavigableAssignment_1.eContents().get(0);
 		private final Assignment cMultiplicityAssignment_2 = (Assignment)cGroup.eContents().get(2);
 		private final RuleCall cMultiplicityTUMultiplicityParserRuleCall_2_0 = (RuleCall)cMultiplicityAssignment_2.eContents().get(0);
-		private final Assignment cEndClassAssignment_3 = (Assignment)cGroup.eContents().get(3);
-		private final CrossReference cEndClassTUClassCrossReference_3_0 = (CrossReference)cEndClassAssignment_3.eContents().get(0);
-		private final RuleCall cEndClassTUClassQualifiedNameParserRuleCall_3_0_1 = (RuleCall)cEndClassTUClassCrossReference_3_0.eContents().get(1);
-		private final Assignment cNameAssignment_4 = (Assignment)cGroup.eContents().get(4);
-		private final RuleCall cNameValidIDParserRuleCall_4_0 = (RuleCall)cNameAssignment_4.eContents().get(0);
-		private final Keyword cSemicolonKeyword_5 = (Keyword)cGroup.eContents().get(5);
+		private final Assignment cContainerAssignment_3 = (Assignment)cGroup.eContents().get(3);
+		private final Keyword cContainerContainerKeyword_3_0 = (Keyword)cContainerAssignment_3.eContents().get(0);
+		private final Assignment cEndClassAssignment_4 = (Assignment)cGroup.eContents().get(4);
+		private final CrossReference cEndClassTUClassCrossReference_4_0 = (CrossReference)cEndClassAssignment_4.eContents().get(0);
+		private final RuleCall cEndClassTUClassQualifiedNameParserRuleCall_4_0_1 = (RuleCall)cEndClassTUClassCrossReference_4_0.eContents().get(1);
+		private final Assignment cNameAssignment_5 = (Assignment)cGroup.eContents().get(5);
+		private final RuleCall cNameValidIDParserRuleCall_5_0 = (RuleCall)cNameAssignment_5.eContents().get(0);
+		private final Keyword cSemicolonKeyword_6 = (Keyword)cGroup.eContents().get(6);
 		
 		//// Association-related
 		//TUAssociationEnd:
-		//	visibility=TUVisibility? notNavigable?="hidden"? multiplicity=TUMultiplicity endClass=[TUClass|QualifiedName]
-		//	name=ValidID ";";
+		//	visibility=TUVisibility? notNavigable?="hidden"? multiplicity=TUMultiplicity? container?="container"?
+		//	endClass=[TUClass|QualifiedName] name=ValidID ";";
 		@Override public ParserRule getRule() { return rule; }
 
-		//visibility=TUVisibility? notNavigable?="hidden"? multiplicity=TUMultiplicity endClass=[TUClass|QualifiedName]
-		//name=ValidID ";"
+		//visibility=TUVisibility? notNavigable?="hidden"? multiplicity=TUMultiplicity? container?="container"?
+		//endClass=[TUClass|QualifiedName] name=ValidID ";"
 		public Group getGroup() { return cGroup; }
 
 		//visibility=TUVisibility?
@@ -1011,29 +1037,35 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 		//"hidden"
 		public Keyword getNotNavigableHiddenKeyword_1_0() { return cNotNavigableHiddenKeyword_1_0; }
 
-		//multiplicity=TUMultiplicity
+		//multiplicity=TUMultiplicity?
 		public Assignment getMultiplicityAssignment_2() { return cMultiplicityAssignment_2; }
 
 		//TUMultiplicity
 		public RuleCall getMultiplicityTUMultiplicityParserRuleCall_2_0() { return cMultiplicityTUMultiplicityParserRuleCall_2_0; }
 
+		//container?="container"?
+		public Assignment getContainerAssignment_3() { return cContainerAssignment_3; }
+
+		//"container"
+		public Keyword getContainerContainerKeyword_3_0() { return cContainerContainerKeyword_3_0; }
+
 		//endClass=[TUClass|QualifiedName]
-		public Assignment getEndClassAssignment_3() { return cEndClassAssignment_3; }
+		public Assignment getEndClassAssignment_4() { return cEndClassAssignment_4; }
 
 		//[TUClass|QualifiedName]
-		public CrossReference getEndClassTUClassCrossReference_3_0() { return cEndClassTUClassCrossReference_3_0; }
+		public CrossReference getEndClassTUClassCrossReference_4_0() { return cEndClassTUClassCrossReference_4_0; }
 
 		//QualifiedName
-		public RuleCall getEndClassTUClassQualifiedNameParserRuleCall_3_0_1() { return cEndClassTUClassQualifiedNameParserRuleCall_3_0_1; }
+		public RuleCall getEndClassTUClassQualifiedNameParserRuleCall_4_0_1() { return cEndClassTUClassQualifiedNameParserRuleCall_4_0_1; }
 
 		//name=ValidID
-		public Assignment getNameAssignment_4() { return cNameAssignment_4; }
+		public Assignment getNameAssignment_5() { return cNameAssignment_5; }
 
 		//ValidID
-		public RuleCall getNameValidIDParserRuleCall_4_0() { return cNameValidIDParserRuleCall_4_0; }
+		public RuleCall getNameValidIDParserRuleCall_5_0() { return cNameValidIDParserRuleCall_5_0; }
 
 		//";"
-		public Keyword getSemicolonKeyword_5() { return cSemicolonKeyword_5; }
+		public Keyword getSemicolonKeyword_6() { return cSemicolonKeyword_6; }
 	}
 
 	public class TUMultiplicityElements extends AbstractParserRuleElementFinder {
@@ -3075,7 +3107,7 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 	}
 
 	//TUAssociation:
-	//	"association" name=ValidID "{" ends+=TUAssociationEnd* "}";
+	//	({TUAssociation} "association" | {TUComposition} "composition") name=ValidID "{" ends+=TUAssociationEnd* "}";
 	public TUAssociationElements getTUAssociationAccess() {
 		return pTUAssociation;
 	}
@@ -3235,8 +3267,8 @@ public class XtxtUMLGrammarAccess extends AbstractGrammarElementFinder {
 
 	//// Association-related
 	//TUAssociationEnd:
-	//	visibility=TUVisibility? notNavigable?="hidden"? multiplicity=TUMultiplicity endClass=[TUClass|QualifiedName]
-	//	name=ValidID ";";
+	//	visibility=TUVisibility? notNavigable?="hidden"? multiplicity=TUMultiplicity? container?="container"?
+	//	endClass=[TUClass|QualifiedName] name=ValidID ";";
 	public TUAssociationEndElements getTUAssociationEndAccess() {
 		return pTUAssociationEnd;
 	}

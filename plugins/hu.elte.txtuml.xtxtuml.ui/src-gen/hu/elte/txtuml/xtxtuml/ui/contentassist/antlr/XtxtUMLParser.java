@@ -41,6 +41,7 @@ public class XtxtUMLParser extends AbstractContentAssistParser {
 					put(grammarAccess.getTUModelElementAccess().getAlternatives(), "rule__TUModelElement__Alternatives");
 					put(grammarAccess.getTUSignalAccess().getAlternatives_2(), "rule__TUSignal__Alternatives_2");
 					put(grammarAccess.getTUClassAccess().getAlternatives_3(), "rule__TUClass__Alternatives_3");
+					put(grammarAccess.getTUAssociationAccess().getAlternatives_0(), "rule__TUAssociation__Alternatives_0");
 					put(grammarAccess.getTUClassMemberAccess().getAlternatives(), "rule__TUClassMember__Alternatives");
 					put(grammarAccess.getTUClassMemberAccess().getAlternatives_1_1(), "rule__TUClassMember__Alternatives_1_1");
 					put(grammarAccess.getTUStateAccess().getAlternatives_2(), "rule__TUState__Alternatives_2");
@@ -104,6 +105,8 @@ public class XtxtUMLParser extends AbstractContentAssistParser {
 					put(grammarAccess.getTUClassAccess().getGroup_2(), "rule__TUClass__Group_2__0");
 					put(grammarAccess.getTUClassAccess().getGroup_3_0(), "rule__TUClass__Group_3_0__0");
 					put(grammarAccess.getTUAssociationAccess().getGroup(), "rule__TUAssociation__Group__0");
+					put(grammarAccess.getTUAssociationAccess().getGroup_0_0(), "rule__TUAssociation__Group_0_0__0");
+					put(grammarAccess.getTUAssociationAccess().getGroup_0_1(), "rule__TUAssociation__Group_0_1__0");
 					put(grammarAccess.getTUSignalAttributeAccess().getGroup(), "rule__TUSignalAttribute__Group__0");
 					put(grammarAccess.getTUClassMemberAccess().getGroup_1(), "rule__TUClassMember__Group_1__0");
 					put(grammarAccess.getTUClassMemberAccess().getGroup_1_1_0(), "rule__TUClassMember__Group_1_1_0__0");
@@ -331,8 +334,9 @@ public class XtxtUMLParser extends AbstractContentAssistParser {
 					put(grammarAccess.getTUAssociationEndAccess().getVisibilityAssignment_0(), "rule__TUAssociationEnd__VisibilityAssignment_0");
 					put(grammarAccess.getTUAssociationEndAccess().getNotNavigableAssignment_1(), "rule__TUAssociationEnd__NotNavigableAssignment_1");
 					put(grammarAccess.getTUAssociationEndAccess().getMultiplicityAssignment_2(), "rule__TUAssociationEnd__MultiplicityAssignment_2");
-					put(grammarAccess.getTUAssociationEndAccess().getEndClassAssignment_3(), "rule__TUAssociationEnd__EndClassAssignment_3");
-					put(grammarAccess.getTUAssociationEndAccess().getNameAssignment_4(), "rule__TUAssociationEnd__NameAssignment_4");
+					put(grammarAccess.getTUAssociationEndAccess().getContainerAssignment_3(), "rule__TUAssociationEnd__ContainerAssignment_3");
+					put(grammarAccess.getTUAssociationEndAccess().getEndClassAssignment_4(), "rule__TUAssociationEnd__EndClassAssignment_4");
+					put(grammarAccess.getTUAssociationEndAccess().getNameAssignment_5(), "rule__TUAssociationEnd__NameAssignment_5");
 					put(grammarAccess.getTUMultiplicityAccess().getLowerAssignment_0_0(), "rule__TUMultiplicity__LowerAssignment_0_0");
 					put(grammarAccess.getTUMultiplicityAccess().getUpperSetAssignment_0_1_0(), "rule__TUMultiplicity__UpperSetAssignment_0_1_0");
 					put(grammarAccess.getTUMultiplicityAccess().getUpperAssignment_0_1_1_0(), "rule__TUMultiplicity__UpperAssignment_0_1_1_0");

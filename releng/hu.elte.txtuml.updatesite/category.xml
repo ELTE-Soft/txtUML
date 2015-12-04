@@ -5,7 +5,7 @@
 	</feature>
 	<category-def name="hu.elte.txtuml.category" label="txtUML">
 		<description>
-			Textual, eXecutable, Translatable UML
+			Textual, executable, translatable UML.
 		</description>
 	</category-def>
 </site>

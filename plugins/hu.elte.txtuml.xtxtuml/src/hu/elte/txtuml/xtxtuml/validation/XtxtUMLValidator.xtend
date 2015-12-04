@@ -37,7 +37,7 @@ import org.eclipse.xtext.xbase.XMemberFeatureCall
 import org.eclipse.xtext.xbase.XbasePackage
 import org.eclipse.xtext.xbase.typesystem.util.ExtendedEarlyExitComputer
 
-class XtxtUMLValidator extends AbstractXtxtUMLValidator {
+class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 
 	@Inject extension ExtendedEarlyExitComputer;
 	@Inject extension IQualifiedNameProvider;

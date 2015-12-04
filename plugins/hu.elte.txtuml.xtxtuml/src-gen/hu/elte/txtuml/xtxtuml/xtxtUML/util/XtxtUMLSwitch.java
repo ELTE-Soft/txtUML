@@ -244,6 +244,15 @@ public class XtxtUMLSwitch<T> extends Switch<T>
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
+      case XtxtUMLPackage.TU_COMPOSITION:
+      {
+        TUComposition tuComposition = (TUComposition)theEObject;
+        T result = caseTUComposition(tuComposition);
+        if (result == null) result = caseTUAssociation(tuComposition);
+        if (result == null) result = caseTUModelElement(tuComposition);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
       case XtxtUMLPackage.TU_ATTRIBUTE:
       {
         TUAttribute tuAttribute = (TUAttribute)theEObject;
@@ -644,6 +653,22 @@ public class XtxtUMLSwitch<T> extends Switch<T>
    * @generated
    */
   public T caseTUMultiplicity(TUMultiplicity object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>TU Composition</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>TU Composition</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseTUComposition(TUComposition object)
   {
     return null;
   }
