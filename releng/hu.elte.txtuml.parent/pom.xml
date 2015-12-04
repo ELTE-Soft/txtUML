@@ -67,7 +67,7 @@
 		<tycho.version>0.24.0</tycho.version>
 		<build-helper.version>1.9</build-helper.version>
 		<xtend.version>2.8.4</xtend.version>
-		<jacoco.version>0.7.5.201505241946</jacoco.version>
+		<jacoco.version>0.7.4.201502262128</jacoco.version>
 		<!-- <rcptt.version>2.0.0</rcptt.version> -->
 	</properties>
 
