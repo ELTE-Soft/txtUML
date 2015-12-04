@@ -9,8 +9,8 @@ import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
 import hu.elte.txtuml.validation.ProblemCollector;
-import hu.elte.txtuml.validation.problems.InvalidSignalContent;
-import hu.elte.txtuml.validation.problems.InvalidTypeWithClassNotAllowed;
+import hu.elte.txtuml.validation.problems.modelclass.InvalidTypeWithClassNotAllowed;
+import hu.elte.txtuml.validation.problems.signal.InvalidSignalContent;
 
 public class SignalVisitor extends VisitorBase {
 

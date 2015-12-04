@@ -4,8 +4,8 @@ import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.export.uml2.utils.SharedUtils;
 import hu.elte.txtuml.validation.ProblemCollector;
-import hu.elte.txtuml.validation.problems.InvalidModifier;
-import hu.elte.txtuml.validation.problems.InvalidTemplate;
+import hu.elte.txtuml.validation.problems.general.InvalidModifier;
+import hu.elte.txtuml.validation.problems.general.InvalidTemplate;
 
 import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.IExtendedModifier;

@@ -1,6 +1,8 @@
-package hu.elte.txtuml.validation.problems;
+package hu.elte.txtuml.validation.problems.general;
 
 import hu.elte.txtuml.validation.SourceInfo;
+import hu.elte.txtuml.validation.problems.ValidationErrorBase;
+import hu.elte.txtuml.validation.problems.ValidationErrorCatalog;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 

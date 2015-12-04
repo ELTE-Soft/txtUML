@@ -11,9 +11,9 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.validation.ProblemCollector;
-import hu.elte.txtuml.validation.problems.InvalidModelClassElement;
-import hu.elte.txtuml.validation.problems.InvalidTypeWithClassAllowed;
-import hu.elte.txtuml.validation.problems.InvalidTypeWithClassNotAllowed;
+import hu.elte.txtuml.validation.problems.modelclass.InvalidModelClassElement;
+import hu.elte.txtuml.validation.problems.modelclass.InvalidTypeWithClassAllowed;
+import hu.elte.txtuml.validation.problems.modelclass.InvalidTypeWithClassNotAllowed;
 
 public class ModelClassVisitor extends VisitorBase {
 

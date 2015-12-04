@@ -10,7 +10,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.validation.ProblemCollector;
-import hu.elte.txtuml.validation.problems.InvalidChildrenElement;
+import hu.elte.txtuml.validation.problems.general.InvalidChildrenElement;
 
 public class VisitorBase extends ASTVisitor {
 

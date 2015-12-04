@@ -5,7 +5,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import hu.elte.txtuml.diagnostics.PluginLogWrapper;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.validation.ProblemCollector;
-import hu.elte.txtuml.validation.problems.InvalidTypeInModel;
+import hu.elte.txtuml.validation.problems.general.InvalidTypeInModel;
 
 public class ModelVisitor extends VisitorBase {
 
