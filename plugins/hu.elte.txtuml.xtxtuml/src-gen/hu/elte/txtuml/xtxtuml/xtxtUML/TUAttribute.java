@@ -10,11 +10,11 @@ package hu.elte.txtuml.xtxtuml.xtxtUML;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute#getPrefix <em>Prefix</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute#getName <em>Name</em>}</li>
  * </ul>
- * </p>
  *
  * @see hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage#getTUAttribute()
  * @model

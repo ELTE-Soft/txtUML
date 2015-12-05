@@ -6,9 +6,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Stream;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
@@ -27,6 +31,8 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+
+import hu.elte.txtuml.utils.Sneaky;
 
 public final class SharedUtils {
 
@@ -111,6 +117,21 @@ public final class SharedUtils {
 		return null;
 	}
 
+	public static CompilationUnit[] parseICompilationUnitStream(
+			Stream<ICompilationUnit> stream, IJavaProject javaProject)
+			throws IOException, JavaModelException {
+
+		// Sneaky.<JavaModelException> Throw();
+		// Sneaky.<IOException> Throw();
+		return stream
+				.map(ICompilationUnit::getResource)
+				.map(IResource::getLocationURI)
+				.map(File::new)
+				.map(Sneaky.unchecked(f -> SharedUtils.parseJavaSource(f,
+						javaProject))).filter(Objects::nonNull)
+				.toArray(CompilationUnit[]::new);
+	}
+	
 	/**
 	 * Parses the specified Java source file located in the given Java project.
 	 * 

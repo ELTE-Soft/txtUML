@@ -78,45 +78,55 @@ ruleTUFile returns [EObject current=null]
     @init { enterRule(); 
     }
     @after { leaveRule(); }:
-((	otherlv_0='package' 
+(
+    { 
+        newCompositeNode(grammarAccess.getTUFileAccess().getTUModelDeclarationParserRuleCall_0()); 
+    }
+    this_TUModelDeclaration_0=ruleTUModelDeclaration
+    { 
+        $current = $this_TUModelDeclaration_0.current; 
+        afterParserOrEnumRuleCall();
+    }
+
+    |((	otherlv_1='package' 
     {
-    	newLeafNode(otherlv_0, grammarAccess.getTUFileAccess().getPackageKeyword_0_0());
+    	newLeafNode(otherlv_1, grammarAccess.getTUFileAccess().getPackageKeyword_1_0_0());
     }
 (
 (
 		{ 
-	        newCompositeNode(grammarAccess.getTUFileAccess().getNameQualifiedNameParserRuleCall_0_1_0()); 
+	        newCompositeNode(grammarAccess.getTUFileAccess().getNameQualifiedNameParserRuleCall_1_0_1_0()); 
 	    }
-		lv_name_1_0=ruleQualifiedName		{
+		lv_name_2_0=ruleQualifiedName		{
 	        if ($current==null) {
 	            $current = createModelElementForParent(grammarAccess.getTUFileRule());
 	        }
        		set(
        			$current, 
        			"name",
-        		lv_name_1_0, 
+        		lv_name_2_0, 
         		"QualifiedName");
 	        afterParserOrEnumRuleCall();
 	    }
 
 )
-)(	otherlv_2=';' 
+)(	otherlv_3=';' 
     {
-    	newLeafNode(otherlv_2, grammarAccess.getTUFileAccess().getSemicolonKeyword_0_2());
+    	newLeafNode(otherlv_3, grammarAccess.getTUFileAccess().getSemicolonKeyword_1_0_2());
     }
 )?)?(
 (
 		{ 
-	        newCompositeNode(grammarAccess.getTUFileAccess().getImportSectionXImportSectionParserRuleCall_1_0()); 
+	        newCompositeNode(grammarAccess.getTUFileAccess().getImportSectionXImportSectionParserRuleCall_1_1_0()); 
 	    }
-		lv_importSection_3_0=ruleXImportSection		{
+		lv_importSection_4_0=ruleXImportSection		{
 	        if ($current==null) {
 	            $current = createModelElementForParent(grammarAccess.getTUFileRule());
 	        }
        		set(
        			$current, 
        			"importSection",
-        		lv_importSection_3_0, 
+        		lv_importSection_4_0, 
         		"XImportSection");
 	        afterParserOrEnumRuleCall();
 	    }
@@ -125,140 +135,135 @@ ruleTUFile returns [EObject current=null]
 )?(
 (
 		{ 
-	        newCompositeNode(grammarAccess.getTUFileAccess().getElementsTUFileElementParserRuleCall_2_0()); 
+	        newCompositeNode(grammarAccess.getTUFileAccess().getElementsTUModelElementParserRuleCall_1_2_0()); 
 	    }
-		lv_elements_4_0=ruleTUFileElement		{
+		lv_elements_5_0=ruleTUModelElement		{
 	        if ($current==null) {
 	            $current = createModelElementForParent(grammarAccess.getTUFileRule());
 	        }
        		add(
        			$current, 
        			"elements",
-        		lv_elements_4_0, 
-        		"TUFileElement");
-	        afterParserOrEnumRuleCall();
-	    }
-
-)
-)*)
-;
-
-
-
-
-
-// Entry rule entryRuleTUFileElement
-entryRuleTUFileElement returns [EObject current=null] 
-	:
-	{ newCompositeNode(grammarAccess.getTUFileElementRule()); }
-	 iv_ruleTUFileElement=ruleTUFileElement 
-	 { $current=$iv_ruleTUFileElement.current; } 
-	 EOF 
-;
-
-// Rule TUFileElement
-ruleTUFileElement returns [EObject current=null] 
-    @init { enterRule(); 
-    }
-    @after { leaveRule(); }:
-(
-    { 
-        newCompositeNode(grammarAccess.getTUFileElementAccess().getTUModelParserRuleCall_0()); 
-    }
-    this_TUModel_0=ruleTUModel
-    { 
-        $current = $this_TUModel_0.current; 
-        afterParserOrEnumRuleCall();
-    }
-
-    |
-    { 
-        newCompositeNode(grammarAccess.getTUFileElementAccess().getTUExecutionParserRuleCall_1()); 
-    }
-    this_TUExecution_1=ruleTUExecution
-    { 
-        $current = $this_TUExecution_1.current; 
-        afterParserOrEnumRuleCall();
-    }
-)
-;
-
-
-
-
-
-// Entry rule entryRuleTUModel
-entryRuleTUModel returns [EObject current=null] 
-	:
-	{ newCompositeNode(grammarAccess.getTUModelRule()); }
-	 iv_ruleTUModel=ruleTUModel 
-	 { $current=$iv_ruleTUModel.current; } 
-	 EOF 
-;
-
-// Rule TUModel
-ruleTUModel returns [EObject current=null] 
-    @init { enterRule(); 
-    }
-    @after { leaveRule(); }:
-(	otherlv_0='model' 
-    {
-    	newLeafNode(otherlv_0, grammarAccess.getTUModelAccess().getModelKeyword_0());
-    }
-(
-(
-		{ 
-	        newCompositeNode(grammarAccess.getTUModelAccess().getNameValidIDParserRuleCall_1_0()); 
-	    }
-		lv_name_1_0=ruleValidID		{
-	        if ($current==null) {
-	            $current = createModelElementForParent(grammarAccess.getTUModelRule());
-	        }
-       		set(
-       			$current, 
-       			"name",
-        		lv_name_1_0, 
-        		"ValidID");
-	        afterParserOrEnumRuleCall();
-	    }
-
-)
-)((	otherlv_2='{' 
-    {
-    	newLeafNode(otherlv_2, grammarAccess.getTUModelAccess().getLeftCurlyBracketKeyword_2_0_0());
-    }
-(
-(
-		{ 
-	        newCompositeNode(grammarAccess.getTUModelAccess().getElementsTUModelElementParserRuleCall_2_0_1_0()); 
-	    }
-		lv_elements_3_0=ruleTUModelElement		{
-	        if ($current==null) {
-	            $current = createModelElementForParent(grammarAccess.getTUModelRule());
-	        }
-       		add(
-       			$current, 
-       			"elements",
-        		lv_elements_3_0, 
+        		lv_elements_5_0, 
         		"TUModelElement");
 	        afterParserOrEnumRuleCall();
 	    }
 
 )
-)*	otherlv_4='}' 
-    {
-    	newLeafNode(otherlv_4, grammarAccess.getTUModelAccess().getRightCurlyBracketKeyword_2_0_2());
+)*))
+;
+
+
+
+
+
+// Entry rule entryRuleTUModelDeclaration
+entryRuleTUModelDeclaration returns [EObject current=null] 
+	:
+	{ newCompositeNode(grammarAccess.getTUModelDeclarationRule()); }
+	 iv_ruleTUModelDeclaration=ruleTUModelDeclaration 
+	 { $current=$iv_ruleTUModelDeclaration.current; } 
+	 EOF 
+;
+
+// Rule TUModelDeclaration
+ruleTUModelDeclaration returns [EObject current=null] 
+    @init { enterRule(); 
     }
-(	otherlv_5=';' 
+    @after { leaveRule(); }:
+((
     {
-    	newLeafNode(otherlv_5, grammarAccess.getTUModelAccess().getSemicolonKeyword_2_0_3());
+        $current = forceCreateModelElement(
+            grammarAccess.getTUModelDeclarationAccess().getTUModelDeclarationAction_0(),
+            $current);
     }
-)?)
-    |	otherlv_6=';' 
+)	otherlv_1='model' 
     {
-    	newLeafNode(otherlv_6, grammarAccess.getTUModelAccess().getSemicolonKeyword_2_1());
+    	newLeafNode(otherlv_1, grammarAccess.getTUModelDeclarationAccess().getModelKeyword_1());
     }
-))
+(
+(
+		lv_name_2_0=RULE_STRING
+		{
+			newLeafNode(lv_name_2_0, grammarAccess.getTUModelDeclarationAccess().getNameSTRINGTerminalRuleCall_2_0()); 
+		}
+		{
+	        if ($current==null) {
+	            $current = createModelElement(grammarAccess.getTUModelDeclarationRule());
+	        }
+       		setWithLastConsumed(
+       			$current, 
+       			"name",
+        		lv_name_2_0, 
+        		"STRING");
+	    }
+
+)
+)?	otherlv_3=';' 
+    {
+    	newLeafNode(otherlv_3, grammarAccess.getTUModelDeclarationAccess().getSemicolonKeyword_3());
+    }
+)
+;
+
+
+
+
+
+// Entry rule entryRuleTUModelElement
+entryRuleTUModelElement returns [EObject current=null] 
+	:
+	{ newCompositeNode(grammarAccess.getTUModelElementRule()); }
+	 iv_ruleTUModelElement=ruleTUModelElement 
+	 { $current=$iv_ruleTUModelElement.current; } 
+	 EOF 
+;
+
+// Rule TUModelElement
+ruleTUModelElement returns [EObject current=null] 
+    @init { enterRule(); 
+    }
+    @after { leaveRule(); }:
+(
+    { 
+        newCompositeNode(grammarAccess.getTUModelElementAccess().getTUExecutionParserRuleCall_0()); 
+    }
+    this_TUExecution_0=ruleTUExecution
+    { 
+        $current = $this_TUExecution_0.current; 
+        afterParserOrEnumRuleCall();
+    }
+
+    |
+    { 
+        newCompositeNode(grammarAccess.getTUModelElementAccess().getTUSignalParserRuleCall_1()); 
+    }
+    this_TUSignal_1=ruleTUSignal
+    { 
+        $current = $this_TUSignal_1.current; 
+        afterParserOrEnumRuleCall();
+    }
+
+    |
+    { 
+        newCompositeNode(grammarAccess.getTUModelElementAccess().getTUClassParserRuleCall_2()); 
+    }
+    this_TUClass_2=ruleTUClass
+    { 
+        $current = $this_TUClass_2.current; 
+        afterParserOrEnumRuleCall();
+    }
+
+    |
+    { 
+        newCompositeNode(grammarAccess.getTUModelElementAccess().getTUAssociationParserRuleCall_3()); 
+    }
+    this_TUAssociation_3=ruleTUAssociation
+    { 
+        $current = $this_TUAssociation_3.current; 
+        afterParserOrEnumRuleCall();
+    }
+)
 ;
 
 
@@ -320,56 +325,6 @@ ruleTUExecution returns [EObject current=null]
 
 )
 ))
-;
-
-
-
-
-
-// Entry rule entryRuleTUModelElement
-entryRuleTUModelElement returns [EObject current=null] 
-	:
-	{ newCompositeNode(grammarAccess.getTUModelElementRule()); }
-	 iv_ruleTUModelElement=ruleTUModelElement 
-	 { $current=$iv_ruleTUModelElement.current; } 
-	 EOF 
-;
-
-// Rule TUModelElement
-ruleTUModelElement returns [EObject current=null] 
-    @init { enterRule(); 
-    }
-    @after { leaveRule(); }:
-(
-    { 
-        newCompositeNode(grammarAccess.getTUModelElementAccess().getTUSignalParserRuleCall_0()); 
-    }
-    this_TUSignal_0=ruleTUSignal
-    { 
-        $current = $this_TUSignal_0.current; 
-        afterParserOrEnumRuleCall();
-    }
-
-    |
-    { 
-        newCompositeNode(grammarAccess.getTUModelElementAccess().getTUClassParserRuleCall_1()); 
-    }
-    this_TUClass_1=ruleTUClass
-    { 
-        $current = $this_TUClass_1.current; 
-        afterParserOrEnumRuleCall();
-    }
-
-    |
-    { 
-        newCompositeNode(grammarAccess.getTUModelElementAccess().getTUAssociationParserRuleCall_2()); 
-    }
-    this_TUAssociation_2=ruleTUAssociation
-    { 
-        $current = $this_TUAssociation_2.current; 
-        afterParserOrEnumRuleCall();
-    }
-)
 ;
 
 
@@ -565,53 +520,70 @@ ruleTUAssociation returns [EObject current=null]
     @init { enterRule(); 
     }
     @after { leaveRule(); }:
-(	otherlv_0='association' 
+((((
     {
-    	newLeafNode(otherlv_0, grammarAccess.getTUAssociationAccess().getAssociationKeyword_0());
+        $current = forceCreateModelElement(
+            grammarAccess.getTUAssociationAccess().getTUAssociationAction_0_0_0(),
+            $current);
     }
-(
+)	otherlv_1='association' 
+    {
+    	newLeafNode(otherlv_1, grammarAccess.getTUAssociationAccess().getAssociationKeyword_0_0_1());
+    }
+)
+    |((
+    {
+        $current = forceCreateModelElement(
+            grammarAccess.getTUAssociationAccess().getTUCompositionAction_0_1_0(),
+            $current);
+    }
+)	otherlv_3='composition' 
+    {
+    	newLeafNode(otherlv_3, grammarAccess.getTUAssociationAccess().getCompositionKeyword_0_1_1());
+    }
+))(
 (
 		{ 
 	        newCompositeNode(grammarAccess.getTUAssociationAccess().getNameValidIDParserRuleCall_1_0()); 
 	    }
-		lv_name_1_0=ruleValidID		{
+		lv_name_4_0=ruleValidID		{
 	        if ($current==null) {
 	            $current = createModelElementForParent(grammarAccess.getTUAssociationRule());
 	        }
        		set(
        			$current, 
        			"name",
-        		lv_name_1_0, 
+        		lv_name_4_0, 
         		"ValidID");
 	        afterParserOrEnumRuleCall();
 	    }
 
 )
-)	otherlv_2='{' 
+)	otherlv_5='{' 
     {
-    	newLeafNode(otherlv_2, grammarAccess.getTUAssociationAccess().getLeftCurlyBracketKeyword_2());
+    	newLeafNode(otherlv_5, grammarAccess.getTUAssociationAccess().getLeftCurlyBracketKeyword_2());
     }
 (
 (
 		{ 
 	        newCompositeNode(grammarAccess.getTUAssociationAccess().getEndsTUAssociationEndParserRuleCall_3_0()); 
 	    }
-		lv_ends_3_0=ruleTUAssociationEnd		{
+		lv_ends_6_0=ruleTUAssociationEnd		{
 	        if ($current==null) {
 	            $current = createModelElementForParent(grammarAccess.getTUAssociationRule());
 	        }
        		add(
        			$current, 
        			"ends",
-        		lv_ends_3_0, 
+        		lv_ends_6_0, 
         		"TUAssociationEnd");
 	        afterParserOrEnumRuleCall();
 	    }
 
 )
-)*	otherlv_4='}' 
+)*	otherlv_7='}' 
     {
-    	newLeafNode(otherlv_4, grammarAccess.getTUAssociationAccess().getRightCurlyBracketKeyword_4());
+    	newLeafNode(otherlv_7, grammarAccess.getTUAssociationAccess().getRightCurlyBracketKeyword_4());
     }
 )
 ;
@@ -1702,7 +1674,22 @@ ruleTUAssociationEnd returns [EObject current=null]
 	    }
 
 )
-)(
+)?(
+(
+		lv_container_3_0=	'container' 
+    {
+        newLeafNode(lv_container_3_0, grammarAccess.getTUAssociationEndAccess().getContainerContainerKeyword_3_0());
+    }
+ 
+	    {
+	        if ($current==null) {
+	            $current = createModelElement(grammarAccess.getTUAssociationEndRule());
+	        }
+       		setWithLastConsumed($current, "container", true, "container");
+	    }
+
+)
+)?(
 (
 		{
 			if ($current==null) {
@@ -1710,7 +1697,7 @@ ruleTUAssociationEnd returns [EObject current=null]
 	        }
         }
 		{ 
-	        newCompositeNode(grammarAccess.getTUAssociationEndAccess().getEndClassTUClassCrossReference_3_0()); 
+	        newCompositeNode(grammarAccess.getTUAssociationEndAccess().getEndClassTUClassCrossReference_4_0()); 
 	    }
 		ruleQualifiedName		{ 
 	        afterParserOrEnumRuleCall();
@@ -1720,24 +1707,24 @@ ruleTUAssociationEnd returns [EObject current=null]
 )(
 (
 		{ 
-	        newCompositeNode(grammarAccess.getTUAssociationEndAccess().getNameValidIDParserRuleCall_4_0()); 
+	        newCompositeNode(grammarAccess.getTUAssociationEndAccess().getNameValidIDParserRuleCall_5_0()); 
 	    }
-		lv_name_4_0=ruleValidID		{
+		lv_name_5_0=ruleValidID		{
 	        if ($current==null) {
 	            $current = createModelElementForParent(grammarAccess.getTUAssociationEndRule());
 	        }
        		set(
        			$current, 
        			"name",
-        		lv_name_4_0, 
+        		lv_name_5_0, 
         		"ValidID");
 	        afterParserOrEnumRuleCall();
 	    }
 
 )
-)	otherlv_5=';' 
+)	otherlv_6=';' 
     {
-    	newLeafNode(otherlv_5, grammarAccess.getTUAssociationEndAccess().getSemicolonKeyword_5());
+    	newLeafNode(otherlv_6, grammarAccess.getTUAssociationEndAccess().getSemicolonKeyword_6());
     }
 )
 ;

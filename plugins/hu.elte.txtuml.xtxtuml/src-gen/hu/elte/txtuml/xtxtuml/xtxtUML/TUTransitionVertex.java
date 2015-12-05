@@ -10,11 +10,11 @@ package hu.elte.txtuml.xtxtuml.xtxtUML;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex#isFrom <em>From</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex#getVertex <em>Vertex</em>}</li>
  * </ul>
- * </p>
  *
  * @see hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage#getTUTransitionVertex()
  * @model

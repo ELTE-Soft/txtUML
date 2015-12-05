@@ -23,14 +23,15 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUAssociationEndImpl#getVisibility <em>Visibility</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUAssociationEndImpl#isNotNavigable <em>Not Navigable</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUAssociationEndImpl#getMultiplicity <em>Multiplicity</em>}</li>
+ *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUAssociationEndImpl#isContainer <em>Container</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUAssociationEndImpl#getEndClass <em>End Class</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUAssociationEndImpl#getName <em>Name</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -85,6 +86,26 @@ public class TUAssociationEndImpl extends MinimalEObjectImpl.Container implement
    * @ordered
    */
   protected TUMultiplicity multiplicity;
+
+  /**
+   * The default value of the '{@link #isContainer() <em>Container</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isContainer()
+   * @generated
+   * @ordered
+   */
+  protected static final boolean CONTAINER_EDEFAULT = false;
+
+  /**
+   * The cached value of the '{@link #isContainer() <em>Container</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isContainer()
+   * @generated
+   * @ordered
+   */
+  protected boolean container = CONTAINER_EDEFAULT;
 
   /**
    * The cached value of the '{@link #getEndClass() <em>End Class</em>}' reference.
@@ -236,6 +257,29 @@ public class TUAssociationEndImpl extends MinimalEObjectImpl.Container implement
    * <!-- end-user-doc -->
    * @generated
    */
+  public boolean isContainer()
+  {
+    return container;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public void setContainer(boolean newContainer)
+  {
+    boolean oldContainer = container;
+    container = newContainer;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, XtxtUMLPackage.TU_ASSOCIATION_END__CONTAINER, oldContainer, container));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   public TUClass getEndClass()
   {
     if (endClass != null && endClass.eIsProxy())
@@ -329,6 +373,8 @@ public class TUAssociationEndImpl extends MinimalEObjectImpl.Container implement
         return isNotNavigable();
       case XtxtUMLPackage.TU_ASSOCIATION_END__MULTIPLICITY:
         return getMultiplicity();
+      case XtxtUMLPackage.TU_ASSOCIATION_END__CONTAINER:
+        return isContainer();
       case XtxtUMLPackage.TU_ASSOCIATION_END__END_CLASS:
         if (resolve) return getEndClass();
         return basicGetEndClass();
@@ -356,6 +402,9 @@ public class TUAssociationEndImpl extends MinimalEObjectImpl.Container implement
         return;
       case XtxtUMLPackage.TU_ASSOCIATION_END__MULTIPLICITY:
         setMultiplicity((TUMultiplicity)newValue);
+        return;
+      case XtxtUMLPackage.TU_ASSOCIATION_END__CONTAINER:
+        setContainer((Boolean)newValue);
         return;
       case XtxtUMLPackage.TU_ASSOCIATION_END__END_CLASS:
         setEndClass((TUClass)newValue);
@@ -386,6 +435,9 @@ public class TUAssociationEndImpl extends MinimalEObjectImpl.Container implement
       case XtxtUMLPackage.TU_ASSOCIATION_END__MULTIPLICITY:
         setMultiplicity((TUMultiplicity)null);
         return;
+      case XtxtUMLPackage.TU_ASSOCIATION_END__CONTAINER:
+        setContainer(CONTAINER_EDEFAULT);
+        return;
       case XtxtUMLPackage.TU_ASSOCIATION_END__END_CLASS:
         setEndClass((TUClass)null);
         return;
@@ -412,6 +464,8 @@ public class TUAssociationEndImpl extends MinimalEObjectImpl.Container implement
         return notNavigable != NOT_NAVIGABLE_EDEFAULT;
       case XtxtUMLPackage.TU_ASSOCIATION_END__MULTIPLICITY:
         return multiplicity != null;
+      case XtxtUMLPackage.TU_ASSOCIATION_END__CONTAINER:
+        return container != CONTAINER_EDEFAULT;
       case XtxtUMLPackage.TU_ASSOCIATION_END__END_CLASS:
         return endClass != null;
       case XtxtUMLPackage.TU_ASSOCIATION_END__NAME:
@@ -435,6 +489,8 @@ public class TUAssociationEndImpl extends MinimalEObjectImpl.Container implement
     result.append(visibility);
     result.append(", notNavigable: ");
     result.append(notNavigable);
+    result.append(", container: ");
+    result.append(container);
     result.append(", name: ");
     result.append(name);
     result.append(')');

@@ -1,9 +1,9 @@
 package hu.elte.txtuml.api.model.base;
 
-import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.models.HierarchicalModel.A;
-
 import org.junit.Before;
+
+import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.models.hierarchical.A;
 
 public class HierarchicalModelTestsBase extends TestsBase {
 

@@ -5,6 +5,6 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ ModelExecutorThreadTest.class })
+@SuiteClasses({ ModelExecutorThreadTest.class, CompositionTest.class })
 public class AllPackagePrivateTests {
 }
