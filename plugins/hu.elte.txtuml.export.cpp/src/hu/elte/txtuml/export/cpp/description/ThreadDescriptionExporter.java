@@ -15,6 +15,7 @@ public class ThreadDescriptionExporter {
 	
 	private Map<String, ThreadPoolConfiguration > configMap;
 	private boolean descriptionExported = false;
+	private boolean isMultiThreading = true;;
 	
 	List<String> warningList;
 	List<String> errorList;
@@ -41,14 +42,15 @@ public class ThreadDescriptionExporter {
 		
 		if(descriptionExported) return;
 		
-		for(Annotation container: description.getAnnotations() ){
-			if(container instanceof GroupContainer){
+		for(Annotation annotaion: description.getAnnotations() ){
+			if(annotaion instanceof GroupContainer){
 				
-				for(Annotation annotation: ((GroupContainer) container).value()){
+				for(Annotation annotation: ((GroupContainer) annotaion).value()){
 					numberOfConfigurations = numberOfConfigurations + 1;
 					
 					Group g = (Group) annotation;
 					ThreadPoolConfiguration config = new ThreadPoolConfiguration(numberOfConfigurations, g.gradient(), g.constant());
+					config.setMaxThreads(g.max());
 	
 					
 					checkEmptyGroup(g.contains());
@@ -62,6 +64,15 @@ public class ThreadDescriptionExporter {
 						}
 						
 					}
+				}
+			}
+			else if(annotaion instanceof Multithreading){
+				Multithreading mlt = (Multithreading) annotaion;
+				if(mlt.value()){
+					isMultiThreading = true;
+				}
+				else{
+					isMultiThreading = false;
 				}
 			}
 			else{
@@ -88,6 +99,10 @@ public class ThreadDescriptionExporter {
 	
 	public List<String> getWarnings(){
 		return warningList;
+	}
+	
+	public boolean isMultiThreading() {
+		return isMultiThreading;
 	}
 
 	private void checkEmptyGroup(Class<? extends ModelClass>[] classes) {

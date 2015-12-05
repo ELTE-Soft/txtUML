@@ -6,10 +6,12 @@ public class ThreadPoolConfiguration {
 	public class LinearFunction{
 		private double gradient;
 		private int constant;
+
 		
 		LinearFunction(double gradient, int constant){
-			this.gradient = gradient;
-			this.constant = constant;
+			
+			setGradient(gradient);
+			setConstant(constant);
 		}
 		
 		public double getGradient(){
@@ -20,17 +22,42 @@ public class ThreadPoolConfiguration {
 			return constant;
 		}
 		
+		public void setGradient(double gradient){
+			if (gradient >= 0 && gradient <= 1){
+				this.gradient = gradient;
+			}
+			else if (gradient < 0) {
+				this.gradient = 0;
+			}
+			else if (gradient > 1) {
+				this.gradient = 1;
+			}
+			
+		}
+		
+		public void setConstant(int constant){
+			if(constant < 0){
+				this.constant = 0;
+			}
+			else{
+				this.constant = constant;
+			}
+		}
+		
 	}
 	
 	ThreadPoolConfiguration(int id, double gradient, int constant){
 		this.id = id;
 		function = new LinearFunction(gradient,constant);
+		
+		
 	}
 	
 	private LinearFunction function;
 	
 	private int id;
 	private int threads;
+	private int maxThread;
 	
 	public int getId(){
 		return id;
@@ -40,7 +67,20 @@ public class ThreadPoolConfiguration {
 		return threads;
 	}
 	
+	public int getMaxThread(){
+		return maxThread;
+	}
+	
 	public LinearFunction getFunction(){
 		return function;
+	}
+	
+	public void setMaxThreads(int max){
+		if(max < 1){
+			maxThread = 1;
+		}
+		else{
+			maxThread = max;
+		}
 	}
 }

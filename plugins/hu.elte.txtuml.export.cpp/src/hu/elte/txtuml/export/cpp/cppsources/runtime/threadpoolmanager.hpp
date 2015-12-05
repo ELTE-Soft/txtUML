@@ -40,7 +40,13 @@ class ThreadPoolManager
 		void recalculateThreads(id_type id,int n)
 		{
 			LinearFunction function = *(function_matching_map[id]);
-			id_matching_map[id]->modifiedThreads(function(n));
+			if (function(n) > maximum_thread_map.at(id_type) ){
+				id_matching_map[id]->modifiedThreads(max);
+			}
+			else{
+				id_matching_map[id]->modifiedThreads(function(n));
+			}
+
 		}
 		
 		void enqueObject(StateMachineI* sm)
@@ -64,6 +70,7 @@ class ThreadPoolManager
 	
 		std::map<id_type,StateMachineThreadPool*> id_matching_map;
 		std::map<id_type,LinearFunction*>  function_matching_map;
+		std::map<id_type,int> maximum_thread_map;
 		unsigned int number_of_pools;
 	
 };

@@ -88,8 +88,7 @@ public class TxtUMLToCppWizard extends Wizard{
 			Uml2ToCppExporter cppExporter;
 			
 			if(threadManagmentDescription.isEmpty()){
-				
-				cppExporter = new Uml2ToCppExporter(model,null,false,runtimeOption,debugOption);
+				return false;
 			}
 			else{
 				//load description class
@@ -99,7 +98,14 @@ public class TxtUMLToCppWizard extends Wizard{
 				ThreadDescriptionExporter exporter= new ThreadDescriptionExporter();
 				exporter.exportDescription((Class<? extends Configuration>) txtUMLThreadDescription);
 				
-				cppExporter = new Uml2ToCppExporter(model,exporter.getConfigMap(),true,runtimeOption,debugOption);
+				if (exporter.isMultiThreading()) {
+					cppExporter = new Uml2ToCppExporter(model,exporter.getConfigMap(),true,runtimeOption,debugOption);
+				}
+				else {
+					cppExporter = new Uml2ToCppExporter(model,null,false,runtimeOption,debugOption);
+				}
+				
+				
 			}
 			
 			

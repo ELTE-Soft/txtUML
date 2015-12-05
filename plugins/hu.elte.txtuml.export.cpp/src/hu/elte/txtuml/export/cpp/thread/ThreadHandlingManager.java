@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.cpp.thread;
 
 import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.description.*;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
@@ -33,6 +34,8 @@ public class ThreadHandlingManager {
 	
 	Model model;
 	private static Map<String, ThreadPoolConfiguration > threadDescription;
+	private Set<ThreadPoolConfiguration> pools;
+	private int poolsNumber;
 	
 	public static final String ThreadManagerName = "ThreadPoolManager";
 	public static final String ThreadManagerHaderName = "threadpoolmanager.hpp";
@@ -43,6 +46,7 @@ public class ThreadHandlingManager {
 	public static final String ThreadPool = "StateMachineThreadPool";
 	public static final String FunctionMapName = "function_matching_map";
 	public static final String FunctionName = "LinearFunction";
+	public static final String MaximumThreadsMapName = "maximum_thread_map";
 	
 	int numberOfThreads;
 	
@@ -58,6 +62,13 @@ public class ThreadHandlingManager {
 		
 		classList = new ArrayList<Class>();
 		Shared.getTypedElements(classList,model.allOwnedElements(),UMLPackage.Literals.CLASS);
+		
+		Collection<ThreadPoolConfiguration> poolsCollection = threadDescription.values();
+		pools = new LinkedHashSet<ThreadPoolConfiguration>();
+		pools.addAll(poolsCollection);
+		poolsNumber = pools.size();
+		
+		
 	}
 	
 	public static Map<String, ThreadPoolConfiguration >  Description(){
@@ -83,23 +94,32 @@ public class ThreadHandlingManager {
 	private String createMaganerCppCource() {
 		String source = "";
 		
-		Collection<ThreadPoolConfiguration> poolsCollection = threadDescription.values();
-		Set<ThreadPoolConfiguration> pools = new LinkedHashSet<ThreadPoolConfiguration>();
-		pools.addAll(poolsCollection);
-		int poolsNumber = pools.size();
+		source = source + GenerationTemplates.CppInclude(ThreadManagerName);
+		source = source + createConstructorHead();
+		source = createConstructorBody();
 		
-		//include
-		source = source + "#include \"" + ThreadManagerHaderName + "\"\n\n";
-		
-		
-		//constructor
-		
-		//head
-		source = source + ThreadManagerName + "::" + ThreadManagerName + 
+		return source;
+	}
+	
+	private String createConstructorHead() {
+		return ThreadManagerName + "::" + ThreadManagerName + 
 				"(): "+ PoolsNumberField + "(" + (poolsNumber + 1) + ")\n";
+	}
+	
+	private String createConstructorBody() {
+		String body = "";
 		
-		//body
-		source = source + "{\n";
+		
+		body = "{\n" + setDefaultPoolValues () + setPoolsMap() + setFunctionMap() + maximumThreadMap() + "}\n\n";
+		
+		return body;
+	}
+	
+	
+	
+	private String setDefaultPoolValues() {
+		
+		String source = "{\n";
 		if(threadDescription.values().size() != classList.size()){
 			
 			source = source + "\t" + PoolsMapName +"[" + 0 + "] = new " + ThreadPool +
@@ -107,19 +127,46 @@ public class ThreadHandlingManager {
 			
 			source = source + "\t" + FunctionMapName +"[" + 0 + "] = new " + FunctionName +
 					"(" + 0 + "," +  1 + "); \n" ;
+			
+			source = source + "\t" + MaximumThreadsMapName +"[" + 0 + "] = " + 1 +"; \n" ;
+			
+			
+			
 		}
+		
+		return source;
+	}
+	
+	private String maximumThreadMap() {
+		String source = "";
+		for(ThreadPoolConfiguration pool: pools){
+			source = source  + "\t" + MaximumThreadsMapName +"[" + 0 + "] = " + pool.getMaxThread() +"; \n" ;
+		}
+		
+		return source;
 
+	}
+
+	private String setFunctionMap() {
+		
+		String source = "";
+		
+		for(ThreadPoolConfiguration pool: pools){
+			source = source + "\t" + FunctionMapName +"[" + pool.getId() + "] = new " + FunctionName +
+					"(" + pool.getFunction().getGradient() + "," +  pool.getFunction().getConstant() + "); \n" ;
+		}
+		
+		return source;
+	}
+
+	private String setPoolsMap() {
+		
+		String source = "";
 		
 		for(ThreadPoolConfiguration pool: pools){
 			source = source + "\t" + PoolsMapName +"[" + pool.getId() + "] = new " + ThreadPool +
 					"(" + pool.getFunction().getConstant() + "," +  "5); \n" ;
 		}
-
-		for(ThreadPoolConfiguration pool: pools){
-			source = source + "\t" + FunctionMapName +"[" + pool.getId() + "] = new " + FunctionName +
-					"(" + pool.getFunction().getGradient() + "," +  pool.getFunction().getConstant() + "); \n" ;
-		}
-		source = source + "}\n\n";
 		
 		return source;
 	}

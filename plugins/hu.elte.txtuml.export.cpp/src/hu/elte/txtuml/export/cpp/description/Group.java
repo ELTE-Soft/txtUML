@@ -18,4 +18,5 @@ public @interface Group{
 	Class<? extends ModelClass>[] contains();
 	double gradient() default 0;
 	int constant() default 1;
+	int max() default 1;
 }
