@@ -37,13 +37,6 @@ protected:
   std::condition_variable _cond;
 };
 
-class SeparateThreadRT: public RuntimeI
-{
-public:
-  void startObject(StateMachineI* sm_);
-  void run();
-};
-
 
 class SingleThreadRT:public RuntimeI
 {
@@ -57,23 +50,7 @@ private:
   void setupObjectVirtual(StateMachineI* sm_){sm_->setMessageQueue(_messageQueue);}
 
   std::shared_ptr<MessageQueueType> _messageQueue;
-  
-  std::atomic_bool waiting;
   std::condition_variable waiting_empty_cond;
-};
-
-class ThreadPoolRT:public RuntimeI
-{
-public:
-  ThreadPoolRT(size_t threads_= defaultThreadCount,int workTime_= defaultWorkTime);
-  void startObject(StateMachineI* sm_){sm_->startSM();}
-  void run();
-  void stopUponCompletion() {_pool.stopUponCompletion();}
-
-private:
-  void setupObjectVirtual(StateMachineI* sm_){sm_->setPool(&_pool);}
-
-  StateMachineThreadPool _pool;
 };
 
 class ConfiguredThreadPoolsRT: public RuntimeI

@@ -11,6 +11,7 @@
                label="txtUML">
             <command
                   commandId="hu.elte.txtuml.export.cpp.translate"
+                  icon="icons/txtUML_cpp.jpg"
                   label="Generate C++ code from txtUML"
                   style="push">
             </command>

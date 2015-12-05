@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.uml2.uml.Activity;
+//import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Constraint;
@@ -243,6 +243,7 @@ public class ClassExporter
 													returnType,
 													item.getName(),getOperationParams(item),
 													funcBody);*/
+			
 			source+=GenerationTemplates.FunctionDef(class_.getName(),
 					returnType,
 					item.getName(),getOperationParams(item),
@@ -298,11 +299,12 @@ public class ClassExporter
 	private void createFuncTypeMap(Region region,FuncTypeEnum funcType_,Boolean rt_)
 	{
 			Map<String,Pair<String, String>> map=new HashMap<String,Pair<String,String>>();
-			String source="";
-			String name="";
+			//String source="";
+			//String name="";
 			for(State item:getStateList(region))
 			{
 				Behavior behavior=null;
+				@SuppressWarnings("unused")
 				String unknownName=null;
 				switch(funcType_)
 				{
