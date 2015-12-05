@@ -1,14 +1,15 @@
 package hu.elte.txtuml.api.model;
 
+import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicLong;
+
 import hu.elte.txtuml.api.model.ModelExecutor.Report;
+import hu.elte.txtuml.api.model.assocends.Aggregation;
 import hu.elte.txtuml.api.model.assocends.Navigability;
 import hu.elte.txtuml.api.model.backend.MultipleContainerException;
 import hu.elte.txtuml.api.model.backend.MultiplicityException;
 import hu.elte.txtuml.api.model.backend.collections.AssociationsMap;
 import hu.elte.txtuml.utils.InstanceCreator;
-
-import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Base class for classes in the model.
@@ -295,9 +296,9 @@ public class ModelClass extends Region {
 
 	private <T extends ModelClass, C, AE extends AssociationEnd<T, C>> void containerCheck(Class<AE> otherEnd)
 			throws MultipleContainerException {
-		if (Container.class.isAssignableFrom(otherEnd)) {
+		if (Aggregation.Composite.class.isAssignableFrom(otherEnd)) {
 			for (Entry<Class<? extends AssociationEnd<?, ?>>, AssociationEnd<?, ?>> entry : associations.entrySet()) {
-				if (Container.class.isAssignableFrom(entry.getKey()) && !entry.getValue().isEmpty()) {
+				if (Aggregation.Composite.class.isAssignableFrom(entry.getKey()) && !entry.getValue().isEmpty()) {
 					throw new MultipleContainerException();
 				}
 			}
