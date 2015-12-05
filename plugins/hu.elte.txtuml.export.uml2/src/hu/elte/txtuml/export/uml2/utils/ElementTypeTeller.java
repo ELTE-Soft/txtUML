@@ -130,18 +130,34 @@ public final class ElementTypeTeller {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Vertex.class);
 	}
 
+	public static boolean isVertex(ITypeBinding type) {
+		return hasSuperClass(type, Vertex.class.getCanonicalName());
+	}
+
 	public static boolean isInitialPseudoState(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Initial.class);
+	}
+
+	public static boolean isInitialPseudoState(ITypeBinding type) {
+		return hasSuperClass(type, Initial.class.getCanonicalName());
 	}
 
 	public static boolean isChoicePseudoState(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Choice.class);
 	}
 
+	public static boolean isChoicePseudoState(ITypeBinding type) {
+		return hasSuperClass(type, Choice.class.getCanonicalName());
+	}
+
 	public static boolean isState(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, State.class);
 	}
 
+	public static boolean isState(ITypeBinding value) {
+		return hasSuperClass(value, State.class.getCanonicalName());
+	}
+	
 	public static boolean isCompositeState(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, CompositeState.class);
 	}
@@ -156,6 +172,10 @@ public final class ElementTypeTeller {
 
 	public static boolean isSignal(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Signal.class);
+	}
+
+	public static boolean isSignal(ITypeBinding value) {
+		return hasSuperClass(value, Signal.class.getCanonicalName());
 	}
 
 	public static boolean isAssociation(TypeDeclaration typeDeclaration) {
@@ -206,6 +226,13 @@ public final class ElementTypeTeller {
 	
 	public static boolean isGuard(MethodDeclaration method) {
 		return method.getName().toString().equals("guard");
+	}
+
+	public static boolean hasSuperClass(ITypeBinding type, String superClassName) {
+		while (type != null && !type.getQualifiedName().equals(superClassName)) {
+			type = type.getSuperclass();
+		}
+		return type != null;
 	}
 	
 }

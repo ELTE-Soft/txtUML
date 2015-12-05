@@ -43,6 +43,9 @@ public class PluginLogWrapper {
 	}
 	
 	public static void logError(String message, Throwable exception) {
+		// TODO: exceptions somehow got lost. inspect
+		System.out.println(message);
+		exception.printStackTrace();
 		getInstance().log(new Status(Status.ERROR, "hu.elte.txtuml.diagnostics", Status.OK, message, exception));
 	}
 	

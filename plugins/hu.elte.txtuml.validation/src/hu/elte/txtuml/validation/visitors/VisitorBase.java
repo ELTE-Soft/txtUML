@@ -73,7 +73,7 @@ public class VisitorBase extends ASTVisitor {
 			checkChildren(elem, "initial state", StateVisitor.ALLOWED_INITIAL_STATE_DECLARATIONS);
 		} else if (ElementTypeTeller.isTransition(elem)) {
 			checkChildren(elem, "transition", TransitionVisitor.ALLOWED_TRANSITION_DECLARATIONS);
-			acceptChildren(elem, new TransitionVisitor(collector));
+			acceptChildren(elem, new TransitionVisitor(elem, collector));
 		}
 	}
 
