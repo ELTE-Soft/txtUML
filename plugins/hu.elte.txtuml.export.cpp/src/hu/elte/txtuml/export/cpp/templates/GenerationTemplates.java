@@ -309,12 +309,8 @@ public class GenerationTemplates
 	
 	public static String HierarchicalStateMachineClassConstructor(String className_,Map<Pair<String,String>,Pair<String,String>> machine_,Map<String,String> subMachines_,String intialState_,Boolean rt_)
 	{
-		if(Options.Runtime()){
-			String source= className_+"::"+className_+"(" + RuntimePointer + " rt):"+GenerationNames.DefaultStateInitialization+","+GenerationNames.CurrentMachineName+"("+GenerationNames.NullPtr+")\n{\n";
-			return source+PrivateFunctionalTemplates.HierarchicalStateMachineClassConstructorSharedBody(className_, "this", machine_, subMachines_, intialState_, rt_);
-		}
 		
-		String source= className_+"::"+className_+"():"+GenerationNames.DefaultStateInitialization+","+GenerationNames.CurrentMachineName+"("+GenerationNames.NullPtr+")\n{\n";
+		String source= SimpleStateMachineClassConstructorHead(className_,rt_) +GenerationNames.DefaultStateInitialization+","+GenerationNames.CurrentMachineName+"("+GenerationNames.NullPtr+")\n{\n";
 		return source+PrivateFunctionalTemplates.HierarchicalStateMachineClassConstructorSharedBody(className_, "this", machine_, subMachines_, intialState_, rt_);
 	}
 	
@@ -336,18 +332,20 @@ public class GenerationTemplates
 	 * */
 	public static String SimpleStateMachineClassConstructor(String className_,Map<Pair<String,String>,Pair<String,String>> machine_,String intialState_,Boolean rt_)
 	{
-		if(Options.Runtime()){
-			String source=className_+"::"+className_+"(" + RuntimePointer + " rt):"+GenerationNames.DefaultStateInitialization +
+			String source= SimpleStateMachineClassConstructorHead(className_,rt_) + GenerationNames.DefaultStateInitialization +
 					"\n{\n"+PrivateFunctionalTemplates.StateMachineClassConstructorSharedBody(className_, machine_, intialState_)+"}\n\n";
 						return source+PrivateFunctionalTemplates.SimpleStateMachineClassConstructorSharedBody(className_, machine_, intialState_, rt_);
-		}
-		else{
-			String source=className_+"::"+className_+"():"+GenerationNames.DefaultStateInitialization +
-					"\n{\n"+PrivateFunctionalTemplates.StateMachineClassConstructorSharedBody(className_, machine_, intialState_)+"}\n\n";
-						return source+PrivateFunctionalTemplates.SimpleStateMachineClassConstructorSharedBody(className_, machine_, intialState_, rt_);
-		}
 			
 		
+	}
+	
+	public static String SimpleStateMachineClassConstructorHead(String className, Boolean rt){
+		if(rt){
+			return className +"::"+className +"(" + RuntimePointer + " rt):";
+		}
+		else{
+			return className +"::"+ className +"():";
+		}
 	}
 	
 	public static String GuardFunction(String guardFunctionName_,String constraint_,String eventName_)
@@ -448,17 +446,23 @@ public class GenerationTemplates
 		if (returnType == null) {
 			return "\n";
 		}
-		
-		else {
-			switch(PrivateFunctionalTemplates.CppType(returnType)) {
-				case "int": return "return 0;\n";
-				case "double": return "return 0;\n";
-				case "bool": return "return true;\n";
-				case GenerationNames.cppString: return "return \"\";\n";
-				default : return "return 0;\n";
-				
-			}
+		else{
+			return "return " + GetDefalultRetrunValue(returnType) + ";\n";
 		}
+		
+	}
+	
+	public static String GetDefalultRetrunValue(String returnType) {
+		
+		switch(PrivateFunctionalTemplates.CppType(returnType)) {
+			case "int": return "0";
+			case "double": return "0";
+			case "bool": return "true";
+			case GenerationNames.cppString: return "\"\"";
+			default : return "0";
+		
+		}
+		
 	}
 	
 }

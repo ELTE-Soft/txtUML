@@ -23,7 +23,9 @@ import hu.elte.txtuml.export.Uml2Utils;
 
 public class TxtUMLToCppWizard extends Wizard{
 	
-	private final String genericFolder = "gen";
+	private final String genericFolderName = "gen";
+	private final String cppCodesFolderName = "cpp_codes";
+	private final String umlFilesFolderName = "uml_files";
 	
 	private TxtUMLToCppPage createCppCodePage;
 	
@@ -62,16 +64,16 @@ public class TxtUMLToCppWizard extends Wizard{
 			boolean debugOption = createCppCodePage.selectDebugOption();
 			
 			
-			String genFolder = txtUMLProject + File.separator +  genericFolder;
+			String genFolder = txtUMLProject + File.separator +  genericFolderName;
 			String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation().toFile().getAbsolutePath();
 			
 			String splitModelName[] = txtUMLModel.split("\\.");
 			String simpleModelName = splitModelName[splitModelName.length - 1];
 			
-			String umlFilesFolder = genFolder + File.separator + "uml_files" + File.separator + simpleModelName;
+			String umlFilesFolder = genFolder + File.separator + umlFilesFolderName + File.separator + simpleModelName;
 			String umlFileLocation = umlFilesFolder + File.separator + txtUMLModel + ".uml";
 			
-			String cppFilesFolder = genericFolder + File.separator + "cpp_codes" + File.separator + simpleModelName;
+			String cppFilesFolder = genericFolderName + File.separator + cppCodesFolderName + File.separator + simpleModelName;
 						
 			try{
 				ExportUtils.exportTxtUMLModelToUML2(txtUMLProject, txtUMLModel,
@@ -91,6 +93,7 @@ public class TxtUMLToCppWizard extends Wizard{
 			}
 			else{
 				//load description class
+
 				URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(txtUMLProject, ThreadDescriptionExporter.class.getClassLoader());
 				Class<?> txtUMLThreadDescription = loader.loadClass(threadManagmentDescription);
 				ThreadDescriptionExporter exporter= new ThreadDescriptionExporter();

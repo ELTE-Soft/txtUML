@@ -7,6 +7,7 @@ package hu.elte.txtuml.export.cpp;
  **********************************************************/
 
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -58,10 +59,10 @@ public class Shared
 		{
 			//TODO
 		}
-		else if(guard_.eClass().equals(UMLPackage.Literals.CONSTRAINT))
-		{
+		else if(guard_.eClass().equals(UMLPackage.Literals.CONSTRAINT)){
+		
 			//source=getGuardFromValueSpecification(guard_.getSpecification());
-			source = "true";
+			source = GenerationTemplates.GetDefalultRetrunValue("Boolean");
 		}
 		return source;
 	}
