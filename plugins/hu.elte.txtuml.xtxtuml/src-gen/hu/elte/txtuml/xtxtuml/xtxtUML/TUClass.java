@@ -11,11 +11,11 @@ import org.eclipse.emf.common.util.EList;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUClass#getSuperClass <em>Super Class</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUClass#getMembers <em>Members</em>}</li>
  * </ul>
- * </p>
  *
  * @see hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage#getTUClass()
  * @model

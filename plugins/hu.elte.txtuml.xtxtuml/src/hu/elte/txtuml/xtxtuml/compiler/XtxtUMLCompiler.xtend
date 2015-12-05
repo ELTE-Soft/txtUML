@@ -9,6 +9,7 @@ import org.eclipse.xtext.xbase.XExpression
 import org.eclipse.xtext.xbase.compiler.XbaseCompiler
 import org.eclipse.xtext.xbase.compiler.output.ITreeAppendable
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
+import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression
 
 class XtxtUMLCompiler extends XbaseCompiler {
 	
@@ -18,7 +19,8 @@ class XtxtUMLCompiler extends XbaseCompiler {
 		switch (obj) {
 			RAlfAssocNavExpression,
 			RAlfDeleteObjectExpression,
-			RAlfSendSignalExpression
+			RAlfSendSignalExpression,
+			RAlfSignalAccessExpression
 				: obj.toJavaStatement(builder)
 			
 			default
@@ -27,6 +29,10 @@ class XtxtUMLCompiler extends XbaseCompiler {
 	}
 	
 	def dispatch toJavaStatement(RAlfAssocNavExpression navExpr, ITreeAppendable it) {
+		// intentionally left empty
+	}
+	
+	def dispatch toJavaStatement(RAlfSignalAccessExpression sigExpr, ITreeAppendable it) {
 		// intentionally left empty
 	}
 	
@@ -49,17 +55,26 @@ class XtxtUMLCompiler extends XbaseCompiler {
 	}
 	
 	override protected internalToConvertedExpression(XExpression obj, ITreeAppendable it) {
-		if (obj instanceof RAlfAssocNavExpression) {
-			obj.toJavaExpression(it);
-		} else {
-			super.internalToConvertedExpression(obj, it);
+		switch (obj) {
+			RAlfAssocNavExpression,
+			RAlfSignalAccessExpression
+				: obj.toJavaExpression(it)
+			
+			default
+				: super.internalToConvertedExpression(obj, it)
 		}
 	}
 	
-	def toJavaExpression(RAlfAssocNavExpression navExpr, ITreeAppendable it) {
+	def dispatch toJavaExpression(RAlfAssocNavExpression navExpr, ITreeAppendable it) {
 		navExpr.left.internalToConvertedExpression(it);
 		append(".assoc(");
 		append(navExpr.right.getPrimaryJvmElement as JvmType);
+		append(".class)");
+	}
+	
+	def dispatch toJavaExpression(RAlfSignalAccessExpression sigExpr, ITreeAppendable it) {
+		append("getSignal(");
+		append(sigExpr.lightweightType);
 		append(".class)");
 	}
 		

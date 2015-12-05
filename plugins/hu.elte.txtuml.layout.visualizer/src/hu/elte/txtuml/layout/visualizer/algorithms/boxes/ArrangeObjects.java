@@ -8,11 +8,8 @@ import hu.elte.txtuml.layout.visualizer.exceptions.BoxOverlapConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.MyException;
-import hu.elte.txtuml.layout.visualizer.helpers.BiMap;
 import hu.elte.txtuml.layout.visualizer.helpers.Helper;
 import hu.elte.txtuml.layout.visualizer.helpers.Options;
-import hu.elte.txtuml.layout.visualizer.helpers.Pair;
-import hu.elte.txtuml.layout.visualizer.helpers.Quadraple;
 import hu.elte.txtuml.layout.visualizer.helpers.StatementHelper;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.Point;
@@ -20,12 +17,17 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementLevel;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
+import hu.elte.txtuml.utils.Pair;
+import hu.elte.txtuml.utils.Quadruple;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 /**
  * This class arranges the boxes in the diagram using mainly a Bellman-Ford
@@ -255,8 +257,8 @@ public class ArrangeObjects
 		// current state
 		Pair<List<Statement>, Integer> pair = OverlapHelper.fixCurrentState(_objects,
 				_statements, _gid);
-		_statements.addAll(pair.First);
-		_gid = pair.Second;
+		_statements.addAll(pair.getFirst());
+		_gid = pair.getSecond();
 		
 		for (Entry<Point, HashSet<String>> entry : OverlapHelper.overlaps(_objects)
 				.entrySet())
@@ -336,8 +338,8 @@ public class ArrangeObjects
 		// current state
 		Pair<List<Statement>, Integer> pair = OverlapHelper.fixCurrentState(_objects,
 				_statements, _gid);
-		_statements.addAll(pair.First);
-		_gid = pair.Second;
+		_statements.addAll(pair.getFirst());
+		_gid = pair.getSecond();
 		
 		Boolean wasExtension = false;
 		do
@@ -506,7 +508,7 @@ public class ArrangeObjects
 	{
 		int n = _objects.size();
 		int startNode = 0;
-		ArrayList<Quadraple<Integer, Integer, Integer, Statement>> l = buildEdges(n,
+		ArrayList<Quadruple<Integer, Integer, Integer, Statement>> l = buildEdges(n,
 				stats);
 		
 		EdgeWeightedDigraph G = new EdgeWeightedDigraph((2 * n) + 1, l);
@@ -534,7 +536,7 @@ public class ArrangeObjects
 					if (v > n)
 					{
 						// set Y coordinate
-						nameOfTheObject = _indices.getKey(v - n);
+						nameOfTheObject = _indices.inverse().get(v - n);
 						
 						RectangleObject mod = _objects.stream()
 								.filter(o -> o.getName().equals(nameOfTheObject))
@@ -545,7 +547,7 @@ public class ArrangeObjects
 					else
 					{
 						// set X coordinate
-						nameOfTheObject = _indices.getKey(v);
+						nameOfTheObject = _indices.inverse().get(v);
 						
 						RectangleObject mod = _objects.stream()
 								.filter(o -> o.getName().equals(nameOfTheObject))
@@ -565,7 +567,7 @@ public class ArrangeObjects
 	
 	private void setIndices()
 	{
-		_indices = new BiMap<String, Integer>();
+		_indices =  HashBiMap.create(_objects.size());
 		// Set indices
 		{
 			Integer index = 1;
@@ -577,15 +579,15 @@ public class ArrangeObjects
 		}
 	}
 	
-	private ArrayList<Quadraple<Integer, Integer, Integer, Statement>> buildEdges(
+	private ArrayList<Quadruple<Integer, Integer, Integer, Statement>> buildEdges(
 			Integer n, List<Statement> stats) throws InternalException
 	{
-		ArrayList<Quadraple<Integer, Integer, Integer, Statement>> result = new ArrayList<Quadraple<Integer, Integer, Integer, Statement>>();
+		ArrayList<Quadruple<Integer, Integer, Integer, Statement>> result = new ArrayList<Quadruple<Integer, Integer, Integer, Statement>>();
 		
 		// Set the edges from node 0 to ALL
 		for (int i = 0; i < (2 * n) + 1; ++i)
 		{
-			result.add(new Quadraple<Integer, Integer, Integer, Statement>(0, i, 0, null));
+			result.add(new Quadruple<Integer, Integer, Integer, Statement>(0, i, 0, null));
 		}
 		
 		// Set edges based on statement constraints
@@ -597,7 +599,7 @@ public class ArrangeObjects
 				{
 					int i = _indices.get(s.getParameter(0)) + n;
 					int j = _indices.get(s.getParameter(1)) + n;
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(i, j,
 							-1, s));
 				}
 					break;
@@ -605,7 +607,7 @@ public class ArrangeObjects
 				{
 					int i = _indices.get(s.getParameter(1)) + n;
 					int j = _indices.get(s.getParameter(0)) + n;
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(i, j,
 							-1, s));
 				}
 					break;
@@ -613,7 +615,7 @@ public class ArrangeObjects
 				{
 					int i = _indices.get(s.getParameter(0));
 					int j = _indices.get(s.getParameter(1));
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(i, j,
 							-1, s));
 				}
 					break;
@@ -621,7 +623,7 @@ public class ArrangeObjects
 				{
 					int i = _indices.get(s.getParameter(1));
 					int j = _indices.get(s.getParameter(0));
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(i, j,
 							-1, s));
 				}
 					break;
@@ -629,9 +631,9 @@ public class ArrangeObjects
 				{
 					int i = _indices.get(s.getParameter(1));
 					int j = _indices.get(s.getParameter(0));
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(i, j,
 							0, s));
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(j, i,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(j, i,
 							0, s));
 				}
 					break;
@@ -639,9 +641,9 @@ public class ArrangeObjects
 				{
 					int i = _indices.get(s.getParameter(1)) + n;
 					int j = _indices.get(s.getParameter(0)) + n;
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(i, j,
 							0, s));
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(j, i,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(j, i,
 							0, s));
 				}
 					break;
@@ -649,15 +651,15 @@ public class ArrangeObjects
 				{
 					int i = _indices.get(s.getParameter(1));
 					int j = _indices.get(s.getParameter(0));
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(i, j,
 							0, s));
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(j, i,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(j, i,
 							0, s));
 					i = i + n;
 					j = j + n;
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(i, j,
 							1, s));
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(j, i,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(j, i,
 							-1, s));
 				}
 					break;
@@ -665,15 +667,15 @@ public class ArrangeObjects
 				{
 					int i = _indices.get(s.getParameter(1));
 					int j = _indices.get(s.getParameter(0));
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(i, j,
 							0, s));
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(j, i,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(j, i,
 							0, s));
 					i = i + n;
 					j = j + n;
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(i, j,
 							-1, s));
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(j, i,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(j, i,
 							1, s));
 				}
 					break;
@@ -681,15 +683,15 @@ public class ArrangeObjects
 				{
 					int i = _indices.get(s.getParameter(1));
 					int j = _indices.get(s.getParameter(0));
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(i, j,
 							1, s));
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(j, i,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(j, i,
 							-1, s));
 					i = i + n;
 					j = j + n;
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(i, j,
 							0, s));
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(j, i,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(j, i,
 							0, s));
 				}
 					break;
@@ -697,15 +699,15 @@ public class ArrangeObjects
 				{
 					int i = _indices.get(s.getParameter(1));
 					int j = _indices.get(s.getParameter(0));
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(i, j,
 							-1, s));
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(j, i,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(j, i,
 							1, s));
 					i = i + n;
 					j = j + n;
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(i, j,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(i, j,
 							0, s));
-					result.add(new Quadraple<Integer, Integer, Integer, Statement>(j, i,
+					result.add(new Quadruple<Integer, Integer, Integer, Statement>(j, i,
 							0, s));
 				}
 					break;

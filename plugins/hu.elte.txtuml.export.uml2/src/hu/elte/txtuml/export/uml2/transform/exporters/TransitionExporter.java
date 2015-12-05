@@ -56,8 +56,9 @@ public class TransitionExporter {
 				transitionName, sourceVertex, targetVertex);
 
 		exportTrigger(transitionDeclaration, exportedTransition);
-		exportEffectAction(transitionDeclaration, exportedTransition);
-		exportGuard(transitionDeclaration, exportedTransition);
+// TODO: Uncomment this	when activity export gets fixed.	
+//		exportEffectAction(transitionDeclaration, exportedTransition);
+//		exportGuard(transitionDeclaration, exportedTransition);
 
 		modelExporter.getMapping().put(
 				SharedUtils.qualifiedName(transitionDeclaration),
@@ -120,6 +121,7 @@ public class TransitionExporter {
 	 * 
 	 * @author Adam Ancsin
 	 */
+	@SuppressWarnings("unused")
 	private void exportEffectAction(TypeDeclaration transitionDeclaration,
 			Transition exportedTransition) {
 		MethodDeclaration effectMethodDeclaration = SharedUtils
@@ -145,6 +147,7 @@ public class TransitionExporter {
 	 *
 	 * @author Adam Ancsin
 	 */
+	@SuppressWarnings("unused")
 	private void exportGuard(TypeDeclaration transitionDeclaration,
 			org.eclipse.uml2.uml.Transition exportedTransition) {
 		MethodDeclaration guardDeclaration = SharedUtils

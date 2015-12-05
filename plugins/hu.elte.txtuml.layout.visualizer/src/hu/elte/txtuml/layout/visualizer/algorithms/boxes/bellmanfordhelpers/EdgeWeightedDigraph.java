@@ -1,7 +1,7 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers;
 
-import hu.elte.txtuml.layout.visualizer.helpers.Quadraple;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
+import hu.elte.txtuml.utils.Quadruple;
 
 import java.util.ArrayList;
 import java.util.Stack;
@@ -65,7 +65,7 @@ public class EdgeWeightedDigraph
 	 *            List of edges.
 	 */
 	public EdgeWeightedDigraph(Integer ns,
-			ArrayList<Quadraple<Integer, Integer, Integer, Statement>> es)
+			ArrayList<Quadruple<Integer, Integer, Integer, Statement>> es)
 	{
 		this(ns);
 		
@@ -73,19 +73,19 @@ public class EdgeWeightedDigraph
 		if (E < 0)
 			throw new IllegalArgumentException("Number of edges must be nonnegative");
 		
-		for (Quadraple<Integer, Integer, Integer, Statement> el : es)
+		for (Quadruple<Integer, Integer, Integer, Statement> el : es)
 		{
-			//Quadraple<Integer, Integer, Integer, Statement> el = es.get(i);
-			int v = el.First;
-			int w = el.Second;
+			//Quadruple<Integer, Integer, Integer, Statement> el = es.get(i);
+			int v = el.getFirst();
+			int w = el.getSecond();
 			if (v < 0 || v >= V)
 				throw new IndexOutOfBoundsException("vertex " + v
 						+ " is not between 0 and " + (V - 1));
 			if (w < 0 || w >= V)
 				throw new IndexOutOfBoundsException("vertex " + w
 						+ " is not between 0 and " + (V - 1));
-			double weight = el.Third;
-			addEdge(new DirectedEdge(v, w, weight, el.Fourth));
+			double weight = el.getThird();
+			addEdge(new DirectedEdge(v, w, weight, el.getFourth()));
 		}
 	}
 	

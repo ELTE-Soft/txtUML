@@ -11,6 +11,7 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementLevel;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
+import hu.elte.txtuml.utils.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -183,7 +184,8 @@ public class StatementHelper
 						s.getParameter(0), s.getParameter(1));
 				if (s.getParameters().size() == 3)
 				{
-					pair.Second += "_" + s.getParameter(2);
+					pair = new Pair<String, String>(pair.getFirst(), 
+							pair.getSecond() + "_" + s.getParameter(2));
 				}
 				
 				if (tempObj.containsKey(pair))

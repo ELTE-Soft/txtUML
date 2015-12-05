@@ -23,6 +23,10 @@ import hu.elte.txtuml.export.Uml2Utils;
 
 public class TxtUMLToCppWizard extends Wizard{
 	
+	private final String genericFolderName = "gen";
+	private final String cppCodesFolderName = "cpp_codes";
+	private final String umlFilesFolderName = "uml_files";
+	
 	private TxtUMLToCppPage createCppCodePage;
 	
 	public TxtUMLToCppWizard(){
@@ -36,6 +40,7 @@ public class TxtUMLToCppWizard extends Wizard{
 		return "Generate C++ code from txtUML Model";
 	}
 	
+	@Override
 	public void addPages(){
 		createCppCodePage = new TxtUMLToCppPage();
 		addPage(createCppCodePage);
@@ -59,18 +64,16 @@ public class TxtUMLToCppWizard extends Wizard{
 			boolean debugOption = createCppCodePage.selectDebugOption();
 			
 			
-			
-			
-			String genFolder = txtUMLProject + File.separator +  "gen";
+			String genFolder = txtUMLProject + File.separator +  genericFolderName;
 			String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation().toFile().getAbsolutePath();
 			
 			String splitModelName[] = txtUMLModel.split("\\.");
 			String simpleModelName = splitModelName[splitModelName.length - 1];
 			
-			String umlFilesFolder = genFolder + File.separator + "uml_files" + File.separator + simpleModelName;
+			String umlFilesFolder = genFolder + File.separator + umlFilesFolderName + File.separator + simpleModelName;
 			String umlFileLocation = umlFilesFolder + File.separator + txtUMLModel + ".uml";
 			
-			String cppFilesFolder = "gen" + File.separator + "cpp_codes" + File.separator + simpleModelName;
+			String cppFilesFolder = genericFolderName + File.separator + cppCodesFolderName + File.separator + simpleModelName;
 						
 			try{
 				ExportUtils.exportTxtUMLModelToUML2(txtUMLProject, txtUMLModel,
@@ -83,12 +86,14 @@ public class TxtUMLToCppWizard extends Wizard{
 			
 			Model model = Uml2Utils.loadModel(URI.createPlatformResourceURI(umlFileLocation, false));
 			Uml2ToCppExporter cppExporter;
+			
 			if(threadManagmentDescription.isEmpty()){
 				
 				cppExporter = new Uml2ToCppExporter(model,null,false,runtimeOption,debugOption);
 			}
 			else{
 				//load description class
+
 				URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(txtUMLProject, ThreadDescriptionExporter.class.getClassLoader());
 				Class<?> txtUMLThreadDescription = loader.loadClass(threadManagmentDescription);
 				ThreadDescriptionExporter exporter= new ThreadDescriptionExporter();

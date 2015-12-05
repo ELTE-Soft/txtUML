@@ -22,11 +22,11 @@ import org.eclipse.xtext.common.types.JvmTypeReference;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUAttributeOrOperationDeclarationPrefixImpl#getVisibility <em>Visibility</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUAttributeOrOperationDeclarationPrefixImpl#getType <em>Type</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

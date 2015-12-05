@@ -12,6 +12,18 @@ import org.eclipse.xtext.common.types.JvmType
 import org.eclipse.xtext.xbase.typesystem.references.ParameterizedTypeReference
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
 import com.google.inject.Inject
+import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
+import org.eclipse.xtext.xbase.typesystem.references.LightweightTypeReference
+import java.util.ArrayList
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionTrigger
+import hu.elte.txtuml.api.model.Signal
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
+import java.util.HashSet
 
 class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 
@@ -39,6 +51,104 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 			
 		(collectionOfRightTypesRef as ParameterizedTypeReference).addTypeArgument(rightTypeRef);
 		state.acceptActualType(collectionOfRightTypesRef);
+	}
+
+	def dispatch computeTypes(RAlfSignalAccessExpression sigExpr, ITypeComputationState state) {
+		var container = sigExpr.eContainer;
+		while (
+			container != null &&
+			!(container instanceof TUEntryOrExitActivity) &&
+			!(container instanceof TUTransition)
+		) {
+			container = container.eContainer;
+		}
+		
+		var visitedStates = new HashSet<TUState>();
+		var type = switch (container) {
+			TUEntryOrExitActivity
+				: if (container.eContainer instanceof TUState) {
+					getCommonSignalSuperType(
+						container.eContainer as TUState, state,
+						container.entry, visitedStates
+					)
+				} else {
+					getTypeForName(Signal, state)
+				}
+				
+			TUTransition
+				: getCommonSignalSuperType(container, state, visitedStates)
+			
+			default
+				: getTypeForName(Signal, state)
+		}
+		
+		state.acceptActualType(type);
+	}
+	
+	def private LightweightTypeReference getCommonSignalSuperType(
+		TUTransition trans,
+		ITypeComputationState cState,
+		HashSet<TUState> visitedStates
+	) {
+		var trigger = (trans.members.findFirst[
+			it instanceof TUTransitionTrigger
+		] as TUTransitionTrigger)?.trigger;
+		
+		if (trigger != null) {
+			val jvmSignal = trigger.getPrimaryJvmElement as JvmType;
+			return if (jvmSignal != null) {
+				cState.referenceOwner.toLightweightTypeReference(jvmSignal) 
+			} else {
+				getTypeForName(Signal, cState)
+			}
+		}
+		
+		var from = (trans.members.findFirst[
+			it instanceof TUTransitionVertex && (it as TUTransitionVertex).from
+		] as TUTransitionVertex)?.vertex;
+	
+		if (from != null && from.type == TUStateType.CHOICE) {
+			return getCommonSignalSuperType(from, cState, true, visitedStates);
+		}
+	
+		return getTypeForName(Signal, cState);
+	}
+	
+	def private LightweightTypeReference getCommonSignalSuperType(
+		TUState state,
+		ITypeComputationState cState,
+		boolean toState,
+		HashSet<TUState> visitedStates
+	) {
+		if (!visitedStates.add(state)) {
+			return getTypeForName(Signal, cState);
+		}
+		
+		val siblingsAndSelf = switch (c : state.eContainer) {
+			TUState : c.members
+			TUClass : c.members
+		}
+		
+		var signalCandidates = new ArrayList<LightweightTypeReference>();
+		for (siblingOrSelf : siblingsAndSelf) {
+			if (siblingOrSelf instanceof TUTransition &&
+				((siblingOrSelf as TUTransition).members.findFirst[
+					it instanceof TUTransitionVertex && toState != (it as TUTransitionVertex).from
+				] as TUTransitionVertex)?.vertex == state
+			) {
+				signalCandidates.add(
+					getCommonSignalSuperType(
+						siblingOrSelf as TUTransition, cState, visitedStates
+					)
+				);
+			}
+		}
+		
+		return if (!signalCandidates.empty) {
+			getCommonSuperType(signalCandidates, cState)
+		} else {
+			getTypeForName(Signal, cState)
+		}
 	}
 
 	def dispatch computeTypes(RAlfDeleteObjectExpression deleteExpr, ITypeComputationState state) {

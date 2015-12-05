@@ -28,12 +28,12 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUStateImpl#getType <em>Type</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUStateImpl#getName <em>Name</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUStateImpl#getMembers <em>Members</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

@@ -1,12 +1,13 @@
 package hu.elte.txtuml.export.cpp;
 
 /***********************************************************
- * Author: Hack János
+ * Author: Hack Jï¿½nos
  * Version 0.9 2014.02.25
  * Email:zodiakus (at) elte.hu
  **********************************************************/
 
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -58,9 +59,10 @@ public class Shared
 		{
 			//TODO
 		}
-		else if(guard_.eClass().equals(UMLPackage.Literals.CONSTRAINT))
-		{
-			source=getGuardFromValueSpecification(guard_.getSpecification());
+		else if(guard_.eClass().equals(UMLPackage.Literals.CONSTRAINT)){
+		
+			//source=getGuardFromValueSpecification(guard_.getSpecification());
+			source = GenerationTemplates.GetDefalultRetrunValue("Boolean");
 		}
 		return source;
 	}

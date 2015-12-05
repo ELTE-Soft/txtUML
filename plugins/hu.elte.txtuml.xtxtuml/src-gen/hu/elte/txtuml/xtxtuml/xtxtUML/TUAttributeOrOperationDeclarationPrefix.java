@@ -11,11 +11,11 @@ import org.eclipse.xtext.common.types.JvmTypeReference;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix#getVisibility <em>Visibility</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix#getType <em>Type</em>}</li>
  * </ul>
- * </p>
  *
  * @see hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage#getTUAttributeOrOperationDeclarationPrefix()
  * @model

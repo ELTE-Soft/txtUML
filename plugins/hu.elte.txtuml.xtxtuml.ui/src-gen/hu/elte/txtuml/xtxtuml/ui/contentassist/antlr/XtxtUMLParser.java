@@ -37,11 +37,11 @@ public class XtxtUMLParser extends AbstractContentAssistParser {
 			nameMappings = new HashMap<AbstractElement, String>() {
 				private static final long serialVersionUID = 1L;
 				{
-					put(grammarAccess.getTUFileElementAccess().getAlternatives(), "rule__TUFileElement__Alternatives");
-					put(grammarAccess.getTUModelAccess().getAlternatives_2(), "rule__TUModel__Alternatives_2");
+					put(grammarAccess.getTUFileAccess().getAlternatives(), "rule__TUFile__Alternatives");
 					put(grammarAccess.getTUModelElementAccess().getAlternatives(), "rule__TUModelElement__Alternatives");
 					put(grammarAccess.getTUSignalAccess().getAlternatives_2(), "rule__TUSignal__Alternatives_2");
 					put(grammarAccess.getTUClassAccess().getAlternatives_3(), "rule__TUClass__Alternatives_3");
+					put(grammarAccess.getTUAssociationAccess().getAlternatives_0(), "rule__TUAssociation__Alternatives_0");
 					put(grammarAccess.getTUClassMemberAccess().getAlternatives(), "rule__TUClassMember__Alternatives");
 					put(grammarAccess.getTUClassMemberAccess().getAlternatives_1_1(), "rule__TUClassMember__Alternatives_1_1");
 					put(grammarAccess.getTUStateAccess().getAlternatives_2(), "rule__TUState__Alternatives_2");
@@ -49,6 +49,7 @@ public class XtxtUMLParser extends AbstractContentAssistParser {
 					put(grammarAccess.getTUEntryOrExitActivityAccess().getAlternatives_0(), "rule__TUEntryOrExitActivity__Alternatives_0");
 					put(grammarAccess.getTUTransitionMemberAccess().getAlternatives(), "rule__TUTransitionMember__Alternatives");
 					put(grammarAccess.getTUTransitionVertexAccess().getAlternatives_0(), "rule__TUTransitionVertex__Alternatives_0");
+					put(grammarAccess.getTUTransitionGuardAccess().getAlternatives_2(), "rule__TUTransitionGuard__Alternatives_2");
 					put(grammarAccess.getTUMultiplicityAccess().getAlternatives(), "rule__TUMultiplicity__Alternatives");
 					put(grammarAccess.getTUMultiplicityAccess().getAlternatives_0_1_1(), "rule__TUMultiplicity__Alternatives_0_1_1");
 					put(grammarAccess.getXRAlfStatementAccess().getAlternatives(), "rule__XRAlfStatement__Alternatives");
@@ -94,10 +95,9 @@ public class XtxtUMLParser extends AbstractContentAssistParser {
 					put(grammarAccess.getJvmWildcardTypeReferenceAccess().getAlternatives_2(), "rule__JvmWildcardTypeReference__Alternatives_2");
 					put(grammarAccess.getTUStateTypeAccess().getAlternatives(), "rule__TUStateType__Alternatives");
 					put(grammarAccess.getTUVisibilityAccess().getAlternatives(), "rule__TUVisibility__Alternatives");
-					put(grammarAccess.getTUFileAccess().getGroup(), "rule__TUFile__Group__0");
-					put(grammarAccess.getTUFileAccess().getGroup_0(), "rule__TUFile__Group_0__0");
-					put(grammarAccess.getTUModelAccess().getGroup(), "rule__TUModel__Group__0");
-					put(grammarAccess.getTUModelAccess().getGroup_2_0(), "rule__TUModel__Group_2_0__0");
+					put(grammarAccess.getTUFileAccess().getGroup_1(), "rule__TUFile__Group_1__0");
+					put(grammarAccess.getTUFileAccess().getGroup_1_0(), "rule__TUFile__Group_1_0__0");
+					put(grammarAccess.getTUModelDeclarationAccess().getGroup(), "rule__TUModelDeclaration__Group__0");
 					put(grammarAccess.getTUExecutionAccess().getGroup(), "rule__TUExecution__Group__0");
 					put(grammarAccess.getTUSignalAccess().getGroup(), "rule__TUSignal__Group__0");
 					put(grammarAccess.getTUSignalAccess().getGroup_2_0(), "rule__TUSignal__Group_2_0__0");
@@ -105,6 +105,8 @@ public class XtxtUMLParser extends AbstractContentAssistParser {
 					put(grammarAccess.getTUClassAccess().getGroup_2(), "rule__TUClass__Group_2__0");
 					put(grammarAccess.getTUClassAccess().getGroup_3_0(), "rule__TUClass__Group_3_0__0");
 					put(grammarAccess.getTUAssociationAccess().getGroup(), "rule__TUAssociation__Group__0");
+					put(grammarAccess.getTUAssociationAccess().getGroup_0_0(), "rule__TUAssociation__Group_0_0__0");
+					put(grammarAccess.getTUAssociationAccess().getGroup_0_1(), "rule__TUAssociation__Group_0_1__0");
 					put(grammarAccess.getTUSignalAttributeAccess().getGroup(), "rule__TUSignalAttribute__Group__0");
 					put(grammarAccess.getTUClassMemberAccess().getGroup_1(), "rule__TUClassMember__Group_1__0");
 					put(grammarAccess.getTUClassMemberAccess().getGroup_1_1_0(), "rule__TUClassMember__Group_1_1_0__0");
@@ -128,6 +130,7 @@ public class XtxtUMLParser extends AbstractContentAssistParser {
 					put(grammarAccess.getTUMultiplicityAccess().getGroup_0_1(), "rule__TUMultiplicity__Group_0_1__0");
 					put(grammarAccess.getRAlfSendSignalExpressionAccess().getGroup(), "rule__RAlfSendSignalExpression__Group__0");
 					put(grammarAccess.getRAlfDeleteObjectExpressionAccess().getGroup(), "rule__RAlfDeleteObjectExpression__Group__0");
+					put(grammarAccess.getRAlfSignalAccessExpressionAccess().getGroup(), "rule__RAlfSignalAccessExpression__Group__0");
 					put(grammarAccess.getXParenthesizedRAlfExpressionAccess().getGroup(), "rule__XParenthesizedRAlfExpression__Group__0");
 					put(grammarAccess.getXConstructorCallAccess().getGroup(), "rule__XConstructorCall__Group__0");
 					put(grammarAccess.getXConstructorCallAccess().getGroup_3(), "rule__XConstructorCall__Group_3__0");
@@ -286,11 +289,10 @@ public class XtxtUMLParser extends AbstractContentAssistParser {
 					put(grammarAccess.getJvmTypeParameterAccess().getGroup_1(), "rule__JvmTypeParameter__Group_1__0");
 					put(grammarAccess.getQualifiedNameWithWildcardAccess().getGroup(), "rule__QualifiedNameWithWildcard__Group__0");
 					put(grammarAccess.getQualifiedNameInStaticImportAccess().getGroup(), "rule__QualifiedNameInStaticImport__Group__0");
-					put(grammarAccess.getTUFileAccess().getNameAssignment_0_1(), "rule__TUFile__NameAssignment_0_1");
-					put(grammarAccess.getTUFileAccess().getImportSectionAssignment_1(), "rule__TUFile__ImportSectionAssignment_1");
-					put(grammarAccess.getTUFileAccess().getElementsAssignment_2(), "rule__TUFile__ElementsAssignment_2");
-					put(grammarAccess.getTUModelAccess().getNameAssignment_1(), "rule__TUModel__NameAssignment_1");
-					put(grammarAccess.getTUModelAccess().getElementsAssignment_2_0_1(), "rule__TUModel__ElementsAssignment_2_0_1");
+					put(grammarAccess.getTUFileAccess().getNameAssignment_1_0_1(), "rule__TUFile__NameAssignment_1_0_1");
+					put(grammarAccess.getTUFileAccess().getImportSectionAssignment_1_1(), "rule__TUFile__ImportSectionAssignment_1_1");
+					put(grammarAccess.getTUFileAccess().getElementsAssignment_1_2(), "rule__TUFile__ElementsAssignment_1_2");
+					put(grammarAccess.getTUModelDeclarationAccess().getNameAssignment_2(), "rule__TUModelDeclaration__NameAssignment_2");
 					put(grammarAccess.getTUExecutionAccess().getNameAssignment_1(), "rule__TUExecution__NameAssignment_1");
 					put(grammarAccess.getTUExecutionAccess().getBodyAssignment_2(), "rule__TUExecution__BodyAssignment_2");
 					put(grammarAccess.getTUSignalAccess().getNameAssignment_1(), "rule__TUSignal__NameAssignment_1");
@@ -327,12 +329,14 @@ public class XtxtUMLParser extends AbstractContentAssistParser {
 					put(grammarAccess.getTUTransitionVertexAccess().getFromAssignment_0_0(), "rule__TUTransitionVertex__FromAssignment_0_0");
 					put(grammarAccess.getTUTransitionVertexAccess().getVertexAssignment_1(), "rule__TUTransitionVertex__VertexAssignment_1");
 					put(grammarAccess.getTUTransitionEffectAccess().getBodyAssignment_1(), "rule__TUTransitionEffect__BodyAssignment_1");
-					put(grammarAccess.getTUTransitionGuardAccess().getExpressionAssignment_2(), "rule__TUTransitionGuard__ExpressionAssignment_2");
+					put(grammarAccess.getTUTransitionGuardAccess().getElseAssignment_2_0(), "rule__TUTransitionGuard__ElseAssignment_2_0");
+					put(grammarAccess.getTUTransitionGuardAccess().getExpressionAssignment_2_1(), "rule__TUTransitionGuard__ExpressionAssignment_2_1");
 					put(grammarAccess.getTUAssociationEndAccess().getVisibilityAssignment_0(), "rule__TUAssociationEnd__VisibilityAssignment_0");
 					put(grammarAccess.getTUAssociationEndAccess().getNotNavigableAssignment_1(), "rule__TUAssociationEnd__NotNavigableAssignment_1");
 					put(grammarAccess.getTUAssociationEndAccess().getMultiplicityAssignment_2(), "rule__TUAssociationEnd__MultiplicityAssignment_2");
-					put(grammarAccess.getTUAssociationEndAccess().getEndClassAssignment_3(), "rule__TUAssociationEnd__EndClassAssignment_3");
-					put(grammarAccess.getTUAssociationEndAccess().getNameAssignment_4(), "rule__TUAssociationEnd__NameAssignment_4");
+					put(grammarAccess.getTUAssociationEndAccess().getContainerAssignment_3(), "rule__TUAssociationEnd__ContainerAssignment_3");
+					put(grammarAccess.getTUAssociationEndAccess().getEndClassAssignment_4(), "rule__TUAssociationEnd__EndClassAssignment_4");
+					put(grammarAccess.getTUAssociationEndAccess().getNameAssignment_5(), "rule__TUAssociationEnd__NameAssignment_5");
 					put(grammarAccess.getTUMultiplicityAccess().getLowerAssignment_0_0(), "rule__TUMultiplicity__LowerAssignment_0_0");
 					put(grammarAccess.getTUMultiplicityAccess().getUpperSetAssignment_0_1_0(), "rule__TUMultiplicity__UpperSetAssignment_0_1_0");
 					put(grammarAccess.getTUMultiplicityAccess().getUpperAssignment_0_1_1_0(), "rule__TUMultiplicity__UpperAssignment_0_1_1_0");
@@ -341,6 +345,7 @@ public class XtxtUMLParser extends AbstractContentAssistParser {
 					put(grammarAccess.getRAlfSendSignalExpressionAccess().getSignalAssignment_2(), "rule__RAlfSendSignalExpression__SignalAssignment_2");
 					put(grammarAccess.getRAlfSendSignalExpressionAccess().getTargetAssignment_4(), "rule__RAlfSendSignalExpression__TargetAssignment_4");
 					put(grammarAccess.getRAlfDeleteObjectExpressionAccess().getObjectAssignment_2(), "rule__RAlfDeleteObjectExpression__ObjectAssignment_2");
+					put(grammarAccess.getRAlfSignalAccessExpressionAccess().getSigdataAssignment_1(), "rule__RAlfSignalAccessExpression__SigdataAssignment_1");
 					put(grammarAccess.getXConstructorCallAccess().getConstructorAssignment_2(), "rule__XConstructorCall__ConstructorAssignment_2");
 					put(grammarAccess.getXConstructorCallAccess().getTypeArgumentsAssignment_3_1(), "rule__XConstructorCall__TypeArgumentsAssignment_3_1");
 					put(grammarAccess.getXConstructorCallAccess().getExplicitConstructorCallAssignment_4(), "rule__XConstructorCall__ExplicitConstructorCallAssignment_4");

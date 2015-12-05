@@ -11,10 +11,10 @@ import org.eclipse.emf.common.util.EList;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation#getEnds <em>Ends</em>}</li>
  * </ul>
- * </p>
  *
  * @see hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage#getTUAssociation()
  * @model

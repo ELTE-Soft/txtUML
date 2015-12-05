@@ -1,0 +1,73 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>hu.elte.txtuml.updatesite</artifactId>
+	<packaging>eclipse-repository</packaging>
+	<name>txtUML Update Site</name>
+
+	<parent>
+		<groupId>hu.elte.txtuml</groupId>
+		<artifactId>hu.elte.txtuml.parent</artifactId>
+		<version>0.3.0-SNAPSHOT</version>
+		<relativePath>../../releng/hu.elte.txtuml.parent/pom.xml</relativePath>
+	</parent>
+
+	<properties>
+		<repository.target.path>${project.build.directory}/${project.artifactId}-${project.version}.zip</repository.target.path>
+		<repository.source.path>${project.build.directory}/repository</repository.source.path>
+		<content.jar.path>${repository.source.path}/content.jar</content.jar.path>
+		<content.xml.path>${repository.source.path}/content.xml</content.xml.path>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-p2-repository-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<!-- Do not create an all-in one site -->
+					<includeAllDependencies>false</includeAllDependencies>
+				</configuration>
+			</plugin>
+
+			<!-- Modify update site metadata and inject associate sites -->
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<dependencies>
+					<dependency>
+						<groupId>ant-contrib</groupId>
+						<artifactId>ant-contrib</artifactId>
+						<version>1.0b3</version>
+						<exclusions>
+							<exclusion>
+								<groupId>ant</groupId>
+								<artifactId>ant</artifactId>
+							</exclusion>
+						</exclusions>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant-nodeps</artifactId>
+						<version>1.8.1</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<configuration>
+							<target>
+								<ant antfile="${basedir}/add.associate.sites.xml" target="add.associate.sites" />
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

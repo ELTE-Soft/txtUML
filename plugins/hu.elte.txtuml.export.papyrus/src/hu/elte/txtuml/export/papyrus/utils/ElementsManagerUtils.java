@@ -26,7 +26,7 @@ public class ElementsManagerUtils {
 	 * @param diagramElement - The Element that is to be added
 	 */
 	public static void addElementToEditPart(EditPart EP, Element diagramElement){
-		addElementsToEditpart(EP, Arrays.asList(diagramElement));
+		addElementsToEditPart(EP, Arrays.asList(diagramElement));
 	}
 	
 	/**
@@ -35,7 +35,7 @@ public class ElementsManagerUtils {
 	 * @param diagramElements - The Elements that are to be added
 	 */
 	@SuppressWarnings("unchecked")
-	public static void addElementsToEditpart(EditPart EP, Collection<? extends Element> diagramElements) {
+	public static void addElementsToEditPart(EditPart EP, Collection<? extends Element> diagramElements) {
 		List<Element> diagramElementsList;
 		
 		if(!(diagramElements instanceof List<?>)){

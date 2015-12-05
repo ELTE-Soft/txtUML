@@ -18,6 +18,7 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUMultiplicityImpl#getLower <em>Lower</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUMultiplicityImpl#isUpperSet <em>Upper Set</em>}</li>
@@ -25,7 +26,6 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUMultiplicityImpl#isUpperInf <em>Upper Inf</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.TUMultiplicityImpl#isAny <em>Any</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

@@ -44,8 +44,9 @@ public class VertexExporter {
 		}
 
 		if (ElementTypeTeller.isState(vertexDeclaration)) {
-			exportStateEntryAction(vertexDeclaration, (State) vertex);
-			exportStateExitAction(vertexDeclaration, (State) vertex);
+// TODO: Uncomment this	when activity export gets fixed.	
+//			exportStateEntryAction(vertexDeclaration, (State) vertex);
+//			exportStateExitAction(vertexDeclaration, (State) vertex);
 		}
 
 		modelExporter.getMapping().put(
@@ -80,6 +81,7 @@ public class VertexExporter {
 	 * 
 	 * @author Adam Ancsin
 	 */
+	@SuppressWarnings("unused")
 	private void exportStateEntryAction(TypeDeclaration stateDeclaration,
 			State exportedState) {
 		MethodDeclaration entryMethodDeclaration = SharedUtils
@@ -105,6 +107,7 @@ public class VertexExporter {
 	 * 
 	 * @author Adam Ancsin
 	 */
+	@SuppressWarnings("unused")
 	private void exportStateExitAction(TypeDeclaration stateDeclaration,
 			State exportedState) {
 		MethodDeclaration exitMethodDeclaration = SharedUtils

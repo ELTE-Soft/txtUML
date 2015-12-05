@@ -472,10 +472,4 @@
       </ownedParameter>
     </ownedOperation>
   </packagedElement>
-  <profileApplication xmi:type="uml:ProfileApplication" xmi:id="_DHLzQ3LCEeWVx4ZuxFlarQ">
-    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_DHLzRHLCEeWVx4ZuxFlarQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
-      <references xmi:type="ecore:EPackage" href="hu.elte.txtuml.stdlib.StdLib.profile.uml#_DHLzMnLCEeWVx4ZuxFlarQ"/>
-    </eAnnotations>
-    <appliedProfile xmi:type="uml:Profile" href="hu.elte.txtuml.stdlib.StdLib.profile.uml#_DHLzMHLCEeWVx4ZuxFlarQ"/>
-  </profileApplication>
 </uml:Model>

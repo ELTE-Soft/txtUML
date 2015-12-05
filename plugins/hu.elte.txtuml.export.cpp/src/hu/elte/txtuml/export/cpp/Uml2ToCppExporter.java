@@ -1,7 +1,7 @@
 package hu.elte.txtuml.export.cpp;
 
 /***********************************************************
- * Author: Hack János
+ * Author: Hack Jï¿½nos
  * Version 0.9 2014.02.25
  * Email:zodiakus (at) elte.hu
  * upcoming features:
@@ -55,7 +55,6 @@ public class Uml2ToCppExporter
 	private static final String DefaultModelName = "main";
 	
 	private Model model;
-	
 	
 	
 	private ClassExporter classExporter;

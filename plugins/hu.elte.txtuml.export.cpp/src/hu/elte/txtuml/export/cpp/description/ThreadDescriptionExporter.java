@@ -48,9 +48,11 @@ public class ThreadDescriptionExporter {
 					numberOfConfigurations = numberOfConfigurations + 1;
 					
 					Group g = (Group) annotation;
-					ThreadPoolConfiguration config = new ThreadPoolConfiguration(numberOfConfigurations,g.gradient(),g.constant());
+					ThreadPoolConfiguration config = new ThreadPoolConfiguration(numberOfConfigurations, g.gradient(), g.constant());
+	
 					
 					checkEmptyGroup(g.contains());
+					
 					for(Class<? extends ModelClass> cls: g.contains()){
 						if(!exportedClasses.contains(cls.getSimpleName())){
 							configMap.put(cls.getSimpleName(), config);

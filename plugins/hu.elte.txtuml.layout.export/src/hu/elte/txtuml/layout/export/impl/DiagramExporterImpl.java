@@ -1,10 +1,13 @@
 package hu.elte.txtuml.layout.export.impl;
 
+import java.lang.annotation.Annotation;
+
 import hu.elte.txtuml.api.layout.Above;
 import hu.elte.txtuml.api.layout.Below;
 import hu.elte.txtuml.api.layout.BottomMost;
 import hu.elte.txtuml.api.layout.Column;
 import hu.elte.txtuml.api.layout.Diagram;
+import hu.elte.txtuml.api.layout.Diagram.Layout;
 import hu.elte.txtuml.api.layout.Diamond;
 import hu.elte.txtuml.api.layout.East;
 import hu.elte.txtuml.api.layout.Left;
@@ -18,7 +21,6 @@ import hu.elte.txtuml.api.layout.Show;
 import hu.elte.txtuml.api.layout.South;
 import hu.elte.txtuml.api.layout.TopMost;
 import hu.elte.txtuml.api.layout.West;
-import hu.elte.txtuml.api.layout.Diagram.Layout;
 import hu.elte.txtuml.api.layout.containers.AboveContainer;
 import hu.elte.txtuml.api.layout.containers.BelowContainer;
 import hu.elte.txtuml.api.layout.containers.ColumnContainer;
@@ -40,8 +42,6 @@ import hu.elte.txtuml.layout.export.interfaces.StatementExporter;
 import hu.elte.txtuml.layout.export.problems.ElementExportationException;
 import hu.elte.txtuml.layout.export.problems.ProblemReporter;
 
-import java.lang.annotation.Annotation;
-
 /**
  * Default implementation for {@link DiagramExporter}.
  * 
@@ -56,11 +56,11 @@ public class DiagramExporterImpl implements DiagramExporter {
 	private final ElementExporter elementExporter;
 	private final StatementExporter statementExporter;
 
-	public DiagramExporterImpl(Class<? extends Diagram> diagClass) {
-		this(diagClass, null);
+	public DiagramExporterImpl(String sourceProjectName, Class<? extends Diagram> diagClass) {
+		this(sourceProjectName, diagClass, null);
 	}
 
-	public DiagramExporterImpl(Class<? extends Diagram> diagClass,
+	public DiagramExporterImpl(String sourceProjectName, Class<? extends Diagram> diagClass,
 			DiagramExportationReport report) {
 
 		if (report == null) {
@@ -71,7 +71,7 @@ public class DiagramExporterImpl implements DiagramExporter {
 
 		this.problemReporter = new ProblemReporter(this.report);
 		this.diagClass = diagClass;
-		this.elementExporter = ElementExporter.create(problemReporter);
+		this.elementExporter = ElementExporter.create(sourceProjectName, problemReporter);
 		this.statementExporter = StatementExporter.create(elementExporter,
 				problemReporter);
 	}
@@ -81,8 +81,8 @@ public class DiagramExporterImpl implements DiagramExporter {
 		exportDiagram();
 
 		if (report.isSuccessful()) {
-			report.setRootElementAsString(elementExporter
-					.getRootElementAsString());
+			report.setModelName(elementExporter
+					.getModelName());
 			report.setType(elementExporter.getDiagramTypeBasedOnElements());
 			report.setStatements(statementExporter.getStatements());
 			report.setNodes(elementExporter.getNodesAsObjects());

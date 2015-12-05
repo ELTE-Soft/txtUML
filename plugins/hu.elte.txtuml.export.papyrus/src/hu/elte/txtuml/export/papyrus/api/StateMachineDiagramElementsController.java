@@ -1,19 +1,21 @@
 package hu.elte.txtuml.export.papyrus.api;
 
-import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
-
 import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.EditPart;
+import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateMachineCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.RegionCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.RegionEditPart;
+import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateCompartmentEditPart;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.FinalState;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.Transition;
+
+import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
 
 /**
  *
@@ -37,7 +39,7 @@ public class StateMachineDiagramElementsController {
 	 */
 	public static void addElementsToRegion(RegionEditPart regionEditPart, Collection<? extends Element> elements){
 		RegionCompartmentEditPart regComEp = getRegionCompatementEditPart(regionEditPart);
-		ElementsManagerUtils.addElementsToEditpart(regComEp, elements);
+		ElementsManagerUtils.addElementsToEditPart(regComEp, elements);
 	}
 	
 	//**STATE**//
@@ -56,7 +58,7 @@ public class StateMachineDiagramElementsController {
 	 */
 	public static void addStatesToRegion(RegionEditPart regionEditPart, Collection<State> states){
 		RegionCompartmentEditPart regComEp = getRegionCompatementEditPart(regionEditPart);
-		ElementsManagerUtils.addElementsToEditpart(regComEp, states);
+		ElementsManagerUtils.addElementsToEditPart(regComEp, states);
 	}
 	
 	//**FINALSTATE**//
@@ -76,7 +78,7 @@ public class StateMachineDiagramElementsController {
 	 */
 	public static void addFinalStatesToRegion(RegionEditPart regionEditPart, Collection<FinalState> finalstates){
 		RegionCompartmentEditPart regComEp = getRegionCompatementEditPart(regionEditPart);
-		ElementsManagerUtils.addElementsToEditpart(regComEp, finalstates);
+		ElementsManagerUtils.addElementsToEditPart(regComEp, finalstates);
 	}
 	
 	//**PSEUDOSTATE**//
@@ -96,7 +98,7 @@ public class StateMachineDiagramElementsController {
 	 */
 	public static void addPseudostatesToRegion(RegionEditPart regionEditPart, Collection<Pseudostate> pseudostates){
 		RegionCompartmentEditPart regComEp = getRegionCompatementEditPart(regionEditPart);
-		ElementsManagerUtils.addElementsToEditpart(regComEp, pseudostates);
+		ElementsManagerUtils.addElementsToEditPart(regComEp, pseudostates);
 	}
 
 	//**TRANSITIONS**//
@@ -116,7 +118,7 @@ public class StateMachineDiagramElementsController {
 	 */	
 	public static void addTransitionsToRegion(RegionEditPart regionEditPart, List<Transition> transitions) {
 		RegionCompartmentEditPart regComEp = getRegionCompatementEditPart(regionEditPart);
-		ElementsManagerUtils.addElementsToEditpart(regComEp, transitions);
+		ElementsManagerUtils.addElementsToEditPart(regComEp, transitions);
 	}
 	
 	/**
@@ -131,4 +133,35 @@ public class StateMachineDiagramElementsController {
 		RegionCompartmentEditPart regComEp = (RegionCompartmentEditPart) compartements.get(0);
 		return regComEp;
 	}
+	
+	/**
+	 * @param ep
+	 * @return
+	 */
+	public static StateCompartmentEditPart getStateCompartmentEditPart(EditPart ep) {
+		@SuppressWarnings("unchecked")
+		List<Object> compartments = ep.getChildren();
+		for(Object compartment : compartments) {
+			if(compartment instanceof StateCompartmentEditPart) {
+				return (StateCompartmentEditPart) compartment;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param ep
+	 * @return
+	 */
+	public static CustomStateMachineCompartmentEditPart getCustomStateMachineCompartmentEditPart(EditPart ep) {
+		@SuppressWarnings("unchecked")
+		List<Object> compartments = ep.getChildren();
+		for(Object compartment : compartments) {
+			if(compartment instanceof CustomStateMachineCompartmentEditPart) {
+				return (CustomStateMachineCompartmentEditPart) compartment;
+			}
+		}
+		return null;
+	}
+
 }

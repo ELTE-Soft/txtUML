@@ -9,16 +9,18 @@ import hu.elte.txtuml.xtxtuml.services.XtxtUMLGrammarAccess;
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfAssocNavExpression;
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression;
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression;
+import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile;
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUModel;
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal;
@@ -267,6 +269,9 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 			case XtxtUMLPackage.RALF_SEND_SIGNAL_EXPRESSION:
 				sequence_RAlfSendSignalExpression(context, (RAlfSendSignalExpression) semanticObject); 
 				return; 
+			case XtxtUMLPackage.RALF_SIGNAL_ACCESS_EXPRESSION:
+				sequence_RAlfSignalAccessExpression(context, (RAlfSignalAccessExpression) semanticObject); 
+				return; 
 			case XtxtUMLPackage.TU_ASSOCIATION:
 				sequence_TUAssociation(context, (TUAssociation) semanticObject); 
 				return; 
@@ -282,6 +287,9 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 			case XtxtUMLPackage.TU_CLASS:
 				sequence_TUClass(context, (TUClass) semanticObject); 
 				return; 
+			case XtxtUMLPackage.TU_COMPOSITION:
+				sequence_TUAssociation(context, (TUComposition) semanticObject); 
+				return; 
 			case XtxtUMLPackage.TU_CONSTRUCTOR:
 				sequence_TUConstructor(context, (TUConstructor) semanticObject); 
 				return; 
@@ -294,8 +302,8 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 			case XtxtUMLPackage.TU_FILE:
 				sequence_TUFile(context, (TUFile) semanticObject); 
 				return; 
-			case XtxtUMLPackage.TU_MODEL:
-				sequence_TUModel(context, (TUModel) semanticObject); 
+			case XtxtUMLPackage.TU_MODEL_DECLARATION:
+				sequence_TUModelDeclaration(context, (TUModelDeclaration) semanticObject); 
 				return; 
 			case XtxtUMLPackage.TU_MULTIPLICITY:
 				sequence_TUMultiplicity(context, (TUMultiplicity) semanticObject); 
@@ -406,7 +414,30 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 	
 	/**
 	 * Constraint:
-	 *     (visibility=TUVisibility? notNavigable?='hidden'? multiplicity=TUMultiplicity endClass=[TUClass|QualifiedName] name=ValidID)
+	 *     sigdata='sigdata'
+	 */
+	protected void sequence_RAlfSignalAccessExpression(EObject context, RAlfSignalAccessExpression semanticObject) {
+		if(errorAcceptor != null) {
+			if(transientValues.isValueTransient(semanticObject, XtxtUMLPackage.Literals.RALF_SIGNAL_ACCESS_EXPRESSION__SIGDATA) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, XtxtUMLPackage.Literals.RALF_SIGNAL_ACCESS_EXPRESSION__SIGDATA));
+		}
+		INodesForEObjectProvider nodes = createNodeProvider(semanticObject);
+		SequenceFeeder feeder = createSequencerFeeder(semanticObject, nodes);
+		feeder.accept(grammarAccess.getRAlfSignalAccessExpressionAccess().getSigdataSigdataKeyword_1_0(), semanticObject.getSigdata());
+		feeder.finish();
+	}
+	
+	
+	/**
+	 * Constraint:
+	 *     (
+	 *         visibility=TUVisibility? 
+	 *         notNavigable?='hidden'? 
+	 *         multiplicity=TUMultiplicity? 
+	 *         container?='container'? 
+	 *         endClass=[TUClass|QualifiedName] 
+	 *         name=ValidID
+	 *     )
 	 */
 	protected void sequence_TUAssociationEnd(EObject context, TUAssociationEnd semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -418,6 +449,15 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 	 *     (name=ValidID ends+=TUAssociationEnd*)
 	 */
 	protected void sequence_TUAssociation(EObject context, TUAssociation semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Constraint:
+	 *     (name=ValidID ends+=TUAssociationEnd*)
+	 */
+	protected void sequence_TUAssociation(EObject context, TUComposition semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
 	}
 	
@@ -497,8 +537,8 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 	 */
 	protected void sequence_TUExecution(EObject context, TUExecution semanticObject) {
 		if(errorAcceptor != null) {
-			if(transientValues.isValueTransient(semanticObject, XtxtUMLPackage.Literals.TU_FILE_ELEMENT__NAME) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, XtxtUMLPackage.Literals.TU_FILE_ELEMENT__NAME));
+			if(transientValues.isValueTransient(semanticObject, XtxtUMLPackage.Literals.TU_MODEL_ELEMENT__NAME) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, XtxtUMLPackage.Literals.TU_MODEL_ELEMENT__NAME));
 			if(transientValues.isValueTransient(semanticObject, XtxtUMLPackage.Literals.TU_EXECUTION__BODY) == ValueTransient.YES)
 				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, XtxtUMLPackage.Literals.TU_EXECUTION__BODY));
 		}
@@ -512,7 +552,7 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 	
 	/**
 	 * Constraint:
-	 *     (name=QualifiedName? importSection=XImportSection? elements+=TUFileElement*)
+	 *     (name=QualifiedName? importSection=XImportSection? elements+=TUModelElement*)
 	 */
 	protected void sequence_TUFile(EObject context, TUFile semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -521,9 +561,9 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 	
 	/**
 	 * Constraint:
-	 *     (name=ValidID elements+=TUModelElement*)
+	 *     (name=STRING?)
 	 */
-	protected void sequence_TUModel(EObject context, TUModel semanticObject) {
+	protected void sequence_TUModelDeclaration(EObject context, TUModelDeclaration semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
 	}
 	
@@ -582,17 +622,10 @@ public class XtxtUMLSemanticSequencer extends XbaseSemanticSequencer {
 	
 	/**
 	 * Constraint:
-	 *     expression=XExpression
+	 *     (else?='else' | expression=XExpression)
 	 */
 	protected void sequence_TUTransitionGuard(EObject context, TUTransitionGuard semanticObject) {
-		if(errorAcceptor != null) {
-			if(transientValues.isValueTransient(semanticObject, XtxtUMLPackage.Literals.TU_TRANSITION_GUARD__EXPRESSION) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, XtxtUMLPackage.Literals.TU_TRANSITION_GUARD__EXPRESSION));
-		}
-		INodesForEObjectProvider nodes = createNodeProvider(semanticObject);
-		SequenceFeeder feeder = createSequencerFeeder(semanticObject, nodes);
-		feeder.accept(grammarAccess.getTUTransitionGuardAccess().getExpressionXExpressionParserRuleCall_2_0(), semanticObject.getExpression());
-		feeder.finish();
+		genericSequencer.createSequence(context, semanticObject);
 	}
 	
 	

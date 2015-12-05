@@ -32,31 +32,13 @@ public interface XtxtUMLFactory extends EFactory
   TUFile createTUFile();
 
   /**
-   * Returns a new object of class '<em>TU File Element</em>'.
+   * Returns a new object of class '<em>TU Model Declaration</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return a new object of class '<em>TU File Element</em>'.
+   * @return a new object of class '<em>TU Model Declaration</em>'.
    * @generated
    */
-  TUFileElement createTUFileElement();
-
-  /**
-   * Returns a new object of class '<em>TU Model</em>'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return a new object of class '<em>TU Model</em>'.
-   * @generated
-   */
-  TUModel createTUModel();
-
-  /**
-   * Returns a new object of class '<em>TU Execution</em>'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return a new object of class '<em>TU Execution</em>'.
-   * @generated
-   */
-  TUExecution createTUExecution();
+  TUModelDeclaration createTUModelDeclaration();
 
   /**
    * Returns a new object of class '<em>TU Model Element</em>'.
@@ -66,6 +48,15 @@ public interface XtxtUMLFactory extends EFactory
    * @generated
    */
   TUModelElement createTUModelElement();
+
+  /**
+   * Returns a new object of class '<em>TU Execution</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>TU Execution</em>'.
+   * @generated
+   */
+  TUExecution createTUExecution();
 
   /**
    * Returns a new object of class '<em>TU Signal</em>'.
@@ -230,6 +221,15 @@ public interface XtxtUMLFactory extends EFactory
   TUMultiplicity createTUMultiplicity();
 
   /**
+   * Returns a new object of class '<em>TU Composition</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>TU Composition</em>'.
+   * @generated
+   */
+  TUComposition createTUComposition();
+
+  /**
    * Returns a new object of class '<em>TU Attribute</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -264,6 +264,15 @@ public interface XtxtUMLFactory extends EFactory
    * @generated
    */
   RAlfDeleteObjectExpression createRAlfDeleteObjectExpression();
+
+  /**
+   * Returns a new object of class '<em>RAlf Signal Access Expression</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>RAlf Signal Access Expression</em>'.
+   * @generated
+   */
+  RAlfSignalAccessExpression createRAlfSignalAccessExpression();
 
   /**
    * Returns a new object of class '<em>RAlf Assoc Nav Expression</em>'.

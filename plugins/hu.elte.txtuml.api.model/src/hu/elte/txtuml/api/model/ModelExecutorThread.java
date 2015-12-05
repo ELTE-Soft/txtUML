@@ -1,5 +1,8 @@
 package hu.elte.txtuml.api.model;
 
+import hu.elte.txtuml.api.model.ModelExecutor.Report;
+import hu.elte.txtuml.utils.NotifierOfTermination.TerminationManager;
+
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -27,6 +30,11 @@ class ModelExecutorThread extends Thread {
 	private final LinkedBlockingQueue<MailboxEntry> mailbox = new LinkedBlockingQueue<>();
 
 	/**
+	 * An object to manage termination notifications.
+	 */
+	private final TerminationManager terminationManager = new TerminationManager();
+
+	/**
 	 * A queue of checks which are to be performed at the beginning of the next
 	 * <i>execution step</i>.
 	 * <p>
@@ -35,12 +43,13 @@ class ModelExecutorThread extends Thread {
 	 */
 	private final Queue<CheckQueueEntry> checkQueue = new ConcurrentLinkedQueue<>();
 
+	private volatile boolean shutdownWhenEmpty = false;
+	private volatile boolean shutdownImmediately = false;
+
 	/**
 	 * Sole constructor of package private <code>ModelExecutorThread</code>.
-	 * Creates and also starts the thread.
 	 */
 	ModelExecutorThread() {
-		start();
 	}
 
 	/**
@@ -76,24 +85,22 @@ class ModelExecutorThread extends Thread {
 	 * becomes empty.
 	 */
 	void shutdown() {
-		try {
-			class ShutdownAction implements MailboxEntry {
-				@Override
-				public void execute() {
-					if (mailbox.isEmpty()) {
-						ModelExecutor.shutdownNow();
-					} else {
-						try {
-							mailbox.put(new ShutdownAction());
-						} catch (InterruptedException e) {
-						}
-					}
-				}
-			}
+		shutdownWhenEmpty = true;
+		// wake up if waiting with an empty message
+		mailbox.add(() -> {
+		});
+	}
 
-			mailbox.put(new ShutdownAction());
-		} catch (InterruptedException e) {
-		}
+	/**
+	 * Sets the model executor to be shut down immediately. If the execution of
+	 * a {@link #mailbox} item does not terminate it cannot guarantee the
+	 * termination.
+	 */
+	void shutdownImmediately() {
+		shutdownImmediately = true;
+		// wake up if waiting with an empty message
+		mailbox.add(() -> {
+		});
 	}
 
 	/**
@@ -111,7 +118,7 @@ class ModelExecutorThread extends Thread {
 	 * @param assocEnd
 	 *            the association end which's multiplicity is to be checked
 	 */
-	void checkLowerBoundOfMultiplcitiy(ModelClass obj,
+	void checkLowerBoundOfMultiplicity(ModelClass obj,
 			Class<? extends AssociationEnd<?, ?>> assocEnd) {
 		checkQueue.add(() -> obj.checkLowerBound(assocEnd));
 	}
@@ -124,22 +131,37 @@ class ModelExecutorThread extends Thread {
 	 */
 	@Override
 	public void run() {
-		try {
-			while (true) {
-				while (true) {
-					CheckQueueEntry entry = checkQueue.poll();
-					if (entry == null) {
-						break;
-					}
-					entry.performCheck();
-				}
-
-				mailbox.take().execute();
+		while (!shouldShutdown()) {
+			CheckQueueEntry entry = checkQueue.poll();
+			while (entry != null) {
+				entry.performCheck();
+				entry = checkQueue.poll();
 			}
-		} catch (InterruptedException e) { // do nothing (finish thread)
+
+			try {
+				mailbox.take().execute();
+			} catch (InterruptedException e) {
+				// user interruption by shutdownImmediately()
+			}
+		}
+		Report.event.forEach(x -> x.executionTerminated());
+		terminationManager.notifyAllOfTermination();
+	}
+
+	private boolean shouldShutdown() {
+		return shutdownImmediately || (shutdownWhenEmpty && mailbox.isEmpty());
+	}
+
+	public void addToShutdownQueue(Runnable shutdownAction) {
+		if (!terminationManager.addTerminationListener(shutdownAction)) {
+			shutdownAction.run();
 		}
 	}
 
+	public ModelExecutorThread autoStart() {
+		start();
+		return this;
+	}
 }
 
 /**

@@ -13,12 +13,12 @@ import org.eclipse.xtext.common.types.JvmTypeReference;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute#getVisibility <em>Visibility</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute#getType <em>Type</em>}</li>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute#getName <em>Name</em>}</li>
  * </ul>
- * </p>
  *
  * @see hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage#getTUSignalAttribute()
  * @model

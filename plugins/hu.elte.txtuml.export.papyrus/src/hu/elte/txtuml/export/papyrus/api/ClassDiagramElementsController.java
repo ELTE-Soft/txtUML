@@ -1,18 +1,14 @@
 package hu.elte.txtuml.export.papyrus.api;
 
-import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
-
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.EditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassAttributeCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassOperationCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.InterfaceAttributeCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.InterfaceEditPart;
-import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.InterfaceOperationCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ModelEditPart;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExtensionEnd;
@@ -20,6 +16,8 @@ import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Port;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Reception;
+
+import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
 
 /**
  *
@@ -40,7 +38,7 @@ public class ClassDiagramElementsController {
 	 * @param elements
 	 */
 	public static void addElementsToClassDiagram(ModelEditPart diagramEditPart, Collection<? extends Element> elements){
-		ElementsManagerUtils.addElementsToEditpart(diagramEditPart, elements);
+		ElementsManagerUtils.addElementsToEditPart(diagramEditPart, elements);
 	}
 
 	//**PROPERTY**//
@@ -50,12 +48,10 @@ public class ClassDiagramElementsController {
 	 * @param property
 	 */
 	public static void addPropertyToClass(ClassEditPart classEditPart, Property property){
-		@SuppressWarnings("unchecked")
-		List<EditPart> compartements = classEditPart.getChildren();
-		Assert.isTrue(compartements.size() == 4);
-		Assert.isTrue(compartements.get(1) instanceof ClassAttributeCompartmentEditPart);
-		ClassAttributeCompartmentEditPart attrCompEP = (ClassAttributeCompartmentEditPart) compartements.get(1);
-		ElementsManagerUtils.addElementToEditPart(attrCompEP, property);
+		EditPart ep = getClassAttributeEditPart(classEditPart);
+		if(ep != null) {
+			ElementsManagerUtils.addElementToEditPart(ep, property);
+		}
 	}
 	
 	/**
@@ -63,12 +59,10 @@ public class ClassDiagramElementsController {
 	 * @param properties 
 	 */
 	public static void addPropertiesToClass(ClassEditPart classEditPart,Collection<Property> properties){
-		@SuppressWarnings("unchecked")
-		List<EditPart> compartements = classEditPart.getChildren();
-		Assert.isTrue(compartements.size() == 4);
-		Assert.isTrue(compartements.get(1) instanceof ClassAttributeCompartmentEditPart);
-		ClassAttributeCompartmentEditPart attrCompEP = (ClassAttributeCompartmentEditPart) compartements.get(1);
-		ElementsManagerUtils.addElementsToEditpart(attrCompEP, properties);
+		EditPart ep = getClassAttributeEditPart(classEditPart);
+		if(ep != null) {
+			ElementsManagerUtils.addElementsToEditPart(ep, properties);
+		}
 	}
 	
 	/**
@@ -76,25 +70,21 @@ public class ClassDiagramElementsController {
 	 * @param property
 	 */
 	public static void addPropertyToInterface(InterfaceEditPart classEditPart, Property property){
-		@SuppressWarnings("unchecked")
-		List<EditPart> compartements = classEditPart.getChildren();
-		Assert.isTrue(compartements.size() == 4);
-		Assert.isTrue(compartements.get(1) instanceof InterfaceAttributeCompartmentEditPart);
-		InterfaceAttributeCompartmentEditPart attrCompEP = (InterfaceAttributeCompartmentEditPart) compartements.get(1);
-		ElementsManagerUtils.addElementToEditPart(attrCompEP, property);
+		EditPart ep = getInterfaceAttributeEditPart(classEditPart);
+		if(ep != null) {
+			ElementsManagerUtils.addElementToEditPart(ep, property);
+		}
 	}
 	
 	/**
-	 * @param classEditPart
+	 * @param interfaceEditPart
 	 * @param elements 
 	 */
-	public static void addPropertiesToInterface(InterfaceEditPart classEditPart,Collection<Property> elements){
-		@SuppressWarnings("unchecked")
-		List<EditPart> compartements = classEditPart.getChildren();
-		Assert.isTrue(compartements.size() == 4);
-		Assert.isTrue(compartements.get(1) instanceof InterfaceAttributeCompartmentEditPart);
-		InterfaceAttributeCompartmentEditPart attrCompEP = (InterfaceAttributeCompartmentEditPart) compartements.get(1);
-		ElementsManagerUtils.addElementsToEditpart(attrCompEP, elements);
+	public static void addPropertiesToInterface(InterfaceEditPart interfaceEditPart,Collection<Property> elements){
+		EditPart ep = getInterfaceAttributeEditPart(interfaceEditPart);
+		if(ep != null) {
+			ElementsManagerUtils.addElementsToEditPart(ep, elements);
+		}
 	}
 	
 	//**PORT**//
@@ -104,12 +94,10 @@ public class ClassDiagramElementsController {
 	 * @param port
 	 */
 	public static void addPortToClass(ClassEditPart classEditPart, Port port){
-		@SuppressWarnings("unchecked")
-		List<EditPart> compartements = classEditPart.getChildren();
-		Assert.isTrue(compartements.size() == 4);
-		Assert.isTrue(compartements.get(1) instanceof ClassAttributeCompartmentEditPart);
-		ClassAttributeCompartmentEditPart attrCompEP = (ClassAttributeCompartmentEditPart) compartements.get(1);
-		ElementsManagerUtils.addElementToEditPart(attrCompEP, port);
+		EditPart ep = getClassAttributeEditPart(classEditPart);
+		if(ep != null) {
+			ElementsManagerUtils.addElementToEditPart(ep, port);
+		}
 	}
 	
 	/**
@@ -117,38 +105,32 @@ public class ClassDiagramElementsController {
 	 * @param ports 
 	 */
 	public static void addPortsToClass(ClassEditPart classEditPart,Collection<Port> ports){
-		@SuppressWarnings("unchecked")
-		List<EditPart> compartements = classEditPart.getChildren();
-		Assert.isTrue(compartements.size() == 4);
-		Assert.isTrue(compartements.get(1) instanceof ClassAttributeCompartmentEditPart);
-		ClassAttributeCompartmentEditPart attrCompEP = (ClassAttributeCompartmentEditPart) compartements.get(1);
-		ElementsManagerUtils.addElementsToEditpart(attrCompEP, ports);
+		EditPart ep = getClassAttributeEditPart(classEditPart);
+		if(ep != null) {
+			ElementsManagerUtils.addElementsToEditPart(ep, ports);
+		}
 	}
 	
 	/**
-	 * @param classEditPart
+	 * @param interfaceEditPart
 	 * @param port
 	 */
-	public static void addPortToInterface(InterfaceEditPart classEditPart, Port port){
-		@SuppressWarnings("unchecked")
-		List<EditPart> compartements = classEditPart.getChildren();
-		Assert.isTrue(compartements.size() == 4);
-		Assert.isTrue(compartements.get(1) instanceof InterfaceAttributeCompartmentEditPart);
-		InterfaceAttributeCompartmentEditPart attrCompEP = (InterfaceAttributeCompartmentEditPart) compartements.get(1);
-		ElementsManagerUtils.addElementToEditPart(attrCompEP, port);
+	public static void addPortToInterface(InterfaceEditPart interfaceEditPart, Port port){
+		EditPart ep = getInterfaceAttributeEditPart(interfaceEditPart);
+		if(ep != null) {
+			ElementsManagerUtils.addElementToEditPart(ep, port);
+		}
 	}
 	
 	/**
-	 * @param classEditPart
+	 * @param interfaceEditPart
 	 * @param ports 
 	 */
-	public static void addPortsToInterface(InterfaceEditPart classEditPart,Collection<Port> ports){
-		@SuppressWarnings("unchecked")
-		List<EditPart> compartements = classEditPart.getChildren();
-		Assert.isTrue(compartements.size() == 4);
-		Assert.isTrue(compartements.get(1) instanceof InterfaceAttributeCompartmentEditPart);
-		InterfaceAttributeCompartmentEditPart attrCompEP = (InterfaceAttributeCompartmentEditPart) compartements.get(1);
-		ElementsManagerUtils.addElementsToEditpart(attrCompEP, ports);
+	public static void addPortsToInterface(InterfaceEditPart interfaceEditPart,Collection<Port> ports){
+		EditPart ep = getInterfaceAttributeEditPart(interfaceEditPart);
+		if(ep != null) {
+			ElementsManagerUtils.addElementsToEditPart(ep, ports);
+		}
 	}
 	
 	//**EXTENSION END**//
@@ -158,12 +140,10 @@ public class ClassDiagramElementsController {
 	 * @param extensionEnd
 	 */
 	public static void addExtensionEndToClass(ClassEditPart classEditPart, ExtensionEnd extensionEnd){
-		@SuppressWarnings("unchecked")
-		List<EditPart> compartements = classEditPart.getChildren();
-		Assert.isTrue(compartements.size() == 4);
-		Assert.isTrue(compartements.get(1) instanceof ClassAttributeCompartmentEditPart);
-		ClassAttributeCompartmentEditPart attrCompEP = (ClassAttributeCompartmentEditPart) compartements.get(1);
-		ElementsManagerUtils.addElementToEditPart(attrCompEP, extensionEnd);
+		EditPart ep = getClassAttributeEditPart(classEditPart);
+		if(ep != null) {
+			ElementsManagerUtils.addElementToEditPart(ep, extensionEnd);
+		}
 	}
 	
 	/**
@@ -171,38 +151,32 @@ public class ClassDiagramElementsController {
 	 * @param extensionEnds 
 	 */
 	public static void addExtensionEndsToClass(ClassEditPart classEditPart,Collection<ExtensionEnd> extensionEnds){
-		@SuppressWarnings("unchecked")
-		List<EditPart> compartements = classEditPart.getChildren();
-		Assert.isTrue(compartements.size() == 4);
-		Assert.isTrue(compartements.get(1) instanceof ClassAttributeCompartmentEditPart);
-		ClassAttributeCompartmentEditPart attrCompEP = (ClassAttributeCompartmentEditPart) compartements.get(1);
-		ElementsManagerUtils.addElementsToEditpart(attrCompEP, extensionEnds);
+		EditPart ep = getClassAttributeEditPart(classEditPart);
+		if(ep != null) {
+			ElementsManagerUtils.addElementsToEditPart(ep, extensionEnds);
+		}
 	}
 	
 	/**
-	 * @param classEditPart
+	 * @param interfaceEditPart
 	 * @param extensionEnd
 	 */
-	public static void addExtensionEndToInterface(InterfaceEditPart classEditPart, ExtensionEnd extensionEnd){
-		@SuppressWarnings("unchecked")
-		List<EditPart> compartements = classEditPart.getChildren();
-		Assert.isTrue(compartements.size() == 4);
-		Assert.isTrue(compartements.get(1) instanceof InterfaceAttributeCompartmentEditPart);
-		InterfaceAttributeCompartmentEditPart attrCompEP = (InterfaceAttributeCompartmentEditPart) compartements.get(1);
-		ElementsManagerUtils.addElementToEditPart(attrCompEP, extensionEnd);
+	public static void addExtensionEndToInterface(InterfaceEditPart interfaceEditPart, ExtensionEnd extensionEnd){
+		EditPart ep = getInterfaceAttributeEditPart(interfaceEditPart);
+		if(ep != null) {
+			ElementsManagerUtils.addElementToEditPart(ep, extensionEnd);
+		}
 	}
 	
 	/**
-	 * @param classEditPart
+	 * @param interfaceEditPart
 	 * @param extensionEnds 
 	 */
-	public static void addExtensionEndsToInterface(InterfaceEditPart classEditPart,Collection<ExtensionEnd> extensionEnds){
-		@SuppressWarnings("unchecked")
-		List<EditPart> compartements = classEditPart.getChildren();
-		Assert.isTrue(compartements.size() == 4);
-		Assert.isTrue(compartements.get(1) instanceof InterfaceAttributeCompartmentEditPart);
-		InterfaceAttributeCompartmentEditPart attrCompEP = (InterfaceAttributeCompartmentEditPart) compartements.get(1);
-		ElementsManagerUtils.addElementsToEditpart(attrCompEP, extensionEnds);
+	public static void addExtensionEndsToInterface(InterfaceEditPart interfaceEditPart,Collection<ExtensionEnd> extensionEnds){
+		EditPart ep = getInterfaceAttributeEditPart(interfaceEditPart);
+		if(ep != null) {
+			ElementsManagerUtils.addElementsToEditPart(ep, extensionEnds);
+		}
 	}
 	
 	
@@ -213,12 +187,10 @@ public class ClassDiagramElementsController {
 	 * @param operation
 	 */
 	public static void addOperationToClass(ClassEditPart classEditPart, Operation operation){
-		@SuppressWarnings("unchecked")
-		List<EditPart> compartements = classEditPart.getChildren();
-		Assert.isTrue(compartements.size() == 4);
-		Assert.isTrue(compartements.get(2) instanceof ClassOperationCompartmentEditPart);
-		ClassOperationCompartmentEditPart operCompEP = (ClassOperationCompartmentEditPart) compartements.get(2);
-		ElementsManagerUtils.addElementToEditPart(operCompEP, operation);
+		EditPart ep = getClassOperationEditPart(classEditPart);
+		if(ep != null) {
+			ElementsManagerUtils.addElementToEditPart(ep, operation);
+		}
 	}
 	
 	/**
@@ -226,12 +198,10 @@ public class ClassDiagramElementsController {
 	 * @param operations 
 	 */
 	public static void addOperationsToClass(ClassEditPart classEditPart, Collection<Operation> operations){
-		@SuppressWarnings("unchecked")
-		List<EditPart> compartements = classEditPart.getChildren();
-		Assert.isTrue(compartements.size() == 4);
-		Assert.isTrue(compartements.get(2) instanceof ClassOperationCompartmentEditPart);
-		ClassOperationCompartmentEditPart operCompEP = (ClassOperationCompartmentEditPart) compartements.get(2);
-		ElementsManagerUtils.addElementsToEditpart(operCompEP, operations);
+		EditPart ep = getClassOperationEditPart(classEditPart);
+		if(ep != null) {
+			ElementsManagerUtils.addElementsToEditPart(ep, operations);
+		}
 	}
 	
 	/**
@@ -239,12 +209,10 @@ public class ClassDiagramElementsController {
 	 * @param operation
 	 */
 	public static void addOperationToInterface(InterfaceEditPart interfaceEditPart, Operation operation){
-		@SuppressWarnings("unchecked")
-		List<EditPart> compartements = interfaceEditPart.getChildren();
-		Assert.isTrue(compartements.size() == 4);
-		Assert.isTrue(compartements.get(2) instanceof InterfaceOperationCompartmentEditPart);
-		InterfaceOperationCompartmentEditPart operCompEP = (InterfaceOperationCompartmentEditPart) compartements.get(2);
-		ElementsManagerUtils.addElementToEditPart(operCompEP, operation);
+		EditPart ep = getInterfaceOperationEditPart(interfaceEditPart);
+		if(ep != null) {
+			ElementsManagerUtils.addElementToEditPart(ep, operation);
+		}
 	}
 	
 	/**
@@ -252,12 +220,10 @@ public class ClassDiagramElementsController {
 	 * @param operations 
 	 */
 	public static void addOperationsToInterface(InterfaceEditPart interfaceEditPart, Collection<Operation> operations){
-		@SuppressWarnings("unchecked")
-		List<EditPart> compartements = interfaceEditPart.getChildren();
-		Assert.isTrue(compartements.size() == 4);
-		Assert.isTrue(compartements.get(2) instanceof InterfaceOperationCompartmentEditPart);
-		InterfaceOperationCompartmentEditPart operCompEP = (InterfaceOperationCompartmentEditPart) compartements.get(2);
-		ElementsManagerUtils.addElementsToEditpart(operCompEP, operations);
+		EditPart ep = getInterfaceOperationEditPart(interfaceEditPart);
+		if(ep != null) {
+			ElementsManagerUtils.addElementsToEditPart(ep, operations);
+		}
 	}
 	
 	//**RECEPTION**//
@@ -267,12 +233,10 @@ public class ClassDiagramElementsController {
 	 * @param reception
 	 */
 	public static void addReceptionToClass(ClassEditPart classEditPart, Reception reception){
-		@SuppressWarnings("unchecked")
-		List<EditPart> compartements = classEditPart.getChildren();
-		Assert.isTrue(compartements.size() == 4);
-		Assert.isTrue(compartements.get(2) instanceof ClassOperationCompartmentEditPart);
-		ClassOperationCompartmentEditPart operCompEP = (ClassOperationCompartmentEditPart) compartements.get(2);
-		ElementsManagerUtils.addElementToEditPart(operCompEP, reception);
+		EditPart ep = getClassOperationEditPart(classEditPart);
+		if(ep != null) {
+			ElementsManagerUtils.addElementToEditPart(ep, reception);
+		}
 	}
 	
 	/**
@@ -280,12 +244,10 @@ public class ClassDiagramElementsController {
 	 * @param receptions 
 	 */
 	public static void addReceptionsToClass(ClassEditPart classEditPart, Collection<Reception> receptions){
-		@SuppressWarnings("unchecked")
-		List<EditPart> compartements = classEditPart.getChildren();
-		Assert.isTrue(compartements.size() == 4);
-		Assert.isTrue(compartements.get(2) instanceof ClassOperationCompartmentEditPart);
-		ClassOperationCompartmentEditPart operCompEP = (ClassOperationCompartmentEditPart) compartements.get(2);
-		ElementsManagerUtils.addElementsToEditpart(operCompEP, receptions);
+		EditPart ep = getClassOperationEditPart(classEditPart);
+		if(ep != null) {
+			ElementsManagerUtils.addElementsToEditPart(ep, receptions);
+		}
 	}
 	
 	/**
@@ -293,12 +255,10 @@ public class ClassDiagramElementsController {
 	 * @param reception
 	 */
 	public static void addReceptionToInterface(InterfaceEditPart interfaceEditPart, Reception reception){
-		@SuppressWarnings("unchecked")
-		List<EditPart> compartements = interfaceEditPart.getChildren();
-		Assert.isTrue(compartements.size() == 4);
-		Assert.isTrue(compartements.get(2) instanceof InterfaceOperationCompartmentEditPart);
-		InterfaceOperationCompartmentEditPart operCompEP = (InterfaceOperationCompartmentEditPart) compartements.get(2);
-		ElementsManagerUtils.addElementToEditPart(operCompEP, reception);
+		EditPart ep = getInterfaceOperationEditPart(interfaceEditPart);
+		if(ep != null) {
+			ElementsManagerUtils.addElementToEditPart(ep, reception);
+		}
 	}
 	
 	/**
@@ -306,12 +266,54 @@ public class ClassDiagramElementsController {
 	 * @param receptions 
 	 */
 	public static void addReceptionsToInterface(InterfaceEditPart interfaceEditPart, Collection<Reception> receptions){
+		EditPart ep = getInterfaceOperationEditPart(interfaceEditPart);
+		if(ep != null) {
+			ElementsManagerUtils.addElementsToEditPart(ep, receptions);
+		}
+	}
+	
+	private static EditPart getClassAttributeEditPart(ClassEditPart parent) {
 		@SuppressWarnings("unchecked")
-		List<EditPart> compartements = interfaceEditPart.getChildren();
-		Assert.isTrue(compartements.size() == 4);
-		Assert.isTrue(compartements.get(2) instanceof InterfaceOperationCompartmentEditPart);
-		InterfaceOperationCompartmentEditPart operCompEP = (InterfaceOperationCompartmentEditPart) compartements.get(2);
-		ElementsManagerUtils.addElementsToEditpart(operCompEP, receptions);
+		List<EditPart> compartments = parent.getChildren();
+		for(EditPart compartment : compartments) {
+			if(compartment instanceof ClassAttributeCompartmentEditPart) {
+				return compartment;
+			}
+		}
+		return null;
+	}
+
+	private static EditPart getInterfaceAttributeEditPart(InterfaceEditPart parent) {
+		@SuppressWarnings("unchecked")
+		List<EditPart> compartments = parent.getChildren();
+		for(EditPart compartment : compartments) {
+			if(compartment instanceof InterfaceAttributeCompartmentEditPart) {
+				return compartment;
+			}
+		}
+		return null;
+	}
+
+	private static EditPart getClassOperationEditPart(ClassEditPart parent) {
+		@SuppressWarnings("unchecked")
+		List<EditPart> compartments = parent.getChildren();
+		for(EditPart compartment : compartments) {
+			if(compartment instanceof ClassOperationCompartmentEditPart) {
+				return compartment;
+			}
+		}
+		return null;
+	}
+
+	private static EditPart getInterfaceOperationEditPart(InterfaceEditPart parent) {
+		@SuppressWarnings("unchecked")
+		List<EditPart> compartments = parent.getChildren();
+		for(EditPart compartment : compartments) {
+			if(compartment instanceof ClassOperationCompartmentEditPart) {
+				return compartment;
+			}
+		}
+		return null;
 	}
 	
 }
