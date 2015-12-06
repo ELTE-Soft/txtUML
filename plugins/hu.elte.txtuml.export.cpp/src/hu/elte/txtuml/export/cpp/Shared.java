@@ -62,7 +62,7 @@ public class Shared
 		else if(guard_.eClass().equals(UMLPackage.Literals.CONSTRAINT)){
 		
 			//source=getGuardFromValueSpecification(guard_.getSpecification());
-			source = GenerationTemplates.GetDefalultRetrunValue("Boolean");
+			source = GenerationTemplates.GetDefaultReturnValue("Boolean");
 		}
 		return source;
 	}

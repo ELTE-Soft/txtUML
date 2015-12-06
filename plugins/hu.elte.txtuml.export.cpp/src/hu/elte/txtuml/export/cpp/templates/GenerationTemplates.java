@@ -447,12 +447,12 @@ public class GenerationTemplates
 			return "\n";
 		}
 		else{
-			return "return " + GetDefalultRetrunValue(returnType) + ";\n";
+			return "return " + GetDefaultReturnValue(returnType) + ";\n";
 		}
 		
 	}
 	
-	public static String GetDefalultRetrunValue(String returnType) {
+	public static String GetDefaultReturnValue(String returnType) {
 		
 		switch(PrivateFunctionalTemplates.CppType(returnType)) {
 			case "int": return "0";
