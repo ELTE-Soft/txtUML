@@ -14,6 +14,8 @@ void StateMachineThreadPool::stopPool()
 {
 	stop = true;
 	cond.notify_all();
+	future_cond.notify_all();
+	future_cond_alt.notify_all();
 	
 }
 
@@ -44,9 +46,17 @@ void StateMachineThreadPool::task()
 		std::unique_lock<std::mutex> fmlock(future_mu);
 		if(workers.isTooManyWorkes())
 		{
-			f = std::async(&ThreadContainer::removeThread, &workers, std::this_thread::get_id());
 			workers.reduceActiveThreads();
+			while(!getter_ready)
+			{
+				future_cond.notify_one();
+				future_cond_alt.wait(fmlock);
+			}
+			getter_ready = false;
+			f = std::async(&ThreadContainer::removeThread, &workers, std::this_thread::get_id());
+
 			future_cond.notify_one();
+			fmlock.unlock();
 			return;
 		}
 		else
@@ -110,12 +120,15 @@ void StateMachineThreadPool::task()
 void StateMachineThreadPool::futureGetter()
 {
 	std::unique_lock<std::mutex> fmlock(future_mu);
+	getter_ready = true;
 	while(!this->stop)
 	{
 		future_cond.wait(fmlock);
 		if(!this->stop)
 		{
 			f.get();
+			getter_ready = true;
+			future_cond_alt.notofy_one();
 		}
 		
 	}

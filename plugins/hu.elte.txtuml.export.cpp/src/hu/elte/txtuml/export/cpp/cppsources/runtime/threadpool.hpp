@@ -59,8 +59,10 @@ private:
 	//synchronize remove threads
 	std::future<void> f;
 	std::condition_variable future_cond;
+	std::condition_variable future_cond_alt;
 	std::mutex future_mu;
 	std::thread* future_getter_thread;
+	bool getter_ready;
 };
 
 

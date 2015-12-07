@@ -16,8 +16,6 @@ void ThreadContainer::removeThread(std::thread::id thread_id)
 	
 	threads.at(thread_id)->join(); // musn't delete while it is runing..
 	
-	//active_threads = active_threads - 1;
-	
 	delete threads.at(thread_id);
 	threads.erase(thread_id);
 }
@@ -40,4 +38,9 @@ void ThreadContainer::removeAll()
 	}
 	threads.clear();
 	
+}
+
+ThreadContainer::~ThreadContainer()
+{
+	removeAll();
 }

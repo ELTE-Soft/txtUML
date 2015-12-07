@@ -94,6 +94,7 @@ public class Uml2ToCppExporter
 			threadManager = new ThreadHandlingManager(model,threadDescription);
 		}
 		else{
+			threadManager = new ThreadHandlingManager();
 			Options.setThreadManagement(false);
 		}
 		
@@ -104,10 +105,8 @@ public class Uml2ToCppExporter
 
 		try {
 			
-			if(Options.ThreadManagement()){
-				threadManager.detectSynchronousCallConflicts();
-				threadManager.createThreadPoolManager(outputDirectory + File.separator + "runtime");
-			}
+			
+			threadManager.createThreadPoolManager(outputDirectory + File.separator + "runtime");
 			
 			EList<Element> elements = model.allOwnedElements();
 			
