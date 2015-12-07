@@ -11,6 +11,7 @@ class ThreadContainer
 	
 	public:
 		ThreadContainer();
+		~ThreadContainer();
 		
 		void addThread(std::thread*);
 		void removeThread(std::thread::id);

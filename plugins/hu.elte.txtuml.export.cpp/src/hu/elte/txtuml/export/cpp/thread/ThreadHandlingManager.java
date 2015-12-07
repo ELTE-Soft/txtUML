@@ -33,6 +33,7 @@ import org.eclipse.uml2.uml.Vertex;
 public class ThreadHandlingManager {
 	
 	Model model;
+	boolean isThreadHandling;
 	private static Map<String, ThreadPoolConfiguration > threadDescription;
 	private Set<ThreadPoolConfiguration> pools;
 	private int poolsNumber;
@@ -54,6 +55,9 @@ public class ThreadHandlingManager {
 	private List<Class> classList;
 	
 	public ThreadHandlingManager(Model model,  Map<String, ThreadPoolConfiguration > description){
+		
+		isThreadHandling = true;
+		
 		this.model = model;
 		ThreadHandlingManager.threadDescription = description;
 		
@@ -71,11 +75,18 @@ public class ThreadHandlingManager {
 		
 	}
 	
+	public ThreadHandlingManager() {
+		isThreadHandling = false;
+	}
+	
 	public static Map<String, ThreadPoolConfiguration >  Description(){
 		return threadDescription;
 	}
 	
 	public void createThreadPoolManager(String dest) {
+		
+		
+		
 		String source = createMaganerCppCource();
 		
 		try {
@@ -96,7 +107,14 @@ public class ThreadHandlingManager {
 		
 		source = source + GenerationTemplates.CppInclude(ThreadManagerName);
 		source = source + createConstructorHead();
-		source = createConstructorBody();
+		
+		if (isThreadHandling){
+			source = source + createConstructorBody();
+		}
+		else {
+			source = source + "{}";
+		}
+		
 		
 		return source;
 	}
