@@ -6,6 +6,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -25,7 +26,9 @@ import org.junit.Test;
 
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.export.uml2.utils.SharedUtils;
+import hu.elte.txtuml.validation.problems.general.InvalidModifier;
 import hu.elte.txtuml.validation.problems.general.InvalidTypeInModel;
+import hu.elte.txtuml.validation.problems.modelclass.InvalidTypeWithClassAllowed;
 import hu.elte.txtuml.validation.problems.modelclass.InvalidTypeWithClassNotAllowed;
 import hu.elte.txtuml.validation.visitors.ModelVisitor;
 
@@ -49,9 +52,19 @@ public class ModelTest {
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
 		verify(mockCollector).setProblemStatus(eq(true), isA(InvalidTypeInModel.class));
-		verify(mockCollector, atLeast(0)).getSourceInfo();
+		
+		checkNoOtherErrorRaised();
+	}
 
-		verifyNoMoreInteractions(mockCollector);
+	@Test
+	public void testInvalidParameterType() throws Exception {
+		CompilationUnit compilationUnit = prepareAST("InvalidParameterType.java");
+
+		compilationUnit.accept(new ModelVisitor(mockCollector));
+
+		verify(mockCollector, times(2)).setProblemStatus(eq(true), isA(InvalidTypeWithClassAllowed.class));
+		
+		checkNoOtherErrorRaised();
 	}
 
 	@Test
@@ -61,9 +74,46 @@ public class ModelTest {
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
 		verify(mockCollector).setProblemStatus(eq(true), isA(InvalidTypeWithClassNotAllowed.class));
+		
+		checkNoOtherErrorRaised();
+	}
+	
+	@Test
+	public void testInvalidModifier() throws Exception {
+		CompilationUnit compilationUnit = prepareAST("InvalidModifier.java");
+
+		compilationUnit.accept(new ModelVisitor(mockCollector));
+
+		verify(mockCollector, times(3)).setProblemStatus(eq(true), isA(InvalidModifier.class));
+		
+		checkNoOtherErrorRaised();
+	}
+	
+	@Test
+	public void testFieldType() throws Exception {
+		CompilationUnit compilationUnit = prepareAST("InvalidFieldType.java");
+
+		compilationUnit.accept(new ModelVisitor(mockCollector));
+
+		verify(mockCollector, times(2)).setProblemStatus(eq(true), isA(InvalidTypeWithClassNotAllowed.class));
+		
+		checkNoOtherErrorRaised();
+	}
+
+	@Test
+	public void testInvalidTypeInSignal() throws Exception {
+		CompilationUnit compilationUnit = prepareAST("InvalidTypeInSignal.java");
+
+		compilationUnit.accept(new ModelVisitor(mockCollector));
+
+		verify(mockCollector, times(2)).setProblemStatus(eq(true), isA(InvalidTypeWithClassNotAllowed.class));
+		
+		checkNoOtherErrorRaised();
+	}
+
+	private void checkNoOtherErrorRaised() {
 		verify(mockCollector, atLeast(0)).setProblemStatus(eq(false), any());
 		verify(mockCollector, atLeast(0)).getSourceInfo();
-
 		verifyNoMoreInteractions(mockCollector);
 	}
 
