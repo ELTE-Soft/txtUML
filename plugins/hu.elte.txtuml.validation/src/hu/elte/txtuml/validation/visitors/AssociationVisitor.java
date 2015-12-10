@@ -15,7 +15,7 @@ public class AssociationVisitor extends VisitorBase {
 
 	public static final Class<?>[] ALLOWED_ASSOCIATION_DECLARATIONS = new Class<?>[] { TypeDeclaration.class,
 			SimpleName.class, SimpleType.class, Modifier.class, Annotation.class };
-			
+
 	private TypeDeclaration root;
 	private int members = 0;
 
@@ -26,18 +26,16 @@ public class AssociationVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(TypeDeclaration node) {
-		if (!ElementTypeTeller.isAssociationeEnd(node)) {
-			collector.setProblemStatus(true, new WrongTypeInAssociation(collector.getSourceInfo(), node));
-		}
+		boolean invalid = !ElementTypeTeller.isAssociationeEnd(node);
+		collector.setProblemStatus(invalid, new WrongTypeInAssociation(collector.getSourceInfo(), node));
 		++members;
 		return false;
 	}
 
 	@Override
 	public void check() {
-		if (members != 2) {
-			collector.setProblemStatus(true, new WrongNumberOfAssociationEnds(collector.getSourceInfo(), root));
-		}
+		boolean invalid = members != 2;
+		collector.setProblemStatus(invalid, new WrongNumberOfAssociationEnds(collector.getSourceInfo(), root));
 	}
 
 }

@@ -27,8 +27,7 @@ public class ModelClassVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(TypeDeclaration elem) {
-		boolean valid = ElementTypeTeller.isState(elem) || ElementTypeTeller.isInitialPseudoState(elem)
-				|| ElementTypeTeller.isTransition(elem) || ElementTypeTeller.isChoicePseudoState(elem);
+		boolean valid = ElementTypeTeller.isVertex(elem) || ElementTypeTeller.isTransition(elem);
 		collector.setProblemStatus(!valid, new InvalidModelClassElement(collector.getSourceInfo(), elem.getName()));
 		if (valid) {
 			handleStateMachineElements(elem);
