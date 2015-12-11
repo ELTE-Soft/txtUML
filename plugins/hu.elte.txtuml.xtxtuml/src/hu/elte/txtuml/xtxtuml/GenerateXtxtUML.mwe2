@@ -65,6 +65,7 @@ Workflow {
     	projectNameRt = projectName
     	projectNameUi = "${projectName}.ui"
     	encoding = encoding
+    	mergeManifest = false
     	language = auto-inject {
 			// make sure we use the resourceSet created during standalone setup.
     		forcedResourceSet = theResourceSet
