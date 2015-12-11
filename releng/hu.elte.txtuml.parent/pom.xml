@@ -67,7 +67,7 @@
 		<tycho.version>0.24.0</tycho.version>
 		<build-helper.version>1.10</build-helper.version>
 		<maven-clean-plugin.version>3.0.0</maven-clean-plugin.version>
-		<xtend.version>2.9.0</xtend.version>
+		<xtend.version>2.8.4</xtend.version>
 		<exec-maven-plugin.version>1.4.0</exec-maven-plugin.version>
 		<lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
 		<jacoco.version>0.7.4.201502262128</jacoco.version>
@@ -232,12 +232,6 @@
 						<filesets>
 							<fileset>
 								<directory>xtend-gen</directory>
-								<includes>
-									<include>**</include>
-								</includes>
-							</fileset>
-							<fileset>
-								<directory>src-gen</directory>
 								<includes>
 									<include>**</include>
 								</includes>
