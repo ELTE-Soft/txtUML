@@ -4,9 +4,11 @@ import org.eclipse.emf.mwe.utils.*
 import org.eclipse.xtext.generator.*
 import org.eclipse.xtext.ui.generator.*
 
-var projectName = "hu.elte.txtuml.xtxtuml"
-var grammarURI = "platform:/resource/${projectName}/src/hu/elte/txtuml/xtxtuml/XtxtUML.xtext"
 var fileExtensions = "txtuml,xtxtuml"
+var projectName = "hu.elte.txtuml.xtxtuml"
+
+// grammarURI has to be platform:/resource as it is not on the classpath
+var grammarURI = "platform:/resource/${projectName}/src/hu/elte/txtuml/xtxtuml/XtxtUML.xtext"
 var runtimeProject = "../${projectName}"
 var testProject = "../../tests/${projectName}.tests"
 var generateXtendStub = true
@@ -73,7 +75,9 @@ Workflow {
     		fragment = grammarAccess.GrammarAccessFragment auto-inject {}
     
     		// generates Java API for the generated EPackages
-    		fragment = ecore.EMFGeneratorFragment auto-inject {}
+    		fragment = ecore.EMFGeneratorFragment auto-inject {
+    			javaModelDirectory = "/${projectName}/src-gen"
+    		}
     
     		// the old serialization component
     		// fragment = parseTreeConstructor.ParseTreeConstructorFragment auto-inject {}    
