@@ -10,5 +10,5 @@
 		<relativePath>../../releng/hu.elte.txtuml.parent/pom.xml</relativePath>
 	</parent>
 	<artifactId>hu.elte.txtuml.validation.test</artifactId>
-	<packaging>eclipse-plugin</packaging>
+	<packaging>eclipse-test-plugin</packaging>
 </project>

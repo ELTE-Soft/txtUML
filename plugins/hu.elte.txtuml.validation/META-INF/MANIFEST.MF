@@ -16,4 +16,5 @@ Bundle-ActivationPolicy: lazy
 Export-Package: hu.elte.txtuml.validation,
  hu.elte.txtuml.validation.problems.general,
  hu.elte.txtuml.validation.problems.modelclass,
+ hu.elte.txtuml.validation.problems.signal,
  hu.elte.txtuml.validation.visitors

@@ -49,11 +49,12 @@
 		<module>../../tests/hu.elte.txtuml.export.uml2.tests.models</module>
 		<module>../../tests/hu.elte.txtuml.layout.export.tests</module>
 		<module>../../tests/hu.elte.txtuml.utils.tests</module>
-		<module>../../tests/hu.elte.txtuml.validation.tests</module>
+		
 		<module>../../tests/hu.elte.txtuml.xtxtuml.tests</module>
 
 		<module>../../releng/hu.elte.txtuml.target</module>
 		<module>../../releng/hu.elte.txtuml.updatesite</module>
+		<module>../../tests/hu.elte.txtuml.validation.test</module>
 	</modules>
 
 	<!-- Tycho requires Maven 3 -->
