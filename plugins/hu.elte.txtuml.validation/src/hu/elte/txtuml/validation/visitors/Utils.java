@@ -3,7 +3,6 @@ package hu.elte.txtuml.validation.visitors;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.PrimitiveType;
-import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeParameter;
@@ -49,15 +48,14 @@ public class Utils {
 		}
 
 		if (type.isSimpleType()) {
-			SimpleType stype = (SimpleType) type;
-			return (stype.getName().toString().equals("String"));
+			type.resolveBinding().getQualifiedName().equals("java.lang.String");
 		}
 
 		return false;
 	}
 
 	public static boolean isAllowedBasicTypeOrModelClass(Type type, boolean isVoidAllowed) {
-		if (isAllowedBasicType(type, isVoidAllowed)) {
+		if (isAllowedBasicType(type, isVoidAllowed) || ElementTypeTeller.isModelClass(type.resolveBinding())) {
 			return true;
 		}
 

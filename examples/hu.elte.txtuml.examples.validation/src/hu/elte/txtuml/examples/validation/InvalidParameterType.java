@@ -1,5 +1,6 @@
 package hu.elte.txtuml.examples.validation;
 import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.examples.validation.helpers.A;
 
 public class InvalidParameterType extends ModelClass {
 
@@ -7,15 +8,15 @@ public class InvalidParameterType extends ModelClass {
 	}
 
 	public Object g() {
+		return null;
 	}
 
 	public void h(A a) {
 	}
 
 	public A k() {
+		return null;
 	}
 
 }
 
-class A extends ModelClass {
-}

@@ -60,6 +60,7 @@ public class VisitorBase extends ASTVisitor {
 		for (Object decl : elem.bodyDeclarations()) {
 			((BodyDeclaration) decl).accept(visitor);
 		}
+		visitor.check();
 	}
 	
 	public void handleStateMachineElements(TypeDeclaration elem) {

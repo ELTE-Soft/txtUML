@@ -21,6 +21,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import hu.elte.txtuml.export.uml2.utils.SharedUtils;
+import hu.elte.txtuml.validation.problems.association.WrongNumberOfAssociationEnds;
+import hu.elte.txtuml.validation.problems.association.WrongTypeInAssociation;
 import hu.elte.txtuml.validation.problems.general.InvalidModifier;
 import hu.elte.txtuml.validation.problems.general.InvalidTypeInModel;
 import hu.elte.txtuml.validation.problems.modelclass.InvalidModelClassElement;
@@ -31,8 +33,8 @@ import hu.elte.txtuml.validation.visitors.ModelVisitor;
 
 public class ModelTest {
 
-	private static final String VALIDATION_EXAMPLES_PACKAGE = "/src/hu/elte/txtuml/examples/validation/";
-	private static final String VALIDATION_EXAMPLES_ROOT = "../../examples/hu.elte.txtuml.examples.validation";
+	private static final String VALIDATION_EXAMPLES_PACKAGE = "/hu/elte/txtuml/examples/validation/";
+	private static final String VALIDATION_EXAMPLES_ROOT = "../../examples/hu.elte.txtuml.examples.validation/src";
 	private static final String API_SRC_LOC = "../../plugins/hu.elte.txtuml.api.model/src/";
 	
 	ProblemCollector mockCollector;
@@ -131,6 +133,28 @@ public class ModelTest {
 
 		verify(mockCollector, times(1)).setProblemStatus(eq(true), isA(InvalidSignalContent.class));
 
+		checkNoOtherErrorRaised();
+	}
+	
+	@Test
+	public void testWrongNumberOfAssociationEnds() throws Exception {
+		CompilationUnit compilationUnit = prepareAST("WrongNumberOfAssociationEnds.java");
+		
+		compilationUnit.accept(new ModelVisitor(mockCollector));
+		
+		verify(mockCollector, times(3)).setProblemStatus(eq(true), isA(WrongNumberOfAssociationEnds.class));
+		
+		checkNoOtherErrorRaised();
+	}
+	
+	@Test
+	public void testAssociationWrongInnerClass() throws Exception {
+		CompilationUnit compilationUnit = prepareAST("AssociationWrongInnerClass.java");
+		
+		compilationUnit.accept(new ModelVisitor(mockCollector));
+		
+		verify(mockCollector, times(2)).setProblemStatus(eq(true), isA(WrongTypeInAssociation.class));
+		
 		checkNoOtherErrorRaised();
 	}
 

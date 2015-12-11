@@ -126,6 +126,10 @@ public final class ElementTypeTeller {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ModelClass.class);
 	}
 
+	public static boolean isModelClass(ITypeBinding type) {
+		return hasSuperClass(type, ModelClass.class.getCanonicalName());
+	}
+
 	public static boolean isVertex(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Vertex.class);
 	}
