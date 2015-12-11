@@ -58,16 +58,7 @@ public class ModelTest {
 				String srcDir = modelFolder.get().replaceAll("/bin", "/src");
 				modelPath = new File(srcDir).getCanonicalPath();
 			} else {
-				Bundle bundle = Platform.getBundle("hu.elte.txtuml.api.model");
-				String location = bundle.getLocation();
-				if (location.endsWith(".jar")) {
-					File myTempDir = Files.createTempDir();
-					UnZip.unzipFile(location, myTempDir.getAbsolutePath());
-					modelPath = myTempDir.getAbsolutePath() + "/src";
-					teardown = () -> myTempDir.delete();
-				} else {
-					modelPath = location + "src/";
-				}
+				modelPath = new File("../../plugins/hu.elte.txtuml.api.model/src/").getCanonicalPath();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
