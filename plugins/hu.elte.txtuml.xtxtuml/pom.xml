@@ -41,6 +41,7 @@
 					<includeProjectDependencies>false</includeProjectDependencies>
 					<includePluginDependencies>true</includePluginDependencies>
 					<mainClass>org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher</mainClass>
+					<cleanupDaemonThreads>false</cleanupDaemonThreads>
 					<arguments>
 						<argument>
 							file://${project.basedir}/src/hu/elte/txtuml/xtxtuml/GenerateXtxtUML.mwe2
