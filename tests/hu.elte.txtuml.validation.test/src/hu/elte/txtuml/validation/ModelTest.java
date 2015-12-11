@@ -13,24 +13,13 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Arrays;
-import java.util.Optional;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.osgi.framework.Bundle;
 
-import com.google.common.io.Files;
-
-import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.export.uml2.utils.SharedUtils;
 import hu.elte.txtuml.validation.problems.general.InvalidModifier;
 import hu.elte.txtuml.validation.problems.general.InvalidTypeInModel;
@@ -42,33 +31,11 @@ import hu.elte.txtuml.validation.visitors.ModelVisitor;
 
 public class ModelTest {
 
+	private static final String VALIDATION_EXAMPLES_PACKAGE = "/src/hu/elte/txtuml/examples/validation/";
+	private static final String VALIDATION_EXAMPLES_ROOT = "../../examples/hu.elte.txtuml.examples.validation";
+	private static final String API_SRC_LOC = "../../plugins/hu.elte.txtuml.api.model/src/";
+	
 	ProblemCollector mockCollector;
-	private static String modelPath;
-	private static Runnable teardown;
-
-	@BeforeClass
-	static public void obtainSources() {
-		try {
-			teardown = () -> {};
-			ClassLoader cloader = ModelTest.class.getClassLoader();
-			if (cloader instanceof URLClassLoader) {
-				URLClassLoader classLoader = (URLClassLoader) Model.class.getClassLoader();
-				Optional<String> modelFolder = Arrays.asList(classLoader.getURLs()).stream().map(URL::getFile)
-						.filter(u -> u.contains("hu.elte.txtuml.api.model")).findAny();
-				String srcDir = modelFolder.get().replaceAll("/bin", "/src");
-				modelPath = new File(srcDir).getCanonicalPath();
-			} else {
-				modelPath = new File("../../plugins/hu.elte.txtuml.api.model/src/").getCanonicalPath();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@AfterClass
-	static public void releaseExtractedSrc() {
-		teardown.run();
-	}
 
 	@Before
 	public void before() {
@@ -174,16 +141,14 @@ public class ModelTest {
 	}
 
 	private CompilationUnit prepareAST(String javaFile) throws IOException {
-		File projectRoot = new File("testmodels").getAbsoluteFile();
-		File sourceFile = new File("testmodels/" + javaFile);
+		File projectRoot = new File(VALIDATION_EXAMPLES_ROOT).getAbsoluteFile();
+		File sourceFile = new File(projectRoot.getCanonicalPath() + VALIDATION_EXAMPLES_PACKAGE + javaFile);
 
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		char[] content = SharedUtils.getFileContents(sourceFile);
 
-		System.out.println("loading API from: " + modelPath);
-
 		String[] classpath = {};
-		String[] sourcepath = { projectRoot.getCanonicalPath(), modelPath };
+		String[] sourcepath = { projectRoot.getCanonicalPath(), new File(API_SRC_LOC).getCanonicalPath() };
 		String[] encodings = { "UTF-8", "UTF-8" };
 
 		parser.setSource(content);
