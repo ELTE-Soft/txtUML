@@ -49,7 +49,7 @@ public class Utils {
 		}
 
 		if (type.isSimpleType()) {
-			type.resolveBinding().getQualifiedName().equals("java.lang.String");
+			type.resolveBinding().getQualifiedName().equals("java.lang.String"); //$NON-NLS-1$
 		}
 
 		return false;

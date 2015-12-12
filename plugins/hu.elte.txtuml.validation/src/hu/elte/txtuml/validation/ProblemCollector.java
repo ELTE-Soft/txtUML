@@ -61,7 +61,7 @@ public class ProblemCollector {
 			}
 			problems.clear();
 		} catch (CoreException e) {
-			PluginLogWrapper.logError("Error while refreshing problem markers", e);
+			PluginLogWrapper.logError("Error while refreshing problem markers", e); //$NON-NLS-1$
 		}
 	}
 

@@ -1,5 +1,6 @@
 package hu.elte.txtuml.validation.problems.association;
 
+import hu.elte.txtuml.validation.Messages;
 import hu.elte.txtuml.validation.SourceInfo;
 import hu.elte.txtuml.validation.problems.ValidationErrorBase;
 import hu.elte.txtuml.validation.problems.ValidationErrorCatalog;
@@ -19,7 +20,7 @@ public class WrongCompositionEnds extends ValidationErrorBase {
 
 	@Override
 	public String getMessage() {
-		return "A composition must have exactly one container end and exactly one part end.";
+		return Messages.WrongCompositionEnds_message;
 	}
 
 }

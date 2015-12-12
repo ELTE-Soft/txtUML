@@ -1,5 +1,6 @@
 package hu.elte.txtuml.validation.problems.signal;
 
+import hu.elte.txtuml.validation.Messages;
 import hu.elte.txtuml.validation.SourceInfo;
 import hu.elte.txtuml.validation.problems.ValidationErrorBase;
 import hu.elte.txtuml.validation.problems.ValidationErrorCatalog;
@@ -19,7 +20,7 @@ public class InvalidSignalContent extends ValidationErrorBase {
 
 	@Override
 	public String getMessage() {
-		return "Invalid element in signal. Only attributes and constructors are allowed.";
+		return Messages.InvalidSignalContent_message;
 	}
 
 }

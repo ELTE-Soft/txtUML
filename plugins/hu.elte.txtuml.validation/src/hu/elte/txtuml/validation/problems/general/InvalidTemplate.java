@@ -1,5 +1,6 @@
 package hu.elte.txtuml.validation.problems.general;
 
+import hu.elte.txtuml.validation.Messages;
 import hu.elte.txtuml.validation.SourceInfo;
 import hu.elte.txtuml.validation.problems.ValidationErrorBase;
 import hu.elte.txtuml.validation.problems.ValidationErrorCatalog;
@@ -19,7 +20,7 @@ public class InvalidTemplate extends ValidationErrorBase {
 
 	@Override
 	public String getMessage() {
-		return "Templates are not yet supported in txtUML models.";
+		return Messages.InvalidTemplate_message;
 	}
 
 }

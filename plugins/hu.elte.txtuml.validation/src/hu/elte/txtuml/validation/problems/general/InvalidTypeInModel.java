@@ -2,6 +2,7 @@ package hu.elte.txtuml.validation.problems.general;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
+import hu.elte.txtuml.validation.Messages;
 import hu.elte.txtuml.validation.SourceInfo;
 import hu.elte.txtuml.validation.problems.ValidationErrorBase;
 import hu.elte.txtuml.validation.problems.ValidationErrorCatalog;
@@ -19,7 +20,7 @@ public class InvalidTypeInModel extends ValidationErrorBase {
 
 	@Override
 	public String getMessage() {
-		return "Invalid type declaration in model. Only model classes, signals and associations can be part of the model";
+		return Messages.InvalidTypeInModel_message;
 	}
 
 }

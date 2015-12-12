@@ -22,15 +22,15 @@ import hu.elte.txtuml.validation.visitors.ModelVisitor;
  * 
  */
 public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler.CompilationParticipant {
-	private static final String TXTUML_NATURE_ID = "hu.elte.txtuml.project.txtumlprojectNature";
-	public static final String JTXTUML_MARKER_TYPE = "hu.elte.txtuml.validation.jtxtumlmarker";
+	private static final String TXTUML_NATURE_ID = "hu.elte.txtuml.project.txtumlprojectNature"; //$NON-NLS-1$
+	public static final String JTXTUML_MARKER_TYPE = "hu.elte.txtuml.validation.jtxtumlmarker"; //$NON-NLS-1$
 
 	@Override
 	public boolean isActive(IJavaProject project) {
 		try {
 			return project.getProject().getNature(TXTUML_NATURE_ID) != null;
 		} catch (CoreException e) {
-			PluginLogWrapper.logError("Error while checking txtuml project", e);
+			PluginLogWrapper.logError("Error while checking txtuml project", e); //$NON-NLS-1$
 			return false;
 		}
 	}
@@ -50,7 +50,7 @@ public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler
 			}
 			collector.refreshProblems();
 		} catch (Exception e) {
-			PluginLogWrapper.logError("Error while checking for problems", e);
+			PluginLogWrapper.logError("Error while checking for problems", e); //$NON-NLS-1$
 		}
 	}
 
@@ -90,7 +90,7 @@ public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler
 			unit.accept(new ModelVisitor(collector));
 			collector.refreshProblems();
 		} catch (JavaModelException e) {
-			PluginLogWrapper.logError("Error while creating problem collector", e);
+			PluginLogWrapper.logError("Error while creating problem collector", e); //$NON-NLS-1$
 		}
 	}
 

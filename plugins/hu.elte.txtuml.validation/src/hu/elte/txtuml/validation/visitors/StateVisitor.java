@@ -23,7 +23,7 @@ public class StateVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(MethodDeclaration node) {
-		if (!node.getName().toString().equals("entry") && !node.getName().toString().equals("exit")) {
+		if (!node.getName().toString().equals("entry") && !node.getName().toString().equals("exit")) { //$NON-NLS-1$ //$NON-NLS-2$
 
 			collector.setProblemStatus(new UnknownStateMethod(collector.getSourceInfo(), node));
 			return false;

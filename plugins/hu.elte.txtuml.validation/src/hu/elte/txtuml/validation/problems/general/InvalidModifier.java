@@ -1,5 +1,6 @@
 package hu.elte.txtuml.validation.problems.general;
 
+import hu.elte.txtuml.validation.Messages;
 import hu.elte.txtuml.validation.SourceInfo;
 import hu.elte.txtuml.validation.problems.ValidationErrorBase;
 import hu.elte.txtuml.validation.problems.ValidationErrorCatalog;
@@ -19,7 +20,7 @@ public class InvalidModifier extends ValidationErrorBase {
 
 	@Override
 	public String getMessage() {
-		return "Invalid modifier. Only private and public are allowed on all elements. Static is allowed only on signals.";
+		return Messages.InvalidModifier_message;
 	}
 
 }

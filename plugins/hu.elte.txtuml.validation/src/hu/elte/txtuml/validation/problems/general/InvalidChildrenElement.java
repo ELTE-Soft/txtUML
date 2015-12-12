@@ -1,7 +1,10 @@
 package hu.elte.txtuml.validation.problems.general;
 
+import java.text.MessageFormat;
+
 import org.eclipse.jdt.core.dom.ASTNode;
 
+import hu.elte.txtuml.validation.Messages;
 import hu.elte.txtuml.validation.SourceInfo;
 import hu.elte.txtuml.validation.problems.ValidationErrorBase;
 import hu.elte.txtuml.validation.problems.ValidationErrorCatalog;
@@ -24,13 +27,7 @@ public class InvalidChildrenElement extends ValidationErrorBase {
 
 	@Override
 	public String getMessage() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Invalid element in ");
-		sb.append(nodeStr);
-		sb.append(" : ");
-		sb.append(child.getClass().getSimpleName());
-		sb.append(".");
-		return sb.toString();
+		return MessageFormat.format(Messages.InvalidChildrenElement_message, nodeStr, child.getClass().getSimpleName());
 	}
 
 }

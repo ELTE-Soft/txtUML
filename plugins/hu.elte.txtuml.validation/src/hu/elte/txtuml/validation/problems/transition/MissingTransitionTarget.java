@@ -2,6 +2,7 @@ package hu.elte.txtuml.validation.problems.transition;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
+import hu.elte.txtuml.validation.Messages;
 import hu.elte.txtuml.validation.SourceInfo;
 import hu.elte.txtuml.validation.problems.ValidationErrorBase;
 import hu.elte.txtuml.validation.problems.ValidationErrorCatalog;
@@ -19,7 +20,7 @@ public class MissingTransitionTarget extends ValidationErrorBase {
 
 	@Override
 	public String getMessage() {
-		return "A transition must have a target state";
+		return Messages.MissingTransitionTarget_message;
 	}
 
 }

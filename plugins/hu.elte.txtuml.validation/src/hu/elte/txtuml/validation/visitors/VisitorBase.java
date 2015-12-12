@@ -9,6 +9,7 @@ import org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
+import hu.elte.txtuml.validation.Messages;
 import hu.elte.txtuml.validation.ProblemCollector;
 import hu.elte.txtuml.validation.problems.general.InvalidChildrenElement;
 
@@ -66,15 +67,15 @@ public class VisitorBase extends ASTVisitor {
 
 	public void handleStateMachineElements(TypeDeclaration elem) {
 		if (ElementTypeTeller.isCompositeState(elem)) {
-			checkChildren(elem, "composite state", CompositeStateVisitor.ALLOWED_COMPOSITE_STATE_DECLARATIONS);
+			checkChildren(elem, Messages.VisitorBase_composite_state_label, CompositeStateVisitor.ALLOWED_COMPOSITE_STATE_DECLARATIONS);
 			acceptChildren(elem, new CompositeStateVisitor(collector));
 		} else if (ElementTypeTeller.isState(elem)) {
-			checkChildren(elem, "state", StateVisitor.ALLOWED_STATE_DECLARATIONS);
+			checkChildren(elem, Messages.VisitorBase_state_label, StateVisitor.ALLOWED_STATE_DECLARATIONS);
 			acceptChildren(elem, new StateVisitor(collector));
 		} else if (ElementTypeTeller.isInitialPseudoState(elem)) {
-			checkChildren(elem, "initial state", StateVisitor.ALLOWED_INITIAL_STATE_DECLARATIONS);
+			checkChildren(elem, Messages.VisitorBase_initial_state_label, StateVisitor.ALLOWED_INITIAL_STATE_DECLARATIONS);
 		} else if (ElementTypeTeller.isTransition(elem)) {
-			checkChildren(elem, "transition", TransitionVisitor.ALLOWED_TRANSITION_DECLARATIONS);
+			checkChildren(elem, Messages.VisitorBase_transition_label, TransitionVisitor.ALLOWED_TRANSITION_DECLARATIONS);
 			acceptChildren(elem, new TransitionVisitor(elem, collector));
 		}
 	}

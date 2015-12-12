@@ -3,6 +3,7 @@ package hu.elte.txtuml.validation.visitors;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
+import hu.elte.txtuml.validation.Messages;
 import hu.elte.txtuml.validation.ProblemCollector;
 import hu.elte.txtuml.validation.problems.general.InvalidTypeInModel;
 
@@ -22,7 +23,7 @@ public class ModelVisitor extends VisitorBase {
 
 		if (ElementTypeTeller.isSignal(elem)) {
 			Utils.checkModifiers(collector, elem);
-			checkChildren(elem, "signal", SignalVisitor.ALLOWED_SIGNAL_DECLARATIONS);
+			checkChildren(elem, Messages.ModelVisitor_signal_label, SignalVisitor.ALLOWED_SIGNAL_DECLARATIONS);
 			acceptChildren(elem, new SignalVisitor(collector));
 		} else if (ElementTypeTeller.isAssociation(elem)) {
 			Utils.checkModifiers(collector, elem);
@@ -31,9 +32,9 @@ public class ModelVisitor extends VisitorBase {
 			} else {
 				acceptChildren(elem, new AssociationVisitor(elem, collector));
 			}
-			checkChildren(elem, "association", AssociationVisitor.ALLOWED_ASSOCIATION_DECLARATIONS);
+			checkChildren(elem, Messages.ModelVisitor_association_label, AssociationVisitor.ALLOWED_ASSOCIATION_DECLARATIONS);
 		} else if (ElementTypeTeller.isModelClass(elem)) {
-			checkChildren(elem, "class", ModelClassVisitor.ALLOWED_MODEL_CLASS_DECLARATIONS);
+			checkChildren(elem, Messages.ModelVisitor_class_label, ModelClassVisitor.ALLOWED_MODEL_CLASS_DECLARATIONS);
 			acceptChildren(elem, new ModelClassVisitor(collector));
 		}
 		return false;
