@@ -24,15 +24,17 @@ public class StateVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(MethodDeclaration node) {
-		boolean invalidName = !node.getName().toString().equals("entry") && !node.getName().toString().equals("exit");
-		collector.setProblemStatus(invalidName, new UnknownStateMethod(collector.getSourceInfo(), node));
-		if (invalidName) {
+		if (!node.getName().toString().equals("entry") && !node.getName().toString().equals("exit")) {
+
+			collector.setProblemStatus(new UnknownStateMethod(collector.getSourceInfo(), node));
 			return false;
 		}
-		collector.setProblemStatus(!Utils.isVoid(node.getReturnType2()),
-				new StateMethodNonVoidReturn(collector.getSourceInfo(), node.getReturnType2()));
-		collector.setProblemStatus(!node.parameters().isEmpty(),
-				new StateMethodParameters(collector.getSourceInfo(), node));
+		if (!Utils.isVoid(node.getReturnType2())) {
+			collector.setProblemStatus(new StateMethodNonVoidReturn(collector.getSourceInfo(), node.getReturnType2()));
+		}
+		if (!node.parameters().isEmpty()) {
+			collector.setProblemStatus(new StateMethodParameters(collector.getSourceInfo(), node));
+		}
 		// TODO: validate body
 		return false;
 	}

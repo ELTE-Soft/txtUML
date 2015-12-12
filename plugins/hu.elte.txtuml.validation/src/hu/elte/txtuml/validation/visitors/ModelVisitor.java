@@ -15,10 +15,10 @@ public class ModelVisitor extends VisitorBase {
 	@Override
 	public boolean visit(TypeDeclaration elem) {
 		Utils.checkTemplate(collector, elem);
-		collector.setProblemStatus(
-				!ElementTypeTeller.isSignal(elem) && !ElementTypeTeller.isAssociation(elem)
-						&& !ElementTypeTeller.isModelClass(elem),
-				new InvalidTypeInModel(collector.getSourceInfo(), elem));
+		if (!ElementTypeTeller.isSignal(elem) && !ElementTypeTeller.isAssociation(elem)
+				&& !ElementTypeTeller.isModelClass(elem)) {
+			collector.setProblemStatus(new InvalidTypeInModel(collector.getSourceInfo(), elem));
+		}
 
 		if (ElementTypeTeller.isSignal(elem)) {
 			Utils.checkModifiers(collector, elem);

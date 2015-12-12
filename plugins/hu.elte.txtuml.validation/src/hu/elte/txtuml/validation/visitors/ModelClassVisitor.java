@@ -27,9 +27,9 @@ public class ModelClassVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(TypeDeclaration elem) {
-		boolean valid = ElementTypeTeller.isVertex(elem) || ElementTypeTeller.isTransition(elem);
-		collector.setProblemStatus(!valid, new InvalidModelClassElement(collector.getSourceInfo(), elem.getName()));
-		if (valid) {
+		if (!ElementTypeTeller.isVertex(elem) && !ElementTypeTeller.isTransition(elem)) {
+			collector.setProblemStatus(new InvalidModelClassElement(collector.getSourceInfo(), elem.getName()));
+		} else {
 			handleStateMachineElements(elem);
 		}
 		return false;
@@ -37,10 +37,9 @@ public class ModelClassVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(FieldDeclaration elem) {
-		boolean valid = Utils.isAllowedBasicType(elem.getType(), false);
-		collector.setProblemStatus(!valid,
-				new InvalidTypeWithClassNotAllowed(collector.getSourceInfo(), elem.getType()));
-		if (valid) {
+		if (!Utils.isAllowedBasicType(elem.getType(), false)) {
+			collector.setProblemStatus(new InvalidTypeWithClassNotAllowed(collector.getSourceInfo(), elem.getType()));
+		} else {
 			Utils.checkModifiers(collector, elem);
 		}
 		return false;
@@ -49,17 +48,18 @@ public class ModelClassVisitor extends VisitorBase {
 	@Override
 	public boolean visit(MethodDeclaration elem) {
 		if (!elem.isConstructor()) {
-			boolean hasValidReturnType = Utils.isAllowedBasicTypeOrModelClass(elem.getReturnType2(), true);
-			collector.setProblemStatus(!hasValidReturnType,
-					new InvalidTypeWithClassAllowed(collector.getSourceInfo(), elem.getReturnType2()));
+			if (!Utils.isAllowedBasicTypeOrModelClass(elem.getReturnType2(), true)) {
+				collector.setProblemStatus(
+						new InvalidTypeWithClassAllowed(collector.getSourceInfo(), elem.getReturnType2()));
+			}
 		}
 
 		Utils.checkModifiers(collector, elem);
 		for (Object obj : elem.parameters()) {
 			SingleVariableDeclaration param = (SingleVariableDeclaration) obj;
-			boolean valid = Utils.isAllowedBasicTypeOrModelClass(param.getType(), false);
-			collector.setProblemStatus(!valid,
-					new InvalidTypeWithClassAllowed(collector.getSourceInfo(), param.getType()));
+			if (!Utils.isAllowedBasicTypeOrModelClass(param.getType(), false)) {
+				collector.setProblemStatus(new InvalidTypeWithClassAllowed(collector.getSourceInfo(), param.getType()));
+			}
 		}
 		// TODO: check body
 		return false;

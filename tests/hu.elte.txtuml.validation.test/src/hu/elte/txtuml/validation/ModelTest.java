@@ -1,8 +1,6 @@
 package hu.elte.txtuml.validation;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
@@ -54,7 +52,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector).setProblemStatus(eq(true), isA(InvalidTypeInModel.class));
+		verify(mockCollector).setProblemStatus(isA(InvalidTypeInModel.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -65,7 +63,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).setProblemStatus(eq(true), isA(InvalidTypeWithClassAllowed.class));
+		verify(mockCollector, times(2)).setProblemStatus(isA(InvalidTypeWithClassAllowed.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -76,7 +74,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector).setProblemStatus(eq(true), isA(InvalidTypeWithClassNotAllowed.class));
+		verify(mockCollector).setProblemStatus(isA(InvalidTypeWithClassNotAllowed.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -87,7 +85,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(3)).setProblemStatus(eq(true), isA(InvalidModifier.class));
+		verify(mockCollector, times(3)).setProblemStatus(isA(InvalidModifier.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -98,7 +96,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).setProblemStatus(eq(true), isA(InvalidTypeWithClassNotAllowed.class));
+		verify(mockCollector, times(2)).setProblemStatus(isA(InvalidTypeWithClassNotAllowed.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -109,7 +107,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).setProblemStatus(eq(true), isA(InvalidTypeWithClassNotAllowed.class));
+		verify(mockCollector, times(2)).setProblemStatus(isA(InvalidTypeWithClassNotAllowed.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -120,7 +118,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).setProblemStatus(eq(true), isA(InvalidModelClassElement.class));
+		verify(mockCollector, times(2)).setProblemStatus(isA(InvalidModelClassElement.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -131,7 +129,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(1)).setProblemStatus(eq(true), isA(InvalidSignalContent.class));
+		verify(mockCollector, times(1)).setProblemStatus(isA(InvalidSignalContent.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -142,7 +140,7 @@ public class ModelTest {
 		
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 		
-		verify(mockCollector, times(3)).setProblemStatus(eq(true), isA(WrongNumberOfAssociationEnds.class));
+		verify(mockCollector, times(3)).setProblemStatus(isA(WrongNumberOfAssociationEnds.class));
 		
 		checkNoOtherErrorRaised();
 	}
@@ -153,13 +151,12 @@ public class ModelTest {
 		
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 		
-		verify(mockCollector, times(2)).setProblemStatus(eq(true), isA(WrongTypeInAssociation.class));
+		verify(mockCollector, times(2)).setProblemStatus(isA(WrongTypeInAssociation.class));
 		
 		checkNoOtherErrorRaised();
 	}
 
 	private void checkNoOtherErrorRaised() {
-		verify(mockCollector, atLeast(0)).setProblemStatus(eq(false), any());
 		verify(mockCollector, atLeast(0)).getSourceInfo();
 		verifyNoMoreInteractions(mockCollector);
 	}

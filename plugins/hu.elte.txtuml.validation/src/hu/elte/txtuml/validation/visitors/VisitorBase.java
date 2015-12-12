@@ -30,21 +30,22 @@ public class VisitorBase extends ASTVisitor {
 			StructuralPropertyDescriptor spd = (StructuralPropertyDescriptor) prop;
 			if (spd.isChildListProperty()) {
 				for (Object child : ((List<?>) node.getStructuralProperty(spd))) {
-					collector.setProblemStatus(childAllowed(child, allowedChildrenTypes),
-							new InvalidChildrenElement(collector.getSourceInfo(), nodeStr, (ASTNode) child));
+					if (childForbidden(child, allowedChildrenTypes)) {
+						collector.setProblemStatus(
+								new InvalidChildrenElement(collector.getSourceInfo(), nodeStr, (ASTNode) child));
+					}
 				}
 			} else if (spd.isChildProperty()) {
 				Object child = node.getStructuralProperty(spd);
-				if (child != null) {
-					collector.setProblemStatus(childAllowed(child, allowedChildrenTypes),
-							new InvalidChildrenElement(collector.getSourceInfo(), nodeStr, (ASTNode) child));
+				if (child != null && childForbidden(child, allowedChildrenTypes)) {
+					collector.setProblemStatus(new InvalidChildrenElement(collector.getSourceInfo(), nodeStr, (ASTNode) child));
 				}
 			}
 
 		}
 	}
 
-	private boolean childAllowed(Object child, Class<?>... allowedChildrenTypes) {
+	private boolean childForbidden(Object child, Class<?>... allowedChildrenTypes) {
 		for (Class<?> allowedType : allowedChildrenTypes) {
 			if (allowedType.isInstance(child)) {
 				return false;
@@ -62,7 +63,7 @@ public class VisitorBase extends ASTVisitor {
 		}
 		visitor.check();
 	}
-	
+
 	public void handleStateMachineElements(TypeDeclaration elem) {
 		if (ElementTypeTeller.isCompositeState(elem)) {
 			checkChildren(elem, "composite state", CompositeStateVisitor.ALLOWED_COMPOSITE_STATE_DECLARATIONS);

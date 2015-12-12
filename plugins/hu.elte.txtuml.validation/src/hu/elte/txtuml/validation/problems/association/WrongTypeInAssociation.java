@@ -19,8 +19,7 @@ public class WrongTypeInAssociation extends ValidationErrorBase {
 
 	@Override
 	public String getMessage() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Member classes of association must be association ends.";
 	}
 
 }

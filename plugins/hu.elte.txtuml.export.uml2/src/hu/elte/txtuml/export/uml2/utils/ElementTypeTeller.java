@@ -41,6 +41,10 @@ public final class ElementTypeTeller {
 	}
 
 	public static boolean isModelElement(CompilationUnit unit) {
+		if (unit.getPackage() == null) {
+			// the model cannot be in default package
+			return false;
+		}
 		return isModelPackage((IPackageFragment) unit.getPackage().resolveBinding().getJavaElement());
 	}
 

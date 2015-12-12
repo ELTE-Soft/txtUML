@@ -2,9 +2,7 @@ package hu.elte.txtuml.validation;
 
 import java.io.IOException;
 
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IJavaProject;
@@ -45,13 +43,12 @@ public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler
 	@Override
 	public void reconcile(ReconcileContext context) {
 		try {
-			IMarker[] markers = context.getWorkingCopy().getResource().findMarkers(JTXTUML_MARKER_TYPE, true,
-					IResource.DEPTH_ZERO);
 			CompilationUnit unit = context.getAST8();
-			ProblemCollectorForReconcile collector = new ProblemCollectorForReconcile(context, markers);
+			ProblemCollector collector = new ProblemCollector(context);
 			if (ElementTypeTeller.isModelElement(unit)) {
 				unit.accept(new ModelVisitor(collector));
 			}
+			collector.refreshProblems();
 		} catch (Exception e) {
 			PluginLogWrapper.logError("Error while checking for problems", e);
 		}
@@ -88,9 +85,13 @@ public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler
 			return;
 		}
 
-		ProblemCollectorForBuild collector = new ProblemCollectorForBuild(unit);
-		unit.accept(new ModelVisitor(collector));
-		file.recordNewProblems(collector.getProblems());
+		try {
+			ProblemCollector collector = new ProblemCollector(unit, file.getFile());
+			unit.accept(new ModelVisitor(collector));
+			collector.refreshProblems();
+		} catch (JavaModelException e) {
+			PluginLogWrapper.logError("Error while creating problem collector", e);
+		}
 	}
 
 }

@@ -29,8 +29,9 @@ public class CompositionVisitor extends VisitorBase {
 	}
 
 	public void check() {
-		boolean invalid = containerMembers != 1 || partMembers != 1;
-		collector.setProblemStatus(invalid, new WrongCompositionEnds(collector.getSourceInfo(), root));
+		if (containerMembers != 1 || partMembers != 1) {
+			collector.setProblemStatus(new WrongCompositionEnds(collector.getSourceInfo(), root));
+		}
 	}
 
 }

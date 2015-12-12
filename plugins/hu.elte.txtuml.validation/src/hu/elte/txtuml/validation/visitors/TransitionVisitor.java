@@ -43,24 +43,30 @@ public class TransitionVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(MethodDeclaration node) {
-		boolean invalidName = !ElementTypeTeller.isEffect(node) && !ElementTypeTeller.isGuard(node);
-		collector.setProblemStatus(invalidName, new UnknownTransitionMethod(collector.getSourceInfo(), node));
-		if (invalidName) {
+		if (!ElementTypeTeller.isEffect(node) && !ElementTypeTeller.isGuard(node)) {
+			collector.setProblemStatus(new UnknownTransitionMethod(collector.getSourceInfo(), node));
 			return false;
 		}
 		if (ElementTypeTeller.isEffect(node)) {
-			collector.setProblemStatus(!Utils.isVoid(node.getReturnType2()),
-					new TransitionMethodNonVoidReturn(collector.getSourceInfo(), node.getReturnType2()));
+			if (!Utils.isVoid(node.getReturnType2())) {
+				collector.setProblemStatus(
+						new TransitionMethodNonVoidReturn(collector.getSourceInfo(), node.getReturnType2()));
+			}
 		} else {
-			collector.setProblemStatus(!Utils.isBoolean(node.getReturnType2()),
-					new TransitionMethodNonVoidReturn(collector.getSourceInfo(), node.getReturnType2()));
+			if (!Utils.isBoolean(node.getReturnType2())) {
+				collector.setProblemStatus(
+						new TransitionMethodNonVoidReturn(collector.getSourceInfo(), node.getReturnType2()));
+			}
 		}
-		collector.setProblemStatus(!node.parameters().isEmpty(),
-				new TransitionMethodParameters(collector.getSourceInfo(), node));
+		if (!node.parameters().isEmpty()) {
+			collector.setProblemStatus(new TransitionMethodParameters(collector.getSourceInfo(), node));
+		}
+
 		loadDirections();
 
 		// TODO: validate body
 		return false;
+
 	}
 
 	private void loadDirections() {
@@ -91,31 +97,37 @@ public class TransitionVisitor extends VisitorBase {
 				}
 			}
 		}
-		collector.setProblemStatus(fromValue == null,
-				new MissingTransitionSource(collector.getSourceInfo(), transition));
-		collector.setProblemStatus(toValue == null, new MissingTransitionTarget(collector.getSourceInfo(), transition));
+		if (fromValue == null) {
+			collector.setProblemStatus(new MissingTransitionSource(collector.getSourceInfo(), transition));
+		}
+		if (toValue == null) {
+			collector.setProblemStatus(new MissingTransitionTarget(collector.getSourceInfo(), transition));
+		}
 		checkTrigger(triggerAnnot, triggerValue, fromValue);
 	}
 
 	protected void checkFrom(Annotation from, ITypeBinding value) {
-		collector.setProblemStatus(!Arrays.asList(parentElement.getDeclaredTypes()).contains(value),
-				new TransitionFromOutside(collector.getSourceInfo(), from));
+		if (!Arrays.asList(parentElement.getDeclaredTypes()).contains(value)) {
+			collector.setProblemStatus(new TransitionFromOutside(collector.getSourceInfo(), from));
+		}
 	}
 
 	protected void checkTo(Annotation to, ITypeBinding value) {
-		collector.setProblemStatus(!Arrays.asList(parentElement.getDeclaredTypes()).contains(value),
-				new TransitionToOutside(collector.getSourceInfo(), to));
+		if (!Arrays.asList(parentElement.getDeclaredTypes()).contains(value)) {
+			collector.setProblemStatus(new TransitionToOutside(collector.getSourceInfo(), to));
+		}
 	}
 
 	protected void checkTrigger(Annotation signal, ITypeBinding value, ITypeBinding fromValue) {
-		collector.setProblemStatus(
-				value == null && !ElementTypeTeller.isInitialPseudoState(fromValue)
-						&& !ElementTypeTeller.isChoicePseudoState(fromValue),
-				new MissingTransitionTrigger(collector.getSourceInfo(), transition));
-		collector.setProblemStatus(
-				value != null && (ElementTypeTeller.isInitialPseudoState(fromValue)
-						|| ElementTypeTeller.isChoicePseudoState(fromValue)),
-				new TriggerOnInitialTransition(collector.getSourceInfo(), signal != null ? signal : transition));
+		if (value == null && !ElementTypeTeller.isInitialPseudoState(fromValue)
+				&& !ElementTypeTeller.isChoicePseudoState(fromValue)) {
+			collector.setProblemStatus(new MissingTransitionTrigger(collector.getSourceInfo(), transition));
+		}
+		if (value != null && (ElementTypeTeller.isInitialPseudoState(fromValue)
+				|| ElementTypeTeller.isChoicePseudoState(fromValue))) {
+			collector.setProblemStatus(
+					new TriggerOnInitialTransition(collector.getSourceInfo(), signal != null ? signal : transition));
+		}
 	}
 
 }

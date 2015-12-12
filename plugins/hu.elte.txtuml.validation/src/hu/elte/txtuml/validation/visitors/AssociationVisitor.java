@@ -18,6 +18,7 @@ public class AssociationVisitor extends VisitorBase {
 
 	private TypeDeclaration root;
 	private int members = 0;
+	private boolean errorInside = false;
 
 	public AssociationVisitor(TypeDeclaration root, ProblemCollector collector) {
 		super(collector);
@@ -26,16 +27,20 @@ public class AssociationVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(TypeDeclaration node) {
-		boolean invalid = !ElementTypeTeller.isAssociationeEnd(node);
-		collector.setProblemStatus(invalid, new WrongTypeInAssociation(collector.getSourceInfo(), node));
-		++members;
+		if (!ElementTypeTeller.isAssociationeEnd(node)) {
+			collector.setProblemStatus(new WrongTypeInAssociation(collector.getSourceInfo(), node));
+			errorInside = true;
+		} else {
+			++members;
+		}
 		return false;
 	}
 
 	@Override
 	public void check() {
-		boolean invalid = members != 2;
-		collector.setProblemStatus(invalid, new WrongNumberOfAssociationEnds(collector.getSourceInfo(), root));
+		if (!errorInside && members != 2) {
+			collector.setProblemStatus(new WrongNumberOfAssociationEnds(collector.getSourceInfo(), root));
+		}
 	}
 
 }

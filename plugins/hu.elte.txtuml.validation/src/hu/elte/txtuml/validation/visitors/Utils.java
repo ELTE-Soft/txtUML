@@ -18,7 +18,7 @@ public class Utils {
 
 	public static void checkTemplate(ProblemCollector collector, TypeDeclaration elem) {
 		if (elem.typeParameters().size() > 0) {
-			collector.setProblemStatus(true,
+			collector.setProblemStatus(
 					new InvalidTemplate(collector.getSourceInfo(), (TypeParameter) (elem.typeParameters().get(0))));
 		}
 	}
@@ -35,8 +35,9 @@ public class Utils {
 			} else {
 				valid = modifier.isPrivate() || modifier.isPublic();
 			}
-			collector.setProblemStatus(!valid, new InvalidModifier(collector.getSourceInfo(), modifier));
-
+			if (!valid) {
+				collector.setProblemStatus(new InvalidModifier(collector.getSourceInfo(), modifier));
+			}
 		}
 	}
 

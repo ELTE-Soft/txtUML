@@ -23,11 +23,9 @@ public class SignalVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(FieldDeclaration elem) {
-		boolean valid = Utils.isAllowedBasicType(elem.getType(), false);
-		collector.setProblemStatus(!valid,
-				new InvalidTypeWithClassNotAllowed(collector.getSourceInfo(), elem.getType()));
-
-		if (valid) {
+		if (!Utils.isAllowedBasicType(elem.getType(), false)) {
+			collector.setProblemStatus(new InvalidTypeWithClassNotAllowed(collector.getSourceInfo(), elem.getType()));
+		} else {
 			Utils.checkModifiers(collector, elem);
 		}
 		return false;
@@ -35,9 +33,9 @@ public class SignalVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(MethodDeclaration elem) {
-		boolean valid = elem.isConstructor();
-		collector.setProblemStatus(!valid, new InvalidSignalContent(collector.getSourceInfo(), elem.getName()));
-		if (valid) {
+		if (!elem.isConstructor()) {
+			collector.setProblemStatus(new InvalidSignalContent(collector.getSourceInfo(), elem.getName()));
+		} else {
 			checkConstructor(elem);
 			Utils.checkModifiers(collector, elem);
 		}
@@ -47,9 +45,10 @@ public class SignalVisitor extends VisitorBase {
 	private void checkConstructor(MethodDeclaration elem) {
 		for (Object obj : elem.parameters()) {
 			SingleVariableDeclaration param = (SingleVariableDeclaration) obj;
-			boolean valid = Utils.isAllowedBasicType(param.getType(), false);
-			collector.setProblemStatus(!valid,
-					new InvalidTypeWithClassNotAllowed(collector.getSourceInfo(), param.getType()));
+			if (!Utils.isAllowedBasicType(param.getType(), false)) {
+				collector.setProblemStatus(
+						new InvalidTypeWithClassNotAllowed(collector.getSourceInfo(), param.getType()));
+			}
 		}
 		// TODO: check constructor body
 	}
