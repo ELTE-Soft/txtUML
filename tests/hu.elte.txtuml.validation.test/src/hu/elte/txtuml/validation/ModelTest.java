@@ -32,6 +32,12 @@ import hu.elte.txtuml.validation.problems.signal.InvalidSignalContent;
 import hu.elte.txtuml.validation.problems.state.StateMethodParameters;
 import hu.elte.txtuml.validation.problems.state.UnknownClassInState;
 import hu.elte.txtuml.validation.problems.state.UnknownStateMethod;
+import hu.elte.txtuml.validation.problems.transition.MissingTransitionSource;
+import hu.elte.txtuml.validation.problems.transition.MissingTransitionTarget;
+import hu.elte.txtuml.validation.problems.transition.MissingTransitionTrigger;
+import hu.elte.txtuml.validation.problems.transition.TransitionMethodParameters;
+import hu.elte.txtuml.validation.problems.transition.TriggerOnInitialTransition;
+import hu.elte.txtuml.validation.problems.transition.UnknownTransitionMethod;
 import hu.elte.txtuml.validation.visitors.ModelVisitor;
 
 public class ModelTest {
@@ -196,6 +202,34 @@ public class ModelTest {
 		
 		checkNoOtherErrorRaised();
 	}
+	
+	@Test
+	public void testTransitionMethodNotCorrect() throws Exception {
+		CompilationUnit compilationUnit = prepareAST("TransitionMethodNotCorrect.java");
+		
+		compilationUnit.accept(new ModelVisitor(mockCollector));
+		
+		verify(mockCollector).setProblemStatus(isA(UnknownTransitionMethod.class));
+		verify(mockCollector).setProblemStatus(isA(TransitionMethodParameters.class));
+		
+		checkNoOtherErrorRaised();
+	}
+	
+	@Test
+	public void testTransitionsWithoutSourceTargetOrTrigger() throws Exception {
+		CompilationUnit compilationUnit = prepareAST("TransitionsWithoutSourceTargetOrTrigger.java");
+		
+		compilationUnit.accept(new ModelVisitor(mockCollector));
+		
+		verify(mockCollector).setProblemStatus(isA(TriggerOnInitialTransition.class));
+		verify(mockCollector).setProblemStatus(isA(MissingTransitionSource.class));
+		verify(mockCollector).setProblemStatus(isA(MissingTransitionTarget.class));
+		verify(mockCollector).setProblemStatus(isA(MissingTransitionTrigger.class));
+		
+		checkNoOtherErrorRaised();
+	}
+	
+	
 
 	private void checkNoOtherErrorRaised() {
 		verify(mockCollector, atLeast(0)).getSourceInfo();

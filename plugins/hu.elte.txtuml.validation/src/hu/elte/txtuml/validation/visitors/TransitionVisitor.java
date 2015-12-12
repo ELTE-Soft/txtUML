@@ -62,14 +62,16 @@ public class TransitionVisitor extends VisitorBase {
 			collector.setProblemStatus(new TransitionMethodParameters(collector.getSourceInfo(), node));
 		}
 
-		loadDirections();
-
 		// TODO: validate body
 		return false;
 
 	}
 
-	private void loadDirections() {
+	public void check() {
+		checkDirections();
+	};
+
+	private void checkDirections() {
 		ITypeBinding triggerValue = null;
 		Annotation triggerAnnot = null;
 		ITypeBinding fromValue = null;
@@ -103,7 +105,9 @@ public class TransitionVisitor extends VisitorBase {
 		if (toValue == null) {
 			collector.setProblemStatus(new MissingTransitionTarget(collector.getSourceInfo(), transition));
 		}
-		checkTrigger(triggerAnnot, triggerValue, fromValue);
+		if (fromValue != null && toValue != null) {
+			checkTrigger(triggerAnnot, triggerValue, fromValue);
+		}
 	}
 
 	protected void checkFrom(Annotation from, ITypeBinding value) {

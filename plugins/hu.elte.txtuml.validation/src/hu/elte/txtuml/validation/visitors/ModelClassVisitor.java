@@ -48,7 +48,7 @@ public class ModelClassVisitor extends VisitorBase {
 	@Override
 	public boolean visit(MethodDeclaration elem) {
 		if (!elem.isConstructor()) {
-			if (!Utils.isAllowedBasicTypeOrModelClass(elem.getReturnType2(), true)) {
+			if (elem.getReturnType2() != null && !Utils.isAllowedBasicTypeOrModelClass(elem.getReturnType2(), true)) {
 				collector.setProblemStatus(
 						new InvalidTypeWithClassAllowed(collector.getSourceInfo(), elem.getReturnType2()));
 			}
