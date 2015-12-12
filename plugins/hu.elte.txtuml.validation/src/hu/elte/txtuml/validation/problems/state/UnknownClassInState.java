@@ -6,20 +6,20 @@ import hu.elte.txtuml.validation.SourceInfo;
 import hu.elte.txtuml.validation.problems.ValidationErrorBase;
 import hu.elte.txtuml.validation.problems.ValidationErrorCatalog;
 
-public class StateMethodNonVoidReturn extends ValidationErrorBase {
+public class UnknownClassInState extends ValidationErrorBase {
 
-	public StateMethodNonVoidReturn(SourceInfo sourceInfo, ASTNode node) {
+	public UnknownClassInState(SourceInfo sourceInfo, ASTNode node) {
 		super(sourceInfo, node);
 	}
 
 	@Override
 	public int getID() {
-		return ValidationErrorCatalog.STATE_METHOD_NONVOID_RETURN.ordinal();
+		return ValidationErrorCatalog.UNKNOWN_CLASS_IN_STATE.ordinal();
 	}
 
 	@Override
 	public String getMessage() {
-		return "Methods in a state must have a void return type";
+		return "In composite states only states and transitions can be declared.";
 	}
 
 }

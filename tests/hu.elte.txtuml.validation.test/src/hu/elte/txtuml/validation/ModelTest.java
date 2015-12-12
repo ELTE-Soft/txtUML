@@ -19,14 +19,19 @@ import org.junit.Before;
 import org.junit.Test;
 
 import hu.elte.txtuml.export.uml2.utils.SharedUtils;
+import hu.elte.txtuml.validation.problems.association.WrongCompositionEnds;
 import hu.elte.txtuml.validation.problems.association.WrongNumberOfAssociationEnds;
 import hu.elte.txtuml.validation.problems.association.WrongTypeInAssociation;
+import hu.elte.txtuml.validation.problems.general.InvalidChildrenElement;
 import hu.elte.txtuml.validation.problems.general.InvalidModifier;
 import hu.elte.txtuml.validation.problems.general.InvalidTypeInModel;
 import hu.elte.txtuml.validation.problems.modelclass.InvalidModelClassElement;
 import hu.elte.txtuml.validation.problems.modelclass.InvalidTypeWithClassAllowed;
 import hu.elte.txtuml.validation.problems.modelclass.InvalidTypeWithClassNotAllowed;
 import hu.elte.txtuml.validation.problems.signal.InvalidSignalContent;
+import hu.elte.txtuml.validation.problems.state.StateMethodParameters;
+import hu.elte.txtuml.validation.problems.state.UnknownClassInState;
+import hu.elte.txtuml.validation.problems.state.UnknownStateMethod;
 import hu.elte.txtuml.validation.visitors.ModelVisitor;
 
 public class ModelTest {
@@ -152,6 +157,42 @@ public class ModelTest {
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 		
 		verify(mockCollector, times(2)).setProblemStatus(isA(WrongTypeInAssociation.class));
+		
+		checkNoOtherErrorRaised();
+	}
+	
+	@Test
+	public void testCompositionNotExactlyOneContainer() throws Exception {
+		CompilationUnit compilationUnit = prepareAST("CompositionNotExactlyOneContainer.java");
+		
+		compilationUnit.accept(new ModelVisitor(mockCollector));
+		
+		verify(mockCollector, times(2)).setProblemStatus(isA(WrongCompositionEnds.class));
+		
+		checkNoOtherErrorRaised();
+	}
+	
+	@Test
+	public void testStateMethodNotCorrect() throws Exception {
+		CompilationUnit compilationUnit = prepareAST("StateMethodNotCorrect.java");
+		
+		compilationUnit.accept(new ModelVisitor(mockCollector));
+		
+		verify(mockCollector).setProblemStatus(isA(InvalidChildrenElement.class));
+		verify(mockCollector).setProblemStatus(isA(UnknownStateMethod.class));
+		verify(mockCollector).setProblemStatus(isA(StateMethodParameters.class));
+		
+		checkNoOtherErrorRaised();
+	}
+	
+	@Test
+	public void testStateInnerTypesNotCorrect() throws Exception {
+		CompilationUnit compilationUnit = prepareAST("StateInnerTypesNotCorrect.java");
+		
+		compilationUnit.accept(new ModelVisitor(mockCollector));
+		
+		verify(mockCollector, times(3)).setProblemStatus(isA(InvalidChildrenElement.class));
+		verify(mockCollector).setProblemStatus(isA(UnknownClassInState.class));
 		
 		checkNoOtherErrorRaised();
 	}

@@ -6,7 +6,6 @@ import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 
 import hu.elte.txtuml.validation.ProblemCollector;
-import hu.elte.txtuml.validation.problems.state.StateMethodNonVoidReturn;
 import hu.elte.txtuml.validation.problems.state.StateMethodParameters;
 import hu.elte.txtuml.validation.problems.state.UnknownStateMethod;
 
@@ -28,9 +27,6 @@ public class StateVisitor extends VisitorBase {
 
 			collector.setProblemStatus(new UnknownStateMethod(collector.getSourceInfo(), node));
 			return false;
-		}
-		if (!Utils.isVoid(node.getReturnType2())) {
-			collector.setProblemStatus(new StateMethodNonVoidReturn(collector.getSourceInfo(), node.getReturnType2()));
 		}
 		if (!node.parameters().isEmpty()) {
 			collector.setProblemStatus(new StateMethodParameters(collector.getSourceInfo(), node));
