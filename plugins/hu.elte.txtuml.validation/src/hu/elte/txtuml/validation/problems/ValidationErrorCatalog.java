@@ -1,5 +1,8 @@
 package hu.elte.txtuml.validation.problems;
 
+/**
+ * An enumeration for assigning different codes values to the different problems.
+ */
 public enum ValidationErrorCatalog {
 
 	INVALID_CHILDREN_ELEMENT,

@@ -13,6 +13,9 @@ import hu.elte.txtuml.validation.Messages;
 import hu.elte.txtuml.validation.ProblemCollector;
 import hu.elte.txtuml.validation.problems.general.InvalidChildrenElement;
 
+/**
+ * Base class for visitors checking validity of java AST as txtUML model.
+ */
 public class VisitorBase extends ASTVisitor {
 
 	protected ProblemCollector collector;
@@ -39,7 +42,8 @@ public class VisitorBase extends ASTVisitor {
 			} else if (spd.isChildProperty()) {
 				Object child = node.getStructuralProperty(spd);
 				if (child != null && childForbidden(child, allowedChildrenTypes)) {
-					collector.setProblemStatus(new InvalidChildrenElement(collector.getSourceInfo(), nodeStr, (ASTNode) child));
+					collector.setProblemStatus(
+							new InvalidChildrenElement(collector.getSourceInfo(), nodeStr, (ASTNode) child));
 				}
 			}
 
@@ -55,6 +59,10 @@ public class VisitorBase extends ASTVisitor {
 		return true;
 	}
 
+	/**
+	 * Checks if the node is valid after visiting its children. Default
+	 * implementation never reports a problem.
+	 */
 	public void check() {
 	}
 
@@ -65,17 +73,24 @@ public class VisitorBase extends ASTVisitor {
 		visitor.check();
 	}
 
+	/**
+	 * Method extracted to apply the applicable visitor to a type declaration
+	 * that is a state machine element.
+	 */
 	public void handleStateMachineElements(TypeDeclaration elem) {
 		if (ElementTypeTeller.isCompositeState(elem)) {
-			checkChildren(elem, Messages.VisitorBase_composite_state_label, CompositeStateVisitor.ALLOWED_COMPOSITE_STATE_DECLARATIONS);
+			checkChildren(elem, Messages.VisitorBase_composite_state_label,
+					CompositeStateVisitor.ALLOWED_COMPOSITE_STATE_DECLARATIONS);
 			acceptChildren(elem, new CompositeStateVisitor(collector));
 		} else if (ElementTypeTeller.isState(elem)) {
 			checkChildren(elem, Messages.VisitorBase_state_label, StateVisitor.ALLOWED_STATE_DECLARATIONS);
 			acceptChildren(elem, new StateVisitor(collector));
 		} else if (ElementTypeTeller.isInitialPseudoState(elem)) {
-			checkChildren(elem, Messages.VisitorBase_initial_state_label, StateVisitor.ALLOWED_INITIAL_STATE_DECLARATIONS);
+			checkChildren(elem, Messages.VisitorBase_initial_state_label,
+					StateVisitor.ALLOWED_INITIAL_STATE_DECLARATIONS);
 		} else if (ElementTypeTeller.isTransition(elem)) {
-			checkChildren(elem, Messages.VisitorBase_transition_label, TransitionVisitor.ALLOWED_TRANSITION_DECLARATIONS);
+			checkChildren(elem, Messages.VisitorBase_transition_label,
+					TransitionVisitor.ALLOWED_TRANSITION_DECLARATIONS);
 			acceptChildren(elem, new TransitionVisitor(elem, collector));
 		}
 	}

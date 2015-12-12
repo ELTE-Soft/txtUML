@@ -71,6 +71,10 @@ public class TransitionVisitor extends VisitorBase {
 		checkDirections();
 	};
 
+	/**
+	 * Checks the {@link @To} {@link @From} and {@link @Trigger} annotations.
+	 * Only reports error on {@link @Trigger} if the others are OK.
+	 */
 	private void checkDirections() {
 		ITypeBinding triggerValue = null;
 		Annotation triggerAnnot = null;

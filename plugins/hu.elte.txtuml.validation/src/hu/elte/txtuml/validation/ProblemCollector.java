@@ -32,9 +32,6 @@ public class ProblemCollector {
 
 	/**
 	 * Adds a new problem.
-	 * 
-	 * @param problem
-	 *            The problem to add.
 	 */
 	public void setProblemStatus(ValidationErrorBase problem) {
 		problems.add(problem);

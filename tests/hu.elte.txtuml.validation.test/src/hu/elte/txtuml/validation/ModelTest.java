@@ -42,10 +42,15 @@ import hu.elte.txtuml.validation.visitors.ModelVisitor;
 
 public class ModelTest {
 
+	/*
+	 * This test suite relies on the repository having a given structure. The
+	 * structure is encoded in these pathes:
+	 */
+
 	private static final String VALIDATION_EXAMPLES_PACKAGE = "/hu/elte/txtuml/examples/validation/";
 	private static final String VALIDATION_EXAMPLES_ROOT = "../../examples/hu.elte.txtuml.examples.validation/src";
 	private static final String API_SRC_LOC = "../../plugins/hu.elte.txtuml.api.model/src/";
-	
+
 	ProblemCollector mockCollector;
 
 	@Before
@@ -144,92 +149,90 @@ public class ModelTest {
 
 		checkNoOtherErrorRaised();
 	}
-	
+
 	@Test
 	public void testWrongNumberOfAssociationEnds() throws Exception {
 		CompilationUnit compilationUnit = prepareAST("WrongNumberOfAssociationEnds.java");
-		
+
 		compilationUnit.accept(new ModelVisitor(mockCollector));
-		
+
 		verify(mockCollector, times(3)).setProblemStatus(isA(WrongNumberOfAssociationEnds.class));
-		
+
 		checkNoOtherErrorRaised();
 	}
-	
+
 	@Test
 	public void testAssociationWrongInnerClass() throws Exception {
 		CompilationUnit compilationUnit = prepareAST("AssociationWrongInnerClass.java");
-		
+
 		compilationUnit.accept(new ModelVisitor(mockCollector));
-		
+
 		verify(mockCollector, times(2)).setProblemStatus(isA(WrongTypeInAssociation.class));
-		
+
 		checkNoOtherErrorRaised();
 	}
-	
+
 	@Test
 	public void testCompositionNotExactlyOneContainer() throws Exception {
 		CompilationUnit compilationUnit = prepareAST("CompositionNotExactlyOneContainer.java");
-		
+
 		compilationUnit.accept(new ModelVisitor(mockCollector));
-		
+
 		verify(mockCollector, times(2)).setProblemStatus(isA(WrongCompositionEnds.class));
-		
+
 		checkNoOtherErrorRaised();
 	}
-	
+
 	@Test
 	public void testStateMethodNotCorrect() throws Exception {
 		CompilationUnit compilationUnit = prepareAST("StateMethodNotCorrect.java");
-		
+
 		compilationUnit.accept(new ModelVisitor(mockCollector));
-		
+
 		verify(mockCollector).setProblemStatus(isA(InvalidChildrenElement.class));
 		verify(mockCollector).setProblemStatus(isA(UnknownStateMethod.class));
 		verify(mockCollector).setProblemStatus(isA(StateMethodParameters.class));
-		
+
 		checkNoOtherErrorRaised();
 	}
-	
+
 	@Test
 	public void testStateInnerTypesNotCorrect() throws Exception {
 		CompilationUnit compilationUnit = prepareAST("StateInnerTypesNotCorrect.java");
-		
+
 		compilationUnit.accept(new ModelVisitor(mockCollector));
-		
+
 		verify(mockCollector, times(3)).setProblemStatus(isA(InvalidChildrenElement.class));
 		verify(mockCollector).setProblemStatus(isA(UnknownClassInState.class));
-		
+
 		checkNoOtherErrorRaised();
 	}
-	
+
 	@Test
 	public void testTransitionMethodNotCorrect() throws Exception {
 		CompilationUnit compilationUnit = prepareAST("TransitionMethodNotCorrect.java");
-		
+
 		compilationUnit.accept(new ModelVisitor(mockCollector));
-		
+
 		verify(mockCollector).setProblemStatus(isA(UnknownTransitionMethod.class));
 		verify(mockCollector).setProblemStatus(isA(TransitionMethodParameters.class));
-		
+
 		checkNoOtherErrorRaised();
 	}
-	
+
 	@Test
 	public void testTransitionsWithoutSourceTargetOrTrigger() throws Exception {
 		CompilationUnit compilationUnit = prepareAST("TransitionsWithoutSourceTargetOrTrigger.java");
-		
+
 		compilationUnit.accept(new ModelVisitor(mockCollector));
-		
+
 		verify(mockCollector).setProblemStatus(isA(TriggerOnInitialTransition.class));
 		verify(mockCollector).setProblemStatus(isA(MissingTransitionSource.class));
 		verify(mockCollector).setProblemStatus(isA(MissingTransitionTarget.class));
 		verify(mockCollector).setProblemStatus(isA(MissingTransitionTrigger.class));
-		
+
 		checkNoOtherErrorRaised();
 	}
-	
-	
 
 	private void checkNoOtherErrorRaised() {
 		verify(mockCollector, atLeast(0)).getSourceInfo();

@@ -14,6 +14,9 @@ import hu.elte.txtuml.validation.ProblemCollector;
 import hu.elte.txtuml.validation.problems.general.InvalidModifier;
 import hu.elte.txtuml.validation.problems.general.InvalidTemplate;
 
+/**
+ * Utility methods for visitors to check common AST elements.
+ */
 public class Utils {
 
 	public static void checkTemplate(ProblemCollector collector, TypeDeclaration elem) {

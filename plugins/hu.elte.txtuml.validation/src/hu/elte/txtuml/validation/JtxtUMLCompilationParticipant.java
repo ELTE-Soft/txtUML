@@ -18,8 +18,8 @@ import hu.elte.txtuml.export.uml2.utils.SharedUtils;
 import hu.elte.txtuml.validation.visitors.ModelVisitor;
 
 /**
- * Compilation participant for JtxtUML validation.
- * 
+ * Compilation participant for JtxtUML validation. Performs validation on
+ * reconcile events (not typing for a few seconds) and build events
  */
 public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler.CompilationParticipant {
 	private static final String TXTUML_NATURE_ID = "hu.elte.txtuml.project.txtumlprojectNature"; //$NON-NLS-1$
