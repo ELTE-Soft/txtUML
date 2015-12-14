@@ -20,8 +20,8 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 import org.osgi.framework.Bundle;
 
-import hu.elte.txtuml.eclipseutils.PackageUtils;
 import hu.elte.txtuml.export.uml2.UML2;
+import hu.elte.txtuml.utils.platform.PackageUtils;
 
 public class ModelExportTestUtils {
 	private static final String TEST_PROJECT_NAME = "hu.elte.txtuml.export.uml2.tests.models";

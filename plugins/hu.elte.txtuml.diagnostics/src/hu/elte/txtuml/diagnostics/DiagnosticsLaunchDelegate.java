@@ -17,6 +17,7 @@ import hu.elte.txtuml.api.diagnostics.protocol.GlobalSettings;
 import hu.elte.txtuml.diagnostics.session.DiagnosticsPlugin;
 import hu.elte.txtuml.diagnostics.session.IDisposable;
 import hu.elte.txtuml.diagnostics.session.RuntimeSessionTracker;
+import hu.elte.txtuml.utils.platform.PluginLogWrapper;
 
 /**
  * Launches txtUML apps with all debugging aids.

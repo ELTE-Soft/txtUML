@@ -180,7 +180,8 @@ public final class ModelExecutor implements ModelElement {
 		 * turned on or off by calling the
 		 * {@link Settings#setExecutorLog(boolean) setExecutorLog} method.
 		 * <p>
-		 * By default, executor's non-error log is printed on {@link System#out}.
+		 * By default, executor's non-error log is printed on {@link System#out}
+		 * .
 		 * 
 		 * @param executorOutStream
 		 *            the stream on which the executor's non-error log will be
@@ -200,8 +201,7 @@ public final class ModelExecutor implements ModelElement {
 		 *            the stream on which the executor's error log will be
 		 *            printed in the future
 		 */
-		public static void setExecutorErrorStream(
-				PrintStream executorErrorStream) {
+		public static void setExecutorErrorStream(PrintStream executorErrorStream) {
 			executorLog.setErr(executorErrorStream);
 		}
 
@@ -253,8 +253,7 @@ public final class ModelExecutor implements ModelElement {
 				if (Settings.canChangeExecutionTimeMultiplier) {
 					Settings.executionTimeMultiplier = newMultiplier;
 				} else {
-					Report.error.forEach(x -> x
-							.changingLockedExecutionTimeMultiplier());
+					Report.error.forEach(x -> x.changingLockedExecutionTimeMultiplier());
 				}
 			}
 		}
@@ -369,33 +368,27 @@ public final class ModelExecutor implements ModelElement {
 			DiagnosticsServiceConnector.startAndGetInstance();
 		}
 
-		public static void addModelExecutionEventsListener(
-				ModelExecutionEventsListener listener) {
+		public static void addModelExecutionEventsListener(ModelExecutionEventsListener listener) {
 			event.add(listener);
 		}
 
-		public static void addRuntimeErrorsListener(
-				RuntimeErrorsListener listener) {
+		public static void addRuntimeErrorsListener(RuntimeErrorsListener listener) {
 			error.add(listener);
 		}
 
-		public static void addRuntimeWarningsListener(
-				RuntimeWarningsListener listener) {
+		public static void addRuntimeWarningsListener(RuntimeWarningsListener listener) {
 			warning.add(listener);
 		}
 
-		public static void removeModelExecutionEventsListener(
-				ModelExecutionEventsListener listener) {
+		public static void removeModelExecutionEventsListener(ModelExecutionEventsListener listener) {
 			event.remove(listener);
 		}
 
-		public static void removeRuntimeErrorsListener(
-				RuntimeErrorsListener listener) {
+		public static void removeRuntimeErrorsListener(RuntimeErrorsListener listener) {
 			error.remove(listener);
 		}
 
-		public static void removeRuntimeWarningsListener(
-				RuntimeWarningsListener listener) {
+		public static void removeRuntimeWarningsListener(RuntimeWarningsListener listener) {
 			warning.remove(listener);
 		}
 	}
@@ -439,8 +432,7 @@ public final class ModelExecutor implements ModelElement {
 		try {
 			thread.join();
 		} catch (InterruptedException e) {
-			// TODO: error logging
-			e.printStackTrace();
+			userErrorLog("Interrupted while awaiting termination", e);
 		}
 	}
 
@@ -482,8 +474,7 @@ public final class ModelExecutor implements ModelElement {
 	 * @param assocEnd
 	 *            the association end which's multiplicity is to be checked
 	 */
-	static void checkLowerBoundInNextExecutionStep(ModelClass obj,
-			Class<? extends AssociationEnd<?, ?>> assocEnd) {
+	static void checkLowerBoundInNextExecutionStep(ModelClass obj, Class<? extends AssociationEnd<?, ?>> assocEnd) {
 
 		thread.checkLowerBoundOfMultiplicity(obj, assocEnd);
 	}
@@ -509,6 +500,20 @@ public final class ModelExecutor implements ModelElement {
 	 * @see Settings#setUserErrorStream(PrintStream)
 	 */
 	static void userErrorLog(String message) {
+		logOnStream(Settings.userErrorStream, message);
+	}
+
+	/**
+	 * Prints the specified message with a stack trace in the user's error log.
+	 * 
+	 * @param message
+	 *            the message to print in the log
+	 * @param error
+	 *            the error that occurred
+	 * @see Settings#setUserErrorStream(PrintStream)
+	 */
+	static void userErrorLog(String message, Throwable error) {
+		error.printStackTrace(Settings.userErrorStream);
 		logOnStream(Settings.userErrorStream, message);
 	}
 

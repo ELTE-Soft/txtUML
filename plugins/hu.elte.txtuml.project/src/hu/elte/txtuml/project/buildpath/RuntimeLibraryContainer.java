@@ -1,8 +1,5 @@
 package hu.elte.txtuml.project.buildpath;
 
-import hu.elte.txtuml.diagnostics.PluginLogWrapper;
-import hu.elte.txtuml.project.Messages;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -17,6 +14,9 @@ import org.eclipse.jdt.core.IClasspathContainer;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.JavaCore;
 import org.osgi.framework.Bundle;
+
+import hu.elte.txtuml.project.Messages;
+import hu.elte.txtuml.utils.platform.PluginLogWrapper;
 
 /**
  * Contains the model execution runtime library and its dependencies.

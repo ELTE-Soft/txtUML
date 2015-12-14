@@ -1,11 +1,5 @@
 package hu.elte.txtuml.diagnostics.session;
 
-import hu.elte.txtuml.api.diagnostics.protocol.Message;
-import hu.elte.txtuml.api.diagnostics.protocol.MessageType;
-import hu.elte.txtuml.api.diagnostics.protocol.ModelEvent;
-import hu.elte.txtuml.diagnostics.Activator;
-import hu.elte.txtuml.diagnostics.PluginLogWrapper;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -17,6 +11,12 @@ import java.net.Socket;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+
+import hu.elte.txtuml.api.diagnostics.protocol.Message;
+import hu.elte.txtuml.api.diagnostics.protocol.MessageType;
+import hu.elte.txtuml.api.diagnostics.protocol.ModelEvent;
+import hu.elte.txtuml.diagnostics.Activator;
+import hu.elte.txtuml.utils.platform.PluginLogWrapper;
 
 /**
  * Receives DiagnosticsService events and handles them accordingly.

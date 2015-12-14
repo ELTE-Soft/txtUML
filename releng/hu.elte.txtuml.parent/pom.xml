@@ -26,7 +26,6 @@
 		<module>../../plugins/hu.elte.txtuml.api.model</module>
 		<module>../../plugins/hu.elte.txtuml.api.stdlib</module>
 		<module>../../plugins/hu.elte.txtuml.diagnostics</module>
-		<module>../../plugins/hu.elte.txtuml.eclipseutils</module>
 		<module>../../plugins/hu.elte.txtuml.export</module>
 		<module>../../plugins/hu.elte.txtuml.export.cpp</module>
 		<module>../../plugins/hu.elte.txtuml.export.papyrus</module>

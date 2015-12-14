@@ -1,4 +1,4 @@
-package hu.elte.txtuml.eclipseutils;
+package hu.elte.txtuml.utils.platform;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -22,7 +22,7 @@ public class ClassLoaderProvider {
 	 * @param projectName
 	 * @param parent
 	 * @return
-	 * @author András Dobreff
+	 * @author Andrï¿½s Dobreff
 	 */
 	public static URLClassLoader getClassLoaderForProject(String projectName, ClassLoader parent){
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
@@ -34,7 +34,7 @@ public class ClassLoaderProvider {
 	 * @param project
 	 * @param parent
 	 * @return
-	 * @author András Dobreff
+	 * @author Andrï¿½s Dobreff
 	 */
 	public static URLClassLoader getClassLoaderForProject(IProject project, ClassLoader parent){
 		String[] classPathEntries;
@@ -55,7 +55,7 @@ public class ClassLoaderProvider {
 	 * Converts ClassPathEntries StringArray to URL Array
 	 * @param classPathEntries
 	 * @return
-	 * @author András Dobreff
+	 * @author Andrï¿½s Dobreff
 	 */
 	private static URL[] getClassPathEntyUrls(String[] classPathEntries){
 		try{

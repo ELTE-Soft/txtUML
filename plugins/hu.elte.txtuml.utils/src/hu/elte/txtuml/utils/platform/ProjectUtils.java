@@ -1,4 +1,4 @@
-package hu.elte.txtuml.eclipseutils;
+package hu.elte.txtuml.utils.platform;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -11,7 +11,7 @@ import org.eclipse.jdt.core.JavaCore;
 /**
  * Responsible for basic functionalities of an Eclipse Project
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public class ProjectUtils {
 

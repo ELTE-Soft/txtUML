@@ -1,4 +1,4 @@
-package hu.elte.txtuml.eclipseutils;
+package hu.elte.txtuml.utils.platform;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -17,7 +17,7 @@ import org.eclipse.ui.PlatformUI;
 /**
  * 
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public class Dialogs {
 	/**

@@ -4,7 +4,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import hu.elte.txtuml.diagnostics.Activator;
-import hu.elte.txtuml.diagnostics.PluginLogWrapper;
+import hu.elte.txtuml.utils.platform.PluginLogWrapper;
 
 /**
  * Uniquely identifies an object instance on the other side and keeps its status.

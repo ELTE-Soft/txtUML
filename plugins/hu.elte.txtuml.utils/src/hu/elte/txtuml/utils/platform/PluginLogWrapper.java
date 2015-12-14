@@ -1,4 +1,4 @@
-package hu.elte.txtuml.diagnostics;
+package hu.elte.txtuml.utils.platform;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
  * Access plugin logging through this class!
@@ -21,17 +22,17 @@ public class PluginLogWrapper {
 	private ILog log;
 	private Set<ILogListener> logListeners;
 	
-	static void pluginStarted(Activator activator) {
+	public static void pluginStarted(AbstractUIPlugin activator) {
 		assert instance == null;
 		instance = new PluginLogWrapper(activator);
 	}
 
-	static void pluginStopped() {
+	public static void pluginStopped() {
 		assert instance != null;
 		instance = null;
 	}
 	
-	static boolean isPluginRunning() {
+	public static boolean isPluginRunning() {
 		return instance != null;
 	}
 
@@ -46,7 +47,7 @@ public class PluginLogWrapper {
 		getInstance().log(new Status(Status.ERROR, "hu.elte.txtuml.diagnostics", Status.OK, message, exception));
 	}
 	
-	private PluginLogWrapper(Activator activator) {
+	private PluginLogWrapper(AbstractUIPlugin activator) {
 		log = activator.getLog();
 	}
 	

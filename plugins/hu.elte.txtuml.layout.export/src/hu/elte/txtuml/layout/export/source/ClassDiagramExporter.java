@@ -18,9 +18,6 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import hu.elte.txtuml.api.model.Association;
 import hu.elte.txtuml.api.model.AssociationEnd;
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.eclipseutils.NotFoundException;
-import hu.elte.txtuml.eclipseutils.PackageUtils;
-import hu.elte.txtuml.eclipseutils.ProjectUtils;
 import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
 import hu.elte.txtuml.layout.export.interfaces.NodeMap;
@@ -29,6 +26,9 @@ import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.Sneaky;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.utils.jdt.SharedUtils;
+import hu.elte.txtuml.utils.platform.NotFoundException;
+import hu.elte.txtuml.utils.platform.PackageUtils;
+import hu.elte.txtuml.utils.platform.ProjectUtils;
 
 /**
  * 

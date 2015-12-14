@@ -3,8 +3,9 @@ package hu.elte.txtuml.export.papyrus.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import hu.elte.txtuml.eclipseutils.ProjectUtils;
+
 import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
+import hu.elte.txtuml.utils.platform.ProjectUtils;
 
 import java.io.IOException;
 
@@ -29,7 +30,7 @@ import org.junit.Test;
 /**
  * Unit test for {@link PapyrusModelCreator}
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  * 
  * <p>
  * <b>Attention:</b>

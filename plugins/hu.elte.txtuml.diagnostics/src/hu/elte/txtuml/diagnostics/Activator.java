@@ -3,6 +3,8 @@ package hu.elte.txtuml.diagnostics;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import hu.elte.txtuml.utils.platform.PluginLogWrapper;
+
 /**
  * The activator class controls the plug-in life cycle
  */

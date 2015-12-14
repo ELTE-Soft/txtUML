@@ -1,6 +1,5 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
-import hu.elte.txtuml.eclipseutils.Dialogs;
 import hu.elte.txtuml.export.ExportUtils;
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLExporter;
@@ -8,6 +7,7 @@ import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.TxtUMLPapyrusModelManager;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.utils.platform.Dialogs;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;

@@ -10,9 +10,9 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-import hu.elte.txtuml.eclipseutils.PackageUtils;
-import hu.elte.txtuml.export.uml2.utils.ModelUtils;
-import hu.elte.txtuml.export.uml2.utils.SharedUtils;
+import hu.elte.txtuml.utils.jdt.ModelUtils;
+import hu.elte.txtuml.utils.jdt.SharedUtils;
+import hu.elte.txtuml.utils.platform.PackageUtils;
 import hu.elte.txtuml.validation.visitors.ModelVisitor;
 
 public class JtxtUMLValidator {

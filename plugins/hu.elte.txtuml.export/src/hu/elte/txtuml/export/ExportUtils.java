@@ -1,13 +1,14 @@
 package hu.elte.txtuml.export;
 
+import java.net.URLClassLoader;
+
+import org.eclipse.emf.common.util.URI;
+
 import hu.elte.txtuml.api.layout.Diagram;
-import hu.elte.txtuml.eclipseutils.ClassLoaderProvider;
 import hu.elte.txtuml.export.uml2.UML2;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.export.DiagramExporter;
-
-import java.net.URLClassLoader;
-import org.eclipse.emf.common.util.URI;
+import hu.elte.txtuml.utils.platform.ClassLoaderProvider;
 
 /**
  * Utilities Class to convert txtUML representations

@@ -18,7 +18,7 @@ import org.eclipse.jface.wizard.IWizardContainer;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
 import hu.elte.txtuml.api.model.Model;
-import hu.elte.txtuml.diagnostics.PluginLogWrapper;
+import hu.elte.txtuml.utils.platform.PluginLogWrapper;
 
 /**
  * Creates the root package of the model and the model file.

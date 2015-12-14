@@ -1,12 +1,13 @@
 package hu.elte.txtuml.export.papyrus.api.tests;
 
 import static org.junit.Assert.fail;
-import hu.elte.txtuml.eclipseutils.ProjectUtils;
+
 import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
 import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;
 import hu.elte.txtuml.utils.Pair;
+import hu.elte.txtuml.utils.platform.ProjectUtils;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -61,7 +62,7 @@ import org.junit.Test;
  * {@link hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsArranger
  * AbstractDiagramElementsArranger}
  * 
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  * 
  *         <p>
  *         <b>Attention:</b> This test should be run as a JUnit Plug-in test

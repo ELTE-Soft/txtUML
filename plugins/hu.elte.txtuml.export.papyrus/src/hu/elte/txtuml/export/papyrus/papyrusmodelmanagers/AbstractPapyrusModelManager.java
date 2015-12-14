@@ -1,9 +1,9 @@
 package hu.elte.txtuml.export.papyrus.papyrusmodelmanagers;
 
-import hu.elte.txtuml.eclipseutils.Dialogs;
 import hu.elte.txtuml.export.papyrus.DiagramManager;
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
+import hu.elte.txtuml.utils.platform.Dialogs;
 
 import java.util.List;
 

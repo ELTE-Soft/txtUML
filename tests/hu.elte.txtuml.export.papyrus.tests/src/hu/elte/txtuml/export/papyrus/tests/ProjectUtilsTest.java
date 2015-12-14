@@ -2,7 +2,6 @@ package hu.elte.txtuml.export.papyrus.tests;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import hu.elte.txtuml.eclipseutils.ProjectUtils;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -12,10 +11,12 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.After;
 import org.junit.Test;
 
+import hu.elte.txtuml.utils.platform.ProjectUtils;
+
 /**
  * Unit test for {@link ProjectUtils}
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  * 
  * <p>
  * <b>Attention:</b>

@@ -5,4 +5,12 @@ Bundle-SymbolicName: hu.elte.txtuml.utils
 Bundle-Version: 0.3.0.qualifier
 Bundle-Vendor: ELTE
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: hu.elte.txtuml.utils
+Export-Package: hu.elte.txtuml.utils,
+ hu.elte.txtuml.utils.platform
+Require-Bundle: org.eclipse.core.resources,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.launching,
+ org.eclipse.core.runtime,
+ org.eclipse.jface,
+ org.eclipse.ui.ide,
+ org.eclipse.ui.workbench

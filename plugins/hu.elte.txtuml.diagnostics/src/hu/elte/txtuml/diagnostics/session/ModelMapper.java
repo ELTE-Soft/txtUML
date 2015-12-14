@@ -15,10 +15,10 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 
 import hu.elte.txtuml.diagnostics.Activator;
-import hu.elte.txtuml.diagnostics.PluginLogWrapper;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
+import hu.elte.txtuml.utils.platform.PluginLogWrapper;
 
 /**
  * Keeps track of model mappings

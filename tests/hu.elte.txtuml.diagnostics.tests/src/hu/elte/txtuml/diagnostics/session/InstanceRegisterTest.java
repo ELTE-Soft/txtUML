@@ -1,17 +1,20 @@
 package hu.elte.txtuml.diagnostics.session;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.core.Is.*;
-import static org.hamcrest.core.IsNull.*;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertThat;
+
+import org.eclipse.core.runtime.ILogListener;
+import org.eclipse.core.runtime.IStatus;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import hu.elte.txtuml.api.diagnostics.protocol.InstanceEvent;
 import hu.elte.txtuml.api.diagnostics.protocol.Message;
 import hu.elte.txtuml.api.diagnostics.protocol.MessageType;
 import hu.elte.txtuml.api.diagnostics.protocol.ModelEvent;
-import hu.elte.txtuml.diagnostics.PluginLogWrapper;
-
-import org.eclipse.core.runtime.ILogListener;
-import org.eclipse.core.runtime.IStatus;
-import org.junit.*;
+import hu.elte.txtuml.utils.platform.PluginLogWrapper;
 
 /**
  * @author gerazo

@@ -1,9 +1,9 @@
 package hu.elte.txtuml.project.wizards;
 
-import hu.elte.txtuml.eclipseutils.Dialogs;
 import hu.elte.txtuml.project.Activator;
 import hu.elte.txtuml.project.ProjectCreator;
 import hu.elte.txtuml.project.ProjectCreator.ProjectSettings;
+import hu.elte.txtuml.utils.platform.Dialogs;
 import hu.elte.txtuml.project.TxtUMLProjectNature;
 
 import java.lang.reflect.InvocationTargetException;

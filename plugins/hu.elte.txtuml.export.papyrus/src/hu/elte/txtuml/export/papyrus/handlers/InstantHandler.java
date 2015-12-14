@@ -1,8 +1,8 @@
 package hu.elte.txtuml.export.papyrus.handlers;
 
-import hu.elte.txtuml.eclipseutils.Dialogs;
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;
+import hu.elte.txtuml.utils.platform.Dialogs;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -24,7 +24,7 @@ import org.eclipse.ui.progress.IProgressService;
 /**
  * Handles the the call to visualization from context menu.
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public class InstantHandler extends AbstractHandler {
 	

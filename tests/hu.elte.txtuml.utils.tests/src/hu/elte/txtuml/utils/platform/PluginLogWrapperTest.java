@@ -1,12 +1,15 @@
-package hu.elte.txtuml.diagnostics;
+package hu.elte.txtuml.utils.platform;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.core.Is.*;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.junit.Test;
+
+import hu.elte.txtuml.diagnostics.Activator;
+import hu.elte.txtuml.utils.platform.PluginLogWrapper;
 
 /**
  * @author gerazo
