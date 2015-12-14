@@ -1,11 +1,11 @@
 package hu.elte.txtuml.validation.visitors;
 
-import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
-import hu.elte.txtuml.validation.ProblemCollector;
-import hu.elte.txtuml.validation.problems.WrongCompositionEnds;
-
 import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
+import hu.elte.txtuml.validation.ProblemCollector;
+import hu.elte.txtuml.validation.problems.WrongCompositionEnds;
 
 public class CompositionVisitor extends VisitorBase {
 

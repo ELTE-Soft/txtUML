@@ -1,11 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.exporters;
 
-import hu.elte.txtuml.export.uml2.mapping.ModelMapCollector;
-import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
-import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
-import hu.elte.txtuml.export.uml2.utils.MultiplicityProvider;
-import hu.elte.txtuml.export.uml2.utils.SharedUtils;
-
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -15,6 +9,12 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
+
+import hu.elte.txtuml.export.uml2.mapping.ModelMapCollector;
+import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
+import hu.elte.txtuml.export.uml2.utils.MultiplicityProvider;
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
+import hu.elte.txtuml.utils.jdt.SharedUtils;
 
 /**
  * Instances of this class are responsible for exporting associations.

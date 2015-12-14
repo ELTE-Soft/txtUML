@@ -14,7 +14,7 @@ import org.eclipse.jdt.core.compiler.BuildContext;
 import org.eclipse.jdt.core.compiler.ReconcileContext;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-import hu.elte.txtuml.export.uml2.utils.SharedUtils;
+import hu.elte.txtuml.utils.jdt.SharedUtils;
 
 /**
  * Compilation participant for JtxtUML validation.

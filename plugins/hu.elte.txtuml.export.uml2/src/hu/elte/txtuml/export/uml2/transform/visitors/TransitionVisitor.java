@@ -1,10 +1,10 @@
 package hu.elte.txtuml.export.uml2.transform.visitors;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.TransitionExporter;
-import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
-
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+
+import hu.elte.txtuml.export.uml2.transform.exporters.TransitionExporter;
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 
 public class TransitionVisitor extends ASTVisitor {
 

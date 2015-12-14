@@ -1,15 +1,15 @@
 package hu.elte.txtuml.validation.visitors;
 
-import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
-import hu.elte.txtuml.validation.ProblemCollector;
-import hu.elte.txtuml.validation.problems.InvalidModelClassElement;
-import hu.elte.txtuml.validation.problems.InvalidTypeWithClassAllowed;
-import hu.elte.txtuml.validation.problems.InvalidTypeWithClassNotAllowed;
-
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
+import hu.elte.txtuml.validation.ProblemCollector;
+import hu.elte.txtuml.validation.problems.InvalidModelClassElement;
+import hu.elte.txtuml.validation.problems.InvalidTypeWithClassAllowed;
+import hu.elte.txtuml.validation.problems.InvalidTypeWithClassNotAllowed;
 
 public class ModelClassVisitor extends VisitorBase {
 

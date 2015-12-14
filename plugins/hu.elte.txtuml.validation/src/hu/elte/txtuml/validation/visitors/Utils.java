@@ -1,12 +1,5 @@
 package hu.elte.txtuml.validation.visitors;
 
-import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
-import hu.elte.txtuml.export.uml2.utils.SharedUtils;
-import hu.elte.txtuml.validation.ProblemCollector;
-import hu.elte.txtuml.validation.problems.InvalidModifier;
-import hu.elte.txtuml.validation.problems.InvalidTemplate;
-
 import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.Modifier;
@@ -15,6 +8,13 @@ import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeParameter;
+
+import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
+import hu.elte.txtuml.utils.jdt.SharedUtils;
+import hu.elte.txtuml.validation.ProblemCollector;
+import hu.elte.txtuml.validation.problems.InvalidModifier;
+import hu.elte.txtuml.validation.problems.InvalidTemplate;
 
 public class Utils {
 	

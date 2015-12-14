@@ -37,6 +37,7 @@
 		<module>../../plugins/hu.elte.txtuml.project</module>
 		<module>../../plugins/hu.elte.txtuml.stdlib</module>
 		<module>../../plugins/hu.elte.txtuml.utils</module>
+		<module>../../plugins/hu.elte.txtuml.utils.jdt</module>
 		<module>../../plugins/hu.elte.txtuml.validation</module>
 		<module>../../plugins/hu.elte.txtuml.xtxtuml</module>
 		<module>../../plugins/hu.elte.txtuml.xtxtuml.lib</module>

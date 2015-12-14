@@ -1,14 +1,14 @@
 package hu.elte.txtuml.export.uml2.transform.visitors;
 
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.uml2.uml.Model;
+
 import hu.elte.txtuml.export.uml2.mapping.ModelMapCollector;
 import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
 import hu.elte.txtuml.export.uml2.transform.backend.RuntimeExportException;
 import hu.elte.txtuml.export.uml2.transform.exporters.AssociationExporter;
-import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
-
-import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.uml2.uml.Model;
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 
 /**
  * Instances of this class visit associations in a source txtUML model.
@@ -16,7 +16,7 @@ import org.eclipse.uml2.uml.Model;
  * @throws RuntimeException
  *             When applied to an <code>ASTNode</code>, methods of this visitor
  *             may throw this kind of exception.
- * @author Ádám Ancsin
+ * @author ï¿½dï¿½m Ancsin
  *
  */
 public class AssociationVisitor extends ASTVisitor {

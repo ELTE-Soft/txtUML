@@ -1,16 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.exporters;
 
-import hu.elte.txtuml.export.uml2.mapping.ModelMapCollector;
-import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
-import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
-import hu.elte.txtuml.export.uml2.transform.backend.RuntimeExportException;
-import hu.elte.txtuml.export.uml2.transform.visitors.AssociationVisitor;
-import hu.elte.txtuml.export.uml2.transform.visitors.AttributeVisitor;
-import hu.elte.txtuml.export.uml2.transform.visitors.ClassifierVisitor;
-import hu.elte.txtuml.export.uml2.transform.visitors.MethodSkeletonVisitor;
-import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
-import hu.elte.txtuml.export.uml2.utils.ResourceSetFactory;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -35,6 +24,17 @@ import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
+
+import hu.elte.txtuml.export.uml2.mapping.ModelMapCollector;
+import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
+import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
+import hu.elte.txtuml.export.uml2.transform.backend.RuntimeExportException;
+import hu.elte.txtuml.export.uml2.transform.visitors.AssociationVisitor;
+import hu.elte.txtuml.export.uml2.transform.visitors.AttributeVisitor;
+import hu.elte.txtuml.export.uml2.transform.visitors.ClassifierVisitor;
+import hu.elte.txtuml.export.uml2.transform.visitors.MethodSkeletonVisitor;
+import hu.elte.txtuml.export.uml2.utils.ResourceSetFactory;
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 
 /**
  * This class is responsible for generating Eclipse UML2 model from a txtUML

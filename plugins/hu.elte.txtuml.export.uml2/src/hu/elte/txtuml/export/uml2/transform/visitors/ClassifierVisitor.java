@@ -1,8 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.visitors;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.ClassifierExporter;
-import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,6 +7,9 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.uml2.uml.Classifier;
+
+import hu.elte.txtuml.export.uml2.transform.exporters.ClassifierExporter;
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 
 public class ClassifierVisitor extends ASTVisitor {
 
