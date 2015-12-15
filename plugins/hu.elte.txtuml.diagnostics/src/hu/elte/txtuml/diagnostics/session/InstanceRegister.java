@@ -5,15 +5,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-
 import hu.elte.txtuml.api.diagnostics.protocol.InstanceEvent;
 import hu.elte.txtuml.api.diagnostics.protocol.Message;
 import hu.elte.txtuml.api.diagnostics.protocol.MessageType;
 import hu.elte.txtuml.api.diagnostics.protocol.ModelEvent;
-import hu.elte.txtuml.diagnostics.Activator;
-import hu.elte.txtuml.utils.platform.PluginLogWrapper;
+import hu.elte.txtuml.utils.Logger;
 
 /**
  * Analyzes events for errors, keeps track of service and class instances
@@ -32,10 +28,10 @@ class InstanceRegister {
 	
 	void dispose() {
 		for (UniqueInstance instance : aliveClassInstances.values()) {
-			PluginLogWrapper.getInstance().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "Instance" + instance + " of class " + instance.getModelClassName() + " was not destructed"));
+			Logger.logWarning("Instance" + instance + " of class " + instance.getModelClassName() + " was not destructed");
 		}
 		for (int clientID : aliveServiceInstances) {
-			PluginLogWrapper.getInstance().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "Service instance 0x" + Integer.toHexString(clientID) + " was not shut down properly"));
+			Logger.logWarning("Service instance 0x" + Integer.toHexString(clientID) + " was not shut down properly");
 		}
 
 		aliveClassInstances.clear();
@@ -76,11 +72,11 @@ class InstanceRegister {
 			protocolKept = false;
 		}
 		if (!protocolKept) {
-			PluginLogWrapper.getInstance().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Protocol error: inappropriate message type"));
+			Logger.logError("Protocol error: inappropriate message type");
 			assert false;
 		}
 		if (event.messageType != MessageType.CHECKOUT && !aliveServiceInstances.contains(event.serviceInstanceID)) {
-			PluginLogWrapper.getInstance().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "Service instance 0x" + Integer.toHexString(event.serviceInstanceID) + " has not checked in"));
+			Logger.logWarning("Service instance 0x" + Integer.toHexString(event.serviceInstanceID) + " has not checked in");
 		}
 	}
 	
@@ -88,13 +84,13 @@ class InstanceRegister {
 		if (event.messageType == MessageType.CHECKIN) {
 			boolean isNew = aliveServiceInstances.add(event.serviceInstanceID);
 			if (!isNew) {
-				PluginLogWrapper.getInstance().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "Service instance 0x" + Integer.toHexString(event.serviceInstanceID) + " has already checked in"));
+				Logger.logWarning("Service instance 0x" + Integer.toHexString(event.serviceInstanceID) + " has already checked in");
 			}
 		}
 		else if (event.messageType == MessageType.CHECKOUT) {
 			boolean wasHere = aliveServiceInstances.remove(event.serviceInstanceID);
 			if (!wasHere) {
-				PluginLogWrapper.getInstance().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "Service instance 0x" + Integer.toHexString(event.serviceInstanceID) + " has checked out before or was never checked in"));
+				Logger.logWarning("Service instance 0x" + Integer.toHexString(event.serviceInstanceID) + " has checked out before or was never checked in");
 			}
 		}
 	}
@@ -105,13 +101,13 @@ class InstanceRegister {
 			instance.setModelClassName(event.modelClassName);
 			boolean isNew = (aliveClassInstances.putIfAbsent(instance, instance) == null);
 			if (!isNew) {
-				PluginLogWrapper.getInstance().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "Instance " + instance + " of class " + instance.getModelClassName() + " was already created"));
+				Logger.logWarning("Instance " + instance + " of class " + instance.getModelClassName() + " was already created");
 			}
 		}
 		else if (event.messageType == MessageType.INSTANCE_DESTRUCTION) {
 			boolean wasHere = (aliveClassInstances.remove(instance) != null);
 			if (!wasHere) {
-				PluginLogWrapper.getInstance().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "Instance " + instance + " of class " + instance.getModelClassName() + " was already destroyed"));
+				Logger.logWarning("Instance " + instance + " of class " + instance.getModelClassName() + " was already destroyed");
 			}
 		}
 	}
@@ -121,7 +117,7 @@ class InstanceRegister {
 		// here instanceID only contains the ID but instance has additional data
 		UniqueInstance instance = aliveClassInstances.get(instanceID);
 		if (instance == null) {
-			PluginLogWrapper.getInstance().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "Instance " + instanceID + " of class " + event.modelClassName + " was never created and is currently active"));
+			Logger.logWarning("Instance " + instanceID + " of class " + event.modelClassName + " was never created and is currently active");
 			instance = new UniqueInstance(event.modelClassInstanceID, event.serviceInstanceID);
 			instance.setModelClassName(event.modelClassName);
 			aliveClassInstances.putIfAbsent(instance, instance);

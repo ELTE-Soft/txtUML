@@ -11,6 +11,7 @@ import hu.elte.txtuml.api.diagnostics.protocol.GlobalSettings;
 import hu.elte.txtuml.api.diagnostics.protocol.Message;
 import hu.elte.txtuml.api.diagnostics.protocol.MessageType;
 import hu.elte.txtuml.api.diagnostics.protocol.ModelEvent;
+import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.NotifierOfTermination;
 
 /**
@@ -96,7 +97,7 @@ public class DiagnosticsService extends NotifierOfTermination {
 		}
 		diagnosticsPort = port;
 		
-		System.out.println("INFO: txtUML Diagnostics connection is set on " + diagnosticsPort + " for service instance 0x" + Integer.toHexString(serviceInstanceID));
+		Logger.logInfo("txtUML Diagnostics connection is set on " + diagnosticsPort + " for service instance 0x" + Integer.toHexString(serviceInstanceID));
 		sendMessage(new Message(MessageType.CHECKIN, serviceInstanceID));
 	}
 	
@@ -124,7 +125,7 @@ public class DiagnosticsService extends NotifierOfTermination {
 				} catch (ClassNotFoundException | ClassCastException ex) {
 					if (faultTolerance > 0) {
 						faultTolerance--;
-						System.out.println("ERROR: communication problem in service instance 0x" + Integer.toHexString(serviceInstanceID) + ": " + ex);
+						Logger.logError("Communication problem in service instance 0x" + Integer.toHexString(serviceInstanceID), ex);
 					}
 					assert false;
 				}
@@ -133,13 +134,12 @@ public class DiagnosticsService extends NotifierOfTermination {
 		} catch (IOException ex) {
 			if (faultTolerance > 0) {
 				faultTolerance--;
-				System.out.println("ERROR: communication problem in service instance 0x" + Integer.toHexString(serviceInstanceID) + ": " + ex + " at ");
-				ex.printStackTrace();
+				Logger.logError("Communication problem in service instance 0x" + Integer.toHexString(serviceInstanceID), ex);
 			}
 			assert false;
 		}
 		if (faultTolerance == 0) {
-			System.out.println("WARN: Something is fishy with the diagnostics connection, no more log poisoning, no more guarantees...");
+			Logger.logWarning("Something is fishy with the diagnostics connection, no more log poisoning, no more guarantees...");
 			faultTolerance = -1;
 		}
 	}

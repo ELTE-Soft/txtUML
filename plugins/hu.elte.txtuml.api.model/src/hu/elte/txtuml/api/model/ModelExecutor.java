@@ -1,14 +1,13 @@
 package hu.elte.txtuml.api.model;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import hu.elte.txtuml.api.model.backend.DiagnosticsServiceConnector;
-import hu.elte.txtuml.api.model.backend.log.ExecutorLog;
 import hu.elte.txtuml.api.model.report.ModelExecutionEventsListener;
 import hu.elte.txtuml.api.model.report.RuntimeErrorsListener;
 import hu.elte.txtuml.api.model.report.RuntimeWarningsListener;
-
-import java.io.PrintStream;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import hu.elte.txtuml.utils.Logger;
 
 /**
  * The class that manages the model execution.
@@ -48,11 +47,6 @@ public final class ModelExecutor implements ModelElement {
 	 * The thread on which the model execution will run.
 	 */
 	private static final ModelExecutorThread thread = new ModelExecutorThread().autoStart();
-
-	/**
-	 * The object which prints the runtime log of the executor.
-	 */
-	private static final ExecutorLog executorLog = new ExecutorLog();
 
 	/**
 	 * Sole constructor of <code>ModelExecutor</code>, which is designed to be
@@ -98,18 +92,6 @@ public final class ModelExecutor implements ModelElement {
 	public static final class Settings implements ModelElement {
 
 		/**
-		 * The stream on which the user's non-error log is printed. Is
-		 * {@link System#out} by default.
-		 */
-		private static volatile PrintStream userOutStream = System.out;
-
-		/**
-		 * The stream on which the user's error log is printed. Is
-		 * {@link System#err} by default.
-		 */
-		private static volatile PrintStream userErrorStream = System.err;
-
-		/**
 		 * Indicates whether optional dynamic checks should be performed. Is
 		 * <code>true</code> by default.
 		 */
@@ -138,86 +120,6 @@ public final class ModelExecutor implements ModelElement {
 		 * uninstantiatable class.
 		 */
 		private Settings() {
-		}
-
-		/**
-		 * Sets the stream on which the user's non-error log is printed. The
-		 * user may write non-error log any time during model execution by
-		 * calling the {@link Action#log(String) log} method of the action
-		 * language.
-		 * <p>
-		 * By default, user's non-error log is printed on {@link System#out}.
-		 * 
-		 * @param userOutStream
-		 *            the stream on which the user's non-error log will be
-		 *            printed in the future
-		 */
-		public static void setUserOutStream(PrintStream userOutStream) {
-			Settings.userOutStream = userOutStream;
-		}
-
-		/**
-		 * Sets the stream on which the user's error log is printed. The user
-		 * may write error log any time during model execution by calling the
-		 * {@link Action#logError(String) logError} method of the action
-		 * language.
-		 * <p>
-		 * By default, user's error log is printed on {@link System#err}.
-		 * 
-		 * @param userErrorStream
-		 *            the stream on which the user's error log will be printed
-		 *            in the future
-		 */
-		public static void setUserErrorStream(PrintStream userErrorStream) {
-			Settings.userErrorStream = userErrorStream;
-		}
-
-		/**
-		 * Sets the stream on which the executor's non-error log is printed.
-		 * Executor's non-error log consists of short messages reporting about
-		 * certain changes in the runtime model, like a model object processing
-		 * a signal or using a transition. Executor's non-error log can be
-		 * turned on or off by calling the
-		 * {@link Settings#setExecutorLog(boolean) setExecutorLog} method.
-		 * <p>
-		 * By default, executor's non-error log is printed on {@link System#out}
-		 * .
-		 * 
-		 * @param executorOutStream
-		 *            the stream on which the executor's non-error log will be
-		 *            printed in the future
-		 */
-		public static void setExecutorOutStream(PrintStream executorOutStream) {
-			executorLog.setOut(executorOutStream);
-		}
-
-		/**
-		 * Sets the stream on which the executor's error log is printed.
-		 * Executor's error log consists of runtime errors and warnings.
-		 * <p>
-		 * By default, executor's error log is printed on {@link System#err}.
-		 * 
-		 * @param executorErrorStream
-		 *            the stream on which the executor's error log will be
-		 *            printed in the future
-		 */
-		public static void setExecutorErrorStream(PrintStream executorErrorStream) {
-			executorLog.setErr(executorErrorStream);
-		}
-
-		/**
-		 * Sets whether executor's non-error log has to be shown. By default, it
-		 * is switched off.
-		 * <p>
-		 * Executor's non-error log consists of short messages reporting about
-		 * certain changes in the runtime model, like a model object processing
-		 * a signal or using a transition.
-		 * 
-		 * @param newValue
-		 *            whether executor's non-error log has to shown
-		 */
-		public static void setExecutorLog(boolean newValue) {
-			executorLog.setLogEvents(newValue);
 		}
 
 		/**
@@ -432,7 +334,7 @@ public final class ModelExecutor implements ModelElement {
 		try {
 			thread.join();
 		} catch (InterruptedException e) {
-			userErrorLog("Interrupted while awaiting termination", e);
+			Logger.logError("Interrupted while awaiting termination", e);
 		}
 	}
 
@@ -479,56 +381,4 @@ public final class ModelExecutor implements ModelElement {
 		thread.checkLowerBoundOfMultiplicity(obj, assocEnd);
 	}
 
-	// LOGGING METHODS
-
-	/**
-	 * Prints the specified message in the user's non-error log.
-	 * 
-	 * @param message
-	 *            the message to print in the log
-	 * @see Settings#setUserOutStream(PrintStream)
-	 */
-	static void userLog(String message) {
-		logOnStream(Settings.userOutStream, message);
-	}
-
-	/**
-	 * Prints the specified message in the user's error log.
-	 * 
-	 * @param message
-	 *            the message to print in the log
-	 * @see Settings#setUserErrorStream(PrintStream)
-	 */
-	static void userErrorLog(String message) {
-		logOnStream(Settings.userErrorStream, message);
-	}
-
-	/**
-	 * Prints the specified message with a stack trace in the user's error log.
-	 * 
-	 * @param message
-	 *            the message to print in the log
-	 * @param error
-	 *            the error that occurred
-	 * @see Settings#setUserErrorStream(PrintStream)
-	 */
-	static void userErrorLog(String message, Throwable error) {
-		error.printStackTrace(Settings.userErrorStream);
-		logOnStream(Settings.userErrorStream, message);
-	}
-
-	/**
-	 * Prints on the given stream after synchronizing on it to ensure that
-	 * different threads do not mix the output.
-	 * 
-	 * @param printStream
-	 *            the stream to print on
-	 * @param message
-	 *            the message to print on the given stream
-	 */
-	private static void logOnStream(PrintStream printStream, String message) {
-		synchronized (printStream) {
-			printStream.println(message);
-		}
-	}
 }

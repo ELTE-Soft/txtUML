@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: txtUML Diagnostics Plugin
 Bundle-SymbolicName: hu.elte.txtuml.diagnostics;singleton:=true
 Bundle-Version: 0.3.0.qualifier
-Bundle-Activator: hu.elte.txtuml.diagnostics.Activator
 Bundle-Vendor: ELTE
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

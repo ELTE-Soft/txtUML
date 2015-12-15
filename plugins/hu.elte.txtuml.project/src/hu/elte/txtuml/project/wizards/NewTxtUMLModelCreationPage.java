@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Group;
 
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.project.ModelCreator;
-import hu.elte.txtuml.utils.platform.PluginLogWrapper;
+import hu.elte.txtuml.utils.Logger;
 
 /**
  * This dialog uses source container, package and type name inputs from
@@ -157,7 +157,7 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 				}
 			}
 		} catch (JavaModelException e) {
-			PluginLogWrapper.logError("Error while checking compilation unit", e);
+			Logger.logError("Error while checking compilation unit", e);
 		}
 		return false;
 	}

@@ -1,7 +1,5 @@
 package hu.elte.txtuml.utils;
 
-import hu.elte.txtuml.utils.InstanceCreator;
-
 import org.junit.Assert;
 import org.junit.Test;
 

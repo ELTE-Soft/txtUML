@@ -16,7 +16,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.osgi.framework.Bundle;
 
 import hu.elte.txtuml.project.Messages;
-import hu.elte.txtuml.utils.platform.PluginLogWrapper;
+import hu.elte.txtuml.utils.Logger;
 
 /**
  * Contains the model execution runtime library and its dependencies.
@@ -75,7 +75,7 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 			} catch (IOException e) {
 				String message = "Can't resolve path '"
 						+ bundle.getSymbolicName() + "'"; //$NON-NLS-1$ //$NON-NLS-2$
-				PluginLogWrapper.logError(message, e);
+				Logger.logError(message, e);
 			}
 		}
 		return path;
@@ -91,7 +91,7 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 			} catch (IOException e) {
 				String message = "Can't resolve path '"
 						+ bundle.getSymbolicName() + "'"; //$NON-NLS-1$ //$NON-NLS-2$
-				PluginLogWrapper.logError(message, e);
+				Logger.logError(message, e);
 			}
 		}
 		return null;
@@ -107,7 +107,7 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 			} catch (IOException e) {
 				String message = "Can't resolve path '"
 						+ bundle.getSymbolicName() + "'"; //$NON-NLS-1$ //$NON-NLS-2$
-				PluginLogWrapper.logError(message, e);
+				Logger.logError(message, e);
 			}
 		}
 		return path;
@@ -123,7 +123,7 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 			} catch (IOException e) {
 				String message = "Can't resolve path '"
 						+ bundle.getSymbolicName() + "'"; //$NON-NLS-1$ //$NON-NLS-2$
-				PluginLogWrapper.logError(message, e);
+				Logger.logError(message, e);
 			}
 		}
 		return null;

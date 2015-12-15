@@ -9,14 +9,10 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-
 import hu.elte.txtuml.api.diagnostics.protocol.Message;
 import hu.elte.txtuml.api.diagnostics.protocol.MessageType;
 import hu.elte.txtuml.api.diagnostics.protocol.ModelEvent;
-import hu.elte.txtuml.diagnostics.Activator;
-import hu.elte.txtuml.utils.platform.PluginLogWrapper;
+import hu.elte.txtuml.utils.Logger;
 
 /**
  * Receives DiagnosticsService events and handles them accordingly.
@@ -39,7 +35,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 		try {
 			serverSocket = new ServerSocket(diagnosticsPort, SERVER_SOCKET_BACKLOG, InetAddress.getLoopbackAddress());
 		} catch (IOException | IllegalArgumentException | SecurityException ex) {
-			PluginLogWrapper.getInstance().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Problem creating server socket: " + ex));
+			Logger.logError("Problem creating server socket: " + ex);
 			throw ex;
 		}
 		modelMapper = new ModelMapper(projectName);
@@ -47,7 +43,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 		animator = new Animator(instanceRegister, modelMapper);
 		thread = new Thread(this, "txtUMLDiagnosticsPlugin");
 		thread.start();
-		//PluginLogWrapper.getInstance().log(new Status(IStatus.INFO, Activator.PLUGIN_ID, "txtUML DiagnosticsPlugin started"));
+		//Logger.getInstance().log(new Status(IStatus.INFO, Activator.PLUGIN_ID, "txtUML DiagnosticsPlugin started"));
 	}
 	
 	@Override
@@ -57,7 +53,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 		try {
 			serverSocket.close();
 		} catch (IOException ex) {
-			PluginLogWrapper.getInstance().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Problem shutting down server socket: " + ex));
+			Logger.logError("Problem shutting down server socket", ex);
 			assert false;
 		}
 		try {
@@ -84,7 +80,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 				socket = serverSocket.accept();
 			} catch (IOException ex) {
 				if (!shutdownHasCome && faultTolerance > 0) {
-					PluginLogWrapper.getInstance().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Problem with reception from client service: " + ex));
+					Logger.logError("Problem with reception from client service", ex);
 					faultTolerance--;
 					assert false;
 				}
@@ -101,7 +97,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 						event = (Message)inStream.readObject();
 					} catch (ClassNotFoundException | ClassCastException ex) {
 						if (!shutdownHasCome && faultTolerance > 0) {
-							PluginLogWrapper.getInstance().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Protocol problem: " + ex));
+							Logger.logError("Protocol problem", ex);
 							faultTolerance--;
 							assert false;
 						}
@@ -128,8 +124,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 							StringWriter sw = new StringWriter();
 							PrintWriter pw = new PrintWriter(sw);
 						) {
-							ex.printStackTrace(pw);
-							PluginLogWrapper.getInstance().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Communication problem: " + ex + " at " + sw));
+							Logger.logError("Communication problem: ", ex);
 							faultTolerance--;
 							assert false;
 						} catch (IOException e) {}
@@ -142,7 +137,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 			}
 			
 			if (faultTolerance == 0) {
-				PluginLogWrapper.getInstance().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "Something is fishy with the diagnostics connection, no more log poisoning, no more guarantees..."));
+				Logger.logWarning("Something is fishy with the diagnostics connection, no more log poisoning, no more guarantees...");
 				faultTolerance = -1;
 			}
 		}

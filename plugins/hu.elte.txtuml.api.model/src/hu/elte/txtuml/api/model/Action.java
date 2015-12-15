@@ -4,6 +4,7 @@ import hu.elte.txtuml.api.model.ModelExecutor.Report;
 import hu.elte.txtuml.api.model.backend.MultipleContainerException;
 import hu.elte.txtuml.api.model.backend.MultiplicityException;
 import hu.elte.txtuml.utils.InstanceCreator;
+import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
 
 /**
@@ -276,10 +277,9 @@ public class Action implements ModelElement {
 	 * 
 	 * @param message
 	 *            the message to be logged
-	 * @see ModelExecutor.Settings#setUserOutStream(java.io.PrintStream)
 	 */
 	public static void log(String message) {
-		ModelExecutor.userLog(message);
+		Logger.logInfo(message);
 	}
 
 	/**
@@ -287,10 +287,9 @@ public class Action implements ModelElement {
 	 * 
 	 * @param message
 	 *            the error message to logged
-	 * @see ModelExecutor.Settings#setUserErrorStream(java.io.PrintStream)
 	 */
 	public static void logError(String message) {
-		ModelExecutor.userErrorLog(message);
+		Logger.logError(message);
 	}
 
 }

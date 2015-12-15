@@ -22,10 +22,7 @@ public class TestsBase {
 
 	@Before
 	public void settings() {
-		ModelExecutor.Settings.setUserOutStream(userOutStream);
-
 		ModelExecutor.Settings.setDynamicChecks(true);
-		ModelExecutor.Settings.setExecutorLog(true);
 	}
 
 	public static void transition(ModelExecutionEventsListener x,
