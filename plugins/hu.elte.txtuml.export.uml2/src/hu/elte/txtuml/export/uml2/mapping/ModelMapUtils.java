@@ -10,7 +10,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 
-import hu.elte.txtuml.utils.platform.ProjectUtils;
+import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 public class ModelMapUtils {
 	public static final String MAPPING_FILE_EXTENSION = "mapping";

@@ -9,7 +9,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
 
-import hu.elte.txtuml.utils.platform.Dialogs;
+import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 @SuppressWarnings("javadoc")
 public class EditorOpener {

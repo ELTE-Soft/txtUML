@@ -24,11 +24,11 @@ import hu.elte.txtuml.layout.export.interfaces.NodeMap;
 import hu.elte.txtuml.layout.export.problems.ElementExportationException;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.Sneaky;
+import hu.elte.txtuml.utils.eclipse.NotFoundException;
+import hu.elte.txtuml.utils.eclipse.PackageUtils;
+import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.utils.jdt.SharedUtils;
-import hu.elte.txtuml.utils.platform.NotFoundException;
-import hu.elte.txtuml.utils.platform.PackageUtils;
-import hu.elte.txtuml.utils.platform.ProjectUtils;
 
 /**
  * 

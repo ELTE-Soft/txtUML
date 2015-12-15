@@ -2,7 +2,7 @@ package hu.elte.txtuml.export.papyrus;
 
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
 import hu.elte.txtuml.export.papyrus.utils.EditorOpener;
-import hu.elte.txtuml.utils.platform.ProjectUtils;
+import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;

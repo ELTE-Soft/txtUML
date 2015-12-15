@@ -2,7 +2,7 @@ package hu.elte.txtuml.export.papyrus.wizardz;
 
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;
-import hu.elte.txtuml.utils.platform.Dialogs;
+import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
