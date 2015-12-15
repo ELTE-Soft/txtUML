@@ -1,4 +1,4 @@
-package hu.elte.txtuml.utils.platform;
+package hu.elte.txtuml.utils.eclipse;
 
 import java.util.List;
 import java.util.stream.Collectors;

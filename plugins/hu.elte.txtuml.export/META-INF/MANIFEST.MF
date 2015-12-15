@@ -16,5 +16,5 @@ Require-Bundle: hu.elte.txtuml.api.model;bundle-version="0.3.0",
  org.eclipse.uml2.uml.resources,
  org.eclipse.jdt.core,
  org.eclipse.equinox.registry,
- hu.elte.txtuml.utils.jdt;bundle-version="0.3.0"
+ hu.elte.txtuml.utils.eclipse;bundle-version="0.3.0"
 Export-Package: hu.elte.txtuml.export

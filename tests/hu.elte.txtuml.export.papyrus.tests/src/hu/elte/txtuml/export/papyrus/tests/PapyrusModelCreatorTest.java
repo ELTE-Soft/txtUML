@@ -5,7 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
-import hu.elte.txtuml.utils.platform.ProjectUtils;
+import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 import java.io.IOException;
 

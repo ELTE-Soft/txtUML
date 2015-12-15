@@ -15,11 +15,11 @@ import org.eclipse.jdt.core.dom.PackageDeclaration;
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
 import hu.elte.txtuml.layout.export.problems.ElementExportationException;
+import hu.elte.txtuml.utils.eclipse.NotFoundException;
+import hu.elte.txtuml.utils.eclipse.PackageUtils;
+import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 import hu.elte.txtuml.utils.jdt.ModelUtils;
 import hu.elte.txtuml.utils.jdt.SharedUtils;
-import hu.elte.txtuml.utils.platform.NotFoundException;
-import hu.elte.txtuml.utils.platform.PackageUtils;
-import hu.elte.txtuml.utils.platform.ProjectUtils;
 
 abstract class AbstractSourceExporter implements SourceExporter {
 

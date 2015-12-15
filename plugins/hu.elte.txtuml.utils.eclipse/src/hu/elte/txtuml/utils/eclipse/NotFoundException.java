@@ -1,4 +1,4 @@
-package hu.elte.txtuml.utils.platform;
+package hu.elte.txtuml.utils.eclipse;
 
 @SuppressWarnings("serial")
 public class NotFoundException extends Exception {

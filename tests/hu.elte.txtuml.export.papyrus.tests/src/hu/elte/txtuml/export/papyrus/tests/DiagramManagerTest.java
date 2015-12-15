@@ -5,7 +5,7 @@ import static org.junit.Assert.fail;
 import hu.elte.txtuml.export.papyrus.DiagramManager;
 import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
-import hu.elte.txtuml.utils.platform.ProjectUtils;
+import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 import java.io.IOException;
 import java.util.Arrays;

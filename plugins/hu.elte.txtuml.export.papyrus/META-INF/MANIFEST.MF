@@ -34,7 +34,7 @@ Require-Bundle:
  org.eclipse.emf.ecore,
  org.eclipse.jdt.ui,
  com.google.guava;bundle-version="15.0.0",
- hu.elte.txtuml.utils.jdt;bundle-version="0.3.0"
+ hu.elte.txtuml.utils.eclipse;bundle-version="0.3.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: hu.elte.txtuml.export.papyrus,

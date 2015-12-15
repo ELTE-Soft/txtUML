@@ -11,7 +11,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.After;
 import org.junit.Test;
 
-import hu.elte.txtuml.utils.platform.ProjectUtils;
+import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 /**
  * Unit test for {@link ProjectUtils}

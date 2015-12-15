@@ -55,7 +55,7 @@ import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;
 import hu.elte.txtuml.utils.Pair;
-import hu.elte.txtuml.utils.platform.ProjectUtils;
+import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 /**
  * Unit Tests for

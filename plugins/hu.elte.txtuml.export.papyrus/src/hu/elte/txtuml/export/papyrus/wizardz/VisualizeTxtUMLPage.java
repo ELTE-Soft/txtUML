@@ -1,9 +1,9 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
-import hu.elte.txtuml.utils.platform.NotFoundException;
-import hu.elte.txtuml.utils.platform.PackageUtils;
-import hu.elte.txtuml.utils.platform.ProjectUtils;
+import hu.elte.txtuml.utils.eclipse.NotFoundException;
+import hu.elte.txtuml.utils.eclipse.PackageUtils;
+import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 import java.util.Collection;
 import java.util.Collections;
