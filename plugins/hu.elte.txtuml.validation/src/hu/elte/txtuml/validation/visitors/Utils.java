@@ -45,20 +45,7 @@ public class Utils {
 	}
 
 	public static boolean isAllowedAttributeType(Type type, boolean isVoidAllowed) {
-		if (type.isPrimitiveType()) {
-			PrimitiveType.Code code = ((PrimitiveType) type).getPrimitiveTypeCode();
-			return (code == PrimitiveType.BOOLEAN || code == PrimitiveType.DOUBLE || code == PrimitiveType.INT
-					|| (code == PrimitiveType.VOID && isVoidAllowed));
-		}
-		if (type.resolveBinding().getQualifiedName().equals(String.class.getCanonicalName())) {
-			return true;
-		}
-		if (ElementTypeTeller.isExternalInterface(type.resolveBinding())) {
-			return true;
-		}
-
-
-		return false;
+		return isBasicType(type, isVoidAllowed) || ElementTypeTeller.isExternalInterface(type.resolveBinding());
 	}
 
 	public static boolean isAllowedParameterType(Type type, boolean isVoidAllowed) {
@@ -83,6 +70,18 @@ public class Utils {
 		} else {
 			return false;
 		}
+	}
+
+	public static boolean isBasicType(Type type, boolean isVoidAllowed) {
+		if (type.isPrimitiveType()) {
+			PrimitiveType.Code code = ((PrimitiveType) type).getPrimitiveTypeCode();
+			return (code == PrimitiveType.BOOLEAN || code == PrimitiveType.DOUBLE || code == PrimitiveType.INT
+					|| (code == PrimitiveType.VOID && isVoidAllowed));
+		}
+		if (type.resolveBinding().getQualifiedName().equals(String.class.getCanonicalName())) {
+			return true;
+		}
+		return false;
 	}
 
 }

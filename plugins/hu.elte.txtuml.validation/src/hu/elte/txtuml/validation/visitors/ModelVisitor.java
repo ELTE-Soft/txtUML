@@ -35,6 +35,9 @@ public class ModelVisitor extends VisitorBase {
 		} else if (ElementTypeTeller.isExternalInterface(elem.resolveBinding())) {
 			// nothing to check, but visit inner classes
 			return true;
+		} else if (ElementTypeTeller.isDataType(elem.resolveBinding())) {
+			checkChildren(elem, "data type", DataTypeVisitor.ALLOWED_DATA_TYPE_DECLARATIONS);
+			acceptChildren(elem, new DataTypeVisitor(collector));
 		} else {
 			collector.setProblemStatus(new InvalidTypeInModel(collector.getSourceInfo(), elem));
 		}

@@ -8,6 +8,7 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -17,6 +18,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import hu.elte.txtuml.api.model.Association;
 import hu.elte.txtuml.api.model.AssociationEnd;
 import hu.elte.txtuml.api.model.Composition;
+import hu.elte.txtuml.api.model.DataType;
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
@@ -135,6 +137,10 @@ public final class ElementTypeTeller {
 		return hasSuperClass(type, ModelClass.class.getCanonicalName());
 	}
 
+	public static boolean isDataType(ITypeBinding type) {
+		return hasSuperClass(type, DataType.class.getCanonicalName());
+	}
+
 	public static boolean isVertex(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Vertex.class);
 	}
@@ -240,6 +246,15 @@ public final class ElementTypeTeller {
 	
 	public static boolean isGuard(MethodDeclaration method) {
 		return method.getName().toString().equals("guard");
+	}
+
+	public static boolean isFinal(FieldDeclaration node) {
+		for (Object modifier : node.modifiers()) {
+			if (modifier instanceof Modifier && ((Modifier) modifier).isFinal()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static boolean hasSuperInterface(ITypeBinding type, String superInterfaceName) {

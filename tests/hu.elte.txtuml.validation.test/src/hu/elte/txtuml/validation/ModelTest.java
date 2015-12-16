@@ -22,6 +22,9 @@ import hu.elte.txtuml.export.uml2.utils.SharedUtils;
 import hu.elte.txtuml.validation.problems.association.WrongCompositionEnds;
 import hu.elte.txtuml.validation.problems.association.WrongNumberOfAssociationEnds;
 import hu.elte.txtuml.validation.problems.association.WrongTypeInAssociation;
+import hu.elte.txtuml.validation.problems.datatype.InvalidDataTypeField;
+import hu.elte.txtuml.validation.problems.datatype.InvalidDataTypeMethod;
+import hu.elte.txtuml.validation.problems.datatype.MutableDataTypeField;
 import hu.elte.txtuml.validation.problems.general.InvalidChildrenElement;
 import hu.elte.txtuml.validation.problems.general.InvalidModifier;
 import hu.elte.txtuml.validation.problems.general.InvalidTypeInModel;
@@ -233,6 +236,40 @@ public class ModelTest {
 
 		checkNoOtherErrorRaised();
 	}
+	
+	@Test
+	public void testDataTypeFieldNotFinal() throws Exception {
+		CompilationUnit compilationUnit = prepareAST("DataTypeFieldNotFinal.java");
+
+		compilationUnit.accept(new ModelVisitor(mockCollector));
+
+		verify(mockCollector).setProblemStatus(isA(MutableDataTypeField.class));
+
+		checkNoOtherErrorRaised();
+	}
+	
+	@Test
+	public void testDataTypeInvalidFieldType() throws Exception {
+		CompilationUnit compilationUnit = prepareAST("DataTypeInvalidFieldType.java");
+
+		compilationUnit.accept(new ModelVisitor(mockCollector));
+
+		verify(mockCollector, times(2)).setProblemStatus(isA(InvalidDataTypeField.class));
+
+		checkNoOtherErrorRaised();
+	}
+	
+	@Test
+	public void testDataTypeInvalidMethod() throws Exception {
+		CompilationUnit compilationUnit = prepareAST("DataTypeInvalidMethod.java");
+
+		compilationUnit.accept(new ModelVisitor(mockCollector));
+
+		verify(mockCollector).setProblemStatus(isA(InvalidDataTypeMethod.class));
+
+		checkNoOtherErrorRaised();
+	}
+
 
 	private void checkNoOtherErrorRaised() {
 		verify(mockCollector, atLeast(0)).getSourceInfo();
@@ -256,7 +293,7 @@ public class ModelTest {
 		parser.setBindingsRecovery(true);
 		parser.setUnitName(sourceFile.getName());
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		parser.setEnvironment(classpath, sourcepath, encodings, false);
+		parser.setEnvironment(classpath, sourcepath, encodings, true);
 
 		return (CompilationUnit) parser.createAST(null);
 	}
