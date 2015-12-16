@@ -30,7 +30,7 @@ public class CompositionVisitor extends VisitorBase {
 
 	public void check() {
 		if (containerMembers != 1 || partMembers != 1) {
-			collector.setProblemStatus(new WrongCompositionEnds(collector.getSourceInfo(), root));
+			collector.report(new WrongCompositionEnds(collector.getSourceInfo(), root));
 		}
 	}
 

@@ -33,7 +33,7 @@ public class ProblemCollector {
 	/**
 	 * Adds a new problem.
 	 */
-	public void setProblemStatus(ValidationErrorBase problem) {
+	public void report(ValidationErrorBase problem) {
 		problems.add(problem);
 	}
 

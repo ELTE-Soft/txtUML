@@ -35,14 +35,14 @@ public class VisitorBase extends ASTVisitor {
 			if (spd.isChildListProperty()) {
 				for (Object child : ((List<?>) node.getStructuralProperty(spd))) {
 					if (childForbidden(child, allowedChildrenTypes)) {
-						collector.setProblemStatus(
+						collector.report(
 								new InvalidChildrenElement(collector.getSourceInfo(), nodeStr, (ASTNode) child));
 					}
 				}
 			} else if (spd.isChildProperty()) {
 				Object child = node.getStructuralProperty(spd);
 				if (child != null && childForbidden(child, allowedChildrenTypes)) {
-					collector.setProblemStatus(
+					collector.report(
 							new InvalidChildrenElement(collector.getSourceInfo(), nodeStr, (ASTNode) child));
 				}
 			}

@@ -39,7 +39,7 @@ public class ModelVisitor extends VisitorBase {
 			checkChildren(elem, "data type", DataTypeVisitor.ALLOWED_DATA_TYPE_DECLARATIONS);
 			acceptChildren(elem, new DataTypeVisitor(collector));
 		} else {
-			collector.setProblemStatus(new InvalidTypeInModel(collector.getSourceInfo(), elem));
+			collector.report(new InvalidTypeInModel(collector.getSourceInfo(), elem));
 		}
 		return false;
 	}

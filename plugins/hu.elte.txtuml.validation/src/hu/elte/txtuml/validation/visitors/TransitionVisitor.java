@@ -38,22 +38,22 @@ public class TransitionVisitor extends VisitorBase {
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		if (!ElementTypeTeller.isEffect(node) && !ElementTypeTeller.isGuard(node)) {
-			collector.setProblemStatus(new UnknownTransitionMethod(collector.getSourceInfo(), node));
+			collector.report(new UnknownTransitionMethod(collector.getSourceInfo(), node));
 			return false;
 		}
 		if (ElementTypeTeller.isEffect(node)) {
 			if (!Utils.isVoid(node.getReturnType2())) {
-				collector.setProblemStatus(
+				collector.report(
 						new TransitionMethodNonVoidReturn(collector.getSourceInfo(), node.getReturnType2()));
 			}
 		} else {
 			if (!Utils.isBoolean(node.getReturnType2())) {
-				collector.setProblemStatus(
+				collector.report(
 						new TransitionMethodNonVoidReturn(collector.getSourceInfo(), node.getReturnType2()));
 			}
 		}
 		if (!node.parameters().isEmpty()) {
-			collector.setProblemStatus(new TransitionMethodParameters(collector.getSourceInfo(), node));
+			collector.report(new TransitionMethodParameters(collector.getSourceInfo(), node));
 		}
 
 		// TODO: validate body
@@ -96,10 +96,10 @@ public class TransitionVisitor extends VisitorBase {
 			}
 		}
 		if (fromValue == null) {
-			collector.setProblemStatus(new MissingTransitionSource(collector.getSourceInfo(), transition));
+			collector.report(new MissingTransitionSource(collector.getSourceInfo(), transition));
 		}
 		if (toValue == null) {
-			collector.setProblemStatus(new MissingTransitionTarget(collector.getSourceInfo(), transition));
+			collector.report(new MissingTransitionTarget(collector.getSourceInfo(), transition));
 		}
 		if (fromValue != null && toValue != null) {
 			checkTrigger(triggerAnnot, triggerValue, fromValue);
@@ -109,11 +109,11 @@ public class TransitionVisitor extends VisitorBase {
 	protected void checkTrigger(Annotation signal, ITypeBinding value, ITypeBinding fromValue) {
 		if (value == null && !ElementTypeTeller.isInitialPseudoState(fromValue)
 				&& !ElementTypeTeller.isChoicePseudoState(fromValue)) {
-			collector.setProblemStatus(new MissingTransitionTrigger(collector.getSourceInfo(), transition));
+			collector.report(new MissingTransitionTrigger(collector.getSourceInfo(), transition));
 		}
 		if (value != null && (ElementTypeTeller.isInitialPseudoState(fromValue)
 				|| ElementTypeTeller.isChoicePseudoState(fromValue))) {
-			collector.setProblemStatus(
+			collector.report(
 					new TriggerOnInitialTransition(collector.getSourceInfo(), signal != null ? signal : transition));
 		}
 	}

@@ -25,11 +25,11 @@ public class DataTypeVisitor extends VisitorBase {
 	@Override
 	public boolean visit(FieldDeclaration node) {
 		if (!ElementTypeTeller.isFinal(node)) {
-			collector.setProblemStatus(new MutableDataTypeField(collector.getSourceInfo(), node));
+			collector.report(new MutableDataTypeField(collector.getSourceInfo(), node));
 		}
 		if (!Utils.isBasicType(node.getType(), false)
 				&& !ElementTypeTeller.isDataType(node.getType().resolveBinding())) {
-			collector.setProblemStatus(new InvalidDataTypeField(collector.getSourceInfo(), node));
+			collector.report(new InvalidDataTypeField(collector.getSourceInfo(), node));
 		}
 		return false;
 	}
@@ -37,7 +37,7 @@ public class DataTypeVisitor extends VisitorBase {
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		if (!node.isConstructor()) {
-			collector.setProblemStatus(new InvalidDataTypeMethod(collector.getSourceInfo(), node));
+			collector.report(new InvalidDataTypeMethod(collector.getSourceInfo(), node));
 		}
 		// TODO: check body
 		return false;

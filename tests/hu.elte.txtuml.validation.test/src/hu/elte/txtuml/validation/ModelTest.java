@@ -71,7 +71,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector).setProblemStatus(isA(InvalidTypeInModel.class));
+		verify(mockCollector).report(isA(InvalidTypeInModel.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -82,7 +82,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).setProblemStatus(isA(InvalidTypeWithClassAllowed.class));
+		verify(mockCollector, times(2)).report(isA(InvalidTypeWithClassAllowed.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -93,7 +93,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector).setProblemStatus(isA(InvalidTypeWithClassNotAllowed.class));
+		verify(mockCollector).report(isA(InvalidTypeWithClassNotAllowed.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -104,7 +104,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(3)).setProblemStatus(isA(InvalidModifier.class));
+		verify(mockCollector, times(3)).report(isA(InvalidModifier.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -115,7 +115,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).setProblemStatus(isA(InvalidTypeWithClassNotAllowed.class));
+		verify(mockCollector, times(2)).report(isA(InvalidTypeWithClassNotAllowed.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -126,7 +126,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).setProblemStatus(isA(InvalidTypeWithClassNotAllowed.class));
+		verify(mockCollector, times(2)).report(isA(InvalidTypeWithClassNotAllowed.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -137,7 +137,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).setProblemStatus(isA(InvalidModelClassElement.class));
+		verify(mockCollector, times(2)).report(isA(InvalidModelClassElement.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -148,7 +148,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(1)).setProblemStatus(isA(InvalidSignalContent.class));
+		verify(mockCollector, times(1)).report(isA(InvalidSignalContent.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -159,7 +159,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(3)).setProblemStatus(isA(WrongNumberOfAssociationEnds.class));
+		verify(mockCollector, times(3)).report(isA(WrongNumberOfAssociationEnds.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -170,7 +170,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).setProblemStatus(isA(WrongTypeInAssociation.class));
+		verify(mockCollector, times(2)).report(isA(WrongTypeInAssociation.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -181,7 +181,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).setProblemStatus(isA(WrongCompositionEnds.class));
+		verify(mockCollector, times(2)).report(isA(WrongCompositionEnds.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -192,9 +192,9 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector).setProblemStatus(isA(InvalidChildrenElement.class));
-		verify(mockCollector).setProblemStatus(isA(UnknownStateMethod.class));
-		verify(mockCollector).setProblemStatus(isA(StateMethodParameters.class));
+		verify(mockCollector).report(isA(InvalidChildrenElement.class));
+		verify(mockCollector).report(isA(UnknownStateMethod.class));
+		verify(mockCollector).report(isA(StateMethodParameters.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -205,8 +205,8 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(3)).setProblemStatus(isA(InvalidChildrenElement.class));
-		verify(mockCollector).setProblemStatus(isA(UnknownClassInState.class));
+		verify(mockCollector, times(3)).report(isA(InvalidChildrenElement.class));
+		verify(mockCollector).report(isA(UnknownClassInState.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -217,8 +217,8 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector).setProblemStatus(isA(UnknownTransitionMethod.class));
-		verify(mockCollector).setProblemStatus(isA(TransitionMethodParameters.class));
+		verify(mockCollector).report(isA(UnknownTransitionMethod.class));
+		verify(mockCollector).report(isA(TransitionMethodParameters.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -229,10 +229,10 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector).setProblemStatus(isA(TriggerOnInitialTransition.class));
-		verify(mockCollector).setProblemStatus(isA(MissingTransitionSource.class));
-		verify(mockCollector).setProblemStatus(isA(MissingTransitionTarget.class));
-		verify(mockCollector).setProblemStatus(isA(MissingTransitionTrigger.class));
+		verify(mockCollector).report(isA(TriggerOnInitialTransition.class));
+		verify(mockCollector).report(isA(MissingTransitionSource.class));
+		verify(mockCollector).report(isA(MissingTransitionTarget.class));
+		verify(mockCollector).report(isA(MissingTransitionTrigger.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -243,7 +243,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector).setProblemStatus(isA(MutableDataTypeField.class));
+		verify(mockCollector).report(isA(MutableDataTypeField.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -254,7 +254,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).setProblemStatus(isA(InvalidDataTypeField.class));
+		verify(mockCollector, times(2)).report(isA(InvalidDataTypeField.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -265,7 +265,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector).setProblemStatus(isA(InvalidDataTypeMethod.class));
+		verify(mockCollector).report(isA(InvalidDataTypeMethod.class));
 
 		checkNoOtherErrorRaised();
 	}

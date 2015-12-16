@@ -22,7 +22,7 @@ public class CompositeStateVisitor extends StateVisitor {
 	@Override
 	public boolean visit(TypeDeclaration node) {
 		if (!ElementTypeTeller.isVertex(node) && !ElementTypeTeller.isTransition(node)) {
-			collector.setProblemStatus(new UnknownClassInState(collector.getSourceInfo(), node));
+			collector.report(new UnknownClassInState(collector.getSourceInfo(), node));
 		} else {
 			handleStateMachineElements(node);
 		}

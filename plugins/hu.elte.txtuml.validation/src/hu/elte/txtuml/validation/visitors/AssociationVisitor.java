@@ -28,7 +28,7 @@ public class AssociationVisitor extends VisitorBase {
 	@Override
 	public boolean visit(TypeDeclaration node) {
 		if (!ElementTypeTeller.isAssociationeEnd(node)) {
-			collector.setProblemStatus(new WrongTypeInAssociation(collector.getSourceInfo(), node));
+			collector.report(new WrongTypeInAssociation(collector.getSourceInfo(), node));
 			errorInside = true;
 		} else {
 			++members;
@@ -39,7 +39,7 @@ public class AssociationVisitor extends VisitorBase {
 	@Override
 	public void check() {
 		if (!errorInside && members != 2) {
-			collector.setProblemStatus(new WrongNumberOfAssociationEnds(collector.getSourceInfo(), root));
+			collector.report(new WrongNumberOfAssociationEnds(collector.getSourceInfo(), root));
 		}
 	}
 

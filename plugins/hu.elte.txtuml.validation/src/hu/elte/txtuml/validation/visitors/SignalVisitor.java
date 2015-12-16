@@ -24,7 +24,7 @@ public class SignalVisitor extends VisitorBase {
 	@Override
 	public boolean visit(FieldDeclaration elem) {
 		if (!Utils.isAllowedAttributeType(elem.getType(), false)) {
-			collector.setProblemStatus(new InvalidTypeWithClassNotAllowed(collector.getSourceInfo(), elem.getType()));
+			collector.report(new InvalidTypeWithClassNotAllowed(collector.getSourceInfo(), elem.getType()));
 		} else {
 			Utils.checkModifiers(collector, elem);
 		}
@@ -34,7 +34,7 @@ public class SignalVisitor extends VisitorBase {
 	@Override
 	public boolean visit(MethodDeclaration elem) {
 		if (!elem.isConstructor()) {
-			collector.setProblemStatus(new InvalidSignalContent(collector.getSourceInfo(), elem.getName()));
+			collector.report(new InvalidSignalContent(collector.getSourceInfo(), elem.getName()));
 		} else {
 			checkConstructor(elem);
 			Utils.checkModifiers(collector, elem);
@@ -46,7 +46,7 @@ public class SignalVisitor extends VisitorBase {
 		for (Object obj : elem.parameters()) {
 			SingleVariableDeclaration param = (SingleVariableDeclaration) obj;
 			if (!Utils.isAllowedAttributeType(param.getType(), false)) {
-				collector.setProblemStatus(
+				collector.report(
 						new InvalidTypeWithClassNotAllowed(collector.getSourceInfo(), param.getType()));
 			}
 		}

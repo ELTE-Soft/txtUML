@@ -28,7 +28,7 @@ public class ModelClassVisitor extends VisitorBase {
 	@Override
 	public boolean visit(TypeDeclaration elem) {
 		if (!ElementTypeTeller.isVertex(elem) && !ElementTypeTeller.isTransition(elem)) {
-			collector.setProblemStatus(new InvalidModelClassElement(collector.getSourceInfo(), elem.getName()));
+			collector.report(new InvalidModelClassElement(collector.getSourceInfo(), elem.getName()));
 		} else {
 			handleStateMachineElements(elem);
 		}
@@ -38,7 +38,7 @@ public class ModelClassVisitor extends VisitorBase {
 	@Override
 	public boolean visit(FieldDeclaration elem) {
 		if (!Utils.isAllowedAttributeType(elem.getType(), false)) {
-			collector.setProblemStatus(new InvalidTypeWithClassNotAllowed(collector.getSourceInfo(), elem.getType()));
+			collector.report(new InvalidTypeWithClassNotAllowed(collector.getSourceInfo(), elem.getType()));
 		} else {
 			Utils.checkModifiers(collector, elem);
 		}
@@ -49,7 +49,7 @@ public class ModelClassVisitor extends VisitorBase {
 	public boolean visit(MethodDeclaration elem) {
 		if (!elem.isConstructor()) {
 			if (elem.getReturnType2() != null && !Utils.isAllowedParameterType(elem.getReturnType2(), true)) {
-				collector.setProblemStatus(
+				collector.report(
 						new InvalidTypeWithClassAllowed(collector.getSourceInfo(), elem.getReturnType2()));
 			}
 		}
@@ -58,7 +58,7 @@ public class ModelClassVisitor extends VisitorBase {
 		for (Object obj : elem.parameters()) {
 			SingleVariableDeclaration param = (SingleVariableDeclaration) obj;
 			if (!Utils.isAllowedParameterType(param.getType(), false)) {
-				collector.setProblemStatus(new InvalidTypeWithClassAllowed(collector.getSourceInfo(), param.getType()));
+				collector.report(new InvalidTypeWithClassAllowed(collector.getSourceInfo(), param.getType()));
 			}
 		}
 		// TODO: check body
