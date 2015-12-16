@@ -1,6 +1,7 @@
 package hu.elte.txtuml.examples.validation;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.examples.validation.helpers.A;
+import hu.elte.txtuml.examples.validation.helpers.ExternalIface;
 
 public class InvalidParameterType extends ModelClass {
 
@@ -11,12 +12,15 @@ public class InvalidParameterType extends ModelClass {
 		return null;
 	}
 
-	public void h(A a) {
+	public void h(A a, ExternalIface external) {
 	}
 
 	public A k() {
 		return null;
 	}
+	
+	public ExternalIface m() {
+		return null;
+	}
 
 }
-
