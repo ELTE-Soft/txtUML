@@ -28,6 +28,7 @@ import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.assocends.Aggregation;
 import hu.elte.txtuml.api.model.external.ExternalClass;
+import hu.elte.txtuml.api.model.external.ExternalType;
 
 /**
  * This class provides utilities for telling the types of txtUML model elements.
@@ -229,12 +230,29 @@ public final class ElementTypeTeller {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ExternalClass.class);
 	}
 	
+	public static boolean isExternalInterface(ITypeBinding type) {
+		return type.isInterface() && hasSuperInterface(type, ExternalType.class.getCanonicalName());
+	}
+
 	public static boolean isEffect(MethodDeclaration method) {
 		return method.getName().toString().equals("effect");
 	}
 	
 	public static boolean isGuard(MethodDeclaration method) {
 		return method.getName().toString().equals("guard");
+	}
+
+	public static boolean hasSuperInterface(ITypeBinding type, String superInterfaceName) {
+		if (type.getQualifiedName().equals(superInterfaceName)) {
+			return true;
+		} else {
+			for (ITypeBinding ifaceType : type.getInterfaces()) {
+				if (hasSuperInterface(ifaceType, superInterfaceName)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public static boolean hasSuperClass(ITypeBinding type, String superClassName) {

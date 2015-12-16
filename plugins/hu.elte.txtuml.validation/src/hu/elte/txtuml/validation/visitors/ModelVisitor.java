@@ -16,11 +16,7 @@ public class ModelVisitor extends VisitorBase {
 	@Override
 	public boolean visit(TypeDeclaration elem) {
 		Utils.checkTemplate(collector, elem);
-		if (!ElementTypeTeller.isSignal(elem) && !ElementTypeTeller.isAssociation(elem)
-				&& !ElementTypeTeller.isModelClass(elem)) {
-			collector.setProblemStatus(new InvalidTypeInModel(collector.getSourceInfo(), elem));
-		}
-
+		
 		if (ElementTypeTeller.isSignal(elem)) {
 			Utils.checkModifiers(collector, elem);
 			checkChildren(elem, Messages.ModelVisitor_signal_label, SignalVisitor.ALLOWED_SIGNAL_DECLARATIONS);
@@ -36,6 +32,11 @@ public class ModelVisitor extends VisitorBase {
 		} else if (ElementTypeTeller.isModelClass(elem)) {
 			checkChildren(elem, Messages.ModelVisitor_class_label, ModelClassVisitor.ALLOWED_MODEL_CLASS_DECLARATIONS);
 			acceptChildren(elem, new ModelClassVisitor(collector));
+		} else if (ElementTypeTeller.isExternalInterface(elem.resolveBinding())) {
+			// nothing to check, but visit inner classes
+			return true;
+		} else {
+			collector.setProblemStatus(new InvalidTypeInModel(collector.getSourceInfo(), elem));
 		}
 		return false;
 	}

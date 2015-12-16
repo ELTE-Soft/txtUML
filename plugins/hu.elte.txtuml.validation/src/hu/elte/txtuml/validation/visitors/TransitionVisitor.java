@@ -1,7 +1,5 @@
 package hu.elte.txtuml.validation.visitors;
 
-import java.util.Arrays;
-
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
@@ -20,10 +18,8 @@ import hu.elte.txtuml.validation.ProblemCollector;
 import hu.elte.txtuml.validation.problems.transition.MissingTransitionSource;
 import hu.elte.txtuml.validation.problems.transition.MissingTransitionTarget;
 import hu.elte.txtuml.validation.problems.transition.MissingTransitionTrigger;
-import hu.elte.txtuml.validation.problems.transition.TransitionFromOutside;
 import hu.elte.txtuml.validation.problems.transition.TransitionMethodNonVoidReturn;
 import hu.elte.txtuml.validation.problems.transition.TransitionMethodParameters;
-import hu.elte.txtuml.validation.problems.transition.TransitionToOutside;
 import hu.elte.txtuml.validation.problems.transition.TriggerOnInitialTransition;
 import hu.elte.txtuml.validation.problems.transition.UnknownTransitionMethod;
 
@@ -33,12 +29,10 @@ public class TransitionVisitor extends VisitorBase {
 			SimpleName.class, SimpleType.class, Modifier.class, Annotation.class };
 
 	private TypeDeclaration transition;
-	private ITypeBinding parentElement;
 
 	public TransitionVisitor(TypeDeclaration transition, ProblemCollector collector) {
 		super(collector);
 		this.transition = transition;
-		parentElement = ((TypeDeclaration) transition.getParent()).resolveBinding();
 	}
 
 	@Override
@@ -92,10 +86,8 @@ public class TransitionVisitor extends VisitorBase {
 				}
 				String bindedAnnotationName = annBinding.getAnnotationType().getQualifiedName();
 				if (From.class.getCanonicalName().equals(bindedAnnotationName)) {
-					checkFrom(annot, value);
 					fromValue = value;
 				} else if (To.class.getCanonicalName().equals(bindedAnnotationName)) {
-					checkTo(annot, value);
 					toValue = value;
 				} else if (Trigger.class.getCanonicalName().equals(bindedAnnotationName)) {
 					triggerValue = value;
@@ -111,18 +103,6 @@ public class TransitionVisitor extends VisitorBase {
 		}
 		if (fromValue != null && toValue != null) {
 			checkTrigger(triggerAnnot, triggerValue, fromValue);
-		}
-	}
-
-	protected void checkFrom(Annotation from, ITypeBinding value) {
-		if (!Arrays.asList(parentElement.getDeclaredTypes()).contains(value)) {
-			collector.setProblemStatus(new TransitionFromOutside(collector.getSourceInfo(), from));
-		}
-	}
-
-	protected void checkTo(Annotation to, ITypeBinding value) {
-		if (!Arrays.asList(parentElement.getDeclaredTypes()).contains(value)) {
-			collector.setProblemStatus(new TransitionToOutside(collector.getSourceInfo(), to));
 		}
 	}
 

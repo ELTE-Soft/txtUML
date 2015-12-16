@@ -5,6 +5,7 @@ import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelExecutor;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.external.ExternalClass;
+import hu.elte.txtuml.api.model.external.ExternalType;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -91,7 +92,7 @@ public class Timer implements ExternalClass {
 	public static Handle start(ModelClass targetObj, Signal signal,
 			int millisecs) {
 		ModelExecutor.Settings.lockExecutionTimeMultiplier();
-		return new Handle(targetObj, signal, millisecs);
+		return new HandleImpl(targetObj, signal, millisecs);
 	}
 
 	/**
@@ -110,18 +111,52 @@ public class Timer implements ExternalClass {
 			ModelExecutor.shutdown();
 		}
 	}
+	
+	public interface Handle extends ExternalType {
 
-	/**
-	 * The handle of a certain timed event created by the {@link Timer} class.
-	 * This handle object can be used to manage the event.
-	 * <p>
-	 * See the documentation of {@link hu.elte.txtuml.api.Model} for an overview
-	 * on modeling in JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
-	 */
-	public static class Handle implements ExternalClass {
+		/**
+		 * @return the remaining delay in millisecs; zero or negative values
+		 *         indicate that the delay has already elapsed
+		 */
+		long query();
+
+		/**
+		 * Reschedules the timed event this handle manages to happen after the
+		 * specified time from now. If it has already happened, it will be
+		 * scheduled for a second time.
+		 * 
+		 * @param millisecs
+		 *            new delay in millisecs
+		 * @throws NullPointerException
+		 *             if <code>millisecs</code> is <code>null</code>
+		 */
+		void reset(long millisecs);
+
+		/**
+		 * Reschedules the timed event this handle manages to have a delay
+		 * increased by the specified amount of time. If it has already
+		 * happened, it will be scheduled for a second time.
+		 * 
+		 * @param millisecs
+		 *            the amount of time to add in millisecs
+		 * @throws NullPointerException
+		 *             if <code>millisecs</code> is <code>null</code>
+		 */
+		void add(int millisecs);
+
+		/**
+		 * Cancels the timed event managed by this handle object.
+		 * 
+		 * @return <code>true</code> if the cancel was successful, so the timed
+		 *         event managed by this handle was <i>not</i> yet cancelled or
+		 *         performed; <code>false</code> otherwise
+		 */
+		boolean cancel();
+
+	}
+
+
+	private static class HandleImpl implements Handle, ExternalClass {
 
 		/**
 		 * The handle of the event scheduled with {@link Timer#scheduler
@@ -144,7 +179,7 @@ public class Timer implements ExternalClass {
 		 * @param millisecs
 		 *            millisecs to wait before the timeout
 		 */
-		Handle(ModelClass targetObj, Signal signal, int millisecs) {
+		HandleImpl(ModelClass targetObj, Signal signal, int millisecs) {
 			this.action = () -> {
 				Action.send(targetObj, signal);
 				int currentCount = scheduledEvents.decrementAndGet();
@@ -156,25 +191,11 @@ public class Timer implements ExternalClass {
 			schedule(millisecs);
 		}
 
-		/**
-		 * @return the remaining delay in millisecs; zero or negative values
-		 *         indicate that the delay has already elapsed
-		 */
 		public long query() {
 			return ModelExecutor.Settings.inExecutionTime(handle
 					.getDelay(TimeUnit.MILLISECONDS));
 		}
 
-		/**
-		 * Reschedules the timed event this handle manages to happen after the
-		 * specified time from now. If it has already happened, it will be
-		 * scheduled for a second time.
-		 * 
-		 * @param millisecs
-		 *            new delay in millisecs
-		 * @throws NullPointerException
-		 *             if <code>millisecs</code> is <code>null</code>
-		 */
 		public void reset(long millisecs) {
 			boolean wasCancelled = handle.cancel(false);
 			if (wasCancelled) {
@@ -183,16 +204,6 @@ public class Timer implements ExternalClass {
 			schedule(millisecs);
 		}
 
-		/**
-		 * Reschedules the timed event this handle manages to have a delay
-		 * increased by the specified amount of time. If it has already
-		 * happened, it will be scheduled for a second time.
-		 * 
-		 * @param millisecs
-		 *            the amount of time to add in millisecs
-		 * @throws NullPointerException
-		 *             if <code>millisecs</code> is <code>null</code>
-		 */
 		public void add(int millisecs) {
 			long delay = query();
 			if (delay < 0) {
@@ -201,26 +212,12 @@ public class Timer implements ExternalClass {
 			reset(delay + millisecs);
 		}
 
-		/**
-		 * Cancels the timed event managed by this handle object.
-		 * 
-		 * @return <code>true</code> if the cancel was successful, so the timed
-		 *         event managed by this handle was <i>not</i> yet cancelled or
-		 *         performed; <code>false</code> otherwise
-		 */
 		public boolean cancel() {
 			boolean cancelledNow = handle.cancel(false);
 			scheduledEvents.decrementAndGet();
 			return cancelledNow;
 		}
 
-		/**
-		 * Schedules the timed event this handle manages with the specified
-		 * <code>millisecs</code> delay.
-		 * 
-		 * @param millisecs
-		 *            the delay in millisecs
-		 */
 		private void schedule(long millisecs) {
 			if (scheduler.isShutdown()) {
 				return;

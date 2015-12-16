@@ -44,22 +44,25 @@ public class Utils {
 		}
 	}
 
-	public static boolean isAllowedBasicType(Type type, boolean isVoidAllowed) {
+	public static boolean isAllowedAttributeType(Type type, boolean isVoidAllowed) {
 		if (type.isPrimitiveType()) {
 			PrimitiveType.Code code = ((PrimitiveType) type).getPrimitiveTypeCode();
 			return (code == PrimitiveType.BOOLEAN || code == PrimitiveType.DOUBLE || code == PrimitiveType.INT
 					|| (code == PrimitiveType.VOID && isVoidAllowed));
 		}
-
-		if (type.isSimpleType()) {
-			type.resolveBinding().getQualifiedName().equals("java.lang.String"); //$NON-NLS-1$
+		if (type.resolveBinding().getQualifiedName().equals(String.class.getCanonicalName())) {
+			return true;
 		}
+		if (ElementTypeTeller.isExternalInterface(type.resolveBinding())) {
+			return true;
+		}
+
 
 		return false;
 	}
 
-	public static boolean isAllowedBasicTypeOrModelClass(Type type, boolean isVoidAllowed) {
-		if (isAllowedBasicType(type, isVoidAllowed) || ElementTypeTeller.isModelClass(type.resolveBinding())) {
+	public static boolean isAllowedParameterType(Type type, boolean isVoidAllowed) {
+		if (isAllowedAttributeType(type, isVoidAllowed) || ElementTypeTeller.isModelClass(type.resolveBinding())) {
 			return true;
 		}
 
