@@ -2,6 +2,7 @@ package hu.elte.txtuml.examples.validation;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.examples.validation.helpers.A;
 import hu.elte.txtuml.examples.validation.helpers.ExternalIface;
+import hu.elte.txtuml.examples.validation.helpers.MyDataType;
 
 public class InvalidParameterType extends ModelClass {
 
@@ -12,7 +13,7 @@ public class InvalidParameterType extends ModelClass {
 		return null;
 	}
 
-	public void h(A a, ExternalIface external) {
+	public void h(A a, ExternalIface external, MyDataType datatype) {
 	}
 
 	public A k() {
@@ -20,6 +21,10 @@ public class InvalidParameterType extends ModelClass {
 	}
 	
 	public ExternalIface m() {
+		return null;
+	}
+	
+	public MyDataType n() {
 		return null;
 	}
 
