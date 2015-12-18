@@ -15,6 +15,7 @@ import hu.elte.txtuml.api.model.models.hierarchical.Sig1;
 import hu.elte.txtuml.api.model.report.ModelExecutionEventsListener;
 import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
 
+//TODO This test should explicitly check whether the entry and exit methods are called in the model, not that it is reported.
 @RunWith(SeparateClassloaderTestRunner.class)
 public class CompositeStateEntryExitTest extends HierarchicalModelTestsBase {
 

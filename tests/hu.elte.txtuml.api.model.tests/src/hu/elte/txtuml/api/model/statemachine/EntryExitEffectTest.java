@@ -15,6 +15,7 @@ import hu.elte.txtuml.api.model.models.transitions.Sig2;
 import hu.elte.txtuml.api.model.report.ModelExecutionEventsListener;
 import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
 
+// TODO This test should explicitly check whether the entry and exit methods are called in the model, not that it is reported.
 @RunWith(SeparateClassloaderTestRunner.class)
 public class EntryExitEffectTest extends TransitionsModelTestsBase {
 
@@ -28,7 +29,7 @@ public class EntryExitEffectTest extends TransitionsModelTestsBase {
 		Action.send(a, new Sig2());
 
 		stopModelExecution();
-		
+
 		InOrder inOrder = Mockito.inOrder(mock);
 		inOrder.verify(mock).enteringVertex(Matchers.isA(A.class), Matchers.isA(A.S.class));
 		inOrder.verify(mock).leavingVertex(Matchers.isA(A.class), Matchers.isA(A.S.class));
