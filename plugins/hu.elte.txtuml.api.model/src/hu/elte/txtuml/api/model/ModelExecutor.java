@@ -4,6 +4,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import hu.elte.txtuml.api.model.backend.DiagnosticsServiceConnector;
+import hu.elte.txtuml.api.model.backend.log.ExecutorLog;
 import hu.elte.txtuml.api.model.report.ModelExecutionEventsListener;
 import hu.elte.txtuml.api.model.report.RuntimeErrorsListener;
 import hu.elte.txtuml.api.model.report.RuntimeWarningsListener;
@@ -47,6 +48,11 @@ public final class ModelExecutor implements ModelElement {
 	 * The thread on which the model execution will run.
 	 */
 	private static final ModelExecutorThread thread = new ModelExecutorThread().autoStart();
+
+	/**
+	 * The object which prints the runtime log of the executor.
+	 */
+	private static final ExecutorLog executorLog = new ExecutorLog();
 
 	/**
 	 * Sole constructor of <code>ModelExecutor</code>, which is designed to be
@@ -120,6 +126,21 @@ public final class ModelExecutor implements ModelElement {
 		 * uninstantiatable class.
 		 */
 		private Settings() {
+		}
+
+		/**
+		 * Sets whether executor's non-error log has to be shown. By default, it
+		 * is switched off.
+		 * <p>
+		 * Executor's non-error log consists of short messages reporting about
+		 * certain changes in the runtime model, like a model object processing
+		 * a signal or using a transition.
+		 * 
+		 * @param newValue
+		 *            whether executor's non-error log has to shown
+		 */
+		public static void setExecutorLog(boolean newValue) {
+			executorLog.setLogEvents(newValue);
 		}
 
 		/**

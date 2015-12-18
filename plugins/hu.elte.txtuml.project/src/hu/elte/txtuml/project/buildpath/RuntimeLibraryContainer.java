@@ -26,7 +26,7 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 	private static final String BIN_FOLDER_IN_PLUGIN = "bin"; //$NON-NLS-1$
 	private static final String SRC_FOLDER_IN_PLUGIN = "src"; //$NON-NLS-1$
 
-	public static final String[] BUNDLE_IDS_TO_INCLUDE = { "com.google.guava", //$NON-NLS-1$
+	public static final String[] BUNDLE_IDS_TO_INCLUDE = { "org.apache.log4j", "com.google.guava", //$NON-NLS-1$ //$NON-NLS-2$
 			"org.eclipse.uml2.uml", "org.eclipse.uml2.uml.resources", //$NON-NLS-1$ //$NON-NLS-2$
 			"org.eclipse.xtext.xbase.lib", "hu.elte.txtuml.api.model", //$NON-NLS-1$ //$NON-NLS-2$
 			"hu.elte.txtuml.api.layout", "hu.elte.txtuml.api.stdlib", //$NON-NLS-1$ //$NON-NLS-2$
@@ -55,13 +55,11 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 		return classPathEntries;
 	}
 
-	private void addEntry(final List<IClasspathEntry> cpEntries,
-			final String bundleId) {
+	private void addEntry(final List<IClasspathEntry> cpEntries, final String bundleId) {
 		Bundle bundle = Platform.getBundle(bundleId);
 		if (bundle != null) {
-			cpEntries.add(JavaCore
-					.newLibraryEntry(bundlePath(bundle), sourcePath(bundle),
-							null, new IAccessRule[] {}, null, false));
+			cpEntries.add(JavaCore.newLibraryEntry(bundlePath(bundle), sourcePath(bundle), null, new IAccessRule[] {},
+					null, false));
 		}
 	}
 
@@ -70,11 +68,9 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 		if (path == null) {
 			// common jar file case, no bin folder
 			try {
-				path = new Path(FileLocator.getBundleFile(bundle)
-						.getAbsolutePath());
+				path = new Path(FileLocator.getBundleFile(bundle).getAbsolutePath());
 			} catch (IOException e) {
-				String message = "Can't resolve path '"
-						+ bundle.getSymbolicName() + "'"; //$NON-NLS-1$ //$NON-NLS-2$
+				String message = "Can't resolve path '" + bundle.getSymbolicName() + "'"; //$NON-NLS-2$
 				Logger.logError(message, e);
 			}
 		}
@@ -82,15 +78,13 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 	}
 
 	private IPath binFolderPath(Bundle bundle) {
-		URL binFolderURL = FileLocator.find(bundle, new Path(
-				BIN_FOLDER_IN_PLUGIN), null);
+		URL binFolderURL = FileLocator.find(bundle, new Path(BIN_FOLDER_IN_PLUGIN), null);
 		if (binFolderURL != null) {
 			try {
 				URL binFolderFileURL = FileLocator.toFileURL(binFolderURL);
 				return new Path(binFolderFileURL.getPath()).makeAbsolute();
 			} catch (IOException e) {
-				String message = "Can't resolve path '"
-						+ bundle.getSymbolicName() + "'"; //$NON-NLS-1$ //$NON-NLS-2$
+				String message = "Can't resolve path '" + bundle.getSymbolicName() + "'"; //$NON-NLS-2$
 				Logger.logError(message, e);
 			}
 		}
@@ -102,11 +96,9 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 		if (path == null) {
 			// common jar file case, no bin folder
 			try {
-				path = new Path(FileLocator.getBundleFile(bundle)
-						.getAbsolutePath());
+				path = new Path(FileLocator.getBundleFile(bundle).getAbsolutePath());
 			} catch (IOException e) {
-				String message = "Can't resolve path '"
-						+ bundle.getSymbolicName() + "'"; //$NON-NLS-1$ //$NON-NLS-2$
+				String message = "Can't resolve path '" + bundle.getSymbolicName() + "'"; //$NON-NLS-2$
 				Logger.logError(message, e);
 			}
 		}
@@ -114,15 +106,13 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 	}
 
 	private IPath srcFolderPath(Bundle bundle) {
-		URL binFolderURL = FileLocator.find(bundle, new Path(
-				SRC_FOLDER_IN_PLUGIN), null);
+		URL binFolderURL = FileLocator.find(bundle, new Path(SRC_FOLDER_IN_PLUGIN), null);
 		if (binFolderURL != null) {
 			try {
 				URL binFolderFileURL = FileLocator.toFileURL(binFolderURL);
 				return new Path(binFolderFileURL.getPath()).makeAbsolute();
 			} catch (IOException e) {
-				String message = "Can't resolve path '"
-						+ bundle.getSymbolicName() + "'"; //$NON-NLS-1$ //$NON-NLS-2$
+				String message = "Can't resolve path '" + bundle.getSymbolicName() + "'"; //$NON-NLS-2$
 				Logger.logError(message, e);
 			}
 		}

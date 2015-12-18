@@ -11,22 +11,28 @@ import hu.elte.txtuml.utils.Logger;
  */
 public final class ExecutorLog {
 
+	private volatile boolean logEvents = false;
+
 	public ExecutorLog() {
-		ModelExecutor.Report
-				.addModelExecutionEventsListener(new ModelExecutionEventsListenerImpl(
-						this));
-		ModelExecutor.Report
-				.addRuntimeWarningsListener(new RuntimeWarningsListenerImpl(
-						this));
-		ModelExecutor.Report
-				.addRuntimeErrorsListener(new RuntimeErrorsListenerImpl(this));
+		ModelExecutor.Report.addModelExecutionEventsListener(new ModelExecutionEventsListenerImpl(this));
+		ModelExecutor.Report.addRuntimeWarningsListener(new RuntimeWarningsListenerImpl(this));
+		ModelExecutor.Report.addRuntimeErrorsListener(new RuntimeErrorsListenerImpl(this));
 	}
-	
+
+	/**
+	 * Sets whether or not valid events should be logged.
+	 */
+	public void setLogEvents(boolean logEvents) {
+		this.logEvents = logEvents;
+	}
+
 	/**
 	 * Prints a simple message.
 	 */
 	void out(String message) {
-		Logger.logInfo(message);
+		if (logEvents) {
+			Logger.logInfo(message);
+		}
 	}
 
 	/**
