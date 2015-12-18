@@ -43,7 +43,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 		animator = new Animator(instanceRegister, modelMapper);
 		thread = new Thread(this, "txtUMLDiagnosticsPlugin");
 		thread.start();
-		//Logger.getInstance().log(new Status(IStatus.INFO, Activator.PLUGIN_ID, "txtUML DiagnosticsPlugin started"));
+		//Logger.logInfo("txtUML DiagnosticsPlugin started"));
 	}
 	
 	@Override
