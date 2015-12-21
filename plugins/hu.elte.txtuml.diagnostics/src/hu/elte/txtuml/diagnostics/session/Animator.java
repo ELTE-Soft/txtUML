@@ -24,7 +24,9 @@ import org.eclipse.papyrus.infra.services.markerlistener.PapyrusMarkerAdapter;
  */
 class Animator {
 	private static final int ANIMATION_TIMER = 1000;
-	private static final String ANIMATED_MARKER_ID = "hu.elte.txtuml.diagnostics.animatedmarker";
+	
+	// Warning! This is fragile as it was changed to "org.eclipse.papyrus.moka.animation.animatedmarker" in more recent versions
+	private static final String MOKA_ANIMATION_MARKER_ID = "org.eclipse.papyrus.moka.ui.animationmarker";
 
 	
 	private InstanceRegister instanceRegister;
@@ -89,23 +91,21 @@ class Animator {
 	}
 	
 	private void addAnimationMarker(EObject eobject) {
-		Map<String, String> attributes = new HashMap<String, String>();
-		attributes.put(EValidator.URI_ATTRIBUTE, EcoreUtil.getURI(eobject).toString());
 		IResource resource = null;
 		IWorkspace workspace = ResourcesPlugin.getWorkspace(); 
 		if (workspace != null) {
 			resource = workspace.getRoot().getFile(new Path(eobject.eResource().getURI().toPlatformString(true)));
 		}
-		if (resource != null) {
+		if (resource != null && resource.exists()) {
 			IMarker imarker = null;
 			try {
-				imarker = resource.createMarker(ANIMATED_MARKER_ID);
-				imarker.setAttributes(attributes);
+				imarker = resource.createMarker(MOKA_ANIMATION_MARKER_ID);
+				imarker.setAttribute(EValidator.URI_ATTRIBUTE, EcoreUtil.getURI(eobject).toString());
 			} catch (CoreException e) {
 				e.printStackTrace();
 			}
 			if (imarker != null) {
-				IPapyrusMarker marker = PapyrusMarkerAdapter.wrap(eobject.eResource(), imarker, attributes);
+				IPapyrusMarker marker = PapyrusMarkerAdapter.wrap(eobject.eResource(), imarker);
 				eobjectToMarker.put(eobject, marker);
 			}
 		}
