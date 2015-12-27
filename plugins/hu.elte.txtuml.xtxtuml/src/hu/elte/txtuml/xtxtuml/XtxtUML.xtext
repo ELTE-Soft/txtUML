@@ -280,7 +280,7 @@ XConstructorCall returns xbase::XExpression :
 XBlockExpression returns xbase::XExpression : 
 	{xbase::XBlockExpression}
 	'{' 
-		(expressions+=XRAlfStatementSemicolonNotNeeded | expressions+=XRAlfStatementSemicolonNeeded ';' )*
+		(expressions+=XRAlfStatementSemicolonNotNeeded | =>(expressions+=XRAlfStatementSemicolonNeeded) ';' )*
 	'}'
 ;
 
