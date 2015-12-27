@@ -5,6 +5,9 @@ import org.eclipse.xtext.naming.QualifiedName
 
 class XtxtUMLQualifiedNameConverter extends IQualifiedNameConverter.DefaultImpl {
 
+	private static val char DOT = '.'
+	private static val char COLON = ':'
+
 	override toQualifiedName(String name) {
 		var lastWasColon = false
 		val l = name.length
@@ -14,13 +17,13 @@ class XtxtUMLQualifiedNameConverter extends IQualifiedNameConverter.DefaultImpl 
 		val segments = <String>newArrayList
 
 		while (i < l) {
-			switch (c : name.charAt(i).toString) {
-				case '.': {
+			switch (c : name.charAt(i)) {
+				case DOT: {
 					lastWasColon = false
 					segments.add(current.toString)
 					current.length = 0
 				}
-				case ':':
+				case COLON:
 					if (lastWasColon) {
 						lastWasColon = false
 						segments.add(current.toString)
