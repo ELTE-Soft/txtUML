@@ -2,20 +2,41 @@ package hu.elte.txtuml.xtxtuml.naming
 
 import org.eclipse.xtext.naming.IQualifiedNameConverter
 import org.eclipse.xtext.naming.QualifiedName
-import java.util.regex.Pattern
 
 class XtxtUMLQualifiedNameConverter extends IQualifiedNameConverter.DefaultImpl {
-	
-	private static String assocEndDelimiterRegex = "\\:\\:|\\.";
-	
+
 	override toQualifiedName(String name) {
-		val regex = Pattern.compile(assocEndDelimiterRegex);
-		val matcher = regex.matcher(name);
-		if (name != null && matcher.find) {
-			QualifiedName.create(name.split(assocEndDelimiterRegex));
-		} else {
-			super.toQualifiedName(name);
+		var lastWasColon = false
+		val l = name.length
+		var i = 0
+
+		val current = new StringBuffer()
+		val segments = <String>newArrayList
+
+		while (i < l) {
+			switch (c : name.charAt(i).toString) {
+				case '.': {
+					lastWasColon = false
+					segments.add(current.toString)
+					current.length = 0
+				}
+				case ':':
+					if (lastWasColon) {
+						lastWasColon = false
+						segments.add(current.toString)
+						current.length = 0
+					} else {
+						lastWasColon = true
+					}
+				default: {
+					lastWasColon = false
+					current.append(c)
+				}
+			}
+			i++
 		}
+		segments.add(current.toString)
+
+		return QualifiedName.create(segments)
 	}
-	
 }
