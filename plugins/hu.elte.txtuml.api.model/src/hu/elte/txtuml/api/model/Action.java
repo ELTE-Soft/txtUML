@@ -1,11 +1,10 @@
 package hu.elte.txtuml.api.model;
 
 import hu.elte.txtuml.api.model.ModelExecutor.Report;
+import hu.elte.txtuml.api.model.backend.MultipleContainerException;
 import hu.elte.txtuml.api.model.backend.MultiplicityException;
 import hu.elte.txtuml.utils.InstanceCreator;
 import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
-
-import java.lang.reflect.Modifier;
 
 /**
  * Class <code>Action</code> provides methods for the user to be used as
@@ -65,18 +64,8 @@ public class Action implements ModelElement {
 	 */
 	public static <T extends ModelClass> T create(Class<T> classType,
 			Object... parameters) {
-		Object[] params;
-		if (Modifier.isStatic(classType.getModifiers())) {
-			params = parameters;
-		} else {
-			params = new Object[parameters.length + 1];
-			params[0] = null;
-			for (int i = 0; i < parameters.length; ++i) {
-				params[i + 1] = parameters[i];
-			}
-		}
 		try {
-			return InstanceCreator.create(classType, params);
+			return InstanceCreator.create(classType, parameters);
 		} catch (IllegalArgumentException | RuntimeInvocationTargetException e) {
 			Report.error.forEach(x -> x.modelObjectCreationFailed(classType,
 					parameters));
@@ -137,20 +126,23 @@ public class Action implements ModelElement {
 			return;
 		}
 
+		tryAddToAssoc(leftObj, rightEnd, rightObj, () -> {});
+		tryAddToAssoc(rightObj, leftEnd, leftObj, () -> leftObj.removeFromAssoc(rightEnd, rightObj));
+	}
+	
+	private static <R extends ModelClass, L extends ModelClass> void tryAddToAssoc(L leftObj,
+			Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj, Runnable rollBack) {
 		try {
 			leftObj.addToAssoc(rightEnd, rightObj);
+			return;
 		} catch (MultiplicityException e) {
 			Report.error.forEach(x -> x.upperBoundOfMultiplicityOffended(
 					leftObj, rightEnd));
+		} catch (MultipleContainerException e) {
+			Report.error.forEach(x -> x.multipleContainerForAnObject(
+					leftObj, rightEnd));
 		}
-
-		try {
-			rightObj.addToAssoc(leftEnd, leftObj);
-		} catch (MultiplicityException e) {
-			leftObj.removeFromAssoc(rightEnd, rightObj);
-			Report.error.forEach(x -> x.upperBoundOfMultiplicityOffended(
-					rightObj, leftEnd));
-		}
+		rollBack.run();
 	}
 
 	/**

@@ -1,14 +1,14 @@
 package hu.elte.txtuml.api.model.statemachine;
 
-import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.base.TransitionsModelTestsBase;
-import hu.elte.txtuml.api.model.models.TransitionsModel.Sig1;
-import hu.elte.txtuml.api.model.models.TransitionsModel.Sig2;
-import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.base.TransitionsModelTestsBase;
+import hu.elte.txtuml.api.model.models.transitions.Sig1;
+import hu.elte.txtuml.api.model.models.transitions.Sig2;
+import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
 
 @RunWith(SeparateClassloaderTestRunner.class)
 public class EntryExitEffectTest extends TransitionsModelTestsBase {
@@ -19,10 +19,8 @@ public class EntryExitEffectTest extends TransitionsModelTestsBase {
 		Action.send(a, new Sig2());
 
 		stopModelExecution();
-		
-		Assert.assertArrayEquals(
-				new String[] { 
-						"entry", "exit", "T1", "entry", "exit", "T2", "entry" },
-				userOutStream.getOutputAsArray());
+
+		Assert.assertArrayEquals(new String[] { "entry", "exit", "T1", "entry",
+				"exit", "T2", "entry" }, userOutStream.getOutputAsArray());
 	}
 }

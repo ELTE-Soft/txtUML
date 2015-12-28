@@ -1,0 +1,21 @@
+# Let the default be core.autocrlf=input on Linux, core.autocrlf=true on Windows
+* text=auto
+
+# Define text files explicitly here
+*.java text
+*.txt text
+*.xml text
+*.xtend text
+*.xtext text
+*.prefs text
+*.properties text
+MANIFEST.MF text
+*.mwe2 text
+*.g text
+*.tokens text
+
+# Define binaries explicitly here
+*.class binary
+*.jar binary
+*.zip binary
+

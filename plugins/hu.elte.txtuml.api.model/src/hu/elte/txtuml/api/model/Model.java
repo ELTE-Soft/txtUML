@@ -1,10 +1,17 @@
 package hu.elte.txtuml.api.model;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import hu.elte.txtuml.api.model.external.ExternalClass;
 
 /**
- * Base class of JtxtUML models. Read this documentation page further for an
- * overview on modeling in JtxtUML.
+ * This annotation shows that the annotated package and its subpackages form a
+ * JtxtUML model. Read this documentation page further for an overview on
+ * modeling in JtxtUML.
  * 
  * <p>
  * <b>Represents:</b> model
@@ -12,60 +19,19 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * <b>Usage:</b>
  * <p>
  * 
- * All elements of the model must be nested classes of the same subclass of
- * <code>Model</code>.
- * 
+ * Apply on the top package of a JtxtUML model. Annotations on packages should
+ * be defined in {@code package-info.java} file.
  * <p>
- * <b>Java restrictions:</b>
- * <ul>
- * <li><i>Instantiate:</i> disallowed</li>
- * <li><i>Define subtype:</i> allowed
+ * Set {@link value} to define a unique name of the model.
  * <p>
- * <b>Subtype requirements:</b>
- * <ul>
- * <li>none</li>
- * </ul>
+ * If package <i>A</i> is marked as a model and <i>B</i> is a subpackage of
+ * <i>A</i> then <i>B</i> cannot be marked to be a model as it is already a part
+ * of one.
  * <p>
- * <b>Subtype restrictions:</b>
- * <ul>
- * <li><i>Be abstract:</i> disallowed</li>
- * <li><i>Generic parameters:</i> disallowed</li>
- * <li><i>Constructors:</i> disallowed</li>
- * <li><i>Initialization blocks:</i> disallowed</li>
- * <li><i>Fields:</i> disallowed</li>
- * <li><i>Methods:</i> disallowed</li>
- * <li><i>Nested interfaces:</i> disallowed</li>
- * <li><i>Nested classes:</i> allowed, both static and non-static, to represent
- * elements of the model; all nested classes must be subclasses of an API class
- * representing a certain model element</li>
- * <li><i>Nested enums:</i> disallowed</li>
- * </ul>
- * </li>
- * <li><i>Inherit from the defined subtype:</i> disallowed</li>
- * </ul>
- * 
+ * If a package is marked as a model then all {@code .java} files in that
+ * package and its subpackages are considered parts of the model and therefore
+ * should be valid model elements.
  * <p>
- * <b>Example:</b>
- * 
- * <pre>
- * <code>
- * public class SampleModel extends Model {
- * 
- * 	class SampleClass1 extends ModelClass {
- *  		//...
- * 	}
- * 
- * 	class SampleClass2 extends ModelClass {
- *  		//...
- * 	}
- *  
- * 	public static class SampleSignal extends Signal {}
- *  
- * 	//...
- * 
- * }
- * </code>
- * </pre>
  * 
  * <h1>Modeling in JtxtUML</h1>
  * 
@@ -74,19 +40,17 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * <p>
  * A JtxtUML model is always a valid Java source but it must apply to other
  * restrictions and requirements as well. All these special rules are detailed
- * at the corresponding pages of this documentation. Offending these rules may
- * cause unexpected behavior or errors without proper explanation or error
- * messages.
+ * at the corresponding pages of this documentation.
  *
  * <h2>Main structure of a model</h2>
  * 
  * <p>
- * A JtxtUML model consists of a single class <i>m</i> which has to be the
- * subclass of <code>Model</code>. All parts of the model must be implemented as
- * nested classes of <i>m</i>. As a general rule, the model <b>may not</b> refer
- * to or use <i>any</i> code in <i>any</i> way that is from outside <i>m</i>,
- * with a few exceptions, described below, in the 'Global Java restrictions'
- * section.
+ * A JtxtUML model consists of a package structure under one particular package
+ * that has to be annotated with {@link Model}. All parts of the model must be
+ * implemented as contents of this package or its subpackages. As a general
+ * rule, the model <b>may not</b> refer to or use <i>any</i> code in <i>any</i>
+ * way that is from outside this package structure, with a few exceptions,
+ * described below, in the 'Global Java restrictions' section.
  * 
  * <h2>Supported features</h2>
  *
@@ -95,6 +59,7 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * <ul>
  * <li>classes ( {@link ModelClass} ),</li>
  * <li>associations ( {@link Association} ),</li>
+ * <li>compositions ( {@link Composition} ),</li>
  * <li>navigable and non-navigable association ends with different
  * multiplicities ( {@link AssociationEnd} ),</li>
  * <li>collections of model objects ( {@link Collection} ),</li>
@@ -204,10 +169,7 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * <ul>
  * <li>Create model objects (instances of subclasses of {@link ModelClass}) by
  * either calling their constructors or using the
- * {@link Action#create(Class, Object...) Action.create} method. Instantiating
- * the model class <i>m</i> (the subclass of <code>Model</code> which encloses
- * the whole model) is also allowed but is not required, neither has any effect
- * on a well-defined model.</li>
+ * {@link Action#create(Class, Object...) Action.create} method.</li>
  * <li>Use the static methods of the <code>Action</code> class to
  * {@link Action#link(Class, ModelClass, Class, ModelClass) link},
  * {@link Action#unlink(Class, ModelClass, Class, ModelClass) unlink},
@@ -304,12 +266,14 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * @see Signal
  * 
  */
-public class Model extends Action {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PACKAGE)
+@Documented
+public @interface Model {
 
 	/**
-	 * Sole constructor of <code>Model</code>.
+	 * Sets the name of the model.
 	 */
-	protected Model() {
-	}
+	String value() default "";
 
 }

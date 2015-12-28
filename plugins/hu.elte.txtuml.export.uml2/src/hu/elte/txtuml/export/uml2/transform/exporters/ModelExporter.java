@@ -14,11 +14,13 @@ import hu.elte.txtuml.export.uml2.utils.SharedUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -46,10 +48,10 @@ public class ModelExporter {
 
 	private static final String STDLIB_URI = "pathmap://TXTUML_STDLIB/stdlib.uml";
 
-	private final String txtUMLModelName;
+	private final String sourcePackageName;
 	private final String outputDirectory;
 	private final Model exportedModel;
-	private final TypeDeclaration sourceModel;
+	private final CompilationUnit[] compilationUnits;
 	private final ResourceSet resourceSet;
 	private final Resource modelResource;
 	private final TypeExporter typeExporter;
@@ -59,17 +61,18 @@ public class ModelExporter {
 	private Map<TypeDeclaration, Classifier> classifiers;
 	private Map<TypeDeclaration, Map<MethodDeclaration, Operation>> methods;
 
-	public ModelExporter(TypeDeclaration sourceModel, String txtUMLModelName,
+	public ModelExporter(CompilationUnit[] compilationUnits,
+			String JtxtUMLModelName, String sourcePackageName,
 			String outputDirectory) throws ExportException {
-		this.sourceModel = sourceModel;
-		this.txtUMLModelName = txtUMLModelName;
+		this.compilationUnits = compilationUnits;
+		this.sourcePackageName = sourcePackageName;
 		this.outputDirectory = outputDirectory;
 
 		this.exportedModel = UMLFactory.eINSTANCE.createModel();
-		this.exportedModel.setName(txtUMLModelName);
+		this.exportedModel.setName(JtxtUMLModelName);
 
 		this.resourceSet = new ResourceSetFactory().createAndInitResourceSet();
-		this.modelResource = createAndInitModelResource(txtUMLModelName,
+		this.modelResource = createAndInitModelResource(sourcePackageName,
 				outputDirectory, resourceSet, exportedModel);
 		this.mapping = new ModelMapCollector(modelResource.getURI());
 
@@ -155,7 +158,7 @@ public class ModelExporter {
 // TODO: Uncomment this	when activity export gets fixed.	
 //		exportMethodBodiesOfEveryClassifier();
 
-		this.mapping.put(txtUMLModelName, exportedModel);
+		this.mapping.put(sourcePackageName, exportedModel);
 		finishModelExport();
 
 		return this.exportedModel;
@@ -170,7 +173,7 @@ public class ModelExporter {
 	private void exportClassifiers() {
 		ClassifierVisitor visitor = new ClassifierVisitor(
 				new ClassifierExporter(mapping, exportedModel), true);
-		sourceModel.accept(visitor);
+		Stream.of(compilationUnits).forEach(cu -> cu.accept(visitor));
 		classifiers = visitor.getVisitedClassifiers();
 	}
 
@@ -183,7 +186,9 @@ public class ModelExporter {
 	 */
 	private void exportAssociations() throws ExportException {
 		try {
-			sourceModel.accept(new AssociationVisitor(mapping, exportedModel));
+			Stream.of(compilationUnits).forEach(
+					cu -> cu.accept(new AssociationVisitor(mapping,
+							exportedModel)));
 		} catch (RuntimeExportException e) {
 			throw e.getCause();
 		}
@@ -324,7 +329,7 @@ public class ModelExporter {
 	 */
 	private void finishModelExport() {
 		try {
-			mapping.save(URI.createURI(outputDirectory), txtUMLModelName);
+			mapping.save(URI.createURI(outputDirectory), sourcePackageName);
 		} catch (ModelMapException e) {
 			System.out.println("Faild to save model mapping.");
 		}

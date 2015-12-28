@@ -26,7 +26,7 @@ import org.eclipse.uml2.uml.Generalization;
 /**
  * Finds the org.eclipse.uml2 element from a model according to the txtUML name 
  *
- * @author Andrï¿½s Dobreff
+ * @author András Dobreff
  */
 public class TxtUMLElementsRegistry {
 	

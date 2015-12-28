@@ -1,0 +1,179 @@
+package hu.elte.txtuml.examples.train.xmodel;
+
+class Gearbox {
+	initial Init;
+	
+	state Neutral;
+	composite Forwards {
+		initial FInit;
+		state F1;
+		state F2;
+
+		transition FInit_F1 {
+			from FInit;
+			to F1;
+		}
+
+		transition F1_F2 {
+			from F1;
+			to F2;
+			trigger Forward;
+		}
+
+		transition F2_F1 {
+			from F2;
+			to F1;
+			trigger Forward;
+		}
+	}
+
+	composite Backwards {
+		initial BInit;
+		state B1;
+		state B2;
+
+		transition BInit_B1 {
+			from BInit;
+			to B1;
+		}
+		
+		transition B1_B2 {
+			from B1;
+			to B2;
+			trigger Backward;
+		}
+
+		transition B2_B1 {
+			from B2;
+			to B1;
+			trigger Backward;
+		}
+	}
+
+	transition Init_Neutral {
+		from Init;
+		to Neutral;
+	}
+
+	transition Neutral_Forwards {
+		from Neutral;
+		to Forwards;
+		trigger Forward;
+		effect {
+			startEngineOp();
+		}
+	}
+
+	transition Neutral_Backwards {
+		from Neutral;
+		to Backwards;
+		trigger Backward;
+		effect {
+			startEngineOp();
+		}
+	}
+	
+	transition Forwards_Neutral {
+		from Forwards;
+		to Neutral;
+		trigger Backward;
+		effect {
+			Engine e = Gearbox.this->GE::e.selectAny();
+			send new EngineOff() to e;
+			Lamp l = Gearbox.this->GL::l.selectAny();
+			send new LightOff() to l;
+		}
+	}
+
+	transition Backwards_Neutral {
+		from Backwards;
+		to Neutral;
+		trigger Forward;
+		effect {
+			Engine e = Gearbox.this->GE::e.selectAny();
+			send new EngineOff() to e;
+			Lamp l = Gearbox.this->GL::l.selectAny();
+			send new LightOff() to l;
+		}			
+	}
+	
+	void startEngineOp() {
+		Engine e = Gearbox.this->GE::e.selectAny();
+		send new EngineOn() to e;
+	}
+}
+
+class Engine {
+	initial Init;
+	state Stopped;
+	state Working;
+	
+	transition Init_Stopped {
+		from Init;
+		to Stopped;
+	}
+
+	transition Stopped_Working {
+		from Stopped;
+		to Working;
+		trigger EngineOn;
+	}
+
+	transition Working_Stopped {
+		from Working;
+		to Stopped;
+		trigger EngineOff;
+	}
+}
+
+class Lamp {
+	initial Init;
+	state Dark;
+	state Light;
+	
+	transition Init_Dark {
+		from Init;
+		to Dark;
+	}
+
+	transition Dark_Light {
+		from Dark;
+		to Light;
+		trigger SwitchLight;
+	}
+
+	transition Light_Dark {
+		from Light;
+		to Dark;
+		trigger SwitchLight;
+	}
+
+	transition Light_Dark2 {
+		from Light;
+		to Dark;
+		trigger LightOff;
+	}
+}
+
+signal Forward;
+signal Backward;
+signal SwitchLight;
+
+signal LightOff;
+signal EngineOn;
+signal EngineOff;
+
+association GE {
+	1 Gearbox g;
+	1 Engine e;
+}
+
+association GL {
+	1 Gearbox g;
+	1 Lamp l;
+}
+
+association LE {
+	1 Lamp l;
+	1 Engine e;
+}
