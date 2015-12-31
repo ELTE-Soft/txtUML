@@ -9,13 +9,13 @@ import org.eclipse.draw2d.geometry.Rectangle;
 
 /**
  * The transformer class which transforms the object coordinates to fit the GMF diagram
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public class LayoutTransformer {
 	
 	/**
 	 * Defines where should the origin be form the diagram elements 
-	 * @author András Dobreff
+	 * @author Andrï¿½s Dobreff
 	 */
 	@SuppressWarnings("javadoc")
 	public enum OrigoConstraint{
@@ -38,19 +38,23 @@ public class LayoutTransformer {
 	 * @param boxHeight - The height of the surrounding box (typically the greatest height)
 	 * @param gapX - vertical gap between boxes
 	 * @param gapY - horizontal gap between boxes
-	 * @param gridDesity - Defines how many partitions an object has
+	 * @param gridDesityX - Defines how many partitions an object has
+	 * @param gridDesityY - Defines how many partitions an object has
 	 */
-	public LayoutTransformer(int boxWidth, int boxHeight, int gapX, int gapY, int gridDesity) {
+	public LayoutTransformer(int boxWidth, int boxHeight, int gapX, int gapY, int gridDesityX, int gridDesityY ) {
 		this.gridWidth = boxWidth+gapX;
 		this.gridHeight = boxHeight+gapY;
-		if(gridDesity == 0){
+		if(gridDesityX == 0){
 			this.scaleX = this.gridWidth;
+		}else{
+			this.scaleX = Math.round((float) this.gridWidth/(float) gridDesityX);
+		}
+		
+		if(gridDesityY == 0){
 			this.scaleY = this.gridHeight;
 		}else{
-			this.scaleX = Math.round((float) this.gridWidth/(float) gridDesity);
-			this.scaleY = Math.round((float) this.gridHeight/(float) gridDesity);
+			this.scaleY = Math.round((float) this.gridHeight/(float) gridDesityY);
 		}
-
 		init();
 	}
 	

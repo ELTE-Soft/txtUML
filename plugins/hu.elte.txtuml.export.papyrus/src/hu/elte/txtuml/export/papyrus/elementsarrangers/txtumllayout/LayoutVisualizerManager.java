@@ -37,13 +37,15 @@ public class LayoutVisualizerManager {
 	
 	/**
 	 * The Constructor
-	 * @param report - DiagramExportationReport
+	 * @param objects - Rectangle Objects to be arranged by the algorithm
+	 * @param links  - Links to be arranged by the algorithm
+	 * @param statements - statements that are to be considered by the arrangement
 	 * @param txtUmlRegistry - The TxtUMLElementsFinder that connects the model elements with txtUML names  
 	 */
-	public LayoutVisualizerManager(DiagramExportationReport report) {
-		this.objects = report.getNodes();
-		this.associations = report.getLinks();
-		this.statementsSet = report.getStatements();
+	public LayoutVisualizerManager(Set<RectangleObject> objects, Set<LineAssociation> links, List<Statement> statements) {
+		this.objects = objects;
+		this.associations = links;
+		this.statementsSet = statements;
 	}
 	
 	/**
