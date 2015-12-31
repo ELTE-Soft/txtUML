@@ -105,15 +105,15 @@ public class LayoutVisualize
 	 * Returns the pixel-grid ratio.
 	 * @return the pixel-grid ratio.
 	 */
-	public Double getPixelGridRatio()
+	public Integer getPixelGridRatio()
 	{
 		if(_objects.size() > 0)
 		{
 			RectangleObject obj = _objects.stream().findFirst().get();
-			return (double)obj.getPixelWidth() / (double)obj.getWidth();
+			return obj.getPixelWidth() / obj.getWidth();
 		}
 		
-		return 1.0;
+		return 1;
 	}
 	
 	/**
