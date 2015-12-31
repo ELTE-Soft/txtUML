@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * This class arranges the lines of links.
  * 
- * @author Balázs Gregorics
+ * @author Balï¿½zs Gregorics
  *
  */
 public class ArrangeAssociations
@@ -223,7 +223,9 @@ public class ArrangeAssociations
 		{
 			RectangleObject mod = new RectangleObject(obj);
 			mod.setWidth((int) Math.ceil(mod.getPixelWidth() / pixelPerGridWidth));
+			mod.setPixelWidth((int) (mod.getWidth() * Math.floor(pixelPerGridWidth)));
 			mod.setHeight((int) Math.ceil(mod.getPixelHeight() / pixelPerGridHeight));
+			mod.setPixelHeight((int) (mod.getHeight() * Math.floor(pixelPerGridHeight)));
 			
 			if (_widthOfCells < mod.getWidth())
 				_widthOfCells = mod.getWidth();

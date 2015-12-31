@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 /**
  * This class is used to wrap the arrange of a whole diagram.
  * 
- * @author Balázs Gregorics
+ * @author Balï¿½zs Gregorics
  */
 public class LayoutVisualize
 {
@@ -99,6 +99,21 @@ public class LayoutVisualize
 	public List<Statement> getAssocStatements()
 	{
 		return _assocStatements;
+	}
+	
+	/**
+	 * Returns the pixel-grid ratio.
+	 * @return the pixel-grid ratio.
+	 */
+	public Double getPixelGridRatio()
+	{
+		if(_objects.size() > 0)
+		{
+			RectangleObject obj = _objects.stream().findFirst().get();
+			return (double)obj.getPixelWidth() / (double)obj.getWidth();
+		}
+		
+		return 1.0;
 	}
 	
 	/**
