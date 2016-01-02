@@ -29,6 +29,7 @@ import hu.elte.txtuml.layout.visualizer.model.AssociationType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
+import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 /**
  * An abstract class for arranging the elements with the txtUML arranging algorithm. 
@@ -66,6 +67,8 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			Set<LineAssociation> links = report.getLinks();
 			List<Statement> statements =  report.getStatements();
 
+			statements.add(new Statement(StatementType.corridorsize, "0.5"));
+			
 			Map<GraphicalEditPart, RectangleObject> editPartsObjectsMapping  = pairObjectsToEditParts(objects, editParts);
 			setPixelsizes(editPartsObjectsMapping, MAXPIXELWIDTH, MAXPIXELHEIGHT);
 			
