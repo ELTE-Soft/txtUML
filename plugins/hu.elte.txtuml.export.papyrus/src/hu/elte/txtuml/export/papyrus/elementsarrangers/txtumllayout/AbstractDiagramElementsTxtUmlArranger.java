@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.xml.transform.stream.StreamSource;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
@@ -35,7 +33,7 @@ import hu.elte.txtuml.layout.visualizer.statements.Statement;
 /**
  * An abstract class for arranging the elements with the txtUML arranging algorithm. 
  *
- * @author Andr�s Dobreff
+ * @author András Dobreff
  */
 public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDiagramElementsArranger{
 	
@@ -63,15 +61,6 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			int MAXPIXELWIDTH = 200;
 			int MAXPIXELHEIGHT = 200;
 			
-			int cellSizeX = getMaxWidth(editParts);
-			cellSizeX = cellSizeX > MAXPIXELWIDTH ? MAXPIXELWIDTH : cellSizeX;
-			int cellSizeY = getMaxHeight(editParts);
-			cellSizeY = cellSizeY > MAXPIXELHEIGHT ? MAXPIXELHEIGHT : cellSizeY;
-			int gapX = 0;
-			int gapY = 0;
-			
-
-			
 			DiagramExportationReport report = txtUmlRegistry.getDescriptor().getReport(this.diagep.getDiagramView().getName());
 			Set<RectangleObject> objects = report.getNodes();
 			Set<LineAssociation> links = report.getLinks();
@@ -90,36 +79,18 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			
 			List<ConnectionNodeEditPart> connections = getConnectionsOfEditParts(editParts);
 			Map<ConnectionNodeEditPart, List<Point>> linksTransform = pairRoutesToConnectionEditParts(links, connections);
-			Map<GraphicalEditPart, Rectangle> objectsTransform = createRectanglesFromObjectToEditParts(objects, editParts);
+			Map<GraphicalEditPart, Rectangle> objectsTransform = createObjectRectangleMappingFromObjectsAndEditParts(objects, editParts);
 			
-			int gridDensityX = objects.isEmpty() ? 0 : getGridDensityX(objects);
-			int gridDensityY = objects.isEmpty() ? 0 : getGridDensityY(objects);
+			int pixelGridRatio = vm.getPixelGridRatio();
 			
-			transformObjectsAndLinks(objectsTransform, linksTransform , cellSizeX, cellSizeY, gapX, gapY, gridDensityX-1, gridDensityY-1);
+			transformObjectsAndLinks(objectsTransform, linksTransform, pixelGridRatio);
 			
 			modifyEditParts(objectsTransform);		
 			modifyConnectionEditParts(linksTransform, objectsTransform);	
 		}
 	}
 
-	
-	private int getGridDensityX(Set<RectangleObject> objects) {
-		int max = 0;
-		for(RectangleObject obj : objects){
-			max = Integer.max(obj.getWidth(), max);
-		}
-		return max;
-	}
-
-	private int getGridDensityY(Set<RectangleObject> objects) {
-		int max = 0;
-		for(RectangleObject obj : objects){
-			max = Integer.max(obj.getHeight(), max);
-		}
-		return max;
-	}
-
-	private Map<GraphicalEditPart, Rectangle> createRectanglesFromObjectToEditParts(Set<RectangleObject> objects,
+	private Map<GraphicalEditPart, Rectangle> createObjectRectangleMappingFromObjectsAndEditParts(Set<RectangleObject> objects,
 			List<EditPart> editParts) {
 		Map<GraphicalEditPart, Rectangle> result = new HashMap<>();
 		for(RectangleObject obj : objects){
@@ -127,7 +98,9 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			if(e.isPresent()){
 				GraphicalEditPart ep = (GraphicalEditPart) getEditPartOfModelElement(editParts, e.get());
 				if(ep != null){
-					result.put(ep, rectangleObjectToRectangle(obj));
+					Rectangle rect =  new Rectangle(obj.getPosition().getX(), obj.getPosition().getY(),
+													obj.getPixelWidth(), obj.getPixelHeight());
+					result.put(ep, rect);
 				}
 			}
 		}
@@ -163,11 +136,6 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 					}
 		});
 	}
-
-	private Rectangle rectangleObjectToRectangle(RectangleObject obj){
-		return new Rectangle(obj.getPosition().getX(), obj.getPosition().getY(),
-				obj.getPixelWidth(), obj.getPixelHeight());
-	};
 	
 	private void modifyEditParts(
 			Map<GraphicalEditPart, Rectangle> editPartsObjectsMapping) {
@@ -179,10 +147,9 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 
 	private void transformObjectsAndLinks(
 			Map<GraphicalEditPart, Rectangle> objectsTransform,
-			Map<ConnectionNodeEditPart, List<Point>> linksTransform,
-			int cellSizeX, int cellSizeY, int gapX, int gapY, int gridDensityX, int gridDensityY) {
+			Map<ConnectionNodeEditPart, List<Point>> linksTransform, int pixelGridRatio) {
 		
-		LayoutTransformer trans = new LayoutTransformer(cellSizeX, cellSizeY, gapX, gapY, gridDensityX, gridDensityY);
+		LayoutTransformer trans = new LayoutTransformer(pixelGridRatio);
 		trans.setOrigo(OrigoConstraint.UpperLeft);
 		trans.flipYAxis();
 		trans.doTranformations(objectsTransform, linksTransform);
@@ -253,38 +220,6 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			connections.addAll(conns);
 		}
 		return connections;
-	}
-
-	/**
-	 * Gets the maximum width of the given EditParts 
-	 * @param editParts - The EditParts
-	 * @return The maximum width
-	 */
-	protected int getMaxWidth(List<EditPart> editParts){
-		int max = 0;
-		int width = 0;
-		for(EditPart editpart : editParts){
-			width = getSize((GraphicalEditPart) editpart).width();
-			if(width > max)
-				max = width;
-		}
-		return max;
-	}
-	
-	/**
-	 * Gets the maximum height of the given EditParts 
-	 * @param editParts - The EditParts
-	 * @return The maximum height
-	 */
-	protected int getMaxHeight(List<EditPart> editParts){
-		int max = 0;
-		int height = 0;
-		for(EditPart editpart : editParts){
-			height = getSize((GraphicalEditPart) editpart).height();
-			if(height > max)
-				max = height;
-		}
-		return max;
 	}
 
 	/**

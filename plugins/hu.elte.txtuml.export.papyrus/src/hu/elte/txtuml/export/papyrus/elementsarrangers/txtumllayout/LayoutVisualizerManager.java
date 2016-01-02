@@ -1,20 +1,5 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
-import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
-import hu.elte.txtuml.layout.export.DiagramExportationReport;
-import hu.elte.txtuml.layout.visualizer.algorithms.LayoutVisualize;
-import hu.elte.txtuml.layout.visualizer.statements.Statement;
-import hu.elte.txtuml.layout.visualizer.exceptions.BoxArrangeConflictException;
-import hu.elte.txtuml.layout.visualizer.exceptions.BoxOverlapConflictException;
-import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
-import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
-import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
-import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
-import hu.elte.txtuml.layout.visualizer.exceptions.StatementsConflictException;
-import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
-import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
-import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,15 +10,30 @@ import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
+import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
+import hu.elte.txtuml.layout.visualizer.algorithms.LayoutVisualize;
+import hu.elte.txtuml.layout.visualizer.exceptions.BoxArrangeConflictException;
+import hu.elte.txtuml.layout.visualizer.exceptions.BoxOverlapConflictException;
+import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
+import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
+import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
+import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
+import hu.elte.txtuml.layout.visualizer.exceptions.StatementsConflictException;
+import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
+import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
+import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.layout.visualizer.statements.Statement;
+
 /**
  * The instance of this class handles the layout algorithm
- * @author Andr�s Dobreff
+ * @author András Dobreff
  */
 public class LayoutVisualizerManager {
 	private Set<RectangleObject> objects;
 	private Set<LineAssociation> associations;
 	private List<Statement> statementsSet;
 	private IProgressMonitor progressMonitor = new NullProgressMonitor();
+	private final LayoutVisualize layoutVisualize;
 	
 	/**
 	 * The Constructor
@@ -46,6 +46,7 @@ public class LayoutVisualizerManager {
 		this.objects = objects;
 		this.associations = links;
 		this.statementsSet = statements;
+		layoutVisualize = new LayoutVisualize();
 	}
 	
 	/**
@@ -60,9 +61,8 @@ public class LayoutVisualizerManager {
 	 * @throws ArrangeException 
 	 */
 	public void arrange() throws ArrangeException {
-		
-		LayoutVisualize v = new LayoutVisualize();
-		v.addObserver(new Observer() {
+
+		layoutVisualize.addObserver(new Observer() {
 			
 			int previous_percent = 0;
 			
@@ -75,11 +75,11 @@ public class LayoutVisualizerManager {
 			}
 		});
 		
-		v.load(objects, associations);
+		layoutVisualize.load(objects, associations);
 		try {
 			progressMonitor.beginTask("Arranging elements", 100);
 			progressMonitor.subTask("Arranging elements...");
-			v.arrange(new ArrayList<Statement>(statementsSet));
+			layoutVisualize.arrange(new ArrayList<Statement>(statementsSet));
 		} catch (InternalException| BoxArrangeConflictException|
 				ConversionException| StatementTypeMatchException|
 				CannotFindAssociationRouteException| UnknownStatementException|
@@ -113,8 +113,8 @@ public class LayoutVisualizerManager {
 			}
 		}
 
-		objects = v.getObjects();
-		associations = v.getAssocs();
+		objects = layoutVisualize.getObjects();
+		associations = layoutVisualize.getAssocs();
 	}
 	
 	private String formatStatements(Collection<Statement> statements){
@@ -149,5 +149,12 @@ public class LayoutVisualizerManager {
 	 */
 	public List<Statement> getStatementsSet() {
 		return statementsSet;
+	}
+	
+	/**
+	 * @return
+	 */
+	public int getPixelGridRatio(){
+		return layoutVisualize.getPixelGridRatio().intValue();
 	}
 }
