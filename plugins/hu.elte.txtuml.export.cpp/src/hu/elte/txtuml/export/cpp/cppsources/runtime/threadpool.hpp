@@ -23,7 +23,7 @@
 class StateMachineThreadPool {
 	
 public:
-    StateMachineThreadPool(size_t,int);
+    StateMachineThreadPool(size_t);
 	void task();
     void enqueObject(StateMachineI*);
 	void stopPool();
@@ -42,7 +42,6 @@ private:
     // the task queue
     PoolQueueType stateMachines; //must be blocking queue
 	size_t threads;
-	std::atomic_int messages_to_procces;
 
     // synchronization
     std::atomic_bool stop;

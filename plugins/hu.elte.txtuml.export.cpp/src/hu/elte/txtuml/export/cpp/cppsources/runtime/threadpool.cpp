@@ -6,8 +6,8 @@
 
 
 
-StateMachineThreadPool::StateMachineThreadPool(size_t threads_,int messages_to_procces_)
-    :   stop(true),worker_threads(0),threads(threads_),messages_to_procces(messages_to_procces_), delta(10), 
+StateMachineThreadPool::StateMachineThreadPool(size_t threads_)
+    :   stop(true),worker_threads(0),threads(threads_), delta(10),
 		future_getter_thread(new std::thread(&StateMachineThreadPool::futureGetter,this) ) {}
 	
 void StateMachineThreadPool::stopPool()
@@ -95,7 +95,7 @@ void StateMachineThreadPool::task()
 		
 		if(sm != nullptr)
 		{
-			for(int i = 0; i < messages_to_procces && !sm->emptyMessageQueue(); ++i)
+			for(int i = 0; i < 5 && !sm->emptyMessageQueue(); ++i)
 			{
 				sm->processEventVirtual();
 			}
@@ -128,7 +128,7 @@ void StateMachineThreadPool::futureGetter()
 		{
 			f.get();
 			getter_ready = true;
-			future_cond_alt.notofy_one();
+			future_cond_alt.notify_one();
 		}
 		
 	}

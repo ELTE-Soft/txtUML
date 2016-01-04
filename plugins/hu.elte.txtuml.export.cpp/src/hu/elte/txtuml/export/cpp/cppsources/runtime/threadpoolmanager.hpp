@@ -40,8 +40,8 @@ class ThreadPoolManager
 		void recalculateThreads(id_type id,int n)
 		{
 			LinearFunction function = *(function_matching_map[id]);
-			if (function(n) > maximum_thread_map.at(id_type) ){
-				id_matching_map[id]->modifiedThreads(max);
+			if (function(n) > maximum_thread_map.at(id)) {
+				id_matching_map[id]->modifiedThreads(maximum_thread_map.at(id));
 			}
 			else{
 				id_matching_map[id]->modifiedThreads(function(n));

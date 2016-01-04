@@ -439,6 +439,20 @@ public class GenerationTemplates
 		
 	}
 	
+	public static String AllocateObject(String typeName,List<String> params) {
+		String parameters = "(";
+		for(int i = 0; i < params.size() - 1; i++) {
+			parameters = parameters + params.get(i) + ",";
+		}
+		parameters = parameters + params.get(params.size() - 1) + ")";
+		
+		return GenerationNames.MemoryAllocator +" "+ typeName + parameters;
+	}
+	
+	public static String AllocateObject(String typeName) {
+		return GenerationNames.MemoryAllocator+" "+typeName+"()";
+	}
+	
 	public static String GetDefaultReturn(String returnType){
 		
 		
@@ -463,6 +477,11 @@ public class GenerationTemplates
 		
 		}
 		
+	}
+	
+	public static String EmptyBody()
+	{
+		return "{}";
 	}
 	
 }

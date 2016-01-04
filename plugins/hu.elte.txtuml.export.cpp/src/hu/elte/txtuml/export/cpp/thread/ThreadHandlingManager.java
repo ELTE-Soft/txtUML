@@ -27,9 +27,6 @@ import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
-
-
-
 public class ThreadHandlingManager {
 	
 	Model model;
@@ -38,16 +35,17 @@ public class ThreadHandlingManager {
 	private Set<ThreadPoolConfiguration> pools;
 	private int poolsNumber;
 	
-	public static final String ThreadManagerName = "ThreadPoolManager";
-	public static final String ThreadManagerHaderName = "threadpoolmanager.hpp";
-	public static final String ThreadManagerCppSourceName = "threadpoolmanager.cpp";
-	public static final String PoolsMapName = "id_matching_map";
-	public static final String IDType = "id_type";
-	public static final String PoolsNumberField = "number_of_pools";
-	public static final String ThreadPool = "StateMachineThreadPool";
-	public static final String FunctionMapName = "function_matching_map";
-	public static final String FunctionName = "LinearFunction";
-	public static final String MaximumThreadsMapName = "maximum_thread_map";
+	private static final String ThreadManagerName = "ThreadPoolManager";
+	private static final String ThreadManagerCppSourceName = "threadpoolmanager.cpp";
+	private static final String PoolsMapName = "id_matching_map";
+	private static final String ThreadPool = "StateMachineThreadPool";
+	private static final String FunctionName = "LinearFunction";
+	private static final String FunctionTypePointer = FunctionName + "*";
+	private static final String IDType = "id_type";
+	private static final String ThreadPoolTypePointer = ThreadPool + "*";
+	private static final String PoolsNumberField = "number_of_pools";
+	private static final String FunctionMapName = "function_matching_map";
+	private static final String MaximumThreadsMapName = "maximum_thread_map";
 	
 	int numberOfThreads;
 	
@@ -72,6 +70,15 @@ public class ThreadHandlingManager {
 		pools.addAll(poolsCollection);
 		poolsNumber = pools.size();
 		
+		if (classList.size() != threadDescription.size())
+		{
+			ThreadPoolConfiguration defaultConfig = new ThreadPoolConfiguration(0,0,1);
+			defaultConfig.setMaxThreads(1);
+			
+			pools.add(defaultConfig);
+			
+		}
+		
 		
 	}
 	
@@ -85,17 +92,13 @@ public class ThreadHandlingManager {
 	
 	public void createThreadPoolManager(String dest) {
 		
-		
-		
 		String source = createMaganerCppCource();
 		
 		try {
 			Shared.writeOutSource(dest, ThreadManagerCppSourceName, source);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -105,16 +108,9 @@ public class ThreadHandlingManager {
 	private String createMaganerCppCource() {
 		String source = "";
 		
-		source = source + GenerationTemplates.CppInclude(ThreadManagerName);
+		source = source + GenerationTemplates.CppInclude(ThreadManagerName.toLowerCase());
 		source = source + createConstructorHead();
-		
-		if (isThreadHandling){
-			source = source + createConstructorBody();
-		}
-		else {
-			source = source + "{}";
-		}
-		
+		source = source + createConstructorBody(isThreadHandling);
 		
 		return source;
 	}
@@ -124,41 +120,27 @@ public class ThreadHandlingManager {
 				"(): "+ PoolsNumberField + "(" + (poolsNumber + 1) + ")\n";
 	}
 	
-	private String createConstructorBody() {
+	private String createConstructorBody(boolean threadHandling) {
 		String body = "";
 		
+		if (threadHandling) {
+			body = "{\n" + setPoolsMap() + setFunctionMap() + maximumThreadMap() + "}\n\n";
+		}
+		else {
+			body = GenerationTemplates.EmptyBody();
+		}
 		
-		body = "{\n" + setDefaultPoolValues () + setPoolsMap() + setFunctionMap() + maximumThreadMap() + "}\n\n";
 		
 		return body;
 	}
 	
-	
-	
-	private String setDefaultPoolValues() {
-		
-		String source = "{\n";
-		if(threadDescription.values().size() != classList.size()){
-			
-			source = source + "\t" + PoolsMapName +"[" + 0 + "] = new " + ThreadPool +
-					"(" + 1 + "," +  "5); \n" ;
-			
-			source = source + "\t" + FunctionMapName +"[" + 0 + "] = new " + FunctionName +
-					"(" + 0 + "," +  1 + "); \n" ;
-			
-			source = source + "\t" + MaximumThreadsMapName +"[" + 0 + "] = " + 1 +"; \n" ;
-			
-			
-			
-		}
-		
-		return source;
-	}
-	
 	private String maximumThreadMap() {
 		String source = "";
+		
 		for(ThreadPoolConfiguration pool: pools){
-			source = source  + "\t" + MaximumThreadsMapName +"[" + 0 + "] = " + pool.getMaxThread() +"; \n" ;
+			source = source + "\t" + 
+					insertToConfigurationMap(MaximumThreadsMapName,IDType,"int",new Integer(pool.getId()).toString(),
+							new Integer(pool.getMaxThread()).toString()) + ";\n" ;
 		}
 		
 		return source;
@@ -170,8 +152,13 @@ public class ThreadHandlingManager {
 		String source = "";
 		
 		for(ThreadPoolConfiguration pool: pools){
-			source = source + "\t" + FunctionMapName +"[" + pool.getId() + "] = new " + FunctionName +
-					"(" + pool.getFunction().getGradient() + "," +  pool.getFunction().getConstant() + "); \n" ;
+			List<String> params = new ArrayList<String>();
+			
+			params.add(new Integer(pool.getFunction().getConstant()).toString());
+			params.add(new Double(pool.getFunction().getGradient()).toString());
+			source = source + "\t" + 
+					insertToConfigurationMap(FunctionMapName,IDType,FunctionTypePointer,new Integer(pool.getId()).toString(),
+							GenerationTemplates.AllocateObject(FunctionName, params)) + ";\n" ;
 		}
 		
 		return source;
@@ -182,12 +169,23 @@ public class ThreadHandlingManager {
 		String source = "";
 		
 		for(ThreadPoolConfiguration pool: pools){
-			source = source + "\t" + PoolsMapName +"[" + pool.getId() + "] = new " + ThreadPool +
-					"(" + pool.getFunction().getConstant() + "," +  "5); \n" ;
+			
+			List<String> params = new ArrayList<String>();
+			
+			params.add(new Integer(pool.getFunction().getConstant()).toString());
+			source = source + "\t" + 
+					insertToConfigurationMap(PoolsMapName,IDType,ThreadPoolTypePointer,new Integer(pool.getId()).toString(),
+							GenerationTemplates.AllocateObject(ThreadPool, params)) + ";\n" ;
 		}
 		
 		return source;
 	}
+	
+	private String insertToConfigurationMap(String mapName, String keyType, String valueType,String key,String value) {
+		return mapName + ".insert(std::pair<" + keyType + "," + valueType + ">(" + key + "," + value + ") )";  
+	}
+
+
 
 	public void detectSynchronousCallConflicts() {
 		boolean conflict = false;

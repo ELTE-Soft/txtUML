@@ -36,7 +36,7 @@ void RuntimeI::stop()
 
 //********************************SingleThreadRT**********************************
 
-SingleThreadRT::SingleThreadRT():_messageQueue(new MessageQueueType){}
+SingleThreadRT::SingleThreadRT():_messageQueue(new MessageQueueType), waiting(false){}
 
 void SingleThreadRT::run()
 {
@@ -47,6 +47,10 @@ void SingleThreadRT::run()
     if(!_messageQueue->empty())
     {
       _messageQueue->front()->dest.processEventVirtual();
+    }
+    else if(waiting)
+    {
+    	waiting_empty_cond.notify_one();
     }
 
   }

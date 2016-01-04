@@ -51,6 +51,7 @@ private:
 
   std::shared_ptr<MessageQueueType> _messageQueue;
   std::condition_variable waiting_empty_cond;
+  std::atomic_bool waiting;
 };
 
 class ConfiguredThreadPoolsRT: public RuntimeI

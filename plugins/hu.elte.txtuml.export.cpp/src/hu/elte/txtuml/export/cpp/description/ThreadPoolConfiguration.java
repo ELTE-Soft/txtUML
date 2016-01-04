@@ -46,7 +46,7 @@ public class ThreadPoolConfiguration {
 		
 	}
 	
-	ThreadPoolConfiguration(int id, double gradient, int constant){
+	public ThreadPoolConfiguration(int id, double gradient, int constant){
 		this.id = id;
 		function = new LinearFunction(gradient,constant);
 		

@@ -4,6 +4,7 @@ package hu.elte.txtuml.export.cpp.description;
 import hu.elte.txtuml.api.model.ModelClass;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -15,7 +16,7 @@ public class ThreadDescriptionExporter {
 	
 	private Map<String, ThreadPoolConfiguration > configMap;
 	private boolean descriptionExported = false;
-	private boolean isMultiThreading = true;;
+	private boolean isMultiThreading = true;
 	
 	List<String> warningList;
 	List<String> errorList;
@@ -30,6 +31,9 @@ public class ThreadDescriptionExporter {
 		configMap = new HashMap<String, ThreadPoolConfiguration >();
 		exportedClasses = new HashSet<String>();
 		numberOfConfigurations = 0;
+		
+		warningList = new ArrayList<String>();
+		errorList = new ArrayList<String>();
 	}
 	
 	
@@ -45,26 +49,16 @@ public class ThreadDescriptionExporter {
 		for(Annotation annotaion: description.getAnnotations() ){
 			if(annotaion instanceof GroupContainer){
 				
-				for(Annotation annotation: ((GroupContainer) annotaion).value()){
-					numberOfConfigurations = numberOfConfigurations + 1;
+				for(Annotation group: ((GroupContainer) annotaion).value()){
 					
-					Group g = (Group) annotation;
-					ThreadPoolConfiguration config = new ThreadPoolConfiguration(numberOfConfigurations, g.gradient(), g.constant());
-					config.setMaxThreads(g.max());
-	
 					
-					checkEmptyGroup(g.contains());
-					
-					for(Class<? extends ModelClass> cls: g.contains()){
-						if(!exportedClasses.contains(cls.getSimpleName())){
-							configMap.put(cls.getSimpleName(), config);
-						}
-						else{
-							warningList.add(cls.getSimpleName() + " configured more times!");
-						}
-						
-					}
+					exportGroup( (Group) group);
 				}
+			}
+			else if (annotaion instanceof Group) {
+				
+				exportGroup( (Group) annotaion);
+
 			}
 			else if(annotaion instanceof Multithreading){
 				Multithreading mlt = (Multithreading) annotaion;
@@ -103,6 +97,26 @@ public class ThreadDescriptionExporter {
 	
 	public boolean isMultiThreading() {
 		return isMultiThreading;
+	}
+	
+	private void exportGroup(Group group) {
+		numberOfConfigurations = numberOfConfigurations + 1;
+		
+		ThreadPoolConfiguration config = new ThreadPoolConfiguration(numberOfConfigurations, group.gradient(), group.constant());
+		config.setMaxThreads(group.max());
+
+		
+		checkEmptyGroup(group.contains());
+		
+		for(Class<? extends ModelClass> cls: group.contains()){
+			if(!exportedClasses.contains(cls.getSimpleName())){
+				configMap.put(cls.getSimpleName(), config);
+			}
+			else{
+				warningList.add(cls.getSimpleName() + " configured more times!");
+			}
+			
+		}
 	}
 
 	private void checkEmptyGroup(Class<? extends ModelClass>[] classes) {
