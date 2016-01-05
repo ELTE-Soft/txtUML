@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * This static class handles a variety of {@link Statement} related support
  * features.
  * 
- * @author Balázs Gregorics
+ * @author Balï¿½zs Gregorics
  *
  */
 public class StatementHelper
@@ -366,9 +366,6 @@ public class StatementHelper
 					++gid;
 					result.add(new Statement(StatementType.north,
 							StatementLevel.Low, gid, a.getFrom(), a.getTo()));
-					++gid;
-					result.add(new Statement(StatementType.south,
-							StatementLevel.Low, gid, a.getId(), a.getFrom()));
 					break;
 				case aggregation:
 				case composition:
