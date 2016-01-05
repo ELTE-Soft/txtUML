@@ -42,7 +42,6 @@ class Animator {
 	
 	void dispose() {
 		removeAllAnimationMarkers();
-		eobjectToMarker.clear();
 		eobjectToMarker = null;
 		classNameToAnimatedElement.clear();
 		classNameToAnimatedElement = null;
@@ -86,8 +85,9 @@ class Animator {
 	
 	private void removeAllAnimationMarkers() {
 		for (EObject eobject : eobjectToMarker.keySet()) {
-			removeAnimationMarker(eobject);
+			removeAnimationMarker(eobject, false);
 		}
+		eobjectToMarker.clear();
 	}
 	
 	private void addAnimationMarker(EObject eobject) {
@@ -111,7 +111,7 @@ class Animator {
 		}
 	}
 
-	private void removeAnimationMarker(EObject eobject) {
+	private void removeAnimationMarker(EObject eobject, boolean removeFromMap) {
 		IPapyrusMarker marker = eobjectToMarker.get(eobject);
 		if (marker != null) {
 			try {
@@ -119,8 +119,13 @@ class Animator {
 			} catch (CoreException e) {
 				e.printStackTrace();
 			}
-			eobjectToMarker.remove(eobject);
+			if (removeFromMap) {
+				eobjectToMarker.remove(eobject);
+			}
 		}
 	}
 
+	private void removeAnimationMarker(EObject eobject) {
+		removeAnimationMarker(eobject, true);
+	}
 }
