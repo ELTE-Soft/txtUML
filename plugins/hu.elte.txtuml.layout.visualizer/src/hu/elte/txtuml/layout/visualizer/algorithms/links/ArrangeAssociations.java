@@ -37,6 +37,8 @@ import java.util.stream.Collectors;
  */
 public class ArrangeAssociations
 {
+	private final Integer MINIMAL_CORRIDOR_SIZE = 1;
+	
 	private Integer _widthOfCells;
 	private Integer _heightOfCells;
 	
@@ -242,9 +244,9 @@ public class ArrangeAssociations
 			
 			// Calculate the position of the cell
 			tempPos.setX(o.getPosition().getX()
-					* (int) Math.floor(_widthOfCells * (_options.CorridorRatio + 1.0)));
+					* calculateCorridorSize(_widthOfCells, _options.CorridorRatio));
 			tempPos.setY(o.getPosition().getY()
-					* (int) Math.floor(_heightOfCells * (_options.CorridorRatio + 1.0)));
+					* calculateCorridorSize(_heightOfCells, _options.CorridorRatio));
 			_cellPositions.put(o.getName(), new Point(tempPos));
 			
 			// Calculate the position of the box in the cell
@@ -271,6 +273,16 @@ public class ArrangeAssociations
 		
 		if (_options.Logging)
 			System.err.println("(Default) Expanding Grid!");
+		
+		return result;
+	}
+	
+	private Integer calculateCorridorSize(Integer cellSize, Double multiplier)
+	{
+		Integer result = (int) Math.floor(cellSize * (multiplier + 1.0));
+		
+		if(result < MINIMAL_CORRIDOR_SIZE)
+			result = MINIMAL_CORRIDOR_SIZE;
 		
 		return result;
 	}
@@ -465,7 +477,6 @@ public class ArrangeAssociations
 		result.removeIf(p -> Helper.isCornerPoint(p.getFirst(), tempObj));
 		
 		// Set the weights of nodes.
-		// TODO
 		for (Pair<Point, Double> pair : result)
 		{
 			if (pair.getSecond() < 0.0)
