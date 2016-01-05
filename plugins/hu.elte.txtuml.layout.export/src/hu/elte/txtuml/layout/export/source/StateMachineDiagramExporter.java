@@ -5,7 +5,9 @@ import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.layout.export.DiagramType;
+import hu.elte.txtuml.layout.export.elementinfo.NodeInfo;
 import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
+import hu.elte.txtuml.layout.export.interfaces.NodeMap;
 import hu.elte.txtuml.layout.export.problems.ElementExportationException;
 import hu.elte.txtuml.utils.Pair;
 
@@ -14,6 +16,12 @@ public class StateMachineDiagramExporter extends AbstractSourceExporter {
 	@Override
 	public DiagramType getType() {
 		return DiagramType.StateMachine;
+	}
+	
+	@Override
+	public String getReferencedElementName(NodeMap nodes) {
+		NodeInfo nodeinfo = nodes.values().iterator().next();
+		return nodeinfo.getElementClass().getEnclosingClass().getCanonicalName();
 	}
 
 	@Override

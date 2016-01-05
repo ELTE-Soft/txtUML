@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.uml2.uml.Association;
+import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Generalization;
@@ -26,7 +27,7 @@ import org.eclipse.uml2.uml.Generalization;
 /**
  * Finds the org.eclipse.uml2 element from a model according to the txtUML name 
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public class TxtUMLElementsRegistry {
 	
@@ -65,11 +66,19 @@ public class TxtUMLElementsRegistry {
 		List<Triple<DiagramType, String, Element>> roots = new ArrayList<>();
 		for(Pair<String, DiagramExportationReport> pair : this.descriptor.getReportsWithDiagramNames()){
 			DiagramExportationReport report = pair.getSecond();
-			String name = report.getModelName();
+			String name = report.getReferencedElementName();
 			DiagramType type = report.getType();
-			findElement(name).ifPresent(
+			if(type.equals(DiagramType.Class)){
+				findElement(name).ifPresent(
 						e -> roots.add(new Triple<>(type, pair.getFirst(), e))
 					);
+			}else if(type.equals(DiagramType.StateMachine)){
+				Optional<Element> classOfStatemachine =  findElement(name);
+				if(classOfStatemachine.isPresent()){
+					Behavior behavior =  ((org.eclipse.uml2.uml.BehavioredClassifier) classOfStatemachine.get()).getClassifierBehavior();
+					roots.add(new Triple<>(type, pair.getFirst(), behavior));
+				}
+			}
 		}
 		return roots;
 	}

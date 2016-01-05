@@ -1,12 +1,11 @@
 package hu.elte.txtuml.export.uml2.transform.exporters;
 
-import hu.elte.txtuml.export.uml2.transform.visitors.TransitionVisitor;
-import hu.elte.txtuml.export.uml2.transform.visitors.VertexVisitor;
-import hu.elte.txtuml.export.uml2.utils.SharedUtils;
-
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.StateMachine;
+
+import hu.elte.txtuml.export.uml2.transform.visitors.TransitionVisitor;
+import hu.elte.txtuml.export.uml2.transform.visitors.VertexVisitor;
 
 public class RegionExporter {
 

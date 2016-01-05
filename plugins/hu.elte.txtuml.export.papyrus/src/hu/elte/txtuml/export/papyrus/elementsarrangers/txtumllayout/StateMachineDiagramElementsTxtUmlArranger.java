@@ -13,6 +13,10 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationMultiplicitySourceEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationMultiplicityTargetEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationNameEditPart;
+import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomRegionCompartmentEditPart;
+import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomRegionEditPart;
+import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateMachineCompartmentEditPart;
+import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateMachineEditPart;
 
 /**
  * Controls the arranging of a StateMachineDiagram with GMF algorithm
@@ -37,7 +41,8 @@ public class StateMachineDiagramElementsTxtUmlArranger extends
 	 */
 	@Override
 	public void arrange(IProgressMonitor monitor) throws ArrangeException {
-		super.arrangeChildren(this.diagep, monitor);
+		
+		super.arrangeChildren(getRegionCompartementEditPart(), monitor);
 		@SuppressWarnings("unchecked")
 		List<EditPart> children = this.diagep.getChildren();
 		DiagramElementsModifier.hideConnectionLabelsForEditParts(children, Arrays.asList(
@@ -47,6 +52,26 @@ public class StateMachineDiagramElementsTxtUmlArranger extends
 				));
 	}
 	
+	private EditPart getRegionCompartementEditPart(){
+		for(Object customStateMachineEditPart : this.diagep.getChildren()){
+			if(customStateMachineEditPart instanceof CustomStateMachineEditPart){
+				for(Object customSMCompartementEditPart : ((CustomStateMachineEditPart)customStateMachineEditPart).getChildren()){
+					if(customSMCompartementEditPart instanceof CustomStateMachineCompartmentEditPart){
+						for(Object customRegionEditPart : ((CustomStateMachineCompartmentEditPart)customSMCompartementEditPart).getChildren()){
+							if(customRegionEditPart instanceof CustomRegionEditPart){
+								for(Object customRegionCompartmentEditPart : ((CustomRegionEditPart)customRegionEditPart).getChildren()){
+									if(customRegionCompartmentEditPart instanceof CustomRegionCompartmentEditPart){
+										return (CustomRegionCompartmentEditPart) customRegionCompartmentEditPart;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
 }
 
 

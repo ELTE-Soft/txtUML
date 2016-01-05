@@ -14,13 +14,14 @@ import java.util.Set;
  * Provides important information about the exportation, including its results.
  * 
  * @author Gabor Ferenc Kovacs
- * @author Dávid János Németh
+ * @author Dï¿½vid Jï¿½nos Nï¿½meth
  *
  */
 public class DiagramExportationReport {
 
 	private DiagramType type;
 	private String modelName;
+	private String referencedElementName; 
 	private StatementList statements;
 	private Set<RectangleObject> nodes;
 	private Set<LineAssociation> links;
@@ -54,6 +55,17 @@ public class DiagramExportationReport {
 	 */
 	public final String getModelName() {
 		return modelName;
+	}
+	
+	
+	/**
+	 * Returns the string representation of the element which the exported diagram belongs
+	 * to. (eg. The referenced model element in case of a class diagram is package,
+	 * in case of a statemachine it is a class) 
+	 * @return - the fully qualified name of the referenced element
+	 */
+	public final String getReferencedElementName(){
+		return referencedElementName;
 	}
 
 	/**
@@ -159,6 +171,7 @@ public class DiagramExportationReport {
 	 */
 	public final void clear() {
 		modelName = null;
+		referencedElementName = null;
 		type = DiagramType.Unknown;
 		errorCount = 0;
 		warningCount = 0;
@@ -172,11 +185,21 @@ public class DiagramExportationReport {
 	/**
 	 * Should be called only by the diagram exporter.
 	 * 
-	 * @param rootElement
+	 * @param modelName
 	 *            string representation of the diagram's root element
 	 */
 	public final void setModelName(String modelName) {
 		this.modelName = modelName;
+	}
+	
+	/**
+	 * Should be called only by the diagram exporter.
+	 * 
+	 * @param referencedElementName
+	 *            string representation of the diagram's referenced element
+	 */
+	public final void setReferencedElementName(String referencedElementName) {
+		this.referencedElementName = referencedElementName;
 	}
 
 	/**

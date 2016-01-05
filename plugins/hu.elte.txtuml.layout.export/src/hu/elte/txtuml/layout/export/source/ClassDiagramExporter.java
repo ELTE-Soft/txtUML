@@ -24,6 +24,7 @@ import hu.elte.txtuml.eclipseutils.ProjectUtils;
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.export.uml2.utils.SharedUtils;
 import hu.elte.txtuml.layout.export.DiagramType;
+import hu.elte.txtuml.layout.export.elementinfo.NodeInfo;
 import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
 import hu.elte.txtuml.layout.export.interfaces.NodeMap;
 import hu.elte.txtuml.layout.export.problems.ElementExportationException;
@@ -41,6 +42,12 @@ public class ClassDiagramExporter extends AbstractSourceExporter {
 	@Override
 	public DiagramType getType() {
 		return DiagramType.Class;
+	}
+
+	@Override
+	public String getReferencedElementName(NodeMap nodes) {
+		NodeInfo nodeinfo = nodes.values().iterator().next();
+		return nodeinfo.getElementClass().getPackage().getName();
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package hu.elte.txtuml.layout.export.source;
 
 import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
+import hu.elte.txtuml.layout.export.interfaces.NodeMap;
 import hu.elte.txtuml.layout.export.problems.ElementExportationException;
 import hu.elte.txtuml.utils.Pair;
 
@@ -25,6 +26,8 @@ public interface SourceExporter {
 	boolean isNode(Class<?> cls);
 
 	boolean isLink(Class<?> cls);
+	
+	String getReferencedElementName(NodeMap nodes);
 
 	/**
 	 * Called to get an identifier object of the model which contains
@@ -42,7 +45,7 @@ public interface SourceExporter {
 	 *             {@code element} is not a node or a link or is badly defined)
 	 */
 	ModelId getModelOf(Class<?> element, ElementExporter elementExporter) throws ElementExportationException;
-
+	
 	Pair<Class<?>, Class<?>> getStartAndEndOfLink(Class<?> link) throws ElementExportationException;
 
 	/**
