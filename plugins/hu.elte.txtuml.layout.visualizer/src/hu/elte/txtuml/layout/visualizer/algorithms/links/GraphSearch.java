@@ -33,7 +33,7 @@ class GraphSearch
 	// Constants
 	
 	private final Double WEIGHT_LENGTH = 1.0; // 2.9
-	private final Double WEIGHT_TURNS = 3.0; // 2.7
+	private final Double WEIGHT_TURNS = 3.2; // 2.7
 	private final Double WEIGHT_CROSSING = 2.0; // 2.0
 	
 	// end Constants
@@ -358,13 +358,12 @@ class GraphSearch
 		
 		do
 		{
-			result.add(n);
+			result.add(n);	
 			n = PI.get(n);
 		} while (n != null);
 		
 		// Reverse order
 		ArrayList<Node> result2 = new ArrayList<Node>();
-		
 		for (int i = result.size() - 1; i >= 0; --i)
 		{
 			result2.add(result.get(i));

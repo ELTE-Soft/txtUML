@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 public class ArrangeAssociations
 {
 	private final Integer MINIMAL_CORRIDOR_SIZE = 1;
+	private final Integer MAXIMUM_TRY_COUNT = 100;
 	
 	private Integer _widthOfCells;
 	private Integer _heightOfCells;
@@ -153,14 +154,14 @@ public class ArrangeAssociations
 		DefaultAssocStatements das = new DefaultAssocStatements(_gId, statements, _assocs);
 		statements = das.value();
 		_gId = das.getGroupId();
-		
+
 		Boolean repeat = true;
 		
-		// Arrange until ok
-		Integer maxTryCount = 100;
-		while (repeat && maxTryCount >= 0)
+		// Arrange until OK
+		Integer tryCount = 0;
+		while (repeat && tryCount <= MAXIMUM_TRY_COUNT)
 		{
-			--maxTryCount;
+			++tryCount;
 			
 			// Process statements, priority and direction
 			_assocs = processStatements(_assocs, statements, diagramObjects);
