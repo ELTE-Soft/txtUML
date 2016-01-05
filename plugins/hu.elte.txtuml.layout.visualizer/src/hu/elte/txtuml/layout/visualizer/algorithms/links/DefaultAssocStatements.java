@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * This class generates {@link Statement}s automatically for the
  * {@link LineAssociation}s.
  * 
- * @author Balázs Gregorics
+ * @author Balï¿½zs Gregorics
  *
  */
 class DefaultAssocStatements
@@ -101,9 +101,8 @@ class DefaultAssocStatements
 				{
 					if (s.getType().equals(StatementType.priority))
 					{
-						s.setParameter(1,
-								""
-										+ (Integer.valueOf(s.getParameter(1)) + (alterAmount * 2)));
+						Integer par_value = Integer.valueOf(s.getParameter(1)) + (alterAmount * 2);
+						s.setParameter(1, par_value.toString());
 					}
 				}
 			}

@@ -25,18 +25,16 @@ import java.util.Set;
 /**
  * This class implements an A^* graph search algorithm.
  * 
- * @author Balázs Gregorics
+ * @author Balï¿½zs Gregorics
  */
 class GraphSearch
 {
 	
 	// Constants
 	
-	private final Double _weightLength = 1.0; // 2.9
-	private final Double _weightTurns = 3.0; // 2.7
-	private final Double _weightCrossing = 3.0; // 2.0
-	@SuppressWarnings("unused")
-	private final Integer _penalizeTurns = 2;
+	private final Double WEIGHT_LENGTH = 1.0; // 2.9
+	private final Double WEIGHT_TURNS = 3.0; // 2.7
+	private final Double WEIGHT_CROSSING = 2.0; // 2.0
 	
 	// end Constants
 	
@@ -106,14 +104,13 @@ class GraphSearch
 		{
 			_endSet.add(pair.getFirst());
 			g.set(pair.getFirst(), pair.getSecond());
-			// TODO
 		}
 		
 		// Extend StartSet
 		for (Pair<Node, Double> pair : ss)
 		{
 			PI.set(pair.getFirst(), null);
-			g.set(pair.getFirst(), 2 * _weightLength + pair.getSecond());
+			g.set(pair.getFirst(), 2 * WEIGHT_LENGTH + pair.getSecond());
 			AvailableNodes.add(pair.getFirst());
 		}
 		
@@ -189,7 +186,7 @@ class GraphSearch
 		return min;
 	}
 	
-	// Kiértékelõ függvény
+	// Kiï¿½rtï¿½kelï¿½ fï¿½ggvï¿½ny
 	private Double f(Node p)
 	{
 		Double cost = g.get(p);
@@ -206,7 +203,7 @@ class GraphSearch
 		Pair<Double, Node> distance = manhattanDistance(p);
 		Double remainingTurns = manhattanLeastTurns(p);
 		// manhattanLeastTurnsCheckingOccupied(p, distance.getSecond());
-		Double result = (_weightTurns * remainingTurns + _weightLength * distance.getFirst());
+		Double result = (WEIGHT_TURNS * remainingTurns + WEIGHT_LENGTH * distance.getFirst());
 		
 		_heuristic.put(p, result);
 		
@@ -269,14 +266,14 @@ class GraphSearch
 		 * 
 		 * if (dx > 0 && dy > 0) { ++resultF; ++resultB; }
 		 * 
-		 * // elejérõl és végérõl nézzük egyszerre a két külön utat // X tengely
-		 * mentén Point tempF = new Point(from.getTo()); Point tempB = new
+		 * // elejï¿½rï¿½l ï¿½s vï¿½gï¿½rï¿½l nï¿½zzï¿½k egyszerre a kï¿½t kï¿½lï¿½n utat // X tengely
+		 * mentï¿½n Point tempF = new Point(from.getTo()); Point tempB = new
 		 * Point(ending); for (int i = 0; i < dx; ++i) { if (sx > 0) { tempF =
 		 * Point.Add(tempF, Direction.east); tempB = Point.Add(tempF,
 		 * Direction.west); } else if (sx < 0) { tempF = Point.Add(tempF,
 		 * Direction.west); tempB = Point.Add(tempF, Direction.east); }
 		 * 
-		 * // tempF nem a vége és nem piros pont // tempB nem az eleje és nem
+		 * // tempF nem a vï¿½ge ï¿½s nem piros pont // tempB nem az eleje ï¿½s nem
 		 * piros pont Point tF = new Point(tempF); if (resultF <= 1 &&
 		 * !tempF.equals(ending) && (_objects.stream().anyMatch(pp -> pp.Color
 		 * .equals(Colors.Red) && pp.Inner.equals(tF)))) { resultF = resultF +
@@ -285,7 +282,7 @@ class GraphSearch
 		 * .equals(Colors.Red) && pp.Inner.equals(tB)))) { resultB = resultB +
 		 * _penalizeTurns; } }
 		 * 
-		 * // Y tengely mentén for (int i = 0; i < dy; ++i) { if (sy > 0) {
+		 * // Y tengely mentï¿½n for (int i = 0; i < dy; ++i) { if (sy > 0) {
 		 * tempF = Point.Add(tempF, Direction.north); tempB = Point.Add(tempB,
 		 * Direction.south); } else if (sy < 0) { tempF = Point.Add(tempF,
 		 * Direction.south); tempB = Point.Add(tempB, Direction.north); }
@@ -327,11 +324,11 @@ class GraphSearch
 				Double w = 0.0;
 				
 				if (dir.equals(sub))
-					w = _weightLength;
+					w = WEIGHT_LENGTH;
 				else if (dir.equals(Direction.opposite(sub)))
 					continue;
 				else
-					w = _weightLength + _weightTurns;
+					w = WEIGHT_LENGTH + WEIGHT_TURNS;
 				
 				Point p = Point.Add(parent.getTo(), dir);
 				result.add(new Pair<Node, Double>(new Node(parent.getTo(), p), w));
@@ -342,7 +339,7 @@ class GraphSearch
 			Direction sub = Point.directionOf(parent.getTo(), parent.getFrom());
 			// straight, crossing
 			result.add(new Pair<Node, Double>(new Node(parent.getTo(), Point.Add(
-					parent.getTo(), sub)), _weightLength + _weightCrossing));
+					parent.getTo(), sub)), WEIGHT_LENGTH + WEIGHT_CROSSING));
 		}
 		
 		return result;
