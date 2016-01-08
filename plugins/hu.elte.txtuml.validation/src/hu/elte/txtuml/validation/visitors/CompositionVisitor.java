@@ -1,16 +1,18 @@
 package hu.elte.txtuml.validation.visitors;
 
+import org.eclipse.jdt.core.dom.TypeDeclaration;
+
 import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.validation.ProblemCollector;
-import hu.elte.txtuml.validation.problems.WrongCompositionEnds;
-
-import org.eclipse.jdt.core.dom.BodyDeclaration;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
+import hu.elte.txtuml.validation.problems.association.WrongCompositionEnds;
 
 public class CompositionVisitor extends VisitorBase {
 
-	public CompositionVisitor(ProblemCollector collector) {
+	private TypeDeclaration root;
+
+	public CompositionVisitor(TypeDeclaration root, ProblemCollector collector) {
 		super(collector);
+		this.root = root;
 	}
 
 	private int containerMembers = 0;
@@ -18,28 +20,17 @@ public class CompositionVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(TypeDeclaration node) {
-		for (Object decl : node.bodyDeclarations()) {
-			((BodyDeclaration) decl).accept(new VisitorBase(collector) {
-
-				@Override
-				public boolean visit(TypeDeclaration node) {
-					if (ElementTypeTeller.isContainer(node)) {
-						++containerMembers;
-					} else {
-						++partMembers;
-					}
-					return false;
-				}
-
-			});
+		if (ElementTypeTeller.isContainer(node)) {
+			++containerMembers;
+		} else {
+			++partMembers;
 		}
 		return false;
 	}
 
-	public void endVisit(TypeDeclaration node) {
+	public void check() {
 		if (containerMembers != 1 || partMembers != 1) {
-			collector.setProblemStatus(true,
-					new WrongCompositionEnds(collector.getSourceInfo(), node));
+			collector.report(new WrongCompositionEnds(collector.getSourceInfo(), root));
 		}
 	}
 

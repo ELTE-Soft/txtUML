@@ -2,14 +2,9 @@ package hu.elte.txtuml.project.wizards;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jdt.core.IAnnotation;
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.dialogs.StatusInfo;
 import org.eclipse.jdt.internal.ui.wizards.NewWizardMessages;
 import org.eclipse.jdt.ui.wizards.NewTypeWizardPage;
@@ -22,8 +17,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 
-import hu.elte.txtuml.api.model.Model;
-import hu.elte.txtuml.diagnostics.PluginLogWrapper;
+import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.project.ModelCreator;
 
 /**
@@ -138,87 +132,11 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 	protected IStatus packageChanged() {
 		IStatus status = super.packageChanged();
 		if (status.isOK()) {
-			if (isModelPackage(getPackageFragment())) {
+			if (ElementTypeTeller.isModelPackage(getPackageFragment())) {
 				((StatusInfo) status).setError("The selected package is already a model package");
 			}
 		}
 		return status;
 	}
 
-	public static boolean isModelPackage(IPackageFragment pack) {
-		try {
-			IJavaProject javaProject = pack.getJavaProject();
-			String packageName = pack.getElementName();
-			for (IPackageFragmentRoot pfRoot : javaProject.getPackageFragmentRoots()) {
-				if (!pfRoot.isExternal()) {
-					if (isModelPackage(pfRoot, packageName)) {
-						return true;
-					}
-				}
-			}
-		} catch (JavaModelException e) {
-			PluginLogWrapper.logError("Error while checking compilation unit", e);
-		}
-		return false;
-	}
-
-	/**
-	 * Checks a package if it belong to an existing model. Searches for a
-	 * package-info.java compilation unit in the package or one of the ancestor
-	 * packages and checks if it has the {@link Model} annotation.
-	 */
-	private static boolean isModelPackage(IPackageFragmentRoot pfRoot, String packageName) throws JavaModelException {
-		IPackageFragment pack;
-		while (!packageName.isEmpty()) {
-			pack = pfRoot.getPackageFragment(packageName);
-			if (pack.exists() && isModelRootPackage(pack)) {
-				return true;
-			}
-			int lastDot = packageName.lastIndexOf(".");
-			if (lastDot == -1) {
-				lastDot = 0;
-			}
-			packageName = packageName.substring(0, lastDot);
-		}
-		return false;
-	}
-
-	private static boolean isModelRootPackage(IPackageFragment pack) throws JavaModelException {
-		ICompilationUnit[] compilationUnits = pack.getCompilationUnits();
-		for (ICompilationUnit compUnit : compilationUnits) {
-			if (compUnit.getElementName().equals("package-info.java")) {
-				if (checkPackageInfo(compUnit)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	private static boolean checkPackageInfo(ICompilationUnit compUnit) throws JavaModelException {
-		for (IPackageDeclaration packDecl : compUnit.getPackageDeclarations()) {
-			for (IAnnotation annot : packDecl.getAnnotations()) {
-				// Because names are not resolved in IJavaElement AST
-				// representation, we have to manually check if a given
-				// annotation is really the Model annotation.
-				if (isImportedNameResolvedTo(compUnit, annot.getElementName(), Model.class.getCanonicalName())) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	private static boolean isImportedNameResolvedTo(ICompilationUnit compUnit, String elementName,
-			String qualifiedName) {
-		if (qualifiedName.equals(elementName)) {
-			return true;
-		}
-		if (!qualifiedName.endsWith(elementName)) {
-			return false;
-		}
-		int lastSection = qualifiedName.lastIndexOf(".");
-		String pack = qualifiedName.substring(0, lastSection);
-		return (compUnit.getImport(qualifiedName).exists() || compUnit.getImport(pack + ".*").exists());
-	}
 }

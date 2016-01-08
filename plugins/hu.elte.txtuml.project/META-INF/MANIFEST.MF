@@ -17,4 +17,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.ui,
  hu.elte.txtuml.api.diagnostics;bundle-version="0.3.0",
  hu.elte.txtuml.diagnostics;bundle-version="0.3.0",
- hu.elte.txtuml.api.model;bundle-version="0.3.0"
+ hu.elte.txtuml.api.model;bundle-version="0.3.0",
+ hu.elte.txtuml.export.uml2

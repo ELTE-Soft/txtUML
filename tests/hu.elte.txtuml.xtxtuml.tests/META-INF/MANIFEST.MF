@@ -8,10 +8,9 @@ Fragment-Host: hu.elte.txtuml.xtxtuml
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit,
  org.eclipse.jdt.core,
- org.eclipse.ui.workbench,
+ org.eclipse.ui.workbench;resolution:=optional,
  org.eclipse.xtext.junit4,
  org.eclipse.xtext.xbase.junit,
- org.eclipse.ui.workbench;resolution:=optional,
  hu.elte.txtuml.xtxtuml.ui,
  org.eclipse.core.runtime,
  org.eclipse.xtext.xbase.lib,

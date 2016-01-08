@@ -1,27 +1,26 @@
 package hu.elte.txtuml.validation;
 
-
+import org.eclipse.jdt.core.dom.CompilationUnit;
 
 /**
- * Instances of the subclasses are referenced from
- * validation error messages to be able to provide
- * information about error location and file name.
+ * Class for calculating some informations like line numbers or source files for
+ * error markings. Only needed to be able to use the java problem handling
+ * utilities.
  */
-public abstract class SourceInfo {
-	
-	/**
-	 * Computes the line index of the given character index in the 
-	 * associated source file.
-	 *  
-	 * @param charIndex	Index of the character.
-	 * @return	Line number of the referenced character.
-	 */
-	public abstract int getSourceLineNumber(int charIndex);
-	
-	/**
-	 * Provides the name of the file containing the source.
-	 * 
-	 * @return	Name of the file.
-	 */
-	public abstract String getOriginatingFileName();
+public class SourceInfo {
+
+	private CompilationUnit compUnit;
+
+	public SourceInfo(CompilationUnit compilationUnit) {
+		this.compUnit = compilationUnit;
+	}
+
+	public int getSourceLineNumber(int charIndex) {
+		return compUnit.getLineNumber(charIndex);
+	}
+
+	public String getOriginatingFileName() {
+		return compUnit.getJavaElement().getPath().toOSString();
+	}
+
 }
