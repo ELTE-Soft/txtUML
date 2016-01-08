@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: hu.elte.txtuml.xtxtuml.tests
+Bundle-SymbolicName: hu.elte.txtuml.xtxtuml.tests; singleton:=true
+Bundle-Version: 0.0.1
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Export-Package: hu.elte.txtuml.xtxtuml
+Require-Bundle: hu.elte.txtuml.xtxtuml,
+ hu.elte.txtuml.xtxtuml.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.xtext.junit4,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.ui.workbench;resolution:=optional,
+ org.objectweb.asm;bundle-version="[5.0.1,6.0.0)";resolution:=optional
+Import-Package: org.junit.runner;version="4.5.0",
+ org.junit.runner.manipulation;version="4.5.0",
+ org.junit.runner.notification;version="4.5.0",
+ org.junit.runners;version="4.5.0",
+ org.junit.runners.model;version="4.5.0",
+ org.hamcrest.core
+Bundle-Activator: hu.elte.txtuml.xtxtuml.ui.internal.XtxtUMLActivator

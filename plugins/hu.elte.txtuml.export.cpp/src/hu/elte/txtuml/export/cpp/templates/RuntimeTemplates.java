@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 /***********************************************************
- * Author: Hack János
+ * Author: Hack Jï¿½nos
  * Version 0.8 2014.12.01
  * Email:zodiakus (at) elte.hu
  **********************************************************/

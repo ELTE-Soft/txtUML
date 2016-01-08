@@ -1,7 +1,7 @@
 package hu.elte.txtuml.export.cpp.templates;
 
 /***********************************************************
- * Author: Hack János
+ * Author: Hack Jï¿½nos
  * Version 0.9 2014.02.25
  * Email:zodiakus (at) elte.hu
  **********************************************************/
