@@ -26,12 +26,6 @@ import org.eclipse.papyrus.infra.services.markerlistener.PapyrusMarkerAdapter;
  * @author gerazo
  */
 public class Animator {
-	private static final int ANIMATION_TIMER = 1000;
-	
-	// Warning! This is fragile as it was changed to "org.eclipse.papyrus.moka.animation.animatedmarker" in more recent versions
-	private static final String MOKA_ANIMATION_MARKER_ID = "org.eclipse.papyrus.moka.ui.animationmarker";
-
-	
 	private InstanceRegister instanceRegister;
 	private ModelMapper modelMapper;
 	private Map<String, UniqueInstance> classNameToAnimatedInstance = new HashMap<String, UniqueInstance>();
@@ -75,7 +69,7 @@ public class Animator {
 		}
 
 		try {
-			Thread.sleep(ANIMATION_TIMER);
+			Thread.sleep(AnimationConfig.ANIMATION_TIMER);
 		} catch (InterruptedException ex) {}
 	}
 		
@@ -102,7 +96,7 @@ public class Animator {
 		if (resource != null && resource.exists()) {
 			IMarker imarker = null;
 			try {
-				imarker = resource.createMarker(MOKA_ANIMATION_MARKER_ID);
+				imarker = resource.createMarker(AnimationConfig.TXTUML_ANIMATION_MARKER_ID);
 				imarker.setAttribute(EValidator.URI_ATTRIBUTE, EcoreUtil.getURI(eobject).toString());
 			} catch (CoreException e) {
 				e.printStackTrace();
