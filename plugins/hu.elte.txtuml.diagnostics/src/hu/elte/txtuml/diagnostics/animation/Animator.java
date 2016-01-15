@@ -1,10 +1,13 @@
-package hu.elte.txtuml.diagnostics.session;
+package hu.elte.txtuml.diagnostics.animation;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import hu.elte.txtuml.api.diagnostics.protocol.MessageType;
 import hu.elte.txtuml.api.diagnostics.protocol.ModelEvent;
+import hu.elte.txtuml.diagnostics.session.InstanceRegister;
+import hu.elte.txtuml.diagnostics.session.ModelMapper;
+import hu.elte.txtuml.diagnostics.session.UniqueInstance;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -22,7 +25,7 @@ import org.eclipse.papyrus.infra.services.markerlistener.PapyrusMarkerAdapter;
  * Animates diagrams
  * @author gerazo
  */
-class Animator {
+public class Animator {
 	private static final int ANIMATION_TIMER = 1000;
 	
 	// Warning! This is fragile as it was changed to "org.eclipse.papyrus.moka.animation.animatedmarker" in more recent versions
@@ -35,12 +38,12 @@ class Animator {
 	private Map<String, EObject> classNameToAnimatedElement = new HashMap<String, EObject>();
 	private Map<EObject, IPapyrusMarker> eobjectToMarker = new HashMap<EObject, IPapyrusMarker>();
 	
-	Animator(InstanceRegister instanceRegister, ModelMapper modelMapper) {
+	public Animator(InstanceRegister instanceRegister, ModelMapper modelMapper) {
 		this.instanceRegister = instanceRegister;
 		this.modelMapper = modelMapper;
 	}
 	
-	void dispose() {
+	public void dispose() {
 		removeAllAnimationMarkers();
 		eobjectToMarker = null;
 		classNameToAnimatedElement.clear();
@@ -51,7 +54,7 @@ class Animator {
 		instanceRegister = null;
 	}
 	
-	void animateEvent(ModelEvent event) {
+	public void animateEvent(ModelEvent event) {
 		if (event.messageType == MessageType.PROCESSING_SIGNAL) {
 			return;
 		}
