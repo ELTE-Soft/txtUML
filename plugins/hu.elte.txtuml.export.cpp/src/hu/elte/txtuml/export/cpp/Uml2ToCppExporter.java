@@ -47,8 +47,6 @@ public class Uml2ToCppExporter
 {
 	private static final String DefaultCompiler = "g++";
 	private static final String GCCDebugSymbolOn = "-D_DEBUG"; //the symbol located in GenerationNames
-	//private static final String CppFileLocation= "hu.elte.txtuml.export.cpp" + File.separator + "src" +File.separator+"hu"+File.separator+"elte"+File.separator+"txtuml"+File.separator+"export"+File.separator+"cpp"+File.separator+"cppsources"+File.separator;
-	//private static final String RuntimeCppFileLocation = CppFileLocation + RuntimeFolder;
 	private static final String RuntimeFolder= GenerationTemplates.RuntimePath;
 	private static final String RuntimeLibName = "libsmrt.a";
 	private static final String DefaultMakeFileName = "Makefile";
@@ -207,7 +205,7 @@ public class Uml2ToCppExporter
 					Files.copy(Paths.get(sourceRuntimeDir.getAbsolutePath() + File.separator + file),
 							Paths.get(outputRuntimeDir.getAbsolutePath() + File.separator + fileNamesMap.get(file)), StandardCopyOption.REPLACE_EXISTING);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					
 					e.printStackTrace();
 				}
 			}
@@ -216,7 +214,7 @@ public class Uml2ToCppExporter
 					Files.copy(Paths.get(sourceRuntimeDir.getAbsolutePath() + File.separator + file),
 							Paths.get(outputRuntimeDir.getAbsolutePath() + File.separator + file), StandardCopyOption.REPLACE_EXISTING);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					
 					e.printStackTrace();
 				}
 			}
@@ -254,7 +252,9 @@ public class Uml2ToCppExporter
 			makeFile+=" -I "+RuntimeFolder+" -LC "+RuntimeLibName+"\n\n"+RuntimeLibName+": runtime runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o\n"+
 					"\tar rcs "+RuntimeLibName+" runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o\n\n"+
 					".PHONY:runtime\n"+
-					"runtime:\n\t$(CC) -Wall -c "+RuntimeFolder+"runtime.cpp "+RuntimeFolder+"statemachineI.cpp "+RuntimeFolder+"threadpool.cpp " + RuntimeFolder+"threadpoolmanager.cpp -std=gnu++11";
+					"runtime:\n\t$(CC) -Wall -c "+RuntimeFolder+"runtime.cpp "+RuntimeFolder+"statemachineI.cpp "
+					 + RuntimeFolder + "threadpool.cpp " + RuntimeFolder + "threadpoolmanager.cpp " + RuntimeFolder + "threadcontainer.cpp "
+							+ "-std=gnu++11";
 		}
 		
 		Shared.writeOutSource(path_, makefileName_, makeFile);

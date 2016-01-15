@@ -71,7 +71,8 @@ public class ClassExporter
 		String source="";
 		List<StateMachine> smList=new ArrayList<StateMachine>();
 		Shared.getTypedElements(smList,class_.allOwnedElements(),UMLPackage.Literals.STATE_MACHINE);
-		if(!smList.isEmpty())
+		if (ownStates(class_,smList))
+		//if (!smList.isEmpty())
 		{
 			Region region=smList.get(0).getRegions().get(0);
 			_submachineMap=getSubMachines(region);
@@ -92,6 +93,17 @@ public class ClassExporter
 		Shared.writeOutSource(dest_,GenerationTemplates.SourceName(class_.getName()),GenerationTemplates.CppInclude(class_.getName())+getAllDependency(class_,false)+source);
 	}
 	
+	private boolean ownStates(Class class_,List<StateMachine> smList) {
+		
+		if (smList.isEmpty() || getStateList(smList.get(0).getRegions().get(0)).size() == 0 ) {
+			return false;
+		}
+		else {
+			return true;
+		}
+		
+	}
+
 	public List<String> getSubmachines()
 	{
 		List<String> ret=new LinkedList<String>();
@@ -140,7 +152,9 @@ public class ClassExporter
 		String privateParts=createParts(class_,"private");
 		String protectedParts=createParts(class_,"protected");
 		String publicParts=createParts(class_,"public");
-		if(!smList.isEmpty())
+		
+		if (ownStates(class_,smList))
+		//if(!smList.isEmpty())
 		{
 			Region region=smList.get(0).getRegions().get(0);
 			privateParts+=createEntryFunctionsDecl(region) + createExitFunctionsDecl(region) +
@@ -197,7 +211,9 @@ public class ClassExporter
 		String source="";
 		List<StateMachine> smList=new ArrayList<StateMachine>();
 		Shared.getTypedElements(smList,class_.allOwnedElements(),UMLPackage.Literals.STATE_MACHINE);
-		if(!smList.isEmpty())
+		
+		if (ownStates(class_,smList))
+		//if(containsStateMachine(class_))
 		{
 			Region region=smList.get(0).getRegions().get(0);
 			Map<Pair<String,String>,Pair<String,String>> smMap=createMachine(region);

@@ -5,18 +5,27 @@ Bundle-SymbolicName: hu.elte.txtuml.export.cpp;singleton:=true
 Bundle-Version: 0.1.1.qualifier
 Bundle-Vendor: ELTE
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: org.eclipse.uml2.uml;bundle-version="5.0.1",
- org.eclipse.uml2.uml.resources;bundle-version="5.0.0",
+Require-Bundle: org.eclipse.uml2.uml,
+ org.eclipse.uml2.uml.resources,
  hu.elte.txtuml.export.uml2,
  hu.elte.txtuml.utils,
- org.eclipse.jface,
- org.eclipse.core.resources,
  hu.elte.txtuml.export,
  hu.elte.txtuml.eclipseutils,
+ hu.elte.txtuml.api.model,
  org.eclipse.equinox.registry,
  org.eclipse.osgi,
- org.eclipse.core.runtime;bundle-version="3.10.0",
- hu.elte.txtuml.api.model
+ org.eclipse.jface,
+ org.eclipse.core.resources,
+ org.eclipse.core.runtime,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.launching,
+ org.eclipse.ui.ide,
+ org.eclipse.jdt.debug.ui,
+ org.eclipse.jdt.ui,
+ org.eclipse.gmf.tooling.runtime,
+ org.eclipse.ui,
+ org.eclipse.debug.ui
 Export-Package: hu.elte.txtuml.export.cpp,
  hu.elte.txtuml.export.cpp.description
 Bundle-ActivationPolicy: lazy
+Import-Package: org.eclipse.ui.dialogs

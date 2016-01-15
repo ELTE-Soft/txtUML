@@ -1,8 +1,5 @@
 package hu.elte.txtuml.export.cpp.wizardz;
 
-
-
-
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.emf.common.util.URI;
 
@@ -23,10 +20,10 @@ import hu.elte.txtuml.export.Uml2Utils;
 
 public class TxtUMLToCppWizard extends Wizard{
 	
-	private final String genericFolderName = "gen";
-	private final String cppCodesFolderName = "cpp_codes";
-	private final String umlFilesFolderName = "uml_files";
-	
+	private static final String GenericFolderName = "cpp_gen";
+	private static final String UmlFilesFolderName = "uml_files";
+	private static final String CppCodesFolderName = "cpp_codes";
+
 	private TxtUMLToCppPage createCppCodePage;
 	
 	public TxtUMLToCppWizard(){
@@ -60,20 +57,14 @@ public class TxtUMLToCppWizard extends Wizard{
 			TxtUMLToCppPage.MODEL_NAME = txtUMLModel;
 			TxtUMLToCppPage.DESCRIPTION_NAME = threadManagmentDescription;
 			
-			boolean runtimeOption = createCppCodePage.selectRuntimeOption();
-			boolean debugOption = createCppCodePage.selectDebugOption();
+			boolean runtimeOption = createCppCodePage.getRuntimeOptionSelection();
+			boolean debugOption = createCppCodePage.getDebugOptionSelection();
 			
-			
-			String genFolder = txtUMLProject + File.separator +  genericFolderName;
 			String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation().toFile().getAbsolutePath();
 			
-			String splitModelName[] = txtUMLModel.split("\\.");
-			String simpleModelName = splitModelName[splitModelName.length - 1];
-			
-			String umlFilesFolder = genFolder + File.separator + umlFilesFolderName + File.separator + simpleModelName;
+			String umlFilesFolder = txtUMLProject + File.separator +  GenericFolderName + 
+					File.separator + UmlFilesFolderName + File.separator + txtUMLModel;
 			String umlFileLocation = umlFilesFolder + File.separator + txtUMLModel + ".uml";
-			
-			String cppFilesFolder = genericFolderName + File.separator + cppCodesFolderName + File.separator + simpleModelName;
 						
 			try{
 				ExportUtils.exportTxtUMLModelToUML2(txtUMLProject, txtUMLModel,
@@ -85,33 +76,17 @@ public class TxtUMLToCppWizard extends Wizard{
 			
 			
 			Model model = Uml2Utils.loadModel(URI.createPlatformResourceURI(umlFileLocation, false));
-			Uml2ToCppExporter cppExporter;
 			
-			if(threadManagmentDescription.isEmpty()){
-				return false;
-			}
-			else{
-				//load description class
 
-				URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(txtUMLProject, ThreadDescriptionExporter.class.getClassLoader());
-				Class<?> txtUMLThreadDescription = loader.loadClass(threadManagmentDescription);
-				ThreadDescriptionExporter exporter= new ThreadDescriptionExporter();
-				exporter.exportDescription((Class<? extends Configuration>) txtUMLThreadDescription);
-				
-				if (exporter.isMultiThreading()) {
-					cppExporter = new Uml2ToCppExporter(model,exporter.getConfigMap(),true,runtimeOption,debugOption);
-				}
-				else {
-					cppExporter = new Uml2ToCppExporter(model,null,false,runtimeOption,debugOption);
-				}
-				
-				
-			}
+			URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(txtUMLProject, ThreadDescriptionExporter.class.getClassLoader());
+			Class<?> txtUMLThreadDescription = loader.loadClass(threadManagmentDescription);
+			ThreadDescriptionExporter exporter= new ThreadDescriptionExporter();
+			exporter.exportDescription((Class<? extends Configuration>) txtUMLThreadDescription);
 			
+			Uml2ToCppExporter cppExporter = new Uml2ToCppExporter(model,exporter.getConfigMap(),exporter.isMultiThreading(),runtimeOption,debugOption);
 			
-			cppExporter.buildCppCode(projectFolder + File.separator +  cppFilesFolder);
-			
-			
+			cppExporter.buildCppCode(projectFolder + File.separator + 
+					GenericFolderName + File.separator + CppCodesFolderName + File.separator + txtUMLModel);	
 			
 		} catch (Exception e) {
 			
