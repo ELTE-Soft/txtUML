@@ -46,9 +46,18 @@ void SingleThreadRT::run()
   
     if(!_messageQueue->empty())
     {
-      _messageQueue->front()->dest.processEventVirtual();
+	
+		 if (_messageQueue->front()->dest.isStarted() && _messageQueue->front()->dest.isInitialized())		 
+		 {
+			_messageQueue->front()->dest.processEventVirtual();			
+		 }
+		 else if (_messageQueue->front()->dest.isStarted() && !_messageQueue->front()->dest.isInitialized()) 
+		 {
+			 _messageQueue->front()->dest.init();
+		 }
+      
     }
-    else if(waiting)
+    else if(_messageQueue->empty() && waiting)
     {
     	waiting_empty_cond.notify_one();
     }
