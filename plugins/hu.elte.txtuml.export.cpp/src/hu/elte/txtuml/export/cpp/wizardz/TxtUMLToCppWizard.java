@@ -72,6 +72,7 @@ public class TxtUMLToCppWizard extends Wizard{
 			}catch(Exception e){
 				Dialogs.errorMsgb("txtUML export Error",
     					e.getClass() + ":"+ System.lineSeparator() + e.getMessage(), e);
+				return false;
 			}
 			
 			
@@ -83,10 +84,26 @@ public class TxtUMLToCppWizard extends Wizard{
 			ThreadDescriptionExporter exporter= new ThreadDescriptionExporter();
 			exporter.exportDescription((Class<? extends Configuration>) txtUMLThreadDescription);
 			
+			if (exporter.warningListIsEmpty()) {
+				String warnings = "";
+				for (String warning : exporter.getWarnings()) {
+					warnings += warning + "\n";
+				}
+				
+				warnings += "\nWould you like continue the exportation?\n ";
+				if (!Dialogs.WarningConfirm("Description exportation warnings", warnings) ) {
+					return false;
+				}
+			}
+				
 			Uml2ToCppExporter cppExporter = new Uml2ToCppExporter(model,exporter.getConfigMap(),exporter.isMultiThreading(),runtimeOption,debugOption);
-			
 			cppExporter.buildCppCode(projectFolder + File.separator + 
-					GenericFolderName + File.separator + CppCodesFolderName + File.separator + txtUMLModel);	
+					GenericFolderName + File.separator + CppCodesFolderName + 
+					File.separator + txtUMLModel);
+			
+
+			
+	
 			
 		} catch (Exception e) {
 			

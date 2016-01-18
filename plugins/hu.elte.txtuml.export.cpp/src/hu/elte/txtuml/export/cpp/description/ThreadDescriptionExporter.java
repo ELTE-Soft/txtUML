@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 public class ThreadDescriptionExporter {
 	
 	private Map<String, ThreadPoolConfiguration > configMap;
 	private boolean descriptionExported = false;
-	private boolean isMultiThreading = true;
+	private boolean isMultiThreading = false;
+	private boolean containsMulthreadingAnnotaion = false;
 	
 	List<String> warningList;
 	List<String> errorList;
@@ -42,7 +42,7 @@ public class ThreadDescriptionExporter {
 		return configMap;
 	}
 	
-	public void exportDescription(Class<? extends Configuration> description){
+	public void exportDescription(Class<? extends Configuration> description) {
 		
 		if(descriptionExported) return;
 		
@@ -50,7 +50,6 @@ public class ThreadDescriptionExporter {
 			if(annotaion instanceof GroupContainer){
 				
 				for(Annotation group: ((GroupContainer) annotaion).value()){
-					
 					
 					exportGroup( (Group) group);
 				}
@@ -61,6 +60,7 @@ public class ThreadDescriptionExporter {
 
 			}
 			else if(annotaion instanceof Multithreading){
+				containsMulthreadingAnnotaion = true;
 				Multithreading mlt = (Multithreading) annotaion;
 				if(mlt.value()){
 					isMultiThreading = true;
@@ -74,17 +74,29 @@ public class ThreadDescriptionExporter {
 			}
 		}
 		
+		if (!containsMulthreadingAnnotaion) {
+			warningList.add("Missing Multithreading option from the description!");
+			
+			if (!configMap.isEmpty()) {
+				isMultiThreading = true;
+			}
+		}
+		
 		descriptionExported = true;
 		
 	}
 	
-	public boolean successfulExportation(){
+	public boolean isSuccessfulExportation(){
 		if(!descriptionExported){
 			return false;
 		}
 		else{
 			return errorList.isEmpty();
 		}
+	}
+	
+	public boolean warningListIsEmpty() {
+		return !warningList.isEmpty();
 	}
 	
 	public List<String> getErrors(){
@@ -110,6 +122,7 @@ public class ThreadDescriptionExporter {
 		
 		for(Class<? extends ModelClass> cls: group.contains()){
 			if(!exportedClasses.contains(cls.getSimpleName())){
+				exportedClasses.add(cls.getSimpleName());
 				configMap.put(cls.getSimpleName(), config);
 			}
 			else{
@@ -121,7 +134,7 @@ public class ThreadDescriptionExporter {
 
 	private void checkEmptyGroup(Class<? extends ModelClass>[] classes) {
 		if(classes.length == 0){
-			warningList.add("Empty Serves annotation");
+			warningList.add("Empty Group annotation");
 		}
 		
 	}

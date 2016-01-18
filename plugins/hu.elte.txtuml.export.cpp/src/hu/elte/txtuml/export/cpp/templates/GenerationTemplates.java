@@ -90,16 +90,18 @@ public class GenerationTemplates
 	
 	public static String EventEnum(Set<SignalEvent> events_)//TODO works only with signal events! (Time,Change,.. not handled)
 	{
-		if(events_== null || events_.isEmpty())
-		{
-			return "";
-		}
+		
 		String EventList = "enum Events{";
 		EventList += GenerationNames.EventEnumName("InitSignal") + ",";
-		for(SignalEvent item: events_)
+		
+		if(events_!= null && !events_.isEmpty())
 		{
-			EventList+=GenerationNames.EventEnumName(item.getSignal().getName())+",";
+			for(SignalEvent item: events_)
+			{
+				EventList+=GenerationNames.EventEnumName(item.getSignal().getName())+",";
+			}
 		}
+		
 		return EventList.substring(0,EventList.length()-1)+"};\n";
 	}
 	

@@ -315,12 +315,11 @@ public class ClassExporter
 	private void createFuncTypeMap(Region region,FuncTypeEnum funcType_,Boolean rt_)
 	{
 			Map<String,Pair<String, String>> map=new HashMap<String,Pair<String,String>>();
-			//String source="";
-			//String name="";
+			String source="";
+			String name="";
 			for(State item:getStateList(region))
 			{
 				Behavior behavior=null;
-				@SuppressWarnings("unused")
 				String unknownName=null;
 				switch(funcType_)
 				{
@@ -340,16 +339,17 @@ public class ClassExporter
 
 				if(behavior!= null)
 				{
-					/*if(behavior.eClass().equals(UMLPackage.Literals.ACTIVITY))
+					if(behavior.eClass().equals(UMLPackage.Literals.ACTIVITY))
 					{
-						source=ActivityExport.createfunctionBody((Activity)behavior,rt_);
+						//source=ActivityExport.createfunctionBody((Activity)behavior,rt_);
+						source = "";
 						name = behavior.getName();
 						if(name == null || name.isEmpty())
 						{
 							name=item.getName()+"_"+unknownName;
 						}
 						map.put(name,new Pair<String, String>(item.getName(),source));
-					}*/
+					}
 				}
 			}
 			
