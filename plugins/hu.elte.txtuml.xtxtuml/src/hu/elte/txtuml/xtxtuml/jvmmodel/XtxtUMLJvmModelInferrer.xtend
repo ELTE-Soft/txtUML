@@ -1,4 +1,4 @@
-package hu.elte.txtuml.xtxtuml.jvmmodel;
+package hu.elte.txtuml.xtxtuml.jvmmodel
 
 import com.google.inject.Inject
 import hu.elte.txtuml.api.model.Association
@@ -46,7 +46,6 @@ import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
 
 class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
-	// Helper extensions
 	@Inject extension XtxtUMLTypesBuilder
 	@Inject extension IJvmModelAssociations
 	@Inject extension IQualifiedNameProvider
@@ -61,21 +60,21 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
 	def dispatch void infer(TUExecution exec, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		acceptor.accept(exec.toClass(exec.fullyQualifiedName)) [
-			visibility = JvmVisibility.PUBLIC;
+			visibility = JvmVisibility.PUBLIC
 
 			members += exec.toMethod("main", Void.TYPE.typeRef) [
 				documentation = exec.documentation
 				parameters += exec.toParameter("args", String.typeRef.addArrayTypeDimension)
-				varArgs = true;
+				varArgs = true
 
-				static = true;
-				body = exec.body;
+				static = true
+				body = exec.body
 			]
 		]
 	}
 
 	def dispatch void infer(TUAssociation assoc, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		acceptor.accept(assoc.toClass(assoc.fullyQualifiedName) [
+		acceptor.accept(assoc.toClass(assoc.fullyQualifiedName)) [
 			documentation = assoc.documentation
 			superTypes += switch assoc {
 				TUComposition: Composition
@@ -83,24 +82,24 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			}.typeRef
 
 			for (end : assoc.ends) {
-				members += end.toJvmMember;
+				members += end.toJvmMember
 			}
-		])
+		]
 	}
 
 	def dispatch void infer(TUSignal signal, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		acceptor.accept(signal.toClass(signal.fullyQualifiedName)) [
 			documentation = signal.documentation
-			superTypes += Signal.typeRef;
+			superTypes += Signal.typeRef
 
 			for (attr : signal.attributes) {
-				members += attr.toJvmMember;
+				members += attr.toJvmMember
 			}
 
 			if (!signal.attributes.isEmpty) {
 				members += signal.toConstructor [
 					for (attr : signal.attributes) {
-						parameters += attr.toParameter(attr.name, attr.type);
+						parameters += attr.toParameter(attr.name, attr.type)
 					}
 
 					body = '''
@@ -117,17 +116,17 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		acceptor.accept(tUClass.toClass(tUClass.fullyQualifiedName)) [
 			documentation = tUClass.documentation
 			if (tUClass.superClass != null) {
-				superTypes += (tUClass.superClass.getPrimaryJvmElement as JvmDeclaredType).typeRef;
+				superTypes += tUClass.superClass.inferredType
 			} else {
-				superTypes += ModelClass.typeRef;
+				superTypes += ModelClass.typeRef
 			}
 
 			for (member : tUClass.members) {
 				if (member instanceof TUState) {
 					// just use the element which was inferred earlier
-					members += member.getPrimaryJvmElement as JvmMember;
+					members += member.getPrimaryJvmElement as JvmMember
 				} else {
-					members += member.toJvmMember;
+					members += member.toJvmMember
 				}
 			}
 		]
@@ -151,9 +150,9 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			for (member : state.members) {
 				if (member instanceof TUState) {
 					// just use the element which was inferred earlier
-					members += member.getPrimaryJvmElement as JvmMember;
+					members += member.getPrimaryJvmElement as JvmMember
 				} else {
-					members += member.toJvmMember;
+					members += member.toJvmMember
 				}
 			}
 		]
@@ -164,75 +163,74 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		]
 	}
 
-	// Internal helper methods
 	def dispatch private toJvmMember(TUConstructor ctor) {
 		ctor.toConstructor [
 			documentation = ctor.documentation
-			visibility = ctor.visibility.toJvmVisibility;
+			visibility = ctor.visibility.toJvmVisibility
 
 			for (param : ctor.parameters) {
 				parameters += param.toParameter(param.name, param.parameterType) => [
 					documentation = ctor.documentation
-				];
+				]
 			}
 
-			body = ctor.body;
+			body = ctor.body
 		]
 	}
 
 	def dispatch private toJvmMember(TUAttribute attr) {
 		attr.toField(attr.name, attr.prefix.type) [
 			documentation = attr.documentation
-			visibility = attr.prefix.visibility.toJvmVisibility;
+			visibility = attr.prefix.visibility.toJvmVisibility
 		]
 	}
 
 	def dispatch private toJvmMember(TUSignalAttribute attr) {
 		attr.toField(attr.name, attr.type) [
 			documentation = attr.documentation
-			visibility = attr.visibility.toJvmVisibility;
+			visibility = attr.visibility.toJvmVisibility
 		]
 	}
 
 	def dispatch private toJvmMember(TUOperation op) {
 		op.toMethod(op.name, op.prefix.type) [
 			documentation = op.documentation
-			visibility = op.prefix.visibility.toJvmVisibility;
+			visibility = op.prefix.visibility.toJvmVisibility
 
 			for (JvmFormalParameter param : op.parameters) {
 				parameters += param.toParameter(param.name, param.parameterType) => [
 					documentation = param.documentation
-				];
+				]
 			}
 
-			body = op.body;
+			body = op.body
 		]
 	}
 
 	def dispatch private toJvmMember(TUEntryOrExitActivity act) {
-		val name = if(act.entry) "entry" else "exit";
+		val name = if(act.entry) "entry" else "exit"
 
 		return act.toMethod(name, Void.TYPE.typeRef) [
 			documentation = act.documentation
-			visibility = JvmVisibility.PUBLIC;
-			annotations += annotationRef(Override);
-			body = act.body;
+			visibility = JvmVisibility.PUBLIC
+			annotations += annotationRef(Override)
+			body = act.body
 		]
 	}
 
 	def dispatch private JvmMember toJvmMember(TUTransition trans) {
 		trans.toClass(trans.name) [
 			documentation = trans.documentation
-			superTypes += StateMachine.Transition.typeRef;
+			superTypes += StateMachine.Transition.typeRef
 
 			for (member : trans.members) {
 				switch (member) {
 					TUTransitionTrigger,
 					TUTransitionVertex: {
-						annotations += member.toAnnotationRef;
+						annotations += member.toAnnotationRef
 					}
 					default: {
-						members += member.toJvmMember;
+						members += member.toJvmMember
 					}
 				}
 			}
@@ -242,22 +240,22 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch private toJvmMember(TUTransitionEffect effect) {
 		effect.toMethod("effect", Void.TYPE.typeRef) [
 			documentation = effect.documentation
-			visibility = JvmVisibility.PUBLIC;
-			annotations += annotationRef(Override);
-			body = effect.body;
+			visibility = JvmVisibility.PUBLIC
+			annotations += annotationRef(Override)
+			body = effect.body
 		]
 	}
 
 	def dispatch private toJvmMember(TUTransitionGuard guard) {
 		guard.toMethod("guard", Boolean.TYPE.typeRef) [
 			documentation = guard.documentation
-			visibility = JvmVisibility.PUBLIC;
+			visibility = JvmVisibility.PUBLIC
 
-			annotations += annotationRef(Override);
+			annotations += annotationRef(Override)
 			if (guard.^else) {
-				body = '''return Else();''';
+				body = '''return Else();'''
 			} else {
-				body = guard.expression;
+				body = guard.expression
 			}
 		]
 	}
@@ -265,15 +263,15 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch private toJvmMember(TUAssociationEnd end) {
 		end.toClass(end.fullyQualifiedName) [
 			documentation = end.documentation
-			visibility = JvmVisibility.PUBLIC;
+			visibility = JvmVisibility.PUBLIC
 
 			val calcApiSuperTypeResult = end.calculateApiSuperType
-			superTypes += calcApiSuperTypeResult.key;
+			superTypes += calcApiSuperTypeResult.key
 
 			if (calcApiSuperTypeResult.value != null) {
-				annotations += calcApiSuperTypeResult.value.key.toAnnotationRef(Min);
+				annotations += calcApiSuperTypeResult.value.key.toAnnotationRef(Min)
 				if (!end.multiplicity.isUpperInf) {
-					annotations += calcApiSuperTypeResult.value.value.toAnnotationRef(Max);
+					annotations += calcApiSuperTypeResult.value.value.toAnnotationRef(Max)
 				}
 			}
 		]
@@ -308,7 +306,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def private toAnnotationRef(EObject obj, Class<?> annotationType) {
 		annotationRef(annotationType) => [
 			explicitValues += TypesFactory::eINSTANCE.createJvmTypeAnnotationValue => [
-				values += (obj.getPrimaryJvmElement as JvmDeclaredType).typeRef;
+				values += obj.inferredType
 			]
 		]
 	}
@@ -316,13 +314,13 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def private toAnnotationRef(int i, Class<?> annotationType) {
 		annotationRef(annotationType) => [
 			explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
-				values += i;
+				values += i
 			]
 		]
 	}
 
 	def private calculateApiSuperType(TUAssociationEnd it) {
-		val endClassTypeParam = (endClass.getPrimaryJvmElement as JvmDeclaredType).typeRef
+		val endClassTypeParam = endClass.inferredType
 		if (isContainer) {
 			// Do not try to simplify the code here, as it breaks standalone builds.
 			// The inferred type will be Class<? extend MaybeOneBase>, which is invalid,
@@ -334,15 +332,15 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			}
 		}
 
-		val optionalHidden = if(notNavigable) "Hidden" else "";
-		var Pair<Integer, Integer> explicitMultiplicities = null;
+		val optionalHidden = if(notNavigable) "Hidden" else ""
+		var Pair<Integer, Integer> explicitMultiplicities = null
 		val apiBoundTypeName = if (multiplicity.any) // *
 				"Many"
 			else if (!multiplicity.upperSet) { // <lower> (exact)
 				if (multiplicity.lower == 1)
 					"One"
 				else {
-					explicitMultiplicities = multiplicity.lower -> multiplicity.lower;
+					explicitMultiplicities = multiplicity.lower -> multiplicity.lower
 					"Multiple"
 				}
 			} else { // <lower> .. <upper>
@@ -355,12 +353,16 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				else if (multiplicity.lower == 1 && multiplicity.upperInf)
 					"Some"
 				else {
-					explicitMultiplicities = multiplicity.lower -> multiplicity.upper;
+					explicitMultiplicities = multiplicity.lower -> multiplicity.upper
 					"Multiple"
 				}
 			}
 
 		val endClassImpl = "hu.elte.txtuml.api.model.Association$" + optionalHidden + apiBoundTypeName
-		return endClassImpl.typeRef(endClassTypeParam) -> explicitMultiplicities;
+		return endClassImpl.typeRef(endClassTypeParam) -> explicitMultiplicities
+	}
+
+	def private inferredType(EObject modelElement) {
+		(modelElement?.getPrimaryJvmElement as JvmDeclaredType)?.typeRef
 	}
 }

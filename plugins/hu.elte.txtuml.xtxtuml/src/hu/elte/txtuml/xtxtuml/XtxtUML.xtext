@@ -16,7 +16,7 @@ TUFile :
 
 TUModelDeclaration :
 	{TUModelDeclaration}
-	'model' (name=STRING)? ';'
+	'model' (name=STRING)? ';'?
 ;
 
 // Model level
@@ -142,7 +142,7 @@ TUMultiplicity :
 // Commons
 
 enum TUVisibility :
-	PACKAGE = "package" | PRIVATE = "private" | PROTECTED = "protected" | PUBLIC = "public"
+	PACKAGE = 'package' | PRIVATE = 'private' | PROTECTED = 'protected' | PUBLIC = 'public'
 ;
 
 // rAlf
@@ -280,7 +280,7 @@ XConstructorCall returns xbase::XExpression :
 XBlockExpression returns xbase::XExpression : 
 	{xbase::XBlockExpression}
 	'{' 
-		(expressions+=XRAlfStatementSemicolonNotNeeded | expressions+=XRAlfStatementSemicolonNeeded ';' )*
+		(expressions+=XRAlfStatementSemicolonNotNeeded | =>(expressions+=XRAlfStatementSemicolonNeeded) ';' )*
 	'}'
 ;
 
@@ -451,13 +451,13 @@ XMemberFeatureCall returns xbase::XExpression :
 	XPrimaryExpression
 	(
 		=>(
-			{xbase::XAssignment.assignable=current} ('.' | explicitStatic?="::")
+			{xbase::XAssignment.assignable=current} ('.' | explicitStatic?='::')
 			feature=[types::JvmIdentifiableElement|FeatureCallID] OpSingleAssign
 		)
 		value=XAssignment
 	| 
 		=>(
-			{xbase::XMemberFeatureCall.memberCallTarget=current} ("." | explicitStatic?="::")
+			{xbase::XMemberFeatureCall.memberCallTarget=current} ('.' | explicitStatic?='::')
 		) 
 		feature=[types::JvmIdentifiableElement|IdOrSuper] (
 			=>explicitOperationCall?='(' (
