@@ -19,7 +19,7 @@ import hu.elte.txtuml.diagnostics.PluginLogWrapper;
  * Analyzes events for errors, keeps track of service and class instances
  * @author gerazo
  */
-class InstanceRegister {
+public class InstanceRegister {
 	// Usually only 1 or 2 instances will be in this container so a
 	// TreeSet performs better as its memory is more compact than HashSet's
 	private Set<Integer> aliveServiceInstances = new TreeSet<>();
@@ -44,7 +44,7 @@ class InstanceRegister {
 		aliveServiceInstances = null;
 	}
 	
-	UniqueInstance getInstance(String classInstanceID, int serviceInstanceID) {
+	public UniqueInstance getInstance(String classInstanceID, int serviceInstanceID) {
 		return aliveClassInstances.get(new UniqueInstance(classInstanceID, serviceInstanceID));
 	}
 	
