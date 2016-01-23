@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 /**
  * This class is used to wrap the arrange of a whole diagram.
  * 
- * @author Bal�zs Gregorics
+ * @author Balázs Gregorics
  */
 public class LayoutVisualize {
 	/***
