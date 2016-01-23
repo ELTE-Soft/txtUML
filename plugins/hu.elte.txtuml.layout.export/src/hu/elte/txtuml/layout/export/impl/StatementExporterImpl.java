@@ -248,6 +248,11 @@ public class StatementExporterImpl implements StatementExporter {
 					annot.right(), annot.bottom(), annot.left());
 		}
 	}
+	
+	@Override
+	public void exportCorridorRatio(hu.elte.txtuml.api.layout.Spacing annot) {
+		statements.addNew(StatementType.corridorsize, Double.toString(annot.value()));
+	}
 
 	// public statement container exporters
 
