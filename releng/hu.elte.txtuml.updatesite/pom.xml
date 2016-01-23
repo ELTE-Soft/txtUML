@@ -32,7 +32,8 @@
 				</configuration>
 			</plugin>
 
-			<!-- Modify update site metadata and inject associate sites -->
+			<!-- Currently we do not use any associate sites. Re-enable this section when it is needed again. -->
+			<!-- Modify update site metadata and inject associate sites
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<version>1.8</version>
@@ -68,6 +69,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			-->
 		</plugins>
 	</build>
 </project>

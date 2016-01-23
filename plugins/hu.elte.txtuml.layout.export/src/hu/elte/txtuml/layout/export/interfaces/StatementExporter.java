@@ -4,6 +4,7 @@ import hu.elte.txtuml.api.layout.Above;
 import hu.elte.txtuml.api.layout.Below;
 import hu.elte.txtuml.api.layout.BottomMost;
 import hu.elte.txtuml.api.layout.Column;
+import hu.elte.txtuml.api.layout.Spacing;
 import hu.elte.txtuml.api.layout.Diamond;
 import hu.elte.txtuml.api.layout.East;
 import hu.elte.txtuml.api.layout.Left;
@@ -84,6 +85,8 @@ public interface StatementExporter {
 	void exportRow(Row annot);
 	
 	void exportDiamond(Diamond annot);
+	
+	void exportCorridorRatio(Spacing annot);
 	
 	// statement container exporters
 	

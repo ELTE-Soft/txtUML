@@ -15,9 +15,9 @@ class XtxtUMLTypesBuilder extends JvmTypesBuilder {
 	 * @see XtxtUMLGenerator
 	 */
 	def JvmGenericType toPackageInfo(EObject sourceElement, QualifiedName packageName, String modelName) {
-		val result = createJvmGenericType(sourceElement, packageName + ".package-info");
+		val result = createJvmGenericType(sourceElement, packageName + ".package-info")
 		if (result == null) {
-			return null;
+			return null
 		}
 		result.eAdapters.add(new XtxtUMLModelPackageInfoAdapter(modelName))
 		copyDocumentationTo(sourceElement, result)

@@ -5,6 +5,7 @@ import hu.elte.txtuml.api.diagnostics.protocol.MessageType;
 import hu.elte.txtuml.api.diagnostics.protocol.ModelEvent;
 import hu.elte.txtuml.diagnostics.Activator;
 import hu.elte.txtuml.diagnostics.PluginLogWrapper;
+import hu.elte.txtuml.diagnostics.animation.Animator;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

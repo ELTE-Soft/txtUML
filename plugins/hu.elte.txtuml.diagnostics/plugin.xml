@@ -19,4 +19,31 @@
       </launchConfigurationTabGroup>
    </extension>
 
+   <extension
+         point="org.eclipse.papyrus.infra.gmfdiag.css.markertopseudoselectormappingprovider">
+      <provider
+            class="hu.elte.txtuml.diagnostics.animation.AnimationMarkerToPseudoSelectorMappingProvider">
+      </provider>
+   </extension>
+   <extension
+         id="hu.elte.txtuml.diagnostics.animation.animatedmarker"
+         name="ANIMATED MARKER"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.papyrus.modelmarker">
+      </super>
+      <persistent
+            value="false">
+      </persistent>
+   </extension>
+   <extension
+         point="org.eclipse.papyrus.infra.gmfdiag.css.theme">
+      <themeContribution
+            id="org.eclipse.papyrus.css.papyrus_theme">
+         <stylesheet
+               stylesheetPath="css/txtUMLAnimation.css">
+         </stylesheet>
+      </themeContribution>
+   </extension>
+
 </plugin>
