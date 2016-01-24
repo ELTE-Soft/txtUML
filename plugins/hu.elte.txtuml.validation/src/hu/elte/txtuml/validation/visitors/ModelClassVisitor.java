@@ -27,10 +27,12 @@ public class ModelClassVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(TypeDeclaration elem) {
-		if (!ElementTypeTeller.isVertex(elem) && !ElementTypeTeller.isTransition(elem)) {
-			collector.report(new InvalidModelClassElement(collector.getSourceInfo(), elem.getName()));
-		} else {
+		if (ElementTypeTeller.isVertex(elem) || ElementTypeTeller.isTransition(elem)) {
 			handleStateMachineElements(elem);
+		} else if (ElementTypeTeller.isPort(elem)) {
+			// TODO: check port
+		} else {
+			collector.report(new InvalidModelClassElement(collector.getSourceInfo(), elem.getName()));
 		}
 		return false;
 	}
@@ -49,8 +51,7 @@ public class ModelClassVisitor extends VisitorBase {
 	public boolean visit(MethodDeclaration elem) {
 		if (!elem.isConstructor()) {
 			if (elem.getReturnType2() != null && !Utils.isAllowedParameterType(elem.getReturnType2(), true)) {
-				collector.report(
-						new InvalidTypeWithClassAllowed(collector.getSourceInfo(), elem.getReturnType2()));
+				collector.report(new InvalidTypeWithClassAllowed(collector.getSourceInfo(), elem.getReturnType2()));
 			}
 		}
 
