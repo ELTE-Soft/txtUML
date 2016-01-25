@@ -9,8 +9,6 @@ package hu.elte.txtuml.export.cpp.templates;
 import java.util.List;
 import java.util.Map;
 
-import hu.elte.txtuml.export.cpp.description.ThreadPoolConfiguration;
-import hu.elte.txtuml.export.cpp.thread.ThreadHandlingManager;
 import hu.elte.txtuml.utils.Pair;
 
 class PrivateFunctionalTemplates
@@ -31,7 +29,7 @@ class PrivateFunctionalTemplates
 			source+=GenerationNames.CompositeStateMapName+".emplace("+GenerationNames.StateEnumName(entry.getKey())+","+GenerationNames.CompositeStateMapSmType+"("+GenerationNames.MemoryAllocator+" "+entry.getValue()+"("+parentClassName_+")"+"));\n";
 		}
 		
-		source+="\n"+StateMachineClassConstructorSharedBody(className_,parentClassName_, machine_, intialState_)+"}\n\n";
+		source+="\n"+StateMachineClassConstructorSharedBody(className_,parentClassName_, machine_, intialState_,rt_,null)+"}\n\n";
 		if(rt_)
 		{
 			source+=RuntimeTemplates.RTFunctionDecl(className_);
@@ -55,12 +53,12 @@ class PrivateFunctionalTemplates
 				PrivateFunctionalTemplates.SetInitialState(className_,intialState_)+"\n";
 	}
 	
-	public static String StateMachineClassConstructorSharedBody(String className_,Map<Pair<String,String>,Pair<String,String>> machine_,String intialState_)
+	public static String StateMachineClassConstructorSharedBody(String className_,Map<Pair<String,String>,Pair<String,String>> machine_,String intialState_, Boolean rt, Integer poolId)
 	{
-		return StateMachineClassConstructorSharedBody(className_, null, machine_, intialState_);
+		return StateMachineClassConstructorSharedBody(className_, null, machine_, intialState_,rt,poolId);
 	}
 
-	public static String StateMachineClassConstructorSharedBody(String className_,String parentClassName_,Map<Pair<String,String>,Pair<String,String>> machine_,String intialState_)
+	public static String StateMachineClassConstructorSharedBody(String className_,String parentClassName_,Map<Pair<String,String>,Pair<String,String>> machine_,String intialState_, Boolean rt, Integer poolId)
 	{
 		String source="";
 		for (Map.Entry<Pair<String,String>, Pair<String,String>> entry : machine_.entrySet())
@@ -81,18 +79,12 @@ class PrivateFunctionalTemplates
 		
 		}
 		
-		if(Options.ThreadManagement() && Options.Runtime()){
-			ThreadPoolConfiguration config = ThreadHandlingManager.Description().get(className_);
-			if(config == null){
-				source += "\n" + GenerationNames.PoolIdSetter + "(" + 0 + ");\n";
-			}
-			else{
-				source += "\n" + GenerationNames.PoolIdSetter + "(" + ThreadHandlingManager.Description().get(className_).getId() + ");\n";
-			}
+		if(poolId != null && rt){
 			
+			source += "\n" + GenerationNames.PoolIdSetter + "(" + poolId + ");\n";
 		}
 		
-		if(Options.Runtime() && (parentClassName_ == null || parentClassName_=="this")){
+		if(rt && (parentClassName_ == null || parentClassName_=="this")){
 			source += "\n" + RuntimeTemplates.RuntimeSetter + "(rt); \n";
 			source += RuntimeTemplates.InitStateMachineForRuntime();
 		}

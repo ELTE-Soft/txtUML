@@ -69,7 +69,7 @@ public class TxtUMLToCppPage extends WizardPage {
 	protected TxtUMLToCppPage(){
 		super("Generate C++ Code Page");
 		setTitle("Generate C++ Code page");
-		super.setDescription("Give your txtUML project and model class to creat C++ code!");
+		super.setDescription("Browse your txtUML project, model and configuration to generate C++ code!");
 		
 		
 	}
@@ -166,7 +166,7 @@ public class TxtUMLToCppPage extends WizardPage {
 		});
 				
 		Label threadLabel = new Label(composite, SWT.NONE);
-		threadLabel.setText("txtUML Threads Description: ");
+		threadLabel.setText("txtUML Deployment configuration: ");
 		
 		threadManagerDescription = new Text(composite, SWT.BORDER | SWT.SINGLE);
 		threadManagerDescription.setText(DESCRIPTION_NAME);
@@ -202,10 +202,10 @@ public class TxtUMLToCppPage extends WizardPage {
 		
 		runtime = new Button(composite, SWT.CHECK);
 		runtime.setSelection(true);
-		runtime.setText("Set runtime option");
+		runtime.setText("Generate runtime");
 		
 	    debug = new Button(composite, SWT.CHECK);
-	    debug.setText("Set debug option");
+	    debug.setText("Switch debug messages on");
 	    
 		 setControl(composite);
 		 setPageComplete(true);

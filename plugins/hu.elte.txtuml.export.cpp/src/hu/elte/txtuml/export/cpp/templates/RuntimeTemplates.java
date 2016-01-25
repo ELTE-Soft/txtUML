@@ -23,6 +23,7 @@ class RuntimeTemplates
 	public static final String RuntimeIterfaceName = "RuntimeI";
 	public static final String RuntimeSetter = "setRuntime";
 	public static final String RuntimeVarName = "_runtime";
+	public static final String RuntimeParamter = "rt";
 			
 	
 	public static String CreateObject(String objName_)

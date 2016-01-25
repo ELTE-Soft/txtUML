@@ -53,6 +53,7 @@ public class ClassExporter
 	private Map<String,Pair<String,Region>> _submachineMap;// <stateName,<machinename,behavior>>
 	private List<String> _subSubMachines;
 	private enum FuncTypeEnum {Entry,Exit}
+	private Integer poolId;
 	
 	public ClassExporter(){
 		reiniIialize();
@@ -72,7 +73,6 @@ public class ClassExporter
 		List<StateMachine> smList=new ArrayList<StateMachine>();
 		Shared.getTypedElements(smList,class_.allOwnedElements(),UMLPackage.Literals.STATE_MACHINE);
 		if (ownStates(class_,smList))
-		//if (!smList.isEmpty())
 		{
 			Region region=smList.get(0).getRegions().get(0);
 			_submachineMap=getSubMachines(region);
@@ -93,16 +93,6 @@ public class ClassExporter
 		Shared.writeOutSource(dest_,GenerationTemplates.SourceName(class_.getName()),GenerationTemplates.CppInclude(class_.getName())+getAllDependency(class_,false)+source);
 	}
 	
-	private boolean ownStates(Class class_,List<StateMachine> smList) {
-		
-		if (smList.isEmpty() || getStateList(smList.get(0).getRegions().get(0)).size() == 0 ) {
-			return false;
-		}
-		else {
-			return true;
-		}
-		
-	}
 
 	public List<String> getSubmachines()
 	{
@@ -116,6 +106,11 @@ public class ClassExporter
 			ret.addAll(_subSubMachines);
 		}
 		return ret;
+	}
+	
+	public void setConfiguratedPoolId(Integer poolId) {
+		this.poolId = poolId;
+		
 	}
 	
 	private void createSubSmSource(String className_,String parentClass_, Region region_, String dest_) throws FileNotFoundException, UnsupportedEncodingException
@@ -153,8 +148,12 @@ public class ClassExporter
 		String protectedParts=createParts(class_,"protected");
 		String publicParts=createParts(class_,"public");
 		
+		List<String> constructorParams = new ArrayList<String>();
+		if(Options.Runtime()){
+			constructorParams.add(GenerationTemplates.RuntimeName);
+		}
+		
 		if (ownStates(class_,smList))
-		//if(!smList.isEmpty())
 		{
 			Region region=smList.get(0).getRegions().get(0);
 			privateParts+=createEntryFunctionsDecl(region) + createExitFunctionsDecl(region) +
@@ -165,12 +164,7 @@ public class ClassExporter
 			
 			if(_submachineMap.isEmpty())
 			{
-				List<String> constructorParams = new ArrayList<String>();
-				if(Options.Runtime()){
-					constructorParams.add(GenerationTemplates.RuntimeName);
-				}
-				
-				source=GenerationTemplates.SimpleStateMachineClassHeader(dependency,class_.getName(),constructorParams,publicParts,protectedParts,privateParts,Options.Runtime());
+				source=GenerationTemplates.SimpleStateMachineClassHeader(dependency,class_.getName(),getBaseClass(class_),constructorParams,publicParts,protectedParts,privateParts,Options.Runtime());
 			}
 			else
 			{
@@ -179,7 +173,7 @@ public class ClassExporter
 		}
 		else
 		{
-			source=GenerationTemplates.ClassHeader(dependency,class_.getName(),publicParts,protectedParts,privateParts );
+			source=GenerationTemplates.ClassHeader(dependency,class_.getName(),getBaseClass(class_),constructorParams,publicParts,protectedParts,privateParts,Options.Runtime());
 		}
 		return source;
 	}
@@ -213,13 +207,12 @@ public class ClassExporter
 		Shared.getTypedElements(smList,class_.allOwnedElements(),UMLPackage.Literals.STATE_MACHINE);
 		
 		if (ownStates(class_,smList))
-		//if(containsStateMachine(class_))
 		{
 			Region region=smList.get(0).getRegions().get(0);
 			Map<Pair<String,String>,Pair<String,String>> smMap=createMachine(region);
 			if(_submachineMap.isEmpty())
 			{
-				source+=GenerationTemplates.SimpleStateMachineClassConstructor(class_.getName(),smMap,getInitialState(region),Options.Runtime());
+				source+=GenerationTemplates.SimpleStateMachineClassConstructor(class_.getName(),getBaseClass(class_),smMap,getInitialState(region),Options.Runtime(),poolId);
 			}
 			else
 			{
@@ -234,14 +227,13 @@ public class ClassExporter
 		}
 		else 
 		{
-			source += GenerationTemplates.ConstructorDef(class_.getName());
+			source += GenerationTemplates.ConstructorDef(class_.getName(),getBaseClass(class_),Options.Runtime());
 		}
 		
 		
-		for(Operation item:class_.getAllOperations())
+		for(Operation item:class_.getOwnedOperations())
 		{
 			String returnType=getReturnType(item.getReturnResult());
-			
 			
 			
 			/*Behavior behavior=item.getMethods().get(0);
@@ -257,7 +249,7 @@ public class ClassExporter
 			
 			/*source+=GenerationTemplates.FunctionDef(class_.getName(),
 													returnType,
-													item.getName(),getOperationParams(item),
+												item.getName(),getOperationParams(item),
 													funcBody);*/
 			
 			source+=GenerationTemplates.FunctionDef(class_.getName(),
@@ -485,6 +477,10 @@ public class ClassExporter
 			}
 		}
 		
+		if (getBaseClass(class_) != null) {
+			source += GenerationTemplates.CppInclude(getBaseClass(class_));
+		}
+		
 		if(Options.Runtime() && !isHeader_)
 		{
 			source+=GenerationTemplates.CppInclude(GenerationTemplates.RuntimeHeader);
@@ -493,6 +489,8 @@ public class ClassExporter
 		{
 			source+=GenerationTemplates.StandardIOinclude;
 		}
+		
+
 		
 		return source+"\n";
 	}
@@ -818,6 +816,17 @@ public class ClassExporter
 		return stateList;
 	}
 	
+	private boolean ownStates(Class class_,List<StateMachine> smList) {
+		
+		if (smList.isEmpty() || getStateList(smList.get(0).getRegions().get(0)).size() == 0 ) {
+			return false;
+		}
+		else {
+			return true;
+		}
+		
+	}
+	
 	private Set<SignalEvent> getEventList(Region region_)
 	{
 		Set<SignalEvent> eventList=new HashSet<SignalEvent>();
@@ -845,6 +854,17 @@ public class ClassExporter
 		}
 			
 		return eventList;
+	}
+	
+	private String getBaseClass(Class class_) {
+		class_.getGenerals();
+		
+		if (!class_.getGeneralizations().isEmpty()) {
+			return class_.getGeneralizations().get(0).getGeneral().getName();
+		}
+		else {
+			return null;
+		}
 	}
 	
 }

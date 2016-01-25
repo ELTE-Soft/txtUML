@@ -20,9 +20,8 @@ import hu.elte.txtuml.export.Uml2Utils;
 
 public class TxtUMLToCppWizard extends Wizard{
 	
-	private static final String GenericFolderName = "cpp_gen";
-	private static final String UmlFilesFolderName = "uml_files";
-	private static final String CppCodesFolderName = "cpp_codes";
+	private static final String GenericFolderName = "cpp-gen";
+	private static final String UmlFilesFolderName = "model";
 
 	private TxtUMLToCppPage createCppCodePage;
 	
@@ -63,7 +62,7 @@ public class TxtUMLToCppWizard extends Wizard{
 			String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation().toFile().getAbsolutePath();
 			
 			String umlFilesFolder = txtUMLProject + File.separator +  GenericFolderName + 
-					File.separator + UmlFilesFolderName + File.separator + txtUMLModel;
+					File.separator + txtUMLModel + File.separator + UmlFilesFolderName;
 			String umlFileLocation = umlFilesFolder + File.separator + txtUMLModel + ".uml";
 						
 			try{
@@ -90,7 +89,7 @@ public class TxtUMLToCppWizard extends Wizard{
 					warnings += warning + "\n";
 				}
 				
-				warnings += "\nWould you like continue the exportation?\n ";
+				warnings += "\nWould you like continue the geeration?\n ";
 				if (!Dialogs.WarningConfirm("Description exportation warnings", warnings) ) {
 					return false;
 				}
@@ -98,8 +97,7 @@ public class TxtUMLToCppWizard extends Wizard{
 				
 			Uml2ToCppExporter cppExporter = new Uml2ToCppExporter(model,exporter.getConfigMap(),exporter.isMultiThreading(),runtimeOption,debugOption);
 			cppExporter.buildCppCode(projectFolder + File.separator + 
-					GenericFolderName + File.separator + CppCodesFolderName + 
-					File.separator + txtUMLModel);
+					GenericFolderName + File.separator + txtUMLModel);
 			
 
 			

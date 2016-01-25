@@ -7,7 +7,7 @@
 
 
 StateMachineThreadPool::StateMachineThreadPool(size_t threads_)
-    :   stop(true),worker_threads(0),threads(threads_), delta(10),
+    :   threads(threads_),stop(true),worker_threads(0),
 		future_getter_thread(new std::thread(&StateMachineThreadPool::futureGetter,this) ) {}
 	
 void StateMachineThreadPool::stopPool()
@@ -17,6 +17,21 @@ void StateMachineThreadPool::stopPool()
 	future_cond.notify_all();
 	future_cond_alt.notify_all();
 	
+}
+
+void StateMachineThreadPool::startPool()
+{
+	std::unique_lock<std::mutex> mlock(start_mu);
+	
+	stop = false;
+	workers.setExpectedThreads(threads);
+	for(size_t i = 0;i<threads;++i)
+	{
+		workers.addThread(new std::thread(&StateMachineThreadPool::task,this));
+	}
+	
+	mlock.unlock();
+        
 }
 
 void StateMachineThreadPool::stopUponCompletion()
@@ -132,21 +147,6 @@ void StateMachineThreadPool::futureGetter()
 		}
 		
 	}
-}
-
-void StateMachineThreadPool::startPool()
-{
-	std::unique_lock<std::mutex> mlock(start_mu);
-	
-	stop = false;
-	workers.setExpectedThreads(threads);
-	for(size_t i = 0;i<threads;++i)
-	{
-		workers.addThread(new std::thread(&StateMachineThreadPool::task,this));
-	}
-	
-	mlock.unlock();
-        
 }
 
 void StateMachineThreadPool::modifiedThreads(int n)

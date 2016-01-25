@@ -30,6 +30,8 @@ public class GenerationTemplates
 	public static String StandardIOinclude=GenerationNames.StandardIOinclude;
 	public static String RuntimeName = RuntimeTemplates.RuntimeIterfaceName;
 	public static String RuntimePointer = RuntimeTemplates.RuntimeIterfaceName + "*";
+	public static String RuntimeParamaterName = RuntimeTemplates.RuntimeParamter;
+	
 	
 	public static String InitSignal = GenerationNames.InitialEventName;
 	
@@ -150,7 +152,7 @@ public class GenerationTemplates
 	
 	public static String HierarchicalStateMachineClassHeader(String dependency_,String className_,List<String> constructorParams_,List<String> subMachines_, String public_,String protected_,String private_,Boolean rt_)
 	{
-		return ClassHeader(PrivateFunctionalTemplates.ClassHeaderIncludes(rt_)+dependency_,className_,constructorParams_,
+		return ClassHeader(PrivateFunctionalTemplates.ClassHeaderIncludes(rt_)+dependency_,className_,null,constructorParams_,
 				PrivateFunctionalTemplates.StateMachineClassFixPublicParts(className_,rt_)+public_,protected_,
 				PrivateFunctionalTemplates.HierarchicalStateMachineClassFixPrivateParts(className_,subMachines_)+private_,true,rt_);
 	}
@@ -160,27 +162,32 @@ public class GenerationTemplates
 		List<String> parentParam=new LinkedList<String>();
 		parentParam.add(parentclass_);
 		
-		return SimpleStateMachineClassHeader(dependency_, className_,parentParam,public_, protected_, (PrivateFunctionalTemplates.SubStateMachineClassFixPrivateParts(parentclass_)+private_),false);
+		return SimpleStateMachineClassHeader(dependency_, className_,null,parentParam,public_, protected_, (PrivateFunctionalTemplates.SubStateMachineClassFixPrivateParts(parentclass_)+private_),false);
 	}
 	
-	public static String SimpleStateMachineClassHeader(String dependency_,String className_,String public_,String protected_,String private_,Boolean rt_)
+	public static String SimpleStateMachineClassHeader(String dependency_,String className_,String baseClassName,String public_,String protected_,String private_,Boolean rt_)
 	{
-		return SimpleStateMachineClassHeader(dependency_, className_, null, public_, protected_, private_, rt_);
+		return SimpleStateMachineClassHeader(dependency_, className_, baseClassName, public_, protected_, private_, rt_);
 	}
 	
-	public static String SimpleStateMachineClassHeader(String dependency_,String className_,List<String> constructorParams_,String public_,String protected_,String private_,Boolean rt_)
+	public static String SimpleStateMachineClassHeader(String dependency_,String className_,String baseClassName,List<String> constructorParams_,String public_,String protected_,String private_,Boolean rt_)
 	{
-		return ClassHeader(PrivateFunctionalTemplates.ClassHeaderIncludes(rt_)+dependency_,className_,constructorParams_,
+		return ClassHeader(PrivateFunctionalTemplates.ClassHeaderIncludes(rt_)+dependency_,className_,baseClassName,constructorParams_,
 				PrivateFunctionalTemplates.StateMachineClassFixPublicParts(className_,rt_)+public_,protected_,
 				PrivateFunctionalTemplates.SimpleStateMachineClassFixPrivateParts(className_)+private_,true,rt_);
 	}
 	
-	public static String ClassHeader(String dependency_,String name_,String public_,String protected_,String private_)
+	public static String ClassHeader(String dependency_,String name_,String baseClassName,String public_,String protected_,String private_)
 	{
-		return ClassHeader(dependency_,name_,null,public_,protected_,private_,false,false);
+		return ClassHeader(dependency_,name_,baseClassName,null,public_,protected_,private_,false,false);
 	}
 	
-	public static String ClassHeader(String dependency_,String className_,List<String> constructorParams_,String public_,String protected_,String private_,Boolean sm_,Boolean rt_)
+	public static String ClassHeader(String dependency_,String name_,String baseClassName,List<String> constructorParams_,String public_,String protected_,String private_,Boolean rt_)
+	{
+		return ClassHeader(dependency_,name_,baseClassName,constructorParams_,public_,protected_,private_,false,rt_);
+	}
+	
+	public static String ClassHeader(String dependency_,String className_,String baseClassName,List<String> constructorParams_,String public_,String protected_,String private_,Boolean sm_,Boolean rt_)
 	{
 		String source=dependency_;
 		if(!sm_)
@@ -189,7 +196,11 @@ public class GenerationTemplates
 		}
 		
 		source+=GenerationNames.ClassType+" "+className_;
-		if(sm_)
+		
+		if (baseClassName != null) {
+			source += ": public " + baseClassName;
+		}
+		else if (sm_)
 		{
 			source+=":public "+GenerationNames.StatemachineBaseName;
 			if(rt_)
@@ -199,10 +210,12 @@ public class GenerationTemplates
 		}
 		
 		source+="\n{\npublic:\n"+className_+"("+PrivateFunctionalTemplates.ParamTypeList(constructorParams_)+");\n";
-		if(!sm_)
+		
+		if(!sm_ && baseClassName == null)
 		{
 			source+=GenerationNames.DummyProcessEventDef;
 		}
+		
 		
 		if(!public_.isEmpty())
 		{
@@ -244,9 +257,21 @@ public class GenerationTemplates
 		return VariableDecl(typeName_, variableName_);
 	}
 	
-	public static String ConstructorDef(String className_)//TODO too simple ....
+	
+	
+	public static String ConstructorDef(String className_,String baseClassName_,Boolean rt)//TODO too simple ....
 	{
-		return className_+"::"+className_+"(){}\n\n";
+		if (baseClassName_ == null) {
+			return className_+"::"+className_+"(){}\n\n";
+		}
+		else if (baseClassName_ != null && rt) {
+			return className_+"::"+className_+"("+ RuntimePointer + 
+					" " +  RuntimeParamaterName +"): " +  baseClassName_ + "(" + RuntimeParamaterName +") {}\n\n";
+		}
+		else {
+			return className_+"::"+className_+"() :" +  baseClassName_ + "() {}\n\n";
+		}
+		
 	}
 
 	public static String TransitionActionDecl(String transitionActionName_)
@@ -324,7 +349,7 @@ public class GenerationTemplates
 	{
 		String parentParam=GenerationNames.FormatIncomignParamName(GenerationNames.ParentSmName);
 		String source=className_+"::"+className_+"("+GenerationNames.PointerType(parentClass_)+" "+parentParam+"):"+GenerationNames.DefaultStateInitialization+","+
-				GenerationNames.ParentSmMemberName+"("+parentParam+")"+"\n{\n"+PrivateFunctionalTemplates.StateMachineClassConstructorSharedBody(className_,parentClass_,machine_, intialState_)+"}\n\n";	
+				GenerationNames.ParentSmMemberName+"("+parentParam+")"+"\n{\n"+PrivateFunctionalTemplates.StateMachineClassConstructorSharedBody(className_,parentClass_,machine_, intialState_,false,null)+"}\n\n";	
 		return source+PrivateFunctionalTemplates.SimpleStateMachineClassConstructorSharedBody(className_, machine_, intialState_, false);
 	}
 
@@ -332,10 +357,10 @@ public class GenerationTemplates
 	 * Map<Pair<String, String>,<String,String>
 	 *                <event, state>,<guard,handlerName>
 	 * */
-	public static String SimpleStateMachineClassConstructor(String className_,Map<Pair<String,String>,Pair<String,String>> machine_,String intialState_,Boolean rt_)
+	public static String SimpleStateMachineClassConstructor(String className_,String baseClassName,Map<Pair<String,String>,Pair<String,String>> machine_,String intialState_,Boolean rt_,Integer poolId)
 	{
-			String source= SimpleStateMachineClassConstructorHead(className_,rt_) + GenerationNames.DefaultStateInitialization +
-					"\n{\n"+PrivateFunctionalTemplates.StateMachineClassConstructorSharedBody(className_, machine_, intialState_)+"}\n\n";
+			String source= SimpleStateMachineClassConstructorHead(className_,baseClassName,rt_) + GenerationNames.DefaultStateInitialization +
+					"\n{\n"+PrivateFunctionalTemplates.StateMachineClassConstructorSharedBody(className_, machine_, intialState_,rt_,poolId)+"}\n\n";
 						return source+PrivateFunctionalTemplates.SimpleStateMachineClassConstructorSharedBody(className_, machine_, intialState_, rt_);
 			
 		
@@ -343,12 +368,34 @@ public class GenerationTemplates
 	
 	public static String SimpleStateMachineClassConstructorHead(String className, Boolean rt){
 		if(rt){
-			return className +"::"+className +"(" + RuntimePointer + " rt):";
+				return className +"::"+className +"(" + RuntimePointer + " " + RuntimeTemplates.RuntimeParamter +"):";
+			
 		}
 		else{
-			return className +"::"+ className +"():";
+			return className +"::"+className +"():";
+			
 		}
-	}
+	} 
+	
+	public static String SimpleStateMachineClassConstructorHead(String className,String baseClassName, Boolean rt){
+		if(rt){
+			if (baseClassName != null) {
+				return className +"::"+className +"(" + RuntimePointer + " " + RuntimeTemplates.RuntimeParamter +"): " + baseClassName + "(" + RuntimeTemplates.RuntimeParamter + "),";
+			}
+			else {
+				return className +"::"+className +"(" + RuntimePointer + " " + RuntimeTemplates.RuntimeParamter +"):";
+			}
+			
+		}
+		else{
+			if (baseClassName != null) {
+				return className +"::"+className +"(): " + baseClassName + "(" + RuntimeTemplates.RuntimeParamter + "),";
+			}
+			else {
+				return className +"::"+className +"():";
+			}
+		}
+	} 
 	
 	public static String GuardFunction(String guardFunctionName_,String constraint_,String eventName_)
 	{

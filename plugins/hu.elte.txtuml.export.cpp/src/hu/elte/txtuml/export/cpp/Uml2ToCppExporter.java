@@ -52,28 +52,28 @@ public class Uml2ToCppExporter
 	private static final String DefaultMakeFileName = "Makefile";
 	private static final String DefaultModelName = "main";
 	
-	private Model model;
-	
-	
 	private ClassExporter classExporter;
-	
 	
 	ThreadHandlingManager threadManager;
 	
 	List<Class> classList;
+	EList<Element> elements;
+	
 	List<String> classNames;
 	
 	
 	
 	public Uml2ToCppExporter(Model model, Map<String, ThreadPoolConfiguration > threadDescription,
 			boolean threadManagement,boolean runtimeOption,boolean debugOption){
-		this.model = model;
 		
 		classExporter = new ClassExporter();
 		
-		classList = new ArrayList<Class>();
-		classNames = new LinkedList<String>();
 		
+		this.classList = new ArrayList<Class>();
+		this.elements = model.allOwnedElements();
+		this.classNames = new LinkedList<String>();
+		
+		Shared.getTypedElements(classList,elements,UMLPackage.Literals.CLASS);
 		
 		if(runtimeOption){
 			Options.setRuntime();
@@ -89,7 +89,9 @@ public class Uml2ToCppExporter
 		}
 		if(threadManagement){
 			Options.setThreadManagement();
-			threadManager = new ThreadHandlingManager(model,threadDescription);
+			
+
+			threadManager = new ThreadHandlingManager(classList,threadDescription);
 		}
 		else{
 			threadManager = new ThreadHandlingManager();
@@ -106,19 +108,14 @@ public class Uml2ToCppExporter
 			
 			threadManager.createThreadPoolManager(outputDirectory + File.separator + "runtime");
 			
-			EList<Element> elements = model.allOwnedElements();
-			
 			Shared.writeOutSource(outputDirectory,(GenerationTemplates.EventHeader),createEventSource(elements));
 			
-			copyPreWrittenCppFiles(outputDirectory);
-
-			
-			Shared.getTypedElements(classList,elements,UMLPackage.Literals.CLASS);
-			
+			copyPreWrittenCppFiles(outputDirectory);	
 			
 			for(Class item: classList)
-			{
+			{	
 				classExporter.reiniIialize();
+				classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
 				classExporter.createSource(item, outputDirectory);
 				
 				classNames.addAll(classExporter.getSubmachines());

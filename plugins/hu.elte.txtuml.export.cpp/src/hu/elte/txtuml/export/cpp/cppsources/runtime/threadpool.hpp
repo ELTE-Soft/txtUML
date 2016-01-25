@@ -38,7 +38,6 @@ private:
 	
 	ThreadContainer workers;
 	
-	int delta;
     // the task queue
     PoolQueueType stateMachines; //must be blocking queue
 	size_t threads;
