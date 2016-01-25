@@ -72,7 +72,7 @@ public class ModelExporter {
 				outputDirectory, resourceSet, exportedModel);
 		this.mapping = new ModelMapCollector(modelResource.getURI());
 
-		importStandardLibrary(resourceSet, exportedModel);
+		this.importStandardLibrary(resourceSet, exportedModel);
 
 		this.typeExporter = new TypeExporter(this);
 		this.regionExporter = new RegionExporter(this);
@@ -89,7 +89,7 @@ public class ModelExporter {
 	 * 
 	 * @see hu.elte.txtuml.stdlib
 	 */
-	private static void importStandardLibrary(ResourceSet resourceSet,
+	private void importStandardLibrary(ResourceSet resourceSet,
 			Model exportedModel) {
 		// Load standard library
 		Resource resource = resourceSet.getResource(URI.createURI(STDLIB_URI),

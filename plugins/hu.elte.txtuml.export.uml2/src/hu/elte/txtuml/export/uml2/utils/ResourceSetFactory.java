@@ -54,6 +54,9 @@ public final class ResourceSetFactory {
 				URI.createURI(UMLResource.PROFILES_PATHMAP),
 				uml2ResourcesPluginURI.appendSegment("profiles").appendSegment(
 						""));
+		
+		uriMap.put(URI.createURI("pathmap://TXTUML_STDLIB/"), 
+				URI.createURI("platform:/plugin/hu.elte.txtuml.stdlib/src/hu/elte/txtuml/stdlib/"));
 
 		UMLResourcesUtil.init(resourceSet);
 		return resourceSet;
