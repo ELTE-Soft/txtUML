@@ -1,14 +1,14 @@
 package hu.elte.txtuml.layout.visualizer.algorithms;
 
+import java.util.HashMap;
+
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.Queue;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Graph;
-
-import java.util.HashMap;
 
 /**
  * This class provides an implementation to the Breath-First search algorithm.
  * 
- * @author Balázs Gregorics
+ * @author Balï¿½zs Gregorics
  * @param <T>
  *            Type of the graph nodes.
  *
@@ -18,7 +18,7 @@ class BreathFirstSearch<T>
 	/**
 	 * Types of discovery property.
 	 * 
-	 * @author Balázs Gregorics
+	 * @author Balï¿½zs Gregorics
 	 *
 	 */
 	public enum LabelType

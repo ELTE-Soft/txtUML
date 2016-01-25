@@ -1,11 +1,5 @@
 package hu.elte.txtuml.project.wizards;
 
-import hu.elte.txtuml.project.Activator;
-import hu.elte.txtuml.project.ProjectCreator;
-import hu.elte.txtuml.project.ProjectCreator.ProjectSettings;
-import hu.elte.txtuml.utils.eclipse.Dialogs;
-import hu.elte.txtuml.project.TxtUMLProjectNature;
-
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.resources.IFolder;
@@ -25,6 +19,12 @@ import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.xtext.ui.XtextProjectHelper;
+
+import hu.elte.txtuml.project.Activator;
+import hu.elte.txtuml.project.ProjectCreator;
+import hu.elte.txtuml.project.ProjectCreator.ProjectSettings;
+import hu.elte.txtuml.project.TxtUMLProjectNature;
+import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 public class TxtUMLProjectWizard extends Wizard implements INewWizard {
 

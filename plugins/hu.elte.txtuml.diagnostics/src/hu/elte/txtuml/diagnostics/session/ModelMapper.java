@@ -21,7 +21,7 @@ import hu.elte.txtuml.utils.Logger;
  * Keeps track of model mappings
  * @author gerazo
  */
-class ModelMapper {
+public class ModelMapper {
 	private static final String MAPPING_FILE_EXTENSION = ModelMapProvider.MAPPING_FILE_EXTENSION;
 	private static final String MAPPING_FILE_EXTENSION_TOKEN = "." + MAPPING_FILE_EXTENSION;
 	private static final String MAPPING_DIRECTORY_PATH =
@@ -68,7 +68,7 @@ class ModelMapper {
 		mappingFileNameToMapProvider = null;
 	}
 	
-	EObject getEObjectForModelAndElement(String modelClassName, String elementClassName) {
+	public EObject getEObjectForModelAndElement(String modelClassName, String elementClassName) {
 		ModelMapProvider modelMapProvider = null;
 		Map.Entry<String, ModelMapProvider> entry = mappingFileNameToMapProvider.floorEntry(modelClassName);
 		// We do depend heavily on the fact that the mapping file name begins

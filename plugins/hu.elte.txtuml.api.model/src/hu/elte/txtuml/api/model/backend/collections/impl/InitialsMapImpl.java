@@ -1,9 +1,9 @@
 package hu.elte.txtuml.api.model.backend.collections.impl;
 
+import java.util.HashMap;
+
 import hu.elte.txtuml.api.model.StateMachine.Initial;
 import hu.elte.txtuml.api.model.backend.collections.InitialsMap;
-
-import java.util.HashMap;
 
 /**
  * Default implementation for {@link InitialsMap}.

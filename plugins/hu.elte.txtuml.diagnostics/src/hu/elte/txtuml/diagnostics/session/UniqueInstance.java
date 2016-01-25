@@ -9,7 +9,7 @@ import hu.elte.txtuml.utils.Logger;
  * object in it.
  * @author gerazo
  */
-class UniqueInstance {
+public class UniqueInstance {
 	// unique ID
 	final String classInstanceID;
 	final int serviceInstanceID;

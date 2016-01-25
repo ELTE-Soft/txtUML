@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout;
 
-import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,10 +9,12 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.papyrus.uml.diagram.activity.edit.parts.ControlFlowGuardEditPart;
 import org.eclipse.papyrus.uml.diagram.activity.edit.parts.ObjectFlowGuardEditPart;
 
+import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
+
 /**
  * Controls the arranging of an ActivityDiagram with GMF algorithm
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public class ActivityDiagramElementsGmfArranger extends AbstractDiagramElementsGmfArranger {
 	

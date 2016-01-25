@@ -12,6 +12,7 @@ import java.net.Socket;
 import hu.elte.txtuml.api.diagnostics.protocol.Message;
 import hu.elte.txtuml.api.diagnostics.protocol.MessageType;
 import hu.elte.txtuml.api.diagnostics.protocol.ModelEvent;
+import hu.elte.txtuml.diagnostics.animation.Animator;
 import hu.elte.txtuml.utils.Logger;
 
 /**

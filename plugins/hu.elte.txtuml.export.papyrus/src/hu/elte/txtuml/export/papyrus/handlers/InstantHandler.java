@@ -1,9 +1,5 @@
 package hu.elte.txtuml.export.papyrus.handlers;
 
-import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
-import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;
-import hu.elte.txtuml.utils.eclipse.Dialogs;
-
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -20,6 +16,10 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.progress.IProgressService;
+
+import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
+import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;
+import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 /**
  * Handles the the call to visualization from context menu.

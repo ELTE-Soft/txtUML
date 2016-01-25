@@ -8,7 +8,6 @@ import hu.elte.txtuml.api.layout.Diagram;
 import hu.elte.txtuml.export.uml2.UML2;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.export.DiagramExporter;
-import hu.elte.txtuml.utils.eclipse.ClassLoaderProvider;
 
 /**
  * Utilities Class to convert txtUML representations

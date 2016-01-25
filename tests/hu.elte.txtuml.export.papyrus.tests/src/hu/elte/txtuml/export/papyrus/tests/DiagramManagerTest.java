@@ -2,11 +2,6 @@ package hu.elte.txtuml.export.papyrus.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import hu.elte.txtuml.export.papyrus.DiagramManager;
-import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
-import hu.elte.txtuml.export.papyrus.UMLModelManager;
-import hu.elte.txtuml.utils.eclipse.ProjectUtils;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -45,6 +40,11 @@ import org.eclipse.uml2.uml.resource.UMLResource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import hu.elte.txtuml.export.papyrus.DiagramManager;
+import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
+import hu.elte.txtuml.export.papyrus.UMLModelManager;
+import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 /**
  * Unit test for {@link DiagramManager}

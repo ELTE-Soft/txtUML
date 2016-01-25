@@ -1,9 +1,9 @@
 package hu.elte.txtuml.layout.visualizer.model;
 
-import hu.elte.txtuml.layout.visualizer.helpers.Helper;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import hu.elte.txtuml.layout.visualizer.helpers.Helper;
 
 /***
  * Class representing a link in a diagram. The abstract model consists of the
@@ -11,7 +11,7 @@ import java.util.List;
  * object. The physical line is represented with a series of Points, which are
  * accesible via the getRoute() method.
  * 
- * @author Balázs Gregorics
+ * @author Balï¿½zs Gregorics
  *
  */
 public class LineAssociation
@@ -152,7 +152,7 @@ public class LineAssociation
 	 * Enumaration representing the choice to select a route's starting or
 	 * ending point.
 	 * 
-	 * @author Balázs Gregorics
+	 * @author Balï¿½zs Gregorics
 	 *
 	 */
 	public enum RouteConfig

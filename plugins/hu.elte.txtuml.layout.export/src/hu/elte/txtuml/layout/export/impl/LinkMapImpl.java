@@ -1,12 +1,12 @@
 package hu.elte.txtuml.layout.export.impl;
 
-import hu.elte.txtuml.layout.export.elementinfo.LinkInfo;
-import hu.elte.txtuml.layout.export.interfaces.LinkMap;
-import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+
+import hu.elte.txtuml.layout.export.elementinfo.LinkInfo;
+import hu.elte.txtuml.layout.export.interfaces.LinkMap;
+import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 
 /**
  * Default implementation for {@link LinkMap}.

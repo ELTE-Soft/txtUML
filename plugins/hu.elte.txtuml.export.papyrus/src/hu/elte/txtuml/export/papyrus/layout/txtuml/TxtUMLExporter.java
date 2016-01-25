@@ -1,10 +1,5 @@
 package hu.elte.txtuml.export.papyrus.layout.txtuml;
 
-import hu.elte.txtuml.export.ExportUtils;
-import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
-import hu.elte.txtuml.layout.export.DiagramExportationReport;
-import hu.elte.txtuml.utils.Pair;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +14,11 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
+
+import hu.elte.txtuml.export.ExportUtils;
+import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
+import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.utils.Pair;
 
 /**
  * This class helps preparing the {@link PapyrusVisualizer} from a txtUML model

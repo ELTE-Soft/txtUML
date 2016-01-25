@@ -1,11 +1,11 @@
 package hu.elte.txtuml.layout.export.interfaces;
 
+import java.util.Map;
+import java.util.Set;
+
 import hu.elte.txtuml.layout.export.elementinfo.LinkInfo;
 import hu.elte.txtuml.layout.export.impl.LinkMapImpl;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
-
-import java.util.Map;
-import java.util.Set;
 
 /**
  * 

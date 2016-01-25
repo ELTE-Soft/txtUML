@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout;
 
-import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,10 +11,12 @@ import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomState
 import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomTransitionGuardEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateEditPart;
 
+import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
+
 /**
  * Controls the arranging of a StateMachineDiagram with GMF algorithm
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public class StateMachineDiagramElementsGmfArranger extends
 		AbstractDiagramElementsGmfArranger {

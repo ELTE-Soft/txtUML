@@ -1,10 +1,10 @@
 package hu.elte.txtuml.api.model.backend;
 
+import java.util.Iterator;
+
 import hu.elte.txtuml.api.model.Collection;
 import hu.elte.txtuml.api.model.backend.collections.JavaCollectionOfMany;
 import hu.elte.txtuml.api.model.blocks.ParameterizedCondition;
-
-import java.util.Iterator;
 
 public class ManyCollection<T> implements Collection<T> {
 

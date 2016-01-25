@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout;
 
-import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,10 +10,12 @@ import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationMultiplicityS
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationMultiplicityTargetEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationNameEditPart;
 
+import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
+
 /**
  * Controls the arranging of a ClassDiagram with GMF algorithm
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public class ClassDiagramElementsGmfArranger extends AbstractDiagramElementsGmfArranger{
 

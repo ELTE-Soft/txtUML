@@ -1,12 +1,12 @@
 package hu.elte.txtuml.export.uml2.transform.backend;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.VariableExpr;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
-
 import java.util.HashMap;
 
 import org.eclipse.uml2.uml.Variable;
+
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.VariableExpr;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
 
 public interface VariableMap {
 

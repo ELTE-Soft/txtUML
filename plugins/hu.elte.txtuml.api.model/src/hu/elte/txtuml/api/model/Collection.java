@@ -1,12 +1,12 @@
 package hu.elte.txtuml.api.model;
 
-import hu.elte.txtuml.api.model.backend.ManyCollection;
-import hu.elte.txtuml.api.model.backend.SingleItemCollection;
-import hu.elte.txtuml.api.model.blocks.ParameterizedCondition;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Spliterator;
+
+import hu.elte.txtuml.api.model.backend.ManyCollection;
+import hu.elte.txtuml.api.model.backend.SingleItemCollection;
+import hu.elte.txtuml.api.model.blocks.ParameterizedCondition;
 
 /**
  * Base interface for immutable collections.

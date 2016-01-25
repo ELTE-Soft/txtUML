@@ -1,11 +1,15 @@
 package hu.elte.txtuml.validation.problems;
 
-import hu.elte.txtuml.validation.JtxtUMLCompilationParticipant;
-import hu.elte.txtuml.validation.SourceInfo;
-
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.core.dom.ASTNode;
 
+import hu.elte.txtuml.validation.JtxtUMLCompilationParticipant;
+import hu.elte.txtuml.validation.SourceInfo;
+
+/**
+ * Base class for all jtxtuml problems.
+ *
+ */
 public abstract class ValidationErrorBase extends CategorizedProblem {
 
 	private SourceInfo sourceInfo;

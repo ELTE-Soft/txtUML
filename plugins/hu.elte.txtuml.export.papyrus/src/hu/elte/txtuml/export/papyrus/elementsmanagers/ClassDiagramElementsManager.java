@@ -1,9 +1,5 @@
 package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
-import hu.elte.txtuml.export.papyrus.UMLModelManager;
-import hu.elte.txtuml.export.papyrus.api.ClassDiagramElementsController;
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
-
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,10 +36,14 @@ import org.eclipse.uml2.uml.Realization;
 import org.eclipse.uml2.uml.Reception;
 import org.eclipse.uml2.uml.Signal;
 
+import hu.elte.txtuml.export.papyrus.UMLModelManager;
+import hu.elte.txtuml.export.papyrus.api.ClassDiagramElementsController;
+import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+
 /**
  * An abstract class for adding/removing elements to ClassDiagrams.
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 

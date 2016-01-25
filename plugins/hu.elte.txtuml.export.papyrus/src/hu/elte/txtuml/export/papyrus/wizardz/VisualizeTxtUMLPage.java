@@ -1,10 +1,5 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
-import hu.elte.txtuml.utils.eclipse.NotFoundException;
-import hu.elte.txtuml.utils.eclipse.PackageUtils;
-import hu.elte.txtuml.utils.eclipse.ProjectUtils;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,6 +37,11 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+
+import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.utils.eclipse.NotFoundException;
+import hu.elte.txtuml.utils.eclipse.PackageUtils;
+import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 /**
  * The Page for txtUML visualization.

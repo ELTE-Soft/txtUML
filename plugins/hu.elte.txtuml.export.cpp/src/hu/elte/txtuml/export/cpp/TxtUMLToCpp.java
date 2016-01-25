@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.cpp;
 
-import hu.elte.txtuml.export.cpp.Uml2ToCpp;
-
 public class TxtUMLToCpp {
 	
 	private static final String HelpAOption="-h";

@@ -3,9 +3,10 @@
  */
 package hu.elte.txtuml.xtxtuml.ui;
 
-import hu.elte.txtuml.xtxtuml.ui.highlighting.XtxtUMLHighlightingCalculator;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.xtext.ui.editor.syntaxcoloring.ISemanticHighlightingCalculator;
+
+import hu.elte.txtuml.xtxtuml.ui.highlighting.XtxtUMLHighlightingCalculator;
 
 public class XtxtUMLUiModule extends hu.elte.txtuml.xtxtuml.ui.AbstractXtxtUMLUiModule {
 	

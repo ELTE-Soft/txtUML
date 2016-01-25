@@ -1,5 +1,14 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.boxes;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.DirectedEdge;
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.EdgeWeightedDigraph;
 import hu.elte.txtuml.layout.visualizer.events.ProgressManager;
@@ -20,20 +29,11 @@ import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.Quadruple;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-
 /**
  * This class arranges the boxes in the diagram using mainly a Bellman-Ford
  * shortest path algorithm.
  * 
- * @author Balázs Gregorics
+ * @author Balï¿½zs Gregorics
  *
  */
 public class ArrangeObjects

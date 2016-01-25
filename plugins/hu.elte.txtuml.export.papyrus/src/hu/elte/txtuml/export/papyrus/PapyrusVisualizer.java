@@ -1,9 +1,5 @@
 package hu.elte.txtuml.export.papyrus;
 
-import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
-import hu.elte.txtuml.export.papyrus.utils.EditorOpener;
-import hu.elte.txtuml.utils.eclipse.ProjectUtils;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -13,6 +9,10 @@ import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.infra.core.resource.ModelMultiException;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
+
+import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
+import hu.elte.txtuml.export.papyrus.utils.EditorOpener;
+import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 /**
  * Our sample action implements workbench action delegate.

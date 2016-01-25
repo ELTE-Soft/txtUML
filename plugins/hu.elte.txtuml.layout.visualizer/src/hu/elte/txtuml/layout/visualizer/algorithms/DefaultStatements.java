@@ -1,5 +1,13 @@
 package hu.elte.txtuml.layout.visualizer.algorithms;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import hu.elte.txtuml.layout.visualizer.algorithms.BreathFirstSearch.LabelType;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Graph;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Link;
@@ -12,19 +20,11 @@ import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementLevel;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 /**
  * This class generates the necessary default statements to auto layout a
  * diagram.
  * 
- * @author Balázs Gregorics
+ * @author Balï¿½zs Gregorics
  *
  */
 public class DefaultStatements

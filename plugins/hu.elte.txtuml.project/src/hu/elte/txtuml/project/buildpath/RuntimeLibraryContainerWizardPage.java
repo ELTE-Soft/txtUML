@@ -1,7 +1,5 @@
 package hu.elte.txtuml.project.buildpath;
 
-import hu.elte.txtuml.project.Messages;
-
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.ui.wizards.IClasspathContainerPage;
@@ -11,6 +9,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+
+import hu.elte.txtuml.project.Messages;
 
 /**
  * Shows an informational page about the executor runtime library.

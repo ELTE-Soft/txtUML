@@ -5,7 +5,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
@@ -25,6 +24,7 @@ import org.eclipse.swt.widgets.Group;
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.project.ModelCreator;
 import hu.elte.txtuml.utils.Logger;
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 
 /**
  * This dialog uses source container, package and type name inputs from
@@ -138,28 +138,11 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 	protected IStatus packageChanged() {
 		IStatus status = super.packageChanged();
 		if (status.isOK()) {
-			if (isModelPackage(getPackageFragment())) {
+			if (ElementTypeTeller.isModelPackage(getPackageFragment())) {
 				((StatusInfo) status).setError("The selected package is already a model package");
 			}
 		}
 		return status;
-	}
-
-	public static boolean isModelPackage(IPackageFragment pack) {
-		try {
-			IJavaProject javaProject = pack.getJavaProject();
-			String packageName = pack.getElementName();
-			for (IPackageFragmentRoot pfRoot : javaProject.getPackageFragmentRoots()) {
-				if (!pfRoot.isExternal()) {
-					if (isModelPackage(pfRoot, packageName)) {
-						return true;
-					}
-				}
-			}
-		} catch (JavaModelException e) {
-			Logger.logError("Error while checking compilation unit", e);
-		}
-		return false;
 	}
 
 	/**

@@ -1,7 +1,7 @@
 package hu.elte.txtuml.export.cpp;
 
 /***********************************************************
- * Author: Hack János
+ * Author: Hack Jï¿½nos
  * Version 0.9 2014.02.25
  * Email:zodiakus (at) elte.hu
  **********************************************************/
@@ -34,10 +34,10 @@ import org.eclipse.uml2.uml.Trigger;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
-import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.Options;
+import hu.elte.txtuml.utils.Pair;
 
 public class ClassExporter 
 {

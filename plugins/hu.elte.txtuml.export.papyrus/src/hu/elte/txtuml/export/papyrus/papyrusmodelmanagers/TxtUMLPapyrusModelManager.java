@@ -1,17 +1,5 @@
 package hu.elte.txtuml.export.papyrus.papyrusmodelmanagers;
 
-import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout.StateMachineDiagramElementsGmfArranger;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.ClassDiagramElementsTxtUmlArranger;
-import hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager;
-import hu.elte.txtuml.export.papyrus.elementsmanagers.ClassDiagramElementsManager;
-import hu.elte.txtuml.export.papyrus.elementsmanagers.StateMachineDiagramElementsManager;
-import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
-import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
-import hu.elte.txtuml.utils.Pair;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +12,18 @@ import org.eclipse.papyrus.uml.diagram.clazz.CreateClassDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.statemachine.CreateStateMachineDiagramCommand;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.StateMachine;
+
+import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout.StateMachineDiagramElementsGmfArranger;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.ClassDiagramElementsTxtUmlArranger;
+import hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager;
+import hu.elte.txtuml.export.papyrus.elementsmanagers.ClassDiagramElementsManager;
+import hu.elte.txtuml.export.papyrus.elementsmanagers.StateMachineDiagramElementsManager;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
+import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.utils.Pair;
 
 /**
  * 

@@ -1,11 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.visitors;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.controls.ForActionExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.controls.ForEachActionExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.controls.IfActionExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.controls.WhileActionExporter;
-
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CatchClause;
@@ -19,6 +13,12 @@ import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
+
+import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.controls.ForActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.controls.ForEachActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.controls.IfActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.controls.WhileActionExporter;
 
 /**
  * TODO BlockVisitor

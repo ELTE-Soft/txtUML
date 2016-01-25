@@ -1,7 +1,7 @@
 package hu.elte.txtuml.export.cpp;
 
 /***********************************************************
- * Author: Hack János
+ * Author: Hack Jï¿½nos
  * Version 0.9 2014.02.25
  * Email:zodiakus (at) elte.hu
  * upcoming features:
@@ -25,11 +25,11 @@ import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.WrappedException;
+import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
-import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;

@@ -1,5 +1,12 @@
 package hu.elte.txtuml.layout.visualizer.helpers;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
@@ -9,18 +16,11 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-
 /**
  * Static class for various algorithm related helping tasks, such as
  * conversions, cloning or parsing.
  * 
- * @author Balázs Gregorics
+ * @author Balï¿½zs Gregorics
  *
  */
 public class Helper

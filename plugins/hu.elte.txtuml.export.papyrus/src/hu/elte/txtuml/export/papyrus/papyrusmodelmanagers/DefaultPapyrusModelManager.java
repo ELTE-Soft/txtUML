@@ -1,16 +1,5 @@
 package hu.elte.txtuml.export.papyrus.papyrusmodelmanagers;
 
-import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout.ActivityDiagramElementsGmfArranger;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout.ClassDiagramElementsGmfArranger;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout.StateMachineDiagramElementsGmfArranger;
-import hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager;
-import hu.elte.txtuml.export.papyrus.elementsmanagers.ActivityDiagramElementsManager;
-import hu.elte.txtuml.export.papyrus.elementsmanagers.ClassDiagramElementsManager;
-import hu.elte.txtuml.export.papyrus.elementsmanagers.StateMachineDiagramElementsManager;
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,10 +16,21 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.StateMachine;
 
+import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout.ActivityDiagramElementsGmfArranger;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout.ClassDiagramElementsGmfArranger;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout.StateMachineDiagramElementsGmfArranger;
+import hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager;
+import hu.elte.txtuml.export.papyrus.elementsmanagers.ActivityDiagramElementsManager;
+import hu.elte.txtuml.export.papyrus.elementsmanagers.ClassDiagramElementsManager;
+import hu.elte.txtuml.export.papyrus.elementsmanagers.StateMachineDiagramElementsManager;
+import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+
 /**
  *	The Default representation of Papyrus Model manager
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public class DefaultPapyrusModelManager extends AbstractPapyrusModelManager {
 

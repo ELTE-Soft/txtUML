@@ -2,8 +2,8 @@ package hu.elte.txtuml.api.model.backend.log;
 
 import hu.elte.txtuml.api.model.Region;
 import hu.elte.txtuml.api.model.Signal;
-import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
+import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.report.ModelExecutionEventsListener;
 
 final class ModelExecutionEventsListenerImpl extends BaseListenerImpl

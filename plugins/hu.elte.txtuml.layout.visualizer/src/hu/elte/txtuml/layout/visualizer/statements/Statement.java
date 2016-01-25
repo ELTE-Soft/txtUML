@@ -1,16 +1,16 @@
 package hu.elte.txtuml.layout.visualizer.statements;
 
+import java.util.ArrayList;
+
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
 import hu.elte.txtuml.layout.visualizer.helpers.Helper;
-
-import java.util.ArrayList;
 
 /**
  * Statement class represents a layout statement defined on a diagram object or
  * link. These support the algorithm to arrange the objects and the links.
  * 
- * @author Balázs Gregorics
+ * @author Balï¿½zs Gregorics
  *
  */
 public class Statement

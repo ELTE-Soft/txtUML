@@ -12,8 +12,6 @@ import org.eclipse.xtext.naming.QualifiedName
 import org.eclipse.xtext.service.AbstractGenericModule
 import org.eclipse.xtext.util.Modules2
 
-import static hu.elte.txtuml.xtxtuml.tests.PackageNameCalculatorStubProvider.*
-
 class CustomXtxtUMLInjectorProvider extends XtxtUMLInjectorProvider {
 
 	override Injector internalCreateInjector() {

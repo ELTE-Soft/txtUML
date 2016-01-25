@@ -1,9 +1,9 @@
 package hu.elte.txtuml.api.model.backend.collections.impl;
 
+import java.util.HashMap;
+
 import hu.elte.txtuml.api.model.AssociationEnd;
 import hu.elte.txtuml.api.model.backend.collections.AssociationsMap;
-
-import java.util.HashMap;
 
 /**
  * Default implementation for {@link AssociationsMap}.

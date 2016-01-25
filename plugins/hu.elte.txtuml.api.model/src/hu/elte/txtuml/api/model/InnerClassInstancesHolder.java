@@ -1,9 +1,9 @@
 package hu.elte.txtuml.api.model;
 
-import hu.elte.txtuml.utils.InstanceCreator;
-
 import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.MutableClassToInstanceMap;
+
+import hu.elte.txtuml.utils.InstanceCreator;
 
 /**
  * An abstract class which contains a mapping to single instances of its inner

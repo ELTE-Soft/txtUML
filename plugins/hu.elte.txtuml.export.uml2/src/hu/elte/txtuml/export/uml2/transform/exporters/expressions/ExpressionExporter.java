@@ -4,19 +4,6 @@ import static org.eclipse.uml2.uml.ParameterDirectionKind.INOUT_LITERAL;
 import static org.eclipse.uml2.uml.ParameterDirectionKind.IN_LITERAL;
 import static org.eclipse.uml2.uml.ParameterDirectionKind.OUT_LITERAL;
 import static org.eclipse.uml2.uml.ParameterDirectionKind.RETURN_LITERAL;
-import hu.elte.txtuml.export.uml2.transform.backend.ParameterMap;
-import hu.elte.txtuml.export.uml2.transform.backend.VariableMap;
-import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.actions.CreateObjectActionExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.actions.DeleteObjectActionExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.actions.LinkActionExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.actions.SendActionExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.actions.StartActionExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.actions.UnlinkActionExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.TypeExpr;
-import hu.elte.txtuml.export.uml2.utils.ControlStructureEditor;
-import hu.elte.txtuml.utils.Pair;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -50,6 +37,20 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValueSpecification;
 import org.eclipse.uml2.uml.ValueSpecificationAction;
 import org.eclipse.uml2.uml.Variable;
+
+import hu.elte.txtuml.export.uml2.transform.backend.ParameterMap;
+import hu.elte.txtuml.export.uml2.transform.backend.VariableMap;
+import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.actions.CreateObjectActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.actions.DeleteObjectActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.actions.LinkActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.actions.SendActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.actions.StartActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.actions.UnlinkActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.TypeExpr;
+import hu.elte.txtuml.export.uml2.utils.ControlStructureEditor;
+import hu.elte.txtuml.utils.Pair;
 
 public class ExpressionExporter extends ControlStructureEditor {
 

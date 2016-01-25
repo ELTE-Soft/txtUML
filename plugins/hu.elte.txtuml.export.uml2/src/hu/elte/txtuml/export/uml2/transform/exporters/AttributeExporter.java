@@ -1,8 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.exporters;
 
-import hu.elte.txtuml.export.uml2.mapping.ModelMapCollector;
-import hu.elte.txtuml.export.uml2.utils.ElementModifiersAssigner;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -13,6 +10,9 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
+
+import hu.elte.txtuml.export.uml2.mapping.ModelMapCollector;
+import hu.elte.txtuml.export.uml2.utils.ElementModifiersAssigner;
 
 public class AttributeExporter {
 
@@ -43,7 +43,7 @@ public class AttributeExporter {
 	 *            The specified field declaration.
 	 * @return A collection of the exported attributes.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ï¿½dï¿½m Ancsin
 	 */
 	public Collection<Property> exportClassifierAttributesFromFieldDeclaration(
 			FieldDeclaration fieldDeclaration) {
@@ -73,7 +73,7 @@ public class AttributeExporter {
 	 *            The given attribute type.
 	 * @return
 	 *
-	 * @author Ádám Ancsin
+	 * @author ï¿½dï¿½m Ancsin
 	 */
 	private Property createClassifierAttribute(String attributeName,
 			org.eclipse.uml2.uml.Type attributeType) {
@@ -97,7 +97,7 @@ public class AttributeExporter {
 	 *            The specified field declaration.
 	 * @return A map of the obtained attribute names and types.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ï¿½dï¿½m Ancsin
 	 */
 	private Map<String, org.eclipse.uml2.uml.Type> obtainAttributeNamesAndTypesFromFieldDeclaration(
 			FieldDeclaration fieldDeclaration) {

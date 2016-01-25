@@ -1,8 +1,8 @@
 package hu.elte.txtuml.api.model.backend.collections.impl;
 
-import hu.elte.txtuml.api.model.backend.collections.JavaCollectionOfMany;
-
 import java.util.ArrayList;
+
+import hu.elte.txtuml.api.model.backend.collections.JavaCollectionOfMany;
 
 /**
  * Default implementation for {@link JavaCollectionOfMany}.

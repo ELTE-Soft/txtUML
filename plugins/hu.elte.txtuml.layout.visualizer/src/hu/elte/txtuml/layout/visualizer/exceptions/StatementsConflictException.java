@@ -1,13 +1,13 @@
 package hu.elte.txtuml.layout.visualizer.exceptions;
 
-import hu.elte.txtuml.layout.visualizer.statements.Statement;
-
 import java.util.List;
+
+import hu.elte.txtuml.layout.visualizer.statements.Statement;
 
 /**
  * Exception indicating that conflicts were detected in the statements.
  * 
- * @author Balázs Gregorics
+ * @author Balï¿½zs Gregorics
  */
 public class StatementsConflictException extends MyException
 {

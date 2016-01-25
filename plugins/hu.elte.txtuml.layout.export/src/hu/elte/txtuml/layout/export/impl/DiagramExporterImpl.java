@@ -19,6 +19,7 @@ import hu.elte.txtuml.api.layout.RightMost;
 import hu.elte.txtuml.api.layout.Row;
 import hu.elte.txtuml.api.layout.Show;
 import hu.elte.txtuml.api.layout.South;
+import hu.elte.txtuml.api.layout.Spacing;
 import hu.elte.txtuml.api.layout.TopMost;
 import hu.elte.txtuml.api.layout.West;
 import hu.elte.txtuml.api.layout.containers.AboveContainer;
@@ -196,6 +197,8 @@ public class DiagramExporterImpl implements DiagramExporter {
 			} else if (isOfType(Diamond.class, annot)) {
 				statementExporter.exportDiamond((Diamond) annot);
 
+			} else if (isOfType(Spacing.class, annot)) {
+				statementExporter.exportCorridorRatio((Spacing) annot);
 			} else if (isOfType(AboveContainer.class, annot)) {
 				statementExporter.exportAboveContainer((AboveContainer) annot);
 

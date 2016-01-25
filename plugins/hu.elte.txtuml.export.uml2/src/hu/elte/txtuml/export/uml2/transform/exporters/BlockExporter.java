@@ -1,11 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.exporters;
 
-import hu.elte.txtuml.export.uml2.transform.backend.ParameterMap;
-import hu.elte.txtuml.export.uml2.transform.backend.VariableMap;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
-import hu.elte.txtuml.export.uml2.transform.visitors.BlockVisitor;
-import hu.elte.txtuml.export.uml2.utils.ControlStructureEditor;
-
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Block;
@@ -13,6 +7,12 @@ import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.uml2.uml.ExecutableNode;
 import org.eclipse.uml2.uml.SequenceNode;
 import org.eclipse.uml2.uml.StructuredActivityNode;
+
+import hu.elte.txtuml.export.uml2.transform.backend.ParameterMap;
+import hu.elte.txtuml.export.uml2.transform.backend.VariableMap;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
+import hu.elte.txtuml.export.uml2.transform.visitors.BlockVisitor;
+import hu.elte.txtuml.export.uml2.utils.ControlStructureEditor;
 
 public class BlockExporter extends ControlStructureEditor {
 

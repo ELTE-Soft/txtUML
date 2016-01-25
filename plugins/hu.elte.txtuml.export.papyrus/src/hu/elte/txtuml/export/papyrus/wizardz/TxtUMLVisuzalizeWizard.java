@@ -1,14 +1,5 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
-import hu.elte.txtuml.export.ExportUtils;
-import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
-import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLExporter;
-import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
-import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.TxtUMLPapyrusModelManager;
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
-import hu.elte.txtuml.layout.export.DiagramExportationReport;
-import hu.elte.txtuml.utils.eclipse.Dialogs;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,6 +12,15 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
+
+import hu.elte.txtuml.export.ExportUtils;
+import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLExporter;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
+import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.TxtUMLPapyrusModelManager;
+import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 /**
  * Wizard for visualization of txtUML models

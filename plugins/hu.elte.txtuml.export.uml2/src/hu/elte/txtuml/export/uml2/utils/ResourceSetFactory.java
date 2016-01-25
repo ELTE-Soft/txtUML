@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.uml2.utils;
 
-import hu.elte.txtuml.export.uml2.transform.backend.ExporterConfiguration;
-
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
@@ -10,6 +8,8 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
+
+import hu.elte.txtuml.export.uml2.transform.backend.ExporterConfiguration;
 
 /**
  * A factory for creating and initializing resource sets that can be used by the

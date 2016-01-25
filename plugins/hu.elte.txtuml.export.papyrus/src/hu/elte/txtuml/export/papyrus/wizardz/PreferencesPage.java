@@ -1,18 +1,18 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesUI;
-
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 
+import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.export.papyrus.preferences.PreferencesUI;
+
 /**
  * A PreferencesPage for the visualization wizard.
  * The UI is the same as by {@link hu.elte.txtuml.export.papyrus.preferences.PreferencesPage PreferencesPage}
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public class PreferencesPage extends WizardPage{
 

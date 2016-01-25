@@ -1,13 +1,13 @@
 package hu.elte.txtuml.layout.export.impl;
 
+import java.util.HashMap;
+
 import hu.elte.txtuml.layout.export.elementinfo.LinkGroupInfo;
 import hu.elte.txtuml.layout.export.interfaces.LinkGroupMap;
 
-import java.util.HashMap;
-
 /**
  * 
- * @author Dávid János Németh
+ * @author Dï¿½vid Jï¿½nos Nï¿½meth
  *
  */
 @SuppressWarnings("serial")

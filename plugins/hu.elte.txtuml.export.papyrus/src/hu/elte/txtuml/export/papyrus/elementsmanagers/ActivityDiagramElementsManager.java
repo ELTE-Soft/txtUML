@@ -1,9 +1,5 @@
 package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
-import hu.elte.txtuml.export.papyrus.UMLModelManager;
-import hu.elte.txtuml.export.papyrus.api.ActivityDiagramElementsController;
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
-
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,10 +35,14 @@ import org.eclipse.uml2.uml.SendObjectAction;
 import org.eclipse.uml2.uml.SendSignalAction;
 import org.eclipse.uml2.uml.ValueSpecificationAction;
 
+import hu.elte.txtuml.export.papyrus.UMLModelManager;
+import hu.elte.txtuml.export.papyrus.api.ActivityDiagramElementsController;
+import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+
 /**
  * An abstract class for adding/removing elements to ActivityDiagrams.
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public class ActivityDiagramElementsManager extends AbstractDiagramElementsManager{
 	

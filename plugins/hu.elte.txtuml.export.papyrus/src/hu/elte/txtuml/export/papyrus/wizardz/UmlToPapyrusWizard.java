@@ -1,9 +1,5 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
-import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
-import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;
-import hu.elte.txtuml.utils.eclipse.Dialogs;
-
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 
@@ -13,6 +9,10 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
+
+import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
+import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;
+import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 /**
  * Wizard for visualizing Eclipse UML2 file from local filesystem
