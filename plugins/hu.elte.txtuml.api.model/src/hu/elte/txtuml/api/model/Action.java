@@ -1,8 +1,5 @@
 package hu.elte.txtuml.api.model;
 
-import javax.sound.sampled.Port;
-
-import hu.elte.txtuml.api.model.Connector.ConnectorEnd;
 import hu.elte.txtuml.api.model.ModelExecutor.Report;
 import hu.elte.txtuml.api.model.backend.MultipleContainerException;
 import hu.elte.txtuml.api.model.backend.MultiplicityException;
@@ -66,11 +63,13 @@ public class Action implements ModelElement {
 	 * @throws NullPointerException
 	 *             if <code>classType</code> is <code>null</code>
 	 */
-	public static <T extends ModelClass> T create(Class<T> classType, Object... parameters) {
+	public static <T extends ModelClass> T create(Class<T> classType,
+			Object... parameters) {
 		try {
 			return InstanceCreator.create(classType, parameters);
 		} catch (IllegalArgumentException | RuntimeInvocationTargetException e) {
-			Report.error.forEach(x -> x.modelObjectCreationFailed(classType, parameters));
+			Report.error.forEach(x -> x.modelObjectCreationFailed(classType,
+					parameters));
 			return null;
 		}
 	}
@@ -90,52 +89,6 @@ public class Action implements ModelElement {
 	 */
 	public static void delete(ModelClass obj) {
 		obj.forceDelete();
-	}
-
-	/**
-	 * Connects two ports through the specified assembly connector.
-	 * <p>
-	 * The two specified ends must be the two different ends of the same
-	 * connector. None of the parameters should be <code>null</code>.
-	 * 
-	 * @param leftEnd
-	 *            the left end of the connector
-	 * @param leftPort
-	 *            the port instance at the left end of the connector
-	 * @param rightEnd
-	 *            the right end of the connector
-	 * @param rightPort
-	 *            the port instance at the right end of the connector
-	 * @throws NullPointerException
-	 *             if either <code>leftPort</code> or <code>rightPort</code> is
-	 *             <code>null</code>
-	 */
-	public static <C1 extends ConnectorEnd<?, P1>, P1 extends Port<I1, I2>, C2 extends ConnectorEnd<?, P2>, P2 extends Port<I2, I1>, I1 extends Interface, I2 extends Interface> void connect(
-			Class<C1> leftEnd, P1 leftPort, Class<C2> rightEnd, P2 rightPort) {
-		leftPort.connectToPort(rightPort);
-		rightPort.connectToPort(leftPort);
-	}
-
-	/**
-	 * Connects two ports through the specified delegation connector.
-	 * <p>
-	 * The two specified ends must be the two different ends of the same
-	 * connector. None of the parameters should be <code>null</code>.
-	 * 
-	 * @param parentPort
-	 *            the port instance of the container object
-	 * @param childEnd
-	 *            the end at the contained object
-	 * @param childPort
-	 *            the port instance of the contained object
-	 * @throws NullPointerException
-	 *             if either <code>leftPort</code> or <code>rightPort</code> is
-	 *             <code>null</code>
-	 */
-	public static <P1 extends Port<I1, I2>, C extends ConnectorEnd<?, P2>, P2 extends Port<I1, I2>, I1 extends Interface, I2 extends Interface> void connect(
-			P1 parentPort, Class<C> childEnd, P2 childPort) {
-		parentPort.connectToPort(childPort);
-		childPort.connectToPort(parentPort);
 	}
 
 	/**
@@ -166,27 +119,29 @@ public class Action implements ModelElement {
 	 * @see AssociationEnd
 	 * @see ModelClass.Status#DELETED
 	 */
-	public static <L extends ModelClass, R extends ModelClass> void link(Class<? extends AssociationEnd<L, ?>> leftEnd,
-			L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj) {
+	public static <L extends ModelClass, R extends ModelClass> void link(
+			Class<? extends AssociationEnd<L, ?>> leftEnd, L leftObj,
+			Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj) {
 
 		if (isLinkingDeleted(leftObj) || isLinkingDeleted(rightObj)) {
 			return;
 		}
 
-		tryAddToAssoc(leftObj, rightEnd, rightObj, () -> {
-		});
+		tryAddToAssoc(leftObj, rightEnd, rightObj, () -> {});
 		tryAddToAssoc(rightObj, leftEnd, leftObj, () -> leftObj.removeFromAssoc(rightEnd, rightObj));
 	}
-
+	
 	private static <R extends ModelClass, L extends ModelClass> void tryAddToAssoc(L leftObj,
 			Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj, Runnable rollBack) {
 		try {
 			leftObj.addToAssoc(rightEnd, rightObj);
 			return;
 		} catch (MultiplicityException e) {
-			Report.error.forEach(x -> x.upperBoundOfMultiplicityOffended(leftObj, rightEnd));
+			Report.error.forEach(x -> x.upperBoundOfMultiplicityOffended(
+					leftObj, rightEnd));
 		} catch (MultipleContainerException e) {
-			Report.error.forEach(x -> x.multipleContainerForAnObject(leftObj, rightEnd));
+			Report.error.forEach(x -> x.multipleContainerForAnObject(
+					leftObj, rightEnd));
 		}
 		rollBack.run();
 	}
@@ -240,17 +195,19 @@ public class Action implements ModelElement {
 	 * @see AssociationEnd
 	 */
 	public static <L extends ModelClass, R extends ModelClass> void unlink(
-			Class<? extends AssociationEnd<L, ?>> leftEnd, L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd,
-			R rightObj) {
+			Class<? extends AssociationEnd<L, ?>> leftEnd, L leftObj,
+			Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj) {
 
 		if (isUnlinkingDeleted(leftObj) || isUnlinkingDeleted(rightObj)) {
 			return;
 		}
 
 		if (ModelExecutor.Settings.dynamicChecks()) {
-			if (!leftObj.hasAssoc(rightEnd, rightObj) || !rightObj.hasAssoc(leftEnd, leftObj)) {
+			if (!leftObj.hasAssoc(rightEnd, rightObj)
+					|| !rightObj.hasAssoc(leftEnd, leftObj)) {
 
-				Report.warning.forEach(x -> x.unlinkingNonExistingAssociation(leftObj, rightObj));
+				Report.warning.forEach(x -> x.unlinkingNonExistingAssociation(
+						leftObj, rightObj));
 				return;
 			}
 		}
@@ -296,20 +253,6 @@ public class Action implements ModelElement {
 		}
 
 		obj.start();
-	}
-
-	/**
-	 * Asynchronously sends the specified signal through the specified reception.
-	 * 
-	 * @param reception
-	 *            the reception which will accept the signal
-	 * @param signal
-	 *            the signal object to send
-	 * @throws NullPointerException
-	 *             if <code>reception</code> is <code>null</code>
-	 */
-	public static <S extends Signal> void send(Reception<S> reception, S signal) {
-		reception.accept(signal);
 	}
 
 	/**

@@ -48,3 +48,4 @@ Export-Package: hu.elte.txtuml.export.papyrus,
  hu.elte.txtuml.export.papyrus.papyrusmodelmanagers,
  hu.elte.txtuml.export.papyrus.preferences,
  hu.elte.txtuml.export.papyrus.wizardz
+Import-Package: hu.elte.txtuml.utils.eclipse

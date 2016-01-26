@@ -3,11 +3,6 @@ package hu.elte.txtuml.api.model;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.sound.sampled.Port;
-
-import com.google.common.collect.ClassToInstanceMap;
-import com.google.common.collect.MutableClassToInstanceMap;
-
 import hu.elte.txtuml.api.model.ModelExecutor.Report;
 import hu.elte.txtuml.api.model.assocends.Aggregation;
 import hu.elte.txtuml.api.model.assocends.Navigability;
@@ -196,8 +191,6 @@ public class ModelClass extends Region {
 	 */
 	private final AssociationsMap associations = AssociationsMap.create();
 
-	private final ClassToInstanceMap<Port<?, ?>> ports = MutableClassToInstanceMap.create();
-
 	/**
 	 * Sole constructor of <code>ModelClass</code>. Creates the unique
 	 * identifier of this object and after setting its current vertex to its
@@ -375,28 +368,6 @@ public class ModelClass extends Region {
 			Report.error.forEach(x -> x.lowerBoundOfMultiplicityOffended(this, assocEnd));
 		}
 
-	}
-
-	/**
-	 * Gets the instance of the specified port type on this model object.
-	 * 
-	 * @param portType
-	 *            a specific port type which has to be a port type on this model
-	 *            class
-	 * @return the instance of the specified port type
-	 */
-	public <P extends Port<?, ?>> P port(Class<P> portType) {
-		P inst = ports.getInstance(portType);
-
-		if (inst == null) {
-			inst = InstanceCreator.create(portType, this);
-			if (portType.isAnnotationPresent(BehaviorPort.class)) {
-				inst.connectToSM(this);
-			}
-			ports.putInstance(portType, inst);
-		}
-
-		return inst;
 	}
 
 	@Override
