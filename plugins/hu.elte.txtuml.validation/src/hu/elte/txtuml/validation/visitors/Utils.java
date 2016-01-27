@@ -34,7 +34,7 @@ public class Utils {
 			Modifier modifier = (Modifier) obj;
 			boolean valid;
 			if (modifier.isStatic()) {
-				valid = elem instanceof TypeDeclaration && ElementTypeTeller.isSignal((TypeDeclaration) elem);
+				valid = false;
 			} else {
 				valid = modifier.isPrivate() || modifier.isPublic();
 			}

@@ -11,8 +11,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.launching,
  org.eclipse.debug.ui,
  org.eclipse.jdt.debug.ui,
- org.eclipse.papyrus.moka.ui;bundle-version="1.1.0",
  org.eclipse.emf.ecore,
+ org.eclipse.papyrus.infra.services.markerlistener,
+ org.eclipse.papyrus.infra.gmfdiag.css,
  hu.elte.txtuml.export.uml2;bundle-version="0.3.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
