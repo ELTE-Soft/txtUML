@@ -34,7 +34,7 @@ public class A extends ModelClass {
 
 		@Override
 		public boolean guard() {
-			Sig s = getSignal(Sig.class);
+			Sig s = getSignal();
 			return s.value == 0;
 		}
 
@@ -47,7 +47,7 @@ public class A extends ModelClass {
 
 		@Override
 		public boolean guard() {
-			Sig s = getSignal(Sig.class);
+			Sig s = getSignal();
 			return s.value == 1;
 		}
 

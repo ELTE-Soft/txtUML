@@ -48,7 +48,7 @@ public class TopClass extends ModelClass {
 		@Override
 		public void effect() {
 			PingClass ping = assoc(TopClass_PingClass.ping.class).selectAny();
-			Action.send(ping, getSignal(PongSignal.class));
+			Action.send(ping, getSignal());
 		}
 
 	}

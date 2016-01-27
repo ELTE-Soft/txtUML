@@ -324,7 +324,7 @@ public class Region extends StateMachine {
 	 */
 	private void executeTransition(Transition transition) {
 		callExitAction(transition.getSource(),
-				transition.getSignal(Signal.class));
+				transition.getSignal());
 		Report.event.forEach(x -> x.usingTransition(this, transition));
 		transition.effect();
 		currentVertex = transition.getTarget();
