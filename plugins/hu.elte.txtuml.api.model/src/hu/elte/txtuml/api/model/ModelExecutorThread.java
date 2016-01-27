@@ -60,11 +60,14 @@ class ModelExecutorThread extends Thread {
 	 * 
 	 * @param target
 	 *            the target of this send operation
+	 * @param port
+	 *            the port through which the signal arrived (might be
+	 *            {@code null} in case the signal did not arrive through a port)
 	 * @param signal
 	 *            the signal to send
 	 */
-	void send(Region target, Signal signal) {
-		newMailboxEntry(() -> target.process(signal));
+	void send(Region target, Port<?, ?> port, Signal signal) {
+		newMailboxEntry(() -> target.process(port, signal));
 	}
 
 	/**
@@ -118,8 +121,7 @@ class ModelExecutorThread extends Thread {
 	 * @param assocEnd
 	 *            the association end which's multiplicity is to be checked
 	 */
-	void checkLowerBoundOfMultiplicity(ModelClass obj,
-			Class<? extends AssociationEnd<?, ?>> assocEnd) {
+	void checkLowerBoundOfMultiplicity(ModelClass obj, Class<? extends AssociationEnd<?, ?>> assocEnd) {
 		checkQueue.add(() -> obj.checkLowerBound(assocEnd));
 	}
 

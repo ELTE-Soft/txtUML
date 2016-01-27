@@ -121,7 +121,7 @@ public abstract class Port<P extends Interface, R extends Interface> {
 		} else if (sender == neighbor1) {
 			if (neighbor2 == null) {
 				if (obj != null) {
-					Action.send(obj, signal);
+					ModelExecutor.send(obj, this, signal);
 				}
 			} else {
 				neighbor2.accept(signal, this);

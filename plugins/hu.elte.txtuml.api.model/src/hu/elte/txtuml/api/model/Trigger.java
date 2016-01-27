@@ -26,6 +26,10 @@ import java.lang.annotation.Target;
  * Transitions are only allowed to have no triggers if they are from an initial
  * pseudostate or a choice pseudostate. Therefore, transitions not included in
  * these two cases must have exactly one trigger defined.
+ * <p>
+ * It is also possible to restrict the trigger to only accept signals that
+ * appear on a specific port. For this, set a value to the {@link Trigger#port()
+ * port} element.
  * 
  * <p>
  * <b>Example:</b>
@@ -58,5 +62,48 @@ public @interface Trigger {
 	 * The triggering signal of the transition this annotation is used on.
 	 */
 	Class<? extends Signal> value();
+
+	/**
+	 * The behavior port on which the triggering signal must appear. By default,
+	 * it equals to {@link AnyPort AnyPort.class}, which means that the
+	 * represented trigger may accept signals from any port (including cases
+	 * when the signal does arrive through a port).
+	 */
+	Class<? extends Port<?, ?>> port() default AnyPort.class;
+
+	/**
+	 * A special port type which is only used to mark at {@link Trigger#port()}
+	 * that the represented trigger may accept signals from any port (or even
+	 * signals that do not arrive through ports).
+	 * 
+	 * <p>
+	 * <b>Represents:</b> any port type
+	 * <p>
+	 * <b> Usage: </b>
+	 * <p>
+	 * As {@link Trigger#port()} equals to {@code AnyPort.class} by default,
+	 * this type does not need to be used in JtxtUML models directly.
+	 * 
+	 * <p>
+	 * <b>Java restrictions:</b>
+	 * <ul>
+	 * <li><i>Instantiate:</i> disallowed</li>
+	 * <li><i>Define subtype:</i> disallowed</li>
+	 * 
+	 * See the documentation of {@link StateMachine} for detailed examples about
+	 * defining state machines.
+	 * <p>
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * JtxtUML.
+	 *
+	 * @author Gabor Ferenc Kovacs
+	 *
+	 */
+	abstract class AnyPort extends Port<Interface, Interface> {
+
+		private AnyPort() {
+		}
+
+	}
 
 }

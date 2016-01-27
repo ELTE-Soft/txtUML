@@ -398,12 +398,12 @@ public class ModelClass extends Region {
 	}
 
 	@Override
-	void process(Signal signal) {
+	void process(Port<?, ?> port, Signal signal) {
 		if (isDeleted()) {
 			Report.warning.forEach(x -> x.signalArrivedToDeletedObject(this, signal));
 			return;
 		}
-		super.process(signal);
+		super.process(port, signal);
 	}
 
 	/**
