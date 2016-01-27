@@ -63,10 +63,17 @@ public class Connector implements ModelElement {
 	 * Connector ends should be defined as inner classes of a connector (a
 	 * subclass of {@link Connector}).
 	 * <p>
-	 * The first of the two generic parameters of a connector end has to be an
-	 * association end which is a non-composite (not a container) end of an
-	 * association. The second parameter must be a port on the class to which
-	 * the given association end (the first parameter) belongs to.
+	 * The first of the two generic parameters of a connector end has to be a
+	 * role of the class which this end belongs to. A role is represented by a
+	 * non-composite (not a container) association end of a composite
+	 * association (composition). The second parameter must be a port on the
+	 * class to which the given association end (the first parameter) belongs
+	 * to.
+	 * <p>
+	 * In case of a <b>delegation connector</b>, if this connector end belongs
+	 * to the container class, the first parameter should be the composite
+	 * (container) end of the same composite association (composition) which's
+	 * non-composite end is referenced in the other connector end.
 	 * 
 	 * <p>
 	 * <b>Java restrictions:</b>
@@ -82,16 +89,15 @@ public class Connector implements ModelElement {
 	 *
 	 * @author Gabor Ferenc Kovacs
 	 * @see Connector.One
-	 * @see Connector.IN_CONTAINER
 	 * 
 	 */
-	public class ConnectorEnd<AE extends AssociationEnd<?, ?>, P extends Port<?, ?>> {
+	public class ConnectorEnd<R extends AssociationEnd<?, ?>, P extends Port<?, ?>> {
 		ConnectorEnd() {
 		}
 	}
 
 	/**
-	 * Base class for connector endswith a multiplicity of 1.
+	 * Base class for connector ends with a multiplicity of 1.
 	 * 
 	 * <p>
 	 * <b>Represents:</b> connector end with a multiplicity of 1
@@ -136,32 +142,7 @@ public class Connector implements ModelElement {
 	 * @author Gabor Ferenc Kovacs
 	 * 
 	 */
-	public class One<AE extends AssociationEnd<?, ?>, P extends Port<?, ?>> extends ConnectorEnd<AE, P> {
-	}
-
-	/**
-	 * A special non-instantiatable, non-extendible class to be used as first
-	 * parameter of connector ends which are the container side ends of a
-	 * delegation connector.
-	 * 
-	 * <p>
-	 * <b>Java restrictions:</b>
-	 * <ul>
-	 * <li><i>Instantiate:</i> disallowed</li>
-	 * <li><i>Define subtype:</i> disallowed</li>
-	 * </ul>
-	 * 
-	 * <p>
-	 * See the documentation of {@link Model} for an overview on modeling in
-	 * JtxtUML.
-	 * 
-	 * @author Gabor Ferenc Kovacs
-	 * 
-	 */
-	@SuppressWarnings("rawtypes")
-	public abstract class IN_CONTAINER extends AssociationEnd {
-		private IN_CONTAINER() {
-		}
+	public class One<R extends AssociationEnd<?, ?>, P extends Port<?, ?>> extends ConnectorEnd<R, P> {
 	}
 
 }
