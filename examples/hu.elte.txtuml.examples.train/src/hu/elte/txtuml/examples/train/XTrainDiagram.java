@@ -1,12 +1,12 @@
 package hu.elte.txtuml.examples.train;
 
-import hu.elte.txtuml.api.layout.Diagram;
+import hu.elte.txtuml.api.layout.ClassDiagram;
 import hu.elte.txtuml.api.layout.Diamond;
 import hu.elte.txtuml.examples.train.xmodel.Engine;
 import hu.elte.txtuml.examples.train.xmodel.Gearbox;
 import hu.elte.txtuml.examples.train.xmodel.Lamp;
 
-class XTrainDiagram extends Diagram {
+class XTrainDiagram extends ClassDiagram {
 	class TopPhantom extends Phantom {
 	}
 
