@@ -78,9 +78,9 @@ class Gearbox {
 		to Neutral;
 		trigger Backward;
 		effect {
-			Engine e = Gearbox.this->GE::e.selectAny();
+			Engine e = Gearbox.this->(GE.e).selectAny();
 			send new EngineOff() to e;
-			Lamp l = Gearbox.this->GL::l.selectAny();
+			Lamp l = Gearbox.this->(GL.l).selectAny();
 			send new LightOff() to l;
 		}
 	}
@@ -90,15 +90,15 @@ class Gearbox {
 		to Neutral;
 		trigger Forward;
 		effect {
-			Engine e = Gearbox.this->GE::e.selectAny();
+			Engine e = Gearbox.this->(GE.e).selectAny();
 			send new EngineOff() to e;
-			Lamp l = Gearbox.this->GL::l.selectAny();
+			Lamp l = Gearbox.this->(GL.l).selectAny();
 			send new LightOff() to l;
 		}			
 	}
 	
 	void startEngineOp() {
-		Engine e = Gearbox.this->GE::e.selectAny();
+		Engine e = Gearbox.this->(GE.e).selectAny();
 		send new EngineOn() to e;
 	}
 }

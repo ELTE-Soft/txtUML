@@ -466,12 +466,8 @@ XMemberFeatureCall returns xbase::XExpression :
 			)? ')'
 		)?
 	| 
-		=>({RAlfAssocNavExpression.left=current} '->') right=[TUAssociationEnd|TUAssocEndName]
+		=>({RAlfAssocNavExpression.left=current} '->') '(' right=[TUAssociationEnd|QualifiedName] ')'
 	)*
-;
-
-TUAssocEndName :
-	ValidID (=>'::' ValidID)*
 ;
 
 // New Xtype rules
