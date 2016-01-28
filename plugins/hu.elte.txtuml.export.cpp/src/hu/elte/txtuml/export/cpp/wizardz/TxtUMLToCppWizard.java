@@ -96,8 +96,16 @@ public class TxtUMLToCppWizard extends Wizard{
 			}
 				
 			Uml2ToCppExporter cppExporter = new Uml2ToCppExporter(model,exporter.getConfigMap(),exporter.isMultiThreading(),runtimeOption,debugOption);
-			cppExporter.buildCppCode(projectFolder + File.separator + 
-					GenericFolderName + File.separator + txtUMLModel);
+			try {
+				cppExporter.buildCppCode(projectFolder + File.separator + 
+						GenericFolderName + File.separator + txtUMLModel);
+				
+				
+			} catch (Exception e) {
+				Dialogs.errorMsgb("Completion faild", e.getMessage(), e);
+				e.printStackTrace();
+			}
+
 			
 
 			

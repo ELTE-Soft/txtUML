@@ -101,35 +101,32 @@ public class Uml2ToCppExporter
 	}
 	
 	
-	public void buildCppCode(String outputDirectory) {
+	public void buildCppCode(String outputDirectory) throws IOException {
 
-		try {
 			
+		threadManager.createThreadPoolManager(outputDirectory + File.separator + "runtime");
 			
-			threadManager.createThreadPoolManager(outputDirectory + File.separator + "runtime");
+		Shared.writeOutSource(outputDirectory,(GenerationTemplates.EventHeader),createEventSource(elements));
 			
-			Shared.writeOutSource(outputDirectory,(GenerationTemplates.EventHeader),createEventSource(elements));
+		copyPreWrittenCppFiles(outputDirectory);	
 			
-			copyPreWrittenCppFiles(outputDirectory);	
-			
-			for(Class item: classList)
-			{	
-				classExporter.reiniIialize();
+		for(Class item: classList)
+		{	
+			classExporter.reiniIialize();
+			if (Options.ThreadManagement() ) {
 				classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
-				classExporter.createSource(item, outputDirectory);
-				
-				classNames.addAll(classExporter.getSubmachines());
-				classNames.add(item.getName());
+
 			}
+			classExporter.createSource(item, outputDirectory);
+				
+			classNames.addAll(classExporter.getSubmachines());
+			classNames.add(item.getName());
+		}
 			
-			createMakeFile(outputDirectory,DefaultModelName,DefaultMakeFileName,classNames);
+		createMakeFile(outputDirectory,DefaultModelName,DefaultMakeFileName,classNames);
 			
 			
-			System.out.println("Compile completed");
-		} catch(IOException e) {
-			System.out.println("\nCan not write out generated source the problem:");
-			System.out.println(e.getMessage());
-        }
+			
 	}
 	
 
