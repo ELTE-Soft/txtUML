@@ -18,9 +18,12 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import hu.elte.txtuml.api.model.Association;
 import hu.elte.txtuml.api.model.AssociationEnd;
 import hu.elte.txtuml.api.model.Composition;
+import hu.elte.txtuml.api.model.Connector;
 import hu.elte.txtuml.api.model.DataType;
+import hu.elte.txtuml.api.model.Interface;
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.Port;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.StateMachine.Choice;
 import hu.elte.txtuml.api.model.StateMachine.CompositeState;
@@ -128,7 +131,7 @@ public final class ElementTypeTeller {
 		String pack = qualifiedName.substring(0, lastSection);
 		return (compUnit.getImport(qualifiedName).exists() || compUnit.getImport(pack + ".*").exists());
 	}
-	
+
 	public static boolean isModelClass(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ModelClass.class);
 	}
@@ -172,7 +175,7 @@ public final class ElementTypeTeller {
 	public static boolean isState(ITypeBinding value) {
 		return hasSuperClass(value, State.class.getCanonicalName());
 	}
-	
+
 	public static boolean isCompositeState(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, CompositeState.class);
 	}
@@ -206,8 +209,19 @@ public final class ElementTypeTeller {
 	}
 
 	public static boolean isContainer(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
-				Aggregation.Composite.class);
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Aggregation.Composite.class);
+	}
+
+	public static boolean isPort(TypeDeclaration typeDeclaration) {
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Port.class);
+	}
+
+	public static boolean isInterface(TypeDeclaration typeDeclaration) {
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Interface.class);
+	}
+
+	public static boolean isConnector(TypeDeclaration typeDeclaration) {
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Connector.class);
 	}
 
 	public static boolean isSpecificClassifier(TypeDeclaration classifierDeclaration) {
@@ -235,7 +249,7 @@ public final class ElementTypeTeller {
 	public static boolean isExternalClass(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ExternalClass.class);
 	}
-	
+
 	public static boolean isExternalInterface(ITypeBinding type) {
 		return type.isInterface() && hasSuperInterface(type, ExternalType.class.getCanonicalName());
 	}
@@ -243,7 +257,7 @@ public final class ElementTypeTeller {
 	public static boolean isEffect(MethodDeclaration method) {
 		return method.getName().toString().equals("effect");
 	}
-	
+
 	public static boolean isGuard(MethodDeclaration method) {
 		return method.getName().toString().equals("guard");
 	}
@@ -276,5 +290,4 @@ public final class ElementTypeTeller {
 		}
 		return type != null;
 	}
-	
 }

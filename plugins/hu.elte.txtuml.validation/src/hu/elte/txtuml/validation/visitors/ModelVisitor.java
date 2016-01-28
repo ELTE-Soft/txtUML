@@ -16,7 +16,7 @@ public class ModelVisitor extends VisitorBase {
 	@Override
 	public boolean visit(TypeDeclaration elem) {
 		Utils.checkTemplate(collector, elem);
-		
+
 		if (ElementTypeTeller.isSignal(elem)) {
 			Utils.checkModifiers(collector, elem);
 			checkChildren(elem, Messages.ModelVisitor_signal_label, SignalVisitor.ALLOWED_SIGNAL_DECLARATIONS);
@@ -28,7 +28,8 @@ public class ModelVisitor extends VisitorBase {
 			} else {
 				acceptChildren(elem, new AssociationVisitor(elem, collector));
 			}
-			checkChildren(elem, Messages.ModelVisitor_association_label, AssociationVisitor.ALLOWED_ASSOCIATION_DECLARATIONS);
+			checkChildren(elem, Messages.ModelVisitor_association_label,
+					AssociationVisitor.ALLOWED_ASSOCIATION_DECLARATIONS);
 		} else if (ElementTypeTeller.isModelClass(elem)) {
 			checkChildren(elem, Messages.ModelVisitor_class_label, ModelClassVisitor.ALLOWED_MODEL_CLASS_DECLARATIONS);
 			acceptChildren(elem, new ModelClassVisitor(collector));
@@ -38,6 +39,10 @@ public class ModelVisitor extends VisitorBase {
 		} else if (ElementTypeTeller.isDataType(elem.resolveBinding())) {
 			checkChildren(elem, "data type", DataTypeVisitor.ALLOWED_DATA_TYPE_DECLARATIONS);
 			acceptChildren(elem, new DataTypeVisitor(collector));
+		} else if (ElementTypeTeller.isInterface(elem)) {
+			// TODO: check interfaces
+		} else if (ElementTypeTeller.isConnector(elem)) {
+			// TODO: check connectors
 		} else {
 			collector.report(new InvalidTypeInModel(collector.getSourceInfo(), elem));
 		}
