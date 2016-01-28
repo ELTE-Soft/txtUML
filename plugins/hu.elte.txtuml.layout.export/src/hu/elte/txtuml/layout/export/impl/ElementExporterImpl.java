@@ -94,10 +94,10 @@ public class ElementExporterImpl implements ElementExporter {
 		return containingModel == null ? null : containingModel.getName();
 	}
 	
-	@Override
+	/*@Override
 	public String getReferencedElementName() {
 		return sourceExporter == null ? "" : sourceExporter.getReferencedElementName(this.nodes);
-	}
+	}*/
 
 	@Override
 	public NodeMap getNodes() {

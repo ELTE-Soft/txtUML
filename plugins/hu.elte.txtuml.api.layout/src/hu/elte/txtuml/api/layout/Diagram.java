@@ -18,6 +18,9 @@ package hu.elte.txtuml.api.layout;
  */
 public abstract class Diagram {
 
+	
+	Diagram(){}
+	
 	/**
 	 * Base class for phantom nodes.
 	 */

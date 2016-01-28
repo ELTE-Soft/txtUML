@@ -1,12 +1,15 @@
 package hu.elte.txtuml.layout.export.impl;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
 
 import hu.elte.txtuml.api.layout.Above;
 import hu.elte.txtuml.api.layout.Below;
 import hu.elte.txtuml.api.layout.BottomMost;
+import hu.elte.txtuml.api.layout.ClassDiagram;
 import hu.elte.txtuml.api.layout.Column;
 import hu.elte.txtuml.api.layout.Spacing;
+import hu.elte.txtuml.api.layout.StateMachineDiagram;
 import hu.elte.txtuml.api.layout.Diagram;
 import hu.elte.txtuml.api.layout.Diagram.Layout;
 import hu.elte.txtuml.api.layout.Diamond;
@@ -83,7 +86,7 @@ public class DiagramExporterImpl implements DiagramExporter {
 
 		if (report.isSuccessful()) {
 			report.setModelName(elementExporter.getModelName());
-			report.setReferencedElementName(elementExporter.getReferencedElementName());
+			//report.setReferencedElementName(elementExporter.getReferencedElementName());
 			report.setType(elementExporter.getDiagramTypeBasedOnElements());
 			report.setStatements(statementExporter.getStatements());
 			report.setNodes(elementExporter.getNodesAsObjects());
@@ -97,6 +100,20 @@ public class DiagramExporterImpl implements DiagramExporter {
 	// All casts are checked with reflection.
 	private void exportDiagram() {
 
+		if(isClassDiagram(diagClass))
+		{
+			//report.setReferencedElementName(diagClass.getPackage().getName() + ".model");
+		} 
+		else if(isStateMachineDiagram(diagClass))
+		{
+			Class<?> cls = (Class<?>)((ParameterizedType)diagClass.getGenericSuperclass()).getActualTypeArguments()[0];
+			report.setReferencedElementName(cls.getCanonicalName());
+		}
+		else
+		{
+			report.error("No proper Diagram class found (ClassDiagram or StateMachineDiagram<T>)");
+		}
+		
 		Class<? extends Diagram.Layout> layoutClass = null;
 
 		for (Class<?> innerClass : diagClass.getDeclaredClasses()) {
@@ -140,6 +157,16 @@ public class DiagramExporterImpl implements DiagramExporter {
 		}
 	}
 
+	private boolean isClassDiagram(Class<? extends Diagram> cls)
+	{
+		return ClassDiagram.class.isAssignableFrom(cls);
+	}
+	
+	private boolean isStateMachineDiagram(Class<? extends Diagram> cls)
+	{
+		return StateMachineDiagram.class.isAssignableFrom(cls);
+	}
+	
 	private boolean isLayout(Class<?> cls) {
 		return Layout.class.isAssignableFrom(cls);
 	}

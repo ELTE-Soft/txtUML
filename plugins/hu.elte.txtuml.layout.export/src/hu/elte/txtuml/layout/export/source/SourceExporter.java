@@ -2,7 +2,6 @@ package hu.elte.txtuml.layout.export.source;
 
 import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
-import hu.elte.txtuml.layout.export.interfaces.NodeMap;
 import hu.elte.txtuml.layout.export.problems.ElementExportationException;
 import hu.elte.txtuml.utils.Pair;
 
@@ -26,9 +25,9 @@ public interface SourceExporter {
 	boolean isNode(Class<?> cls);
 
 	boolean isLink(Class<?> cls);
-	
-	String getReferencedElementName(NodeMap nodes);
 
+	//String getReferencedElementName(NodeMap nodes);
+	
 	/**
 	 * Called to get an identifier object of the model which contains
 	 * {@code element}.

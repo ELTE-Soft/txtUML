@@ -69,7 +69,7 @@ public class TxtUMLElementsRegistry {
 			String name = report.getReferencedElementName();
 			DiagramType type = report.getType();
 			if(type.equals(DiagramType.Class)){
-				findElement(name).ifPresent(
+				findElement(report.getModelName()).ifPresent(
 						e -> roots.add(new Triple<>(type, pair.getFirst(), e))
 					);
 			}else if(type.equals(DiagramType.StateMachine)){
