@@ -12,8 +12,6 @@ import hu.elte.txtuml.utils.eclipse.ClassLoaderProvider;
 
 /**
  * Utilities Class to convert txtUML representations
- *
- * @author Andr�s Dobreff
  */
 public class ExportUtils {
 	

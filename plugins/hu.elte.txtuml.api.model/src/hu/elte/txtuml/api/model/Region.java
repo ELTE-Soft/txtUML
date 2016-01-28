@@ -1,6 +1,7 @@
 package hu.elte.txtuml.api.model;
 
 import hu.elte.txtuml.api.model.ModelExecutor.Report;
+import hu.elte.txtuml.api.model.Trigger.AnyPort;
 import hu.elte.txtuml.api.model.backend.ElseException;
 import hu.elte.txtuml.api.model.backend.collections.InitialsMap;
 
@@ -28,9 +29,6 @@ import hu.elte.txtuml.api.model.backend.collections.InitialsMap;
  * <p>
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
- *
- * @author Gabor Ferenc Kovacs
- *
  */
 public class Region extends StateMachine {
 
@@ -112,7 +110,7 @@ public class Region extends StateMachine {
 	 *            the signal to send to this object
 	 */
 	void send(Signal signal) {
-		ModelExecutor.send(this, signal);
+		ModelExecutor.send(this, null, signal);
 	}
 
 	/**
@@ -129,19 +127,22 @@ public class Region extends StateMachine {
 	 * the first state which is not a composite state (and as a state, also not
 	 * an initial or choice pseudostate).
 	 * 
+	 * @param port
+	 *            the port through which the signal arrived (might be
+	 *            {@code null} in case the signal did not arrive through a port)
 	 * @param signal
 	 *            the signal object to be processed
 	 * @throws NullPointerException
 	 *             if <code>signal</code> is <code>null</code>
 	 */
-	void process(Signal signal) {
+	void process(Port<?, ?> port, Signal signal) {
 		if (currentVertex == null) { // no state machine
 			return;
 		}
 		if (signal != null) {
 			Report.event.forEach(x -> x.processingSignal(this, signal));
 		}
-		if (findAndExecuteTransition(signal)) {
+		if (findAndExecuteTransition(port, signal)) {
 			callEntryAction(signal);
 		}
 	}
@@ -152,27 +153,28 @@ public class Region extends StateMachine {
 	 * <code>currentVertex</code> is truly <i>not</i> a choice psuedostate but
 	 * should only be called in this case.
 	 * 
+	 * @param port
+	 *            the port through which the signal arrived (might be
+	 *            {@code null} in case the signal did not arrive through a port)
 	 * @param signal
-	 *            the received signal
+	 *            the received signal (might be {@code null})
 	 * @return <code>true</code> if an applicable transition was found and
 	 *         executed, <code>false</code> otherwise
 	 * @see Region#findAndExecuteTransitionFromChoice(Signal)
 	 */
-	private boolean findAndExecuteTransition(Signal signal) {
+	private boolean findAndExecuteTransition(Port<?, ?> port, Signal signal) {
 		Transition applicableTransition = null;
 
 		for (Class<?> examinedClass = currentVertex.getClass(), parentClass = examinedClass
-				.getEnclosingClass(); parentClass != null
-				&& Vertex.class.isAssignableFrom(examinedClass); examinedClass = parentClass, parentClass = examinedClass
-				.getEnclosingClass()) {
+				.getEnclosingClass(); parentClass != null && Vertex.class.isAssignableFrom(
+						examinedClass); examinedClass = parentClass, parentClass = examinedClass.getEnclosingClass()) {
 
 			for (Class<?> c : parentClass.getDeclaredClasses()) {
 				if (Transition.class.isAssignableFrom(c)) {
 
 					Transition transition = (Transition) getInnerClassInstance(c);
 
-					if (!transition.isFromSource(examinedClass)
-							|| notApplicableTrigger(c, signal)) {
+					if (!transition.isFromSource(examinedClass) || notApplicableTrigger(c, port, signal)) {
 						continue;
 					}
 
@@ -183,16 +185,13 @@ public class Region extends StateMachine {
 							continue;
 						}
 					} catch (ElseException e) {
-						Report.error.forEach(x -> x
-								.elseGuardFromNonChoiceVertex(transition));
+						Report.error.forEach(x -> x.elseGuardFromNonChoiceVertex(transition));
 						continue;
 					}
 
 					if (applicableTransition != null) {
 						final Transition tmp = applicableTransition;
-						Report.error.forEach(x -> x
-								.guardsOfTransitionsAreOverlapping(tmp,
-										transition, currentVertex));
+						Report.error.forEach(x -> x.guardsOfTransitionsAreOverlapping(tmp, transition, currentVertex));
 						continue;
 					}
 
@@ -261,9 +260,7 @@ public class Region extends StateMachine {
 					if (elseTransition != null) {
 						// there was already a transition with an else condition
 
-						Report.error
-								.forEach(x -> x
-										.moreThanOneElseTransitionsFromChoice(currentVertex));
+						Report.error.forEach(x -> x.moreThanOneElseTransitionsFromChoice(currentVertex));
 						continue;
 					}
 
@@ -276,9 +273,7 @@ public class Region extends StateMachine {
 					// there was already an applicable transition
 
 					final Transition tmp = applicableTransition;
-					Report.error.forEach(x -> x
-							.guardsOfTransitionsAreOverlapping(tmp, transition,
-									currentVertex));
+					Report.error.forEach(x -> x.guardsOfTransitionsAreOverlapping(tmp, transition, currentVertex));
 
 					continue;
 				}
@@ -304,8 +299,7 @@ public class Region extends StateMachine {
 			} else {
 				// no way to move from choice
 
-				Report.error.forEach(x -> x
-						.noTransitionFromChoice(currentVertex));
+				Report.error.forEach(x -> x.noTransitionFromChoice(currentVertex));
 				return;
 			}
 
@@ -323,8 +317,7 @@ public class Region extends StateMachine {
 	 *            the transition to be executed
 	 */
 	private void executeTransition(Transition transition) {
-		callExitAction(transition.getSource(),
-				transition.getSignal(Signal.class));
+		callExitAction(transition.getSource(), transition.getSignal(Signal.class));
 		Report.event.forEach(x -> x.usingTransition(this, transition));
 		transition.effect();
 		currentVertex = transition.getTarget();
@@ -336,16 +329,25 @@ public class Region extends StateMachine {
 	 * 
 	 * @param transitionClass
 	 *            the class representing the transition to check
+	 * @param port
+	 *            the port through which the signal arrived (might be
+	 *            {@code null} in case the signal did not arrive through a port)
 	 * @param signal
 	 *            the signal to check
 	 * @return <code>true</code> if the signal does <b>not</b> trigger the
 	 *         specified transition, <code>false</code> otherwise
 	 */
-	private boolean notApplicableTrigger(Class<?> transitionClass, Signal signal) {
+	private boolean notApplicableTrigger(Class<?> transitionClass, Port<?, ?> port, Signal signal) {
 		Trigger trigger = transitionClass.getAnnotation(Trigger.class);
-		if ((signal == null) == (trigger == null)
-				&& ((signal == null) || (trigger.value().isInstance(signal)))) {
-			return false;
+		if (trigger == null) {
+			if (signal == null) {
+				return false;
+			}
+		} else {
+			if (trigger.value().isInstance(signal)
+					&& (trigger.port() == AnyPort.class || trigger.port().isInstance(port))) {
+				return false;
+			}
 		}
 		return true;
 	}
@@ -375,8 +377,7 @@ public class Region extends StateMachine {
 				break;
 			}
 
-			Class<?> currentParentState = currentVertex.getClass()
-					.getEnclosingClass();
+			Class<?> currentParentState = currentVertex.getClass().getEnclosingClass();
 
 			currentVertex = (Vertex) getInnerClassInstance(currentParentState);
 		}
@@ -398,17 +399,15 @@ public class Region extends StateMachine {
 		currentVertex.setSignal(signal);
 		currentVertex.entry();
 		if (currentVertex instanceof CompositeState) {
-			Class<? extends Initial> initClass = getInitial(currentVertex
-					.getClass());
+			Class<? extends Initial> initClass = getInitial(currentVertex.getClass());
 			if (initClass != null) {
 
 				currentVertex = getInnerClassInstance(initClass);
-				Report.event
-						.forEach(x -> x.enteringVertex(this, currentVertex));
+				Report.event.forEach(x -> x.enteringVertex(this, currentVertex));
 				// no entry action needs to be called: initial pseudostates have
 				// none
 
-				process(null); // step forward from initial pseudostate
+				process(null, null); // step forward from initial pseudostate
 			}
 		}
 	}

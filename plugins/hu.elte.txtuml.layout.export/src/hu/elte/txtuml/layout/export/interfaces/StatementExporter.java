@@ -35,11 +35,6 @@ import hu.elte.txtuml.layout.export.elementinfo.NodeGroupInfo;
 import hu.elte.txtuml.layout.export.impl.StatementExporterImpl;
 import hu.elte.txtuml.layout.export.problems.ProblemReporter;
 
-/**
- * 
- * @author Gabor Ferenc Kovacs
- *
- */
 public interface StatementExporter {
 
     static StatementExporter create(ElementExporter elementExporter, ProblemReporter problemReporter) {

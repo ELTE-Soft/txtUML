@@ -23,7 +23,6 @@ import hu.elte.txtuml.diagnostics.session.UniqueInstance;
 
 /**
  * Animates diagrams
- * @author gerazo
  */
 public class Animator {
 	private InstanceRegister instanceRegister;

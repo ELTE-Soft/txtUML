@@ -34,8 +34,6 @@ import hu.elte.txtuml.utils.Pair;
 
 /**
  * This class is used to wrap the arrange of a whole diagram.
- * 
- * @author Balázs Gregorics
  */
 public class LayoutVisualize {
 	/***

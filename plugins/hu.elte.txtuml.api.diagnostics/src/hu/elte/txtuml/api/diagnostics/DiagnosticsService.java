@@ -19,7 +19,6 @@ import hu.elte.txtuml.utils.NotifierOfTermination;
  * and sends information the the DiagnosticsPlugin about events happening.
  * Blocks execution until animation is in progress (will be optional later).
  * Has a singleton lifecycle and can be shut down.
- * @author gerazo
  */
 public class DiagnosticsService extends NotifierOfTermination {
 

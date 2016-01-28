@@ -10,9 +10,6 @@ import hu.elte.txtuml.layout.visualizer.helpers.Helper;
  * name of the link, the name of the starting object and the name of the ending
  * object. The physical line is represented with a series of Points, which are
  * accesible via the getRoute() method.
- * 
- * @author Bal�zs Gregorics
- *
  */
 public class LineAssociation
 {
@@ -151,9 +148,6 @@ public class LineAssociation
 	/***
 	 * Enumaration representing the choice to select a route's starting or
 	 * ending point.
-	 * 
-	 * @author Bal�zs Gregorics
-	 *
 	 */
 	public enum RouteConfig
 	{

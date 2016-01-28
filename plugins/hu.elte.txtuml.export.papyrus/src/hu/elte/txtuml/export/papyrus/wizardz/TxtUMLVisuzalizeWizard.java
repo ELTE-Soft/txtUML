@@ -24,8 +24,6 @@ import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 /**
  * Wizard for visualization of txtUML models
- *
- * @author Andr�s Dobreff
  */
 public class TxtUMLVisuzalizeWizard extends Wizard {
 

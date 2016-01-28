@@ -10,9 +10,6 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamsProxy;
 import org.junit.Test;
 
-/**
- * @author gerazo
- */
 public class RuntimeSessionTrackerTest {
 
 	class FakePlugin implements IDisposable {

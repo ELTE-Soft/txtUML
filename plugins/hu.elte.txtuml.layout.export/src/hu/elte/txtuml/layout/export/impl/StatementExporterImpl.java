@@ -51,9 +51,6 @@ import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 /**
  * Default implementation for {@link StatementExporter}.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 public class StatementExporterImpl implements StatementExporter {
 

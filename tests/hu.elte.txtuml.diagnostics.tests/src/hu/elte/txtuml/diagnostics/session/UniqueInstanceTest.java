@@ -9,9 +9,6 @@ import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.junit.Test;
 
-/**
- * @author gerazo
- */
 public class UniqueInstanceTest {
 	
 	private static final int serviceInstanceID = 123;

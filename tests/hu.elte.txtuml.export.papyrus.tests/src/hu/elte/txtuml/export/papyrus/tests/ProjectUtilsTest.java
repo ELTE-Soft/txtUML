@@ -15,8 +15,6 @@ import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 /**
  * Unit test for {@link ProjectUtils}
- *
- * @author Andr�s Dobreff
  * 
  * <p>
  * <b>Attention:</b>

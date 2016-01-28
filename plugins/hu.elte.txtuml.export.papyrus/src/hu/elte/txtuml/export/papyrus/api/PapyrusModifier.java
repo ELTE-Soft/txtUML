@@ -17,10 +17,6 @@ import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
 import hu.elte.txtuml.export.papyrus.utils.EditPartFinder;
 import hu.elte.txtuml.export.papyrus.utils.EditorOpener;
 
-/**
- *
- * @author Andr�s Dobreff
- */
 public class PapyrusModifier {
 
 	private PapyrusModelCreator papyrusModelCreator;

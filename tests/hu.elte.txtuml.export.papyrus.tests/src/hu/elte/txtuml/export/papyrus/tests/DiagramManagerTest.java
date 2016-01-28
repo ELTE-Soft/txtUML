@@ -48,8 +48,6 @@ import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 /**
  * Unit test for {@link DiagramManager}
- *
- * @author Andr�s Dobreff
  * 
  * <p>
  * <b>Attention:</b>

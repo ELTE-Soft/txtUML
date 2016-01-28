@@ -23,9 +23,6 @@ import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 /**
  * This class generates the necessary default statements to auto layout a
  * diagram.
- * 
- * @author Bal�zs Gregorics
- *
  */
 public class DefaultStatements
 {

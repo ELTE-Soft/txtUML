@@ -33,8 +33,6 @@ import hu.elte.txtuml.api.model.blocks.ParameterizedCondition;
  * <p>
  * See the documentation of {@link Model} for an overview on modeling in JtxtUML.
  *
- * @author Gabor Ferenc Kovacs
- *
  * @param <T>
  *            the type of objects to be contained in this collection
  * @see Collection.Empty
@@ -147,8 +145,6 @@ public interface Collection<T> extends Iterable<T>, ModelElement {
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
 	 *
 	 * @param <T>
 	 *            the type of objects to be contained in this collection

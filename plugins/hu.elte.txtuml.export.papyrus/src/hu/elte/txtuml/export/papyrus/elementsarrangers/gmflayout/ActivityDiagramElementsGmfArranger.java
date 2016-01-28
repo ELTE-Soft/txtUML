@@ -13,8 +13,6 @@ import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
 
 /**
  * Controls the arranging of an ActivityDiagram with GMF algorithm
- *
- * @author Andr�s Dobreff
  */
 public class ActivityDiagramElementsGmfArranger extends AbstractDiagramElementsGmfArranger {
 	

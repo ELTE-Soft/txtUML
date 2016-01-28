@@ -7,8 +7,6 @@ import org.eclipse.uml2.uml.Element;
 
 /**
  * An abstract class for adding/removing elements to diagrams.
- *
- * @author András Dobreff
  */
 public abstract class AbstractDiagramElementsManager{
 		

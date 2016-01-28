@@ -8,18 +8,13 @@ import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Grap
 /**
  * This class provides an implementation to the Breath-First search algorithm.
  * 
- * @author Bal�zs Gregorics
  * @param <T>
  *            Type of the graph nodes.
- *
  */
 class BreathFirstSearch<T>
 {
 	/**
 	 * Types of discovery property.
-	 * 
-	 * @author Bal�zs Gregorics
-	 *
 	 */
 	public enum LabelType
 	{

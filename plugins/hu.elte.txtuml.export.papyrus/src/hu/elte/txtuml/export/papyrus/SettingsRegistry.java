@@ -9,7 +9,6 @@ import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelMan
 
 /**
  * A simple registry for registering implementation for the diagram creation process
- * @author Andr�s Dobreff
  */
 public class SettingsRegistry {
 	private static Class<? extends AbstractPapyrusModelManager> manager;

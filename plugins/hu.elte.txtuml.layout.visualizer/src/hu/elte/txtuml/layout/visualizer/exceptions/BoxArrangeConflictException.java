@@ -7,8 +7,6 @@ import hu.elte.txtuml.layout.visualizer.statements.Statement;
 /**
  * Exception indicating that conflicts were detected as a result of the user
  * statements during Box arrangement.
- * 
- * @author Bal�zs Gregorics
  */
 public class BoxArrangeConflictException extends MyException
 {

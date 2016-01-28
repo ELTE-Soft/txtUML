@@ -20,8 +20,6 @@ import org.eclipse.uml2.uml.NamedElement;
 
 /**
  * Controls the diagrams. 
- *
- * @author András Dobreff
  */
 public class DiagramManager {
 	private IMultiDiagramEditor editor;

@@ -19,7 +19,6 @@ import hu.elte.txtuml.utils.Logger;
 
 /**
  * Keeps track of model mappings
- * @author gerazo
  */
 public class ModelMapper {
 	private static final String MAPPING_FILE_EXTENSION = ModelMapProvider.MAPPING_FILE_EXTENSION;

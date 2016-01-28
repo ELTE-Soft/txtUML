@@ -23,8 +23,6 @@ import hu.elte.txtuml.utils.Pair;
 
 /**
  * Finds the org.eclipse.uml2 element from a model according to the txtUML name 
- *
- * @author Andr�s Dobreff
  */
 public class TxtUMLElementsRegistry {
 	

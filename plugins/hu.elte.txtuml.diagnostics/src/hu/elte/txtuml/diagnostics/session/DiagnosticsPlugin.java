@@ -18,7 +18,6 @@ import hu.elte.txtuml.utils.Logger;
 /**
  * Receives DiagnosticsService events and handles them accordingly.
  * Drives animator and blocks client service on the other side.
- * @author gerazo
  */
 public class DiagnosticsPlugin implements IDisposable, Runnable {
 

@@ -9,9 +9,6 @@ import hu.elte.txtuml.layout.visualizer.helpers.Helper;
 /**
  * Statement class represents a layout statement defined on a diagram object or
  * link. These support the algorithm to arrange the objects and the links.
- * 
- * @author Bal�zs Gregorics
- *
  */
 public class Statement
 {

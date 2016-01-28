@@ -16,8 +16,6 @@ import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 /**
  * Wizard for visualizing Eclipse UML2 file from local filesystem
- *
- * @author Andr�s Dobreff
  */
 public class UmlToPapyrusWizard extends Wizard {
 

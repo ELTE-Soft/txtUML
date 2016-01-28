@@ -42,8 +42,6 @@ import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
 /**
  * An abstract class for adding/removing elements to ClassDiagrams.
- *
- * @author Andr�s Dobreff
  */
 public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 

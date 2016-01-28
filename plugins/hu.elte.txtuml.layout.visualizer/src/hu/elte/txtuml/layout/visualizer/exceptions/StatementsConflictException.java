@@ -6,8 +6,6 @@ import hu.elte.txtuml.layout.visualizer.statements.Statement;
 
 /**
  * Exception indicating that conflicts were detected in the statements.
- * 
- * @author Bal�zs Gregorics
  */
 public class StatementsConflictException extends MyException
 {

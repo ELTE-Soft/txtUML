@@ -9,9 +9,6 @@ import hu.elte.txtuml.api.layout.Show;
 
 /**
  * The container for repeatable annotation {@link Show}.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

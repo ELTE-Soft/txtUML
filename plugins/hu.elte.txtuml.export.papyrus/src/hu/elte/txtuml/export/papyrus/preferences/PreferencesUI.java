@@ -13,15 +13,11 @@ import hu.elte.txtuml.export.papyrus.graphics.IconsUtil;
 
 /**
  * Creates the controls for the preferences
- *
- * @author Andr�s Dobreff
  */
 public class PreferencesUI {
 
 	/**
 	 * Value-Objects that hold the checkboxes and the preferences together
-	 *
-	 * @author Andr�s Dobreff
 	 */
 	private class CheckBoxRecord{
 		TreeItem chbx;

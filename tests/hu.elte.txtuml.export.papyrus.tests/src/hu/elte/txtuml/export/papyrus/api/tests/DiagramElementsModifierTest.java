@@ -62,8 +62,6 @@ import hu.elte.txtuml.utils.eclipse.ProjectUtils;
  * {@link hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsArranger
  * AbstractDiagramElementsArranger}
  * 
- * @author Andr�s Dobreff
- * 
  *         <p>
  *         <b>Attention:</b> This test should be run as a JUnit Plug-in test
  *         </p>

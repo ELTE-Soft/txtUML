@@ -24,8 +24,6 @@ import hu.elte.txtuml.utils.Pair;
 
 /**
  * This class implements an A^* graph search algorithm.
- * 
- * @author Balázs Gregorics
  */
 class GraphSearch {
 

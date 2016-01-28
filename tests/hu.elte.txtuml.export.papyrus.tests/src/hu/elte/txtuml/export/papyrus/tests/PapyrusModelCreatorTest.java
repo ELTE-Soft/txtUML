@@ -29,8 +29,6 @@ import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 /**
  * Unit test for {@link PapyrusModelCreator}
- *
- * @author Andr�s Dobreff
  * 
  * <p>
  * <b>Attention:</b>

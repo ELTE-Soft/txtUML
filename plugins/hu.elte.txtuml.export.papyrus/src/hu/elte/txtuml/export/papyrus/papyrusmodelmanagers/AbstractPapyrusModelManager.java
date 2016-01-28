@@ -19,8 +19,6 @@ import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 /**
  * Controls the Papyrus Model
- *
- * @author Andr�s Dobreff
  */
 public abstract class AbstractPapyrusModelManager {
 

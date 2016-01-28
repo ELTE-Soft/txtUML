@@ -18,9 +18,6 @@ import hu.elte.txtuml.utils.jdt.SharedUtils;
 
 /**
  * Instances of this class are responsible for exporting associations.
- * 
- * @author Adam Ancsin
- *
  */
 public class AssociationExporter {
 
@@ -48,7 +45,6 @@ public class AssociationExporter {
 	 * 
 	 * @return The exported UML2 association.
 	 * @throws ExportException
-	 *
 	 */
 	@SuppressWarnings("rawtypes")
 	public Association exportAssociation() throws ExportException {
@@ -78,7 +74,6 @@ public class AssociationExporter {
 	 * @param sourceElement
 	 *            The class representing the txtUML association end.
 	 * @throws ExportException
-	 *
 	 */
 	private void exportAssociationEnd(Association exportedAssociation,
 			Object sourceElement) throws ExportException {

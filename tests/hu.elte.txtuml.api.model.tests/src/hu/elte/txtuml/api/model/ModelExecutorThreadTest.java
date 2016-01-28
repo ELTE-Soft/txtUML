@@ -25,9 +25,9 @@ public class ModelExecutorThreadTest {
 		thread.start();
 
 		Signal signal = new Signal();
-		thread.send(mock, signal);
+		thread.send(mock, null, signal);
 
-		verify(mock).process(signal);
+		verify(mock).process(null, signal);
 
 		thread.shutdown();
 		thread.join();
@@ -39,7 +39,7 @@ public class ModelExecutorThreadTest {
 		ModelClass mockClass = Mockito.mock(ModelClass.class);
 
 		Signal signal = new Signal();
-		thread.send(mockClass, signal);
+		thread.send(mockClass, null, signal);
 		// what the class is does not matter since it is handled in
 		// ModelClass.checkLowerBound
 		thread.checkLowerBoundOfMultiplicity(mockClass, null);
@@ -48,7 +48,7 @@ public class ModelExecutorThreadTest {
 
 		InOrder inOrder = Mockito.inOrder(mockClass);
 		inOrder.verify(mockClass).checkLowerBound(Matchers.any());
-		inOrder.verify(mockClass).process(signal);
+		inOrder.verify(mockClass).process(null, signal);
 
 		thread.shutdown();
 		thread.join();
@@ -60,14 +60,14 @@ public class ModelExecutorThreadTest {
 
 		Region reg = new Region() {
 			@Override
-			void process(Signal signal) {
-				thread.send(this, new Signal());
+			void process(Port<?, ?> port, Signal signal) {
+				thread.send(this, port, new Signal());
 			}
 		};
 
 		thread.start();
 		// the execution will never terminate by itself because of the looping
-		thread.send(reg, new Signal());
+		thread.send(reg, null, new Signal());
 
 		thread.shutdownImmediately();
 
@@ -100,7 +100,7 @@ public class ModelExecutorThreadTest {
 		ModelClass mock = Mockito.mock(ModelClass.class);
 
 		for (int i = 0; i < 10; ++i) {
-			thread.send(mock, new Signal());
+			thread.send(mock, null, new Signal());
 		}
 
 		Assert.assertEquals(false, actionPerformed.value);
@@ -110,7 +110,7 @@ public class ModelExecutorThreadTest {
 		thread.join();
 
 		Assert.assertEquals(true, actionPerformed.value);
-		verify(mock, times(10)).process(Matchers.any());
+		verify(mock, times(10)).process(Matchers.isNull(Port.class), Matchers.any());
 	}
 
 	@Test(timeout = 1000)

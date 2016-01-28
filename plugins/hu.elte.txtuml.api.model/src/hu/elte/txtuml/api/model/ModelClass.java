@@ -91,9 +91,6 @@ import hu.elte.txtuml.utils.InstanceCreator;
  * <p>
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
- *
- * @author Gabor Ferenc Kovacs
- *
  */
 public class ModelClass extends Region {
 
@@ -371,12 +368,12 @@ public class ModelClass extends Region {
 	}
 
 	@Override
-	void process(Signal signal) {
+	void process(Port<?, ?> port, Signal signal) {
 		if (isDeleted()) {
 			Report.warning.forEach(x -> x.signalArrivedToDeletedObject(this, signal));
 			return;
 		}
-		super.process(signal);
+		super.process(port, signal);
 	}
 
 	/**

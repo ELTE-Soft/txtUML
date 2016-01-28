@@ -43,8 +43,6 @@ public class MethodSkeletonExporter {
 	 *            The specified method declaration.
 	 * @return A map entry: key - list of param names, value - list of param
 	 *         types
-	 *
-	 * @author �d�m Ancsin
 	 */
 	private Iterable<Parameter> obtainMethodParameters(
 			MethodDeclaration methodDeclaration) {
@@ -90,8 +88,6 @@ public class MethodSkeletonExporter {
 	 * @param methodDeclaration
 	 *            The specified method declaration.
 	 * @return The return type (UML2).
-	 *
-	 * @author �d�m Ancsin
 	 */
 	private Type obtainReturnType(MethodDeclaration methodDeclaration) {
 		return typeExporter.exportType(methodDeclaration.getReturnType2());
@@ -103,8 +99,6 @@ public class MethodSkeletonExporter {
 	 * @param methodDeclaration
 	 *            The specified method declaration.
 	 * @return The result UML2 operation.
-	 *
-	 * @author �d�m Ancsin
 	 */
 	public Operation exportMethodSkeleton(MethodDeclaration methodDeclaration) {
 		Operation operation = createMethodSkeleton(methodDeclaration);
@@ -119,8 +113,6 @@ public class MethodSkeletonExporter {
 	 * @param methodDeclaration
 	 *            The specified method declaration.
 	 * @return The created UML2 operation.
-	 *
-	 * @author �d�m Ancsin
 	 */
 	private Operation createMethodSkeleton(MethodDeclaration methodDeclaration) {
 		String methodName = methodDeclaration.getName().getFullyQualifiedName();

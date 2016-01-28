@@ -29,8 +29,6 @@ import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
 /**
  *	The Default representation of Papyrus Model manager
- *
- * @author Andr�s Dobreff
  */
 public class DefaultPapyrusModelManager extends AbstractPapyrusModelManager {
 

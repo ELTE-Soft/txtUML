@@ -7,8 +7,6 @@ import hu.elte.txtuml.api.model.StateMachine.Vertex;
 
 /**
  * A listener interface that listens to valid events of the model execution.
- * 
- * @author Gabor Ferenc Kovacs
  */
 public interface ModelExecutionEventsListener {
 

@@ -45,8 +45,6 @@ import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 /**
  * The Page for txtUML visualization.
- *
- * @author Andr�s Dobreff
  */
 @SuppressWarnings("restriction")
 public class VisualizeTxtUMLPage extends WizardPage {

@@ -5,9 +5,6 @@ import hu.elte.txtuml.layout.export.interfaces.LinkMap;
 
 /**
  * Information holder about a link group in a diagram layout description.
- * 
- * @author Dávid János Németh
- *
  */
 public interface LinkGroupInfo extends GroupInfo {
 

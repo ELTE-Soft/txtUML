@@ -14,8 +14,6 @@ import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
 
 /**
  * Controls the arranging of a ClassDiagram with GMF algorithm
- *
- * @author Andr�s Dobreff
  */
 public class ClassDiagramElementsGmfArranger extends AbstractDiagramElementsGmfArranger{
 

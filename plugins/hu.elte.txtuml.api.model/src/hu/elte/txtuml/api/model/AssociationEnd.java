@@ -57,7 +57,6 @@ import hu.elte.txtuml.api.model.backend.SingleItemCollection;
  * <p>
  * See the documentation of {@link Model} for an overview on modeling in JtxtUML.
  *
- * @author Gabor Ferenc Kovacs
  * @see Association.Many
  * @see Association.One
  * @see Association.MaybeOne
@@ -116,8 +115,6 @@ public abstract class AssociationEnd<T extends ModelClass, C> implements
  * <p>
  * Directly unusable by the user.
  *
- * @author Gabor Ferenc Kovacs
- *
  * @param <T>
  *            the type of model objects to be contained in this collection
  */
@@ -158,8 +155,6 @@ class ManyBase<T extends ModelClass> extends AssociationEnd<T, Collection<T>> {
  * Base class for association ends having a multiplicity of 0..1.
  * <p>
  * Directly unusable by the user.
- * 
- * @author Gabor Ferenc Kovacs
  *
  * @param <T>
  *            the type of model objects to be contained in this collection
@@ -207,8 +202,6 @@ class MaybeOneBase<T extends ModelClass> extends
  * Inherits its implementation from <code>ManyBase</code>.
  * <p>
  * Directly unusable by the user.
- * 
- * @author Gabor Ferenc Kovacs
  *
  * @param <T>
  *            the type of model objects to be contained in this collection
@@ -253,8 +246,6 @@ class MultipleBase<T extends ModelClass> extends ManyBase<T> {
  * Base class for association ends having a multiplicity of 1.
  * <p>
  * Directly unusable by the user.
- * 
- * @author Gabor Ferenc Kovacs
  *
  * @param <T>
  *            the type of model objects to be contained in this collection
@@ -272,8 +263,6 @@ class OneBase<T extends ModelClass> extends MaybeOneBase<T> {
  * Base class for association ends having a multiplicity of 1..*.
  * <p>
  * Directly unusable by the user.
- * 
- * @author Gabor Ferenc Kovacs
  *
  * @param <T>
  *            the type of model objects to be contained in this collection

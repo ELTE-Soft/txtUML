@@ -7,7 +7,6 @@ import hu.elte.txtuml.utils.Logger;
  * It is not a POD in the sense that while (classInstanceID, serviceInstanceID)
  * uniquely identifies the object, additional data can be present about the
  * object in it.
- * @author gerazo
  */
 public class UniqueInstance {
 	// unique ID

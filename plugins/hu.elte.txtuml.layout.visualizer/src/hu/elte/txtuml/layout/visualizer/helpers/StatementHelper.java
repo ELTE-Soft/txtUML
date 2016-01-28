@@ -24,9 +24,6 @@ import hu.elte.txtuml.utils.Pair;
 /**
  * This static class handles a variety of {@link Statement} related support
  * features.
- * 
- * @author Balázs Gregorics
- *
  */
 public class StatementHelper {
 	/**

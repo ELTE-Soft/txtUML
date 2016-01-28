@@ -22,7 +22,6 @@ import hu.elte.txtuml.utils.Pair;
 
 /**
  * This class helps preparing the {@link PapyrusVisualizer} from a txtUML model
- * @author Andr�s Dobreff
  */
 public class TxtUMLExporter {
 	

@@ -14,11 +14,6 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.PlatformUI;
 
-/**
- * 
- *
- * @author Andr�s Dobreff
- */
 public class Dialogs {
 	/**
 	 * Opens an {@link Dialogs}

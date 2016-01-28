@@ -16,8 +16,6 @@ import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
 
 /**
  * Controls the arranging of a ClassDiagram with txtUML algorithm
- *
- * @author Andr�s Dobreff
  */
 public class ClassDiagramElementsTxtUmlArranger extends AbstractDiagramElementsTxtUmlArranger{
 	

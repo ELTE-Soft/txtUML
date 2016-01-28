@@ -23,8 +23,6 @@ import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 /**
  * Handles the the call to visualization from context menu.
- *
- * @author Andr�s Dobreff
  */
 public class InstantHandler extends AbstractHandler {
 	

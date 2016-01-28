@@ -6,10 +6,8 @@ import java.util.Map;
 /**
  * Class that helps the Graph search algorithm to store the costs of each point.
  * 
- * @author Balázs Gregorics
  * @param <T>
  *            Type of the Nodes.
- *
  */
 public class Cost<T>
 {

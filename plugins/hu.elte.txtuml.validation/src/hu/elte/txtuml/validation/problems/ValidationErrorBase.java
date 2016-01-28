@@ -8,7 +8,6 @@ import hu.elte.txtuml.validation.SourceInfo;
 
 /**
  * Base class for all jtxtuml problems.
- *
  */
 public abstract class ValidationErrorBase extends CategorizedProblem {
 

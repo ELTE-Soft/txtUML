@@ -6,9 +6,6 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 
 /**
  * Information holder about a link in a diagram layout description.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 public interface LinkInfo extends ConcreteElementInfo {
 

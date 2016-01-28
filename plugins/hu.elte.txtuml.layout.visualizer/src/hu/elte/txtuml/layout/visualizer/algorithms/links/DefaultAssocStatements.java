@@ -17,9 +17,6 @@ import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 /**
  * This class generates {@link Statement}s automatically for the
  * {@link LineAssociation}s.
- * 
- * @author Balázs Gregorics
- *
  */
 class DefaultAssocStatements {
 	/**

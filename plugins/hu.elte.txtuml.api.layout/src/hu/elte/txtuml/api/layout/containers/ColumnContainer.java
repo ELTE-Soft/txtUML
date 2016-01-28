@@ -9,9 +9,6 @@ import hu.elte.txtuml.api.layout.Column;
 
 /**
  * The container for repeatable annotation {@link Column}.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

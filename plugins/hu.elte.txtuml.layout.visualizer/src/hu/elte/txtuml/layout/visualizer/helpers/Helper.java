@@ -19,9 +19,6 @@ import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 /**
  * Static class for various algorithm related helping tasks, such as
  * conversions, cloning or parsing.
- * 
- * @author Bal�zs Gregorics
- *
  */
 public class Helper
 {

@@ -32,9 +32,6 @@ import hu.elte.txtuml.utils.Quadruple;
 /**
  * This class arranges the boxes in the diagram using mainly a Bellman-Ford
  * shortest path algorithm.
- * 
- * @author Bal�zs Gregorics
- *
  */
 public class ArrangeObjects
 {

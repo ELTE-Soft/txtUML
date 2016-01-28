@@ -38,9 +38,6 @@ import hu.elte.txtuml.utils.Logger;
  * <p>
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
- *
- * @author Gabor Ferenc Kovacs
- *
  */
 public final class ModelExecutor implements ModelElement {
 
@@ -91,9 +88,6 @@ public final class ModelExecutor implements ModelElement {
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	public static final class Settings implements ModelElement {
 
@@ -265,10 +259,6 @@ public final class ModelExecutor implements ModelElement {
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 * 
-	 *
 	 */
 	public static final class Report {
 
@@ -379,7 +369,22 @@ public final class ModelExecutor implements ModelElement {
 	 *            the signal to send
 	 */
 	static void send(Region target, Signal signal) {
-		thread.send(target, signal);
+		send(target, null, signal);
+	}
+	
+	/**
+	 * Sends a signal to the specified target object asynchronously.
+	 * 
+	 * @param target
+	 *            the target object of the send operation
+	 * @param port
+	 *            the port through which the signal arrived (might be
+	 *            {@code null} in case the signal did not arrive through a port)
+	 * @param signal
+	 *            the signal to send
+	 */
+	static void send(Region target, Port<?, ?> port, Signal signal) {
+		thread.send(target, port, signal);
 	}
 
 	/**

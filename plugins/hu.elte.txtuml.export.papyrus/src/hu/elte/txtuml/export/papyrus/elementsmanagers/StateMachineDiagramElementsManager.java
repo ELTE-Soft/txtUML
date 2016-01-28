@@ -24,8 +24,6 @@ import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
 
 /**
  * An abstract class for adding/removing elements to StateMachineDiagrams.
- *
- * @author András Dobreff
  */
 public class StateMachineDiagramElementsManager extends AbstractDiagramElementsManager {
 

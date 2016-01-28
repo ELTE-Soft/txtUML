@@ -30,12 +30,6 @@ import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.utils.jdt.SharedUtils;
 
-/**
- * 
- * @author Gabor Ferenc Kovacs
- * @author D�vid J�nos N�meth
- *
- */
 public class ClassDiagramExporter extends AbstractSourceExporter {
 
 	@Override

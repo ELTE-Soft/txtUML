@@ -8,9 +8,6 @@ import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 /**
  * Default implementation for {@link StatementList}.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 @SuppressWarnings("serial")
 public class StatementListImpl extends ArrayList<Statement> implements StatementList {

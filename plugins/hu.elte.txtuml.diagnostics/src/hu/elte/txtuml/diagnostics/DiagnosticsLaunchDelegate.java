@@ -21,7 +21,6 @@ import hu.elte.txtuml.utils.Logger;
  * Launches txtUML apps with all debugging aids.
  * Makes sure client service knows about the plugin diagnostics port.
  * It should cease to exist after the process was launched.
- * @author gerazo
  */
 public class DiagnosticsLaunchDelegate extends JavaLaunchDelegate {
 	

@@ -9,9 +9,6 @@ import hu.elte.txtuml.api.layout.East;
 
 /**
  * The container for repeatable annotation {@link East}.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

@@ -9,8 +9,6 @@ import hu.elte.txtuml.export.papyrus.wizardz.UmlToPapyrusWizard;
 
 /**
  * Handles the call to visualization from wizard
- *
- * @author Andr�s Dobreff
  */
 public class WizardHandler extends AbstractHandler{
 	/**

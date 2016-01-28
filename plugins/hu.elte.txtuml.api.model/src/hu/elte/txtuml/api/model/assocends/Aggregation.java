@@ -7,9 +7,6 @@ package hu.elte.txtuml.api.model.assocends;
  * <p>
  * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
  * overview on modeling in JtxtUML.
- *
- * @author Gabor Ferenc Kovacs
- *
  */
 public interface Aggregation<T extends Aggregation<T>> {
 
@@ -18,9 +15,6 @@ public interface Aggregation<T extends Aggregation<T>> {
 	 * <p>
 	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
 	 * overview on modeling in JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	interface None extends Aggregation<None> {
 	}
@@ -31,9 +25,6 @@ public interface Aggregation<T extends Aggregation<T>> {
 	 * <p>
 	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
 	 * overview on modeling in JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	interface Composite extends Aggregation<Composite> {
 	}

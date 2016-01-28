@@ -13,8 +13,6 @@ import hu.elte.txtuml.export.papyrus.Activator;
 
 /**
  * Handles the preferences that are saved by eclipse
- *
- * @author Andr�s Dobreff
  */
 @SuppressWarnings("javadoc")
 public class PreferencesManager{

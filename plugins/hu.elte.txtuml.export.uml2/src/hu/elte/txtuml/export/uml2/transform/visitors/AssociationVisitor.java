@@ -16,8 +16,6 @@ import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
  * @throws RuntimeException
  *             When applied to an <code>ASTNode</code>, methods of this visitor
  *             may throw this kind of exception.
- * @author �d�m Ancsin
- *
  */
 public class AssociationVisitor extends ASTVisitor {
 

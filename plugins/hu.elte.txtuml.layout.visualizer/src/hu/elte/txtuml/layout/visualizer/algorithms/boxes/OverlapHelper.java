@@ -21,9 +21,6 @@ import hu.elte.txtuml.utils.Pair;
 /**
  * The class that provides helping functions in the process of Overlap
  * Arrangement,
- * 
- * @author Bal�zs Gregorics
- *
  */
 class OverlapHelper
 {

@@ -43,8 +43,6 @@ public class TransitionExporter {
 	 * @param transitionDeclaration
 	 *            The type declaration of the txtUML transition.
 	 * @return The exported UML2 transition.
-	 * 
-	 * @author Adam Ancsin
 	 */
 	public Transition exportTransition(TypeDeclaration transitionDeclaration) {
 		String transitionName = transitionDeclaration.getName()
@@ -118,8 +116,6 @@ public class TransitionExporter {
 	 *            The type declaration txtUML state.
 	 * @param exportedTransition
 	 *            The exported UML2 transition.
-	 * 
-	 * @author Adam Ancsin
 	 */
 	@SuppressWarnings("unused")
 	private void exportEffectAction(TypeDeclaration transitionDeclaration,
@@ -144,8 +140,6 @@ public class TransitionExporter {
 	 *            The type declaration of the txtUML transition.
 	 * @param exportedTransition
 	 *            The exported UML2 transition.
-	 *
-	 * @author Adam Ancsin
 	 */
 	@SuppressWarnings("unused")
 	private void exportGuard(TypeDeclaration transitionDeclaration,
@@ -188,8 +182,6 @@ public class TransitionExporter {
 	 * @param target
 	 *            The target UML2 vertex.
 	 * @return The created UML2 transition.
-	 *
-	 * @author Adam Ancsin
 	 */
 	private Transition createTransitionBetweenVertices(String name,
 			Vertex source, Vertex target) {

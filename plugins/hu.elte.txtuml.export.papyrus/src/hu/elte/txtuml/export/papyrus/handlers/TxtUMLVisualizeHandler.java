@@ -9,8 +9,6 @@ import hu.elte.txtuml.export.papyrus.wizardz.TxtUMLVisuzalizeWizard;
 
 /**
  * Handles the call to txtUML Visualization
- *
- * @author Andr�s Dobreff
  */
 public class TxtUMLVisualizeHandler  extends AbstractHandler {
 

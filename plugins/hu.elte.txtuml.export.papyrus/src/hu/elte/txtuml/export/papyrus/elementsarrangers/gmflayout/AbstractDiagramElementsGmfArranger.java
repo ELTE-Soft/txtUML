@@ -16,8 +16,6 @@ import hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsAr
 
 /**
  * An abstract class for arranging the elements with the GMF arranging algorithm. 
- *
- * @author Andr�s Dobreff
  */
 public abstract class  AbstractDiagramElementsGmfArranger extends AbstractDiagramElementsArranger{
 

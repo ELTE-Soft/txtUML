@@ -10,8 +10,6 @@ import org.eclipse.jdt.core.JavaCore;
 
 /**
  * Responsible for basic functionalities of an Eclipse Project
- *
- * @author Andr�s Dobreff
  */
 public class ProjectUtils {
 
