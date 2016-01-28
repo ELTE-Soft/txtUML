@@ -29,7 +29,7 @@ public class PrinterFrontend extends ModelClass {
 	public class Initialize extends Transition {
 		@Override
 		public void effect() {
-			//queue = new LinkedList<Document>();
+			queue = new LinkedList<Document>();
 			lock = false;
 		}
 	}
@@ -72,7 +72,7 @@ public class PrinterFrontend extends ModelClass {
 
 			lock = false;
 			Action.log("PrinterFrontend: the printing of a document has finished. Remaining: " + queue.size()
-					+ ". Papers: " + paperCount + ".");*/
+					+ ". Papers: " + paperCount + ".");
 		}
 	}
 
@@ -114,3 +114,4 @@ public class PrinterFrontend extends ModelClass {
 	}
 
 }
+
