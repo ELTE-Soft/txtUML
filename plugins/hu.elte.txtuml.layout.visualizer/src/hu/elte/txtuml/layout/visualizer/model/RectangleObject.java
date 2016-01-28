@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  * The class that represents a box in a diagram.
  * 
- * @author Balázs Gregorics
+ * @author Balï¿½zs Gregorics
  */
 public class RectangleObject
 {
@@ -19,6 +19,7 @@ public class RectangleObject
 	private Integer _pixelWidth;
 	private Integer _pixelHeight;
 	private Boolean _phantom;
+	private SpecialBox _special;
 	
 	// private Set<Point> _points;
 	
@@ -249,6 +250,21 @@ public class RectangleObject
 		_phantom = value;
 	}
 	
+	public Boolean isSpecial()
+	{
+		return !_special.equals(SpecialBox.None);
+	}
+	
+	public SpecialBox getSpecial()
+	{
+		return _special;
+	}
+	
+	public void setSpecial(SpecialBox spec)
+	{
+		_special = spec;
+	}
+	
 	// end Getters, setters
 	
 	// Ctors
@@ -268,6 +284,7 @@ public class RectangleObject
 		_pixelWidth = 1;
 		_pixelHeight = 1;
 		_phantom = false;
+		_special = SpecialBox.None;
 	}
 	
 	/***
@@ -287,6 +304,7 @@ public class RectangleObject
 		_pixelWidth = 1;
 		_pixelHeight = 1;
 		_phantom = false;
+		_special = SpecialBox.None;
 	}
 	
 	/***
@@ -304,6 +322,7 @@ public class RectangleObject
 		_pixelWidth = new Integer(o._pixelWidth);
 		_pixelHeight = new Integer(o._pixelHeight);
 		_phantom = new Boolean(o._phantom);
+		_special = o._special;
 	}
 	
 	// end Ctors
