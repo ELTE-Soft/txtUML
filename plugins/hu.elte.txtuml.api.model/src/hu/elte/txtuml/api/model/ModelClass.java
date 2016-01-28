@@ -94,9 +94,6 @@ import hu.elte.txtuml.utils.InstanceCreator;
  * <p>
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
- *
- * @author Gabor Ferenc Kovacs
- *
  */
 public class ModelClass extends Region {
 

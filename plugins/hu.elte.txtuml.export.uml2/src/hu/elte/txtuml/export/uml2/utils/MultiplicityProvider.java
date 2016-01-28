@@ -18,8 +18,6 @@ public class MultiplicityProvider {
 	 * @param specifiedClass
 	 *            The specified class representing a txtUML element.
 	 * @return The decision.
-	 *
-	 * @author Adam Ancsin
 	 */
 	public static boolean isOne(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
@@ -33,8 +31,6 @@ public class MultiplicityProvider {
 	 * @param specifiedClass
 	 *            The specified class representing a txtUML element.
 	 * @return The decision.
-	 *
-	 * @author Adam Ancsin
 	 */
 	public static boolean isZeroToOne(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
@@ -48,8 +44,6 @@ public class MultiplicityProvider {
 	 * @param specifiedClass
 	 *            The specified class representing a txtUML element.
 	 * @return The decision.
-	 *
-	 * @author Adam Ancsin
 	 */
 	public static boolean isZeroToUnlimited(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
@@ -63,8 +57,6 @@ public class MultiplicityProvider {
 	 * @param specifiedClass
 	 *            The specified class representing a txtUML element.
 	 * @return The decision.
-	 *
-	 * @author Adam Ancsin
 	 */
 	public static boolean isOneToUnlimited(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
@@ -78,8 +70,6 @@ public class MultiplicityProvider {
 	 * @param specifiedClass
 	 *            The specified class representing a txtUML element.
 	 * @return The decision.
-	 *
-	 * @author Adam Ancsin
 	 */
 	public static boolean hasInvalidMultiplicity(TypeDeclaration typeDeclaration) {
 		return !isZeroToOne(typeDeclaration)
@@ -127,8 +117,6 @@ public class MultiplicityProvider {
 	 * @param specifiedClass
 	 *            The specified class representing a txtUML element.
 	 * @return The lower bound of the specified element's multiplicity.
-	 *
-	 * @author Adam Ancsin
 	 */
 	public static int getLowerBound(TypeDeclaration typeDeclaration) {
 		Integer explicitLowerBound = getExplicitLowerBound(typeDeclaration);
@@ -148,8 +136,6 @@ public class MultiplicityProvider {
 	 * @param specifiedClass
 	 *            The specified class representing a txtUML element.
 	 * @return The upper bound of the specified element's multiplicity.
-	 *
-	 * @author Adam Ancsin
 	 */
 	public static int getUpperBound(TypeDeclaration typeDeclaration) {
 		Integer explicitUpperBound = getExplicitUpperBound(typeDeclaration);

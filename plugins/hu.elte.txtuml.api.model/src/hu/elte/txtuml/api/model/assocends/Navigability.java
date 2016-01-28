@@ -6,9 +6,6 @@ package hu.elte.txtuml.api.model.assocends;
  * <p>
  * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
  * overview on modeling in JtxtUML.
- *
- * @author Gabor Ferenc Kovacs
- *
  */
 public interface Navigability<T extends Navigability<T>> {
 
@@ -18,9 +15,6 @@ public interface Navigability<T extends Navigability<T>> {
 	 * <p>
 	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
 	 * overview on modeling in JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	public interface Navigable extends Navigability<Navigable> {
 	}
@@ -31,9 +25,6 @@ public interface Navigability<T extends Navigability<T>> {
 	 * <p>
 	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
 	 * overview on modeling in JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	public interface NonNavigable extends Navigability<NonNavigable> {
 	}

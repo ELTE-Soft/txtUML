@@ -8,10 +8,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.junit.Test;
 
-/**
- * @author gerazo
- */
-
 public class PluginLogWrapperTest {
 	
 	static class MyLogListener implements ILogListener {

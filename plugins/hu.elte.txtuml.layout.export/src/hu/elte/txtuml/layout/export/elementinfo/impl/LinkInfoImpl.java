@@ -6,9 +6,6 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 
 /**
  * Default implementation for {@link LinkInfo}.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 public class LinkInfoImpl extends ElementInfoImpl implements LinkInfo {
 

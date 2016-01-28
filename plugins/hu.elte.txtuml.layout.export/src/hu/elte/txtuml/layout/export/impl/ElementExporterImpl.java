@@ -33,9 +33,6 @@ import hu.elte.txtuml.utils.Pair;
 
 /**
  * Default implementation for {@link ElementExporter}.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 public class ElementExporterImpl implements ElementExporter {
 

@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 /**
  * Root type of all messages which passes through between DiagnosticsPlugin and DiagnosticsService.
- * @author gerazo
  */
 public class Message implements Serializable {
 	private static final long serialVersionUID = -3021014219480855216L;

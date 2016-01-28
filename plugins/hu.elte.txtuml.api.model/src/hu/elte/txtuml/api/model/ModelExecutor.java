@@ -38,9 +38,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * <p>
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
- *
- * @author Gabor Ferenc Kovacs
- *
  */
 public final class ModelExecutor implements ModelElement {
 
@@ -91,9 +88,6 @@ public final class ModelExecutor implements ModelElement {
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	public static final class Settings implements ModelElement {
 
@@ -342,10 +336,6 @@ public final class ModelExecutor implements ModelElement {
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 * 
-	 *
 	 */
 	public static final class Report {
 

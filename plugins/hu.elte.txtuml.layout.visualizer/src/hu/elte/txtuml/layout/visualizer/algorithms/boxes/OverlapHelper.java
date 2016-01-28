@@ -21,9 +21,6 @@ import java.util.stream.Collectors;
 /**
  * The class that provides helping functions in the process of Overlap
  * Arrangement,
- * 
- * @author Balázs Gregorics
- *
  */
 class OverlapHelper
 {

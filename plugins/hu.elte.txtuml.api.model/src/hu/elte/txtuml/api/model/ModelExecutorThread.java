@@ -17,9 +17,6 @@ import java.util.concurrent.LinkedBlockingQueue;
  * instantiated only once by the {@link ModelExecutor} class.
  * <p>
  * Unusable by the user.
- *
- * @author Gabor Ferenc Kovacs
- *
  */
 class ModelExecutorThread extends Thread {
 
@@ -171,9 +168,6 @@ class ModelExecutorThread extends Thread {
  * and prepares an asynchronous operation to be executed in the future.
  * <p>
  * Unusable by the user.
- *
- * @author Gabor Ferenc Kovacs
- *
  */
 @FunctionalInterface
 interface MailboxEntry {
@@ -189,9 +183,6 @@ interface MailboxEntry {
  * and prepares a check to be performed in the future.
  * <p>
  * Unusable by the user.
- * 
- * @author Gabor Ferenc Kovacs
- * 
  */
 @FunctionalInterface
 interface CheckQueueEntry {

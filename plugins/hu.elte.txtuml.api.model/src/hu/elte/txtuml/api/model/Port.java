@@ -54,7 +54,6 @@ import java.lang.reflect.Proxy;
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  * 
- * @author Gabor Ferenc Kovacs
  * @see BehaviorPort
  * @see Connector
  * @see Action#connect(Port, Class, Port)

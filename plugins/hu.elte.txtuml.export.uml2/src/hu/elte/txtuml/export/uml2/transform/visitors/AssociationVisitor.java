@@ -16,8 +16,6 @@ import org.eclipse.uml2.uml.Model;
  * @throws RuntimeException
  *             When applied to an <code>ASTNode</code>, methods of this visitor
  *             may throw this kind of exception.
- * @author Ádám Ancsin
- *
  */
 public class AssociationVisitor extends ASTVisitor {
 

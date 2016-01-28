@@ -46,11 +46,9 @@ import java.lang.annotation.Target;
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  *
- * @author Gabor Ferenc Kovacs
  * @see StateMachine.Transition
  * @see To
  * @see From
- * 
  */
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -95,9 +93,6 @@ public @interface Trigger {
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	abstract class AnyPort extends Port<Interface, Interface> {
 

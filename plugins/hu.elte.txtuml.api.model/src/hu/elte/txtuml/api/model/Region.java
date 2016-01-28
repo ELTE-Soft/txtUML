@@ -29,9 +29,6 @@ import hu.elte.txtuml.api.model.backend.collections.InitialsMap;
  * <p>
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
- *
- * @author Gabor Ferenc Kovacs
- *
  */
 public class Region extends StateMachine {
 
