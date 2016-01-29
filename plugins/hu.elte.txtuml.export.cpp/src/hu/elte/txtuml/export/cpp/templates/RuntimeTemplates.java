@@ -52,7 +52,7 @@ class RuntimeTemplates
 	public static String ProcessInitTransition(String className_)
 	{
 		return GenerationNames.NoReturn + " " +className_+"::processInitTranstion()\n{\n"+
-					"process_event(" +GenerationNames.InitialEventName + "_EC((*" + GenerationNames.Self + "), " + className_ + "::" + GenerationNames.InitialEventName + "_EE));\n}\n" ;
+					GenerationNames.ProcessEventFName + "(" +GenerationNames.InitialEventName + "_EC((*" + GenerationNames.Self + "), " + className_ + "::" + GenerationNames.InitialEventName + "_EE));\n}\n" ;
 				
 	}
 	public static String StartSM(String className_)

@@ -152,6 +152,7 @@ class GenerationNames
 					"{\n"+
 				  		CurrentMachineName+"=(it->second).get();\n"+
 				  		CurrentMachineName+"->"+SetInitialStateName+"();//restarting from initial state\n"+
+				  		CurrentMachineName+"->"+ProcessEventFName+"("+GenerationNames.InitialEventName + "_EC(" + DerefenrencePointer( GenerationNames.Self ) + ", " + className_ + "::" + GenerationNames.InitialEventName + "_EE));\n" +
 				  	"}\n"+
 				  	"else\n"+
 				  	"{\n"+

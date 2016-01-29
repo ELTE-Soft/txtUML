@@ -142,17 +142,17 @@ public class GenerationTemplates
 		List<String> parentParam=new LinkedList<String>();
 		parentParam.add(parentclass_);
 		
-		return  HierarchicalStateMachineClassHeader(dependency_,className_,parentParam,subMachines_,public_,protected_,(PrivateFunctionalTemplates.SubStateMachineClassFixPrivateParts(parentclass_)+private_),false);
+		return  HierarchicalStateMachineClassHeader(dependency_,className_,null,parentParam,subMachines_,public_,protected_,(PrivateFunctionalTemplates.SubStateMachineClassFixPrivateParts(parentclass_)+private_),false);
 	}
 	
 	public static String HierarchicalStateMachineClassHeader(String dependency_,String className_,List<String> subMachines_, String public_,String protected_,String private_,Boolean rt_)
 	{
-		return HierarchicalStateMachineClassHeader(dependency_, className_, null, subMachines_, public_, protected_, private_, rt_);
+		return HierarchicalStateMachineClassHeader(dependency_, className_, null,null, subMachines_, public_, protected_, private_, rt_);
 	}
 	
-	public static String HierarchicalStateMachineClassHeader(String dependency_,String className_,List<String> constructorParams_,List<String> subMachines_, String public_,String protected_,String private_,Boolean rt_)
+	public static String HierarchicalStateMachineClassHeader(String dependency_,String className_,String baseClassName_,List<String> constructorParams_,List<String> subMachines_, String public_,String protected_,String private_,Boolean rt_)
 	{
-		return ClassHeader(PrivateFunctionalTemplates.ClassHeaderIncludes(rt_)+dependency_,className_,null,constructorParams_,
+		return ClassHeader(PrivateFunctionalTemplates.ClassHeaderIncludes(rt_)+dependency_,className_,baseClassName_,constructorParams_,
 				PrivateFunctionalTemplates.StateMachineClassFixPublicParts(className_,rt_)+public_,protected_,
 				PrivateFunctionalTemplates.HierarchicalStateMachineClassFixPrivateParts(className_,subMachines_)+private_,true,rt_);
 	}
@@ -162,7 +162,8 @@ public class GenerationTemplates
 		List<String> parentParam=new LinkedList<String>();
 		parentParam.add(parentclass_);
 		
-		return SimpleStateMachineClassHeader(dependency_, className_,null,parentParam,public_, protected_, (PrivateFunctionalTemplates.SubStateMachineClassFixPrivateParts(parentclass_)+private_),false);
+		return SimpleStateMachineClassHeader(dependency_, className_,null,parentParam,public_, protected_, 
+				(PrivateFunctionalTemplates.SubStateMachineClassFixPrivateParts(parentclass_)+private_),false);
 	}
 	
 	public static String SimpleStateMachineClassHeader(String dependency_,String className_,String baseClassName,String public_,String protected_,String private_,Boolean rt_)
@@ -334,10 +335,10 @@ public class GenerationTemplates
 		return source+PrivateFunctionalTemplates.HierarchicalStateMachineClassConstructorSharedBody(className_, parentParamName, machine_, subMachines_, intialState_, false);
 	}
 	
-	public static String HierarchicalStateMachineClassConstructor(String className_,Map<Pair<String,String>,Pair<String,String>> machine_,Map<String,String> subMachines_,String intialState_,Boolean rt_)
+	public static String HierarchicalStateMachineClassConstructor(String className_,String baseClassName_,Map<Pair<String,String>,Pair<String,String>> machine_,Map<String,String> subMachines_,String intialState_,Boolean rt_)
 	{
 		
-		String source= SimpleStateMachineClassConstructorHead(className_,rt_) +GenerationNames.DefaultStateInitialization+","+GenerationNames.CurrentMachineName+"("+GenerationNames.NullPtr+")\n{\n";
+		String source= SimpleStateMachineClassConstructorHead(className_,baseClassName_,rt_) +GenerationNames.CurrentMachineName+"("+GenerationNames.NullPtr+")"+","+GenerationNames.DefaultStateInitialization+"\n{\n";
 		return source+PrivateFunctionalTemplates.HierarchicalStateMachineClassConstructorSharedBody(className_, "this", machine_, subMachines_, intialState_, rt_);
 	}
 	

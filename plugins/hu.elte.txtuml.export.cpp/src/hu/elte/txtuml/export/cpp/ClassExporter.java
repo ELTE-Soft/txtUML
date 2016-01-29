@@ -168,7 +168,7 @@ public class ClassExporter
 			}
 			else
 			{
-				source=GenerationTemplates.HierarchicalStateMachineClassHeader(dependency,class_.getName(),getSubmachines(),publicParts,protectedParts,privateParts,Options.Runtime());
+				source=GenerationTemplates.HierarchicalStateMachineClassHeader(dependency,class_.getName(),getBaseClass(class_),constructorParams,getSubmachines(),publicParts,protectedParts,privateParts,Options.Runtime());
 			}
 		}
 		else
@@ -216,7 +216,7 @@ public class ClassExporter
 			}
 			else
 			{
-				source+=GenerationTemplates.HierarchicalStateMachineClassConstructor(class_.getName(),smMap,getEventSubmachineNameMap(),getInitialState(region),Options.Runtime());
+				source+=GenerationTemplates.HierarchicalStateMachineClassConstructor(class_.getName(),getBaseClass(class_),smMap,getEventSubmachineNameMap(),getInitialState(region),Options.Runtime());
 			}
 			source+=createEntryFunctionsDef(class_.getName(),region)+
 					createExitFunctionsDef(class_.getName(),region)+
