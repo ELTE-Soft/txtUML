@@ -4,9 +4,6 @@ import java.util.Observable;
 
 /**
  * This class emits the events the algorithm fires.
- * 
- * @author Balázs Gregorics
- *
  */
 public class ProgressEmitter extends Observable
 {

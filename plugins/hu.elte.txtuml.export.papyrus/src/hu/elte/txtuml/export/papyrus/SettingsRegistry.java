@@ -9,7 +9,6 @@ import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 
 /**
  * A simple registry for registering implementation for the diagram creation process
- * @author András Dobreff
  */
 public class SettingsRegistry {
 	private static Class<? extends AbstractPapyrusModelManager> manager;

@@ -2,8 +2,6 @@ package hu.elte.txtuml.utils;
 
 /**
  * Triple type. One type to store three different types.
- * 
- * @author Balázs Gregorics
  *
  * @param <T1>
  *            First type.

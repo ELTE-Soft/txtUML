@@ -7,11 +7,6 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * 
- * @author Gabor Ferenc Kovacs
- *
- */
 public interface NodeMap extends Map<Class<?>, NodeInfo> {
 
 	static NodeMap create() {

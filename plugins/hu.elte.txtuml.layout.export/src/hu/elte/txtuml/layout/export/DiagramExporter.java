@@ -6,9 +6,6 @@ import hu.elte.txtuml.layout.export.impl.DiagramExporterImpl;
 /**
  * Public interface to export diagram layout descriptions from their Java
  * format.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 public interface DiagramExporter {
 

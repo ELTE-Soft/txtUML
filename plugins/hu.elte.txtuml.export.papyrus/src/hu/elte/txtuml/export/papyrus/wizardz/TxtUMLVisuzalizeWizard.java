@@ -24,8 +24,6 @@ import org.eclipse.ui.progress.IProgressService;
 
 /**
  * Wizard for visualization of txtUML models
- *
- * @author Andr�s Dobreff
  */
 public class TxtUMLVisuzalizeWizard extends Wizard {
 

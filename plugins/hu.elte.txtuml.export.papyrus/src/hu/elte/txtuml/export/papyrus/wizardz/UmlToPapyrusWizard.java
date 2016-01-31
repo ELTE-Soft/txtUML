@@ -16,8 +16,6 @@ import org.eclipse.ui.progress.IProgressService;
 
 /**
  * Wizard for visualizing Eclipse UML2 file from local filesystem
- *
- * @author András Dobreff
  */
 public class UmlToPapyrusWizard extends Wizard {
 

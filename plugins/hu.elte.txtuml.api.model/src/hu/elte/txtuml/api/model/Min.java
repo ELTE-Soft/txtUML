@@ -28,9 +28,6 @@ import java.lang.annotation.Target;
  * </pre>
  * 
  * See the documentation of {@link Model} for an overview on modeling in JtxtUML.
- *
- * @author Gabor Ferenc Kovacs
- * 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

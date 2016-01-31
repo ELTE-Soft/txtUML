@@ -42,8 +42,6 @@ import org.eclipse.uml2.uml.Signal;
 
 /**
  * An abstract class for adding/removing elements to ClassDiagrams.
- *
- * @author András Dobreff
  */
 public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 

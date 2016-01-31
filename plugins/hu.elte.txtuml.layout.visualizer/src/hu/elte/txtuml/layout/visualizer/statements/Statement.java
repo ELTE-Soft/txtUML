@@ -9,9 +9,6 @@ import java.util.ArrayList;
 /**
  * Statement class represents a layout statement defined on a diagram object or
  * link. These support the algorithm to arrange the objects and the links.
- * 
- * @author Balázs Gregorics
- *
  */
 public class Statement
 {

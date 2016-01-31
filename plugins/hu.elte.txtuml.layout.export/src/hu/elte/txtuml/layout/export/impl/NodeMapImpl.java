@@ -10,9 +10,6 @@ import java.util.Set;
 
 /**
  * Default implementation for {@link NodeMap}.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 @SuppressWarnings("serial")
 public class NodeMapImpl extends LinkedHashMap<Class<?>, NodeInfo> implements NodeMap {

@@ -5,11 +5,6 @@ import hu.elte.txtuml.layout.export.impl.NodeGroupMapImpl;
 
 import java.util.Map;
 
-/**
- * 
- * @author Dávid János Németh
- *
- */
 public interface NodeGroupMap extends Map<Class<?>, NodeGroupInfo> {
     
     static NodeGroupMap create() {

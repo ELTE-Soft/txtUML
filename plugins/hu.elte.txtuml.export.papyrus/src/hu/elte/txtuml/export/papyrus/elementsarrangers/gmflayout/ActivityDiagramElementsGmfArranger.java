@@ -13,8 +13,6 @@ import org.eclipse.papyrus.uml.diagram.activity.edit.parts.ObjectFlowGuardEditPa
 
 /**
  * Controls the arranging of an ActivityDiagram with GMF algorithm
- *
- * @author András Dobreff
  */
 public class ActivityDiagramElementsGmfArranger extends AbstractDiagramElementsGmfArranger {
 	

@@ -30,12 +30,6 @@ import hu.elte.txtuml.layout.export.problems.ElementExportationException;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.Sneaky;
 
-/**
- * 
- * @author Gabor Ferenc Kovacs
- * @author D�vid J�nos N�meth
- *
- */
 public class ClassDiagramExporter extends AbstractSourceExporter {
 
 	@Override
