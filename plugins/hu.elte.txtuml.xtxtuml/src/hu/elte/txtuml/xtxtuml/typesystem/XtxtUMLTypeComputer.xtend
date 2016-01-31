@@ -40,7 +40,7 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		// right child
 		val rightChild = navExpr.right;
 		// if the reference couldn't be resolved
-		if (rightChild == null || rightChild.name == null) {
+		if (rightChild?.name == null) {
 			return;
 		}
 

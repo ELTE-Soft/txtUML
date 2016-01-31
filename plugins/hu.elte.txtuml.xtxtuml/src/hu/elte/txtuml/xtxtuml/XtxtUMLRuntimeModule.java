@@ -1,7 +1,6 @@
 package hu.elte.txtuml.xtxtuml;
 
 import org.eclipse.xtext.generator.IGenerator;
-import org.eclipse.xtext.naming.IQualifiedNameConverter;
 import org.eclipse.xtext.scoping.IScopeProvider;
 import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider;
 import org.eclipse.xtext.validation.ConfigurableIssueCodesProvider;
