@@ -14,9 +14,7 @@ import java.util.Set;
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.State;
 
-
-
-
+import com.google.common.collect.Multimap;
 
 import hu.elte.txtuml.utils.Pair;
 
@@ -326,7 +324,7 @@ public class GenerationTemplates
 		return PrivateFunctionalTemplates.CppType(returnTypeName_)+" "+className_+"::"+functionName_+"("+PrivateFunctionalTemplates.ParamList(params_)+")\n{\n"+body_+"}\n\n";
 	}
 
-	public static String HierarchicalSubStateMachineClassConstructor(String className_,String parentClassName_,Map<Pair<String,String>,Pair<String,String>> machine_,Map<String,String> subMachines_,String intialState_)
+	public static String HierarchicalSubStateMachineClassConstructor(String className_,String parentClassName_,Multimap<Pair<String,String>,Pair<String,String>> machine_,Map<String,String> subMachines_,String intialState_)
 	{
 		
 		String parentParamName=GenerationNames.FormatIncomignParamName(GenerationNames.ParentSmName);
@@ -335,7 +333,7 @@ public class GenerationTemplates
 		return source+PrivateFunctionalTemplates.HierarchicalStateMachineClassConstructorSharedBody(className_, parentParamName, machine_, subMachines_, intialState_, false);
 	}
 	
-	public static String HierarchicalStateMachineClassConstructor(String className_,String baseClassName_,Map<Pair<String,String>,Pair<String,String>> machine_,Map<String,String> subMachines_,String intialState_,Boolean rt_)
+	public static String HierarchicalStateMachineClassConstructor(String className_,String baseClassName_,Multimap<Pair<String,String>,Pair<String,String>> machine_,Map<String,String> subMachines_,String intialState_,Boolean rt_)
 	{
 		
 		String source= SimpleStateMachineClassConstructorHead(className_,baseClassName_,rt_) +GenerationNames.CurrentMachineName+"("+GenerationNames.NullPtr+")"+","+GenerationNames.DefaultStateInitialization+"\n{\n";
@@ -346,7 +344,7 @@ public class GenerationTemplates
 	 * Map<Pair<String, String>,<String,String>
 	 *                <event, state>,<guard,handlerName>
 	 * */
-	public static String SimpleSubStateMachineClassConstructor(String className_,String parentClass_,Map<Pair<String,String>,Pair<String,String>> machine_,String intialState_)
+	public static String SimpleSubStateMachineClassConstructor(String className_,String parentClass_,Multimap<Pair<String,String>,Pair<String,String>> machine_,String intialState_)
 	{
 		String parentParam=GenerationNames.FormatIncomignParamName(GenerationNames.ParentSmName);
 		String source=className_+"::"+className_+"("+GenerationNames.PointerType(parentClass_)+" "+parentParam+"):"+GenerationNames.DefaultStateInitialization+","+
@@ -358,7 +356,7 @@ public class GenerationTemplates
 	 * Map<Pair<String, String>,<String,String>
 	 *                <event, state>,<guard,handlerName>
 	 * */
-	public static String SimpleStateMachineClassConstructor(String className_,String baseClassName,Map<Pair<String,String>,Pair<String,String>> machine_,String intialState_,Boolean rt_,Integer poolId)
+	public static String SimpleStateMachineClassConstructor(String className_,String baseClassName,Multimap<Pair<String,String>,Pair<String,String>> machine_,String intialState_,Boolean rt_,Integer poolId)
 	{
 			String source= SimpleStateMachineClassConstructorHead(className_,baseClassName,rt_) + GenerationNames.DefaultStateInitialization +
 					"\n{\n"+PrivateFunctionalTemplates.StateMachineClassConstructorSharedBody(className_, machine_, intialState_,rt_,poolId)+"}\n\n";

@@ -35,6 +35,9 @@ import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
@@ -209,7 +212,7 @@ public class ClassExporter
 		if (ownStates(class_,smList))
 		{
 			Region region=smList.get(0).getRegions().get(0);
-			Map<Pair<String,String>,Pair<String,String>> smMap=createMachine(region);
+			Multimap<Pair<String,String>,Pair<String,String>> smMap=createMachine(region);
 			if(_submachineMap.isEmpty())
 			{
 				source+=GenerationTemplates.SimpleStateMachineClassConstructor(class_.getName(),getBaseClass(class_),smMap,getInitialState(region),Options.Runtime(),poolId);
@@ -263,7 +266,7 @@ public class ClassExporter
 	private String createSubSmClassCppSource(String className_,String parentClass_, Region region_) 
 	{
 		String source="";
-		Map<Pair<String,String>,Pair<String,String>> smMap=createMachine(region_);
+		Multimap<Pair<String,String>,Pair<String,String>> smMap=createMachine(region_);
 		if(_submachineMap.isEmpty())
 		{
 			source+=GenerationTemplates.SimpleSubStateMachineClassConstructor(className_,parentClass_,smMap,getInitialState(region_));
@@ -762,9 +765,9 @@ public class ClassExporter
 	 * Map<Pair<String, String>,<String,String>
 	 *                <event, state>,<guard,handlerName>
 	 * */
-	private Map<Pair<String,String>,Pair<String,String>> createMachine(Region region_)
+	private Multimap<Pair<String,String>,Pair<String,String>> createMachine(Region region_)
 	{
-		Map<Pair<String,String>,Pair<String,String>> smMap=new HashMap<Pair<String,String>,Pair<String,String>>();
+		Multimap<Pair<String,String>,Pair<String,String>> smMap= HashMultimap.create();
 		for(Transition item:region_.getTransitions())
 		{
 			Pair<String,String> eventSignalPair=null;

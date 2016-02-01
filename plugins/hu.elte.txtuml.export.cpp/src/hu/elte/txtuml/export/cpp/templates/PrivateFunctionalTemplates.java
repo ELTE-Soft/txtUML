@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.cpp.templates;
 
+
 /***********************************************************
  * Author: Hack J�nos
  * Version 0.9 2014.02.25
@@ -8,6 +9,8 @@ package hu.elte.txtuml.export.cpp.templates;
 
 import java.util.List;
 import java.util.Map;
+
+import com.google.common.collect.Multimap;
 
 import hu.elte.txtuml.utils.Pair;
 
@@ -21,7 +24,7 @@ class PrivateFunctionalTemplates
 	 * Map<String,String>
 	 * 	  <event,SubmachineName>
 	 * */
-	public static String HierarchicalStateMachineClassConstructorSharedBody(String className_,String parentClassName_,Map<Pair<String,String>,Pair<String,String>> machine_,Map<String,String> subMachines_,String intialState_,Boolean rt_)
+	public static String HierarchicalStateMachineClassConstructorSharedBody(String className_,String parentClassName_,Multimap<Pair<String,String>,Pair<String,String>> machine_,Map<String,String> subMachines_,String intialState_,Boolean rt_)
 	{
 		String source="";
 		for(Map.Entry<String,String> entry:subMachines_.entrySet())
@@ -40,7 +43,7 @@ class PrivateFunctionalTemplates
 				PrivateFunctionalTemplates.SetInitialState(className_,intialState_)+"\n";
 	}
 	
-	public static String SimpleStateMachineClassConstructorSharedBody(String className_,Map<Pair<String,String>,Pair<String,String>> machine_,String intialState_,Boolean rt_)
+	public static String SimpleStateMachineClassConstructorSharedBody(String className_,Multimap<Pair<String,String>,Pair<String,String>> machine_,String intialState_,Boolean rt_)
 	{
 		String source="";
 		if(rt_)
@@ -53,29 +56,32 @@ class PrivateFunctionalTemplates
 				PrivateFunctionalTemplates.SetInitialState(className_,intialState_)+"\n";
 	}
 	
-	public static String StateMachineClassConstructorSharedBody(String className_,Map<Pair<String,String>,Pair<String,String>> machine_,String intialState_, Boolean rt, Integer poolId)
+	public static String StateMachineClassConstructorSharedBody(String className_,Multimap<Pair<String,String>,Pair<String,String>> machine_,String intialState_, Boolean rt, Integer poolId)
 	{
 		return StateMachineClassConstructorSharedBody(className_, null, machine_, intialState_,rt,poolId);
 	}
 
-	public static String StateMachineClassConstructorSharedBody(String className_,String parentClassName_,Map<Pair<String,String>,Pair<String,String>> machine_,String intialState_, Boolean rt, Integer poolId)
+	public static String StateMachineClassConstructorSharedBody(String className_,String parentClassName_,Multimap<Pair<String,String>,Pair<String,String>> machine_,String intialState_, Boolean rt, Integer poolId)
 	{
 		String source="";
-		for (Map.Entry<Pair<String,String>, Pair<String,String>> entry : machine_.entrySet())
+		for (Pair<String,String> key : machine_.keySet())
 		{
-			source+=GenerationNames.TransitionTableName+".emplace("+GenerationNames.EventStateTypeName+"(";
-			if(parentClassName_!=null && parentClassName_!="this")
-			{
-				source+=parentClassName_+"::";
+			for (Pair<String,String> value : machine_.get(key)) {
+				source+=GenerationNames.TransitionTableName+".emplace("+GenerationNames.EventStateTypeName+"(";
+				if(parentClassName_!=null && parentClassName_!="this")
+				{
+					source+=parentClassName_+"::";
+				}
+				source+=GenerationNames.EventEnumName(key.getFirst())+","+GenerationNames.StateEnumName(key.getSecond())+"),";
+				String guardName=GenerationNames.DefaultGuardName;
+				if(value.getFirst() != null)
+				{
+					guardName=value.getFirst();
+				}		
+				source+=GenerationNames.GuardActionName+"("+GenerationNames.GuardFuncTypeName+"(&"+className_+"::"+guardName+"),"
+						+GenerationNames.FunctionPtrTypeName+"(&"+className_+"::"+value.getSecond()+")));\n";
 			}
-			source+=GenerationNames.EventEnumName(entry.getKey().getFirst())+","+GenerationNames.StateEnumName(entry.getKey().getSecond())+"),";
-			String guardName=GenerationNames.DefaultGuardName;
-			if(entry.getValue().getFirst() != null)
-			{
-				guardName=entry.getValue().getFirst();
-			}		
-			source+=GenerationNames.GuardActionName+"("+GenerationNames.GuardFuncTypeName+"(&"+className_+"::"+guardName+"),"
-					+GenerationNames.FunctionPtrTypeName+"(&"+className_+"::"+entry.getValue().getSecond()+")));\n";
+
 		
 		}
 		

@@ -24,7 +24,8 @@ Require-Bundle: org.eclipse.uml2.uml,
  org.eclipse.jdt.ui,
  org.eclipse.gmf.tooling.runtime,
  org.eclipse.ui,
- org.eclipse.debug.ui
+ org.eclipse.debug.ui,
+ com.google.guava
 Export-Package: hu.elte.txtuml.export.cpp,
  hu.elte.txtuml.export.cpp.description
 Bundle-ActivationPolicy: lazy
