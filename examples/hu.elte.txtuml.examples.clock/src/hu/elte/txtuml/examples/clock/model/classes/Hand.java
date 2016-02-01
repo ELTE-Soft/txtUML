@@ -1,30 +1,31 @@
 package hu.elte.txtuml.examples.clock.model.classes;
 
-import hu.elte.txtuml.examples.clock.model.interfaces.EmptyIfc;
-import hu.elte.txtuml.examples.clock.model.interfaces.TickIfc;
-import hu.elte.txtuml.examples.clock.model.signals.Tick;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.BehaviorPort;
 import hu.elte.txtuml.api.model.From;
+import hu.elte.txtuml.api.model.Interface;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Port;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
+import hu.elte.txtuml.examples.clock.model.interfaces.TickIfc;
+import hu.elte.txtuml.examples.clock.model.interfaces.ValueIfc;
+import hu.elte.txtuml.examples.clock.model.signals.HandValue;
+import hu.elte.txtuml.examples.clock.model.signals.Tick;
 
 public class Hand extends ModelClass {
 	private int maxValue;
 	private int currentValue;
-	private int index;
 	
 	@BehaviorPort
-	public class InTickPort extends Port<EmptyIfc,TickIfc> {}
+	public class InTickPort extends Port<Interface.Empty,TickIfc> {}
 
-	public class OutTickPort extends Port<TickIfc,EmptyIfc> {}
+	public class OutTickPort extends Port<TickIfc,Interface.Empty> {}
+	public class ValuePort extends Port<ValueIfc,Interface.Empty> {}
 	
-	public Hand(int maxValue, int index) {
+	public Hand(int maxValue, int currentValue) {
 		this.maxValue = maxValue;
-		this.currentValue = 0;
-		this.index = index;
+		this.currentValue = currentValue;
 	}
 	
 	class Init extends Initial {}
@@ -41,16 +42,7 @@ public class Hand extends ModelClass {
 				currentValue = 0;
 				Action.send(port(OutTickPort.class).provided::reception, new Tick());
 			}
-			logValue();
+			Action.send(port(ValuePort.class).provided::reception, new HandValue(currentValue));
 		}
-		
-	}
-	
-	private void logValue() {
-		String log = "";
-		for(int i=0; i<index; ++i) {
-			log += "  :";
-		}
-		Action.log(log + currentValue);
 	}
 }
