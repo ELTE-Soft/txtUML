@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.dom.ArrayAccess;
 import org.eclipse.jdt.core.dom.ArrayCreation;
 import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.Assignment;
+import org.eclipse.jdt.core.dom.Assignment.Operator;
 import org.eclipse.jdt.core.dom.BooleanLiteral;
 import org.eclipse.jdt.core.dom.CastExpression;
 import org.eclipse.jdt.core.dom.CharacterLiteral;
@@ -79,10 +80,11 @@ class ExpressionVisitor extends ASTVisitor {
 	public boolean visit(Assignment node) {
 		Expression left = node.getLeftHandSide();
 		Expression right = node.getRightHandSide();
+		Operator operator = node.getOperator();
 
 		right.accept(this);
 		LeftHandSideOfAssignmentVisitor visitor = new LeftHandSideOfAssignmentVisitor(
-				result, expressionExporter);
+				result, expressionExporter, operatorExporter, operator);
 		left.accept(visitor);
 		return false;
 	}
