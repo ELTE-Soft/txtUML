@@ -6,8 +6,8 @@ import org.eclipse.emf.ecore.EObject;
 
 /**
  * Compares two {@link EObject}
- * @author András Dobreff -
- * 	reference: http://jorgemanrubia.net/blog/wp-content/uploads/2008/07/emfcomparator.java
+ * <p>
+ * reference: http://jorgemanrubia.net/blog/wp-content/uploads/2008/07/emfcomparator.java
  */
 public class EObjectComparator implements Comparator<EObject> {
 	@Override

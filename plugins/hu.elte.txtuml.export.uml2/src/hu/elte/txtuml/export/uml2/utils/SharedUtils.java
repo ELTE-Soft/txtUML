@@ -48,8 +48,6 @@ public final class SharedUtils {
 	 * @param specifiedClass
 	 *            The specified class.
 	 * @return The decision.
-	 *
-	 * @author Adam Ancsin
 	 */
 	public static boolean typeIsAssignableFrom(TypeDeclaration typeDeclaration,
 			Class<?> specifiedClass) {
@@ -143,8 +141,6 @@ public final class SharedUtils {
 	 * @throws IOException
 	 *             Thrown when I/O error occurs during reading the file.
 	 * @throws JavaModelException
-	 *
-	 * @author �d�m Ancsin
 	 */
 	public static CompilationUnit parseJavaSource(File sourceFile,
 			IJavaProject project) throws IOException, JavaModelException {
@@ -191,8 +187,6 @@ public final class SharedUtils {
 	 *         array.
 	 * @throws IOException
 	 *             Thrown when I/O error occurs during reading the file.
-	 *
-	 * @author �d�m Ancsin
 	 */
 	public static char[] getFileContents(File sourceFile) throws IOException {
 		Path path = Paths.get(sourceFile.getAbsolutePath());

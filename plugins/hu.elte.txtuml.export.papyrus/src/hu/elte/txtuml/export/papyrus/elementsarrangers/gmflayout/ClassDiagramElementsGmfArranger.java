@@ -14,8 +14,6 @@ import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationNameEditPart;
 
 /**
  * Controls the arranging of a ClassDiagram with GMF algorithm
- *
- * @author András Dobreff
  */
 public class ClassDiagramElementsGmfArranger extends AbstractDiagramElementsGmfArranger{
 

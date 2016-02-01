@@ -335,7 +335,6 @@ XFeatureCall returns xbase::XExpression :
  *     <li>XBlockExpression is mandatory, except for an "else if" construct</li>
  *     <li>XExpression -> XExpression</li>
  * </ul>
- * 
  */
 XIfExpression returns xbase::XExpression :
 	{xbase::XIfExpression}

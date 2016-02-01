@@ -13,9 +13,6 @@ import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.junit.*;
 
-/**
- * @author gerazo
- */
 public class InstanceRegisterTest {
 	
 	static class MyLogListener implements ILogListener {

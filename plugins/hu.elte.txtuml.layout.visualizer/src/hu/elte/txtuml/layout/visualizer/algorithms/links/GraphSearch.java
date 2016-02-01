@@ -24,8 +24,6 @@ import java.util.Set;
 
 /**
  * This class implements an A^* graph search algorithm.
- * 
- * @author Balázs Gregorics
  */
 class GraphSearch {
 

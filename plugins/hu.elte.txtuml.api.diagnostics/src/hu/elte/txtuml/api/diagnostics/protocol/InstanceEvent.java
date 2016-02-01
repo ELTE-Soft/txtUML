@@ -2,7 +2,6 @@ package hu.elte.txtuml.api.diagnostics.protocol;
 
 /**
  * Instance life-cycle related event
- * @author gerazo
  */
 public class InstanceEvent extends Message {
 	private static final long serialVersionUID = -5803880169919413931L;

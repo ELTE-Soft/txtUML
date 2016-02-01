@@ -31,9 +31,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>
  * See the documentation of {@link hu.elte.txtuml.api.Model} for an overview on
  * modeling in JtxtUML.
- *
- * @author Gabor Ferenc Kovacs
- *
  */
 public class Timer implements ExternalClass {
 

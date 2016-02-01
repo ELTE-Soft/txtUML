@@ -23,7 +23,6 @@ import org.eclipse.papyrus.infra.services.markerlistener.PapyrusMarkerAdapter;
 
 /**
  * Animates diagrams
- * @author gerazo
  */
 public class Animator {
 	private InstanceRegister instanceRegister;

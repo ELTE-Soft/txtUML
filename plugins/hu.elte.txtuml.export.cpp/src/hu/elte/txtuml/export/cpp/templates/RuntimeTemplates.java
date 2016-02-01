@@ -2,12 +2,6 @@ package hu.elte.txtuml.export.cpp.templates;
 
 import java.io.File;
 
-/***********************************************************
- * Author: Hack János
- * Version 0.8 2014.12.01
- * Email:zodiakus (at) elte.hu
- **********************************************************/
-
 class RuntimeTemplates
 {
 	public static final String RTPath="runtime"+File.separator;

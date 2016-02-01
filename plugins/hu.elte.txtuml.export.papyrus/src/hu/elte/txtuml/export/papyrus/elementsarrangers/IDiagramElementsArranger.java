@@ -4,8 +4,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
  * An Interface for arranging elements of a diagram 
- *
- * @author András Dobreff
  */
 public interface IDiagramElementsArranger {
 	

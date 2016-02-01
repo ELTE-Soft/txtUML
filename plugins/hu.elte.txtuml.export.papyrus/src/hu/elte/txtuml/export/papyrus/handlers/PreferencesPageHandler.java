@@ -8,8 +8,6 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
 
 /**
  * Handles the the call to preferences page.
- *
- * @author András Dobreff
  */
 public class PreferencesPageHandler extends AbstractHandler{
 

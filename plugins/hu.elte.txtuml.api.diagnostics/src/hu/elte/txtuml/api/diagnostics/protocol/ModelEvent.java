@@ -2,7 +2,6 @@ package hu.elte.txtuml.api.diagnostics.protocol;
 
 /**
  * Model related event on an instance
- * @author gerazo
  */
 public class ModelEvent extends InstanceEvent {
 	private static final long serialVersionUID = 8194665363543638635L;

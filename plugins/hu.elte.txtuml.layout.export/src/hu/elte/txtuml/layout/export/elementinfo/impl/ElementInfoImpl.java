@@ -4,9 +4,6 @@ import hu.elte.txtuml.layout.export.elementinfo.ElementInfo;
 
 /**
  * Default implementation for {@link ElementInfo}.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 abstract class ElementInfoImpl implements ElementInfo {
 

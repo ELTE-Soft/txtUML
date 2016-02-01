@@ -8,18 +8,13 @@ import java.util.HashMap;
 /**
  * This class provides an implementation to the Breath-First search algorithm.
  * 
- * @author Balázs Gregorics
  * @param <T>
  *            Type of the graph nodes.
- *
  */
 class BreathFirstSearch<T>
 {
 	/**
 	 * Types of discovery property.
-	 * 
-	 * @author Balázs Gregorics
-	 *
 	 */
 	public enum LabelType
 	{

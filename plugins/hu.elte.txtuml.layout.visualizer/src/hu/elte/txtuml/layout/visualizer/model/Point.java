@@ -5,8 +5,6 @@ import java.util.Set;
 
 /**
  * The class representing an abstract Integer Point.
- * 
- * @author Balázs Gregorics
  */
 public class Point
 {

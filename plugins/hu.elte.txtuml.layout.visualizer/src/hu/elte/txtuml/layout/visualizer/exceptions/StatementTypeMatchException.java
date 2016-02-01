@@ -3,9 +3,6 @@ package hu.elte.txtuml.layout.visualizer.exceptions;
 /**
  * Exception indicating that a specific statement was not in correct format: not
  * enough parameters, too few parameters or parameters are not correct types.
- * 
- * @author Balázs Gregorics
- *
  */
 public class StatementTypeMatchException extends MyException
 {

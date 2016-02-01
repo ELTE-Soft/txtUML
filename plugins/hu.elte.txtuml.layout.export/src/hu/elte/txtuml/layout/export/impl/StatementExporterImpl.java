@@ -51,9 +51,6 @@ import java.util.Map;
 
 /**
  * Default implementation for {@link StatementExporter}.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 public class StatementExporterImpl implements StatementExporter {
 
