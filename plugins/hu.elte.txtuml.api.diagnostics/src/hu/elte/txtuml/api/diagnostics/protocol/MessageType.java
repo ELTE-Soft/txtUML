@@ -2,7 +2,6 @@ package hu.elte.txtuml.api.diagnostics.protocol;
 
 /**
  * Helps non-java serialization for compiled code lacking RTTI.
- * @author gerazo
  */
 public enum MessageType {
 	ACKNOWLEDGED,

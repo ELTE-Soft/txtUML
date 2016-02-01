@@ -1,11 +1,5 @@
 package hu.elte.txtuml.export.cpp;
 
-/***********************************************************
- * Author: Hack J�nos
- * Version 0.9 2014.02.25
- * Email:zodiakus (at) elte.hu
- **********************************************************/
-
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;

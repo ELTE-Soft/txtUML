@@ -16,8 +16,6 @@ import org.eclipse.papyrus.uml.diagram.menu.actions.SizeAction;
 
 /**
  * An abstract class for arranging the elements with the GMF arranging algorithm. 
- *
- * @author András Dobreff
  */
 public abstract class  AbstractDiagramElementsGmfArranger extends AbstractDiagramElementsArranger{
 

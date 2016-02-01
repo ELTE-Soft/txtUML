@@ -6,9 +6,6 @@ import java.io.PrintStream;
 
 /**
  * This class manages the runtime log of the executor.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 public final class ExecutorLog {
 

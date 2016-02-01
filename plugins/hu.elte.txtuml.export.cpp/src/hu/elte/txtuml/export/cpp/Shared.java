@@ -1,11 +1,5 @@
 package hu.elte.txtuml.export.cpp;
 
-/***********************************************************
- * Author: Hack J�nos
- * Version 0.9 2014.02.25
- * Email:zodiakus (at) elte.hu
- **********************************************************/
-
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 

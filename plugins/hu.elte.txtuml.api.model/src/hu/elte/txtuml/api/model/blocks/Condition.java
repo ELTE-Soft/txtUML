@@ -11,9 +11,6 @@ import hu.elte.txtuml.api.model.ModelElement;
  * 
  * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
  * overview on modeling in JtxtUML.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 @FunctionalInterface
 public interface Condition extends ModelElement {

@@ -17,8 +17,6 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * The Page where the user can select eclipse UML2 file.
- *
- * @author András Dobreff
  */
 public class SelectUMLPage extends WizardPage {
   private Text ProjectName;

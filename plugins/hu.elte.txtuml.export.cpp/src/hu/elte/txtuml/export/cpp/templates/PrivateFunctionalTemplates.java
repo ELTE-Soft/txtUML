@@ -1,12 +1,5 @@
 package hu.elte.txtuml.export.cpp.templates;
 
-
-/***********************************************************
- * Author: Hack J�nos
- * Version 0.9 2014.02.25
- * Email:zodiakus (at) elte.hu
- **********************************************************/
-
 import java.util.List;
 import java.util.Map;
 

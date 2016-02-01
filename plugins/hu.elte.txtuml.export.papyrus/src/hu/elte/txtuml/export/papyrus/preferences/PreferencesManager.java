@@ -13,8 +13,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 /**
  * Handles the preferences that are saved by eclipse
- *
- * @author András Dobreff
  */
 @SuppressWarnings("javadoc")
 public class PreferencesManager{

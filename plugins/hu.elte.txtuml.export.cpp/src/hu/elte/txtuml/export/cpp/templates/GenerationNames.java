@@ -1,11 +1,5 @@
 package hu.elte.txtuml.export.cpp.templates;
 
-/***********************************************************
- * Author: Hack J�nos
- * Version 0.9 2014.02.25
- * Email:zodiakus (at) elte.hu
- **********************************************************/
-
 class GenerationNames
 {
 	public static final String EventHeaderName="event";

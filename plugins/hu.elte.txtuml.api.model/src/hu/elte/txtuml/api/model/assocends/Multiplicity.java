@@ -8,9 +8,6 @@ package hu.elte.txtuml.api.model.assocends;
  * <p>
  * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
  * overview on modeling in JtxtUML.
- *
- * @author Gabor Ferenc Kovacs
- *
  */
 public interface Multiplicity<T extends Multiplicity<T>> {
 
@@ -20,9 +17,6 @@ public interface Multiplicity<T extends Multiplicity<T>> {
 	 * <p>
 	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
 	 * overview on modeling in JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	public interface One extends Multiplicity<One> {
 	}
@@ -33,9 +27,6 @@ public interface Multiplicity<T extends Multiplicity<T>> {
 	 * <p>
 	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
 	 * overview on modeling in JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	public interface ZeroToOne extends Multiplicity<ZeroToOne> {
 	}
@@ -46,9 +37,6 @@ public interface Multiplicity<T extends Multiplicity<T>> {
 	 * <p>
 	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
 	 * overview on modeling in JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	public interface ZeroToUnlimited extends Multiplicity<ZeroToUnlimited> {
 	}
@@ -59,9 +47,6 @@ public interface Multiplicity<T extends Multiplicity<T>> {
 	 * <p>
 	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
 	 * overview on modeling in JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	public interface OneToUnlimited extends Multiplicity<OneToUnlimited> {
 	}
@@ -72,8 +57,6 @@ public interface Multiplicity<T extends Multiplicity<T>> {
 	 * <p>
 	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
 	 * overview on modeling in JtxtUML.
-	 * 
-	 * @author Gabor Ferenc Kovacs
 	 */
 	public interface MinToMax extends Multiplicity<MinToMax> {
 	}

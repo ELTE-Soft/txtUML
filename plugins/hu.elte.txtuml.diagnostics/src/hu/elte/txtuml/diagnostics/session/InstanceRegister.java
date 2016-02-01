@@ -17,7 +17,6 @@ import hu.elte.txtuml.diagnostics.PluginLogWrapper;
 
 /**
  * Analyzes events for errors, keeps track of service and class instances
- * @author gerazo
  */
 public class InstanceRegister {
 	// Usually only 1 or 2 instances will be in this container so a

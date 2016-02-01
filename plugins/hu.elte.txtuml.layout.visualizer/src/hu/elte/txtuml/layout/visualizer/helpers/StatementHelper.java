@@ -24,9 +24,6 @@ import java.util.stream.Collectors;
 /**
  * This static class handles a variety of {@link Statement} related support
  * features.
- * 
- * @author Balázs Gregorics
- *
  */
 public class StatementHelper {
 	/**

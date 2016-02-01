@@ -11,9 +11,6 @@ import org.junit.Test;
 
 import hu.elte.txtuml.diagnostics.PluginLogWrapper;
 
-/**
- * @author gerazo
- */
 public class UniqueInstanceTest {
 	
 	private static final int serviceInstanceID = 123;

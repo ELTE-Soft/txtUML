@@ -8,10 +8,8 @@ import java.util.Map.Entry;
  * Class to help the Graph search algorithm to store the parent of a node in the
  * graph.
  * 
- * @author Balázs Gregorics
  * @param <T>
  *            Type of the Nodes.
- *
  */
 public class Parent<T>
 {

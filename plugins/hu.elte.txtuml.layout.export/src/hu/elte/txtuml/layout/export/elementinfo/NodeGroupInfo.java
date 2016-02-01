@@ -6,9 +6,6 @@ import hu.elte.txtuml.layout.export.interfaces.NodeMap;
 
 /**
  * Information holder about a node group in a diagram layout description.
- * 
- * @author Dávid János Németh
- *
  */
 public interface NodeGroupInfo extends GroupInfo {
 
