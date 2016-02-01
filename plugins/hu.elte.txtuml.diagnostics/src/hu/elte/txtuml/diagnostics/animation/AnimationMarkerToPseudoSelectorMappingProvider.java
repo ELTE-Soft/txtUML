@@ -7,7 +7,6 @@ import org.eclipse.papyrus.infra.gmfdiag.css.service.IMarkerToPseudoSelectorMapp
 
 /**
  * The mapping from marker kind to the selector in CSS file
- * @author gerazo
  */
 public class AnimationMarkerToPseudoSelectorMappingProvider implements IMarkerToPseudoSelectorMappingProvider {
 	private Map<String, String> mappings;

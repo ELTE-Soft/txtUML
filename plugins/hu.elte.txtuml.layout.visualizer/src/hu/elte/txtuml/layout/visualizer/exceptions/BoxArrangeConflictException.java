@@ -7,8 +7,6 @@ import java.util.List;
 /**
  * Exception indicating that conflicts were detected as a result of the user
  * statements during Box arrangement.
- * 
- * @author Balázs Gregorics
  */
 public class BoxArrangeConflictException extends MyException
 {

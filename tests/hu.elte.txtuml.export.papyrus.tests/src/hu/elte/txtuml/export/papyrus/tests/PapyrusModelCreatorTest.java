@@ -28,8 +28,6 @@ import org.junit.Test;
 
 /**
  * Unit test for {@link PapyrusModelCreator}
- *
- * @author András Dobreff
  * 
  * <p>
  * <b>Attention:</b>

@@ -19,11 +19,6 @@ import hu.elte.txtuml.layout.export.problems.ProblemReporter;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
-/**
- * 
- * @author Gabor Ferenc Kovacs
- *
- */
 public interface ElementExporter {
 
 	static ElementExporter create(String sourceProjectName, ProblemReporter problemReporter) {

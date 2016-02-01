@@ -9,8 +9,6 @@ import org.eclipse.swt.widgets.Display;
 
 /**
  * A collection of papyrus icons
- *
- * @author András Dobreff
  */
 @SuppressWarnings("javadoc")
 public class IconsUtil {

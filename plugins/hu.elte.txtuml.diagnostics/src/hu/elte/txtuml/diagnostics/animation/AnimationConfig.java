@@ -2,7 +2,6 @@ package hu.elte.txtuml.diagnostics.animation;
 
 /**
  * Configuration and IDs for animation related stuff
- * @author gerazo
  */
 public class AnimationConfig {
 	static final int ANIMATION_TIMER = 1000;

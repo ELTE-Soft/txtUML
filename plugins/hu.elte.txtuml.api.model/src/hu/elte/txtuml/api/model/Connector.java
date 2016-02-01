@@ -45,9 +45,6 @@ package hu.elte.txtuml.api.model;
  * 
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
- *
- * @author Gabor Ferenc Kovacs
- * 
  */
 public class Connector implements ModelElement {
 
@@ -80,10 +77,8 @@ public class Connector implements ModelElement {
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 *
-	 * @author Gabor Ferenc Kovacs
 	 * @see Connector.One
 	 * @see Connector.IN_CONTAINER
-	 * 
 	 */
 	public class ConnectorEnd<AE extends AssociationEnd<?, ?>, P extends Port<?, ?>> {
 		ConnectorEnd() {
@@ -132,9 +127,6 @@ public class Connector implements ModelElement {
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 * 
-	 * @author Gabor Ferenc Kovacs
-	 * 
 	 */
 	public class One<AE extends AssociationEnd<?, ?>, P extends Port<?, ?>> extends ConnectorEnd<AE, P> {
 	}
@@ -154,9 +146,6 @@ public class Connector implements ModelElement {
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 * 
-	 * @author Gabor Ferenc Kovacs
-	 * 
 	 */
 	@SuppressWarnings("rawtypes")
 	public abstract class IN_CONTAINER extends AssociationEnd {

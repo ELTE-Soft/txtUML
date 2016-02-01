@@ -4,9 +4,6 @@ import hu.elte.txtuml.layout.visualizer.model.Point;
 
 /**
  * Abstract Node for the graph.
- * 
- * @author Balázs Gregorics
- *
  */
 public class Node
 {

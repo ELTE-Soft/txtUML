@@ -23,9 +23,6 @@ import java.util.stream.Collectors;
 /**
  * This class generates the necessary default statements to auto layout a
  * diagram.
- * 
- * @author Balázs Gregorics
- *
  */
 public class DefaultStatements
 {

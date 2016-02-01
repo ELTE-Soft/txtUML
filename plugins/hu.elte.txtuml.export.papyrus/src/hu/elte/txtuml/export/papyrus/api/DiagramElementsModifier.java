@@ -22,10 +22,6 @@ import org.eclipse.gmf.runtime.emf.core.util.EObjectAdapter;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.common.commands.ShowHideLabelsRequest;
 
-/**
- *
- * @author András Dobreff
- */
 @SuppressWarnings("restriction")
 public class DiagramElementsModifier {
 	/**

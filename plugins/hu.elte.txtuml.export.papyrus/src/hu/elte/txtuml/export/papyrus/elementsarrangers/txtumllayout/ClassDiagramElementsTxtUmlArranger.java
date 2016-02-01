@@ -16,8 +16,6 @@ import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationNameEditPart;
 
 /**
  * Controls the arranging of a ClassDiagram with txtUML algorithm
- *
- * @author András Dobreff
  */
 public class ClassDiagramElementsTxtUmlArranger extends AbstractDiagramElementsTxtUmlArranger{
 	

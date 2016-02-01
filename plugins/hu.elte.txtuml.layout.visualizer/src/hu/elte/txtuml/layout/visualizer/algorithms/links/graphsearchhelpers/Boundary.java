@@ -5,9 +5,6 @@ import hu.elte.txtuml.layout.visualizer.model.Point;
 
 /**
  * This class represents the bounds of a diagram.
- * 
- * @author Balázs Gregorics
- *
  */
 public class Boundary
 {
