@@ -171,14 +171,12 @@ import hu.elte.txtuml.api.model.backend.ElseException;
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  *
- * @author Gabor Ferenc Kovacs
  * @see Vertex
  * @see Pseudostate
  * @see Initial
  * @see Choice
  * @see State
  * @see CompositeState
- *
  */
 public abstract class StateMachine extends InnerClassInstancesHolder implements
 		ModelElement {
@@ -213,7 +211,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 *
-	 * @author Gabor Ferenc Kovacs
 	 * @see State
 	 * @see CompositeState
 	 * @see Pseudostate
@@ -296,7 +293,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 * 
-	 * @author Gabor Ferenc Kovacs
 	 * @see Initial
 	 * @see Choice
 	 * @see State
@@ -396,9 +392,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	public class Initial extends Pseudostate {
 
@@ -475,9 +468,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	public class Choice extends Pseudostate {
 
@@ -564,9 +554,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	public class State extends Vertex {
 
@@ -695,9 +682,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	public class CompositeState extends State {
 
@@ -818,9 +802,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	public class Transition extends TransitionBase {
 

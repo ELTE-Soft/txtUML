@@ -14,9 +14,6 @@ import java.util.List;
  * Only registers lines that were printed with the <code>println(String)</code>
  * method. The <code>hu.elte.txtuml.api</code> package always prints logs with
  * this method.
- *
- * @author Gabor Ferenc Kovacs
- *
  */
 public class MemorizingPrintStream extends PrintStream {
 

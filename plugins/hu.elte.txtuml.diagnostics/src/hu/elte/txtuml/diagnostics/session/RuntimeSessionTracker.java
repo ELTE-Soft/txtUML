@@ -8,7 +8,6 @@ import org.eclipse.debug.core.model.IProcess;
 
 /**
  * Tracks the launched VM run and shuts down DiagnosticsPlugin in sync with it
- * @author gerazo
  */
 public class RuntimeSessionTracker implements IDebugEventSetListener {
 

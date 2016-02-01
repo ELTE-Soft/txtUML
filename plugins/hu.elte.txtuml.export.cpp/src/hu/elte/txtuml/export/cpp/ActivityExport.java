@@ -1,11 +1,5 @@
 package hu.elte.txtuml.export.cpp;
 
-/***********************************************************
- * Author: Hack János
- * Version 0.9 2014.02.25
- * Email:zodiakus (at) elte.hu
- **********************************************************/
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

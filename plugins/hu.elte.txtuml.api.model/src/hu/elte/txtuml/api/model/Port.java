@@ -54,7 +54,6 @@ import java.lang.reflect.Proxy;
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  * 
- * @author Gabor Ferenc Kovacs
  * @see BehaviorPort
  * @see Connector
  * @see Action#connect(Port, Class, Port)
@@ -121,7 +120,7 @@ public abstract class Port<P extends Interface, R extends Interface> {
 		} else if (sender == neighbor1) {
 			if (neighbor2 == null) {
 				if (obj != null) {
-					Action.send(obj, signal);
+					ModelExecutor.send(obj, this, signal);
 				}
 			} else {
 				neighbor2.accept(signal, this);

@@ -61,8 +61,6 @@ import org.junit.Test;
  * {@link hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsArranger
  * AbstractDiagramElementsArranger}
  * 
- * @author András Dobreff
- * 
  *         <p>
  *         <b>Attention:</b> This test should be run as a JUnit Plug-in test
  *         </p>

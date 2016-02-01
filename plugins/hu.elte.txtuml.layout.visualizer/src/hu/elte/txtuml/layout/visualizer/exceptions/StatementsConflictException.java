@@ -6,8 +6,6 @@ import java.util.List;
 
 /**
  * Exception indicating that conflicts were detected in the statements.
- * 
- * @author Balázs Gregorics
  */
 public class StatementsConflictException extends MyException
 {

@@ -15,8 +15,6 @@ import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateEditPart;
 
 /**
  * Controls the arranging of a StateMachineDiagram with GMF algorithm
- *
- * @author András Dobreff
  */
 public class StateMachineDiagramElementsGmfArranger extends
 		AbstractDiagramElementsGmfArranger {

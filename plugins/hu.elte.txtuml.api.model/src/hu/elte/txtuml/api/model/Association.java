@@ -68,7 +68,6 @@ import hu.elte.txtuml.api.model.assocends.Navigability;
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  *
- * @author Gabor Ferenc Kovacs
  * @see Composition
  * @see Association.Many
  * @see Association.One
@@ -133,8 +132,6 @@ public class Association implements ModelElement {
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 * 
-	 * @author Gabor Ferenc Kovacs
-	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
@@ -192,8 +189,6 @@ public class Association implements ModelElement {
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 * 
-	 * @author Gabor Ferenc Kovacs
 	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
@@ -253,8 +248,6 @@ public class Association implements ModelElement {
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 * 
-	 * @author Gabor Ferenc Kovacs
-	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
@@ -312,8 +305,6 @@ public class Association implements ModelElement {
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 * 
-	 * @author Gabor Ferenc Kovacs
 	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
@@ -386,8 +377,6 @@ public class Association implements ModelElement {
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 * 
-	 * @author Gabor Ferenc Kovacs
-	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
@@ -446,8 +435,6 @@ public class Association implements ModelElement {
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 * 
-	 * @author Gabor Ferenc Kovacs
 	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
@@ -508,8 +495,6 @@ public class Association implements ModelElement {
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 * 
-	 * @author Gabor Ferenc Kovacs
-	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
@@ -569,8 +554,6 @@ public class Association implements ModelElement {
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 * 
-	 * @author Gabor Ferenc Kovacs
-	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
@@ -628,8 +611,6 @@ public class Association implements ModelElement {
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 * 
-	 * @author Gabor Ferenc Kovacs
 	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
@@ -689,8 +670,6 @@ public class Association implements ModelElement {
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 * 
-	 * @author Gabor Ferenc Kovacs
 	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection

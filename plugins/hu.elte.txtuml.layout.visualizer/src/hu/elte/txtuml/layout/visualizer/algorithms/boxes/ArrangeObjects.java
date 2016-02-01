@@ -32,9 +32,6 @@ import com.google.common.collect.HashBiMap;
 /**
  * This class arranges the boxes in the diagram using mainly a Bellman-Ford
  * shortest path algorithm.
- * 
- * @author Balázs Gregorics
- *
  */
 public class ArrangeObjects
 {

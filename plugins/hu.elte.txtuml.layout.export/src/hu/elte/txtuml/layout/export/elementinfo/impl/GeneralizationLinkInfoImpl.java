@@ -8,9 +8,6 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 /**
  * Implementation for {@link LinkInfo} which contains information about a
  * generalization link.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 public class GeneralizationLinkInfoImpl extends LinkInfoImpl implements
 		LinkInfo {

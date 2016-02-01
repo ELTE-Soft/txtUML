@@ -14,9 +14,6 @@ import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 /**
  * A factory for creating and initializing resource sets that can be used by the
  * exporter.
- * 
- * @author Adam Ancsin
- *
  */
 public final class ResourceSetFactory {
 
@@ -27,8 +24,6 @@ public final class ResourceSetFactory {
 	 * Creates and initializes a resource set.
 	 * 
 	 * @return The created and initialized resource set.
-	 * 
-	 * @author Adam Ancsin
 	 */
 	public ResourceSet createAndInitResourceSet() {
 		ResourceSet resourceSet = new ResourceSetImpl();

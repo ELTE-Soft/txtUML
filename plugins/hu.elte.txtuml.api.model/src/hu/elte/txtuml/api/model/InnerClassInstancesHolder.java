@@ -10,9 +10,6 @@ import com.google.common.collect.MutableClassToInstanceMap;
  * classes. Can also have mappings to inner classes of its inner classes (in any
  * depth). A subclass of this class can have mappings to inner classes of any of
  * its superclasses.
- *
- * @author Gabor Ferenc Kovacs
- *
  */
 abstract class InnerClassInstancesHolder {
 

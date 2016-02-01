@@ -17,10 +17,6 @@ import org.eclipse.uml2.uml.Transition;
 
 import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
 
-/**
- *
- * @author András Dobreff
- */
 public class StateMachineDiagramElementsController {
 	
 	//**ELEMENT**//

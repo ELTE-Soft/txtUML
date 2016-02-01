@@ -19,9 +19,6 @@ import java.util.Set;
 /**
  * Static class for various algorithm related helping tasks, such as
  * conversions, cloning or parsing.
- * 
- * @author Balázs Gregorics
- *
  */
 public class Helper
 {

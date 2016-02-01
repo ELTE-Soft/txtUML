@@ -37,9 +37,6 @@ import hu.elte.txtuml.api.model.external.ExternalType;
 
 /**
  * This class provides utilities for telling the types of txtUML model elements.
- * 
- * @author Adam Ancsin
- *
  */
 public final class ElementTypeTeller {
 
