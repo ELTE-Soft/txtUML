@@ -30,7 +30,7 @@ public abstract class AbstractControlStructureExporter {
 			EList<ExecutableNode> nodeList) {
 
 		return new BlockExporter(controlStructure, nodeList, params, vars,
-				typeExporter);
+				typeExporter, blockExporter.getMethodBodyExporter());
 	}
 
 	protected ExpressionExporter createExpressionExporter(

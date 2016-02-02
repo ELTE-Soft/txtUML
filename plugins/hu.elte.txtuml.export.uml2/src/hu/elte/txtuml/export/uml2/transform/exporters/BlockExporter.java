@@ -20,6 +20,7 @@ public class BlockExporter extends ControlStructureEditor {
 	private final VariableMap vars;
 	private final TypeExporter typeExporter;
 	private final ExpressionExporter expressionExporter;
+	private final MethodBodyExporter exporterOfContainerMethod;
 
 	/**
 	 * This constructor is public only to allow customization for special
@@ -37,32 +38,30 @@ public class BlockExporter extends ControlStructureEditor {
 	 * @param typeExporter
 	 *            a type exporter
 	 */
-	public BlockExporter(StructuredActivityNode controlStructure,
-			EList<ExecutableNode> nodeList, ParameterMap params,
-			VariableMap vars, TypeExporter typeExporter) {
+	public BlockExporter(StructuredActivityNode controlStructure, EList<ExecutableNode> nodeList, ParameterMap params,
+			VariableMap vars, TypeExporter typeExporter, MethodBodyExporter exporterOfContainerMethod) {
 		super(controlStructure, nodeList);
 
 		this.params = params;
 		this.vars = vars;
 		this.typeExporter = typeExporter;
+		this.exporterOfContainerMethod = exporterOfContainerMethod;
 		this.expressionExporter = new ExpressionExporter(this);
 	}
 
 	/**
 	 * Exports main block of method.
 	 */
-	public static SequenceNode exportBody(
-			MethodBodyExporter exporterOfContainerMethod, Block block) {
+	public static SequenceNode exportBody(MethodBodyExporter exporterOfContainerMethod, Block block) {
 
-		SequenceNode sequenceNode = exporterOfContainerMethod
-				.createSequenceNode("body");
+		SequenceNode sequenceNode = exporterOfContainerMethod.createSequenceNode("body");
 
 		ParameterMap params = exporterOfContainerMethod.getParameters();
 		VariableMap vars = VariableMap.create();
 		TypeExporter typeExporter = exporterOfContainerMethod.getTypeExporter();
 
-		new BlockExporter(sequenceNode, sequenceNode.getExecutableNodes(),
-				params, vars, typeExporter).export(block);
+		new BlockExporter(sequenceNode, sequenceNode.getExecutableNodes(), params, vars, typeExporter,
+				exporterOfContainerMethod).export(block);
 
 		return sequenceNode;
 	}
@@ -70,17 +69,15 @@ public class BlockExporter extends ControlStructureEditor {
 	/**
 	 * Exports inner blocks.
 	 */
-	public static SequenceNode exportBlock(BlockExporter exporterOfParentBlock,
-			Statement block, String nameOfBlock) {
-		SequenceNode sequenceNode = exporterOfParentBlock
-				.createSequenceNode(nameOfBlock);
+	public static SequenceNode exportBlock(BlockExporter exporterOfParentBlock, Statement block, String nameOfBlock) {
+		SequenceNode sequenceNode = exporterOfParentBlock.createSequenceNode(nameOfBlock);
 
 		ParameterMap params = exporterOfParentBlock.getParameters();
 		VariableMap vars = exporterOfParentBlock.getVariables().copy();
 		TypeExporter typeExporter = exporterOfParentBlock.getTypeExporter();
 
-		new BlockExporter(sequenceNode, sequenceNode.getExecutableNodes(),
-				params, vars, typeExporter).export(block);
+		new BlockExporter(sequenceNode, sequenceNode.getExecutableNodes(), params, vars, typeExporter,
+				exporterOfParentBlock.exporterOfContainerMethod).export(block);
 
 		return sequenceNode;
 	}
@@ -89,13 +86,12 @@ public class BlockExporter extends ControlStructureEditor {
 	public void export(Statement block) {
 		BlockVisitor visitor = new BlockVisitor(this);
 		if (block instanceof Block) {
-			((Block) block).statements().forEach(
-					o -> ((ASTNode) o).accept(visitor));
+			((Block) block).statements().forEach(o -> ((ASTNode) o).accept(visitor));
 		} else {
 			block.accept(visitor);
 		}
 	}
-	
+
 	public TypeExporter getTypeExporter() {
 		return typeExporter;
 	}
@@ -110,6 +106,15 @@ public class BlockExporter extends ControlStructureEditor {
 
 	public VariableMap getVariables() {
 		return vars;
+	}
+
+	public void createReturnNode() {
+		SequenceNode returnNode = createSequenceNode("return");
+		createControlFlowBetweenActivityNodes(returnNode, exporterOfContainerMethod.getFinalNode());
+	}
+
+	public MethodBodyExporter getMethodBodyExporter() {
+		return exporterOfContainerMethod;
 	}
 
 }

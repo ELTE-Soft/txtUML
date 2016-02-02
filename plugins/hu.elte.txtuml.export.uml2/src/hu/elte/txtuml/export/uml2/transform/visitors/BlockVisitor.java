@@ -16,16 +16,18 @@ import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.LabeledStatement;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
-import org.eclipse.jdt.core.dom.SwitchCase;
+import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.uml2.uml.Operation;
+import org.eclipse.uml2.uml.SequenceNode;
 
 import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.controls.DoWhileActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.controls.ForActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.controls.ForEachActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.controls.IfActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.controls.SwitchCaseActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.controls.WhileActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
@@ -91,6 +93,7 @@ public class BlockVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(ReturnStatement node) {
 		blockExporter.getExpressionExporter().exportReturnStatement(node.getExpression());
+		blockExporter.createReturnNode();
 		return false;
 	}
 
@@ -138,9 +141,9 @@ public class BlockVisitor extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(SwitchCase node) {
-		// TODO SwitchCase
-		throw new RuntimeException("switch-case statements are not supported");
+	public boolean visit(SwitchStatement node) {
+		new SwitchCaseActionExporter(blockExporter).exportSwitchCaseStatement(node);
+		return false;
 	}
 
 }

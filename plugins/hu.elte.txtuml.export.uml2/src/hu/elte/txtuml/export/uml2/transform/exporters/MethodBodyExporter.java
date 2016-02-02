@@ -14,6 +14,8 @@ public class MethodBodyExporter extends ActivityEditor {
 
 	private final ModelExporter modelExporter;
 	private final ParameterMap params;
+	private ActivityNode initialNode;
+	private ActivityNode finalNode;
 
 	private MethodBodyExporter(Activity activity, ModelExporter modelExporter) {
 		super(activity);
@@ -41,8 +43,8 @@ public class MethodBodyExporter extends ActivityEditor {
 			parameterList.forEach(params::copyParameter);
 		}
 
-		ActivityNode initialNode = createInitialNode("initial_node");
-		ActivityNode finalNode = createFinalNode("final_node");
+		initialNode = createInitialNode("initial_node");
+		finalNode = createFinalNode("final_node");
 
 		Block body = methodDeclaration.getBody();
 		if(body != null) {
@@ -60,6 +62,10 @@ public class MethodBodyExporter extends ActivityEditor {
 	
 	public TypeExporter getTypeExporter() {
 		return modelExporter.getTypeExporter();
+	}
+
+	public ActivityNode getFinalNode() {
+		return finalNode;
 	}
 	
 }

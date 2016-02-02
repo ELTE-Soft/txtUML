@@ -59,6 +59,14 @@ class ExporttestModel extends Model {
 //				y = 1;
 //			}
 		}
+		
+		public void earlyReturn() {
+			int x = 1;
+			if (x == 1) {
+				return;
+			}
+			x = 2;
+		}
 
 		public int fld;
 
