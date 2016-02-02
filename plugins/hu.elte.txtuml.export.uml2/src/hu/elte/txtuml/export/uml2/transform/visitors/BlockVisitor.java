@@ -22,6 +22,7 @@ import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.uml2.uml.Operation;
 
 import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.controls.DoWhileActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.controls.ForActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.controls.ForEachActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.controls.IfActionExporter;
@@ -132,8 +133,8 @@ public class BlockVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(DoStatement node) {
-		// TODO DoStatement
-		throw new RuntimeException("do-while statements are not supported");
+		new DoWhileActionExporter(blockExporter).exportDoWhileStatement(node);
+		return false;
 	}
 
 	@Override

@@ -39,7 +39,7 @@ abstract class AbstractLoopExporter extends AbstractControlStructureExporter {
 
 	}
 
-	private void exportList(LoopNode loopNode, EList<ExecutableNode> nodeList,
+	protected void exportList(LoopNode loopNode, EList<ExecutableNode> nodeList,
 			List<Expression> list, String byName) {
 		if (list == null || list.isEmpty()) {
 			return;
@@ -53,7 +53,7 @@ abstract class AbstractLoopExporter extends AbstractControlStructureExporter {
 		list.forEach(exporter::export);
 	}
 
-	private Expr exportCondition(LoopNode loopNode,
+	protected Expr exportCondition(LoopNode loopNode,
 			EList<ExecutableNode> nodeList, Expression expression, String byName) {
 		SequenceNode sequenceNode = (SequenceNode) loopNode.createNode(byName,
 				UMLPackage.Literals.SEQUENCE_NODE);
@@ -69,7 +69,7 @@ abstract class AbstractLoopExporter extends AbstractControlStructureExporter {
 		}
 	}
 
-	private void exportBlock(LoopNode loopNode, EList<ExecutableNode> nodeList,
+	protected void exportBlock(LoopNode loopNode, EList<ExecutableNode> nodeList,
 			Statement block, String byName) {
 		if (block == null) {
 			return;

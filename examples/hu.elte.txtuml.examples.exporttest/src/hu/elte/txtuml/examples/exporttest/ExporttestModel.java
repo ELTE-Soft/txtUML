@@ -32,7 +32,6 @@ class ExporttestModel extends Model {
 			if (x > 2) {
 				y = 4;
 			}
-			// System.out.println(y); // Causes a null pointer exception
 		}
 
 		public void ifThenElse() {
@@ -44,7 +43,6 @@ class ExporttestModel extends Model {
 			} else {
 				y = 2;
 			}
-			// System.out.println(y); // Causes a null pointer exception
 		}
 
 		public void switchCase() {
@@ -60,7 +58,6 @@ class ExporttestModel extends Model {
 //			default:
 //				y = 1;
 //			}
-			// System.out.println(y); // Causes a null pointer exception
 		}
 
 		public int fld;
@@ -79,41 +76,37 @@ class ExporttestModel extends Model {
 
 			b &= true;
 			b |= true;
-
-			// q ^= 3; // NOT SUPPORTED
-			// q &= 3; // NOT SUPPORTED
-			// q |= 3; // NOT SUPPORTED
-			// q >>= 3; // NOT SUPPORTED
-			// q <<= 3; // NOT SUPPORTED
-			// q >>>= 3; // NOT SUPPORTED
-
 		}
 
-		public void cycleTest() {
+		public void forCycle() {
 			int c = 0;
 			for (int i = 0; i < 10; i++) {
 				++c;
 			}
+		}
 
+		public void whileCycle() {
+			int c = 0;
 			while (c < 20) {
 				++c;
 			}
+		}
 
-//			do {
-//				++c;
-//			} while (c < 30);
-//
-//			int[] array = new int[] { 1, 2, 3, 4 };
-//			for (int i : array) {
+		public void doCycle() {
+			int c = 0;
+			do {
+				++c;
+			} while (c < 30);
+		}
+		
+		public void foreachCycle() {
+//			int c = 0;
+//			???
+//			for (int i : list) {
 //				c += i;
 //			}
 
 		}
-
-		// public void arrayTest() {
-		// int[] array = new int[] { 1,2,3 };
-		// array[0] = array[1] + array[2];
-		// }
 		
 		public int returnTest() {
 			return 10;
