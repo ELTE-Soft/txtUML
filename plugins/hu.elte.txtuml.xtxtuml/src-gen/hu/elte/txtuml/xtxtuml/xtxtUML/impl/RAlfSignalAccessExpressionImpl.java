@@ -19,10 +19,10 @@ import org.eclipse.xtext.xbase.impl.XExpressionImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link hu.elte.txtuml.xtxtuml.xtxtUML.impl.RAlfSignalAccessExpressionImpl#getSigdata <em>Sigdata</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
