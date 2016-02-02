@@ -82,7 +82,7 @@ import hu.elte.txtuml.api.model.backend.ElseException;
  * 
  * 		{@literal @}Override
  * 		public boolean guard() {
- * 			SampleSignal sg = getSignal(SampleSignal.class); 
+ * 			SampleSignal sg = getSignal(); 
  * 			return sg.sampleParam == 0;
  * 		}
  * 	}
@@ -598,15 +598,13 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		 * 
 		 * @param <T>
 		 *            the type to which the casting should be performed
-		 * @param signalClass
-		 *            the signal class to which the casting should be performed
 		 * @return the signal receiving which triggered the execution (or the
 		 *         call of the guard) of this transition
 		 * @throws ClassCastException
 		 *             if the cast might not be performed
 		 */
 		@SuppressWarnings("unchecked")
-		protected final <T extends Signal> T getSignal(Class<T> signalClass) {
+		protected final <T extends Signal> T getSignal() {
 			return (T) signal;
 		}
 
@@ -850,7 +848,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		 * actions.
 		 * <p>
 		 * If the actual transition has a trigger defined, the
-		 * {@link #getSignal(Class) getSignal} method can be used inside the
+		 * {@link #getSignal() getSignal} method can be used inside the
 		 * overriding methods to get the triggering signal.
 		 * <p>
 		 * Overriding methods may only contain action code. See the
@@ -899,7 +897,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		 * should always do so.
 		 * <p>
 		 * If the actual transition has a trigger defined, the
-		 * {@link #getSignal(Class) getSignal} method can be used inside the
+		 * {@link #getSignal() getSignal} method can be used inside the
 		 * overriding methods to get the triggering signal.
 		 * <p>
 		 * Overriding methods may only contain a condition evaluation. See the
@@ -940,15 +938,13 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		 * 
 		 * @param <T>
 		 *            the type to which the casting should be performed
-		 * @param signalClass
-		 *            the signal class to which the casting should be performed
 		 * @return the signal receiving which triggered the execution (or the
 		 *         call of the guard) of this transition
 		 * @throws ClassCastException
 		 *             if the cast might not be performed
 		 */
 		@SuppressWarnings("unchecked")
-		protected final <T extends Signal> T getSignal(Class<T> signalClass) {
+		protected final <T extends Signal> T getSignal() {
 			return (T) signal;
 		}
 
