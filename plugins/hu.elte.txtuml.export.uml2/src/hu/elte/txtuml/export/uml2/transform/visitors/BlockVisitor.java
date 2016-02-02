@@ -1,15 +1,9 @@
 package hu.elte.txtuml.export.uml2.transform.visitors;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.controls.ForActionExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.controls.ForEachActionExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.controls.IfActionExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.controls.WhileActionExporter;
-
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Block;
-import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
+import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.ForStatement;
@@ -17,8 +11,15 @@ import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.LabeledStatement;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
+import org.eclipse.jdt.core.dom.SwitchCase;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
+
+import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.controls.ForActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.controls.ForEachActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.controls.IfActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.controls.WhileActionExporter;
 
 /**
  * TODO BlockVisitor
@@ -48,17 +49,11 @@ public class BlockVisitor extends ASTVisitor {
 		BlockExporter.exportBlock(blockExporter, node, "block");
 		return false;
 	}
-
-	@Override
-	public boolean visit(CatchClause node) {
-		// TODO catch clause
-		return false;
-	}
 	
 	@Override
 	public boolean visit(ConstructorInvocation node) {
 		// TODO ConstructorInvocation
-		return false;
+		throw new RuntimeException("constructor invocation statements are not supported");
 	}
 
 	@Override
@@ -100,13 +95,13 @@ public class BlockVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(SuperConstructorInvocation node) {
 		// TODO SuperConstructorInvocation
-		return false;
+		throw new RuntimeException("super constructor invocation statements are not supported");
 	}
 
 	@Override
 	public boolean visit(VariableDeclarationStatement node) {
 		blockExporter.getExpressionExporter().exportVariableDeclaration(
-				node.getType(), node);
+				node.getType().resolveBinding(), node);
 		return false;
 	}
 
@@ -114,6 +109,18 @@ public class BlockVisitor extends ASTVisitor {
 	public boolean visit(WhileStatement node) {
 		new WhileActionExporter(blockExporter).exportWhileStatement(node);
 		return false;
+	}
+	
+	@Override
+	public boolean visit(DoStatement node) {
+		// TODO DoStatement
+		throw new RuntimeException("do-while statements are not supported");
+	}
+	
+	@Override
+	public boolean visit(SwitchCase node) {
+		// TODO SwitchCase
+		throw new RuntimeException("switch-case statements are not supported");
 	}
 
 }

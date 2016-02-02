@@ -74,9 +74,8 @@ public class ExpressionExporter extends ControlStructureEditor {
 	 * @param typeExporter
 	 *            a type exporter
 	 */
-	public ExpressionExporter(StructuredActivityNode controlStructure,
-			EList<ExecutableNode> nodeList, ParameterMap params,
-			VariableMap vars, TypeExporter typeExporter) {
+	public ExpressionExporter(StructuredActivityNode controlStructure, EList<ExecutableNode> nodeList,
+			ParameterMap params, VariableMap vars, TypeExporter typeExporter) {
 		super(controlStructure, nodeList);
 
 		this.params = params;
@@ -101,34 +100,31 @@ public class ExpressionExporter extends ControlStructureEditor {
 		if (result == null) {
 			if (!TypeExporter.isVoid(expression.resolveTypeBinding())) {
 				// TODO unexported expression
-				return createOpaqueAction(expression.toString(),
-						expression.resolveTypeBinding(), null, null);
+				return createOpaqueAction(expression.toString(), expression.resolveTypeBinding(), null, null);
 			}
 		}
 		return result;
 	}
 
 	public void exportReturnStatement(Expression expression) {
-		params.getReturnParam(this).setValue(export(expression));
+		if (expression != null) {
+			params.getReturnParam(this).setValue(export(expression));
+		}
 	}
 
-	public void exportVariableDeclaration(org.eclipse.jdt.core.dom.Type type,
-			ASTNode node) {
+	public void exportVariableDeclaration(ITypeBinding type, ASTNode node) {
 		final List<Pair<String, Expression>> vars = new ArrayList<>();
 		node.accept(new ASTVisitor() {
 			@Override
 			public boolean visit(VariableDeclarationFragment node) {
-				vars.add(Pair.of(node.getName().getIdentifier(),
-						node.getInitializer()));
+				vars.add(Pair.of(node.getName().getIdentifier(), node.getInitializer()));
 				return false;
 			}
 		});
-		vars.forEach(pair -> exportVariable(type, pair.getFirst(),
-				pair.getSecond()));
+		vars.forEach(pair -> exportVariable(type, pair.getFirst(), pair.getSecond()));
 	}
 
-	private void exportVariable(org.eclipse.jdt.core.dom.Type type,
-			String name, Expression initializer) {
+	private void exportVariable(ITypeBinding type, String name, Expression initializer) {
 		Type exportedType = typeExporter.exportType(type);
 
 		vars.addVariable(createVariable(name, exportedType));
@@ -141,7 +137,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 	public Expr exportAction(MethodInvocation methodInvocation, List<Expr> args) throws ExportException {
 		IMethodBinding binding = methodInvocation.resolveMethodBinding();
 		String actionName = binding.getName();
-	
+
 		if (actionName.equals("create")) {
 			return new CreateObjectActionExporter(this).export(args);
 		} else if (actionName.equals("delete")) {
@@ -164,7 +160,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 			return null;
 		}
 		ITypeBinding type;
-		
+
 		if (binding.getKind() == IBinding.VARIABLE) {
 			type = ((IVariableBinding) binding).getDeclaringClass();
 		} else if (binding.getKind() == IBinding.METHOD) {
@@ -174,31 +170,30 @@ public class ExpressionExporter extends ControlStructureEditor {
 		}
 
 		String simpleName = binding.getName();
-		if(simpleName.equals(qualifiedName)) {
+		if (simpleName.equals(qualifiedName)) {
 			return Expr.thisExpression(typeExporter.exportType(type), this);
-		}
-		else {
+		} else {
 			String ownerName = qualifiedName.substring(0, qualifiedName.length() - simpleName.length() - 1);
-	
+
 			ParameterExpr paramExpr = params.get(ownerName, this);
-			//owner is a parameter
-			if(paramExpr != null) {
+			// owner is a parameter
+			if (paramExpr != null) {
 				return paramExpr;
 			}
-	
+
 			VariableExpr varExpr = vars.get(ownerName, this);
-			//owner is a variable
-			if(varExpr != null) {
+			// owner is a variable
+			if (varExpr != null) {
 				return varExpr;
-			} 			
-			
+			}
+
 			return Expr.thisExpression(typeExporter.exportType(type), this);
 		}
 	}
 
 	public OutputPin createReadVariableAction(Variable var) {
-		ReadVariableAction action = (ReadVariableAction) createExecutableNode(
-				var.getName(), UMLPackage.Literals.READ_VARIABLE_ACTION);
+		ReadVariableAction action = (ReadVariableAction) createExecutableNode(var.getName(),
+				UMLPackage.Literals.READ_VARIABLE_ACTION);
 
 		action.setVariable(var);
 
@@ -211,15 +206,12 @@ public class ExpressionExporter extends ControlStructureEditor {
 		String newValueName = rightHandSide.getName();
 
 		AddVariableValueAction action = (AddVariableValueAction) createExecutableNode(
-				var.getName() + "=" + newValueName,
-				UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION);
+				var.getName() + "=" + newValueName, UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION);
 
 		action.setIsReplaceAll(true);
 
-		InputPin value = action.createValue(newValueName,
-				rightHandSide.getType());
-		createObjectFlowBetweenActivityNodes(rightHandSide.getObjectNode(),
-				value);
+		InputPin value = action.createValue(newValueName, rightHandSide.getType());
+		createObjectFlowBetweenActivityNodes(rightHandSide.getObjectNode(), value);
 
 		action.setVariable(var);
 	}
@@ -229,25 +221,21 @@ public class ExpressionExporter extends ControlStructureEditor {
 	 *            optional; can be <code>null</code> in case of static
 	 *            structural features
 	 */
-	public OutputPin createReadStructuralFeatureAction(
-			StructuralFeature feature, Expr target) {
+	public OutputPin createReadStructuralFeatureAction(StructuralFeature feature, Expr target) {
 		if (target != null) {
 			target.evaluate();
 		}
 
-		ReadStructuralFeatureAction action = (ReadStructuralFeatureAction) createExecutableNode(
-				feature.getName(),
+		ReadStructuralFeatureAction action = (ReadStructuralFeatureAction) createExecutableNode(feature.getName(),
 				UMLPackage.Literals.READ_STRUCTURAL_FEATURE_ACTION);
 
 		action.setStructuralFeature(feature);
 		if (target != null) {
-			InputPin object = action.createObject(target.getName(),
-					target.getType());
+			InputPin object = action.createObject(target.getName(), target.getType());
 			createObjectFlowBetweenActivityNodes(target.getObjectNode(), object);
 		}
 
-		OutputPin ret = action.createResult(feature.getName(),
-				feature.getType());
+		OutputPin ret = action.createResult(feature.getName(), feature.getType());
 
 		return ret;
 	}
@@ -257,8 +245,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 	 *            optional; can be <code>null</code> in case of static
 	 *            structural features
 	 */
-	public void createWriteStructuralFeatureAction(StructuralFeature feature,
-			Expr target, Expr newValue) {
+	public void createWriteStructuralFeatureAction(StructuralFeature feature, Expr target, Expr newValue) {
 		newValue.evaluate();
 		if (target != null) {
 			target.evaluate();
@@ -266,15 +253,13 @@ public class ExpressionExporter extends ControlStructureEditor {
 
 		String newValueName = newValue.getName();
 
-		StringBuilder builder = new StringBuilder(target == null ? ""
-				: target.getName() + ".");
+		StringBuilder builder = new StringBuilder(target == null ? "" : target.getName() + ".");
 		builder.append(feature.getName());
 		builder.append("=");
 		builder.append(newValueName);
 
 		AddStructuralFeatureValueAction action = (AddStructuralFeatureValueAction) createExecutableNode(
-				builder.toString(),
-				UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION);
+				builder.toString(), UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION);
 
 		action.setIsReplaceAll(true);
 
@@ -283,8 +268,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 
 		action.setStructuralFeature(feature);
 		if (target != null) {
-			InputPin object = action.createObject(target.getName(),
-					target.getType());
+			InputPin object = action.createObject(target.getName(), target.getType());
 			createObjectFlowBetweenActivityNodes(target.getObjectNode(), object);
 		}
 
@@ -295,8 +279,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 	 *            optional; can be <code>null</code> in case of static
 	 *            operations
 	 */
-	public Expr createCallOperationAction(Operation operation, Expr target,
-			List<Expr> args) {
+	public Expr createCallOperationAction(Operation operation, Expr target, List<Expr> args) {
 
 		// evaluate inputs and target
 
@@ -306,8 +289,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 				continue;
 			}
 			Expr arg = it.next();
-			if (p.getDirection() == IN_LITERAL
-					|| p.getDirection() == INOUT_LITERAL) {
+			if (p.getDirection() == IN_LITERAL || p.getDirection() == INOUT_LITERAL) {
 				arg.evaluate();
 			}
 		}
@@ -318,8 +300,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 
 		// generate name
 
-		StringBuilder builder = new StringBuilder(target == null ? ""
-				: target.getName() + ".");
+		StringBuilder builder = new StringBuilder(target == null ? "" : target.getName() + ".");
 		builder.append(operation.getName() + "(");
 		if (!args.isEmpty()) {
 			it = args.iterator();
@@ -333,8 +314,8 @@ public class ExpressionExporter extends ControlStructureEditor {
 
 		// create action
 
-		CallOperationAction action = (CallOperationAction) createExecutableNode(
-				builder.toString(), UMLPackage.Literals.CALL_OPERATION_ACTION);
+		CallOperationAction action = (CallOperationAction) createExecutableNode(builder.toString(),
+				UMLPackage.Literals.CALL_OPERATION_ACTION);
 
 		action.setOperation(operation);
 
@@ -344,39 +325,32 @@ public class ExpressionExporter extends ControlStructureEditor {
 		Expr ret = null;
 		for (Parameter p : operation.getOwnedParameters()) {
 			if (p.getDirection() == RETURN_LITERAL) {
-				ret = Expr.ofPin(action.createResult(p.getName(), p.getType()),
-						action.getName());
+				ret = Expr.ofPin(action.createResult(p.getName(), p.getType()), action.getName());
 				continue;
 			}
 			Expr arg = it.next();
-			if (p.getDirection() == IN_LITERAL
-					|| p.getDirection() == INOUT_LITERAL) {
+			if (p.getDirection() == IN_LITERAL || p.getDirection() == INOUT_LITERAL) {
 				createObjectFlowBetweenActivityNodes(arg.getObjectNode(),
 						action.createArgument(p.getName(), p.getType()));
 			}
-			if (p.getDirection() == OUT_LITERAL
-					|| p.getDirection() == INOUT_LITERAL) {
-				arg.setValue(Expr.ofPin(
-						action.createResult(p.getName(), p.getType()), "out "
-								+ arg.getName()));
+			if (p.getDirection() == OUT_LITERAL || p.getDirection() == INOUT_LITERAL) {
+				arg.setValue(Expr.ofPin(action.createResult(p.getName(), p.getType()), "out " + arg.getName()));
 			}
 		}
 
 		// connect to target
 
 		if (target != null) {
-			InputPin t = action
-					.createTarget(target.getName(), target.getType());
+			InputPin t = action.createTarget(target.getName(), target.getType());
 			createObjectFlowBetweenActivityNodes(target.getObjectNode(), t);
 		}
 
 		return ret;
 	}
 
-	Expr createAndSetValueSpecificationAction(ValueSpecification value,
-			String name, Type type) {
-		ValueSpecificationAction action = (ValueSpecificationAction) createExecutableNode(
-				name, UMLPackage.Literals.VALUE_SPECIFICATION_ACTION);
+	Expr createAndSetValueSpecificationAction(ValueSpecification value, String name, Type type) {
+		ValueSpecificationAction action = (ValueSpecificationAction) createExecutableNode(name,
+				UMLPackage.Literals.VALUE_SPECIFICATION_ACTION);
 		value.setName(name);
 		value.setType(type);
 		action.setValue(value);
@@ -388,27 +362,23 @@ public class ExpressionExporter extends ControlStructureEditor {
 	 * 
 	 * @param target
 	 */
-	Expr createOpaqueAction(String stringValue, ITypeBinding returnType,
-			Expr target, List<Expr> args) {
-		OpaqueAction action = (OpaqueAction) createExecutableNode("unknown < "
-				+ stringValue + " >", UMLPackage.Literals.OPAQUE_ACTION);
+	Expr createOpaqueAction(String stringValue, ITypeBinding returnType, Expr target, List<Expr> args) {
+		OpaqueAction action = (OpaqueAction) createExecutableNode("unknown < " + stringValue + " >",
+				UMLPackage.Literals.OPAQUE_ACTION);
 
 		action.getLanguages().add("JtxtUML");
 		action.getBodies().add(stringValue);
 
 		if (target != null) {
-			action.createInputValue("target " + target.getName(),
-					target.getType());
+			action.createInputValue("target " + target.getName(), target.getType());
 		}
 
 		if (args != null) {
 			args.forEach(arg -> {
-				InputPin input = action.createInputValue(arg.getName(),
-						arg.getType());
+				InputPin input = action.createInputValue(arg.getName(), arg.getType());
 
 				if (!(arg instanceof TypeExpr)) {
-					createObjectFlowBetweenActivityNodes(arg.evaluate()
-							.getObjectNode(), input);
+					createObjectFlowBetweenActivityNodes(arg.evaluate().getObjectNode(), input);
 				}
 			});
 		}
@@ -416,9 +386,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 		if (returnType == null || TypeExporter.isVoid(returnType)) {
 			return null;
 		}
-		return Expr.ofPin(
-				action.createOutputValue(stringValue,
-						typeExporter.exportType(returnType)), stringValue);
+		return Expr.ofPin(action.createOutputValue(stringValue, typeExporter.exportType(returnType)), stringValue);
 	}
 
 	public ParameterMap getParams() {
