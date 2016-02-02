@@ -17,9 +17,6 @@ package hu.elte.txtuml.api.model;
  * <p>
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
- *
- * @author Gabor Ferenc Kovacs
- *
  */
 @FunctionalInterface
 public interface Reception<S extends Signal> {

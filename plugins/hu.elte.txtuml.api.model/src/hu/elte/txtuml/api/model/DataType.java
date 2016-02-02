@@ -72,9 +72,6 @@ package hu.elte.txtuml.api.model;
  * 
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
- *
- * @author Gabor Ferenc Kovacs
- *
  */
 public abstract class DataType {
 

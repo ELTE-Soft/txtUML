@@ -22,7 +22,6 @@ import hu.elte.txtuml.diagnostics.session.RuntimeSessionTracker;
  * Launches txtUML apps with all debugging aids.
  * Makes sure client service knows about the plugin diagnostics port.
  * It should cease to exist after the process was launched.
- * @author gerazo
  */
 public class DiagnosticsLaunchDelegate extends JavaLaunchDelegate {
 	

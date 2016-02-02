@@ -5,9 +5,6 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 /**
  * Information holder about a node in a diagram layout description.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 public interface NodeInfo extends ConcreteElementInfo {
 

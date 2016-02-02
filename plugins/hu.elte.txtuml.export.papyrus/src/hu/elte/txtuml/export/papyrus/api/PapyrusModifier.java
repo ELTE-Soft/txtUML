@@ -17,10 +17,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Model;
 
-/**
- *
- * @author András Dobreff
- */
 public class PapyrusModifier {
 
 	private PapyrusModelCreator papyrusModelCreator;

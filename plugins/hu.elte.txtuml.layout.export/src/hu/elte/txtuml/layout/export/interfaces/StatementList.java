@@ -6,11 +6,6 @@ import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 import java.util.List;
 
-/**
- * 
- * @author Gabor Ferenc Kovacs
- *
- */
 public interface StatementList extends List<Statement> {
 
 	static StatementList create() {

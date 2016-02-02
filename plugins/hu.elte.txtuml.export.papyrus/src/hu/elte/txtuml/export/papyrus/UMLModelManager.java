@@ -15,8 +15,6 @@ import com.google.common.collect.Multimap;
 
 /**
  * Controls the Eclipse UML2 Model.
- *
- * @author András Dobreff
  */
 public class UMLModelManager {
 	

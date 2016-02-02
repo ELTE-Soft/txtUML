@@ -8,7 +8,6 @@ import org.eclipse.jdt.core.dom.ASTNode;
 
 /**
  * Base class for all jtxtuml problems.
- *
  */
 public abstract class ValidationErrorBase extends CategorizedProblem {
 

@@ -5,8 +5,6 @@ import java.util.List;
 /**
  * Exception indicating that the algorithm encountered an unsolvable conflict
  * during the arrangement of overlapping boxes.
- * 
- * @author Balázs Gregorics
  */
 public class BoxOverlapConflictException extends MyException
 {

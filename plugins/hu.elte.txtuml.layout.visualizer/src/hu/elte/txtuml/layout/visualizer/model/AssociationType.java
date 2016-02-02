@@ -1,10 +1,5 @@
 package hu.elte.txtuml.layout.visualizer.model;
 
-/***
- * 
- * @author Balázs Gregorics
- *
- */
 public enum AssociationType
 {
 	/**
