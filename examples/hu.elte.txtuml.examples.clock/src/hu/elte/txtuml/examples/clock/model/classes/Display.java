@@ -45,6 +45,8 @@ public class Display extends ModelClass {
 	class HourChanged extends Transition {
 		public void effect() {
 			hour = ((HandValue)getSignal()).value;
+			minute = 0;
+			second = 0;
 			refresh();
 		}
 	}
@@ -53,9 +55,8 @@ public class Display extends ModelClass {
 	class MinuteChanged extends Transition {
 		public void effect() {
 			minute = ((HandValue)getSignal()).value;
-			if(minute > 0) {
-				refresh();
-			}
+			second = 0;
+			refresh();
 		}
 	}
 
@@ -63,9 +64,7 @@ public class Display extends ModelClass {
 	class SecondChanged extends Transition {
 		public void effect() {
 			second = ((HandValue)getSignal()).value;
-			if(second > 0) {
-				refresh();
-			}
+			refresh();
 		}
 	}
 }
