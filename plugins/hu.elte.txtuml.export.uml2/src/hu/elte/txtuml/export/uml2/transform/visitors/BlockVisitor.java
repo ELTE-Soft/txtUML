@@ -16,18 +16,15 @@ import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.LabeledStatement;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
-import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.uml2.uml.Operation;
-import org.eclipse.uml2.uml.SequenceNode;
 
 import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.controls.DoWhileActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.controls.ForActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.controls.ForEachActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.controls.IfActionExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.controls.SwitchCaseActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.controls.WhileActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
@@ -137,12 +134,6 @@ public class BlockVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(DoStatement node) {
 		new DoWhileActionExporter(blockExporter).exportDoWhileStatement(node);
-		return false;
-	}
-
-	@Override
-	public boolean visit(SwitchStatement node) {
-		new SwitchCaseActionExporter(blockExporter).exportSwitchCaseStatement(node);
 		return false;
 	}
 
