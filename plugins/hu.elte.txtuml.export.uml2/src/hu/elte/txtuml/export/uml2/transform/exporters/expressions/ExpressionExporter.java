@@ -139,7 +139,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 		String actionName = binding.getName();
 
 		if (actionName.equals("create")) {
-			return new CreateObjectActionExporter(this).export(args);
+			return new CreateObjectActionExporter(this).export(methodInvocation.resolveMethodBinding(), args);
 		} else if (actionName.equals("delete")) {
 			new DeleteObjectActionExporter(this).export(args);
 		} else if (actionName.equals("link")) {

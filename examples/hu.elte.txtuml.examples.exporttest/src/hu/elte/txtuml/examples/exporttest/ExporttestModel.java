@@ -115,6 +115,14 @@ class ExporttestModel extends Model {
 		// array[0] = array[1] + array[2];
 		// }
 		
+		public int returnTest() {
+			return 10;
+		}
+		
+		public void noReturnTest() {
+			return;
+		}
+		
 		public void constructorTest() {
 			new OtherClass(4);
 			new OtherClassWithCtor();

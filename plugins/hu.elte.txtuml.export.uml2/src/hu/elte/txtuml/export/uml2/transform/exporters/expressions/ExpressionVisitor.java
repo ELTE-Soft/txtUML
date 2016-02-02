@@ -100,7 +100,7 @@ class ExpressionVisitor extends ASTVisitor {
 		List<Expr> args = new ArrayList<>();
 		args.add(Expr.type(node.getType().resolveBinding(), typeExporter));
 		node.arguments().forEach(o -> args.add(expressionExporter.export((Expression) o)));
-		result = new CreateObjectActionExporter(expressionExporter).export(args);
+		result = new CreateObjectActionExporter(expressionExporter).export(node.resolveConstructorBinding(), args);
 		return false;
 	}
 

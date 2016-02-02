@@ -181,10 +181,6 @@ public class TypeExporter {
 			exportedReturnType = exportType(returnType);
 		}
 		
-		if (method.isConstructor()) {
-			exportedReturnType = exportedOwner;
-		}
-		
 		return exportMethodAsOperation(exportedOwner, method.getName(),
 				exportedReturnType, args);
 	}
