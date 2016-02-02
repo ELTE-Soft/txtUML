@@ -4,6 +4,25 @@ import hu.elte.txtuml.api.model.*;
 
 class ExporttestModel extends Model {
 
+	class OtherClass extends ModelClass {
+
+		public OtherClass(int i) {
+		}
+		
+	}
+	
+	class OtherClassWithCtor extends OtherClass {
+		
+		public OtherClassWithCtor() {
+			this(0);
+		}
+		
+		public OtherClassWithCtor(int i) {
+			super(i);
+		}
+		
+	}
+	
 	class SomeClass extends ModelClass {
 
 		public void ifThen() {
@@ -95,6 +114,11 @@ class ExporttestModel extends Model {
 		// int[] array = new int[] { 1,2,3 };
 		// array[0] = array[1] + array[2];
 		// }
+		
+		public void constructorTest() {
+			new OtherClass(4);
+			new OtherClassWithCtor();
+		}
 
 	}
 

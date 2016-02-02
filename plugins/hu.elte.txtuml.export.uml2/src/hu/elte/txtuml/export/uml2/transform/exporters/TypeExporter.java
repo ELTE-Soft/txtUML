@@ -180,6 +180,11 @@ public class TypeExporter {
 		if (!isVoid(returnType)) {
 			exportedReturnType = exportType(returnType);
 		}
+		
+		if (method.isConstructor()) {
+			exportedReturnType = exportedOwner;
+		}
+		
 		return exportMethodAsOperation(exportedOwner, method.getName(),
 				exportedReturnType, args);
 	}
