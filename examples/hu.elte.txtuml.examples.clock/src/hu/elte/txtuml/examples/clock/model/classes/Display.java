@@ -44,7 +44,7 @@ public class Display extends ModelClass {
 	@From(Accepting.class) @To(Accepting.class) @Trigger(port = HourPort.class, value = HandValue.class)
 	class HourChanged extends Transition {
 		public void effect() {
-			hour = getSignal(HandValue.class).value;
+			hour = ((HandValue)getSignal()).value;
 			refresh();
 		}
 	}
@@ -52,7 +52,7 @@ public class Display extends ModelClass {
 	@From(Accepting.class) @To(Accepting.class) @Trigger(port = MinutePort.class, value = HandValue.class)
 	class MinuteChanged extends Transition {
 		public void effect() {
-			minute = getSignal(HandValue.class).value;
+			minute = ((HandValue)getSignal()).value;
 			if(minute > 0) {
 				refresh();
 			}
@@ -62,7 +62,7 @@ public class Display extends ModelClass {
 	@From(Accepting.class) @To(Accepting.class) @Trigger(port = SecondPort.class, value = HandValue.class)
 	class SecondChanged extends Transition {
 		public void effect() {
-			second = getSignal(HandValue.class).value;
+			second = ((HandValue)getSignal()).value;
 			if(second > 0) {
 				refresh();
 			}
