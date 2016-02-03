@@ -74,7 +74,7 @@ class ResourceMonitor {
 		to OpenForWrite;
 		trigger Read;
 		effect {
-			Aggregator aggreg = this->ToAggregator::aggregator.selectAny();
+			Aggregator aggreg = this->(ToAggregator.aggregator).selectAny();
 			send new ReadError() to aggreg;
 			sendError();
 		}
@@ -85,19 +85,19 @@ class ResourceMonitor {
 		to OpenForRead;
 		trigger Write;
 		effect {
-			Aggregator aggreg = this->ToAggregator::aggregator.selectAny();
+			Aggregator aggreg = this->(ToAggregator.aggregator).selectAny();
 			send new WriteError() to aggreg;
 			sendError();
 		}
 	}
 	
 	void sendError() {
-			Alert alert = this->ToAlert::alert.selectAny();
+			Alert alert = this->(ToAlert.alert).selectAny();
 			send new Error() to alert;		
 	}
 
 	void sendOK() {
-			Alert alert = this->ToAlert::alert.selectAny();
+			Alert alert = this->(ToAlert.alert).selectAny();
 			send new OK() to alert;		
 	}
 }
