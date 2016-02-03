@@ -3,4 +3,5 @@ src-gen/
 xtend-gen/
 target/
 META-INF/MANIFEST.MF_gen
+plugin.xml_gen
 
