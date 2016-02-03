@@ -3,6 +3,9 @@ package hu.elte.txtuml.examples.exporttest;
 import hu.elte.txtuml.api.model.*;
 
 class ExporttestModel extends Model {
+	
+	class ParamClass<T> extends ModelClass {
+	}
 
 	class OtherClass extends ModelClass {
 
@@ -127,6 +130,10 @@ class ExporttestModel extends Model {
 		public void constructorTest() {
 			new OtherClass(4);
 			new OtherClassWithCtor();
+		}
+		
+		public void parameteredClassTest() {
+			ParamClass<Integer> i = new ParamClass<>();
 		}
 
 	}

@@ -7,6 +7,7 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
 import org.eclipse.jdt.core.dom.DoStatement;
+import org.eclipse.jdt.core.dom.EmptyStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
@@ -29,21 +30,6 @@ import hu.elte.txtuml.export.uml2.transform.exporters.controls.WhileActionExport
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
 
-/**
- * TODO BlockVisitor
- * <p>
- * {@link org.eclipse.jdt.core.dom.AssertStatement},
- * {@link org.eclipse.jdt.core.dom.BreakStatement},
- * {@link org.eclipse.jdt.core.dom.ContinueStatement},
- * {@link org.eclipse.jdt.core.dom.DoStatement},
- * {@link org.eclipse.jdt.core.dom.EmptyStatement},
- * {@link org.eclipse.jdt.core.dom.SwitchCase},
- * {@link org.eclipse.jdt.core.dom.SwitchStatement},
- * {@link org.eclipse.jdt.core.dom.SynchronizedStatement},
- * {@link org.eclipse.jdt.core.dom.ThrowStatement},
- * {@link org.eclipse.jdt.core.dom.TryStatement},
- * {@link org.eclipse.jdt.core.dom.TypeDeclarationStatement},
- */
 public class BlockVisitor extends ASTVisitor {
 
 	private final BlockExporter blockExporter;
@@ -61,6 +47,12 @@ public class BlockVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(EnhancedForStatement node) {
 		new ForEachActionExporter(blockExporter).exportForEachStatement(node);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(EmptyStatement node) {
+		blockExporter.createSequenceNode(";");
 		return false;
 	}
 

@@ -49,9 +49,6 @@ import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.actions.CreateObjectActionExporter;
 import hu.elte.txtuml.utils.Pair;
 
-/**
- * TODO {@link org.eclipse.jdt.core.dom.Annotation}
- */
 class ExpressionVisitor extends ASTVisitor {
 
 	private final ExpressionExporter expressionExporter;
@@ -81,6 +78,7 @@ class ExpressionVisitor extends ASTVisitor {
 		left.accept(visitor);
 		return false;
 	}
+	
 
 	@Override
 	public boolean visit(BooleanLiteral node) {
