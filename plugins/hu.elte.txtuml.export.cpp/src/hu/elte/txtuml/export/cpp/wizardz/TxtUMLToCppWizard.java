@@ -89,8 +89,8 @@ public class TxtUMLToCppWizard extends Wizard{
 					warnings += warning + "\n";
 				}
 				
-				warnings += "\nWould you like continue the geeration?\n ";
-				if (!Dialogs.WarningConfirm("Description exportation warnings", warnings) ) {
+				warnings += "\nWould you like continue the generation?\n ";
+				if (!Dialogs.WarningConfirm("Description export warnings", warnings) ) {
 					return false;
 				}
 			}
@@ -102,7 +102,7 @@ public class TxtUMLToCppWizard extends Wizard{
 				
 				
 			} catch (Exception e) {
-				Dialogs.errorMsgb("Completion faild", e.getMessage(), e);
+				Dialogs.errorMsgb("Completion failed", e.getMessage(), e);
 				e.printStackTrace();
 			}
 
