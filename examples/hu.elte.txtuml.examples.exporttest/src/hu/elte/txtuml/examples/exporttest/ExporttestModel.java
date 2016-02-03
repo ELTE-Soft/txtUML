@@ -3,29 +3,48 @@ package hu.elte.txtuml.examples.exporttest;
 import hu.elte.txtuml.api.model.*;
 
 class ExporttestModel extends Model {
-	
+
 	class ParamClass<T> extends ModelClass {
 	}
 
 	class OtherClass extends ModelClass {
 
+		public int fld;
+
 		public OtherClass(int i) {
+			this.fld = i;
+		}
+
+		public void superMethodCall() {
+
 		}
 		
+		public void fieldAccess() {
+			fld = 10;
+		}
+
 	}
-	
+
 	class OtherClassWithCtor extends OtherClass {
-		
+
 		public OtherClassWithCtor() {
 			this(0);
 		}
-		
+
 		public OtherClassWithCtor(int i) {
 			super(i);
 		}
-		
+
+		public void superFieldAccess() {
+			super.fld = 3;
+		}
+
+		public void superMethodCall() {
+			super.superMethodCall();
+		}
+
 	}
-	
+
 	class SomeClass extends ModelClass {
 
 		public void ifThen() {
@@ -48,21 +67,6 @@ class ExporttestModel extends Model {
 			}
 		}
 
-		public void switchCase() {
-//			int x = 3;
-//			int y;
-//
-//			switch (x) {
-//			case 2:
-//				y = 2;
-//				break;
-//			case 3:
-//				return;
-//			default:
-//				y = 1;
-//			}
-		}
-		
 		public void earlyReturn() {
 			int x = 1;
 			if (x == 1) {
@@ -109,29 +113,29 @@ class ExporttestModel extends Model {
 				++c;
 			} while (c < 30);
 		}
-		
+
 		public void foreachCycle() {
-//			int c = 0;
-//			???
-//			for (int i : list) {
-//				c += i;
-//			}
+			// int c = 0;
+			// ???
+			// for (int i : list) {
+			// c += i;
+			// }
 
 		}
-		
+
 		public int returnTest() {
 			return 10;
 		}
-		
+
 		public void noReturnTest() {
 			return;
 		}
-		
+
 		public void constructorTest() {
 			new OtherClass(4);
 			new OtherClassWithCtor();
 		}
-		
+
 		public void parameteredClassTest() {
 			ParamClass<Integer> i = new ParamClass<>();
 		}

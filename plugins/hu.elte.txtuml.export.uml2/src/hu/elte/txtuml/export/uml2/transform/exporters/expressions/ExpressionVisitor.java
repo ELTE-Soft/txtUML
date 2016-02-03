@@ -8,11 +8,9 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.Assignment.Operator;
 import org.eclipse.jdt.core.dom.BooleanLiteral;
-import org.eclipse.jdt.core.dom.CastExpression;
 import org.eclipse.jdt.core.dom.CharacterLiteral;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.ConditionalExpression;
-import org.eclipse.jdt.core.dom.CreationReference;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.IBinding;
@@ -49,6 +47,11 @@ import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.actions.CreateObjectActionExporter;
 import hu.elte.txtuml.utils.Pair;
 
+/**
+ * This visitor is only applied to right-hand-side expressions. left-hand-side
+ * expressions are visited by {@linkplain LeftHandSideOfAssignmentVisitor}.
+ *
+ */
 class ExpressionVisitor extends ASTVisitor {
 
 	private final ExpressionExporter expressionExporter;
@@ -78,7 +81,6 @@ class ExpressionVisitor extends ASTVisitor {
 		left.accept(visitor);
 		return false;
 	}
-	
 
 	@Override
 	public boolean visit(BooleanLiteral node) {
@@ -116,10 +118,8 @@ class ExpressionVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(FieldAccess node) {
-
 		result = Expr.field(expressionExporter.export(node.getExpression()), node.resolveFieldBinding(),
 				expressionExporter);
-
 		return false;
 	}
 
@@ -143,16 +143,23 @@ class ExpressionVisitor extends ASTVisitor {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public boolean visit(MethodInvocation node) {
-		IMethodBinding binding = node.resolveMethodBinding();
+		createMethodInvocation(node.resolveMethodBinding(), node.getExpression(), (List<?>) node.arguments());
+		return false;
+	}
 
+	@Override
+	public boolean visit(SuperMethodInvocation node) {
+		createMethodInvocation(node.resolveMethodBinding(), null, (List<?>) node.arguments());
+		return false;
+	}
+
+	private void createMethodInvocation(IMethodBinding binding, Expression expression, List<?> arguments) {
 		List<Expr> args = new ArrayList<>();
-		node.arguments().forEach(o -> args.add(expressionExporter.export((Expression) o)));
+		arguments.forEach(o -> args.add(expressionExporter.export((Expression) o)));
 
 		Expr target = null;
 		if (!Modifier.isStatic(binding.getModifiers())) {
-			Expression expression = node.getExpression();
 			if (expression != null) {
 				target = expressionExporter.export(expression);
 			} else {
@@ -161,24 +168,24 @@ class ExpressionVisitor extends ASTVisitor {
 		} else {
 			if (TypeExporter.isAction(binding)) {
 				try {
-					result = expressionExporter.exportAction(node, args);
+					result = expressionExporter.exportAction(binding, args);
 				} catch (ExportException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				return false;
+				return;
 			}
 		}
 
 		Operation operation = typeExporter.exportMethodAsOperation(binding, args);
 
 		if (operation == null) { // TODO unknown operation
-			result = expressionExporter.createOpaqueAction(node.toString(), node.resolveTypeBinding(), target, args);
-			return false;
+			result = expressionExporter.createOpaqueAction(binding.toString(), binding.getDeclaringClass(), target,
+					args);
+			return;
 		}
 
 		result = expressionExporter.createCallOperationAction(operation, target, args);
-		return false;
 	}
 
 	@Override
@@ -282,20 +289,8 @@ class ExpressionVisitor extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(CastExpression node) {
-		// TODO CastExpression
-		throw new RuntimeException("Cast expressions are not supported");
-	}
-
-	@Override
 	public boolean visit(ConditionalExpression node) {
 		// TODO ConditionalExpression
-		throw new RuntimeException("Conditional expressions are not supported");
-	}
-
-	@Override
-	public boolean visit(CreationReference node) {
-		// TODO CreationReference
 		throw new RuntimeException("Conditional expressions are not supported");
 	}
 
@@ -307,14 +302,11 @@ class ExpressionVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(SuperFieldAccess node) {
-		// TODO SuperFieldAccess
-		throw new RuntimeException("Super field reference is not supported");
-	}
-
-	@Override
-	public boolean visit(SuperMethodInvocation node) {
-		// TODO SuperMethodInvocation
-		throw new RuntimeException("Super method invocation is not supported");
+		Expr thisExpression = Expr.thisExpression(
+				typeExporter.exportType(node.resolveFieldBinding().getDeclaringClass().getSuperclass()),
+				expressionExporter);
+		result = Expr.field(thisExpression, node.resolveFieldBinding(), expressionExporter);
+		return false;
 	}
 
 }
