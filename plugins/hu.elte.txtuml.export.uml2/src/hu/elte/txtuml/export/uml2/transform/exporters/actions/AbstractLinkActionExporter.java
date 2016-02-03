@@ -2,12 +2,9 @@ package hu.elte.txtuml.export.uml2.transform.exporters.actions;
 
 import java.util.List;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
-
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.InputPin;
@@ -18,6 +15,9 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
+
 public abstract class AbstractLinkActionExporter {
 	protected final ExpressionExporter expressionExporter;
 
@@ -25,12 +25,12 @@ public abstract class AbstractLinkActionExporter {
 		this.expressionExporter = expressionExporter;
 	}
 	
-	public abstract void export(MethodInvocation methodInvocation, List<Expr> args);
+	public abstract void export(IMethodBinding binding, List<Expr> args);
 	
-	protected void export(MethodInvocation methodInvocation, List<Expr> args, EClass actionEClass) {
+	protected void export(IMethodBinding binding, List<Expr> args, EClass actionEClass) {
 		args.forEach(Expr::evaluate);
 		
-		Association association = getAssociation(methodInvocation);
+		Association association = getAssociation(binding, args);
 		
 		Expr leftExpr = args.get(1);
 		String leftName = leftExpr.getName();
@@ -68,8 +68,8 @@ public abstract class AbstractLinkActionExporter {
 		expressionExporter.createObjectFlowBetweenActivityNodes(endExprObjNode, endPin);
 	}
 	
-	protected Association getAssociation(MethodInvocation methodInvocation) {
-		TypeLiteral arg0 = (TypeLiteral) methodInvocation.arguments().get(0);
+	protected Association getAssociation(IMethodBinding binding, List<Expr> args) {
+		TypeLiteral arg0 = (TypeLiteral) args.get(0);
 		
 		ITypeBinding assocTypeBinding =
 				arg0.getType().resolveBinding().getDeclaringClass();

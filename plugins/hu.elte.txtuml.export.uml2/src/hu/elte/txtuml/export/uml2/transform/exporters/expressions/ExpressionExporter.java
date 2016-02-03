@@ -4,22 +4,6 @@ import static org.eclipse.uml2.uml.ParameterDirectionKind.INOUT_LITERAL;
 import static org.eclipse.uml2.uml.ParameterDirectionKind.IN_LITERAL;
 import static org.eclipse.uml2.uml.ParameterDirectionKind.OUT_LITERAL;
 import static org.eclipse.uml2.uml.ParameterDirectionKind.RETURN_LITERAL;
-import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
-import hu.elte.txtuml.export.uml2.transform.backend.ParameterMap;
-import hu.elte.txtuml.export.uml2.transform.backend.VariableMap;
-import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.actions.CreateObjectActionExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.actions.DeleteObjectActionExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.actions.LinkActionExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.actions.SendActionExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.actions.StartActionExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.actions.UnlinkActionExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.ParameterExpr;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.TypeExpr;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.VariableExpr;
-import hu.elte.txtuml.export.uml2.utils.ControlStructureEditor;
-import hu.elte.txtuml.utils.Pair;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -33,7 +17,6 @@ import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
-import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.uml2.uml.AddStructuralFeatureValueAction;
@@ -54,6 +37,23 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValueSpecification;
 import org.eclipse.uml2.uml.ValueSpecificationAction;
 import org.eclipse.uml2.uml.Variable;
+
+import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
+import hu.elte.txtuml.export.uml2.transform.backend.ParameterMap;
+import hu.elte.txtuml.export.uml2.transform.backend.VariableMap;
+import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.actions.CreateObjectActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.actions.DeleteObjectActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.actions.LinkActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.actions.SendActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.actions.StartActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.actions.UnlinkActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.ParameterExpr;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.TypeExpr;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.VariableExpr;
+import hu.elte.txtuml.export.uml2.utils.ControlStructureEditor;
+import hu.elte.txtuml.utils.Pair;
 
 public class ExpressionExporter extends ControlStructureEditor {
 
@@ -134,18 +134,17 @@ public class ExpressionExporter extends ControlStructureEditor {
 		}
 	}
 
-	public Expr exportAction(MethodInvocation methodInvocation, List<Expr> args) throws ExportException {
-		IMethodBinding binding = methodInvocation.resolveMethodBinding();
+	public Expr exportAction(IMethodBinding binding, List<Expr> args) throws ExportException {
 		String actionName = binding.getName();
 
 		if (actionName.equals("create")) {
-			return new CreateObjectActionExporter(this).export(methodInvocation.resolveMethodBinding(), args);
+			return new CreateObjectActionExporter(this).export(binding, args);
 		} else if (actionName.equals("delete")) {
 			new DeleteObjectActionExporter(this).export(args);
 		} else if (actionName.equals("link")) {
-			new LinkActionExporter(this).export(methodInvocation, args);
+			new LinkActionExporter(this).export(binding, args);
 		} else if (actionName.equals("unlink")) {
-			new UnlinkActionExporter(this).export(methodInvocation, args);
+			new UnlinkActionExporter(this).export(binding, args);
 		} else if (actionName.equals("start")) {
 			new StartActionExporter(this).export(args);
 		} else if (actionName.equals("send")) {

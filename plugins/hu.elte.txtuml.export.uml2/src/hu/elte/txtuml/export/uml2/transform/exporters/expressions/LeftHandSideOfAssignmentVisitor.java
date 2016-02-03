@@ -88,7 +88,9 @@ class LeftHandSideOfAssignmentVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(SuperFieldAccess node) {
-		// TODO SuperFieldAccess
+		Expr thisExpression = Expr.thisExpression(expressionExporter.getTypeExporter()
+				.exportType(node.resolveFieldBinding().getDeclaringClass().getSuperclass()), expressionExporter);
+		applyOperatorOn(Expr.field(thisExpression, node.resolveFieldBinding(), expressionExporter));
 		return false;
 	}
 
