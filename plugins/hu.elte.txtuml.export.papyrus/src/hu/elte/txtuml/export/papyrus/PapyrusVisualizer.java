@@ -8,7 +8,6 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.infra.core.resource.ModelMultiException;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
-import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
 import hu.elte.txtuml.export.papyrus.utils.EditorOpener;

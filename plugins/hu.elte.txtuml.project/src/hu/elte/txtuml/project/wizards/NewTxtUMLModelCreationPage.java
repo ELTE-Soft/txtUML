@@ -23,7 +23,6 @@ import org.eclipse.swt.widgets.Group;
 
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.project.ModelCreator;
-import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 
 /**
