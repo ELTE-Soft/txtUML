@@ -147,6 +147,8 @@ public class TypeExporter {
 	private Type exportNonPrimitiveType(ITypeBinding sourceType) {
 		Model exportedModel = modelExporter.getExportedModel();
 		if (exportedModel != null) {
+			// get the generic class instead of parameterized type
+			sourceType = sourceType.getErasure();
 			String typeName = sourceType.getName();
 			return exportedModel.getOwnedType(typeName);
 		} else {
