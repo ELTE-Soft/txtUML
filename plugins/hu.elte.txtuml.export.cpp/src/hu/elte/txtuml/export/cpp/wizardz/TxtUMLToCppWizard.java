@@ -89,7 +89,7 @@ public class TxtUMLToCppWizard extends Wizard{
 					warnings += warning + "\n";
 				}
 				
-				warnings += "\nWould you like continue the generation?\n ";
+				warnings += "\nWould you like to continue the generation?\n ";
 				if (!Dialogs.WarningConfirm("Description export warnings", warnings) ) {
 					return false;
 				}

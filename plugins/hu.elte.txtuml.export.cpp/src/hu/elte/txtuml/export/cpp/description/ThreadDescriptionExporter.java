@@ -70,7 +70,7 @@ public class ThreadDescriptionExporter {
 				}
 			}
 			else{
-				warningList.add("Unknown annotaiton detected!");
+				warningList.add("Unknown annotation detected!");
 			}
 		}
 		

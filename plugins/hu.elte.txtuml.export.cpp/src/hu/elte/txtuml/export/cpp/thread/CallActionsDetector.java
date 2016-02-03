@@ -48,7 +48,7 @@ public class CallActionsDetector {
 			for(String conccurentClass: concurrentClasses){
 				conflict = threreIsSyncrhonCall(currentClass,conccurentClass);
 				if(conflict){
-					syncronousWarnings.add("Thre is a CallOperationAction between " + currentClass + " and " + conccurentClass);
+					syncronousWarnings.add("There is a CallOperationAction between " + currentClass + " and " + conccurentClass);
 				}
 				
 			}
