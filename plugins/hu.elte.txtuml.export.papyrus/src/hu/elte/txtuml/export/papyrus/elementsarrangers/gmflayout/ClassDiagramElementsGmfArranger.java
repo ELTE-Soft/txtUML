@@ -8,6 +8,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationMultiplicitySourceEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationMultiplicityTargetEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationNameEditPart;
@@ -15,7 +16,7 @@ import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationNameEditPart;
 /**
  * Controls the arranging of a ClassDiagram with GMF algorithm
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public class ClassDiagramElementsGmfArranger extends AbstractDiagramElementsGmfArranger{
 
@@ -37,7 +38,7 @@ public class ClassDiagramElementsGmfArranger extends AbstractDiagramElementsGmfA
 		monitor.subTask("Arranging elements...");
 		super.arrangeChildren(this.diagep);
 		@SuppressWarnings("unchecked")
-		List<EditPart> listEp = this.diagep.getChildren();
+		List<GraphicalEditPart> listEp = this.diagep.getChildren();
 		DiagramElementsModifier.hideConnectionLabelsForEditParts(listEp, Arrays.asList(
 				AssociationNameEditPart.class,
 				AssociationMultiplicityTargetEditPart.class,

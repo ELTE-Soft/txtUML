@@ -10,6 +10,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationMultiplicitySourceEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationMultiplicityTargetEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationNameEditPart;
@@ -17,7 +18,7 @@ import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationNameEditPart;
 /**
  * Controls the arranging of a ClassDiagram with txtUML algorithm
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public class ClassDiagramElementsTxtUmlArranger extends AbstractDiagramElementsTxtUmlArranger{
 	
@@ -37,9 +38,9 @@ public class ClassDiagramElementsTxtUmlArranger extends AbstractDiagramElementsT
 	 */
 	@Override
 	public void arrange(IProgressMonitor monitor) throws ArrangeException {
-		super.arrangeChildren(this.diagep, monitor);
+		arrangeChildren(this.diagep, monitor);
 		@SuppressWarnings("unchecked")
-		List<EditPart> children = this.diagep.getChildren();
+		List<GraphicalEditPart> children = this.diagep.getChildren();
 		DiagramElementsModifier.hideConnectionLabelsForEditParts(children, Arrays.asList(
 				AssociationNameEditPart.class,
 				AssociationMultiplicityTargetEditPart.class,

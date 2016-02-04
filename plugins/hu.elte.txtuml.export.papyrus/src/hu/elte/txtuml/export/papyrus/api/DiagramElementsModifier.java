@@ -24,7 +24,7 @@ import org.eclipse.papyrus.uml.diagram.common.commands.ShowHideLabelsRequest;
 
 /**
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 @SuppressWarnings("restriction")
 public class DiagramElementsModifier {
@@ -35,6 +35,7 @@ public class DiagramElementsModifier {
 	 * @param new_height - The new height of the EditPart
 	 */
 	public static void resizeGraphicalEditPart(GraphicalEditPart graphEP, int new_width, int new_height){
+		graphEP.getFigure().setPreferredSize(new Dimension(new_width, new_height));
 		Dimension figuredim = graphEP.getFigure().getSize();
 		ChangeBoundsRequest resize_req = new ChangeBoundsRequest(RequestConstants.REQ_RESIZE);
 		resize_req.setSizeDelta(new Dimension(new_width-figuredim.width(), new_height-figuredim.height()));
@@ -50,16 +51,15 @@ public class DiagramElementsModifier {
 	 * @param elements - The EditParts which's connection labels is to be hidden 
 	 * @param excluding - The types of connection labels which are not wanted to be hidden
 	 */
-	public static void hideConnectionLabelsForEditParts(List<EditPart> elements, List<java.lang.Class<?>> excluding){
-		for(EditPart editpart: elements){
-			GraphicalEditPart ep = ((GraphicalEditPart) editpart);
+	public static void hideConnectionLabelsForEditParts(List<? extends GraphicalEditPart> elements, List<java.lang.Class<?>> excluding){
+		for(GraphicalEditPart editpart: elements){
 			@SuppressWarnings("unchecked")
-			List<ConnectionNodeEditPart> connections = ep.getSourceConnections();
+			List<ConnectionNodeEditPart> connections = editpart.getSourceConnections();
 			for(ConnectionNodeEditPart connection : connections){
 				@SuppressWarnings("unchecked")
 				List<ConnectionNodeEditPart> labels = connection.getChildren();
 				for(EditPart label : labels){
-					if(!isInstanceOfAny(label, excluding)){
+					if(excluding == null || !isInstanceOfAny(label, excluding)){
 						ShowHideLabelsRequest request = new ShowHideLabelsRequest(false, ((View) label.getModel()));
 						Command com = connection.getCommand(request);
 						if(com != null && com.canExecute())
