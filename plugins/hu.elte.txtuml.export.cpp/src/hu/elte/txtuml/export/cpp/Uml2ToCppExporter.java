@@ -111,9 +111,7 @@ public class Uml2ToCppExporter
 			classNames.add(item.getName());
 		}
 			
-		createMakeFile(outputDirectory,DefaultModelName,DefaultMakeFileName,classNames);
-			
-			
+		createMakeFile(outputDirectory,DefaultModelName,DefaultMakeFileName,classNames);	
 			
 	}
 	
@@ -123,57 +121,45 @@ public class Uml2ToCppExporter
 	private void copyPreWrittenCppFiles(String destination) throws IOException 
 	{
 		
-		String absoluteCppFilesLocation = seekCppFilesLolcation();
+	    String cppFilesLocation = seekCppFilesLolcation();
+	    File file = new File(destination);
+	    if(!file.exists()){
+			file.mkdirs();
+	    }
 		
-		try
-		{
-		
-			File file = new File(destination);
-			if(!file.exists()){
-				file.mkdirs();
-			}
-		}
-		catch(Exception e){
-			e.printStackTrace();
-		}
-		
-		Files.copy(Paths.get(absoluteCppFilesLocation + GenerationTemplates.StateMachineBaseHeader),
-				Paths.get(destination+File.separator+GenerationTemplates.StateMachineBaseHeader), StandardCopyOption.REPLACE_EXISTING);
-		if(Options.Runtime())
-		{
+	    Files.copy(Paths.get(cppFilesLocation + GenerationTemplates.StateMachineBaseHeader),
+		    Paths.get(destination+File.separator+GenerationTemplates.StateMachineBaseHeader), StandardCopyOption.REPLACE_EXISTING);
+	    if(Options.Runtime())
+	    {
 			
-			File sourceRuntimeDir = new File(absoluteCppFilesLocation + RuntimeFolder);
-			File outputRuntimeDir = new File(destination + File.separator +  RuntimeFolder);
-			if(!outputRuntimeDir.exists()){
-				outputRuntimeDir.mkdirs();
-			}
-				
-			Map<String, String> fileNamesMap = new HashMap<String,String>();// the map contains  filenames which will be changed compared to source files
-			fileNamesMap.put("runtimemain.cpp", "main.cpp");  
-				
-			copyFolder(sourceRuntimeDir, outputRuntimeDir, fileNamesMap);
-				
+		File sourceRuntimeDir = new File(cppFilesLocation);
+		File outputRuntimeDir = new File(destination + File.separator +  RuntimeFolder);
+		if(!outputRuntimeDir.exists()){
+			outputRuntimeDir.mkdirs();
 		}
-		else
-		{
-			Files.copy(Paths.get(absoluteCppFilesLocation + "main.cpp"),
+				
+		Map<String, String> fileNamesMap = new HashMap<String,String>();// the map contains  filenames which will be changed compared to source files
+		fileNamesMap.put("runtimemain.cpp", "main.cpp");  
+				
+		copyFolder(sourceRuntimeDir, outputRuntimeDir, fileNamesMap);
+				
+	     }
+	      else
+	      {
+		  Files.copy(Paths.get(cppFilesLocation + "main.cpp"),
 					Paths.get(destination + File.separator+"main.cpp"), StandardCopyOption.REPLACE_EXISTING);
-		}
+	      }
 		
 	}
 	
-	private String seekCppFilesLolcation(){
+	private String seekCppFilesLolcation() throws IOException{
 		
 		Bundle bundle = Platform.getBundle("hu.elte.txtuml.export.cpp");
-		URL fileURL = bundle.getEntry("src" +File.separator+"hu"+File.separator+"elte"+File.separator+"txtuml"+File.separator+"export"+File.separator+"cpp"+File.separator+"cppsources");
-		File f = null;
-		try {
-			f = new File(FileLocator.toFileURL(fileURL).getPath());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return f.getAbsolutePath() + File.separator;
+		URL fileURL = bundle.getEntry("cpp-sources");
+		System.out.println(fileURL.getPath());
+		File f = new File(FileLocator.toFileURL(fileURL).getPath());
+		
+		return f.getPath() + File.separator;
 	}
 
 	private void copyFolder(File sourceRuntimeDir, File outputRuntimeDir, Map<String, String> fileNamesMap) {
