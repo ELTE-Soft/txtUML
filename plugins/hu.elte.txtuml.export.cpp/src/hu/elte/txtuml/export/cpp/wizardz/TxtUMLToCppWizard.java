@@ -13,7 +13,7 @@ import hu.elte.txtuml.eclipseutils.ClassLoaderProvider;
 import hu.elte.txtuml.eclipseutils.Dialogs;
 import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
 import hu.elte.txtuml.export.cpp.description.ThreadDescriptionExporter;
-import hu.elte.txtuml.export.cpp.description.Configuration;
+import hu.elte.txtuml.api.platform.Configuration;
 import hu.elte.txtuml.export.ExportUtils;
 import hu.elte.txtuml.export.Uml2Utils;
 

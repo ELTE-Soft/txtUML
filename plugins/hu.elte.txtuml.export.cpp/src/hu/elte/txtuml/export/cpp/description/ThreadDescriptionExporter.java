@@ -2,6 +2,10 @@ package hu.elte.txtuml.export.cpp.description;
 
 
 import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.platform.Configuration;
+import hu.elte.txtuml.api.platform.Group;
+import hu.elte.txtuml.api.platform.GroupContainer;
+import hu.elte.txtuml.api.platform.Multithreading;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;

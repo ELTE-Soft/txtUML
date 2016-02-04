@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.cpp.description;
+package hu.elte.txtuml.api.platform;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.export.cpp.description.GroupContainer;
+import hu.elte.txtuml.api.platform.GroupContainer;
 
 /**
  * <p>

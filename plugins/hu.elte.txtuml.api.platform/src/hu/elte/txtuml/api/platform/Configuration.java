@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.cpp.description;
+package hu.elte.txtuml.api.platform;
 
 /**
  * Base class for thread management configuration controlled by various
