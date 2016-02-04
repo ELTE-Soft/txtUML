@@ -23,6 +23,7 @@ import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Generalization;
+import org.eclipse.uml2.uml.Transition;
 
 /**
  * Finds the org.eclipse.uml2 element from a model according to the txtUML name 
@@ -170,6 +171,19 @@ public class TxtUMLElementsRegistry {
 				Classifier classif =  gen.getGeneral();
 				if(classif.equals(superclass.get())) return Optional.of(gen);
 			}
+		}
+		return Optional.empty();
+	}
+
+	/**
+	 * Finds an {@link Transition} that matches the given ID
+	 * @param id - the TxtUML ID of the transition
+	 * @return The Transition model Element
+	 */
+	public Optional<Transition> findTransition(String id) {
+		Optional<Element> elem = findElement(id);
+		if(elem.isPresent() && elem.get() instanceof Transition){
+			return Optional.of((Transition) elem.get());
 		}
 		return Optional.empty();
 	}

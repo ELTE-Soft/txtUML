@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.geometry.Dimension;
@@ -9,21 +10,21 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.layout.FreeFormLayoutEx;
-import org.eclipse.papyrus.uml.diagram.statemachine.StateMachineDiagramCreationCondition;
 import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomRegionCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomRegionEditPart;
-import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateMachineCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateMachineEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.RegionCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.RegionEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateCompartmentEditPart;
+import org.eclipse.uml2.uml.Element;
 
 import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
 import hu.elte.txtuml.export.papyrus.api.StateMachineDiagramElementsController;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
+import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 
 /**
  * Controls the arranging of a StateMachineDiagram with GMF algorithm
@@ -133,6 +134,12 @@ public class StateMachineDiagramElementsTxtUmlArranger extends
 		}
 		
 		return new Dimension(bottomRight.x-topLeft.x, bottomRight.y-topLeft.y);
+	}
+	
+	@Override
+	protected Optional<? extends Element> findConnection(LineAssociation la){
+		Optional<? extends Element> e = txtUmlRegistry.findTransition(la.getId());
+		return e;
 	}
 }
 

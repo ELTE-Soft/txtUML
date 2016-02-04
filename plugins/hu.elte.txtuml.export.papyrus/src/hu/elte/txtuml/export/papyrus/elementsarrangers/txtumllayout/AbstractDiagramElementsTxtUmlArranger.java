@@ -42,7 +42,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 	protected int MAXWIDTH = 200;
 	protected int MAXHEIGHT = 200;
 	
-	private TxtUMLElementsRegistry txtUmlRegistry;
+	protected TxtUMLElementsRegistry txtUmlRegistry;
 	
 	/**
 	 * The Constructor 
@@ -114,9 +114,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			int w = getSize(ep).width;
 			int h = getSize(ep).height;
 			int nW = w > MAXWIDTH ? MAXWIDTH : w;
-		//	nW = nW < MINWIDTH ? MINWIDTH : nW;
 			int nH = h > MAXHEIGHT ? MAXHEIGHT : h;
-			//nH = nH < MINHEIGHT ? MINHEIGHT : nH;
 			obj.setPixelWidth(nW);
 			obj.setPixelHeight(nH);
 		});
@@ -168,8 +166,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		Map<ConnectionNodeEditPart, List<Point>> linksTransform = new HashMap<ConnectionNodeEditPart, List<Point>>(); 
 		for(LineAssociation la : links){
 			
-			Optional<? extends Element> e = txtUmlRegistry.findAssociation(la.getId());
-			if(!e.isPresent()) e = txtUmlRegistry.findGeneralization(la.getFrom(), la.getTo());
+			Optional<? extends Element> e = findConnection(la);
 			
 			if(e.isPresent()){
 				ConnectionNodeEditPart connection = (ConnectionNodeEditPart) getEditPartOfModelElement(connections, e.get());
@@ -200,6 +197,17 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			}
 		}
 		return linksTransform;
+	}
+
+	/**
+	 * Returns the required element associated with the given lineassociation 
+	 * @param la - the lineAssociation in the registry
+	 * @return
+	 */
+	protected Optional<? extends Element> findConnection(LineAssociation la) {
+		Optional<? extends Element> e = txtUmlRegistry.findAssociation(la.getId());
+		if(!e.isPresent()) e = txtUmlRegistry.findGeneralization(la.getFrom(), la.getTo());
+		return e;
 	}
 
 	private Map<GraphicalEditPart, RectangleObject> pairObjectsToEditParts(Collection<RectangleObject> objects,
