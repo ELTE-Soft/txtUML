@@ -186,6 +186,39 @@ public class ArrangeAssociations {
 		_objects = diagramObjects;
 	}
 
+	private Integer calculateMaxLinks(List<LineAssociation> as) {
+		if (as.size() == 0)
+			return 0;
+
+		// Gather data
+		HashMap<String, Integer> data = new HashMap<String, Integer>();
+
+		Integer countMod = 1;
+		for (LineAssociation a : as) {
+			// From
+			if (data.containsKey(a.getFrom())) {
+				data.put(a.getFrom(), data.get(a.getFrom()) + countMod);
+			} else {
+				data.put(a.getFrom(), countMod);
+			}
+
+			if (a.isReflexive())
+				continue;
+			// To
+			if (data.containsKey(a.getTo())) {
+				data.put(a.getTo(), data.get(a.getTo()) + countMod);
+			} else {
+				data.put(a.getTo(), countMod);
+			}
+		}
+
+		// Find max
+		Integer max = data.entrySet().stream().max((e1, e2) -> Integer.compare(e1.getValue(), e2.getValue())).get()
+				.getValue();
+
+		return max;
+	}
+	
 	private Set<RectangleObject> defaultGrid(Integer k, Set<RectangleObject> objs) {
 		Set<RectangleObject> result = new HashSet<RectangleObject>();
 		_widthOfCells = k;
@@ -199,16 +232,16 @@ public class ArrangeAssociations {
 			return Integer.compare(o1.getPixelHeight(), o2.getPixelHeight());
 		}).get().getPixelHeight();
 
-		Double pixelPerGridWidth = smallestPixelWidth / (k + 2.0);
-		Double pixelPerGridHeight = smallestPixelHeight / (k + 2.0);
+		Double pixelPerGridWidth = Math.floor(smallestPixelWidth / (k + 2.0));
+		Double pixelPerGridHeight = Math.floor(smallestPixelHeight / (k + 2.0));
 
 		// Set the grid sizes of boxes based on their pixel sizes
 		for (RectangleObject obj : objs) {
 			RectangleObject mod = new RectangleObject(obj);
 			mod.setWidth((int) Math.ceil(mod.getPixelWidth() / pixelPerGridWidth));
-			mod.setPixelWidth((int) (mod.getWidth() * Math.floor(pixelPerGridWidth)));
+			mod.setPixelWidth((int) (mod.getWidth() * pixelPerGridWidth));
 			mod.setHeight((int) Math.ceil(mod.getPixelHeight() / pixelPerGridHeight));
-			mod.setPixelHeight((int) (mod.getHeight() * Math.floor(pixelPerGridHeight)));
+			mod.setPixelHeight((int) (mod.getHeight() * pixelPerGridHeight));
 
 			if (_widthOfCells < mod.getWidth())
 				_widthOfCells = mod.getWidth();
@@ -316,39 +349,6 @@ public class ArrangeAssociations {
 		}
 
 		return result;
-	}
-
-	private Integer calculateMaxLinks(List<LineAssociation> as) {
-		if (as.size() == 0)
-			return 0;
-
-		// Gather data
-		HashMap<String, Integer> data = new HashMap<String, Integer>();
-
-		Integer countMod = 1;
-		for (LineAssociation a : as) {
-			// From
-			if (data.containsKey(a.getFrom())) {
-				data.put(a.getFrom(), data.get(a.getFrom()) + countMod);
-			} else {
-				data.put(a.getFrom(), countMod);
-			}
-
-			if (a.isReflexive())
-				continue;
-			// To
-			if (data.containsKey(a.getTo())) {
-				data.put(a.getTo(), data.get(a.getTo()) + countMod);
-			} else {
-				data.put(a.getTo(), countMod);
-			}
-		}
-
-		// Find max
-		Integer max = data.entrySet().stream().max((e1, e2) -> Integer.compare(e1.getValue(), e2.getValue())).get()
-				.getValue();
-
-		return max;
 	}
 
 	private List<LineAssociation> processStatements(List<LineAssociation> links, List<Statement> stats,
