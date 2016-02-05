@@ -121,7 +121,7 @@ public class Uml2ToCppExporter
 	private void copyPreWrittenCppFiles(String destination) throws IOException 
 	{
 		
-	    String cppFilesLocation = seekCppFilesLolcation();
+	    String cppFilesLocation = seekCppFilesLocation();
 	    File file = new File(destination);
 	    if(!file.exists()){
 			file.mkdirs();
@@ -152,7 +152,7 @@ public class Uml2ToCppExporter
 		
 	}
 	
-	private String seekCppFilesLolcation() throws IOException{
+	private String seekCppFilesLocation() throws IOException{
 		
 		Bundle bundle = Platform.getBundle("hu.elte.txtuml.export.cpp");
 		URL fileURL = bundle.getEntry("cpp-sources");

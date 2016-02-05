@@ -74,12 +74,12 @@ public class ThreadDescriptionExporter {
 				}
 			}
 			else{
-				warningList.add("Only Group and Multithreading annotation are allowed to use.");
+				warningList.add("Only Group and Multithreading annotations are allowed to use.");
 			}
 		}
 		
 		if (!containsMulthreadingAnnotaion) {
-			warningList.add("Missing Multithreading option from the description.");
+			warningList.add("Multithreading option from the description is missing.");
 			
 			if (!configMap.isEmpty()) {
 				isMultiThreading = true;
@@ -123,7 +123,7 @@ public class ThreadDescriptionExporter {
 		}
 		
 		if (group.constant() < 0) {
-		    warningList.add("The constant of linear function should be more than 0.");
+		    warningList.add("The constant of linear function should be higher than 0.");
 		}
 		
 		ThreadPoolConfiguration config = new ThreadPoolConfiguration(numberOfConfigurations, group.gradient(), group.constant());
@@ -138,7 +138,7 @@ public class ThreadDescriptionExporter {
 				configMap.put(cls.getSimpleName(), config);
 			}
 			else{
-				warningList.add(cls.getSimpleName() + " configured more times!");
+				warningList.add(cls.getSimpleName() + " is configured multiple times!");
 			}
 			
 		}
@@ -146,7 +146,7 @@ public class ThreadDescriptionExporter {
 
 	private void checkEmptyGroup(Class<? extends ModelClass>[] classes) {
 		if(classes.length == 0){
-			warningList.add("Empty Group annotation.");
+			warningList.add("Group annotation is empty.");
 		}
 		
 	}
