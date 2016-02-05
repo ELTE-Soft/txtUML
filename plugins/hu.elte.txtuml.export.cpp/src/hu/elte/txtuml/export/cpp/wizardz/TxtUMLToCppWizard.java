@@ -101,7 +101,7 @@ public class TxtUMLToCppWizard extends Wizard {
 
 			} catch (Exception e) {
 				Dialogs.errorMsgb("Compilation failed", e.getMessage(), e);
-				e.printStackTrace();
+				
 			}
 
 		} catch (Exception e) {
