@@ -27,7 +27,6 @@ Require-Bundle: org.eclipse.uml2.uml,
  org.eclipse.ui,
  org.eclipse.debug.ui,
  com.google.guava
-Export-Package: hu.elte.txtuml.export.cpp,
- hu.elte.txtuml.export.cpp.description
+Export-Package: hu.elte.txtuml.export.cpp
 Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.ui.dialogs

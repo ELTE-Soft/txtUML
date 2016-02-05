@@ -19,153 +19,145 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
 import hu.elte.txtuml.export.cpp.Shared;
-import hu.elte.txtuml.export.cpp.description.ThreadPoolConfiguration;
+import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
 
 public class CallActionsDetector {
-	
-	
-	private Map<String, ThreadPoolConfiguration > threadDescription;
+
+	private Map<String, ThreadPoolConfiguration> threadDescription;
 	private List<Class> classList;
 	private List<String> syncronousWarnings;
-	
-	public CallActionsDetector(Model model, Map<String, ThreadPoolConfiguration > threadDescription) {
+
+	public CallActionsDetector(Model model, Map<String, ThreadPoolConfiguration> threadDescription) {
 		this.threadDescription = threadDescription;
-		Shared.getTypedElements(classList,model.allOwnedElements(),UMLPackage.Literals.CLASS);
+		Shared.getTypedElements(classList, model.allOwnedElements(), UMLPackage.Literals.CLASS);
 		syncronousWarnings = new ArrayList<String>();
 	}
-	
+
 	public List<String> getWarnings() {
 		return syncronousWarnings;
 	}
-	
+
 	public void detectSynchronousCallConflicts() {
 		boolean conflict = false;
-		
-		for(String currentClass: threadDescription.keySet() ){
-			
+
+		for (String currentClass : threadDescription.keySet()) {
+
 			List<String> concurrentClasses = createConcurentList(currentClass);
-			
-			for(String conccurentClass: concurrentClasses){
-				conflict = threreIsSyncrhonCall(currentClass,conccurentClass);
-				if(conflict){
-					syncronousWarnings.add("There is a CallOperationAction between " + currentClass + " and " + conccurentClass);
+
+			for (String conccurentClass : concurrentClasses) {
+				conflict = threreIsSyncrhonCall(currentClass, conccurentClass);
+				if (conflict) {
+					syncronousWarnings
+							.add("There is a CallOperationAction between " + currentClass + " and " + conccurentClass);
 				}
-				
+
 			}
-			
+
 		}
-			
+
 	}
-	
+
 	private List<String> createConcurentList(String cls) {
 		List<String> concurrentList = new ArrayList<String>();
-		
+
 		int poolId = threadDescription.get(cls).getId();
 
-		for(String concurrentCls: threadDescription.keySet()){
-			if(threadDescription.get(concurrentCls).getId() != poolId){
+		for (String concurrentCls : threadDescription.keySet()) {
+			if (threadDescription.get(concurrentCls).getId() != poolId) {
 				concurrentList.add(concurrentCls);
 			}
 		}
-		
+
 		return concurrentList;
 	}
-	
-	
-	
-	private boolean threreIsSyncrhonCall(
-			String currentClass,
-			String concurrentClass) {
+
+	private boolean threreIsSyncrhonCall(String currentClass, String concurrentClass) {
 		Class from = getClassFromUMLModel(currentClass);
 		Class to = getClassFromUMLModel(concurrentClass);
-		
-		
-		if(!isInAssoc(from, to)){
+
+		if (!isInAssoc(from, to)) {
 			System.out.println(from.getName() + " and " + to.getName() + " is not in assoc");
 			return false;
-		}
-		else{
+		} else {
 			System.out.println(from.getName() + " and " + to.getName() + " is in assoc");
-			//Detect syncrhon call
-			for (Behavior b : from.getOwnedBehaviors()){
-				
-				if(b.eClass().equals(UMLPackage.Literals.STATE_MACHINE)){
-					
+			// Detect syncrhon call
+			for (Behavior b : from.getOwnedBehaviors()) {
+
+				if (b.eClass().equals(UMLPackage.Literals.STATE_MACHINE)) {
+
 					StateMachine fromSM = (StateMachine) b;
 					Region fromR = fromSM.getRegion(from.getName());
-					for(Vertex vertex: fromR.getSubvertices()){
-						if(vertex.eClass().equals(UMLPackage.Literals.STATE)){
+					for (Vertex vertex : fromR.getSubvertices()) {
+						if (vertex.eClass().equals(UMLPackage.Literals.STATE)) {
 							State state = (State) vertex;
 							Behavior entry = state.getEntry();
 							Behavior exit = state.getExit();
-							if(entry != null){
-								containsCallOperationForClass(entry,to);
+							if (entry != null) {
+								containsCallOperationForClass(entry, to);
 							}
-							if(exit != null){
-								containsCallOperationForClass(exit,to);
+							if (exit != null) {
+								containsCallOperationForClass(exit, to);
 							}
 						}
 					}
-					
-					for(Transition trans : fromR.getTransitions()){
-						
+
+					for (Transition trans : fromR.getTransitions()) {
+
 						Behavior fromEffect = trans.getEffect();
-						if(fromEffect != null){
-							if(containsCallOperationForClass(fromEffect,to)){
+						if (fromEffect != null) {
+							if (containsCallOperationForClass(fromEffect, to)) {
 								return true;
 							}
 						}
 					}
-					
-				}
-				else if(b.eClass().equals(UMLPackage.Literals.ACTIVITY)){
-					if(containsCallOperationForClass(b,to)){
+
+				} else if (b.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
+					if (containsCallOperationForClass(b, to)) {
 						return true;
 					}
-					
+
 				}
 			}
-			
+
 			return false;
 		}
-		
+
 	}
-	
-	boolean containsCallOperationForClass(Behavior behavior, Class cls){
-		
-		for(Element elem : behavior.allOwnedElements()){
-				
-			if(elem.eClass().getName().equals("CallOperationAction")){
-					
+
+	boolean containsCallOperationForClass(Behavior behavior, Class cls) {
+
+		for (Element elem : behavior.allOwnedElements()) {
+
+			if (elem.eClass().getName().equals("CallOperationAction")) {
+
 				CallOperationAction action = (CallOperationAction) elem;
-					
-				if(action.getTarget().getType().equals(cls)){
+
+				if (action.getTarget().getType().equals(cls)) {
 					return true;
-						
-				}	
+
+				}
 			}
 		}
-		
+
 		return false;
 	}
-	
-	boolean isInAssoc(Class cls1, Class cls2){
-		
-		for(Association assoc : cls1.getAssociations()){
-			for(Type endType: assoc.getEndTypes()){
-				if(endType.getName().equals(cls2.getName())){
+
+	boolean isInAssoc(Class cls1, Class cls2) {
+
+		for (Association assoc : cls1.getAssociations()) {
+			for (Type endType : assoc.getEndTypes()) {
+				if (endType.getName().equals(cls2.getName())) {
 					return true;
 				}
 			}
 		}
 		return false;
 	}
-	
-	
+
 	private Class getClassFromUMLModel(String name) {
-		
-		for(Class cls: classList){
-			if(cls.getName().equals(name)){
+
+		for (Class cls : classList) {
+			if (cls.getName().equals(name)) {
 				return cls;
 			}
 		}

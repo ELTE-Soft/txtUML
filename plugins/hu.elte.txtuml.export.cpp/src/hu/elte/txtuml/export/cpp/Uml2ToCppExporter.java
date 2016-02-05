@@ -25,249 +25,223 @@ import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.osgi.framework.Bundle;
 
-import hu.elte.txtuml.export.cpp.description.ThreadPoolConfiguration;
+import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.Options;
 import hu.elte.txtuml.export.cpp.thread.ThreadHandlingManager;
 import hu.elte.txtuml.utils.Pair;
 
-public class Uml2ToCppExporter
-{
+public class Uml2ToCppExporter {
 	private static final String DefaultCompiler = "g++";
-	private static final String GCCDebugSymbolOn = "-D_DEBUG"; //the symbol located in GenerationNames
-	private static final String RuntimeFolder= GenerationTemplates.RuntimePath;
+	private static final String GCCDebugSymbolOn = "-D_DEBUG"; // the symbol located in GenerationNames
+	private static final String RuntimeFolder = GenerationTemplates.RuntimePath;
 	private static final String RuntimeLibName = "libsmrt.a";
 	private static final String DefaultMakeFileName = "Makefile";
 	private static final String DefaultModelName = "main";
-	
+
 	private ClassExporter classExporter;
-	
+
 	ThreadHandlingManager threadManager;
-	
+
 	List<Class> classList;
 	EList<Element> elements;
-	
+
 	List<String> classNames;
-	
-	
-	
-	public Uml2ToCppExporter(Model model, Map<String, ThreadPoolConfiguration > threadDescription,
-			boolean threadManagement,boolean runtimeOption,boolean debugOption){
-		
+
+	public Uml2ToCppExporter(Model model, Map<String, ThreadPoolConfiguration> threadDescription,
+			boolean threadManagement, boolean runtimeOption, boolean debugOption) {
+
 		classExporter = new ClassExporter();
-		
-		
+
 		this.classList = new ArrayList<Class>();
 		this.elements = model.allOwnedElements();
 		this.classNames = new LinkedList<String>();
-		
-		Shared.getTypedElements(classList,elements,UMLPackage.Literals.CLASS);
-		
-		if(runtimeOption){
+
+		Shared.getTypedElements(classList, elements, UMLPackage.Literals.CLASS);
+
+		if (runtimeOption) {
 			Options.setRuntime();
-		}
-		else{
+		} else {
 			Options.setRuntime(false);
 		}
-		if(debugOption){
+		if (debugOption) {
 			Options.setDebugLog();
-		}
-		else{
+		} else {
 			Options.setDebugLog(false);
 		}
-		if(threadManagement){
+		if (threadManagement) {
 			Options.setThreadManagement();
-			
 
-			threadManager = new ThreadHandlingManager(classList,threadDescription);
-		}
-		else{
+			threadManager = new ThreadHandlingManager(classList, threadDescription);
+		} else {
 			threadManager = new ThreadHandlingManager();
 			Options.setThreadManagement(false);
 		}
-		
+
 	}
-	
-	
+
 	public void buildCppCode(String outputDirectory) throws IOException {
 
-			
 		threadManager.createThreadPoolManager(outputDirectory + File.separator + "runtime");
-			
-		Shared.writeOutSource(outputDirectory,(GenerationTemplates.EventHeader),createEventSource(elements));
-			
-		copyPreWrittenCppFiles(outputDirectory);	
-			
-		for(Class item: classList)
-		{	
+
+		Shared.writeOutSource(outputDirectory, (GenerationTemplates.EventHeader), createEventSource(elements));
+
+		copyPreWrittenCppFiles(outputDirectory);
+
+		for (Class item : classList) {
 			classExporter.reiniIialize();
-			if (Options.ThreadManagement() ) {
+			if (Options.ThreadManagement()) {
 				classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
 
 			}
 			classExporter.createSource(item, outputDirectory);
-				
+
 			classNames.addAll(classExporter.getSubmachines());
 			classNames.add(item.getName());
 		}
-			
-		createMakeFile(outputDirectory,DefaultModelName,DefaultMakeFileName,classNames);	
-			
+
+		createMakeFile(outputDirectory, DefaultModelName, DefaultMakeFileName, classNames);
+
 	}
-	
 
+	private void copyPreWrittenCppFiles(String destination) throws IOException {
 
-
-	private void copyPreWrittenCppFiles(String destination) throws IOException 
-	{
-		
-	    String cppFilesLocation = seekCppFilesLocation();
-	    File file = new File(destination);
-	    if(!file.exists()){
+		String cppFilesLocation = seekCppFilesLocation();
+		File file = new File(destination);
+		if (!file.exists()) {
 			file.mkdirs();
-	    }
-		
-	    Files.copy(Paths.get(cppFilesLocation + GenerationTemplates.StateMachineBaseHeader),
-		    Paths.get(destination+File.separator+GenerationTemplates.StateMachineBaseHeader), StandardCopyOption.REPLACE_EXISTING);
-	    if(Options.Runtime())
-	    {
-			
-		File sourceRuntimeDir = new File(cppFilesLocation);
-		File outputRuntimeDir = new File(destination + File.separator +  RuntimeFolder);
-		if(!outputRuntimeDir.exists()){
-			outputRuntimeDir.mkdirs();
 		}
-				
-		Map<String, String> fileNamesMap = new HashMap<String,String>();// the map contains  filenames which will be changed compared to source files
-		fileNamesMap.put("runtimemain.cpp", "main.cpp");  
-				
-		copyFolder(sourceRuntimeDir, outputRuntimeDir, fileNamesMap);
-				
-	     }
-	      else
-	      {
-		  Files.copy(Paths.get(cppFilesLocation + "main.cpp"),
-					Paths.get(destination + File.separator+"main.cpp"), StandardCopyOption.REPLACE_EXISTING);
-	      }
-		
+
+		Files.copy(Paths.get(cppFilesLocation + GenerationTemplates.StateMachineBaseHeader),
+				Paths.get(destination + File.separator + GenerationTemplates.StateMachineBaseHeader),
+				StandardCopyOption.REPLACE_EXISTING);
+		if (Options.Runtime()) {
+
+			File sourceRuntimeDir = new File(cppFilesLocation);
+			File outputRuntimeDir = new File(destination + File.separator + RuntimeFolder);
+			if (!outputRuntimeDir.exists()) {
+				outputRuntimeDir.mkdirs();
+			}
+
+			// the map contains filenames which will be changed compared to source files
+			Map<String, String> fileNamesMap = new HashMap<String, String>();
+			fileNamesMap.put("runtimemain.cpp", "main.cpp");
+
+			copyFolder(sourceRuntimeDir, outputRuntimeDir, fileNamesMap);
+
+		} else {
+			Files.copy(Paths.get(cppFilesLocation + "main.cpp"), Paths.get(destination + File.separator + "main.cpp"),
+					StandardCopyOption.REPLACE_EXISTING);
+		}
+
 	}
-	
-	private String seekCppFilesLocation() throws IOException{
-		
+
+	private String seekCppFilesLocation() throws IOException {
+
 		Bundle bundle = Platform.getBundle("hu.elte.txtuml.export.cpp");
 		URL fileURL = bundle.getEntry("cpp-sources");
 		System.out.println(fileURL.getPath());
 		File f = new File(FileLocator.toFileURL(fileURL).getPath());
-		
+
 		return f.getPath() + File.separator;
 	}
 
 	private void copyFolder(File sourceRuntimeDir, File outputRuntimeDir, Map<String, String> fileNamesMap) {
-		
+
 		String files[] = sourceRuntimeDir.list();
-		
-		for(String file: files){
-			
-			if(fileNamesMap.containsKey(file)){
+
+		for (String file : files) {
+
+			if (fileNamesMap.containsKey(file)) {
 				try {
 					Files.copy(Paths.get(sourceRuntimeDir.getAbsolutePath() + File.separator + file),
-							Paths.get(outputRuntimeDir.getAbsolutePath() + File.separator + fileNamesMap.get(file)), StandardCopyOption.REPLACE_EXISTING);
+							Paths.get(outputRuntimeDir.getAbsolutePath() + File.separator + fileNamesMap.get(file)),
+							StandardCopyOption.REPLACE_EXISTING);
 				} catch (IOException e) {
-					
+
+					e.printStackTrace();
+				}
+			} else {
+				try {
+					Files.copy(Paths.get(sourceRuntimeDir.getAbsolutePath() + File.separator + file),
+							Paths.get(outputRuntimeDir.getAbsolutePath() + File.separator + file),
+							StandardCopyOption.REPLACE_EXISTING);
+				} catch (IOException e) {
+
 					e.printStackTrace();
 				}
 			}
-			else{
-				try {
-					Files.copy(Paths.get(sourceRuntimeDir.getAbsolutePath() + File.separator + file),
-							Paths.get(outputRuntimeDir.getAbsolutePath() + File.separator + file), StandardCopyOption.REPLACE_EXISTING);
-				} catch (IOException e) {
-					
-					e.printStackTrace();
-				}
-			}
-			
+
 		}
 	}
 
-	private void createMakeFile(String path_,String outputName_,String makefileName_,List<String> classNames_) throws FileNotFoundException, UnsupportedEncodingException
-	{
-		String makeFile="CC="+DefaultCompiler+"\n\nall: "+outputName_+"\n\n";
-		
-		makeFile+=outputName_+":";
-		if(Options.Runtime())
-		{
-			makeFile += " "+ RuntimeLibName;
-		}
-		
-		String fileList=" main.cpp";
-		for(String file:classNames_)
-		{
-			fileList+=" "+GenerationTemplates.SourceName(file);
-		}
-		
+	private void createMakeFile(String path_, String outputName_, String makefileName_, List<String> classNames_)
+			throws FileNotFoundException, UnsupportedEncodingException {
+		String makeFile = "CC=" + DefaultCompiler + "\n\nall: " + outputName_ + "\n\n";
 
-		makeFile+=fileList+"\n";
-		makeFile+="\t$(CC)";		
-		if(Options.DebugLog())
-		{
-			makeFile+=" "+GCCDebugSymbolOn;
+		makeFile += outputName_ + ":";
+		if (Options.Runtime()) {
+			makeFile += " " + RuntimeLibName;
 		}
-		makeFile+=" -Wall -o "+outputName_+fileList+" -std=gnu++11";
 
-		if(Options.Runtime())
-		{
-			makeFile+=" -I "+RuntimeFolder+" -LC "+RuntimeLibName+"\n\n"+RuntimeLibName+": runtime runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o\n"+
-					"\tar rcs "+RuntimeLibName+" runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o\n\n"+
-					".PHONY:runtime\n"+
-					"runtime:\n\t$(CC) -Wall -c "+RuntimeFolder+"runtime.cpp "+RuntimeFolder+"statemachineI.cpp "
-					 + RuntimeFolder + "threadpool.cpp " + RuntimeFolder + "threadpoolmanager.cpp " + RuntimeFolder + "threadcontainer.cpp "
-							+ "-std=gnu++11";
+		String fileList = " main.cpp";
+		for (String file : classNames_) {
+			fileList += " " + GenerationTemplates.SourceName(file);
 		}
-		
+
+		makeFile += fileList + "\n";
+		makeFile += "\t$(CC)";
+		if (Options.DebugLog()) {
+			makeFile += " " + GCCDebugSymbolOn;
+		}
+		makeFile += " -Wall -o " + outputName_ + fileList + " -std=gnu++11";
+
+		if (Options.Runtime()) {
+			makeFile += " -I " + RuntimeFolder + " -LC " + RuntimeLibName + "\n\n" + RuntimeLibName
+					+ ": runtime runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o\n"
+					+ "\tar rcs " + RuntimeLibName
+					+ " runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o\n\n"
+					+ ".PHONY:runtime\n" + "runtime:\n\t$(CC) -Wall -c " + RuntimeFolder + "runtime.cpp "
+					+ RuntimeFolder + "statemachineI.cpp " + RuntimeFolder + "threadpool.cpp " + RuntimeFolder
+					+ "threadpoolmanager.cpp " + RuntimeFolder + "threadcontainer.cpp " + "-std=gnu++11";
+		}
+
 		Shared.writeOutSource(path_, makefileName_, makeFile);
 	}
 
-	private  String createEventSource(EList<Element> elements_)
-	{
-		List<Signal> signalList=new ArrayList<Signal>();
-		Shared.getTypedElements(signalList,elements_,UMLPackage.Literals.SIGNAL);
-		String forwardDecl="";
-		String source = GenerationTemplates.EventBase()+"\n";
-		List<Pair<String,String>> allParam=new LinkedList<Pair<String,String>>();
-		
-		for(Signal item:signalList)
-		{
-			List<Pair<String,String>> currentParams=getSignalParams(item);
+	private String createEventSource(EList<Element> elements_) {
+		List<Signal> signalList = new ArrayList<Signal>();
+		Shared.getTypedElements(signalList, elements_, UMLPackage.Literals.SIGNAL);
+		String forwardDecl = "";
+		String source = GenerationTemplates.EventBase() + "\n";
+		List<Pair<String, String>> allParam = new LinkedList<Pair<String, String>>();
+
+		for (Signal item : signalList) {
+			List<Pair<String, String>> currentParams = getSignalParams(item);
 			allParam.addAll(currentParams);
-			source+=GenerationTemplates.EventClass(item.getName(),currentParams);
+			source += GenerationTemplates.EventClass(item.getName(), currentParams);
 		}
-		
-		source+=GenerationTemplates.EventClass("InitSignal", new ArrayList<Pair<String,String>>());
-		
-		for(Pair<String,String> param:allParam)
-		{
-			if(!Shared.isBasicType(param.getFirst()))
-			{
-				String tmp=GenerationTemplates.ForwardDeclaration(param.getFirst());
-				if(!forwardDecl.contains(tmp))
-				{
-					forwardDecl+=tmp;	
+
+		source += GenerationTemplates.EventClass("InitSignal", new ArrayList<Pair<String, String>>());
+
+		for (Pair<String, String> param : allParam) {
+			if (!Shared.isBasicType(param.getFirst())) {
+				String tmp = GenerationTemplates.ForwardDeclaration(param.getFirst());
+				if (!forwardDecl.contains(tmp)) {
+					forwardDecl += tmp;
 				}
 			}
 		}
-		forwardDecl+="\n";
-		source=forwardDecl+source;
+		forwardDecl += "\n";
+		source = forwardDecl + source;
 		return GenerationTemplates.EventHeaderGuard(source);
 	}
-	
-	private List<Pair<String,String>> getSignalParams(Signal signal_)
-	{
-		List<Pair<String,String>> ret = new ArrayList<Pair<String,String>>();
-		for(Property prop:signal_.getOwnedAttributes())
-		{
-			ret.add(new Pair<String, String>(prop.getType().getName(),prop.getName()));
+
+	private List<Pair<String, String>> getSignalParams(Signal signal_) {
+		List<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
+		for (Property prop : signal_.getOwnedAttributes()) {
+			ret.add(new Pair<String, String>(prop.getType().getName(), prop.getName()));
 		}
 		return ret;
-	} 
+	}
 }

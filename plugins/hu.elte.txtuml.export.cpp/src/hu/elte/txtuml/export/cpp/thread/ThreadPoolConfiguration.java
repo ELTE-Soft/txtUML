@@ -1,85 +1,78 @@
-package hu.elte.txtuml.export.cpp.description;
+package hu.elte.txtuml.export.cpp.thread;
 
 public class ThreadPoolConfiguration {
-	
 
-	public class LinearFunction{
+	public class LinearFunction {
 		private double gradient;
 		private int constant;
 
-		
-		LinearFunction(double gradient, int constant){
-			
+		LinearFunction(double gradient, int constant) {
+
 			setGradient(gradient);
 			setConstant(constant);
 		}
-		
-		public double getGradient(){
+
+		public double getGradient() {
 			return gradient;
 		}
-		
-		public int getConstant(){
+
+		public int getConstant() {
 			return constant;
 		}
-		
-		public void setGradient(double gradient){
-			if (gradient >= 0 && gradient <= 1){
+
+		public void setGradient(double gradient) {
+			if (gradient >= 0 && gradient <= 1) {
 				this.gradient = gradient;
-			}
-			else if (gradient < 0) {
+			} else if (gradient < 0) {
 				this.gradient = 0;
-			}
-			else if (gradient > 1) {
+			} else if (gradient > 1) {
 				this.gradient = 1;
 			}
-			
+
 		}
-		
-		public void setConstant(int constant){
-			if(constant < 0){
+
+		public void setConstant(int constant) {
+			if (constant < 0) {
 				this.constant = 0;
-			}
-			else{
+			} else {
 				this.constant = constant;
 			}
 		}
-		
+
 	}
-	
-	public ThreadPoolConfiguration(int id, double gradient, int constant){
+
+	public ThreadPoolConfiguration(int id, double gradient, int constant) {
 		this.id = id;
-		function = new LinearFunction(gradient,constant);
-		
-		
+		function = new LinearFunction(gradient, constant);
+
 	}
-	
+
 	private LinearFunction function;
-	
+
 	private int id;
 	private int threads;
 	private int maxThread;
-	
-	public int getId(){
+
+	public int getId() {
 		return id;
 	}
-	
-	public int getNumberOfThreads(){
+
+	public int getNumberOfThreads() {
 		return threads;
 	}
-	
-	public int getMaxThread(){
+
+	public int getMaxThread() {
 		return maxThread;
 	}
-	
-	public LinearFunction getFunction(){
+
+	public LinearFunction getFunction() {
 		return function;
 	}
-	
-	public void setMaxThreads(int max){
-		if(max < 1){
+
+	public void setMaxThreads(int max) {
+		if (max < 1) {
 			maxThread = 1;
-		}
-		else{
+		} else {
 			maxThread = max;
 		}
 	}
