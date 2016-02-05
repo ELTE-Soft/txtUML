@@ -38,6 +38,8 @@ public class Uml2ToCppExporter {
 	private static final String RuntimeLibName = "libsmrt.a";
 	private static final String DefaultMakeFileName = "Makefile";
 	private static final String DefaultModelName = "main";
+	private static final String ProjectName = "hu.elte.txtuml.export.cpp";
+	private static final String CppFilesFolderName = "cpp-runtime";
 
 	private ClassExporter classExporter;
 
@@ -138,8 +140,8 @@ public class Uml2ToCppExporter {
 
 	private String seekCppFilesLocation() throws IOException {
 
-		Bundle bundle = Platform.getBundle("hu.elte.txtuml.export.cpp");
-		URL fileURL = bundle.getEntry("cpp-sources");
+		Bundle bundle = Platform.getBundle(ProjectName);
+		URL fileURL = bundle.getEntry(CppFilesFolderName);
 		System.out.println(fileURL.getPath());
 		File f = new File(FileLocator.toFileURL(fileURL).getPath());
 
