@@ -142,7 +142,6 @@ public class Uml2ToCppExporter {
 
 		Bundle bundle = Platform.getBundle(ProjectName);
 		URL fileURL = bundle.getEntry(CppFilesFolderName);
-		System.out.println(fileURL.getPath());
 		File f = new File(FileLocator.toFileURL(fileURL).getPath());
 
 		return f.getPath() + File.separator;
