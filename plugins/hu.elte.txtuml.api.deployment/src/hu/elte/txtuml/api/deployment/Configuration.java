@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.platform;
+package hu.elte.txtuml.api.deployment;
 
 /**
  * Base class for thread management configuration controlled by various

@@ -1,10 +1,10 @@
 package hu.elte.txtuml.export.cpp.thread;
 
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.platform.Configuration;
-import hu.elte.txtuml.api.platform.Group;
-import hu.elte.txtuml.api.platform.GroupContainer;
-import hu.elte.txtuml.api.platform.Multithreading;
+import hu.elte.txtuml.api.deployment.Configuration;
+import hu.elte.txtuml.api.deployment.Group;
+import hu.elte.txtuml.api.deployment.GroupContainer;
+import hu.elte.txtuml.api.deployment.Multithreading;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
