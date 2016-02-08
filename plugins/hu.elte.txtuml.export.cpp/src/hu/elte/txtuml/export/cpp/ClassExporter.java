@@ -230,6 +230,9 @@ public class ClassExporter
 		
 		for(Operation item:class_.getOwnedOperations())
 		{
+		    if (!isConstructor(class_,item)) {
+			
+		    
 			String returnType=getReturnType(item.getReturnResult());
 			
 			
@@ -253,6 +256,10 @@ public class ClassExporter
 					returnType,
 					item.getName(),getOperationParams(item),
 					GenerationTemplates.GetDefaultReturn(returnType));
+		    }
+		    else {
+			//TODO generate constructors
+		    }
 		}
 		return source;
 	}
@@ -599,8 +606,14 @@ public class ClassExporter
 		{
 			if(item.getVisibility().toString().equals(modifyer_))
 			{
-				String returnType=getReturnType(item.getReturnResult());
-				source+=GenerationTemplates.FunctionDecl(returnType, item.getName(),getOperationParamTypes(item));
+			    	if (isConstructor(class_,item)) {
+			    	    //TODO export constructor
+			    	}
+			    	else {
+			    	    String returnType=getReturnType(item.getReturnResult());
+			    	    source+=GenerationTemplates.FunctionDecl(returnType, item.getName(),getOperationParamTypes(item));
+			    	}
+
 			}
 		}
 		
@@ -634,6 +647,17 @@ public class ClassExporter
 	
 
 	
+	private boolean isConstructor(Class cls,Operation operation) {
+	    
+
+	    if (cls.getName().equals(operation.getName()) ) {
+		return true;
+	    }
+	    else {
+		return false;
+	    }
+	}
+
 	private List<String> getOperationParamTypes(Operation op_)
 	{
 		List<String> ret=new ArrayList<String>();
