@@ -13,6 +13,7 @@ class GenerationNames
 	public static final String StandardIOinclude="#include <iostream>\n";
 	
 	public static final String NullPtr="nullptr";
+	public static final String Self = "this";
 	public static final String MemoryAllocator="new";
 	public static final String PointerAccess="->";
 	public static final String SimpleAccess=".";
@@ -63,6 +64,10 @@ class GenerationNames
 	
 	public static final String Unknown="?";
 	public static final String AssocMultiplicityDataStruct="std::list";
+	
+	//
+	public static final String PoolIdSetter = "setPoolId";
+	public static final String InitialEventName = "InitSignal";
 	
 	
 	public static String FriendClassDecl(String className_)
@@ -141,6 +146,7 @@ class GenerationNames
 					"{\n"+
 				  		CurrentMachineName+"=(it->second).get();\n"+
 				  		CurrentMachineName+"->"+SetInitialStateName+"();//restarting from initial state\n"+
+				  		CurrentMachineName+"->"+ProcessEventFName+"("+GenerationNames.InitialEventName + "_EC(" + DerefenrencePointer( GenerationNames.Self ) + ", " + className_ + "::" + GenerationNames.InitialEventName + "_EE));\n" +
 				  	"}\n"+
 				  	"else\n"+
 				  	"{\n"+

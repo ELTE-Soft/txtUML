@@ -1,9 +1,5 @@
 package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
-import hu.elte.txtuml.export.papyrus.UMLModelManager;
-import hu.elte.txtuml.export.papyrus.api.ClassDiagramElementsController;
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
-
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,7 +8,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.View;
-import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.InterfaceEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ModelEditPart;
@@ -39,6 +34,10 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Realization;
 import org.eclipse.uml2.uml.Reception;
 import org.eclipse.uml2.uml.Signal;
+
+import hu.elte.txtuml.export.papyrus.UMLModelManager;
+import hu.elte.txtuml.export.papyrus.api.ClassDiagramElementsController;
+import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
 /**
  * An abstract class for adding/removing elements to ClassDiagrams.

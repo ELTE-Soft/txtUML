@@ -1,12 +1,12 @@
 package hu.elte.txtuml.export.cpp;
 
+import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,8 +22,6 @@ import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.Transition;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValueSpecification;
-
-import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 
 public class Shared
 {
@@ -55,9 +53,10 @@ public class Shared
 		{
 			//TODO
 		}
-		else if(guard_.eClass().equals(UMLPackage.Literals.CONSTRAINT))
-		{
-			source=getGuardFromValueSpecification(guard_.getSpecification());
+		else if(guard_.eClass().equals(UMLPackage.Literals.CONSTRAINT)){
+		
+			//source=getGuardFromValueSpecification(guard_.getSpecification());
+			source = GenerationTemplates.GetDefaultReturnValue("Boolean");
 		}
 		return source;
 	}
@@ -107,17 +106,26 @@ public class Shared
 		{
 			return true;
 		}
-		return false;
+		else{
+			return false;
+		}
+		
 	}
 	
 	public static void writeOutSource(String path_,String fileName_,String source_) throws FileNotFoundException, UnsupportedEncodingException
 	{
 		try
 		{
-			Files.createDirectory(Paths.get(path_));
+			File file = new File(path_);
+			if(!file.exists()){
+				file.mkdirs();
+			}
+				
 		}
-		catch(IOException e){}
-		PrintWriter writer = new PrintWriter(path_+File.separator+fileName_, "UTF-8");
+		catch(Exception e){
+			e.printStackTrace();
+		}
+		PrintWriter writer = new PrintWriter(path_ + File.separator + fileName_, "UTF-8");
         writer.println(source_);
         writer.close();
 	}
@@ -133,7 +141,7 @@ public class Shared
 		}
 		else
 		{
-			source=ActivityTemplates.Self;
+			source = ActivityTemplates.Self;
 		}
 		
 		if(source.contains("first"))
