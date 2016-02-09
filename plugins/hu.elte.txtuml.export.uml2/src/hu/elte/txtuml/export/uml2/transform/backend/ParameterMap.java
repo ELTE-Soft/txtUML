@@ -7,6 +7,7 @@ import hu.elte.txtuml.export.uml2.utils.ActivityEditor;
 
 import java.util.HashMap;
 
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.ActivityParameterNode;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.ParameterDirectionKind;
@@ -42,13 +43,13 @@ public interface ParameterMap {
 			}
 
 			private ParameterExpr createExpr(ActivityParameterNode paramNode,
-					ExpressionExporter expressionExporter) {
+					ExpressionExporter<? extends ActivityNode> expressionExporter) {
 				return Expr.param(paramNode, expressionExporter);
 			}
 
 			@Override
 			public ParameterExpr get(String name,
-					ExpressionExporter expressionExporter) {
+					ExpressionExporter<? extends ActivityNode> expressionExporter) {
 				ActivityParameterNode paramNode = super.get(name);
 				if(paramNode != null) {
 					return createExpr(paramNode, expressionExporter);
@@ -59,7 +60,7 @@ public interface ParameterMap {
 
 			@Override
 			public ParameterExpr getReturnParam(
-					ExpressionExporter expressionExporter) {
+					ExpressionExporter<? extends ActivityNode> expressionExporter) {
 				return createExpr(ret, expressionExporter);
 			}
 		}
@@ -69,7 +70,7 @@ public interface ParameterMap {
 
 	void copyParameter(Parameter paramToCopy);
 
-	ParameterExpr get(String name, ExpressionExporter expressionExporter);
+	ParameterExpr get(String name, ExpressionExporter<? extends ActivityNode> expressionExporter);
 
-	ParameterExpr getReturnParam(ExpressionExporter expressionExporter);
+	ParameterExpr getReturnParam(ExpressionExporter<? extends ActivityNode> expressionExporter);
 }

@@ -19,6 +19,7 @@ import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Operation;
 
 import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
@@ -32,9 +33,9 @@ import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExpo
 
 public class BlockVisitor extends ASTVisitor {
 
-	private final BlockExporter blockExporter;
+	private final BlockExporter<? extends ActivityNode> blockExporter;
 
-	public BlockVisitor(BlockExporter blockExporter) {
+	public BlockVisitor(BlockExporter<? extends ActivityNode> blockExporter) {
 		this.blockExporter = blockExporter;
 	}
 
@@ -110,7 +111,7 @@ public class BlockVisitor extends ASTVisitor {
 
 	private void createConstructorCall(IMethodBinding ctorBinding, List<?> arguments) {
 		List<Expr> args = new LinkedList<>();
-		ExpressionExporter expressionExporter = blockExporter.getExpressionExporter();
+		ExpressionExporter<? extends ActivityNode> expressionExporter = blockExporter.getExpressionExporter();
 		arguments.forEach(a -> args.add(expressionExporter.export((Expression) a)));
 		Operation calledCtor = blockExporter.getTypeExporter()
 				.exportMethodAsOperation(ctorBinding, args);

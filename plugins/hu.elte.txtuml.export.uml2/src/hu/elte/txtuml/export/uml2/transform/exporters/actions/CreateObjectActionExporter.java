@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.CreateObjectAction;
 import org.eclipse.uml2.uml.Operation;
@@ -14,9 +15,9 @@ import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExpo
 
 public class CreateObjectActionExporter {
 
-	private final ExpressionExporter expressionExporter;
+	private final ExpressionExporter<? extends ActivityNode> expressionExporter;
 
-	public CreateObjectActionExporter(ExpressionExporter expressionExporter) {
+	public CreateObjectActionExporter(ExpressionExporter<? extends ActivityNode> expressionExporter) {
 		this.expressionExporter = expressionExporter;
 	}
 
@@ -27,7 +28,7 @@ public class CreateObjectActionExporter {
 		Expr type = it.next();
 		it.remove();
 		CreateObjectAction createAction = (CreateObjectAction) expressionExporter
-				.createExecutableNode("instantiate " + type.getName(), UMLPackage.Literals.CREATE_OBJECT_ACTION);
+				.createAndAddNode("instantiate " + type.getName(), UMLPackage.Literals.CREATE_OBJECT_ACTION);
 		Expr target = Expr.ofPin(createAction.createResult("new " + type.getName(), type.getType()),
 				"new " + type.getName());
 

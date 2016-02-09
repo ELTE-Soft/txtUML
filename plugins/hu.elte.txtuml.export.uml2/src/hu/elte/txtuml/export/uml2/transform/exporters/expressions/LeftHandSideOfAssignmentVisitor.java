@@ -9,17 +9,18 @@ import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SuperFieldAccess;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Type;
 
 class LeftHandSideOfAssignmentVisitor extends ASTVisitor {
 
 	private final Expr rightHandSide;
-	private final ExpressionExporter expressionExporter;
+	private final ExpressionExporter<? extends ActivityNode> expressionExporter;
 	private String name;
 	private Operator operator;
 	private OperatorExporter operatorExporter;
 
-	public LeftHandSideOfAssignmentVisitor(Expr result, ExpressionExporter expressionExporter,
+	public LeftHandSideOfAssignmentVisitor(Expr result, ExpressionExporter<? extends ActivityNode> expressionExporter,
 			OperatorExporter operatorExporter, Operator operator) {
 		this.rightHandSide = result;
 		this.expressionExporter = expressionExporter;

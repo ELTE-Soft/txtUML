@@ -6,6 +6,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.TypeLiteral;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.InputPin;
 import org.eclipse.uml2.uml.LinkAction;
@@ -19,9 +20,9 @@ import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
 
 public abstract class AbstractLinkActionExporter {
-	protected final ExpressionExporter expressionExporter;
+	protected final ExpressionExporter<? extends ActivityNode> expressionExporter;
 
-	protected AbstractLinkActionExporter(ExpressionExporter expressionExporter) {
+	protected AbstractLinkActionExporter(ExpressionExporter<? extends ActivityNode> expressionExporter) {
 		this.expressionExporter = expressionExporter;
 	}
 	
@@ -41,7 +42,7 @@ public abstract class AbstractLinkActionExporter {
 		String linkActionName = prefix + leftName + "_and_" + rightName;
 
 		LinkAction linkAction = (LinkAction) 
-				expressionExporter.createExecutableNode(linkActionName, actionEClass);
+				expressionExporter.createAndAddNode(linkActionName, actionEClass);
 		
 		this.addEndToLinkAction(linkAction, association, leftExpr, 1);
 		this.addEndToLinkAction(linkAction, association, rightExpr, 2);

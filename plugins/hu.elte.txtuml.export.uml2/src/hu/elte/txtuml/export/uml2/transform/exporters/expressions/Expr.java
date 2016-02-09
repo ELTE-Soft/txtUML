@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.ActivityParameterNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.ObjectNode;
@@ -101,7 +102,7 @@ public interface Expr {
 	}
 
 	static ParameterExpr param(ActivityParameterNode node,
-			ExpressionExporter expressionExporter) {
+			ExpressionExporter<? extends ActivityNode> expressionExporter) {
 		return new ParameterExpr() {
 
 			@Override
@@ -122,24 +123,21 @@ public interface Expr {
 			@Override
 			public OutputPin getOutputPin() {
 				if (expressionExporter.getTypeExporter().isBoolean(getType())) {
-					OperatorExporter operatorExporter = new OperatorExporter(
-							expressionExporter);
-					return operatorExporter.export("id", Arrays.asList(this))
-							.getSecond().evaluate().getOutputPin();
+					OperatorExporter operatorExporter = new OperatorExporter(expressionExporter);
+					return operatorExporter.export("id", Arrays.asList(this)).getSecond().evaluate().getOutputPin();
 				}
 				throw new UnsupportedOperationException();
 			}
 
 			@Override
 			public void setValue(Expr newValue) {
-				expressionExporter.createObjectFlowBetweenActivityNodes(
-						newValue.evaluate().getObjectNode(), node);
+				expressionExporter.createObjectFlowBetweenActivityNodes(newValue.evaluate().getObjectNode(), node);
 			}
 		};
 
 	}
 
-	static VariableExpr var(Variable var, ExpressionExporter expressionExporter) {
+	static VariableExpr var(Variable var, ExpressionExporter<? extends ActivityNode> expressionExporter) {
 		return new Expr.VariableExpr() {
 
 			private OutputPin value = null;
@@ -179,9 +177,8 @@ public interface Expr {
 	 *            structural features
 	 */
 	static StructuralFeatureExpr field(Expr target, IVariableBinding field,
-			ExpressionExporter expressionExporter) {
-		StructuralFeature feature = expressionExporter.getTypeExporter()
-				.exportFieldAsStructuralFeature(field);
+			ExpressionExporter<? extends ActivityNode> expressionExporter) {
+		StructuralFeature feature = expressionExporter.getTypeExporter().exportFieldAsStructuralFeature(field);
 
 		return new StructuralFeatureExpr() {
 
@@ -189,8 +186,7 @@ public interface Expr {
 
 			@Override
 			public String getName() {
-				return (target == null ? "" : target.getName() + ".")
-						+ feature.getName();
+				return (target == null ? "" : target.getName() + ".") + feature.getName();
 			}
 
 			@Override
@@ -200,8 +196,7 @@ public interface Expr {
 
 			@Override
 			public Expr evaluate() {
-				value = expressionExporter.createReadStructuralFeatureAction(
-						feature, target);
+				value = expressionExporter.createReadStructuralFeatureAction(feature, target);
 				return this;
 			}
 
@@ -212,15 +207,14 @@ public interface Expr {
 
 			@Override
 			public void setValue(Expr newValue) {
-				expressionExporter.createWriteStructuralFeatureAction(feature,
-						target, newValue);
+				expressionExporter.createWriteStructuralFeatureAction(feature, target, newValue);
 			}
 
 		};
 
 	}
 
-	static Expr thisExpression(Type type, ExpressionExporter expressionExporter) {
+	static Expr thisExpression(Type type, ExpressionExporter<? extends ActivityNode> expressionExporter) {
 		return new Expr() {
 
 			private OutputPin value;
@@ -237,9 +231,8 @@ public interface Expr {
 
 			@Override
 			public Expr evaluate() {
-				ReadSelfAction action = (ReadSelfAction) expressionExporter
-						.createExecutableNode("self",
-								UMLPackage.Literals.READ_SELF_ACTION);
+				ReadSelfAction action = (ReadSelfAction) expressionExporter.createAndAddNode("self",
+						UMLPackage.Literals.READ_SELF_ACTION);
 				value = action.createResult("self", type);
 				return this;
 			}
@@ -253,7 +246,7 @@ public interface Expr {
 
 	}
 
-	static Expr trueExpression(ExpressionExporter expressionExporter) {
+	static Expr trueExpression(ExpressionExporter<? extends ActivityNode> expressionExporter) {
 		return new Expr() {
 
 			private OutputPin value;
@@ -270,13 +263,11 @@ public interface Expr {
 
 			@Override
 			public Expr evaluate() {
-				LiteralBoolean value = UMLFactory.eINSTANCE
-						.createLiteralBoolean();
+				LiteralBoolean value = UMLFactory.eINSTANCE.createLiteralBoolean();
 
 				value.setValue(true);
 
-				return expressionExporter.createAndSetValueSpecificationAction(
-						value, getName(), getType());
+				return expressionExporter.createAndSetValueSpecificationAction(value, getName(), getType());
 			}
 
 			@Override
@@ -309,24 +300,21 @@ public interface Expr {
 		};
 	}
 
-	static Expr ofName(IVariableBinding binding,
-			ExpressionExporter expressionExporter) {
+	static Expr ofName(IVariableBinding binding, ExpressionExporter<? extends ActivityNode> expressionExporter) {
 		return ofName(binding, binding.getName(), expressionExporter);
 	}
-	
-	static Expr ofName(IVariableBinding binding, String qualifiedName, ExpressionExporter expressionExporter) {
+
+	static Expr ofName(IVariableBinding binding, String qualifiedName,
+			ExpressionExporter<? extends ActivityNode> expressionExporter) {
 		if (binding.isField()) {
-			return Expr.field(expressionExporter.autoFillTarget(binding, qualifiedName),
-					binding, expressionExporter);
+			return Expr.field(expressionExporter.autoFillTarget(binding, qualifiedName), binding, expressionExporter);
 		} else if (binding.isParameter()) {
-			return expressionExporter.getParams().get(binding.getName(),
-					expressionExporter);
+			return expressionExporter.getParams().get(binding.getName(), expressionExporter);
 		} else if (binding.isEnumConstant()) {
 			// TODO enum constants
 			return null;
 		} else {
-			return expressionExporter.getVars().get(binding.getName(),
-					expressionExporter);
+			return expressionExporter.getVars().get(binding.getName(), expressionExporter);
 		}
 	}
 

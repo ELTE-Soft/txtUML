@@ -1,29 +1,30 @@
 package hu.elte.txtuml.export.uml2.transform.exporters.controls;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
-
 import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.Statement;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.ExecutableNode;
 import org.eclipse.uml2.uml.LoopNode;
 import org.eclipse.uml2.uml.SequenceNode;
 import org.eclipse.uml2.uml.UMLPackage;
 
+import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
+
 abstract class AbstractLoopExporter extends AbstractControlStructureExporter {
 
-	AbstractLoopExporter(BlockExporter blockExporter) {
+	AbstractLoopExporter(BlockExporter<? extends ActivityNode> blockExporter) {
 		super(blockExporter);
 	}
 
 	protected void exportLoop(String name, List<Expression> initializers,
 			Expression condition, List<Expression> updaters, Statement body) {
 
-		LoopNode loopNode = (LoopNode) blockExporter.createExecutableNode(name,
+		LoopNode loopNode = (LoopNode) blockExporter.createAndAddNode(name,
 				UMLPackage.Literals.LOOP_NODE);
 
 		exportList(loopNode, loopNode.getSetupParts(), initializers, "init");
@@ -48,7 +49,7 @@ abstract class AbstractLoopExporter extends AbstractControlStructureExporter {
 				UMLPackage.Literals.SEQUENCE_NODE);
 		nodeList.add(sequenceNode);
 		sequenceNode.setName(byName);
-		ExpressionExporter exporter = createExpressionExporter(loopNode,
+		ExpressionExporter<? extends ActivityNode> exporter = createExpressionExporter(loopNode,
 				sequenceNode.getExecutableNodes());
 		list.forEach(exporter::export);
 	}
@@ -59,7 +60,7 @@ abstract class AbstractLoopExporter extends AbstractControlStructureExporter {
 				UMLPackage.Literals.SEQUENCE_NODE);
 		nodeList.add(sequenceNode);
 		sequenceNode.setName(byName);
-		ExpressionExporter exporter = createExpressionExporter(loopNode,
+		ExpressionExporter<? extends ActivityNode> exporter = createExpressionExporter(loopNode,
 				sequenceNode.getExecutableNodes());
 
 		if (expression == null) {
@@ -78,7 +79,7 @@ abstract class AbstractLoopExporter extends AbstractControlStructureExporter {
 				UMLPackage.Literals.SEQUENCE_NODE);
 		nodeList.add(sequenceNode);
 		sequenceNode.setName(byName);
-		BlockExporter exporter = createBlockExporter(sequenceNode,
+		BlockExporter<ExecutableNode> exporter = createBlockExporter(sequenceNode,
 				sequenceNode.getExecutableNodes());
 		exporter.export(block);
 	}

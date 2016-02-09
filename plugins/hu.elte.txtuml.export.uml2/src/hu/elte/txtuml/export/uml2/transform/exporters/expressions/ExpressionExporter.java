@@ -19,10 +19,10 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.AddStructuralFeatureValueAction;
 import org.eclipse.uml2.uml.AddVariableValueAction;
 import org.eclipse.uml2.uml.CallOperationAction;
-import org.eclipse.uml2.uml.ExecutableNode;
 import org.eclipse.uml2.uml.InputPin;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.Operation;
@@ -55,7 +55,7 @@ import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.VariableE
 import hu.elte.txtuml.export.uml2.utils.ControlStructureEditor;
 import hu.elte.txtuml.utils.Pair;
 
-public class ExpressionExporter extends ControlStructureEditor {
+public class ExpressionExporter<ElemType extends ActivityNode> extends ControlStructureEditor<ElemType> {
 
 	private final ParameterMap params;
 	private final VariableMap vars;
@@ -74,7 +74,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 	 * @param typeExporter
 	 *            a type exporter
 	 */
-	public ExpressionExporter(StructuredActivityNode controlStructure, EList<ExecutableNode> nodeList,
+	public ExpressionExporter(StructuredActivityNode controlStructure, EList<ElemType> nodeList,
 			ParameterMap params, VariableMap vars, TypeExporter typeExporter) {
 		super(controlStructure, nodeList);
 
@@ -84,7 +84,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 		this.visitor = new ExpressionVisitor(this);
 	}
 
-	public ExpressionExporter(BlockExporter blockExporter) {
+	public ExpressionExporter(BlockExporter<ElemType> blockExporter) {
 		super(blockExporter);
 
 		this.params = blockExporter.getParameters();
@@ -191,7 +191,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 	}
 
 	public OutputPin createReadVariableAction(Variable var) {
-		ReadVariableAction action = (ReadVariableAction) createExecutableNode(var.getName(),
+		ReadVariableAction action = (ReadVariableAction) createAndAddNode(var.getName(),
 				UMLPackage.Literals.READ_VARIABLE_ACTION);
 
 		action.setVariable(var);
@@ -204,7 +204,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 
 		String newValueName = rightHandSide.getName();
 
-		AddVariableValueAction action = (AddVariableValueAction) createExecutableNode(
+		AddVariableValueAction action = (AddVariableValueAction) createAndAddNode(
 				var.getName() + "=" + newValueName, UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION);
 
 		action.setIsReplaceAll(true);
@@ -225,7 +225,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 			target.evaluate();
 		}
 
-		ReadStructuralFeatureAction action = (ReadStructuralFeatureAction) createExecutableNode(feature.getName(),
+		ReadStructuralFeatureAction action = (ReadStructuralFeatureAction) createAndAddNode(feature.getName(),
 				UMLPackage.Literals.READ_STRUCTURAL_FEATURE_ACTION);
 
 		action.setStructuralFeature(feature);
@@ -257,7 +257,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 		builder.append("=");
 		builder.append(newValueName);
 
-		AddStructuralFeatureValueAction action = (AddStructuralFeatureValueAction) createExecutableNode(
+		AddStructuralFeatureValueAction action = (AddStructuralFeatureValueAction) createAndAddNode(
 				builder.toString(), UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION);
 
 		action.setIsReplaceAll(true);
@@ -313,7 +313,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 
 		// create action
 
-		CallOperationAction action = (CallOperationAction) createExecutableNode(builder.toString(),
+		CallOperationAction action = (CallOperationAction) createAndAddNode(builder.toString(),
 				UMLPackage.Literals.CALL_OPERATION_ACTION);
 
 		action.setOperation(operation);
@@ -348,7 +348,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 	}
 
 	Expr createAndSetValueSpecificationAction(ValueSpecification value, String name, Type type) {
-		ValueSpecificationAction action = (ValueSpecificationAction) createExecutableNode(name,
+		ValueSpecificationAction action = (ValueSpecificationAction) createAndAddNode(name,
 				UMLPackage.Literals.VALUE_SPECIFICATION_ACTION);
 		value.setName(name);
 		value.setType(type);
@@ -362,7 +362,7 @@ public class ExpressionExporter extends ControlStructureEditor {
 	 * @param target
 	 */
 	Expr createOpaqueAction(String stringValue, ITypeBinding returnType, Expr target, List<Expr> args) {
-		OpaqueAction action = (OpaqueAction) createExecutableNode("unknown < " + stringValue + " >",
+		OpaqueAction action = (OpaqueAction) createAndAddNode("unknown < " + stringValue + " >",
 				UMLPackage.Literals.OPAQUE_ACTION);
 
 		action.getLanguages().add("JtxtUML");

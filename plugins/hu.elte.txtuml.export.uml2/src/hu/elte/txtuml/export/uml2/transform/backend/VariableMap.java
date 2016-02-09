@@ -6,6 +6,7 @@ import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExpo
 
 import java.util.HashMap;
 
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Variable;
 
 public interface VariableMap {
@@ -22,7 +23,7 @@ public interface VariableMap {
 			
 			@Override
 			public VariableExpr get(String name,
-					ExpressionExporter expressionExporter) {
+					ExpressionExporter<? extends ActivityNode> expressionExporter) {
 				Variable variable = super.get(name); 
 				if(variable != null) {
 					return Expr.var(variable, expressionExporter);
@@ -43,7 +44,7 @@ public interface VariableMap {
 	
 	void addVariable(Variable var);
 
-	VariableExpr get(String name, ExpressionExporter expressionExporter);
+	VariableExpr get(String name, ExpressionExporter<? extends ActivityNode> expressionExporter);
 
 	VariableMap copy();
 

@@ -34,6 +34,7 @@ import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.ThisExpression;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.LiteralNull;
@@ -54,12 +55,12 @@ import hu.elte.txtuml.utils.Pair;
  */
 class ExpressionVisitor extends ASTVisitor {
 
-	private final ExpressionExporter expressionExporter;
+	private final ExpressionExporter<? extends ActivityNode> expressionExporter;
 	private final TypeExporter typeExporter;
 	private final OperatorExporter operatorExporter;
 	private Expr result;
 
-	public ExpressionVisitor(ExpressionExporter expressionExporter) {
+	public ExpressionVisitor(ExpressionExporter<? extends ActivityNode> expressionExporter) {
 		this.expressionExporter = expressionExporter;
 		this.typeExporter = expressionExporter.getTypeExporter();
 		this.operatorExporter = new OperatorExporter(expressionExporter);

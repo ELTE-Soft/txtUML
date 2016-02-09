@@ -3,17 +3,16 @@ package hu.elte.txtuml.export.uml2.utils;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
-import org.eclipse.uml2.uml.ExecutableNode;
 import org.eclipse.uml2.uml.ObjectNode;
 import org.eclipse.uml2.uml.SequenceNode;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Variable;
 
-public abstract class AbstractActivityEditor {
+public abstract class AbstractActivityEditor<ElemType> {
 
 	public abstract ActivityEdge createEdge(String name, EClass type);
-	public abstract ExecutableNode createExecutableNode(String name, EClass type);
+	public abstract ElemType createAndAddNode(String name, EClass type);
 	
 	public abstract Variable createVariable(String name, Type type);
 
@@ -79,7 +78,7 @@ public abstract class AbstractActivityEditor {
 	}
 
 	public SequenceNode createSequenceNode(String name) {
-		return (SequenceNode) createExecutableNode(name,
+		return (SequenceNode) createAndAddNode(name,
 				UMLPackage.Literals.SEQUENCE_NODE);
 	}
 	

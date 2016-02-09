@@ -7,14 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Type;
 
 public class OperatorExporter {
 
-	private final ExpressionExporter expressionExporter;
+	private final ExpressionExporter<? extends ActivityNode> expressionExporter;
 
-	public OperatorExporter(ExpressionExporter expressionExporter) {
+	public OperatorExporter(ExpressionExporter<? extends ActivityNode> expressionExporter) {
 		this.expressionExporter = expressionExporter;
 	}
 

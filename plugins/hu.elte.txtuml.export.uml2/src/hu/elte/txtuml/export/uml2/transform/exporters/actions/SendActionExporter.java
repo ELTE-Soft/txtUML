@@ -6,6 +6,7 @@ import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExpo
 
 import java.util.List;
 
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.InputPin;
 import org.eclipse.uml2.uml.ObjectNode;
 import org.eclipse.uml2.uml.SendObjectAction;
@@ -15,9 +16,9 @@ import org.eclipse.uml2.uml.UMLPackage;
 
 public class SendActionExporter {
 
-	private final ExpressionExporter expressionExporter;
+	private final ExpressionExporter<? extends ActivityNode> expressionExporter;
 
-	public SendActionExporter(ExpressionExporter expressionExporter) {
+	public SendActionExporter(ExpressionExporter<? extends ActivityNode> expressionExporter) {
 		this.expressionExporter = expressionExporter;
 	}
 
@@ -31,7 +32,7 @@ public class SendActionExporter {
 				+ instanceExpression.getName();
 		
 		SendObjectAction sendAction = (SendObjectAction) 
-				expressionExporter.createExecutableNode(sendActionName, UMLPackage.Literals.SEND_OBJECT_ACTION);
+				expressionExporter.createAndAddNode(sendActionName, UMLPackage.Literals.SEND_OBJECT_ACTION);
 		
 		createAndWireRequest(sendAction, signalToSend, args);
 		createAndWireTarget(sendAction, instanceExpression);

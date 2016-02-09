@@ -1,35 +1,42 @@
 package hu.elte.txtuml.export.uml2.transform.exporters.controls;
 
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
-import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.Statement;
-import org.eclipse.uml2.uml.Type;
+import org.eclipse.uml2.uml.ActivityNode;
+import org.eclipse.uml2.uml.ExpansionKind;
+import org.eclipse.uml2.uml.ExpansionNode;
+import org.eclipse.uml2.uml.ExpansionRegion;
+import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Variable;
 
 import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
 
-public class ForEachActionExporter extends AbstractLoopExporter {
+public class ForEachActionExporter {
 
-	public ForEachActionExporter(BlockExporter blockExporter) {
-		super(blockExporter);
+	private BlockExporter<? extends ActivityNode> blockExporter;
+
+	public ForEachActionExporter(BlockExporter<? extends ActivityNode> blockExporter) {
+		this.blockExporter = blockExporter;
 	}
 
-	public void exportForEachStatement(Statement statement) {
-		EnhancedForStatement forState = (EnhancedForStatement) statement;
+	public void exportForEachStatement(EnhancedForStatement statement) {
 
-		SingleVariableDeclaration parameter = forState.getParameter();
-		Expression expression = forState.getExpression();
-		Statement forEachBody = forState.getBody();
-		
-		Type exprType = blockExporter.getTypeExporter().exportType(expression.resolveTypeBinding());
-		Type paramType = blockExporter.getTypeExporter().exportType(parameter.getType());
-		Variable exprVar = blockExporter.createVariable("foreach_expr_" + expression.hashCode(), exprType);
-		Variable indexVar = blockExporter.createVariable(parameter.getName().getIdentifier(), paramType);
+		ExpansionRegion expRegion = (ExpansionRegion) blockExporter.createAndAddNode("foreach",
+				UMLPackage.Literals.EXPANSION_REGION);
+		expRegion.setMode(ExpansionKind.ITERATIVE_LITERAL);
 
-		throw new RuntimeException("For-each loop is not supported yet");
-		
-		// TODO: generate indexed for loop
+		Expr expr = blockExporter.getExpressionExporter().export(statement.getExpression());
+
+		BlockExporter<ActivityNode> subExporter = blockExporter.subExporter(expRegion, expRegion.getNodes());
+		ExpansionNode inNode = (ExpansionNode) subExporter.createAndAddNode("foreach-in", UMLPackage.Literals.EXPANSION_NODE);
+		expRegion.getInputElements().add(inNode);
+
+		blockExporter.createObjectFlowBetweenActivityNodes(expr.getObjectNode(), inNode);
+
+		Variable foreachVariable = subExporter.createVariable(statement.getParameter().getName().getIdentifier(),
+				subExporter.getTypeExporter().exportType(statement.getParameter().resolveBinding().getType()));
+		subExporter.getVariables().addVariable(foreachVariable);
+		subExporter.export(statement.getBody());
 	}
 
 }

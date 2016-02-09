@@ -18,7 +18,7 @@ class ExporttestModel extends Model {
 		public void superMethodCall() {
 
 		}
-		
+
 		public void fieldAccess() {
 			fld = 10;
 		}
@@ -80,6 +80,7 @@ class ExporttestModel extends Model {
 		public void compoundOps() {
 			int q = fld;
 			boolean b = false;
+			Integer x = q;
 
 			fld += 10;
 			fld -= 20;
@@ -114,12 +115,11 @@ class ExporttestModel extends Model {
 			} while (c < 30);
 		}
 
-		public void foreachCycle() {
-			// int c = 0;
-			// ???
-			// for (int i : list) {
-			// c += i;
-			// }
+		public void foreachCycle(hu.elte.txtuml.api.model.Collection<Integer> coll) {
+			int c = 0;
+			for (int i : coll) {
+				c = i;
+			}
 
 		}
 
