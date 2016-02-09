@@ -31,23 +31,23 @@ public class GenerationTemplates
 	{
 		String eventBase="";
 		
-		if(Options.Runtime())
+		if(Options.isAddRuntime())
 		{
 			eventBase+=RuntimeTemplates.RTEventHeaderInclude()+"\n";
 		}
 		
 		eventBase+= GenerationNames.ClassType+" "+GenerationNames.EventBaseName;
-		if(Options.Runtime())
+		if(Options.isAddRuntime())
 		{
 			eventBase+=":"+RuntimeTemplates.EventIName;
 		}
 		eventBase+="\n{\n"+GenerationNames.EventBaseName+"(";
-		if(Options.Runtime())
+		if(Options.isAddRuntime())
 		{
 			eventBase+=RuntimeTemplates.SMParam+",";
 		}
 		eventBase+="int t_):";
-		if(Options.Runtime())
+		if(Options.isAddRuntime())
 		{
 			eventBase+=RuntimeTemplates.EventIName+"("+GenerationNames.FormatIncomignParamName(RuntimeTemplates.SMRefName)+"),";
 		}
@@ -57,7 +57,7 @@ public class GenerationTemplates
 	public static String EventClass(String className_,List<Pair<String,String>> params_)
 	{
 		String source=GenerationNames.ClassType+" "+GenerationNames.EventClassName(className_)+":public "+GenerationNames.EventBaseName+"\n{\n"+GenerationNames.EventClassName(className_)+"(";
-		if(Options.Runtime())
+		if(Options.isAddRuntime())
 		{
 			source+=RuntimeTemplates.SMParam+",";
 		}
@@ -68,7 +68,7 @@ public class GenerationTemplates
 			source +=","+paramList;
 		}
 		source+="):"+GenerationNames.EventBaseName+"(";
-		if(Options.Runtime())
+		if(Options.isAddRuntime())
 		{
 			source+=GenerationNames.FormatIncomignParamName(RuntimeTemplates.SMRefName)+",";
 		}

@@ -55,7 +55,7 @@ public class TxtUMLToCppWizard extends Wizard {
 			TxtUMLToCppPage.MODEL_NAME = txtUMLModel;
 			TxtUMLToCppPage.DESCRIPTION_NAME = threadManagmentDescription;
 
-			boolean runtimeOption = createCppCodePage.getRuntimeOptionSelection();
+			boolean addRuntimeOption = createCppCodePage.getAddRuntimeOptionSelection();
 			boolean debugOption = createCppCodePage.getDebugOptionSelection();
 
 			String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation()
@@ -94,14 +94,14 @@ public class TxtUMLToCppWizard extends Wizard {
 			}
 
 			Uml2ToCppExporter cppExporter = new Uml2ToCppExporter(model, exporter.getConfigMap(),
-					exporter.isMultiThreading(), runtimeOption, debugOption);
+					exporter.isMultiThreading(), addRuntimeOption, debugOption);
 			try {
 				cppExporter.buildCppCode(
 						projectFolder + File.separator + GenericFolderName + File.separator + txtUMLModel);
 
 			} catch (Exception e) {
 				Dialogs.errorMsgb("Compilation failed", e.getMessage(), e);
-				
+
 			}
 
 		} catch (Exception e) {

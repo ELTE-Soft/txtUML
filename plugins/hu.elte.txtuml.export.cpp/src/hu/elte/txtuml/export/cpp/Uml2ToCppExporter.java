@@ -32,7 +32,9 @@ import hu.elte.txtuml.utils.Pair;
 
 public class Uml2ToCppExporter {
 	private static final String DefaultCompiler = "g++";
-	private static final String GCCDebugSymbolOn = "-D_DEBUG"; // the symbol located in GenerationNames
+	private static final String GCCDebugSymbolOn = "-D_DEBUG"; // the symbol
+																// located in
+																// GenerationNames
 	private static final String RuntimeFolder = GenerationTemplates.RuntimePath;
 	private static final String RuntimeLibName = "libsmrt.a";
 	private static final String DefaultMakeFileName = "Makefile";
@@ -50,7 +52,7 @@ public class Uml2ToCppExporter {
 	List<String> classNames;
 
 	public Uml2ToCppExporter(Model model, Map<String, ThreadPoolConfiguration> threadDescription,
-			boolean threadManagement, boolean runtimeOption, boolean debugOption) {
+			boolean threadManagement, boolean addRuntimeOption, boolean debugOption) {
 
 		classExporter = new ClassExporter();
 
@@ -60,10 +62,10 @@ public class Uml2ToCppExporter {
 
 		Shared.getTypedElements(classList, elements, UMLPackage.Literals.CLASS);
 
-		if (runtimeOption) {
+		if (addRuntimeOption) {
 			Options.setRuntime();
 		} else {
-			Options.setRuntime(false);
+			Options.setAddRuntime(false);
 		}
 		if (debugOption) {
 			Options.setDebugLog();
@@ -82,11 +84,10 @@ public class Uml2ToCppExporter {
 	}
 
 	public void buildCppCode(String outputDirectory) throws IOException {
-	    
-	    if (Options.Runtime()) {
-		threadManager.createThreadPoolManager(outputDirectory + File.separator + "runtime");
-	    }
-		
+
+		if (Options.isAddRuntime()) {
+			threadManager.createThreadPoolManager(outputDirectory + File.separator + "runtime");
+		}
 
 		Shared.writeOutSource(outputDirectory, (GenerationTemplates.EventHeader), createEventSource(elements));
 
@@ -94,7 +95,7 @@ public class Uml2ToCppExporter {
 
 		for (Class item : classList) {
 			classExporter.reiniIialize();
-			if (Options.ThreadManagement()) {
+			if (Options.isThreadManagement()) {
 				classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
 
 			}
@@ -119,7 +120,7 @@ public class Uml2ToCppExporter {
 		Files.copy(Paths.get(cppFilesLocation + GenerationTemplates.StateMachineBaseHeader),
 				Paths.get(destination + File.separator + GenerationTemplates.StateMachineBaseHeader),
 				StandardCopyOption.REPLACE_EXISTING);
-		if (Options.Runtime()) {
+		if (Options.isAddRuntime()) {
 
 			File sourceRuntimeDir = new File(cppFilesLocation);
 			File outputRuntimeDir = new File(destination + File.separator + RuntimeFolder);
@@ -127,14 +128,11 @@ public class Uml2ToCppExporter {
 				outputRuntimeDir.mkdirs();
 			}
 
-			
-			
-
 			copyFolder(sourceRuntimeDir, outputRuntimeDir);
 
 		}
 		Files.copy(Paths.get(cppFilesLocation + "main.cpp"), Paths.get(destination + File.separator + "main.cpp"),
-			StandardCopyOption.REPLACE_EXISTING);
+				StandardCopyOption.REPLACE_EXISTING);
 
 	}
 
@@ -153,8 +151,8 @@ public class Uml2ToCppExporter {
 
 		for (String file : files) {
 			Files.copy(Paths.get(sourceRuntimeDir.getAbsolutePath() + File.separator + file),
-				Paths.get(outputRuntimeDir.getAbsolutePath() + File.separator + file),
-				StandardCopyOption.REPLACE_EXISTING);
+					Paths.get(outputRuntimeDir.getAbsolutePath() + File.separator + file),
+					StandardCopyOption.REPLACE_EXISTING);
 		}
 
 	}
@@ -164,7 +162,7 @@ public class Uml2ToCppExporter {
 		String makeFile = "CC=" + DefaultCompiler + "\n\nall: " + outputName_ + "\n\n";
 
 		makeFile += outputName_ + ":";
-		if (Options.Runtime()) {
+		if (Options.isAddRuntime()) {
 			makeFile += " " + RuntimeLibName;
 		}
 
@@ -175,12 +173,12 @@ public class Uml2ToCppExporter {
 
 		makeFile += fileList + "\n";
 		makeFile += "\t$(CC)";
-		if (Options.DebugLog()) {
+		if (Options.isDebugLog()) {
 			makeFile += " " + GCCDebugSymbolOn;
 		}
 		makeFile += " -Wall -o " + outputName_ + fileList + " -std=gnu++11";
 
-		if (Options.Runtime()) {
+		if (Options.isAddRuntime()) {
 			makeFile += " -I " + RuntimeFolder + " -LC " + RuntimeLibName + " -pthread\n\n" + RuntimeLibName
 					+ ": runtime runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o\n"
 					+ "\tar rcs " + RuntimeLibName

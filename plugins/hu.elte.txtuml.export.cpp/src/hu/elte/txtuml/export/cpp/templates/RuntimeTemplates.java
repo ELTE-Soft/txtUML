@@ -52,7 +52,7 @@ class RuntimeTemplates
 	public static String StartSM(String className_)
 	{
 		return GenerationNames.NoReturn+" "+className_+"::startSM()\n{\n"+
-				ActivityTemplates.SignalSend(GenerationNames.InitialEventName, GenerationNames.Self, className_, GenerationNames.PointerAccess, new ArrayList<String>(), Options.Runtime())+"\n}\n";
+				ActivityTemplates.SignalSend(GenerationNames.InitialEventName, GenerationNames.Self, className_, GenerationNames.PointerAccess, new ArrayList<String>(), Options.isAddRuntime())+"\n}\n";
 	}
 	
 	public static String RTFunctionDecl(String className_)

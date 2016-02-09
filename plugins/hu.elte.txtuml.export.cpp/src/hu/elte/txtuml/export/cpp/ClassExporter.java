@@ -127,7 +127,7 @@ public class ClassExporter
 		source=createSubSmClassCppSource(className_,parentClass_,region_);
 		
 		String dependencyIncludes=GenerationTemplates.CppInclude(className_);
-		if(Options.DebugLog())
+		if(Options.isDebugLog())
 		{
 			dependencyIncludes=GenerationTemplates.StandardIOinclude+dependencyIncludes;
 		}
@@ -487,7 +487,7 @@ public class ClassExporter
 		{
 			source+=GenerationTemplates.CppInclude(GenerationTemplates.RuntimeHeader);
 		}
-		if(Options.DebugLog() && !isHeader_)
+		if(Options.isDebugLog() && !isHeader_)
 		{
 			source+=GenerationTemplates.StandardIOinclude;
 		}
