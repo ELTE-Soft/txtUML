@@ -181,7 +181,7 @@ public class Uml2ToCppExporter {
 		makeFile += " -Wall -o " + outputName_ + fileList + " -std=gnu++11";
 
 		if (Options.Runtime()) {
-			makeFile += " -I " + RuntimeFolder + " -LC " + RuntimeLibName + "\n\n" + RuntimeLibName
+			makeFile += " -I " + RuntimeFolder + " -LC " + RuntimeLibName + " -pthread\n\n" + RuntimeLibName
 					+ ": runtime runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o\n"
 					+ "\tar rcs " + RuntimeLibName
 					+ " runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o\n\n"
