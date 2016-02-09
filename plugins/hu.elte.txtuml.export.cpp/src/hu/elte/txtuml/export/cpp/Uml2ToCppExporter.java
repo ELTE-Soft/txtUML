@@ -83,8 +83,11 @@ public class Uml2ToCppExporter {
 	}
 
 	public void buildCppCode(String outputDirectory) throws IOException {
-
+	    
+	    if (Options.Runtime()) {
 		threadManager.createThreadPoolManager(outputDirectory + File.separator + "runtime");
+	    }
+		
 
 		Shared.writeOutSource(outputDirectory, (GenerationTemplates.EventHeader), createEventSource(elements));
 
@@ -125,16 +128,14 @@ public class Uml2ToCppExporter {
 				outputRuntimeDir.mkdirs();
 			}
 
-			// the map contains filenames which will be changed compared to source files
-			Map<String, String> fileNamesMap = new HashMap<String, String>();
-			fileNamesMap.put("runtimemain.cpp", "main.cpp");
+			
+			
 
-			copyFolder(sourceRuntimeDir, outputRuntimeDir, fileNamesMap);
+			copyFolder(sourceRuntimeDir, outputRuntimeDir);
 
-		} else {
-			Files.copy(Paths.get(cppFilesLocation + "main.cpp"), Paths.get(destination + File.separator + "main.cpp"),
-					StandardCopyOption.REPLACE_EXISTING);
 		}
+		Files.copy(Paths.get(cppFilesLocation + "main.cpp"), Paths.get(destination + File.separator + "main.cpp"),
+			StandardCopyOption.REPLACE_EXISTING);
 
 	}
 
@@ -147,33 +148,16 @@ public class Uml2ToCppExporter {
 		return f.getPath() + File.separator;
 	}
 
-	private void copyFolder(File sourceRuntimeDir, File outputRuntimeDir, Map<String, String> fileNamesMap) {
+	private void copyFolder(File sourceRuntimeDir, File outputRuntimeDir) throws IOException {
 
 		String files[] = sourceRuntimeDir.list();
 
 		for (String file : files) {
-
-			if (fileNamesMap.containsKey(file)) {
-				try {
-					Files.copy(Paths.get(sourceRuntimeDir.getAbsolutePath() + File.separator + file),
-							Paths.get(outputRuntimeDir.getAbsolutePath() + File.separator + fileNamesMap.get(file)),
-							StandardCopyOption.REPLACE_EXISTING);
-				} catch (IOException e) {
-
-					e.printStackTrace();
-				}
-			} else {
-				try {
-					Files.copy(Paths.get(sourceRuntimeDir.getAbsolutePath() + File.separator + file),
-							Paths.get(outputRuntimeDir.getAbsolutePath() + File.separator + file),
-							StandardCopyOption.REPLACE_EXISTING);
-				} catch (IOException e) {
-
-					e.printStackTrace();
-				}
-			}
-
+			Files.copy(Paths.get(sourceRuntimeDir.getAbsolutePath() + File.separator + file),
+				Paths.get(outputRuntimeDir.getAbsolutePath() + File.separator + file),
+				StandardCopyOption.REPLACE_EXISTING);
 		}
+
 	}
 
 	private void createMakeFile(String path_, String outputName_, String makefileName_, List<String> classNames_)

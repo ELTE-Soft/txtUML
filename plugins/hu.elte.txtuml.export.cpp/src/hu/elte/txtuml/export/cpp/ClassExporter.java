@@ -73,8 +73,8 @@ public class ClassExporter
 		{
 			Region region=smList.get(0).getRegions().get(0);
 			_submachineMap=getSubMachines(region);
-			createFuncTypeMap(region,FuncTypeEnum.Entry,Options.Runtime());
-			createFuncTypeMap(region,FuncTypeEnum.Exit,Options.Runtime());
+			createFuncTypeMap(region,FuncTypeEnum.Entry,true);
+			createFuncTypeMap(region,FuncTypeEnum.Exit,true);
 			
 			for(Map.Entry<String, Pair<String, Region>> entry:_submachineMap.entrySet())
 			{
@@ -146,10 +146,8 @@ public class ClassExporter
 		String publicParts=createParts(class_,"public");
 		
 		List<String> constructorParams = new ArrayList<String>();
-		if(Options.Runtime()){
-			constructorParams.add(GenerationTemplates.RuntimeName);
-		}
 		
+		constructorParams.add(GenerationTemplates.RuntimeName);
 		if (ownStates(class_,smList))
 		{
 			Region region=smList.get(0).getRegions().get(0);
@@ -161,16 +159,16 @@ public class ClassExporter
 			
 			if(_submachineMap.isEmpty())
 			{
-				source=GenerationTemplates.SimpleStateMachineClassHeader(dependency,class_.getName(),getBaseClass(class_),constructorParams,publicParts,protectedParts,privateParts,Options.Runtime());
+				source=GenerationTemplates.SimpleStateMachineClassHeader(dependency,class_.getName(),getBaseClass(class_),constructorParams,publicParts,protectedParts,privateParts,true);
 			}
 			else
 			{
-				source=GenerationTemplates.HierarchicalStateMachineClassHeader(dependency,class_.getName(),getBaseClass(class_),constructorParams,getSubmachines(),publicParts,protectedParts,privateParts,Options.Runtime());
+				source=GenerationTemplates.HierarchicalStateMachineClassHeader(dependency,class_.getName(),getBaseClass(class_),constructorParams,getSubmachines(),publicParts,protectedParts,privateParts,true);
 			}
 		}
 		else
 		{
-			source=GenerationTemplates.ClassHeader(dependency,class_.getName(),getBaseClass(class_),constructorParams,publicParts,protectedParts,privateParts,Options.Runtime());
+			source=GenerationTemplates.ClassHeader(dependency,class_.getName(),getBaseClass(class_),constructorParams,publicParts,protectedParts,privateParts,true);
 		}
 		return source;
 	}
@@ -209,22 +207,22 @@ public class ClassExporter
 			Multimap<Pair<String,String>,Pair<String,String>> smMap=createMachine(region);
 			if(_submachineMap.isEmpty())
 			{
-				source+=GenerationTemplates.SimpleStateMachineClassConstructor(class_.getName(),getBaseClass(class_),smMap,getInitialState(region),Options.Runtime(),poolId);
+				source+=GenerationTemplates.SimpleStateMachineClassConstructor(class_.getName(),getBaseClass(class_),smMap,getInitialState(region),true,poolId);
 			}
 			else
 			{
-				source+=GenerationTemplates.HierarchicalStateMachineClassConstructor(class_.getName(),getBaseClass(class_),smMap,getEventSubmachineNameMap(),getInitialState(region),Options.Runtime());
+				source+=GenerationTemplates.HierarchicalStateMachineClassConstructor(class_.getName(),getBaseClass(class_),smMap,getEventSubmachineNameMap(),getInitialState(region),true);
 			}
 			source+=createEntryFunctionsDef(class_.getName(),region)+
 					createExitFunctionsDef(class_.getName(),region)+
-					createTransitionFunctionsDef(class_.getName(),region,Options.Runtime());
+					createTransitionFunctionsDef(class_.getName(),region,true);
 			
 			source+=GenerationTemplates.Entry(class_.getName(), createStateActionMap(_entryMap,region))+"\n";
 			source+=GenerationTemplates.Exit(class_.getName(), createStateActionMap(_exitMap,region))+"\n";
 		}
 		else 
 		{
-			source += GenerationTemplates.ConstructorDef(class_.getName(),getBaseClass(class_),Options.Runtime());
+			source += GenerationTemplates.ConstructorDef(class_.getName(),getBaseClass(class_),true);
 		}
 		
 		
@@ -240,7 +238,7 @@ public class ClassExporter
 			String funcBody="";
 			if(behavior.eClass().equals(UMLPackage.Literals.ACTIVITY))
 			{
-				funcBody=ActivityExport.createfunctionBody((Activity)behavior,Options.Runtime());
+				funcBody=ActivityExport.createfunctionBody((Activity)behavior,true);
 			}
 			else
 			{
@@ -485,7 +483,7 @@ public class ClassExporter
 			source += GenerationTemplates.CppInclude(getBaseClass(class_));
 		}
 		
-		if(Options.Runtime() && !isHeader_)
+		if(!isHeader_)
 		{
 			source+=GenerationTemplates.CppInclude(GenerationTemplates.RuntimeHeader);
 		}
