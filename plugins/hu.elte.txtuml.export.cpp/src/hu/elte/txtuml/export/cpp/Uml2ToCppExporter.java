@@ -32,9 +32,6 @@ import hu.elte.txtuml.utils.Pair;
 
 public class Uml2ToCppExporter {
 	private static final String DefaultCompiler = "g++";
-	private static final String GCCDebugSymbolOn = "-D_DEBUG"; // the symbol
-																// located in
-																// GenerationNames
 	private static final String RuntimeFolder = GenerationTemplates.RuntimePath;
 	private static final String RuntimeLibName = "libsmrt.a";
 	private static final String DefaultMakeFileName = "Makefile";
@@ -52,7 +49,7 @@ public class Uml2ToCppExporter {
 	List<String> classNames;
 
 	public Uml2ToCppExporter(Model model, Map<String, ThreadPoolConfiguration> threadDescription,
-			boolean threadManagement, boolean addRuntimeOption, boolean debugOption) {
+			boolean threadManagement, boolean addRuntimeOption) {
 
 		classExporter = new ClassExporter();
 
@@ -66,11 +63,6 @@ public class Uml2ToCppExporter {
 			Options.setRuntime();
 		} else {
 			Options.setAddRuntime(false);
-		}
-		if (debugOption) {
-			Options.setDebugLog();
-		} else {
-			Options.setDebugLog(false);
 		}
 		if (threadManagement) {
 			Options.setThreadManagement();
@@ -173,9 +165,6 @@ public class Uml2ToCppExporter {
 
 		makeFile += fileList + "\n";
 		makeFile += "\t$(CC)";
-		if (Options.isDebugLog()) {
-			makeFile += " " + GCCDebugSymbolOn;
-		}
 		makeFile += " -Wall -o " + outputName_ + fileList + " -std=gnu++11";
 
 		if (Options.isAddRuntime()) {
