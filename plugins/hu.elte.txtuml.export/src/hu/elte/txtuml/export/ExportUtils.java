@@ -11,8 +11,6 @@ import org.eclipse.emf.common.util.URI;
 
 /**
  * Utilities Class to convert txtUML representations
- *
- * @author András Dobreff
  */
 public class ExportUtils {
 	
@@ -45,13 +43,10 @@ public class ExportUtils {
 				.getClassLoaderForProject(sourceProject, layoutparent)){
 			Class<?> txtUMLLayoutClass = loader.loadClass(txtUMLLayout);  
 	        @SuppressWarnings("unchecked")
-			DiagramExporter exporter= DiagramExporter.create((Class<? extends Diagram>) txtUMLLayoutClass); 
+			DiagramExporter exporter= DiagramExporter.create(sourceProject, (Class<? extends Diagram>) txtUMLLayoutClass); 
 	        DiagramExportationReport report = exporter.export();
 	        return report;
-		} catch (Exception e) {
-			throw e;
 		}
-		
 	}
 	
 	

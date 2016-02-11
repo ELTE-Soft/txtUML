@@ -1,5 +1,7 @@
 package hu.elte.txtuml.layout.export.interfaces;
 
+import java.util.Set;
+
 import hu.elte.txtuml.api.layout.Diagram.LinkGroup;
 import hu.elte.txtuml.api.layout.Diagram.NodeGroup;
 import hu.elte.txtuml.api.layout.Diagram.Phantom;
@@ -17,22 +19,17 @@ import hu.elte.txtuml.layout.export.problems.ProblemReporter;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
-import java.util.Set;
-
-/**
- * 
- * @author Gabor Ferenc Kovacs
- *
- */
 public interface ElementExporter {
 
-	static ElementExporter create(ProblemReporter problemReporter) {
-		return new ElementExporterImpl(problemReporter);
+	static ElementExporter create(String sourceProjectName, ProblemReporter problemReporter) {
+		return new ElementExporterImpl(sourceProjectName, problemReporter);
 	}
 
 	DiagramType getDiagramTypeBasedOnElements();
 
-	String getRootElementAsString();
+	String getSourceProjectName();
+	
+	String getModelName();
 
 	NodeMap getNodes();
 
@@ -102,7 +99,7 @@ public interface ElementExporter {
 
 	/**
 	 * Should be called only by an instance of class
-	 * {@link hu.elte.txtuml.layout.export.diagramexporters.ClassDiagramExporter
+	 * {@link hu.elte.txtuml.layout.export.source.ClassDiagramExporter
 	 * ClassDiagramExporter}. Checking the diagram type is not necessary since
 	 * it's checked by the caller.
 	 * @throws ElementExportationException 
@@ -156,4 +153,5 @@ public interface ElementExporter {
 	// exportation finalizer
 
 	void exportImpliedLinks();
+
 }

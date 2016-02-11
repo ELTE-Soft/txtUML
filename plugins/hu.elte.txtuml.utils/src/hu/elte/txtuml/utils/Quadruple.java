@@ -2,8 +2,6 @@ package hu.elte.txtuml.utils;
 
 /**
  * Quadruple type. One type to store four different types.
- * 
- * @author Balázs Gregorics
  *
  * @param <T1>
  *            First type.

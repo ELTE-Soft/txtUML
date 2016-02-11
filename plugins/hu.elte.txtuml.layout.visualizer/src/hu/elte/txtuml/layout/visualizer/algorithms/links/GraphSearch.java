@@ -24,41 +24,36 @@ import java.util.Set;
 
 /**
  * This class implements an A^* graph search algorithm.
- * 
- * @author Balázs Gregorics
  */
-class GraphSearch
-{
-	
+class GraphSearch {
+
 	// Constants
-	
-	private final Double _weightLength = 1.0; // 2.9
-	private final Double _weightTurns = 3.0; // 2.7
-	private final Double _weightCrossing = 3.0; // 2.0
-	@SuppressWarnings("unused")
-	private final Integer _penalizeTurns = 2;
-	
+
+	private final Double WEIGHT_LENGTH = 1.0; // 2.9
+	private final Double WEIGHT_TURNS = 3.2; // 2.7
+	private final Double WEIGHT_CROSSING = 2.0; // 2.0
+
 	// end Constants
-	
+
 	// Variables
-	
+
 	private Node _end;
 	private Set<Node> _endSet;
 	private Map<Point, Color> _colors;
 	private Boundary _boundary;
 	private Integer _extends;
-	
+
 	private Graph<Node> G;
 	private PriorityQueue<Node> AvailableNodes;
 	private Cost<Node> g;
 	private Parent<Node> PI;
-	
+
 	private HashMap<Node, Double> _heuristic;
-	
+
 	// end Variables
-	
+
 	// Ctors
-	
+
 	/**
 	 * Creates a graph to find a route in it from start to end. Route length is
 	 * minimal. Route cornering is minimal.
@@ -83,11 +78,9 @@ class GraphSearch
 	 *             Throws if the algorithm encounters something which it should
 	 *             not have.
 	 */
-	public GraphSearch(Set<Pair<Node, Double>> ss, Set<Pair<Node, Double>> es,
-			Map<Point, Color> cols, Boundary bounds)
-			throws CannotFindAssociationRouteException,
-			CannotStartAssociationRouteException, ConversionException, InternalException
-	{
+	public GraphSearch(Set<Pair<Node, Double>> ss, Set<Pair<Node, Double>> es, Map<Point, Color> cols, Boundary bounds)
+			throws CannotFindAssociationRouteException, CannotStartAssociationRouteException, ConversionException,
+			InternalException {
 		// Initialize
 		G = new Graph<Node>(); // Graph
 		AvailableNodes = new PriorityQueue<Node>((x, y) -> nodeComparator(x, y)); // 'Open'
@@ -100,44 +93,37 @@ class GraphSearch
 		_boundary = bounds;
 		_extends = 0;
 		_heuristic = new HashMap<Node, Double>();
-		
+
 		// Set up End Set
-		for (Pair<Node, Double> pair : es)
-		{
+		for (Pair<Node, Double> pair : es) {
 			_endSet.add(pair.getFirst());
 			g.set(pair.getFirst(), pair.getSecond());
-			// TODO
 		}
-		
+
 		// Extend StartSet
-		for (Pair<Node, Double> pair : ss)
-		{
+		for (Pair<Node, Double> pair : ss) {
 			PI.set(pair.getFirst(), null);
-			g.set(pair.getFirst(), 2 * _weightLength + pair.getSecond());
+			g.set(pair.getFirst(), 2 * WEIGHT_LENGTH + pair.getSecond());
 			AvailableNodes.add(pair.getFirst());
 		}
-		
-		if (!search())
-		{
+
+		if (!search()) {
 			throw new CannotFindAssociationRouteException("No Route from START to END!");
 		}
 	}
-	
+
 	// end Ctors
-	
+
 	// Methods
-	
-	private boolean search()
-	{
-		while (true)
-		{
+
+	private boolean search() {
+		while (true) {
 			if (AvailableNodes.isEmpty())
 				return false;
-			
+
 			Node n = AvailableNodes.poll();
-			
-			if (_endSet.contains(n))
-			{
+
+			if (_endSet.contains(n)) {
 				// Node e = _endSet.stream()
 				// .filter(node -> node.getFrom().equals(n.getTo()))
 				// .findFirst().get();
@@ -145,16 +131,14 @@ class GraphSearch
 				PI.set(_end, n);
 				return true;
 			}
-			
+
 			++_extends;
 			Set<Pair<Node, Double>> childs = Gamma(n);
-			for (Pair<Node, Double> pair : childs)
-			{
+			for (Pair<Node, Double> pair : childs) {
 				Node m = pair.getFirst();
 				Double newCost = (g.get(n) + pair.getSecond());
-				
-				if (!G.contains(m) || newCost < g.get(m))
-				{
+
+				if (!G.contains(m) || newCost < g.get(m)) {
 					PI.set(m, n);
 					g.set(m, newCost);
 					AvailableNodes.add(m);
@@ -164,100 +148,85 @@ class GraphSearch
 			}
 		}
 	}
-	
-	private Integer nodeComparator(Node a, Node b)
-	{
+
+	private Integer nodeComparator(Node a, Node b) {
 		return Double.compare(f(a), f(b));
 	}
-	
+
 	@SuppressWarnings("unused")
-	private Node minf()
-	{
+	private Node minf() {
 		Node min = null;
 		Double minval = Double.MAX_VALUE;
-		
-		for (Node p : AvailableNodes)
-		{
+
+		for (Node p : AvailableNodes) {
 			Double f = f(p);
-			if (f < minval)
-			{
+			if (f < minval) {
 				minval = f;
 				min = p;
 			}
 		}
-		
+
 		return min;
 	}
-	
-	// Kiértékelõ függvény
-	private Double f(Node p)
-	{
+
+	// Evaluation function
+	private Double f(Node p) {
 		Double cost = g.get(p);
 		Double heuristic = h(p);
-		
+
 		return cost + heuristic;
 	}
-	
-	private Double h(Node p)
-	{
+
+	private Double h(Node p) {
 		if (_heuristic.containsKey(p))
 			return _heuristic.get(p);
-		
+
 		Pair<Double, Node> distance = manhattanDistance(p);
 		Double remainingTurns = manhattanLeastTurns(p);
 		// manhattanLeastTurnsCheckingOccupied(p, distance.getSecond());
-		Double result = (_weightTurns * remainingTurns + _weightLength * distance.getFirst());
-		
+		Double result = (WEIGHT_TURNS * remainingTurns + WEIGHT_LENGTH * distance.getFirst());
+
 		_heuristic.put(p, result);
-		
+
 		return result;
 	}
-	
+
 	// Metrics
-	
-	private Pair<Double, Node> manhattanDistance(Node a)
-	{
-		Pair<Integer, Node> result = _endSet.stream().map(p ->
-		{
+
+	private Pair<Double, Node> manhattanDistance(Node a) {
+		Pair<Integer, Node> result = _endSet.stream().map(p -> {
 			Integer dx = Math.abs(a.getTo().getX() - p.getTo().getX());
 			Integer dy = Math.abs(a.getTo().getY() - p.getTo().getY());
 			Integer tempResult = dx + dy;
-			
+
 			return new Pair<Integer, Node>(tempResult, p);
-		}).min((p1, p2) ->
-		{
+		}).min((p1, p2) -> {
 			return Integer.compare(p1.getFirst(), p2.getFirst());
 		}).get();
-		
+
 		return new Pair<Double, Node>((double) result.getFirst(), result.getSecond());
 	}
-	
-	private Double manhattanLeastTurns(Node a)
-	{
-		Node closest = _endSet.stream().map(p ->
-		{
+
+	private Double manhattanLeastTurns(Node a) {
+		Node closest = _endSet.stream().map(p -> {
 			Integer dx = Math.abs(a.getTo().getX() - p.getTo().getX());
 			Integer dy = Math.abs(a.getTo().getY() - p.getTo().getY());
 			Integer tempResult = dx + dy;
-			
+
 			return new Pair<Node, Integer>(p, tempResult);
-		}).min((d1, d2) ->
-		{
+		}).min((d1, d2) -> {
 			return Integer.compare(d1.getSecond(), d2.getSecond());
 		}).get().getFirst();
-		
-		if (!closest.getTo().getX().equals(a.getTo().getX())
-				&& !closest.getTo().getY().equals(a.getTo().getY()))
-		{
+
+		if (!closest.getTo().getX().equals(a.getTo().getX()) && !closest.getTo().getY().equals(a.getTo().getY())) {
 			return 1.0;
 		}
-		
+
 		return 0.0;
 	}
-	
+
 	@SuppressWarnings("unused")
-	private Double manhattanLeastTurnsCheckingOccupied(Node from, Node to)
-	{
+	private Double manhattanLeastTurnsCheckingOccupied(Node from, Node to) {
 		/*
 		 * Integer min = Integer.MAX_VALUE;
 		 * 
@@ -269,15 +238,16 @@ class GraphSearch
 		 * 
 		 * if (dx > 0 && dy > 0) { ++resultF; ++resultB; }
 		 * 
-		 * // elejérõl és végérõl nézzük egyszerre a két külön utat // X tengely
-		 * mentén Point tempF = new Point(from.getTo()); Point tempB = new
+		 * // examining two different paths from the beginning and from the end
+		 * // along the X axis
+		 * Point tempF = new Point(from.getTo()); Point tempB = new
 		 * Point(ending); for (int i = 0; i < dx; ++i) { if (sx > 0) { tempF =
 		 * Point.Add(tempF, Direction.east); tempB = Point.Add(tempF,
 		 * Direction.west); } else if (sx < 0) { tempF = Point.Add(tempF,
 		 * Direction.west); tempB = Point.Add(tempF, Direction.east); }
 		 * 
-		 * // tempF nem a vége és nem piros pont // tempB nem az eleje és nem
-		 * piros pont Point tF = new Point(tempF); if (resultF <= 1 &&
+		 * // tempF is not the end and not red // tempB is not the beginning and not red
+		 * Point tF = new Point(tempF); if (resultF <= 1 &&
 		 * !tempF.equals(ending) && (_objects.stream().anyMatch(pp -> pp.Color
 		 * .equals(Colors.Red) && pp.Inner.equals(tF)))) { resultF = resultF +
 		 * _penalizeTurns; } Point tB = new Point(tempB); if (resultB <= 1 &&
@@ -285,7 +255,8 @@ class GraphSearch
 		 * .equals(Colors.Red) && pp.Inner.equals(tB)))) { resultB = resultB +
 		 * _penalizeTurns; } }
 		 * 
-		 * // Y tengely mentén for (int i = 0; i < dy; ++i) { if (sy > 0) {
+		 * // along the Y axis
+		 * for (int i = 0; i < dy; ++i) { if (sy > 0) {
 		 * tempF = Point.Add(tempF, Direction.north); tempB = Point.Add(tempB,
 		 * Direction.south); } else if (sy < 0) { tempF = Point.Add(tempF,
 		 * Direction.south); tempB = Point.Add(tempB, Direction.north); }
@@ -301,89 +272,79 @@ class GraphSearch
 		 * Integer tempMin = Math.min(resultF, resultB); min = Math.min(min,
 		 * tempMin);
 		 */
-		
+
 		return (double) 0;// min;
 	}
-	
+
 	// end Metrics
-	
+
 	// Methods
-	
-	private Set<Pair<Node, Double>> Gamma(Node parent)
-	{
+
+	private Set<Pair<Node, Double>> Gamma(Node parent) {
 		Set<Pair<Node, Double>> result = new HashSet<Pair<Node, Double>>();
-		
+
 		if (!_boundary.isIn(parent.getTo()))
 			return result;
-		
+
 		// Add possible neighbors
-		if (!_colors.containsKey(parent.getTo()))
-		{
+		if (!_colors.containsKey(parent.getTo())) {
 			Direction sub = Point.directionOf(parent.getTo(), parent.getFrom());
-			
+
 			// ~0.5ms
-			for (Direction dir : Direction.values())
-			{
+			for (Direction dir : Direction.values()) {
 				Double w = 0.0;
-				
+
 				if (dir.equals(sub))
-					w = _weightLength;
+					w = WEIGHT_LENGTH;
 				else if (dir.equals(Direction.opposite(sub)))
 					continue;
 				else
-					w = _weightLength + _weightTurns;
-				
+					w = WEIGHT_LENGTH + WEIGHT_TURNS;
+
 				Point p = Point.Add(parent.getTo(), dir);
 				result.add(new Pair<Node, Double>(new Node(parent.getTo(), p), w));
 			}
-		}
-		else if (_colors.get(parent.getTo()).equals(Color.Yellow))
-		{
+		} else if (_colors.get(parent.getTo()).equals(Color.Yellow)) {
 			Direction sub = Point.directionOf(parent.getTo(), parent.getFrom());
 			// straight, crossing
-			result.add(new Pair<Node, Double>(new Node(parent.getTo(), Point.Add(
-					parent.getTo(), sub)), _weightLength + _weightCrossing));
+			result.add(new Pair<Node, Double>(new Node(parent.getTo(), Point.Add(parent.getTo(), sub)),
+					WEIGHT_LENGTH + WEIGHT_CROSSING));
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Returns the route from start to end.
 	 * 
 	 * @return the route from start to end.
 	 */
-	public ArrayList<Node> value()
-	{
+	public ArrayList<Node> value() {
 		ArrayList<Node> result = new ArrayList<Node>();
-		
+
 		Node n = PI.get(_end);
-		
-		do
-		{
+
+		do {
 			result.add(n);
 			n = PI.get(n);
 		} while (n != null);
-		
+
 		// Reverse order
 		ArrayList<Node> result2 = new ArrayList<Node>();
-		
-		for (int i = result.size() - 1; i >= 0; --i)
-		{
+		for (int i = result.size() - 1; i >= 0; --i) {
 			result2.add(result.get(i));
 		}
-		
+
 		return result2;
 	}
-	
+
 	/**
 	 * Returns the number of node extensions completed during the path search.
 	 * 
 	 * @return the number of node extensions completed during the path search.
 	 */
-	public Integer extendsNum()
-	{
+	public Integer extendsNum() {
 		return _extends;
 	}
-	
+
 }

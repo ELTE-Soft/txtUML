@@ -8,10 +8,8 @@ import java.util.stream.Collectors;
 /**
  * Class that helps the Graph Search algorithm to represent the graph.
  * 
- * @author Balázs Gregorics
  * @param <N>
  *            The type of nodes.
- *
  */
 public class Graph<N>
 {

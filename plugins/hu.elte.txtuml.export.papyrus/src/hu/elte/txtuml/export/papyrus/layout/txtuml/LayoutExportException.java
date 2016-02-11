@@ -2,13 +2,9 @@ package hu.elte.txtuml.export.papyrus.layout.txtuml;
 
 /**
  * Exception for Layout export errors
- * @author András Dobreff
  */
 public class LayoutExportException extends Exception {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	/**

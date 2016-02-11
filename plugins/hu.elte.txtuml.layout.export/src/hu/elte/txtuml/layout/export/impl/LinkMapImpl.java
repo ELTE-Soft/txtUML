@@ -10,9 +10,6 @@ import java.util.Set;
 
 /**
  * Default implementation for {@link LinkMap}.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 @SuppressWarnings("serial")
 public class LinkMapImpl extends HashMap<Class<?>, LinkInfo> implements LinkMap {

@@ -14,8 +14,6 @@ import org.junit.Test;
 
 /**
  * Unit test for {@link ProjectUtils}
- *
- * @author András Dobreff
  * 
  * <p>
  * <b>Attention:</b>

@@ -6,21 +6,20 @@ import hu.elte.txtuml.layout.export.impl.DiagramExporterImpl;
 /**
  * Public interface to export diagram layout descriptions from their Java
  * format.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 public interface DiagramExporter {
 
 	/**
 	 * Creates a new <code>DiagramExporter</code> to export the given diagram.
 	 * 
+	 * @param javaProject
+	 *            the name of the Eclipse project that contains the model
 	 * @param diagClass
 	 *            the diagram class to export
 	 * @return the new exporter instance
 	 */
-	static DiagramExporter create(Class<? extends Diagram> diagClass) {
-		return new DiagramExporterImpl(diagClass);
+	static DiagramExporter create(String sourceProjectName, Class<? extends Diagram> diagClass) {
+		return new DiagramExporterImpl(sourceProjectName, diagClass);
 	}
 
 	/**
@@ -34,6 +33,8 @@ public interface DiagramExporter {
 	 * 
 	 * @see DiagramExportationReport
 	 * 
+	 * @param javaProject
+	 *            the name of the Eclipse project that contains the model
 	 * @param diagClass
 	 *            the diagram class to export
 	 * @param emptyReport
@@ -42,9 +43,9 @@ public interface DiagramExporter {
 	 *            called
 	 * @return the new exporter instance
 	 */
-	static DiagramExporter create(Class<? extends Diagram> diagClass,
+	static DiagramExporter create(String sourceProjectName, Class<? extends Diagram> diagClass,
 			DiagramExportationReport emptyReport) {
-		return new DiagramExporterImpl(diagClass, emptyReport);
+		return new DiagramExporterImpl(sourceProjectName, diagClass, emptyReport);
 	}
 
 	/**

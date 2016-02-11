@@ -51,9 +51,6 @@ import java.util.Map;
 
 /**
  * Default implementation for {@link StatementExporter}.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 public class StatementExporterImpl implements StatementExporter {
 
@@ -247,6 +244,11 @@ public class StatementExporterImpl implements StatementExporter {
 			problemReporter.diamondStatementExportationFailed(annot.top(),
 					annot.right(), annot.bottom(), annot.left());
 		}
+	}
+	
+	@Override
+	public void exportCorridorRatio(hu.elte.txtuml.api.layout.Spacing annot) {
+		statements.addNew(StatementType.corridorsize, Double.toString(annot.value()));
 	}
 
 	// public statement container exporters

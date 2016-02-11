@@ -4,9 +4,6 @@ import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 
 /**
  * Enumeration for Directions.
- * 
- * @author Balázs Gregorics
- *
  */
 public enum Direction
 {

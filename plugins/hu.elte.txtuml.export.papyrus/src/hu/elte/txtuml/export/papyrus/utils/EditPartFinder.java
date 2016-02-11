@@ -10,7 +10,6 @@ import org.eclipse.uml2.uml.Element;
 
 /**
  * Supplies functionalities for finding EditParts
- * @author András Dobreff
  */
 public class EditPartFinder {
 	/**

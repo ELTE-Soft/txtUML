@@ -1,12 +1,12 @@
 package hu.elte.txtuml.api.model.error.multiplicity;
 
-import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.base.SimpleModelTestsBase;
-import hu.elte.txtuml.api.model.models.SimpleModel.A_B;
-import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.base.SimpleModelTestsBase;
+import hu.elte.txtuml.api.model.models.simple.A_B;
+import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
 
 @RunWith(SeparateClassloaderTestRunner.class)
 public class LowerBoundOffendedAfterUnlinkTest extends SimpleModelTestsBase {

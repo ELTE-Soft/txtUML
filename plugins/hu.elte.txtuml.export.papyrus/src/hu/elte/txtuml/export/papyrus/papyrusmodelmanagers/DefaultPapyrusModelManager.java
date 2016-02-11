@@ -29,8 +29,6 @@ import org.eclipse.uml2.uml.StateMachine;
 
 /**
  *	The Default representation of Papyrus Model manager
- *
- * @author András Dobreff
  */
 public class DefaultPapyrusModelManager extends AbstractPapyrusModelManager {
 

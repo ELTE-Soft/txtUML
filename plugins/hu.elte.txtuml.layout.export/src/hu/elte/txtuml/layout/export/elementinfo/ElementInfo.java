@@ -1,21 +1,9 @@
 package hu.elte.txtuml.layout.export.elementinfo;
 
-import hu.elte.txtuml.layout.export.DiagramType;
-
 /**
  * General information holder about a diagram layout description element.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 public interface ElementInfo {
-
-	/**
-	 * @return the diagram type in which the element this object holds info
-	 *         about may occur. Null if <code>getType</code> method returns
-	 *         <code>ElementType.Invalid</code>
-	 */
-	DiagramType getDiagType();
 
 	/**
 	 * @return the element type this object holds info about

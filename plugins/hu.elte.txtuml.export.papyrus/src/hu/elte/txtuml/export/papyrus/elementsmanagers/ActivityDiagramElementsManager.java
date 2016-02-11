@@ -41,8 +41,6 @@ import org.eclipse.uml2.uml.ValueSpecificationAction;
 
 /**
  * An abstract class for adding/removing elements to ActivityDiagrams.
- *
- * @author András Dobreff
  */
 public class ActivityDiagramElementsManager extends AbstractDiagramElementsManager{
 	

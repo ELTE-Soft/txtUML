@@ -9,13 +9,11 @@ import org.eclipse.draw2d.geometry.Rectangle;
 
 /**
  * The transformer class which transforms the object coordinates to fit the GMF diagram
- * @author András Dobreff
  */
 public class LayoutTransformer {
 	
 	/**
 	 * Defines where should the origin be form the diagram elements 
-	 * @author András Dobreff
 	 */
 	@SuppressWarnings("javadoc")
 	public enum OrigoConstraint{
@@ -25,8 +23,6 @@ public class LayoutTransformer {
 	
 	private int scaleX;
 	private int scaleY;
-	private int gridWidth;
-	private int gridHeight;
 
 	private OrigoConstraint origoConstaint;
 	private boolean flipXAxis;
@@ -34,23 +30,11 @@ public class LayoutTransformer {
 	
 	/**
 	 * Constructor for {@link LayoutTransformer}
-	 * @param boxWidth - The width of the surrounding box (typically the greatest width)
-	 * @param boxHeight - The height of the surrounding box (typically the greatest height)
-	 * @param gapX - vertical gap between boxes
-	 * @param gapY - horizontal gap between boxes
-	 * @param gridDesity - Defines how many partitions an object has
+	 * @param scaleValue - The scaling number. All coordinates will be multiplied by this value
 	 */
-	public LayoutTransformer(int boxWidth, int boxHeight, int gapX, int gapY, int gridDesity) {
-		this.gridWidth = boxWidth+gapX;
-		this.gridHeight = boxHeight+gapY;
-		if(gridDesity == 0){
-			this.scaleX = this.gridWidth;
-			this.scaleY = this.gridHeight;
-		}else{
-			this.scaleX = Math.round((float) this.gridWidth/(float) gridDesity);
-			this.scaleY = Math.round((float) this.gridHeight/(float) gridDesity);
-		}
-
+	public LayoutTransformer(int scaleValue ) {
+		this.scaleX = scaleValue;
+		this.scaleY = scaleValue;
 		init();
 	}
 	
@@ -107,10 +91,8 @@ public class LayoutTransformer {
 	 */
 	private void scaleUpObjects(Map<?, Rectangle> objects, Map<?, List<Point>> connections) {
 		for(Rectangle rect : objects.values()){
-			int shiftToCenterX = (this.gridWidth-rect.width())/2;
-			int shiftToCenterY = (this.gridHeight-rect.height())/2;
-			rect.setX(rect.x()*(this.scaleX)+shiftToCenterX);
-			rect.setY(rect.y()*(this.scaleY)+shiftToCenterY);
+			rect.setX(rect.x()*(this.scaleX));
+			rect.setY(rect.y()*(this.scaleY));
 		}
 		
 		for(List<Point> pointlist: connections.values()){

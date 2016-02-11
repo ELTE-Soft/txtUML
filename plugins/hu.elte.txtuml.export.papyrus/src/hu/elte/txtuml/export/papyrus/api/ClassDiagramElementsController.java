@@ -19,10 +19,6 @@ import org.eclipse.uml2.uml.Reception;
 
 import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
 
-/**
- *
- * @author András Dobreff
- */
 public class ClassDiagramElementsController {
 
 	/**

@@ -11,9 +11,8 @@ import hu.elte.txtuml.diagnostics.PluginLogWrapper;
  * It is not a POD in the sense that while (classInstanceID, serviceInstanceID)
  * uniquely identifies the object, additional data can be present about the
  * object in it.
- * @author gerazo
  */
-class UniqueInstance {
+public class UniqueInstance {
 	// unique ID
 	final String classInstanceID;
 	final int serviceInstanceID;

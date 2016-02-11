@@ -1,11 +1,5 @@
 package hu.elte.txtuml.export.cpp.templates;
 
-/***********************************************************
- * Author: Hack János
- * Version 0.9 2014.02.25
- * Email:zodiakus (at) elte.hu
- **********************************************************/
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,6 +13,7 @@ public class ActivityTemplates
 	public static final String ReplaceCompositTypeOp=ReplaceSimpleTypeOp;
 	public static final String Self="this";
 	public static final String AccessOperatorForSets=GenerationNames.SimpleAccess;
+	
 		
 	public static String GeneralSetValue(String leftValueName_,String rightValueName_,String operator_)
 	{
@@ -150,13 +145,20 @@ public class ActivityTemplates
 		
 	public static String CreateObject(String typenName_,String objName_,Boolean rt_,Boolean isSm_)
 	{
-		String source=GenerationNames.PointerType(typenName_)+" "+objName_+"= "+GenerationNames.MemoryAllocator+" "+typenName_+"();\n";
+		String source;
 		if(rt_ && isSm_)
 		{
-			source+=RuntimeTemplates.CreateObject(objName_);
+			source = GenerationNames.PointerType(typenName_)+" "+objName_+"= "+GenerationNames.MemoryAllocator+" "+typenName_+"(" + RuntimeTemplates.RuntimeVarName + ");\n";
+			source += objName_ + GenerationNames.PointerAccess +  "startSM();\n";
+			//source+=RuntimeTemplates.CreateObject(objName_);
+		}
+		else{
+			source=GenerationNames.PointerType(typenName_)+" "+objName_+"= "+GenerationNames.MemoryAllocator+" "+typenName_+"();\n";
 		}
 		return source;
 	}
+	
+	
 	
 	public static String getOperationFromType(boolean isMultivalued_, boolean isReplace_) 
 	{

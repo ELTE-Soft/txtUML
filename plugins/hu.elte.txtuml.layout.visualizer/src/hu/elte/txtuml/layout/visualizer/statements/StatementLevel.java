@@ -2,9 +2,6 @@ package hu.elte.txtuml.layout.visualizer.statements;
 
 /**
  * Enumeration that represents the level of a statement.
- * 
- * @author Balázs Gregorics
- *
  */
 public enum StatementLevel
 {

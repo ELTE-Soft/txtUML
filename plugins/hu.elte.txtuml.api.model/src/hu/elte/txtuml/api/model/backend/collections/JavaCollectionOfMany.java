@@ -6,8 +6,6 @@ import hu.elte.txtuml.api.model.backend.collections.impl.JavaCollectionOfManyImp
  * A Java collection for implementations of txtUML collections having a
  * multiplicity of <i>'many'</i> (0..*).
  *
- * @author Gabor Ferenc Kovacs
- *
  * @param <T>
  *            the type of model objects to be contained in this collection
  */
