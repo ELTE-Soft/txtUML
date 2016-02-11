@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.cpp.handlers;
 
-
-
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -14,10 +12,10 @@ public class TxtUMLToCppHandler extends AbstractHandler implements IHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		
-		WizardDialog wizardDialog = new WizardDialog(null, new TxtUMLToCppWizard());		
+
+		WizardDialog wizardDialog = new WizardDialog(null, new TxtUMLToCppWizard());
 		wizardDialog.open();
-		
+
 		return null;
 	}
 
