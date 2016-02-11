@@ -26,10 +26,12 @@ public class ModelExportTestUtils {
 	private static String bundlePath;
 	
 	public static Model export(String txtUMLModelName) throws Exception {
+		JavaCore.create(txtUMLModelName);
+		project.findPackageFragment(path)
 		IType model  = project.findType(txtUMLModelName, (IProgressMonitor) null);
 		File file = new File(bundlePath + model.getPath().toOSString());
 		String uri = URI.createPlatformResourceURI(GEN_DIR, false).toString();
-		UML2.exportModel(txtUMLModelName, file, project, uri);
+		UML2.exportModelElements(txtUMLModelName, file, project, uri);
 		Model ret = loadModel(txtUMLModelName);
 		Thread.sleep(1000);
 		return ret;

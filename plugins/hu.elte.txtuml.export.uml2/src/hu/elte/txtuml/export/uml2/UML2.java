@@ -2,23 +2,23 @@ package hu.elte.txtuml.export.uml2;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
 import hu.elte.txtuml.export.uml2.transform.backend.RuntimeExportException;
 import hu.elte.txtuml.export.uml2.transform.exporters.ModelExporter;
-import hu.elte.txtuml.export.uml2.transform.visitors.ModelObtainer;
 import hu.elte.txtuml.export.uml2.utils.SharedUtils;
 
 /**
@@ -30,7 +30,7 @@ import hu.elte.txtuml.export.uml2.utils.SharedUtils;
  */
 public class UML2 {
 
-	public static void exportModel(String sourceProject, String className, String outputDirectory) throws Exception {
+	public static void exportModel(String sourceProject, String modelName, String outputDirectory) throws Exception {
 		IProject project;
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(sourceProject);
 		if (project == null || !project.exists()) {
@@ -38,27 +38,19 @@ public class UML2 {
 		}
 
 		IJavaProject javaProject = JavaCore.create(project);
-		IType type = javaProject.findType(className, (IProgressMonitor) null);
-		if (type == null) {
-			throw new Exception("Cannot find class '" + className + "'");
+		String modelPackageName = modelName.substring(0, modelName.lastIndexOf('.'));
+
+		List<ICompilationUnit> compUnits = new LinkedList<>();
+
+		for (IPackageFragment fragment : javaProject.getPackageFragments()) {
+			if (fragment.getElementName().equals(modelPackageName)) {
+				for (ICompilationUnit compUnit : fragment.getCompilationUnits()) {
+					compUnits.add(compUnit);
+				}
+			}
 		}
 
-		IResource resource = type.getResource();
-		File file = new File(resource.getLocationURI());
-		exportModel(className, file, javaProject, outputDirectory);
-	}
-
-	/**
-	 * Obtains the txtUML model from the specified compilation unit.
-	 * 
-	 * @param compilationUnit
-	 *            The specified compilation unit.
-	 * @return The type declaration of the txtUML model.
-	 *
-	 * @author �d�m Ancsin
-	 */
-	private static TypeDeclaration obtainModelFromCompilationUnit(CompilationUnit compilationUnit) {
-		return new ModelObtainer(compilationUnit).getModel();
+		exportModelElements(modelName, compUnits, javaProject, outputDirectory);
 	}
 
 	/**
@@ -67,7 +59,7 @@ public class UML2 {
 	 * @param txtUMLModelName
 	 *            The name of the class representing the txtUML model.
 	 * 
-	 * @param sourceFile
+	 * @param compUnits
 	 *            The Java source file containing the txtUML model.
 	 * 
 	 * @param project
@@ -82,13 +74,18 @@ public class UML2 {
 	 * 
 	 * @author Adam Ancsin
 	 */
-	public static void exportModel(String txtUMLModelName, File sourceFile, IJavaProject project,
-			String outputDirectory) throws JavaModelException, IOException, ExportException {
+	public static void exportModelElements(String txtUMLModelName, List<ICompilationUnit> compUnits,
+			IJavaProject project, String outputDirectory) throws JavaModelException, IOException, ExportException {
 
-		CompilationUnit compilationUnit = SharedUtils.parseJavaSource(sourceFile, project);
+		List<CompilationUnit> parsedCompUnits = new LinkedList<>();
 
-		ModelExporter modelExporter = new ModelExporter(obtainModelFromCompilationUnit(compilationUnit),
-				txtUMLModelName, outputDirectory);
+		for (ICompilationUnit compUnit : compUnits) {
+			IResource resource = compUnit.getResource();
+			File file = new File(resource.getLocationURI());
+			parsedCompUnits.add(SharedUtils.parseJavaSource(file, project));
+		}
+
+		ModelExporter modelExporter = new ModelExporter(parsedCompUnits, txtUMLModelName, outputDirectory);
 		try {
 			modelExporter.exportModel();
 

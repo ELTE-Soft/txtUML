@@ -1,12 +1,14 @@
 package hu.elte.txtuml.export.uml2.transform.exporters;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -48,7 +50,7 @@ public class ModelExporter {
 	private final String txtUMLModelName;
 	private final String outputDirectory;
 	private final Model exportedModel;
-	private final TypeDeclaration sourceModel;
+	private final List<CompilationUnit> sourceModel;
 	private final ResourceSet resourceSet;
 	private final Resource modelResource;
 	private final TypeExporter typeExporter;
@@ -58,7 +60,7 @@ public class ModelExporter {
 	private Map<TypeDeclaration, Classifier> classifiers;
 	private Map<TypeDeclaration, Map<MethodDeclaration, Operation>> methods;
 
-	public ModelExporter(TypeDeclaration sourceModel, String txtUMLModelName, String outputDirectory)
+	public ModelExporter(List<CompilationUnit> sourceModel, String txtUMLModelName, String outputDirectory)
 			throws ExportException {
 		this.sourceModel = sourceModel;
 		this.txtUMLModelName = txtUMLModelName;
@@ -162,7 +164,7 @@ public class ModelExporter {
 	 */
 	private void exportClassifiers() {
 		ClassifierVisitor visitor = new ClassifierVisitor(new ClassifierExporter(mapping, exportedModel), true);
-		sourceModel.accept(visitor);
+		sourceModel.forEach(cl -> cl.accept(visitor));
 		classifiers = visitor.getVisitedClassifiers();
 	}
 
@@ -175,7 +177,7 @@ public class ModelExporter {
 	 */
 	private void exportAssociations() throws ExportException {
 		try {
-			sourceModel.accept(new AssociationVisitor(mapping, exportedModel));
+			sourceModel.forEach(cl -> cl.accept(new AssociationVisitor(mapping, exportedModel)));
 		} catch (RuntimeExportException e) {
 			throw e.getCause();
 		}
