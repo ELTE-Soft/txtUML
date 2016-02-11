@@ -8,11 +8,11 @@ import hu.elte.txtuml.validation.problems.ValidationErrorBase;
 import hu.elte.txtuml.validation.problems.ValidationErrorCatalog;
 
 public class InvalidTemplate extends ValidationErrorBase {
-	
+
 	public InvalidTemplate(SourceInfo sourceInfo, ASTNode node) {
-		super(sourceInfo,node);
+		super(sourceInfo, node);
 	}
-	
+
 	@Override
 	public int getID() {
 		return ValidationErrorCatalog.INVALID_TEMPLATE.ordinal();

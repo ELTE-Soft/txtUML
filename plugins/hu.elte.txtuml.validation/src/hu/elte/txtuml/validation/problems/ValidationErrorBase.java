@@ -15,14 +15,14 @@ public abstract class ValidationErrorBase extends CategorizedProblem {
 	private int sourceStart;
 	private int sourceEnd;
 	private int lineNumber;
-	
+
 	public ValidationErrorBase(SourceInfo sourceInfo, ASTNode node) {
 		this.sourceInfo = sourceInfo;
 		this.sourceStart = node.getStartPosition();
 		this.sourceEnd = node.getStartPosition() + node.getLength() - 1;
 		this.lineNumber = sourceInfo.getSourceLineNumber(getSourceEnd());
 	}
-	
+
 	@Override
 	public String[] getArguments() {
 		return new String[0];
@@ -45,7 +45,7 @@ public abstract class ValidationErrorBase extends CategorizedProblem {
 
 	@Override
 	public int getSourceStart() {
-		 return sourceStart;
+		return sourceStart;
 	}
 
 	@Override

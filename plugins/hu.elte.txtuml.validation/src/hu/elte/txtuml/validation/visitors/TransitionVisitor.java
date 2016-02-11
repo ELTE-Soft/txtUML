@@ -43,13 +43,11 @@ public class TransitionVisitor extends VisitorBase {
 		}
 		if (ElementTypeTeller.isEffect(node)) {
 			if (!Utils.isVoid(node.getReturnType2())) {
-				collector.report(
-						new TransitionMethodNonVoidReturn(collector.getSourceInfo(), node.getReturnType2()));
+				collector.report(new TransitionMethodNonVoidReturn(collector.getSourceInfo(), node.getReturnType2()));
 			}
 		} else {
 			if (!Utils.isBoolean(node.getReturnType2())) {
-				collector.report(
-						new TransitionMethodNonVoidReturn(collector.getSourceInfo(), node.getReturnType2()));
+				collector.report(new TransitionMethodNonVoidReturn(collector.getSourceInfo(), node.getReturnType2()));
 			}
 		}
 		if (!node.parameters().isEmpty()) {

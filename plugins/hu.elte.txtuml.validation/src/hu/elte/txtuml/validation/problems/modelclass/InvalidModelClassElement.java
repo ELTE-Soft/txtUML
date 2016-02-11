@@ -8,13 +8,13 @@ import hu.elte.txtuml.validation.problems.ValidationErrorBase;
 import hu.elte.txtuml.validation.problems.ValidationErrorCatalog;
 
 public class InvalidModelClassElement extends ValidationErrorBase {
-	
+
 	public static final String message = Messages.InvalidModelClassElement_message;
-	
+
 	public InvalidModelClassElement(SourceInfo sourceInfo, ASTNode node) {
-		super(sourceInfo,node);
+		super(sourceInfo, node);
 	}
-	
+
 	@Override
 	public int getID() {
 		return ValidationErrorCatalog.INVALID_MODEL_CLASS_ELEMENT.ordinal();

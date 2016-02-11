@@ -23,7 +23,7 @@ public class ModelVisitor extends VisitorBase {
 			acceptChildren(elem, new SignalVisitor(collector));
 		} else if (ElementTypeTeller.isAssociation(elem)) {
 			Utils.checkModifiers(collector, elem);
-			if(ElementTypeTeller.isComposition(elem)) {
+			if (ElementTypeTeller.isComposition(elem)) {
 				acceptChildren(elem, new CompositionVisitor(elem, collector));
 			} else {
 				acceptChildren(elem, new AssociationVisitor(elem, collector));

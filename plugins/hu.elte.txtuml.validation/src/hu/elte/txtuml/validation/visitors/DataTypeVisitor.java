@@ -33,7 +33,7 @@ public class DataTypeVisitor extends VisitorBase {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		if (!node.isConstructor()) {

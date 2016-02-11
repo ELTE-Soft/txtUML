@@ -12,9 +12,9 @@ public class InvalidTypeWithClassAllowed extends ValidationErrorBase {
 	public static final String message = Messages.InvalidTypeWithClassAllowed_message;
 
 	public InvalidTypeWithClassAllowed(SourceInfo sourceInfo, ASTNode node) {
-		super(sourceInfo,node);
+		super(sourceInfo, node);
 	}
-	
+
 	@Override
 	public int getID() {
 		return ValidationErrorCatalog.INVALID_TYPE_WITH_CLASS_ALLOWED.ordinal();

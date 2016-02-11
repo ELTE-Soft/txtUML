@@ -24,7 +24,7 @@ public class ModelClassVisitor extends VisitorBase {
 	public ModelClassVisitor(ProblemCollector collector) {
 		super(collector);
 	}
-	
+
 	@Override
 	public boolean visit(TypeDeclaration elem) {
 		if (ElementTypeTeller.isVertex(elem) || ElementTypeTeller.isTransition(elem)) {
@@ -33,10 +33,10 @@ public class ModelClassVisitor extends VisitorBase {
 			// TODO: check port
 		} else {
 			collector.report(new InvalidModelClassElement(collector.getSourceInfo(), elem.getName()));
-			}
+		}
 		return false;
 	}
-	
+
 	@Override
 	public boolean visit(FieldDeclaration elem) {
 		if (!Utils.isAllowedAttributeType(elem.getType(), false)) {
@@ -49,18 +49,18 @@ public class ModelClassVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(MethodDeclaration elem) {
-	    if (!elem.isConstructor()) {
+		if (!elem.isConstructor()) {
 			if (elem.getReturnType2() != null && !Utils.isAllowedParameterType(elem.getReturnType2(), true)) {
 				collector.report(new InvalidTypeWithClassAllowed(collector.getSourceInfo(), elem.getReturnType2()));
-	    }
+			}
 		}
-	    
+
 		Utils.checkModifiers(collector, elem);
-		for(Object obj : elem.parameters()) {
-			SingleVariableDeclaration param = (SingleVariableDeclaration)obj;
+		for (Object obj : elem.parameters()) {
+			SingleVariableDeclaration param = (SingleVariableDeclaration) obj;
 			if (!Utils.isAllowedParameterType(param.getType(), false)) {
 				collector.report(new InvalidTypeWithClassAllowed(collector.getSourceInfo(), param.getType()));
-		}
+			}
 		}
 		// TODO: check body
 		return false;

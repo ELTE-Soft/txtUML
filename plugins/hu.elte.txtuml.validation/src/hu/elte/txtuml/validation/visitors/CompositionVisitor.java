@@ -20,13 +20,13 @@ public class CompositionVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(TypeDeclaration node) {
-					if (ElementTypeTeller.isContainer(node)) {
-						++containerMembers;
-					} else {
-						++partMembers;
-					}
-					return false;
-				}
+		if (ElementTypeTeller.isContainer(node)) {
+			++containerMembers;
+		} else {
+			++partMembers;
+		}
+		return false;
+	}
 
 	public void check() {
 		if (containerMembers != 1 || partMembers != 1) {

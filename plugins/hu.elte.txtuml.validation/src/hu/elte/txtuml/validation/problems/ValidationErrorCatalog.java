@@ -1,7 +1,8 @@
 package hu.elte.txtuml.validation.problems;
 
 /**
- * An enumeration for assigning different codes values to the different problems.
+ * An enumeration for assigning different codes values to the different
+ * problems.
  */
 public enum ValidationErrorCatalog {
 
@@ -15,11 +16,11 @@ public enum ValidationErrorCatalog {
 
 	UNKNOWN_TRANSITION_METHOD, STATE_METHOD_PARAMETERS, UNKNOWN_CLASS_IN_STATE,
 
-	TRANSITION_METHOD_NONVOID_RETURN, TRANSITION_METHOD_PARAMETERS, 
-	
+	TRANSITION_METHOD_NONVOID_RETURN, TRANSITION_METHOD_PARAMETERS,
+
 	TRANSITION_FROM_OUTSIDE, TRANSITION_TO_OUTSIDE, INITIAL_TRANSITION_WITH_TRIGGER, TRANSITION_WITHOUT_TRIGGER,
-	
+
 	MISSING_TRANSITION_SOURCE, MISSING_TRANSITION_TARGET,
-	
+
 	DATA_TYPE_FIELD_NOT_FINAL, DATA_TYPE_FIELD_INVALID_TYPE, DATA_TYPE_INVALID_METHOD
 }
