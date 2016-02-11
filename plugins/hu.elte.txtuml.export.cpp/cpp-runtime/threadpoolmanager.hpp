@@ -7,19 +7,11 @@
 
 #include "threadpool.hpp"
 #include "runtimetypes.hpp"
+#include "threadconfiguration.hpp"
 
 class ThreadPoolManager
 {
-	struct LinearFunction{
-		public:
-			LinearFunction(double gradient_,int constant_): gradient(gradient_),constant(constant_) {}
-			int operator()(int n) {return  round(gradient*n + constant);} 
-		private:
-			double gradient;
-			int constant;
-	};
-	
-	
+
 	public:
 		ThreadPoolManager();
 		~ThreadPoolManager()
@@ -71,7 +63,6 @@ class ThreadPoolManager
 		std::map<id_type,StateMachineThreadPool*> id_matching_map;
 		std::map<id_type,LinearFunction*>  function_matching_map;
 		std::map<id_type,int> maximum_thread_map;
-		unsigned int number_of_pools;
 	
 };
 
