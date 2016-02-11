@@ -10,7 +10,6 @@ import hu.elte.txtuml.examples.monitoring.model.ResourceMonitor;
 
 @Group(contains = { ResourceMonitor.class })
 @Group(contains = { Alert.class, Aggregator.class })
-@Multithreading(false)
 public class MonitoringConfiguration extends Configuration {
 
 }

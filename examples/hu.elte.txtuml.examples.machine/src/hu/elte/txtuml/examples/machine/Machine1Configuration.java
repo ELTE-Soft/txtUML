@@ -7,6 +7,5 @@ import hu.elte.txtuml.examples.machine.model1.Machine;
 import hu.elte.txtuml.examples.machine.model1.User;
 
 @Group(contains = { Machine.class, User.class })
-@Multithreading(false)
 public class Machine1Configuration extends Configuration {
 }

@@ -12,7 +12,6 @@ import hu.elte.txtuml.examples.garage.control.model.Motor;
 @Group(contains = { Door.class, Motor.class })
 @Group(contains = { Keyboard.class })
 @Group(contains = { Alarm.class })
-@Multithreading(false)
 public class GarageConfiguration extends Configuration {
 
 }

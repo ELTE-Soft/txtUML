@@ -52,7 +52,7 @@ public class Uml2ToCppExporter {
 	List<String> classNames;
 
 	public Uml2ToCppExporter(Model model, Map<String, ThreadPoolConfiguration> threadDescription,
-			boolean threadManagement, boolean addRuntimeOption, boolean debugOption) {
+			 boolean addRuntimeOption, boolean debugOption) {
 
 		classExporter = new ClassExporter();
 
@@ -72,14 +72,8 @@ public class Uml2ToCppExporter {
 		} else {
 			Options.setDebugLog(false);
 		}
-		if (threadManagement) {
-			Options.setThreadManagement();
-
-			threadManager = new ThreadHandlingManager(classList, threadDescription);
-		} else {
-			threadManager = new ThreadHandlingManager();
-			Options.setThreadManagement(false);
-		}
+		threadManager = new ThreadHandlingManager(classList, threadDescription);
+		
 
 	}
 
@@ -95,10 +89,9 @@ public class Uml2ToCppExporter {
 
 		for (Class item : classList) {
 			classExporter.reiniIialize();
-			if (Options.isThreadManagement()) {
-				classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
+			classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
 
-			}
+			
 			classExporter.createSource(item, outputDirectory);
 
 			classNames.addAll(classExporter.getSubmachines());

@@ -7,8 +7,7 @@ import hu.elte.txtuml.api.deployment.Multithreading;
 import hu.elte.txtuml.examples.printer.model.*;
 
 @Group(contains = { Human.class }) // the human will be a separate thread and
-									// everything else will be an other
-@Multithreading(true)
+				// everything else will be an other
 public class PrinterConfiguration extends Configuration {
 
 }

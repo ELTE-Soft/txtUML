@@ -4,7 +4,6 @@ import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.deployment.Configuration;
 import hu.elte.txtuml.api.deployment.Group;
 import hu.elte.txtuml.api.deployment.GroupContainer;
-import hu.elte.txtuml.api.deployment.Multithreading;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -18,8 +17,6 @@ public class ThreadDescriptionExporter {
 
 	private Map<String, ThreadPoolConfiguration> configMap;
 	private boolean descriptionExported = false;
-	private boolean isMultiThreading = false;
-	private boolean containsMulthreadingAnnotaion = false;
 
 	List<String> warningList;
 	List<String> errorList;
@@ -57,24 +54,8 @@ public class ThreadDescriptionExporter {
 
 				exportGroup((Group) annotaion);
 
-			} else if (annotaion instanceof Multithreading) {
-				containsMulthreadingAnnotaion = true;
-				Multithreading mlt = (Multithreading) annotaion;
-				if (mlt.value()) {
-					isMultiThreading = true;
-				} else {
-					isMultiThreading = false;
-				}
 			} else {
-				warningList.add("Only Group and Multithreading annotations are allowed to use.");
-			}
-		}
-
-		if (!containsMulthreadingAnnotaion) {
-			warningList.add("Multithreading option from the description is missing.");
-
-			if (!configMap.isEmpty()) {
-				isMultiThreading = true;
+				warningList.add("Only Group annotations are allowed to use.");
 			}
 		}
 
@@ -91,7 +72,7 @@ public class ThreadDescriptionExporter {
 	}
 
 	public boolean warningListIsEmpty() {
-		return !warningList.isEmpty();
+		return warningList.isEmpty();
 	}
 
 	public List<String> getErrors() {
@@ -100,10 +81,6 @@ public class ThreadDescriptionExporter {
 
 	public List<String> getWarnings() {
 		return warningList;
-	}
-
-	public boolean isMultiThreading() {
-		return isMultiThreading;
 	}
 
 	private void exportGroup(Group group) {

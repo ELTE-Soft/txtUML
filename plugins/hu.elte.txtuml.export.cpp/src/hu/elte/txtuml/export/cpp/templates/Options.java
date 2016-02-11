@@ -29,16 +29,4 @@ public class Options {
 		return addRuntime;
 	}
 
-	public static void setThreadManagement(boolean value) {
-		threadManagement = value;
-	}
-
-	public static void setThreadManagement() {
-		setThreadManagement(true);
-	}
-
-	public static boolean isThreadManagement() {
-		return threadManagement;
-	}
-
 }
