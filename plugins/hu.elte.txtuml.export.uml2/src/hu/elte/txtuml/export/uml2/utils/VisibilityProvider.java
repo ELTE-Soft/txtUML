@@ -11,8 +11,7 @@ public final class VisibilityProvider {
 	private VisibilityProvider() {
 	}
 
-	public static VisibilityKind getVisibilityOfNamedElementFromModifiers(
-			NamedElement element, int modifiers) {
+	public static VisibilityKind getVisibilityOfNamedElementFromModifiers(NamedElement element, int modifiers) {
 		if (Modifier.isPrivate(modifiers)) {
 			return VisibilityKind.PRIVATE_LITERAL;
 		} else if (Modifier.isProtected(modifiers)) {
@@ -24,12 +23,10 @@ public final class VisibilityProvider {
 		}
 	}
 
-	private static VisibilityKind getVisibilityOfElementWithoutVisibilityModifier(
-			NamedElement element) {
+	private static VisibilityKind getVisibilityOfElementWithoutVisibilityModifier(NamedElement element) {
 		if (element instanceof Property) {
 			return VisibilityKind.PRIVATE_LITERAL;
-		} else if (element instanceof Operation
-				|| element instanceof org.eclipse.uml2.uml.Classifier) {
+		} else if (element instanceof Operation || element instanceof org.eclipse.uml2.uml.Classifier) {
 			return VisibilityKind.PUBLIC_LITERAL;
 		} else {
 			return VisibilityKind.PACKAGE_LITERAL;

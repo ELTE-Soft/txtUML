@@ -1,10 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.backend;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.ParameterExpr;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
-import hu.elte.txtuml.export.uml2.utils.ActivityEditor;
-
 import java.util.HashMap;
 
 import org.eclipse.uml2.uml.ActivityNode;
@@ -13,12 +8,16 @@ import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.ParameterDirectionKind;
 import org.eclipse.uml2.uml.UMLFactory;
 
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.ParameterExpr;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
+import hu.elte.txtuml.export.uml2.utils.ActivityEditor;
+
 public interface ParameterMap {
 
 	static ParameterMap create(ActivityEditor editor) {
 		@SuppressWarnings("serial")
-		class ParameterMapImpl extends HashMap<String, ActivityParameterNode>
-				implements ParameterMap {
+		class ParameterMapImpl extends HashMap<String, ActivityParameterNode> implements ParameterMap {
 
 			private ActivityParameterNode ret;
 
@@ -33,8 +32,7 @@ public interface ParameterMap {
 				param.setType(paramToCopy.getType());
 
 				editor.addOwnedParameter(param);
-				ActivityParameterNode paramNode = editor
-						.createParameterNode(param);
+				ActivityParameterNode paramNode = editor.createParameterNode(param);
 				this.put(name, paramNode);
 
 				if (direction == ParameterDirectionKind.RETURN_LITERAL) {
@@ -48,10 +46,9 @@ public interface ParameterMap {
 			}
 
 			@Override
-			public ParameterExpr get(String name,
-					ExpressionExporter<? extends ActivityNode> expressionExporter) {
+			public ParameterExpr get(String name, ExpressionExporter<? extends ActivityNode> expressionExporter) {
 				ActivityParameterNode paramNode = super.get(name);
-				if(paramNode != null) {
+				if (paramNode != null) {
 					return createExpr(paramNode, expressionExporter);
 				} else {
 					return null;
@@ -59,8 +56,7 @@ public interface ParameterMap {
 			}
 
 			@Override
-			public ParameterExpr getReturnParam(
-					ExpressionExporter<? extends ActivityNode> expressionExporter) {
+			public ParameterExpr getReturnParam(ExpressionExporter<? extends ActivityNode> expressionExporter) {
 				return createExpr(ret, expressionExporter);
 			}
 		}

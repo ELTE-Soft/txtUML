@@ -1,11 +1,5 @@
 package hu.elte.txtuml.export.uml2;
 
-import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
-import hu.elte.txtuml.export.uml2.transform.backend.RuntimeExportException;
-import hu.elte.txtuml.export.uml2.transform.exporters.ModelExporter;
-import hu.elte.txtuml.export.uml2.transform.visitors.ModelObtainer;
-import hu.elte.txtuml.export.uml2.utils.SharedUtils;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -21,6 +15,12 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
+import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
+import hu.elte.txtuml.export.uml2.transform.backend.RuntimeExportException;
+import hu.elte.txtuml.export.uml2.transform.exporters.ModelExporter;
+import hu.elte.txtuml.export.uml2.transform.visitors.ModelObtainer;
+import hu.elte.txtuml.export.uml2.utils.SharedUtils;
+
 /**
  * This class is responsible for exporting Eclipse UML2 model generated from a
  * txtUML model.
@@ -30,11 +30,9 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
  */
 public class UML2 {
 
-	public static void exportModel(String sourceProject, String className,
-			String outputDirectory) throws Exception {
+	public static void exportModel(String sourceProject, String className, String outputDirectory) throws Exception {
 		IProject project;
-		project = ResourcesPlugin.getWorkspace().getRoot()
-				.getProject(sourceProject);
+		project = ResourcesPlugin.getWorkspace().getRoot().getProject(sourceProject);
 		if (project == null || !project.exists()) {
 			throw new Exception("Cannot find project '" + sourceProject + "'");
 		}
@@ -57,10 +55,9 @@ public class UML2 {
 	 *            The specified compilation unit.
 	 * @return The type declaration of the txtUML model.
 	 *
-	 * @author Ádám Ancsin
+	 * @author ï¿½dï¿½m Ancsin
 	 */
-	private static TypeDeclaration obtainModelFromCompilationUnit(
-			CompilationUnit compilationUnit) {
+	private static TypeDeclaration obtainModelFromCompilationUnit(CompilationUnit compilationUnit) {
 		return new ModelObtainer(compilationUnit).getModel();
 	}
 
@@ -85,15 +82,12 @@ public class UML2 {
 	 * 
 	 * @author Adam Ancsin
 	 */
-	public static void exportModel(String txtUMLModelName, File sourceFile,
-			IJavaProject project, String outputDirectory)
-			throws JavaModelException, IOException, ExportException {
+	public static void exportModel(String txtUMLModelName, File sourceFile, IJavaProject project,
+			String outputDirectory) throws JavaModelException, IOException, ExportException {
 
-		CompilationUnit compilationUnit = SharedUtils.parseJavaSource(
-				sourceFile, project);
+		CompilationUnit compilationUnit = SharedUtils.parseJavaSource(sourceFile, project);
 
-		ModelExporter modelExporter = new ModelExporter(
-				obtainModelFromCompilationUnit(compilationUnit),
+		ModelExporter modelExporter = new ModelExporter(obtainModelFromCompilationUnit(compilationUnit),
 				txtUMLModelName, outputDirectory);
 		try {
 			modelExporter.exportModel();

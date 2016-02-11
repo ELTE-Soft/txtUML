@@ -62,8 +62,7 @@ public class ModelMapCollector {
 			throw new ModelMapException(CANNOT_CREATE_URI);
 		}
 		try {
-			OutputStream out = new ExtensibleURIConverterImpl()
-					.createOutputStream(uri);
+			OutputStream out = new ExtensibleURIConverterImpl().createOutputStream(uri);
 			ObjectOutputStream stream = new ObjectOutputStream(out);
 			stream.writeObject(path);
 			stream.writeObject(map);

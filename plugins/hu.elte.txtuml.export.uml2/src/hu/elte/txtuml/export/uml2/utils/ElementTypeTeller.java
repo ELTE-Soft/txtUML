@@ -1,5 +1,10 @@
 package hu.elte.txtuml.export.uml2.utils;
 
+import org.eclipse.jdt.core.dom.IExtendedModifier;
+import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
+
 import hu.elte.txtuml.api.model.Association;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
@@ -10,11 +15,6 @@ import hu.elte.txtuml.api.model.StateMachine.State;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.external.ExternalClass;
-
-import org.eclipse.jdt.core.dom.IExtendedModifier;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.Modifier;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 /**
  * This class provides utilities for telling the types of txtUML model elements.
@@ -44,8 +44,7 @@ public final class ElementTypeTeller {
 	}
 
 	public static boolean isCompositeState(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
-				CompositeState.class);
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, CompositeState.class);
 	}
 
 	public static boolean isSimpleState(TypeDeclaration typeDeclaration) {
@@ -53,13 +52,11 @@ public final class ElementTypeTeller {
 	}
 
 	public static boolean isTransition(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
-				Transition.class);
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Transition.class);
 	}
 
 	public static boolean isModelClass(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
-				ModelClass.class);
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ModelClass.class);
 	}
 
 	public static boolean isSignal(TypeDeclaration typeDeclaration) {
@@ -67,19 +64,14 @@ public final class ElementTypeTeller {
 	}
 
 	public static boolean isAssociation(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
-				Association.class);
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Association.class);
 	}
 
-	public static boolean isSpecificClassifier(
-			TypeDeclaration classifierDeclaration) {
-		ITypeBinding superclassBinding = classifierDeclaration.resolveBinding()
-				.getSuperclass();
+	public static boolean isSpecificClassifier(TypeDeclaration classifierDeclaration) {
+		ITypeBinding superclassBinding = classifierDeclaration.resolveBinding().getSuperclass();
 		String superclassQualifiedName = superclassBinding.getQualifiedName();
-		boolean extendsModelClass = superclassQualifiedName
-				.equals(ModelClass.class.getCanonicalName());
-		boolean extendsSignal = superclassQualifiedName.equals(Signal.class
-				.getCanonicalName());
+		boolean extendsModelClass = superclassQualifiedName.equals(ModelClass.class.getCanonicalName());
+		boolean extendsSignal = superclassQualifiedName.equals(Signal.class.getCanonicalName());
 
 		return !extendsModelClass && !extendsSignal;
 	}
@@ -98,7 +90,6 @@ public final class ElementTypeTeller {
 	}
 
 	public static boolean isExternalClass(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
-				ExternalClass.class);
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ExternalClass.class);
 	}
 }

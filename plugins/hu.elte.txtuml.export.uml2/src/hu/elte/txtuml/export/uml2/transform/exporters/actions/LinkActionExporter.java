@@ -14,10 +14,10 @@ public class LinkActionExporter extends AbstractLinkActionExporter {
 	public LinkActionExporter(ExpressionExporter<? extends ActivityNode> expressionExporter) {
 		super(expressionExporter);
 	}
-	
+
 	@Override
 	public void export(IMethodBinding binding, List<Expr> args) {
-		export(binding, args, UMLPackage.Literals.CREATE_LINK_ACTION);	
+		export(binding, args, UMLPackage.Literals.CREATE_LINK_ACTION);
 	}
 
 }

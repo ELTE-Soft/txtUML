@@ -50,7 +50,7 @@ public class BlockVisitor extends ASTVisitor {
 		new ForEachActionExporter(blockExporter).exportForEachStatement(node);
 		return false;
 	}
-	
+
 	@Override
 	public boolean visit(EmptyStatement node) {
 		blockExporter.createSequenceNode(";");
@@ -112,8 +112,7 @@ public class BlockVisitor extends ASTVisitor {
 		List<Expr> args = new LinkedList<>();
 		ExpressionExporter<? extends ActivityNode> expressionExporter = blockExporter.getExpressionExporter();
 		arguments.forEach(a -> args.add(expressionExporter.export((Expression) a)));
-		Operation calledCtor = blockExporter.getTypeExporter()
-				.exportMethodAsOperation(ctorBinding, args);
+		Operation calledCtor = blockExporter.getTypeExporter().exportMethodAsOperation(ctorBinding, args);
 		expressionExporter.createCallOperationAction(calledCtor, null, args);
 	}
 

@@ -12,8 +12,9 @@ import org.eclipse.uml2.uml.Variable;
 public abstract class AbstractActivityEditor<ElemType> {
 
 	public abstract ActivityEdge createEdge(String name, EClass type);
+
 	public abstract ElemType createAndAddNode(String name, EClass type);
-	
+
 	public abstract Variable createVariable(String name, Type type);
 
 	/**
@@ -27,8 +28,7 @@ public abstract class AbstractActivityEditor<ElemType> {
 	 *            The target activity node.
 	 * @return The created activity edge.
 	 */
-	public ActivityEdge createEdgeBetweenActivityNodes(ActivityNode source,
-			ActivityNode target) {
+	public ActivityEdge createEdgeBetweenActivityNodes(ActivityNode source, ActivityNode target) {
 		if (source instanceof ObjectNode || target instanceof ObjectNode) {
 			return createObjectFlowBetweenActivityNodes(source, target);
 		} else {
@@ -46,11 +46,9 @@ public abstract class AbstractActivityEditor<ElemType> {
 	 *            The target activity node.
 	 * @return The created control flow.
 	 */
-	public ActivityEdge createControlFlowBetweenActivityNodes(
-			ActivityNode source, ActivityNode target) {
-		ActivityEdge edge = createEdge(
-				"controlflow_from_" + source.getName() + "_to_"
-						+ target.getName(), UMLPackage.Literals.CONTROL_FLOW);
+	public ActivityEdge createControlFlowBetweenActivityNodes(ActivityNode source, ActivityNode target) {
+		ActivityEdge edge = createEdge("controlflow_from_" + source.getName() + "_to_" + target.getName(),
+				UMLPackage.Literals.CONTROL_FLOW);
 		edge.setSource(source);
 		edge.setTarget(target);
 		return edge;
@@ -66,11 +64,9 @@ public abstract class AbstractActivityEditor<ElemType> {
 	 *            The target activity node.
 	 * @return The created object flow.
 	 */
-	public ActivityEdge createObjectFlowBetweenActivityNodes(
-			ActivityNode source, ActivityNode target) {
-		ActivityEdge edge = createEdge(
-				"objectflow_from_" + source.getName() + "_to_"
-						+ target.getName(), UMLPackage.Literals.OBJECT_FLOW);
+	public ActivityEdge createObjectFlowBetweenActivityNodes(ActivityNode source, ActivityNode target) {
+		ActivityEdge edge = createEdge("objectflow_from_" + source.getName() + "_to_" + target.getName(),
+				UMLPackage.Literals.OBJECT_FLOW);
 		edge.setSource(source);
 		edge.setTarget(target);
 
@@ -78,8 +74,7 @@ public abstract class AbstractActivityEditor<ElemType> {
 	}
 
 	public SequenceNode createSequenceNode(String name) {
-		return (SequenceNode) createAndAddNode(name,
-				UMLPackage.Literals.SEQUENCE_NODE);
+		return (SequenceNode) createAndAddNode(name, UMLPackage.Literals.SEQUENCE_NODE);
 	}
-	
+
 }

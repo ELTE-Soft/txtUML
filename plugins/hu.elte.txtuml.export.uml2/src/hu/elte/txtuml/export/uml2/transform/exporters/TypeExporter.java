@@ -1,8 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.exporters;
 
-import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
-
 import java.util.List;
 
 import org.eclipse.emf.common.util.BasicEList;
@@ -17,6 +14,9 @@ import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.StructuralFeature;
 import org.eclipse.uml2.uml.Type;
+
+import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
 
 /**
  * Instances of this class are responsible for matching txtUML types to UML2
@@ -54,24 +54,15 @@ public class TypeExporter {
 		this.modelExporter = modelExporter;
 		Model exportedModel = modelExporter.getExportedModel();
 
-		UML2Integer = (PrimitiveType) exportedModel
-				.getImportedMember(UML2_INTEGER_NAME);
-		UML2Boolean = (PrimitiveType) exportedModel
-				.getImportedMember(UML2_BOOLEAN_NAME);
-		UML2String = (PrimitiveType) exportedModel
-				.getImportedMember(UML2_STRING_NAME);
-		UML2Real = (PrimitiveType) exportedModel
-				.getImportedMember(UML2_REAL_NAME);
-		UML2UnlimitedNatural = (PrimitiveType) exportedModel
-				.getImportedMember(UML2_UNLIMITED_NATURAL_NAME);
-		integerOperations = (Class) exportedModel
-				.getImportedMember(INTEGER_OPERATIONS_NAME);
-		booleanOperations = (Class) exportedModel
-				.getImportedMember(BOOLEAN_OPERATIONS_NAME);
-		stringOperations = (Class) exportedModel
-				.getImportedMember(STRING_OPERATIONS_NAME);
-		objectOperations = (Class) exportedModel
-				.getImportedMember(OBJECT_OPERATIONS_NAME);
+		UML2Integer = (PrimitiveType) exportedModel.getImportedMember(UML2_INTEGER_NAME);
+		UML2Boolean = (PrimitiveType) exportedModel.getImportedMember(UML2_BOOLEAN_NAME);
+		UML2String = (PrimitiveType) exportedModel.getImportedMember(UML2_STRING_NAME);
+		UML2Real = (PrimitiveType) exportedModel.getImportedMember(UML2_REAL_NAME);
+		UML2UnlimitedNatural = (PrimitiveType) exportedModel.getImportedMember(UML2_UNLIMITED_NATURAL_NAME);
+		integerOperations = (Class) exportedModel.getImportedMember(INTEGER_OPERATIONS_NAME);
+		booleanOperations = (Class) exportedModel.getImportedMember(BOOLEAN_OPERATIONS_NAME);
+		stringOperations = (Class) exportedModel.getImportedMember(STRING_OPERATIONS_NAME);
+		objectOperations = (Class) exportedModel.getImportedMember(OBJECT_OPERATIONS_NAME);
 	}
 
 	/**
@@ -83,8 +74,7 @@ public class TypeExporter {
 	 *
 	 * @author Adam Ancsin
 	 */
-	public org.eclipse.uml2.uml.Type exportType(
-			org.eclipse.jdt.core.dom.Type sourceType) {
+	public org.eclipse.uml2.uml.Type exportType(org.eclipse.jdt.core.dom.Type sourceType) {
 		if (sourceType == null) {
 			return null;
 		}
@@ -156,25 +146,20 @@ public class TypeExporter {
 		}
 	}
 
-	public StructuralFeature exportFieldAsStructuralFeature(
-			IVariableBinding field) {
+	public StructuralFeature exportFieldAsStructuralFeature(IVariableBinding field) {
 
-		Classifier exportedOwner = (Classifier) exportNonPrimitiveType(field
-				.getDeclaringClass());
+		Classifier exportedOwner = (Classifier) exportNonPrimitiveType(field.getDeclaringClass());
 
 		if (exportedOwner == null) { // TODO unknown type of field owner
 			return null;
 		}
 
-		return exportedOwner.getAttribute(field.getName(),
-				exportType(field.getType()));
+		return exportedOwner.getAttribute(field.getName(), exportType(field.getType()));
 	}
 
-	public Operation exportMethodAsOperation(IMethodBinding method,
-			List<Expr> args) {
+	public Operation exportMethodAsOperation(IMethodBinding method, List<Expr> args) {
 
-		Classifier exportedOwner = (Classifier) exportNonPrimitiveType(method
-				.getDeclaringClass());
+		Classifier exportedOwner = (Classifier) exportNonPrimitiveType(method.getDeclaringClass());
 
 		ITypeBinding returnType = method.getReturnType();
 		Type exportedReturnType = null;
@@ -182,13 +167,11 @@ public class TypeExporter {
 		if (!isVoid(returnType)) {
 			exportedReturnType = exportType(returnType);
 		}
-		
-		return exportMethodAsOperation(exportedOwner, method.getName(),
-				exportedReturnType, args);
+
+		return exportMethodAsOperation(exportedOwner, method.getName(), exportedReturnType, args);
 	}
 
-	public Operation exportMethodAsOperation(Classifier exportedOwner,
-			String name, Type returnType, List<Expr> args) {
+	public Operation exportMethodAsOperation(Classifier exportedOwner, String name, Type returnType, List<Expr> args) {
 
 		if (exportedOwner == null) { // TODO unknown type of method owner
 			return null;
@@ -288,8 +271,7 @@ public class TypeExporter {
 	}
 
 	public static boolean isAction(IMethodBinding binding) {
-		return binding.getDeclaringClass().getQualifiedName()
-				.equals(Action.class.getName());
+		return binding.getDeclaringClass().getQualifiedName().equals(Action.class.getName());
 	}
 
 }

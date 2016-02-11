@@ -16,15 +16,13 @@ public class DoWhileActionExporter extends AbstractLoopExporter {
 
 	public void exportDoWhileStatement(DoStatement node) {
 		String name = "dowhile";
-		
-		LoopNode loopNode = (LoopNode) blockExporter.createAndAddNode(name ,
-				UMLPackage.Literals.LOOP_NODE);
+
+		LoopNode loopNode = (LoopNode) blockExporter.createAndAddNode(name, UMLPackage.Literals.LOOP_NODE);
 
 		exportBlock(loopNode, loopNode.getSetupParts(), node.getBody(), "init");
 
-		Expr exportedCondition = exportCondition(loopNode, loopNode.getTests(),
-				node.getExpression(), "cond");
-		loopNode.setName(name + " "  + exportedCondition.getName());
+		Expr exportedCondition = exportCondition(loopNode, loopNode.getTests(), node.getExpression(), "cond");
+		loopNode.setName(name + " " + exportedCondition.getName());
 		loopNode.setDecider(exportedCondition.evaluate().getOutputPin());
 
 		exportBlock(loopNode, loopNode.getBodyParts(), node.getBody(), "body");

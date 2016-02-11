@@ -21,17 +21,15 @@ abstract class AbstractLoopExporter extends AbstractControlStructureExporter {
 		super(blockExporter);
 	}
 
-	protected void exportLoop(String name, List<Expression> initializers,
-			Expression condition, List<Expression> updaters, Statement body) {
+	protected void exportLoop(String name, List<Expression> initializers, Expression condition,
+			List<Expression> updaters, Statement body) {
 
-		LoopNode loopNode = (LoopNode) blockExporter.createAndAddNode(name,
-				UMLPackage.Literals.LOOP_NODE);
+		LoopNode loopNode = (LoopNode) blockExporter.createAndAddNode(name, UMLPackage.Literals.LOOP_NODE);
 
 		exportList(loopNode, loopNode.getSetupParts(), initializers, "init");
 
-		Expr exportedCondition = exportCondition(loopNode, loopNode.getTests(),
-				condition, "cond");
-		loopNode.setName(name + " "  + exportedCondition.getName());
+		Expr exportedCondition = exportCondition(loopNode, loopNode.getTests(), condition, "cond");
+		loopNode.setName(name + " " + exportedCondition.getName());
 		loopNode.setDecider(exportedCondition.evaluate().getOutputPin());
 
 		exportBlock(loopNode, loopNode.getBodyParts(), body, "body");
@@ -40,13 +38,11 @@ abstract class AbstractLoopExporter extends AbstractControlStructureExporter {
 
 	}
 
-	protected void exportList(LoopNode loopNode, EList<ExecutableNode> nodeList,
-			List<Expression> list, String byName) {
+	protected void exportList(LoopNode loopNode, EList<ExecutableNode> nodeList, List<Expression> list, String byName) {
 		if (list == null || list.isEmpty()) {
 			return;
 		}
-		SequenceNode sequenceNode = (SequenceNode) loopNode.createNode(byName,
-				UMLPackage.Literals.SEQUENCE_NODE);
+		SequenceNode sequenceNode = (SequenceNode) loopNode.createNode(byName, UMLPackage.Literals.SEQUENCE_NODE);
 		nodeList.add(sequenceNode);
 		sequenceNode.setName(byName);
 		ExpressionExporter<? extends ActivityNode> exporter = createExpressionExporter(loopNode,
@@ -54,10 +50,9 @@ abstract class AbstractLoopExporter extends AbstractControlStructureExporter {
 		list.forEach(exporter::export);
 	}
 
-	protected Expr exportCondition(LoopNode loopNode,
-			EList<ExecutableNode> nodeList, Expression expression, String byName) {
-		SequenceNode sequenceNode = (SequenceNode) loopNode.createNode(byName,
-				UMLPackage.Literals.SEQUENCE_NODE);
+	protected Expr exportCondition(LoopNode loopNode, EList<ExecutableNode> nodeList, Expression expression,
+			String byName) {
+		SequenceNode sequenceNode = (SequenceNode) loopNode.createNode(byName, UMLPackage.Literals.SEQUENCE_NODE);
 		nodeList.add(sequenceNode);
 		sequenceNode.setName(byName);
 		ExpressionExporter<? extends ActivityNode> exporter = createExpressionExporter(loopNode,
@@ -70,17 +65,14 @@ abstract class AbstractLoopExporter extends AbstractControlStructureExporter {
 		}
 	}
 
-	protected void exportBlock(LoopNode loopNode, EList<ExecutableNode> nodeList,
-			Statement block, String byName) {
+	protected void exportBlock(LoopNode loopNode, EList<ExecutableNode> nodeList, Statement block, String byName) {
 		if (block == null) {
 			return;
 		}
-		SequenceNode sequenceNode = (SequenceNode) loopNode.createNode(byName,
-				UMLPackage.Literals.SEQUENCE_NODE);
+		SequenceNode sequenceNode = (SequenceNode) loopNode.createNode(byName, UMLPackage.Literals.SEQUENCE_NODE);
 		nodeList.add(sequenceNode);
 		sequenceNode.setName(byName);
-		BlockExporter<ExecutableNode> exporter = createBlockExporter(sequenceNode,
-				sequenceNode.getExecutableNodes());
+		BlockExporter<ExecutableNode> exporter = createBlockExporter(sequenceNode, sequenceNode.getExecutableNodes());
 		exporter.export(block);
 	}
 }

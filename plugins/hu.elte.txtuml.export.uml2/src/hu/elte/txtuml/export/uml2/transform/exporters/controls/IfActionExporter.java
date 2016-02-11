@@ -34,8 +34,7 @@ public class IfActionExporter extends AbstractControlStructureExporter {
 
 		Variable var = blockExporter.createVariable("#if_cond_variable", blockExporter.getTypeExporter().getBoolean());
 
-		conditionalNode = (ConditionalNode) blockExporter.createAndAddNode(null,
-				UMLPackage.Literals.CONDITIONAL_NODE);
+		conditionalNode = (ConditionalNode) blockExporter.createAndAddNode(null, UMLPackage.Literals.CONDITIONAL_NODE);
 
 		thenClause = UMLFactory.eINSTANCE.createClause();
 		SequenceNode conditionSequence = (SequenceNode) conditionalNode.createNode("cond",

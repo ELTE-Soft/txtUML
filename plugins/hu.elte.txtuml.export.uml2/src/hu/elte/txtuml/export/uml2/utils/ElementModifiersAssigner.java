@@ -14,11 +14,9 @@ public final class ElementModifiersAssigner {
 	private ElementModifiersAssigner() {
 	}
 
-	public static void assignModifiersForElementBasedOnDeclaration(
-			NamedElement element, BodyDeclaration declaration) {
+	public static void assignModifiersForElementBasedOnDeclaration(NamedElement element, BodyDeclaration declaration) {
 		int modifiers = declaration.getModifiers();
-		VisibilityKind visibility = VisibilityProvider
-				.getVisibilityOfNamedElementFromModifiers(element, modifiers);
+		VisibilityKind visibility = VisibilityProvider.getVisibilityOfNamedElementFromModifiers(element, modifiers);
 		element.setVisibility(visibility);
 
 		boolean isAbstract = Modifier.isAbstract(modifiers);

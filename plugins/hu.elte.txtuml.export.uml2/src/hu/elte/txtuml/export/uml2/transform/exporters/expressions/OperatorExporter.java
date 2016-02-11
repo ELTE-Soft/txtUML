@@ -1,8 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.exporters.expressions;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
-import hu.elte.txtuml.utils.Pair;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +7,9 @@ import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Type;
+
+import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
+import hu.elte.txtuml.utils.Pair;
 
 public class OperatorExporter {
 
@@ -19,8 +19,7 @@ public class OperatorExporter {
 		this.expressionExporter = expressionExporter;
 	}
 
-	public Pair<Operation, Expr> exportRaw(String operator,
-			List<Expression> arguments) {
+	public Pair<Operation, Expr> exportRaw(String operator, List<Expression> arguments) {
 		List<Expr> args = new ArrayList<>();
 		arguments.forEach(a -> args.add(expressionExporter.export(a)));
 		return export(operator, args);
@@ -32,32 +31,26 @@ public class OperatorExporter {
 
 		Operation operation = getOperation(typeExporter, type, operator);
 
-		Expr ret = expressionExporter.createCallOperationAction(operation,
-				null, arguments);
+		Expr ret = expressionExporter.createCallOperationAction(operation, null, arguments);
 
 		return Pair.of(operation, ret);
 	}
 
-	private Operation getOperation(TypeExporter typeExporter, Type type,
-			String operator) {
+	private Operation getOperation(TypeExporter typeExporter, Type type, String operator) {
 		if (typeExporter.isInteger(type)) {
-			return typeExporter.getIntegerOperations().getOperation(
-					getIntegerOperationName(operator), null, null);
+			return typeExporter.getIntegerOperations().getOperation(getIntegerOperationName(operator), null, null);
 		}
 
 		if (typeExporter.isBoolean(type)) {
-			return typeExporter.getBooleanOperations().getOperation(
-					getBooleanOperationName(operator), null, null);
+			return typeExporter.getBooleanOperations().getOperation(getBooleanOperationName(operator), null, null);
 		}
 
 		if (typeExporter.isString(type)) {
-			return typeExporter.getStringOperations().getOperation(
-					getStringOperationName(operator), null, null);
+			return typeExporter.getStringOperations().getOperation(getStringOperationName(operator), null, null);
 		}
 
 		// TODO give better support for object equality and inequality checks
-		return typeExporter.getObjectOperations().getOperation(
-				getObjectOperationName(operator), null, null);
+		return typeExporter.getObjectOperations().getOperation(getObjectOperationName(operator), null, null);
 	}
 
 	private String getIntegerOperationName(String operator) {

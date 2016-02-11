@@ -12,12 +12,11 @@ public class ControlStructureEditor<ElemType> extends AbstractActivityEditor<Ele
 	private final StructuredActivityNode controlStructure;
 	private final EList<ElemType> nodeList;
 
-	public ControlStructureEditor(StructuredActivityNode controlStructure,
-			EList<ElemType> nodeList) {
+	public ControlStructureEditor(StructuredActivityNode controlStructure, EList<ElemType> nodeList) {
 		this.controlStructure = controlStructure;
 		this.nodeList = nodeList;
 	}
-	
+
 	public ControlStructureEditor(ControlStructureEditor<ElemType> editor) {
 		this.controlStructure = editor.controlStructure;
 		this.nodeList = editor.nodeList;

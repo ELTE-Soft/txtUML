@@ -74,8 +74,8 @@ public class ExpressionExporter<ElemType extends ActivityNode> extends ControlSt
 	 * @param typeExporter
 	 *            a type exporter
 	 */
-	public ExpressionExporter(StructuredActivityNode controlStructure, EList<ElemType> nodeList,
-			ParameterMap params, VariableMap vars, TypeExporter typeExporter) {
+	public ExpressionExporter(StructuredActivityNode controlStructure, EList<ElemType> nodeList, ParameterMap params,
+			VariableMap vars, TypeExporter typeExporter) {
 		super(controlStructure, nodeList);
 
 		this.params = params;
@@ -204,8 +204,8 @@ public class ExpressionExporter<ElemType extends ActivityNode> extends ControlSt
 
 		String newValueName = rightHandSide.getName();
 
-		AddVariableValueAction action = (AddVariableValueAction) createAndAddNode(
-				var.getName() + "=" + newValueName, UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION);
+		AddVariableValueAction action = (AddVariableValueAction) createAndAddNode(var.getName() + "=" + newValueName,
+				UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION);
 
 		action.setIsReplaceAll(true);
 
@@ -257,8 +257,8 @@ public class ExpressionExporter<ElemType extends ActivityNode> extends ControlSt
 		builder.append("=");
 		builder.append(newValueName);
 
-		AddStructuralFeatureValueAction action = (AddStructuralFeatureValueAction) createAndAddNode(
-				builder.toString(), UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION);
+		AddStructuralFeatureValueAction action = (AddStructuralFeatureValueAction) createAndAddNode(builder.toString(),
+				UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION);
 
 		action.setIsReplaceAll(true);
 

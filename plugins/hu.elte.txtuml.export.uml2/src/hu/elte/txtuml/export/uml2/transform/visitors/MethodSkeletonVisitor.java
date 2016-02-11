@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.visitors;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.MethodSkeletonExporter;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,14 +9,15 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.uml2.uml.Operation;
 
+import hu.elte.txtuml.export.uml2.transform.exporters.MethodSkeletonExporter;
+
 public class MethodSkeletonVisitor extends ASTVisitor {
 
 	private final MethodSkeletonExporter methodExporter;
 	private final TypeDeclaration classifierDeclaration;
 	private final Map<MethodDeclaration, Operation> visitedMethods;
 
-	public MethodSkeletonVisitor(MethodSkeletonExporter methodExporter,
-			TypeDeclaration classifierDeclaration) {
+	public MethodSkeletonVisitor(MethodSkeletonExporter methodExporter, TypeDeclaration classifierDeclaration) {
 		this.methodExporter = methodExporter;
 		this.classifierDeclaration = classifierDeclaration;
 		this.visitedMethods = new HashMap<>();
@@ -27,11 +26,9 @@ public class MethodSkeletonVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(MethodDeclaration methodDeclaration) {
 		if (isMemberFunction(methodDeclaration)) {
-			Operation operation = methodExporter
-					.exportMethodSkeleton(methodDeclaration);
+			Operation operation = methodExporter.exportMethodSkeleton(methodDeclaration);
 			Block methodBody = methodDeclaration.getBody();
-			String methodBodyText = methodBody != null ? methodBody.toString()
-					: "";
+			String methodBodyText = methodBody != null ? methodBody.toString() : "";
 			methodExporter.createOwnedBehavior(operation, methodBodyText);
 			visitedMethods.put(methodDeclaration, operation);
 		}

@@ -28,7 +28,8 @@ public class ForEachActionExporter {
 		Expr expr = blockExporter.getExpressionExporter().export(statement.getExpression());
 
 		BlockExporter<ActivityNode> subExporter = blockExporter.subExporter(expRegion, expRegion.getNodes());
-		ExpansionNode inNode = (ExpansionNode) subExporter.createAndAddNode("foreach-in", UMLPackage.Literals.EXPANSION_NODE);
+		ExpansionNode inNode = (ExpansionNode) subExporter.createAndAddNode("foreach-in",
+				UMLPackage.Literals.EXPANSION_NODE);
 		expRegion.getInputElements().add(inNode);
 
 		blockExporter.createObjectFlowBetweenActivityNodes(expr.getObjectNode(), inNode);

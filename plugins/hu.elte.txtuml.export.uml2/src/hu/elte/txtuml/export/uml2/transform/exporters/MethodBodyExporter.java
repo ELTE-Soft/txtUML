@@ -1,14 +1,14 @@
 package hu.elte.txtuml.export.uml2.transform.exporters;
 
-import hu.elte.txtuml.export.uml2.transform.backend.ParameterMap;
-import hu.elte.txtuml.export.uml2.utils.ActivityEditor;
-
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.SequenceNode;
+
+import hu.elte.txtuml.export.uml2.transform.backend.ParameterMap;
+import hu.elte.txtuml.export.uml2.utils.ActivityEditor;
 
 public class MethodBodyExporter extends ActivityEditor {
 
@@ -23,22 +23,18 @@ public class MethodBodyExporter extends ActivityEditor {
 		this.params = ParameterMap.create(this);
 	}
 
-	public static void export(Activity activity, ModelExporter modelExporter,
-			MethodDeclaration methodDeclaration) {
+	public static void export(Activity activity, ModelExporter modelExporter, MethodDeclaration methodDeclaration) {
 		export(activity, modelExporter, methodDeclaration, null);
 	}
 
-	public static void export(Activity activity, ModelExporter modelExporter,
-			MethodDeclaration methodDeclaration,
+	public static void export(Activity activity, ModelExporter modelExporter, MethodDeclaration methodDeclaration,
 			Iterable<Parameter> parameterList) {
 
-		new MethodBodyExporter(activity, modelExporter).exportMethodBody(
-				methodDeclaration, parameterList);
+		new MethodBodyExporter(activity, modelExporter).exportMethodBody(methodDeclaration, parameterList);
 	}
 
-	private void exportMethodBody(MethodDeclaration methodDeclaration,
-			Iterable<Parameter> parameterList) {
-		
+	private void exportMethodBody(MethodDeclaration methodDeclaration, Iterable<Parameter> parameterList) {
+
 		if (parameterList != null) {
 			parameterList.forEach(params::copyParameter);
 		}
@@ -47,19 +43,19 @@ public class MethodBodyExporter extends ActivityEditor {
 		finalNode = createFinalNode("final_node");
 
 		Block body = methodDeclaration.getBody();
-		if(body != null) {
+		if (body != null) {
 			SequenceNode bodyNode = BlockExporter.exportBody(this, body);
 			createControlFlowBetweenActivityNodes(initialNode, bodyNode);
 			createControlFlowBetweenActivityNodes(bodyNode, finalNode);
 		} else {
 			createControlFlowBetweenActivityNodes(initialNode, finalNode);
-		}	
+		}
 	}
-	
+
 	public ParameterMap getParameters() {
 		return params;
 	}
-	
+
 	public TypeExporter getTypeExporter() {
 		return modelExporter.getTypeExporter();
 	}
@@ -67,5 +63,5 @@ public class MethodBodyExporter extends ActivityEditor {
 	public ActivityNode getFinalNode() {
 		return finalNode;
 	}
-	
+
 }

@@ -1,11 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.exporters;
 
-import hu.elte.txtuml.export.uml2.transform.backend.ParameterMap;
-import hu.elte.txtuml.export.uml2.transform.backend.VariableMap;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
-import hu.elte.txtuml.export.uml2.transform.visitors.BlockVisitor;
-import hu.elte.txtuml.export.uml2.utils.ControlStructureEditor;
-
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Block;
@@ -14,6 +8,12 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.ExecutableNode;
 import org.eclipse.uml2.uml.SequenceNode;
 import org.eclipse.uml2.uml.StructuredActivityNode;
+
+import hu.elte.txtuml.export.uml2.transform.backend.ParameterMap;
+import hu.elte.txtuml.export.uml2.transform.backend.VariableMap;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
+import hu.elte.txtuml.export.uml2.transform.visitors.BlockVisitor;
+import hu.elte.txtuml.export.uml2.utils.ControlStructureEditor;
 
 public class BlockExporter<ElemType extends ActivityNode> extends ControlStructureEditor<ElemType> {
 
@@ -70,7 +70,8 @@ public class BlockExporter<ElemType extends ActivityNode> extends ControlStructu
 	/**
 	 * Exports inner blocks.
 	 */
-	public static SequenceNode exportBlock(BlockExporter<? extends ActivityNode> exporterOfParentBlock, Statement block, String nameOfBlock) {
+	public static SequenceNode exportBlock(BlockExporter<? extends ActivityNode> exporterOfParentBlock, Statement block,
+			String nameOfBlock) {
 		SequenceNode sequenceNode = exporterOfParentBlock.createSequenceNode(nameOfBlock);
 
 		ParameterMap params = exporterOfParentBlock.getParameters();
@@ -86,12 +87,14 @@ public class BlockExporter<ElemType extends ActivityNode> extends ControlStructu
 	/**
 	 * Exporter for inner blocks specifying the owning object and node list.
 	 */
-	public <NewElemType extends ActivityNode> BlockExporter<NewElemType> subExporter(StructuredActivityNode rootNode, EList<NewElemType> nodeContainer) {
+	public <NewElemType extends ActivityNode> BlockExporter<NewElemType> subExporter(StructuredActivityNode rootNode,
+			EList<NewElemType> nodeContainer) {
 		ParameterMap params = getParameters();
 		VariableMap vars = getVariables().copy();
 		TypeExporter typeExporter = getTypeExporter();
 
-		return new BlockExporter<NewElemType>(rootNode, nodeContainer, params, vars, typeExporter, exporterOfContainerMethod);
+		return new BlockExporter<NewElemType>(rootNode, nodeContainer, params, vars, typeExporter,
+				exporterOfContainerMethod);
 	}
 
 	@SuppressWarnings("unchecked")

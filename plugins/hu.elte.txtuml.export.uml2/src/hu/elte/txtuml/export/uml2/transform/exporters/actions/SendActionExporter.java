@@ -1,9 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.exporters.actions;
 
-import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
-
 import java.util.List;
 
 import org.eclipse.uml2.uml.ActivityNode;
@@ -13,6 +9,10 @@ import org.eclipse.uml2.uml.SendObjectAction;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
+
+import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
 
 public class SendActionExporter {
 
@@ -28,34 +28,29 @@ public class SendActionExporter {
 		Signal signalToSend = this.obtainSignalToSend(args);
 		Expr instanceExpression = args.get(0);
 
-		String sendActionName = "send_" + signalToSend.getName() + "_to_"
-				+ instanceExpression.getName();
-		
-		SendObjectAction sendAction = (SendObjectAction) 
-				expressionExporter.createAndAddNode(sendActionName, UMLPackage.Literals.SEND_OBJECT_ACTION);
-		
+		String sendActionName = "send_" + signalToSend.getName() + "_to_" + instanceExpression.getName();
+
+		SendObjectAction sendAction = (SendObjectAction) expressionExporter.createAndAddNode(sendActionName,
+				UMLPackage.Literals.SEND_OBJECT_ACTION);
+
 		createAndWireRequest(sendAction, signalToSend, args);
 		createAndWireTarget(sendAction, instanceExpression);
 	}
 
-	private void createAndWireTarget(SendObjectAction sendAction,
-			Expr instanceExpression) {
-		
+	private void createAndWireTarget(SendObjectAction sendAction, Expr instanceExpression) {
+
 		Type instanceType = instanceExpression.getType();
 
-		InputPin targetNode = (InputPin) sendAction.createTarget(
-				sendAction.getName() + "_target", instanceType,
+		InputPin targetNode = (InputPin) sendAction.createTarget(sendAction.getName() + "_target", instanceType,
 				UMLPackage.Literals.INPUT_PIN);
 
 		ObjectNode instanceNode = instanceExpression.getObjectNode();
 		expressionExporter.createObjectFlowBetweenActivityNodes(instanceNode, targetNode);
 	}
 
-	private void createAndWireRequest(SendObjectAction sendAction,
-			Signal signalToSend, List<Expr> args) {
+	private void createAndWireRequest(SendObjectAction sendAction, Signal signalToSend, List<Expr> args) {
 
-		InputPin requestNode = (InputPin) sendAction.createRequest(
-				sendAction.getName() + "_request", signalToSend,
+		InputPin requestNode = (InputPin) sendAction.createRequest(sendAction.getName() + "_request", signalToSend,
 				UMLPackage.Literals.VALUE_PIN);
 
 		Expr signalExpression = args.get(1);
@@ -64,9 +59,9 @@ public class SendActionExporter {
 	}
 
 	private Signal obtainSignalToSend(List<Expr> args) throws ExportException {
-		try{
+		try {
 			return (Signal) args.get(1).getType();
-		} catch(ClassCastException e) {
+		} catch (ClassCastException e) {
 			throw new ExportException("Failed to export send signal action. 2nd argument is not of type Signal.");
 		}
 	}
