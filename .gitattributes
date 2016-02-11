@@ -5,14 +5,18 @@
 *.java text
 *.txt text
 *.xml text
+*.xml_gen text
 *.xtend text
 *.xtext text
 *.prefs text
 *.properties text
 MANIFEST.MF text
+MANIFEST.MF_gen text
 *.mwe2 text
 *.g text
 *.tokens text
+*.cpp text
+*.hpp text
 
 # Define binaries explicitly here
 *.class binary
