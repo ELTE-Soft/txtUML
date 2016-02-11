@@ -25,6 +25,7 @@ import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
 
+import hu.elte.txtuml.export.uml2.UML2.ExportMode;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapCollector;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
 import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
@@ -57,19 +58,20 @@ public class ModelExporter {
 	private Map<TypeDeclaration, Classifier> classifiers;
 	private Map<TypeDeclaration, Map<MethodDeclaration, Operation>> methods;
 
-	public ModelExporter(CompilationUnit[] compilationUnits,
-			String JtxtUMLModelName, String sourcePackageName,
-			String outputDirectory) throws ExportException {
+	private ExportMode exportMode;
+
+	public ModelExporter(CompilationUnit[] compilationUnits, String JtxtUMLModelName, String sourcePackageName,
+			String outputDirectory, ExportMode exportMode) throws ExportException {
 		this.compilationUnits = compilationUnits;
 		this.sourcePackageName = sourcePackageName;
 		this.outputDirectory = outputDirectory;
+		this.exportMode = exportMode;
 
 		this.exportedModel = UMLFactory.eINSTANCE.createModel();
 		this.exportedModel.setName(JtxtUMLModelName);
 
 		this.resourceSet = new ResourceSetFactory().createAndInitResourceSet();
-		this.modelResource = createAndInitModelResource(sourcePackageName,
-				outputDirectory, resourceSet, exportedModel);
+		this.modelResource = createAndInitModelResource(sourcePackageName, outputDirectory, resourceSet, exportedModel);
 		this.mapping = new ModelMapCollector(modelResource.getURI());
 
 		importStandardLibrary(resourceSet, exportedModel);
@@ -89,23 +91,19 @@ public class ModelExporter {
 	 * 
 	 * @see hu.elte.txtuml.stdlib
 	 */
-	private static void importStandardLibrary(ResourceSet resourceSet,
-			Model exportedModel) {
+	private static void importStandardLibrary(ResourceSet resourceSet, Model exportedModel) {
 		// Load standard library
-		Resource resource = resourceSet.getResource(URI.createURI(STDLIB_URI),
-				true);
+		Resource resource = resourceSet.getResource(URI.createURI(STDLIB_URI), true);
 		if (resource == null) {
 			return;
 		}
-		Package stdLib = (Package) EcoreUtil.getObjectByType(
-				resource.getContents(), UMLPackage.Literals.PACKAGE);
+		Package stdLib = (Package) EcoreUtil.getObjectByType(resource.getContents(), UMLPackage.Literals.PACKAGE);
 		if (stdLib == null) {
 			return;
 		}
 
 		// Import standard library into the generated model
-		PackageImport packageImport = UMLFactory.eINSTANCE
-				.createPackageImport();
+		PackageImport packageImport = UMLFactory.eINSTANCE.createPackageImport();
 		packageImport.setImportedPackage(stdLib);
 		exportedModel.getPackageImports().add(packageImport);
 	}
@@ -122,8 +120,8 @@ public class ModelExporter {
 	 * @param exportedModel
 	 *            The EMF-UML2 model.
 	 */
-	private static Resource createAndInitModelResource(String txtUMLModelName,
-			String outputPath, ResourceSet resourceSet, Model exportedModel) {
+	private static Resource createAndInitModelResource(String txtUMLModelName, String outputPath,
+			ResourceSet resourceSet, Model exportedModel) {
 		URI uri = URI.createURI(outputPath).appendSegment(txtUMLModelName)
 				.appendFileExtension(UMLResource.FILE_EXTENSION);
 		Resource modelResource = resourceSet.createResource(uri);
@@ -160,8 +158,7 @@ public class ModelExporter {
 	 * model.
 	 */
 	private void exportClassifiers() {
-		ClassifierVisitor visitor = new ClassifierVisitor(
-				new ClassifierExporter(mapping, exportedModel), true);
+		ClassifierVisitor visitor = new ClassifierVisitor(new ClassifierExporter(mapping, exportedModel), true);
 		Stream.of(compilationUnits).forEach(cu -> cu.accept(visitor));
 		classifiers = visitor.getVisitedClassifiers();
 	}
@@ -173,9 +170,7 @@ public class ModelExporter {
 	 */
 	private void exportAssociations() throws ExportException {
 		try {
-			Stream.of(compilationUnits).forEach(
-					cu -> cu.accept(new AssociationVisitor(mapping,
-							exportedModel)));
+			Stream.of(compilationUnits).forEach(cu -> cu.accept(new AssociationVisitor(mapping, exportedModel)));
 		} catch (RuntimeExportException e) {
 			throw e.getCause();
 		}
@@ -200,16 +195,12 @@ public class ModelExporter {
 	 *            The declaration of the specified subtype classifier.
 	 */
 	private void exportGeneralization(TypeDeclaration classifierDeclaration) {
-		ITypeBinding superclassBinding = classifierDeclaration.resolveBinding()
-				.getSuperclass();
+		ITypeBinding superclassBinding = classifierDeclaration.resolveBinding().getSuperclass();
 		final String generalName = superclassBinding.getName();
-		final String specificName = classifierDeclaration.getName()
-				.getFullyQualifiedName();
+		final String specificName = classifierDeclaration.getName().getFullyQualifiedName();
 
-		Classifier specific = (Classifier) exportedModel
-				.getOwnedType(specificName);
-		Classifier general = (Classifier) exportedModel
-				.getOwnedType(generalName);
+		Classifier specific = (Classifier) exportedModel.getOwnedType(specificName);
+		Classifier general = (Classifier) exportedModel.getOwnedType(generalName);
 
 		specific.createGeneralization(general);
 	}
@@ -218,19 +209,16 @@ public class ModelExporter {
 	 * Exports the attributes of every classifier in the model.
 	 */
 	private void exportAttributesOfEveryClassifier() {
-		classifiers.entrySet().forEach(
-				entry -> {
+		classifiers.entrySet().forEach(entry -> {
 					Classifier classifier = entry.getValue();
 					TypeDeclaration classifierDeclaration = entry.getKey();
-					exportAttributesOfSpecificClassifier(classifier,
-							classifierDeclaration);
+			exportAttributesOfSpecificClassifier(classifier, classifierDeclaration);
 				});
 	}
 
-	private void exportAttributesOfSpecificClassifier(Classifier classifier,
-			TypeDeclaration classifierDeclaration) {
-		AttributeVisitor visitor = new AttributeVisitor(new AttributeExporter(
-				typeExporter, mapping, classifier), classifierDeclaration);
+	private void exportAttributesOfSpecificClassifier(Classifier classifier, TypeDeclaration classifierDeclaration) {
+		AttributeVisitor visitor = new AttributeVisitor(new AttributeExporter(typeExporter, mapping, classifier),
+				classifierDeclaration);
 		classifierDeclaration.accept(visitor);
 	}
 
@@ -241,17 +229,14 @@ public class ModelExporter {
 		classifiers.forEach((classifierDeclaration, classifier) -> {
 			if (classifier instanceof Class) {
 				Class specifiedClass = (Class) classifier;
-				exportMethodSkeletonsOfSpecificClass(classifierDeclaration,
-						specifiedClass);
+				exportMethodSkeletonsOfSpecificClass(classifierDeclaration, specifiedClass);
 			}
 		});
 	}
 
-	private void exportMethodSkeletonsOfSpecificClass(
-			TypeDeclaration classDeclaration, Class specificClass) {
+	private void exportMethodSkeletonsOfSpecificClass(TypeDeclaration classDeclaration, Class specificClass) {
 		MethodSkeletonVisitor visitor = new MethodSkeletonVisitor(
-				new MethodSkeletonExporter(typeExporter, specificClass),
-				classDeclaration);
+				new MethodSkeletonExporter(typeExporter, specificClass), classDeclaration);
 		classDeclaration.accept(visitor);
 		methods.put(classDeclaration, visitor.getVisitedMethods());
 	}
@@ -264,37 +249,32 @@ public class ModelExporter {
 		});
 	}
 
-	private void exportStateMachine(TypeDeclaration classifierDeclaration,
-			Class ownerClass) {
-		StateMachine stateMachine = (StateMachine) ownerClass
-				.createClassifierBehavior(ownerClass.getName(),
+	private void exportStateMachine(TypeDeclaration classifierDeclaration, Class ownerClass) {
+		StateMachine stateMachine = (StateMachine) ownerClass.createClassifierBehavior(ownerClass.getName(),
 						UMLPackage.Literals.STATE_MACHINE);
 		Region region = stateMachine.createRegion(ownerClass.getName());
-		regionExporter
-				.exportRegion(classifierDeclaration, stateMachine, region);
+		regionExporter.exportRegion(classifierDeclaration, stateMachine, region);
 	}
 
 	private void exportMethodBodiesOfEveryClassifier() {
 		classifiers.forEach((declaration, classifier) -> {
 			if (classifier instanceof Class) {
-				exportMethodBodiesOfSpecificClass(declaration,
-						(Class) classifier);
+				exportMethodBodiesOfSpecificClass(declaration, (Class) classifier);
 			}
 		});
 	}
 
-	private void exportMethodBodiesOfSpecificClass(
-			TypeDeclaration classDeclaration, Class specificClass) {
-		Map<MethodDeclaration, Operation> memberFunctions = methods
-				.get(classDeclaration);
+	private void exportMethodBodiesOfSpecificClass(TypeDeclaration classDeclaration, Class specificClass) {
+		if (exportMode == ExportMode.ExportActionCode) {
+			Map<MethodDeclaration, Operation> memberFunctions = methods.get(classDeclaration);
 		memberFunctions.forEach((methodDeclaration, operation) -> {
 			String methodName = operation.getName();
-			Activity activity = (Activity) specificClass.createOwnedBehavior(
-					methodName, UMLPackage.Literals.ACTIVITY);
+				Activity activity = (Activity) specificClass.createOwnedBehavior(methodName,
+						UMLPackage.Literals.ACTIVITY);
 			activity.setSpecification(operation);
-			MethodBodyExporter.export(activity, this, methodDeclaration,
-					operation.getOwnedParameters());
+				MethodBodyExporter.export(activity, this, methodDeclaration, operation.getOwnedParameters());
 		});
+	}
 	}
 
 	/**

@@ -13,6 +13,7 @@ import hu.elte.txtuml.eclipseutils.ClassLoaderProvider;
 import hu.elte.txtuml.eclipseutils.Dialogs;
 import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
 import hu.elte.txtuml.export.cpp.thread.ThreadDescriptionExporter;
+import hu.elte.txtuml.export.uml2.UML2.ExportMode;
 import hu.elte.txtuml.api.deployment.Configuration;
 import hu.elte.txtuml.export.ExportUtils;
 import hu.elte.txtuml.export.Uml2Utils;
@@ -66,7 +67,8 @@ public class TxtUMLToCppWizard extends Wizard {
 			String umlFileLocation = umlFilesFolder + File.separator + txtUMLModel + ".uml";
 
 			try {
-				ExportUtils.exportTxtUMLModelToUML2(txtUMLProject, txtUMLModel, umlFilesFolder);
+				ExportUtils.exportTxtUMLModelToUML2(txtUMLProject, txtUMLModel, umlFilesFolder,
+						ExportMode.ExportActionCode);
 			} catch (Exception e) {
 				Dialogs.errorMsgb("txtUML export Error", e.getClass() + ":" + System.lineSeparator() + e.getMessage(),
 						e);

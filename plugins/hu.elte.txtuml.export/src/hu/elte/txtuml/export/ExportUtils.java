@@ -1,13 +1,15 @@
 package hu.elte.txtuml.export;
 
+import java.net.URLClassLoader;
+
+import org.eclipse.emf.common.util.URI;
+
 import hu.elte.txtuml.api.layout.Diagram;
 import hu.elte.txtuml.eclipseutils.ClassLoaderProvider;
 import hu.elte.txtuml.export.uml2.UML2;
+import hu.elte.txtuml.export.uml2.UML2.ExportMode;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.export.DiagramExporter;
-
-import java.net.URLClassLoader;
-import org.eclipse.emf.common.util.URI;
 
 /**
  * Utilities Class to convert txtUML representations
@@ -24,9 +26,9 @@ public class ExportUtils {
 	 * @throws Exception - any exception that can be thrown during the exportation
 	 */
 	public static void exportTxtUMLModelToUML2(String sourceProject, String modelName,
-										String folder) throws Exception{
+										String folder, ExportMode exportMode) throws Exception{
 		String uri = URI.createPlatformResourceURI(folder, false).toString();
-		UML2.exportModel(sourceProject, modelName, uri);
+		UML2.exportModel(sourceProject, modelName, uri, exportMode);
 	}
 
 	/**

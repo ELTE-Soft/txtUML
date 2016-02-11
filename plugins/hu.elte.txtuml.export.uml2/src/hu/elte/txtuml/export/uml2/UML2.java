@@ -26,9 +26,13 @@ import hu.elte.txtuml.utils.Sneaky;
  * txtUML model.
  */
 public class UML2 {
+	
+	public enum ExportMode {
+		ExportDefinitions, ExportActionCode
+	}
 
 	public static void exportModel(String sourceProject, String packageName,
-			String outputDirectory) throws NotFoundException,
+			String outputDirectory, ExportMode exportMode) throws NotFoundException,
 			JavaModelException, IOException, ExportException {
 
 		IJavaProject javaProject = ProjectUtils.findJavaProject(sourceProject);
@@ -41,7 +45,7 @@ public class UML2 {
 					+ "'");
 		}
 
-		exportModel(packageName, packageFragments, javaProject, outputDirectory);
+		exportModel(packageName, packageFragments, javaProject, outputDirectory, exportMode);
 	}
 
 	/**
@@ -81,13 +85,14 @@ public class UML2 {
 	 * @param outputDirectory
 	 *            The name of the output directory. (relative to the path of the
 	 *            project containing the txtUML model)
+	 * @param exportMode 
 	 * @throws IOException
 	 * @throws JavaModelException
 	 * @throws ExportException
 	 */
 	public static void exportModel(String packageName,
 			IPackageFragment[] packageFragments, IJavaProject javaProject,
-			String outputDirectory) throws JavaModelException, IOException,
+			String outputDirectory, ExportMode exportMode) throws JavaModelException, IOException,
 			ExportException {
 
 		Stream<ICompilationUnit> packageInfo = Stream.of(packageFragments)
@@ -108,7 +113,7 @@ public class UML2 {
 				Sneaky.unchecked(pf -> Stream.of(pf.getCompilationUnits())));
 
 		ModelExporter modelExporter = new ModelExporter(SharedUtils.parseICompilationUnitStream(all,
-				javaProject), JtxtUMLModelName.get(), packageName, outputDirectory);
+				javaProject), JtxtUMLModelName.get(), packageName, outputDirectory, exportMode);
 		try {
 			modelExporter.exportModel();
 
