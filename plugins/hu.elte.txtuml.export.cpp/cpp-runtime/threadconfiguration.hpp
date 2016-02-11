@@ -42,6 +42,7 @@ class ThreadConfiguration
 		StateMachineThreadPool* getThreadPool(int);
 		LinearFunction* getFunction(int);
 		int getMax(int);
+		int getNumberOfConfigurations();
 
 	private:
 

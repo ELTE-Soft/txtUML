@@ -14,61 +14,23 @@ class ThreadPoolManager
 
 	public:
 		ThreadPoolManager();
-		~ThreadPoolManager()
-		{
-			for (std::map<id_type, StateMachineThreadPool*>::iterator it = id_matching_map.begin();  it != id_matching_map.end();  it++)
-			{
-				delete it->second;
-			}
+		~ThreadPoolManager();
 
-			for (std::map<id_type, LinearFunction*>::iterator it = function_matching_map.begin(); it!=  function_matching_map.end(); it++)
-			{
-				delete it->second;
-			}
-
-			
-		}
-		StateMachineThreadPool* get_pool(id_type);
-		void recalculateThreads(id_type id,int n)
-		{
-			LinearFunction function = *(function_matching_map[id]);
-			if (function(n) > maximum_thread_map.at(id)) {
-				id_matching_map[id]->modifiedThreads(maximum_thread_map.at(id));
-			}
-			else{
-				id_matching_map[id]->modifiedThreads(function(n));
-			}
-
-		}
-		
-		void enqueObject(StateMachineI* sm)
-		{
-			id_type object_id = sm->getPoolId();
-			id_matching_map[object_id]->enqueObject(sm);
-		}
-		
-		std::list<id_type> get_idies()
-		{
-			std::list<id_type> idies;
-			for(std::map<id_type,StateMachineThreadPool*>::iterator it = id_matching_map.begin(); it != id_matching_map.end(); it++ )
-			{
-				idies.push_back(it->first);
-			}
-			
-			return idies;
-		}
+		StateMachineThreadPool* get_pool(int);
+		void recalculateThreads(int,int);
+		void enqueObject(StateMachineI*);
+		int getNumberOfConfigurations();
+		void setConfiguration(ThreadConfiguration*);
+		bool isConfigurated();
 	
 	private:
-	
-		std::map<id_type,StateMachineThreadPool*> id_matching_map;
-		std::map<id_type,LinearFunction*>  function_matching_map;
-		std::map<id_type,int> maximum_thread_map;
+		ThreadConfiguration* configuration;
 	
 };
 
-inline StateMachineThreadPool* ThreadPoolManager::get_pool(id_type id)
+inline StateMachineThreadPool* ThreadPoolManager::getPool(int id)
 {
-	return id_matching_map[id];
+	return configuration->getThreadPool(id);
 }
 
 #endif // THEAD_POOL_MANAGER_H
