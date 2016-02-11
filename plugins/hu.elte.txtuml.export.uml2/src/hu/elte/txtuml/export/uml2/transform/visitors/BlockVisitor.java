@@ -83,7 +83,6 @@ public class BlockVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(ReturnStatement node) {
 		blockExporter.getExpressionExporter().exportReturnStatement(node.getExpression());
-		blockExporter.createReturnNode();
 		return false;
 	}
 

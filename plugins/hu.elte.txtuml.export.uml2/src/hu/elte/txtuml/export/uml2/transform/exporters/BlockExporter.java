@@ -120,11 +120,6 @@ public class BlockExporter<ElemType extends ActivityNode> extends ControlStructu
 		return vars;
 	}
 
-	public void createReturnNode() {
-		SequenceNode returnNode = createSequenceNode("return");
-		createControlFlowBetweenActivityNodes(returnNode, exporterOfContainerMethod.getFinalNode());
-	}
-
 	public MethodBodyExporter getMethodBodyExporter() {
 		return exporterOfContainerMethod;
 	}
