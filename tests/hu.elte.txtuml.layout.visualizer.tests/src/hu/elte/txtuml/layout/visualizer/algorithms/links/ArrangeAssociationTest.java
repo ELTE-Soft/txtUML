@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.tests.algorithms.links;
+package hu.elte.txtuml.layout.visualizer.algorithms.links;
 
 import static org.junit.Assert.*;
 
@@ -31,7 +31,6 @@ public class ArrangeAssociationTest {
 	
 	private LineAssociation _A_B;
 	private LineAssociation _A_C;
-	private LineAssociation _C_B;
 	
 	private Options _option;
 	
@@ -45,10 +44,7 @@ public class ArrangeAssociationTest {
 		
 		_A_B = new LineAssociation("A_B", _A, _B);
 		
-		_A_C = new LineAssociation("A_C", _A, _C);
-		
-		_C_B = new LineAssociation("C_B", _C, _B);
-		
+		_A_C = new LineAssociation("A_C", _A, _C);		
 		
 		_option = new Options();
 		_option.ArrangeOverlaps = OverlapArrangeMode.few;

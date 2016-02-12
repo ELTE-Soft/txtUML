@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.tests.algorithms;
+package hu.elte.txtuml.layout.visualizer.algorithms;
 
 import static org.junit.Assert.*;
 

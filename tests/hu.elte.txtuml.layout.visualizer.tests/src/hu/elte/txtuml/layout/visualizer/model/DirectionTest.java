@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.tests.model;
+package hu.elte.txtuml.layout.visualizer.model;
 
 import static org.junit.Assert.*;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;

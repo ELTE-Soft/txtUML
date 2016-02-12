@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.tests.algorithms.links;
+package hu.elte.txtuml.layout.visualizer.algorithms.links;
 
 import static org.junit.Assert.*;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.GraphSearch;

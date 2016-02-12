@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.tests.statements;
+package hu.elte.txtuml.layout.visualizer.statements;
 
 import static org.junit.Assert.*;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
@@ -59,51 +59,46 @@ public class StatementTest {
 		
 		try {
 			Statement.opposite(hor);
-		} catch (InternalException e) {
-			fail("Test failed: " + e.getMessage());
-		} catch(UnknownStatementException e){
+			fail("Test failed: Opposite of Statement!");
+		} catch (InternalException | UnknownStatementException e) {
 			assertTrue(true);
 		}
 		
 		try {
 			Statement.opposite(ver);
-		} catch (InternalException e) {
-			fail("Test failed: " + e.getMessage());
-		} catch(UnknownStatementException e){
+			fail("Test failed: Opposite of Statement!");
+		} catch (InternalException | UnknownStatementException e) {
 			assertTrue(true);
 		}
 		
 		try {
 			Statement.opposite(prio);
-		} catch (InternalException e) {
-			fail("Test failed: " + e.getMessage());
-		} catch(UnknownStatementException e){
+			fail("Test failed: Opposite of Statement!");
+		} catch (InternalException | UnknownStatementException e) {
 			assertTrue(true);
 		}
 		
-		try{
+		try {
 			Statement.opposite(phan);
-		} catch (InternalException e) {
-			fail("Test failed: " + e.getMessage());
-		} catch(UnknownStatementException e){
+			fail("Test failed: Opposite of Statement!");
+		} catch (InternalException | UnknownStatementException e) {
 			assertTrue(true);
 		}
 		
 		try {
 			Statement.opposite(corr);
-		} catch (InternalException e) {
-			fail("Test failed: " + e.getMessage());
-		} catch (UnknownStatementException e) {
+			fail("Test failed: Opposite of Statement!");
+		} catch (InternalException | UnknownStatementException e) {
 			assertTrue(true);
 		}
-
+		
 		try {
 			Statement.opposite(over);
-		} catch (InternalException e) {
-			fail("Test failed: " + e.getMessage());
-		} catch (UnknownStatementException e) {
+			fail("Test failed: Opposite of Statement!");
+		} catch (InternalException | UnknownStatementException e) {
 			assertTrue(true);
 		}
+		
 	}
 
 }

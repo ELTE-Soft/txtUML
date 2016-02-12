@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.tests.model;
+package hu.elte.txtuml.layout.visualizer.model;
 
 import static org.junit.Assert.*;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
@@ -35,11 +35,11 @@ public class PointTest {
 	}
 	
 	@Test
-	public void SubtractPoiTest() {
-		assertEquals(_b, Point.Subtract( _b, _a));
-		assertEquals(_c, Point.Subtract( _a, _b));
-		assertNotEquals(_b, Point.Subtract(_a, _b));
-		assertNotEquals(_a, Point.Subtract(_a, _b));
+	public void SubstractPoiTest() {
+		assertEquals(_b, Point.Substract( _b, _a));
+		assertEquals(_c, Point.Substract( _a, _b));
+		assertNotEquals(_b, Point.Substract(_a, _b));
+		assertNotEquals(_a, Point.Substract(_a, _b));
 	}
 	
 	@Test
@@ -73,9 +73,9 @@ public class PointTest {
 	
 	@Test
 	public void InTheDirectionTest1() {
-		assertTrue(Point.isInTheDirection(_c, _a, Direction.east));
-		assertTrue(Point.isInTheDirection(_d, _b, Direction.west));
-		assertFalse(Point.isInTheDirection(_a, _b, Direction.north));
+		assertTrue(Point.isInTheDirection(_c, _a, Direction.east, false));
+		assertTrue(Point.isInTheDirection(_d, _b, Direction.west, false));
+		assertFalse(Point.isInTheDirection(_a, _b, Direction.north, false));
 	}
 	
 	@Test
