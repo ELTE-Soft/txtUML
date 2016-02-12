@@ -1,17 +1,13 @@
 package hu.elte.txtuml.export.cpp.templates;
 
 public class Options {
-	private static boolean addRuntime = false;
+	private final boolean addRuntime;
 
-	public static void setRuntime() {
-		setAddRuntime(true);
+	public Options(boolean addRuntime_) {
+		this.addRuntime = addRuntime_;
 	}
 
-	public static void setAddRuntime(boolean value_) {
-		addRuntime = value_;
-	}
-
-	public static boolean isAddRuntime() {
+	public boolean isAddRuntime() {
 		return addRuntime;
 	}
 

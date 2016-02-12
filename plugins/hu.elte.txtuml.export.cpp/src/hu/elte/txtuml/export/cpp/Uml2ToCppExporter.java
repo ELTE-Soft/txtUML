@@ -40,6 +40,7 @@ public class Uml2ToCppExporter {
 	private static final String CppFilesFolderName = "cpp-runtime";
 
 	private ClassExporter classExporter;
+	private final Options options;
 
 	ThreadHandlingManager threadManager;
 
@@ -58,17 +59,13 @@ public class Uml2ToCppExporter {
 
 		Shared.getTypedElements(classList, elements, UMLPackage.Literals.CLASS);
 
-		if (addRuntimeOption) {
-			Options.setRuntime();
-		} else {
-			Options.setAddRuntime(false);
-		}
+		options = new Options(addRuntimeOption);
 		threadManager = new ThreadHandlingManager(classList, threadDescription);
 	}
 
 	public void buildCppCode(String outputDirectory) throws IOException {
 
-		if (Options.isAddRuntime()) {
+		if (options.isAddRuntime()) {
 			threadManager.createThreadPoolManager(outputDirectory + File.separator + "runtime");
 		}
 
@@ -101,7 +98,7 @@ public class Uml2ToCppExporter {
 		Files.copy(Paths.get(cppFilesLocation + GenerationTemplates.StateMachineBaseHeader),
 				Paths.get(destination + File.separator + GenerationTemplates.StateMachineBaseHeader),
 				StandardCopyOption.REPLACE_EXISTING);
-		if (Options.isAddRuntime()) {
+		if (options.isAddRuntime()) {
 
 			File sourceRuntimeDir = new File(cppFilesLocation);
 			File outputRuntimeDir = new File(destination + File.separator + RuntimeFolder);
@@ -143,7 +140,7 @@ public class Uml2ToCppExporter {
 		String makeFile = "CC=" + DefaultCompiler + "\n\nall: " + outputName_ + "\n\n";
 
 		makeFile += outputName_ + ":";
-		if (Options.isAddRuntime()) {
+		if (options.isAddRuntime()) {
 			makeFile += " " + RuntimeLibName;
 		}
 
@@ -156,7 +153,7 @@ public class Uml2ToCppExporter {
 		makeFile += "\t$(CC)";
 		makeFile += " -Wall -o " + outputName_ + fileList + " -std=gnu++11";
 
-		if (Options.isAddRuntime()) {
+		if (options.isAddRuntime()) {
 			makeFile += " -I " + RuntimeFolder + " -LC " + RuntimeLibName + " -pthread\n\n" + RuntimeLibName
 					+ ": runtime runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o threadconfiguration.o\n"
 					+ "\tar rcs " + RuntimeLibName
@@ -174,16 +171,16 @@ public class Uml2ToCppExporter {
 		List<Signal> signalList = new ArrayList<Signal>();
 		Shared.getTypedElements(signalList, elements_, UMLPackage.Literals.SIGNAL);
 		String forwardDecl = "";
-		String source = GenerationTemplates.EventBase() + "\n";
+		String source = GenerationTemplates.EventBase(options) + "\n";
 		List<Pair<String, String>> allParam = new LinkedList<Pair<String, String>>();
 
 		for (Signal item : signalList) {
 			List<Pair<String, String>> currentParams = getSignalParams(item);
 			allParam.addAll(currentParams);
-			source += GenerationTemplates.EventClass(item.getName(), currentParams);
+			source += GenerationTemplates.EventClass(item.getName(), currentParams, options);
 		}
 
-		source += GenerationTemplates.EventClass("InitSignal", new ArrayList<Pair<String, String>>());
+		source += GenerationTemplates.EventClass("InitSignal", new ArrayList<Pair<String, String>>(), options);
 
 		for (Pair<String, String> param : allParam) {
 			if (!Shared.isBasicType(param.getFirst())) {

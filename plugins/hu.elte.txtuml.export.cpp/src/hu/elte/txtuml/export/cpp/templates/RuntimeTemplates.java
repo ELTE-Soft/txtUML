@@ -46,10 +46,10 @@ class RuntimeTemplates {
 
 	}
 
-	public static String StartSM(String className_) {
+	public static String StartSM(String className_, Options options) {
 		return GenerationNames.NoReturn + " " + className_ + "::startSM()\n{\n"
 				+ ActivityTemplates.SignalSend(GenerationNames.InitialEventName, GenerationNames.Self, className_,
-						GenerationNames.PointerAccess, new ArrayList<String>(), Options.isAddRuntime())
+						GenerationNames.PointerAccess, new ArrayList<String>(), options.isAddRuntime())
 				+ "\n}\n";
 	}
 

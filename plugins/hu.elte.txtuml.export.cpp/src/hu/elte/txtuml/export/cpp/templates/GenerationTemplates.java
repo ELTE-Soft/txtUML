@@ -26,23 +26,23 @@ public class GenerationTemplates {
 
 	public static String InitSignal = GenerationNames.InitialEventName;
 
-	public static String EventBase() {
+	public static String EventBase(Options options) {
 		String eventBase = "";
 
-		if (Options.isAddRuntime()) {
+		if (options.isAddRuntime()) {
 			eventBase += RuntimeTemplates.RTEventHeaderInclude() + "\n";
 		}
 
 		eventBase += GenerationNames.ClassType + " " + GenerationNames.EventBaseName;
-		if (Options.isAddRuntime()) {
+		if (options.isAddRuntime()) {
 			eventBase += ":" + RuntimeTemplates.EventIName;
 		}
 		eventBase += "\n{\n" + GenerationNames.EventBaseName + "(";
-		if (Options.isAddRuntime()) {
+		if (options.isAddRuntime()) {
 			eventBase += RuntimeTemplates.SMParam + ",";
 		}
 		eventBase += "int t_):";
-		if (Options.isAddRuntime()) {
+		if (options.isAddRuntime()) {
 			eventBase += RuntimeTemplates.EventIName + "("
 					+ GenerationNames.FormatIncomingParamName(RuntimeTemplates.SMRefName) + "),";
 		}
@@ -50,10 +50,10 @@ public class GenerationTemplates {
 				+ GenerationNames.EventBaseRefName + ";\n\n";
 	}
 
-	public static String EventClass(String className_, List<Pair<String, String>> params_) {
+	public static String EventClass(String className_, List<Pair<String, String>> params_, Options options) {
 		String source = GenerationNames.ClassType + " " + GenerationNames.EventClassName(className_) + ":public "
 				+ GenerationNames.EventBaseName + "\n{\n" + GenerationNames.EventClassName(className_) + "(";
-		if (Options.isAddRuntime()) {
+		if (options.isAddRuntime()) {
 			source += RuntimeTemplates.SMParam + ",";
 		}
 		source += "int t_";
@@ -62,7 +62,7 @@ public class GenerationTemplates {
 			source += "," + paramList;
 		}
 		source += "):" + GenerationNames.EventBaseName + "(";
-		if (Options.isAddRuntime()) {
+		if (options.isAddRuntime()) {
 			source += GenerationNames.FormatIncomingParamName(RuntimeTemplates.SMRefName) + ",";
 		}
 		source += "t_)";
