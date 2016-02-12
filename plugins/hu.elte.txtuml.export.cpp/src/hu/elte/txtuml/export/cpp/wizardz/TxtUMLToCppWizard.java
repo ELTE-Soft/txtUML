@@ -80,7 +80,7 @@ public class TxtUMLToCppWizard extends Wizard {
 			ThreadDescriptionExporter exporter = new ThreadDescriptionExporter();
 			exporter.exportDescription((Class<? extends Configuration>) txtUMLThreadDescription);
 
-			if (exporter.warningListIsEmpty()) {
+			if (!exporter.warningListIsEmpty()) {
 				String warnings = "";
 				for (String warning : exporter.getWarnings()) {
 					warnings += warning + "\n";
@@ -92,8 +92,7 @@ public class TxtUMLToCppWizard extends Wizard {
 				}
 			}
 
-			Uml2ToCppExporter cppExporter = new Uml2ToCppExporter(model, exporter.getConfigMap(),
-					exporter.isMultiThreading(), addRuntimeOption);
+			Uml2ToCppExporter cppExporter = new Uml2ToCppExporter(model, exporter.getConfigMap(), addRuntimeOption);
 			try {
 				cppExporter.buildCppCode(
 						projectFolder + File.separator + GenericFolderName + File.separator + txtUMLModel);

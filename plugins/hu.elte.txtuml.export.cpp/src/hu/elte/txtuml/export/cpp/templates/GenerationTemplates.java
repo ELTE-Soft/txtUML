@@ -74,12 +74,8 @@ public class GenerationTemplates {
 		return source + body + "};\n\n";
 	}
 
-	public static String EventEnum(Set<SignalEvent> events_)// TODO works only
-															// with signal
-															// events!
-															// (Time,Change,..
-															// not handled)
-	{
+	// TODO works only with signal events! (Time,Change,.. not handled)
+	public static String EventEnum(Set<SignalEvent> events_) {
 
 		String EventList = "enum Events{";
 		EventList += GenerationNames.EventEnumName("InitSignal") + ",";

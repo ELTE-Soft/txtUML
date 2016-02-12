@@ -49,8 +49,7 @@ public class Uml2ToCppExporter {
 	List<String> classNames;
 
 	public Uml2ToCppExporter(Model model, Map<String, ThreadPoolConfiguration> threadDescription,
-			boolean threadManagement, boolean addRuntimeOption) {
-
+			boolean addRuntimeOption) {
 		classExporter = new ClassExporter();
 
 		this.classList = new ArrayList<Class>();
@@ -64,15 +63,7 @@ public class Uml2ToCppExporter {
 		} else {
 			Options.setAddRuntime(false);
 		}
-		if (threadManagement) {
-			Options.setThreadManagement();
-
-			threadManager = new ThreadHandlingManager(classList, threadDescription);
-		} else {
-			threadManager = new ThreadHandlingManager();
-			Options.setThreadManagement(false);
-		}
-
+		threadManager = new ThreadHandlingManager(classList, threadDescription);
 	}
 
 	public void buildCppCode(String outputDirectory) throws IOException {
@@ -87,10 +78,8 @@ public class Uml2ToCppExporter {
 
 		for (Class item : classList) {
 			classExporter.reiniIialize();
-			if (Options.isThreadManagement()) {
-				classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
+			classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
 
-			}
 			classExporter.createSource(item, outputDirectory);
 
 			classNames.addAll(classExporter.getSubmachines());
@@ -169,12 +158,13 @@ public class Uml2ToCppExporter {
 
 		if (Options.isAddRuntime()) {
 			makeFile += " -I " + RuntimeFolder + " -LC " + RuntimeLibName + " -pthread\n\n" + RuntimeLibName
-					+ ": runtime runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o\n"
+					+ ": runtime runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o threadconfiguration.o\n"
 					+ "\tar rcs " + RuntimeLibName
-					+ " runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o\n\n"
+					+ " runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o threadconfiguration.o\n\n"
 					+ ".PHONY:runtime\n" + "runtime:\n\t$(CC) -Wall -c " + RuntimeFolder + "runtime.cpp "
 					+ RuntimeFolder + "statemachineI.cpp " + RuntimeFolder + "threadpool.cpp " + RuntimeFolder
-					+ "threadpoolmanager.cpp " + RuntimeFolder + "threadcontainer.cpp " + "-std=gnu++11";
+					+ "threadpoolmanager.cpp " + RuntimeFolder + "threadcontainer.cpp" + RuntimeFolder
+					+ "threadconfiguration.cpp" + "-std=gnu++11";
 		}
 
 		Shared.writeOutSource(path_, makefileName_, makeFile);

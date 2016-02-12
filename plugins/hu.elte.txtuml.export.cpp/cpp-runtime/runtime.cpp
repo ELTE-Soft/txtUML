@@ -93,7 +93,7 @@ void ConfiguredThreadPoolsRT::run()
     
 	for(std::list<id_type>::iterator it = pool_ides.begin(); it != pool_ides.end(); it++)
 	{
-		pool_manager->get_pool(*it)->startPool();
+		pool_manager->getPool(*it)->startPool();
 	}
 }
 
