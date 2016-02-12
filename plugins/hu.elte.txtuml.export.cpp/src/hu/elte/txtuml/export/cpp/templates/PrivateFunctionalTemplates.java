@@ -15,26 +15,27 @@ class PrivateFunctionalTemplates {
 	 * 
 	 * Map<String,String> <event,SubmachineName>
 	 */
-	public static String hierarchicalStateMachineClassConstructorSharedBody(String className, String parentClassName,
-			Multimap<Pair<String, String>, Pair<String, String>> machine, Map<String, String> subMachines,
-			String intialState, Boolean rt) {
-		String source = "";
+	public static StringBuilder hierarchicalStateMachineClassConstructorSharedBody(String className,
+			String parentClassName, Multimap<Pair<String, String>, Pair<String, String>> machine,
+			Map<String, String> subMachines, String intialState, Boolean rt) {
+		StringBuilder source = new StringBuilder("");
 		for (Map.Entry<String, String> entry : subMachines.entrySet()) {
-			source += GenerationNames.CompositeStateMapName + ".emplace("
-					+ GenerationNames.stateEnumName(entry.getKey()) + "," + GenerationNames.CompositeStateMapSmType
-					+ "(" + GenerationNames.MemoryAllocator + " " + entry.getValue() + "(" + parentClassName + ")"
-					+ "));\n";
+			source.append(
+					GenerationNames.CompositeStateMapName + ".emplace(" + GenerationNames.stateEnumName(entry.getKey())
+							+ "," + GenerationNames.CompositeStateMapSmType + "(" + GenerationNames.MemoryAllocator
+							+ " " + entry.getValue() + "(" + parentClassName + ")" + "));\n");
 		}
 
-		source += "\n"
+		source.append("\n"
 				+ stateMachineClassConstructorSharedBody(className, parentClassName, machine, intialState, rt, null)
-				+ "}\n\n";
+				+ "}\n\n");
 		if (rt) {
-			source += RuntimeTemplates.rtFunctionDecl(className);
+			source.append(RuntimeTemplates.rtFunctionDecl(className));
 		}
-		return source + GenerationNames.hierachicalProcessEventDef(className) + "\n"
+		source.append(GenerationNames.hierachicalProcessEventDef(className) + "\n"
 				+ GenerationNames.actionCallerDef(className) + "\n" + GenerationNames.hierachicalSetStateDef(className)
-				+ "\n" + PrivateFunctionalTemplates.setInitialState(className, intialState) + "\n";
+				+ "\n" + PrivateFunctionalTemplates.setInitialState(className, intialState) + "\n");
+		return source;
 	}
 
 	public static String simpleStateMachineClassConstructorSharedBody(String className,
@@ -49,46 +50,46 @@ class PrivateFunctionalTemplates {
 				+ PrivateFunctionalTemplates.setInitialState(className, intialState) + "\n";
 	}
 
-	public static String stateMachineClassConstructorSharedBody(String className,
+	public static StringBuilder stateMachineClassConstructorSharedBody(String className,
 			Multimap<Pair<String, String>, Pair<String, String>> machine, String intialState, Boolean rt,
 			Integer poolId) {
 		return stateMachineClassConstructorSharedBody(className, null, machine, intialState, rt, poolId);
 	}
 
-	public static String stateMachineClassConstructorSharedBody(String className, String parentClassName,
+	public static StringBuilder stateMachineClassConstructorSharedBody(String className, String parentClassName,
 			Multimap<Pair<String, String>, Pair<String, String>> machine, String intialState, Boolean rt,
 			Integer poolId) {
-		String source = "";
+		StringBuilder source = new StringBuilder("");
 		for (Pair<String, String> key : machine.keySet()) {
 			for (Pair<String, String> value : machine.get(key)) {
-				source += GenerationNames.TransitionTableName + ".emplace(" + GenerationNames.EventStateTypeName + "(";
+				source.append(
+						GenerationNames.TransitionTableName + ".emplace(" + GenerationNames.EventStateTypeName + "(");
 				if (parentClassName != null && parentClassName != "this") {
-					source += parentClassName + "::";
+					source.append(parentClassName + "::");
 				}
-				source += GenerationNames.eventEnumName(key.getFirst()) + ","
-						+ GenerationNames.stateEnumName(key.getSecond()) + "),";
+				source.append(GenerationNames.eventEnumName(key.getFirst()) + ","
+						+ GenerationNames.stateEnumName(key.getSecond()) + "),");
 				String guardName = GenerationNames.DefaultGuardName;
 				if (value.getFirst() != null) {
 					guardName = value.getFirst();
 				}
-				source += GenerationNames.GuardActionName + "(" + GenerationNames.GuardFuncTypeName + "(&" + className
-						+ "::" + guardName + ")," + GenerationNames.FunctionPtrTypeName + "(&" + className + "::"
-						+ value.getSecond() + ")));\n";
+				source.append(GenerationNames.GuardActionName + "(" + GenerationNames.GuardFuncTypeName + "(&"
+						+ className + "::" + guardName + ")," + GenerationNames.FunctionPtrTypeName + "(&" + className
+						+ "::" + value.getSecond() + ")));\n");
 			}
 
 		}
 
 		if (poolId != null && rt) {
-
-			source += "\n" + GenerationNames.PoolIdSetter + "(" + poolId + ");\n";
+			source.append("\n" + GenerationNames.PoolIdSetter + "(" + poolId + ");\n");
 		}
 
 		if (rt && (parentClassName == null || parentClassName == "this")) {
-			source += "\n" + RuntimeTemplates.RuntimeSetter + "(rt); \n";
-			source += RuntimeTemplates.initStateMachineForRuntime();
+			source.append("\n" + RuntimeTemplates.RuntimeSetter + "(rt); \n");
+			source.append(RuntimeTemplates.initStateMachineForRuntime());
 		}
 
-		source += GenerationNames.SetInitialStateName + "();\n";
+		source.append(GenerationNames.SetInitialStateName + "();\n");
 
 		return source;
 	}
@@ -141,10 +142,10 @@ class PrivateFunctionalTemplates {
 				+ simpleStateMachineClassFixPrivateParts(className);
 	}
 
-	private static String subMachineFriendDecls(List<String> subMachines) {
-		String source = "";
+	private static StringBuilder subMachineFriendDecls(List<String> subMachines) {
+		StringBuilder source = new StringBuilder("");
 		for (String subMachine : subMachines) {
-			source += GenerationNames.friendClassDecl(subMachine);
+			source.append(GenerationNames.friendClassDecl(subMachine));
 		}
 		return source;
 	}
@@ -164,10 +165,10 @@ class PrivateFunctionalTemplates {
 	public static String paramList(List<Pair<String, String>> params) {
 		if (params == null || params.size() == 0)
 			return "";
-		String source = "";
+		StringBuilder source = new StringBuilder("");
 		for (Pair<String, String> item : params) {
-			source += PrivateFunctionalTemplates.cppType(item.getFirst()) + " "
-					+ GenerationNames.formatIncomingParamName(item.getSecond()) + ",";
+			source.append(PrivateFunctionalTemplates.cppType(item.getFirst()) + " "
+					+ GenerationNames.formatIncomingParamName(item.getSecond()) + ",");
 		}
 		return source.substring(0, source.length() - 1);
 	}
@@ -175,9 +176,9 @@ class PrivateFunctionalTemplates {
 	public static String paramTypeList(List<String> params) {
 		if (params == null || params.size() == 0)
 			return "";
-		String source = "";
+		StringBuilder source = new StringBuilder("");
 		for (String item : params) {
-			source += cppType(item) + ",";
+			source.append(cppType(item) + ",");
 		}
 		return source.substring(0, source.length() - 1);
 	}

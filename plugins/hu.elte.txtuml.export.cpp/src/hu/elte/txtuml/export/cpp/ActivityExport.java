@@ -206,12 +206,8 @@ public class ActivityExport {
 	private static String createIfCode(DecisionNode node_, ActivityNode ifEndNode_, List<ActivityEdge> branches_,
 			List<ActivityNode> finishedControlNodes_, Boolean rt_) {
 		String source = "";
-		List<ActivityNode> finishedNodes = new ArrayList<ActivityNode>(Arrays.asList(node_));// TODO
-																								// not
-																								// sure
-																								// it
-																								// is
-																								// needed
+		// TODO not sure it is needed
+		List<ActivityNode> finishedNodes = new ArrayList<ActivityNode>(Arrays.asList(node_));
 		List<Pair<String, String>> condsAndBodies = new LinkedList<Pair<String, String>>();
 		Pair<String, String> elseBranch = null;
 		for (ActivityEdge edge : branches_) {
@@ -226,7 +222,7 @@ public class ActivityExport {
 		if (elseBranch != null && !elseBranch.getSecond().isEmpty()) {
 			condsAndBodies.add(elseBranch);
 		}
-		source = ActivityTemplates.elseIf(condsAndBodies);
+		source = ActivityTemplates.elseIf(condsAndBodies).toString();
 
 		finishedControlNodes_.addAll(finishedNodes);
 		return source;

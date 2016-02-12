@@ -170,29 +170,30 @@ public class Uml2ToCppExporter {
 	private String createEventSource(EList<Element> elements_) {
 		List<Signal> signalList = new ArrayList<Signal>();
 		Shared.getTypedElements(signalList, elements_, UMLPackage.Literals.SIGNAL);
-		String forwardDecl = "";
-		String source = GenerationTemplates.eventBase(options) + "\n";
+		StringBuilder forwardDecl = new StringBuilder("");
+		StringBuilder source = GenerationTemplates.eventBase(options).append("\n");
 		List<Pair<String, String>> allParam = new LinkedList<Pair<String, String>>();
 
 		for (Signal item : signalList) {
 			List<Pair<String, String>> currentParams = getSignalParams(item);
 			allParam.addAll(currentParams);
-			source += GenerationTemplates.eventClass(item.getName(), currentParams, options);
+			source.append(GenerationTemplates.eventClass(item.getName(), currentParams, options));
 		}
 
-		source += GenerationTemplates.eventClass("InitSignal", new ArrayList<Pair<String, String>>(), options);
+		source.append(GenerationTemplates.eventClass("InitSignal", new ArrayList<Pair<String, String>>(), options));
 
 		for (Pair<String, String> param : allParam) {
 			if (!Shared.isBasicType(param.getFirst())) {
 				String tmp = GenerationTemplates.forwardDeclaration(param.getFirst());
-				if (!forwardDecl.contains(tmp)) {
-					forwardDecl += tmp;
+				// TODO this is suboptimal
+				if (!forwardDecl.toString().contains(tmp)) {
+					forwardDecl.append(tmp);
 				}
 			}
 		}
-		forwardDecl += "\n";
-		source = forwardDecl + source;
-		return GenerationTemplates.eventHeaderGuard(source);
+		forwardDecl.append("\n");
+		forwardDecl.append(source);
+		return GenerationTemplates.eventHeaderGuard(forwardDecl.toString());
 	}
 
 	private List<Pair<String, String>> getSignalParams(Signal signal_) {

@@ -90,16 +90,16 @@ public class ActivityTemplates {
 		return simpleCondControlStruct("if", cond, body);
 	}
 
-	public static String elseIf(List<Pair<String, String>> branches) {
-		String source = "";
+	public static StringBuilder elseIf(List<Pair<String, String>> branches) {
+		StringBuilder source = new StringBuilder("");
 		int i = 1;
 		for (Pair<String, String> part : branches) {
 			if (i == 1) {
-				source += simpleIf(part.getFirst(), part.getSecond());
+				source.append(simpleIf(part.getFirst(), part.getSecond()));
 			} else if (i == branches.size() && (part.getFirst().isEmpty() || part.getFirst().equals("else"))) {
-				source += "else\n{\n" + part.getSecond() + "}\n";
+				source.append("else\n{\n" + part.getSecond() + "}\n");
 			} else {
-				source += simpleCondControlStruct("else if", part.getFirst(), part.getSecond());
+				source.append(simpleCondControlStruct("else if", part.getFirst(), part.getSecond()));
 			}
 			++i;
 		}

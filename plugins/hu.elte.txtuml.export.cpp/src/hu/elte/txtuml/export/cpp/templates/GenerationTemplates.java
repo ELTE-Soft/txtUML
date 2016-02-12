@@ -26,63 +26,68 @@ public class GenerationTemplates {
 
 	public static final String InitSignal = GenerationNames.InitialEventName;
 
-	public static String eventBase(Options options) {
-		String eventBase = "";
+	public static StringBuilder eventBase(Options options) {
+		StringBuilder eventBase = new StringBuilder("");
 
 		if (options.isAddRuntime()) {
-			eventBase += RuntimeTemplates.rtEventHeaderInclude() + "\n";
+			eventBase.append(RuntimeTemplates.rtEventHeaderInclude()).append("\n");
 		}
 
-		eventBase += GenerationNames.ClassType + " " + GenerationNames.EventBaseName;
+		eventBase.append(GenerationNames.ClassType + " " + GenerationNames.EventBaseName);
 		if (options.isAddRuntime()) {
-			eventBase += ":" + RuntimeTemplates.EventIName;
+			eventBase.append(":" + RuntimeTemplates.EventIName);
 		}
-		eventBase += "\n{\n" + GenerationNames.EventBaseName + "(";
+		eventBase.append("\n{\n" + GenerationNames.EventBaseName + "(");
 		if (options.isAddRuntime()) {
-			eventBase += RuntimeTemplates.SMParam + ",";
+			eventBase.append(RuntimeTemplates.SMParam + ",");
 		}
-		eventBase += "int t_):";
+		eventBase.append("int t_):");
 		if (options.isAddRuntime()) {
-			eventBase += RuntimeTemplates.EventIName + "("
-					+ GenerationNames.formatIncomingParamName(RuntimeTemplates.SMRefName) + "),";
+			eventBase.append(RuntimeTemplates.EventIName + "("
+					+ GenerationNames.formatIncomingParamName(RuntimeTemplates.SMRefName) + "),");
 		}
-		return eventBase + "t(t_){}\nint t;\n};\ntypedef const " + GenerationNames.EventBaseName + "& "
-				+ GenerationNames.EventBaseRefName + ";\n\n";
+
+		eventBase.append("t(t_){}\nint t;\n};\ntypedef const " + GenerationNames.EventBaseName + "& "
+				+ GenerationNames.EventBaseRefName + ";\n\n");
+		return eventBase;
 	}
 
-	public static String eventClass(String className, List<Pair<String, String>> params, Options options) {
-		String source = GenerationNames.ClassType + " " + GenerationNames.eventClassName(className) + ":public "
-				+ GenerationNames.EventBaseName + "\n{\n" + GenerationNames.eventClassName(className) + "(";
+	public static StringBuilder eventClass(String className, List<Pair<String, String>> params, Options options) {
+		StringBuilder source = new StringBuilder(
+				GenerationNames.ClassType + " " + GenerationNames.eventClassName(className) + ":public "
+						+ GenerationNames.EventBaseName + "\n{\n" + GenerationNames.eventClassName(className) + "(");
 		if (options.isAddRuntime()) {
-			source += RuntimeTemplates.SMParam + ",";
+			source.append(RuntimeTemplates.SMParam + ",");
 		}
-		source += "int t_";
+		source.append("int t_");
 		String paramList = PrivateFunctionalTemplates.paramList(params);
 		if (paramList != "") {
-			source += "," + paramList;
+			source.append("," + paramList);
 		}
-		source += "):" + GenerationNames.EventBaseName + "(";
+		source.append("):" + GenerationNames.EventBaseName + "(");
 		if (options.isAddRuntime()) {
-			source += GenerationNames.formatIncomingParamName(RuntimeTemplates.SMRefName) + ",";
+			source.append(GenerationNames.formatIncomingParamName(RuntimeTemplates.SMRefName) + ",");
 		}
-		source += "t_)";
-		String body = "{}\n";
+		source.append("t_)");
+		StringBuilder body = new StringBuilder("{}\n");
 		for (Pair<String, String> param : params) {
-			source += "," + param.getSecond() + "(" + GenerationNames.formatIncomingParamName(param.getSecond()) + ")";
-			body += PrivateFunctionalTemplates.cppType(param.getFirst()) + " " + param.getSecond() + ";\n";
+			source.append(
+					"," + param.getSecond() + "(" + GenerationNames.formatIncomingParamName(param.getSecond()) + ")");
+			body.append(PrivateFunctionalTemplates.cppType(param.getFirst()) + " " + param.getSecond() + ";\n");
 		}
-		return source + body + "};\n\n";
+		source.append(body).append("};\n\n");
+		body.setLength(0);
+		return source;
 	}
 
 	// TODO works only with signal events! (Time,Change,.. not handled)
 	public static String eventEnum(Set<SignalEvent> events) {
-
-		String EventList = "enum Events{";
-		EventList += GenerationNames.eventEnumName("InitSignal") + ",";
+		StringBuilder EventList = new StringBuilder("enum Events {");
+		EventList.append(GenerationNames.eventEnumName("InitSignal") + ",");
 
 		if (events != null && !events.isEmpty()) {
 			for (SignalEvent item : events) {
-				EventList += GenerationNames.eventEnumName(item.getSignal().getName()) + ",";
+				EventList.append(GenerationNames.eventEnumName(item.getSignal().getName()) + ",");
 			}
 		}
 
@@ -306,15 +311,16 @@ public class GenerationTemplates {
 				parentParamName, machine, subMachines, intialState, false);
 	}
 
-	public static String hierarchicalStateMachineClassConstructor(String className, String baseClassName,
+	public static StringBuilder hierarchicalStateMachineClassConstructor(String className, String baseClassName,
 			Multimap<Pair<String, String>, Pair<String, String>> machine, Map<String, String> subMachines,
 			String intialState, Boolean rt) {
 
-		String source = simpleStateMachineClassConstructorHead(className, baseClassName, rt)
+		StringBuilder source = new StringBuilder(simpleStateMachineClassConstructorHead(className, baseClassName, rt)
 				+ GenerationNames.CurrentMachineName + "(" + GenerationNames.NullPtr + ")" + ","
-				+ GenerationNames.DefaultStateInitialization + "\n{\n";
-		return source + PrivateFunctionalTemplates.hierarchicalStateMachineClassConstructorSharedBody(className, "this",
-				machine, subMachines, intialState, rt);
+				+ GenerationNames.DefaultStateInitialization + "\n{\n");
+		source.append(PrivateFunctionalTemplates.hierarchicalStateMachineClassConstructorSharedBody(className, "this",
+				machine, subMachines, intialState, rt));
+		return source;
 	}
 
 	/*
@@ -407,11 +413,11 @@ public class GenerationTemplates {
 	}
 
 	public static String stateEnum(Iterable<State> states, String initialState) {
-		String StateList = "enum States{";
+		StringBuilder StateList = new StringBuilder("enum States {");
 
-		StateList += GenerationNames.stateEnumName(initialState) + ",";
+		StateList.append(GenerationNames.stateEnumName(initialState) + ",");
 		for (State item : states) {
-			StateList += GenerationNames.stateEnumName(item.getName()) + ",";
+			StateList.append(GenerationNames.stateEnumName(item.getName()) + ",");
 		}
 		return StateList.substring(0, StateList.length() - 1) + "};\n";
 	}
