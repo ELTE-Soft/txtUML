@@ -146,7 +146,7 @@ public class Uml2ToCppExporter {
 
 		String fileList = " main.cpp";
 		for (String file : classNames_) {
-			fileList += " " + GenerationTemplates.SourceName(file);
+			fileList += " " + GenerationTemplates.sourceName(file);
 		}
 
 		makeFile += fileList + "\n";
@@ -171,20 +171,20 @@ public class Uml2ToCppExporter {
 		List<Signal> signalList = new ArrayList<Signal>();
 		Shared.getTypedElements(signalList, elements_, UMLPackage.Literals.SIGNAL);
 		String forwardDecl = "";
-		String source = GenerationTemplates.EventBase(options) + "\n";
+		String source = GenerationTemplates.eventBase(options) + "\n";
 		List<Pair<String, String>> allParam = new LinkedList<Pair<String, String>>();
 
 		for (Signal item : signalList) {
 			List<Pair<String, String>> currentParams = getSignalParams(item);
 			allParam.addAll(currentParams);
-			source += GenerationTemplates.EventClass(item.getName(), currentParams, options);
+			source += GenerationTemplates.eventClass(item.getName(), currentParams, options);
 		}
 
-		source += GenerationTemplates.EventClass("InitSignal", new ArrayList<Pair<String, String>>(), options);
+		source += GenerationTemplates.eventClass("InitSignal", new ArrayList<Pair<String, String>>(), options);
 
 		for (Pair<String, String> param : allParam) {
 			if (!Shared.isBasicType(param.getFirst())) {
-				String tmp = GenerationTemplates.ForwardDeclaration(param.getFirst());
+				String tmp = GenerationTemplates.forwardDeclaration(param.getFirst());
 				if (!forwardDecl.contains(tmp)) {
 					forwardDecl += tmp;
 				}
@@ -192,7 +192,7 @@ public class Uml2ToCppExporter {
 		}
 		forwardDecl += "\n";
 		source = forwardDecl + source;
-		return GenerationTemplates.EventHeaderGuard(source);
+		return GenerationTemplates.eventHeaderGuard(source);
 	}
 
 	private List<Pair<String, String>> getSignalParams(Signal signal_) {
