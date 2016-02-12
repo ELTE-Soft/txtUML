@@ -1,11 +1,5 @@
 package hu.elte.txtuml.export.cpp.templates;
 
-/***********************************************************
- * Author: Hack János
- * Version 0.9 2014.02.25
- * Email:zodiakus (at) elte.hu
- **********************************************************/
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +7,8 @@ import java.util.Set;
 
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.State;
+
+import com.google.common.collect.Multimap;
 
 import hu.elte.txtuml.utils.Pair;
 
@@ -24,28 +20,34 @@ public class GenerationTemplates
 	public static String RuntimeHeader=RuntimeTemplates.RuntimeHeaderName;
 	public static String RuntimePath=RuntimeTemplates.RTPath;
 	public static String StandardIOinclude=GenerationNames.StandardIOinclude;
+	public static String RuntimeName = RuntimeTemplates.RuntimeIterfaceName;
+	public static String RuntimePointer = RuntimeTemplates.RuntimeIterfaceName + "*";
+	public static String RuntimeParamaterName = RuntimeTemplates.RuntimeParamter;
+	
+	
+	public static String InitSignal = GenerationNames.InitialEventName;
 	
 	public static String EventBase()
 	{
 		String eventBase="";
 		
-		if(Options.Runtime())
+		if(Options.isAddRuntime())
 		{
 			eventBase+=RuntimeTemplates.RTEventHeaderInclude()+"\n";
 		}
 		
 		eventBase+= GenerationNames.ClassType+" "+GenerationNames.EventBaseName;
-		if(Options.Runtime())
+		if(Options.isAddRuntime())
 		{
 			eventBase+=":"+RuntimeTemplates.EventIName;
 		}
 		eventBase+="\n{\n"+GenerationNames.EventBaseName+"(";
-		if(Options.Runtime())
+		if(Options.isAddRuntime())
 		{
 			eventBase+=RuntimeTemplates.SMParam+",";
 		}
 		eventBase+="int t_):";
-		if(Options.Runtime())
+		if(Options.isAddRuntime())
 		{
 			eventBase+=RuntimeTemplates.EventIName+"("+GenerationNames.FormatIncomignParamName(RuntimeTemplates.SMRefName)+"),";
 		}
@@ -55,7 +57,7 @@ public class GenerationTemplates
 	public static String EventClass(String className_,List<Pair<String,String>> params_)
 	{
 		String source=GenerationNames.ClassType+" "+GenerationNames.EventClassName(className_)+":public "+GenerationNames.EventBaseName+"\n{\n"+GenerationNames.EventClassName(className_)+"(";
-		if(Options.Runtime())
+		if(Options.isAddRuntime())
 		{
 			source+=RuntimeTemplates.SMParam+",";
 		}
@@ -66,7 +68,7 @@ public class GenerationTemplates
 			source +=","+paramList;
 		}
 		source+="):"+GenerationNames.EventBaseName+"(";
-		if(Options.Runtime())
+		if(Options.isAddRuntime())
 		{
 			source+=GenerationNames.FormatIncomignParamName(RuntimeTemplates.SMRefName)+",";
 		}
@@ -82,15 +84,18 @@ public class GenerationTemplates
 	
 	public static String EventEnum(Set<SignalEvent> events_)//TODO works only with signal events! (Time,Change,.. not handled)
 	{
-		if(events_== null || events_.isEmpty())
-		{
-			return "";
-		}
+		
 		String EventList = "enum Events{";
-		for(SignalEvent item: events_)
+		EventList += GenerationNames.EventEnumName("InitSignal") + ",";
+		
+		if(events_!= null && !events_.isEmpty())
 		{
-			EventList+=GenerationNames.EventEnumName(item.getSignal().getName())+",";
+			for(SignalEvent item: events_)
+			{
+				EventList+=GenerationNames.EventEnumName(item.getSignal().getName())+",";
+			}
 		}
+		
 		return EventList.substring(0,EventList.length()-1)+"};\n";
 	}
 	
@@ -129,17 +134,17 @@ public class GenerationTemplates
 		List<String> parentParam=new LinkedList<String>();
 		parentParam.add(parentclass_);
 		
-		return  HierarchicalStateMachineClassHeader(dependency_,className_,parentParam,subMachines_,public_,protected_,(PrivateFunctionalTemplates.SubStateMachineClassFixPrivateParts(parentclass_)+private_),false);
+		return  HierarchicalStateMachineClassHeader(dependency_,className_,null,parentParam,subMachines_,public_,protected_,(PrivateFunctionalTemplates.SubStateMachineClassFixPrivateParts(parentclass_)+private_),false);
 	}
 	
 	public static String HierarchicalStateMachineClassHeader(String dependency_,String className_,List<String> subMachines_, String public_,String protected_,String private_,Boolean rt_)
 	{
-		return HierarchicalStateMachineClassHeader(dependency_, className_, null, subMachines_, public_, protected_, private_, rt_);
+		return HierarchicalStateMachineClassHeader(dependency_, className_, null,null, subMachines_, public_, protected_, private_, rt_);
 	}
 	
-	public static String HierarchicalStateMachineClassHeader(String dependency_,String className_,List<String> constructorParams_,List<String> subMachines_, String public_,String protected_,String private_,Boolean rt_)
+	public static String HierarchicalStateMachineClassHeader(String dependency_,String className_,String baseClassName_,List<String> constructorParams_,List<String> subMachines_, String public_,String protected_,String private_,Boolean rt_)
 	{
-		return ClassHeader(PrivateFunctionalTemplates.ClassHeaderIncludes(rt_)+dependency_,className_,constructorParams_,
+		return ClassHeader(PrivateFunctionalTemplates.ClassHeaderIncludes(rt_)+dependency_,className_,baseClassName_,constructorParams_,
 				PrivateFunctionalTemplates.StateMachineClassFixPublicParts(className_,rt_)+public_,protected_,
 				PrivateFunctionalTemplates.HierarchicalStateMachineClassFixPrivateParts(className_,subMachines_)+private_,true,rt_);
 	}
@@ -149,27 +154,33 @@ public class GenerationTemplates
 		List<String> parentParam=new LinkedList<String>();
 		parentParam.add(parentclass_);
 		
-		return SimpleStateMachineClassHeader(dependency_, className_,parentParam,public_, protected_, (PrivateFunctionalTemplates.SubStateMachineClassFixPrivateParts(parentclass_)+private_),false);
+		return SimpleStateMachineClassHeader(dependency_, className_,null,parentParam,public_, protected_, 
+				(PrivateFunctionalTemplates.SubStateMachineClassFixPrivateParts(parentclass_)+private_),false);
 	}
 	
-	public static String SimpleStateMachineClassHeader(String dependency_,String className_,String public_,String protected_,String private_,Boolean rt_)
+	public static String SimpleStateMachineClassHeader(String dependency_,String className_,String baseClassName,String public_,String protected_,String private_,Boolean rt_)
 	{
-		return SimpleStateMachineClassHeader(dependency_, className_, null, public_, protected_, private_, rt_);
+		return SimpleStateMachineClassHeader(dependency_, className_, baseClassName, public_, protected_, private_, rt_);
 	}
 	
-	public static String SimpleStateMachineClassHeader(String dependency_,String className_,List<String> constructorParams_,String public_,String protected_,String private_,Boolean rt_)
+	public static String SimpleStateMachineClassHeader(String dependency_,String className_,String baseClassName,List<String> constructorParams_,String public_,String protected_,String private_,Boolean rt_)
 	{
-		return ClassHeader(PrivateFunctionalTemplates.ClassHeaderIncludes(rt_)+dependency_,className_,constructorParams_,
+		return ClassHeader(PrivateFunctionalTemplates.ClassHeaderIncludes(rt_)+dependency_,className_,baseClassName,constructorParams_,
 				PrivateFunctionalTemplates.StateMachineClassFixPublicParts(className_,rt_)+public_,protected_,
 				PrivateFunctionalTemplates.SimpleStateMachineClassFixPrivateParts(className_)+private_,true,rt_);
 	}
 	
-	public static String ClassHeader(String dependency_,String name_,String public_,String protected_,String private_)
+	public static String ClassHeader(String dependency_,String name_,String baseClassName,String public_,String protected_,String private_)
 	{
-		return ClassHeader(dependency_,name_,null,public_,protected_,private_,false,false);
+		return ClassHeader(dependency_,name_,baseClassName,null,public_,protected_,private_,false,false);
 	}
 	
-	public static String ClassHeader(String dependency_,String className_,List<String> constructorParams_,String public_,String protected_,String private_,Boolean sm_,Boolean rt_)
+	public static String ClassHeader(String dependency_,String name_,String baseClassName,List<String> constructorParams_,String public_,String protected_,String private_,Boolean rt_)
+	{
+		return ClassHeader(dependency_,name_,baseClassName,constructorParams_,public_,protected_,private_,false,rt_);
+	}
+	
+	public static String ClassHeader(String dependency_,String className_,String baseClassName,List<String> constructorParams_,String public_,String protected_,String private_,Boolean sm_,Boolean rt_)
 	{
 		String source=dependency_;
 		if(!sm_)
@@ -178,7 +189,11 @@ public class GenerationTemplates
 		}
 		
 		source+=GenerationNames.ClassType+" "+className_;
-		if(sm_)
+		
+		if (baseClassName != null) {
+			source += ": public " + baseClassName;
+		}
+		else if (sm_)
 		{
 			source+=":public "+GenerationNames.StatemachineBaseName;
 			if(rt_)
@@ -188,10 +203,12 @@ public class GenerationTemplates
 		}
 		
 		source+="\n{\npublic:\n"+className_+"("+PrivateFunctionalTemplates.ParamTypeList(constructorParams_)+");\n";
-		if(!sm_)
+		
+		if(!sm_ && baseClassName == null)
 		{
 			source+=GenerationNames.DummyProcessEventDef;
 		}
+		
 		
 		if(!public_.isEmpty())
 		{
@@ -233,9 +250,21 @@ public class GenerationTemplates
 		return VariableDecl(typeName_, variableName_);
 	}
 	
-	public static String ConstructorDef(String className_)//TODO too simple ....
+	
+	
+	public static String ConstructorDef(String className_,String baseClassName_,Boolean rt)//TODO too simple ....
 	{
-		return className_+"::"+className_+"()+{}\n\n";
+		if (baseClassName_ == null) {
+			return className_+"::"+className_+"(){}\n\n";
+		}
+		else if (baseClassName_ != null && rt) {
+			return className_+"::"+className_+"("+ RuntimePointer + 
+					" " +  RuntimeParamaterName +"): " +  baseClassName_ + "(" + RuntimeParamaterName +") {}\n\n";
+		}
+		else {
+			return className_+"::"+className_+"() :" +  baseClassName_ + "() {}\n\n";
+		}
+		
 	}
 
 	public static String TransitionActionDecl(String transitionActionName_)
@@ -289,17 +318,19 @@ public class GenerationTemplates
 		return PrivateFunctionalTemplates.CppType(returnTypeName_)+" "+className_+"::"+functionName_+"("+PrivateFunctionalTemplates.ParamList(params_)+")\n{\n"+body_+"}\n\n";
 	}
 
-	public static String HierarchicalSubStateMachineClassConstructor(String className_,String parentClassName_,Map<Pair<String,String>,Pair<String,String>> machine_,Map<String,String> subMachines_,String intialState_)
+	public static String HierarchicalSubStateMachineClassConstructor(String className_,String parentClassName_,Multimap<Pair<String,String>,Pair<String,String>> machine_,Map<String,String> subMachines_,String intialState_)
 	{
+		
 		String parentParamName=GenerationNames.FormatIncomignParamName(GenerationNames.ParentSmName);
 		String source=className_+"::"+className_+"("+GenerationNames.PointerType(parentClassName_)+" "+parentParamName+"):"+GenerationNames.DefaultStateInitialization+","+GenerationNames.CurrentMachineName+"("+GenerationNames.NullPtr+"),"+
 				GenerationNames.ParentSmMemberName+"("+parentParamName+")"+"\n{\n";
 		return source+PrivateFunctionalTemplates.HierarchicalStateMachineClassConstructorSharedBody(className_, parentParamName, machine_, subMachines_, intialState_, false);
 	}
 	
-	public static String HierarchicalStateMachineClassConstructor(String className_,Map<Pair<String,String>,Pair<String,String>> machine_,Map<String,String> subMachines_,String intialState_,Boolean rt_)
+	public static String HierarchicalStateMachineClassConstructor(String className_,String baseClassName_,Multimap<Pair<String,String>,Pair<String,String>> machine_,Map<String,String> subMachines_,String intialState_,Boolean rt_)
 	{
-		String source= className_+"::"+className_+"():"+GenerationNames.DefaultStateInitialization+","+GenerationNames.CurrentMachineName+"("+GenerationNames.NullPtr+")\n{\n";
+		
+		String source= SimpleStateMachineClassConstructorHead(className_,baseClassName_,rt_) +GenerationNames.CurrentMachineName+"("+GenerationNames.NullPtr+")"+","+GenerationNames.DefaultStateInitialization+"\n{\n";
 		return source+PrivateFunctionalTemplates.HierarchicalStateMachineClassConstructorSharedBody(className_, "this", machine_, subMachines_, intialState_, rt_);
 	}
 	
@@ -307,11 +338,11 @@ public class GenerationTemplates
 	 * Map<Pair<String, String>,<String,String>
 	 *                <event, state>,<guard,handlerName>
 	 * */
-	public static String SimpleSubStateMachineClassConstructor(String className_,String parentClass_,Map<Pair<String,String>,Pair<String,String>> machine_,String intialState_)
+	public static String SimpleSubStateMachineClassConstructor(String className_,String parentClass_,Multimap<Pair<String,String>,Pair<String,String>> machine_,String intialState_)
 	{
 		String parentParam=GenerationNames.FormatIncomignParamName(GenerationNames.ParentSmName);
 		String source=className_+"::"+className_+"("+GenerationNames.PointerType(parentClass_)+" "+parentParam+"):"+GenerationNames.DefaultStateInitialization+","+
-				GenerationNames.ParentSmMemberName+"("+parentParam+")"+"\n{\n"+PrivateFunctionalTemplates.StateMachineClassConstructorSharedBody(className_,parentClass_,machine_, intialState_)+"}\n\n";	
+				GenerationNames.ParentSmMemberName+"("+parentParam+")"+"\n{\n"+PrivateFunctionalTemplates.StateMachineClassConstructorSharedBody(className_,parentClass_,machine_, intialState_,false,null)+"}\n\n";	
 		return source+PrivateFunctionalTemplates.SimpleStateMachineClassConstructorSharedBody(className_, machine_, intialState_, false);
 	}
 
@@ -319,11 +350,45 @@ public class GenerationTemplates
 	 * Map<Pair<String, String>,<String,String>
 	 *                <event, state>,<guard,handlerName>
 	 * */
-	public static String SimpleStateMachineClassConstructor(String className_,Map<Pair<String,String>,Pair<String,String>> machine_,String intialState_,Boolean rt_)
+	public static String SimpleStateMachineClassConstructor(String className_,String baseClassName,Multimap<Pair<String,String>,Pair<String,String>> machine_,String intialState_,Boolean rt_,Integer poolId)
 	{
-		String source=className_+"::"+className_+"():"+GenerationNames.DefaultStateInitialization+"\n{\n"+PrivateFunctionalTemplates.StateMachineClassConstructorSharedBody(className_, machine_, intialState_)+"}\n\n";
-		return source+PrivateFunctionalTemplates.SimpleStateMachineClassConstructorSharedBody(className_, machine_, intialState_, rt_);
+			String source= SimpleStateMachineClassConstructorHead(className_,baseClassName,rt_) + GenerationNames.DefaultStateInitialization +
+					"\n{\n"+PrivateFunctionalTemplates.StateMachineClassConstructorSharedBody(className_, machine_, intialState_,rt_,poolId)+"}\n\n";
+						return source+PrivateFunctionalTemplates.SimpleStateMachineClassConstructorSharedBody(className_, machine_, intialState_, rt_);
+			
+		
 	}
+	
+	public static String SimpleStateMachineClassConstructorHead(String className, Boolean rt){
+		if(rt){
+				return className +"::"+className +"(" + RuntimePointer + " " + RuntimeTemplates.RuntimeParamter +"):";
+			
+		}
+		else{
+			return className +"::"+className +"():";
+			
+		}
+	} 
+	
+	public static String SimpleStateMachineClassConstructorHead(String className,String baseClassName, Boolean rt){
+		if(rt){
+			if (baseClassName != null) {
+				return className +"::"+className +"(" + RuntimePointer + " " + RuntimeTemplates.RuntimeParamter +"): " + baseClassName + "(" + RuntimeTemplates.RuntimeParamter + "),";
+			}
+			else {
+				return className +"::"+className +"(" + RuntimePointer + " " + RuntimeTemplates.RuntimeParamter +"):";
+			}
+			
+		}
+		else{
+			if (baseClassName != null) {
+				return className +"::"+className +"(): " + baseClassName + "(" + RuntimeTemplates.RuntimeParamter + "),";
+			}
+			else {
+				return className +"::"+className +"():";
+			}
+		}
+	} 
 	
 	public static String GuardFunction(String guardFunctionName_,String constraint_,String eventName_)
 	{
@@ -361,9 +426,11 @@ public class GenerationTemplates
 	
 
 	
-	public static String StateEnum(Iterable<State> states_) 
+	public static String StateEnum(Iterable<State> states_, String initialState) 
 	{
 		String StateList = "enum States{";
+		
+		StateList+=GenerationNames.StateEnumName(initialState)+",";
 		for(State item: states_)
 		{
 			StateList+=GenerationNames.StateEnumName(item.getName())+",";
@@ -405,6 +472,58 @@ public class GenerationTemplates
 	public static String EventParamUsage(String eventName_, String body_)
 	{
 		return body_.replaceAll((eventName_+"\\"+GenerationNames.SimpleAccess), (GenerationNames.RealEventName+GenerationNames.SimpleAccess));
+	}
+	
+	public static String CreateObject(String typeName,String objName){
+		String source;
+		source = GenerationNames.PointerType(typeName)+" "+objName+"= "+GenerationNames.MemoryAllocator+" "+typeName+"();\n";
+		return source;
+		
+	}
+	
+	public static String AllocateObject(String typeName,List<String> params) {
+		String parameters = "(";
+		for(int i = 0; i < params.size() - 1; i++) {
+			parameters = parameters + params.get(i) + ",";
+		}
+		parameters = parameters + params.get(params.size() - 1) + ")";
+		
+		return GenerationNames.MemoryAllocator +" "+ typeName + parameters;
+	}
+	
+	public static String AllocateObject(String typeName) {
+		return GenerationNames.MemoryAllocator+" "+typeName+"()";
+	}
+	
+	public static String GetDefaultReturn(String returnType){
+		
+		
+	
+		if (returnType == null) {
+			return "\n";
+		}
+		else{
+			return "return " + GetDefaultReturnValue(returnType) + ";\n";
+		}
+		
+	}
+	
+	public static String GetDefaultReturnValue(String returnType) {
+		
+		switch(PrivateFunctionalTemplates.CppType(returnType)) {
+			case "int": return "0";
+			case "double": return "0";
+			case "bool": return "true";
+			case GenerationNames.cppString: return "\"\"";
+			default : return "0";
+		
+		}
+		
+	}
+	
+	public static String EmptyBody()
+	{
+		return "{}";
 	}
 	
 }

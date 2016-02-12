@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.uml2.transform.exporters;
 
 import hu.elte.txtuml.export.uml2.mapping.ModelMapCollector;
 import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
+import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.export.uml2.utils.MultiplicityProvider;
 import hu.elte.txtuml.export.uml2.utils.SharedUtils;
 
@@ -17,9 +18,6 @@ import org.eclipse.uml2.uml.UMLPackage;
 
 /**
  * Instances of this class are responsible for exporting associations.
- * 
- * @author Adam Ancsin
- *
  */
 public class AssociationExporter {
 
@@ -35,7 +33,8 @@ public class AssociationExporter {
 	 * @param exportedModel
 	 *            The exported UML2 model.
 	 */
-	public AssociationExporter(TypeDeclaration sourceClass, ModelMapCollector mapping, Model exportedModel) {
+	public AssociationExporter(TypeDeclaration sourceClass,
+			ModelMapCollector mapping, Model exportedModel) {
 		this.sourceClass = sourceClass;
 		this.mapping = mapping;
 		this.exportedModel = exportedModel;
@@ -46,7 +45,6 @@ public class AssociationExporter {
 	 * 
 	 * @return The exported UML2 association.
 	 * @throws ExportException
-	 *
 	 */
 	@SuppressWarnings("rawtypes")
 	public Association exportAssociation() throws ExportException {
@@ -61,10 +59,10 @@ public class AssociationExporter {
 				.createPackagedElement(sourceClass.getName()
 						.getFullyQualifiedName(), UMLPackage.eINSTANCE
 						.getAssociation());
+
 		exportAssociationEnd(exportedAssociation, classes.get(0));
 		exportAssociationEnd(exportedAssociation, classes.get(1));
-		mapping.put(SharedUtils.qualifiedName(sourceClass),
-				exportedAssociation);
+		mapping.put(SharedUtils.qualifiedName(sourceClass), exportedAssociation);
 		return exportedAssociation;
 	}
 
@@ -76,7 +74,6 @@ public class AssociationExporter {
 	 * @param sourceElement
 	 *            The class representing the txtUML association end.
 	 * @throws ExportException
-	 *
 	 */
 	private void exportAssociationEnd(Association exportedAssociation,
 			Object sourceElement) throws ExportException {
@@ -125,9 +122,16 @@ public class AssociationExporter {
 			} else {
 				end = exportedAssociation.createOwnedEnd(phrase, participant);
 			}
+
+			if (ElementTypeTeller.isComposition((TypeDeclaration) endSource
+					.getParent()) && !ElementTypeTeller.isContainer(endSource)) {
+				end.setAggregation(AggregationKind.COMPOSITE_LITERAL);
+			} else {
+				end.setAggregation(AggregationKind.NONE_LITERAL);
+			}
+
 			end.setLower(lowerBound);
 			end.setUpper(upperBound);
-			end.setAggregation(AggregationKind.NONE_LITERAL);
 		}
 	}
 }

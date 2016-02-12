@@ -26,7 +26,7 @@ package hu.elte.txtuml.api.model;
  * <p>
  * <b>Subtype requirements:</b>
  * <ul>
- * <li>must be the nested class of a subclass of {@link Model}</li>
+ * <li><i>none</i></li>
  * </ul>
  * <p>
  * <b>Subtype restrictions:</b>
@@ -61,9 +61,6 @@ package hu.elte.txtuml.api.model;
  * </pre>
  *
  * See the documentation of {@link Model} for an overview on modeling in JtxtUML.
- *
- * @author Gabor Ferenc Kovacs
- *
  */
 public class Signal extends Event {
 

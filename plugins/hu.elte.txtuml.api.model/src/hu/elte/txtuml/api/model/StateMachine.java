@@ -82,7 +82,7 @@ import hu.elte.txtuml.api.model.backend.ElseException;
  * 
  * 		{@literal @}Override
  * 		public boolean guard() {
- * 			SampleSignal sg = getSignal(SampleSignal.class); 
+ * 			SampleSignal sg = getSignal(); 
  * 			return sg.sampleParam == 0;
  * 		}
  * 	}
@@ -171,14 +171,12 @@ import hu.elte.txtuml.api.model.backend.ElseException;
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  *
- * @author Gabor Ferenc Kovacs
  * @see Vertex
  * @see Pseudostate
  * @see Initial
  * @see Choice
  * @see State
  * @see CompositeState
- *
  */
 public abstract class StateMachine extends InnerClassInstancesHolder implements
 		ModelElement {
@@ -213,7 +211,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 *
-	 * @author Gabor Ferenc Kovacs
 	 * @see State
 	 * @see CompositeState
 	 * @see Pseudostate
@@ -296,7 +293,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 * 
-	 * @author Gabor Ferenc Kovacs
 	 * @see Initial
 	 * @see Choice
 	 * @see State
@@ -396,9 +392,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	public class Initial extends Pseudostate {
 
@@ -475,9 +468,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	public class Choice extends Pseudostate {
 
@@ -564,9 +554,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	public class State extends Vertex {
 
@@ -611,15 +598,13 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		 * 
 		 * @param <T>
 		 *            the type to which the casting should be performed
-		 * @param signalClass
-		 *            the signal class to which the casting should be performed
 		 * @return the signal receiving which triggered the execution (or the
 		 *         call of the guard) of this transition
 		 * @throws ClassCastException
 		 *             if the cast might not be performed
 		 */
 		@SuppressWarnings("unchecked")
-		protected final <T extends Signal> T getSignal(Class<T> signalClass) {
+		protected final <T extends Signal> T getSignal() {
 			return (T) signal;
 		}
 
@@ -695,9 +680,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	public class CompositeState extends State {
 
@@ -818,9 +800,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
-	 *
 	 */
 	public class Transition extends TransitionBase {
 
@@ -869,7 +848,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		 * actions.
 		 * <p>
 		 * If the actual transition has a trigger defined, the
-		 * {@link #getSignal(Class) getSignal} method can be used inside the
+		 * {@link #getSignal() getSignal} method can be used inside the
 		 * overriding methods to get the triggering signal.
 		 * <p>
 		 * Overriding methods may only contain action code. See the
@@ -918,7 +897,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		 * should always do so.
 		 * <p>
 		 * If the actual transition has a trigger defined, the
-		 * {@link #getSignal(Class) getSignal} method can be used inside the
+		 * {@link #getSignal() getSignal} method can be used inside the
 		 * overriding methods to get the triggering signal.
 		 * <p>
 		 * Overriding methods may only contain a condition evaluation. See the
@@ -959,15 +938,13 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements
 		 * 
 		 * @param <T>
 		 *            the type to which the casting should be performed
-		 * @param signalClass
-		 *            the signal class to which the casting should be performed
 		 * @return the signal receiving which triggered the execution (or the
 		 *         call of the guard) of this transition
 		 * @throws ClassCastException
 		 *             if the cast might not be performed
 		 */
 		@SuppressWarnings("unchecked")
-		protected final <T extends Signal> T getSignal(Class<T> signalClass) {
+		protected final <T extends Signal> T getSignal() {
 			return (T) signal;
 		}
 

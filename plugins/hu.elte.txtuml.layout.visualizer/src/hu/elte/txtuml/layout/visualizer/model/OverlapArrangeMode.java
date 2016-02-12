@@ -2,9 +2,6 @@ package hu.elte.txtuml.layout.visualizer.model;
 
 /**
  * Mode of the overlap arrangement.
- * 
- * @author Balázs Gregorics
- *
  */
 public enum OverlapArrangeMode
 {

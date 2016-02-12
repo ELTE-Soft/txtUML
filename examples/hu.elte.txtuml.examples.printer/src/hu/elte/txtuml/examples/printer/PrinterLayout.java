@@ -4,10 +4,10 @@ import hu.elte.txtuml.api.layout.Above;
 import hu.elte.txtuml.api.layout.Diagram;
 import hu.elte.txtuml.api.layout.Left;
 import hu.elte.txtuml.api.layout.West;
-import hu.elte.txtuml.examples.printer.PrinterModel.Document;
-import hu.elte.txtuml.examples.printer.PrinterModel.Human;
-import hu.elte.txtuml.examples.printer.PrinterModel.PrinterBackend;
-import hu.elte.txtuml.examples.printer.PrinterModel.PrinterFrontend;
+import hu.elte.txtuml.examples.printer.model.Document;
+import hu.elte.txtuml.examples.printer.model.Human;
+import hu.elte.txtuml.examples.printer.model.PrinterBackend;
+import hu.elte.txtuml.examples.printer.model.PrinterFrontend;
 
 class PrinterDiagram extends Diagram {
 	@Above(val = PrinterFrontend.class, from = PrinterBackend.class)

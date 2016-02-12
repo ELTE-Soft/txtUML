@@ -1,5 +1,10 @@
 package hu.elte.txtuml.layout.export.impl;
 
+import java.lang.annotation.Annotation;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Function;
+
 import hu.elte.txtuml.api.layout.Alignment;
 import hu.elte.txtuml.api.layout.Contains;
 import hu.elte.txtuml.layout.export.DiagramType;
@@ -26,19 +31,13 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.utils.Pair;
 
-import java.lang.annotation.Annotation;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Function;
-
 /**
  * Default implementation for {@link ElementExporter}.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 public class ElementExporterImpl implements ElementExporter {
 
+	private final String sourceProjectName;
+	
 	/**
 	 * Can be null.
 	 */
@@ -69,7 +68,8 @@ public class ElementExporterImpl implements ElementExporter {
 
 	private long phantomCounter = 0;
 
-	public ElementExporterImpl(ProblemReporter problemReporter) {
+	public ElementExporterImpl(String sourceProjectName, ProblemReporter problemReporter) {
+		this.sourceProjectName = sourceProjectName;
 		this.nodes = NodeMap.create();
 		this.links = LinkMap.create();
 		this.nodeGroups = NodeGroupMap.create();
@@ -114,6 +114,11 @@ public class ElementExporterImpl implements ElementExporter {
 		return links;
 	}
 
+	@Override
+	public String getSourceProjectName() {
+		return sourceProjectName;
+	}
+	
 	@Override
 	public Set<RectangleObject> getNodesAsObjects() {
 		// for efficiency purposes, phantoms are handled in NodeMap's convert()
@@ -611,12 +616,12 @@ public class ElementExporterImpl implements ElementExporter {
 	private boolean checkModelOf(Class<?> cls) {
 		try {
 			// sourceExporter cannot be null when this method is called
-			ModelId containerOfCls = sourceExporter.getModelOf(cls);
+			ModelId containerOfCls = sourceExporter.getModelOf(cls, this);
 			if (!containerOfCls.equals(containingModel)) {
 				if (containingModel == null) {
 					containingModel = containerOfCls;
 				} else {
-					problemReporter.elementFromAnotherModels(containingModel,
+					problemReporter.elementFromAnotherModel(containingModel,
 							containerOfCls, cls);
 					return false;
 				}

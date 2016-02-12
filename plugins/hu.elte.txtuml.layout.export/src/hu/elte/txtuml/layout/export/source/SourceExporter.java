@@ -18,8 +18,7 @@ import java.util.List;
  */
 public interface SourceExporter {
 
-	List<SourceExporter> ALL = Arrays.asList(new ClassDiagramExporter(),
-			new StateMachineDiagramExporter());
+	List<SourceExporter> ALL = Arrays.asList(new ClassDiagramExporter(), new StateMachineDiagramExporter());
 
 	DiagramType getType();
 
@@ -35,15 +34,16 @@ public interface SourceExporter {
 	 *            must be a {@code Class<?>} instance for which either
 	 *            {@link isNode} or {@link isLink} returns {@code true} (it is
 	 *            not checked explicitly)
+	 * @param elementExporter
+	 *            the current element exporter instance
 	 * @return identifier of model
 	 * @throws ElementExportationException
 	 *             if {@code element} is not contained in a model (if
 	 *             {@code element} is not a node or a link or is badly defined)
 	 */
-	ModelId getModelOf(Class<?> element) throws ElementExportationException;
+	ModelId getModelOf(Class<?> element, ElementExporter elementExporter) throws ElementExportationException;
 
-	Pair<Class<?>, Class<?>> getStartAndEndOfLink(Class<?> link)
-			throws ElementExportationException;
+	Pair<Class<?>, Class<?>> getStartAndEndOfLink(Class<?> link) throws ElementExportationException;
 
 	/**
 	 * This method is called with a model identifier returned by one of this

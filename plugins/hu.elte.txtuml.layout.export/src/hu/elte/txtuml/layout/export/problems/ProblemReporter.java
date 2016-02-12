@@ -82,14 +82,14 @@ public class ProblemReporter {
 				+ " contains itself.");
 	}
 
-	public void elementFromAnotherModels(ModelId model,
+	public void elementFromAnotherModel(ModelId model,
 			ModelId otherModel, Class<?> element) {
 		report.error("Model element "
 				+ Utils.classAsString(element)
 				+ " is invalid because it is part of the model "
 				+ otherModel.getName()
 				+ ". The current diagram definition belongs to the model "
-				+ model
+				+ model.getName()
 				+ " (as that is the container of the first found element inside the definition).");
 	}
 

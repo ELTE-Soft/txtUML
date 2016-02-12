@@ -1,9 +1,9 @@
 package hu.elte.txtuml.api.model.base;
 
-import hu.elte.txtuml.api.model.models.SimpleModel.A;
-import hu.elte.txtuml.api.model.models.SimpleModel.B;
-
 import org.junit.Before;
+
+import hu.elte.txtuml.api.model.models.simple.A;
+import hu.elte.txtuml.api.model.models.simple.B;
 
 public class SimpleModelTestsBase extends TestsBase {
 

@@ -9,8 +9,6 @@ import org.eclipse.jface.wizard.WizardDialog;
 
 /**
  * Handles the call to visualization from wizard
- *
- * @author András Dobreff
  */
 public class WizardHandler extends AbstractHandler{
 	/**

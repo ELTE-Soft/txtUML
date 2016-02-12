@@ -1,0 +1,103 @@
+package hu.elte.txtuml.examples.monitoring.^model;
+
+signal Read;
+signal Write;
+signal Close;
+
+class ResourceMonitor {
+	initial Init;
+	state Closed;
+	state OpenForRead;
+	state OpenForWrite;
+	
+	transition TInit {
+		from Init;
+		to Closed;
+	}
+	
+	transition TOpenRead {
+		from Closed;
+		to OpenForRead;
+		trigger Read;
+		effect {
+			sendOK();
+		}
+	}
+	
+	transition TOpenWrite {
+		from Closed;
+		to OpenForWrite;
+		trigger Write;
+		effect {
+			sendOK();
+		}
+	}
+	
+	transition TReadAgain {
+		from OpenForRead;
+		to OpenForRead;
+		trigger Read;
+		effect {
+			sendOK();
+		}
+	}
+	
+	transition TWriteAgain {
+		from OpenForWrite;
+		to OpenForWrite;
+		trigger Write;
+		effect {
+			sendOK();
+		}
+	}
+	
+	transition TCloseRead {
+		from OpenForRead;
+		to Closed;
+		trigger Close;
+		effect {
+			sendOK();
+		}
+	}
+	
+	transition TCloseWrite {
+		from OpenForWrite;
+		to Closed;
+		trigger Close;
+		effect {
+			sendOK();
+		}
+	}
+	
+	transition TErrRead {
+		from OpenForWrite;
+		to OpenForWrite;
+		trigger Read;
+		effect {
+			Aggregator aggreg = this->(ToAggregator.aggregator).selectAny();
+			send new ReadError() to aggreg;
+			sendError();
+		}
+	}
+	
+	transition TErrWrite {
+		from OpenForRead;
+		to OpenForRead;
+		trigger Write;
+		effect {
+			Aggregator aggreg = this->(ToAggregator.aggregator).selectAny();
+			send new WriteError() to aggreg;
+			sendError();
+		}
+	}
+	
+	void sendError() {
+			Alert alert = this->(ToAlert.alert).selectAny();
+			send new Error() to alert;		
+	}
+
+	void sendOK() {
+			Alert alert = this->(ToAlert.alert).selectAny();
+			send new OK() to alert;		
+	}
+}

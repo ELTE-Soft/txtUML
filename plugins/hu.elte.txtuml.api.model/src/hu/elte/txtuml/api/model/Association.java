@@ -1,5 +1,9 @@
 package hu.elte.txtuml.api.model;
 
+import hu.elte.txtuml.api.model.assocends.Aggregation;
+import hu.elte.txtuml.api.model.assocends.Multiplicity;
+import hu.elte.txtuml.api.model.assocends.Navigability;
+
 /**
  * A base class for associations in the model.
  * 
@@ -27,7 +31,7 @@ package hu.elte.txtuml.api.model;
  * <p>
  * <b>Subtype requirements:</b>
  * <ul>
- * <li>must be the nested class of a subclass of {@link Model}</li>
+ * <li>must be a top level class (not a nested or local class)</li>
  * <li>must have two inner classes which are subclasses of
  * <code>AssociationEnd</code></li>
  * </ul>
@@ -64,8 +68,7 @@ package hu.elte.txtuml.api.model;
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  *
- * @author Gabor Ferenc Kovacs
- * @see Association
+ * @see Composition
  * @see Association.Many
  * @see Association.One
  * @see Association.MaybeOne
@@ -129,14 +132,11 @@ public class Association implements ModelElement {
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 * 
-	 * @author Gabor Ferenc Kovacs
-	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class Many<T extends ModelClass> extends ManyBase<T> implements
-			hu.elte.txtuml.api.model.assocends.Navigability.Navigable,
-			hu.elte.txtuml.api.model.assocends.Multiplicity.ZeroToUnlimited {
+	public class Many<T extends ModelClass> extends ManyBase<T>
+			implements Navigability.Navigable, Multiplicity.ZeroToUnlimited, Aggregation.None {
 
 		/**
 		 * Sole constructor of <code>Many</code>.
@@ -190,14 +190,11 @@ public class Association implements ModelElement {
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 * 
-	 * @author Gabor Ferenc Kovacs
-	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class Some<T extends ModelClass> extends SomeBase<T> implements
-			hu.elte.txtuml.api.model.assocends.Navigability.Navigable,
-			hu.elte.txtuml.api.model.assocends.Multiplicity.OneToUnlimited {
+	public class Some<T extends ModelClass> extends SomeBase<T>
+			implements Navigability.Navigable, Multiplicity.OneToUnlimited, Aggregation.None {
 
 		/**
 		 * Sole constructor of <code>Some</code>.
@@ -251,15 +248,11 @@ public class Association implements ModelElement {
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 * 
-	 * @author Gabor Ferenc Kovacs
-	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
 	public class MaybeOne<T extends ModelClass> extends MaybeOneBase<T>
-			implements
-			hu.elte.txtuml.api.model.assocends.Navigability.Navigable,
-			hu.elte.txtuml.api.model.assocends.Multiplicity.ZeroToOne {
+			implements Navigability.Navigable, Multiplicity.ZeroToOne, Aggregation.None {
 
 		/**
 		 * Sole constructor of <code>MaybeOne</code>.
@@ -313,14 +306,11 @@ public class Association implements ModelElement {
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 * 
-	 * @author Gabor Ferenc Kovacs
-	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class One<T extends ModelClass> extends OneBase<T> implements
-			hu.elte.txtuml.api.model.assocends.Navigability.Navigable,
-			hu.elte.txtuml.api.model.assocends.Multiplicity.One {
+	public class One<T extends ModelClass> extends OneBase<T>
+			implements Navigability.Navigable, Multiplicity.One, Aggregation.None {
 
 		/**
 		 * Sole constructor of <code>One</code>.
@@ -387,15 +377,11 @@ public class Association implements ModelElement {
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 * 
-	 * @author Gabor Ferenc Kovacs
-	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
 	public class Multiple<T extends ModelClass> extends MultipleBase<T>
-			implements
-			hu.elte.txtuml.api.model.assocends.Navigability.Navigable,
-			hu.elte.txtuml.api.model.assocends.Multiplicity.MinToMax {
+			implements Navigability.Navigable, Multiplicity.MinToMax, Aggregation.None {
 
 		/**
 		 * Sole constructor of <code>Multiple</code>.
@@ -450,14 +436,11 @@ public class Association implements ModelElement {
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 * 
-	 * @author Gabor Ferenc Kovacs
-	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class HiddenMany<T extends ModelClass> extends ManyBase<T> implements
-			hu.elte.txtuml.api.model.assocends.Navigability.NonNavigable,
-			hu.elte.txtuml.api.model.assocends.Multiplicity.ZeroToUnlimited {
+	public class HiddenMany<T extends ModelClass> extends ManyBase<T>
+			implements Navigability.NonNavigable, Multiplicity.ZeroToUnlimited, Aggregation.None {
 
 		/**
 		 * Sole constructor of <code>HiddenMany</code>.
@@ -512,14 +495,11 @@ public class Association implements ModelElement {
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 * 
-	 * @author Gabor Ferenc Kovacs
-	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class HiddenSome<T extends ModelClass> extends SomeBase<T> implements
-			hu.elte.txtuml.api.model.assocends.Navigability.NonNavigable,
-			hu.elte.txtuml.api.model.assocends.Multiplicity.OneToUnlimited {
+	public class HiddenSome<T extends ModelClass> extends SomeBase<T>
+			implements Navigability.NonNavigable, Multiplicity.OneToUnlimited, Aggregation.None {
 
 		/**
 		 * Sole constructor of <code>HiddenSome</code>.
@@ -574,15 +554,11 @@ public class Association implements ModelElement {
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 * 
-	 * @author Gabor Ferenc Kovacs
-	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
 	public class HiddenMaybeOne<T extends ModelClass> extends MaybeOneBase<T>
-			implements
-			hu.elte.txtuml.api.model.assocends.Navigability.NonNavigable,
-			hu.elte.txtuml.api.model.assocends.Multiplicity.ZeroToOne {
+			implements Navigability.NonNavigable, Multiplicity.ZeroToOne, Aggregation.None {
 
 		/**
 		 * Sole constructor of <code>HiddenMaybeOne</code>.
@@ -636,14 +612,11 @@ public class Association implements ModelElement {
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 * 
-	 * @author Gabor Ferenc Kovacs
-	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class HiddenOne<T extends ModelClass> extends OneBase<T> implements
-			hu.elte.txtuml.api.model.assocends.Navigability.NonNavigable,
-			hu.elte.txtuml.api.model.assocends.Multiplicity.One {
+	public class HiddenOne<T extends ModelClass> extends OneBase<T>
+			implements Navigability.NonNavigable, Multiplicity.One, Aggregation.None {
 
 		/**
 		 * Sole constructor of <code>HiddenOne</code>.
@@ -698,15 +671,11 @@ public class Association implements ModelElement {
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 * 
-	 * @author Gabor Ferenc Kovacs
-	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
 	public class HiddenMultiple<T extends ModelClass> extends MultipleBase<T>
-			implements
-			hu.elte.txtuml.api.model.assocends.Navigability.NonNavigable,
-			hu.elte.txtuml.api.model.assocends.Multiplicity.MinToMax {
+			implements Navigability.NonNavigable, Multiplicity.MinToMax, Aggregation.None {
 
 		/**
 		 * Sole constructor of <code>HiddenMultiple</code>.

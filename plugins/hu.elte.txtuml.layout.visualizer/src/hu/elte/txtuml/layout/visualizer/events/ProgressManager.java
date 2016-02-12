@@ -4,9 +4,6 @@ import java.util.Observer;
 
 /**
  * A static class that handles the event emitter.
- * 
- * @author Balázs Gregorics
- *
  */
 public class ProgressManager
 {

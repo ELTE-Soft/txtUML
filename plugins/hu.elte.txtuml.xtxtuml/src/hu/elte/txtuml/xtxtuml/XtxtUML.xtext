@@ -8,32 +8,26 @@ import "http://www.eclipse.org/xtext/xbase/Xtype" as xtype
 // Start rule
 
 TUFile :
-	('package' name=QualifiedName ';'?)?
+	TUModelDeclaration |
+	(('package' name=QualifiedName ';'?)?
 	importSection=XImportSection?
-	elements+=TUFileElement*
+	elements+=TUModelElement*)
 ;
 
-// File level
-
-TUFileElement :
-	TUModel | TUExecution
-;
-
-TUModel : 
-	'model' name=ValidID ('{'
-		elements+=TUModelElement*
-	'}' ';'? | ';')
-;
-
-TUExecution :
-	'execution' name=ValidID
-		body=XBlockExpression
+TUModelDeclaration :
+	{TUModelDeclaration}
+	'model' (name=STRING)? ';'?
 ;
 
 // Model level
 
 TUModelElement :
-	TUSignal | TUClass | TUAssociation
+	TUExecution | TUSignal | TUClass | TUAssociation
+;
+
+TUExecution :
+	'execution' name=ValidID
+		body=XBlockExpression
 ;
 
 TUSignal :
@@ -48,8 +42,8 @@ TUClass :
 	'}' ';'? | ';')
 ;
 
-TUAssociation :
-	'association' name=ValidID '{'
+TUAssociation returns TUAssociation:
+	({TUAssociation} 'association' | {TUComposition} 'composition') name=ValidID '{'
 		ends+=TUAssociationEnd*
 	'}'
 ;
@@ -137,7 +131,8 @@ TUTransitionGuard :
 
 TUAssociationEnd :
 	visibility=TUVisibility? notNavigable?='hidden'?
-		multiplicity=TUMultiplicity endClass=[TUClass|QualifiedName] name=ValidID ';'
+		multiplicity=TUMultiplicity? container?='container'?
+		endClass=[TUClass|QualifiedName] name=ValidID ';'
 ;
 
 TUMultiplicity :
@@ -147,7 +142,7 @@ TUMultiplicity :
 // Commons
 
 enum TUVisibility :
-	PACKAGE = "package" | PRIVATE = "private" | PROTECTED = "protected" | PUBLIC = "public"
+	PACKAGE = 'package' | PRIVATE = 'private' | PROTECTED = 'protected' | PUBLIC = 'public'
 ;
 
 // rAlf
@@ -285,7 +280,7 @@ XConstructorCall returns xbase::XExpression :
 XBlockExpression returns xbase::XExpression : 
 	{xbase::XBlockExpression}
 	'{' 
-		(expressions+=XRAlfStatementSemicolonNotNeeded | expressions+=XRAlfStatementSemicolonNeeded ';' )*
+		(expressions+=XRAlfStatementSemicolonNotNeeded | =>(expressions+=XRAlfStatementSemicolonNeeded) ';' )*
 	'}'
 ;
 
@@ -340,7 +335,6 @@ XFeatureCall returns xbase::XExpression :
  *     <li>XBlockExpression is mandatory, except for an "else if" construct</li>
  *     <li>XExpression -> XExpression</li>
  * </ul>
- * 
  */
 XIfExpression returns xbase::XExpression :
 	{xbase::XIfExpression}
@@ -456,13 +450,13 @@ XMemberFeatureCall returns xbase::XExpression :
 	XPrimaryExpression
 	(
 		=>(
-			{xbase::XAssignment.assignable=current} ('.' | explicitStatic?="::")
+			{xbase::XAssignment.assignable=current} ('.' | explicitStatic?='::')
 			feature=[types::JvmIdentifiableElement|FeatureCallID] OpSingleAssign
 		)
 		value=XAssignment
 	| 
 		=>(
-			{xbase::XMemberFeatureCall.memberCallTarget=current} ("." | explicitStatic?="::")
+			{xbase::XMemberFeatureCall.memberCallTarget=current} ('.' | explicitStatic?='::')
 		) 
 		feature=[types::JvmIdentifiableElement|IdOrSuper] (
 			=>explicitOperationCall?='(' (
@@ -471,12 +465,8 @@ XMemberFeatureCall returns xbase::XExpression :
 			)? ')'
 		)?
 	| 
-		=>({RAlfAssocNavExpression.left=current} '->') right=[TUAssociationEnd|TUAssocEndName]
+		=>({RAlfAssocNavExpression.left=current} '->') '(' right=[TUAssociationEnd|QualifiedName] ')'
 	)*
-;
-
-TUAssocEndName :
-	ValidID (=>'::' ValidID)*
 ;
 
 // New Xtype rules

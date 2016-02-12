@@ -1,12 +1,12 @@
 package hu.elte.txtuml.api.model.statemachine;
 
-import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.base.TransitionsModelTestsBase;
-import hu.elte.txtuml.api.model.models.TransitionsModel.Sig3;
-import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.base.TransitionsModelTestsBase;
+import hu.elte.txtuml.api.model.models.transitions.Sig3;
+import hu.elte.txtuml.api.model.util.SeparateClassloaderTestRunner;
 
 @RunWith(SeparateClassloaderTestRunner.class)
 public class GuardTest extends TransitionsModelTestsBase {

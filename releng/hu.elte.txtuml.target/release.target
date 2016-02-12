@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.8"?>
-<target name="release" sequenceNumber="6">
+<target name="release" sequenceNumber="7">
 	<locations>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<unit id="org.eclipse.jdt.feature.group" version="3.11.1.v20150904-0015"/>
@@ -16,10 +16,6 @@
 			<unit id="org.eclipse.xtext.xbase.feature.group" version="2.8.4.v201508050135"/>
 			<unit id="org.eclipse.xtext.xtext.ui.feature.group" version="2.8.4.v201508050135"/>
 			<repository location="http://download.eclipse.org/releases/mars/201510021000"/>
-		</location>
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-			<unit id="org.eclipse.papyrus.extra.moka.feature.feature.group" version="1.1.2.201509161524"/>
-			<repository location="http://download.eclipse.org/modeling/mdt/papyrus/updates/releases/mars/1.1.2/extra"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<unit id="org.powermock.mockito-junit.feature.feature.group" version="1.5.6.0"/>

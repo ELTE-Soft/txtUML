@@ -1,17 +1,13 @@
 package hu.elte.txtuml.layout.export.source;
 
 import hu.elte.txtuml.api.model.From;
-import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.StateMachine.CompositeState;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.layout.export.DiagramType;
+import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
 import hu.elte.txtuml.layout.export.problems.ElementExportationException;
 import hu.elte.txtuml.utils.Pair;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class StateMachineDiagramExporter extends AbstractSourceExporter {
 
@@ -31,8 +27,7 @@ public class StateMachineDiagramExporter extends AbstractSourceExporter {
 	}
 
 	@Override
-	public Pair<Class<?>, Class<?>> getStartAndEndOfLink(Class<?> link)
-			throws ElementExportationException {
+	public Pair<Class<?>, Class<?>> getStartAndEndOfLink(Class<?> link) throws ElementExportationException {
 		From from = link.getAnnotation(From.class);
 		To to = link.getAnnotation(To.class);
 		if (from == null || to == null) {
@@ -42,18 +37,28 @@ public class StateMachineDiagramExporter extends AbstractSourceExporter {
 	}
 
 	@Override
-	protected List<Class<?>> loadAllLinksFromModel(Class<?> model) {		
-		List<Class<?>> links = new ArrayList<>();
-		for (Class<?> cls : model.getDeclaredClasses()) {
-			if (ModelClass.class.isAssignableFrom(cls) ||
-					CompositeState.class.isAssignableFrom(cls)) {
-				links.addAll(loadAllLinksFromModel(cls));
-				continue;
-			}
-			if (isLink(cls)) {
-				links.add(cls);
+	public void exportImpliedLinks(ModelId modelId, ElementExporter elementExporter) {
+
+		elementExporter.getNodes().keySet().forEach(node -> exportImpliedLinksFromSpecifiedNode(elementExporter, node));
+
+	}
+
+	private void exportImpliedLinksFromSpecifiedNode(ElementExporter elementExporter, Class<?> node) {
+
+		Class<?> parent = node.getEnclosingClass();
+		for (Class<?> cls : parent.getDeclaredClasses()) {
+			try {
+				if (isLink(cls)) {
+					Pair<Class<?>, Class<?>> p = getStartAndEndOfLink(cls);
+
+					if (p.getFirst() == node && elementExporter.getNodes().containsKey(p.getSecond())) {
+						elementExporter.exportLink(cls);
+					}
+				}
+			} catch (ElementExportationException e) {
+				// do nothing (step to next link)
 			}
 		}
-		return links;
+
 	}
 }

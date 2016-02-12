@@ -12,7 +12,6 @@ import org.eclipse.core.runtime.Status;
  * Access plugin logging through this class!
  * It wraps the real plugin logs normally
  * but mocks one if Eclipse is not present (for headless testing)
- * @author gerazo
  */
 public class PluginLogWrapper {
 	
@@ -43,6 +42,9 @@ public class PluginLogWrapper {
 	}
 	
 	public static void logError(String message, Throwable exception) {
+		// TODO: exceptions somehow got lost. inspect
+		System.out.println(message);
+		exception.printStackTrace();
 		getInstance().log(new Status(Status.ERROR, "hu.elte.txtuml.diagnostics", Status.OK, message, exception));
 	}
 	

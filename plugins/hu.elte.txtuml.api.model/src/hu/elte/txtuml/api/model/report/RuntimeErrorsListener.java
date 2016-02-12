@@ -7,8 +7,6 @@ import hu.elte.txtuml.api.model.StateMachine.Vertex;
 
 /**
  * A listener interface that listens to runtime errors of the model execution.
- * 
- * @author Gabor Ferenc Kovacs
  */
 public interface RuntimeErrorsListener {
 
@@ -53,6 +51,9 @@ public interface RuntimeErrorsListener {
 	}
 
 	default void elseGuardFromNonChoiceVertex(Transition transition) {
+	}
+
+	default void multipleContainerForAnObject(ModelClass leftObj, Class<? extends AssociationEnd<?, ?>> rightEnd) {
 	}
 
 }

@@ -2,8 +2,6 @@ package hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers;
 
 /**
  * Enumeration for available colors.
- * 
- * @author Balázs Gregorics
  */
 public enum Color
 {

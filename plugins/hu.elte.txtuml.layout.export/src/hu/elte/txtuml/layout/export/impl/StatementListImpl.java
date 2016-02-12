@@ -8,9 +8,6 @@ import java.util.ArrayList;
 
 /**
  * Default implementation for {@link StatementList}.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 @SuppressWarnings("serial")
 public class StatementListImpl extends ArrayList<Statement> implements StatementList {

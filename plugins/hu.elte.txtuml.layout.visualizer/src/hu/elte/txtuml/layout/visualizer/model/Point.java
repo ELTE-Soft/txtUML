@@ -5,8 +5,6 @@ import java.util.Set;
 
 /**
  * The class representing an abstract Integer Point.
- * 
- * @author Balázs Gregorics
  */
 public class Point
 {
@@ -141,15 +139,15 @@ public class Point
 	}
 	
 	/***
-	 * Subtraction of two {@link Point}s.
+	 * Substraction of two {@link Point}s.
 	 * 
 	 * @param p1
-	 *            First argument to subtract.
+	 *            First argument to substract.
 	 * @param p2
-	 *            Second argument to subtract.
-	 * @return A {@link Point} from the subtraction of p1 and p2.
+	 *            Second argument to substract.
+	 * @return A {@link Point} from the substraction of p1 and p2.
 	 */
-	public static Point Subtract(Point p1, Point p2)
+	public static Point Substract(Point p1, Point p2)
 	{
 		return new Point(p1._x - p2._x, p1._y - p2._y);
 	}
@@ -284,7 +282,7 @@ public class Point
 	 */
 	public static Direction directionOf(Point p, Point relative)
 	{
-		Point temp = Point.Subtract(p, relative);
+		Point temp = Point.Substract(p, relative);
 		if (Math.abs(temp.getX()) > Math.abs(temp.getY()))
 		{
 			if (temp.getX() > 0)
@@ -324,7 +322,7 @@ public class Point
 	{
 		Set<Direction> result = new HashSet<Direction>();
 		
-		Point temp = Point.Subtract(p, relative);
+		Point temp = Point.Substract(p, relative);
 		
 		if (temp.getX() > 0)
 			result.add(Direction.east);
@@ -390,7 +388,7 @@ public class Point
 	 */
 	public boolean isInTheDirection(Point p, Direction dir)
 	{
-		Point dv = Point.Subtract(p, this);
+		Point dv = Point.Substract(p, this);
 		
 		if (dv.getX() > 0 && dir.equals(Direction.east))
 			return true;
@@ -419,27 +417,15 @@ public class Point
 	 */
 	public boolean isInTheDirection(Point p, Direction dir, Boolean inLineCounts)
 	{
-		Point dv = Point.Subtract(p, this);
+		Point dv = Point.Substract(p, this);
 		
-		if (dir.equals(Direction.east) && 
-				((inLineCounts && dv.getX() >= 0) 
-				|| (!inLineCounts && dv.getX() > 0))
-				)
+		if (dv.getX() >= 0 && dir.equals(Direction.east))
 			return true;
-		if (dir.equals(Direction.west) && 
-				((inLineCounts && dv.getX() <= 0)
-				|| (!inLineCounts && dv.getX() < 0 ))
-				)
+		if (dv.getX() <= 0 && dir.equals(Direction.west))
 			return true;
-		if (dir.equals(Direction.north) &&
-				((inLineCounts && dv.getY() >= 0 )
-				|| (!inLineCounts && dv.getY() > 0))
-				)
+		if (dv.getY() >= 0 && dir.equals(Direction.north))
 			return true;
-		if (dir.equals(Direction.south) &&
-				((inLineCounts && dv.getY() <= 0)
-				|| (!inLineCounts && dv.getY() < 0))
-				)
+		if (dv.getY() <= 0 && dir.equals(Direction.south))
 			return true;
 		
 		return false;

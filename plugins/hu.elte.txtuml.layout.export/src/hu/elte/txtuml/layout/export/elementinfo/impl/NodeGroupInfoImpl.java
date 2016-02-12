@@ -5,11 +5,6 @@ import hu.elte.txtuml.layout.export.elementinfo.NodeGroupInfo;
 import hu.elte.txtuml.layout.export.elementinfo.NodeInfo;
 import hu.elte.txtuml.layout.export.interfaces.NodeMap;
 
-/**
- * 
- * @author Dávid János Németh
- *
- */
 public class NodeGroupInfoImpl extends ElementInfoImpl implements NodeGroupInfo {
 
 	private final NodeMap nodes;

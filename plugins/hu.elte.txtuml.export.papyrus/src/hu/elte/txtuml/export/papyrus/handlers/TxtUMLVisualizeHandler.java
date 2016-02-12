@@ -9,8 +9,6 @@ import org.eclipse.jface.wizard.WizardDialog;
 
 /**
  * Handles the call to txtUML Visualization
- *
- * @author András Dobreff
  */
 public class TxtUMLVisualizeHandler  extends AbstractHandler {
 

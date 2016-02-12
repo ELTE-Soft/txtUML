@@ -11,8 +11,6 @@ import org.eclipse.swt.widgets.Composite;
 /**
  * A PreferencesPage for the visualization wizard.
  * The UI is the same as by {@link hu.elte.txtuml.export.papyrus.preferences.PreferencesPage PreferencesPage}
- *
- * @author András Dobreff
  */
 public class PreferencesPage extends WizardPage{
 

@@ -2,9 +2,6 @@ package hu.elte.txtuml.layout.visualizer.exceptions;
 
 /**
  * Abstract generic form of the algorithm's exceptions.
- * 
- * @author Balázs Gregorics
- *
  */
 public class MyException extends Throwable
 {

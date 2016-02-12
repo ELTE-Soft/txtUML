@@ -25,11 +25,6 @@ import org.eclipse.papyrus.uml.diagram.statemachine.CreateStateMachineDiagramCom
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.StateMachine;
 
-/**
- * 
- *
- * @author Andr�s Dobreff
- */
 public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 
 	private TxtUMLElementsRegistry txtumlregistry;
