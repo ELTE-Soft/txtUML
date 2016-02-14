@@ -26,8 +26,8 @@ class XtxtUMLAssociationValidator extends AbstractXtxtUMLValidator {
 	def checkAssociationEndNamesAreUnique(TUAssociationEnd associationEnd) {
 		val association = associationEnd.eContainer as TUAssociation
 		if (1 < association.ends.filter[name == associationEnd.name].length) {
-			error("Association end names must be unique", associationEnd,
-				XtxtUMLPackage.eINSTANCE.TUAssociationEnd_Name, ASSOCIATION_END_NAME_IS_NOT_UNIQUE, associationEnd.name)
+			error("Association end names must be unique", associationEnd, XtxtUMLPackage.eINSTANCE.TUClassProperty_Name,
+				ASSOCIATION_END_NAME_IS_NOT_UNIQUE, associationEnd.name)
 		}
 	}
 

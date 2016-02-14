@@ -2,14 +2,15 @@ package hu.elte.txtuml.xtxtuml.validation
 
 import com.google.inject.Inject
 import hu.elte.txtuml.api.model.ModelClass
+import hu.elte.txtuml.api.model.Port
 import hu.elte.txtuml.api.model.Signal
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfAssocNavExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelElement
@@ -116,7 +117,6 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 			it instanceof TUOperation && {
 				val siblingOrSelfOp = it as TUOperation;
 				siblingOrSelfOp.name == op.name && siblingOrSelfOp.parameterTypeList == op.parameterTypeList
-
 			} && it != op
 		]) {
 			error(
@@ -277,9 +277,9 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 			);
 		}
 
-		if (!sendExpr.target.isConformantWith(ModelClass, false)) {
+		if (!sendExpr.target.isConformantWith(ModelClass, false) && !sendExpr.target.isConformantWith(Port, false)) {
 			error(
-				typeMismatch("Class"),
+				typeMismatch("Class or Port"),
 				XtxtUMLPackage::eINSTANCE.RAlfSendSignalExpression_Target
 			);
 		}
@@ -296,12 +296,11 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 	}
 
 	@Check
-	def checkAssocNavExpressionTypes(RAlfAssocNavExpression navExpr) {
-		// TODO modify when empty collections are available in the api
-		if (!navExpr.left.isConformantWith(ModelClass, false)) {
+	def checkClassPropertyAccessExpressionTypes(TUClassPropertyAccessExpression accessExpr) {
+		if (!accessExpr.left.isConformantWith(ModelClass, false)) {
 			error(
 				typeMismatch("Class"),
-				XtxtUMLPackage::eINSTANCE.RAlfAssocNavExpression_Left
+				XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Left
 			)
 		}
 	}
