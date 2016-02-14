@@ -90,7 +90,7 @@ public class ThreadHandlingManager {
 	private String createMaganerCppCource() {
 		String source = "";
 
-		source = source + GenerationTemplates.CppInclude(ThreadManagerName.toLowerCase());
+		source = source + GenerationTemplates.cppInclude(ThreadManagerName.toLowerCase());
 		source = source + createConstructorHead();
 		source = source + createConstructorBody(isThreadHandling);
 
@@ -107,7 +107,7 @@ public class ThreadHandlingManager {
 		if (threadHandling) {
 			body = "{\n" + setPoolsMap() + setFunctionMap() + maximumThreadMap() + "}\n\n";
 		} else {
-			body = GenerationTemplates.EmptyBody();
+			body = GenerationTemplates.emptyBody();
 		}
 
 		return body;
@@ -137,7 +137,7 @@ public class ThreadHandlingManager {
 			source = source + "\t"
 					+ insertToConfigurationMap(FunctionMapName, IDType, FunctionTypePointer,
 							new Integer(pool.getId()).toString(),
-							GenerationTemplates.AllocateObject(FunctionName, params))
+							GenerationTemplates.allocateObject(FunctionName, params))
 					+ ";\n";
 		}
 
@@ -156,7 +156,7 @@ public class ThreadHandlingManager {
 			source = source + "\t"
 					+ insertToConfigurationMap(PoolsMapName, IDType, ThreadPoolTypePointer,
 							new Integer(pool.getId()).toString(),
-							GenerationTemplates.AllocateObject(ThreadPool, params))
+							GenerationTemplates.allocateObject(ThreadPool, params))
 					+ ";\n";
 		}
 

@@ -32,9 +32,6 @@ import hu.elte.txtuml.utils.Pair;
 
 public class Uml2ToCppExporter {
 	private static final String DefaultCompiler = "g++";
-	private static final String GCCDebugSymbolOn = "-D_DEBUG"; // the symbol
-																// located in
-																// GenerationNames
 	private static final String RuntimeFolder = GenerationTemplates.RuntimePath;
 	private static final String RuntimeLibName = "libsmrt.a";
 	private static final String DefaultMakeFileName = "Makefile";
@@ -43,6 +40,7 @@ public class Uml2ToCppExporter {
 	private static final String CppFilesFolderName = "cpp-runtime";
 
 	private ClassExporter classExporter;
+	private final Options options;
 
 	ThreadHandlingManager threadManager;
 
@@ -52,8 +50,7 @@ public class Uml2ToCppExporter {
 	List<String> classNames;
 
 	public Uml2ToCppExporter(Model model, Map<String, ThreadPoolConfiguration> threadDescription,
-			 boolean addRuntimeOption, boolean debugOption) {
-
+			boolean addRuntimeOption) {
 		classExporter = new ClassExporter();
 
 		this.classList = new ArrayList<Class>();
@@ -62,24 +59,13 @@ public class Uml2ToCppExporter {
 
 		Shared.getTypedElements(classList, elements, UMLPackage.Literals.CLASS);
 
-		if (addRuntimeOption) {
-			Options.setRuntime();
-		} else {
-			Options.setAddRuntime(false);
-		}
-		if (debugOption) {
-			Options.setDebugLog();
-		} else {
-			Options.setDebugLog(false);
-		}
+		options = new Options(addRuntimeOption);
 		threadManager = new ThreadHandlingManager(classList, threadDescription);
-		
-
 	}
 
 	public void buildCppCode(String outputDirectory) throws IOException {
 
-		if (Options.isAddRuntime()) {
+		if (options.isAddRuntime()) {
 			threadManager.createThreadPoolManager(outputDirectory + File.separator + "runtime");
 		}
 
@@ -91,7 +77,6 @@ public class Uml2ToCppExporter {
 			classExporter.reiniIialize();
 			classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
 
-			
 			classExporter.createSource(item, outputDirectory);
 
 			classNames.addAll(classExporter.getSubmachines());
@@ -113,7 +98,7 @@ public class Uml2ToCppExporter {
 		Files.copy(Paths.get(cppFilesLocation + GenerationTemplates.StateMachineBaseHeader),
 				Paths.get(destination + File.separator + GenerationTemplates.StateMachineBaseHeader),
 				StandardCopyOption.REPLACE_EXISTING);
-		if (Options.isAddRuntime()) {
+		if (options.isAddRuntime()) {
 
 			File sourceRuntimeDir = new File(cppFilesLocation);
 			File outputRuntimeDir = new File(destination + File.separator + RuntimeFolder);
@@ -155,30 +140,28 @@ public class Uml2ToCppExporter {
 		String makeFile = "CC=" + DefaultCompiler + "\n\nall: " + outputName_ + "\n\n";
 
 		makeFile += outputName_ + ":";
-		if (Options.isAddRuntime()) {
+		if (options.isAddRuntime()) {
 			makeFile += " " + RuntimeLibName;
 		}
 
 		String fileList = " main.cpp";
 		for (String file : classNames_) {
-			fileList += " " + GenerationTemplates.SourceName(file);
+			fileList += " " + GenerationTemplates.sourceName(file);
 		}
 
 		makeFile += fileList + "\n";
 		makeFile += "\t$(CC)";
-		if (Options.isDebugLog()) {
-			makeFile += " " + GCCDebugSymbolOn;
-		}
 		makeFile += " -Wall -o " + outputName_ + fileList + " -std=gnu++11";
 
-		if (Options.isAddRuntime()) {
+		if (options.isAddRuntime()) {
 			makeFile += " -I " + RuntimeFolder + " -LC " + RuntimeLibName + " -pthread\n\n" + RuntimeLibName
 					+ ": runtime runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o threadconfiguration.o\n"
 					+ "\tar rcs " + RuntimeLibName
 					+ " runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o threadconfiguration.o\n\n"
 					+ ".PHONY:runtime\n" + "runtime:\n\t$(CC) -Wall -c " + RuntimeFolder + "runtime.cpp "
 					+ RuntimeFolder + "statemachineI.cpp " + RuntimeFolder + "threadpool.cpp " + RuntimeFolder
-					+ "threadpoolmanager.cpp " + RuntimeFolder + "threadcontainer.cpp" +  RuntimeFolder + "threadconfiguration.cpp" + "-std=gnu++11";
+					+ "threadpoolmanager.cpp " + RuntimeFolder + "threadcontainer.cpp" + RuntimeFolder
+					+ "threadconfiguration.cpp" + "-std=gnu++11";
 		}
 
 		Shared.writeOutSource(path_, makefileName_, makeFile);
@@ -187,29 +170,30 @@ public class Uml2ToCppExporter {
 	private String createEventSource(EList<Element> elements_) {
 		List<Signal> signalList = new ArrayList<Signal>();
 		Shared.getTypedElements(signalList, elements_, UMLPackage.Literals.SIGNAL);
-		String forwardDecl = "";
-		String source = GenerationTemplates.EventBase() + "\n";
+		StringBuilder forwardDecl = new StringBuilder("");
+		StringBuilder source = GenerationTemplates.eventBase(options).append("\n");
 		List<Pair<String, String>> allParam = new LinkedList<Pair<String, String>>();
 
 		for (Signal item : signalList) {
 			List<Pair<String, String>> currentParams = getSignalParams(item);
 			allParam.addAll(currentParams);
-			source += GenerationTemplates.EventClass(item.getName(), currentParams);
+			source.append(GenerationTemplates.eventClass(item.getName(), currentParams, options));
 		}
 
-		source += GenerationTemplates.EventClass("InitSignal", new ArrayList<Pair<String, String>>());
+		source.append(GenerationTemplates.eventClass("InitSignal", new ArrayList<Pair<String, String>>(), options));
 
 		for (Pair<String, String> param : allParam) {
 			if (!Shared.isBasicType(param.getFirst())) {
-				String tmp = GenerationTemplates.ForwardDeclaration(param.getFirst());
-				if (!forwardDecl.contains(tmp)) {
-					forwardDecl += tmp;
+				String tmp = GenerationTemplates.forwardDeclaration(param.getFirst());
+				// TODO this is suboptimal
+				if (!forwardDecl.toString().contains(tmp)) {
+					forwardDecl.append(tmp);
 				}
 			}
 		}
-		forwardDecl += "\n";
-		source = forwardDecl + source;
-		return GenerationTemplates.EventHeaderGuard(source);
+		forwardDecl.append("\n");
+		forwardDecl.append(source);
+		return GenerationTemplates.eventHeaderGuard(forwardDecl.toString());
 	}
 
 	private List<Pair<String, String>> getSignalParams(Signal signal_) {

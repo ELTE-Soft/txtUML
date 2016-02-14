@@ -64,7 +64,7 @@ public class ActivityExport {
 			if (variable.getType() != null) {
 				type = variable.getType().getName();
 			}
-			source += GenerationTemplates.VariableDecl(type, variable.getName());
+			source += GenerationTemplates.variableDecl(type, variable.getName());
 		}
 		return source;
 	}
@@ -107,7 +107,7 @@ public class ActivityExport {
 
 		if (node_.eClass().equals(UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION)) {
 			AddStructuralFeatureValueAction asfva = (AddStructuralFeatureValueAction) node_;
-			source = ActivityTemplates.GeneralSetValue(getTargetFromASFVA(asfva),
+			source = ActivityTemplates.generalSetValue(getTargetFromASFVA(asfva),
 					getTargetFromInputPin(asfva.getValue(), false), ActivityTemplates
 							.getOperationFromType(asfva.getStructuralFeature().isMultivalued(), asfva.isReplaceAll()));
 		} else if (node_.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
@@ -118,7 +118,7 @@ public class ActivityExport {
 			source = createCallOperationActionCode((org.eclipse.uml2.uml.CallOperationAction) node_);
 		} else if (node_.eClass().equals(UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION)) {
 			AddVariableValueAction avva = (AddVariableValueAction) node_;
-			source = ActivityTemplates.GeneralSetValue(avva.getVariable().getName(),
+			source = ActivityTemplates.generalSetValue(avva.getVariable().getName(),
 					getTargetFromInputPin(avva.getValue()),
 					ActivityTemplates.getOperationFromType(avva.getVariable().isMultivalued(), avva.isReplaceAll()));
 		} else if (node_.eClass().equals(UMLPackage.Literals.DECISION_NODE)) {
@@ -139,7 +139,7 @@ public class ActivityExport {
 
 		String name = "co_of_" + type + "_" + _objCounter++;// #Create#Object_#of_type_GlobalNumberOfObjectCreation
 		_objectMap.put(node_, name);
-		return ActivityTemplates.CreateObject(type, name, rt_, isSm);
+		return ActivityTemplates.createObject(type, name, rt_, isSm);
 	}
 
 	// decide if it's a while or if-else
@@ -195,7 +195,7 @@ public class ActivityExport {
 				loopBody = createActivityPartCode(branches.get(0).getTarget(), node_, finishedNodes, rt_);
 			}
 			finishedControlNodes_.addAll(finishedNodes);
-			source = ActivityTemplates.While(loopCondition, loopBody);
+			source = ActivityTemplates.simpleWhile(loopCondition, loopBody);
 		} else // if-else
 		{
 			source = createIfCode(node_, getIfEnd(node_), node_.getOutgoings(), finishedControlNodes_, rt_);
@@ -206,12 +206,8 @@ public class ActivityExport {
 	private static String createIfCode(DecisionNode node_, ActivityNode ifEndNode_, List<ActivityEdge> branches_,
 			List<ActivityNode> finishedControlNodes_, Boolean rt_) {
 		String source = "";
-		List<ActivityNode> finishedNodes = new ArrayList<ActivityNode>(Arrays.asList(node_));// TODO
-																								// not
-																								// sure
-																								// it
-																								// is
-																								// needed
+		// TODO not sure it is needed
+		List<ActivityNode> finishedNodes = new ArrayList<ActivityNode>(Arrays.asList(node_));
 		List<Pair<String, String>> condsAndBodies = new LinkedList<Pair<String, String>>();
 		Pair<String, String> elseBranch = null;
 		for (ActivityEdge edge : branches_) {
@@ -226,7 +222,7 @@ public class ActivityExport {
 		if (elseBranch != null && !elseBranch.getSecond().isEmpty()) {
 			condsAndBodies.add(elseBranch);
 		}
-		source = ActivityTemplates.ElseIf(condsAndBodies);
+		source = ActivityTemplates.elseIf(condsAndBodies).toString();
 
 		finishedControlNodes_.addAll(finishedNodes);
 		return source;
@@ -290,10 +286,10 @@ public class ActivityExport {
 			EClass ec = node_.getActivity().getOwner().eClass();
 			String paramName = ((ActivityParameterNode) node_).getParameter().getName();
 			if (ec.equals(UMLPackage.Literals.TRANSITION)) {
-				source = ActivityTemplates.TransitionActionParameter(paramName);
+				source = ActivityTemplates.transitionActionParameter(paramName);
 			} else // the parameter is a function parameter
 			{
-				source = GenerationTemplates.ParamName(paramName);
+				source = GenerationTemplates.paramName(paramName);
 			}
 		} else if (node_.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
 			source = _objectMap.get(node_);
@@ -304,7 +300,7 @@ public class ActivityExport {
 			source = Shared.parseOCL(oa.getBodies().get(0));
 			for (InputPin variable : oa.getInputs()) {
 				String oclParam = "\\(" + variable.getName() + "\\)";
-				String cppParam = "\\(" + GenerationTemplates.ParamName(getTargetFromInputPin(variable)) + "\\)";
+				String cppParam = "\\(" + GenerationTemplates.paramName(getTargetFromInputPin(variable)) + "\\)";
 				source = source.replaceAll(oclParam, cppParam);
 			}
 		} else if (node_.eClass().equals(UMLPackage.Literals.OUTPUT_PIN)) {
@@ -322,7 +318,7 @@ public class ActivityExport {
 		String source = node_.getStructuralFeature().getName();
 		String object = getTargetFromInputPin(node_.getObject());
 		if (!object.isEmpty()) {
-			source = object + ActivityTemplates.AccesOperatoForType(getTypeFromInputPin(node_.getObject())) + source;
+			source = object + ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node_.getObject())) + source;
 		}
 		return source;
 	}
@@ -331,15 +327,15 @@ public class ActivityExport {
 		String source = node_.getStructuralFeature().getName();
 		String object = getTargetFromInputPin(node_.getObject());
 		if (!object.isEmpty()) {
-			source = object + ActivityTemplates.AccesOperatoForType(getTypeFromInputPin(node_.getObject())) + source;
+			source = object + ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node_.getObject())) + source;
 		}
 		return source;
 	}
 
 	private static String createSendSignalActionCode(org.eclipse.uml2.uml.SendSignalAction node_, Boolean rt_) {
-		return ActivityTemplates.SignalSend(node_.getSignal().getName(),
+		return ActivityTemplates.signalSend(node_.getSignal().getName(),
 				getTargetFromInputPin(node_.getTarget(), false), getTypeFromInputPin(node_.getTarget()),
-				ActivityTemplates.AccesOperatoForType(getTypeFromInputPin(node_.getTarget())),
+				ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node_.getTarget())),
 				getParamNames(node_.getArguments()), rt_);
 	}
 
@@ -427,8 +423,8 @@ public class ActivityExport {
 	}
 
 	private static String createCallOperationActionCode(org.eclipse.uml2.uml.CallOperationAction node_) {
-		return ActivityTemplates.OperationCall(getTargetFromInputPin(node_.getTarget(), false),
-				ActivityTemplates.AccesOperatoForType(getTypeFromInputPin(node_.getTarget())),
+		return ActivityTemplates.operationCall(getTargetFromInputPin(node_.getTarget(), false),
+				ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node_.getTarget())),
 				node_.getOperation().getName(), getParamNames(node_.getArguments()));
 	}
 

@@ -46,21 +46,13 @@ public class Shared {
 		} else if (guard_.eClass().equals(UMLPackage.Literals.CONSTRAINT)) {
 
 			// source=getGuardFromValueSpecification(guard_.getSpecification());
-			source = GenerationTemplates.GetDefaultReturnValue("Boolean");
+			source = GenerationTemplates.getDefaultReturnValue("Boolean");
 		}
 		return source;
 	}
 
-	public static String getGuardFromValueSpecification(ValueSpecification guard_)// TODO
-																					// we
-																					// need
-																					// a
-																					// more
-																					// complex
-																					// ocl
-																					// parse
-																					// ....
-	{
+	// TODO we need a more complex ocl parse....
+	public static String getGuardFromValueSpecification(ValueSpecification guard_) {
 		String source = "";
 		if (guard_ != null) {
 			if (guard_.eClass().equals(UMLPackage.Literals.LITERAL_STRING)) {
@@ -87,9 +79,8 @@ public class Shared {
 		}
 	}
 
-	public static boolean isBasicType(String typeName_)// TODO need a better
-														// solution
-	{
+	// TODO need a better solution
+	public static boolean isBasicType(String typeName_) {
 
 		if (typeName_.equals("Integer") || typeName_.equals("Real") || typeName_.equals("Boolean")) {
 			return true;
@@ -115,9 +106,8 @@ public class Shared {
 		writer.close();
 	}
 
-	public static String parseOCL(String ocl_)// TODO just basic pars, need a
-												// much better
-	{
+	// TODO just basic pars, need a much better
+	public static String parseOCL(String ocl_) {
 		String source = ocl_.replaceAll("\n", "");
 		if (!source.equals("self")) {
 			source = source.replaceAll("self.", "(*" + ActivityTemplates.Self + ").");

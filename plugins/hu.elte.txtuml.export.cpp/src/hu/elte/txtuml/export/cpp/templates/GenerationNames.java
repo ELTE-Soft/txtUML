@@ -8,7 +8,9 @@ class GenerationNames {
 	public static final String HeaderExtension = "hpp";
 	public static final String SourceExtension = "cpp";
 	public static final String ClassType = "struct";
-	public static final String DebugSimbol = "_DEBUG";
+
+	// NDEBUG is the only thing guaranteed, DEBUG and _DEBUG is non-standard
+	public static final String NoDebugSymbol = "NDEBUG";
 	public static final String StandardIOinclude = "#include <iostream>\n";
 
 	public static final String NullPtr = "nullptr";
@@ -26,7 +28,7 @@ class GenerationNames {
 	public static final String EntryName = "Entry";
 	public static final String ExitName = "Exit";
 	public static final String EventParamName = "e";
-	public static final String EventFParamName = FormatIncomignParamName(EventParamName);
+	public static final String EventFParamName = formatIncomingParamName(EventParamName);
 	public static final String StateParamName = "s_";
 	public static final String TransitionTableName = "_mM";
 	public static final String setStateFuncName = "setState";
@@ -59,7 +61,7 @@ class GenerationNames {
 	public static final String CompositeStateMapSmType = SmartPtr + "<" + StatemachineBaseName + ">";
 	public static final String CompositeStateMap = "std::unordered_map<int," + CompositeStateMapSmType + " > "
 			+ CompositeStateMapName + ";\n";
-	public static final String CurrentMachine = PointerType(StatemachineBaseName) + " " + CurrentMachineName + ";\n";
+	public static final String CurrentMachine = pointerType(StatemachineBaseName) + " " + CurrentMachineName + ";\n";
 	public static final String ActionCallerFName = "action_caller";
 	public static final String ActionCallerDecl = "bool " + ActionCallerFName + "(" + EventBaseRefName + " "
 			+ EventFParamName + ");\n";
@@ -73,26 +75,26 @@ class GenerationNames {
 	public static final String PoolIdSetter = "setPoolId";
 	public static final String InitialEventName = "InitSignal";
 
-	public static String FriendClassDecl(String className_) {
-		return "friend " + GenerationNames.ClassType + " " + className_ + ";\n";
+	public static String friendClassDecl(String className) {
+		return "friend " + GenerationNames.ClassType + " " + className + ";\n";
 	}
 
-	public static final String ParentSmPointerNameDef(String parentType_) {
-		return PointerType(parentType_) + " " + ParentSmPointerName;
+	public static final String parentSmPointerNameDef(String parentType) {
+		return pointerType(parentType) + " " + ParentSmPointerName;
 	}
 
-	public static String ActionCallerDef(String className_) {
-		return "bool " + className_ + "::" + ActionCallerFName + "(" + EventBaseRefName + " " + EventFParamName + ")\n"
-				+ SimpleProcessEventDefBody();
+	public static String actionCallerDef(String className) {
+		return "bool " + className + "::" + ActionCallerFName + "(" + EventBaseRefName + " " + EventFParamName + ")\n"
+				+ simpleProcessEventDefBody();
 	}
 
-	public static String SimpleProcessEventDef(String className_) {
-		return "bool " + className_ + "::" + ProcessEventFName + "(" + EventBaseRefName + " " + EventFParamName + ")\n"
-				+ SimpleProcessEventDefBody();
+	public static String simpleProcessEventDef(String className) {
+		return "bool " + className + "::" + ProcessEventFName + "(" + EventBaseRefName + " " + EventFParamName + ")\n"
+				+ simpleProcessEventDefBody();
 	}
 
-	public static String HierachicalProcessEventDef(String className_) {
-		return "bool " + className_ + "::" + ProcessEventFName + "(" + EventBaseRefName + " " + EventFParamName + ")\n"
+	public static String hierachicalProcessEventDef(String className) {
+		return "bool " + className + "::" + ProcessEventFName + "(" + EventBaseRefName + " " + EventFParamName + ")\n"
 				+ "{\n" + "bool handled=false;\n" + "if(" + CurrentMachineName + ")\n" + "{\n" + "if("
 				+ CurrentMachineName + "->" + ProcessEventFName + "(" + EventFParamName + "))\n" + "{\n"
 				+ "handled=true;\n" + "}\n" + "}\n" + "if(!handled)\n" + "{\n" + "handled=handled || "
@@ -100,7 +102,7 @@ class GenerationNames {
 				+ "return handled;\n" + "}\n";
 	}
 
-	private static final String SimpleProcessEventDefBody() {
+	private static final String simpleProcessEventDefBody() {
 		return "{\n" + "bool handled=false;\n" + "auto range = " + TransitionTableName + ".equal_range(EventState("
 				+ EventFParamName + ".t," + CurrentStateName + "));\n" + "if(range.first!=" + TransitionTableName
 				+ ".end())\n" + "{\n" + "for(auto it=range.first;it!=range.second;++it)\n" + "{\n"
@@ -109,44 +111,44 @@ class GenerationNames {
 				+ "}\n" + "}\n" + "}\n" + "return handled;\n" + "}\n";
 	}
 
-	public static String SimpleSetStateDef(String className_) {
-		return NoReturn + " " + className_ + "::" + setStateFuncName + "(int " + GenerationNames.StateParamName + "){"
+	public static String simpleSetStateDef(String className) {
+		return NoReturn + " " + className + "::" + setStateFuncName + "(int " + GenerationNames.StateParamName + "){"
 				+ CurrentStateName + "=" + GenerationNames.StateParamName + ";" + EntryName + "();}\n";
 	}
 
-	public static String HierachicalSetStateDef(String className_) {
-		return NoReturn + " " + className_ + "::" + setStateFuncName + "(int " + GenerationNames.StateParamName + ")\n"
+	public static String hierachicalSetStateDef(String className) {
+		return NoReturn + " " + className + "::" + setStateFuncName + "(int " + GenerationNames.StateParamName + ")\n"
 				+ "{\n" + "auto it=" + CompositeStateMapName + ".find(" + GenerationNames.StateParamName + ");\n"
 				+ "if(it!=" + CompositeStateMapName + ".end())\n" + "{\n" + CurrentMachineName
 				+ "=(it->second).get();\n" + CurrentMachineName + "->" + SetInitialStateName
 				+ "();//restarting from initial state\n" + CurrentMachineName + "->" + ProcessEventFName + "("
-				+ GenerationNames.InitialEventName + "_EC(" + DerefenrencePointer(GenerationNames.Self) + ", "
-				+ className_ + "::" + GenerationNames.InitialEventName + "_EE));\n" + "}\n" + "else\n" + "{\n"
+				+ GenerationNames.InitialEventName + "_EC(" + derefenrencePointer(GenerationNames.Self) + ", "
+				+ className + "::" + GenerationNames.InitialEventName + "_EE));\n" + "}\n" + "else\n" + "{\n"
 				+ CurrentMachineName + "=" + NullPtr + ";\n" + "}\n" + CurrentStateName + "="
 				+ GenerationNames.StateParamName + ";\n" + EntryName + "();\n" + "}\n";
 	}
 
-	public static String EventClassName(String eventName_) {
-		return eventName_ + EventClassTypeId;
+	public static String eventClassName(String eventName) {
+		return eventName + EventClassTypeId;
 	}
 
-	public static String EventEnumName(String eventName_) {
-		return eventName_ + EventEnumTypeId;
+	public static String eventEnumName(String eventName) {
+		return eventName + EventEnumTypeId;
 	}
 
-	public static String StateEnumName(String stateName_) {
-		return stateName_ + StateEnumTypeId;
+	public static String stateEnumName(String stateName) {
+		return stateName + StateEnumTypeId;
 	}
 
-	public static String DerefenrencePointer(String pointer_) {
-		return "(*" + pointer_ + ")";
+	public static String derefenrencePointer(String pointer) {
+		return "(*" + pointer + ")";
 	}
 
-	public static String PointerType(String typeName_) {
-		return typeName_ + "*";
+	public static String pointerType(String typeName) {
+		return typeName + "*";
 	}
 
-	public static String FormatIncomignParamName(String paramName_) {
-		return paramName_ + IncomingParamTypeId;
+	public static String formatIncomingParamName(String paramName) {
+		return paramName + IncomingParamTypeId;
 	}
 }

@@ -55,7 +55,6 @@ public class TxtUMLToCppPage extends WizardPage {
 	private Button descriptionBrowser;
 
 	Button addRuntime;
-	Button debug;
 
 	String tempText;
 
@@ -191,9 +190,6 @@ public class TxtUMLToCppPage extends WizardPage {
 		addRuntime.setSelection(true);
 		addRuntime.setText("Copy runtime next to generated files");
 
-		debug = new Button(composite, SWT.CHECK);
-		debug.setText("Switch debug messages on");
-
 		setControl(composite);
 		setPageComplete(true);
 
@@ -213,9 +209,5 @@ public class TxtUMLToCppPage extends WizardPage {
 
 	public boolean getAddRuntimeOptionSelection() {
 		return addRuntime.getSelection();
-	}
-
-	public boolean getDebugOptionSelection() {
-		return debug.getSelection();
 	}
 }
