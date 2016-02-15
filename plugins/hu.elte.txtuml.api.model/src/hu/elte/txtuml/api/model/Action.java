@@ -32,9 +32,6 @@ import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
  * <p>
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
- *
- * @author Gabor Ferenc Kovacs
- *
  */
 public class Action implements ModelElement {
 

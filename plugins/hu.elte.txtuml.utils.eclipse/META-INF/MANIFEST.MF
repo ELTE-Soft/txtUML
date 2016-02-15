@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: txtUML Utils
+Bundle-Name: txtUML Utils for Eclipse Plugins
 Bundle-SymbolicName: hu.elte.txtuml.utils.eclipse
 Bundle-Version: 0.3.0.qualifier
 Bundle-Vendor: ELTE
