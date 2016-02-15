@@ -202,10 +202,10 @@ public class ArrangeAssociations {
 		// Set the grid sizes of boxes based on their pixel sizes
 		for (RectangleObject obj : objs) {
 			RectangleObject mod = new RectangleObject(obj);
-			mod.setWidth((int) Math.ceil(mod.getPixelWidth() / pixelPerGridWidth));
-			mod.setPixelWidth((int) (mod.getWidth() * Math.floor(pixelPerGridWidth)));
-			mod.setHeight((int) Math.ceil(mod.getPixelHeight() / pixelPerGridHeight));
-			mod.setPixelHeight((int) (mod.getHeight() * Math.floor(pixelPerGridHeight)));
+			mod.setWidth((int) Math.ceil(mod.getPixelWidth() / pixelPerGridWidth) + 1);
+			mod.setPixelWidth((int) ((mod.getWidth() - 1) * Math.floor(pixelPerGridWidth)));
+			mod.setHeight((int) Math.ceil(mod.getPixelHeight() / pixelPerGridHeight) + 1);
+			mod.setPixelHeight((int) ((mod.getHeight() - 1) * Math.floor(pixelPerGridHeight)));
 
 			if (_widthOfCells < mod.getWidth())
 				_widthOfCells = mod.getWidth();
