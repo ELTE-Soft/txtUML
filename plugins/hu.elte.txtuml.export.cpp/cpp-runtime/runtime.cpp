@@ -108,7 +108,7 @@ void ConfiguredThreadPoolsRT::run()
 
 void ConfiguredThreadPoolsRT::stopUponCompletion()
 {
-	for(unsigned int i = 0; i < pool_manager->getNumberOfConfigurations(); i++)
+	for(int i = 0; i < pool_manager->getNumberOfConfigurations(); i++)
 	{
 		pool_manager->getPool(i)->stopUponCompletion();
 	}

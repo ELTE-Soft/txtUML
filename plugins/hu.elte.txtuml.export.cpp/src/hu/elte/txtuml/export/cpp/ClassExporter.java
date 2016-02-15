@@ -67,7 +67,7 @@ public class ClassExporter {
 	}
 
 	public void createSource(Class class_, String dest_) throws FileNotFoundException, UnsupportedEncodingException {
-		StringBuilder source = new StringBuilder("");
+		String source;
 		List<StateMachine> smList = new ArrayList<StateMachine>();
 		Shared.getTypedElements(smList, class_.allOwnedElements(), UMLPackage.Literals.STATE_MACHINE);
 		if (ownStates(class_, smList)) {
@@ -84,10 +84,10 @@ public class ClassExporter {
 			}
 		}
 
-		source.append(createClassHeaderSource(class_));
+		source = createClassHeaderSource(class_);
 		Shared.writeOutSource(dest_, GenerationTemplates.headerName(class_.getName()),
 				GenerationTemplates.headerGuard(source.toString(), class_.getName()));
-		source.append(createClassCppSource(class_));
+		source = (createClassCppSource(class_)).toString();
 		Shared.writeOutSource(dest_, GenerationTemplates.sourceName(class_.getName()),
 				GenerationTemplates.cppInclude(class_.getName()) + getAllDependency(class_, false) + source);
 	}
