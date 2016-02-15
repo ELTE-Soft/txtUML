@@ -80,48 +80,57 @@ void SingleThreadRT::stopUponCompletion()
  
 ConfiguredThreadPoolsRT::ConfiguredThreadPoolsRT(): pool_manager(new ThreadPoolManager())
 {
-	pool_ides = pool_manager->get_idies();
-	for(std::list<id_type>::iterator it = pool_ides.begin(); it != pool_ides.end(); it++)
-	{
-		number_of_objects.insert( std::pair<id_type,int>(*it,0));
-	}
 		
 }
 
 void ConfiguredThreadPoolsRT::run()
 {
-    
-	for(std::list<id_type>::iterator it = pool_ides.begin(); it != pool_ides.end(); it++)
+	if (pool_manager->isConfigurated())
 	{
-		pool_manager->getPool(*it)->startPool();
+		
+		int numberOfConfigurations = pool_manager->getNumberOfConfigurations();
+		
+		number_of_objects.clear();
+		number_of_objects.resize(numberOfConfigurations);
+		
+		for(int i = 0; i < numberOfConfigurations; i++)
+		{
+			pool_manager->getPool(i)->startPool();
+		}
 	}
+	else
+	{
+		//TODO sign error
+	}
+	
+
 }
 
 void ConfiguredThreadPoolsRT::stopUponCompletion()
 {
-	for(std::list<id_type>::iterator it = pool_ides.begin(); it != pool_ides.end(); it++)
+	for(unsigned int i = 0; i < pool_manager->getNumberOfConfigurations(); i++)
 	{
-		pool_manager->get_pool(*it)->stopUponCompletion();
+		pool_manager->getPool(i)->stopUponCompletion();
 	}
 }
 
 void ConfiguredThreadPoolsRT::setupObjectVirtual(StateMachineI* sm_)
 {
 	
-	id_type object_id = sm_->getPoolId();
-	StateMachineThreadPool* matched_pool = pool_manager->get_pool(object_id);
+	int objectID = sm_->getPoolId();
 	
+	StateMachineThreadPool* matched_pool = pool_manager->getPool(objectID);
 	sm_->setPool(matched_pool);
 	
-	number_of_objects[object_id] = number_of_objects[object_id] + 1;
-	pool_manager->recalculateThreads(object_id,number_of_objects[object_id]);
+	number_of_objects[objectID]++;
+	pool_manager->recalculateThreads(objectID,number_of_objects[objectID]);
 	
 }
 
 void ConfiguredThreadPoolsRT::removeObject(StateMachineI* sm_)
 {
-	id_type object_id = sm_->getPoolId();
-	number_of_objects[object_id] = number_of_objects[object_id] - 1;
-	pool_manager->recalculateThreads(object_id,number_of_objects[object_id]);
+	int objectID = sm_->getPoolId();
+	number_of_objects[objectID]--;
+	pool_manager->recalculateThreads(objectID,number_of_objects[objectID]);
 	
 }

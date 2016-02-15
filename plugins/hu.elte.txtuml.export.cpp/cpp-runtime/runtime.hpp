@@ -4,8 +4,7 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
-#include <list>
-#include <map>
+#include <vector>
 
 #include "runtimetypes.hpp"
 #include "statemachineI.hpp"
@@ -66,10 +65,8 @@ public:
 private:
 	void setupObjectVirtual(StateMachineI*);
 	
-	std::map<id_type,int> number_of_objects;
-	std::list<id_type> pool_ides;
-	
 	ThreadPoolManager* pool_manager;
+	std::vector<int> number_of_objects;
 };
 
 

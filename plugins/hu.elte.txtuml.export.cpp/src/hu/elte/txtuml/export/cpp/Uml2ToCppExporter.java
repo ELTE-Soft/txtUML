@@ -66,7 +66,7 @@ public class Uml2ToCppExporter {
 	public void buildCppCode(String outputDirectory) throws IOException {
 
 		if (options.isAddRuntime()) {
-			threadManager.createThreadPoolManager(outputDirectory + File.separator + "runtime");
+			threadManager.createConfigurationSource(outputDirectory);
 		}
 
 		Shared.writeOutSource(outputDirectory, (GenerationTemplates.EventHeader), createEventSource(elements));
@@ -160,8 +160,8 @@ public class Uml2ToCppExporter {
 					+ " runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o threadconfiguration.o\n\n"
 					+ ".PHONY:runtime\n" + "runtime:\n\t$(CC) -Wall -c " + RuntimeFolder + "runtime.cpp "
 					+ RuntimeFolder + "statemachineI.cpp " + RuntimeFolder + "threadpool.cpp " + RuntimeFolder
-					+ "threadpoolmanager.cpp " + RuntimeFolder + "threadcontainer.cpp" + RuntimeFolder
-					+ "threadconfiguration.cpp" + "-std=gnu++11";
+					+ "threadpoolmanager.cpp " + RuntimeFolder + "threadcontainer.cpp " + RuntimeFolder
+					+ "threadconfiguration.cpp " + "-std=gnu++11";
 		}
 
 		Shared.writeOutSource(path_, makefileName_, makeFile);

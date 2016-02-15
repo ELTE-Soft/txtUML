@@ -17,12 +17,11 @@ import org.eclipse.uml2.uml.Class;
 
 public class ThreadHandlingManager {
 
-	private boolean isThreadHandling;
 	private Map<String, ThreadPoolConfiguration> threadDescription;
 	private Set<ThreadPoolConfiguration> pools;
 
-	private static final String ThreadManagerName = "ThreadPoolManager";
-	private static final String ThreadManagerCppSourceName = "threadpoolmanager.cpp";
+	private static final String ConfigurationClassName = "ThreadConfiguration";
+	private static final String ConfigurationFile = "conf.hpp";
 	private static final String PoolsMapName = "id_matching_map";
 	private static final String ThreadPool = "StateMachineThreadPool";
 	private static final String FunctionName = "LinearFunction";
@@ -35,8 +34,6 @@ public class ThreadHandlingManager {
 	int numberOfThreads;
 
 	public ThreadHandlingManager(List<Class> classList, Map<String, ThreadPoolConfiguration> description) {
-
-		isThreadHandling = true;
 
 		this.threadDescription = description;
 		numberOfThreads = threadDescription.size();
@@ -65,50 +62,41 @@ public class ThreadHandlingManager {
 		}
 	}
 
-	public ThreadHandlingManager() {
-		isThreadHandling = false;
-	}
-
 	public Map<String, ThreadPoolConfiguration> getDescription() {
 		return threadDescription;
 	}
+	
+	
 
-	public void createThreadPoolManager(String dest) {
+	public void createConfigurationSource(String dest) throws FileNotFoundException, UnsupportedEncodingException {
 
-		String source = createMaganerCppCource();
-
-		try {
-			Shared.writeOutSource(dest, ThreadManagerCppSourceName, source);
-		} catch (FileNotFoundException e) {
-
-		} catch (UnsupportedEncodingException e) {
-
-		}
+		String source = createConfiguratioSource();
+		Shared.writeOutSource(dest, ConfigurationFile, source);
 
 	}
+	
+	private void createConfiguration() {
+	    //TODO create a configuration object and configure it 
+	}
 
-	private String createMaganerCppCource() {
+	private String createConfiguratioSource() {
 		String source = "";
 
-		source = source + GenerationTemplates.cppInclude(ThreadManagerName.toLowerCase());
+		source = source + GenerationTemplates.cppInclude(ConfigurationClassName.toLowerCase());
 		source = source + createConstructorHead();
-		source = source + createConstructorBody(isThreadHandling);
+		//source = source + createConstructorBody();
 
 		return source;
 	}
 
 	private String createConstructorHead() {
-		return ThreadManagerName + "::" + ThreadManagerName + "()\n";
+		return ConfigurationClassName + "::" + ConfigurationClassName + "()\n";
 	}
 
-	private String createConstructorBody(boolean threadHandling) {
+	private String createConstructorBody() {
 		String body = "";
-
-		if (threadHandling) {
-			body = "{\n" + setPoolsMap() + setFunctionMap() + maximumThreadMap() + "}\n\n";
-		} else {
-			body = GenerationTemplates.emptyBody();
-		}
+		body = "{\n" + setPoolsMap() + setFunctionMap() + maximumThreadMap() + "}\n\n";
+		
 
 		return body;
 	}
