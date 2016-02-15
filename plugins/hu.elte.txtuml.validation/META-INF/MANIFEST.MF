@@ -22,3 +22,4 @@ Export-Package: hu.elte.txtuml.validation,
  hu.elte.txtuml.validation.problems.state,
  hu.elte.txtuml.validation.problems.transition,
  hu.elte.txtuml.validation.visitors
+Bundle-Vendor: ELTE

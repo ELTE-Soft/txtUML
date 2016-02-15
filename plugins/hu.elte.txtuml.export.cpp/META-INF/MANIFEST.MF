@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: txtUML C++ model compiler
+Bundle-Name: txtUML C++ Model Compiler
 Bundle-SymbolicName: hu.elte.txtuml.export.cpp;singleton:=true
 Bundle-Version: 0.3.0.qualifier
 Bundle-Vendor: ELTE
