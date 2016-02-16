@@ -17,9 +17,6 @@ import hu.elte.txtuml.export.uml2.utils.SharedUtils;
 
 /**
  * Instances of this class are responsible for exporting associations.
- * 
- * @author Adam Ancsin
- *
  */
 public class AssociationExporter {
 

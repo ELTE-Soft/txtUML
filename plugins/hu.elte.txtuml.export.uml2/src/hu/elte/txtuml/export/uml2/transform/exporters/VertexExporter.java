@@ -33,8 +33,6 @@ public class VertexExporter {
 	 * 
 	 * @param vertexDeclaration
 	 *            The type declaration of the txtUML vertex.
-	 *
-	 * @author Adam Ancsin
 	 */
 	public void exportVertex(TypeDeclaration vertexDeclaration) {
 		Vertex vertex = createVertex(vertexDeclaration);
@@ -59,8 +57,6 @@ public class VertexExporter {
 	 *            The type declaration of the state.
 	 * @param state
 	 *            The UML2 state.
-	 *
-	 * @author Adam Ancsin
 	 */
 	private void exportSubRegion(TypeDeclaration stateDeclaration, State state) {
 		Region subRegion = state.createRegion(state.getName());
@@ -76,8 +72,6 @@ public class VertexExporter {
 	 *            The type declaration txtUML state.
 	 * @param exportedState
 	 *            The exported UML2 state.
-	 * 
-	 * @author Adam Ancsin
 	 */
 	private void exportStateEntryAction(TypeDeclaration stateDeclaration, State exportedState) {
 		MethodDeclaration entryMethodDeclaration = SharedUtils.findMethodDeclarationByName(stateDeclaration, "entry");
@@ -97,8 +91,6 @@ public class VertexExporter {
 	 *            The type declaration txtUML state.
 	 * @param exportedState
 	 *            The exported UML2 state.
-	 * 
-	 * @author Adam Ancsin
 	 */
 	private void exportStateExitAction(TypeDeclaration stateDeclaration, State exportedState) {
 		MethodDeclaration exitMethodDeclaration = SharedUtils.findMethodDeclarationByName(stateDeclaration, "exit");
@@ -119,8 +111,6 @@ public class VertexExporter {
 	 *            The type declaration of the vertex.
 	 * @return The created vertex.
 	 * @throws ExportException
-	 *
-	 * @author Adam Ancsin
 	 */
 	private Vertex createVertex(TypeDeclaration vertexDeclaration) {
 		if (ElementTypeTeller.isInitialPseudoState(vertexDeclaration)) {
@@ -143,8 +133,6 @@ public class VertexExporter {
 	 * @param vertexDeclaration
 	 *            The type declaration of the vertex.
 	 * @return The created UML2 initial pseudostate.
-	 *
-	 * @author Adam Ancsin
 	 */
 	private Pseudostate createInitial(TypeDeclaration vertexDeclaration) {
 		return (Pseudostate) createVertex(vertexDeclaration, UMLPackage.Literals.PSEUDOSTATE);
@@ -156,8 +144,6 @@ public class VertexExporter {
 	 * @param vertexDeclaration
 	 *            The type declaration of the vertex.
 	 * @return The created UML2 choice pseudostate.
-	 *
-	 * @author Adam Ancsin
 	 */
 	private Pseudostate createChoice(TypeDeclaration vertexDeclaration) {
 		Pseudostate result = (Pseudostate) createVertex(vertexDeclaration, UMLPackage.Literals.PSEUDOSTATE);

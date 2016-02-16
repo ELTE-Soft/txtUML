@@ -21,9 +21,6 @@ import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
 /**
  * Instances of this class are responsible for matching txtUML types to UML2
  * types.
- * 
- * @author Adam Ancsin
- *
  */
 public class TypeExporter {
 
@@ -71,8 +68,6 @@ public class TypeExporter {
 	 * @param sourceType
 	 *            The specified source type.
 	 * @return The exported UML2 type.
-	 *
-	 * @author Adam Ancsin
 	 */
 	public org.eclipse.uml2.uml.Type exportType(org.eclipse.jdt.core.dom.Type sourceType) {
 		if (sourceType == null) {
@@ -88,8 +83,6 @@ public class TypeExporter {
 	 * @param sourceType
 	 *            The specified source type.
 	 * @return The exported UML2 type.
-	 *
-	 * @author Adam Ancsin
 	 */
 	public Type exportType(ITypeBinding sourceType) {
 		if (sourceType == null) {
@@ -131,8 +124,6 @@ public class TypeExporter {
 	 * @param sourceType
 	 *            The specified source type.
 	 * @return The exported UML2 type; or <code>null</code> in case of error.
-	 *
-	 * @author Adam Ancsin
 	 */
 	private Type exportNonPrimitiveType(ITypeBinding sourceType) {
 		Model exportedModel = modelExporter.getExportedModel();

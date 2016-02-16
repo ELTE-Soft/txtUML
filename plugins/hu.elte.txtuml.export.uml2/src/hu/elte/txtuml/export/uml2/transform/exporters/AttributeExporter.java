@@ -41,8 +41,6 @@ public class AttributeExporter {
 	 * @param fieldDeclaration
 	 *            The specified field declaration.
 	 * @return A collection of the exported attributes.
-	 *
-	 * @author �d�m Ancsin
 	 */
 	public Collection<Property> exportClassifierAttributesFromFieldDeclaration(FieldDeclaration fieldDeclaration) {
 		LinkedList<Property> exportedAttributes = new LinkedList<>();
@@ -69,8 +67,6 @@ public class AttributeExporter {
 	 * @param attributeType
 	 *            The given attribute type.
 	 * @return
-	 *
-	 * @author �d�m Ancsin
 	 */
 	private Property createClassifierAttribute(String attributeName, org.eclipse.uml2.uml.Type attributeType) {
 
@@ -90,8 +86,6 @@ public class AttributeExporter {
 	 * @param fieldDeclaration
 	 *            The specified field declaration.
 	 * @return A map of the obtained attribute names and types.
-	 *
-	 * @author �d�m Ancsin
 	 */
 	private Map<String, org.eclipse.uml2.uml.Type> obtainAttributeNamesAndTypesFromFieldDeclaration(
 			FieldDeclaration fieldDeclaration) {
