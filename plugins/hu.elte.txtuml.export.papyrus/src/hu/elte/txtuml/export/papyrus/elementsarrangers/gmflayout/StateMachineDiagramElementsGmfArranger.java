@@ -86,11 +86,11 @@ public class StateMachineDiagramElementsGmfArranger extends
 		for(GraphicalEditPart region: regions){		
 			GraphicalEditPart regioncompartement = (GraphicalEditPart) region.getChildren().get(0);
 			@SuppressWarnings("unchecked")
-			List<EditPart> listEp = regioncompartement.getChildren();
+			List<GraphicalEditPart> listEp = regioncompartement.getChildren();
 			
-			for(EditPart Ep : listEp){
+			for(GraphicalEditPart Ep : listEp){
 				if(Ep instanceof StateEditPart){
-					arrange_recurively((GraphicalEditPart) Ep);				
+					arrange_recurively(Ep);				
 				}
 			}
 			super.arrangeChildren(regioncompartement);

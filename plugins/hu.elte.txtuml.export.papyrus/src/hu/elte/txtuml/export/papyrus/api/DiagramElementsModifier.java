@@ -1,13 +1,16 @@
 package hu.elte.txtuml.export.papyrus.api;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.emf.transaction.Transaction;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.RequestConstants;
@@ -20,10 +23,44 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.internal.commands.SetConnectionBendpointsCommand;
 import org.eclipse.gmf.runtime.emf.core.util.EObjectAdapter;
 import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.papyrus.infra.gmfdiag.common.adapter.SemanticAdapter;
 import org.eclipse.papyrus.uml.diagram.common.commands.ShowHideLabelsRequest;
+import org.eclipse.papyrus.uml.diagram.statemachine.custom.commands.CustomStateResizeCommand;
+import org.eclipse.papyrus.uml.diagram.statemachine.custom.helpers.Zone;
 
 @SuppressWarnings("restriction")
 public class DiagramElementsModifier {
+	
+    /**
+     * Resizes  a GraphicalEditPart
+     * @param graphEP - The GraphicalEditPart that is to be resized
+     * @param new_width - The new width of the EditPart
+     * @param new_height - The new height of the EditPart
+     */
+    public static void resizeState(GraphicalEditPart graphEP, int new_width, int new_height){
+        Dimension figuredim = graphEP.getFigure().getSize();
+        View stateView = (View)graphEP.getModel();
+        
+        IAdaptable adaptableForState = (IAdaptable) graphEP.getAdapter(SemanticAdapter.class);
+        ChangeBoundsRequest internalResizeRequest = new ChangeBoundsRequest();
+        ChangeBoundsRequest resize_req = new ChangeBoundsRequest(RequestConstants.REQ_RESIZE);
+        resize_req.setSizeDelta(new Dimension(new_width-figuredim.width(), new_height-figuredim.height()));
+        resize_req.setEditParts(graphEP);
+        Rectangle rect = new Rectangle(Zone.getX(stateView), Zone.getY(stateView), new_width, new_height);
+
+        CustomStateResizeCommand internalResizeCommand = new CustomStateResizeCommand(adaptableForState, graphEP.getDiagramPreferencesHint(),
+                graphEP.getEditingDomain(), "Resize State", internalResizeRequest, rect, true);
+        internalResizeCommand.setOptions(Collections.singletonMap(Transaction.OPTION_UNPROTECTED, Boolean.TRUE));
+
+        try {
+            internalResizeCommand.execute(null, null);
+        } catch (Exception e) {
+        }
+
+
+    }
+
+	
 	/**
 	 * Resizes  a GraphicalEditPart
 	 * @param graphEP - The GraphicalEditPart that is to be resized
@@ -46,7 +83,7 @@ public class DiagramElementsModifier {
 	 * @param elements - The EditParts which's connection labels is to be hidden 
 	 * @param excluding - The types of connection labels which are not wanted to be hidden
 	 */
-	public static void hideConnectionLabelsForEditParts(List<EditPart> elements, List<java.lang.Class<?>> excluding){
+	public static void hideConnectionLabelsForEditParts(List<GraphicalEditPart> elements, List<java.lang.Class<?>> excluding){
 		for(EditPart editpart: elements){
 			GraphicalEditPart ep = ((GraphicalEditPart) editpart);
 			@SuppressWarnings("unchecked")

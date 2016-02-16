@@ -1,8 +1,10 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;

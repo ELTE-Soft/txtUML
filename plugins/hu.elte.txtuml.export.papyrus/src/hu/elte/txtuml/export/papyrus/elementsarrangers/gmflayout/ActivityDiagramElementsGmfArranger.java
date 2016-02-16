@@ -8,6 +8,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.papyrus.uml.diagram.activity.edit.parts.ControlFlowGuardEditPart;
 import org.eclipse.papyrus.uml.diagram.activity.edit.parts.ObjectFlowGuardEditPart;
 
@@ -36,7 +37,7 @@ public class ActivityDiagramElementsGmfArranger extends AbstractDiagramElementsG
 		EditPart activityContentEditpart = (EditPart) activityEditpart.getChildren().get(5);
 		super.arrangeChildren(activityContentEditpart);
 		@SuppressWarnings("unchecked")
-		List<EditPart> listEp =  activityContentEditpart.getChildren();
+		List<GraphicalEditPart> listEp =  activityContentEditpart.getChildren();
 		DiagramElementsModifier.hideConnectionLabelsForEditParts(listEp, Arrays.asList(ObjectFlowGuardEditPart.class, ControlFlowGuardEditPart.class));
 		monitor.worked(1);
 	}	
