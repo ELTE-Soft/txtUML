@@ -4,8 +4,6 @@ package hu.elte.txtuml.layout.visualizer.exceptions;
  * Exception indicating that the algorithm couldn't start to find the route for
  * a specific link. This means that all of the object's edge points are
  * occupied.
- * 
- * @author Balázs Gregorics
  */
 public class CannotStartAssociationRouteException extends MyException
 {

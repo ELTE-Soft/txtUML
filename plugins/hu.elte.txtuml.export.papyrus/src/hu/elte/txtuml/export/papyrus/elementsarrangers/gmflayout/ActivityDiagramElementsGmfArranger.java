@@ -8,14 +8,11 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.papyrus.uml.diagram.activity.edit.parts.ControlFlowGuardEditPart;
 import org.eclipse.papyrus.uml.diagram.activity.edit.parts.ObjectFlowGuardEditPart;
 
 /**
  * Controls the arranging of an ActivityDiagram with GMF algorithm
- *
- * @author Andr�s Dobreff
  */
 public class ActivityDiagramElementsGmfArranger extends AbstractDiagramElementsGmfArranger {
 	
@@ -39,7 +36,7 @@ public class ActivityDiagramElementsGmfArranger extends AbstractDiagramElementsG
 		EditPart activityContentEditpart = (EditPart) activityEditpart.getChildren().get(5);
 		super.arrangeChildren(activityContentEditpart);
 		@SuppressWarnings("unchecked")
-		List<GraphicalEditPart> listEp =  activityContentEditpart.getChildren();
+		List<EditPart> listEp =  activityContentEditpart.getChildren();
 		DiagramElementsModifier.hideConnectionLabelsForEditParts(listEp, Arrays.asList(ObjectFlowGuardEditPart.class, ControlFlowGuardEditPart.class));
 		monitor.worked(1);
 	}	

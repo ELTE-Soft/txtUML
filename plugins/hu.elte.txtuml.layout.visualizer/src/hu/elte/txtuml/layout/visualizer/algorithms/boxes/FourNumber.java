@@ -4,9 +4,6 @@ import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 
 /**
  * This is a base-4 numeral system's number.
- * 
- * @author Balázs Gregorics
- *
  */
 class FourNumber
 {

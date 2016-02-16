@@ -151,7 +151,7 @@ class User {
 
 		log("\t" + name.toString() + ": analyzing machine...");
 
-		Collection<User> usersOfM = m->Usage::userOfMachine;
+		Collection<User> usersOfM = m->(Usage.userOfMachine);
 		
 		log("\t\tI found its users!");
 		log("");
@@ -201,7 +201,7 @@ class User {
 	void doWork() {
 		log("\t" + name.toString() + ": starting to work...");
 
-		Machine myMachine = User.this->Usage::usedMachine.selectAny();
+		Machine myMachine = User.this->(Usage.usedMachine).selectAny();
 		
 		User otherUser = findOtherUser(myMachine);
 

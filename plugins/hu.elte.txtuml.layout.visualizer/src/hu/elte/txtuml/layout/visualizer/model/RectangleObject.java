@@ -5,8 +5,6 @@ import java.util.Set;
 
 /**
  * The class that represents a box in a diagram.
- * 
- * @author Bal�zs Gregorics
  */
 public class RectangleObject
 {

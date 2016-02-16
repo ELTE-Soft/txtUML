@@ -5,9 +5,6 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.EditPart;
-import org.eclipse.gmf.tooling.runtime.linklf.LinkLFShapeCompartmentEditPart;
-import org.eclipse.papyrus.uml.diagram.common.editparts.RoundedCompartmentEditPart;
-import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateMachineCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.RegionCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.RegionEditPart;
@@ -20,10 +17,6 @@ import org.eclipse.uml2.uml.Transition;
 
 import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
 
-/**
- *
- * @author Andr�s Dobreff
- */
 public class StateMachineDiagramElementsController {
 	
 	//**ELEMENT**//
@@ -141,12 +134,12 @@ public class StateMachineDiagramElementsController {
 	 * @param ep
 	 * @return
 	 */
-	public static LinkLFShapeCompartmentEditPart getStateCompartmentEditPart(RoundedCompartmentEditPart ep) {
+	public static StateCompartmentEditPart getStateCompartmentEditPart(EditPart ep) {
 		@SuppressWarnings("unchecked")
 		List<Object> compartments = ep.getChildren();
 		for(Object compartment : compartments) {
-			if(compartment instanceof LinkLFShapeCompartmentEditPart) {
-				return (LinkLFShapeCompartmentEditPart) compartment;
+			if(compartment instanceof StateCompartmentEditPart) {
+				return (StateCompartmentEditPart) compartment;
 			}
 		}
 		return null;

@@ -3,7 +3,6 @@ package hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout;
 import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
 
 import java.util.Arrays;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -16,8 +15,6 @@ import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateEditPart;
 
 /**
  * Controls the arranging of a StateMachineDiagram with GMF algorithm
- *
- * @author Andr�s Dobreff
  */
 public class StateMachineDiagramElementsGmfArranger extends
 		AbstractDiagramElementsGmfArranger {
@@ -89,11 +86,11 @@ public class StateMachineDiagramElementsGmfArranger extends
 		for(GraphicalEditPart region: regions){		
 			GraphicalEditPart regioncompartement = (GraphicalEditPart) region.getChildren().get(0);
 			@SuppressWarnings("unchecked")
-			List<GraphicalEditPart> listEp = regioncompartement.getChildren();
+			List<EditPart> listEp = regioncompartement.getChildren();
 			
-			for(GraphicalEditPart Ep : listEp){
+			for(EditPart Ep : listEp){
 				if(Ep instanceof StateEditPart){
-					arrange_recurively(Ep);				
+					arrange_recurively((GraphicalEditPart) Ep);				
 				}
 			}
 			super.arrangeChildren(regioncompartement);

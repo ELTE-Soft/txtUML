@@ -25,11 +25,6 @@ import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.utils.Triple;
 
-/**
- * 
- *
- * @author Andr�s Dobreff
- */
 public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 
 	private TxtUMLElementsRegistry txtumlregistry;

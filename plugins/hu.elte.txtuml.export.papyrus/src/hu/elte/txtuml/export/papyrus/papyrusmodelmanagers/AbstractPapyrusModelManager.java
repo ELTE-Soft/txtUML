@@ -19,8 +19,6 @@ import org.eclipse.ui.IEditorPart;
 
 /**
  * Controls the Papyrus Model
- *
- * @author Andr�s Dobreff
  */
 public abstract class AbstractPapyrusModelManager {
 

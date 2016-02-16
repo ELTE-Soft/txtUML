@@ -7,11 +7,6 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * 
- * @author Gabor Ferenc Kovacs
- *
- */
 public interface LinkMap extends Map<Class<?>, LinkInfo> {
 	
 	static LinkMap create() {

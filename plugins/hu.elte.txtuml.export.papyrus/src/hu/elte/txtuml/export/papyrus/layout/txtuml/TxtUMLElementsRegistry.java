@@ -27,8 +27,6 @@ import org.eclipse.uml2.uml.Transition;
 
 /**
  * Finds the org.eclipse.uml2 element from a model according to the txtUML name 
- *
- * @author Andr�s Dobreff
  */
 public class TxtUMLElementsRegistry {
 	

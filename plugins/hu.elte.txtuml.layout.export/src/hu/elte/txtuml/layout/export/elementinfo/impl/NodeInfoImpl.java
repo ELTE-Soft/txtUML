@@ -5,9 +5,6 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 /**
  * Default implementation for {@link NodeInfo}.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 public class NodeInfoImpl extends ElementInfoImpl implements NodeInfo {
 

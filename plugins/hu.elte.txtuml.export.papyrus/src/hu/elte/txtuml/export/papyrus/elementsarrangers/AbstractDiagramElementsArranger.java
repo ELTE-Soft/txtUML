@@ -5,8 +5,6 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 
 /**
  * Abstract class for arranging the elements of a diagram.
- *
- * @author András Dobreff
  */
 public abstract class AbstractDiagramElementsArranger implements
 		IDiagramElementsArranger {

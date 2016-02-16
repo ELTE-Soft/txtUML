@@ -48,9 +48,6 @@ import hu.elte.txtuml.layout.export.problems.ProblemReporter;
 
 /**
  * Default implementation for {@link DiagramExporter}.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 public class DiagramExporterImpl implements DiagramExporter {
 

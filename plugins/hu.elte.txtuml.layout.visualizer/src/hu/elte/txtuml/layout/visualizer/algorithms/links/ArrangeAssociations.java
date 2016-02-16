@@ -31,9 +31,6 @@ import java.util.stream.Collectors;
 
 /**
  * This class arranges the lines of links.
- * 
- * @author Balázs Gregorics
- *
  */
 public class ArrangeAssociations {
 	private final Integer MINIMAL_CORRIDOR_SIZE = 1;

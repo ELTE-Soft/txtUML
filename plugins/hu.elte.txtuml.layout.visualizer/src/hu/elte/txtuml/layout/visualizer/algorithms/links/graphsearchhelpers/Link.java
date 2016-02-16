@@ -4,10 +4,8 @@ package hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers;
  * Class that represents an edge in the graph that the Graph search algorithm
  * uses.
  * 
- * @author Balázs Gregorics
  * @param <N>
  *            Type of the nodes that the link connects.
- *
  */
 public class Link<N>
 {

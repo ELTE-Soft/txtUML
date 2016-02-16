@@ -35,8 +35,6 @@ import hu.elte.txtuml.layout.visualizer.statements.Statement;
 
 /**
  * An abstract class for arranging the elements with the txtUML arranging algorithm. 
- *
- * @author András Dobreff
  */
 public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDiagramElementsArranger{
 

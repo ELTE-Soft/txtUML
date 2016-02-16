@@ -26,7 +26,6 @@ import hu.elte.txtuml.layout.visualizer.statements.Statement;
 
 /**
  * The instance of this class handles the layout algorithm
- * @author András Dobreff
  */
 public class LayoutVisualizerManager {
 	private Set<RectangleObject> objects;
