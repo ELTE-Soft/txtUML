@@ -51,7 +51,7 @@ public class ModelTest {
 	 */
 
 	private static final String VALIDATION_EXAMPLES_PACKAGE = "/hu/elte/txtuml/examples/validation/";
-	private static final String VALIDATION_EXAMPLES_ROOT = "../../examples/hu.elte.txtuml.examples.validation/src";
+	private static final String VALIDATION_EXAMPLES_ROOT = "../../../examples/tests/hu.elte.txtuml.examples.validation/src";
 	private static final String API_SRC_LOC = "../../plugins/hu.elte.txtuml.api.model/src/";
 
 	ProblemCollector mockCollector;
