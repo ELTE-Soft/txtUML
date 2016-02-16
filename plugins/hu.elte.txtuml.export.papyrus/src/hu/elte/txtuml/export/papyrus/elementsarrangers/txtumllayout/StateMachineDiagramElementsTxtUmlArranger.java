@@ -7,9 +7,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gef.editparts.AbstractEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.layout.FreeFormLayoutEx;
+import org.eclipse.gmf.tooling.runtime.linklf.LinkLFShapeCompartmentEditPart;
+import org.eclipse.papyrus.uml.diagram.common.editparts.RoundedCompartmentEditPart;
+import org.eclipse.papyrus.uml.diagram.statemachine.custom.commands.CustomStateResizeCommand;
 import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomRegionCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomRegionEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateEditPart;
@@ -18,6 +22,7 @@ import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomState
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.RegionCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.RegionEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateCompartmentEditPart;
+import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateMachineEditPart;
 import org.eclipse.uml2.uml.Element;
 
 import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
@@ -49,10 +54,10 @@ public class StateMachineDiagramElementsTxtUmlArranger extends
 	 */
 	@Override
 	public void arrange(IProgressMonitor monitor) throws ArrangeException {
-		GraphicalEditPart regionCompaEditPart = getRegionCompartementEditPart();
-		this.arrangeChildren(regionCompaEditPart, monitor);
+		CustomStateMachineEditPart stateMachineEditPart = getStateMachineEditPart();
+		this.arrangeChildren(stateMachineEditPart, monitor);
 		@SuppressWarnings("unchecked")
-		List<GraphicalEditPart> children = regionCompaEditPart.getChildren();
+		List<GraphicalEditPart> children = getRegionCompatementEditPart(stateMachineEditPart).getChildren();
 		DiagramElementsModifier.hideConnectionLabelsForEditParts(children, null);
 		CustomStateMachineEditPart sm = (CustomStateMachineEditPart)this.diagep.getChildren().get(0);
 		
@@ -60,53 +65,48 @@ public class StateMachineDiagramElementsTxtUmlArranger extends
 		DiagramElementsModifier.resizeGraphicalEditPart(sm, preferredSize.width, preferredSize.height);
 	}
 	
-	private GraphicalEditPart getRegionCompartementEditPart(){
+	private RegionCompartmentEditPart getRegionCompatementEditPart(RoundedCompartmentEditPart state) {
+		LinkLFShapeCompartmentEditPart stateCompartement = StateMachineDiagramElementsController.getStateCompartmentEditPart((RoundedCompartmentEditPart) state);
+		if(stateCompartement.getChildren() != null && stateCompartement.getChildren().size() != 0){ //there can be pseudostates
+			RegionEditPart region = (RegionEditPart) stateCompartement.getChildren().get(0);
+			RegionCompartmentEditPart regionCompartement = StateMachineDiagramElementsController.getRegionCompatementEditPart(region);
+			return regionCompartement;
+		}
+		return null;
+	}
+
+	private CustomStateMachineEditPart getStateMachineEditPart(){
 		for(Object customStateMachineEditPart : this.diagep.getChildren()){
 			if(customStateMachineEditPart instanceof CustomStateMachineEditPart){
-				for(Object customSMCompartementEditPart : ((CustomStateMachineEditPart)customStateMachineEditPart).getChildren()){
-					if(customSMCompartementEditPart instanceof CustomStateMachineCompartmentEditPart){
-						for(Object customRegionEditPart : ((CustomStateMachineCompartmentEditPart)customSMCompartementEditPart).getChildren()){
-							if(customRegionEditPart instanceof CustomRegionEditPart){
-								for(Object customRegionCompartmentEditPart : ((CustomRegionEditPart)customRegionEditPart).getChildren()){
-									if(customRegionCompartmentEditPart instanceof CustomRegionCompartmentEditPart){
-										return (CustomRegionCompartmentEditPart) customRegionCompartmentEditPart;
-									}
-								}
-							}
-						}
-					}
-				}
+				return (CustomStateMachineEditPart) customStateMachineEditPart;
 			}
 		}
 		return null;
 	}
 	
 	@Override
-	protected void arrangeChildren(GraphicalEditPart parent, IProgressMonitor monitor) throws ArrangeException{
+	protected void arrangeChildren(GraphicalEditPart state, IProgressMonitor monitor) throws ArrangeException{
+		assert state instanceof RoundedCompartmentEditPart;
 		boolean isCompositeState = false;
 		
-		@SuppressWarnings("unchecked")
-		List<GraphicalEditPart> editparts = parent.getChildren();
-		for(GraphicalEditPart ep : editparts){
-			if(isValidStateClass(ep)){
-				isCompositeState = true;
-				StateCompartmentEditPart stateCompartement = StateMachineDiagramElementsController.getStateCompartmentEditPart(ep);
-				if(stateCompartement.getChildren() != null && stateCompartement.getChildren().size() != 0){
-					RegionEditPart region = (RegionEditPart) stateCompartement.getChildren().get(0);
-					RegionCompartmentEditPart regionCompartement = StateMachineDiagramElementsController.getRegionCompatementEditPart(region);
-					this.arrangeChildren(regionCompartement, monitor);
+		RegionCompartmentEditPart regionCompartement = getRegionCompatementEditPart((RoundedCompartmentEditPart)state);
+		
+		if(regionCompartement != null){
+			@SuppressWarnings("unchecked")
+			List<GraphicalEditPart> editparts = regionCompartement.getChildren();
+			for(GraphicalEditPart ep : editparts){
+				if(isValidStateClass(ep)){
+					isCompositeState = true;
+					this.arrangeChildren(ep, monitor);
 				}
 			}
+	
+			if(isCompositeState){
+				super.arrangeChildren(regionCompartement, monitor);
+				Dimension d = calculatePreferredSize(editparts);
+				DiagramElementsModifier.resizeState(state, d.width, d.height);
+			}
 		}
-		
-		
-		if(isCompositeState){
-			super.arrangeChildren(parent, monitor);
-			Dimension d = calculatePreferredSize(editparts);
-			DiagramElementsModifier.resizeGraphicalEditPart(parent, d.width, d.height);
-		}
-		
-
 	}
 
 	private boolean isValidStateClass(GraphicalEditPart ep) {

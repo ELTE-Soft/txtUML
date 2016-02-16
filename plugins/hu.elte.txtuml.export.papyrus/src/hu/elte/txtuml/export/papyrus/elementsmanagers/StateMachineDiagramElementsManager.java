@@ -7,6 +7,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.papyrus.uml.diagram.common.editparts.RoundedCompartmentEditPart;
+import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.RegionEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateEditPart;
 import org.eclipse.uml2.uml.Comment;
@@ -25,7 +27,7 @@ import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
 /**
  * An abstract class for adding/removing elements to StateMachineDiagrams.
  *
- * @author András Dobreff
+ * @author Andrï¿½s Dobreff
  */
 public class StateMachineDiagramElementsManager extends AbstractDiagramElementsManager {
 
@@ -65,7 +67,7 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	 * @param state - The state
 	 */
 	private void fillState(EditPart state){
-		EditPart ep = StateMachineDiagramElementsController.getStateCompartmentEditPart(state);
+		EditPart ep = StateMachineDiagramElementsController.getStateCompartmentEditPart((RoundedCompartmentEditPart) state);
 		if(ep == null) {
 			ep = StateMachineDiagramElementsController.getCustomStateMachineCompartmentEditPart(state);
 		}
