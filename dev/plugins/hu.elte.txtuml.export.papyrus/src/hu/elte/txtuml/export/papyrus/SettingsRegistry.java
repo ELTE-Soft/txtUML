@@ -1,11 +1,11 @@
 package hu.elte.txtuml.export.papyrus;
 
-import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
-import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;
-
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
+
+import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
+import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;
 
 /**
  * A simple registry for registering implementation for the diagram creation process

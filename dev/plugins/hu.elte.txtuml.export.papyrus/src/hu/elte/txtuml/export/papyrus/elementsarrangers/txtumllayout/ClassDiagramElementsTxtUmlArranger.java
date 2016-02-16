@@ -1,9 +1,5 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
-import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
-import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,6 +9,10 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationMultiplicitySourceEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationMultiplicityTargetEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationNameEditPart;
+
+import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
 
 /**
  * Controls the arranging of a ClassDiagram with txtUML algorithm

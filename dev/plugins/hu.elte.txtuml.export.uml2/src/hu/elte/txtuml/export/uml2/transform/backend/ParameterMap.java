@@ -1,16 +1,16 @@
 package hu.elte.txtuml.export.uml2.transform.backend;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.ParameterExpr;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
-import hu.elte.txtuml.export.uml2.utils.ActivityEditor;
-
 import java.util.HashMap;
 
 import org.eclipse.uml2.uml.ActivityParameterNode;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.ParameterDirectionKind;
 import org.eclipse.uml2.uml.UMLFactory;
+
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.ParameterExpr;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
+import hu.elte.txtuml.export.uml2.utils.ActivityEditor;
 
 public interface ParameterMap {
 

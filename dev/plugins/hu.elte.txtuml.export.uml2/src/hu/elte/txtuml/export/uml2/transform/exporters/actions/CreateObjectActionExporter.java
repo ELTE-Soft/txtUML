@@ -1,8 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.exporters.actions;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
-
 import java.util.Iterator;
 import java.util.List;
 
@@ -10,6 +7,9 @@ import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.CreateObjectAction;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.UMLPackage;
+
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
 
 public class CreateObjectActionExporter {
 

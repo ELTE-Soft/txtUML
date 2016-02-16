@@ -1,10 +1,10 @@
 package hu.elte.txtuml.api.model.backend;
 
-import hu.elte.txtuml.api.model.Collection;
-import hu.elte.txtuml.api.model.blocks.ParameterizedCondition;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
+import hu.elte.txtuml.api.model.Collection;
+import hu.elte.txtuml.api.model.blocks.ParameterizedCondition;
 
 public class SingleItemCollection<T> implements Collection<T> {
 

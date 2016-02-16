@@ -1,8 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.exporters;
 
-import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
-
 import java.util.List;
 
 import org.eclipse.emf.common.util.BasicEList;
@@ -17,6 +14,9 @@ import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.StructuralFeature;
 import org.eclipse.uml2.uml.Type;
+
+import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
 
 /**
  * Instances of this class are responsible for matching txtUML types to UML2

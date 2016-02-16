@@ -9,9 +9,9 @@ import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.infra.core.resource.ModelMultiException;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 
-import hu.elte.txtuml.eclipseutils.ProjectUtils;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
 import hu.elte.txtuml.export.papyrus.utils.EditorOpener;
+import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 /**
  * Our sample action implements workbench action delegate.

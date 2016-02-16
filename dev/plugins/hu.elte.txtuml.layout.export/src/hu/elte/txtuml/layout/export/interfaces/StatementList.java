@@ -1,10 +1,10 @@
 package hu.elte.txtuml.layout.export.interfaces;
 
+import java.util.List;
+
 import hu.elte.txtuml.layout.export.impl.StatementListImpl;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
-
-import java.util.List;
 
 public interface StatementList extends List<Statement> {
 

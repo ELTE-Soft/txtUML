@@ -1,17 +1,17 @@
 package hu.elte.txtuml.api.stdlib;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelExecutor;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.external.ExternalClass;
 import hu.elte.txtuml.api.model.external.ExternalType;
-
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * An external class which enhances the txtUML models with the ability of using

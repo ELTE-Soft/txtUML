@@ -10,7 +10,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.compiler.ReconcileContext;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-import hu.elte.txtuml.diagnostics.PluginLogWrapper;
+import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.validation.problems.ValidationErrorBase;
 
 public class ProblemCollector {
@@ -58,7 +58,7 @@ public class ProblemCollector {
 			}
 			problems.clear();
 		} catch (CoreException e) {
-			PluginLogWrapper.logError("Error while refreshing problem markers", e); //$NON-NLS-1$
+			Logger.sys.error("Error while refreshing problem markers", e); //$NON-NLS-1$
 		}
 	}
 

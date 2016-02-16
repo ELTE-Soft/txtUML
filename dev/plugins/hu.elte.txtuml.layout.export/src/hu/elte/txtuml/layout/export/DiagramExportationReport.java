@@ -1,13 +1,13 @@
 package hu.elte.txtuml.layout.export;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import hu.elte.txtuml.layout.export.interfaces.StatementList;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * The type to be returned by the exportation of a diagram layout description.

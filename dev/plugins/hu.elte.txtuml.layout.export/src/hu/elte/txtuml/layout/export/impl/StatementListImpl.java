@@ -1,10 +1,10 @@
 package hu.elte.txtuml.layout.export.impl;
 
+import java.util.ArrayList;
+
 import hu.elte.txtuml.layout.export.interfaces.StatementList;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
-
-import java.util.ArrayList;
 
 /**
  * Default implementation for {@link StatementList}.

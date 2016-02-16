@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.papyrus.preferences;
 
-import hu.elte.txtuml.export.papyrus.Activator;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,6 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+
+import hu.elte.txtuml.export.papyrus.Activator;
 
 /**
  * Handles the preferences that are saved by eclipse

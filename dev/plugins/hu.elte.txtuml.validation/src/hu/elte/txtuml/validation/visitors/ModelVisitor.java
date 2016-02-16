@@ -2,7 +2,7 @@ package hu.elte.txtuml.validation.visitors;
 
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
-import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.Messages;
 import hu.elte.txtuml.validation.ProblemCollector;
 import hu.elte.txtuml.validation.problems.general.InvalidTypeInModel;

@@ -7,7 +7,7 @@ import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 
-import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.ProblemCollector;
 import hu.elte.txtuml.validation.problems.datatype.InvalidDataTypeField;
 import hu.elte.txtuml.validation.problems.datatype.InvalidDataTypeMethod;
@@ -33,7 +33,7 @@ public class DataTypeVisitor extends VisitorBase {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		if (!node.isConstructor()) {

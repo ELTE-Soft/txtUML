@@ -1,8 +1,8 @@
 package hu.elte.txtuml.export.uml2.transform.exporters.controls;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
-
 import org.eclipse.jdt.core.dom.ForStatement;
+
+import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
 
 public class ForActionExporter extends AbstractLoopExporter {
 

@@ -18,17 +18,17 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import hu.elte.txtuml.api.model.Association;
 import hu.elte.txtuml.api.model.AssociationEnd;
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.eclipseutils.NotFoundException;
-import hu.elte.txtuml.eclipseutils.PackageUtils;
-import hu.elte.txtuml.eclipseutils.ProjectUtils;
-import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
-import hu.elte.txtuml.export.uml2.utils.SharedUtils;
 import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
 import hu.elte.txtuml.layout.export.interfaces.NodeMap;
 import hu.elte.txtuml.layout.export.problems.ElementExportationException;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.Sneaky;
+import hu.elte.txtuml.utils.eclipse.NotFoundException;
+import hu.elte.txtuml.utils.eclipse.PackageUtils;
+import hu.elte.txtuml.utils.eclipse.ProjectUtils;
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
+import hu.elte.txtuml.utils.jdt.SharedUtils;
 
 public class ClassDiagramExporter extends AbstractSourceExporter {
 

@@ -1,5 +1,9 @@
 package hu.elte.txtuml.layout.export.impl;
 
+import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.Map;
+
 import hu.elte.txtuml.api.layout.Above;
 import hu.elte.txtuml.api.layout.Below;
 import hu.elte.txtuml.api.layout.BottomMost;
@@ -44,10 +48,6 @@ import hu.elte.txtuml.layout.export.interfaces.StatementList;
 import hu.elte.txtuml.layout.export.problems.ElementExportationException;
 import hu.elte.txtuml.layout.export.problems.ProblemReporter;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
-
-import java.lang.annotation.Annotation;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Default implementation for {@link StatementExporter}.

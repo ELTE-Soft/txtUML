@@ -3,8 +3,6 @@ package hu.elte.txtuml.export.papyrus.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import hu.elte.txtuml.eclipseutils.ProjectUtils;
-import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
 
 import java.io.IOException;
 
@@ -25,6 +23,9 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
 import org.junit.Before;
 import org.junit.Test;
+
+import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
+import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 /**
  * Unit test for {@link PapyrusModelCreator}

@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.exporters.expressions;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
-
 import java.util.Arrays;
 
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -16,6 +14,8 @@ import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Variable;
+
+import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
 
 public interface Expr {
 

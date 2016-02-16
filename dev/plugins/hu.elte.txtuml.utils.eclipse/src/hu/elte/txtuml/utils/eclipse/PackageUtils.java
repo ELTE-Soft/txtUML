@@ -1,6 +1,4 @@
-package hu.elte.txtuml.eclipseutils;
-
-import hu.elte.txtuml.utils.Sneaky;
+package hu.elte.txtuml.utils.eclipse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,6 +9,8 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
+
+import hu.elte.txtuml.utils.Sneaky;
 
 public final class PackageUtils {
 

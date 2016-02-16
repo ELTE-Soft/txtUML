@@ -1,5 +1,13 @@
 package hu.elte.txtuml.layout.visualizer.algorithms;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Observer;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.ArrangeObjects;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.ArrangeAssociations;
 import hu.elte.txtuml.layout.visualizer.events.ProgressEmitter;
@@ -23,14 +31,6 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 import hu.elte.txtuml.utils.Pair;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Observer;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * This class is used to wrap the arrange of a whole diagram.

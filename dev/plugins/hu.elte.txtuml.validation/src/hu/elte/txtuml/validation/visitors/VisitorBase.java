@@ -8,7 +8,7 @@ import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
-import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.Messages;
 import hu.elte.txtuml.validation.ProblemCollector;
 import hu.elte.txtuml.validation.problems.general.InvalidChildrenElement;
@@ -42,8 +42,7 @@ public class VisitorBase extends ASTVisitor {
 			} else if (spd.isChildProperty()) {
 				Object child = node.getStructuralProperty(spd);
 				if (child != null && childForbidden(child, allowedChildrenTypes)) {
-					collector.report(
-							new InvalidChildrenElement(collector.getSourceInfo(), nodeStr, (ASTNode) child));
+					collector.report(new InvalidChildrenElement(collector.getSourceInfo(), nodeStr, (ASTNode) child));
 				}
 			}
 
