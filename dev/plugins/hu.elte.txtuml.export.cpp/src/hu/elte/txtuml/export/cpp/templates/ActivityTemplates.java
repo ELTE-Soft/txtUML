@@ -70,6 +70,10 @@ public class ActivityTemplates {
 		}
 		return source;
 	}
+	
+	public static String operationCallOnPointerVariable(String ownerName, String operationName, List<String> params) {
+	    return operationCall(ownerName,GenerationNames.PointerAccess,operationName,params);
+	}
 
 	private static String operationCallParamList(List<String> params) {
 		String source = "";

@@ -22,6 +22,12 @@ struct Configuration
 	LinearFunction* function;
 	int max;
 
+	Configuration(StateMachineThreadPool* threadPool,LinearFunction* function,int max)
+	{
+		this->threadPool = threadPool;
+		this->function = function;
+		this->max = max;
+	}
 	~Configuration()
 	{
 		delete threadPool;
@@ -37,8 +43,9 @@ class ThreadConfiguration
 	public:
 
 		ThreadConfiguration(int);
+		~ThreadConfiguration();
 
-		void insertConfiguration(int,Configuration);
+		void insertConfiguration(int,Configuration*);
 		StateMachineThreadPool* getThreadPool(int);
 		LinearFunction* getFunction(int);
 		int getMax(int);
@@ -46,7 +53,7 @@ class ThreadConfiguration
 
 	private:
 
-		std::vector<Configuration> configurations;
+		std::vector<Configuration*> configurations;
 
 };
 

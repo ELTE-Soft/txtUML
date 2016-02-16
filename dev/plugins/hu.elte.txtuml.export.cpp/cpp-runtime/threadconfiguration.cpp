@@ -5,7 +5,7 @@ ThreadConfiguration::ThreadConfiguration(int size)
 	configurations.resize(size);
 }
 
-void ThreadConfiguration::insertConfiguration(int id,Configuration conf)
+void ThreadConfiguration::insertConfiguration(int id,Configuration* conf)
 {
 	configurations[id] = conf;
 }
@@ -28,4 +28,12 @@ int ThreadConfiguration::getMax(int id)
 int ThreadConfiguration::getNumberOfConfigurations()
 {
 	return configurations.size();
+}
+
+ThreadConfiguration::~ThreadConfiguration()
+{
+	for (it = configurations.begin(); it != configurations.end(); it++)
+	{
+		delete (*it);
+	}
 }

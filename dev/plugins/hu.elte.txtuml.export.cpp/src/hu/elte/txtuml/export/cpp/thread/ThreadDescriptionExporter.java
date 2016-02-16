@@ -24,9 +24,10 @@ public class ThreadDescriptionExporter {
 	int numberOfConfigurations;
 
 	Set<String> exportedClasses;
-
-	public ThreadDescriptionExporter() {
+	Set<String> allClass;
+	public ThreadDescriptionExporter(Set<String> allClass) {
 		configMap = new HashMap<String, ThreadPoolConfiguration>();
+		this.allClass = allClass;
 		exportedClasses = new HashSet<String>();
 		numberOfConfigurations = 0;
 
@@ -58,10 +59,14 @@ public class ThreadDescriptionExporter {
 				warningList.add("Only Group annotations are allowed to use.");
 			}
 		}
+		
+		exportDefaultConfiguration();
 
 		descriptionExported = true;
 
 	}
+
+
 
 	public boolean isSuccessfulExportation() {
 		if (!descriptionExported) {
@@ -109,6 +114,21 @@ public class ThreadDescriptionExporter {
 			}
 
 		}
+	}
+	
+	private void exportDefaultConfiguration() {
+		
+		if(allClass.size() != exportedClasses.size()) {
+			Set<String> nonExportedClasses = new HashSet<String>();
+			nonExportedClasses.addAll(allClass);
+			nonExportedClasses.removeAll(exportedClasses);
+			
+			ThreadPoolConfiguration config = new ThreadPoolConfiguration(0,0,1);
+			for(String cls : nonExportedClasses) {
+				configMap.put(cls, config);
+			}
+		}
+		
 	}
 
 	private void checkEmptyGroup(Class<? extends ModelClass>[] classes) {

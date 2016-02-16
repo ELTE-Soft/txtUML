@@ -454,10 +454,14 @@ public class GenerationTemplates {
 
 	public static String createObject(String typeName, String objName) {
 		String source;
-		source = GenerationNames.pointerType(typeName) + " " + objName + "= " + GenerationNames.MemoryAllocator + " "
-				+ typeName + "();\n";
+		source = GenerationNames.pointerType(typeName) + " " + objName + " = " + allocateObject(typeName) + ";\n";
 		return source;
-
+	}
+	
+	public static String createObject(String typeName, String objName, List<String> params) {
+		String source;
+		source = GenerationNames.pointerType(typeName) + " " + objName + " = " + allocateObject(typeName,params) + ";\n";
+		return source;
 	}
 
 	public static String allocateObject(String typeName, List<String> params) {
@@ -473,6 +477,8 @@ public class GenerationTemplates {
 	public static String allocateObject(String typeName) {
 		return GenerationNames.MemoryAllocator + " " + typeName + "()";
 	}
+	
+	
 
 	public static String getDefaultReturn(String returnType) {
 

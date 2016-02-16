@@ -60,7 +60,7 @@ public class Uml2ToCppExporter {
 		Shared.getTypedElements(classList, elements, UMLPackage.Literals.CLASS);
 
 		options = new Options(addRuntimeOption);
-		threadManager = new ThreadHandlingManager(classList, threadDescription);
+		threadManager = new ThreadHandlingManager(threadDescription);
 	}
 
 	public void buildCppCode(String outputDirectory) throws IOException {

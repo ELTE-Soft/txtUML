@@ -5,12 +5,19 @@ import org.eclipse.emf.common.util.URI;
 
 import java.io.File;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.UMLPackage;
+
 
 import hu.elte.txtuml.eclipseutils.ClassLoaderProvider;
 import hu.elte.txtuml.eclipseutils.Dialogs;
+import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
 import hu.elte.txtuml.export.cpp.thread.ThreadDescriptionExporter;
 import hu.elte.txtuml.api.deployment.Configuration;
@@ -77,7 +84,15 @@ public class TxtUMLToCppWizard extends Wizard {
 			URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(txtUMLProject,
 					ThreadDescriptionExporter.class.getClassLoader());
 			Class<?> txtUMLThreadDescription = loader.loadClass(threadManagmentDescription);
-			ThreadDescriptionExporter exporter = new ThreadDescriptionExporter();
+			
+			List<org.eclipse.uml2.uml.Class> classList = new ArrayList<org.eclipse.uml2.uml.Class>();
+			Shared.getTypedElements(classList, model.getOwnedElements(), UMLPackage.Literals.CLASS);
+			Set<String> allClass = new HashSet<String>();
+			for(org.eclipse.uml2.uml.Class cls: classList) {
+				allClass.add(cls.getName());
+			}
+			
+			ThreadDescriptionExporter exporter = new ThreadDescriptionExporter(allClass);
 			exporter.exportDescription((Class<? extends Configuration>) txtUMLThreadDescription);
 
 			if (!exporter.warningListIsEmpty()) {
