@@ -334,7 +334,9 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
 		val optionalHidden = if(notNavigable) "Hidden" else ""
 		var Pair<Integer, Integer> explicitMultiplicities = null
-		val apiBoundTypeName = if (multiplicity.any) // *
+		val apiBoundTypeName = if (multiplicity == null) // omitted
+				"One"
+			else if (multiplicity.any) // *
 				"Many"
 			else if (!multiplicity.upperSet) { // <lower> (exact)
 				if (multiplicity.lower == 1)

@@ -47,8 +47,6 @@ import org.junit.Test;
 
 /**
  * Unit test for {@link DiagramManager}
- *
- * @author András Dobreff
  * 
  * <p>
  * <b>Attention:</b>

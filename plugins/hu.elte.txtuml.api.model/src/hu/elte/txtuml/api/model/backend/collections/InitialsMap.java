@@ -10,9 +10,6 @@ import java.util.Map;
  * {@link hu.elte.txtuml.api.model.Region} class where it is used to cache the
  * classes representing the initial pseudostates of regions and composite
  * states.
- *
- * @author Gabor Ferenc Kovacs
- *
  */
 public interface InitialsMap extends Map<Class<?>, Class<? extends Initial>> {
 

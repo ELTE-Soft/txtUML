@@ -1,11 +1,5 @@
 package hu.elte.txtuml.export;
 
-/***********************************************************
- * Author: Hack János
- * Version 0.9 2014.02.25
- * Email:zodiakus (at) elte.hu
- **********************************************************/
-
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -15,8 +9,6 @@ import org.eclipse.uml2.uml.Model;
 
 /**
  * Utilites class for UML2 models
- *
- * @author András Dobreff
  */
 public class Uml2Utils {
 	

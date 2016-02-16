@@ -2,9 +2,6 @@ package hu.elte.txtuml.export.uml2.transform.backend;
 
 /**
  * Exception used by the exporter.
- * 
- * @author Adam Ancsin
- *
  */
 @SuppressWarnings("serial")
 public class ExportException extends Exception {
@@ -14,7 +11,6 @@ public class ExportException extends Exception {
 	 * 
 	 * @param msg
 	 *            The error message.
-	 * @author Adam Ancsin
 	 */
 	public ExportException(String msg) {
 		super(msg);

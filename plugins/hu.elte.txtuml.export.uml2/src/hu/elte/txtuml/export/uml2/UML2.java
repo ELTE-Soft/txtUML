@@ -24,9 +24,6 @@ import hu.elte.txtuml.utils.Sneaky;
 /**
  * This class is responsible for exporting Eclipse UML2 model generated from a
  * txtUML model.
- * 
- * @author Adam Ancsin
- *
  */
 public class UML2 {
 
@@ -53,8 +50,6 @@ public class UML2 {
 	 * @param compilationUnit
 	 *            The specified compilation unit.
 	 * @return The type declaration of the txtUML model.
-	 *
-	 * @author Adam Ancsin
 	 */
 	private static Optional<String> obtainModelFromCompilationUnits(
 			String packageName, CompilationUnit[] compilationUnits) {
@@ -89,8 +84,6 @@ public class UML2 {
 	 * @throws IOException
 	 * @throws JavaModelException
 	 * @throws ExportException
-	 * 
-	 * @author Adam Ancsin
 	 */
 	public static void exportModel(String packageName,
 			IPackageFragment[] packageFragments, IJavaProject javaProject,

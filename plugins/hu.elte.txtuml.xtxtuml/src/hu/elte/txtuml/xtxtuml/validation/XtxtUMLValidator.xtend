@@ -23,6 +23,8 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionGuard
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
 import hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage
 import java.util.HashSet
+import java.util.List
+import java.util.Map
 import org.eclipse.xtext.common.types.JvmFormalParameter
 import org.eclipse.xtext.common.types.JvmOperation
 import org.eclipse.xtext.common.types.JvmTypeReference
@@ -36,6 +38,9 @@ import org.eclipse.xtext.xbase.XFeatureCall
 import org.eclipse.xtext.xbase.XMemberFeatureCall
 import org.eclipse.xtext.xbase.XbasePackage
 import org.eclipse.xtext.xbase.typesystem.util.ExtendedEarlyExitComputer
+import org.eclipse.xtext.xtype.XImportDeclaration
+
+import static org.eclipse.xtext.xbase.validation.IssueCodes.IMPORT_UNUSED
 
 class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 
@@ -346,6 +351,15 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 			RAlfDeleteObjectExpression: true
 			XBlockExpression: false
 			default: super.isValueExpectedRecursive(expr)
+		}
+	}
+
+	override addImportUnusedIssues(Map<String, List<XImportDeclaration>> imports) {
+		for (List<XImportDeclaration> importDeclarations : imports.values()) {
+			for (XImportDeclaration importDeclaration : importDeclarations) {
+				addIssue("The import '" + importDeclaration.importedType.getQualifiedName(".") + "' is never used.",
+					importDeclaration, IMPORT_UNUSED);
+			}
 		}
 	}
 

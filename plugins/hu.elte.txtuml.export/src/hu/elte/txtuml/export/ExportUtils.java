@@ -11,8 +11,6 @@ import org.eclipse.emf.common.util.URI;
 
 /**
  * Utilities Class to convert txtUML representations
- *
- * @author Andr�s Dobreff
  */
 public class ExportUtils {
 	

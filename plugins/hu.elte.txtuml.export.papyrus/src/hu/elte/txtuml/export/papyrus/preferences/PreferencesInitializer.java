@@ -4,8 +4,6 @@ import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 
 /**
  * Initializes the preferences
- *
- * @author András Dobreff
  */
 public class PreferencesInitializer extends AbstractPreferenceInitializer {
 

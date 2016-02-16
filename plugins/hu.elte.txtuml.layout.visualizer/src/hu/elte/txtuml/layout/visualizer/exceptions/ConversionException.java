@@ -3,8 +3,6 @@ package hu.elte.txtuml.layout.visualizer.exceptions;
 /**
  * Exception indicating that somewhere in the algorithm there was either an
  * illegal conversion between types or a conversion which is not defined.
- * 
- * @author Balázs Gregorics
  */
 public class ConversionException extends MyException
 {

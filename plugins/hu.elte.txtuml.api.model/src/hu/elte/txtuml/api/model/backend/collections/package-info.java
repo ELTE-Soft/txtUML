@@ -7,8 +7,5 @@
  * {@link java.util.Collection} or one of its subinterfaces, which are
  * used by classes of the {@link hu.elte.txtuml.api.model} package to store 
  * information during model execution.
- *
- * @author Gabor Ferenc Kovacs
- *
  */
 package hu.elte.txtuml.api.model.backend.collections;

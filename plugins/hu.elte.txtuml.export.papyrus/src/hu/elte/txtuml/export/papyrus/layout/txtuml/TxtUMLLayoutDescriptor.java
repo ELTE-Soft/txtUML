@@ -11,7 +11,6 @@ import java.util.Map;
 
 /**
  * The instance holds infomration about the layout of a specific model
- * @author András Dobreff
  */
 public class TxtUMLLayoutDescriptor {
 	
@@ -64,10 +63,6 @@ public class TxtUMLLayoutDescriptor {
 		return reports.values();
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
 	public List<Pair<String, DiagramExportationReport>> getReportsWithDiagramNames(){
 		List<Pair<String, DiagramExportationReport>> result =  new LinkedList<>();
 		reports.entrySet().forEach( entry -> {

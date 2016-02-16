@@ -28,8 +28,6 @@ import hu.elte.txtuml.export.Uml2Utils;
 
 /**
  * Controls the creation of a Papyrus Model
- *
- * @author Andr�s Dobreff
  */
 public class PapyrusModelCreator {
 	private IFile diFile;

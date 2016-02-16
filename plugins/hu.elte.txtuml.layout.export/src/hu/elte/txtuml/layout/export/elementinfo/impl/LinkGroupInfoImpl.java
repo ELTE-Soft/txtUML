@@ -4,11 +4,6 @@ import hu.elte.txtuml.layout.export.elementinfo.LinkGroupInfo;
 import hu.elte.txtuml.layout.export.elementinfo.LinkInfo;
 import hu.elte.txtuml.layout.export.interfaces.LinkMap;
 
-/**
- * 
- * @author Dávid János Németh
- *
- */
 public class LinkGroupInfoImpl extends ElementInfoImpl implements LinkGroupInfo {
 
 	private final LinkMap links;

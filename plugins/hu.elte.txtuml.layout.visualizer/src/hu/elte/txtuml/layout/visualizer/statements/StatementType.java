@@ -2,9 +2,6 @@ package hu.elte.txtuml.layout.visualizer.statements;
 
 /***
  * Enumeration of the Types of Statements.
- * 
- * @author Balázs Gregorics
- *
  */
 public enum StatementType
 {

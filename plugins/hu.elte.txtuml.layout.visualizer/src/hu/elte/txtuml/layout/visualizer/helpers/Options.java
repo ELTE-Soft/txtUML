@@ -5,9 +5,6 @@ import hu.elte.txtuml.layout.visualizer.model.OverlapArrangeMode;
 
 /**
  * Class that encapsulates the multiple options of the algorithm.
- * 
- * @author Balázs Gregorics
- *
  */
 public class Options
 {
