@@ -223,7 +223,7 @@ public class LayoutVisualize {
 		_statements.sort((s1, s2) -> {
 			return s1.getType().compareTo(s2.getType());
 		});
-		
+
 		// Get options from statements
 		getOptions();
 
@@ -262,10 +262,10 @@ public class LayoutVisualize {
 
 		if (_options.Logging)
 			System.err.println("End of arrange!");
-		
+
 		ProgressManager.end();
 	}
-	
+
 	private void getOptions() {
 		// Remove corridorsize, overlaparrange from statements
 
