@@ -127,12 +127,9 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 						
 			        	String anchor_start = getAnchor(source.getTopLeft(), route.get(0), source.width, source.height);
 			        	String anchor_end = getAnchor(target.getTopLeft(), route.get(route.size()-1), target.width, target.height);
-			        	route.remove(0);
-			        	route.remove(route.size()-1);
-			        	connection.getSource();
 			        	
 			        	DiagramElementsModifier.setConnectionAnchors(connection, anchor_start, anchor_end);
-			        	DiagramElementsModifier.setConnectionBendpoints(connection, route);
+			        	DiagramElementsModifier.setConnectionPoints(connection, route);
 					}
 		});
 	}

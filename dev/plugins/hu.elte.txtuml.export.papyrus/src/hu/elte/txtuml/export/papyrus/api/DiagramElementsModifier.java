@@ -100,24 +100,22 @@ public class DiagramElementsModifier {
 	}
 	
 	/**
-	 * Sets the BendPoints of a connection. (Starting point and Ending points are not BendPoints)
+	 * Sets the points of a connection.
 	 * @param connection - The connection
-	 * @param bendpoints - The BendPoints
+	 * @param bendpoints - Start, end and bending points
 	 */
-	public static void setConnectionBendpoints(ConnectionNodeEditPart connection, List<Point> bendpoints){
+	public static void setConnectionPoints(ConnectionNodeEditPart connection, List<Point> bendpoints){
 		TransactionalEditingDomain editingDomain = connection.getEditingDomain();
 		SetConnectionBendpointsCommand cmd = new SetConnectionBendpointsCommand(editingDomain);
 		cmd.setEdgeAdapter(new EObjectAdapter(connection.getNotationView()));
 		
-		Point sourceRef = connection.getConnectionFigure().getSourceAnchor().getReferencePoint();
-		Point targetRef = connection.getConnectionFigure().getTargetAnchor().getReferencePoint();
+		Point sourceRef = bendpoints.get(0);
+		Point targetRef = bendpoints.get(bendpoints.size()-1);
 		PointList pointList = new PointList();
 		
-		pointList.addPoint(sourceRef);
 		for(Point bendpoint: bendpoints){
 			pointList.addPoint(bendpoint);
 		}
-		pointList.addPoint(targetRef);
 		
 		cmd.setNewPointList(pointList, sourceRef, targetRef);
 		Command proxy =  new ICommandProxy(cmd);
