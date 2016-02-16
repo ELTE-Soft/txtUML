@@ -78,7 +78,7 @@ public class ThreadHandlingManager {
 
 
 
-	private Object insertToConfiguration(Integer id, String configuration) {
+	private String insertToConfiguration(Integer id, String configuration) {
 	    List<String> params = new ArrayList<String>();
 	    params.add(id.toString());
 	    params.add(configuration);
