@@ -115,20 +115,20 @@ public class LayoutTransformer {
 		int moveY = 0;
 		switch(this.origoConstaint){
 			case BottomLeft:
-					moveX = objects.values().stream().map(p -> p.x()).min((p1, p2) -> Integer.compare(p1, p2)).get();
-					moveY = objects.values().stream().map(p -> p.y()).min((p1, p2) -> Integer.compare(p1, p2)).get();  
+				moveX = getBoundaryValue(objects, connections, r -> r.x(), p -> p.x(), true);
+				moveY = getBoundaryValue(objects, connections, r -> r.y(), p -> p.y(), true);
 				break;
 			case BottomRight:
-					moveX = objects.values().stream().map(p -> p.x()).max((p1, p2) -> Integer.compare(p1, p2)).get();
-					moveY = objects.values().stream().map(p -> p.y()).min((p1, p2) -> Integer.compare(p1, p2)).get();
+				moveX = getBoundaryValue(objects, connections, r -> r.x(), p -> p.x(), false);
+				moveY = getBoundaryValue(objects, connections, r -> r.y(), p -> p.y(), true);
 				break;
-			case  UpperRight:
-					moveX = objects.values().stream().map(p -> p.x()).max((p1, p2) -> Integer.compare(p1, p2)).get();
-					moveY = objects.values().stream().map(p -> p.y()).max((p1, p2) -> Integer.compare(p1, p2)).get();
+			case UpperRight:
+				moveX = getBoundaryValue(objects, connections, r -> r.x(), p -> p.x(), false);
+				moveY = getBoundaryValue(objects, connections, r -> r.y(), p -> p.y(), false);
 				break;
 			case UpperLeft:
-					moveX = objects.values().stream().map(p -> p.x()).min((p1, p2) -> Integer.compare(p1, p2)).get();
-					moveY = objects.values().stream().map(p -> p.y()).max((p1, p2) -> Integer.compare(p1, p2)).get();
+				moveX = getBoundaryValue(objects, connections, r -> r.x(), p -> p.x(), true);
+				moveY = getBoundaryValue(objects, connections, r -> r.y(), p -> p.y(), false);
 				break;
 			default: 
 				return;
@@ -148,6 +148,26 @@ public class LayoutTransformer {
 		}
 	}
 	
+	private int getBoundaryValue(Map<?, Rectangle> objects, Map<?, List<Point>> connections,
+			Function<Rectangle, Integer> objectMapping, Function<Point, Integer> connectionMapping, Boolean isMin) {
+		Comparator<Integer> comparator = (p1, p2) -> {
+			return Integer.compare(p1, p2);
+		};
+
+		if (isMin) {
+			int first = objects.values().stream().map(objectMapping).min(comparator).orElse(Integer.MAX_VALUE);
+			int second = connections.values().stream()
+					.map(list -> list.stream().map(connectionMapping).min(comparator).orElse(Integer.MAX_VALUE)).min(comparator)
+					.orElse(Integer.MAX_VALUE);
+			return (first > second) ? first : second;
+		} else {
+			int first = objects.values().stream().map(objectMapping).max(comparator).orElse(Integer.MIN_VALUE);
+			int second = connections.values().stream()
+					.map(list -> list.stream().map(connectionMapping).max(comparator).orElse(Integer.MIN_VALUE)).max(comparator)
+					.orElse(Integer.MIN_VALUE);
+			return (first > second) ? first : second;
+		}
+	}
 	
 	/**
 	 * Multiplies the y coordinates of the objects with -1. From now on they can be handled
