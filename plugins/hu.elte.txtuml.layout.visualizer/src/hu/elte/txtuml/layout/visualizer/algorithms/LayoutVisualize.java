@@ -99,10 +99,25 @@ public class LayoutVisualize {
 	 * 
 	 * @return the pixel-grid ratio.
 	 */
-	public Integer getPixelGridRatio() {
+	public Integer getPixelGridHorizontal() {
 		if (_objects.size() > 0) {
 			RectangleObject obj = _objects.stream().findFirst().get();
-			return obj.getPixelWidth() / obj.getWidth();
+			if(obj.getWidth() == 1)
+				return obj.getPixelWidth();
+			else
+				return obj.getPixelWidth() / (obj.getWidth() - 1);
+		}
+
+		return 1;
+	}
+	
+	public Integer getPixelGridVertical() {
+		if (_objects.size() > 0) {
+			RectangleObject obj = _objects.stream().findFirst().get();
+			if(obj.getHeight() == 1)
+				return obj.getPixelHeight();
+			else
+				return obj.getPixelHeight() / (obj.getHeight() - 1);
 		}
 
 		return 1;
@@ -208,7 +223,7 @@ public class LayoutVisualize {
 		_statements.sort((s1, s2) -> {
 			return s1.getType().compareTo(s2.getType());
 		});
-
+		
 		// Get options from statements
 		getOptions();
 
@@ -247,10 +262,10 @@ public class LayoutVisualize {
 
 		if (_options.Logging)
 			System.err.println("End of arrange!");
-
+		
 		ProgressManager.end();
 	}
-
+	
 	private void getOptions() {
 		// Remove corridorsize, overlaparrange from statements
 

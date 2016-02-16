@@ -82,9 +82,8 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			Map<ConnectionNodeEditPart, List<Point>> linksTransform = pairRoutesToConnectionEditParts(links, connections);
 			Map<GraphicalEditPart, Rectangle> objectsTransform = createObjectRectangleMappingFromObjectsAndEditParts(objects, editParts);
 			
-			int pixelGridRatio = vm.getPixelGridRatio();
-			
-			transformObjectsAndLinks(objectsTransform, linksTransform, pixelGridRatio);
+			transformObjectsAndLinks(objectsTransform, linksTransform, 
+					vm.getPixelGridRatioHorizontal(), vm.getPixelGridRatioVertical());
 			
 			modifyEditParts(objectsTransform);		
 			modifyConnectionEditParts(linksTransform, objectsTransform);	
@@ -148,9 +147,11 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 
 	private void transformObjectsAndLinks(
 			Map<GraphicalEditPart, Rectangle> objectsTransform,
-			Map<ConnectionNodeEditPart, List<Point>> linksTransform, int pixelGridRatio) {
+			Map<ConnectionNodeEditPart, List<Point>> linksTransform,
+			int pixelGridRatioHorizontal, int pixelGridRatioVertical) {
 		
-		LayoutTransformer trans = new LayoutTransformer(pixelGridRatio);
+		LayoutTransformer trans = new LayoutTransformer(pixelGridRatioHorizontal, 
+				pixelGridRatioVertical);
 		trans.setOrigo(OrigoConstraint.UpperLeft);
 		trans.flipYAxis();
 		trans.doTranformations(objectsTransform, linksTransform);
