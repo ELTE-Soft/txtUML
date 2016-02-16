@@ -13,15 +13,11 @@ import org.eclipse.swt.widgets.TreeItem;
 
 /**
  * Creates the controls for the preferences
- *
- * @author András Dobreff
  */
 public class PreferencesUI {
 
 	/**
 	 * Value-Objects that hold the checkboxes and the preferences together
-	 *
-	 * @author András Dobreff
 	 */
 	private class CheckBoxRecord{
 		TreeItem chbx;

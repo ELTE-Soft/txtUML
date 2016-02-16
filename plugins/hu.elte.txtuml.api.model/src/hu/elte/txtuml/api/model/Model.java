@@ -193,11 +193,9 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * synchronous events caused by it (like a state machine changing state, entry
  * and exit actions, transition effects, operation calls) have been processed.
  *
- * @author Gabor Ferenc Kovacs
  * @see ModelClass
  * @see Association
  * @see Signal
- * 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PACKAGE)

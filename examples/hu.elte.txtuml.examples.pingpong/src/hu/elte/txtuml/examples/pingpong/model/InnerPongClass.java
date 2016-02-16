@@ -25,7 +25,7 @@ public class InnerPongClass extends ModelClass {
 
 		@Override
 		public void effect() {
-			PingSignal sig = getSignal(PingSignal.class);
+			PingSignal sig = getSignal();
 			if (sig.count > 0) {
 				Action.send(port(PongPort.class).provided::reception, new PongSignal(sig.count - 1));
 				Action.log("pong");

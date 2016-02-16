@@ -5,9 +5,6 @@ import java.util.List;
 
 /**
  * Time measuring class.
- * 
- * @author Balázs Gregorics
- *
  */
 public class TimeManager
 {

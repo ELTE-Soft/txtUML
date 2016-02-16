@@ -23,8 +23,6 @@ import org.eclipse.ui.progress.IProgressService;
 
 /**
  * Handles the the call to visualization from context menu.
- *
- * @author András Dobreff
  */
 public class InstantHandler extends AbstractHandler {
 	

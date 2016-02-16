@@ -12,10 +12,6 @@ import java.util.Set;
 /**
  * The type to be returned by the exportation of a diagram layout description.
  * Provides important information about the exportation, including its results.
- * 
- * @author Gabor Ferenc Kovacs
- * @author D�vid J�nos N�meth
- *
  */
 public class DiagramExportationReport {
 

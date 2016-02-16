@@ -21,7 +21,7 @@ class A {
 	state A1 {
 		entry {
 			if (remainingCycles-- <= 0) {
-				for (B b in A.this->AB::b) {
+				for (B b in A.this->(AB.b)) {
 					unlink(AB.a, A.this, AB.b, b);
 				}
 				delete A.this;
@@ -65,8 +65,8 @@ class A {
 			if (sig.nf % 4 == 0) {
 				createChild();
 			}
-			if (!A.this->AB::b.isEmpty()) {
-				send new Forward(0) to A.this->AB::b.selectAny();
+			if (!A.this->(AB.b).isEmpty()) {
+				send new Forward(0) to A.this->(AB.b).selectAny();
 			}
 			numForward++;
 			send new Forward(numForward) to A.this;
@@ -83,8 +83,8 @@ class A {
 			if (sig.nf % 4 == 0) {
 				createChild();
 			}
-			if (!A.this->AB::b.isEmpty()) {
-				send new Forward(0) to A.this->AB::b.selectAny();
+			if (!A.this->(AB.b).isEmpty()) {
+				send new Forward(0) to A.this->(AB.b).selectAny();
 			}
 			numForward++;
 			send new Forward(numForward) to A.this;
@@ -101,8 +101,8 @@ class A {
 			if (sig.nf % 4 == 0) {
 				createChild();
 			}
-			if (!A.this->AB::b.isEmpty()) {
-				send new Forward(0) to A.this->AB::b.selectAny();
+			if (!A.this->(AB.b).isEmpty()) {
+				send new Forward(0) to A.this->(AB.b).selectAny();
 			}
 			numForward++;
 			send new Forward(numForward) to A.this;
@@ -119,8 +119,8 @@ class A {
 			if (sig.nf % 4 == 0) {
 				createChild();
 			}
-			if (!A.this->AB::b.isEmpty()) {
-				send new Forward(0) to A.this->AB::b.selectAny();
+			if (!A.this->(AB.b).isEmpty()) {
+				send new Forward(0) to A.this->(AB.b).selectAny();
 			}
 			numForward++;
 			send new Forward(numForward) to A.this;
@@ -171,9 +171,9 @@ class B {
 	state B4;
 	state finalstate {
 		entry {
-			if (B.this->AB::a.isEmpty()) {
+			if (B.this->(AB.a).isEmpty()) {
 			} else {
-				A a = B.this->AB::a.selectAny();
+				A a = B.this->(AB.a).selectAny();
 				unlink(AB.a, a, AB.b, B.this);
 				a.childTerminated();
 			}

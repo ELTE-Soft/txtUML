@@ -2,9 +2,6 @@ package hu.elte.txtuml.layout.export.elementinfo;
 
 /**
  * General information holder about a diagram layout description element.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 public interface ElementInfo {
 

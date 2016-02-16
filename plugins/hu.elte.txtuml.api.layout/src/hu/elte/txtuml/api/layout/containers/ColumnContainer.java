@@ -9,9 +9,6 @@ import java.lang.annotation.Target;
 
 /**
  * The container for repeatable annotation {@link Column}.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

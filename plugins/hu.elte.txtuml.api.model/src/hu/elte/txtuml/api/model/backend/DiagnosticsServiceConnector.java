@@ -13,9 +13,6 @@ import hu.elte.txtuml.api.model.report.ModelExecutionEventsListener;
  * A class that connects the modeling API and the {@link DiagnosticsService} by
  * listening to the model execution events and reporting them to the diagnostics
  * service.
- * 
- * @author Gabor Ferenc Kovacs
- *
  */
 public final class DiagnosticsServiceConnector implements
 		ModelExecutionEventsListener {

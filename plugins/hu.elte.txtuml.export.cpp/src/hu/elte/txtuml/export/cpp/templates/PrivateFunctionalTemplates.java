@@ -1,13 +1,9 @@
 package hu.elte.txtuml.export.cpp.templates;
 
-/***********************************************************
- * Author: Hack János
- * Version 0.9 2014.02.25
- * Email:zodiakus (at) elte.hu
- **********************************************************/
-
 import java.util.List;
 import java.util.Map;
+
+import com.google.common.collect.Multimap;
 
 import hu.elte.txtuml.utils.Pair;
 
@@ -21,7 +17,7 @@ class PrivateFunctionalTemplates
 	 * Map<String,String>
 	 * 	  <event,SubmachineName>
 	 * */
-	public static String HierarchicalStateMachineClassConstructorSharedBody(String className_,String parentClassName_,Map<Pair<String,String>,Pair<String,String>> machine_,Map<String,String> subMachines_,String intialState_,Boolean rt_)
+	public static String HierarchicalStateMachineClassConstructorSharedBody(String className_,String parentClassName_,Multimap<Pair<String,String>,Pair<String,String>> machine_,Map<String,String> subMachines_,String intialState_,Boolean rt_)
 	{
 		String source="";
 		for(Map.Entry<String,String> entry:subMachines_.entrySet())
@@ -29,7 +25,7 @@ class PrivateFunctionalTemplates
 			source+=GenerationNames.CompositeStateMapName+".emplace("+GenerationNames.StateEnumName(entry.getKey())+","+GenerationNames.CompositeStateMapSmType+"("+GenerationNames.MemoryAllocator+" "+entry.getValue()+"("+parentClassName_+")"+"));\n";
 		}
 		
-		source+="\n"+StateMachineClassConstructorSharedBody(className_,parentClassName_, machine_, intialState_)+"}\n\n";
+		source+="\n"+StateMachineClassConstructorSharedBody(className_,parentClassName_, machine_, intialState_,rt_,null)+"}\n\n";
 		if(rt_)
 		{
 			source+=RuntimeTemplates.RTFunctionDecl(className_);
@@ -40,43 +36,59 @@ class PrivateFunctionalTemplates
 				PrivateFunctionalTemplates.SetInitialState(className_,intialState_)+"\n";
 	}
 	
-	public static String SimpleStateMachineClassConstructorSharedBody(String className_,Map<Pair<String,String>,Pair<String,String>> machine_,String intialState_,Boolean rt_)
+	public static String SimpleStateMachineClassConstructorSharedBody(String className_,Multimap<Pair<String,String>,Pair<String,String>> machine_,String intialState_,Boolean rt_)
 	{
 		String source="";
 		if(rt_)
 		{
 			source+=RuntimeTemplates.RTFunctionDecl(className_);
-		}		
+		}
+		
 		return source+GenerationNames.SimpleProcessEventDef(className_)+"\n"+
 				GenerationNames.SimpleSetStateDef(className_)+"\n"+
 				PrivateFunctionalTemplates.SetInitialState(className_,intialState_)+"\n";
 	}
 	
-	public static String StateMachineClassConstructorSharedBody(String className_,Map<Pair<String,String>,Pair<String,String>> machine_,String intialState_)
+	public static String StateMachineClassConstructorSharedBody(String className_,Multimap<Pair<String,String>,Pair<String,String>> machine_,String intialState_, Boolean rt, Integer poolId)
 	{
-		return StateMachineClassConstructorSharedBody(className_, null, machine_, intialState_);
+		return StateMachineClassConstructorSharedBody(className_, null, machine_, intialState_,rt,poolId);
 	}
 
-	public static String StateMachineClassConstructorSharedBody(String className_,String parentClassName_,Map<Pair<String,String>,Pair<String,String>> machine_,String intialState_)
+	public static String StateMachineClassConstructorSharedBody(String className_,String parentClassName_,Multimap<Pair<String,String>,Pair<String,String>> machine_,String intialState_, Boolean rt, Integer poolId)
 	{
 		String source="";
-		for (Map.Entry<Pair<String,String>, Pair<String,String>> entry : machine_.entrySet())
+		for (Pair<String,String> key : machine_.keySet())
 		{
-			source+=GenerationNames.TransitionTableName+".emplace("+GenerationNames.EventStateTypeName+"(";
-			if(parentClassName_!=null && parentClassName_!="this")
-			{
-				source+=parentClassName_+"::";
+			for (Pair<String,String> value : machine_.get(key)) {
+				source+=GenerationNames.TransitionTableName+".emplace("+GenerationNames.EventStateTypeName+"(";
+				if(parentClassName_!=null && parentClassName_!="this")
+				{
+					source+=parentClassName_+"::";
+				}
+				source+=GenerationNames.EventEnumName(key.getFirst())+","+GenerationNames.StateEnumName(key.getSecond())+"),";
+				String guardName=GenerationNames.DefaultGuardName;
+				if(value.getFirst() != null)
+				{
+					guardName=value.getFirst();
+				}		
+				source+=GenerationNames.GuardActionName+"("+GenerationNames.GuardFuncTypeName+"(&"+className_+"::"+guardName+"),"
+						+GenerationNames.FunctionPtrTypeName+"(&"+className_+"::"+value.getSecond()+")));\n";
 			}
-			source+=GenerationNames.EventEnumName(entry.getKey().getFirst())+","+GenerationNames.StateEnumName(entry.getKey().getSecond())+"),";
-			String guardName=GenerationNames.DefaultGuardName;
-			if(entry.getValue().getFirst() != null)
-			{
-				guardName=entry.getValue().getFirst();
-			}		
-			source+=GenerationNames.GuardActionName+"("+GenerationNames.GuardFuncTypeName+"(&"+className_+"::"+guardName+"),"
-					+GenerationNames.FunctionPtrTypeName+"(&"+className_+"::"+entry.getValue().getSecond()+")));\n";
+
 		
 		}
+		
+		if(poolId != null && rt){
+			
+			source += "\n" + GenerationNames.PoolIdSetter + "(" + poolId + ");\n";
+		}
+		
+		if(rt && (parentClassName_ == null || parentClassName_=="this")){
+			source += "\n" + RuntimeTemplates.RuntimeSetter + "(rt); \n";
+			source += RuntimeTemplates.InitStateMachineForRuntime();
+		}
+		
+		
 		source+=GenerationNames.SetInitialStateName+"();\n";
 		
 		return source;
@@ -234,7 +246,9 @@ class PrivateFunctionalTemplates
 	
 	public static String SetInitialState(String className_,String initialState_)
 	{
-		return GenerationNames.NoReturn+" "+className_+"::"+GenerationNames.SetInitialStateName+"(){"+GenerationNames.setStateFuncName+"("+GenerationNames.StateEnumName(initialState_)+");}\n";
+		
+		return GenerationNames.NoReturn+" "+className_+"::"+GenerationNames.SetInitialStateName+"(){"+ 
+			GenerationNames.setStateFuncName+"("+GenerationNames.StateEnumName(initialState_)+");}\n";
 	}
 	
 	public static String SubStateMachineClassFixPrivateParts(String parentclass_) 

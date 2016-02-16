@@ -6,7 +6,6 @@ import java.util.Set;
  * This class is used to add additional information to other classes using
  * coloring.
  * 
- * @author Balázs Gregorics
  * @param <Item>
  *            Inner class to extend.
  */

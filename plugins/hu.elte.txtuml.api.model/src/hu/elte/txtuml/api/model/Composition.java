@@ -69,7 +69,6 @@ import hu.elte.txtuml.api.model.assocends.Navigability;
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  *
- * @author Gabor Ferenc Kovacs
  * @see Association
  * @see Container
  * @see HiddenContainer
@@ -138,8 +137,6 @@ public class Composition extends Association {
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
 	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
@@ -196,8 +193,6 @@ public class Composition extends Association {
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 *
-	 * @author Gabor Ferenc Kovacs
 	 * 
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection

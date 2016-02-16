@@ -45,8 +45,6 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 /**
  * The Page for txtUML visualization.
- *
- * @author Andr�s Dobreff
  */
 @SuppressWarnings("restriction")
 public class VisualizeTxtUMLPage extends WizardPage {

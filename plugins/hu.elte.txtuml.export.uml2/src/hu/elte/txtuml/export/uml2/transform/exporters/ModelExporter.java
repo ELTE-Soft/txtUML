@@ -39,9 +39,6 @@ import hu.elte.txtuml.export.uml2.utils.ResourceSetFactory;
 /**
  * This class is responsible for generating Eclipse UML2 model from a txtUML
  * model.
- *
- * @author Adam Ancsin
- *
  */
 public class ModelExporter {
 
@@ -124,8 +121,6 @@ public class ModelExporter {
 	 *            The resource set to add the new resource to.
 	 * @param exportedModel
 	 *            The EMF-UML2 model.
-	 *
-	 * @author Adam Ancsin
 	 */
 	private static Resource createAndInitModelResource(String txtUMLModelName,
 			String outputPath, ResourceSet resourceSet, Model exportedModel) {
@@ -142,8 +137,6 @@ public class ModelExporter {
 	 * @return The exported UML2 model.
 	 * @throws ExportException
 	 * @throws RuntimeExportException
-	 *
-	 * @author Adam Ancsin
 	 */
 	public Model exportModel() throws ExportException, RuntimeExportException {
 
@@ -166,8 +159,6 @@ public class ModelExporter {
 	/**
 	 * Exports all classifiers (classes and signals) from the source txtUML
 	 * model.
-	 *
-	 * @author Adam Ancsin
 	 */
 	private void exportClassifiers() {
 		ClassifierVisitor visitor = new ClassifierVisitor(
@@ -179,9 +170,7 @@ public class ModelExporter {
 	/**
 	 * Exports all associations from the source txtUML model.
 	 *
-	 * @author Adam Ancsin
 	 * @throws ExportException
-	 * 
 	 */
 	private void exportAssociations() throws ExportException {
 		try {
@@ -195,8 +184,6 @@ public class ModelExporter {
 
 	/**
 	 * Exports all generalizations from the source txtUML model.
-	 * 
-	 * @author Adam Ancsin
 	 */
 	private void exportGeneralizations() {
 		for (TypeDeclaration classifierDeclaration : this.classifiers.keySet()) {
@@ -212,8 +199,6 @@ public class ModelExporter {
 	 * 
 	 * @param classifierDeclaration
 	 *            The declaration of the specified subtype classifier.
-	 *
-	 * @author Adam Ancsin
 	 */
 	private void exportGeneralization(TypeDeclaration classifierDeclaration) {
 		ITypeBinding superclassBinding = classifierDeclaration.resolveBinding()
@@ -232,8 +217,6 @@ public class ModelExporter {
 
 	/**
 	 * Exports the attributes of every classifier in the model.
-	 * 
-	 * @author Adam Ancsin
 	 */
 	private void exportAttributesOfEveryClassifier() {
 		classifiers.entrySet().forEach(
@@ -254,8 +237,6 @@ public class ModelExporter {
 
 	/**
 	 * Exports the member function skeletons of every classifier in the model.
-	 * 
-	 * @author Adam Ancsin
 	 */
 	private void exportMethodSkeletonsOfEveryClassifier() {
 		classifiers.forEach((classifierDeclaration, classifier) -> {
@@ -320,8 +301,6 @@ public class ModelExporter {
 
 	/**
 	 * Finishes the model export in progress.
-	 * 
-	 * @author Adam Ancsin
 	 */
 	private void finishModelExport() {
 		try {
@@ -337,8 +316,6 @@ public class ModelExporter {
 
 	/**
 	 * @return The resource containing the currently exported model.
-	 *
-	 * @author Adam Ancsin
 	 */
 	public Resource getModelResource() {
 		return this.modelResource;
@@ -346,8 +323,6 @@ public class ModelExporter {
 
 	/**
 	 * @return The exported UML2 model.
-	 *
-	 * @author Adam Ancsin
 	 */
 	public Model getExportedModel() {
 		return this.exportedModel;
