@@ -35,7 +35,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 		try {
 			serverSocket = new ServerSocket(diagnosticsPort, SERVER_SOCKET_BACKLOG, InetAddress.getLoopbackAddress());
 		} catch (IOException | IllegalArgumentException | SecurityException ex) {
-			Logger.logError("Problem creating server socket: " + ex);
+			Logger.sys.error("Problem creating server socket: " + ex);
 			throw ex;
 		}
 		modelMapper = new ModelMapper(projectName);
@@ -53,7 +53,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 		try {
 			serverSocket.close();
 		} catch (IOException ex) {
-			Logger.logError("Problem shutting down server socket", ex);
+			Logger.sys.error("Problem shutting down server socket", ex);
 			assert false;
 		}
 		try {
@@ -80,7 +80,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 				socket = serverSocket.accept();
 			} catch (IOException ex) {
 				if (!shutdownHasCome && faultTolerance > 0) {
-					Logger.logError("Problem with reception from client service", ex);
+					Logger.sys.error("Problem with reception from client service", ex);
 					faultTolerance--;
 					assert false;
 				}
@@ -97,7 +97,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 						event = (Message)inStream.readObject();
 					} catch (ClassNotFoundException | ClassCastException ex) {
 						if (!shutdownHasCome && faultTolerance > 0) {
-							Logger.logError("Protocol problem", ex);
+							Logger.sys.error("Protocol problem", ex);
 							faultTolerance--;
 							assert false;
 						}
@@ -124,7 +124,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 							StringWriter sw = new StringWriter();
 							PrintWriter pw = new PrintWriter(sw);
 						) {
-							Logger.logError("Communication problem: ", ex);
+							Logger.sys.error("Communication problem: ", ex);
 							faultTolerance--;
 							assert false;
 						} catch (IOException e) {}
@@ -137,7 +137,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 			}
 			
 			if (faultTolerance == 0) {
-				Logger.logWarning("Something is fishy with the diagnostics connection, no more log poisoning, no more guarantees...");
+				Logger.sys.warn("Something is fishy with the diagnostics connection, no more log poisoning, no more guarantees...");
 				faultTolerance = -1;
 			}
 		}

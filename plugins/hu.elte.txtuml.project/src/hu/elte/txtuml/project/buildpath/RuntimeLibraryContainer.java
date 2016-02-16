@@ -71,7 +71,7 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 				path = new Path(FileLocator.getBundleFile(bundle).getAbsolutePath());
 			} catch (IOException e) {
 				String message = "Can't resolve path '" + bundle.getSymbolicName() + "'"; //$NON-NLS-2$
-				Logger.logError(message, e);
+				Logger.sys.error(message, e);
 			}
 		}
 		return path;
@@ -85,7 +85,7 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 				return new Path(binFolderFileURL.getPath()).makeAbsolute();
 			} catch (IOException e) {
 				String message = "Can't resolve path '" + bundle.getSymbolicName() + "'"; //$NON-NLS-2$
-				Logger.logError(message, e);
+				Logger.sys.error(message, e);
 			}
 		}
 		return null;
@@ -99,7 +99,7 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 				path = new Path(FileLocator.getBundleFile(bundle).getAbsolutePath());
 			} catch (IOException e) {
 				String message = "Can't resolve path '" + bundle.getSymbolicName() + "'"; //$NON-NLS-2$
-				Logger.logError(message, e);
+				Logger.sys.error(message, e);
 			}
 		}
 		return path;
@@ -113,7 +113,7 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 				return new Path(binFolderFileURL.getPath()).makeAbsolute();
 			} catch (IOException e) {
 				String message = "Can't resolve path '" + bundle.getSymbolicName() + "'"; //$NON-NLS-2$
-				Logger.logError(message, e);
+				Logger.sys.error(message, e);
 			}
 		}
 		return null;

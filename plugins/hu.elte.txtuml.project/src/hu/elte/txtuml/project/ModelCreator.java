@@ -42,7 +42,7 @@ public class ModelCreator {
 				return (IFile) resource;
 			}
 		} catch (Throwable e) {
-			Logger.logError("Error while creating package/model-info file", e);
+			Logger.sys.error("Error while creating package/model-info file", e);
 		}
 		return null;
 	}
@@ -110,7 +110,7 @@ public class ModelCreator {
 			// cancelled by user
 			return false;
 		} catch (InvocationTargetException e) {
-			Logger.logError("Error during file creation", e);
+			Logger.sys.error("Error during file creation", e);
 		}
 		return true;
 	}

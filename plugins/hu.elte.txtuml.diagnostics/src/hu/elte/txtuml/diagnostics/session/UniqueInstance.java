@@ -31,7 +31,7 @@ public class UniqueInstance {
 			this.modelClassName = modelClassName.intern();
 		}
 		else if (!this.modelClassName.equals(modelClassName)) {
-			Logger.logWarning("ModelClassName cannot change for " + this + " from " + this.modelClassName + " to " + modelClassName);
+			Logger.sys.warn("ModelClassName cannot change for " + this + " from " + this.modelClassName + " to " + modelClassName);
 		}
 	}
 	

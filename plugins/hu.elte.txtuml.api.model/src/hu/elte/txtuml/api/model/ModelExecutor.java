@@ -345,7 +345,7 @@ public final class ModelExecutor implements ModelElement {
 		try {
 			thread.join();
 		} catch (InterruptedException e) {
-			Logger.logError("Interrupted while awaiting termination", e);
+			Logger.sys.error("Interrupted while awaiting termination", e);
 		}
 	}
 

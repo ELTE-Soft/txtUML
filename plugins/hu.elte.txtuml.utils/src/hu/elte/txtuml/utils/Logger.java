@@ -1,23 +1,56 @@
 package hu.elte.txtuml.utils;
 
-public class Logger {
+import org.apache.log4j.Level;
 
-	private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(Logger.class);
+public enum Logger {
+	sys("SYS"),
+	user("USER"),
+	executor("EXEC");
 	
-	public static void logError(String message) {
-		LOGGER.error(message);
-	}
+	private final org.apache.log4j.Logger logger;
 	
-	public static void logError(String message, Throwable error) {
-		LOGGER.error(message, error);
-	}
-	
-	public static void logInfo(String message) {
-		LOGGER.info(message);
+	private Logger(String name) {
+		logger = org.apache.log4j.Logger.getLogger(name);
 	}
 
-	public static void logWarning(String message) {
-		LOGGER.warn(message);
+	public final void fatal(String msg) {
+		logger.fatal(msg);
+	}
+
+	public final void fatal(String msg, Throwable t) {
+		logger.fatal(msg, t);
+	}
+
+	public final void error(String msg) {
+		logger.error(msg);
+	}
+
+	public final void error(String msg, Throwable t) {
+		logger.error(msg, t);
+	}
+
+	public final void warn(String msg) {
+		logger.warn(msg);
+	}
+
+	public final void info(String msg) {
+		logger.info(msg);
+	}
+
+	public final void debug(String msg) {
+		logger.debug(msg);
+	}
+
+	public final void trace(String msg) {
+		logger.trace(msg);
 	}
 	
+	public final void setTracing(boolean newValue) {
+		if (newValue) {
+			logger.setLevel(Level.TRACE);
+		} else {
+			logger.setLevel(org.apache.log4j.Logger.getRootLogger().getLevel());
+		}
+	}
+
 }

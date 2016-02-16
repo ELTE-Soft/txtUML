@@ -49,7 +49,7 @@ public class ModelMapper {
 							try {
 								modelMapProvider = new ModelMapProvider(uri, mappingFilename);
 							} catch (ModelMapException ex) {
-								Logger.logError("Symbol mapping error", ex);
+								Logger.sys.error("Symbol mapping error", ex);
 								assert false;
 							}
 							if (modelMapProvider != null) {
@@ -81,10 +81,10 @@ public class ModelMapper {
 			if (eobject != null) {
 				return eobject;
 			} else {
-				Logger.logWarning("Mapping failure for element " + elementClassName + " in model " + modelClassName);
+				Logger.sys.warn("Mapping failure for element " + elementClassName + " in model " + modelClassName);
 			}
 		} else {
-			Logger.logWarning("Mapping failure for model " + modelClassName);
+			Logger.sys.warn("Mapping failure for model " + modelClassName);
 		}
 		return null;
 	}

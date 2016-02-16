@@ -331,7 +331,7 @@ public class Action implements ModelElement {
 	 *            the message to be logged
 	 */
 	public static void log(String message) {
-		Logger.logInfo(message);
+		Logger.user.info(message);
 	}
 
 	/**
@@ -341,7 +341,7 @@ public class Action implements ModelElement {
 	 *            the error message to logged
 	 */
 	public static void logError(String message) {
-		Logger.logError(message);
+		Logger.user.error(message);
 	}
 
 }

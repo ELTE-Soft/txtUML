@@ -58,7 +58,7 @@ public class ProblemCollector {
 			}
 			problems.clear();
 		} catch (CoreException e) {
-			Logger.logError("Error while refreshing problem markers", e); //$NON-NLS-1$
+			Logger.sys.error("Error while refreshing problem markers", e); //$NON-NLS-1$
 		}
 	}
 

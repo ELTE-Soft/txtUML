@@ -96,7 +96,7 @@ public class DiagnosticsService extends NotifierOfTermination {
 		}
 		diagnosticsPort = port;
 		
-		Logger.logInfo("txtUML Diagnostics connection is set on " + diagnosticsPort + " for service instance 0x" + Integer.toHexString(serviceInstanceID));
+		Logger.sys.info("txtUML Diagnostics connection is set on " + diagnosticsPort + " for service instance 0x" + Integer.toHexString(serviceInstanceID));
 		sendMessage(new Message(MessageType.CHECKIN, serviceInstanceID));
 	}
 	
@@ -124,7 +124,7 @@ public class DiagnosticsService extends NotifierOfTermination {
 				} catch (ClassNotFoundException | ClassCastException ex) {
 					if (faultTolerance > 0) {
 						faultTolerance--;
-						Logger.logError("Communication problem in service instance 0x" + Integer.toHexString(serviceInstanceID), ex);
+						Logger.sys.error("Communication problem in service instance 0x" + Integer.toHexString(serviceInstanceID), ex);
 					}
 					assert false;
 				}
@@ -133,12 +133,12 @@ public class DiagnosticsService extends NotifierOfTermination {
 		} catch (IOException ex) {
 			if (faultTolerance > 0) {
 				faultTolerance--;
-				Logger.logError("Communication problem in service instance 0x" + Integer.toHexString(serviceInstanceID), ex);
+				Logger.sys.error("Communication problem in service instance 0x" + Integer.toHexString(serviceInstanceID), ex);
 			}
 			assert false;
 		}
 		if (faultTolerance == 0) {
-			Logger.logWarning("Something is fishy with the diagnostics connection, no more log poisoning, no more guarantees...");
+			Logger.sys.warn("Something is fishy with the diagnostics connection, no more log poisoning, no more guarantees...");
 			faultTolerance = -1;
 		}
 	}

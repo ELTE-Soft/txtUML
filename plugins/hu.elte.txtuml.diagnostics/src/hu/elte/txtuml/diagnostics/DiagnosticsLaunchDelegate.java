@@ -42,9 +42,9 @@ public class DiagnosticsLaunchDelegate extends JavaLaunchDelegate {
 				diagnosticsPort = Integer.decode(strPort).intValue();
 			}
 		} catch (CoreException ex) {
-			Logger.logError("Failed to acquire VM arguments for " + GlobalSettings.TXTUML_DIAGNOSTICS_PORT_KEY);
+			Logger.sys.error("Failed to acquire VM arguments for " + GlobalSettings.TXTUML_DIAGNOSTICS_PORT_KEY);
 		} catch (NumberFormatException ex) {
-			Logger.logError("VM argument problem, use " + TXTUML_DIAGNOSTICS_PORT_TOKEN + "<portNumber> as VM argument");
+			Logger.sys.error("VM argument problem, use " + TXTUML_DIAGNOSTICS_PORT_TOKEN + "<portNumber> as VM argument");
 		}
 		
 		if (diagnosticsPort == 0) {
@@ -56,7 +56,7 @@ public class DiagnosticsLaunchDelegate extends JavaLaunchDelegate {
 						+ " " + TXTUML_DIAGNOSTICS_PORT_TOKEN + diagnosticsPort);
 				configuration = workingCopy;
 			} catch (CoreException | IllegalArgumentException | SecurityException ex) {
-				Logger.logError("Cannot set VM arguments: " + ex);
+				Logger.sys.error("Cannot set VM arguments: " + ex);
 				throw ex;
 			}
 		}

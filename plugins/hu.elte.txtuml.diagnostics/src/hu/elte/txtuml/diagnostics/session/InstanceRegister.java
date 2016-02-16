@@ -27,10 +27,10 @@ public class InstanceRegister {
 	
 	void dispose() {
 		for (UniqueInstance instance : aliveClassInstances.values()) {
-			Logger.logWarning("Instance" + instance + " of class " + instance.getModelClassName() + " was not destructed");
+			Logger.sys.warn("Instance" + instance + " of class " + instance.getModelClassName() + " was not destructed");
 		}
 		for (int clientID : aliveServiceInstances) {
-			Logger.logWarning("Service instance 0x" + Integer.toHexString(clientID) + " was not shut down properly");
+			Logger.sys.warn("Service instance 0x" + Integer.toHexString(clientID) + " was not shut down properly");
 		}
 
 		aliveClassInstances.clear();
@@ -71,11 +71,11 @@ public class InstanceRegister {
 			protocolKept = false;
 		}
 		if (!protocolKept) {
-			Logger.logError("Protocol error: inappropriate message type");
+			Logger.sys.error("Protocol error: inappropriate message type");
 			assert false;
 		}
 		if (event.messageType != MessageType.CHECKOUT && !aliveServiceInstances.contains(event.serviceInstanceID)) {
-			Logger.logWarning("Service instance 0x" + Integer.toHexString(event.serviceInstanceID) + " has not checked in");
+			Logger.sys.warn("Service instance 0x" + Integer.toHexString(event.serviceInstanceID) + " has not checked in");
 		}
 	}
 	
@@ -83,13 +83,13 @@ public class InstanceRegister {
 		if (event.messageType == MessageType.CHECKIN) {
 			boolean isNew = aliveServiceInstances.add(event.serviceInstanceID);
 			if (!isNew) {
-				Logger.logWarning("Service instance 0x" + Integer.toHexString(event.serviceInstanceID) + " has already checked in");
+				Logger.sys.warn("Service instance 0x" + Integer.toHexString(event.serviceInstanceID) + " has already checked in");
 			}
 		}
 		else if (event.messageType == MessageType.CHECKOUT) {
 			boolean wasHere = aliveServiceInstances.remove(event.serviceInstanceID);
 			if (!wasHere) {
-				Logger.logWarning("Service instance 0x" + Integer.toHexString(event.serviceInstanceID) + " has checked out before or was never checked in");
+				Logger.sys.warn("Service instance 0x" + Integer.toHexString(event.serviceInstanceID) + " has checked out before or was never checked in");
 			}
 		}
 	}
@@ -100,13 +100,13 @@ public class InstanceRegister {
 			instance.setModelClassName(event.modelClassName);
 			boolean isNew = (aliveClassInstances.putIfAbsent(instance, instance) == null);
 			if (!isNew) {
-				Logger.logWarning("Instance " + instance + " of class " + instance.getModelClassName() + " was already created");
+				Logger.sys.warn("Instance " + instance + " of class " + instance.getModelClassName() + " was already created");
 			}
 		}
 		else if (event.messageType == MessageType.INSTANCE_DESTRUCTION) {
 			boolean wasHere = (aliveClassInstances.remove(instance) != null);
 			if (!wasHere) {
-				Logger.logWarning("Instance " + instance + " of class " + instance.getModelClassName() + " was already destroyed");
+				Logger.sys.warn("Instance " + instance + " of class " + instance.getModelClassName() + " was already destroyed");
 			}
 		}
 	}
@@ -116,7 +116,7 @@ public class InstanceRegister {
 		// here instanceID only contains the ID but instance has additional data
 		UniqueInstance instance = aliveClassInstances.get(instanceID);
 		if (instance == null) {
-			Logger.logWarning("Instance " + instanceID + " of class " + event.modelClassName + " was never created and is currently active");
+			Logger.sys.warn("Instance " + instanceID + " of class " + event.modelClassName + " was never created and is currently active");
 			instance = new UniqueInstance(event.modelClassInstanceID, event.serviceInstanceID);
 			instance.setModelClassName(event.modelClassName);
 			aliveClassInstances.putIfAbsent(instance, instance);

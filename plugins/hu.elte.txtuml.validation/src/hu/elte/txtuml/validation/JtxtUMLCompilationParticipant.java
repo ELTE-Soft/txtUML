@@ -30,7 +30,7 @@ public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler
 		try {
 			return project.getProject().getNature(TXTUML_NATURE_ID) != null;
 		} catch (CoreException e) {
-			Logger.logError("Error while checking txtuml project", e); //$NON-NLS-1$
+			Logger.sys.error("Error while checking txtuml project", e); //$NON-NLS-1$
 			return false;
 		}
 	}
@@ -50,7 +50,7 @@ public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler
 			}
 			collector.refreshProblems();
 		} catch (Exception e) {
-			Logger.logError("Error while checking for problems", e); //$NON-NLS-1$
+			Logger.sys.error("Error while checking for problems", e); //$NON-NLS-1$
 		}
 	}
 
@@ -90,7 +90,7 @@ public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler
 			unit.accept(new ModelVisitor(collector));
 			collector.refreshProblems();
 		} catch (JavaModelException e) {
-			Logger.logError("Error while creating problem collector", e); //$NON-NLS-1$
+			Logger.sys.error("Error while creating problem collector", e); //$NON-NLS-1$
 		}
 	}
 
