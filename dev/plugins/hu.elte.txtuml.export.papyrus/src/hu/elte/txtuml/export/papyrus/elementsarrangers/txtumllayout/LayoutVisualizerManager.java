@@ -153,7 +153,11 @@ public class LayoutVisualizerManager {
 	/**
 	 * @return
 	 */
-	public int getPixelGridRatio(){
-		return layoutVisualize.getPixelGridRatio().intValue();
+	public int getPixelGridRatioHorizontal(){
+		return layoutVisualize.getPixelGridHorizontal().intValue();
+	}
+	
+	public int getPixelGridRatioVertical(){
+		return layoutVisualize.getPixelGridVertical().intValue();
 	}
 }

@@ -1,9 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.exporters.expressions;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.actions.CreateObjectActionExporter;
-import hu.elte.txtuml.utils.Pair;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,6 +49,10 @@ import org.eclipse.uml2.uml.LiteralReal;
 import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.UMLFactory;
+
+import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.actions.CreateObjectActionExporter;
+import hu.elte.txtuml.utils.Pair;
 
 /**
  * TODO {@link org.eclipse.jdt.core.dom.Annotation}

@@ -1,10 +1,5 @@
 package hu.elte.txtuml.export.papyrus.api;
 
-import hu.elte.txtuml.export.papyrus.DiagramManager;
-import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
-import hu.elte.txtuml.export.papyrus.utils.EditPartFinder;
-import hu.elte.txtuml.export.papyrus.utils.EditorOpener;
-
 import java.util.List;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -16,6 +11,11 @@ import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Model;
+
+import hu.elte.txtuml.export.papyrus.DiagramManager;
+import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
+import hu.elte.txtuml.export.papyrus.utils.EditPartFinder;
+import hu.elte.txtuml.export.papyrus.utils.EditorOpener;
 
 public class PapyrusModifier {
 

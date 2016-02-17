@@ -1,9 +1,9 @@
 package hu.elte.txtuml.api.model.backend.collections;
 
+import java.util.Map;
+
 import hu.elte.txtuml.api.model.AssociationEnd;
 import hu.elte.txtuml.api.model.backend.collections.impl.AssociationsMapImpl;
-
-import java.util.Map;
 
 /**
  * A mapping of classes representing association ends to instances of those

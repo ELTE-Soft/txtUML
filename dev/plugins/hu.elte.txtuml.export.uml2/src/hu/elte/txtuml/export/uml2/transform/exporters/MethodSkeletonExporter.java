@@ -1,8 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.exporters;
 
-import hu.elte.txtuml.export.uml2.transform.backend.ExporterConfiguration;
-import hu.elte.txtuml.export.uml2.utils.ElementModifiersAssigner;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,6 +14,9 @@ import org.eclipse.uml2.uml.ParameterDirectionKind;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
+
+import hu.elte.txtuml.export.uml2.transform.backend.ExporterConfiguration;
+import hu.elte.txtuml.export.uml2.utils.ElementModifiersAssigner;
 
 public class MethodSkeletonExporter {
 

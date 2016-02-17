@@ -1,10 +1,5 @@
 package hu.elte.txtuml.export.papyrus.papyrusmodelmanagers;
 
-import hu.elte.txtuml.eclipseutils.Dialogs;
-import hu.elte.txtuml.export.papyrus.DiagramManager;
-import hu.elte.txtuml.export.papyrus.UMLModelManager;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
-
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -16,6 +11,11 @@ import org.eclipse.papyrus.infra.core.resource.ModelSet;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.uml.tools.model.UmlModel;
 import org.eclipse.ui.IEditorPart;
+
+import hu.elte.txtuml.export.papyrus.DiagramManager;
+import hu.elte.txtuml.export.papyrus.UMLModelManager;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
+import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 /**
  * Controls the Papyrus Model

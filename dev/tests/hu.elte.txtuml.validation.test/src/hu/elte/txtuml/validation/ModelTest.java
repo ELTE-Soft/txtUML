@@ -18,7 +18,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.junit.Before;
 import org.junit.Test;
 
-import hu.elte.txtuml.export.uml2.utils.SharedUtils;
+import hu.elte.txtuml.utils.jdt.SharedUtils;
 import hu.elte.txtuml.validation.problems.association.WrongCompositionEnds;
 import hu.elte.txtuml.validation.problems.association.WrongNumberOfAssociationEnds;
 import hu.elte.txtuml.validation.problems.association.WrongTypeInAssociation;

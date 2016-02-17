@@ -196,13 +196,6 @@ This Agreement is governed by the laws of the State of New York and the intellec
          unpack="false"/>
 
    <plugin
-         id="hu.elte.txtuml.eclipseutils"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="hu.elte.txtuml.project"
          download-size="0"
          install-size="0"
@@ -260,6 +253,13 @@ This Agreement is governed by the laws of the State of New York and the intellec
 
    <plugin
          id="hu.elte.txtuml.validation"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="hu.elte.txtuml.utils.eclipse"
          download-size="0"
          install-size="0"
          version="0.0.0"

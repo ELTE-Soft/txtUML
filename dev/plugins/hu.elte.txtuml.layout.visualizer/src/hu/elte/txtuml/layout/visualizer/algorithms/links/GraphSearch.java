@@ -1,5 +1,12 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.links;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
+
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Boundary;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Color;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Cost;
@@ -14,13 +21,6 @@ import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.utils.Pair;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Set;
 
 /**
  * This class implements an A^* graph search algorithm.

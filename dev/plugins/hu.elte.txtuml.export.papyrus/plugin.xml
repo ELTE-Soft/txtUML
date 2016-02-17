@@ -97,7 +97,7 @@
       <page
             class="hu.elte.txtuml.export.papyrus.preferences.PreferencesPage"
             id="hu.elte.txtuml.export.papyrus.preferences1"
-            name="txtUML Diagram generation">
+            name="txtUML Diagram Generation">
       </page>
    </extension>
    <extension

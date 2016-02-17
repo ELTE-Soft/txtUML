@@ -3,12 +3,6 @@ package hu.elte.txtuml.diagnostics.animation;
 import java.util.HashMap;
 import java.util.Map;
 
-import hu.elte.txtuml.api.diagnostics.protocol.MessageType;
-import hu.elte.txtuml.api.diagnostics.protocol.ModelEvent;
-import hu.elte.txtuml.diagnostics.session.InstanceRegister;
-import hu.elte.txtuml.diagnostics.session.ModelMapper;
-import hu.elte.txtuml.diagnostics.session.UniqueInstance;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
@@ -20,6 +14,12 @@ import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.papyrus.infra.services.markerlistener.IPapyrusMarker;
 import org.eclipse.papyrus.infra.services.markerlistener.PapyrusMarkerAdapter;
+
+import hu.elte.txtuml.api.diagnostics.protocol.MessageType;
+import hu.elte.txtuml.api.diagnostics.protocol.ModelEvent;
+import hu.elte.txtuml.diagnostics.session.InstanceRegister;
+import hu.elte.txtuml.diagnostics.session.ModelMapper;
+import hu.elte.txtuml.diagnostics.session.UniqueInstance;
 
 /**
  * Animates diagrams

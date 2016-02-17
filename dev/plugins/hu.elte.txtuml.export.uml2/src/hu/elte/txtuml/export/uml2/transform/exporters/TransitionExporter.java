@@ -1,9 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.exporters;
 
-import hu.elte.txtuml.api.model.From;
-import hu.elte.txtuml.api.model.To;
-import hu.elte.txtuml.export.uml2.utils.SharedUtils;
-
 import java.util.Arrays;
 
 import org.eclipse.jdt.core.dom.Expression;
@@ -23,6 +19,10 @@ import org.eclipse.uml2.uml.Trigger;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
+
+import hu.elte.txtuml.api.model.From;
+import hu.elte.txtuml.api.model.To;
+import hu.elte.txtuml.utils.jdt.SharedUtils;
 
 public class TransitionExporter {
 

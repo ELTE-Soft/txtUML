@@ -1,7 +1,5 @@
 package hu.elte.txtuml.project;
 
-import hu.elte.txtuml.project.buildpath.RuntimeLibraryContainerInitializer;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +21,8 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironmentsManager;
+
+import hu.elte.txtuml.project.buildpath.RuntimeLibraryContainerInitializer;
 
 public class ProjectCreator {
 

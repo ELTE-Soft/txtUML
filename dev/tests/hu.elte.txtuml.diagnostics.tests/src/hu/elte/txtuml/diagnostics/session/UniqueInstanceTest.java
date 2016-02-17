@@ -1,15 +1,13 @@
 package hu.elte.txtuml.diagnostics.session;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.core.Is.*;
-import static org.hamcrest.core.IsNot.*;
-import static org.hamcrest.core.IsNull.*;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertThat;
 
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.junit.Test;
-
-import hu.elte.txtuml.diagnostics.PluginLogWrapper;
 
 public class UniqueInstanceTest {
 	
@@ -39,21 +37,6 @@ public class UniqueInstanceTest {
 		assertThat(inst.getModelClassName(), nullValue());
 		inst.setModelClassName(className);
 		assertThat(inst.getModelClassName(), is(className));
-	}
-
-	@Test
-	public void replacingModelClassNameWritesToLog() {
-		UniqueInstance inst = new UniqueInstance(classInstanceID, serviceInstanceID);
-		LogCounter logCount = new LogCounter();
-		PluginLogWrapper.getInstance().addLogListener(logCount);
-		assertThat(logCount.counter, is(0));
-		inst.setModelClassName(className);
-		assertThat(logCount.counter, is(0));
-		inst.setModelClassName(className);
-		assertThat(logCount.counter, is(0));
-		inst.setModelClassName("butasag");
-		assertThat(logCount.counter, is(1));
-		PluginLogWrapper.getInstance().removeLogListener(logCount);
 	}
 
 	@Test

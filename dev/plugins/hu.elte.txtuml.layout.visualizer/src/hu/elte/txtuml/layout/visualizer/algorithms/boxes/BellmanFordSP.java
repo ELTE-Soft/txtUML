@@ -1,11 +1,11 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.boxes;
 
+import java.util.Stack;
+
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.DirectedEdge;
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.EdgeWeightedDigraph;
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.EdgeWeightedDirectedCycle;
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.Queue;
-
-import java.util.Stack;
 
 /**
  * The <tt>BellmanFordSP</tt> class represents a data type for solving the

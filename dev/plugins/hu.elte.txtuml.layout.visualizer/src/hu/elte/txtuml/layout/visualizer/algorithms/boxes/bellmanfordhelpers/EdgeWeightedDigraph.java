@@ -1,10 +1,10 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers;
 
-import hu.elte.txtuml.layout.visualizer.statements.Statement;
-import hu.elte.txtuml.utils.Quadruple;
-
 import java.util.ArrayList;
 import java.util.Stack;
+
+import hu.elte.txtuml.layout.visualizer.statements.Statement;
+import hu.elte.txtuml.utils.Quadruple;
 
 /**
  * The <tt>EdgeWeightedDigraph</tt> class represents a edge-weighted digraph of

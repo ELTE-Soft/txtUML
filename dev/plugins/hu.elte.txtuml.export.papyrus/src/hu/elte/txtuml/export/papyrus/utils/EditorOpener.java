@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.papyrus.utils;
 
-import hu.elte.txtuml.eclipseutils.Dialogs;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.ui.IEditorInput;
@@ -10,6 +8,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
+
+import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 @SuppressWarnings("javadoc")
 public class EditorOpener {

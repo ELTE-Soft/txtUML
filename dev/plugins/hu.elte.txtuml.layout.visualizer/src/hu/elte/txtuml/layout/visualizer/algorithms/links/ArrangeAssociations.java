@@ -1,5 +1,14 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.links;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Boundary;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Color;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Node;
@@ -19,15 +28,6 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 import hu.elte.txtuml.utils.Pair;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * This class arranges the lines of links.
@@ -202,10 +202,10 @@ public class ArrangeAssociations {
 		// Set the grid sizes of boxes based on their pixel sizes
 		for (RectangleObject obj : objs) {
 			RectangleObject mod = new RectangleObject(obj);
-			mod.setWidth((int) Math.ceil(mod.getPixelWidth() / pixelPerGridWidth));
-			mod.setPixelWidth((int) (mod.getWidth() * Math.floor(pixelPerGridWidth)));
-			mod.setHeight((int) Math.ceil(mod.getPixelHeight() / pixelPerGridHeight));
-			mod.setPixelHeight((int) (mod.getHeight() * Math.floor(pixelPerGridHeight)));
+			mod.setWidth((int) Math.ceil(mod.getPixelWidth() / pixelPerGridWidth) + 1);
+			mod.setPixelWidth((int) ((mod.getWidth() - 1) * Math.floor(pixelPerGridWidth)));
+			mod.setHeight((int) Math.ceil(mod.getPixelHeight() / pixelPerGridHeight) + 1);
+			mod.setPixelHeight((int) ((mod.getHeight() - 1) * Math.floor(pixelPerGridHeight)));
 
 			if (_widthOfCells < mod.getWidth())
 				_widthOfCells = mod.getWidth();

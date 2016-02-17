@@ -2,13 +2,14 @@ package hu.elte.txtuml.api.model;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import hu.elte.txtuml.api.model.util.MutableBoolean;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
+
+import hu.elte.txtuml.api.model.util.MutableBoolean;
 
 /**
  * Unit tests for ModelExecutorThread. Deadlock is considered a test failure so

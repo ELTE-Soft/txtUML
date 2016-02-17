@@ -46,8 +46,7 @@ public class SignalVisitor extends VisitorBase {
 		for (Object obj : elem.parameters()) {
 			SingleVariableDeclaration param = (SingleVariableDeclaration) obj;
 			if (!Utils.isAllowedAttributeType(param.getType(), false)) {
-				collector.report(
-						new InvalidTypeWithClassNotAllowed(collector.getSourceInfo(), param.getType()));
+				collector.report(new InvalidTypeWithClassNotAllowed(collector.getSourceInfo(), param.getType()));
 			}
 		}
 		// TODO: check constructor body

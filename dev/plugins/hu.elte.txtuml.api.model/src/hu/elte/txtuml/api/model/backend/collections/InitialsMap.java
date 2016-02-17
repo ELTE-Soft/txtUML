@@ -1,9 +1,9 @@
 package hu.elte.txtuml.api.model.backend.collections;
 
+import java.util.Map;
+
 import hu.elte.txtuml.api.model.StateMachine.Initial;
 import hu.elte.txtuml.api.model.backend.collections.impl.InitialsMapImpl;
-
-import java.util.Map;
 
 /**
  * A mapping of classes to subclasses of {@link Initial}. Intended for the

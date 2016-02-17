@@ -1,10 +1,5 @@
 package hu.elte.txtuml.api.model.util;
 
-import hu.elte.txtuml.api.model.ModelExecutor;
-import hu.elte.txtuml.api.model.report.ModelExecutionEventsListener;
-import hu.elte.txtuml.api.model.report.RuntimeErrorsListener;
-import hu.elte.txtuml.api.model.report.RuntimeWarningsListener;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -13,6 +8,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
+
+import hu.elte.txtuml.api.model.ModelExecutor;
+import hu.elte.txtuml.api.model.report.ModelExecutionEventsListener;
+import hu.elte.txtuml.api.model.report.RuntimeErrorsListener;
+import hu.elte.txtuml.api.model.report.RuntimeWarningsListener;
 
 public final class ModelExecutionAsserter {
 

@@ -4,8 +4,6 @@ import java.io.IOException;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -17,6 +15,7 @@ import hu.elte.txtuml.api.diagnostics.protocol.GlobalSettings;
 import hu.elte.txtuml.diagnostics.session.DiagnosticsPlugin;
 import hu.elte.txtuml.diagnostics.session.IDisposable;
 import hu.elte.txtuml.diagnostics.session.RuntimeSessionTracker;
+import hu.elte.txtuml.utils.Logger;
 
 /**
  * Launches txtUML apps with all debugging aids.
@@ -43,9 +42,9 @@ public class DiagnosticsLaunchDelegate extends JavaLaunchDelegate {
 				diagnosticsPort = Integer.decode(strPort).intValue();
 			}
 		} catch (CoreException ex) {
-			PluginLogWrapper.getInstance().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Failed to acquire VM arguments for " + GlobalSettings.TXTUML_DIAGNOSTICS_PORT_KEY));
+			Logger.sys.error("Failed to acquire VM arguments for " + GlobalSettings.TXTUML_DIAGNOSTICS_PORT_KEY);
 		} catch (NumberFormatException ex) {
-			PluginLogWrapper.getInstance().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "VM argument problem, use " + TXTUML_DIAGNOSTICS_PORT_TOKEN + "<portNumber> as VM argument"));
+			Logger.sys.error("VM argument problem, use " + TXTUML_DIAGNOSTICS_PORT_TOKEN + "<portNumber> as VM argument");
 		}
 		
 		if (diagnosticsPort == 0) {
@@ -57,7 +56,7 @@ public class DiagnosticsLaunchDelegate extends JavaLaunchDelegate {
 						+ " " + TXTUML_DIAGNOSTICS_PORT_TOKEN + diagnosticsPort);
 				configuration = workingCopy;
 			} catch (CoreException | IllegalArgumentException | SecurityException ex) {
-				PluginLogWrapper.getInstance().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Cannot set VM arguments: " + ex));
+				Logger.sys.error("Cannot set VM arguments: " + ex);
 				throw ex;
 			}
 		}
@@ -68,7 +67,7 @@ public class DiagnosticsLaunchDelegate extends JavaLaunchDelegate {
 					configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""),
 					configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, "."));
 		} catch (IOException ex) {
-			throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, -1, "Launching txtUML DiagnosticsPlugin failed miserably", ex));
+			throw new RuntimeException("Launching txtUML DiagnosticsPlugin failed miserably");
 		}
 		new RuntimeSessionTracker(launch, diagnosticsPlugin);
 		super.launch(configuration, mode, launch, monitor);

@@ -1,12 +1,6 @@
 package hu.elte.txtuml.export.papyrus.api.tests;
 
 import static org.junit.Assert.fail;
-import hu.elte.txtuml.eclipseutils.ProjectUtils;
-import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
-import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
-import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
-import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;
-import hu.elte.txtuml.utils.Pair;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -55,6 +49,13 @@ import org.eclipse.uml2.uml.AggregationKind;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
+
+import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
+import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
+import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
+import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;
+import hu.elte.txtuml.utils.Pair;
+import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 /**
  * Unit Tests for

@@ -1,9 +1,9 @@
 package hu.elte.txtuml.export.uml2.transform.exporters.actions;
 
+import java.util.List;
+
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
-
-import java.util.List;
 
 public class SendActionExporter {
 

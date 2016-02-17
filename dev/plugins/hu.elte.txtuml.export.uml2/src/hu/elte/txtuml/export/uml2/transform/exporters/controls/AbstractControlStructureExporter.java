@@ -1,15 +1,15 @@
 package hu.elte.txtuml.export.uml2.transform.exporters.controls;
 
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.uml2.uml.ExecutableNode;
+import org.eclipse.uml2.uml.SequenceNode;
+import org.eclipse.uml2.uml.StructuredActivityNode;
+
 import hu.elte.txtuml.export.uml2.transform.backend.ParameterMap;
 import hu.elte.txtuml.export.uml2.transform.backend.VariableMap;
 import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
-
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.uml2.uml.ExecutableNode;
-import org.eclipse.uml2.uml.SequenceNode;
-import org.eclipse.uml2.uml.StructuredActivityNode;
 
 public abstract class AbstractControlStructureExporter {
 

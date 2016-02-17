@@ -1,4 +1,4 @@
-package hu.elte.txtuml.eclipseutils;
+package hu.elte.txtuml.utils.eclipse;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

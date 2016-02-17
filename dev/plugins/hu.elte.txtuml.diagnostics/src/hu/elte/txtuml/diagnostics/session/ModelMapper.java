@@ -9,16 +9,13 @@ import java.util.TreeMap;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 
-import hu.elte.txtuml.diagnostics.Activator;
-import hu.elte.txtuml.diagnostics.PluginLogWrapper;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
+import hu.elte.txtuml.utils.Logger;
 
 /**
  * Keeps track of model mappings
@@ -52,7 +49,7 @@ public class ModelMapper {
 							try {
 								modelMapProvider = new ModelMapProvider(uri, mappingFilename);
 							} catch (ModelMapException ex) {
-								PluginLogWrapper.getInstance().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Symbol mapping error: " + ex));
+								Logger.sys.error("Symbol mapping error", ex);
 								assert false;
 							}
 							if (modelMapProvider != null) {
@@ -84,10 +81,10 @@ public class ModelMapper {
 			if (eobject != null) {
 				return eobject;
 			} else {
-				PluginLogWrapper.getInstance().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "Mapping failure for element " + elementClassName + " in model " + modelClassName));
+				Logger.sys.warn("Mapping failure for element " + elementClassName + " in model " + modelClassName);
 			}
 		} else {
-			PluginLogWrapper.getInstance().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "Mapping failure for model " + modelClassName));
+			Logger.sys.warn("Mapping failure for model " + modelClassName);
 		}
 		return null;
 	}

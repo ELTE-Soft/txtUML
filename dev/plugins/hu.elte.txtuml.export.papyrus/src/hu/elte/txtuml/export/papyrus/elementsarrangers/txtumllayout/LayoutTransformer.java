@@ -32,9 +32,9 @@ public class LayoutTransformer {
 	 * Constructor for {@link LayoutTransformer}
 	 * @param scaleValue - The scaling number. All coordinates will be multiplied by this value
 	 */
-	public LayoutTransformer(int scaleValue ) {
-		this.scaleX = scaleValue;
-		this.scaleY = scaleValue;
+	public LayoutTransformer(int scaleValueHorizontal, int scaleValueVertical ) {
+		this.scaleX = scaleValueHorizontal;
+		this.scaleY = scaleValueVertical;
 		init();
 	}
 	

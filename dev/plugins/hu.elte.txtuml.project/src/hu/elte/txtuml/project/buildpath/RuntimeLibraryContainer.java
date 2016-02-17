@@ -1,8 +1,5 @@
 package hu.elte.txtuml.project.buildpath;
 
-import hu.elte.txtuml.diagnostics.PluginLogWrapper;
-import hu.elte.txtuml.project.Messages;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -18,6 +15,9 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.JavaCore;
 import org.osgi.framework.Bundle;
 
+import hu.elte.txtuml.project.Messages;
+import hu.elte.txtuml.utils.Logger;
+
 /**
  * Contains the model execution runtime library and its dependencies.
  */
@@ -26,16 +26,15 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 	private static final String BIN_FOLDER_IN_PLUGIN = "bin"; //$NON-NLS-1$
 	private static final String SRC_FOLDER_IN_PLUGIN = "src"; //$NON-NLS-1$
 
-	public static final String[] BUNDLE_IDS_TO_INCLUDE = { "com.google.guava", //$NON-NLS-1$
+	public static final String[] BUNDLE_IDS_TO_INCLUDE = { "org.apache.log4j", "com.google.guava", //$NON-NLS-1$ //$NON-NLS-2$
 			"org.eclipse.uml2.uml", "org.eclipse.uml2.uml.resources", //$NON-NLS-1$ //$NON-NLS-2$
-			"org.eclipse.xtext.xbase.lib", "hu.elte.txtuml.api.model", //$NON-NLS-1$ //$NON-NLS-2$
+			"org.eclipse.xtext.xbase.lib", "hu.elte.txtuml.api.deployment", "hu.elte.txtuml.api.model", //$NON-NLS-1$ //$NON-NLS-2$  //$NON-NLS-3$ 
 			"hu.elte.txtuml.api.layout", "hu.elte.txtuml.api.stdlib", //$NON-NLS-1$ //$NON-NLS-2$
 			"hu.elte.txtuml.api.diagnostics", "hu.elte.txtuml.export.papyrus", //$NON-NLS-1$ //$NON-NLS-2$
 			"hu.elte.txtuml.export.uml2", "hu.elte.txtuml.layout.export", //$NON-NLS-1$ //$NON-NLS-2$
 			"hu.elte.txtuml.layout.visualizer", "hu.elte.txtuml.utils", //$NON-NLS-1$ //$NON-NLS-2$
 			"hu.elte.txtuml.xtxtuml.lib", "hu.elte.txtuml.xtxtuml", //$NON-NLS-1$ //$NON-NLS-2$
-			"hu.elte.txtuml.xtxtuml.ui", "hu.elte.txtuml.export.cpp", //$NON-NLS-1$ //$NON-NLS-2$
-			"hu.elte.txtuml.api.deployment"}; //$NON-NLS-1$
+			"hu.elte.txtuml.xtxtuml.ui" }; //$NON-NLS-1$
 
 	private final IPath containerPath;
 	private IClasspathEntry[] classPathEntries;
@@ -72,7 +71,7 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 				path = new Path(FileLocator.getBundleFile(bundle).getAbsolutePath());
 			} catch (IOException e) {
 				String message = "Can't resolve path '" + bundle.getSymbolicName() + "'"; //$NON-NLS-2$
-				PluginLogWrapper.logError(message, e);
+				Logger.sys.error(message, e);
 			}
 		}
 		return path;
@@ -86,7 +85,7 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 				return new Path(binFolderFileURL.getPath()).makeAbsolute();
 			} catch (IOException e) {
 				String message = "Can't resolve path '" + bundle.getSymbolicName() + "'"; //$NON-NLS-2$
-				PluginLogWrapper.logError(message, e);
+				Logger.sys.error(message, e);
 			}
 		}
 		return null;
@@ -100,7 +99,7 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 				path = new Path(FileLocator.getBundleFile(bundle).getAbsolutePath());
 			} catch (IOException e) {
 				String message = "Can't resolve path '" + bundle.getSymbolicName() + "'"; //$NON-NLS-2$
-				PluginLogWrapper.logError(message, e);
+				Logger.sys.error(message, e);
 			}
 		}
 		return path;
@@ -114,7 +113,7 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 				return new Path(binFolderFileURL.getPath()).makeAbsolute();
 			} catch (IOException e) {
 				String message = "Can't resolve path '" + bundle.getSymbolicName() + "'"; //$NON-NLS-2$
-				PluginLogWrapper.logError(message, e);
+				Logger.sys.error(message, e);
 			}
 		}
 		return null;

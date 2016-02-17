@@ -1,11 +1,11 @@
 package hu.elte.txtuml.validation.problems.association;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+
 import hu.elte.txtuml.validation.Messages;
 import hu.elte.txtuml.validation.SourceInfo;
 import hu.elte.txtuml.validation.problems.ValidationErrorBase;
 import hu.elte.txtuml.validation.problems.ValidationErrorCatalog;
-
-import org.eclipse.jdt.core.dom.ASTNode;
 
 public class WrongCompositionEnds extends ValidationErrorBase {
 

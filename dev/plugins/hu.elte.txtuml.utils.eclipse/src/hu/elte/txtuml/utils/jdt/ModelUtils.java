@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.uml2.utils;
+package hu.elte.txtuml.utils.jdt;
 
 import java.util.List;
 import java.util.Optional;
