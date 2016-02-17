@@ -31,13 +31,11 @@ import hu.elte.txtuml.export.cpp.thread.ThreadHandlingManager;
 import hu.elte.txtuml.utils.Pair;
 
 public class Uml2ToCppExporter {
-	private static final String DefaultCompiler = "g++";
-	private static final String RuntimeFolder = GenerationTemplates.RuntimePath;
-	private static final String RuntimeLibName = "libsmrt.a";
-	private static final String DefaultMakeFileName = "Makefile";
-	private static final String DefaultModelName = "main";
-	private static final String ProjectName = "hu.elte.txtuml.export.cpp";
-	private static final String CppFilesFolderName = "cpp-runtime";
+	private static final String RUNTIME_DIR_PREFIX = GenerationTemplates.RuntimePath;
+	private static final String RUNTIME_LIB_NAME = "libsmrt";
+	private static final String DEFAULT_TARGET_EXECUTABLE = "main";
+	private static final String PROJECT_NAME = "hu.elte.txtuml.export.cpp";
+	private static final String CPP_FILES_FOLDER_NAME = "cpp-runtime";
 
 	private ClassExporter classExporter;
 	private final Options options;
@@ -83,8 +81,7 @@ public class Uml2ToCppExporter {
 			classNames.add(item.getName());
 		}
 
-		createMakeFile(outputDirectory, DefaultModelName, DefaultMakeFileName, classNames);
-
+		createCMakeFile(outputDirectory);
 	}
 
 	private void copyPreWrittenCppFiles(String destination) throws IOException {
@@ -101,7 +98,7 @@ public class Uml2ToCppExporter {
 		if (options.isAddRuntime()) {
 
 			File sourceRuntimeDir = new File(cppFilesLocation);
-			File outputRuntimeDir = new File(destination + File.separator + RuntimeFolder);
+			File outputRuntimeDir = new File(destination + File.separator + RUNTIME_DIR_PREFIX);
 			if (!outputRuntimeDir.exists()) {
 				outputRuntimeDir.mkdirs();
 			}
@@ -116,8 +113,8 @@ public class Uml2ToCppExporter {
 
 	private String seekCppFilesLocation() throws IOException {
 
-		Bundle bundle = Platform.getBundle(ProjectName);
-		URL fileURL = bundle.getEntry(CppFilesFolderName);
+		Bundle bundle = Platform.getBundle(PROJECT_NAME);
+		URL fileURL = bundle.getEntry(CPP_FILES_FOLDER_NAME);
 		File f = new File(FileLocator.toFileURL(fileURL).getPath());
 
 		return f.getPath() + File.separator;
@@ -135,36 +132,22 @@ public class Uml2ToCppExporter {
 
 	}
 
-	private void createMakeFile(String path_, String outputName_, String makefileName_, List<String> classNames_)
-			throws FileNotFoundException, UnsupportedEncodingException {
-		String makeFile = "CC=" + DefaultCompiler + "\n\nall: " + outputName_ + "\n\n";
-
-		makeFile += outputName_ + ":";
-		if (options.isAddRuntime()) {
-			makeFile += " " + RuntimeLibName;
-		}
-
-		String fileList = " main.cpp";
-		for (String file : classNames_) {
-			fileList += " " + GenerationTemplates.sourceName(file);
-		}
-
-		makeFile += fileList + "\n";
-		makeFile += "\t$(CC)";
-		makeFile += " -Wall -o " + outputName_ + fileList + " -std=gnu++11";
-
-		if (options.isAddRuntime()) {
-			makeFile += " -I " + RuntimeFolder + " -LC " + RuntimeLibName + " -pthread\n\n" + RuntimeLibName
-					+ ": runtime runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o threadconfiguration.o\n"
-					+ "\tar rcs " + RuntimeLibName
-					+ " runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o threadconfiguration.o\n\n"
-					+ ".PHONY:runtime\n" + "runtime:\n\t$(CC) -Wall -c " + RuntimeFolder + "runtime.cpp "
-					+ RuntimeFolder + "statemachineI.cpp " + RuntimeFolder + "threadpool.cpp " + RuntimeFolder
-					+ "threadpoolmanager.cpp " + RuntimeFolder + "threadcontainer.cpp " + RuntimeFolder
-					+ "threadconfiguration.cpp " + "-std=gnu++11";
-		}
-
-		Shared.writeOutSource(path_, makefileName_, makeFile);
+	private void createCMakeFile(String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException {
+		CMakeSupport cmake = new CMakeSupport(outputDirectory);
+		cmake.addIncludeDirectory(RUNTIME_DIR_PREFIX.substring(0, RUNTIME_DIR_PREFIX.indexOf(File.separator)));
+		List<String> librarySourceClasses = new ArrayList<String>();
+		librarySourceClasses.add("runtime");
+		librarySourceClasses.add("statemachineI");
+		librarySourceClasses.add("threadpool");
+		librarySourceClasses.add("threadpoolmanager");
+		librarySourceClasses.add("threadcontainer");
+		librarySourceClasses.add("threadconfiguration");
+		cmake.addStaticLibraryTarget(RUNTIME_LIB_NAME, librarySourceClasses, RUNTIME_DIR_PREFIX);
+		List<String> sourceNames = new ArrayList<String>();
+		sourceNames.add(GenerationTemplates.sourceName(DEFAULT_TARGET_EXECUTABLE));
+		sourceNames.addAll(classNames);
+		cmake.addExecutableTarget(DEFAULT_TARGET_EXECUTABLE, sourceNames, "");
+		cmake.writeOutCMakeLists();
 	}
 
 	private String createEventSource(EList<Element> elements_) {
