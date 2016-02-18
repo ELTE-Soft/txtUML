@@ -81,11 +81,11 @@ class PrivateFunctionalTemplates {
 		}
 
 		if (poolId != null && rt) {
-			source.append("\n" + GenerationNames.PoolIdSetter + "(" + poolId + ");\n");
+			source.append(GenerationNames.PoolIdSetter + "(" + poolId + ");\n");
 		}
 
 		if (rt && (parentClassName == null || parentClassName == "this")) {
-			source.append("\n" + RuntimeTemplates.RuntimeSetter + "(rt); \n");
+			source.append(RuntimeTemplates.RuntimeSetter + "(rt); \n");
 			source.append(RuntimeTemplates.initStateMachineForRuntime());
 		}
 

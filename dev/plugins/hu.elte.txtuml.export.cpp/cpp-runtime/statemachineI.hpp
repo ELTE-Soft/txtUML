@@ -14,7 +14,6 @@ class StateMachineI
 {
 public:
   virtual void processEventVirtual()=0;
-  //virtual void startSM()=0;
   virtual void processInitTranstion() = 0;
 
   void startSM() {_started = true;}
@@ -31,13 +30,13 @@ public:
   bool isInPool(){return _inPool;}
   bool isStarted() {return _started;}
   bool isInitialized() {return _initialized; }
-  id_type getPoolId() {return poolId;};
+  int getPoolId() {return poolId;};
   
   virtual ~StateMachineI();
 protected:
   StateMachineI(std::shared_ptr<MessageQueueType> messageQueue_=std::shared_ptr<MessageQueueType>(new MessageQueueType()));
   RuntimeI* _runtime;////safe because: controlled by the runtime, but we can not set it in the constructor
-  void setPoolId(id_type id) {poolId = id;}
+  void setPoolId(int id) {poolId = id;}
 private:
   void handlePool();
   
@@ -48,7 +47,7 @@ private:
   std::atomic_bool _inPool;
   std::atomic_bool _started;
   std::atomic_bool _initialized;
-  id_type poolId;
+  int poolId;
   
   
   

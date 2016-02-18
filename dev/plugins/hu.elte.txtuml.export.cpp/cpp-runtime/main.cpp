@@ -5,10 +5,10 @@
 int main()
 {
   //RuntimeI* rt=new SingleThreadRT(); // 
-  //RuntimeI* rt=new ConfiguredThreadPoolsRT(); // it is allowed when a configuration was generated
+  //RuntimeI* rt=deployment::createThrededRuntime(); // it is allowed when a configuration was generated
 
   //Class obj(rt); //create the object and emplace the object into the runtime
-  //rt->startObject(&obj); obj.startSM(); //starts the statemachine of the object
+  //obj.startSM(); //starts the statemachine of the object
   //obj.send(EventPtr(new SignalName_EC(obj,Class::SignalName_EE))); //send a signal to the object
 
   //rt->run();

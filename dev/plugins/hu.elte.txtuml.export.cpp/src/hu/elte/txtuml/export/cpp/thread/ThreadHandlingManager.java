@@ -26,6 +26,11 @@ public class ThreadHandlingManager {
 	private static final String ConfigurationFile = "deployment"; 
 	private static final String ThreadPoolClassName = "StateMachineThreadPool";
 	private static final String FunctionName = "LinearFunction";
+	private static final String NamespaceName = "deployment";
+	private static final String MyRuntimeName = "ConfRuntime";
+	private static final String ThreadedRuntimeName = "ConfiguratedThreadedRT";
+	private static final String SetConfigurationMethod = "setConfiguration";
+	private static final String CreatorFunction = "createThrededRuntime";
 	
 
 	int numberOfThreads;
@@ -51,11 +56,31 @@ public class ThreadHandlingManager {
 		StringBuilder source = new StringBuilder("");
 		source.append(GenerationTemplates.cppInclude(ThreadConfigurationClassName.toLowerCase()));
 		source.append(GenerationTemplates.cppInclude(GenerationTemplates.RuntimeHeader));
-		source.append(createConfiguration());
-		Shared.writeOutSource(dest, GenerationTemplates.headerName(ConfigurationFile), GenerationTemplates.headerGuard(source.toString(),ConfigurationFile));
+		source.append("\n\n");
+		
+		/*List<String> templateParams = new ArrayList<String>();
+		templateParams.add(ThreadedRuntimeName);
+		source.append(GenerationTemplates.usingTemplateType(MyRuntimeName,
+			GenerationTemplates.RuntimeName,templateParams));
+		source.append("\n\n");*/
+		
+		source.append(GenerationTemplates.putNamespace(GenerationTemplates.simpleFunctionDef(ThreadedRuntimeName, CreatorFunction,
+			(createConfiguration().append(createThreadedRuntime()).toString()), GenerationTemplates.RuntimeParamaterName), NamespaceName));
+		
+		Shared.writeOutSource(dest, GenerationTemplates.headerName(ConfigurationFile),
+			GenerationTemplates.headerGuard(source.toString(),ConfigurationFile));
 
 	}
 	
+	private StringBuilder createThreadedRuntime() {
+	    StringBuilder source = new StringBuilder("");
+	    source.append(GenerationTemplates.createObject(ThreadedRuntimeName, GenerationTemplates.RuntimeParamaterName));
+	    List<String> params = new ArrayList<String>();
+	    params.add(ConfigurationObjectVariableName);
+	    source.append(ActivityTemplates.operationCallOnPointerVariable(GenerationTemplates.RuntimeParamaterName,SetConfigurationMethod,params));
+	    return source;
+	}
+
 	private StringBuilder createConfiguration() {
 	     StringBuilder source = new StringBuilder("");
 	     List<String> parameters = new ArrayList<String>();

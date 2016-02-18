@@ -12,17 +12,17 @@ void ThreadConfiguration::insertConfiguration(int id,Configuration* conf)
 
 StateMachineThreadPool* ThreadConfiguration::getThreadPool(int id)
 {
-	return configurations[id].threadPool;
+	return configurations[id]->threadPool;
 }
 
 LinearFunction* ThreadConfiguration::getFunction(int id)
 {
-	return configurations[id].function;
+	return configurations[id]->function;
 }
 
 int ThreadConfiguration::getMax(int id)
 {
-	return configurations[id].max;
+	return configurations[id]->max;
 }
 
 int ThreadConfiguration::getNumberOfConfigurations()
@@ -32,7 +32,7 @@ int ThreadConfiguration::getNumberOfConfigurations()
 
 ThreadConfiguration::~ThreadConfiguration()
 {
-	for (it = configurations.begin(); it != configurations.end(); it++)
+	for (std::vector<Configuration*>::iterator it = configurations.begin(); it != configurations.end(); it++)
 	{
 		delete (*it);
 	}

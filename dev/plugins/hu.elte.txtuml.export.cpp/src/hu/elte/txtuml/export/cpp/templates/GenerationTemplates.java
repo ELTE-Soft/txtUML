@@ -271,6 +271,11 @@ public class GenerationTemplates {
 	public static String functionDecl(String functionName, List<String> params) {
 		return functionDecl(GenerationNames.NoReturn, functionName, params);
 	}
+	
+	public static String simpleFunctionDecl(String returnType,String functionName) {
+	    return PrivateFunctionalTemplates.cppType(returnType) + " " + functionName +
+		    "()";
+	}
 
 	// TODO modifiers
 	public static String functionDecl(String returnTypeName, String functionName, List<String> params) {
@@ -296,6 +301,11 @@ public class GenerationTemplates {
 			List<Pair<String, String>> params, String body) {
 		return PrivateFunctionalTemplates.cppType(returnTypeName) + " " + className + "::" + functionName + "("
 				+ PrivateFunctionalTemplates.paramList(params) + ")\n{\n" + body + "}\n\n";
+	}
+	
+	public static String simpleFunctionDef(String returnType, String functionName, String body, String returnVariable) {
+	    return simpleFunctionDecl(returnType,functionName) + " {\n" +
+		    body + "\n" + "return " + returnVariable +";\n}";
 	}
 
 	public static String hierarchicalSubStateMachineClassConstructor(String className, String parentClassName,
@@ -442,6 +452,10 @@ public class GenerationTemplates {
 	public static String cppInclude(String className) {
 		return PrivateFunctionalTemplates.include(className);
 	}
+	
+	public static String putNamespace(String source, String namespace) {
+	    return "namespace " + namespace + "\n{\n " + source + "\n}\n";
+	}
 
 	public static String formatSubSmFunctions(String source) {
 		return source.replaceAll(ActivityTemplates.Self, GenerationNames.ParentSmMemberName);
@@ -453,29 +467,61 @@ public class GenerationTemplates {
 	}
 
 	public static String createObject(String typeName, String objName) {
-		String source;
-		source = GenerationNames.pointerType(typeName) + " " + objName + " = " + allocateObject(typeName) + ";\n";
-		return source;
+		return createObject(typeName,objName,null,null);
 	}
 	
-	public static String createObject(String typeName, String objName, List<String> params) {
-		String source;
-		source = GenerationNames.pointerType(typeName) + " " + objName + " = " + allocateObject(typeName,params) + ";\n";
-		return source;
+	public static String createObject(String typeName,String objName, List<String> params) {
+	    return createObject(typeName,objName,null,params);
+	}
+	
+	public static String createObject(String typeName, String objName,List<String> templateParams, List<String> params){
+	    String templateParameters = "";
+	    	if (templateParams != null) {
+	    	templateParameters = "<";   
+	    	for (int i = 0; i < templateParams.size() - 1; i++) {
+	    	templateParameters = templateParameters + templateParams.get(i) + ",";
+	    	}
+	    	templateParameters = templateParameters + templateParams.get(templateParams.size() - 1) + ">";
+	    	}
+	    	
+		return GenerationNames.pointerType(typeName) + " " + objName + templateParameters + " = " + allocateObject(typeName,templateParams,params) + ";\n";
+		
 	}
 
-	public static String allocateObject(String typeName, List<String> params) {
-		String parameters = "(";
-		for (int i = 0; i < params.size() - 1; i++) {
-			parameters = parameters + params.get(i) + ",";
-		}
-		parameters = parameters + params.get(params.size() - 1) + ")";
+	public static String allocateObject(String typeName, List<String> templateParams ,List<String> params) {
+	    	
+	    	String parameters = "(";
+	    	if (params != null) {
+	    
+	    	    for (int i = 0; i < params.size() - 1; i++) {
+        		parameters = parameters + params.get(i) + ",";
+        	    }
+        	    parameters = parameters + params.get(params.size() - 1);
+	    	}
+	    	parameters = parameters + ")";
+	    	
+	    	String templateParameters = "";
+	    	if (templateParams != null) {
+	    	templateParameters = "<";   
+	    	for (int i = 0; i < templateParams.size() - 1; i++) {
+	    	templateParameters = templateParameters + templateParams.get(i) + ",";
+	    	}
+	    	templateParameters = templateParameters + templateParams.get(templateParams.size() - 1) + ">";
+	    	}
+	    	return GenerationNames.MemoryAllocator + " " + typeName + templateParameters + parameters;
 
-		return GenerationNames.MemoryAllocator + " " + typeName + parameters;
+	    	
+		
+		
 	}
-
+	
+	public static String allocateObject(String typeName,List<String> params)
+	{
+	    return allocateObject(typeName,null,params);
+	}
+	
 	public static String allocateObject(String typeName) {
-		return GenerationNames.MemoryAllocator + " " + typeName + "()";
+		return allocateObject(typeName,null,null);
 	}
 	
 	
@@ -514,5 +560,17 @@ public class GenerationTemplates {
 
 	public static String debugOnlyCodeBlock(String code_) {
 		return "#ifndef " + GenerationNames.NoDebugSymbol + "\n" + code_ + "#endif\n";
+	}
+
+	public static String usingTemplateType(String usedName, String typeName, List<String> templateParams) {
+	    String templateParameters = "<";
+	    templateParameters = "<";   
+	    for (int i = 0; i < templateParams.size() - 1; i++) {
+	    templateParameters = templateParameters + templateParams.get(i) + ",";
+	    }
+	    templateParameters = templateParameters + templateParams.get(templateParams.size() - 1) + ">";
+	    	
+	return "using " + usedName + " = " + typeName + templateParameters + ";\n";
+	    
 	}
 }

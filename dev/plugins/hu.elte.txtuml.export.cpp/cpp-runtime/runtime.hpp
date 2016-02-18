@@ -18,13 +18,11 @@ class RuntimeI
 {
 public:
   RuntimeI();
-  void setupObject(ObjectList& ol_);
   void setupObject(StateMachineI* sm_);
-  void startObject(ObjectList& ol_);
-
-  virtual void startObject(StateMachineI* sm_)=0;
+  void setupObject(ObjectList& ol_);
+  
   virtual void run()=0;
-  virtual void removeObject(StateMachineI* sm_) {sm_->setRuntime(nullptr);}
+  virtual void removeObject(StateMachineI* sm) {sm->setRuntime(nullptr);}
   void stop();
   virtual void stopUponCompletion() = 0;
 
@@ -41,32 +39,32 @@ class SingleThreadRT:public RuntimeI
 {
 public:
   SingleThreadRT();
-  void startObject(StateMachineI* sm_){sm_->startSM();}
   void run();
   void stopUponCompletion();
 
 private:
-  void setupObjectVirtual(StateMachineI* sm_){sm_->setMessageQueue(_messageQueue);}
+  void setupObjectVirtual(StateMachineI* sm){sm->setMessageQueue(_messageQueue);}
 
   std::shared_ptr<MessageQueueType> _messageQueue;
   std::condition_variable waiting_empty_cond;
   std::atomic_bool waiting;
 };
 
-class ConfiguredThreadPoolsRT: public RuntimeI
+class ConfiguratedThreadedRT: public RuntimeI
 {
 public:
-	ConfiguredThreadPoolsRT();
+	ConfiguratedThreadedRT();
+	~ConfiguratedThreadedRT();
 	
-	void startObject(StateMachineI* sm_){sm_->startSM();}
 	void run();
 	void removeObject(StateMachineI*);
 	void stopUponCompletion();
+	void setConfiguration(ThreadConfiguration*);
 private:
 	void setupObjectVirtual(StateMachineI*);
 	
-	ThreadPoolManager* pool_manager;
-	std::vector<int> number_of_objects;
+	ThreadPoolManager* poolManager;
+	std::vector<int> numberOfObjects;
 };
 
 

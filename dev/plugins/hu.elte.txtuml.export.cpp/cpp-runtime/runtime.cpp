@@ -18,14 +18,6 @@ void RuntimeI::setupObject(StateMachineI* sm_)
   setupObjectVirtual(sm_);
 }
 
-void RuntimeI::startObject(ObjectList& ol_)
-{
-  for(auto it=ol_.begin();it!=ol_.end();++it)
-  {
-      startObject(*it);
-  }
-}
-
 void RuntimeI::stop()
 {
   std::unique_lock<std::mutex> mlock(_mutex);
@@ -75,27 +67,27 @@ void SingleThreadRT::stopUponCompletion()
 	stop();
 }
 
-//********************************ConfiguredThreadPoolsRT************************************
+//********************************ConfiguratedThreadedRT************************************
 
  
-ConfiguredThreadPoolsRT::ConfiguredThreadPoolsRT(): pool_manager(new ThreadPoolManager())
+ConfiguratedThreadedRT::ConfiguratedThreadedRT(): poolManager(new ThreadPoolManager())
 {
 		
 }
 
-void ConfiguredThreadPoolsRT::run()
+void ConfiguratedThreadedRT::run()
 {
-	if (pool_manager->isConfigurated())
+	if (poolManager->isConfigurated())
 	{
 		
-		int numberOfConfigurations = pool_manager->getNumberOfConfigurations();
+		int numberOfConfigurations = poolManager->getNumberOfConfigurations();
 		
-		number_of_objects.clear();
-		number_of_objects.resize(numberOfConfigurations);
+		numberOfObjects.clear();
+		numberOfObjects.resize(numberOfConfigurations);
 		
 		for(int i = 0; i < numberOfConfigurations; i++)
 		{
-			pool_manager->getPool(i)->startPool();
+			poolManager->getPool(i)->startPool();
 		}
 	}
 	else
@@ -106,31 +98,40 @@ void ConfiguredThreadPoolsRT::run()
 
 }
 
-void ConfiguredThreadPoolsRT::stopUponCompletion()
+void ConfiguratedThreadedRT::stopUponCompletion()
 {
-	for(int i = 0; i < pool_manager->getNumberOfConfigurations(); i++)
+	for(int i = 0; i < poolManager->getNumberOfConfigurations(); i++)
 	{
-		pool_manager->getPool(i)->stopUponCompletion();
+		poolManager->getPool(i)->stopUponCompletion();
 	}
 }
 
-void ConfiguredThreadPoolsRT::setupObjectVirtual(StateMachineI* sm_)
+void ConfiguratedThreadedRT::setupObjectVirtual(StateMachineI* sm)
 {
 	
-	int objectID = sm_->getPoolId();
-	
-	StateMachineThreadPool* matched_pool = pool_manager->getPool(objectID);
-	sm_->setPool(matched_pool);
-	
-	number_of_objects[objectID]++;
-	pool_manager->recalculateThreads(objectID,number_of_objects[objectID]);
+	int objectID = sm->getPoolId();
+	StateMachineThreadPool* matchedPool = poolManager->getPool(objectID);
+	sm->setPool(matchedPool);
+	numberOfObjects[objectID]++;
+	poolManager->recalculateThreads(objectID,numberOfObjects[objectID]);
 	
 }
 
-void ConfiguredThreadPoolsRT::removeObject(StateMachineI* sm_)
+void ConfiguratedThreadedRT::removeObject(StateMachineI* sm)
 {
-	int objectID = sm_->getPoolId();
-	number_of_objects[objectID]--;
-	pool_manager->recalculateThreads(objectID,number_of_objects[objectID]);
+	sm->setRuntime(nullptr);
+	int objectID = sm->getPoolId();
+	numberOfObjects[objectID]--;
+	poolManager->recalculateThreads(objectID,numberOfObjects[objectID]);
 	
+}
+
+void ConfiguratedThreadedRT::setConfiguration(ThreadConfiguration* conf)
+{
+	poolManager->setConfiguration(conf);
+}
+
+ConfiguratedThreadedRT::~ConfiguratedThreadedRT()
+{
+	delete poolManager;
 }

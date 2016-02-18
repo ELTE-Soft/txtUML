@@ -124,6 +124,7 @@ public class ThreadDescriptionExporter {
 			nonExportedClasses.removeAll(exportedClasses);
 			
 			ThreadPoolConfiguration config = new ThreadPoolConfiguration(0,0,1);
+			config.setMaxThreads(1);
 			for(String cls : nonExportedClasses) {
 				configMap.put(cls, config);
 			}
