@@ -2,7 +2,6 @@ package hu.elte.txtuml.examples.monitoring;
 
 import hu.elte.txtuml.api.deployment.Configuration;
 import hu.elte.txtuml.api.deployment.Group;
-import hu.elte.txtuml.api.deployment.Multithreading;
 
 import hu.elte.txtuml.examples.monitoring.model.Aggregator;
 import hu.elte.txtuml.examples.monitoring.model.Alert;
