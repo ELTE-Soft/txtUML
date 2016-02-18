@@ -1,9 +1,11 @@
 package hu.elte.txtuml.xtxtuml.validation
 
 import com.google.inject.Inject
+import hu.elte.txtuml.api.model.DataType
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.api.model.Port
 import hu.elte.txtuml.api.model.Signal
+import hu.elte.txtuml.api.model.external.ExternalType
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression
@@ -196,19 +198,23 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 
 	@Check
 	def checkTypeReference(JvmTypeReference typeRef) {
-		var isPartOfSignalAttribute = false;
+		var isAttribute = false;
 
 		val isValid = switch (container : typeRef.eContainer) {
 			TUSignalAttribute: {
-				isPartOfSignalAttribute = true;
-				typeRef.isAllowedBasictype(false)
+				isAttribute = true;
+				typeRef.isAllowedAttributeType(false)
 			}
 			TUAttributeOrOperationDeclarationPrefix: {
-				typeRef.isAllowedBasictype(container.eContainer instanceof TUOperation) ||
-					typeRef.isConformantWith(ModelClass)
+				if (container.eContainer instanceof TUOperation) {
+					typeRef.isAllowedParameterType(true)
+				} else {
+					isAttribute = true;
+					typeRef.isAllowedAttributeType(false)
+				}
 			}
 			JvmFormalParameter: {
-				typeRef.isAllowedBasictype(false) || typeRef.isConformantWith(ModelClass)
+				typeRef.isAllowedParameterType(false)
 			}
 			// TODO check types inside XBlockExpression
 			default:
@@ -217,10 +223,10 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 
 		if (!isValid) {
 			error(
-				if (isPartOfSignalAttribute) {
-					"Invalid type. Only boolean, double, int and String are allowed."
+				if (isAttribute) {
+					"Invalid type. Only boolean, double, int, String, model data types and external interfaces are allowed."
 				} else {
-					"Invalid type. Only boolean, double, int, String and model class types are allowed."
+					"Invalid type. Only boolean, double, int, String, model data types, external interfaces and model class types are allowed."
 				},
 				TypesPackage::eINSTANCE.jvmParameterizedTypeReference_Type
 			)
@@ -349,7 +355,16 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 	}
 
 	// Helpers
-	def private isAllowedBasictype(JvmTypeReference typeRef, boolean isVoidAllowed) {
+	def private isAllowedParameterType(JvmTypeReference typeRef, boolean isVoidAllowed) {
+		isAllowedAttributeType(typeRef, isVoidAllowed) || typeRef.isConformantWith(ModelClass)
+	}
+
+	def private isAllowedAttributeType(JvmTypeReference typeRef, boolean isVoidAllowed) {
+		isAllowedBasicType(typeRef, isVoidAllowed) || typeRef.isConformantWith(DataType) ||
+			typeRef.type.interface && typeRef.isConformantWith(ExternalType)
+	}
+
+	def private isAllowedBasicType(JvmTypeReference typeRef, boolean isVoidAllowed) {
 		typeRef.isType(Integer.TYPE) || typeRef.isType(Boolean.TYPE) || typeRef.isType(Double.TYPE) ||
 			typeRef.isType(String) || typeRef.isType(Void.TYPE) && isVoidAllowed
 	}
