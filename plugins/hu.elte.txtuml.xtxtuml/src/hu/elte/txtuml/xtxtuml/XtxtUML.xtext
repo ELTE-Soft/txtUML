@@ -140,8 +140,12 @@ TUTransition :
 	'}' ';'?
 ;
 
-TUTransitionMember :
-	TUTransitionTrigger | TUTransitionVertex | TUTransitionEffect | TUTransitionGuard
+TUTransitionMember
+	: TUTransitionTrigger
+	| TUTransitionVertex
+	| TUTransitionEffect
+	| TUTransitionGuard
+	| TUTransitionPort
 ;
 
 TUTransitionTrigger :
@@ -158,6 +162,10 @@ TUTransitionEffect :
 
 TUTransitionGuard :
 	'guard' '(' (else?='else' | expression=XExpression) ')' ';'?
+;
+
+TUTransitionPort :
+	'port' port=[TUPort|QualifiedName] ';'
 ;
 
 TUPort :

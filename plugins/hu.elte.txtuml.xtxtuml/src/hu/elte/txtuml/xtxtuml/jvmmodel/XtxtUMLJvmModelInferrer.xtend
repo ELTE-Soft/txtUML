@@ -22,6 +22,7 @@ import hu.elte.txtuml.xtxtuml.naming.IPackageNameCalculator
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
@@ -41,6 +42,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionEffect
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionGuard
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionTrigger
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUVisibility
@@ -137,7 +139,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				if (member instanceof TUState) {
 					// just use the element which was inferred earlier
 					members += member.getPrimaryJvmElement as JvmMember
-				} else {
+				} else if (!(member instanceof TUAttributeOrOperationDeclarationPrefix)) { // TODO refactor grammar
 					members += member.toJvmMember
 				}
 			}
@@ -265,6 +267,8 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 					TUTransitionVertex: {
 						annotations += member.toAnnotationRef
 					}
+					TUTransitionPort: {
+					} // do nothing, handled together with triggers
 					default: {
 						members += member.toJvmMember
 					}
@@ -345,7 +349,6 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		]
 	}
 
-	// Commons
 	def private toJvmVisibility(TUVisibility it) {
 		if (it == TUVisibility.PACKAGE)
 			JvmVisibility.DEFAULT
@@ -354,29 +357,24 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	}
 
 	def dispatch private toAnnotationRef(TUTransitionTrigger it) {
-		trigger.toAnnotationRef(Trigger)
+		val port = (eContainer as TUTransition).members.findFirst[it instanceof TUTransitionPort] as TUTransitionPort;
+
+		createAnnotationRef(Trigger, if (port != null) {
+			#["port" -> port.port, "value" -> trigger]
+		} else {
+			#["value" -> trigger]
+		});
 	}
 
 	def dispatch private toAnnotationRef(TUTransitionVertex it) {
-		vertex.toAnnotationRef(
+		createAnnotationRef(
 			if (from) {
 				From
 			} else {
 				To
-			}
+			},
+			"value" -> vertex
 		)
-	}
-
-	def dispatch private toAnnotationRef(TUState it) {
-		toAnnotationRef(From)
-	}
-
-	def private toAnnotationRef(EObject obj, Class<?> annotationType) {
-		annotationRef(annotationType) => [
-			explicitValues += TypesFactory::eINSTANCE.createJvmTypeAnnotationValue => [
-				values += obj.inferredTypeRef
-			]
-		]
 	}
 
 	def private toAnnotationRef(int i, Class<?> annotationType) {
@@ -384,6 +382,20 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
 				values += i
 			]
+		]
+	}
+
+	def private createAnnotationRef(Class<?> annotationType, Pair<String, EObject>... params) {
+		annotationRef(annotationType) => [ annotationRef |
+			for (param : params) {
+				annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmTypeAnnotationValue => [
+					values += param.value.inferredTypeRef;
+					if (params.size != 1 || param.key != "value") {
+						operation = annotationRef.annotation.declaredOperations.findFirst[it.simpleName == param.key];
+					}
+				]
+			}
+
 		]
 	}
 
