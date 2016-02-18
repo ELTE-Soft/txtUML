@@ -315,7 +315,7 @@ public class DiagramElementsModifierTest {
 
 		List<Point> bendpointslist = Arrays.asList(new Point(10, 10),
 				new Point(150, 200), new Point(400, 300));
-		DiagramElementsModifier.setConnectionBendpoints(assoc, bendpointslist);
+		DiagramElementsModifier.setConnectionPoints(assoc, bendpointslist);
 	}
 
 	/**
