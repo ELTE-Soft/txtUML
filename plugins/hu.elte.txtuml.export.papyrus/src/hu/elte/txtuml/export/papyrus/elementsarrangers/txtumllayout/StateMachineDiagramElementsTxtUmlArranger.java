@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,22 +8,15 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gef.editparts.AbstractEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.layout.FreeFormLayoutEx;
 import org.eclipse.gmf.tooling.runtime.linklf.LinkLFShapeCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.common.editparts.RoundedCompartmentEditPart;
-import org.eclipse.papyrus.uml.diagram.statemachine.custom.commands.CustomStateResizeCommand;
-import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomRegionCompartmentEditPart;
-import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomRegionEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateEditPart;
-import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateMachineCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateMachineEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.RegionCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.RegionEditPart;
-import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateCompartmentEditPart;
-import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateMachineEditPart;
 import org.eclipse.uml2.uml.Element;
 
 import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
@@ -58,7 +52,7 @@ public class StateMachineDiagramElementsTxtUmlArranger extends
 		this.arrangeChildren(stateMachineEditPart, monitor);
 		@SuppressWarnings("unchecked")
 		List<GraphicalEditPart> children = getRegionCompatementEditPart(stateMachineEditPart).getChildren();
-		DiagramElementsModifier.hideConnectionLabelsForEditParts(children, null);
+		DiagramElementsModifier.hideConnectionLabelsForEditParts(children, new LinkedList<java.lang.Class<?>>());
 		CustomStateMachineEditPart sm = (CustomStateMachineEditPart)this.diagep.getChildren().get(0);
 		
 		Dimension preferredSize = this.calculatePreferredSize((List<GraphicalEditPart>) children);
@@ -66,8 +60,8 @@ public class StateMachineDiagramElementsTxtUmlArranger extends
 	}
 	
 	private RegionCompartmentEditPart getRegionCompatementEditPart(RoundedCompartmentEditPart state) {
-		LinkLFShapeCompartmentEditPart stateCompartement = StateMachineDiagramElementsController.getStateCompartmentEditPart((RoundedCompartmentEditPart) state);
-		if(stateCompartement.getChildren() != null && stateCompartement.getChildren().size() != 0){ //there can be pseudostates
+		LinkLFShapeCompartmentEditPart stateCompartement = StateMachineDiagramElementsController.getCustomStateMachineCompartmentEditPart((RoundedCompartmentEditPart) state);
+		if(stateCompartement != null && stateCompartement.getChildren() != null && stateCompartement.getChildren().size() != 0){ //there can be pseudostates
 			RegionEditPart region = (RegionEditPart) stateCompartement.getChildren().get(0);
 			RegionCompartmentEditPart regionCompartement = StateMachineDiagramElementsController.getRegionCompatementEditPart(region);
 			return regionCompartement;
