@@ -12,10 +12,12 @@ class CMakeSupport {
 	// TODO gcc and clang is ok, but msvc needs different flags
 	private static final String CPP_STANDARD = "c++11";
 	private static final String EXTRA_WARNINGS = "-Wall -pedantic -Wextra -Wconversion";
-	// TODO remove the unused/parameter option when correct code is generated
-	private static final String TREAT_WARNINGS_AS_ERRORS = "-Werror -Wno-error=unused-parameter)";
+	// TODO remove the unused parameter option when correct code is generated
+	// TODO remove the unused field option when correct code is generated
+	private static final String TREAT_WARNINGS_AS_ERRORS = "-Werror -Wno-error=unused-parameter -Wno-error=unused-private-field)";
 	private static final String DEBUG_ONLY_COMPILE_OPTIONS = "-fsanitize=address";
-	private static final String RELEASE_ONLY_COMPILE_OPTIONS = "-flto"; // "-pg"
+	// could be "-flto" or "-pg"
+	private static final String RELEASE_ONLY_COMPILE_OPTIONS = "";
 	private static final String DEBUG_ONLY_LINK_FLAGS = DEBUG_ONLY_COMPILE_OPTIONS;
 	private static final String RELEASE_ONLY_LINK_FLAGS = RELEASE_ONLY_COMPILE_OPTIONS;
 	private static final String CMAKE_MINIMUM_VERSION = "2.8";
