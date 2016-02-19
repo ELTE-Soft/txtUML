@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.cpp;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -63,7 +64,8 @@ class CMakeSupport {
 
 		// preambulum
 		fileContent.append("cmake_minimum_required(VERSION " + CMAKE_MINIMUM_VERSION + ")\n");
-		fileContent.append("project(" + executableTargetNames.get(0) + " CXX)\n");
+		String projectName = targetRootPath.substring(targetRootPath.lastIndexOf(File.separator) + 1).replace('.', '_');
+		fileContent.append("project(" + projectName + " CXX)\n");
 
 		// compile options
 		fileContent.append("add_compile_options(-std=" + CPP_STANDARD + ")\n");

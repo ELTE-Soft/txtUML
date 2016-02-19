@@ -144,7 +144,7 @@ public class Uml2ToCppExporter {
 		librarySourceClasses.add("threadconfiguration");
 		cmake.addStaticLibraryTarget(RUNTIME_LIB_NAME, librarySourceClasses, RUNTIME_DIR_PREFIX);
 		List<String> sourceNames = new ArrayList<String>();
-		sourceNames.add(GenerationTemplates.sourceName(DEFAULT_TARGET_EXECUTABLE));
+		sourceNames.add(DEFAULT_TARGET_EXECUTABLE);
 		sourceNames.addAll(classNames);
 		cmake.addExecutableTarget(DEFAULT_TARGET_EXECUTABLE, sourceNames, "");
 		cmake.writeOutCMakeLists();
