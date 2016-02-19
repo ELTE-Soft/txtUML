@@ -2,27 +2,27 @@
 
 ThreadConfiguration::ThreadConfiguration(int size)
 {
-	configurations.resize(size);
+	configurations.resize((size_t)size);
 }
 
-void ThreadConfiguration::insertConfiguration(int id,Configuration conf)
+void ThreadConfiguration::insertConfiguration(int id, Configuration conf)
 {
-	configurations[id] = conf;
+	configurations[(size_t)id] = conf;
 }
 
 StateMachineThreadPool* ThreadConfiguration::getThreadPool(int id)
 {
-	return configurations[id].threadPool;
+	return configurations[(size_t)id].threadPool;
 }
 
 LinearFunction* ThreadConfiguration::getFunction(int id)
 {
-	return configurations[id].function;
+	return configurations[(size_t)id].function;
 }
 
 int ThreadConfiguration::getMax(int id)
 {
-	return configurations[id].max;
+	return configurations[(size_t)id].max;
 }
 
 int ThreadConfiguration::getNumberOfConfigurations()

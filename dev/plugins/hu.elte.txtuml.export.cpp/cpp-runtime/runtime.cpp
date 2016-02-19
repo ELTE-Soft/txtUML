@@ -91,7 +91,7 @@ void ConfiguredThreadPoolsRT::run()
 		int numberOfConfigurations = pool_manager->getNumberOfConfigurations();
 		
 		number_of_objects.clear();
-		number_of_objects.resize(numberOfConfigurations);
+		number_of_objects.resize((size_t)numberOfConfigurations);
 		
 		for(int i = 0; i < numberOfConfigurations; i++)
 		{
@@ -122,15 +122,15 @@ void ConfiguredThreadPoolsRT::setupObjectVirtual(StateMachineI* sm_)
 	StateMachineThreadPool* matched_pool = pool_manager->getPool(objectID);
 	sm_->setPool(matched_pool);
 	
-	number_of_objects[objectID]++;
-	pool_manager->recalculateThreads(objectID,number_of_objects[objectID]);
+	number_of_objects[(size_t)objectID]++;
+	pool_manager->recalculateThreads(objectID,number_of_objects[(size_t)objectID]);
 	
 }
 
 void ConfiguredThreadPoolsRT::removeObject(StateMachineI* sm_)
 {
 	int objectID = sm_->getPoolId();
-	number_of_objects[objectID]--;
-	pool_manager->recalculateThreads(objectID,number_of_objects[objectID]);
+	number_of_objects[(size_t)objectID]--;
+	pool_manager->recalculateThreads(objectID,number_of_objects[(size_t)objectID]);
 	
 }
