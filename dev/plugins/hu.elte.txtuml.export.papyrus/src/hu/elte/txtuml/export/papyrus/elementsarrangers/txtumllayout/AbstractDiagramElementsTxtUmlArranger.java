@@ -17,6 +17,7 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateEditPart;
 import org.eclipse.uml2.uml.Element;
 
 import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
@@ -152,23 +153,27 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 					if(connection != null && route.size() >= 2){
 						Rectangle source = objectTransform.get(connection.getSource());
 						Rectangle target = objectTransform.get(connection.getTarget());
-						
+
 			        	String anchor_start = getAnchor(source.getTopLeft(), route.get(0), source.width, source.height);
 			        	String anchor_end = getAnchor(target.getTopLeft(), route.get(route.size()-1), target.width, target.height);
-			        	
+
 			        	DiagramElementsModifier.setConnectionAnchors(connection, anchor_start, anchor_end);
 			        	DiagramElementsModifier.setConnectionPoints(connection, route);
 					}
 		});
 //		GraphicalEditPart[] mock = objectTransform.keySet().toArray(new GraphicalEditPart[objectTransform.size()]);
 	}
-	
+
 	private void modifyEditParts(
 			Map<GraphicalEditPart, Rectangle> editPartsObjectsMapping) {
 		editPartsObjectsMapping.forEach((GraphicalEditPart ep, Rectangle rect) -> {
-				DiagramElementsModifier.resizeGraphicalEditPart(ep, rect.width, rect.height);
-				DiagramElementsModifier.moveGraphicalEditPart(ep, rect.getTopLeft());
-			});
+			int height = rect.height;
+			if(ep instanceof CustomStateEditPart) {
+				height += 20;
+			}
+			DiagramElementsModifier.resizeGraphicalEditPart(ep, rect.width, height);
+			DiagramElementsModifier.moveGraphicalEditPart(ep, rect.getTopLeft());
+		});
 	}
 
 	private void transformObjectsAndLinks(
