@@ -9,7 +9,7 @@ struct LinearFunction
 {
 	public:
 		LinearFunction(double gradient_,int constant_): gradient(gradient_),constant(constant_) {}
-		int operator()(int n) {return  round(gradient*n + constant);}
+		int operator()(int n) {return (int)round(gradient*n) + constant;}
 	private:
 		double gradient;
 		int constant;

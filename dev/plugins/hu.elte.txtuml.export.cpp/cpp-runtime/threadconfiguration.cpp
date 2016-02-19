@@ -27,5 +27,5 @@ int ThreadConfiguration::getMax(int id)
 
 int ThreadConfiguration::getNumberOfConfigurations()
 {
-	return configurations.size();
+	return (int)configurations.size();
 }
