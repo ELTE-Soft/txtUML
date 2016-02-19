@@ -14,7 +14,7 @@ class CMakeSupport {
 	private static final String EXTRA_WARNINGS = "-Wall -pedantic -Wextra -Wconversion";
 	// TODO remove the unused parameter option when correct code is generated
 	// TODO remove the unused field option when correct code is generated
-	private static final String TREAT_WARNINGS_AS_ERRORS = "-Werror -Wno-error=unused-parameter -Wno-error=unused-private-field)";
+	private static final String TREAT_WARNINGS_AS_ERRORS = "-Werror -Wno-error=unused-parameter -Wno-error=unused-private-field";
 	private static final String DEBUG_ONLY_COMPILE_OPTIONS = "-fsanitize=address";
 	// could be "-flto" or "-pg"
 	private static final String RELEASE_ONLY_COMPILE_OPTIONS = "";
