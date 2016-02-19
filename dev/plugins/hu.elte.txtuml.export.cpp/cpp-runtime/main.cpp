@@ -2,10 +2,10 @@
 
 #include "runtime/runtime.hpp"
 
+#include "deployment.hpp"
 int main()
 {
-  //RuntimeI* rt=new SingleThreadRT(); // 
-  //RuntimeI* rt=deployment::createThrededRuntime(); // it is allowed when a configuration was generated
+  //RuntimeI* rt=deployment::createThrededRuntime(); // the runtime type depends on deployment header options
 
   //Class obj(rt); //create the object and emplace the object into the runtime
   //obj.startSM(); //starts the statemachine of the object

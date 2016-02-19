@@ -142,8 +142,8 @@ public class ClassExporter {
 
 		List<String> constructorParams = new ArrayList<String>();
 
-		constructorParams.add(GenerationTemplates.RuntimeName);
 		if (ownStates(class_, smList)) {
+			constructorParams.add(GenerationTemplates.RuntimeName);
 			Region region = smList.get(0).getRegions().get(0);
 			privateParts.append(createEntryFunctionsDecl(region));
 			privateParts.append(createExitFunctionsDecl(region));

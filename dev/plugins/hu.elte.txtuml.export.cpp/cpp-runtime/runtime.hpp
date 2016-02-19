@@ -13,21 +13,63 @@
 #include "threadpoolmanager.hpp"
 #include "runtimetypes.hpp"
 
-
+template<typename RuntimeType>
 class RuntimeI
 {
 public:
-  RuntimeI();
-  void setupObject(StateMachineI* sm_);
-  void setupObject(ObjectList& ol_);
+
+  static RuntimeI<RuntimeType>* createRuntime()
+  {
+      return RuntimeType::createRuntime();
+  }
+
+  void setupObject(StateMachineI* sm_)
+  {
+      //sm_->setRuntime(this);
+      static_cast<RuntimeType*>(this)->setupObjectSpecificRuntime(sm_);
+  }
+
+  void setupObject(ObjectList& ol_)
+  {
+      for(auto it=ol_.begin();it!=ol_.end();++it)
+      {
+        //(*it)->setRuntime(this);
+        static_cast<RuntimeType*>(this)->setupObjectSpecificRuntime(*it);
+      }
+  }
+
+  void stop()
+  {
+      std::unique_lock<std::mutex> mlock(_mutex);
+      _stop=true;
+      mlock.unlock();
+      _cond.notify_one();
+  }
+
+  void configure(ThreadConfiguration* configuration)
+  {
+        static_cast<RuntimeType*>(this)->setConfiguration(configuration);
+  }
   
-  virtual void run()=0;
-  virtual void removeObject(StateMachineI* sm) {sm->setRuntime(nullptr);}
-  void stop();
-  virtual void stopUponCompletion() = 0;
+  void startRT()
+  {
+        static_cast<RuntimeType*>(this)->start();
+  }
+
+  void removeObject(StateMachineI* sm)
+  {
+      //sm->setRuntime(nullptr);
+      static_cast<RuntimeType*>(this)->removeObject(sm);
+  }
+
+
+  void stopUponCompletion()
+  {
+        static_cast<RuntimeType*>(this)->stopUponCompletion();
+  }
 
 protected:
-  virtual void setupObjectVirtual(StateMachineI*){}
+  RuntimeI(): _stop(false) {}
 
   std::atomic_bool _stop;
   std::mutex _mutex;
@@ -35,34 +77,43 @@ protected:
 };
 
 
-class SingleThreadRT:public RuntimeI
+class SingleThreadRT:public RuntimeI<SingleThreadRT>
 {
 public:
-  SingleThreadRT();
-  void run();
+
+  static SingleThreadRT* createRuntime();
+  void start();
+  void setConfiguration(ThreadConfiguration*);
   void stopUponCompletion();
 
 private:
-  void setupObjectVirtual(StateMachineI* sm){sm->setMessageQueue(_messageQueue);}
+  SingleThreadRT();
+
+  void setupObjectSpecificRuntime(StateMachineI*);
+  bool isConfigurated();
 
   std::shared_ptr<MessageQueueType> _messageQueue;
   std::condition_variable waiting_empty_cond;
   std::atomic_bool waiting;
 };
 
-class ConfiguratedThreadedRT: public RuntimeI
+class ConfiguratedThreadedRT: public RuntimeI<ConfiguratedThreadedRT>
 {
 public:
-	ConfiguratedThreadedRT();
-	~ConfiguratedThreadedRT();
+
+        static ConfiguratedThreadedRT* createRuntime();
 	
-	void run();
+        void start();
 	void removeObject(StateMachineI*);
 	void stopUponCompletion();
 	void setConfiguration(ThreadConfiguration*);
+        ~ConfiguratedThreadedRT();
 private:
-	void setupObjectVirtual(StateMachineI*);
-	
+        ConfiguratedThreadedRT();
+
+        void setupObjectSpecificRuntime(StateMachineI*);
+        bool isConfigurated();
+
 	ThreadPoolManager* poolManager;
 	std::vector<int> numberOfObjects;
 };

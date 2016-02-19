@@ -23,15 +23,16 @@ public class ThreadHandlingManager {
 	private static final String InsertConfigurationOperationName = "insertConfiguration";
 	private static final String ConfigurationStructName = "Configuration";
 	private static final String ConfigurationObjectVariableName = "conf";
-	private static final String ConfigurationFile = "deployment"; 
+	private static final String ConfigurationFile = "deployment";
 	private static final String ThreadPoolClassName = "StateMachineThreadPool";
 	private static final String FunctionName = "LinearFunction";
 	private static final String NamespaceName = "deployment";
-	private static final String MyRuntimeName = "ConfRuntime";
-	private static final String ThreadedRuntimeName = "ConfiguratedThreadedRT";
-	private static final String SetConfigurationMethod = "setConfiguration";
+	// private static final String ThreadedRuntimeName =
+	// "ConfiguratedThreadedRT";
+	private static final String SingleRuntimeName = "SingleThreadRT";
+	private static final String SetConfigurationMethod = "configure";
 	private static final String CreatorFunction = "createThrededRuntime";
-	
+	private static final String CreateRTMethod = "createRuntime";
 
 	int numberOfThreads;
 
@@ -39,7 +40,7 @@ public class ThreadHandlingManager {
 
 		this.threadDescription = description;
 		numberOfThreads = threadDescription.size();
-		
+
 		Collection<ThreadPoolConfiguration> poolsCollection = threadDescription.values();
 		pools = new LinkedHashSet<ThreadPoolConfiguration>();
 		pools.addAll(poolsCollection);
@@ -48,8 +49,6 @@ public class ThreadHandlingManager {
 	public Map<String, ThreadPoolConfiguration> getDescription() {
 		return threadDescription;
 	}
-	
-	
 
 	public void createConfigurationSource(String dest) throws FileNotFoundException, UnsupportedEncodingException {
 
@@ -57,72 +56,75 @@ public class ThreadHandlingManager {
 		source.append(GenerationTemplates.cppInclude(ThreadConfigurationClassName.toLowerCase()));
 		source.append(GenerationTemplates.cppInclude(GenerationTemplates.RuntimeHeader));
 		source.append("\n\n");
-		
-		/*List<String> templateParams = new ArrayList<String>();
-		templateParams.add(ThreadedRuntimeName);
-		source.append(GenerationTemplates.usingTemplateType(MyRuntimeName,
-			GenerationTemplates.RuntimeName,templateParams));
-		source.append("\n\n");*/
-		
-		source.append(GenerationTemplates.putNamespace(GenerationTemplates.simpleFunctionDef(ThreadedRuntimeName, CreatorFunction,
-			(createConfiguration().append(createThreadedRuntime()).toString()), GenerationTemplates.RuntimeParamaterName), NamespaceName));
-		
+
+		List<String> templateParams = new ArrayList<String>();
+		templateParams.add(SingleRuntimeName);
+		source.append(GenerationTemplates.usingTemplateType(GenerationTemplates.MyRuntimeName,
+				GenerationTemplates.RuntimeName, templateParams));
+		source.append("\n\n");
+
+		source.append(GenerationTemplates
+				.putNamespace(GenerationTemplates.simpleFunctionDef(GenerationTemplates.MyRuntimeName, CreatorFunction,
+						(createConfiguration().append(createThreadedRuntime()).toString()),
+						GenerationTemplates.RuntimeParamaterName), NamespaceName));
+
 		Shared.writeOutSource(dest, GenerationTemplates.headerName(ConfigurationFile),
-			GenerationTemplates.headerGuard(source.toString(),ConfigurationFile));
+				GenerationTemplates.headerGuard(source.toString(), ConfigurationFile));
 
 	}
-	
+
 	private StringBuilder createThreadedRuntime() {
-	    StringBuilder source = new StringBuilder("");
-	    source.append(GenerationTemplates.createObject(ThreadedRuntimeName, GenerationTemplates.RuntimeParamaterName));
-	    List<String> params = new ArrayList<String>();
-	    params.add(ConfigurationObjectVariableName);
-	    source.append(ActivityTemplates.operationCallOnPointerVariable(GenerationTemplates.RuntimeParamaterName,SetConfigurationMethod,params));
-	    return source;
+		StringBuilder source = new StringBuilder("");
+		source.append(GenerationTemplates.staticCreate(GenerationTemplates.MyRuntimeName,
+				GenerationTemplates.RuntimeParamaterName, CreateRTMethod));
+		List<String> params = new ArrayList<String>();
+		params.add(ConfigurationObjectVariableName);
+		source.append(ActivityTemplates.operationCallOnPointerVariable(GenerationTemplates.RuntimeParamaterName,
+				SetConfigurationMethod, params));
+		return source;
 	}
 
 	private StringBuilder createConfiguration() {
-	     StringBuilder source = new StringBuilder("");
-	     List<String> parameters = new ArrayList<String>();
-	     parameters.add(new Integer(pools.size()).toString());
-	     source.append(GenerationTemplates.createObject(ThreadConfigurationClassName,ConfigurationObjectVariableName,parameters));
-	     
-	     
-	     for (ThreadPoolConfiguration pool : pools) {
-		parameters.clear();
-		parameters.add(allocatePoolObject(pool));
-		parameters.add(allocateFunctionObject(pool.getFunction()));
-		parameters.add(new Integer(pool.getMaxThread()).toString());
-		
-		source.append(insertToConfiguration(pool.getId(),GenerationTemplates.allocateObject(ConfigurationStructName, parameters)));
-	     }
-	     
-	     
-	     return source;
+		StringBuilder source = new StringBuilder("");
+		List<String> parameters = new ArrayList<String>();
+		parameters.add(new Integer(pools.size()).toString());
+		source.append(GenerationTemplates.createObject(ThreadConfigurationClassName, ConfigurationObjectVariableName,
+				parameters));
+
+		for (ThreadPoolConfiguration pool : pools) {
+			parameters.clear();
+			parameters.add(allocatePoolObject(pool));
+			parameters.add(allocateFunctionObject(pool.getFunction()));
+			parameters.add(new Integer(pool.getMaxThread()).toString());
+
+			source.append(insertToConfiguration(pool.getId(),
+					GenerationTemplates.allocateObject(ConfigurationStructName, parameters)));
+		}
+
+		return source;
 	}
-
-
 
 	private String insertToConfiguration(Integer id, String configuration) {
-	    List<String> params = new ArrayList<String>();
-	    params.add(id.toString());
-	    params.add(configuration);
-	    
-	    return ActivityTemplates.operationCallOnPointerVariable(ConfigurationObjectVariableName, InsertConfigurationOperationName, params);
+		List<String> params = new ArrayList<String>();
+		params.add(id.toString());
+		params.add(configuration);
+
+		return ActivityTemplates.operationCallOnPointerVariable(ConfigurationObjectVariableName,
+				InsertConfigurationOperationName, params);
 	}
-	
+
 	private String allocateFunctionObject(LinearFunction function) {
-	    List<String> params = new ArrayList<String>();
-	    params.add(new Integer(function.getConstant()).toString());
-	    params.add(new Double(function.getGradient()).toString());
-	    
-	    return GenerationTemplates.allocateObject(FunctionName, params);
+		List<String> params = new ArrayList<String>();
+		params.add(new Integer(function.getConstant()).toString());
+		params.add(new Double(function.getGradient()).toString());
+
+		return GenerationTemplates.allocateObject(FunctionName, params);
 	}
-	
+
 	private String allocatePoolObject(ThreadPoolConfiguration pool) {
-	    List<String> params = new ArrayList<String>();
-	    params.add(new Integer(pool.getFunction().getConstant()).toString());
-	    return GenerationTemplates.allocateObject(ThreadPoolClassName, params);
+		List<String> params = new ArrayList<String>();
+		params.add(new Integer(pool.getFunction().getConstant()).toString());
+		return GenerationTemplates.allocateObject(ThreadPoolClassName, params);
 	}
 
 }

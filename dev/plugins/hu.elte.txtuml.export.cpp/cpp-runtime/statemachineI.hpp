@@ -7,7 +7,7 @@
 
 #include "runtimetypes.hpp"
 
-class RuntimeI;
+//class RuntimeI;
 class StateMachineThreadPool;
 
 class StateMachineI
@@ -24,18 +24,18 @@ public:
   void deleteNextMessage() {_messageQueue->pop_front(); }
   bool emptyMessageQueue(){return _messageQueue->empty();}
   void setPool(StateMachineThreadPool* pool_){_pool=pool_;}
-  void setRuntime(RuntimeI* runtime_){_runtime=runtime_;}
+  //void setRuntime(RuntimeI* runtime_){_runtime=runtime_;}
   void setMessageQueue(std::shared_ptr<MessageQueueType> messageQueue_){_messageQueue=messageQueue_;}
   void setPooled(bool);
   bool isInPool(){return _inPool;}
   bool isStarted() {return _started;}
   bool isInitialized() {return _initialized; }
-  int getPoolId() {return poolId;};
+  int getPoolId() {return poolId;}
   
   virtual ~StateMachineI();
 protected:
   StateMachineI(std::shared_ptr<MessageQueueType> messageQueue_=std::shared_ptr<MessageQueueType>(new MessageQueueType()));
-  RuntimeI* _runtime;////safe because: controlled by the runtime, but we can not set it in the constructor
+  //RuntimeI* _runtime;////safe because: controlled by the runtime, but we can not set it in the constructor
   void setPoolId(int id) {poolId = id;}
 private:
   void handlePool();
