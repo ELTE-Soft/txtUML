@@ -4,9 +4,14 @@ import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUPortMember
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUReception
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionTrigger
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
 import hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage
+import java.util.ArrayList
 import org.eclipse.emf.common.util.TreeIterator
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.util.EcoreUtil
@@ -30,49 +35,62 @@ class XtxtUMLImportedTypesCollector extends ImportedTypesCollector {
 		val TreeIterator<EObject> contents = EcoreUtil.getAllContents(rootElement, true);
 
 		while (contents.hasNext()) {
-			var JvmType jvmType = null;
-			var ITextRegion refRegion = null;
+			val references = new ArrayList<Pair<JvmType, ITextRegion>>();
 
 			// determine the grammar-level cross-referenced types inside XtxtUML expressions
 			switch (next : contents.next()) {
-				TUClass: {
-					jvmType = next.superClass?.getPrimaryJvmElement as JvmType;
-					refRegion = next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUClass_SuperClass, 0);
+				TUClass:
+					references.add(next.superClass?.getPrimaryJvmElement as JvmType ->
+						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUClass_SuperClass, 0))
+				TUTransitionTrigger:
+					references.add(next.trigger?.getPrimaryJvmElement as JvmType ->
+						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUTransitionTrigger_Trigger, 0))
+				TUTransitionVertex:
+					references.add(next.vertex?.getPrimaryJvmElement as JvmType ->
+						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUTransitionVertex_Vertex, 0))
+				TUAssociationEnd:
+					references.add(next.endClass?.getPrimaryJvmElement as JvmType ->
+						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUAssociationEnd_EndClass, 0))
+				TUClassPropertyAccessExpression:
+					references.add(next.right?.getPrimaryJvmElement as JvmType ->
+						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Right, 0))
+				TUReception:
+					references.add(next.signal?.getPrimaryJvmElement as JvmType ->
+						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUReception_Signal, 0))
+				TUConnectorEnd: {
+					references.add(next.role?.getPrimaryJvmElement as JvmType ->
+						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUConnectorEnd_Role, 0))
+					references.add(next.port?.getPrimaryJvmElement as JvmType ->
+						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUConnectorEnd_Port, 0))
 				}
-				TUTransitionTrigger: {
-					jvmType = next.trigger?.getPrimaryJvmElement as JvmType;
-					refRegion = next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUTransitionTrigger_Trigger, 0);
-				}
-				TUTransitionVertex: {
-					jvmType = next.vertex?.getPrimaryJvmElement as JvmType;
-					refRegion = next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUTransitionVertex_Vertex, 0);
-				}
-				TUAssociationEnd: {
-					jvmType = next.endClass?.getPrimaryJvmElement as JvmType;
-					refRegion = next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUAssociationEnd_EndClass, 0);
-				}
-				TUClassPropertyAccessExpression: {
-					jvmType = next.right?.getPrimaryJvmElement as JvmType;
-					refRegion = next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Right,
-						0);
-				}
+				TUPortMember:
+					references.add(next.interface?.getPrimaryJvmElement as JvmType ->
+						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUPortMember_Interface, 0))
+				TUTransitionPort:
+					references.add(next.port?.getPrimaryJvmElement as JvmType ->
+						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUTransitionPort_Port, 0))
 			}
 
-			/* Apart from the original type references, enclosing types shall be considered too.
-			 * For example, if A is imported, B is a nested class of A and A.B is referenced, 
-			 * A is used as well, and so on.
-			 */
-			while (jvmType != null && refRegion != null) {
-				acceptType(jvmType, refRegion);
+			for (ref : references) {
+				var jvmType = ref.key;
+				var refRegion = ref.value;
 
-				val superClassRefLength = refRegion.length - jvmType.simpleName.length - 1;
-				refRegion = if (superClassRefLength > 0) {
-					new TextRegion(refRegion.offset, superClassRefLength)
-				} else {
-					null
+				/* Apart from the original type references, enclosing types shall be considered too.
+				 * For example, if A is imported, B is a nested class of A and A.B is referenced, then
+				 * A is used as well, and so on.
+				 */
+				while (jvmType != null && refRegion != null) {
+					acceptType(jvmType, refRegion);
+
+					val enclosingClassRefLength = refRegion.length - jvmType.simpleName.length - 1;
+					refRegion = if (enclosingClassRefLength > 0) {
+						new TextRegion(refRegion.offset, enclosingClassRefLength)
+					} else {
+						null
+					}
+
+					jvmType = jvmType.eContainer as JvmType;
 				}
-
-				jvmType = jvmType.eContainer as JvmType;
 			}
 		}
 	}
