@@ -64,13 +64,26 @@ public class ThreadHandlingManager {
 		source.append("\n\n");
 
 		source.append(GenerationTemplates
-				.putNamespace(GenerationTemplates.simpleFunctionDef(GenerationTemplates.MyRuntimeName, CreatorFunction,
-						(createConfiguration().append(createThreadedRuntime()).toString()),
-						GenerationTemplates.RuntimeParamaterName), NamespaceName));
+				.putNamespace(GenerationTemplates.simpleFunctionDecl(GenerationTemplates.MyRuntimeName, CreatorFunction) + ";",
+						NamespaceName));
 
 		Shared.writeOutSource(dest, GenerationTemplates.headerName(ConfigurationFile),
 				GenerationTemplates.headerGuard(source.toString(), ConfigurationFile));
+		
+		source = createDeplyomentFunctionDefinition();
+		Shared.writeOutSource(dest, GenerationTemplates.sourceName(ConfigurationFile), source.toString());
 
+	}
+
+	private StringBuilder createDeplyomentFunctionDefinition() {
+		StringBuilder source  = new StringBuilder("");
+		source.append(GenerationTemplates.cppInclude(ConfigurationFile));
+		source.append(GenerationTemplates
+				.putNamespace(GenerationTemplates.simpleFunctionDef(GenerationTemplates.MyRuntimeName, CreatorFunction,
+						(createConfiguration().append(createThreadedRuntime()).toString()),
+						GenerationTemplates.RuntimeParamaterName), NamespaceName));
+		
+		return source;
 	}
 
 	private StringBuilder createThreadedRuntime() {
