@@ -9,6 +9,8 @@ import hu.elte.txtuml.api.model.external.ExternalType
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
@@ -17,6 +19,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelElement
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
@@ -38,12 +41,14 @@ import org.eclipse.xtext.xbase.XExpression
 import org.eclipse.xtext.xbase.XFeatureCall
 import org.eclipse.xtext.xbase.XMemberFeatureCall
 import org.eclipse.xtext.xbase.XbasePackage
+import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
 import org.eclipse.xtext.xbase.typesystem.util.ExtendedEarlyExitComputer
 
-class XtxtUMLValidator extends XtxtUMLAssociationValidator {
+class XtxtUMLValidator extends XtxtUMLPortValidator {
 
 	@Inject extension ExtendedEarlyExitComputer;
 	@Inject extension IQualifiedNameProvider;
+	@Inject extension IJvmModelAssociations;
 
 	// Checks
 	@Check
@@ -129,9 +134,11 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 	}
 
 	@Check
-	def checkNoDuplicateState(TUState state) {
+	def checkStateNameIsUnique(TUState state) {
 		val container = state.eContainer;
+		var inClass = false;
 		val siblingsAndSelf = if (container instanceof TUClass) {
+				inClass = true;
 				(container as TUClass).members
 			} else {
 				(container as TUState).members
@@ -139,19 +146,26 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 
 		if (siblingsAndSelf.exists [
 			it instanceof TUState && (it as TUState).name == state.name && it != state ||
-				it instanceof TUTransition && (it as TUTransition).name == state.name
+				it instanceof TUTransition && (it as TUTransition).name == state.name ||
+				it instanceof TUPort && (it as TUPort).name == state.name
 		]) {
 			error(
-				"Duplicate element " + state.name,
+				"State " + state.name + " in " + (if (inClass)
+					"class " + (container as TUClass).name
+				else
+					"state " + (container as TUState).name) +
+					" must have a unique name among states, transitions and ports of the enclosing element",
 				XtxtUMLPackage::eINSTANCE.TUState_Name
 			);
 		}
 	}
 
 	@Check
-	def checkNoDuplicateTransition(TUTransition trans) {
+	def checkTransitionNameIsUnique(TUTransition trans) {
 		val container = trans.eContainer;
+		var inClass = false;
 		val siblingsAndSelf = if (container instanceof TUClass) {
+				inClass = true;
 				(container as TUClass).members
 			} else {
 				(container as TUState).members
@@ -159,10 +173,15 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 
 		if (siblingsAndSelf.exists [
 			it instanceof TUTransition && (it as TUTransition).name == trans.name && it != trans ||
-				it instanceof TUState && (it as TUState).name == trans.name
+				it instanceof TUState && (it as TUState).name == trans.name ||
+				it instanceof TUPort && (it as TUPort).name == trans.name
 		]) {
 			error(
-				"Duplicate element " + trans.name,
+				"Transition " + trans.name + " in " + (if (inClass)
+					"class " + (container as TUClass).name
+				else
+					"state " + (container as TUState).name) +
+					" must have a unique name among states, transitions and ports of the enclosing element",
 				XtxtUMLPackage::eINSTANCE.TUTransition_Name
 			);
 		}
@@ -292,6 +311,23 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 	}
 
 	@Check
+	def checkSignalSentToPortIsProvided(RAlfSendSignalExpression sendExpr) {
+		if (!sendExpr.target.isConformantWith(Port, false) || !sendExpr.signal.isConformantWith(Signal, false)) {
+			return;
+		}
+
+		val sentSignalSourceElement = sendExpr.signal.actualType.type.primarySourceElement as TUSignal;
+
+		val portSourceElement = sendExpr.target.actualType.type.primarySourceElement as TUPort;
+		val providedReceptionsOfPort = portSourceElement.members.findFirst[provided]?.interface.receptions;
+
+		if (providedReceptionsOfPort?.findFirst[signal == sentSignalSourceElement] == null) {
+			error("Signal type " + sentSignalSourceElement.name + " is not provided by port " + portSourceElement.name,
+				XtxtUMLPackage::eINSTANCE.RAlfSendSignalExpression_Signal);
+		}
+	}
+
+	@Check
 	def checkDeleteObjectExpressionTypes(RAlfDeleteObjectExpression deleteExpr) {
 		if (!deleteExpr.object.isConformantWith(ModelClass, false)) {
 			error(
@@ -308,6 +344,35 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 				typeMismatch("Class"),
 				XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Left
 			)
+		}
+	}
+
+	@Check
+	def checkOwnerOfAccessedClassProperty(TUClassPropertyAccessExpression accessExpr) {
+		val leftSourceElement = accessExpr.left.actualType.type.primarySourceElement as TUClass;
+
+		if (leftSourceElement == null) {
+			return; // typechecks will mark it
+		}
+
+		switch (prop : accessExpr.right) {
+			TUAssociationEnd: {
+				val validAccessor = (prop.eContainer as TUAssociation).ends.findFirst[name != prop.name].endClass
+				if (leftSourceElement != validAccessor) {
+					error("Association end " + prop.name + " is not accessible from class " + leftSourceElement.name,
+						XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Right);
+				} else if (prop.notNavigable) {
+					error("Association end " + prop.name + " is not navigable",
+						XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Right);
+				}
+			}
+			default: { // TUPort
+				val validAccessor = (prop.eContainer as TUClass);
+				if (leftSourceElement != validAccessor) {
+					error(prop.name + " cannot be resolved as a port of class " + leftSourceElement.name,
+						XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Right);
+				}
+			}
 		}
 	}
 
