@@ -97,8 +97,8 @@ public class StateMachineDiagramElementsTxtUmlArranger extends
 	
 			if(isCompositeState){
 				super.arrangeChildren(regionCompartement, monitor);
-				Dimension d = calculatePreferredSize(editparts);
-				DiagramElementsModifier.resizeState(state, d.width, d.height);
+//				Dimension d = calculatePreferredSize(editparts);
+//				DiagramElementsModifier.resizeState(state, d.width, d.height);
 			}
 		}
 	}
