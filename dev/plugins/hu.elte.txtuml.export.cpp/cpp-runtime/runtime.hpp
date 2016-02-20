@@ -48,7 +48,11 @@ public:
 
   void configure(ThreadConfiguration* configuration)
   {
-        static_cast<RuntimeType*>(this)->setConfiguration(configuration);
+	  if(!(static_cast<RuntimeType*>(this)->isConfigurated()))
+	  {
+		  static_cast<RuntimeType*>(this)->setConfiguration(configuration);
+	  }
+
   }
   
   void startRT()
@@ -83,15 +87,14 @@ public:
 
   static SingleThreadRT* createRuntime();
   void start();
+  void setupObjectSpecificRuntime(StateMachineI*);
   void setConfiguration(ThreadConfiguration*);
   void stopUponCompletion();
-
+  bool isConfigurated();
 private:
   SingleThreadRT();
-
-  void setupObjectSpecificRuntime(StateMachineI*);
-  bool isConfigurated();
-
+  static SingleThreadRT* instance;
+  
   std::shared_ptr<MessageQueueType> _messageQueue;
   std::condition_variable waiting_empty_cond;
   std::atomic_bool waiting;
@@ -101,18 +104,21 @@ class ConfiguratedThreadedRT: public RuntimeI<ConfiguratedThreadedRT>
 {
 public:
 
-        static ConfiguratedThreadedRT* createRuntime();
+    static ConfiguratedThreadedRT* createRuntime();
 	
-        void start();
+    void start();
 	void removeObject(StateMachineI*);
 	void stopUponCompletion();
 	void setConfiguration(ThreadConfiguration*);
-        ~ConfiguratedThreadedRT();
+	bool isConfigurated();
+	void setupObjectSpecificRuntime(StateMachineI*);
+   ~ConfiguratedThreadedRT();
 private:
         ConfiguratedThreadedRT();
+        static ConfiguratedThreadedRT* instance;
 
-        void setupObjectSpecificRuntime(StateMachineI*);
-        bool isConfigurated();
+        
+        
 
 	ThreadPoolManager* poolManager;
 	std::vector<int> numberOfObjects;

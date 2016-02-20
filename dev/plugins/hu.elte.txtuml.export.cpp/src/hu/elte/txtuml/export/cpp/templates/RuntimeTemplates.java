@@ -17,14 +17,17 @@ class RuntimeTemplates {
 	public static final String RuntimeSetter = "setRuntime";
 	public static final String RuntimeVarName = "_runtime";
 	public static final String RuntimeParamter = "rt";
+	public static final String UsingRuntime = "Runtime";
+	public static final String RuntimeIntanceMethod= "createRuntime";
+	public static final String GetRuntimeInstance = UsingRuntime + "::" + RuntimeIntanceMethod + "()";
+	public static final String ObjectSetterForRuntime = "setupObject";
 
 	public static String createObject(String objName) {
-		return "_runtime->setupObject(" + objName + ");\n" + "_runtime->startObject(" + objName + ");\n";
+		return GetRuntimeInstance + GenerationNames.PointerAccess + ObjectSetterForRuntime + "(" + objName + ");\n";
 	}
 
 	public static String initStateMachineForRuntime() {
-		return "_runtime->setupObject(" + GenerationNames.Self + ");\n";
-		// "_runtime->startObject(this);\n\n";
+		return GetRuntimeInstance + GenerationNames.PointerAccess + ObjectSetterForRuntime + "(" + GenerationNames.Self + ");\n";
 	}
 
 	public static String processEventVirtual(String className) {

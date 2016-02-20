@@ -84,8 +84,7 @@ class PrivateFunctionalTemplates {
 			source.append(GenerationNames.PoolIdSetter + "(" + poolId + ");\n");
 		}
 
-		if (rt && (parentClassName == null || parentClassName == "this")) {
-			source.append(RuntimeTemplates.RuntimeSetter + "(rt); \n");
+		if (rt && (parentClassName == null || parentClassName == GenerationNames.Self)) {
 			source.append(RuntimeTemplates.initStateMachineForRuntime());
 		}
 

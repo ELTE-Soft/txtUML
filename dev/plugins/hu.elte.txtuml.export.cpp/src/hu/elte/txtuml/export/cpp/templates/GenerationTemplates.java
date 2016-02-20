@@ -23,6 +23,8 @@ public class GenerationTemplates {
 	public static final String RuntimeName = RuntimeTemplates.RuntimeIterfaceName;
 	public static final String RuntimePointer = RuntimeTemplates.RuntimeIterfaceName + "*";
 	public static final String RuntimeParamaterName = RuntimeTemplates.RuntimeParamter;
+	public static final String MyRuntimeName = RuntimeTemplates.UsingRuntime;
+	public static final String DeploymentHeader = "deployment";
 
 	public static final String InitSignal = GenerationNames.InitialEventName;
 
@@ -237,12 +239,9 @@ public class GenerationTemplates {
 	}
 
 	// TODO too simple....
-	public static String constructorDef(String className, String baseClassName, Boolean rt) {
+	public static String constructorDef(String className, String baseClassName) {
 		if (baseClassName == null) {
 			return className + "::" + className + "(){}\n\n";
-		} else if (baseClassName != null && rt) {
-			return className + "::" + className + "(" + RuntimePointer + " " + RuntimeParamaterName + "): "
-					+ baseClassName + "(" + RuntimeParamaterName + ") {}\n\n";
 		} else {
 			return className + "::" + className + "() :" + baseClassName + "() {}\n\n";
 		}
@@ -324,7 +323,7 @@ public class GenerationTemplates {
 			Multimap<Pair<String, String>, Pair<String, String>> machine, Map<String, String> subMachines,
 			String intialState, Boolean rt) {
 
-		StringBuilder source = new StringBuilder(simpleStateMachineClassConstructorHead(className, baseClassName, rt)
+		StringBuilder source = new StringBuilder(simpleStateMachineClassConstructorHead(className, baseClassName)
 				+ GenerationNames.CurrentMachineName + "(" + GenerationNames.NullPtr + ")" + ","
 				+ GenerationNames.DefaultStateInitialization + "\n{\n");
 		source.append(PrivateFunctionalTemplates.hierarchicalStateMachineClassConstructorSharedBody(className, "this",
@@ -356,7 +355,7 @@ public class GenerationTemplates {
 	public static String simpleStateMachineClassConstructor(String className, String baseClassName,
 			Multimap<Pair<String, String>, Pair<String, String>> machine, String intialState, Boolean rt,
 			Integer poolId) {
-		String source = simpleStateMachineClassConstructorHead(className, baseClassName, rt)
+		String source = simpleStateMachineClassConstructorHead(className, baseClassName)
 				+ GenerationNames.DefaultStateInitialization + "\n{\n" + PrivateFunctionalTemplates
 						.stateMachineClassConstructorSharedBody(className, machine, intialState, rt, poolId)
 				+ "}\n\n";
@@ -365,34 +364,20 @@ public class GenerationTemplates {
 
 	}
 
-	public static String simpleStateMachineClassConstructorHead(String className, Boolean rt) {
-		if (rt) {
-			return className + "::" + className + "(" + RuntimePointer + " " + RuntimeTemplates.RuntimeParamter + "):";
-
-		} else {
+	public static String simpleStateMachineClassConstructorHead(String className) {
+		
 			return className + "::" + className + "():";
-
-		}
+		
 	}
 
-	public static String simpleStateMachineClassConstructorHead(String className, String baseClassName, Boolean rt) {
-		if (rt) {
-			if (baseClassName != null) {
-				return className + "::" + className + "(" + RuntimePointer + " " + RuntimeTemplates.RuntimeParamter
-						+ "): " + baseClassName + "(" + RuntimeTemplates.RuntimeParamter + "),";
-			} else {
-				return className + "::" + className + "(" + RuntimePointer + " " + RuntimeTemplates.RuntimeParamter
-						+ "):";
-			}
-
-		} else {
+	public static String simpleStateMachineClassConstructorHead(String className, String baseClassName) {
+		
 			if (baseClassName != null) {
 				return className + "::" + className + "(): " + baseClassName + "(" + RuntimeTemplates.RuntimeParamter
 						+ "),";
 			} else {
 				return className + "::" + className + "():";
 			}
-		}
 	}
 
 	public static String guardFunction(String guardFunctionName, String constraint, String eventName) {
@@ -573,5 +558,5 @@ public class GenerationTemplates {
 
 	}
 
-	public static final String MyRuntimeName = "ChosenRuntime";
+	
 }

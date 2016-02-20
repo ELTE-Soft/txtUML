@@ -143,7 +143,6 @@ public class ClassExporter {
 		List<String> constructorParams = new ArrayList<String>();
 
 		if (ownStates(class_, smList)) {
-			constructorParams.add(GenerationTemplates.RuntimeName);
 			Region region = smList.get(0).getRegions().get(0);
 			privateParts.append(createEntryFunctionsDecl(region));
 			privateParts.append(createExitFunctionsDecl(region));
@@ -212,7 +211,7 @@ public class ClassExporter {
 			source.append(GenerationTemplates.entry(class_.getName(), createStateActionMap(_entryMap, region)) + "\n");
 			source.append(GenerationTemplates.exit(class_.getName(), createStateActionMap(_exitMap, region)) + "\n");
 		} else {
-			source.append(GenerationTemplates.constructorDef(class_.getName(), getBaseClass(class_), true));
+			source.append(GenerationTemplates.constructorDef(class_.getName(), getBaseClass(class_)));
 		}
 
 		for (Operation item : class_.getOwnedOperations()) {
@@ -423,9 +422,7 @@ public class ClassExporter {
 		}
 
 		if (!isHeader) {
-			source.append(GenerationTemplates.cppInclude(GenerationTemplates.RuntimeHeader));
-		}
-		if (!isHeader) {
+			source.append(GenerationTemplates.cppInclude(GenerationTemplates.DeploymentHeader));
 			source.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
 		}
 

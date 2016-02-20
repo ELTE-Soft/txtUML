@@ -2,6 +2,8 @@
 
 //********************************SingleThreadRT**********************************
 
+SingleThreadRT* SingleThreadRT::instance = nullptr;
+
 SingleThreadRT::SingleThreadRT():_messageQueue(new MessageQueueType), waiting(false){}
 
 void SingleThreadRT::setupObjectSpecificRuntime(StateMachineI *sm)
@@ -14,9 +16,13 @@ bool SingleThreadRT::isConfigurated()
     return true;
 }
 
-SingleThreadRT *SingleThreadRT::createRuntime()
+SingleThreadRT* SingleThreadRT::createRuntime()
 {
-    return new SingleThreadRT();
+    if (instance == nullptr)
+    {
+        instance = new SingleThreadRT();
+    }
+    return instance;
 }
 
 void SingleThreadRT::start()
@@ -62,12 +68,17 @@ void SingleThreadRT::stopUponCompletion()
 
 //********************************ConfiguratedThreadedRT************************************
 
+ConfiguratedThreadedRT* ConfiguratedThreadedRT::instance = nullptr;
 
 ConfiguratedThreadedRT::ConfiguratedThreadedRT(): poolManager(new ThreadPoolManager()){}
 
-ConfiguratedThreadedRT *ConfiguratedThreadedRT::createRuntime()
+ConfiguratedThreadedRT* ConfiguratedThreadedRT::createRuntime()
 {
-    return new ConfiguratedThreadedRT();
+    if (instance == nullptr)
+    {
+        instance = new ConfiguratedThreadedRT();
+    }
+    return instance;
 }
 
 void ConfiguratedThreadedRT::start()
