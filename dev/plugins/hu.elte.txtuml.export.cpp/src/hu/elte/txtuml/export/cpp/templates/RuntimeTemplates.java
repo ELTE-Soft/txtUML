@@ -21,6 +21,8 @@ class RuntimeTemplates {
 	public static final String RuntimeIntanceMethod= "createRuntime";
 	public static final String GetRuntimeInstance = UsingRuntime + "::" + RuntimeIntanceMethod + "()";
 	public static final String ObjectSetterForRuntime = "setupObject";
+	public static final String ObjectRemoverForRuntime = "removeObject";
+	
 
 	public static String createObject(String objName) {
 		return GetRuntimeInstance + GenerationNames.PointerAccess + ObjectSetterForRuntime + "(" + objName + ");\n";

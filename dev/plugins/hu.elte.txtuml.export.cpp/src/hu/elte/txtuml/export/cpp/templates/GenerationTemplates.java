@@ -200,6 +200,7 @@ public class GenerationTemplates {
 
 		source += "\n{\npublic:\n" + className + "(" + PrivateFunctionalTemplates.paramTypeList(constructorParams)
 				+ ");\n";
+		source += "~" + className + "();\n"; 
 
 		if (!sm && baseClassName == null) {
 			source += GenerationNames.DummyProcessEventDef;
@@ -246,6 +247,16 @@ public class GenerationTemplates {
 			return className + "::" + className + "() :" + baseClassName + "() {}\n\n";
 		}
 
+	}
+	
+	public static String destructorDef(String className, Boolean ownStates) {
+		if(!ownStates) {
+			return className + "::" + "~" + className + "()" + emptyBody() + "\n";
+		}
+		else {
+			return className + "::" + "~" + className + "()\n{\n" + RuntimeTemplates.GetRuntimeInstance + GenerationNames.PointerAccess + RuntimeTemplates.ObjectRemoverForRuntime + "(" + GenerationNames.Self + ");\n}";
+		}
+		
 	}
 
 	public static String transitionActionDecl(String transitionActionName) {
