@@ -1,13 +1,13 @@
 package hu.elte.txtuml.export.uml2.transform.exporters;
 
-import hu.elte.txtuml.export.uml2.transform.backend.ParameterMap;
-import hu.elte.txtuml.export.uml2.utils.ActivityEditor;
-
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.SequenceNode;
+
+import hu.elte.txtuml.export.uml2.transform.backend.ParameterMap;
+import hu.elte.txtuml.export.uml2.utils.ActivityEditor;
 
 public class MethodBodyExporter extends ActivityEditor {
 

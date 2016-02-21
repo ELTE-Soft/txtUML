@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.visitors;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.MethodSkeletonExporter;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,6 +8,8 @@ import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.uml2.uml.Operation;
+
+import hu.elte.txtuml.export.uml2.transform.exporters.MethodSkeletonExporter;
 
 public class MethodSkeletonVisitor extends ASTVisitor {
 

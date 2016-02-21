@@ -1,8 +1,5 @@
 package hu.elte.txtuml.export.cpp.wizardz;
 
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.emf.common.util.URI;
-
 import java.io.File;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -10,19 +7,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.UMLPackage;
 
 
-import hu.elte.txtuml.eclipseutils.ClassLoaderProvider;
-import hu.elte.txtuml.eclipseutils.Dialogs;
-import hu.elte.txtuml.export.cpp.Shared;
-import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
-import hu.elte.txtuml.export.cpp.thread.ThreadDescriptionExporter;
 import hu.elte.txtuml.api.deployment.Configuration;
 import hu.elte.txtuml.export.ExportUtils;
 import hu.elte.txtuml.export.Uml2Utils;
+import hu.elte.txtuml.export.cpp.Shared;
+import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
+import hu.elte.txtuml.export.cpp.thread.ThreadDescriptionExporter;
+import hu.elte.txtuml.utils.eclipse.ClassLoaderProvider;
+import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 public class TxtUMLToCppWizard extends Wizard {
 

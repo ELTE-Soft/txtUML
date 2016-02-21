@@ -1,9 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.exporters.controls;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
-
 import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
@@ -13,6 +9,10 @@ import org.eclipse.uml2.uml.ExecutableNode;
 import org.eclipse.uml2.uml.LoopNode;
 import org.eclipse.uml2.uml.SequenceNode;
 import org.eclipse.uml2.uml.UMLPackage;
+
+import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
 
 abstract class AbstractLoopExporter extends AbstractControlStructureExporter {
 

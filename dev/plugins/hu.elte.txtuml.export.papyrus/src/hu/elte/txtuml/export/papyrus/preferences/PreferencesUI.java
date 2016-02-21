@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.papyrus.preferences;
 
-import hu.elte.txtuml.export.papyrus.graphics.IconsUtil;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -10,6 +8,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+
+import hu.elte.txtuml.export.papyrus.graphics.IconsUtil;
 
 /**
  * Creates the controls for the preferences

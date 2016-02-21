@@ -1,14 +1,14 @@
 package hu.elte.txtuml.export.uml2.transform.exporters.expressions;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
-import hu.elte.txtuml.utils.Pair;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Type;
+
+import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
+import hu.elte.txtuml.utils.Pair;
 
 public class OperatorExporter {
 

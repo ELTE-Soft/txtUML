@@ -1,14 +1,5 @@
 package hu.elte.txtuml.export.papyrus.layout.txtuml;
 
-import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
-import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
-import hu.elte.txtuml.export.uml2.mapping.ModelMapUtils;
-import hu.elte.txtuml.layout.export.DiagramExportationReport;
-import hu.elte.txtuml.layout.visualizer.model.AssociationType;
-import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
-import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
-import hu.elte.txtuml.utils.Pair;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +11,15 @@ import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Generalization;
+
+import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
+import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
+import hu.elte.txtuml.export.uml2.mapping.ModelMapUtils;
+import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.layout.visualizer.model.AssociationType;
+import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
+import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.utils.Pair;
 
 /**
  * Finds the org.eclipse.uml2 element from a model according to the txtUML name 

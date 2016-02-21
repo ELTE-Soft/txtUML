@@ -8,15 +8,12 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeParameter;
 
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
-import hu.elte.txtuml.export.uml2.utils.SharedUtils;
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
+import hu.elte.txtuml.utils.jdt.SharedUtils;
 import hu.elte.txtuml.validation.ProblemCollector;
 import hu.elte.txtuml.validation.problems.general.InvalidModifier;
 import hu.elte.txtuml.validation.problems.general.InvalidTemplate;
 
-/**
- * Utility methods for visitors to check common AST elements.
- */
 public class Utils {
 
 	public static void checkTemplate(ProblemCollector collector, TypeDeclaration elem) {

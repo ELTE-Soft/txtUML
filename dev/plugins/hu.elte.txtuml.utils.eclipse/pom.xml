@@ -9,6 +9,6 @@
 		<version>0.3.0-SNAPSHOT</version>
 		<relativePath>../../releng/hu.elte.txtuml.parent/pom.xml</relativePath>
 	</parent>
-	<artifactId>hu.elte.txtuml.eclipseutils</artifactId>
+	<artifactId>hu.elte.txtuml.utils.eclipse</artifactId>
 	<packaging>eclipse-plugin</packaging>
 </project>

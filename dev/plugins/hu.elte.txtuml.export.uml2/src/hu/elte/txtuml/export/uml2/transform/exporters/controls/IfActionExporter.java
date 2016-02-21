@@ -1,12 +1,5 @@
 package hu.elte.txtuml.export.uml2.transform.exporters.controls;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.AssignableExpr;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.OperatorExporter;
-import hu.elte.txtuml.utils.Reference;
-
 import java.util.Arrays;
 
 import org.eclipse.jdt.core.dom.IfStatement;
@@ -18,6 +11,13 @@ import org.eclipse.uml2.uml.SequenceNode;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
+
+import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.AssignableExpr;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.OperatorExporter;
+import hu.elte.txtuml.utils.Reference;
 
 public class IfActionExporter extends AbstractControlStructureExporter {
 

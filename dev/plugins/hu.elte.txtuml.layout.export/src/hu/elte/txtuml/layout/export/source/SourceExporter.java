@@ -1,12 +1,12 @@
 package hu.elte.txtuml.layout.export.source;
 
+import java.util.Arrays;
+import java.util.List;
+
 import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
 import hu.elte.txtuml.layout.export.problems.ElementExportationException;
 import hu.elte.txtuml.utils.Pair;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Implementations of this interface are used by the diagram exportation to get

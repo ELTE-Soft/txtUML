@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.uml2.utils;
+package hu.elte.txtuml.utils.jdt;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;

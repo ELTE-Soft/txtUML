@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout;
 
-import hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsArranger;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +11,8 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.requests.ArrangeRequest;
 import org.eclipse.papyrus.uml.diagram.menu.actions.SizeAction;
+
+import hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsArranger;
 
 /**
  * An abstract class for arranging the elements with the GMF arranging algorithm. 

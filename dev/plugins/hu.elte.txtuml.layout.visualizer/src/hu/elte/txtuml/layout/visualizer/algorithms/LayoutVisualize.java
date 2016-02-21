@@ -1,5 +1,13 @@
 package hu.elte.txtuml.layout.visualizer.algorithms;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Observer;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.ArrangeObjects;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.ArrangeAssociations;
 import hu.elte.txtuml.layout.visualizer.events.ProgressEmitter;
@@ -23,14 +31,6 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 import hu.elte.txtuml.utils.Pair;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Observer;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * This class is used to wrap the arrange of a whole diagram.
@@ -99,10 +99,25 @@ public class LayoutVisualize {
 	 * 
 	 * @return the pixel-grid ratio.
 	 */
-	public Integer getPixelGridRatio() {
+	public Integer getPixelGridHorizontal() {
 		if (_objects.size() > 0) {
 			RectangleObject obj = _objects.stream().findFirst().get();
-			return obj.getPixelWidth() / obj.getWidth();
+			if(obj.getWidth() == 1)
+				return obj.getPixelWidth();
+			else
+				return obj.getPixelWidth() / (obj.getWidth() - 1);
+		}
+
+		return 1;
+	}
+	
+	public Integer getPixelGridVertical() {
+		if (_objects.size() > 0) {
+			RectangleObject obj = _objects.stream().findFirst().get();
+			if(obj.getHeight() == 1)
+				return obj.getPixelHeight();
+			else
+				return obj.getPixelHeight() / (obj.getHeight() - 1);
 		}
 
 		return 1;

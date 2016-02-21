@@ -89,8 +89,8 @@ void ConfiguratedThreadedRT::start()
         int numberOfConfigurations = poolManager->getNumberOfConfigurations();
 		
 		numberOfObjects.clear();
-		numberOfObjects.resize(numberOfConfigurations);
-		
+                numberOfObjects.resize((unsigned int)numberOfConfigurations);
+
 		for(int i = 0; i < numberOfConfigurations; i++)
 		{
 			poolManager->getPool(i)->startPool();
@@ -115,16 +115,17 @@ void ConfiguratedThreadedRT::stopUponCompletion()
 void ConfiguratedThreadedRT::setupObjectSpecificRuntime(StateMachineI* sm)
 {
 	
+
 	int objectID = sm->getPoolId();
 	StateMachineThreadPool* matchedPool = poolManager->getPool(objectID);
 	sm->setPool(matchedPool);
 	numberOfObjects[objectID]++;
 	poolManager->recalculateThreads(objectID,numberOfObjects[objectID]);
-
 }
 
 bool ConfiguratedThreadedRT::isConfigurated()
 {
+
     return poolManager->isConfigurated();
 }
 

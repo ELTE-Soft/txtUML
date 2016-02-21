@@ -1,9 +1,9 @@
 package hu.elte.txtuml.layout.export.problems;
 
+import java.lang.annotation.Annotation;
+
 import hu.elte.txtuml.api.layout.LinkEnd;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
-
-import java.lang.annotation.Annotation;
 
 public class Utils {
     

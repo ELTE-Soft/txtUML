@@ -1,7 +1,7 @@
 package hu.elte.txtuml.diagnostics.session;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.core.Is.*;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;

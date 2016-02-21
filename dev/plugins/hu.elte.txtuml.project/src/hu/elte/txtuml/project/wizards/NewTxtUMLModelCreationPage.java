@@ -17,8 +17,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 
-import hu.elte.txtuml.export.uml2.utils.ElementTypeTeller;
 import hu.elte.txtuml.project.ModelCreator;
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 
 /**
  * This dialog uses source container, package and type name inputs from
@@ -138,5 +138,4 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 		}
 		return status;
 	}
-
 }

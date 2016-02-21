@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: txtUML Diagnostics Plugin
 Bundle-SymbolicName: hu.elte.txtuml.diagnostics;singleton:=true
 Bundle-Version: 0.3.0.qualifier
-Bundle-Activator: hu.elte.txtuml.diagnostics.Activator
 Bundle-Vendor: ELTE
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -14,11 +13,12 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.emf.ecore,
  org.eclipse.papyrus.infra.services.markerlistener,
  org.eclipse.papyrus.infra.gmfdiag.css,
+ hu.elte.txtuml.export.uml2;bundle-version="0.3.0",
+ hu.elte.txtuml.utils;bundle-version="0.3.0",
+ hu.elte.txtuml.export.papyrus;bundle-version="0.3.0",
+ hu.elte.txtuml.api.diagnostics;bundle-version="0.3.0",
  hu.elte.txtuml.export.uml2;bundle-version="0.3.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Import-Package: hu.elte.txtuml.api.diagnostics.protocol,
- hu.elte.txtuml.export.papyrus.preferences,
- hu.elte.txtuml.export.uml2.mapping
 Export-Package: hu.elte.txtuml.diagnostics,
  hu.elte.txtuml.diagnostics.session

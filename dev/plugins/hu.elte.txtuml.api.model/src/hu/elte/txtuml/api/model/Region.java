@@ -1,8 +1,8 @@
 package hu.elte.txtuml.api.model;
 
-import hu.elte.txtuml.api.model.backend.ElseException;
 import hu.elte.txtuml.api.model.ModelExecutor.Report;
 import hu.elte.txtuml.api.model.Trigger.AnyPort;
+import hu.elte.txtuml.api.model.backend.ElseException;
 import hu.elte.txtuml.api.model.backend.collections.InitialsMap;
 
 /**

@@ -1,13 +1,14 @@
 package hu.elte.txtuml.export.uml2.utils;
 
-import hu.elte.txtuml.api.model.Max;
-import hu.elte.txtuml.api.model.Min;
-import hu.elte.txtuml.api.model.assocends.Multiplicity;
-
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.NumberLiteral;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+
+import hu.elte.txtuml.api.model.Max;
+import hu.elte.txtuml.api.model.Min;
+import hu.elte.txtuml.api.model.assocends.Multiplicity;
+import hu.elte.txtuml.utils.jdt.SharedUtils;
 
 public class MultiplicityProvider {
 
