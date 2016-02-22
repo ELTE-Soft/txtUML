@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.InputPin;
@@ -44,17 +42,18 @@ public abstract class AbstractLinkActionExporter {
 
 		LinkAction linkAction = (LinkAction) expressionExporter.createAndAddNode(linkActionName, actionEClass);
 
-		this.addEndToLinkAction(linkAction, association, leftExpr, 1);
-		this.addEndToLinkAction(linkAction, association, rightExpr, 2);
+		this.addEndToLinkAction(linkAction, association, args.get(0), args.get(1), 1);
+		this.addEndToLinkAction(linkAction, association, args.get(2), args.get(3), 2);
 	}
 
-	protected void addEndToLinkAction(LinkAction linkAction, Association association, Expr endExpr, int endNum) {
+	protected void addEndToLinkAction(LinkAction linkAction, Association association, Expr endSelector, Expr endExpr,
+			int endNum) {
 
-		String phrase = endExpr.getName();
+		String endName = endSelector.getName();
 		Type endType = endExpr.getType();
 
 		LinkEndData end = linkAction.createEndData();
-		Property endProp = association.getMemberEnd(phrase, endType);
+		Property endProp = association.getMemberEnd(endName, endType);
 
 		InputPin endPin = (InputPin) linkAction.createInputValue(linkAction.getName() + "_end" + endNum + "input",
 				endType, UMLPackage.Literals.INPUT_PIN);
@@ -69,8 +68,7 @@ public abstract class AbstractLinkActionExporter {
 
 	protected Association getAssociation(IMethodBinding binding, List<Expr> args) {
 		TypeLiteralExpr arg0 = (TypeLiteralExpr) args.get(0);
-
-		return (Association) arg0.getType();
+		return (Association) expressionExporter.getTypeExporter().exportType(arg0.getBinding().getDeclaringClass());
 	}
 
 }

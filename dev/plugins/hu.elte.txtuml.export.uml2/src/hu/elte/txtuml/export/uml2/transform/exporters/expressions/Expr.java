@@ -296,6 +296,11 @@ public interface Expr {
 		public Type getType() {
 			return typeExporter.exportType(binding);
 		}
+		
+		public ITypeBinding getBinding() {
+			return binding;
+			
+		}
 
 		@Override
 		public String getName() {

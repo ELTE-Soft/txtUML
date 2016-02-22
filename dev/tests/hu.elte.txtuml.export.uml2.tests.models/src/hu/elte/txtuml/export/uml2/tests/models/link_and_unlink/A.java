@@ -16,11 +16,11 @@ public class A extends ModelClass {
 		@Override
 		public void entry() {
 			A inst1 = Action.create(A.class);
-			A inst2 = Action.create(A.class);
+			B inst2 = Action.create(B.class);
 
-			Action.link(A_A.ThisEnd.class, inst1, A_A.OtherEnd.class, inst2);
+			Action.link(A_B.ThisEnd.class, inst1, A_B.OtherEnd.class, inst2);
 
-			Action.unlink(A_A.ThisEnd.class, inst1, A_A.OtherEnd.class, inst2);
+			Action.unlink(A_B.ThisEnd.class, inst1, A_B.OtherEnd.class, inst2);
 		}
 	}
 
