@@ -17,6 +17,7 @@ import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.TypeLiteralExpr;
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
 
 public abstract class AbstractLinkActionExporter {
@@ -67,11 +68,9 @@ public abstract class AbstractLinkActionExporter {
 	}
 
 	protected Association getAssociation(IMethodBinding binding, List<Expr> args) {
-		TypeLiteral arg0 = (TypeLiteral) args.get(0);
+		TypeLiteralExpr arg0 = (TypeLiteralExpr) args.get(0);
 
-		ITypeBinding assocTypeBinding = arg0.getType().resolveBinding().getDeclaringClass();
-
-		return (Association) expressionExporter.getTypeExporter().exportType(assocTypeBinding);
+		return (Association) arg0.getType();
 	}
 
 }

@@ -118,7 +118,7 @@ public class TestStructure {
 	public void testAssociation() throws Exception {
 		org.eclipse.uml2.uml.Model model = ModelExportTestUtils.export("hu.elte.txtuml.export.uml2.tests.models.association");
 		assertNotNull(model);
-		assertEquals(8, model.getMembers().size());
+		assertEquals(8, model.getOwnedMembers().size());
 		
 		Class a = (Class)model.getMember("A");
 		assertNotNull(a);
@@ -470,9 +470,9 @@ public class TestStructure {
 		
 		assertEquals(3,nodesList.size());
 		
-		SequenceNode body = (SequenceNode) nodesList.get(1);
+		SequenceNode body = (SequenceNode) nodesList.get(2);
 		
-		StartClassifierBehaviorAction act = (StartClassifierBehaviorAction)body.getExecutableNodes().get(1);
+		StartClassifierBehaviorAction act = (StartClassifierBehaviorAction)body.getExecutableNodes().get(2);
 		
 		InputPin StartedClassPin = act.getInputs().get(0);
 		

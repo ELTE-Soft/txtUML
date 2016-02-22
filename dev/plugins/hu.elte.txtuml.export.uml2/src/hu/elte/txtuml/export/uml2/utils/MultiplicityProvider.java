@@ -60,19 +60,6 @@ public class MultiplicityProvider {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Multiplicity.OneToUnlimited.class);
 	}
 
-	/**
-	 * Decides if the txtUML element represented by the specified class has
-	 * invalid multiplicity.
-	 * 
-	 * @param specifiedClass
-	 *            The specified class representing a txtUML element.
-	 * @return The decision.
-	 */
-	public static boolean hasInvalidMultiplicity(TypeDeclaration typeDeclaration) {
-		return !isZeroToOne(typeDeclaration) && !isZeroToUnlimited(typeDeclaration) && !isOne(typeDeclaration)
-				&& !isOneToUnlimited(typeDeclaration);
-	}
-
 	private static Integer getExplicitMultiplicity(TypeDeclaration typeDeclaration, String annotationName) {
 		for (Object modifier : typeDeclaration.modifiers()) {
 			if (modifier instanceof SingleMemberAnnotation) {

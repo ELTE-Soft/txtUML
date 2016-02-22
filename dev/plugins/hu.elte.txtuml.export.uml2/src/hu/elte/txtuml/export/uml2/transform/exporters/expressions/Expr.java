@@ -280,24 +280,32 @@ public interface Expr {
 	}
 
 	static TypeExpr type(ITypeBinding binding, TypeExporter typeExporter) {
-		return new TypeExpr() {
+		return new TypeLiteralExpr(binding, typeExporter);
+	}
 
-			@Override
-			public Type getType() {
-				return typeExporter.exportType(binding);
-			}
+	public static final class TypeLiteralExpr implements TypeExpr {
+		private ITypeBinding binding;
+		private TypeExporter typeExporter;
 
-			@Override
-			public String getName() {
-				return binding.getName();
-			}
+		public TypeLiteralExpr(ITypeBinding binding, TypeExporter typeExporter) {
+			this.binding = binding;
+			this.typeExporter = typeExporter;
+		}
 
-			@Override
-			public OutputPin getOutputPin() {
-				throw new UnsupportedOperationException();
-			}
+		@Override
+		public Type getType() {
+			return typeExporter.exportType(binding);
+		}
 
-		};
+		@Override
+		public String getName() {
+			return binding.getName();
+		}
+
+		@Override
+		public OutputPin getOutputPin() {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	static Expr ofName(IVariableBinding binding, ExpressionExporter<? extends ActivityNode> expressionExporter) {

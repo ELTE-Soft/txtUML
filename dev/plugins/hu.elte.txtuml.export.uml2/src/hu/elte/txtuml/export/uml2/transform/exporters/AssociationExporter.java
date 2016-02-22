@@ -13,7 +13,6 @@ import org.eclipse.uml2.uml.UMLPackage;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapCollector;
 import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
 import hu.elte.txtuml.export.uml2.utils.MultiplicityProvider;
-import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.utils.jdt.SharedUtils;
 
 /**
@@ -80,10 +79,7 @@ public class AssociationExporter {
 
 			int lowerBound = MultiplicityProvider.getLowerBound(endSource);
 			int upperBound = MultiplicityProvider.getUpperBound(endSource);
-
-			if (MultiplicityProvider.hasInvalidMultiplicity(endSource))
-				throw new ExportException("Association end " + endSource.getName() + " has invalid multiplicity.");
-
+			
 			boolean navigable;
 
 			if (SharedUtils.typeIsAssignableFrom(endSource,
