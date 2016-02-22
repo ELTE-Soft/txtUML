@@ -119,8 +119,8 @@ void ConfiguratedThreadedRT::setupObjectSpecificRuntime(StateMachineI* sm)
 	int objectID = sm->getPoolId();
 	StateMachineThreadPool* matchedPool = poolManager->getPool(objectID);
 	sm->setPool(matchedPool);
-	numberOfObjects[objectID]++;
-	poolManager->recalculateThreads(objectID,numberOfObjects[objectID]);
+	numberOfObjects[(size_t)objectID]++;
+	poolManager->recalculateThreads(objectID,numberOfObjects[(size_t)objectID]);
 }
 
 bool ConfiguratedThreadedRT::isConfigurated()
@@ -132,8 +132,8 @@ bool ConfiguratedThreadedRT::isConfigurated()
 void ConfiguratedThreadedRT::removeObject(StateMachineI* sm)
 {
 	int objectID = sm->getPoolId();
-	numberOfObjects[objectID]--;
-	poolManager->recalculateThreads(objectID,numberOfObjects[objectID]);
+	numberOfObjects[(size_t)objectID]--;
+	poolManager->recalculateThreads(objectID,numberOfObjects[(size_t)objectID]);
 	
 }
 
