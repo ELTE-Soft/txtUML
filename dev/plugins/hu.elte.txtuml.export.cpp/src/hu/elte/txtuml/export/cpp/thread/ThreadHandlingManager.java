@@ -31,7 +31,7 @@ public class ThreadHandlingManager {
 	// "ConfiguratedThreadedRT";
 	private static final String SingleRuntimeName = "SingleThreadRT";
 	private static final String SetConfigurationMethod = "configure";
-	private static final String CreatorFunction = "createThrededRuntime";
+	private static final String CreatorFunction = "createThreadedRuntime";
 	private static final String CreateRTMethod = "createRuntime";
 
 	int numberOfThreads;
