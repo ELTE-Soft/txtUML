@@ -153,9 +153,12 @@ class CMakeSupport {
 				fileContent.append(" PROPERTIES LINK_FLAGS_RELEASE \"" + RELEASE_ONLY_LINK_FLAGS + "\")\n");
 			}
 
-			fileContent.append("if(Threads_FOUND)\n  target_link_libraries(");
+			fileContent.append("if(Threads_FOUND)\n");
+			fileContent.append("  string(REPLACE \"\\\\\" \"/\" THREADLIBS ${CMAKE_THREAD_LIBS_INIT})\n");
+			fileContent.append("  target_link_libraries(");
 			fileContent.append(targetName);
-			fileContent.append(" \"${CMAKE_THREAD_LIBS_INIT}\")\nendif()\n");
+			fileContent.append(" \"${THREADLIBS}\")\n");
+			fileContent.append("endif()\n");
 		}
 
 		Shared.writeOutSource(targetRootPath, CMAKE_FILE_NAME, fileContent.toString());
