@@ -200,12 +200,13 @@ public class ClassExporter {
 			if (_submachineMap.isEmpty()) {
 				source.append(GenerationTemplates.simpleStateMachineClassConstructor(class_.getName(),
 						getBaseClass(class_), smMap, getInitialState(region), true, poolId));
-				source.append(GenerationTemplates.destructorDef(class_.getName(), true));
+				
 			} else {
 				source.append(GenerationTemplates.hierarchicalStateMachineClassConstructor(class_.getName(),
 						getBaseClass(class_), smMap, getEventSubmachineNameMap(), getInitialState(region), true));
-				source.append(GenerationTemplates.destructorDef(class_.getName(), false));
+				
 			}
+			source.append(GenerationTemplates.destructorDef(class_.getName(), true));
 			source.append(createEntryFunctionsDef(class_.getName(), region));
 			source.append(createExitFunctionsDef(class_.getName(), region));
 			source.append(createTransitionFunctionsDef(class_.getName(), region, true));
@@ -256,6 +257,7 @@ public class ClassExporter {
 			source.append(GenerationTemplates.hierarchicalSubStateMachineClassConstructor(className_, parentClass_,
 					smMap, getEventSubmachineNameMap(), getInitialState(region_)));
 		}
+		source.append(GenerationTemplates.destructorDef(className_,false));
 		StringBuilder subSmSpec = createEntryFunctionsDef(className_, region_);
 		subSmSpec.append(createExitFunctionsDef(className_, region_));
 		subSmSpec.append(createTransitionFunctionsDef(className_, region_, false));
