@@ -1,8 +1,8 @@
-package hu.elte.txtuml.examples.exporttest;
+package hu.elte.txtuml.examples.exporttest.model;
 
 import hu.elte.txtuml.api.model.ModelClass;
 
-class SomeClass extends ModelClass {
+public class SomeClass extends ModelClass {
 
 	public void ifThen() {
 		int x = 3;
