@@ -46,15 +46,6 @@ public class TestStructure {
 	}
 	
 	@Test
-	@Ignore
-	public void testClass() throws Exception {
-		org.eclipse.uml2.uml.Model model = ModelExportTestUtils.export("hu.elte.txtuml.export.uml2.tests.models.TestClassModel");
-		assertNotNull(model);
-		assertEquals(1, model.getMembers().size());
-		assertEquals("TestClass", model.getMembers().get(0).getName());
-	}
-	
-	@Test
 	public void testAttribute() throws Exception {
 		org.eclipse.uml2.uml.Model model = ModelExportTestUtils.export("hu.elte.txtuml.export.uml2.tests.models.attribute");
 		assertNotNull(model);
@@ -101,23 +92,23 @@ public class TestStructure {
 	public void testSignal() throws Exception {
 		org.eclipse.uml2.uml.Model model = ModelExportTestUtils.export("hu.elte.txtuml.export.uml2.tests.models.signal");
 		assertNotNull(model);		
-		assertEquals(2, model.getMembers().size());
+		assertEquals(4, model.getOwnedMembers().size());
 		
 		Signal sig = (Signal)model.getMembers().get(0);
 		assertNotNull(sig);
 		assertEquals(3, sig.getOwnedAttributes().size());
-		assertEquals("TestSignal", sig.getName());
-		Property a = sig.getOwnedAttribute("a", null);
+		assertEquals("Sig", sig.getName());
+		Property a = sig.getOwnedAttribute("val", null);
 		assertNotNull(a);
 		assertEquals("Integer", a.getType().getName());
 		Property b = sig.getOwnedAttribute("b", null);
 		assertNotNull(b);
 		assertEquals("Boolean", b.getType().getName());
-		Property c = sig.getOwnedAttribute("c", null);
+		Property c = sig.getOwnedAttribute("param", null);
 		assertNotNull(c);
 		assertEquals("String", c.getType().getName());
 		
-		SignalEvent ev = (SignalEvent)model.getMember("TestSignal_event");
+		SignalEvent ev = (SignalEvent)model.getMember("Sig_event");
 		assertNotNull(ev);
 		assertEquals(ev.getSignal(),sig);
 	}
@@ -255,16 +246,16 @@ public class TestStructure {
 		assertEquals(1,sm.getRegions().size());
 		Region r = sm.getRegions().get(0);
 		assertEquals(2,r.getSubvertices().size());
-		Pseudostate a = (Pseudostate)r.getSubvertex("A");
+		Pseudostate a = (Pseudostate)r.getSubvertex("Init");
 		assertNotNull(a);
-		State b = (State)r.getSubvertex("B");
+		State b = (State)r.getSubvertex("S1");
 		assertNotNull(b);
 		assertEquals(2,r.getTransitions().size());
-		Transition ab = r.getTransition("AB");
+		Transition ab = r.getTransition("Init_S1");
 		assertEquals(a,ab.getSource());
 		assertEquals(b,ab.getTarget());
 		assertEquals(0,ab.getTriggers().size());
-		Transition bb = r.getTransition("BB");
+		Transition bb = r.getTransition("S1_S1");
 		assertEquals(b,bb.getSource());
 		assertEquals(b,bb.getTarget());		
 		assertEquals(1,bb.getTriggers().size());
@@ -306,7 +297,7 @@ public class TestStructure {
 	public void testCreateActionBehavior() throws Exception {
 		org.eclipse.uml2.uml.Model model = ModelExportTestUtils.export("hu.elte.txtuml.export.uml2.tests.models.create_and_destroy");
 		assertNotNull(model);
-		Class c = (Class)model.getMember("TestModelClass");
+		Class c = (Class)model.getMember("TestClass");
 		assertNotNull(c);
 		StateMachine sm = (StateMachine)c.getClassifierBehavior();
 		assertNotNull(sm);
@@ -323,19 +314,18 @@ public class TestStructure {
 		
 		assertEquals(3,nodesList.size());
 	
-		SequenceNode bodyNode = (SequenceNode)nodesList.get(1);
+		SequenceNode bodyNode = (SequenceNode)nodesList.get(2);
 		
-		CreateObjectAction act = (CreateObjectAction)bodyNode.getExecutableNodes().get(0);
+		CreateObjectAction act = (CreateObjectAction)bodyNode.getExecutableNodes().get(2);
 		
 		assertEquals(c.getName(),act.getResult().getType().getName());
 	}
 	
 	@Test
-	@Ignore
 	public void testDestroyActionBehavior() throws Exception {
-		org.eclipse.uml2.uml.Model model = ModelExportTestUtils.export("hu.elte.txtuml.export.uml2.tests.models.TestCreateAndDestroyActionModel");
+		org.eclipse.uml2.uml.Model model = ModelExportTestUtils.export("hu.elte.txtuml.export.uml2.tests.models.create_and_destroy");
 		assertNotNull(model);
-		Class c = (Class)model.getMember("TestModelClass");
+		Class c = (Class)model.getMember("TestClass");
 		assertNotNull(c);
 		StateMachine sm = (StateMachine)c.getClassifierBehavior();
 		assertNotNull(sm);
@@ -352,9 +342,9 @@ public class TestStructure {
 		
 		assertEquals(3,nodesList.size());
 		
-		SequenceNode body = (SequenceNode) nodesList.get(1);
+		SequenceNode body = (SequenceNode) nodesList.get(2);
 		
-		DestroyObjectAction act = (DestroyObjectAction)body.getExecutableNodes().get(1);
+		DestroyObjectAction act = (DestroyObjectAction)body.getExecutableNodes().get(4);
 	
 		assertEquals(c.getName(),act.getTarget().getType().getName());
 	}
@@ -463,7 +453,7 @@ public class TestStructure {
 	public void testStartAction() throws Exception{
 		org.eclipse.uml2.uml.Model model = ModelExportTestUtils.export("hu.elte.txtuml.export.uml2.tests.models.start");
 		assertNotNull(model);
-		Class c = (Class)model.getMember("A");
+		Class c = (Class)model.getMember("TestClass");
 		assertNotNull(c);
 		StateMachine sm = (StateMachine)c.getClassifierBehavior();
 		assertNotNull(sm);
@@ -471,7 +461,7 @@ public class TestStructure {
 		
 		Region r = sm.getRegions().get(0);
 		
-		State StartStateTest = (State)r.getSubvertex("StartStateTest");
+		State StartStateTest = (State)r.getSubvertex("S1");
 		
 		Activity behav = (Activity)StartStateTest.getEntry();
 		assertNotNull(behav);
@@ -508,17 +498,14 @@ public class TestStructure {
 	
 		EList<?> nodesList = behav.getOwnedNodes();
 		
-		assertEquals(5,nodesList.size());
+		assertEquals(3,nodesList.size());
 		
-		SequenceNode bodyNode = (SequenceNode)nodesList.get(1);
+		SequenceNode bodyNode = (SequenceNode)nodesList.get(2);
 		
-		ConditionalNode act = (ConditionalNode)bodyNode.getExecutableNodes().get(0);
+		ConditionalNode act = (ConditionalNode)bodyNode.getExecutableNodes().get(4);
 		
-		OutputPin thenOutputs = act.getClauses().get(0).getBodyOutputs().get(0);
-		OutputPin elseOutputs = act.getClauses().get(1).getBodyOutputs().get(0);
-		
-		assertEquals(c.getName(),thenOutputs.getType().getName());
-		assertEquals(c.getName(),elseOutputs.getType().getName());
+		assertEquals(1, act.getClauses().get(0).getBodies().size());
+		assertEquals(1, act.getClauses().get(1).getBodies().size());
 	}
 	
 	@Test
