@@ -16,6 +16,8 @@ import org.eclipse.uml2.uml.StructuralFeature;
 import org.eclipse.uml2.uml.Type;
 
 import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.Collection;
+import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
 
 /**
@@ -263,6 +265,13 @@ public class TypeExporter {
 
 	public static boolean isAction(IMethodBinding binding) {
 		return binding.getDeclaringClass().getQualifiedName().equals(Action.class.getName());
+	}
+
+	public static boolean isNavigation(IMethodBinding binding) {
+		return (binding.getDeclaringClass().getQualifiedName().equals(ModelClass.class.getName())
+				&& binding.getName().equals("assoc"))
+				|| (binding.getDeclaringClass().getErasure().getQualifiedName().equals(Collection.class.getName())
+						&& binding.getName().equals("selectAny"));
 	}
 
 }

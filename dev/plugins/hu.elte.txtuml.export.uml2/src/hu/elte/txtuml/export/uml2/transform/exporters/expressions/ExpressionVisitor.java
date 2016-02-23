@@ -47,7 +47,6 @@ import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
 import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.actions.CreateObjectActionExporter;
 import hu.elte.txtuml.utils.Pair;
-import hu.elte.txtuml.utils.Pair;
 
 /**
  * This visitor is only applied to right-hand-side expressions. left-hand-side
@@ -161,16 +160,17 @@ class ExpressionVisitor extends ASTVisitor {
 		arguments.forEach(o -> args.add(expressionExporter.export((Expression) o)));
 
 		Expr target = null;
-		if (!Modifier.isStatic(binding.getModifiers())) {
+		if (!Modifier.isStatic(binding.getModifiers()) && !TypeExporter.isNavigation(binding)) {
 			if (expression != null) {
 				target = expressionExporter.export(expression);
 			} else {
 				target = expressionExporter.autoFillTarget(binding, binding.getName());
 			}
 		} else {
-			if (TypeExporter.isAction(binding)) {
+			if (TypeExporter.isAction(binding) || TypeExporter.isNavigation(binding)) {
 				try {
-					result = expressionExporter.exportAction(binding, args);
+					Expr expr = Modifier.isStatic(binding.getModifiers()) ? null : expressionExporter.export(expression);
+					result = expressionExporter.exportAction(binding, expr, args);
 				} catch (ExportException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

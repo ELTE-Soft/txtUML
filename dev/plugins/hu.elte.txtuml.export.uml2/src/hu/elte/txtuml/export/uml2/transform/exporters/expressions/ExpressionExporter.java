@@ -51,8 +51,6 @@ import hu.elte.txtuml.export.uml2.transform.exporters.actions.StartActionExporte
 import hu.elte.txtuml.export.uml2.transform.exporters.actions.UnlinkActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.ParameterExpr;
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.TypeExpr;
-import hu.elte.txtuml.export.uml2.utils.ControlStructureEditor;
-import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.VariableExpr;
 import hu.elte.txtuml.export.uml2.utils.ControlStructureEditor;
 import hu.elte.txtuml.utils.Pair;
@@ -136,7 +134,7 @@ public class ExpressionExporter<ElemType extends ActivityNode> extends ControlSt
 		}
 	}
 
-	public Expr exportAction(IMethodBinding binding, List<Expr> args) throws ExportException {
+	public Expr exportAction(IMethodBinding binding, Expr expression, List<Expr> args) throws ExportException {
 		String actionName = binding.getName();
 
 		if (actionName.equals("create")) {
@@ -144,9 +142,14 @@ public class ExpressionExporter<ElemType extends ActivityNode> extends ControlSt
 		} else if (actionName.equals("delete")) {
 			new DeleteObjectActionExporter(this).export(args);
 		} else if (actionName.equals("link")) {
-			new LinkActionExporter(this).export(binding, args);
+			new LinkActionExporter(this).export(binding, expression, args);
 		} else if (actionName.equals("unlink")) {
-			new UnlinkActionExporter(this).export(binding, args);
+			new UnlinkActionExporter(this).export(binding, expression, args);
+		} else if (actionName.equals("assoc")) {
+			return new NavigationActionExporter(this).export(binding, expression, args);
+		} else if (actionName.equals("selectAny")) {
+			return expression;
+			// select any is implicit in exported model
 		} else if (actionName.equals("start")) {
 			new StartActionExporter(this).export(args);
 		} else if (actionName.equals("send")) {

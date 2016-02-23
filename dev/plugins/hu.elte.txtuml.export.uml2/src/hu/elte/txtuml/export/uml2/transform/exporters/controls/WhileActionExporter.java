@@ -5,8 +5,6 @@ import org.eclipse.uml2.uml.ActivityNode;
 
 import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
-
 public class WhileActionExporter extends AbstractLoopExporter {
 
 	public WhileActionExporter(BlockExporter<? extends ActivityNode> blockExporter) {

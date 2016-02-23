@@ -12,16 +12,15 @@ import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ConditionalNode;
 import org.eclipse.uml2.uml.CreateLinkAction;
 import org.eclipse.uml2.uml.CreateObjectAction;
+import org.eclipse.uml2.uml.DestroyLinkAction;
 import org.eclipse.uml2.uml.DestroyObjectAction;
 import org.eclipse.uml2.uml.ExpansionRegion;
 import org.eclipse.uml2.uml.InputPin;
-import org.eclipse.uml2.uml.LinkAction;
 import org.eclipse.uml2.uml.LinkEndCreationData;
 import org.eclipse.uml2.uml.LinkEndDestructionData;
 import org.eclipse.uml2.uml.LoopNode;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.Operation;
-import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.ParameterDirectionKind;
 import org.eclipse.uml2.uml.Property;
@@ -395,16 +394,18 @@ public class TestStructure {
 	}
 
 	@Test
-	@Ignore
 	public void testUnLinkAction() throws Exception {
 		org.eclipse.uml2.uml.Model model = ModelExportTestUtils
-				.export("hu.elte.txtuml.export.uml2.tests.models.TestLinkAndUnlinkActionModel");
+				.export("hu.elte.txtuml.export.uml2.tests.models.link_and_unlink");
 		assertNotNull(model);
-		Class c = (Class) model.getMember("A");
-		assertNotNull(c);
-		StateMachine sm = (StateMachine) c.getClassifierBehavior();
+		Class classA = (Class) model.getMember("A");
+		assertNotNull(classA);
+		StateMachine sm = (StateMachine) classA.getClassifierBehavior();
 		assertNotNull(sm);
 		assertEquals(1, sm.getRegions().size());
+		
+		Class classB = (Class) model.getMember("B");
+		assertNotNull(classB);
 
 		Region r = sm.getRegions().get(0);
 
@@ -417,49 +418,50 @@ public class TestStructure {
 
 		assertEquals(3, nodesList.size());
 
-		SequenceNode body = (SequenceNode) nodesList.get(1);
+		SequenceNode body = (SequenceNode) nodesList.get(2);
 
-		LinkAction act = (LinkAction) body.getExecutableNodes().get(3);
+		DestroyLinkAction act = (DestroyLinkAction) body.getExecutableNodes().get(9);
 
 		EList<?> list = act.getEndData();
 
 		LinkEndDestructionData leftEnd = (LinkEndDestructionData) list.get(0);
 		LinkEndDestructionData rightEnd = (LinkEndDestructionData) list.get(1);
 
-		assertEquals(c.getName(), rightEnd.getEnd().getType().getName());
-		assertEquals(c.getName(), leftEnd.getEnd().getType().getName());
+		assertEquals(classA.getName(), leftEnd.getEnd().getType().getName());
+		assertEquals(classB.getName(), rightEnd.getEnd().getType().getName());
 	}
 
 	@Test
-	@Ignore
 	public void testSendAction() throws Exception {
 		org.eclipse.uml2.uml.Model model = ModelExportTestUtils
-				.export("hu.elte.txtuml.export.uml2.tests.models.TestSendActionModel");
+				.export("hu.elte.txtuml.export.uml2.tests.models.send");
 		assertNotNull(model);
-		Class c = (Class) model.getMember("A");
-		assertNotNull(c);
-		StateMachine sm = (StateMachine) c.getClassifierBehavior();
+		Class classA = (Class) model.getMember("A");
+		assertNotNull(classA);
+		StateMachine sm = (StateMachine) classA.getClassifierBehavior();
 		assertNotNull(sm);
 		assertEquals(1, sm.getRegions().size());
+		
+		Class classB = (Class) model.getMember("B");
+		assertNotNull(classB);
 
 		Region r = sm.getRegions().get(0);
 
-		State TestSendState = (State) r.getSubvertex("TestSendState");
+		State LinkUnlinkAction = (State) r.getSubvertex("SendAction");
 
-		Activity behav = (Activity) TestSendState.getEntry();
+		Activity behav = (Activity) LinkUnlinkAction.getEntry();
 		assertNotNull(behav);
 
 		EList<?> nodesList = behav.getNodes();
 
 		assertEquals(3, nodesList.size());
 
-		SequenceNode bodyNode = (SequenceNode) nodesList.get(1);
+		SequenceNode body = (SequenceNode) nodesList.get(2);
 
-		SendObjectAction action = (SendObjectAction) bodyNode.getExecutableNodes().get(1);
+		SendObjectAction act = (SendObjectAction) body.getExecutableNodes().get(10);
 
-		InputPin target = action.getTarget();
-
-		assertEquals(c.getName(), target.getType().getName());
+		assertEquals("Sig", act.getRequest().getType().getName());
+		assertEquals(classB.getName(), act.getTarget().getType().getName());
 	}
 
 	@Test
@@ -523,12 +525,11 @@ public class TestStructure {
 	}
 
 	@Test
-	@Ignore
 	public void testForControl() throws Exception {
 		org.eclipse.uml2.uml.Model model = ModelExportTestUtils
-				.export("hu.elte.txtuml.export.uml2.tests.models.TestForControlModel");
+				.export("hu.elte.txtuml.export.uml2.tests.models.for_control");
 		assertNotNull(model);
-		Class c = (Class) model.getMember("TestModelClass");
+		Class c = (Class) model.getMember("TestClass");
 		assertNotNull(c);
 		StateMachine sm = (StateMachine) c.getClassifierBehavior();
 		assertNotNull(sm);
@@ -543,29 +544,25 @@ public class TestStructure {
 
 		EList<?> nodesList = behav.getNodes();
 
-		assertEquals(5, nodesList.size());
+		assertEquals(3, nodesList.size());
 
-		SequenceNode body = (SequenceNode) nodesList.get(1);
+		SequenceNode body = (SequenceNode) nodesList.get(2);
 
-		LoopNode creator = (LoopNode) body.getExecutableNodes().get(0);
-		LoopNode deleter = (LoopNode) body.getExecutableNodes().get(1);
-
-		OutputPin createOutput = creator.getBodyOutputs().get(0);
-
-		SequenceNode deleteSeq = (SequenceNode) deleter.getBodyParts().get(0);
-		DestroyObjectAction act = (DestroyObjectAction) deleteSeq.getExecutableNodes().get(0);
-
-		assertEquals(c.getName(), createOutput.getType().getName());
-		assertEquals(c.getName(), act.getTarget().getType().getName());
+		LoopNode loop = (LoopNode) body.getExecutableNodes().get(2);
+		
+		SequenceNode loopBody = (SequenceNode) loop.getBodyParts().get(0);
+		SequenceNode loopUpdate = (SequenceNode) loop.getBodyParts().get(1);
+		
+		assertEquals(2, loopBody.getExecutableNodes().size()); // read var, create obj
+		assertEquals(3, loopUpdate.getExecutableNodes().size()); // read var, inc, write var
 	}
 
 	@Test
-	@Ignore
 	public void testWhileControl() throws Exception {
 		org.eclipse.uml2.uml.Model model = ModelExportTestUtils
-				.export("hu.elte.txtuml.export.uml2.tests.models.TestWhileControlModel");
+				.export("hu.elte.txtuml.export.uml2.tests.models.while_control");
 		assertNotNull(model);
-		Class c = (Class) model.getMember("TestModelClass");
+		Class c = (Class) model.getMember("TestClass");
 		assertNotNull(c);
 		StateMachine sm = (StateMachine) c.getClassifierBehavior();
 		assertNotNull(sm);
@@ -580,20 +577,20 @@ public class TestStructure {
 
 		EList<?> nodesList = behav.getNodes();
 
-		assertEquals(5, nodesList.size());
+		assertEquals(3, nodesList.size());
 
-		SequenceNode body = (SequenceNode) nodesList.get(1);
+		SequenceNode body = (SequenceNode) nodesList.get(2);
 
-		LoopNode creator = (LoopNode) body.getExecutableNodes().get(0);
-		LoopNode deleter = (LoopNode) body.getExecutableNodes().get(1);
-
-		OutputPin createOutput = creator.getBodyOutputs().get(0);
-
-		SequenceNode deleteSeq = (SequenceNode) deleter.getBodyParts().get(0);
-		DestroyObjectAction act = (DestroyObjectAction) deleteSeq.getExecutableNodes().get(0);
-
-		assertEquals(c.getName(), createOutput.getType().getName());
-		assertEquals(c.getName(), act.getTarget().getType().getName());
+		LoopNode loop = (LoopNode) body.getExecutableNode("while gt(x,0)");
+		
+		SequenceNode loopBody = (SequenceNode) loop.getBodyParts().get(0);
+		
+		assertEquals(1, loop.getTests().size());
+		
+		assertNotNull(((SequenceNode) loop.getTest("cond")).getExecutableNode("gt(x,0)"));
+		
+		assertEquals("Boolean", loop.getDecider().getType().getName());
+		assertEquals(3, loopBody.getExecutableNodes().size()); // read var, dec, write var
 	}
 
 	@Test

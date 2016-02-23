@@ -25,7 +25,7 @@ public abstract class AbstractLinkActionExporter {
 		this.expressionExporter = expressionExporter;
 	}
 
-	public abstract void export(IMethodBinding binding, List<Expr> args);
+	public abstract Expr export(IMethodBinding binding, Expr base, List<Expr> args);
 
 	protected void export(IMethodBinding binding, List<Expr> args, EClass actionEClass) {
 		args.forEach(Expr::evaluate);
@@ -42,18 +42,21 @@ public abstract class AbstractLinkActionExporter {
 
 		LinkAction linkAction = (LinkAction) expressionExporter.createAndAddNode(linkActionName, actionEClass);
 
-		this.addEndToLinkAction(linkAction, association, args.get(0), args.get(1), 1);
-		this.addEndToLinkAction(linkAction, association, args.get(2), args.get(3), 2);
+		this.addEndToLinkAction(linkAction, association, args.get(0).getName(), args.get(1), 1);
+		this.addEndToLinkAction(linkAction, association, args.get(2).getName(), args.get(3), 2);
 	}
 
-	protected void addEndToLinkAction(LinkAction linkAction, Association association, Expr endSelector, Expr endExpr,
+	/**
+	 * @param endExpr
+	 *            The expression that is the target of the end. Must be
+	 *            evaluated
+	 */
+	protected void addEndToLinkAction(LinkAction linkAction, Association association, String selectorName, Expr endExpr,
 			int endNum) {
-
-		String endName = endSelector.getName();
 		Type endType = endExpr.getType();
 
 		LinkEndData end = linkAction.createEndData();
-		Property endProp = association.getMemberEnd(endName, endType);
+		Property endProp = association.getMemberEnd(selectorName, endType);
 
 		InputPin endPin = (InputPin) linkAction.createInputValue(linkAction.getName() + "_end" + endNum + "input",
 				endType, UMLPackage.Literals.INPUT_PIN);

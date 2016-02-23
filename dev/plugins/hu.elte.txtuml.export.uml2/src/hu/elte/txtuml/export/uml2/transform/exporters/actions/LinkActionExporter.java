@@ -2,9 +2,6 @@ package hu.elte.txtuml.export.uml2.transform.exporters.actions;
 
 import java.util.List;
 
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
-
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -19,8 +16,9 @@ public class LinkActionExporter extends AbstractLinkActionExporter {
 	}
 
 	@Override
-	public void export(IMethodBinding binding, List<Expr> args) {
+	public Expr export(IMethodBinding binding, Expr base, List<Expr> args) {
 		export(binding, args, UMLPackage.Literals.CREATE_LINK_ACTION);
+		return null;
 	}
 
 }
