@@ -154,10 +154,9 @@ class CMakeSupport {
 			}
 
 			fileContent.append("if(Threads_FOUND)\n");
-			fileContent.append("  string(REPLACE \"\\\\\" \"/\" THREADLIBS ${CMAKE_THREAD_LIBS_INIT})\n");
 			fileContent.append("  target_link_libraries(");
 			fileContent.append(targetName);
-			fileContent.append(" \"${THREADLIBS}\")\n");
+			fileContent.append(" \"${CMAKE_THREAD_LIBS_INIT}\")\n");
 			fileContent.append("endif()\n");
 		}
 
