@@ -133,7 +133,11 @@ public class TypeExporter {
 			// get the generic class instead of parameterized type
 			sourceType = sourceType.getErasure();
 			String typeName = sourceType.getName();
-			return exportedModel.getOwnedType(typeName);
+			Type ret = exportedModel.getOwnedType(typeName);
+			if (ret == null) {
+				ret = (Type) exportedModel.getImportedMember(typeName);
+			}
+			return ret;
 		} else {
 			return null;
 		}

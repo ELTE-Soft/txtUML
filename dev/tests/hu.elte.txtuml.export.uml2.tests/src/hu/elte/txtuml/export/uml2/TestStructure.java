@@ -618,17 +618,10 @@ public class TestStructure {
 		SequenceNode body = (SequenceNode) nodesList.get(2);
 
 		ExpansionRegion loop = (ExpansionRegion) body.getExecutableNode("foreach");
-				
 		
-//		loop.getNode("foreach-in")
-//		SequenceNode loopBody = (SequenceNode) loop.getNodes().get(0);
-//		SequenceNode loopUpdate = (SequenceNode) loop.getBodyParts().get(1);
+		assertEquals(3, loop.getNodes().size()); // input, read variable, create object
 		
-		assertEquals("Integer", loop.getVariables().get(0).getType().getName());
-		
-//		assertEquals(2, loopBody.getExecutableNodes().size()); // read var, create obj
-//		assertEquals(3, loopUpdate.getExecutableNodes().size()); // read var, inc, write var
-		fail("not implemented yet");
+		assertEquals("Collection", loop.getInputElements().get(0).getType().getName());
 	}
 	
 	@Test

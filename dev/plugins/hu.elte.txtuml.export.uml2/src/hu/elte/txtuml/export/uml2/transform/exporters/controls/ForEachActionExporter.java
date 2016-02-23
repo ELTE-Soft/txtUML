@@ -30,9 +30,10 @@ public class ForEachActionExporter {
 		BlockExporter<ActivityNode> subExporter = blockExporter.subExporter(expRegion, expRegion.getNodes());
 		ExpansionNode inNode = (ExpansionNode) subExporter.createAndAddNode("foreach-in",
 				UMLPackage.Literals.EXPANSION_NODE);
+		inNode.setType(blockExporter.getTypeExporter().exportType(statement.getExpression().resolveTypeBinding()));
 		expRegion.getInputElements().add(inNode);
 
-		blockExporter.createObjectFlowBetweenActivityNodes(expr.getObjectNode(), inNode);
+		blockExporter.createObjectFlowBetweenActivityNodes(expr.evaluate().getObjectNode(), inNode);
 
 		Variable foreachVariable = subExporter.createVariable(statement.getParameter().getName().getIdentifier(),
 				subExporter.getTypeExporter().exportType(statement.getParameter().resolveBinding().getType()));
