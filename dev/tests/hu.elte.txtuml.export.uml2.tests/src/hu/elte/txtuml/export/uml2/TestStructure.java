@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.uml2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.Activity;
@@ -35,7 +36,6 @@ import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.Transition;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestStructure {
@@ -594,12 +594,11 @@ public class TestStructure {
 	}
 
 	@Test
-	@Ignore
 	public void testForEachControl() throws Exception {
 		org.eclipse.uml2.uml.Model model = ModelExportTestUtils
-				.export("hu.elte.txtuml.export.uml2.tests.models.TestForEachControlModel");
+				.export("hu.elte.txtuml.export.uml2.tests.models.foreach_control");
 		assertNotNull(model);
-		Class c = (Class) model.getMember("A");
+		Class c = (Class) model.getMember("TestClass");
 		assertNotNull(c);
 		StateMachine sm = (StateMachine) c.getClassifierBehavior();
 		assertNotNull(sm);
@@ -614,14 +613,51 @@ public class TestStructure {
 
 		EList<?> nodesList = behav.getNodes();
 
-		assertEquals(5, nodesList.size());
+		assertEquals(3, nodesList.size());
 
-		SequenceNode body = (SequenceNode) nodesList.get(1);
+		SequenceNode body = (SequenceNode) nodesList.get(2);
 
-		ExpansionRegion forEachLoop = (ExpansionRegion) body.getExecutableNodes().get(1);
-		SequenceNode forEachBody = (SequenceNode) forEachLoop.getNodes().get(1);
-		System.out.println(forEachBody.getExecutableNodes());
-
-		assertEquals(1, forEachBody.getExecutableNodes().size());
+		ExpansionRegion loop = (ExpansionRegion) body.getExecutableNode("foreach");
+				
+		
+//		loop.getNode("foreach-in")
+//		SequenceNode loopBody = (SequenceNode) loop.getNodes().get(0);
+//		SequenceNode loopUpdate = (SequenceNode) loop.getBodyParts().get(1);
+		
+		assertEquals("Integer", loop.getVariables().get(0).getType().getName());
+		
+//		assertEquals(2, loopBody.getExecutableNodes().size()); // read var, create obj
+//		assertEquals(3, loopUpdate.getExecutableNodes().size()); // read var, inc, write var
+		fail("not implemented yet");
+	}
+	
+	@Test
+	public void testCompoundOps() throws Exception {
+		fail("not implemented yet");
+	}
+	
+	@Test
+	public void testDoCycle() throws Exception {
+		fail("not implemented yet");
+	}
+	
+	@Test
+	public void testReturn() throws Exception {
+		fail("not implemented yet");
+	}
+	
+	@Test
+	public void testConstructor() throws Exception {
+		fail("not implemented yet");
+	}
+	
+	@Test
+	public void testConstructorWithArgs() throws Exception {
+		fail("not implemented yet");
+	}
+	
+	@Test
+	public void testIfThen() throws Exception {
+		fail("not implemented yet");
 	}
 }
