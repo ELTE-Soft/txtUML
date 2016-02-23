@@ -44,12 +44,16 @@ class CMakeSupport {
 		this.targetRootPath = targetRootPath;
 	}
 
+	static String convertToPosixPath(String path) {
+		return path.replace('\\', '/');
+	}
+
 	void addExecutableTarget(String executableTargetName, List<String> executableTargetClasses, String pathPrefix) {
 		assert executableTargetClasses.size() > 0;
 		executableTargetNames.add(executableTargetName);
 		List<String> fileNames = new ArrayList<String>();
 		for (String className : executableTargetClasses) {
-			fileNames.add(pathPrefix + GenerationTemplates.sourceName(className));
+			fileNames.add(convertToPosixPath(pathPrefix + GenerationTemplates.sourceName(className)));
 		}
 		executableTargetSourceNames.add(fileNames);
 	}
@@ -60,13 +64,13 @@ class CMakeSupport {
 		staticLibraryTargetNames.add(staticLibraryTargetName);
 		List<String> fileNames = new ArrayList<String>();
 		for (String className : staticLibraryTargetClasses) {
-			fileNames.add(pathPrefix + GenerationTemplates.sourceName(className));
+			fileNames.add(convertToPosixPath(pathPrefix + GenerationTemplates.sourceName(className)));
 		}
 		staticLibraryTargetSourceNames.add(fileNames);
 	}
 
 	void addIncludeDirectory(String includeDirectory) {
-		includeDirectories.add(includeDirectory);
+		includeDirectories.add(convertToPosixPath(includeDirectory));
 	}
 
 	private static void addCompileOption(StringBuilder output, String compileOption, boolean optional) {
