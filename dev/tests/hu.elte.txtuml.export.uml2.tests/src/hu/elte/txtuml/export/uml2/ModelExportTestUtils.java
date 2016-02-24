@@ -43,10 +43,18 @@ public class ModelExportTestUtils {
 	public static void initialize() throws CoreException, IOException, InterruptedException {
 		Bundle bundle = Platform.getBundle(TEST_PROJECT_NAME);
 		File bundleFile = FileLocator.getBundleFile(bundle);
-		String path = bundleFile.getAbsolutePath() + File.separator + PROJECT_FILE_NAME;
+		String projectPath;
+		if (bundleFile.isDirectory()) {
+			projectPath = bundleFile.getAbsolutePath();
+		} else {
+			projectPath = new File("../" + bundle.getSymbolicName()).getCanonicalPath();
+		}
+		String path = projectPath + File.separator + PROJECT_FILE_NAME;
 		IProjectDescription description = ResourcesPlugin.getWorkspace().loadProjectDescription(new Path(path));
 		IProject genericProject = ResourcesPlugin.getWorkspace().getRoot().getProject(description.getName());
-		genericProject.create(description, null);
+		if (!genericProject.exists()) {
+			genericProject.create(description, null);
+		}
 		genericProject.open(null);
 		project = JavaCore.create(genericProject);
 		Thread.sleep(1000);
