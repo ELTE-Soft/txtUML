@@ -2,7 +2,6 @@ package hu.elte.txtuml.export.uml2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.Activity;
