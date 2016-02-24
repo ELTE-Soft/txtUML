@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.AggregationKind;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Behavior;
@@ -39,6 +40,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestStructure {
+
+	private Class cls;
+	private org.eclipse.uml2.uml.Model model;
+	private StateMachine sm;
+	private Region region;
+	private Activity behav;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -299,88 +306,28 @@ public class TestStructure {
 
 	@Test
 	public void testCreateActionBehavior() throws Exception {
-		org.eclipse.uml2.uml.Model model = ModelExportTestUtils
-				.export("hu.elte.txtuml.export.uml2.tests.models.create_and_destroy");
-		assertNotNull(model);
-		Class c = (Class) model.getMember("TestClass");
-		assertNotNull(c);
-		StateMachine sm = (StateMachine) c.getClassifierBehavior();
-		assertNotNull(sm);
-		assertEquals(1, sm.getRegions().size());
+		SequenceNode body = loadActionCode("create_and_destroy", "TestClass", "ObjectCreate");
 
-		Region r = sm.getRegions().get(0);
+		CreateObjectAction act = (CreateObjectAction) body.getExecutableNodes().get(2);
 
-		State ObjectCreate = (State) r.getSubvertex("ObjectCreate");
-
-		Activity behav = (Activity) ObjectCreate.getEntry();
-		assertNotNull(behav);
-
-		EList<?> nodesList = behav.getNodes();
-
-		assertEquals(3, nodesList.size());
-
-		SequenceNode bodyNode = (SequenceNode) nodesList.get(2);
-
-		CreateObjectAction act = (CreateObjectAction) bodyNode.getExecutableNodes().get(2);
-
-		assertEquals(c.getName(), act.getResult().getType().getName());
+		assertEquals(cls.getName(), act.getResult().getType().getName());
 	}
 
 	@Test
 	public void testDestroyActionBehavior() throws Exception {
-		org.eclipse.uml2.uml.Model model = ModelExportTestUtils
-				.export("hu.elte.txtuml.export.uml2.tests.models.create_and_destroy");
-		assertNotNull(model);
-		Class c = (Class) model.getMember("TestClass");
-		assertNotNull(c);
-		StateMachine sm = (StateMachine) c.getClassifierBehavior();
-		assertNotNull(sm);
-		assertEquals(1, sm.getRegions().size());
-
-		Region r = sm.getRegions().get(0);
-
-		State ObjectDestroy = (State) r.getSubvertex("ObjectCreate");
-
-		Activity behav = (Activity) ObjectDestroy.getEntry();
-		assertNotNull(behav);
-
-		EList<?> nodesList = behav.getNodes();
-
-		assertEquals(3, nodesList.size());
-
-		SequenceNode body = (SequenceNode) nodesList.get(2);
+		SequenceNode body = loadActionCode("create_and_destroy", "TestClass", "ObjectCreate");
 
 		DestroyObjectAction act = (DestroyObjectAction) body.getExecutableNodes().get(4);
 
-		assertEquals(c.getName(), act.getTarget().getType().getName());
+		assertEquals(cls.getName(), act.getTarget().getType().getName());
 	}
 
 	@Test
 	public void testLinkAction() throws Exception {
-		org.eclipse.uml2.uml.Model model = ModelExportTestUtils
-				.export("hu.elte.txtuml.export.uml2.tests.models.link_and_unlink");
-		assertNotNull(model);
-		Class classA = (Class) model.getMember("A");
-		assertNotNull(classA);
-		StateMachine sm = (StateMachine) classA.getClassifierBehavior();
-		assertNotNull(sm);
-		assertEquals(1, sm.getRegions().size());
-
+		SequenceNode bodyNode = loadActionCode("link_and_unlink", "A", "LinkUnlinkAction");
+		
 		Class classB = (Class) model.getMember("B");
 		assertNotNull(classB);
-
-		Region r = sm.getRegions().get(0);
-
-		State LinkUnlinkAction = (State) r.getSubvertex("LinkUnlinkAction");
-
-		Activity behav = (Activity) LinkUnlinkAction.getEntry();
-		assertNotNull(behav);
-
-		EList<?> nodesList = behav.getNodes();
-
-		assertEquals(3, nodesList.size());
-
-		SequenceNode bodyNode = (SequenceNode) nodesList.get(2);
 
 		CreateLinkAction act = (CreateLinkAction) bodyNode.getExecutableNodes().get(6);
 
@@ -389,36 +336,16 @@ public class TestStructure {
 		LinkEndCreationData leftEnd = (LinkEndCreationData) list.get(0);
 		LinkEndCreationData rightEnd = (LinkEndCreationData) list.get(1);
 
-		assertEquals(classA.getName(), leftEnd.getEnd().getType().getName());
+		assertEquals(cls.getName(), leftEnd.getEnd().getType().getName());
 		assertEquals(classB.getName(), rightEnd.getEnd().getType().getName());
 	}
 
 	@Test
 	public void testUnLinkAction() throws Exception {
-		org.eclipse.uml2.uml.Model model = ModelExportTestUtils
-				.export("hu.elte.txtuml.export.uml2.tests.models.link_and_unlink");
-		assertNotNull(model);
-		Class classA = (Class) model.getMember("A");
-		assertNotNull(classA);
-		StateMachine sm = (StateMachine) classA.getClassifierBehavior();
-		assertNotNull(sm);
-		assertEquals(1, sm.getRegions().size());
+		SequenceNode body = loadActionCode("link_and_unlink", "A", "LinkUnlinkAction");
 		
 		Class classB = (Class) model.getMember("B");
 		assertNotNull(classB);
-
-		Region r = sm.getRegions().get(0);
-
-		State LinkUnlinkAction = (State) r.getSubvertex("LinkUnlinkAction");
-
-		Activity behav = (Activity) LinkUnlinkAction.getEntry();
-		assertNotNull(behav);
-
-		EList<?> nodesList = behav.getNodes();
-
-		assertEquals(3, nodesList.size());
-
-		SequenceNode body = (SequenceNode) nodesList.get(2);
 
 		DestroyLinkAction act = (DestroyLinkAction) body.getExecutableNodes().get(9);
 
@@ -427,36 +354,16 @@ public class TestStructure {
 		LinkEndDestructionData leftEnd = (LinkEndDestructionData) list.get(0);
 		LinkEndDestructionData rightEnd = (LinkEndDestructionData) list.get(1);
 
-		assertEquals(classA.getName(), leftEnd.getEnd().getType().getName());
+		assertEquals(cls.getName(), leftEnd.getEnd().getType().getName());
 		assertEquals(classB.getName(), rightEnd.getEnd().getType().getName());
 	}
 
 	@Test
 	public void testSendAction() throws Exception {
-		org.eclipse.uml2.uml.Model model = ModelExportTestUtils
-				.export("hu.elte.txtuml.export.uml2.tests.models.send");
-		assertNotNull(model);
-		Class classA = (Class) model.getMember("A");
-		assertNotNull(classA);
-		StateMachine sm = (StateMachine) classA.getClassifierBehavior();
-		assertNotNull(sm);
-		assertEquals(1, sm.getRegions().size());
+		SequenceNode body = loadActionCode("send", "A", "SendAction");
 		
 		Class classB = (Class) model.getMember("B");
 		assertNotNull(classB);
-
-		Region r = sm.getRegions().get(0);
-
-		State LinkUnlinkAction = (State) r.getSubvertex("SendAction");
-
-		Activity behav = (Activity) LinkUnlinkAction.getEntry();
-		assertNotNull(behav);
-
-		EList<?> nodesList = behav.getNodes();
-
-		assertEquals(3, nodesList.size());
-
-		SequenceNode body = (SequenceNode) nodesList.get(2);
 
 		SendObjectAction act = (SendObjectAction) body.getExecutableNodes().get(10);
 
@@ -466,57 +373,29 @@ public class TestStructure {
 
 	@Test
 	public void testStartAction() throws Exception {
-		org.eclipse.uml2.uml.Model model = ModelExportTestUtils.export("hu.elte.txtuml.export.uml2.tests.models.start");
-		assertNotNull(model);
-		Class c = (Class) model.getMember("TestClass");
-		assertNotNull(c);
-		StateMachine sm = (StateMachine) c.getClassifierBehavior();
-		assertNotNull(sm);
-		assertEquals(1, sm.getRegions().size());
-
-		Region r = sm.getRegions().get(0);
-
-		State StartStateTest = (State) r.getSubvertex("S1");
-
-		Activity behav = (Activity) StartStateTest.getEntry();
-		assertNotNull(behav);
-
-		EList<?> nodesList = behav.getNodes();
-
-		assertEquals(3, nodesList.size());
-
-		SequenceNode body = (SequenceNode) nodesList.get(2);
+		SequenceNode body = loadActionCode("start", "TestClass", "S1");
 
 		StartClassifierBehaviorAction act = (StartClassifierBehaviorAction) body.getExecutableNodes().get(2);
 
 		InputPin StartedClassPin = act.getInputs().get(0);
 
-		assertEquals(c.getName(), StartedClassPin.getType().getName());
+		assertEquals(cls.getName(), StartedClassPin.getType().getName());
 	}
 
 	@Test
 	public void testIfControl() throws Exception {
-		org.eclipse.uml2.uml.Model model = ModelExportTestUtils
-				.export("hu.elte.txtuml.export.uml2.tests.models.if_control");
-		assertNotNull(model);
-		Class c = (Class) model.getMember("TestModelClass");
-		assertNotNull(c);
-		StateMachine sm = (StateMachine) c.getClassifierBehavior();
-		assertNotNull(sm);
-		assertEquals(1, sm.getRegions().size());
+		SequenceNode bodyNode = loadActionCode("if_control", "TestModelClass", "IfControl");
 
-		Region r = sm.getRegions().get(0);
+		ConditionalNode act = (ConditionalNode) bodyNode.getExecutableNodes().get(4);
 
-		State StartStateTest = (State) r.getSubvertex("IfControl");
-
-		Activity behav = (Activity) StartStateTest.getEntry();
-		assertNotNull(behav);
-
-		EList<?> nodesList = behav.getOwnedNodes();
-
-		assertEquals(3, nodesList.size());
-
-		SequenceNode bodyNode = (SequenceNode) nodesList.get(2);
+		assertEquals(1, act.getClauses().get(0).getBodies().size());
+		assertEquals(1, act.getClauses().get(1).getBodies().size());
+	}
+	
+	
+	@Test
+	public void testIfThen() throws Exception {
+		SequenceNode bodyNode = loadActionCode("if_then_control", "TestModelClass", "IfControl");
 
 		ConditionalNode act = (ConditionalNode) bodyNode.getExecutableNodes().get(4);
 
@@ -526,27 +405,7 @@ public class TestStructure {
 
 	@Test
 	public void testForControl() throws Exception {
-		org.eclipse.uml2.uml.Model model = ModelExportTestUtils
-				.export("hu.elte.txtuml.export.uml2.tests.models.for_control");
-		assertNotNull(model);
-		Class c = (Class) model.getMember("TestClass");
-		assertNotNull(c);
-		StateMachine sm = (StateMachine) c.getClassifierBehavior();
-		assertNotNull(sm);
-		assertEquals(1, sm.getRegions().size());
-
-		Region r = sm.getRegions().get(0);
-
-		State StartStateTest = (State) r.getSubvertex("ForControl");
-
-		Activity behav = (Activity) StartStateTest.getEntry();
-		assertNotNull(behav);
-
-		EList<?> nodesList = behav.getNodes();
-
-		assertEquals(3, nodesList.size());
-
-		SequenceNode body = (SequenceNode) nodesList.get(2);
+		SequenceNode body = loadActionCode("for_control", "TestClass", "ForControl");
 
 		LoopNode loop = (LoopNode) body.getExecutableNodes().get(2);
 		
@@ -559,27 +418,7 @@ public class TestStructure {
 
 	@Test
 	public void testWhileControl() throws Exception {
-		org.eclipse.uml2.uml.Model model = ModelExportTestUtils
-				.export("hu.elte.txtuml.export.uml2.tests.models.while_control");
-		assertNotNull(model);
-		Class c = (Class) model.getMember("TestClass");
-		assertNotNull(c);
-		StateMachine sm = (StateMachine) c.getClassifierBehavior();
-		assertNotNull(sm);
-		assertEquals(1, sm.getRegions().size());
-
-		Region r = sm.getRegions().get(0);
-
-		State StartStateTest = (State) r.getSubvertex("WhileControl");
-
-		Activity behav = (Activity) StartStateTest.getEntry();
-		assertNotNull(behav);
-
-		EList<?> nodesList = behav.getNodes();
-
-		assertEquals(3, nodesList.size());
-
-		SequenceNode body = (SequenceNode) nodesList.get(2);
+		SequenceNode body = loadActionCode("while_control", "TestClass", "WhileControl");
 
 		LoopNode loop = (LoopNode) body.getExecutableNode("while gt(x,0)");
 		
@@ -594,28 +433,25 @@ public class TestStructure {
 	}
 
 	@Test
+	public void testDoCycle() throws Exception {
+		SequenceNode body = loadActionCode("do_while_control", "TestClass", "DoWhileControl");
+
+		LoopNode loop = (LoopNode) body.getExecutableNode("dowhile gt(x,0)");
+		
+		SequenceNode loopBody = (SequenceNode) loop.getBodyPart("body");
+		
+		assertEquals(1, loop.getTests().size());
+		
+		assertNotNull(((SequenceNode) loop.getTest("cond")).getExecutableNode("gt(x,0)"));
+		
+		assertEquals("Boolean", loop.getDecider().getType().getName());
+		assertEquals(3, loopBody.getExecutableNodes().size()); // read var, dec, write var
+		assertEquals(3, ((SequenceNode) loop.getNode("init")).getExecutableNodes().size()); // the same as the loop body
+	}
+
+	@Test
 	public void testForEachControl() throws Exception {
-		org.eclipse.uml2.uml.Model model = ModelExportTestUtils
-				.export("hu.elte.txtuml.export.uml2.tests.models.foreach_control");
-		assertNotNull(model);
-		Class c = (Class) model.getMember("TestClass");
-		assertNotNull(c);
-		StateMachine sm = (StateMachine) c.getClassifierBehavior();
-		assertNotNull(sm);
-		assertEquals(1, sm.getRegions().size());
-
-		Region r = sm.getRegions().get(0);
-
-		State StartStateTest = (State) r.getSubvertex("ForEachControl");
-
-		Activity behav = (Activity) StartStateTest.getEntry();
-		assertNotNull(behav);
-
-		EList<?> nodesList = behav.getNodes();
-
-		assertEquals(3, nodesList.size());
-
-		SequenceNode body = (SequenceNode) nodesList.get(2);
+		SequenceNode body = loadActionCode("foreach_control", "TestClass", "ForEachControl");
 
 		ExpansionRegion loop = (ExpansionRegion) body.getExecutableNode("foreach");
 		
@@ -623,34 +459,57 @@ public class TestStructure {
 		
 		assertEquals("Collection", loop.getInputElements().get(0).getType().getName());
 	}
-	
+
 	@Test
 	public void testCompoundOps() throws Exception {
-		fail("not implemented yet");
-	}
-	
-	@Test
-	public void testDoCycle() throws Exception {
-		fail("not implemented yet");
-	}
-	
-	@Test
-	public void testReturn() throws Exception {
-		fail("not implemented yet");
+		SequenceNode body = loadActionCode("compound_ops", "TestClass", "CompoundOps");
+		
+		assertEquals(6, body.getExecutableNodes().size()); // 10, this, read fld, plus, this, write fld
 	}
 	
 	@Test
 	public void testConstructor() throws Exception {
-		fail("not implemented yet");
+		SequenceNode body = loadActionCode("ctors", "TestClass", "CtorCall");
+		
+		assertEquals(3, body.getExecutableNodes().size()); // value 10, create obj, call ctor 
 	}
 	
 	@Test
-	public void testConstructorWithArgs() throws Exception {
-		fail("not implemented yet");
+	public void testReturn() throws Exception {
+		model = ModelExportTestUtils
+				.export("hu.elte.txtuml.export.uml2.tests.models.return_stmt");
+		assertNotNull(model);
+		cls = (Class) model.getMember("TestModelClass");
+		assertNotNull(cls);
+		Activity act = (Activity) cls.getOwnedBehavior("returnOp");
+		assertNotNull(act);
+		ActivityNode finalNode = act.getNode("return_paramNode");
+		assertNotNull(finalNode.getIncoming("objectflow_from_10_to_return_paramNode"));
 	}
+
+	private SequenceNode loadActionCode(String modelSuffix, String className, String stateName) throws Exception {
+		model = ModelExportTestUtils
+				.export("hu.elte.txtuml.export.uml2.tests.models." + modelSuffix);
+		assertNotNull(model);
+		cls = (Class) model.getMember(className);
+		assertNotNull(cls);
+		sm = (StateMachine) cls.getClassifierBehavior();
+		assertNotNull(sm);
+		assertEquals(1, sm.getRegions().size());
 	
-	@Test
-	public void testIfThen() throws Exception {
-		fail("not implemented yet");
+		region = sm.getRegions().get(0);
+	
+		State st = (State) region.getSubvertex(stateName);
+		
+		behav = (Activity) st.getEntry();
+		assertNotNull(behav);
+	
+		EList<?> nodesList = behav.getNodes();
+		
+		assertEquals(3, nodesList.size());
+	
+		SequenceNode body = (SequenceNode) nodesList.get(2);
+		return body;
 	}
+
 }

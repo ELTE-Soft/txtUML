@@ -8,6 +8,7 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.CreateObjectAction;
 import org.eclipse.uml2.uml.Operation;
+import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
@@ -32,7 +33,14 @@ public class CreateObjectActionExporter {
 		Expr target = Expr.ofPin(createAction.createResult("new " + type.getName(), type.getType()),
 				"new " + type.getName());
 
-		Operation constructor = expressionExporter.getTypeExporter().exportMethodAsOperation(ctorBinding, args);
+		Operation constructor;
+		if (ctorBinding.getName().equals("create")) {
+			Type created = expressionExporter.getTypeExporter().exportType(ctorBinding.getReturnType());
+			constructor = expressionExporter.getTypeExporter().exportMethodAsOperation((Classifier) created,
+					created.getName(), null, args);
+		} else {
+			constructor = expressionExporter.getTypeExporter().exportMethodAsOperation(ctorBinding, args);
+		}
 
 		createAction.setClassifier(
 				(Classifier) expressionExporter.getTypeExporter().exportType(ctorBinding.getDeclaringClass()));
