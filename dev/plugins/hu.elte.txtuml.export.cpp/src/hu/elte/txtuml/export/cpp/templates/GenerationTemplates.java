@@ -254,7 +254,7 @@ public class GenerationTemplates {
 			return className + "::" + "~" + className + "()" + emptyBody() + "\n";
 		}
 		else {
-			return className + "::" + "~" + className + "()\n{\n" + RuntimeTemplates.GetRuntimeInstance + GenerationNames.PointerAccess + RuntimeTemplates.ObjectRemoverForRuntime + "(" + GenerationNames.Self + ");\n}";
+			return className + "::" + "~" + className + "()\n{\n" + RuntimeTemplates.GetRuntimeInstance + GenerationNames.PointerAccess + RuntimeTemplates.ObjectRemoverForRuntime + "(" + GenerationNames.Self + ");\n}\n\n";
 		}
 		
 	}
@@ -384,8 +384,7 @@ public class GenerationTemplates {
 	public static String simpleStateMachineClassConstructorHead(String className, String baseClassName) {
 		
 			if (baseClassName != null) {
-				return className + "::" + className + "(): " + baseClassName + "(" + RuntimeTemplates.RuntimeParamter
-						+ "),";
+				return className + "::" + className + "(): " + baseClassName + "(),";
 			} else {
 				return className + "::" + className + "():";
 			}
