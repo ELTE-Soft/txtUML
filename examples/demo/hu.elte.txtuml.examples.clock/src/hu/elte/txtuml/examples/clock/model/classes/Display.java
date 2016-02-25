@@ -17,13 +17,13 @@ public class Display extends ModelClass {
 	int second;
 	
 	@BehaviorPort
-	public class HourPort extends Port<Interface.Empty,ValueIfc> {}
+	public class HourPort extends Port<ValueIfc, Interface.Empty> {}
 
 	@BehaviorPort
-	public class MinutePort extends Port<Interface.Empty,ValueIfc> {}
+	public class MinutePort extends Port<ValueIfc, Interface.Empty> {}
 
 	@BehaviorPort
-	public class SecondPort extends Port<Interface.Empty,ValueIfc> {}
+	public class SecondPort extends Port<ValueIfc, Interface.Empty> {}
 	
 	public Display(int hour, int minute, int second) {
 		this.hour = hour;
