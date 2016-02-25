@@ -10,7 +10,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -18,27 +17,21 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
-import org.eclipse.xtext.ui.XtextProjectHelper;
 
 import hu.elte.txtuml.project.Activator;
 import hu.elte.txtuml.project.ProjectCreator;
 import hu.elte.txtuml.project.ProjectCreator.ProjectSettings;
-import hu.elte.txtuml.project.TxtUMLProjectNature;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 public class TxtUMLProjectWizard extends Wizard implements INewWizard {
 
-	private static final String[] PROJECT_NATURE_IDS = new String[] {
-			TxtUMLProjectNature.NATURE_ID, JavaCore.NATURE_ID,
-			XtextProjectHelper.NATURE_ID };
-	
 	private static final String BIN_DIR = "bin";
 	private static final String GENERATED_SOURCE_FOLDER_DIR = "src-gen";
 	private static final String SOURCE_FOLDER_DIR = "src";
-	
+
 	public static final String WIZARD_IMAGE = "icons/txtuml_model_wizard.png";
 	public static final String TITLE = "New txtUML Project";
-	
+
 	private TxtUMLProjectPage page;
 
 	/**
@@ -77,35 +70,32 @@ public class TxtUMLProjectWizard extends Wizard implements INewWizard {
 
 	private boolean setUptxtUMLProject(IPath projectLocation, String projectName) {
 		IRunnableWithProgress op = new WorkspaceModifyOperation() {
-			
+
 			@Override
-			protected void execute(IProgressMonitor monitor) throws CoreException,
-					InvocationTargetException, InterruptedException {
-				
+			protected void execute(IProgressMonitor monitor)
+					throws CoreException, InvocationTargetException, InterruptedException {
+
 				if (monitor == null) {
 					monitor = new NullProgressMonitor();
 				}
-				
-				try {				
-					IProject project = ProjectCreator.createProjectOnLocation(projectLocation, projectName);
-					ProjectCreator.openProject(project);
-					
-					ProjectCreator.addProjectNatures(project, PROJECT_NATURE_IDS);
-	
+
+				try {
+					IProject project = ProjectCreator.createAndOpenTxtUMLProjectAtLocation(projectLocation, projectName);
+
 					IFolder src = ProjectCreator.createFolder(project, SOURCE_FOLDER_DIR);
 					IFolder srcgen = ProjectCreator.createFolder(project, GENERATED_SOURCE_FOLDER_DIR);
 					IFolder bin = ProjectCreator.createFolder(project, BIN_DIR);
-	
+
 					ProjectSettings settings = new ProjectSettings();
 					settings.executionEnviromentID = "JavaSE-1.8";
 					settings.output = bin;
 					settings.source = src;
 					settings.sourcegen = srcgen;
-	
+
 					ProjectCreator.addProjectSettings(project, settings);
 
 					project.refreshLocal(IResource.DEPTH_INFINITE, null);
-					
+
 				} catch (OperationCanceledException e) {
 					throw new InterruptedException();
 				} catch (Exception e) {
@@ -118,8 +108,7 @@ public class TxtUMLProjectWizard extends Wizard implements INewWizard {
 		try {
 			getContainer().run(true, true, op);
 		} catch (Exception e) {
-			Dialogs.errorMsgb("txtUML Project creation Error", 
-					"Error occured during project creation.", e);
+			Dialogs.errorMsgb("txtUML Project creation Error", "Error occured during project creation.", e);
 			return false;
 		}
 		return true;

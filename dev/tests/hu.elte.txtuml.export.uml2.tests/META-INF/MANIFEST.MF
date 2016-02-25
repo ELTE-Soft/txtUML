@@ -8,4 +8,4 @@ Fragment-Host: hu.elte.txtuml.export.uml2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit,
  hu.elte.txtuml.utils.eclipse,
- hu.elte.txtuml.export.uml2.tests.models;bundle-version="0.3.0"
+ hu.elte.txtuml.project

@@ -103,7 +103,7 @@ public class TestStructure {
 		assertNotNull(model);
 		assertEquals(4, model.getOwnedMembers().size());
 
-		Signal sig = (Signal) model.getMembers().get(0);
+		Signal sig = (Signal) model.getMember("Sig");
 		assertNotNull(sig);
 		assertEquals(3, sig.getOwnedAttributes().size());
 		assertEquals("Sig", sig.getName());
