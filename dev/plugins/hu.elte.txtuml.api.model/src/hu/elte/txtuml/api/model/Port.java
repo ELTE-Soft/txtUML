@@ -59,13 +59,12 @@ import java.lang.reflect.Proxy;
  * @see Action#connect(Port, Class, Port)
  * @see Action#connect(Class, Port, Class, Port)
  * 
- * @param
- * 			<P>
- *            the provided interface
  * @param <R>
  *            the required interface
+ * @param <P>
+ *            the provided interface
  */
-public abstract class Port<P extends Interface, R extends Interface> {
+public abstract class Port<R extends Interface, P extends Interface> {
 
 	/**
 	 * The provided interface of this port.

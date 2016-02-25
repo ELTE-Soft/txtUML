@@ -22,7 +22,7 @@ public class PongClass extends ModelClass {
 		Action.start(inner);
 	}
 
-	public class PongPort extends Port<PongInterface, PingInterface> {
+	public class PongPort extends Port<PingInterface, PongInterface> {
 	}
 
 }

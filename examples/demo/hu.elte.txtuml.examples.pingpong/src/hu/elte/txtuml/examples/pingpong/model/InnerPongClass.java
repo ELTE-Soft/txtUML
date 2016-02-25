@@ -15,7 +15,7 @@ import hu.elte.txtuml.examples.pingpong.model.signals.PongSignal;
 public class InnerPongClass extends ModelClass {
 
 	@BehaviorPort
-	public class PongPort extends Port<PongInterface, PingInterface> {
+	public class PongPort extends Port<PingInterface, PongInterface> {
 	}
 
 	@From(Waiting.class)
