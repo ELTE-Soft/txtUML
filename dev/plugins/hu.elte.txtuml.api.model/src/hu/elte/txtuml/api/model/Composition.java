@@ -1,6 +1,6 @@
 package hu.elte.txtuml.api.model;
 
-import hu.elte.txtuml.api.model.assocends.Aggregation;
+import hu.elte.txtuml.api.model.assocends.ContainmentKind;
 import hu.elte.txtuml.api.model.assocends.Multiplicity;
 import hu.elte.txtuml.api.model.assocends.Navigability;
 
@@ -142,7 +142,7 @@ public class Composition extends Association {
 	 *            the type of model objects to be contained in this collection
 	 */
 	public abstract class Container<T extends ModelClass> extends MaybeOneBase<T>
-			implements Multiplicity.ZeroToOne, Navigability.Navigable, Aggregation.Composite {
+			implements Multiplicity.ZeroToOne, Navigability.Navigable, ContainmentKind.ContainerEnd {
 	}
 
 	/**
@@ -198,7 +198,7 @@ public class Composition extends Association {
 	 *            the type of model objects to be contained in this collection
 	 */
 	public abstract class HiddenContainer<T extends ModelClass> extends MaybeOneBase<T>
-			implements Multiplicity.ZeroToOne, Navigability.NonNavigable, Aggregation.Composite {
+			implements Multiplicity.ZeroToOne, Navigability.NonNavigable, ContainmentKind.ContainerEnd {
 	}
 
 }
