@@ -2,9 +2,8 @@ package hu.elte.txtuml.examples.clock.model.classes;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.From;
-import hu.elte.txtuml.api.model.Interface;
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.Port;
+import hu.elte.txtuml.api.model.OutPort;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
 import hu.elte.txtuml.api.stdlib.Timer;
@@ -15,7 +14,7 @@ public class Pendulum extends ModelClass {
 	private Timer.Handle timerHandle;
 	private int unit = 1000;
 	
-	public class OutTickPort extends Port<Interface.Empty, TickIfc> {}
+	public class OutTickPort extends OutPort<TickIfc> {}
 	
 	class Init extends Initial {}
 	class Working extends State {
