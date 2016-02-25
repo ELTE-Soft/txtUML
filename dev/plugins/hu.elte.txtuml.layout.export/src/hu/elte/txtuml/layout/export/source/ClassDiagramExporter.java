@@ -37,12 +37,6 @@ public class ClassDiagramExporter extends AbstractSourceExporter {
 		return DiagramType.Class;
 	}
 
-	/*@Override
-	public String getReferencedElementName(NodeMap nodes) {
-		NodeInfo nodeinfo = nodes.values().iterator().next();
-		return nodeinfo.getElementClass().getPackage().getName();
-	}*/
-
 	@Override
 	public boolean isNode(Class<?> cls) {
 		return ModelClass.class.isAssignableFrom(cls);

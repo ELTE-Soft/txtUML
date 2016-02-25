@@ -120,34 +120,6 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 	private void modifyConnectionEditParts(
 			Map<ConnectionNodeEditPart, List<Point>> linksTransform,
 			Map<GraphicalEditPart, Rectangle> objectTransform) {
-   
-		
-		/*Debug
-    	 * 
-    	 *
-		ConnectionNodeEditPart[] mock = linksTransform.keySet().toArray(new ConnectionNodeEditPart[linksTransform.size()]);
-		/**
-		linksTransform.put(mock[0], new LinkedList<Point>(Arrays.asList(new Point(0,0), new Point(0,100), new Point(0,150), new Point(0,200))));
-//		linksTransform.put(mock[1], new LinkedList<Point>(Arrays.asList( new Point(50,0), new Point(50,100), new Point(50,150), new Point(50,200))));
-//		linksTransform.put(mock[2], new LinkedList<Point>(Arrays.asList( new Point(100,0), new Point(100,100), new Point(100,150),new Point(100,200))));
-		linksTransform.put(mock[3], new LinkedList<Point>(Arrays.asList(new Point(150,0), new Point(150,100), new Point(150,150), new Point(150,200))));
-			//	*/
-		/**
-//		linksTransform.put(mock[0], new LinkedList<Point>(Arrays.asList(new Point(0,0), new Point(25,0), new Point(50,0), new Point(100,0))));
-		linksTransform.put(mock[1], new LinkedList<Point>(Arrays.asList(new Point(0,50), new Point(25,50), new Point(50,50), new Point(100,50))));
-		linksTransform.put(mock[2], new LinkedList<Point>(Arrays.asList(new Point(0,100), new Point(25,100), new Point(50,100), new Point(100,100))));
-//		linksTransform.put(mock[3], new LinkedList<Point>(Arrays.asList(new Point(0,150), new Point(25,150), new Point(50,150), new Point(100,150))));
-		//*/
-    	/*Debug
-    	 * 
-    	 */
-		/*
-		ConnectionNodeEditPart[] mock = linksTransform.keySet().toArray(new ConnectionNodeEditPart[linksTransform.size()]);
-		linksTransform.put(mock[0], new LinkedList<Point>(Arrays.asList(new Point(50,20), new Point(120,20), new Point(120,80))));
-		linksTransform.put(mock[1], new LinkedList<Point>(Arrays.asList( new Point(50,20), new Point(120,20),new Point(120,80))));
-		linksTransform.put(mock[2], new LinkedList<Point>(Arrays.asList( new Point(50,20), new Point(120,20),new Point(120,80))));
-		linksTransform.put(mock[3], new LinkedList<Point>(Arrays.asList(new Point(50,20), new Point(120,20), new Point(102,80))));
-		*/
 		linksTransform.forEach((ConnectionNodeEditPart connection, List<Point> route)  ->{
 					if(connection != null && route.size() >= 2){
 						Rectangle source = objectTransform.get(connection.getSource());
@@ -160,7 +132,6 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			        	DiagramElementsModifier.setConnectionPoints(connection, route);
 					}
 		});
-//		GraphicalEditPart[] mock = objectTransform.keySet().toArray(new GraphicalEditPart[objectTransform.size()]);
 	}
 
 	private void modifyEditParts(

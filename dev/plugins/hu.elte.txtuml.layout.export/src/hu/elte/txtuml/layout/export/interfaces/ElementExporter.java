@@ -30,8 +30,6 @@ public interface ElementExporter {
 	String getSourceProjectName();
 	
 	String getModelName();
-	
-	//String getReferencedElementName();
 
 	NodeMap getNodes();
 

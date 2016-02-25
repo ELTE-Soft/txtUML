@@ -26,8 +26,6 @@ public interface SourceExporter {
 
 	boolean isLink(Class<?> cls);
 
-	//String getReferencedElementName(NodeMap nodes);
-	
 	/**
 	 * Called to get an identifier object of the model which contains
 	 * {@code element}.
@@ -44,7 +42,7 @@ public interface SourceExporter {
 	 *             {@code element} is not a node or a link or is badly defined)
 	 */
 	ModelId getModelOf(Class<?> element, ElementExporter elementExporter) throws ElementExportationException;
-	
+
 	Pair<Class<?>, Class<?>> getStartAndEndOfLink(Class<?> link) throws ElementExportationException;
 
 	/**

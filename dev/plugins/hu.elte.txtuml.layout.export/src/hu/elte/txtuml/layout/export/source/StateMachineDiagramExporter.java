@@ -16,12 +16,6 @@ public class StateMachineDiagramExporter extends AbstractSourceExporter {
 		return DiagramType.StateMachine;
 	}
 	
-	/*@Override
-	public String getReferencedElementName(NodeMap nodes) {
-		NodeInfo nodeinfo = nodes.values().iterator().next();
-		return nodeinfo.getElementClass().getEnclosingClass().getCanonicalName();
-	}*/
-
 	@Override
 	public boolean isNode(Class<?> cls) {
 		return Vertex.class.isAssignableFrom(cls);

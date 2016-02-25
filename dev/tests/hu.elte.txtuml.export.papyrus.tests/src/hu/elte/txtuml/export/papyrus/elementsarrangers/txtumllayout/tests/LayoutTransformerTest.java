@@ -37,7 +37,7 @@ public class LayoutTransformerTest {
 		Assert.assertEquals(2, connections.get("A_B").get(1).x());
 		Assert.assertEquals(1, connections.get("A_B").get(1).y());
 	}
-	
+
 	@Test
 	public void testAllObjectAreInPartII() {
 		LayoutTransformer layoutTransformer = new LayoutTransformer(1,1);
@@ -61,7 +61,7 @@ public class LayoutTransformerTest {
 		Assert.assertEquals(2, connections.get("A_B").get(1).x());
 		Assert.assertEquals(1, connections.get("A_B").get(1).y());
 	}
-	
+
 	@Test
 	public void testAllObjectAreInPartIII() {
 		LayoutTransformer layoutTransformer = new LayoutTransformer(1,1);
