@@ -25,7 +25,6 @@ public:
 
   void setupObject(StateMachineI* sm_)
   {
-      //sm_->setRuntime(this);
       static_cast<RuntimeType*>(this)->setupObjectSpecificRuntime(sm_);
   }
 
@@ -33,17 +32,8 @@ public:
   {
       for(auto it=ol_.begin();it!=ol_.end();++it)
       {
-        //(*it)->setRuntime(this);
         static_cast<RuntimeType*>(this)->setupObjectSpecificRuntime(*it);
       }
-  }
-
-  void stop()
-  {
-      std::unique_lock<std::mutex> mlock(_mutex);
-      _stop=true;
-      mlock.unlock();
-      _cond.notify_one();
   }
 
   void configure(ThreadConfiguration* configuration)
@@ -62,7 +52,6 @@ public:
 
   void removeObject(StateMachineI* sm)
   {
-      //sm->setRuntime(nullptr);
       static_cast<RuntimeType*>(this)->removeObject(sm);
   }
 
@@ -73,11 +62,7 @@ public:
   }
 
 protected:
-  RuntimeI(): _stop(false) {}
-
-  std::atomic_bool _stop;
-  std::mutex _mutex;
-  std::condition_variable _cond;
+  RuntimeI() {}
 };
 
 
@@ -90,14 +75,13 @@ public:
   void setupObjectSpecificRuntime(StateMachineI*);
   void setConfiguration(ThreadConfiguration*);
   void stopUponCompletion();
+  void removeObject(StateMachineI*);
   bool isConfigurated();
 private:
   SingleThreadRT();
-  static SingleThreadRT* instance;
-  
+  static SingleThreadRT* instance;  
   std::shared_ptr<MessageQueueType> _messageQueue;
-  std::condition_variable waiting_empty_cond;
-  std::atomic_bool waiting;
+
 };
 
 class ConfiguratedThreadedRT: public RuntimeI<ConfiguratedThreadedRT>
@@ -112,14 +96,10 @@ public:
 	void setConfiguration(ThreadConfiguration*);
 	bool isConfigurated();
 	void setupObjectSpecificRuntime(StateMachineI*);
-   ~ConfiguratedThreadedRT();
+        ~ConfiguratedThreadedRT();
 private:
         ConfiguratedThreadedRT();
         static ConfiguratedThreadedRT* instance;
-
-        
-        
-
 	ThreadPoolManager* poolManager;
 	std::vector<int> numberOfObjects;
 };

@@ -4,7 +4,7 @@
 
 SingleThreadRT* SingleThreadRT::instance = nullptr;
 
-SingleThreadRT::SingleThreadRT():_messageQueue(new MessageQueueType), waiting(false){}
+SingleThreadRT::SingleThreadRT():_messageQueue(new MessageQueueType){}
 
 void SingleThreadRT::setupObjectSpecificRuntime(StateMachineI *sm)
 {
@@ -28,41 +28,30 @@ SingleThreadRT* SingleThreadRT::createRuntime()
 void SingleThreadRT::start()
 {
 
-    while(!_stop)
+    while(!_messageQueue->empty())
     {
+            EventPtr e = messageQueue->front();
+            if (e->dest.isStarted())
+            {
+                if(e->dest.isInitialized())
+                {
+                    e->dest.processEventVirtual();
+                }
+                else
+                {
+                    e->dest.init();
+                }
 
-        if(!_messageQueue->empty())
-        {
-
-            if (_messageQueue->front()->dest.isStarted() && _messageQueue->front()->dest.isInitialized())
-		 {
-			_messageQueue->front()->dest.processEventVirtual();			
-		 }
-		 else if (_messageQueue->front()->dest.isStarted() && !_messageQueue->front()->dest.isInitialized()) 
-		 {
-			 _messageQueue->front()->dest.init();
-		 }
-      
+            }
     }
-    else if(_messageQueue->empty() && waiting)
-    {
-    	waiting_empty_cond.notify_one();
-    }
-
-  }
 
 }
 
 void SingleThreadRT::setConfiguration(ThreadConfiguration *conf){}
 
-void SingleThreadRT::stopUponCompletion()
-{
-	std::unique_lock<std::mutex> mlock(_mutex);
-	waiting = true;
-	waiting_empty_cond.wait(mlock);
-	mlock.unlock();
-	stop();
-}
+void SingleThreadRT::stopUponCompletion() {}
+
+void SingleThreadRT::removeObject(StateMachineI* sm) {}
 
 
 
