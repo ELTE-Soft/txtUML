@@ -1,17 +1,17 @@
 package hu.elte.txtuml.api.model;
 
 /**
- * A base class for assembly connectors in the model.
+ * A base class for delegation connectors in the model.
  * 
  * <p>
- * <b>Represents:</b> assembly connector
+ * <b>Represents:</b> delegation connector
  * <p>
  * <b>Usage:</b>
  * <p>
  * 
- * An assembly connector in the model is a subclass of <code>Connector</code>, having two
- * inner classes which both extend {@link ConnectorEnd}. These two inner classes
- * will represent the two ends of this connector.
+ * A delegation connector in the model is a subclass of <code>Delegation</code>,
+ * having two inner classes which both extend {@link ConnectorEnd}. These two
+ * inner classes will represent the two ends of this connector.
  * 
  * <p>
  * <b>Java restrictions:</b>
@@ -46,6 +46,6 @@ package hu.elte.txtuml.api.model;
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  */
-public abstract class Connector extends ConnectorBase {
+public abstract class Delegation extends ConnectorBase {
 
 }

@@ -56,6 +56,7 @@ import java.lang.reflect.Proxy;
  * 
  * @see BehaviorPort
  * @see Connector
+ * @see Delegation
  * @see Action#connect(Port, Class, Port)
  * @see Action#connect(Class, Port, Class, Port)
  * 
