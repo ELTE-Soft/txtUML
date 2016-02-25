@@ -89,7 +89,7 @@ public abstract class Port<R extends Interface, P extends Interface> {
 		Class<?> type = getClass();
 
 		Class<P> typeOfProvided = (Class<P>) ((ParameterizedType) type.getGenericSuperclass())
-				.getActualTypeArguments()[0];
+				.getActualTypeArguments()[1];
 
 		instanceOfProvided = (P) Proxy.newProxyInstance(type.getClassLoader(), new Class[] { typeOfProvided },
 				createReceptionHandler());
