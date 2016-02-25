@@ -45,8 +45,8 @@ public class DiagramElementsModifier {
 	 * pixels, and this causes the state to change height, and links get
 	 * distorted.
 	 * 
-	 * @param The
-	 *            state to be fixed.
+	 * @param state
+	 *            The state to be fixed.
 	 */
 	public static void fixStateLabelHeight(CustomStateEditPart state) {
 		IAdaptable adaptableForState = new SemanticAdapter(null, ((View) state.getModel()));
