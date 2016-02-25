@@ -15,7 +15,7 @@ public class Pendulum extends ModelClass {
 	private Timer.Handle timerHandle;
 	private int unit = 1000;
 	
-	public class OutTickPort extends Port<TickIfc,Interface.Empty> {}
+	public class OutTickPort extends Port<Interface.Empty, TickIfc> {}
 	
 	class Init extends Initial {}
 	class Working extends State {

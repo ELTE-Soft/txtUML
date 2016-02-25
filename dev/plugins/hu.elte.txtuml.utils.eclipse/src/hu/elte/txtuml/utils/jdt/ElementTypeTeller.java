@@ -31,7 +31,7 @@ import hu.elte.txtuml.api.model.StateMachine.Initial;
 import hu.elte.txtuml.api.model.StateMachine.State;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
-import hu.elte.txtuml.api.model.assocends.Aggregation;
+import hu.elte.txtuml.api.model.assocends.ContainmentKind;
 import hu.elte.txtuml.api.model.external.ExternalClass;
 import hu.elte.txtuml.api.model.external.ExternalType;
 
@@ -206,7 +206,7 @@ public final class ElementTypeTeller {
 	}
 
 	public static boolean isContainer(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Aggregation.Composite.class);
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ContainmentKind.ContainerEnd.class);
 	}
 
 	public static boolean isPort(TypeDeclaration typeDeclaration) {
