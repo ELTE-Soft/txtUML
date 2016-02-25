@@ -9,6 +9,5 @@ Export-Package: hu.elte.txtuml.api.model,
  hu.elte.txtuml.api.model.assocends,
  hu.elte.txtuml.api.model.external,
  hu.elte.txtuml.api.model.report
-Require-Bundle: hu.elte.txtuml.api.diagnostics;bundle-version="0.4.0",
- hu.elte.txtuml.utils;bundle-version="0.4.0",
+Require-Bundle: hu.elte.txtuml.utils;bundle-version="0.4.0",
  com.google.guava;bundle-version="15.0.0"

@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.diagnostics;
+package hu.elte.txtuml.api.model.execution.diagnostics;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -7,10 +7,10 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Random;
 
-import hu.elte.txtuml.api.diagnostics.protocol.GlobalSettings;
-import hu.elte.txtuml.api.diagnostics.protocol.Message;
-import hu.elte.txtuml.api.diagnostics.protocol.MessageType;
-import hu.elte.txtuml.api.diagnostics.protocol.ModelEvent;
+import hu.elte.txtuml.api.model.execution.diagnostics.protocol.GlobalSettings;
+import hu.elte.txtuml.api.model.execution.diagnostics.protocol.Message;
+import hu.elte.txtuml.api.model.execution.diagnostics.protocol.MessageType;
+import hu.elte.txtuml.api.model.execution.diagnostics.protocol.ModelEvent;
 import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.NotifierOfTermination;
 

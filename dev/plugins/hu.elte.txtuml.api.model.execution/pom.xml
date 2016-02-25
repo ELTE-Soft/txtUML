@@ -9,6 +9,6 @@
 		<version>0.4.0-SNAPSHOT</version>
 		<relativePath>../../releng/hu.elte.txtuml.parent/pom.xml</relativePath>
 	</parent>
-	<artifactId>hu.elte.txtuml.api.diagnostics</artifactId>
+	<artifactId>hu.elte.txtuml.api.model.execution</artifactId>
 	<packaging>eclipse-plugin</packaging>
 </project>

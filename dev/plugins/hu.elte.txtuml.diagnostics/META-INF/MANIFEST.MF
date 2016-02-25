@@ -16,8 +16,7 @@ Require-Bundle: org.eclipse.ui,
  hu.elte.txtuml.export.uml2;bundle-version="0.4.0",
  hu.elte.txtuml.utils;bundle-version="0.4.0",
  hu.elte.txtuml.export.papyrus;bundle-version="0.4.0",
- hu.elte.txtuml.api.diagnostics;bundle-version="0.4.0",
- hu.elte.txtuml.export.uml2;bundle-version="0.4.0"
+ hu.elte.txtuml.api.model.execution;bundle-version="0.4.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: hu.elte.txtuml.diagnostics,

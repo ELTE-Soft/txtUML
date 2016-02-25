@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.diagnostics.protocol;
+package hu.elte.txtuml.api.model.execution.diagnostics.protocol;
 
 /**
  * Instance life-cycle related event

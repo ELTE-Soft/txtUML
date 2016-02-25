@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.diagnostics.protocol;
+package hu.elte.txtuml.api.model.execution.diagnostics.protocol;
 
 import java.io.Serializable;
 
