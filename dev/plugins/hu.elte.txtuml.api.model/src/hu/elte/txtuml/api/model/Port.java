@@ -58,6 +58,8 @@ import java.lang.reflect.Proxy;
  * @see Connector
  * @see Action#connect(Port, Class, Port)
  * @see Action#connect(Class, Port, Class, Port)
+ * @see InPort
+ * @see OutPort
  * 
  * @param <R>
  *            the required interface
