@@ -1,24 +1,20 @@
 package hu.elte.txtuml.api.model;
 
-import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicLong;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Proxy;
 
-import com.google.common.collect.ClassToInstanceMap;
-import com.google.common.collect.MutableClassToInstanceMap;
-
-import hu.elte.txtuml.api.model.ModelExecutor.Report;
-import hu.elte.txtuml.api.model.assocends.ContainmentKind;
+import hu.elte.txtuml.api.model.Runtime.Described;
 import hu.elte.txtuml.api.model.assocends.Navigability;
-import hu.elte.txtuml.api.model.backend.MultipleContainerException;
-import hu.elte.txtuml.api.model.backend.MultiplicityException;
-import hu.elte.txtuml.api.model.backend.collections.AssociationsMap;
-import hu.elte.txtuml.utils.InstanceCreator;
+import hu.elte.txtuml.api.model.runtime.ModelClassWrapper;
+import hu.elte.txtuml.api.model.runtime.PortWrapper;
 
 /**
  * Base class for classes in the model.
  * 
  * <p>
- * <b>Represents:</b> class
+ * <b>Represents:</b> model class
  * <p>
  * <b>Usage:</b>
  * <p>
@@ -95,7 +91,7 @@ import hu.elte.txtuml.utils.InstanceCreator;
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  */
-public class ModelClass extends Region {
+public abstract class ModelClass extends StateMachine {
 
 	/**
 	 * The life cycle of a model object consists of steps represented by the
@@ -171,56 +167,18 @@ public class ModelClass extends Region {
 	}
 
 	/**
-	 * A static counter to give different identifiers to each created model
-	 * object instance.
-	 */
-	private static final AtomicLong counter = new AtomicLong(0);
-
-	/**
-	 * The current status of this model object.
-	 */
-	private volatile Status status;
-
-	/**
-	 * A unique identifier of this object.
-	 */
-	private final long identifier;
-
-	/**
-	 * A map of the associations of this model object.
-	 */
-	private final AssociationsMap associations = AssociationsMap.create();
-
-	private final ClassToInstanceMap<Port<?, ?>> ports = MutableClassToInstanceMap.create();
-
-	/**
-	 * Sole constructor of <code>ModelClass</code>. Creates the unique
-	 * identifier of this object and after setting its current vertex to its
-	 * initial pseudostate (if any), it goes into either {@link Status#READY
-	 * READY} or {@link Status#FINALIZED FINALIZED} status depending on whether
-	 * it has any state machine or not (any initial pseudostate or not).
+	 * Creates the unique identifier of this object and after setting its
+	 * current vertex to its initial pseudostate (if any), it goes into either
+	 * {@link Status#READY READY} or {@link Status#FINALIZED FINALIZED} status
+	 * depending on whether it has any state machine or not (any initial
+	 * pseudostate or not).
 	 */
 	protected ModelClass() {
-		super();
-
-		this.identifier = counter.incrementAndGet();
-
-		if (getCurrentVertex() == null) {
-			status = Status.FINALIZED;
-		} else {
-			status = Status.READY;
-		}
 	}
 
-	/**
-	 * Returns a unique identifier of this model object which is created upon
-	 * the creation of this object.
-	 * 
-	 * @return the unique identifier of this model object
-	 */
 	@Override
-	public final String getIdentifier() {
-		return "obj_" + identifier;
+	ModelClassWrapper createRuntimeInfo() {
+		return Runtime.currentRuntime().createRuntimeInfoFor(this);
 	}
 
 	/**
@@ -238,138 +196,9 @@ public class ModelClass extends Region {
 	 * @return collection containing the objects in association with this object
 	 *         and being on <code>otherEnd</code>
 	 */
-	public <T extends ModelClass, C, AE extends AssociationEnd<T, C> & Navigability.Navigable> C assoc(
+	public final <T extends ModelClass, C extends Collection<T>, AE extends AssociationEnd<T, C> & Navigability.Navigable> C assoc(
 			Class<AE> otherEnd) {
-
-		return assocPrivate(otherEnd).getCollection();
-
-	}
-
-	/**
-	 * Gets the collection containing the objects in association with this
-	 * object and being on the specified opposite (navigable or non-navigable)
-	 * association end.
-	 * 
-	 * @param <T>
-	 *            the type of objects which are on the opposite association end
-	 * @param <AE>
-	 *            the type of the opposite association end
-	 * @param otherEnd
-	 *            the opposite association end
-	 * @return collection containing the objects in association with this object
-	 *         and being on <code>otherEnd</code>
-	 */
-	<T extends ModelClass, C, AE extends AssociationEnd<T, C>> AE assocPrivate(Class<AE> otherEnd) {
-
-		@SuppressWarnings("unchecked")
-		AE ret = (AE) associations.get(otherEnd);
-		if (ret == null) {
-			ret = InstanceCreator.create(otherEnd, (Object) null);
-			associations.put(otherEnd, ret);
-		}
-		return ret;
-	}
-
-	/**
-	 * Adds the specified object to the collection containing the objects in
-	 * association with this object and being on the specified opposite
-	 * association end.
-	 * 
-	 * @param <T>
-	 *            the type of objects which are on the opposite association end
-	 * @param <AE>
-	 *            the type of the opposite association end
-	 * @param otherEnd
-	 *            the opposite association end
-	 * @param object
-	 *            the object to add to the collection (should not be
-	 *            <code>null</code>)
-	 * @throws MultiplicityException
-	 *             if the upper bound of the multiplicity of the opposite
-	 *             association end is offended
-	 * @throws MultipleContainerException
-	 *             if the same object would be part of two containers
-	 */
-	<T extends ModelClass, C, AE extends AssociationEnd<T, C>> void addToAssoc(Class<AE> otherEnd, T object)
-			throws MultiplicityException, MultipleContainerException {
-		containerCheck(otherEnd);
-		assocPrivate(otherEnd).add(object);
-	}
-
-	private <T extends ModelClass, C, AE extends AssociationEnd<T, C>> void containerCheck(Class<AE> otherEnd)
-			throws MultipleContainerException {
-		if (ContainmentKind.ContainerEnd.class.isAssignableFrom(otherEnd)) {
-			for (Entry<Class<? extends AssociationEnd<?, ?>>, AssociationEnd<?, ?>> entry : associations.entrySet()) {
-				if (ContainmentKind.ContainerEnd.class.isAssignableFrom(entry.getKey()) && !entry.getValue().isEmpty()) {
-					throw new MultipleContainerException();
-				}
-			}
-		}
-	}
-
-	/**
-	 * Removes the specified object from the collection containing the objects
-	 * in association with this object and being on the specified opposite
-	 * association end.
-	 * 
-	 * @param <T>
-	 *            the type of objects which are on the opposite association end
-	 * @param <AE>
-	 *            the type of the opposite association end
-	 * @param otherEnd
-	 *            the opposite association end
-	 * @param object
-	 *            the object to remove from the collection
-	 */
-	<T extends ModelClass, C, AE extends AssociationEnd<T, C>> void removeFromAssoc(Class<AE> otherEnd, T object) {
-
-		AE assocEnd = assocPrivate(otherEnd);
-		assocEnd.remove(object);
-
-		if (ModelExecutor.Settings.dynamicChecks() && !assocEnd.checkLowerBound()) {
-			ModelExecutor.checkLowerBoundInNextExecutionStep(this, otherEnd);
-		}
-
-	}
-
-	/**
-	 * Checks if the specified object is element of the collection containing
-	 * the objects in association with this object and being on the specified
-	 * opposite association end.
-	 * 
-	 * @param <T>
-	 *            the type of objects which are on the opposite association end
-	 * @param <AE>
-	 *            the type of the opposite association end
-	 * @param otherEnd
-	 *            the opposite association end
-	 * @param object
-	 *            the object to check in the collection
-	 * @return <code>true</code> if <code>object</code> is included in the
-	 *         collection related to <code>otherEnd</code>, <code>false</code>
-	 *         otherwise
-	 */
-	<T extends ModelClass, AE extends AssociationEnd<T, ?>> boolean hasAssoc(Class<AE> otherEnd, T object) {
-
-		@SuppressWarnings("unchecked")
-		AssociationEnd<T, ?> actualOtherEnd = (AssociationEnd<T, ?>) associations.get(otherEnd);
-		return actualOtherEnd == null ? false : actualOtherEnd.contains(object);
-	}
-
-	/**
-	 * Checks the lower bound of the specified association end's multiplicity.
-	 * Shows a message in case of an error. If this object is in
-	 * {@link Status#DELETED DELETED} status, the check is ignored.
-	 * 
-	 * @param assocEnd
-	 *            the association end to check
-	 */
-	void checkLowerBound(Class<? extends AssociationEnd<?, ?>> assocEnd) {
-
-		if (status != Status.DELETED && !assocPrivate(assocEnd).checkLowerBound()) {
-			Report.error.forEach(x -> x.lowerBoundOfMultiplicityOffended(this, assocEnd));
-		}
-
+		return runtimeInfo().navigateThroughAssociation(otherEnd);
 	}
 
 	/**
@@ -380,130 +209,267 @@ public class ModelClass extends Region {
 	 *            class
 	 * @return the instance of the specified port type
 	 */
-	public <P extends Port<?, ?>> P port(Class<P> portType) {
-		P inst = ports.getInstance(portType);
-
-		if (inst == null) {
-			inst = InstanceCreator.create(portType, this);
-			if (portType.isAnnotationPresent(BehaviorPort.class)) {
-				inst.connectToSM(this);
-			}
-			ports.putInstance(portType, inst);
-		}
-
-		return inst;
-	}
-
-	@Override
-	void process(Port<?, ?> port, Signal signal) {
-		if (isDeleted()) {
-			Report.warning.forEach(x -> x.signalArrivedToDeletedObject(this, signal));
-			return;
-		}
-		super.process(port, signal);
+	public final <P extends Port<?, ?>> P port(Class<P> portType) {
+		return runtimeInfo().getPortInstance(portType);
 	}
 
 	/**
-	 * Starts the state machine of this object.
-	 * <p>
-	 * If this object is <i>not</i> in {@link Status#READY READY} status, this
-	 * method does nothing. Otherwise, it sends an asynchronous request to
-	 * itself to step forward from its initial pseudostate and also changes its
-	 * status to {@link Status#ACTIVE ACTIVE}.
-	 * <p>
-	 * If the optional dynamic checks are switched on in
-	 * {@link ModelExecutor.Settings}, this method also initializes the defined
-	 * association ends of this model object by calling the
-	 * {@link #initializeAllDefinedAssociationEnds} method.
-	 */
-	@Override
-	void start() {
-		if (status != Status.READY) {
-			return;
-		}
-		status = Status.ACTIVE;
-
-		if (ModelExecutor.Settings.dynamicChecks()) {
-			initializeAllDefinedAssociationEnds();
-		}
-
-		super.start();
-	}
-
-	/**
-	 * Looks up all the defined associations of the model class this object is
-	 * an instance of and initializes them, if they have not been initialized
-	 * yet, by assigning empty {@link Collection Collections} to them in the
-	 * {@link #associations} map. If any of them has a lower bound which is
-	 * currently offended then registers that association end to be checked in
-	 * the next <i>execution step</i>.
-	 * <p>
-	 * Shows an error about a bad model if any exception is thrown during the
-	 * above described process as this method and all the methods this calls,
-	 * assume that the model is well-defined.
-	 * <p>
-	 * See the documentation of {@link Model} for information about execution
-	 * steps.
-	 */
-	private void initializeAllDefinedAssociationEnds() {
-		// TODO Implement initialization of defined association ends.
-	}
-
-	/**
-	 * Checks whether this model object is in {@link Status#DELETED DELETED}
-	 * status.
+	 * Base class for ports in the model.
 	 * 
-	 * @return <code>true</code> if this model object is in <code>DELETED</code>
-	 *         status, <code>false</code> otherwise
-	 */
-	boolean isDeleted() {
-		return status == Status.DELETED;
-	}
-
-	/**
-	 * Checks if this model object is ready to be deleted. If it is already
-	 * deleted, this method automatically returns <code>true</code>. Otherwise,
-	 * it checks whether all associations to this object have already been
-	 * unlinked.
+	 * <p>
+	 * <b>Represents:</b> port
+	 * <p>
+	 * <b>Usage:</b>
+	 * <p>
 	 * 
-	 * @return <code>true</code> if this model object is ready to be deleted,
-	 *         <code>false</code> otherwise
+	 * Define connectors to specify the connections between ports and create
+	 * these connections at runtime with the appropriate action methods. Signals
+	 * can be sent through the receptions on the required interface of a port
+	 * with the {@link Action#send(Signal, Reception)} method.
+	 * <p>
+	 * The {@link #required} field of a port contains an instance of the
+	 * required interface.
+	 * 
+	 * <p>
+	 * <b>Java restrictions:</b>
+	 * <ul>
+	 * <li><i>Instantiate:</i> disallowed</li>
+	 * <li><i>Define subtype:</i> allowed
+	 * <p>
+	 * <b>Subtype requirements:</b>
+	 * <ul>
+	 * <li>must be the inner class of a model class (a subclass of
+	 * {@link ModelClass})</li>
+	 * </ul>
+	 * <p>
+	 * <b>Subtype restrictions:</b>
+	 * <ul>
+	 * <li><i>Be abstract:</i> disallowed</li>
+	 * <li><i>Generic parameters:</i> disallowed</li>
+	 * <li><i>Constructors:</i> disallowed</li>
+	 * <li><i>Initialization blocks:</i> disallowed</li>
+	 * <li><i>Fields:</i> disallowed</li>
+	 * <li><i>Methods:</i> disallowed</li>
+	 * <li><i>Nested interfaces:</i> disallowed</li>
+	 * <li><i>Nested classes:</i> disallowed</li>
+	 * <li><i>Nested enums:</i> disallowed</li>
+	 * </ul>
+	 * </li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
+	 * </ul>
+	 * 
+	 * <p>
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * JtxtUML.
+	 * 
+	 * @see BehaviorPort
+	 * @see Connector
+	 * @see Delegation
+	 * @see Action#connect(Port, Class, Port)
+	 * @see Action#connect(Class, Port, Class, Port)
+	 * @see InPort
+	 * @see OutPort
+	 * 
+	 * @param <P>
+	 *            the provided interface
+	 * @param <R>
+	 *            the required interface
 	 */
-	boolean isDeletable() {
-		if (isDeleted()) {
-			return true;
+	public class Port<P extends Interface, R extends Interface> extends Described<PortWrapper> {
+
+		/**
+		 * The required interface of this port.
+		 * <p>
+		 * This instance of the specified required interface of this port
+		 * instance can be used to reference the receptions on which a send
+		 * operation might be performed.
+		 * 
+		 * @see Action#send(Signal, Reception)
+		 */
+		public final R required;
+
+		protected Port() {
+			this(1);
 		}
-		for (AssociationEnd<?, ?> assocEnd : this.associations.values()) {
-			if (!assocEnd.isEmpty()) {
-				return false;
-			}
+
+		@Override
+		PortWrapper createRuntimeInfo() {
+			return ModelClass.this.getRuntime().createRuntimeInfoFor(this, ModelClass.this);
 		}
-		return true;
+
+		/**
+		 * @param indexOfProvidedInterface
+		 *            the index of the provided interface in the list of type
+		 *            arguments
+		 */
+		@SuppressWarnings("unchecked")
+		Port(int indexOfRequiredInterface) {
+			Class<?> type = getClass();
+
+			Class<R> typeOfRequired = (Class<R>) ((ParameterizedType) type.getGenericSuperclass())
+					.getActualTypeArguments()[indexOfRequiredInterface];
+
+			required = (R) Proxy.newProxyInstance(type.getClassLoader(), new Class[] { typeOfRequired },
+					createReceptionHandler());
+		}
+
+		Port(R required) {
+			this.required = required;
+		}
+
+		private InvocationHandler createReceptionHandler() {
+			return (Object proxy, Method method, Object[] args) -> {
+				runtimeInfo().send((Signal) args[0]);
+
+				return null; // the actual method has to be void
+			};
+		}
+
 	}
 
 	/**
-	 * Deletes the specified model object.
+	 * A base class for ports with an empty provided interface. It is only a
+	 * syntactic sugar in JtxtUML, the following two definitions are
+	 * semantically equal:
+	 * 
+	 * <pre>
+	 * <code>
+	 * class SampleClass extends ModelClass {
+	 * 
+	 * 	class SamplePort extends InPort{@literal <SampleInterface>} {}
+	 * 
+	 * 	// ...
+	 * }
+	 * </code>
+	 * </pre>
+	 * 
+	 * and
+	 * 
+	 * <pre>
+	 * <code>
+	 * class SampleClass extends ModelClass {
+	 * 
+	 * 	class SamplePort extends Port{@literal <SampleInterface, Interface.Empty>} {}
+	 * 
+	 * 	// ...
+	 * }
+	 * </code>
+	 * </pre>
+	 * 
 	 * <p>
-	 * Might only be called if all associations of the specified model object
-	 * are already unlinked. Shows an error otherwise.
+	 * <b>Java restrictions:</b>
+	 * <ul>
+	 * <li><i>Instantiate:</i> disallowed</li>
+	 * <li><i>Define subtype:</i> allowed
 	 * <p>
-	 * See {@link ModelClass.Status#DELETED DELETED} status of model objects for
-	 * more information about model object deletion.
+	 * <b>Subtype requirements:</b>
+	 * <ul>
+	 * <li>must be the inner class of a model class (a subclass of
+	 * {@link ModelClass})</li>
+	 * </ul>
+	 * <p>
+	 * <b>Subtype restrictions:</b>
+	 * <ul>
+	 * <li><i>Be abstract:</i> disallowed</li>
+	 * <li><i>Generic parameters:</i> disallowed</li>
+	 * <li><i>Constructors:</i> disallowed</li>
+	 * <li><i>Initialization blocks:</i> disallowed</li>
+	 * <li><i>Fields:</i> disallowed</li>
+	 * <li><i>Methods:</i> disallowed</li>
+	 * <li><i>Nested interfaces:</i> disallowed</li>
+	 * <li><i>Nested classes:</i> disallowed</li>
+	 * <li><i>Nested enums:</i> disallowed</li>
+	 * </ul>
+	 * </li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
+	 * </ul>
+	 * 
+	 * <p>
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * JtxtUML.
+	 * 
+	 * @param <P>
+	 *            the provided interface
 	 */
-	void forceDelete() {
-		if (!isDeletable()) {
-			Report.error.forEach(x -> x.objectCannotBeDeleted(this));
-			return;
+	public abstract class InPort<P extends Interface> extends Port<P, Interface.Empty> {
+
+		protected InPort() {
+			super(new Interface.Empty() {
+			});
 		}
 
-		this.inactivate();
-
-		status = Status.DELETED;
 	}
 
-	@Override
-	public String toString() {
-		return getClass().getSimpleName() + ":" + getIdentifier();
+	/**
+	 * A base class for ports with an empty required interface. It is only a
+	 * syntactic sugar in JtxtUML, the following two definitions are
+	 * semantically equal:
+	 * 
+	 * <pre>
+	 * <code>
+	 * class SampleClass extends ModelClass {
+	 * 
+	 * 	class SamplePort extends OutPort{@literal <SampleInterface>} {}
+	 * 
+	 * 	// ...
+	 * }
+	 * </code>
+	 * </pre>
+	 * 
+	 * and
+	 * 
+	 * <pre>
+	 * <code>
+	 * class SampleClass extends ModelClass {
+	 * 
+	 * 	class SamplePort extends Port{@literal <Interface.Empty, SampleInterface>} {}
+	 * 
+	 * 	// ...
+	 * }
+	 * </code>
+	 * </pre>
+	 * 
+	 * <p>
+	 * <b>Java restrictions:</b>
+	 * <ul>
+	 * <li><i>Instantiate:</i> disallowed</li>
+	 * <li><i>Define subtype:</i> allowed
+	 * <p>
+	 * <b>Subtype requirements:</b>
+	 * <ul>
+	 * <li>must be the inner class of a model class (a subclass of
+	 * {@link ModelClass})</li>
+	 * </ul>
+	 * <p>
+	 * <b>Subtype restrictions:</b>
+	 * <ul>
+	 * <li><i>Be abstract:</i> disallowed</li>
+	 * <li><i>Generic parameters:</i> disallowed</li>
+	 * <li><i>Constructors:</i> disallowed</li>
+	 * <li><i>Initialization blocks:</i> disallowed</li>
+	 * <li><i>Fields:</i> disallowed</li>
+	 * <li><i>Methods:</i> disallowed</li>
+	 * <li><i>Nested interfaces:</i> disallowed</li>
+	 * <li><i>Nested classes:</i> disallowed</li>
+	 * <li><i>Nested enums:</i> disallowed</li>
+	 * </ul>
+	 * </li>
+	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
+	 * </ul>
+	 * 
+	 * <p>
+	 * See the documentation of {@link Model} for an overview on modeling in
+	 * JtxtUML.
+	 * 
+	 * @param <R>
+	 *            the required interface
+	 */
+	public abstract class OutPort<R extends Interface> extends Port<Interface.Empty, R> {
+
+		protected OutPort() {
+			super(0);
+		}
+
 	}
 
 }

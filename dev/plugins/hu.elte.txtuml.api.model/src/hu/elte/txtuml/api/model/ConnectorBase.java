@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api.model;
 
+import hu.elte.txtuml.api.model.ModelClass.Port;
+
 /**
  * A base class for connectors in the model.
  * 
@@ -65,7 +67,7 @@ public abstract class ConnectorBase {
 	 *
 	 * @see ConnectorBase.One
 	 */
-	public class ConnectorEnd<R extends AssociationEnd<?, ?>, P extends Port<?, ?>> {
+	public abstract class ConnectorEnd<R extends AssociationEnd<?, ?>, P extends Port<?, ?>> {
 		ConnectorEnd() {
 		}
 	}
@@ -113,7 +115,7 @@ public abstract class ConnectorBase {
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 */
-	public class One<R extends AssociationEnd<?, ?>, P extends Port<?, ?>> extends ConnectorEnd<R, P> {
+	public abstract class One<R extends AssociationEnd<?, ?>, P extends Port<?, ?>> extends ConnectorEnd<R, P> {
 	}
 
 }

@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api.model;
 
+import hu.elte.txtuml.api.model.ConnectorBase.ConnectorEnd;
+
 /**
  * A base class for assembly connectors in the model.
  * 

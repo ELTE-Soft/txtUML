@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.model.backend;
+package hu.elte.txtuml.api.model.runtime;
 
 /**
  * Used by {@link hu.elte.txtuml.api.model.StateMachine.Transition#Else} to

@@ -6,6 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import hu.elte.txtuml.api.model.ModelClass.Port;
+
 /**
  * A runtime annotation to define the trigger of a transition.
  * 
@@ -50,7 +52,6 @@ import java.lang.annotation.Target;
  * @see To
  * @see From
  */
-
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
@@ -95,7 +96,14 @@ public @interface Trigger {
 	 */
 	abstract class AnyPort extends Port<Interface, Interface> {
 
-		private AnyPort() {
+		/**
+		 * Not intended to be ever run.
+		 * 
+		 * @throws NullPointerException
+		 *             always
+		 */
+		private AnyPort() throws NullPointerException {
+			null.super();
 		}
 
 	}

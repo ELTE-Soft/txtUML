@@ -22,7 +22,7 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * Apply on the top package of a JtxtUML model. Annotations on packages should
  * be defined in {@code package-info.java} file.
  * <p>
- * Set {@link value} to define a unique name of the model.
+ * Set {@link #value() value} to define a unique name of the model.
  * <p>
  * If package <i>A</i> is marked as a model and <i>B</i> is a subpackage of
  * <i>A</i> then <i>B</i> cannot be marked to be a model as it is already a part
@@ -58,11 +58,10 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * 
  * <ul>
  * <li>Using and extending classes, interfaces, enums and annotations of this
- * package and the {@link hu.elte.txtuml.api.model.blocks} package, if the
- * opposite is not stated on the corresponding pages of this documentation.</li>
+ * package, if the opposite is not stated on the corresponding pages of this
+ * documentation.</li>
  * <li>Using Java primitive types and <code>String</code>s.</li>
- * <li>Using subclasses of <code>ExternalClass</code>, like the classes of the
- * <code>hu.elte.txtuml.api.stdlib</code> package. See the documentation of
+ * <li>Using subclasses of <code>ExternalClass</code>. See the documentation of
  * {@link ExternalClass} for details.</li>
  * </ul>
  * 
@@ -70,7 +69,8 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * 
  * <ul>
  * <li>Using or extending any type not included in the preceding list, including
- * Java built-in types (with the exception of <code>java.lang.Object</code>).</li>
+ * Java built-in types (with the exception of <code>java.lang.Object</code>).
+ * </li>
  * <li>Exception handling.</li>
  * <li>Defining <code>abstract class</code>es.</li>
  * <li>Defining <code>synchronized</code>, <code>native</code> or
@@ -83,9 +83,8 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  *
  * <p>
  * A JtxtUML model may never run by itself. It has to be managed or at least
- * started from the outside. As {@link ModelExecutor} (the class which is
- * responsible for executing models) uses its own thread, there are two main
- * cases of accessing the model from the outside:
+ * started from the outside. As model executors use their own threads, there are
+ * two main cases of accessing the model from the outside:
  * <ul>
  * <li>The model is accessed from another thread (that is, not the executor's
  * thread).</li>
@@ -122,8 +121,6 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * signals to a model object that <b>has already been started</b>.</li>
  * <li>Call {@link Action#log(String) Action.log} or
  * {@link Action#logError(String) Action.logError} at any time.</li>
- * <li>Call {@link ModelClass#getIdentifier() ModelClass.getIdentifier} to get
- * the unique identifier of a model object at any time.</li>
  * </ul>
  * 
  * <h2>Definitions</h2>
@@ -167,15 +164,14 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * <p>
  * Condition evaluations in JtxtUML include
  * {@link StateMachine.Transition#guard() guards} of transitions and conditions
- * of certain <code>Collection</code> methods (
- * {@link Collection#selectAll(hu.elte.txtuml.api.model.blocks.ParameterizedCondition)
- * selectAll} ).
+ * of certain <code>Collection</code> methods ( {@link Collection#selectAll} ).
  * <p>
  * A condition evaluation is exported as a single model query, so it <b>may
  * include only the following actions</b>:
  * <ul>
  * <li>Defining, modifying local variables.</li>
- * <li>Getting (but <i>not</i> setting) fields of model objects and signals.</li>
+ * <li>Getting (but <i>not</i> setting) fields of model objects and signals.
+ * </li>
  * <li>Querying association ends with the {@link ModelClass#assoc(Class)
  * ModelClass.assoc} method.</li>
  * <li>Using primitives (including <code>Sting</code>).</li>

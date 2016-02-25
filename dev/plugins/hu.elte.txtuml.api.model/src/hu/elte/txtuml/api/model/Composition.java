@@ -73,14 +73,7 @@ import hu.elte.txtuml.api.model.assocends.Navigability;
  * @see Container
  * @see HiddenContainer
  */
-public class Composition extends Association {
-
-	/**
-	 * Sole constructor of <code>Composition</code>.
-	 */
-	protected Composition() {
-
-	}
+public abstract class Composition extends Association {
 
 	/**
 	 * Abstract base class for the navigable container end of a composition
@@ -141,7 +134,7 @@ public class Composition extends Association {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public abstract class Container<T extends ModelClass> extends MaybeOneBase<T>
+	public abstract class Container<T extends ModelClass> extends MaybeEnd<T>
 			implements Multiplicity.ZeroToOne, Navigability.Navigable, ContainmentKind.ContainerEnd {
 	}
 
@@ -197,7 +190,7 @@ public class Composition extends Association {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public abstract class HiddenContainer<T extends ModelClass> extends MaybeOneBase<T>
+	public abstract class HiddenContainer<T extends ModelClass> extends MaybeEnd<T>
 			implements Multiplicity.ZeroToOne, Navigability.NonNavigable, ContainmentKind.ContainerEnd {
 	}
 

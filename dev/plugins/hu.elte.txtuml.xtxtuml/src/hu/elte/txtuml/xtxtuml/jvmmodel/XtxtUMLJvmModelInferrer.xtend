@@ -14,7 +14,7 @@ import hu.elte.txtuml.api.model.Interface
 import hu.elte.txtuml.api.model.Max
 import hu.elte.txtuml.api.model.Min
 import hu.elte.txtuml.api.model.ModelClass
-import hu.elte.txtuml.api.model.Port
+import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.api.model.StateMachine
 import hu.elte.txtuml.api.model.To
