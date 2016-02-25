@@ -63,4 +63,8 @@ package hu.elte.txtuml.api.model;
  */
 public abstract class InPort<R extends Interface> extends Port<R, Interface.Empty> {
 
+	protected InPort() {
+		super(new Interface.Empty() {});
+	}
+	
 }

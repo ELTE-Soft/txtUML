@@ -65,4 +65,8 @@ package hu.elte.txtuml.api.model;
  */
 public abstract class OutPort<P extends Interface> extends Port<Interface.Empty, P> {
 
+	protected OutPort() {
+		super(0);
+	}
+	
 }
