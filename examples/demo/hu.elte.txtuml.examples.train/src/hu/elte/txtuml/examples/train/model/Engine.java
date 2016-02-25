@@ -8,13 +8,13 @@ import hu.elte.txtuml.examples.train.model.signals.EngineOff;
 import hu.elte.txtuml.examples.train.model.signals.EngineOn;
 
 public class Engine extends ModelClass {
-	class Init extends Initial {
+	public class Init extends Initial {
 	}
 
-	class Stopped extends State {
+	public class Stopped extends State {
 	}
 
-	class Working extends State {
+	public class Working extends State {
 	}
 
 	@From(Init.class)
