@@ -26,39 +26,50 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.gmfdiag.common.adapter.SemanticAdapter;
 import org.eclipse.papyrus.uml.diagram.common.commands.ShowHideLabelsRequest;
 import org.eclipse.papyrus.uml.diagram.statemachine.custom.commands.CustomStateResizeCommand;
-import org.eclipse.papyrus.uml.diagram.statemachine.custom.helpers.Zone;
+import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateEditPart;
 
 @SuppressWarnings("restriction")
 public class DiagramElementsModifier {
-	
-    /**
-     * Resizes  a GraphicalEditPart
-     * @param graphEP - The GraphicalEditPart that is to be resized
-     * @param new_width - The new width of the EditPart
-     * @param new_height - The new height of the EditPart
-     */
-    public static void resizeState(GraphicalEditPart graphEP, int new_width, int new_height){
-        Dimension figuredim = graphEP.getFigure().getSize();
-        View stateView = (View)graphEP.getModel();
-        
-        IAdaptable adaptableForState = (IAdaptable) graphEP.getAdapter(SemanticAdapter.class);
-        ChangeBoundsRequest internalResizeRequest = new ChangeBoundsRequest();
-        ChangeBoundsRequest resize_req = new ChangeBoundsRequest(RequestConstants.REQ_RESIZE);
-        resize_req.setSizeDelta(new Dimension(new_width-figuredim.width(), new_height-figuredim.height()));
-        resize_req.setEditParts(graphEP);
-        Rectangle rect = new Rectangle(Zone.getX(stateView), Zone.getY(stateView), new_width, new_height);
 
-        CustomStateResizeCommand internalResizeCommand = new CustomStateResizeCommand(adaptableForState, graphEP.getDiagramPreferencesHint(),
-                graphEP.getEditingDomain(), "Resize State", internalResizeRequest, rect, true);
-        internalResizeCommand.setOptions(Collections.singletonMap(Transaction.OPTION_UNPROTECTED, Boolean.TRUE));
+	/**
+	 *  See {@link #fixStateLabelHeight(CustomStateEditPart) fixStateLabelHeight}.
+	 */
+	private static final int STATE_LABEL_HEIGHT_FIX = -20;
 
-        try {
-            internalResizeCommand.execute(null, null);
-        } catch (Exception e) {
-        }
+	/**
+	 * Decreases the height of the label compartment by 20 pixels.
+	 * 
+	 * This is a workaround for the following problem: When we place states onto
+	 * a diagram programmatically, the height of the label compartment becomes
+	 * 40 pixels, but after opening the diagram, Papyrus shrinks it to 20
+	 * pixels, and this causes the state to change height, and links get
+	 * distorted.
+	 * 
+	 * @param The
+	 *            state to be fixed.
+	 */
+	public static void fixStateLabelHeight(CustomStateEditPart state) {
+		IAdaptable adaptableForState = new SemanticAdapter(null, ((View) state.getModel()));
+		ChangeBoundsRequest req = new ChangeBoundsRequest();
+		req.setSizeDelta(new Dimension(0, STATE_LABEL_HEIGHT_FIX));
+		req.setEditParts(state);
+		Rectangle orig = state.getFigure().getBounds();
+		Rectangle rect = new Rectangle(orig.x, orig.y, orig.width, orig.height + STATE_LABEL_HEIGHT_FIX);
 
+		// The last constructor parameter should be 'true' in order to make the
+		// command
+		// change the height of the label compartment:
+		CustomStateResizeCommand cmd = new CustomStateResizeCommand(adaptableForState,
+				state.getDiagramPreferencesHint(), state.getEditingDomain(), "Resize State", req, rect, true);
+		cmd.setOptions(Collections.singletonMap(Transaction.OPTION_UNPROTECTED, Boolean.TRUE));
 
-    }
+		try {
+			if (cmd != null && cmd.canExecute()) {
+				cmd.execute(null, null);
+			}
+		} catch (org.eclipse.core.commands.ExecutionException e) {
+		}
+	}
 
 	
 	/**

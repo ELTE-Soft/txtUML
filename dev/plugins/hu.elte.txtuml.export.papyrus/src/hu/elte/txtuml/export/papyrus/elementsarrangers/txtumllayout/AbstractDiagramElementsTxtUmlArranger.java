@@ -166,11 +166,10 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 	private void modifyEditParts(
 			Map<GraphicalEditPart, Rectangle> editPartsObjectsMapping) {
 		editPartsObjectsMapping.forEach((GraphicalEditPart ep, Rectangle rect) -> {
-			int height = rect.height;
 			if(ep instanceof CustomStateEditPart) {
-				height += 20;
+				DiagramElementsModifier.fixStateLabelHeight((CustomStateEditPart)ep);
 			}
-			DiagramElementsModifier.resizeGraphicalEditPart(ep, rect.width, height);
+			DiagramElementsModifier.resizeGraphicalEditPart(ep, rect.width, rect.height);
 			DiagramElementsModifier.moveGraphicalEditPart(ep, rect.getTopLeft());
 		});
 	}
