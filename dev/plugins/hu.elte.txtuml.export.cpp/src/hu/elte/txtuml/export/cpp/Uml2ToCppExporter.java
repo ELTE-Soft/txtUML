@@ -34,6 +34,7 @@ public class Uml2ToCppExporter {
 	private static final String RUNTIME_DIR_PREFIX = GenerationTemplates.RuntimePath;
 	private static final String RUNTIME_LIB_NAME = "libsmrt";
 	private static final String DEFAULT_TARGET_EXECUTABLE = "main";
+	private static final String DEFAULT_DEPLOYMENT_NAME = "deployment";
 	private static final String PROJECT_NAME = "hu.elte.txtuml.export.cpp";
 	private static final String CPP_FILES_FOLDER_NAME = "cpp-runtime";
 
@@ -145,6 +146,7 @@ public class Uml2ToCppExporter {
 		cmake.addStaticLibraryTarget(RUNTIME_LIB_NAME, librarySourceClasses, RUNTIME_DIR_PREFIX);
 		List<String> sourceNames = new ArrayList<String>();
 		sourceNames.add(DEFAULT_TARGET_EXECUTABLE);
+		sourceNames.add(DEFAULT_DEPLOYMENT_NAME);
 		sourceNames.addAll(classNames);
 		cmake.addExecutableTarget(DEFAULT_TARGET_EXECUTABLE, sourceNames, "");
 		cmake.writeOutCMakeLists();
