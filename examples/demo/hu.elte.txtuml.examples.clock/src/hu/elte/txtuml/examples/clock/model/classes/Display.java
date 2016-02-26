@@ -3,9 +3,8 @@ package hu.elte.txtuml.examples.clock.model.classes;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.BehaviorPort;
 import hu.elte.txtuml.api.model.From;
-import hu.elte.txtuml.api.model.Interface;
+import hu.elte.txtuml.api.model.InPort;
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.Port;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
 import hu.elte.txtuml.examples.clock.model.interfaces.ValueIfc;
@@ -17,13 +16,13 @@ public class Display extends ModelClass {
 	int second;
 	
 	@BehaviorPort
-	public class HourPort extends Port<Interface.Empty,ValueIfc> {}
+	public class HourPort extends InPort<ValueIfc> {}
 
 	@BehaviorPort
-	public class MinutePort extends Port<Interface.Empty,ValueIfc> {}
+	public class MinutePort extends InPort<ValueIfc> {}
 
 	@BehaviorPort
-	public class SecondPort extends Port<Interface.Empty,ValueIfc> {}
+	public class SecondPort extends InPort<ValueIfc> {}
 	
 	public Display(int hour, int minute, int second) {
 		this.hour = hour;

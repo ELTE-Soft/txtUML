@@ -3,9 +3,9 @@ package hu.elte.txtuml.examples.clock.model.classes;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.BehaviorPort;
 import hu.elte.txtuml.api.model.From;
-import hu.elte.txtuml.api.model.Interface;
+import hu.elte.txtuml.api.model.InPort;
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.Port;
+import hu.elte.txtuml.api.model.OutPort;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
 import hu.elte.txtuml.examples.clock.model.interfaces.TickIfc;
@@ -18,10 +18,10 @@ public class Hand extends ModelClass {
 	private int currentValue;
 	
 	@BehaviorPort
-	public class InTickPort extends Port<Interface.Empty,TickIfc> {}
+	public class InTickPort extends InPort<TickIfc> {}
 
-	public class OutTickPort extends Port<TickIfc,Interface.Empty> {}
-	public class ValuePort extends Port<ValueIfc,Interface.Empty> {}
+	public class OutTickPort extends OutPort<TickIfc> {}
+	public class ValuePort extends OutPort<ValueIfc> {}
 	
 	public Hand(int maxValue, int currentValue) {
 		this.maxValue = maxValue;

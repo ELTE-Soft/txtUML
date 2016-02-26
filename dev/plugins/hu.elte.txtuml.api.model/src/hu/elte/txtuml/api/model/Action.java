@@ -1,6 +1,6 @@
 package hu.elte.txtuml.api.model;
 
-import hu.elte.txtuml.api.model.Connector.ConnectorEnd;
+import hu.elte.txtuml.api.model.ConnectorBase.ConnectorEnd;
 import hu.elte.txtuml.api.model.ModelExecutor.Report;
 import hu.elte.txtuml.api.model.backend.MultipleContainerException;
 import hu.elte.txtuml.api.model.backend.MultiplicityException;
