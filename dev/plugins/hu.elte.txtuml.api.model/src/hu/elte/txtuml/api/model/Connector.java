@@ -62,15 +62,14 @@ public class Connector implements ModelElement {
 	 * <p>
 	 * The first of the two generic parameters of a connector end has to be a
 	 * role of the class which this end belongs to. A role is represented by a
-	 * non-composite (not a container) association end of a composite
-	 * association (composition). The second parameter must be a port on the
-	 * class to which the given association end (the first parameter) belongs
-	 * to.
+	 * non-container association end of a composite association (composition).
+	 * The second parameter must be a port on the class to which the given
+	 * association end (the first parameter) belongs to.
 	 * <p>
 	 * In case of a <b>delegation connector</b>, if this connector end belongs
-	 * to the container class, the first parameter should be the composite
-	 * (container) end of the same composite association (composition) which's
-	 * non-composite end is referenced in the other connector end.
+	 * to the container class, the first parameter should be the container end
+	 * of the same composite association (composition) which's non-container end
+	 * is referenced in the other connector end.
 	 * 
 	 * <p>
 	 * <b>Java restrictions:</b>
@@ -85,11 +84,6 @@ public class Connector implements ModelElement {
 	 * JtxtUML.
 	 *
 	 * @see Connector.One
-<<<<<<< HEAD
-	 * 
-=======
-	 * @see Connector.IN_CONTAINER
->>>>>>> refs/remotes/origin/master
 	 */
 	public class ConnectorEnd<R extends AssociationEnd<?, ?>, P extends Port<?, ?>> {
 		ConnectorEnd() {
