@@ -130,13 +130,13 @@ public final class SharedUtils {
 
 		parser.setSource(content);
 		parser.setProject(project);
+		
 		parser.setResolveBindings(true);
 		parser.setBindingsRecovery(true);
 		parser.setUnitName(sourceFile.getName());
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 
 		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
-
 		return compilationUnit;
 	}
 

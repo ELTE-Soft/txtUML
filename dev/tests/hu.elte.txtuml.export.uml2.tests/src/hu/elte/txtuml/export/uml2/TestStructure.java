@@ -474,6 +474,13 @@ public class TestStructure {
 	}
 	
 	@Test
+	public void testLogAction() throws Exception {
+		SequenceNode body = loadActionCode("log", "TestClass", "S1");
+		
+		assertEquals(2, body.getExecutableNodes().size()); // String spec, log action
+	}
+	
+	@Test
 	public void testReturn() throws Exception {
 		model = ModelExportTestUtils
 				.export("hu.elte.txtuml.export.uml2.tests.models.return_stmt");

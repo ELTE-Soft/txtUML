@@ -430,6 +430,12 @@
 }
 </body>
     </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_T3uvQNxtEeWMgebnm1pcCw" name="log_opaqueBehavior" specification="_HBO98NxtEeWMgebnm1pcCw">
+      <language>JTxtUML</language>
+      <body>{&#xD;
+	Action.log(msg);&#xD;
+}</body>
+    </ownedBehavior>
     <ownedOperation xmi:type="uml:Operation" xmi:id="_DHR51HLCEeWVx4ZuxFlarQ" name="concat" visibility="public" isStatic="true" method="_DHR52HLCEeWVx4ZuxFlarQ">
       <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR51XLCEeWVx4ZuxFlarQ" name="left">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
@@ -438,6 +444,11 @@
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
       </ownedParameter>
       <ownedParameter xmi:type="uml:Parameter" xmi:id="_DHR513LCEeWVx4ZuxFlarQ" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_HBO98NxtEeWMgebnm1pcCw" name="log" isStatic="true" method="_T3uvQNxtEeWMgebnm1pcCw">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_NvLcoNxtEeWMgebnm1pcCw" name="msg">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
       </ownedParameter>
     </ownedOperation>

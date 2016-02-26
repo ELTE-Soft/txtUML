@@ -46,6 +46,7 @@ import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.actions.CreateObjectActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.actions.DeleteObjectActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.actions.LinkActionExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.actions.LogActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.actions.SendActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.actions.StartActionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.actions.UnlinkActionExporter;
@@ -154,6 +155,8 @@ public class ExpressionExporter<ElemType extends ActivityNode> extends ControlSt
 			new StartActionExporter(this).export(args);
 		} else if (actionName.equals("send")) {
 			new SendActionExporter(this).export(args);
+		} else if (actionName.equals("log")) {
+			new LogActionExporter(this).export(args);
 		}
 
 		return null;
