@@ -124,7 +124,7 @@ class CMakeSupport {
 		fileContent.append("find_package(Threads)\n");
 		fileContent.append("include(CheckCXXCompilerFlag)\n");
 
-		fileContent.append("if(MSVC)");
+		fileContent.append("if(MSVC)\n");
 
 		addCompileOption(fileContent, STRICTLY_NO_WARNINGS_WIN, false, false, false);
 		if (DEBUG_ONLY_COMPILE_OPTIONS_WIN.length() > 0) {
@@ -134,7 +134,7 @@ class CMakeSupport {
 			addCompileOption(fileContent, RELEASE_ONLY_COMPILE_OPTIONS_WIN, false, false, true);
 		}
 
-		fileContent.append("else()");
+		fileContent.append("else()\n");
 
 		addCompileOption(fileContent, "-std=" + CPP_STANDARD, false, false, false);
 		addCompileOption(fileContent, STRICTLY_NO_WARNINGS, false, false, false);
@@ -149,7 +149,7 @@ class CMakeSupport {
 			addCompileOption(fileContent, RELEASE_ONLY_COMPILE_OPTIONS, false, false, true);
 		}
 
-		fileContent.append("endif()");
+		fileContent.append("endif()\n");
 
 		for (String includeDirectory : includeDirectories) {
 			fileContent.append("include_directories(" + includeDirectory + ")\n");
@@ -180,7 +180,7 @@ class CMakeSupport {
 				fileContent.append(")\n");
 			}
 
-			fileContent.append("if(MSVC)");
+			fileContent.append("if(MSVC)\n");
 
 			if (DEBUG_ONLY_LINK_FLAGS_WIN.length() > 0) {
 				fileContent.append("set_target_properties(" + targetName);
@@ -191,7 +191,7 @@ class CMakeSupport {
 				fileContent.append(" PROPERTIES LINK_FLAGS_RELEASE \"" + RELEASE_ONLY_LINK_FLAGS_WIN + "\")\n");
 			}
 
-			fileContent.append("else()");
+			fileContent.append("else()\n");
 
 			if (DEBUG_ONLY_LINK_FLAGS.length() > 0) {
 				fileContent.append("set_target_properties(" + targetName);
@@ -202,7 +202,7 @@ class CMakeSupport {
 				fileContent.append(" PROPERTIES LINK_FLAGS_RELEASE \"" + RELEASE_ONLY_LINK_FLAGS + "\")\n");
 			}
 
-			fileContent.append("endif()");
+			fileContent.append("endif()\n");
 
 			fileContent.append("if(Threads_FOUND)\n");
 			fileContent.append("  target_link_libraries(");
