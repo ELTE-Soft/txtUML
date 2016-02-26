@@ -30,12 +30,13 @@ public class NavigationActionExporter extends AbstractLinkActionExporter {
 		Association assoc = getAssociation(binding, args);
 
 		String nodeName = base.getName() + "->" + selectorExpr.getName();
+		 base.evaluate();
 		ReadLinkAction rla = (ReadLinkAction) expressionExporter.createAndAddNode(nodeName,
 				UMLPackage.Literals.READ_LINK_ACTION);
 		OutputPin res = rla.createResult("res" + rla.getName(),
 				expressionExporter.getTypeExporter().exportType(selectorType));
 
-		addEndToLinkAction(rla, assoc, otherSelector.getName(), base.evaluate(), 1);
+		addEndToLinkAction(rla, assoc, otherSelector.getName(), base, 1);
 		return Expr.ofPin(res, res.getName());
 	}
 
