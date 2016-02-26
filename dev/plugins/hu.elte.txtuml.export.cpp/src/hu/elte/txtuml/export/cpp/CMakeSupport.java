@@ -22,16 +22,23 @@ import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
  * && make
  */
 class CMakeSupport {
-	// TODO gcc and clang is ok, but msvc needs different flags
-	private static final String CPP_STANDARD = "c++11";
-	private static final String STRICTLY_NO_WARNINGS = "-Wall -pedantic -Wextra -Wconversion -Werror";
-	private static final String DEBUG_ONLY_COMPILE_OPTIONS = "-fsanitize=address";
-	// could be "-flto" or "-pg"
-	private static final String RELEASE_ONLY_COMPILE_OPTIONS = "";
-	private static final String DEBUG_ONLY_LINK_FLAGS = DEBUG_ONLY_COMPILE_OPTIONS;
-	private static final String RELEASE_ONLY_LINK_FLAGS = RELEASE_ONLY_COMPILE_OPTIONS;
 	private static final String CMAKE_MINIMUM_VERSION = "2.8";
 	private static final String CMAKE_FILE_NAME = "CMakeLists.txt";
+
+	private static final String CPP_STANDARD = "c++11";
+	private static final String STRICTLY_NO_WARNINGS = "-Wall -pedantic -Wextra -Wconversion -Werror";
+	private static final String STRICTLY_NO_WARNINGS_WIN = "/W3 /WX";
+
+	private static final String DEBUG_ONLY_COMPILE_OPTIONS = "-fsanitize=address";
+	private static final String DEBUG_ONLY_COMPILE_OPTIONS_WIN = "/RTC";
+	// could be "-flto" or "-pg"
+	private static final String RELEASE_ONLY_COMPILE_OPTIONS = "";
+	private static final String RELEASE_ONLY_COMPILE_OPTIONS_WIN = "";
+
+	private static final String DEBUG_ONLY_LINK_FLAGS = DEBUG_ONLY_COMPILE_OPTIONS;
+	private static final String DEBUG_ONLY_LINK_FLAGS_WIN = "";
+	private static final String RELEASE_ONLY_LINK_FLAGS = RELEASE_ONLY_COMPILE_OPTIONS;
+	private static final String RELEASE_ONLY_LINK_FLAGS_WIN = "";
 
 	private String targetRootPath;
 	private List<String> executableTargetNames = new ArrayList<String>();
@@ -73,23 +80,34 @@ class CMakeSupport {
 		includeDirectories.add(convertToPosixPath(includeDirectory));
 	}
 
-	private static void addCompileOption(StringBuilder output, String compileOption, boolean optional) {
+	private static void addCompileOption(StringBuilder output, String compileOption, boolean optional,
+			boolean debugOnly, boolean releaseOnly) {
 		if (optional) {
 			String optionName = compileOption.replace("-", "").replace("/", "").replace('=', '_').replace('+', '_')
 					.toUpperCase().trim();
-			output.append("CHECK_CXX_COMPILER_FLAG(");
+			output.append("  CHECK_CXX_COMPILER_FLAG(");
 			output.append(compileOption);
 			output.append(" ");
 			output.append(optionName);
-			output.append(")\nif(");
+			output.append(")\n  if(");
 			output.append(optionName);
 			output.append(")\n  ");
 		}
-		output.append("add_compile_options(");
+		output.append("  add_compile_options(");
+		assert !debugOnly || !releaseOnly;
+		if (debugOnly) {
+			output.append("$<$<CONFIG:Debug>:");
+		}
+		if (releaseOnly) {
+			output.append("$<$<CONFIG:Release>:");
+		}
 		output.append(compileOption);
+		if (debugOnly || releaseOnly) {
+			output.append(">");
+		}
 		output.append(")\n");
 		if (optional) {
-			output.append("endif()\n");
+			output.append("  endif()\n");
 		}
 	}
 
@@ -106,19 +124,33 @@ class CMakeSupport {
 		fileContent.append("find_package(Threads)\n");
 		fileContent.append("include(CheckCXXCompilerFlag)\n");
 
-		// compile options
-		addCompileOption(fileContent, "-std=" + CPP_STANDARD, false);
-		addCompileOption(fileContent, STRICTLY_NO_WARNINGS, false);
-		addCompileOption(fileContent, "-Wno-error=unused-parameter", false);
-		// only clang supports it
-		addCompileOption(fileContent, "-Wno-error=unused-private-field", true);
+		fileContent.append("if(MSVC)");
 
+		addCompileOption(fileContent, STRICTLY_NO_WARNINGS_WIN, false, false, false);
+		if (DEBUG_ONLY_COMPILE_OPTIONS_WIN.length() > 0) {
+			addCompileOption(fileContent, DEBUG_ONLY_COMPILE_OPTIONS_WIN, false, true, false);
+		}
+		if (RELEASE_ONLY_COMPILE_OPTIONS_WIN.length() > 0) {
+			addCompileOption(fileContent, RELEASE_ONLY_COMPILE_OPTIONS_WIN, false, false, true);
+		}
+
+		fileContent.append("else()");
+
+		addCompileOption(fileContent, "-std=" + CPP_STANDARD, false, false, false);
+		addCompileOption(fileContent, STRICTLY_NO_WARNINGS, false, false, false);
+		// TODO remove these later on
+		addCompileOption(fileContent, "-Wno-error=unused-parameter", false, false, false);
+		// only clang supports it
+		addCompileOption(fileContent, "-Wno-error=unused-private-field", true, false, false);
 		if (DEBUG_ONLY_COMPILE_OPTIONS.length() > 0) {
-			fileContent.append("add_compile_options($<$<CONFIG:Debug>:" + DEBUG_ONLY_COMPILE_OPTIONS + ">)\n");
+			addCompileOption(fileContent, DEBUG_ONLY_COMPILE_OPTIONS, false, true, false);
 		}
 		if (RELEASE_ONLY_COMPILE_OPTIONS.length() > 0) {
-			fileContent.append("add_compile_options($<$<CONFIG:Release>:" + RELEASE_ONLY_COMPILE_OPTIONS + ">)\n");
+			addCompileOption(fileContent, RELEASE_ONLY_COMPILE_OPTIONS, false, false, true);
 		}
+
+		fileContent.append("endif()");
+
 		for (String includeDirectory : includeDirectories) {
 			fileContent.append("include_directories(" + includeDirectory + ")\n");
 		}
@@ -148,6 +180,19 @@ class CMakeSupport {
 				fileContent.append(")\n");
 			}
 
+			fileContent.append("if(MSVC)");
+
+			if (DEBUG_ONLY_LINK_FLAGS_WIN.length() > 0) {
+				fileContent.append("set_target_properties(" + targetName);
+				fileContent.append(" PROPERTIES LINK_FLAGS_DEBUG \"" + DEBUG_ONLY_LINK_FLAGS_WIN + "\")\n");
+			}
+			if (RELEASE_ONLY_LINK_FLAGS_WIN.length() > 0) {
+				fileContent.append("set_target_properties(" + targetName);
+				fileContent.append(" PROPERTIES LINK_FLAGS_RELEASE \"" + RELEASE_ONLY_LINK_FLAGS_WIN + "\")\n");
+			}
+
+			fileContent.append("else()");
+
 			if (DEBUG_ONLY_LINK_FLAGS.length() > 0) {
 				fileContent.append("set_target_properties(" + targetName);
 				fileContent.append(" PROPERTIES LINK_FLAGS_DEBUG \"" + DEBUG_ONLY_LINK_FLAGS + "\")\n");
@@ -156,6 +201,8 @@ class CMakeSupport {
 				fileContent.append("set_target_properties(" + targetName);
 				fileContent.append(" PROPERTIES LINK_FLAGS_RELEASE \"" + RELEASE_ONLY_LINK_FLAGS + "\")\n");
 			}
+
+			fileContent.append("endif()");
 
 			fileContent.append("if(Threads_FOUND)\n");
 			fileContent.append("  target_link_libraries(");
