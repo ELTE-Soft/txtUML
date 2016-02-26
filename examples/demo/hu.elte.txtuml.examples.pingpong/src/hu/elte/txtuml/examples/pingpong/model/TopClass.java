@@ -37,7 +37,7 @@ public class TopClass extends ModelClass {
 	}
 
 	@BehaviorPort
-	public class TopPort extends Port<PongInterface, PingInterface> {
+	public class TopPort extends Port<PingInterface, PongInterface> {
 	}
 
 	@From(Waiting.class)
