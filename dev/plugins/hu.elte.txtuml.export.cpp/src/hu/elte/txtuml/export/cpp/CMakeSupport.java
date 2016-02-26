@@ -183,22 +183,22 @@ class CMakeSupport {
 			fileContent.append("if(MSVC)\n");
 
 			if (DEBUG_ONLY_LINK_FLAGS_WIN.length() > 0) {
-				fileContent.append("set_target_properties(" + targetName);
+				fileContent.append("  set_target_properties(" + targetName);
 				fileContent.append(" PROPERTIES LINK_FLAGS_DEBUG \"" + DEBUG_ONLY_LINK_FLAGS_WIN + "\")\n");
 			}
 			if (RELEASE_ONLY_LINK_FLAGS_WIN.length() > 0) {
-				fileContent.append("set_target_properties(" + targetName);
+				fileContent.append("  set_target_properties(" + targetName);
 				fileContent.append(" PROPERTIES LINK_FLAGS_RELEASE \"" + RELEASE_ONLY_LINK_FLAGS_WIN + "\")\n");
 			}
 
 			fileContent.append("else()\n");
 
 			if (DEBUG_ONLY_LINK_FLAGS.length() > 0) {
-				fileContent.append("set_target_properties(" + targetName);
+				fileContent.append("  set_target_properties(" + targetName);
 				fileContent.append(" PROPERTIES LINK_FLAGS_DEBUG \"" + DEBUG_ONLY_LINK_FLAGS + "\")\n");
 			}
 			if (RELEASE_ONLY_LINK_FLAGS.length() > 0) {
-				fileContent.append("set_target_properties(" + targetName);
+				fileContent.append("  set_target_properties(" + targetName);
 				fileContent.append(" PROPERTIES LINK_FLAGS_RELEASE \"" + RELEASE_ONLY_LINK_FLAGS + "\")\n");
 			}
 
