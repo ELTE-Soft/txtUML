@@ -32,13 +32,13 @@ class CMakeSupport {
 	private static final String DEBUG_ONLY_COMPILE_OPTIONS = "-fsanitize=address";
 	private static final String DEBUG_ONLY_COMPILE_OPTIONS_WIN = "/RTC";
 	// could be "-flto" or "-pg"
-	private static final String RELEASE_ONLY_COMPILE_OPTIONS = "";
-	private static final String RELEASE_ONLY_COMPILE_OPTIONS_WIN = "";
+	private static final String RELEASE_ONLY_COMPILE_OPTIONS = "-flto";
+	private static final String RELEASE_ONLY_COMPILE_OPTIONS_WIN = "/GL";
 
 	private static final String DEBUG_ONLY_LINK_FLAGS = DEBUG_ONLY_COMPILE_OPTIONS;
 	private static final String DEBUG_ONLY_LINK_FLAGS_WIN = "";
 	private static final String RELEASE_ONLY_LINK_FLAGS = RELEASE_ONLY_COMPILE_OPTIONS;
-	private static final String RELEASE_ONLY_LINK_FLAGS_WIN = "";
+	private static final String RELEASE_ONLY_LINK_FLAGS_WIN = "/LTCG";
 
 	private String targetRootPath;
 	private List<String> executableTargetNames = new ArrayList<String>();
@@ -78,6 +78,16 @@ class CMakeSupport {
 
 	void addIncludeDirectory(String includeDirectory) {
 		includeDirectories.add(convertToPosixPath(includeDirectory));
+	}
+
+	private static void addEnvironmentConfiguration(StringBuilder output) {
+		output.append("if(\"${CMAKE_CXX_COMPILER_ID}\" STREQUAL \"GNU\")\n");
+		output.append("  set(CMAKE_AR gcc-ar)\n");
+		output.append("  set(CMAKE_RANLIB gcc-ranlib)\n");
+		output.append("elseif(\"${CMAKE_CXX_COMPILER_ID}\" STREQUAL \"Clang\")\n");
+		output.append("  set(CMAKE_AR llvm-ar)\n");
+		output.append("  set(CMAKE_RANLIB llvm-ranlib)\n");
+		output.append("endif()\n");
 	}
 
 	private static void addCompileOption(StringBuilder output, String compileOption, boolean optional,
@@ -123,6 +133,8 @@ class CMakeSupport {
 		fileContent.append("project(" + projectName + " CXX C)\n");
 		fileContent.append("find_package(Threads)\n");
 		fileContent.append("include(CheckCXXCompilerFlag)\n");
+
+		addEnvironmentConfiguration(fileContent);
 
 		fileContent.append("if(MSVC)\n");
 
