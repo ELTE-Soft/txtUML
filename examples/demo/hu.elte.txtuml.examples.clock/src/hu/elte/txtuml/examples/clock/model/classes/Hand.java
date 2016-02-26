@@ -18,10 +18,10 @@ public class Hand extends ModelClass {
 	private int currentValue;
 	
 	@BehaviorPort
-	public class InTickPort extends Port<Interface.Empty,TickIfc> {}
+	public class InTickPort extends Port<TickIfc, Interface.Empty> {}
 
-	public class OutTickPort extends Port<TickIfc,Interface.Empty> {}
-	public class ValuePort extends Port<ValueIfc,Interface.Empty> {}
+	public class OutTickPort extends Port<Interface.Empty, TickIfc> {}
+	public class ValuePort extends Port<Interface.Empty, ValueIfc> {}
 	
 	public Hand(int maxValue, int currentValue) {
 		this.maxValue = maxValue;

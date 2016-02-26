@@ -12,23 +12,23 @@ import hu.elte.txtuml.examples.pingpong.model.signals.PingSignal;
 import hu.elte.txtuml.examples.pingpong.model.signals.PongInterface;
 import hu.elte.txtuml.examples.pingpong.model.signals.PongSignal;
 
-public class InnerPongClass extends ModelClass {
+public class PingClass extends ModelClass {
 
 	@BehaviorPort
-	public class PongPort extends Port<PongInterface, PingInterface> {
+	public class PingPort extends Port<PongInterface, PingInterface> {
 	}
-
+	
 	@From(Waiting.class)
 	@To(Waiting.class)
-	@Trigger(PingSignal.class)
-	class AcceptPing extends Transition {
+	@Trigger(PongSignal.class)
+	class AcceptPong extends Transition {
 
 		@Override
 		public void effect() {
-			PingSignal sig = getSignal();
+			PongSignal sig = getSignal();
 			if (sig.count > 0) {
-				Action.send(port(PongPort.class).provided::reception, new PongSignal(sig.count - 1));
-				Action.log("pong");
+				Action.send(port(PingPort.class).provided::reception, new PingSignal(sig.count - 1));				
+				Action.log("ping");
 			}
 		}
 
