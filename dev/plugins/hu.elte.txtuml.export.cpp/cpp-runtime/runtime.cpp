@@ -30,7 +30,7 @@ void SingleThreadRT::start()
 
     while(!_messageQueue->empty())
     {
-            EventPtr e = messageQueue->front();
+            EventPtr e = _messageQueue->front();
             if (e->dest.isStarted())
             {
                 if(e->dest.isInitialized())

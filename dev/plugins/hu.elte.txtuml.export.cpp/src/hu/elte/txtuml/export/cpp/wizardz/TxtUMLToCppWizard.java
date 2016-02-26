@@ -82,7 +82,16 @@ public class TxtUMLToCppWizard extends Wizard {
 
 			URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(txtUMLProject,
 					ThreadDescriptionExporter.class.getClassLoader());
-			Class<?> txtUMLThreadDescription = loader.loadClass(threadManagmentDescription);
+			Class<?> txtUMLThreadDescription;
+			try {
+				 txtUMLThreadDescription = loader.loadClass(threadManagmentDescription);
+			}
+			catch(ClassNotFoundException e) {
+				Dialogs.errorMsgb("Description Class Error", e.getClass() + ":" + System.lineSeparator() + e.getMessage(),
+						e);
+				return false;
+			}
+			
 			
 			List<org.eclipse.uml2.uml.Class> classList = new ArrayList<org.eclipse.uml2.uml.Class>();
 			Shared.getTypedElements(classList, model.getOwnedElements(), UMLPackage.Literals.CLASS);
@@ -112,7 +121,7 @@ public class TxtUMLToCppWizard extends Wizard {
 						projectFolder + File.separator + GenericFolderName + File.separator + txtUMLModel);
 
 			} catch (Exception e) {
-				Dialogs.errorMsgb("Compilation failed", e.getMessage(), e);
+				Dialogs.errorMsgb("Compilation failed",e.getClass() + ":" + System.lineSeparator() + e.getMessage(), e);
 
 			}
 
