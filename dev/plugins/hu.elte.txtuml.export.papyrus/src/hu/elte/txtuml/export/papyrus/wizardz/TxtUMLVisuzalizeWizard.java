@@ -85,6 +85,9 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 				generateSMsAutomatically);
 		
 		try {
+			
+			this.checkEmptyLayoutDecsriptions();
+			
 			IProgressService progressService = PlatformUI.getWorkbench()
 					.getProgressService();
 
@@ -183,6 +186,18 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 			return true;
 		} catch (InvocationTargetException | InterruptedException e) {
 			return false;
+		}
+	}
+
+	private void checkEmptyLayoutDecsriptions() throws InterruptedException {
+		if(selectTxtUmlPage.getTxtUmlLayout().isEmpty()){
+			boolean answer = Dialogs.WarningConfirm("No Layout descriptions",
+					"No diagrams will be generated using the current setup,"
+							+ " because no diagram descriptions are added."
+							+ System.lineSeparator() + System.lineSeparator()
+							+ "Do you want to continue?"
+					);
+			if(!answer) throw new InterruptedException();
 		}
 	}
 
