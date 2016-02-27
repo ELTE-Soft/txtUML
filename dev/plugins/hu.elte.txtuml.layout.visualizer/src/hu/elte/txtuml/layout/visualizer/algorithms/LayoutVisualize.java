@@ -30,6 +30,7 @@ import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
+import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.Pair;
 
 /**
@@ -228,7 +229,7 @@ public class LayoutVisualize {
 		getOptions();
 
 		if (_options.Logging)
-			System.err.println("Starting arrange...");
+			Logger.sys.info("Starting arrange...");
 
 		// Set next Group Id
 		Integer maxGroupId = getGroupId();
@@ -261,7 +262,7 @@ public class LayoutVisualize {
 		maxGroupId = linkArrange(maxGroupId);
 
 		if (_options.Logging)
-			System.err.println("End of arrange!");
+			Logger.sys.info("End of arrange!");
 
 		ProgressManager.end();
 	}
@@ -276,7 +277,7 @@ public class LayoutVisualize {
 			_options.CorridorRatio = Double.parseDouble(tempList.get(0).getParameter(0));
 
 			if (_options.Logging)
-				System.err.println("Found Corridor size option setting (" + _options.CorridorRatio.toString() + ")!");
+				Logger.sys.info("Found Corridor size option setting (" + _options.CorridorRatio.toString() + ")!");
 		}
 
 		tempList = _statements.stream().filter(s -> s.getType().equals(StatementType.overlaparrange))
@@ -286,7 +287,7 @@ public class LayoutVisualize {
 			_options.ArrangeOverlaps = Enum.valueOf(OverlapArrangeMode.class, tempList.get(0).getParameter(0));
 
 			if (_options.Logging)
-				System.err.println(
+				Logger.sys.info(
 						"Found Overlap arrange mode option setting (" + _options.ArrangeOverlaps.toString() + ")!");
 		}
 
@@ -341,7 +342,7 @@ public class LayoutVisualize {
 	private Integer boxArrange(Integer maxGroupId)
 			throws BoxArrangeConflictException, InternalException, ConversionException, BoxOverlapConflictException {
 		if (_options.Logging)
-			System.err.println("> Starting box arrange...");
+			Logger.sys.info("> Starting box arrange...");
 
 		// Arrange objects
 		ArrangeObjects ao = new ArrangeObjects(_objects.stream().collect(Collectors.toList()), _statements, maxGroupId,
@@ -350,7 +351,7 @@ public class LayoutVisualize {
 		_statements = ao.statements();
 
 		if (_options.Logging)
-			System.err.println("> Box arrange DONE!");
+			Logger.sys.info("> Box arrange DONE!");
 
 		return ao.getGId();
 	}
@@ -389,14 +390,14 @@ public class LayoutVisualize {
 	private Integer linkArrange(Integer maxGroupId) throws ConversionException, InternalException,
 			CannotFindAssociationRouteException, UnknownStatementException {
 		if (_options.Logging)
-			System.err.println("> Starting link arrange...");
+			Logger.sys.info("> Starting link arrange...");
 
 		ArrangeAssociations aa = new ArrangeAssociations(_objects, _assocs, _assocStatements, maxGroupId, _options);
 		_assocs = aa.value();
 		_objects = aa.objects();
 
 		if (_options.Logging)
-			System.err.println("> Link arrange DONE!");
+			Logger.sys.info("> Link arrange DONE!");
 
 		return aa.getGId();
 	}
