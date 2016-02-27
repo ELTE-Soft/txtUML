@@ -84,8 +84,8 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			transformObjectsAndLinks(objectsTransform, linksTransform, 
 					vm.getPixelGridRatioHorizontal(), vm.getPixelGridRatioVertical());
 			
-			modifyEditParts(objectsTransform);		
-			modifyConnectionEditParts(linksTransform, objectsTransform);	
+			this.modifyEditParts(objectsTransform);		
+			this.modifyConnectionEditParts(linksTransform, objectsTransform);	
 		}
 	}
 
@@ -134,8 +134,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		});
 	}
 
-	private void modifyEditParts(
-			Map<GraphicalEditPart, Rectangle> editPartsObjectsMapping) {
+	private void modifyEditParts(Map<GraphicalEditPart, Rectangle> editPartsObjectsMapping) {
 		editPartsObjectsMapping.forEach((GraphicalEditPart ep, Rectangle rect) -> {
 			if(ep instanceof CustomStateEditPart) {
 				DiagramElementsModifier.fixStateLabelHeight((CustomStateEditPart)ep);

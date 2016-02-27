@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -97,7 +98,7 @@ public class StateMachineDiagramElementsTxtUmlArranger extends
 	
 			if(isCompositeState){
 				super.arrangeChildren(regionCompartement, monitor);
-//				Dimension d = calculatePreferredSize(editparts);
+				Dimension d = calculatePreferredSize(editparts);
 //				DiagramElementsModifier.resizeState(state, d.width, d.height);
 			}
 		}

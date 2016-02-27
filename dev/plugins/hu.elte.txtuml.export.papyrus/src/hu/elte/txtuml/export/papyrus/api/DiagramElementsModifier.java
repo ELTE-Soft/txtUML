@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
@@ -13,15 +14,19 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.transaction.Transaction;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gef.EditPart;
+import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
+import org.eclipse.gmf.runtime.common.core.command.CommandResult;
 import org.eclipse.gmf.runtime.diagram.core.commands.SetConnectionAnchorsCommand;
 import org.eclipse.gmf.runtime.diagram.ui.commands.ICommandProxy;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.internal.commands.SetConnectionBendpointsCommand;
 import org.eclipse.gmf.runtime.emf.core.util.EObjectAdapter;
+import org.eclipse.gmf.runtime.notation.Node;
+import org.eclipse.gmf.runtime.notation.NotationFactory;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.gmfdiag.common.adapter.SemanticAdapter;
 import org.eclipse.papyrus.uml.diagram.common.commands.ShowHideLabelsRequest;
@@ -30,11 +35,6 @@ import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomState
 
 @SuppressWarnings("restriction")
 public class DiagramElementsModifier {
-
-	/**
-	 *  See {@link #fixStateLabelHeight(CustomStateEditPart) fixStateLabelHeight}.
-	 */
-	private static final int STATE_LABEL_HEIGHT_FIX = -20;
 
 	/**
 	 * Decreases the height of the label compartment by 20 pixels.
@@ -49,28 +49,14 @@ public class DiagramElementsModifier {
 	 *            The state to be fixed.
 	 */
 	public static void fixStateLabelHeight(CustomStateEditPart state) {
-		IAdaptable adaptableForState = new SemanticAdapter(null, ((View) state.getModel()));
-		ChangeBoundsRequest req = new ChangeBoundsRequest();
-		req.setSizeDelta(new Dimension(0, STATE_LABEL_HEIGHT_FIX));
-		req.setEditParts(state);
-		Rectangle orig = state.getFigure().getBounds();
-		Rectangle rect = new Rectangle(orig.x, orig.y, orig.width, orig.height + STATE_LABEL_HEIGHT_FIX);
-
-		// The last constructor parameter should be 'true' in order to make the
-		// command
-		// change the height of the label compartment:
-		CustomStateResizeCommand cmd = new CustomStateResizeCommand(adaptableForState,
-				state.getDiagramPreferencesHint(), state.getEditingDomain(), "Resize State", req, rect, true);
-		cmd.setOptions(Collections.singletonMap(Transaction.OPTION_UNPROTECTED, Boolean.TRUE));
-
+        FixStateContentSizesCommand cmd = new FixStateContentSizesCommand(state);
 		try {
 			if (cmd != null && cmd.canExecute()) {
 				cmd.execute(null, null);
 			}
-		} catch (org.eclipse.core.commands.ExecutionException e) {
+		} catch (ExecutionException e) {
 		}
 	}
-
 	
 	/**
 	 * Resizes  a GraphicalEditPart

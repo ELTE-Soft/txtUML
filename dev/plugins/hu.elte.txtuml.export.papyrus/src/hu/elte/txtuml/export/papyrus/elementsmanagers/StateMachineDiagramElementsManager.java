@@ -53,8 +53,8 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 		ElementsManagerUtils.removeEditParts(diagramEditPart.getEditingDomain(), Arrays.asList(stateMachineEditpart));
 		ElementsManagerUtils.addElementsToEditPart(diagramEditPart, Arrays.asList(smElement));
 		
-		stateMachineEditpart = (EditPart) diagramEditPart.getChildren().get(0);
-		fillState(stateMachineEditpart);
+		EditPart newStateMachineEditpart = (EditPart) diagramEditPart.getChildren().get(0);
+		fillState(newStateMachineEditpart);
 	}
 	
 	/**
