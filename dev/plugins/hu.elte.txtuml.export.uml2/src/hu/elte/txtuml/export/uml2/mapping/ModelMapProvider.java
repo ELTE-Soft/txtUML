@@ -106,7 +106,7 @@ public class ModelMapProvider {
 	 * Dumps the mapping to the standard output for testing purposes.
 	 */
 	public void dump() {
-		System.out.println("Model URI: " + resource.getURI());
-		System.out.println(uriFragmentMapper.toString());
+		Logger.sys.info("Model URI: " + resource.getURI());
+		Logger.sys.info(uriFragmentMapper.toString());
 	}
 }

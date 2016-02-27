@@ -76,10 +76,10 @@ public class CallActionsDetector {
 		Class to = getClassFromUMLModel(concurrentClass);
 
 		if (!isInAssoc(from, to)) {
-			System.out.println(from.getName() + " and " + to.getName() + " is not in assoc");
+			Logger.sys.info(from.getName() + " and " + to.getName() + " is not in assoc");
 			return false;
 		} else {
-			System.out.println(from.getName() + " and " + to.getName() + " is in assoc");
+			Logger.sys.info(from.getName() + " and " + to.getName() + " is in assoc");
 			// Detect syncrhon call
 			for (Behavior b : from.getOwnedBehaviors()) {
 

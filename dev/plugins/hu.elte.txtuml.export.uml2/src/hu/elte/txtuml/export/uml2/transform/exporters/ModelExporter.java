@@ -306,7 +306,7 @@ public class ModelExporter {
 		try {
 			mapping.save(URI.createURI(outputDirectory), sourcePackageName);
 		} catch (ModelMapException e) {
-			System.out.println("Faild to save model mapping.");
+			Logger.sys.info("Faild to save model mapping.");
 		}
 	}
 

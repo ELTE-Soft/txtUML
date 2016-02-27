@@ -379,7 +379,7 @@ public class ActivityExport
 		}
 		else
 		{
-			System.out.println(node_.eClass().getName());//TODO just for development debug
+			Logger.sys.info(node_.eClass().getName());//TODO just for development debug
 		}
 		return source;
 	}

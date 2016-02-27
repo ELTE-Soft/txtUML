@@ -613,7 +613,7 @@ public class TestStructure {
 
 		ExpansionRegion forEachLoop = (ExpansionRegion) body.getExecutableNodes().get(1);
 		SequenceNode forEachBody = (SequenceNode) forEachLoop.getNodes().get(1);
-		System.out.println(forEachBody.getExecutableNodes());
+		Logger.sys.info(forEachBody.getExecutableNodes());
 		
 		assertEquals(1,forEachBody.getExecutableNodes().size());		
 	}

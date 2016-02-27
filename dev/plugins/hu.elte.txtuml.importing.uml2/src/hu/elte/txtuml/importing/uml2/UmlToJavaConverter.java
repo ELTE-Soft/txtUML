@@ -64,7 +64,7 @@ public class UmlToJavaConverter {
 		try {
 			converter.convert(javaFileDir, packageName, umlFileName, xmlFileName);
 		} catch (ConvertException e) {
-			System.out.println(e.getMessage());
+			Logger.sys.info(e.getMessage());
 		}
 	}
 }

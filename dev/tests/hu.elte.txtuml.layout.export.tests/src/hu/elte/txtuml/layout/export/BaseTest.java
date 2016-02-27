@@ -131,9 +131,9 @@ public class BaseTest {
 	protected static <T> void assertCollectionEquals(Collection<T> expecteds,
 			Collection<T> actuals) {
 		if (!expecteds.equals(actuals)) {
-			System.err.println("EXPECTED");
+			Logger.sys.info("EXPECTED");
 			prettyPrint(expecteds, System.err);
-			System.err.println("ACTUAL");
+			Logger.sys.info("ACTUAL");
 			prettyPrint(actuals, System.err);
 			Assert.assertTrue(false);
 		}
