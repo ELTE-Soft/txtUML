@@ -643,7 +643,7 @@ public class ArrangeAssociations {
 		for (LineAssociation a : _assocs) {
 			++c;
 			if (_options.Logging)
-				System.err.print(c + "/" + _assocs.size() + ": " + a.getId() + " ... ");
+				Logger.sys.info(c + "/" + _assocs.size() + ": " + a.getId() + " ... ");
 
 			if (a.isPlaced()) {
 				if (_options.Logging)

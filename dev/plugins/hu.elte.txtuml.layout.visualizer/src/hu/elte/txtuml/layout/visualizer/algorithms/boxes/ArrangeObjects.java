@@ -176,8 +176,7 @@ public class ArrangeObjects
 		{
 			for (Statement stat : toDeletes)
 			{
-				System.err
-						.println("> > Weak(" + stat.toString() + ") statement deleted!");
+				Logger.sys.info("> > Weak(" + stat.toString() + ") statement deleted!");
 			}
 		}
 	}
@@ -207,8 +206,7 @@ public class ArrangeObjects
 		{
 			for (Statement stat : toDeletes)
 			{
-				System.err
-						.println("> > Weak(" + stat.toString() + ") statement deleted!");
+				Logger.sys.info("> > Weak(" + stat.toString() + ") statement deleted!");
 			}
 		}
 	}
