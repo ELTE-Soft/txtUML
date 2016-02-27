@@ -3,14 +3,11 @@ package hu.elte.txtuml.export.papyrus.elementsmanagers;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.RegionEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateEditPart;
-import org.eclipse.uml2.uml.Comment;
-import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.FinalState;
 import org.eclipse.uml2.uml.Pseudostate;
@@ -21,7 +18,6 @@ import com.google.common.collect.Lists;
 
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
 import hu.elte.txtuml.export.papyrus.api.StateMachineDiagramElementsController;
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
 
 /**
