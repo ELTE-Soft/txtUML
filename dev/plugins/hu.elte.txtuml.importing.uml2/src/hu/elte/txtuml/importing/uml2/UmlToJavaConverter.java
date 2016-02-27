@@ -1,6 +1,7 @@
 package hu.elte.txtuml.importing.uml2;
 
 import org.eclipse.uml2.uml.Model;
+import hu.elte.txtuml.utils.Logger;
 
 public class UmlToJavaConverter {
 	private static UmlToJavaConverter instance = null;

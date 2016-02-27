@@ -38,6 +38,7 @@ import org.eclipse.uml2.uml.Variable;
 
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.Pair;
 
 public class ActivityExport

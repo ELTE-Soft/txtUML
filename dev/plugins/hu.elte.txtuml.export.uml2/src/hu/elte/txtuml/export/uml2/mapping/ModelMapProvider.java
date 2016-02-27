@@ -10,6 +10,8 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
+import hu.elte.txtuml.utils.Logger;
+
 /**
  * ModelMapProvider provides a mapping from txtUML model elements to EMF-UML2
  * model elements.

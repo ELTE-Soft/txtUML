@@ -35,6 +35,7 @@ import hu.elte.txtuml.export.uml2.transform.visitors.ClassifierVisitor;
 import hu.elte.txtuml.export.uml2.transform.visitors.MethodSkeletonVisitor;
 import hu.elte.txtuml.export.uml2.utils.ResourceSetFactory;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
+import hu.elte.txtuml.utils.Logger;
 
 /**
  * This class is responsible for generating Eclipse UML2 model from a txtUML

@@ -37,6 +37,8 @@ import org.eclipse.uml2.uml.Transition;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import hu.elte.txtuml.utils.Logger;
+
 public class TestStructure {
 	
 	@BeforeClass
@@ -613,7 +615,7 @@ public class TestStructure {
 
 		ExpansionRegion forEachLoop = (ExpansionRegion) body.getExecutableNodes().get(1);
 		SequenceNode forEachBody = (SequenceNode) forEachLoop.getNodes().get(1);
-		Logger.sys.info(forEachBody.getExecutableNodes());
+		Logger.sys.info(forEachBody.getExecutableNodes().toString());
 		
 		assertEquals(1,forEachBody.getExecutableNodes().size());		
 	}

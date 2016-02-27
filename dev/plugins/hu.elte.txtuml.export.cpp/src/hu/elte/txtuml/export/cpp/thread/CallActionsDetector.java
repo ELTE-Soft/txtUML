@@ -20,6 +20,7 @@ import org.eclipse.uml2.uml.Vertex;
 
 import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
+import hu.elte.txtuml.utils.Logger;
 
 public class CallActionsDetector {
 
