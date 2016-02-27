@@ -2,7 +2,6 @@ package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -27,9 +26,7 @@ import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 
 /**
- * Controls the arranging of a StateMachineDiagram with GMF algorithm
- *
- * @author Andr�s Dobreff
+ * Controls the arranging of a StateMachineDiagram
  */
 public class StateMachineDiagramElementsTxtUmlArranger extends
 		AbstractDiagramElementsTxtUmlArranger {
@@ -54,10 +51,6 @@ public class StateMachineDiagramElementsTxtUmlArranger extends
 		@SuppressWarnings("unchecked")
 		List<GraphicalEditPart> children = getRegionCompatementEditPart(stateMachineEditPart).getChildren();
 		DiagramElementsModifier.hideConnectionLabelsForEditParts(children, new LinkedList<java.lang.Class<?>>());
-		CustomStateMachineEditPart sm = (CustomStateMachineEditPart)this.diagep.getChildren().get(0);
-		
-		Dimension preferredSize = this.calculatePreferredSize((List<GraphicalEditPart>) children);
-		DiagramElementsModifier.resizeGraphicalEditPart(sm, preferredSize.width, preferredSize.height);
 	}
 	
 	private RegionCompartmentEditPart getRegionCompatementEditPart(RoundedCompartmentEditPart state) {
@@ -99,7 +92,7 @@ public class StateMachineDiagramElementsTxtUmlArranger extends
 			if(isCompositeState){
 				super.arrangeChildren(regionCompartement, monitor);
 				Dimension d = calculatePreferredSize(editparts);
-//				DiagramElementsModifier.resizeState(state, d.width, d.height);
+				DiagramElementsModifier.resizeGraphicalEditPart(state, d.width, d.height);
 			}
 		}
 	}

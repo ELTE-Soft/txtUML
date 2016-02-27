@@ -46,7 +46,7 @@ public class LayoutVisualizerManager {
 		this.associations = links;
 		this.statementsSet = statements;
 		layoutVisualize = new LayoutVisualize();
-		layoutVisualize.setLogging(true);
+		layoutVisualize.setLogging(false);
 	}
 	
 	/**

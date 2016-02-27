@@ -131,6 +131,10 @@ public class TxtUMLElementsRegistry {
 					elem = findAssociation(association.getId());
 				}
 				
+				if(!elem.isPresent()){
+					elem = findTransition(association.getId());
+				}
+				
 				if(elem.isPresent()){
 					elements.add(elem.get());
 				}
@@ -139,6 +143,7 @@ public class TxtUMLElementsRegistry {
 		
 		return elements;
 	}
+	
 	
 	/**
 	 * Finds an {@link Association} that matches the given ID
@@ -152,6 +157,7 @@ public class TxtUMLElementsRegistry {
 		}
 		return Optional.empty();
 	}
+	
 	
 	/**
 	 * Finds an {@link Generalization} that matches the given ID
