@@ -316,7 +316,7 @@ public class TestStructure {
 	public void testDestroyActionBehavior() throws Exception {
 		SequenceNode body = loadActionCode("create_and_destroy", "TestClass", "ObjectCreate");
 
-		DestroyObjectAction act = (DestroyObjectAction) body.getExecutableNodes().get(4);
+		DestroyObjectAction act = (DestroyObjectAction) body.getExecutableNode("delete cls");
 
 		assertEquals(cls.getName(), act.getTarget().getType().getName());
 	}
