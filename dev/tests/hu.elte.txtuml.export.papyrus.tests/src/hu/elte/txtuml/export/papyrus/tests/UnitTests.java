@@ -5,7 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import hu.elte.txtuml.export.papyrus.api.tests.DiagramElementsModifierTest;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.tests.LayoutTransformerTest;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.unittests.LayoutTransformerTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({ DiagramManagerTest.class, PapyrusModelCreatorTest.class,
