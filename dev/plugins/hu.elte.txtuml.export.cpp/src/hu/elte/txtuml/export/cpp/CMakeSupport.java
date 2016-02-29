@@ -81,10 +81,10 @@ class CMakeSupport {
 	}
 
 	private static void addEnvironmentConfiguration(StringBuilder output) {
-		output.append("if(\"${CMAKE_CXX_COMPILER_ID}\" STREQUAL \"GNU\")\n");
+		output.append("if(${CMAKE_CXX_COMPILER_ID} STREQUAL \"GNU\")\n");
 		output.append("  set(CMAKE_AR gcc-ar)\n");
 		output.append("  set(CMAKE_RANLIB gcc-ranlib)\n");
-		output.append("elseif(\"${CMAKE_CXX_COMPILER_ID}\" STREQUAL \"Clang\")\n");
+		output.append("elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL \"Clang\")\n");
 		output.append("  set(CMAKE_AR llvm-ar)\n");
 		output.append("  set(CMAKE_RANLIB llvm-ranlib)\n");
 		output.append("endif()\n");
