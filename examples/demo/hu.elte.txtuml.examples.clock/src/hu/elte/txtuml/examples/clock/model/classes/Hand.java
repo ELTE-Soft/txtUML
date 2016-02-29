@@ -40,9 +40,9 @@ public class Hand extends ModelClass {
 			++currentValue;
 			if(currentValue == maxValue) {
 				currentValue = 0;
-				Action.send(port(OutTickPort.class).provided::reception, new Tick());
+				Action.send(new Tick(), port(OutTickPort.class).provided::reception);
 			}
-			Action.send(port(ValuePort.class).provided::reception, new HandValue(currentValue));
+			Action.send(new HandValue(currentValue), port(ValuePort.class).provided::reception);
 		}
 	}
 }

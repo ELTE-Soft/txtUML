@@ -14,12 +14,12 @@ public class TriggerTest extends TransitionsModelTestsBase {
 
 	@Test
 	public void test() {
-		Action.send(a, new Sig1());
-		Action.send(a, new Sig2());
-		Action.send(a, new Sig1());
-		Action.send(a, new Sig1());
-		Action.send(a, new Sig1());
-		Action.send(a, new Sig2());
+		Action.send(new Sig1(), a);
+		Action.send(new Sig2(), a);
+		Action.send(new Sig1(), a);
+		Action.send(new Sig1(), a);
+		Action.send(new Sig1(), a);
+		Action.send(new Sig2(), a);
 
 		stopModelExecution();
 

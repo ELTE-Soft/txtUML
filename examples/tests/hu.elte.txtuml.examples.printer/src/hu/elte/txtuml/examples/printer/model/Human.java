@@ -29,7 +29,7 @@ public class Human extends ModelClass {
 			doc.sideCount = count;
 
 			Action.link(DocumentToPrint.toPrint.class, doc, DocumentToPrint.PrinterFrontEnd.class, p);
-			Action.send(p, new Print());
+			Action.send(new Print(), p);
 		}
 	}
 

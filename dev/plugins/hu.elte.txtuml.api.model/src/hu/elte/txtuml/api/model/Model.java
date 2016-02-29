@@ -117,8 +117,8 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * applies to this rule.</li>
  * <li>Create instances of signal types (subclasses of {@link Signal}) and set
  * their fields <b>before they are sent</b> to the model (with the
- * {@link Action#send(ModelClass, Signal) Action.send} method).</li>
- * <li>Use the {@link Action#send(ModelClass, Signal) send} method to send
+ * {@link Action#send(Signal, ModelClass) Action.send} method).</li>
+ * <li>Use the {@link Action#send(Signal, ModelClass) send} method to send
  * signals to a model object that <b>has already been started</b>.</li>
  * <li>Call {@link Action#log(String) Action.log} or
  * {@link Action#logError(String) Action.logError} at any time.</li>

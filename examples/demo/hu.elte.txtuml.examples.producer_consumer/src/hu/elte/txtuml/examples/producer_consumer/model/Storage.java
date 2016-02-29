@@ -54,7 +54,7 @@ public class Storage extends ModelClass {
 
 		@Override
 		public void effect() {
-			Action.send(Storage.this, new OfferNotification());
+			Action.send(new OfferNotification(), Storage.this);
 		}
 	}
 
@@ -88,7 +88,7 @@ public class Storage extends ModelClass {
 
 		@Override
 		public void effect() {
-			Action.send(Storage.this, new RequestNotification());
+			Action.send(new RequestNotification(), Storage.this);
 		}
 	}
 }
