@@ -77,6 +77,11 @@ public class TxtUMLElementsRegistry {
 					Behavior behavior =  ((org.eclipse.uml2.uml.BehavioredClassifier) classOfStatemachine.get()).getClassifierBehavior();
 					roots.add(new Triple<>(type, pair.getFirst(), behavior));
 				}
+			} else if(type.equals(DiagramType.Composite)) {
+				Optional<Element> classOfComposite = findElement(name);
+				if(classOfComposite.isPresent()){
+					roots.add(new Triple<>(type, pair.getFirst(), classOfComposite.get()));
+				}
 			}
 		}
 		return roots;

@@ -9,6 +9,7 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.uml.diagram.clazz.CreateClassDiagramCommand;
+import org.eclipse.papyrus.uml.diagram.composite.CreateCompositeDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.statemachine.CreateStateMachineDiagramCommand;
 import org.eclipse.uml2.uml.Element;
 
@@ -18,6 +19,7 @@ import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.ClassDiagram
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.StateMachineDiagramElementsTxtUmlArranger;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.ClassDiagramElementsManager;
+import hu.elte.txtuml.export.papyrus.elementsmanagers.CompositeDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.StateMachineDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
@@ -55,19 +57,24 @@ public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 			
 			for(Triple<DiagramType, String, Element> diagramRoot : diagramRoots){
 				if(PreferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_PREF) 
-						&& diagramRoot.getFirst().equals(DiagramType.Class))
-				{
+						&& diagramRoot.getFirst().equals(DiagramType.Class)) {
 					diagramManager.createDiagram(diagramRoot.getThird(), 
 						diagramRoot.getSecond(), 
 						new CreateClassDiagramCommand());
 				}
 				
 				if(PreferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_PREF) 
-						&& diagramRoot.getFirst().equals(DiagramType.StateMachine))
-				{
+						&& diagramRoot.getFirst().equals(DiagramType.StateMachine)) {
 					diagramManager.createDiagram(diagramRoot.getThird(), 
 						diagramRoot.getSecond(), 
 						new CreateStateMachineDiagramCommand());
+				}
+				
+				if(PreferencesManager.getBoolean(PreferencesManager.COMPOSITE_DIAGRAM_PREF)
+						&& diagramRoot.getFirst().equals(DiagramType.Composite)) {
+					diagramManager.createDiagram(diagramRoot.getThird(),
+							diagramRoot.getSecond(),
+							new CreateCompositeDiagramCommand());
 				}
 			}
 		 
@@ -84,10 +91,12 @@ public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 		AbstractDiagramElementsManager diagramElementsManager;
 
 		DiagramEditPart diagep = diagramManager.getActiveDiagramEditPart();
-		if(diagram.getType().equals(diagramType_CD)){                                 
+		if(diagram.getType().equals(diagramType_CD)){
 			diagramElementsManager = new ClassDiagramElementsManager(diagep);
-		}else if(diagram.getType().equals(diagramType_SMD)){                                 
+		}else if(diagram.getType().equals(diagramType_SMD)){
 			diagramElementsManager = new StateMachineDiagramElementsManager(diagep);
+		}else if(diagram.getType().equals(diagramType_CSD)){
+			diagramElementsManager = new CompositeDiagramElementsManager(diagep);
 		}else{
 			return;
 		}

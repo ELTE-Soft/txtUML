@@ -35,7 +35,7 @@ public class TxtUMLExporter {
 	 * @param projectName - The txtUMLProject
 	 * @param outputFolder - The folder in the project where UML data and diagrams are put
 	 * @param txtUMLModelName - The fully qualified name of the txtUML model
-	 * @param txtUMLLayout - The fully qualified name of the txtUML Diagram
+	 * @param txtUMLLayout - The fully qualified names of the txtUML Diagrams
 	 * @param parent - the parent ClassLoader
 	 */
 	public TxtUMLExporter(String projectName, String outputFolder,
@@ -56,21 +56,17 @@ public class TxtUMLExporter {
 		List<Pair<String, DiagramExportationReport>> reports = new ArrayList<>();
 		
 		for(String layout : txtUMLLayout){
-			try {
-				DiagramExportationReport report = ExportUtils.exportTxtUMLLayout(projectName, layout);
-		        if(!report.isSuccessful()){
-		        	StringBuilder errorMessages = new StringBuilder("Errors occured during layout exportation:"+System.lineSeparator());
-		        	for(Object error : report.getErrors()){
-		        		errorMessages.append("- "+error+System.lineSeparator());
-		        	}
-		        	errorMessages.append("The exportation was't successfull.");
-		        	throw new LayoutExportException(errorMessages.toString());
-		        }
-		        
-		        reports.add(new Pair<>(layout,report));
-			} catch (Exception e) {
-				throw e;
-			}
+			DiagramExportationReport report = ExportUtils.exportTxtUMLLayout(projectName, layout);
+	        if(!report.isSuccessful()){
+	        	StringBuilder errorMessages = new StringBuilder("Errors occured while exporting the layout description:"+System.lineSeparator());
+	        	for(Object error : report.getErrors()){
+	        		errorMessages.append("- "+error+System.lineSeparator());
+	        	}
+	        	errorMessages.append("Failed to export the layout description.");
+	        	throw new LayoutExportException(errorMessages.toString());
+	        }
+	        
+	        reports.add(new Pair<>(layout,report));
 		}
 		return new TxtUMLLayoutDescriptor(txtUMLModelName, reports); 
 	}
@@ -95,7 +91,7 @@ public class TxtUMLExporter {
 	
 	
 	/**
-	 * Closes the editor and deletes the files that are have the same name as the generated ones will have
+	 * Closes the editor and deletes the files that have the same name as the generated ones will have
 	 * @throws CoreException if this method fails. Reasons include: 
 		<ul>
 		<li>This resource could not be deleted for some reason.</li> 
