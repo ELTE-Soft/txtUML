@@ -1,5 +1,17 @@
 package hu.elte.txtuml.export.papyrus.unittests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
+
+import java.util.Arrays;
+
+import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramEditor;
+import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.commands.ICreationCommand;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.infra.core.resource.ModelSet;
@@ -9,28 +21,17 @@ import org.eclipse.papyrus.infra.gmfdiag.common.model.NotationModel;
 import org.eclipse.papyrus.infra.gmfdiag.css.notation.CSSDiagramImpl;
 import org.eclipse.papyrus.infra.gmfdiag.css.resource.CSSNotationResource;
 import org.eclipse.uml2.uml.Element;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.common.util.BasicEList;
-
 import org.junit.After;
 import org.junit.Before;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.verify;
-
-import java.util.Arrays;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import org.eclipse.gmf.runtime.notation.Diagram;
 import hu.elte.txtuml.export.papyrus.DiagramManager;
 
 public class DiagManagerTest {
 	private DiagramManager diagramManager;
 	private ModelSet ms;
-	
+	private DiagramEditor editorPart;
 	@Before
 	public void setUp(){
 		IMultiDiagramEditor editor = Mockito.mock(IMultiDiagramEditor.class);
@@ -39,12 +40,15 @@ public class DiagManagerTest {
 		this.ms = Mockito.mock(ModelSet.class);
 		
 		try {
-			Mockito.when(reg.getService(ModelSet.class)).thenReturn(ms);
+			Mockito.when(reg.getService(ModelSet.class)).thenReturn(this.ms);
 		} catch (ServiceException e) {
 			e.printStackTrace();
 		}
 		
+		this.editorPart = Mockito.mock(DiagramEditor.class);
+		
 		Mockito.when(editor.getServicesRegistry()).thenReturn(reg);
+		Mockito.when(editor.getActiveEditor()).thenReturn(this.editorPart);
 		
 		this.diagramManager = new DiagramManager(editor);
 	}
@@ -92,5 +96,26 @@ public class DiagManagerTest {
 		
 		assertTrue(diagramManager.getDiagrams().size() == 1);
 		assertEquals(diagram, diagramManager.getDiagrams().get(0));
+	}
+	
+	@Test
+	public void testGetDiagramContainer(){
+		Diagram diagram = Mockito.mock(Diagram.class);
+		Element container = Mockito.mock(Element.class);
+		Mockito.when(diagram.getElement()).thenReturn(container);
+		
+		Element result = diagramManager.getDiagramContainer(diagram);
+		
+		assertEquals(container, result);
+	}
+	
+	@Test
+	public void testGetDiagramEditPart(){
+		DiagramEditPart diagEp = Mockito.mock(DiagramEditPart.class);
+		Mockito.when(this.editorPart.getDiagramEditPart()).thenReturn(diagEp);
+		
+		DiagramEditPart result = diagramManager.getActiveDiagramEditPart();
+		
+		assertEquals(diagEp, result);
 	}
 }

@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
-import org.eclipse.gmf.runtime.diagram.ui.parts.IDiagramWorkbenchPart;
+import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramEditor;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.commands.ICreationCommand;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
@@ -115,8 +115,8 @@ public class DiagramManager {
 	public DiagramEditPart getActiveDiagramEditPart(){
 		IEditorPart ied = this.editor.getActiveEditor();
 		
-		if(ied instanceof IDiagramWorkbenchPart){
-			return ((IDiagramWorkbenchPart) ied).getDiagramEditPart();
+		if(ied instanceof DiagramEditor){
+			return ((DiagramEditor) ied).getDiagramEditPart();
 		}else{
 			return null;
 		}
