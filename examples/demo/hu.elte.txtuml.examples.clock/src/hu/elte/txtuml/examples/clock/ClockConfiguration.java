@@ -8,7 +8,6 @@ import hu.elte.txtuml.examples.clock.model.classes.Hand;
 import hu.elte.txtuml.examples.clock.model.classes.Pendulum;
 
 @Group(contains = {Display.class, Hand.class, Pendulum.class}, max = 3, gradient = 1)
-@Multithreading(false)
 public class ClockConfiguration extends Configuration{
 
 }

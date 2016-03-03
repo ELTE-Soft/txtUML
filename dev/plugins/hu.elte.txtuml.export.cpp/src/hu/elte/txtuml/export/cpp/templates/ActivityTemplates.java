@@ -5,196 +5,162 @@ import java.util.List;
 
 import hu.elte.txtuml.utils.Pair;
 
-public class ActivityTemplates
-{
-	public static final String AddSimpleTypeOp="+=";
-	public static final String ReplaceSimpleTypeOp="=";
-	public static final String AddCompositTypeOp=".push_back";
-	public static final String ReplaceCompositTypeOp=ReplaceSimpleTypeOp;
-	public static final String Self="this";
-	public static final String AccessOperatorForSets=GenerationNames.SimpleAccess;
-	
-		
-	public static String GeneralSetValue(String leftValueName_,String rightValueName_,String operator_)
-	{
-		if(operator_ == AddCompositTypeOp)
-		{
-			return leftValueName_+operator_+"("+rightValueName_+");\n";
+public class ActivityTemplates {
+	public static final String AddSimpleTypeOp = "+=";
+	public static final String ReplaceSimpleTypeOp = "=";
+	public static final String AddCompositTypeOp = ".push_back";
+	public static final String ReplaceCompositTypeOp = ReplaceSimpleTypeOp;
+	public static final String Self = "this";
+	public static final String AccessOperatorForSets = GenerationNames.SimpleAccess;
+
+	public static String generalSetValue(String leftValueName, String rightValueName, String operator) {
+		if (operator == AddCompositTypeOp) {
+			return leftValueName + operator + "(" + rightValueName + ");\n";
 		}
-		return leftValueName_+operator_+rightValueName_+";\n";
+		return leftValueName + operator + rightValueName + ";\n";
 	}
-	
-	public static String SignalSend(String signalName_,String targetName_,String targetTypeName_,String accessOperator_,List<String> params_,Boolean rt_)
-	{
-		String source=targetName_+accessOperator_;
-		String signal=GenerationNames.EventClassName(signalName_)+"(";
-		if(rt_)
-		{
-			signal+=GenerationNames.DerefenrencePointer(targetName_)+",";
+
+	public static String signalSend(String signalName, String targetName, String targetTypeName, String accessOperator,
+			List<String> params, Boolean rt) {
+		String source = targetName + accessOperator;
+		String signal = GenerationNames.eventClassName(signalName) + "(";
+		if (rt) {
+			signal += GenerationNames.derefenrencePointer(targetName) + ",";
 		}
-		signal+=targetTypeName_+"::"+GenerationNames.EventEnumName(signalName_);
-		String paramList=OperationCallParamList(params_);
-		if(!paramList.isEmpty())
-		{
-			signal+=","+paramList;
+		signal += targetTypeName + "::" + GenerationNames.eventEnumName(signalName);
+		String paramList = operationCallParamList(params);
+		if (!paramList.isEmpty()) {
+			signal += "," + paramList;
 		}
-		signal+=")";
-		
-		if(rt_)
-		{
-			source+=RuntimeTemplates.SendSignal(signal);
+		signal += ")";
+
+		if (rt) {
+			source += RuntimeTemplates.sendSignal(signal);
+		} else {
+			source += "" + GenerationNames.ProcessEventFName + "(" + signal;
 		}
-		else
-		{
-			source+=""+GenerationNames.ProcessEventFName+"("+signal;
-		}
-		
-		return source+");\n";
+
+		return source + ");\n";
 	}
-	
-	public static String TransitionActionCall(String operationName_)
-	{
-		List<String> params=new LinkedList<String>();
+
+	public static String transitionActionCall(String operationName) {
+		List<String> params = new LinkedList<String>();
 		params.add(GenerationNames.EventFParamName);
-		return OperationCall(operationName_,params);
+		return operationCall(operationName, params);
 	}
-	
-	public static String OperationCall(String operationName_)
-	{
-		return OperationCall(operationName_,null);
+
+	public static String operationCall(String operationName) {
+		return operationCall(operationName, null);
 	}
-	
-	
-	public static String OperationCall(String operationName_,List<String> params_)
-	{
-		String source=operationName_+"(";
-		if(params_!=null)
-		{
-			source+=OperationCallParamList(params_);
+
+	public static String operationCall(String operationName, List<String> params) {
+		String source = operationName + "(";
+		if (params != null) {
+			source += operationCallParamList(params);
 		}
-		source+=");\n";
+		source += ");\n";
 		return source;
 	}
-	
-	public static String OperationCall(String ownerName_,String accessOperator_,String operationName_,List<String> params_)
-	{
-		String source=OperationCall(operationName_, params_);
-		if(ownerName_!=null && ownerName_!="")
-		{
-			source=ownerName_+accessOperator_+source;
+
+	public static String operationCall(String ownerName, String accessOperator, String operationName,
+			List<String> params) {
+		String source = operationCall(operationName, params);
+		if (ownerName != null && ownerName != "") {
+			source = ownerName + accessOperator + source;
 		}
 		return source;
 	}
 	
-	private static String OperationCallParamList(List<String> params_)
-	{
-		String source="";
-		for(String param:params_)
-		{
-			source+=param+",";
+	public static String operationCallOnPointerVariable(String ownerName, String operationName, List<String> params) {
+	    return operationCall(ownerName,GenerationNames.PointerAccess,operationName,params);
+	}
+
+	private static String operationCallParamList(List<String> params) {
+		String source = "";
+		for (String param : params) {
+			source += param + ",";
 		}
-		if(!params_.isEmpty())
-		{
-			source=source.substring(0,source.length()-1);
+		if (!params.isEmpty()) {
+			source = source.substring(0, source.length() - 1);
 		}
 		return source;
 	}
-	
-	public static String SimpleCondControlStruct(String control_,String cond_,String body_)
-	{
-		return control_+"("+cond_+")\n{\n"+body_+"}\n";
+
+	public static String simpleCondControlStruct(String control, String cond, String body) {
+		return control + "(" + cond + ")\n{\n" + body + "}\n";
 	}
-	
-	public static String SimpleIf(String cond_,String body_)
-	{
-		return SimpleCondControlStruct("if", cond_, body_);
+
+	public static String simpleIf(String cond, String body) {
+		return simpleCondControlStruct("if", cond, body);
 	}
-	
-	public static String ElseIf(List<Pair<String,String>> branches_)
-	{
-		String source="";
-		int i=1;
-		for(Pair<String,String> part:branches_)
-		{
-			if(i == 1)
-			{
-				source+=SimpleIf(part.getFirst(),part.getSecond());
-			}
-			else if(i == branches_.size() && (part.getFirst().isEmpty() || part.getFirst().equals("else")))
-			{
-				source+="else\n{\n"+part.getSecond()+"}\n";
-			}
-			else
-			{
-				source+=SimpleCondControlStruct("else if", part.getFirst(), part.getSecond());
+
+	public static StringBuilder elseIf(List<Pair<String, String>> branches) {
+		StringBuilder source = new StringBuilder("");
+		int i = 1;
+		for (Pair<String, String> part : branches) {
+			if (i == 1) {
+				source.append(simpleIf(part.getFirst(), part.getSecond()));
+			} else if (i == branches.size() && (part.getFirst().isEmpty() || part.getFirst().equals("else"))) {
+				source.append("else\n{\n" + part.getSecond() + "}\n");
+			} else {
+				source.append(simpleCondControlStruct("else if", part.getFirst(), part.getSecond()));
 			}
 			++i;
 		}
 		return source;
 	}
-	
-	public static String While(String cond_,String body_)
-	{
-		return SimpleCondControlStruct("while", cond_, body_);
+
+	public static String simpleWhile(String cond, String body) {
+		return simpleCondControlStruct("while", cond, body);
 	}
-	
-	public static String TransitionActionParameter(String paramName_)
-	{
-		return GenerationNames.RealEventName+"."+paramName_;
+
+	public static String transitionActionParameter(String paramName) {
+		return GenerationNames.RealEventName + "." + paramName;
 	}
-		
-	public static String CreateObject(String typenName_,String objName_,Boolean rt_,Boolean isSm_)
-	{
+
+	public static String createObject(String typenName, String objName, Boolean rt, Boolean isSm) {
 		String source;
-		if(rt_ && isSm_)
-		{
-			source = GenerationNames.PointerType(typenName_)+" "+objName_+"= "+GenerationNames.MemoryAllocator+" "+typenName_+"(" + RuntimeTemplates.RuntimeVarName + ");\n";
-			source += objName_ + GenerationNames.PointerAccess +  "startSM();\n";
-			//source+=RuntimeTemplates.CreateObject(objName_);
-		}
-		else{
-			source=GenerationNames.PointerType(typenName_)+" "+objName_+"= "+GenerationNames.MemoryAllocator+" "+typenName_+"();\n";
-		}
-		return source;
-	}
-	
-	
-	
-	public static String getOperationFromType(boolean isMultivalued_, boolean isReplace_) 
-	{
-		String source="";
-		if(isMultivalued_)//if the type is a collection
-		{
-			if(isReplace_)
-			{
-				source=ReplaceCompositTypeOp;
-			}
-			else
-			{
-				source=AddCompositTypeOp;
-			}
-		}
-		else //simple class or basic type
-		{
-			source=ReplaceSimpleTypeOp;
+		if (rt && isSm) {
+			source = GenerationNames.pointerType(typenName) + " " + objName + "= " + GenerationNames.MemoryAllocator
+					+ " " + typenName + "(" + RuntimeTemplates.RuntimeVarName + ");\n";
+			source += objName + GenerationNames.PointerAccess + "startSM();\n";
+			// source+=RuntimeTemplates.CreateObject(objName_);
+		} else {
+			source = GenerationNames.pointerType(typenName) + " " + objName + "= " + GenerationNames.MemoryAllocator
+					+ " " + typenName + "();\n";
 		}
 		return source;
 	}
-	
-	public static String AccesOperatoForType(String typeName_)//Everything is pointer
-	{
+
+	public static String getOperationFromType(boolean isMultivalued, boolean isReplace) {
+		String source = "";
+		if (isMultivalued)// if the type is a collection
+		{
+			if (isReplace) {
+				source = ReplaceCompositTypeOp;
+			} else {
+				source = AddCompositTypeOp;
+			}
+		} else // simple class or basic type
+		{
+			source = ReplaceSimpleTypeOp;
+		}
+		return source;
+	}
+
+	// Everything is pointer
+	public static String accesOperatoForType(String typeName) {
 		return GenerationNames.PointerAccess;
 	}
-	
-	public static class Operators
-	{
-		public static final String Not="!";
-		public static final String And="&&";
-		public static final String Or="||";
-		public static final String NotEqual="!=";
-		public static final String Equal="==";
-		public static final String Remove="remove";
-		public static final String First="front";
-		public static final String Last="back";
+
+	public static class Operators {
+		public static final String Not = "!";
+		public static final String And = "&&";
+		public static final String Or = "||";
+		public static final String NotEqual = "!=";
+		public static final String Equal = "==";
+		public static final String Remove = "remove";
+		public static final String First = "front";
+		public static final String Last = "back";
 	}
 }

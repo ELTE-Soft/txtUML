@@ -4,7 +4,6 @@ import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.deployment.Configuration;
 import hu.elte.txtuml.api.deployment.Group;
 import hu.elte.txtuml.api.deployment.GroupContainer;
-import hu.elte.txtuml.api.deployment.Multithreading;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -18,8 +17,6 @@ public class ThreadDescriptionExporter {
 
 	private Map<String, ThreadPoolConfiguration> configMap;
 	private boolean descriptionExported = false;
-	private boolean isMultiThreading = false;
-	private boolean containsMulthreadingAnnotaion = false;
 
 	List<String> warningList;
 	List<String> errorList;
@@ -27,9 +24,10 @@ public class ThreadDescriptionExporter {
 	int numberOfConfigurations;
 
 	Set<String> exportedClasses;
-
-	public ThreadDescriptionExporter() {
+	Set<String> allClass;
+	public ThreadDescriptionExporter(Set<String> allClass) {
 		configMap = new HashMap<String, ThreadPoolConfiguration>();
+		this.allClass = allClass;
 		exportedClasses = new HashSet<String>();
 		numberOfConfigurations = 0;
 
@@ -57,30 +55,18 @@ public class ThreadDescriptionExporter {
 
 				exportGroup((Group) annotaion);
 
-			} else if (annotaion instanceof Multithreading) {
-				containsMulthreadingAnnotaion = true;
-				Multithreading mlt = (Multithreading) annotaion;
-				if (mlt.value()) {
-					isMultiThreading = true;
-				} else {
-					isMultiThreading = false;
-				}
 			} else {
-				warningList.add("Only Group and Multithreading annotations are allowed to use.");
+				warningList.add("Only Group annotations are allowed to use.");
 			}
 		}
-
-		if (!containsMulthreadingAnnotaion) {
-			warningList.add("Multithreading option from the description is missing.");
-
-			if (!configMap.isEmpty()) {
-				isMultiThreading = true;
-			}
-		}
+		
+		exportDefaultConfiguration();
 
 		descriptionExported = true;
 
 	}
+
+
 
 	public boolean isSuccessfulExportation() {
 		if (!descriptionExported) {
@@ -91,7 +77,7 @@ public class ThreadDescriptionExporter {
 	}
 
 	public boolean warningListIsEmpty() {
-		return !warningList.isEmpty();
+		return warningList.isEmpty();
 	}
 
 	public List<String> getErrors() {
@@ -100,10 +86,6 @@ public class ThreadDescriptionExporter {
 
 	public List<String> getWarnings() {
 		return warningList;
-	}
-
-	public boolean isMultiThreading() {
-		return isMultiThreading;
 	}
 
 	private void exportGroup(Group group) {
@@ -132,6 +114,22 @@ public class ThreadDescriptionExporter {
 			}
 
 		}
+	}
+	
+	private void exportDefaultConfiguration() {
+		
+		if(allClass.size() != exportedClasses.size()) {
+			Set<String> nonExportedClasses = new HashSet<String>();
+			nonExportedClasses.addAll(allClass);
+			nonExportedClasses.removeAll(exportedClasses);
+			
+			ThreadPoolConfiguration config = new ThreadPoolConfiguration(0,0,1);
+			config.setMaxThreads(1);
+			for(String cls : nonExportedClasses) {
+				configMap.put(cls, config);
+			}
+		}
+		
 	}
 
 	private void checkEmptyGroup(Class<? extends ModelClass>[] classes) {
