@@ -35,7 +35,7 @@ public class Machine3Tester {
 		User oneOfTheUsers = m.assoc(Usage.userOfMachine.class).selectAny();
 		// In Machine1 and Machine2 models this cannot be done as userOfMachine
 		// association end is non-navigable in that model.
-		Action.send(oneOfTheUsers, new DoYourWork());
+		Action.send(new DoYourWork(), oneOfTheUsers);
 
 		Timer.start(oneOfTheUsers, new DoYourWork(), 5000);
 

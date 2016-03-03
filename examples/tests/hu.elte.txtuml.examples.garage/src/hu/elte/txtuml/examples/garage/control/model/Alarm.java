@@ -45,7 +45,7 @@ public class Alarm extends ModelClass {
 		public void entry() {
 			Glue.getInstance().codeExpected();
 			Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectAny();
-			Action.send(kb, new WaitForCode());
+			Action.send(new WaitForCode(), kb);
 		}
 	}
 
@@ -61,7 +61,7 @@ public class Alarm extends ModelClass {
 		public void entry() {
 			Glue.getInstance().oldCodeExpected();
 			Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectAny();
-			Action.send(kb, new WaitForCode());
+			Action.send(new WaitForCode(), kb);
 		}
 	}
 
@@ -70,7 +70,7 @@ public class Alarm extends ModelClass {
 		public void entry() {
 			Glue.getInstance().newCodeExpected();
 			Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectAny();
-			Action.send(kb, new WaitForCode());
+			Action.send(new WaitForCode(), kb);
 		}
 	}
 

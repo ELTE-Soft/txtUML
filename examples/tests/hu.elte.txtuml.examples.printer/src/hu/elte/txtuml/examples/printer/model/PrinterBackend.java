@@ -76,7 +76,7 @@ public class PrinterBackend extends ModelClass {
 			;
 			tonerPercent -= doc.sideCount;
 			Action.log("PrinterBackend: finished printing.");
-			Action.send(PrinterBackend.this, new FinishedPrinting());
+			Action.send(new FinishedPrinting(), PrinterBackend.this);
 		}
 	}
 
@@ -90,7 +90,7 @@ public class PrinterBackend extends ModelClass {
 			Action.unlink(DocumentBeingPrinted.beingPrinted.class, doc, DocumentBeingPrinted.PrinterBackEnd.class,
 					PrinterBackend.this);
 			PrinterFrontend pf = PrinterBackend.this.assoc(PrinterSystem.frontend.class).selectAny();
-			Action.send(pf, new FinishedPrinting());
+			Action.send(new FinishedPrinting(), pf);
 		}
 	}
 

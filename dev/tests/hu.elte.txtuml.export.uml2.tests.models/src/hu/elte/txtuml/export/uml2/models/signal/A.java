@@ -19,7 +19,7 @@ public class A extends ModelClass {
 			sig.param = "test";
 			A inst = Action.create(A.class);
 
-			Action.send(inst, sig);
+			Action.send(sig, inst);
 		}
 	}
 

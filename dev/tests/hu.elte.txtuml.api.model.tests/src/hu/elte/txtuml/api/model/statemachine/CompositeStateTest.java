@@ -15,9 +15,9 @@ public class CompositeStateTest extends HierarchicalModelTestsBase {
 
 	@Test
 	public void test() {
-		Action.send(a, new Sig0());
-		Action.send(a, new Sig0());
-		Action.send(a, new Sig1());
+		Action.send(new Sig0(), a);
+		Action.send(new Sig0(), a);
+		Action.send(new Sig1(), a);
 
 		stopModelExecution();
 
