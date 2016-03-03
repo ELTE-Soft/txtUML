@@ -286,6 +286,20 @@ public class RectangleObject
 	}
 	
 	/***
+	 * Create a RectanlgeObject with a name and special property.
+	 * 
+	 * @param n
+	 *            Name of the object.
+	 * @param sb
+	 * 	          SpecialBox value.
+	 */
+	public RectangleObject(String n, SpecialBox sb)
+	{
+		this(n);
+		_special = sb;
+	}
+	
+	/***
 	 * Create a RectangleObject with a name and a position.
 	 * 
 	 * @param n
@@ -391,7 +405,8 @@ public class RectangleObject
 	@Override
 	public String toString()
 	{
-		return _name + ": " + _position.toString() + "[w:" + _width.toString() + "("
+		String specialString = isSpecial()?("(" + _special.toString() + ")"):"";
+		return _name + specialString + ": " + _position.toString() + "[w:" + _width.toString() + "("
 				+ _pixelWidth.toString() + "), h:" + _height.toString() + "("
 				+ _pixelHeight.toString() + ")]";
 	}
