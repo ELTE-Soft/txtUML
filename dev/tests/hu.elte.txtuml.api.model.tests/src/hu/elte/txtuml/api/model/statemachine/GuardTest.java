@@ -13,10 +13,10 @@ public class GuardTest extends TransitionsModelTestsBase {
 
 	@Test
 	public void test() {
-		Action.send(a, new Sig3());
-		Action.send(a, new Sig3());
-		Action.send(a, new Sig3());
-		Action.send(a, new Sig3());
+		Action.send(new Sig3(), a);
+		Action.send(new Sig3(), a);
+		Action.send(new Sig3(), a);
+		Action.send(new Sig3(), a);
 
 		stopModelExecution();
 

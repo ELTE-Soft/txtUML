@@ -108,9 +108,9 @@ public class Gearbox extends ModelClass {
 		@Override
 		public void effect() {
 			Engine e = Gearbox.this.assoc(GE.e.class).selectAny();
-			Action.send(e, new EngineOff());
+			Action.send(new EngineOff(), e);
 			Lamp l = Gearbox.this.assoc(GL.l.class).selectAny();
-			Action.send(l, new LightOff());
+			Action.send(new LightOff(), l);
 		}
 	}
 
@@ -121,14 +121,14 @@ public class Gearbox extends ModelClass {
 		@Override
 		public void effect() {
 			Engine e = Gearbox.this.assoc(GE.e.class).selectAny();
-			Action.send(e, new EngineOff());
+			Action.send(new EngineOff(), e);
 			Lamp l = Gearbox.this.assoc(GL.l.class).selectAny();
-			Action.send(l, new LightOff());
+			Action.send(new LightOff(), l);
 		}
 	}
 
 	void startEngineOp() {
 		Engine e = Gearbox.this.assoc(GE.e.class).selectAny();
-		Action.send(e, new EngineOn());
+		Action.send(new EngineOn(), e);
 	}
 }

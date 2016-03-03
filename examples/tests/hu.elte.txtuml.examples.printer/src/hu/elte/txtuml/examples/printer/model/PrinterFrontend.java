@@ -43,11 +43,11 @@ public class PrinterFrontend extends ModelClass {
 					lock = true;
 					Document doc = queue.peek();
 					if (paperCount < doc.sideCount) {
-						Action.send(PrinterFrontend.this, new OutOfPaperSignal());
+						Action.send(new OutOfPaperSignal(), PrinterFrontend.this);
 					} else {
 						Action.link(DocumentBeingPrinted.beingPrinted.class, doc,
 								DocumentBeingPrinted.PrinterBackEnd.class, pb);
-						Action.send(pb, new Print());
+						Action.send(new Print(), pb);
 						paperCount -= doc.sideCount;
 						Action.unlink(DocumentToPrint.toPrint.class, doc, DocumentToPrint.PrinterFrontEnd.class,
 								PrinterFrontend.this);
