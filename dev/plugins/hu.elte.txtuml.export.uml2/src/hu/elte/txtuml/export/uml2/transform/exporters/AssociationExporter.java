@@ -128,7 +128,7 @@ public class AssociationExporter {
 		org.eclipse.uml2.uml.Type participant = (Type) exportedModel.getMember(participantName);
 		if (participant == null) {
 			throw new ExportException(
-					participantName + "is a type of an association end, but is cannot be found in the exported model.");
+					participantName + "is a type of an association end, but it cannot be found in the exported model.");
 		}
 
 		return (StructuredClassifier) exportedModel.getMember(participantName);
