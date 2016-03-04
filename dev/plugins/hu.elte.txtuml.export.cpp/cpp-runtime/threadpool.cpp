@@ -6,7 +6,7 @@
 
 
 
-StateMachineThreadPool::StateMachineThreadPool(size_t threads_)
+StateMachineThreadPool::StateMachineThreadPool(int threads_)
     :   threads(threads_),stop(true),worker_threads(0),
 		future_getter_thread(new std::thread(&StateMachineThreadPool::futureGetter,this) ) {}
 	
@@ -25,7 +25,7 @@ void StateMachineThreadPool::startPool()
 	
 	stop = false;
 	workers.setExpectedThreads(threads);
-	for(size_t i = 0;i<threads;++i)
+	for(int i = 0; i < threads; ++i)
 	{
 		workers.addThread(new std::thread(&StateMachineThreadPool::task,this));
 	}

@@ -41,7 +41,7 @@ public class XTrainTester {
 			for (int i = 0; i < 3; i++) {
 				Thread.sleep(time);
 				Action.log("");
-				Action.send(l, new SwitchLight());
+				Action.send(new SwitchLight(), l);
 			}
 
 			Thread.sleep(2 * time);
@@ -49,11 +49,11 @@ public class XTrainTester {
 			for (int i = 0; i < 3; i++) {
 				Thread.sleep(3 * time);
 				Action.log("");
-				Action.send(g, new Forward());
+				Action.send(new Forward(), g);
 
 				Thread.sleep(time);
 				Action.log("");
-				Action.send(g, new Backward());
+				Action.send(new Backward(), g);
 			}
 
 			ModelExecutor.shutdown();

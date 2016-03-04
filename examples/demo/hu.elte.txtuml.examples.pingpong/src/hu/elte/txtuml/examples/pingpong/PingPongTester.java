@@ -13,7 +13,7 @@ public class PingPongTester {
 		TopClass top = Action.create(TopClass.class);
 		Action.start(top);
 		
-		Action.send(top, new PongSignal(4));
+		Action.send(new PongSignal(4), top);
 		
 		ModelExecutor.shutdown();
 	}

@@ -1,14 +1,12 @@
 #include <iostream>
-
-#include "runtime/runtime.hpp"
+#include "deployment.hpp"
 
 int main()
 {
-  //RuntimeI* rt=new SingleThreadRT(); // 
-  //RuntimeI* rt=new ConfiguredThreadPoolsRT(); // it is allowed when a configuration was generated
+  //Runtime* rt=deployment::createThreadedRuntime(); // the runtime type depends on deployment header options
 
-  //Class obj(rt); //create the object and emplace the object into the runtime
-  //rt->startObject(&obj); obj.startSM(); //starts the statemachine of the object
+  //Class obj(); //create the object
+  //obj.startSM(); //starts the statemachine of the object
   //obj.send(EventPtr(new SignalName_EC(obj,Class::SignalName_EE))); //send a signal to the object
 
   //rt->run();

@@ -24,9 +24,9 @@ public class CompositeStateEntryExitTest extends HierarchicalModelTestsBase {
 		ModelExecutionEventsListener mock = Mockito.mock(ModelExecutionEventsListener.class);
 		ModelExecutor.Report.addModelExecutionEventsListener(mock);
 		
-		Action.send(a, new Sig0());
-		Action.send(a, new Sig0());
-		Action.send(a, new Sig1());
+		Action.send(new Sig0(), a);
+		Action.send(new Sig0(), a);
+		Action.send(new Sig1(), a);
 
 		stopModelExecution();
 

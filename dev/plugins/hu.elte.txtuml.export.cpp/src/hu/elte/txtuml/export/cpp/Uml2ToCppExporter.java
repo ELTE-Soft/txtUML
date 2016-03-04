@@ -31,18 +31,15 @@ import hu.elte.txtuml.export.cpp.thread.ThreadHandlingManager;
 import hu.elte.txtuml.utils.Pair;
 
 public class Uml2ToCppExporter {
-	private static final String DefaultCompiler = "g++";
-	private static final String GCCDebugSymbolOn = "-D_DEBUG"; // the symbol
-																// located in
-																// GenerationNames
-	private static final String RuntimeFolder = GenerationTemplates.RuntimePath;
-	private static final String RuntimeLibName = "libsmrt.a";
-	private static final String DefaultMakeFileName = "Makefile";
-	private static final String DefaultModelName = "main";
-	private static final String ProjectName = "hu.elte.txtuml.export.cpp";
-	private static final String CppFilesFolderName = "cpp-runtime";
+	private static final String RUNTIME_DIR_PREFIX = GenerationTemplates.RuntimePath;
+	private static final String RUNTIME_LIB_NAME = "libsmrt";
+	private static final String DEFAULT_TARGET_EXECUTABLE = "main";
+	private static final String DEFAULT_DEPLOYMENT_NAME = "deployment";
+	private static final String PROJECT_NAME = "hu.elte.txtuml.export.cpp";
+	private static final String CPP_FILES_FOLDER_NAME = "cpp-runtime";
 
 	private ClassExporter classExporter;
+	private final Options options;
 
 	ThreadHandlingManager threadManager;
 
@@ -52,8 +49,7 @@ public class Uml2ToCppExporter {
 	List<String> classNames;
 
 	public Uml2ToCppExporter(Model model, Map<String, ThreadPoolConfiguration> threadDescription,
-			boolean threadManagement, boolean addRuntimeOption, boolean debugOption) {
-
+			boolean addRuntimeOption) {
 		classExporter = new ClassExporter();
 
 		this.classList = new ArrayList<Class>();
@@ -62,31 +58,14 @@ public class Uml2ToCppExporter {
 
 		Shared.getTypedElements(classList, elements, UMLPackage.Literals.CLASS);
 
-		if (addRuntimeOption) {
-			Options.setRuntime();
-		} else {
-			Options.setAddRuntime(false);
-		}
-		if (debugOption) {
-			Options.setDebugLog();
-		} else {
-			Options.setDebugLog(false);
-		}
-		if (threadManagement) {
-			Options.setThreadManagement();
-
-			threadManager = new ThreadHandlingManager(classList, threadDescription);
-		} else {
-			threadManager = new ThreadHandlingManager();
-			Options.setThreadManagement(false);
-		}
-
+		options = new Options(addRuntimeOption);
+		threadManager = new ThreadHandlingManager(threadDescription);
 	}
 
 	public void buildCppCode(String outputDirectory) throws IOException {
 
-		if (Options.isAddRuntime()) {
-			threadManager.createThreadPoolManager(outputDirectory + File.separator + "runtime");
+		if (options.isAddRuntime()) {
+			threadManager.createConfigurationSource(outputDirectory);
 		}
 
 		Shared.writeOutSource(outputDirectory, (GenerationTemplates.EventHeader), createEventSource(elements));
@@ -95,18 +74,15 @@ public class Uml2ToCppExporter {
 
 		for (Class item : classList) {
 			classExporter.reiniIialize();
-			if (Options.isThreadManagement()) {
-				classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
+			classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
 
-			}
 			classExporter.createSource(item, outputDirectory);
 
 			classNames.addAll(classExporter.getSubmachines());
 			classNames.add(item.getName());
 		}
 
-		createMakeFile(outputDirectory, DefaultModelName, DefaultMakeFileName, classNames);
-
+		createCMakeFile(outputDirectory);
 	}
 
 	private void copyPreWrittenCppFiles(String destination) throws IOException {
@@ -120,10 +96,10 @@ public class Uml2ToCppExporter {
 		Files.copy(Paths.get(cppFilesLocation + GenerationTemplates.StateMachineBaseHeader),
 				Paths.get(destination + File.separator + GenerationTemplates.StateMachineBaseHeader),
 				StandardCopyOption.REPLACE_EXISTING);
-		if (Options.isAddRuntime()) {
+		if (options.isAddRuntime()) {
 
 			File sourceRuntimeDir = new File(cppFilesLocation);
-			File outputRuntimeDir = new File(destination + File.separator + RuntimeFolder);
+			File outputRuntimeDir = new File(destination + File.separator + RUNTIME_DIR_PREFIX);
 			if (!outputRuntimeDir.exists()) {
 				outputRuntimeDir.mkdirs();
 			}
@@ -138,8 +114,8 @@ public class Uml2ToCppExporter {
 
 	private String seekCppFilesLocation() throws IOException {
 
-		Bundle bundle = Platform.getBundle(ProjectName);
-		URL fileURL = bundle.getEntry(CppFilesFolderName);
+		Bundle bundle = Platform.getBundle(PROJECT_NAME);
+		URL fileURL = bundle.getEntry(CPP_FILES_FOLDER_NAME);
 		File f = new File(FileLocator.toFileURL(fileURL).getPath());
 
 		return f.getPath() + File.separator;
@@ -157,66 +133,52 @@ public class Uml2ToCppExporter {
 
 	}
 
-	private void createMakeFile(String path_, String outputName_, String makefileName_, List<String> classNames_)
-			throws FileNotFoundException, UnsupportedEncodingException {
-		String makeFile = "CC=" + DefaultCompiler + "\n\nall: " + outputName_ + "\n\n";
-
-		makeFile += outputName_ + ":";
-		if (Options.isAddRuntime()) {
-			makeFile += " " + RuntimeLibName;
-		}
-
-		String fileList = " main.cpp";
-		for (String file : classNames_) {
-			fileList += " " + GenerationTemplates.SourceName(file);
-		}
-
-		makeFile += fileList + "\n";
-		makeFile += "\t$(CC)";
-		if (Options.isDebugLog()) {
-			makeFile += " " + GCCDebugSymbolOn;
-		}
-		makeFile += " -Wall -o " + outputName_ + fileList + " -std=gnu++11";
-
-		if (Options.isAddRuntime()) {
-			makeFile += " -I " + RuntimeFolder + " -LC " + RuntimeLibName + " -pthread\n\n" + RuntimeLibName
-					+ ": runtime runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o\n"
-					+ "\tar rcs " + RuntimeLibName
-					+ " runtime.o statemachineI.o threadpool.o threadpoolmanager.o threadcontainer.o\n\n"
-					+ ".PHONY:runtime\n" + "runtime:\n\t$(CC) -Wall -c " + RuntimeFolder + "runtime.cpp "
-					+ RuntimeFolder + "statemachineI.cpp " + RuntimeFolder + "threadpool.cpp " + RuntimeFolder
-					+ "threadpoolmanager.cpp " + RuntimeFolder + "threadcontainer.cpp " + "-std=gnu++11";
-		}
-
-		Shared.writeOutSource(path_, makefileName_, makeFile);
+	private void createCMakeFile(String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException {
+		CMakeSupport cmake = new CMakeSupport(outputDirectory);
+		cmake.addIncludeDirectory(RUNTIME_DIR_PREFIX.substring(0, RUNTIME_DIR_PREFIX.indexOf(File.separator)));
+		List<String> librarySourceClasses = new ArrayList<String>();
+		librarySourceClasses.add("runtime");
+		librarySourceClasses.add("statemachineI");
+		librarySourceClasses.add("threadpool");
+		librarySourceClasses.add("threadpoolmanager");
+		librarySourceClasses.add("threadcontainer");
+		librarySourceClasses.add("threadconfiguration");
+		cmake.addStaticLibraryTarget(RUNTIME_LIB_NAME, librarySourceClasses, RUNTIME_DIR_PREFIX);
+		List<String> sourceNames = new ArrayList<String>();
+		sourceNames.add(DEFAULT_TARGET_EXECUTABLE);
+		sourceNames.add(DEFAULT_DEPLOYMENT_NAME);
+		sourceNames.addAll(classNames);
+		cmake.addExecutableTarget(DEFAULT_TARGET_EXECUTABLE, sourceNames, "");
+		cmake.writeOutCMakeLists();
 	}
 
 	private String createEventSource(EList<Element> elements_) {
 		List<Signal> signalList = new ArrayList<Signal>();
 		Shared.getTypedElements(signalList, elements_, UMLPackage.Literals.SIGNAL);
-		String forwardDecl = "";
-		String source = GenerationTemplates.EventBase() + "\n";
+		StringBuilder forwardDecl = new StringBuilder("");
+		StringBuilder source = GenerationTemplates.eventBase(options).append("\n");
 		List<Pair<String, String>> allParam = new LinkedList<Pair<String, String>>();
 
 		for (Signal item : signalList) {
 			List<Pair<String, String>> currentParams = getSignalParams(item);
 			allParam.addAll(currentParams);
-			source += GenerationTemplates.EventClass(item.getName(), currentParams);
+			source.append(GenerationTemplates.eventClass(item.getName(), currentParams, options));
 		}
 
-		source += GenerationTemplates.EventClass("InitSignal", new ArrayList<Pair<String, String>>());
+		source.append(GenerationTemplates.eventClass("InitSignal", new ArrayList<Pair<String, String>>(), options));
 
 		for (Pair<String, String> param : allParam) {
 			if (!Shared.isBasicType(param.getFirst())) {
-				String tmp = GenerationTemplates.ForwardDeclaration(param.getFirst());
-				if (!forwardDecl.contains(tmp)) {
-					forwardDecl += tmp;
+				String tmp = GenerationTemplates.forwardDeclaration(param.getFirst());
+				// TODO this is suboptimal
+				if (!forwardDecl.toString().contains(tmp)) {
+					forwardDecl.append(tmp);
 				}
 			}
 		}
-		forwardDecl += "\n";
-		source = forwardDecl + source;
-		return GenerationTemplates.EventHeaderGuard(source);
+		forwardDecl.append("\n");
+		forwardDecl.append(source);
+		return GenerationTemplates.eventHeaderGuard(forwardDecl.toString());
 	}
 
 	private List<Pair<String, String>> getSignalParams(Signal signal_) {
