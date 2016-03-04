@@ -80,7 +80,7 @@ public class ClassExporter {
 
 			for (Map.Entry<String, Pair<String, Region>> entry : _submachineMap.entrySet()) {
 				ClassExporter classExporter = new ClassExporter();
-				classExporter.createSubSmSource(entry.getValue().getFirst(), class_.getName(),
+				classExporter.createSubSmSource(entry.getValue().getFirst(),
 						entry.getValue().getSecond(), dest_);
 				_subSubMachines.addAll(classExporter.getSubmachines());
 			}
@@ -110,7 +110,7 @@ public class ClassExporter {
 
 	}
 
-	private void createSubSmSource(String className_, String parentClass_, Region region_, String dest_)
+	private void createSubSmSource(String className_,Region region_, String dest_)
 			throws FileNotFoundException, UnsupportedEncodingException {
 		String source = "";
 		_submachineMap = getSubMachines(region_);
@@ -118,10 +118,10 @@ public class ClassExporter {
 		createFuncTypeMap(region_, FuncTypeEnum.Exit, false);
 
 		for (Map.Entry<String, Pair<String, Region>> entry : _submachineMap.entrySet()) {
-			createSubSmSource(entry.getValue().getFirst(), parentClass_, entry.getValue().getSecond(), dest_);
+			createSubSmSource(entry.getValue().getFirst(), entry.getValue().getSecond(), dest_);
 		}
 
-		source = createSubSmClassHeaderSource(className_, parentClass_, region_);
+		source = createSubSmClassHeaderSource(className_,region_);
 		Shared.writeOutSource(dest_, GenerationTemplates.headerName(className_),
 				GenerationTemplates.headerGuard(source, className_));
 		source = createSubSmClassCppSource(className_, region_).toString();
@@ -172,23 +172,23 @@ public class ClassExporter {
 		return source;
 	}
 
-	private String createSubSmClassHeaderSource(String className_, String parentclass_, Region region_) {
+	private String createSubSmClassHeaderSource(String className_, Region region_) {
 		String source = "";
-		String dependency = GenerationTemplates.cppInclude(parentclass_) + "\n";
+		String dependency = "";
 
 		StringBuilder privateParts = createEntryFunctionsDecl(region_);
 		privateParts.append(createExitFunctionsDecl(region_));
 		privateParts.append(GenerationTemplates.formatSubSmFunctions(createGuardFunctions(region_).toString()));
 		privateParts.append(createTransitionFunctionDecl(region_));
 		String protectedParts = "";
-		String publicParts = GenerationTemplates.stateEnum(getStateList(region_), getInitState(region_));
-
+		StringBuilder publicParts = new StringBuilder(GenerationTemplates.stateEnum(getStateList(region_), getInitState(region_)));
+		publicParts.append(GenerationTemplates.constructorDecl(className_, null));
 		if (_submachineMap.isEmpty()) {
-			source = GenerationTemplates.simpleSubStateMachineClassHeader(dependency, className_, parentclass_,
-					publicParts, protectedParts, privateParts.toString()).toString();
+			source = GenerationTemplates.simpleSubStateMachineClassHeader(dependency, className_,
+					publicParts.toString(), protectedParts, privateParts.toString()).toString();
 		} else {
-			source = GenerationTemplates.hierarchicalSubStateMachineClassHeader(dependency, className_, parentclass_,
-					getSubmachines(), publicParts, protectedParts, privateParts.toString()).toString();
+			source = GenerationTemplates.hierarchicalSubStateMachineClassHeader(dependency, className_, 
+					getSubmachines(), publicParts.toString(), protectedParts, privateParts.toString()).toString();
 		}
 		return source;
 	}
