@@ -22,6 +22,7 @@ import org.eclipse.uml2.uml.Vertex;
 
 import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.To;
+import hu.elte.txtuml.export.uml2.UML2.ExportMode;
 import hu.elte.txtuml.utils.jdt.SharedUtils;
 
 public class TransitionExporter {
@@ -29,11 +30,14 @@ public class TransitionExporter {
 	private final ModelExporter modelExporter;
 	private final StateMachine stateMachine;
 	private final Region region;
+	private ExportMode exportMode;
 
-	public TransitionExporter(ModelExporter modelExporter, StateMachine stateMachine, Region region) {
+	public TransitionExporter(ModelExporter modelExporter, StateMachine stateMachine, Region region,
+			ExportMode exportMode) {
 		this.modelExporter = modelExporter;
 		this.stateMachine = stateMachine;
 		this.region = region;
+		this.exportMode = exportMode;
 	}
 
 	/**
@@ -51,8 +55,10 @@ public class TransitionExporter {
 		Transition exportedTransition = createTransitionBetweenVertices(transitionName, sourceVertex, targetVertex);
 
 		exportTrigger(transitionDeclaration, exportedTransition);
-		exportEffectAction(transitionDeclaration, exportedTransition);
-		exportGuard(transitionDeclaration, exportedTransition);
+		if (exportMode == ExportMode.ExportActionCode) {
+			exportEffectAction(transitionDeclaration, exportedTransition);
+			exportGuard(transitionDeclaration, exportedTransition);
+		}
 
 		modelExporter.getMapping().put(SharedUtils.qualifiedName(transitionDeclaration), exportedTransition);
 

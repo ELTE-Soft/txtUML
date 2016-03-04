@@ -77,7 +77,7 @@ public class ModelExporter {
 		importStandardLibrary(resourceSet, exportedModel);
 
 		this.typeExporter = new TypeExporter(this);
-		this.regionExporter = new RegionExporter(this);
+		this.regionExporter = new RegionExporter(this, exportMode);
 		this.methods = new HashMap<>();
 	}
 

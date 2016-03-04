@@ -12,6 +12,7 @@ import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
+import hu.elte.txtuml.export.uml2.UML2.ExportMode;
 import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.utils.jdt.SharedUtils;
@@ -21,11 +22,14 @@ public class VertexExporter {
 	private final ModelExporter modelExporter;
 	private final StateMachine stateMachine;
 	private final Region region;
+	private ExportMode exportMode;
 
-	public VertexExporter(ModelExporter modelExporter, StateMachine stateMachine, Region region) {
+	public VertexExporter(ModelExporter modelExporter, StateMachine stateMachine, Region region,
+			ExportMode exportMode) {
 		this.modelExporter = modelExporter;
 		this.stateMachine = stateMachine;
 		this.region = region;
+		this.exportMode = exportMode;
 	}
 
 	/**
@@ -41,7 +45,7 @@ public class VertexExporter {
 			exportSubRegion(vertexDeclaration, (State) vertex);
 		}
 
-		if (ElementTypeTeller.isState(vertexDeclaration)) {
+		if (ElementTypeTeller.isState(vertexDeclaration) && exportMode == ExportMode.ExportActionCode) {
 
 			exportStateEntryAction(vertexDeclaration, (State) vertex);
 			exportStateExitAction(vertexDeclaration, (State) vertex);
