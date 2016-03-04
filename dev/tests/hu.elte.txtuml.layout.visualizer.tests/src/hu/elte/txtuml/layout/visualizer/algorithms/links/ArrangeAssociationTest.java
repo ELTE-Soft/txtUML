@@ -66,25 +66,26 @@ public class ArrangeAssociationTest {
 		
 		Integer gid = 1;
 		
-		LineAssociation _A_B_expected_3wide = new LineAssociation(_A_B);
+		LineAssociation _A_B_expected_4wide = new LineAssociation(_A_B);
 		ArrayList<Point> abep = new ArrayList<Point>();
 		abep.add(new Point(0,0));
-		abep.add(new Point(1,-2));
-		abep.add(new Point(1,-3));
-		abep.add(new Point(1,-4));
-		abep.add(new Point(1,-5));
-		abep.add(new Point(1,-6));
-		abep.add(new Point(0,-6));
-		_A_B_expected_3wide.setRoute(abep);
+		abep.add(new Point(2,-3));
+		abep.add(new Point(2,-4));
+		abep.add(new Point(2,-5));
+		abep.add(new Point(2,-6));
+		abep.add(new Point(2,-7));
+		abep.add(new Point(2,-8));
+		abep.add(new Point(0,-8));
+		_A_B_expected_4wide.setRoute(abep);
 		
 		try {
 			ArrangeAssociations aa = 
 					new ArrangeAssociations(os, as, ss, gid, _option);
 			for(LineAssociation a : aa.value())
 			{
-				if(a.getId().equals(_A_B_expected_3wide.getId()))
+				if(a.getId().equals(_A_B_expected_4wide.getId()))
 				{
-					assertArrayEquals(_A_B_expected_3wide.getRoute().toArray(),
+					assertArrayEquals(_A_B_expected_4wide.getRoute().toArray(),
 							a.getRoute().toArray());
 				}
 				else
@@ -114,29 +115,30 @@ public class ArrangeAssociationTest {
 		
 		Integer gid = 1;
 		
-		LineAssociation _A_B_expected_3wide = new LineAssociation(_A_B);
+		LineAssociation _A_B_expected_4wide = new LineAssociation(_A_B);
 		ArrayList<Point> abep = new ArrayList<Point>();
 		abep.add(new Point(0,0));
-		abep.add(new Point(2,-1));
-		abep.add(new Point(3,-1));
 		abep.add(new Point(3,-2));
-		abep.add(new Point(3,-3));
-		abep.add(new Point(3,-4));
-		abep.add(new Point(3,-5));
-		abep.add(new Point(3,-6));
-		abep.add(new Point(3,-7));
-		abep.add(new Point(2,-7));
-		abep.add(new Point(0,-6));
-		_A_B_expected_3wide.setRoute(abep);
+		abep.add(new Point(4,-2));
+		abep.add(new Point(4,-3));
+		abep.add(new Point(4,-4));
+		abep.add(new Point(4,-5));
+		abep.add(new Point(4,-6));
+		abep.add(new Point(4,-7));
+		abep.add(new Point(4,-8));
+		abep.add(new Point(4,-9));
+		abep.add(new Point(3,-9));
+		abep.add(new Point(0,-8));
+		_A_B_expected_4wide.setRoute(abep);
 		
 		try {
 			ArrangeAssociations aa = 
 					new ArrangeAssociations(os, as, ss, gid, _option);
 			for(LineAssociation a : aa.value())
 			{
-				if(a.getId().equals(_A_B_expected_3wide.getId()))
+				if(a.getId().equals(_A_B_expected_4wide.getId()))
 				{
-					assertArrayEquals(_A_B_expected_3wide.getRoute().toArray(),
+					assertArrayEquals(_A_B_expected_4wide.getRoute().toArray(),
 							a.getRoute().toArray());
 				}
 				else
@@ -166,32 +168,34 @@ public class ArrangeAssociationTest {
 		
 		Integer gid = 1;
 		
-		LineAssociation _A_C_expected_3wide = new LineAssociation(_A_C);
+		LineAssociation _A_C_expected_4wide = new LineAssociation(_A_C);
 		ArrayList<Point> abep = new ArrayList<Point>();
 		abep.add(new Point(0,0));
-		abep.add(new Point(2,-1));
-		abep.add(new Point(3,-1));
 		abep.add(new Point(3,-2));
-		abep.add(new Point(3,-3));
-		abep.add(new Point(3,-4));
-		abep.add(new Point(3,-5));
-		abep.add(new Point(3,-6));
-		abep.add(new Point(3,-7));
-		abep.add(new Point(3,-8));
-		abep.add(new Point(3,-9));
-		abep.add(new Point(3,-10));
-		abep.add(new Point(3,-11));
-		abep.add(new Point(3,-12));
-		abep.add(new Point(3,-13));
-		abep.add(new Point(2,-13));
-		abep.add(new Point(0,-12));
-		_A_C_expected_3wide.setRoute(abep);
+		abep.add(new Point(4,-2));
+		abep.add(new Point(4,-3));
+		abep.add(new Point(4,-4));
+		abep.add(new Point(4,-5));
+		abep.add(new Point(4,-6));
+		abep.add(new Point(4,-7));
+		abep.add(new Point(4,-8));
+		abep.add(new Point(4,-9));
+		abep.add(new Point(4,-10));
+		abep.add(new Point(4,-11));
+		abep.add(new Point(4,-12));
+		abep.add(new Point(4,-13));
+		abep.add(new Point(4,-14));
+		abep.add(new Point(4,-15));
+		abep.add(new Point(4,-16));
+		abep.add(new Point(4,-17));
+		abep.add(new Point(3,-17));
+		abep.add(new Point(0,-16));
+		_A_C_expected_4wide.setRoute(abep);
 		
-		LineAssociation _A_C_expected_alternative_3wide = new LineAssociation(_A_C);
+		LineAssociation _A_C_expected_alternative_4wide = new LineAssociation(_A_C);
 		abep = new ArrayList<Point>();
 		abep.add(new Point(0,0));
-		abep.add(new Point(0,-1));
-		abep.add(new Point(-1,-1));
+		abep.add(new Point(0,-2));
 		abep.add(new Point(-1,-2));
 		abep.add(new Point(-1,-3));
 		abep.add(new Point(-1,-4));
@@ -204,19 +208,23 @@ public class ArrangeAssociationTest {
 		abep.add(new Point(-1,-11));
 		abep.add(new Point(-1,-12));
 		abep.add(new Point(-1,-13));
-		abep.add(new Point(0,-13));
-		abep.add(new Point(0,-12));
-		_A_C_expected_alternative_3wide.setRoute(abep);
+		abep.add(new Point(-1,-14));
+		abep.add(new Point(-1,-15));
+		abep.add(new Point(-1,-16));
+		abep.add(new Point(-1,-17));
+		abep.add(new Point(0,-17));
+		abep.add(new Point(0,-16));
+		_A_C_expected_alternative_4wide.setRoute(abep);
 		
 		try {
 			ArrangeAssociations aa = 
 					new ArrangeAssociations(os, as, ss, gid, _option);
 			for(LineAssociation a : aa.value())
 			{
-				if(a.getId().equals(_A_C_expected_3wide.getId()))
+				if(a.getId().equals(_A_C_expected_4wide.getId()))
 				{
-					assertTrue(_A_C_expected_alternative_3wide.getRoute().equals(a.getRoute())
-							|| _A_C_expected_3wide.getRoute().equals(a.getRoute()));
+					assertTrue(_A_C_expected_alternative_4wide.getRoute().equals(a.getRoute())
+							|| _A_C_expected_4wide.getRoute().equals(a.getRoute()));
 					//assertArrayEquals(_A_C_expected_3wide.getRoute().toArray(),
 					//		a.getRoute().toArray());
 				}
