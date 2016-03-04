@@ -7,6 +7,7 @@ import org.eclipse.uml2.uml.AggregationKind;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.StructuredClassifier;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 
@@ -33,8 +34,7 @@ public class AssociationExporter {
 	 * @param exportedModel
 	 *            The exported UML2 model.
 	 */
-	public AssociationExporter(TypeDeclaration sourceClass,
-			ModelMapCollector mapping, Model exportedModel) {
+	public AssociationExporter(TypeDeclaration sourceClass, ModelMapCollector mapping, Model exportedModel) {
 		this.sourceClass = sourceClass;
 		this.mapping = mapping;
 		this.exportedModel = exportedModel;
@@ -50,18 +50,15 @@ public class AssociationExporter {
 	public Association exportAssociation() throws ExportException {
 		List classes = this.sourceClass.bodyDeclarations();
 		if (classes.size() != 2) {
-			throw new ExportException(
-					"The following association doesn't have exactly 2 association ends: "
-							+ sourceClass.resolveBinding().getQualifiedName());
+			throw new ExportException("The following association doesn't have exactly 2 association ends: "
+					+ sourceClass.resolveBinding().getQualifiedName());
 		}
 
-		Association exportedAssociation = (Association) exportedModel
-				.createPackagedElement(sourceClass.getName()
-						.getFullyQualifiedName(), UMLPackage.eINSTANCE
-						.getAssociation());
+		Association exportedAssociation = (Association) exportedModel.createPackagedElement(
+				sourceClass.getName().getFullyQualifiedName(), UMLPackage.eINSTANCE.getAssociation());
 
-		exportAssociationEnd(exportedAssociation, classes.get(0));
-		exportAssociationEnd(exportedAssociation, classes.get(1));
+		exportAssociationEnd(exportedAssociation, classes.get(0), classes.get(1));
+		exportAssociationEnd(exportedAssociation, classes.get(1), classes.get(0));
 		mapping.put(SharedUtils.qualifiedName(sourceClass), exportedAssociation);
 		return exportedAssociation;
 	}
@@ -75,63 +72,66 @@ public class AssociationExporter {
 	 *            The class representing the txtUML association end.
 	 * @throws ExportException
 	 */
-	private void exportAssociationEnd(Association exportedAssociation,
-			Object sourceElement) throws ExportException {
-		if (sourceElement instanceof TypeDeclaration) {
+	private void exportAssociationEnd(Association exportedAssociation, Object sourceElement, Object otherElement)
+			throws ExportException {
+		if (sourceElement instanceof TypeDeclaration && otherElement instanceof TypeDeclaration) {
 			TypeDeclaration endSource = (TypeDeclaration) sourceElement;
+			TypeDeclaration otherSource = (TypeDeclaration) otherElement;
 			String phrase = endSource.getName().getFullyQualifiedName();
-			String className = endSource.resolveBinding().getSuperclass()
-					.getTypeArguments()[0].getName();
+			StructuredClassifier participant = getParticipant(endSource);
+			StructuredClassifier otherParticipant = getParticipant(otherSource);
 
 			int lowerBound = MultiplicityProvider.getLowerBound(endSource);
 			int upperBound = MultiplicityProvider.getUpperBound(endSource);
 
 			if (MultiplicityProvider.hasInvalidMultiplicity(endSource))
-				throw new ExportException("Association end "
-						+ endSource.getName() + " has invalid multiplicity.");
+				throw new ExportException("Association end " + endSource.getName() + " has invalid multiplicity.");
 
 			boolean navigable;
 
-			if (SharedUtils
-					.typeIsAssignableFrom(
-							endSource,
-							hu.elte.txtuml.api.model.assocends.Navigability.Navigable.class)) {
+			if (SharedUtils.typeIsAssignableFrom(endSource,
+					hu.elte.txtuml.api.model.assocends.Navigability.Navigable.class)) {
 				navigable = true;
-			} else if (SharedUtils
-					.typeIsAssignableFrom(
-							endSource,
-							hu.elte.txtuml.api.model.assocends.Navigability.NonNavigable.class)) {
+			} else if (SharedUtils.typeIsAssignableFrom(endSource,
+					hu.elte.txtuml.api.model.assocends.Navigability.NonNavigable.class)) {
 				navigable = false;
 			} else {
-				throw new ExportException("Association end "
-						+ endSource.getName() + " has invalid navigability.");
-			}
-
-			org.eclipse.uml2.uml.Type participant = (Type) exportedModel
-					.getMember(className);
-
-			if (participant == null) {
-				throw new ExportException(phrase + ": No class " + className
-						+ " found in this model.");
+				throw new ExportException("Association end " + endSource.getName() + " has invalid navigability.");
 			}
 
 			Property end;
-			if (navigable) {
-				end = exportedAssociation.createNavigableOwnedEnd(phrase,
-						participant);
-			} else {
-				end = exportedAssociation.createOwnedEnd(phrase, participant);
-			}
-
-			if (ElementTypeTeller.isComposition((TypeDeclaration) endSource
-					.getParent()) && !ElementTypeTeller.isContainer(endSource)) {
+			if (ElementTypeTeller.isComposition((TypeDeclaration) endSource.getParent())
+					&& !ElementTypeTeller.isContainer(endSource)) {
+				end = otherParticipant.createOwnedAttribute(phrase, participant, UMLPackage.eINSTANCE.getProperty());
+				end.setAssociation(exportedAssociation);
 				end.setAggregation(AggregationKind.COMPOSITE_LITERAL);
 			} else {
+				end = exportedAssociation.createOwnedEnd(phrase, participant);
 				end.setAggregation(AggregationKind.NONE_LITERAL);
 			}
 
+			end.setIsNavigable(navigable);
 			end.setLower(lowerBound);
 			end.setUpper(upperBound);
 		}
+	}
+
+	/**
+	 * @param end
+	 *            Type declaration representing an association end.
+	 * @return The UML class that is the type of the association end.
+	 * @throws ExportException
+	 */
+	private StructuredClassifier getParticipant(TypeDeclaration end) throws ExportException {
+		String participantName = end.resolveBinding().getSuperclass().getTypeArguments()[0].getName();
+
+		org.eclipse.uml2.uml.Type participant = (Type) exportedModel.getMember(participantName);
+		if (participant == null) {
+			throw new ExportException(
+					participantName + "is a type of an association end, but is cannot be found in the exported model.");
+		}
+
+		return (StructuredClassifier) exportedModel.getMember(participantName);
+
 	}
 }
