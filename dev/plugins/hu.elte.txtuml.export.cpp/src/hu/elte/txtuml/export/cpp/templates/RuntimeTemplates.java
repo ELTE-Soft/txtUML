@@ -58,7 +58,7 @@ class RuntimeTemplates {
 				+ "\n}\n";
 	}
 
-	public static String rtFunctionDecl(String className) {
+	public static String rtFunctionDef(String className) {
 		return processEventVirtual(className) + "\n" + processInitTransition(className) + "\n";
 	}
 

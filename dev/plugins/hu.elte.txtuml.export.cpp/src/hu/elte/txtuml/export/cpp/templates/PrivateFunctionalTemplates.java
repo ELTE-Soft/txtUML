@@ -28,22 +28,18 @@ class PrivateFunctionalTemplates {
 
 		source.append("\n"
 				+ stateMachineClassConstructorSharedBody(className, parentClassName, machine, intialState, rt, null)
-				+ "}\n\n");
-		if (rt) {
-			source.append(RuntimeTemplates.rtFunctionDecl(className));
-		}
-		source.append(GenerationNames.hierachicalProcessEventDef(className) + "\n"
-				+ GenerationNames.actionCallerDef(className) + "\n" + GenerationNames.hierachicalSetStateDef(className)
-				+ "\n" + PrivateFunctionalTemplates.setInitialState(className, intialState) + "\n");
+				+ "\n\n");
 		return source;
 	}
 
 	public static String simpleStateMachineClassConstructorSharedBody(String className,
-			Multimap<Pair<String, String>, Pair<String, String>> machine, String intialState, Boolean rt) {
+			Multimap<Pair<String, String>, Pair<String, String>> machine, String intialState, Boolean simpleMachine) {
 		String source = "";
-		if (rt) {
-			source += RuntimeTemplates.rtFunctionDecl(className);
+		if(simpleMachine) {
+			source += RuntimeTemplates.rtFunctionDef(className);
 		}
+		
+		
 
 		return source + GenerationNames.simpleProcessEventDef(className) + "\n"
 				+ GenerationNames.simpleSetStateDef(className) + "\n"
@@ -64,7 +60,7 @@ class PrivateFunctionalTemplates {
 			for (Pair<String, String> value : machine.get(key)) {
 				source.append(
 						GenerationNames.TransitionTableName + ".emplace(" + GenerationNames.EventStateTypeName + "(");
-				if (parentClassName != null && parentClassName != "this") {
+				if (parentClassName != null && parentClassName != GenerationNames.Self) {
 					source.append(parentClassName + "::");
 				}
 				source.append(GenerationNames.eventEnumName(key.getFirst()) + ","
@@ -80,11 +76,11 @@ class PrivateFunctionalTemplates {
 
 		}
 
-		if (poolId != null && rt) {
+		if (poolId != null) {
 			source.append(GenerationNames.PoolIdSetter + "(" + poolId + ");\n");
 		}
 
-		if (rt && (parentClassName == null || parentClassName == GenerationNames.Self)) {
+		if (parentClassName == null || parentClassName == GenerationNames.Self) {
 			source.append(RuntimeTemplates.initStateMachineForRuntime());
 		}
 

@@ -70,10 +70,12 @@ class GenerationNames {
 
 	public static final String Unknown = "?";
 	public static final String AssocMultiplicityDataStruct = "std::list";
+	public static final String InitStateMachine = "initStateMachine";
 
 	//
 	public static final String PoolIdSetter = "setPoolId";
 	public static final String InitialEventName = "InitSignal";
+	
 
 	public static String friendClassDecl(String className) {
 		return "friend " + GenerationNames.ClassType + " " + className + ";\n";
