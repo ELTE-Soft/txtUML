@@ -50,15 +50,10 @@ public class ThreadPoolConfiguration {
 	private LinearFunction function;
 
 	private int id;
-	private int threads;
 	private int maxThread;
 
 	public int getId() {
 		return id;
-	}
-
-	public int getNumberOfThreads() {
-		return threads;
 	}
 
 	public int getMaxThread() {
