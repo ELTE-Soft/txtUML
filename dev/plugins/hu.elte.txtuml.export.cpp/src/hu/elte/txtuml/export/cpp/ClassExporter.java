@@ -80,7 +80,7 @@ public class ClassExporter {
 
 			for (Map.Entry<String, Pair<String, Region>> entry : _submachineMap.entrySet()) {
 				ClassExporter classExporter = new ClassExporter();
-				classExporter.createSubSmSource(entry.getValue().getFirst(),
+				classExporter.createSubSmSource(entry.getValue().getFirst(), class_.getName(),
 						entry.getValue().getSecond(), dest_);
 				_subSubMachines.addAll(classExporter.getSubmachines());
 			}
@@ -110,7 +110,7 @@ public class ClassExporter {
 
 	}
 
-	private void createSubSmSource(String className_,Region region_, String dest_)
+	private void createSubSmSource(String className_,String parentClass,Region region_, String dest_)
 			throws FileNotFoundException, UnsupportedEncodingException {
 		String source = "";
 		_submachineMap = getSubMachines(region_);
@@ -118,17 +118,17 @@ public class ClassExporter {
 		createFuncTypeMap(region_, FuncTypeEnum.Exit, false);
 
 		for (Map.Entry<String, Pair<String, Region>> entry : _submachineMap.entrySet()) {
-			createSubSmSource(entry.getValue().getFirst(), entry.getValue().getSecond(), dest_);
+			createSubSmSource(entry.getValue().getFirst(), parentClass,entry.getValue().getSecond(), dest_);
 		}
 
 		source = createSubSmClassHeaderSource(className_,region_);
 		Shared.writeOutSource(dest_, GenerationTemplates.headerName(className_),
 				GenerationTemplates.headerGuard(source, className_));
-		source = createSubSmClassCppSource(className_, region_).toString();
+		source = createSubSmClassCppSource(className_,parentClass, region_).toString();
 
 		String dependencyIncludes = GenerationTemplates.cppInclude(className_);
 		dependencyIncludes = GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude)
-				+ dependencyIncludes;
+				+ dependencyIncludes + GenerationTemplates.cppInclude(parentClass);
 
 		Shared.writeOutSource(dest_, GenerationTemplates.sourceName(className_), dependencyIncludes + "\n" + source);
 	}
@@ -249,21 +249,21 @@ public class ClassExporter {
 						getOperationParams(item), GenerationTemplates.getDefaultReturn(returnType)));
 			} else {
 				source.append(GenerationTemplates.constructorDef(class_.getName(), getBaseClass(class_), "",
-						getOperationParams(item), new ArrayList<Pair<String,String>>() ));
+						getOperationParams(item), null ));
 				// TODO generate constructors
 			}
 		}
 		return source;
 	}
 
-	private StringBuilder createSubSmClassCppSource(String className_, Region region_) {
+	private StringBuilder createSubSmClassCppSource(String className_, String parentStateMachine, Region region_) {
 		StringBuilder source = new StringBuilder("");
 		Multimap<Pair<String, String>, Pair<String, String>> smMap = createMachine(region_);
 		if (_submachineMap.isEmpty()) {
-			source.append(GenerationTemplates.simpleSubStateMachineClassConstructor(className_, smMap,
+			source.append(GenerationTemplates.simpleSubStateMachineClassConstructor(className_,parentStateMachine, smMap,
 					getInitialState(region_)));
 		} else {
-			source.append(GenerationTemplates.hierarchicalSubStateMachineClassConstructor(className_,
+			source.append(GenerationTemplates.hierarchicalSubStateMachineClassConstructor(className_,parentStateMachine,
 					smMap, getEventSubmachineNameMap(), getInitialState(region_)));
 		}
 		source.append(GenerationTemplates.destructorDef(className_,false));

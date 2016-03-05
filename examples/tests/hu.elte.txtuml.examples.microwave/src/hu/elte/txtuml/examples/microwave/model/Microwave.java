@@ -9,6 +9,7 @@ import hu.elte.txtuml.api.stdlib.Timer;
 import hu.elte.txtuml.examples.microwave.model.associations.Usage;
 import hu.elte.txtuml.examples.microwave.model.signals.Close;
 import hu.elte.txtuml.examples.microwave.model.signals.Ding;
+import hu.elte.txtuml.examples.microwave.model.signals.FinishSignal;
 import hu.elte.txtuml.examples.microwave.model.signals.Get;
 import hu.elte.txtuml.examples.microwave.model.signals.Open;
 import hu.elte.txtuml.examples.microwave.model.signals.Put;
@@ -201,6 +202,12 @@ public class Microwave extends ModelClass {
 		@To(Finished.class)
 		@Trigger(TimedOut.class)
 		public class LoopQuit extends Transition {
+			
+			@Override
+			public void effect() {
+				Action.send(new FinishSignal(), Microwave.this);
+			}
+			
 			@Override
 			public boolean guard() {
 				return time == 0;
@@ -250,8 +257,9 @@ public class Microwave extends ModelClass {
 		}
 	}
 
-	@From(Heating.Finished.class)
+	@From(Heating.class)
 	@To(Closed.class)
+	@Trigger(FinishSignal.class)
 	public class Finishing extends Transition {
 	}
 

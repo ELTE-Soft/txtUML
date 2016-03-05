@@ -15,7 +15,7 @@ class PrivateFunctionalTemplates {
 	 * 
 	 * Map<String,String> <event,SubmachineName>
 	 */
-	public static StringBuilder hierarchicalStateMachineClassConstructorSharedBody(String className,
+	public static StringBuilder hierarchicalStateMachineClassConstructorSharedBody(String className, String parentStateMchine,
 			 Multimap<Pair<String, String>, Pair<String, String>> machine,
 			Map<String, String> subMachines, String intialState, Boolean rt) {
 		StringBuilder source = new StringBuilder("");
@@ -27,7 +27,7 @@ class PrivateFunctionalTemplates {
 		}
 
 		source.append("\n"
-				+ stateMachineClassConstructorSharedBody(className, machine, intialState, rt, null)
+				+ stateMachineClassConstructorSharedBody(className,parentStateMchine, machine, intialState, rt, null)
 				+ "\n\n");
 		return source;
 	}
@@ -46,14 +46,14 @@ class PrivateFunctionalTemplates {
 				+ PrivateFunctionalTemplates.setInitialState(className, intialState) + "\n";
 	}
 
-	public static StringBuilder stateMachineClassConstructorSharedBody(String className,
-			Multimap<Pair<String, String>, Pair<String, String>> machine, String intialState, Boolean rt,
+	public static StringBuilder stateMachineClassConstructorSharedBody(String className, String parentStateMachine,
+			Multimap<Pair<String, String>, Pair<String, String>> machine, String intialState, Boolean simpleMachine,
 			Integer poolId) {
 		StringBuilder source = new StringBuilder("");
 		for (Pair<String, String> key : machine.keySet()) {
 			for (Pair<String, String> value : machine.get(key)) {
 				source.append(
-						GenerationNames.TransitionTableName + ".emplace(" + GenerationNames.EventStateTypeName + "(");
+						GenerationNames.TransitionTableName + ".emplace(" +  GenerationNames.EventStateTypeName + "(" + parentStateMachine + "::");
 				source.append(GenerationNames.eventEnumName(key.getFirst()) + ","
 						+ GenerationNames.stateEnumName(key.getSecond()) + "),");
 				String guardName = GenerationNames.DefaultGuardName;
@@ -70,7 +70,10 @@ class PrivateFunctionalTemplates {
 		if (poolId != null) {
 			source.append(GenerationNames.PoolIdSetter + "(" + poolId + ");\n");
 		}
-		source.append(RuntimeTemplates.initStateMachineForRuntime());
+		if(simpleMachine) {
+			source.append(RuntimeTemplates.initStateMachineForRuntime());
+		}
+		
 
 		source.append(GenerationNames.SetInitialStateName + "();\n");
 

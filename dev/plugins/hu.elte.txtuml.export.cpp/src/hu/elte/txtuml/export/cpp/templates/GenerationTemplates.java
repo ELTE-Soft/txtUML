@@ -181,7 +181,12 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 		if (baseClassName != null) {
 			source.append( ": public " + baseClassName);
 		} else if (sm) {
-			source.append( ":public " + GenerationNames.StatemachineBaseName + ",public " + RuntimeTemplates.STMIName + "\n{\n");
+			source.append( ":public " + GenerationNames.StatemachineBaseName);
+					if(rt) {
+						source.append(",public " + RuntimeTemplates.STMIName);
+					}
+					source.append("\n{\n");
+					
 
 		}
 		source.append( "~" + className + "();\n"); 
@@ -322,7 +327,7 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 				+ ";\n}";
 	}
 
-	public static String hierarchicalSubStateMachineClassConstructor(String className,
+	public static String hierarchicalSubStateMachineClassConstructor(String className, String parentClassName,
 			Multimap<Pair<String, String>, Pair<String, String>> machine, Map<String, String> subMachines,
 			String intialState) {
 
@@ -331,18 +336,18 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 				+ parentParamName + "):" + GenerationNames.DefaultStateInitialization + ","
 				+ GenerationNames.CurrentMachineName + "(" + GenerationNames.NullPtr + "),"
 				+ GenerationNames.ParentSmMemberName + "(" + parentParamName + ")" + "\n{\n";
-		return source + PrivateFunctionalTemplates.hierarchicalStateMachineClassConstructorSharedBody(className,
+		return source + PrivateFunctionalTemplates.hierarchicalStateMachineClassConstructorSharedBody(className,parentClassName,
 					machine, subMachines, intialState, false);
 	}
 
-	public static StringBuilder hierarchicalStateMachineClassConstructor(String className, String baseClassName,
+	public static StringBuilder hierarchicalStateMachineClassConstructor(String className, String parentClassName, String baseClassName,
 			Multimap<Pair<String, String>, Pair<String, String>> machine, Map<String, String> subMachines,
 			String intialState, Boolean rt) {
 
 		StringBuilder source = new StringBuilder(simpleStateMachineClassConstructorHead(className, baseClassName)
 				+ GenerationNames.CurrentMachineName + "(" + GenerationNames.NullPtr + ")" + ","
 				+ GenerationNames.DefaultStateInitialization + "\n{\n");
-		source.append(PrivateFunctionalTemplates.hierarchicalStateMachineClassConstructorSharedBody(className,
+		source.append(PrivateFunctionalTemplates.hierarchicalStateMachineClassConstructorSharedBody(className,parentClassName,
 				machine, subMachines, intialState, rt));
 		return source;
 	}
@@ -351,10 +356,10 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 	 * Map<Pair<String, String>,<String,String> <event,
 	 * state>,<guard,handlerName>
 	 */
-	public static String simpleSubStateMachineClassConstructor(String className,
+	public static String simpleSubStateMachineClassConstructor(String className, String parentStateMachine,
 			Multimap<Pair<String, String>, Pair<String, String>> machine, String intialState) {
 		String source = className + "::" + className + "():" + GenerationNames.DefaultStateInitialization + "\n{\n"
-				+ PrivateFunctionalTemplates.stateMachineClassConstructorSharedBody(className, machine,
+				+ PrivateFunctionalTemplates.stateMachineClassConstructorSharedBody(className,parentStateMachine, machine,
 						intialState, false, null)
 				+ "}\n\n";
 		return source + PrivateFunctionalTemplates.simpleStateMachineClassConstructorSharedBody(className, machine,
@@ -370,7 +375,7 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 			Integer poolId) {
 		String source = simpleStateMachineClassConstructorHead(className, baseClassName)
 				+ GenerationNames.DefaultStateInitialization + "\n{\n" + PrivateFunctionalTemplates
-						.stateMachineClassConstructorSharedBody(className, machine, intialState, rt, poolId)
+						.stateMachineClassConstructorSharedBody(className,className, machine, intialState, rt, poolId)
 				+ "}\n\n";
 		return source + PrivateFunctionalTemplates.simpleStateMachineClassConstructorSharedBody(className, machine,
 				intialState, rt);
@@ -380,7 +385,7 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 	public static String simpleStateMachineInitialization(String className, String intialState, Boolean rt, Integer poolId, Multimap<Pair<String, String>, Pair<String, String>> machine) {
 		StringBuilder body = new StringBuilder("");
 		body.append(PrivateFunctionalTemplates
-		.stateMachineClassConstructorSharedBody(className, machine, intialState, rt, poolId));
+		.stateMachineClassConstructorSharedBody(className,className, machine, intialState, rt, poolId));
 
 		return functionDef(className,GenerationNames.InitStateMachine,body.toString());
 	}
@@ -388,7 +393,7 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 	public static String hierachialStateMachineInitialization(String className, String intialState, Boolean rt, Integer poolId, Multimap<Pair<String, String>, Pair<String, String>> machine, Map<String, String> subMachines) {
 		StringBuilder body = new StringBuilder("");
 		body.append(GenerationNames.CurrentMachineName + " = " + GenerationNames.NullPtr + ";");
-		body.append(PrivateFunctionalTemplates.hierarchicalStateMachineClassConstructorSharedBody(className,
+		body.append(PrivateFunctionalTemplates.hierarchicalStateMachineClassConstructorSharedBody(className,className,
 				machine, subMachines, intialState, rt));
 		return functionDef(className,GenerationNames.InitStateMachine,body.toString());
 	}
