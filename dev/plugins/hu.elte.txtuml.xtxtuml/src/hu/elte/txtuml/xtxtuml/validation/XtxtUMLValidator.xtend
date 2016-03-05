@@ -58,7 +58,7 @@ class XtxtUMLValidator extends XtxtUMLPortValidator {
 	// Checks
 	@Check
 	def checkModelDeclarationIsInModelInfoFile(TUModelDeclaration modelDeclaration) {
-		var name = modelDeclaration.eResource?.URI.lastSegment ?: ""
+		var name = modelDeclaration.eResource?.URI?.lastSegment ?: ""
 		if (!"model-info.xtxtuml".equals(name)) {
 			error('Model declaration must be specified in "model-info.xtxtuml".', modelDeclaration, null)
 		}
@@ -324,7 +324,7 @@ class XtxtUMLValidator extends XtxtUMLPortValidator {
 		val sentSignalSourceElement = sendExpr.signal.actualType.type.primarySourceElement as TUSignal;
 
 		val portSourceElement = sendExpr.target.actualType.type.primarySourceElement as TUPort;
-		val providedReceptionsOfPort = portSourceElement.members.findFirst[provided]?.interface.receptions;
+		val providedReceptionsOfPort = portSourceElement.members.findFirst[provided]?.interface?.receptions;
 
 		if (providedReceptionsOfPort?.
 			findFirst[signal.fullyQualifiedName == sentSignalSourceElement.fullyQualifiedName] == null) {
@@ -406,7 +406,7 @@ class XtxtUMLValidator extends XtxtUMLPortValidator {
 				(container as TUState).type == TUStateType.INITIAL || (container as TUState).type == TUStateType.CHOICE
 			) || container instanceof TUTransition && ((container as TUTransition).members.findFirst [
 			it instanceof TUTransitionVertex && (it as TUTransitionVertex).from
-		] as TUTransitionVertex)?.vertex.type == TUStateType.INITIAL) {
+		] as TUTransitionVertex)?.vertex?.type == TUStateType.INITIAL) {
 			error(
 				"'sigdata' cannot be used here",
 				XtxtUMLPackage::eINSTANCE.RAlfSignalAccessExpression_Sigdata

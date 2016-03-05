@@ -81,7 +81,7 @@ class XtxtUMLPortValidator extends XtxtUMLAssociationValidator {
 		val containerOfRoleB = if (roleB.eContainer instanceof TUComposition) roleB.eContainer as TUComposition;
 
 		if (connector.delegation) {
-			if (containerOfRoleA == null || containerOfRoleA.fullyQualifiedName != containerOfRoleB.fullyQualifiedName) {
+			if (containerOfRoleA == null || containerOfRoleA.fullyQualifiedName != containerOfRoleB?.fullyQualifiedName) {
 				error("Delegation connector " + connector.name + " must connect ports of a component and one of its parts",
 					connector, XtxtUMLPackage::eINSTANCE.TUModelElement_Name,
 					CONNECTOR_ROLE_COMPOSITION_MISMATCH, connector.name);
@@ -89,8 +89,8 @@ class XtxtUMLPortValidator extends XtxtUMLAssociationValidator {
 		} else { // assembly connector
 			if (containerOfRoleA == null || containerOfRoleB == null // roles must be from compositions
 			|| containerOfRoleA.fullyQualifiedName == containerOfRoleB.fullyQualifiedName // underlying compositions must be different
-			|| containerOfRoleA.ends.findFirst[container].endClass.fullyQualifiedName !=
-				containerOfRoleB.ends.findFirst[container].endClass.fullyQualifiedName // container must be the same
+			|| containerOfRoleA.ends.findFirst[container]?.endClass?.fullyQualifiedName !=
+				containerOfRoleB.ends.findFirst[container]?.endClass?.fullyQualifiedName // container must be the same
 			) {
 				error("Assembly connector " + connector.name + " must connect ports of parts belonging to the same component",
 					connector, XtxtUMLPackage::eINSTANCE.TUModelElement_Name,
@@ -108,10 +108,10 @@ class XtxtUMLPortValidator extends XtxtUMLAssociationValidator {
 		val portA = connector.ends.get(0).port;
 		val portB = connector.ends.get(1).port;
 
-		val providedAName = portA.getInterface(true).fullyQualifiedName;
-		val providedBName = portB.getInterface(true).fullyQualifiedName;
-		val requiredAName = portA.getInterface(false).fullyQualifiedName;
-		val requiredBName = portB.getInterface(false).fullyQualifiedName;
+		val providedAName = portA.getInterface(true)?.fullyQualifiedName;
+		val providedBName = portB.getInterface(true)?.fullyQualifiedName;
+		val requiredAName = portA.getInterface(false)?.fullyQualifiedName;
+		val requiredBName = portB.getInterface(false)?.fullyQualifiedName;
 
 		if (connector.delegation && (providedAName != providedBName || requiredAName != requiredBName)
 		|| !connector.delegation && (providedAName != requiredBName || requiredAName != providedBName)

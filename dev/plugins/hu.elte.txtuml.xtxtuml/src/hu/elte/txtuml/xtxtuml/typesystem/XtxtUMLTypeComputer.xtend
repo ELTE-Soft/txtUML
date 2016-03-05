@@ -176,7 +176,7 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		for (siblingOrSelf : siblingsAndSelf) {
 			if (siblingOrSelf instanceof TUTransition && ((siblingOrSelf as TUTransition).members.findFirst [
 				it instanceof TUTransitionVertex && toState != (it as TUTransitionVertex).from
-			] as TUTransitionVertex)?.vertex.fullyQualifiedName == state.fullyQualifiedName) {
+			] as TUTransitionVertex)?.vertex?.fullyQualifiedName == state.fullyQualifiedName) {
 				signalCandidates.add(
 					getCommonSignalSuperType(
 						siblingOrSelf as TUTransition,
