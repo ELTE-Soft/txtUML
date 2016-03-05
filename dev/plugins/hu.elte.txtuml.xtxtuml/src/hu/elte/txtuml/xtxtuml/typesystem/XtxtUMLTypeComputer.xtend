@@ -2,6 +2,8 @@ package hu.elte.txtuml.xtxtuml.typesystem
 
 import com.google.inject.Inject
 import hu.elte.txtuml.api.model.Collection
+import hu.elte.txtuml.api.model.ModelClass
+import hu.elte.txtuml.api.model.Port
 import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
@@ -18,11 +20,17 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionTrigger
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
 import java.util.ArrayList
 import java.util.HashSet
+import org.eclipse.emf.common.util.EList
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.resource.Resource
+import org.eclipse.xtext.common.types.JvmGenericType
 import org.eclipse.xtext.common.types.JvmType
+import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.xbase.XBlockExpression
 import org.eclipse.xtext.xbase.XVariableDeclaration
 import org.eclipse.xtext.xbase.annotations.typesystem.XbaseWithAnnotationsTypeComputer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
+import org.eclipse.xtext.xbase.resource.BatchLinkableResource
 import org.eclipse.xtext.xbase.typesystem.computation.ITypeComputationState
 import org.eclipse.xtext.xbase.typesystem.conformance.ConformanceFlags
 import org.eclipse.xtext.xbase.typesystem.references.LightweightTypeReference
@@ -31,6 +39,7 @@ import org.eclipse.xtext.xbase.typesystem.references.ParameterizedTypeReference
 class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 
 	@Inject extension IJvmModelAssociations;
+	@Inject extension IQualifiedNameProvider;
 
 	def dispatch void computeTypes(TUClassPropertyAccessExpression accessExpr, ITypeComputationState state) {
 		// expectations for childs are enabled by default,
@@ -49,22 +58,50 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 
 		switch (rightChild) {
 			TUAssociationEnd: {
-				val accocEndTypeRef = state.referenceOwner.toLightweightTypeReference(
-					rightChild.endClass.getPrimaryJvmElement as JvmType);
-
 				val collectionOfAssocEndTypeRef = getTypeForName(Collection, state).
 					rawTypeReference as ParameterizedTypeReference;
-				collectionOfAssocEndTypeRef.addTypeArgument(accocEndTypeRef);
+				collectionOfAssocEndTypeRef.addTypeArgument(
+					state.nullSafeJvmElementTypeRef(rightChild.endClass, ModelClass));
 
 				state.acceptActualType(collectionOfAssocEndTypeRef);
 			}
 			TUPort: {
-				val portTypeRef = state.referenceOwner.toLightweightTypeReference(
-					rightChild.getPrimaryJvmElement as JvmType);
-
-				state.acceptActualType(portTypeRef);
+				state.acceptActualType(state.nullSafeJvmElementTypeRef(rightChild, Port));
 			}
 		}
+	}
+
+	def private nullSafeJvmElementTypeRef(ITypeComputationState state, EObject sourceElement, Class<?> fallbackType) {
+		val inferredType = sourceElement.getPrimaryJvmElement as JvmType;
+		return if (inferredType != null) {
+			state.referenceOwner.toLightweightTypeReference(inferredType)
+		} else {
+			val newEquivalent = sourceElement.findNewJvmEquivalent(state.referenceOwner.contextResourceSet.resources);
+			if (newEquivalent != null) {
+				state.referenceOwner.toLightweightTypeReference(newEquivalent)
+			} else {
+				getTypeForName(fallbackType, state)
+			}
+		}
+	}
+
+	/**
+	 * Returns a <i>JvmType</i> equivalent of <code>sourceElement</code> from the given <code>resourceSet</code>,
+	 * or <code>null</code>, if no equivalent could be found. The call of this method might be expensive.
+	 */
+	def private findNewJvmEquivalent(EObject sourceElement, EList<Resource> resourceSet) {
+		for (resource : resourceSet) {
+			if (resource instanceof BatchLinkableResource) {
+				val newEquivalent = resource.allContents.findFirst [
+					it instanceof JvmGenericType && it.fullyQualifiedName == sourceElement.fullyQualifiedName
+				];
+				if (newEquivalent != null) {
+					return newEquivalent as JvmGenericType;
+				}
+			}
+		}
+
+		return null;
 	}
 
 	def dispatch computeTypes(RAlfSignalAccessExpression sigExpr, ITypeComputationState state) {
@@ -106,12 +143,7 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		] as TUTransitionTrigger)?.trigger;
 
 		if (trigger != null) {
-			val jvmSignal = trigger.getPrimaryJvmElement as JvmType;
-			return if (jvmSignal != null) {
-				cState.referenceOwner.toLightweightTypeReference(jvmSignal)
-			} else {
-				getTypeForName(Signal, cState)
-			}
+			return cState.nullSafeJvmElementTypeRef(trigger, Signal);
 		}
 
 		var from = (trans.members.findFirst [
