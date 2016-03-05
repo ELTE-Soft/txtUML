@@ -1,6 +1,6 @@
 package hu.elte.txtuml.api.model;
 
-import hu.elte.txtuml.api.model.Connector.ConnectorEnd;
+import hu.elte.txtuml.api.model.ConnectorBase.ConnectorEnd;
 import hu.elte.txtuml.api.model.ModelExecutor.Report;
 import hu.elte.txtuml.api.model.backend.MultipleContainerException;
 import hu.elte.txtuml.api.model.backend.MultiplicityException;
@@ -295,15 +295,15 @@ public class Action implements ModelElement {
 
 	/**
 	 * Asynchronously sends the specified signal through the specified reception.
-	 * 
-	 * @param reception
-	 *            the reception which will accept the signal
 	 * @param signal
 	 *            the signal object to send
+	 * @param reception
+	 *            the reception which will accept the signal
+	 * 
 	 * @throws NullPointerException
 	 *             if <code>reception</code> is <code>null</code>
 	 */
-	public static <S extends Signal> void send(Reception<S> reception, S signal) {
+	public static <S extends Signal> void send(S signal, Reception<S> reception) {
 		reception.accept(signal);
 	}
 
@@ -312,15 +312,15 @@ public class Action implements ModelElement {
 	 * <p>
 	 * Does not check whether the target object is deleted, it is only checked
 	 * when the signal arrives to the object.
-	 * 
-	 * @param target
-	 *            the model object which will receive the signal
 	 * @param signal
 	 *            the signal object to send
+	 * @param target
+	 *            the model object which will receive the signal
+	 * 
 	 * @throws NullPointerException
 	 *             if <code>target</code> is <code>null</code>
 	 */
-	public static void send(ModelClass target, Signal signal) {
+	public static void send(Signal signal, ModelClass target) {
 		target.send(signal);
 	}
 

@@ -17,7 +17,7 @@ import java.lang.reflect.Proxy;
  * Define connectors to specify the connections between ports and create these
  * connections at runtime with the appropriate action methods. Signals can be
  * sent through the receptions on the provided interface of a port with the
- * {@link Action#send(Reception, Signal)} method.
+ * {@link Action#send(Signal, Reception)} method.
  * <p>
  * The {@link #provided} field of a port contains an instance of the provided
  * interface.
@@ -56,16 +56,19 @@ import java.lang.reflect.Proxy;
  * 
  * @see BehaviorPort
  * @see Connector
+ * @see Delegation
  * @see Action#connect(Port, Class, Port)
  * @see Action#connect(Class, Port, Class, Port)
+ * @see InPort
+ * @see OutPort
  * 
+ * @param <R>
+ *            the required interface
  * @param
  * 			<P>
  *            the provided interface
- * @param <R>
- *            the required interface
  */
-public abstract class Port<P extends Interface, R extends Interface> {
+public abstract class Port<R extends Interface, P extends Interface> {
 
 	/**
 	 * The provided interface of this port.
@@ -80,22 +83,28 @@ public abstract class Port<P extends Interface, R extends Interface> {
 	private Port<?, ?> neighbor2 = null;
 	private ModelClass obj = null;
 
+	protected Port() {
+		this(1);
+	}
+
 	/**
-	 * Sole constructor of {@code Port}.
+	 * @param indexOfProvidedInterface
+	 *            the index of the provided interface in the list of type
+	 *            arguments
 	 */
 	@SuppressWarnings("unchecked")
-	protected Port() {
-		P instanceOfProvided = null;
-
+	Port(int indexOfProvidedInterface) {
 		Class<?> type = getClass();
 
 		Class<P> typeOfProvided = (Class<P>) ((ParameterizedType) type.getGenericSuperclass())
-				.getActualTypeArguments()[0];
+				.getActualTypeArguments()[indexOfProvidedInterface];
 
-		instanceOfProvided = (P) Proxy.newProxyInstance(type.getClassLoader(), new Class[] { typeOfProvided },
+		provided = (P) Proxy.newProxyInstance(type.getClassLoader(), new Class[] { typeOfProvided },
 				createReceptionHandler());
+	}
 
-		provided = instanceOfProvided;
+	Port(P provided) {
+		this.provided = provided;
 	}
 
 	private InvocationHandler createReceptionHandler() {

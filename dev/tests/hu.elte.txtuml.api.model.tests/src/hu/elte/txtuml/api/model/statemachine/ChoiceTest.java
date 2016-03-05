@@ -13,9 +13,9 @@ public class ChoiceTest extends ChoiceModelTestsBase {
 
 	@Test
 	public void test() {
-		Action.send(a, new Sig(0));
-		Action.send(a, new Sig(1));
-		Action.send(a, new Sig(2));
+		Action.send(new Sig(0), a);
+		Action.send(new Sig(1), a);
+		Action.send(new Sig(2), a);
 
 		stopModelExecution();
 

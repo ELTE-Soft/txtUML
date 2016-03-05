@@ -173,7 +173,7 @@ public class Microwave extends ModelClass {
 			public void entry() {
 				Action.log("Microwave: DING!");
 				Human h = Microwave.this.assoc(Usage.userOfMicrowave.class).selectAny();
-				Action.send(h, new Ding());
+				Action.send(new Ding(), h);
 			}
 		}
 

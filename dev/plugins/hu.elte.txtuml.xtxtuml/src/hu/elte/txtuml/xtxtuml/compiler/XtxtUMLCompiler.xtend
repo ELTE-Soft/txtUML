@@ -50,14 +50,15 @@ class XtxtUMLCompiler extends XbaseCompiler {
 		newLine;
 		append(Action)
 		append(".send(");
-		sendExpr.target.internalToJavaExpression(it);
 
+		sendExpr.signal.internalToJavaExpression(it);
+		append(", ");
+
+		sendExpr.target.internalToJavaExpression(it);
 		if (sendExpr.target.lightweightType.isSubtypeOf(Port)) {
 			append(".provided::reception");
 		}
 
-		append(", ");
-		sendExpr.signal.internalToJavaExpression(it);
 		append(");");
 	}
 

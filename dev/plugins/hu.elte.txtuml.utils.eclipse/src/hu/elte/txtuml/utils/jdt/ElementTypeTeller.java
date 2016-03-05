@@ -18,7 +18,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import hu.elte.txtuml.api.model.Association;
 import hu.elte.txtuml.api.model.AssociationEnd;
 import hu.elte.txtuml.api.model.Composition;
-import hu.elte.txtuml.api.model.Connector;
+import hu.elte.txtuml.api.model.ConnectorBase;
 import hu.elte.txtuml.api.model.DataType;
 import hu.elte.txtuml.api.model.Interface;
 import hu.elte.txtuml.api.model.Model;
@@ -31,7 +31,7 @@ import hu.elte.txtuml.api.model.StateMachine.Initial;
 import hu.elte.txtuml.api.model.StateMachine.State;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
-import hu.elte.txtuml.api.model.assocends.Aggregation;
+import hu.elte.txtuml.api.model.assocends.ContainmentKind;
 import hu.elte.txtuml.api.model.external.ExternalClass;
 import hu.elte.txtuml.api.model.external.ExternalType;
 
@@ -206,7 +206,7 @@ public final class ElementTypeTeller {
 	}
 
 	public static boolean isContainer(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Aggregation.Composite.class);
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ContainmentKind.ContainerEnd.class);
 	}
 
 	public static boolean isPort(TypeDeclaration typeDeclaration) {
@@ -218,7 +218,7 @@ public final class ElementTypeTeller {
 	}
 
 	public static boolean isConnector(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Connector.class);
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ConnectorBase.class);
 	}
 
 	public static boolean isSpecificClassifier(TypeDeclaration classifierDeclaration) {

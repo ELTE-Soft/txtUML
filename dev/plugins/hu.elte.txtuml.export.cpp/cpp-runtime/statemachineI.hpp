@@ -7,14 +7,13 @@
 
 #include "runtimetypes.hpp"
 
-class RuntimeI;
+//class RuntimeI;
 class StateMachineThreadPool;
 
 class StateMachineI
 {
 public:
   virtual void processEventVirtual()=0;
-  //virtual void startSM()=0;
   virtual void processInitTranstion() = 0;
 
   void startSM() {_started = true;}
@@ -25,19 +24,19 @@ public:
   void deleteNextMessage() {_messageQueue->pop_front(); }
   bool emptyMessageQueue(){return _messageQueue->empty();}
   void setPool(StateMachineThreadPool* pool_){_pool=pool_;}
-  void setRuntime(RuntimeI* runtime_){_runtime=runtime_;}
+  //void setRuntime(RuntimeI* runtime_){_runtime=runtime_;}
   void setMessageQueue(std::shared_ptr<MessageQueueType> messageQueue_){_messageQueue=messageQueue_;}
   void setPooled(bool);
   bool isInPool(){return _inPool;}
   bool isStarted() {return _started;}
   bool isInitialized() {return _initialized; }
-  id_type getPoolId() {return poolId;};
+  int getPoolId() {return poolId;}
   
   virtual ~StateMachineI();
 protected:
   StateMachineI(std::shared_ptr<MessageQueueType> messageQueue_=std::shared_ptr<MessageQueueType>(new MessageQueueType()));
-  RuntimeI* _runtime;////safe because: controlled by the runtime, but we can not set it in the constructor
-  void setPoolId(id_type id) {poolId = id;}
+  //RuntimeI* _runtime;////safe because: controlled by the runtime, but we can not set it in the constructor
+  void setPoolId(int id) {poolId = id;}
 private:
   void handlePool();
   
@@ -48,7 +47,7 @@ private:
   std::atomic_bool _inPool;
   std::atomic_bool _started;
   std::atomic_bool _initialized;
-  id_type poolId;
+  int poolId;
   
   
   

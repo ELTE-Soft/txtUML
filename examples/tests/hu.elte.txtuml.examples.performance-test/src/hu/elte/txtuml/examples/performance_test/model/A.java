@@ -50,7 +50,7 @@ public class A extends ModelClass {
 	}
 
 	void childTerminated() {
-		Action.send(this, new Backward());
+		Action.send(new Backward(), this);
 	}
 
 	@From(A.init.class)
@@ -59,7 +59,7 @@ public class A extends ModelClass {
 		@Override
 		public void effect() {
 			// Action.log("initial transition");
-			Action.send(A.this, new Forward(++numForward));
+			Action.send(new Forward(++numForward), A.this);
 		}
 	}
 
@@ -75,9 +75,9 @@ public class A extends ModelClass {
 				createChild();
 			}
 			if (!assoc(AB.b.class).isEmpty()) {
-				Action.send(assoc(AB.b.class).selectAny(), new Forward(0));
+				Action.send(new Forward(0), assoc(AB.b.class).selectAny());
 			}
-			Action.send(A.this, new Forward(++numForward));
+			Action.send(new Forward(++numForward), A.this);
 		}
 	}
 
@@ -93,9 +93,9 @@ public class A extends ModelClass {
 				createChild();
 			}
 			if (!assoc(AB.b.class).isEmpty()) {
-				Action.send(assoc(AB.b.class).selectAny(), new Forward(0));
+				Action.send(new Forward(0), assoc(AB.b.class).selectAny());
 			}
-			Action.send(A.this, new Forward(++numForward));
+			Action.send(new Forward(++numForward), A.this);
 		}
 	}
 
@@ -111,9 +111,9 @@ public class A extends ModelClass {
 				createChild();
 			}
 			if (!assoc(AB.b.class).isEmpty()) {
-				Action.send(assoc(AB.b.class).selectAny(), new Forward(0));
+				Action.send(new Forward(0), assoc(AB.b.class).selectAny());
 			}
-			Action.send(A.this, new Forward(++numForward));
+			Action.send(new Forward(++numForward), A.this);
 		}
 	}
 
@@ -129,9 +129,9 @@ public class A extends ModelClass {
 				createChild();
 			}
 			if (!assoc(AB.b.class).isEmpty()) {
-				Action.send(assoc(AB.b.class).selectAny(), new Forward(0));
+				Action.send(new Forward(0), assoc(AB.b.class).selectAny());
 			}
-			Action.send(A.this, new Forward(++numForward));
+			Action.send(new Forward(++numForward), A.this);
 		}
 	}
 

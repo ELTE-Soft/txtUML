@@ -7,7 +7,8 @@ import hu.elte.txtuml.api.model.Composition
 import hu.elte.txtuml.api.model.Composition.Container
 import hu.elte.txtuml.api.model.Composition.HiddenContainer
 import hu.elte.txtuml.api.model.Connector
-import hu.elte.txtuml.api.model.Connector.One
+import hu.elte.txtuml.api.model.ConnectorBase.One
+import hu.elte.txtuml.api.model.Delegation
 import hu.elte.txtuml.api.model.From
 import hu.elte.txtuml.api.model.Interface
 import hu.elte.txtuml.api.model.Max
@@ -154,7 +155,11 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch void infer(TUConnector connector, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		acceptor.accept(connector.toClass(connector.fullyQualifiedName)) [
 			documentation = connector.documentation
-			superTypes += Connector.typeRef
+			superTypes += if (connector.delegation) {
+				Delegation.typeRef
+			} else {
+				Connector.typeRef
+			}
 
 			for (end : connector.ends) {
 				members += end.toJvmMember
@@ -341,7 +346,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			val providedIFace = port.members.findFirst[provided]
 			val requiredIFace = port.members.findFirst[!provided]
 
-			superTypes += typeRef(Port, providedIFace.toInterfaceTypeRef, requiredIFace.toInterfaceTypeRef)
+			superTypes += typeRef(Port, requiredIFace.toInterfaceTypeRef, providedIFace.toInterfaceTypeRef)
 
 			if (port.behavior) {
 				annotations += BehaviorPort.annotationRef

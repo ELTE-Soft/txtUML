@@ -7,7 +7,7 @@ import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.MutableClassToInstanceMap;
 
 import hu.elte.txtuml.api.model.ModelExecutor.Report;
-import hu.elte.txtuml.api.model.assocends.Aggregation;
+import hu.elte.txtuml.api.model.assocends.ContainmentKind;
 import hu.elte.txtuml.api.model.assocends.Navigability;
 import hu.elte.txtuml.api.model.backend.MultipleContainerException;
 import hu.elte.txtuml.api.model.backend.MultiplicityException;
@@ -298,9 +298,9 @@ public class ModelClass extends Region {
 
 	private <T extends ModelClass, C, AE extends AssociationEnd<T, C>> void containerCheck(Class<AE> otherEnd)
 			throws MultipleContainerException {
-		if (Aggregation.Composite.class.isAssignableFrom(otherEnd)) {
+		if (ContainmentKind.ContainerEnd.class.isAssignableFrom(otherEnd)) {
 			for (Entry<Class<? extends AssociationEnd<?, ?>>, AssociationEnd<?, ?>> entry : associations.entrySet()) {
-				if (Aggregation.Composite.class.isAssignableFrom(entry.getKey()) && !entry.getValue().isEmpty()) {
+				if (ContainmentKind.ContainerEnd.class.isAssignableFrom(entry.getKey()) && !entry.getValue().isEmpty()) {
 					throw new MultipleContainerException();
 				}
 			}
