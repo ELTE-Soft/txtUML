@@ -83,7 +83,7 @@ class XtxtUMLValidator extends XtxtUMLPortValidator {
 	def CheckNoDuplicateFileElementInternal(TUModelElement modelElement) {
 		val siblingsAndSelf = (modelElement.eContainer as TUFile).elements;
 		if (siblingsAndSelf.exists [
-			name == modelElement.name && it != modelElement
+			name == modelElement.name && it != modelElement // direct comparison is safe here
 		]) {
 			error(
 				"Duplicate file element " + modelElement.name,
@@ -100,7 +100,7 @@ class XtxtUMLValidator extends XtxtUMLPortValidator {
 	def checkNoDuplicateSignalAttribute(TUSignalAttribute attr) {
 		val containingSignal = attr.eContainer as TUSignal;
 		if (containingSignal.attributes.exists [
-			name == attr.name && it != attr
+			name == attr.name && it != attr // direct comparison is safe here
 		]) {
 			error(
 				"Duplicate attribute " + attr.name + " in signal " + containingSignal.name,
@@ -113,7 +113,7 @@ class XtxtUMLValidator extends XtxtUMLPortValidator {
 	def checkNoDuplicateAttribute(TUAttribute attr) {
 		val containingClass = attr.eContainer as TUClass;
 		if (containingClass.members.exists [
-			it instanceof TUAttribute && (it as TUAttribute).name == attr.name && it != attr
+			it instanceof TUAttribute && (it as TUAttribute).name == attr.name && it != attr // direct comparison is safe here
 		]) {
 			error(
 				"Duplicate attribute " + attr.name + " in class " + containingClass.name,
@@ -129,7 +129,7 @@ class XtxtUMLValidator extends XtxtUMLPortValidator {
 			it instanceof TUOperation && {
 				val siblingOrSelfOp = it as TUOperation;
 				siblingOrSelfOp.name == op.name && siblingOrSelfOp.parameterTypeList == op.parameterTypeList
-			} && it != op
+			} && it != op // direct comparison is safe here
 		]) {
 			error(
 				'''Duplicate method «op.name»(«op.parameterTypeList.join(", ")»)''',
@@ -150,8 +150,8 @@ class XtxtUMLValidator extends XtxtUMLPortValidator {
 			}
 
 		if (siblingsAndSelf.exists [
-			it instanceof TUState && (it as TUState).name == state.name && it != state ||
-				it instanceof TUTransition && (it as TUTransition).name == state.name ||
+			it instanceof TUState && (it as TUState).name == state.name && it != state || // direct comparison is safe here
+			it instanceof TUTransition && (it as TUTransition).name == state.name ||
 				it instanceof TUPort && (it as TUPort).name == state.name
 		]) {
 			error(
@@ -177,8 +177,8 @@ class XtxtUMLValidator extends XtxtUMLPortValidator {
 			}
 
 		if (siblingsAndSelf.exists [
-			it instanceof TUTransition && (it as TUTransition).name == trans.name && it != trans ||
-				it instanceof TUState && (it as TUState).name == trans.name ||
+			it instanceof TUTransition && (it as TUTransition).name == trans.name && it != trans || // direct comparison is safe here
+			it instanceof TUState && (it as TUState).name == trans.name ||
 				it instanceof TUPort && (it as TUPort).name == trans.name
 		]) {
 			error(
@@ -326,7 +326,8 @@ class XtxtUMLValidator extends XtxtUMLPortValidator {
 		val portSourceElement = sendExpr.target.actualType.type.primarySourceElement as TUPort;
 		val providedReceptionsOfPort = portSourceElement.members.findFirst[provided]?.interface.receptions;
 
-		if (providedReceptionsOfPort?.findFirst[signal == sentSignalSourceElement] == null) {
+		if (providedReceptionsOfPort?.
+			findFirst[signal.fullyQualifiedName == sentSignalSourceElement.fullyQualifiedName] == null) {
 			error("Signal type " + sentSignalSourceElement.name + " is not provided by port " + portSourceElement.name,
 				XtxtUMLPackage::eINSTANCE.RAlfSendSignalExpression_Signal);
 		}
@@ -363,7 +364,7 @@ class XtxtUMLValidator extends XtxtUMLPortValidator {
 		switch (prop : accessExpr.right) {
 			TUAssociationEnd: {
 				val validAccessor = (prop.eContainer as TUAssociation).ends.findFirst[name != prop.name].endClass
-				if (leftSourceElement != validAccessor) {
+				if (leftSourceElement.fullyQualifiedName != validAccessor.fullyQualifiedName) {
 					error("Association end " + prop.name + " is not accessible from class " + leftSourceElement.name,
 						XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Right);
 				} else if (prop.notNavigable) {
@@ -371,9 +372,9 @@ class XtxtUMLValidator extends XtxtUMLPortValidator {
 						XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Right);
 				}
 			}
-			default: { // TUPort
+			TUPort: {
 				val validAccessor = (prop.eContainer as TUClass);
-				if (leftSourceElement != validAccessor) {
+				if (leftSourceElement.fullyQualifiedName != validAccessor.fullyQualifiedName) {
 					error(prop.name + " cannot be resolved as a port of class " + leftSourceElement.name,
 						XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Right);
 				}

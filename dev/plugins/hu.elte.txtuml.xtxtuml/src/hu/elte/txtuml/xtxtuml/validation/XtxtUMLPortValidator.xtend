@@ -1,5 +1,6 @@
 package hu.elte.txtuml.xtxtuml.validation
 
+import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
@@ -10,6 +11,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage
 import org.eclipse.xtext.EcoreUtil2
+import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.validation.Check
 
 class XtxtUMLPortValidator extends XtxtUMLAssociationValidator {
@@ -28,6 +30,8 @@ class XtxtUMLPortValidator extends XtxtUMLAssociationValidator {
 
 	public static val TRIGGER_PORT_IS_NOT_BEHAVIOR = "hu.elte.txtuml.xtxtuml.issues.TriggerPortIsNotBehavior";
 	public static val TRIGGER_PORT_OWNER_MISMATCH = "hu.elte.txtuml.xtxtuml.issues.TriggerPortOwnerMismatch";
+
+	@Inject extension IQualifiedNameProvider
 
 	@Check
 	def checkPortHaveAtMostOneInterfacePerType(TUPort port) {
@@ -77,16 +81,16 @@ class XtxtUMLPortValidator extends XtxtUMLAssociationValidator {
 		val containerOfRoleB = if (roleB.eContainer instanceof TUComposition) roleB.eContainer as TUComposition;
 
 		if (connector.delegation) {
-			if (containerOfRoleA == null || containerOfRoleA != containerOfRoleB) {
+			if (containerOfRoleA == null || containerOfRoleA.fullyQualifiedName != containerOfRoleB.fullyQualifiedName) {
 				error("Delegation connector " + connector.name + " must connect ports of a component and one of its parts",
 					connector, XtxtUMLPackage::eINSTANCE.TUModelElement_Name,
 					CONNECTOR_ROLE_COMPOSITION_MISMATCH, connector.name);
 			}
 		} else { // assembly connector
 			if (containerOfRoleA == null || containerOfRoleB == null // roles must be from compositions
-			|| containerOfRoleA == containerOfRoleB // underlying compositions must be different
-			|| containerOfRoleA.ends.findFirst[container].endClass !=
-				containerOfRoleB.ends.findFirst[container].endClass // container must be the same
+			|| containerOfRoleA.fullyQualifiedName == containerOfRoleB.fullyQualifiedName // underlying compositions must be different
+			|| containerOfRoleA.ends.findFirst[container].endClass.fullyQualifiedName !=
+				containerOfRoleB.ends.findFirst[container].endClass.fullyQualifiedName // container must be the same
 			) {
 				error("Assembly connector " + connector.name + " must connect ports of parts belonging to the same component",
 					connector, XtxtUMLPackage::eINSTANCE.TUModelElement_Name,
@@ -104,13 +108,13 @@ class XtxtUMLPortValidator extends XtxtUMLAssociationValidator {
 		val portA = connector.ends.get(0).port;
 		val portB = connector.ends.get(1).port;
 
-		val providedA = portA.getInterface(true);
-		val providedB = portB.getInterface(true);
-		val requiredA = portA.getInterface(false);
-		val requiredB = portB.getInterface(false);
+		val providedAName = portA.getInterface(true).fullyQualifiedName;
+		val providedBName = portB.getInterface(true).fullyQualifiedName;
+		val requiredAName = portA.getInterface(false).fullyQualifiedName;
+		val requiredBName = portB.getInterface(false).fullyQualifiedName;
 
-		if (connector.delegation && (providedA != providedB || requiredA != requiredB)
-		|| !connector.delegation && (providedA != requiredB || requiredA != providedB)
+		if (connector.delegation && (providedAName != providedBName || requiredAName != requiredBName)
+		|| !connector.delegation && (providedAName != requiredBName || requiredAName != providedBName)
 		) {
 			error("Connector " + connector.name + " connects incompatible ports", connector,
 				XtxtUMLPackage::eINSTANCE.TUModelElement_Name, CONNECTOR_INCOMPATIBLE_PORTS, connector.name);
@@ -126,7 +130,7 @@ class XtxtUMLPortValidator extends XtxtUMLAssociationValidator {
 		val ownerOfPort = connEnd.port.eContainer;
 		val classInRole = connEnd.role.endClass;
 
-		if (ownerOfPort != classInRole) {
+		if (ownerOfPort.fullyQualifiedName != classInRole.fullyQualifiedName) {
 			error(connEnd.port.name + " cannot be resolved as a port of class " + classInRole.name, connEnd,
 				XtxtUMLPackage::eINSTANCE.TUConnectorEnd_Port, CONNECTOR_END_PORT_OWNER_MISMATCH, connEnd.port.name);
 		}
@@ -135,7 +139,9 @@ class XtxtUMLPortValidator extends XtxtUMLAssociationValidator {
 	@Check
 	def checkNoDuplicateConnectorEnd(TUConnectorEnd connEnd) {
 		val container = connEnd.eContainer as TUConnector;
-		if (container.ends.exists[(it.name == connEnd.name || it.role == connEnd.role) && it != connEnd]) {
+		if (container.ends.exists[(it.name == connEnd.name || it.role.fullyQualifiedName == connEnd.role.fullyQualifiedName)
+			&& it != connEnd // direct comparison is safe here
+		]) {
 			error("Duplicate connector end " + connEnd.name + " in connector " + container.name +
 				". Names and roles must be unique among ends of a connector.", connEnd,
 				XtxtUMLPackage::eINSTANCE.TUConnectorEnd_Name, CONNECTOR_END_DUPLICATE, connEnd.name);
@@ -146,7 +152,7 @@ class XtxtUMLPortValidator extends XtxtUMLAssociationValidator {
 	def checkPortNameIsUnique(TUPort port) {
 		val containingClass = port.eContainer as TUClass;
 		if (containingClass.members.exists [
-			it instanceof TUPort && (it as TUPort).name == port.name && it != port
+			it instanceof TUPort && (it as TUPort).name == port.name && it != port // direct comparison is safe here
 			|| it instanceof TUState && (it as TUState).name == port.name
 			|| it instanceof TUTransition && (it as TUTransition).name == port.name
 		]) {
@@ -167,7 +173,7 @@ class XtxtUMLPortValidator extends XtxtUMLAssociationValidator {
 	@Check
 	def checkOwnerOfTriggerPort(TUTransitionPort triggerPort) {
 		val containingClass = EcoreUtil2.getContainerOfType(triggerPort, TUClass); // due to composite states
-		if (triggerPort.port.eContainer != containingClass) {
+		if (triggerPort.port.eContainer.fullyQualifiedName != containingClass.fullyQualifiedName) {
 			error(triggerPort.port.name + " cannot be resolved as a port of class " + containingClass.name, triggerPort,
 				XtxtUMLPackage::eINSTANCE.TUTransitionPort_Port, TRIGGER_PORT_OWNER_MISMATCH, triggerPort.port.name);
 		}
