@@ -190,12 +190,14 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 	}
 
 	private void checkEmptyLayoutDecsriptions() throws InterruptedException {
-		if(selectTxtUmlPage.getTxtUmlLayout().isEmpty()){
+		if(selectTxtUmlPage.getTxtUmlLayout().isEmpty() && !this.selectTxtUmlPage.getGenerateSMDs()){
 			boolean answer = Dialogs.WarningConfirm("No Layout descriptions",
 					"No diagrams will be generated using the current setup,"
 							+ " because no diagram descriptions are added."
+							+ System.lineSeparator() +
+							"Use the 'Add txtUML diagram descriptions' button to avoid this message."
 							+ System.lineSeparator() + System.lineSeparator()
-							+ "Do you want to continue?"
+							+ "Do you want to continue without diagram descriptions?"
 					);
 			if(!answer) throw new InterruptedException();
 		}
