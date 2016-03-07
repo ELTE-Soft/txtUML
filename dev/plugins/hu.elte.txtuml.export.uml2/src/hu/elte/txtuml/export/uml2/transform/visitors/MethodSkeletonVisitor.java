@@ -17,8 +17,7 @@ public class MethodSkeletonVisitor extends ASTVisitor {
 	private final TypeDeclaration classifierDeclaration;
 	private final Map<MethodDeclaration, Operation> visitedMethods;
 
-	public MethodSkeletonVisitor(MethodSkeletonExporter methodExporter,
-			TypeDeclaration classifierDeclaration) {
+	public MethodSkeletonVisitor(MethodSkeletonExporter methodExporter, TypeDeclaration classifierDeclaration) {
 		this.methodExporter = methodExporter;
 		this.classifierDeclaration = classifierDeclaration;
 		this.visitedMethods = new HashMap<>();
@@ -27,11 +26,9 @@ public class MethodSkeletonVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(MethodDeclaration methodDeclaration) {
 		if (isMemberFunction(methodDeclaration)) {
-			Operation operation = methodExporter
-					.exportMethodSkeleton(methodDeclaration);
+			Operation operation = methodExporter.exportMethodSkeleton(methodDeclaration);
 			Block methodBody = methodDeclaration.getBody();
-			String methodBodyText = methodBody != null ? methodBody.toString()
-					: "";
+			String methodBodyText = methodBody != null ? methodBody.toString() : "";
 			methodExporter.createOwnedBehavior(operation, methodBodyText);
 			visitedMethods.put(methodDeclaration, operation);
 		}

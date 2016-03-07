@@ -11,8 +11,7 @@ public class AttributeVisitor extends ASTVisitor {
 	private final AttributeExporter attributeExporter;
 	private final TypeDeclaration classifierDeclaration;
 
-	public AttributeVisitor(AttributeExporter attributeExporter,
-			TypeDeclaration classifierDeclaration) {
+	public AttributeVisitor(AttributeExporter attributeExporter, TypeDeclaration classifierDeclaration) {
 		this.attributeExporter = attributeExporter;
 		this.classifierDeclaration = classifierDeclaration;
 	}
@@ -20,8 +19,7 @@ public class AttributeVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(FieldDeclaration fieldDeclaration) {
 		if (fieldDeclaration.getParent().equals(this.classifierDeclaration)) {
-			this.attributeExporter
-					.exportClassifierAttributesFromFieldDeclaration(fieldDeclaration);
+			this.attributeExporter.exportClassifierAttributesFromFieldDeclaration(fieldDeclaration);
 		}
 		return false;
 	}

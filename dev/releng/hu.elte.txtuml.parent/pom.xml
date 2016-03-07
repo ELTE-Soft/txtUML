@@ -47,7 +47,6 @@
 		<module>../../tests/hu.elte.txtuml.export.cpp.tests</module>
 		<module>../../tests/hu.elte.txtuml.export.papyrus.tests</module>
 		<module>../../tests/hu.elte.txtuml.export.uml2.tests</module>
-		<module>../../tests/hu.elte.txtuml.export.uml2.tests.models</module>
 		<module>../../tests/hu.elte.txtuml.layout.export.tests</module>
 		<module>../../tests/hu.elte.txtuml.utils.tests</module>
 		

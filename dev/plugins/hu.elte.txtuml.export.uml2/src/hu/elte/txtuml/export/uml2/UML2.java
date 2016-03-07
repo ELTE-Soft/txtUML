@@ -27,21 +27,22 @@ import hu.elte.txtuml.utils.jdt.SharedUtils;
  */
 public class UML2 {
 
-	public static void exportModel(String sourceProject, String packageName,
-			String outputDirectory) throws NotFoundException,
-			JavaModelException, IOException, ExportException {
+	public enum ExportMode {
+		ExportDefinitions, ExportActionCode
+	}
+
+	public static void exportModel(String sourceProject, String packageName, String outputDirectory,
+			ExportMode exportMode) throws NotFoundException, JavaModelException, IOException, ExportException {
 
 		IJavaProject javaProject = ProjectUtils.findJavaProject(sourceProject);
 
-		IPackageFragment[] packageFragments = PackageUtils
-				.findPackageFragments(javaProject, packageName);
+		IPackageFragment[] packageFragments = PackageUtils.findPackageFragments(javaProject, packageName);
 
 		if (packageFragments.length == 0) {
-			throw new NotFoundException("Cannot find package '" + packageName
-					+ "'");
+			throw new NotFoundException("Cannot find package '" + packageName + "'");
 		}
 
-		exportModel(packageName, packageFragments, javaProject, outputDirectory);
+		exportModel(packageName, packageFragments, javaProject, outputDirectory, exportMode);
 	}
 
 	/**
@@ -51,11 +52,11 @@ public class UML2 {
 	 *            The specified compilation unit.
 	 * @return The type declaration of the txtUML model.
 	 */
-	private static Optional<String> obtainModelFromCompilationUnits(
-			String packageName, CompilationUnit[] compilationUnits) {
+	private static Optional<String> obtainModelFromCompilationUnits(String packageName,
+			CompilationUnit[] compilationUnits) {
 
 		Optional<String> ret;
-		
+
 		for (CompilationUnit cu : compilationUnits) {
 			ret = ModelUtils.findModelNameInTopPackage(cu);
 			if (ret.isPresent()) {
@@ -81,34 +82,31 @@ public class UML2 {
 	 * @param outputDirectory
 	 *            The name of the output directory. (relative to the path of the
 	 *            project containing the txtUML model)
+	 * @param exportMode
 	 * @throws IOException
 	 * @throws JavaModelException
 	 * @throws ExportException
 	 */
-	public static void exportModel(String packageName,
-			IPackageFragment[] packageFragments, IJavaProject javaProject,
-			String outputDirectory) throws JavaModelException, IOException,
-			ExportException {
+	public static void exportModel(String packageName, IPackageFragment[] packageFragments, IJavaProject javaProject,
+			String outputDirectory, ExportMode exportMode) throws JavaModelException, IOException, ExportException {
 
 		Stream<ICompilationUnit> packageInfo = Stream.of(packageFragments)
 				.filter(pf -> pf.getElementName().equals(packageName))
-				.map(pf -> pf.getCompilationUnit(PackageUtils.PACKAGE_INFO))
-				.filter(ICompilationUnit::exists);
+				.map(pf -> pf.getCompilationUnit(PackageUtils.PACKAGE_INFO)).filter(ICompilationUnit::exists);
 
-		Optional<String> JtxtUMLModelName = obtainModelFromCompilationUnits(
-				packageName, SharedUtils.parseICompilationUnitStream(packageInfo, javaProject));
+		Optional<String> JtxtUMLModelName = obtainModelFromCompilationUnits(packageName,
+				SharedUtils.parseICompilationUnitStream(packageInfo, javaProject));
 
 		if (!JtxtUMLModelName.isPresent()) {
-			throw new ExportException("Package '" + packageName
-					+ "' is not a JtxtUML model.");
+			throw new ExportException("Package '" + packageName + "' is not a JtxtUML model.");
 		}
 
 		// Sneaky.<JavaModelException> Throw();
-		Stream<ICompilationUnit> all = Stream.of(packageFragments).flatMap(
-				Sneaky.unchecked(pf -> Stream.of(pf.getCompilationUnits())));
+		Stream<ICompilationUnit> all = Stream.of(packageFragments)
+				.flatMap(Sneaky.unchecked(pf -> Stream.of(pf.getCompilationUnits())));
 
-		ModelExporter modelExporter = new ModelExporter(SharedUtils.parseICompilationUnitStream(all,
-				javaProject), JtxtUMLModelName.get(), packageName, outputDirectory);
+		ModelExporter modelExporter = new ModelExporter(SharedUtils.parseICompilationUnitStream(all, javaProject),
+				JtxtUMLModelName.get(), packageName, outputDirectory, exportMode);
 		try {
 			modelExporter.exportModel();
 

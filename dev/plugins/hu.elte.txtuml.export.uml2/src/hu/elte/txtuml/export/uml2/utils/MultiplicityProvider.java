@@ -21,8 +21,7 @@ public class MultiplicityProvider {
 	 * @return The decision.
 	 */
 	public static boolean isOne(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
-				Multiplicity.One.class);
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Multiplicity.One.class);
 	}
 
 	/**
@@ -34,8 +33,7 @@ public class MultiplicityProvider {
 	 * @return The decision.
 	 */
 	public static boolean isZeroToOne(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
-				Multiplicity.ZeroToOne.class);
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Multiplicity.ZeroToOne.class);
 	}
 
 	/**
@@ -47,8 +45,7 @@ public class MultiplicityProvider {
 	 * @return The decision.
 	 */
 	public static boolean isZeroToUnlimited(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
-				Multiplicity.ZeroToUnlimited.class);
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Multiplicity.ZeroToUnlimited.class);
 	}
 
 	/**
@@ -60,27 +57,10 @@ public class MultiplicityProvider {
 	 * @return The decision.
 	 */
 	public static boolean isOneToUnlimited(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration,
-				Multiplicity.OneToUnlimited.class);
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Multiplicity.OneToUnlimited.class);
 	}
 
-	/**
-	 * Decides if the txtUML element represented by the specified class has
-	 * invalid multiplicity.
-	 * 
-	 * @param specifiedClass
-	 *            The specified class representing a txtUML element.
-	 * @return The decision.
-	 */
-	public static boolean hasInvalidMultiplicity(TypeDeclaration typeDeclaration) {
-		return !isZeroToOne(typeDeclaration)
-				&& !isZeroToUnlimited(typeDeclaration)
-				&& !isOne(typeDeclaration)
-				&& !isOneToUnlimited(typeDeclaration);
-	}
-
-	private static Integer getExplicitMultiplicity(
-			TypeDeclaration typeDeclaration, String annotationName) {
+	private static Integer getExplicitMultiplicity(TypeDeclaration typeDeclaration, String annotationName) {
 		for (Object modifier : typeDeclaration.modifiers()) {
 			if (modifier instanceof SingleMemberAnnotation) {
 				SingleMemberAnnotation annotation = (SingleMemberAnnotation) modifier;
@@ -102,13 +82,11 @@ public class MultiplicityProvider {
 	}
 
 	public static Integer getExplicitLowerBound(TypeDeclaration typeDeclaration) {
-		return getExplicitMultiplicity(typeDeclaration,
-				Min.class.getSimpleName());
+		return getExplicitMultiplicity(typeDeclaration, Min.class.getSimpleName());
 	}
 
 	public static Integer getExplicitUpperBound(TypeDeclaration typeDeclaration) {
-		return getExplicitMultiplicity(typeDeclaration,
-				Max.class.getSimpleName());
+		return getExplicitMultiplicity(typeDeclaration, Max.class.getSimpleName());
 	}
 
 	/**
@@ -143,8 +121,7 @@ public class MultiplicityProvider {
 		if (explicitUpperBound != null) {
 			return explicitUpperBound;
 		}
-		if (isOneToUnlimited(typeDeclaration)
-				|| isZeroToUnlimited(typeDeclaration))
+		if (isOneToUnlimited(typeDeclaration) || isZeroToUnlimited(typeDeclaration))
 			return org.eclipse.uml2.uml.LiteralUnlimitedNatural.UNLIMITED;
 		else
 			return 1;

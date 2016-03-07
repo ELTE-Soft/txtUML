@@ -12,6 +12,7 @@ import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
+import hu.elte.txtuml.export.uml2.UML2.ExportMode;
 import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.utils.jdt.SharedUtils;
@@ -21,11 +22,14 @@ public class VertexExporter {
 	private final ModelExporter modelExporter;
 	private final StateMachine stateMachine;
 	private final Region region;
+	private ExportMode exportMode;
 
-	public VertexExporter(ModelExporter modelExporter,StateMachine stateMachine, Region region) {
+	public VertexExporter(ModelExporter modelExporter, StateMachine stateMachine, Region region,
+			ExportMode exportMode) {
 		this.modelExporter = modelExporter;
 		this.stateMachine = stateMachine;
 		this.region = region;
+		this.exportMode = exportMode;
 	}
 
 	/**
@@ -41,14 +45,13 @@ public class VertexExporter {
 			exportSubRegion(vertexDeclaration, (State) vertex);
 		}
 
-		if (ElementTypeTeller.isState(vertexDeclaration)) {
-// TODO: Uncomment this	when activity export gets fixed.	
-//			exportStateEntryAction(vertexDeclaration, (State) vertex);
-//			exportStateExitAction(vertexDeclaration, (State) vertex);
+		if (ElementTypeTeller.isState(vertexDeclaration) && exportMode == ExportMode.ExportActionCode) {
+
+			exportStateEntryAction(vertexDeclaration, (State) vertex);
+			exportStateExitAction(vertexDeclaration, (State) vertex);
 		}
 
-		modelExporter.getMapping().put(
-				SharedUtils.qualifiedName(vertexDeclaration), vertex);
+		modelExporter.getMapping().put(SharedUtils.qualifiedName(vertexDeclaration), vertex);
 	}
 
 	/**
@@ -61,8 +64,7 @@ public class VertexExporter {
 	 */
 	private void exportSubRegion(TypeDeclaration stateDeclaration, State state) {
 		Region subRegion = state.createRegion(state.getName());
-		modelExporter.getRegionExporter().exportRegion(stateDeclaration, stateMachine,
-				subRegion);
+		modelExporter.getRegionExporter().exportRegion(stateDeclaration, stateMachine, subRegion);
 
 		subRegion.setState(state);
 	}
@@ -75,19 +77,14 @@ public class VertexExporter {
 	 * @param exportedState
 	 *            The exported UML2 state.
 	 */
-	@SuppressWarnings("unused")
-	private void exportStateEntryAction(TypeDeclaration stateDeclaration,
-			State exportedState) {
-		MethodDeclaration entryMethodDeclaration = SharedUtils
-				.findMethodDeclarationByName(stateDeclaration, "entry");
+	private void exportStateEntryAction(TypeDeclaration stateDeclaration, State exportedState) {
+		MethodDeclaration entryMethodDeclaration = SharedUtils.findMethodDeclarationByName(stateDeclaration, "entry");
 
 		if (entryMethodDeclaration != null) {
-			Activity activity = (Activity) exportedState.createEntry(
-					exportedState.getName() + "_entry",
+			Activity activity = (Activity) exportedState.createEntry(exportedState.getName() + "_entry",
 					UMLPackage.Literals.ACTIVITY);
 
-			MethodBodyExporter.export(activity, modelExporter,
-					entryMethodDeclaration);
+			MethodBodyExporter.export(activity, modelExporter, entryMethodDeclaration);
 		}
 	}
 
@@ -99,19 +96,14 @@ public class VertexExporter {
 	 * @param exportedState
 	 *            The exported UML2 state.
 	 */
-	@SuppressWarnings("unused")
-	private void exportStateExitAction(TypeDeclaration stateDeclaration,
-			State exportedState) {
-		MethodDeclaration exitMethodDeclaration = SharedUtils
-				.findMethodDeclarationByName(stateDeclaration, "exit");
+	private void exportStateExitAction(TypeDeclaration stateDeclaration, State exportedState) {
+		MethodDeclaration exitMethodDeclaration = SharedUtils.findMethodDeclarationByName(stateDeclaration, "exit");
 
 		if (exitMethodDeclaration != null) {
-			Activity activity = (Activity) exportedState.createExit(
-					exportedState.getName() + "_exit",
+			Activity activity = (Activity) exportedState.createExit(exportedState.getName() + "_exit",
 					UMLPackage.Literals.ACTIVITY);
 
-			MethodBodyExporter.export(activity, modelExporter,
-					exitMethodDeclaration);
+			MethodBodyExporter.export(activity, modelExporter, exitMethodDeclaration);
 		}
 	}
 
@@ -136,8 +128,7 @@ public class VertexExporter {
 	}
 
 	private Vertex createVertex(TypeDeclaration vertexDeclaration, EClass type) {
-		return region.createSubvertex(vertexDeclaration.getName()
-				.getFullyQualifiedName(), type);
+		return region.createSubvertex(vertexDeclaration.getName().getFullyQualifiedName(), type);
 	}
 
 	/**
@@ -148,8 +139,7 @@ public class VertexExporter {
 	 * @return The created UML2 initial pseudostate.
 	 */
 	private Pseudostate createInitial(TypeDeclaration vertexDeclaration) {
-		return (Pseudostate) createVertex(vertexDeclaration,
-				UMLPackage.Literals.PSEUDOSTATE);
+		return (Pseudostate) createVertex(vertexDeclaration, UMLPackage.Literals.PSEUDOSTATE);
 	}
 
 	/**
@@ -160,8 +150,7 @@ public class VertexExporter {
 	 * @return The created UML2 choice pseudostate.
 	 */
 	private Pseudostate createChoice(TypeDeclaration vertexDeclaration) {
-		Pseudostate result = (Pseudostate) createVertex(vertexDeclaration,
-				UMLPackage.Literals.PSEUDOSTATE);
+		Pseudostate result = (Pseudostate) createVertex(vertexDeclaration, UMLPackage.Literals.PSEUDOSTATE);
 		result.setKind(PseudostateKind.CHOICE_LITERAL);
 		return result;
 	}
