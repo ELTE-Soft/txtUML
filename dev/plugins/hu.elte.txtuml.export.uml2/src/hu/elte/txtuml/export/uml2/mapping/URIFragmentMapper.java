@@ -18,18 +18,16 @@ public class URIFragmentMapper {
 	private static final String INVALID_MAPPING_FILE_CONTENT = "Mapping file content is invalid.";
 	private String modelPath;
 
-	public URIFragmentMapper(URI directory, String filename)
-			throws ModelMapException {
+	public URIFragmentMapper(URI directory, String filename) throws ModelMapException {
 		URI mappingURI = ModelMapUtils.createMappingURI(directory, filename);
 
 		try {
-			InputStream in = new ExtensibleURIConverterImpl()
-					.createInputStream(mappingURI);
+			InputStream in = new ExtensibleURIConverterImpl().createInputStream(mappingURI);
 			ObjectInputStream stream = new ObjectInputStream(in);
 			Object modelPathObject = stream.readObject();
 			Object mapObject = stream.readObject();
-			if (modelPathObject == null || !(modelPathObject instanceof String)
-					|| mapObject == null || !(mapObject instanceof Map<?, ?>)) {
+			if (modelPathObject == null || !(modelPathObject instanceof String) || mapObject == null
+					|| !(mapObject instanceof Map<?, ?>)) {
 				throw new ModelMapException(INVALID_MAPPING_FILE_CONTENT);
 			}
 			modelPath = (String) modelPathObject;

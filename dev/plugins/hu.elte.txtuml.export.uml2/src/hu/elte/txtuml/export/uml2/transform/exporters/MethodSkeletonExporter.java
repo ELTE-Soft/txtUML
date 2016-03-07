@@ -44,17 +44,14 @@ public class MethodSkeletonExporter {
 	 * @return A map entry: key - list of param names, value - list of param
 	 *         types
 	 */
-	private Iterable<Parameter> obtainMethodParameters(
-			MethodDeclaration methodDeclaration) {
+	private Iterable<Parameter> obtainMethodParameters(MethodDeclaration methodDeclaration) {
 		List<Parameter> parameters = new LinkedList<>();
 
 		for (Object obj : methodDeclaration.parameters()) {
 			if (obj instanceof SingleVariableDeclaration) {
 				SingleVariableDeclaration paramDeclaration = (SingleVariableDeclaration) obj;
-				String paramName = paramDeclaration.getName()
-						.getFullyQualifiedName();
-				Type paramType = typeExporter.exportType(paramDeclaration
-						.getType());
+				String paramName = paramDeclaration.getName().getFullyQualifiedName();
+				Type paramType = typeExporter.exportType(paramDeclaration.getType());
 
 				Parameter param = UMLFactory.eINSTANCE.createParameter();
 				param.setName(paramName);
@@ -66,11 +63,8 @@ public class MethodSkeletonExporter {
 
 			}
 		}
-		
+
 		Type returnType = obtainReturnType(methodDeclaration);
-		if (methodDeclaration.isConstructor()) {
-			returnType = owner;
-		}
 		if (returnType != null) {
 			Parameter returnParam = UMLFactory.eINSTANCE.createParameter();
 			returnParam.setName(ExporterConfiguration.RETURN_PARAMETER_NAME);
@@ -102,8 +96,7 @@ public class MethodSkeletonExporter {
 	 */
 	public Operation exportMethodSkeleton(MethodDeclaration methodDeclaration) {
 		Operation operation = createMethodSkeleton(methodDeclaration);
-		ElementModifiersAssigner.assignModifiersForElementBasedOnDeclaration(
-				operation, methodDeclaration);
+		ElementModifiersAssigner.assignModifiersForElementBasedOnDeclaration(operation, methodDeclaration);
 		return operation;
 	}
 
@@ -117,11 +110,9 @@ public class MethodSkeletonExporter {
 	private Operation createMethodSkeleton(MethodDeclaration methodDeclaration) {
 		String methodName = methodDeclaration.getName().getFullyQualifiedName();
 
-		Operation operation = owner.createOwnedOperation(methodName, null,
-				null, null);
+		Operation operation = owner.createOwnedOperation(methodName, null, null, null);
 
-		obtainMethodParameters(methodDeclaration).forEach(
-				operation.getOwnedParameters()::add);
+		obtainMethodParameters(methodDeclaration).forEach(operation.getOwnedParameters()::add);
 
 		return operation;
 	}
@@ -137,8 +128,8 @@ public class MethodSkeletonExporter {
 	 */
 	public Behavior createOwnedBehavior(Operation specification, String body) {
 		String behaviorName = specification.getName() + "_opaqueBehavior";
-		OpaqueBehavior behavior = (OpaqueBehavior) owner.createOwnedBehavior(
-				behaviorName, UMLPackage.Literals.OPAQUE_BEHAVIOR);
+		OpaqueBehavior behavior = (OpaqueBehavior) owner.createOwnedBehavior(behaviorName,
+				UMLPackage.Literals.OPAQUE_BEHAVIOR);
 		behavior.setSpecification(specification);
 		behavior.getBodies().add(body);
 		behavior.getLanguages().add("JtxtUML");

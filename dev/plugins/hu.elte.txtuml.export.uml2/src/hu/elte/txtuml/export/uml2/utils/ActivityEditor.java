@@ -16,7 +16,7 @@ import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Variable;
 
-public class ActivityEditor extends AbstractActivityEditor {
+public class ActivityEditor extends AbstractActivityEditor<ExecutableNode> {
 
 	private final Activity activity;
 
@@ -29,7 +29,7 @@ public class ActivityEditor extends AbstractActivityEditor {
 	}
 
 	@Override
-	public ExecutableNode createExecutableNode(String name, EClass type) {
+	public ExecutableNode createAndAddNode(String name, EClass type) {
 		return (ExecutableNode) createNode(name, type);
 	}
 
@@ -52,8 +52,7 @@ public class ActivityEditor extends AbstractActivityEditor {
 	}
 
 	public ActivityFinalNode createFinalNode(String name) {
-		return (ActivityFinalNode) createNode(name,
-				UMLPackage.Literals.ACTIVITY_FINAL_NODE);
+		return (ActivityFinalNode) createNode(name, UMLPackage.Literals.ACTIVITY_FINAL_NODE);
 	}
 
 	public ActivityNode createNode(String name, EClass type) {
@@ -72,8 +71,7 @@ public class ActivityEditor extends AbstractActivityEditor {
 		String paramName = param.getName();
 		Type paramType = param.getType();
 
-		ActivityParameterNode paramNode = (ActivityParameterNode) createNode(
-				paramName + "_paramNode",
+		ActivityParameterNode paramNode = (ActivityParameterNode) createNode(paramName + "_paramNode",
 				UMLPackage.Literals.ACTIVITY_PARAMETER_NODE);
 
 		paramNode.setParameter(param);
@@ -94,8 +92,7 @@ public class ActivityEditor extends AbstractActivityEditor {
 	 */
 	public MergeNode createMergeNode(ActivityNode node1, ActivityNode node2) {
 		String name = "merge_" + node1.getName() + "_and_" + node2.getName();
-		MergeNode result = (MergeNode) createExecutableNode(name,
-				UMLPackage.Literals.MERGE_NODE);
+		MergeNode result = (MergeNode) createAndAddNode(name, UMLPackage.Literals.MERGE_NODE);
 		createControlFlowBetweenActivityNodes(node1, result);
 		createControlFlowBetweenActivityNodes(node2, result);
 		return result;
@@ -112,10 +109,8 @@ public class ActivityEditor extends AbstractActivityEditor {
 	 *            The second node to fork tSo.
 	 * @return The created fork node.
 	 */
-	public ForkNode forkToNodes(String name, ActivityNode node1,
-			ActivityNode node2) {
-		ForkNode result = (ForkNode) createNode(name,
-				UMLPackage.Literals.FORK_NODE);
+	public ForkNode forkToNodes(String name, ActivityNode node1, ActivityNode node2) {
+		ForkNode result = (ForkNode) createNode(name, UMLPackage.Literals.FORK_NODE);
 
 		createEdgeBetweenActivityNodes(result, node1);
 		createEdgeBetweenActivityNodes(result, node2);
@@ -135,8 +130,7 @@ public class ActivityEditor extends AbstractActivityEditor {
 	 */
 	public JoinNode joinNodes(ActivityNode node1, ActivityNode node2) {
 		String name = "join_" + node1.getName() + "_and_" + node2.getName();
-		JoinNode result = (JoinNode) createNode(name,
-				UMLPackage.Literals.JOIN_NODE);
+		JoinNode result = (JoinNode) createNode(name, UMLPackage.Literals.JOIN_NODE);
 		createControlFlowBetweenActivityNodes(node1, result);
 		createControlFlowBetweenActivityNodes(node2, result);
 		return result;

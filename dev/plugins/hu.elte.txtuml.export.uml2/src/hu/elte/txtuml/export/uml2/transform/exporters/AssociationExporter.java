@@ -45,6 +45,7 @@ public class AssociationExporter {
 	 * 
 	 * @return The exported UML2 association.
 	 * @throws ExportException
+	 *
 	 */
 	@SuppressWarnings("rawtypes")
 	public Association exportAssociation() throws ExportException {
@@ -71,6 +72,7 @@ public class AssociationExporter {
 	 * @param sourceElement
 	 *            The class representing the txtUML association end.
 	 * @throws ExportException
+	 *
 	 */
 	private void exportAssociationEnd(Association exportedAssociation, Object sourceElement, Object otherElement)
 			throws ExportException {
@@ -83,10 +85,6 @@ public class AssociationExporter {
 
 			int lowerBound = MultiplicityProvider.getLowerBound(endSource);
 			int upperBound = MultiplicityProvider.getUpperBound(endSource);
-
-			if (MultiplicityProvider.hasInvalidMultiplicity(endSource))
-				throw new ExportException("Association end " + endSource.getName() + " has invalid multiplicity.");
-
 			boolean navigable;
 
 			if (SharedUtils.typeIsAssignableFrom(endSource,
@@ -113,6 +111,7 @@ public class AssociationExporter {
 			end.setIsNavigable(navigable);
 			end.setLower(lowerBound);
 			end.setUpper(upperBound);
+			end.setAggregation(AggregationKind.NONE_LITERAL);
 		}
 	}
 
@@ -129,7 +128,7 @@ public class AssociationExporter {
 		if (participant == null) {
 			throw new ExportException(
 					participantName + "is a type of an association end, but it cannot be found in the exported model.");
-		}
+}
 
 		return (StructuredClassifier) exportedModel.getMember(participantName);
 
