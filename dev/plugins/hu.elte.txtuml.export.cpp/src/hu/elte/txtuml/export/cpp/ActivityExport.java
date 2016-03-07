@@ -24,6 +24,7 @@ import org.eclipse.uml2.uml.InputPin;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.LiteralString;
+import org.eclipse.uml2.uml.LoopNode;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueExpression;
@@ -134,6 +135,7 @@ public class ActivityExport {
 		}
 		else if(node_.eClass().equals(UMLPackage.Literals.LOOP_NODE)) {
 		    //TODO export cycles
+		    source.append(createCycleCode((LoopNode) node_));
 		}
 		return source;
 	}
@@ -213,6 +215,12 @@ public class ActivityExport {
 		}
 		return source;
 	}
+	
+	private static StringBuilder createCycleCode(LoopNode lNode) {
+	    StringBuilder source = new StringBuilder("");
+	    
+	    return source;
+	}
 
 	private static String createIfCode(DecisionNode node_, ActivityNode ifEndNode_, List<ActivityEdge> branches_,
 			List<ActivityNode> finishedControlNodes_, Boolean rt_) {
@@ -262,17 +270,7 @@ public class ActivityExport {
 
 	private static String getValueFromValueSpecification(ValueSpecification valueSpec_) {
 		String source = "";
-		if (valueSpec_.eClass().equals(UMLPackage.Literals.OPAQUE_EXPRESSION)) {
-			source = Shared.parseOCL(((OpaqueExpression) valueSpec_).getBodies().get(0));// except
-																							// only
-																							// one,
-																							// if
-																							// more
-																							// then
-																							// one
-																							// can't
-																							// choose
-		} else if (valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_INTEGER)) {
+		if (valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_INTEGER)) {
 			source = ((Integer) ((LiteralInteger) valueSpec_).getValue()).toString();
 		} else if (valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_BOOLEAN)) {
 			source = ((Boolean) ((LiteralBoolean) valueSpec_).isValue()).toString();
