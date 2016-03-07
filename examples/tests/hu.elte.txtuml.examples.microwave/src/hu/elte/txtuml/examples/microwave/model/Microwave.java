@@ -9,7 +9,7 @@ import hu.elte.txtuml.api.stdlib.Timer;
 import hu.elte.txtuml.examples.microwave.model.associations.Usage;
 import hu.elte.txtuml.examples.microwave.model.signals.Close;
 import hu.elte.txtuml.examples.microwave.model.signals.Ding;
-import hu.elte.txtuml.examples.microwave.model.signals.FinishSignal;
+import hu.elte.txtuml.examples.microwave.model.signals.Finish;
 import hu.elte.txtuml.examples.microwave.model.signals.Get;
 import hu.elte.txtuml.examples.microwave.model.signals.Open;
 import hu.elte.txtuml.examples.microwave.model.signals.Put;
@@ -173,8 +173,7 @@ public class Microwave extends ModelClass {
 			@Override
 			public void entry() {
 				Action.log("Microwave: DING!");
-				Human h = Microwave.this.assoc(Usage.userOfMicrowave.class).selectAny();
-				Action.send(new Ding(), h);
+				Action.send(new Ding(), Microwave.this);
 			}
 		}
 
@@ -205,7 +204,7 @@ public class Microwave extends ModelClass {
 			
 			@Override
 			public void effect() {
-				Action.send(new FinishSignal(), Microwave.this);
+				Action.send(new Finish(), Microwave.this);
 			}
 			
 			@Override
@@ -259,8 +258,13 @@ public class Microwave extends ModelClass {
 
 	@From(Heating.class)
 	@To(Closed.class)
-	@Trigger(FinishSignal.class)
+	@Trigger(Finish.class)
 	public class Finishing extends Transition {
+		@Override
+		public void effect() {
+			Human h = Microwave.this.assoc(Usage.userOfMicrowave.class).selectAny();
+			Action.send(new Ding(), h);
+		}
 	}
 
 }
