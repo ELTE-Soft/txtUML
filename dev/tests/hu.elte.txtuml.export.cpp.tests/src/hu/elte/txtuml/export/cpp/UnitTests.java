@@ -6,8 +6,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+	CompileTests.class
 	})
 public class UnitTests {
-
 }
 
