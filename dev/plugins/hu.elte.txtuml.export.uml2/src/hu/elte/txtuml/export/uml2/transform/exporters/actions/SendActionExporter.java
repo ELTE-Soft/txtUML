@@ -2,104 +2,68 @@ package hu.elte.txtuml.export.uml2.transform.exporters.actions;
 
 import java.util.List;
 
+import org.eclipse.uml2.uml.ActivityNode;
+import org.eclipse.uml2.uml.InputPin;
+import org.eclipse.uml2.uml.ObjectNode;
+import org.eclipse.uml2.uml.SendObjectAction;
+import org.eclipse.uml2.uml.Signal;
+import org.eclipse.uml2.uml.Type;
+import org.eclipse.uml2.uml.UMLPackage;
+
+import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
 
 public class SendActionExporter {
 
-	@SuppressWarnings("unused")
-	private final ExpressionExporter expressionExporter;
+	private final ExpressionExporter<? extends ActivityNode> expressionExporter;
 
-	public SendActionExporter(ExpressionExporter expressionExporter) {
+	public SendActionExporter(ExpressionExporter<? extends ActivityNode> expressionExporter) {
 		this.expressionExporter = expressionExporter;
 	}
 
-	public void export(List<Expr> args) {
-		// TODO export send
-	}
-	
-	/*
-	@Override
-	public void exportFromMethodInvocation(List<Expr> args) {
+	public void export(List<Expr> args) throws ExportException {
+		args.forEach(Expr::evaluate);
 
 		Signal signalToSend = this.obtainSignalToSend(args);
-		Type instanceType = this.obtainInstanceType(args);
-		String instanceExpression = this.obtainInstanceExpression(args);
+		Expr instanceExpression = args.get(1);
 
-		SendObjectAction sendAction = (SendObjectAction) this.activity
-				.createOwnedNode("send_" + signalToSend.getName() + "_to_"
-						+ instanceExpression,
-						UMLPackage.Literals.SEND_OBJECT_ACTION);
+		String sendActionName = "send_" + signalToSend.getName() + "_to_" + instanceExpression.getName();
 
-		createAndWireRequest(sendAction, args, signalToSend);
-		createAndWireTarget(instanceType, instanceExpression, sendAction);
+		SendObjectAction sendAction = (SendObjectAction) expressionExporter.createAndAddNode(sendActionName,
+				UMLPackage.Literals.SEND_OBJECT_ACTION);
 
-		this.methodBodyExporter.getBodyNode().getExecutableNodes()
-				.add(sendAction);
-
+		createAndWireRequest(sendAction, signalToSend, args);
+		createAndWireTarget(sendAction, instanceExpression);
 	}
 
-	private void createAndWireTarget(Type instanceType,
-			String instanceExpression, SendObjectAction sendAction) {
+	private void createAndWireTarget(SendObjectAction sendAction, Expr instanceExpression) {
 
-		ValuePin target = (ValuePin) sendAction.createTarget(
-				sendAction.getName() + "_target", instanceType,
-				UMLPackage.Literals.VALUE_PIN);
+		Type instanceType = instanceExpression.getType();
 
-		this.createAndAddOpaqueExpressionToValuePin(target, instanceExpression,
-				instanceType);
+		InputPin targetNode = (InputPin) sendAction.createTarget(sendAction.getName() + "_target", instanceType,
+				UMLPackage.Literals.INPUT_PIN);
+
+		ObjectNode instanceNode = instanceExpression.getObjectNode();
+		expressionExporter.createObjectFlowBetweenActivityNodes(instanceNode, targetNode);
 	}
 
-	private void createAndWireRequest(SendObjectAction sendAction,
-			MethodInvocation methodInvocation, Signal signalToSend) {
+	private void createAndWireRequest(SendObjectAction sendAction, Signal signalToSend, List<Expr> args) {
 
-		ValuePin request = (ValuePin) sendAction.createRequest(
-				sendAction.getName() + "_request", signalToSend,
+		InputPin requestNode = (InputPin) sendAction.createRequest(sendAction.getName() + "_request", signalToSend,
 				UMLPackage.Literals.VALUE_PIN);
 
-		Expression signalArg = (Expression) methodInvocation.arguments().get(1);
-		String signalExpression = null;
-		if (signalArg instanceof ClassInstanceCreation) {
+		Expr signalExpression = args.get(1);
+		ObjectNode instanceNode = signalExpression.getObjectNode();
+		expressionExporter.createObjectFlowBetweenActivityNodes(instanceNode, requestNode);
+	}
 
-			ClassInstanceCreation signalCreation = (ClassInstanceCreation) signalArg;
-
-			Variable signalVar = exportSignalCreation(signalCreation,
-					signalToSend);
-			if (signalVar != null) {
-				signalExpression = signalVar.getName();
-			}
-
+	private Signal obtainSignalToSend(List<Expr> args) throws ExportException {
+		Type signalType = args.get(0).getType();
+		if (signalType instanceof Signal) {
+			return (Signal) signalType;
 		} else {
-			ExpressionVisitorOLD visitor = new ExpressionVisitorOLD();
-			signalArg.accept(visitor);
-			signalExpression = visitor.getExportedExpression();
+			throw new ExportException("Failed to export send signal action. First argument is not of type Signal.");
 		}
-
-		this.createAndAddValueExpressionToValuePin(request, signalExpression,
-				signalToSend);
 	}
-
-	private Type obtainInstanceType(MethodInvocation methodInvocation) {
-		return obtainTypeOfNthArgument(methodInvocation, 1);
-	}
-
-	private Signal obtainSignalToSend(MethodInvocation methodInvocation) {
-		return (Signal) obtainTypeOfNthArgument(methodInvocation, 2);
-	}
-
-	private String obtainInstanceExpression(MethodInvocation methodInvocation) {
-		Expression expr = (Expression) methodInvocation.arguments().get(0);
-		ExpressionVisitorOLD expressionVisitor = new ExpressionVisitorOLD();
-		expr.accept(expressionVisitor);
-		return expressionVisitor.getExportedExpression();
-	}
-
-	private Variable exportSignalCreation(ClassInstanceCreation signalCreation,
-			Signal signal) {
-		String variableName = "signal_"
-				+ System.identityHashCode(signalCreation);
-		Variable variable = this.activity.createVariable(variableName, signal);
-		return variable;
-	}
-	*/
 }

@@ -17,3 +17,4 @@ Require-Bundle: org.eclipse.ui,
  hu.elte.txtuml.api.model;bundle-version="0.3.0",
  hu.elte.txtuml.utils.eclipse;bundle-version="0.3.0",
  hu.elte.txtuml.export.uml2;bundle-version="0.3.0"
+Export-Package: hu.elte.txtuml.project

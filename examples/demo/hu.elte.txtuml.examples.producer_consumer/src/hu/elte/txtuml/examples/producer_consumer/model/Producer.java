@@ -17,7 +17,7 @@ public class Producer extends ModelClass {
 
 	Item produce() {
 		this.toProduce--;
-		Action.send(this, new DoWork());
+		Action.send(new DoWork(), this);
 		return new Item();
 	}
 
@@ -42,7 +42,7 @@ public class Producer extends ModelClass {
 
 		@Override
 		public void effect() {
-			Action.send(Producer.this, new DoWork());
+			Action.send(new DoWork(), Producer.this);
 		}
 	}
 
@@ -58,7 +58,7 @@ public class Producer extends ModelClass {
 		public void effect() {
 			Storage storage = Producer.this.assoc(Production.storage.class).selectAny();
 			Action.link(Offer.producer.class, Producer.this, Offer.storage.class, storage);
-			Action.send(storage, new OfferNotification());
+			Action.send(new OfferNotification(), storage);
 		}
 	}
 

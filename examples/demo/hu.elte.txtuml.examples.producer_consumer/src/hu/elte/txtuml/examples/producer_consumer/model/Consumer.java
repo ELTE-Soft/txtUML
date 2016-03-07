@@ -17,7 +17,7 @@ public class Consumer extends ModelClass {
 
 	void consume(Item item) {
 		this.toConsume--;
-		Action.send(this, new DoWork());
+		Action.send(new DoWork(), this);
 	}
 
 	public class Init extends StateMachine.Initial {
@@ -41,7 +41,7 @@ public class Consumer extends ModelClass {
 
 		@Override
 		public void effect() {
-			Action.send(Consumer.this, new DoWork());
+			Action.send(new DoWork(), Consumer.this);
 		}
 	}
 
@@ -57,7 +57,7 @@ public class Consumer extends ModelClass {
 		public void effect() {
 			Storage storage = Consumer.this.assoc(Consumption.storage.class).selectAny();
 			Action.link(Request.storage.class, storage, Request.consumer.class, Consumer.this);
-			Action.send(storage, new RequestNotification());
+			Action.send(new RequestNotification(), storage);
 		}
 	}
 

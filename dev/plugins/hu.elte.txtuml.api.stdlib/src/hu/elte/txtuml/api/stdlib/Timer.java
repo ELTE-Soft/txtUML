@@ -178,7 +178,7 @@ public class Timer implements ExternalClass {
 		 */
 		HandleImpl(ModelClass targetObj, Signal signal, int millisecs) {
 			this.action = () -> {
-				Action.send(targetObj, signal);
+				Action.send(signal, targetObj);
 				int currentCount = scheduledEvents.decrementAndGet();
 				if (currentCount == 0 && shutdownInitiated) {
 					ModelExecutor.shutdown();
