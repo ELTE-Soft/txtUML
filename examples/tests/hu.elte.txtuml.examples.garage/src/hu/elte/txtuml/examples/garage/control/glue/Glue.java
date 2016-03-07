@@ -117,42 +117,42 @@ public class Glue implements ExternalClass, IControl, IControlled {
 	// IControl implementation
 	@Override
 	public void remoteControlButtonPressed() {
-		Action.send(door, new RemoteControlButtonPressed());
+		Action.send(new RemoteControlButtonPressed(), door);
 	}
 
 	@Override
 	public void motionSensorActivated() {
-		Action.send(door, new MotionSensorActivated());
+		Action.send(new MotionSensorActivated(), door);
 	}
 
 	@Override
 	public void alarmSensorActivated() {
-		Action.send(alarm, new AlarmSensorActivated());
+		Action.send(new AlarmSensorActivated(), alarm);
 	}
 
 	@Override
 	public void doorReachedTop() {
-		Action.send(motor, new DoorReachedTop());
+		Action.send(new DoorReachedTop(), motor);
 	}
 
 	@Override
 	public void doorReachedBottom() {
-		Action.send(motor, new DoorReachedBottom());
+		Action.send(new DoorReachedBottom(), motor);
 	}
 
 	@Override
 	public void keyPress(int nr) {
-		Action.send(keyboard, new KeyPress(nr));
+		Action.send(new KeyPress(nr), keyboard);
 	}
 
 	@Override
 	public void starPressed() {
-		Action.send(alarm, new StarPressed());
+		Action.send(new StarPressed(), alarm);
 	}
 
 	@Override
 	public void hashPressed() {
-		Action.send(alarm, new HashPressed());
+		Action.send(new HashPressed(), alarm);
 	}
 
 }

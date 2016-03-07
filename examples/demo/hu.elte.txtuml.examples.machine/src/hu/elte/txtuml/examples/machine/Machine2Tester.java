@@ -24,7 +24,7 @@ public class Machine2Tester {
 		Action.start(u1);
 		Action.start(u2);
 
-		Action.send(u1, new DoYourWork());
+		Action.send(new DoYourWork(), u1);
 
 		ModelExecutor.shutdown();
 	}

@@ -26,7 +26,7 @@ public class SendActionExporter {
 		args.forEach(Expr::evaluate);
 
 		Signal signalToSend = this.obtainSignalToSend(args);
-		Expr instanceExpression = args.get(0);
+		Expr instanceExpression = args.get(1);
 
 		String sendActionName = "send_" + signalToSend.getName() + "_to_" + instanceExpression.getName();
 
@@ -59,10 +59,11 @@ public class SendActionExporter {
 	}
 
 	private Signal obtainSignalToSend(List<Expr> args) throws ExportException {
-		try {
-			return (Signal) args.get(1).getType();
-		} catch (ClassCastException e) {
-			throw new ExportException("Failed to export send signal action. 2nd argument is not of type Signal.");
+		Type signalType = args.get(0).getType();
+		if (signalType instanceof Signal) {
+			return (Signal) signalType;
+		} else {
+			throw new ExportException("Failed to export send signal action. First argument is not of type Signal.");
 		}
 	}
 }

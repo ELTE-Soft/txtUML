@@ -20,7 +20,7 @@ public class A extends ModelClass {
 
 			Action.link(A_B.ThisEnd.class, inst1, A_B.OtherEnd.class, inst2);
 			
-			Action.send(inst1.assoc(A_B.OtherEnd.class).selectAny(), new Sig());
+			Action.send(new Sig(), inst1.assoc(A_B.OtherEnd.class).selectAny());
 
 			Action.unlink(A_B.ThisEnd.class, inst1, A_B.OtherEnd.class, inst2);
 		}

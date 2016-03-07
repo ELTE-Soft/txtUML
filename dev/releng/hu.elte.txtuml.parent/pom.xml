@@ -31,7 +31,6 @@
 		<module>../../plugins/hu.elte.txtuml.export.cpp</module>
 		<module>../../plugins/hu.elte.txtuml.export.papyrus</module>
 		<module>../../plugins/hu.elte.txtuml.export.uml2</module>
-		<module>../../plugins/hu.elte.txtuml.importing.uml2</module>
 		<module>../../plugins/hu.elte.txtuml.layout.export</module>
 		<module>../../plugins/hu.elte.txtuml.layout.visualizer</module>
 		<module>../../plugins/hu.elte.txtuml.project</module>

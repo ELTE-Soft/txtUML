@@ -36,32 +36,32 @@ public class MicrowaveTester {
 
 			switch (inp) {
 			case "open":
-				Action.send(m, new Open());
+				Action.send(new Open(), m);
 				break;
 			case "close":
-				Action.send(m, new Close());
+				Action.send(new Close(), m);
 				break;
 			case "put":
-				Action.send(m, new Put());
+				Action.send(new Put(), m);
 				break;
 			case "get":
-				Action.send(m, new Get());
+				Action.send(new Get(), m);
 				break;
 			case "setintensity":
 				System.out.println("  Intensity Level (1-5): ");
 				Integer i = Integer.parseInt(System.console().readLine());
-				Action.send(m, new SetIntensity(i));
+				Action.send(new SetIntensity(i), m);
 				break;
 			case "settime":
 				System.out.println("  Time in sec(s): ");
 				Integer t = Integer.parseInt(System.console().readLine());
-				Action.send(m, new SetTime(t));
+				Action.send(new SetTime(t), m);
 				break;
 			case "start":
-				Action.send(m, new Start());
+				Action.send(new Start(), m);
 				break;
 			case "stop":
-				Action.send(m, new Stop());
+				Action.send(new Stop(), m);
 				break;
 			case "quit":
 

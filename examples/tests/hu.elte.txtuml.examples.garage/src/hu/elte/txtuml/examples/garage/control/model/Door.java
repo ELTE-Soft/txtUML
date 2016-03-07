@@ -24,7 +24,7 @@ public class Door extends ModelClass {
 		@Override
 		public void entry() {
 			Motor m = Door.this.assoc(MotorMovesDoor.movingMotor.class).selectAny();
-			Action.send(m, new ReenableMotor());
+			Action.send(new ReenableMotor(), m);
 		}
 	}
 
@@ -73,7 +73,7 @@ public class Door extends ModelClass {
 		@Override
 		public void effect() {
 			Motor m = Door.this.assoc(MotorMovesDoor.movingMotor.class).selectAny();
-			Action.send(m, new ChangeMotorMode());
+			Action.send(new ChangeMotorMode(), m);
 		}
 	}
 }

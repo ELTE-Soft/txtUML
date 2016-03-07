@@ -99,7 +99,7 @@ public class ExpressionExporter<ElemType extends ActivityNode> extends ControlSt
 		Expr result = visitor.getResult();
 
 		if (result == null) {
-			if (!TypeExporter.isVoid(expression.resolveTypeBinding())) {
+			if (expression.resolveTypeBinding() == null || !TypeExporter.isVoid(expression.resolveTypeBinding())) {
 				// TODO unexported expression
 				return createOpaqueAction(expression.toString(), expression.resolveTypeBinding(), null, null);
 			}

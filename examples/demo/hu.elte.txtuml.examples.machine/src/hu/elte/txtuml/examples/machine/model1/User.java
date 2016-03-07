@@ -40,9 +40,9 @@ public class User extends ModelClass {
 	void doWork() {
 		Action.log("\tUser: starting to work...");
 		Machine myMachine = this.assoc(Usage.usedMachine.class).selectAny();
-		Action.send(myMachine, new ButtonPress());
-		Action.send(myMachine, new ButtonPress());
-		Action.send(myMachine, new ButtonPress());
+		Action.send(new ButtonPress(), myMachine);
+		Action.send(new ButtonPress(), myMachine);
+		Action.send(new ButtonPress(), myMachine);
 		Action.log("\tUser: work finished...");
 	}
 

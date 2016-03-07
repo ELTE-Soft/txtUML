@@ -23,27 +23,27 @@
 class StateMachineThreadPool {
 	
 public:
-    StateMachineThreadPool(size_t);
+	StateMachineThreadPool(int);
 	void task();
-    void enqueObject(StateMachineI*);
+	void enqueObject(StateMachineI*);
 	void stopPool();
 	void stopUponCompletion();
 	void startPool();
 	void incrementWorkers();
 	void reduceWorkers();
 	void modifiedThreads(int);
-    ~StateMachineThreadPool();
+	~StateMachineThreadPool();
 private:
 	void futureGetter();
 	
 	ThreadContainer workers;
 	
-    // the task queue
-    PoolQueueType stateMachines; //must be blocking queue
-	size_t threads;
+	// the task queue
+	PoolQueueType stateMachines; //must be blocking queue
+	int threads;
 
-    // synchronization
-    std::atomic_bool stop;
+	// synchronization
+	std::atomic_bool stop;
 	std::atomic_int worker_threads;
 	
 	std::condition_variable cond;
