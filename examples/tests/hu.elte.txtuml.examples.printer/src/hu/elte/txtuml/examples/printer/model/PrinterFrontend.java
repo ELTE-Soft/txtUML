@@ -1,14 +1,12 @@
 package hu.elte.txtuml.examples.printer.model;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
 import hu.elte.txtuml.examples.printer.model.associations.DocumentBeingPrinted;
+import hu.elte.txtuml.examples.printer.model.associations.DocumentQueue;
 import hu.elte.txtuml.examples.printer.model.associations.DocumentToPrint;
 import hu.elte.txtuml.examples.printer.model.associations.PrinterSystem;
 import hu.elte.txtuml.examples.printer.model.signals.FinishedPrinting;
@@ -17,7 +15,6 @@ import hu.elte.txtuml.examples.printer.model.signals.Print;
 import hu.elte.txtuml.examples.printer.model.signals.RestockPaper;
 
 public class PrinterFrontend extends ModelClass {
-	Queue<Document> queue;
 	public int paperCount;
 	boolean lock;
 
@@ -29,7 +26,6 @@ public class PrinterFrontend extends ModelClass {
 	public class Initialize extends Transition {
 		@Override
 		public void effect() {
-			queue = new LinkedList<Document>();
 			lock = false;
 		}
 	}
@@ -37,26 +33,23 @@ public class PrinterFrontend extends ModelClass {
 	public class AcceptingDocuments extends State {
 		@Override
 		public void entry() {
-			if (queue.size() > 0) {
+			if (size() > 0) {
 				PrinterBackend pb = PrinterFrontend.this.assoc(PrinterSystem.backend.class).selectAny();
 				if (!lock) {
 					lock = true;
-					Document doc = queue.peek();
+					Document doc = first();
 					if (paperCount < doc.sideCount) {
 						Action.send(new OutOfPaperSignal(), PrinterFrontend.this);
 					} else {
 						Action.link(DocumentBeingPrinted.beingPrinted.class, doc,
-								DocumentBeingPrinted.PrinterBackEnd.class, pb);
+								DocumentBeingPrinted.printerBackend.class, pb);
 						Action.send(new Print(), pb);
 						paperCount -= doc.sideCount;
-						Action.unlink(DocumentToPrint.toPrint.class, doc, DocumentToPrint.PrinterFrontEnd.class,
+						Action.unlink(DocumentToPrint.toPrint.class, doc, DocumentToPrint.printerFrontend.class,
 								PrinterFrontend.this);
 					}
-					;
 				}
-				;
 			}
-			;
 
 			Action.log("PrinterFrontend: the printer is waiting for documents.");
 		}
@@ -68,12 +61,13 @@ public class PrinterFrontend extends ModelClass {
 	public class PrintFinished extends Transition {
 		@Override
 		public void effect() {
-			queue.poll();
+			removeFirst();
 
 			lock = false;
-			Action.log("PrinterFrontend: the printing of a document has finished. Remaining: " + queue.size()
-					+ ". Papers: " + paperCount + ".");
+			Action.log("PrinterFrontend: the printing of a document has finished. Remaining: " + size() + ". Papers: "
+					+ paperCount + ".");
 		}
+
 	}
 
 	@From(AcceptingDocuments.class)
@@ -83,8 +77,8 @@ public class PrinterFrontend extends ModelClass {
 		@Override
 		public void effect() {
 			Document doc = PrinterFrontend.this.assoc(DocumentToPrint.toPrint.class).selectAny();
-			queue.add(doc);
-			Action.log("PrinterFrontend: Document recieved. Queue size: " + queue.size() + ".");
+			addAsLast(doc);
+			Action.log("PrinterFrontend: Document recieved. Queue size: " + size() + ".");
 		}
 	}
 
@@ -113,5 +107,22 @@ public class PrinterFrontend extends ModelClass {
 		}
 	}
 
-}
+	private void addAsLast(Document doc) {
+		Action.link(DocumentQueue.element.class, doc, DocumentQueue.printerFrontend.class, this);
+	}
 
+	private Document first() {
+		return assoc(DocumentQueue.element.class).selectAny();
+	}
+
+	private void removeFirst() {
+		Document toRemove = assoc(DocumentQueue.element.class).selectAny();
+		
+		Action.unlink(DocumentQueue.element.class, toRemove, DocumentQueue.printerFrontend.class, this);
+	}
+
+	private int size() {
+		return assoc(DocumentQueue.element.class).count();
+	}
+
+}
