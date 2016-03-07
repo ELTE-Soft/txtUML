@@ -20,27 +20,23 @@ public class ActivityTemplates {
 		return leftValueName + operator + rightValueName + ";\n";
 	}
 
-	public static String signalSend(String signalName, String targetName, String targetTypeName, String accessOperator,
-			List<String> params, Boolean rt) {
-		String source = targetName + accessOperator;
-		String signal = GenerationNames.eventClassName(signalName) + "(";
-		if (rt) {
-			signal += GenerationNames.derefenrencePointer(targetName) + ",";
-		}
-		signal += targetTypeName + "::" + GenerationNames.eventEnumName(signalName);
+	public static StringBuilder signalSend(String signalName, String targetName, String targetTypeName, String accessOperator,
+			List<String> params) {
+		StringBuilder source = new StringBuilder(targetName + accessOperator);
+		StringBuilder signal = new StringBuilder(GenerationNames.eventClassName(signalName) + "(");
+		signal.append(GenerationNames.derefenrencePointer(targetName) + ",");
+
+		signal.append(targetTypeName + "::" + GenerationNames.eventEnumName(signalName));
 		String paramList = operationCallParamList(params);
 		if (!paramList.isEmpty()) {
-			signal += "," + paramList;
+			signal.append("," + paramList);
 		}
-		signal += ")";
-
-		if (rt) {
-			source += RuntimeTemplates.sendSignal(signal);
-		} else {
-			source += "" + GenerationNames.ProcessEventFName + "(" + signal;
-		}
-
-		return source + ");\n";
+		signal.append( ")");
+		
+		source.append(RuntimeTemplates.sendSignal(signal.toString()));
+		source.append(");\n");
+	
+		return source;
 	}
 
 	public static String transitionActionCall(String operationName) {

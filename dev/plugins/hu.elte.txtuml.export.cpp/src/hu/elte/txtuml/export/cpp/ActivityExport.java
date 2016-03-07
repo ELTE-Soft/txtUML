@@ -19,6 +19,7 @@ import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.CreateObjectAction;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.ExecutableNode;
 import org.eclipse.uml2.uml.InputPin;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralInteger;
@@ -29,6 +30,7 @@ import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
+import org.eclipse.uml2.uml.SequenceNode;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValuePin;
@@ -100,29 +102,38 @@ public class ActivityExport {
 		return source;
 	}
 
-	private static String createActivityNodeCode(ActivityNode node_, List<ActivityNode> finishedControlNodes_,
+	private static StringBuilder createActivityNodeCode(ActivityNode node_, List<ActivityNode> finishedControlNodes_,
 			Boolean rt_) {
-		String source = "";
+		StringBuilder source = new StringBuilder("");
 		finishedControlNodes_.add(node_);
-
-		if (node_.eClass().equals(UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION)) {
+		
+		if (node_.eClass().equals(UMLPackage.Literals.SEQUENCE_NODE)) {
+		    SequenceNode seqNode = (SequenceNode) node_;
+		    for (ActivityNode aNode : seqNode.getNodes()) {
+		       source.append(createActivityNodeCode(aNode,finishedControlNodes_,rt_));
+		    }
+		}
+		else if (node_.eClass().equals(UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION)) {
 			AddStructuralFeatureValueAction asfva = (AddStructuralFeatureValueAction) node_;
-			source = ActivityTemplates.generalSetValue(getTargetFromASFVA(asfva),
+			source.append(ActivityTemplates.generalSetValue(getTargetFromASFVA(asfva),
 					getTargetFromInputPin(asfva.getValue(), false), ActivityTemplates
-							.getOperationFromType(asfva.getStructuralFeature().isMultivalued(), asfva.isReplaceAll()));
+							.getOperationFromType(asfva.getStructuralFeature().isMultivalued(), asfva.isReplaceAll())));
 		} else if (node_.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
-			source = createObjectActionCode((CreateObjectAction) node_, rt_);
+			source.append(createObjectActionCode((CreateObjectAction) node_, rt_));
 		} else if (node_.eClass().equals(UMLPackage.Literals.SEND_SIGNAL_ACTION)) {
-			source = createSendSignalActionCode((org.eclipse.uml2.uml.SendSignalAction) node_, rt_);
+			source.append(createSendSignalActionCode((org.eclipse.uml2.uml.SendSignalAction) node_).toString());
 		} else if (node_.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
-			source = createCallOperationActionCode((org.eclipse.uml2.uml.CallOperationAction) node_);
+			source.append(createCallOperationActionCode((org.eclipse.uml2.uml.CallOperationAction) node_));
 		} else if (node_.eClass().equals(UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION)) {
 			AddVariableValueAction avva = (AddVariableValueAction) node_;
-			source = ActivityTemplates.generalSetValue(avva.getVariable().getName(),
+			source.append(ActivityTemplates.generalSetValue(avva.getVariable().getName(),
 					getTargetFromInputPin(avva.getValue()),
-					ActivityTemplates.getOperationFromType(avva.getVariable().isMultivalued(), avva.isReplaceAll()));
+					ActivityTemplates.getOperationFromType(avva.getVariable().isMultivalued(), avva.isReplaceAll())));
 		} else if (node_.eClass().equals(UMLPackage.Literals.DECISION_NODE)) {
-			source = createDecisionNodeCode((DecisionNode) node_, finishedControlNodes_, rt_);
+			source.append(createDecisionNodeCode((DecisionNode) node_, finishedControlNodes_, rt_));
+		}
+		else if(node_.eClass().equals(UMLPackage.Literals.LOOP_NODE)) {
+		    //TODO export cycles
 		}
 		return source;
 	}
@@ -332,11 +343,11 @@ public class ActivityExport {
 		return source;
 	}
 
-	private static String createSendSignalActionCode(org.eclipse.uml2.uml.SendSignalAction node_, Boolean rt_) {
+	private static StringBuilder createSendSignalActionCode(org.eclipse.uml2.uml.SendSignalAction node_) {
 		return ActivityTemplates.signalSend(node_.getSignal().getName(),
 				getTargetFromInputPin(node_.getTarget(), false), getTypeFromInputPin(node_.getTarget()),
 				ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node_.getTarget())),
-				getParamNames(node_.getArguments()), rt_);
+				getParamNames(node_.getArguments()));
 	}
 
 	private static String getTypeFromInputPin(InputPin inputPin_) {

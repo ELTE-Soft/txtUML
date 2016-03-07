@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.uml2.uml.Activity;
 //import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
@@ -225,31 +226,31 @@ public class ClassExporter {
 			source.append(GenerationTemplates.destructorDef(class_.getName(), false));
 		}
 
-		for (Operation item : class_.getOwnedOperations()) {
-			if (!isConstructor(class_, item)) {
+		for (Operation operation : class_.getOwnedOperations()) {
+			if (!isConstructor(class_, operation)) {
 
-				String returnType = getReturnType(item.getReturnResult());
+				String returnType = getReturnType(operation.getReturnResult());
 
-				/*
-				 * Behavior behavior=item.getMethods().get(0); String
-				 * funcBody="";
-				 * if(behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
-				 * funcBody=ActivityExport.createfunctionBody((Activity)behavior
-				 * ,true); } else { //TODO exception, unknown for me, need the
-				 * model }
-				 */
+				String funcBody="";
+				  for (Behavior behavior : operation.getMethods()) {
+				      
+					  if(behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
+					      funcBody=ActivityExport.createfunctionBody((Activity)behavior,true); 
+					  } else { 
+					      //TODO exception, unknown for me, need the model
+					  }
+				  }	
+				
+				  source.append(GenerationTemplates.functionDef(class_.getName(),
+				  returnType, operation.getName(),getOperationParams(operation),
+				  funcBody));
+				 
 
-				/*
-				 * source+=GenerationTemplates.FunctionDef(class_.getName(),
-				 * returnType, item.getName(),getOperationParams(item),
-				 * funcBody);
-				 */
-
-				source.append(GenerationTemplates.functionDef(class_.getName(), returnType, item.getName(),
-						getOperationParams(item), GenerationTemplates.getDefaultReturn(returnType)));
+				source.append(GenerationTemplates.functionDef(class_.getName(), returnType, operation.getName(),
+						getOperationParams(operation), GenerationTemplates.getDefaultReturn(returnType)));
 			} else {
 				source.append(GenerationTemplates.constructorDef(class_.getName(), getBaseClass(class_), "",
-						getOperationParams(item), null ));
+						getOperationParams(operation), null ));
 				// TODO generate constructors
 			}
 		}

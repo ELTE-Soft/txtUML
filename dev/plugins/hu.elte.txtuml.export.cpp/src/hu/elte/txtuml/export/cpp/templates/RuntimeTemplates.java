@@ -53,8 +53,6 @@ class RuntimeTemplates {
 
 	public static String startSM(String className, Options options) {
 		return GenerationNames.NoReturn + " " + className + "::startSM()\n{\n"
-				+ ActivityTemplates.signalSend(GenerationNames.InitialEventName, GenerationNames.Self, className,
-						GenerationNames.PointerAccess, new ArrayList<String>(), options.isAddRuntime())
 				+ "\n}\n";
 	}
 
