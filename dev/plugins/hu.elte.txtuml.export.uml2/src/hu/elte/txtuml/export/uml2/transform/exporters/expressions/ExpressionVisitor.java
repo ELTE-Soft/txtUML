@@ -8,10 +8,12 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.Assignment.Operator;
 import org.eclipse.jdt.core.dom.BooleanLiteral;
+import org.eclipse.jdt.core.dom.CastExpression;
 import org.eclipse.jdt.core.dom.CharacterLiteral;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.ConditionalExpression;
 import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.ExpressionMethodReference;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
@@ -160,23 +162,22 @@ class ExpressionVisitor extends ASTVisitor {
 		arguments.forEach(o -> args.add(expressionExporter.export((Expression) o)));
 
 		Expr target = null;
-		if (!Modifier.isStatic(binding.getModifiers()) && !TypeExporter.isNavigation(binding)) {
-			if (expression != null) {
-				target = expressionExporter.export(expression);
-			} else {
-				target = expressionExporter.autoFillTarget(binding, binding.getName());
-			}
+		if (expression != null && !Modifier.isStatic(binding.getModifiers())) {
+			target = expressionExporter.export(expression);
 		} else {
-			if (TypeExporter.isAction(binding) || TypeExporter.isNavigation(binding)) {
-				try {
-					Expr expr = Modifier.isStatic(binding.getModifiers()) ? null : expressionExporter.export(expression);
-					result = expressionExporter.exportAction(binding, expr, args);
-				} catch (ExportException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				return;
+			target = expressionExporter.autoFillTarget(binding, binding.getName());
+		}
+		
+		if (TypeExporter.isNavigation(binding)
+				|| (Modifier.isStatic(binding.getModifiers()) && TypeExporter.isAction(binding))) {
+			// is an API call
+			try {
+				result = expressionExporter.exportAction(binding, target, args);
+			} catch (ExportException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+			return;
 		}
 
 		Operation operation = typeExporter.exportMethodAsOperation(binding, args);
@@ -308,6 +309,18 @@ class ExpressionVisitor extends ASTVisitor {
 				typeExporter.exportType(node.resolveFieldBinding().getDeclaringClass().getSuperclass()),
 				expressionExporter);
 		result = Expr.field(thisExpression, node.resolveFieldBinding(), expressionExporter);
+		return false;
+	}
+
+	// explicitly handling a certain types of expressions that cannot be present
+	// to stop from going into them
+	@Override
+	public boolean visit(ExpressionMethodReference node) {
+		return false;
+	}
+
+	@Override
+	public boolean visit(CastExpression node) {
 		return false;
 	}
 

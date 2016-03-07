@@ -34,6 +34,7 @@ import hu.elte.txtuml.export.uml2.transform.visitors.AssociationVisitor;
 import hu.elte.txtuml.export.uml2.transform.visitors.AttributeVisitor;
 import hu.elte.txtuml.export.uml2.transform.visitors.ClassifierVisitor;
 import hu.elte.txtuml.export.uml2.transform.visitors.MethodSkeletonVisitor;
+import hu.elte.txtuml.export.uml2.transform.visitors.PortVisitor;
 import hu.elte.txtuml.export.uml2.utils.ResourceSetFactory;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 
@@ -56,6 +57,7 @@ public class ModelExporter {
 	private final ModelMapCollector mapping;
 
 	private Map<TypeDeclaration, Classifier> classifiers;
+
 	private Map<TypeDeclaration, Map<MethodDeclaration, Operation>> methods;
 
 	private ExportMode exportMode;
@@ -146,6 +148,7 @@ public class ModelExporter {
 		exportMethodSkeletonsOfEveryClassifier();
 		exportStateMachinesOfEveryClass();
 		exportMethodBodiesOfEveryClassifier();
+		exportPortsOfEveryClassifier();
 
 		this.mapping.put(sourcePackageName, exportedModel);
 		finishModelExport();
@@ -196,6 +199,9 @@ public class ModelExporter {
 	 */
 	private void exportGeneralization(TypeDeclaration classifierDeclaration) {
 		ITypeBinding superclassBinding = classifierDeclaration.resolveBinding().getSuperclass();
+		if (superclassBinding == null) {
+			return;
+		}
 		final String generalName = superclassBinding.getName();
 		final String specificName = classifierDeclaration.getName().getFullyQualifiedName();
 
@@ -261,6 +267,13 @@ public class ModelExporter {
 			if (classifier instanceof Class) {
 				exportMethodBodiesOfSpecificClass(declaration, (Class) classifier);
 			}
+		});
+	}
+	
+	private void exportPortsOfEveryClassifier() {
+		classifiers.forEach((declaration, classifier) -> {
+			PortVisitor pv = new PortVisitor(new PortExporter(typeExporter), classifier);
+			declaration.accept(pv);
 		});
 	}
 

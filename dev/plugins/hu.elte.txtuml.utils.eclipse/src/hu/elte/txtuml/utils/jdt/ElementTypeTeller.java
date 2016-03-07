@@ -223,6 +223,9 @@ public final class ElementTypeTeller {
 
 	public static boolean isSpecificClassifier(TypeDeclaration classifierDeclaration) {
 		ITypeBinding superclassBinding = classifierDeclaration.resolveBinding().getSuperclass();
+		if (superclassBinding == null) {
+			return false;
+		}
 		String superclassQualifiedName = superclassBinding.getQualifiedName();
 		boolean extendsModelClass = superclassQualifiedName.equals(ModelClass.class.getCanonicalName());
 		boolean extendsSignal = superclassQualifiedName.equals(Signal.class.getCanonicalName());
