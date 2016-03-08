@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: txtUML Layout Export Tests
 Bundle-SymbolicName: hu.elte.txtuml.layout.export.tests
-Bundle-Version: 0.3.0.qualifier
+Bundle-Version: 0.4.0.qualifier
 Bundle-Vendor: ELTE
 Fragment-Host: hu.elte.txtuml.layout.export
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
