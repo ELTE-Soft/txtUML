@@ -49,6 +49,8 @@ public class ClassExporter {
 	private Map<String, Pair<String, Region>> _submachineMap;// <stateName,<machinename,behavior>>
 	private List<String> _subSubMachines;
 	private boolean ownConstructor;
+	
+	ActivityExporter activityExporter;
 
 	private enum FuncTypeEnum {
 		Entry, Exit
@@ -61,12 +63,14 @@ public class ClassExporter {
 	}
 
 	public void reiniIialize() {
+	    	activityExporter = new ActivityExporter();
 		_guardMap = new HashMap<String, String>();
 		_entryMap = null;
 		_exitMap = null;
 		_submachineMap = null;
 		_subSubMachines = new LinkedList<String>();
 		ownConstructor = false;
+		
 	}
 
 	public void createSource(Class class_, String dest_) throws FileNotFoundException, UnsupportedEncodingException {
@@ -235,7 +239,7 @@ public class ClassExporter {
 				  for (Behavior behavior : operation.getMethods()) {
 				      
 					  if(behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
-					      funcBody=ActivityExport.createfunctionBody((Activity)behavior,true); 
+					      funcBody=activityExporter.createfunctionBody((Activity)behavior); 
 					  } else { 
 					      //TODO exception, unknown for me, need the model
 					  }
@@ -244,10 +248,6 @@ public class ClassExporter {
 				  source.append(GenerationTemplates.functionDef(class_.getName(),
 				  returnType, operation.getName(),getOperationParams(operation),
 				  funcBody));
-				 
-
-				source.append(GenerationTemplates.functionDef(class_.getName(), returnType, operation.getName(),
-						getOperationParams(operation), GenerationTemplates.getDefaultReturn(returnType)));
 			} else {
 				source.append(GenerationTemplates.constructorDef(class_.getName(), getBaseClass(class_), "",
 						getOperationParams(operation), null ));

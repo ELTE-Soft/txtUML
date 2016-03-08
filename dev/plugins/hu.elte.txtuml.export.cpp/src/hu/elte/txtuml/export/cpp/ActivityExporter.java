@@ -2,7 +2,6 @@ package hu.elte.txtuml.export.cpp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,7 +16,6 @@ import org.eclipse.uml2.uml.AddStructuralFeatureValueAction;
 import org.eclipse.uml2.uml.AddVariableValueAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.CreateObjectAction;
-import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutableNode;
 import org.eclipse.uml2.uml.InputPin;
@@ -25,12 +23,10 @@ import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.LoopNode;
-import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.OpaqueAction;
-import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.OutputPin;
-import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
+import org.eclipse.uml2.uml.ReadVariableAction;
 import org.eclipse.uml2.uml.SequenceNode;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -41,13 +37,16 @@ import org.eclipse.uml2.uml.Variable;
 
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
-import hu.elte.txtuml.utils.Pair;
 
-public class ActivityExport {
-	static private Map<CreateObjectAction, String> _objectMap = new HashMap<CreateObjectAction, String>();
-	static private int _objCounter = 1;
+public class ActivityExporter {
+	Map<CreateObjectAction, String> _objectMap = new HashMap<CreateObjectAction, String>();
+	int _objCounter = 1;
+	
+	public ActivityExporter() {
+	    ActivityTemplates.Operators.Init();
+	}
 
-	public static String createfunctionBody(Activity activity_, Boolean rt_) {
+	public String createfunctionBody(Activity activity_) {
 		ActivityNode startNode = null;
 		for (ActivityNode node : activity_.getOwnedNodes()) {
 			if (node.eClass().equals(UMLPackage.Literals.INITIAL_NODE)) {
@@ -55,10 +54,10 @@ public class ActivityExport {
 				break;
 			}
 		}
-		return createActivityVariables(activity_) + createActivityPartCode(startNode, rt_);
+		return createActivityVariables(activity_) + createActivityPartCode(startNode);
 	}
 
-	private static String createActivityVariables(Activity activity_) {
+	private String createActivityVariables(Activity activity_) {
 		String source = "";
 		List<Variable> variables = new LinkedList<Variable>();
 		Shared.getTypedElements(variables, activity_.allOwnedElements(), UMLPackage.Literals.VARIABLE);
@@ -72,12 +71,12 @@ public class ActivityExport {
 		return source;
 	}
 
-	private static String createActivityPartCode(ActivityNode startNode_, Boolean rt_) {
-		return createActivityPartCode(startNode_, null, new ArrayList<ActivityNode>(), rt_);
+	private String createActivityPartCode(ActivityNode startNode_) {
+		return createActivityPartCode(startNode_, null, new ArrayList<ActivityNode>());
 	}
 
-	private static String createActivityPartCode(ActivityNode startNode_, ActivityNode stopNode_,
-			List<ActivityNode> finishedControlNodes_, Boolean rt_) {
+	private String createActivityPartCode(ActivityNode startNode_, ActivityNode stopNode_,
+			List<ActivityNode> finishedControlNodes_) {
 		String source = "";
 		LinkedList<ActivityNode> nodeList = new LinkedList<ActivityNode>(Arrays.asList(startNode_));
 
@@ -91,7 +90,7 @@ public class ActivityExport {
 					currentNode = (ActivityNode) currentNode.getOwner();
 				}
 				// current node compile
-				source += createActivityNodeCode(currentNode, finishedControlNodes, rt_);
+				source += createActivityNodeCode(currentNode);
 
 				for (ActivityNode node : getNextNodes(currentNode)) {
 					if (!finishedControlNodes.contains(node) && !nodeList.contains(node)) {
@@ -103,44 +102,41 @@ public class ActivityExport {
 		return source;
 	}
 
-	private static StringBuilder createActivityNodeCode(ActivityNode node_, List<ActivityNode> finishedControlNodes_,
-			Boolean rt_) {
+	private StringBuilder createActivityNodeCode(ActivityNode node_) {
 		StringBuilder source = new StringBuilder("");
-		finishedControlNodes_.add(node_);
 		
 		if (node_.eClass().equals(UMLPackage.Literals.SEQUENCE_NODE)) {
 		    SequenceNode seqNode = (SequenceNode) node_;
 		    for (ActivityNode aNode : seqNode.getNodes()) {
-		       source.append(createActivityNodeCode(aNode,finishedControlNodes_,rt_));
+		       source.append(createActivityNodeCode(aNode));
 		    }
 		}
 		else if (node_.eClass().equals(UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION)) {
 			AddStructuralFeatureValueAction asfva = (AddStructuralFeatureValueAction) node_;
 			source.append(ActivityTemplates.generalSetValue(getTargetFromASFVA(asfva),
-					getTargetFromInputPin(asfva.getValue(), false), ActivityTemplates
-							.getOperationFromType(asfva.getStructuralFeature().isMultivalued(), asfva.isReplaceAll())));
+					getTargetFromInputPin(asfva.getValue(), false), 
+					ActivityTemplates.getOperationFromType(
+						asfva.getStructuralFeature().isMultivalued(), asfva.isReplaceAll())));
 		} else if (node_.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
-			source.append(createObjectActionCode((CreateObjectAction) node_, rt_));
+			source.append(createObjectActionCode((CreateObjectAction) node_));
 		} else if (node_.eClass().equals(UMLPackage.Literals.SEND_SIGNAL_ACTION)) {
 			source.append(createSendSignalActionCode((org.eclipse.uml2.uml.SendSignalAction) node_).toString());
 		} else if (node_.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
+		    	
 			source.append(createCallOperationActionCode((org.eclipse.uml2.uml.CallOperationAction) node_));
 		} else if (node_.eClass().equals(UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION)) {
 			AddVariableValueAction avva = (AddVariableValueAction) node_;
 			source.append(ActivityTemplates.generalSetValue(avva.getVariable().getName(),
 					getTargetFromInputPin(avva.getValue()),
 					ActivityTemplates.getOperationFromType(avva.getVariable().isMultivalued(), avva.isReplaceAll())));
-		} else if (node_.eClass().equals(UMLPackage.Literals.DECISION_NODE)) {
-			source.append(createDecisionNodeCode((DecisionNode) node_, finishedControlNodes_, rt_));
 		}
 		else if(node_.eClass().equals(UMLPackage.Literals.LOOP_NODE)) {
-		    //TODO export cycles
 		    source.append(createCycleCode((LoopNode) node_));
 		}
 		return source;
 	}
 
-	private static String createObjectActionCode(CreateObjectAction node_, Boolean rt_) {
+	private String createObjectActionCode(CreateObjectAction node_) {
 		String type = node_.getClassifier().getName();
 		boolean isSm = false;
 		for (Element element : node_.getClassifier().allOwnedElements()) {
@@ -152,106 +148,39 @@ public class ActivityExport {
 
 		String name = "co_of_" + type + "_" + _objCounter++;// #Create#Object_#of_type_GlobalNumberOfObjectCreation
 		_objectMap.put(node_, name);
-		return ActivityTemplates.createObject(type, name, rt_, isSm);
-	}
-
-	// decide if it's a while or if-else
-	private static String createDecisionNodeCode(DecisionNode node_, List<ActivityNode> finishedControlNodes_,
-			Boolean rt_) {
-		String source = "";
-		if (isLoop(node_)) // while
-		{
-			// find the loop condition
-			List<ActivityNode> finishedNodes = new ArrayList<ActivityNode>(Arrays.asList(node_));
-			List<ActivityEdge> branches = node_.getOutgoings();
-			String loopCondition = "";
-			ActivityEdge toFinal = null;
-			for (ActivityEdge edge : branches) {
-				if (isLeadsToFinal(edge.getTarget(), node_)) {
-					String guard = getGuard(edge);
-					toFinal = edge;
-					loopCondition = ActivityTemplates.Operators.Not + "(" + (guard) + ")";
-					if (guard.isEmpty() || guard.equals("else")) {
-						int i = 0;
-						for (ActivityEdge edgeInner : branches) {
-							if (!edgeInner.equals(toFinal)) {
-								if (i == 0) {
-									if (branches.size() > 2) {
-										guard = "(" + (getGuard(edgeInner)) + ")";
-									} else {
-										guard = getGuard(edgeInner);
-									}
-								} else {
-									guard += " " + ActivityTemplates.Operators.And + " " + "(" + (getGuard(edgeInner))
-											+ ")";
-								}
-							}
-						}
-						loopCondition = guard;
-					}
-					break;
-				}
-			}
-			String loopBody = "";
-
-			// removing toFinal edge
-			branches = new LinkedList<ActivityEdge>();
-			for (ActivityEdge edge : node_.getOutgoings()) {
-				if (!edge.equals(toFinal)) {
-					branches.add(edge);
-				}
-			}
-
-			if (branches.size() > 1) {
-				loopBody = createIfCode(node_, node_, branches, finishedControlNodes_, rt_);
-			} else {
-				loopBody = createActivityPartCode(branches.get(0).getTarget(), node_, finishedNodes, rt_);
-			}
-			finishedControlNodes_.addAll(finishedNodes);
-			source = ActivityTemplates.simpleWhile(loopCondition, loopBody);
-		} else // if-else
-		{
-			source = createIfCode(node_, getIfEnd(node_), node_.getOutgoings(), finishedControlNodes_, rt_);
-		}
-		return source;
+		return ActivityTemplates.createObject(type, name, isSm);
 	}
 	
-	private static StringBuilder createCycleCode(LoopNode lNode) {
+	private StringBuilder createCycleCode(LoopNode loopNode) {
 	    StringBuilder source = new StringBuilder("");
+	    
+	    if(loopNode.getSetupParts() != null ) {
+		    for(ExecutableNode initNode : loopNode.getSetupParts()) {
+			source.append(createActivityNodeCode(initNode));
+		    }
+	    }
+	    
+	    StringBuilder body = new StringBuilder("");
+	    for(ExecutableNode bodyNode : loopNode.getBodyParts()) {
+		body.append(createActivityNodeCode(bodyNode));
+	    }
+	    
+	    StringBuilder cond = new StringBuilder("");
+	    for(ExecutableNode condNode : loopNode.getTests()) {
+		cond.append(createActivityNodeCode(condNode));
+	    }
+	    
+	    source.append(ActivityTemplates.whileCycle(cond.toString(), body.toString(), ""));
+
 	    
 	    return source;
 	}
 
-	private static String createIfCode(DecisionNode node_, ActivityNode ifEndNode_, List<ActivityEdge> branches_,
-			List<ActivityNode> finishedControlNodes_, Boolean rt_) {
-		String source = "";
-		// TODO not sure it is needed
-		List<ActivityNode> finishedNodes = new ArrayList<ActivityNode>(Arrays.asList(node_));
-		List<Pair<String, String>> condsAndBodies = new LinkedList<Pair<String, String>>();
-		Pair<String, String> elseBranch = null;
-		for (ActivityEdge edge : branches_) {
-			Pair<String, String> tmp = new Pair<String, String>(getGuard(edge),
-					createActivityPartCode(edge.getTarget(), ifEndNode_, finishedNodes, rt_));
-			if (tmp.getFirst().isEmpty() || tmp.getFirst().equals("else")) {
-				elseBranch = tmp;
-			} else {
-				condsAndBodies.add(tmp);
-			}
-		}
-		if (elseBranch != null && !elseBranch.getSecond().isEmpty()) {
-			condsAndBodies.add(elseBranch);
-		}
-		source = ActivityTemplates.elseIf(condsAndBodies).toString();
-
-		finishedControlNodes_.addAll(finishedNodes);
-		return source;
-	}
-
-	private static String getTargetFromInputPin(InputPin node_) {
+	private String getTargetFromInputPin(InputPin node_) {
 		return getTargetFromInputPin(node_, true);
 	}
 
-	private static String getTargetFromInputPin(InputPin node_, Boolean recursive_) {
+	private String getTargetFromInputPin(InputPin node_, Boolean recursive_) {
 		String source = "UNKNOWN_TYPE_FROM_VALUEPIN";
 		if (node_.eClass().equals(UMLPackage.Literals.INPUT_PIN)) {
 			source = getTargetFromActivityNode(node_.getIncomings().get(0).getSource());// TODO
@@ -268,7 +197,7 @@ public class ActivityExport {
 		return source;
 	}
 
-	private static String getValueFromValueSpecification(ValueSpecification valueSpec_) {
+	private String getValueFromValueSpecification(ValueSpecification valueSpec_) {
 		String source = "";
 		if (valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_INTEGER)) {
 			source = ((Integer) ((LiteralInteger) valueSpec_).getValue()).toString();
@@ -282,7 +211,7 @@ public class ActivityExport {
 		return source;
 	}
 
-	private static String getTargetFromActivityNode(ActivityNode node_) {
+	private String getTargetFromActivityNode(ActivityNode node_) {
 		String source = "UNHANDLED_ACTIVITYNODE";
 		if (node_.eClass().equals(UMLPackage.Literals.FORK_NODE) || node_.eClass().equals(UMLPackage.Literals.JOIN_NODE)
 				|| node_.eClass().equals(UMLPackage.Literals.DECISION_NODE)) {
@@ -313,17 +242,26 @@ public class ActivityExport {
 				source = source.replaceAll(oclParam, cppParam);
 			}
 		} else if (node_.eClass().equals(UMLPackage.Literals.OUTPUT_PIN)) {
+		    	
 			source = getTargetFromActivityNode((ActivityNode) node_.getOwner());
 		} else if (node_.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION)) {
 			source = getValueFromValueSpecification(((ValueSpecificationAction) node_).getValue());
-		} else {
-			System.out.println(node_.eClass().getName());// TODO just for
+		} else if(node_.eClass().equals(UMLPackage.Literals.READ_VARIABLE_ACTION)) {
+		    ReadVariableAction rA = (ReadVariableAction) node_;
+		    source = rA.getVariable().getName();
+		}
+		else if(node_.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
+		    source = (createCallOperationActionCode((org.eclipse.uml2.uml.CallOperationAction) node_));
+		}
+		else {
+			System.out.println(node_.eClass().getName());
+			// TODO just for
 															// development debug
 		}
 		return source;
 	}
 
-	private static String getTargetFromASFVA(AddStructuralFeatureValueAction node_) {
+	private String getTargetFromASFVA(AddStructuralFeatureValueAction node_) {
 		String source = node_.getStructuralFeature().getName();
 		String object = getTargetFromInputPin(node_.getObject());
 		if (!object.isEmpty()) {
@@ -332,7 +270,7 @@ public class ActivityExport {
 		return source;
 	}
 
-	private static String getTargetFromRSFA(ReadStructuralFeatureAction node_) {
+	private String getTargetFromRSFA(ReadStructuralFeatureAction node_) {
 		String source = node_.getStructuralFeature().getName();
 		String object = getTargetFromInputPin(node_.getObject());
 		if (!object.isEmpty()) {
@@ -341,14 +279,14 @@ public class ActivityExport {
 		return source;
 	}
 
-	private static StringBuilder createSendSignalActionCode(org.eclipse.uml2.uml.SendSignalAction node_) {
+	private StringBuilder createSendSignalActionCode(org.eclipse.uml2.uml.SendSignalAction node_) {
 		return ActivityTemplates.signalSend(node_.getSignal().getName(),
 				getTargetFromInputPin(node_.getTarget(), false), getTypeFromInputPin(node_.getTarget()),
 				ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node_.getTarget())),
 				getParamNames(node_.getArguments()));
 	}
 
-	private static String getTypeFromInputPin(InputPin inputPin_) {
+	private String getTypeFromInputPin(InputPin inputPin_) {
 		Type type = inputPin_.getType();
 		String targetTypeName = "null";
 		if (type != null) {
@@ -357,45 +295,12 @@ public class ActivityExport {
 			targetTypeName = getTypeFromSpecialAcivityNode(inputPin_.getIncomings().get(0).getSource());
 		} else // inputPin_.eClass().equals(UMLPackage.Literals.VALUE_PIN)
 		{
-			ValueSpecification valueSpec = ((ValuePin) inputPin_).getValue();
-			if (valueSpec.eClass().equals(UMLPackage.Literals.OPAQUE_EXPRESSION)) {
-				targetTypeName = getTypeFromOCL(((OpaqueExpression) valueSpec).getBodies().get(0),
-						getParentClass(((ActivityNode) inputPin_.getOwner()).getActivity()));// except
-																								// only
-																								// one,
-																								// if
-																								// more
-																								// then
-																								// one
-																								// can't
-																								// choose
-			} else {
-				targetTypeName = "UNHANDLED_VALUE_TYPE";
-			}
+			//ValueSpecification valueSpec = ((ValuePin) inputPin_).getValue();
 		}
 		return targetTypeName;
 	}
 
-	private static String getTypeFromOCL(String ocl_, Class self_) {
-		Class currentClass = self_;
-		String[] parts = ocl_.split("\\.");
-		for (String str : parts) {
-			if (!str.equals("self")) {
-				if (str.contains("->")) {
-					str = str.substring(0, str.indexOf("->"));
-
-				}
-				for (Property prop : Shared.getProperties(currentClass)) {
-					if (prop.getName().equals(str)) {
-						currentClass = (Class) prop.getType();
-					}
-				}
-			}
-		}
-		return currentClass.getName();
-	}
-
-	private static String getTypeFromSpecialAcivityNode(ActivityNode node_) {
+	private String getTypeFromSpecialAcivityNode(ActivityNode node_) {
 		String targetTypeName = "null";
 		// because the output pins not count as parent i have to if-else again
 		// ...
@@ -412,9 +317,6 @@ public class ActivityExport {
 				|| node_.eClass().equals(UMLPackage.Literals.DECISION_NODE)
 				|| node_.eClass().equals(UMLPackage.Literals.JOIN_NODE)) {
 			targetTypeName = getTypeFromSpecialAcivityNode(node_.getIncomings().get(0).getSource());
-		} else if (node_.eClass().equals(UMLPackage.Literals.OPAQUE_ACTION)) {
-			targetTypeName = getTypeFromOCL(((OpaqueAction) node_).getBodies().get(0),
-					getParentClass(node_.getActivity()));
 		} else {
 			targetTypeName = "UNKNOWN_TARGET_TYPER_NAME";
 			// TODO unknown for me, need the model
@@ -423,7 +325,7 @@ public class ActivityExport {
 		return targetTypeName;
 	}
 
-	private static <ItemType extends Element> Class getParentClass(ItemType element_) {
+	private <ItemType extends Element> Class getParentClass(ItemType element_) {
 		Element parent = element_.getOwner();
 		while (!parent.eClass().equals(UMLPackage.Literals.CLASS)) {
 			parent = parent.getOwner();
@@ -431,13 +333,21 @@ public class ActivityExport {
 		return (Class) parent;
 	}
 
-	private static String createCallOperationActionCode(org.eclipse.uml2.uml.CallOperationAction node_) {
+	private String createCallOperationActionCode(org.eclipse.uml2.uml.CallOperationAction node_) {
+	    	if (node_.getTarget() == null) {
+	    	    if(node_.getArguments().size() == 2) {
+	    		return ActivityTemplates.stdLibOperationCall(node_.getOperation().getName(),
+		    		    getTargetFromInputPin((node_.getArguments()).get(0)),getTargetFromInputPin((node_.getArguments()).get(1)));
+	    	    }
+	    	    return "";
+	    	    
+	    	}
 		return ActivityTemplates.operationCall(getTargetFromInputPin(node_.getTarget(), false),
 				ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node_.getTarget())),
 				node_.getOperation().getName(), getParamNames(node_.getArguments()));
 	}
 
-	private static List<String> getParamNames(List<InputPin> arguments_) {
+	private List<String> getParamNames(List<InputPin> arguments_) {
 		List<String> params = new ArrayList<String>();
 		for (InputPin param : arguments_) {
 			params.add(getTargetFromInputPin(param));
@@ -445,92 +355,7 @@ public class ActivityExport {
 		return params;
 	}
 
-	private static ActivityNode getIfEnd(DecisionNode node_) {
-		ActivityNode ret = null;
-		LinkedList<ActivityNode> nodes = getNextNodes(node_);
-		int branchNumber = nodes.size();
-		LinkedList<MergeNode> ifEnds = new LinkedList<MergeNode>();
-		while (!nodes.isEmpty()) {
-			ActivityNode currentNode = nodes.removeFirst();
-			if (currentNode.eClass().equals(UMLPackage.Literals.DECISION_NODE)) {
-				if (isLoop((DecisionNode) currentNode)) {
-					for (ActivityNode loopNodes : getNextNodes(currentNode)) {
-						if (isLeadsToFinal(loopNodes, (DecisionNode) currentNode)) {
-							nodes.addAll(getNextNodes(loopNodes));
-							break;
-						}
-					}
-				} else// if
-				{
-					ActivityNode ifEnd = getIfEnd((DecisionNode) currentNode);
-					ifEnds.add((MergeNode) ifEnd);
-					nodes.addAll(getNextNodes(ifEnd));
-				}
-			} else if (currentNode.eClass().equals(UMLPackage.Literals.MERGE_NODE)) {
-				ifEnds.add((MergeNode) currentNode);
-			} else {
-				nodes.addAll(getNextNodes(currentNode));
-			}
-		}
-
-		for (MergeNode end : ifEnds) {
-			if (Collections.frequency(ifEnds, end) == branchNumber) {
-				ret = end;
-				break;
-			}
-		}
-		return ret;
-	}
-
-	private static boolean isLoop(DecisionNode loopStarter_) {
-		LinkedList<ActivityNode> nodes = getNextNodes(loopStarter_);
-		List<Boolean> toFinal = new LinkedList<Boolean>();
-		for (ActivityNode node : nodes) {
-			toFinal.add(isLeadsToFinal(node, loopStarter_));
-		}
-		if (1 == Collections.frequency(toFinal, true)) {
-			return true;
-		}
-		return false;
-	}
-
-	private static boolean isLeadsToFinal(ActivityNode start_, DecisionNode loopStart_) {
-		List<DecisionNode> loopStarters = new LinkedList<DecisionNode>();
-		loopStarters.add(loopStart_);
-		return isLeadsToFinal(start_, loopStarters);
-	}
-
-	private static boolean isLeadsToFinal(ActivityNode start_, List<DecisionNode> loopStarts_) {
-		if (start_.eClass().equals(UMLPackage.Literals.ACTIVITY_FINAL_NODE)) {
-			return true;
-		}
-		LinkedList<ActivityNode> nodes = getNextNodes(start_);
-		while (!nodes.isEmpty()) {
-			for (ActivityNode node : nodes) {
-				if (node.eClass().equals(UMLPackage.Literals.DECISION_NODE)) {
-					DecisionNode dec = (DecisionNode) node;
-					if (loopStarts_.contains(dec)) {
-						return false;
-					}
-					loopStarts_.add(dec);
-
-					if (isLeadsToFinal(dec, loopStarts_)) {
-						return true;
-					}
-				}
-				if (node.eClass().equals(UMLPackage.Literals.ACTIVITY_FINAL_NODE)) {
-					return true;
-				}
-			}
-			nodes.removeAll(loopStarts_);
-			if (!nodes.isEmpty()) {
-				nodes.addAll(getNextNodes(nodes.removeFirst()));
-			}
-		}
-		return false;
-	}
-
-	private static LinkedList<ActivityNode> getNextNodes(ActivityNode node_) {
+	private LinkedList<ActivityNode> getNextNodes(ActivityNode node_) {
 		ActivityNode currentNode = node_;
 		LinkedList<ActivityNode> nextNodes = new LinkedList<ActivityNode>();
 		if (node_.eClass().equals(UMLPackage.Literals.INPUT_PIN)) {
@@ -556,13 +381,6 @@ public class ActivityExport {
 			nextNodes.add(tmp);
 		}
 		return nextNodes;
-	}
-
-	private static String getGuard(ActivityEdge edge_) // TODO works with
-														// literalString or
-														// opaqueExpression only
-	{
-		return Shared.getGuardFromValueSpecification(edge_.getGuard());
 	}
 
 }

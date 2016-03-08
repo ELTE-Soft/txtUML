@@ -1,7 +1,9 @@
 package hu.elte.txtuml.export.cpp.templates;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import hu.elte.txtuml.utils.Pair;
 
@@ -67,6 +69,17 @@ public class ActivityTemplates {
 		return source;
 	}
 	
+	public static String stdLibOperationCall(String operationName, String left, String right) {
+	    Operators.Init();
+	    if(Operators.operationsOnPrimitiveTypesMap.get(operationName) != null ) {
+		return left + " " + Operators.operationsOnPrimitiveTypesMap.get(operationName) + " " + right;
+	    }
+	    else {
+		return "";
+	    }
+	     
+	}
+	
 	public static String operationCallOnPointerVariable(String ownerName, String operationName, List<String> params) {
 	    return operationCall(ownerName,GenerationNames.PointerAccess,operationName,params);
 	}
@@ -106,7 +119,7 @@ public class ActivityTemplates {
 		return source;
 	}
 
-	public static String simpleWhile(String cond, String body) {
+	public static String whileCycle(String cond, String body, String update) {
 		return simpleCondControlStruct("while", cond, body);
 	}
 
@@ -114,9 +127,9 @@ public class ActivityTemplates {
 		return GenerationNames.RealEventName + "." + paramName;
 	}
 
-	public static String createObject(String typenName, String objName, Boolean rt, Boolean isSm) {
+	public static String createObject(String typenName, String objName, Boolean isSm) {
 		String source;
-		if (rt && isSm) {
+		if (isSm) {
 			source = GenerationNames.pointerType(typenName) + " " + objName + "= " + GenerationNames.MemoryAllocator
 					+ " " + typenName + "(" + RuntimeTemplates.RuntimeVarName + ");\n";
 			source += objName + GenerationNames.PointerAccess + "startSM();\n";
@@ -150,13 +163,75 @@ public class ActivityTemplates {
 	}
 
 	public static class Operators {
-		public static final String Not = "!";
-		public static final String And = "&&";
-		public static final String Or = "||";
-		public static final String NotEqual = "!=";
-		public static final String Equal = "==";
+		
+		
 		public static final String Remove = "remove";
 		public static final String First = "front";
 		public static final String Last = "back";
+		
+		
+		public static final String Add = "+";
+		public static final String Sub = "-";
+		public static final String Mul = "*";
+		public static final String Div = "/";
+		public static final String Mod = "%";
+		public static final String Increment = "++";
+		public static final String Decrement = "--";
+		public static final String Neg = "-";
+		public static final String Equal = "==";
+		public static final String NotEqual = "!=";
+		public static final String LessThen = "<";
+		public static final String GreatThen = ">";
+		public static final String LessOrEqThen = "<=";
+		public static final String GreatOrEqThen = ">=";
+		
+		public static final String Not = "!";
+		public static final String And = "&&";
+		public static final String Or = "||";
+		
+		public static String Fork(String cond, String e1, String e2) {
+		    return cond + " ? " + e1 + " : " + e2;
+		}
+		
+		public static String DIncrement(String var) {
+		    return var + "++";
+		}
+		
+		public static String DDecrment(String var) {
+		    return var + "--";
+		}
+		
+		
+		public static Map<String,String> operationsOnPrimitiveTypesMap;
+		public static void Init() {
+		    operationsOnPrimitiveTypesMap = new HashMap<String,String>();
+		    operationsOnPrimitiveTypesMap.put("add", Add);
+		    operationsOnPrimitiveTypesMap.put("sub", Sub);
+		    operationsOnPrimitiveTypesMap.put("mul", Mul);
+		    operationsOnPrimitiveTypesMap.put("div", Div);
+		    operationsOnPrimitiveTypesMap.put("mod", Mod);
+		    operationsOnPrimitiveTypesMap.put("eq", Equal);
+		    operationsOnPrimitiveTypesMap.put("neq", NotEqual);
+		    operationsOnPrimitiveTypesMap.put("lt", LessThen);
+		    operationsOnPrimitiveTypesMap.put("gt", GreatThen);
+		    operationsOnPrimitiveTypesMap.put("leq", LessOrEqThen);
+		    operationsOnPrimitiveTypesMap.put("geq", GreatOrEqThen);
+		    
+		    operationsOnPrimitiveTypesMap.put("inc", Increment);
+		    operationsOnPrimitiveTypesMap.put("dec", Decrement);
+		    operationsOnPrimitiveTypesMap.put("neg", Neg);
+		    
+		    operationsOnPrimitiveTypesMap.put("and", And);
+		    operationsOnPrimitiveTypesMap.put("or", Or);
+		    operationsOnPrimitiveTypesMap.put("not", Not);
+		    
+		    operationsOnPrimitiveTypesMap.put("concat", Add);
+		    
+		    operationsOnPrimitiveTypesMap.put("id", "");
+		      
+		}
 	}
+	
+	
+	
 }
