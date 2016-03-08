@@ -49,8 +49,8 @@ class TopClass {
 class PingClass {
 
 	behavior port PingPort {
-		required PongInterface;
-		provided PingInterface;
+		required PingInterface;
+		provided PongInterface;
 	}
 
 	initial Init;
@@ -90,8 +90,8 @@ class PongClass {
 	}
 
 	port PongPort {
-		required PingInterface;
-		provided PongInterface;
+		required PongInterface;
+		provided PingInterface;
 	}
 
 }
@@ -99,8 +99,8 @@ class PongClass {
 class InnerPongClass {
 
 	behavior port PongPort {
-		required PingInterface;
-		provided PongInterface;
+		required PongInterface;
+		provided PingInterface;
 	}
 
 	initial Init;

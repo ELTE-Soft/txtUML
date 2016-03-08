@@ -19,7 +19,7 @@ public class Pendulum extends ModelClass {
 	class Init extends Initial {}
 	class Working extends State {
 		public void entry() {
-			Action.send(new Tick(), port(OutTickPort.class).provided::reception);
+			Action.send(new Tick(), port(OutTickPort.class).required::reception);
 		}
 	}
 	

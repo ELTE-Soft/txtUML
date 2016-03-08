@@ -343,10 +343,10 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			documentation = port.documentation
 			visibility = JvmVisibility.PUBLIC
 
-			val providedIFace = port.members.findFirst[provided]
-			val requiredIFace = port.members.findFirst[!provided]
+			val requiredIFace = port.members.findFirst[required]
+			val providedIFace = port.members.findFirst[!required]
 
-			superTypes += typeRef(Port, requiredIFace.toInterfaceTypeRef, providedIFace.toInterfaceTypeRef)
+			superTypes += typeRef(Port, providedIFace.toInterfaceTypeRef, requiredIFace.toInterfaceTypeRef)
 
 			if (port.behavior) {
 				annotations += BehaviorPort.annotationRef

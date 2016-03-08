@@ -48,15 +48,15 @@ class Display {
 	int second;
 
 	behavior port HourPort {
-		required ValueIfc;
+		provided ValueIfc;
 	}
 
 	behavior port MinutePort {
-		required ValueIfc;
+		provided ValueIfc;
 	}
 
 	behavior port SecondPort {
-		required ValueIfc;
+		provided ValueIfc;
 	}
 
 	public Display(int hour, int minute, int second) {
@@ -125,15 +125,15 @@ class Hand {
 	private int currentValue;
 
 	behavior port InTickPort {
-		required TickIfc;
-	}
-
-	port OutTickPort {
 		provided TickIfc;
 	}
 
+	port OutTickPort {
+		required TickIfc;
+	}
+
 	port ValuePort {
-		provided ValueIfc;
+		required ValueIfc;
 	}
 
 	public Hand(int maxValue, int currentValue) {
@@ -177,7 +177,7 @@ class Pendulum {
 	}
 
 	port OutTickPort {
-		provided TickIfc;
+		required TickIfc;
 	}
 
 	initial Init;

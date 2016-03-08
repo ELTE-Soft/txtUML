@@ -35,8 +35,8 @@ class XtxtUMLPortValidator extends XtxtUMLAssociationValidator {
 
 	@Check
 	def checkPortHaveAtMostOneInterfacePerType(TUPort port) {
-		if (port.members.filter[provided].length > 1 || port.members.filter[!provided].length > 1) {
-			error("Port " + port.name + " must not specify more than one provided or required interface", port,
+		if (port.members.filter[required].length > 1 || port.members.filter[!required].length > 1) {
+			error("Port " + port.name + " must not specify more than one required or provided interface", port,
 				XtxtUMLPackage::eINSTANCE.TUClassProperty_Name, PORT_INTERFACE_COUNT_MISMATCH);
 		}
 	}
@@ -108,21 +108,21 @@ class XtxtUMLPortValidator extends XtxtUMLAssociationValidator {
 		val portA = connector.ends.get(0).port;
 		val portB = connector.ends.get(1).port;
 
-		val providedAName = portA.getInterface(true)?.fullyQualifiedName;
-		val providedBName = portB.getInterface(true)?.fullyQualifiedName;
-		val requiredAName = portA.getInterface(false)?.fullyQualifiedName;
-		val requiredBName = portB.getInterface(false)?.fullyQualifiedName;
+		val requiredAName = portA.getInterface(true)?.fullyQualifiedName;
+		val requiredBName = portB.getInterface(true)?.fullyQualifiedName;
+		val providedAName = portA.getInterface(false)?.fullyQualifiedName;
+		val providedBName = portB.getInterface(false)?.fullyQualifiedName;
 
-		if (connector.delegation && (providedAName != providedBName || requiredAName != requiredBName)
-		|| !connector.delegation && (providedAName != requiredBName || requiredAName != providedBName)
+		if (connector.delegation && (requiredAName != requiredBName || providedAName != providedBName)
+		|| !connector.delegation && (requiredAName != providedBName || providedAName != requiredBName)
 		) {
 			error("Connector " + connector.name + " connects incompatible ports", connector,
 				XtxtUMLPackage::eINSTANCE.TUModelElement_Name, CONNECTOR_INCOMPATIBLE_PORTS, connector.name);
 		}
 	}
 
-	def private getInterface(TUPort port, boolean ofTypeProvided) {
-		port.members.findFirst[provided == ofTypeProvided]?.interface
+	def private getInterface(TUPort port, boolean ofTypeReqiured) {
+		port.members.findFirst[required == ofTypeReqiured]?.interface
 	}
 
 	@Check
