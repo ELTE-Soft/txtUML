@@ -32,7 +32,7 @@ class TxtUMLToCppGovernor {
 	}
 
 	@SuppressWarnings("unchecked")
-	void uml2ToCpp(String txtUMLProject, String txtUMLModel, String threadManagmentDescription,
+	void uml2ToCpp(String txtUMLProject, String txtUMLModel, String deploymentDescription,
 			boolean addRuntimeOption) throws Exception {
 		String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation().toFile()
 				.getAbsolutePath();
@@ -51,7 +51,7 @@ class TxtUMLToCppGovernor {
 				ThreadDescriptionExporter.class.getClassLoader());
 		Class<? extends Configuration> txtUMLThreadDescription;
 		try {
-			txtUMLThreadDescription = (Class<? extends Configuration>) loader.loadClass(threadManagmentDescription);
+			txtUMLThreadDescription = (Class<? extends Configuration>) loader.loadClass(deploymentDescription);
 		} catch (ClassNotFoundException e) {
 			if (!testing) {
 				Dialogs.errorMsgb("Description Class Error",
