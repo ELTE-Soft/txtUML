@@ -17,8 +17,8 @@ class XtxtUMLAssociationValidator extends AbstractXtxtUMLValidator {
 	def checkAssociationsHaveExactlyTwoEnds(TUAssociation association) {
 		val numberOfEnds = association.ends.length
 		if (2 != numberOfEnds) {
-			error("Associations must have exactly two ends", association, XtxtUMLPackage.eINSTANCE.TUAssociation_Ends,
-				ASSOCIATION_END_COUNT_MISMATCH, numberOfEnds.toString)
+			error("Association " + association.name + " must have exactly two ends", association,
+				XtxtUMLPackage.eINSTANCE.TUModelElement_Name, ASSOCIATION_END_COUNT_MISMATCH, numberOfEnds.toString)
 		}
 	}
 
@@ -26,8 +26,9 @@ class XtxtUMLAssociationValidator extends AbstractXtxtUMLValidator {
 	def checkAssociationEndNamesAreUnique(TUAssociationEnd associationEnd) {
 		val association = associationEnd.eContainer as TUAssociation
 		if (1 < association.ends.filter[name == associationEnd.name].length) {
-			error("Association end names must be unique", associationEnd,
-				XtxtUMLPackage.eINSTANCE.TUAssociationEnd_Name, ASSOCIATION_END_NAME_IS_NOT_UNIQUE, associationEnd.name)
+			error("Association end " + associationEnd.name + " in association " + association.name +
+				" must have a unique name", associationEnd, XtxtUMLPackage.eINSTANCE.TUClassProperty_Name,
+				ASSOCIATION_END_NAME_IS_NOT_UNIQUE, associationEnd.name)
 		}
 	}
 
@@ -37,15 +38,16 @@ class XtxtUMLAssociationValidator extends AbstractXtxtUMLValidator {
 		val numberOfContainerEnds = containerEnds.length
 		if (association instanceof TUComposition) {
 			if (1 != numberOfContainerEnds) {
-				error("Compositions must have exactly one container end", association,
-					XtxtUMLPackage.eINSTANCE.TUAssociation_Ends,
+				error("Composition " + association.name + " must have exactly one container end", association,
+					XtxtUMLPackage.eINSTANCE.TUModelElement_Name,
 					XtxtUMLAssociationValidator.CONTAINER_END_COUNT_MISMATCH, association.name)
 			}
 		} else {
 			containerEnds.forEach [
-				error("Associations must not have any container ends", it,
+				error("Container end " + it.name + " must not be present in an association", it,
 					XtxtUMLPackage.eINSTANCE.TUAssociationEnd_Container, ASSOCIATION_CONTAINS_CONTAINER_END, it.name)
 			]
 		}
 	}
+
 }
