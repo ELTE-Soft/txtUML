@@ -24,7 +24,7 @@ import org.eclipse.papyrus.uml.diagram.wizards.command.NewPapyrusModelCommand;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Profile;
 
-import hu.elte.txtuml.export.Uml2Utils;
+import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
 
 /**
  * Controls the creation of a Papyrus Model
@@ -42,7 +42,7 @@ public class PapyrusModelCreator {
 	 * The Constructor
 	 * @param modelpath
 	 */
-	public PapyrusModelCreator(String modelpath){
+	public PapyrusModelCreator(String modelpath) {
 		diFilePath = modelpath+".di";
 		umlFilePath = modelpath+".uml";
 		notationFilePath = modelpath+".notation";
@@ -137,7 +137,7 @@ public class PapyrusModelCreator {
 	 * @return The {@link Model}
 	 */
 	public Model getUmlModel(){
-		return Uml2Utils.loadModel(umlFilePath);
+		return TxtUMLToUML2.loadExportedModel(umlFilePath);
 	}
 	
 	private void copyFile(String sourcepath, IFile newFile){
