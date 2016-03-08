@@ -1,6 +1,8 @@
 package hu.elte.txtuml.api.model.report;
 
 import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.Port;
+import hu.elte.txtuml.api.model.Region;
 import hu.elte.txtuml.api.model.Signal;
 
 /**
@@ -8,11 +10,15 @@ import hu.elte.txtuml.api.model.Signal;
  */
 public interface RuntimeWarningsListener {
 
-	default void unlinkingNonExistingAssociation(ModelClass leftObj,
-			ModelClass rightObj) {
+	default void unlinkingNonExistingAssociation(ModelClass leftObj, ModelClass rightObj) {
 	}
 
 	default void signalArrivedToDeletedObject(ModelClass obj, Signal signal) {
 	}
 
+	default void lostSignalAtObject(Region region, Signal signal) {
+	}
+
+	default void lostSignalAtPort(Port<?, ?> portInstance, Signal signal) {
+	}
 }

@@ -144,6 +144,8 @@ public class Region extends StateMachine {
 		}
 		if (findAndExecuteTransition(port, signal)) {
 			callEntryAction(signal);
+		} else {
+			Report.warning.forEach(x -> x.lostSignalAtObject(this, signal));
 		}
 	}
 
