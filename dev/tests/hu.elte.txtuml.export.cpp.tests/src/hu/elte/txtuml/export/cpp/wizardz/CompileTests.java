@@ -3,6 +3,8 @@ package hu.elte.txtuml.export.cpp.wizardz;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -24,7 +26,7 @@ public class CompileTests {
 	}
 
 	private static final String pathToProjects = "../../../examples/demo/";
-	
+
 	private static final Config[] testProjects = {
 			new Config("hu.elte.txtuml.examples.machine", "hu.elte.txtuml.examples.machine.model1",
 					"hu.elte.txtuml.examples.machine.Machine1Configuration"),
@@ -41,7 +43,9 @@ public class CompileTests {
 			TxtUMLToCppGovernor cppgen = new TxtUMLToCppGovernor(true);
 			boolean runsOk = true;
 			try {
-				IProjectDescription desc = ResourcesPlugin.getWorkspace().loadProjectDescription(new Path(pathToProjects + config.project + "/.project"));
+				IProjectDescription desc = ResourcesPlugin.getWorkspace()
+						.loadProjectDescription(new Path(pathToProjects + config.project + "/.project"));
+				desc.setLocation(new Path(new File(pathToProjects + config.project).getAbsolutePath()));
 				IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(desc.getName());
 				project.create(desc, null);
 				project.open(null);
