@@ -4,7 +4,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.StateMachine;
 
-import hu.elte.txtuml.export.uml2.UML2.ExportMode;
+import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode;
 import hu.elte.txtuml.export.uml2.transform.visitors.TransitionVisitor;
 import hu.elte.txtuml.export.uml2.transform.visitors.VertexVisitor;
 

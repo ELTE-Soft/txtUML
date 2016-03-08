@@ -22,7 +22,7 @@ import org.eclipse.uml2.uml.Vertex;
 
 import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.To;
-import hu.elte.txtuml.export.uml2.UML2.ExportMode;
+import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode;
 import hu.elte.txtuml.utils.jdt.SharedUtils;
 
 public class TransitionExporter {

@@ -59,8 +59,7 @@ package hu.elte.txtuml.api.model;
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  * 
- * @param
- * 			<P>
+ * @param <P>
  *            the provided interface
  */
 public abstract class OutPort<P extends Interface> extends Port<Interface.Empty, P> {
@@ -68,5 +67,5 @@ public abstract class OutPort<P extends Interface> extends Port<Interface.Empty,
 	protected OutPort() {
 		super(0);
 	}
-	
+
 }

@@ -207,7 +207,6 @@ class BellmanFordSP
 			}
 			if (weight >= 0.0)
 			{
-				System.err.println("error: weight of negative cycle = " + weight);
 				return false;
 			}
 		}
@@ -219,7 +218,6 @@ class BellmanFordSP
 			// check that distTo[v] and edgeTo[v] are consistent
 			if (distTo[s] != 0.0 || edgeTo[s] != null)
 			{
-				System.err.println("distanceTo[s] and edgeTo[s] inconsistent");
 				return false;
 			}
 			for (int v = 0; v < G.V(); v++)
@@ -228,7 +226,6 @@ class BellmanFordSP
 					continue;
 				if (edgeTo[v] == null && distTo[v] != Double.POSITIVE_INFINITY)
 				{
-					System.err.println("distTo[] and edgeTo[] inconsistent");
 					return false;
 				}
 			}
@@ -242,7 +239,6 @@ class BellmanFordSP
 					int w = e.to();
 					if (distTo[v] + e.weight() < distTo[w])
 					{
-						System.err.println("edge " + e + " not relaxed");
 						return false;
 					}
 				}
@@ -260,7 +256,6 @@ class BellmanFordSP
 					return false;
 				if (distTo[v] + e.weight() != distTo[w])
 				{
-					System.err.println("edge " + e + " on shortest path not tight");
 					return false;
 				}
 			}
