@@ -453,7 +453,7 @@ public class Statement
 		if (st.equals(StatementType.left))
 			return StatementType.right;
 		
-		throw new UnknownStatementException("Noopposite of such statement!", st.toString());
+		throw new UnknownStatementException("Internal error: This statement has no opposite!", st.toString());
 	}
 	
 	// end Statics
