@@ -13,11 +13,10 @@ import hu.elte.txtuml.api.deployment.GroupContainer;
  * <p>
  * Configures which classes go to the same thread pool. It defines the number of
  * threads according to a linear function parameterized by the number of created
- * objects. <b>max</b> defines how many threads could be at most.
- * <p>
+ * objects. {@link #max} defines how many threads could be at most.
+ * 
  * <p>
  * <b>Example:</b>
- * <p>
  * 
  * <pre>
  * <code>@Group(contains = {A.class,B.class}, max = 10, constant = 5, gradient = 0.1)</code>

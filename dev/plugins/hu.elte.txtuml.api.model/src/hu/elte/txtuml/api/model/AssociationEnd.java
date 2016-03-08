@@ -28,10 +28,7 @@ import hu.elte.txtuml.api.model.backend.SingleItemCollection;
  * <p>
  * The multiplicity of an association end might only be checked during model
  * execution. The upper bound is always checked, if it is ever offended, an
- * error message is shown in the model executor's error log (see the
- * documentation of the
- * {@link ModelExecutor.Settings#setExecutorErrorStream(java.io.PrintStream)
- * ModelExecutor.Settings.setExecutorErrorStream} method). However, this does
+ * error message is shown in the model executor's error log. However, this does
  * not cause the execution to fail. The lower bound might be offended
  * temporarily, but has to be restored before the current <i>execution step</i>
  * ends. It is checked at the beginning of the next <i>execution step</i> and an

@@ -6,7 +6,7 @@ import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
 
 /**
- * A listener interface that listens to runtime errors of the model execution.
+ * Listener for runtime errors of the model execution.
  */
 public interface RuntimeErrorsListener {
 
