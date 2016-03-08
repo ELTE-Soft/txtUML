@@ -33,7 +33,7 @@ public class Hand extends ModelClass {
 
 	@From(Init.class) @To(Working.class)
 	class Initialize extends Transition {}
-	
+	/*
 	@From(Working.class) @To(Working.class) @Trigger(Tick.class)
 	class DoWork extends Transition {
 		public void effect() {
@@ -44,5 +44,5 @@ public class Hand extends ModelClass {
 			}
 			Action.send(new HandValue(currentValue), port(ValuePort.class).provided::reception);
 		}
-	}
+	}*/
 }
