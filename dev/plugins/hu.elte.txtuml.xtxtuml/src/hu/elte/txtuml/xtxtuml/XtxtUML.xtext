@@ -21,8 +21,13 @@ TUModelDeclaration :
 
 // Model level
 
-TUModelElement :
-	TUExecution | TUSignal | TUClass | TUAssociation
+TUModelElement
+	: TUExecution
+	| TUSignal
+	| TUClass
+	| TUAssociation
+	| TUInterface
+	| TUConnector
 ;
 
 TUExecution :
@@ -45,7 +50,27 @@ TUClass :
 TUAssociation returns TUAssociation:
 	({TUAssociation} 'association' | {TUComposition} 'composition') name=ValidID '{'
 		ends+=TUAssociationEnd*
-	'}'
+	'}' ';'?
+;
+
+TUInterface :
+	'interface' name=ValidID '{'
+		receptions+=TUReception*
+	'}' ';'?
+;
+
+TUReception :
+	'reception' signal=[TUSignal|QualifiedName] ';'
+;
+
+TUConnector :
+	('connector' | delegation?='delegation') name=ValidID '{'
+		ends+=TUConnectorEnd*
+	'}' ';'?
+;
+
+TUConnectorEnd :
+	role=[TUAssociationEnd|QualifiedName] '->' port=[TUPort|QualifiedName] name=ValidID ';'
 ;
 
 // Inner element level
@@ -71,6 +96,14 @@ TUClassMember
 	  )
 	| TUState
 	| TUTransition
+	| TUPort
+;
+
+/*
+ * The inferred EClass is used in TUClassPropertyAccessExpression.
+ */
+TUClassProperty :
+	TUPort | TUAssociationEnd
 ;
 
 TUConstructor :
@@ -97,7 +130,7 @@ TUStateMember :
 ;
 
 TUEntryOrExitActivity :
-	(entry?='entry' | exit?='exit')
+	(entry?='entry' | 'exit')
 		body=XBlockExpression ';'?
 ;
 
@@ -107,8 +140,12 @@ TUTransition :
 	'}' ';'?
 ;
 
-TUTransitionMember :
-	TUTransitionTrigger | TUTransitionVertex | TUTransitionEffect | TUTransitionGuard
+TUTransitionMember
+	: TUTransitionTrigger
+	| TUTransitionVertex
+	| TUTransitionEffect
+	| TUTransitionGuard
+	| TUTransitionPort
 ;
 
 TUTransitionTrigger :
@@ -125,6 +162,20 @@ TUTransitionEffect :
 
 TUTransitionGuard :
 	'guard' '(' (else?='else' | expression=XExpression) ')' ';'?
+;
+
+TUTransitionPort :
+	'port' port=[TUPort|QualifiedName] ';'
+;
+
+TUPort :
+	behavior?='behavior'? 'port' name=ValidID '{'
+		members+=TUPortMember*
+	'}' ';'?
+;
+
+TUPortMember :
+	(provided?='provided' | 'required') interface=[TUInterface|QualifiedName] ';'
 ;
 
 // Association-related
@@ -465,7 +516,9 @@ XMemberFeatureCall returns xbase::XExpression :
 			)? ')'
 		)?
 	| 
-		=>({RAlfAssocNavExpression.left=current} '->') '(' right=[TUAssociationEnd|QualifiedName] ')'
+		=>({TUClassPropertyAccessExpression.left=current} '->') '('
+			right=[TUClassProperty|QualifiedName]
+		')'
 	)*
 ;
 
