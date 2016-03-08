@@ -1,83 +1,44 @@
 package hu.elte.txtuml.export.uml2.transform.exporters.controls;
 
-import org.eclipse.jdt.core.dom.Statement;
+import org.eclipse.jdt.core.dom.EnhancedForStatement;
+import org.eclipse.uml2.uml.ActivityNode;
+import org.eclipse.uml2.uml.ExpansionKind;
+import org.eclipse.uml2.uml.ExpansionNode;
+import org.eclipse.uml2.uml.ExpansionRegion;
+import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.Variable;
 
 import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
+import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
 
-public class ForEachActionExporter extends AbstractLoopExporter {
+public class ForEachActionExporter {
 
-	public ForEachActionExporter(BlockExporter blockExporter) {
-		super(blockExporter);
+	private BlockExporter<? extends ActivityNode> blockExporter;
+
+	public ForEachActionExporter(BlockExporter<? extends ActivityNode> blockExporter) {
+		this.blockExporter = blockExporter;
 	}
 
-	public void exportForEachStatement(Statement statement) {
-		// TODO export forEach
-		/*
-		EnhancedForStatement forState = (EnhancedForStatement) statement;
+	public void exportForEachStatement(EnhancedForStatement statement) {
 
-		SingleVariableDeclaration parameter = forState.getParameter();
-		Expression expression = forState.getExpression();
-		Statement forEachBody = forState.getBody();
+		ExpansionRegion expRegion = (ExpansionRegion) blockExporter.createAndAddNode("foreach",
+				UMLPackage.Literals.EXPANSION_REGION);
+		expRegion.setMode(ExpansionKind.ITERATIVE_LITERAL);
 
-		Type exprType = this.getExpressionType(expression);
-		String expr = this.getExpressionString(expression);
+		Expr expr = blockExporter.getExpressionExporter().export(statement.getExpression());
 
-		ExpansionNode currentNode = (ExpansionNode) this.activity
-				.createOwnedNode("LOOP_NODE_FOREACH_" + this.hashCode(),
-						UMLPackage.Literals.EXPANSION_NODE);
+		BlockExporter<ActivityNode> subExporter = blockExporter.subExporter(expRegion, expRegion.getNodes());
+		ExpansionNode inNode = (ExpansionNode) subExporter.createAndAddNode("foreach-in",
+				UMLPackage.Literals.EXPANSION_NODE);
+		inNode.setType(blockExporter.getTypeExporter().exportType(statement.getExpression().resolveTypeBinding()));
+		expRegion.getInputElements().add(inNode);
 
-		ExpansionRegion currentRegion = (ExpansionRegion) this.activity
-				.createOwnedNode("LOOP_REGION_FOREACH_" + this.hashCode(),
-						UMLPackage.Literals.EXPANSION_REGION);
+		blockExporter.createObjectFlowBetweenActivityNodes(expr.evaluate().getObjectNode(), inNode);
 
-		currentNode.setRegionAsInput(currentRegion);
-		currentNode.setRegionAsOutput(currentRegion);
-
-		this.currentNode = currentRegion;
-
-		Variable loopVar = this.currentNode.createVariable("LOOP_VAR_"
-				+ this.currentNode.getName(), exprType);
-		AddVariableValueAction writeVar = (AddVariableValueAction) this.currentNode
-				.createNode("INIT_LOOP_VAR_" + this.currentNode.getName(),
-						UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION);
-
-		writeVar.setVariable(loopVar);
-
-		ValuePin valuePin = (ValuePin) writeVar.createValue(parameter.getName()
-				.toString() + "_" + this.hashCode(), exprType,
-				UMLPackage.Literals.VALUE_PIN);
-		this.createAndAddOpaqueExpressionToValuePin(valuePin, expr, exprType);
-
-		this.createEdgeBetweenActivityNodes(this.getLastNode(), writeVar);
-		this.setLastNode(writeVar);
-
-		++AbstractActionCodeExporter.blockBodiesBeingExported;
-
-		this.exportBodyFromStatement(forEachBody);
-
-		--AbstractActionCodeExporter.blockBodiesBeingExported;
-
-		this.methodBodyExporter.getBodyNode().getExecutableNodes()
-				.add(this.currentNode);
-
-		// this.setLastNode(this.currentNode);
-		 */
+		Variable foreachVariable = subExporter.createVariable(statement.getParameter().getName().getIdentifier(),
+				subExporter.getTypeExporter().exportType(statement.getParameter().resolveBinding().getType()));
+		subExporter.getVariables().addVariable(foreachVariable);
+		subExporter.export(statement.getBody());
 	}
-/*
-	protected MethodBodyExporter exportBodyFromStatement(Statement statement) {
-		MethodBodyExporter imp = super.exportBodyFromStatement(statement);
 
-		SequenceNode seqNode = imp.getBodyNode();
-
-		this.currentNode.getNodes().add(seqNode);
-
-		Action lastAction = (Action) seqNode.getExecutableNodes().get(
-				seqNode.getExecutableNodes().size() - 1);
-
-		this.currentNode.getOutputs().addAll(lastAction.getOutputs());
-		this.loopBody = seqNode;
-
-		return imp;
-	}
-*/
 }

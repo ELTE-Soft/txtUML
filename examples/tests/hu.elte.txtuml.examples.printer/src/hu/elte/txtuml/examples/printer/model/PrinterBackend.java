@@ -87,7 +87,7 @@ public class PrinterBackend extends ModelClass {
 		@Override
 		public void effect() {
 			Document doc = PrinterBackend.this.assoc(DocumentBeingPrinted.beingPrinted.class).selectAny();
-			Action.unlink(DocumentBeingPrinted.beingPrinted.class, doc, DocumentBeingPrinted.PrinterBackEnd.class,
+			Action.unlink(DocumentBeingPrinted.beingPrinted.class, doc, DocumentBeingPrinted.printerBackend.class,
 					PrinterBackend.this);
 			PrinterFrontend pf = PrinterBackend.this.assoc(PrinterSystem.frontend.class).selectAny();
 			Action.send(new FinishedPrinting(), pf);

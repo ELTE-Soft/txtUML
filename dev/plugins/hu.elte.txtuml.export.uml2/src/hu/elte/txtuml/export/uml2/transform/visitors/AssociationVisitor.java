@@ -36,8 +36,7 @@ public class AssociationVisitor extends ASTVisitor {
 	public boolean visit(TypeDeclaration typeDeclaration) {
 		if (ElementTypeTeller.isAssociation(typeDeclaration)) {
 			try {
-				new AssociationExporter(typeDeclaration, mapping, exportedModel)
-						.exportAssociation();
+				new AssociationExporter(typeDeclaration, mapping, exportedModel).exportAssociation();
 				return false;
 			} catch (ExportException e) {
 				throw new RuntimeExportException(e);

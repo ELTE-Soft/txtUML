@@ -5,25 +5,19 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.ArrayAccess;
-import org.eclipse.jdt.core.dom.ArrayCreation;
-import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.Assignment;
+import org.eclipse.jdt.core.dom.Assignment.Operator;
 import org.eclipse.jdt.core.dom.BooleanLiteral;
-import org.eclipse.jdt.core.dom.CastExpression;
 import org.eclipse.jdt.core.dom.CharacterLiteral;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.ConditionalExpression;
-import org.eclipse.jdt.core.dom.CreationReference;
 import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.ExpressionMethodReference;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.InstanceofExpression;
-import org.eclipse.jdt.core.dom.LambdaExpression;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
@@ -37,11 +31,10 @@ import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.SuperFieldAccess;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
-import org.eclipse.jdt.core.dom.SuperMethodReference;
 import org.eclipse.jdt.core.dom.ThisExpression;
 import org.eclipse.jdt.core.dom.TypeLiteral;
-import org.eclipse.jdt.core.dom.TypeMethodReference;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.LiteralNull;
@@ -50,21 +43,24 @@ import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.UMLFactory;
 
+import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
 import hu.elte.txtuml.export.uml2.transform.exporters.TypeExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.actions.CreateObjectActionExporter;
 import hu.elte.txtuml.utils.Pair;
 
 /**
- * TODO {@link org.eclipse.jdt.core.dom.Annotation}
+ * This visitor is only applied to right-hand-side expressions. left-hand-side
+ * expressions are visited by {@linkplain LeftHandSideOfAssignmentVisitor}.
+ *
  */
 class ExpressionVisitor extends ASTVisitor {
 
-	private final ExpressionExporter expressionExporter;
+	private final ExpressionExporter<? extends ActivityNode> expressionExporter;
 	private final TypeExporter typeExporter;
 	private final OperatorExporter operatorExporter;
 	private Expr result;
 
-	public ExpressionVisitor(ExpressionExporter expressionExporter) {
+	public ExpressionVisitor(ExpressionExporter<? extends ActivityNode> expressionExporter) {
 		this.expressionExporter = expressionExporter;
 		this.typeExporter = expressionExporter.getTypeExporter();
 		this.operatorExporter = new OperatorExporter(expressionExporter);
@@ -78,10 +74,11 @@ class ExpressionVisitor extends ASTVisitor {
 	public boolean visit(Assignment node) {
 		Expression left = node.getLeftHandSide();
 		Expression right = node.getRightHandSide();
+		Operator operator = node.getOperator();
 
 		right.accept(this);
-		LeftHandSideOfAssignmentVisitor visitor = new LeftHandSideOfAssignmentVisitor(
-				result, expressionExporter);
+		LeftHandSideOfAssignmentVisitor visitor = new LeftHandSideOfAssignmentVisitor(result, expressionExporter,
+				operatorExporter, operator);
 		left.accept(visitor);
 		return false;
 	}
@@ -92,8 +89,7 @@ class ExpressionVisitor extends ASTVisitor {
 
 		value.setValue(node.booleanValue());
 
-		result = expressionExporter.createAndSetValueSpecificationAction(value,
-				Boolean.toString(node.booleanValue()),
+		result = expressionExporter.createAndSetValueSpecificationAction(value, Boolean.toString(node.booleanValue()),
 				typeExporter.getBoolean());
 		return false;
 	}
@@ -104,10 +100,8 @@ class ExpressionVisitor extends ASTVisitor {
 
 		List<Expr> args = new ArrayList<>();
 		args.add(Expr.type(node.getType().resolveBinding(), typeExporter));
-		node.arguments().forEach(
-				o -> args.add(expressionExporter.export((Expression) o)));
-		result = new CreateObjectActionExporter(expressionExporter)
-				.export(args);
+		node.arguments().forEach(o -> args.add(expressionExporter.export((Expression) o)));
+		result = new CreateObjectActionExporter(expressionExporter).export(node.resolveConstructorBinding(), args);
 		return false;
 	}
 
@@ -118,36 +112,31 @@ class ExpressionVisitor extends ASTVisitor {
 		String asString = Character.toString(literal.charValue());
 		value.setValue(asString);
 
-		result = expressionExporter.createAndSetValueSpecificationAction(value,
-				"\"" + asString + "\"", typeExporter.getString());
+		result = expressionExporter.createAndSetValueSpecificationAction(value, "\"" + asString + "\"",
+				typeExporter.getString());
 		return false;
 	}
 
 	@Override
 	public boolean visit(FieldAccess node) {
-
-		result = Expr.field(expressionExporter.export(node.getExpression()),
-				node.resolveFieldBinding(), expressionExporter);
-
+		result = Expr.field(expressionExporter.export(node.getExpression()), node.resolveFieldBinding(),
+				expressionExporter);
 		return false;
 	}
 
 	@Override
 	public boolean visit(InfixExpression node) {
-		OperatorExporter operatorExporter = new OperatorExporter(
-				expressionExporter);
+		OperatorExporter operatorExporter = new OperatorExporter(expressionExporter);
 
-		Pair<Operation, Expr> pair = operatorExporter.exportRaw(node
-				.getOperator().toString(), Arrays.asList(node.getLeftOperand(),
-				node.getRightOperand()));
+		Pair<Operation, Expr> pair = operatorExporter.exportRaw(node.getOperator().toString(),
+				Arrays.asList(node.getLeftOperand(), node.getRightOperand()));
 
 		result = pair.getSecond();
 
 		for (Object o : node.extendedOperands()) {
 			Expression operand = (Expression) o;
 
-			result = expressionExporter.createCallOperationAction(
-					pair.getFirst(), null,
+			result = expressionExporter.createCallOperationAction(pair.getFirst(), null,
 					Arrays.asList(result, expressionExporter.export(operand)));
 		}
 
@@ -155,54 +144,57 @@ class ExpressionVisitor extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(LambdaExpression node) {
-		// TODO LambdaExpression
+	public boolean visit(MethodInvocation node) {
+		createMethodInvocation(node.resolveMethodBinding(), node.getExpression(), (List<?>) node.arguments());
 		return false;
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public boolean visit(MethodInvocation node) {
-		IMethodBinding binding = node.resolveMethodBinding();
+	public boolean visit(SuperMethodInvocation node) {
+		createMethodInvocation(node.resolveMethodBinding(), null, (List<?>) node.arguments());
+		return false;
+	}
 
+	private void createMethodInvocation(IMethodBinding binding, Expression expression, List<?> arguments) {
 		List<Expr> args = new ArrayList<>();
-		node.arguments().forEach(
-				o -> args.add(expressionExporter.export((Expression) o)));
+		arguments.forEach(o -> args.add(expressionExporter.export((Expression) o)));
 
 		Expr target = null;
-		if (!Modifier.isStatic(binding.getModifiers())) {
-			Expression expression = node.getExpression();
+		if (!Modifier.isStatic(binding.getModifiers()) && !TypeExporter.isNavigation(binding)) {
 			if (expression != null) {
 				target = expressionExporter.export(expression);
 			} else {
-				target = expressionExporter.autoFillTarget(binding);
+				target = expressionExporter.autoFillTarget(binding, binding.getName());
 			}
 		} else {
-			if (TypeExporter.isAction(binding)) {
-				result = expressionExporter.exportAction(binding, args);
-				return false;
+			if (TypeExporter.isAction(binding) || TypeExporter.isNavigation(binding)) {
+				try {
+					Expr expr = Modifier.isStatic(binding.getModifiers()) ? null : expressionExporter.export(expression);
+					result = expressionExporter.exportAction(binding, expr, args);
+				} catch (ExportException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return;
 			}
 		}
 
-		Operation operation = typeExporter.exportMethodAsOperation(binding,
-				args);
+		Operation operation = typeExporter.exportMethodAsOperation(binding, args);
 
 		if (operation == null) { // TODO unknown operation
-			result = expressionExporter.createOpaqueAction(node.toString(),
-					node.resolveTypeBinding(), target, args);
-			return false;
+			result = expressionExporter.createOpaqueAction(binding.toString(), binding.getDeclaringClass(), target,
+					args);
+			return;
 		}
 
-		result = expressionExporter.createCallOperationAction(operation,
-				target, args);
-		return false;
+		result = expressionExporter.createCallOperationAction(operation, target, args);
 	}
 
 	@Override
 	public boolean visit(NullLiteral node) {
 		LiteralNull value = UMLFactory.eINSTANCE.createLiteralNull();
-		result = expressionExporter.createAndSetValueSpecificationAction(value,
-				"null", typeExporter.exportType(node.resolveTypeBinding()));
+		result = expressionExporter.createAndSetValueSpecificationAction(value, "null",
+				typeExporter.exportType(node.resolveTypeBinding()));
 		return false;
 	}
 
@@ -214,14 +206,13 @@ class ExpressionVisitor extends ASTVisitor {
 			int intValue = Integer.parseInt(asString);
 			LiteralInteger value = UMLFactory.eINSTANCE.createLiteralInteger();
 			value.setValue(intValue);
-			result = expressionExporter.createAndSetValueSpecificationAction(
-					value, asString, typeExporter.getInteger());
+			result = expressionExporter.createAndSetValueSpecificationAction(value, asString,
+					typeExporter.getInteger());
 		} else if (typeName.equals("double")) {
 			double doubleValue = Double.parseDouble(asString);
 			LiteralReal value = UMLFactory.eINSTANCE.createLiteralReal();
 			value.setValue(doubleValue);
-			result = expressionExporter.createAndSetValueSpecificationAction(
-					value, asString, typeExporter.getReal());
+			result = expressionExporter.createAndSetValueSpecificationAction(value, asString, typeExporter.getReal());
 		}
 		return false;
 	}
@@ -236,8 +227,7 @@ class ExpressionVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(PostfixExpression node) {
 		String operator = "_" + node.getOperator().toString();
-		result = operatorExporter.exportRaw(operator,
-				Arrays.asList(node.getOperand())).getSecond();
+		result = operatorExporter.exportRaw(operator, Arrays.asList(node.getOperand())).getSecond();
 
 		return false;
 	}
@@ -245,8 +235,7 @@ class ExpressionVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(PrefixExpression node) {
 		String operator = node.getOperator().toString() + "_";
-		result = operatorExporter.exportRaw(operator,
-				Arrays.asList(node.getOperand())).getSecond();
+		result = operatorExporter.exportRaw(operator, Arrays.asList(node.getOperand())).getSecond();
 
 		return false;
 	}
@@ -267,8 +256,7 @@ class ExpressionVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(SimpleName node) {
-		result = Expr.ofName((IVariableBinding) node.resolveBinding(),
-				expressionExporter);
+		result = Expr.ofName((IVariableBinding) node.resolveBinding(), expressionExporter);
 		return false;
 	}
 
@@ -279,16 +267,14 @@ class ExpressionVisitor extends ASTVisitor {
 		String asString = node.getLiteralValue();
 		value.setValue(asString);
 
-		result = expressionExporter.createAndSetValueSpecificationAction(value,
-				"\"" + asString + "\"", typeExporter.getString());
+		result = expressionExporter.createAndSetValueSpecificationAction(value, "\"" + asString + "\"",
+				typeExporter.getString());
 		return false;
 	}
 
 	@Override
 	public boolean visit(ThisExpression node) {
-		result = Expr.thisExpression(
-				typeExporter.exportType(node.resolveTypeBinding()),
-				expressionExporter);
+		result = Expr.thisExpression(typeExporter.exportType(node.resolveTypeBinding()), expressionExporter);
 		return false;
 	}
 
@@ -300,79 +286,28 @@ class ExpressionVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(VariableDeclarationExpression node) {
-		expressionExporter.exportVariableDeclaration(node.getType(), node);
-		return false;
-	}
-
-	@Override
-	public boolean visit(ArrayAccess node) {
-		// TODO ArrayAccess
-		return false;
-	}
-
-	@Override
-	public boolean visit(ArrayCreation node) {
-		// TODO ArrayCreation
-		return false;
-	}
-
-	@Override
-	public boolean visit(ArrayInitializer node) {
-		// TODO ArrayInitializer
-		return false;
-	}
-
-	@Override
-	public boolean visit(CastExpression node) {
-		// TODO CastExpression
+		expressionExporter.exportVariableDeclaration(node.resolveTypeBinding(), node);
 		return false;
 	}
 
 	@Override
 	public boolean visit(ConditionalExpression node) {
 		// TODO ConditionalExpression
-		return false;
-	}
-
-	@Override
-	public boolean visit(CreationReference node) {
-		// TODO CreationReference
-		return false;
-	}
-
-	@Override
-	public boolean visit(ExpressionMethodReference node) {
-		// TODO ExpressionMethodReference
-		return false;
+		throw new RuntimeException("Conditional expressions are not supported");
 	}
 
 	@Override
 	public boolean visit(InstanceofExpression node) {
 		// TODO InstanceofExpression
-		return false;
+		throw new RuntimeException("Instanceof operator is not supported");
 	}
 
 	@Override
 	public boolean visit(SuperFieldAccess node) {
-		// TODO SuperFieldAccess
-		return false;
-	}
-
-	@Override
-	public boolean visit(SuperMethodInvocation node) {
-		// TODO SuperMethodInvocation
-		return false;
-	}
-
-	@Override
-	public boolean visit(SuperMethodReference node) {
-		// TODO SuperMethodReference
-		return false;
-	}
-
-	@Override
-	public boolean visit(TypeMethodReference node) {
-		// TODO TypeMethodReference
+		Expr thisExpression = Expr.thisExpression(
+				typeExporter.exportType(node.resolveFieldBinding().getDeclaringClass().getSuperclass()),
+				expressionExporter);
+		result = Expr.field(thisExpression, node.resolveFieldBinding(), expressionExporter);
 		return false;
 	}
 
