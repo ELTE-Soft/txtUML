@@ -43,7 +43,7 @@ public class Keyboard extends ModelClass {
 		@Override
 		public void effect() {
 			Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).selectAny();
-			Action.send(a, ((KeyPress) getSignal()));
+			Action.send(((KeyPress) getSignal()), a);
 		}
 	}
 
@@ -82,7 +82,7 @@ public class Keyboard extends ModelClass {
 		@Override
 		public void effect() {
 			Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).selectAny();
-			Action.send(a, ((KeyPress) getSignal()));
+			Action.send(((KeyPress) getSignal()), a);
 		}
 	}
 
@@ -98,7 +98,7 @@ public class Keyboard extends ModelClass {
 		@Override
 		public void effect() {
 			Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).selectAny();
-			Action.send(a, new KeyboardTimeout());
+			Action.send(new KeyboardTimeout(), a);
 		}
 	}
 }

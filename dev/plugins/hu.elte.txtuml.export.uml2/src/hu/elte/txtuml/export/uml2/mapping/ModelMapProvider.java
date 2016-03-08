@@ -34,8 +34,7 @@ public class ModelMapProvider {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public ModelMapProvider(URI directory, String filename)
-			throws ModelMapException {
+	public ModelMapProvider(URI directory, String filename) throws ModelMapException {
 		uriFragmentMapper = new URIFragmentMapper(directory, filename);
 
 		ResourceSet resourceSet = new ResourceSetImpl();
@@ -62,8 +61,7 @@ public class ModelMapProvider {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public ModelMapProvider(URI directory, String filename, Resource resource)
-			throws ModelMapException {
+	public ModelMapProvider(URI directory, String filename, Resource resource) throws ModelMapException {
 		uriFragmentMapper = new URIFragmentMapper(directory, filename);
 
 		if (resource == null) {

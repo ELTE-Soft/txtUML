@@ -6,7 +6,7 @@
 
 
  StateMachineI::StateMachineI(std::shared_ptr<MessageQueueType> messageQueue_)
-	 :_runtime(nullptr), _messageQueue(messageQueue_), _pool(nullptr), _inPool(false), _started(false), _initialized(false){}
+         :_messageQueue(messageQueue_), _pool(nullptr), _inPool(false), _started(false), _initialized(false){}
 
  
 void StateMachineI::runSM()
@@ -53,15 +53,14 @@ void StateMachineI::setPooled(bool value_=true)
 StateMachineI::~StateMachineI()
 {
 	std::unique_lock<std::mutex> mlock(_mutex);
-	
 	while(_inPool)
 	{
 		_cond.wait(mlock);
 	}
 	
-	if(_runtime != nullptr)
+        /*if(_runtime != nullptr)
 	{
 		_runtime->removeObject(this);
-	}
+        }*/
 		
 }

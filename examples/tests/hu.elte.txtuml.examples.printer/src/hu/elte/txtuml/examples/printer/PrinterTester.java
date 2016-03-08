@@ -39,19 +39,19 @@ public class PrinterTester {
 		Action.start(h3);
 		Action.start(h4);
 
-		Action.send(h1, new WantToPrint()); // 2
+		Action.send(new WantToPrint(), h1); // 2
 		Thread.sleep(500);
-		Action.send(h2, new WantToPrint()); // 2
+		Action.send(new WantToPrint(), h2); // 2
 		Thread.sleep(500);
-		Action.send(h1, new WantToPrint()); // 2
+		Action.send(new WantToPrint(), h1); // 2
 		Thread.sleep(500);
-		Action.send(h3, new WantToPrint()); // 2
+		Action.send(new WantToPrint(), h3); // 2
 		Thread.sleep(500);
-		Action.send(h4, new WantToPrint()); // 2
+		Action.send(new WantToPrint(), h4); // 2
 		Thread.sleep(500);
-		Action.send(h1, new WantToPrint()); // 2
+		Action.send(new WantToPrint(), h1); // 2
 		Thread.sleep(2000);
-		Action.send(p, new RestockPaper(20));
+		Action.send(new RestockPaper(20), p);
 
 		Thread.sleep(24000);
 

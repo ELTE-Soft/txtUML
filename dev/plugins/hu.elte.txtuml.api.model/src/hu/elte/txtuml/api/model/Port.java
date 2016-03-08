@@ -17,7 +17,7 @@ import java.lang.reflect.Proxy;
  * Define connectors to specify the connections between ports and create these
  * connections at runtime with the appropriate action methods. Signals can be
  * sent through the receptions on the provided interface of a port with the
- * {@link Action#send(Reception, Signal)} method.
+ * {@link Action#send(Signal, Reception)} method.
  * <p>
  * The {@link #provided} field of a port contains an instance of the provided
  * interface.

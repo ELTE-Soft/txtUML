@@ -5,6 +5,7 @@ import java.util.List;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.Statement;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.ExecutableNode;
 import org.eclipse.uml2.uml.LoopNode;
 import org.eclipse.uml2.uml.SequenceNode;
@@ -16,21 +17,19 @@ import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExpo
 
 abstract class AbstractLoopExporter extends AbstractControlStructureExporter {
 
-	AbstractLoopExporter(BlockExporter blockExporter) {
+	AbstractLoopExporter(BlockExporter<? extends ActivityNode> blockExporter) {
 		super(blockExporter);
 	}
 
-	protected void exportLoop(String name, List<Expression> initializers,
-			Expression condition, List<Expression> updaters, Statement body) {
+	protected void exportLoop(String name, List<Expression> initializers, Expression condition,
+			List<Expression> updaters, Statement body) {
 
-		LoopNode loopNode = (LoopNode) blockExporter.createExecutableNode(name,
-				UMLPackage.Literals.LOOP_NODE);
+		LoopNode loopNode = (LoopNode) blockExporter.createAndAddNode(name, UMLPackage.Literals.LOOP_NODE);
 
 		exportList(loopNode, loopNode.getSetupParts(), initializers, "init");
 
-		Expr exportedCondition = exportCondition(loopNode, loopNode.getTests(),
-				condition, "cond");
-		loopNode.setName(name + " "  + exportedCondition.getName());
+		Expr exportedCondition = exportCondition(loopNode, loopNode.getTests(), condition, "cond");
+		loopNode.setName(name + " " + exportedCondition.getName());
 		loopNode.setDecider(exportedCondition.evaluate().getOutputPin());
 
 		exportBlock(loopNode, loopNode.getBodyParts(), body, "body");
@@ -39,27 +38,24 @@ abstract class AbstractLoopExporter extends AbstractControlStructureExporter {
 
 	}
 
-	private void exportList(LoopNode loopNode, EList<ExecutableNode> nodeList,
-			List<Expression> list, String byName) {
+	protected void exportList(LoopNode loopNode, EList<ExecutableNode> nodeList, List<Expression> list, String byName) {
 		if (list == null || list.isEmpty()) {
 			return;
 		}
-		SequenceNode sequenceNode = (SequenceNode) loopNode.createNode(byName,
-				UMLPackage.Literals.SEQUENCE_NODE);
+		SequenceNode sequenceNode = (SequenceNode) loopNode.createNode(byName, UMLPackage.Literals.SEQUENCE_NODE);
 		nodeList.add(sequenceNode);
 		sequenceNode.setName(byName);
-		ExpressionExporter exporter = createExpressionExporter(loopNode,
+		ExpressionExporter<? extends ActivityNode> exporter = createExpressionExporter(loopNode,
 				sequenceNode.getExecutableNodes());
 		list.forEach(exporter::export);
 	}
 
-	private Expr exportCondition(LoopNode loopNode,
-			EList<ExecutableNode> nodeList, Expression expression, String byName) {
-		SequenceNode sequenceNode = (SequenceNode) loopNode.createNode(byName,
-				UMLPackage.Literals.SEQUENCE_NODE);
+	protected Expr exportCondition(LoopNode loopNode, EList<ExecutableNode> nodeList, Expression expression,
+			String byName) {
+		SequenceNode sequenceNode = (SequenceNode) loopNode.createNode(byName, UMLPackage.Literals.SEQUENCE_NODE);
 		nodeList.add(sequenceNode);
 		sequenceNode.setName(byName);
-		ExpressionExporter exporter = createExpressionExporter(loopNode,
+		ExpressionExporter<? extends ActivityNode> exporter = createExpressionExporter(loopNode,
 				sequenceNode.getExecutableNodes());
 
 		if (expression == null) {
@@ -69,17 +65,14 @@ abstract class AbstractLoopExporter extends AbstractControlStructureExporter {
 		}
 	}
 
-	private void exportBlock(LoopNode loopNode, EList<ExecutableNode> nodeList,
-			Statement block, String byName) {
+	protected void exportBlock(LoopNode loopNode, EList<ExecutableNode> nodeList, Statement block, String byName) {
 		if (block == null) {
 			return;
 		}
-		SequenceNode sequenceNode = (SequenceNode) loopNode.createNode(byName,
-				UMLPackage.Literals.SEQUENCE_NODE);
+		SequenceNode sequenceNode = (SequenceNode) loopNode.createNode(byName, UMLPackage.Literals.SEQUENCE_NODE);
 		nodeList.add(sequenceNode);
 		sequenceNode.setName(byName);
-		BlockExporter exporter = createBlockExporter(sequenceNode,
-				sequenceNode.getExecutableNodes());
+		BlockExporter<ExecutableNode> exporter = createBlockExporter(sequenceNode, sequenceNode.getExecutableNodes());
 		exporter.export(block);
 	}
 }

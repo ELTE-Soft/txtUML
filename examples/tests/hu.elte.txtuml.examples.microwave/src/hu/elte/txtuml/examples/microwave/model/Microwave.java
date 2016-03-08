@@ -172,8 +172,7 @@ public class Microwave extends ModelClass {
 			@Override
 			public void entry() {
 				Action.log("Microwave: DING!");
-				Human h = Microwave.this.assoc(Usage.userOfMicrowave.class).selectAny();
-				Action.send(h, new Ding());
+				Action.send(new Ding(), Microwave.this);
 			}
 		}
 
@@ -250,9 +249,15 @@ public class Microwave extends ModelClass {
 		}
 	}
 
-	@From(Heating.Finished.class)
+	@From(Heating.class)
 	@To(Closed.class)
+	@Trigger(Ding.class)
 	public class Finishing extends Transition {
+		@Override
+		public void effect() {
+			Human h = Microwave.this.assoc(Usage.userOfMicrowave.class).selectAny();
+			Action.send(new Ding(), h);
+		}
 	}
 
 }
