@@ -36,6 +36,7 @@ import hu.elte.txtuml.export.uml2.transform.visitors.ClassifierVisitor;
 import hu.elte.txtuml.export.uml2.transform.visitors.MethodSkeletonVisitor;
 import hu.elte.txtuml.export.uml2.utils.ResourceSetFactory;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
+import hu.elte.txtuml.utils.Logger;
 
 /**
  * This class is responsible for generating Eclipse UML2 model from a txtUML
@@ -284,7 +285,7 @@ public class ModelExporter {
 		try {
 			mapping.save(URI.createURI(outputDirectory), sourcePackageName);
 		} catch (ModelMapException e) {
-			System.out.println("Faild to save model mapping.");
+			Logger.sys.info("Faild to save model mapping.");
 		}
 	}
 
