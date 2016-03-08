@@ -78,7 +78,11 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		PreferencesManager.setValue(PreferencesManager.GENERATE_STATEMACHINES_AUTOMATICALLY, generateSMsAutomatically);
 
 		try {
-			IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
+			
+			this.checkEmptyLayoutDecsriptions();
+			
+			IProgressService progressService = PlatformUI.getWorkbench()
+					.getProgressService();
 
 			progressService.runInUI(progressService, new IRunnableWithProgress() {
 				@Override
@@ -160,6 +164,20 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 			return true;
 		} catch (InvocationTargetException | InterruptedException e) {
 			return false;
+		}
+	}
+
+	private void checkEmptyLayoutDecsriptions() throws InterruptedException {
+		if(selectTxtUmlPage.getTxtUmlLayout().isEmpty() && !this.selectTxtUmlPage.getGenerateSMDs()){
+			boolean answer = Dialogs.WarningConfirm("No Layout descriptions",
+					"No diagrams will be generated using the current setup,"
+							+ " because no diagram descriptions are added."
+							+ System.lineSeparator() +
+							"Use the 'Add txtUML diagram descriptions' button to avoid this message."
+							+ System.lineSeparator() + System.lineSeparator()
+							+ "Do you want to continue without diagram descriptions?"
+					);
+			if(!answer) throw new InterruptedException();
 		}
 	}
 

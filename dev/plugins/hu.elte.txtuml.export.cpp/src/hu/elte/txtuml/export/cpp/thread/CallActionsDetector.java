@@ -20,6 +20,7 @@ import org.eclipse.uml2.uml.Vertex;
 
 import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
+import hu.elte.txtuml.utils.Logger;
 
 public class CallActionsDetector {
 
@@ -76,10 +77,10 @@ public class CallActionsDetector {
 		Class to = getClassFromUMLModel(concurrentClass);
 
 		if (!isInAssoc(from, to)) {
-			System.out.println(from.getName() + " and " + to.getName() + " is not in assoc");
+			Logger.sys.info(from.getName() + " and " + to.getName() + " is not in assoc");
 			return false;
 		} else {
-			System.out.println(from.getName() + " and " + to.getName() + " is in assoc");
+			Logger.sys.info(from.getName() + " and " + to.getName() + " is in assoc");
 			// Detect syncrhon call
 			for (Behavior b : from.getOwnedBehaviors()) {
 

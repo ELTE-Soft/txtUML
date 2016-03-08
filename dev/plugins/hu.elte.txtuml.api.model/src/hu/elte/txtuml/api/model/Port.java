@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 
+import hu.elte.txtuml.api.model.ModelExecutor.Report;
+
 /**
  * Base class for ports in the model.
  * 
@@ -64,8 +66,7 @@ import java.lang.reflect.Proxy;
  * 
  * @param <R>
  *            the required interface
- * @param
- * 			<P>
+ * @param <P>
  *            the provided interface
  */
 public abstract class Port<R extends Interface, P extends Interface> {
@@ -122,23 +123,24 @@ public abstract class Port<R extends Interface, P extends Interface> {
 	 */
 	private void accept(Signal signal, Object sender) {
 		// Exactly one of neighbor2 and obj should be null.
-		if (sender == null) {
-			if (neighbor1 != null) {
-				neighbor1.accept(signal, this);
-			}
-		} else if (sender == neighbor1) {
-			if (neighbor2 == null) {
-				if (obj != null) {
-					ModelExecutor.send(obj, this, signal);
-				}
-			} else {
+		if (sender == neighbor1) {
+			if (neighbor2 != null) {
 				neighbor2.accept(signal, this);
+				return;
+			}
+
+			if (obj != null) {
+				ModelExecutor.send(obj, this, signal);
+				return;
 			}
 		} else {
 			if (neighbor1 != null) {
 				neighbor1.accept(signal, this);
+				return;
 			}
 		}
+
+		Report.warning.forEach(x -> x.lostSignalAtPort(this, signal));
 	}
 
 	void connectToPort(Port<?, ?> other) {
