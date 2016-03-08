@@ -43,7 +43,9 @@ class TxtUMLToCppGovernor {
 		try {
 			model = TxtUMLToUML2.exportModel(txtUMLProject, txtUMLModel, umlFilesFolder, ExportMode.ExportActionCode);
 		} catch (Exception e) {
-			Dialogs.errorMsgb("txtUML export Error", e.getClass() + ":" + System.lineSeparator() + e.getMessage(), e);
+			if (!testing) {
+				Dialogs.errorMsgb("txtUML export Error", e.getClass() + ":" + System.lineSeparator() + e.getMessage(), e);
+			}
 			throw e;
 		}
 
