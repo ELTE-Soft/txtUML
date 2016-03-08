@@ -8,17 +8,15 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.api.deployment.Configuration;
-import hu.elte.txtuml.export.ExportUtils;
-import hu.elte.txtuml.export.Uml2Utils;
 import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
 import hu.elte.txtuml.export.cpp.thread.ThreadDescriptionExporter;
-import hu.elte.txtuml.export.uml2.UML2.ExportMode;
+import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
+import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode;
 import hu.elte.txtuml.utils.eclipse.ClassLoaderProvider;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
 
@@ -40,20 +38,14 @@ class TxtUMLToCppGovernor {
 				.getAbsolutePath();
 		String umlFilesFolder = txtUMLProject + File.separator + GeneratedCPPFolderName + File.separator + txtUMLModel
 				+ File.separator + UmlFilesFolderName;
-		String umlFileLocation = umlFilesFolder + File.separator + txtUMLModel + ".uml";
 
+		Model model;
 		try {
-			ExportUtils.exportTxtUMLModelToUML2(txtUMLProject, txtUMLModel, umlFilesFolder,
-					ExportMode.ExportActionCode);
+			model = TxtUMLToUML2.exportModel(txtUMLProject, txtUMLModel, umlFilesFolder, ExportMode.ExportActionCode);
 		} catch (Exception e) {
-			if (!testing) {
-				Dialogs.errorMsgb("txtUML export Error", e.getClass() + ":" + System.lineSeparator() + e.getMessage(),
-						e);
-			}
+			Dialogs.errorMsgb("txtUML export Error", e.getClass() + ":" + System.lineSeparator() + e.getMessage(), e);
 			throw e;
 		}
-
-		Model model = Uml2Utils.loadModel(URI.createPlatformResourceURI(umlFileLocation, false));
 
 		URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(txtUMLProject,
 				ThreadDescriptionExporter.class.getClassLoader());
