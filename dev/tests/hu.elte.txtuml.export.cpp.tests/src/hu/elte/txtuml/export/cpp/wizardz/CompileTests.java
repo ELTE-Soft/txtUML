@@ -7,6 +7,7 @@ import java.io.File;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.junit.Test;
@@ -49,6 +50,8 @@ public class CompileTests {
 				IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(desc.getName());
 				project.create(desc, null);
 				project.open(null);
+				project.build(IncrementalProjectBuilder.CLEAN_BUILD, null);
+				project.build(IncrementalProjectBuilder.FULL_BUILD, null);
 
 				cppgen.uml2ToCpp(config.project, config.model, config.deployment, false);
 			} catch (Exception e) {
