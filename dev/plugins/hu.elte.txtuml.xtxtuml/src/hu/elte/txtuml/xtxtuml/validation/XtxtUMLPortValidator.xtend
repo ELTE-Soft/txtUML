@@ -121,8 +121,8 @@ class XtxtUMLPortValidator extends XtxtUMLAssociationValidator {
 		}
 	}
 
-	def private getInterface(TUPort port, boolean ofTypeReqiured) {
-		port.members.findFirst[required == ofTypeReqiured]?.interface
+	def private getInterface(TUPort port, boolean ofTypeRequired) {
+		port.members.findFirst[required == ofTypeRequired]?.interface
 	}
 
 	@Check
