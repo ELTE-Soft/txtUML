@@ -4,7 +4,7 @@
 
 	<groupId>hu.elte.txtuml</groupId>
 	<artifactId>hu.elte.txtuml.parent</artifactId>
-	<version>0.3.0-SNAPSHOT</version>
+	<version>0.4.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>txtUML Main Maven Project</name>
@@ -124,7 +124,7 @@
 						<artifact>
 							<groupId>hu.elte.txtuml</groupId>
 							<artifactId>hu.elte.txtuml.target</artifactId>
-							<version>0.3.0-SNAPSHOT</version>
+							<version>0.4.0-SNAPSHOT</version>
 							<classifier>mirrors</classifier>
 						</artifact>
 					</target>
@@ -337,7 +337,7 @@
 								<artifact>
 									<groupId>hu.elte.txtuml</groupId>
 									<artifactId>hu.elte.txtuml.target</artifactId>
-									<version>0.3.0-SNAPSHOT</version>
+									<version>0.4.0-SNAPSHOT</version>
 									<classifier>release</classifier>
 								</artifact>
 							</target>
