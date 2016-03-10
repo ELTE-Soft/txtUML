@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: txtUML API for model creation
 Bundle-SymbolicName: hu.elte.txtuml.api.model
-Bundle-Version: 0.3.0.qualifier
+Bundle-Version: 0.4.0.qualifier
 Bundle-Vendor: ELTE
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: hu.elte.txtuml.api.model,
@@ -10,6 +10,6 @@ Export-Package: hu.elte.txtuml.api.model,
  hu.elte.txtuml.api.model.blocks,
  hu.elte.txtuml.api.model.external,
  hu.elte.txtuml.api.model.report
-Require-Bundle: hu.elte.txtuml.api.diagnostics;bundle-version="0.3.0",
- hu.elte.txtuml.utils;bundle-version="0.3.0",
+Require-Bundle: hu.elte.txtuml.api.diagnostics;bundle-version="0.4.0",
+ hu.elte.txtuml.utils;bundle-version="0.4.0",
  com.google.guava;bundle-version="15.0.0"
