@@ -231,15 +231,15 @@ public class ClassExporter {
 		}
 
 		for (Operation operation : class_.getOwnedOperations()) {
+		    activityExporter.reinitilaize();
 			if (!isConstructor(class_, operation)) {
 
 				String returnType = getReturnType(operation.getReturnResult());
-
 				String funcBody="";
 				  for (Behavior behavior : operation.getMethods()) {
 				      
 					  if(behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
-					      funcBody=activityExporter.createfunctionBody((Activity)behavior); 
+					      funcBody=activityExporter.createfunctionBody((Activity)behavior).toString(); 
 					  } else { 
 					      //TODO exception, unknown for me, need the model
 					  }

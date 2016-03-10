@@ -144,6 +144,10 @@ public class ActivityTemplates {
 		return GenerationNames.pointerType(typenName) + " " + objName + "= " + GenerationNames.MemoryAllocator
 			+ " " + typenName + "();\n";
 	}
+	
+	public static String returnTemplates(String variable) {
+	    return "return " + variable + ";\n";
+	}
 
 	public static String getOperationFromType(boolean isMultivalued, boolean isReplace) {
 		String source = "";

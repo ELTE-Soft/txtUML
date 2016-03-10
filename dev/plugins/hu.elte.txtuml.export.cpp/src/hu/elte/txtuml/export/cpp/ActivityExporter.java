@@ -26,6 +26,7 @@ import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.LoopNode;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OutputPin;
+import org.eclipse.uml2.uml.ParameterDirectionKind;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.ReadVariableAction;
 import org.eclipse.uml2.uml.SequenceNode;
@@ -42,12 +43,14 @@ import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 public class ActivityExporter {
 	Map<CreateObjectAction, String> _objectMap = new HashMap<CreateObjectAction, String>();
 	int tempVariableCounter = 0;
+	OutputPin returnPin;
 	
 	private Map<OutputPin,String> tempVariables;
 	
 	public ActivityExporter() {
 	    ActivityTemplates.Operators.Init();
 		reinitilaize();
+		returnPin = null;
 	}
 	
 	public void reinitilaize() {
@@ -55,16 +58,22 @@ public class ActivityExporter {
 		tempVariableCounter = 0;
 	}
 
-	public String createfunctionBody(Activity activity_) {
+	public StringBuilder createfunctionBody(Activity activity_) {
 		ActivityNode startNode = null;
+		StringBuilder source = new StringBuilder("");
 		for (ActivityNode node : activity_.getOwnedNodes()) {
 			if (node.eClass().equals(UMLPackage.Literals.INITIAL_NODE)) {
 				startNode = node;
 				break;
 			}
 		}
-		return createActivityVariables(activity_) + createActivityPartCode(startNode);
+		source.append(createActivityVariables(activity_));
+		source.append(createActivityPartCode(startNode));
+		source.append(createReturnParamaterCode());
+		return  source;
 	}
+
+
 
 	private String createActivityVariables(Activity activity_) {
 		String source = "";
@@ -78,6 +87,26 @@ public class ActivityExporter {
 			source += GenerationTemplates.variableDecl(type, variable.getName());
 		}
 		return source;
+	}
+	
+	private String createReturnParamaterCode() {
+	    /*if(returnPin == null || !tempVariables.containsKey(returnPin)) {
+		return "";
+	    }
+	    else {
+		return ActivityTemplates.returnTemplates(tempVariables.get(returnPin));
+	    }*/
+	    
+	    for(OutputPin outputPin : tempVariables.keySet()) {
+		if(outputPin.getOutgoings().get(0).getTarget().eClass().equals(UMLPackage.Literals.ACTIVITY_PARAMETER_NODE)) {
+		    ActivityParameterNode paramNode = (ActivityParameterNode) outputPin.getOutgoings().get(0).getTarget();
+		    if(paramNode.getParameter().getDirection().equals(ParameterDirectionKind.RETURN_LITERAL)) {
+			return ActivityTemplates.returnTemplates(tempVariables.get(outputPin));
+		    }
+		    
+		}
+	    }
+	    return "";
 	}
 
 	private String createActivityPartCode(ActivityNode startNode_) {
@@ -148,6 +177,13 @@ public class ActivityExporter {
 		}
 		else if(node_.eClass().equals(UMLPackage.Literals.LOOP_NODE)) {
 		    source.append(createCycleCode((LoopNode) node_));
+		}
+		
+		else if(node_.eClass().equals(UMLPackage.Literals.ACTIVITY_PARAMETER_NODE)) {
+		    ActivityParameterNode paramNode = (ActivityParameterNode) node_;
+		    if(paramNode.getParameter().getDirection().equals(ParameterDirectionKind.RETURN_LITERAL)) {
+			returnPin = (OutputPin) paramNode.getIncomings().get(0);
+		    }
 		}
 		return source;
 	}
@@ -233,31 +269,29 @@ public class ActivityExporter {
 			source = getTargetFromRSFA((ReadStructuralFeatureAction) node_);
 		} else if (node_.eClass().equals(UMLPackage.Literals.ACTIVITY_PARAMETER_NODE)) {
 			EClass ec = node_.getActivity().getOwner().eClass();
+			ActivityParameterNode paramNode = (ActivityParameterNode) node_;
 			String paramName = ((ActivityParameterNode) node_).getParameter().getName();
 			if (ec.equals(UMLPackage.Literals.TRANSITION)) {
 				source = ActivityTemplates.transitionActionParameter(paramName);
+			}
+			else if (paramNode.getParameter().getDirection().equals(ParameterDirectionKind.RETURN_LITERAL)) {
+			    source = ActivityTemplates.returnTemplates(getTargetFromActivityNode(paramNode.getIncomings().get(0).getSource()));
 			} else // the parameter is a function parameter
 			{
 				source = GenerationTemplates.paramName(paramName);
 			}
+			
 		} else if (node_.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
 			source = _objectMap.get(node_);
 		} else if (node_.eClass().equals(UMLPackage.Literals.READ_SELF_ACTION)) {
 			source = ActivityTemplates.Self;
-		} else if (node_.eClass().equals(UMLPackage.Literals.OPAQUE_ACTION)) {
-			OpaqueAction oa = (OpaqueAction) node_;
-			source = Shared.parseOCL(oa.getBodies().get(0));
-			for (InputPin variable : oa.getInputs()) {
-				String oclParam = "\\(" + variable.getName() + "\\)";
-				String cppParam = "\\(" + GenerationTemplates.paramName(getTargetFromInputPin(variable)) + "\\)";
-				source = source.replaceAll(oclParam, cppParam);
-			}
 		} else if (node_.eClass().equals(UMLPackage.Literals.OUTPUT_PIN)) {
 		    	OutputPin outPin = (OutputPin) node_;
 		    	if(tempVariables.containsKey(outPin)) {
 		    	    source = tempVariables.get(outPin);
 		    	}
 		    	else {
+		    	    
 		    	    source = getTargetFromActivityNode((ActivityNode) node_.getOwner()); 
 		    	}
 			
