@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import hu.elte.txtuml.export.cpp.templates.ActivityTemplates.OperationSide;
 import hu.elte.txtuml.utils.Pair;
 
 public class ActivityTemplates {
@@ -14,7 +15,9 @@ public class ActivityTemplates {
 	public static final String ReplaceCompositTypeOp = ReplaceSimpleTypeOp;
 	public static final String Self = "this";
 	public static final String AccessOperatorForSets = GenerationNames.SimpleAccess;
-
+	
+	public enum OperationSide {Left,Right}
+	
 	public static String generalSetValue(String leftValueName, String rightValueName, String operator) {
 		if (operator == AddCompositTypeOp) {
 			return leftValueName + operator + "(" + rightValueName + ");\n";
@@ -56,7 +59,7 @@ public class ActivityTemplates {
 		if (params != null) {
 			source += operationCallParamList(params);
 		}
-		source += ");\n";
+		source += ")";
 		return source;
 	}
 
@@ -72,12 +75,21 @@ public class ActivityTemplates {
 	public static String stdLibOperationCall(String operationName, String left, String right) {
 	    Operators.Init();
 	    if(Operators.operationsOnPrimitiveTypesMap.get(operationName) != null ) {
-		return left + " " + Operators.operationsOnPrimitiveTypesMap.get(operationName) + " " + right;
+		return "(" + left + " " + Operators.operationsOnPrimitiveTypesMap.get(operationName) + " " + right + ")";
 	    }
 	    else {
 		return "";
 	    }
 	     
+	}
+	
+	public static String stdLibOperationCall(String operationName, String operand, OperationSide side) {
+	    if(side == OperationSide.Right) {
+		return operand + operationName + ";";
+	    }
+	    else {
+		return operationName + operand + ";";
+	    }
 	}
 	
 	public static String operationCallOnPointerVariable(String ownerName, String operationName, List<String> params) {
@@ -127,18 +139,10 @@ public class ActivityTemplates {
 		return GenerationNames.RealEventName + "." + paramName;
 	}
 
-	public static String createObject(String typenName, String objName, Boolean isSm) {
-		String source;
-		if (isSm) {
-			source = GenerationNames.pointerType(typenName) + " " + objName + "= " + GenerationNames.MemoryAllocator
-					+ " " + typenName + "(" + RuntimeTemplates.RuntimeVarName + ");\n";
-			source += objName + GenerationNames.PointerAccess + "startSM();\n";
-			// source+=RuntimeTemplates.CreateObject(objName_);
-		} else {
-			source = GenerationNames.pointerType(typenName) + " " + objName + "= " + GenerationNames.MemoryAllocator
-					+ " " + typenName + "();\n";
-		}
-		return source;
+	public static String createObject(String typenName, String objName) {
+		
+		return GenerationNames.pointerType(typenName) + " " + objName + "= " + GenerationNames.MemoryAllocator
+			+ " " + typenName + "();\n";
 	}
 
 	public static String getOperationFromType(boolean isMultivalued, boolean isReplace) {
@@ -160,6 +164,10 @@ public class ActivityTemplates {
 	// Everything is pointer
 	public static String accesOperatoForType(String typeName) {
 		return GenerationNames.PointerAccess;
+	}
+	
+	public static String addVariableTemplate(String type,String left, String right) {
+	    return PrivateFunctionalTemplates.cppType(type) + " " + left + " = " + right + ";\n";
 	}
 
 	public static class Operators {
@@ -193,18 +201,12 @@ public class ActivityTemplates {
 		    return cond + " ? " + e1 + " : " + e2;
 		}
 		
-		public static String DIncrement(String var) {
-		    return var + "++";
-		}
-		
-		public static String DDecrment(String var) {
-		    return var + "--";
-		}
-		
 		
 		public static Map<String,String> operationsOnPrimitiveTypesMap;
+		public static Map<String, Pair<String,OperationSide> > oneOperandOperationsOnPrimitiveTypesMap;
 		public static void Init() {
 		    operationsOnPrimitiveTypesMap = new HashMap<String,String>();
+		    oneOperandOperationsOnPrimitiveTypesMap = new HashMap<String,Pair<String,OperationSide> >();
 		    operationsOnPrimitiveTypesMap.put("add", Add);
 		    operationsOnPrimitiveTypesMap.put("sub", Sub);
 		    operationsOnPrimitiveTypesMap.put("mul", Mul);
@@ -217,17 +219,19 @@ public class ActivityTemplates {
 		    operationsOnPrimitiveTypesMap.put("leq", LessOrEqThen);
 		    operationsOnPrimitiveTypesMap.put("geq", GreatOrEqThen);
 		    
-		    operationsOnPrimitiveTypesMap.put("inc", Increment);
-		    operationsOnPrimitiveTypesMap.put("dec", Decrement);
-		    operationsOnPrimitiveTypesMap.put("neg", Neg);
+		    oneOperandOperationsOnPrimitiveTypesMap.put("inc", new Pair<String, OperationSide> (Increment, OperationSide.Right));
+		    oneOperandOperationsOnPrimitiveTypesMap.put("dec", new Pair<String, OperationSide> (Decrement, OperationSide.Right));
+		    oneOperandOperationsOnPrimitiveTypesMap.put("delayedInc", new Pair<String, OperationSide> (Increment, OperationSide.Left));
+		    oneOperandOperationsOnPrimitiveTypesMap.put("delayedDec", new Pair<String, OperationSide> (Decrement, OperationSide.Left));
+		    oneOperandOperationsOnPrimitiveTypesMap.put("neg", new Pair<String, OperationSide> (Not, OperationSide.Right));
 		    
 		    operationsOnPrimitiveTypesMap.put("and", And);
 		    operationsOnPrimitiveTypesMap.put("or", Or);
-		    operationsOnPrimitiveTypesMap.put("not", Not);
+		    oneOperandOperationsOnPrimitiveTypesMap.put("not", new Pair<String, OperationSide> (Increment, OperationSide.Right));
 		    
 		    operationsOnPrimitiveTypesMap.put("concat", Add);
 		    
-		    operationsOnPrimitiveTypesMap.put("id", "");
+		    oneOperandOperationsOnPrimitiveTypesMap.put("id", new Pair<String, OperationSide> ("", OperationSide.Right));
 		      
 		}
 	}
