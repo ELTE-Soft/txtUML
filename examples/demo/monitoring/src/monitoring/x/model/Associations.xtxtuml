@@ -1,0 +1,11 @@
+package monitoring.x.^model;
+
+association ToAggregator {
+	hidden * ResourceMonitor rmonitor;
+	1 Aggregator aggregator;
+}
+
+association ToAlert {
+	hidden * ResourceMonitor rmonitor;
+	1 Alert alert;
+}
