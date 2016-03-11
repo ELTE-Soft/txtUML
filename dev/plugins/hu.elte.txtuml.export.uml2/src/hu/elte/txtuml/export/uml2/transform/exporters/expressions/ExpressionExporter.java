@@ -144,10 +144,14 @@ public class ExpressionExporter<ElemType extends ActivityNode> extends ControlSt
 			new DeleteObjectActionExporter(this).export(args);
 		} else if (actionName.equals("link")) {
 			new LinkActionExporter(this).export(binding, expression, args);
+		} else if (actionName.equals("connect")) {
+			new ConnectActionExporter(this).export(binding, expression, args);
 		} else if (actionName.equals("unlink")) {
 			new UnlinkActionExporter(this).export(binding, expression, args);
 		} else if (actionName.equals("assoc")) {
 			return new NavigationActionExporter(this).export(binding, expression, args);
+		} else if (actionName.equals("port")) {
+			return new PortActionExporter(this).export(binding, expression, args);
 		} else if (actionName.equals("selectAny")) {
 			return expression;
 			// select any is implicit in exported model

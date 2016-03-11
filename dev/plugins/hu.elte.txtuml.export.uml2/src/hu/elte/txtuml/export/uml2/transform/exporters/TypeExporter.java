@@ -281,7 +281,7 @@ public class TypeExporter {
 
 	public static boolean isNavigation(IMethodBinding binding) {
 		return (binding.getDeclaringClass().getQualifiedName().equals(ModelClass.class.getName())
-				&& binding.getName().equals("assoc"))
+				&& (binding.getName().equals("assoc") || binding.getName().equals("port")))
 				|| (binding.getDeclaringClass().getErasure().getQualifiedName().equals(Collection.class.getName())
 						&& binding.getName().equals("selectAny"));
 	}

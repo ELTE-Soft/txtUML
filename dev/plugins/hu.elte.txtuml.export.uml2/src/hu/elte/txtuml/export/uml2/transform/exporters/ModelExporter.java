@@ -145,11 +145,11 @@ public class ModelExporter {
 		exportClassifiers();
 		exportAssociations();
 		exportGeneralizations();
+		exportPortsAndConnectors();
 		exportAttributesOfEveryClassifier();
 		exportMethodSkeletonsOfEveryClassifier();
 		exportStateMachinesOfEveryClass();
 		exportMethodBodiesOfEveryClassifier();
-		exportPortsAndConnectors();
 
 		this.mapping.put(sourcePackageName, exportedModel);
 		finishModelExport();
@@ -279,7 +279,7 @@ public class ModelExporter {
 				declaration.accept(pv);
 			}
 		});
-		ConnectorVisitor visitor = new ConnectorVisitor(new ConnectorExporter(exportedModel, portExporter.getExportedPorts(), typeExporter));
+		ConnectorVisitor visitor = new ConnectorVisitor(new ConnectorExporter(exportedModel, portExporter.getExportedPorts()));
 		Stream.of(compilationUnits).forEach(cu -> cu.accept(visitor));
 	}
 

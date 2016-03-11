@@ -49,7 +49,7 @@ public class PortExporter {
 		provided.getModel().getPackagedElements().add(providedRequired);
 
 		ownerClassifier.getNestedClassifiers().add(dummyProvided);
-		ownerClassifier.getOwnedAttributes().add(createdPort);
+		ownerClassifier.getOwnedPorts().add(createdPort);
 		
 		exportedPorts.add(createdPort);
 	}

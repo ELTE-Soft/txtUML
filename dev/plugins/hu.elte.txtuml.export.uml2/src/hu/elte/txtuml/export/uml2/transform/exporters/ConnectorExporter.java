@@ -14,14 +14,12 @@ import hu.elte.txtuml.export.uml2.utils.MultiplicityProvider;
 
 public class ConnectorExporter {
 
-	private TypeExporter typeExporter;
 	private List<Port> ports;
 	private Model exportedModel;
 
-	public ConnectorExporter(Model exportedModel, List<Port> ports, TypeExporter typeExporter) {
+	public ConnectorExporter(Model exportedModel, List<Port> ports) {
 		this.exportedModel = exportedModel;
 		this.ports = ports;
-		this.typeExporter = typeExporter;
 	}
 
 	public void exportPort(TypeDeclaration typeDeclaration) {
