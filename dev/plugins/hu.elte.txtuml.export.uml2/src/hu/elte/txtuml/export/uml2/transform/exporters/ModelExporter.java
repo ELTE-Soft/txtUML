@@ -21,6 +21,7 @@ import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.PackageImport;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.StateMachine;
+import org.eclipse.uml2.uml.StructuredClassifier;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
@@ -216,10 +217,10 @@ public class ModelExporter {
 	 */
 	private void exportAttributesOfEveryClassifier() {
 		classifiers.entrySet().forEach(entry -> {
-					Classifier classifier = entry.getValue();
-					TypeDeclaration classifierDeclaration = entry.getKey();
+			Classifier classifier = entry.getValue();
+			TypeDeclaration classifierDeclaration = entry.getKey();
 			exportAttributesOfSpecificClassifier(classifier, classifierDeclaration);
-				});
+		});
 	}
 
 	private void exportAttributesOfSpecificClassifier(Classifier classifier, TypeDeclaration classifierDeclaration) {
@@ -257,7 +258,7 @@ public class ModelExporter {
 
 	private void exportStateMachine(TypeDeclaration classifierDeclaration, Class ownerClass) {
 		StateMachine stateMachine = (StateMachine) ownerClass.createClassifierBehavior(ownerClass.getName(),
-						UMLPackage.Literals.STATE_MACHINE);
+				UMLPackage.Literals.STATE_MACHINE);
 		Region region = stateMachine.createRegion(ownerClass.getName());
 		regionExporter.exportRegion(classifierDeclaration, stateMachine, region);
 	}
@@ -269,25 +270,27 @@ public class ModelExporter {
 			}
 		});
 	}
-	
+
 	private void exportPortsOfEveryClassifier() {
 		classifiers.forEach((declaration, classifier) -> {
-			PortVisitor pv = new PortVisitor(new PortExporter(typeExporter), classifier);
-			declaration.accept(pv);
+			if (classifier instanceof StructuredClassifier) {
+				PortVisitor pv = new PortVisitor(new PortExporter(typeExporter), (StructuredClassifier) classifier);
+				declaration.accept(pv);
+			}
 		});
 	}
 
 	private void exportMethodBodiesOfSpecificClass(TypeDeclaration classDeclaration, Class specificClass) {
 		if (exportMode == ExportMode.ExportActionCode) {
 			Map<MethodDeclaration, Operation> memberFunctions = methods.get(classDeclaration);
-		memberFunctions.forEach((methodDeclaration, operation) -> {
-			String methodName = operation.getName();
+			memberFunctions.forEach((methodDeclaration, operation) -> {
+				String methodName = operation.getName();
 				Activity activity = (Activity) specificClass.createOwnedBehavior(methodName,
 						UMLPackage.Literals.ACTIVITY);
-			activity.setSpecification(operation);
+				activity.setSpecification(operation);
 				MethodBodyExporter.export(activity, this, methodDeclaration, operation.getOwnedParameters());
-		});
-	}
+			});
+		}
 	}
 
 	/**
