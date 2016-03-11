@@ -1,5 +1,8 @@
 package hu.elte.txtuml.export.uml2.transform.exporters;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.uml2.uml.Class;
@@ -7,7 +10,6 @@ import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.Interface;
 import org.eclipse.uml2.uml.Port;
-import org.eclipse.uml2.uml.StructuredClassifier;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.Usage;
@@ -17,12 +19,13 @@ import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 public class PortExporter {
 
 	TypeExporter typeExporter;
+	private List<Port> exportedPorts = new LinkedList<>();
 
 	public PortExporter(TypeExporter typeExporter) {
 		this.typeExporter = typeExporter;
 	}
 
-	public void exportPort(TypeDeclaration typeDeclaration, StructuredClassifier ownerClassifier) {
+	public void exportPort(TypeDeclaration typeDeclaration, Class ownerClassifier) {
 		ITypeBinding[] typeArguments = typeDeclaration.resolveBinding().getSuperclass().getTypeArguments();
 
 		Type required = typeExporter.exportType(typeArguments[0]);
@@ -45,11 +48,13 @@ public class PortExporter {
 		createdPort.setType(dummyProvided);
 		provided.getModel().getPackagedElements().add(providedRequired);
 
-		
-		if (ownerClassifier instanceof Class) {
-			((Class) ownerClassifier).getNestedClassifiers().add(dummyProvided);
-		}
+		ownerClassifier.getNestedClassifiers().add(dummyProvided);
 		ownerClassifier.getOwnedAttributes().add(createdPort);
+		
+		exportedPorts.add(createdPort);
 	}
-
+	
+	public List<Port> getExportedPorts() {
+		return exportedPorts;
+	}
 }

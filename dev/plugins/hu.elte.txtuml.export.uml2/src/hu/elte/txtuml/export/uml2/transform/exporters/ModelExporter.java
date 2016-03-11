@@ -21,7 +21,6 @@ import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.PackageImport;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.StateMachine;
-import org.eclipse.uml2.uml.StructuredClassifier;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
@@ -34,6 +33,7 @@ import hu.elte.txtuml.export.uml2.transform.backend.RuntimeExportException;
 import hu.elte.txtuml.export.uml2.transform.visitors.AssociationVisitor;
 import hu.elte.txtuml.export.uml2.transform.visitors.AttributeVisitor;
 import hu.elte.txtuml.export.uml2.transform.visitors.ClassifierVisitor;
+import hu.elte.txtuml.export.uml2.transform.visitors.ConnectorVisitor;
 import hu.elte.txtuml.export.uml2.transform.visitors.MethodSkeletonVisitor;
 import hu.elte.txtuml.export.uml2.transform.visitors.PortVisitor;
 import hu.elte.txtuml.export.uml2.utils.ResourceSetFactory;
@@ -149,7 +149,7 @@ public class ModelExporter {
 		exportMethodSkeletonsOfEveryClassifier();
 		exportStateMachinesOfEveryClass();
 		exportMethodBodiesOfEveryClassifier();
-		exportPortsOfEveryClassifier();
+		exportPortsAndConnectors();
 
 		this.mapping.put(sourcePackageName, exportedModel);
 		finishModelExport();
@@ -271,14 +271,18 @@ public class ModelExporter {
 		});
 	}
 
-	private void exportPortsOfEveryClassifier() {
+	private void exportPortsAndConnectors() {
+		PortExporter portExporter = new PortExporter(typeExporter);
 		classifiers.forEach((declaration, classifier) -> {
-			if (classifier instanceof StructuredClassifier) {
-				PortVisitor pv = new PortVisitor(new PortExporter(typeExporter), (StructuredClassifier) classifier);
+			if (classifier instanceof Class) {
+				PortVisitor pv = new PortVisitor(portExporter, (Class) classifier);
 				declaration.accept(pv);
 			}
 		});
+		ConnectorVisitor visitor = new ConnectorVisitor(new ConnectorExporter(exportedModel, portExporter.getExportedPorts(), typeExporter));
+		Stream.of(compilationUnits).forEach(cu -> cu.accept(visitor));
 	}
+
 
 	private void exportMethodBodiesOfSpecificClass(TypeDeclaration classDeclaration, Class specificClass) {
 		if (exportMode == ExportMode.ExportActionCode) {
