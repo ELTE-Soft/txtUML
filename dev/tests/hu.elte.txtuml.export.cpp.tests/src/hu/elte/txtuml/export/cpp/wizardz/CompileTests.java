@@ -44,8 +44,11 @@ public class CompileTests {
 						.loadProjectDescription(new Path(pathToProjects + config.project + "/.project"));
 				desc.setLocation(new Path(new File(pathToProjects + config.project).getAbsolutePath()));
 				IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(desc.getName());
-				project.create(desc, null);
+				if (!project.exists()) {
+					project.create(desc, null);
+				}
 				project.open(null);
+				project.refreshLocal(IProject.DEPTH_INFINITE, null);
 				project.build(IncrementalProjectBuilder.CLEAN_BUILD, null);
 				project.build(IncrementalProjectBuilder.FULL_BUILD, null);
 
