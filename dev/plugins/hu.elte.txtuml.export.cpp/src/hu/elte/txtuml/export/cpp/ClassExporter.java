@@ -231,7 +231,7 @@ public class ClassExporter {
 		}
 
 		for (Operation operation : class_.getOwnedOperations()) {
-		    activityExporter.reinitilaize();
+		    	activityExporter.reinitilaize();
 			if (!isConstructor(class_, operation)) {
 
 				String returnType = getReturnType(operation.getReturnResult());

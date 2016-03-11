@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import hu.elte.txtuml.export.cpp.templates.ActivityTemplates.OperationSide;
 import hu.elte.txtuml.utils.Pair;
 
 public class ActivityTemplates {

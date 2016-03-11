@@ -24,7 +24,7 @@ import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.LoopNode;
-import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.ObjectFlow;
 import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.ParameterDirectionKind;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
@@ -43,19 +43,20 @@ import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 public class ActivityExporter {
 	Map<CreateObjectAction, String> _objectMap = new HashMap<CreateObjectAction, String>();
 	int tempVariableCounter = 0;
-	OutputPin returnPin;
+	ActivityNode returnNode;
 	
 	private Map<OutputPin,String> tempVariables;
 	
 	public ActivityExporter() {
 	    ActivityTemplates.Operators.Init();
 		reinitilaize();
-		returnPin = null;
+		
 	}
 	
 	public void reinitilaize() {
 		tempVariables = new HashMap<OutputPin,String>();
 		tempVariableCounter = 0;
+		returnNode = null;
 	}
 
 	public StringBuilder createfunctionBody(Activity activity_) {
@@ -90,23 +91,12 @@ public class ActivityExporter {
 	}
 	
 	private String createReturnParamaterCode() {
-	    /*if(returnPin == null || !tempVariables.containsKey(returnPin)) {
-		return "";
-	    }
-	    else {
-		return ActivityTemplates.returnTemplates(tempVariables.get(returnPin));
-	    }*/
-	    
-	    for(OutputPin outputPin : tempVariables.keySet()) {
-		if(outputPin.getOutgoings().get(0).getTarget().eClass().equals(UMLPackage.Literals.ACTIVITY_PARAMETER_NODE)) {
-		    ActivityParameterNode paramNode = (ActivityParameterNode) outputPin.getOutgoings().get(0).getTarget();
-		    if(paramNode.getParameter().getDirection().equals(ParameterDirectionKind.RETURN_LITERAL)) {
-			return ActivityTemplates.returnTemplates(tempVariables.get(outputPin));
-		    }
-		    
-		}
-	    }
-	    return "";
+		if(returnNode != null) {
+		    return ActivityTemplates.returnTemplates(getTargetFromActivityNode(returnNode));
+		} else {
+		    return "";
+		}	  
+
 	}
 
 	private String createActivityPartCode(ActivityNode startNode_) {
@@ -145,10 +135,25 @@ public class ActivityExporter {
 		
 		if (node_.eClass().equals(UMLPackage.Literals.SEQUENCE_NODE)) {
 		    SequenceNode seqNode = (SequenceNode) node_;
+		    if(returnNode == null) {
+			 for(ActivityEdge aEdge: seqNode.getContainedEdges()) {
+				if(aEdge.eClass().equals(UMLPackage.Literals.OBJECT_FLOW)) {
+				    ObjectFlow objectFlow = (ObjectFlow) aEdge;
+				    if(objectFlow.getTarget().eClass().equals(UMLPackage.Literals.ACTIVITY_PARAMETER_NODE)) {
+					ActivityParameterNode parameterNode = (ActivityParameterNode) objectFlow.getTarget();
+					if(parameterNode.getParameter().getDirection().equals(ParameterDirectionKind.RETURN_LITERAL)) {
+					    returnNode = objectFlow.getSource();
+					}
+				    }
+				}
+			    }
+		    }
+		   
 		    for (ActivityNode aNode : seqNode.getNodes()) {
 		       source.append(createActivityNodeCode(aNode));
 		    }
 		}
+		
 		else if(node_.eClass().equals(UMLPackage.Literals.READ_VARIABLE_ACTION)) {
 		    ReadVariableAction rAction = (ReadVariableAction) node_;
 		    source.append(ActivityTemplates.addVariableTemplate(rAction.getResult().getType().getName(),"tmp" + tempVariableCounter,getTargetFromActivityNode(rAction.getResult())));
@@ -178,13 +183,6 @@ public class ActivityExporter {
 		else if(node_.eClass().equals(UMLPackage.Literals.LOOP_NODE)) {
 		    source.append(createCycleCode((LoopNode) node_));
 		}
-		
-		else if(node_.eClass().equals(UMLPackage.Literals.ACTIVITY_PARAMETER_NODE)) {
-		    ActivityParameterNode paramNode = (ActivityParameterNode) node_;
-		    if(paramNode.getParameter().getDirection().equals(ParameterDirectionKind.RETURN_LITERAL)) {
-			returnPin = (OutputPin) paramNode.getIncomings().get(0);
-		    }
-		}
 		return source;
 	}
 
@@ -193,7 +191,7 @@ public class ActivityExporter {
 
 
 		String name = "tmp" + tempVariableCounter;// #Create#Object_#of_type_GlobalNumberOfObjectCreation
-		
+		importOutputPinToMap(node_.getOutputs().get(0));
 		_objectMap.put(node_, name);
 		return ActivityTemplates.createObject(type, name);
 	}
@@ -273,10 +271,7 @@ public class ActivityExporter {
 			String paramName = ((ActivityParameterNode) node_).getParameter().getName();
 			if (ec.equals(UMLPackage.Literals.TRANSITION)) {
 				source = ActivityTemplates.transitionActionParameter(paramName);
-			}
-			else if (paramNode.getParameter().getDirection().equals(ParameterDirectionKind.RETURN_LITERAL)) {
-			    source = ActivityTemplates.returnTemplates(getTargetFromActivityNode(paramNode.getIncomings().get(0).getSource()));
-			} else // the parameter is a function parameter
+			}else // the parameter is a function parameter
 			{
 				source = GenerationTemplates.paramName(paramName);
 			}
@@ -365,8 +360,7 @@ public class ActivityExporter {
 		} else if (node_.eClass().equals(UMLPackage.Literals.ACTIVITY_PARAMETER_NODE)) {
 			targetTypeName = ((ActivityParameterNode) node_).getType().getName();
 		} else if (node_.eClass().equals(UMLPackage.Literals.FORK_NODE)
-				|| node_.eClass().equals(UMLPackage.Literals.DECISION_NODE)
-				|| node_.eClass().equals(UMLPackage.Literals.JOIN_NODE)) {
+			|| node_.eClass().equals(UMLPackage.Literals.JOIN_NODE)) {
 			targetTypeName = getTypeFromSpecialAcivityNode(node_.getIncomings().get(0).getSource());
 		} else {
 			targetTypeName = "UNKNOWN_TARGET_TYPER_NAME";
