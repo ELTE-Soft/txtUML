@@ -1,0 +1,98 @@
+package machine1.x.^model;
+
+// classes
+
+class Machine {
+	initial Init;
+
+	state Off {
+		entry {
+			log("\tMachine enters state: 'off'");
+		}
+
+		exit {
+			log("\tMachine exits state: 'off'");
+		}
+	}
+
+	state On {
+		entry {
+			log("\tMachine enters state: 'on'");
+		}
+
+		exit {
+			log("\tMachine exits state: 'on'");
+		}
+
+	}
+
+	transition Initialize {
+		from Init;
+		to Off;
+		effect {
+			log("\tMachine: initializing...");
+		}
+	}
+
+	transition SwitchOn {
+		from Off;
+		to On;
+		trigger ButtonPress;
+		effect {
+			log("\tMachine: switching on...");
+		}
+	}
+
+	transition SwitchOff {
+		from On;
+		to Off;
+		trigger ButtonPress;
+		effect {
+			log("\tMachine: switching off...");
+		}
+	}
+}
+
+class User {
+	initial Init;
+	state Ready;
+	
+	transition Initialize {
+		from Init;
+		to Ready;
+		effect {
+			log("\tUser: initializing...");
+		}
+	}
+
+	transition Working {
+		from Ready;
+		to Ready;
+		trigger DoYourWork;
+		effect {
+			log("\tUser: working...");
+			doWork();
+		}
+	}
+	
+	void doWork() {
+		log("\tUser: starting to work...");
+		Machine myMachine = this->(Usage.usedMachine).selectAny();
+		send new ButtonPress() to myMachine;
+		send new ButtonPress() to myMachine;
+		send new ButtonPress() to myMachine;
+		log("\tUser: work finished...");
+	}
+}
+
+// associations
+
+association Usage {
+	1 Machine usedMachine;
+	hidden * User userOfMachine;
+}
+
+// signals
+
+signal ButtonPress;
+signal DoYourWork;
