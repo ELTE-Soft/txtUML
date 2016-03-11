@@ -43,7 +43,7 @@ public class ClassifierExporter {
 	}
 	
 	public Interface exportInterface(TypeDeclaration typeDeclaration) {
-		String name = typeDeclaration.resolveBinding().getQualifiedName();
+		String name = typeDeclaration.resolveBinding().getName();
 		Interface ret = (Interface) exportedModel.createOwnedType(name, UMLPackage.Literals.INTERFACE);
 		return ret;
 	}
