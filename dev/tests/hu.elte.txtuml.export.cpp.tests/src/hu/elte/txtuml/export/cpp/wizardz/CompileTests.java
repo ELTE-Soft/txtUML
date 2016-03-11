@@ -7,7 +7,6 @@ import java.io.File;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.junit.Test;
@@ -48,11 +47,18 @@ public class CompileTests {
 					project.create(desc, null);
 				}
 				project.open(null);
+				String testProject = "test_" + config.project;
+				project.copy(new Path(testProject), true, null);
+				project.close(null);
+				project = ResourcesPlugin.getWorkspace().getRoot().getProject(testProject);
+				//IJavaProject jProject = JavaCore.create(project);
 				project.refreshLocal(IProject.DEPTH_INFINITE, null);
-				project.build(IncrementalProjectBuilder.CLEAN_BUILD, null);
-				project.build(IncrementalProjectBuilder.FULL_BUILD, null);
+				//project.build(IncrementalProjectBuilder.CLEAN_BUILD, null);
+				//project.build(IncrementalProjectBuilder.FULL_BUILD, null);
 
-				cppgen.uml2ToCpp(config.project, config.model, config.deployment, false);
+				cppgen.uml2ToCpp(testProject, config.model, config.deployment, false);
+
+				//project.delete(true, true, null);
 			} catch (Exception e) {
 				runsOk = false;
 				e.printStackTrace();
