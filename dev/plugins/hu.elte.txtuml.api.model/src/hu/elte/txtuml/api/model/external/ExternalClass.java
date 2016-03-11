@@ -2,7 +2,7 @@ package hu.elte.txtuml.api.model.external;
 
 /**
  * Base type for external classes in the model. External classes are those
- * which's implementation is not part of the model, and from the scope of the
+ * whose implementation is not part of the model, and from the scope of the
  * model they function as black boxes. They might be used to bring external
  * features into the model or to communicate with components of the program that
  * are not part of the model.
@@ -39,7 +39,6 @@ package hu.elte.txtuml.api.model.external;
  * <p>
  * <b>Java restrictions:</b>
  * <ul>
- * <li><i>Instantiate:</i> disallowed</li>
  * <li><i>Define subtype:</i> allowed
  * <p>
  * <b>Subtype requirements:</b>

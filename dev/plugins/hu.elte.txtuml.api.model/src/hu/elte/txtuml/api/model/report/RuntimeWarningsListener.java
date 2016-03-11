@@ -6,7 +6,7 @@ import hu.elte.txtuml.api.model.Region;
 import hu.elte.txtuml.api.model.Signal;
 
 /**
- * A listener interface that listens to runtime warnings of the model execution.
+ * Listener for runtime warnings of the model execution.
  */
 public interface RuntimeWarningsListener {
 

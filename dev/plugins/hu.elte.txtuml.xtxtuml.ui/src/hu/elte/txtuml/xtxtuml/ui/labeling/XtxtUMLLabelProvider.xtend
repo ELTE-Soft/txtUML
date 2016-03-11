@@ -175,7 +175,7 @@ class XtxtUMLLabelProvider extends XbaseLabelProvider {
 	}
 
 	def text(TUPortMember it) {
-		createJavaStyledText(if(provided) "provided" else "required", interface.name)
+		createJavaStyledText(if(required) "required" else "provided", interface.name)
 	}
 
 	def image(TUState it) {

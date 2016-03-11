@@ -316,7 +316,7 @@ class XtxtUMLValidator extends XtxtUMLPortValidator {
 	}
 
 	@Check
-	def checkSignalSentToPortIsProvided(RAlfSendSignalExpression sendExpr) {
+	def checkSignalSentToPortIsRequired(RAlfSendSignalExpression sendExpr) {
 		if (!sendExpr.target.isConformantWith(Port, false) || !sendExpr.signal.isConformantWith(Signal, false)) {
 			return;
 		}
@@ -324,11 +324,11 @@ class XtxtUMLValidator extends XtxtUMLPortValidator {
 		val sentSignalSourceElement = sendExpr.signal.actualType.type.primarySourceElement as TUSignal;
 
 		val portSourceElement = sendExpr.target.actualType.type.primarySourceElement as TUPort;
-		val providedReceptionsOfPort = portSourceElement.members.findFirst[provided]?.interface?.receptions;
+		val requiredReceptionsOfPort = portSourceElement.members.findFirst[required]?.interface?.receptions;
 
-		if (providedReceptionsOfPort?.
+		if (requiredReceptionsOfPort?.
 			findFirst[signal.fullyQualifiedName == sentSignalSourceElement.fullyQualifiedName] == null) {
-			error("Signal type " + sentSignalSourceElement.name + " is not provided by port " + portSourceElement.name,
+			error("Signal type " + sentSignalSourceElement.name + " is not required by port " + portSourceElement.name,
 				XtxtUMLPackage::eINSTANCE.RAlfSendSignalExpression_Signal);
 		}
 	}

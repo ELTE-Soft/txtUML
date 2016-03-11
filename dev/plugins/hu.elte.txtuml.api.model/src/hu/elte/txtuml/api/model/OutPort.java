@@ -15,7 +15,7 @@ package hu.elte.txtuml.api.model;
  * }
  * </code>
  * </pre>
- * 
+ * and
  * <pre>
  * <code>
  * class SampleClass extends ModelClass {
@@ -59,10 +59,10 @@ package hu.elte.txtuml.api.model;
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  * 
- * @param <P>
- *            the provided interface
+ * @param <R>
+ *            the required interface
  */
-public abstract class OutPort<P extends Interface> extends Port<Interface.Empty, P> {
+public abstract class OutPort<R extends Interface> extends Port<Interface.Empty, R> {
 
 	protected OutPort() {
 		super(0);

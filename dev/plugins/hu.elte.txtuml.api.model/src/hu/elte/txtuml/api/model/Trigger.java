@@ -65,7 +65,7 @@ public @interface Trigger {
 	 * The behavior port on which the triggering signal must appear. By default,
 	 * it equals to {@link AnyPort AnyPort.class}, which means that the
 	 * represented trigger may accept signals from any port (including cases
-	 * when the signal does arrive through a port).
+	 * when the signal does <i>not</i> arrive through a port).
 	 */
 	Class<? extends Port<?, ?>> port() default AnyPort.class;
 
@@ -87,9 +87,8 @@ public @interface Trigger {
 	 * <ul>
 	 * <li><i>Instantiate:</i> disallowed</li>
 	 * <li><i>Define subtype:</i> disallowed</li>
+	 * </ul>
 	 * 
-	 * See the documentation of {@link StateMachine} for detailed examples about
-	 * defining state machines.
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
