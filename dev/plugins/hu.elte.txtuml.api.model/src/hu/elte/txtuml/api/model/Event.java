@@ -20,6 +20,7 @@ package hu.elte.txtuml.api.model;
  * subclasses, like {@link Signal}</li>
  * </ul>
  * 
+ * <p>
  * See the documentation of {@link Model} for an overview on modeling in JtxtUML.
  *
  * @see Signal

@@ -15,7 +15,7 @@ package hu.elte.txtuml.api.model;
  * }
  * </code>
  * </pre>
- * 
+ * and
  * <pre>
  * <code>
  * class SampleClass extends ModelClass {

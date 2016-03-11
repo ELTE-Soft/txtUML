@@ -7,7 +7,7 @@ package hu.elte.txtuml.api.model.assocends;
  * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
  * overview on modeling in JtxtUML.
  * 
- * @see Composition
+ * @see hu.elte.txtuml.api.model.Composition
  */
 public interface ContainmentKind<T extends ContainmentKind<T>> {
 
@@ -16,8 +16,6 @@ public interface ContainmentKind<T extends ContainmentKind<T>> {
 	 * <p>
 	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
 	 * overview on modeling in JtxtUML.
-	 * 
-	 * @see Composition
 	 */
 	interface SimpleEnd extends ContainmentKind<SimpleEnd> {
 	}
@@ -28,7 +26,7 @@ public interface ContainmentKind<T extends ContainmentKind<T>> {
 	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
 	 * overview on modeling in JtxtUML.
 	 * 
-	 * @see Composition
+	 * @see hu.elte.txtuml.api.model.Composition
 	 */
 	interface ContainerEnd extends ContainmentKind<ContainerEnd> {
 	}

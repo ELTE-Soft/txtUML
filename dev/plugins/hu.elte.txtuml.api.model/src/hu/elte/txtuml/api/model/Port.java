@@ -77,6 +77,8 @@ public abstract class Port<P extends Interface, R extends Interface> {
 	 * This instance of the specified required interface of this port instance
 	 * can be used to reference the receptions on which a send operation might
 	 * be performed.
+	 * 
+	 * @see Action#send(Signal, Reception)
 	 */
 	public final R required;
 

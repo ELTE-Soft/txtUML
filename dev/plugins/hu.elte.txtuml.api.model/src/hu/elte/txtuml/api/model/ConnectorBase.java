@@ -18,6 +18,7 @@ package hu.elte.txtuml.api.model;
  * <li><i>Define subtype:</i> disallowed</li>
  * </ul>
  * 
+ * <p>
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  */
