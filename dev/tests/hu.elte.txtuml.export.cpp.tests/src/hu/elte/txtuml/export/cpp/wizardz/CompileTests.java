@@ -29,14 +29,14 @@ public class CompileTests {
 	private static final String pathToProjects = "../../../examples/demo/";
 
 	private static final Config[] testProjects = {
-			new Config("hu.elte.txtuml.examples.machine", "hu.elte.txtuml.examples.machine.model1",
-					"hu.elte.txtuml.examples.machine.Machine1Configuration"),
-			new Config("hu.elte.txtuml.examples.monitoring", "hu.elte.txtuml.examples.monitoring.model",
-					"hu.elte.txtuml.examples.monitoring.MonitoringConfiguration"),
-			new Config("hu.elte.txtuml.examples.producer_consumer", "hu.elte.txtuml.examples.producer_consumer.model",
-					"hu.elte.txtuml.examples.producer_consumer.ProducerConsumerConfiguration"),
-			new Config("hu.elte.txtuml.examples.train", "hu.elte.txtuml.examples.train.model",
-					"hu.elte.txtuml.examples.train.TrainConfiguration"), };
+			new Config("machine", "machine1.j.model",
+					"machine1.j.DefaultConfiguration"),
+			new Config("monitoring", "monitoring.x.model",
+					"monitoring.x.DefaultConfiguration"),
+			new Config("producer_consumer", "producer_consumer.j.model",
+					"producer_consumer.j.DefaultConfiguration"),
+			new Config("train", "train.j.model",
+					"train.j.DefaultConfiguration"), };
 
 	@Test
 	public void exportTest() {
