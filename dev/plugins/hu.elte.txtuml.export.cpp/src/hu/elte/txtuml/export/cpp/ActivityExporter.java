@@ -30,6 +30,7 @@ import org.eclipse.uml2.uml.ParameterDirectionKind;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.ReadVariableAction;
 import org.eclipse.uml2.uml.SequenceNode;
+import org.eclipse.uml2.uml.StartClassifierBehaviorAction;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValuePin;
@@ -167,10 +168,18 @@ public class ActivityExporter {
 					ActivityTemplates.getOperationFromType(
 						asfva.getStructuralFeature().isMultivalued(), asfva.isReplaceAll())));
 		} else if (node_.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
-			source.append(createObjectActionCode((CreateObjectAction) node_));
+			CreateObjectAction cAction = (CreateObjectAction) node_;
+			//cAction.
+			source.append(createObjectActionCode(cAction));
 		} else if (node_.eClass().equals(UMLPackage.Literals.SEND_SIGNAL_ACTION)) {
 			source.append(createSendSignalActionCode((org.eclipse.uml2.uml.SendSignalAction) node_).toString());
-		} else if (node_.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
+		} else if(node_.eClass().equals(UMLPackage.Literals.SEND_OBJECT_ACTION)) {
+			
+		}
+		else if(node_.eClass().equals(UMLPackage.Literals.START_CLASSIFIER_BEHAVIOR_ACTION)) {
+			source.append(createStartObjectActionCode((StartClassifierBehaviorAction) node_));
+		}
+		else if (node_.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
 		    	
 			source.append(createCallOperationActionCode((CallOperationAction) node_));
 		} else if (node_.eClass().equals(UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION)) {
@@ -184,6 +193,10 @@ public class ActivityExporter {
 		    source.append(createCycleCode((LoopNode) node_));
 		}
 		return source;
+	}
+
+	private String createStartObjectActionCode(StartClassifierBehaviorAction node_) {
+		return getTargetFromInputPin(node_.getObject());
 	}
 
 	private String createObjectActionCode(CreateObjectAction node_) {
@@ -267,7 +280,6 @@ public class ActivityExporter {
 			source = getTargetFromRSFA((ReadStructuralFeatureAction) node_);
 		} else if (node_.eClass().equals(UMLPackage.Literals.ACTIVITY_PARAMETER_NODE)) {
 			EClass ec = node_.getActivity().getOwner().eClass();
-			ActivityParameterNode paramNode = (ActivityParameterNode) node_;
 			String paramName = ((ActivityParameterNode) node_).getParameter().getName();
 			if (ec.equals(UMLPackage.Literals.TRANSITION)) {
 				source = ActivityTemplates.transitionActionParameter(paramName);

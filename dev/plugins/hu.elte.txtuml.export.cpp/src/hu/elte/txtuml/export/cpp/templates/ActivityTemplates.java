@@ -104,6 +104,10 @@ public class ActivityTemplates {
 		}
 		return source;
 	}
+	
+	public static String startObject(String objectVariable) {
+		return objectVariable + GenerationNames.PointerAccess + GenerationNames.StartSmMethodName + "();\n";
+	}
 
 	public static String simpleCondControlStruct(String control, String cond, String body) {
 		return control + "(" + cond + ")\n{\n" + body + "}\n";

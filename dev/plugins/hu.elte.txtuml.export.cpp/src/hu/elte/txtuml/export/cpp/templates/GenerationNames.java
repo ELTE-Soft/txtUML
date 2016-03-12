@@ -53,6 +53,7 @@ class GenerationNames {
 	public static final String StatemachineBaseHeaderName = "statemachinebase";
 	public static final String DefaultGuardName = "defaultGuard";
 	public static final String DummyProcessEventDef = ProcessEventDeclShared + "{return false;}\n";
+	public static final String StartSmMethodName = "startSM";
 
 	// hierarchical state machine
 	public static final String ParentSmPointerName = "_parentSm";
