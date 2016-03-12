@@ -81,12 +81,12 @@ public class ActivityTemplates {
 	     
 	}
 	
-	public static String stdLibOperationCall(String operationName, String operand, OperationSide side) {
-	    if(side == OperationSide.Right) {
-		return operand + operationName + ";";
+	public static String stdLibOperationCall(String operationName, String operand) {
+	    if(Operators.oneOperandOperationsOnPrimitiveTypesMap.get(operationName).getSecond() == OperationSide.Right) {
+		return operand + Operators.oneOperandOperationsOnPrimitiveTypesMap.get(operationName).getFirst();
 	    }
 	    else {
-		return operationName + operand + ";";
+		return Operators.oneOperandOperationsOnPrimitiveTypesMap.get(operationName).getFirst() + operand;
 	    }
 	}
 	
@@ -225,15 +225,14 @@ public class ActivityTemplates {
 		    operationsOnPrimitiveTypesMap.put("leq", LessOrEqThen);
 		    operationsOnPrimitiveTypesMap.put("geq", GreatOrEqThen);
 		    
-		    oneOperandOperationsOnPrimitiveTypesMap.put("inc", new Pair<String, OperationSide> (Increment, OperationSide.Right));
-		    oneOperandOperationsOnPrimitiveTypesMap.put("dec", new Pair<String, OperationSide> (Decrement, OperationSide.Right));
-		    oneOperandOperationsOnPrimitiveTypesMap.put("delayedInc", new Pair<String, OperationSide> (Increment, OperationSide.Left));
-		    oneOperandOperationsOnPrimitiveTypesMap.put("delayedDec", new Pair<String, OperationSide> (Decrement, OperationSide.Left));
-		    oneOperandOperationsOnPrimitiveTypesMap.put("neg", new Pair<String, OperationSide> (Not, OperationSide.Right));
+		    oneOperandOperationsOnPrimitiveTypesMap.put("inc", new Pair<String, OperationSide> (Increment, OperationSide.Left));
+		    oneOperandOperationsOnPrimitiveTypesMap.put("dec", new Pair<String, OperationSide> (Decrement, OperationSide.Left));
+		    oneOperandOperationsOnPrimitiveTypesMap.put("delayedInc", new Pair<String, OperationSide> (Increment, OperationSide.Right));
+		    oneOperandOperationsOnPrimitiveTypesMap.put("delayedDec", new Pair<String, OperationSide> (Decrement, OperationSide.Right));
 		    
 		    operationsOnPrimitiveTypesMap.put("and", And);
 		    operationsOnPrimitiveTypesMap.put("or", Or);
-		    oneOperandOperationsOnPrimitiveTypesMap.put("not", new Pair<String, OperationSide> (Increment, OperationSide.Right));
+		    oneOperandOperationsOnPrimitiveTypesMap.put("not", new Pair<String, OperationSide> (Not, OperationSide.Left));
 		    
 		    operationsOnPrimitiveTypesMap.put("concat", Add);
 		    

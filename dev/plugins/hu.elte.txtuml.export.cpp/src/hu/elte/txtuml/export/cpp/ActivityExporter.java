@@ -45,6 +45,7 @@ public class ActivityExporter {
 	Map<CreateObjectAction, String> _objectMap = new HashMap<CreateObjectAction, String>();
 	int tempVariableCounter = 0;
 	ActivityNode returnNode;
+	ActivityNode cycleConditionNode;
 	
 	private Map<OutputPin,String> tempVariables;
 	
@@ -58,6 +59,7 @@ public class ActivityExporter {
 		tempVariables = new HashMap<OutputPin,String>();
 		tempVariableCounter = 0;
 		returnNode = null;
+		cycleConditionNode = null;
 	}
 
 	public StringBuilder createfunctionBody(Activity activity_) {
@@ -167,7 +169,8 @@ public class ActivityExporter {
 					getTargetFromInputPin(asfva.getValue(), false), 
 					ActivityTemplates.getOperationFromType(
 						asfva.getStructuralFeature().isMultivalued(), asfva.isReplaceAll())));
-		} else if (node_.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
+		}
+		else if (node_.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
 			CreateObjectAction cAction = (CreateObjectAction) node_;
 			//cAction.
 			source.append(createObjectActionCode(cAction));
@@ -218,17 +221,18 @@ public class ActivityExporter {
 		    }
 	    }
 	    
+	    StringBuilder cond = new StringBuilder("");
+	    for(ExecutableNode condNode : loopNode.getTests()) {
+		cond.append(createActivityNodeCode(condNode));
+	    }
+	    source.append(cond);
+	    
 	    StringBuilder body = new StringBuilder("");
 	    for(ExecutableNode bodyNode : loopNode.getBodyParts()) {
 		body.append(createActivityNodeCode(bodyNode));
 	    }
 	    
-	    StringBuilder cond = new StringBuilder("");
-	    for(ExecutableNode condNode : loopNode.getTests()) {
-		cond.append(createActivityNodeCode(condNode));
-	    }
-	    
-	    source.append(ActivityTemplates.whileCycle(cond.toString(), body.toString(), ""));
+	    source.append(ActivityTemplates.whileCycle("", body.toString() + cond.toString(), ""));
 
 	    
 	    return source;
@@ -394,17 +398,20 @@ public class ActivityExporter {
 	    	String source = "";
 	    	if (isStdLibOperation(node_)) {
 	    	    
-	    	   
+	    	String val = "";
 		    if(node_.getArguments().size() == 2) {
 			 
-			 String val = ActivityTemplates.stdLibOperationCall(node_.getOperation().getName(),
-		    		 getTargetFromInputPin((node_.getArguments()).get(0)),getTargetFromInputPin((node_.getArguments()).get(1)));
-		    	 source = ActivityTemplates.addVariableTemplate(node_.getOperation().getType().getName(),"tmp" + tempVariableCounter,val);
-		    	importOutputPinToMap(node_.getOutputs().get(0));
+		    	val = ActivityTemplates.stdLibOperationCall(node_.getOperation().getName(),
+		    	getTargetFromInputPin((node_.getArguments()).get(0)),getTargetFromInputPin((node_.getArguments()).get(1)));
 		    }
 		    else if(node_.getArguments().size() == 1) {
-		    	  source = ""; //TODO one operand
+		    	val = ActivityTemplates.stdLibOperationCall(node_.getOperation().getName(),
+		    			getTargetFromInputPin((node_.getArguments()).get(0)));
+		    	
 		    }
+		    
+		    source = ActivityTemplates.addVariableTemplate(node_.getOperation().getType().getName(),"tmp" + tempVariableCounter,val); 
+	    	importOutputPinToMap(node_.getOutputs().get(0));
 		    	
 	    	    
 	    	    
