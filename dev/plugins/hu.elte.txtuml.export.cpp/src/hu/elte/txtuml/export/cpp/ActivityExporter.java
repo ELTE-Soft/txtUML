@@ -16,6 +16,8 @@ import org.eclipse.uml2.uml.AddStructuralFeatureValueAction;
 import org.eclipse.uml2.uml.AddVariableValueAction;
 import org.eclipse.uml2.uml.CallOperationAction;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.Clause;
+import org.eclipse.uml2.uml.ConditionalNode;
 import org.eclipse.uml2.uml.CreateObjectAction;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutableNode;
@@ -46,7 +48,7 @@ public class ActivityExporter {
 	int tempVariableCounter = 0;
 	ActivityNode returnNode;
 	ActivityNode cycleConditionNode;
-	boolean cycleExportation;
+	boolean conditionExportation;
 	
 	private Map<OutputPin,String> tempVariables;
 	
@@ -61,7 +63,7 @@ public class ActivityExporter {
 		tempVariableCounter = 0;
 		returnNode = null;
 		cycleConditionNode = null;
-		cycleExportation = false;
+		conditionExportation = false;
 	}
 
 	public StringBuilder createfunctionBody(Activity activity_) {
@@ -201,12 +203,17 @@ public class ActivityExporter {
 		    source.append(createCycleCode((LoopNode) node_));
 		}
 		
-		 else if (node_.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION) && cycleExportation) {
+		else if(node_.eClass().equals(UMLPackage.Literals.CONDITIONAL_NODE)) {
+			source.append(createForkCode(( (ConditionalNode) node_)));
+		}
+		
+		 else if (node_.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION) && conditionExportation) {
 				cycleConditionNode = node_;
 
 			}
 		return source;
 	}
+
 
 	private String createStartObjectActionCode(StartClassifierBehaviorAction node_) {
 		return getTargetFromInputPin(node_.getObject());
@@ -233,11 +240,11 @@ public class ActivityExporter {
 	    }
 	    
 	    StringBuilder cond = new StringBuilder("");
-	    cycleExportation = true;
+	    conditionExportation = true;
 	    for(ExecutableNode condNode : loopNode.getTests()) {
 		cond.append(createActivityNodeCode(condNode));
 	    }
-	    cycleExportation = false;
+	    conditionExportation = false;
 	    source.append(cond);
 	    
 	    StringBuilder body = new StringBuilder("");
@@ -255,6 +262,34 @@ public class ActivityExporter {
 
 	    
 	    return source;
+	}
+	
+	private StringBuilder createForkCode(ConditionalNode conditionalNode) {
+		StringBuilder source = new StringBuilder("");
+		StringBuilder tests = new StringBuilder("");
+		StringBuilder bodies = new StringBuilder("");
+		
+		
+		for (Clause clause : conditionalNode.getClauses()) {
+			for (ExecutableNode test: clause.getTests()) {
+				tests.append(createActivityNodeCode(test));
+			}
+			
+			String cond = getTargetFromActivityNode(clause.getDecider());
+			StringBuilder body = new StringBuilder("");
+			for( ExecutableNode node : clause.getBodies()) {
+				body.append(createActivityNodeCode(node));
+			}
+			
+			bodies.append(ActivityTemplates.simpleIf(cond, body.toString()));
+			
+			
+			
+		}
+		
+		source.append(tests);
+		source.append(bodies);
+		return source;
 	}
 
 	private String getTargetFromInputPin(InputPin node_) {
@@ -327,7 +362,7 @@ public class ActivityExporter {
 		    	}
 			
 		} else if (node_.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION)) {
-			if(cycleExportation) {
+			if(conditionExportation) {
 				cycleConditionNode = node_;
 			}
 			source = getValueFromValueSpecification(((ValueSpecificationAction) node_).getValue());
@@ -491,7 +526,7 @@ public class ActivityExporter {
 	}
 	
 	private void importOutputPinToMap(OutputPin out) {
-		if(cycleExportation) {
+		if(conditionExportation) {
 			cycleConditionNode = out;
 		}
 	    tempVariables.put(out, "tmp" + tempVariableCounter);
