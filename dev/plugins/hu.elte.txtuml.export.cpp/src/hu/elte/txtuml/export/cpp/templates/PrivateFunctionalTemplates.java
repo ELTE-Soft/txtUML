@@ -53,7 +53,7 @@ class PrivateFunctionalTemplates {
 		for (Pair<String, String> key : machine.keySet()) {
 			for (Pair<String, String> value : machine.get(key)) {
 				source.append(
-						GenerationNames.TransitionTableName + ".emplace(" +  GenerationNames.EventStateTypeName + "(" + parentStateMachine + "::");
+						GenerationNames.TransitionTableName + ".emplace(" +  GenerationNames.EventStateTypeName + "(" + GenerationNames.EventsEnumName + "::");
 				source.append(GenerationNames.eventEnumName(key.getFirst()) + ","
 						+ GenerationNames.stateEnumName(key.getSecond()) + "),");
 				String guardName = GenerationNames.DefaultGuardName;

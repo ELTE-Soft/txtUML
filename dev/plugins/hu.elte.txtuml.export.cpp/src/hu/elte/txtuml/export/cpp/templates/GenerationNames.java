@@ -4,6 +4,7 @@ class GenerationNames {
 	public static final String EventHeaderName = "event";
 	public static final String EventBaseName = "EventBase";
 	public static final String EventBaseRefName = EventBaseName + "CRef";
+	public static final String EventsEnumName = "Events";
 	public static final String NoReturn = "void";
 	public static final String HeaderExtension = "hpp";
 	public static final String SourceExtension = "cpp";

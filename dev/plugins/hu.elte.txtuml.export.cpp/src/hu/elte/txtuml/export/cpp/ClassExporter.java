@@ -158,7 +158,6 @@ public class ClassExporter {
 			privateParts.append(createGuardFunctions(region));
 			privateParts.append(createTransitionFunctionDecl(region));
 			publicParts.append(GenerationTemplates.stateEnum(getStateList(region), getInitState(region)));
-			publicParts.append(GenerationTemplates.eventEnum(getEventList(region)));
 
 			if (_submachineMap.isEmpty()) {
 				source = GenerationTemplates.simpleStateMachineClassHeader(dependency.toString(), class_.getName(),
