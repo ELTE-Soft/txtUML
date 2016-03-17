@@ -437,6 +437,7 @@ public class ClassExporter {
 
 		if (!isHeader) {
 			source.append(GenerationTemplates.cppInclude(GenerationTemplates.DeploymentHeader));
+			source.append(GenerationTemplates.cppInclude(GenerationTemplates.StandardFunctionsHeader));
 			source.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
 		}
 
@@ -724,6 +725,7 @@ public class ClassExporter {
 
 	}
 
+	@SuppressWarnings("unused")
 	private Set<SignalEvent> getEventList(Region region_) {
 		Set<SignalEvent> eventList = new HashSet<SignalEvent>();
 		for (Transition item : region_.getTransitions()) {

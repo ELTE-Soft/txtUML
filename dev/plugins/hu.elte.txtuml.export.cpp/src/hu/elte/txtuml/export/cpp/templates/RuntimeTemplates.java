@@ -1,7 +1,6 @@
 package hu.elte.txtuml.export.cpp.templates;
 
 import java.io.File;
-import java.util.ArrayList;
 
 class RuntimeTemplates {
 	public static final String RTPath = "runtime" + File.separator;

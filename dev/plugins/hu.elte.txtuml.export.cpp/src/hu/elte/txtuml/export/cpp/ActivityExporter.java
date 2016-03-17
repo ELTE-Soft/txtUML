@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -371,7 +372,7 @@ public class ActivityExporter {
 		    source = rA.getVariable().getName();
 		}
 		else if(node_.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
-		    source = (createCallOperationActionCode((org.eclipse.uml2.uml.CallOperationAction) node_));
+		    source = (createCallOperationActionCode((org.eclipse.uml2.uml.CallOperationAction) node_)).toString();
 		}
 		else {
 			System.out.println(node_.eClass().getName());
@@ -452,12 +453,31 @@ public class ActivityExporter {
 		return (Class) parent;
 	}
 
-	private String createCallOperationActionCode(CallOperationAction node_) {
-	    	String source = "";
+	private StringBuilder createCallOperationActionCode(CallOperationAction node_) {
+	    	StringBuilder source = new StringBuilder("");
+
 	    	if (isStdLibOperation(node_)) {
 	    	    
-	    	String val = "";
-		    if(node_.getArguments().size() == 2) {
+	    	    String val = "";
+	    	    
+	    	    for(OutputPin outPin : node_.getOutputs()) {
+	    		importOutputPinToMap(outPin);
+	    	    }
+	    	    if(ActivityTemplates.Operators.isStdLibFunction(node_.getOperation().getName())) {
+			    List<String> outParameterVariables = new ArrayList<String>(getParamNames(node_.getArguments()));
+			    EList<OutputPin> outList = node_.getOutputs();
+			    for(int i = 0; i < outList.size(); i++) {
+				if(i != outList.size() - 1) {
+				    source.append( GenerationTemplates.variableDecl(
+					    outList.get(i).getType().getName(),tempVariables.get(outList.get(i))));
+				    outParameterVariables.add(tempVariables.get(outList.get(i)));
+				}
+				
+			    }
+			    val = ActivityTemplates.simpleFunctionCall(node_.getOperation().getName(), outParameterVariables);
+			    
+	    	    }
+	    	    else if(node_.getArguments().size() == 2) {
 			 
 		    	val = ActivityTemplates.stdLibOperationCall(node_.getOperation().getName(),
 		    	getTargetFromInputPin((node_.getArguments()).get(0)),getTargetFromInputPin((node_.getArguments()).get(1)));
@@ -467,9 +487,12 @@ public class ActivityExporter {
 		    			getTargetFromInputPin((node_.getArguments()).get(0)));
 		    	
 		    }
-		    
-		    source = ActivityTemplates.addVariableTemplate(node_.getOperation().getType().getName(),"tmp" + tempVariableCounter,val); 
-	    	importOutputPinToMap(node_.getOutputs().get(0));
+	    	    
+	    	source.append(ActivityTemplates.addVariableTemplate(
+			    node_.getOperation().getType().getName(),
+			    tempVariables.get(node_.getOutputs().get(node_.getOutputs().size() -1)),val));
+ 
+
 		    	
 	    	    
 	    	    
@@ -477,7 +500,8 @@ public class ActivityExporter {
 	    	    String val = ActivityTemplates.operationCall(getTargetFromInputPin(node_.getTarget(), false),
 			ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node_.getTarget())),
 			node_.getOperation().getName(), getParamNames(node_.getArguments()));
-	    	     source = ActivityTemplates.addVariableTemplate(node_.getOperation().getType().getName(),"tmp" + tempVariableCounter,val );
+	    	     source.append(ActivityTemplates.addVariableTemplate
+	    		     (node_.getOperation().getType().getName(),"tmp" + tempVariableCounter,val ));
 	    	 importOutputPinToMap(node_.getOutputs().get(0));
 	    	    
 	    	}
@@ -526,11 +550,14 @@ public class ActivityExporter {
 	}
 	
 	private void importOutputPinToMap(OutputPin out) {
-		if(conditionExportation) {
+	    if(conditionExportation) {
 			cycleConditionNode = out;
 		}
-	    tempVariables.put(out, "tmp" + tempVariableCounter);
-	    tempVariableCounter++;
+	    if(!tempVariables.containsKey(out)) {
+		tempVariables.put(out, "tmp" + tempVariableCounter);
+		tempVariableCounter++;
+	    }
+	    
 	}
 
 }

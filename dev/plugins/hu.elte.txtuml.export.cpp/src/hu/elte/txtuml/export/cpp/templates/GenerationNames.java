@@ -13,6 +13,8 @@ class GenerationNames {
 	// NDEBUG is the only thing guaranteed, DEBUG and _DEBUG is non-standard
 	public static final String NoDebugSymbol = "NDEBUG";
 	public static final String StandardIOinclude = "#include <iostream>\n";
+	
+	public static final String StandardLibaryFunctionsHeaderName = "standard_functions";
 
 	public static final String NullPtr = "nullptr";
 	public static final String Self = "this";

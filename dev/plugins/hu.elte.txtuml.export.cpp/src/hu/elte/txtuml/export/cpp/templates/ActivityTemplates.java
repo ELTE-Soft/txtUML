@@ -90,6 +90,10 @@ public class ActivityTemplates {
 	    }
 	}
 	
+	public static String simpleFunctionCall(String functionName, List<String> parameters) {
+	    return functionName + "(" + operationCallParamList(parameters) + ")";
+	}
+	
 	public static String operationCallOnPointerVariable(String ownerName, String operationName, List<String> params) {
 	    return operationCall(ownerName,GenerationNames.PointerAccess,operationName,params);
 	}
@@ -225,10 +229,10 @@ public class ActivityTemplates {
 		    operationsOnPrimitiveTypesMap.put("leq", LessOrEqThen);
 		    operationsOnPrimitiveTypesMap.put("geq", GreatOrEqThen);
 		    
-		    oneOperandOperationsOnPrimitiveTypesMap.put("inc", new Pair<String, OperationSide> (Increment, OperationSide.Left));
-		    oneOperandOperationsOnPrimitiveTypesMap.put("dec", new Pair<String, OperationSide> (Decrement, OperationSide.Left));
-		    oneOperandOperationsOnPrimitiveTypesMap.put("delayedInc", new Pair<String, OperationSide> (Increment, OperationSide.Right));
-		    oneOperandOperationsOnPrimitiveTypesMap.put("delayedDec", new Pair<String, OperationSide> (Decrement, OperationSide.Right));
+		    oneOperandOperationsOnPrimitiveTypesMap.put("inc", 
+			    new Pair<String, OperationSide> (Increment, OperationSide.Left));
+		    oneOperandOperationsOnPrimitiveTypesMap.put("dec", 
+			    new Pair<String, OperationSide> (Decrement, OperationSide.Left));
 		    
 		    operationsOnPrimitiveTypesMap.put("and", And);
 		    operationsOnPrimitiveTypesMap.put("or", Or);
@@ -238,6 +242,15 @@ public class ActivityTemplates {
 		    
 		    oneOperandOperationsOnPrimitiveTypesMap.put("id", new Pair<String, OperationSide> ("", OperationSide.Right));
 		      
+		}
+		public static boolean isStdLibFunction(String name) {
+		    if(name.equals("delayedInc") || name.equals("delayedDec") ) {
+			return true;
+		    }
+		    else {
+			return false;
+		    }
+		    
 		}
 	}
 	

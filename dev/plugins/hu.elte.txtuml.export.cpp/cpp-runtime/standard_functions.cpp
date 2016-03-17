@@ -2,6 +2,12 @@
 
 int delayedInc(int i, int& out)
 {
-	out = out + 1;
+	out = i + 1;
+	return i;
+}
+
+int delayedDec(int i, int& out)
+{
+	out = i - 1;
 	return i;
 }

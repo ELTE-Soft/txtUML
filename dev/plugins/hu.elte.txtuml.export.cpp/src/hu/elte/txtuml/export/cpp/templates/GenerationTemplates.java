@@ -25,6 +25,7 @@ public class GenerationTemplates {
 	public static final String RuntimeParamaterName = RuntimeTemplates.RuntimeParamter;
 	public static final String MyRuntimeName = RuntimeTemplates.UsingRuntime;
 	public static final String InitStateMachineProcedureName = GenerationNames.InitStateMachine;
+	public static final String StandardFunctionsHeader = GenerationNames.StandardLibaryFunctionsHeaderName;
 	public static final String DeploymentHeader = "deployment";
 
 	public static final String InitSignal = GenerationNames.InitialEventName;
