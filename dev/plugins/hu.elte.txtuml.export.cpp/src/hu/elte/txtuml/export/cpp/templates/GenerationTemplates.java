@@ -32,23 +32,14 @@ public class GenerationTemplates {
 	public static StringBuilder eventBase(Options options) {
 		StringBuilder eventBase = new StringBuilder("");
 
-		if (options.isAddRuntime()) {
-			eventBase.append(RuntimeTemplates.rtEventHeaderInclude()).append("\n");
-		}
+		eventBase.append(RuntimeTemplates.rtEventHeaderInclude()).append("\n");
 
 		eventBase.append(GenerationNames.ClassType + " " + GenerationNames.EventBaseName);
 		if (options.isAddRuntime()) {
 			eventBase.append(":" + RuntimeTemplates.EventIName);
 		}
 		eventBase.append("\n{\n" + GenerationNames.EventBaseName + "(");
-		if (options.isAddRuntime()) {
-			eventBase.append(RuntimeTemplates.SMParam + ",");
-		}
 		eventBase.append("int t_):");
-		if (options.isAddRuntime()) {
-			eventBase.append(RuntimeTemplates.EventIName + "("
-					+ GenerationNames.formatIncomingParamName(RuntimeTemplates.SMRefName) + "),");
-		}
 
 		eventBase.append("t(t_){}\nint t;\n};\ntypedef const " + GenerationNames.EventBaseName + "& "
 				+ GenerationNames.EventBaseRefName + ";\n\n");
@@ -59,19 +50,12 @@ public class GenerationTemplates {
 		StringBuilder source = new StringBuilder(
 				GenerationNames.ClassType + " " + GenerationNames.eventClassName(className) + ":public "
 						+ GenerationNames.EventBaseName + "\n{\n" + GenerationNames.eventClassName(className) + "(");
-		if (options.isAddRuntime()) {
-			source.append(RuntimeTemplates.SMParam + ",");
-		}
-		source.append("int t_");
 		String paramList = PrivateFunctionalTemplates.paramList(params);
 		if (paramList != "") {
-			source.append("," + paramList);
+			source.append(paramList);
 		}
 		source.append("):" + GenerationNames.EventBaseName + "(");
-		if (options.isAddRuntime()) {
-			source.append(GenerationNames.formatIncomingParamName(RuntimeTemplates.SMRefName) + ",");
-		}
-		source.append("t_)");
+		source.append(className + "_EE)");
 		StringBuilder body = new StringBuilder("{}\n");
 		for (Pair<String, String> param : params) {
 			source.append(

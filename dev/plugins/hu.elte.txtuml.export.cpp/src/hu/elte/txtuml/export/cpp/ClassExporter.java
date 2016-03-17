@@ -63,7 +63,7 @@ public class ClassExporter {
 	}
 
 	public void reiniIialize() {
-	    	activityExporter = new ActivityExporter();
+	    activityExporter = new ActivityExporter();
 		_guardMap = new HashMap<String, String>();
 		_entryMap = null;
 		_exitMap = null;

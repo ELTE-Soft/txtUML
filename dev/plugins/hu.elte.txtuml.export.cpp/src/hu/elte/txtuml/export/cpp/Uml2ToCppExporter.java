@@ -156,14 +156,18 @@ public class Uml2ToCppExporter {
 		List<Signal> signalList = new ArrayList<Signal>();
 		Shared.getTypedElements(signalList, elements_, UMLPackage.Literals.SIGNAL);
 		StringBuilder forwardDecl = new StringBuilder("");
+		StringBuilder events = new StringBuilder("");
 		StringBuilder source = GenerationTemplates.eventBase(options).append("\n");
 		List<Pair<String, String>> allParam = new LinkedList<Pair<String, String>>();
-
+		
+		events.append("InitSignal_EE,");
 		for (Signal item : signalList) {
 			List<Pair<String, String>> currentParams = getSignalParams(item);
 			allParam.addAll(currentParams);
 			source.append(GenerationTemplates.eventClass(item.getName(), currentParams, options));
+			events.append(item.getName() + "_EE,");
 		}
+		events = new StringBuilder(events.substring(0, events.length()-1));
 
 		source.append(GenerationTemplates.eventClass("InitSignal", new ArrayList<Pair<String, String>>(), options));
 
@@ -176,8 +180,11 @@ public class Uml2ToCppExporter {
 				}
 			}
 		}
+		
+		
 		forwardDecl.append("\n");
 		forwardDecl.append(source);
+		forwardDecl.append("enum Events {" +  events + "}");
 		return GenerationTemplates.eventHeaderGuard(forwardDecl.toString());
 	}
 
