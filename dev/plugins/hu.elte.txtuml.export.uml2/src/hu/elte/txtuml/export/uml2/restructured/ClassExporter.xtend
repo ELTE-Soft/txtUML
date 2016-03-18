@@ -15,9 +15,9 @@ class ClassExporter extends Exporter<TypeDeclaration, Class> {
 	
 	override create() { factory.createClass }
 	
-	override exportContents(Class cls, TypeDeclaration typeDecl) {
-		cls.isAbstract = ElementTypeTeller.isAbstract(typeDecl)
-		cls.name = typeDecl.name.identifier
+	override exportContents(TypeDeclaration typeDecl) {
+		result.isAbstract = ElementTypeTeller.isAbstract(typeDecl)
+		result.name = typeDecl.name.identifier
 //		typeDecl.fields.forEach[ attributeExporter.export ]
 	}
 	

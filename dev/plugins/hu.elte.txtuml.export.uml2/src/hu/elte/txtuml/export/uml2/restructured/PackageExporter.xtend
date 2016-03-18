@@ -15,6 +15,8 @@ import org.eclipse.uml2.uml.Type
 
 abstract class AbstractPackageExporter<T extends Element> extends Exporter<IPackageFragment, T> {
 
+	new() {}
+
 	new(Exporter<?,?> parent) {
 		super(parent);
 	}
@@ -53,8 +55,8 @@ class PackageExporter extends AbstractPackageExporter<Package> {
 
 	override create() { factory.createPackage }
 
-	override exportContents(Package pack, IPackageFragment s) {
-		pack.name = s.elementName.split(Pattern.quote(".")).last
+	override exportContents(IPackageFragment s) {
+		result.name = s.elementName.split(Pattern.quote(".")).last
 	}
 
 	override tryStore(Element contained) {

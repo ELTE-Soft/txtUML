@@ -10,15 +10,11 @@ import org.eclipse.uml2.uml.Package
 
 class ModelExporter extends AbstractPackageExporter<Model> {
 	
-	new(Exporter<?,?> parent) {
-		super(parent)
-	}
-	
 	override create() { factory.createModel }
 
-	override exportContents(Model model, IPackageFragment packageFragment) {
+	override exportContents(IPackageFragment packageFragment) {
 		val unit = packageFragment.getCompilationUnit(PackageUtils.PACKAGE_INFO).parseCompUnit
-		model.name = unit.findModelName
+		result.name = unit.findModelName
 		packageFragment.children.forEach[exportChild]
 	}
 	
