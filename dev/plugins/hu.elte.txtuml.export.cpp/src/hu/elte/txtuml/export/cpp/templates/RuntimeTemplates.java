@@ -45,8 +45,7 @@ class RuntimeTemplates {
 
 	public static String processInitTransition(String className) {
 		return GenerationNames.NoReturn + " " + className + "::processInitTranstion()\n{\n"
-				+ GenerationNames.ProcessEventFName + "(" + GenerationNames.InitialEventName + "_EC((*"
-				+ GenerationNames.Self + "), " + className + "::" + GenerationNames.InitialEventName + "_EE));\n}\n";
+				+ GenerationNames.ProcessEventFName + "(" + GenerationNames.InitialEventName + "_EC());\n}\n";
 
 	}
 

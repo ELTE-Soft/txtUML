@@ -78,7 +78,7 @@ public class ThreadHandlingManager {
 		source.append(GenerationTemplates.cppInclude(ConfigurationFile));
 		source.append(GenerationTemplates
 				.putNamespace(GenerationTemplates.simpleFunctionDef(GenerationTemplates.MyRuntimeName, CreatorFunction,
-						(createConfiguration().append(createThreadedRuntime()).toString()),
+						(createConfiguration().append(";\n").append(createThreadedRuntime()).toString()),
 						GenerationTemplates.RuntimeParamaterName), NamespaceName));
 		
 		return source;
@@ -90,8 +90,8 @@ public class ThreadHandlingManager {
 				GenerationTemplates.RuntimeParamaterName, CreateRTMethod));
 		List<String> params = new ArrayList<String>();
 		params.add(ConfigurationObjectVariableName);
-		source.append(ActivityTemplates.operationCallOnPointerVariable(GenerationTemplates.RuntimeParamaterName,
-				SetConfigurationMethod, params));
+		source.append(ActivityTemplates.blockStatement(ActivityTemplates.operationCallOnPointerVariable(GenerationTemplates.RuntimeParamaterName,
+				SetConfigurationMethod, params)));
 		return source;
 	}
 

@@ -203,7 +203,7 @@ public class ClassExporter {
 		Shared.getTypedElements(smList, class_.allOwnedElements(), UMLPackage.Literals.STATE_MACHINE);
 		
 		if(!ownConstructor) {
-			source.append(GenerationTemplates.constructorDef(class_.getName()) + "\n");
+			source.append(GenerationTemplates.constructorDef(class_.getName(), ownStates(class_, smList)) + "\n");
 		}
 		
 		if (ownStates(class_, smList)) {
@@ -249,7 +249,7 @@ public class ClassExporter {
 				  funcBody));
 			} else {
 				source.append(GenerationTemplates.constructorDef(class_.getName(), getBaseClass(class_), "",
-						getOperationParams(operation), null ));
+						getOperationParams(operation), null,ownStates(class_, smList)));
 				// TODO generate constructors
 			}
 		}

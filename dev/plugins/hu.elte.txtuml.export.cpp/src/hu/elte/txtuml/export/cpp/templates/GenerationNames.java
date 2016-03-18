@@ -128,8 +128,7 @@ class GenerationNames {
 				+ "if(it!=" + CompositeStateMapName + ".end())\n" + "{\n" + CurrentMachineName
 				+ "=(it->second).get();\n" + CurrentMachineName + "->" + SetInitialStateName
 				+ "();//restarting from initial state\n" + CurrentMachineName + "->" + ProcessEventFName + "("
-				+ GenerationNames.InitialEventName + "_EC(" + derefenrencePointer(GenerationNames.Self) + ", "
-				+ className + "::" + GenerationNames.InitialEventName + "_EE));\n" + "}\n" + "else\n" + "{\n"
+				+ GenerationNames.InitialEventName + "_EC());\n" + "}\n" + "else\n" + "{\n"
 				+ CurrentMachineName + "=" + NullPtr + ";\n" + "}\n" + CurrentStateName + "="
 				+ GenerationNames.StateParamName + ";\n" + EntryName + "();\n" + "}\n";
 	}

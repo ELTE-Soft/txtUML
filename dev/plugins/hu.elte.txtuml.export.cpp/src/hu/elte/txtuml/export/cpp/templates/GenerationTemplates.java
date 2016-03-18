@@ -170,10 +170,11 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 					if(rt) {
 						source.append(",public " + RuntimeTemplates.STMIName);
 					}
-					source.append("\n{\n");
+					
 					
 
 		}
+		source.append("\n{\n");
 		source.append( "~" + className + "();\n"); 
 
 		if (!sm && baseClassName == null) {
@@ -218,7 +219,7 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 	}
 	
 	
-	public static StringBuilder constructorDef(String className, String baseClassName, String body, List<Pair<String,String>> params, List<Pair<String,String>> baseParams) {
+	public static StringBuilder constructorDef(String className, String baseClassName, String body, List<Pair<String,String>> params, List<Pair<String,String>> baseParams, Boolean stateMachine) {
 		StringBuilder source = new StringBuilder("");
 		source.append(className + "::" + className + "(");
 		source.append(PrivateFunctionalTemplates.paramList(params) + ")");
@@ -226,14 +227,20 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 			source.append(":" +  baseClassName + "(" + PrivateFunctionalTemplates.paramList(baseParams) + ")");
 		}
 		
-		source.append("\n{\n" + body + "\n" + GenerationNames.InitStateMachine +"();\n}\n" );
+		
+			source.append("\n{\n" + body + "\n");
+			if(stateMachine) {
+				source.append(GenerationNames.InitStateMachine + "();\n");
+			}
+			source.append("}\n");
+		
 		
 		return source;
 
 	}
 	
-	public static StringBuilder constructorDef(String className) {
-		return constructorDef(className,null,"",null,null);
+	public static StringBuilder constructorDef(String className, Boolean stateMachine) {
+		return constructorDef(className,null,"",null,null,stateMachine);
 	}
 	
 	public static String destructorDef(String className, Boolean ownStates) {
@@ -554,7 +561,7 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 	}
 
 	public static String staticCreate(String typeName, String objName, String creatorMethod) {
-		return GenerationNames.pointerType(typeName) + " " + objName + " = " + typeName + "::" + creatorMethod + "();";
+		return GenerationNames.pointerType(typeName) + " " + objName + " = " + typeName + "::" + creatorMethod + "();\n";
 	}
 
 	public static String getDefaultReturn(String returnType) {
