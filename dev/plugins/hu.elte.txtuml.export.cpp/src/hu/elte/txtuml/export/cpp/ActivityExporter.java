@@ -29,6 +29,7 @@ import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.LoopNode;
 import org.eclipse.uml2.uml.ObjectFlow;
 import org.eclipse.uml2.uml.OutputPin;
+import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.ParameterDirectionKind;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.ReadVariableAction;
@@ -455,10 +456,11 @@ public class ActivityExporter {
 
 	private StringBuilder createCallOperationActionCode(CallOperationAction node_) {
 	    	StringBuilder source = new StringBuilder("");
-
+	    	
+	    	node_.validateArgumentPins(null, null);
+	    	//node_.get
 	    	if (isStdLibOperation(node_)) {
-	    	    
-	    	    String val = "";
+	    	    String val = ""; 
 	    	    
 	    	    for(OutputPin outPin : node_.getOutputs()) {
 	    		importOutputPinToMap(outPin);
@@ -500,9 +502,16 @@ public class ActivityExporter {
 	    	    String val = ActivityTemplates.operationCall(getTargetFromInputPin(node_.getTarget(), false),
 			ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node_.getTarget())),
 			node_.getOperation().getName(), getParamNames(node_.getArguments()));
-	    	     source.append(ActivityTemplates.addVariableTemplate
-	    		     (node_.getOperation().getType().getName(),"tmp" + tempVariableCounter,val ));
-	    	 importOutputPinToMap(node_.getOutputs().get(0));
+	    	     if(node_.getOperation().getType() != null ) {
+	    		source.append(ActivityTemplates.addVariableTemplate
+		    		     (node_.getOperation().getType().getName(),"tmp" + tempVariableCounter,val));
+	    		importOutputPinToMap(node_.getOutputs().get(0));
+	    	     }
+	    	     else {
+	    		 source.append(ActivityTemplates.blockStatement(val));
+	    	     }
+	    	     
+	    	 
 	    	    
 	    	}
 	    	return source;

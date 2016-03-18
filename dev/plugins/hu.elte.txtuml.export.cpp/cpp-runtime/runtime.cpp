@@ -30,16 +30,17 @@ void SingleThreadRT::start()
 
     while(!_messageQueue->empty())
     {
-            EventPtr e = _messageQueue->front();
-            if (e->dest.isStarted())
+            StateMachineI* sm;
+            _messageQueue->pop_front(sm);
+            if (sm->isStarted())
             {
-                if(e->dest.isInitialized())
+                if(sm->isInitialized())
                 {
-                    e->dest.processEventVirtual();
+                    sm->processEventVirtual();
                 }
                 else
                 {
-                    e->dest.init();
+                    sm->init();
                 }
 
             }
@@ -48,6 +49,11 @@ void SingleThreadRT::start()
 }
 
 void SingleThreadRT::setConfiguration(ThreadConfiguration *conf){}
+
+void SingleThreadRT::enqueObject(StateMachineI *sm)
+{
+    _messageQueue->push_back(sm);
+}
 
 void SingleThreadRT::stopUponCompletion() {}
 
@@ -128,8 +134,10 @@ void ConfiguratedThreadedRT::removeObject(StateMachineI* sm)
 
 void ConfiguratedThreadedRT::setConfiguration(ThreadConfiguration* conf)
 {
-	poolManager->setConfiguration(conf);
+    poolManager->setConfiguration(conf);
 }
+
+void ConfiguratedThreadedRT::enqueObject(StateMachineI *sm) {}
 
 ConfiguratedThreadedRT::~ConfiguratedThreadedRT()
 {

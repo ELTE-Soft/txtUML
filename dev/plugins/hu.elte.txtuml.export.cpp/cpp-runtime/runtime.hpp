@@ -27,6 +27,11 @@ public:
   {
       static_cast<RuntimeType*>(this)->setupObjectSpecificRuntime(sm_);
   }
+  
+  void enqueObject(StateMachineI* sm)
+  {
+      static_cast<RuntimeType*>(this)->enqueObject(sm);
+  }
 
   void setupObject(ObjectList& ol_)
   {
@@ -35,6 +40,8 @@ public:
         static_cast<RuntimeType*>(this)->setupObjectSpecificRuntime(*it);
       }
   }
+  
+  
 
   void configure(ThreadConfiguration* configuration)
   {
@@ -74,13 +81,14 @@ public:
   void start();
   void setupObjectSpecificRuntime(StateMachineI*);
   void setConfiguration(ThreadConfiguration*);
+  void enqueObject(StateMachineI*);
   void stopUponCompletion();
   void removeObject(StateMachineI*);
   bool isConfigurated();
 private:
   SingleThreadRT();
   static SingleThreadRT* instance;  
-  std::shared_ptr<MessageQueueType> _messageQueue;
+  std::shared_ptr<PoolQueueType> _messageQueue;
 
 };
 
@@ -94,12 +102,13 @@ public:
 	void removeObject(StateMachineI*);
 	void stopUponCompletion();
 	void setConfiguration(ThreadConfiguration*);
+	void enqueObject(StateMachineI*);
 	bool isConfigurated();
 	void setupObjectSpecificRuntime(StateMachineI*);
-        ~ConfiguratedThreadedRT();
+   ~ConfiguratedThreadedRT();
 private:
-        ConfiguratedThreadedRT();
-        static ConfiguratedThreadedRT* instance;
+    ConfiguratedThreadedRT();
+    static ConfiguratedThreadedRT* instance;
 	ThreadPoolManager* poolManager;
 	std::vector<int> numberOfObjects;
 };

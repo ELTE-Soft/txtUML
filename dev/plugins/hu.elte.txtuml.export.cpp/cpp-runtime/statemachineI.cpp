@@ -30,6 +30,10 @@ void StateMachineI::send(EventPtr e_)
   {
     handlePool();
   }
+  else
+  {
+      RuntimeI<SingleThreadRT>::createRuntime()->enqueObject(this);
+  }
   
 
 }
@@ -57,10 +61,5 @@ StateMachineI::~StateMachineI()
 	{
 		_cond.wait(mlock);
 	}
-	
-        /*if(_runtime != nullptr)
-	{
-		_runtime->removeObject(this);
-        }*/
 		
 }

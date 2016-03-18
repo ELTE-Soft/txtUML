@@ -97,6 +97,10 @@ public class ActivityTemplates {
 	public static String operationCallOnPointerVariable(String ownerName, String operationName, List<String> params) {
 	    return operationCall(ownerName,GenerationNames.PointerAccess,operationName,params);
 	}
+	
+	public static String blockStatement(String statement) {
+	    return statement + ";\n";
+	}
 
 	private static String operationCallParamList(List<String> params) {
 		String source = "";
