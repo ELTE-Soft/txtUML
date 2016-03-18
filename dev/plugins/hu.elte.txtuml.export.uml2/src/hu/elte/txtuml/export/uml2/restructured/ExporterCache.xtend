@@ -10,7 +10,7 @@ class ExporterCache {
 	val Map<Object, Element> cache = new HashMap();
 	protected val factory = UMLFactory.eINSTANCE
 	
-	def <S,R extends Element> R export(Exporter<S,R> exporter, S source) {
+	def <S,A,R extends Element> R export(Exporter<S,A,R> exporter, S source) {
 		if (cache.containsKey(source)) {
 			return cache.get(source) as R
 		} else {

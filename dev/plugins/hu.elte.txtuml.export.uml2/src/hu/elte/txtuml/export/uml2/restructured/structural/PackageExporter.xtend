@@ -1,5 +1,7 @@
-package hu.elte.txtuml.export.uml2.restructured
+package hu.elte.txtuml.export.uml2.restructured.structural
 
+import hu.elte.txtuml.export.uml2.restructured.Exporter
+import hu.elte.txtuml.export.uml2.restructured.UniformExporter
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller
 import hu.elte.txtuml.utils.jdt.SharedUtils
 import java.io.File
@@ -13,11 +15,12 @@ import org.eclipse.uml2.uml.Package
 import org.eclipse.uml2.uml.PackageableElement
 import org.eclipse.uml2.uml.Type
 
-abstract class AbstractPackageExporter<T extends Element> extends Exporter<IPackageFragment, T> {
+abstract class AbstractPackageExporter<T extends Package> extends UniformExporter<IPackageFragment, T> {
 
-	new() {}
+	new() {
+	}
 
-	new(Exporter<?,?> parent) {
+	new(Exporter<?, ?, ?> parent) {
 		super(parent);
 	}
 
@@ -29,6 +32,13 @@ abstract class AbstractPackageExporter<T extends Element> extends Exporter<IPack
 		val unit = parseCompUnit(compUnit)
 		unit.types.forEach[exportType]
 	}
+	
+	def dispatch exportType(TypeDeclaration decl) {
+		switch decl {
+			case ElementTypeTeller.isModelClass(decl): exportClass(decl)
+			default: throw new IllegalArgumentException(decl.toString)
+		}
+	}
 
 	def dispatch exportChild(IJavaElement other) {
 		throw new IllegalArgumentException(other.toString);
@@ -37,28 +47,7 @@ abstract class AbstractPackageExporter<T extends Element> extends Exporter<IPack
 	def parseCompUnit(ICompilationUnit compUnit) {
 		SharedUtils.parseJavaSource(new File(compUnit.resource.locationURI), compUnit.javaProject)
 	}
-
-	def exportType(TypeDeclaration typeDecl) {
-		switch typeDecl {
-			case ElementTypeTeller.isModelClass(typeDecl): exportClass(typeDecl)
-			default: throw new IllegalArgumentException(typeDecl.toString)
-		}
-	}
-
-}
-
-class PackageExporter extends AbstractPackageExporter<Package> {
-
-	new(Exporter<?,?> parent) {
-		super(parent)
-	}
-
-	override create() { factory.createPackage }
-
-	override exportContents(IPackageFragment s) {
-		result.name = s.elementName.split(Pattern.quote(".")).last
-	}
-
+	
 	override tryStore(Element contained) {
 		switch contained {
 			Type: result.ownedTypes.add(contained)
@@ -66,7 +55,19 @@ class PackageExporter extends AbstractPackageExporter<Package> {
 			PackageableElement: result.packagedElements.add(contained)
 			default: return false
 		}
-		return true;
+		return true
+	}
+}
+
+class PackageExporter extends AbstractPackageExporter<Package> {
+
+	new(Exporter<?, ?, ?> parent) {
+		super(parent)
 	}
 
+	override create(IPackageFragment pf) { factory.createPackage }
+
+	override exportContents(IPackageFragment s) {
+		result.name = s.elementName.split(Pattern.quote(".")).last
+	}
 }

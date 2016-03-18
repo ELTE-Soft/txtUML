@@ -229,6 +229,10 @@ public final class ElementTypeTeller {
 
 		return !extendsModelClass && !extendsSignal;
 	}
+	
+	public static boolean isAbstract(ITypeBinding type) {
+		return (type.getModifiers() & Modifier.ABSTRACT) != 0;
+	}
 
 	public static boolean isAbstract(TypeDeclaration typeDeclaration) {
 		for (Object elem : typeDeclaration.modifiers()) {

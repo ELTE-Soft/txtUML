@@ -1,16 +1,13 @@
-package hu.elte.txtuml.export.uml2.restructured
+package hu.elte.txtuml.export.uml2.restructured.structural
 
 import hu.elte.txtuml.utils.eclipse.PackageUtils
 import org.eclipse.jdt.core.IPackageFragment
 import org.eclipse.jdt.core.dom.CompilationUnit
-import org.eclipse.uml2.uml.Class
-import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.Model
-import org.eclipse.uml2.uml.Package
 
 class ModelExporter extends AbstractPackageExporter<Model> {
 	
-	override create() { factory.createModel }
+	override create(IPackageFragment pf) { factory.createModel }
 
 	override exportContents(IPackageFragment packageFragment) {
 		val unit = packageFragment.getCompilationUnit(PackageUtils.PACKAGE_INFO).parseCompUnit
@@ -30,12 +27,4 @@ class ModelExporter extends AbstractPackageExporter<Model> {
 		}
 	}
 	
-	override tryStore(Element contained) {
-		switch contained {
-			Package: result.nestedPackages.add(contained)
-			Class: result.ownedTypes.add(contained)
-			default: return false
-		}
-		return true
-	}
 }
