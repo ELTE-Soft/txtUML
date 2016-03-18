@@ -9,8 +9,8 @@ import org.eclipse.uml2.uml.Property
 
 class ClassExporter extends Exporter<TypeDeclaration, Class> {
 	
-	new(ExporterRegistry registry) {
-		super(registry, Class)
+	new(Exporter<?,?> parent) {
+		super(parent)
 	}
 	
 	override create() { factory.createClass }
@@ -21,10 +21,10 @@ class ClassExporter extends Exporter<TypeDeclaration, Class> {
 //		typeDecl.fields.forEach[ attributeExporter.export ]
 	}
 	
-	override tryStore(Class cls, Element contained) {
+	override tryStore(Element contained) {
 		switch contained {
-			Operation: cls.ownedOperations.add(contained)
-			Property: cls.ownedAttributes.add(contained)
+			Operation: result.ownedOperations.add(contained)
+			Property: result.ownedAttributes.add(contained)
 			default: return false
 		}
 		return true;

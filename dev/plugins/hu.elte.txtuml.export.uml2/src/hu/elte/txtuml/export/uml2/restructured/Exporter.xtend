@@ -1,56 +1,43 @@
 package hu.elte.txtuml.export.uml2.restructured
 
-import java.util.HashMap
-import java.util.List
-import java.util.Map
 import org.eclipse.uml2.uml.Element
-import org.eclipse.uml2.uml.UMLFactory
+import org.eclipse.jdt.core.IPackageFragment
+import org.eclipse.jdt.core.dom.TypeDeclaration
 
 abstract class Exporter<S, R extends Element> {
 
-	protected ExporterRegistry registry
+	Exporter<?, ?> parent
+	ExporterCache cache
+	protected R result;
 
-	val Map<S, R> cache = new HashMap();
-	protected val factory = UMLFactory.eINSTANCE
-
-	Class<R> cls
-
-	new(ExporterRegistry exporterRegistry, Class<R> cls) {
-		this.cls = cls
-		this.registry = exporterRegistry
-	}
-
-	def R export(List<Element> stack, S source) {
-		if (cache.containsKey(source)) {
-			return cache.get(source);
-		} else {
-			val r = create();
-			r.exportContents(source)
-			store(stack, r);
-			return r
-		}
+	new(Exporter<?,?> parent) {
+		this.parent = parent
+		this.cache = parent.cache
 	}
 
 	abstract def R create();
 
 	abstract def void exportContents(R r, S s);
 
-	def void store(List<Element> stack, Element contained) {
-		val container = stack.last
-		val exporter = registry.getSourceExporter(container)
-		if (!exporter.tryStoreCast(container, contained)) {
-			exporter.store(stack.subList(0, stack.length - 2), contained)
+	def R export(S source) {
+		result = create();
+		exportContents(result, source)
+		parent.store(result);
+		return result
+	}
+
+	def void store(Element contained) {
+		if (!tryStore(contained)) {
+			parent.store(contained)
 		}
 	}
 
-	def tryStoreCast(Element container, Element contained) {
-		tryStore(cls.cast(container), contained)
-	}
-
-	abstract def boolean tryStore(R container, Element contained);
+	abstract def boolean tryStore(Element contained);
 	
-	def getModelExporter() { registry.modelExporter }
-	def getPackageExporter() { registry.packageExporter }
-	def getClassExporter() { registry.classExporter }
-
+	def getFactory() { cache.factory }
+	
+	def exportModel(IPackageFragment pf) { cache.export(new ModelExporter(this), pf) }
+	def exportPackage(IPackageFragment pf) { cache.export(new PackageExporter(this), pf) }
+	def exportClass(TypeDeclaration td) { cache.export(new ClassExporter(this), td) }
+	
 }
