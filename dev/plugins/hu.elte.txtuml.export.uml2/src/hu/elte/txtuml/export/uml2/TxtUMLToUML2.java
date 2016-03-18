@@ -15,10 +15,12 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.resource.UMLResource;
 
 import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
 import hu.elte.txtuml.export.uml2.transform.backend.RuntimeExportException;
 import hu.elte.txtuml.export.uml2.transform.exporters.ModelExporter;
+import hu.elte.txtuml.export.uml2.utils.ResourceSetFactory;
 import hu.elte.txtuml.utils.Sneaky;
 import hu.elte.txtuml.utils.eclipse.NotFoundException;
 import hu.elte.txtuml.utils.eclipse.PackageUtils;
@@ -73,7 +75,13 @@ public class TxtUMLToUML2 {
 			throw new NotFoundException("Cannot find package '" + packageName + "'");
 		}
 
-		return exportModel(packageName, packageFragments, javaProject, outputDirectory, exportMode);
+		Model model = new hu.elte.txtuml.export.uml2.restructured.ModelExporter().export(packageFragments[0]);
+		URI uri = URI.createFileURI(javaProject.getProject().getLocation().toOSString()).appendSegment("gen").appendSegment(packageName)
+				.appendFileExtension(UMLResource.FILE_EXTENSION);
+		ResourceSet resourceSet = new ResourceSetFactory().createAndInitResourceSet();
+		Resource modelResource = resourceSet.createResource(uri);
+		modelResource.getContents().add(model);
+		return model;
 	}
 
 	/**
