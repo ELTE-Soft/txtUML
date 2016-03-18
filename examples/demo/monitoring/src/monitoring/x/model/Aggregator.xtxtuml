@@ -1,0 +1,50 @@
+package monitoring.x.^model;
+
+signal ReadError;
+signal WriteError;
+signal PrintReport;
+
+class Aggregator {
+	int writeErrorNum;
+	int readErrorNum;
+	
+	Aggregator() {
+		writeErrorNum = 0;
+		readErrorNum = 0;
+	}
+	
+	initial Init;
+	state Aggregate;
+	
+	transition TInit {
+		from Init;
+		to Aggregate;
+	}
+	
+	transition TReadError {
+		from Aggregate;
+		to Aggregate;
+		trigger ReadError;
+		effect {
+			readErrorNum++;
+		}
+	}
+	
+	transition TWriteError {
+		from Aggregate;
+		to Aggregate;
+		trigger WriteError;
+		effect {
+			writeErrorNum++;
+		}		
+	}
+	
+	transition TPrintReport {
+		from Aggregate;
+		to Aggregate;
+		trigger PrintReport;
+		effect {
+			log("# read errors: " + readErrorNum + ", # write errors: " + writeErrorNum);
+		}
+	}
+}

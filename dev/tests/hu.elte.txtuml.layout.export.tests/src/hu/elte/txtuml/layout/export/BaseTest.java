@@ -1,6 +1,5 @@
 package hu.elte.txtuml.layout.export;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -22,6 +21,7 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
+import hu.elte.txtuml.utils.Logger; 
 
 public class BaseTest {
 
@@ -131,16 +131,16 @@ public class BaseTest {
 	protected static <T> void assertCollectionEquals(Collection<T> expecteds,
 			Collection<T> actuals) {
 		if (!expecteds.equals(actuals)) {
-			System.err.println("EXPECTED");
-			prettyPrint(expecteds, System.err);
-			System.err.println("ACTUAL");
-			prettyPrint(actuals, System.err);
+			Logger.sys.info("EXPECTED");
+			prettyPrint(expecteds);
+			Logger.sys.info("ACTUAL"); 
+			prettyPrint(actuals);
 			Assert.assertTrue(false);
 		}
 	}
 
-	protected static void prettyPrint(Collection<?> coll, PrintStream on) {
-		coll.stream().map(Object::toString).sorted().forEach(on::println);
+	protected static void prettyPrint(Collection<?> coll) {
+		coll.stream().map(Object::toString).sorted().forEach(s -> Logger.sys.info(s));
 	}
 
 	protected static class Link {

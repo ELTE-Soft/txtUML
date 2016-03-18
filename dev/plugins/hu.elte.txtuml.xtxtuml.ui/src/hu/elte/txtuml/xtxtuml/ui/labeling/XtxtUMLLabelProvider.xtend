@@ -8,19 +8,26 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUPortMember
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUReception
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionEffect
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionGuard
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionTrigger
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider
@@ -39,160 +46,233 @@ class XtxtUMLLabelProvider extends XbaseLabelProvider {
 		super(delegate);
 	}
 
-	def image(TUFile file) {
+	def image(TUFile it) {
 		"uml2/Package.gif"
 	}
-	
-	def image(TUModelDeclaration model) {
+
+	def image(TUModelDeclaration it) {
 		"uml2/Model.gif"
 	}
-	
-	def image(TUExecution exec) {
+
+	def image(TUExecution it) {
 		"execution.gif"
 	}
-	
-	def image(TUClass clazz) {
+
+	def image(TUClass it) {
 		"uml2/Class.gif"
 	}
-	
-	def image(TUSignal signal) {
+
+	def image(TUSignal it) {
 		"uml2/Signal.gif"
 	}
-	
-	def image(TUSignalAttribute sAttr) {
+
+	def image(TUSignalAttribute it) {
 		"uml2/Property.gif"
 	}
-	
-	def text(TUSignalAttribute sAttr) {
-		new StyledString(sAttr.name).append(new StyledString(
-			" : " + sAttr.type.simpleName,
-			StyledString::DECORATIONS_STYLER
-		))
+
+	def text(TUSignalAttribute it) {
+		createJavaStyledText(name, type.simpleName)
 	}
-	
-	def image(TUAssociation assoc) {
-		"uml2/Association.gif"
+
+	def image(TUInterface it) {
+		"uml2/Interface.gif"
 	}
-	
-	def image(TUAssociationEnd assocEnd) {
+
+	def image(TUReception it) {
+		"uml2/Reception.gif"
+	}
+
+	def text(TUReception it) {
+		createJavaStyledText("reception", signal.name)
+	}
+
+	def image(TUAssociation it) {
+		if (it instanceof TUComposition) {
+			"uml2/Association_composite.gif"
+		} else {
+			"uml2/Association.gif"
+		}
+	}
+
+	def image(TUAssociationEnd it) {
 		"uml2/Property.gif"
 	}
-	
-	def text(TUAssociationEnd assocEnd) {
-		new StyledString(assocEnd.name).append(new StyledString(
-			" : " + assocEnd.multiplicity.asString + " " + assocEnd.endClass.name,
-			StyledString::DECORATIONS_STYLER
-		))
+
+	def text(TUAssociationEnd it) {
+		createJavaStyledText(name, multiplicityAsString + " " + endClass.name + propertiesAsString)
 	}
-	
-	def image(TUAttribute attr) {
+
+	def image(TUConnector it) {
+		if (delegation) {
+			"uml2/Connector_delegation.gif"
+		} else {
+			"uml2/Connector_assembly.gif"
+		}
+	}
+
+	def image(TUConnectorEnd it) {
+		"uml2/ConnectorEnd.gif"
+	}
+
+	def text(TUConnectorEnd it) {
+		createJavaStyledText(name, role?.name + "->" + port?.name)
+	}
+
+	def image(TUAttribute it) {
 		"uml2/Property.gif"
 	}
-	
-	def text(TUAttribute attr) {
-		new StyledString(attr.name).append(new StyledString(
-			" : " + attr.prefix.type.simpleName,
-			StyledString::DECORATIONS_STYLER
-		))
+
+	def text(TUAttribute it) {
+		createJavaStyledText(name, prefix.type.simpleName)
 	}
-	
-	def image(TUConstructor ctor) {
+
+	def image(TUConstructor it) {
 		"uml2/Operation.gif"
 	}
-	
-	def text(TUConstructor ctor) {
-		val parameterList = if (ctor.parameters.empty) {
-			"()"
-		} else {
-			ctor.parameters.join("(", ", ", ")", [parameterType.simpleName])
-		}
-		
-		return new StyledString(ctor.name + parameterList)
+
+	def text(TUConstructor it) {
+		val parameterList = if (parameters.empty) {
+				"()"
+			} else {
+				parameters.join("(", ", ", ")", [parameterType.simpleName])
+			}
+
+		return new StyledString(name + parameterList)
 	}
-	
-	def image(TUOperation op) {
+
+	def image(TUOperation it) {
 		"uml2/Operation.gif"
 	}
-	
-	def text(TUOperation op) {
-		val parameterList = if (op.parameters.empty) {
-			"()"
-		} else {
-			op.parameters.join("(", ", ", ")", [parameterType.simpleName])
-		}
-		
-		new StyledString(op.name + parameterList)
-			.append(new StyledString(" : " + op.prefix.type.simpleName, StyledString::DECORATIONS_STYLER))
+
+	def text(TUOperation it) {
+		val parameterList = if (parameters.empty) {
+				"()"
+			} else {
+				parameters.join("(", ", ", ")", [parameterType.simpleName])
+			}
+
+		createJavaStyledText(name + parameterList, prefix.type.simpleName)
 	}
-	
-	def image(TUState state) {
-		switch (state.type) {
-			case PLAIN, case COMPOSITE : "uml2/State.gif"
+
+	def image(TUPort it) {
+		"uml2/Port.gif"
+	}
+
+	def text(TUPort it) {
+		var text = new StyledString(name);
+		if (behavior) {
+			text = text.append(new StyledString(
+				" (behavior)",
+				StyledString::DECORATIONS_STYLER
+			))
+		}
+
+		return text;
+	}
+
+	def image(TUPortMember it) {
+		"uml2/Property.gif"
+	}
+
+	def text(TUPortMember it) {
+		createJavaStyledText(if(required) "required" else "provided", interface.name)
+	}
+
+	def image(TUState it) {
+		switch (type) {
+			case PLAIN,
+			case COMPOSITE: "uml2/State.gif"
 			case INITIAL: "uml2/Pseudostate_initial.gif"
-			case CHOICE: "uml2/Pseudostate_choice.gif"		
+			case CHOICE: "uml2/Pseudostate_choice.gif"
 		}
 	}
-	
-	def image(TUEntryOrExitActivity act) {
+
+	def image(TUEntryOrExitActivity it) {
 		"uml2/Activity.gif"
 	}
-	
-	def text(TUEntryOrExitActivity act) {
-		if (act.entry) "entry" else "exit"
+
+	def text(TUEntryOrExitActivity it) {
+		if(entry) "entry" else "exit"
 	}
-	
-	def image(TUTransition trans) {
+
+	def image(TUTransition it) {
 		"uml2/Transition.gif"
 	}
-	
-	def image(TUTransitionEffect effect) {
+
+	def image(TUTransitionEffect it) {
 		"uml2/Activity.gif"
 	}
-	
-	def text(TUTransitionEffect effect) {
+
+	def text(TUTransitionEffect it) {
 		"effect"
 	}
-	
-	def image(TUTransitionGuard guard) {
+
+	def image(TUTransitionGuard it) {
 		"uml2/Constraint.gif"
 	}
-	
-	def text(TUTransitionGuard guard) {
+
+	def text(TUTransitionGuard it) {
 		"guard"
 	}
-	
-	def image(TUTransitionVertex vertex) {
+
+	def image(TUTransitionVertex it) {
 		"uml2/Property.gif"
 	}
-	
-	def text(TUTransitionVertex vertex) {
-		new StyledString(if (vertex.from) "from" else "to").append(new StyledString(
-			" : " + vertex.vertex.name,
-			StyledString::DECORATIONS_STYLER
-		))
+
+	def text(TUTransitionVertex it) {
+		createJavaStyledText(if(from) "from" else "to", vertex.name)
 	}
-	
-	def image(TUTransitionTrigger trigger) {
+
+	def image(TUTransitionTrigger it) {
 		"uml2/Trigger.gif"
 	}
-	
-	def text(TUTransitionTrigger trigger) {
-		new StyledString("trigger").append(new StyledString(
-			" : " + trigger.trigger.name,
-			StyledString::DECORATIONS_STYLER
-		))
+
+	def text(TUTransitionTrigger it) {
+		createJavaStyledText("trigger", trigger.name)
 	}
-	
-	def private asString(TUMultiplicity multi) {
-		if (multi.any) {
+
+	def image(TUTransitionPort it) {
+		"uml2/Port.gif"
+	}
+
+	def text(TUTransitionPort it) {
+		createJavaStyledText("port", port.name)
+	}
+
+	def private multiplicityAsString(TUAssociationEnd it) {
+		if (container) {
+			"0..1"
+		} else if (multiplicity == null) {
+			"1"
+		} else if (multiplicity.any) {
 			"*"
 		} else {
-			multi.lower + if (multi.isUpperSet) {
-				".." + if (multi.isUpperInf) "*" else multi.upper
+			multiplicity.lower + if (multiplicity.isUpperSet) {
+				".." + if(multiplicity.isUpperInf) "*" else multiplicity.upper
 			} else {
 				""
 			}
 		}
 	}
-	
+
+	def private propertiesAsString(TUAssociationEnd it) {
+		if (notNavigable || container) {
+			var propString = " (";
+
+			if(notNavigable) propString += "hidden ";
+			if(container) propString += "container ";
+
+			return propString.substring(0, propString.length - 1) + ")";
+		} else {
+			return "";
+		}
+	}
+
+	def private createJavaStyledText(String name, String details) {
+		new StyledString(name).append(new StyledString(
+			" : " + details,
+			StyledString::DECORATIONS_STYLER
+		))
+	}
+
 }

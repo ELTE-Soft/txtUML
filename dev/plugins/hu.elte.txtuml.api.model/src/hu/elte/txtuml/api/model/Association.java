@@ -65,9 +65,6 @@ import hu.elte.txtuml.api.model.assocends.Navigability;
  * </code>
  * </pre>
  * 
- * See the documentation of {@link Model} for an overview on modeling in
- * JtxtUML.
- *
  * @see Composition
  * @see Association.Many
  * @see Association.One

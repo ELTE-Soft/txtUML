@@ -216,11 +216,6 @@ public final class ModelExecutor implements ModelElement {
 		 * the model to ensure that such events are not influenced by the change
 		 * of this multiplier in a bad or unspecified way. If called multiple
 		 * times, this method does nothing after the first call.
-		 * <p>
-		 * For example, the
-		 * {@link hu.elte.txtuml.api.stdlib.Timer#start(ModelClass, Signal, int)
-		 * Timer.start} method calls this method as it operates with timed
-		 * events.
 		 */
 		public static void lockExecutionTimeMultiplier() {
 			Settings.canChangeExecutionTimeMultiplier = false;

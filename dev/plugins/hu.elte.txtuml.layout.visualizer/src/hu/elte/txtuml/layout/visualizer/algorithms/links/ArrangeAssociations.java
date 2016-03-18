@@ -27,6 +27,7 @@ import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
+import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.Pair;
 
 /**
@@ -171,7 +172,7 @@ public class ArrangeAssociations {
 				arrangeLinks(diagramObjects, occupied, bounds);
 			} catch (CannotStartAssociationRouteException | CannotFindAssociationRouteException e) {
 				if (_options.Logging)
-					System.err.println("(Normal) Expanding grid!");
+					Logger.sys.info("(Normal) Expanding grid!");
 
 				repeat = true;
 				// Grid * 2
@@ -244,7 +245,7 @@ public class ArrangeAssociations {
 		}
 
 		if (_options.Logging)
-			System.err.println("(Default) Expanding Grid!");
+			Logger.sys.info("(Default) Expanding Grid!");
 
 		return result;
 	}
@@ -642,11 +643,11 @@ public class ArrangeAssociations {
 		for (LineAssociation a : _assocs) {
 			++c;
 			if (_options.Logging)
-				System.err.print(c + "/" + _assocs.size() + ": " + a.getId() + " ... ");
+				Logger.sys.info(c + "/" + _assocs.size() + ": " + a.getId() + " ... ");
 
 			if (a.isPlaced()) {
 				if (_options.Logging)
-					System.err.println("NOTHING TO DO!");
+					Logger.sys.info("NOTHING TO DO!");
 
 				Map<Point, Color> routePoints = getRoutePaintedPoints(a);
 				occupiedLinks.putAll(routePoints);
@@ -657,7 +658,7 @@ public class ArrangeAssociations {
 			doGraphSearch(diagramObjects, occupiedLinks, occupied, bounds, a);
 
 			if (_options.Logging)
-				System.err.println("DONE!");
+				Logger.sys.info("DONE!");
 
 			if (a.getRoute().size() < 3)
 				throw new InternalException("Route is shorter then 3!");
