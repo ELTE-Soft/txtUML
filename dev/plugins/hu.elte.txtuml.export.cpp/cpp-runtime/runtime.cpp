@@ -4,11 +4,10 @@
 
 SingleThreadRT* SingleThreadRT::instance = nullptr;
 
-SingleThreadRT::SingleThreadRT():_messageQueue(new MessageQueueType){}
+SingleThreadRT::SingleThreadRT():_messageQueue(new PoolQueueType){}
 
 void SingleThreadRT::setupObjectSpecificRuntime(StateMachineI *sm)
 {
-    sm->setMessageQueue(_messageQueue);
 }
 
 bool SingleThreadRT::isConfigurated()

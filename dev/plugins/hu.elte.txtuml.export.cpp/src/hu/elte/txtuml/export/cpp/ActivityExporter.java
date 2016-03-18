@@ -51,17 +51,17 @@ public class ActivityExporter {
 	ActivityNode returnNode;
 	ActivityNode cycleConditionNode;
 	boolean conditionExportation;
-	
-	private Map<OutputPin,String> tempVariables;
-	
+
+	private Map<OutputPin, String> tempVariables;
+
 	public ActivityExporter() {
-	    ActivityTemplates.Operators.Init();
+		ActivityTemplates.Operators.Init();
 		reinitilaize();
-		
+
 	}
-	
+
 	public void reinitilaize() {
-		tempVariables = new HashMap<OutputPin,String>();
+		tempVariables = new HashMap<OutputPin, String>();
 		tempVariableCounter = 0;
 		returnNode = null;
 		cycleConditionNode = null;
@@ -80,10 +80,8 @@ public class ActivityExporter {
 		source.append(createActivityVariables(activity_));
 		source.append(createActivityPartCode(startNode));
 		source.append(createReturnParamaterCode());
-		return  source;
+		return source;
 	}
-
-
 
 	private String createActivityVariables(Activity activity_) {
 		String source = "";
@@ -98,13 +96,13 @@ public class ActivityExporter {
 		}
 		return source;
 	}
-	
+
 	private String createReturnParamaterCode() {
-		if(returnNode != null) {
-		    return ActivityTemplates.returnTemplates(getTargetFromActivityNode(returnNode));
+		if (returnNode != null) {
+			return ActivityTemplates.returnTemplates(getTargetFromActivityNode(returnNode));
 		} else {
-		    return "";
-		}	  
+			return "";
+		}
 
 	}
 
@@ -141,81 +139,73 @@ public class ActivityExporter {
 
 	private StringBuilder createActivityNodeCode(ActivityNode node_) {
 		StringBuilder source = new StringBuilder("");
-		
 
-		
-		
 		if (node_.eClass().equals(UMLPackage.Literals.SEQUENCE_NODE)) {
-		    SequenceNode seqNode = (SequenceNode) node_;
-		    if(returnNode == null) {
-			 for(ActivityEdge aEdge: seqNode.getContainedEdges()) {
-				if(aEdge.eClass().equals(UMLPackage.Literals.OBJECT_FLOW)) {
-				    ObjectFlow objectFlow = (ObjectFlow) aEdge;
-				    if(objectFlow.getTarget().eClass().equals(UMLPackage.Literals.ACTIVITY_PARAMETER_NODE)) {
-					ActivityParameterNode parameterNode = (ActivityParameterNode) objectFlow.getTarget();
-					if(parameterNode.getParameter().getDirection().equals(ParameterDirectionKind.RETURN_LITERAL)) {
-					    returnNode = objectFlow.getSource();
+			SequenceNode seqNode = (SequenceNode) node_;
+			if (returnNode == null) {
+				for (ActivityEdge aEdge : seqNode.getContainedEdges()) {
+					if (aEdge.eClass().equals(UMLPackage.Literals.OBJECT_FLOW)) {
+						ObjectFlow objectFlow = (ObjectFlow) aEdge;
+						if (objectFlow.getTarget().eClass().equals(UMLPackage.Literals.ACTIVITY_PARAMETER_NODE)) {
+							ActivityParameterNode parameterNode = (ActivityParameterNode) objectFlow.getTarget();
+							if (parameterNode.getParameter().getDirection()
+									.equals(ParameterDirectionKind.RETURN_LITERAL)) {
+								returnNode = objectFlow.getSource();
+							}
+						}
 					}
-				    }
 				}
-			    }
-		    }
-		   
-		    for (ActivityNode aNode : seqNode.getNodes()) {
-		       source.append(createActivityNodeCode(aNode));
-		    }
+			}
+
+			for (ActivityNode aNode : seqNode.getNodes()) {
+				source.append(createActivityNodeCode(aNode));
+			}
 		}
-		
-		else if(node_.eClass().equals(UMLPackage.Literals.READ_VARIABLE_ACTION)) {
-		    ReadVariableAction rAction = (ReadVariableAction) node_;
-		    source.append(ActivityTemplates.addVariableTemplate(rAction.getResult().getType().getName(),"tmp" + tempVariableCounter,getTargetFromActivityNode(rAction.getResult())));
-		    importOutputPinToMap(rAction.getResult());
-		    
-		}
-		else if (node_.eClass().equals(UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION)) {
+
+		else if (node_.eClass().equals(UMLPackage.Literals.READ_VARIABLE_ACTION)) {
+			ReadVariableAction rAction = (ReadVariableAction) node_;
+			source.append(ActivityTemplates.addVariableTemplate(rAction.getResult().getType().getName(),
+					"tmp" + tempVariableCounter, getTargetFromActivityNode(rAction.getResult())));
+			importOutputPinToMap(rAction.getResult());
+
+		} else if (node_.eClass().equals(UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION)) {
 			AddStructuralFeatureValueAction asfva = (AddStructuralFeatureValueAction) node_;
 			source.append(ActivityTemplates.generalSetValue(getTargetFromASFVA(asfva),
-					getTargetFromInputPin(asfva.getValue(), false), 
-					ActivityTemplates.getOperationFromType(
-						asfva.getStructuralFeature().isMultivalued(), asfva.isReplaceAll())));
-		}
-		else if (node_.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
+					getTargetFromInputPin(asfva.getValue(), false), ActivityTemplates
+							.getOperationFromType(asfva.getStructuralFeature().isMultivalued(), asfva.isReplaceAll())));
+		} else if (node_.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
 			CreateObjectAction cAction = (CreateObjectAction) node_;
-			//cAction.
+			// cAction.
 			source.append(createObjectActionCode(cAction));
 		} else if (node_.eClass().equals(UMLPackage.Literals.SEND_SIGNAL_ACTION)) {
 			source.append(createSendSignalActionCode((org.eclipse.uml2.uml.SendSignalAction) node_).toString());
-		} else if(node_.eClass().equals(UMLPackage.Literals.SEND_OBJECT_ACTION)) {
-			
-		}
-		else if(node_.eClass().equals(UMLPackage.Literals.START_CLASSIFIER_BEHAVIOR_ACTION)) {
+		} else if (node_.eClass().equals(UMLPackage.Literals.SEND_OBJECT_ACTION)) {
+
+		} else if (node_.eClass().equals(UMLPackage.Literals.START_CLASSIFIER_BEHAVIOR_ACTION)) {
 			source.append(createStartObjectActionCode((StartClassifierBehaviorAction) node_));
-		}
-		else if (node_.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
-		    	
+		} else if (node_.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
+
 			source.append(createCallOperationActionCode((CallOperationAction) node_));
 		} else if (node_.eClass().equals(UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION)) {
 			AddVariableValueAction avva = (AddVariableValueAction) node_;
 			source.append(ActivityTemplates.generalSetValue(avva.getVariable().getName(),
 					getTargetFromInputPin(avva.getValue()),
 					ActivityTemplates.getOperationFromType(avva.getVariable().isMultivalued(), avva.isReplaceAll())));
-			
-		}
-		else if(node_.eClass().equals(UMLPackage.Literals.LOOP_NODE)) {
-		    source.append(createCycleCode((LoopNode) node_));
-		}
-		
-		else if(node_.eClass().equals(UMLPackage.Literals.CONDITIONAL_NODE)) {
-			source.append(createForkCode(( (ConditionalNode) node_)));
-		}
-		
-		 else if (node_.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION) && conditionExportation) {
-				cycleConditionNode = node_;
 
-			}
+		} else if (node_.eClass().equals(UMLPackage.Literals.LOOP_NODE)) {
+			source.append(createCycleCode((LoopNode) node_));
+		}
+
+		else if (node_.eClass().equals(UMLPackage.Literals.CONDITIONAL_NODE)) {
+			source.append(createForkCode(((ConditionalNode) node_)));
+		}
+
+		else if (node_.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION) && conditionExportation) {
+			cycleConditionNode = node_;
+
+		}
 		return source;
 	}
-
 
 	private String createStartObjectActionCode(StartClassifierBehaviorAction node_) {
 		return getTargetFromInputPin(node_.getObject());
@@ -224,71 +214,64 @@ public class ActivityExporter {
 	private String createObjectActionCode(CreateObjectAction node_) {
 		String type = node_.getClassifier().getName();
 
-
 		String name = "tmp" + tempVariableCounter;// #Create#Object_#of_type_GlobalNumberOfObjectCreation
 		importOutputPinToMap(node_.getOutputs().get(0));
 		_objectMap.put(node_, name);
 		return ActivityTemplates.createObject(type, name);
 	}
-	
-	private StringBuilder createCycleCode(LoopNode loopNode) {
-	    StringBuilder source = new StringBuilder("");
-	    
-	    
-	    if(loopNode.getSetupParts() != null ) {
-		    for(ExecutableNode initNode : loopNode.getSetupParts()) {
-			source.append(createActivityNodeCode(initNode));
-		    }
-	    }
-	    
-	    StringBuilder cond = new StringBuilder("");
-	    conditionExportation = true;
-	    for(ExecutableNode condNode : loopNode.getTests()) {
-		cond.append(createActivityNodeCode(condNode));
-	    }
-	    conditionExportation = false;
-	    source.append(cond);
-	    
-	    StringBuilder body = new StringBuilder("");
-	    for(ExecutableNode bodyNode : loopNode.getBodyParts()) {
-		body.append(createActivityNodeCode(bodyNode));
-	    }
-	    
-	    if(cycleConditionNode != null) {
-	    	source.append(ActivityTemplates.whileCycle(getTargetFromActivityNode(cycleConditionNode), body.toString() + cond.toString(), ""));
-	    }
-	    else {
-	    	source.append(ActivityTemplates.whileCycle("", body.toString() + cond.toString(), ""));
-	    }
-	    
 
-	    
-	    return source;
+	private StringBuilder createCycleCode(LoopNode loopNode) {
+		StringBuilder source = new StringBuilder("");
+
+		if (loopNode.getSetupParts() != null) {
+			for (ExecutableNode initNode : loopNode.getSetupParts()) {
+				source.append(createActivityNodeCode(initNode));
+			}
+		}
+
+		StringBuilder cond = new StringBuilder("");
+		conditionExportation = true;
+		for (ExecutableNode condNode : loopNode.getTests()) {
+			cond.append(createActivityNodeCode(condNode));
+		}
+		conditionExportation = false;
+		source.append(cond);
+
+		StringBuilder body = new StringBuilder("");
+		for (ExecutableNode bodyNode : loopNode.getBodyParts()) {
+			body.append(createActivityNodeCode(bodyNode));
+		}
+
+		if (cycleConditionNode != null) {
+			source.append(ActivityTemplates.whileCycle(getTargetFromActivityNode(cycleConditionNode),
+					body.toString() + cond.toString(), ""));
+		} else {
+			source.append(ActivityTemplates.whileCycle("", body.toString() + cond.toString(), ""));
+		}
+
+		return source;
 	}
-	
+
 	private StringBuilder createForkCode(ConditionalNode conditionalNode) {
 		StringBuilder source = new StringBuilder("");
 		StringBuilder tests = new StringBuilder("");
 		StringBuilder bodies = new StringBuilder("");
-		
-		
+
 		for (Clause clause : conditionalNode.getClauses()) {
-			for (ExecutableNode test: clause.getTests()) {
+			for (ExecutableNode test : clause.getTests()) {
 				tests.append(createActivityNodeCode(test));
 			}
-			
+
 			String cond = getTargetFromActivityNode(clause.getDecider());
 			StringBuilder body = new StringBuilder("");
-			for( ExecutableNode node : clause.getBodies()) {
+			for (ExecutableNode node : clause.getBodies()) {
 				body.append(createActivityNodeCode(node));
 			}
-			
+
 			bodies.append(ActivityTemplates.simpleIf(cond, body.toString()));
-			
-			
-			
+
 		}
-		
+
 		source.append(tests);
 		source.append(bodies);
 		return source;
@@ -330,7 +313,7 @@ public class ActivityExporter {
 	}
 
 	private String getTargetFromActivityNode(ActivityNode node_) {
-		
+
 		String source = "UNHANDLED_ACTIVITYNODE";
 		if (node_.eClass().equals(UMLPackage.Literals.FORK_NODE) || node_.eClass().equals(UMLPackage.Literals.JOIN_NODE)
 				|| node_.eClass().equals(UMLPackage.Literals.DECISION_NODE)) {
@@ -344,41 +327,38 @@ public class ActivityExporter {
 			String paramName = ((ActivityParameterNode) node_).getParameter().getName();
 			if (ec.equals(UMLPackage.Literals.TRANSITION)) {
 				source = ActivityTemplates.transitionActionParameter(paramName);
-			}else // the parameter is a function parameter
+			} else // the parameter is a function parameter
 			{
 				source = GenerationTemplates.paramName(paramName);
 			}
-			
+
 		} else if (node_.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
 			source = _objectMap.get(node_);
 		} else if (node_.eClass().equals(UMLPackage.Literals.READ_SELF_ACTION)) {
 			source = ActivityTemplates.Self;
 		} else if (node_.eClass().equals(UMLPackage.Literals.OUTPUT_PIN)) {
-		    	OutputPin outPin = (OutputPin) node_;
-		    	if(tempVariables.containsKey(outPin)) {
-		    	    source = tempVariables.get(outPin);
-		    	}
-		    	else {
-		    	    
-		    	    source = getTargetFromActivityNode((ActivityNode) node_.getOwner()); 
-		    	}
-			
+			OutputPin outPin = (OutputPin) node_;
+			if (tempVariables.containsKey(outPin)) {
+				source = tempVariables.get(outPin);
+			} else {
+
+				source = getTargetFromActivityNode((ActivityNode) node_.getOwner());
+			}
+
 		} else if (node_.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION)) {
-			if(conditionExportation) {
+			if (conditionExportation) {
 				cycleConditionNode = node_;
 			}
 			source = getValueFromValueSpecification(((ValueSpecificationAction) node_).getValue());
-		} else if(node_.eClass().equals(UMLPackage.Literals.READ_VARIABLE_ACTION)) {
-		    ReadVariableAction rA = (ReadVariableAction) node_;
-		    source = rA.getVariable().getName();
-		}
-		else if(node_.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
-		    source = (createCallOperationActionCode((org.eclipse.uml2.uml.CallOperationAction) node_)).toString();
-		}
-		else {
+		} else if (node_.eClass().equals(UMLPackage.Literals.READ_VARIABLE_ACTION)) {
+			ReadVariableAction rA = (ReadVariableAction) node_;
+			source = rA.getVariable().getName();
+		} else if (node_.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
+			source = (createCallOperationActionCode((org.eclipse.uml2.uml.CallOperationAction) node_)).toString();
+		} else {
 			System.out.println(node_.eClass().getName());
 			// TODO just for
-															// development debug
+			// development debug
 		}
 		return source;
 	}
@@ -417,7 +397,7 @@ public class ActivityExporter {
 			targetTypeName = getTypeFromSpecialAcivityNode(inputPin_.getIncomings().get(0).getSource());
 		} else // inputPin_.eClass().equals(UMLPackage.Literals.VALUE_PIN)
 		{
-			//ValueSpecification valueSpec = ((ValuePin) inputPin_).getValue();
+			// ValueSpecification valueSpec = ((ValuePin) inputPin_).getValue();
 		}
 		return targetTypeName;
 	}
@@ -436,7 +416,7 @@ public class ActivityExporter {
 		} else if (node_.eClass().equals(UMLPackage.Literals.ACTIVITY_PARAMETER_NODE)) {
 			targetTypeName = ((ActivityParameterNode) node_).getType().getName();
 		} else if (node_.eClass().equals(UMLPackage.Literals.FORK_NODE)
-			|| node_.eClass().equals(UMLPackage.Literals.JOIN_NODE)) {
+				|| node_.eClass().equals(UMLPackage.Literals.JOIN_NODE)) {
 			targetTypeName = getTypeFromSpecialAcivityNode(node_.getIncomings().get(0).getSource());
 		} else {
 			targetTypeName = "UNKNOWN_TARGET_TYPER_NAME";
@@ -455,71 +435,89 @@ public class ActivityExporter {
 	}
 
 	private StringBuilder createCallOperationActionCode(CallOperationAction node_) {
-	    	StringBuilder source = new StringBuilder("");
-	    	
-	    	node_.validateArgumentPins(null, null);
-	    	//node_.get
-	    	if (isStdLibOperation(node_)) {
-	    	    String val = ""; 
-	    	    
-	    	    for(OutputPin outPin : node_.getOutputs()) {
-	    		importOutputPinToMap(outPin);
-	    	    }
-	    	    if(ActivityTemplates.Operators.isStdLibFunction(node_.getOperation().getName())) {
-			    List<String> outParameterVariables = new ArrayList<String>(getParamNames(node_.getArguments()));
-			    EList<OutputPin> outList = node_.getOutputs();
-			    for(int i = 0; i < outList.size(); i++) {
-				if(i != outList.size() - 1) {
-				    source.append( GenerationTemplates.variableDecl(
-					    outList.get(i).getType().getName(),tempVariables.get(outList.get(i))));
-				    outParameterVariables.add(tempVariables.get(outList.get(i)));
-				}
+		StringBuilder source = new StringBuilder("");
+		
+		exportAllOutputPinToMap(node_.getOutputs());
+		OutputPin returnPin = searchReturnPin(node_.getResults(),node_.getOperation().outputParameters());
+		if (isStdLibOperation(node_)) {
+			String val = "";
+			
+			
+			if (ActivityTemplates.Operators.isStdLibFunction(node_.getOperation().getName())) {
 				
-			    }
-			    val = ActivityTemplates.simpleFunctionCall(node_.getOperation().getName(), outParameterVariables);
-			    
-	    	    }
-	    	    else if(node_.getArguments().size() == 2) {
-			 
-		    	val = ActivityTemplates.stdLibOperationCall(node_.getOperation().getName(),
-		    	getTargetFromInputPin((node_.getArguments()).get(0)),getTargetFromInputPin((node_.getArguments()).get(1)));
-		    }
-		    else if(node_.getArguments().size() == 1) {
-		    	val = ActivityTemplates.stdLibOperationCall(node_.getOperation().getName(),
-		    			getTargetFromInputPin((node_.getArguments()).get(0)));
-		    	
-		    }
-	    	    
-	    	source.append(ActivityTemplates.addVariableTemplate(
-			    node_.getOperation().getType().getName(),
-			    tempVariables.get(node_.getOutputs().get(node_.getOutputs().size() -1)),val));
- 
+				EList<OutputPin> outParamaterPins =  node_.getResults();
+				outParamaterPins.remove(returnPin);
+				source.append(declareAllOutTempParameter(outParamaterPins));
+				List<String> parameterVariables = new ArrayList<String>(getParamNames(node_.getArguments()));
+				addOutParametrsToList(parameterVariables,outParamaterPins);
 
-		    	
-	    	    
-	    	    
-	    	} else if(!isStdLibOperation(node_)) {
-	    	    String val = ActivityTemplates.operationCall(getTargetFromInputPin(node_.getTarget(), false),
-			ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node_.getTarget())),
-			node_.getOperation().getName(), getParamNames(node_.getArguments()));
-	    	     if(node_.getOperation().getType() != null ) {
-	    		source.append(ActivityTemplates.addVariableTemplate
-		    		     (node_.getOperation().getType().getName(),"tmp" + tempVariableCounter,val));
-	    		importOutputPinToMap(node_.getOutputs().get(0));
-	    	     }
-	    	     else {
-	    		 source.append(ActivityTemplates.blockStatement(val));
-	    	     }
-	    	     
-	    	 
-	    	    
-	    	}
-	    	return source;
+				val = ActivityTemplates.simpleFunctionCall(node_.getOperation().getName(), parameterVariables);
+
+			} else if (node_.getArguments().size() == 2) {
+
+				val = ActivityTemplates.stdLibOperationCall(node_.getOperation().getName(),
+						getTargetFromInputPin((node_.getArguments()).get(0)),
+						getTargetFromInputPin((node_.getArguments()).get(1)));
+			} else if (node_.getArguments().size() == 1) {
+				val = ActivityTemplates.stdLibOperationCall(node_.getOperation().getName(),
+						getTargetFromInputPin((node_.getArguments()).get(0)));
+
+			}
+
+			source.append(ActivityTemplates.addVariableTemplate(node_.getOperation().getType().getName(),
+					tempVariables.get(returnPin), val));
+
+		} else {
+			String val = ActivityTemplates.operationCall(getTargetFromInputPin(node_.getTarget(), false),
+					ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node_.getTarget())),
+					node_.getOperation().getName(), getParamNames(node_.getArguments()));
+			if (returnPin != null) {
+				source.append(ActivityTemplates.addVariableTemplate(node_.getOperation().getType().getName(),
+						tempVariables.get(returnPin), val));
+			} else {
+				source.append(ActivityTemplates.blockStatement(val));
+			}
+
+		}
+		return source;
+
+	}
+
+	private void addOutParametrsToList(List<String> parameterVariables, EList<OutputPin> outParamaterPins) {
+		for (OutputPin outPin : outParamaterPins) {
+				parameterVariables.add(tempVariables.get(outPin));
+			}		
+	}
+
+	private StringBuilder declareAllOutTempParameter(EList<OutputPin> outParamaterPins) {
+		StringBuilder declerations = new StringBuilder("");
+		for (OutputPin outPin : outParamaterPins) {
+			declerations.append(GenerationTemplates.variableDecl(outPin.getType().getName(),
+						tempVariables.get(outPin)));
+			}
+		
+		return declerations;
+	}
+
+	private OutputPin searchReturnPin(EList<OutputPin> results, EList<Parameter> outputParameters) {
+		for (int i = 0; i < results.size(); i++) {
+
+			if (outputParameters.get(i).getDirection().equals(ParameterDirectionKind.RETURN_LITERAL)) {
+				return results.get(i);
+			}
+		}
+		return null;
+	}
+
+	private void exportAllOutputPinToMap(EList<OutputPin> outputs) {
+		for (OutputPin outPin : outputs) {
+			importOutputPinToMap(outPin);
+		}
 		
 	}
 
 	private boolean isStdLibOperation(CallOperationAction node_) {
-	    return node_.getTarget() == null;
+		return node_.getTarget() == null;
 	}
 
 	private List<String> getParamNames(List<InputPin> arguments_) {
@@ -557,16 +555,16 @@ public class ActivityExporter {
 		}
 		return nextNodes;
 	}
-	
+
 	private void importOutputPinToMap(OutputPin out) {
-	    if(conditionExportation) {
+		if (conditionExportation) {
 			cycleConditionNode = out;
 		}
-	    if(!tempVariables.containsKey(out)) {
-		tempVariables.put(out, "tmp" + tempVariableCounter);
-		tempVariableCounter++;
-	    }
-	    
+		if (!tempVariables.containsKey(out)) {
+			tempVariables.put(out, "tmp" + tempVariableCounter);
+			tempVariableCounter++;
+		}
+
 	}
 
 }
