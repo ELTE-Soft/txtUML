@@ -15,11 +15,7 @@ class OperationExporter extends Exporter<MethodDeclaration, IMethodBinding, Oper
 		super(parent)
 	}
 
-	override create(MethodDeclaration s) {
-		factory.createOperation
-	}
-	
-	override createFetched(IMethodBinding a) {
+	override create(IMethodBinding s) {
 		factory.createOperation
 	}
 

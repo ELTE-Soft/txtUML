@@ -1,7 +1,6 @@
 package hu.elte.txtuml.export.uml2.restructured.structural
 
 import hu.elte.txtuml.export.uml2.restructured.Exporter
-import hu.elte.txtuml.export.uml2.restructured.UniformExporter
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller
 import hu.elte.txtuml.utils.jdt.SharedUtils
 import java.io.File
@@ -15,7 +14,7 @@ import org.eclipse.uml2.uml.Package
 import org.eclipse.uml2.uml.PackageableElement
 import org.eclipse.uml2.uml.Type
 
-abstract class AbstractPackageExporter<T extends Package> extends UniformExporter<IPackageFragment, T> {
+abstract class AbstractPackageExporter<T extends Package> extends Exporter<IPackageFragment, IPackageFragment, T> {
 
 	new() {
 	}

@@ -3,13 +3,12 @@ package hu.elte.txtuml.export.uml2.restructured.structural
 import hu.elte.txtuml.export.uml2.restructured.Exporter
 import org.eclipse.jdt.core.dom.IVariableBinding
 import org.eclipse.uml2.uml.Element
-import org.eclipse.uml2.uml.Property
-import org.eclipse.uml2.uml.TypedElement
 import org.eclipse.uml2.uml.NamedElement
 import org.eclipse.uml2.uml.Parameter
-import hu.elte.txtuml.export.uml2.restructured.UniformExporter
+import org.eclipse.uml2.uml.Property
+import org.eclipse.uml2.uml.TypedElement
 
-abstract class TypedNamedExporter<T extends TypedElement & NamedElement> extends UniformExporter<IVariableBinding, T> {
+abstract class TypedNamedExporter<T extends TypedElement & NamedElement> extends Exporter<IVariableBinding, IVariableBinding, T> {
 
 	new(Exporter<?, ?, ?> parent) {
 		super(parent);

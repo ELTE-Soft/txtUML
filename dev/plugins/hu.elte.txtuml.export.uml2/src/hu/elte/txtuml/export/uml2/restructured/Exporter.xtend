@@ -30,15 +30,12 @@ abstract class Exporter<S, A, R extends Element> {
 		this.cache = parent.cache
 	}
 
-	abstract def R create(S s)
-	abstract def R createFetched(A a)
+	abstract def R create(A a)
 
 	abstract def void exportContents(S s)
-	
-	def R fetch(A source) { createFetched(source) }
 
-	def R export(S source) {
-		this.result = create(source)
+	def R export(S source, A access) {
+		this.result = create(access)
 		if (result != null) {
 			exportContents(source)
 			if (parent != null) {
@@ -47,8 +44,14 @@ abstract class Exporter<S, A, R extends Element> {
 		}
 		return result
 	}
-	
-	private def R fetchGen(Object obj) { fetch(obj as A) }
+
+	def exportExisting(S source, R existing) {
+		this.result = existing
+		exportContents(source)
+		if (parent != null) {
+			parent.store(existing)
+		}
+	}
 
 	private def void store(Element contained) {
 		if (!tryStore(contained)) {
@@ -63,22 +66,20 @@ abstract class Exporter<S, A, R extends Element> {
 
 	def getFactory() { cache.factory }
 
-	def fetchElement(Object obj) {
-		val exporters = getExporters(obj);
+	def <CA, CR extends Element> fetchElement(CA access) {
+		val exporters = getExporters(access);
 		for (exporter : exporters) {
-			val res = exporter.fetchGen(obj);
+			val res = cache.fetch(exporter as Exporter<?, CA, CR>, access)
 			if (res != null) {
 				return res;
 			}
 		}
-		throw new IllegalArgumentException(obj.toString)
-	}
-	
-	def fetchType(ITypeBinding typ) {
-		fetchElement(typ) as Type
+		throw new IllegalArgumentException(access.toString)
 	}
 
-	def List<Exporter<?,?,?>> getExporters(Object obj) {
+	def fetchType(ITypeBinding typ) { fetchElement(typ) as Type }
+
+	def List<Exporter<?, ?, ?>> getExporters(Object obj) {
 		switch obj {
 			IPackageFragment: #[new PackageExporter(this)]
 			ITypeBinding: #[new ClassExporter(this)]
@@ -88,13 +89,14 @@ abstract class Exporter<S, A, R extends Element> {
 		}
 	}
 
-	def exportPackage(IPackageFragment pf) { cache.export(new PackageExporter(this), pf) }
+	def exportPackage(IPackageFragment pf) { cache.export(new PackageExporter(this), pf, pf) }
 
-	def exportClass(TypeDeclaration td) { cache.export(new ClassExporter(this), td) }
+	def exportClass(TypeDeclaration td) { cache.export(new ClassExporter(this), td, td.resolveBinding) }
 
-	def exportField(IVariableBinding td) { cache.export(new FieldExporter(this), td) }
-	
-	def exportOperation(MethodDeclaration md) { cache.export(new OperationExporter(this), md) }
-	
-	def exportParameter(IVariableBinding vb) { cache.export(new ParameterExporter(this), vb) }
+	def exportField(IVariableBinding td) { cache.export(new FieldExporter(this), td, td) }
+
+	def exportOperation(MethodDeclaration md) { cache.export(new OperationExporter(this), md, md.resolveBinding) }
+
+	def exportParameter(IVariableBinding vb) { cache.export(new ParameterExporter(this), vb, vb) }
+
 }
