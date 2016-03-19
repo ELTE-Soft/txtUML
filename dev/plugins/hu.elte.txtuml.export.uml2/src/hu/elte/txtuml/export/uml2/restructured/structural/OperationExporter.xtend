@@ -33,7 +33,7 @@ class OperationExporter extends Exporter<MethodDeclaration, IMethodBinding, Oper
 
 	override tryStore(Element contained) {
 		switch contained {
-			case Parameter: result.ownedParameters.add(contained as Parameter)
+			Parameter: result.ownedParameters.add(contained)
 			default: return false
 		}
 		return true

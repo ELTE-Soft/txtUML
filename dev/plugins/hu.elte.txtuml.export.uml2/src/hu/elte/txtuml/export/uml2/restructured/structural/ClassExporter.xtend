@@ -14,9 +14,9 @@ class ClassExporter extends Exporter<TypeDeclaration, ITypeBinding, Class> {
 	new(Exporter<?, ?, ?> parent) {
 		super(parent)
 	}
-	
-	override create(ITypeBinding typ) { 
-		if (ElementTypeTeller.isModelClass(typ)) { factory.createClass }
+
+	override create(ITypeBinding typ) {
+		if(ElementTypeTeller.isModelClass(typ)) factory.createClass
 	}
 
 	override exportContents(TypeDeclaration typeDecl) {

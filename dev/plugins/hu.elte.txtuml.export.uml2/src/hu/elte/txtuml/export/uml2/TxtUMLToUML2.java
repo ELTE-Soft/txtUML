@@ -76,8 +76,7 @@ public class TxtUMLToUML2 {
 			throw new NotFoundException("Cannot find package '" + packageName + "'");
 		}
 
-		Model model = new hu.elte.txtuml.export.uml2.restructured.structural.ModelExporter().export(packageFragments[0],
-				packageFragments[0]);
+		Model model = new hu.elte.txtuml.export.uml2.restructured.structural.ModelExporter().export(packageFragments[0]);
 		URI uri = URI.createFileURI(javaProject.getProject().getLocation().toOSString()).appendSegment("gen")
 				.appendSegment(packageName).appendFileExtension(UMLResource.FILE_EXTENSION);
 		ResourceSet resourceSet = new ResourceSetFactory().createAndInitResourceSet();

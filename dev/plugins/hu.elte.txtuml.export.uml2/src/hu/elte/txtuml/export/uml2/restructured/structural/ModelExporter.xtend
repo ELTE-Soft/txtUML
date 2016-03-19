@@ -6,13 +6,17 @@ import org.eclipse.jdt.core.dom.CompilationUnit
 import org.eclipse.uml2.uml.Model
 
 class ModelExporter extends AbstractPackageExporter<Model> {
+
+	def export(IPackageFragment pf) {
+		cache.export(this, pf, pf)
+	}
 	
 	override create(IPackageFragment pf) { factory.createModel }
 
 	override exportContents(IPackageFragment packageFragment) {
 		val unit = packageFragment.getCompilationUnit(PackageUtils.PACKAGE_INFO).parseCompUnit
 		result.name = unit.findModelName
-		packageFragment.children.forEach[exportChild]
+		exportPackageContents(packageFragment)
 	}
 	
 	def findModelName(CompilationUnit unit) {

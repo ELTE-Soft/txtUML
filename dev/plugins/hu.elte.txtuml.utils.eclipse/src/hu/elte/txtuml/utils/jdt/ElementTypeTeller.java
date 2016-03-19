@@ -196,9 +196,17 @@ public final class ElementTypeTeller {
 	public static boolean isAssociation(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Association.class);
 	}
+	
+	public static boolean isAssociation(ITypeBinding binding) {
+		return hasSuperClass(binding, Association.class.getCanonicalName());
+	}
 
 	public static boolean isAssociationeEnd(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, AssociationEnd.class);
+	}
+	
+	public static boolean isAssociationEnd(ITypeBinding value) {
+		return hasSuperClass(value, AssociationEnd.class.getCanonicalName());
 	}
 
 	public static boolean isComposition(TypeDeclaration typeDeclaration) {
@@ -286,7 +294,7 @@ public final class ElementTypeTeller {
 	}
 
 	public static boolean hasSuperClass(ITypeBinding type, String superClassName) {
-		while (type != null && !type.getQualifiedName().equals(superClassName)) {
+		while (type != null && !type.getErasure().getQualifiedName().equals(superClassName)) {
 			type = type.getSuperclass();
 		}
 		return type != null;

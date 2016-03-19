@@ -1,24 +1,26 @@
 package hu.elte.txtuml.export.uml2.restructured
 
+import hu.elte.txtuml.export.uml2.restructured.structural.AssociationEndExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.AssociationExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.ClassExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.FieldExporter
-import hu.elte.txtuml.export.uml2.restructured.structural.PackageExporter
-import org.eclipse.jdt.core.IPackageFragment
-import org.eclipse.jdt.core.dom.ITypeBinding
-import org.eclipse.jdt.core.dom.IVariableBinding
-import org.eclipse.uml2.uml.Element
-import org.eclipse.uml2.uml.Type
 import hu.elte.txtuml.export.uml2.restructured.structural.OperationExporter
-import org.eclipse.jdt.core.dom.IMethodBinding
+import hu.elte.txtuml.export.uml2.restructured.structural.PackageExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.ParameterExporter
 import java.util.List
-import org.eclipse.jdt.core.dom.TypeDeclaration
+import org.eclipse.jdt.core.IPackageFragment
+import org.eclipse.jdt.core.dom.IMethodBinding
+import org.eclipse.jdt.core.dom.ITypeBinding
+import org.eclipse.jdt.core.dom.IVariableBinding
 import org.eclipse.jdt.core.dom.MethodDeclaration
+import org.eclipse.jdt.core.dom.TypeDeclaration
+import org.eclipse.uml2.uml.Element
+import org.eclipse.uml2.uml.Type
 
 abstract class Exporter<S, A, R extends Element> {
 
 	Exporter<?, ?, ?> parent
-	ExporterCache cache
+	protected ExporterCache cache
 	protected R result
 
 	new() {
@@ -31,25 +33,14 @@ abstract class Exporter<S, A, R extends Element> {
 	}
 
 	abstract def R create(A a)
+	
+	def R createResult(A access) { result = create(access) }
 
 	abstract def void exportContents(S s)
 
-	def R export(S source, A access) {
-		this.result = create(access)
-		if (result != null) {
-			exportContents(source)
-			if (parent != null) {
-				parent.store(result)
-			}
-		}
-		return result
-	}
-
-	def exportExisting(S source, R existing) {
-		this.result = existing
-		exportContents(source)
+	def store() {
 		if (parent != null) {
-			parent.store(existing)
+			parent.store(result)
 		}
 	}
 
@@ -82,7 +73,7 @@ abstract class Exporter<S, A, R extends Element> {
 	def List<Exporter<?, ?, ?>> getExporters(Object obj) {
 		switch obj {
 			IPackageFragment: #[new PackageExporter(this)]
-			ITypeBinding: #[new ClassExporter(this)]
+			ITypeBinding: #[new ClassExporter(this), new AssociationExporter(this), new AssociationEndExporter(this)]
 			IMethodBinding: #[new OperationExporter(this)]
 			IVariableBinding: #[new FieldExporter(this), new ParameterExporter(this)]
 			default: #[]
@@ -92,6 +83,12 @@ abstract class Exporter<S, A, R extends Element> {
 	def exportPackage(IPackageFragment pf) { cache.export(new PackageExporter(this), pf, pf) }
 
 	def exportClass(TypeDeclaration td) { cache.export(new ClassExporter(this), td, td.resolveBinding) }
+
+	def exportAssociation(TypeDeclaration td) { cache.export(new AssociationExporter(this), td, td.resolveBinding) }
+
+	def exportAssociationEnd(TypeDeclaration td) {
+		cache.export(new AssociationEndExporter(this), td, td.resolveBinding)
+	}
 
 	def exportField(IVariableBinding td) { cache.export(new FieldExporter(this), td, td) }
 
