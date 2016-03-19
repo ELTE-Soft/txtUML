@@ -185,6 +185,10 @@ public final class ElementTypeTeller {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Transition.class);
 	}
 
+	public static boolean isTransition(ITypeBinding value) {
+		return hasSuperClass(value, Transition.class.getCanonicalName());
+	}
+
 	public static boolean isSignal(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Signal.class);
 	}

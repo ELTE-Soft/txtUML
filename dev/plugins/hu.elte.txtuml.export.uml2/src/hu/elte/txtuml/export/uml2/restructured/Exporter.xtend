@@ -16,6 +16,9 @@ import org.eclipse.jdt.core.dom.MethodDeclaration
 import org.eclipse.jdt.core.dom.TypeDeclaration
 import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.Type
+import hu.elte.txtuml.export.uml2.restructured.statemachine.StateExporter
+import hu.elte.txtuml.export.uml2.restructured.statemachine.InitStateExporter
+import hu.elte.txtuml.export.uml2.restructured.statemachine.TransitionExporter
 
 abstract class Exporter<S, A, R extends Element> {
 
@@ -32,11 +35,11 @@ abstract class Exporter<S, A, R extends Element> {
 		this.cache = parent.cache
 	}
 
-	abstract def R create(A a)
-	
+	abstract def R create(A access)
+
 	def R createResult(A access) { result = create(access) }
 
-	abstract def void exportContents(S s)
+	abstract def void exportContents(S source)
 
 	def store() {
 		if (parent != null) {
@@ -56,6 +59,10 @@ abstract class Exporter<S, A, R extends Element> {
 	abstract def boolean tryStore(Element contained)
 
 	def getFactory() { cache.factory }
+	
+	def void alreadyExists(R result) {
+		this.result = result
+	}
 
 	def <CA, CR extends Element> fetchElement(CA access) {
 		val exporters = getExporters(access);
@@ -73,11 +80,23 @@ abstract class Exporter<S, A, R extends Element> {
 	def List<Exporter<?, ?, ?>> getExporters(Object obj) {
 		switch obj {
 			IPackageFragment: #[new PackageExporter(this)]
-			ITypeBinding: #[new ClassExporter(this), new AssociationExporter(this), new AssociationEndExporter(this)]
+			ITypeBinding: #[new ClassExporter(this), new AssociationExporter(this), new AssociationEndExporter(this),
+				new StateExporter(this), new InitStateExporter(this), new TransitionExporter(this)]
 			IMethodBinding: #[new OperationExporter(this)]
 			IVariableBinding: #[new FieldExporter(this), new ParameterExporter(this)]
 			default: #[]
 		}
+	}
+	
+	def <CS, CA, CR extends Element> exportElement(CS source, CA access) {
+		val exporters = getExporters(access);
+		for (exporter : exporters) {
+			val res = cache.export(exporter as Exporter<CS, CA, CR>, source, access)
+			if (res != null) {
+				return res;
+			}
+		}
+		throw new IllegalArgumentException(access.toString)
 	}
 
 	def exportPackage(IPackageFragment pf) { cache.export(new PackageExporter(this), pf, pf) }
@@ -95,5 +114,5 @@ abstract class Exporter<S, A, R extends Element> {
 	def exportOperation(MethodDeclaration md) { cache.export(new OperationExporter(this), md, md.resolveBinding) }
 
 	def exportParameter(IVariableBinding vb) { cache.export(new ParameterExporter(this), vb, vb) }
-
+	
 }

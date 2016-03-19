@@ -27,6 +27,7 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.TypeLiteral;
 
 import hu.elte.txtuml.utils.Sneaky;
 
@@ -83,6 +84,14 @@ public final class SharedUtils {
 					return singleMemberAnnot.getValue();
 				}
 			}
+		}
+		return null;
+	}
+	
+	public static ITypeBinding obtainTypeLiteralAnnotation(BodyDeclaration declaration, Class<?> annotationClass) {
+		Expression expr = obtainSingleMemberAnnotationValue(declaration, annotationClass);
+		if (expr instanceof TypeLiteral) {
+			return ((TypeLiteral) expr).getType().resolveBinding();
 		}
 		return null;
 	}

@@ -24,6 +24,7 @@ class ExporterCache {
 		val accessKey = generateAccessKey(access)
 		val fetched = fetchMap.get(accessKey) as R;
 		if (fetched != null) {
+			exporter.alreadyExists(fetched)
 			exporter.exportContents(source)
 			exporter.store()
 			return fetched
