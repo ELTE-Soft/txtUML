@@ -13,6 +13,7 @@ import org.eclipse.uml2.uml.StateMachine
 import org.eclipse.uml2.uml.UMLPackage
 import org.eclipse.uml2.uml.Region
 import org.eclipse.uml2.uml.Transition
+import org.eclipse.uml2.uml.Activity
 
 class ClassExporter extends Exporter<TypeDeclaration, ITypeBinding, Class> {
 
@@ -34,12 +35,14 @@ class ClassExporter extends Exporter<TypeDeclaration, ITypeBinding, Class> {
 		region = sm.createRegion(result.name)
 		typeBnd.declaredFields.forEach[exportField]
 		typeDecl.methods.forEach[exportOperation]
+		typeDecl.methods.forEach[exportActivity]
 		typeDecl.types.forEach[exportElement(it, it.resolveBinding)]
 	}
 
 	override tryStore(Element contained) {
 		switch contained {
 			Operation: result.ownedOperations.add(contained)
+			Activity: result.ownedBehaviors.add(contained)
 			Property: result.ownedAttributes.add(contained)
 			Vertex: region.subvertices.add(contained)
 			Transition: region.transitions.add(contained)

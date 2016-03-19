@@ -4,7 +4,6 @@ import hu.elte.txtuml.export.uml2.restructured.Exporter
 import org.eclipse.jdt.core.dom.IVariableBinding
 import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.NamedElement
-import org.eclipse.uml2.uml.Parameter
 import org.eclipse.uml2.uml.Property
 import org.eclipse.uml2.uml.TypedElement
 
@@ -33,16 +32,4 @@ class FieldExporter extends TypedNamedExporter<Property> {
 	override create(IVariableBinding source) {
 		if(source.isField) factory.createProperty
 	}
-}
-
-class ParameterExporter extends TypedNamedExporter<Parameter> {
-
-	new(Exporter<?, ?, ?> parent) {
-		super(parent)
-	}
-
-	override create(IVariableBinding source) {
-		if(source.isParameter) factory.createParameter
-	}
-
 }

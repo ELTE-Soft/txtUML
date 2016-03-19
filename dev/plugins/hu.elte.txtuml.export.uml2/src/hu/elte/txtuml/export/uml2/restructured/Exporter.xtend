@@ -19,6 +19,7 @@ import org.eclipse.uml2.uml.Type
 import hu.elte.txtuml.export.uml2.restructured.statemachine.StateExporter
 import hu.elte.txtuml.export.uml2.restructured.statemachine.InitStateExporter
 import hu.elte.txtuml.export.uml2.restructured.statemachine.TransitionExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.MethodActivityExporter
 
 abstract class Exporter<S, A, R extends Element> {
 
@@ -59,7 +60,7 @@ abstract class Exporter<S, A, R extends Element> {
 	abstract def boolean tryStore(Element contained)
 
 	def getFactory() { cache.factory }
-	
+
 	def void alreadyExists(R result) {
 		this.result = result
 	}
@@ -79,15 +80,20 @@ abstract class Exporter<S, A, R extends Element> {
 
 	def List<Exporter<?, ?, ?>> getExporters(Object obj) {
 		switch obj {
-			IPackageFragment: #[new PackageExporter(this)]
-			ITypeBinding: #[new ClassExporter(this), new AssociationExporter(this), new AssociationEndExporter(this),
-				new StateExporter(this), new InitStateExporter(this), new TransitionExporter(this)]
-			IMethodBinding: #[new OperationExporter(this)]
-			IVariableBinding: #[new FieldExporter(this), new ParameterExporter(this)]
-			default: #[]
+			IPackageFragment:
+				#[new PackageExporter(this)]
+			ITypeBinding:
+				#[new ClassExporter(this), new AssociationExporter(this), new AssociationEndExporter(this),
+					new StateExporter(this), new InitStateExporter(this), new TransitionExporter(this)]
+			IMethodBinding:
+				#[new OperationExporter(this), new MethodActivityExporter(this)]
+			IVariableBinding:
+				#[new FieldExporter(this), new ParameterExporter(this)]
+			default:
+				#[]
 		}
 	}
-	
+
 	def <CS, CA, CR extends Element> exportElement(CS source, CA access) {
 		val exporters = getExporters(access);
 		for (exporter : exporters) {
@@ -113,6 +119,8 @@ abstract class Exporter<S, A, R extends Element> {
 
 	def exportOperation(MethodDeclaration md) { cache.export(new OperationExporter(this), md, md.resolveBinding) }
 
+	def exportActivity(MethodDeclaration md) { cache.export(new MethodActivityExporter(this), md, md.resolveBinding) }
+
 	def exportParameter(IVariableBinding vb) { cache.export(new ParameterExporter(this), vb, vb) }
-	
+
 }

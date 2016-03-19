@@ -11,17 +11,17 @@ import org.eclipse.jdt.core.IPackageFragment
 
 class ExporterCache {
 
-	val Map<Object, Element> cache = new HashMap
-	val Map<String, Element> fetchMap = new HashMap
+	val Map<Pair<Class<?>, Object>, Element> cache = new HashMap
+	val Map<Pair<Class<?>, String>, Element> fetchMap = new HashMap
 
 	protected val factory = UMLFactory.eINSTANCE
 
 	def <S, A, R extends Element> R export(Exporter<S, A, R> exporter, S source, A access) {
-		val exported = cache.get(source)
+		val exported = cache.get(new Pair(exporter.class,source))
 		if (exported != null) {
 			return exported as R
 		}
-		val accessKey = generateAccessKey(access)
+		val accessKey = generateAccessKey(exporter.class, access)
 		val fetched = fetchMap.get(accessKey) as R;
 		if (fetched != null) {
 			exporter.alreadyExists(fetched)
@@ -31,7 +31,7 @@ class ExporterCache {
 		}
 		val justExported = exporter.createResult(access)
 		if (justExported != null) {
-			cache.put(source, justExported)
+			cache.put(new Pair(exporter.class,source), justExported)
 			fetchMap.put(accessKey, justExported)
 			exporter.exportContents(source)
 			exporter.store()
@@ -40,7 +40,7 @@ class ExporterCache {
 	}
 
 	def <S, A, R extends Element> R fetch(Exporter<S, A, R> exporter, A access) {
-		val accessKey = generateAccessKey(access)
+		val accessKey = generateAccessKey(exporter.class, access)
 		if (fetchMap.containsKey(accessKey)) {
 			return fetchMap.get(accessKey) as R
 		} else {
@@ -50,32 +50,36 @@ class ExporterCache {
 		}
 	}
 	
-	def dispatch String generateAccessKey(IVariableBinding access) {
+	def generateAccessKey(Class<?> exporterClass, Object key) {
+		new Pair(exporterClass, generateAccessKeyString(key))
+	}
+	
+	def dispatch String generateAccessKeyString(IVariableBinding access) {
 		val method = access.declaringMethod
 		if (method != null) {
-			generateAccessKey(method) + access.name
+			generateAccessKeyString(method) + access.name
 		} else {
 			val cls = access.declaringClass
-			generateAccessKey(cls) + access.name
+			generateAccessKeyString(cls) + access.name
 		}
 	}
 	
-	def dispatch String generateAccessKey(IMethodBinding access) {
+	def dispatch String generateAccessKeyString(IMethodBinding access) {
 		val cls = access.declaringClass
 		if (cls != null) {
-			generateAccessKey(cls) + access.name
+			generateAccessKeyString(cls) + access.name
 		}
 	}
 	
-	def dispatch String generateAccessKey(ITypeBinding access) {
+	def dispatch String generateAccessKeyString(ITypeBinding access) {
 		access.qualifiedName
 	}
 	
-	def dispatch String generateAccessKey(IPackageFragment pack) {
+	def dispatch String generateAccessKeyString(IPackageFragment pack) {
 		pack.elementName
 	}
 	
-	def dispatch String generateAccessKey(Object obj) {
+	def dispatch String generateAccessKeyString(Object obj) {
 		throw new IllegalArgumentException(obj.toString)
 	}
 

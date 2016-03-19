@@ -5,6 +5,13 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -15,6 +22,10 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.resource.UMLResource;
 
@@ -82,9 +93,27 @@ public class TxtUMLToUML2 {
 		ResourceSet resourceSet = new ResourceSetFactory().createAndInitResourceSet();
 		Resource modelResource = resourceSet.createResource(uri);
 		modelResource.getContents().add(model);
-		new File(uri.toFileString()).getParentFile().mkdirs();
+		File file = new File(uri.toFileString());
+		file.getParentFile().mkdirs();
 		modelResource.save(null);
-		return model;
+		
+	    IFile createdFile = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(file.toURI())[0];
+        try {
+			createdFile.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+		} catch (CoreException e) {
+			throw new RuntimeException(e);
+		}
+        
+        IFileStore fileStore = EFS.getLocalFileSystem().getStore(file.toURI());
+	    IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+	    
+	    try {
+	        IDE.openEditorOnFileStore( page, fileStore );
+	    } catch ( PartInitException e ) {
+	        throw new RuntimeException(e);
+	    }
+	    
+	    return model;
 	}
 
 	/**
