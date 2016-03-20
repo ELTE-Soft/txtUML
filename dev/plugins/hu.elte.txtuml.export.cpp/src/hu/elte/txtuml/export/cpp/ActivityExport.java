@@ -38,6 +38,7 @@ import org.eclipse.uml2.uml.Variable;
 
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.Pair;
 
 public class ActivityExport {
@@ -308,7 +309,7 @@ public class ActivityExport {
 		} else if (node_.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION)) {
 			source = getValueFromValueSpecification(((ValueSpecificationAction) node_).getValue());
 		} else {
-			System.out.println(node_.eClass().getName());// TODO just for
+			Logger.sys.info(node_.eClass().getName());// TODO just for
 															// development debug
 		}
 		return source;

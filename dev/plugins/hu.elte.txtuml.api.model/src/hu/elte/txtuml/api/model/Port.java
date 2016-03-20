@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 
+import hu.elte.txtuml.api.model.ModelExecutor.Report;
+
 /**
  * Base class for ports in the model.
  * 
@@ -16,10 +18,10 @@ import java.lang.reflect.Proxy;
  * 
  * Define connectors to specify the connections between ports and create these
  * connections at runtime with the appropriate action methods. Signals can be
- * sent through the receptions on the provided interface of a port with the
+ * sent through the receptions on the required interface of a port with the
  * {@link Action#send(Signal, Reception)} method.
  * <p>
- * The {@link #provided} field of a port contains an instance of the provided
+ * The {@link #required} field of a port contains an instance of the required
  * interface.
  * 
  * <p>
@@ -62,22 +64,23 @@ import java.lang.reflect.Proxy;
  * @see InPort
  * @see OutPort
  * 
+ * @param <P>
+ *            the provided interface
  * @param <R>
  *            the required interface
- * @param
- * 			<P>
- *            the provided interface
  */
-public abstract class Port<R extends Interface, P extends Interface> {
+public abstract class Port<P extends Interface, R extends Interface> {
 
 	/**
-	 * The provided interface of this port.
+	 * The required interface of this port.
 	 * <p>
-	 * This instance of the specified provided interface of this port instance
+	 * This instance of the specified required interface of this port instance
 	 * can be used to reference the receptions on which a send operation might
 	 * be performed.
+	 * 
+	 * @see Action#send(Signal, Reception)
 	 */
-	public final P provided;
+	public final R required;
 
 	private Port<?, ?> neighbor1 = null;
 	private Port<?, ?> neighbor2 = null;
@@ -93,18 +96,18 @@ public abstract class Port<R extends Interface, P extends Interface> {
 	 *            arguments
 	 */
 	@SuppressWarnings("unchecked")
-	Port(int indexOfProvidedInterface) {
+	Port(int indexOfRequiredInterface) {
 		Class<?> type = getClass();
 
-		Class<P> typeOfProvided = (Class<P>) ((ParameterizedType) type.getGenericSuperclass())
-				.getActualTypeArguments()[indexOfProvidedInterface];
+		Class<R> typeOfRequired = (Class<R>) ((ParameterizedType) type.getGenericSuperclass())
+				.getActualTypeArguments()[indexOfRequiredInterface];
 
-		provided = (P) Proxy.newProxyInstance(type.getClassLoader(), new Class[] { typeOfProvided },
+		required = (R) Proxy.newProxyInstance(type.getClassLoader(), new Class[] { typeOfRequired },
 				createReceptionHandler());
 	}
 
-	Port(P provided) {
-		this.provided = provided;
+	Port(R required) {
+		this.required = required;
 	}
 
 	private InvocationHandler createReceptionHandler() {
@@ -122,23 +125,24 @@ public abstract class Port<R extends Interface, P extends Interface> {
 	 */
 	private void accept(Signal signal, Object sender) {
 		// Exactly one of neighbor2 and obj should be null.
-		if (sender == null) {
-			if (neighbor1 != null) {
-				neighbor1.accept(signal, this);
-			}
-		} else if (sender == neighbor1) {
-			if (neighbor2 == null) {
-				if (obj != null) {
-					ModelExecutor.send(obj, this, signal);
-				}
-			} else {
+		if (sender == neighbor1) {
+			if (neighbor2 != null) {
 				neighbor2.accept(signal, this);
+				return;
+			}
+
+			if (obj != null) {
+				ModelExecutor.send(obj, this, signal);
+				return;
 			}
 		} else {
 			if (neighbor1 != null) {
 				neighbor1.accept(signal, this);
+				return;
 			}
 		}
+
+		Report.warning.forEach(x -> x.lostSignalAtPort(this, signal));
 	}
 
 	void connectToPort(Port<?, ?> other) {

@@ -221,7 +221,6 @@ class OverlapHelper
 			_combinations.add(temp);
 			
 			count = count + 1;
-			System.err.println(count + "/" + _pairs.size());
 			
 			for (List<Pair<String, String>> list : addToCombinations)
 			{

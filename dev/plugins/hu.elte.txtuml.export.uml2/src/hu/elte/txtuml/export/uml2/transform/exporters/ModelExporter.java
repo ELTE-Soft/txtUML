@@ -25,7 +25,7 @@ import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
 
-import hu.elte.txtuml.export.uml2.UML2.ExportMode;
+import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapCollector;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
 import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
@@ -36,6 +36,7 @@ import hu.elte.txtuml.export.uml2.transform.visitors.ClassifierVisitor;
 import hu.elte.txtuml.export.uml2.transform.visitors.MethodSkeletonVisitor;
 import hu.elte.txtuml.export.uml2.utils.ResourceSetFactory;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
+import hu.elte.txtuml.utils.Logger;
 
 /**
  * This class is responsible for generating Eclipse UML2 model from a txtUML
@@ -46,7 +47,7 @@ public class ModelExporter {
 	private static final String STDLIB_URI = "pathmap://TXTUML_STDLIB/stdlib.uml";
 
 	private final String sourcePackageName;
-	private final String outputDirectory;
+	private final URI outputPath;
 	private final Model exportedModel;
 	private final CompilationUnit[] compilationUnits;
 	private final ResourceSet resourceSet;
@@ -61,17 +62,17 @@ public class ModelExporter {
 	private ExportMode exportMode;
 
 	public ModelExporter(CompilationUnit[] compilationUnits, String JtxtUMLModelName, String sourcePackageName,
-			String outputDirectory, ExportMode exportMode) throws ExportException {
+			URI outputPath, ExportMode exportMode) throws ExportException {
 		this.compilationUnits = compilationUnits;
 		this.sourcePackageName = sourcePackageName;
-		this.outputDirectory = outputDirectory;
+		this.outputPath = outputPath;
 		this.exportMode = exportMode;
 
 		this.exportedModel = UMLFactory.eINSTANCE.createModel();
 		this.exportedModel.setName(JtxtUMLModelName);
 
 		this.resourceSet = new ResourceSetFactory().createAndInitResourceSet();
-		this.modelResource = createAndInitModelResource(sourcePackageName, outputDirectory, resourceSet, exportedModel);
+		this.modelResource = createAndInitModelResource(sourcePackageName, outputPath, resourceSet, exportedModel);
 		this.mapping = new ModelMapCollector(modelResource.getURI());
 
 		importStandardLibrary(resourceSet, exportedModel);
@@ -120,10 +121,9 @@ public class ModelExporter {
 	 * @param exportedModel
 	 *            The EMF-UML2 model.
 	 */
-	private static Resource createAndInitModelResource(String txtUMLModelName, String outputPath,
-			ResourceSet resourceSet, Model exportedModel) {
-		URI uri = URI.createURI(outputPath).appendSegment(txtUMLModelName)
-				.appendFileExtension(UMLResource.FILE_EXTENSION);
+	private static Resource createAndInitModelResource(String txtUMLModelName, URI outputPath, ResourceSet resourceSet,
+			Model exportedModel) {
+		URI uri = outputPath.appendSegment(txtUMLModelName).appendFileExtension(UMLResource.FILE_EXTENSION);
 		Resource modelResource = resourceSet.createResource(uri);
 		modelResource.getContents().add(exportedModel);
 		return modelResource;
@@ -210,10 +210,10 @@ public class ModelExporter {
 	 */
 	private void exportAttributesOfEveryClassifier() {
 		classifiers.entrySet().forEach(entry -> {
-					Classifier classifier = entry.getValue();
-					TypeDeclaration classifierDeclaration = entry.getKey();
+			Classifier classifier = entry.getValue();
+			TypeDeclaration classifierDeclaration = entry.getKey();
 			exportAttributesOfSpecificClassifier(classifier, classifierDeclaration);
-				});
+		});
 	}
 
 	private void exportAttributesOfSpecificClassifier(Classifier classifier, TypeDeclaration classifierDeclaration) {
@@ -251,7 +251,7 @@ public class ModelExporter {
 
 	private void exportStateMachine(TypeDeclaration classifierDeclaration, Class ownerClass) {
 		StateMachine stateMachine = (StateMachine) ownerClass.createClassifierBehavior(ownerClass.getName(),
-						UMLPackage.Literals.STATE_MACHINE);
+				UMLPackage.Literals.STATE_MACHINE);
 		Region region = stateMachine.createRegion(ownerClass.getName());
 		regionExporter.exportRegion(classifierDeclaration, stateMachine, region);
 	}
@@ -267,14 +267,14 @@ public class ModelExporter {
 	private void exportMethodBodiesOfSpecificClass(TypeDeclaration classDeclaration, Class specificClass) {
 		if (exportMode == ExportMode.ExportActionCode) {
 			Map<MethodDeclaration, Operation> memberFunctions = methods.get(classDeclaration);
-		memberFunctions.forEach((methodDeclaration, operation) -> {
-			String methodName = operation.getName();
+			memberFunctions.forEach((methodDeclaration, operation) -> {
+				String methodName = operation.getName();
 				Activity activity = (Activity) specificClass.createOwnedBehavior(methodName,
 						UMLPackage.Literals.ACTIVITY);
-			activity.setSpecification(operation);
+				activity.setSpecification(operation);
 				MethodBodyExporter.export(activity, this, methodDeclaration, operation.getOwnedParameters());
-		});
-	}
+			});
+		}
 	}
 
 	/**
@@ -282,9 +282,9 @@ public class ModelExporter {
 	 */
 	private void finishModelExport() {
 		try {
-			mapping.save(URI.createURI(outputDirectory), sourcePackageName);
+			mapping.save(outputPath, sourcePackageName);
 		} catch (ModelMapException e) {
-			System.out.println("Faild to save model mapping.");
+			Logger.sys.info("Faild to save model mapping.");
 		}
 	}
 

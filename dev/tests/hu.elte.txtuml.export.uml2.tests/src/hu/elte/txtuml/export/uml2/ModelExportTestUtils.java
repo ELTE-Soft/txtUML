@@ -17,7 +17,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
-import hu.elte.txtuml.export.uml2.UML2.ExportMode;
+import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode;
 import hu.elte.txtuml.utils.eclipse.PackageUtils;
 
 public class ModelExportTestUtils {
@@ -30,8 +30,8 @@ public class ModelExportTestUtils {
 	private static IJavaProject project;
 
 	public static Model export(String txtUMLModelTopPackage) throws Exception {
-		String uri = URI.createPlatformResourceURI(GEN_DIR, false).toString();
-		UML2.exportModel(txtUMLModelTopPackage, PackageUtils.findPackageFragments(project, txtUMLModelTopPackage),
+		URI uri = URI.createPlatformResourceURI(GEN_DIR, false);
+		TxtUMLToUML2.exportModel(txtUMLModelTopPackage, PackageUtils.findPackageFragments(project, txtUMLModelTopPackage),
 				project, uri, ExportMode.ExportActionCode);
 		Model ret = loadModel(txtUMLModelTopPackage);
 		Thread.sleep(1000);

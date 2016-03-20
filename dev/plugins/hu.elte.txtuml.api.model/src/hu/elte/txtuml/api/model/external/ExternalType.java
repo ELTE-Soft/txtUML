@@ -4,7 +4,7 @@ import hu.elte.txtuml.api.model.ModelElement;
 
 /**
  * Base type for external types in the model. External types are those
- * which's implementation is not part of the model, and from the scope of the
+ * whose implementation is not part of the model, and from the scope of the
  * model they function as black boxes. They might be used to bring external
  * features into the model or to communicate with components of the program that
  * are not part of the model.
@@ -20,7 +20,6 @@ import hu.elte.txtuml.api.model.ModelElement;
  * <p>
  * <b>Java restrictions:</b>
  * <ul>
- * <li><i>Instantiate:</i> disallowed</li>
  * <li><i>Define subtype:</i> disallowed</li>
  * </ul>
  * 
