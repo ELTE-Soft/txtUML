@@ -18,7 +18,7 @@ public class OverlappingGuardsTest extends TestsBase {
 
 		A a = new A();
 		Action.start(a);
-		Action.send(a, new Sig());
+		Action.send(new Sig(), a);
 
 		stopModelExecution();
 

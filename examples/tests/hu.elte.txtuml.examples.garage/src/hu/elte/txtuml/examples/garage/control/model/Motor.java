@@ -89,7 +89,7 @@ public class Motor extends ModelClass {
 		public void effect() {
 			Door d = Motor.this.assoc(MotorMovesDoor.movedDoor.class).selectAny();
 			Alarm a = d.assoc(DoorSwitchesOnAlarm.SwitchedAlarm.class).selectAny();
-			Action.send(a, new StarPressed());
+			Action.send(new StarPressed(), a);
 		}
 	}
 

@@ -62,7 +62,7 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * opposite is not stated on the corresponding pages of this documentation.</li>
  * <li>Using Java primitive types and <code>String</code>s.</li>
  * <li>Using subclasses of <code>ExternalClass</code>, like the classes of the
- * {@link hu.elte.txtuml.api.stdlib} package. See the documentation of
+ * <code>hu.elte.txtuml.api.stdlib</code> package. See the documentation of
  * {@link ExternalClass} for details.</li>
  * </ul>
  * 
@@ -117,8 +117,8 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * applies to this rule.</li>
  * <li>Create instances of signal types (subclasses of {@link Signal}) and set
  * their fields <b>before they are sent</b> to the model (with the
- * {@link Action#send(ModelClass, Signal) Action.send} method).</li>
- * <li>Use the {@link Action#send(ModelClass, Signal) send} method to send
+ * {@link Action#send(Signal, ModelClass) Action.send} method).</li>
+ * <li>Use the {@link Action#send(Signal, ModelClass) send} method to send
  * signals to a model object that <b>has already been started</b>.</li>
  * <li>Call {@link Action#log(String) Action.log} or
  * {@link Action#logError(String) Action.logError} at any time.</li>

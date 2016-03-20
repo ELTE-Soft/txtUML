@@ -8,6 +8,6 @@ public class DocumentToPrint extends Association {
 	public class toPrint extends Many<Document> {
 	}
 
-	public class PrinterFrontEnd extends HiddenOne<PrinterFrontend> {
+	public class printerFrontend extends HiddenOne<PrinterFrontend> {
 	}
 }

@@ -1,127 +1,137 @@
 #include "runtime.hpp"
 
-//********************************RuntimeI********************************
-
-RuntimeI::RuntimeI():_stop(false) {}
-
-void RuntimeI::setupObject(ObjectList& ol_)
-{
-  for(auto it=ol_.begin();it!=ol_.end();++it)
-  {
-    (*it)->setRuntime(this);
-    setupObjectVirtual(*it);
-  }
-}
-
-void RuntimeI::setupObject(StateMachineI* sm_)
-{
-  setupObjectVirtual(sm_);
-}
-
-void RuntimeI::startObject(ObjectList& ol_)
-{
-  for(auto it=ol_.begin();it!=ol_.end();++it)
-  {
-      startObject(*it);
-  }
-}
-
-void RuntimeI::stop()
-{
-  std::unique_lock<std::mutex> mlock(_mutex);
-  _stop=true;
-  mlock.unlock();
-  _cond.notify_one();
-}
-
 //********************************SingleThreadRT**********************************
 
-SingleThreadRT::SingleThreadRT():_messageQueue(new MessageQueueType), waiting(false){}
+SingleThreadRT* SingleThreadRT::instance = nullptr;
 
-void SingleThreadRT::run()
+SingleThreadRT::SingleThreadRT():_messageQueue(new MessageQueueType){}
+
+void SingleThreadRT::setupObjectSpecificRuntime(StateMachineI *sm)
+{
+    sm->setMessageQueue(_messageQueue);
+}
+
+bool SingleThreadRT::isConfigurated()
+{
+    return true;
+}
+
+SingleThreadRT* SingleThreadRT::createRuntime()
+{
+    if (instance == nullptr)
+    {
+        instance = new SingleThreadRT();
+    }
+    return instance;
+}
+
+void SingleThreadRT::start()
 {
 
-  while(!_stop)
-  {
-  
-    if(!_messageQueue->empty())
+    while(!_messageQueue->empty())
     {
-	
-		 if (_messageQueue->front()->dest.isStarted() && _messageQueue->front()->dest.isInitialized())		 
-		 {
-			_messageQueue->front()->dest.processEventVirtual();			
-		 }
-		 else if (_messageQueue->front()->dest.isStarted() && !_messageQueue->front()->dest.isInitialized()) 
-		 {
-			 _messageQueue->front()->dest.init();
-		 }
-      
-    }
-    else if(_messageQueue->empty() && waiting)
-    {
-    	waiting_empty_cond.notify_one();
-    }
+            EventPtr e = _messageQueue->front();
+            if (e->dest.isStarted())
+            {
+                if(e->dest.isInitialized())
+                {
+                    e->dest.processEventVirtual();
+                }
+                else
+                {
+                    e->dest.init();
+                }
 
-  }
+            }
+    }
 
 }
 
-void SingleThreadRT::stopUponCompletion()
+void SingleThreadRT::setConfiguration(ThreadConfiguration *conf){}
+
+void SingleThreadRT::stopUponCompletion() {}
+
+void SingleThreadRT::removeObject(StateMachineI* sm) {}
+
+
+
+//********************************ConfiguratedThreadedRT************************************
+
+ConfiguratedThreadedRT* ConfiguratedThreadedRT::instance = nullptr;
+
+ConfiguratedThreadedRT::ConfiguratedThreadedRT(): poolManager(new ThreadPoolManager()){}
+
+ConfiguratedThreadedRT* ConfiguratedThreadedRT::createRuntime()
 {
-	std::unique_lock<std::mutex> mlock(_mutex);
-	waiting = true;
-	waiting_empty_cond.wait(mlock);
-	mlock.unlock();
-	stop();
+    if (instance == nullptr)
+    {
+        instance = new ConfiguratedThreadedRT();
+    }
+    return instance;
 }
 
-//********************************ConfiguredThreadPoolsRT************************************
-
- 
-ConfiguredThreadPoolsRT::ConfiguredThreadPoolsRT(): pool_manager(new ThreadPoolManager())
+void ConfiguratedThreadedRT::start()
 {
-	pool_ides = pool_manager->get_idies();
-	for(std::list<id_type>::iterator it = pool_ides.begin(); it != pool_ides.end(); it++)
-	{
-		number_of_objects.insert( std::pair<id_type,int>(*it,0));
-	}
+    if (poolManager->isConfigurated())
+    {
+
+        int numberOfConfigurations = poolManager->getNumberOfConfigurations();
 		
+		numberOfObjects.clear();
+                numberOfObjects.resize((unsigned int)numberOfConfigurations);
+
+		for(int i = 0; i < numberOfConfigurations; i++)
+		{
+			poolManager->getPool(i)->startPool();
+		}
+	}
+	else
+	{
+		//TODO sign error
+	}
+	
+
 }
 
-void ConfiguredThreadPoolsRT::run()
+void ConfiguratedThreadedRT::stopUponCompletion()
 {
-    
-	for(std::list<id_type>::iterator it = pool_ides.begin(); it != pool_ides.end(); it++)
+	for(int i = 0; i < poolManager->getNumberOfConfigurations(); i++)
 	{
-		pool_manager->get_pool(*it)->startPool();
+		poolManager->getPool(i)->stopUponCompletion();
 	}
 }
 
-void ConfiguredThreadPoolsRT::stopUponCompletion()
+void ConfiguratedThreadedRT::setupObjectSpecificRuntime(StateMachineI* sm)
 {
-	for(std::list<id_type>::iterator it = pool_ides.begin(); it != pool_ides.end(); it++)
-	{
-		pool_manager->get_pool(*it)->stopUponCompletion();
-	}
+	
+
+	int objectID = sm->getPoolId();
+	StateMachineThreadPool* matchedPool = poolManager->getPool(objectID);
+	sm->setPool(matchedPool);
+	numberOfObjects[(size_t)objectID]++;
+	poolManager->recalculateThreads(objectID,numberOfObjects[(size_t)objectID]);
 }
 
-void ConfiguredThreadPoolsRT::setupObjectVirtual(StateMachineI* sm_)
+bool ConfiguratedThreadedRT::isConfigurated()
 {
-	
-	id_type object_id = sm_->getPoolId();
-	StateMachineThreadPool* matched_pool = pool_manager->get_pool(object_id);
-	
-	sm_->setPool(matched_pool);
-	
-	number_of_objects[object_id] = number_of_objects[object_id] + 1;
-	pool_manager->recalculateThreads(object_id,number_of_objects[object_id]);
+
+    return poolManager->isConfigurated();
+}
+
+void ConfiguratedThreadedRT::removeObject(StateMachineI* sm)
+{
+	int objectID = sm->getPoolId();
+	numberOfObjects[(size_t)objectID]--;
+	poolManager->recalculateThreads(objectID,numberOfObjects[(size_t)objectID]);
 	
 }
 
-void ConfiguredThreadPoolsRT::removeObject(StateMachineI* sm_)
+void ConfiguratedThreadedRT::setConfiguration(ThreadConfiguration* conf)
 {
-	id_type object_id = sm_->getPoolId();
-	number_of_objects[object_id] = number_of_objects[object_id] - 1;
-	pool_manager->recalculateThreads(object_id,number_of_objects[object_id]);
-	
+	poolManager->setConfiguration(conf);
+}
+
+ConfiguratedThreadedRT::~ConfiguratedThreadedRT()
+{
+	delete poolManager;
 }

@@ -28,8 +28,7 @@ public class AttributeExporter {
 	 * @param owner
 	 *            The owning classifier.
 	 */
-	public AttributeExporter(TypeExporter typeExporter,
-			ModelMapCollector mapping, Classifier owner) {
+	public AttributeExporter(TypeExporter typeExporter, ModelMapCollector mapping, Classifier owner) {
 		this.typeExporter = typeExporter;
 		this.mapping = mapping;
 		this.owner = owner;
@@ -43,16 +42,14 @@ public class AttributeExporter {
 	 *            The specified field declaration.
 	 * @return A collection of the exported attributes.
 	 */
-	public Collection<Property> exportClassifierAttributesFromFieldDeclaration(
-			FieldDeclaration fieldDeclaration) {
+	public Collection<Property> exportClassifierAttributesFromFieldDeclaration(FieldDeclaration fieldDeclaration) {
 		LinkedList<Property> exportedAttributes = new LinkedList<>();
-		Map<String, org.eclipse.uml2.uml.Type> attributeNamesAndTypes = obtainAttributeNamesAndTypesFromFieldDeclaration(fieldDeclaration);
+		Map<String, org.eclipse.uml2.uml.Type> attributeNamesAndTypes = obtainAttributeNamesAndTypesFromFieldDeclaration(
+				fieldDeclaration);
 
 		attributeNamesAndTypes.forEach((name, type) -> {
 			Property property = createClassifierAttribute(name, type);
-			ElementModifiersAssigner
-					.assignModifiersForElementBasedOnDeclaration(property,
-							fieldDeclaration);
+			ElementModifiersAssigner.assignModifiersForElementBasedOnDeclaration(property, fieldDeclaration);
 			exportedAttributes.add(property);
 
 			mapping.put(name, property);
@@ -71,15 +68,12 @@ public class AttributeExporter {
 	 *            The given attribute type.
 	 * @return
 	 */
-	private Property createClassifierAttribute(String attributeName,
-			org.eclipse.uml2.uml.Type attributeType) {
+	private Property createClassifierAttribute(String attributeName, org.eclipse.uml2.uml.Type attributeType) {
 
 		if (this.owner instanceof Signal) {
-			return ((Signal) this.owner).createOwnedAttribute(attributeName,
-					attributeType);
+			return ((Signal) this.owner).createOwnedAttribute(attributeName, attributeType);
 		} else if (this.owner instanceof org.eclipse.uml2.uml.Class) {
-			return ((org.eclipse.uml2.uml.Class) this.owner)
-					.createOwnedAttribute(attributeName, attributeType);
+			return ((org.eclipse.uml2.uml.Class) this.owner).createOwnedAttribute(attributeName, attributeType);
 		}
 
 		return null;
@@ -97,8 +91,7 @@ public class AttributeExporter {
 			FieldDeclaration fieldDeclaration) {
 
 		org.eclipse.jdt.core.dom.Type type = fieldDeclaration.getType();
-		org.eclipse.uml2.uml.Type exportedType = this.typeExporter
-				.exportType(type);
+		org.eclipse.uml2.uml.Type exportedType = this.typeExporter.exportType(type);
 
 		HashMap<String, org.eclipse.uml2.uml.Type> attributes = new HashMap<>();
 		for (Object fragment : fieldDeclaration.fragments()) {

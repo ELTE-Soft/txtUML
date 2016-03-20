@@ -2,8 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: XtxtUML Runtime Library
 Bundle-SymbolicName: hu.elte.txtuml.xtxtuml.lib
-Bundle-Version: 0.3.0.qualifier
-Require-Bundle: org.eclipse.xtext.xbase.lib
+Bundle-Version: 0.4.0.qualifier
+Require-Bundle: org.eclipse.xtext.xbase.lib,
+ hu.elte.txtuml.utils;bundle-version="0.4.0"
 Bundle-Vendor: ELTE
 Export-Package: hu.elte.txtuml.xtxtuml.lib
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

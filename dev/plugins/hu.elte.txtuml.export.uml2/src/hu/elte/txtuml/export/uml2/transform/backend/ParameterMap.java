@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.uml2.transform.backend;
 
 import java.util.HashMap;
 
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.ActivityParameterNode;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.ParameterDirectionKind;
@@ -16,8 +17,7 @@ public interface ParameterMap {
 
 	static ParameterMap create(ActivityEditor editor) {
 		@SuppressWarnings("serial")
-		class ParameterMapImpl extends HashMap<String, ActivityParameterNode>
-				implements ParameterMap {
+		class ParameterMapImpl extends HashMap<String, ActivityParameterNode> implements ParameterMap {
 
 			private ActivityParameterNode ret;
 
@@ -32,8 +32,7 @@ public interface ParameterMap {
 				param.setType(paramToCopy.getType());
 
 				editor.addOwnedParameter(param);
-				ActivityParameterNode paramNode = editor
-						.createParameterNode(param);
+				ActivityParameterNode paramNode = editor.createParameterNode(param);
 				this.put(name, paramNode);
 
 				if (direction == ParameterDirectionKind.RETURN_LITERAL) {
@@ -42,19 +41,22 @@ public interface ParameterMap {
 			}
 
 			private ParameterExpr createExpr(ActivityParameterNode paramNode,
-					ExpressionExporter expressionExporter) {
+					ExpressionExporter<? extends ActivityNode> expressionExporter) {
 				return Expr.param(paramNode, expressionExporter);
 			}
 
 			@Override
-			public ParameterExpr get(String name,
-					ExpressionExporter expressionExporter) {
-				return createExpr(super.get(name), expressionExporter);
+			public ParameterExpr get(String name, ExpressionExporter<? extends ActivityNode> expressionExporter) {
+				ActivityParameterNode paramNode = super.get(name);
+				if (paramNode != null) {
+					return createExpr(paramNode, expressionExporter);
+				} else {
+					return null;
+				}
 			}
 
 			@Override
-			public ParameterExpr getReturnParam(
-					ExpressionExporter expressionExporter) {
+			public ParameterExpr getReturnParam(ExpressionExporter<? extends ActivityNode> expressionExporter) {
 				return createExpr(ret, expressionExporter);
 			}
 		}
@@ -64,7 +66,7 @@ public interface ParameterMap {
 
 	void copyParameter(Parameter paramToCopy);
 
-	ParameterExpr get(String name, ExpressionExporter expressionExporter);
+	ParameterExpr get(String name, ExpressionExporter<? extends ActivityNode> expressionExporter);
 
-	ParameterExpr getReturnParam(ExpressionExporter expressionExporter);
+	ParameterExpr getReturnParam(ExpressionExporter<? extends ActivityNode> expressionExporter);
 }

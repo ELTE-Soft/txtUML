@@ -4,20 +4,19 @@ import java.util.Arrays;
 
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.Statement;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Clause;
 import org.eclipse.uml2.uml.ConditionalNode;
 import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.SequenceNode;
-import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.Variable;
 
 import hu.elte.txtuml.export.uml2.transform.exporters.BlockExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr;
-import hu.elte.txtuml.export.uml2.transform.exporters.expressions.Expr.AssignableExpr;
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExporter;
 import hu.elte.txtuml.export.uml2.transform.exporters.expressions.OperatorExporter;
-import hu.elte.txtuml.utils.Reference;
 
 public class IfActionExporter extends AbstractControlStructureExporter {
 
@@ -25,103 +24,50 @@ public class IfActionExporter extends AbstractControlStructureExporter {
 	private Expr condition;
 	private Clause thenClause;
 	private Clause elseClause;
-	private ExpressionExporter testsExporter;
+	private ExpressionExporter<? extends ActivityNode> testsExporter;
 
-	public IfActionExporter(BlockExporter blockExporter) {
+	public IfActionExporter(BlockExporter<? extends ActivityNode> blockExporter) {
 		super(blockExporter);
 	}
 
 	public void exportIfStatement(IfStatement statement) {
-		conditionalNode = (ConditionalNode) blockExporter.createExecutableNode(
-				null, UMLPackage.Literals.CONDITIONAL_NODE);
+
+		Variable var = blockExporter.createVariable("#if_cond_variable", blockExporter.getTypeExporter().getBoolean());
+
+		conditionalNode = (ConditionalNode) blockExporter.createAndAddNode(null, UMLPackage.Literals.CONDITIONAL_NODE);
 
 		thenClause = UMLFactory.eINSTANCE.createClause();
 		SequenceNode conditionSequence = (SequenceNode) conditionalNode.createNode("cond",
 				UMLPackage.Literals.SEQUENCE_NODE);
 		thenClause.getTests().add(conditionSequence);
-		testsExporter = createExpressionExporter(conditionSequence,
-				conditionSequence.getExecutableNodes());
+		testsExporter = createExpressionExporter(conditionSequence, conditionSequence.getExecutableNodes());
 
 		condition = testsExporter.export(statement.getExpression());
+		testsExporter.createWriteVariableAction(var, condition);
 
 		conditionalNode.setName("if " + condition.getName());
+		OutputPin thenExpr = testsExporter.createReadVariableAction(var);
 
 		if (statement.getElseStatement() != null) {
-			createElse();
-		} else {
-			thenClause.setDecider(condition.evaluate().getOutputPin());
+			elseClause = UMLFactory.eINSTANCE.createClause();
+
+			OperatorExporter operatorExporter = new OperatorExporter(
+					createExpressionExporter(conditionalNode, elseClause.getTests()));
+
+			Expr output = operatorExporter.export("!_", Arrays.asList(Expr.ofPin(thenExpr, "cond"))).getSecond();
+			elseClause.setDecider(output.getOutputPin());
+			exportClause(elseClause, "else", statement.getElseStatement());
 		}
 
 		exportClause(thenClause, "then", statement.getThenStatement());
-
-		if (elseClause != null) {
-			exportClause(elseClause, "else", statement.getElseStatement());
-		}
+		thenClause.setDecider(thenExpr);
 	}
 
-	private void createElse() {
-		elseClause = UMLFactory.eINSTANCE.createClause();
-
-		OperatorExporter operatorExporter = new OperatorExporter(testsExporter);
-
-		Reference<Expr> thenExpr = Reference.empty();
-		Reference<Expr> elseExpr = Reference.empty();
-		operatorExporter.export("fork", Arrays.asList(condition,
-				createDummyExprToGetOutput("then", thenExpr),
-				createDummyExprToGetOutput("else", elseExpr)));
-
-		operatorExporter = new OperatorExporter(createExpressionExporter(
-				conditionalNode, elseClause.getTests()));
-
-		Expr output = operatorExporter.export("!_",
-				Arrays.asList(elseExpr.get())).getSecond();
-
-		/*
-		 * Calling 'evaluate' is unnecessary as in this case, the Expr instances
-		 * are guaranteed to have been created from an output pin and so
-		 * 'evaluate' would do nothing.
-		 */
-		thenClause.setDecider(thenExpr.get().getOutputPin());
-		elseClause.setDecider(output.getOutputPin());
-	}
-
-	private void exportClause(Clause clause, String nameOfClause,
-			Statement statementToExport) {
+	private void exportClause(Clause clause, String nameOfClause, Statement statementToExport) {
 		conditionalNode.getClauses().add(clause);
 
-		BlockExporter clauseExporter = createBlockExporter(conditionalNode,
-				clause.getBodies());
+		BlockExporter<? extends ActivityNode> clauseExporter = createBlockExporter(conditionalNode, clause.getBodies());
 
-		clause.getBodies().add(
-				BlockExporter.exportBlock(clauseExporter, statementToExport,
-						nameOfClause));
+		clause.getBodies().add(BlockExporter.exportBlock(clauseExporter, statementToExport, nameOfClause));
 	}
-
-	private Expr createDummyExprToGetOutput(String name, Reference<Expr> output) {
-		return new AssignableExpr() {
-
-			@Override
-			public Type getType() {
-				return blockExporter.getTypeExporter().getBoolean();
-			}
-
-			@Override
-			public String getName() {
-				return name;
-			}
-
-			@Override
-			public OutputPin getOutputPin() {
-				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			public void setValue(Expr newValue) {
-				output.set(newValue);
-			}
-
-		};
-
-	}
-
 }

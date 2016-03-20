@@ -4,7 +4,6 @@ package hu.elte.txtuml.api.layout;
  * Base class for diagram layout descriptions.
  * <p>
  * <b>Example:</b>
- * <p>
  * 
  * <pre>
  * <code>

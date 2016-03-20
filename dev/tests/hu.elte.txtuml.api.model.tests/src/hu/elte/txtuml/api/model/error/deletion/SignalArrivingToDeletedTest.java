@@ -15,7 +15,7 @@ public class SignalArrivingToDeletedTest extends SimpleModelTestsBase {
 	public void test() {
 		
 		Action.delete(a);
-		Action.send(a, new Sig());
+		Action.send(new Sig(), a);
 		
 		stopModelExecution();
 

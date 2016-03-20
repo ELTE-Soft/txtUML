@@ -15,8 +15,8 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 
-import hu.elte.txtuml.export.ExportUtils;
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
+import hu.elte.txtuml.export.papyrus.utils.LayoutUtils;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.utils.Pair;
 
@@ -24,7 +24,7 @@ import hu.elte.txtuml.utils.Pair;
  * This class helps preparing the {@link PapyrusVisualizer} from a txtUML model
  */
 public class TxtUMLExporter {
-	
+
 	private String projectName;
 	private String outputFolder;
 	private String txtUMLModelName;
@@ -57,7 +57,7 @@ public class TxtUMLExporter {
 		
 		for(String layout : txtUMLLayout){
 			try {
-				DiagramExportationReport report = ExportUtils.exportTxtUMLLayout(projectName, layout);
+				DiagramExportationReport report = LayoutUtils.exportTxtUMLLayout(projectName, layout);
 		        if(!report.isSuccessful()){
 		        	StringBuilder errorMessages = new StringBuilder("Errors occured during layout exportation:"+System.lineSeparator());
 		        	for(Object error : report.getErrors()){

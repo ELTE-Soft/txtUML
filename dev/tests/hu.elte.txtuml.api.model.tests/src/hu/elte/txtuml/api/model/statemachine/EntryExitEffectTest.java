@@ -25,8 +25,8 @@ public class EntryExitEffectTest extends TransitionsModelTestsBase {
 
 		ModelExecutor.Report.addModelExecutionEventsListener(mock);
 
-		Action.send(a, new Sig1());
-		Action.send(a, new Sig2());
+		Action.send(new Sig1(), a);
+		Action.send(new Sig2(), a);
 
 		stopModelExecution();
 

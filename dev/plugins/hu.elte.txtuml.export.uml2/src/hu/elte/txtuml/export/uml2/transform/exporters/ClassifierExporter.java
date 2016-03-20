@@ -23,8 +23,7 @@ public class ClassifierExporter {
 
 	public Class exportClass(TypeDeclaration typeDeclaration) {
 		String name = typeDeclaration.getName().getFullyQualifiedName();
-		Class cls = exportedModel.createOwnedClass(name,
-				ElementTypeTeller.isAbstract(typeDeclaration));
+		Class cls = exportedModel.createOwnedClass(name, ElementTypeTeller.isAbstract(typeDeclaration));
 		mapping.put(SharedUtils.qualifiedName(typeDeclaration), cls);
 		return cls;
 	}
@@ -32,12 +31,10 @@ public class ClassifierExporter {
 	public Signal exportSignal(TypeDeclaration typeDeclaration) {
 		String name = typeDeclaration.getName().getFullyQualifiedName();
 
-		Signal signal = (Signal) exportedModel.createOwnedType(name,
-				UMLPackage.Literals.SIGNAL);
+		Signal signal = (Signal) exportedModel.createOwnedType(name, UMLPackage.Literals.SIGNAL);
 
-		SignalEvent signalEvent = (SignalEvent) exportedModel
-				.createPackagedElement(name + "_event",
-						UMLPackage.Literals.SIGNAL_EVENT);
+		SignalEvent signalEvent = (SignalEvent) exportedModel.createPackagedElement(name + "_event",
+				UMLPackage.Literals.SIGNAL_EVENT);
 
 		signalEvent.setSignal(signal);
 

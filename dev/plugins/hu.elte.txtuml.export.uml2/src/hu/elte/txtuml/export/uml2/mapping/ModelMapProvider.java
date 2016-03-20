@@ -10,6 +10,8 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
+import hu.elte.txtuml.utils.Logger;
+
 /**
  * ModelMapProvider provides a mapping from txtUML model elements to EMF-UML2
  * model elements.
@@ -32,8 +34,7 @@ public class ModelMapProvider {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public ModelMapProvider(URI directory, String filename)
-			throws ModelMapException {
+	public ModelMapProvider(URI directory, String filename) throws ModelMapException {
 		uriFragmentMapper = new URIFragmentMapper(directory, filename);
 
 		ResourceSet resourceSet = new ResourceSetImpl();
@@ -60,8 +61,7 @@ public class ModelMapProvider {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public ModelMapProvider(URI directory, String filename, Resource resource)
-			throws ModelMapException {
+	public ModelMapProvider(URI directory, String filename, Resource resource) throws ModelMapException {
 		uriFragmentMapper = new URIFragmentMapper(directory, filename);
 
 		if (resource == null) {
@@ -106,7 +106,7 @@ public class ModelMapProvider {
 	 * Dumps the mapping to the standard output for testing purposes.
 	 */
 	public void dump() {
-		System.out.println("Model URI: " + resource.getURI());
-		System.out.println(uriFragmentMapper.toString());
+		Logger.sys.info("Model URI: " + resource.getURI());
+		Logger.sys.info(uriFragmentMapper.toString());
 	}
 }

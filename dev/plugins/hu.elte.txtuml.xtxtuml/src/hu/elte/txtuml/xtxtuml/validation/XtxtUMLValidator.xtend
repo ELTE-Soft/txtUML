@@ -1,19 +1,25 @@
 package hu.elte.txtuml.xtxtuml.validation
 
 import com.google.inject.Inject
+import hu.elte.txtuml.api.model.DataType
 import hu.elte.txtuml.api.model.ModelClass
+import hu.elte.txtuml.api.model.Port
 import hu.elte.txtuml.api.model.Signal
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfAssocNavExpression
+import hu.elte.txtuml.api.model.external.ExternalType
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelElement
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
@@ -37,20 +43,22 @@ import org.eclipse.xtext.xbase.XExpression
 import org.eclipse.xtext.xbase.XFeatureCall
 import org.eclipse.xtext.xbase.XMemberFeatureCall
 import org.eclipse.xtext.xbase.XbasePackage
+import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
 import org.eclipse.xtext.xbase.typesystem.util.ExtendedEarlyExitComputer
 import org.eclipse.xtext.xtype.XImportDeclaration
 
 import static org.eclipse.xtext.xbase.validation.IssueCodes.IMPORT_UNUSED
 
-class XtxtUMLValidator extends XtxtUMLAssociationValidator {
+class XtxtUMLValidator extends XtxtUMLPortValidator {
 
 	@Inject extension ExtendedEarlyExitComputer;
 	@Inject extension IQualifiedNameProvider;
+	@Inject extension IJvmModelAssociations;
 
 	// Checks
 	@Check
 	def checkModelDeclarationIsInModelInfoFile(TUModelDeclaration modelDeclaration) {
-		var name = modelDeclaration.eResource?.URI.lastSegment ?: ""
+		var name = modelDeclaration.eResource?.URI?.lastSegment ?: ""
 		if (!"model-info.xtxtuml".equals(name)) {
 			error('Model declaration must be specified in "model-info.xtxtuml".', modelDeclaration, null)
 		}
@@ -75,7 +83,7 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 	def CheckNoDuplicateFileElementInternal(TUModelElement modelElement) {
 		val siblingsAndSelf = (modelElement.eContainer as TUFile).elements;
 		if (siblingsAndSelf.exists [
-			name == modelElement.name && it != modelElement
+			name == modelElement.name && it != modelElement // direct comparison is safe here
 		]) {
 			error(
 				"Duplicate file element " + modelElement.name,
@@ -92,7 +100,7 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 	def checkNoDuplicateSignalAttribute(TUSignalAttribute attr) {
 		val containingSignal = attr.eContainer as TUSignal;
 		if (containingSignal.attributes.exists [
-			name == attr.name && it != attr
+			name == attr.name && it != attr // direct comparison is safe here
 		]) {
 			error(
 				"Duplicate attribute " + attr.name + " in signal " + containingSignal.name,
@@ -105,7 +113,7 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 	def checkNoDuplicateAttribute(TUAttribute attr) {
 		val containingClass = attr.eContainer as TUClass;
 		if (containingClass.members.exists [
-			it instanceof TUAttribute && (it as TUAttribute).name == attr.name && it != attr
+			it instanceof TUAttribute && (it as TUAttribute).name == attr.name && it != attr // direct comparison is safe here
 		]) {
 			error(
 				"Duplicate attribute " + attr.name + " in class " + containingClass.name,
@@ -121,8 +129,7 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 			it instanceof TUOperation && {
 				val siblingOrSelfOp = it as TUOperation;
 				siblingOrSelfOp.name == op.name && siblingOrSelfOp.parameterTypeList == op.parameterTypeList
-
-			} && it != op
+			} && it != op // direct comparison is safe here
 		]) {
 			error(
 				'''Duplicate method «op.name»(«op.parameterTypeList.join(", ")»)''',
@@ -132,40 +139,54 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 	}
 
 	@Check
-	def checkNoDuplicateState(TUState state) {
+	def checkStateNameIsUnique(TUState state) {
 		val container = state.eContainer;
+		var inClass = false;
 		val siblingsAndSelf = if (container instanceof TUClass) {
+				inClass = true;
 				(container as TUClass).members
 			} else {
 				(container as TUState).members
 			}
 
 		if (siblingsAndSelf.exists [
-			it instanceof TUState && (it as TUState).name == state.name && it != state ||
-				it instanceof TUTransition && (it as TUTransition).name == state.name
+			it instanceof TUState && (it as TUState).name == state.name && it != state || // direct comparison is safe here
+			it instanceof TUTransition && (it as TUTransition).name == state.name ||
+				it instanceof TUPort && (it as TUPort).name == state.name
 		]) {
 			error(
-				"Duplicate element " + state.name,
+				"State " + state.name + " in " + (if (inClass)
+					"class " + (container as TUClass).name
+				else
+					"state " + (container as TUState).name) +
+					" must have a unique name among states, transitions and ports of the enclosing element",
 				XtxtUMLPackage::eINSTANCE.TUState_Name
 			);
 		}
 	}
 
 	@Check
-	def checkNoDuplicateTransition(TUTransition trans) {
+	def checkTransitionNameIsUnique(TUTransition trans) {
 		val container = trans.eContainer;
+		var inClass = false;
 		val siblingsAndSelf = if (container instanceof TUClass) {
+				inClass = true;
 				(container as TUClass).members
 			} else {
 				(container as TUState).members
 			}
 
 		if (siblingsAndSelf.exists [
-			it instanceof TUTransition && (it as TUTransition).name == trans.name && it != trans ||
-				it instanceof TUState && (it as TUState).name == trans.name
+			it instanceof TUTransition && (it as TUTransition).name == trans.name && it != trans || // direct comparison is safe here
+			it instanceof TUState && (it as TUState).name == trans.name ||
+				it instanceof TUPort && (it as TUPort).name == trans.name
 		]) {
 			error(
-				"Duplicate element " + trans.name,
+				"Transition " + trans.name + " in " + (if (inClass)
+					"class " + (container as TUClass).name
+				else
+					"state " + (container as TUState).name) +
+					" must have a unique name among states, transitions and ports of the enclosing element",
 				XtxtUMLPackage::eINSTANCE.TUTransition_Name
 			);
 		}
@@ -201,19 +222,23 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 
 	@Check
 	def checkTypeReference(JvmTypeReference typeRef) {
-		var isPartOfSignalAttribute = false;
+		var isAttribute = false;
 
 		val isValid = switch (container : typeRef.eContainer) {
 			TUSignalAttribute: {
-				isPartOfSignalAttribute = true;
-				typeRef.isAllowedBasictype(false)
+				isAttribute = true;
+				typeRef.isAllowedAttributeType(false)
 			}
 			TUAttributeOrOperationDeclarationPrefix: {
-				typeRef.isAllowedBasictype(container.eContainer instanceof TUOperation) ||
-					typeRef.isConformantWith(ModelClass)
+				if (container.eContainer instanceof TUOperation) {
+					typeRef.isAllowedParameterType(true)
+				} else {
+					isAttribute = true;
+					typeRef.isAllowedAttributeType(false)
+				}
 			}
 			JvmFormalParameter: {
-				typeRef.isAllowedBasictype(false) || typeRef.isConformantWith(ModelClass)
+				typeRef.isAllowedParameterType(false)
 			}
 			// TODO check types inside XBlockExpression
 			default:
@@ -222,10 +247,10 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 
 		if (!isValid) {
 			error(
-				if (isPartOfSignalAttribute) {
-					"Invalid type. Only boolean, double, int and String are allowed."
+				if (isAttribute) {
+					"Invalid type. Only boolean, double, int, String, model data types and external interfaces are allowed."
 				} else {
-					"Invalid type. Only boolean, double, int, String and model class types are allowed."
+					"Invalid type. Only boolean, double, int, String, model data types, external interfaces and model class types are allowed."
 				},
 				TypesPackage::eINSTANCE.jvmParameterizedTypeReference_Type
 			)
@@ -282,11 +307,29 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 			);
 		}
 
-		if (!sendExpr.target.isConformantWith(ModelClass, false)) {
+		if (!sendExpr.target.isConformantWith(ModelClass, false) && !sendExpr.target.isConformantWith(Port, false)) {
 			error(
-				typeMismatch("Class"),
+				typeMismatch("Class or Port"),
 				XtxtUMLPackage::eINSTANCE.RAlfSendSignalExpression_Target
 			);
+		}
+	}
+
+	@Check
+	def checkSignalSentToPortIsRequired(RAlfSendSignalExpression sendExpr) {
+		if (!sendExpr.target.isConformantWith(Port, false) || !sendExpr.signal.isConformantWith(Signal, false)) {
+			return;
+		}
+
+		val sentSignalSourceElement = sendExpr.signal.actualType.type.primarySourceElement as TUSignal;
+
+		val portSourceElement = sendExpr.target.actualType.type.primarySourceElement as TUPort;
+		val requiredReceptionsOfPort = portSourceElement.members.findFirst[required]?.interface?.receptions;
+
+		if (requiredReceptionsOfPort?.
+			findFirst[signal.fullyQualifiedName == sentSignalSourceElement.fullyQualifiedName] == null) {
+			error("Signal type " + sentSignalSourceElement.name + " is not required by port " + portSourceElement.name,
+				XtxtUMLPackage::eINSTANCE.RAlfSendSignalExpression_Signal);
 		}
 	}
 
@@ -301,13 +344,41 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 	}
 
 	@Check
-	def checkAssocNavExpressionTypes(RAlfAssocNavExpression navExpr) {
-		// TODO modify when empty collections are available in the api
-		if (!navExpr.left.isConformantWith(ModelClass, false)) {
+	def checkClassPropertyAccessExpressionTypes(TUClassPropertyAccessExpression accessExpr) {
+		if (!accessExpr.left.isConformantWith(ModelClass, false)) {
 			error(
 				typeMismatch("Class"),
-				XtxtUMLPackage::eINSTANCE.RAlfAssocNavExpression_Left
+				XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Left
 			)
+		}
+	}
+
+	@Check
+	def checkOwnerOfAccessedClassProperty(TUClassPropertyAccessExpression accessExpr) {
+		val leftSourceElement = accessExpr.left.actualType.type.primarySourceElement as TUClass;
+
+		if (leftSourceElement == null) {
+			return; // typechecks will mark it
+		}
+
+		switch (prop : accessExpr.right) {
+			TUAssociationEnd: {
+				val validAccessor = (prop.eContainer as TUAssociation).ends.findFirst[name != prop.name].endClass
+				if (leftSourceElement.fullyQualifiedName != validAccessor.fullyQualifiedName) {
+					error("Association end " + prop.name + " is not accessible from class " + leftSourceElement.name,
+						XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Right);
+				} else if (prop.notNavigable) {
+					error("Association end " + prop.name + " is not navigable",
+						XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Right);
+				}
+			}
+			TUPort: {
+				val validAccessor = (prop.eContainer as TUClass);
+				if (leftSourceElement.fullyQualifiedName != validAccessor.fullyQualifiedName) {
+					error(prop.name + " cannot be resolved as a port of class " + leftSourceElement.name,
+						XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Right);
+				}
+			}
 		}
 	}
 
@@ -335,7 +406,7 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 				(container as TUState).type == TUStateType.INITIAL || (container as TUState).type == TUStateType.CHOICE
 			) || container instanceof TUTransition && ((container as TUTransition).members.findFirst [
 			it instanceof TUTransitionVertex && (it as TUTransitionVertex).from
-		] as TUTransitionVertex)?.vertex.type == TUStateType.INITIAL) {
+		] as TUTransitionVertex)?.vertex?.type == TUStateType.INITIAL) {
 			error(
 				"'sigdata' cannot be used here",
 				XtxtUMLPackage::eINSTANCE.RAlfSignalAccessExpression_Sigdata
@@ -364,7 +435,16 @@ class XtxtUMLValidator extends XtxtUMLAssociationValidator {
 	}
 
 	// Helpers
-	def private isAllowedBasictype(JvmTypeReference typeRef, boolean isVoidAllowed) {
+	def private isAllowedParameterType(JvmTypeReference typeRef, boolean isVoidAllowed) {
+		isAllowedAttributeType(typeRef, isVoidAllowed) || typeRef.isConformantWith(ModelClass)
+	}
+
+	def private isAllowedAttributeType(JvmTypeReference typeRef, boolean isVoidAllowed) {
+		isAllowedBasicType(typeRef, isVoidAllowed) || typeRef.isConformantWith(DataType) ||
+			typeRef.type.interface && typeRef.isConformantWith(ExternalType)
+	}
+
+	def private isAllowedBasicType(JvmTypeReference typeRef, boolean isVoidAllowed) {
 		typeRef.isType(Integer.TYPE) || typeRef.isType(Boolean.TYPE) || typeRef.isType(Double.TYPE) ||
 			typeRef.isType(String) || typeRef.isType(Void.TYPE) && isVoidAllowed
 	}

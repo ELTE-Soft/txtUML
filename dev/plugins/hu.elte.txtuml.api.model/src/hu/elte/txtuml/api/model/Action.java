@@ -114,8 +114,7 @@ public class Action implements ModelElement {
 	/**
 	 * Connects two ports through the specified delegation connector.
 	 * <p>
-	 * The two specified ends must be the two different ends of the same
-	 * connector. None of the parameters should be <code>null</code>.
+	 * None of the parameters should be <code>null</code>.
 	 * 
 	 * @param parentPort
 	 *            the port instance of the container object
@@ -140,12 +139,8 @@ public class Action implements ModelElement {
 	 * linked between the two objects.
 	 * <p>
 	 * The two specified ends must be the two different ends of the same
-	 * transition. None of the parameters should be <code>null</code>.
+	 * association. None of the parameters should be <code>null</code>.
 	 * 
-	 * @param <L>
-	 *            the type of objects on the left end of the association
-	 * @param <R>
-	 *            the type of objects on the right end of the association
 	 * @param leftEnd
 	 *            the left end of the association
 	 * @param leftObj
@@ -214,12 +209,8 @@ public class Action implements ModelElement {
 	 * never linked) between the two objects, this method shows a warning.
 	 * <p>
 	 * The two specified ends must be the two different ends of the same
-	 * transition. None of the parameters should be <code>null</code>.
+	 * association. None of the parameters should be <code>null</code>.
 	 * 
-	 * @param <L>
-	 *            the type of objects on the left end of the association
-	 * @param <R>
-	 *            the type of objects on the right end of the association
 	 * @param leftEnd
 	 *            the left end of the association
 	 * @param leftObj
@@ -294,16 +285,26 @@ public class Action implements ModelElement {
 	}
 
 	/**
-	 * Asynchronously sends the specified signal through the specified reception.
+	 * Asynchronously sends the specified signal through the specified
+	 * reception.
+	 * <p>
+	 * <b>Example:</b>
+	 * <p>
 	 * 
-	 * @param reception
-	 *            the reception which will accept the signal
+	 * <pre>
+	 * <code>
+	 * Action.send(new MySignal(), port(MyPort.class).required::reception);
+	 * </code>
+	 * </pre>
+	 * 
 	 * @param signal
 	 *            the signal object to send
+	 * @param reception
+	 *            the reception which will accept the signal
 	 * @throws NullPointerException
 	 *             if <code>reception</code> is <code>null</code>
 	 */
-	public static <S extends Signal> void send(Reception<S> reception, S signal) {
+	public static <S extends Signal> void send(S signal, Reception<S> reception) {
 		reception.accept(signal);
 	}
 
@@ -313,14 +314,15 @@ public class Action implements ModelElement {
 	 * Does not check whether the target object is deleted, it is only checked
 	 * when the signal arrives to the object.
 	 * 
-	 * @param target
-	 *            the model object which will receive the signal
 	 * @param signal
 	 *            the signal object to send
+	 * @param target
+	 *            the model object which will receive the signal
+	 * 
 	 * @throws NullPointerException
 	 *             if <code>target</code> is <code>null</code>
 	 */
-	public static void send(ModelClass target, Signal signal) {
+	public static void send(Signal signal, ModelClass target) {
 		target.send(signal);
 	}
 
