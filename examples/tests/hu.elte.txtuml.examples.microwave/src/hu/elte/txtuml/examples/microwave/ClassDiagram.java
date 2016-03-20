@@ -5,7 +5,7 @@ import hu.elte.txtuml.api.layout.Left;
 import hu.elte.txtuml.examples.microwave.model.Human;
 import hu.elte.txtuml.examples.microwave.model.Microwave;
 
-class MicrowaveClassDiagram extends ClassDiagram {
+class MicrowaveDiagram extends ClassDiagram {
 	@Left(val = Microwave.class, from = Human.class)
 	class MicrowaveLayout extends Layout {
 	}

@@ -9,7 +9,7 @@ import hu.elte.txtuml.examples.printer.model.Human;
 import hu.elte.txtuml.examples.printer.model.PrinterBackend;
 import hu.elte.txtuml.examples.printer.model.PrinterFrontend;
 
-class PrinterClassDiagram extends ClassDiagram {
+class PrinterDiagram extends ClassDiagram {
 	@Above(val = PrinterFrontend.class, from = PrinterBackend.class)
 	@Left(val = Human.class, from = PrinterFrontend.class)
 	@West(val = Document.class, from = PrinterFrontend.class)

@@ -6,11 +6,8 @@ import train.x.model.Engine;
 import train.x.model.Gearbox;
 import train.x.model.Lamp;
 
-<<<<<<< HEAD:examples/demo/hu.elte.txtuml.examples.train/src/hu/elte/txtuml/examples/train/XTrainDiagram.java
+
 class XTrainDiagram extends ClassDiagram {
-=======
-public class ClassDiagram extends Diagram {
->>>>>>> master:examples/demo/train/src/train/x/ClassDiagram.java
 	class TopPhantom extends Phantom {
 	}
 
