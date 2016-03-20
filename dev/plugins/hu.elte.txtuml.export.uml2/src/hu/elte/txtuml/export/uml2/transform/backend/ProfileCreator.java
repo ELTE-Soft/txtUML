@@ -32,11 +32,10 @@ public final class ProfileCreator {
 	 *            The given resource set.
 	 * @throws ExportException
 	 */
-	public static void createProfileForModel(String modelClassQualifiedName,
-			String path, ResourceSet resourceSet) throws ExportException {
+	public static void createProfileForModel(String modelClassQualifiedName, String path, ResourceSet resourceSet)
+			throws ExportException {
 		Profile profile = createProfile(modelClassQualifiedName, path);
-		Model umlMetamodel = loadUMLMetamodelAndPrimitiveTypes(profile,
-				resourceSet);
+		Model umlMetamodel = loadUMLMetamodelAndPrimitiveTypes(profile, resourceSet);
 		createExternalClassStereotypeForProfile(profile, umlMetamodel);
 		defineAndSaveProfile(profile, modelClassQualifiedName, resourceSet);
 	}
@@ -52,20 +51,17 @@ public final class ProfileCreator {
 	 *            The resource set.
 	 * @throws ExportException
 	 */
-	private static void defineAndSaveProfile(Profile profile,
-			String modelClassQualifiedName, ResourceSet resourceSet)
+	private static void defineAndSaveProfile(Profile profile, String modelClassQualifiedName, ResourceSet resourceSet)
 			throws ExportException {
 		profile.define();
-		Resource resource = resourceSet.createResource(URI.createFileURI("")
-				.appendSegment(modelClassQualifiedName)
+		Resource resource = resourceSet.createResource(URI.createFileURI("").appendSegment(modelClassQualifiedName)
 				.appendFileExtension(UMLResource.PROFILE_FILE_EXTENSION));
 
 		resource.getContents().add(profile);
 		try {
 			resource.save(null);
 		} catch (IOException ioe) {
-			throw new ExportException(
-					"I/O error occured during model exportation. Cannot save UML profile.");
+			throw new ExportException("I/O error occured during model exportation. Cannot save UML profile.");
 		}
 	}
 
@@ -78,8 +74,7 @@ public final class ProfileCreator {
 	 * @param umlMetamodel
 	 *            The given UML metamodel.
 	 */
-	private static void createExternalClassStereotypeForProfile(
-			Profile profile, Model umlMetamodel) {
+	private static void createExternalClassStereotypeForProfile(Profile profile, Model umlMetamodel) {
 		// creating the ExternalClass stereotype and an extension for it
 		try {
 			org.eclipse.uml2.uml.Class classifierMetaclass = (org.eclipse.uml2.uml.Class) umlMetamodel
@@ -88,9 +83,7 @@ public final class ProfileCreator {
 			profile.createMetaclassReference(classifierMetaclass);
 
 			Stereotype externalStereotype = profile
-					.createOwnedStereotype(
-							ExporterConfiguration.EXTERNAL_CLASS_STEREOTYPE_NAME,
-							false);
+					.createOwnedStereotype(ExporterConfiguration.EXTERNAL_CLASS_STEREOTYPE_NAME, false);
 			externalStereotype.createExtension(classifierMetaclass, false);
 		} catch (Exception e) {
 
@@ -107,17 +100,14 @@ public final class ProfileCreator {
 	 *            The given resource set.
 	 * @return The UML metamodel.
 	 */
-	private static Model loadUMLMetamodelAndPrimitiveTypes(Profile profile,
-			ResourceSet resourceSet) {
+	private static Model loadUMLMetamodelAndPrimitiveTypes(Profile profile, ResourceSet resourceSet) {
 		// loading the UML metamodel
-		Model umlMetamodel = (Model) loadResource(
-				URI.createURI(UMLResource.UML_METAMODEL_URI), resourceSet);
+		Model umlMetamodel = (Model) loadResource(URI.createURI(UMLResource.UML_METAMODEL_URI), resourceSet);
 
 		// loading UML Primitive Types Library and importing the primitive types
 		// from there
 		org.eclipse.uml2.uml.Package umlLibrary = loadResource(
-				URI.createURI(UMLResource.UML_PRIMITIVE_TYPES_LIBRARY_URI),
-				resourceSet);
+				URI.createURI(UMLResource.UML_PRIMITIVE_TYPES_LIBRARY_URI), resourceSet);
 		profile.createElementImport(umlLibrary.getOwnedType("Integer"));
 		profile.createElementImport(umlLibrary.getOwnedType("Real"));
 		profile.createElementImport(umlLibrary.getOwnedType("Boolean"));
@@ -139,14 +129,11 @@ public final class ProfileCreator {
 	 * 
 	 * @return The created profile-
 	 */
-	private static Profile createProfile(String modelClassQualifiedName,
-			String path) {
+	private static Profile createProfile(String modelClassQualifiedName, String path) {
 		Profile profile = UMLFactory.eINSTANCE.createProfile();
 		profile.setName(ExporterConfiguration.PROFILE_NAME);
-		profile.setURI(URI.createFileURI(path)
-				.appendSegment(modelClassQualifiedName)
-				.appendFileExtension(UMLResource.PROFILE_FILE_EXTENSION)
-				.toString());
+		profile.setURI(URI.createFileURI(path).appendSegment(modelClassQualifiedName)
+				.appendFileExtension(UMLResource.PROFILE_FILE_EXTENSION).toString());
 
 		return profile;
 	}
@@ -161,10 +148,9 @@ public final class ProfileCreator {
 	 *            The given resource set.
 	 * @return The loaded package.
 	 */
-	private static org.eclipse.uml2.uml.Package loadResource(URI uri,
-			ResourceSet resourceSet) {
+	private static org.eclipse.uml2.uml.Package loadResource(URI uri, ResourceSet resourceSet) {
 		Resource resource = resourceSet.getResource(uri, true);
-		return (org.eclipse.uml2.uml.Package) EcoreUtil.getObjectByType(
-				resource.getContents(), UMLPackage.Literals.PACKAGE);
+		return (org.eclipse.uml2.uml.Package) EcoreUtil.getObjectByType(resource.getContents(),
+				UMLPackage.Literals.PACKAGE);
 	}
 }

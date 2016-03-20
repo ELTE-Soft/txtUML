@@ -43,27 +43,27 @@ public class User extends ModelClass {
 
 		Machine myMachine = this.assoc(Usage.usedMachine.class).selectAny();
 
-		Action.send(myMachine, new ButtonPress());
+		Action.send(new ButtonPress(), myMachine);
 		// Switching the machine on.
 
-		Action.send(myMachine, new ButtonPress());
+		Action.send(new ButtonPress(), myMachine);
 		// Trying to switch it off but fails because of the guard.
 
-		Action.send(myMachine, new DoTasks(1));
+		Action.send(new DoTasks(1), myMachine);
 		// The machine becomes active and decreases its tasks-to-do count
 		// by 1.
 
-		Action.send(myMachine, new ButtonPress());
+		Action.send(new ButtonPress(), myMachine);
 		// Trying to switch it off but fails again.
 
-		Action.send(myMachine, new DoTasks(1));
+		Action.send(new DoTasks(1), myMachine);
 		// The machine becomes active again and decreases its tasks-to-do
 		// count by 1.
 
-		Action.send(myMachine, new ButtonPress());
+		Action.send(new ButtonPress(), myMachine);
 		// Trying to switch it off but fails again.
 
-		Action.send(myMachine, new DoTasks(1));
+		Action.send(new DoTasks(1), myMachine);
 		// This event has no effect, the machine is switched off.
 
 		Action.log("\tUser: work finished...");

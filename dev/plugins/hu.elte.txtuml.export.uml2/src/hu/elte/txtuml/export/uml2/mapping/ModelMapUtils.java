@@ -14,59 +14,43 @@ import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 public class ModelMapUtils {
 	public static final String MAPPING_FILE_EXTENSION = "mapping";
-	public static final String MAPPING_FILE_EXTENSION_TOKEN = "."
-			+ MAPPING_FILE_EXTENSION;
+	public static final String MAPPING_FILE_EXTENSION_TOKEN = "." + MAPPING_FILE_EXTENSION;
 
 	public static URI createMappingURI(URI directory, String filename) {
-		return directory.appendSegment(filename).appendFileExtension(
-				MAPPING_FILE_EXTENSION);
+		return directory.appendSegment(filename).appendFileExtension(MAPPING_FILE_EXTENSION);
 	}
 
-	public static Map<String, ModelMapProvider> collectModelMapProviders(
-			String projectName, String mappingFolderName, Resource resource)
-			throws ModelMapException {
+	public static Map<String, ModelMapProvider> collectModelMapProviders(String projectName, String mappingFolderName,
+			Resource resource) throws ModelMapException {
 		Map<String, ModelMapProvider> modelMapProviders = new TreeMap<>();
 
 		IProject project = ProjectUtils.getProject(projectName);
 
-		if (project.isOpen()
-				&& (projectName.equals("") || project.getName().equals(
-						projectName))) {
+		if (project.isOpen() && (projectName.equals("") || project.getName().equals(projectName))) {
 			IFolder mappingFolder = project.getFolder(mappingFolderName);
 			if (mappingFolder.exists()) {
-				File mappingDirectory = new File(mappingFolder.getLocation()
-						.toOSString());
-				URI uri = URI.createFileURI(mappingFolder.getLocation()
-						.toOSString());
+				File mappingDirectory = new File(mappingFolder.getLocation().toOSString());
+				URI uri = URI.createFileURI(mappingFolder.getLocation().toOSString());
 
-				if (mappingDirectory.exists() && mappingDirectory.isDirectory()
-						&& mappingDirectory.canRead()) {
-					for (String mappingFilename : mappingDirectory
-							.list(new FilenameFilter() {
-								@Override
-								public boolean accept(File dir, String name) {
-									return name
-											.endsWith(MAPPING_FILE_EXTENSION_TOKEN);
-								}
-							})) {
+				if (mappingDirectory.exists() && mappingDirectory.isDirectory() && mappingDirectory.canRead()) {
+					for (String mappingFilename : mappingDirectory.list(new FilenameFilter() {
+						@Override
+						public boolean accept(File dir, String name) {
+							return name.endsWith(MAPPING_FILE_EXTENSION_TOKEN);
+						}
+					})) {
 
 						ModelMapProvider modelMapProvider = null;
-						mappingFilename = mappingFilename
-								.substring(
-										0,
-										mappingFilename
-												.lastIndexOf(MAPPING_FILE_EXTENSION_TOKEN));
+						mappingFilename = mappingFilename.substring(0,
+								mappingFilename.lastIndexOf(MAPPING_FILE_EXTENSION_TOKEN));
 						if (resource != null) {
-							modelMapProvider = new ModelMapProvider(uri,
-									mappingFilename, resource);
+							modelMapProvider = new ModelMapProvider(uri, mappingFilename, resource);
 						} else {
-							modelMapProvider = new ModelMapProvider(uri,
-									mappingFilename);
+							modelMapProvider = new ModelMapProvider(uri, mappingFilename);
 						}
 
 						if (modelMapProvider != null) {
-							modelMapProviders.put(mappingFilename,
-									modelMapProvider);
+							modelMapProviders.put(mappingFilename, modelMapProvider);
 						}
 					}
 				}

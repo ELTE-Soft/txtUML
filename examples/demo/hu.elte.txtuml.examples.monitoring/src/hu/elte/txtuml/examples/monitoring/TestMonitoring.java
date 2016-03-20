@@ -37,13 +37,13 @@ public class TestMonitoring {
 			char c = (char)System.in.read();
 			while(c != 'q') {
 				if(c == 'r') {
-					Action.send(monitor, new Read());
+					Action.send(new Read(), monitor);
 				} else if(c == 'w') {
-					Action.send(monitor, new Write());
+					Action.send(new Write(), monitor);
 				} else if(c == 'c') {
-					Action.send(monitor, new Close());
+					Action.send(new Close(), monitor);
 				} else if(c == 'x') {
-					Action.send(aggregator, new PrintReport());
+					Action.send(new PrintReport(), aggregator);
 				}
 				c = (char)System.in.read();				
 			}

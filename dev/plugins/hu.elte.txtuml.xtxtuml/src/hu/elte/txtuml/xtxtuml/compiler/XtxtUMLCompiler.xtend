@@ -48,9 +48,9 @@ class XtxtUMLCompiler extends XbaseCompiler {
 		newLine;
 		append(hu.elte.txtuml.api.model.Action)
 		append(".send(");
-		sendExpr.target.internalToJavaExpression(it);
-		append(", ");
 		sendExpr.signal.internalToJavaExpression(it);
+		append(", ");
+		sendExpr.target.internalToJavaExpression(it);
 		append(");");
 	}
 	

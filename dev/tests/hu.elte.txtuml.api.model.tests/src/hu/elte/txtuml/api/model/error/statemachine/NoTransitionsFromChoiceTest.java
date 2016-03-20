@@ -17,7 +17,7 @@ public class NoTransitionsFromChoiceTest extends TestsBase {
 
 		A a = new A();
 		Action.start(a);
-		Action.send(a, new Sig(2));
+		Action.send(new Sig(2), a);
 
 		stopModelExecution();
 

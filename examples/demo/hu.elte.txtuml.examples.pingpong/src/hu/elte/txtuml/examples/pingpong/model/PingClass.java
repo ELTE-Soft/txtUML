@@ -27,7 +27,7 @@ public class PingClass extends ModelClass {
 		public void effect() {
 			PongSignal sig = getSignal();
 			if (sig.count > 0) {
-				Action.send(port(PingPort.class).provided::reception, new PingSignal(sig.count - 1));				
+				Action.send(new PingSignal(sig.count - 1), port(PingPort.class).provided::reception);				
 				Action.log("ping");
 			}
 		}

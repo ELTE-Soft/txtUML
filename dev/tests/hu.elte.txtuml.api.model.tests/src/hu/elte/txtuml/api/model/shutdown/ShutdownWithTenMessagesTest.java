@@ -21,7 +21,7 @@ public class ShutdownWithTenMessagesTest extends SimpleModelTestsBase {
 
 		Action.start(a);
 		for (int i = 0; i < 10; ++i) {
-			Action.send(a, new Sig());
+			Action.send(new Sig(), a);
 		}
 
 		Assert.assertEquals(false, actionPerformed.value);
