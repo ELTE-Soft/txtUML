@@ -3,9 +3,11 @@ package hu.elte.txtuml.export.cpp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
@@ -48,9 +50,8 @@ import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 public class ActivityExporter {
 	Map<CreateObjectAction, String> _objectMap = new HashMap<CreateObjectAction, String>();
 	int tempVariableCounter = 0;
+	Set<String> declaredTempVariables;
 	ActivityNode returnNode;
-	ActivityNode cycleConditionNode;
-	boolean conditionExportation;
 
 	private Map<OutputPin, String> tempVariables;
 
@@ -62,10 +63,9 @@ public class ActivityExporter {
 
 	public void reinitilaize() {
 		tempVariables = new HashMap<OutputPin, String>();
+		declaredTempVariables = new HashSet<String>();
 		tempVariableCounter = 0;
 		returnNode = null;
-		cycleConditionNode = null;
-		conditionExportation = false;
 	}
 
 	public StringBuilder createfunctionBody(Activity activity_) {
@@ -162,13 +162,14 @@ public class ActivityExporter {
 			}
 		}
 
-		else if (node_.eClass().equals(UMLPackage.Literals.READ_VARIABLE_ACTION)) {
+		/*else if (node_.eClass().equals(UMLPackage.Literals.READ_VARIABLE_ACTION)) {
 			ReadVariableAction rAction = (ReadVariableAction) node_;
-			source.append(ActivityTemplates.addVariableTemplate(rAction.getResult().getType().getName(),
-					"tmp" + tempVariableCounter, getTargetFromActivityNode(rAction.getResult())));
 			importOutputPinToMap(rAction.getResult());
+			source.append(ActivityTemplates.addVariableTemplate(rAction.getResult().getType().getName(),
+					tempVariables.get(rAction.getResult()), getTargetFromActivityNode(rAction.getResult())));
+			
 
-		} else if (node_.eClass().equals(UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION)) {
+		} */else if (node_.eClass().equals(UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION)) {
 			AddStructuralFeatureValueAction asfva = (AddStructuralFeatureValueAction) node_;
 			source.append(ActivityTemplates.generalSetValue(getTargetFromASFVA(asfva),
 					getTargetFromInputPin(asfva.getValue(), false), ActivityTemplates
@@ -200,8 +201,7 @@ public class ActivityExporter {
 			source.append(createForkCode(((ConditionalNode) node_)));
 		}
 
-		else if (node_.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION) && conditionExportation) {
-			cycleConditionNode = node_;
+		else if (node_.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION)) {
 
 		}
 		return source;
@@ -223,31 +223,28 @@ public class ActivityExporter {
 	private StringBuilder createCycleCode(LoopNode loopNode) {
 		StringBuilder source = new StringBuilder("");
 
-		if (loopNode.getSetupParts() != null) {
-			for (ExecutableNode initNode : loopNode.getSetupParts()) {
-				source.append(createActivityNodeCode(initNode));
-			}
+		for (ExecutableNode initNode : loopNode.getSetupParts()) {
+			source.append(createActivityNodeCode(initNode));
 		}
 
 		StringBuilder cond = new StringBuilder("");
-		conditionExportation = true;
 		for (ExecutableNode condNode : loopNode.getTests()) {
 			cond.append(createActivityNodeCode(condNode));
 		}
-		conditionExportation = false;
 		source.append(cond);
-
+		
 		StringBuilder body = new StringBuilder("");
 		for (ExecutableNode bodyNode : loopNode.getBodyParts()) {
 			body.append(createActivityNodeCode(bodyNode));
 		}
-
-		if (cycleConditionNode != null) {
-			source.append(ActivityTemplates.whileCycle(getTargetFromActivityNode(cycleConditionNode),
-					body.toString() + cond.toString(), ""));
-		} else {
-			source.append(ActivityTemplates.whileCycle("", body.toString() + cond.toString(), ""));
+		
+		StringBuilder recond = new StringBuilder("");
+		for (ExecutableNode condNode : loopNode.getTests()) {
+			recond.append(createActivityNodeCode(condNode));
 		}
+		
+		source.append(ActivityTemplates.whileCycle(getTargetFromActivityNode(loopNode.getDecider()), body.toString() + "\n" +  recond.toString()));
+		
 
 		return source;
 	}
@@ -346,9 +343,6 @@ public class ActivityExporter {
 			}
 
 		} else if (node_.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION)) {
-			if (conditionExportation) {
-				cycleConditionNode = node_;
-			}
 			source = getValueFromValueSpecification(((ValueSpecificationAction) node_).getValue());
 		} else if (node_.eClass().equals(UMLPackage.Literals.READ_VARIABLE_ACTION)) {
 			ReadVariableAction rA = (ReadVariableAction) node_;
@@ -464,7 +458,7 @@ public class ActivityExporter {
 
 			}
 
-			source.append(ActivityTemplates.addVariableTemplate(node_.getOperation().getType().getName(),
+			source.append(addValueToTemporalVariable(node_.getOperation().getType().getName(),
 					tempVariables.get(returnPin), val));
 
 		} else {
@@ -472,7 +466,7 @@ public class ActivityExporter {
 					ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node_.getTarget())),
 					node_.getOperation().getName(), getParamNames(node_.getArguments()));
 			if (returnPin != null) {
-				source.append(ActivityTemplates.addVariableTemplate(node_.getOperation().getType().getName(),
+				source.append(addValueToTemporalVariable(node_.getOperation().getType().getName(),
 						tempVariables.get(returnPin), val));
 			} else {
 				source.append(ActivityTemplates.blockStatement(val));
@@ -555,11 +549,19 @@ public class ActivityExporter {
 		}
 		return nextNodes;
 	}
+	
+	private String addValueToTemporalVariable(String type, String var, String value) {
+		if(declaredTempVariables.contains(var)){
+			return ActivityTemplates.simpleSetValue(var, value);
+		}
+		else {
+			declaredTempVariables.add(var);
+			return ActivityTemplates.addVariableTemplate(type, var, value);
+			
+		}
+	}
 
 	private void importOutputPinToMap(OutputPin out) {
-		if (conditionExportation) {
-			cycleConditionNode = out;
-		}
 		if (!tempVariables.containsKey(out)) {
 			tempVariables.put(out, "tmp" + tempVariableCounter);
 			tempVariableCounter++;

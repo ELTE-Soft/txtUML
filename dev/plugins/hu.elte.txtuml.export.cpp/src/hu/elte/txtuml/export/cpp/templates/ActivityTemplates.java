@@ -22,6 +22,10 @@ public class ActivityTemplates {
 		}
 		return leftValueName + operator + rightValueName + ";\n";
 	}
+	
+	public static String simpleSetValue(String leftValueName, String rightValueName) {
+		return generalSetValue(leftValueName,rightValueName,ReplaceSimpleTypeOp);
+	}
 
 	public static StringBuilder signalSend(String signalName, String targetName, String targetTypeName, String accessOperator,
 			List<String> params) {
@@ -141,7 +145,7 @@ public class ActivityTemplates {
 		return source;
 	}
 
-	public static String whileCycle(String cond, String body, String update) {
+	public static String whileCycle(String cond, String body) {
 		return simpleCondControlStruct("while", cond, body);
 	}
 
