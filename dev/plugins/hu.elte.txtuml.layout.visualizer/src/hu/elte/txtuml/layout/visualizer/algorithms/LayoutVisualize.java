@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Observer;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.ArrangeObjects;
@@ -101,27 +102,30 @@ public class LayoutVisualize {
 	 * @return the pixel-grid ratio.
 	 */
 	public Integer getPixelGridHorizontal() {
-		if (_objects.size() > 0) {
-			RectangleObject obj = _objects.stream().findFirst().get();
-			if(obj.getWidth() == 1)
-				return obj.getPixelWidth();
-			else
-				return obj.getPixelWidth() / (obj.getWidth() - 1);
-		}
-
-		return 1;
+		return getPixelGridRatio(box -> box.getWidth(), box -> box.getPixelWidth());
 	}
 	
 	public Integer getPixelGridVertical() {
-		if (_objects.size() > 0) {
-			RectangleObject obj = _objects.stream().findFirst().get();
-			if(obj.getHeight() == 1)
-				return obj.getPixelHeight();
+		return getPixelGridRatio(box -> box.getHeight(), box -> box.getPixelHeight());
+	}
+	
+	private Integer getPixelGridRatio(Function<RectangleObject, Integer> selector, 
+			Function<RectangleObject, Integer> selectorPixel)
+	{
+		final Integer defaultValue = 1;
+		
+		if (_objects != null) {
+			RectangleObject obj = _objects.stream()
+					.filter(box -> !box.isSpecial()).findFirst().orElse(null);
+			if(obj == null)
+				return defaultValue;
+			else if(selector.apply(obj) == 1)
+				return selectorPixel.apply(obj);
 			else
-				return obj.getPixelHeight() / (obj.getHeight() - 1);
+				return selectorPixel.apply(obj) / (selector.apply(obj) - 1);
 		}
 
-		return 1;
+		return defaultValue;
 	}
 
 	/**
@@ -218,7 +222,7 @@ public class LayoutVisualize {
 			UnknownStatementException, BoxOverlapConflictException, StatementsConflictException {
 		if (_objects == null)
 			return;
-
+		
 		// Clone statements into local working copy
 		_statements = Helper.cloneStatementList(par_stats);
 		_statements.sort((s1, s2) -> {
