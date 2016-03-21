@@ -1,5 +1,7 @@
 package hu.elte.txtuml.export.papyrus.layout.txtuml;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +12,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.CommonPlugin;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
@@ -17,8 +20,12 @@ import org.eclipse.ui.part.FileEditorInput;
 
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 import hu.elte.txtuml.export.papyrus.utils.LayoutUtils;
+import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
+import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode;
+import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.utils.Pair;
+import hu.elte.txtuml.utils.eclipse.NotFoundException;
 
 /**
  * This class helps preparing the {@link PapyrusVisualizer} from a txtUML model
@@ -93,6 +100,18 @@ public class TxtUMLExporter {
 		return pv;
 	}
 	
+	/**
+	 * Exports the txtUML model to an EMF model to the same folder where the papyrus Model will be
+	 * @throws JavaModelException
+	 * @throws NotFoundException
+	 * @throws IOException
+	 * @throws ExportException
+	 */
+	public void exportModel() throws JavaModelException, NotFoundException, IOException, ExportException{
+		TxtUMLToUML2.exportModel(projectName, txtUMLModelName,
+				projectName + "/" + outputFolder, ExportMode.ExportDefinitions);
+	}
+		
 	
 	/**
 	 * Closes the editor and deletes the files that are have the same name as the generated ones will have
@@ -105,7 +124,7 @@ public class TxtUMLExporter {
 		 resource change event notification. See IResourceChangeEvent for more details.</li> 
 		</ul>
 	 */
-	public void cleanBeforeVisualization() throws CoreException{
+	public void cleanBeforeVisualization() throws CoreException, InvocationTargetException, InterruptedException{
 		String location  = projectName + "/" + this.outputFolder + "/" + this.txtUMLModelName;
 		URI diFileURI = URI.createFileURI(location+".di");
 		URI umlFileURI = URI.createFileURI(location+".uml");
@@ -133,7 +152,7 @@ public class TxtUMLExporter {
 			PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 					.getActivePage().closeEditor(editor, false);
 			
-		}
+		}		
 		
 		diFile.delete(true, new NullProgressMonitor());
 		umlFile.delete(true, new NullProgressMonitor());

@@ -1,13 +1,17 @@
 package hu.elte.txtuml.export.papyrus;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.infra.core.resource.ModelMultiException;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.progress.IProgressService;
 
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
 import hu.elte.txtuml.export.papyrus.utils.EditorOpener;
@@ -22,7 +26,7 @@ import hu.elte.txtuml.utils.eclipse.ProjectUtils;
  * @param <ViewPrototype>
  * @see IWorkbenchWindowActionDelegate
  */
-public class PapyrusVisualizer {
+public class PapyrusVisualizer implements IRunnableWithProgress {
 	private String projectName;
 	private String modelName;
 	private String sourceUMLPath;
@@ -61,17 +65,31 @@ public class PapyrusVisualizer {
 	 * @throws ServiceException 
 	 * @throws ModelMultiException 
 	 */
-	public IStatus run(IProgressMonitor monitor) throws ModelMultiException, ServiceException {
-		monitor.beginTask("Visualization", 100);
-		
+	@Override
+	public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException{
+		monitor.beginTask("Visualization", 100);			
 		monitor.subTask("Creating new Papyrus project...");
-		IProject project = ProjectUtils.createProject(projectName);
-		ProjectUtils.openProject(project);
-		monitor.worked(20);
+
 		
-		createAndOpenPapyrusModel(new SubProgressMonitor(monitor, 80));
-		SettingsRegistry.clear();
-		return Status.OK_STATUS;
+		IProgressService progressService = PlatformUI.getWorkbench()
+				.getProgressService();
+
+		progressService.runInUI(progressService, new IRunnableWithProgress() {
+			
+			@Override
+			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+
+				IProject project = ProjectUtils.createProject(projectName);
+				ProjectUtils.openProject(project);
+				monitor.worked(20);
+				try{	
+					createAndOpenPapyrusModel(new SubProgressMonitor(monitor, 80));
+				}catch(Exception e){
+					throw new RuntimeException(e);
+				}
+				SettingsRegistry.clear();
+			}
+		}, ResourcesPlugin.getWorkspace().getRoot());
 	}
 	
 	
@@ -81,7 +99,7 @@ public class PapyrusVisualizer {
 	 * @throws ModelMultiException - If the loading of existing model fails
 	 * @throws ServiceException 
 	 */
-	private void createAndOpenPapyrusModel(IProgressMonitor monitor) throws ModelMultiException, ServiceException {
+	private void createAndOpenPapyrusModel(IProgressMonitor monitor) throws ModelMultiException, ServiceException, InvocationTargetException, InterruptedException {
 		monitor.beginTask("Generating Papyrus Model", 100);
 		PapyrusModelCreator papyrusModelCreator = new PapyrusModelCreator(projectName + "/" + modelName);
 		papyrusModelCreator.setUpUML(sourceUMLPath);
@@ -89,13 +107,12 @@ public class PapyrusVisualizer {
 			
 			monitor.subTask("Generating Papyrus model...");
 			papyrusModelCreator.createPapyrusModel();
-			IMultiDiagramEditor editor = EditorOpener.openPapyrusEditor(papyrusModelCreator.getDi());
-			
-			papyrusModelManager = SettingsRegistry.getPapyrusModelManager(editor);
-			papyrusModelManager.setLayoutController(layoutDescriptor);
-			monitor.worked(10);
-			
-			papyrusModelManager.createAndFillDiagrams(new SubProgressMonitor(monitor, 90));
+					IMultiDiagramEditor editor = EditorOpener.openPapyrusEditor(papyrusModelCreator.getDi());
+					papyrusModelManager = SettingsRegistry.getPapyrusModelManager(editor);
+					papyrusModelManager.setLayoutController(layoutDescriptor);
+					monitor.worked(10);
+					
+					papyrusModelManager.createAndFillDiagrams(new SubProgressMonitor(monitor, 90));
 		} 
 	}
 	

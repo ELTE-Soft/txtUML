@@ -20,11 +20,6 @@ public class TxtUMLLayoutDescriptor {
 	public String modelName;
 	
 	/**
-	 * True if the user wants to generate StateMachines automatically
-	 */
-	public boolean generateSMDs;
-	
-	/**
 	 * The name of the Folder where the txtUML model and
 	 * the EMF-UML2 mapping description is saved.
 	 */
