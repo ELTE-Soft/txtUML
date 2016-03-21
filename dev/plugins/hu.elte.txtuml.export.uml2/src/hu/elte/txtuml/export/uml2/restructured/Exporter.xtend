@@ -1,5 +1,10 @@
 package hu.elte.txtuml.export.uml2.restructured
 
+import hu.elte.txtuml.export.uml2.restructured.activity.BlockExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.MethodActivityExporter
+import hu.elte.txtuml.export.uml2.restructured.statemachine.InitStateExporter
+import hu.elte.txtuml.export.uml2.restructured.statemachine.StateExporter
+import hu.elte.txtuml.export.uml2.restructured.statemachine.TransitionExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.AssociationEndExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.AssociationExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.ClassExporter
@@ -9,21 +14,22 @@ import hu.elte.txtuml.export.uml2.restructured.structural.PackageExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.ParameterExporter
 import java.util.List
 import org.eclipse.jdt.core.IPackageFragment
+import org.eclipse.jdt.core.dom.Block
 import org.eclipse.jdt.core.dom.IMethodBinding
 import org.eclipse.jdt.core.dom.ITypeBinding
 import org.eclipse.jdt.core.dom.IVariableBinding
 import org.eclipse.jdt.core.dom.MethodDeclaration
+import org.eclipse.jdt.core.dom.Statement
 import org.eclipse.jdt.core.dom.TypeDeclaration
 import org.eclipse.uml2.uml.Element
+import org.eclipse.uml2.uml.ExecutableNode
+import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
-import hu.elte.txtuml.export.uml2.restructured.statemachine.StateExporter
-import hu.elte.txtuml.export.uml2.restructured.statemachine.InitStateExporter
-import hu.elte.txtuml.export.uml2.restructured.statemachine.TransitionExporter
-import hu.elte.txtuml.export.uml2.restructured.structural.MethodActivityExporter
+import org.eclipse.jdt.core.dom.Expression
 
 abstract class Exporter<S, A, R extends Element> {
 
-	Exporter<?, ?, ?> parent
+	protected Exporter<?, ?, ?> parent
 	protected ExporterCache cache
 	protected R result
 
@@ -48,7 +54,7 @@ abstract class Exporter<S, A, R extends Element> {
 		}
 	}
 
-	private def void store(Element contained) {
+	def void store(Element contained) {
 		if (!tryStore(contained)) {
 			if (parent == null) {
 				throw new IllegalStateException("Could not store element: " + contained)
@@ -89,9 +95,19 @@ abstract class Exporter<S, A, R extends Element> {
 				#[new OperationExporter(this), new MethodActivityExporter(this)]
 			IVariableBinding:
 				#[new FieldExporter(this), new ParameterExporter(this)]
+			Block:
+				#[new BlockExporter(this)]
 			default:
 				#[]
 		}
+	}
+	
+	def exportStatement(Statement source) {
+		exportElement(source, source) as ExecutableNode
+	}
+	
+	def exportExpression(Expression source) {
+		exportElement(source, source) as ExecutableNode
 	}
 
 	def <CS, CA, CR extends Element> exportElement(CS source, CA access) {
@@ -104,6 +120,15 @@ abstract class Exporter<S, A, R extends Element> {
 		}
 		throw new IllegalArgumentException(access.toString)
 	}
+	
+	def getBooleanType() { getImportedElement("Boolean") as PrimitiveType }
+	def getIntegerType() { getImportedElement("Integer") as PrimitiveType }
+	def getStringType() { getImportedElement("String") as PrimitiveType }
+	def getRealType() { getImportedElement("Real") as PrimitiveType }
+	def getUnlimitedNaturalType() { getImportedElement("UnlimitedNatural") as PrimitiveType }
+	
+	def Element getImportedElement(String name) { parent.getImportedElement(name) }
+	
 
 	def exportPackage(IPackageFragment pf) { cache.export(new PackageExporter(this), pf, pf) }
 
