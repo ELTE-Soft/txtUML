@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
+import hu.elte.txtuml.layout.visualizer.algorithms.FileVisualize;
 import hu.elte.txtuml.layout.visualizer.algorithms.LayoutVisualize;
 import hu.elte.txtuml.layout.visualizer.exceptions.BoxArrangeConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.BoxOverlapConflictException;
@@ -115,6 +116,8 @@ public class LayoutVisualizerManager {
 
 		objects = layoutVisualize.getObjects();
 		associations = layoutVisualize.getAssocs();
+
+		//FileVisualize.printOutput(objects, associations, "C:/Users/Andris/Desktop/vis.txt");
 	}
 	
 	private String formatStatements(Collection<Statement> statements){
