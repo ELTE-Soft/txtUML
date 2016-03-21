@@ -1,9 +1,7 @@
 package hu.elte.txtuml.export.cpp.templates;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import hu.elte.txtuml.utils.Pair;
 
 public class ActivityTemplates {
@@ -75,23 +73,14 @@ public class ActivityTemplates {
 	}
 	
 	public static String stdLibOperationCall(String operationName, String left, String right) {
-	    Operators.Init();
-	    if(Operators.operationsOnPrimitiveTypesMap.get(operationName) != null ) {
-		return "(" + left + " " + Operators.operationsOnPrimitiveTypesMap.get(operationName) + " " + right + ")";
-	    }
-	    else {
-		return "";
-	    }
+	 
+	    return "(" + left + " " + Operators.getStandardOperationName(operationName) + " " + right + ")";
 	     
 	}
 	
 	public static String stdLibOperationCall(String operationName, String operand) {
-	    if(Operators.oneOperandOperationsOnPrimitiveTypesMap.get(operationName).getSecond() == OperationSide.Right) {
-		return operand + Operators.oneOperandOperationsOnPrimitiveTypesMap.get(operationName).getFirst();
-	    }
-	    else {
-		return Operators.oneOperandOperationsOnPrimitiveTypesMap.get(operationName).getFirst() + operand;
-	    }
+		return operand + Operators.getStandardSigneleOperatorName(operationName);
+	    
 	}
 	
 	public static String simpleFunctionCall(String functionName, List<String> parameters) {
@@ -219,38 +208,74 @@ public class ActivityTemplates {
 		    return cond + " ? " + e1 + " : " + e2;
 		}
 		
-		
-		public static Map<String,String> operationsOnPrimitiveTypesMap;
-		public static Map<String, Pair<String,OperationSide> > oneOperandOperationsOnPrimitiveTypesMap;
-		public static void Init() {
-		    operationsOnPrimitiveTypesMap = new HashMap<String,String>();
-		    oneOperandOperationsOnPrimitiveTypesMap = new HashMap<String,Pair<String,OperationSide> >();
-		    operationsOnPrimitiveTypesMap.put("add", Add);
-		    operationsOnPrimitiveTypesMap.put("sub", Sub);
-		    operationsOnPrimitiveTypesMap.put("mul", Mul);
-		    operationsOnPrimitiveTypesMap.put("div", Div);
-		    operationsOnPrimitiveTypesMap.put("mod", Mod);
-		    operationsOnPrimitiveTypesMap.put("eq", Equal);
-		    operationsOnPrimitiveTypesMap.put("neq", NotEqual);
-		    operationsOnPrimitiveTypesMap.put("lt", LessThen);
-		    operationsOnPrimitiveTypesMap.put("gt", GreatThen);
-		    operationsOnPrimitiveTypesMap.put("leq", LessOrEqThen);
-		    operationsOnPrimitiveTypesMap.put("geq", GreatOrEqThen);
+		public static String getStandardOperationName(String operation) {
+		    String name = "";
+		    switch(operation) {
+		    case "add" :
+			name = Add;
+			break;
+		    case "concat" :
+			name = Add;
+		    case "sub" :
+			name = Sub;
+			break;
+		    case "mul" :
+			name = Mul;
+			break;
+		    case "div" :
+			name = Div;
+			break;
+		    case "mod" :
+			name = Mod;
+			break;
+		    case "eq" :
+			name = Equal;
+			break;
+		    case "neq" :
+			name = NotEqual;
+			break;
+		    case "lt" :
+			name = LessThen;
+			break;
+		    case "gt" :
+			name = GreatThen;
+			break;
+		    case "leq" :
+			name = LessOrEqThen;
+			break;
+		    case "qeq" :
+			name = GreatOrEqThen;
+			break;
+		    case "and" :
+			name = And;
+			break;
+		    case "or" :
+			name = Or;
+			break;
+		    }
 		    
-		    oneOperandOperationsOnPrimitiveTypesMap.put("inc", 
-			    new Pair<String, OperationSide> (Increment, OperationSide.Left));
-		    oneOperandOperationsOnPrimitiveTypesMap.put("dec", 
-			    new Pair<String, OperationSide> (Decrement, OperationSide.Left));
-		    
-		    operationsOnPrimitiveTypesMap.put("and", And);
-		    operationsOnPrimitiveTypesMap.put("or", Or);
-		    oneOperandOperationsOnPrimitiveTypesMap.put("not", new Pair<String, OperationSide> (Not, OperationSide.Left));
-		    
-		    operationsOnPrimitiveTypesMap.put("concat", Add);
-		    
-		    oneOperandOperationsOnPrimitiveTypesMap.put("id", new Pair<String, OperationSide> ("", OperationSide.Right));
-		      
+		    return name;
 		}
+		
+		public static String getStandardSigneleOperatorName(String operation) {
+		    String name = "";
+		    switch(operation) {
+		    	case "inc" :
+		    	    name = Increment;
+		    	    break;
+		    	case "dec" :
+		    	    name = Decrement;
+		    	    break;
+		    	case "not" :
+		    	    name = Not;
+		    	    break;
+		    	default :
+		    	    name = "";
+		    }
+		    
+		    return name;
+		}
+		
 		public static boolean isStdLibFunction(String name) {
 		    if(name.equals("delayedInc") || name.equals("delayedDec") ) {
 			return true;

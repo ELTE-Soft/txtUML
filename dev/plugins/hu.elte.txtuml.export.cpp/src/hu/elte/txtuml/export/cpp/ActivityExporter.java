@@ -56,7 +56,6 @@ public class ActivityExporter {
 	private Map<OutputPin, String> tempVariables;
 
 	public ActivityExporter() {
-		ActivityTemplates.Operators.Init();
 		reinitilaize();
 
 	}
