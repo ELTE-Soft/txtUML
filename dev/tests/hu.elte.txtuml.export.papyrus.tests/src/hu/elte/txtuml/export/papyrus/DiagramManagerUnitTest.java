@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.unittests;
+package hu.elte.txtuml.export.papyrus;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -28,7 +28,7 @@ import org.mockito.Mockito;
 
 import hu.elte.txtuml.export.papyrus.DiagramManager;
 
-public class DiagManagerTest {
+public class DiagramManagerUnitTest {
 	private DiagramManager diagramManager;
 	private ModelSet ms;
 	private DiagramEditor editorPart;
