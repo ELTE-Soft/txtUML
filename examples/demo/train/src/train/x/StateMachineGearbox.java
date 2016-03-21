@@ -1,4 +1,4 @@
-package train.j;
+package train.x;
 
 import hu.elte.txtuml.api.layout.Below;
 import hu.elte.txtuml.api.layout.Row;
@@ -9,7 +9,7 @@ import train.x.model.Gearbox.Forwards;
 import train.x.model.Gearbox.Init;
 import train.x.model.Gearbox.Neutral;
 
-class GearboxSM extends StateMachineDiagram<Gearbox> {
+class XGearboxSM extends StateMachineDiagram<Gearbox> {
 	
 	@Row({Init.class, Neutral.class})
     @Row({Forwards.class, Backwards.class})
