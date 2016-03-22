@@ -1,33 +1,68 @@
 package hu.elte.txtuml.export.uml2.restructured.activity
 
+import hu.elte.txtuml.export.uml2.restructured.Exporter
 import org.eclipse.jdt.core.dom.IfStatement
 import org.eclipse.uml2.uml.ConditionalNode
-import org.eclipse.uml2.uml.Element
+import org.eclipse.uml2.uml.Operation
+import org.eclipse.uml2.uml.ParameterDirectionKind
+import org.eclipse.uml2.uml.ReadVariableAction
+import org.eclipse.uml2.uml.SequenceNode
+import org.eclipse.uml2.uml.Type
+import org.eclipse.uml2.uml.UMLPackage
+import org.eclipse.uml2.uml.Variable
 
-class IfExporter extends ControlExporter<IfStatement, ConditionalNode> {
+class IfExporter extends ControlExporter<IfStatement, SequenceNode> {
 
-	override create(IfStatement access) { factory.createConditionalNode }
+	static val LOGICAL_NOT = "not"
+	
+	new(Exporter<?, ?, ?> parent) {
+		super(parent)
+	}
+
+	override create(IfStatement access) { factory.createSequenceNode }
 
 	override exportContents(IfStatement source) {
-		val variable = factory.createVariable
-		variable.name = "#if_cond"
-		variable.type = booleanType
-		parent.store(variable)
-		val thenClause = factory.createClause
-		result.clauses.add(thenClause)
+
+		val condVar = result.createVariable("#if_cond", booleanType)
 		val testExpr = exportExpression(source.expression)
-		result.setName("if_" + testExpr.name)
-		thenClause.tests.add(testExpr)
-		parent.store(variable.writeVariable(testExpr))
+		result.nodes.add(testExpr)
+		result.nodes.add(writeVariable(condVar, testExpr))
+
+		val condNode = result.createNode("if_" + testExpr.name, UMLPackage.Literals.CONDITIONAL_NODE) as ConditionalNode
+		val thenClause = condNode.createClause
+		val readVar = condVar.read
+		thenClause.tests.add(readVar)
+		thenClause.decider = condVar.read.store.result
 
 		thenClause.bodies.add(exportStatement(source.thenStatement))
 		if (source.elseStatement != null) {
-			val elseClause = factory.createClause
+			val elseClause = condNode.createClause
 			elseClause.bodies.add(exportStatement(source.elseStatement))
-			result.clauses.add(elseClause)
+			elseClause.tests.add(readVar)
+			elseClause.decider = LOGICAL_NOT.eval(condVar.read).store.result
 		}
 	}
 
-	override tryStore(Element contained) { false }
+	def eval(String opName, ReadVariableAction... action) {
+		eval(getImportedElement(opName) as Operation, action)
+	}
+
+	def eval(Operation op, ReadVariableAction... action) {
+		val act = factory.createCallOperationAction
+		act.operation = op
+		act.arguments.addAll(action.map[it.result])
+		return act
+	}
+	
+	def Type getReturnType(Operation operation) {
+		operation.ownedParameters.findFirst[direction == ParameterDirectionKind.RETURN_LITERAL].type
+	}
+
+	def read(Variable variable) {
+		val readVar = factory.createReadVariableAction
+		readVar.variable = variable
+		readVar.createResult("read_" + variable.name, variable.type)
+		return readVar
+	}
 
 }

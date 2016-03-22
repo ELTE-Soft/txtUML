@@ -2,12 +2,10 @@ package hu.elte.txtuml.export.uml2.restructured.structural
 
 import hu.elte.txtuml.export.uml2.restructured.Exporter
 import org.eclipse.jdt.core.dom.IMethodBinding
-import org.eclipse.uml2.uml.Element
-import org.eclipse.uml2.uml.Operation
-import org.eclipse.uml2.uml.Parameter
-import org.eclipse.uml2.uml.ParameterDirectionKind
 import org.eclipse.jdt.core.dom.MethodDeclaration
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration
+import org.eclipse.uml2.uml.Operation
+import org.eclipse.uml2.uml.ParameterDirectionKind
 
 class OperationExporter extends Exporter<MethodDeclaration, IMethodBinding, Operation> {
 
@@ -28,15 +26,9 @@ class OperationExporter extends Exporter<MethodDeclaration, IMethodBinding, Oper
 			retParam.direction = ParameterDirectionKind.RETURN_LITERAL
 			result.ownedParameters.add(retParam)
 		}
-		decl.parameters.forEach[exportParameter((it as SingleVariableDeclaration).resolveBinding)]
-	}
-
-	override tryStore(Element contained) {
-		switch contained {
-			Parameter: result.ownedParameters.add(contained)
-			default: return false
-		}
-		return true
+		result.ownedParameters.addAll(decl.parameters.map [
+			exportParameter((it as SingleVariableDeclaration).resolveBinding)
+		])
 	}
 
 }

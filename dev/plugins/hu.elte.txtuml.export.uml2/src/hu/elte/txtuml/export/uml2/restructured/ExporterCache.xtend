@@ -8,11 +8,12 @@ import org.eclipse.jdt.core.dom.IVariableBinding
 import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.UMLFactory
 import org.eclipse.jdt.core.IPackageFragment
+import org.eclipse.jdt.core.dom.ASTNode
 
 class ExporterCache {
 
 	val Map<Pair<Class<?>, Object>, Element> cache = new HashMap
-	val Map<Pair<Class<?>, String>, Element> fetchMap = new HashMap
+	val Map<Pair<Class<?>, Object>, Element> fetchMap = new HashMap
 
 	protected val factory = UMLFactory.eINSTANCE
 
@@ -26,7 +27,6 @@ class ExporterCache {
 		if (fetched != null) {
 			exporter.alreadyExists(fetched)
 			exporter.exportContents(source)
-			exporter.store()
 			return fetched
 		}
 		val justExported = exporter.createResult(access)
@@ -34,7 +34,6 @@ class ExporterCache {
 			cache.put(new Pair(exporter.class,source), justExported)
 			fetchMap.put(accessKey, justExported)
 			exporter.exportContents(source)
-			exporter.store()
 		}
 		return justExported
 	}
@@ -51,35 +50,37 @@ class ExporterCache {
 	}
 	
 	def generateAccessKey(Class<?> exporterClass, Object key) {
-		new Pair(exporterClass, generateAccessKeyString(key))
+		new Pair(exporterClass, generateSourceAccessKey(key))
 	}
 	
-	def dispatch String generateAccessKeyString(IVariableBinding access) {
+	def dispatch Object generateSourceAccessKey(IVariableBinding access) {
 		val method = access.declaringMethod
 		if (method != null) {
-			generateAccessKeyString(method) + access.name
+			generateSourceAccessKey(method) + access.name
 		} else {
 			val cls = access.declaringClass
-			generateAccessKeyString(cls) + access.name
+			generateSourceAccessKey(cls) + access.name
 		}
 	}
 	
-	def dispatch String generateAccessKeyString(IMethodBinding access) {
+	def dispatch Object generateSourceAccessKey(IMethodBinding access) {
 		val cls = access.declaringClass
 		if (cls != null) {
-			generateAccessKeyString(cls) + access.name
+			generateSourceAccessKey(cls) + access.name
 		}
 	}
 	
-	def dispatch String generateAccessKeyString(ITypeBinding access) {
+	def dispatch Object generateSourceAccessKey(ITypeBinding access) {
 		access.qualifiedName
 	}
 	
-	def dispatch String generateAccessKeyString(IPackageFragment pack) {
+	def dispatch Object generateSourceAccessKey(IPackageFragment pack) {
 		pack.elementName
 	}
 	
-	def dispatch String generateAccessKeyString(Object obj) {
+	def dispatch Object generateSourceAccessKey(ASTNode node) { node }
+	
+	def dispatch Object generateSourceAccessKey(Object obj) {
 		throw new IllegalArgumentException(obj.toString)
 	}
 
