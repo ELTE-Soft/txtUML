@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.cpp.templates;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import hu.elte.txtuml.utils.Pair;
@@ -79,7 +80,7 @@ public class ActivityTemplates {
 	}
 	
 	public static String stdLibOperationCall(String operationName, String operand) {
-		return operand + Operators.getStandardSigneleOperatorName(operationName);
+		return Operators.getStandardSigneleOperatorName(operationName) + operand;
 	    
 	}
 	
@@ -142,10 +143,15 @@ public class ActivityTemplates {
 		return GenerationNames.RealEventName + "." + paramName;
 	}
 
-	public static String createObject(String typenName, String objName) {
+	public static String createObject(String typenName, String objName, List<String> parameters) {
 		
 		return GenerationNames.pointerType(typenName) + " " + objName + "= " + GenerationNames.MemoryAllocator
-			+ " " + typenName + "();\n";
+			+ " " + typenName + "(" + operationCallParamList(parameters) + ");\n";
+	}
+	
+	public static String createObject(String typenName, String objName) {
+		
+		return createObject(typenName, objName, new ArrayList<String>());
 	}
 	
 	public static String returnTemplates(String variable) {
@@ -175,6 +181,10 @@ public class ActivityTemplates {
 	
 	public static String addVariableTemplate(String type,String left, String right) {
 	    return PrivateFunctionalTemplates.cppType(type) + " " + left + " = " + right + ";\n";
+	}
+	
+	public static String signalType(String type) {
+		return type + GenerationNames.EventClassTypeId;
 	}
 
 	public static class Operators {

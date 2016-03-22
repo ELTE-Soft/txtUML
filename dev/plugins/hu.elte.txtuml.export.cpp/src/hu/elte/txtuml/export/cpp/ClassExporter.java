@@ -250,7 +250,6 @@ public class ClassExporter {
 			} else {
 				source.append(GenerationTemplates.constructorDef(class_.getName(), getBaseClass(class_), "",
 						getOperationParams(operation), null,ownStates(class_, smList)));
-				// TODO generate constructors
 			}
 		}
 		return source;
