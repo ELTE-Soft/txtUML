@@ -436,7 +436,7 @@ public class ClassExporter {
 
 		if (!isHeader) {
 			source.append(GenerationTemplates.cppInclude(GenerationTemplates.DeploymentHeader));
-			source.append(GenerationTemplates.cppInclude(GenerationTemplates.StandardFunctionsHeader));
+			source.append(GenerationTemplates.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.StandardFunctionsHeader));
 			source.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
 		}
 

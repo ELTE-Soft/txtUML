@@ -44,6 +44,11 @@ public class ActivityTemplates {
 	
 		return source;
 	}
+	
+	public static String signalSend(String target, String signalName) {
+		return target + GenerationNames.PointerAccess + GenerationNames.SendSignal + "("  + GenerationNames.SmartPtr +
+				"(" +  signalName + "));\n";
+	}
 
 	public static String transitionActionCall(String operationName) {
 		List<String> params = new LinkedList<String>();

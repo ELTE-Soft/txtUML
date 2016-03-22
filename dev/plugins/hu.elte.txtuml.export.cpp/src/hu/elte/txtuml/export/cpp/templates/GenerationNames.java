@@ -79,6 +79,7 @@ class GenerationNames {
 	//
 	public static final String PoolIdSetter = "setPoolId";
 	public static final String InitialEventName = "InitSignal";
+	public static final String SendSignal = "send";
 	
 
 	public static String friendClassDecl(String className) {

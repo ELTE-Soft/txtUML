@@ -35,6 +35,7 @@ import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.ParameterDirectionKind;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.ReadVariableAction;
+import org.eclipse.uml2.uml.SendObjectAction;
 import org.eclipse.uml2.uml.SequenceNode;
 import org.eclipse.uml2.uml.StartClassifierBehaviorAction;
 import org.eclipse.uml2.uml.Type;
@@ -186,9 +187,9 @@ public class ActivityExporter {
 			source.append(createObjectActionCode(cAction));
 		} else if (node_.eClass().equals(UMLPackage.Literals.SEND_SIGNAL_ACTION)) {
 			source.append(createSendSignalActionCode((org.eclipse.uml2.uml.SendSignalAction) node_).toString());
-		} else if (node_.eClass().equals(UMLPackage.Literals.SEND_OBJECT_ACTION)) {
-
-		} else if (node_.eClass().equals(UMLPackage.Literals.START_CLASSIFIER_BEHAVIOR_ACTION)) {
+		} /*else if (node_.eClass().equals(UMLPackage.Literals.SEND_OBJECT_ACTION)) {
+			source.append(createSendSignalActionCode((SendObjectAction) node_));
+		}*/ else if (node_.eClass().equals(UMLPackage.Literals.START_CLASSIFIER_BEHAVIOR_ACTION)) {
 			source.append(createStartObjectActionCode((StartClassifierBehaviorAction) node_));
 		} else if (node_.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
 			
@@ -216,16 +217,18 @@ public class ActivityExporter {
 		return source;
 	}
 
+
+
 	private String createStartObjectActionCode(StartClassifierBehaviorAction node_) {
 		return getTargetFromInputPin(node_.getObject());
 	}
 
 	private String createObjectActionCode(CreateObjectAction node_) {
 		String type = node_.getClassifier().getName();
+		CallOperationAction ctrCallAction = null;
 		if (node_.getClassifier().eClass().equals(UMLPackage.Literals.SIGNAL)){
 			type = ActivityTemplates.signalType(type);
 		}
-		CallOperationAction ctrCallAction = null;
 		
 		for( ActivityEdge out : node_.getOutputs().get(0).getOutgoings()) {
 			if (out.getTarget().getOwner().eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
@@ -233,9 +236,8 @@ public class ActivityExporter {
 				
 			}
 		}
-		
-		String name = "tmp" + tempVariableCounter;// #Create#Object_#of_type_GlobalNumberOfObjectCreation
 		importOutputPinToMap(node_.getOutputs().get(0));
+		String name = tempVariables.get(node_.getOutputs().get(0));
 		_objectMap.put(node_, name);
 		
 		if(ctrCallAction != null) {
@@ -406,6 +408,16 @@ public class ActivityExporter {
 				getTargetFromInputPin(node_.getTarget(), false), getTypeFromInputPin(node_.getTarget()),
 				ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node_.getTarget())),
 				getParamNames(node_.getArguments()));
+	}
+	
+	private String createSendSignalActionCode(SendObjectAction sendObjectAction) {
+		
+		String target = getTargetFromInputPin(sendObjectAction.getTarget());
+		String singal = getTargetFromInputPin(sendObjectAction.getRequest());
+		
+		return ActivityTemplates.signalSend(target, singal);
+		
+		
 	}
 
 	private String getTypeFromInputPin(InputPin inputPin_) {
