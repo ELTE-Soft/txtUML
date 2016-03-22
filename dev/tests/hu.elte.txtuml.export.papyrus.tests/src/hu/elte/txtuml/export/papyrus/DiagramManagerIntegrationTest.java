@@ -47,7 +47,7 @@ import hu.elte.txtuml.export.papyrus.UMLModelManager;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 /**
- * Unit test for {@link DiagramManager}
+ * Integration test for {@link DiagramManager}
  * 
  * <p>
  * <b>Attention:</b>

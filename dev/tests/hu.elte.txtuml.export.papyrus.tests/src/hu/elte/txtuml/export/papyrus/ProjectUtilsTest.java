@@ -14,7 +14,7 @@ import org.junit.Test;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 /**
- * Unit test for {@link ProjectUtils}
+ * Integration test for {@link ProjectUtils}
  * 
  * <p>
  * <b>Attention:</b>

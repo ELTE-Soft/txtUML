@@ -28,7 +28,7 @@ import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 /**
- * Unit test for {@link PapyrusModelCreator}
+ * Integration test for {@link PapyrusModelCreator}
  * 
  * <p>
  * <b>Attention:</b>
