@@ -563,7 +563,6 @@ public class ClassExporter {
 	}
 
 	private boolean isConstructor(Class cls, Operation operation) {
-
 		if (cls.getName().equals(operation.getName())) {
 			return true;
 		} else {

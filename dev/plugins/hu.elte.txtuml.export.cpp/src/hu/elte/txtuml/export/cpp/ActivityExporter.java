@@ -22,6 +22,7 @@ import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Clause;
 import org.eclipse.uml2.uml.ConditionalNode;
 import org.eclipse.uml2.uml.CreateObjectAction;
+import org.eclipse.uml2.uml.DestroyObjectAction;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutableNode;
 import org.eclipse.uml2.uml.InputPin;
@@ -86,7 +87,7 @@ public class ActivityExporter {
 	}
 
 	private String createActivityVariables(Activity activity_) {
-		String source = "";
+		StringBuilder source = new StringBuilder("");
 		List<Variable> variables = new LinkedList<Variable>();
 		Shared.getTypedElements(variables, activity_.allOwnedElements(), UMLPackage.Literals.VARIABLE);
 		for (Variable variable : variables) {
@@ -99,9 +100,9 @@ public class ActivityExporter {
 				}
 				
 			}
-			source += GenerationTemplates.variableDecl(type, variable.getName());
+			source.append(GenerationTemplates.variableDecl(type, variable.getName()));
 		}
-		return source;
+		return source.toString();
 	}
 
 	private String createReturnParamaterCode() {
@@ -187,9 +188,9 @@ public class ActivityExporter {
 			source.append(createObjectActionCode(cAction));
 		} else if (node_.eClass().equals(UMLPackage.Literals.SEND_SIGNAL_ACTION)) {
 			source.append(createSendSignalActionCode((org.eclipse.uml2.uml.SendSignalAction) node_).toString());
-		} /*else if (node_.eClass().equals(UMLPackage.Literals.SEND_OBJECT_ACTION)) {
+		} else if (node_.eClass().equals(UMLPackage.Literals.SEND_OBJECT_ACTION)) {
 			source.append(createSendSignalActionCode((SendObjectAction) node_));
-		}*/ else if (node_.eClass().equals(UMLPackage.Literals.START_CLASSIFIER_BEHAVIOR_ACTION)) {
+		} else if (node_.eClass().equals(UMLPackage.Literals.START_CLASSIFIER_BEHAVIOR_ACTION)) {
 			source.append(createStartObjectActionCode((StartClassifierBehaviorAction) node_));
 		} else if (node_.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
 			
@@ -214,13 +215,20 @@ public class ActivityExporter {
 		else if (node_.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION)) {
 
 		}
+		else if (node_.eClass().equals(UMLPackage.Literals.DESTROY_OBJECT_ACTION)) {
+			source.append(createDestroyObjectActionCode((DestroyObjectAction) node_));
+		}
 		return source;
 	}
 
 
 
+	private String createDestroyObjectActionCode(DestroyObjectAction node_) {
+		return ActivityTemplates.deleteObject(getTargetFromInputPin(node_.getTarget()));
+	}
+
 	private String createStartObjectActionCode(StartClassifierBehaviorAction node_) {
-		return getTargetFromInputPin(node_.getObject());
+		return ActivityTemplates.startObject(getTargetFromInputPin(node_.getObject()));
 	}
 
 	private String createObjectActionCode(CreateObjectAction node_) {
@@ -411,6 +419,9 @@ public class ActivityExporter {
 	}
 	
 	private String createSendSignalActionCode(SendObjectAction sendObjectAction) {
+		
+		System.out.println(sendObjectAction.getTarget());
+		System.out.println(sendObjectAction.getRequest());
 		
 		String target = getTargetFromInputPin(sendObjectAction.getTarget());
 		String singal = getTargetFromInputPin(sendObjectAction.getRequest());

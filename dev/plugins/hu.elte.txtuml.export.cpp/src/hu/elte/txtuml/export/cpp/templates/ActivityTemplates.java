@@ -115,6 +115,10 @@ public class ActivityTemplates {
 	public static String startObject(String objectVariable) {
 		return objectVariable + GenerationNames.PointerAccess + GenerationNames.StartSmMethodName + "();\n";
 	}
+	
+	public static String deleteObject(String objectVariable) {
+		return GenerationNames.DeleteObject + " " + objectVariable + ";\n";
+	}
 
 	public static String simpleCondControlStruct(String control, String cond, String body) {
 		return control + "(" + cond + ")\n{\n" + body + "}\n";
