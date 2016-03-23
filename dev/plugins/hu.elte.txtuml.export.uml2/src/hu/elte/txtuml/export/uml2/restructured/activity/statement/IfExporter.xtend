@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.uml2.restructured.activity
+package hu.elte.txtuml.export.uml2.restructured.activity.statement
 
 import hu.elte.txtuml.export.uml2.restructured.Exporter
 import org.eclipse.jdt.core.dom.IfStatement
@@ -25,20 +25,20 @@ class IfExporter extends ControlExporter<IfStatement, SequenceNode> {
 
 		val condVar = result.createVariable("#if_cond", booleanType)
 		val testExpr = exportExpression(source.expression)
-		result.nodes.add(testExpr)
-		result.nodes.add(writeVariable(condVar, testExpr))
+		result.nodes += testExpr
+		result.nodes += writeVariable(condVar, testExpr)
 
 		val condNode = result.createNode("if_" + testExpr.name, UMLPackage.Literals.CONDITIONAL_NODE) as ConditionalNode
 		val thenClause = condNode.createClause
 		val readVar = condVar.read
-		thenClause.tests.add(readVar)
+		thenClause.tests += readVar
 		thenClause.decider = condVar.read.store.result
 
-		thenClause.bodies.add(exportStatement(source.thenStatement))
+		thenClause.bodies += exportStatement(source.thenStatement)
 		if (source.elseStatement != null) {
 			val elseClause = condNode.createClause
-			elseClause.bodies.add(exportStatement(source.elseStatement))
-			elseClause.tests.add(readVar)
+			elseClause.bodies += exportStatement(source.elseStatement)
+			elseClause.tests += readVar
 			elseClause.decider = LOGICAL_NOT.eval(condVar.read).store.result
 		}
 	}
@@ -50,7 +50,7 @@ class IfExporter extends ControlExporter<IfStatement, SequenceNode> {
 	def eval(Operation op, ReadVariableAction... action) {
 		val act = factory.createCallOperationAction
 		act.operation = op
-		act.arguments.addAll(action.map[it.result])
+		act.arguments += action.map[it.result]
 		return act
 	}
 	

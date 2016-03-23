@@ -18,6 +18,7 @@ class SignalEventExporter extends Exporter<TypeDeclaration, ITypeBinding, Signal
 	}
 
 	override exportContents(TypeDeclaration source) {
+		result.name = source.name.identifier
 		result.signal = fetchElement(source.resolveBinding, new SignalExporter(this)) as Signal
 	}
 

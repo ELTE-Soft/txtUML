@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.uml2.restructured.activity
+package hu.elte.txtuml.export.uml2.restructured.activity.expression
 
 import hu.elte.txtuml.export.uml2.restructured.activity.ActionExporter
 import org.eclipse.jdt.core.dom.StringLiteral

@@ -39,7 +39,7 @@ abstract class AbstractPackageExporter<T extends Package> extends Exporter<IPack
 			case ElementTypeTeller.isModelClass(decl): #{exportClass(decl)}
 			case ElementTypeTeller.isAssociation(decl): #{exportAssociation(decl)}
 			case ElementTypeTeller.isSignal(decl): #{exportSignal(decl), exportSignalEvent(decl)}
-			default: throw new IllegalArgumentException(decl.toString)
+			default: throw new IllegalArgumentException("Illegal type declaration: " + decl.toString)
 		}
 	}
 

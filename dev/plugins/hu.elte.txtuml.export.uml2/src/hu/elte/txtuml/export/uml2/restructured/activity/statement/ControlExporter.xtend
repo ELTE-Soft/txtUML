@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.uml2.restructured.activity
+package hu.elte.txtuml.export.uml2.restructured.activity.statement
 
 import hu.elte.txtuml.export.uml2.restructured.Exporter
 import org.eclipse.uml2.uml.Action
@@ -11,7 +11,7 @@ import org.eclipse.uml2.uml.UMLPackage
 import org.eclipse.uml2.uml.Variable
 import org.eclipse.uml2.uml.WriteVariableAction
 
-abstract class ControlExporter<S, R extends StructuredActivityNode> extends ActionExporter<S, R> {
+abstract class ControlExporter<S, R extends StructuredActivityNode> extends hu.elte.txtuml.export.uml2.restructured.activity.ActionExporter<S, R> {
 
 	new(Exporter<?, ?, ?> parent) {
 		super(parent)

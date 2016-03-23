@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.uml2.restructured.activity
+package hu.elte.txtuml.export.uml2.restructured.activity.statement
 
 import hu.elte.txtuml.export.uml2.restructured.Exporter
 import hu.elte.txtuml.export.uml2.restructured.activity.ActionExporter

@@ -17,6 +17,7 @@ class SignalExporter extends Exporter<TypeDeclaration, ITypeBinding, Signal> {
 	}
 	
 	override exportContents(TypeDeclaration source) {
+		result.name = source.name.identifier
 		result.ownedAttributes += source.resolveBinding.declaredFields.map[exportField]
 	}
 	

@@ -3,14 +3,13 @@ package hu.elte.txtuml.export.uml2.restructured
 import hu.elte.txtuml.api.model.Collection
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.export.uml2.restructured.activity.ActivityExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.BlockExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.CallExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.ExpressionStatementExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.MethodActivityExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.StringLiteralExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.VariableDeclarationExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.AssocNavigationExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.IgnoredAPICallExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.CallExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.StringLiteralExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.statement.BlockExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.statement.ExpressionStatementExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.statement.VariableDeclarationExporter
 import hu.elte.txtuml.export.uml2.restructured.statemachine.InitStateExporter
 import hu.elte.txtuml.export.uml2.restructured.statemachine.StateExporter
 import hu.elte.txtuml.export.uml2.restructured.statemachine.TransitionExporter
@@ -18,9 +17,12 @@ import hu.elte.txtuml.export.uml2.restructured.structural.AssociationEndExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.AssociationExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.ClassExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.FieldExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.MethodActivityExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.OperationExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.PackageExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.ParameterExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.SignalEventExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.SignalExporter
 import java.util.List
 import org.eclipse.jdt.core.IPackageFragment
 import org.eclipse.jdt.core.dom.Block
@@ -37,12 +39,11 @@ import org.eclipse.jdt.core.dom.StringLiteral
 import org.eclipse.jdt.core.dom.TypeDeclaration
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement
 import org.eclipse.uml2.uml.Action
+import org.eclipse.uml2.uml.Activity
 import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.ExecutableNode
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
-import hu.elte.txtuml.export.uml2.restructured.structural.SignalExporter
-import hu.elte.txtuml.export.uml2.restructured.structural.SignalEventExporter
 
 abstract class Exporter<S, A, R extends Element> {
 
@@ -81,16 +82,16 @@ abstract class Exporter<S, A, R extends Element> {
 		}
 		val exporters = getExporters(access);
 		for (exporter : exporters) {
-			fetchElement(access, exporter as Exporter<?, CA, CR>)
+			val res = fetchElement(access, exporter as Exporter<?, CA, CR>)
+			if (res != null) {
+				return res
+			}
 		}
 		throw new IllegalArgumentException(access.toString)
 	}
 
 	def <CA, CR extends Element> fetchElement(CA access, Exporter<?, CA, CR> exporter) {
-		val res = cache.fetch(exporter, access)
-		if (res != null) {
-			return res
-		}
+		cache.fetch(exporter, access)
 	}
 
 	def fetchType(ITypeBinding typ) { fetchElement(typ) as Type }
@@ -162,9 +163,9 @@ abstract class Exporter<S, A, R extends Element> {
 	def exportPackage(IPackageFragment pf) { cache.export(new PackageExporter(this), pf, pf) }
 
 	def exportClass(TypeDeclaration td) { cache.export(new ClassExporter(this), td, td.resolveBinding) }
-	
+
 	def exportSignal(TypeDeclaration td) { cache.export(new SignalExporter(this), td, td.resolveBinding) }
-	
+
 	def exportSignalEvent(TypeDeclaration td) { cache.export(new SignalEventExporter(this), td, td.resolveBinding) }
 
 	def exportAssociation(TypeDeclaration td) { cache.export(new AssociationExporter(this), td, td.resolveBinding) }
@@ -179,7 +180,11 @@ abstract class Exporter<S, A, R extends Element> {
 
 	def exportActivity(MethodDeclaration md) { cache.export(new MethodActivityExporter(this), md, md.resolveBinding) }
 
-	def exportActivity(Block blk) { cache.export(new ActivityExporter(this), blk, blk) }
+	def exportActivity(Block blk, Activity act) {
+		val exporter = new ActivityExporter(this)
+		exporter.alreadyExists(act)
+		exporter.exportContents(blk)
+	}
 
 	def exportBlock(Block blk) { cache.export(new BlockExporter(this), blk, blk) }
 

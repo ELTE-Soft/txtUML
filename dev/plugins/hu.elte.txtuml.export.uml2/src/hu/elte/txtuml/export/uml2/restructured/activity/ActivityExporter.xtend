@@ -17,18 +17,22 @@ class ActivityExporter extends ActionExporter<Block, Activity> {
 	override create(Block access) { factory.createActivity }
 
 	override exportContents(Block block) {
-		val init = result.createOwnedNode("_init", UMLPackage.Literals.INITIAL_NODE)
-		val final = result.createOwnedNode("_final", UMLPackage.Literals.ACTIVITY_FINAL_NODE)
-		val exportedBlock = exportBlock(block)
-		result.nodes.add(exportedBlock)
-		init.controlFlow(exportedBlock)
-		exportedBlock.controlFlow(final)
+		val init = result.createOwnedNode("#init", UMLPackage.Literals.INITIAL_NODE)
+		val body = block.statements.map[exportStatement]
+		result.ownedNodes += body
+		val final = result.createOwnedNode("#final", UMLPackage.Literals.ACTIVITY_FINAL_NODE)
+		if (body.isEmpty) {
+			init.controlFlow(final)
+		} else {
+			init.controlFlow(body.get(0))
+			body.last.controlFlow(final)
+		}
 	}
 
 	override storeEdge(ActivityEdge edge) { result.edges += edge }
 
 	override storeNode(ActivityNode node) { result.nodes += node }
-	
+
 	override storeVariable(Variable variable) { result.variables += variable }
 
 }

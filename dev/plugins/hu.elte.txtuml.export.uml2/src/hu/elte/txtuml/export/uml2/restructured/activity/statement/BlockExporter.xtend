@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.uml2.restructured.activity
+package hu.elte.txtuml.export.uml2.restructured.activity.statement
 
 import hu.elte.txtuml.export.uml2.restructured.Exporter
 import org.eclipse.jdt.core.dom.Block
@@ -13,6 +13,6 @@ class BlockExporter extends ControlExporter<Block, SequenceNode> {
 	override create(Block access) { factory.createSequenceNode }
 
 	override exportContents(Block source) {
-		result.executableNodes.addAll(source.statements.map[exportStatement])
+		result.executableNodes += source.statements.map[exportStatement]
 	}
 }

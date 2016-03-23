@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.uml2.restructured.activity
+package hu.elte.txtuml.export.uml2.restructured.structural
 
 import hu.elte.txtuml.export.uml2.restructured.Exporter
 import org.eclipse.jdt.core.dom.IMethodBinding
@@ -24,7 +24,7 @@ class MethodActivityExporter extends Exporter<MethodDeclaration, IMethodBinding,
 		result.ownedParameters.addAll(decl.parameters.map [
 			exportParameter((it as SingleVariableDeclaration).resolveBinding)
 		])
-		exportActivity(decl.body)
+		exportActivity(decl.body, result)
 	}
 	
 	def handleReturnParameter(IMethodBinding binding) {

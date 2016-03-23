@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.uml2.restructured.activity
+package hu.elte.txtuml.export.uml2.restructured.activity.expression
 
 import hu.elte.txtuml.export.uml2.restructured.Exporter
 import java.util.concurrent.atomic.AtomicInteger
@@ -7,7 +7,7 @@ import org.eclipse.jdt.core.dom.MethodInvocation
 import org.eclipse.jdt.core.dom.Modifier
 import org.eclipse.uml2.uml.CallOperationAction
 
-class CallExporter extends ActionExporter<MethodInvocation, CallOperationAction> {
+class CallExporter extends hu.elte.txtuml.export.uml2.restructured.activity.ActionExporter<MethodInvocation, CallOperationAction> {
 
 	new(Exporter<?, ?, ?> parent) {
 		super(parent)
