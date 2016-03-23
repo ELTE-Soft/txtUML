@@ -228,27 +228,28 @@ public class ClassExporter {
 		} else {
 			source.append(GenerationTemplates.destructorDef(class_.getName(), false));
 		}
-
+		
 		for (Operation operation : class_.getOwnedOperations()) {
-		    	activityExporter.reinitilaize();
+		    activityExporter.reinitilaize();
+		    String funcBody = "";
+		    for (Behavior behavior : operation.getMethods()) {
+			      
+				  if(behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
+				      funcBody=activityExporter.createfunctionBody((Activity)behavior).toString(); 
+				  } else { 
+				      //TODO exception, unknown for me, need the model
+				  }
+			 }	
 			if (!isConstructor(class_, operation)) {
 
 				String returnType = getReturnType(operation.getReturnResult());
-				String funcBody="";
-				  for (Behavior behavior : operation.getMethods()) {
-				      
-					  if(behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
-					      funcBody=activityExporter.createfunctionBody((Activity)behavior).toString(); 
-					  } else { 
-					      //TODO exception, unknown for me, need the model
-					  }
-				  }	
 				
 				  source.append(GenerationTemplates.functionDef(class_.getName(),
 				  returnType, operation.getName(),getOperationParams(operation),
 				  funcBody));
 			} else {
-				source.append(GenerationTemplates.constructorDef(class_.getName(), getBaseClass(class_), "",
+					
+				source.append(GenerationTemplates.constructorDef(class_.getName(), getBaseClass(class_), funcBody,
 						getOperationParams(operation), null,ownStates(class_, smList)));
 			}
 		}
