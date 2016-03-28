@@ -116,7 +116,7 @@ public class DiagramElementsModifierTest {
 					.getCommand();
 			creationCommand.createModel(modelSet);
 			AbstractPapyrusModelManager manager = new DefaultPapyrusModelManager(
-					editor);
+					editor.getServicesRegistry());
 
 			EObject model = UmlUtils.getUmlModel().lookupRoot();
 			org.eclipse.uml2.uml.Package modelpackage = (org.eclipse.uml2.uml.Package) model;

@@ -93,7 +93,7 @@ public class DiagramManagerTest {
 				editorInput, "org.eclipse.papyrus.infra.core.papyrusEditor", true);
 	
 		editor = (IMultiDiagramEditor) ed;
-		diagramManager = new DiagramManager(editor);
+		diagramManager = new DiagramManager(editor.getServicesRegistry());
 		UmlModel umlModel = (UmlModel) editor.getServicesRegistry().getService(ModelSet.class)
 											.getModel(UmlModel.MODEL_ID);
 		modelManager = new UMLModelManager(umlModel);

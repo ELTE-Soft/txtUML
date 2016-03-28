@@ -13,6 +13,7 @@ import org.eclipse.papyrus.infra.core.sasheditor.contentprovider.IPageManager;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.infra.core.services.ServicesRegistry;
 import org.eclipse.papyrus.infra.core.utils.ServiceUtils;
+import org.eclipse.papyrus.infra.gmfdiag.common.model.NotationModel;
 import org.eclipse.papyrus.infra.gmfdiag.common.model.NotationUtils;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.uml2.uml.Element;
@@ -22,14 +23,19 @@ import org.eclipse.uml2.uml.NamedElement;
  * Controls the diagrams. 
  */
 public class DiagramManager {
-	private IMultiDiagramEditor editor;
+	private ModelSet modelSet;
 	
 	/**
 	 * The constructor
 	 * @param editor - The editor to the instance will be attached.
 	 */
-	public DiagramManager(IMultiDiagramEditor editor) {
-		this.editor = editor;
+	public DiagramManager(ServicesRegistry registry) {
+
+		try {
+			this.modelSet = registry.getService(ModelSet.class);
+		} catch (ServiceException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	/**
@@ -54,12 +60,7 @@ public class DiagramManager {
 	 * @param diagramCreationCommand - the Command that will be executed.
 	 */
 	public void createDiagram(Element container, String diagramName, ICreationCommand diagramCreationCommand){
-		try {
-			ModelSet ms = this.editor.getServicesRegistry().getService(ModelSet.class);
-			diagramCreationCommand.createDiagram(ms, container, diagramName);
-		} catch (ServiceException e) {
-			throw new RuntimeException(e);
-		}
+			diagramCreationCommand.createDiagram(this.modelSet, container, diagramName);
 	}
 	
 	
@@ -68,15 +69,11 @@ public class DiagramManager {
 	 * @return The list of the the Diagrams
 	 */
 	public List<Diagram> getDiagrams(){
-		try{
-			Resource notationResource;
-			notationResource = NotationUtils.getNotationModel(this.editor.getServicesRegistry().getService(ModelSet.class)).getResource();
+			NotationModel notationmodel = (NotationModel) this.modelSet.getModel(NotationModel.MODEL_ID);
+			Resource notationResource = notationmodel.getResource();
 			@SuppressWarnings("unchecked")
 			List<Diagram> list = (List<Diagram>)(List<?>) notationResource.getContents();
 			return list;
-		}catch(ServiceException e){
-			throw new RuntimeException(e);
-		}
 	}
 	
 	/**
@@ -93,14 +90,16 @@ public class DiagramManager {
 	 * @param diag - The diagram is to be opened
 	 */
 	public void openDiagram(Diagram diag){
-		this.editor.getActiveEditor(); //Some kind of magic, but has to be done at least once before selecting different diagrams
+		
+		//this.registry.getActiveEditor(); //Some kind of magic, but has to be done at least once before selecting different diagrams
+		/*
 		try{
-			ServicesRegistry serviceRegistry = this.editor.getServicesRegistry();
-			IPageManager pageMngr = ServiceUtils.getInstance().getIPageManager(serviceRegistry);
+			IPageManager pageMngr = ServiceUtils.getInstance().getIPageManager(this.registry);
 			pageMngr.selectPage(diag);
 		}catch(ServiceException e){
 			throw new RuntimeException(e);
 		}
+		*/
 	}
 
 	/**
@@ -108,7 +107,7 @@ public class DiagramManager {
 	 * @return Returns the DiagramEditPart or null if the editor is not an {@link IDiagramWorkbenchPart}
 	 */
 	public DiagramEditPart getActiveDiagramEditPart(){
-		IEditorPart ied = this.editor.getActiveEditor();
+		IEditorPart ied = null; //this.registry.getActiveEditor();
 		
 		if(ied instanceof IDiagramWorkbenchPart){
 			return ((IDiagramWorkbenchPart) ied).getDiagramEditPart();

@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
+import org.eclipse.papyrus.infra.core.services.ServicesRegistry;
 import org.eclipse.papyrus.uml.diagram.activity.CreateActivityDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.clazz.CreateClassDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.statemachine.CreateStateMachineDiagramCommand;
@@ -32,13 +33,8 @@ import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
  */
 public class DefaultPapyrusModelManager extends AbstractPapyrusModelManager {
 
-	/**
-	 * The Constructor
-	 * @param editor - The editor
-	 * @param model - The Uml Model
-	 */
-	public DefaultPapyrusModelManager(IMultiDiagramEditor editor) {
-		super(editor);
+	public DefaultPapyrusModelManager(ServicesRegistry registry) {
+		super(registry);
 	}
 	
 

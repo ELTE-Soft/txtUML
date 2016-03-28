@@ -70,26 +70,17 @@ public class PapyrusVisualizer implements IRunnableWithProgress {
 		monitor.beginTask("Visualization", 100);			
 		monitor.subTask("Creating new Papyrus project...");
 
+		IProject project = ProjectUtils.createProject(projectName);
+		ProjectUtils.openProject(project);
 		
-		IProgressService progressService = PlatformUI.getWorkbench()
-				.getProgressService();
-
-		progressService.runInUI(progressService, new IRunnableWithProgress() {
-			
-			@Override
-			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-
-				IProject project = ProjectUtils.createProject(projectName);
-				ProjectUtils.openProject(project);
-				monitor.worked(20);
-				try{	
-					createAndOpenPapyrusModel(new SubProgressMonitor(monitor, 80));
-				}catch(Exception e){
-					throw new RuntimeException(e);
-				}
-				SettingsRegistry.clear();
-			}
-		}, ResourcesPlugin.getWorkspace().getRoot());
+		
+		monitor.worked(20);
+		try{	
+			createAndOpenPapyrusModel(new SubProgressMonitor(monitor, 80));
+		}catch(Exception e){
+			throw new RuntimeException(e);
+		}
+		SettingsRegistry.clear();
 	}
 	
 	
@@ -107,8 +98,9 @@ public class PapyrusVisualizer implements IRunnableWithProgress {
 			
 			monitor.subTask("Generating Papyrus model...");
 			papyrusModelCreator.createPapyrusModel();
-					IMultiDiagramEditor editor = EditorOpener.openPapyrusEditor(papyrusModelCreator.getDi());
-					papyrusModelManager = SettingsRegistry.getPapyrusModelManager(editor);
+		
+			
+					papyrusModelManager = SettingsRegistry.getPapyrusModelManager(papyrusModelCreator.getServiceRegistry());
 					papyrusModelManager.setLayoutController(layoutDescriptor);
 					monitor.worked(10);
 					

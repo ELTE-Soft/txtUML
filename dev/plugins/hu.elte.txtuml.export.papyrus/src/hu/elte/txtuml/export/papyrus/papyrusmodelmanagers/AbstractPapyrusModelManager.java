@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.papyrus.papyrusmodelmanagers;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -7,8 +8,10 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
+import org.eclipse.papyrus.infra.core.resource.BadStateException;
 import org.eclipse.papyrus.infra.core.resource.ModelSet;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
+import org.eclipse.papyrus.infra.core.services.ServicesRegistry;
 import org.eclipse.papyrus.uml.tools.model.UmlModel;
 import org.eclipse.ui.IEditorPart;
 
@@ -46,10 +49,9 @@ public abstract class AbstractPapyrusModelManager {
 	 */
 	protected UMLModelManager modelManager;
 	
-	/**
-	 * The Editor in which the the visualization is performed
-	 */
-	protected IEditorPart editor;
+	protected ServicesRegistry registry;
+	
+	protected ModelSet modelSet;
 	
 	/**
 	 * The resource were the elements are stored
@@ -61,14 +63,15 @@ public abstract class AbstractPapyrusModelManager {
 	 * @param editor - The Editor to which the PapyrusModelManager will be attached
 	 * @param model - The Uml Model manager
 	 */
-	public AbstractPapyrusModelManager(IMultiDiagramEditor editor){
+	public AbstractPapyrusModelManager(ServicesRegistry registry){
 		try{
-			this.model = (UmlModel) editor.getServicesRegistry().getService(ModelSet.class)
-					.getModel(UmlModel.MODEL_ID);
+			this.registry = registry;
+			this.modelSet = registry.getService(ModelSet.class);
+			this.model = (UmlModel)this.modelSet.getModel(UmlModel.MODEL_ID);
+			this.modelSet.loadModel(UmlModel.MODEL_ID);
 			this.modelManager = new UMLModelManager(model);
-			this.diagramManager = new DiagramManager(editor);
-			this.editor = editor;
-		}catch(ServiceException e){
+			this.diagramManager = new DiagramManager(registry);
+		}catch(ServiceException | BadStateException e){
 			throw new RuntimeException(e);
 		}
 		
@@ -82,7 +85,12 @@ public abstract class AbstractPapyrusModelManager {
 		monitor.beginTask("Generating Diagrams", 100);
 		createDiagrams(new SubProgressMonitor(monitor, 20));
 		addElementsToDiagrams(new SubProgressMonitor(monitor, 80));
-		this.editor.doSave(new NullProgressMonitor());
+		try {
+			this.modelSet.save(new NullProgressMonitor());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -99,11 +107,11 @@ public abstract class AbstractPapyrusModelManager {
 			Diagram diagram = diags.get(i/2);
 			diagramManager.openDiagram(diagram);
 			monitor.subTask("Filling diagrams "+(i+2)/2+"/"+diagNum);
-			addElementsToDiagram(diagram, monitor);
+		//	addElementsToDiagram(diagram, monitor);
 			monitor.worked(1);
 			
 			try{
-				arrangeElementsOfDiagram(diagram, monitor);
+			//	arrangeElementsOfDiagram(diagram, monitor);
 			}catch(Throwable e){
 				Dialogs.errorMsgb("Arrange error",
 						"Error occured during arrangement of diagram '" +diagram.getName()+"'.", e);

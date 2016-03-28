@@ -4,10 +4,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.CommonPlugin;
@@ -15,16 +17,20 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
 import org.eclipse.emf.transaction.RecordingCommand;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.papyrus.infra.core.resource.ModelSet;
 import org.eclipse.papyrus.infra.core.sasheditor.contentprovider.IPageManager;
 import org.eclipse.papyrus.infra.core.services.ExtensionServicesRegistry;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.infra.core.services.ServicesRegistry;
 import org.eclipse.papyrus.uml.diagram.wizards.command.NewPapyrusModelCommand;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.progress.IProgressService;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Profile;
 
 import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
+import hu.elte.txtuml.utils.Logger;
 
 /**
  * Controls the creation of a Papyrus Model
@@ -140,6 +146,10 @@ public class PapyrusModelCreator {
 		return TxtUMLToUML2.loadExportedModel(umlFilePath);
 	}
 	
+	public ServicesRegistry getServiceRegistry(){
+		return this.registry;
+	}
+	
 	private void copyFile(String sourcepath, IFile newFile){
 		try{
 			File oldFile = new File(java.net.URI.create(sourcepath));
@@ -186,18 +196,37 @@ public class PapyrusModelCreator {
 	 * @param registry - The ServiceRegistry to be Initialized 
 	 */
 	private void initRegistry(ServicesRegistry registry){
-		try {
-			registry.startRegistry();
-		} catch (ServiceException ex) {
-			// Ignore this exception: some services may not have been loaded,
-			// which is probably normal at this point
-		}
-		
-		try{
-			registry.getService(IPageManager.class);
-		}catch (ServiceException e){
-			throw new RuntimeException(e);
-		}
+		IProgressService progressService = PlatformUI.getWorkbench()
+				.getProgressService();
+
+			try {
+				progressService.runInUI(progressService, new IRunnableWithProgress() {
+					
+					@Override
+					public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+						try {
+							registry.startRegistry();
+						} catch (ServiceException ex) {
+							// Ignore this exception: some services may not have been loaded,
+							// which is probably normal at this point
+						}
+						
+						//TODO: remove
+						try{
+							registry.getService(IPageManager.class);
+						}catch (ServiceException e){
+							throw new RuntimeException(e);
+						}
+					}
+				}, ResourcesPlugin.getWorkspace().getRoot());
+			} catch (InvocationTargetException e) {
+				Logger.executor.error("Service initialization failed.");
+				Logger.executor.error(e.getStackTrace().toString());
+				throw new RuntimeException(e);
+			} catch (InterruptedException e) {
+				Logger.executor.warn("Service initialization interrupted.");
+				throw new RuntimeException(e);
+			}
 	}
 
 	/**

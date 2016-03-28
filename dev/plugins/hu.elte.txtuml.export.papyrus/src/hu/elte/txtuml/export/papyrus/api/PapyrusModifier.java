@@ -32,7 +32,7 @@ public class PapyrusModifier {
 		papyrusModelCreator = new PapyrusModelCreator(projectName+"/"+modelName);
 		if(papyrusModelCreator.diExists()){
 			editor = EditorOpener.openPapyrusEditor(papyrusModelCreator.getDi());
-			diagramManager = new DiagramManager(editor);
+			diagramManager = new DiagramManager(editor.getServicesRegistry());
 		}
 	}
 	
