@@ -3,6 +3,16 @@
 
 #include <list>
 
+namespace action 
+{
+    template<typename E1, typename E2>
+    void link(E1* e1, E2* e2)
+    {
+        e1->link<E2>(e2);
+        e2->link<E1>(e1);
+    }
+}
+
 enum Multiplicity {One, Many, Some};
 
 template <typename T>
