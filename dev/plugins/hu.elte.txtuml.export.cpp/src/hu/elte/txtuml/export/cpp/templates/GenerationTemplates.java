@@ -271,6 +271,7 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 		}
 		
 	}
+	
 
 	public static String transitionActionDecl(String transitionActionName) {
 		List<String> params = new LinkedList<String>();
@@ -336,6 +337,18 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 	public static String simpleFunctionDef(String returnType, String functionName, String body, String returnVariable) {
 		return simpleFunctionDecl(returnType, functionName) + " {\n" + body + "\n" + "return " + returnVariable
 				+ ";\n}";
+	}
+	
+	public static StringBuilder linkTemplateSpecializationDef(String className, String otherClassName, String roleName) {
+		StringBuilder source = new StringBuilder("");
+		source.append("tmplate<>\n");
+		source.append(GenerationNames.NoReturn + " " + className + "::" + GenerationNames.LinkFunctionName);
+		source.append("<" + otherClassName + ">");
+		source.append("(" + PrivateFunctionalTemplates.cppType(otherClassName) + " " +  GenerationNames.AssocParameterName +  ")\n");
+		source.append("{\n" + roleName + GenerationNames.SimpleAccess + 
+				GenerationNames.AddAssocToAssocationFunctionName + "(" +  GenerationNames.AssocParameterName + ");\n}\n" );
+		 
+		return source;
 	}
 
 	public static String hierarchicalSubStateMachineClassConstructor(String className, String parentClassName,

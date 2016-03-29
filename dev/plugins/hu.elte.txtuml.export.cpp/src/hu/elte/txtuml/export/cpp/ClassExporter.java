@@ -48,6 +48,7 @@ public class ClassExporter {
 	private Map<String, Pair<String, String>> _entryMap;// <name,<state,func>>
 	private Map<String, Pair<String, String>> _exitMap;// <name,<state,func>>
 	private Map<String, Pair<String, Region>> _submachineMap;// <stateName,<machinename,behavior>>
+	private List<Property> assocationMembers;
 	private List<String> _subSubMachines;
 	private boolean ownConstructor;
 	
@@ -66,6 +67,7 @@ public class ClassExporter {
 	public void reiniIialize() {
 	    activityExporter = new ActivityExporter();
 		guardMap = new HashMap<String, String>();
+		assocationMembers = new ArrayList<Property>();
 		_entryMap = null;
 		_exitMap = null;
 		_submachineMap = null;
@@ -587,6 +589,7 @@ public class ClassExporter {
 			}
 			
 			linkedClass = GenerationTemplates.assocationDecl(memberEnd.getType().getName(), memberEnd.getName(),lower,upper);
+			assocationMembers.add(memberEnd);
 			source.append(linkedClass);
 		}
 		return source;

@@ -84,6 +84,9 @@ class GenerationNames {
 	public static final String SendSignal = "send";
 	public static final String MultiplicityEnum = "Multiplicity";
 	public static final String AssigmentOperator = "=";
+	public static final String AddAssocToAssocationFunctionName = "addAssoc";
+	public static final String AssocParameterName = "o";
+	public static final String LinkFunctionName = "link";
 	
 
 	public static String friendClassDecl(String className) {
