@@ -4,6 +4,9 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -32,6 +35,9 @@ public class CompileTests {
 			new Config("monitoring", "monitoring.x.model", "monitoring.x.DefaultConfiguration"),
 			new Config("producer_consumer", "producer_consumer.j.model", "producer_consumer.j.DefaultConfiguration"),
 			new Config("train", "train.j.model", "train.j.DefaultConfiguration"), };
+
+	private static final String testDirParent = "target/work/data/";
+	private static final String buildDir = "build";
 
 	private static String generateCPP(Config config, String testPrefix, boolean addRuntime) throws Exception {
 		TxtUMLToCppGovernor cppgen = new TxtUMLToCppGovernor(true);
@@ -69,11 +75,35 @@ public class CompileTests {
 		}
 	}
 
+	private static int executeCommand(String directory, List<String> strings) throws IOException, InterruptedException {
+		ProcessBuilder processBuilder = new ProcessBuilder(strings);
+		processBuilder.inheritIO();
+		processBuilder.directory(new File(directory));
+		Process process = processBuilder.start();
+		return process.waitFor();
+	}
+
+	private static void compileCPP(String testProjectName) throws IOException, InterruptedException {
+		System.out.println("***************** CPP Compilation test execution on project: " + testProjectName);
+		String testDir = testDirParent + "/" + testProjectName + "/" + buildDir;
+		File buildDirFile = new File(testDir);
+		buildDirFile.mkdir();
+		int cmakeIsPresent = executeCommand(testDir, Arrays.asList("cmake", "--version"));
+		int ninjaIsPresent = executeCommand(testDir, Arrays.asList("ninja", "--version"));
+		if (cmakeIsPresent != 0 || ninjaIsPresent != 0) {
+			System.out.println(
+					"***************** CMake and Ninja is needed to execute CPP compilation tests, please install!");
+			return;
+		}
+
+	}
+
 	@Test
 	public void compileTest() {
 		for (Config config : testProjects) {
 			try {
-				generateCPP(config, "compileTest_", true);
+				String projectName = generateCPP(config, "compileTest_", true);
+				compileCPP(projectName);
 			} catch (Exception e) {
 				e.printStackTrace();
 				assertThat(false, is(true));
