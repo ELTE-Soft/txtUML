@@ -74,13 +74,16 @@ class GenerationNames {
 	public static final String ParentSmMemberName = "_" + ParentSmName;
 
 	public static final String Unknown = "?";
-	public static final String AssocMultiplicityDataStruct = "std::list";
+	public static final String AssocMultiplicityDataStruct = "Association";
+	public static final String AssocationHeaderName = "assocation";
+	
 	public static final String InitStateMachine = "initStateMachine";
 
-	//
 	public static final String PoolIdSetter = "setPoolId";
 	public static final String InitialEventName = "InitSignal";
 	public static final String SendSignal = "send";
+	public static final String MultiplicityEnum = "Multiplicity";
+	public static final String AssigmentOperator = "=";
 	
 
 	public static String friendClassDecl(String className) {

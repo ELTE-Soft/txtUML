@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.Association;
 //import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
@@ -43,7 +44,7 @@ public class ClassExporter {
 	private static String _unknownEntryName = "entry";
 	private static String _unknownExitName = "exit";
 
-	private Map<String, String> _guardMap;// <guardConstraint,guardName>
+	private Map<String, String> guardMap;// <guardConstraint,guardName>
 	private Map<String, Pair<String, String>> _entryMap;// <name,<state,func>>
 	private Map<String, Pair<String, String>> _exitMap;// <name,<state,func>>
 	private Map<String, Pair<String, Region>> _submachineMap;// <stateName,<machinename,behavior>>
@@ -64,7 +65,7 @@ public class ClassExporter {
 
 	public void reiniIialize() {
 	    activityExporter = new ActivityExporter();
-		_guardMap = new HashMap<String, String>();
+		guardMap = new HashMap<String, String>();
 		_entryMap = null;
 		_exitMap = null;
 		_submachineMap = null;
@@ -150,6 +151,8 @@ public class ClassExporter {
 		if(!ownConstructor) {
 			publicParts.append(GenerationTemplates.constructorDecl(class_.getName(),null) + "\n");
 		}
+		
+		publicParts.append("\n" + getAssocations(class_));
 		
 		if (ownStates(class_, smList)) {
 			Region region = smList.get(0).getRegions().get(0);
@@ -370,7 +373,7 @@ public class ClassExporter {
 
 				}
 
-				_guardMap.put(guard, guardName);
+				guardMap.put(guard, guardName);
 				source.append(GenerationTemplates.guardFunction(guardName, guard, parameterisedEventTrigger(item)));
 			}
 		}
@@ -439,6 +442,9 @@ public class ClassExporter {
 			source.append(GenerationTemplates.cppInclude(GenerationTemplates.DeploymentHeader));
 			source.append(GenerationTemplates.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.StandardFunctionsHeader));
 			source.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
+		}
+		else {
+			source.append(GenerationTemplates.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.AssocationHeader));
 		}
 
 		source.append("\n");
@@ -539,27 +545,50 @@ public class ClassExporter {
 			}
 		}
 
-		for (Property item : Shared.getProperties(class_)) {
-			if (item.getVisibility().toString().equals(modifyer_)) {
+		for (Property attribute : class_.getOwnedAttributes()) {
+			if (attribute.getVisibility().toString().equals(modifyer_)) {
 				String type = "!!!UNKNOWNTYPE!!!";
-				if (item.getType() != null) {
-					type = item.getType().getName();
+				if (attribute.getType() != null) {
+					type = attribute.getType().getName();
 				}
 
-				int multip = item.getUpper();
-				if (item.getUpper() == _UMLMany) {
-					multip = 2;
-				}
-
-				String tmp = GenerationTemplates.variableDecl(type, item.getName(), multip);
+				String tmp = GenerationTemplates.variableDecl(type, attribute.getName(), 1);
 				// TODO suboptimal code
 				if (!source.toString().contains(tmp)) {
 					source.append(tmp);
 				}
+				
 			}
 			// TODO else exception if we want to stop the compile
 		}
 
+
+		return source;
+	}
+	
+	private StringBuilder getAssocations(Class class_) {
+		StringBuilder source = new StringBuilder("");
+		for (Association association : class_.getAssociations()) {
+			
+			Property memberEnd = null;
+			String linkedClass;
+			
+			for (Property prop : association.getMemberEnds()) {
+				if (!prop.getType().equals(class_)) {
+					memberEnd = prop;
+				}
+			}
+			
+			int upper = memberEnd.getUpper();
+			int lower = memberEnd.getLower();
+			
+			if (memberEnd.getUpper() == _UMLMany) {
+				upper = Integer.MAX_VALUE;
+			}
+			
+			linkedClass = GenerationTemplates.assocationDecl(memberEnd.getType().getName(), memberEnd.getName(),lower,upper);
+			source.append(linkedClass);
+		}
 		return source;
 	}
 
@@ -692,7 +721,7 @@ public class ClassExporter {
 			if (eventSignalPair != null) {
 				Pair<String, String> guardTransitionPair = null;
 				if (item.getGuard() != null) {
-					guardTransitionPair = new Pair<String, String>(_guardMap.get(Shared.getGuard(item.getGuard())),
+					guardTransitionPair = new Pair<String, String>(guardMap.get(Shared.getGuard(item.getGuard())),
 							item.getName());
 
 				} else {

@@ -26,6 +26,7 @@ public class GenerationTemplates {
 	public static final String MyRuntimeName = RuntimeTemplates.UsingRuntime;
 	public static final String InitStateMachineProcedureName = GenerationNames.InitStateMachine;
 	public static final String StandardFunctionsHeader = GenerationNames.StandardLibaryFunctionsHeaderName;
+	public static final String AssocationHeader = GenerationNames.AssocationHeaderName;
 	public static final String DeploymentHeader = "deployment";
 
 	public static final String InitSignal = GenerationNames.InitialEventName;
@@ -218,7 +219,25 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 		return variableDecl(typeName, variableName);
 	}
 	
+	public static String assocationDecl(String className,String roleName, Integer lower, Integer upper) {
+		return GenerationNames.AssocMultiplicityDataStruct + "<" + className +
+				">" + " " + roleName + " " + GenerationNames.AssigmentOperator + " " + 
+				GenerationNames.AssocMultiplicityDataStruct + "<" + className +
+				">" + "(" + GenerationNames.MultiplicityEnum + "::" + getMultiplicityEnumType(lower,upper) +  ");\n";
+	}
 	
+	
+	public static String getMultiplicityEnumType(Integer lowerLimit, Integer upperLimit) {
+		String multiplicity = "";
+		if(lowerLimit == 1 && upperLimit == 1) {
+			multiplicity =  "One";
+		}
+		else if(lowerLimit == 1 && upperLimit > 1) {
+			multiplicity =  "Some";
+		}
+		return multiplicity;
+	}
+
 	public static StringBuilder constructorDef(String className, String baseClassName, String body, List<Pair<String,String>> params, List<Pair<String,String>> baseParams, Boolean stateMachine) {
 		StringBuilder source = new StringBuilder("");
 		source.append(className + "::" + className + "(");

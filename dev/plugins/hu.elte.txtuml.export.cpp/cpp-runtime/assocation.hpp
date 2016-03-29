@@ -41,7 +41,7 @@ public:
         {
             //TODO sign error
         }
-        return o;
+        return object;
     }
 
     std::list<T*> getAll()
