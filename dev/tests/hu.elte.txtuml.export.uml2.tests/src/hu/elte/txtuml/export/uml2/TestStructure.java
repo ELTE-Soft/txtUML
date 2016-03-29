@@ -374,7 +374,7 @@ public class TestStructure {
 	public void testStartAction() throws Exception {
 		SequenceNode body = loadActionCode("start", "TestClass", "S1");
 
-		StartClassifierBehaviorAction act = (StartClassifierBehaviorAction) body.getExecutableNodes().get(2);
+		StartClassifierBehaviorAction act = (StartClassifierBehaviorAction) body.getExecutableNodes().get(3);
 
 		InputPin StartedClassPin = act.getInputs().get(0);
 
