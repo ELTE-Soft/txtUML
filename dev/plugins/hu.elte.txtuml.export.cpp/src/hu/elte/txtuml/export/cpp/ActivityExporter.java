@@ -209,7 +209,7 @@ public class ActivityExporter {
 		}
 
 		else if (node_.eClass().equals(UMLPackage.Literals.CONDITIONAL_NODE)) {
-			source.append(createForkCode(((ConditionalNode) node_)));
+			source.append(createConditionalCode(((ConditionalNode) node_)));
 		}
 
 		else if (node_.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION)) {
@@ -274,18 +274,18 @@ public class ActivityExporter {
 			body.append(createActivityNodeCode(bodyNode));
 		}
 		
-		StringBuilder recond = new StringBuilder("");
+		StringBuilder reCond = new StringBuilder("");
 		for (ExecutableNode condNode : loopNode.getTests()) {
-			recond.append(createActivityNodeCode(condNode));
+			reCond.append(createActivityNodeCode(condNode));
 		}
 		
-		source.append(ActivityTemplates.whileCycle(getTargetFromActivityNode(loopNode.getDecider()), body.toString() + "\n" +  recond.toString()));
+		source.append(ActivityTemplates.whileCycle(getTargetFromActivityNode(loopNode.getDecider()), body.toString() + "\n" +  reCond.toString()));
 		
 
 		return source;
 	}
 
-	private StringBuilder createForkCode(ConditionalNode conditionalNode) {
+	private StringBuilder createConditionalCode(ConditionalNode conditionalNode) {
 		StringBuilder source = new StringBuilder("");
 		StringBuilder tests = new StringBuilder("");
 		StringBuilder bodies = new StringBuilder("");
@@ -317,16 +317,23 @@ public class ActivityExporter {
 	private String getTargetFromInputPin(InputPin node_, Boolean recursive_) {
 		String source = "UNKNOWN_TYPE_FROM_VALUEPIN";
 		if (node_.eClass().equals(UMLPackage.Literals.INPUT_PIN)) {
-			source = getTargetFromActivityNode(node_.getIncomings().get(0).getSource());// TODO
-																						// null
-																						// check,
-																						// if
-																						// null
-																						// terminate
-		} else // node_.eClass().equals(UMLPackage.Literals.VALUE_PIN)
-		{
+			
+			if(node_.getIncomings().size() > 0) {
+				source = getTargetFromActivityNode(node_.getIncomings().get(0).getSource());
+			}
+			
+			
+		} else if(node_.eClass().equals(UMLPackage.Literals.VALUE_PIN) ) {
+			
+				
 			ValueSpecification valueSpec = ((ValuePin) node_).getValue();
-			source = getValueFromValueSpecification(valueSpec);
+			if(valueSpec != null) {
+				source = getValueFromValueSpecification(valueSpec);
+			}
+			else if(node_.getIncomings().size() > 0) {
+				source = getTargetFromActivityNode(node_.getIncomings().get(0).getSource());
+			}
+			
 		}
 		return source;
 	}
@@ -419,9 +426,6 @@ public class ActivityExporter {
 	}
 	
 	private String createSendSignalActionCode(SendObjectAction sendObjectAction) {
-		
-		System.out.println(sendObjectAction.getTarget());
-		System.out.println(sendObjectAction.getRequest());
 		
 		String target = getTargetFromInputPin(sendObjectAction.getTarget());
 		String singal = getTargetFromInputPin(sendObjectAction.getRequest());
