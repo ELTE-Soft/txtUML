@@ -107,17 +107,36 @@ public class TypeExporter {
 	 * @return The exported UML2 type; or <code>null</code> in case of error.
 	 */
 	private Type exportPrimitiveType(ITypeBinding sourceType) {
-		String typeName = sourceType.getQualifiedName();
-		if (sourceType.isPrimitive()) {
-			if (typeName.equals("int")) {
-				return UML2Integer;
-			} else if (typeName.equals("boolean")) {
-				return UML2Boolean;
-			}
-		} else if (typeName.equals("java.lang.String")) {
+		switch (sourceType.getQualifiedName()) {
+		case "java.lang.Integer":
+			return UML2Integer;
+		case "int":
+			return UML2Integer;
+		case "java.lang.Short":
+			return UML2Integer;
+		case "short":
+			return UML2Integer;
+		case "java.lang.Byte":
+			return UML2Integer;
+		case "byte":
+			return UML2Integer;
+		case "java.lang.Boolean":
+			return UML2Boolean;
+		case "boolean":
+			return UML2Boolean;
+		case "java.lang.Double":
+			return UML2Real;
+		case "double":
+			return UML2Real;
+		case "java.lang.Float":
+			return UML2Real;
+		case "float":
+			return UML2Real;
+		case "java.lang.String":
 			return UML2String;
+		default:
+			return null;
 		}
-		return null;
 	}
 
 	/**
