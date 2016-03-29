@@ -33,27 +33,47 @@ public class CompileTests {
 			new Config("producer_consumer", "producer_consumer.j.model", "producer_consumer.j.DefaultConfiguration"),
 			new Config("train", "train.j.model", "train.j.DefaultConfiguration"), };
 
+	private static String generateCPP(Config config, String testPrefix, boolean addRuntime) throws Exception {
+		TxtUMLToCppGovernor cppgen = new TxtUMLToCppGovernor(true);
+
+		String canPathToProjects = new File(pathToProjects).getCanonicalPath();
+		IProjectDescription desc = ResourcesPlugin.getWorkspace()
+				.loadProjectDescription(new Path(canPathToProjects + "/" + config.project + "/.project"));
+		desc.setLocation(new Path(new File(canPathToProjects + "/" + config.project).getCanonicalPath()));
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(desc.getName());
+		if (!project.exists()) {
+			project.create(desc, null);
+		}
+		project.open(null);
+
+		String testProject = testPrefix + config.project;
+		project.copy(new Path(testProject), true, null);
+		project.close(null);
+		project = ResourcesPlugin.getWorkspace().getRoot().getProject(testProject);
+		project.refreshLocal(IProject.DEPTH_INFINITE, null);
+
+		cppgen.uml2ToCpp(testProject, config.model, config.deployment, addRuntime);
+
+		return testProject;
+	}
+
 	@Test
 	public void exportTest() {
 		for (Config config : testProjects) {
-			TxtUMLToCppGovernor cppgen = new TxtUMLToCppGovernor(true);
 			try {
-				String canPathToProjects = new File(pathToProjects).getCanonicalPath();
-				IProjectDescription desc = ResourcesPlugin.getWorkspace()
-						.loadProjectDescription(new Path(canPathToProjects + "/" + config.project + "/.project"));
-				desc.setLocation(new Path(new File(canPathToProjects + "/" + config.project).getCanonicalPath()));
-				IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(desc.getName());
-				if (!project.exists()) {
-					project.create(desc, null);
-				}
-				project.open(null);
-				String testProject = "test_" + config.project;
-				project.copy(new Path(testProject), true, null);
-				project.close(null);
-				project = ResourcesPlugin.getWorkspace().getRoot().getProject(testProject);
-				project.refreshLocal(IProject.DEPTH_INFINITE, null);
+				generateCPP(config, "exportTest_", false);
+			} catch (Exception e) {
+				e.printStackTrace();
+				assertThat(false, is(true));
+			}
+		}
+	}
 
-				cppgen.uml2ToCpp(testProject, config.model, config.deployment, false);
+	@Test
+	public void compileTest() {
+		for (Config config : testProjects) {
+			try {
+				generateCPP(config, "compileTest_", true);
 			} catch (Exception e) {
 				e.printStackTrace();
 				assertThat(false, is(true));
