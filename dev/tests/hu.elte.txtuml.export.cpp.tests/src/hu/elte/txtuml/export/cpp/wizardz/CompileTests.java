@@ -37,11 +37,11 @@ public class CompileTests {
 	public void exportTest() {
 		for (Config config : testProjects) {
 			TxtUMLToCppGovernor cppgen = new TxtUMLToCppGovernor(true);
-			boolean runsOk = true;
 			try {
+				String canPathToProjects = new File(pathToProjects).getCanonicalPath();
 				IProjectDescription desc = ResourcesPlugin.getWorkspace()
-						.loadProjectDescription(new Path(pathToProjects + config.project + "/.project"));
-				desc.setLocation(new Path(new File(pathToProjects + config.project).getAbsolutePath()));
+						.loadProjectDescription(new Path(canPathToProjects + "/" + config.project + "/.project"));
+				desc.setLocation(new Path(new File(canPathToProjects + "/" + config.project).getCanonicalPath()));
 				IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(desc.getName());
 				if (!project.exists()) {
 					project.create(desc, null);
@@ -51,19 +51,13 @@ public class CompileTests {
 				project.copy(new Path(testProject), true, null);
 				project.close(null);
 				project = ResourcesPlugin.getWorkspace().getRoot().getProject(testProject);
-				//IJavaProject jProject = JavaCore.create(project);
 				project.refreshLocal(IProject.DEPTH_INFINITE, null);
-				//project.build(IncrementalProjectBuilder.CLEAN_BUILD, null);
-				//project.build(IncrementalProjectBuilder.FULL_BUILD, null);
 
 				cppgen.uml2ToCpp(testProject, config.model, config.deployment, false);
-
-				//project.delete(true, true, null);
 			} catch (Exception e) {
-				runsOk = false;
 				e.printStackTrace();
+				assertThat(false, is(true));
 			}
-			assertThat(runsOk, is(true));
 		}
 	}
 }
