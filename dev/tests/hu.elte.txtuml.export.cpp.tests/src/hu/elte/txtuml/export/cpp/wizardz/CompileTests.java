@@ -65,36 +65,45 @@ public class CompileTests {
 	@BeforeClass
 	public static void detectCPPEnvironment() {
 		System.out.println("***************** CPP Compilation Test probing environment");
+		int cmakeRet = -1;
+		int ninjaRet = -1;
+		int gccRet = -1;
+		int gccxxRet = -1;
+		int clangRet = -1;
+		int clangxxRet = -1;
+
 		try {
-			int cmakeRet = executeCommand(testWorkspace, Arrays.asList("cmake", "--version"), null);
-			int ninjaRet = executeCommand(testWorkspace, Arrays.asList("ninja", "--version"), null);
-			if (cmakeRet != 0 || ninjaRet != 0) {
-				System.out.println(
-						"***************** CPP Compilation Test needs cmake and ninja, skipping compilation tests!!!!!!!!!!");
-				return;
-			}
-			int gccRet = executeCommand(testWorkspace, Arrays.asList("gcc", "--version"), null);
-			int gccxxRet = executeCommand(testWorkspace, Arrays.asList("g++", "--version"), null);
-			int clangRet = executeCommand(testWorkspace, Arrays.asList("clang", "--version"), null);
-			int clangxxRet = executeCommand(testWorkspace, Arrays.asList("clang++", "--version"), null);
-			if (gccRet == 0 && gccxxRet == 0) {
-				System.out.println("***************** CPP Compilation Test found GCC");
-				compilerGCCPresent = true;
-			}
-			if (clangRet == 0 && clangxxRet == 0) {
-				System.out.println("***************** CPP Compilation Test found Clang");
-				compilerClangPresent = true;
-			}
-			if (!compilerGCCPresent && !compilerClangPresent) {
-				System.out.println(
-						"***************** CPP Compilation Test needs a C++ compiler, skipping compilation tests!!!!!!!!!!");
-				return;
-			}
-			buildStuffPresent = true;
+			cmakeRet = executeCommand(testWorkspace, Arrays.asList("cmake", "--version"), null);
+			ninjaRet = executeCommand(testWorkspace, Arrays.asList("ninja", "--version"), null);
 		} catch (IOException | InterruptedException e) {
-			e.printStackTrace();
-			assertThat(false, is(true));
 		}
+		if (cmakeRet != 0 || ninjaRet != 0) {
+			System.out.println(
+					"***************** CPP Compilation Test needs cmake and ninja, skipping compilation tests!!!!!!!!!!");
+			return;
+		}
+
+		try {
+			gccRet = executeCommand(testWorkspace, Arrays.asList("gcc", "--version"), null);
+			gccxxRet = executeCommand(testWorkspace, Arrays.asList("g++", "--version"), null);
+			clangRet = executeCommand(testWorkspace, Arrays.asList("clang", "--version"), null);
+			clangxxRet = executeCommand(testWorkspace, Arrays.asList("clang++", "--version"), null);
+		} catch (IOException | InterruptedException e) {
+		}
+		if (gccRet == 0 && gccxxRet == 0) {
+			System.out.println("***************** CPP Compilation Test found GCC");
+			compilerGCCPresent = true;
+		}
+		if (clangRet == 0 && clangxxRet == 0) {
+			System.out.println("***************** CPP Compilation Test found Clang");
+			compilerClangPresent = true;
+		}
+		if (!compilerGCCPresent && !compilerClangPresent) {
+			System.out.println(
+					"***************** CPP Compilation Test needs a C++ compiler, skipping compilation tests!!!!!!!!!!");
+			return;
+		}
+		buildStuffPresent = true;
 	}
 
 	@Test
