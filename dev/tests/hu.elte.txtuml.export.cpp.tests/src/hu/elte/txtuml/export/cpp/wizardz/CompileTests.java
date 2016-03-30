@@ -178,10 +178,10 @@ public class CompileTests {
 		for (Map<String, String> compileEnv : compileEnvironments) {
 			for (String modeStr : new String[] { "Debug", "Release" }) {
 				System.out.println("***************** CPP Compilation Test started on " + testProjectName + " "
-						+ compileEnv.get("CC") + modeStr);
+						+ compileEnv.get("CC").split(" ")[0] + modeStr);
 				String buildDir = testWorkspace + "/" + testProjectName + "/"
 						+ Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME + "/" + modelName + "/" + buildDirPrefix
-						+ compileEnv.get("CC") + modeStr;
+						+ compileEnv.get("CC").split(" ")[0] + modeStr;
 				File buildDirFile = new File(buildDir);
 				boolean wasCreated = buildDirFile.mkdir();
 				assertThat(wasCreated, is(true));
