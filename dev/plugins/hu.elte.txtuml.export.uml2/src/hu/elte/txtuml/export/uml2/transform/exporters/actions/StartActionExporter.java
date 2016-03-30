@@ -19,11 +19,12 @@ public class StartActionExporter {
 
 	public void export(List<Expr> args) {
 		Expr arg = args.get(0);
+		arg.evaluate();
 
 		StartClassifierBehaviorAction startAction = (StartClassifierBehaviorAction) expressionExporter
 				.createAndAddNode("start " + arg.getName(), UMLPackage.Literals.START_CLASSIFIER_BEHAVIOR_ACTION);
 
 		startAction.createObject(arg.getName(), arg.getType());
-
+		expressionExporter.createObjectFlowBetweenActivityNodes(arg.getOutputPin(), startAction.getObject());
 	}
 }
