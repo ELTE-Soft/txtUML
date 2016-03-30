@@ -161,11 +161,15 @@ public class CompileTests {
 		String testProject = testPrefix + config.project;
 		project.copy(new Path(testProject), true, null);
 		project.close(null);
+		project.delete(false, false, null);
+
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(testProject);
 		project.refreshLocal(IProject.DEPTH_INFINITE, null);
 
 		cppgen.uml2ToCpp(testProject, config.model, config.deployment, addRuntime);
 
+		project.close(null);
+		project.delete(false, false, null);
 		return testProject;
 	}
 
