@@ -191,7 +191,7 @@ public class CompileTests {
 				int ninjaRetCode = executeCommand(buildDir, Arrays.asList("ninja", "-v"), compileEnv);
 				assertThat(ninjaRetCode, is(0));
 				System.out.println("***************** CPP Compilation Test successful on " + testProjectName + " "
-						+ compileEnv.get("CC") + modeStr);
+						+ compileEnv.get("CC").split(" ")[0] + modeStr);
 			}
 		}
 	}
