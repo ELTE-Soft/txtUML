@@ -22,8 +22,8 @@ import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 class TxtUMLToCppGovernor {
 
-	private static final String GeneratedCPPFolderName = "cpp-gen";
-	private static final String UmlFilesFolderName = "model";
+	private static final String GeneratedCPPFolderName = Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME;
+	private static final String UmlFilesFolderName = Uml2ToCppExporter.UML_FILES_FOLDER_NAME;
 
 	private final boolean testing;
 
@@ -32,8 +32,8 @@ class TxtUMLToCppGovernor {
 	}
 
 	@SuppressWarnings("unchecked")
-	void uml2ToCpp(String txtUMLProject, String txtUMLModel, String deploymentDescription,
-			boolean addRuntimeOption) throws Exception {
+	void uml2ToCpp(String txtUMLProject, String txtUMLModel, String deploymentDescription, boolean addRuntimeOption)
+			throws Exception {
 		String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation().toFile()
 				.getAbsolutePath();
 		String umlFilesFolder = txtUMLProject + File.separator + GeneratedCPPFolderName + File.separator + txtUMLModel
@@ -44,7 +44,8 @@ class TxtUMLToCppGovernor {
 			model = TxtUMLToUML2.exportModel(txtUMLProject, txtUMLModel, umlFilesFolder, ExportMode.ExportActionCode);
 		} catch (Exception e) {
 			if (!testing) {
-				Dialogs.errorMsgb("txtUML export Error", e.getClass() + ":" + System.lineSeparator() + e.getMessage(), e);
+				Dialogs.errorMsgb("txtUML export Error", e.getClass() + ":" + System.lineSeparator() + e.getMessage(),
+						e);
 			}
 			throw e;
 		}

@@ -31,6 +31,9 @@ import hu.elte.txtuml.export.cpp.thread.ThreadHandlingManager;
 import hu.elte.txtuml.utils.Pair;
 
 public class Uml2ToCppExporter {
+	public static final String GENERATED_CPP_FOLDER_NAME = "cpp-gen";
+	public static final String UML_FILES_FOLDER_NAME = "model";
+
 	private static final String RUNTIME_DIR_PREFIX = GenerationTemplates.RuntimePath;
 	private static final String RUNTIME_LIB_NAME = "libsmrt";
 	private static final String DEFAULT_TARGET_EXECUTABLE = "main";

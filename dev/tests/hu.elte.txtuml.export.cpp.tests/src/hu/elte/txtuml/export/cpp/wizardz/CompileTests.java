@@ -18,6 +18,8 @@ import org.eclipse.core.runtime.Path;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
+
 /**
  * These tests can also test the compilation of generated CPP sources if the
  * following are installed:
@@ -113,7 +115,7 @@ public class CompileTests {
 			try {
 				String projectName = generateCPP(config, compileTestProjectPrefix, true);
 				if (buildStuffPresent) {
-					compileCPP(projectName);
+					compileCPP(projectName, config.model);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -158,7 +160,7 @@ public class CompileTests {
 		return testProject;
 	}
 
-	private static void compileCPP(String testProjectName) throws Exception {
+	private static void compileCPP(String testProjectName, String modelName) throws Exception {
 		List<Map<String, String>> compileEnvironments = new ArrayList<Map<String, String>>();
 		if (compilerGCCPresent) {
 			Map<String, String> env = new TreeMap<String, String>();
@@ -177,20 +179,17 @@ public class CompileTests {
 			for (String modeStr : new String[] { "Debug", "Release" }) {
 				System.out.println("***************** CPP Compilation Test started on " + testProjectName + " "
 						+ compileEnv.get("CC") + modeStr);
-				String buildDir = testWorkspace + "/" + testProjectName + "/" + buildDirPrefix + compileEnv.get("CC")
-						+ modeStr;
+				String buildDir = testWorkspace + "/" + testProjectName + "/"
+						+ Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME + "/" + modelName + "/" + buildDirPrefix
+						+ compileEnv.get("CC") + modeStr;
 				File buildDirFile = new File(buildDir);
 				boolean wasCreated = buildDirFile.mkdir();
 				assertThat(wasCreated, is(true));
 				int cmakeRetCode = executeCommand(buildDir,
 						Arrays.asList("cmake", "-G", "Ninja", "-DCMAKE_BUILD_TYPE=" + modeStr, ".."), compileEnv);
-				if (cmakeRetCode != 0) {
-					throw new Exception("***************** CMake command failed with exit code: " + cmakeRetCode);
-				}
+				assertThat(cmakeRetCode, is(0));
 				int ninjaRetCode = executeCommand(buildDir, Arrays.asList("ninja", "-v"), compileEnv);
-				if (ninjaRetCode != 0) {
-					throw new Exception("***************** Ninja build failed with exit code: " + ninjaRetCode);
-				}
+				assertThat(ninjaRetCode, is(0));
 				System.out.println("***************** CPP Compilation Test successful on " + testProjectName + " "
 						+ compileEnv.get("CC") + modeStr);
 			}
