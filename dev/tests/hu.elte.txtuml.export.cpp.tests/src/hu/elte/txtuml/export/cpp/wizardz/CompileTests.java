@@ -13,6 +13,7 @@ import java.util.TreeMap;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.junit.BeforeClass;
@@ -165,6 +166,7 @@ public class CompileTests {
 
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(testProject);
 		project.refreshLocal(IProject.DEPTH_INFINITE, null);
+		project.build(IncrementalProjectBuilder.FULL_BUILD, null);
 
 		cppgen.uml2ToCpp(testProject, config.model, config.deployment, addRuntime);
 
