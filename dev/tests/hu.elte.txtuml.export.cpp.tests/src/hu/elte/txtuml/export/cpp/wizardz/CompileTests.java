@@ -11,11 +11,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -158,15 +163,27 @@ public class CompileTests {
 			project.create(desc, null);
 		}
 		project.open(null);
-
 		String testProject = testPrefix + config.project;
 		project.copy(new Path(testProject), true, null);
 		project.close(null);
 		project.delete(false, false, null);
 
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(testProject);
+		IFolder folder = project.getFolder("src-gen");
+		folder.create(false, true, null);
+		// IJavaProject javaProject = JavaCore.create(project);
 		project.refreshLocal(IProject.DEPTH_INFINITE, null);
-		project.build(IncrementalProjectBuilder.FULL_BUILD, null);
+		project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, new NullProgressMonitor());
+
+		// System.out.println(project.isNatureEnabled("org.eclipse.jdt.core.javanature"));
+		// System.out.println(project.isNatureEnabled("org.eclipse.xtext.ui.shared.xtextNature"));
+		// if (!javaProject.hasBuildState()) {
+		for (IMarker m : project.findMarkers(IMarker.PROBLEM, true, IProject.DEPTH_INFINITE)) {
+			for (Object o : m.getAttributes().values()) {
+				System.out.println(o.toString());
+			}
+		}
+		// }
 
 		cppgen.uml2ToCpp(testProject, config.model, config.deployment, addRuntime);
 
