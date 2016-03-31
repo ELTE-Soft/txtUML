@@ -24,11 +24,12 @@ class OperationExporter extends Exporter<MethodDeclaration, IMethodBinding, Oper
 			val retParam = factory.createParameter
 			retParam.type = fetchType(binding.returnType)
 			retParam.direction = ParameterDirectionKind.RETURN_LITERAL
-			result.ownedParameters.add(retParam)
+			result.ownedParameters += retParam
 		}
-		result.ownedParameters.addAll(decl.parameters.map [
+		result.methods += fetchElement(decl.resolveBinding, new MethodActivityExporter(this))
+		result.ownedParameters += decl.parameters.map [
 			exportParameter((it as SingleVariableDeclaration).resolveBinding)
-		])
+		]
 	}
 
 }
