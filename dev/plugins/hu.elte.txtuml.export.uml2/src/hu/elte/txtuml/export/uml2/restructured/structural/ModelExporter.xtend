@@ -11,33 +11,35 @@ import org.eclipse.uml2.uml.Package
 import org.eclipse.uml2.uml.UMLPackage
 import org.eclipse.uml2.uml.resource.UMLResource
 import java.util.Map
+import org.eclipse.uml2.uml.Profile
 
 class ModelExporter extends AbstractPackageExporter<Model> {
 
 	static final val STDLIB_URI = "pathmap://TXTUML_STDLIB/stdlib.uml";
+	static final val STDPROF_URI = "pathmap://UML_PROFILES/Standard.profile.uml";
+	static final val STD_PROF_NAME = "StandardProfile";
 
 	static final val Map<String, String> NAME_MAP = #{String.canonicalName -> "String",
 		Integer.canonicalName -> "Integer", int.canonicalName -> "Integer", Boolean.canonicalName -> "Boolean",
 		boolean.canonicalName -> "Boolean"}
 
 	def export(IPackageFragment pf) {
-		cache.export(this, pf, pf)
+		cache.export(this, pf, pf, [])
 	}
 
 	override create(IPackageFragment pf) { factory.createModel }
 
 	override getImportedElement(String name) {
-		result.getImportedMember(NAME_MAP.get(name) ?: name)
-
-//		val member = result.getImportedMember(name)
-//		member ?: result.importedPackages.map[it.getMember(name)].filterNull.head
+		result.getImportedMember(NAME_MAP.get(name) ?: name) ?: result.importedPackages.findFirst[it.name == name] 
 	}
 
 	override exportContents(IPackageFragment packageFragment) {
 		val unit = packageFragment.getCompilationUnit(PackageUtils.PACKAGE_INFO).parseCompUnit
 		setupResourceSet(packageFragment)
 		result.name = unit.findModelName
-		importStandardLib
+		addPackageImport(STDLIB_URI)
+		addPackageImport(STDPROF_URI)
+		addProfileApplication(getImportedElement(STD_PROF_NAME) as Profile)
 		super.exportContents(packageFragment)
 	}
 
@@ -62,16 +64,20 @@ class ModelExporter extends AbstractPackageExporter<Model> {
 		}
 	}
 
-	def importStandardLib() {
+	def addPackageImport(String uri) {
 		// Load standard library
 		val resourceSet = result.eResource.resourceSet
-		val resource = resourceSet.getResource(URI.createURI(STDLIB_URI), true)
-		val stdLib = EcoreUtil.getObjectByType(resource.getContents(), UMLPackage.Literals.PACKAGE) as Package
+		val resource = resourceSet.getResource(URI.createURI(uri), true)
+		val lib = EcoreUtil.getObjectByType(resource.getContents(), UMLPackage.Literals.PACKAGE) as Package
 
 		// Import standard library into the generated model
-		val packageImport = factory.createPackageImport()
-		packageImport.importedPackage = stdLib
-		result.packageImports.add(packageImport)
+		val packageImport = factory.createPackageImport
+		packageImport.importedPackage = lib
+		result.packageImports += packageImport
+	}
+	
+	def addProfileApplication(Profile profile) {
+		result.applyProfile(profile)
 	}
 
 }

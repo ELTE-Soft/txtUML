@@ -28,19 +28,25 @@ abstract class AbstractPackageExporter<T extends Package> extends Exporter<IPack
 		val subPackages = packageRoot.children.map[it as IPackageFragment].filter [
 			elementName.startsWith(packageFragment.elementName + ".")
 		]
-		result.nestedPackages += subPackages.map[exportPackage]
+		subPackages.forEach[exportPackage[result.nestedPackages += it]]
 	}
 
 	def exportCompUnit(ICompilationUnit compUnit) {
-		result.packagedElements += parseCompUnit(compUnit).types.map[exportType].flatten
+		parseCompUnit(compUnit).types.forEach[exportType]
 	}
 
 	def dispatch exportType(TypeDeclaration decl) {
 		switch decl {
-			case ElementTypeTeller.isModelClass(decl): #{exportClass(decl)}
-			case ElementTypeTeller.isAssociation(decl): #{exportAssociation(decl)}
-			case ElementTypeTeller.isSignal(decl): #{exportSignal(decl), exportSignalEvent(decl)}
-			default: throw new IllegalArgumentException("Illegal type declaration: " + decl.toString)
+			case ElementTypeTeller.isModelClass(decl):
+				exportClass(result, decl)[result.packagedElements += it]
+			case ElementTypeTeller.isAssociation(decl):
+				exportAssociation(decl)[result.packagedElements += it]
+			case ElementTypeTeller.isSignal(decl): {
+				exportSignal(decl)[result.packagedElements += it]
+				exportSignalEvent(decl)[result.packagedElements += it]
+			}
+			default:
+				throw new IllegalArgumentException("Illegal type declaration: " + decl.toString)
 		}
 	}
 

@@ -38,6 +38,7 @@ import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.ExecutableNode
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
+import java.util.function.Consumer
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -149,22 +150,24 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S,A,R> {
 		}
 	}
 
-	def exportStatement(Statement source) {
-		exportElement(source, source) as ExecutableNode
+	def exportStatement(Statement source, Consumer<ExecutableNode> store) {
+		exportElement(source, source, store) as ExecutableNode
 	}
 
-	def exportExpression(Expression source) {
-		exportElement(source, source) as Action
+	def exportExpression(Expression source, Consumer<Action> store) {
+		exportElement(source, source, store) as Action
 	}
 
 	/**
 	 * Fully exports the given element by selecting the exporter that is able to export it.
 	 */
-	def <CS, CA, CR extends Element> exportElement(CS source, CA access) {
+	def <CS, CA, CR extends Element> exportElement(CS source, CA access, Consumer<CR> store) {
 		if(source == null) return null
 		val exporters = getExporters(access);
+		// if getExporters returns an exporter that doesn't have the correct type it will
+		// be a cast exception here
 		for (exporter : exporters) {
-			val res = cache.export(exporter as Exporter<CS, CA, CR>, source, access)
+			val res = cache.export(exporter as Exporter<CS, CA, CR>, source, access, store)
 			if (res != null) {
 				return res;
 			}

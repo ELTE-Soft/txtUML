@@ -18,8 +18,7 @@ class ActivityExporter extends ActionExporter<Block, Activity> {
 
 	override exportContents(Block block) {
 		val init = result.createOwnedNode("#init", UMLPackage.Literals.INITIAL_NODE)
-		val body = block.statements.map[exportStatement]
-		result.ownedNodes += body
+		val body = block.statements.map[exportStatement[result.ownedNodes += it]]
 		val final = result.createOwnedNode("#final", UMLPackage.Literals.ACTIVITY_FINAL_NODE)
 		if (body.isEmpty) {
 			init.controlFlow(final)

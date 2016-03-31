@@ -18,41 +18,66 @@ import org.eclipse.jdt.core.dom.IVariableBinding
 import org.eclipse.jdt.core.dom.MethodDeclaration
 import org.eclipse.jdt.core.dom.TypeDeclaration
 import org.eclipse.uml2.uml.Activity
+import org.eclipse.uml2.uml.Class
 import org.eclipse.uml2.uml.Element
+import org.eclipse.uml2.uml.Package
+import org.eclipse.uml2.uml.Property
+import java.util.function.Consumer
+import org.eclipse.uml2.uml.Signal
+import org.eclipse.uml2.uml.SignalEvent
+import org.eclipse.uml2.uml.Association
+import org.eclipse.uml2.uml.Operation
+import org.eclipse.uml2.uml.SequenceNode
 
 /**
  * Base class for exporters, methods to export different kinds of elements using specific exporters.
  */
 abstract class BaseExporter<S, A, R extends Element> {
-	
+
 	/** Reference to the cache shared between all exporters */
 	protected ExporterCache cache
-	
+
 	new(ExporterCache cache) {
 		this.cache = cache
 	}
-	
+
 	abstract def Element getImportedElement(String name)
-	
-	def exportPackage(IPackageFragment pf) { cache.export(new PackageExporter(this), pf, pf) }
 
-	def exportClass(TypeDeclaration td) { cache.export(new ClassExporter(this), td, td.resolveBinding) }
-
-	def exportSignal(TypeDeclaration td) { cache.export(new SignalExporter(this), td, td.resolveBinding) }
-
-	def exportSignalEvent(TypeDeclaration td) { cache.export(new SignalEventExporter(this), td, td.resolveBinding) }
-
-	def exportAssociation(TypeDeclaration td) { cache.export(new AssociationExporter(this), td, td.resolveBinding) }
-
-	def exportAssociationEnd(TypeDeclaration td) {
-		cache.export(new AssociationEndExporter(this), td, td.resolveBinding)
+	def exportPackage(IPackageFragment pf, Consumer<Package> store) {
+		cache.export(new PackageExporter(this), pf, pf, store)
 	}
 
-	def exportField(IVariableBinding td) { cache.export(new FieldExporter(this), td, td) }
+	def exportClass(Package pkg, TypeDeclaration td, Consumer<Class> store) {
+		cache.export(new ClassExporter(this), td, td.resolveBinding, store)
+	}
 
-	def exportOperation(MethodDeclaration md) { cache.export(new OperationExporter(this), md, md.resolveBinding) }
+	def exportSignal(TypeDeclaration td, Consumer<Signal> store) {
+		cache.export(new SignalExporter(this), td, td.resolveBinding, store)
+	}
 
-	def exportActivity(MethodDeclaration md) { cache.export(new MethodActivityExporter(this), md, md.resolveBinding) }
+	def exportSignalEvent(TypeDeclaration td, Consumer<SignalEvent> store) {
+		cache.export(new SignalEventExporter(this), td, td.resolveBinding, store)
+	}
+
+	def exportAssociation(TypeDeclaration td, Consumer<Association> store) {
+		cache.export(new AssociationExporter(this), td, td.resolveBinding, store)
+	}
+
+	def exportAssociationEnd(TypeDeclaration td, Consumer<Property> store) {
+		cache.export(new AssociationEndExporter(this), td, td.resolveBinding, store)
+	}
+
+	def exportField(IVariableBinding td, Consumer<Property> store) {
+		cache.export(new FieldExporter(this), td, td, store)
+	}
+
+	def exportOperation(MethodDeclaration md, Consumer<Operation> store) {
+		cache.export(new OperationExporter(this), md, md.resolveBinding, store)
+	}
+
+	def exportActivity(MethodDeclaration md, Consumer<Activity> store) {
+		cache.export(new MethodActivityExporter(this), md, md.resolveBinding, store)
+	}
 
 	def exportActivity(Block blk, Activity act) {
 		val exporter = new ActivityExporter(this)
@@ -60,8 +85,8 @@ abstract class BaseExporter<S, A, R extends Element> {
 		exporter.exportContents(blk)
 	}
 
-	def exportBlock(Block blk) { cache.export(new BlockExporter(this), blk, blk) }
+	def exportBlock(Block blk, Consumer<SequenceNode> store) { cache.export(new BlockExporter(this), blk, blk, store) }
 
-	def exportParameter(IVariableBinding vb) { cache.export(new ParameterExporter(this), vb, vb) }
-	
+	def exportParameter(IVariableBinding vb) { cache.export(new ParameterExporter(this), vb, vb, []) }
+
 }

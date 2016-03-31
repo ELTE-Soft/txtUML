@@ -9,6 +9,7 @@ import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.UMLFactory
 import org.eclipse.jdt.core.IPackageFragment
 import org.eclipse.jdt.core.dom.ASTNode
+import java.util.function.Consumer
 
 class ExporterCache {
 
@@ -17,7 +18,7 @@ class ExporterCache {
 
 	protected val factory = UMLFactory.eINSTANCE
 
-	def <S, A, R extends Element> R export(Exporter<S, A, R> exporter, S source, A access) {
+	def <S, A, R extends Element> R export(Exporter<S, A, R> exporter, S source, A access, Consumer<? super R> store) {
 		val exported = cache.get(new Pair(exporter.class,source))
 		if (exported != null) {
 			return exported as R
@@ -26,6 +27,7 @@ class ExporterCache {
 		val fetched = fetchMap.get(accessKey) as R;
 		if (fetched != null) {
 			exporter.alreadyExists(fetched)
+			store.accept(fetched)
 			exporter.exportContents(source)
 			return fetched
 		}
@@ -33,6 +35,7 @@ class ExporterCache {
 		if (justExported != null) {
 			cache.put(new Pair(exporter.class,source), justExported)
 			fetchMap.put(accessKey, justExported)
+			store.accept(justExported)
 			exporter.exportContents(source)
 		}
 		return justExported

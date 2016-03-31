@@ -19,6 +19,6 @@ class AssociationExporter extends Exporter<TypeDeclaration, ITypeBinding, Associ
 
 	override exportContents(TypeDeclaration decl) {
 		result.name = decl.name.identifier
-		result.ownedEnds.addAll(decl.types.map[exportAssociationEnd])
+		decl.types.map[exportAssociationEnd[result.ownedEnds += it]]
 	}
 }

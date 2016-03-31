@@ -31,10 +31,10 @@ class ClassExporter extends Exporter<TypeDeclaration, ITypeBinding, Class> {
 		result.name = typeBnd.name
 		val sm = result.createClassifierBehavior(result.name, UMLPackage.Literals.STATE_MACHINE) as StateMachine
 		region = sm.createRegion(result.name)
-		result.ownedAttributes += typeBnd.declaredFields.map[exportField]
-		result.ownedOperations += typeDecl.methods.map[exportOperation]
-		result.ownedBehaviors += typeDecl.methods.map[exportActivity]
-		typeDecl.types.map[exportElement(it, it.resolveBinding)].forEach[storeSMElement]
+		typeBnd.declaredFields.forEach[exportField[result.ownedAttributes += it]]
+		typeDecl.methods.forEach[exportOperation[result.ownedOperations += it]]
+		typeDecl.methods.forEach[exportActivity[result.ownedBehaviors += it]]
+		typeDecl.types.forEach[exportElement(it, it.resolveBinding, [storeSMElement])]
 	}
 
 	def storeSMElement(Element contained) {

@@ -71,6 +71,7 @@ public class TxtUMLToCppWizard extends Wizard {
 			try {
 				model = TxtUMLToUML2.exportModel(txtUMLProject, txtUMLModel, umlFilesFolder, ExportMode.ExportActionCode);
 			} catch (Exception e) {
+				e.printStackTrace();
 				Dialogs.errorMsgb("txtUML export Error", e.getClass() + ":" + System.lineSeparator() + e.getMessage(),
 						e);
 				return false;

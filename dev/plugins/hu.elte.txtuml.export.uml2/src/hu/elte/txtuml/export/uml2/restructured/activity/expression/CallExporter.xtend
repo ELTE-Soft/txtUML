@@ -28,13 +28,13 @@ class CallExporter extends hu.elte.txtuml.export.uml2.restructured.activity.Acti
 		val expr = if (Modifier.isStatic(binding.modifiers))
 				null
 			else
-				exportExpression(source.expression) ?: createThis(binding.declaringClass)
+				exportExpression(source.expression)[storeNode] ?: createThis(binding.declaringClass)
 		expr?.result?.connect(result.target)
 
 		val i = new AtomicInteger
 		binding.parameterTypes.forEach[result.createArgument("p" + i.andIncrement, fetchType)]
 
-		val argVals = source.arguments.map[exportExpression].map[it.result]
+		val argVals = source.arguments.map[exportExpression[storeNode]].map[it.result]
 
 		for (argi : 0 ..< result.arguments.length) {
 			argVals.get(argi).connect(result.arguments.get(argi))
