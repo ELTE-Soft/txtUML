@@ -90,6 +90,10 @@ public class GenerationTemplates {
 	public static String sourceName(String className) {
 		return className + "." + GenerationNames.SourceExtension;
 	}
+	
+	public static String linkSourceName(String className) {
+	    return className + "-" + GenerationNames.LinkAddition + "." + GenerationNames.SourceExtension;
+	}
 
 	public static String eventHeaderGuard(String source) {
 		return headerGuard(source, GenerationNames.EventHeaderName);
@@ -267,7 +271,9 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 			return className + "::" + "~" + className + "()" + emptyBody() + "\n";
 		}
 		else {
-			return className + "::" + "~" + className + "()\n{\n" + RuntimeTemplates.GetRuntimeInstance + GenerationNames.PointerAccess + RuntimeTemplates.ObjectRemoverForRuntime + "(" + GenerationNames.Self + ");\n}\n\n";
+			return className + "::" + "~" + className + "()\n{\n" + RuntimeTemplates.GetRuntimeInstance + 
+				GenerationNames.PointerAccess + RuntimeTemplates.ObjectRemoverForRuntime + 
+				"(" + GenerationNames.Self + ");\n}\n\n";
 		}
 		
 	}
@@ -339,9 +345,19 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 				+ ";\n}";
 	}
 	
+	public static StringBuilder linkTemplateSpecializationDecl(String className, String otherClassName) {
+		StringBuilder source = new StringBuilder("");
+		source.append(GenerationNames.TemplateDecl + "<>\n");
+		source.append(GenerationNames.NoReturn + " " + className + "::" + GenerationNames.LinkFunctionName);
+		source.append("<" + otherClassName + ">");
+		source.append("(" + PrivateFunctionalTemplates.cppType(otherClassName) + ");\n");
+		
+		return source;
+	}
+	
 	public static StringBuilder linkTemplateSpecializationDef(String className, String otherClassName, String roleName) {
 		StringBuilder source = new StringBuilder("");
-		source.append("tmplate<>\n");
+		source.append(GenerationNames.TemplateDecl + "<>\n");
 		source.append(GenerationNames.NoReturn + " " + className + "::" + GenerationNames.LinkFunctionName);
 		source.append("<" + otherClassName + ">");
 		source.append("(" + PrivateFunctionalTemplates.cppType(otherClassName) + " " +  GenerationNames.AssocParameterName +  ")\n");
@@ -350,6 +366,17 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 		 
 		return source;
 	}
+	
+	public static StringBuilder templateLinkFunction() {
+	    StringBuilder source = new StringBuilder("");
+	    source.append(GenerationNames.TemplateDecl + "<" + GenerationNames.TemplateType + " " + GenerationNames.TemplateParameterName + ">\n");
+	    source.append(GenerationNames.NoReturn + " " + GenerationNames.LinkFunctionName);
+	    source.append("(" + PrivateFunctionalTemplates.cppType(GenerationNames.TemplateParameterName) + " " +  GenerationNames.AssocParameterName +  ") {}\n");
+	    
+	    return source;
+	}
+	
+	
 
 	public static String hierarchicalSubStateMachineClassConstructor(String className, String parentClassName,
 			Multimap<Pair<String, String>, Pair<String, String>> machine, Map<String, String> subMachines,
@@ -643,6 +670,8 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 		return "using " + usedName + " = " + typeName + templateParameters + ";\n";
 
 	}
+
+
 
 	
 }

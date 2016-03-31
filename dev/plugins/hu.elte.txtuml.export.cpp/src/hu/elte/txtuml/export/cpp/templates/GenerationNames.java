@@ -85,8 +85,12 @@ class GenerationNames {
 	public static final String MultiplicityEnum = "Multiplicity";
 	public static final String AssigmentOperator = "=";
 	public static final String AddAssocToAssocationFunctionName = "addAssoc";
-	public static final String AssocParameterName = "o";
+	public static final String AssocParameterName = "object";
 	public static final String LinkFunctionName = "link";
+	public static final String LinkAddition = "link";
+	public static final String TemplateDecl = "template";
+	public static final String TemplateType = "typename";
+	public static final String TemplateParameterName = "T";
 	
 
 	public static String friendClassDecl(String className) {

@@ -80,6 +80,7 @@ public class Uml2ToCppExporter {
 
 			classNames.addAll(classExporter.getSubmachines());
 			classNames.add(item.getName());
+			classNames.addAll(classExporter.getAdditionalSources());
 		}
 
 		createCMakeFile(outputDirectory);

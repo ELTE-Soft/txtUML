@@ -36,7 +36,7 @@ public:
         linkedObjects.remove(o);
     }
 
-    T* getOne(bool cond(T*) = []{return true;})
+    T* getOne(bool cond(T*) = [](T* o){return true;})
     {
         T* object = nullptr;
         for(T* o : linkedObjects)
