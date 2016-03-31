@@ -1,12 +1,12 @@
 package hu.elte.txtuml.export.uml2.restructured.activity.statement
 
-import hu.elte.txtuml.export.uml2.restructured.Exporter
+import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import org.eclipse.jdt.core.dom.Block
 import org.eclipse.uml2.uml.SequenceNode
 
 class BlockExporter extends ControlExporter<Block, SequenceNode> {
 
-	new(Exporter<?, ?, ?> parent) {
+	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
 	}
 

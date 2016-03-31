@@ -11,13 +11,14 @@ import org.eclipse.jdt.core.IPackageFragmentRoot
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration
 import org.eclipse.jdt.core.dom.TypeDeclaration
 import org.eclipse.uml2.uml.Package
+import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 
 abstract class AbstractPackageExporter<T extends Package> extends Exporter<IPackageFragment, IPackageFragment, T> {
 
 	new() {
 	}
 
-	new(Exporter<?, ?, ?> parent) {
+	new(BaseExporter<?, ?, ?> parent) {
 		super(parent);
 	}
 
@@ -54,7 +55,7 @@ abstract class AbstractPackageExporter<T extends Package> extends Exporter<IPack
 
 class PackageExporter extends AbstractPackageExporter<Package> {
 
-	new(Exporter<?, ?, ?> parent) {
+	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
 	}
 

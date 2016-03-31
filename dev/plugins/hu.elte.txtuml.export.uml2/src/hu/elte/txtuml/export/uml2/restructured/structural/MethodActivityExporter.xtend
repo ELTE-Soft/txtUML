@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.uml2.restructured.structural
 
+import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import hu.elte.txtuml.export.uml2.restructured.Exporter
 import org.eclipse.jdt.core.dom.IMethodBinding
 import org.eclipse.jdt.core.dom.MethodDeclaration
@@ -11,7 +12,7 @@ import org.eclipse.uml2.uml.UMLPackage
 
 class MethodActivityExporter extends Exporter<MethodDeclaration, IMethodBinding, Activity> {
 
-	new(Exporter<?, ?, ?> parent) {
+	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
 	}
 

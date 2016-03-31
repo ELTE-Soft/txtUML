@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.uml2.restructured.activity
 
+import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import hu.elte.txtuml.export.uml2.restructured.Exporter
 import org.eclipse.uml2.uml.Action
 import org.eclipse.uml2.uml.ActivityEdge
@@ -17,7 +18,7 @@ import org.eclipse.uml2.uml.Variable
 
 abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 
-	new(Exporter<?, ?, ?> parent) {
+	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
 	}
 

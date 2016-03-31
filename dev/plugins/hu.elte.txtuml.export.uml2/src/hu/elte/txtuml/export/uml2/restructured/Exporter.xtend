@@ -2,7 +2,6 @@ package hu.elte.txtuml.export.uml2.restructured
 
 import hu.elte.txtuml.api.model.Collection
 import hu.elte.txtuml.api.model.ModelClass
-import hu.elte.txtuml.export.uml2.restructured.activity.ActivityExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.AssocNavigationExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.IgnoredAPICallExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.CallExporter
@@ -21,8 +20,6 @@ import hu.elte.txtuml.export.uml2.restructured.structural.MethodActivityExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.OperationExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.PackageExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.ParameterExporter
-import hu.elte.txtuml.export.uml2.restructured.structural.SignalEventExporter
-import hu.elte.txtuml.export.uml2.restructured.structural.SignalExporter
 import java.util.List
 import org.eclipse.jdt.core.IPackageFragment
 import org.eclipse.jdt.core.dom.Block
@@ -32,49 +29,74 @@ import org.eclipse.jdt.core.dom.IBinding
 import org.eclipse.jdt.core.dom.IMethodBinding
 import org.eclipse.jdt.core.dom.ITypeBinding
 import org.eclipse.jdt.core.dom.IVariableBinding
-import org.eclipse.jdt.core.dom.MethodDeclaration
 import org.eclipse.jdt.core.dom.MethodInvocation
 import org.eclipse.jdt.core.dom.Statement
 import org.eclipse.jdt.core.dom.StringLiteral
-import org.eclipse.jdt.core.dom.TypeDeclaration
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement
 import org.eclipse.uml2.uml.Action
-import org.eclipse.uml2.uml.Activity
 import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.ExecutableNode
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
 
-abstract class Exporter<S, A, R extends Element> {
+/** An exporter is able to fully or partially export a given element. 
+ * Partial export only creates the UML object itself, while full export also creates its contents.
+ * For partial generation we need the access key type, for partial generation we need the source type.
+ * 
+ * Exporting can return null if the exporter is not capable of exporting the given element (even if the 
+ * type is correct)
+ * 
+ * @param S Source type
+ * @param A Access key type
+ * @param R Result type
+ */
+abstract class Exporter<S, A, R extends Element> extends BaseExporter<S,A,R> {
 
+	/** Method calls to these classes will be treated specially */
 	protected static val API_CLASSES = #{ModelClass.canonicalName, hu.elte.txtuml.api.model.Action.canonicalName,
 		Collection.canonicalName}
 
-	protected Exporter<?, ?, ?> parent
-	protected ExporterCache cache
+	/** The parent exporter. Exporters form a tree to be able to place generated object in one of their parent exporter. */
+	protected BaseExporter<?, ?, ?> parent
+
+	/** The UML object resulting from export */
 	protected R result
 
+	/** Creates a root exporter with a new cache */
 	new() {
-		cache = new ExporterCache
+		super(new ExporterCache)
 	}
 
-	new(Exporter<?, ?, ?> parent) {
+	/** Creates an exporter as a child of an existing one */
+	new(BaseExporter<?, ?, ?> parent) {
+		super(parent.cache)
 		this.parent = parent
-		this.cache = parent.cache
 	}
 
+	/** 
+	 * Partially exports the element if the exporter is able to export the given element. 
+	 * Returns null otherwise.
+	 */
 	abstract def R create(A access)
 
+	/** Partially exports the element and sets the result. */
 	def R createResult(A access) { result = create(access) }
 
+	/** Perform full export for an element that was partially exported. */
 	abstract def void exportContents(S source)
 
+	/** Returns the UML factory for creating UML elements. */
 	def getFactory() { cache.factory }
 
+	/** This method should be called when the partially exported element is already found in the cache. */
 	def void alreadyExists(R result) {
 		this.result = result
 	}
 
+	/** 
+	 * Gets the element if it was already exported (at least partially) or export the element partially, 
+	 * automatically selecting the exporter that is able to export the element.
+	 */
 	def <CA, CR extends Element> fetchElement(CA access) {
 		val imported = if(access instanceof IBinding) getImportedElement(access)
 		if (imported != null) {
@@ -90,12 +112,17 @@ abstract class Exporter<S, A, R extends Element> {
 		throw new IllegalArgumentException(access.toString)
 	}
 
+	/**
+	 * Fetch an element with a specific exporter. This must be used when multiple exporters can export
+	 * the given element.
+	 */
 	def <CA, CR extends Element> fetchElement(CA access, Exporter<?, CA, CR> exporter) {
 		cache.fetch(exporter, access)
 	}
 
 	def fetchType(ITypeBinding typ) { fetchElement(typ) as Type }
 
+	/** Gets the possible exporters for a given access object */
 	def List<Exporter<?, ?, ?>> getExporters(Object obj) {
 		switch obj {
 			IPackageFragment:
@@ -130,6 +157,9 @@ abstract class Exporter<S, A, R extends Element> {
 		exportElement(source, source) as Action
 	}
 
+	/**
+	 * Fully exports the given element by selecting the exporter that is able to export it.
+	 */
 	def <CS, CA, CR extends Element> exportElement(CS source, CA access) {
 		if(source == null) return null
 		val exporters = getExporters(access);
@@ -152,42 +182,12 @@ abstract class Exporter<S, A, R extends Element> {
 
 	def getUnlimitedNaturalType() { getImportedElement("UnlimitedNatural") as PrimitiveType }
 
-	def Element getImportedElement(String name) { parent.getImportedElement(name) }
+	override def Element getImportedElement(String name) { parent.getImportedElement(name) }
 
 	def Element getImportedElement(IBinding binding) {
 		switch binding {
 			ITypeBinding: getImportedElement(binding.qualifiedName)
 		}
 	}
-
-	def exportPackage(IPackageFragment pf) { cache.export(new PackageExporter(this), pf, pf) }
-
-	def exportClass(TypeDeclaration td) { cache.export(new ClassExporter(this), td, td.resolveBinding) }
-
-	def exportSignal(TypeDeclaration td) { cache.export(new SignalExporter(this), td, td.resolveBinding) }
-
-	def exportSignalEvent(TypeDeclaration td) { cache.export(new SignalEventExporter(this), td, td.resolveBinding) }
-
-	def exportAssociation(TypeDeclaration td) { cache.export(new AssociationExporter(this), td, td.resolveBinding) }
-
-	def exportAssociationEnd(TypeDeclaration td) {
-		cache.export(new AssociationEndExporter(this), td, td.resolveBinding)
-	}
-
-	def exportField(IVariableBinding td) { cache.export(new FieldExporter(this), td, td) }
-
-	def exportOperation(MethodDeclaration md) { cache.export(new OperationExporter(this), md, md.resolveBinding) }
-
-	def exportActivity(MethodDeclaration md) { cache.export(new MethodActivityExporter(this), md, md.resolveBinding) }
-
-	def exportActivity(Block blk, Activity act) {
-		val exporter = new ActivityExporter(this)
-		exporter.alreadyExists(act)
-		exporter.exportContents(blk)
-	}
-
-	def exportBlock(Block blk) { cache.export(new BlockExporter(this), blk, blk) }
-
-	def exportParameter(IVariableBinding vb) { cache.export(new ParameterExporter(this), vb, vb) }
 
 }

@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.uml2.restructured.structural
 
 import hu.elte.txtuml.api.model.assocends.Navigability.Navigable
+import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import hu.elte.txtuml.export.uml2.restructured.Exporter
 import hu.elte.txtuml.export.uml2.utils.MultiplicityProvider
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller
@@ -8,12 +9,12 @@ import hu.elte.txtuml.utils.jdt.SharedUtils
 import org.eclipse.jdt.core.dom.ITypeBinding
 import org.eclipse.jdt.core.dom.TypeDeclaration
 import org.eclipse.uml2.uml.AggregationKind
-import org.eclipse.uml2.uml.Property
 import org.eclipse.uml2.uml.Association
+import org.eclipse.uml2.uml.Property
 
 class AssociationEndExporter extends Exporter<TypeDeclaration, ITypeBinding, Property> {
 
-	new(Exporter<?, ?, ?> parent) {
+	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
 	}
 

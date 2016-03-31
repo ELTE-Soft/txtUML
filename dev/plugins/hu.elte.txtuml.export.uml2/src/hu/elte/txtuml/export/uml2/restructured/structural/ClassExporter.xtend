@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.uml2.restructured.structural
 
+import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import hu.elte.txtuml.export.uml2.restructured.Exporter
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller
 import org.eclipse.jdt.core.dom.ITypeBinding
@@ -16,7 +17,7 @@ class ClassExporter extends Exporter<TypeDeclaration, ITypeBinding, Class> {
 
 	private Region region
 
-	new(Exporter<?, ?, ?> parent) {
+	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
 	}
 
@@ -30,9 +31,9 @@ class ClassExporter extends Exporter<TypeDeclaration, ITypeBinding, Class> {
 		result.name = typeBnd.name
 		val sm = result.createClassifierBehavior(result.name, UMLPackage.Literals.STATE_MACHINE) as StateMachine
 		region = sm.createRegion(result.name)
-		result.ownedAttributes.addAll(typeBnd.declaredFields.map[exportField])
-		result.ownedOperations.addAll(typeDecl.methods.map[exportOperation])
-		result.ownedBehaviors.addAll(typeDecl.methods.map[exportActivity])
+		result.ownedAttributes += typeBnd.declaredFields.map[exportField]
+		result.ownedOperations += typeDecl.methods.map[exportOperation]
+		result.ownedBehaviors += typeDecl.methods.map[exportActivity]
 		typeDecl.types.map[exportElement(it, it.resolveBinding)].forEach[storeSMElement]
 	}
 

@@ -1,16 +1,16 @@
 package hu.elte.txtuml.export.uml2.restructured.activity
 
-import hu.elte.txtuml.export.uml2.restructured.Exporter
+import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import org.eclipse.jdt.core.dom.Block
 import org.eclipse.uml2.uml.Activity
 import org.eclipse.uml2.uml.ActivityEdge
-import org.eclipse.uml2.uml.UMLPackage
 import org.eclipse.uml2.uml.ActivityNode
+import org.eclipse.uml2.uml.UMLPackage
 import org.eclipse.uml2.uml.Variable
 
 class ActivityExporter extends ActionExporter<Block, Activity> {
 
-	new(Exporter<?, ?, ?> parent) {
+	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
 	}
 
