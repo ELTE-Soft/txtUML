@@ -21,6 +21,7 @@ import org.eclipse.uml2.uml.CallOperationAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Clause;
 import org.eclipse.uml2.uml.ConditionalNode;
+import org.eclipse.uml2.uml.CreateLinkAction;
 import org.eclipse.uml2.uml.CreateObjectAction;
 import org.eclipse.uml2.uml.DestroyObjectAction;
 import org.eclipse.uml2.uml.Element;
@@ -186,7 +187,10 @@ public class ActivityExporter {
 			CreateObjectAction cAction = (CreateObjectAction) node_;
 			// cAction.
 			source.append(createObjectActionCode(cAction));
-		} else if (node_.eClass().equals(UMLPackage.Literals.SEND_SIGNAL_ACTION)) {
+		} else if (node_.eClass().equals(UMLPackage.Literals.CREATE_LINK_ACTION)) {
+		    source.append(createLinkActionCode((CreateLinkAction) node_));
+		}
+		else if (node_.eClass().equals(UMLPackage.Literals.SEND_SIGNAL_ACTION)) {
 			source.append(createSendSignalActionCode((org.eclipse.uml2.uml.SendSignalAction) node_).toString());
 		} else if (node_.eClass().equals(UMLPackage.Literals.SEND_OBJECT_ACTION)) {
 			source.append(createSendSignalActionCode((SendObjectAction) node_));
@@ -222,6 +226,16 @@ public class ActivityExporter {
 	}
 
 
+
+	private String createLinkActionCode(CreateLinkAction node_) {
+	    String firstEndClassType = node_.getInputValues().get(0).getType().getName();
+	    String firstEndObject = getTargetFromInputPin(node_.getInputValues().get(0));
+	    
+	    String secondEndClassType = node_.getInputValues().get(1).getType().getName();
+	    String secondEndObject = getTargetFromInputPin(node_.getInputValues().get(1));
+	    
+	    return ActivityTemplates.linkObjects(firstEndClassType, firstEndObject, secondEndClassType, secondEndObject);
+	}
 
 	private String createDestroyObjectActionCode(DestroyObjectAction node_) {
 		return ActivityTemplates.deleteObject(getTargetFromInputPin(node_.getTarget()));

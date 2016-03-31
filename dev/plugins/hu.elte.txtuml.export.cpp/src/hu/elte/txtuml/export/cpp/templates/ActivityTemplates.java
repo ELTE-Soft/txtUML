@@ -45,6 +45,12 @@ public class ActivityTemplates {
 		return source;
 	}
 	
+	public static String linkObjects(String firstClassName, String firstObjectName, 
+		String secondClassName, String secondObjectName) {
+	    return GenerationNames.ActionFunctionsNamespace + "::" + GenerationNames.LinkFunctionName + "<" + firstClassName + "," + secondClassName + ">" +
+		"(" + firstObjectName + "," + secondObjectName + ");\n";
+	}
+	
 	public static String signalSend(String target, String signalName) {
 		return target + GenerationNames.PointerAccess + GenerationNames.SendSignal + "("  + GenerationNames.SmartPtr +
 				"(" +  signalName + "));\n";

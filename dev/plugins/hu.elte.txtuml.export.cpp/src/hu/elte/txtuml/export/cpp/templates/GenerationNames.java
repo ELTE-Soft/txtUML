@@ -92,6 +92,8 @@ class GenerationNames {
 	public static final String TemplateType = "typename";
 	public static final String TemplateParameterName = "T";
 	
+	public static final String ActionFunctionsNamespace = "action";
+	
 
 	public static String friendClassDecl(String className) {
 		return "friend " + GenerationNames.ClassType + " " + className + ";\n";
