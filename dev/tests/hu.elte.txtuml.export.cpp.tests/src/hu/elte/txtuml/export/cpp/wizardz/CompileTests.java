@@ -57,25 +57,29 @@ public class CompileTests {
 			new Config("producer_consumer", "producer_consumer.j.model", "producer_consumer.j.DefaultConfiguration"),
 			new Config("train", "train.j.model", "train.j.DefaultConfiguration"), };
 
-	private static final String testWorkspace = "target/work/data/";
 	private static final String exportTestProjectPrefix = "exportTest_";
 	private static final String compileTestProjectPrefix = "compileTest_";
 	private static final String buildDirPrefix = "build_";
 
+	private static String testWorkspace = "target/work/data/";
 	private static boolean buildStuffPresent = false;
 	private static boolean compilerGCCPresent = false;
 	private static boolean compilerClangPresent = false;
 
 	@BeforeClass
 	public static void detectCPPEnvironment() {
-		System.out.println("***************** CPP Compilation Test probing environment");
+		try {
+			testWorkspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile().getCanonicalPath() + "/";
+		} catch (IOException e1) {
+		}
+		System.out.println("***************** CPP Compilation Test probing environment in workspace " + testWorkspace);
+
 		int cmakeRet = -1;
 		int ninjaRet = -1;
 		int gccRet = -1;
 		int gccxxRet = -1;
 		int clangRet = -1;
 		int clangxxRet = -1;
-
 		try {
 			cmakeRet = executeCommand(testWorkspace, Arrays.asList("cmake", "--version"), null);
 			ninjaRet = executeCommand(testWorkspace, Arrays.asList("ninja", "--version"), null);
