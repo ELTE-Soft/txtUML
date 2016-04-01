@@ -37,6 +37,11 @@
 								<id>hu.elte.txtuml.project</id>
 								<versionRange>0.0.0</versionRange>
 							</requirement>
+							<requirement>
+								<type>eclipse-plugin</type>
+								<id>hu.elte.txtuml.xtxtuml.ui</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
 
 						</extraRequirements>
 					</dependency-resolution>
