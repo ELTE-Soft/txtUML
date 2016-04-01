@@ -5,12 +5,13 @@ import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.AssocNavigationExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.IgnoredAPICallExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.BooleanLiteralExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.expression.CallExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.CharacterLiteralExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.MethodCallExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.NullLiteralExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.NumberLiteralExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.ParenExpressionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.StringLiteralExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.SuperCallExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.BlockExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.ExpressionStatementExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.ReturnStatementExporter
@@ -45,6 +46,7 @@ import org.eclipse.jdt.core.dom.ParenthesizedExpression
 import org.eclipse.jdt.core.dom.ReturnStatement
 import org.eclipse.jdt.core.dom.Statement
 import org.eclipse.jdt.core.dom.StringLiteral
+import org.eclipse.jdt.core.dom.SuperMethodInvocation
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement
 import org.eclipse.uml2.uml.Action
 import org.eclipse.uml2.uml.Element
@@ -150,7 +152,9 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 			Block:
 				#[new BlockExporter(this)]
 			MethodInvocation:
-				#[new CallExporter(this), new AssocNavigationExporter(this), new IgnoredAPICallExporter(this)]
+				#[new MethodCallExporter(this), new AssocNavigationExporter(this), new IgnoredAPICallExporter(this)]
+			SuperMethodInvocation:
+				#[new SuperCallExporter(this)]
 			StringLiteral:
 				#[new StringLiteralExporter(this)]
 			BooleanLiteral:
