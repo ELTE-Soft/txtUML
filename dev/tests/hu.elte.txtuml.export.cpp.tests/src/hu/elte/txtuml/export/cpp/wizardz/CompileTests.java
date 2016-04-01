@@ -16,7 +16,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.junit.BeforeClass;
@@ -172,15 +171,18 @@ public class CompileTests {
 
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(testProject);
 		IFolder folder = project.getFolder("src-gen");
-		folder.create(false, true, new NullProgressMonitor());
+		folder.create(false, true, null);
 		project.refreshLocal(IProject.DEPTH_INFINITE, new NullProgressMonitor());
-		try {
-			project.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-		} catch (CoreException ex) {
-			Thread.sleep(300);
+		int buildsTriggered = 0;
+		int buildsFailed = 0;
+		while (buildsTriggered < 3 && buildsFailed < 9) {
 			try {
-				project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, new NullProgressMonitor());
-			} catch (CoreException ex2) {
+				System.out.println("Calling build round " + buildsTriggered);
+				project.build(IncrementalProjectBuilder.AUTO_BUILD, new NullProgressMonitor());
+				buildsTriggered++;
+			} catch (Exception ex) {
+				System.out.println("Whoops, build failed round " + buildsFailed);
+				buildsFailed++;
 			}
 		}
 
