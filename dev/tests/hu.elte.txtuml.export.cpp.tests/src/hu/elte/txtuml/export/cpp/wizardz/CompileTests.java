@@ -175,10 +175,11 @@ public class CompileTests {
 		project.refreshLocal(IProject.DEPTH_INFINITE, new NullProgressMonitor());
 		int buildsTriggered = 0;
 		int buildsFailed = 0;
-		while (buildsTriggered < 3 && buildsFailed < 9) {
+		while (buildsTriggered < 3 && buildsFailed < 19) {
 			try {
 				System.out.println("Calling build round " + buildsTriggered);
-				project.build(IncrementalProjectBuilder.AUTO_BUILD, new NullProgressMonitor());
+				project.build(buildsTriggered == 0 ? IncrementalProjectBuilder.CLEAN_BUILD
+						: IncrementalProjectBuilder.AUTO_BUILD, new NullProgressMonitor());
 				buildsTriggered++;
 			} catch (Exception ex) {
 				System.out.println("Whoops, build failed round " + buildsFailed);
