@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -170,8 +169,8 @@ public class CompileTests {
 		project.delete(false, false, null);
 
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(testProject);
-		IFolder folder = project.getFolder("src-gen");
-		folder.create(false, true, null);
+		// IFolder folder = project.getFolder("src-gen");
+		// folder.create(false, true, null);
 		project.refreshLocal(IProject.DEPTH_INFINITE, new NullProgressMonitor());
 		int buildsTriggered = 0;
 		int buildsFailed = 0;
