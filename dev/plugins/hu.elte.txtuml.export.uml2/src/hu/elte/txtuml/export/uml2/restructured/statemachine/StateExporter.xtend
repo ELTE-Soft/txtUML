@@ -8,6 +8,7 @@ import org.eclipse.uml2.uml.Pseudostate
 import org.eclipse.uml2.uml.PseudostateKind
 import org.eclipse.uml2.uml.State
 import org.eclipse.uml2.uml.Vertex
+import org.eclipse.jdt.core.dom.MethodDeclaration
 
 abstract class AbstractStateExporter<V extends Vertex> extends Exporter<TypeDeclaration, ITypeBinding, V> {
 
@@ -29,6 +30,18 @@ class StateExporter extends AbstractStateExporter<State> {
 	override create(ITypeBinding access) {
 		if(ElementTypeTeller.isState(access)) factory.createState
 	}
+	
+	override exportContents(TypeDeclaration source) {
+		super.exportContents(source)
+		source.bodyDeclarations.filter[it instanceof MethodDeclaration].filter [
+			(it as MethodDeclaration).name.identifier == "entry"
+		].forEach[exportActivity(it as MethodDeclaration)[ result.entry = it ]]
+		source.bodyDeclarations.filter[it instanceof MethodDeclaration].filter [
+			(it as MethodDeclaration).name.identifier == "exit"
+		].forEach[exportActivity(it as MethodDeclaration)[ result.exit = it ]]
+
+	}
+	
 }
 
 class InitStateExporter extends AbstractStateExporter<Pseudostate> {

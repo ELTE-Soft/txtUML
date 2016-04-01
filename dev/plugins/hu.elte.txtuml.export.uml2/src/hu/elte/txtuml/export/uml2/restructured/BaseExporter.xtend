@@ -28,6 +28,8 @@ import org.eclipse.uml2.uml.SignalEvent
 import org.eclipse.uml2.uml.Association
 import org.eclipse.uml2.uml.Operation
 import org.eclipse.uml2.uml.SequenceNode
+import org.eclipse.uml2.uml.Constraint
+import hu.elte.txtuml.export.uml2.restructured.statemachine.GuardExporter
 
 /**
  * Base class for exporters, methods to export different kinds of elements using specific exporters.
@@ -77,6 +79,10 @@ abstract class BaseExporter<S, A, R extends Element> {
 
 	def exportActivity(MethodDeclaration md, Consumer<Activity> store) {
 		cache.export(new MethodActivityExporter(this), md, md.resolveBinding, store)
+	}
+	
+	def exportGuard(MethodDeclaration md, Consumer<Constraint> store) {
+		cache.export(new GuardExporter(this), md, md.resolveBinding, store)
 	}
 
 	def exportActivity(Block blk, Activity act) {

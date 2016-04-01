@@ -25,11 +25,10 @@ class CallExporter extends hu.elte.txtuml.export.uml2.restructured.activity.Acti
 
 	override void exportContents(MethodInvocation source) {
 		val binding = source.resolveMethodBinding
-		val expr = if (Modifier.isStatic(binding.modifiers))
-				null
-			else
-				exportExpression(source.expression)[storeNode] ?: createThis(binding.declaringClass)
-		expr?.result?.connect(result.target)
+		if (!Modifier.isStatic(binding.modifiers)) {
+			val target = exportExpression(source.expression)[storeNode] ?: createThis(binding.declaringClass)
+			target.result.objectFlow(result.createTarget(target.name, target.result.type))
+		}
 
 		val i = new AtomicInteger
 		binding.parameterTypes.forEach[result.createArgument("p" + i.andIncrement, fetchType)]
@@ -37,7 +36,7 @@ class CallExporter extends hu.elte.txtuml.export.uml2.restructured.activity.Acti
 		val argVals = source.arguments.map[exportExpression[storeNode]].map[it.result]
 
 		for (argi : 0 ..< result.arguments.length) {
-			argVals.get(argi).connect(result.arguments.get(argi))
+			argVals.get(argi).objectFlow(result.arguments.get(argi))
 		}
 	}
 
@@ -48,6 +47,7 @@ class CallExporter extends hu.elte.txtuml.export.uml2.restructured.activity.Acti
 	def createThis(ITypeBinding ref) {
 		val readThis = factory.createReadSelfAction
 		readThis.createResult("self_result", fetchType(ref))
+		storeNode(readThis)
 		readThis
 	}
 

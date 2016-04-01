@@ -5,11 +5,11 @@ import hu.elte.txtuml.export.uml2.restructured.Exporter
 import org.eclipse.uml2.uml.Action
 import org.eclipse.uml2.uml.ActivityEdge
 import org.eclipse.uml2.uml.ActivityNode
+import org.eclipse.uml2.uml.ActivityParameterNode
 import org.eclipse.uml2.uml.CallOperationAction
 import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.InputPin
 import org.eclipse.uml2.uml.ObjectFlow
-import org.eclipse.uml2.uml.OutputPin
 import org.eclipse.uml2.uml.ReadLinkAction
 import org.eclipse.uml2.uml.ReadSelfAction
 import org.eclipse.uml2.uml.ReadVariableAction
@@ -33,6 +33,10 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 	def void storeVariable(Variable variable) {
 		(parent as ActionExporter<?, ?>).storeVariable(variable)
 	}
+	
+	def ActivityParameterNode getParameterNode(String name) {
+		(parent as ActionExporter<?, ?>).getParameterNode(name)
+	}
 
 	def dispatch result(ReadVariableAction node) { node.result }
 
@@ -52,7 +56,7 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 
 	def getOtherSide(InputPin inp) { inp.incomings.filter[it instanceof ObjectFlow].map[source] }
 
-	def connect(OutputPin source, InputPin target) {
+	def objectFlow(ActivityNode source, ActivityNode target) {
 		val flow = factory.createObjectFlow
 		flow.storeEdge
 		flow.source = source

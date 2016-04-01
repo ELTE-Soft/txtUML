@@ -33,6 +33,7 @@ class MethodActivityExporter extends Exporter<MethodDeclaration, IMethodBinding,
 			val retParam = factory.createParameter
 			retParam.type = fetchType(binding.returnType)
 			retParam.direction = ParameterDirectionKind.RETURN_LITERAL
+			retParam.name = "return"
 			result.ownedParameters.add(retParam)
 		}
 	}

@@ -4,10 +4,16 @@ import hu.elte.txtuml.api.model.Collection
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.AssocNavigationExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.IgnoredAPICallExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.BooleanLiteralExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.CallExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.CharacterLiteralExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.NullLiteralExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.NumberLiteralExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.ParenExpressionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.StringLiteralExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.BlockExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.ExpressionStatementExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.statement.ReturnStatementExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.VariableDeclarationExporter
 import hu.elte.txtuml.export.uml2.restructured.statemachine.InitStateExporter
 import hu.elte.txtuml.export.uml2.restructured.statemachine.StateExporter
@@ -21,8 +27,11 @@ import hu.elte.txtuml.export.uml2.restructured.structural.OperationExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.PackageExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.ParameterExporter
 import java.util.List
+import java.util.function.Consumer
 import org.eclipse.jdt.core.IPackageFragment
 import org.eclipse.jdt.core.dom.Block
+import org.eclipse.jdt.core.dom.BooleanLiteral
+import org.eclipse.jdt.core.dom.CharacterLiteral
 import org.eclipse.jdt.core.dom.Expression
 import org.eclipse.jdt.core.dom.ExpressionStatement
 import org.eclipse.jdt.core.dom.IBinding
@@ -30,6 +39,10 @@ import org.eclipse.jdt.core.dom.IMethodBinding
 import org.eclipse.jdt.core.dom.ITypeBinding
 import org.eclipse.jdt.core.dom.IVariableBinding
 import org.eclipse.jdt.core.dom.MethodInvocation
+import org.eclipse.jdt.core.dom.NullLiteral
+import org.eclipse.jdt.core.dom.NumberLiteral
+import org.eclipse.jdt.core.dom.ParenthesizedExpression
+import org.eclipse.jdt.core.dom.ReturnStatement
 import org.eclipse.jdt.core.dom.Statement
 import org.eclipse.jdt.core.dom.StringLiteral
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement
@@ -38,7 +51,6 @@ import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.ExecutableNode
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
-import java.util.function.Consumer
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -51,7 +63,7 @@ import java.util.function.Consumer
  * @param A Access key type
  * @param R Result type
  */
-abstract class Exporter<S, A, R extends Element> extends BaseExporter<S,A,R> {
+abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 
 	/** Method calls to these classes will be treated specially */
 	protected static val API_CLASSES = #{ModelClass.canonicalName, hu.elte.txtuml.api.model.Action.canonicalName,
@@ -141,8 +153,20 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S,A,R> {
 				#[new CallExporter(this), new AssocNavigationExporter(this), new IgnoredAPICallExporter(this)]
 			StringLiteral:
 				#[new StringLiteralExporter(this)]
+			BooleanLiteral:
+				#[new BooleanLiteralExporter(this)]
+			CharacterLiteral:
+				#[new CharacterLiteralExporter(this)]
+			NullLiteral:
+				#[new NullLiteralExporter(this)]
+			NumberLiteral:
+				#[new NumberLiteralExporter(this)]
+			ParenthesizedExpression:
+				#[new ParenExpressionExporter(this)]
 			ExpressionStatement:
 				#[new ExpressionStatementExporter(this)]
+			ReturnStatement:
+				#[new ReturnStatementExporter(this)]
 			VariableDeclarationStatement:
 				#[new VariableDeclarationExporter(this)]
 			default:
@@ -184,6 +208,8 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S,A,R> {
 	def getRealType() { getImportedElement("Real") as PrimitiveType }
 
 	def getUnlimitedNaturalType() { getImportedElement("UnlimitedNatural") as PrimitiveType }
+
+	def getCollectionType() { getImportedElement("Collection") as PrimitiveType }
 
 	override def Element getImportedElement(String name) { parent.getImportedElement(name) }
 

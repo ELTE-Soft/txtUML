@@ -35,10 +35,15 @@ public class User extends ModelClass {
 			Action.log("\tUser: working...");
 			doWork();
 		}
+		
+		@Override
+		public boolean guard() {
+			return true;
+		}
 	}
 
 	void doWork() {
-		Action.log("\tUser: starting to work...");
+		Action.log(("\tUser: starting to work..."));
 		Machine myMachine = this.assoc(Usage.usedMachine.class).selectAny();
 		Action.send(new ButtonPress(), myMachine);
 		Action.send(new ButtonPress(), myMachine);

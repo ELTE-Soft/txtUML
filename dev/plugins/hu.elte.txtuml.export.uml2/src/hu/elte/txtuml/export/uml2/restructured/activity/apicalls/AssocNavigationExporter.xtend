@@ -35,7 +35,7 @@ class AssocNavigationExporter extends ActionExporter<MethodInvocation, ReadLinkA
 		val endData = action.createEndData
 		endData.end = assoc.ownedEnds.findFirst[name == binding.name]
 		val baseExpr = exportExpression(expression)[storeNode]
-		baseExpr.store.result.connect(endData.value)
+		baseExpr.store.result.objectFlow(endData.value)
 		endData.value.name = baseExpr.name
 	}
 
