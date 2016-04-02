@@ -53,9 +53,10 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 	 * @param diagramEditPart - The DiagramEditPart of the diagram which is to be handled
 	 */
 	public ActivityDiagramElementsManager(Diagram diagram, TransactionalEditingDomain domain) {
-		super(diagram, domain);
+		super(diagram);
 		nodesToBeAdded = generateNodesToBeAdded();
-		connectorsToBeAdded = generateConnectorsToBeAdded(); 
+		connectorsToBeAdded = generateConnectorsToBeAdded();
+		//TODO: ElementCreator field needed
 	}
 	
 	public ActivityDiagramElementsManager(Diagram diagram, TransactionalEditingDomain domain, IProgressMonitor monitor) {

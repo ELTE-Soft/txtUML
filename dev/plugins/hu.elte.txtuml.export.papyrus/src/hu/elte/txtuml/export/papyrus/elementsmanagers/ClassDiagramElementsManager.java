@@ -8,12 +8,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gef.EditPart;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.InterfaceEditPart;
-import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ModelEditPart;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Comment;
@@ -39,7 +37,7 @@ import org.eclipse.uml2.uml.Reception;
 import org.eclipse.uml2.uml.Signal;
 
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
-import hu.elte.txtuml.export.papyrus.api.ClassDiagramElementUtils;
+import hu.elte.txtuml.export.papyrus.api.ClassDiagramElementCreator;
 import hu.elte.txtuml.export.papyrus.api.ClassDiagramElementsController;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
@@ -48,6 +46,8 @@ import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
  */
 public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 
+	protected ClassDiagramElementCreator elementCreator;
+	
 	private List<java.lang.Class<? extends Element>> elementsToBeAdded;
 	private List<java.lang.Class<? extends Element>> connectorsToBeAdded;
 	
@@ -57,9 +57,10 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 	 * @param diagramEditPart - The DiagramEditPart of the diagram which is to be handled
 	 */
 	public ClassDiagramElementsManager(Diagram diagram, TransactionalEditingDomain domain) {
-		super(diagram, domain);
+		super(diagram);
 		elementsToBeAdded = generateElementsToBeAdded();
 		connectorsToBeAdded = generateConnectorsToBeAdded();
+		this.elementCreator = new ClassDiagramElementCreator(domain);
 	}
 	
 	public ClassDiagramElementsManager(Diagram diagram, TransactionalEditingDomain domain, IProgressMonitor monitor) {
@@ -123,7 +124,10 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 
 		for(Element e : diagramelements){
 			if(e instanceof Class)
-				ClassDiagramElementUtils.createClassForDiagram(this.diagram, (Class) e, this.domain, this.monitor);
+				this.elementCreator.createClassForDiagram(this.diagram, (Class) e, this.monitor);
+			if(e instanceof Signal){
+				this.elementCreator.createSignalForDiagram(this.diagram, (Signal) e, this.monitor);
+			}
 		}
 //TODO: Replace		
 //		ClassDiagramElementsController.addElementsToClassDiagram((ModelEditPart) diagramEditPart, diagramelements);

@@ -33,7 +33,8 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	 * @param diagramEditPart - The DiagramEditPart of the diagram which is to be handled
 	 */
 	public StateMachineDiagramElementsManager(Diagram diagram, TransactionalEditingDomain domain) {
-		super(diagram, domain);
+		super(diagram);
+		//TODO: ElementCreator field needed
 	}
 	
 	public StateMachineDiagramElementsManager(Diagram diagram, TransactionalEditingDomain domain, IProgressMonitor monitor) {
