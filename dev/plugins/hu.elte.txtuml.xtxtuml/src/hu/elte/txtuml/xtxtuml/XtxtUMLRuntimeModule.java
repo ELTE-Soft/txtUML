@@ -1,6 +1,7 @@
 package hu.elte.txtuml.xtxtuml;
 
 import org.eclipse.xtext.generator.IGenerator;
+import org.eclipse.xtext.linking.ILinkingDiagnosticMessageProvider;
 import org.eclipse.xtext.scoping.IScopeProvider;
 import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider;
 import org.eclipse.xtext.validation.ConfigurableIssueCodesProvider;
@@ -28,6 +29,7 @@ import hu.elte.txtuml.xtxtuml.typesystem.XtxtUMLReentrantTypeResolver;
 import hu.elte.txtuml.xtxtuml.typesystem.XtxtUMLTypeComputer;
 import hu.elte.txtuml.xtxtuml.validation.XtxtUMLConfigurableIssueCodes;
 import hu.elte.txtuml.xtxtuml.validation.XtxtUMLExpressionHelper;
+import hu.elte.txtuml.xtxtuml.validation.XtxtUMLLinkingDiagnosticMessageProvider;
 
 /**
  * Use this class to register components to be used at runtime / without the
@@ -84,6 +86,10 @@ public class XtxtUMLRuntimeModule extends AbstractXtxtUMLRuntimeModule {
 
 	public Class<? extends ImportedTypesCollector> bindImportedTypesCollector() {
 		return XtxtUMLImportedTypesCollector.class;
+	}
+
+	public Class<? extends ILinkingDiagnosticMessageProvider> bindILinkingDiagnosticMessageProvider() {
+		return XtxtUMLLinkingDiagnosticMessageProvider.class;
 	}
 
 }
