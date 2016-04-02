@@ -29,7 +29,7 @@ Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: hu.elte.txtuml.xtxtuml,
  hu.elte.txtuml.xtxtuml.common,
- hu.elte.txtuml.xtxtuml.formatting,
+ hu.elte.txtuml.xtxtuml.formatting2,
  hu.elte.txtuml.xtxtuml.jvmmodel,
  hu.elte.txtuml.xtxtuml.parser.antlr,
  hu.elte.txtuml.xtxtuml.parser.antlr.internal,
