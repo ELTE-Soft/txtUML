@@ -124,9 +124,9 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 
 		for(Element e : diagramelements){
 			if(e instanceof Class)
-				this.elementCreator.createClassForDiagram(this.diagram, (Class) e, this.monitor);
+				this.elementCreator.createClassForDiagram(this.diagram, (Class) e, null, this.monitor);
 			if(e instanceof Signal){
-				this.elementCreator.createSignalForDiagram(this.diagram, (Signal) e, this.monitor);
+				this.elementCreator.createSignalForDiagram(this.diagram, (Signal) e, null, this.monitor);
 			}
 		}
 //TODO: Replace		

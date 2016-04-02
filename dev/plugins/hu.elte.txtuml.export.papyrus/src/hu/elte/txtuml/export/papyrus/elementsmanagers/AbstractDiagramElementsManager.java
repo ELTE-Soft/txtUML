@@ -3,7 +3,6 @@ package hu.elte.txtuml.export.papyrus.elementsmanagers;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.uml2.uml.Element;
 

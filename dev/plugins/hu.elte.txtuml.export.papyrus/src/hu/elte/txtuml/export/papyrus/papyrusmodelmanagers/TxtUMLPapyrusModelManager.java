@@ -1,27 +1,15 @@
 package hu.elte.txtuml.export.papyrus.papyrusmodelmanagers;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
-import org.eclipse.gmf.runtime.common.core.command.CommandResult;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
-import org.eclipse.gmf.runtime.emf.commands.core.command.AbstractTransactionalCommand;
 import org.eclipse.gmf.runtime.notation.Diagram;
-import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.infra.core.services.ServicesRegistry;
-import org.eclipse.papyrus.infra.core.utils.ServiceUtils;
 import org.eclipse.papyrus.uml.diagram.clazz.CreateClassDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.statemachine.CreateStateMachineDiagramCommand;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.progress.IProgressService;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.StateMachine;
 
@@ -35,7 +23,6 @@ import hu.elte.txtuml.export.papyrus.elementsmanagers.StateMachineDiagramElement
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
-import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.Pair;
 
 public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
