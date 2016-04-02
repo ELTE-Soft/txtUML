@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.notation.Diagram;
-import org.eclipse.papyrus.uml.diagram.activity.edit.parts.ActivityDiagramEditPart;
 import org.eclipse.uml2.uml.AcceptEventAction;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityFinalNode;
@@ -37,7 +37,6 @@ import org.eclipse.uml2.uml.SendSignalAction;
 import org.eclipse.uml2.uml.ValueSpecificationAction;
 
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
-import hu.elte.txtuml.export.papyrus.api.ActivityDiagramElementsController;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
 /**
@@ -53,10 +52,15 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 	 * @param modelManager - The ModelManager which serves the model elements
 	 * @param diagramEditPart - The DiagramEditPart of the diagram which is to be handled
 	 */
-	public ActivityDiagramElementsManager(Diagram diagram) {
-		super(diagram);
+	public ActivityDiagramElementsManager(Diagram diagram, TransactionalEditingDomain domain) {
+		super(diagram, domain);
 		nodesToBeAdded = generateNodesToBeAdded();
 		connectorsToBeAdded = generateConnectorsToBeAdded(); 
+	}
+	
+	public ActivityDiagramElementsManager(Diagram diagram, TransactionalEditingDomain domain, IProgressMonitor monitor) {
+		this(diagram, domain);
+		this.monitor = monitor;
 	}
 
 	/**

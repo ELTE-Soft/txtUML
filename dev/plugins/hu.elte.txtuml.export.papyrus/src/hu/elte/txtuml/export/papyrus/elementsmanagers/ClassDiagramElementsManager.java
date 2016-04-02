@@ -4,7 +4,9 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.Diagram;
@@ -37,6 +39,7 @@ import org.eclipse.uml2.uml.Reception;
 import org.eclipse.uml2.uml.Signal;
 
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
+import hu.elte.txtuml.export.papyrus.api.ClassDiagramElementUtils;
 import hu.elte.txtuml.export.papyrus.api.ClassDiagramElementsController;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
@@ -53,11 +56,18 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 	 * @param modelManager - The ModelManager which serves the model elements
 	 * @param diagramEditPart - The DiagramEditPart of the diagram which is to be handled
 	 */
-	public ClassDiagramElementsManager(Diagram diagram) {
-		super(diagram);
+	public ClassDiagramElementsManager(Diagram diagram, TransactionalEditingDomain domain) {
+		super(diagram, domain);
 		elementsToBeAdded = generateElementsToBeAdded();
 		connectorsToBeAdded = generateConnectorsToBeAdded();
 	}
+	
+	public ClassDiagramElementsManager(Diagram diagram, TransactionalEditingDomain domain, IProgressMonitor monitor) {
+		this(diagram, domain);
+		this.monitor = monitor;
+	}
+	
+	
 
 	/**
 	 * Returns the types of elements that are to be added
@@ -110,6 +120,11 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 	public void addElementsToDiagram(List<Element> elements){
 		List<Element> diagramelements = UMLModelManager.getElementsOfTypesFromList(elements, elementsToBeAdded);
 		List<Element> diagramconnections = UMLModelManager.getElementsOfTypesFromList(elements, connectorsToBeAdded);
+
+		for(Element e : diagramelements){
+			if(e instanceof Class)
+				ClassDiagramElementUtils.createClassForDiagram(this.diagram, (Class) e, this.domain, this.monitor);
+		}
 //TODO: Replace		
 //		ClassDiagramElementsController.addElementsToClassDiagram((ModelEditPart) diagramEditPart, diagramelements);
 //		ClassDiagramElementsController.addElementsToClassDiagram((ModelEditPart) diagramEditPart, diagramconnections);

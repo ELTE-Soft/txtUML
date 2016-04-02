@@ -1,11 +1,11 @@
 package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
-import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gef.EditPart;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.RegionEditPart;
@@ -21,7 +21,6 @@ import org.eclipse.uml2.uml.Transition;
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
 import hu.elte.txtuml.export.papyrus.api.StateMachineDiagramElementsController;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
-import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
 
 /**
  * An abstract class for adding/removing elements to StateMachineDiagrams.
@@ -33,8 +32,13 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	 * @param modelManager - The ModelManager which serves the model elements
 	 * @param diagramEditPart - The DiagramEditPart of the diagram which is to be handled
 	 */
-	public StateMachineDiagramElementsManager(Diagram diagram) {
-		super(diagram);
+	public StateMachineDiagramElementsManager(Diagram diagram, TransactionalEditingDomain domain) {
+		super(diagram, domain);
+	}
+	
+	public StateMachineDiagramElementsManager(Diagram diagram, TransactionalEditingDomain domain, IProgressMonitor monitor) {
+		this(diagram, domain);
+		this.monitor = monitor;
 	}
 	
 	

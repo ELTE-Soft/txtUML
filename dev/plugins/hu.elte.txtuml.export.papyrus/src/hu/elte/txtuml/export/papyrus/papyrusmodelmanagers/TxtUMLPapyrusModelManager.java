@@ -1,10 +1,12 @@
 package hu.elte.txtuml.export.papyrus.papyrusmodelmanagers;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -12,11 +14,14 @@ import org.eclipse.gmf.runtime.common.core.command.CommandResult;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.emf.commands.core.command.AbstractTransactionalCommand;
 import org.eclipse.gmf.runtime.notation.Diagram;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.infra.core.services.ServicesRegistry;
 import org.eclipse.papyrus.infra.core.utils.ServiceUtils;
 import org.eclipse.papyrus.uml.diagram.clazz.CreateClassDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.statemachine.CreateStateMachineDiagramCommand;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.progress.IProgressService;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.StateMachine;
 
@@ -56,29 +61,14 @@ public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 			List<Pair<String, Element>> classDiagramRoots = txtumlregistry.getDiagramRootsWithDiagramNames();
 			CreateClassDiagramCommand cmd = new CreateClassDiagramCommand();
 			for (Pair<String, Element> classDiagramRoot : classDiagramRoots) {
-				diagramManager.createDiagram(classDiagramRoot.getSecond(), classDiagramRoot.getFirst(), cmd);
+				diagramManager.createDiagram(classDiagramRoot.getSecond(), classDiagramRoot.getFirst(), cmd, this.domain);
 			}
 		}
 
 		List<Element> statemachines = modelManager.getElementsOfTypes(Arrays.asList(StateMachine.class));
-		try {
-			TransactionalEditingDomain domain = ServiceUtils.getInstance().getTransactionalEditingDomain(this.registry);
-			AbstractTransactionalCommand command = new AbstractTransactionalCommand(domain, "Creating StateMachine",
-					statemachines) {
 
-				@Override
-				protected CommandResult doExecuteWithResult(IProgressMonitor monitor, IAdaptable info)
-						throws ExecutionException {
-					diagramManager.createDiagrams(statemachines, new CreateStateMachineDiagramCommand());
-					return CommandResult.newOKCommandResult();
-				}
-			};
-			command.execute(monitor, null);
-		} catch (ServiceException e) {
-			Logger.executor.error("Could not get TransationalEditingDomain", e);
-		} catch (ExecutionException e) {
-			Logger.executor.error("Could not execute StateMachine Creation Command", e);
-		}
+		diagramManager.createDiagrams(statemachines, new CreateStateMachineDiagramCommand(), this.domain);
+
 		monitor.worked(100);
 	}
 
@@ -88,9 +78,9 @@ public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 
 		//DiagramEditPart diagep = diagramManager.getActiveDiagramEditPart();
 		if (diagram.getType().equals(diagramType_CD)) {
-			diagramElementsManager = new ClassDiagramElementsManager(diagram);
+			diagramElementsManager = new ClassDiagramElementsManager(diagram, this.domain, monitor);
 		} else if (diagram.getType().equals(diagramType_SMD)) {
-			diagramElementsManager = new StateMachineDiagramElementsManager(diagram);
+			diagramElementsManager = new StateMachineDiagramElementsManager(diagram, this.domain, monitor);
 		} else {
 			return;
 		}

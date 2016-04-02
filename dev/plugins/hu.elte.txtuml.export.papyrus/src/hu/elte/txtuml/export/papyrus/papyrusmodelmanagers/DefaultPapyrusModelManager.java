@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.Diagram;
-import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.infra.core.services.ServicesRegistry;
 import org.eclipse.papyrus.uml.diagram.activity.CreateActivityDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.clazz.CreateClassDiagramCommand;
@@ -49,17 +49,17 @@ public class DefaultPapyrusModelManager extends AbstractPapyrusModelManager {
 		
 		if(PreferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_PREF)){
 			List<Element> packages = modelManager.getElementsOfTypes(Arrays.asList(Model.class, Package.class));
-			diagramManager.createDiagrams(packages, new CreateClassDiagramCommand());
+			diagramManager.createDiagrams(packages, new CreateClassDiagramCommand(), this.domain);
 		}
 		
 		if(PreferencesManager.getBoolean(PreferencesManager.ACTIVITY_DIAGRAM_PREF)){
 			List<Element> activities = modelManager.getElementsOfTypes(Arrays.asList(Activity.class));
-			diagramManager.createDiagrams(activities, new CreateActivityDiagramCommand());
+			diagramManager.createDiagrams(activities, new CreateActivityDiagramCommand(), this.domain);
 		}
 		
 		if(PreferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_PREF)){
 			List<Element> statemachines = modelManager.getElementsOfTypes(Arrays.asList(StateMachine.class));
-			diagramManager.createDiagrams(statemachines, new CreateStateMachineDiagramCommand());
+			diagramManager.createDiagrams(statemachines, new CreateStateMachineDiagramCommand(), this.domain);
 		}
 		monitor.worked(100);
 	}
@@ -99,14 +99,13 @@ public class DefaultPapyrusModelManager extends AbstractPapyrusModelManager {
 	protected void addElementsToDiagram(Diagram diagram, IProgressMonitor monitor) {
 		
 		Element container = diagramManager.getDiagramContainer(diagram);
-	//	DiagramEditPart diagep = diagramManager.getActiveDiagramEditPart();*/
 		AbstractDiagramElementsManager diagramElementsManager;
 		if(diagram.getType().equals("PapyrusUMLClassDiagram")){					
-			diagramElementsManager = new ClassDiagramElementsManager(diagram);
+			diagramElementsManager = new ClassDiagramElementsManager(diagram, this.domain);
 		}else if(diagram.getType().equals("PapyrusUMLActivityDiagram")){
-			diagramElementsManager = new ActivityDiagramElementsManager(diagram);
+			diagramElementsManager = new ActivityDiagramElementsManager(diagram, this.domain);
 		}else if(diagram.getType().equals("PapyrusUMLStateMachineDiagram")){
-			diagramElementsManager = new StateMachineDiagramElementsManager(diagram);
+			diagramElementsManager = new StateMachineDiagramElementsManager(diagram, this.domain);
 		}else{
 			return;
 		}

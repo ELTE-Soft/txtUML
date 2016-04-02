@@ -144,14 +144,14 @@ public class DiagramManagerTest {
 	@Test
 	public void testCreateDiagrams() {
 		List<Element> models = modelManager.getElementsOfTypes(Arrays.asList(Model.class));
-		diagramManager.createDiagrams(models, new CreateClassDiagramCommand());
+		diagramManager.createDiagrams(models, new CreateClassDiagramCommand(), null);
 		
 		List<Element> packages = modelManager.getElementsOfTypes(Arrays.asList(Package.class));
-		diagramManager.createDiagrams(packages, new CreateClassDiagramCommand());
+		diagramManager.createDiagrams(packages, new CreateClassDiagramCommand(), null);
 		
 		
 		List<Element> statemachines = modelManager.getElementsOfTypes(Arrays.asList(StateMachine.class));
-		diagramManager.createDiagrams(statemachines, new CreateStateMachineDiagramCommand());
+		diagramManager.createDiagrams(statemachines, new CreateStateMachineDiagramCommand(), null);
 		
 		Resource notationResource = null;
 		try {
@@ -181,14 +181,14 @@ public class DiagramManagerTest {
 	@Test
 	public void testGetDiagrams() {
 		List<Element> models = modelManager.getElementsOfTypes(Arrays.asList(Model.class));
-		diagramManager.createDiagrams(models, new CreateClassDiagramCommand());
+		diagramManager.createDiagrams(models, new CreateClassDiagramCommand(), null);
 		
 		List<Element> packages = modelManager.getElementsOfTypes(Arrays.asList(Package.class));
-		diagramManager.createDiagrams(packages, new CreateClassDiagramCommand());
+		diagramManager.createDiagrams(packages, new CreateClassDiagramCommand(), null);
 		
 		
 		List<Element> statemachines = modelManager.getElementsOfTypes(Arrays.asList(StateMachine.class));
-		diagramManager.createDiagrams(statemachines, new CreateStateMachineDiagramCommand());
+		diagramManager.createDiagrams(statemachines, new CreateStateMachineDiagramCommand(), null);
 		
 		
 		List<Diagram> list = diagramManager.getDiagrams();
@@ -211,14 +211,14 @@ public class DiagramManagerTest {
 	@Test
 	public void testGetDiagramContainer() {
 		List<Element> models = modelManager.getElementsOfTypes(Arrays.asList(Model.class));
-		diagramManager.createDiagrams(models, new CreateClassDiagramCommand());
+		diagramManager.createDiagrams(models, new CreateClassDiagramCommand(), null);
 		
 		List<Element> packages = modelManager.getElementsOfTypes(Arrays.asList(Package.class));
-		diagramManager.createDiagrams(packages, new CreateClassDiagramCommand());
+		diagramManager.createDiagrams(packages, new CreateClassDiagramCommand(), null);
 		
 		
 		List<Element> statemachines = modelManager.getElementsOfTypes(Arrays.asList(StateMachine.class));
-		diagramManager.createDiagrams(statemachines, new CreateStateMachineDiagramCommand());
+		diagramManager.createDiagrams(statemachines, new CreateStateMachineDiagramCommand(), null);
 		
 		Resource notationResource = null;
 		try {
@@ -243,13 +243,13 @@ public class DiagramManagerTest {
 	@Test
 	public void testOpenDiagram() {
 		List<Element> models = modelManager.getElementsOfTypes(Arrays.asList(Model.class));
-		diagramManager.createDiagrams(models, new CreateClassDiagramCommand());
+		diagramManager.createDiagrams(models, new CreateClassDiagramCommand(), null);
 		
 		List<Element> packages = modelManager.getElementsOfTypes(Arrays.asList(Package.class));
-		diagramManager.createDiagrams(packages, new CreateClassDiagramCommand());
+		diagramManager.createDiagrams(packages, new CreateClassDiagramCommand(), null);
 		
 		List<Element> stateMachines = modelManager.getElementsOfTypes(Arrays.asList(StateMachine.class));
-		diagramManager.createDiagrams(stateMachines, new CreateStateMachineDiagramCommand());
+		diagramManager.createDiagrams(stateMachines, new CreateStateMachineDiagramCommand(), null);
 		
 		List<Diagram> diags =  diagramManager.getDiagrams();
 
@@ -275,7 +275,7 @@ public class DiagramManagerTest {
 	@Test
 	public void testGetActiveDiagramEditPart() {
 		List<Element> models = modelManager.getElementsOfTypes(Arrays.asList(Model.class));
-		diagramManager.createDiagrams(models, new CreateClassDiagramCommand());
+		diagramManager.createDiagrams(models, new CreateClassDiagramCommand(), null);
 		
 		DiagramEditPart diagep = diagramManager.getActiveDiagramEditPart();
 		

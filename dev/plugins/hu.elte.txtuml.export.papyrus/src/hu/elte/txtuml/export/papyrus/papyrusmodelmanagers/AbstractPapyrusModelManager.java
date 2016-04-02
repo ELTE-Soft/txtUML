@@ -6,14 +6,14 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.notation.Diagram;
-import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.infra.core.resource.BadStateException;
 import org.eclipse.papyrus.infra.core.resource.ModelSet;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.infra.core.services.ServicesRegistry;
+import org.eclipse.papyrus.infra.core.utils.ServiceUtils;
 import org.eclipse.papyrus.uml.tools.model.UmlModel;
-import org.eclipse.ui.IEditorPart;
 
 import hu.elte.txtuml.export.papyrus.DiagramManager;
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
@@ -49,14 +49,17 @@ public abstract class AbstractPapyrusModelManager {
 	 */
 	protected UMLModelManager modelManager;
 	
-	protected ServicesRegistry registry;
 	
 	protected ModelSet modelSet;
+	
+	
+	protected TransactionalEditingDomain domain;
 	
 	/**
 	 * The resource were the elements are stored
 	 */
 	protected UmlModel model;
+
 	
 	/**
 	 * The Constructor
@@ -65,8 +68,9 @@ public abstract class AbstractPapyrusModelManager {
 	 */
 	public AbstractPapyrusModelManager(ServicesRegistry registry){
 		try{
-			this.registry = registry;
 			this.modelSet = registry.getService(ModelSet.class);
+			this.domain = ServiceUtils.getInstance()
+					.getTransactionalEditingDomain(registry);
 			this.model = (UmlModel)this.modelSet.getModel(UmlModel.MODEL_ID);
 			this.modelSet.loadModel(UmlModel.MODEL_ID);
 			this.modelManager = new UMLModelManager(model);
@@ -107,7 +111,7 @@ public abstract class AbstractPapyrusModelManager {
 			Diagram diagram = diags.get(i/2);
 			diagramManager.openDiagram(diagram);
 			monitor.subTask("Filling diagrams "+(i+2)/2+"/"+diagNum);
-		//	addElementsToDiagram(diagram, monitor);
+			addElementsToDiagram(diagram, monitor);
 			monitor.worked(1);
 			
 			try{

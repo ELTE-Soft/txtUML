@@ -1,11 +1,20 @@
 package hu.elte.txtuml.export.papyrus;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.gmf.runtime.common.core.command.CommandResult;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.parts.IDiagramWorkbenchPart;
+import org.eclipse.gmf.runtime.emf.commands.core.command.AbstractTransactionalCommand;
 import org.eclipse.gmf.runtime.notation.Diagram;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.papyrus.commands.ICreationCommand;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.infra.core.resource.ModelSet;
@@ -16,6 +25,8 @@ import org.eclipse.papyrus.infra.core.utils.ServiceUtils;
 import org.eclipse.papyrus.infra.gmfdiag.common.model.NotationModel;
 import org.eclipse.papyrus.infra.gmfdiag.common.model.NotationUtils;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.progress.IProgressService;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.NamedElement;
 
@@ -45,9 +56,10 @@ public class DiagramManager {
 	 * @param containers - the {@link Element}s thats children will be placed on the diagram.
 	 * @param diagramCreationCommand - the Command that will be executed.
 	 */
-	public void createDiagrams(List<Element> containers, ICreationCommand diagramCreationCommand){
+	public void createDiagrams(List<Element> containers, ICreationCommand diagramCreationCommand,
+			TransactionalEditingDomain domain){
 		for(Element container : containers){
-			this.createDiagram(container, ((NamedElement)container).getName(), diagramCreationCommand);
+			this.createDiagram(container, ((NamedElement)container).getName(), diagramCreationCommand, domain);
 		}
 	}
 	
@@ -59,8 +71,43 @@ public class DiagramManager {
 	 * @param diagramName - The name of the new Diagram
 	 * @param diagramCreationCommand - the Command that will be executed.
 	 */
-	public void createDiagram(Element container, String diagramName, ICreationCommand diagramCreationCommand){
-			diagramCreationCommand.createDiagram(this.modelSet, container, diagramName);
+	public void createDiagram(Element container, String diagramName,
+			ICreationCommand diagramCreationCommand, TransactionalEditingDomain domain){
+		try {
+			IProgressService progressService = PlatformUI.getWorkbench()
+					.getProgressService();
+
+			progressService.runInUI(progressService, new IRunnableWithProgress() {
+				
+				@Override
+				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+					AbstractTransactionalCommand command = 
+							new AbstractTransactionalCommand(domain, "Creating StateMachine",null) {
+			
+								@Override
+								protected CommandResult doExecuteWithResult(IProgressMonitor monitor, IAdaptable info)
+										throws ExecutionException {
+									diagramCreationCommand.createDiagram(DiagramManager.this.modelSet, container, diagramName);
+									return CommandResult.newOKCommandResult();
+								}
+							};
+					try {
+						command.execute(monitor, null);
+					} catch (ExecutionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}, ResourcesPlugin.getWorkspace().getRoot());
+			
+			
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 	}
 	
 	
