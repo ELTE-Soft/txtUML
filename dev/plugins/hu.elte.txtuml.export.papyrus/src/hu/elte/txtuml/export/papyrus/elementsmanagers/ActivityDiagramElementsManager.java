@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
+import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.uml.diagram.activity.edit.parts.ActivityDiagramEditPart;
 import org.eclipse.uml2.uml.AcceptEventAction;
 import org.eclipse.uml2.uml.Activity;
@@ -52,8 +53,8 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 	 * @param modelManager - The ModelManager which serves the model elements
 	 * @param diagramEditPart - The DiagramEditPart of the diagram which is to be handled
 	 */
-	public ActivityDiagramElementsManager(DiagramEditPart diagramEditPart) {
-		super(diagramEditPart);
+	public ActivityDiagramElementsManager(Diagram diagram) {
+		super(diagram);
 		nodesToBeAdded = generateNodesToBeAdded();
 		connectorsToBeAdded = generateConnectorsToBeAdded(); 
 	}
@@ -114,7 +115,8 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 		List<Element> diagramelements = UMLModelManager.getElementsOfTypesFromList(elements, nodesToBeAdded);
 		List<Element> diagramconnections = UMLModelManager.getElementsOfTypesFromList(elements, connectorsToBeAdded);
 
-		ActivityDiagramElementsController.addElementsToActivityDiagram((ActivityDiagramEditPart) diagramEditPart, diagramelements);
-		ActivityDiagramElementsController.addElementsToActivityDiagram((ActivityDiagramEditPart) diagramEditPart, diagramconnections);
+//TODO: Replace
+//		ActivityDiagramElementsController.addElementsToActivityDiagram((ActivityDiagramEditPart) diagramEditPart, diagramelements);
+//		ActivityDiagramElementsController.addElementsToActivityDiagram((ActivityDiagramEditPart) diagramEditPart, diagramconnections);
 	}
 }

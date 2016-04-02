@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.papyrus.elementsmanagers;
 import java.util.List;
 
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
+import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.uml2.uml.Element;
 
 /**
@@ -11,17 +12,12 @@ import org.eclipse.uml2.uml.Element;
 public abstract class AbstractDiagramElementsManager{
 		
 	/**
-	 * The DiagramEditPart of the diagram which is to be handled
+	 * The Diagram that is to be populated
 	 */
-	protected DiagramEditPart diagramEditPart;
+	protected Diagram diagram;
 	
-	/**
-	 * The Constructor
-	 * @param modelManager - The ModelManager which serves the model elements
-	 * @param diagramEditPart - The DiagramEditPart of the diagram which is to be handled
-	 */
-	public AbstractDiagramElementsManager(DiagramEditPart diagramEditPart) {
-		this.diagramEditPart = diagramEditPart;
+	public AbstractDiagramElementsManager(Diagram diagram) {
+		this.diagram = diagram;
 	}
 	
 	/**

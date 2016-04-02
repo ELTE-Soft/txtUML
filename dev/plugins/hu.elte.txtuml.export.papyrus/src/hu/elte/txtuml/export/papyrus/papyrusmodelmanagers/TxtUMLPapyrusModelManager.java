@@ -86,11 +86,11 @@ public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 	protected void addElementsToDiagram(Diagram diagram, IProgressMonitor monitor) {
 		AbstractDiagramElementsManager diagramElementsManager;
 
-		DiagramEditPart diagep = diagramManager.getActiveDiagramEditPart();
+		//DiagramEditPart diagep = diagramManager.getActiveDiagramEditPart();
 		if (diagram.getType().equals(diagramType_CD)) {
-			diagramElementsManager = new ClassDiagramElementsManager(diagep);
+			diagramElementsManager = new ClassDiagramElementsManager(diagram);
 		} else if (diagram.getType().equals(diagramType_SMD)) {
-			diagramElementsManager = new StateMachineDiagramElementsManager(diagep);
+			diagramElementsManager = new StateMachineDiagramElementsManager(diagram);
 		} else {
 			return;
 		}

@@ -97,15 +97,16 @@ public class DefaultPapyrusModelManager extends AbstractPapyrusModelManager {
 	 */
 	@Override
 	protected void addElementsToDiagram(Diagram diagram, IProgressMonitor monitor) {
+		
 		Element container = diagramManager.getDiagramContainer(diagram);
+	//	DiagramEditPart diagep = diagramManager.getActiveDiagramEditPart();*/
 		AbstractDiagramElementsManager diagramElementsManager;
-		DiagramEditPart diagep = diagramManager.getActiveDiagramEditPart();
 		if(diagram.getType().equals("PapyrusUMLClassDiagram")){					
-			diagramElementsManager = new ClassDiagramElementsManager(diagep);
+			diagramElementsManager = new ClassDiagramElementsManager(diagram);
 		}else if(diagram.getType().equals("PapyrusUMLActivityDiagram")){
-			diagramElementsManager = new ActivityDiagramElementsManager(diagep);
+			diagramElementsManager = new ActivityDiagramElementsManager(diagram);
 		}else if(diagram.getType().equals("PapyrusUMLStateMachineDiagram")){
-			diagramElementsManager = new StateMachineDiagramElementsManager(diagep);
+			diagramElementsManager = new StateMachineDiagramElementsManager(diagram);
 		}else{
 			return;
 		}

@@ -7,6 +7,7 @@ import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
+import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.InterfaceEditPart;
@@ -52,8 +53,8 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 	 * @param modelManager - The ModelManager which serves the model elements
 	 * @param diagramEditPart - The DiagramEditPart of the diagram which is to be handled
 	 */
-	public ClassDiagramElementsManager(DiagramEditPart diagramEditPart) {
-		super(diagramEditPart);
+	public ClassDiagramElementsManager(Diagram diagram) {
+		super(diagram);
 		elementsToBeAdded = generateElementsToBeAdded();
 		connectorsToBeAdded = generateConnectorsToBeAdded();
 	}
@@ -109,10 +110,10 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 	public void addElementsToDiagram(List<Element> elements){
 		List<Element> diagramelements = UMLModelManager.getElementsOfTypesFromList(elements, elementsToBeAdded);
 		List<Element> diagramconnections = UMLModelManager.getElementsOfTypesFromList(elements, connectorsToBeAdded);
-		
-		ClassDiagramElementsController.addElementsToClassDiagram((ModelEditPart) diagramEditPart, diagramelements);
-		ClassDiagramElementsController.addElementsToClassDiagram((ModelEditPart) diagramEditPart, diagramconnections);
-		
+//TODO: Replace		
+//		ClassDiagramElementsController.addElementsToClassDiagram((ModelEditPart) diagramEditPart, diagramelements);
+//		ClassDiagramElementsController.addElementsToClassDiagram((ModelEditPart) diagramEditPart, diagramconnections);
+/*		
 		@SuppressWarnings("unchecked")
 		List<EditPart> editParts = diagramEditPart.getChildren();
 		
@@ -121,6 +122,7 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 				addSubElements(editPart);
 			}
 		}
+*/
 	}
 	
 	/**

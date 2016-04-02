@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
+import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.RegionEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateEditPart;
@@ -32,8 +33,8 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	 * @param modelManager - The ModelManager which serves the model elements
 	 * @param diagramEditPart - The DiagramEditPart of the diagram which is to be handled
 	 */
-	public StateMachineDiagramElementsManager(DiagramEditPart diagramEditPart) {
-		super(diagramEditPart);
+	public StateMachineDiagramElementsManager(Diagram diagram) {
+		super(diagram);
 	}
 	
 	
@@ -46,6 +47,7 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 		
 		/* The diagram creation creates an empty StateMachine, but it may have more Regions. 
 		 * So we delete it and place it on the diagram again.  */
+/*
 		EditPart stateMachineEditpart = (EditPart) diagramEditPart.getChildren().get(0);
 		View smModel = (View) stateMachineEditpart.getModel();
 		Element smElement = (Element) smModel.getElement();
@@ -55,6 +57,7 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 		
 		stateMachineEditpart = (EditPart) diagramEditPart.getChildren().get(0);
 		fillState(stateMachineEditpart);
+*/
 	}
 	
 	/**
