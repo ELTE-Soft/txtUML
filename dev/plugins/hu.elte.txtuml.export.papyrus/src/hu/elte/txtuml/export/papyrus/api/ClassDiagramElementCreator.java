@@ -10,6 +10,9 @@ import org.eclipse.gmf.runtime.notation.BasicCompartment;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassEditPart;
+import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.OperationForClassEditPart;
+import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.PropertyForClassEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.part.UMLDiagramEditorPlugin;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Operation;
@@ -17,6 +20,8 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
 
 public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
+	
+	private static final PreferencesHint diagramPrefHint = UMLDiagramEditorPlugin.DIAGRAM_PREFERENCES_HINT;
 	
 	private static final Rectangle defaultClassBounds = new Rectangle(0, 0, 100, 100);
 
@@ -28,9 +33,8 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 			IProgressMonitor monitor) {
 		
 		Runnable runnable = () -> {
-			PreferencesHint diagramPrefHint = UMLDiagramEditorPlugin.DIAGRAM_PREFERENCES_HINT;
-			String hint = "2008";
-			Node newNode = ViewService.createNode(diagram, objectToDisplay, hint, diagramPrefHint);
+			String hint = String.valueOf(ClassEditPart.VISUAL_ID);
+			Node newNode = ViewService.createNode(diagram, objectToDisplay, hint, ClassDiagramElementCreator.diagramPrefHint);
 			
 			newNode.setLayoutConstraint(createBounds(bounds, defaultClassBounds));
 			
@@ -57,9 +61,8 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 																	// 7017
 
 		Runnable runnable = () -> {
-			PreferencesHint diagramPrefHint = UMLDiagramEditorPlugin.DIAGRAM_PREFERENCES_HINT;
-			String hint = "3012";
-			ViewService.createNode(comp, propertyToDisplay, hint, diagramPrefHint);
+			String hint = String.valueOf(PropertyForClassEditPart.VISUAL_ID);
+			ViewService.createNode(comp, propertyToDisplay, hint, ClassDiagramElementCreator.diagramPrefHint);
 		};
 
 		runInTransactionalCommand(runnable, "Creating Property for Node " + node, monitor);
@@ -76,9 +79,8 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 																	// 7018
 
 		Runnable runnable = () -> {
-			PreferencesHint diagramPrefHint = UMLDiagramEditorPlugin.DIAGRAM_PREFERENCES_HINT;
-			String hint = "3013";
-			ViewService.createNode(comp, operationToDisplay, hint, diagramPrefHint);
+			String hint = String.valueOf(OperationForClassEditPart.VISUAL_ID);
+			ViewService.createNode(comp, operationToDisplay, hint, ClassDiagramElementCreator.diagramPrefHint);
 		};
 
 		runInTransactionalCommand(runnable, "Creating Operation for Node " + node, monitor);
