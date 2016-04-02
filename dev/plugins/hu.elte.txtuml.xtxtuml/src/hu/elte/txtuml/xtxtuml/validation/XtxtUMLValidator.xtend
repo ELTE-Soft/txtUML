@@ -47,8 +47,6 @@ import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
 import org.eclipse.xtext.xbase.typesystem.util.ExtendedEarlyExitComputer
 import org.eclipse.xtext.xtype.XImportDeclaration
 
-import static org.eclipse.xtext.xbase.validation.IssueCodes.IMPORT_UNUSED
-
 class XtxtUMLValidator extends XtxtUMLPortValidator {
 
 	@Inject extension ExtendedEarlyExitComputer;
@@ -426,12 +424,7 @@ class XtxtUMLValidator extends XtxtUMLPortValidator {
 	}
 
 	override addImportUnusedIssues(Map<String, List<XImportDeclaration>> imports) {
-		for (List<XImportDeclaration> importDeclarations : imports.values()) {
-			for (XImportDeclaration importDeclaration : importDeclarations) {
-				addIssue("The import '" + importDeclaration.importedType.getQualifiedName(".") + "' is never used.",
-					importDeclaration, IMPORT_UNUSED);
-			}
-		}
+		// unused import warnings would be misleading in the current implementation
 	}
 
 	// Helpers

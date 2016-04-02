@@ -7,6 +7,8 @@ import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider;
 import org.eclipse.xtext.validation.ConfigurableIssueCodesProvider;
 import org.eclipse.xtext.xbase.compiler.XbaseCompiler;
 import org.eclipse.xtext.xbase.imports.ImportedTypesCollector;
+import org.eclipse.xtext.xbase.imports.RewritableImportSection;
+import org.eclipse.xtext.xbase.imports.TypeUsageCollector;
 import org.eclipse.xtext.xbase.scoping.batch.ImplicitlyImportedFeatures;
 import org.eclipse.xtext.xbase.typesystem.computation.ITypeComputer;
 import org.eclipse.xtext.xbase.typesystem.internal.DefaultReentrantTypeResolver;
@@ -19,6 +21,7 @@ import com.google.inject.name.Names;
 import hu.elte.txtuml.xtxtuml.compiler.XtxtUMLCompiler;
 import hu.elte.txtuml.xtxtuml.compiler.XtxtUMLGenerator;
 import hu.elte.txtuml.xtxtuml.imports.XtxtUMLImportedTypesCollector;
+import hu.elte.txtuml.xtxtuml.imports.XtxtUMLRewritableImportSection;
 import hu.elte.txtuml.xtxtuml.jvmmodel.XtxtUMLTypesBuilder;
 import hu.elte.txtuml.xtxtuml.naming.IPackageNameCalculator;
 import hu.elte.txtuml.xtxtuml.naming.XtxtUMLPackageNameCalculator;
@@ -86,6 +89,14 @@ public class XtxtUMLRuntimeModule extends AbstractXtxtUMLRuntimeModule {
 
 	public Class<? extends ImportedTypesCollector> bindImportedTypesCollector() {
 		return XtxtUMLImportedTypesCollector.class;
+	}
+
+	public Class<? extends TypeUsageCollector> bindTypeUsageCollector() {
+		return XtxtUMLImportedTypesCollector.class;
+	}
+
+	public Class<? extends RewritableImportSection.Factory> bindRewritableImportSectionFactory() {
+		return XtxtUMLRewritableImportSection.Factory.class;
 	}
 
 	public Class<? extends ILinkingDiagnosticMessageProvider> bindILinkingDiagnosticMessageProvider() {
