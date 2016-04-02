@@ -8,6 +8,7 @@ import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.api.model.external.ExternalType
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLReferenceProposalScopeProvider
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
@@ -42,6 +43,7 @@ import org.eclipse.xtext.xbase.XBlockExpression
 import org.eclipse.xtext.xbase.XVariableDeclaration
 import org.eclipse.xtext.xbase.XbasePackage
 import org.eclipse.xtext.xbase.scoping.batch.InstanceFeatureDescription
+import org.eclipse.xtext.xbase.typesystem.IBatchTypeResolver
 import org.eclipse.xtext.xbase.typesystem.references.LightweightTypeReference
 import org.eclipse.xtext.xbase.typesystem.references.LightweightTypeReferenceFactory
 import org.eclipse.xtext.xbase.typesystem.references.StandardTypeReferenceOwner
@@ -54,7 +56,10 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 	static val allowedJavaClassTypes = #["java.lang.Boolean", "java.lang.Double", "java.lang.Integer",
 		"java.lang.String"];
 
+	@Inject extension IBatchTypeResolver;
 	@Inject extension IQualifiedNameProvider;
+	@Inject extension XtxtUMLUtils;
+
 	@Inject XtxtUMLReferenceProposalScopeProvider scopeProvider;
 	@Inject CommonTypeComputationServices services;
 
@@ -99,7 +104,9 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 
 	def private selectCompositionEnds(IScope scope, EObject model) {
 		if (model instanceof TUConnector || model instanceof TUConnectorEnd) {
-			scope.allElements.filter[EObjectOrProxy.eContainer instanceof TUComposition]
+			scope.allElements.filter [
+				EContainerDescription.EObjectOrProxy instanceof TUComposition
+			]
 		}
 	}
 
@@ -107,7 +114,7 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 		if (model instanceof TUConnectorEnd) {
 			val roleClassName = model.role?.endClass?.fullyQualifiedName;
 			return scope.allElements.filter [
-				EObjectOrProxy.eContainer?.fullyQualifiedName == roleClassName
+				EContainerDescription.qualifiedName == roleClassName
 			];
 		}
 	}
@@ -117,7 +124,7 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 			val containerClassName = EcoreUtil2.getContainerOfType(model, TUClass).fullyQualifiedName;
 			return scope.allElements.filter [
 				val port = EObjectOrProxy as TUPort;
-				return port != null && port.behavior && port.eContainer.fullyQualifiedName == containerClassName
+				return port != null && port.behavior && EContainerDescription.qualifiedName == containerClassName;
 			]
 		}
 	}
@@ -127,12 +134,13 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 			val transPort = (model.eContainer as TUTransition).members?.findFirst [
 				it instanceof TUTransitionPort
 			] as TUTransitionPort;
+
 			if (transPort != null) { // check if port is specified
 				val providedIFace = transPort.port?.members?.findFirst[!required];
 				val providedSignals = providedIFace?.interface?.receptions?.map[signal];
-				return scope.allElements.filter [
-					val proposedSignalName = EObjectOrProxy.fullyQualifiedName;
-					providedSignals?.findFirst[fullyQualifiedName == proposedSignalName] != null
+
+				return scope.allElements.filter [ descr |
+					providedSignals?.findFirst[fullyQualifiedName == descr.qualifiedName] != null
 				// `findFirst` is used instead of `exists` to eliminate the warning about null-safe'd primitives
 				]
 			}
@@ -141,9 +149,9 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 
 	def private selectOwnedStates(IScope scope, EObject model) {
 		if (model instanceof TUTransitionVertex) {
-			val transContainerName = model.eContainer.eContainer.fullyQualifiedName;
+			val transContainerName = model.eContainer?.eContainer?.fullyQualifiedName;
 			return scope.allElements.filter [
-				EObjectOrProxy.eContainer.fullyQualifiedName == transContainerName &&
+				EContainerDescription.qualifiedName == transContainerName &&
 					(model.from || (EObjectOrProxy as TUState).type != TUStateType.INITIAL)
 			];
 		}
@@ -151,16 +159,17 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 
 	def private selectNavigableClassProperties(IScope scope, EObject model) {
 		if (model instanceof TUClassPropertyAccessExpression) {
-			val containerClassName = EcoreUtil2.getContainerOfType(model, TUClass).fullyQualifiedName;
-			return scope.allElements.filter [
-				switch (proposedObj : EObjectOrProxy) {
+			val containerClassName = model.left.resolveTypes.getActualType(model.left).type.fullyQualifiedName;
+			return scope.allElements.filter [ descr |
+				switch (proposedObj : descr.EObjectOrProxy) {
 					TUPort:
-						proposedObj.eContainer.fullyQualifiedName == containerClassName
+						descr.EContainerDescription.qualifiedName == containerClassName
 					TUAssociationEnd:
-						!proposedObj.notNavigable && (proposedObj.eContainer as TUAssociation).ends.exists [
-							endClass?.fullyQualifiedName == containerClassName &&
-								fullyQualifiedName != proposedObj.fullyQualifiedName
-						]
+						!proposedObj.notNavigable &&
+							(descr.EContainerDescription.EObjectOrProxy as TUAssociation).ends.exists [
+								endClass?.fullyQualifiedName == containerClassName &&
+									fullyQualifiedName != descr.qualifiedName
+							]
 					default:
 						false // to make Xtend happy
 				}
@@ -172,7 +181,7 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 		if (model instanceof TUClass) {
 			val selfName = model.fullyQualifiedName;
 			return scope.allElements.filter [
-				EObjectOrProxy.fullyQualifiedName != selfName
+				qualifiedName != selfName
 			]
 		}
 	}
@@ -180,9 +189,7 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 	def private selectAllowedFeatures(IScope scope, EObject model, EReference ref,
 		Predicate<IEObjectDescription> filter) {
 		super.queryScope(scope, model, ref, filter).filter [
-			val proposedObj = EObjectOrProxy;
-
-			val fqn = proposedObj?.fullyQualifiedName?.toString(".");
+			val fqn = qualifiedName?.toString;
 			val isObjectOrXbaseLibCall = fqn != null &&
 				(fqn.startsWith("java.lang.Object") || fqn.startsWith("org.eclipse.xtext.xbase.lib"));
 
@@ -223,7 +230,7 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 
 	def private isAllowedType(IEObjectDescription desc, boolean isClassAllowed, boolean isSignalAllowed) {
 		// primitives are handled as keywords on this level, nothing to do with them
-		allowedJavaClassTypes.contains(desc.qualifiedName.toString(".")) || {
+		allowedJavaClassTypes.contains(desc.qualifiedName.toString) || {
 			val proposedObj = desc.EObjectOrProxy;
 
 			// investigating superTypes only is sufficient and convenient here
