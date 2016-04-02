@@ -10,7 +10,9 @@ import org.eclipse.gmf.runtime.notation.BasicCompartment;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassAttributeCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassEditPart;
+import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassOperationCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.OperationForClassEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.PropertyForClassEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.part.UMLDiagramEditorPlugin;
@@ -18,6 +20,8 @@ import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
+
+import hu.elte.txtuml.utils.Logger;
 
 public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 	
@@ -51,15 +55,13 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 	}
 
 	public void createPropertyForNode(Node node, Property propertyToDisplay, IProgressMonitor monitor) {
-
-		@SuppressWarnings("unchecked")
-		EList<View> children = node.getChildren();
-		BasicCompartment comp = (BasicCompartment) children.get(2); // TODO get
-																	// with type
-																	// if
-																	// possible
-																	// 7017
-
+		BasicCompartment comp = getPropertyCompartementOfNode(node);
+		
+		if(comp == null){
+			Logger.executor.info("Node "+node+" has no compartement for properties");
+			return;
+		}
+		
 		Runnable runnable = () -> {
 			String hint = String.valueOf(PropertyForClassEditPart.VISUAL_ID);
 			ViewService.createNode(comp, propertyToDisplay, hint, ClassDiagramElementCreator.diagramPrefHint);
@@ -69,15 +71,13 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 	}
 
 	public void createOperationForNode(Node node, Operation operationToDisplay, IProgressMonitor monitor) {
+		BasicCompartment comp = getOperationCompartementOfNode(node);
 
-		@SuppressWarnings("unchecked")
-		EList<View> children = node.getChildren();
-		BasicCompartment comp = (BasicCompartment) children.get(3); // TODO get
-																	// with type
-																	// if
-																	// possible
-																	// 7018
-
+		if(comp == null){
+			Logger.executor.info("Node "+node+" has no compartement for operations");
+			return;
+		}
+		
 		Runnable runnable = () -> {
 			String hint = String.valueOf(OperationForClassEditPart.VISUAL_ID);
 			ViewService.createNode(comp, operationToDisplay, hint, ClassDiagramElementCreator.diagramPrefHint);
@@ -88,5 +88,30 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 
 	public void createSignalForDiagram(Diagram diagram, Signal signal, Rectangle bounds, IProgressMonitor monitor) {
 		// TODO Auto-generated method stub
+	}
+	
+	
+
+	private static BasicCompartment getPropertyCompartementOfNode(Node node) {
+
+		@SuppressWarnings("unchecked")
+		EList<View> children = node.getChildren();
+		for(View child : children){
+			if(child.getType().equals(String.valueOf(ClassAttributeCompartmentEditPart.VISUAL_ID))){
+				return (BasicCompartment) child;
+			}
+		}
+		return null;
+	}
+	
+	private static BasicCompartment getOperationCompartementOfNode(Node node) {
+		@SuppressWarnings("unchecked")
+		EList<View> children = node.getChildren();
+		for(View child : children){
+			if(child.getType().equals(String.valueOf(ClassOperationCompartmentEditPart.VISUAL_ID))){
+				return (BasicCompartment) child;
+			}
+		}
+		return null;
 	}
 }
