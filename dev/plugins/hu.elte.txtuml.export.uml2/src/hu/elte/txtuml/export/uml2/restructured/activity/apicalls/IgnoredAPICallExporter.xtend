@@ -5,6 +5,7 @@ import hu.elte.txtuml.export.uml2.restructured.activity.ActionExporter
 import org.eclipse.jdt.core.dom.MethodInvocation
 import org.eclipse.uml2.uml.SequenceNode
 
+@Deprecated // Remove this when all api calls are implemented
 class IgnoredAPICallExporter extends ActionExporter<MethodInvocation, SequenceNode> {
 
 	new(Exporter<?, ?, ?> parent) {

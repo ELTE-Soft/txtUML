@@ -207,10 +207,12 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 		}
 	}
 
+	/** Auto-exports the element as a statement (no pre-store) */
 	def exportStatement(Statement source) {
 		exportElement(source, source, []) as ExecutableNode
 	}
 
+	/** Auto-exports the element as an expression (no pre-store) */
 	def exportExpression(Expression source) {
 		exportElement(source, source, []) as Action
 	}

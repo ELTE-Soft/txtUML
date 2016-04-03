@@ -19,6 +19,13 @@ import org.eclipse.uml2.uml.ReadStructuralFeatureAction
 import org.eclipse.jdt.core.dom.Statement
 import org.eclipse.jdt.core.dom.Expression
 
+/**
+ * Base class for all exporters on the statement-expression level.
+ * 
+ * Action exporters do not have pre-storage, exportStatement and exportExpression
+ * methods will store the elements after the export. This guarantees correct ordering
+ * of subexpressions.
+ */
 abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 
 	new(BaseExporter<?, ?, ?> parent) {

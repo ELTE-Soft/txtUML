@@ -33,6 +33,13 @@ import hu.elte.txtuml.export.uml2.restructured.statemachine.GuardExporter
 
 /**
  * Base class for exporters, methods to export different kinds of elements using specific exporters.
+ * 
+ * Exporters can be used by general and specific methods. General methods auto-select the exporter
+ * for exporting the given element based on the type of the element.
+ * 
+ * Structural nodes must be stored before the exportContents method is called, because some features are
+ * dependent on the position of the node in the model. Actions on the other hand are stored after the 
+ * exportContents method call, because the subexpressions must be placed in the sequence nodes first.
  */
 abstract class BaseExporter<S, A, R extends Element> {
 
