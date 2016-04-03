@@ -171,7 +171,9 @@ public class CompileTests {
 
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(testProject);
 		IFolder folder = project.getFolder("src-gen");
-		folder.create(false, true, null);
+		if (!folder.exists()) {
+			folder.create(false, true, null);
+		}
 		project.refreshLocal(IProject.DEPTH_INFINITE, new NullProgressMonitor());
 		int buildsTriggered = 0;
 		int buildsFailed = 0;
