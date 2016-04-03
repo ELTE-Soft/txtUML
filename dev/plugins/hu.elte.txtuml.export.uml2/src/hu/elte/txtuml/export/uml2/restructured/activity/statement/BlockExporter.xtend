@@ -13,6 +13,6 @@ class BlockExporter extends ControlExporter<Block, SequenceNode> {
 	override create(Block access) { factory.createSequenceNode }
 
 	override exportContents(Block source) {
-		source.statements.map[exportStatement[result.executableNodes += it]]
+		result.executableNodes += source.statements.map[exportStatement]
 	}
 }

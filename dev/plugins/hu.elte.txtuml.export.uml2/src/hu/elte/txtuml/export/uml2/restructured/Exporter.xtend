@@ -4,14 +4,22 @@ import hu.elte.txtuml.api.model.Collection
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.AssocNavigationExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.IgnoredAPICallExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.BinaryOperatorExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.BooleanLiteralExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.CharacterLiteralExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.MethodCallExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.NameFieldAccessExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.NullLiteralExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.NumberLiteralExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.ParenExpressionExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.PostfixOperatorExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.PrefixOperatorExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.PrefixPlusExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.SimpleFieldAccessExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.StringLiteralExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.SuperCallExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.ThisExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.VariableExpressionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.BlockExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.ExpressionStatementExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.ReturnStatementExporter
@@ -35,31 +43,32 @@ import org.eclipse.jdt.core.dom.BooleanLiteral
 import org.eclipse.jdt.core.dom.CharacterLiteral
 import org.eclipse.jdt.core.dom.Expression
 import org.eclipse.jdt.core.dom.ExpressionStatement
+import org.eclipse.jdt.core.dom.FieldAccess
 import org.eclipse.jdt.core.dom.IBinding
 import org.eclipse.jdt.core.dom.IMethodBinding
 import org.eclipse.jdt.core.dom.ITypeBinding
 import org.eclipse.jdt.core.dom.IVariableBinding
+import org.eclipse.jdt.core.dom.InfixExpression
 import org.eclipse.jdt.core.dom.MethodInvocation
+import org.eclipse.jdt.core.dom.Name
 import org.eclipse.jdt.core.dom.NullLiteral
 import org.eclipse.jdt.core.dom.NumberLiteral
 import org.eclipse.jdt.core.dom.ParenthesizedExpression
+import org.eclipse.jdt.core.dom.PostfixExpression
+import org.eclipse.jdt.core.dom.PrefixExpression
 import org.eclipse.jdt.core.dom.ReturnStatement
 import org.eclipse.jdt.core.dom.Statement
 import org.eclipse.jdt.core.dom.StringLiteral
 import org.eclipse.jdt.core.dom.SuperMethodInvocation
+import org.eclipse.jdt.core.dom.ThisExpression
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement
 import org.eclipse.uml2.uml.Action
+import org.eclipse.uml2.uml.Class
 import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.ExecutableNode
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
-import hu.elte.txtuml.export.uml2.restructured.activity.expression.NameFieldAccessExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.expression.VariableExpressionExporter
-import org.eclipse.jdt.core.dom.Name
-import hu.elte.txtuml.export.uml2.restructured.activity.expression.SimpleFieldAccessExporter
-import org.eclipse.jdt.core.dom.FieldAccess
-import org.eclipse.jdt.core.dom.ThisExpression
-import hu.elte.txtuml.export.uml2.restructured.activity.expression.ThisExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.LogActionExporter
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -159,7 +168,8 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 			Block:
 				#[new BlockExporter(this)]
 			MethodInvocation:
-				#[new MethodCallExporter(this), new AssocNavigationExporter(this), new IgnoredAPICallExporter(this)]
+				#[new MethodCallExporter(this), new AssocNavigationExporter(this), new LogActionExporter(this),
+					new IgnoredAPICallExporter(this)]
 			SuperMethodInvocation:
 				#[new SuperCallExporter(this)]
 			StringLiteral:
@@ -176,6 +186,12 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 				#[new NullLiteralExporter(this)]
 			ThisExpression:
 				#[new ThisExporter(this)]
+			InfixExpression:
+				#[new BinaryOperatorExporter(this)]
+			PrefixExpression:
+				#[new PrefixPlusExporter(this), new PrefixOperatorExporter(this)]
+			PostfixExpression:
+				#[new PostfixOperatorExporter(this)]
 			NumberLiteral:
 				#[new NumberLiteralExporter(this)]
 			ParenthesizedExpression:
@@ -191,12 +207,12 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 		}
 	}
 
-	def exportStatement(Statement source, Consumer<ExecutableNode> store) {
-		exportElement(source, source, store) as ExecutableNode
+	def exportStatement(Statement source) {
+		exportElement(source, source, []) as ExecutableNode
 	}
 
-	def exportExpression(Expression source, Consumer<Action> store) {
-		exportElement(source, source, store) as Action
+	def exportExpression(Expression source) {
+		exportElement(source, source, []) as Action
 	}
 
 	/**
@@ -234,6 +250,10 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 		switch binding {
 			ITypeBinding: getImportedElement(binding.qualifiedName)
 		}
+	}
+
+	def getImportedOperation(String clsName, String opName) {
+		(getImportedElement(clsName) as Class).ownedOperations.findFirst[name == opName]
 	}
 
 }

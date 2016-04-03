@@ -13,7 +13,8 @@ class ExpressionStatementExporter extends ControlExporter<ExpressionStatement, S
 	override create(ExpressionStatement access) { factory.createSequenceNode }
 	
 	override exportContents(ExpressionStatement source) {
-		val expr = exportExpression(source.expression)[result.executableNodes += it]
+		val expr = exportExpression(source.expression)
+		result.executableNodes += expr
 		result.name = expr.name
 	}
 	

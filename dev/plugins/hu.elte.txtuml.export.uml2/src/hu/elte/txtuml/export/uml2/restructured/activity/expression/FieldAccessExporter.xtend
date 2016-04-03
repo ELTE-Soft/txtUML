@@ -9,6 +9,7 @@ import org.eclipse.jdt.core.dom.Name
 import org.eclipse.jdt.core.dom.QualifiedName
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction
 import org.eclipse.uml2.uml.StructuralFeature
+import org.eclipse.jdt.core.dom.Modifier
 
 abstract class FieldAccessExporter<T> extends ActionExporter<T, ReadStructuralFeatureAction> {
 
@@ -17,14 +18,17 @@ abstract class FieldAccessExporter<T> extends ActionExporter<T, ReadStructuralFe
 	}
 
 	def IVariableBinding resolveBinding(T source)
-	
+
 	def Expression getExpression(T source)
 
 	override exportContents(T source) {
 		result.name = source.resolveBinding.name
 		result.createResult(result.name, fetchType(source.resolveBinding.type))
-		val base = exportExpression(source.expression)[storeNode]
-		base.result.objectFlow(result.object)
+		if (!Modifier.isStatic(source.resolveBinding.modifiers)) {
+			val base = source.expression?.exportExpression ?:
+				new ThisExporter(this).createThis(source.resolveBinding.type)
+			base.result.objectFlow(result.createObject("object", base.result.type))
+		}
 		result.structuralFeature = fetchElement(source.resolveBinding) as StructuralFeature
 	}
 }
@@ -36,8 +40,8 @@ class NameFieldAccessExporter extends FieldAccessExporter<Name> {
 	}
 
 	override resolveBinding(Name source) { source.resolveBinding as IVariableBinding }
-	
-	override getExpression(Name source) { (source as QualifiedName).qualifier }
+
+	override getExpression(Name source) { if(source instanceof QualifiedName) (source as QualifiedName).qualifier }
 
 	override create(Name access) {
 		if(access.resolveBinding instanceof IVariableBinding &&
@@ -50,11 +54,11 @@ class SimpleFieldAccessExporter extends FieldAccessExporter<FieldAccess> {
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
 	}
-	
+
 	override create(FieldAccess access) { factory.createReadStructuralFeatureAction }
 
 	override resolveBinding(FieldAccess source) { source.resolveFieldBinding }
-	
+
 	override getExpression(FieldAccess source) { source.expression }
 }
 

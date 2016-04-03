@@ -8,29 +8,33 @@ import hu.elte.txtuml.api.model.Trigger;
 import machine1.j.model.signals.ButtonPress;
 
 public class Machine extends ModelClass {
+	
+	int machineId;
+	
 	class Init extends Initial {}
 
 	class Off extends State {
 		@Override
 		public void entry() {
-			Action.log("\tMachine enters state: 'off'");
+			int mId = 0;
+			Action.log("\tMachine " + mId + " enters state: 'off'");
 		}
 
 		@Override
 		public void exit() {
-			Action.log("\tMachine exits state: 'off'");
+			Action.log("\tMachine " + machineId + " exits state: 'off'");
 		}
 	}
 
 	class On extends State {
 		@Override
 		public void entry() {
-			Action.log("\tMachine enters state: 'on'");
+			Action.log("\tMachine " + machineId + " enters state: 'on'");
 		}
 
 		@Override
 		public void exit() {
-			Action.log("\tMachine exits state: 'on'");
+			Action.log("\tMachine " + machineId + " exits state: 'on'");
 		}
 
 	}
@@ -39,7 +43,7 @@ public class Machine extends ModelClass {
 	class Initialize extends Transition {
 		@Override
 		public void effect() {
-			Action.log("\tMachine: initializing...");
+			Action.log("\tMachine " + machineId + ": initializing...");
 		}
 	}
 
@@ -47,7 +51,7 @@ public class Machine extends ModelClass {
 	class SwitchOn extends Transition {
 		@Override
 		public void effect() {
-			Action.log("\tMachine: switching on...");
+			Action.log("\tMachine " + machineId + ": switching on...");
 		}
 
 	}
@@ -56,7 +60,7 @@ public class Machine extends ModelClass {
 	class SwitchOff extends Transition {
 		@Override
 		public void effect() {
-			Action.log("\tMachine: switching off...");
+			Action.log("\tMachine " + machineId + ": switching off...");
 		}
 	}
 

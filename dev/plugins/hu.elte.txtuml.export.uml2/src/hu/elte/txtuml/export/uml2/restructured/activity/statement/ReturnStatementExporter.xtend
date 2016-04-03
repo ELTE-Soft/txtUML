@@ -13,7 +13,7 @@ class ReturnStatementExporter extends ControlExporter<ReturnStatement, SequenceN
 	override create(ReturnStatement access) { factory.createSequenceNode }
 	
 	override exportContents(ReturnStatement source) {
-		val expr = exportExpression(source.expression)[storeNode]
+		val expr = exportExpression(source.expression)
 		result.name = "return " + expr.name
 		expr.result.objectFlow(getParameterNode("return"))
 	}

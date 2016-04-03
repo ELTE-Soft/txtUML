@@ -12,7 +12,7 @@ class ParenExpressionExporter extends ActionExporter<ParenthesizedExpression, Ac
 	}
 	
 	override create(ParenthesizedExpression access) {
-		exportExpression(access.expression, [storeNode])
+		exportExpression(access.expression)
 	}
 	
 	override exportContents(ParenthesizedExpression source) {

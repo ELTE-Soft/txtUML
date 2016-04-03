@@ -15,6 +15,9 @@ import org.eclipse.uml2.uml.ReadSelfAction
 import org.eclipse.uml2.uml.ReadVariableAction
 import org.eclipse.uml2.uml.ValueSpecificationAction
 import org.eclipse.uml2.uml.Variable
+import org.eclipse.uml2.uml.ReadStructuralFeatureAction
+import org.eclipse.jdt.core.dom.Statement
+import org.eclipse.jdt.core.dom.Expression
 
 abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 
@@ -43,6 +46,8 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 	def dispatch result(ReadSelfAction node) { node.result }
 
 	def dispatch result(ReadLinkAction node) { node.result }
+	
+	def dispatch result(ReadStructuralFeatureAction node) { node.result }
 
 	def dispatch result(CallOperationAction node) { node.results.get(0) }
 	
@@ -51,6 +56,8 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 	def dispatch inputs(ReadLinkAction node) { node.inputValues.map[otherSide].flatten }
 
 	def dispatch inputs(CallOperationAction node) { node.arguments.map[otherSide].flatten }
+
+	def dispatch inputs(ReadStructuralFeatureAction node) { node.object.otherSide }
 
 	def dispatch inputs(Action act) { #[] }
 
@@ -61,13 +68,13 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 		flow.storeEdge
 		flow.source = source
 		flow.target = target
-		flow.name = "object_flow_from_" + source.name + "_to_" + target.name
+		flow.name = source.name + "==>" + target.name
 	}
 	
 	def controlFlow(ActivityNode from, ActivityNode to) {
 		val edge = factory.createControlFlow
 		edge.storeEdge
-		edge.name = "control_flow_from_" + from.name + "_to_" + to.name
+		edge.name = from.name + "~~>" + to.name
 		edge.source = from
 		edge.target = to
 		return edge
@@ -78,6 +85,18 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 		subExpressions.forEach[storeNode]
 		storeNode(action)
 		return action
+	}
+	
+	override exportStatement(Statement source) {
+		val stmt = super.exportStatement(source)
+		stmt?.storeNode
+		return stmt
+	}
+	
+	override exportExpression(Expression source) {
+		val expr = super.exportExpression(source)
+		expr?.storeNode
+		return expr
 	}
 
 }

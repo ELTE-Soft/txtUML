@@ -5,10 +5,9 @@ import org.eclipse.jdt.core.dom.Block
 import org.eclipse.uml2.uml.Activity
 import org.eclipse.uml2.uml.ActivityEdge
 import org.eclipse.uml2.uml.ActivityNode
-import org.eclipse.uml2.uml.SequenceNode
+import org.eclipse.uml2.uml.ActivityParameterNode
 import org.eclipse.uml2.uml.UMLPackage
 import org.eclipse.uml2.uml.Variable
-import org.eclipse.uml2.uml.ActivityParameterNode
 
 class ActivityExporter extends ActionExporter<Block, Activity> {
 
@@ -27,8 +26,7 @@ class ActivityExporter extends ActionExporter<Block, Activity> {
 			storeNode(paramNode)
 		]
 		val init = result.createOwnedNode("#init", UMLPackage.Literals.INITIAL_NODE)
-		val body = result.createOwnedNode("#body", UMLPackage.Literals.SEQUENCE_NODE) as SequenceNode
-		block.statements.forEach[exportStatement[body.executableNodes += it]]
+		val body = block.exportBlock[storeNode]
 		val final = result.createOwnedNode("#final", UMLPackage.Literals.ACTIVITY_FINAL_NODE)
 		if (body.executableNodes.empty) {
 			init.controlFlow(final)

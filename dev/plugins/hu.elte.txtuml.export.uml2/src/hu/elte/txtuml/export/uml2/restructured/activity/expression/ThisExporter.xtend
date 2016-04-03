@@ -4,6 +4,7 @@ import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.ActionExporter
 import org.eclipse.jdt.core.dom.ThisExpression
 import org.eclipse.uml2.uml.ReadSelfAction
+import org.eclipse.jdt.core.dom.ITypeBinding
 
 class ThisExporter extends ActionExporter<ThisExpression, ReadSelfAction> {
 	
@@ -16,6 +17,13 @@ class ThisExporter extends ActionExporter<ThisExpression, ReadSelfAction> {
 	override exportContents(ThisExpression source) {
 		result.name = "this"
 		result.createResult("this", fetchType(source.resolveTypeBinding))
+	}
+	
+	def createThis(ITypeBinding ref) {
+		val readThis = factory.createReadSelfAction
+		readThis.createResult("self_result", fetchType(ref))
+		storeNode(readThis)
+		readThis
 	}
 	
 }

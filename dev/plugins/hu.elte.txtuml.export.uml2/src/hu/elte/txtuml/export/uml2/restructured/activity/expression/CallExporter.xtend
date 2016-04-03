@@ -1,17 +1,17 @@
 package hu.elte.txtuml.export.uml2.restructured.activity.expression
 
 import hu.elte.txtuml.export.uml2.restructured.Exporter
-import java.util.concurrent.atomic.AtomicInteger
-import org.eclipse.jdt.core.dom.ITypeBinding
-import org.eclipse.jdt.core.dom.MethodInvocation
-import org.eclipse.jdt.core.dom.Modifier
-import org.eclipse.uml2.uml.CallOperationAction
+import hu.elte.txtuml.export.uml2.restructured.activity.ActionExporter
 import java.util.List
+import java.util.concurrent.atomic.AtomicInteger
 import org.eclipse.jdt.core.dom.Expression
 import org.eclipse.jdt.core.dom.IMethodBinding
+import org.eclipse.jdt.core.dom.MethodInvocation
+import org.eclipse.jdt.core.dom.Modifier
 import org.eclipse.jdt.core.dom.SuperMethodInvocation
+import org.eclipse.uml2.uml.CallOperationAction
 
-abstract class CallExporter<T> extends hu.elte.txtuml.export.uml2.restructured.activity.ActionExporter<T, CallOperationAction> {
+abstract class CallExporter<T> extends ActionExporter<T, CallOperationAction> {
 
 	new(Exporter<?, ?, ?> parent) {
 		super(parent)
@@ -36,14 +36,15 @@ abstract class CallExporter<T> extends hu.elte.txtuml.export.uml2.restructured.a
 	override void exportContents(T source) {
 		val binding = source.binding
 		if (!Modifier.isStatic(binding.modifiers)) {
-			val target = exportExpression(source.expression)[storeNode] ?: createThis(binding.declaringClass)
+			val target = exportExpression(source.expression) ?:
+				new ThisExporter(this).createThis(binding.declaringClass)
 			target.result.objectFlow(result.createTarget(target.name, target.result.type))
 		}
 
 		val i = new AtomicInteger
 		binding.parameterTypes.forEach[result.createArgument("p" + i.andIncrement, fetchType)]
 
-		val argVals = source.arguments.map[exportExpression[storeNode]].map[it.result]
+		val argVals = source.arguments.map[exportExpression].map[it.result]
 
 		for (argi : 0 ..< result.arguments.length) {
 			argVals.get(argi).objectFlow(result.arguments.get(argi))
@@ -53,13 +54,6 @@ abstract class CallExporter<T> extends hu.elte.txtuml.export.uml2.restructured.a
 	def buildName() '''«result.target?.name?.concat(".")»«result.operation?.name»(«buildArgs»)'''
 
 	def buildArgs() '''«FOR arg : result.getArguments SEPARATOR ", "»«arg.type.name» «arg.name»«ENDFOR»'''
-
-	def createThis(ITypeBinding ref) {
-		val readThis = factory.createReadSelfAction
-		readThis.createResult("self_result", fetchType(ref))
-		storeNode(readThis)
-		readThis
-	}
 
 }
 

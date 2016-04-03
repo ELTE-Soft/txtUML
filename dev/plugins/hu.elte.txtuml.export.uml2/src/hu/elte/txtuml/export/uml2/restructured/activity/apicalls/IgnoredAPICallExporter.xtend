@@ -12,7 +12,7 @@ class IgnoredAPICallExporter extends ActionExporter<MethodInvocation, SequenceNo
 	}
 
 	override create(MethodInvocation access) {
-		factory.createSequenceNode
+		if(API_CLASSES.contains(access.resolveMethodBinding.declaringClass.qualifiedName)) factory.createSequenceNode
 	}
 
 	override exportContents(MethodInvocation source) {
