@@ -1,8 +1,10 @@
 package hu.elte.txtuml.export.uml2.restructured.structural
 
+import hu.elte.txtuml.api.model.assocends.Navigability.Navigable
 import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import hu.elte.txtuml.export.uml2.restructured.Exporter
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller
+import hu.elte.txtuml.utils.jdt.SharedUtils
 import org.eclipse.jdt.core.dom.ITypeBinding
 import org.eclipse.jdt.core.dom.TypeDeclaration
 import org.eclipse.uml2.uml.Association
@@ -24,7 +26,7 @@ class AssociationExporter extends Exporter<TypeDeclaration, ITypeBinding, Associ
 
 		decl.types.forEach [ td, i |
 			exportAssociationEnd(td) [
-				if (ElementTypeTeller.isComposition(decl)) {
+				if (SharedUtils.typeIsAssignableFrom(td, Navigable)) {
 					classes.get(1 - i).ownedAttributes += it
 				} else {
 					result.ownedEnds += it
