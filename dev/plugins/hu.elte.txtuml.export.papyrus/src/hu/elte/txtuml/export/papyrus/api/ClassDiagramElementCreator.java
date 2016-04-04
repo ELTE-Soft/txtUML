@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.papyrus.api;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.geometry.Point;
@@ -16,12 +17,12 @@ import org.eclipse.gmf.runtime.notation.BasicCompartment;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.Edge;
 import org.eclipse.gmf.runtime.notation.Node;
+import org.eclipse.gmf.runtime.notation.NotationFactory;
+import org.eclipse.gmf.runtime.notation.RelativeBendpoints;
 import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.gmf.runtime.notation.datatype.RelativeBendpoint;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassAttributeCompartmentEditPart;
-import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassOperationCompartmentEditPart;
-import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.OperationForClassEditPart;
-import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.PropertyForClassEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.part.UMLDiagramEditorPlugin;
 import org.eclipse.papyrus.uml.diagram.clazz.providers.UMLElementTypes;
 import org.eclipse.uml2.uml.Association;
@@ -47,7 +48,7 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 			IProgressMonitor monitor) {
 		
 		Runnable runnable = () -> {
-			String hint = String.valueOf(ClassEditPart.VISUAL_ID);
+			String hint = ((IHintedType)UMLElementTypes.Class_2008).getSemanticHint();
 			Node newNode = ViewService.createNode(diagram, objectToDisplay, hint, ClassDiagramElementCreator.diagramPrefHint);
 			
 			newNode.setLayoutConstraint(createBounds(bounds, defaultClassBounds));
@@ -73,7 +74,7 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 		}
 		
 		Runnable runnable = () -> {
-			String hint = String.valueOf(PropertyForClassEditPart.VISUAL_ID);
+			String hint =  ((IHintedType)UMLElementTypes.Property_3012).getSemanticHint();
 			ViewService.createNode(comp, propertyToDisplay, hint, ClassDiagramElementCreator.diagramPrefHint);
 		};
 
@@ -89,7 +90,7 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 		}
 		
 		Runnable runnable = () -> {
-			String hint = String.valueOf(OperationForClassEditPart.VISUAL_ID);
+			String hint = ((IHintedType)UMLElementTypes.Operation_3013).getSemanticHint();
 			ViewService.createNode(comp, operationToDisplay, hint, ClassDiagramElementCreator.diagramPrefHint);
 		};
 
@@ -112,6 +113,15 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 				edge.setElement(assoc);
 				edge.setSource(sourceView);
 				edge.setTarget(targetView);
+				
+				if(route != null && !route.isEmpty()){
+					RelativeBendpoints bendpoints = NotationFactory.eINSTANCE.createRelativeBendpoints();
+					List<RelativeBendpoint> relativePoints = route.stream().map(
+								(p) -> new RelativeBendpoint(p.x, p.y, p.x, p.y) //TODO: Algorithm is needed to create these points
+							).collect(Collectors.toList());
+					bendpoints.setPoints(relativePoints);
+					edge.setBendpoints(bendpoints);
+				}
 			};
 
 			runInTransactionalCommand(runnable, "Creating Assoc", monitor);

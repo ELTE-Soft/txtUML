@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gef.EditPart;
@@ -133,7 +134,9 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 				Property member2 = assoc.getMemberEnds().get(1);
 				Type memberT1 = member1.getType();
 				Type memberT2 = member2.getType();
-				this.elementCreator.createAssociationForNodes((Classifier) memberT1,(Classifier) memberT2, assoc, this.diagram,  null, this.monitor);
+				
+				List<Point> route = Arrays.asList(new Point(50, 250), new Point(250, 250), new Point(250, 50));
+				this.elementCreator.createAssociationForNodes((Classifier) memberT1,(Classifier) memberT2, assoc, this.diagram,  route, this.monitor);
 			}
 		}
 		// TODO: Replace
