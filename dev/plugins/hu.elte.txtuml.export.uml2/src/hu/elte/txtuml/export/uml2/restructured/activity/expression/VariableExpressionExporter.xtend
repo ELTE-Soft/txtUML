@@ -14,8 +14,8 @@ class VariableExpressionExporter extends ActionExporter<Name, ReadVariableAction
 
 	override create(Name access) {
 		val binding = access.resolveBinding
-		if(binding instanceof IVariableBinding && !(binding as IVariableBinding).isField &&
-			!(binding as IVariableBinding).isParameter) factory.createReadVariableAction
+		if (binding instanceof IVariableBinding && !(binding as IVariableBinding).isField)
+			factory.createReadVariableAction
 	}
 
 	override exportContents(Name source) {

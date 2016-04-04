@@ -20,12 +20,12 @@ class IfExporter extends ControlExporter<IfStatement, SequenceNode> {
 	override create(IfStatement access) { factory.createSequenceNode }
 
 	override exportContents(IfStatement source) {
-
 		val condVar = result.createVariable("#if_cond", booleanType)
 		val testExpr = exportExpression(source.expression)
 		result.nodes += writeVariable(condVar, testExpr)
+		result.name = '''if («testExpr.name»)'''
 
-		val condNode = result.createNode("if_" + testExpr.name, UMLPackage.Literals.CONDITIONAL_NODE) as ConditionalNode
+		val condNode = result.createNode(result.name, UMLPackage.Literals.CONDITIONAL_NODE) as ConditionalNode
 		val thenClause = condNode.createClause
 		val readVar = condVar.read
 		thenClause.tests += readVar
@@ -48,6 +48,7 @@ class IfExporter extends ControlExporter<IfStatement, SequenceNode> {
 
 	def read(Variable variable) {
 		val readVar = factory.createReadVariableAction
+		readVar.name = '''read_«variable.name»'''
 		readVar.variable = variable
 		readVar.createResult("read_" + variable.name, variable.type)
 		storeNode(readVar)

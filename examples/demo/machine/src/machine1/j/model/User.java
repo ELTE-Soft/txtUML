@@ -1,6 +1,7 @@
 package machine1.j.model;
 
 import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.Collection;
 import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
@@ -35,7 +36,7 @@ public class User extends ModelClass {
 		@Override
 		public void effect() {
 			Action.log("\tUser: working...");
-			doWork();
+			doWork(null);
 		}
 		
 		@Override
@@ -44,7 +45,7 @@ public class User extends ModelClass {
 		}
 	}
 
-	void doWork() {
+	void doWork(Collection<Integer> c) {
 		if (b) {
 			Action.log(("\tUser: starting to work..."));
 		}
@@ -56,6 +57,12 @@ public class User extends ModelClass {
 		}
 		while (b) {
 			Action.send(new ButtonPress(), myMachine);
+		}
+		do {
+			Action.send(new ButtonPress(), myMachine);
+		} while (b);
+		for (int i : c) {
+			Action.log("\tUser: work finished...");
 		}
 		Action.log("\tUser: work finished...");
 	}

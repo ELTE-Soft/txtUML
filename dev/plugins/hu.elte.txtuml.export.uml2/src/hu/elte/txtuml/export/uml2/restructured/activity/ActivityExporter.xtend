@@ -8,6 +8,8 @@ import org.eclipse.uml2.uml.ActivityNode
 import org.eclipse.uml2.uml.ActivityParameterNode
 import org.eclipse.uml2.uml.UMLPackage
 import org.eclipse.uml2.uml.Variable
+import org.eclipse.uml2.uml.SequenceNode
+import org.eclipse.uml2.uml.AddVariableValueAction
 
 class ActivityExporter extends ActionExporter<Block, Activity> {
 
@@ -18,14 +20,21 @@ class ActivityExporter extends ActionExporter<Block, Activity> {
 	override create(Block access) { factory.createActivity }
 
 	override exportContents(Block block) {
+		val init = result.createOwnedNode("#init", UMLPackage.Literals.INITIAL_NODE)
+		val prepare = result.createOwnedNode("#prepare", UMLPackage.Literals.SEQUENCE_NODE) as SequenceNode
 		result.ownedParameters.forEach [
 			val paramNode = factory.createActivityParameterNode
 			paramNode.parameter = it
 			paramNode.name = name + "_node"
 			paramNode.type = type
 			storeNode(paramNode)
+			
+			val paramVar = result.createVariable(name, type)
+			val initAssign = prepare.createExecutableNode("", UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION) as AddVariableValueAction
+			initAssign.isReplaceAll = true
+			initAssign.variable = paramVar
+			paramNode.objectFlow(initAssign.createValue("", type))
 		]
-		val init = result.createOwnedNode("#init", UMLPackage.Literals.INITIAL_NODE)
 		val body = block.exportBlock[storeNode]
 		val final = result.createOwnedNode("#final", UMLPackage.Literals.ACTIVITY_FINAL_NODE)
 		if (body.executableNodes.empty) {

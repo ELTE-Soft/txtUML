@@ -4,6 +4,7 @@ import hu.elte.txtuml.api.model.Collection
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.AssocNavigationExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.IgnoredAPICallExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.LogActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.BinaryOperatorExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.BooleanLiteralExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.CharacterLiteralExporter
@@ -21,9 +22,13 @@ import hu.elte.txtuml.export.uml2.restructured.activity.expression.SuperCallExpo
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.ThisExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.VariableExpressionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.BlockExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.statement.DoWhileExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.statement.EmptyStmtExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.ExpressionStatementExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.statement.IfExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.ReturnStatementExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.VariableDeclarationExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.statement.WhileExporter
 import hu.elte.txtuml.export.uml2.restructured.statemachine.InitStateExporter
 import hu.elte.txtuml.export.uml2.restructured.statemachine.StateExporter
 import hu.elte.txtuml.export.uml2.restructured.statemachine.TransitionExporter
@@ -41,6 +46,9 @@ import org.eclipse.jdt.core.IPackageFragment
 import org.eclipse.jdt.core.dom.Block
 import org.eclipse.jdt.core.dom.BooleanLiteral
 import org.eclipse.jdt.core.dom.CharacterLiteral
+import org.eclipse.jdt.core.dom.DoStatement
+import org.eclipse.jdt.core.dom.EmptyStatement
+import org.eclipse.jdt.core.dom.EnhancedForStatement
 import org.eclipse.jdt.core.dom.Expression
 import org.eclipse.jdt.core.dom.ExpressionStatement
 import org.eclipse.jdt.core.dom.FieldAccess
@@ -48,6 +56,7 @@ import org.eclipse.jdt.core.dom.IBinding
 import org.eclipse.jdt.core.dom.IMethodBinding
 import org.eclipse.jdt.core.dom.ITypeBinding
 import org.eclipse.jdt.core.dom.IVariableBinding
+import org.eclipse.jdt.core.dom.IfStatement
 import org.eclipse.jdt.core.dom.InfixExpression
 import org.eclipse.jdt.core.dom.MethodInvocation
 import org.eclipse.jdt.core.dom.Name
@@ -62,19 +71,15 @@ import org.eclipse.jdt.core.dom.StringLiteral
 import org.eclipse.jdt.core.dom.SuperMethodInvocation
 import org.eclipse.jdt.core.dom.ThisExpression
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement
+import org.eclipse.jdt.core.dom.WhileStatement
 import org.eclipse.uml2.uml.Action
 import org.eclipse.uml2.uml.Class
 import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.ExecutableNode
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
-import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.LogActionExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.statement.EmptyStmtExporter
-import org.eclipse.jdt.core.dom.EmptyStatement
-import org.eclipse.jdt.core.dom.IfStatement
-import hu.elte.txtuml.export.uml2.restructured.activity.statement.IfExporter
-import org.eclipse.jdt.core.dom.WhileStatement
-import hu.elte.txtuml.export.uml2.restructured.activity.statement.WhileExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.ParameterExpressionExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.statement.ForEachExporter
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -159,7 +164,10 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 
 	def fetchType(ITypeBinding typ) { fetchElement(typ) as Type }
 
-	/** Gets the possible exporters for a given access object */
+	/** 
+	 * Gets the possible exporters for a given access object. This method creates the possibility to
+	 * automatically export a given element, by checking its type.
+	 */
 	def List<Exporter<?, ?, ?>> getExporters(Object obj) {
 		switch obj {
 			IPackageFragment:
@@ -185,7 +193,8 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 			CharacterLiteral:
 				#[new CharacterLiteralExporter(this)]
 			Name:
-				#[new VariableExpressionExporter(this), new NameFieldAccessExporter(this)]
+				#[new VariableExpressionExporter(this), new NameFieldAccessExporter(this),
+					new ParameterExpressionExporter(this)]
 			FieldAccess:
 				#[new SimpleFieldAccessExporter(this)]
 			NullLiteral:
@@ -212,6 +221,10 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 				#[new IfExporter(this)]
 			WhileStatement:
 				#[new WhileExporter(this)]
+			DoStatement:
+				#[new DoWhileExporter(this)]
+			EnhancedForStatement:
+				#[new ForEachExporter(this)]
 			VariableDeclarationStatement:
 				#[new VariableDeclarationExporter(this)]
 			default:
@@ -256,13 +269,13 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 
 	def getUnlimitedNaturalType() { getImportedElement("UnlimitedNatural") as PrimitiveType }
 
-	def getCollectionType() { getImportedElement("Collection") as PrimitiveType }
+	def getCollectionType() { getImportedElement("Collection") as Class }
 
 	override def Element getImportedElement(String name) { parent.getImportedElement(name) }
 
 	def Element getImportedElement(IBinding binding) {
 		switch binding {
-			ITypeBinding: getImportedElement(binding.qualifiedName)
+			ITypeBinding: getImportedElement(binding.erasure.name)
 		}
 	}
 
