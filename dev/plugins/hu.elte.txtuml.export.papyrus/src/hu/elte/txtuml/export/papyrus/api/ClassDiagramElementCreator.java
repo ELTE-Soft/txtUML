@@ -1,13 +1,20 @@
 package hu.elte.txtuml.export.papyrus.api;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.diagram.core.preferences.PreferencesHint;
 import org.eclipse.gmf.runtime.diagram.core.services.ViewService;
+import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
+import org.eclipse.gmf.runtime.emf.type.core.IElementType;
+import org.eclipse.gmf.runtime.emf.type.core.IHintedType;
 import org.eclipse.gmf.runtime.notation.BasicCompartment;
 import org.eclipse.gmf.runtime.notation.Diagram;
+import org.eclipse.gmf.runtime.notation.Edge;
 import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassAttributeCompartmentEditPart;
@@ -16,7 +23,10 @@ import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassOperationCompartmen
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.OperationForClassEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.PropertyForClassEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.part.UMLDiagramEditorPlugin;
+import org.eclipse.papyrus.uml.diagram.clazz.providers.UMLElementTypes;
+import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
@@ -90,7 +100,27 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 		// TODO Auto-generated method stub
 	}
 	
+	public void createAssociationForNodes(Classifier source, Classifier target, Association assoc, Diagram diagram, List<Point> route, IProgressMonitor monitor) {
+
+		View sourceView = getViewOfModel(source, diagram);
+		View targetView = getViewOfModel(target, diagram);
+		IElementType elementType = UMLElementTypes.Association_4001;
+		String hint = ((IHintedType)elementType).getSemanticHint();
+
+			Runnable runnable = () -> {
+				Edge edge = (Edge)ViewService.getInstance().createEdge(elementType, diagram, hint, ViewUtil.APPEND, ClassDiagramElementCreator.diagramPrefHint);
+				edge.setElement(assoc);
+				edge.setSource(sourceView);
+				edge.setTarget(targetView);
+			};
+
+			runInTransactionalCommand(runnable, "Creating Assoc", monitor);
+	}
 	
+
+	public void createGeneralizationForNodes(Node diagram, Classifier target, List<Point> route, IProgressMonitor monitor) {
+		// TODO Auto-generated method stub
+	}
 
 	private static BasicCompartment getPropertyCompartementOfNode(Node node) {
 

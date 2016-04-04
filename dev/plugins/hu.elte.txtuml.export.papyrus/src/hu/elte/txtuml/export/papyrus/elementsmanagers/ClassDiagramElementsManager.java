@@ -14,6 +14,7 @@ import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.InterfaceEditPart;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Comment;
 import org.eclipse.uml2.uml.Component;
 import org.eclipse.uml2.uml.Constraint;
@@ -35,6 +36,7 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Realization;
 import org.eclipse.uml2.uml.Reception;
 import org.eclipse.uml2.uml.Signal;
+import org.eclipse.uml2.uml.Type;
 
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
 import hu.elte.txtuml.export.papyrus.api.ClassDiagramElementCreator;
@@ -44,17 +46,20 @@ import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 /**
  * An abstract class for adding/removing elements to ClassDiagrams.
  */
-public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
+public class ClassDiagramElementsManager extends AbstractDiagramElementsManager {
 
 	protected ClassDiagramElementCreator elementCreator;
-	
+
 	private List<java.lang.Class<? extends Element>> elementsToBeAdded;
 	private List<java.lang.Class<? extends Element>> connectorsToBeAdded;
-	
+
 	/**
 	 * The Constructor
-	 * @param modelManager - The ModelManager which serves the model elements
-	 * @param diagramEditPart - The DiagramEditPart of the diagram which is to be handled
+	 * 
+	 * @param modelManager
+	 *            - The ModelManager which serves the model elements
+	 * @param diagramEditPart
+	 *            - The DiagramEditPart of the diagram which is to be handled
 	 */
 	public ClassDiagramElementsManager(Diagram diagram, TransactionalEditingDomain domain) {
 		super(diagram);
@@ -62,113 +67,117 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 		connectorsToBeAdded = generateConnectorsToBeAdded();
 		this.elementCreator = new ClassDiagramElementCreator(domain);
 	}
-	
+
 	public ClassDiagramElementsManager(Diagram diagram, TransactionalEditingDomain domain, IProgressMonitor monitor) {
 		this(diagram, domain);
 		this.monitor = monitor;
 	}
-	
-	
 
 	/**
 	 * Returns the types of elements that are to be added
+	 * 
 	 * @return Returns the types of elements that are to be added
 	 */
 	private List<java.lang.Class<? extends Element>> generateElementsToBeAdded() {
-		List<java.lang.Class<? extends Element>> nodes = new LinkedList<>(Arrays.asList(
-				Class.class,
-				Component.class,
-				DataType.class,
-				Enumeration.class,
-				InformationItem.class,
-				InstanceSpecification.class,
-				Interface.class,
-				Model.class,
-				Package.class,
-				PrimitiveType.class
-		));
-		
-		if(PreferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_CONSTRAINT_PREF))
+		List<java.lang.Class<? extends Element>> nodes = new LinkedList<>(
+				Arrays.asList(Class.class, Component.class, DataType.class, Enumeration.class, InformationItem.class,
+						InstanceSpecification.class, Interface.class, Model.class, Package.class, PrimitiveType.class));
+
+		if (PreferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_CONSTRAINT_PREF))
 			nodes.add(Constraint.class);
-		if(PreferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_COMMENT_PREF))
+		if (PreferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_COMMENT_PREF))
 			nodes.add(Comment.class);
-		if(PreferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_SIGNAL_PREF))
+		if (PreferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_SIGNAL_PREF))
 			nodes.add(Signal.class);
-		
+
 		return nodes;
 	}
-	
+
 	/**
 	 * Returns the types of connectors that are to be added
-	 * @return Returns the types of connectors that are to be added 
+	 * 
+	 * @return Returns the types of connectors that are to be added
 	 */
 	private List<java.lang.Class<? extends Element>> generateConnectorsToBeAdded() {
-		List<java.lang.Class<? extends Element>> connectors = new LinkedList<>(Arrays.asList(
-				Association.class,
-				Generalization.class,
-				InterfaceRealization.class,
-				Realization.class
-		));
-		
+		List<java.lang.Class<? extends Element>> connectors = new LinkedList<>(
+				Arrays.asList(Association.class, Generalization.class, InterfaceRealization.class, Realization.class));
+
 		return connectors;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager#addElementsToDiagram(java.util.List)
+	 * 
+	 * @see hu.elte.txtuml.export.papyrus.elementsmanagers.
+	 * AbstractDiagramElementsManager#addElementsToDiagram(java.util.List)
 	 */
 	@Override
-	public void addElementsToDiagram(List<Element> elements){
+	public void addElementsToDiagram(List<Element> elements) {
 		List<Element> diagramelements = UMLModelManager.getElementsOfTypesFromList(elements, elementsToBeAdded);
 		List<Element> diagramconnections = UMLModelManager.getElementsOfTypesFromList(elements, connectorsToBeAdded);
 
-		for(Element e : diagramelements){
-			if(e instanceof Class)
+		for (Element e : diagramelements) {
+			if (e instanceof Class)
 				this.elementCreator.createClassForDiagram(this.diagram, (Class) e, null, this.monitor);
-			if(e instanceof Signal){
+			if (e instanceof Signal) {
 				this.elementCreator.createSignalForDiagram(this.diagram, (Signal) e, null, this.monitor);
 			}
 		}
-//TODO: Replace		
-//		ClassDiagramElementsController.addElementsToClassDiagram((ModelEditPart) diagramEditPart, diagramelements);
-//		ClassDiagramElementsController.addElementsToClassDiagram((ModelEditPart) diagramEditPart, diagramconnections);
-/*		
-		@SuppressWarnings("unchecked")
-		List<EditPart> editParts = diagramEditPart.getChildren();
-		
-		for(EditPart editPart : editParts){
-			if(editPart instanceof ClassEditPart || editPart instanceof InterfaceEditPart){
-				addSubElements(editPart);
+
+		for (Element e : diagramconnections) {
+			if (e instanceof Association) {
+				Association assoc = (Association) e;
+				// A txtUML scpecific implementation. Assoiciations are exported
+				// in a way that they are the owner of both ends
+				Property member1 = assoc.getMemberEnds().get(0);
+				Property member2 = assoc.getMemberEnds().get(1);
+				Type memberT1 = member1.getType();
+				Type memberT2 = member2.getType();
+				this.elementCreator.createAssociationForNodes((Classifier) memberT1,(Classifier) memberT2, assoc, this.diagram,  null, this.monitor);
 			}
 		}
-*/
+		// TODO: Replace
+		// ClassDiagramElementsController.addElementsToClassDiagram((ModelEditPart)
+		// diagramEditPart, diagramelements);
+		// ClassDiagramElementsController.addElementsToClassDiagram((ModelEditPart)
+		// diagramEditPart, diagramconnections);
+		/*
+		 * @SuppressWarnings("unchecked") List<EditPart> editParts =
+		 * diagramEditPart.getChildren();
+		 * 
+		 * for(EditPart editPart : editParts){ if(editPart instanceof
+		 * ClassEditPart || editPart instanceof InterfaceEditPart){
+		 * addSubElements(editPart); } }
+		 */
 	}
-	
+
 	/**
 	 * Fills up the compartments of classes and interfaces
-	 * @param ep - The EditPart of the class or interface
+	 * 
+	 * @param ep
+	 *            - The EditPart of the class or interface
 	 * @throws ServiceException
 	 */
-	private void addSubElements(EditPart ep){
+	private void addSubElements(EditPart ep) {
 		EObject parent = ((View) ep.getModel()).getElement();
 		List<Element> list = ((Element) parent).getOwnedElements();
-		
+
 		List<Property> properties = UMLModelManager.getElementsOfTypeFromList(list, Property.class);
 		List<Port> ports = UMLModelManager.getElementsOfTypeFromList(list, Port.class);
 		List<ExtensionEnd> extensionEnds = UMLModelManager.getElementsOfTypeFromList(list, ExtensionEnd.class);
-		
+
 		List<Operation> operations = UMLModelManager.getElementsOfTypeFromList(list, Operation.class);
 		List<Reception> receptions = UMLModelManager.getElementsOfTypeFromList(list, Reception.class);
-		
+
 		removeAssociationProperties(properties);
-		
-		if(ep instanceof ClassEditPart){
+
+		if (ep instanceof ClassEditPart) {
 			ClassDiagramElementsController.addPropertiesToClass((ClassEditPart) ep, properties);
 			ClassDiagramElementsController.addPortsToClass((ClassEditPart) ep, ports);
 			ClassDiagramElementsController.addExtensionEndsToClass((ClassEditPart) ep, extensionEnds);
 			ClassDiagramElementsController.addOperationsToClass((ClassEditPart) ep, operations);
 			ClassDiagramElementsController.addReceptionsToClass((ClassEditPart) ep, receptions);
-		}else if( ep instanceof InterfaceEditPart){
+		} else if (ep instanceof InterfaceEditPart) {
 			ClassDiagramElementsController.addPropertiesToInterface((InterfaceEditPart) ep, properties);
 			ClassDiagramElementsController.addPortsToInterface((InterfaceEditPart) ep, ports);
 			ClassDiagramElementsController.addExtensionEndsToInterface((InterfaceEditPart) ep, extensionEnds);
@@ -176,17 +185,20 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 			ClassDiagramElementsController.addReceptionsToInterface((InterfaceEditPart) ep, receptions);
 		}
 	}
-	
+
 	/**
-	 * Removes the {@link Property Properties} that have {@link Association Associations} from the given list
-	 * @param properties - the list
+	 * Removes the {@link Property Properties} that have {@link Association
+	 * Associations} from the given list
+	 * 
+	 * @param properties
+	 *            - the list
 	 */
-	private void removeAssociationProperties(List<Property> properties){
+	private void removeAssociationProperties(List<Property> properties) {
 		List<Element> propertiesToRemove = new LinkedList<Element>();
-		for(Element property : properties){
-			if(property instanceof Property){
+		for (Element property : properties) {
+			if (property instanceof Property) {
 				Property prop = (Property) property;
-				if(prop.getAssociation() != null){
+				if (prop.getAssociation() != null) {
 					propertiesToRemove.add(property);
 				}
 			}
@@ -194,5 +206,3 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager{
 		properties.removeAll(propertiesToRemove);
 	}
 }
-
-
