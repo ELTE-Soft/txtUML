@@ -9,7 +9,6 @@ import hu.elte.txtuml.utils.jdt.SharedUtils
 import org.eclipse.jdt.core.dom.ITypeBinding
 import org.eclipse.jdt.core.dom.TypeDeclaration
 import org.eclipse.uml2.uml.AggregationKind
-import org.eclipse.uml2.uml.Association
 import org.eclipse.uml2.uml.Property
 
 class AssociationEndExporter extends Exporter<TypeDeclaration, ITypeBinding, Property> {
@@ -28,13 +27,12 @@ class AssociationEndExporter extends Exporter<TypeDeclaration, ITypeBinding, Pro
 		result.lower = MultiplicityProvider.getLowerBound(decl);
 		result.upper = MultiplicityProvider.getUpperBound(decl);
 
-		result.association = fetchElement((decl.parent as TypeDeclaration).resolveBinding) as Association
+		result.association = (parent as AssociationExporter).result
 		result.isNavigable = SharedUtils.typeIsAssignableFrom(decl, Navigable)
-		result.aggregation = if (ElementTypeTeller.isComposition(decl.getParent() as TypeDeclaration)) 
+		result.aggregation = if (ElementTypeTeller.isComposition(decl.getParent() as TypeDeclaration)) {
 			AggregationKind.COMPOSITE_LITERAL
-		else
+		} else {
 			AggregationKind.NONE_LITERAL
-		
+		}
 	}
-
 }

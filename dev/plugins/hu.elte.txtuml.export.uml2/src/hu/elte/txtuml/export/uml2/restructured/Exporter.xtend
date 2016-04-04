@@ -102,7 +102,7 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 	protected BaseExporter<?, ?, ?> parent
 
 	/** The UML object resulting from export */
-	protected R result
+	public R result
 
 	/** Creates a root exporter with a new cache */
 	new() {

@@ -6,6 +6,7 @@ import hu.elte.txtuml.utils.jdt.ElementTypeTeller
 import org.eclipse.jdt.core.dom.ITypeBinding
 import org.eclipse.jdt.core.dom.TypeDeclaration
 import org.eclipse.uml2.uml.Association
+import org.eclipse.uml2.uml.Class
 
 class AssociationExporter extends Exporter<TypeDeclaration, ITypeBinding, Association> {
 
@@ -19,6 +20,17 @@ class AssociationExporter extends Exporter<TypeDeclaration, ITypeBinding, Associ
 
 	override exportContents(TypeDeclaration decl) {
 		result.name = decl.name.identifier
-		decl.types.map[exportAssociationEnd[result.ownedEnds += it]]
+		val classes = decl.types.map[fetchType(resolveBinding.superclass.typeArguments.get(0)) as Class]
+
+		decl.types.forEach [ td, i |
+			exportAssociationEnd(td) [
+				if (ElementTypeTeller.isComposition(decl)) {
+					classes.get(1 - i).ownedAttributes += it
+				} else {
+					result.ownedEnds += it
+				}
+			]
+		]
+
 	}
 }
