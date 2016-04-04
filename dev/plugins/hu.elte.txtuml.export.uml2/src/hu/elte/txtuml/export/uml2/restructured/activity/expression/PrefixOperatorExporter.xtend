@@ -5,6 +5,8 @@ import hu.elte.txtuml.export.uml2.restructured.activity.ActionExporter
 import org.eclipse.jdt.core.dom.PrefixExpression
 import org.eclipse.jdt.core.dom.PrefixExpression.Operator
 import org.eclipse.uml2.uml.CallOperationAction
+import org.eclipse.uml2.uml.Operation
+import org.eclipse.uml2.uml.Action
 
 class PrefixOperatorExporter extends ActionExporter<PrefixExpression, CallOperationAction> {
 	
@@ -27,11 +29,23 @@ class PrefixOperatorExporter extends ActionExporter<PrefixExpression, CallOperat
 			case Operator.NOT:
 				getImportedOperation("BooleanOperations", "not")
 		}
-		val returnType = result.operation.ownedParameters.findFirst[name == "return"].type
 		val op = exportExpression(source.operand)
-		op.result.objectFlow(result.inputs.get(0))
-		result.operation = operator
-		result.createResult("result", returnType)
 		result.name = '''«source.operator»«op.name»'''
+		finishOperation(op, operator)
+	}
+	
+	def logicalNot(Action expr) {
+		result = factory.createCallOperationAction
+		val operator = getImportedOperation("BooleanOperations", "not")
+		result.name = '''!«expr.name»'''
+		finishOperation(expr, operator)
+		result
+	}
+	
+	protected def finishOperation(Action operand, Operation operator) {
+		result.operation = operator
+		val returnType = result.operation.ownedParameters.findFirst[name == "return"].type
+		operand.result.objectFlow(result.createArgument("b", operand.result.type))
+		result.createResult("result", returnType)
 	}
 }

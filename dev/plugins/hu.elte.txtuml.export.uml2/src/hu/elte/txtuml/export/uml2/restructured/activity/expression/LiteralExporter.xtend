@@ -22,6 +22,7 @@ abstract class LiteralExporter<T> extends ActionExporter<T, ValueSpecificationAc
 	override exportContents(T source) {
 		val literal = createValueSpec(source)
 		result.value = literal
+		result.name = literal.name
 		result.createResult(literal.name + "_result", literal.type)
 	}
 	

@@ -100,10 +100,14 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 		return stmt
 	}
 	
+	def exportStatementManual(Statement source) { super.exportStatement(source) }
+	
 	override exportExpression(Expression source) {
 		val expr = super.exportExpression(source)
 		expr?.storeNode
 		return expr
 	}
+	
+	def exportExpressionManual(Expression source) { super.exportExpression(source) }
 
 }

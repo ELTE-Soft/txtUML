@@ -69,6 +69,12 @@ import org.eclipse.uml2.uml.ExecutableNode
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.LogActionExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.statement.EmptyStmtExporter
+import org.eclipse.jdt.core.dom.EmptyStatement
+import org.eclipse.jdt.core.dom.IfStatement
+import hu.elte.txtuml.export.uml2.restructured.activity.statement.IfExporter
+import org.eclipse.jdt.core.dom.WhileStatement
+import hu.elte.txtuml.export.uml2.restructured.activity.statement.WhileExporter
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -200,6 +206,12 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 				#[new ExpressionStatementExporter(this)]
 			ReturnStatement:
 				#[new ReturnStatementExporter(this)]
+			EmptyStatement:
+				#[new EmptyStmtExporter(this)]
+			IfStatement:
+				#[new IfExporter(this)]
+			WhileStatement:
+				#[new WhileExporter(this)]
 			VariableDeclarationStatement:
 				#[new VariableDeclarationExporter(this)]
 			default:

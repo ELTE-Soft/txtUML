@@ -11,6 +11,8 @@ import machine1.j.model.signals.DoYourWork;
 
 public class User extends ModelClass {
 
+	boolean b;
+	
 	class Init extends Initial {
 	}
 
@@ -43,11 +45,18 @@ public class User extends ModelClass {
 	}
 
 	void doWork() {
-		Action.log(("\tUser: starting to work..."));
+		if (b) {
+			Action.log(("\tUser: starting to work..."));
+		}
 		Machine myMachine = this.assoc(Usage.usedMachine.class).selectAny();
-		Action.send(new ButtonPress(), myMachine);
-		Action.send(new ButtonPress(), myMachine);
-		Action.send(new ButtonPress(), myMachine);
+		if (b) {
+			Action.send(new ButtonPress(), myMachine);
+		} else {
+			Action.send(new ButtonPress(), myMachine);
+		}
+		while (b) {
+			Action.send(new ButtonPress(), myMachine);
+		}
 		Action.log("\tUser: work finished...");
 	}
 
