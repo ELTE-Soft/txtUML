@@ -7,7 +7,6 @@ import org.eclipse.jdt.core.dom.Statement
 import org.eclipse.uml2.uml.Action
 import org.eclipse.uml2.uml.ActivityEdge
 import org.eclipse.uml2.uml.ActivityNode
-import org.eclipse.uml2.uml.ActivityParameterNode
 import org.eclipse.uml2.uml.CallOperationAction
 import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.InputPin
@@ -35,25 +34,37 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 	}
 
 	def void storeEdge(ActivityEdge edge) {
-		(parent as ActionExporter<?, ?>).storeEdge(edge)
+		if (parent instanceof ActionExporter<?, ?>) {
+			(parent as ActionExporter<?, ?>).storeEdge(edge)
+		} else {
+			throw new UnsupportedOperationException("No place to store edge " + edge)
+		}
 	}
 	
 	def void storeNode(ActivityNode node) {
-		(parent as ActionExporter<?, ?>).storeNode(node)
+		if (parent instanceof ActionExporter<?, ?>) {
+			(parent as ActionExporter<?, ?>).storeNode(node)
+		} else {
+			throw new UnsupportedOperationException("No place to store node " + node)
+		}
 	}
 	
 	def void storeVariable(Variable variable) {
-		(parent as ActionExporter<?, ?>).storeVariable(variable)
+		if (parent instanceof ActionExporter<?, ?>) {
+			(parent as ActionExporter<?, ?>).storeVariable(variable)
+		} else {
+			throw new UnsupportedOperationException("No place to store variable " + variable)
+		}
 	}
 		
 	def Variable getVariable(String varName) {
-		(parent as ActionExporter<?, ?>).getVariable(varName)
+		if (parent instanceof ActionExporter<?, ?>) {
+			(parent as ActionExporter<?, ?>).getVariable(varName)
+		} else {
+			throw new UnsupportedOperationException("Variable '" + varName + "' cannot be found")
+		}
 	}
 	
-	def ActivityParameterNode getParameterNode(String name) {
-		(parent as ActionExporter<?, ?>).getParameterNode(name)
-	}
-
 	def dispatch OutputPin result(ReadVariableAction node) { node.result }
 
 	def dispatch OutputPin result(ReadSelfAction node) { node.result }
@@ -107,15 +118,11 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 		stmt?.storeNode
 		return stmt
 	}
-	
-	def exportStatementManual(Statement source) { super.exportStatement(source) }
-	
+		
 	override exportExpression(Expression source) {
 		val expr = super.exportExpression(source)
 		expr?.storeNode
 		return expr
 	}
 	
-	def exportExpressionManual(Expression source) { super.exportExpression(source) }
-
 }

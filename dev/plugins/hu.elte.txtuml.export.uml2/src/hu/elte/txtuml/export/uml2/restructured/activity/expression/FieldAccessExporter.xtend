@@ -2,17 +2,16 @@ package hu.elte.txtuml.export.uml2.restructured.activity.expression
 
 import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.ActionExporter
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller
 import org.eclipse.jdt.core.dom.Expression
 import org.eclipse.jdt.core.dom.FieldAccess
 import org.eclipse.jdt.core.dom.IVariableBinding
 import org.eclipse.jdt.core.dom.Name
 import org.eclipse.jdt.core.dom.QualifiedName
-import org.eclipse.uml2.uml.ReadStructuralFeatureAction
-import org.eclipse.uml2.uml.StructuralFeature
-import org.eclipse.jdt.core.dom.Modifier
 import org.eclipse.jdt.core.dom.SuperFieldAccess
 import org.eclipse.uml2.uml.Action
-import hu.elte.txtuml.utils.jdt.ElementTypeTeller
+import org.eclipse.uml2.uml.Property
+import org.eclipse.uml2.uml.ReadStructuralFeatureAction
 
 abstract class FieldAccessExporter<T extends Expression> extends ActionExporter<T, ReadStructuralFeatureAction> {
 
@@ -29,14 +28,26 @@ abstract class FieldAccessExporter<T extends Expression> extends ActionExporter<
 	}
 
 	override exportContents(T source) {
-		result.name = source.resolveBinding.name
-		result.createResult(result.name, fetchType(source.resolveBinding.type))
-		if (!Modifier.isStatic(source.resolveBinding.modifiers)) {
-			val base = source.expression
-			base.result.objectFlow(result.createObject("object", base.result.type))
-		}
-		result.structuralFeature = fetchElement(source.resolveBinding) as StructuralFeature
+		val base = source.expression
+		val field = fetchElement(source.resolveBinding) as Property
+		finishFieldAccess(result, base, field)
 	}
+	
+	def createFieldAccess(Action base, Property field) {
+		val ret = factory.createReadStructuralFeatureAction
+		finishFieldAccess(ret, base, field)
+		storeNode(ret)
+	}
+	
+	protected def finishFieldAccess(ReadStructuralFeatureAction action, Action base, Property field) {
+		action.name = field.name
+		action.createResult(action.name, field.type)
+		if (!field.isStatic) {
+			base.result.objectFlow(action.createObject("base", base.result.type))
+		}
+		action.structuralFeature = field
+	}
+	
 }
 
 class NameFieldAccessExporter extends FieldAccessExporter<Name> {
