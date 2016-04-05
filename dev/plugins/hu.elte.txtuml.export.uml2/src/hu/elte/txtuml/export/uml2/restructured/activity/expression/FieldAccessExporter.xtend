@@ -37,6 +37,7 @@ abstract class FieldAccessExporter<T extends Expression> extends ActionExporter<
 		val ret = factory.createReadStructuralFeatureAction
 		finishFieldAccess(ret, base, field)
 		storeNode(ret)
+		return ret
 	}
 	
 	protected def finishFieldAccess(ReadStructuralFeatureAction action, Action base, Property field) {

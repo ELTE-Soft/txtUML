@@ -36,7 +36,7 @@ class AssignToFieldExporter extends AssignExporter {
 			FieldAccess: exportExpression(lhs.expression)
 		}
 		val field = fetchElement(fieldName) as Property
-		val rhs = exportExpression(source.rightHandSide)
+		val rhs = generateRhs(source.operator, [new SimpleFieldAccessExporter(this).createFieldAccess(base, field)], exportExpression(source.rightHandSide))
 		val writeField = result.createNode('''«base?.name».«field.name»«source.operator»«rhs.name»''',
 			UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION) as AddStructuralFeatureValueAction
 		writeField.isReplaceAll = true

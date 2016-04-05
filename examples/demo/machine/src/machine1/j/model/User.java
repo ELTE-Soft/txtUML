@@ -28,6 +28,7 @@ public class User extends ModelClass {
 			boolean x;
 			x = b;
 			b = x;
+			x &= b;
 			Action.log("\tUser: initializing...");
 		}
 	}

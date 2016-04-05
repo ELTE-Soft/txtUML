@@ -14,9 +14,7 @@ class PrepareBlockExporter extends ActionExporter<Block, SequenceNode> {
 	override create(Block access) { factory.createSequenceNode }
 
 	override exportContents(Block source) {
-		(parent as ActivityExporter).result.ownedParameters.filter [
-			direction == ParameterDirectionKind.IN_LITERAL || direction == ParameterDirectionKind.INOUT_LITERAL
-		].forEach [
+		(parent as ActivityExporter).result.ownedParameters.forEach [
 			val paramNode = factory.createActivityParameterNode
 			paramNode.parameter = it
 			paramNode.name = name
@@ -28,13 +26,15 @@ class PrepareBlockExporter extends ActionExporter<Block, SequenceNode> {
 			paramVar.type = type
 			storeVariable(paramVar)
 
-			// here we cannot use the standard VariableExpressionExporter function, because ActivityParameterBlock is not an Action
-			val initAssign = factory.createAddVariableValueAction
-			initAssign.name = '''fetch(«name»)'''
-			initAssign.isReplaceAll = true
-			initAssign.variable = paramVar
-			paramNode.objectFlow(initAssign.createValue("new_value", type))
-			storeNode(initAssign)
+			if (direction == ParameterDirectionKind.IN_LITERAL || direction == ParameterDirectionKind.INOUT_LITERAL) {
+				// here we cannot use the standard VariableExpressionExporter function, because ActivityParameterBlock is not an Action
+				val initAssign = factory.createAddVariableValueAction
+				initAssign.name = '''fetch(«name»)'''
+				initAssign.isReplaceAll = true
+				initAssign.variable = paramVar
+				paramNode.objectFlow(initAssign.createValue("new_value", type))
+				storeNode(initAssign)
+			}
 		]
 	}
 

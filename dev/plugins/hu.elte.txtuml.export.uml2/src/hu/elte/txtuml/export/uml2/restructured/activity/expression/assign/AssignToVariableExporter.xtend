@@ -15,18 +15,19 @@ class AssignToVariableExporter extends AssignExporter {
 	}
 
 	override create(Assignment access) {
-		if (ElementTypeTeller.isVariable(access.leftHandSide)) factory.createSequenceNode
+		if(ElementTypeTeller.isVariable(access.leftHandSide)) factory.createSequenceNode
 	}
 
 	override exportContents(Assignment source) {
 		val varName = (source.leftHandSide as SimpleName).identifier
-		val rhs = exportExpression(source.rightHandSide)
+		val rhsVal = exportExpression(source.rightHandSide)
 		val assignVar = getVariable(varName)
+		val rhs = generateRhs(source.operator, [new VariableExpressionExporter(this).readVar(assignVar)], rhsVal)
 		val write = createWriteVariableAction(assignVar, rhs)
 		result.name = write.name
 		new VariableExpressionExporter(this).readVar(assignVar)
 	}
-	
+
 	def createWriteVariableAction(Variable variable, Action rhs) {
 		val write = factory.createAddVariableValueAction
 		write.name = '''«variable.name»=«rhs.name»'''
@@ -36,5 +37,5 @@ class AssignToVariableExporter extends AssignExporter {
 		storeNode(write)
 		return write
 	}
-	
+
 }
