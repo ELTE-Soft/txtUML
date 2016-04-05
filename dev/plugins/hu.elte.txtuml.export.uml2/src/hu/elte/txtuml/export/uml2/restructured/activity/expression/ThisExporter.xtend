@@ -21,6 +21,7 @@ class ThisExporter extends ActionExporter<ThisExpression, ReadSelfAction> {
 	
 	def createThis(ITypeBinding ref) {
 		val readThis = factory.createReadSelfAction
+		readThis.name = "this"
 		readThis.createResult("self_result", fetchType(ref))
 		storeNode(readThis)
 		readThis

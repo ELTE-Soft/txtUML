@@ -8,11 +8,16 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.api.model.Association;
@@ -302,5 +307,32 @@ public final class ElementTypeTeller {
 			type = type.getSuperclass();
 		}
 		return type != null;
+	}
+	
+	public static boolean isVariable(Expression expr) {
+		if (!(expr instanceof Name)) {
+			return false;
+		}
+		IBinding binding = ((Name) expr).resolveBinding();
+		if (!(binding instanceof IVariableBinding)) {
+			return false;
+		}
+		IVariableBinding varBinding = (IVariableBinding) binding;
+		return !varBinding.isField();
+	}
+	
+	public static boolean isFieldAccess(Expression expr) {
+		if (expr instanceof FieldAccess) {
+			return true;
+		}
+		if (!(expr instanceof Name)) {
+			return false;
+		}
+		IBinding binding = ((Name) expr).resolveBinding();
+		if (!(binding instanceof IVariableBinding)) {
+			return false;
+		}
+		IVariableBinding varBinding = (IVariableBinding) binding;
+		return varBinding.isField();
 	}
 }

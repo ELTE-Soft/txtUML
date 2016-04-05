@@ -21,10 +21,13 @@ import hu.elte.txtuml.export.uml2.restructured.activity.expression.StringLiteral
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.SuperCallExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.ThisExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.VariableExpressionExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.assign.AssignToFieldExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.assign.AssignToVariableExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.BlockExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.DoWhileExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.EmptyStmtExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.ExpressionStatementExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.statement.ForEachExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.IfExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.ReturnStatementExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.VariableDeclarationExporter
@@ -43,6 +46,7 @@ import hu.elte.txtuml.export.uml2.restructured.structural.ParameterExporter
 import java.util.List
 import java.util.function.Consumer
 import org.eclipse.jdt.core.IPackageFragment
+import org.eclipse.jdt.core.dom.Assignment
 import org.eclipse.jdt.core.dom.Block
 import org.eclipse.jdt.core.dom.BooleanLiteral
 import org.eclipse.jdt.core.dom.CharacterLiteral
@@ -78,8 +82,6 @@ import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.ExecutableNode
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
-import hu.elte.txtuml.export.uml2.restructured.activity.expression.ParameterExpressionExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.statement.ForEachExporter
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -193,8 +195,7 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 			CharacterLiteral:
 				#[new CharacterLiteralExporter(this)]
 			Name:
-				#[new VariableExpressionExporter(this), new NameFieldAccessExporter(this),
-					new ParameterExpressionExporter(this)]
+				#[new VariableExpressionExporter(this), new NameFieldAccessExporter(this)]
 			FieldAccess:
 				#[new SimpleFieldAccessExporter(this)]
 			NullLiteral:
@@ -225,6 +226,8 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 				#[new DoWhileExporter(this)]
 			EnhancedForStatement:
 				#[new ForEachExporter(this)]
+			Assignment:
+				#[new AssignToVariableExporter(this), new AssignToFieldExporter(this)]
 			VariableDeclarationStatement:
 				#[new VariableDeclarationExporter(this)]
 			default:

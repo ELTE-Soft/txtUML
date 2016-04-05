@@ -25,6 +25,9 @@ public class User extends ModelClass {
 	class Initialize extends Transition {
 		@Override
 		public void effect() {
+			boolean x;
+			x = b;
+			b = x;
 			Action.log("\tUser: initializing...");
 		}
 	}

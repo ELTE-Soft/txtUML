@@ -17,7 +17,7 @@ abstract class ControlExporter<S, R extends StructuredActivityNode> extends Acti
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
 	}
-	
+
 	def writeVariable(Variable variable, ExecutableNode testExpr) {
 		val writevar = result.createNode("write_" + testExpr.name + "_to_" + variable.name,
 			UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION) as AddVariableValueAction
@@ -34,11 +34,15 @@ abstract class ControlExporter<S, R extends StructuredActivityNode> extends Acti
 	def dispatch Type getType(ExecutableNode node) {
 		throw new RuntimeException("Cannot type " + node.toString)
 	}
-	
+
 	override storeEdge(ActivityEdge edge) { result.edges += edge }
 
 	override storeNode(ActivityNode node) { result.nodes += node }
-	
+
 	override storeVariable(Variable variable) { result.variables += variable }
-	
+
+	override getVariable(String varName) { 
+		result.variables.findFirst[name == varName] ?: super.getVariable(varName)
+	}
+
 }

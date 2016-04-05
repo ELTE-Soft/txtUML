@@ -2,6 +2,8 @@ package hu.elte.txtuml.export.uml2.restructured.activity
 
 import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import hu.elte.txtuml.export.uml2.restructured.Exporter
+import org.eclipse.jdt.core.dom.Expression
+import org.eclipse.jdt.core.dom.Statement
 import org.eclipse.uml2.uml.Action
 import org.eclipse.uml2.uml.ActivityEdge
 import org.eclipse.uml2.uml.ActivityNode
@@ -10,14 +12,14 @@ import org.eclipse.uml2.uml.CallOperationAction
 import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.InputPin
 import org.eclipse.uml2.uml.ObjectFlow
+import org.eclipse.uml2.uml.OutputPin
 import org.eclipse.uml2.uml.ReadLinkAction
 import org.eclipse.uml2.uml.ReadSelfAction
+import org.eclipse.uml2.uml.ReadStructuralFeatureAction
 import org.eclipse.uml2.uml.ReadVariableAction
+import org.eclipse.uml2.uml.SequenceNode
 import org.eclipse.uml2.uml.ValueSpecificationAction
 import org.eclipse.uml2.uml.Variable
-import org.eclipse.uml2.uml.ReadStructuralFeatureAction
-import org.eclipse.jdt.core.dom.Statement
-import org.eclipse.jdt.core.dom.Expression
 
 /**
  * Base class for all exporters on the statement-expression level.
@@ -43,22 +45,28 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 	def void storeVariable(Variable variable) {
 		(parent as ActionExporter<?, ?>).storeVariable(variable)
 	}
+		
+	def Variable getVariable(String varName) {
+		(parent as ActionExporter<?, ?>).getVariable(varName)
+	}
 	
 	def ActivityParameterNode getParameterNode(String name) {
 		(parent as ActionExporter<?, ?>).getParameterNode(name)
 	}
 
-	def dispatch result(ReadVariableAction node) { node.result }
+	def dispatch OutputPin result(ReadVariableAction node) { node.result }
 
-	def dispatch result(ReadSelfAction node) { node.result }
+	def dispatch OutputPin result(ReadSelfAction node) { node.result }
 
-	def dispatch result(ReadLinkAction node) { node.result }
+	def dispatch OutputPin result(ReadLinkAction node) { node.result }
 	
-	def dispatch result(ReadStructuralFeatureAction node) { node.result }
+	def dispatch OutputPin result(ReadStructuralFeatureAction node) { node.result }
 
-	def dispatch result(CallOperationAction node) { node.results.get(0) }
+	def dispatch OutputPin result(CallOperationAction node) { node.results.get(0) }
 	
-	def dispatch result(ValueSpecificationAction node) { node.result }
+	def dispatch OutputPin result(ValueSpecificationAction node) { node.result }
+	
+	def dispatch OutputPin result(SequenceNode node) { (node.executableNodes.last as Action).result }
 
 	def dispatch inputs(ReadLinkAction node) { node.inputValues.map[otherSide].flatten }
 

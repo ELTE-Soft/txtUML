@@ -1,10 +1,10 @@
 package hu.elte.txtuml.export.uml2.restructured.activity.expression
 
-import hu.elte.txtuml.export.uml2.restructured.activity.ActionExporter
-import org.eclipse.uml2.uml.ReadVariableAction
-import org.eclipse.jdt.core.dom.Name
 import hu.elte.txtuml.export.uml2.restructured.BaseExporter
-import org.eclipse.jdt.core.dom.IVariableBinding
+import hu.elte.txtuml.export.uml2.restructured.activity.ActionExporter
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller
+import org.eclipse.jdt.core.dom.Name
+import org.eclipse.uml2.uml.ReadVariableAction
 
 class VariableExpressionExporter extends ActionExporter<Name, ReadVariableAction> {
 
@@ -13,9 +13,7 @@ class VariableExpressionExporter extends ActionExporter<Name, ReadVariableAction
 	}
 
 	override create(Name access) {
-		val binding = access.resolveBinding
-		if (binding instanceof IVariableBinding && !(binding as IVariableBinding).isField)
-			factory.createReadVariableAction
+		if (ElementTypeTeller.isVariable(access)) factory.createReadVariableAction
 	}
 
 	override exportContents(Name source) {
