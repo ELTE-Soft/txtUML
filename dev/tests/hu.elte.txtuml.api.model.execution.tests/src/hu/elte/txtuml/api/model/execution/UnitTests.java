@@ -4,18 +4,18 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import hu.elte.txtuml.api.model.execution.assocends.AllAssociationEndTests;
-import hu.elte.txtuml.api.model.execution.error.deletion.AllDeletionErrorTests;
-import hu.elte.txtuml.api.model.execution.error.multiplicity.AllAssociationEndErrorTests;
-import hu.elte.txtuml.api.model.execution.error.other.AllOtherErrorTests;
-import hu.elte.txtuml.api.model.execution.error.statemachine.AllStateMachineErrorTests;
-import hu.elte.txtuml.api.model.execution.shutdown.ShutdownWithTenMessagesTest;
-import hu.elte.txtuml.api.model.execution.statemachine.AllStateMachineTests;
+import hu.elte.txtuml.api.model.execution.unittests.AssociationEndErrorTests;
+import hu.elte.txtuml.api.model.execution.unittests.AssociationEndTests;
+import hu.elte.txtuml.api.model.execution.unittests.DeletionErrorTests;
+import hu.elte.txtuml.api.model.execution.unittests.OtherErrorTests;
+import hu.elte.txtuml.api.model.execution.unittests.ShutdownTests;
+import hu.elte.txtuml.api.model.execution.unittests.StateMachineErrorTests;
+import hu.elte.txtuml.api.model.execution.unittests.StateMachineTests;
 
 @RunWith(Suite.class)
-@SuiteClasses({ AllPackagePrivateTests.class, AllAssociationEndTests.class,
-		AllStateMachineTests.class, AllDeletionErrorTests.class,
-		AllStateMachineErrorTests.class, AllAssociationEndErrorTests.class,
-		AllOtherErrorTests.class, ShutdownWithTenMessagesTest.class })
+@SuiteClasses({ AllPackagePrivateTests.class, AssociationEndTests.class,
+		StateMachineTests.class, DeletionErrorTests.class,
+		StateMachineErrorTests.class, AssociationEndErrorTests.class,
+		OtherErrorTests.class, ShutdownTests.class })
 public class UnitTests {
 }
