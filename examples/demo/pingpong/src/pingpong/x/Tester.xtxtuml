@@ -1,0 +1,16 @@
+package pingpong.x;
+
+import hu.elte.txtuml.api.^model.ModelExecutor;
+import pingpong.x.^model.PongSignal;
+import pingpong.x.^model.TopClass;
+
+execution Tester {
+	ModelExecutor.Settings.setExecutorLog(true);
+
+	TopClass top = create(TopClass);
+	start(top);
+
+	send new PongSignal(4) to top;
+
+	ModelExecutor.shutdown();
+}
