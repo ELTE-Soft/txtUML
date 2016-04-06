@@ -18,6 +18,7 @@ public class RectangleObject
 	private Integer _pixelHeight;
 	private Boolean _phantom;
 	private SpecialBox _special;
+	private Diagram _inner;
 	
 	// private Set<Point> _points;
 	
@@ -25,7 +26,7 @@ public class RectangleObject
 	
 	// Getters, setters
 	
-	/***
+	/**
 	 * Getter for the name of the {@link RectangleObject}.
 	 * 
 	 * @return Name of the {@link RectangleObject}.
@@ -35,7 +36,30 @@ public class RectangleObject
 		return _name;
 	}
 	
-	/***
+	public Boolean hasInner()
+	{
+		return null == _inner;
+	}
+	
+	/**
+	 * Returns the inner diagram if it's present or null.
+	 * @return the inner diagram if it's present or null.
+	 */
+	public Diagram getInner()
+	{
+		return _inner;
+	}
+	
+	/**
+	 * Sets the inner diagram.
+	 * @param diag Diagram to set.
+	 */
+	public void setInner(Diagram diag)
+	{
+		_inner = diag;
+	}
+	
+	/**
 	 * Getter for the top-left position of the {@link RectangleObject}.
 	 * 
 	 * @return top-left position of the {@link RectangleObject}.
@@ -175,6 +199,11 @@ public class RectangleObject
 		}
 	}
 	
+	public boolean isPixelDimensionsPresent()
+	{
+		return (_pixelWidth == -1 || _pixelHeight == -1);
+	}
+	
 	/**
 	 * Getter for the width amount of the rectangle in pixels.
 	 * 
@@ -279,10 +308,11 @@ public class RectangleObject
 		_position = new Point();
 		_width = 1;
 		_height = 1;
-		_pixelWidth = 1;
-		_pixelHeight = 1;
+		_pixelWidth = -1;
+		_pixelHeight = -1;
 		_phantom = false;
 		_special = SpecialBox.None;
+		_inner = null;
 	}
 	
 	/***
@@ -313,10 +343,11 @@ public class RectangleObject
 		_position = p;
 		_width = 1;
 		_height = 1;
-		_pixelWidth = 1;
-		_pixelHeight = 1;
+		_pixelWidth = -1;
+		_pixelHeight = -1;
 		_phantom = false;
 		_special = SpecialBox.None;
+		_inner = null;
 	}
 	
 	/***
@@ -335,6 +366,7 @@ public class RectangleObject
 		_pixelHeight = new Integer(o._pixelHeight);
 		_phantom = new Boolean(o._phantom);
 		_special = o._special;
+		_inner = Diagram.clone(o._inner);
 	}
 	
 	// end Ctors

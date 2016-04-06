@@ -2,6 +2,8 @@ package hu.elte.txtuml.layout.export.impl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
+import java.util.HashSet;
+import java.util.Set;
 
 import hu.elte.txtuml.api.layout.Above;
 import hu.elte.txtuml.api.layout.Below;
@@ -13,6 +15,7 @@ import hu.elte.txtuml.api.layout.StateMachineDiagram;
 import hu.elte.txtuml.api.layout.Diagram.Layout;
 import hu.elte.txtuml.api.layout.Diamond;
 import hu.elte.txtuml.api.layout.East;
+import hu.elte.txtuml.api.layout.Inside;
 import hu.elte.txtuml.api.layout.Left;
 import hu.elte.txtuml.api.layout.LeftMost;
 import hu.elte.txtuml.api.layout.North;
@@ -45,6 +48,8 @@ import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
 import hu.elte.txtuml.layout.export.interfaces.StatementExporter;
 import hu.elte.txtuml.layout.export.problems.ElementExportationException;
 import hu.elte.txtuml.layout.export.problems.ProblemReporter;
+import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
+import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 /**
  * Default implementation for {@link DiagramExporter}.
@@ -85,15 +90,76 @@ public class DiagramExporterImpl implements DiagramExporter {
 			report.setModelName(elementExporter.getModelName());
 			report.setType(elementExporter.getDiagramTypeBasedOnElements());
 			report.setStatements(statementExporter.getStatements());
-			report.setNodes(elementExporter.getNodesAsObjects());
-			report.setLinks(elementExporter.getLinksAsLines());
+			
+			Set<LineAssociation> links = elementExporter.getLinksAsLines();
+			report.setNodes(mergeNodesWithLinks(elementExporter.getNodesAsObjects(), links));
+			report.setLinks(links);
 		}
 
 		return report;
 	}
 
-	@SuppressWarnings("unchecked")
-	// All casts are checked with reflection.
+	private Set<RectangleObject> mergeNodesWithLinks(Set<RectangleObject> nodes, 
+			Set<LineAssociation> links)
+	{
+		Set<RectangleObject> result = new HashSet<RectangleObject>();
+		
+		for(LineAssociation link : links)
+		{
+			RectangleObject parent = new RectangleObject("#DEFAULT_PARENT#");
+			parent.setInner(new hu.elte.txtuml.layout.visualizer.model.Diagram(nodes, null));
+			result = mergeLinkIntoNodes(link, parent);
+		}
+		
+		return result;
+	}
+	
+	private Set<RectangleObject> mergeLinkIntoNodes(LineAssociation link, RectangleObject parent)
+	{
+		Set<RectangleObject> result = new HashSet<RectangleObject>();
+		
+		for(RectangleObject box : parent.getInner().Objects)
+		{
+			if(!box.hasInner())
+			{
+				result.add(box);
+				continue;
+			}
+			
+			if(result.contains(box))
+				result.remove(box);
+			
+			if(isLinkBetweenChildren(link, box))
+				box.getInner().Assocs.add(link);
+			else
+				box.getInner().Objects = mergeLinkIntoNodes(link, box);
+			
+			result.add(box);
+		}
+		
+		return result;
+	}
+	
+	private boolean isLinkBetweenChildren(LineAssociation link, RectangleObject parent)
+	{
+		boolean startFound = false;
+		boolean endFound = false;
+		
+		for(RectangleObject box : parent.getInner().Objects)
+		{
+			if(startFound && endFound)
+				break;
+			
+			if(!endFound && link.getTo().equals(box.getName()))
+				endFound = true;
+			
+			if(!startFound && link.getFrom().equals(box.getName()))
+				startFound = true;
+		}
+		
+		return startFound && endFound;
+	}
+	
 	private void exportDiagram() {
 
 		if(isClassDiagram(diagClass))
@@ -110,6 +176,18 @@ public class DiagramExporterImpl implements DiagramExporter {
 			report.error("No proper Diagram class found (ClassDiagram or StateMachineDiagram<T>)");
 		}
 		
+		exportDiagramBody(diagClass);
+	}
+
+	private void exportDiagramBody(Class<?> diagClass)
+	{
+		exportDiagramBody(diagClass, null);
+	}
+	
+	@SuppressWarnings("unchecked")
+	// All casts are checked with reflection.
+	private void exportDiagramBody(Class<?> diagClass, Class<?> phantomParent)
+	{
 		Class<? extends Diagram.Layout> layoutClass = null;
 
 		for (Class<?> innerClass : diagClass.getDeclaredClasses()) {
@@ -127,6 +205,11 @@ public class DiagramExporterImpl implements DiagramExporter {
 
 				} else if (ElementExporter.isPhantom(innerClass)) {
 					elementExporter.exportPhantom(innerClass);
+					exportDiagramBody(innerClass, innerClass);
+					
+				} else if(ElementExporter.isBoxContainer(innerClass)){
+					statementExporter.exportInside(innerClass.getAnnotation(Inside.class));
+					exportDiagramBody(innerClass);
 
 				} else if (isLayout(innerClass)) {
 					if (layoutClass != null) {
@@ -152,7 +235,7 @@ public class DiagramExporterImpl implements DiagramExporter {
 			exportLayout(layoutClass);
 		}
 	}
-
+	
 	private boolean isClassDiagram(Class<? extends Diagram> cls)
 	{
 		return ClassDiagram.class.isAssignableFrom(cls);
@@ -222,6 +305,7 @@ public class DiagramExporterImpl implements DiagramExporter {
 
 			} else if (isOfType(Spacing.class, annot)) {
 				statementExporter.exportCorridorRatio((Spacing) annot);
+				
 			} else if (isOfType(AboveContainer.class, annot)) {
 				statementExporter.exportAboveContainer((AboveContainer) annot);
 

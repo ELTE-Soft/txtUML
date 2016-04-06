@@ -9,18 +9,20 @@ import java.util.stream.Collectors;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.DirectedEdge;
-import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.EdgeWeightedDigraph;
+import hu.elte.txtuml.layout.visualizer.algorithms.boxes.utils.BellmanFordSP;
+import hu.elte.txtuml.layout.visualizer.algorithms.boxes.utils.OverlapHelper;
+import hu.elte.txtuml.layout.visualizer.algorithms.boxes.utils.bellmanfordutils.DirectedEdge;
+import hu.elte.txtuml.layout.visualizer.algorithms.boxes.utils.bellmanfordutils.EdgeWeightedDigraph;
+import hu.elte.txtuml.layout.visualizer.algorithms.utils.Helper;
+import hu.elte.txtuml.layout.visualizer.algorithms.utils.StatementHelper;
 import hu.elte.txtuml.layout.visualizer.events.ProgressManager;
 import hu.elte.txtuml.layout.visualizer.exceptions.BoxArrangeConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.BoxOverlapConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.MyException;
-import hu.elte.txtuml.layout.visualizer.helpers.Helper;
-import hu.elte.txtuml.layout.visualizer.helpers.Options;
-import hu.elte.txtuml.layout.visualizer.helpers.StatementHelper;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
+import hu.elte.txtuml.layout.visualizer.model.Options;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
@@ -39,7 +41,7 @@ public class ArrangeObjects
 	private List<RectangleObject> _objects;
 	private List<Statement> _statements;
 	private BiMap<String, Integer> _indices;
-	private Integer _gid;
+	private Integer _gId;
 	private Options _options;
 	
 	private Integer _transformAmount;
@@ -98,7 +100,7 @@ public class ArrangeObjects
 			return;
 		
 		_options = opt;
-		_gid = gid;
+		_gId = gid;
 		
 		_statements = Helper.cloneStatementList(par_stats);
 		_objects = new ArrayList<RectangleObject>(obj);
@@ -128,7 +130,7 @@ public class ArrangeObjects
 			isConflicted = false;
 			try
 			{
-				arrange(_statements);
+				arrange();
 			}
 			catch (BoxArrangeConflictException ex)
 			{
@@ -231,12 +233,6 @@ public class ArrangeObjects
 			case few:
 				removeOverlapsWithFew();
 				break;
-			case limited:
-				removeOverlaps(100);
-				break;
-			case full:
-				removeOverlaps(1);
-				break;
 		}
 		
 		if (_options.Logging)
@@ -252,9 +248,9 @@ public class ArrangeObjects
 		// Fixes the layout of the diagram by giving statements preserving the
 		// current state
 		Pair<List<Statement>, Integer> pair = OverlapHelper.fixCurrentState(_objects,
-				_statements, _gid);
+				_statements, _gId);
 		_statements.addAll(pair.getFirst());
-		_gid = pair.getSecond();
+		_gId = pair.getSecond();
 		
 		for (Entry<Point, HashSet<String>> entry : OverlapHelper.overlaps(_objects)
 				.entrySet())
@@ -285,7 +281,7 @@ public class ArrangeObjects
 		
 		try
 		{
-			arrange(_statements);
+			arrange();
 		}
 		catch (BoxArrangeConflictException e)
 		{
@@ -299,7 +295,7 @@ public class ArrangeObjects
 	private void makeStatementsForMatrix(String[][] matrix, Integer size)
 			throws InternalException
 	{
-		++_gid;
+		++_gId;
 		for (int i = 0; i < size; ++i)
 		{
 			for (int j = 0; j < size; ++j)
@@ -310,12 +306,12 @@ public class ArrangeObjects
 				if (i > 0)
 				{
 					_statements.add(new Statement(StatementType.south,
-							StatementLevel.Medium, _gid, matrix[i][j], matrix[i - 1][j]));
+							StatementLevel.Medium, _gId, matrix[i][j], matrix[i - 1][j]));
 				}
 				if (j > 0)
 				{
 					_statements.add(new Statement(StatementType.east,
-							StatementLevel.Medium, _gid, matrix[i][j], matrix[i][j - 1]));
+							StatementLevel.Medium, _gId, matrix[i][j], matrix[i][j - 1]));
 				}
 			}
 		}
@@ -333,9 +329,9 @@ public class ArrangeObjects
 		// Fixes the layout of the diagram by giving statements preserving the
 		// current state
 		Pair<List<Statement>, Integer> pair = OverlapHelper.fixCurrentState(_objects,
-				_statements, _gid);
+				_statements, _gId);
 		_statements.addAll(pair.getFirst());
-		_gid = pair.getSecond();
+		_gId = pair.getSecond();
 		
 		Boolean wasExtension = false;
 		do
@@ -391,13 +387,13 @@ public class ArrangeObjects
 				break;
 			
 			List<Statement> newStats = Helper.cloneStatementList(_statements);
-			++_gid;
+			++_gId;
 			newStats.add(new Statement(Helper.asStatementType(dir),
-					StatementLevel.Medium, _gid, boxA.getName(), boxB.getName()));
+					StatementLevel.Medium, _gId, boxA.getName(), boxB.getName()));
 			
 			try
 			{
-				arrange(newStats);
+				arrange();
 				Integer currOverlapCount = OverlapHelper.overlappingCount(_objects);
 				if (currOverlapCount < prevOverlapCount)
 				{
@@ -409,11 +405,11 @@ public class ArrangeObjects
 								+ currOverlapCount + "<" + prevOverlapCount + "!");
 				}
 				else
-					--_gid;
+					--_gId;
 			}
 			catch (MyException ex)
 			{
-				--_gid;
+				--_gId;
 				if (_options.Logging)
 					Logger.sys.info("[FEW] Retrying to resolve overlaps...");
 			}
@@ -422,90 +418,13 @@ public class ArrangeObjects
 		return wasExtension;
 	}
 	
-	private void removeOverlaps(Integer limit) throws InternalException,
-			BoxOverlapConflictException, ConversionException
-	{
-		Integer c = OverlapHelper.pairsCount(_objects);
-		Integer firstStep = ((c / limit) == 0) ? 1 : (c / limit);
-		
-		for (int i = 1; i <= c; i = i + firstStep)
-		{
-			if (_options.Logging)
-				Logger.sys.info("[FULL] List of Pairs of " + i);
-			
-			if (!OverlapHelper.isThereOverlapping(_objects))
-				break;
-			
-			Integer secondStep = ((OverlapHelper.selectPairs(i).size() / limit) == 0) ? 1
-					: (OverlapHelper.selectPairs(i).size() / limit);
-			
-			for (int comb = 0; comb < OverlapHelper.selectPairs(i).size(); comb = comb
-					+ secondStep)
-			{
-				if (_options.Logging)
-					Logger.sys.info("[FULL] > " + (comb + 1) + "/"
-							+ OverlapHelper.selectPairs(i).size() + ".");
-				
-				if (!OverlapHelper.isThereOverlapping(_objects))
-					break;
-				
-				for (FourNumber fn = FourNumber.Zero(OverlapHelper.selectPairs(i)
-						.get(comb).size()); fn.isLessThanOrEqual(FourNumber
-						.Max(OverlapHelper.selectPairs(i).get(comb).size())); fn.next())
-				{
-					if (!OverlapHelper.isThereOverlapping(_objects))
-						break;
-					
-					List<Statement> newStats = Helper.cloneStatementList(_statements);
-					newStats.addAll(OverlapHelper.getStatementsForPairs(OverlapHelper
-							.selectPairs(i).get(comb), fn, _gid));
-					
-					List<RectangleObject> originalObjects = new ArrayList<RectangleObject>(
-							_objects);
-					
-					try
-					{
-						arrange(newStats);
-						if (OverlapHelper.isThereOverlapping(_objects))
-						{
-							throw new BoxOverlapConflictException(null);
-						}
-						else
-						{
-							if (_options.Logging)
-								Logger.sys.info("[FULL] Found solution!");
-							
-							_statements = newStats;
-							break;
-						}
-					}
-					catch (MyException e)
-					{
-						_objects = new ArrayList<RectangleObject>(originalObjects);
-					}
-				}
-			}
-		}
-		
-		// If the cycle stopped but there remained overlapped elements
-		if (OverlapHelper.isThereOverlapping(_objects))
-		{
-			throw new BoxOverlapConflictException(OverlapHelper.overlaps(_objects)
-					.entrySet().stream().map(e -> e.getValue()).max((x, y) ->
-					{
-						return Integer.compare(x.size(), y.size());
-					}).get().stream().collect(Collectors.toList()));
-		}
-		
-	}
-	
-	private void arrange(List<Statement> stats) throws InternalException,
+	private void arrange() throws InternalException,
 			BoxArrangeConflictException
 	{
 		int n = _objects.size();
 		int startNode = 0;
 		ArrayList<Quadruple<Integer, Integer, Integer, Statement>> l = buildEdges(n,
-				stats);
+				_statements);
 		
 		EdgeWeightedDigraph G = new EdgeWeightedDigraph((2 * n) + 1, l);
 		
@@ -748,7 +667,7 @@ public class ArrangeObjects
 	 */
 	public Integer getGId()
 	{
-		return _gid;
+		return _gId;
 	}
 	
 }

@@ -2,9 +2,10 @@ package hu.elte.txtuml.layout.export.interfaces;
 
 import java.util.Set;
 
+import hu.elte.txtuml.api.layout.Diagram.Box;
 import hu.elte.txtuml.api.layout.Diagram.LinkGroup;
 import hu.elte.txtuml.api.layout.Diagram.NodeGroup;
-import hu.elte.txtuml.api.layout.Diagram.Phantom;
+import hu.elte.txtuml.api.layout.Inside;
 import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.elementinfo.ConcreteElementInfo;
 import hu.elte.txtuml.layout.export.elementinfo.ElementInfo;
@@ -87,7 +88,7 @@ public interface ElementExporter {
 	 */
 	NodeInfo exportPhantom(Class<?> phantom)
 			throws ElementExportationException;
-
+	
 	/**
 	 * Specialization to the <code>exportElement</code> method. Using
 	 * <code>exportElement</code> is always sufficient, but this method might be
@@ -139,7 +140,15 @@ public interface ElementExporter {
 	NodeInfo createPhantom();
 
 	static boolean isPhantom(Class<?> cls) {
-		return Phantom.class.isAssignableFrom(cls);
+		Inside annot = cls.getAnnotation(Inside.class);
+		
+		return Box.class.isAssignableFrom(cls) && (annot == null);
+	}
+	
+	static boolean isBoxContainer(Class<?> cls) {
+		Inside annot = cls.getAnnotation(Inside.class);
+		
+		return Box.class.isAssignableFrom(cls)  && (annot != null);
 	}
 
 	static boolean isNodeGroup(Class<?> cls) {
