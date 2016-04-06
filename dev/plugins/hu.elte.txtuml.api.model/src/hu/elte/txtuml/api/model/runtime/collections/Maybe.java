@@ -6,10 +6,20 @@ import java.util.function.Predicate;
 
 import hu.elte.txtuml.api.model.Collection;
 
+/**
+ * An immutable collection which may contain at most one element but is also
+ * allowed to be empty.
+ * <p>
+ * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
+ * overview on modeling in JtxtUML.
+ * 
+ * @param <T>
+ *            the type of the contained element
+ */
 public class Maybe<T> implements Collection<T> {
 
 	/**
-	 * The element contained in this collection. If <code>null</code>, this
+	 * The element contained in this collection or {@code null} if this
 	 * collection is empty.
 	 */
 	private final T obj;
@@ -25,7 +35,7 @@ public class Maybe<T> implements Collection<T> {
 	 * Creates a {@code Maybe} that contains the specified element.
 	 * 
 	 * @param element
-	 *            the element this sequence will contain
+	 *            the element this collection will contain
 	 */
 	public static <T> Maybe<T> of(T element) {
 		return new Maybe<T>(element);

@@ -8,15 +8,16 @@ import hu.elte.txtuml.api.model.Collection;
 
 /**
  * An abstract immutable collection with a back-end Java collection.
+ * <p>
+ * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
+ * overview on modeling in JtxtUML.
  *
  * @param <T>
  *            the type of items contained in the collection
- * @param <C>
- *            the concrete collection
  * @param <B>
  *            the back-end java collection
  */
-abstract class AbstractCollection<T, B extends java.util.Collection<T>> implements Collection<T> {
+public abstract class AbstractCollection<T, B extends java.util.Collection<T>> implements Collection<T> {
 
 	private final B backend;
 

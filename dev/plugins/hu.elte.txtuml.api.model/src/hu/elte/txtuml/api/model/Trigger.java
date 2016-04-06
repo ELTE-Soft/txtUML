@@ -80,6 +80,7 @@ public @interface Trigger {
 	 * <p>
 	 * <b> Usage: </b>
 	 * <p>
+	 * 
 	 * As {@link Trigger#port()} equals to {@code AnyPort.class} by default,
 	 * this type does not need to be used in JtxtUML models directly.
 	 * 

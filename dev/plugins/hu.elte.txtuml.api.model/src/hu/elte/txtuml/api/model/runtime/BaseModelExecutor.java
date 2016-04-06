@@ -9,7 +9,10 @@ import hu.elte.txtuml.api.model.error.MissingRuntimeContextError;
  * <p>
  * These features are those which has to be provided by <i>any</i> txtUML model
  * executor and therefore <i>these and only these</i> can be used to implement
- * external libraries for txtUML models.
+ * external libraries for txtUML models. *
+ * <p>
+ * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
+ * overview on modeling in JtxtUML.
  */
 public interface BaseModelExecutor {
 
@@ -17,8 +20,8 @@ public interface BaseModelExecutor {
 	 * Gets the current model executor which is associated with the current
 	 * thread.
 	 * <p>
-	 * <b>Note:</b> calls {@link Runtime#currentRuntime} and
-	 * {@link Runtime#getExecutor}.
+	 * <b>Note:</b> calls {@link Runtime#currentRuntime()}.
+	 * {@link Runtime#getExecutor getExecutor()}.
 	 * 
 	 * @return the model executor which is associated with the current thread
 	 * @throws MissingRuntimeContextError
@@ -58,7 +61,10 @@ public interface BaseModelExecutor {
 	BaseModelExecutor removeTerminationListener(Runnable listener);
 
 	/**
-	 * TODO documentation
+	 * Adds a termination blocker to this model executor's set of blockers. A
+	 * model executor may only terminate gracefully if this set is empty, that
+	 * is, if all previously added blockers are removed. A forced termination
+	 * may omit this restriction.
 	 * <p>
 	 * Must be <b>thread-safe</b>.
 	 * 
@@ -69,7 +75,10 @@ public interface BaseModelExecutor {
 	BaseModelExecutor addTerminationBlocker(Object blocker);
 
 	/**
-	 * TODO documentation
+	 * Removes a termination blocker from this model executor's set of blockers. A
+	 * model executor may only terminate gracefully if this set is empty, that
+	 * is, if all previously added blockers are removed. A forced termination
+	 * may omit this restriction.
 	 * <p>
 	 * Must be <b>thread-safe</b>.
 	 * 

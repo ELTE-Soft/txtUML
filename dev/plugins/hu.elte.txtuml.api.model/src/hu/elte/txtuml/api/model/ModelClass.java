@@ -111,8 +111,7 @@ public abstract class ModelClass extends StateMachine {
 		 * represented model object's state machine is not yet started. It will
 		 * not react to any asynchronous events, for example, sending signals to
 		 * it. However, sending signal to a <code>READY</code> object is legal
-		 * in the model, therefore no error or warning messages are shown if it
-		 * is done.
+		 * in the model, therefore no error messages are shown if it is done.
 		 * <p>
 		 * See the documentation of {@link Model} for an overview on modeling in
 		 * JtxtUML.
@@ -138,8 +137,7 @@ public abstract class ModelClass extends StateMachine {
 		 * from the model. Its fields and methods might be used but it will not
 		 * react to any asynchronous events, for example, sending signals to it.
 		 * However, sending signal to a <code>FINALIZED</code> object is legal
-		 * in the model, therefore no error or warning messages are shown if it
-		 * is done.
+		 * in the model, therefore no error messages are shown if it is done.
 		 * <p>
 		 * <b>Note:</b> currently there is no way to stop the state machine of a
 		 * model object without deleting it. So the only way to reach this
@@ -167,8 +165,7 @@ public abstract class ModelClass extends StateMachine {
 	}
 
 	/**
-	 * Creates the unique identifier of this object and after setting its
-	 * current vertex to its initial pseudostate (if any), it goes into either
+	 * Initializes this model object, after which it goes into either
 	 * {@link Status#READY READY} or {@link Status#FINALIZED FINALIZED} status
 	 * depending on whether it has any state machine or not (any initial
 	 * pseudostate or not).
@@ -178,7 +175,7 @@ public abstract class ModelClass extends StateMachine {
 
 	@Override
 	ModelClassWrapper createRuntimeInfo() {
-		return Runtime.currentRuntime().createRuntimeInfoFor(this);
+		return Runtime.currentRuntime().createModelClassWrapper(this);
 	}
 
 	/**
@@ -294,7 +291,7 @@ public abstract class ModelClass extends StateMachine {
 
 		@Override
 		PortWrapper createRuntimeInfo() {
-			return ModelClass.this.getRuntime().createRuntimeInfoFor(this, ModelClass.this);
+			return ModelClass.this.getRuntime().createPortWrapper(this, ModelClass.this);
 		}
 
 		/**

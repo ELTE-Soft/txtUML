@@ -377,7 +377,7 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 
 		@Override
 		public String toString() {
-			return "initial_" + super.toString();
+			return "initial:" + vertexIdentifier();
 		}
 
 	}
@@ -447,7 +447,7 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 
 		@Override
 		public String toString() {
-			return "choice_" + super.toString();
+			return "choice:" + vertexIdentifier();
 		}
 
 	}
@@ -683,7 +683,7 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 		 *         an <i>else</i> condition
 		 * @throws ElseException
 		 *             always, due to implementation issues; should <b>not be
-		 *             caught</b> by user code.
+		 *             caught</b> by user code
 		 * @see Transition#guard
 		 */
 		protected static boolean Else() throws ElseException {

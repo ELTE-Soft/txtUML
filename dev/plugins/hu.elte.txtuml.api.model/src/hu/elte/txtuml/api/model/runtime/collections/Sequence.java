@@ -4,6 +4,16 @@ import java.util.ArrayList;
 
 import hu.elte.txtuml.api.model.Collection;
 
+/**
+ * An immutable ordered collection which may contain any number of elements
+ * (including zero).
+ * <p>
+ * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
+ * overview on modeling in JtxtUML.
+ *
+ * @param <T>
+ *            the type of the contained elements
+ */
 public class Sequence<T> extends AbstractCollection<T, ArrayList<T>> implements Collection<T> {
 
 	static <T> Builder<T, Sequence<T>> builder() {

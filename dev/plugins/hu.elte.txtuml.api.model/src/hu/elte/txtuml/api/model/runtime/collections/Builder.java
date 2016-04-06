@@ -8,6 +8,9 @@ import hu.elte.txtuml.api.model.Collection;
 
 /**
  * A mutable builder for an immutable collection.
+ * <p>
+ * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
+ * overview on modeling in JtxtUML.
  *
  * @param <T>
  *            the type of items contained in the collection
@@ -15,6 +18,26 @@ import hu.elte.txtuml.api.model.Collection;
  *            the type of the immutable collection
  */
 interface Builder<T, C extends Collection<T>> {
+
+	Builder<T, C> add(T element);
+
+	default Builder<T, C> addAll(Iterable<? extends T> elements) {
+		elements.forEach(this::add);
+		return this;
+	}
+
+	default Builder<T, C> addAll(Iterator<? extends T> it) {
+		it.forEachRemaining(this::add);
+		return this;
+	}
+
+	/**
+	 * May only be called <b>once</b> to create the prepared immutable
+	 * collection.
+	 */
+	C build();
+
+	// create method
 
 	static <T, C extends Collection<T>, B extends java.util.Collection<T>> Builder<T, C> create(
 			Supplier<B> backendCollectionCreator, Function<B, C> immutableCollectionCreator) {
@@ -34,24 +57,6 @@ interface Builder<T, C extends Collection<T>> {
 				return ret;
 			}
 		};
-	}
-
-	Builder<T, C> add(T element);
-
-	/**
-	 * May only be called <b>once</b> to create the prepared immutable
-	 * collection.
-	 */
-	C build();
-
-	default Builder<T, C> addAll(Iterable<? extends T> elements) {
-		elements.forEach(this::add);
-		return this;
-	}
-
-	default Builder<T, C> addAll(Iterator<? extends T> it) {
-		it.forEachRemaining(this::add);
-		return this;
 	}
 
 }

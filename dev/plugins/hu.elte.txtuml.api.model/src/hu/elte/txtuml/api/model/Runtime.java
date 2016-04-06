@@ -9,6 +9,27 @@ import hu.elte.txtuml.api.model.runtime.PortWrapper;
 import hu.elte.txtuml.api.model.runtime.RuntimeContext;
 import hu.elte.txtuml.api.model.runtime.RuntimeInfo;
 
+/**
+ * txtUML models has to be run in a txtUML runtime context, that is, an instance
+ * of this class must manage them.
+ * 
+ * <p>
+ * <b>Represents:</b> no model element
+ * <p>
+ * <b>Usage:</b>
+ * <p>
+ * 
+ * Cannot be used in a model, it has to be subclassed by model executors.
+ * 
+ * <p>
+ * <b>Note:</b> all model executor threads (Java threads on which a model runs)
+ * must implement the {@link RuntimeContext} interface to provide access to a
+ * runtime instance. Model executors has to suffice this requirement.
+ * 
+ * <p>
+ * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
+ * overview on modeling in JtxtUML.
+ */
 public abstract class Runtime {
 
 	/**
@@ -36,7 +57,9 @@ public abstract class Runtime {
 	public abstract BaseModelExecutor getExecutor();
 
 	/**
-	 * Returns whether optional dynamic checks are on.
+	 * Returns whether optional dynamic checks are on. These checks include
+	 * checking lower bounds of multiplicities, checking whether the guards of
+	 * two transitions from the same vertex are overlapping, etc.
 	 * <p>
 	 * Must be <b>thread-safe</b>.
 	 */
@@ -73,7 +96,7 @@ public abstract class Runtime {
 	}
 
 	/**
-	 * Called by {@link Action#connect(Class, Port, Class, Port)} .
+	 * Called by {@link Action#connect(Class, Port, Class, Port)}.
 	 */
 	public abstract <C1 extends ConnectorEnd<?, P1>, P1 extends Port<I1, I2>, C2 extends ConnectorEnd<?, P2>, P2 extends Port<I2, I1>, I1 extends Interface, I2 extends Interface> void connect(
 			Class<C1> leftEnd, P1 leftPort, Class<C2> rightEnd, P2 rightPort);
@@ -85,40 +108,68 @@ public abstract class Runtime {
 			P1 parentPort, Class<C> childEnd, P2 childPort);
 
 	/**
-	 * Called by {@link Action#link(Class, ModelClass, Class, ModelClass)} .
+	 * Called by {@link Action#link(Class, ModelClass, Class, ModelClass)}.
 	 */
 	public abstract <L extends ModelClass, R extends ModelClass> void link(
 			Class<? extends AssociationEnd<L, ?>> leftEnd, L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd,
 			R rightObj);
 
 	/**
-	 * Called by {@link Action#unlink(Class, ModelClass, Class, ModelClass)} .
+	 * Called by {@link Action#unlink(Class, ModelClass, Class, ModelClass)}.
 	 */
 	public abstract <L extends ModelClass, R extends ModelClass> void unlink(
 			Class<? extends AssociationEnd<L, ?>> leftEnd, L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd,
 			R rightObj);
 
-	protected abstract ModelClassWrapper createRuntimeInfoFor(ModelClass object);
+	/**
+	 * Creates a model class wrapper for the given wrapped object.
+	 */
+	protected abstract ModelClassWrapper createModelClassWrapper(ModelClass wrapped);
 
-	protected abstract PortWrapper createRuntimeInfoFor(Port<?, ?> portInstance, ModelClass owner);
+	/**
+	 * Creates a model class wrapper for the given wrapped port instance.
+	 */
+	protected abstract PortWrapper createPortWrapper(Port<?, ?> wrapped, ModelClass owner);
 
+	/**
+	 * Base class for model elements that have a runtime information provider.
+	 * 
+	 * @param <I>
+	 *            the type of the runtime information provider of this model
+	 *            element
+	 */
 	protected static abstract class Described<I extends RuntimeInfo> {
 
+		/**
+		 * The runtime information provider of this model element.
+		 */
 		private final I runtimeInfo = createRuntimeInfo();
 
+		/**
+		 * Creates the runtime information provider for this model element.
+		 * Implementation must not depend on fields of any subclass of
+		 * {@link Described} as this method is called in the constructor.
+		 */
 		abstract I createRuntimeInfo();
 
 		/**
-		 * Returns the runtime information provider associated with this object.
+		 * Returns the runtime information provider of this model element.
 		 */
 		public final I runtimeInfo() {
 			return runtimeInfo;
 		}
 
+		/**
+		 * A shorthand operation for {@link #runtimeInfo()}.
+		 * {@link RuntimeInfo#getRuntime() getRuntime()}.
+		 */
 		Runtime getRuntime() {
 			return runtimeInfo().getRuntime();
 		}
 
+		/**
+		 * Returns a short string representation of this model element.
+		 */
 		@Override
 		public String toString() {
 			return runtimeInfo().getStringRepresentation();

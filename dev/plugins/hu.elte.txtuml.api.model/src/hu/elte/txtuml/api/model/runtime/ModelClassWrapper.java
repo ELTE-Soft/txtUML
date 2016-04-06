@@ -9,6 +9,13 @@ import hu.elte.txtuml.api.model.ModelClass.Status;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.assocends.Navigability;
 
+/**
+ * Wraps a model class instance, providing additional runtime information and
+ * management capabilities.
+ * <p>
+ * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
+ * overview on modeling in JtxtUML.
+ */
 public interface ModelClassWrapper extends Wrapper<ModelClass>, RuntimeInfo {
 
 	/**
@@ -37,7 +44,8 @@ public interface ModelClassWrapper extends Wrapper<ModelClass>, RuntimeInfo {
 	void delete();
 
 	/**
-	 * Called by {@link Action#send(Signal, ModelClass)}.
+	 * Called by {@link Action#send(Signal, ModelClass)}, asynchronously sends a
+	 * signal to this object.
 	 */
 	void send(Signal signal);
 

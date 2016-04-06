@@ -8,8 +8,9 @@ import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
 
 /**
- * Class <code>Action</code> provides methods for the user to be used as
- * statements of the action language.
+ * Provides static methods for the user to be used as statements of the action
+ * language. Its methods may only <b>be called from the model</b>, see the class
+ * {@link API} for possible ways to communicate with the model from the outside.
  * 
  * <p>
  * <b>Represents:</b> no model element directly, its static methods are part of
@@ -25,7 +26,7 @@ import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
  * <b>Java restrictions:</b>
  * <ul>
  * <li><i>Instantiate:</i> disallowed</li>
- * <li><i>Define subtype:</i> disallowed</li>
+ * <li><i>Define subtype:</i> allowed, for simplified access to its methods</li>
  * </ul>
  * 
  * <p>
@@ -33,9 +34,6 @@ import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
  * JtxtUML.
  */
 public abstract class Action {
-
-	Action() {
-	}
 
 	/**
 	 * Creates a new instance of the specified model class. Shows an error
@@ -56,7 +54,7 @@ public abstract class Action {
 		try {
 			return InstanceCreator.create(classType, parameters);
 		} catch (IllegalArgumentException | RuntimeInvocationTargetException e) {
-			throw new ObjectCreationError();
+			throw new ObjectCreationError(e);
 		}
 	}
 
