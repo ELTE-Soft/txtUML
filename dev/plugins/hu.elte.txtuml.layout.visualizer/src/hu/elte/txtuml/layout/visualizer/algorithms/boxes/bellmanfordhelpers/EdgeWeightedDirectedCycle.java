@@ -128,8 +128,6 @@ public class EdgeWeightedDirectedCycle
 				{
 					if (last.to() != e.from())
 					{
-						System.err
-								.printf("cycle edges %s and %s not incident\n", last, e);
 						return false;
 					}
 				}
@@ -138,7 +136,6 @@ public class EdgeWeightedDirectedCycle
 			
 			if (last.to() != first.from())
 			{
-				System.err.printf("cycle edges %s and %s not incident\n", last, first);
 				return false;
 			}
 		}

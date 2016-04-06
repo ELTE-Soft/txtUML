@@ -175,7 +175,7 @@ TUPort :
 ;
 
 TUPortMember :
-	(provided?='provided' | 'required') interface=[TUInterface|QualifiedName] ';'
+	(required?='required' | 'provided') interface=[TUInterface|QualifiedName] ';'
 ;
 
 // Association-related

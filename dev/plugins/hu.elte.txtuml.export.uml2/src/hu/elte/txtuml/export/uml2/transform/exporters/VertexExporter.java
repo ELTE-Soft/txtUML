@@ -12,7 +12,7 @@ import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
-import hu.elte.txtuml.export.uml2.UML2.ExportMode;
+import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode;
 import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.utils.jdt.SharedUtils;

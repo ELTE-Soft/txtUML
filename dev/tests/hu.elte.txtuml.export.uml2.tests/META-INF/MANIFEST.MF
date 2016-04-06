@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: txtUML Export to UML2 Tests
 Bundle-SymbolicName: hu.elte.txtuml.export.uml2.tests
-Bundle-Version: 0.3.0.qualifier
+Bundle-Version: 0.4.0.qualifier
 Bundle-Vendor: ELTE
 Fragment-Host: hu.elte.txtuml.export.uml2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

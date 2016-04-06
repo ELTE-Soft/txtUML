@@ -62,7 +62,7 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * opposite is not stated on the corresponding pages of this documentation.</li>
  * <li>Using Java primitive types and <code>String</code>s.</li>
  * <li>Using subclasses of <code>ExternalClass</code>, like the classes of the
- * {@link hu.elte.txtuml.api.stdlib} package. See the documentation of
+ * <code>hu.elte.txtuml.api.stdlib</code> package. See the documentation of
  * {@link ExternalClass} for details.</li>
  * </ul>
  * 

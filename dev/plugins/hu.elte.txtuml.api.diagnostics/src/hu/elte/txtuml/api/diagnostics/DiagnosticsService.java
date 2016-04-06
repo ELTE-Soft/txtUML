@@ -89,7 +89,7 @@ public class DiagnosticsService extends NotifierOfTermination {
 			port = Integer.decode(portStr).intValue();
 		} catch (Exception ex) {}
 		if (port <= 0 || port > 65535) {
-			System.out.println("INFO: No " + GlobalSettings.TXTUML_DIAGNOSTICS_PORT_KEY + " property is set correctly on this VM, no txtUML diagnostics will be available for service instance 0x" + Integer.toHexString(serviceInstanceID));
+			Logger.sys.info("INFO: No " + GlobalSettings.TXTUML_DIAGNOSTICS_PORT_KEY + " property is set correctly on this VM, no txtUML diagnostics will be available for service instance 0x" + Integer.toHexString(serviceInstanceID));
 			diagnosticsPort = -1;
 			notifyAllOfTermination();
 			return;

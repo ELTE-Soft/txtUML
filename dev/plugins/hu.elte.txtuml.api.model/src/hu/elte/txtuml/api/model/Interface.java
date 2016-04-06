@@ -16,18 +16,17 @@ package hu.elte.txtuml.api.model;
  * (non-default) Java method on it with {@code void} return type and exactly one
  * parameter the type of which must be a subtype of {@link Signal} (or
  * {@code Signal} itself). This reception method must also have the name
- * {@code reception} (more precisely, must equal to the constant
+ * {@code reception} (more precisely, its name must equal to the constant
  * {@link Interface#RECEPTION_NAME}). This reception will only accept signals
  * that are of a subtype of the given signal type (or all signals if the
  * parameters's type is {@code Signal}).
  * <p>
- * For specific use cases, when an empty interface is needed, the
+ * For specific use cases when an empty interface is needed, the
  * {@link Interface.Empty} type is present in the API.
  * 
  * <p>
  * <b>Java restrictions:</b>
  * <ul>
- * <li><i>Instantiate:</i> disallowed</li>
  * <li><i>Define subtype:</i> allowed
  * <p>
  * <b>Subtype requirements:</b>
@@ -38,14 +37,14 @@ package hu.elte.txtuml.api.model;
  * <b>Subtype restrictions:</b>
  * <ul>
  * <li><i>Be abstract:</i> disallowed</li>
- * <li><i>Generic parameters:</i> allowed</li>
- * <li><i>Constructors:</i> allowed</li>
- * <li><i>Initialization blocks:</i> allowed</li>
- * <li><i>Fields:</i> allowed</li>
- * <li><i>Methods:</i> allowed</li>
- * <li><i>Nested interfaces:</i> allowed</li>
- * <li><i>Nested classes:</i> allowed</li>
- * <li><i>Nested enums:</i> allowed</li>
+ * <li><i>Generic parameters:</i> disallowed</li>
+ * <li><i>Constructors:</i> disallowed</li>
+ * <li><i>Initialization blocks:</i> disallowed</li>
+ * <li><i>Fields:</i> disallowed</li>
+ * <li><i>Methods:</i> allowed, to represent receptions</li>
+ * <li><i>Nested interfaces:</i> disallowed</li>
+ * <li><i>Nested classes:</i> disallowed</li>
+ * <li><i>Nested enums:</i> disallowed</li>
  * </ul>
  * </li>
  * <li><i>Inherit from the defined subtype:</i> allowed
@@ -88,7 +87,6 @@ public interface Interface extends ModelElement {
 	 * <p>
 	 * <b>Java restrictions:</b>
 	 * <ul>
-	 * <li><i>Instantiate:</i> disallowed</li>
 	 * <li><i>Define subtype:</i> disallowed</li>
 	 * </ul>
 	 * 

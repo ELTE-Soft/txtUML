@@ -23,7 +23,7 @@ package hu.elte.txtuml.api.model;
  * <ul>
  * <li>must be a top level class (not a nested or local class)</li>
  * <li>must have two inner classes which are subclasses of
- * {@link ConnectorEnd}</code></li>
+ * {@link ConnectorEnd}</li>
  * </ul>
  * <p>
  * <b>Subtype restrictions:</b>
@@ -43,6 +43,7 @@ package hu.elte.txtuml.api.model;
  * <li><i>Inherit from the defined subtype:</i> disallowed</li>
  * </ul>
  * 
+ * <p>
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  */

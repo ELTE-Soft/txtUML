@@ -8,19 +8,16 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.UMLPackage;
 
-
-import hu.elte.txtuml.export.uml2.UML2.ExportMode;
 import hu.elte.txtuml.api.deployment.Configuration;
-import hu.elte.txtuml.export.ExportUtils;
-import hu.elte.txtuml.export.Uml2Utils;
 import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
 import hu.elte.txtuml.export.cpp.thread.ThreadDescriptionExporter;
+import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
+import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode;
 import hu.elte.txtuml.utils.eclipse.ClassLoaderProvider;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
 
@@ -69,39 +66,34 @@ public class TxtUMLToCppWizard extends Wizard {
 
 			String umlFilesFolder = txtUMLProject + File.separator + GenericFolderName + File.separator + txtUMLModel
 					+ File.separator + UmlFilesFolderName;
-			String umlFileLocation = umlFilesFolder + File.separator + txtUMLModel + ".uml";
 
+			Model model;
 			try {
-				ExportUtils.exportTxtUMLModelToUML2(txtUMLProject, txtUMLModel, umlFilesFolder,
-						ExportMode.ExportActionCode);
+				model = TxtUMLToUML2.exportModel(txtUMLProject, txtUMLModel, umlFilesFolder, ExportMode.ExportActionCode);
 			} catch (Exception e) {
 				Dialogs.errorMsgb("txtUML export Error", e.getClass() + ":" + System.lineSeparator() + e.getMessage(),
 						e);
 				return false;
 			}
 
-			Model model = Uml2Utils.loadModel(URI.createPlatformResourceURI(umlFileLocation, false));
-
 			URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(txtUMLProject,
 					ThreadDescriptionExporter.class.getClassLoader());
 			Class<?> txtUMLThreadDescription;
 			try {
-				 txtUMLThreadDescription = loader.loadClass(threadManagmentDescription);
-			}
-			catch(ClassNotFoundException e) {
-				Dialogs.errorMsgb("Description Class Error", e.getClass() + ":" + System.lineSeparator() + e.getMessage(),
-						e);
+				txtUMLThreadDescription = loader.loadClass(threadManagmentDescription);
+			} catch (ClassNotFoundException e) {
+				Dialogs.errorMsgb("Description Class Error",
+						e.getClass() + ":" + System.lineSeparator() + e.getMessage(), e);
 				return false;
 			}
-			
-			
+
 			List<org.eclipse.uml2.uml.Class> classList = new ArrayList<org.eclipse.uml2.uml.Class>();
 			Shared.getTypedElements(classList, model.getOwnedElements(), UMLPackage.Literals.CLASS);
 			Set<String> allClass = new HashSet<String>();
-			for(org.eclipse.uml2.uml.Class cls: classList) {
+			for (org.eclipse.uml2.uml.Class cls : classList) {
 				allClass.add(cls.getName());
 			}
-			
+
 			ThreadDescriptionExporter exporter = new ThreadDescriptionExporter(allClass);
 			exporter.exportDescription((Class<? extends Configuration>) txtUMLThreadDescription);
 
@@ -123,7 +115,8 @@ public class TxtUMLToCppWizard extends Wizard {
 						projectFolder + File.separator + GenericFolderName + File.separator + txtUMLModel);
 
 			} catch (Exception e) {
-				Dialogs.errorMsgb("Compilation failed",e.getClass() + ":" + System.lineSeparator() + e.getMessage(), e);
+				Dialogs.errorMsgb("Compilation failed", e.getClass() + ":" + System.lineSeparator() + e.getMessage(),
+						e);
 
 			}
 
