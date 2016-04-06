@@ -47,9 +47,11 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionTrigger
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUVisibility
+import java.util.Map
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.common.types.JvmDeclaredType
 import org.eclipse.xtext.common.types.JvmFormalParameter
+import org.eclipse.xtext.common.types.JvmGenericType
 import org.eclipse.xtext.common.types.JvmMember
 import org.eclipse.xtext.common.types.JvmVisibility
 import org.eclipse.xtext.common.types.TypesFactory
@@ -59,6 +61,8 @@ import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
 
 class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
+
+	Map<EObject, JvmDeclaredType> registeredTypes = newHashMap;
 
 	@Inject extension XtxtUMLTypesBuilder
 	@Inject extension IJvmModelAssociations
@@ -97,12 +101,12 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			}.typeRef
 
 			for (end : assoc.ends) {
-				members += end.getPrimaryJvmElement as JvmMember
+				members += end.inferredType as JvmMember
 			}
 		]
 
 		for (end : assoc.ends) {
-			infer(end, acceptor, isPreIndexingPhase)
+			register(end, acceptor, isPreIndexingPhase)
 		}
 	}
 
@@ -142,8 +146,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
 			for (member : tUClass.members) {
 				if (member instanceof TUState || member instanceof TUPort) {
-					// just use the element which was inferred earlier
-					members += member.getPrimaryJvmElement as JvmMember
+					members += member.inferredType as JvmMember
 				} else if (!(member instanceof TUAttributeOrOperationDeclarationPrefix)) { // TODO refactor grammar
 					members += member.toJvmMember
 				}
@@ -152,7 +155,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
 		for (member : tUClass.members) {
 			if (member instanceof TUState || member instanceof TUPort) {
-				infer(member, acceptor, isPreIndexingPhase)
+				register(member, acceptor, isPreIndexingPhase)
 			}
 		}
 	}
@@ -167,12 +170,12 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			}
 
 			for (end : connector.ends) {
-				members += end.getPrimaryJvmElement as JvmMember
+				members += end.inferredType as JvmMember
 			}
 		]
 
 		for (end : connector.ends) {
-			infer(end, acceptor, isPreIndexingPhase)
+			register(end, acceptor, isPreIndexingPhase)
 		}
 	}
 
@@ -189,8 +192,9 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		]
 	}
 
-	def dispatch void infer(TUAssociationEnd assocEnd, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		acceptor.accept(assocEnd.toClass(assocEnd.fullyQualifiedName)) [
+	def private dispatch void register(TUAssociationEnd assocEnd, IJvmDeclaredTypeAcceptor acceptor,
+		boolean isPreIndexingPhase) {
+		acceptor.register(assocEnd, assocEnd.toClass(assocEnd.fullyQualifiedName)) [
 			documentation = assocEnd.documentation
 			visibility = JvmVisibility.PUBLIC
 
@@ -206,8 +210,8 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		]
 	}
 
-	def dispatch void infer(TUPort port, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		acceptor.accept(port.toClass(port.fullyQualifiedName)) [
+	def private dispatch void register(TUPort port, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+		acceptor.register(port, port.toClass(port.fullyQualifiedName)) [
 			documentation = port.documentation
 			visibility = JvmVisibility.PUBLIC
 
@@ -222,8 +226,8 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		]
 	}
 
-	def dispatch void infer(TUState state, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		acceptor.accept(state.toClass(state.fullyQualifiedName)) [
+	def private dispatch void register(TUState state, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+		acceptor.register(state, state.toClass(state.fullyQualifiedName)) [
 			documentation = state.documentation
 			superTypes += switch (state.type) {
 				case PLAIN: StateMachine.State.typeRef
@@ -234,8 +238,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
 			for (member : state.members) {
 				if (member instanceof TUState) {
-					// just use the element which was inferred earlier
-					members += member.getPrimaryJvmElement as JvmMember
+					members += member.inferredType as JvmMember
 				} else {
 					members += member.toJvmMember
 				}
@@ -244,13 +247,14 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
 		for (member : state.members) {
 			if (member instanceof TUState) {
-				infer(member, acceptor, isPreIndexingPhase)
+				register(member, acceptor, isPreIndexingPhase)
 			}
 		}
 	}
 
-	def dispatch void infer(TUConnectorEnd connEnd, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		acceptor.accept(connEnd.toClass(connEnd.fullyQualifiedName)) [
+	def private dispatch void register(TUConnectorEnd connEnd, IJvmDeclaredTypeAcceptor acceptor,
+		boolean isPreIndexingPhase) {
+		acceptor.register(connEnd, connEnd.toClass(connEnd.fullyQualifiedName)) [
 			documentation = connEnd.documentation
 			visibility = JvmVisibility.PUBLIC
 			superTypes += typeRef(One, connEnd.role.inferredTypeRef, connEnd.port.inferredTypeRef)
@@ -459,8 +463,11 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		return endClassImpl.typeRef(endClassTypeParam) -> explicitMultiplicities
 	}
 
-	def private inferredTypeRef(EObject modelElement) {
-		(modelElement?.getPrimaryJvmElement as JvmDeclaredType)?.typeRef
+	def private inferredTypeRef(EObject sourceElement) {
+		val type = sourceElement.inferredType
+		if (type instanceof JvmDeclaredType) {
+			return type.typeRef
+		}
 	}
 
 	def private toInterfaceTypeRef(TUPortMember portMember) {
@@ -469,6 +476,19 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		} else {
 			Interface.Empty.typeRef
 		}
+	}
+
+	def private void register(IJvmDeclaredTypeAcceptor acceptor, EObject sourceElement, JvmGenericType type,
+		(JvmGenericType)=>void initializer) {
+		registeredTypes.put(sourceElement, type)
+		acceptor.accept(type, initializer)
+		if (type.eResource != null) { // to eliminate warning about null-safe'd primitives
+			type.eResource.contents.remove(type)
+		}
+	}
+
+	def private inferredType(EObject sourceElement) {
+		registeredTypes.get(sourceElement) ?: sourceElement.getPrimaryJvmElement
 	}
 
 }
