@@ -135,7 +135,7 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 				Type memberT1 = member1.getType();
 				Type memberT2 = member2.getType();
 				
-				List<Point> route = Arrays.asList(new Point(50, 250), new Point(250, 250), new Point(250, 50));
+				List<Point> route = Arrays.asList(new Point(0, 50), new Point(50, 250), new Point(250, 250), new Point(250, 50), new Point(50, 0));
 				this.elementCreator.createAssociationForNodes((Classifier) memberT1,(Classifier) memberT2, assoc, this.diagram,  route, this.monitor);
 			}
 		}
