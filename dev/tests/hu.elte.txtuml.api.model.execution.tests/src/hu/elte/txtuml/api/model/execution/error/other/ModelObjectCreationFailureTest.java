@@ -1,25 +1,30 @@
 package hu.elte.txtuml.api.model.execution.error.other;
 
+import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.execution.base.SimpleModelTestsBase;
+import hu.elte.txtuml.api.model.error.ObjectCreationError;
+import hu.elte.txtuml.api.model.execution.base.TestsBase;
 import hu.elte.txtuml.api.model.execution.models.simple.A;
-import hu.elte.txtuml.api.model.execution.util.SeparateClassloaderTestRunner;
+import hu.elte.txtuml.api.model.execution.util.MutableBoolean;
 
-@RunWith(SeparateClassloaderTestRunner.class)
-public class ModelObjectCreationFailureTest extends SimpleModelTestsBase {
+public class ModelObjectCreationFailureTest extends TestsBase {
 
 	@Test
 	public void test() {
 
-		Action.create(A.class, 100);
+		MutableBoolean bool = new MutableBoolean(false);
 
-		stopModelExecution();
-
-		executionAsserter.assertErrors(x -> x.modelObjectCreationFailed(
-				A.class, new Object[] { 100 }));
+		executor.run(() -> {
+			try {
+				Action.create(A.class, 100);
+			} catch (ObjectCreationError e) {
+				bool.value = true;
+			}
+		});
+		
+		Assert.assertTrue(bool.value);
 	}
 
 }

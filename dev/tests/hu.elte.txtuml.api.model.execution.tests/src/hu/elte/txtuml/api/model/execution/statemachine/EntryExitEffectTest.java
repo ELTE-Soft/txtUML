@@ -1,34 +1,34 @@
 package hu.elte.txtuml.api.model.execution.statemachine;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.ModelExecutor;
+import hu.elte.txtuml.api.model.execution.ModelExecutor;
+import hu.elte.txtuml.api.model.execution.TraceListener;
 import hu.elte.txtuml.api.model.execution.base.TransitionsModelTestsBase;
 import hu.elte.txtuml.api.model.execution.models.transitions.A;
 import hu.elte.txtuml.api.model.execution.models.transitions.Sig1;
 import hu.elte.txtuml.api.model.execution.models.transitions.Sig2;
-import hu.elte.txtuml.api.model.execution.util.SeparateClassloaderTestRunner;
-import hu.elte.txtuml.api.model.report.ModelExecutionEventsListener;
 
 // TODO This test should explicitly check whether the entry and exit methods are called in the model, not that it is reported.
-@RunWith(SeparateClassloaderTestRunner.class)
 public class EntryExitEffectTest extends TransitionsModelTestsBase {
 
 	@Test
 	public void test() {
-		ModelExecutionEventsListener mock = Mockito.mock(ModelExecutionEventsListener.class);
+		TraceListener mock = Mockito.mock(TraceListener.class);
 
-		ModelExecutor.Report.addModelExecutionEventsListener(mock);
+		ModelExecutor executor = ModelExecutor.create();
+		executor.addTraceListener(mock);
 
-		Action.send(new Sig1(), a);
-		Action.send(new Sig2(), a);
-
-		stopModelExecution();
+		executor.run(() -> {
+			createAndStartA();
+			
+			Action.send(new Sig1(), a);
+			Action.send(new Sig2(), a);
+		});
 
 		InOrder inOrder = Mockito.inOrder(mock);
 		inOrder.verify(mock).enteringVertex(Matchers.isA(A.class), Matchers.isA(A.S.class));

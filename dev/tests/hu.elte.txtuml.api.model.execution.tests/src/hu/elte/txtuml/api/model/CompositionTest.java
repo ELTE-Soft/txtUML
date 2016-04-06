@@ -1,17 +1,7 @@
 package hu.elte.txtuml.api.model;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
-import hu.elte.txtuml.api.model.CompositionTest.MyComposition.MyContainer;
-import hu.elte.txtuml.api.model.CompositionTest.MyComposition.MyPart;
-import hu.elte.txtuml.api.model.CompositionTest.MyComposition2.MyContainer2;
-import hu.elte.txtuml.api.model.CompositionTest.MyComposition2.MyPart2;
-import hu.elte.txtuml.api.model.backend.MultipleContainerException;
-
 public class CompositionTest {
-
+/* FIXME rewrite composition tests 
 	class A extends ModelClass {
 	}
 
@@ -42,7 +32,7 @@ public class CompositionTest {
 		class MyPart2 extends Many<B> {
 		}
 	}
-	
+
 	@Test(expected = MultipleContainerException.class)
 	public void testCompositionValidate() throws Exception {
 		A a1 = new A();
@@ -53,5 +43,5 @@ public class CompositionTest {
 		a2.addToAssoc(MyPart2.class, b);
 		b.addToAssoc(MyContainer2.class, a2);
 	}
-
+*/
 }

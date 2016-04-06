@@ -5,7 +5,6 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ UnlinkingNonExistingAssociationTest.class,
-		ModelObjectCreationFailureTest.class })
+@SuiteClasses({ UnlinkingNonExistingAssociationTest.class, ModelObjectCreationFailureTest.class })
 public class AllOtherErrorTests {
 }

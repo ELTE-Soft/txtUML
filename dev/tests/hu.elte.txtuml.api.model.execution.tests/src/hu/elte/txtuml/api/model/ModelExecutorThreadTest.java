@@ -1,27 +1,11 @@
 package hu.elte.txtuml.api.model;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
-
-import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.ModelExecutorThread;
-import hu.elte.txtuml.api.model.Port;
-import hu.elte.txtuml.api.model.Region;
-import hu.elte.txtuml.api.model.Signal;
-import hu.elte.txtuml.api.model.execution.util.MutableBoolean;
-
 /**
  * Unit tests for ModelExecutorThread. Deadlock is considered a test failure so
  * the tests should be performed using a timeout.
  */
 public class ModelExecutorThreadTest {
-
+/* FIXME rewrite model executor thread tests
 	@Test(timeout = 1000)
 	public void testSend() throws Exception {
 		ModelExecutorThread thread = new ModelExecutorThread();
@@ -134,5 +118,5 @@ public class ModelExecutorThreadTest {
 
 		Assert.assertEquals(true, actionPerformed.value);
 	}
-
+*/
 }

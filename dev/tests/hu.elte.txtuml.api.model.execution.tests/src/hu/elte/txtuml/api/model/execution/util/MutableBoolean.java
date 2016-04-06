@@ -2,7 +2,7 @@ package hu.elte.txtuml.api.model.execution.util;
 
 public class MutableBoolean {
 
-	public boolean value;
+	public volatile boolean value;
 
 	public MutableBoolean() {
 		this(false);
