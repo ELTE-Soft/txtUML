@@ -23,8 +23,7 @@ public abstract class Diagram {
 	/**
 	 * Base class for phantom nodes.
 	 */
-	public abstract class Phantom {
-	}
+	public abstract class Box {}
 
 	/**
 	 * Base class for node groups.
