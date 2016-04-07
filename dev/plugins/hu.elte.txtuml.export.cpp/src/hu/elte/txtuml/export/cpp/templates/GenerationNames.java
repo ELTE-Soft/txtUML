@@ -26,6 +26,7 @@ class GenerationNames {
 	public static final String IncomingParamTypeId = "_";
 	public static final String RealEventName = "realEvent";
 	public static final String SmartPtr = "std::shared_ptr";
+	public static final String EventPtr = "EventPtr";
 	public static final String EventClassTypeId = "_EC";
 	public static final String EventEnumTypeId = "_EE";
 	public static final String StateEnumTypeId = "_ST";
@@ -93,6 +94,9 @@ class GenerationNames {
 	public static final String TemplateParameterName = "T";
 	
 	public static final String ActionFunctionsNamespace = "action";
+	public static final String SelectAnyFunctionName = "getOne";
+	public static final String SelectAllFunctionName = "getAll";
+	public static final String Collection = "std::list";
 	
 
 	public static String friendClassDecl(String className) {

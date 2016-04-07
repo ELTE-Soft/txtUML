@@ -1,4 +1,5 @@
 #include "standard_functions.hpp"
+#include <iostream>
 
 int delayedInc(int i, int& out)
 {
@@ -10,4 +11,9 @@ int delayedDec(int i, int& out)
 {
 	out = i - 1;
 	return i;
+}
+
+void printLine(std::string line)
+{
+	std::cout << line << std::endl;
 }

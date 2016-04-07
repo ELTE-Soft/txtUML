@@ -52,7 +52,7 @@ public class ActivityTemplates {
 	}
 	
 	public static String signalSend(String target, String signalName) {
-		return target + GenerationNames.PointerAccess + GenerationNames.SendSignal + "("  + GenerationNames.SmartPtr +
+		return target + GenerationNames.PointerAccess + GenerationNames.SendSignal + "("  + GenerationNames.EventPtr +
 				"(" +  signalName + "));\n";
 	}
 
@@ -67,12 +67,12 @@ public class ActivityTemplates {
 	}
 
 	public static String operationCall(String operationName, List<String> params) {
-		String source = operationName + "(";
+		StringBuilder source = new StringBuilder(operationName + "(");
 		if (params != null) {
-			source += operationCallParamList(params);
+			source.append(operationCallParamList(params));
 		}
-		source += ")";
-		return source;
+		source.append(")");
+		return source.toString();
 	}
 
 	public static String operationCall(String ownerName, String accessOperator, String operationName,
@@ -82,6 +82,10 @@ public class ActivityTemplates {
 			source = ownerName + accessOperator + source;
 		}
 		return source;
+	}
+	
+	public static String invokeProcedure(String operationName, List<String> parameters){
+	    return Operators.getStandardOperationName(operationName) + "(" + operationCallParamList(parameters) + ");\n";
 	}
 	
 	public static String stdLibOperationCall(String operationName, String left, String right) {
@@ -153,6 +157,11 @@ public class ActivityTemplates {
 	public static String whileCycle(String cond, String body) {
 		return simpleCondControlStruct("while", cond, body);
 	}
+	
+	public static String foreachCycle(String conatinedType, String paramName, String collection, String body) {
+	    return "for (" + PrivateFunctionalTemplates.cppType(conatinedType) + 
+		    " " + paramName + " :" +  collection + ")\n{\n" + body + "\n}";
+	}
 
 	public static String transitionActionParameter(String paramName) {
 		return GenerationNames.RealEventName + "." + paramName;
@@ -167,6 +176,22 @@ public class ActivityTemplates {
 	public static String createObject(String typenName, String objName) {
 		
 		return createObject(typenName, objName, new ArrayList<String>());
+	}
+	
+	public static String selectAnyTemplate(String otherEnd) {
+	    return otherEnd + GenerationNames.SimpleAccess + 
+		    GenerationNames.SelectAnyFunctionName + "()";
+	    
+	}public static String selectAllTemplate(String otherEnd) {
+	    return otherEnd + GenerationNames.SimpleAccess + 
+		    GenerationNames.SelectAllFunctionName + "()";
+	}
+	
+	public static String collectionTemplate(String collectedType) {
+	    return GenerationNames.Collection + "<" + 
+	PrivateFunctionalTemplates.cppType(collectedType) + ">";
+		     
+	    
 	}
 	
 	public static String returnTemplates(String variable) {
@@ -229,6 +254,8 @@ public class ActivityTemplates {
 		public static final String And = "&&";
 		public static final String Or = "||";
 		
+		public static final String Log = "printLine";
+		
 		public static String Fork(String cond, String e1, String e2) {
 		    return cond + " ? " + e1 + " : " + e2;
 		}
@@ -277,6 +304,9 @@ public class ActivityTemplates {
 			break;
 		    case "or" :
 			name = Or;
+			break;
+		    case "log" :
+			name = Log;
 			break;
 		    }
 		    

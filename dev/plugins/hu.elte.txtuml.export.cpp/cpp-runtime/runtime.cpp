@@ -40,6 +40,7 @@ void SingleThreadRT::start()
                 else
                 {
                     sm->init();
+					_messageQueue->push_back(sm);
                 }
 
             }

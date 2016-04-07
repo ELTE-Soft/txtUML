@@ -1,7 +1,9 @@
 #ifndef STANDARD_FUNCTIONS
 #define STANDARD_FUNCTIONS
 
-int delayedInc(int i, int& out);
-int delayedDec(int i, int& out);
+#include <string>
 
+int delayedInc(int,int&);
+int delayedDec(int,int&);
+void printLine(std::string);
 #endif
