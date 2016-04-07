@@ -1,6 +1,13 @@
 package hu.elte.txtuml.api.model;
 
+import org.junit.Test;
+
 public class CompositionTest {
+
+	@Test
+	public void test() {
+	}
+
 /* FIXME rewrite composition tests 
 	class A extends ModelClass {
 	}

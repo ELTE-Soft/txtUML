@@ -11,7 +11,6 @@ import hu.elte.txtuml.api.model.execution.TraceListener;
 import hu.elte.txtuml.api.model.execution.testmodel.B;
 import hu.elte.txtuml.api.model.execution.testmodel.ClassWithChoice;
 import hu.elte.txtuml.api.model.execution.testmodel.ClassWithHierarchicalSM;
-import hu.elte.txtuml.api.model.execution.testmodel.erronous.ClassWithMultipleElse;
 import hu.elte.txtuml.api.model.execution.testmodel.signals.Sig0;
 import hu.elte.txtuml.api.model.execution.testmodel.signals.Sig1;
 import hu.elte.txtuml.api.model.execution.testmodel.signals.Sig2;
@@ -114,7 +113,7 @@ public class StateMachineTests extends UnitTestsBase {
 	@Test
 	// TODO This test should explicitly check whether the entry and exit methods
 	// are called in the model, not that it is reported.
-	public void test() {
+	public void testEntryExit() {
 		TraceListener mock = Mockito.mock(TraceListener.class);
 
 		ModelExecutor executor = ModelExecutor.create();
@@ -127,13 +126,13 @@ public class StateMachineTests extends UnitTestsBase {
 		});
 
 		InOrder inOrder = Mockito.inOrder(mock);
-		inOrder.verify(mock).enteringVertex(Matchers.isA(ClassWithMultipleElse.class), Matchers.isA(B.S.class));
-		inOrder.verify(mock).leavingVertex(Matchers.isA(ClassWithMultipleElse.class), Matchers.isA(B.S.class));
-		inOrder.verify(mock).usingTransition(Matchers.isA(ClassWithMultipleElse.class), Matchers.isA(B.T1.class));
-		inOrder.verify(mock).enteringVertex(Matchers.isA(ClassWithMultipleElse.class), Matchers.isA(B.S.class));
-		inOrder.verify(mock).leavingVertex(Matchers.isA(ClassWithMultipleElse.class), Matchers.isA(B.S.class));
-		inOrder.verify(mock).usingTransition(Matchers.isA(ClassWithMultipleElse.class), Matchers.isA(B.T2.class));
-		inOrder.verify(mock).enteringVertex(Matchers.isA(ClassWithMultipleElse.class), Matchers.isA(B.S.class));
+		inOrder.verify(mock).enteringVertex(Matchers.isA(B.class), Matchers.isA(B.S.class));
+		inOrder.verify(mock).leavingVertex(Matchers.isA(B.class), Matchers.isA(B.S.class));
+		inOrder.verify(mock).usingTransition(Matchers.isA(B.class), Matchers.isA(B.T1.class));
+		inOrder.verify(mock).enteringVertex(Matchers.isA(B.class), Matchers.isA(B.S.class));
+		inOrder.verify(mock).leavingVertex(Matchers.isA(B.class), Matchers.isA(B.S.class));
+		inOrder.verify(mock).usingTransition(Matchers.isA(B.class), Matchers.isA(B.T2.class));
+		inOrder.verify(mock).enteringVertex(Matchers.isA(B.class), Matchers.isA(B.S.class));
 	}
 
 	@Test

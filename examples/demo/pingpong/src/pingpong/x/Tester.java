@@ -1,25 +1,20 @@
 package pingpong.x;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.ModelExecutor;
-import pingpong.x.model.Game;
+import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import pingpong.x.model.Ball;
+import pingpong.x.model.Game;
 
 public class Tester {
 
-	void test() {
-		ModelExecutor.Settings.setExecutorLog(true);
-
+	static void init() {
 		Game game = Action.create(Game.class);
 		Action.start(game);
-		
 		Action.send(new Ball(4), game);
-		
-		ModelExecutor.shutdown();
 	}
 
 	public static void main(String[] args) {
-		new Tester().test();
+		ModelExecutor.create().setTraceLogging(true).run(Tester::init);
 	}
 
 }

@@ -1,10 +1,17 @@
 package hu.elte.txtuml.api.model;
 
+import org.junit.Test;
+
 /**
  * Unit tests for ModelExecutorThread. Deadlock is considered a test failure so
  * the tests should be performed using a timeout.
  */
 public class ModelExecutorThreadTest {
+	
+	@Test
+	public void test() {
+	}
+	
 /* FIXME rewrite model executor thread tests
 	@Test(timeout = 1000)
 	public void testSend() throws Exception {
