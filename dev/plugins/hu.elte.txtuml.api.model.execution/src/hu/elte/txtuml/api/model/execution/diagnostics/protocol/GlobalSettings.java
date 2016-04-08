@@ -1,7 +1,8 @@
 package hu.elte.txtuml.api.model.execution.diagnostics.protocol;
 
 /**
- * Global protocol and timing related constants which can be used from the DiagnosticsPlugin as well.
+ * Global protocol and timing related constants which can be used from the
+ * DiagnosticsPlugin as well.
  */
 public class GlobalSettings {
 	/**

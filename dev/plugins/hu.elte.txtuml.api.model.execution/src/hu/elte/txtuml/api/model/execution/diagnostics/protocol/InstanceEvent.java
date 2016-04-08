@@ -9,12 +9,11 @@ public class InstanceEvent extends Message {
 	public final String modelClassName;
 	public final String modelClassInstanceID;
 
-	public InstanceEvent(MessageType type, int serviceInstanceID,
-			String modelClassName, String modelClassInstanceID) {
+	public InstanceEvent(MessageType type, int serviceInstanceID, String modelClassName, String modelClassInstanceID) {
 		super(type, serviceInstanceID);
-		assert type == MessageType.INSTANCE_CREATION || type == MessageType.INSTANCE_DESTRUCTION ||
-			type == MessageType.PROCESSING_SIGNAL || type == MessageType.USING_TRANSITION ||
-				type == MessageType.ENTERING_VERTEX || type == MessageType.LEAVING_VERTEX;
+		assert type == MessageType.INSTANCE_CREATION || type == MessageType.INSTANCE_DESTRUCTION
+				|| type == MessageType.PROCESSING_SIGNAL || type == MessageType.USING_TRANSITION
+				|| type == MessageType.ENTERING_VERTEX || type == MessageType.LEAVING_VERTEX;
 		this.modelClassName = modelClassName;
 		this.modelClassInstanceID = modelClassInstanceID;
 	}
