@@ -1,7 +1,5 @@
 package hu.elte.txtuml.utils;
 
-import org.apache.log4j.Level;
-
 public enum Logger {
 	sys("SYS"), user("USER"), executor("EXEC");
 
@@ -41,14 +39,6 @@ public enum Logger {
 
 	public final void trace(String msg) {
 		logger.trace(msg);
-	}
-
-	public final void setTracing(boolean newValue) {
-		if (newValue) {
-			logger.setLevel(Level.TRACE);
-		} else {
-			logger.setLevel(org.apache.log4j.Logger.getRootLogger().getLevel());
-		}
 	}
 
 }

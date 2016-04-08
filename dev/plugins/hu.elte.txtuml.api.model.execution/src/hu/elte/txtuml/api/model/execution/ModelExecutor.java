@@ -3,7 +3,7 @@ package hu.elte.txtuml.api.model.execution;
 import java.util.List;
 
 import hu.elte.txtuml.api.model.Model;
-import hu.elte.txtuml.api.model.execution.defaults.DefaultModelExecutor;
+import hu.elte.txtuml.api.model.execution.impl.DefaultModelExecutor;
 import hu.elte.txtuml.api.model.runtime.BaseModelExecutor;
 
 /**
@@ -29,7 +29,7 @@ public interface ModelExecutor extends BaseModelExecutor, Runnable {
 	 * Creates a default model executor engine without a name.
 	 * <p>
 	 * <b>Note:</b> Instantiates the
-	 * {@link hu.elte.txtuml.api.model.execution.defaults.DefaultModelExecutor}
+	 * {@link hu.elte.txtuml.api.model.execution.impl.DefaultModelExecutor}
 	 * class.
 	 */
 	static ModelExecutor create() {
@@ -40,7 +40,7 @@ public interface ModelExecutor extends BaseModelExecutor, Runnable {
 	 * Creates a default model executor engine with the given name.
 	 * <p>
 	 * <b>Note:</b> Instantiates the
-	 * {@link hu.elte.txtuml.api.model.execution.defaults.DefaultModelExecutor}
+	 * {@link hu.elte.txtuml.api.model.execution.impl.DefaultModelExecutor}
 	 * class.
 	 */
 	static ModelExecutor create(String name) {

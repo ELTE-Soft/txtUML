@@ -9,7 +9,11 @@ Require-Bundle: hu.elte.txtuml.api.model;bundle-version="0.4.0",
  hu.elte.txtuml.utils;bundle-version="0.4.0",
  com.google.guava;bundle-version="15.0.0"
 Export-Package: hu.elte.txtuml.api.model.execution,
- hu.elte.txtuml.api.model.execution.defaults,
  hu.elte.txtuml.api.model.execution.diagnostics,
- hu.elte.txtuml.api.model.execution.diagnostics.protocol
-
+ hu.elte.txtuml.api.model.execution.diagnostics.protocol,
+ hu.elte.txtuml.api.model.execution.impl,
+ hu.elte.txtuml.api.model.execution.impl.assoc,
+ hu.elte.txtuml.api.model.execution.impl.base,
+ hu.elte.txtuml.api.model.execution.impl.singlethread,
+ hu.elte.txtuml.api.model.execution.impl.sm,
+ hu.elte.txtuml.api.model.execution.log
