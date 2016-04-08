@@ -15,6 +15,11 @@ import hu.elte.txtuml.api.model.runtime.BaseModelExecutor;
  * <p>
  * Model executors does <b>not</b> need to be thread-safe.
  * <p>
+ * As a general rule, all methods of this interface will throw
+ * {@link NullPointerException} if a null reference is given to them as a
+ * parameter, unless the opposite is explicitly stated in the documentation of
+ * the methods.
+ * <p>
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  */

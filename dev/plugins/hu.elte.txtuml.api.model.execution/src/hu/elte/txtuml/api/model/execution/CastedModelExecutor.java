@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api.model.execution;
 
+import hu.elte.txtuml.api.model.Model;
+
 /**
  * This interface helps writing specialized {@link ModelExecutor}s which can
  * still be subtyped.
@@ -16,6 +18,9 @@ package hu.elte.txtuml.api.model.execution;
  * methods, it may return the value of {@link #self()}. This way only the
  * {@code self()} method has to be implemented in a concrete subclass to support
  * method chaining.
+ * <p>
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
  * 
  * @param <S>
  *            a subtype of this interface which will be returned by the

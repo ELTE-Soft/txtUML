@@ -11,6 +11,11 @@ import hu.elte.txtuml.api.model.error.MissingRuntimeContextError;
  * executor and therefore <i>these and only these</i> can be used to implement
  * external libraries for txtUML models. *
  * <p>
+ * As a general rule, all methods of this interface will throw
+ * {@link NullPointerException} if a null reference is given to them as a
+ * parameter, unless the opposite is explicitly stated in the documentation of
+ * the methods.
+ * <p>
  * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
  * overview on modeling in JtxtUML.
  */
@@ -75,8 +80,8 @@ public interface BaseModelExecutor {
 	BaseModelExecutor addTerminationBlocker(Object blocker);
 
 	/**
-	 * Removes a termination blocker from this model executor's set of blockers. A
-	 * model executor may only terminate gracefully if this set is empty, that
+	 * Removes a termination blocker from this model executor's set of blockers.
+	 * A model executor may only terminate gracefully if this set is empty, that
 	 * is, if all previously added blockers are removed. A forced termination
 	 * may omit this restriction.
 	 * <p>
