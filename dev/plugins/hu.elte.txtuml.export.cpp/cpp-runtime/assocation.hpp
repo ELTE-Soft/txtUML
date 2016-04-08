@@ -36,14 +36,14 @@ public:
         linkedObjects.remove(o);
     }
 
-    T* getOne(bool cond(T*) = [](T* o){return true;})
+    T* getOne(bool cond(T*) = [](T*){return true;})
     {
         T* object = nullptr;
-        for(T* o : linkedObjects)
+        for(T* e : linkedObjects)
         {
-            if(cond(o))
+            if(cond(e))
             {
-                object = o;
+                object = e;
             }
         }
 
@@ -54,9 +54,17 @@ public:
         return object;
     }
 
-    std::list<T*> getAll()
+    std::list<T*> getAll(bool cond(T*) = [](T*){return true;})
     {
-        return linkedObjects;
+        std::list<T*> conditionedObjects;
+        for(T* e : linkedObjects)
+        {
+            if(cond(e))
+            {
+                conditionedObjects.push_back(e);
+            }
+        }
+        return conditionedObjects;
     }
 
 private:

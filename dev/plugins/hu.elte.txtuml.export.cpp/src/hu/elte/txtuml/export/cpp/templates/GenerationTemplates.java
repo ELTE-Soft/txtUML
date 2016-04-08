@@ -212,7 +212,7 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 	}
 
 	public static String manyMultiplicityDependecy() {
-		return PrivateFunctionalTemplates.outerInclude(GenerationNames.AssocMultiplicityDataStruct);
+		return PrivateFunctionalTemplates.outerInclude(GenerationNames.Collection);
 	}
 
 	public static String variableDecl(String typeName, String variableName, Integer multiplicity) {

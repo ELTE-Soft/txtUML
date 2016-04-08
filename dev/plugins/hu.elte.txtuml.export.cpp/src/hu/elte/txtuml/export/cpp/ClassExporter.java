@@ -441,21 +441,6 @@ public class ClassExporter {
 			types.addAll(getOperationParamTypes(item));
 		}
 
-		Boolean multip = false;
-		for (Property item : Shared.getProperties(class_)) {
-			if (item.getType() != null) {
-
-				Type attr = item.getType();
-				types.add(attr.getName());
-				if ((item.getUpper() > 1 || item.getUpper() == _UMLMany) && !multip) {
-					multip = true;
-					source.append(GenerationTemplates.manyMultiplicityDependecy());
-				}
-			}
-			// TODO else throw except, if we want to terminate the compile
-
-		}
-
 		if (_submachineMap != null) {
 			for (Map.Entry<String, Pair<String, Region>> entry : _submachineMap.entrySet()) {
 				types.add(entry.getValue().getFirst());
