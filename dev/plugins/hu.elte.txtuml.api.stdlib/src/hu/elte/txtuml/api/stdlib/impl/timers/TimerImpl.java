@@ -1,13 +1,22 @@
 package hu.elte.txtuml.api.stdlib.impl.timers;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.Runtime;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.stdlib.timers.Timer;
 
 public class TimerImpl implements Timer {
 
+	private final Callable<Void> action;
+	private ScheduledFuture<?> future;
+
 	/**
-	 * Creates a new {@code Timer}.
+	 * Creates a new {@code TimerImpl}.
 	 * 
 	 * @param obj
 	 *            the target of the delayed send operation
@@ -17,31 +26,38 @@ public class TimerImpl implements Timer {
 	 *            millisecs to wait before the timeout
 	 */
 	public TimerImpl(ModelClass targetObj, Signal signal, int millisecs) {
-		// TODO Auto-generated constructor stub
-
+		this.action = () -> {
+			Action.send(signal, targetObj);
+			return null;
+		};
+		schedule(millisecs);
 	}
 
 	@Override
 	public int query() {
-		// TODO Auto-generated method stub
-		return 0;
+		return (int) future.getDelay(TimeUnit.MILLISECONDS);
 	}
 
 	@Override
 	public void reset(int millisecs) {
-		// TODO Auto-generated method stub
-
+		cancel();
+		schedule(millisecs);
 	}
 
 	@Override
 	public void add(int millisecs) {
-		// TODO Auto-generated method stub
-
+		reset(query() + millisecs);
 	}
 
 	@Override
 	public boolean cancel() {
-		// TODO Auto-generated method stub
-		return false;
+		boolean isDone = future.isDone();
+		future.cancel(false);
+		return isDone;
 	}
+
+	private void schedule(int millisecs) {
+		this.future = Runtime.currentRuntime().schedule(action, millisecs, TimeUnit.MILLISECONDS);
+	}
+
 }

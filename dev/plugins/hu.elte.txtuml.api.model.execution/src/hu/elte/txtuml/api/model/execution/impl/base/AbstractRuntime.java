@@ -2,6 +2,11 @@ package hu.elte.txtuml.api.model.execution.impl.base;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import hu.elte.txtuml.api.model.ModelClass;
@@ -16,8 +21,7 @@ import hu.elte.txtuml.api.model.runtime.PortWrapper;
 /**
  * Abstract base class for {@link Runtime} implementations.
  */
-public abstract class AbstractRuntime<C extends ModelClassWrapper, P extends PortWrapper>
-		extends Runtime {
+public abstract class AbstractRuntime<C extends ModelClassWrapper, P extends PortWrapper> extends Runtime {
 
 	private final AbstractModelExecutor<?> executor;
 
@@ -27,6 +31,24 @@ public abstract class AbstractRuntime<C extends ModelClassWrapper, P extends Por
 
 	private final boolean dynamicChecks;
 	private final double executionTimeMultiplier;
+
+	/**
+	 * Is also used as a termination blocker in the executor while
+	 * scheduledCount > 0.
+	 */
+	private final Object LOCK_ON_SCHEDULER = new Object();
+
+	/**
+	 * May only be accessed while holding the monitor of
+	 * {@link #LOCK_ON_SCHEDULER}.
+	 */
+	private ScheduledExecutorService scheduler = null;
+
+	/**
+	 * May only be accessed while holding the monitor of
+	 * {@link #LOCK_ON_SCHEDULER}.
+	 */
+	private int scheduledCount = 0;
 
 	/**
 	 * Must be called on the thread which manages the given
@@ -63,6 +85,32 @@ public abstract class AbstractRuntime<C extends ModelClassWrapper, P extends Por
 	@Override
 	public double getExecutionTimeMultiplier() {
 		return executionTimeMultiplier;
+	}
+
+	@Override
+	public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
+		ScheduledExecutorService currentScheduler;
+		synchronized (LOCK_ON_SCHEDULER) {
+			if (scheduler == null) {
+				scheduler = createScheduler();
+				getExecutor().addTerminationListener(scheduler::shutdownNow);
+			}
+			currentScheduler = scheduler;
+			if (scheduledCount == 0) {
+				getExecutor().addTerminationBlocker(LOCK_ON_SCHEDULER);
+			}
+			++scheduledCount;
+		}
+
+		return currentScheduler.schedule(() -> {
+			synchronized (LOCK_ON_SCHEDULER) {
+				--scheduledCount;
+				if (scheduledCount == 0) {
+					getExecutor().removeTerminationBlocker(LOCK_ON_SCHEDULER);
+				}
+			}
+			return callable.call();
+		}, inExecutionTime(delay), unit);
 	}
 
 	public void trace(Consumer<TraceListener> eventReporter) {
@@ -125,6 +173,16 @@ public abstract class AbstractRuntime<C extends ModelClassWrapper, P extends Por
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Creates a new {@link ScheduledExecutorService} to be used by this runtime
+	 * instance to schedule timed events.
+	 * <p>
+	 * The default implementation creates a single thread executor service.
+	 */
+	protected ScheduledExecutorService createScheduler() {
+		return Executors.newSingleThreadScheduledExecutor();
 	}
 
 	/**

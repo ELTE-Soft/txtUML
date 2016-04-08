@@ -1,5 +1,9 @@
 package hu.elte.txtuml.api.model;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import hu.elte.txtuml.api.model.ConnectorBase.ConnectorEnd;
 import hu.elte.txtuml.api.model.ModelClass.Port;
 import hu.elte.txtuml.api.model.error.MissingRuntimeContextError;
@@ -94,6 +98,12 @@ public abstract class Runtime {
 	public final long inExecutionTime(long time) {
 		return Math.round(time * getExecutionTimeMultiplier());
 	}
+
+	/**
+	 * Schedules a timed event for this runtime instance. Delay is interpreted
+	 * in execution time.
+	 */
+	public abstract <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit);
 
 	/**
 	 * Called by {@link Action#connect(Class, Port, Class, Port)}.
