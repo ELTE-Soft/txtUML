@@ -41,7 +41,6 @@ import org.eclipse.uml2.uml.ReadLinkAction;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.ReadVariableAction;
 import org.eclipse.uml2.uml.SendObjectAction;
-import org.eclipse.uml2.uml.SendSignalAction;
 import org.eclipse.uml2.uml.SequenceNode;
 import org.eclipse.uml2.uml.StartClassifierBehaviorAction;
 import org.eclipse.uml2.uml.Type;
@@ -157,11 +156,11 @@ public class ActivityExporter {
 		return source;
 	}
 
-	private StringBuilder createActivityNodeCode(ActivityNode node_) {
+	private StringBuilder createActivityNodeCode(ActivityNode node) {
 		StringBuilder source = new StringBuilder("");
 
-		if (node_.eClass().equals(UMLPackage.Literals.SEQUENCE_NODE)) {
-			SequenceNode seqNode = (SequenceNode) node_;
+		if (node.eClass().equals(UMLPackage.Literals.SEQUENCE_NODE)) {
+			SequenceNode seqNode = (SequenceNode) node;
 			if (returnNode == null) {
 				for (ActivityEdge aEdge : seqNode.getContainedEdges()) {
 					if (aEdge.eClass().equals(UMLPackage.Literals.OBJECT_FLOW)) {
@@ -181,55 +180,43 @@ public class ActivityExporter {
 				source.append(createActivityNodeCode(aNode));
 			}
 		}
-		else if (node_.eClass().equals(UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION)) {
-			AddStructuralFeatureValueAction asfva = (AddStructuralFeatureValueAction) node_;
+		else if (node.eClass().equals(UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION)) {
+			AddStructuralFeatureValueAction asfva = (AddStructuralFeatureValueAction) node;
 			source.append(ActivityTemplates.generalSetValue(getTargetFromASFVA(asfva),
 					getTargetFromInputPin(asfva.getValue(), false), ActivityTemplates
 							.getOperationFromType(asfva.getStructuralFeature().isMultivalued(), asfva.isReplaceAll())));
-		} else if (node_.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
-			CreateObjectAction cAction = (CreateObjectAction) node_;
-			// cAction.
-			source.append(createCreateObjectActionCode(cAction));
-		} else if (node_.eClass().equals(UMLPackage.Literals.CREATE_LINK_ACTION)) {
-		    source.append(createLinkActionCode((CreateLinkAction) node_));
-		}
-		else if (node_.eClass().equals(UMLPackage.Literals.READ_LINK_ACTION)) {
-		    source.append(createReadLinkActionCode( (ReadLinkAction) node_));
-		}
-		else if (node_.eClass().equals(UMLPackage.Literals.SEND_SIGNAL_ACTION)) {
-			source.append(createSendSignalActionCode((SendSignalAction) node_).toString());
-		} else if (node_.eClass().equals(UMLPackage.Literals.SEND_OBJECT_ACTION)) {
-			source.append(createSendSignalActionCode((SendObjectAction) node_));
-		} else if (node_.eClass().equals(UMLPackage.Literals.START_CLASSIFIER_BEHAVIOR_ACTION)) {
-			source.append(createStartObjectActionCode((StartClassifierBehaviorAction) node_));
-		} else if (node_.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
+		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
+			source.append(createCreateObjectActionCode((CreateObjectAction) node));
+		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_LINK_ACTION)) {
+		    source.append(createLinkActionCode((CreateLinkAction) node));
+		} else if (node.eClass().equals(UMLPackage.Literals.READ_LINK_ACTION)) {
+		    source.append(createReadLinkActionCode( (ReadLinkAction) node));
+		} else if (node.eClass().equals(UMLPackage.Literals.SEND_OBJECT_ACTION)) {
+			source.append(createSendSignalActionCode((SendObjectAction) node));
+		} else if (node.eClass().equals(UMLPackage.Literals.START_CLASSIFIER_BEHAVIOR_ACTION)) {
+			source.append(createStartObjectActionCode((StartClassifierBehaviorAction) node));
+		} else if (node.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
 			
-			if(!constructorCalls.contains((CallOperationAction) node_)) {
-				source.append( (createCallOperationActionCode((CallOperationAction) node_)));
+			if(!constructorCalls.contains((CallOperationAction) node)) {
+				source.append( (createCallOperationActionCode((CallOperationAction) node)));
 			}
 			
-		} else if (node_.eClass().equals(UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION)) {
-			AddVariableValueAction avva = (AddVariableValueAction) node_;
+		} else if (node.eClass().equals(UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION)) {
+			AddVariableValueAction avva = (AddVariableValueAction) node;
 			source.append(ActivityTemplates.generalSetValue(avva.getVariable().getName(),
 					getTargetFromInputPin(avva.getValue()),
 					ActivityTemplates.getOperationFromType(avva.getVariable().isMultivalued(), avva.isReplaceAll())));
 
-		} else if (node_.eClass().equals(UMLPackage.Literals.LOOP_NODE)) {
-			source.append(createCycleCode((LoopNode) node_));
-		}
-		else if(node_.eClass().equals(UMLPackage.Literals.EXPANSION_REGION) ) {
-		    source.append(createExpansionRegaionCode( (ExpansionRegion) node_));
-		}
+		} else if (node.eClass().equals(UMLPackage.Literals.LOOP_NODE)) {
+			source.append(createCycleCode((LoopNode) node));
+		} else if(node.eClass().equals(UMLPackage.Literals.EXPANSION_REGION) ) {
+		    source.append(createExpansionRegaionCode( (ExpansionRegion) node));
+		} else if (node.eClass().equals(UMLPackage.Literals.CONDITIONAL_NODE)) {
+			source.append(createConditionalCode(((ConditionalNode) node)));
+		} else if (node.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION)) {
 
-		else if (node_.eClass().equals(UMLPackage.Literals.CONDITIONAL_NODE)) {
-			source.append(createConditionalCode(((ConditionalNode) node_)));
-		}
-
-		else if (node_.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION)) {
-
-		}
-		else if (node_.eClass().equals(UMLPackage.Literals.DESTROY_OBJECT_ACTION)) {
-			source.append(createDestroyObjectActionCode((DestroyObjectAction) node_));
+		} else if (node.eClass().equals(UMLPackage.Literals.DESTROY_OBJECT_ACTION)) {
+			source.append(createDestroyObjectActionCode((DestroyObjectAction) node));
 		}
 		return source;
 	}
@@ -239,7 +226,7 @@ public class ActivityExporter {
 	private StringBuilder createExpansionRegaionCode(ExpansionRegion node) {
 	    StringBuilder source = new StringBuilder("");
 	    
-	    if(node.getMode().equals(ExpansionKind.ITERATIVE_LITERAL)) {
+	    /*if(node.getMode().equals(ExpansionKind.ITERATIVE_LITERAL)) {
 		
 		ActivityNode collection = node.getInputElements().get(0).getIncomings().get(0).getSource();
 		String collectionName = getTargetFromActivityNode
@@ -253,7 +240,7 @@ public class ActivityExporter {
 		    body.append(createActivityNodeCode(activityNode));
 		}
 		
-	    }
+	    }*/
 	    
 	    return source;
 	}
@@ -477,13 +464,6 @@ public class ActivityExporter {
 			source = object + ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node_.getObject())) + source;
 		}
 		return source;
-	}
-
-	private StringBuilder createSendSignalActionCode(org.eclipse.uml2.uml.SendSignalAction node_) {
-		return ActivityTemplates.signalSend(node_.getSignal().getName(),
-				getTargetFromInputPin(node_.getTarget(), false), getTypeFromInputPin(node_.getTarget()),
-				ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node_.getTarget())),
-				getParamNames(node_.getArguments()));
 	}
 	
 	private String createSendSignalActionCode(SendObjectAction sendObjectAction) {

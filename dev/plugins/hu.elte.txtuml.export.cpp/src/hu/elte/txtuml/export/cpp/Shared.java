@@ -45,8 +45,7 @@ public class Shared {
 			// TODO
 		} else if (guard_.eClass().equals(UMLPackage.Literals.CONSTRAINT)) {
 
-			// source=getGuardFromValueSpecification(guard_.getSpecification());
-			source = GenerationTemplates.getDefaultReturnValue("Boolean");
+			source=getGuardFromValueSpecification(guard_.getSpecification());
 		}
 		return source;
 	}
