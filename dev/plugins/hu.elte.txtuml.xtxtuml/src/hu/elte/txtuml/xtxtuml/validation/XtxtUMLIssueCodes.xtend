@@ -24,6 +24,9 @@ class XtxtUMLIssueCodes {
 	public static val NOT_ACCESSIBLE_ASSOCIATION_END = ISSUE_CODE_PREFIX + "not_accessible_association_end";
 	public static val NOT_NAVIGABLE_ASSOCIATION_END = ISSUE_CODE_PREFIX + "not_navigable_association_end";
 
+	public static val MISPLACED_MODEL_DECLARATION = ISSUE_CODE_PREFIX + "misplaced_model_declaration";
+	public static val WRONG_PACKAGE = ISSUE_CODE_PREFIX + "wrong_package";
+
 	/**
 	 * Used by XtxtUMLDerivedResourceMarkerCopier to propagate JtxtUML validation errors to XtxtUML source.
 	 */

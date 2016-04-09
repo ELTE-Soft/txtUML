@@ -16,7 +16,7 @@ TUFile :
 
 TUModelDeclaration :
 	{TUModelDeclaration}
-	'model' (name=STRING)? ';'?
+	model='model' (name=STRING)? ';'? // feature 'model' is for error markers
 ;
 
 // Model level
