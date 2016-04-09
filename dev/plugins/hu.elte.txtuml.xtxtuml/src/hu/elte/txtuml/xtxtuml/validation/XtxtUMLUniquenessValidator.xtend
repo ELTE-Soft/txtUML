@@ -1,4 +1,4 @@
-package hu.elte.txtuml.xtxtuml.validation
+package hu.elte.txtuml.xtxtuml.validation;
 
 import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
@@ -15,41 +15,37 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
-import hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage
 import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.validation.Check
 
 import static hu.elte.txtuml.xtxtuml.validation.XtxtUMLIssueCodes.*
+import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 
 class XtxtUMLUniquenessValidator extends AbstractXtxtUMLValidator {
 
 	@Inject extension IQualifiedNameProvider;
 
 	@Check
-	def checkNoDuplicateFileElementExternal(TUModelElement modelElement) {
+	def checkModelElementNameIsUniqueExternal(TUModelElement modelElement) {
 		try {
 			Class.forName(modelElement.fullyQualifiedName.toString, false, getClass.getClassLoader);
 
 			// class with the same qualified name is found
-			error(
-				"Duplicate file element " + modelElement.name,
-				XtxtUMLPackage::eINSTANCE.TUModelElement_Name
-			);
+			error("Duplicate model element " + modelElement.name, modelElement, TU_MODEL_ELEMENT__NAME,
+				NOT_UNIQUE_NAME);
 		} catch (ClassNotFoundException ex) {
 			// no problem
 		}
 	}
 
 	@Check
-	def CheckNoDuplicateFileElementInternal(TUModelElement modelElement) {
+	def checkModelElementNameIsUniqueInternal(TUModelElement modelElement) {
 		val siblingsAndSelf = (modelElement.eContainer as TUFile).elements;
 		if (siblingsAndSelf.exists [
 			name == modelElement.name && it != modelElement // direct comparison is safe here
 		]) {
-			error(
-				"Duplicate file element " + modelElement.name,
-				XtxtUMLPackage::eINSTANCE.TUModelElement_Name
-			);
+			error("Duplicate model element " + modelElement.name, modelElement, TU_MODEL_ELEMENT__NAME,
+				NOT_UNIQUE_NAME);
 		}
 	}
 
@@ -58,44 +54,40 @@ class XtxtUMLUniquenessValidator extends AbstractXtxtUMLValidator {
 	 * TODO override local variable shadowing check defined in AbstractTypeComputationState
 	 */
 	@Check
-	def checkNoDuplicateSignalAttribute(TUSignalAttribute attr) {
-		val containingSignal = attr.eContainer as TUSignal;
+	def checkSignalAttributeNameIsUnique(TUSignalAttribute attribute) {
+		val containingSignal = attribute.eContainer as TUSignal;
 		if (containingSignal.attributes.exists [
-			name == attr.name && it != attr // direct comparison is safe here
+			name == attribute.name && it != attribute // direct comparison is safe here
 		]) {
-			error(
-				"Duplicate attribute " + attr.name + " in signal " + containingSignal.name,
-				XtxtUMLPackage::eINSTANCE.TUSignalAttribute_Name
-			);
+			error("Duplicate attribute " + attribute.name + " in signal " + containingSignal.name, attribute,
+				TU_SIGNAL_ATTRIBUTE__NAME, NOT_UNIQUE_NAME);
 		}
 	}
 
 	@Check
-	def checkNoDuplicateAttribute(TUAttribute attr) {
-		val containingClass = attr.eContainer as TUClass;
+	def checkAttributeNameIsUnique(TUAttribute attribute) {
+		val containingClass = attribute.eContainer as TUClass;
 		if (containingClass.members.exists [
-			it instanceof TUAttribute && (it as TUAttribute).name == attr.name && it != attr // direct comparison is safe here
+			it instanceof TUAttribute && (it as TUAttribute).name == attribute.name && it != attribute // direct comparison is safe here
 		]) {
-			error(
-				"Duplicate attribute " + attr.name + " in class " + containingClass.name,
-				XtxtUMLPackage::eINSTANCE.TUAttribute_Name
-			);
+			error("Duplicate attribute " + attribute.name + " in class " + containingClass.name, attribute,
+				TU_ATTRIBUTE__NAME, NOT_UNIQUE_NAME);
 		}
 	}
 
 	@Check
-	def checkNoDuplicateOperation(TUOperation op) {
-		val containingClass = (op.eContainer as TUClass);
+	def checkOperationIsUnique(TUOperation operation) {
+		val containingClass = (operation.eContainer as TUClass);
 		if (containingClass.members.exists [
-			it instanceof TUOperation && {
-				val siblingOrSelfOp = it as TUOperation;
-				siblingOrSelfOp.name == op.name && siblingOrSelfOp.parameterTypeList == op.parameterTypeList
-			} && it != op // direct comparison is safe here
+			it instanceof TUOperation &&
+				{
+					val siblingOperationOrSelf = it as TUOperation;
+					siblingOperationOrSelf.name == operation.name &&
+						siblingOperationOrSelf.parameterTypeList == operation.parameterTypeList
+				} && it != operation // direct comparison is safe here
 		]) {
-			error(
-				'''Duplicate method «op.name»(«op.parameterTypeList.join(", ")»)''',
-				XtxtUMLPackage.eINSTANCE.TUOperation_Name
-			);
+			error('''Duplicate operation «operation.name»(«operation.parameterTypeList.join(", ")») in class «containingClass.name»''',
+				operation, TU_OPERATION__NAME, NOT_UNIQUE_OPERATION);
 		}
 	}
 
@@ -115,20 +107,18 @@ class XtxtUMLUniquenessValidator extends AbstractXtxtUMLValidator {
 			it instanceof TUTransition && (it as TUTransition).name == state.name ||
 				it instanceof TUPort && (it as TUPort).name == state.name
 		]) {
-			error(
-				"State " + state.name + " in " + (if (inClass)
-					"class " + (container as TUClass).name
-				else
-					"state " + (container as TUState).name) +
-					" must have a unique name among states, transitions and ports of the enclosing element",
-				XtxtUMLPackage::eINSTANCE.TUState_Name
-			);
+			error("State " + state.name + " in " + (if (inClass)
+				"class " + (container as TUClass).name
+			else
+				"state " + (container as TUState).name) +
+				" must have a unique name among states, transitions and ports of the enclosing element", state,
+				TU_STATE__NAME, NOT_UNIQUE_NAME);
 		}
 	}
 
 	@Check
-	def checkTransitionNameIsUnique(TUTransition trans) {
-		val container = trans.eContainer;
+	def checkTransitionNameIsUnique(TUTransition transition) {
+		val container = transition.eContainer;
 		var inClass = false;
 		val siblingsAndSelf = if (container instanceof TUClass) {
 				inClass = true;
@@ -138,42 +128,18 @@ class XtxtUMLUniquenessValidator extends AbstractXtxtUMLValidator {
 			}
 
 		if (siblingsAndSelf.exists [
-			it instanceof TUTransition && (it as TUTransition).name == trans.name && it != trans || // direct comparison is safe here
-			it instanceof TUState && (it as TUState).name == trans.name ||
-				it instanceof TUPort && (it as TUPort).name == trans.name
+			it instanceof TUTransition && (it as TUTransition).name == transition.name && it != transition || // direct comparison is safe here
+			it instanceof TUState && (it as TUState).name == transition.name ||
+				it instanceof TUPort && (it as TUPort).name == transition.name
 		]) {
-			error(
-				"Transition " + trans.name + " in " + (if (inClass)
-					"class " + (container as TUClass).name
-				else
-					"state " + (container as TUState).name) +
-					" must have a unique name among states, transitions and ports of the enclosing element",
-				XtxtUMLPackage::eINSTANCE.TUTransition_Name
-			);
+			error("Transition " + transition.name + " in " + (if (inClass)
+				"class " + (container as TUClass).name
+			else
+				"state " + (container as TUState).name) +
+				" must have a unique name among states, transitions and ports of the enclosing element", transition,
+				TU_TRANSITION__NAME, NOT_UNIQUE_NAME);
 		}
 
-	}
-
-	@Check
-	def checkAssociationEndNamesAreUnique(TUAssociationEnd associationEnd) {
-		val association = associationEnd.eContainer as TUAssociation
-		if (1 < association.ends.filter[name == associationEnd.name].length) {
-			error("Association end " + associationEnd.name + " in association " + association.name +
-				" must have a unique name", associationEnd, XtxtUMLPackage.eINSTANCE.TUClassProperty_Name,
-				ASSOCIATION_END_NAME_IS_NOT_UNIQUE, associationEnd.name)
-		}
-	}
-
-	@Check
-	def checkNoDuplicateConnectorEnd(TUConnectorEnd connEnd) {
-		val container = connEnd.eContainer as TUConnector;
-		if (container.ends.exists [
-			(it.name == connEnd.name || it.role.fullyQualifiedName == connEnd.role.fullyQualifiedName) && it != connEnd // direct comparison is safe here
-		]) {
-			error("Duplicate connector end " + connEnd.name + " in connector " + container.name +
-				". Names and roles must be unique among ends of a connector.", connEnd,
-				XtxtUMLPackage::eINSTANCE.TUConnectorEnd_Name, CONNECTOR_END_DUPLICATE, connEnd.name);
-		}
 	}
 
 	@Check
@@ -186,7 +152,29 @@ class XtxtUMLUniquenessValidator extends AbstractXtxtUMLValidator {
 		]) {
 			error("Port " + port.name + " in class " + containingClass.name +
 				" must have a unique name among states, transitions and ports of the enclosing element", port,
-				XtxtUMLPackage::eINSTANCE.TUClassProperty_Name, PORT_NAME_IS_NOT_UNIQUE, port.name);
+				TU_CLASS_PROPERTY__NAME, NOT_UNIQUE_NAME);
+		}
+	}
+
+	@Check
+	def checkAssociationEndNamesAreUnique(TUAssociationEnd associationEnd) {
+		val association = associationEnd.eContainer as TUAssociation;
+		if (1 < association.ends.filter[name == associationEnd.name].length) {
+			error("Association end " + associationEnd.name + " in association " + association.name +
+				" must have a unique name", associationEnd, TU_CLASS_PROPERTY__NAME, NOT_UNIQUE_NAME);
+		}
+	}
+
+	@Check
+	def checkConnectorEndIsUnique(TUConnectorEnd connectorEnd) {
+		val container = connectorEnd.eContainer as TUConnector;
+		if (container.ends.exists [
+			(it.name == connectorEnd.name || it.role.fullyQualifiedName == connectorEnd.role.fullyQualifiedName) &&
+				it != connectorEnd // direct comparison is safe here
+		]) {
+			error("Duplicate connector end " + connectorEnd.name + " in connector " + container.name +
+				". Names and roles must be unique among ends of a connector.", connectorEnd, TU_CONNECTOR_END__NAME,
+				NOT_UNIQUE_CONNECTOR_END);
 		}
 	}
 
