@@ -1,4 +1,4 @@
-package hu.elte.txtuml.xtxtuml.validation
+package hu.elte.txtuml.xtxtuml.validation;
 
 import hu.elte.txtuml.api.model.DataType
 import hu.elte.txtuml.api.model.ModelClass
@@ -11,19 +11,22 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
-import hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.EStructuralFeature
 import org.eclipse.xtext.common.types.JvmFormalParameter
 import org.eclipse.xtext.common.types.JvmTypeReference
 import org.eclipse.xtext.common.types.TypesPackage
 import org.eclipse.xtext.validation.Check
 import org.eclipse.xtext.xbase.XExpression
 
+import static hu.elte.txtuml.xtxtuml.validation.XtxtUMLIssueCodes.*
+import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
+
 class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
-	
+
 	@Check
 	def checkTypeReference(JvmTypeReference typeRef) {
 		var isAttribute = false;
-
 		val isValid = switch (container : typeRef.eContainer) {
 			TUSignalAttribute: {
 				isAttribute = true;
@@ -51,46 +54,32 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 					"Invalid type. Only boolean, double, int, String, model data types and external interfaces are allowed."
 				} else {
 					"Invalid type. Only boolean, double, int, String, model data types, external interfaces and model class types are allowed."
-				},
-				TypesPackage::eINSTANCE.jvmParameterizedTypeReference_Type
-			)
+				}, typeRef, TypesPackage.Literals.JVM_PARAMETERIZED_TYPE_REFERENCE__TYPE, INVALID_TYPE);
 		}
 	}
 
 	@Check
 	def checkSendSignalExpressionTypes(RAlfSendSignalExpression sendExpr) {
 		if (!sendExpr.signal.isConformantWith(Signal, false)) {
-			error(
-				typeMismatch("Signal"),
-				XtxtUMLPackage::eINSTANCE.RAlfSendSignalExpression_Signal
-			);
+			typeMismatch("Signal", sendExpr, RALF_SEND_SIGNAL_EXPRESSION__SIGNAL);
 		}
 
 		if (!sendExpr.target.isConformantWith(ModelClass, false) && !sendExpr.target.isConformantWith(Port, false)) {
-			error(
-				typeMismatch("Class or Port"),
-				XtxtUMLPackage::eINSTANCE.RAlfSendSignalExpression_Target
-			);
+			typeMismatch("Class or Port", sendExpr, RALF_SEND_SIGNAL_EXPRESSION__TARGET);
 		}
 	}
 
 	@Check
 	def checkDeleteObjectExpressionTypes(RAlfDeleteObjectExpression deleteExpr) {
 		if (!deleteExpr.object.isConformantWith(ModelClass, false)) {
-			error(
-				typeMismatch("Class"),
-				XtxtUMLPackage::eINSTANCE.RAlfDeleteObjectExpression_Object
-			);
+			typeMismatch("Class", deleteExpr, RALF_DELETE_OBJECT_EXPRESSION__OBJECT)
 		}
 	}
 
 	@Check
 	def checkClassPropertyAccessExpressionTypes(TUClassPropertyAccessExpression accessExpr) {
 		if (!accessExpr.left.isConformantWith(ModelClass, false)) {
-			error(
-				typeMismatch("Class"),
-				XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Left
-			)
+			typeMismatch("Class", accessExpr, TU_CLASS_PROPERTY_ACCESS_EXPRESSION__LEFT)
 		}
 	}
 
@@ -109,11 +98,11 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 	}
 
 	def protected isType(JvmTypeReference typeRef, Class<?> expectedType) {
-		typeRef.toLightweightTypeReference.isType(expectedType);
+		typeRef.toLightweightTypeReference.isType(expectedType)
 	}
 
 	def protected isConformantWith(JvmTypeReference typeRef, Class<?> expectedType) {
-		typeRef.toLightweightTypeReference.isSubtypeOf(expectedType);
+		typeRef.toLightweightTypeReference.isSubtypeOf(expectedType)
 	}
 
 	def protected isConformantWith(XExpression expr, Class<?> expectedType, boolean isNullAllowed) {
@@ -121,11 +110,11 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 	}
 
 	def protected isNullLiteral(XExpression expr) {
-		expr.actualType.canonicalName == "null";
+		expr.actualType.canonicalName == "null"
 	}
 
-	def protected typeMismatch(String expectedType) {
-		"Type mismatch: cannot convert the expression to " + expectedType
+	def protected typeMismatch(String expectedType, EObject source, EStructuralFeature feature) {
+		error("Type mismatch: cannot convert the expression to " + expectedType, source, feature, TYPE_MISMATCH)
 	}
 
 }
