@@ -14,6 +14,16 @@ class XtxtUMLIssueCodes {
 	public static val INVALID_TYPE = ISSUE_CODE_PREFIX + "invalid_type";
 	public static val TYPE_MISMATCH = ISSUE_CODE_PREFIX + "type_mistmatch";
 
+	public static val MISSING_RETURN = ISSUE_CODE_PREFIX + "missing_return";
+	public static val UNDEFINED_OPERATION = ISSUE_CODE_PREFIX + "undefined_operation";
+	public static val MISSING_OPERATION_PARENTHESES = ISSUE_CODE_PREFIX + "missing_operation_parentheses";
+	public static val INVALID_SIGNAL_ACCESS = ISSUE_CODE_PREFIX + "invalid_signal_access";
+	public static val NOT_REQUIRED_SIGNAL = ISSUE_CODE_PREFIX + "not_required_signal";
+	public static val QUERIED_PORT_IS_NOT_OWNED = ISSUE_CODE_PREFIX + "queried_port_is_not_owned";
+	public static val NOT_ACCESSIBLE_PORT = ISSUE_CODE_PREFIX + "not_accessible_port";
+	public static val NOT_ACCESSIBLE_ASSOCIATION_END = ISSUE_CODE_PREFIX + "not_accessible_association_end";
+	public static val NOT_NAVIGABLE_ASSOCIATION_END = ISSUE_CODE_PREFIX + "not_navigable_association_end";
+
 	/**
 	 * Used by XtxtUMLDerivedResourceMarkerCopier to propagate JtxtUML validation errors to XtxtUML source.
 	 */
