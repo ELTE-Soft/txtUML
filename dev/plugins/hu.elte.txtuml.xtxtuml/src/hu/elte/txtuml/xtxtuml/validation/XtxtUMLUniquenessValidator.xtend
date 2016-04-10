@@ -152,7 +152,7 @@ class XtxtUMLUniquenessValidator extends AbstractXtxtUMLValidator {
 				it != stateActivity // direct comparison is safe here
 		]) {
 			error(
-				"Duplicate state activity in state " + (stateActivity.eContainer as TUState).classQualifiedName,
+				"Duplicate activity in state " + (stateActivity.eContainer as TUState).classQualifiedName,
 				stateActivity,
 				stateActivity.markerTargetForStateActivity,
 				NOT_UNIQUE_STATE_ACTIVITY
@@ -165,7 +165,8 @@ class XtxtUMLUniquenessValidator extends AbstractXtxtUMLValidator {
 		val sourceState = transition.sourceState;
 		if (sourceState?.type == TUStateType.INITIAL) {
 			if (transition.membersOfEnclosingElement.exists [
-				it instanceof TUTransition && (it as TUTransition).sourceState == sourceState && it != transition
+				it instanceof TUTransition && (it as TUTransition).sourceState?.fullyQualifiedName == sourceState?.fullyQualifiedName &&
+					it != transition // direct comparison is safe here
 			]) {
 				error("Duplicate initial transition " + transition.classQualifiedName +
 					" – only one per initial state is allowed", transition, TU_TRANSITION__NAME,
@@ -241,7 +242,7 @@ class XtxtUMLUniquenessValidator extends AbstractXtxtUMLValidator {
 	def checkConnectorEndIsUnique(TUConnectorEnd connectorEnd) {
 		val container = connectorEnd.eContainer as TUConnector;
 		if (container.ends.exists [
-			(it.name == connectorEnd.name || it.role.fullyQualifiedName == connectorEnd.role.fullyQualifiedName) &&
+			(name == connectorEnd.name || role?.fullyQualifiedName == connectorEnd.role?.fullyQualifiedName) &&
 				it != connectorEnd // direct comparison is safe here
 		]) {
 			error("Duplicate connector end " + connectorEnd.name + " in connector " + container.name +
@@ -251,7 +252,7 @@ class XtxtUMLUniquenessValidator extends AbstractXtxtUMLValidator {
 	}
 
 	def protected typeNames(EList<JvmFormalParameter> parameters) {
-		parameters.map[parameterType.type.fullyQualifiedName]
+		parameters.map[parameterType?.type?.fullyQualifiedName]
 	}
 
 	def protected classQualifiedName(TUClassMember classMember) {

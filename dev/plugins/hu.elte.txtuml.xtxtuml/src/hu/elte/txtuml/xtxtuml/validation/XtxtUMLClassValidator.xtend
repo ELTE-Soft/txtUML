@@ -1,5 +1,6 @@
 package hu.elte.txtuml.xtxtuml.validation;
 
+import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
@@ -16,12 +17,15 @@ import org.eclipse.emf.common.util.EList
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EStructuralFeature
 import org.eclipse.xtext.EcoreUtil2
+import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.validation.Check
 
 import static hu.elte.txtuml.xtxtuml.validation.XtxtUMLIssueCodes.*
 import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 
 class XtxtUMLClassValidator extends XtxtUMLFileValidator {
+
+	@Inject extension IQualifiedNameProvider;
 
 	@Check
 	def checkNoCycleInClassHiearchy(TUClass clazz) {
@@ -72,7 +76,8 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 	@Check
 	def checkPseudostateIsLeavable(TUState state) {
 		if (state.isPseudostate && !state.membersOfEnclosingElement.exists [
-			it instanceof TUTransition && (it as TUTransition).sourceState == state // direct comparison is safe here
+			it instanceof TUTransition &&
+				(it as TUTransition).sourceState?.fullyQualifiedName == state.fullyQualifiedName
 		]) {
 			error("There are no outgoing transitions from pseudostate " + state.classQualifiedName +
 				" – state machines cannot stop in pseudostates", state, TU_STATE__NAME, NOT_LEAVABLE_PSEUDOSTATE);
@@ -141,7 +146,7 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 
 	@Check
 	def checkTransitionTargetIsNotInitialState(TUTransitionVertex transitionVertex) {
-		if (!transitionVertex.from && transitionVertex.vertex.type == TUStateType.INITIAL) {
+		if (!transitionVertex.from && transitionVertex.vertex?.type == TUStateType.INITIAL) {
 			error("Initial state cannot be the target of transition " +
 				(transitionVertex.eContainer as TUTransition).classQualifiedName, transitionVertex,
 				TU_TRANSITION_VERTEX__VERTEX, TARGET_IS_INITIAL_STATE);
@@ -182,7 +187,8 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 	@Check
 	def checkOwnerOfTriggerPort(TUTransitionPort triggerPort) {
 		val containingClass = EcoreUtil2.getContainerOfType(triggerPort, TUClass); // due to composite states
-		if (triggerPort.port.eContainer != containingClass) {
+		if (triggerPort.port != null &&
+			triggerPort.port.eContainer.fullyQualifiedName != containingClass.fullyQualifiedName) {
 			error(triggerPort.port.name + " cannot be resolved as a port of class " + containingClass.name, triggerPort,
 				TU_TRANSITION_PORT__PORT, NOT_OWNED_TRIGGER_PORT);
 		}
@@ -190,7 +196,7 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 
 	@Check
 	def checkTriggerPortIsBehavior(TUTransitionPort triggerPort) {
-		if (!triggerPort.port.behavior) {
+		if (triggerPort.port != null && !triggerPort.port.behavior) {
 			error("Port " + triggerPort.port.name + " in class " + (triggerPort.port.eContainer as TUClass).name +
 				" is not a behavior port", triggerPort, TU_TRANSITION_PORT__PORT, NOT_BEHAVIOR_TRIGGER_PORT)
 		}
@@ -199,7 +205,8 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 	@Check
 	def checkTransitionVertexLevel(TUTransitionVertex transitionVertex) {
 		val enclosingTransition = transitionVertex.eContainer as TUTransition;
-		if (transitionVertex.vertex.eContainer != enclosingTransition.eContainer) {
+		if (transitionVertex.vertex != null && transitionVertex.vertex.eContainer.fullyQualifiedName !=
+			enclosingTransition.eContainer.fullyQualifiedName) {
 			error(
 				"Invalid vertex " + transitionVertex.vertex.classQualifiedName + " in transition " +
 					enclosingTransition.classQualifiedName + " – transition must not cross state machine levels",
@@ -208,6 +215,10 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 	}
 
 	def protected isInitialStateMissing(EList<? extends EObject> members) {
+		if (members == null) {
+			return false;
+		}
+
 		var isOtherStateDefined = false;
 		for (member : members) {
 			if (member instanceof TUState) {

@@ -89,7 +89,7 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 
 	def protected isAllowedAttributeType(JvmTypeReference typeRef, boolean isVoidAllowed) {
 		isAllowedBasicType(typeRef, isVoidAllowed) || typeRef.isConformantWith(DataType) ||
-			typeRef.type.interface && typeRef.isConformantWith(ExternalType)
+			typeRef.type.isInterface && typeRef.isConformantWith(ExternalType)
 	}
 
 	def protected isAllowedBasicType(JvmTypeReference typeRef, boolean isVoidAllowed) {
@@ -106,11 +106,11 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 	}
 
 	def protected isConformantWith(XExpression expr, Class<?> expectedType, boolean isNullAllowed) {
-		expr.actualType.isSubtypeOf(expectedType) && (isNullAllowed || !isNullLiteral(expr))
+		expr != null && expr.actualType.isSubtypeOf(expectedType) && (isNullAllowed || !isNullLiteral(expr))
 	}
 
 	def protected isNullLiteral(XExpression expr) {
-		expr.actualType.canonicalName == "null"
+		expr != null && expr.actualType.canonicalName == "null"
 	}
 
 	def protected typeMismatch(String expectedType, EObject source, EStructuralFeature feature) {

@@ -42,8 +42,8 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 
 	@Check
 	def checkMandatoryIntentionalReturn(TUOperation operation) {
-		val returnTypeName = operation.prefix.type.type.fullyQualifiedName;
-		if (returnTypeName.toString != "void" && !operation.body.definiteEarlyExit) {
+		val returnTypeName = operation.prefix?.type?.type?.fullyQualifiedName;
+		if (returnTypeName != null && returnTypeName.toString != "void" && !operation.body.definiteEarlyExit) {
 			error('''Operation «operation.name» in class «(operation.eContainer as TUClass).name» must return a result of type «returnTypeName.lastSegment»''',
 				operation, TU_OPERATION__NAME, MISSING_RETURN);
 		}
@@ -102,8 +102,9 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		val portSourceElement = sendExpr.target.actualType.type.primarySourceElement as TUPort;
 		val requiredReceptionsOfPort = portSourceElement.members.findFirst[required]?.interface?.receptions;
 
-		if (requiredReceptionsOfPort?.
-			findFirst[signal.fullyQualifiedName == sentSignalSourceElement.fullyQualifiedName] == null) {
+		if (requiredReceptionsOfPort?.findFirst [
+			signal?.fullyQualifiedName == sentSignalSourceElement?.fullyQualifiedName
+		] == null) {
 			error("Signal type " + sentSignalSourceElement.name + " is not required by port " + portSourceElement.name,
 				sendExpr, RALF_SEND_SIGNAL_EXPRESSION__SIGNAL, NOT_REQUIRED_SIGNAL);
 		}
@@ -121,7 +122,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 
 		if (portEnclosingClassName != sendExprEnclosingClassName) {
 			error(
-				"Port " + portType.simpleName + " does not belong to class " + sendExprEnclosingClassName.lastSegment +
+				"Port " + portType.simpleName + " does not belong to class " + sendExprEnclosingClassName?.lastSegment +
 					". Signals can be sent only to owned ports.",
 				sendExpr,
 				RALF_SEND_SIGNAL_EXPRESSION__TARGET,
@@ -141,12 +142,12 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		switch (prop : propAccessExpr.right) {
 			TUAssociationEnd: {
 				val enclosingAssociation = prop.eContainer as TUAssociation;
-				val validAccessor = enclosingAssociation.ends.findFirst[name != prop.name].endClass;
+				val validAccessor = enclosingAssociation.ends.findFirst[name != prop.name]?.endClass;
 
-				if (sourceClass.fullyQualifiedName != validAccessor.fullyQualifiedName) {
+				if (sourceClass.fullyQualifiedName != validAccessor?.fullyQualifiedName) {
 					error(
 						"Association end " + enclosingAssociation.name + "." + prop.name +
-							" is not accessible from class " + sourceClass.name, propAccessExpr,
+							" is not accessible from class " + sourceClass?.name, propAccessExpr,
 						TU_CLASS_PROPERTY_ACCESS_EXPRESSION__RIGHT, NOT_ACCESSIBLE_ASSOCIATION_END);
 				} else if (prop.notNavigable) {
 					error("Association end " + enclosingAssociation.name + "." + prop.name + " is not navigable",
@@ -172,7 +173,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 				actualArguments
 			;
 
-			error('''The operation «featureCall.feature.simpleName»(«actualArgs.drop(1).join(", ")[actualType.simpleName.replace("$", ".")]») is undefined for the class «actualArgs.head.actualType.simpleName.replace("$", ".")»''',
+			error('''The operation «featureCall.feature?.simpleName»(«actualArgs.drop(1).join(", ")[actualType.simpleName.replace("$", ".")]») is undefined for the class «actualArgs.head.actualType.simpleName.replace("$", ".")»''',
 				featureCall, XbasePackage.Literals.XABSTRACT_FEATURE_CALL__FEATURE, UNDEFINED_OPERATION);
 		}
 	}
@@ -210,8 +211,9 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		}
 
 		return state.membersOfEnclosingElement.exists [
-			it instanceof TUTransition && (it as TUTransition).targetState == state && // direct comparison is safe here
-			isReachableFromInitialState(it, visitedStates, throughPseudostatesOnly)
+			it instanceof TUTransition &&
+				(it as TUTransition).targetState?.fullyQualifiedName == state?.fullyQualifiedName &&
+				isReachableFromInitialState(it, visitedStates, throughPseudostatesOnly)
 		];
 	}
 

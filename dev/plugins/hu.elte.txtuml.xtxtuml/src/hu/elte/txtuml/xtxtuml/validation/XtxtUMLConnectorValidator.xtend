@@ -33,7 +33,7 @@ class XtxtUMLConnectorValidator extends XtxtUMLAssociationValidator {
 			}
 		} else {
 			containerEnds.forEach [
-				error("Container role " + role.name + " of connector end " + connector.name + "." + name +
+				error("Container role " + role?.name + " of connector end " + connector.name + "." + name +
 					" must not be present in an assembly connector", it, TU_CONNECTOR_END__ROLE,
 					CONTAINER_ROLE_IN_ASSSEMBLY_CONNECTOR);
 			]
@@ -49,8 +49,8 @@ class XtxtUMLConnectorValidator extends XtxtUMLAssociationValidator {
 		val roleA = connector.ends.get(0).role;
 		val roleB = connector.ends.get(1).role;
 
-		val compositionOfRoleA = if(roleA.eContainer instanceof TUComposition) roleA.eContainer as TUComposition;
-		val compositionOfRoleB = if(roleB.eContainer instanceof TUComposition) roleB.eContainer as TUComposition;
+		val compositionOfRoleA = if(roleA?.eContainer instanceof TUComposition) roleA.eContainer as TUComposition;
+		val compositionOfRoleB = if(roleB?.eContainer instanceof TUComposition) roleB.eContainer as TUComposition;
 
 		if (connector.delegation) {
 			if (compositionOfRoleA == null ||
@@ -95,11 +95,11 @@ class XtxtUMLConnectorValidator extends XtxtUMLAssociationValidator {
 
 	@Check
 	def checkOwnerOfConnectorEndPort(TUConnectorEnd connEnd) {
-		val ownerOfPort = connEnd.port.eContainer;
-		val classInRole = connEnd.role.endClass;
+		val ownerOfPort = connEnd.port?.eContainer;
+		val classInRole = connEnd.role?.endClass;
 
 		if (ownerOfPort?.fullyQualifiedName != classInRole?.fullyQualifiedName) {
-			error(connEnd.port.name + " cannot be resolved as a port of class " + classInRole.name, connEnd,
+			error(connEnd.port?.name + " cannot be resolved as a port of class " + classInRole?.name, connEnd,
 				TU_CONNECTOR_END__PORT, NOT_OWNED_PORT);
 		}
 	}
