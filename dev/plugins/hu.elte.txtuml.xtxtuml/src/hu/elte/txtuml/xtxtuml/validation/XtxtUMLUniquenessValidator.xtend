@@ -245,7 +245,7 @@ class XtxtUMLUniquenessValidator extends AbstractXtxtUMLValidator {
 				it != connectorEnd // direct comparison is safe here
 		]) {
 			error("Duplicate connector end " + connectorEnd.name + " in connector " + container.name +
-				". Names and roles must be unique among ends of a connector.", connectorEnd, TU_CONNECTOR_END__NAME,
+				" – names and roles must be unique among ends of a connector", connectorEnd, TU_CONNECTOR_END__NAME,
 				NOT_UNIQUE_CONNECTOR_END);
 		}
 	}

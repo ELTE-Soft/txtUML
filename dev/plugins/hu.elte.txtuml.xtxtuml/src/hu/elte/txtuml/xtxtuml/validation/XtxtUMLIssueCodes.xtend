@@ -49,20 +49,20 @@ class XtxtUMLIssueCodes {
 	public static val VERTEX_LEVEL_MISMATCH = ISSUE_CODE_PREFIX + "vertex_level_mismatch";
 
 	public static val ASSOCIATION_END_COUNT_MISMATCH = ISSUE_CODE_PREFIX + "association_end_count_mismatch";
-	public static val ASSOCIATION_CONTAINS_CONTAINER_END = ISSUE_CODE_PREFIX + "association_contains_container_end";
+	public static val CONTAINER_END_IN_ASSOCIATION = ISSUE_CODE_PREFIX + "container_end_in_association";
 	public static val CONTAINER_END_COUNT_MISMATCH = ISSUE_CODE_PREFIX + "container_end_count_mismatch";
 
+	public static val CONNECTOR_END_COUNT_MISMATCH = ISSUE_CODE_PREFIX + "connector_end_count_mismatch";
+	public static val CONTAINER_ROLE_COUNT_MISMATCH = ISSUE_CODE_PREFIX + "container_role_count_mismatch";
+	public static val CONTAINER_ROLE_IN_ASSSEMBLY_CONNECTOR = ISSUE_CODE_PREFIX + "container_role_in_assembly_connector";
+	public static val COMPOSITION_MISMATCH_IN_DELEGATION_CONNECTOR = ISSUE_CODE_PREFIX + "composition_mismatch_in_delegation_connector";
+	public static val COMPOSITION_MISMATCH_IN_ASSEMBLY_CONNECTOR = ISSUE_CODE_PREFIX + "composition_mismatch_in_assembly_connector";
+	public static val INCOMPATIBLE_PORTS = ISSUE_CODE_PREFIX + "incompatible_ports";
+	public static val NOT_OWNED_PORT = ISSUE_CODE_PREFIX + "not_owned_port";
+
 	/**
-	 * Used by XtxtUMLDerivedResourceMarkerCopier to propagate JtxtUML validation errors to XtxtUML source.
+	 * Used by {@link XtxtUMLDerivedResourceMarkerCopier} to propagate JtxtUML validation errors to XtxtUML source.
 	 */
-	public static val COPY_JTXTUML_PROBLEMS = ISSUE_CODE_PREFIX + "copyJtxtUMLProblems";
-
-	public static val CONNECTOR_ASSEMBLY_CONTAINS_CONTAINER_ROLE = "hu.elte.txtuml.xtxtuml.issues.ConnectorAssemblyContainsContainerRole";
-	public static val CONNECTOR_CONTAINER_ROLE_COUNT_MISMATCH = "hu.elte.txtuml.xtxtuml.issues.ConnectorContainerRoleCountMismatch";
-	public static val CONNECTOR_INCOMPATIBLE_PORTS = "hu.elte.txtuml.xtxtuml.ConnectorIncompatiblePorts";
-	public static val CONNECTOR_ROLE_COMPOSITION_MISMATCH = "hu.elte.txtuml.xtxtuml.issues.ConnectorRoleCompositionMismatch";
-
-	public static val CONNECTOR_END_COUNT_MISMATCH = "hu.elte.txtuml.xtxtuml.issues.ConnectorEndCountMismatch";
-	public static val CONNECTOR_END_PORT_OWNER_MISMATCH = "hu.elte.txtuml.xtxtuml.issues.ConnectorEndPortOwnerMismatch";
+	public static val COPY_JTXTUML_PROBLEMS = ISSUE_CODE_PREFIX + "copy_jtxtuml_problems";
 
 }

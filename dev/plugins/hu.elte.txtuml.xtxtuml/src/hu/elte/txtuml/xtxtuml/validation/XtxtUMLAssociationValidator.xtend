@@ -29,7 +29,7 @@ class XtxtUMLAssociationValidator extends XtxtUMLClassValidator {
 			containerEnds.forEach [
 				error("Container end " + name + " of association " + association.name +
 					" must not be present in an association", it, TU_ASSOCIATION_END__CONTAINER,
-					ASSOCIATION_CONTAINS_CONTAINER_END);
+					CONTAINER_END_IN_ASSOCIATION);
 			]
 		}
 	}
