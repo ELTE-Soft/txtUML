@@ -17,7 +17,6 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
 import java.util.HashSet
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.common.types.JvmOperation
@@ -194,15 +193,14 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 	}
 
 	def protected dispatch boolean isReachableFromInitialState(TUTransition transition, HashSet<TUState> visitedStates,
-		boolean throughChoicesOnly) {
+		boolean throughPseudostatesOnly) {
 		val from = transition.sourceState;
-		return from != null &&
-			(!throughChoicesOnly || from.type == TUStateType.INITIAL || from.type == TUStateType.CHOICE) &&
-			isReachableFromInitialState(from, visitedStates, throughChoicesOnly);
+		return from != null && (!throughPseudostatesOnly || from.isPseudostate) &&
+			isReachableFromInitialState(from, visitedStates, throughPseudostatesOnly);
 	}
 
 	def protected dispatch boolean isReachableFromInitialState(TUState state, HashSet<TUState> visitedStates,
-		boolean throughChoicesOnly) {
+		boolean throughPseudostatesOnly) {
 		if (state.type == TUStateType.INITIAL) {
 			return true;
 		}
@@ -211,30 +209,10 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 			return false;
 		}
 
-		val siblingsAndSelf = switch (c : state.eContainer) {
-			TUState: c.members
-			TUClass: c.members
-		}
-
-		return siblingsAndSelf != null && siblingsAndSelf.exists [
-			it instanceof TUTransition &&
-				(it as TUTransition).targetState?.fullyQualifiedName == state.fullyQualifiedName &&
-				isReachableFromInitialState(it, visitedStates, throughChoicesOnly)
+		return state.membersOfEnclosingElement.exists [
+			it instanceof TUTransition && (it as TUTransition).targetState == state && // direct comparison is safe here
+			isReachableFromInitialState(it, visitedStates, throughPseudostatesOnly)
 		];
-	}
-
-	def protected sourceState(TUTransition it) {
-		sourceOrTargetState(true)
-	}
-
-	def protected targetState(TUTransition it) {
-		sourceOrTargetState(false)
-	}
-
-	def private sourceOrTargetState(TUTransition it, boolean source) {
-		(members.findFirst [
-			it instanceof TUTransitionVertex && (it as TUTransitionVertex).from == source
-		] as TUTransitionVertex)?.vertex
 	}
 
 	override protected isValueExpectedRecursive(XExpression expr) {

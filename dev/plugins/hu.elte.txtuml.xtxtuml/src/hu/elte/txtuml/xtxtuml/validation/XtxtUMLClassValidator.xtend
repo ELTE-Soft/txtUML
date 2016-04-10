@@ -1,44 +1,42 @@
-package hu.elte.txtuml.xtxtuml.validation
+package hu.elte.txtuml.xtxtuml.validation;
 
-import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateMember
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionGuard
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionMember
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionPort
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionTrigger
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
-import hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage
-import java.util.HashSet
+import org.eclipse.emf.common.util.EList
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.EStructuralFeature
 import org.eclipse.xtext.EcoreUtil2
-import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.validation.Check
 
 import static hu.elte.txtuml.xtxtuml.validation.XtxtUMLIssueCodes.*
+import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 
 class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 
-	@Inject extension IQualifiedNameProvider;
-
 	@Check
-	def checkNoCycleInClassHiearchy(TUClass tUClass) {
-		if (tUClass.superClass == null) {
+	def checkNoCycleInClassHiearchy(TUClass clazz) {
+		if (clazz.superClass == null) {
 			return;
 		}
 
-		val visitedClasses = new HashSet<TUClass>();
-		visitedClasses.add(tUClass);
+		val visitedClasses = newHashSet;
+		visitedClasses.add(clazz);
 
-		var currentClass = tUClass.superClass;
+		var currentClass = clazz.superClass;
 		while (currentClass != null) {
 			if (visitedClasses.contains(currentClass)) {
-				error(
-					"Cycle in hierarchy of class " + tUClass.name + " reaching " + currentClass.name,
-					XtxtUMLPackage::eINSTANCE.TUClass_SuperClass,
-					XtxtUMLIssueCodes.CLASS_HIERARCHY_CYCLE,
-					currentClass.name
-				);
-
+				error("Cycle in hierarchy of class " + clazz.name + " reaching " + currentClass.name,
+					TU_CLASS__SUPER_CLASS, CLASS_HIERARCHY_CYCLE);
 				return;
 			}
 
@@ -48,41 +46,198 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 	}
 
 	@Check
-	def checkElseGuard(TUTransitionGuard guard) {
-		if (guard.^else && guard.eContainer instanceof TUTransition && (guard.eContainer as TUTransition).members.exists [
-			it instanceof TUTransitionVertex && (it as TUTransitionVertex).from &&
-				(it as TUTransitionVertex).vertex.type != TUStateType.CHOICE
+	def checkConstructorName(TUConstructor ctor) {
+		val name = ctor.name;
+		val enclosingClassName = (ctor.eContainer as TUClass).name;
+		if (name != enclosingClassName) {
+			error('''Constructor «name»(«ctor.parameters.typeNames.join(", ")») in class «enclosingClassName» must be named as its enclosing class''',
+				ctor, TU_CONSTRUCTOR__NAME, INVALID_CONSTRUCTOR_NAME);
+		}
+	}
+
+	@Check
+	def checkInitialStateIsDefinedInClass(TUClass clazz) {
+		if (clazz.members.isInitialStateMissing) {
+			missingInitialState(clazz, "class " + clazz.name, TU_MODEL_ELEMENT__NAME)
+		}
+	}
+
+	@Check
+	def checkInitialStateIsDefinedInCompositeState(TUState state) {
+		if (state.type == TUStateType.COMPOSITE && state.members.isInitialStateMissing) {
+			missingInitialState(state, "composite state " + state.classQualifiedName, TU_STATE__NAME)
+		}
+	}
+
+	@Check
+	def checkPseudostateIsLeavable(TUState state) {
+		if (state.isPseudostate && !state.membersOfEnclosingElement.exists [
+			it instanceof TUTransition && (it as TUTransition).sourceState == state // direct comparison is safe here
 		]) {
+			error("There are no outgoing transitions from pseudostate " + state.classQualifiedName +
+				" – state machines cannot stop in pseudostates", state, TU_STATE__NAME, NOT_LEAVABLE_PSEUDOSTATE);
+		}
+	}
+
+	@Check
+	def checkStateIsReachable(TUState state) {
+		if (!state.membersOfEnclosingElement.isInitialStateMissing &&
+			!state.isReachableFromInitialState(newHashSet, false)) {
+			warning("State " + state.classQualifiedName + " is unreachable", state, TU_STATE__NAME, UNREACHABLE_STATE);
+		}
+	}
+
+	@Check
+	def checkStateIsDefinedInClassOrCompositeState(TUState state) {
+		if (state.eContainer instanceof TUState && (state.eContainer as TUState).type == TUStateType.PLAIN) { // pseudostates are handled separately
+			error("State " + state.classQualifiedName + " can be defined only in a class or a composite state", state,
+				TU_STATE__NAME, INVALID_STATE_CONTAINER);
+		}
+	}
+
+	@Check
+	def checkStateMemberDoesNotBelongToPseudostate(TUStateMember stateMember) {
+		if (stateMember.eContainer.isPseudostate) {
+			switch (stateMember) {
+				TUState:
+					elementInPseudostate(stateMember, "State " + stateMember.classQualifiedName, TU_STATE__NAME, null)
+				TUTransition:
+					elementInPseudostate(stateMember, "Transition " + stateMember.classQualifiedName,
+						TU_TRANSITION__NAME, null)
+				TUEntryOrExitActivity:
+					elementInPseudostate(stateMember, "Activities", stateMember.markerTargetForStateActivity,
+						(stateMember.eContainer as TUState).classQualifiedName)
+			}
+		}
+	}
+
+	@Check
+	def checkMandatoryTransitionMembers(TUTransition transition) {
+		var hasSource = false;
+		var hasTarget = false;
+		var hasTrigger = false;
+
+		for (member : transition.members) {
+			switch (member) {
+				TUTransitionVertex:
+					if (member.from) {
+						hasSource = true;
+						if (member.vertex.isPseudostate) {
+							hasTrigger = true;
+						}
+					} else {
+						hasTarget = true;
+					}
+				TUTransitionTrigger:
+					hasTrigger = true
+			}
+		}
+
+		if (!hasSource || !hasTarget || !hasTrigger) {
+			error("Missing mandatory member ('from', 'to' or 'trigger') in transition " + transition.classQualifiedName,
+				transition, TU_TRANSITION__NAME, MISSING_MANDATORY_TRANSITION_MEMBER);
+		}
+	}
+
+	@Check
+	def checkTransitionTargetIsNotInitialState(TUTransitionVertex transitionVertex) {
+		if (!transitionVertex.from && transitionVertex.vertex.type == TUStateType.INITIAL) {
+			error("Initial state cannot be the target of transition " +
+				(transitionVertex.eContainer as TUTransition).classQualifiedName, transitionVertex,
+				TU_TRANSITION_VERTEX__VERTEX, TARGET_IS_INITIAL_STATE);
+		}
+	}
+
+	@Check
+	def checkGuardIsNotForInitialTransition(TUTransitionGuard transitionGuard) {
+		val enclosingTransition = transitionGuard.eContainer as TUTransition;
+		if (enclosingTransition.sourceState?.type == TUStateType.INITIAL) {
+			error("Guards must not be present in initial transition " + enclosingTransition.classQualifiedName,
+				transitionGuard, TU_TRANSITION_GUARD__GUARD, INVALID_TRANSITION_MEMBER);
+		}
+	}
+
+	@Check
+	def checkMemberOfTransitionFromPseudostate(TUTransitionMember transitionMember) {
+		val enclosingTransition = transitionMember.eContainer as TUTransition;
+		val sourceState = enclosingTransition.sourceState;
+
+		if (sourceState != null && sourceState.isPseudostate &&
+			(transitionMember instanceof TUTransitionTrigger || transitionMember instanceof TUTransitionPort)) {
 			error(
-				"'else' condition can be used only if the source of the transition is a choice pseudostate",
-				XtxtUMLPackage::eINSTANCE.TUTransitionGuard_Else
-			)
+				"Triggers and port restrictions must not be present in transition " +
+					enclosingTransition.classQualifiedName + ", as its source is a pseudostate", transitionMember,
+				transitionMember.markerTargetForTransitionMember, INVALID_TRANSITION_MEMBER);
 		}
 	}
 
 	@Check
-	def checkPortHaveAtMostOneInterfacePerType(TUPort port) {
-		if (port.members.filter[required].length > 1 || port.members.filter[!required].length > 1) {
-			error("Port " + port.name + " must not specify more than one required or provided interface", port,
-				XtxtUMLPackage::eINSTANCE.TUClassProperty_Name, PORT_INTERFACE_COUNT_MISMATCH);
-		}
-	}
-
-	@Check
-	def checkTriggerPortIsBehavior(TUTransitionPort triggerPort) {
-		if (!triggerPort.port.behavior) {
-			error("Port " + triggerPort.port.name + " is not a behavior port", triggerPort,
-				XtxtUMLPackage::eINSTANCE.TUTransitionPort_Port, TRIGGER_PORT_IS_NOT_BEHAVIOR, triggerPort.port.name)
+	def checkElseGuard(TUTransitionGuard guard) {
+		if (guard.^else && (guard.eContainer as TUTransition).sourceState?.type != TUStateType.CHOICE) {
+			error("'else' condition can be used only if the source of the transition is a choice pseudostate", guard,
+				TU_TRANSITION_GUARD__ELSE, INVALID_ELSE_GUARD)
 		}
 	}
 
 	@Check
 	def checkOwnerOfTriggerPort(TUTransitionPort triggerPort) {
 		val containingClass = EcoreUtil2.getContainerOfType(triggerPort, TUClass); // due to composite states
-		if (triggerPort.port.eContainer.fullyQualifiedName != containingClass.fullyQualifiedName) {
+		if (triggerPort.port.eContainer != containingClass) {
 			error(triggerPort.port.name + " cannot be resolved as a port of class " + containingClass.name, triggerPort,
-				XtxtUMLPackage::eINSTANCE.TUTransitionPort_Port, TRIGGER_PORT_OWNER_MISMATCH, triggerPort.port.name);
+				TU_TRANSITION_PORT__PORT, NOT_OWNED_TRIGGER_PORT);
 		}
+	}
+
+	@Check
+	def checkTriggerPortIsBehavior(TUTransitionPort triggerPort) {
+		if (!triggerPort.port.behavior) {
+			error("Port " + triggerPort.port.name + " in class " + (triggerPort.port.eContainer as TUClass).name +
+				" is not a behavior port", triggerPort, TU_TRANSITION_PORT__PORT, NOT_BEHAVIOR_TRIGGER_PORT)
+		}
+	}
+
+	@Check
+	def checkTransitionVertexLevel(TUTransitionVertex transitionVertex) {
+		val enclosingTransition = transitionVertex.eContainer as TUTransition;
+		if (transitionVertex.vertex.eContainer != enclosingTransition.eContainer) {
+			error(
+				"Invalid vertex " + transitionVertex.vertex.classQualifiedName + " in transition " +
+					enclosingTransition.classQualifiedName + " – transition must not cross state machine levels",
+				transitionVertex, TU_TRANSITION_VERTEX__VERTEX, VERTEX_LEVEL_MISMATCH);
+		}
+	}
+
+	def protected isInitialStateMissing(EList<? extends EObject> members) {
+		var isOtherStateDefined = false;
+		for (member : members) {
+			if (member instanceof TUState) {
+				if (member.type == TUStateType.INITIAL) {
+					return false;
+				} else {
+					isOtherStateDefined = true;
+				}
+			}
+		}
+
+		return isOtherStateDefined;
+	}
+
+	def protected missingInitialState(EObject element, String name, EStructuralFeature markerTarget) {
+		warning("Missing initial pseudostate in " + name +
+			", therefore its other states and transitions are unreachable", element, markerTarget,
+			MISSING_INITIAL_STATE);
+	}
+
+	def protected elementInPseudostate(TUStateMember stateMember, String name, EStructuralFeature markerTarget,
+		String enclosingStateName) {
+		val adjustedEnclosingStateName = if (enclosingStateName == null) {
+				"a pseudostate"
+			} else {
+				"pseudostate " + enclosingStateName
+			}
+
+		error(name + " must not be present in " + adjustedEnclosingStateName, stateMember, markerTarget,
+			ELEMENT_IN_PSEUDOSTATE);
 	}
 
 }
