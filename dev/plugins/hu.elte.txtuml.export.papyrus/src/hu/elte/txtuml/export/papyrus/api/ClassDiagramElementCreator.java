@@ -29,6 +29,7 @@ import org.eclipse.papyrus.uml.diagram.clazz.providers.UMLElementTypes;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Classifier;
+import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
@@ -118,7 +119,6 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 			edge.setSource(sourceView);
 			edge.setTarget(targetView);
 			edge.setBendpoints(createBendsPoints((Node) sourceView, (Node) targetView, route));
-			System.out.println("");
 		};
 
 		runInTransactionalCommand(runnable, "Creating Assoc", monitor);
@@ -142,9 +142,26 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 		return bendpoints;
 	}
 
-	public void createGeneralizationForNodes(Node diagram, Classifier target, List<Point> route,
-			IProgressMonitor monitor) {
-		// TODO Auto-generated method stub
+	public void createGeneralizationForNodes(Generalization generalization, List<Point> route, Diagram diagram,
+			 IProgressMonitor monitor) {
+		Classifier subclass =   generalization.getSpecific();
+		Classifier baseclass =  generalization.getGeneral();
+		
+		View sourceView = getViewOfModel(subclass, diagram);
+		View targetView = getViewOfModel(baseclass, diagram);
+		IElementType elementType = UMLElementTypes.Generalization_4002;
+		String hint = ((IHintedType) elementType).getSemanticHint();
+
+		Runnable runnable = () -> {
+			Edge edge = (Edge) ViewService.getInstance().createEdge(elementType, diagram, hint, ViewUtil.APPEND,
+					ClassDiagramElementCreator.diagramPrefHint);
+			edge.setElement(generalization);
+			edge.setSource(sourceView);
+			edge.setTarget(targetView);
+			edge.setBendpoints(createBendsPoints((Node) sourceView, (Node) targetView, route));
+		};
+		
+		runInTransactionalCommand(runnable, "Creating Generalization", monitor);
 	}
 
 	private static BasicCompartment getPropertyCompartementOfNode(Node node) {

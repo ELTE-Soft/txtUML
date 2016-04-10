@@ -74,6 +74,7 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 		this.monitor = monitor;
 	}
 
+	//TODO: Eliminate this function, move the list to static final property
 	/**
 	 * Returns the types of elements that are to be added
 	 * 
@@ -94,6 +95,8 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 		return nodes;
 	}
 
+	
+	//TODO: Eliminate this function, move the list to static final property
 	/**
 	 * Returns the types of connectors that are to be added
 	 * 
@@ -130,6 +133,7 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 				Association assoc = (Association) e;
 				// A txtUML scpecific implementation. Assoiciations are exported
 				// in a way that they are the owner of both ends
+				//TODO: This is NOT sure (Must ask nboldi), and logic has to be moved to the creator function. 
 				Property member1 = assoc.getMemberEnds().get(0);
 				Property member2 = assoc.getMemberEnds().get(1);
 				Type memberT1 = member1.getType();
@@ -137,6 +141,10 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 				
 				List<Point> route = Arrays.asList(new Point(0, 50), new Point(50, 250), new Point(250, 250), new Point(250, 50), new Point(50, 0));
 				this.elementCreator.createAssociationForNodes((Classifier) memberT1,(Classifier) memberT2, assoc, this.diagram,  route, this.monitor);
+			}
+			
+			if(e instanceof Generalization) {
+				this.elementCreator.createGeneralizationForNodes((Generalization)e, null, this.diagram, this.monitor);
 			}
 		}
 		// TODO: Replace
