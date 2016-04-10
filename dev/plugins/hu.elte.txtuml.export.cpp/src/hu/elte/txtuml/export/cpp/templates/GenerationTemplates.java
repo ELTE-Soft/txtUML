@@ -239,6 +239,9 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 		else if(lowerLimit == 1 && upperLimit > 1) {
 			multiplicity =  "Some";
 		}
+		else if(lowerLimit == 0 && upperLimit > 1) {
+			multiplicity =  "Many";
+		}
 		return multiplicity;
 	}
 

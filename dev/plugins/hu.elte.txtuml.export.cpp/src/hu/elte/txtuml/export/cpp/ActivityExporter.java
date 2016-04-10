@@ -255,7 +255,7 @@ public class ActivityExporter {
 	    }
 	    importOutputPinToMap(node_.getResult());
 	    
-	    return ActivityTemplates.addVariableTemplate(ActivityTemplates.collectionTemplate(otherMember.getType().getName()), 
+	    return ActivityTemplates.defineAndAddToCollection(otherMember.getType().getName(), 
 		    tempVariables.get(node_.getResult()), ActivityTemplates.selectAllTemplate(otherMember.getName()));
 	}
 	

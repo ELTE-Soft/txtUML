@@ -223,6 +223,11 @@ public class ActivityTemplates {
 	    return PrivateFunctionalTemplates.cppType(type) + " " + left + " = " + right + ";\n";
 	}
 	
+	public static String defineAndAddToCollection(String collectedType, String collectionName, String valueName) {
+		return collectionTemplate(collectedType) + " " + collectionName + " " + ReplaceSimpleTypeOp + " " + 
+				valueName + ";\n";
+	}
+	
 	public static String signalType(String type) {
 		return type + GenerationNames.EventClassTypeId;
 	}

@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 public class ThreadDescriptionExporter {
@@ -18,13 +19,14 @@ public class ThreadDescriptionExporter {
 	private Map<String, ThreadPoolConfiguration> configMap;
 	private boolean descriptionExported = false;
 
-	List<String> warningList;
-	List<String> errorList;
+	private List<String> warningList;
+	private List<String> errorList;
 
-	int numberOfConfigurations;
+	private int numberOfConfigurations;
 
-	Set<String> exportedClasses;
-	Set<String> allClass;
+	private Set<String> exportedClasses;
+	private Set<String> allClass;
+	
 	public ThreadDescriptionExporter(Set<String> allClass) {
 		configMap = new HashMap<String, ThreadPoolConfiguration>();
 		this.allClass = allClass;
@@ -127,6 +129,13 @@ public class ThreadDescriptionExporter {
 			config.setMaxThreads(1);
 			for(String cls : nonExportedClasses) {
 				configMap.put(cls, config);
+			}
+		}
+		else {
+			Set<ThreadPoolConfiguration> configs = new HashSet<ThreadPoolConfiguration>();
+			configs.addAll(configMap.values());
+			for(ThreadPoolConfiguration config : configs) {
+				config.decraseId();
 			}
 		}
 		

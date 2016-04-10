@@ -40,6 +40,10 @@ public class ThreadPoolConfiguration {
 		}
 
 	}
+	
+	private LinearFunction function;
+	private int id;
+	private int maxThread;
 
 	public ThreadPoolConfiguration(int id, double gradient, int constant) {
 		this.id = id;
@@ -47,11 +51,9 @@ public class ThreadPoolConfiguration {
 
 	}
 
-	private LinearFunction function;
-
-	private int id;
-	private int maxThread;
-
+	public void decraseId() {
+		id = id - 1;
+	}
 	public int getId() {
 		return id;
 	}

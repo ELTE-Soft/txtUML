@@ -6,9 +6,7 @@ SingleThreadRT* SingleThreadRT::instance = nullptr;
 
 SingleThreadRT::SingleThreadRT():_messageQueue(new PoolQueueType){}
 
-void SingleThreadRT::setupObjectSpecificRuntime(StateMachineI *sm)
-{
-}
+void SingleThreadRT::setupObjectSpecificRuntime(StateMachineI*){}
 
 bool SingleThreadRT::isConfigurated()
 {
@@ -48,7 +46,7 @@ void SingleThreadRT::start()
 
 }
 
-void SingleThreadRT::setConfiguration(ThreadConfiguration *conf){}
+void SingleThreadRT::setConfiguration(ThreadConfiguration*){}
 
 void SingleThreadRT::enqueObject(StateMachineI *sm)
 {
@@ -57,7 +55,7 @@ void SingleThreadRT::enqueObject(StateMachineI *sm)
 
 void SingleThreadRT::stopUponCompletion() {}
 
-void SingleThreadRT::removeObject(StateMachineI* sm) {}
+void SingleThreadRT::removeObject(StateMachineI*) {}
 
 
 

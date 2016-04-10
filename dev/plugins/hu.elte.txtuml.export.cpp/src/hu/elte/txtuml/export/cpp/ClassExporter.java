@@ -441,6 +441,14 @@ public class ClassExporter {
 			types.addAll(getOperationParamTypes(item));
 		}
 
+		for (Property item : Shared.getProperties(class_)) {
+			if (item.getType() != null) {
+
+				Type attr = item.getType();
+				types.add(attr.getName());
+			}
+		}
+
 		if (_submachineMap != null) {
 			for (Map.Entry<String, Pair<String, Region>> entry : _submachineMap.entrySet()) {
 				types.add(entry.getValue().getFirst());
