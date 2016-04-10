@@ -48,14 +48,14 @@ class XtxtUMLIssueCodes {
 	public static val NOT_OWNED_TRIGGER_PORT = ISSUE_CODE_PREFIX + "not_owned_trigger_port";
 	public static val VERTEX_LEVEL_MISMATCH = ISSUE_CODE_PREFIX + "vertex_level_mismatch";
 
+	public static val ASSOCIATION_END_COUNT_MISMATCH = ISSUE_CODE_PREFIX + "association_end_count_mismatch";
+	public static val ASSOCIATION_CONTAINS_CONTAINER_END = ISSUE_CODE_PREFIX + "association_contains_container_end";
+	public static val CONTAINER_END_COUNT_MISMATCH = ISSUE_CODE_PREFIX + "container_end_count_mismatch";
+
 	/**
 	 * Used by XtxtUMLDerivedResourceMarkerCopier to propagate JtxtUML validation errors to XtxtUML source.
 	 */
 	public static val COPY_JTXTUML_PROBLEMS = ISSUE_CODE_PREFIX + "copyJtxtUMLProblems";
-
-	public static val ASSOCIATION_END_COUNT_MISMATCH = "hu.elte.txtuml.xtxtuml.issues.AssociationEndCountMismatch";
-	public static val ASSOCIATION_CONTAINS_CONTAINER_END = "hu.elte.txtuml.xtxtuml.issues.AssociationContainsContainerEnd";
-	public static val CONTAINER_END_COUNT_MISMATCH = "hu.elte.txtuml.xtxtuml.issues.CompositionMissesContainerEnd";
 
 	public static val CONNECTOR_ASSEMBLY_CONTAINS_CONTAINER_ROLE = "hu.elte.txtuml.xtxtuml.issues.ConnectorAssemblyContainsContainerRole";
 	public static val CONNECTOR_CONTAINER_ROLE_COUNT_MISMATCH = "hu.elte.txtuml.xtxtuml.issues.ConnectorContainerRoleCountMismatch";
