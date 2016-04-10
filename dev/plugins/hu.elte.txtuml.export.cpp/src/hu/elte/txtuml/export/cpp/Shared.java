@@ -1,7 +1,6 @@
 package hu.elte.txtuml.export.cpp;
 
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 
 import java.io.File;
 import java.io.FileNotFoundException;

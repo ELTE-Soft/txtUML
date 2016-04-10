@@ -12,22 +12,24 @@ public class ActivityTemplates {
 	public static final String ReplaceCompositTypeOp = ReplaceSimpleTypeOp;
 	public static final String Self = "this";
 	public static final String AccessOperatorForSets = GenerationNames.SimpleAccess;
-	
-	public enum OperationSide {Left,Right}
-	
+
+	public enum OperationSide {
+		Left, Right
+	}
+
 	public static String generalSetValue(String leftValueName, String rightValueName, String operator) {
 		if (operator == AddCompositTypeOp) {
 			return leftValueName + operator + "(" + rightValueName + ");\n";
 		}
 		return leftValueName + operator + rightValueName + ";\n";
 	}
-	
+
 	public static String simpleSetValue(String leftValueName, String rightValueName) {
-		return generalSetValue(leftValueName,rightValueName,ReplaceSimpleTypeOp);
+		return generalSetValue(leftValueName, rightValueName, ReplaceSimpleTypeOp);
 	}
 
-	public static StringBuilder signalSend(String signalName, String targetName, String targetTypeName, String accessOperator,
-			List<String> params) {
+	public static StringBuilder signalSend(String signalName, String targetName, String targetTypeName,
+			String accessOperator, List<String> params) {
 		StringBuilder source = new StringBuilder(targetName + accessOperator);
 		StringBuilder signal = new StringBuilder(GenerationNames.eventClassName(signalName) + "(");
 		signal.append(GenerationNames.derefenrencePointer(targetName) + ",");
@@ -37,23 +39,23 @@ public class ActivityTemplates {
 		if (!paramList.isEmpty()) {
 			signal.append("," + paramList);
 		}
-		signal.append( ")");
-		
+		signal.append(")");
+
 		source.append(RuntimeTemplates.sendSignal(signal.toString()));
 		source.append(");\n");
-	
+
 		return source;
 	}
-	
-	public static String linkObjects(String firstClassName, String firstObjectName, 
-		String secondClassName, String secondObjectName) {
-	    return GenerationNames.ActionFunctionsNamespace + "::" + GenerationNames.LinkFunctionName + "<" + firstClassName + "," + secondClassName + ">" +
-		"(" + firstObjectName + "," + secondObjectName + ");\n";
+
+	public static String linkObjects(String firstClassName, String firstObjectName, String secondClassName,
+			String secondObjectName) {
+		return GenerationNames.ActionFunctionsNamespace + "::" + GenerationNames.LinkFunctionName + "<" + firstClassName
+				+ "," + secondClassName + ">" + "(" + firstObjectName + "," + secondObjectName + ");\n";
 	}
-	
+
 	public static String signalSend(String target, String signalName) {
-		return target + GenerationNames.PointerAccess + GenerationNames.SendSignal + "("  + GenerationNames.EventPtr +
-				"(" +  signalName + "));\n";
+		return target + GenerationNames.PointerAccess + GenerationNames.SendSignal + "(" + GenerationNames.EventPtr
+				+ "(" + signalName + "));\n";
 	}
 
 	public static String transitionActionCall(String operationName) {
@@ -83,32 +85,32 @@ public class ActivityTemplates {
 		}
 		return source;
 	}
-	
-	public static String invokeProcedure(String operationName, List<String> parameters){
-	    return Operators.getStandardOperationName(operationName) + "(" + operationCallParamList(parameters) + ");\n";
+
+	public static String invokeProcedure(String operationName, List<String> parameters) {
+		return Operators.getStandardOperationName(operationName) + "(" + operationCallParamList(parameters) + ");\n";
 	}
-	
+
 	public static String stdLibOperationCall(String operationName, String left, String right) {
-	 
-	    return "(" + left + " " + Operators.getStandardOperationName(operationName) + " " + right + ")";
-	     
+
+		return "(" + left + " " + Operators.getStandardOperationName(operationName) + " " + right + ")";
+
 	}
-	
+
 	public static String stdLibOperationCall(String operationName, String operand) {
 		return Operators.getStandardSigneleOperatorName(operationName) + operand;
-	    
+
 	}
-	
+
 	public static String simpleFunctionCall(String functionName, List<String> parameters) {
-	    return functionName + "(" + operationCallParamList(parameters) + ")";
+		return functionName + "(" + operationCallParamList(parameters) + ")";
 	}
-	
+
 	public static String operationCallOnPointerVariable(String ownerName, String operationName, List<String> params) {
-	    return operationCall(ownerName,GenerationNames.PointerAccess,operationName,params);
+		return operationCall(ownerName, GenerationNames.PointerAccess, operationName, params);
 	}
-	
+
 	public static String blockStatement(String statement) {
-	    return statement + ";\n";
+		return statement + ";\n";
 	}
 
 	private static String operationCallParamList(List<String> params) {
@@ -121,11 +123,11 @@ public class ActivityTemplates {
 		}
 		return source;
 	}
-	
+
 	public static String startObject(String objectVariable) {
 		return objectVariable + GenerationNames.PointerAccess + GenerationNames.StartSmMethodName + "();\n";
 	}
-	
+
 	public static String deleteObject(String objectVariable) {
 		return GenerationNames.DeleteObject + " " + objectVariable + ";\n";
 	}
@@ -157,10 +159,10 @@ public class ActivityTemplates {
 	public static String whileCycle(String cond, String body) {
 		return simpleCondControlStruct("while", cond, body);
 	}
-	
+
 	public static String foreachCycle(String conatinedType, String paramName, String collection, String body) {
-	    return "for (" + PrivateFunctionalTemplates.cppType(conatinedType) + 
-		    " " + paramName + " :" +  collection + ")\n{\n" + body + "\n}";
+		return "for (" + PrivateFunctionalTemplates.cppType(conatinedType) + " " + paramName + " :" + collection
+				+ ")\n{\n" + body + "\n}";
 	}
 
 	public static String transitionActionParameter(String paramName) {
@@ -168,34 +170,32 @@ public class ActivityTemplates {
 	}
 
 	public static String createObject(String typenName, String objName, List<String> parameters) {
-		
-		return GenerationNames.pointerType(typenName) + " " + objName + "= " + GenerationNames.MemoryAllocator
-			+ " " + typenName + "(" + operationCallParamList(parameters) + ");\n";
+
+		return GenerationNames.pointerType(typenName) + " " + objName + "= " + GenerationNames.MemoryAllocator + " "
+				+ typenName + "(" + operationCallParamList(parameters) + ");\n";
 	}
-	
+
 	public static String createObject(String typenName, String objName) {
-		
+
 		return createObject(typenName, objName, new ArrayList<String>());
 	}
-	
+
 	public static String selectAnyTemplate(String otherEnd) {
-	    return otherEnd + GenerationNames.SimpleAccess + 
-		    GenerationNames.SelectAnyFunctionName + "()";
-	    
-	}public static String selectAllTemplate(String otherEnd) {
-	    return otherEnd + GenerationNames.SimpleAccess + 
-		    GenerationNames.SelectAllFunctionName + "()";
+		return otherEnd + GenerationNames.SimpleAccess + GenerationNames.SelectAnyFunctionName + "()";
+
 	}
-	
+
+	public static String selectAllTemplate(String otherEnd) {
+		return otherEnd + GenerationNames.SimpleAccess + GenerationNames.SelectAllFunctionName + "()";
+	}
+
 	public static String collectionTemplate(String collectedType) {
-	    return GenerationNames.Collection + "<" + 
-	PrivateFunctionalTemplates.cppType(collectedType) + ">";
-		     
-	    
+		return GenerationNames.Collection + "<" + PrivateFunctionalTemplates.cppType(collectedType) + ">";
+
 	}
-	
+
 	public static String returnTemplates(String variable) {
-	    return "return " + variable + ";\n";
+		return "return " + variable + ";\n";
 	}
 
 	public static String getOperationFromType(boolean isMultivalued, boolean isReplace) {
@@ -218,28 +218,26 @@ public class ActivityTemplates {
 	public static String accesOperatoForType(String typeName) {
 		return GenerationNames.PointerAccess;
 	}
-	
-	public static String addVariableTemplate(String type,String left, String right) {
-	    return PrivateFunctionalTemplates.cppType(type) + " " + left + " = " + right + ";\n";
+
+	public static String addVariableTemplate(String type, String left, String right) {
+		return PrivateFunctionalTemplates.cppType(type) + " " + left + " = " + right + ";\n";
 	}
-	
+
 	public static String defineAndAddToCollection(String collectedType, String collectionName, String valueName) {
-		return collectionTemplate(collectedType) + " " + collectionName + " " + ReplaceSimpleTypeOp + " " + 
-				valueName + ";\n";
+		return collectionTemplate(collectedType) + " " + collectionName + " " + ReplaceSimpleTypeOp + " " + valueName
+				+ ";\n";
 	}
-	
+
 	public static String signalType(String type) {
 		return type + GenerationNames.EventClassTypeId;
 	}
 
 	public static class Operators {
-		
-		
+
 		public static final String Remove = "remove";
 		public static final String First = "front";
 		public static final String Last = "back";
-		
-		
+
 		public static final String Add = "+";
 		public static final String Sub = "-";
 		public static final String Mul = "*";
@@ -254,100 +252,97 @@ public class ActivityTemplates {
 		public static final String GreatThen = ">";
 		public static final String LessOrEqThen = "<=";
 		public static final String GreatOrEqThen = ">=";
-		
+
 		public static final String Not = "!";
 		public static final String And = "&&";
 		public static final String Or = "||";
-		
+
 		public static final String Log = "printLine";
-		
+
 		public static String Fork(String cond, String e1, String e2) {
-		    return cond + " ? " + e1 + " : " + e2;
+			return cond + " ? " + e1 + " : " + e2;
 		}
-		
+
 		public static String getStandardOperationName(String operation) {
-		    String name = "";
-		    switch(operation) {
-		    case "add" :
-			name = Add;
-			break;
-		    case "concat" :
-			name = Add;
-			break;
-		    case "sub" :
-			name = Sub;
-			break;
-		    case "mul" :
-			name = Mul;
-			break;
-		    case "div" :
-			name = Div;
-			break;
-		    case "mod" :
-			name = Mod;
-			break;
-		    case "eq" :
-			name = Equal;
-			break;
-		    case "neq" :
-			name = NotEqual;
-			break;
-		    case "lt" :
-			name = LessThen;
-			break;
-		    case "gt" :
-			name = GreatThen;
-			break;
-		    case "leq" :
-			name = LessOrEqThen;
-			break;
-		    case "qeq" :
-			name = GreatOrEqThen;
-			break;
-		    case "and" :
-			name = And;
-			break;
-		    case "or" :
-			name = Or;
-			break;
-		    case "log" :
-			name = Log;
-			break;
-		    }
-		    
-		    return name;
+			String name = "";
+			switch (operation) {
+			case "add":
+				name = Add;
+				break;
+			case "concat":
+				name = Add;
+				break;
+			case "sub":
+				name = Sub;
+				break;
+			case "mul":
+				name = Mul;
+				break;
+			case "div":
+				name = Div;
+				break;
+			case "mod":
+				name = Mod;
+				break;
+			case "eq":
+				name = Equal;
+				break;
+			case "neq":
+				name = NotEqual;
+				break;
+			case "lt":
+				name = LessThen;
+				break;
+			case "gt":
+				name = GreatThen;
+				break;
+			case "leq":
+				name = LessOrEqThen;
+				break;
+			case "qeq":
+				name = GreatOrEqThen;
+				break;
+			case "and":
+				name = And;
+				break;
+			case "or":
+				name = Or;
+				break;
+			case "log":
+				name = Log;
+				break;
+			}
+
+			return name;
 		}
-		
+
 		public static String getStandardSigneleOperatorName(String operation) {
-		    String name = "";
-		    switch(operation) {
-		    	case "inc" :
-		    	    name = Increment;
-		    	    break;
-		    	case "dec" :
-		    	    name = Decrement;
-		    	    break;
-		    	case "not" :
-		    	    name = Not;
-		    	    break;
-		    	default :
-		    	    name = "";
-		    }
-		    
-		    return name;
+			String name = "";
+			switch (operation) {
+			case "inc":
+				name = Increment;
+				break;
+			case "dec":
+				name = Decrement;
+				break;
+			case "not":
+				name = Not;
+				break;
+			default:
+				name = "";
+			}
+
+			return name;
 		}
-		
+
 		public static boolean isStdLibFunction(String name) {
-		    if(name.equals("delayedInc") || name.equals("delayedDec") ) {
-			return true;
-		    }
-		    else {
-			return false;
-		    }
-		    
+			if (name.equals("delayedInc") || name.equals("delayedDec")) {
+				return true;
+			} else {
+				return false;
+			}
+
 		}
 	}
-	
-	
-	
+
 }

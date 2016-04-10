@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 public class ThreadDescriptionExporter {
@@ -26,7 +25,7 @@ public class ThreadDescriptionExporter {
 
 	private Set<String> exportedClasses;
 	private Set<String> allClass;
-	
+
 	public ThreadDescriptionExporter(Set<String> allClass) {
 		configMap = new HashMap<String, ThreadPoolConfiguration>();
 		this.allClass = allClass;
@@ -61,14 +60,12 @@ public class ThreadDescriptionExporter {
 				warningList.add("Only Group annotations are allowed to use.");
 			}
 		}
-		
+
 		exportDefaultConfiguration();
 
 		descriptionExported = true;
 
 	}
-
-
 
 	public boolean isSuccessfulExportation() {
 		if (!descriptionExported) {
@@ -117,28 +114,27 @@ public class ThreadDescriptionExporter {
 
 		}
 	}
-	
+
 	private void exportDefaultConfiguration() {
-		
-		if(allClass.size() != exportedClasses.size()) {
+
+		if (allClass.size() != exportedClasses.size()) {
 			Set<String> nonExportedClasses = new HashSet<String>();
 			nonExportedClasses.addAll(allClass);
 			nonExportedClasses.removeAll(exportedClasses);
-			
-			ThreadPoolConfiguration config = new ThreadPoolConfiguration(0,0,1);
+
+			ThreadPoolConfiguration config = new ThreadPoolConfiguration(0, 0, 1);
 			config.setMaxThreads(1);
-			for(String cls : nonExportedClasses) {
+			for (String cls : nonExportedClasses) {
 				configMap.put(cls, config);
 			}
-		}
-		else {
+		} else {
 			Set<ThreadPoolConfiguration> configs = new HashSet<ThreadPoolConfiguration>();
 			configs.addAll(configMap.values());
-			for(ThreadPoolConfiguration config : configs) {
+			for (ThreadPoolConfiguration config : configs) {
 				config.decraseId();
 			}
 		}
-		
+
 	}
 
 	private void checkEmptyGroup(Class<? extends ModelClass>[] classes) {

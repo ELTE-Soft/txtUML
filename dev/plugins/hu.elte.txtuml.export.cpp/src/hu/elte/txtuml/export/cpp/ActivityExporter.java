@@ -26,7 +26,7 @@ import org.eclipse.uml2.uml.CreateObjectAction;
 import org.eclipse.uml2.uml.DestroyObjectAction;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutableNode;
-import org.eclipse.uml2.uml.ExpansionKind;
+//import org.eclipse.uml2.uml.ExpansionKind;
 import org.eclipse.uml2.uml.InputPin;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralInteger;
@@ -96,25 +96,24 @@ public class ActivityExporter {
 		List<Variable> variables = new LinkedList<Variable>();
 		Shared.getTypedElements(variables, activity_.allOwnedElements(), UMLPackage.Literals.VARIABLE);
 		for (Variable variable : variables) {
-		    source.append(createVariable(variable));
+			source.append(createVariable(variable));
 		}
 		return source.toString();
 	}
-	
+
 	private String createVariable(Variable variable) {
-	    String type = "!!!UNKNOWNTYPE!!!";
-	    if (variable.getType() != null) {
-		if(variable.getType().eClass().equals(UMLPackage.Literals.SIGNAL)) {
-			type = ActivityTemplates.signalType(variable.getType().getName());
-		} else {
+		String type = "!!!UNKNOWNTYPE!!!";
+		if (variable.getType() != null) {
+			if (variable.getType().eClass().equals(UMLPackage.Literals.SIGNAL)) {
+				type = ActivityTemplates.signalType(variable.getType().getName());
+			} else {
 				type = variable.getType().getName();
+			}
+
 		}
-			
-	    }
-	    
-	    return GenerationTemplates.variableDecl(type, variable.getName());
+
+		return GenerationTemplates.variableDecl(type, variable.getName());
 	}
-	
 
 	private String createReturnParamaterCode() {
 		if (returnNode != null) {
@@ -179,8 +178,7 @@ public class ActivityExporter {
 			for (ActivityNode aNode : seqNode.getNodes()) {
 				source.append(createActivityNodeCode(aNode));
 			}
-		}
-		else if (node.eClass().equals(UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION)) {
+		} else if (node.eClass().equals(UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION)) {
 			AddStructuralFeatureValueAction asfva = (AddStructuralFeatureValueAction) node;
 			source.append(ActivityTemplates.generalSetValue(getTargetFromASFVA(asfva),
 					getTargetFromInputPin(asfva.getValue(), false), ActivityTemplates
@@ -188,19 +186,19 @@ public class ActivityExporter {
 		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
 			source.append(createCreateObjectActionCode((CreateObjectAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_LINK_ACTION)) {
-		    source.append(createLinkActionCode((CreateLinkAction) node));
+			source.append(createLinkActionCode((CreateLinkAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.READ_LINK_ACTION)) {
-		    source.append(createReadLinkActionCode( (ReadLinkAction) node));
+			source.append(createReadLinkActionCode((ReadLinkAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.SEND_OBJECT_ACTION)) {
 			source.append(createSendSignalActionCode((SendObjectAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.START_CLASSIFIER_BEHAVIOR_ACTION)) {
 			source.append(createStartObjectActionCode((StartClassifierBehaviorAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
-			
-			if(!constructorCalls.contains((CallOperationAction) node)) {
-				source.append( (createCallOperationActionCode((CallOperationAction) node)));
+
+			if (!constructorCalls.contains((CallOperationAction) node)) {
+				source.append((createCallOperationActionCode((CallOperationAction) node)));
 			}
-			
+
 		} else if (node.eClass().equals(UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION)) {
 			AddVariableValueAction avva = (AddVariableValueAction) node;
 			source.append(ActivityTemplates.generalSetValue(avva.getVariable().getName(),
@@ -209,8 +207,8 @@ public class ActivityExporter {
 
 		} else if (node.eClass().equals(UMLPackage.Literals.LOOP_NODE)) {
 			source.append(createCycleCode((LoopNode) node));
-		} else if(node.eClass().equals(UMLPackage.Literals.EXPANSION_REGION) ) {
-		    source.append(createExpansionRegaionCode( (ExpansionRegion) node));
+		} else if (node.eClass().equals(UMLPackage.Literals.EXPANSION_REGION)) {
+			source.append(createExpansionRegaionCode((ExpansionRegion) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.CONDITIONAL_NODE)) {
 			source.append(createConditionalCode(((ConditionalNode) node)));
 		} else if (node.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION)) {
@@ -221,54 +219,49 @@ public class ActivityExporter {
 		return source;
 	}
 
-
-
 	private StringBuilder createExpansionRegaionCode(ExpansionRegion node) {
-	    StringBuilder source = new StringBuilder("");
-	    
-	    /*if(node.getMode().equals(ExpansionKind.ITERATIVE_LITERAL)) {
-		
-		ActivityNode collection = node.getInputElements().get(0).getIncomings().get(0).getSource();
-		String collectionName = getTargetFromActivityNode
-			(collection);
-		
-		StringBuilder body = new StringBuilder("");
-		for(Variable var : node.getVariables()) {
-		    body.append(createVariable(var));
-		}
-		for(ActivityNode activityNode : node.getNodes()) {
-		    body.append(createActivityNodeCode(activityNode));
-		}
-		
-	    }*/
-	    
-	    return source;
+		StringBuilder source = new StringBuilder("");
+
+		/*
+		 * if(node.getMode().equals(ExpansionKind.ITERATIVE_LITERAL)) {
+		 * 
+		 * ActivityNode collection =
+		 * node.getInputElements().get(0).getIncomings().get(0).getSource();
+		 * String collectionName = getTargetFromActivityNode (collection);
+		 * 
+		 * StringBuilder body = new StringBuilder(""); for(Variable var :
+		 * node.getVariables()) { body.append(createVariable(var)); }
+		 * for(ActivityNode activityNode : node.getNodes()) {
+		 * body.append(createActivityNodeCode(activityNode)); }
+		 * 
+		 * }
+		 */
+
+		return source;
 	}
 
 	private String createReadLinkActionCode(ReadLinkAction node_) {
-	    
-	    Property otherMember = null;
-	    for (Property end : node_.association().getMemberEnds()) {
-		if(!node_.getEndData().get(0).getEnd().equals(end)) {
-		    otherMember = end;
+
+		Property otherMember = null;
+		for (Property end : node_.association().getMemberEnds()) {
+			if (!node_.getEndData().get(0).getEnd().equals(end)) {
+				otherMember = end;
+			}
 		}
-	    }
-	    importOutputPinToMap(node_.getResult());
-	    
-	    return ActivityTemplates.defineAndAddToCollection(otherMember.getType().getName(), 
-		    tempVariables.get(node_.getResult()), ActivityTemplates.selectAllTemplate(otherMember.getName()));
+		importOutputPinToMap(node_.getResult());
+
+		return ActivityTemplates.defineAndAddToCollection(otherMember.getType().getName(),
+				tempVariables.get(node_.getResult()), ActivityTemplates.selectAllTemplate(otherMember.getName()));
 	}
-	
-	
 
 	private String createLinkActionCode(CreateLinkAction node_) {
-	    String firstEndClassType = node_.getInputValues().get(0).getType().getName();
-	    String firstEndObject = getTargetFromInputPin(node_.getInputValues().get(0));
-	    
-	    String secondEndClassType = node_.getInputValues().get(1).getType().getName();
-	    String secondEndObject = getTargetFromInputPin(node_.getInputValues().get(1));
-	    
-	    return ActivityTemplates.linkObjects(firstEndClassType, firstEndObject, secondEndClassType, secondEndObject);
+		String firstEndClassType = node_.getInputValues().get(0).getType().getName();
+		String firstEndObject = getTargetFromInputPin(node_.getInputValues().get(0));
+
+		String secondEndClassType = node_.getInputValues().get(1).getType().getName();
+		String secondEndObject = getTargetFromInputPin(node_.getInputValues().get(1));
+
+		return ActivityTemplates.linkObjects(firstEndClassType, firstEndObject, secondEndClassType, secondEndObject);
 	}
 
 	private String createDestroyObjectActionCode(DestroyObjectAction node_) {
@@ -282,25 +275,25 @@ public class ActivityExporter {
 	private String createCreateObjectActionCode(CreateObjectAction node_) {
 		String type = node_.getClassifier().getName();
 		CallOperationAction ctrCallAction = null;
-		if (node_.getClassifier().eClass().equals(UMLPackage.Literals.SIGNAL)){
+		if (node_.getClassifier().eClass().equals(UMLPackage.Literals.SIGNAL)) {
 			type = ActivityTemplates.signalType(type);
 		}
-		
-		for( ActivityEdge out : node_.getOutputs().get(0).getOutgoings()) {
+
+		for (ActivityEdge out : node_.getOutputs().get(0).getOutgoings()) {
 			if (out.getTarget().getOwner().eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
 				ctrCallAction = (CallOperationAction) out.getTarget().getOwner();
-				
+
 			}
 		}
 		importOutputPinToMap(node_.getOutputs().get(0));
 		String name = tempVariables.get(node_.getOutputs().get(0));
 		_objectMap.put(node_, name);
-		
-		if(ctrCallAction != null) {
+
+		if (ctrCallAction != null) {
 			constructorCalls.add(ctrCallAction);
-			return  ActivityTemplates.createObject(type, name, getParamNames(ctrCallAction.getArguments()));
+			return ActivityTemplates.createObject(type, name, getParamNames(ctrCallAction.getArguments()));
 		}
-		
+
 		return ActivityTemplates.createObject(type, name);
 	}
 
@@ -316,19 +309,19 @@ public class ActivityExporter {
 			cond.append(createActivityNodeCode(condNode));
 		}
 		source.append(cond);
-		
+
 		StringBuilder body = new StringBuilder("");
 		for (ExecutableNode bodyNode : loopNode.getBodyParts()) {
 			body.append(createActivityNodeCode(bodyNode));
 		}
-		
+
 		StringBuilder reCond = new StringBuilder("");
 		for (ExecutableNode condNode : loopNode.getTests()) {
 			reCond.append(createActivityNodeCode(condNode));
 		}
-		
-		source.append(ActivityTemplates.whileCycle(getTargetFromActivityNode(loopNode.getDecider()), body.toString() + "\n" +  reCond.toString()));
-		
+
+		source.append(ActivityTemplates.whileCycle(getTargetFromActivityNode(loopNode.getDecider()),
+				body.toString() + "\n" + reCond.toString()));
 
 		return source;
 	}
@@ -365,23 +358,20 @@ public class ActivityExporter {
 	private String getTargetFromInputPin(InputPin node_, Boolean recursive_) {
 		String source = "UNKNOWN_TYPE_FROM_VALUEPIN";
 		if (node_.eClass().equals(UMLPackage.Literals.INPUT_PIN)) {
-			
-			if(node_.getIncomings().size() > 0) {
+
+			if (node_.getIncomings().size() > 0) {
 				source = getTargetFromActivityNode(node_.getIncomings().get(0).getSource());
 			}
-			
-			
-		} else if(node_.eClass().equals(UMLPackage.Literals.VALUE_PIN) ) {
-			
-				
+
+		} else if (node_.eClass().equals(UMLPackage.Literals.VALUE_PIN)) {
+
 			ValueSpecification valueSpec = ((ValuePin) node_).getValue();
-			if(valueSpec != null) {
+			if (valueSpec != null) {
 				source = getValueFromValueSpecification(valueSpec);
-			}
-			else if(node_.getIncomings().size() > 0) {
+			} else if (node_.getIncomings().size() > 0) {
 				source = getTargetFromActivityNode(node_.getIncomings().get(0).getSource());
 			}
-			
+
 		}
 		return source;
 	}
@@ -438,9 +428,12 @@ public class ActivityExporter {
 		} else if (node_.eClass().equals(UMLPackage.Literals.READ_VARIABLE_ACTION)) {
 			ReadVariableAction rA = (ReadVariableAction) node_;
 			source = rA.getVariable().getName();
-		} /*else if (node_.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
-				source = (createCallOperationActionCode((CallOperationAction) node_)).toString();
-		}*/ else {
+		} /*
+			 * else if
+			 * (node_.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)
+			 * ) { source = (createCallOperationActionCode((CallOperationAction)
+			 * node_)).toString(); }
+			 */ else {
 			System.out.println(node_.eClass().getName());
 			// TODO just for
 			// development debug
@@ -465,15 +458,14 @@ public class ActivityExporter {
 		}
 		return source;
 	}
-	
+
 	private String createSendSignalActionCode(SendObjectAction sendObjectAction) {
-		
+
 		String target = getTargetFromInputPin(sendObjectAction.getTarget());
 		String singal = getTargetFromInputPin(sendObjectAction.getRequest());
-		
+
 		return ActivityTemplates.signalSend(target, singal);
-		
-		
+
 	}
 
 	private String getTypeFromInputPin(InputPin inputPin_) {
@@ -524,19 +516,19 @@ public class ActivityExporter {
 
 	private StringBuilder createCallOperationActionCode(CallOperationAction node_) {
 		StringBuilder source = new StringBuilder("");
-		
+
 		exportAllOutputPinToMap(node_.getOutputs());
-		OutputPin returnPin = searchReturnPin(node_.getResults(),node_.getOperation().outputParameters());
+		OutputPin returnPin = searchReturnPin(node_.getResults(), node_.getOperation().outputParameters());
 		if (isStdLibOperation(node_)) {
 			String val = "";
-			
+
 			if (ActivityTemplates.Operators.isStdLibFunction(node_.getOperation().getName())) {
-				
-				EList<OutputPin> outParamaterPins =  node_.getResults();
+
+				EList<OutputPin> outParamaterPins = node_.getResults();
 				outParamaterPins.remove(returnPin);
 				source.append(declareAllOutTempParameter(outParamaterPins));
 				List<String> parameterVariables = new ArrayList<String>(getParamNames(node_.getArguments()));
-				addOutParametrsToList(parameterVariables,outParamaterPins);
+				addOutParametrsToList(parameterVariables, outParamaterPins);
 
 				val = ActivityTemplates.simpleFunctionCall(node_.getOperation().getName(), parameterVariables);
 
@@ -550,16 +542,14 @@ public class ActivityExporter {
 						getTargetFromInputPin((node_.getArguments()).get(0)));
 
 			}
-			
-			if(node_.getOperation().getType() != null) {
-			    source.append(addValueToTemporalVariable(node_.getOperation().getType().getName(),
-					tempVariables.get(returnPin), val));
+
+			if (node_.getOperation().getType() != null) {
+				source.append(addValueToTemporalVariable(node_.getOperation().getType().getName(),
+						tempVariables.get(returnPin), val));
+			} else {
+				source.append(ActivityTemplates.invokeProcedure(node_.getOperation().getName(),
+						getParamNames(node_.getArguments())));
 			}
-			else {
-			    source.append(ActivityTemplates.invokeProcedure(node_.getOperation().getName(), 
-				    getParamNames(node_.getArguments())));
-			}
-			
 
 		} else {
 			String val = ActivityTemplates.operationCall(getTargetFromInputPin(node_.getTarget(), false),
@@ -579,17 +569,17 @@ public class ActivityExporter {
 
 	private void addOutParametrsToList(List<String> parameterVariables, EList<OutputPin> outParamaterPins) {
 		for (OutputPin outPin : outParamaterPins) {
-				parameterVariables.add(tempVariables.get(outPin));
-			}		
+			parameterVariables.add(tempVariables.get(outPin));
+		}
 	}
 
 	private StringBuilder declareAllOutTempParameter(EList<OutputPin> outParamaterPins) {
 		StringBuilder declerations = new StringBuilder("");
 		for (OutputPin outPin : outParamaterPins) {
-			declerations.append(GenerationTemplates.variableDecl(outPin.getType().getName(),
-						tempVariables.get(outPin)));
-			}
-		
+			declerations
+					.append(GenerationTemplates.variableDecl(outPin.getType().getName(), tempVariables.get(outPin)));
+		}
+
 		return declerations;
 	}
 
@@ -607,7 +597,7 @@ public class ActivityExporter {
 		for (OutputPin outPin : outputs) {
 			importOutputPinToMap(outPin);
 		}
-		
+
 	}
 
 	private boolean isStdLibOperation(CallOperationAction node_) {
@@ -649,19 +639,16 @@ public class ActivityExporter {
 		}
 		return nextNodes;
 	}
-	
+
 	private String addValueToTemporalVariable(String type, String var, String value) {
-		if(declaredTempVariables.contains(var)){
+		if (declaredTempVariables.contains(var)) {
 			return ActivityTemplates.simpleSetValue(var, value);
-		}
-		else {
+		} else {
 			declaredTempVariables.add(var);
 			return ActivityTemplates.addVariableTemplate(type, var, value);
-			
+
 		}
 	}
-	
-	
 
 	private void importOutputPinToMap(OutputPin out) {
 		if (!tempVariables.containsKey(out)) {
