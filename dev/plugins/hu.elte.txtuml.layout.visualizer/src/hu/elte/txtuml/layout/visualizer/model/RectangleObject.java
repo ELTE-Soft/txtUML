@@ -38,7 +38,7 @@ public class RectangleObject
 	
 	public Boolean hasInner()
 	{
-		return null == _inner;
+		return (null != _inner);
 	}
 	
 	/**
@@ -438,9 +438,11 @@ public class RectangleObject
 	public String toString()
 	{
 		String specialString = isSpecial()?("(" + _special.toString() + ")"):"";
-		return _name + specialString + ": " + _position.toString() + "[w:" + _width.toString() + "("
-				+ _pixelWidth.toString() + "), h:" + _height.toString() + "("
-				+ _pixelHeight.toString() + ")]";
+		String innerString = hasInner()?_inner.toString():"";
+		
+		return _name + specialString + innerString + ": " + _position.toString() + "[w:" + _width.toString() + "("
+				+ _pixelWidth.toString() + "px), h:" + _height.toString() + "("
+				+ _pixelHeight.toString() + "px)]";
 	}
 	
 	// end Methods

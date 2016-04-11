@@ -16,5 +16,9 @@ public enum DiagramType
 	/**
 	 * Activity Diagram
 	 */
-	Activity
+	Activity,
+	/**
+	 * Unknown Diagram
+	 */
+	unknown
 }

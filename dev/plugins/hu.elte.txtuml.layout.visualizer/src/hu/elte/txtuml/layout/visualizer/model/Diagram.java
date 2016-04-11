@@ -90,6 +90,27 @@ public class Diagram {
 
 		return result;
 	}
+	
+	@Override
+	public String toString() {
+		String result = "(O:";
+		
+		for(RectangleObject obj : Objects)
+		{
+			result += obj.getName() + ", ";
+		}
+		
+		result += " A: ";
+		
+		for(LineAssociation link : Assocs)
+		{
+			result += link.getId() + ", ";
+		}
+		
+		result += ")";
+		
+		return result;
+	}
 
 	// end Publics
 

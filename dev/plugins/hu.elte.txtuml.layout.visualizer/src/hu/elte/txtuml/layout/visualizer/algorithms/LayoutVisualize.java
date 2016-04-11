@@ -13,7 +13,7 @@ import hu.elte.txtuml.layout.visualizer.algorithms.boxes.ArrangeObjects;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.ArrangeAssociations;
 import hu.elte.txtuml.layout.visualizer.algorithms.utils.DefaultStatements;
 import hu.elte.txtuml.layout.visualizer.algorithms.utils.Helper;
-import hu.elte.txtuml.layout.visualizer.algorithms.utils.RectangleObjectTreeEnumerator;
+import hu.elte.txtuml.layout.visualizer.model.utils.RectangleObjectTreeEnumerator;
 import hu.elte.txtuml.layout.visualizer.algorithms.utils.StatementHelper;
 import hu.elte.txtuml.layout.visualizer.events.ProgressEmitter;
 import hu.elte.txtuml.layout.visualizer.events.ProgressManager;
@@ -159,6 +159,7 @@ public class LayoutVisualize {
 	/**
 	 * Layout algorithm initialize. Use load(), then arrange().
 	 */
+	@Deprecated
 	public LayoutVisualize(IPixelDimensionProvider pPImpl) {
 		_pixelProvider = pPImpl;
 		_options = new Options();

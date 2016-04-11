@@ -15,7 +15,7 @@ import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils.
 import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils.Color;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils.Node;
 import hu.elte.txtuml.layout.visualizer.algorithms.utils.Helper;
-import hu.elte.txtuml.layout.visualizer.algorithms.utils.RectangleObjectTreeEnumerator;
+import hu.elte.txtuml.layout.visualizer.model.utils.RectangleObjectTreeEnumerator;
 import hu.elte.txtuml.layout.visualizer.events.ProgressManager;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotStartAssociationRouteException;
