@@ -2,6 +2,7 @@ package hu.elte.txtuml.xtxtuml.validation;
 
 import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassMember
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
@@ -93,26 +94,33 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 	}
 
 	@Check
-	def checkStateIsDefinedInClassOrCompositeState(TUState state) {
-		if (state.eContainer instanceof TUState && (state.eContainer as TUState).type == TUStateType.PLAIN) { // pseudostates are handled separately
-			error("State " + state.classQualifiedName + " can be defined only in a class or a composite state", state,
-				TU_STATE__NAME, INVALID_STATE_CONTAINER);
+	def checkStateOrTransitionIsDefinedInClassOrCompositeState(TUStateMember stateMember) {
+		var isStateOrTransition = false;
+		val nameAndMarkerTarget = switch (stateMember) {
+			TUState: {
+				isStateOrTransition = true;
+				"State " -> TU_STATE__NAME
+			}
+			TUTransition: {
+				isStateOrTransition = true;
+				"Transition " -> TU_TRANSITION__NAME
+			}
+		}
+
+		if (isStateOrTransition && stateMember.eContainer instanceof TUState &&
+			(stateMember.eContainer as TUState).type != TUStateType.COMPOSITE) {
+			error(nameAndMarkerTarget.key + (stateMember as TUClassMember).classQualifiedName +
+				" can be defined only in a class or a composite state", stateMember, nameAndMarkerTarget.value,
+				STATE_OR_TRANSITION_IN_NOT_COMPOSITE_STATE);
 		}
 	}
 
 	@Check
-	def checkStateMemberDoesNotBelongToPseudostate(TUStateMember stateMember) {
-		if (stateMember.eContainer.isPseudostate) {
-			switch (stateMember) {
-				TUState:
-					elementInPseudostate(stateMember, "State " + stateMember.classQualifiedName, TU_STATE__NAME, null)
-				TUTransition:
-					elementInPseudostate(stateMember, "Transition " + stateMember.classQualifiedName,
-						TU_TRANSITION__NAME, null)
-				TUEntryOrExitActivity:
-					elementInPseudostate(stateMember, "Activities", stateMember.markerTargetForStateActivity,
-						(stateMember.eContainer as TUState).classQualifiedName)
-			}
+	def checkNoActivityInPseudostate(TUEntryOrExitActivity activity) {
+		if (activity.eContainer.isPseudostate) {
+			error("Activities must not be present in pseudostate " +
+				(activity.eContainer as TUState).classQualifiedName, activity, activity.markerTargetForStateActivity,
+				ACTIVITY_IN_PSEUDOSTATE);
 		}
 	}
 
@@ -237,18 +245,6 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 		warning("Missing initial pseudostate in " + name +
 			", therefore its other states and transitions are unreachable", element, markerTarget,
 			MISSING_INITIAL_STATE);
-	}
-
-	def protected elementInPseudostate(TUStateMember stateMember, String name, EStructuralFeature markerTarget,
-		String enclosingStateName) {
-		val adjustedEnclosingStateName = if (enclosingStateName == null) {
-				"a pseudostate"
-			} else {
-				"pseudostate " + enclosingStateName
-			}
-
-		error(name + " must not be present in " + adjustedEnclosingStateName, stateMember, markerTarget,
-			ELEMENT_IN_PSEUDOSTATE);
 	}
 
 }

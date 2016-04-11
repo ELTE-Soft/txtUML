@@ -123,7 +123,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		if (portEnclosingClassName != sendExprEnclosingClassName) {
 			error(
 				"Port " + portType.simpleName + " does not belong to class " + sendExprEnclosingClassName?.lastSegment +
-					". Signals can be sent only to owned ports.",
+					" – signals can be sent only to owned ports",
 				sendExpr,
 				RALF_SEND_SIGNAL_EXPRESSION__TARGET,
 				QUERIED_PORT_IS_NOT_OWNED
