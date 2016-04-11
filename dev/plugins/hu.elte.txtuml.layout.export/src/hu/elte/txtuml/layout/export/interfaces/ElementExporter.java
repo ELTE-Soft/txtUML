@@ -89,6 +89,10 @@ public interface ElementExporter {
 	NodeInfo exportPhantom(Class<?> phantom)
 			throws ElementExportationException;
 	
+	void startOfParent(Class<?> parent);
+	void setParent(Class<?> child, Class<?> parent);
+	void endOfParent();
+	
 	/**
 	 * Specialization to the <code>exportElement</code> method. Using
 	 * <code>exportElement</code> is always sufficient, but this method might be
@@ -139,16 +143,20 @@ public interface ElementExporter {
 
 	NodeInfo createPhantom();
 
+	static boolean isBox(Class<?> cls) {
+		return Box.class.isAssignableFrom(cls);
+	}
+	
 	static boolean isPhantom(Class<?> cls) {
-		Inside annot = cls.getAnnotation(Inside.class);
+		boolean isPresent = cls.isAnnotationPresent(Inside.class);
 		
-		return Box.class.isAssignableFrom(cls) && (annot == null);
+		return isBox(cls) && !isPresent;
 	}
 	
 	static boolean isBoxContainer(Class<?> cls) {
-		Inside annot = cls.getAnnotation(Inside.class);
+		boolean isPresent = cls.isAnnotationPresent(Inside.class);
 		
-		return Box.class.isAssignableFrom(cls)  && (annot != null);
+		return isBox(cls) && isPresent;
 	}
 
 	static boolean isNodeGroup(Class<?> cls) {
@@ -161,6 +169,8 @@ public interface ElementExporter {
 
 	// exportation finalizer
 
+	void exportDefaultParentage();
+	
 	void exportImpliedLinks();
 
 }

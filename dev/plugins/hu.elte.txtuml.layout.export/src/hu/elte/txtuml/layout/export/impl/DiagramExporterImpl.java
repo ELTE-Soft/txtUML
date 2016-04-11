@@ -2,8 +2,6 @@ package hu.elte.txtuml.layout.export.impl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
-import java.util.HashSet;
-import java.util.Set;
 
 import hu.elte.txtuml.api.layout.Above;
 import hu.elte.txtuml.api.layout.Below;
@@ -48,8 +46,6 @@ import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
 import hu.elte.txtuml.layout.export.interfaces.StatementExporter;
 import hu.elte.txtuml.layout.export.problems.ElementExportationException;
 import hu.elte.txtuml.layout.export.problems.ProblemReporter;
-import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
-import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 /**
  * Default implementation for {@link DiagramExporter}.
@@ -91,73 +87,11 @@ public class DiagramExporterImpl implements DiagramExporter {
 			report.setType(elementExporter.getDiagramTypeBasedOnElements());
 			report.setStatements(statementExporter.getStatements());
 			
-			Set<LineAssociation> links = elementExporter.getLinksAsLines();
-			report.setNodes(mergeNodesWithLinks(elementExporter.getNodesAsObjects(), links));
-			report.setLinks(links);
+			report.setNodes(elementExporter.getNodesAsObjects());
+			report.setLinks(elementExporter.getLinksAsLines());
 		}
 
 		return report;
-	}
-
-	private Set<RectangleObject> mergeNodesWithLinks(Set<RectangleObject> nodes, 
-			Set<LineAssociation> links)
-	{
-		Set<RectangleObject> result = new HashSet<RectangleObject>();
-		
-		for(LineAssociation link : links)
-		{
-			RectangleObject parent = new RectangleObject("#DEFAULT_PARENT#");
-			parent.setInner(new hu.elte.txtuml.layout.visualizer.model.Diagram(nodes, null));
-			result = mergeLinkIntoNodes(link, parent);
-		}
-		
-		return result;
-	}
-	
-	private Set<RectangleObject> mergeLinkIntoNodes(LineAssociation link, RectangleObject parent)
-	{
-		Set<RectangleObject> result = new HashSet<RectangleObject>();
-		
-		for(RectangleObject box : parent.getInner().Objects)
-		{
-			if(!box.hasInner())
-			{
-				result.add(box);
-				continue;
-			}
-			
-			if(result.contains(box))
-				result.remove(box);
-			
-			if(isLinkBetweenChildren(link, box))
-				box.getInner().Assocs.add(link);
-			else
-				box.getInner().Objects = mergeLinkIntoNodes(link, box);
-			
-			result.add(box);
-		}
-		
-		return result;
-	}
-	
-	private boolean isLinkBetweenChildren(LineAssociation link, RectangleObject parent)
-	{
-		boolean startFound = false;
-		boolean endFound = false;
-		
-		for(RectangleObject box : parent.getInner().Objects)
-		{
-			if(startFound && endFound)
-				break;
-			
-			if(!endFound && link.getTo().equals(box.getName()))
-				endFound = true;
-			
-			if(!startFound && link.getFrom().equals(box.getName()))
-				startFound = true;
-		}
-		
-		return startFound && endFound;
 	}
 	
 	private void exportDiagram() {
@@ -177,8 +111,13 @@ public class DiagramExporterImpl implements DiagramExporter {
 		}
 		
 		exportDiagramBody(diagClass);
+		elementExporter.exportDefaultParentage();
+		// exportation finalizers
+		statementExporter.resolveMosts();
+		statementExporter.exportPhantoms();
+		elementExporter.exportImpliedLinks();
 	}
-
+	
 	private void exportDiagramBody(Class<?> diagClass)
 	{
 		exportDiagramBody(diagClass, null);
@@ -205,11 +144,15 @@ public class DiagramExporterImpl implements DiagramExporter {
 
 				} else if (ElementExporter.isPhantom(innerClass)) {
 					elementExporter.exportPhantom(innerClass);
+					elementExporter.startOfParent(innerClass);
 					exportDiagramBody(innerClass, innerClass);
+					elementExporter.endOfParent();
 					
 				} else if(ElementExporter.isBoxContainer(innerClass)){
-					statementExporter.exportInside(innerClass.getAnnotation(Inside.class));
+					Class<?> boxClass = statementExporter.exportInside(innerClass.getAnnotation(Inside.class));
+					elementExporter.startOfParent(boxClass);
 					exportDiagramBody(innerClass);
+					elementExporter.endOfParent();
 
 				} else if (isLayout(innerClass)) {
 					if (layoutClass != null) {
@@ -354,11 +297,6 @@ public class DiagramExporterImpl implements DiagramExporter {
 			}
 
 		}
-
-		// exportation finalizers
-		statementExporter.resolveMosts();
-		statementExporter.exportPhantoms();
-		elementExporter.exportImpliedLinks();
 	}
 
 	private static boolean isOfType(

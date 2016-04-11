@@ -4,10 +4,9 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
-import hu.elte.txtuml.api.model.StateMachine.CompositeState;
-import hu.elte.txtuml.api.model.StateMachine.State;
 import hu.elte.txtuml.layout.export.elementinfo.NodeInfo;
 import hu.elte.txtuml.layout.export.interfaces.NodeMap;
+import hu.elte.txtuml.layout.export.interfaces.ParentMap;
 import hu.elte.txtuml.layout.visualizer.model.Diagram;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
@@ -17,46 +16,78 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 @SuppressWarnings("serial")
 public class NodeMapImpl extends LinkedHashMap<Class<?>, NodeInfo> implements NodeMap {
 	
-	@Override
-	public Set<RectangleObject> convert() {
-		Set<RectangleObject> set = new HashSet<>();
-		
-		for(Entry<Class<?>, NodeInfo> entry : this.entrySet()){
-			RectangleObject converted = entry.getValue().convert();
-			if(!set.contains(converted))
-			{
-				if(CompositeState.class.isAssignableFrom(entry.getKey()))
-			    {
-			    	converted.setInner(new Diagram(convertComposite(entry.getKey()), null));
-			    }
-				
-				set.add(converted);
-			}
-		};
-
-		return set;
+	private ParentMap _parentMap;
+	
+	public NodeMapImpl() {
+		_parentMap = ParentMap.create();
 	}
 	
-	private Set<RectangleObject> convertComposite(Class<?> comp)
-	{
-		Set<RectangleObject> result = new HashSet<RectangleObject>();
+	@Override
+	public NodeInfo put(Class<?> key, NodeInfo value) {
 		
-		Class<?>[] children = comp.getDeclaredClasses();
-    	for(Class<?> cls : children)
-    	{
-    		if(CompositeState.class.isAssignableFrom(cls))
-		    {
-    			result.addAll(convertComposite(cls));
-		    }
-    		else if(State.class.isAssignableFrom(cls))
-    		{
-    			NodeInfo v = this.get(cls);
-    			if(v != null && !result.contains(v))
-    				result.add(v.convert());
-    		}
-    	}
-    	
-    	return result;
+		if(_parentMap.isInParent())
+		{
+			_parentMap.put(key);
+		}
+		
+		return super.put(key, value);
+	}
+	
+	@Override
+	public void startOfParent(Class<?> node)
+	{
+		_parentMap.addNew(node);
+	}
+	
+	@Override
+	public void setParent(Class<?> child, Class<?> parent)
+	{
+		if(!_parentMap.containsKey(child))
+			_parentMap.put(child,  parent);
+	}
+	
+	@Override
+	public void endOfParent()
+	{
+		_parentMap.removeLast();
+	}
+	
+	private Set<RectangleObject> converted;
+	
+	@Override
+	public Set<RectangleObject> convert() {
+		converted = new HashSet<>();
+		
+		for(Class<?> node : this.keySet())
+		{
+			convertNode(node);
+		}
+
+		return converted;
 	}
 
+	private RectangleObject convertNode(Class<?> nodeToConvert)
+	{
+		//System.err.println(nodeToConvert.toString());
+		RectangleObject convertedNode = this.get(nodeToConvert).convert();
+		if(converted.contains(convertedNode))
+		{
+			return converted.stream()
+					.filter(con -> con.equals(convertedNode)).findAny().get();
+		}
+		
+		if(_parentMap.containsKey(nodeToConvert))
+		{
+			RectangleObject parent = convertNode(_parentMap.get(nodeToConvert));
+			if(!parent.hasInner())
+			{
+				parent.setInner(new Diagram());
+			}
+			parent.getInner().Objects.add(convertedNode);
+		}
+		else
+			converted.add(convertedNode);
+		
+		return convertedNode;
+	}
 }

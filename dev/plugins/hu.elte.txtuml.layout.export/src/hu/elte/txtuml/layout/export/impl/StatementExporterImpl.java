@@ -214,21 +214,20 @@ public class StatementExporterImpl implements StatementExporter {
 	}
 	
 	@Override
-	//Same as exportShow()
-	public void exportInside(Inside annot) {
-		if (annot.value().length == 0) {
+	public Class<?> exportInside(Inside annot) {
+		if (annot.value() == null) {
 			problemReporter.sugarStatementWithEmptyArguments("show");
-			return;
+			return null;
 		}
-
-		for (Class<?> element : annot.value()) {
-			try {
-				elementExporter.exportConcreteElement(element);
-			} catch (ElementExportationException e) {
-				problemReporter.showStatementWithInvalidElement(element,
-						annot.value());
-			}
+		
+		try {
+			return elementExporter.exportConcreteElement(annot.value()).getElementClass();
+		} catch (ElementExportationException e) {
+			problemReporter.showStatementWithInvalidElement(annot.value(),
+					new Class<?>[] {annot.value()});
 		}
+		
+		return null;
 	}
 
 	@Override

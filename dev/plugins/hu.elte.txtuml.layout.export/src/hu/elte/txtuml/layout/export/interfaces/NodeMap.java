@@ -15,4 +15,8 @@ public interface NodeMap extends Map<Class<?>, NodeInfo> {
 	
 	Set<RectangleObject> convert();
 	
+	void startOfParent(Class<?> node);
+	void setParent(Class<?> child, Class<?> parent);
+	void endOfParent();
+	
 }
