@@ -10,10 +10,10 @@ import org.eclipse.xtext.junit4.validation.ValidationTestHelper
 import org.junit.Test
 import org.junit.runner.RunWith
 
-import static hu.elte.txtuml.xtxtuml.validation.XtxtUMLAssociationValidator.*
+import static hu.elte.txtuml.xtxtuml.validation.XtxtUMLIssueCodes.*
 
-@RunWith(typeof(XtextRunner))
-@InjectWith(typeof(CustomXtxtUMLInjectorProvider))
+@RunWith(XtextRunner)
+@InjectWith(CustomXtxtUMLInjectorProvider)
 class XtxtUMLAssociationValidatorTest {
 
 	@Inject extension ParseHelper<TUFile>
@@ -64,7 +64,7 @@ class XtxtUMLAssociationValidatorTest {
 				1 A a;
 				1 B a;
 			}
-		'''.parse.assertError(XtxtUMLPackage.eINSTANCE.TUAssociationEnd, ASSOCIATION_END_NAME_IS_NOT_UNIQUE)
+		'''.parse.assertError(XtxtUMLPackage.eINSTANCE.TUAssociationEnd, NOT_UNIQUE_NAME)
 	}
 
 	@Test
@@ -76,7 +76,7 @@ class XtxtUMLAssociationValidatorTest {
 				container A a;
 				1 B b;
 			}
-		'''.parse.assertError(XtxtUMLPackage.eINSTANCE.TUAssociationEnd, ASSOCIATION_CONTAINS_CONTAINER_END)
+		'''.parse.assertError(XtxtUMLPackage.eINSTANCE.TUAssociationEnd, CONTAINER_END_IN_ASSOCIATION)
 	}
 
 	@Test
