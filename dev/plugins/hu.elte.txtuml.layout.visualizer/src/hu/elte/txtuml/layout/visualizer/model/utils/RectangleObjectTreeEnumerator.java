@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.algorithms.utils;
+package hu.elte.txtuml.layout.visualizer.model.utils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -48,4 +48,3 @@ public class RectangleObjectTreeEnumerator implements Iterable<RectangleObject>,
 		return _objects.get(currentIndex);
 	}
 }
-
