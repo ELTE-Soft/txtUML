@@ -13,6 +13,7 @@ import org.eclipse.papyrus.uml.diagram.statemachine.CreateStateMachineDiagramCom
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.StateMachine;
 
+import hu.elte.txtuml.export.papyrus.elementproviders.TxtUMLClassDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout.StateMachineDiagramElementsGmfArranger;
@@ -23,6 +24,7 @@ import hu.elte.txtuml.export.papyrus.elementsmanagers.StateMachineDiagramElement
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.utils.Pair;
 
 public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
@@ -48,7 +50,8 @@ public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 			List<Pair<String, Element>> classDiagramRoots = txtumlregistry.getDiagramRootsWithDiagramNames();
 			CreateClassDiagramCommand cmd = new CreateClassDiagramCommand();
 			for (Pair<String, Element> classDiagramRoot : classDiagramRoots) {
-				diagramManager.createDiagram(classDiagramRoot.getSecond(), classDiagramRoot.getFirst(), cmd, this.domain);
+				diagramManager.createDiagram(classDiagramRoot.getSecond(), classDiagramRoot.getFirst(), cmd,
+						this.domain);
 			}
 		}
 
@@ -63,8 +66,11 @@ public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 	protected void addElementsToDiagram(Diagram diagram, IProgressMonitor monitor) {
 		AbstractDiagramElementsManager diagramElementsManager;
 
+		DiagramExportationReport report = this.txtumlregistry.getDescriptor().getReport(diagram.getName());
+
 		if (diagram.getType().equals(diagramType_CD)) {
-			diagramElementsManager = new ClassDiagramElementsManager(diagram, this.domain, monitor);
+			diagramElementsManager = new ClassDiagramElementsManager(diagram,
+					new TxtUMLClassDiagramElementsProvider(report), this.domain, monitor);
 		} else if (diagram.getType().equals(diagramType_SMD)) {
 			diagramElementsManager = new StateMachineDiagramElementsManager(diagram, this.domain, monitor);
 		} else {

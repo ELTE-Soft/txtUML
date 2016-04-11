@@ -100,7 +100,7 @@ public class DefaultPapyrusModelManager extends AbstractPapyrusModelManager {
 		Element container = diagramManager.getDiagramContainer(diagram);
 		AbstractDiagramElementsManager diagramElementsManager;
 		if(diagram.getType().equals("PapyrusUMLClassDiagram")){					
-			diagramElementsManager = new ClassDiagramElementsManager(diagram, this.domain);
+			diagramElementsManager = new ClassDiagramElementsManager(diagram, null, this.domain);
 		}else if(diagram.getType().equals("PapyrusUMLActivityDiagram")){
 			diagramElementsManager = new ActivityDiagramElementsManager(diagram, this.domain);
 		}else if(diagram.getType().equals("PapyrusUMLStateMachineDiagram")){
