@@ -26,6 +26,7 @@ import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.model.AssociationType;
+import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
@@ -65,11 +66,13 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			Set<RectangleObject> objects = report.getNodes();
 			Set<LineAssociation> links = report.getLinks();
 			List<Statement> statements =  report.getStatements();
+			hu.elte.txtuml.layout.visualizer.model.DiagramType type = getDiagramType(report.getType());
 			
 			Map<GraphicalEditPart, RectangleObject> editPartsObjectsMapping  = pairObjectsToEditParts(objects, editParts);
 			setPixelsizes(editPartsObjectsMapping);
 			
-			LayoutVisualizerManager vm = new LayoutVisualizerManager(objects, links, statements);
+			LayoutVisualizerManager vm = 
+					new LayoutVisualizerManager(objects, links, statements, type);
 			vm.addProgressMonitor(monitor);
 			vm.arrange();
 			
@@ -86,6 +89,20 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			
 			this.modifyEditParts(objectsTransform);		
 			this.modifyConnectionEditParts(linksTransform, objectsTransform);	
+		}
+	}
+	
+	private DiagramType getDiagramType(hu.elte.txtuml.layout.export.DiagramType ty)
+	{
+		switch(ty)
+		{
+		case Class:
+			return DiagramType.Class;
+		case StateMachine:
+			return DiagramType.State;
+		case Unknown:
+		default:
+			return DiagramType.unknown;
 		}
 	}
 
