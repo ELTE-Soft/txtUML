@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.api.tests;
+package hu.elte.txtuml.export.papyrus.api;
 
 import static org.junit.Assert.fail;
 
