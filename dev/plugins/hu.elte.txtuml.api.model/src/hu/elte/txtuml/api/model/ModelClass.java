@@ -7,6 +7,7 @@ import java.lang.reflect.Proxy;
 
 import hu.elte.txtuml.api.model.Runtime.Described;
 import hu.elte.txtuml.api.model.assocends.Navigability;
+import hu.elte.txtuml.api.model.error.PortParameterError;
 import hu.elte.txtuml.api.model.runtime.ModelClassWrapper;
 import hu.elte.txtuml.api.model.runtime.PortWrapper;
 
@@ -303,11 +304,15 @@ public abstract class ModelClass extends StateMachine {
 		Port(int indexOfRequiredInterface) {
 			Class<?> type = getClass();
 
-			Class<R> typeOfRequired = (Class<R>) ((ParameterizedType) type.getGenericSuperclass())
-					.getActualTypeArguments()[indexOfRequiredInterface];
+			try {
+				Class<R> typeOfRequired = (Class<R>) ((ParameterizedType) type.getGenericSuperclass())
+						.getActualTypeArguments()[indexOfRequiredInterface];
 
-			required = (R) Proxy.newProxyInstance(type.getClassLoader(), new Class[] { typeOfRequired },
-					createReceptionHandler());
+				required = (R) Proxy.newProxyInstance(type.getClassLoader(), new Class[] { typeOfRequired },
+						createReceptionHandler());
+			} catch (Throwable t) {
+				throw new PortParameterError(type);
+			}
 		}
 
 		Port(R required) {
