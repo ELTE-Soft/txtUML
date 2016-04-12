@@ -165,6 +165,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			
 			if(e.isPresent()){
 				ConnectionNodeEditPart connection = (ConnectionNodeEditPart) getEditPartOfModelElement(connections, e.get());
+				if(connection == null) continue;
 				Element source = (Element) ((View)connection.getSource().getModel()).getElement();
 				Element target = (Element) ((View)connection.getTarget().getModel()).getElement();
 				
