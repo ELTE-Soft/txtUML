@@ -1,10 +1,11 @@
 package hu.elte.txtuml.export.papyrus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
-import org.eclipse.gmf.runtime.diagram.ui.parts.IDiagramWorkbenchPart;
+import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramEditor;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.commands.ICreationCommand;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
@@ -13,7 +14,7 @@ import org.eclipse.papyrus.infra.core.sasheditor.contentprovider.IPageManager;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.infra.core.services.ServicesRegistry;
 import org.eclipse.papyrus.infra.core.utils.ServiceUtils;
-import org.eclipse.papyrus.infra.gmfdiag.common.model.NotationUtils;
+import org.eclipse.papyrus.infra.gmfdiag.common.model.NotationModel;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.NamedElement;
@@ -70,9 +71,13 @@ public class DiagramManager {
 	public List<Diagram> getDiagrams(){
 		try{
 			Resource notationResource;
-			notationResource = NotationUtils.getNotationModel(this.editor.getServicesRegistry().getService(ModelSet.class)).getResource();
-			@SuppressWarnings("unchecked")
-			List<Diagram> list = (List<Diagram>)(List<?>) notationResource.getContents();
+			notationResource = ((NotationModel) this.editor.getServicesRegistry().getService(ModelSet.class).getModel(NotationModel.MODEL_ID)).getResource();
+			List<Diagram> list = new ArrayList<Diagram>();
+			
+			notationResource.getContents().forEach( content -> {
+				if(content instanceof Diagram)
+					list.add((Diagram) content);
+			});
 			return list;
 		}catch(ServiceException e){
 			throw new RuntimeException(e);
@@ -110,8 +115,8 @@ public class DiagramManager {
 	public DiagramEditPart getActiveDiagramEditPart(){
 		IEditorPart ied = this.editor.getActiveEditor();
 		
-		if(ied instanceof IDiagramWorkbenchPart){
-			return ((IDiagramWorkbenchPart) ied).getDiagramEditPart();
+		if(ied instanceof DiagramEditor){
+			return ((DiagramEditor) ied).getDiagramEditPart();
 		}else{
 			return null;
 		}
