@@ -54,6 +54,7 @@ public class ClassExporter {
 	private boolean ownConstructor;
 
 	ActivityExporter activityExporter;
+	GuardExporter guardExporter;
 
 	private enum FuncTypeEnum {
 		Entry, Exit
@@ -67,6 +68,7 @@ public class ClassExporter {
 
 	public void reiniIialize() {
 		activityExporter = new ActivityExporter();
+		guardExporter = new GuardExporter();
 		guardMap = new HashMap<String, String>();
 		associationMembers = new ArrayList<Property>();
 		additionalSourcesNames = new ArrayList<String>();
@@ -414,9 +416,9 @@ public class ClassExporter {
 					unknownGuardCount--;
 				}
 
-				String guard = Shared.getGuard(constraint);
+				String guard = guardExporter.getGuard(constraint);
 				if (guard.equals("else")) {
-					guard = Shared.calculateSmElseGuard(item);
+					guard = guardExporter.calculateSmElseGuard(item);
 
 				}
 
@@ -537,7 +539,7 @@ public class ClassExporter {
 			List<Pair<String, String>> branches = new LinkedList<Pair<String, String>>();
 			Pair<String, String> elseBranch = null;
 			for (Transition trans : targetState.getOutgoings()) {
-				String guard = Shared.getGuard(trans.getGuard());
+				String guard = guardExporter.getGuard(trans.getGuard());
 				String body = ActivityTemplates.transitionActionCall(trans.getName());
 
 				if (guard.isEmpty() || guard.equals("else")) {
@@ -749,7 +751,7 @@ public class ClassExporter {
 			if (eventSignalPair != null) {
 				Pair<String, String> guardTransitionPair = null;
 				if (item.getGuard() != null) {
-					guardTransitionPair = new Pair<String, String>(guardMap.get(Shared.getGuard(item.getGuard())),
+					guardTransitionPair = new Pair<String, String>(guardMap.get(guardExporter.getGuard(item.getGuard())),
 							item.getName());
 
 				} else {

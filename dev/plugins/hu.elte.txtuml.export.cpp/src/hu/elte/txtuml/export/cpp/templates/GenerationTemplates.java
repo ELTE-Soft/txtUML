@@ -502,10 +502,10 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 			source += " " + GenerationNames.EventFParamName + ")\n{" + getRealEvent(eventName);
 			constraint = eventParamUsage(eventName, constraint);
 		} else {
-			source += "){";
+			source += ")\n{\n";
 		}
 
-		return source + "return " + constraint + ";}\n";
+		return source + constraint + "}\n";
 	}
 
 	/*

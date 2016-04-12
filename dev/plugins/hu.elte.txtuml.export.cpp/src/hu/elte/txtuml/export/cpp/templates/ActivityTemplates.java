@@ -264,7 +264,7 @@ public class ActivityTemplates {
 		}
 
 		public static String getStandardOperationName(String operation) {
-			String name = "";
+			String name = "unknown_operator";
 			switch (operation) {
 			case "add":
 				name = Add;
@@ -299,7 +299,7 @@ public class ActivityTemplates {
 			case "leq":
 				name = LessOrEqThen;
 				break;
-			case "qeq":
+			case "geq":
 				name = GreatOrEqThen;
 				break;
 			case "and":
