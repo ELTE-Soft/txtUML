@@ -109,8 +109,9 @@ public class ActivityTemplates {
 		return operationCall(ownerName, GenerationNames.PointerAccess, operationName, params);
 	}
 
-	public static String blockStatement(String statement) {
-		return statement + ";\n";
+	public static StringBuilder blockStatement(String statement) {
+	    	
+		return new StringBuilder(statement).append(";\n");
 	}
 
 	private static String operationCallParamList(List<String> params) {

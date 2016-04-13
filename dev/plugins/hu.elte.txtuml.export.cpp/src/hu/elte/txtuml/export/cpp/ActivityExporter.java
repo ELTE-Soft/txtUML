@@ -428,12 +428,8 @@ public class ActivityExporter {
 		} else if (node_.eClass().equals(UMLPackage.Literals.READ_VARIABLE_ACTION)) {
 			ReadVariableAction rA = (ReadVariableAction) node_;
 			source = rA.getVariable().getName();
-		} /*
-			 * else if
-			 * (node_.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)
-			 * ) { source = (createCallOperationActionCode((CallOperationAction)
-			 * node_)).toString(); }
-			 */ else {
+		} 
+		else {
 			System.out.println(node_.eClass().getName());
 			// TODO just for
 			// development debug

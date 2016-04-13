@@ -78,7 +78,7 @@ public class ThreadHandlingManager {
 		source.append(GenerationTemplates.cppInclude(ConfigurationFile));
 		source.append(GenerationTemplates
 				.putNamespace(GenerationTemplates.simpleFunctionDef(GenerationTemplates.MyRuntimeName, CreatorFunction,
-						(createConfiguration().append(";\n").append(createThreadedRuntime()).toString()),
+						(createConfiguration().append(createThreadedRuntime()).toString()),
 						GenerationTemplates.RuntimeParamaterName), NamespaceName));
 		
 		return source;
@@ -115,13 +115,13 @@ public class ThreadHandlingManager {
 		return source;
 	}
 
-	private String insertToConfiguration(Integer id, String configuration) {
+	private StringBuilder insertToConfiguration(Integer id, String configuration) {
 		List<String> params = new ArrayList<String>();
 		params.add(id.toString());
 		params.add(configuration);
 
-		return ActivityTemplates.operationCallOnPointerVariable(ConfigurationObjectVariableName,
-				InsertConfigurationOperationName, params);
+		return ActivityTemplates.blockStatement(ActivityTemplates.operationCallOnPointerVariable(ConfigurationObjectVariableName,
+				InsertConfigurationOperationName, params));
 	}
 
 	private String allocateFunctionObject(LinearFunction function) {
