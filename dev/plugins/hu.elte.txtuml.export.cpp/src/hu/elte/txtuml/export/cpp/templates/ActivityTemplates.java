@@ -187,7 +187,8 @@ public class ActivityTemplates {
 	}
 
 	public static String selectAllTemplate(String otherEnd) {
-		return otherEnd + GenerationNames.SimpleAccess + GenerationNames.SelectAllFunctionName + "()";
+		return GenerationNames.Self + GenerationNames.PointerAccess +
+			otherEnd + GenerationNames.SimpleAccess + GenerationNames.SelectAllFunctionName + "()";
 	}
 
 	public static String collectionTemplate(String collectedType) {
