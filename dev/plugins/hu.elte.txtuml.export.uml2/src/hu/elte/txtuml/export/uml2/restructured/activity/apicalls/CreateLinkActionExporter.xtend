@@ -23,7 +23,7 @@ class CreateLinkActionExporter extends LinkActionExporterBase<org.eclipse.uml2.u
 		val rightLit = source.arguments.get(2) as TypeLiteral
 		val rightEnd = createEnd(factory.createLinkEndCreationData, rightLit.type.resolveBinding, source.arguments.get(3) as Expression)
 		result.endData += #[leftEnd, rightEnd]
-		result.name = '''link «leftEnd.value.name» to «rightEnd.end.name»'''
+		result.name = '''link «leftEnd.value.name» to «rightEnd.value.name»'''
 	}
 	
 	

@@ -24,7 +24,7 @@ class ReadLinkActionExporter extends LinkActionExporterBase<ReadLinkAction> {
 		val otherEnd = createEnd(factory.createLinkEndData, otherEndType, null)
 		result.endData += #[thisEnd, otherEnd]
 		result.createResult(result.name, otherEnd.end.type)
-		result.name = '''«thisEnd.value.name»->«otherEnd.end.name»'''
+		result.name = '''«thisEnd.value.name» -> «otherEndType.name»'''
 	}
 
 }

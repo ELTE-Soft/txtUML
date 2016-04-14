@@ -19,8 +19,9 @@ abstract class LinkActionExporterBase<T extends LinkAction> extends ActionExport
 	protected def createEnd(LinkEndData end, ITypeBinding endType, Expression endValue) {
 		end.end = fetchElement(endType) as Property
 		if (endValue != null) {
-			end.value = result.createInputValue("end_input", end.end.type)
-			exportExpression(endValue).objectFlow(end.value)
+			val expr = exportExpression(endValue)
+			end.value = result.createInputValue(expr.name, end.end.type)
+			expr.objectFlow(end.value)
 		}	
 		return end
 	}

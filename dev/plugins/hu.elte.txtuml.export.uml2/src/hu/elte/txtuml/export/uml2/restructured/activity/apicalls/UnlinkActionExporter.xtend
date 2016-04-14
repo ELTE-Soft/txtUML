@@ -23,7 +23,7 @@ class UnlinkActionExporter extends LinkActionExporterBase<DestroyLinkAction> {
 		val rightLit = source.arguments.get(2) as TypeLiteral
 		val rightEnd = createEnd(factory.createLinkEndDestructionData, rightLit.type.resolveBinding, source.arguments.get(3) as Expression)
 		result.endData += #[leftEnd, rightEnd]
-		result.name = '''unlink «leftEnd.value.name» from «rightEnd.end.name»'''
+		result.name = '''unlink «leftEnd.value.name» from «rightEnd.value.name»'''
 	}
 	
 	
