@@ -24,9 +24,8 @@ import hu.elte.txtuml.utils.Pair;
 /**
  * Finds the org.eclipse.uml2 element from a model according to the txtUML name 
  */
-public class TxtUMLElementsRegistry {
+public class TxtUMLElementsMapper {
 	
-	private TxtUMLLayoutDescriptor descriptor;
 	private Map<String, ModelMapProvider> modelMapProviders;
 	
 	/**
@@ -35,8 +34,7 @@ public class TxtUMLElementsRegistry {
 	 * @param descriptor - The {@Link TxtUMLLayoutDescriptor} which contains the txtUML Layout informations 
 	 * @throws ModelMapException 
 	 */
-	public TxtUMLElementsRegistry(Resource resource, TxtUMLLayoutDescriptor descriptor) {
-		this.descriptor = descriptor;
+	public TxtUMLElementsMapper(Resource resource, TxtUMLLayoutDescriptor descriptor) {
 		try {
 			this.modelMapProviders = ModelMapUtils.collectModelMapProviders(descriptor.projectName,
 																		descriptor.mappingFolder, resource);
@@ -44,22 +42,15 @@ public class TxtUMLElementsRegistry {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	/**
-	 * Gives the {@link TxtUMLLayoutDescriptor} that is used by the instance
-	 * @return The layout descriptor
-	 */
-	public TxtUMLLayoutDescriptor getDescriptor(){
-		return this.descriptor;
-	}
+
 	
 	/**
 	 * Returns the roots elements of all reports 
 	 * @return
 	 */
-	public List<Pair<String, Element>> getDiagramRootsWithDiagramNames(){
+	public List<Pair<String, Element>> getDiagramRootsWithDiagramNames(TxtUMLLayoutDescriptor descriptor){
 		List<Pair<String, Element>> roots = new ArrayList<>();
-		for(Pair<String, DiagramExportationReport> pair : this.descriptor.getReportsWithDiagramNames()){
+		for(Pair<String, DiagramExportationReport> pair : descriptor.getReportsWithDiagramNames()){
 			DiagramExportationReport report = pair.getSecond();
 			String name = report.getModelName();
 			findElement(name).ifPresent(
@@ -89,9 +80,8 @@ public class TxtUMLElementsRegistry {
 	 * @param diagramName - The name of the diagram which's Elements are required
 	 * @return List of org.eclipse.uml2 model elements
 	 */
-	public List<Element> getNodes(String diagramName){
+	public List<Element> getNodes(DiagramExportationReport report){
 		List<Element> elements = new LinkedList<Element>();
-		DiagramExportationReport report = this.descriptor.getReport(diagramName);
 		if(report != null && report.isSuccessful()){
 			for(RectangleObject rectangle : report.getNodes()){
 				findElement(rectangle.getName()).ifPresent(elements::add);
@@ -105,11 +95,9 @@ public class TxtUMLElementsRegistry {
 	 * @param diagramName - The name of the diagram which's {@link org.eclipse.uml2.uml.Connection Connections} are required
 	 * @return List of org.eclipse.uml2 model connections
 	 */
-	public List<Element> getConnections(String diagramName){
+	public List<Element> getConnections(DiagramExportationReport report){
 		List<Element> elements = new LinkedList<Element>();
 		Optional<? extends Element> elem;
-		DiagramExportationReport report = this.descriptor.getReport(diagramName);
-		
 		if(report != null && report.isSuccessful()){
 			for(LineAssociation association : report.getLinks()){
 				if(association.getType() == AssociationType.generalization){

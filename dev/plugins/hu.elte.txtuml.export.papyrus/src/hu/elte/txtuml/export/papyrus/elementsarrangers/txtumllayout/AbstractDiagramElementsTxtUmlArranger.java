@@ -23,7 +23,7 @@ import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutTransformer.OrigoConstraint;
-import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsMapper;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.model.AssociationType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
@@ -36,16 +36,18 @@ import hu.elte.txtuml.layout.visualizer.statements.StatementType;
  */
 public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDiagramElementsArranger{
 	
-	private TxtUMLElementsRegistry txtUmlRegistry;
+	private DiagramExportationReport report;
+	private TxtUMLElementsMapper mapper;
 	
 	/**
 	 * The Constructor 
 	 * @param diagramEditPart - The EditPart of the diagram which elements is to arranged.
 	 * @param txtUmlRegistry - The {@link TxtUMLElementsRegistry} which specifies the layout
 	 */
-	public AbstractDiagramElementsTxtUmlArranger(DiagramEditPart diagramEditPart, TxtUMLElementsRegistry txtUmlRegistry) {
+	public AbstractDiagramElementsTxtUmlArranger(DiagramEditPart diagramEditPart, DiagramExportationReport report, TxtUMLElementsMapper mapper) {
 		super(diagramEditPart);
-		this.txtUmlRegistry = txtUmlRegistry;
+		this.report = report;
+		this.mapper = mapper;
 	}
 
 	/**
@@ -60,7 +62,6 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			int MAXPIXELWIDTH = 200;
 			int MAXPIXELHEIGHT = 200;
 			
-			DiagramExportationReport report = txtUmlRegistry.getDescriptor().getReport(this.diagep.getDiagramView().getName());
 			Set<RectangleObject> objects = report.getNodes();
 			Set<LineAssociation> links = report.getLinks();
 			List<Statement> statements =  report.getStatements();
@@ -94,7 +95,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			List<EditPart> editParts) {
 		Map<GraphicalEditPart, Rectangle> result = new HashMap<>();
 		for(RectangleObject obj : objects){
-			Optional<Element> e = txtUmlRegistry.findElement(obj.getName());
+			Optional<Element> e = this.mapper.findElement(obj.getName());
 			if(e.isPresent()){
 				GraphicalEditPart ep = (GraphicalEditPart) getEditPartOfModelElement(editParts, e.get());
 				if(ep != null){
@@ -164,16 +165,16 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		Map<ConnectionNodeEditPart, List<Point>> linksTransform = new HashMap<ConnectionNodeEditPart, List<Point>>(); 
 		for(LineAssociation la : links){
 			
-			Optional<? extends Element> e = txtUmlRegistry.findAssociation(la.getId());
-			if(!e.isPresent()) e = txtUmlRegistry.findGeneralization(la.getFrom(), la.getTo());
+			Optional<? extends Element> e = this.mapper.findAssociation(la.getId());
+			if(!e.isPresent()) e = this.mapper.findGeneralization(la.getFrom(), la.getTo());
 			
 			if(e.isPresent()){
 				ConnectionNodeEditPart connection = (ConnectionNodeEditPart) getEditPartOfModelElement(connections, e.get());
 				Element source = (Element) ((View)connection.getSource().getModel()).getElement();
 				Element target = (Element) ((View)connection.getTarget().getModel()).getElement();
 				
-				Optional<Element> from = txtUmlRegistry.findElement(la.getFrom());
-				Optional<Element> to = txtUmlRegistry.findElement(la.getTo());
+				Optional<Element> from = this.mapper.findElement(la.getFrom());
+				Optional<Element> to = this.mapper.findElement(la.getTo());
 				if(!from.isPresent() || !to.isPresent()) continue;
 				
 				List<Point> route = new LinkedList<Point>();
@@ -203,7 +204,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		
 		Map<GraphicalEditPart, RectangleObject> objectsTransform = new HashMap<>();
 		for(RectangleObject obj : objects){
-			Optional<Element> e = txtUmlRegistry.findElement(obj.getName());
+			Optional<Element> e = this.mapper.findElement(obj.getName());
 			if(e.isPresent()){
 				GraphicalEditPart ep = (GraphicalEditPart) getEditPartOfModelElement(editParts, e.get());
 				if(ep != null){

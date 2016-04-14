@@ -21,7 +21,7 @@ import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.ClassDiagram
 import hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.ClassDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.StateMachineDiagramElementsManager;
-import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsMapper;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
@@ -29,7 +29,8 @@ import hu.elte.txtuml.utils.Pair;
 
 public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 
-	private TxtUMLElementsRegistry txtumlregistry;
+	private TxtUMLElementsMapper mapper;
+	private TxtUMLLayoutDescriptor descriptor;
 
 	public TxtUMLPapyrusModelManager(ServicesRegistry registry) {
 		super(registry);
@@ -38,7 +39,8 @@ public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 	@Override
 	public void setLayoutController(Object layoutcontroller) {
 		TxtUMLLayoutDescriptor descriptor = (TxtUMLLayoutDescriptor) layoutcontroller;
-		txtumlregistry = new TxtUMLElementsRegistry(model.getResource(), descriptor);
+		this.descriptor = descriptor;
+		mapper = new TxtUMLElementsMapper(this.model.getResource(), descriptor);
 	}
 
 	@Override
@@ -47,7 +49,8 @@ public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 		monitor.subTask("Creating empty diagrams...");
 
 		if (PreferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_PREF)) {
-			List<Pair<String, Element>> classDiagramRoots = txtumlregistry.getDiagramRootsWithDiagramNames();
+			List<Pair<String, Element>> classDiagramRoots = mapper.getDiagramRootsWithDiagramNames(this.descriptor);
+			
 			CreateClassDiagramCommand cmd = new CreateClassDiagramCommand();
 			for (Pair<String, Element> classDiagramRoot : classDiagramRoots) {
 				diagramManager.createDiagram(classDiagramRoot.getSecond(), classDiagramRoot.getFirst(), cmd,
@@ -66,11 +69,11 @@ public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 	protected void addElementsToDiagram(Diagram diagram, IProgressMonitor monitor) {
 		AbstractDiagramElementsManager diagramElementsManager;
 
-		DiagramExportationReport report = this.txtumlregistry.getDescriptor().getReport(diagram.getName());
+		DiagramExportationReport report = this.descriptor.getReport(diagram.getName());
 
 		if (diagram.getType().equals(diagramType_CD)) {
 			diagramElementsManager = new ClassDiagramElementsManager(diagram,
-					new TxtUMLClassDiagramElementsProvider(report), this.domain, monitor);
+					new TxtUMLClassDiagramElementsProvider(report, this.mapper), this.domain, monitor);
 		} else if (diagram.getType().equals(diagramType_SMD)) {
 			diagramElementsManager = new StateMachineDiagramElementsManager(diagram, this.domain, monitor);
 		} else {
@@ -78,8 +81,8 @@ public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 		}
 
 		List<Element> baseElements = new ArrayList<Element>();
-		List<Element> nodes = txtumlregistry.getNodes(diagram.getName());
-		List<Element> connections = txtumlregistry.getConnections(diagram.getName());
+		List<Element> nodes = mapper.getNodes(this.descriptor.getReport(diagram.getName()));
+		List<Element> connections = mapper.getConnections(this.descriptor.getReport(diagram.getName()));
 		baseElements.addAll(nodes);
 		baseElements.addAll(connections);
 
@@ -90,8 +93,9 @@ public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 	protected void arrangeElementsOfDiagram(Diagram diagram, IProgressMonitor monitor) throws ArrangeException {
 		IDiagramElementsArranger diagramElementsArranger;
 		DiagramEditPart diagep = diagramManager.getActiveDiagramEditPart();
+		DiagramExportationReport report =  this.descriptor.getReport(diagram.getName());
 		if (diagram.getType().equals(diagramType_CD)) {
-			diagramElementsArranger = new ClassDiagramElementsTxtUmlArranger(diagep, txtumlregistry);
+			diagramElementsArranger = new ClassDiagramElementsTxtUmlArranger(diagep, report, this.mapper);
 		} else if (diagram.getType().equals(diagramType_SMD)) {
 			diagramElementsArranger = new StateMachineDiagramElementsGmfArranger(diagep);
 		} else {
