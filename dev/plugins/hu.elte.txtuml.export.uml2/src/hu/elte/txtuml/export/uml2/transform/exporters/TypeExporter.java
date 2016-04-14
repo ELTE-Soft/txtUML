@@ -151,11 +151,19 @@ public class TypeExporter {
 		if (exportedModel != null) {
 			// get the generic class instead of parameterized type
 			sourceType = sourceType.getErasure();
-			String typeName = sourceType.getName();
+			String typeName = sourceType.getQualifiedName();
+			String shortName = sourceType.getName();
 			Type ret = exportedModel.getOwnedType(typeName);
-			if (ret == null) {
-				ret = (Type) exportedModel.getImportedMember(typeName);
-			}
+			// FIXME: generate packages
+			if (ret != null)
+				return ret;
+			ret = (Type) exportedModel.getImportedMember(typeName);
+			if (ret != null)
+				return ret;
+			ret = exportedModel.getOwnedType(shortName);
+			if (ret != null)
+				return ret;
+			ret = (Type) exportedModel.getImportedMember(shortName);
 			return ret;
 		} else {
 			return null;
@@ -292,7 +300,7 @@ public class TypeExporter {
 
 	public static boolean isNavigation(IMethodBinding binding) {
 		return (binding.getDeclaringClass().getQualifiedName().equals(ModelClass.class.getName())
-				&& binding.getName().equals("assoc"))
+				&& (binding.getName().equals("assoc") || binding.getName().equals("port")))
 				|| (binding.getDeclaringClass().getErasure().getQualifiedName().equals(Collection.class.getName())
 						&& binding.getName().equals("selectAny"));
 	}

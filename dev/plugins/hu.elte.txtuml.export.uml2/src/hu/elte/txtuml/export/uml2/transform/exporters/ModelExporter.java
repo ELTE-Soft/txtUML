@@ -33,7 +33,9 @@ import hu.elte.txtuml.export.uml2.transform.backend.RuntimeExportException;
 import hu.elte.txtuml.export.uml2.transform.visitors.AssociationVisitor;
 import hu.elte.txtuml.export.uml2.transform.visitors.AttributeVisitor;
 import hu.elte.txtuml.export.uml2.transform.visitors.ClassifierVisitor;
+import hu.elte.txtuml.export.uml2.transform.visitors.ConnectorVisitor;
 import hu.elte.txtuml.export.uml2.transform.visitors.MethodSkeletonVisitor;
+import hu.elte.txtuml.export.uml2.transform.visitors.PortVisitor;
 import hu.elte.txtuml.export.uml2.utils.ResourceSetFactory;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.utils.Logger;
@@ -57,6 +59,7 @@ public class ModelExporter {
 	private final ModelMapCollector mapping;
 
 	private Map<TypeDeclaration, Classifier> classifiers;
+
 	private Map<TypeDeclaration, Map<MethodDeclaration, Operation>> methods;
 
 	private ExportMode exportMode;
@@ -142,6 +145,7 @@ public class ModelExporter {
 		exportClassifiers();
 		exportAssociations();
 		exportGeneralizations();
+		exportPortsAndConnectors();
 		exportAttributesOfEveryClassifier();
 		exportMethodSkeletonsOfEveryClassifier();
 		exportStateMachinesOfEveryClass();
@@ -196,6 +200,9 @@ public class ModelExporter {
 	 */
 	private void exportGeneralization(TypeDeclaration classifierDeclaration) {
 		ITypeBinding superclassBinding = classifierDeclaration.resolveBinding().getSuperclass();
+		if (superclassBinding == null) {
+			return;
+		}
 		final String generalName = superclassBinding.getName();
 		final String specificName = classifierDeclaration.getName().getFullyQualifiedName();
 
@@ -263,6 +270,19 @@ public class ModelExporter {
 			}
 		});
 	}
+
+	private void exportPortsAndConnectors() {
+		PortExporter portExporter = new PortExporter(typeExporter);
+		classifiers.forEach((declaration, classifier) -> {
+			if (classifier instanceof Class) {
+				PortVisitor pv = new PortVisitor(portExporter, (Class) classifier);
+				declaration.accept(pv);
+			}
+		});
+		ConnectorVisitor visitor = new ConnectorVisitor(new ConnectorExporter(exportedModel, portExporter.getExportedPorts()));
+		Stream.of(compilationUnits).forEach(cu -> cu.accept(visitor));
+	}
+
 
 	private void exportMethodBodiesOfSpecificClass(TypeDeclaration classDeclaration, Class specificClass) {
 		if (exportMode == ExportMode.ExportActionCode) {

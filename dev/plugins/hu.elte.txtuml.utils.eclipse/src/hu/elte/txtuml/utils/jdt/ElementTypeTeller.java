@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -22,6 +23,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.api.model.Association;
 import hu.elte.txtuml.api.model.AssociationEnd;
+import hu.elte.txtuml.api.model.BehaviorPort;
 import hu.elte.txtuml.api.model.Composition;
 import hu.elte.txtuml.api.model.ConnectorBase;
 import hu.elte.txtuml.api.model.DataType;
@@ -205,7 +207,7 @@ public final class ElementTypeTeller {
 	public static boolean isAssociation(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Association.class);
 	}
-	
+
 	public static boolean isAssociation(ITypeBinding binding) {
 		return hasSuperClass(binding, Association.class.getCanonicalName());
 	}
@@ -213,7 +215,7 @@ public final class ElementTypeTeller {
 	public static boolean isAssociationeEnd(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, AssociationEnd.class);
 	}
-	
+
 	public static boolean isAssociationEnd(ITypeBinding value) {
 		return hasSuperClass(value, AssociationEnd.class.getCanonicalName());
 	}
@@ -240,13 +242,16 @@ public final class ElementTypeTeller {
 
 	public static boolean isSpecificClassifier(TypeDeclaration classifierDeclaration) {
 		ITypeBinding superclassBinding = classifierDeclaration.resolveBinding().getSuperclass();
+		if (superclassBinding == null) {
+			return false;
+		}
 		String superclassQualifiedName = superclassBinding.getQualifiedName();
 		boolean extendsModelClass = superclassQualifiedName.equals(ModelClass.class.getCanonicalName());
 		boolean extendsSignal = superclassQualifiedName.equals(Signal.class.getCanonicalName());
 
 		return !extendsModelClass && !extendsSignal;
 	}
-	
+
 	public static boolean isAbstract(ITypeBinding type) {
 		return (type.getModifiers() & Modifier.ABSTRACT) != 0;
 	}
@@ -308,7 +313,16 @@ public final class ElementTypeTeller {
 		}
 		return type != null;
 	}
-	
+
+	public static boolean isBehavioralPort(TypeDeclaration typeDeclaration) {
+		for (IAnnotationBinding annot : typeDeclaration.resolveBinding().getAnnotations()) {
+			if (annot.getAnnotationType().getQualifiedName().equals(BehaviorPort.class.getCanonicalName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static boolean isVariable(Expression expr) {
 		if (!(expr instanceof Name)) {
 			return false;
@@ -320,7 +334,7 @@ public final class ElementTypeTeller {
 		IVariableBinding varBinding = (IVariableBinding) binding;
 		return !varBinding.isField();
 	}
-	
+
 	public static boolean isFieldAccess(Expression expr) {
 		if (expr instanceof FieldAccess) {
 			return true;

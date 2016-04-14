@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.uml2.transform.exporters;
 
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.Interface;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
@@ -39,5 +40,11 @@ public class ClassifierExporter {
 		signalEvent.setSignal(signal);
 
 		return signal;
+	}
+	
+	public Interface exportInterface(TypeDeclaration typeDeclaration) {
+		String name = typeDeclaration.resolveBinding().getName();
+		Interface ret = (Interface) exportedModel.createOwnedType(name, UMLPackage.Literals.INTERFACE);
+		return ret;
 	}
 }

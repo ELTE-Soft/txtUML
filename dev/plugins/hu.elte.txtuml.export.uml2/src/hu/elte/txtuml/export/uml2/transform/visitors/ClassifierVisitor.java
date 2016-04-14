@@ -33,14 +33,17 @@ public class ClassifierVisitor extends ASTVisitor {
 				BodyDeclaration bodyDeclaration = (BodyDeclaration) elem;
 				bodyDeclaration.accept(new ClassifierVisitor(this.classifierExporter, false));
 			}
-
 		} else if (ElementTypeTeller.isSignal(typeDeclaration)) {
 			exportedClassifier = classifierExporter.exportSignal(typeDeclaration);
+		} else if (ElementTypeTeller.isInterface(typeDeclaration)) {
+			exportedClassifier = classifierExporter.exportInterface(typeDeclaration);
 		} else {
 			return true;
 		}
 
-		this.visitedClassifiers.put(typeDeclaration, exportedClassifier);
+		if (exportedClassifier != null) {
+			this.visitedClassifiers.put(typeDeclaration, exportedClassifier);
+		}
 		return false;
 	}
 
