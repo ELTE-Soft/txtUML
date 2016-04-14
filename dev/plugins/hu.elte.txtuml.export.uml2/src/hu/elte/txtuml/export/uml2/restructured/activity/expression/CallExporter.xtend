@@ -18,15 +18,9 @@ abstract class CallExporter<T> extends ActionExporter<T, CallOperationAction> {
 	}
 
 	override CallOperationAction create(T access) {
-		if(!isApiMethodInvocation(access)) factory.createCallOperationAction
+		if(!isApiMethodInvocation(access.binding)) factory.createCallOperationAction
 	}
-
-	def isApiMethodInvocation(T invocation) {
-		val meth = invocation.getBinding
-		val type = meth.declaringClass
-		API_CLASSES.contains(type.qualifiedName)
-	}
-
+	
 	def List<Expression> getArguments(T inv)
 
 	def Expression getExpression(T inv)

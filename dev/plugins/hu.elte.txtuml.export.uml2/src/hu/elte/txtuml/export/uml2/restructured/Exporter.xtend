@@ -2,9 +2,12 @@ package hu.elte.txtuml.export.uml2.restructured
 
 import hu.elte.txtuml.api.model.Collection
 import hu.elte.txtuml.api.model.ModelClass
-import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.AssocNavigationExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.CreateLinkActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.IgnoredAPICallExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.LogActionExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.ReadLinkActionExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.SelectionExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.UnlinkActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.BinaryOperatorExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.BooleanLiteralExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.CharacterLiteralExporter
@@ -20,6 +23,7 @@ import hu.elte.txtuml.export.uml2.restructured.activity.expression.SimpleFieldAc
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.StringLiteralExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.SuperCallExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.ThisExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.VariableDeclarationExpressionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.VariableExpressionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.assign.AssignToFieldExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.assign.AssignToVariableExporter
@@ -74,14 +78,15 @@ import org.eclipse.jdt.core.dom.Statement
 import org.eclipse.jdt.core.dom.StringLiteral
 import org.eclipse.jdt.core.dom.SuperMethodInvocation
 import org.eclipse.jdt.core.dom.ThisExpression
+import org.eclipse.jdt.core.dom.VariableDeclarationExpression
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement
 import org.eclipse.jdt.core.dom.WhileStatement
-import org.eclipse.uml2.uml.Action
-import org.eclipse.uml2.uml.Class
 import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.ExecutableNode
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
+import org.eclipse.uml2.uml.Class
+import org.eclipse.uml2.uml.Action
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -97,8 +102,7 @@ import org.eclipse.uml2.uml.Type
 abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 
 	/** Method calls to these classes will be treated specially */
-	protected static val API_CLASSES = #{ModelClass.canonicalName, hu.elte.txtuml.api.model.Action.canonicalName,
-		Collection.canonicalName}
+	protected static val API_CLASSES = #{ModelClass.canonicalName, hu.elte.txtuml.api.model.Action.canonicalName, Collection.canonicalName}
 
 	/** The parent exporter. Exporters form a tree to be able to place generated object in one of their parent exporter. */
 	protected BaseExporter<?, ?, ?> parent
@@ -184,7 +188,8 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 			Block:
 				#[new BlockExporter(this)]
 			MethodInvocation:
-				#[new MethodCallExporter(this), new AssocNavigationExporter(this), new LogActionExporter(this),
+				#[new MethodCallExporter(this), new ReadLinkActionExporter(this), new LogActionExporter(this),
+					new CreateLinkActionExporter(this), new UnlinkActionExporter(this), new SelectionExporter(this),
 					new IgnoredAPICallExporter(this)]
 			SuperMethodInvocation:
 				#[new SuperCallExporter(this)]
@@ -194,6 +199,8 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 				#[new BooleanLiteralExporter(this)]
 			CharacterLiteral:
 				#[new CharacterLiteralExporter(this)]
+			VariableDeclarationExpression:
+				#[new VariableDeclarationExpressionExporter(this)]
 			Name:
 				#[new VariableExpressionExporter(this), new NameFieldAccessExporter(this)]
 			FieldAccess:

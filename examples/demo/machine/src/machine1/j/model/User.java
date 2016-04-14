@@ -54,6 +54,7 @@ public class User extends ModelClass {
 			Action.log(("\tUser: starting to work..."));
 		}
 		Machine myMachine = this.assoc(Usage.usedMachine.class).selectAny();
+		Action.link(Usage.userOfMachine.class, this, Usage.usedMachine.class, myMachine);
 		if (b) {
 			Action.send(new ButtonPress(), myMachine);
 		} else {

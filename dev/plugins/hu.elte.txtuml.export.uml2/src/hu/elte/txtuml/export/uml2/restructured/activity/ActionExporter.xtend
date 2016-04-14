@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.uml2.restructured.activity
 import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import hu.elte.txtuml.export.uml2.restructured.Exporter
 import org.eclipse.jdt.core.dom.Expression
+import org.eclipse.jdt.core.dom.IMethodBinding
 import org.eclipse.jdt.core.dom.Statement
 import org.eclipse.uml2.uml.Action
 import org.eclipse.uml2.uml.ActivityEdge
@@ -31,6 +32,11 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
+	}
+
+	def isApiMethodInvocation(IMethodBinding meth) {
+		var type = meth.declaringClass
+		API_CLASSES.contains(type.erasure.qualifiedName)
 	}
 
 	def void storeEdge(ActivityEdge edge) {

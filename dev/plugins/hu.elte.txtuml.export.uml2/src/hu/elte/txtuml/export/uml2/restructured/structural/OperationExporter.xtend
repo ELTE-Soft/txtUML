@@ -8,6 +8,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration
 import org.eclipse.uml2.uml.Operation
 import org.eclipse.uml2.uml.ParameterDirectionKind
 import org.eclipse.uml2.uml.Stereotype
+import org.eclipse.jdt.core.dom.Modifier
 
 class OperationExporter extends Exporter<MethodDeclaration, IMethodBinding, Operation> {
 
@@ -32,6 +33,7 @@ class OperationExporter extends Exporter<MethodDeclaration, IMethodBinding, Oper
 		result.ownedParameters += decl.parameters.map [
 			exportParameter((it as SingleVariableDeclaration).resolveBinding)
 		]
+		result.isStatic = Modifier.isStatic(decl.getModifiers)
 		if (decl.isConstructor) {
 			result.applyStereotype(getImportedElement("Create") as Stereotype)
 		}
