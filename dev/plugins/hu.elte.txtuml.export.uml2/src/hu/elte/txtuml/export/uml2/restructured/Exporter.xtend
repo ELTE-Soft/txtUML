@@ -2,15 +2,18 @@ package hu.elte.txtuml.export.uml2.restructured
 
 import hu.elte.txtuml.api.model.Collection
 import hu.elte.txtuml.api.model.ModelClass
+import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.ConnectActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.CreateLinkActionExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.IgnoredAPICallExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.CreateObjectActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.LogActionExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.PortActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.ReadLinkActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.SelectionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.UnlinkActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.BinaryOperatorExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.BooleanLiteralExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.CharacterLiteralExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.ConstructorCallExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.MethodCallExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.NameFieldAccessExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.NullLiteralExporter
@@ -54,6 +57,7 @@ import org.eclipse.jdt.core.dom.Assignment
 import org.eclipse.jdt.core.dom.Block
 import org.eclipse.jdt.core.dom.BooleanLiteral
 import org.eclipse.jdt.core.dom.CharacterLiteral
+import org.eclipse.jdt.core.dom.ConstructorInvocation
 import org.eclipse.jdt.core.dom.DoStatement
 import org.eclipse.jdt.core.dom.EmptyStatement
 import org.eclipse.jdt.core.dom.EnhancedForStatement
@@ -81,12 +85,13 @@ import org.eclipse.jdt.core.dom.ThisExpression
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement
 import org.eclipse.jdt.core.dom.WhileStatement
+import org.eclipse.uml2.uml.Action
+import org.eclipse.uml2.uml.Class
 import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.ExecutableNode
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
-import org.eclipse.uml2.uml.Class
-import org.eclipse.uml2.uml.Action
+import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.StartActionExporter
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -102,7 +107,8 @@ import org.eclipse.uml2.uml.Action
 abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 
 	/** Method calls to these classes will be treated specially */
-	protected static val API_CLASSES = #{ModelClass.canonicalName, hu.elte.txtuml.api.model.Action.canonicalName, Collection.canonicalName}
+	protected static val API_CLASSES = #{ModelClass.canonicalName, hu.elte.txtuml.api.model.Action.canonicalName,
+		Collection.canonicalName}
 
 	/** The parent exporter. Exporters form a tree to be able to place generated object in one of their parent exporter. */
 	protected BaseExporter<?, ?, ?> parent
@@ -188,9 +194,20 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 			Block:
 				#[new BlockExporter(this)]
 			MethodInvocation:
-				#[new MethodCallExporter(this), new ReadLinkActionExporter(this), new LogActionExporter(this),
-					new CreateLinkActionExporter(this), new UnlinkActionExporter(this), new SelectionExporter(this),
-					new IgnoredAPICallExporter(this)]
+				#[
+					new MethodCallExporter(this),
+					new ReadLinkActionExporter(this),
+					new LogActionExporter(this),
+					new CreateLinkActionExporter(this),
+					new UnlinkActionExporter(this),
+					new ConnectActionExporter(this),
+					new PortActionExporter(this),
+					new CreateObjectActionExporter(this),
+					new StartActionExporter(this),
+					new SelectionExporter(this)
+				]
+			ConstructorInvocation:
+				#[new ConstructorCallExporter(this)]
 			SuperMethodInvocation:
 				#[new SuperCallExporter(this)]
 			StringLiteral:

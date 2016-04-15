@@ -9,7 +9,10 @@ import org.eclipse.jdt.core.dom.IMethodBinding
 import org.eclipse.jdt.core.dom.MethodInvocation
 import org.eclipse.jdt.core.dom.Modifier
 import org.eclipse.jdt.core.dom.SuperMethodInvocation
+import org.eclipse.uml2.uml.Action
 import org.eclipse.uml2.uml.CallOperationAction
+import org.eclipse.uml2.uml.Operation
+import org.eclipse.jdt.core.dom.ConstructorInvocation
 
 abstract class CallExporter<T> extends ActionExporter<T, CallOperationAction> {
 
@@ -29,16 +32,26 @@ abstract class CallExporter<T> extends ActionExporter<T, CallOperationAction> {
 
 	override void exportContents(T source) {
 		val binding = source.binding
+		val operation = fetchElement(binding) as Operation
 		if (!Modifier.isStatic(binding.modifiers)) {
 			val target = exportExpression(source.expression) ?:
-				new ThisExporter(this).createThis(binding.declaringClass)
-			target.result.objectFlow(result.createTarget(target.name, target.result.type))
+				new ThisExporter(this).createThis(binding.declaringClass.fetchType)
+			
+			createCall(result, operation, target, source.arguments)
+		} else {
+			createCall(result, operation, null, source.arguments)
 		}
-
+	}
+	
+	def createCall(CallOperationAction call, Operation operation, Action base, List<Expression> args) {
+		result.operation = operation
+		
+		base?.result.objectFlow(result.createTarget(base.name, base.result.type))
+		
 		val i = new AtomicInteger
-		binding.parameterTypes.forEach[result.createArgument("p" + i.andIncrement, fetchType)]
+		args.forEach[result.createArgument("p" + i.andIncrement, resolveTypeBinding.fetchType)]
 
-		val argVals = source.arguments.map[exportExpression].map[it.result]
+		val argVals = args.map[exportExpression].map[it.result]
 
 		for (argi : 0 ..< result.arguments.length) {
 			argVals.get(argi).objectFlow(result.arguments.get(argi))
@@ -76,3 +89,17 @@ class SuperCallExporter extends CallExporter<SuperMethodInvocation> {
 
 	override getBinding(SuperMethodInvocation inv) { inv.resolveMethodBinding }
 }
+
+class ConstructorCallExporter extends CallExporter<ConstructorInvocation> {
+
+	new(Exporter<?, ?, ?> parent) {
+		super(parent)
+	}
+
+	override getArguments(ConstructorInvocation inv) { inv.arguments }
+
+	override getExpression(ConstructorInvocation inv) { null }
+
+	override getBinding(ConstructorInvocation inv) { inv.resolveConstructorBinding }
+}
+

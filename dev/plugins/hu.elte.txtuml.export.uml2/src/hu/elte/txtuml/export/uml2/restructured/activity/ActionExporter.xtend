@@ -2,8 +2,10 @@ package hu.elte.txtuml.export.uml2.restructured.activity
 
 import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import hu.elte.txtuml.export.uml2.restructured.Exporter
+import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.CreateObjectActionExporter
 import org.eclipse.jdt.core.dom.Expression
 import org.eclipse.jdt.core.dom.IMethodBinding
+import org.eclipse.jdt.core.dom.ITypeBinding
 import org.eclipse.jdt.core.dom.Statement
 import org.eclipse.uml2.uml.Action
 import org.eclipse.uml2.uml.ActivityEdge
@@ -46,7 +48,7 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 			throw new UnsupportedOperationException("No place to store edge " + edge)
 		}
 	}
-	
+
 	def void storeNode(ActivityNode node) {
 		if (parent instanceof ActionExporter<?, ?>) {
 			(parent as ActionExporter<?, ?>).storeNode(node)
@@ -54,7 +56,7 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 			throw new UnsupportedOperationException("No place to store node " + node)
 		}
 	}
-	
+
 	def void storeVariable(Variable variable) {
 		if (parent instanceof ActionExporter<?, ?>) {
 			(parent as ActionExporter<?, ?>).storeVariable(variable)
@@ -62,7 +64,7 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 			throw new UnsupportedOperationException("No place to store variable " + variable)
 		}
 	}
-		
+
 	def Variable getVariable(String varName) {
 		if (parent instanceof ActionExporter<?, ?>) {
 			(parent as ActionExporter<?, ?>).getVariable(varName)
@@ -70,19 +72,19 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 			throw new UnsupportedOperationException("Variable '" + varName + "' cannot be found")
 		}
 	}
-	
+
 	def dispatch OutputPin result(ReadVariableAction node) { node.result }
 
 	def dispatch OutputPin result(ReadSelfAction node) { node.result }
 
 	def dispatch OutputPin result(ReadLinkAction node) { node.result }
-	
+
 	def dispatch OutputPin result(ReadStructuralFeatureAction node) { node.result }
 
 	def dispatch OutputPin result(CallOperationAction node) { node.results.get(0) }
-	
+
 	def dispatch OutputPin result(ValueSpecificationAction node) { node.result }
-	
+
 	def dispatch OutputPin result(SequenceNode node) { (node.executableNodes.last as Action).result }
 
 	def dispatch inputs(ReadLinkAction node) { node.inputValues.map[otherSide].flatten }
@@ -102,7 +104,7 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 		flow.target = target
 		flow.name = source.name + "==>" + target.name
 	}
-	
+
 	def controlFlow(ActivityNode from, ActivityNode to) {
 		val edge = factory.createControlFlow
 		edge.storeEdge
@@ -118,17 +120,21 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 		storeNode(action)
 		return action
 	}
-	
+
 	override exportStatement(Statement source) {
 		val stmt = super.exportStatement(source)
 		stmt?.storeNode
 		return stmt
 	}
-		
+
 	override exportExpression(Expression source) {
 		val expr = super.exportExpression(source)
 		expr?.storeNode
 		return expr
 	}
-	
+
+	def exportCreateObjectAction(ITypeBinding tb) {
+		cache.export(new CreateObjectActionExporter(this), tb, tb, [storeNode])
+	}
+
 }

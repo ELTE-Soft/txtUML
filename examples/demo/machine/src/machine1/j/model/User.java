@@ -56,7 +56,7 @@ public class User extends ModelClass {
 		Machine myMachine = this.assoc(Usage.usedMachine.class).selectAny();
 		Action.link(Usage.userOfMachine.class, this, Usage.usedMachine.class, myMachine);
 		if (b) {
-			Action.send(new ButtonPress(), myMachine);
+			doWork(c);
 		} else {
 			Action.send(new ButtonPress(), myMachine);
 		}
