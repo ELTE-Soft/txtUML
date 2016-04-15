@@ -20,6 +20,8 @@ import org.eclipse.uml2.uml.Event;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.Pseudostate;
+import org.eclipse.uml2.uml.PseudostateKind;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
@@ -534,13 +536,19 @@ public class ClassExporter {
 	private String createSetState(Transition transition_) {
 		String source = "";
 		Vertex targetState = transition_.getTarget();
+		
 		// choice handling
-		if (targetState.eClass().equals(UMLPackage.Literals.PSEUDOSTATE)) {
+		if (targetState.eClass().equals(UMLPackage.Literals.PSEUDOSTATE)
+				&& ((Pseudostate) targetState).getKind().equals(PseudostateKind.CHOICE_LITERAL) ) {
+			
 			List<Pair<String, String>> branches = new LinkedList<Pair<String, String>>();
 			Pair<String, String> elseBranch = null;
+			
 			for (Transition trans : targetState.getOutgoings()) {
+				
 				String guard = guardExporter.getGuard(trans.getGuard());
-				String body = ActivityTemplates.transitionActionCall(trans.getName());
+				String body = ActivityTemplates.blockStatement(
+						ActivityTemplates.transitionActionCall(trans.getName())).toString();
 
 				if (guard.isEmpty() || guard.equals("else")) {
 					elseBranch = new Pair<String, String>(guard, body);
@@ -718,8 +726,14 @@ public class ClassExporter {
 	private String getInitialState(Region region_) {
 		String source = "NO_INITIAL_STATE";
 		for (Vertex item : region_.getSubvertices()) {
+			
 			if (item.eClass().equals(UMLPackage.Literals.PSEUDOSTATE)) {
-				source = item.getName();
+				
+				Pseudostate pseduoState = (Pseudostate) item;
+				if (pseduoState.getKind().equals(PseudostateKind.INITIAL_LITERAL)) {
+					source = item.getName();
+				}
+				
 			}
 		}
 		return source;
@@ -734,7 +748,7 @@ public class ClassExporter {
 		for (Transition item : region_.getTransitions()) {
 			Pair<String, String> eventSignalPair = null;
 
-			if (item.getTriggers().isEmpty()) {
+			if (item.getSource().getName().equals(getInitialState(region_))) {
 				eventSignalPair = new Pair<String, String>(GenerationTemplates.InitSignal, item.getSource().getName());
 			}
 

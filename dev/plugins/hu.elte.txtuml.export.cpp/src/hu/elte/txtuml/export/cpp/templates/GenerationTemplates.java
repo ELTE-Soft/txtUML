@@ -206,6 +206,11 @@ PrivateFunctionalTemplates.stateMachineClassFixPublicParts(className, rt) + publ
 	public static String paramName(String paramName) {
 		return GenerationNames.formatIncomingParamName(paramName);
 	}
+	
+	public static String eventParamName() {
+		return GenerationNames.formatIncomingParamName(GenerationNames.EventParamName);
+	}
+	
 
 	public static String variableDecl(String typeName, String variableName) {
 		return PrivateFunctionalTemplates.cppType(typeName) + " " + variableName + ";\n";

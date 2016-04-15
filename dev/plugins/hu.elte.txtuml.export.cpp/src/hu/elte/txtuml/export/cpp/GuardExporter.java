@@ -1,5 +1,8 @@
 package hu.elte.txtuml.export.cpp;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.LiteralString;
@@ -10,13 +13,20 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValueSpecification;
 
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 
 public class GuardExporter {
 	
-	ActivityExporter guardActivityExporter;
+	private ActivityExporter guardActivityExporter;
+	private Map<Constraint,String> constratintFunctionMap;
+	
+	private int guardCount;
 	
 	public GuardExporter() {
 		guardActivityExporter = new ActivityExporter();
+		constratintFunctionMap = new HashMap<Constraint,String>();
+		
+		guardCount = 0;
 	}
 	
 	public String getGuard(Constraint guard_) {
@@ -26,8 +36,16 @@ public class GuardExporter {
 		} else if (guard_.eClass().equals(UMLPackage.Literals.TIME_CONSTRAINT)) {
 			// TODO
 		} else if (guard_.eClass().equals(UMLPackage.Literals.CONSTRAINT)) {
-
-			source=getGuardFromValueSpecification(guard_.getSpecification());
+			
+			if(constratintFunctionMap.containsKey(guard_)) {
+				source = constratintFunctionMap.get(guard_);
+			}
+			else {
+				source = getGuardFromValueSpecification(guard_.getSpecification());
+				constratintFunctionMap.put(guard_, "guard" + guardCount + "("+ GenerationTemplates.eventParamName() + ")");
+				guardCount++;
+			}
+			
 		}
 		return source;
 	}
