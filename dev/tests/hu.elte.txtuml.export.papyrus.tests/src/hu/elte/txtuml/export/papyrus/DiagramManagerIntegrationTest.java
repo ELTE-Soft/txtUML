@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.tests;
+package hu.elte.txtuml.export.papyrus;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -47,14 +47,14 @@ import hu.elte.txtuml.export.papyrus.UMLModelManager;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 /**
- * Unit test for {@link DiagramManager}
+ * Integration test for {@link DiagramManager}
  * 
  * <p>
  * <b>Attention:</b>
  * This test should be run as a JUnit Plug-in test
  * </p>
  */
-public class DiagramManagerTest {
+public class DiagramManagerIntegrationTest {
 
 	public DiagramManager diagramManager;
 	public IProject project;

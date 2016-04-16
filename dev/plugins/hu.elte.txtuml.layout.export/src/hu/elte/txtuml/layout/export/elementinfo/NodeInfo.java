@@ -2,6 +2,7 @@ package hu.elte.txtuml.layout.export.elementinfo;
 
 import hu.elte.txtuml.layout.export.elementinfo.impl.NodeInfoImpl;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.layout.visualizer.model.SpecialBox;
 
 /**
  * Information holder about a node in a diagram layout description.
@@ -19,5 +20,7 @@ public interface NodeInfo extends ConcreteElementInfo {
 	RectangleObject convert();
 
 	boolean isPhantom();
+	
+	SpecialBox getSpecialProperty();
 
 }

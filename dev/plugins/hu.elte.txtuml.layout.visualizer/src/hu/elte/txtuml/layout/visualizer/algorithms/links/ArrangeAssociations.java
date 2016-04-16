@@ -25,6 +25,7 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation.RouteConfig;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.layout.visualizer.model.SpecialBox;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 import hu.elte.txtuml.utils.Logger;
@@ -184,29 +185,70 @@ public class ArrangeAssociations {
 		_objects = diagramObjects;
 	}
 
+	private Integer calculateMaxLinks(List<LineAssociation> as) {
+		if (as.size() == 0)
+			return 0;
+
+		// Gather data
+		HashMap<String, Integer> data = new HashMap<String, Integer>();
+
+		Integer countMod = 1;
+		for (LineAssociation a : as) {
+			// From
+			if (data.containsKey(a.getFrom())) {
+				data.put(a.getFrom(), data.get(a.getFrom()) + countMod);
+			} else {
+				data.put(a.getFrom(), countMod);
+			}
+
+			if (a.isReflexive())
+				continue;
+			// To
+			if (data.containsKey(a.getTo())) {
+				data.put(a.getTo(), data.get(a.getTo()) + countMod);
+			} else {
+				data.put(a.getTo(), countMod);
+			}
+		}
+
+		// Find max
+		Integer max = data.entrySet().stream().max((e1, e2) -> Integer.compare(e1.getValue(), e2.getValue())).get()
+				.getValue();
+
+		return max;
+	}
+
 	private Set<RectangleObject> defaultGrid(Integer k, Set<RectangleObject> objs) {
 		Set<RectangleObject> result = new HashSet<RectangleObject>();
 		_widthOfCells = k;
 		_heightOfCells = k;
 
 		// Get the smallest of boxes to compute the grid dimensions
-		Integer smallestPixelWidth = objs.stream().min((o1, o2) -> {
-			return Integer.compare(o1.getPixelWidth(), o2.getPixelWidth());
-		}).get().getPixelWidth();
-		Integer smallestPixelHeight = objs.stream().min((o1, o2) -> {
-			return Integer.compare(o1.getPixelHeight(), o2.getPixelHeight());
-		}).get().getPixelHeight();
+		Integer smallestPixelWidth = objs.stream().filter(box -> !box.getSpecial().equals(SpecialBox.Initial))
+				.min((o1, o2) -> {
+					return Integer.compare(o1.getPixelWidth(), o2.getPixelWidth());
+				}).get().getPixelWidth();
+		Integer smallestPixelHeight = objs.stream().filter(box -> !box.getSpecial().equals(SpecialBox.Initial))
+				.min((o1, o2) -> {
+					return Integer.compare(o1.getPixelHeight(), o2.getPixelHeight());
+				}).get().getPixelHeight();
 
-		Double pixelPerGridWidth = smallestPixelWidth / (k + 2.0);
-		Double pixelPerGridHeight = smallestPixelHeight / (k + 2.0);
+		Double pixelPerGridWidth = Math.floor(smallestPixelWidth / (k + 2.0));
+		Double pixelPerGridHeight = Math.floor(smallestPixelHeight / (k + 2.0));
 
 		// Set the grid sizes of boxes based on their pixel sizes
 		for (RectangleObject obj : objs) {
 			RectangleObject mod = new RectangleObject(obj);
-			mod.setWidth((int) Math.ceil(mod.getPixelWidth() / pixelPerGridWidth) + 1);
-			mod.setPixelWidth((int) ((mod.getWidth() - 1) * Math.floor(pixelPerGridWidth)));
-			mod.setHeight((int) Math.ceil(mod.getPixelHeight() / pixelPerGridHeight) + 1);
-			mod.setPixelHeight((int) ((mod.getHeight() - 1) * Math.floor(pixelPerGridHeight)));
+
+			if (mod.getSpecial().equals(SpecialBox.Initial)) {
+				mod.setWidth(3);
+				mod.setHeight(3);
+			} else {
+				mod.setWidth((int) Math.ceil(mod.getPixelWidth() / pixelPerGridWidth) + 1);
+				mod.setPixelWidth((int) ((mod.getWidth() - 1) * Math.floor(pixelPerGridWidth)));
+				mod.setHeight((int) Math.ceil(mod.getPixelHeight() / pixelPerGridHeight) + 1);
+				mod.setPixelHeight((int) ((mod.getHeight() - 1) * Math.floor(pixelPerGridHeight)));
+			}
 
 			if (_widthOfCells < mod.getWidth())
 				_widthOfCells = mod.getWidth();
@@ -314,39 +356,6 @@ public class ArrangeAssociations {
 		}
 
 		return result;
-	}
-
-	private Integer calculateMaxLinks(List<LineAssociation> as) {
-		if (as.size() == 0)
-			return 0;
-
-		// Gather data
-		HashMap<String, Integer> data = new HashMap<String, Integer>();
-
-		Integer countMod = 1;
-		for (LineAssociation a : as) {
-			// From
-			if (data.containsKey(a.getFrom())) {
-				data.put(a.getFrom(), data.get(a.getFrom()) + countMod);
-			} else {
-				data.put(a.getFrom(), countMod);
-			}
-
-			if (a.isReflexive())
-				continue;
-			// To
-			if (data.containsKey(a.getTo())) {
-				data.put(a.getTo(), data.get(a.getTo()) + countMod);
-			} else {
-				data.put(a.getTo(), countMod);
-			}
-		}
-
-		// Find max
-		Integer max = data.entrySet().stream().max((e1, e2) -> Integer.compare(e1.getValue(), e2.getValue())).get()
-				.getValue();
-
-		return max;
 	}
 
 	private List<LineAssociation> processStatements(List<LineAssociation> links, List<Statement> stats,

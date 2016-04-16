@@ -5,8 +5,8 @@ import org.junit.Test;
 import hu.elte.txtuml.api.layout.Alignment;
 import hu.elte.txtuml.api.layout.AlignmentType;
 import hu.elte.txtuml.api.layout.BottomMost;
+import hu.elte.txtuml.api.layout.ClassDiagram;
 import hu.elte.txtuml.api.layout.Contains;
-import hu.elte.txtuml.api.layout.Diagram;
 import hu.elte.txtuml.api.layout.Diamond;
 import hu.elte.txtuml.api.layout.LinkEnd;
 import hu.elte.txtuml.api.layout.North;
@@ -31,7 +31,7 @@ import hu.elte.txtuml.layout.export.model1.E;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 
-class Diagram1 extends Diagram {
+class Diagram1 extends ClassDiagram {
 
 	@Contains({ A.class, B.class })
 	class NG1 extends NodeGroup {
