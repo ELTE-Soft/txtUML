@@ -9,6 +9,8 @@ import org.eclipse.uml2.uml.Operation
 import org.eclipse.uml2.uml.ParameterDirectionKind
 import org.eclipse.uml2.uml.Stereotype
 import org.eclipse.jdt.core.dom.Modifier
+import org.eclipse.jdt.core.dom.ITypeBinding
+import hu.elte.txtuml.api.model.ModelClass
 
 class OperationExporter extends Exporter<MethodDeclaration, IMethodBinding, Operation> {
 
@@ -30,14 +32,25 @@ class OperationExporter extends Exporter<MethodDeclaration, IMethodBinding, Oper
 			retParam.name = 'return'
 			result.ownedParameters += retParam
 		}
+		result.redefinedOperations += binding.overridden.map[fetchElement as Operation]
 		result.methods += fetchElement(decl.resolveBinding, new MethodActivityExporter(this))
 		result.ownedParameters += decl.parameters.map [
 			exportParameter((it as SingleVariableDeclaration).resolveBinding)
 		]
-		result.isStatic = Modifier.isStatic(decl.getModifiers)
+		result.isAbstract = Modifier.isAbstract(binding.modifiers)
+		result.isStatic = Modifier.isStatic(binding.getModifiers)
 		if (decl.isConstructor) {
 			result.applyStereotype(getImportedElement("Create") as Stereotype)
 		}
+	}
+
+	def overridden(IMethodBinding meth) { getOverridden(meth, meth.declaringClass.superclass) }
+
+	def Iterable<IMethodBinding> getOverridden(IMethodBinding meth, ITypeBinding cls) {
+		if (cls == null || cls.qualifiedName == ModelClass.canonicalName) {
+			return #[]
+		}
+		cls.declaredMethods.filter[meth.overrides(it)] + getOverridden(meth, cls.superclass)
 	}
 
 }

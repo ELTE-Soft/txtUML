@@ -17,6 +17,8 @@ class ActivityExporter extends ActionExporter<Block, Activity> {
 	override create(Block access) { factory.createActivity }
 
 	override exportContents(Block block) {
+		// TODO: in case of ctor if the first statement is not super() or this() insert call
+		// to the implicit super ctor
 		val init = result.createOwnedNode("#init", UMLPackage.Literals.INITIAL_NODE)
 		val prepare = exportPreparetBlock(block)
 		val body = block.exportBlock[storeNode]

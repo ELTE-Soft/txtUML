@@ -18,7 +18,7 @@ class MethodActivityExporter extends Exporter<MethodDeclaration, IMethodBinding,
 		val binding = decl.resolveBinding
 		result.name = binding.name
 		result.specification = fetchElement(binding, new OperationExporter(this))
-		exportActivity(decl.body, result)
+		decl.body?.exportActivity(result)
 	}
 
 }

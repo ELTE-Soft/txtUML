@@ -12,6 +12,8 @@ import org.eclipse.uml2.uml.StateMachine
 import org.eclipse.uml2.uml.Transition
 import org.eclipse.uml2.uml.UMLPackage
 import org.eclipse.uml2.uml.Vertex
+import org.eclipse.uml2.uml.Classifier
+import hu.elte.txtuml.api.model.ModelClass
 
 class ClassExporter extends Exporter<TypeDeclaration, ITypeBinding, Class> {
 
@@ -31,18 +33,24 @@ class ClassExporter extends Exporter<TypeDeclaration, ITypeBinding, Class> {
 		result.name = typeBnd.name
 		typeBnd.declaredFields.forEach[exportField[result.ownedAttributes += it]]
 		typeDecl.methods.forEach[exportOperation[result.ownedOperations += it]]
-		typeBnd.declaredMethods.filter[isDefaultConstructor].forEach[
+//		if (typeBnd.declaredMethods.filter[isConstructor && ! isDefaultConstructor].isEmpty) {
+		typeBnd.declaredMethods.filter[isDefaultConstructor].forEach [
 			exportDefaultConstructor[result.ownedOperations += it]
 			exportDefaultConstructorBody[result.ownedBehaviors += it]
 		]
+//		}
 		typeDecl.methods.forEach[exportActivity[result.ownedBehaviors += it]]
+		if (typeDecl.superclassType != null &&
+			typeDecl.superclassType.resolveBinding.qualifiedName != ModelClass.canonicalName) {
+			result.createGeneralization(fetchType(typeDecl.superclassType.resolveBinding) as Classifier)
+		}
 		if (!typeDecl.types.isEmpty) {
 			val sm = result.createClassifierBehavior(result.name, UMLPackage.Literals.STATE_MACHINE) as StateMachine
 			region = sm.createRegion(result.name)
 			typeDecl.types.forEach[exportElement(it, it.resolveBinding, [storeSMElement])]
 		}
 	}
-	
+
 	def storeSMElement(Element contained) {
 		switch contained {
 			Vertex: region.subvertices.add(contained)

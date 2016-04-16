@@ -18,6 +18,7 @@ public class TestClass extends ModelClass {
 class ClassWithCtors extends ModelClass {
 
 	public ClassWithCtors() {
+		this(4);
 	}
 
 	public ClassWithCtors(int i) {

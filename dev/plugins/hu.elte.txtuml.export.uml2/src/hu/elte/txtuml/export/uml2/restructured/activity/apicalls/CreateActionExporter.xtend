@@ -44,6 +44,9 @@ class CreateActionExporter extends CreationExporter<MethodInvocation> {
 		val ctor = createdType.declaredMethods.findFirst [
 			isConstructor && parameterTypes.toList == args.map[resolveTypeBinding].toList
 		]
+		if (ctor == null) {
+			throw new IllegalArgumentException('''The constructor of «createdType.name» with the arguments «args.toList» cannot be found.''')
+		}
 		new MethodCallExporter(this).createCall(factory.createCallOperationAction, fetchElement(ctor) as Operation,
 			create, args).storeNode
 	}

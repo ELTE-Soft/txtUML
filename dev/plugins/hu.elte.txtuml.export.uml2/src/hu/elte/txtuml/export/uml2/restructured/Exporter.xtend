@@ -15,12 +15,12 @@ import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.UnlinkActionExp
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.BinaryOperatorExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.BooleanLiteralExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.CharacterLiteralExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.expression.ConstructorCallExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.MethodCallExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.NameFieldAccessExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.NullLiteralExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.NumberLiteralExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.ObjectCreationExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.OtherCtorCallExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.ParenExpressionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.PostfixOperatorExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.PrefixOperatorExporter
@@ -28,6 +28,7 @@ import hu.elte.txtuml.export.uml2.restructured.activity.expression.PrefixPlusExp
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.SimpleFieldAccessExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.StringLiteralExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.SuperCallExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.SuperCtorCallExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.ThisExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.VariableDeclarationExpressionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.VariableExpressionExporter
@@ -38,6 +39,7 @@ import hu.elte.txtuml.export.uml2.restructured.activity.statement.DoWhileExporte
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.EmptyStmtExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.ExpressionStatementExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.ForEachExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.statement.ForLoopExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.IfExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.ReturnStatementExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.VariableDeclarationExporter
@@ -71,6 +73,7 @@ import org.eclipse.jdt.core.dom.EnhancedForStatement
 import org.eclipse.jdt.core.dom.Expression
 import org.eclipse.jdt.core.dom.ExpressionStatement
 import org.eclipse.jdt.core.dom.FieldAccess
+import org.eclipse.jdt.core.dom.ForStatement
 import org.eclipse.jdt.core.dom.IBinding
 import org.eclipse.jdt.core.dom.IMethodBinding
 import org.eclipse.jdt.core.dom.ITypeBinding
@@ -87,6 +90,7 @@ import org.eclipse.jdt.core.dom.PrefixExpression
 import org.eclipse.jdt.core.dom.ReturnStatement
 import org.eclipse.jdt.core.dom.Statement
 import org.eclipse.jdt.core.dom.StringLiteral
+import org.eclipse.jdt.core.dom.SuperConstructorInvocation
 import org.eclipse.jdt.core.dom.SuperMethodInvocation
 import org.eclipse.jdt.core.dom.ThisExpression
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression
@@ -216,7 +220,9 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 					new SelectionExporter(this)
 				]
 			ConstructorInvocation:
-				#[new ConstructorCallExporter(this)]
+				#[new OtherCtorCallExporter(this)]
+			SuperConstructorInvocation:
+				#[new SuperCtorCallExporter(this)]
 			ClassInstanceCreation:
 				#[new ObjectCreationExporter(this)]
 			SuperMethodInvocation:
@@ -257,6 +263,8 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 				#[new IfExporter(this)]
 			WhileStatement:
 				#[new WhileExporter(this)]
+			ForStatement:
+				#[new ForLoopExporter(this)]
 			DoStatement:
 				#[new DoWhileExporter(this)]
 			EnhancedForStatement:

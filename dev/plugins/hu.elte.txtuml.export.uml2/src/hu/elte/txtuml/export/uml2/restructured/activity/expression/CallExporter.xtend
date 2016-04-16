@@ -4,10 +4,12 @@ import hu.elte.txtuml.export.uml2.restructured.Exporter
 import hu.elte.txtuml.export.uml2.restructured.activity.ActionExporter
 import java.util.List
 import java.util.concurrent.atomic.AtomicInteger
+import org.eclipse.jdt.core.dom.ConstructorInvocation
 import org.eclipse.jdt.core.dom.Expression
 import org.eclipse.jdt.core.dom.IMethodBinding
 import org.eclipse.jdt.core.dom.MethodInvocation
 import org.eclipse.jdt.core.dom.Modifier
+import org.eclipse.jdt.core.dom.SuperConstructorInvocation
 import org.eclipse.jdt.core.dom.SuperMethodInvocation
 import org.eclipse.uml2.uml.Action
 import org.eclipse.uml2.uml.CallOperationAction
@@ -59,9 +61,11 @@ abstract class CallExporter<T> extends ActionExporter<T, CallOperationAction> {
 		return call
 	}
 
-	def buildName(CallOperationAction call) '''«call.target?.name?.concat(".")»«call.operation?.name»(«buildArgs(call)»)'''
+	def buildName(
+		CallOperationAction call) '''«call.target?.name?.concat(".")»«call.operation?.name»(«buildArgs(call)»)'''
 
-	def buildArgs(CallOperationAction call) '''«FOR arg : call.getArguments SEPARATOR ", "»«arg.type.name» «arg.name»«ENDFOR»'''
+	def buildArgs(
+		CallOperationAction call) '''«FOR arg : call.getArguments SEPARATOR ", "»«arg.type.name» «arg.name»«ENDFOR»'''
 
 }
 
@@ -89,4 +93,30 @@ class SuperCallExporter extends CallExporter<SuperMethodInvocation> {
 	override getExpression(SuperMethodInvocation inv) { null }
 
 	override getBinding(SuperMethodInvocation inv) { inv.resolveMethodBinding }
+}
+
+class OtherCtorCallExporter extends CallExporter<ConstructorInvocation> {
+
+	new(Exporter<?, ?, ?> parent) {
+		super(parent)
+	}
+
+	override getArguments(ConstructorInvocation inv) { inv.arguments }
+
+	override getExpression(ConstructorInvocation inv) { null }
+
+	override getBinding(ConstructorInvocation inv) { inv.resolveConstructorBinding }
+}
+
+class SuperCtorCallExporter extends CallExporter<SuperConstructorInvocation> {
+
+	new(Exporter<?, ?, ?> parent) {
+		super(parent)
+	}
+
+	override getArguments(SuperConstructorInvocation inv) { inv.arguments }
+
+	override getExpression(SuperConstructorInvocation inv) { null }
+
+	override getBinding(SuperConstructorInvocation inv) { inv.resolveConstructorBinding }
 }

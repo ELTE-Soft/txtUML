@@ -434,5 +434,5 @@
       </ownedParameter>
     </ownedOperation>
   </packagedElement>
-  <packagedElement xmi:type="uml:Class" xmi:id="_DJzhUNpoEeWuz-p1tuEm5Q" name="Collection"/>
+  <packagedElement xmi:type="uml:Class" xmi:id="_DJzhUNpoEeWuz-p1tuEm5Q" name="hu.elte.txtuml.api.model.Collection"/>
 </uml:Model>

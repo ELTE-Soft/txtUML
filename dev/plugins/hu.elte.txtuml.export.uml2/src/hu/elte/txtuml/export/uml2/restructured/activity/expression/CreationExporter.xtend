@@ -2,8 +2,6 @@ package hu.elte.txtuml.export.uml2.restructured.activity.expression
 
 import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.ControlExporter
-import org.eclipse.jdt.core.dom.Expression
-import org.eclipse.uml2.uml.Action
 import org.eclipse.uml2.uml.Class
 import org.eclipse.uml2.uml.SequenceNode
 
