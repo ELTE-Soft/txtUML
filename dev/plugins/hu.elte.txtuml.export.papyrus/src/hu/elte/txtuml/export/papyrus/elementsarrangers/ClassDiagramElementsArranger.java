@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Relationship;
 
+import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutTransformer;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutVisualizerManager;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsMapper;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
@@ -24,7 +26,7 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 
 	private DiagramExportationReport report;
 	private Map<Element, Rectangle> elementbounds;
-	private Map<Relationship, List<Point>> connectionbounds;
+	private Map<Relationship, List<Point>> connectionBendpoints;
 	private TxtUMLElementsMapper elementsMapper;
 
 	public ClassDiagramElementsArranger(DiagramExportationReport report, TxtUMLElementsMapper mapper) {
@@ -53,7 +55,13 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 		links = vm.getAssociations();
 
 		this.elementbounds = createElementBounds(elementsObjectsMapping, objects);
-
+		this.connectionBendpoints = new HashMap<Relationship, List<Point>>();
+		
+		LayoutTransformer transformer = new LayoutTransformer(vm.getPixelGridRatioHorizontal(),
+				vm.getPixelGridRatioVertical());
+		
+		transformer.doTranformations(this.elementbounds, this.connectionBendpoints);
+		
 		monitor.worked(1);
 	}
 
