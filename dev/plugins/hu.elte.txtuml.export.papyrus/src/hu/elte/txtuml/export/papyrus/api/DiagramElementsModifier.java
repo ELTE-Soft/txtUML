@@ -40,13 +40,7 @@ public class DiagramElementsModifier {
 	 *            The state to be fixed.
 	 */
 	public static void fixStateLabelHeight(CustomStateEditPart state) {
-        FixStateContentSizesCommand cmd = new FixStateContentSizesCommand(state);
-		try {
-			if (cmd != null && cmd.canExecute()) {
-				cmd.execute(null, null);
-			}
-		} catch (ExecutionException e) {
-		}
+
 	}
 	
 	/**
@@ -129,7 +123,7 @@ public class DiagramElementsModifier {
 	 * @param connection - The connection
 	 * @param bendpoints - Start, end and bending points
 	 */
-	public static void setConnectionPoints(ConnectionNodeEditPart connection, List<Point> bendpoints){
+	public static void setConnectionBendpoints(ConnectionNodeEditPart connection, List<Point> bendpoints){
 		TransactionalEditingDomain editingDomain = connection.getEditingDomain();
 		SetConnectionBendpointsCommand cmd = new SetConnectionBendpointsCommand(editingDomain);
 		cmd.setEdgeAdapter(new EObjectAdapter(connection.getNotationView()));
