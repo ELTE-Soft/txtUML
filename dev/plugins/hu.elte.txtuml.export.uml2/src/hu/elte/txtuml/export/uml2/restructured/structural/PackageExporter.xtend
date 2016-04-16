@@ -45,6 +45,9 @@ abstract class AbstractPackageExporter<T extends Package> extends Exporter<IPack
 				exportSignal(decl)[result.packagedElements += it]
 				exportSignalEvent(decl)[result.packagedElements += it]
 			}
+			case ElementTypeTeller.isDataType(decl.resolveBinding): {
+				exportDataType(decl)[result.packagedElements += it]
+			}
 			default:
 				throw new IllegalArgumentException("Illegal type declaration: " + decl.toString)
 		}

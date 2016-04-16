@@ -15,7 +15,7 @@ class ExpressionStatementExporter extends ControlExporter<ExpressionStatement, S
 	override exportContents(ExpressionStatement source) {
 		val expr = exportExpression(source.expression)
 		result.executableNodes += expr
-		result.name = expr.name
+		result.name = expr.name + ";"
 	}
 	
 }

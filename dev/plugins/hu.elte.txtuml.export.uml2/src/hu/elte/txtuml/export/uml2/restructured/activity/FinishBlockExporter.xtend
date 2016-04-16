@@ -18,7 +18,7 @@ class FinishBlockExporter extends ControlExporter<Block, SequenceNode> {
 
 	override exportContents(Block source) {
 		result.name = "#finish"
-		(parent as ActivityExporter).result.ownedNodes.filter[it instanceof ActivityParameterNode].map [
+		result.activity.ownedNodes.filter[it instanceof ActivityParameterNode].map [
 			it as ActivityParameterNode
 		].filter [
 			parameter.direction == ParameterDirectionKind.OUT_LITERAL ||

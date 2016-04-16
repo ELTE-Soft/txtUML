@@ -29,14 +29,20 @@ class ClassExporter extends Exporter<TypeDeclaration, ITypeBinding, Class> {
 		val typeBnd = typeDecl.resolveBinding
 		result.isAbstract = ElementTypeTeller.isAbstract(typeBnd)
 		result.name = typeBnd.name
-		val sm = result.createClassifierBehavior(result.name, UMLPackage.Literals.STATE_MACHINE) as StateMachine
-		region = sm.createRegion(result.name)
 		typeBnd.declaredFields.forEach[exportField[result.ownedAttributes += it]]
 		typeDecl.methods.forEach[exportOperation[result.ownedOperations += it]]
+		typeBnd.declaredMethods.filter[isDefaultConstructor].forEach[
+			exportDefaultConstructor[result.ownedOperations += it]
+			exportDefaultConstructorBody[result.ownedBehaviors += it]
+		]
 		typeDecl.methods.forEach[exportActivity[result.ownedBehaviors += it]]
-		typeDecl.types.forEach[exportElement(it, it.resolveBinding, [storeSMElement])]
+		if (!typeDecl.types.isEmpty) {
+			val sm = result.createClassifierBehavior(result.name, UMLPackage.Literals.STATE_MACHINE) as StateMachine
+			region = sm.createRegion(result.name)
+			typeDecl.types.forEach[exportElement(it, it.resolveBinding, [storeSMElement])]
+		}
 	}
-
+	
 	def storeSMElement(Element contained) {
 		switch contained {
 			Vertex: region.subvertices.add(contained)

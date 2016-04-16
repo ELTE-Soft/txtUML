@@ -6,6 +6,9 @@ import hu.elte.txtuml.export.uml2.restructured.statemachine.GuardExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.AssociationEndExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.AssociationExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.ClassExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.DataTypeExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.DefaultConstructorBodyExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.DefaultConstructorExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.FieldExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.MethodActivityExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.OperationExporter
@@ -16,6 +19,7 @@ import hu.elte.txtuml.export.uml2.restructured.structural.SignalExporter
 import java.util.function.Consumer
 import org.eclipse.jdt.core.IPackageFragment
 import org.eclipse.jdt.core.dom.Block
+import org.eclipse.jdt.core.dom.IMethodBinding
 import org.eclipse.jdt.core.dom.IVariableBinding
 import org.eclipse.jdt.core.dom.MethodDeclaration
 import org.eclipse.jdt.core.dom.TypeDeclaration
@@ -23,6 +27,7 @@ import org.eclipse.uml2.uml.Activity
 import org.eclipse.uml2.uml.Association
 import org.eclipse.uml2.uml.Class
 import org.eclipse.uml2.uml.Constraint
+import org.eclipse.uml2.uml.DataType
 import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.Operation
 import org.eclipse.uml2.uml.Package
@@ -59,6 +64,10 @@ abstract class BaseExporter<S, A, R extends Element> {
 	def exportClass(Package pkg, TypeDeclaration td, Consumer<Class> store) {
 		cache.export(new ClassExporter(this), td, td.resolveBinding, store)
 	}
+	
+	def exportDataType(TypeDeclaration td, Consumer<DataType> store) {
+		cache.export(new DataTypeExporter(this), td, td.resolveBinding, store)
+	}
 
 	def exportSignal(TypeDeclaration td, Consumer<Signal> store) {
 		cache.export(new SignalExporter(this), td, td.resolveBinding, store)
@@ -82,6 +91,14 @@ abstract class BaseExporter<S, A, R extends Element> {
 
 	def exportOperation(MethodDeclaration md, Consumer<Operation> store) {
 		cache.export(new OperationExporter(this), md, md.resolveBinding, store)
+	}
+	
+	def exportDefaultConstructor(IMethodBinding bnd, Consumer<Operation> store) {
+		cache.export(new DefaultConstructorExporter(this), bnd, bnd, store)
+	}
+	
+	def exportDefaultConstructorBody(IMethodBinding bnd, Consumer<Activity> store) {
+		cache.export(new DefaultConstructorBodyExporter(this), bnd, bnd, store)
 	}
 
 	def exportActivity(MethodDeclaration md, Consumer<Activity> store) {

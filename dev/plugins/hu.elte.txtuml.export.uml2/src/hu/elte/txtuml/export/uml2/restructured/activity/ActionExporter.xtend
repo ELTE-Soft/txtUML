@@ -2,15 +2,14 @@ package hu.elte.txtuml.export.uml2.restructured.activity
 
 import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import hu.elte.txtuml.export.uml2.restructured.Exporter
-import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.CreateObjectActionExporter
 import org.eclipse.jdt.core.dom.Expression
 import org.eclipse.jdt.core.dom.IMethodBinding
-import org.eclipse.jdt.core.dom.ITypeBinding
 import org.eclipse.jdt.core.dom.Statement
 import org.eclipse.uml2.uml.Action
 import org.eclipse.uml2.uml.ActivityEdge
 import org.eclipse.uml2.uml.ActivityNode
 import org.eclipse.uml2.uml.CallOperationAction
+import org.eclipse.uml2.uml.CreateObjectAction
 import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.InputPin
 import org.eclipse.uml2.uml.ObjectFlow
@@ -80,6 +79,8 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 	def dispatch OutputPin result(ReadLinkAction node) { node.result }
 
 	def dispatch OutputPin result(ReadStructuralFeatureAction node) { node.result }
+	
+	def dispatch OutputPin result(CreateObjectAction node) { node.result }
 
 	def dispatch OutputPin result(CallOperationAction node) { node.results.get(0) }
 
@@ -132,9 +133,4 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 		expr?.storeNode
 		return expr
 	}
-
-	def exportCreateObjectAction(ITypeBinding tb) {
-		cache.export(new CreateObjectActionExporter(this), tb, tb, [storeNode])
-	}
-
 }

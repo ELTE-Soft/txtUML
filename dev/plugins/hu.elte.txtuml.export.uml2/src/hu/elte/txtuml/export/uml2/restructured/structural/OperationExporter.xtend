@@ -23,10 +23,11 @@ class OperationExporter extends Exporter<MethodDeclaration, IMethodBinding, Oper
 	override exportContents(MethodDeclaration decl) {
 		val binding = decl.resolveBinding
 		result.name = binding.name
-		if (binding.returnType.qualifiedName != void.canonicalName || decl.isConstructor) {
+		if (binding.returnType.qualifiedName != void.canonicalName) {
 			val retParam = factory.createParameter
-			retParam.type = fetchType(if (decl.isConstructor) decl.resolveBinding.declaringClass else binding.returnType)
+			retParam.type = fetchType(binding.returnType)
 			retParam.direction = ParameterDirectionKind.RETURN_LITERAL
+			retParam.name = 'return'
 			result.ownedParameters += retParam
 		}
 		result.methods += fetchElement(decl.resolveBinding, new MethodActivityExporter(this))

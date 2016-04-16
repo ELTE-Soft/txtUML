@@ -12,7 +12,6 @@ import org.eclipse.jdt.core.dom.SuperMethodInvocation
 import org.eclipse.uml2.uml.Action
 import org.eclipse.uml2.uml.CallOperationAction
 import org.eclipse.uml2.uml.Operation
-import org.eclipse.jdt.core.dom.ConstructorInvocation
 
 abstract class CallExporter<T> extends ActionExporter<T, CallOperationAction> {
 
@@ -23,7 +22,7 @@ abstract class CallExporter<T> extends ActionExporter<T, CallOperationAction> {
 	override CallOperationAction create(T access) {
 		if(!isApiMethodInvocation(access.binding)) factory.createCallOperationAction
 	}
-	
+
 	def List<Expression> getArguments(T inv)
 
 	def Expression getExpression(T inv)
@@ -36,31 +35,33 @@ abstract class CallExporter<T> extends ActionExporter<T, CallOperationAction> {
 		if (!Modifier.isStatic(binding.modifiers)) {
 			val target = exportExpression(source.expression) ?:
 				new ThisExporter(this).createThis(binding.declaringClass.fetchType)
-			
+
 			createCall(result, operation, target, source.arguments)
 		} else {
 			createCall(result, operation, null, source.arguments)
 		}
 	}
-	
-	def createCall(CallOperationAction call, Operation operation, Action base, List<Expression> args) {
-		result.operation = operation
-		
-		base?.result.objectFlow(result.createTarget(base.name, base.result.type))
-		
+
+	def createCall(CallOperationAction call, Operation operation, Action base, Iterable<Expression> args) {
+		call.operation = operation
+
+		base?.result.objectFlow(call.createTarget("target", base.result.type))
+
 		val i = new AtomicInteger
-		args.forEach[result.createArgument("p" + i.andIncrement, resolveTypeBinding.fetchType)]
+		args.forEach[call.createArgument("p" + i.andIncrement, resolveTypeBinding.fetchType)]
 
 		val argVals = args.map[exportExpression].map[it.result]
 
-		for (argi : 0 ..< result.arguments.length) {
-			argVals.get(argi).objectFlow(result.arguments.get(argi))
+		for (argi : 0 ..< call.arguments.length) {
+			argVals.get(argi).objectFlow(call.arguments.get(argi))
 		}
+		call.name = buildName(call).toString
+		return call
 	}
 
-	def buildName() '''«result.target?.name?.concat(".")»«result.operation?.name»(«buildArgs»)'''
+	def buildName(CallOperationAction call) '''«call.target?.name?.concat(".")»«call.operation?.name»(«buildArgs(call)»)'''
 
-	def buildArgs() '''«FOR arg : result.getArguments SEPARATOR ", "»«arg.type.name» «arg.name»«ENDFOR»'''
+	def buildArgs(CallOperationAction call) '''«FOR arg : call.getArguments SEPARATOR ", "»«arg.type.name» «arg.name»«ENDFOR»'''
 
 }
 
@@ -89,17 +90,3 @@ class SuperCallExporter extends CallExporter<SuperMethodInvocation> {
 
 	override getBinding(SuperMethodInvocation inv) { inv.resolveMethodBinding }
 }
-
-class ConstructorCallExporter extends CallExporter<ConstructorInvocation> {
-
-	new(Exporter<?, ?, ?> parent) {
-		super(parent)
-	}
-
-	override getArguments(ConstructorInvocation inv) { inv.arguments }
-
-	override getExpression(ConstructorInvocation inv) { null }
-
-	override getBinding(ConstructorInvocation inv) { inv.resolveConstructorBinding }
-}
-

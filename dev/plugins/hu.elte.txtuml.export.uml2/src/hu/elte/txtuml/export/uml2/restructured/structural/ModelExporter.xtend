@@ -2,16 +2,16 @@ package hu.elte.txtuml.export.uml2.restructured.structural
 
 import hu.elte.txtuml.export.uml2.utils.ResourceSetFactory
 import hu.elte.txtuml.utils.eclipse.PackageUtils
+import java.util.Map
 import org.eclipse.emf.common.util.URI
 import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.jdt.core.IPackageFragment
 import org.eclipse.jdt.core.dom.CompilationUnit
 import org.eclipse.uml2.uml.Model
 import org.eclipse.uml2.uml.Package
+import org.eclipse.uml2.uml.Profile
 import org.eclipse.uml2.uml.UMLPackage
 import org.eclipse.uml2.uml.resource.UMLResource
-import java.util.Map
-import org.eclipse.uml2.uml.Profile
 
 class ModelExporter extends AbstractPackageExporter<Model> {
 
@@ -20,8 +20,11 @@ class ModelExporter extends AbstractPackageExporter<Model> {
 	static final val STD_PROF_NAME = "StandardProfile";
 
 	static final val Map<String, String> NAME_MAP = #{String.canonicalName -> "String",
-		Integer.canonicalName -> "Integer", int.canonicalName -> "Integer", Boolean.canonicalName -> "Boolean",
-		boolean.canonicalName -> "Boolean"}
+		Boolean.canonicalName -> "Boolean", boolean.canonicalName -> "Boolean", int.canonicalName -> "Integer",
+		Integer.canonicalName -> "Integer", short.canonicalName -> "Integer", Short.canonicalName -> "Integer",
+		byte.canonicalName -> "Integer", Byte.canonicalName -> "Integer", long.canonicalName -> "Integer",
+		Long.canonicalName -> "Integer", double.canonicalName -> "Real", Double.canonicalName -> "Real",
+		float.canonicalName -> "Real", Float.canonicalName -> "Real"}
 
 	def export(IPackageFragment pf) {
 		cache.export(this, pf, pf, [])
@@ -30,7 +33,7 @@ class ModelExporter extends AbstractPackageExporter<Model> {
 	override create(IPackageFragment pf) { factory.createModel }
 
 	override getImportedElement(String name) {
-		result.getImportedMember(NAME_MAP.get(name) ?: name) ?: result.importedPackages.findFirst[it.name == name] 
+		result.getImportedMember(NAME_MAP.get(name) ?: name) ?: result.importedPackages.findFirst[it.name == name]
 	}
 
 	override exportContents(IPackageFragment packageFragment) {
@@ -75,7 +78,7 @@ class ModelExporter extends AbstractPackageExporter<Model> {
 		packageImport.importedPackage = lib
 		result.packageImports += packageImport
 	}
-	
+
 	def addProfileApplication(Profile profile) {
 		result.applyProfile(profile)
 	}

@@ -19,7 +19,7 @@ class ExporterCache {
 
 	/** Fully exported elements */
 	val Map<Pair<Class<?>, Object>, Element> cache = new HashMap
-	
+
 	/** Partially exported elements */
 	// QUESTION: do we have to keep elements that have been partially exported?
 	val Map<Pair<Class<?>, Object>, Element> fetchMap = new HashMap
@@ -84,7 +84,7 @@ class ExporterCache {
 	protected def dispatch Object generateSourceAccessKey(IMethodBinding access) {
 		val cls = access.declaringClass
 		if (cls != null) {
-			generateSourceAccessKey(cls) + access.name
+			generateSourceAccessKey(cls) + "." + access.name + access.parameterTypes.map[generateSourceAccessKey]
 		}
 	}
 

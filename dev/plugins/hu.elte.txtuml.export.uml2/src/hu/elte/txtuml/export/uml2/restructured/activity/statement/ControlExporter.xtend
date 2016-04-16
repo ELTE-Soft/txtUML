@@ -35,11 +35,11 @@ abstract class ControlExporter<S, R extends StructuredActivityNode> extends Acti
 		throw new RuntimeException("Cannot type " + node.toString)
 	}
 
-	override storeEdge(ActivityEdge edge) { result.edges += edge }
+	override storeEdge(ActivityEdge edge) { if (result != null) result.edges += edge else super.storeEdge(edge) }
 
-	override storeNode(ActivityNode node) { result.nodes += node }
+	override storeNode(ActivityNode node) { if (result != null) result.nodes += node else super.storeNode(node) }
 
-	override storeVariable(Variable variable) { result.variables += variable }
+	override storeVariable(Variable variable) { if (result != null) result.variables += variable else super.storeVariable(variable) }
 
 	override getVariable(String varName) { 
 		result.variables.findFirst[name == varName] ?: super.getVariable(varName)

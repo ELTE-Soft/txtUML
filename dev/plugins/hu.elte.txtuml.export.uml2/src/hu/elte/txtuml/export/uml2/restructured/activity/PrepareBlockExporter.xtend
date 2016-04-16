@@ -14,7 +14,7 @@ class PrepareBlockExporter extends ActionExporter<Block, SequenceNode> {
 	override create(Block access) { factory.createSequenceNode }
 
 	override exportContents(Block source) {
-		(parent as ActivityExporter).result.ownedParameters.forEach [
+		result.activity.specification.ownedParameters.forEach [
 			val paramNode = factory.createActivityParameterNode
 			paramNode.parameter = it
 			paramNode.name = name

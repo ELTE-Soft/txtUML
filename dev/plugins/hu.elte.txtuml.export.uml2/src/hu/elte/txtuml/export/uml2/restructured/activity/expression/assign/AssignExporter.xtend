@@ -1,15 +1,15 @@
 package hu.elte.txtuml.export.uml2.restructured.activity.expression.assign
 
 import hu.elte.txtuml.export.uml2.restructured.BaseExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.ActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.BinaryOperatorExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.statement.ControlExporter
 import java.util.function.Supplier
 import org.eclipse.jdt.core.dom.Assignment
 import org.eclipse.jdt.core.dom.Assignment.Operator
 import org.eclipse.uml2.uml.Action
 import org.eclipse.uml2.uml.SequenceNode
 
-abstract class AssignExporter extends ActionExporter<Assignment, SequenceNode> {
+abstract class AssignExporter extends ControlExporter<Assignment, SequenceNode> {
 
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)

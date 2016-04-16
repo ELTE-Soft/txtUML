@@ -20,6 +20,7 @@ class ActivityExporter extends ActionExporter<Block, Activity> {
 		val init = result.createOwnedNode("#init", UMLPackage.Literals.INITIAL_NODE)
 		val prepare = exportPreparetBlock(block)
 		val body = block.exportBlock[storeNode]
+		body.name = "#body"
 		val finishBlock = exportFinishBlock(block)
 		
 		val final = result.createOwnedNode("#final", UMLPackage.Literals.ACTIVITY_FINAL_NODE)

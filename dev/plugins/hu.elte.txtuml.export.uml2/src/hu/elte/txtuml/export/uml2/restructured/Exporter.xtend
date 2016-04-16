@@ -3,12 +3,14 @@ package hu.elte.txtuml.export.uml2.restructured
 import hu.elte.txtuml.api.model.Collection
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.ConnectActionExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.CreateActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.CreateLinkActionExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.CreateObjectActionExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.DeleteActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.LogActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.PortActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.ReadLinkActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.SelectionExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.StartActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.UnlinkActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.BinaryOperatorExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.BooleanLiteralExporter
@@ -18,6 +20,7 @@ import hu.elte.txtuml.export.uml2.restructured.activity.expression.MethodCallExp
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.NameFieldAccessExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.NullLiteralExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.NumberLiteralExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.ObjectCreationExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.ParenExpressionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.PostfixOperatorExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.PrefixOperatorExporter
@@ -45,6 +48,9 @@ import hu.elte.txtuml.export.uml2.restructured.statemachine.TransitionExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.AssociationEndExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.AssociationExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.ClassExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.DataTypeExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.DefaultConstructorBodyExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.DefaultConstructorExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.FieldExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.MethodActivityExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.OperationExporter
@@ -57,6 +63,7 @@ import org.eclipse.jdt.core.dom.Assignment
 import org.eclipse.jdt.core.dom.Block
 import org.eclipse.jdt.core.dom.BooleanLiteral
 import org.eclipse.jdt.core.dom.CharacterLiteral
+import org.eclipse.jdt.core.dom.ClassInstanceCreation
 import org.eclipse.jdt.core.dom.ConstructorInvocation
 import org.eclipse.jdt.core.dom.DoStatement
 import org.eclipse.jdt.core.dom.EmptyStatement
@@ -91,7 +98,6 @@ import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.ExecutableNode
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
-import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.StartActionExporter
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -186,9 +192,11 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 				#[new PackageExporter(this)]
 			ITypeBinding:
 				#[new ClassExporter(this), new AssociationExporter(this), new AssociationEndExporter(this),
-					new StateExporter(this), new InitStateExporter(this), new TransitionExporter(this)]
+					new StateExporter(this), new InitStateExporter(this), new DataTypeExporter(this),
+					new TransitionExporter(this)]
 			IMethodBinding:
-				#[new OperationExporter(this), new MethodActivityExporter(this)]
+				#[new DefaultConstructorExporter(this), new DefaultConstructorBodyExporter(this),
+					new OperationExporter(this), new MethodActivityExporter(this)]
 			IVariableBinding:
 				#[new FieldExporter(this), new ParameterExporter(this)]
 			Block:
@@ -202,12 +210,15 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 					new UnlinkActionExporter(this),
 					new ConnectActionExporter(this),
 					new PortActionExporter(this),
-					new CreateObjectActionExporter(this),
+					new CreateActionExporter(this),
+					new DeleteActionExporter(this),
 					new StartActionExporter(this),
 					new SelectionExporter(this)
 				]
 			ConstructorInvocation:
 				#[new ConstructorCallExporter(this)]
+			ClassInstanceCreation:
+				#[new ObjectCreationExporter(this)]
 			SuperMethodInvocation:
 				#[new SuperCallExporter(this)]
 			StringLiteral:
@@ -302,7 +313,7 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 
 	def Element getImportedElement(IBinding binding) {
 		switch binding {
-			ITypeBinding: getImportedElement(binding.erasure.name)
+			ITypeBinding: getImportedElement(binding.erasure.qualifiedName)
 		}
 	}
 
