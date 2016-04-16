@@ -48,7 +48,7 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	 * @see hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager#addElementsToDiagram(java.util.List)
 	 */
 	@Override
-	public void addElementsToDiagram(List<Element> elements){
+	public void addElementsToDiagram(){
 		
 		/* The diagram creation creates an empty StateMachine, but it may have more Regions. 
 		 * So we delete it and place it on the diagram again.  */

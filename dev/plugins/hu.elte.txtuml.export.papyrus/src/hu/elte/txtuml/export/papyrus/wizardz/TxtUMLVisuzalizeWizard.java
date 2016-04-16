@@ -200,7 +200,6 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 			IProgressMonitor monitor) throws InterruptedException {
 		try {
 			PapyrusVisualizer pv = exporter.createVisualizer(layoutDescriptor);
-			pv.registerPayprusModelManager(TxtUMLPapyrusModelManager.class);
 			PlatformUI.getWorkbench().getProgressService().run(true, true, pv);
 		} catch (Exception e) {
 			Dialogs.errorMsgb("txtUML visualization Error",

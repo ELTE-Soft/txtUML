@@ -33,5 +33,5 @@ public abstract class AbstractDiagramElementsManager{
 	 * Adds the Elements to the diagram handled by the instance.
 	 * @param elements - The Elements that are to be added
 	 */
-	public abstract void addElementsToDiagram(List<Element> elements);
+	public abstract void addElementsToDiagram();
 }

@@ -116,10 +116,11 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 	 * @see hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager#addElementsToDiagram(java.util.List)
 	 */
 	@Override
-	public void addElementsToDiagram(List<Element> elements) {
+	public void addElementsToDiagram() {
+		/*
 		List<Element> diagramelements = UMLModelManager.getElementsOfTypesFromList(elements, nodesToBeAdded);
 		List<Element> diagramconnections = UMLModelManager.getElementsOfTypesFromList(elements, connectorsToBeAdded);
-
+*/
 //TODO: Replace
 //		ActivityDiagramElementsController.addElementsToActivityDiagram((ActivityDiagramEditPart) diagramEditPart, diagramelements);
 //		ActivityDiagramElementsController.addElementsToActivityDiagram((ActivityDiagramEditPart) diagramEditPart, diagramconnections);

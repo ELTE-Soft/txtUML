@@ -1,6 +1,5 @@
 package hu.elte.txtuml.export.papyrus.papyrusmodelmanagers;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,11 +12,11 @@ import org.eclipse.papyrus.uml.diagram.statemachine.CreateStateMachineDiagramCom
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.StateMachine;
 
+import hu.elte.txtuml.export.papyrus.elementproviders.ClassDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.elementproviders.TxtUMLClassDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.ClassDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout.StateMachineDiagramElementsGmfArranger;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.ClassDiagramElementsTxtUmlArranger;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.ClassDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.StateMachineDiagramElementsManager;
@@ -70,23 +69,19 @@ public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 		AbstractDiagramElementsManager diagramElementsManager;
 
 		DiagramExportationReport report = this.descriptor.getReport(diagram.getName());
-
+		
 		if (diagram.getType().equals(diagramType_CD)) {
+			ClassDiagramElementsProvider provider = new TxtUMLClassDiagramElementsProvider(report, this.mapper);
+			ClassDiagramElementsArranger arranger = new ClassDiagramElementsArranger(report, this.mapper);
 			diagramElementsManager = new ClassDiagramElementsManager(diagram,
-					new TxtUMLClassDiagramElementsProvider(report, this.mapper), this.domain, monitor);
+					provider, this.domain, arranger, monitor);
 		} else if (diagram.getType().equals(diagramType_SMD)) {
 			diagramElementsManager = new StateMachineDiagramElementsManager(diagram, this.domain, monitor);
 		} else {
 			return;
 		}
 
-		List<Element> baseElements = new ArrayList<Element>();
-		List<Element> nodes = mapper.getNodes(this.descriptor.getReport(diagram.getName()));
-		List<Element> connections = mapper.getConnections(this.descriptor.getReport(diagram.getName()));
-		baseElements.addAll(nodes);
-		baseElements.addAll(connections);
-
-		diagramElementsManager.addElementsToDiagram(baseElements);
+		diagramElementsManager.addElementsToDiagram();
 	}
 
 	@Override
@@ -95,9 +90,9 @@ public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 		DiagramEditPart diagep = diagramManager.getActiveDiagramEditPart();
 		DiagramExportationReport report =  this.descriptor.getReport(diagram.getName());
 		if (diagram.getType().equals(diagramType_CD)) {
-			diagramElementsArranger = new ClassDiagramElementsTxtUmlArranger(diagep, report, this.mapper);
+			diagramElementsArranger = null;
 		} else if (diagram.getType().equals(diagramType_SMD)) {
-			diagramElementsArranger = new StateMachineDiagramElementsGmfArranger(diagep);
+			diagramElementsArranger = null;
 		} else {
 			return;
 		}

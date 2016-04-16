@@ -15,6 +15,9 @@ import org.eclipse.uml2.uml.Type;
 
 import hu.elte.txtuml.export.papyrus.api.ClassDiagramElementCreator;
 import hu.elte.txtuml.export.papyrus.elementproviders.ClassDiagramElementsProvider;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.ClassDiagramElementsArranger;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger;
 
 /**
  * An abstract class for adding/removing elements to ClassDiagrams.
@@ -23,6 +26,7 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 
 	protected ClassDiagramElementCreator elementCreator;
 	protected ClassDiagramElementsProvider elementsProvider;
+	protected ClassDiagramElementsArranger arranger;
 
 	/**
 	 * The Constructor
@@ -36,11 +40,19 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 	 *            diagram generation
 	 */
 	public ClassDiagramElementsManager(Diagram diagram, ClassDiagramElementsProvider provider,
-			TransactionalEditingDomain domain, IProgressMonitor monitor) {
+			TransactionalEditingDomain domain, ClassDiagramElementsArranger arranger, 
+			IProgressMonitor monitor) {
 		super(diagram);
 		this.elementCreator = new ClassDiagramElementCreator(domain); // TODO:
 																		// Consider
 																		// DI
+		this.arranger = arranger;
+		try {
+			this.arranger.arrange(monitor);
+		} catch (ArrangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.elementsProvider = provider;
 		this.monitor = monitor;
 	}
@@ -54,8 +66,8 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 	 *            - The TransactionalEditingDomain
 	 */
 	public ClassDiagramElementsManager(Diagram diagram, ClassDiagramElementsProvider provider,
-			TransactionalEditingDomain domain) {
-		this(diagram, provider, domain, new NullProgressMonitor());
+			TransactionalEditingDomain domain, ClassDiagramElementsArranger arranger) {
+		this(diagram, provider, domain, arranger, new NullProgressMonitor());
 	}
 
 	/*
@@ -65,11 +77,13 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 	 * AbstractDiagramElementsManager#addElementsToDiagram(java.util.List)
 	 */
 	@Override
-	public void addElementsToDiagram(List<Element> elements) {
+	public void addElementsToDiagram() {
 		elementsProvider.getClasses()
-				.forEach((clazz) -> this.elementCreator.createClassForDiagram(this.diagram, clazz, null, this.monitor));
+				.forEach((clazz) -> this.elementCreator.createClassForDiagram(this.diagram, clazz,
+						this.arranger.getBoundsForElement(clazz), this.monitor));
 		elementsProvider.getSignals().forEach(
-				(signal) -> this.elementCreator.createSignalForDiagram(this.diagram, signal, null, this.monitor));
+				(signal) -> this.elementCreator.createSignalForDiagram(this.diagram, signal,
+						this.arranger.getBoundsForElement(signal), this.monitor));
 
 		elementsProvider.getAssociations().forEach((assoc) -> {
 			// A txtUML scpecific implementation. Assoiciations are exported
@@ -81,9 +95,9 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 			Type memberT1 = member1.getType();
 			Type memberT2 = member2.getType();
 
-			List<Point> route = Arrays.asList(new Point(0, 50), new Point(50, 250), new Point(250, 250),
-					new Point(250, 50), new Point(50, 0));
-			this.elementCreator.createAssociationForNodes((Classifier) memberT1, (Classifier) memberT2, assoc,
+			List<Point> route = Arrays.asList();
+			this.elementCreator.createAssociationForNodes((Classifier) memberT1,
+					(Classifier) memberT2, assoc,
 					this.diagram, route, this.monitor);
 		});
 

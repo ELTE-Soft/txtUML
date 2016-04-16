@@ -14,6 +14,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
+import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.TxtUMLPapyrusModelManager;
 import hu.elte.txtuml.export.papyrus.utils.EditorOpener;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
@@ -80,7 +81,6 @@ public class PapyrusVisualizer implements IRunnableWithProgress {
 		}catch(Exception e){
 			throw new RuntimeException(e);
 		}
-		SettingsRegistry.clear();
 	}
 	
 	
@@ -100,20 +100,11 @@ public class PapyrusVisualizer implements IRunnableWithProgress {
 			papyrusModelCreator.createPapyrusModel();
 		
 			
-					papyrusModelManager = SettingsRegistry.getPapyrusModelManager(papyrusModelCreator.getServiceRegistry());
+					papyrusModelManager = new TxtUMLPapyrusModelManager(papyrusModelCreator.getServiceRegistry());
 					papyrusModelManager.setLayoutController(layoutDescriptor);
 					monitor.worked(10);
 					
 					papyrusModelManager.createAndFillDiagrams(new SubProgressMonitor(monitor, 90));
 		} 
 	}
-	
-	/**
-	 * Registers the Implementation for the PapyrusModelManager
-	 * @param manager
-	 */
-	public void registerPayprusModelManager(Class<? extends AbstractPapyrusModelManager> manager){
-		SettingsRegistry.setPapyrusModelManager(manager);
-	}
-
 }
