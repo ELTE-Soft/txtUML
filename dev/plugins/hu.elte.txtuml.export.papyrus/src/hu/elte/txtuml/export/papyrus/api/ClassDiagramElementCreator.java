@@ -17,11 +17,13 @@ import org.eclipse.gmf.runtime.notation.BasicCompartment;
 import org.eclipse.gmf.runtime.notation.Bounds;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.Edge;
+import org.eclipse.gmf.runtime.notation.IdentityAnchor;
 import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.gmf.runtime.notation.NotationFactory;
 import org.eclipse.gmf.runtime.notation.RelativeBendpoints;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.gmf.runtime.notation.datatype.RelativeBendpoint;
+import org.eclipse.gmf.runtime.notation.impl.IdentityAnchorImpl;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassAttributeCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassOperationCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.part.UMLDiagramEditorPlugin;
@@ -105,7 +107,7 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 	}
 
 	public void createAssociationForNodes(Classifier source, Classifier target, Association assoc, Diagram diagram,
-			List<Point> route, IProgressMonitor monitor) {
+			List<Point> route, String sourceAnchor, String targetAnchor, IProgressMonitor monitor) {
 
 		View sourceView = getViewOfModel(source, diagram);
 		View targetView = getViewOfModel(target, diagram);
@@ -119,6 +121,12 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 			edge.setSource(sourceView);
 			edge.setTarget(targetView);
 			edge.setBendpoints(createBendsPoints((Node) sourceView, (Node) targetView, route));
+				IdentityAnchor sourceanchor = NotationFactory.eINSTANCE.createIdentityAnchor();
+				sourceanchor.setId(sourceAnchor);
+				IdentityAnchor targetanchor = NotationFactory.eINSTANCE.createIdentityAnchor();
+				targetanchor.setId(targetAnchor);
+			edge.setSourceAnchor(sourceanchor);
+			edge.setTargetAnchor(targetanchor);
 		};
 
 		runInTransactionalCommand(runnable, "Creating Assoc", monitor);

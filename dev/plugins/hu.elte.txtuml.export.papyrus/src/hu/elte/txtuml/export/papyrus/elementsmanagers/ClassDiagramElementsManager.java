@@ -40,8 +40,7 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 	 *            diagram generation
 	 */
 	public ClassDiagramElementsManager(Diagram diagram, ClassDiagramElementsProvider provider,
-			TransactionalEditingDomain domain, ClassDiagramElementsArranger arranger, 
-			IProgressMonitor monitor) {
+			TransactionalEditingDomain domain, ClassDiagramElementsArranger arranger, IProgressMonitor monitor) {
 		super(diagram);
 		this.elementCreator = new ClassDiagramElementCreator(domain); // TODO:
 																		// Consider
@@ -78,12 +77,10 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 	 */
 	@Override
 	public void addElementsToDiagram() {
-		elementsProvider.getClasses()
-				.forEach((clazz) -> this.elementCreator.createClassForDiagram(this.diagram, clazz,
-						this.arranger.getBoundsForElement(clazz), this.monitor));
-		elementsProvider.getSignals().forEach(
-				(signal) -> this.elementCreator.createSignalForDiagram(this.diagram, signal,
-						this.arranger.getBoundsForElement(signal), this.monitor));
+		elementsProvider.getClasses().forEach((clazz) -> this.elementCreator.createClassForDiagram(this.diagram, clazz,
+				this.arranger.getBoundsForElement(clazz), this.monitor));
+		elementsProvider.getSignals().forEach((signal) -> this.elementCreator.createSignalForDiagram(this.diagram,
+				signal, this.arranger.getBoundsForElement(signal), this.monitor));
 
 		elementsProvider.getAssociations().forEach((assoc) -> {
 			// A txtUML scpecific implementation. Assoiciations are exported
@@ -95,13 +92,15 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 			Type memberT1 = member1.getType();
 			Type memberT2 = member2.getType();
 
-			List<Point> route = Arrays.asList();
-			this.elementCreator.createAssociationForNodes((Classifier) memberT1,
-					(Classifier) memberT2, assoc,
-					this.diagram, route, this.monitor);
+			List<Point> route = this.arranger.getRouteForConnection(assoc);
+			String sourceAnchor = this.arranger.getSourceAnchorForConnection(assoc);
+			String targetAnchor = this.arranger.getTargetAnchorForConnection(assoc);
+			this.elementCreator.createAssociationForNodes((Classifier) memberT1, (Classifier) memberT2, assoc,
+					this.diagram, route, sourceAnchor, targetAnchor, this.monitor);
 		});
 
-		elementsProvider.getGeneralizations().forEach((generalization) -> this.elementCreator
-				.createGeneralizationForNodes(generalization, null, this.diagram, this.monitor));
+		elementsProvider.getGeneralizations()
+				.forEach((generalization) -> this.elementCreator.createGeneralizationForNodes(generalization,
+						this.arranger.getRouteForConnection(generalization), this.diagram, this.monitor));
 	}
 }
