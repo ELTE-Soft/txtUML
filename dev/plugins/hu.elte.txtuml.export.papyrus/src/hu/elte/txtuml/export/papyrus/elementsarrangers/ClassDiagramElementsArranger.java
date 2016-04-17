@@ -44,10 +44,7 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 		Set<LineAssociation> links = report.getLinks();
 		List<Statement> statements = report.getStatements();
 
-		Map<RectangleObject, Element> elementsObjectsMapping = createElementsMapping(objects);
-		Map<LineAssociation, Relationship> connectionsLinksMapping = createConnectionsMapping(links);
-
-		setPixelsizes(elementsObjectsMapping);
+		setPixelsizes(objects);
 
 		LayoutVisualizerManager vm = new LayoutVisualizerManager(objects, links, statements);
 		vm.addProgressMonitor(monitor);
@@ -55,9 +52,9 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 
 		Set<RectangleObject> arrangedObjects = vm.getObjects();
 		Set<LineAssociation> arrangedLinks = vm.getAssociations();
-		
-		createElementBounds(elementsObjectsMapping, arrangedObjects);
-		createConnectionRoutesAndAnchors(connectionsLinksMapping, arrangedLinks);
+
+		this.elementbounds = createElementsMapping(arrangedObjects);
+		this.connectionRoutes = createConnectionMapping(arrangedLinks);
 
 		LayoutTransformer transformer = new LayoutTransformer(vm.getPixelGridRatioHorizontal(),
 				vm.getPixelGridRatioVertical());
@@ -67,65 +64,30 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 		monitor.worked(1);
 	}
 
-	private Map<RectangleObject, Element> createElementsMapping(Set<RectangleObject> objects) {
-		Map<RectangleObject, Element> map = new HashMap<>();
-		objects.forEach((object) -> {
-			Optional<Element> elem = this.elementsMapper.findElement(object.getName());
-			elem.ifPresent(e -> map.put(object, e));
-		});
-		return map;
+	private Map<Element, Rectangle> createElementsMapping(Set<RectangleObject> arrangedObjects) {
+		return arrangedObjects.stream()
+				.collect(Collectors.toMap(ro -> this.elementsMapper.findNode(ro.getName()),
+						ro -> new Rectangle(ro.getTopLeft().getX(), ro.getTopLeft().getY(), ro.getPixelWidth(),
+								ro.getPixelHeight())));
 	}
 
-	@SuppressWarnings("unchecked")
-	private Map<LineAssociation, Relationship> createConnectionsMapping(Set<LineAssociation> links) {
-		Map<LineAssociation, Relationship> map = new HashMap<>();
-		links.forEach((link) -> {
-			Optional<Relationship> connection;
-			// TODO Get all connections from mapper
-			if (link.getType() == AssociationType.generalization) {
-				connection = (Optional<Relationship>) (Object) this.elementsMapper.findGeneralization(link.getFrom(),
-						link.getTo());
-			} else {
-				connection = (Optional<Relationship>) (Object) this.elementsMapper.findAssociation(link.getId());
-			}
+	private Map<Relationship, List<Point>> createConnectionMapping(Set<LineAssociation> arrangedLinks) {
+		return arrangedLinks.stream()
+				.collect(Collectors.toMap(la -> this.elementsMapper.findConnection(la.getId()),
+						la -> la.getMinimalRoute().stream().map(p -> new Point(p.getX(), p.getY()))
+								.collect(Collectors.toList())));
+	}
 
-			if (connection.isPresent()) {
-				map.put(link, connection.get());
+	private void setPixelsizes(Set<RectangleObject> objects) {
+		objects.forEach(object -> {
+			Element elem = this.elementsMapper.findNode(object.getName());
+			if (elem != null) {
+				// TODO: Implement algorithm
+				object.setPixelWidth(100);
+				object.setPixelHeight(100);
 			}
 		});
-		return map;
-	}
 
-	private void createElementBounds(Map<RectangleObject, Element> map,
-			Set<RectangleObject> objects) {
-		Map<Element, Rectangle> result = new HashMap<>();
-		
-		Map<String, RectangleObject> namesToObjects = objects.stream().collect(Collectors.toMap((rect) -> rect.getName(), (rect) -> rect));
-		map.forEach((o, e) -> {
-			RectangleObject object = namesToObjects.get(o.getName());
-			result.put(e, new Rectangle(object.getTopLeft().getX(), object.getTopLeft().getY(), object.getPixelWidth(),
-					object.getPixelHeight()));
-		});
-		this.elementbounds = result;
-	}
-
-	private void createConnectionRoutesAndAnchors(Map<LineAssociation, Relationship> map,
-			Set<LineAssociation> links) {
-		Map<Relationship, List<Point>> routes = new HashMap<>();
-		Map<String, LineAssociation> namesToLinks = links.stream().collect(Collectors.toMap((link) -> link.getId(), (link) -> link));
-		map.forEach((l, e) -> {
-			LineAssociation link = namesToLinks.get(l.getId());
-			routes.put(e, link.getMinimalRoute().stream().map((point) -> new Point(point.getX(), point.getY()))
-					.collect(Collectors.toList()));
-		});
-		this.connectionRoutes = routes;
-	}
-
-	private void setPixelsizes(Map<RectangleObject, Element> elementsObjectsMapping) {
-		elementsObjectsMapping.keySet().forEach(object -> {
-			object.setPixelWidth(100);
-			object.setPixelHeight(100);
-		});
 	}
 
 	@Override

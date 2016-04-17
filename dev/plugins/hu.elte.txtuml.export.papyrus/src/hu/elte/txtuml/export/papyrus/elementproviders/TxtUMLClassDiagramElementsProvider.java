@@ -17,6 +17,7 @@ import org.eclipse.uml2.uml.InterfaceRealization;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.Realization;
+import org.eclipse.uml2.uml.Relationship;
 import org.eclipse.uml2.uml.Signal;
 
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsMapper;
@@ -25,8 +26,8 @@ import hu.elte.txtuml.layout.export.DiagramExportationReport;
 public class TxtUMLClassDiagramElementsProvider implements ClassDiagramElementsProvider {
 
 	private DiagramExportationReport report;
-	private List<Element> nodes;
-	private List<Element> connections;
+	private Collection<Element> nodes;
+	private Collection<Relationship> connections;
 
 	public TxtUMLClassDiagramElementsProvider(DiagramExportationReport report, TxtUMLElementsMapper mapper) {
 		this.report = report;
