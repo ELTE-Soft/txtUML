@@ -2,32 +2,25 @@ package pingpong.x.^model;
 
 // Classes
 
-class TopClass {
+class Game {
+ 
+	public Game() {
+		Player left = create(Player, "Left ");
+		Player right = create(Player, "Right");
 
-	/**
-	 * Creates an instance of ping and pong and connects them. If gets a pong
-	 * signal, sends it to the ping instance.
-	 */
-	public TopClass() {
-		PingClass ping = create(PingClass);
-		PongClass pong = create(PongClass);
+		link(LeftPlayer.inGame, this, LeftPlayer.player, left);
+		link(RightPlayer.inGame, this, RightPlayer.player, right);
 
-		link(TopClass_PingClass.top, this, TopClass_PingClass.ping, ping);
-		link(TopClass_PongClass.top, this, TopClass_PongClass.pong, pong);
+		connect(Table.left, left->(Player.BallAtPlayerPort), Table.right,
+				right->(Player.BallAtPlayerPort));
 
-		connect(Ping_Pong_Connector.pingEnd, ping->(PingClass.PingPort), Ping_Pong_Connector.pongEnd,
-				pong->(PongClass.PongPort));
-
-		start(ping);
-		start(pong);
-	}
-
-	behavior port TopPort {
-		required PingInterface;
-		provided PongInterface;
+		start(left);
+		start(right);
+		
 	}
 
 	initial Init;
+
 	state Waiting;
 
 	transition Initialize {
@@ -35,25 +28,44 @@ class TopClass {
 		to Waiting;
 	}
 
-	transition AcceptPong {
+	transition StartGame {
 		from Waiting;
 		to Waiting;
-		trigger PongSignal;
+		trigger Ball;
 		effect {
-			send sigdata to this->(TopClass_PingClass.ping).selectAny();
+			Player left = this->(LeftPlayer.player).selectAny();
+			send sigdata to left;		
 		}
 	}
-
 }
 
-class PingClass {
+class Player {
 
-	behavior port PingPort {
-		required PingInterface;
-		provided PongInterface;
+	private String name;
+
+	port BallAtPlayerPort {
+		required BallIfc;
+		provided BallIfc;
+	}
+
+	behavior port ShoutPort {
+		required HitOrMissIfc;
+	}
+
+	public Player(String name) {
+		this.name = name;
+
+		Racket racket = create(Racket);
+		link(PlayerOwnsRacket.player, Player.this, PlayerOwnsRacket.racket, racket);
+		connect(this->(Player.BallAtPlayerPort), PlayerUsesRacket.racket,
+				racket->(Racket.BallAtRacketPort));
+		connect(this->(Player.ShoutPort), PlayerHitsOrMisses.withRacket, racket->(Racket.HitOrMissPort));
+
+		start(racket);
 	}
 
 	initial Init;
+
 	state Waiting;
 
 	transition Initialize {
@@ -61,49 +73,48 @@ class PingClass {
 		to Waiting;
 	}
 
-	transition AcceptPong {
+	transition ShoutAfterHittingTheBall {
 		from Waiting;
 		to Waiting;
-		trigger PongSignal;
+		trigger HitTheBall;
 		effect {
-			if (sigdata.count > 0) {
-				send new PingSignal(sigdata.count - 1) to this->(PingPort);
-				log("ping");
-			}
+			log(name + ": \"HIT!\"");			
 		}
 	}
 
+	transition ShoutAfterMissingTheBall {
+		from Waiting;
+		to Waiting;
+		trigger MissedTheBall;
+		effect {
+			log(name + ": \"MISS! I lost...\"");			
+		}
+	}
+
+	transition Serve {
+		from Waiting;
+		to Waiting;
+		trigger Ball;
+		effect {
+			log(name + ": \"I'll serve now...!\"");
+			send sigdata to this->(PlayerOwnsRacket.racket).selectAny();
+		}
+	}	
 }
 
-class PongClass {
+class Racket {
 
-	/**
-	 * Creates an instance of inner pong and through a delegation connector,
-	 * connects its port to the port of that instance.
-	 */
-	public PongClass() {
-		InnerPongClass inner = create(InnerPongClass);
-
-		link(PongClass_InnerPongClass.pong, this, PongClass_InnerPongClass.inner, inner);
-		connect(this->(PongPort), Pong_InnerPong_Connector.innerEnd, inner->(InnerPongClass.PongPort));
-		start(inner);
+	behavior port BallAtRacketPort {
+		required BallIfc;
+		provided BallIfc;
 	}
 
-	port PongPort {
-		required PongInterface;
-		provided PingInterface;
+	behavior port HitOrMissPort {
+		required HitOrMissIfc;
 	}
-
-}
-
-class InnerPongClass {
-
-	behavior port PongPort {
-		required PongInterface;
-		provided PingInterface;
-	}
-
+	
 	initial Init;
+
 	state Waiting;
 
 	transition Initialize {
@@ -111,63 +122,91 @@ class InnerPongClass {
 		to Waiting;
 	}
 
-	transition AcceptPing {
+	choice Check;
+
+	transition ReceiveBall {
 		from Waiting;
+		to Check;
+		trigger Ball;
+	}
+
+	transition CanHit {
+		from Check;
 		to Waiting;
-		trigger PingSignal;
+		guard (sigdata.countdown > 0)
+
 		effect {
-			if (sigdata.count > 0) {
-				send new PongSignal(sigdata.count - 1) to this->(PongPort);
-				log("pong");
-			}
+			Ball ball = sigdata;
+			 
+			send new Ball(ball.countdown - 1) to this->(Racket.BallAtRacketPort);
+			send new HitTheBall() to this->(Racket.HitOrMissPort);
 		}
+
+	}
+
+	transition CannotHit {
+		from Check;
+		to Waiting;
+		guard (else)
+
+		effect {
+			send new MissedTheBall() to this->(Racket.HitOrMissPort);
+		}
+
 	}
 
 }
 
 // Signals and interfaces
 
-signal PingSignal {
-	public int count;
+signal Ball {
+	public int countdown;
 }
 
-signal PongSignal {
-	public int count;
+signal HitTheBall;
+
+signal MissedTheBall;
+
+interface BallIfc {
+	reception Ball;
 }
 
-interface PingInterface {
-	reception PingSignal;
-}
-
-interface PongInterface {
-	reception PongSignal;
+interface HitOrMissIfc {
+	reception HitTheBall;
+	reception MissedTheBall;
 }
 
 // Associations
 
-composition PongClass_InnerPongClass {
-	hidden container PongClass pong;
-	1 InnerPongClass inner;
+composition LeftPlayer {
+	hidden container Game inGame;
+	1 Player player;
 }
 
-composition TopClass_PingClass {
-	hidden container TopClass top;
-	1 PingClass ping;
+composition RightPlayer {
+	hidden container Game inGame;
+	1 Player player;
 }
 
-composition TopClass_PongClass {
-	hidden container TopClass top;
-	1 PongClass pong;
+composition PlayerOwnsRacket {
+	hidden container Player player;
+	1 Racket racket;
 }
 
 // Connectors
 
-connector Ping_Pong_Connector { // assembly connector
-	TopClass_PingClass.ping->PingClass.PingPort pingEnd;
-	TopClass_PongClass.pong->PongClass.PongPort pongEnd;
+connector Table { // assembly connector
+	LeftPlayer.player->Player.BallAtPlayerPort left;
+	RightPlayer.player->Player.BallAtPlayerPort right;
 }
 
-delegation Pong_InnerPong_Connector { // delegation connector
-	PongClass_InnerPongClass.pong->PongClass.PongPort pongEnd;
-	PongClass_InnerPongClass.inner->InnerPongClass.PongPort innerEnd;
+delegation PlayerUsesRacket {
+	PlayerOwnsRacket.player->Player.BallAtPlayerPort player;
+	PlayerOwnsRacket.racket->Racket.BallAtRacketPort racket;
 }
+
+delegation PlayerHitsOrMisses {
+	PlayerOwnsRacket.player->Player.ShoutPort player;
+	PlayerOwnsRacket.racket->Racket.HitOrMissPort withRacket;
+}
+

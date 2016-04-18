@@ -22,7 +22,7 @@ import hu.elte.txtuml.utils.eclipse.PackageUtils;
 
 public class ModelExportTestUtils {
 	private static final String PROJECT_FILE = ".project";
-	private static final String TEST_PROJECT_NAME = "hu.elte.txtuml.export.uml2.tests.models_";
+	private static final String TEST_PROJECT_NAME = "hu.elte.txtuml.export.uml2.tests.models";
 	private static final String TEST_PROJECT_PATH = "../../../examples/tests/" + TEST_PROJECT_NAME;
 	private static final String GEN_DIR = TEST_PROJECT_NAME + "/gen";
 	private static final String MODEL_PATH_PREFIX = "platform:/resource/" + GEN_DIR + "/";
