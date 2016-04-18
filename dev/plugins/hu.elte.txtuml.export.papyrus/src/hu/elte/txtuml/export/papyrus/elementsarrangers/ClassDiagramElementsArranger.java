@@ -9,26 +9,21 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Relationship;
 
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutTransformer;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutVisualizerManager;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.TxtUmlPixelDimensionProvider;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsMapper;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
+import hu.elte.txtuml.utils.Pair;
 
 public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
-
-	private static final int PIXELWIDTH_OF_CHARACTER = 12;
-	private static final int PIXELHEIGHT_OF_PROPERTY = 25;
-	private static final int MIN_CLASS_WIDTH = 100;
-	private static final int MAX_CLASS_WIDTH = 200;
-	private static final int MIN_CLASS_HEIGHT = 100;
-	private static final int MAX_CLASS_HEIGHT = 200;
 
 	private DiagramExportationReport report;
 	private Map<Element, Rectangle> elementbounds;
@@ -36,10 +31,12 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 	private TxtUMLElementsMapper elementsMapper;
 	private Map<Relationship, String> connectionSourceAnchors;
 	private Map<Relationship, String> connectionTargetAnchors;
+	private TxtUmlPixelDimensionProvider pixelDimensionProvider;
 
 	public ClassDiagramElementsArranger(DiagramExportationReport report, TxtUMLElementsMapper mapper) {
 		this.report = report;
 		this.elementsMapper = mapper;
+		this.pixelDimensionProvider = new TxtUmlPixelDimensionProvider(this.elementsMapper);
 	}
 
 	@Override
@@ -50,13 +47,15 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 		Set<RectangleObject> objects = report.getNodes();
 		Set<LineAssociation> links = report.getLinks();
 		List<Statement> statements = report.getStatements();
+		DiagramType dType = convertDiagramType(report.getType());
 
-		setPixelsizes(objects);
-
-		LayoutVisualizerManager vm = new LayoutVisualizerManager(objects, links, statements);
+		setPixelSizes(objects);
+		
+		LayoutVisualizerManager vm = new LayoutVisualizerManager(objects, links, statements, this.pixelDimensionProvider,
+				dType);
 		vm.addProgressMonitor(monitor);
 		vm.arrange();
-
+		
 		Set<RectangleObject> arrangedObjects = vm.getObjects();
 		Set<LineAssociation> arrangedLinks = vm.getAssociations();
 
@@ -73,6 +72,25 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 		monitor.worked(1);
 	}
 
+	private void setPixelSizes(Set<RectangleObject> objects) {
+		objects.forEach(object -> {
+			Pair<Integer, Integer> dimension = this.pixelDimensionProvider.getPixelDimensionsFor(object);
+			object.setPixelWidth(dimension.getFirst());
+			object.setPixelHeight(dimension.getSecond());
+		});
+	}
+
+	private DiagramType convertDiagramType(hu.elte.txtuml.layout.export.DiagramType type) {
+		switch (type) {
+		case Class:
+			return DiagramType.Class;
+		case StateMachine:
+			return DiagramType.State;
+		default:
+			return DiagramType.unknown;
+		}
+	}
+
 	private Map<Element, Rectangle> createElementsMapping(Set<RectangleObject> arrangedObjects) {
 		return arrangedObjects.stream()
 				.collect(Collectors.toMap(ro -> this.elementsMapper.findNode(ro.getName()),
@@ -85,28 +103,6 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 				.collect(Collectors.toMap(la -> this.elementsMapper.findConnection(la.getId()),
 						la -> la.getMinimalRoute().stream().map(p -> new Point(p.getX(), p.getY()))
 								.collect(Collectors.toList())));
-	}
-
-	private void setPixelsizes(Set<RectangleObject> objects) {
-		objects.forEach(object -> {
-			Element elem = this.elementsMapper.findNode(object.getName());
-			if (elem != null && elem instanceof Classifier) {
-				int width = ((Classifier) elem).getFeatures().stream()
-						.mapToInt((attribute) -> attribute.getName().length() * PIXELWIDTH_OF_CHARACTER).max()
-						.orElse(0);
-				width = width < MIN_CLASS_WIDTH ? MIN_CLASS_WIDTH : width;
-				width = width > MAX_CLASS_WIDTH ? MAX_CLASS_WIDTH : width;
-				
-				int height = ((Classifier) elem).getFeatures().size()* PIXELHEIGHT_OF_PROPERTY;
-				height = height < MIN_CLASS_HEIGHT ? MIN_CLASS_HEIGHT : height;
-				height = height > MAX_CLASS_HEIGHT ? MAX_CLASS_HEIGHT : height;
-				
-				
-				object.setPixelWidth(width);
-				object.setPixelHeight(height);
-			}
-		});
-
 	}
 
 	private Map<Relationship, String> createTargetAnchors(Set<LineAssociation> links) {

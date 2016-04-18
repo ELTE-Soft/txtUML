@@ -45,7 +45,8 @@ public class RectangleObjectTreeEnumerator implements Iterable<RectangleObject>,
 
 	@Override
 	public RectangleObject next() {
+		RectangleObject next = _objects.get(currentIndex);
 		++currentIndex;
-		return _objects.get(currentIndex);
+		return next;
 	}
 }
