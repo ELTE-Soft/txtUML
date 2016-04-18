@@ -114,6 +114,7 @@ public class ArrangeAssociations {
 		if (diagramAssocs == null)
 			return;
 
+		// Setup variables and default values
 		_gId = gid;
 		_options = opt;
 		_cellPositions = new HashMap<String, Point>();
@@ -128,6 +129,7 @@ public class ArrangeAssociations {
 		// Emit Event
 		ProgressManager.getEmitter().OnLinkArrangeStart();
 
+		// Arrange the links
 		arrange();
 
 		// Emit Event
@@ -140,22 +142,27 @@ public class ArrangeAssociations {
 		// Inflate diagram to start with a object width enough for the
 		// maximum number of links
 		defaultGrid();
+		
+		if(isPresentMultiLevelLinks())
+		{
+			//TODO
+		}
 
-		// Pre-define priorities
+		// Get default statements on links
 		DefaultAssocStatements das = new DefaultAssocStatements(_gId, _statements, _assocs);
 		_statements = das.value();
 		_gId = das.getGroupId();
 
-		Boolean repeat = true;
+		Boolean needRepeat = true;
 
-		// Arrange until OK
+		// Arrange until (needs a repeat or reached maximum try count)
 		Integer tryCount = 0;
-		while (repeat && tryCount <= MAXIMUM_TRY_COUNT) {
+		while (needRepeat && tryCount <= MAXIMUM_TRY_COUNT) {
 			++tryCount;
 
 			// Process statements, priority and direction
 			processStatements();
-			repeat = false;
+			needRepeat = false;
 
 			try {
 				// Maximum distance between objects
@@ -176,7 +183,7 @@ public class ArrangeAssociations {
 				if (_options.Logging)
 					Logger.sys.info("(Normal) Expanding grid!");
 
-				repeat = true;
+				needRepeat = true;
 				// Grid * 2
 				expandGrid();
 				continue;
@@ -218,14 +225,29 @@ public class ArrangeAssociations {
 	}
 
 	private void defaultGrid() {
-		Set<RectangleObject> result = new HashSet<RectangleObject>();
-		
 		Integer k = calculateMaxLinks();
 		
 		_widthOfCells = k;
 		_heightOfCells = k;
 
 		// Get the smallest of boxes to compute the grid dimensions
+		Pair<Double, Double> pixelPair = getPixelPerGrid(k);
+
+		// Set the grid sizes of boxes based on their pixel sizes
+		Set<RectangleObject> result = setBoxSizes(pixelPair);
+
+		// Set positions according to width/height of the cells
+		_objects = setBoxCells(result);
+
+		// Update the links' positions
+		updateLinks();
+
+		if (_options.Logging)
+			Logger.sys.info("(Default) Expanding Grid!");
+	}
+	
+	private Pair<Double, Double> getPixelPerGrid(Integer maxLinkNumber)
+	{
 		Integer smallestPixelWidth = _objects.stream().filter(box -> !box.getSpecial().equals(SpecialBox.Initial))
 				.min((o1, o2) -> {
 					return Integer.compare(o1.getPixelWidth(), o2.getPixelWidth());
@@ -234,11 +256,18 @@ public class ArrangeAssociations {
 				.min((o1, o2) -> {
 					return Integer.compare(o1.getPixelHeight(), o2.getPixelHeight());
 				}).get().getPixelHeight();
+		
+		return Pair.of(Math.floor(smallestPixelWidth / (maxLinkNumber + 2.0)),
+				Math.floor(smallestPixelHeight / (maxLinkNumber + 2.0)));
+	}
 
-		Double pixelPerGridWidth = Math.floor(smallestPixelWidth / (k + 2.0));
-		Double pixelPerGridHeight = Math.floor(smallestPixelHeight / (k + 2.0));
-
-		// Set the grid sizes of boxes based on their pixel sizes
+	private Set<RectangleObject> setBoxSizes(Pair<Double, Double> pixelPair)
+	{
+		Set<RectangleObject> result = new HashSet<RectangleObject>();
+		
+		Double pixelPerGridWidth = pixelPair.getFirst();
+		Double pixelPerGridHeight = pixelPair.getSecond();
+		
 		for (RectangleObject obj : _objects) {
 			RectangleObject mod = new RectangleObject(obj);
 
@@ -259,8 +288,12 @@ public class ArrangeAssociations {
 
 			result.add(mod);
 		}
-
-		// Set positions according to width/height of the cells
+		
+		return result;
+	}
+	
+	private Set<RectangleObject> setBoxCells(Set<RectangleObject> result)
+	{
 		for (RectangleObject o : result) {
 			Point tempPos = new Point();
 
@@ -270,30 +303,12 @@ public class ArrangeAssociations {
 			_cellPositions.put(o.getName(), new Point(tempPos));
 
 			// Calculate the position of the box in the cell
-			Integer freeGridCountWidth = _widthOfCells - o.getWidth();
-			Integer freeGridCountHeight = _heightOfCells - o.getHeight();
-
-			tempPos.setX(tempPos.getX() + freeGridCountWidth / 2);
-			tempPos.setY(tempPos.getY() - freeGridCountHeight / 2);
-
-			o.setPosition(tempPos);
+			o.setPosition(getPositionInCell(tempPos, o));
 		}
-
-		// Update the links' positions
-		for (LineAssociation a : _assocs) {
-			ArrayList<Point> route = new ArrayList<Point>();
-			route.add(result.stream().filter(o -> o.getName().equals(a.getFrom())).findFirst().get().getPosition());
-			route.add(result.stream().filter(o -> o.getName().equals(a.getTo())).findFirst().get().getPosition());
-
-			a.setRoute(route);
-		}
-
-		if (_options.Logging)
-			Logger.sys.info("(Default) Expanding Grid!");
-
-		_objects = result;
+		
+		return result;
 	}
-
+	
 	private Integer calculateCorridorSize(Integer cellSize, Double multiplier) {
 		Integer result = (int) Math.floor(cellSize * (multiplier + 1.0));
 
@@ -302,7 +317,57 @@ public class ArrangeAssociations {
 
 		return result;
 	}
+	
+	private void updateLinks()
+	{
+		for (LineAssociation a : _assocs) {
+			ArrayList<Point> route = new ArrayList<Point>();
+			route.add(_objects.stream().filter(o -> o.getName().equals(a.getFrom())).findFirst().get().getPosition());
+			route.add(_objects.stream().filter(o -> o.getName().equals(a.getTo())).findFirst().get().getPosition());
 
+			a.setRoute(route);
+		}
+	}
+	
+	private Point getPositionInCell(Point old_value, RectangleObject box)
+	{
+		Point result = new Point(old_value);
+		
+		Integer freeGridCountWidth = _widthOfCells - box.getWidth();
+		Integer freeGridCountHeight = _heightOfCells - box.getHeight();
+
+		result.setX(result.getX() + freeGridCountWidth / 2);
+		result.setY(result.getY() - freeGridCountHeight / 2);
+		
+		return result;
+	}
+	
+	private boolean isPresentMultiLevelLinks()
+	{
+		for(LineAssociation link : _assocs)
+		{
+			if(isEndInInnerDiagram(link.getTo()) || isEndInInnerDiagram(link.getFrom()))
+			{
+				return true;
+			}	
+		}
+		
+		return false;
+	}
+	
+	private boolean isEndInInnerDiagram(String boxName)
+	{
+		for(RectangleObject box : _objects)
+		{
+			if(box.getName().equals(boxName))
+			{
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	private void expandGrid() throws ConversionException {
 		Set<RectangleObject> result = new HashSet<RectangleObject>();
 		_widthOfCells = _widthOfCells * 2;
@@ -316,14 +381,9 @@ public class ArrangeAssociations {
 			// Calculate the position of the box in the cell
 			Point tempPos = Point.Multiply(_cellPositions.get(o.getName()), 2);
 			_cellPositions.put(o.getName(), new Point(tempPos));
-
-			Integer freeGridCountWidth = _widthOfCells - o.getWidth();
-			Integer freeGridCountHeight = _heightOfCells - o.getHeight();
-
-			tempPos.setX(tempPos.getX() + freeGridCountWidth / 2);
-			tempPos.setY(tempPos.getY() - freeGridCountHeight / 2);
-
-			mod.setPosition(tempPos);
+			
+			// Calculate the position of the box in the cell
+			mod.setPosition(getPositionInCell(tempPos, o));
 
 			result.add(mod);
 		}

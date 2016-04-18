@@ -36,6 +36,7 @@ public class RectangleObject
 		return _name;
 	}
 	
+	//TODO
 	public Boolean hasInner()
 	{
 		return (null != _inner);

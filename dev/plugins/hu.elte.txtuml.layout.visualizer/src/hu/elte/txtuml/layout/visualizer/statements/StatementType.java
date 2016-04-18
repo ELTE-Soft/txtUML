@@ -10,6 +10,14 @@ public enum StatementType
 	 */
 	unknown,
 	/**
+	 * Corridor size.
+	 */
+	corridorsize,
+	/**
+	 * Overlap arrange mode.
+	 */
+	overlaparrange,
+	/**
 	 * North
 	 */
 	north,
@@ -56,22 +64,14 @@ public enum StatementType
 	/**
 	 * Horizontal
 	 */
-	horizontal,
-	/**
-	 * Corridor size.
-	 */
-	corridorsize,
-	/**
-	 * Overlap arrange mode.
-	 */
-	overlaparrange;
+	horizontal;
 	
 	/**
-	 * Returns whether {@link StatementType} st is appliable on Objects/Boxes.
+	 * Returns whether {@link StatementType} st is applicable on Objects/Boxes.
 	 * 
 	 * @param st
 	 *            {@link StatementType} to check.
-	 * @return whether {@link StatementType} st is appliable on Objects/Boxes.
+	 * @return whether {@link StatementType} st is applicable on Objects/Boxes.
 	 */
 	public static boolean isOnObjects(StatementType st)
 	{
