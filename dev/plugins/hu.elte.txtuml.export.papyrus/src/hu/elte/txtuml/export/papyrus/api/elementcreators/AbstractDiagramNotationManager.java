@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.api;
+package hu.elte.txtuml.export.papyrus.api.elementcreators;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -32,13 +32,13 @@ import org.eclipse.uml2.uml.Element;
 
 import hu.elte.txtuml.utils.Logger;
 
-public class AbstractDiagramElementCreator {
+public class AbstractDiagramNotationManager {
 
 	protected TransactionalEditingDomain domain;
 	
 	protected DiagramElementTypes types;
 
-	protected AbstractDiagramElementCreator(){
+	protected AbstractDiagramNotationManager(){
 		
 		IProgressService progressService = PlatformUI.getWorkbench()
 				.getProgressService();

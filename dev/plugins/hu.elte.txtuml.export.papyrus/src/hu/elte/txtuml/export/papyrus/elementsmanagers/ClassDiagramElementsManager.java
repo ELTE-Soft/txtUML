@@ -11,7 +11,7 @@ import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 
-import hu.elte.txtuml.export.papyrus.api.ClassDiagramElementCreator;
+import hu.elte.txtuml.export.papyrus.api.elementcreators.ClassDiagramNotationManager;
 import hu.elte.txtuml.export.papyrus.elementproviders.ClassDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ClassDiagramElementsArranger;
@@ -21,25 +21,14 @@ import hu.elte.txtuml.export.papyrus.elementsarrangers.ClassDiagramElementsArran
  */
 public class ClassDiagramElementsManager extends AbstractDiagramElementsManager {
 
-	protected ClassDiagramElementCreator elementCreator;
+	protected ClassDiagramNotationManager notationManager;
 	protected ClassDiagramElementsProvider elementsProvider;
 	protected ClassDiagramElementsArranger arranger;
 
-	/**
-	 * The Constructor
-	 * 
-	 * @param diagram
-	 *            - The diagram which should be populated
-	 * @param domain
-	 *            - The TransactionalEditingDomain
-	 * @param monitor
-	 *            - A ProgressMonitor which can be informed about the state of
-	 *            diagram generation
-	 */
 	public ClassDiagramElementsManager(Diagram diagram, ClassDiagramElementsProvider provider,
 			TransactionalEditingDomain domain, ClassDiagramElementsArranger arranger, IProgressMonitor monitor) {
 		super(diagram);
-		this.elementCreator = new ClassDiagramElementCreator(domain); // TODO:
+		this.notationManager = new ClassDiagramNotationManager(domain); // TODO:
 																		// Consider
 																		// DI
 		this.arranger = arranger;
@@ -53,14 +42,6 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 		this.monitor = monitor;
 	}
 
-	/**
-	 * The Constructor
-	 * 
-	 * @param diagram
-	 *            - The diagram which should be populated
-	 * @param domain
-	 *            - The TransactionalEditingDomain
-	 */
 	public ClassDiagramElementsManager(Diagram diagram, ClassDiagramElementsProvider provider,
 			TransactionalEditingDomain domain, ClassDiagramElementsArranger arranger) {
 		this(diagram, provider, domain, arranger, new NullProgressMonitor());
@@ -74,12 +55,12 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 	 */
 	@Override
 	public void addElementsToDiagram() {
-		elementsProvider.getClasses().forEach((clazz) -> this.elementCreator.createClassForDiagram(this.diagram, clazz,
+		this.elementsProvider.getClasses().forEach((clazz) -> this.notationManager.createClassForDiagram(this.diagram, clazz,
 				this.arranger.getBoundsForElement(clazz), this.monitor));
-		elementsProvider.getSignals().forEach((signal) -> this.elementCreator.createSignalForDiagram(this.diagram,
+		this.elementsProvider.getSignals().forEach((signal) -> this.notationManager.createSignalForDiagram(this.diagram,
 				signal, this.arranger.getBoundsForElement(signal), this.monitor));
 
-		elementsProvider.getAssociations().forEach((assoc) -> {
+		this.elementsProvider.getAssociations().forEach((assoc) -> {
 			// A txtUML scpecific implementation. Assoiciations are exported
 			// in a way that they are the owner of both ends
 			// TODO: This is NOT sure (Must ask nboldi), and logic has to be
@@ -92,12 +73,12 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 			List<Point> route = this.arranger.getRouteForConnection(assoc);
 			String sourceAnchor = this.arranger.getSourceAnchorForConnection(assoc);
 			String targetAnchor = this.arranger.getTargetAnchorForConnection(assoc);
-			this.elementCreator.createAssociationForNodes((Classifier) memberT1, (Classifier) memberT2, assoc, route,
+			this.notationManager.createAssociationForNodes((Classifier) memberT1, (Classifier) memberT2, assoc, route,
 					sourceAnchor, targetAnchor, this.diagram, this.monitor);
 		});
 
-		elementsProvider.getGeneralizations()
-				.forEach((generalization) -> this.elementCreator.createGeneralizationForNodes(generalization,
+		this.elementsProvider.getGeneralizations()
+				.forEach((generalization) -> this.notationManager.createGeneralizationForNodes(generalization,
 						this.arranger.getRouteForConnection(generalization),
 						this.arranger.getSourceAnchorForConnection(generalization),
 						this.arranger.getTargetAnchorForConnection(generalization), this.diagram, this.monitor));

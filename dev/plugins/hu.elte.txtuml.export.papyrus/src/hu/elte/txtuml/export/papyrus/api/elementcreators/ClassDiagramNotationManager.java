@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.api;
+package hu.elte.txtuml.export.papyrus.api.elementcreators;
 
 import java.util.List;
 
@@ -31,13 +31,13 @@ import org.eclipse.uml2.uml.Signal;
 
 import hu.elte.txtuml.utils.Logger;
 
-public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
+public class ClassDiagramNotationManager extends AbstractDiagramNotationManager {
 
 	private static final PreferencesHint diagramPrefHint = UMLDiagramEditorPlugin.DIAGRAM_PREFERENCES_HINT;
 
 	private static final Rectangle defaultClassBounds = new Rectangle(0, 0, 100, 100);
 
-	public ClassDiagramElementCreator(TransactionalEditingDomain domain) {
+	public ClassDiagramNotationManager(TransactionalEditingDomain domain) {
 		this.domain = domain;
 	}
 
@@ -47,7 +47,7 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 		Runnable runnable = () -> {
 			String hint = ((IHintedType) UMLElementTypes.Class_2008).getSemanticHint();
 			Node newNode = ViewService.createNode(diagram, objectToDisplay, hint,
-					ClassDiagramElementCreator.diagramPrefHint);
+					ClassDiagramNotationManager.diagramPrefHint);
 
 			newNode.setLayoutConstraint(createBounds(bounds, defaultClassBounds));
 
@@ -73,7 +73,7 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 
 		Runnable runnable = () -> {
 			String hint = ((IHintedType) UMLElementTypes.Property_3012).getSemanticHint();
-			ViewService.createNode(comp, propertyToDisplay, hint, ClassDiagramElementCreator.diagramPrefHint);
+			ViewService.createNode(comp, propertyToDisplay, hint, ClassDiagramNotationManager.diagramPrefHint);
 		};
 
 		runInTransactionalCommand(runnable, "Creating Property for Node " + node, monitor);
@@ -89,7 +89,7 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 
 		Runnable runnable = () -> {
 			String hint = ((IHintedType) UMLElementTypes.Operation_3013).getSemanticHint();
-			ViewService.createNode(comp, operationToDisplay, hint, ClassDiagramElementCreator.diagramPrefHint);
+			ViewService.createNode(comp, operationToDisplay, hint, ClassDiagramNotationManager.diagramPrefHint);
 		};
 
 		runInTransactionalCommand(runnable, "Creating Operation for Node " + node, monitor);
@@ -109,7 +109,7 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 
 		Runnable runnable = () -> {
 			Edge edge = (Edge) ViewService.getInstance().createEdge(elementType, diagram, hint, ViewUtil.APPEND,
-					ClassDiagramElementCreator.diagramPrefHint);
+					ClassDiagramNotationManager.diagramPrefHint);
 			edge.setElement(assoc);
 			edge.setSource(sourceView);
 			edge.setTarget(targetView);
@@ -132,7 +132,7 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 
 		Runnable runnable = () -> {
 			Edge edge = (Edge) ViewService.getInstance().createEdge(elementType, diagram, hint, ViewUtil.APPEND,
-					ClassDiagramElementCreator.diagramPrefHint);
+					ClassDiagramNotationManager.diagramPrefHint);
 			edge.setElement(generalization);
 			edge.setSource(sourceView);
 			edge.setTarget(targetView);
