@@ -63,7 +63,7 @@ class NameFieldAccessExporter extends FieldAccessExporter<Name> {
 		if (source instanceof QualifiedName) {
 			exportExpression((source as QualifiedName).qualifier)
 		} else {
-			new ThisExporter(this).createThis((source.resolveBinding as IVariableBinding).declaringClass)
+			thisRef((source.resolveBinding as IVariableBinding).declaringClass.fetchType)
 		}
 	}
 
@@ -89,7 +89,7 @@ class SuperFieldAccessExporter extends FieldAccessExporter<SuperFieldAccess> {
 	override resolveBinding(SuperFieldAccess source) { source.resolveFieldBinding }
 
 	override getExpression(SuperFieldAccess source) {
-		new ThisExporter(this).createThis(source.resolveFieldBinding.declaringClass)
+		thisRef(source.resolveFieldBinding.declaringClass.fetchType)
 	}
 }
 

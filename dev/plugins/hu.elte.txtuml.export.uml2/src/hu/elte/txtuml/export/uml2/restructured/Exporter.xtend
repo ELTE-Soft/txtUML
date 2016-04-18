@@ -7,7 +7,6 @@ import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.CreateActionExp
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.CreateLinkActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.DeleteActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.LogActionExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.PortActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.ReadLinkActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.SelectionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.SendActionExporter
@@ -52,13 +51,17 @@ import hu.elte.txtuml.export.uml2.restructured.statemachine.TransitionExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.AssociationEndExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.AssociationExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.ClassExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.ConnectorEndExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.ConnectorExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.DataTypeExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.DefaultConstructorBodyExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.DefaultConstructorExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.FieldExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.InterfaceExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.OperationExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.PackageExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.ParameterExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.PortExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.SignalExporter
 import java.util.List
 import java.util.function.Consumer
@@ -102,6 +105,7 @@ import org.eclipse.uml2.uml.Action
 import org.eclipse.uml2.uml.Class
 import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.ExecutableNode
+import org.eclipse.uml2.uml.PackageableElement
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
 
@@ -195,7 +199,8 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 			ITypeBinding:
 				#[new ClassExporter(this), new AssociationExporter(this), new AssociationEndExporter(this),
 					new StateExporter(this), new InitStateExporter(this), new DataTypeExporter(this),
-					new TransitionExporter(this), new SignalExporter(this)]
+					new TransitionExporter(this), new SignalExporter(this), new PortExporter(this),
+					new InterfaceExporter(this), new ConnectorExporter(this), new ConnectorEndExporter(this)]
 			IMethodBinding:
 				#[new DefaultConstructorExporter(this), new DefaultConstructorBodyExporter(this),
 					new OperationExporter(this), new MethodActivityExporter(this), new SMActivityExporter(this)]
@@ -212,7 +217,6 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 					new SendActionExporter(this),
 					new UnlinkActionExporter(this),
 					new ConnectActionExporter(this),
-					new PortActionExporter(this),
 					new CreateActionExporter(this),
 					new DeleteActionExporter(this),
 					new StartActionExporter(this),
@@ -285,6 +289,10 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 	/** Auto-exports the element as an expression (no pre-store) */
 	def exportExpression(Expression source) {
 		exportElement(source, source, []) as Action
+	}
+
+	def void storePackaged(PackageableElement pkg) {
+		if(parent instanceof Exporter<?, ?, ?>) parent.storePackaged(pkg)
 	}
 
 	/**

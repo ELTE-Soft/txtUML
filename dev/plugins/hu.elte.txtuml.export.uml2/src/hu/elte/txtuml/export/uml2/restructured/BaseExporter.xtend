@@ -2,18 +2,24 @@ package hu.elte.txtuml.export.uml2.restructured
 
 import hu.elte.txtuml.export.uml2.restructured.activity.ActivityExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.MethodActivityExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.SMActivityExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.BlockExporter
 import hu.elte.txtuml.export.uml2.restructured.statemachine.GuardExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.AssociationEndExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.AssociationExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.ClassExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.ConnectorEndExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.ConnectorExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.ConnectorWrapperExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.DataTypeExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.DefaultConstructorBodyExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.DefaultConstructorExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.FieldExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.InterfaceExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.OperationExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.PackageExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.ParameterExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.PortExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.SignalEventExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.SignalExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.SignalFactoryExporter
@@ -27,16 +33,19 @@ import org.eclipse.jdt.core.dom.TypeDeclaration
 import org.eclipse.uml2.uml.Activity
 import org.eclipse.uml2.uml.Association
 import org.eclipse.uml2.uml.Class
+import org.eclipse.uml2.uml.Connector
+import org.eclipse.uml2.uml.ConnectorEnd
 import org.eclipse.uml2.uml.Constraint
 import org.eclipse.uml2.uml.DataType
 import org.eclipse.uml2.uml.Element
+import org.eclipse.uml2.uml.Interface
 import org.eclipse.uml2.uml.Operation
 import org.eclipse.uml2.uml.Package
+import org.eclipse.uml2.uml.Port
 import org.eclipse.uml2.uml.Property
 import org.eclipse.uml2.uml.SequenceNode
 import org.eclipse.uml2.uml.Signal
 import org.eclipse.uml2.uml.SignalEvent
-import hu.elte.txtuml.export.uml2.restructured.activity.SMActivityExporter
 
 /**
  * Base class for exporters, methods to export different kinds of elements using specific exporters.
@@ -63,8 +72,12 @@ abstract class BaseExporter<S, A, R extends Element> {
 		cache.export(new PackageExporter(this), pf, pf, store)
 	}
 
-	def exportClass(Package pkg, TypeDeclaration td, Consumer<Class> store) {
+	def exportClass(TypeDeclaration td, Consumer<Class> store) {
 		cache.export(new ClassExporter(this), td, td.resolveBinding, store)
+	}
+
+	def exportInterface(TypeDeclaration td, Consumer<Interface> store) {
+		cache.export(new InterfaceExporter(this), td, td.resolveBinding, store)
 	}
 	
 	def exportDataType(TypeDeclaration td, Consumer<DataType> store) {
@@ -89,6 +102,22 @@ abstract class BaseExporter<S, A, R extends Element> {
 
 	def exportAssociationEnd(TypeDeclaration td, Consumer<Property> store) {
 		cache.export(new AssociationEndExporter(this), td, td.resolveBinding, store)
+	}
+	
+	def exportPort(TypeDeclaration td, Consumer<Port> store) {
+		cache.export(new PortExporter(this), td, td.resolveBinding, store)
+	}
+	
+	def exportConnector(TypeDeclaration td, Consumer<Connector> store) {
+		cache.export(new ConnectorExporter(this), td, td.resolveBinding, store)
+	}
+
+	def exportConnectorEnd(TypeDeclaration td, Consumer<ConnectorEnd> store) {
+		cache.export(new ConnectorEndExporter(this), td, td.resolveBinding, store)
+	}
+	
+	def exportConnectorWrapper(TypeDeclaration td, Consumer<Class> store) {
+		cache.export(new ConnectorWrapperExporter(this), td, td.resolveBinding, store)
 	}
 
 	def exportField(IVariableBinding td, Consumer<Property> store) {

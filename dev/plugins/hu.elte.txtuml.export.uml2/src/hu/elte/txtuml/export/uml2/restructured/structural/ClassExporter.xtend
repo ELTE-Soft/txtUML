@@ -31,6 +31,7 @@ class ClassExporter extends Exporter<TypeDeclaration, ITypeBinding, Class> {
 		val typeBnd = typeDecl.resolveBinding
 		result.isAbstract = ElementTypeTeller.isAbstract(typeBnd)
 		result.name = typeBnd.name
+		// fields and methods
 		typeBnd.declaredFields.forEach[exportField[result.ownedAttributes += it]]
 		typeDecl.methods.forEach[exportOperation[result.ownedOperations += it]]
 		typeBnd.declaredMethods.filter[isDefaultConstructor].forEach [
@@ -38,11 +39,16 @@ class ClassExporter extends Exporter<TypeDeclaration, ITypeBinding, Class> {
 			exportDefaultConstructorBody[result.ownedBehaviors += it]
 		]
 		typeDecl.methods.forEach[exportActivity[result.ownedBehaviors += it]]
+		// superclasses
 		if (typeDecl.superclassType != null &&
 			typeDecl.superclassType.resolveBinding.qualifiedName != ModelClass.canonicalName) {
 			result.createGeneralization(fetchType(typeDecl.superclassType.resolveBinding) as Classifier)
 		}
-		if (!typeDecl.types.isEmpty) {
+		typeDecl.types.filter[ElementTypeTeller.isPort(it)].forEach[
+			exportPort(it)[result.ownedPorts += it]
+		]
+		// state machine elments
+		if (!typeDecl.types.filter[ElementTypeTeller.isState(it)].isEmpty) {
 			val sm = result.createClassifierBehavior(result.name, UMLPackage.Literals.STATE_MACHINE) as StateMachine
 			region = sm.createRegion(result.name)
 			typeDecl.types.forEach[exportElement(it, it.resolveBinding, [storeSMElement])]

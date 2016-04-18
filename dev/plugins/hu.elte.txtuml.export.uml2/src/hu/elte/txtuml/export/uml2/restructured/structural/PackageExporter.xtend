@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.uml2.restructured.structural
 
+import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import hu.elte.txtuml.export.uml2.restructured.Exporter
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller
 import hu.elte.txtuml.utils.jdt.SharedUtils
@@ -11,7 +12,7 @@ import org.eclipse.jdt.core.IPackageFragmentRoot
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration
 import org.eclipse.jdt.core.dom.TypeDeclaration
 import org.eclipse.uml2.uml.Package
-import hu.elte.txtuml.export.uml2.restructured.BaseExporter
+import org.eclipse.uml2.uml.PackageableElement
 
 abstract class AbstractPackageExporter<T extends Package> extends Exporter<IPackageFragment, IPackageFragment, T> {
 
@@ -34,11 +35,15 @@ abstract class AbstractPackageExporter<T extends Package> extends Exporter<IPack
 	def exportCompUnit(ICompilationUnit compUnit) {
 		parseCompUnit(compUnit).types.forEach[exportType]
 	}
+	
+	override storePackaged(PackageableElement pkg) {
+		result.packagedElements += pkg
+	}
 
 	def dispatch exportType(TypeDeclaration decl) {
 		switch decl {
 			case ElementTypeTeller.isModelClass(decl):
-				exportClass(result, decl)[result.packagedElements += it]
+				exportClass(decl)[result.packagedElements += it]
 			case ElementTypeTeller.isAssociation(decl):
 				exportAssociation(decl)[result.packagedElements += it]
 			case ElementTypeTeller.isSignal(decl): {
@@ -48,6 +53,12 @@ abstract class AbstractPackageExporter<T extends Package> extends Exporter<IPack
 			}
 			case ElementTypeTeller.isDataType(decl.resolveBinding): {
 				exportDataType(decl)[result.packagedElements += it]
+			}
+			case ElementTypeTeller.isConnector(decl): {
+				exportConnectorWrapper(decl)[result.packagedElements += it]
+			}
+			case ElementTypeTeller.isInterface(decl): {
+				exportInterface(decl)[result.packagedElements += it]
 			}
 			default:
 				throw new IllegalArgumentException("Illegal type declaration: " + decl.toString)

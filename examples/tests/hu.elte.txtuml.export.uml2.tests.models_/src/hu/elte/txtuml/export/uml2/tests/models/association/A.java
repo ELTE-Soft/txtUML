@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.uml2.tests.models.association;
 
 import hu.elte.txtuml.api.model.Association;
+import hu.elte.txtuml.api.model.Composition;
 import hu.elte.txtuml.api.model.Max;
 import hu.elte.txtuml.api.model.Min;
 import hu.elte.txtuml.api.model.ModelClass;
@@ -72,6 +73,22 @@ class One_Hidden_A_Many_B extends Association {
 	}
 
 	class BEnd extends Many<B> {
+	}
+}
+
+class Container_Many extends Composition {
+	class Cont_End extends Container<A> {
+	}
+
+	class Contained_End extends Many<B> {
+	}
+}
+
+class Hidden_Container_Many extends Composition {
+	class Hidden_Cont_End extends HiddenContainer<A> {
+	}
+
+	class Contained_End extends Many<B> {
 	}
 }
 

@@ -26,6 +26,8 @@ import org.eclipse.uml2.uml.SequenceNode
 import org.eclipse.uml2.uml.ValueSpecificationAction
 import org.eclipse.uml2.uml.Variable
 import hu.elte.txtuml.api.model.ModelClass
+import org.eclipse.uml2.uml.Type
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.ThisExporter
 
 /**
  * Base class for all exporters on the statement-expression level.
@@ -150,4 +152,6 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 	def write(Variable variable, Action newValue) {
 		new AssignToVariableExporter(this).createWriteVariableAction(variable, newValue)
 	}
+	
+	def thisRef(Type cls) { new ThisExporter(this).createThis(cls) }
 }

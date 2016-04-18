@@ -37,7 +37,7 @@ abstract class CallExporter<T> extends ActionExporter<T, CallOperationAction> {
 		val operation = fetchElement(binding) as Operation
 		if (!Modifier.isStatic(binding.modifiers)) {
 			val target = exportExpression(source.expression) ?:
-				new ThisExporter(this).createThis(binding.declaringClass.fetchType)
+				thisRef(binding.declaringClass.fetchType)
 
 			createCall(result, operation, target, source.arguments)
 		} else {

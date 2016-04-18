@@ -26,6 +26,7 @@ import hu.elte.txtuml.api.model.AssociationEnd;
 import hu.elte.txtuml.api.model.BehaviorPort;
 import hu.elte.txtuml.api.model.Composition;
 import hu.elte.txtuml.api.model.ConnectorBase;
+import hu.elte.txtuml.api.model.ConnectorBase.ConnectorEnd;
 import hu.elte.txtuml.api.model.DataType;
 import hu.elte.txtuml.api.model.Interface;
 import hu.elte.txtuml.api.model.Model;
@@ -220,6 +221,10 @@ public final class ElementTypeTeller {
 		return hasSuperClass(value, AssociationEnd.class.getCanonicalName());
 	}
 
+	public static boolean isConnectorEnd(ITypeBinding value) {
+		return hasSuperClass(value, ConnectorEnd.class.getCanonicalName());
+	}
+
 	public static boolean isComposition(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Composition.class);
 	}
@@ -232,12 +237,24 @@ public final class ElementTypeTeller {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Port.class);
 	}
 
+	public static boolean isPort(ITypeBinding value) {
+		return hasSuperClass(value, Port.class.getCanonicalName());
+	}
+	
 	public static boolean isInterface(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Interface.class);
+	}
+	
+	public static boolean isInterface(ITypeBinding bnd) {
+		return SharedUtils.typeIsAssignableFrom(bnd, Interface.class);
 	}
 
 	public static boolean isConnector(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ConnectorBase.class);
+	}
+	
+	public static boolean isConnector(ITypeBinding typeDeclaration) {
+		return hasSuperClass(typeDeclaration, ConnectorBase.class.getCanonicalName());
 	}
 
 	public static boolean isSpecificClassifier(TypeDeclaration classifierDeclaration) {

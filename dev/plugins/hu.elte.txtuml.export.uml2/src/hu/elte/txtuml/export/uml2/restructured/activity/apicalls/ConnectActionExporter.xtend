@@ -6,8 +6,12 @@ import org.eclipse.jdt.core.dom.MethodInvocation
 import org.eclipse.jdt.core.dom.TypeLiteral
 import org.eclipse.uml2.uml.CreateLinkAction
 import org.eclipse.uml2.uml.LinkEndData
+import hu.elte.txtuml.export.uml2.restructured.activity.ActionExporter
+import org.eclipse.uml2.uml.ConnectorEnd
+import org.eclipse.uml2.uml.Property
+import org.eclipse.jdt.core.dom.ITypeBinding
 
-class ConnectActionExporter extends LinkActionExporterBase<CreateLinkAction> {
+class ConnectActionExporter extends ActionExporter<MethodInvocation, CreateLinkAction> {
 
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
@@ -37,6 +41,24 @@ class ConnectActionExporter extends LinkActionExporterBase<CreateLinkAction> {
 		}
 		result.endData += #[leftEnd, rightEnd]
 		result.name = '''connect «leftEnd.value.name» to «rightEnd.value.name»'''
+	}
+
+	protected def createEnd(LinkEndData end, ITypeBinding endType, Expression endValue) {
+		end.end = fetchElement(endType.superclass.typeArguments.get(0)) as Property
+		if (endValue != null) {
+			if (endValue instanceof MethodInvocation) {
+				val endInvoke = endValue as MethodInvocation
+				if (endInvoke.resolveMethodBinding.name == "port") {
+					val expr = exportExpression(endInvoke.expression) ?:
+						thisRef(endInvoke.resolveMethodBinding.declaringClass.fetchType)
+					end.value = result.createInputValue(expr.name, end.end.type)
+					expr.objectFlow(end.value)
+					return end
+				}
+			}
+			throw new IllegalArgumentException("Bad Action.connect format")
+		}
+		return end
 	}
 
 }

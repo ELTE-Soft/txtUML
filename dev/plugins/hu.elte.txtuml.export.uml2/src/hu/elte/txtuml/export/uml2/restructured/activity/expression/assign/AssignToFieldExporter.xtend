@@ -2,7 +2,6 @@ package hu.elte.txtuml.export.uml2.restructured.activity.expression.assign
 
 import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.SimpleFieldAccessExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.expression.ThisExporter
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller
 import org.eclipse.jdt.core.dom.Assignment
 import org.eclipse.jdt.core.dom.FieldAccess
@@ -31,7 +30,7 @@ class AssignToFieldExporter extends AssignExporter {
 			FieldAccess: lhs.resolveFieldBinding
 		}
 		val base = switch lhs {
-			SimpleName: new ThisExporter(this).createThis((fieldName as IVariableBinding).declaringClass)
+			SimpleName: thisRef((fieldName as IVariableBinding).declaringClass.fetchType)
 			QualifiedName: if (lhs.qualifier.resolveBinding instanceof IVariableBinding) exportExpression(lhs.qualifier)
 			FieldAccess: exportExpression(lhs.expression)
 		}
