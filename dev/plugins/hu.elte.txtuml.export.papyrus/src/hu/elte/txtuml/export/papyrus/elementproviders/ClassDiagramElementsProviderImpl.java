@@ -23,13 +23,13 @@ import org.eclipse.uml2.uml.Signal;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsMapper;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 
-public class TxtUMLClassDiagramElementsProvider implements ClassDiagramElementsProvider {
+public class ClassDiagramElementsProviderImpl implements ClassDiagramElementsProvider {
 
 	private DiagramExportationReport report;
 	private Collection<Element> nodes;
 	private Collection<Relationship> connections;
 
-	public TxtUMLClassDiagramElementsProvider(DiagramExportationReport report, TxtUMLElementsMapper mapper) {
+	public ClassDiagramElementsProviderImpl(DiagramExportationReport report, TxtUMLElementsMapper mapper) {
 		this.report = report;
 		cacheNodes(mapper);
 		cacheConnections(mapper);

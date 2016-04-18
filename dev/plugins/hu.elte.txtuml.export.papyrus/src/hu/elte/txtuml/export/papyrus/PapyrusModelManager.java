@@ -1,6 +1,7 @@
-package hu.elte.txtuml.export.papyrus.papyrusmodelmanagers;
+package hu.elte.txtuml.export.papyrus;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -13,17 +14,28 @@ import org.eclipse.papyrus.infra.core.resource.ModelSet;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.infra.core.services.ServicesRegistry;
 import org.eclipse.papyrus.infra.core.utils.ServiceUtils;
+import org.eclipse.papyrus.uml.diagram.clazz.CreateClassDiagramCommand;
+import org.eclipse.papyrus.uml.diagram.statemachine.CreateStateMachineDiagramCommand;
 import org.eclipse.papyrus.uml.tools.model.UmlModel;
+import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.StateMachine;
 
-import hu.elte.txtuml.export.papyrus.DiagramManager;
-import hu.elte.txtuml.export.papyrus.UMLModelManager;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
-import hu.elte.txtuml.utils.eclipse.Dialogs;
+import hu.elte.txtuml.export.papyrus.elementproviders.ClassDiagramElementsProvider;
+import hu.elte.txtuml.export.papyrus.elementproviders.ClassDiagramElementsProviderImpl;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.ClassDiagramElementsArranger;
+import hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager;
+import hu.elte.txtuml.export.papyrus.elementsmanagers.ClassDiagramElementsManager;
+import hu.elte.txtuml.export.papyrus.elementsmanagers.StateMachineDiagramElementsManager;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsMapper;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
+import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.utils.Pair;
 
 /**
  * Controls the Papyrus Model
  */
-public abstract class AbstractPapyrusModelManager {
+public class PapyrusModelManager {
 
 	
 	/**
@@ -59,6 +71,11 @@ public abstract class AbstractPapyrusModelManager {
 	 * The resource were the elements are stored
 	 */
 	protected UmlModel model;
+	
+	private TxtUMLLayoutDescriptor descriptor;
+	
+	private TxtUMLElementsMapper mapper;
+
 
 	
 	/**
@@ -66,7 +83,7 @@ public abstract class AbstractPapyrusModelManager {
 	 * @param editor - The Editor to which the PapyrusModelManager will be attached
 	 * @param model - The Uml Model manager
 	 */
-	public AbstractPapyrusModelManager(ServicesRegistry registry){
+	public PapyrusModelManager(ServicesRegistry registry){
 		try{
 			this.modelSet = registry.getService(ModelSet.class);
 			this.domain = ServiceUtils.getInstance()
@@ -109,45 +126,70 @@ public abstract class AbstractPapyrusModelManager {
 		
 		for(int i=0; i<diagNum*2; i=i+2){
 			Diagram diagram = diags.get(i/2);
-			diagramManager.openDiagram(diagram);
 			monitor.subTask("Filling diagrams "+(i+2)/2+"/"+diagNum);
 			addElementsToDiagram(diagram, monitor);
 			monitor.worked(1);
-			
-			try{
-			//	arrangeElementsOfDiagram(diagram, monitor);
-			}catch(Throwable e){
-				Dialogs.errorMsgb("Arrange error",
-						"Error occured during arrangement of diagram '" +diagram.getName()+"'.", e);
-			}
 		}
 	}
-	
-	/**
-	 * Arranges the diagram elements 
-	 * @param diagram - The diagram 
-	 * @param monitor - The progress monitor
-	 * @throws ArrangeException
-	 */
-	protected abstract void arrangeElementsOfDiagram(Diagram diagram, IProgressMonitor monitor) throws ArrangeException;
 	
 	/**
 	 * Adds the suitable elements to the diagram
 	 * @param diagram - The diagram 
 	 * @param monitor - The progress monitor
 	 */
-	protected abstract void addElementsToDiagram(Diagram diagram, IProgressMonitor monitor);
+	protected void addElementsToDiagram(Diagram diagram, IProgressMonitor monitor) {
+		AbstractDiagramElementsManager diagramElementsManager;
+
+		DiagramExportationReport report = this.descriptor.getReport(diagram.getName());
+		
+		if (diagram.getType().equals(diagramType_CD)) {
+			ClassDiagramElementsProvider provider = new ClassDiagramElementsProviderImpl(report, this.mapper);
+			ClassDiagramElementsArranger arranger = new ClassDiagramElementsArranger(report, this.mapper);
+			diagramElementsManager = new ClassDiagramElementsManager(diagram,
+					provider, this.domain, arranger, monitor);
+		} else if (diagram.getType().equals(diagramType_SMD)) {
+			diagramElementsManager = new StateMachineDiagramElementsManager(diagram, this.domain, monitor);
+		} else {
+			return;
+		}
+
+		diagramElementsManager.addElementsToDiagram();
+	}
 	
 	/**
 	 * Creates the diagrams
 	 * @param monitor - The progress monitor
 	 */
-	protected abstract void createDiagrams(IProgressMonitor monitor);
+	protected void createDiagrams(IProgressMonitor monitor) {
+		monitor.beginTask("Generating empty diagrams", 100);
+		monitor.subTask("Creating empty diagrams...");
+
+		if (PreferencesManager.getBoolean(PreferencesManager.CLASS_DIAGRAM_PREF)) {
+			List<Pair<String, Element>> classDiagramRoots = mapper.getDiagramRootsWithDiagramNames(this.descriptor);
+			
+			CreateClassDiagramCommand cmd = new CreateClassDiagramCommand();
+			for (Pair<String, Element> classDiagramRoot : classDiagramRoots) {
+				diagramManager.createDiagram(classDiagramRoot.getSecond(), classDiagramRoot.getFirst(), cmd,
+						this.domain);
+			}
+		}
+
+		//TODO: StateMachines should come from the Description 
+		List<Element> statemachines = modelManager.getElementsOfTypes(Arrays.asList(StateMachine.class));
+
+		diagramManager.createDiagrams(statemachines, new CreateStateMachineDiagramCommand(), this.domain);
+
+		monitor.worked(100);
+	}
 	
 	/**
 	 * Sets the layout controlling object. This object will affect the
 	 * suitable elements and arrage of the diagram
 	 * @param layoutcontroller - The controller object
 	 */
-	public abstract void setLayoutController(Object layoutcontroller);
+	public void setLayoutController(Object layoutcontroller) {
+		TxtUMLLayoutDescriptor descriptor = (TxtUMLLayoutDescriptor) layoutcontroller;
+		this.descriptor = descriptor;
+		this.mapper = new TxtUMLElementsMapper(this.model.getResource(), descriptor);
+	}
 }

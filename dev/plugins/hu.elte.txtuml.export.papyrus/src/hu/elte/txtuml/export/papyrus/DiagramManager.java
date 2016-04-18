@@ -10,8 +10,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.common.core.command.CommandResult;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
-import org.eclipse.gmf.runtime.diagram.ui.parts.IDiagramWorkbenchPart;
 import org.eclipse.gmf.runtime.emf.commands.core.command.AbstractTransactionalCommand;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -20,7 +18,6 @@ import org.eclipse.papyrus.infra.core.resource.ModelSet;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.infra.core.services.ServicesRegistry;
 import org.eclipse.papyrus.infra.gmfdiag.common.model.NotationModel;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 import org.eclipse.uml2.uml.Element;
@@ -118,44 +115,5 @@ public class DiagramManager {
 			List<Diagram> list = (List<Diagram>)(List<?>) notationResource.getContents();
 			return list;
 	}
-	
-	/**
-	 * Gets the {@link Element} that is the container of the diagram
-	 * @param diagram - The Diagram
-	 * @return Container of the diagram
-	 */
-	public Element getDiagramContainer(Diagram diagram){
-		return (Element) diagram.getElement();
-	}
-	
-	/**
-	 * Opens the tab of diagram in the editor
-	 * @param diag - The diagram is to be opened
-	 */
-	public void openDiagram(Diagram diag){
-		
-		//this.registry.getActiveEditor(); //Some kind of magic, but has to be done at least once before selecting different diagrams
-		/*
-		try{
-			IPageManager pageMngr = ServiceUtils.getInstance().getIPageManager(this.registry);
-			pageMngr.selectPage(diag);
-		}catch(ServiceException e){
-			throw new RuntimeException(e);
-		}
-		*/
-	}
 
-	/**
-	 * Gets the DiagramEditPart that is referenced to the editor.
-	 * @return Returns the DiagramEditPart or null if the editor is not an {@link IDiagramWorkbenchPart}
-	 */
-	public DiagramEditPart getActiveDiagramEditPart(){
-		IEditorPart ied = null; //this.registry.getActiveEditor();
-		
-		if(ied instanceof IDiagramWorkbenchPart){
-			return ((IDiagramWorkbenchPart) ied).getDiagramEditPart();
-		}else{
-			return null;
-		}
-	}
 }

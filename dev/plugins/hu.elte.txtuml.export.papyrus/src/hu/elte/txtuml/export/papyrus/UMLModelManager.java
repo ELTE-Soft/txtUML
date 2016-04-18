@@ -16,6 +16,8 @@ import com.google.common.collect.Multimap;
 /**
  * Controls the Eclipse UML2 Model.
  */
+
+//TODO: After all Manager are rewritten this class can be deleted 
 public class UMLModelManager {
 	
 	private UmlModel model;

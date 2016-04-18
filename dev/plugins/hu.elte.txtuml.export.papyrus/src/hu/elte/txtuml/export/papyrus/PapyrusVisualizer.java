@@ -3,19 +3,12 @@ package hu.elte.txtuml.export.papyrus;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.infra.core.resource.ModelMultiException;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.progress.IProgressService;
 
-import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
-import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.TxtUMLPapyrusModelManager;
-import hu.elte.txtuml.export.papyrus.utils.EditorOpener;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 /**
@@ -31,7 +24,7 @@ public class PapyrusVisualizer implements IRunnableWithProgress {
 	private String projectName;
 	private String modelName;
 	private String sourceUMLPath;
-	private AbstractPapyrusModelManager papyrusModelManager;
+	private PapyrusModelManager papyrusModelManager;
 	private Object layoutDescriptor;
 	
 	/**
@@ -100,7 +93,7 @@ public class PapyrusVisualizer implements IRunnableWithProgress {
 			papyrusModelCreator.createPapyrusModel();
 		
 			
-					papyrusModelManager = new TxtUMLPapyrusModelManager(papyrusModelCreator.getServiceRegistry());
+					papyrusModelManager = new PapyrusModelManager(papyrusModelCreator.getServiceRegistry());
 					papyrusModelManager.setLayoutController(layoutDescriptor);
 					monitor.worked(10);
 					

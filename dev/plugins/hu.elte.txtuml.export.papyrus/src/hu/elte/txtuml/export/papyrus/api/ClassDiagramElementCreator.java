@@ -1,7 +1,6 @@
 package hu.elte.txtuml.export.papyrus.api;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.geometry.Point;
@@ -16,12 +15,8 @@ import org.eclipse.gmf.runtime.emf.type.core.IHintedType;
 import org.eclipse.gmf.runtime.notation.BasicCompartment;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.Edge;
-import org.eclipse.gmf.runtime.notation.IdentityAnchor;
 import org.eclipse.gmf.runtime.notation.Node;
-import org.eclipse.gmf.runtime.notation.NotationFactory;
-import org.eclipse.gmf.runtime.notation.RelativeBendpoints;
 import org.eclipse.gmf.runtime.notation.View;
-import org.eclipse.gmf.runtime.notation.datatype.RelativeBendpoint;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassAttributeCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassOperationCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.part.UMLDiagramEditorPlugin;
@@ -123,30 +118,6 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 		};
 
 		runInTransactionalCommand(runnable, "Creating Assoc", monitor);
-	}
-
-	private void createAnchorsForEdge(Edge edge, String sourceAnchor, String targetAnchor) {
-		IdentityAnchor sourceanchor = NotationFactory.eINSTANCE.createIdentityAnchor();
-		sourceanchor.setId(sourceAnchor);
-		IdentityAnchor targetanchor = NotationFactory.eINSTANCE.createIdentityAnchor();
-		targetanchor.setId(targetAnchor);
-		edge.setSourceAnchor(sourceanchor);
-		edge.setTargetAnchor(targetanchor);
-	}
-
-	private RelativeBendpoints createBendsPoints(List<Point> route) {
-		RelativeBendpoints bendpoints = NotationFactory.eINSTANCE.createRelativeBendpoints();
-		if (route != null) {
-			Point sourceAnchor = route.get(0);
-			Point targetAnchor = route.get(route.size() - 1);
-			List<RelativeBendpoint> relativePoints = route.stream()
-					.map((p) -> new RelativeBendpoint(p.x - sourceAnchor.x, p.y - sourceAnchor.y, p.x - targetAnchor.x,
-							p.y - targetAnchor.y))
-					.collect(Collectors.toList());
-
-			bendpoints.setPoints(relativePoints);
-		}
-		return bendpoints;
 	}
 
 	public void createGeneralizationForNodes(Generalization generalization, List<Point> route, String sourceAnchor,

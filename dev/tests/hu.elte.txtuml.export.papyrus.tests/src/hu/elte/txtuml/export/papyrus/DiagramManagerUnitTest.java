@@ -99,25 +99,4 @@ public class DiagramManagerUnitTest {
 		assertTrue(diagramManager.getDiagrams().size() == 1);
 		assertEquals(diagram, diagramManager.getDiagrams().get(0));
 	}
-	
-	@Test
-	public void testGetDiagramContainer(){
-		Diagram diagram = Mockito.mock(Diagram.class);
-		Element container = Mockito.mock(Element.class);
-		Mockito.when(diagram.getElement()).thenReturn(container);
-		
-		Element result = diagramManager.getDiagramContainer(diagram);
-		
-		assertEquals(container, result);
-	}
-	
-	@Test
-	public void testGetDiagramEditPart(){
-		DiagramEditPart diagEp = Mockito.mock(DiagramEditPart.class);
-		Mockito.when(this.editorPart.getDiagramEditPart()).thenReturn(diagEp);
-		
-		DiagramEditPart result = diagramManager.getActiveDiagramEditPart();
-		
-		assertEquals(diagEp, result);
-	}
 }
