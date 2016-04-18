@@ -1,7 +1,7 @@
 package hu.elte.txtuml.export.uml2.restructured
 
-import hu.elte.txtuml.api.model.Collection
-import hu.elte.txtuml.api.model.ModelClass
+import hu.elte.txtuml.export.uml2.restructured.activity.MethodActivityExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.SMActivityExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.ConnectActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.CreateActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.CreateLinkActionExporter
@@ -10,8 +10,10 @@ import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.LogActionExport
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.PortActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.ReadLinkActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.SelectionExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.SendActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.StartActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.UnlinkActionExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.APISuperCtorCallExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.BinaryOperatorExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.BooleanLiteralExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.CharacterLiteralExporter
@@ -54,10 +56,10 @@ import hu.elte.txtuml.export.uml2.restructured.structural.DataTypeExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.DefaultConstructorBodyExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.DefaultConstructorExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.FieldExporter
-import hu.elte.txtuml.export.uml2.restructured.structural.MethodActivityExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.OperationExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.PackageExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.ParameterExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.SignalExporter
 import java.util.List
 import java.util.function.Consumer
 import org.eclipse.jdt.core.IPackageFragment
@@ -115,10 +117,6 @@ import org.eclipse.uml2.uml.Type
  * @param R Result type
  */
 abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
-
-	/** Method calls to these classes will be treated specially */
-	protected static val API_CLASSES = #{ModelClass.canonicalName, hu.elte.txtuml.api.model.Action.canonicalName,
-		Collection.canonicalName}
 
 	/** The parent exporter. Exporters form a tree to be able to place generated object in one of their parent exporter. */
 	protected BaseExporter<?, ?, ?> parent
@@ -197,10 +195,10 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 			ITypeBinding:
 				#[new ClassExporter(this), new AssociationExporter(this), new AssociationEndExporter(this),
 					new StateExporter(this), new InitStateExporter(this), new DataTypeExporter(this),
-					new TransitionExporter(this)]
+					new TransitionExporter(this), new SignalExporter(this)]
 			IMethodBinding:
 				#[new DefaultConstructorExporter(this), new DefaultConstructorBodyExporter(this),
-					new OperationExporter(this), new MethodActivityExporter(this)]
+					new OperationExporter(this), new MethodActivityExporter(this), new SMActivityExporter(this)]
 			IVariableBinding:
 				#[new FieldExporter(this), new ParameterExporter(this)]
 			Block:
@@ -211,6 +209,7 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 					new ReadLinkActionExporter(this),
 					new LogActionExporter(this),
 					new CreateLinkActionExporter(this),
+					new SendActionExporter(this),
 					new UnlinkActionExporter(this),
 					new ConnectActionExporter(this),
 					new PortActionExporter(this),
@@ -222,7 +221,7 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 			ConstructorInvocation:
 				#[new OtherCtorCallExporter(this)]
 			SuperConstructorInvocation:
-				#[new SuperCtorCallExporter(this)]
+				#[new SuperCtorCallExporter(this), new APISuperCtorCallExporter(this)]
 			ClassInstanceCreation:
 				#[new ObjectCreationExporter(this)]
 			SuperMethodInvocation:

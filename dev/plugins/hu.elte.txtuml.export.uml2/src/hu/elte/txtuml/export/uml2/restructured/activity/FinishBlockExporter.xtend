@@ -1,12 +1,11 @@
 package hu.elte.txtuml.export.uml2.restructured.activity
 
 import hu.elte.txtuml.export.uml2.restructured.BaseExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.expression.VariableExpressionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.ControlExporter
 import org.eclipse.jdt.core.dom.Block
 import org.eclipse.uml2.uml.ActivityParameterNode
-import org.eclipse.uml2.uml.SequenceNode
 import org.eclipse.uml2.uml.ParameterDirectionKind
+import org.eclipse.uml2.uml.SequenceNode
 
 class FinishBlockExporter extends ControlExporter<Block, SequenceNode> {
 
@@ -25,8 +24,7 @@ class FinishBlockExporter extends ControlExporter<Block, SequenceNode> {
 				parameter.direction == ParameterDirectionKind.RETURN_LITERAL
 		].forEach [
 			val paramVar = getVariable(name)
-			val read = new VariableExpressionExporter(this).readVar(paramVar)
-			read.result.objectFlow(it)
+			paramVar.read.result.objectFlow(it)
 		]
 	}
 

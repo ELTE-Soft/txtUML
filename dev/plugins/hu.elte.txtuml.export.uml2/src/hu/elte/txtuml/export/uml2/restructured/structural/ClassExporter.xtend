@@ -33,12 +33,10 @@ class ClassExporter extends Exporter<TypeDeclaration, ITypeBinding, Class> {
 		result.name = typeBnd.name
 		typeBnd.declaredFields.forEach[exportField[result.ownedAttributes += it]]
 		typeDecl.methods.forEach[exportOperation[result.ownedOperations += it]]
-//		if (typeBnd.declaredMethods.filter[isConstructor && ! isDefaultConstructor].isEmpty) {
 		typeBnd.declaredMethods.filter[isDefaultConstructor].forEach [
 			exportDefaultConstructor[result.ownedOperations += it]
 			exportDefaultConstructorBody[result.ownedBehaviors += it]
 		]
-//		}
 		typeDecl.methods.forEach[exportActivity[result.ownedBehaviors += it]]
 		if (typeDecl.superclassType != null &&
 			typeDecl.superclassType.resolveBinding.qualifiedName != ModelClass.canonicalName) {

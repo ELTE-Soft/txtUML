@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.uml2.restructured
 
 import hu.elte.txtuml.export.uml2.restructured.activity.ActivityExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.MethodActivityExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.BlockExporter
 import hu.elte.txtuml.export.uml2.restructured.statemachine.GuardExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.AssociationEndExporter
@@ -10,12 +11,12 @@ import hu.elte.txtuml.export.uml2.restructured.structural.DataTypeExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.DefaultConstructorBodyExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.DefaultConstructorExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.FieldExporter
-import hu.elte.txtuml.export.uml2.restructured.structural.MethodActivityExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.OperationExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.PackageExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.ParameterExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.SignalEventExporter
 import hu.elte.txtuml.export.uml2.restructured.structural.SignalExporter
+import hu.elte.txtuml.export.uml2.restructured.structural.SignalFactoryExporter
 import java.util.function.Consumer
 import org.eclipse.jdt.core.IPackageFragment
 import org.eclipse.jdt.core.dom.Block
@@ -35,6 +36,7 @@ import org.eclipse.uml2.uml.Property
 import org.eclipse.uml2.uml.SequenceNode
 import org.eclipse.uml2.uml.Signal
 import org.eclipse.uml2.uml.SignalEvent
+import hu.elte.txtuml.export.uml2.restructured.activity.SMActivityExporter
 
 /**
  * Base class for exporters, methods to export different kinds of elements using specific exporters.
@@ -77,6 +79,10 @@ abstract class BaseExporter<S, A, R extends Element> {
 		cache.export(new SignalEventExporter(this), td, td.resolveBinding, store)
 	}
 
+	def exportSignalFactory(TypeDeclaration td, Consumer<Class> store) {
+		cache.export(new SignalFactoryExporter(this), td, td.resolveBinding, store)
+	}
+
 	def exportAssociation(TypeDeclaration td, Consumer<Association> store) {
 		cache.export(new AssociationExporter(this), td, td.resolveBinding, store)
 	}
@@ -103,6 +109,10 @@ abstract class BaseExporter<S, A, R extends Element> {
 
 	def exportActivity(MethodDeclaration md, Consumer<Activity> store) {
 		cache.export(new MethodActivityExporter(this), md, md.resolveBinding, store)
+	}
+
+	def exportSMActivity(MethodDeclaration md, Consumer<Activity> store) {
+		cache.export(new SMActivityExporter(this), md, md.resolveBinding, store)
 	}
 
 	def exportGuard(MethodDeclaration md, Consumer<Constraint> store) {

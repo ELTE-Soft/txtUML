@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.dom.SuperMethodInvocation
 import org.eclipse.uml2.uml.Action
 import org.eclipse.uml2.uml.CallOperationAction
 import org.eclipse.uml2.uml.Operation
+import org.eclipse.uml2.uml.SequenceNode
 
 abstract class CallExporter<T> extends ActionExporter<T, CallOperationAction> {
 
@@ -119,4 +120,20 @@ class SuperCtorCallExporter extends CallExporter<SuperConstructorInvocation> {
 	override getExpression(SuperConstructorInvocation inv) { null }
 
 	override getBinding(SuperConstructorInvocation inv) { inv.resolveConstructorBinding }
+}
+
+class APISuperCtorCallExporter extends ActionExporter<SuperConstructorInvocation, SequenceNode> {
+
+	new(Exporter<?, ?, ?> parent) {
+		super(parent)
+	}
+	
+	override create(SuperConstructorInvocation access) {
+		if(isApiMethodInvocation(access.resolveConstructorBinding)) factory.createSequenceNode
+	}
+	
+	override exportContents(SuperConstructorInvocation source) {
+		result.name = '#api_ctor_call'
+	}
+
 }

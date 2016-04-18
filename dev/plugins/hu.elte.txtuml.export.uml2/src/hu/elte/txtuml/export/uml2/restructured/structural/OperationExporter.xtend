@@ -1,16 +1,17 @@
 package hu.elte.txtuml.export.uml2.restructured.structural
 
+import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import hu.elte.txtuml.export.uml2.restructured.Exporter
+import hu.elte.txtuml.export.uml2.restructured.activity.MethodActivityExporter
 import org.eclipse.jdt.core.dom.IMethodBinding
+import org.eclipse.jdt.core.dom.ITypeBinding
 import org.eclipse.jdt.core.dom.MethodDeclaration
+import org.eclipse.jdt.core.dom.Modifier
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration
 import org.eclipse.uml2.uml.Operation
 import org.eclipse.uml2.uml.ParameterDirectionKind
 import org.eclipse.uml2.uml.Stereotype
-import org.eclipse.jdt.core.dom.Modifier
-import org.eclipse.jdt.core.dom.ITypeBinding
-import hu.elte.txtuml.api.model.ModelClass
 
 class OperationExporter extends Exporter<MethodDeclaration, IMethodBinding, Operation> {
 

@@ -2,7 +2,6 @@ package hu.elte.txtuml.export.uml2.restructured.activity.statement
 
 import hu.elte.txtuml.export.uml2.restructured.Exporter
 import hu.elte.txtuml.export.uml2.restructured.activity.ActionExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.expression.assign.AssignToVariableExporter
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement
 import org.eclipse.uml2.uml.Action
@@ -24,8 +23,7 @@ class VariableDeclarationExporter extends ActionExporter<VariableDeclarationStat
 			storeVariable(variable)
 			
 			if (decl.initializer != null) {
-				val initializer = exportExpression(decl.initializer)
-				new AssignToVariableExporter(this).createWriteVariableAction(variable, initializer)
+				variable.write(exportExpression(decl.initializer))
 			}
 		]
 	}

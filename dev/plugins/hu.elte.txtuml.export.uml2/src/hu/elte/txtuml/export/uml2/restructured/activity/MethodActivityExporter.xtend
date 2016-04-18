@@ -1,7 +1,8 @@
-package hu.elte.txtuml.export.uml2.restructured.structural
+package hu.elte.txtuml.export.uml2.restructured.activity
 
 import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import hu.elte.txtuml.export.uml2.restructured.Exporter
+import hu.elte.txtuml.export.uml2.restructured.structural.OperationExporter
 import org.eclipse.jdt.core.dom.IMethodBinding
 import org.eclipse.jdt.core.dom.MethodDeclaration
 import org.eclipse.uml2.uml.Activity

@@ -35,10 +35,10 @@ class StateExporter extends AbstractStateExporter<State> {
 		super.exportContents(source)
 		source.bodyDeclarations.filter[it instanceof MethodDeclaration].filter [
 			(it as MethodDeclaration).name.identifier == "entry"
-		].forEach[exportActivity(it as MethodDeclaration)[ result.entry = it ]]
+		].forEach[exportSMActivity(it as MethodDeclaration)[ result.entry = it ]]
 		source.bodyDeclarations.filter[it instanceof MethodDeclaration].filter [
 			(it as MethodDeclaration).name.identifier == "exit"
-		].forEach[exportActivity(it as MethodDeclaration)[ result.exit = it ]]
+		].forEach[exportSMActivity(it as MethodDeclaration)[ result.exit = it ]]
 
 	}
 	

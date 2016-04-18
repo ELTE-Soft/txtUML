@@ -4,8 +4,9 @@ import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import org.eclipse.jdt.core.dom.Block
 import org.eclipse.uml2.uml.SequenceNode
 import org.eclipse.uml2.uml.ParameterDirectionKind
+import hu.elte.txtuml.export.uml2.restructured.activity.statement.ControlExporter
 
-class PrepareBlockExporter extends ActionExporter<Block, SequenceNode> {
+class PrepareBlockExporter extends ControlExporter<Block, SequenceNode> {
 
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
@@ -14,24 +15,19 @@ class PrepareBlockExporter extends ActionExporter<Block, SequenceNode> {
 	override create(Block access) { factory.createSequenceNode }
 
 	override exportContents(Block source) {
-		result.activity.specification.ownedParameters.forEach [
+		result.activity.specification?.ownedParameters?.forEach [
 			val paramNode = factory.createActivityParameterNode
 			paramNode.parameter = it
 			paramNode.name = name
 			paramNode.type = type
 			storeNode(paramNode)
 
-			val paramVar = factory.createVariable
-			paramVar.name = name
-			paramVar.type = type
-			storeVariable(paramVar)
-
 			if (direction == ParameterDirectionKind.IN_LITERAL || direction == ParameterDirectionKind.INOUT_LITERAL) {
 				// here we cannot use the standard VariableExpressionExporter function, because ActivityParameterBlock is not an Action
 				val initAssign = factory.createAddVariableValueAction
 				initAssign.name = '''fetch(«name»)'''
 				initAssign.isReplaceAll = true
-				initAssign.variable = paramVar
+				initAssign.variable = getVariable(name)
 				paramNode.objectFlow(initAssign.createValue("new_value", type))
 				storeNode(initAssign)
 			}

@@ -44,6 +44,7 @@ abstract class AbstractPackageExporter<T extends Package> extends Exporter<IPack
 			case ElementTypeTeller.isSignal(decl): {
 				exportSignal(decl)[result.packagedElements += it]
 				exportSignalEvent(decl)[result.packagedElements += it]
+				exportSignalFactory(decl)[result.packagedElements += it]
 			}
 			case ElementTypeTeller.isDataType(decl.resolveBinding): {
 				exportDataType(decl)[result.packagedElements += it]

@@ -25,7 +25,7 @@ class AssignToVariableExporter extends AssignExporter {
 		val rhs = generateRhs(source.operator, [new VariableExpressionExporter(this).readVar(assignVar)], rhsVal)
 		val write = createWriteVariableAction(assignVar, rhs)
 		result.name = write.name
-		new VariableExpressionExporter(this).readVar(assignVar)
+		assignVar.read
 	}
 
 	def createWriteVariableAction(Variable variable, Action rhs) {

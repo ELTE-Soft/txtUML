@@ -2,8 +2,12 @@ package hu.elte.txtuml.export.uml2.restructured.activity
 
 import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import hu.elte.txtuml.export.uml2.restructured.Exporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.VariableExpressionExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.assign.AssignToVariableExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.statement.ConditionalExporter
 import org.eclipse.jdt.core.dom.Expression
 import org.eclipse.jdt.core.dom.IMethodBinding
+import org.eclipse.jdt.core.dom.IfStatement
 import org.eclipse.jdt.core.dom.Statement
 import org.eclipse.uml2.uml.Action
 import org.eclipse.uml2.uml.ActivityEdge
@@ -21,6 +25,7 @@ import org.eclipse.uml2.uml.ReadVariableAction
 import org.eclipse.uml2.uml.SequenceNode
 import org.eclipse.uml2.uml.ValueSpecificationAction
 import org.eclipse.uml2.uml.Variable
+import hu.elte.txtuml.api.model.ModelClass
 
 /**
  * Base class for all exporters on the statement-expression level.
@@ -37,7 +42,7 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 
 	def isApiMethodInvocation(IMethodBinding meth) {
 		var type = meth.declaringClass
-		API_CLASSES.contains(type.erasure.qualifiedName)
+		type.package.name.startsWith(ModelClass.package.name)
 	}
 
 	def void storeEdge(ActivityEdge edge) {
@@ -132,5 +137,17 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 		val expr = super.exportExpression(source)
 		expr?.storeNode
 		return expr
+	}
+	
+	def exportConditional(IfStatement source) {
+		val expr = cache.export(new ConditionalExporter(this), source, source, [])
+		expr?.storeNode
+		return expr
+	}
+	
+	def read(Variable variable) { new VariableExpressionExporter(this).readVar(variable) }
+	
+	def write(Variable variable, Action newValue) {
+		new AssignToVariableExporter(this).createWriteVariableAction(variable, newValue)
 	}
 }

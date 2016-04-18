@@ -24,8 +24,7 @@ class VariableDeclarationExpressionExporter extends ActionExporter<VariableDecla
 			storeVariable(variable)
 			
 			if (decl.initializer != null) {
-				val initializer = exportExpression(decl.initializer)
-				new AssignToVariableExporter(this).createWriteVariableAction(variable, initializer)
+				variable.write(exportExpression(decl.initializer))
 			}
 		]
 	}

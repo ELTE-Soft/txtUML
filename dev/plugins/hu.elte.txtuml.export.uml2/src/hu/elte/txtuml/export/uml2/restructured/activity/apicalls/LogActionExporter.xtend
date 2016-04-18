@@ -13,8 +13,7 @@ class LogActionExporter extends ActionExporter<MethodInvocation, CallOperationAc
 	}
 
 	override create(MethodInvocation access) {
-		if (API_CLASSES.contains(access.resolveMethodBinding.declaringClass.qualifiedName) &&
-			access.name.identifier == "log")
+		if (isApiMethodInvocation(access.resolveMethodBinding) && access.name.identifier == "log")
 			factory.createCallOperationAction
 	}
 

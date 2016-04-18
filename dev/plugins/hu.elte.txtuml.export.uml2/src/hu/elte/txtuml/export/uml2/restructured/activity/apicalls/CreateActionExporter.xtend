@@ -3,8 +3,6 @@ package hu.elte.txtuml.export.uml2.restructured.activity.apicalls
 import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.CreationExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.MethodCallExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.expression.VariableExpressionExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.expression.assign.AssignToVariableExporter
 import org.eclipse.jdt.core.dom.Expression
 import org.eclipse.jdt.core.dom.ITypeBinding
 import org.eclipse.jdt.core.dom.MethodInvocation
@@ -31,12 +29,10 @@ class CreateActionExporter extends CreationExporter<MethodInvocation> {
 		val create = createObject(typeBinding.name, createdType)
 
 		val tempVar = result.createVariable("#temp", createdType)
-		new AssignToVariableExporter(this).createWriteVariableAction(tempVar, create)
-		val readVar = new VariableExpressionExporter(this).readVar(tempVar)
+		tempVar.write(create)
 
-		callCtor(typeBinding, source.arguments.tail, readVar)
-		new VariableExpressionExporter(this).readVar(tempVar)
-
+		callCtor(typeBinding, source.arguments.tail, tempVar.read)
+		tempVar.read
 		result.name = '''create «typeBinding.name»(...)'''
 	}
 
