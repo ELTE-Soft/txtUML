@@ -1,16 +1,16 @@
 package pingpong.x;
 
 import hu.elte.txtuml.api.^model.ModelExecutor;
-import pingpong.x.^model.PongSignal;
-import pingpong.x.^model.TopClass;
+import pingpong.x.^model.Ball;
+import pingpong.x.^model.Game;
 
 execution Tester {
 	ModelExecutor.Settings.setExecutorLog(true);
 
-	TopClass top = create(TopClass);
+	Game top = create(Game);
 	start(top);
 
-	send new PongSignal(4) to top;
+	send new Ball(4) to top;
 
 	ModelExecutor.shutdown();
 }

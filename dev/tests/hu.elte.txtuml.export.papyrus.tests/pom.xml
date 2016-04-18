@@ -11,20 +11,4 @@
 	</parent>
 	<artifactId>hu.elte.txtuml.export.papyrus.tests</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
-
-	<!-- TODO: Remove the following block if tests are fixed!!! -->
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-surefire-plugin</artifactId>
-				<version>${tycho.version}</version>
-				<configuration>
-					<skipTests>true</skipTests>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-	<!-- TODO: Remove the previous block if tests are fixed!!! -->
-
 </project>

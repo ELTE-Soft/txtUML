@@ -482,7 +482,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		(JvmGenericType)=>void initializer) {
 		registeredTypes.put(sourceElement, type)
 		acceptor.accept(type, initializer)
-		if (type.eResource != null) { // to eliminate warning about null-safe'd primitives
+		if (type?.eResource != null) { // to eliminate warning about null-safe'd primitives
 			type.eResource.contents.remove(type)
 		}
 	}
