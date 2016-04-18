@@ -29,13 +29,13 @@ public class PointTest {
 	}
 
 	@Test
-	public void AddPoiTest() {
+	public void AddPointTest() {
 		assertEquals(_b, Point.Add(_a, _b));
 		assertNotEquals(_b, Point.Add(_b, _b));
 	}
 	
 	@Test
-	public void SubstractPoiTest() {
+	public void SubstractPointTest() {
 		assertEquals(_b, Point.Substract( _b, _a));
 		assertEquals(_c, Point.Substract( _a, _b));
 		assertNotEquals(_b, Point.Substract(_a, _b));
