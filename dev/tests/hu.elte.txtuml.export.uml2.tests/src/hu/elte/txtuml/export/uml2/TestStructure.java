@@ -364,10 +364,9 @@ public class TestStructure {
 		Class classB = (Class) model.getMember("B");
 		assertNotNull(classB);
 
-		SendObjectAction act = (SendObjectAction) body.getExecutableNodes().get(10);
+		SendObjectAction act = (SendObjectAction) body.getExecutableNodes().get(11);
 
 		assertEquals("Sig", act.getRequest().getType().getName());
-		assertEquals(classB.getName(), act.getTarget().getType().getName());
 	}
 
 	@Test
