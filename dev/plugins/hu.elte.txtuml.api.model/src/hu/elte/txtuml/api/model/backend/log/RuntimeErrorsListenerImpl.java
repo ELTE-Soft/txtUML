@@ -57,6 +57,11 @@ final class RuntimeErrorsListenerImpl extends BaseListenerImpl implements Runtim
 	}
 
 	@Override
+	public void missingInitialTransition(Vertex fromInitial) {
+		err("Error: no initial transition is defined from " + fromInitial + ".");
+	}
+
+	@Override
 	public void noTransitionFromChoice(Vertex choice) {
 		err("Error: there was no transition from " + choice + " which could be used.");
 	}
