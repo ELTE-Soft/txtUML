@@ -22,7 +22,10 @@ import org.eclipse.uml2.uml.StateMachine;
 
 import hu.elte.txtuml.export.papyrus.elementproviders.ClassDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.elementproviders.ClassDiagramElementsProviderImpl;
+import hu.elte.txtuml.export.papyrus.elementproviders.StateMachineDiagramElementsProvider;
+import hu.elte.txtuml.export.papyrus.elementproviders.StateMachineDiagramElementsProviderImpl;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ClassDiagramElementsArranger;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.StateMachineDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.ClassDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.StateMachineDiagramElementsManager;
@@ -148,7 +151,9 @@ public class PapyrusModelManager {
 			diagramElementsManager = new ClassDiagramElementsManager(diagram,
 					provider, this.domain, arranger, monitor);
 		} else if (diagram.getType().equals(diagramType_SMD)) {
-			diagramElementsManager = new StateMachineDiagramElementsManager(diagram, this.domain, monitor);
+			StateMachineDiagramElementsProvider provider = new StateMachineDiagramElementsProviderImpl(report, this.mapper);
+			StateMachineDiagramElementsArranger arranger = new StateMachineDiagramElementsArranger(report, this.mapper);
+			diagramElementsManager = new StateMachineDiagramElementsManager(diagram, provider, this.domain, arranger, monitor);
 		} else {
 			return;
 		}
