@@ -14,7 +14,7 @@ public enum StatementLevel
 	 */
 	Low,
 	/**
-	 * Medium level statement. Delete in midst.
+	 * Medium level statement.
 	 */
 	Medium,
 	/**

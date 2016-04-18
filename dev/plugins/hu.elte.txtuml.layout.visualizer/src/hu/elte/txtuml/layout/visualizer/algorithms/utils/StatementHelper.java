@@ -178,7 +178,8 @@ public class StatementHelper {
 	 * @return a {@link Set} of the names of phantom objects/boxes.
 	 */
 	public static Set<String> extractPhantoms(List<Statement> stats) {
-		return stats.stream().filter(s -> s.getType().equals(StatementType.phantom)).map(s -> s.getParameter(0))
+		return stats.stream().filter(s -> s.getType().equals(StatementType.phantom))
+				.map(s -> s.getParameter(0))
 				.collect(Collectors.toSet());
 	}
 

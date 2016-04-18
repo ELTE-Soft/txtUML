@@ -12,7 +12,7 @@ public class RectangleObjectTreeEnumerator implements Iterable<RectangleObject>,
 	private Integer currentIndex = 0;
 	
 	public RectangleObjectTreeEnumerator(Set<RectangleObject> objs) {
-		_objects.addAll(getChildren(objs));
+		_objects = new ArrayList<RectangleObject>(getChildren(objs));
 		_objects.sort((box1, box2) -> box1.getName().compareTo(box2.getName()));
 	}
 	
@@ -45,6 +45,7 @@ public class RectangleObjectTreeEnumerator implements Iterable<RectangleObject>,
 
 	@Override
 	public RectangleObject next() {
+		++currentIndex;
 		return _objects.get(currentIndex);
 	}
 }
