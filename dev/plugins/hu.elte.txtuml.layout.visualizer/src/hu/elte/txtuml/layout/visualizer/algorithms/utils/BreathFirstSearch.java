@@ -1,9 +1,9 @@
-package hu.elte.txtuml.layout.visualizer.algorithms;
+package hu.elte.txtuml.layout.visualizer.algorithms.utils;
 
 import java.util.HashMap;
 
-import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.Queue;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Graph;
+import hu.elte.txtuml.layout.visualizer.algorithms.boxes.utils.bellmanfordutils.Queue;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils.Graph;
 
 /**
  * This class provides an implementation to the Breath-First search algorithm.

@@ -3,7 +3,7 @@ package hu.elte.txtuml.layout.visualizer.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import hu.elte.txtuml.layout.visualizer.helpers.Helper;
+import hu.elte.txtuml.layout.visualizer.algorithms.utils.Helper;
 
 /***
  * Class representing a link in a diagram. The abstract model consists of the

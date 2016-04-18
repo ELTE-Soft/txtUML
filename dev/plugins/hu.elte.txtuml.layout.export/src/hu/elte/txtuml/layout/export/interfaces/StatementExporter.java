@@ -75,6 +75,8 @@ public interface StatementExporter {
 
 	void exportShow(Show annot);
 	
+	Class<?> exportInside(hu.elte.txtuml.api.layout.Inside annot);
+	
 	void exportColumn(Column annot);
 	
 	void exportRow(Row annot);

@@ -1,7 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.helpers;
-
-import hu.elte.txtuml.layout.visualizer.model.DiagramType;
-import hu.elte.txtuml.layout.visualizer.model.OverlapArrangeMode;
+package hu.elte.txtuml.layout.visualizer.model;
 
 /**
  * Class that encapsulates the multiple options of the algorithm.

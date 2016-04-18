@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.algorithms;
+package hu.elte.txtuml.layout.visualizer.algorithms.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,11 +9,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import hu.elte.txtuml.layout.visualizer.algorithms.BreathFirstSearch.LabelType;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Graph;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Link;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils.Graph;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils.Link;
+import hu.elte.txtuml.layout.visualizer.algorithms.utils.BreathFirstSearch.LabelType;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
-import hu.elte.txtuml.layout.visualizer.helpers.Helper;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;

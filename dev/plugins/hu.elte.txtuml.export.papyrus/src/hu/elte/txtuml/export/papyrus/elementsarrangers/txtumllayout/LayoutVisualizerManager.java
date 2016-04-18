@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
+import hu.elte.txtuml.layout.visualizer.algorithms.FileVisualize;
 import hu.elte.txtuml.layout.visualizer.algorithms.LayoutVisualize;
 import hu.elte.txtuml.layout.visualizer.exceptions.BoxArrangeConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.BoxOverlapConflictException;
@@ -20,6 +21,7 @@ import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
 import hu.elte.txtuml.layout.visualizer.exceptions.StatementsConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
+import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
@@ -41,11 +43,13 @@ public class LayoutVisualizerManager {
 	 * @param statements - statements that are to be considered by the arrangement
 	 * @param txtUmlRegistry - The TxtUMLElementsFinder that connects the model elements with txtUML names  
 	 */
-	public LayoutVisualizerManager(Set<RectangleObject> objects, Set<LineAssociation> links, List<Statement> statements) {
+	public LayoutVisualizerManager(Set<RectangleObject> objects, 
+			Set<LineAssociation> links, List<Statement> statements,
+			DiagramType type) {
 		this.objects = objects;
 		this.associations = links;
 		this.statementsSet = statements;
-		layoutVisualize = new LayoutVisualize();
+		layoutVisualize = new LayoutVisualize(new TxtUmlPixelDimensionProvider(), type);
 		layoutVisualize.setLogging(false);
 	}
 	
@@ -116,7 +120,7 @@ public class LayoutVisualizerManager {
 		objects = layoutVisualize.getObjects();
 		associations = layoutVisualize.getAssocs();
 
-		//FileVisualize.printOutput(objects, associations, "C:/Users/Andris/Desktop/vis.txt");
+		//FileVisualize.printOutput(objects, associations, "C:/Users/Andris/Documents/vis.txt");
 	}
 	
 	private String formatStatements(Collection<Statement> statements){

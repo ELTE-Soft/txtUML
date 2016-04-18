@@ -2,6 +2,7 @@ package hu.elte.txtuml.layout.export.elementinfo.impl;
 
 import hu.elte.txtuml.api.model.StateMachine.Initial;
 import hu.elte.txtuml.layout.export.elementinfo.NodeInfo;
+import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.model.SpecialBox;
 
@@ -16,12 +17,17 @@ public class NodeInfoImpl extends ElementInfoImpl implements NodeInfo {
 
 	@Override
 	public RectangleObject convert() {
-		return new RectangleObject(toString(), getSpecialProperty());
+		return new RectangleObject(toString(), getSpecialProperty());	
 	}
 
 	@Override
 	public boolean isPhantom() {
 		return toString().startsWith("#phantom_");
+	}
+	
+	@Override
+	public boolean isBoxContainer() {
+		return ElementExporter.isBoxContainer(getElementClass());
 	}
 
 	@Override
@@ -32,5 +38,4 @@ public class NodeInfoImpl extends ElementInfoImpl implements NodeInfo {
 
 		return SpecialBox.None;
 	}
-
 }

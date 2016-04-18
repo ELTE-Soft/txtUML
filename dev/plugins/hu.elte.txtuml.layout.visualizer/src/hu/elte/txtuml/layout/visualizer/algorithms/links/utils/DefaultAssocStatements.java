@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.algorithms.links;
+package hu.elte.txtuml.layout.visualizer.algorithms.links.utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import hu.elte.txtuml.layout.visualizer.statements.StatementType;
  * This class generates {@link Statement}s automatically for the
  * {@link LineAssociation}s.
  */
-class DefaultAssocStatements {
+public class DefaultAssocStatements {
 	/**
 	 * Generated {@link Statement}s.
 	 */

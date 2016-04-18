@@ -1,11 +1,11 @@
-package hu.elte.txtuml.layout.visualizer.algorithms.boxes;
+package hu.elte.txtuml.layout.visualizer.algorithms.boxes.utils;
 
 import java.util.Stack;
 
-import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.DirectedEdge;
-import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.EdgeWeightedDigraph;
-import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.EdgeWeightedDirectedCycle;
-import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.Queue;
+import hu.elte.txtuml.layout.visualizer.algorithms.boxes.utils.bellmanfordutils.DirectedEdge;
+import hu.elte.txtuml.layout.visualizer.algorithms.boxes.utils.bellmanfordutils.EdgeWeightedDigraph;
+import hu.elte.txtuml.layout.visualizer.algorithms.boxes.utils.bellmanfordutils.EdgeWeightedDirectedCycle;
+import hu.elte.txtuml.layout.visualizer.algorithms.boxes.utils.bellmanfordutils.Queue;
 
 /**
  * The <tt>BellmanFordSP</tt> class represents a data type for solving the
@@ -28,7 +28,7 @@ import hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers.Queu
  * @author Robert Sedgewick
  * @author Kevin Wayne
  */
-class BellmanFordSP
+public class BellmanFordSP
 {
 	private double[] distTo; // distTo[v] = distance of shortest s->v path
 	private DirectedEdge[] edgeTo; // edgeTo[v] = last edge on shortest s->v

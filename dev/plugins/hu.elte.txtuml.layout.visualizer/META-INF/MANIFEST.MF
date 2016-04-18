@@ -3,10 +3,11 @@ Bundle-ManifestVersion: 2
 Bundle-Name: txtUML Layout Visualizer
 Bundle-SymbolicName: hu.elte.txtuml.layout.visualizer
 Bundle-Version: 0.4.0.qualifier
-Export-Package: hu.elte.txtuml.layout.visualizer.algorithms;uses:="hu.elte.txtuml.layout.visualizer.model,hu.elte.txtuml.layout.visualizer.statements,hu.elte.txtuml.layout.visualizer.algorithms.bellmanfordhelpers",
+Export-Package: hu.elte.txtuml.layout.visualizer.algorithms;uses:="hu.elte.txtuml.layout.visualizer.model,hu.elte.txtuml.layout.visualizer.statements",
  hu.elte.txtuml.layout.visualizer.exceptions,
- hu.elte.txtuml.layout.visualizer.helpers;uses:="hu.elte.txtuml.layout.visualizer.model,hu.elte.txtuml.layout.visualizer.statements",
+ hu.elte.txtuml.layout.visualizer.interfaces,
  hu.elte.txtuml.layout.visualizer.model,
+ hu.elte.txtuml.layout.visualizer.model.utils,
  hu.elte.txtuml.layout.visualizer.statements
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: ELTE

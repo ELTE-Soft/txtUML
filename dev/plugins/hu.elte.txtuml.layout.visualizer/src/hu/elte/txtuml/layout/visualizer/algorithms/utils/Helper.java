@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.helpers;
+package hu.elte.txtuml.layout.visualizer.algorithms.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,6 +1,7 @@
 package hu.elte.txtuml.layout.export.source;
 
 import hu.elte.txtuml.api.model.From;
+import hu.elte.txtuml.api.model.StateMachine.CompositeState;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.To;
@@ -36,6 +37,22 @@ public class StateMachineDiagramExporter extends AbstractSourceExporter {
 		return Pair.of(from.value(), to.value());
 	}
 
+	@Override
+	public void exportDefaultParentage(ModelId modelId, 
+			ElementExporter elementExporter)
+	{
+		elementExporter.getNodes().keySet().forEach(node ->
+		{
+			if(node.getEnclosingClass() != null)
+			{
+				if(CompositeState.class.isAssignableFrom(node.getEnclosingClass()))
+				{
+					elementExporter.setParent(node, node.getEnclosingClass());
+				}
+			}
+		});
+	}
+	
 	@Override
 	public void exportImpliedLinks(ModelId modelId, ElementExporter elementExporter) {
 

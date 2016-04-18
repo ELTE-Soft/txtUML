@@ -11,6 +11,10 @@ import java.util.stream.Collectors;
 
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.ArrangeObjects;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.ArrangeAssociations;
+import hu.elte.txtuml.layout.visualizer.algorithms.utils.DefaultStatements;
+import hu.elte.txtuml.layout.visualizer.algorithms.utils.Helper;
+import hu.elte.txtuml.layout.visualizer.model.utils.RectangleObjectTreeEnumerator;
+import hu.elte.txtuml.layout.visualizer.algorithms.utils.StatementHelper;
 import hu.elte.txtuml.layout.visualizer.events.ProgressEmitter;
 import hu.elte.txtuml.layout.visualizer.events.ProgressManager;
 import hu.elte.txtuml.layout.visualizer.exceptions.BoxArrangeConflictException;
@@ -21,11 +25,11 @@ import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
 import hu.elte.txtuml.layout.visualizer.exceptions.StatementsConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
-import hu.elte.txtuml.layout.visualizer.helpers.Helper;
-import hu.elte.txtuml.layout.visualizer.helpers.Options;
-import hu.elte.txtuml.layout.visualizer.helpers.StatementHelper;
+import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider;
+import hu.elte.txtuml.layout.visualizer.model.Diagram;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
+import hu.elte.txtuml.layout.visualizer.model.Options;
 import hu.elte.txtuml.layout.visualizer.model.OverlapArrangeMode;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
@@ -39,13 +43,9 @@ import hu.elte.txtuml.utils.Pair;
  */
 public class LayoutVisualize {
 	/***
-	 * Objects to arrange.
+	 * Diagram to arrange.
 	 */
-	private Set<RectangleObject> _objects;
-	/***
-	 * Links to arrange
-	 */
-	private Set<LineAssociation> _assocs;
+	private Diagram _diagram;
 
 	/***
 	 * Statements which arrange. Later the statements on the objects.
@@ -59,6 +59,7 @@ public class LayoutVisualize {
 	 * Options.
 	 */
 	private Options _options;
+	private IPixelDimensionProvider _pixelProvider;
 
 	/***
 	 * Get the current set of Objects.
@@ -66,7 +67,7 @@ public class LayoutVisualize {
 	 * @return Set of Objects. Can be null.
 	 */
 	public Set<RectangleObject> getObjects() {
-		return _objects;
+		return _diagram.Objects;
 	}
 
 	/***
@@ -75,7 +76,7 @@ public class LayoutVisualize {
 	 * @return Set of Links. Can be null.
 	 */
 	public Set<LineAssociation> getAssocs() {
-		return _assocs;
+		return _diagram.Assocs;
 	}
 
 	/**
@@ -104,22 +105,20 @@ public class LayoutVisualize {
 	public Integer getPixelGridHorizontal() {
 		return getPixelGridRatio(box -> box.getWidth(), box -> box.getPixelWidth());
 	}
-	
+
 	public Integer getPixelGridVertical() {
 		return getPixelGridRatio(box -> box.getHeight(), box -> box.getPixelHeight());
 	}
-	
-	private Integer getPixelGridRatio(Function<RectangleObject, Integer> selector, 
-			Function<RectangleObject, Integer> selectorPixel)
-	{
+
+	private Integer getPixelGridRatio(Function<RectangleObject, Integer> selector,
+			Function<RectangleObject, Integer> selectorPixel) {
 		final Integer defaultValue = 1;
-		
-		if (_objects != null) {
-			RectangleObject obj = _objects.stream()
-					.filter(box -> !box.isSpecial()).findFirst().orElse(null);
-			if(obj == null)
+
+		if (_diagram.Objects != null) {
+			RectangleObject obj = _diagram.Objects.stream().filter(box -> !box.isSpecial()).findFirst().orElse(null);
+			if (obj == null)
 				return defaultValue;
-			else if(selector.apply(obj) == 1)
+			else if (selector.apply(obj) == 1)
 				return selectorPixel.apply(obj);
 			else
 				return selectorPixel.apply(obj) / (selector.apply(obj) - 1);
@@ -160,7 +159,9 @@ public class LayoutVisualize {
 	/**
 	 * Layout algorithm initialize. Use load(), then arrange().
 	 */
-	public LayoutVisualize() {
+	@Deprecated
+	public LayoutVisualize(IPixelDimensionProvider pPImpl) {
+		_pixelProvider = pPImpl;
 		_options = new Options();
 		_options.DiagramType = DiagramType.Class;
 		setDefaults();
@@ -172,7 +173,8 @@ public class LayoutVisualize {
 	 * @param type
 	 *            Type of the diagram to arrange.
 	 */
-	public LayoutVisualize(DiagramType type) {
+	public LayoutVisualize(IPixelDimensionProvider pPImpl, DiagramType type) {
+		_pixelProvider = pPImpl;
 		_options = new Options();
 		_options.DiagramType = type;
 		setDefaults();
@@ -181,8 +183,7 @@ public class LayoutVisualize {
 	private void setDefaults() {
 		ProgressManager.start();
 
-		_objects = null;
-		_assocs = null;
+		_diagram = null;
 		_options.ArrangeOverlaps = OverlapArrangeMode.few;
 		_options.Logging = false;
 		_options.CorridorRatio = 1.0;
@@ -220,9 +221,9 @@ public class LayoutVisualize {
 	public void arrange(ArrayList<Statement> par_stats) throws InternalException, BoxArrangeConflictException,
 			ConversionException, StatementTypeMatchException, CannotFindAssociationRouteException,
 			UnknownStatementException, BoxOverlapConflictException, StatementsConflictException {
-		if (_objects == null)
+		if (_diagram.Objects == null)
 			return;
-		
+
 		// Clone statements into local working copy
 		_statements = Helper.cloneStatementList(par_stats);
 		_statements.sort((s1, s2) -> {
@@ -251,7 +252,7 @@ public class LayoutVisualize {
 		maxGroupId = addDefaultStatements(maxGroupId);
 
 		// Check the types of Statements
-		StatementHelper.checkTypes(_statements, _assocStatements, _objects, _assocs);
+		StatementHelper.checkTypes(_statements, _assocStatements, _diagram.Objects, _diagram.Assocs);
 
 		// Box arrange
 		maxGroupId = boxArrange(maxGroupId);
@@ -308,14 +309,14 @@ public class LayoutVisualize {
 	}
 
 	private void splitStatements() throws ConversionException, StatementsConflictException {
-		_assocStatements = StatementHelper.splitAssocs(_statements, _assocs);
+		_assocStatements = StatementHelper.splitAssocs(_statements, _diagram.Assocs);
 		_statements.removeAll(_assocStatements);
 		_assocStatements = StatementHelper.reduceAssocs(_assocStatements);
 	}
 
 	private Integer transformAssocsIntoStatements(Integer maxGroupId) throws InternalException {
-		Pair<List<Statement>, Integer> tempPair = StatementHelper.transformAssocs(_options.DiagramType, _objects,
-				_assocs, maxGroupId);
+		Pair<List<Statement>, Integer> tempPair = StatementHelper.transformAssocs(_options.DiagramType,
+				_diagram.Objects, _diagram.Assocs, maxGroupId);
 		_statements.addAll(tempPair.getFirst());
 		return tempPair.getSecond();
 	}
@@ -327,7 +328,7 @@ public class LayoutVisualize {
 		for (String p : result) {
 			RectangleObject tempObj = new RectangleObject(p);
 			tempObj.setPhantom(true);
-			_objects.add(tempObj);
+			_diagram.Objects.add(tempObj);
 		}
 
 		_statements.removeAll(_statements.stream().filter(s -> s.getType().equals(StatementType.phantom))
@@ -337,7 +338,8 @@ public class LayoutVisualize {
 	}
 
 	private Integer addDefaultStatements(Integer maxGroupId) throws InternalException {
-		DefaultStatements ds = new DefaultStatements(_options.DiagramType, _objects, _assocs, _statements, maxGroupId);
+		DefaultStatements ds = new DefaultStatements(_options.DiagramType, _diagram.Objects, _diagram.Assocs,
+				_statements, maxGroupId);
 		_statements.addAll(ds.value());
 
 		return ds.getGroupId();
@@ -348,47 +350,60 @@ public class LayoutVisualize {
 		if (_options.Logging)
 			Logger.sys.info("> Starting box arrange...");
 
-		// Arrange objects
-		ArrangeObjects ao = new ArrangeObjects(_objects.stream().collect(Collectors.toList()), _statements, maxGroupId,
-				_options);
-		_objects = new HashSet<RectangleObject>(ao.value());
+		// Arrange Outern most objects
+		ArrangeObjects ao = new ArrangeObjects(_diagram.Objects.stream().collect(Collectors.toList()), _statements,
+				maxGroupId, _options);
+		_diagram.Objects = new HashSet<RectangleObject>(ao.value());
 		_statements = ao.statements();
+		maxGroupId = ao.getGId();
+
+		for (RectangleObject box : _diagram.Objects) {
+			if (box.hasInner()) {
+				ao = new ArrangeObjects(box.getInner().Objects.stream().collect(Collectors.toList()), _statements,
+						maxGroupId, _options);
+				box.getInner().Objects = new HashSet<RectangleObject>(ao.value());
+				_statements = ao.statements();
+				maxGroupId = ao.getGId();
+			}
+		}
 
 		if (_options.Logging)
 			Logger.sys.info("> Box arrange DONE!");
 
-		return ao.getGId();
+		return maxGroupId;
 	}
 
-	private void updateAssocsEnd() {
-		for (LineAssociation a : _assocs) {
-			ArrayList<Point> al = new ArrayList<Point>();
+	private void updateAssocsEnd() throws InternalException {
+		for (LineAssociation link : _diagram.Assocs) {
+			ArrayList<Point> linkRoute = new ArrayList<Point>();
+			
 			Point startend = null;
 			Point endend = null;
-			int ends = 2;
-			for (RectangleObject o : _objects) {
-				if (a.getFrom().equals(o.getName())) {
+			for (RectangleObject o : new RectangleObjectTreeEnumerator(_diagram.Objects)) {
+				if (link.getFrom().equals(o.getName())) {
 					startend = o.getPosition();
-					--ends;
 				}
-				if (a.getTo().equals(o.getName())) {
+				if (link.getTo().equals(o.getName())) {
 					endend = o.getPosition();
-					--ends;
 				}
 
-				if (ends == 0)
+				if (startend != null && endend != null)
 					break;
 			}
-			al.add(startend);
-			al.add(endend);
-			a.setRoute(al);
+			
+			if(startend == null || endend == null)
+				throw new InternalException("Object at link's end not found: " + link.toString());
+			
+			linkRoute.add(startend);
+			linkRoute.add(endend);
+			link.setRoute(linkRoute);
 		}
 	}
 
 	private void removePhantoms(Set<String> phantoms) {
-		Set<RectangleObject> toDeleteSet = _objects.stream().filter(o -> phantoms.contains(o.getName()))
+		Set<RectangleObject> toDeleteSet = _diagram.Objects.stream().filter(o -> phantoms.contains(o.getName()))
 				.collect(Collectors.toSet());
-		_objects.removeAll(toDeleteSet);
+		_diagram.Objects.removeAll(toDeleteSet);
 	}
 
 	private Integer linkArrange(Integer maxGroupId) throws ConversionException, InternalException,
@@ -396,14 +411,48 @@ public class LayoutVisualize {
 		if (_options.Logging)
 			Logger.sys.info("> Starting link arrange...");
 
-		ArrangeAssociations aa = new ArrangeAssociations(_objects, _assocs, _assocStatements, maxGroupId, _options);
-		_assocs = aa.value();
-		_objects = aa.objects();
+		Pair<Integer, Diagram> res = recursiveLinkArrange(maxGroupId, _diagram);
+		_diagram = res.getSecond();
 
 		if (_options.Logging)
 			Logger.sys.info("> Link arrange DONE!");
 
-		return aa.getGId();
+		return res.getFirst();
+	}
+
+	private Pair<Integer, Diagram> recursiveLinkArrange(Integer maxGroupId, Diagram toLayout) throws ConversionException, InternalException,
+			CannotFindAssociationRouteException, UnknownStatementException {
+		for (RectangleObject box : toLayout.Objects) {
+			if (!box.hasInner() || box.getInner().hasLayout()) {
+				if (!box.isPixelDimensionsPresent()) {
+					Pair<Integer, Integer> dim = _pixelProvider.getPixelDimensionsFor(box);
+					box.setPixelWidth(dim.getFirst());
+					box.setPixelHeight(dim.getSecond());
+				} else
+					continue;
+			} else {
+				if (_options.Logging)
+					Logger.sys.info("> > Starting recursive link arrange!");
+				
+				Pair<Integer, Diagram> res = recursiveLinkArrange(maxGroupId, box.getInner());
+				maxGroupId = res.getFirst();
+				box.setInner(res.getSecond());
+				
+				if (_options.Logging)
+					Logger.sys.info("> > Recursive link arrange DONE!");
+			}
+		}
+
+		ArrangeAssociations aa = new ArrangeAssociations(_diagram.Objects, _diagram.Assocs, _assocStatements,
+				maxGroupId, _options);
+		toLayout.Assocs = aa.value();
+		toLayout.Objects = aa.objects();
+
+		return new Pair<Integer, Diagram>(aa.getGId(), toLayout);
+	}
+
+	public void load(Diagram diag) {
+		_diagram = new Diagram(diag);
 	}
 
 	/***
@@ -414,9 +463,11 @@ public class LayoutVisualize {
 	 * @param as
 	 *            Set of LineAssociations to arrange between objects.
 	 */
+	@Deprecated
 	public void load(Set<RectangleObject> os, Set<LineAssociation> as) {
-		_objects = os;
-		_assocs = as;
+		_diagram = new Diagram();
+		_diagram.Objects = os;
+		_diagram.Assocs = as;
 	}
 
 }

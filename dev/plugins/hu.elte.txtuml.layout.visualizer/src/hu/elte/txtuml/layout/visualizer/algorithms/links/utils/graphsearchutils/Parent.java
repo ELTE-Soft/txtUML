@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers;
+package hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils;
 
 import java.util.HashMap;
 import java.util.Map;

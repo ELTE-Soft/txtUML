@@ -10,6 +10,7 @@ import hu.elte.txtuml.api.layout.BottomMost;
 import hu.elte.txtuml.api.layout.Column;
 import hu.elte.txtuml.api.layout.Diamond;
 import hu.elte.txtuml.api.layout.East;
+import hu.elte.txtuml.api.layout.Inside;
 import hu.elte.txtuml.api.layout.Left;
 import hu.elte.txtuml.api.layout.LeftMost;
 import hu.elte.txtuml.api.layout.LinkEnd;
@@ -210,6 +211,23 @@ public class StatementExporterImpl implements StatementExporter {
 						annot.value());
 			}
 		}
+	}
+	
+	@Override
+	public Class<?> exportInside(Inside annot) {
+		if (annot.value() == null) {
+			problemReporter.sugarStatementWithEmptyArguments("show");
+			return null;
+		}
+		
+		try {
+			return elementExporter.exportConcreteElement(annot.value()).getElementClass();
+		} catch (ElementExportationException e) {
+			problemReporter.showStatementWithInvalidElement(annot.value(),
+					new Class<?>[] {annot.value()});
+		}
+		
+		return null;
 	}
 
 	@Override

@@ -55,4 +55,6 @@ abstract class AbstractSourceExporter implements SourceExporter {
 	@Override
 	public abstract void exportImpliedLinks(ModelId modelId, ElementExporter elementExporter);
 
+	@Override
+	public abstract void exportDefaultParentage(ModelId modelId, ElementExporter elementExporter);
 }

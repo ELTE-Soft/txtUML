@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.algorithms.boxes.bellmanfordhelpers;
+package hu.elte.txtuml.layout.visualizer.algorithms.boxes.utils.bellmanfordutils;
 
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 
