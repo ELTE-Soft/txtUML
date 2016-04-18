@@ -1,6 +1,5 @@
 package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -9,7 +8,6 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.uml2.uml.Classifier;
-import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 
@@ -17,7 +15,6 @@ import hu.elte.txtuml.export.papyrus.api.ClassDiagramElementCreator;
 import hu.elte.txtuml.export.papyrus.elementproviders.ClassDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ClassDiagramElementsArranger;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger;
 
 /**
  * An abstract class for adding/removing elements to ClassDiagrams.
@@ -95,12 +92,14 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 			List<Point> route = this.arranger.getRouteForConnection(assoc);
 			String sourceAnchor = this.arranger.getSourceAnchorForConnection(assoc);
 			String targetAnchor = this.arranger.getTargetAnchorForConnection(assoc);
-			this.elementCreator.createAssociationForNodes((Classifier) memberT1, (Classifier) memberT2, assoc,
-					this.diagram, route, sourceAnchor, targetAnchor, this.monitor);
+			this.elementCreator.createAssociationForNodes((Classifier) memberT1, (Classifier) memberT2, assoc, route,
+					sourceAnchor, targetAnchor, this.diagram, this.monitor);
 		});
 
 		elementsProvider.getGeneralizations()
 				.forEach((generalization) -> this.elementCreator.createGeneralizationForNodes(generalization,
-						this.arranger.getRouteForConnection(generalization), this.diagram, this.monitor));
+						this.arranger.getRouteForConnection(generalization),
+						this.arranger.getSourceAnchorForConnection(generalization),
+						this.arranger.getTargetAnchorForConnection(generalization), this.diagram, this.monitor));
 	}
 }

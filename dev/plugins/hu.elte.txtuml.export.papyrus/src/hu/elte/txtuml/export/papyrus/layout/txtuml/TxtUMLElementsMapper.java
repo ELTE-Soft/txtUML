@@ -24,25 +24,29 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.utils.Pair;
 
 /**
- * Finds the org.eclipse.uml2 element from a model according to the txtUML name 
+ * Finds the org.eclipse.uml2 element from a model according to the txtUML name
  */
 public class TxtUMLElementsMapper {
-	
+
 	private Collection<ModelMapProvider> modelMapProviders;
 	private Map<String, Relationship> connectionMap = new HashMap<>();
 	private Map<String, Element> elementMap = new HashMap<>();
-	
+
 	/**
 	 * The Constructor
-	 * @param resource  - The resource where the UML2 element are to be find
-	 * @param descriptor - The {@Link TxtUMLLayoutDescriptor} which contains the txtUML Layout informations 
-	 * @throws ModelMapException 
+	 * 
+	 * @param resource
+	 *            - The resource where the UML2 element are to be find
+	 * @param descriptor
+	 *            - The {@Link TxtUMLLayoutDescriptor} which contains the txtUML
+	 *            Layout informations
+	 * @throws ModelMapException
 	 */
 	public TxtUMLElementsMapper(Resource resource, TxtUMLLayoutDescriptor descriptor) {
 		try {
-			this.modelMapProviders = ModelMapUtils.collectModelMapProviders(descriptor.projectName,
-																		descriptor.mappingFolder, resource).values();
-			
+			this.modelMapProviders = ModelMapUtils
+					.collectModelMapProviders(descriptor.projectName, descriptor.mappingFolder, resource).values();
+
 			init(modelMapProviders, descriptor);
 		} catch (ModelMapException e) {
 			throw new RuntimeException(e);
@@ -50,104 +54,108 @@ public class TxtUMLElementsMapper {
 	}
 
 	/**
-	 * Maps every txtUML element found in the description to UML2 model elements.
-	 * Saves the mapping to the appropriate properties
+	 * Maps every txtUML element found in the description to UML2 model
+	 * elements. Saves the mapping to the appropriate properties
+	 * 
 	 * @param modelMapProviders
 	 * @param descriptor
 	 */
 	private void init(Collection<ModelMapProvider> modelMapProviders, TxtUMLLayoutDescriptor descriptor) {
-		for(DiagramExportationReport report : descriptor.getReports()){
-			//Nodes
-			for(RectangleObject node : report.getNodes()){
-				findElement(node.getName()).ifPresent((e)->{
+		for (DiagramExportationReport report : descriptor.getReports()) {
+			// Nodes
+			for (RectangleObject node : report.getNodes()) {
+				findElement(node.getName()).ifPresent((e) -> {
 					this.elementMap.put(node.getName(), e);
 				});
 			}
-			
-			//Connections
-			for(LineAssociation link : report.getLinks()){
+
+			// Connections
+			for (LineAssociation link : report.getLinks()) {
 				Optional<? extends Relationship> elem = Optional.empty();
-				if(link.getType() == AssociationType.generalization){
+				if (link.getType() == AssociationType.generalization) {
 					elem = findGeneralization(link);
-				}else{
+				} else {
 					elem = findAssociation(link);
 				}
-				elem.ifPresent((e)->{
+				elem.ifPresent((e) -> {
 					this.connectionMap.put(link.getId(), e);
 				});
 			}
 		}
 	}
-	
+
 	/**
-	 * Finds the org.eclipse.uml2 element from a model according to the elements canonical name 
-	 * @param nodeName - The model elements canonical name
+	 * Finds the org.eclipse.uml2 element from a model according to the elements
+	 * canonical name
+	 * 
+	 * @param nodeName
+	 *            - The model elements canonical name
 	 * @return The appropriate model element or null if not found
 	 */
-	private Optional<Element> findElement(String nodeName){
-		for(ModelMapProvider modelMapProvider:  this.modelMapProviders){
+	private Optional<Element> findElement(String nodeName) {
+		for (ModelMapProvider modelMapProvider : this.modelMapProviders) {
 			Element elem = (Element) modelMapProvider.getByName(nodeName);
-			if(elem != null){
+			if (elem != null) {
 				return Optional.of(elem);
 			}
 		}
 		return Optional.empty();
 	}
 
-	private Optional<Association> findAssociation(LineAssociation assoc){
+	private Optional<Association> findAssociation(LineAssociation assoc) {
 		Optional<Element> elem = findElement(assoc.getId());
-		if(elem.isPresent() && elem.get() instanceof Association){
+		if (elem.isPresent() && elem.get() instanceof Association) {
 			return Optional.of((Association) elem.get());
 		}
 		return Optional.empty();
 	}
-	
-	private Optional<Generalization> findGeneralization(LineAssociation generalization){
+
+	private Optional<Generalization> findGeneralization(LineAssociation generalization) {
 		Optional<Element> superclass = findElement(generalization.getFrom());
 		Optional<Element> subclass = findElement(generalization.getTo());
-		
-		if(superclass.isPresent() && subclass.isPresent() && subclass.get() instanceof Classifier){
+
+		if (superclass.isPresent() && subclass.isPresent() && subclass.get() instanceof Classifier) {
 			List<Generalization> gens = ((Classifier) subclass.get()).getGeneralizations();
-			for(Generalization gen : gens){
-				Classifier classif =  gen.getGeneral();
-				if(classif.equals(superclass.get())){ 
+			for (Generalization gen : gens) {
+				Classifier classif = gen.getGeneral();
+				if (classif.equals(superclass.get())) {
 					return Optional.of(gen);
 				}
 			}
 		}
 		return Optional.empty();
 	}
-	
+
 	/**
-	 * Returns the roots elements of all reports 
+	 * Returns the roots elements of all reports
+	 * 
 	 * @return
 	 */
-	public List<Pair<String, Element>> getDiagramRootsWithDiagramNames(TxtUMLLayoutDescriptor descriptor){
+	public List<Pair<String, Element>> getDiagramRootsWithDiagramNames(TxtUMLLayoutDescriptor descriptor) {
 		List<Pair<String, Element>> roots = new ArrayList<>();
-		for(Pair<String, DiagramExportationReport> pair : descriptor.getReportsWithDiagramNames()){
+		for (Pair<String, DiagramExportationReport> pair : descriptor.getReportsWithDiagramNames()) {
 			DiagramExportationReport report = pair.getSecond();
-			//TODO: See if there is a better solution to get container of diagram
+			// TODO: See if there is a better solution to get container of
+			// diagram
 			String name = report.getModelName();
-			findElement(name).ifPresent(
-						e -> roots.add(new Pair<>(pair.getFirst(), e))
-					);
+			findElement(name).ifPresent(e -> roots.add(new Pair<>(pair.getFirst(), e)));
 		}
 		return roots;
 	}
-	
-	public Element findNode(String object){
+
+	public Element findNode(String object) {
 		return this.elementMap.get(object);
 	}
-	
-	public Relationship findConnection(String object){
+
+	public Relationship findConnection(String object) {
 		return this.connectionMap.get(object);
 	}
-	
-	public Collection<Element> getNodes(DiagramExportationReport report){
+
+	public Collection<Element> getNodes(DiagramExportationReport report) {
 		return this.elementMap.values();
 	}
-	
-	public Collection<Relationship> getConnections(DiagramExportationReport report){
+
+	public Collection<Relationship> getConnections(DiagramExportationReport report) {
 		return this.connectionMap.values();
 	}
 }

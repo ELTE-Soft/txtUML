@@ -14,7 +14,6 @@ import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.emf.type.core.IHintedType;
 import org.eclipse.gmf.runtime.notation.BasicCompartment;
-import org.eclipse.gmf.runtime.notation.Bounds;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.Edge;
 import org.eclipse.gmf.runtime.notation.IdentityAnchor;
@@ -23,7 +22,6 @@ import org.eclipse.gmf.runtime.notation.NotationFactory;
 import org.eclipse.gmf.runtime.notation.RelativeBendpoints;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.gmf.runtime.notation.datatype.RelativeBendpoint;
-import org.eclipse.gmf.runtime.notation.impl.IdentityAnchorImpl;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassAttributeCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.ClassOperationCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.clazz.part.UMLDiagramEditorPlugin;
@@ -106,8 +104,8 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 		// TODO Auto-generated method stub
 	}
 
-	public void createAssociationForNodes(Classifier source, Classifier target, Association assoc, Diagram diagram,
-			List<Point> route, String sourceAnchor, String targetAnchor, IProgressMonitor monitor) {
+	public void createAssociationForNodes(Classifier source, Classifier target, Association assoc, List<Point> route,
+			String sourceAnchor, String targetAnchor, Diagram diagram, IProgressMonitor monitor) {
 
 		View sourceView = getViewOfModel(source, diagram);
 		View targetView = getViewOfModel(target, diagram);
@@ -120,29 +118,30 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 			edge.setElement(assoc);
 			edge.setSource(sourceView);
 			edge.setTarget(targetView);
-			edge.setBendpoints(createBendsPoints((Node) sourceView, (Node) targetView, route));
-				IdentityAnchor sourceanchor = NotationFactory.eINSTANCE.createIdentityAnchor();
-				sourceanchor.setId(sourceAnchor);
-				IdentityAnchor targetanchor = NotationFactory.eINSTANCE.createIdentityAnchor();
-				targetanchor.setId(targetAnchor);
-			edge.setSourceAnchor(sourceanchor);
-			edge.setTargetAnchor(targetanchor);
+			edge.setBendpoints(createBendsPoints(route));
+			createAnchorsForEdge(edge, sourceAnchor, targetAnchor);
 		};
 
 		runInTransactionalCommand(runnable, "Creating Assoc", monitor);
 	}
 
-	private RelativeBendpoints createBendsPoints(Node sourceNode, Node targetNode, List<Point> route) {
-		Bounds slc = (Bounds) sourceNode.getLayoutConstraint();
-		Bounds tlc = (Bounds) targetNode.getLayoutConstraint();
-		Point sourceNodeCenter = new Point(slc.getX() + slc.getWidth() / 2, slc.getY() + slc.getHeight() / 2);
-		Point targetNodeCenter = new Point(tlc.getX() + tlc.getWidth() / 2, tlc.getY() + slc.getHeight() / 2);
+	private void createAnchorsForEdge(Edge edge, String sourceAnchor, String targetAnchor) {
+		IdentityAnchor sourceanchor = NotationFactory.eINSTANCE.createIdentityAnchor();
+		sourceanchor.setId(sourceAnchor);
+		IdentityAnchor targetanchor = NotationFactory.eINSTANCE.createIdentityAnchor();
+		targetanchor.setId(targetAnchor);
+		edge.setSourceAnchor(sourceanchor);
+		edge.setTargetAnchor(targetanchor);
+	}
 
+	private RelativeBendpoints createBendsPoints(List<Point> route) {
 		RelativeBendpoints bendpoints = NotationFactory.eINSTANCE.createRelativeBendpoints();
 		if (route != null) {
+			Point sourceAnchor = route.get(0);
+			Point targetAnchor = route.get(route.size() - 1);
 			List<RelativeBendpoint> relativePoints = route.stream()
-					.map((p) -> new RelativeBendpoint(p.x - sourceNodeCenter.x, p.y - sourceNodeCenter.y,
-							p.x - targetNodeCenter.x, p.y - targetNodeCenter.y))
+					.map((p) -> new RelativeBendpoint(p.x - sourceAnchor.x, p.y - sourceAnchor.y, p.x - targetAnchor.x,
+							p.y - targetAnchor.y))
 					.collect(Collectors.toList());
 
 			bendpoints.setPoints(relativePoints);
@@ -150,11 +149,11 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 		return bendpoints;
 	}
 
-	public void createGeneralizationForNodes(Generalization generalization, List<Point> route, Diagram diagram,
-			 IProgressMonitor monitor) {
-		Classifier subclass =   generalization.getSpecific();
-		Classifier baseclass =  generalization.getGeneral();
-		
+	public void createGeneralizationForNodes(Generalization generalization, List<Point> route, String sourceAnchor,
+			String targetAnchor, Diagram diagram, IProgressMonitor monitor) {
+		Classifier subclass = generalization.getSpecific();
+		Classifier baseclass = generalization.getGeneral();
+
 		View sourceView = getViewOfModel(subclass, diagram);
 		View targetView = getViewOfModel(baseclass, diagram);
 		IElementType elementType = UMLElementTypes.Generalization_4002;
@@ -166,9 +165,12 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 			edge.setElement(generalization);
 			edge.setSource(sourceView);
 			edge.setTarget(targetView);
-			edge.setBendpoints(createBendsPoints((Node) sourceView, (Node) targetView, route));
+			edge.setBendpoints(createBendsPoints(route));
+			// Somehow the source and target nodes are swapped in case of
+			// generalization
+			createAnchorsForEdge(edge, targetAnchor, sourceAnchor);
 		};
-		
+
 		runInTransactionalCommand(runnable, "Creating Generalization", monitor);
 	}
 
