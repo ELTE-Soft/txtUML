@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Relationship;
 
@@ -21,6 +22,13 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 
 public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
+
+	private static final int PIXELWIDTH_OF_CHARACTER = 12;
+	private static final int PIXELHEIGHT_OF_PROPERTY = 25;
+	private static final int MIN_CLASS_WIDTH = 100;
+	private static final int MAX_CLASS_WIDTH = 200;
+	private static final int MIN_CLASS_HEIGHT = 100;
+	private static final int MAX_CLASS_HEIGHT = 200;
 
 	private DiagramExportationReport report;
 	private Map<Element, Rectangle> elementbounds;
@@ -82,10 +90,20 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 	private void setPixelsizes(Set<RectangleObject> objects) {
 		objects.forEach(object -> {
 			Element elem = this.elementsMapper.findNode(object.getName());
-			if (elem != null) {
-				// TODO: Implement algorithm
-				object.setPixelWidth(100);
-				object.setPixelHeight(100);
+			if (elem != null && elem instanceof Classifier) {
+				int width = ((Classifier) elem).getFeatures().stream()
+						.mapToInt((attribute) -> attribute.getName().length() * PIXELWIDTH_OF_CHARACTER).max()
+						.orElse(0);
+				width = width < MIN_CLASS_WIDTH ? MIN_CLASS_WIDTH : width;
+				width = width > MAX_CLASS_WIDTH ? MAX_CLASS_WIDTH : width;
+				
+				int height = ((Classifier) elem).getFeatures().size()* PIXELHEIGHT_OF_PROPERTY;
+				height = height < MIN_CLASS_HEIGHT ? MIN_CLASS_HEIGHT : height;
+				height = height > MAX_CLASS_HEIGHT ? MAX_CLASS_HEIGHT : height;
+				
+				
+				object.setPixelWidth(width);
+				object.setPixelHeight(height);
 			}
 		});
 

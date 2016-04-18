@@ -51,11 +51,11 @@ public class ClassDiagramElementCreator extends AbstractDiagramElementCreator {
 
 			newNode.setLayoutConstraint(createBounds(bounds, defaultClassBounds));
 
-			objectToDisplay.getAllAttributes().forEach((property) -> {
+			objectToDisplay.getAttributes().forEach((property) -> {
 				createPropertyForNode(newNode, property, monitor);
 			});
 
-			objectToDisplay.getAllOperations().forEach((operation) -> {
+			objectToDisplay.getOperations().forEach((operation) -> {
 				createOperationForNode(newNode, operation, monitor);
 			});
 
