@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+    <extension point="org.eclipse.ui.actionSets">
+        <actionSet description="Action set for JTxtUML refactorings" id="org.eclipse.refactoring.actionSet" label="JTxtUML Refactorings" visible="true">
+            <menu id="org.eclipse.refactoring.menu" label="JTxtUML Refactorings" path="edit">
+                <separator name="--" />
+            </menu>
+            
+            <!-- Refactorings -->
+            <action 
+            	class="hu.elte.txtuml.refactoring.groupstates.GroupStatesAction"
+            	id="hu.elte.txtuml.refactoring.groupstates.GroupStatesAction" 
+            	label="Group States" 
+            	menubarPath="org.eclipse.refactoring.menu/groupstates" />
+            	
+            <action 
+            	class="hu.elte.txtuml.refactoring.unfoldoutgoing.UnfoldOutgoingAction"
+            	id="hu.elte.txtuml.refactoring.unfoldoutgoing.UnfoldOutgoingAction" 
+            	label="Unfold Outgoing Transitions" 
+            	menubarPath="org.eclipse.refactoring.menu/unfoldoutgoing" />
+            	
+            <action 
+            	class="hu.elte.txtuml.refactoring.unfoldincoming.UnfoldIncomingAction"
+            	id="hu.elte.txtuml.refactoring.unfoldincoming.UnfoldIncomingAction" 
+            	label="Unfold Incoming Transitions" 
+            	menubarPath="org.eclipse.refactoring.menu/unfoldincoming" />
+        </actionSet>
+    </extension>
+</plugin>
