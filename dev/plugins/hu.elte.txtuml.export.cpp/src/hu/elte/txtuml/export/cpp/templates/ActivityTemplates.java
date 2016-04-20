@@ -3,6 +3,8 @@ package hu.elte.txtuml.export.cpp.templates;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates.LinkFunctionType;
 import hu.elte.txtuml.utils.Pair;
 
 public class ActivityTemplates {
@@ -48,8 +50,8 @@ public class ActivityTemplates {
 	}
 
 	public static String linkObjects(String firstClassName, String firstObjectName, String secondClassName,
-			String secondObjectName) {
-		return GenerationNames.ActionFunctionsNamespace + "::" + GenerationNames.LinkFunctionName + "<" + firstClassName
+			String secondObjectName, LinkFunctionType linkType) {
+		return GenerationNames.ActionFunctionsNamespace + "::" + GenerationTemplates.getLinkFunctionName(linkType) + "<" + firstClassName
 				+ "," + secondClassName + ">" + "(" + firstObjectName + "," + secondObjectName + ");\n";
 	}
 

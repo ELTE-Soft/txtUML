@@ -11,6 +11,13 @@ namespace action
         e1->link<E2>(e2);
         e2->link<E1>(e1);
     }
+	
+	template<typename E1, typename E2>
+    void unlink(E1* e1, E2* e2)
+    {
+        e1->unlink<E2>(e2);
+        e2->unlink<E1>(e1);
+    }
 }
 
 enum Multiplicity {One, Many, Some};

@@ -177,7 +177,8 @@ public class ClassExporter {
 		publicParts.append("\n" + getAssocations(class_));
 
 		if (!associationMembers.isEmpty()) {
-			publicParts.append(GenerationTemplates.templateLinkFunction());
+			publicParts.append(GenerationTemplates.templateLinkFunctionGeneralDef(GenerationTemplates.LinkFunctionType.Link));
+			publicParts.append(GenerationTemplates.templateLinkFunctionGeneralDef(GenerationTemplates.LinkFunctionType.Unlink));
 		}
 
 		if (ownStates(class_, smList)) {
@@ -313,8 +314,10 @@ public class ClassExporter {
 	private StringBuilder createLinkFunctionDeclerations(Class class_) {
 		StringBuilder source = new StringBuilder("");
 		for (Property member : associationMembers) {
-			source.append(
-					GenerationTemplates.linkTemplateSpecializationDecl(class_.getName(), member.getType().getName()));
+			source.append(GenerationTemplates.linkTemplateSpecializationDecl(
+				class_.getName(), member.getType().getName(),GenerationTemplates.LinkFunctionType.Link));
+			source.append(GenerationTemplates.linkTemplateSpecializationDecl(
+				class_.getName(), member.getType().getName(),GenerationTemplates.LinkFunctionType.Unlink));
 		}
 
 		return source;
@@ -342,7 +345,11 @@ public class ClassExporter {
 
 		for (Property memberEnd : associationMembers) {
 			source.append(GenerationTemplates.linkTemplateSpecializationDef(cls.getName(),
-					memberEnd.getType().getName(), memberEnd.getName()));
+					memberEnd.getType().getName(), memberEnd.getName(),
+					GenerationTemplates.LinkFunctionType.Link));
+			source.append(GenerationTemplates.linkTemplateSpecializationDef(cls.getName(),
+				memberEnd.getType().getName(), memberEnd.getName(),
+				GenerationTemplates.LinkFunctionType.Unlink));
 		}
 
 		return source;

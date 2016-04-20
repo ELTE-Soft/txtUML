@@ -77,6 +77,7 @@ class GenerationNames {
 	public static final String Unknown = "?";
 	public static final String AssocMultiplicityDataStruct = "Association";
 	public static final String AssocationHeaderName = "assocation";
+	public static final String DeploymentHeaderName = "deployment";
 	
 	public static final String InitStateMachine = "initStateMachine";
 
@@ -86,8 +87,10 @@ class GenerationNames {
 	public static final String MultiplicityEnum = "Multiplicity";
 	public static final String AssigmentOperator = "=";
 	public static final String AddAssocToAssocationFunctionName = "addAssoc";
+	public static final String RemoveAssocToAssocationFunctionName = "removeAssoc";
 	public static final String AssocParameterName = "object";
-	public static final String LinkFunctionName = "link";
+	public static final String LinkActionName = "link";
+	public static final String UnLinkActionName = "unlink";
 	public static final String LinkAddition = "link";
 	public static final String TemplateDecl = "template";
 	public static final String TemplateType = "typename";

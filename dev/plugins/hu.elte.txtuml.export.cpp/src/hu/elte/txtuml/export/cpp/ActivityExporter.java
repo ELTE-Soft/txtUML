@@ -23,6 +23,7 @@ import org.eclipse.uml2.uml.Clause;
 import org.eclipse.uml2.uml.ConditionalNode;
 import org.eclipse.uml2.uml.CreateLinkAction;
 import org.eclipse.uml2.uml.CreateObjectAction;
+import org.eclipse.uml2.uml.DestroyLinkAction;
 import org.eclipse.uml2.uml.DestroyObjectAction;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutableNode;
@@ -187,7 +188,10 @@ public class ActivityExporter {
 			source.append(createCreateObjectActionCode((CreateObjectAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_LINK_ACTION)) {
 			source.append(createLinkActionCode((CreateLinkAction) node));
-		} else if (node.eClass().equals(UMLPackage.Literals.READ_LINK_ACTION)) {
+		} else if (node.eClass().equals(UMLPackage.Literals.DESTROY_LINK_ACTION)) {
+		    source.append(createDestroyLinkActionCode((DestroyLinkAction) node));
+		}
+		else if (node.eClass().equals(UMLPackage.Literals.READ_LINK_ACTION)) {
 			source.append(createReadLinkActionCode((ReadLinkAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.SEND_OBJECT_ACTION)) {
 			source.append(createSendSignalActionCode((SendObjectAction) node));
@@ -218,6 +222,8 @@ public class ActivityExporter {
 		}
 		return source;
 	}
+
+
 
 	private StringBuilder createExpansionRegaionCode(ExpansionRegion node) {
 		StringBuilder source = new StringBuilder("");
@@ -261,7 +267,19 @@ public class ActivityExporter {
 		String secondEndClassType = node_.getInputValues().get(1).getType().getName();
 		String secondEndObject = getTargetFromInputPin(node_.getInputValues().get(1));
 
-		return ActivityTemplates.linkObjects(firstEndClassType, firstEndObject, secondEndClassType, secondEndObject);
+		return ActivityTemplates.linkObjects(firstEndClassType, firstEndObject, secondEndClassType,
+			secondEndObject, GenerationTemplates.LinkFunctionType.Link);
+	}
+	
+	private Object createDestroyLinkActionCode(DestroyLinkAction node) {
+		String firstEndClassType = node.getInputValues().get(0).getType().getName();
+		String firstEndObject = getTargetFromInputPin(node.getInputValues().get(0));
+
+		String secondEndClassType = node.getInputValues().get(1).getType().getName();
+		String secondEndObject = getTargetFromInputPin(node.getInputValues().get(1));
+
+		return ActivityTemplates.linkObjects(firstEndClassType, firstEndObject, 
+			secondEndClassType, secondEndObject, GenerationTemplates.LinkFunctionType.Unlink);
 	}
 
 	private String createDestroyObjectActionCode(DestroyObjectAction node_) {
