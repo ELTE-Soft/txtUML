@@ -2,19 +2,19 @@ package pingpong.x;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.ModelExecutor;
-import pingpong.x.model.PongSignal;
-import pingpong.x.model.TopClass;
+import pingpong.x.model.Game;
+import pingpong.x.model.Ball;
 
 public class Tester {
 
 	void test() {
 		ModelExecutor.Settings.setExecutorLog(true);
 
-		TopClass top = Action.create(TopClass.class);
-		Action.start(top);
-
-		Action.send(new PongSignal(4), top);
-
+		Game game = Action.create(Game.class);
+		Action.start(game);
+		
+		Action.send(new Ball(4), game);
+		
 		ModelExecutor.shutdown();
 	}
 
