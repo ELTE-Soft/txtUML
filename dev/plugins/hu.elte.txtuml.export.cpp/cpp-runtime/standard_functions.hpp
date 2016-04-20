@@ -5,5 +5,10 @@
 
 int delayedInc(int,int&);
 int delayedDec(int,int&);
-void printLine(std::string);
+
+namespace action 
+{
+	void log(std::string);
+}
+
 #endif

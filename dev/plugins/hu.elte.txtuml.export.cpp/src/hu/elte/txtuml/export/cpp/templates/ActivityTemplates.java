@@ -259,7 +259,8 @@ public class ActivityTemplates {
 		public static final String And = "&&";
 		public static final String Or = "||";
 
-		public static final String Log = "printLine";
+		public static final String Log = GenerationNames.
+			ActionFunctionsNamespace + "::" + "log";
 
 		public static String Fork(String cond, String e1, String e2) {
 			return cond + " ? " + e1 + " : " + e2;

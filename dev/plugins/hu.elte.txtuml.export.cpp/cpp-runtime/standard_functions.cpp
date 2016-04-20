@@ -13,7 +13,11 @@ int delayedDec(int i, int& out)
 	return i;
 }
 
-void printLine(std::string line)
+namespace action 
 {
-	std::cout << line << std::endl;
+	void log(std::string line)
+	{
+		std::cout << line << std::endl;
+	}
 }
+
