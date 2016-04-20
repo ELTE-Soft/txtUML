@@ -170,7 +170,10 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 
 		if (signal != null) {
 			getRuntime().warning(x -> x.lostSignalAtObject(signal, getWrapped()));
+		} else {
+			getRuntime().error(x -> x.missingInitialTransition(currentVertex.getWrapped()));
 		}
+
 	}
 
 	/**

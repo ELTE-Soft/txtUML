@@ -235,19 +235,21 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 		public void exit() {
 		}
 
-		/**
-		 * Returns a string identifier of the vertex represented by this
-		 * object's dynamic type.
-		 * 
-		 * @return the identifying string
-		 */
-		String vertexIdentifier() {
-			return getClass().getSimpleName();
-		}
-
 		@Override
 		public String toString() {
-			return "vertex:" + vertexIdentifier();
+			return getVertexTypeName() + ":" + getClass().getSimpleName();
+		}
+
+		/**
+		 * Returns a long string representation of the vertex represented by
+		 * this object's dynamic type.
+		 */
+		public String getStringRepresentation() {
+			return getVertexTypeName() + ":" + getClass().getName();
+		}
+
+		String getVertexTypeName() {
+			return "vertex";
 		}
 
 	}
@@ -305,8 +307,8 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 		}
 
 		@Override
-		public String toString() {
-			return "pseudostate:" + vertexIdentifier();
+		String getVertexTypeName() {
+			return "pseudostate";
 		}
 
 	}
@@ -376,8 +378,8 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 	public abstract class Initial extends Pseudostate {
 
 		@Override
-		public String toString() {
-			return "initial:" + vertexIdentifier();
+		String getVertexTypeName() {
+			return "initial";
 		}
 
 	}
@@ -446,8 +448,8 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 	public abstract class Choice extends Pseudostate {
 
 		@Override
-		public String toString() {
-			return "choice:" + vertexIdentifier();
+		String getVertexTypeName() {
+			return "choice";
 		}
 
 	}
@@ -571,9 +573,10 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 		public void exit() {
 		}
 
+
 		@Override
-		public String toString() {
-			return "state:" + vertexIdentifier();
+		public String getVertexTypeName() {
+			return "state";
 		}
 
 	}
@@ -642,8 +645,8 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 	public abstract class CompositeState extends State {
 
 		@Override
-		public String toString() {
-			return "composite_" + super.toString();
+		public String getVertexTypeName() {
+			return "composite_state";
 		}
 
 	}

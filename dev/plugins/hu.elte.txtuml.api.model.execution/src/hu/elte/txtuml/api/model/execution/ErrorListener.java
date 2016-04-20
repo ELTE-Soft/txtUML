@@ -41,6 +41,9 @@ public interface ErrorListener {
 	default void noTransitionFromChoice(Vertex choice) {
 	}
 
+	default void missingInitialTransition(Vertex fromInitial) {
+	}
+
 	default void elseGuardFromNonChoiceVertex(Transition transition) {
 	}
 
