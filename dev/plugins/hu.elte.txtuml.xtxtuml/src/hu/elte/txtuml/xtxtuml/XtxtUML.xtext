@@ -16,7 +16,7 @@ TUFile :
 
 TUModelDeclaration :
 	{TUModelDeclaration}
-	'model' (name=STRING)? ';'?
+	'model-package' name=QualifiedName ('as' modelName=STRING)? ';'?
 ;
 
 // Model level
