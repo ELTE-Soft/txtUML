@@ -22,6 +22,8 @@ class XtxtUMLAssociationValidatorTest {
 	@Test
 	def void testAssociationWithTwoEnds() {
 		'''
+			package model.test;
+
 			class A {}
 			class B {}
 			association A_B {
@@ -34,6 +36,8 @@ class XtxtUMLAssociationValidatorTest {
 	@Test
 	def void testAssociationWithOneEnd() {
 		'''
+			package model.test;
+
 			class A {}
 			class B {}
 			association A_B {
@@ -45,6 +49,8 @@ class XtxtUMLAssociationValidatorTest {
 	@Test
 	def void testAssociationWithThreeEnds() {
 		'''
+			package model.test;
+
 			class A {}
 			class B {}
 			association A_B {
@@ -58,6 +64,8 @@ class XtxtUMLAssociationValidatorTest {
 	@Test
 	def void testAssociationWithNonUniqueEndNames() {
 		'''
+			package model.test;
+
 			class A {}
 			class B {}
 			association A_B {
@@ -70,6 +78,8 @@ class XtxtUMLAssociationValidatorTest {
 	@Test
 	def void testAssociationWithContainerEnd() {
 		'''
+			package model.test;
+
 			class A {}
 			class B {}
 			association A_B {
@@ -82,6 +92,8 @@ class XtxtUMLAssociationValidatorTest {
 	@Test
 	def void testCompositionWithoutContainerEnd() {
 		'''
+			package model.test;
+
 			class A {}
 			class B {}
 			composition A_B {
@@ -94,6 +106,8 @@ class XtxtUMLAssociationValidatorTest {
 	@Test
 	def void testCompositionWithTwoContainerEnds() {
 		'''
+			package model.test;
+
 			class A {}
 			class B {}
 			composition A_B {
@@ -106,6 +120,8 @@ class XtxtUMLAssociationValidatorTest {
 	@Test
 	def void testCompositionWithOneContainerEnd() {
 		'''
+			package model.test;
+
 			class A {}
 			class B {}
 			composition A_B {
