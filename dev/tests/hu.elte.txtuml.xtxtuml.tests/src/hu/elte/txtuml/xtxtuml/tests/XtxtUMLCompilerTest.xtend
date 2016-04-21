@@ -15,10 +15,8 @@ class XtxtUMLCompilerTest {
 
 	@Test
 	def testModelDeclarationCompilesToProperPackageInfo() {
-		PackageNameCalculatorStubProvider.setPackageName("model", "declaration", "test")
-
 		'''
-			model "Test";
+			model-package model.declaration.test as "Test";
 		'''.assertCompilesTo('''
 			@Model("Test")
 			package model.declaration.test;

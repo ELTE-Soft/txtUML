@@ -20,12 +20,12 @@ class XtxtUMLParserTest {
 
 	@Test
 	def void testModelDeclarationWithoutName() {
-		'''model;'''.parseAsModelInfo.assertNoErrors
+		'''model-package model.test;'''.parseAsModelInfo.assertNoErrors
 	}
 
 	@Test
 	def void testModelDeclarationWithName() {
-		'''model "Test";'''.parseAsModelInfo.assertNoErrors
+		'''model-package model.test as "Test";'''.parseAsModelInfo.assertNoErrors
 	}
 
 	private def parseAsModelInfo(CharSequence text) {
