@@ -1,6 +1,7 @@
 package hu.elte.txtuml.xtxtuml.tests
 
 import com.google.inject.Inject
+import hu.elte.txtuml.xtxtuml.XtxtUMLInjectorProvider
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage
 import org.eclipse.xtext.junit4.InjectWith
@@ -12,8 +13,8 @@ import org.junit.runner.RunWith
 
 import static hu.elte.txtuml.xtxtuml.validation.XtxtUMLAssociationValidator.*
 
-@RunWith(typeof(XtextRunner))
-@InjectWith(typeof(CustomXtxtUMLInjectorProvider))
+@RunWith(XtextRunner)
+@InjectWith(XtxtUMLInjectorProvider)
 class XtxtUMLAssociationValidatorTest {
 
 	@Inject extension ParseHelper<TUFile>
