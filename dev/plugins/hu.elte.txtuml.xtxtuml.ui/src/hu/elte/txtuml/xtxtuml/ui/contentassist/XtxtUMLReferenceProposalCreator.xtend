@@ -165,15 +165,25 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 					TUPort:
 						descr.EContainerDescription.qualifiedName == containerClassName
 					TUAssociationEnd:
-						!proposedObj.notNavigable &&
-							(descr.EContainerDescription.EObjectOrProxy as TUAssociation).ends.exists [
-								endClass?.fullyQualifiedName == containerClassName &&
-									fullyQualifiedName != descr.qualifiedName
-							]
+						!proposedObj.notNavigable && descr.endsOfEnclosingAssociation.exists [
+							endClass?.fullyQualifiedName == containerClassName &&
+								fullyQualifiedName != descr.qualifiedName
+						]
 					default:
 						false // to make Xtend happy
 				}
 			]
+		}
+	}
+
+	def private endsOfEnclosingAssociation(IEObjectDescription assocEndDescription) {
+		val container = assocEndDescription.EObjectOrProxy.eContainer ?:
+			assocEndDescription.EContainerDescription.EObjectOrProxy;
+
+		return if (container instanceof TUAssociation) {
+			container.ends
+		} else {
+			newArrayList
 		}
 	}
 
