@@ -13,11 +13,14 @@ struct EventProcessorThread
 {
 	std::thread* _thread;
 	thread_state _state;
-	std::mutex _mutex;
 	
 	EventProcessorThread() {}
 	EventProcessorThread(std::thread* thread_): _thread(thread_), _state(working) {}
-   ~EventProcessorThread() {_thread->join(); delete _thread;}
+	EventProcessorThread(EventProcessorThread&& e) {_thread = e._thread; _state = e._state; ;e._thread = nullptr;}
+	EventProcessorThread& operator=(EventProcessorThread&&) = delete;
+	EventProcessorThread(const EventProcessorThread&) = delete;
+	EventProcessorThread& operator=(const EventProcessorThread&) = delete;
+   ~EventProcessorThread() {if(_thread != nullptr) _thread->join(); delete _thread;}
 };
 
 class ThreadContainer
@@ -29,10 +32,9 @@ class ThreadContainer
 		
 		void addThread(std::thread*);
 		void removeAll();
-                void gettingThreadsReadyToStop();
-                void eraseInactiveThreads();
-                void stopThread(std::thread::id);
-                thread_state getState(std::thread::id);
+        void gettingThreadsReadyToStop();
+		void signStop(std::thread::id);
+		bool isReadyToStop(std::thread::id);
 		
 		void setExpectedThreads(int e) {expected_threads = e;}
 		bool isTooManyWorkes() {return (expected_threads < active_threads);}

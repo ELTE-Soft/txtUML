@@ -32,18 +32,17 @@ private:
 	// the task queue
 	PoolQueueType stateMachines; //must be blocking queue
 	int threads;
-        int reduce_number;
 
 	// synchronization
 	std::atomic_bool stop;
+	std::atomic_bool stop_request;
 	std::atomic_int worker_threads;
 	
 	std::condition_variable cond;
-	std::condition_variable complite_cond;
+	std::condition_variable stop_request_cond;
 
 	std::mutex mu;
-	std::mutex worker_mu;
-	std::mutex complite_mu;
+	std::mutex stop_request_mu;
 };
 
 
