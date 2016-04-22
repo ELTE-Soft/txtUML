@@ -16,7 +16,7 @@ TUFile :
 
 TUModelDeclaration :
 	{TUModelDeclaration}
-	'model-package' name=QualifiedName ('as' modelName=STRING)? ';'?
+	model='model-package' name=QualifiedName ('as' modelName=STRING)? ';'?
 ;
 
 // Model level
@@ -130,7 +130,7 @@ TUStateMember :
 ;
 
 TUEntryOrExitActivity :
-	(entry?='entry' | 'exit')
+	(entry?='entry' | exit='exit') // feature 'exit' is for error markers
 		body=XBlockExpression ';'?
 ;
 
@@ -149,23 +149,23 @@ TUTransitionMember
 ;
 
 TUTransitionTrigger :
-	'trigger' trigger=[TUSignal|QualifiedName] ';'
+	triggerKeyword='trigger' trigger=[TUSignal|QualifiedName] ';' // feature 'triggerKeyword' is for error markers
 ;
 
 TUTransitionVertex :
-	(from?='from' | 'to') vertex=[TUState|QualifiedName] ';'
+	(from?='from' | to='to') vertex=[TUState|QualifiedName] ';' // feature 'to' is for error markers
 ;
 
 TUTransitionEffect :
-	'effect' body=XBlockExpression ';'?
+	effect='effect' body=XBlockExpression ';'? // feature 'effect' is for error markers
 ;
 
 TUTransitionGuard :
-	'guard' '(' (else?='else' | expression=XExpression) ')' ';'?
+	guard='guard' '(' (else?='else' | expression=XExpression) ')' ';'? // feature 'guard' is for error markers
 ;
 
 TUTransitionPort :
-	'port' port=[TUPort|QualifiedName] ';'
+	portKeyword='port' port=[TUPort|QualifiedName] ';' // feature 'portKeyword' is for error markers
 ;
 
 TUPort :
@@ -175,7 +175,7 @@ TUPort :
 ;
 
 TUPortMember :
-	(required?='required' | 'provided') interface=[TUInterface|QualifiedName] ';'
+	(required?='required' | provided='provided') interface=[TUInterface|QualifiedName] ';' // feature 'provided' is for error markers
 ;
 
 // Association-related
