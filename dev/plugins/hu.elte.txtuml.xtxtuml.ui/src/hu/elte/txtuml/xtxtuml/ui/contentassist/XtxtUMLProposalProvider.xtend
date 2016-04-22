@@ -37,7 +37,7 @@ class XtxtUMLProposalProvider extends AbstractXtxtUMLProposalProvider {
 		val plainDisplayStringSegments = getDisplayString(element, qualifiedName, shortName).replace("$", ".").
 			split("-");
 		return if (plainDisplayStringSegments.size != 2) {
-			new StyledString(plainDisplayStringSegments.get(0))
+			if(!plainDisplayStringSegments.empty) new StyledString(plainDisplayStringSegments.get(0))
 		} else {
 			createStyledProposalText(plainDisplayStringSegments.get(0), plainDisplayStringSegments.get(1));
 		}

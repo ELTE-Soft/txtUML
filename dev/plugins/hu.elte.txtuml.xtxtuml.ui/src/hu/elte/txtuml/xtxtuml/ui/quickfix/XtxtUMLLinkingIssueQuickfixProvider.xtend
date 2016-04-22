@@ -26,6 +26,7 @@ import org.eclipse.xtext.ui.editor.model.IXtextDocument
 import org.eclipse.xtext.ui.editor.model.edit.IModificationContext
 import org.eclipse.xtext.ui.editor.quickfix.IssueResolutionAcceptor
 import org.eclipse.xtext.validation.Issue
+import org.eclipse.xtext.xbase.XbasePackage
 import org.eclipse.xtext.xbase.imports.IImportsConfiguration
 import org.eclipse.xtext.xbase.typesystem.util.CommonTypeComputationServices
 import org.eclipse.xtext.xbase.ui.contentassist.ReplacingAppendable
@@ -51,7 +52,9 @@ class XtxtUMLLinkingIssueQuickfixProvider extends JavaTypeQuickfixes {
 		XtextResource resource, EObject referenceOwner, EReference unresolvedReference) {
 		val referenceString = xtextDocument.get(issue.offset, issue.length);
 
-		if (unresolvedReference == TypesPackage::eINSTANCE.jvmParameterizedTypeReference_Type) {
+		if (unresolvedReference == TypesPackage.Literals.JVM_PARAMETERIZED_TYPE_REFERENCE__TYPE ||
+			unresolvedReference == XbasePackage.Literals.XABSTRACT_FEATURE_CALL__FEATURE ||
+			unresolvedReference == XbasePackage.Literals.XCONSTRUCTOR_CALL__CONSTRUCTOR) {
 			addJvmTypeImportQuickfixes(issue, referenceString, issueResolutionAcceptor, referenceOwner,
 				unresolvedReference);
 		} else if (unresolvedReference.EReferenceType.EPackage.nsURI == XtxtUMLPackage.eNS_URI) {
