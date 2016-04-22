@@ -1,0 +1,12 @@
+package clock.x;
+
+import java.time.LocalDateTime;
+
+import clock.x.^model.Clock;
+import hu.elte.txtuml.api.^model.ModelExecutor;
+
+execution Tester {
+	ModelExecutor.Settings.setExecutorLog(false);
+	LocalDateTime now = LocalDateTime.now();
+	create(Clock, now.getHour(), now.getMinute(), now.getSecond());
+}
