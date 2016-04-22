@@ -18,9 +18,10 @@ class SelectionExporter extends ActionExporter<MethodInvocation, CallOperationAc
 
 	override exportContents(MethodInvocation source) {
 		val expr = source.expression.exportExpression
-//		expr.objectFlow(result.inputs.get(0))
-		result.name = "selectAny"
-		result.createResult(result.name, null)
+		expr.objectFlow(result.createArgument("selected", expr.result.type))
+		result.operation = getImportedOperation("ObjectOperations", "select")
+		result.name = '''select(«expr.name»)'''
+		result.createResult(result.name, expr.result.type)
 	}
 
 }
