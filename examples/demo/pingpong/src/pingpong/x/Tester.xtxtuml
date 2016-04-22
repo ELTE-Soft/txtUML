@@ -1,8 +1,8 @@
 package pingpong.x;
 
-import hu.elte.txtuml.api.^model.ModelExecutor;
-import pingpong.x.^model.Ball;
-import pingpong.x.^model.Game;
+import hu.elte.txtuml.api.model.ModelExecutor;
+import pingpong.x.model.Ball;
+import pingpong.x.model.Game;
 
 execution Tester {
 	ModelExecutor.Settings.setExecutorLog(true);

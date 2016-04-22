@@ -2,16 +2,16 @@ package monitoring.x;
 
 import java.util.Scanner;
 
-import hu.elte.txtuml.api.^model.ModelExecutor;
-import monitoring.x.^model.Aggregator;
-import monitoring.x.^model.Alert;
-import monitoring.x.^model.Close;
-import monitoring.x.^model.PrintReport;
-import monitoring.x.^model.Read;
-import monitoring.x.^model.ResourceMonitor;
-import monitoring.x.^model.ToAggregator;
-import monitoring.x.^model.ToAlert;
-import monitoring.x.^model.Write;
+import hu.elte.txtuml.api.model.ModelExecutor;
+import monitoring.x.model.Aggregator;
+import monitoring.x.model.Alert;
+import monitoring.x.model.Close;
+import monitoring.x.model.PrintReport;
+import monitoring.x.model.Read;
+import monitoring.x.model.ResourceMonitor;
+import monitoring.x.model.ToAggregator;
+import monitoring.x.model.ToAlert;
+import monitoring.x.model.Write;
 
 execution Tester {
 	ModelExecutor.Settings.setExecutorLog(true);

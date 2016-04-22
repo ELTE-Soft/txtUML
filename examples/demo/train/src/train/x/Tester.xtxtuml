@@ -1,15 +1,15 @@
 package train.x;
 
-import hu.elte.txtuml.api.^model.ModelExecutor;
-import train.x.^model.Backward;
-import train.x.^model.Engine;
-import train.x.^model.Forward;
-import train.x.^model.GE;
-import train.x.^model.GL;
-import train.x.^model.Gearbox;
-import train.x.^model.LE;
-import train.x.^model.Lamp;
-import train.x.^model.SwitchLight;
+import hu.elte.txtuml.api.model.ModelExecutor;
+import train.x.model.Backward;
+import train.x.model.Engine;
+import train.x.model.Forward;
+import train.x.model.GE;
+import train.x.model.GL;
+import train.x.model.Gearbox;
+import train.x.model.LE;
+import train.x.model.Lamp;
+import train.x.model.SwitchLight;
 
 execution Tester {
 	ModelExecutor.Settings.setExecutorLog(true);

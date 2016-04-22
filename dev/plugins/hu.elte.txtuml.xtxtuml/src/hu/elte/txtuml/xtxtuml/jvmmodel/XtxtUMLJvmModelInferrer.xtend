@@ -19,7 +19,6 @@ import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.api.model.StateMachine
 import hu.elte.txtuml.api.model.To
 import hu.elte.txtuml.api.model.Trigger
-import hu.elte.txtuml.xtxtuml.naming.IPackageNameCalculator
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
@@ -67,13 +66,9 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	@Inject extension XtxtUMLTypesBuilder
 	@Inject extension IJvmModelAssociations
 	@Inject extension IQualifiedNameProvider
-	@Inject extension IPackageNameCalculator
 
 	def dispatch void infer(TUModelDeclaration decl, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		val packageName = decl.expectedPackageName
-		if (null != packageName) {
-			acceptor.accept(decl.toPackageInfo(packageName, decl.name))
-		}
+		acceptor.accept(decl.toPackageInfo(decl.fullyQualifiedName, decl.modelName))
 	}
 
 	def dispatch void infer(TUExecution exec, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {

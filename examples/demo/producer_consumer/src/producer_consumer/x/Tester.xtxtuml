@@ -1,11 +1,11 @@
 package producer_consumer.x;
 
-import hu.elte.txtuml.api.^model.ModelExecutor;
-import producer_consumer.x.^model.Consumer;
-import producer_consumer.x.^model.Consumption;
-import producer_consumer.x.^model.Producer;
-import producer_consumer.x.^model.Production;
-import producer_consumer.x.^model.Storage;
+import hu.elte.txtuml.api.model.ModelExecutor;
+import producer_consumer.x.model.Consumer;
+import producer_consumer.x.model.Consumption;
+import producer_consumer.x.model.Producer;
+import producer_consumer.x.model.Production;
+import producer_consumer.x.model.Storage;
 
 execution Tester {
 	ModelExecutor.Settings.setExecutorLog(true);

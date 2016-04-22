@@ -1,4 +1,4 @@
 /**
  * XtxtUML XMachine3 example model.
  */
-model "XMachine3";
+model-package machine3.x.model as "XMachine3";

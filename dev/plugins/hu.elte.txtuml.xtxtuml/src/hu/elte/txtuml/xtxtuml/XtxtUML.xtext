@@ -9,14 +9,14 @@ import "http://www.eclipse.org/xtext/xbase/Xtype" as xtype
 
 TUFile :
 	TUModelDeclaration |
-	(('package' name=QualifiedName ';'?)?
+	('package' name=QualifiedName ';'?
 	importSection=XImportSection?
 	elements+=TUModelElement*)
 ;
 
 TUModelDeclaration :
 	{TUModelDeclaration}
-	model='model' (name=STRING)? ';'? // feature 'model' is for error markers
+	model='model-package' name=QualifiedName ('as' modelName=STRING)? ';'?
 ;
 
 // Model level
