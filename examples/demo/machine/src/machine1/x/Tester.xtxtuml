@@ -1,10 +1,10 @@
 package machine1.x;
 
-import hu.elte.txtuml.api.^model.ModelExecutor
-import machine1.x.^model.DoYourWork
-import machine1.x.^model.Machine
-import machine1.x.^model.Usage
-import machine1.x.^model.User
+import hu.elte.txtuml.api.model.ModelExecutor
+import machine1.x.model.DoYourWork
+import machine1.x.model.Machine
+import machine1.x.model.Usage
+import machine1.x.model.User
 
 execution Tester {
 	ModelExecutor.Settings.setExecutorLog(true);

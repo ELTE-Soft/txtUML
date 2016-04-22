@@ -1,11 +1,11 @@
 package machine3.x;
 
-import hu.elte.txtuml.api.^model.ModelExecutor;
+import hu.elte.txtuml.api.model.ModelExecutor;
 import hu.elte.txtuml.api.stdlib.Timer;
-import machine3.x.^model.DoYourWork;
-import machine3.x.^model.Machine;
-import machine3.x.^model.Usage;
-import machine3.x.^model.User;
+import machine3.x.model.DoYourWork;
+import machine3.x.model.Machine;
+import machine3.x.model.Usage;
+import machine3.x.model.User;
 
 execution Tester {
 	ModelExecutor.Settings.setExecutorLog(true);
