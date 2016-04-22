@@ -1,21 +1,20 @@
 package hu.elte.txtuml.export.uml2.restructured.activity.expression
 
 import hu.elte.txtuml.export.uml2.restructured.BaseExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.ActionExporter
 import org.eclipse.jdt.core.dom.PrefixExpression
 import org.eclipse.jdt.core.dom.PrefixExpression.Operator
+import org.eclipse.uml2.uml.Action
 import org.eclipse.uml2.uml.CallOperationAction
 import org.eclipse.uml2.uml.Operation
-import org.eclipse.uml2.uml.Action
 
-class PrefixOperatorExporter extends ActionExporter<PrefixExpression, CallOperationAction> {
-	
+class PrefixOperatorExporter extends OperatorExporter<PrefixExpression> {
+
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
 	}
 
 	override create(PrefixExpression access) {
-		if(access.operator != Operator.PLUS) factory.createCallOperationAction
+		if(access.operator != Operator.PLUS) factory.createSequenceNode
 	}
 
 	override exportContents(PrefixExpression source) {
@@ -23,29 +22,53 @@ class PrefixOperatorExporter extends ActionExporter<PrefixExpression, CallOperat
 			case Operator.MINUS:
 				getImportedOperation("IntegerOperations", "neg")
 			case Operator.INCREMENT:
-				getImportedOperation("IntegerOperations", "inc")
+				getImportedOperation("IntegerOperations", "add")
 			case Operator.DECREMENT:
-				getImportedOperation("IntegerOperations", "dec")
+				getImportedOperation("IntegerOperations", "sub")
 			case Operator.NOT:
 				getImportedOperation("BooleanOperations", "not")
 		}
-		val op = exportExpression(source.operand)
-		result.name = '''«source.operator»«op.name»'''
-		finishOperation(op, operator)
+		switch source.operator {
+			case Operator.MINUS,
+			case Operator.NOT: {
+				val act = factory.createCallOperationAction
+				val op = exportExpression(source.operand)
+				result.name = '''«source.operator»«op.name»'''
+				finishOperation(act, op, operator)
+				storeNode(act)
+			}
+			case Operator.INCREMENT,
+			case Operator.DECREMENT: {
+				assignToExpression(source.operand) [ act |
+					val callOp = factory.createCallOperationAction
+					callOp.operation = operator
+					val lhs = act.get
+					lhs.objectFlow(callOp.createArgument("arg", integerType))
+					val litOne = new NumberLiteralExporter(this).createIntegerLiteral(1)
+					litOne.objectFlow(callOp.createArgument("inc", integerType))
+					callOp.name = '''«source.operator»«lhs.name»'''
+					result.name = callOp.name
+					callOp.createResult(callOp.name, integerType)
+					storeNode(callOp)
+					return callOp
+				]
+			}
+		}
+
 	}
-	
+
 	def logicalNot(Action expr) {
-		result = factory.createCallOperationAction
+		val act = factory.createCallOperationAction
 		val operator = getImportedOperation("BooleanOperations", "not")
-		result.name = '''!«expr.name»'''
-		finishOperation(expr, operator)
-		result
+		act.name = '''!«expr.name»'''
+		finishOperation(act, expr, operator)
+		return act
 	}
-	
-	protected def finishOperation(Action operand, Operation operator) {
-		result.operation = operator
-		val returnType = result.operation.ownedParameters.findFirst[name == "return"].type
-		operand.result.objectFlow(result.createArgument("b", operand.result.type))
-		result.createResult("result", returnType)
+
+	protected def finishOperation(CallOperationAction act, Action operand, Operation operator) {
+		act.operation = operator
+		val returnType = act.operation.ownedParameters.findFirst[name == "return"].type
+		operand.result.objectFlow(act.createArgument("b", operand.result.type))
+		act.createResult("result", returnType)
 	}
 }

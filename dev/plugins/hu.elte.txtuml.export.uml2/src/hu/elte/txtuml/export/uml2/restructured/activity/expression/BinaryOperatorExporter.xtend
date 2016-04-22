@@ -56,7 +56,7 @@ class BinaryOperatorExporter extends ActionExporter<InfixExpression, CallOperati
 		}
 		val left = exportExpression(source.leftOperand)
 		val right = exportExpression(source.rightOperand)
-		finishOperator(result, operator, left, right)
+		finishOperator(result, source.operator.toString, operator, left, right)
 	}
 
 	def minusOp() { getImportedOperation("IntegerOperations", "sub") }
@@ -95,19 +95,19 @@ class BinaryOperatorExporter extends ActionExporter<InfixExpression, CallOperati
 
 	def objectNotEqualsOp() { getImportedOperation("ObjectOperations", "neq") }
 
-	def exportOperator(Operation operator, Action left, Action right) {
+	def exportOperator(Operation operator, String symbol, Action left, Action right) {
 		val ret = factory.createCallOperationAction
-		finishOperator(ret, operator, left, right)
+		finishOperator(ret, symbol, operator, left, right)
 		storeNode(ret)
 		return ret
 	}
 
-	protected def finishOperator(CallOperationAction expr, Operation operator, Action left, Action right) {
+	protected def finishOperator(CallOperationAction expr, String symbol, Operation operator, Action left, Action right) {
 		val returnType = operator.ownedParameters.findFirst[name == "return"].type
 		expr.operation = operator
 		expr.createResult("result", returnType)
 		left.result.objectFlow(expr.createArgument("left", left.result.type))
 		right.result.objectFlow(expr.createArgument("right", right.result.type))
-		expr.name = '''«operator.name»(«left.name»,«right.name»)'''
+		expr.name = '''«left.name»«symbol»«right.name»'''
 	}
 }

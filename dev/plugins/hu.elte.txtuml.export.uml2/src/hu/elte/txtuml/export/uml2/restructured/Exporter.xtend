@@ -2,7 +2,6 @@ package hu.elte.txtuml.export.uml2.restructured
 
 import hu.elte.txtuml.export.uml2.restructured.activity.MethodActivityExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.SMActivityExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.ConnectActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.CreateActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.CreateLinkActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.DeleteActionExporter
@@ -13,6 +12,7 @@ import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.SendActionExpor
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.StartActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.apicalls.UnlinkActionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.APISuperCtorCallExporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.AssignExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.BinaryOperatorExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.BooleanLiteralExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.CharacterLiteralExporter
@@ -33,8 +33,6 @@ import hu.elte.txtuml.export.uml2.restructured.activity.expression.SuperCtorCall
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.ThisExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.VariableDeclarationExpressionExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.VariableExpressionExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.expression.assign.AssignToFieldExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.expression.assign.AssignToVariableExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.BlockExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.DoWhileExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.EmptyStmtExporter
@@ -216,7 +214,7 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 					new CreateLinkActionExporter(this),
 					new SendActionExporter(this),
 					new UnlinkActionExporter(this),
-					new ConnectActionExporter(this),
+//					new ConnectActionExporter(this),
 					new CreateActionExporter(this),
 					new DeleteActionExporter(this),
 					new StartActionExporter(this),
@@ -273,7 +271,7 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 			EnhancedForStatement:
 				#[new ForEachExporter(this)]
 			Assignment:
-				#[new AssignToVariableExporter(this), new AssignToFieldExporter(this)]
+				#[new AssignExporter(this)]
 			VariableDeclarationStatement:
 				#[new VariableDeclarationExporter(this)]
 			default:

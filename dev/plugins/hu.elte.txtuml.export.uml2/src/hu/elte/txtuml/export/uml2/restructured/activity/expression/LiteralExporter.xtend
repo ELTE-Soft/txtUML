@@ -18,14 +18,14 @@ abstract class LiteralExporter<T> extends ActionExporter<T, ValueSpecificationAc
 	}
 
 	override create(T access) { factory.createValueSpecificationAction }
-	
+
 	override exportContents(T source) {
 		val literal = createValueSpec(source)
 		result.value = literal
 		result.name = literal.name
 		result.createResult(literal.name + "_result", literal.type)
 	}
-	
+
 	def ValueSpecification createValueSpec(T source)
 
 }
@@ -83,7 +83,7 @@ class NumberLiteralExporter extends LiteralExporter<NumberLiteral> {
 
 	override createValueSpec(NumberLiteral source) {
 		val typeName = source.resolveTypeBinding().getQualifiedName();
-		 switch typeName {
+		switch typeName {
 			case "int",
 			case "byte",
 			case "short": {
@@ -103,6 +103,20 @@ class NumberLiteralExporter extends LiteralExporter<NumberLiteral> {
 			}
 		}
 	}
+
+	def createIntegerLiteral(int value) {
+		val lit = factory.createLiteralInteger
+		lit.type = integerType
+		lit.value = value
+		lit.name = value + ""
+		val specAct = factory.createValueSpecificationAction
+		specAct.value = lit
+		specAct.name = lit.name
+		specAct.createResult(lit.name, lit.type)
+		storeNode(specAct)
+		return specAct
+	}
+
 }
 
 class NullLiteralExporter extends LiteralExporter<NullLiteral> {

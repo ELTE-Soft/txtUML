@@ -9,6 +9,11 @@ public class TestClass extends ModelClass {
 	public void test() {
 		boolean var = false;
 		
+		++fld;
+		--fld;
+		fld++;
+		fld--;
+		fld = 10;
 		fld += 10;
 		fld -= 10;
 		fld *= 10;

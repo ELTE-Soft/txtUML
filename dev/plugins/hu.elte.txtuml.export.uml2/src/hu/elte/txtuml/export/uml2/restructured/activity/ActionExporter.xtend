@@ -1,9 +1,10 @@
 package hu.elte.txtuml.export.uml2.restructured.activity
 
+import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import hu.elte.txtuml.export.uml2.restructured.Exporter
+import hu.elte.txtuml.export.uml2.restructured.activity.expression.ThisExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.expression.VariableExpressionExporter
-import hu.elte.txtuml.export.uml2.restructured.activity.expression.assign.AssignToVariableExporter
 import hu.elte.txtuml.export.uml2.restructured.activity.statement.ConditionalExporter
 import org.eclipse.jdt.core.dom.Expression
 import org.eclipse.jdt.core.dom.IMethodBinding
@@ -23,11 +24,9 @@ import org.eclipse.uml2.uml.ReadSelfAction
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction
 import org.eclipse.uml2.uml.ReadVariableAction
 import org.eclipse.uml2.uml.SequenceNode
+import org.eclipse.uml2.uml.Type
 import org.eclipse.uml2.uml.ValueSpecificationAction
 import org.eclipse.uml2.uml.Variable
-import hu.elte.txtuml.api.model.ModelClass
-import org.eclipse.uml2.uml.Type
-import hu.elte.txtuml.export.uml2.restructured.activity.expression.ThisExporter
 
 /**
  * Base class for all exporters on the statement-expression level.
@@ -150,7 +149,13 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 	def read(Variable variable) { new VariableExpressionExporter(this).readVar(variable) }
 	
 	def write(Variable variable, Action newValue) {
-		new AssignToVariableExporter(this).createWriteVariableAction(variable, newValue)
+		val write = factory.createAddVariableValueAction
+		write.name = '''«variable.name»=«newValue.name»'''
+		write.isReplaceAll = true
+		write.variable = variable
+		newValue.result.objectFlow(write.createValue("new_value", variable.type))
+		storeNode(write)
+		return write
 	}
 	
 	def thisRef(Type cls) { new ThisExporter(this).createThis(cls) }
