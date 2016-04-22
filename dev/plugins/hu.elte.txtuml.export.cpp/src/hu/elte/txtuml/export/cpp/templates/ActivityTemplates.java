@@ -14,10 +14,13 @@ public class ActivityTemplates {
 	public static final String ReplaceCompositTypeOp = ReplaceSimpleTypeOp;
 	public static final String Self = "this";
 	public static final String AccessOperatorForSets = GenerationNames.SimpleAccess;
+	public static final String SignalSmartPointerType = GenerationNames.EventPtr;
 
 	public enum OperationSide {
 		Left, Right
 	}
+	
+	public enum CreateObjectType {Signal, Class}
 
 	public static String generalSetValue(String leftValueName, String rightValueName, String operator) {
 		if (operator == AddCompositTypeOp) {
@@ -56,8 +59,7 @@ public class ActivityTemplates {
 	}
 
 	public static String signalSend(String target, String signalName) {
-		return target + GenerationNames.PointerAccess + GenerationNames.SendSignal + "(" + GenerationNames.EventPtr
-				+ "(" + signalName + "));\n";
+		return target + GenerationNames.PointerAccess + GenerationNames.SendSignal + "(" + signalName + ");\n";
 	}
 
 	public static String transitionActionCall(String operationName) {
@@ -172,15 +174,24 @@ public class ActivityTemplates {
 		return GenerationNames.RealEventName + "." + paramName;
 	}
 
-	public static String createObject(String typenName, String objName, List<String> parameters) {
+	public static String createObject(String typeName, String objName, CreateObjectType objectType, List<String> parameters) {
+		
+		if(objectType.equals(CreateObjectType.Signal)) {
+			return GenerationNames.EventPtr + " " + objName + "= "
+					+ GenerationNames.EventPtr + "(" + GenerationNames.MemoryAllocator + " "
+					+ signalType(typeName) + "(" + operationCallParamList(parameters) + "));\n";
+		}
+		else {
+			return GenerationNames.pointerType(typeName) + " " + objName + "= " + GenerationNames.MemoryAllocator + " "
+					+ typeName + "(" + operationCallParamList(parameters) + ");\n";
+		}
 
-		return GenerationNames.pointerType(typenName) + " " + objName + "= " + GenerationNames.MemoryAllocator + " "
-				+ typenName + "(" + operationCallParamList(parameters) + ");\n";
+		
 	}
 
-	public static String createObject(String typenName, String objName) {
+	public static String createObject(String typenName, String objName, CreateObjectType objectType) {
 
-		return createObject(typenName, objName, new ArrayList<String>());
+		return createObject(typenName, objName,objectType, new ArrayList<String>());
 	}
 
 	public static String selectAnyTemplate(String otherEnd) {

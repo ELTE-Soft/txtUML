@@ -186,6 +186,9 @@ class PrivateFunctionalTemplates {
 				case "String":
 					cppType = GenerationNames.cppString;
 					break;
+				case GenerationNames.EventPtr : 
+					cppType = GenerationNames.EventPtr;
+					break;
 				default:
 					cppType = GenerationNames.pointerType(typeName);
 					break;

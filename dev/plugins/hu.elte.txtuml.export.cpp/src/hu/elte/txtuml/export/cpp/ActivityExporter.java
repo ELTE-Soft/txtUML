@@ -53,6 +53,7 @@ import org.eclipse.uml2.uml.Variable;
 import org.eclipse.uml2.uml.ExpansionRegion;
 
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
+import hu.elte.txtuml.export.cpp.templates.ActivityTemplates.CreateObjectType;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 
 public class ActivityExporter {
@@ -106,7 +107,7 @@ public class ActivityExporter {
 		String type = "!!!UNKNOWNTYPE!!!";
 		if (variable.getType() != null) {
 			if (variable.getType().eClass().equals(UMLPackage.Literals.SIGNAL)) {
-				type = ActivityTemplates.signalType(variable.getType().getName());
+				type = ActivityTemplates.SignalSmartPointerType;
 			} else {
 				type = variable.getType().getName();
 			}
@@ -293,8 +294,13 @@ public class ActivityExporter {
 	private String createCreateObjectActionCode(CreateObjectAction node_) {
 		String type = node_.getClassifier().getName();
 		CallOperationAction ctrCallAction = null;
+		
+		ActivityTemplates.CreateObjectType objectType;
 		if (node_.getClassifier().eClass().equals(UMLPackage.Literals.SIGNAL)) {
-			type = ActivityTemplates.signalType(type);
+			objectType = ActivityTemplates.CreateObjectType.Signal;
+		}
+		else {
+			objectType = CreateObjectType.Class;
 		}
 
 		for (ActivityEdge out : node_.getOutputs().get(0).getOutgoings()) {
@@ -309,10 +315,10 @@ public class ActivityExporter {
 
 		if (ctrCallAction != null) {
 			constructorCalls.add(ctrCallAction);
-			return ActivityTemplates.createObject(type, name, getParamNames(ctrCallAction.getArguments()));
+			return ActivityTemplates.createObject(type, name, objectType, getParamNames(ctrCallAction.getArguments()));
 		}
 
-		return ActivityTemplates.createObject(type, name);
+		return ActivityTemplates.createObject(type, name,objectType);
 	}
 
 	private StringBuilder createCycleCode(LoopNode loopNode) {
