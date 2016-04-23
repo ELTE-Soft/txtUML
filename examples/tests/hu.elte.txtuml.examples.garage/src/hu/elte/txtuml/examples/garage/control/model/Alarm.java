@@ -86,7 +86,7 @@ public class Alarm extends ModelClass {
 	public class TWrongKey1 extends Transition {
 		@Override
 		public boolean guard() {
-			return ((KeyPress) getSignal()).key != code;
+			return getSignal(KeyPress.class).key != code;
 		}
 	}
 
@@ -96,7 +96,7 @@ public class Alarm extends ModelClass {
 	public class TCorrectKey1 extends Transition {
 		@Override
 		public boolean guard() {
-			return ((KeyPress) getSignal()).key == code;
+			return getSignal(KeyPress.class).key == code;
 		}
 	}
 
@@ -106,7 +106,7 @@ public class Alarm extends ModelClass {
 	public class TWrongKey2 extends Transition {
 		@Override
 		public boolean guard() {
-			return ((KeyPress) getSignal()).key != code;
+			return getSignal(KeyPress.class).key != code;
 		}
 	}
 
@@ -116,7 +116,7 @@ public class Alarm extends ModelClass {
 	public class TCorrectKey2 extends Transition {
 		@Override
 		public boolean guard() {
-			return ((KeyPress) getSignal()).key == code;
+			return getSignal(KeyPress.class).key == code;
 		}
 	}
 
@@ -126,7 +126,7 @@ public class Alarm extends ModelClass {
 	public class TCorrectKey3 extends Transition {
 		@Override
 		public boolean guard() {
-			return ((KeyPress) getSignal()).key == code;
+			return getSignal(KeyPress.class).key == code;
 		}
 	}
 
@@ -136,7 +136,7 @@ public class Alarm extends ModelClass {
 	public class TCorrectKey4 extends Transition {
 		@Override
 		public boolean guard() {
-			return ((KeyPress) getSignal()).key == code;
+			return getSignal(KeyPress.class).key == code;
 		}
 	}
 
@@ -146,7 +146,7 @@ public class Alarm extends ModelClass {
 	public class TWrongKey4 extends Transition {
 		@Override
 		public boolean guard() {
-			return ((KeyPress) getSignal()).key != code;
+			return getSignal(KeyPress.class).key != code;
 		}
 	}
 
@@ -156,7 +156,7 @@ public class Alarm extends ModelClass {
 	public class TNewKey extends Transition {
 		@Override
 		public void effect() {
-			code = ((KeyPress) getSignal()).key;
+			code = getSignal(KeyPress.class).key;
 		}
 	}
 

@@ -35,7 +35,7 @@ public class ClassWithChoice extends ModelClass {
 
 		@Override
 		public boolean guard() {
-			Sig0 s = getSignal();
+			Sig0 s = getSignal(Sig0.class);
 			return s.value == 0;
 		}
 
@@ -48,7 +48,7 @@ public class ClassWithChoice extends ModelClass {
 
 		@Override
 		public boolean guard() {
-			Sig0 s = getSignal();
+			Sig0 s = getSignal(Sig0.class);
 			return s.value == 1;
 		}
 

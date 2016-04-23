@@ -83,7 +83,7 @@ public class Player extends ModelClass {
 		@Override
 		public void effect() {
 			Action.log(name + ": \"I'll serve now...!\"");
-			Action.send(getSignal(), assoc(PlayerOwnsRacket.racket.class).selectAny());
+			Action.send(getSignal(Ball.class), assoc(PlayerOwnsRacket.racket.class).selectAny());
 		}
 
 	}

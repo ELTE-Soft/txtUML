@@ -84,7 +84,7 @@ import hu.elte.txtuml.api.model.runtime.ModelClassWrapper;
  * 
  * 		{@literal @}Override
  * 		public boolean guard() {
- * 			SampleSignal sg = getSignal(); 
+ * 			SampleSignal sg = getSignal(SampleSignal.class); 
  * 			return sg.sampleParam == 0;
  * 		}
  * 	}
@@ -555,14 +555,16 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 		 * 
 		 * @param <T>
 		 *            the type to which the casting should be performed
+		 * @param signalClass
+		 *            the signal class to which the casting should be performed
 		 * @return the signal receiving which triggered the execution (or the
 		 *         call of the guard) of this transition
 		 * @throws ClassCastException
 		 *             if the cast might not be performed
 		 */
 		@SuppressWarnings("unchecked")
-		protected final <T extends Signal> T getSignal() throws ClassCastException {
-			return (T) runtimeInfo().getCurrentTriggeringSignal();
+		protected final <T extends Signal> T getSignal(Class<T> signalClass) throws ClassCastException {
+	return (T) runtimeInfo().getCurrentTriggeringSignal();
 		}
 
 		@Override
@@ -769,7 +771,7 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 		 * actions.
 		 * <p>
 		 * If the actual transition has a trigger defined, the
-		 * {@link #getSignal getSignal} method can be used inside the
+		 * {@code getSignal} method can be used inside the
 		 * overriding methods to get the triggering signal.
 		 * <p>
 		 * Overriding methods may only contain action code. See the
@@ -818,7 +820,7 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 		 * should always do so.
 		 * <p>
 		 * If the actual transition has a trigger defined, the
-		 * {@link #getSignal getSignal} method can be used inside the
+		 * {@code getSignal} method can be used inside the
 		 * overriding methods to get the triggering signal.
 		 * <p>
 		 * Overriding methods may only contain a condition evaluation. See the
@@ -859,13 +861,15 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 		 * 
 		 * @param <T>
 		 *            the type to which the casting should be performed
+		 * @param signalClass
+		 *            the signal class to which the casting should be performed
 		 * @return the signal receiving which triggered the execution (or the
 		 *         call of the guard) of this transition
 		 * @throws ClassCastException
 		 *             if the cast might not be performed
 		 */
 		@SuppressWarnings("unchecked")
-		protected final <T extends Signal> T getSignal() throws ClassCastException {
+		protected final <T extends Signal> T getSignal(Class<T> signalClass) throws ClassCastException {
 			return (T) runtimeInfo().getCurrentTriggeringSignal();
 		}
 
