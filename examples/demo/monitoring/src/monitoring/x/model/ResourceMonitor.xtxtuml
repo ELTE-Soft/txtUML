@@ -1,4 +1,4 @@
-package monitoring.x.^model;
+package monitoring.x.model;
 
 signal Read;
 signal Write;

@@ -53,7 +53,7 @@ public class SendActionExporter {
 		InputPin requestNode = (InputPin) sendAction.createRequest(sendAction.getName() + "_request", signalToSend,
 				UMLPackage.Literals.VALUE_PIN);
 
-		Expr signalExpression = args.get(1);
+		Expr signalExpression = args.get(0);
 		ObjectNode instanceNode = signalExpression.getObjectNode();
 		expressionExporter.createObjectFlowBetweenActivityNodes(instanceNode, requestNode);
 	}

@@ -1,4 +1,4 @@
-package train.x.^model;
+package train.x.model;
 
 class Gearbox {
 	initial Init;
