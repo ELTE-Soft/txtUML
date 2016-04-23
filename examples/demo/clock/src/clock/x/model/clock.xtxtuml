@@ -1,4 +1,4 @@
-package clock.x.^model;
+package clock.x.model;
 
 import hu.elte.txtuml.api.stdlib.Timer;
 

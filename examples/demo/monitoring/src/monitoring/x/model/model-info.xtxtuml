@@ -1,1 +1,1 @@
-model "Monitoring";
+model-package monitoring.x.model as "Monitoring";
