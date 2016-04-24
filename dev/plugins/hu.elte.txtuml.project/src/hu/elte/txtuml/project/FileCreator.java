@@ -21,9 +21,10 @@ import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.utils.Logger;
 
 /**
- * Creates the root package of the model and the model file.
+ * Creates syntax-specific model files or XtxtUML files along with the given
+ * root package, if necessary.
  */
-public class ModelCreator {
+public class FileCreator {
 
 	private IResource resource;
 
@@ -33,9 +34,9 @@ public class ModelCreator {
 			String filename;
 			StringBuilder contentBuilder = new StringBuilder();
 			if (isXtxtUml) {
-				filename = buildXtxtUmlFileContent(typeName, contentBuilder);
+				filename = buildXtxtUmlModelFileContent(typeName, contentBuilder);
 			} else {
-				filename = buildJavaFileContent(packageFragment, typeName, contentBuilder);
+				filename = buildJavaModelFileContent(packageFragment, typeName, contentBuilder);
 			}
 
 			if (createFile(context, packageFragmentRoot, packageFragment, contentBuilder.toString(), filename)) {
@@ -47,7 +48,23 @@ public class ModelCreator {
 		return null;
 	}
 
-	private String buildJavaFileContent(IPackageFragment packageFragment, String typeName,
+	public IFile createXtxtUmlFile(IWizardContainer context, IPackageFragmentRoot packageFragmentRoot,
+			IPackageFragment packageFragment, String filename) {
+		try {
+			StringBuilder contentBuilder = new StringBuilder();
+			buildXtxtUmlFileContent(packageFragment, contentBuilder);
+
+			if (createFile(context, packageFragmentRoot, packageFragment, contentBuilder.toString(), filename)) {
+				return (IFile) resource;
+			}
+		} catch (Throwable e) {
+			Logger.sys.error("Error while creating XtxtUML file", e);
+		}
+
+		return null;
+	}
+
+	private String buildJavaModelFileContent(IPackageFragment packageFragment, String typeName,
 			StringBuilder contentBuilder) {
 		String filename;
 		filename = "package-info.java";
@@ -62,13 +79,19 @@ public class ModelCreator {
 		return filename;
 	}
 
-	private String buildXtxtUmlFileContent(String typeName, StringBuilder contentBuilder) {
+	private String buildXtxtUmlModelFileContent(String typeName, StringBuilder contentBuilder) {
 		String filename;
 		filename = "model-info.xtxtuml";
 		contentBuilder.append("model \"");
 		contentBuilder.append(typeName);
 		contentBuilder.append("\";");
 		return filename;
+	}
+
+	private void buildXtxtUmlFileContent(IPackageFragment packageFragment, StringBuilder contentBuilder) {
+		contentBuilder.append("package ");
+		contentBuilder.append(packageFragment.getElementName());
+		contentBuilder.append(";\n");
 	}
 
 	private boolean createFile(IWizardContainer context, IPackageFragmentRoot packageFragmentRoot,

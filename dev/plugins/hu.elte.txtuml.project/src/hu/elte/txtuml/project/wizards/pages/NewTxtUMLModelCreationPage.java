@@ -1,14 +1,9 @@
-package hu.elte.txtuml.project.wizards;
+package hu.elte.txtuml.project.wizards.pages;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IPackageFragment;
-import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.internal.ui.dialogs.StatusInfo;
 import org.eclipse.jdt.internal.ui.wizards.NewWizardMessages;
-import org.eclipse.jdt.ui.wizards.NewTypeWizardPage;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -17,28 +12,26 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 
-import hu.elte.txtuml.project.ModelCreator;
+import hu.elte.txtuml.project.FileCreator;
+import hu.elte.txtuml.project.wizards.TxtUMLModelCreatorWizard;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 
 /**
- * This dialog uses source container, package and type name inputs from
- * {@linkplain NewTypeWizardPage}.
- * 
  * @noextend This class should not be subclassed, subclass
- *           {@linkplain NewTypeWizardPage} instead.
+ *           {@linkplain NewTxtUMLFileElementCreationPage} instead.
  */
 @SuppressWarnings("restriction")
-public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
+public class NewTxtUMLModelCreationPage extends NewTxtUMLFileElementCreationPage {
 	protected static final int COLS = 4;
 	protected Button txt;
 	protected Button xtxt;
 	protected boolean xtxtuml;
-	private ModelCreator modelCreator = new ModelCreator();
+	private FileCreator fileCreator = new FileCreator();
 
-	protected NewTxtUMLModelCreationPage() {
-		super(false, TxtUMLModelFileCreatorWizard.TITLE);
-		this.setTitle(TxtUMLModelFileCreatorWizard.TITLE);
-		this.setDescription(TxtUMLModelFileCreatorWizard.DESCRIPTION);
+	public NewTxtUMLModelCreationPage() {
+		super(false, TxtUMLModelCreatorWizard.TITLE);
+		this.setTitle(TxtUMLModelCreatorWizard.TITLE);
+		this.setDescription(TxtUMLModelCreatorWizard.DESCRIPTION);
 	}
 
 	@Override
@@ -46,7 +39,8 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 		setControl(createCompositeControl(parent));
 	}
 
-	private Composite createCompositeControl(Composite parent) {
+	@Override
+	protected Composite createCompositeControl(Composite parent) {
 		initializeDialogUnits(parent);
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setFont(parent.getFont());
@@ -72,51 +66,12 @@ public class NewTxtUMLModelCreationPage extends NewTypeWizardPage {
 		xtxt.setText("XtxtUML (custom syntax)");
 	}
 
-	/**
-	 * Tries to guess the values of container and package from the selected
-	 * element. The selected package is assumed to be the model root.
-	 */
-	public void init(IStructuredSelection selection) {
-		IJavaElement jelem = getInitialJavaElement(selection);
-		if (jelem instanceof IPackageFragmentRoot) {
-			setPackageFragmentRoot((IPackageFragmentRoot) jelem, true);
-		} else if (jelem instanceof IPackageFragment) {
-			IPackageFragment pack = (IPackageFragment) jelem;
-			setPackageFragment(pack, true);
-			while (jelem instanceof IPackageFragment) {
-				jelem = jelem.getParent();
-			}
-			if (jelem instanceof IPackageFragmentRoot) {
-				setPackageFragmentRoot((IPackageFragmentRoot) jelem, true);
-			}
-		}
-	}
-
 	public IFile createNewFile() {
-		return modelCreator.createModelFile(getContainer(), getPackageFragmentRoot(), getPackageFragment(),
+		return fileCreator.createModelFile(getContainer(), getPackageFragmentRoot(), getPackageFragment(),
 				getTypeName(), xtxt.getSelection());
 	}
 
 	// validation
-
-	@Override
-	public void setVisible(boolean visible) {
-		super.setVisible(visible);
-		// show error status messages
-		doStatusUpdate();
-	}
-
-	@Override
-	protected void handleFieldChanged(String fieldName) {
-		super.handleFieldChanged(fieldName);
-		// update the status message when a field is changed
-		doStatusUpdate();
-	}
-
-	protected void doStatusUpdate() {
-		IStatus[] status = new IStatus[] { fContainerStatus, fPackageStatus, fTypeNameStatus };
-		updateStatus(status);
-	}
 
 	@Override
 	protected IStatus typeNameChanged() {

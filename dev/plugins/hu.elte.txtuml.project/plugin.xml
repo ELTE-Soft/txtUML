@@ -17,10 +17,17 @@
       </wizard>
       <wizard
             category="hu.elte.txtuml.project"
-            class="hu.elte.txtuml.project.wizards.TxtUMLModelFileCreatorWizard"
+            class="hu.elte.txtuml.project.wizards.TxtUMLModelCreatorWizard"
             icon="icons/txtuml_model.png"
-            id="hu.elte.txtuml.project.newtxtumlfile"
+            id="hu.elte.txtuml.project.newtxtumlmodel"
             name="txtUML Model">
+      </wizard>
+            <wizard
+            category="hu.elte.txtuml.project"
+            class="hu.elte.txtuml.project.wizards.XtxtUMLFileCreatorWizard"
+            icon="icons/xtxtuml_file.gif"
+            id="hu.elte.txtuml.project.newxtxtumlfile"
+            name="XtxtUML File">
       </wizard>
    </extension>
    <extension

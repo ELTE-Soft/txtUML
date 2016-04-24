@@ -1,4 +1,4 @@
-package hu.elte.txtuml.project.wizards;
+package hu.elte.txtuml.project.wizards.pages;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.core.JavaConventions;
@@ -6,6 +6,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 
 import hu.elte.txtuml.project.Messages;
+import hu.elte.txtuml.project.wizards.TxtUMLProjectWizard;
 
 public class TxtUMLProjectPage extends WizardNewProjectCreationPage {
 	/**

@@ -21,6 +21,7 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import hu.elte.txtuml.project.Activator;
 import hu.elte.txtuml.project.ProjectCreator;
 import hu.elte.txtuml.project.ProjectCreator.ProjectSettings;
+import hu.elte.txtuml.project.wizards.pages.TxtUMLProjectPage;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 public class TxtUMLProjectWizard extends Wizard implements INewWizard {
