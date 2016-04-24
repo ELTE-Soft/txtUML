@@ -12,11 +12,10 @@ import hu.elte.txtuml.project.wizards.pages.NewTxtUMLModelWizardPage;
 
 public class NewTxtUMLModelCreationWizard extends Wizard implements INewWizard {
 
+	public static final String TITLE = "New txtUML Model";
+
 	private IWorkbench workbench;
 	private NewTxtUMLModelWizardPage _pageOne;
-
-	public static final String TITLE = "New txtUML model";
-	public static final String DESCRIPTION = "Create new txtUML Model";
 	private IStructuredSelection selection;
 
 	public NewTxtUMLModelCreationWizard() {

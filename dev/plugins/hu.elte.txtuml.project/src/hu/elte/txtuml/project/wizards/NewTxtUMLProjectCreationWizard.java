@@ -26,12 +26,12 @@ import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 public class NewTxtUMLProjectCreationWizard extends Wizard implements INewWizard {
 
+	public static final String WIZARD_IMAGE = "icons/txtuml_model_wizard.png";
+	public static final String TITLE = "New txtUML Project";
+
 	private static final String BIN_DIR = "bin";
 	private static final String GENERATED_SOURCE_FOLDER_DIR = "src-gen";
 	private static final String SOURCE_FOLDER_DIR = "src";
-
-	public static final String WIZARD_IMAGE = "icons/txtuml_model_wizard.png";
-	public static final String TITLE = "New txtUML Project";
 
 	private NewTxtUMLProjectWizardPage page;
 
@@ -81,7 +81,8 @@ public class NewTxtUMLProjectCreationWizard extends Wizard implements INewWizard
 				}
 
 				try {
-					IProject project = ProjectCreator.createAndOpenTxtUMLProjectAtLocation(projectLocation, projectName);
+					IProject project = ProjectCreator.createAndOpenTxtUMLProjectAtLocation(projectLocation,
+							projectName);
 
 					IFolder src = ProjectCreator.createFolder(project, SOURCE_FOLDER_DIR);
 					IFolder srcgen = ProjectCreator.createFolder(project, GENERATED_SOURCE_FOLDER_DIR);

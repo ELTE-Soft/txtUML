@@ -12,9 +12,8 @@ import hu.elte.txtuml.project.wizards.pages.NewXtxtUMLFileWizardPage;
 
 public class NewXtxtUMLFileCreationWizard extends Wizard implements INewWizard {
 
-	public static final String TITLE = "XtxtUML File";
-	public static final String DESCRIPTION = "Create new XtxtUML file";
-	
+	public static final String TITLE = "New XtxtUML File";
+
 	private IWorkbench workbench;
 	private IStructuredSelection selection;
 	private NewXtxtUMLFileWizardPage page;
@@ -34,7 +33,7 @@ public class NewXtxtUMLFileCreationWizard extends Wizard implements INewWizard {
 		if (!page.isPageComplete()) {
 			return false;
 		}
-		
+
 		IFile file = page.createNewFile();
 		boolean result = file != null;
 

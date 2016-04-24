@@ -4,6 +4,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.internal.ui.dialogs.StatusInfo;
 import org.eclipse.jdt.internal.ui.wizards.NewWizardMessages;
+import org.eclipse.jdt.internal.ui.wizards.dialogfields.Separator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -13,7 +14,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 
 import hu.elte.txtuml.project.FileCreator;
-import hu.elte.txtuml.project.wizards.NewTxtUMLModelCreationWizard;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 
 /**
@@ -22,16 +22,19 @@ import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
  */
 @SuppressWarnings("restriction")
 public class NewTxtUMLModelWizardPage extends NewTxtUMLFileElementWizardPage {
+
+	public static final String TITLE = "txtUML Model";
+	public static final String DESCRIPTION = "Create a new txtUML Model.";
 	protected static final int COLS = 4;
+
 	protected Button txt;
 	protected Button xtxt;
-	protected boolean xtxtuml;
 	private FileCreator fileCreator = new FileCreator();
 
 	public NewTxtUMLModelWizardPage() {
-		super(false, NewTxtUMLModelCreationWizard.TITLE);
-		this.setTitle(NewTxtUMLModelCreationWizard.TITLE);
-		this.setDescription(NewTxtUMLModelCreationWizard.DESCRIPTION);
+		super(false, TITLE);
+		this.setTitle(TITLE);
+		this.setDescription(DESCRIPTION);
 	}
 
 	@Override
@@ -47,10 +50,13 @@ public class NewTxtUMLModelWizardPage extends NewTxtUMLFileElementWizardPage {
 		GridLayout layout = new GridLayout();
 		layout.numColumns = COLS;
 		composite.setLayout(layout);
+
 		createContainerControls(composite, COLS);
 		createPackageControls(composite, COLS);
 		createTypeNameControls(composite, COLS);
+		new Separator(SWT.HORIZONTAL).doFillIntoGrid(composite, COLS, convertHeightInCharsToPixels(0));
 		createFileTypeChoice(composite, COLS);
+
 		return composite;
 	}
 
@@ -78,7 +84,7 @@ public class NewTxtUMLModelWizardPage extends NewTxtUMLFileElementWizardPage {
 		IStatus status = super.typeNameChanged();
 		if (status.getMessage() != null
 				&& status.getMessage().equals(NewWizardMessages.NewTypeWizardPage_error_EnterTypeName)) {
-			((StatusInfo) status).setError("Model name is empty");
+			((StatusInfo) status).setError("Model name is empty.");
 		}
 		return status;
 	}
@@ -88,9 +94,10 @@ public class NewTxtUMLModelWizardPage extends NewTxtUMLFileElementWizardPage {
 		IStatus status = super.packageChanged();
 		if (status.isOK()) {
 			if (ElementTypeTeller.isModelPackage(getPackageFragment())) {
-				((StatusInfo) status).setError("The selected package is already a model package");
+				((StatusInfo) status).setError("The selected package is already a model package.");
 			}
 		}
 		return status;
 	}
+
 }
