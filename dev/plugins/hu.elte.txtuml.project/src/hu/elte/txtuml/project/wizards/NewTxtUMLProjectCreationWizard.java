@@ -21,10 +21,10 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import hu.elte.txtuml.project.Activator;
 import hu.elte.txtuml.project.ProjectCreator;
 import hu.elte.txtuml.project.ProjectCreator.ProjectSettings;
-import hu.elte.txtuml.project.wizards.pages.TxtUMLProjectPage;
+import hu.elte.txtuml.project.wizards.pages.NewTxtUMLProjectWizardPage;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
 
-public class TxtUMLProjectWizard extends Wizard implements INewWizard {
+public class NewTxtUMLProjectCreationWizard extends Wizard implements INewWizard {
 
 	private static final String BIN_DIR = "bin";
 	private static final String GENERATED_SOURCE_FOLDER_DIR = "src-gen";
@@ -33,12 +33,12 @@ public class TxtUMLProjectWizard extends Wizard implements INewWizard {
 	public static final String WIZARD_IMAGE = "icons/txtuml_model_wizard.png";
 	public static final String TITLE = "New txtUML Project";
 
-	private TxtUMLProjectPage page;
+	private NewTxtUMLProjectWizardPage page;
 
 	/**
 	 * Constructor for TxtUMLProject.
 	 */
-	public TxtUMLProjectWizard() {
+	public NewTxtUMLProjectCreationWizard() {
 		super();
 		setWindowTitle(TITLE);
 		ImageDescriptor descriptor = Activator.getImageDescriptor(WIZARD_IMAGE);
@@ -52,7 +52,7 @@ public class TxtUMLProjectWizard extends Wizard implements INewWizard {
 
 	@Override
 	public void addPages() {
-		page = new TxtUMLProjectPage();
+		page = new NewTxtUMLProjectWizardPage();
 		addPage(page);
 	}
 

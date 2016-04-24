@@ -6,16 +6,16 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 
 import hu.elte.txtuml.project.Messages;
-import hu.elte.txtuml.project.wizards.TxtUMLProjectWizard;
+import hu.elte.txtuml.project.wizards.NewTxtUMLProjectCreationWizard;
 
-public class TxtUMLProjectPage extends WizardNewProjectCreationPage {
+public class NewTxtUMLProjectWizardPage extends WizardNewProjectCreationPage {
 	/**
 	 * Constructor for SampleNewWizardPage.
 	 * 
 	 * @param pageName
 	 */
-	public TxtUMLProjectPage() {
-		super(TxtUMLProjectWizard.TITLE);
+	public NewTxtUMLProjectWizardPage() {
+		super(NewTxtUMLProjectCreationWizard.TITLE);
 		setTitle("Creating txtUML Project");
 		setDescription("Give the name of the new txtUML Project!");
 	}

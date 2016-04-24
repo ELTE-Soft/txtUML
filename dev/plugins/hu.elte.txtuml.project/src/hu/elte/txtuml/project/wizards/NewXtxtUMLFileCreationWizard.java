@@ -8,18 +8,18 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 
-import hu.elte.txtuml.project.wizards.pages.NewXtxtUMLFileCreationPage;
+import hu.elte.txtuml.project.wizards.pages.NewXtxtUMLFileWizardPage;
 
-public class XtxtUMLFileCreatorWizard extends Wizard implements INewWizard {
+public class NewXtxtUMLFileCreationWizard extends Wizard implements INewWizard {
 
 	public static final String TITLE = "XtxtUML File";
 	public static final String DESCRIPTION = "Create new XtxtUML file";
 	
 	private IWorkbench workbench;
 	private IStructuredSelection selection;
-	private NewXtxtUMLFileCreationPage page;
+	private NewXtxtUMLFileWizardPage page;
 
-	public XtxtUMLFileCreatorWizard() {
+	public NewXtxtUMLFileCreationWizard() {
 		setWindowTitle(TITLE);
 	}
 
@@ -53,7 +53,7 @@ public class XtxtUMLFileCreatorWizard extends Wizard implements INewWizard {
 	public void addPages() {
 		super.addPages();
 
-		page = new NewXtxtUMLFileCreationPage();
+		page = new NewXtxtUMLFileWizardPage();
 		page.init(selection);
 
 		addPage(page);

@@ -16,9 +16,9 @@ import org.eclipse.swt.widgets.Composite;
  * {@linkplain NewTypeWizardPage}.
  */
 @SuppressWarnings("restriction")
-public abstract class NewTxtUMLFileElementCreationPage extends NewTypeWizardPage {
+public abstract class NewTxtUMLFileElementWizardPage extends NewTypeWizardPage {
 
-	protected NewTxtUMLFileElementCreationPage(boolean isClass, String pageName) {
+	protected NewTxtUMLFileElementWizardPage(boolean isClass, String pageName) {
 		super(isClass, pageName);
 	}
 

@@ -17,24 +17,24 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 
 import hu.elte.txtuml.project.FileCreator;
-import hu.elte.txtuml.project.wizards.XtxtUMLFileCreatorWizard;
+import hu.elte.txtuml.project.wizards.NewXtxtUMLFileCreationWizard;
 
 /**
  * @noextend This class should not be subclassed, subclass
- *           {@linkplain NewTxtUMLFileElementCreationPage} instead.
+ *           {@linkplain NewTxtUMLFileElementWizardPage} instead.
  */
 @SuppressWarnings("restriction")
-public class NewXtxtUMLFileCreationPage extends NewTxtUMLFileElementCreationPage {
+public class NewXtxtUMLFileWizardPage extends NewTxtUMLFileElementWizardPage {
 
 	protected static final int COLS = 4;
 
 	private FileCreator fileCreator = new FileCreator();
 	private Button xExtensionOption;
 
-	public NewXtxtUMLFileCreationPage() {
-		super(false, XtxtUMLFileCreatorWizard.TITLE);
-		this.setTitle(XtxtUMLFileCreatorWizard.TITLE);
-		this.setDescription(XtxtUMLFileCreatorWizard.DESCRIPTION);
+	public NewXtxtUMLFileWizardPage() {
+		super(false, NewXtxtUMLFileCreationWizard.TITLE);
+		this.setTitle(NewXtxtUMLFileCreationWizard.TITLE);
+		this.setDescription(NewXtxtUMLFileCreationWizard.DESCRIPTION);
 	}
 
 	@Override

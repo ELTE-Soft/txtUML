@@ -8,18 +8,18 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 
-import hu.elte.txtuml.project.wizards.pages.NewTxtUMLModelCreationPage;
+import hu.elte.txtuml.project.wizards.pages.NewTxtUMLModelWizardPage;
 
-public class TxtUMLModelCreatorWizard extends Wizard implements INewWizard {
+public class NewTxtUMLModelCreationWizard extends Wizard implements INewWizard {
 
 	private IWorkbench workbench;
-	private NewTxtUMLModelCreationPage _pageOne;
+	private NewTxtUMLModelWizardPage _pageOne;
 
 	public static final String TITLE = "New txtUML model";
 	public static final String DESCRIPTION = "Create new txtUML Model";
 	private IStructuredSelection selection;
 
-	public TxtUMLModelCreatorWizard() {
+	public NewTxtUMLModelCreationWizard() {
 		setWindowTitle(TITLE);
 	}
 
@@ -55,7 +55,7 @@ public class TxtUMLModelCreatorWizard extends Wizard implements INewWizard {
 	public void addPages() {
 		super.addPages();
 
-		_pageOne = new NewTxtUMLModelCreationPage();
+		_pageOne = new NewTxtUMLModelWizardPage();
 		_pageOne.init(selection);
 
 		addPage(_pageOne);

@@ -9,24 +9,24 @@
       </category>
       <wizard
             category="hu.elte.txtuml.project"
-            class="hu.elte.txtuml.project.wizards.TxtUMLProjectWizard"
+            class="hu.elte.txtuml.project.wizards.NewTxtUMLProjectCreationWizard"
             icon="icons/txtuml_project.png"
-            id="hu.elte.txtuml.project.wizards.TxtUMLProject"
+            id="hu.elte.txtuml.project.wizards.NewTxtUMLProjectCreationWizard"
             name="txtUML Project"
             project="true">
       </wizard>
       <wizard
             category="hu.elte.txtuml.project"
-            class="hu.elte.txtuml.project.wizards.TxtUMLModelCreatorWizard"
+            class="hu.elte.txtuml.project.wizards.NewTxtUMLModelCreationWizard"
             icon="icons/txtuml_model.png"
-            id="hu.elte.txtuml.project.newtxtumlmodel"
+            id="hu.elte.txtuml.project.wizards.NewTxtUMLModelCreationWizard"
             name="txtUML Model">
       </wizard>
             <wizard
             category="hu.elte.txtuml.project"
-            class="hu.elte.txtuml.project.wizards.XtxtUMLFileCreatorWizard"
+            class="hu.elte.txtuml.project.wizards.NewXtxtUMLFileCreationWizard"
             icon="icons/xtxtuml_file.gif"
-            id="hu.elte.txtuml.project.newxtxtumlfile"
+            id="hu.elte.txtuml.project.wizards.NewXtxtUMLFileCreationWizard"
             name="XtxtUML File">
       </wizard>
    </extension>

@@ -13,25 +13,25 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 
 import hu.elte.txtuml.project.FileCreator;
-import hu.elte.txtuml.project.wizards.TxtUMLModelCreatorWizard;
+import hu.elte.txtuml.project.wizards.NewTxtUMLModelCreationWizard;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 
 /**
  * @noextend This class should not be subclassed, subclass
- *           {@linkplain NewTxtUMLFileElementCreationPage} instead.
+ *           {@linkplain NewTxtUMLFileElementWizardPage} instead.
  */
 @SuppressWarnings("restriction")
-public class NewTxtUMLModelCreationPage extends NewTxtUMLFileElementCreationPage {
+public class NewTxtUMLModelWizardPage extends NewTxtUMLFileElementWizardPage {
 	protected static final int COLS = 4;
 	protected Button txt;
 	protected Button xtxt;
 	protected boolean xtxtuml;
 	private FileCreator fileCreator = new FileCreator();
 
-	public NewTxtUMLModelCreationPage() {
-		super(false, TxtUMLModelCreatorWizard.TITLE);
-		this.setTitle(TxtUMLModelCreatorWizard.TITLE);
-		this.setDescription(TxtUMLModelCreatorWizard.DESCRIPTION);
+	public NewTxtUMLModelWizardPage() {
+		super(false, NewTxtUMLModelCreationWizard.TITLE);
+		this.setTitle(NewTxtUMLModelCreationWizard.TITLE);
+		this.setDescription(NewTxtUMLModelCreationWizard.DESCRIPTION);
 	}
 
 	@Override
