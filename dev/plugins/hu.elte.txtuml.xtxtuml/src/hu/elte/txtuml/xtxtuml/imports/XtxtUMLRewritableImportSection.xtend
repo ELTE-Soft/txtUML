@@ -47,7 +47,7 @@ class XtxtUMLRewritableImportSection extends RewritableImportSection {
 
 	override protected appendImport(StringBuilder builder, XImportDeclaration newImportDeclaration) {
 		super.appendImport(builder, newImportDeclaration);
-		builder.insert(builder.length - 1, ';');
+		builder.insert(builder.toString.replaceAll("\\s+$", "").length, ';');
 	}
 
 }
