@@ -47,9 +47,9 @@ import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 class XtxtUMLFormatter extends XbaseFormatter {
 
 	def dispatch void format(TUModelDeclaration it, extension IFormattableDocument document) {
-		regionForKeyword('model').prepend[noSpace];
-		regionForFeature(TU_FILE__NAME).prepend[oneSpace].append[noSpace];
-		regionForKeyword(';').append[newLine];
+		regionForKeyword('model-package').prepend[noSpace].append[oneSpace];
+		regionForKeyword('as').surround[oneSpace];
+		regionForFeature(TU_MODEL_DECLARATION__SEMI_COLON).prepend[noSpace].append[newLine];
 	}
 
 	def dispatch void format(TUFile it, extension IFormattableDocument document) {
