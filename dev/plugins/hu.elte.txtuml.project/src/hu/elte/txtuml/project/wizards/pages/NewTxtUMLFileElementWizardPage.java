@@ -87,12 +87,12 @@ public abstract class NewTxtUMLFileElementWizardPage extends NewTypeWizardPage {
 		String message = status.getMessage();
 
 		if (message != null) {
-			if (message
-					.startsWith(Messages.format(NewWizardMessages.NewTypeWizardPage_warning_TypeNameDiscouraged, ""))) {
-				status.setOK(); // it's ok if the name starts with a lowercase
-								// letter
+			if (message.startsWith(Messages.format(NewWizardMessages.NewTypeWizardPage_warning_TypeNameDiscouraged, ""))
+					|| message.equals(NewWizardMessages.NewTypeWizardPage_error_TypeNameExists)) {
+				status.setOK();
 			} else if (message
-					.startsWith(Messages.format(NewWizardMessages.NewTypeWizardPage_error_InvalidTypeName, ""))) {
+					.startsWith(Messages.format(NewWizardMessages.NewTypeWizardPage_error_InvalidTypeName, ""))
+					|| message.equals(NewWizardMessages.NewTypeWizardPage_error_QualifiedName)) {
 				status.setError(message.replace("Type name", "Name").replace("Java type name", "name")
 						.replace("type name", "name"));
 				// errors about *type* names would be confusing here
