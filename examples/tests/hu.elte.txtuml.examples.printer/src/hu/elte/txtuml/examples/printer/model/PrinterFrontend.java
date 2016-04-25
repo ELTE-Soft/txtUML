@@ -102,7 +102,7 @@ public class PrinterFrontend extends ModelClass {
 		@Override
 		public void effect() {
 			lock = false;
-			paperCount += getSignal(RestockPaper.class).amount;
+			paperCount += getTrigger(RestockPaper.class).amount;
 			Action.log("PrinterFrontend: restocking paper.");
 		}
 	}
