@@ -20,7 +20,9 @@ class ActivityExporter extends ActionExporter<Block, Activity> {
 		// TODO: in case of ctor if the first statement is not super() or this() insert call
 		// to the implicit super ctor
 		val init = result.createOwnedNode("#init", UMLPackage.Literals.INITIAL_NODE)
-		result.specification?.ownedParameters?.forEach[
+		// for activities of operation, the parameters are in the operation, 
+		// for activities in a state machine, the parameters are in the activity
+		(result.specification?.ownedParameters ?: result.ownedParameters)?.forEach[
 			result.createVariable(name, type)
 		]
 		val prepare = exportPreparetBlock(block)

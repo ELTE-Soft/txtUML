@@ -1,11 +1,11 @@
 package hu.elte.txtuml.export.uml2.restructured.statemachine
 
+import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 import hu.elte.txtuml.export.uml2.restructured.Exporter
-import org.eclipse.jdt.core.dom.MethodDeclaration
 import org.eclipse.jdt.core.dom.IMethodBinding
+import org.eclipse.jdt.core.dom.MethodDeclaration
 import org.eclipse.uml2.uml.Constraint
 import org.eclipse.uml2.uml.Transition
-import hu.elte.txtuml.export.uml2.restructured.BaseExporter
 
 class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constraint> {
 
@@ -17,12 +17,11 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 
 	override exportContents(MethodDeclaration source) {
 		val opaqueExpr = factory.createOpaqueExpression
-		opaqueExpr.behavior = exportActivity(source) [
-			(result.owner as Transition).container.stateMachine.ownedBehaviors += it
-		]
-		opaqueExpr.name = "guard_expression"
 		result.specification = opaqueExpr
 		result.name = "guard_specification"
+		opaqueExpr.behavior = exportSMActivity(source) [
+			(result.owner as Transition).container.stateMachine.ownedBehaviors += it
+		]
 	}
 
 }
