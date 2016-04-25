@@ -36,14 +36,14 @@ class TransitionExporter extends Exporter<TypeDeclaration, ITypeBinding, Transit
 			trigger.event = sigEvent
 		}
 
-		source.bodyDeclarations.filter[it instanceof MethodDeclaration].filter [
-			(it as MethodDeclaration).name.identifier == "effect"
-		].forEach[exportSMActivity(it as MethodDeclaration)[result.effect = it]]
+		if (exportActions) {
+			source.bodyDeclarations.filter[it instanceof MethodDeclaration].filter [
+				(it as MethodDeclaration).name.identifier == "effect"
+			].forEach[exportSMActivity(it as MethodDeclaration)[result.effect = it]]
 
-		source.bodyDeclarations.filter[it instanceof MethodDeclaration].map[it as MethodDeclaration].filter [
-			name.identifier == "guard"
-		].forEach [
-			exportGuard[result.guard = it]
-		]
+			source.bodyDeclarations.filter[it instanceof MethodDeclaration].map[it as MethodDeclaration].filter [
+				name.identifier == "guard"
+			].forEach[exportGuard[result.guard = it]]
+		}
 	}
 }

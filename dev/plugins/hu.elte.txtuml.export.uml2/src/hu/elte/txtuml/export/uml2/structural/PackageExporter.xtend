@@ -13,10 +13,12 @@ import org.eclipse.jdt.core.dom.AbstractTypeDeclaration
 import org.eclipse.jdt.core.dom.TypeDeclaration
 import org.eclipse.uml2.uml.Package
 import org.eclipse.uml2.uml.PackageableElement
+import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode
 
 abstract class AbstractPackageExporter<T extends Package> extends Exporter<IPackageFragment, IPackageFragment, T> {
 
-	new() {
+	new(ExportMode mode) {
+		super(mode)
 	}
 
 	new(BaseExporter<?, ?, ?> parent) {

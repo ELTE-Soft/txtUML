@@ -107,6 +107,7 @@ import org.eclipse.uml2.uml.PackageableElement
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
 import hu.elte.txtuml.export.uml2.activity.apicalls.GetSignalExporter
+import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -128,8 +129,8 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 	public R result
 
 	/** Creates a root exporter with a new cache */
-	new() {
-		super(new ExporterCache)
+	new(ExportMode mode) {
+		super(new ExporterCache(mode))
 	}
 
 	/** Creates an exporter as a child of an existing one */
@@ -156,6 +157,10 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 	/** This method should be called when the partially exported element is already found in the cache. */
 	def void alreadyExists(R result) {
 		this.result = result
+	}
+	
+	def boolean exportActions() {
+		cache.exportMode == ExportMode.ExportActionCode
 	}
 
 	/** 

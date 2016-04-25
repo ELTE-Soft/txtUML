@@ -10,6 +10,7 @@ import org.eclipse.uml2.uml.UMLFactory
 import org.eclipse.jdt.core.IPackageFragment
 import org.eclipse.jdt.core.dom.ASTNode
 import java.util.function.Consumer
+import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode
 
 /**
  * The exporter cache keeps tabs on which elements have been partially or fully exported. For identifying the
@@ -25,6 +26,14 @@ class ExporterCache {
 	val Map<Pair<Class<?>, Object>, Element> fetchMap = new HashMap
 
 	protected val factory = UMLFactory.eINSTANCE
+	
+	val ExportMode exportMode
+	
+	new(ExportMode mode) {
+		exportMode = mode
+	}
+	
+	def getExportMode() { exportMode }
 
 	/** 
 	 * Exports the given element if it hadn't been exported. Checks if it is already partially or fully 

@@ -36,15 +36,19 @@ class ClassExporter extends Exporter<TypeDeclaration, ITypeBinding, Class> {
 		typeDecl.methods.forEach[exportOperation[result.ownedOperations += it]]
 		typeBnd.declaredMethods.filter[isDefaultConstructor].forEach [
 			exportDefaultConstructor[result.ownedOperations += it]
-			exportDefaultConstructorBody[result.ownedBehaviors += it]
+			if (exportActions) {
+				exportDefaultConstructorBody[result.ownedBehaviors += it]
+			}
 		]
-		typeDecl.methods.forEach[exportActivity[result.ownedBehaviors += it]]
+		if (exportActions) {
+			typeDecl.methods.forEach[exportActivity[result.ownedBehaviors += it]]
+		}
 		// superclasses
 		if (typeDecl.superclassType != null &&
 			typeDecl.superclassType.resolveBinding.qualifiedName != ModelClass.canonicalName) {
 			result.createGeneralization(fetchType(typeDecl.superclassType.resolveBinding) as Classifier)
 		}
-		typeDecl.types.filter[ElementTypeTeller.isPort(it)].forEach[
+		typeDecl.types.filter[ElementTypeTeller.isPort(it)].forEach [
 			exportPort(it)[result.ownedPorts += it]
 		]
 		// state machine elments

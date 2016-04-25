@@ -76,7 +76,7 @@ public class TxtUMLToUML2 {
 			throw new NotFoundException("Cannot find package '" + packageName + "'");
 		}
 
-		Model model = new ModelExporter().export(packageFragments[0]);
+		Model model = new ModelExporter(exportMode).export(packageFragments[0]);
 		
 		File file = new File(model.eResource().getURI().toFileString());
 		file.getParentFile().mkdirs();

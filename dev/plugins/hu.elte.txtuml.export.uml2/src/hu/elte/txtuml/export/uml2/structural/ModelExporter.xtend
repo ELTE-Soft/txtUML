@@ -12,6 +12,7 @@ import org.eclipse.uml2.uml.Package
 import org.eclipse.uml2.uml.Profile
 import org.eclipse.uml2.uml.UMLPackage
 import org.eclipse.uml2.uml.resource.UMLResource
+import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode
 
 class ModelExporter extends AbstractPackageExporter<Model> {
 
@@ -25,6 +26,10 @@ class ModelExporter extends AbstractPackageExporter<Model> {
 		byte.canonicalName -> "Integer", Byte.canonicalName -> "Integer", long.canonicalName -> "Integer",
 		Long.canonicalName -> "Integer", double.canonicalName -> "Real", Double.canonicalName -> "Real",
 		float.canonicalName -> "Real", Float.canonicalName -> "Real"}
+
+	new(ExportMode mode) {
+		super(mode)
+	}
 
 	def export(IPackageFragment pf) {
 		cache.export(this, pf, pf, [])

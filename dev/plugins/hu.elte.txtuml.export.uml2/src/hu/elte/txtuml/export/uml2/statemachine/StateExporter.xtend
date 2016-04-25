@@ -30,18 +30,19 @@ class StateExporter extends AbstractStateExporter<State> {
 	override create(ITypeBinding access) {
 		if(ElementTypeTeller.isState(access)) factory.createState
 	}
-	
+
 	override exportContents(TypeDeclaration source) {
 		super.exportContents(source)
-		source.bodyDeclarations.filter[it instanceof MethodDeclaration].filter [
-			(it as MethodDeclaration).name.identifier == "entry"
-		].forEach[exportSMActivity(it as MethodDeclaration)[ result.entry = it ]]
-		source.bodyDeclarations.filter[it instanceof MethodDeclaration].filter [
-			(it as MethodDeclaration).name.identifier == "exit"
-		].forEach[exportSMActivity(it as MethodDeclaration)[ result.exit = it ]]
-
+		if (exportActions) {
+			source.bodyDeclarations.filter[it instanceof MethodDeclaration].filter [
+				(it as MethodDeclaration).name.identifier == "entry"
+			].forEach[exportSMActivity(it as MethodDeclaration)[result.entry = it]]
+			source.bodyDeclarations.filter[it instanceof MethodDeclaration].filter [
+				(it as MethodDeclaration).name.identifier == "exit"
+			].forEach[exportSMActivity(it as MethodDeclaration)[result.exit = it]]
+		}
 	}
-	
+
 }
 
 class InitStateExporter extends AbstractStateExporter<Pseudostate> {

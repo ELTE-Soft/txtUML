@@ -34,7 +34,9 @@ class OperationExporter extends Exporter<MethodDeclaration, IMethodBinding, Oper
 			result.ownedParameters += retParam
 		}
 		result.redefinedOperations += binding.overridden.map[fetchElement as Operation]
-		result.methods += fetchElement(decl.resolveBinding, new MethodActivityExporter(this))
+		if (exportActions) {
+			result.methods += fetchElement(decl.resolveBinding, new MethodActivityExporter(this))
+		}
 		result.ownedParameters += decl.parameters.map [
 			exportParameter((it as SingleVariableDeclaration).resolveBinding)
 		]
