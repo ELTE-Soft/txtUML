@@ -381,4 +381,14 @@
     </ownedOperation>
   </packagedElement>
   <packagedElement xmi:type="uml:Class" xmi:id="_DJzhUNpoEeWuz-p1tuEm5Q" name="hu.elte.txtuml.api.model.Collection"/>
+  <packagedElement xmi:type="uml:Class" xmi:id="_DubAAArpEeapa4Ow9IdZzQ" name="SignalOperations">
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_IIA2cArpEeapa4Ow9IdZzQ" name="getSignal">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_Vv0v8ArpEeapa4Ow9IdZzQ" name="return" type="_e00lkArpEeapa4Ow9IdZzQ" direction="return"/>
+      <ownedTemplateSignature xmi:type="uml:TemplateSignature" xmi:id="_bBCK4ArpEeapa4Ow9IdZzQ" parameter="_bmV3YArpEeapa4Ow9IdZzQ">
+        <ownedParameter xmi:type="uml:TemplateParameter" xmi:id="_bmV3YArpEeapa4Ow9IdZzQ" default="_e00lkArpEeapa4Ow9IdZzQ">
+          <ownedDefault xmi:type="uml:Class" xmi:id="_e00lkArpEeapa4Ow9IdZzQ" name="SigType"/>
+        </ownedParameter>
+      </ownedTemplateSignature>
+    </ownedOperation>
+  </packagedElement>
 </uml:Model>

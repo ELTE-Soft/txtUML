@@ -44,5 +44,11 @@ public class TestClass extends ModelClass {
 		public boolean guard() {
 			return false;
 		}
+		
+		@Override
+		public void effect() {
+			TestSignal signal = getSignal();
+			Action.log(signal.data);
+		}
 	}
 }
