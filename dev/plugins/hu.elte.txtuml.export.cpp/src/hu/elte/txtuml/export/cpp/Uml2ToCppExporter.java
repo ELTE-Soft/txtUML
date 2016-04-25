@@ -9,9 +9,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
@@ -43,7 +45,7 @@ public class Uml2ToCppExporter {
 
 	ThreadHandlingManager threadManager;
 
-	List<Class> classList;
+	Set<Class> classList;
 	EList<Element> elements;
 
 	List<String> classNames;
@@ -52,7 +54,7 @@ public class Uml2ToCppExporter {
 			boolean addRuntimeOption) {
 		classExporter = new ClassExporter();
 
-		this.classList = new ArrayList<Class>();
+		this.classList = new HashSet<Class>();
 		this.elements = model.allOwnedElements();
 		this.classNames = new LinkedList<String>();
 
@@ -73,6 +75,8 @@ public class Uml2ToCppExporter {
 		copyPreWrittenCppFiles(outputDirectory);
 
 		for (Class item : classList) {
+		    
+		    if(threadManager.getDescription().get(item.getName()) != null) {
 			classExporter.reiniIialize();
 			classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
 
@@ -81,6 +85,7 @@ public class Uml2ToCppExporter {
 			classNames.addAll(classExporter.getSubmachines());
 			classNames.add(item.getName());
 			classNames.addAll(classExporter.getAdditionalSources());
+		    }
 		}
 
 		createCMakeFile(outputDirectory);

@@ -24,11 +24,15 @@ public class ThreadDescriptionExporter {
 	private int numberOfConfigurations;
 
 	private Set<String> exportedClasses;
-	private Set<String> allClass;
+	private Set<String> allModelClassName;
 
-	public ThreadDescriptionExporter(Set<String> allClass) {
+	public ThreadDescriptionExporter(Set<org.eclipse.uml2.uml.Class> allClass) {
 		configMap = new HashMap<String, ThreadPoolConfiguration>();
-		this.allClass = allClass;
+		
+		this.allModelClassName = new HashSet<String>();
+		for(org.eclipse.uml2.uml.Class cls : allClass) {
+		    allModelClassName.add(cls.getName());
+		}
 		exportedClasses = new HashSet<String>();
 		numberOfConfigurations = 0;
 
@@ -117,15 +121,15 @@ public class ThreadDescriptionExporter {
 
 	private void exportDefaultConfiguration() {
 
-		if (allClass.size() != exportedClasses.size()) {
+		if (allModelClassName.size() != exportedClasses.size()) {
 			Set<String> nonExportedClasses = new HashSet<String>();
-			nonExportedClasses.addAll(allClass);
+			nonExportedClasses.addAll(allModelClassName);
 			nonExportedClasses.removeAll(exportedClasses);
 
 			ThreadPoolConfiguration config = new ThreadPoolConfiguration(0, 0, 1);
 			config.setMaxThreads(1);
-			for (String cls : nonExportedClasses) {
-				configMap.put(cls, config);
+			for (String uncategorizedClassName : nonExportedClasses) {
+				configMap.put(uncategorizedClassName, config);
 			}
 		} else {
 			Set<ThreadPoolConfiguration> configs = new HashSet<ThreadPoolConfiguration>();

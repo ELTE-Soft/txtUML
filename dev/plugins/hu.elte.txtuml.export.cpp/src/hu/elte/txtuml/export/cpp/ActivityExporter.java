@@ -29,6 +29,7 @@ import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutableNode;
 //import org.eclipse.uml2.uml.ExpansionKind;
 import org.eclipse.uml2.uml.InputPin;
+import org.eclipse.uml2.uml.LinkEndData;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.LiteralString;
@@ -262,22 +263,28 @@ public class ActivityExporter {
 	}
 
 	private String createLinkActionCode(CreateLinkAction node_) {
-		String firstEndClassType = node_.getInputValues().get(0).getType().getName();
-		String firstEndObject = getTargetFromInputPin(node_.getInputValues().get(0));
+	        LinkEndData firstLinkEnd = node_.getEndData().get(0);
+	        LinkEndData secondLinkEnd = node_.getEndData().get(1);
+	        
+		String firstEndClassType  = firstLinkEnd.getEnd().getType().getName();
+		String firstEndObject = getTargetFromInputPin(firstLinkEnd.getValue());
 
-		String secondEndClassType = node_.getInputValues().get(1).getType().getName();
-		String secondEndObject = getTargetFromInputPin(node_.getInputValues().get(1));
+		String secondEndClassType = secondLinkEnd.getEnd().getType().getName();
+		String secondEndObject = getTargetFromInputPin(secondLinkEnd.getValue());
 
 		return ActivityTemplates.linkObjects(firstEndClassType, firstEndObject, secondEndClassType,
 			secondEndObject, GenerationTemplates.LinkFunctionType.Link);
 	}
 	
 	private Object createDestroyLinkActionCode(DestroyLinkAction node) {
-		String firstEndClassType = node.getInputValues().get(0).getType().getName();
-		String firstEndObject = getTargetFromInputPin(node.getInputValues().get(0));
+	        LinkEndData firstLinkEnd = node.getEndData().get(0);
+	        LinkEndData secondLinkEnd = node.getEndData().get(1);
+	        
+		String firstEndClassType  = firstLinkEnd.getEnd().getType().getName();
+		String firstEndObject = getTargetFromInputPin(firstLinkEnd.getValue());
 
-		String secondEndClassType = node.getInputValues().get(1).getType().getName();
-		String secondEndObject = getTargetFromInputPin(node.getInputValues().get(1));
+		String secondEndClassType = secondLinkEnd.getEnd().getType().getName();
+		String secondEndObject = getTargetFromInputPin(secondLinkEnd.getValue());
 
 		return ActivityTemplates.linkObjects(firstEndClassType, firstEndObject, 
 			secondEndClassType, secondEndObject, GenerationTemplates.LinkFunctionType.Unlink);
