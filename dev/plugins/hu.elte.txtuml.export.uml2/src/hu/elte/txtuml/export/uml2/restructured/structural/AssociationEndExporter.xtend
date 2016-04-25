@@ -29,7 +29,7 @@ class AssociationEndExporter extends Exporter<TypeDeclaration, ITypeBinding, Pro
 
 		result.association = (parent as AssociationExporter).result
 		result.isNavigable = SharedUtils.typeIsAssignableFrom(decl, Navigable)
-		result.aggregation = if (ElementTypeTeller.isComposition(decl.getParent() as TypeDeclaration)) {
+		result.aggregation = if (ElementTypeTeller.isContainer(decl)) {
 			AggregationKind.COMPOSITE_LITERAL
 		} else {
 			AggregationKind.NONE_LITERAL
