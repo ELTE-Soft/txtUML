@@ -6,7 +6,6 @@ Bundle-Version: 0.4.0.qualifier
 Bundle-Vendor: ELTE
 Export-Package: hu.elte.txtuml.export.uml2,
  hu.elte.txtuml.export.uml2.mapping,
- hu.elte.txtuml.export.uml2.transform.exporters,
  hu.elte.txtuml.export.uml2.utils
 Require-Bundle: hu.elte.txtuml.api.model;bundle-version="0.4.0",
  hu.elte.txtuml.utils;bundle-version="0.4.0",

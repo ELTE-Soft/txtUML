@@ -2,8 +2,6 @@ package hu.elte.txtuml.export.uml2;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
@@ -17,26 +15,19 @@ import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.uml2.uml.Model;
 
-import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
-import hu.elte.txtuml.export.uml2.transform.backend.RuntimeExportException;
-import hu.elte.txtuml.export.uml2.transform.exporters.ModelExporter;
-import hu.elte.txtuml.utils.Sneaky;
+import hu.elte.txtuml.export.uml2.structural.ModelExporter;
 import hu.elte.txtuml.utils.eclipse.NotFoundException;
 import hu.elte.txtuml.utils.eclipse.PackageUtils;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
-import hu.elte.txtuml.utils.jdt.ModelUtils;
-import hu.elte.txtuml.utils.jdt.SharedUtils;
 
 /**
  * This class is responsible for exporting Eclipse UML2 model generated from a
@@ -59,7 +50,7 @@ public class TxtUMLToUML2 {
 	 *            where the result model should be saved
 	 */
 	public static Model exportModel(String sourceProject, String packageName, String outputDirectory,
-			ExportMode exportMode) throws JavaModelException, NotFoundException, IOException, ExportException {
+			ExportMode exportMode) throws JavaModelException, NotFoundException, IOException {
 		return exportModel(sourceProject, packageName, URI.createPlatformResourceURI(outputDirectory, false),
 				exportMode);
 	}
@@ -75,7 +66,7 @@ public class TxtUMLToUML2 {
 	 *            where the result model should be saved
 	 */
 	public static Model exportModel(String sourceProject, String packageName, URI outputDirectory,
-			ExportMode exportMode) throws NotFoundException, JavaModelException, IOException, ExportException {
+			ExportMode exportMode) throws NotFoundException, JavaModelException, IOException {
 
 		IJavaProject javaProject = ProjectUtils.findJavaProject(sourceProject);
 
@@ -85,7 +76,7 @@ public class TxtUMLToUML2 {
 			throw new NotFoundException("Cannot find package '" + packageName + "'");
 		}
 
-		Model model = new hu.elte.txtuml.export.uml2.restructured.structural.ModelExporter().export(packageFragments[0]);
+		Model model = new ModelExporter(exportMode).export(packageFragments[0]);
 		
 		File file = new File(model.eResource().getURI().toFileString());
 		file.getParentFile().mkdirs();
@@ -108,74 +99,6 @@ public class TxtUMLToUML2 {
 	    }
 	    
 	    return model;
-	}
-
-	/**
-	 * Obtains the txtUML model from the specified compilation unit.
-	 * 
-	 * @param compilationUnit
-	 *            the specified compilation unit
-	 * @return the type declaration of the txtUML model
-	 */
-	private static Optional<String> obtainModelFromCompilationUnits(String packageName,
-			CompilationUnit[] compilationUnits) {
-
-		Optional<String> ret;
-
-		for (CompilationUnit cu : compilationUnits) {
-			ret = ModelUtils.findModelNameInTopPackage(cu);
-			if (ret.isPresent()) {
-				return ret;
-			}
-		}
-
-		return Optional.empty();
-	}
-
-	/**
-	 * Exports UML2 model generated from a txtUML model.
-	 * 
-	 * @param txtUMLModelName
-	 *            the name of the class representing the txtUML model
-	 * @param sourceFile
-	 *            the Java source file containing the txtUML model
-	 * @param javaProject
-	 *            the Java project contatining the txtUML model
-	 * @param outputDirectory
-	 *            the name of the output directory. (relative to the path of the
-	 *            project containing the txtUML model)
-	 */
-	public static Model exportModel(String packageName, IPackageFragment[] packageFragments, IJavaProject javaProject,
-			URI outputDirectory, ExportMode exportMode) throws JavaModelException, IOException, ExportException {
-
-		Stream<ICompilationUnit> packageInfo = Stream.of(packageFragments)
-				.filter(pf -> pf.getElementName().equals(packageName))
-				.map(pf -> pf.getCompilationUnit(PackageUtils.PACKAGE_INFO)).filter(ICompilationUnit::exists);
-
-		Optional<String> JtxtUMLModelName = obtainModelFromCompilationUnits(packageName,
-				SharedUtils.parseICompilationUnitStream(packageInfo, javaProject));
-
-		if (!JtxtUMLModelName.isPresent()) {
-			throw new ExportException("Package '" + packageName + "' is not a JtxtUML model.");
-		}
-
-		// Sneaky.<JavaModelException> Throw();
-		Stream<ICompilationUnit> all = Stream.of(packageFragments)
-				.flatMap(Sneaky.unchecked(pf -> Stream.of(pf.getCompilationUnits())));
-
-		ModelExporter modelExporter = new ModelExporter(SharedUtils.parseICompilationUnitStream(all, javaProject),
-				JtxtUMLModelName.get(), packageName, outputDirectory, exportMode);
-		try {
-			modelExporter.exportModel();
-
-			Resource modelResource = modelExporter.getModelResource();
-			modelResource.save(null); // no save options needed
-
-			return modelExporter.getExportedModel();
-		} catch (RuntimeExportException e) {
-			throw e.getCause();
-		}
-
 	}
 
 	public static Model loadExportedModel(String uri) throws WrappedException {
