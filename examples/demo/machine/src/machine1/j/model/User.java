@@ -1,6 +1,7 @@
 package machine1.j.model;
 
 import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.Collection;
 import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
@@ -11,6 +12,8 @@ import machine1.j.model.signals.DoYourWork;
 
 public class User extends ModelClass {
 
+	boolean b;
+	
 	class Init extends Initial {
 	}
 
@@ -22,6 +25,10 @@ public class User extends ModelClass {
 	class Initialize extends Transition {
 		@Override
 		public void effect() {
+			boolean x;
+			x = b;
+			b = x;
+			x &= b;
 			Action.log("\tUser: initializing...");
 		}
 	}
@@ -33,16 +40,35 @@ public class User extends ModelClass {
 		@Override
 		public void effect() {
 			Action.log("\tUser: working...");
-			doWork();
+			doWork(null);
+		}
+		
+		@Override
+		public boolean guard() {
+			return true;
 		}
 	}
 
-	void doWork() {
-		Action.log("\tUser: starting to work...");
+	void doWork(Collection<Integer> c) {
+		if (b) {
+			Action.log(("\tUser: starting to work..."));
+		}
 		Machine myMachine = this.assoc(Usage.usedMachine.class).selectAny();
-		Action.send(new ButtonPress(), myMachine);
-		Action.send(new ButtonPress(), myMachine);
-		Action.send(new ButtonPress(), myMachine);
+		Action.link(Usage.userOfMachine.class, this, Usage.usedMachine.class, myMachine);
+		if (b) {
+			doWork(c);
+		} else {
+			Action.send(new ButtonPress(), myMachine);
+		}
+		while (b) {
+			Action.send(new ButtonPress(), myMachine);
+		}
+		do {
+			Action.send(new ButtonPress(), myMachine);
+		} while (b);
+		for (int i : c) {
+			Action.log("\tUser: work finished...");
+		}
 		Action.log("\tUser: work finished...");
 	}
 

@@ -13,7 +13,6 @@ public class TestClass extends ModelClass {
 		@Override
 		public void entry() {
 			TestClass inst = Action.create(TestClass.class);
-
 			Action.start(inst);
 		}
 	}
