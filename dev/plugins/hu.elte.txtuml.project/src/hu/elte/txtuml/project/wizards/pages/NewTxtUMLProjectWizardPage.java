@@ -1,4 +1,4 @@
-package hu.elte.txtuml.project.wizards;
+package hu.elte.txtuml.project.wizards.pages;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.core.JavaConventions;
@@ -7,16 +7,20 @@ import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 
 import hu.elte.txtuml.project.Messages;
 
-public class TxtUMLProjectPage extends WizardNewProjectCreationPage {
+public class NewTxtUMLProjectWizardPage extends WizardNewProjectCreationPage {
+
+	public static final String TITLE = "txtUML Project";
+	public static final String DESCRIPTION = "Create a new txtUML Project.";
+
 	/**
 	 * Constructor for SampleNewWizardPage.
 	 * 
 	 * @param pageName
 	 */
-	public TxtUMLProjectPage() {
-		super(TxtUMLProjectWizard.TITLE);
-		setTitle("Creating txtUML Project");
-		setDescription("Give the name of the new txtUML Project!");
+	public NewTxtUMLProjectWizardPage() {
+		super(TITLE);
+		setTitle(TITLE);
+		setDescription(DESCRIPTION);
 	}
 
 	@Override
@@ -26,7 +30,7 @@ public class TxtUMLProjectPage extends WizardNewProjectCreationPage {
 		IStatus status = JavaConventions.validatePackageName(getProjectName(), JavaCore.VERSION_1_5,
 				JavaCore.VERSION_1_5);
 		if (!status.isOK()) {
-			if(status.matches(IStatus.WARNING)){
+			if (status.matches(IStatus.WARNING)) {
 				setMessage(status.getMessage(), IStatus.WARNING);
 				return true;
 			}
