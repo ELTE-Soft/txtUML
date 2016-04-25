@@ -40,6 +40,9 @@ public interface RuntimeErrorsListener {
 	default void noTransitionFromChoice(Vertex choice) {
 	}
 
+	default void missingInitialTransition(Vertex fromInitial) {
+	}
+
 	default void changingLockedExecutionTimeMultiplier() {
 	}
 

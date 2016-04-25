@@ -33,7 +33,7 @@ public class ModelCreator {
 			String filename;
 			StringBuilder contentBuilder = new StringBuilder();
 			if (isXtxtUml) {
-				filename = buildXtxtUmlFileContent(typeName, contentBuilder);
+				filename = buildXtxtUmlFileContent(packageFragment, typeName, contentBuilder);
 			} else {
 				filename = buildJavaFileContent(packageFragment, typeName, contentBuilder);
 			}
@@ -58,16 +58,19 @@ public class ModelCreator {
 		contentBuilder.append(";\n\n");
 		contentBuilder.append("import ");
 		contentBuilder.append(Model.class.getCanonicalName());
-		contentBuilder.append(";");
+		contentBuilder.append(";\n");
 		return filename;
 	}
 
-	private String buildXtxtUmlFileContent(String typeName, StringBuilder contentBuilder) {
+	private String buildXtxtUmlFileContent(IPackageFragment packageFragment, String typeName,
+			StringBuilder contentBuilder) {
 		String filename;
 		filename = "model-info.xtxtuml";
-		contentBuilder.append("model \"");
+		contentBuilder.append("model-package ");
+		contentBuilder.append(packageFragment.getElementName());
+		contentBuilder.append(" as \"");
 		contentBuilder.append(typeName);
-		contentBuilder.append("\";");
+		contentBuilder.append("\";\n");
 		return filename;
 	}
 

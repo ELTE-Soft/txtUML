@@ -70,7 +70,7 @@ public class A extends ModelClass {
 		@Override
 		public void effect() {
 			// Action.log("A1->A2");
-			Forward sig = getSignal();
+			Forward sig = getSignal(Forward.class);
 			if (sig.nf % 4 == 0) {
 				createChild();
 			}
@@ -88,7 +88,7 @@ public class A extends ModelClass {
 		@Override
 		public void effect() {
 			// Action.log("A2->A3");
-			Forward sig = getSignal();
+			Forward sig = getSignal(Forward.class);
 			if (sig.nf % 4 == 0) {
 				createChild();
 			}
@@ -106,7 +106,7 @@ public class A extends ModelClass {
 		@Override
 		public void effect() {
 			// Action.log("A3->A4");
-			Forward sig = getSignal();
+			Forward sig = getSignal(Forward.class);
 			if (sig.nf % 4 == 0) {
 				createChild();
 			}
@@ -124,7 +124,7 @@ public class A extends ModelClass {
 		@Override
 		public void effect() {
 			// Action.log("A4->A1");
-			Forward sig = getSignal();
+			Forward sig = getSignal(Forward.class);
 			if (sig.nf % 4 == 0) {
 				createChild();
 			}
@@ -157,5 +157,5 @@ public class A extends ModelClass {
 	@To(A.A3.class)
 	@Trigger(Backward.class)
 	public class A4_A3 extends Transition {
-	}	
+	}
 }
