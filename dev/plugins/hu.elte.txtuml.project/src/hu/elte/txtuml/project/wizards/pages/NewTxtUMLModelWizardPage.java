@@ -27,8 +27,8 @@ public class NewTxtUMLModelWizardPage extends NewTxtUMLFileElementWizardPage {
 	public static final String DESCRIPTION = "Create a new txtUML Model.";
 	protected static final int COLS = 4;
 
-	protected Button txt;
 	protected Button xtxt;
+	protected Button txt;
 	private FileCreator fileCreator = new FileCreator();
 
 	public NewTxtUMLModelWizardPage() {
@@ -65,11 +65,11 @@ public class NewTxtUMLModelWizardPage extends NewTxtUMLFileElementWizardPage {
 		group1.setText("Model syntax");
 		group1.setLayout(new RowLayout(SWT.VERTICAL));
 		group1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 3, 1));
-		txt = new Button(group1, SWT.RADIO);
-		txt.setText("JtxtUML (Java syntax)");
-		txt.setSelection(true);
 		xtxt = new Button(group1, SWT.RADIO);
 		xtxt.setText("XtxtUML (custom syntax)");
+		xtxt.setSelection(true);
+		txt = new Button(group1, SWT.RADIO);
+		txt.setText("JtxtUML (Java syntax)");
 	}
 
 	public IFile createNewFile() {
