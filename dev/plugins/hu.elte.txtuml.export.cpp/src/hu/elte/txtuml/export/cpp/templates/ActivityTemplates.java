@@ -15,6 +15,7 @@ public class ActivityTemplates {
 	public static final String Self = "this";
 	public static final String AccessOperatorForSets = GenerationNames.SimpleAccess;
 	public static final String SignalSmartPointerType = GenerationNames.EventPtr;
+	public static final String ProcessorDirectivesSign = "#";
 
 	public enum OperationSide {
 		Left, Right
@@ -246,6 +247,10 @@ public class ActivityTemplates {
 	public static String signalType(String type) {
 		return type + GenerationNames.EventClassTypeId;
 	}
+	
+	public static String generatedTempVariable(int count) {
+	    return "generated_tmp" + count;
+	}
 
 	public static class Operators {
 
@@ -359,6 +364,11 @@ public class ActivityTemplates {
 			}
 
 		}
+	}
+
+	public static boolean invalidIdentifier(String name) {
+	   
+	    return name.startsWith(ProcessorDirectivesSign) || name.equals("return");
 	}
 
 }
