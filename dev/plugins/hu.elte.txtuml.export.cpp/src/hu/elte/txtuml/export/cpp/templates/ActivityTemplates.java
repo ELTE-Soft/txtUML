@@ -279,6 +279,7 @@ public class ActivityTemplates {
 
 		public static final String Log = GenerationNames.
 			ActionFunctionsNamespace + "::" + "log";
+		public static final String Select = "select";
 
 		public static String Fork(String cond, String e1, String e2) {
 			return cond + " ? " + e1 + " : " + e2;
@@ -332,6 +333,9 @@ public class ActivityTemplates {
 			case "log":
 				name = Log;
 				break;
+			case "select":
+			    	name = Select;
+			    	break;
 			}
 
 			return name;
@@ -349,6 +353,8 @@ public class ActivityTemplates {
 			case "not":
 				name = Not;
 				break;
+			case "select":
+			    	name = Select;
 			default:
 				name = "";
 			}
@@ -357,7 +363,7 @@ public class ActivityTemplates {
 		}
 
 		public static boolean isStdLibFunction(String name) {
-			if (name.equals("delayedInc") || name.equals("delayedDec")) {
+			if (name.equals("delayedInc") || name.equals("delayedDec") || name.equals("select")) {
 				return true;
 			} else {
 				return false;

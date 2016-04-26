@@ -274,9 +274,9 @@ public class ActivityExporter {
 	private String createReadLinkActionCode(ReadLinkAction node_) {
 
 		Property otherMember = null;
-		for (Property end : node_.association().getMemberEnds()) {
-			if (!node_.getEndData().get(0).getEnd().equals(end)) {
-				otherMember = end;
+		for (LinkEndData end : node_.getEndData()) {
+			if (end.getValue() == null) {
+				otherMember = end.getEnd();
 			}
 		}
 		importOutputPinToMap(node_.getResult());
@@ -468,6 +468,10 @@ public class ActivityExporter {
 			source = _objectMap.get(node_);
 		} else if (node_.eClass().equals(UMLPackage.Literals.READ_SELF_ACTION)) {
 			source = ActivityTemplates.Self;
+			
+		}else if(node_.eClass().equals(UMLPackage.Literals.READ_LINK_ACTION)) {
+		    source = getTargetFromActivityNode( ((ReadLinkAction) node_).getResult());
+		    
 		} else if (node_.eClass().equals(UMLPackage.Literals.OUTPUT_PIN)) {
 			OutputPin outPin = (OutputPin) node_;
 			if (tempVariables.containsKey(outPin)) {
@@ -593,10 +597,21 @@ public class ActivityExporter {
 						getTargetFromInputPin((node_.getArguments()).get(0)));
 
 			}
-
+			
 			if (node_.getOperation().getType() != null) {
+			    if(!node_.getOperation().isTemplate()) {
 				source.append(addValueToTemporalVariable(node_.getOperation().getType().getName(),
-						tempVariables.get(returnPin), val));
+					tempVariables.get(returnPin), val));
+			    }
+			    else {
+				if(returnPin.getOutgoings().size() > 0) {
+					source.append(addValueToTemporalVariable( ((InputPin) 
+						returnPin.getOutgoings().get(0).getTarget()).getType().getName(),
+						tempVariables.get(returnPin),val));
+				 }
+			    }
+				
+				
 			} else {
 				source.append(ActivityTemplates.invokeProcedure(node_.getOperation().getName(),
 						getParamNames(node_.getArguments())));
