@@ -612,7 +612,7 @@ public class ClassExporter {
 
 				String tmp = GenerationTemplates.variableDecl(type, attribute.getName(), 1);
 				// TODO suboptimal code
-				if (!source.toString().contains(tmp)) {
+				if (!source.toString().contains(tmp) && attribute.getAssociation() == null) {
 					source.append(tmp);
 				}
 
