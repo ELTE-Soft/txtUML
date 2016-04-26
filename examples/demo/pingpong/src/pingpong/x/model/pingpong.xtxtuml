@@ -34,7 +34,7 @@ class Game {
 		trigger Ball;
 		effect {
 			Player left = this->(LeftPlayer.player).selectAny();
-			send sigdata to left;		
+			send trigger to left;		
 		}
 	}
 }
@@ -97,7 +97,7 @@ class Player {
 		trigger Ball;
 		effect {
 			log(name + ": \"I'll serve now...!\"");
-			send sigdata to this->(PlayerOwnsRacket.racket).selectAny();
+			send trigger to this->(PlayerOwnsRacket.racket).selectAny();
 		}
 	}	
 }
@@ -133,10 +133,10 @@ class Racket {
 	transition CanHit {
 		from Check;
 		to Waiting;
-		guard (sigdata.countdown > 0)
+		guard (trigger.countdown > 0)
 
 		effect {
-			Ball ball = sigdata;
+			Ball ball = trigger;
 			 
 			send new Ball(ball.countdown - 1) to this->(Racket.BallAtRacketPort);
 			send new HitTheBall() to this->(Racket.HitOrMissPort);

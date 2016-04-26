@@ -210,8 +210,8 @@ RAlfDeleteObjectExpression returns xbase::XExpression :
 
 RAlfSignalAccessExpression returns xbase::XExpression :
 	{RAlfSignalAccessExpression}
-	sigdata='sigdata'
-	// the sole purpose of the sigdata feature
+	trigger='trigger'
+	// the sole purpose of the 'trigger' feature
 	// is to provide a feature for validation
 	// to put a marker on
 ;
