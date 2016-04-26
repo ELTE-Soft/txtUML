@@ -208,8 +208,9 @@ public class GenerationTemplates {
 	return GenerationNames.formatIncomingParamName(GenerationNames.EventParamName);
     }
 
-    public static String variableDecl(String typeName, String variableName) {
-	return PrivateFunctionalTemplates.cppType(typeName) + " " + variableName + ";\n";
+    public static String variableDecl(String typeName, String variableName, boolean isSignal) {
+    	String generatedType = isSignal ? GenerationNames.signalType(typeName) : PrivateFunctionalTemplates.cppType(typeName);
+    	return generatedType + " " + variableName + ";\n";
     }
 
     public static String manyMultiplicityDependecy() {
@@ -221,7 +222,7 @@ public class GenerationTemplates {
 	    return GenerationNames.AssocMultiplicityDataStruct + "<" + PrivateFunctionalTemplates.cppType(typeName)
 		    + ">" + " " + variableName + ";\n";
 	}
-	return variableDecl(typeName, variableName);
+	return variableDecl(typeName, variableName,false);
     }
 
     public static String assocationDecl(String className, String roleName, Integer lower, Integer upper) {

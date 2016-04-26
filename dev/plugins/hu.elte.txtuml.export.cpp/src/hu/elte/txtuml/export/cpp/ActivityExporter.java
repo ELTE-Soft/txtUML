@@ -120,12 +120,7 @@ public class ActivityExporter {
 	private String createVariable(Variable variable) {
 		String type = "!!!UNKNOWNTYPE!!!";
 		if (variable.getType() != null) {
-			if (variable.getType().eClass().equals(UMLPackage.Literals.SIGNAL)) {
-				type = ActivityTemplates.SignalSmartPointerType;
-			} else {
 				type = variable.getType().getName();
-			}
-
 		}
 		String variableName;
 		if(ActivityTemplates.invalidIdentifier(variable.getName())) {
@@ -136,7 +131,8 @@ public class ActivityExporter {
 		} else {
 		    variableName = variable.getName();
 		}
-		return GenerationTemplates.variableDecl(type, variableName);
+		return GenerationTemplates.variableDecl(type, variableName,
+				variable.getType().eClass().equals(UMLPackage.Literals.SIGNAL));
 	}
 
 	private String createReturnParamaterCode() {
@@ -648,7 +644,7 @@ public class ActivityExporter {
 		StringBuilder declerations = new StringBuilder("");
 		for (OutputPin outPin : outParamaterPins) {
 			declerations
-					.append(GenerationTemplates.variableDecl(outPin.getType().getName(), tempVariables.get(outPin)));
+					.append(GenerationTemplates.variableDecl(outPin.getType().getName(), tempVariables.get(outPin),false));
 		}
 
 		return declerations;

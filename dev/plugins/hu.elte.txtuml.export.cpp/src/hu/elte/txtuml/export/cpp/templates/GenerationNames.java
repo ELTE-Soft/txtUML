@@ -173,6 +173,10 @@ class GenerationNames {
 	public static String pointerType(String typeName) {
 		return typeName + "*";
 	}
+	
+	public static String signalType(String signalClassName) {
+		return SmartPtr + "<" + PrivateFunctionalTemplates.signalType(signalClassName) + ">";
+	}
 
 	public static String formatIncomingParamName(String paramName) {
 		return paramName + IncomingParamTypeId;

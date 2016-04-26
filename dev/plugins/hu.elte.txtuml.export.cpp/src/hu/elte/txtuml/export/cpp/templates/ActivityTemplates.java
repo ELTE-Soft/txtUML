@@ -179,7 +179,7 @@ public class ActivityTemplates {
 	public static String createObject(String typeName, String objName, CreateObjectType objectType, List<String> parameters) {
 		
 		if(objectType.equals(CreateObjectType.Signal)) {
-			return GenerationNames.EventPtr + " " + objName + ";\n";
+			return GenerationNames.signalType(typeName) + " " + objName + ";\n";
 		}
 		else {
 			return GenerationNames.pointerType(typeName) + " " + objName + ";\n";
@@ -190,8 +190,8 @@ public class ActivityTemplates {
 	
 	public static String constructorCall(String ownerName, String typeName, CreateObjectType objectType, List<String> parameters) {
 		if(objectType.equals(CreateObjectType.Signal)) {
-			return ownerName + ReplaceSimpleTypeOp + GenerationNames.EventPtr + "(" + GenerationNames.MemoryAllocator + " "
-					+ signalType(typeName) + "(" + operationCallParamList(parameters) + "))";
+			return ownerName + ReplaceSimpleTypeOp + GenerationNames.signalType(typeName) + "(" + GenerationNames.MemoryAllocator + " "
+					+ PrivateFunctionalTemplates.signalType(typeName) + "(" + operationCallParamList(parameters) + "))";
 		} else {
 			return ownerName + ReplaceSimpleTypeOp + GenerationNames.MemoryAllocator + " "
 					+ typeName + "(" + operationCallParamList(parameters) + ")";
@@ -250,10 +250,6 @@ public class ActivityTemplates {
 	public static String defineAndAddToCollection(String collectedType, String collectionName, String valueName) {
 		return collectionTemplate(collectedType) + " " + collectionName + " " + ReplaceSimpleTypeOp + " " + valueName
 				+ ";\n";
-	}
-
-	public static String signalType(String type) {
-		return type + GenerationNames.EventClassTypeId;
 	}
 	
 	public static String generatedTempVariable(int count) {

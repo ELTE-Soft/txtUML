@@ -45,6 +45,11 @@ class PrivateFunctionalTemplates {
 				+ GenerationNames.simpleSetStateDef(className) + "\n"
 				+ PrivateFunctionalTemplates.setInitialState(className, intialState) + "\n";
 	}
+	
+	public static String signalType(String type) {
+		return type + GenerationNames.EventClassTypeId;
+	}
+	
 
 	public static StringBuilder stateMachineClassConstructorSharedBody(String className, String parentStateMachine,
 			Multimap<Pair<String, String>, Pair<String, String>> machine, String intialState, Boolean simpleMachine,
