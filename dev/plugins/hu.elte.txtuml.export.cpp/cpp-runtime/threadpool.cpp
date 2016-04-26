@@ -46,7 +46,7 @@ void StateMachineThreadPool::stopUponCompletion()
 
 void StateMachineThreadPool::task()
 {	
-	while(!this->stop))
+	while(!this->stop)
     {
 		
 		if (workers.isReadyToStop(std::this_thread::get_id()))

@@ -22,6 +22,7 @@ class GenerationNames {
 	public static final String PointerAccess = "->";
 	public static final String SimpleAccess = ".";
 	public static final String DeleteObject = "delete";
+	public static final String StaticCast = "static_cast";
 	public static final String cppString = "std::string";
 	public static final String IncomingParamTypeId = "_";
 	public static final String RealEventName = "realEvent";

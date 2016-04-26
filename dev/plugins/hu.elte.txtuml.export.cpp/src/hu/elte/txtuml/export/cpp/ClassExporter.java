@@ -58,6 +58,7 @@ public class ClassExporter {
 
 	ActivityExporter activityExporter;
 	GuardExporter guardExporter;
+	
 
 	private enum FuncTypeEnum {
 		Entry, Exit
@@ -86,6 +87,8 @@ public class ClassExporter {
 	public List<String> getAdditionalSources() {
 		return additionalSourcesNames;
 	}
+	
+
 
 	public void createSource(Class class_, String dest_) throws FileNotFoundException, UnsupportedEncodingException {
 		String source;
@@ -518,16 +521,10 @@ public class ClassExporter {
 		for (Transition item : region_.getTransitions()) {
 			String body = "";
 			activityExporter.reinitilaize();
-			String eventName = parameterisedEventTrigger(item);
 			Behavior b = item.getEffect();
 			if (b != null && b.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
 				Activity a = (Activity) b;
-				body += activityExporter.createfunctionBody(a);
-			}
-			
-			if (!eventName.isEmpty() && !body.isEmpty()) {
-				body = GenerationTemplates.getRealEvent(eventName)
-						+ GenerationTemplates.eventParamUsage(eventName, body);
+				body = activityExporter.createfunctionBody(a).toString();
 			}
 
 			source.append(GenerationTemplates.transitionActionDef(className_, item.getName(),

@@ -17,6 +17,7 @@ public class ActivityTemplates {
 	public static final String SignalSmartPointerType = GenerationNames.EventPtr;
 	public static final String ProcessorDirectivesSign = "#";
 	public static final String CreateStereoType = "Create";
+	public static final String GetSignalFunctionName = "getSignal";
 
 	public enum OperationSide {
 		Left, Right
@@ -217,6 +218,16 @@ public class ActivityTemplates {
 		return GenerationNames.Collection + "<" + PrivateFunctionalTemplates.cppType(collectedType) + ">";
 
 	}
+	
+	public static StringBuilder getRealSignal(String signalType, String signalVariableName) {
+		StringBuilder source = new StringBuilder("");
+		source.append(GenerationNames.signalType(signalType) + " ");
+		source.append(signalVariableName + " = ");
+		source.append(GenerationNames.signalType(signalType));
+		source.append("(&(" + GenerationNames.StaticCast + "<" + PrivateFunctionalTemplates.signalType(signalType) + "&>");
+		source.append("(" + GenerationNames.EventFParamName + ")));\n");
+		return source;
+	}
 
 	public static String returnTemplates(String variable) {
 		return "return " + variable + ";\n";
@@ -380,5 +391,7 @@ public class ActivityTemplates {
 	   
 	    return name.startsWith(ProcessorDirectivesSign) || name.equals("return");
 	}
+
+
 
 }

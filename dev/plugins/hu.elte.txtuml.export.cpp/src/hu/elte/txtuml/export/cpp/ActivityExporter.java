@@ -63,6 +63,7 @@ public class ActivityExporter {
 	Map<CreateObjectAction, String> _objectMap = new HashMap<CreateObjectAction, String>();
 	int tempVariableCounter;
 	int generatedTempVariableCounter;
+	int signalCounter;
 	Set<String> declaredTempVariables;
 	Set<CallOperationAction> constructorCalls;
 	ActivityNode returnNode;
@@ -82,6 +83,7 @@ public class ActivityExporter {
 		constructorCalls = new HashSet<CallOperationAction>();
 		tempVariableCounter = 0;
 		generatedTempVariableCounter = 0;
+		signalCounter = 0;
 		returnNode = null;
 	}
 
@@ -560,6 +562,12 @@ public class ActivityExporter {
 		exportAllOutputPinToMap(node_.getOutputs());
 		OutputPin returnPin = searchReturnPin(node_.getResults(), node_.getOperation().outputParameters());
 		if (isStdLibOperation(node_)) {
+			
+			if (node_.getOperation().getName().equals(ActivityTemplates.GetSignalFunctionName)) {
+				return ActivityTemplates.getRealSignal(returnPin.getType().getName(),tempVariables.get(returnPin));
+			}
+					
+			
 			String val = "";
 
 			if (ActivityTemplates.Operators.isStdLibFunction(node_.getOperation().getName())) {
