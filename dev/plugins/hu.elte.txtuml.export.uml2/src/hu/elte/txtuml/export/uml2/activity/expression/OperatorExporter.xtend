@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.uml2.activity.expression
 import hu.elte.txtuml.export.uml2.BaseExporter
 import hu.elte.txtuml.export.uml2.activity.statement.ControlExporter
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller
+import java.util.function.Consumer
 import java.util.function.Function
 import java.util.function.Supplier
 import org.eclipse.jdt.core.dom.Expression
@@ -19,11 +20,11 @@ abstract class OperatorExporter<S> extends ControlExporter<S, SequenceNode> {
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
 	}
-	
+
 	def assignToExpression(Expression modified, Function<Supplier<Action>, Action> assigned) {
 		assignToExpression(modified, assigned, false)
 	}
-	
+
 	def assignToExpressionDelayed(Expression modified, Function<Supplier<Action>, Action> assigned) {
 		assignToExpression(modified, assigned, true)
 	}
@@ -46,37 +47,43 @@ abstract class OperatorExporter<S> extends ControlExporter<S, SequenceNode> {
 				FieldAccess:
 					exportExpression(modified.expression)
 			}
-			val write = factory.createAddStructuralFeatureValueAction
-			write.isReplaceAll = true
-			write.structuralFeature = field
-			base.result.objectFlow(write.createObject("base", base.result.type))
-			storeNode(write)
-			if (delayed) {
-				val oldval = new SimpleFieldAccessExporter(this).createFieldAccess(base, field)
-				val act = assigned.apply([new SimpleFieldAccessExporter(this).createFieldAccess(base, field)])
-				result.name = act.name
-				act.result.objectFlow(write.createValue("new_value", field.type))
-				return oldval
-			} else {
-				val act = assigned.apply([new SimpleFieldAccessExporter(this).createFieldAccess(base, field)])
-				result.name = act.name
-				act.result.objectFlow(write.createValue("new_value", field.type))
-				return new SimpleFieldAccessExporter(this).createFieldAccess(base, field)
-			}
+
+			delayWhen(delayed, [new SimpleFieldAccessExporter(this).createFieldAccess(base, field)]) [
+				val rhs = assigned.apply([it])
+				val write = factory.createAddStructuralFeatureValueAction
+				write.isReplaceAll = true
+				write.structuralFeature = field
+				storeNode(write)
+				base.result.objectFlow(write.createObject("base", base.result.type))
+				rhs.result.objectFlow(write.createValue("new_value", rhs.result.type))
+				write.name = '''«base.name».«field.name»=«rhs.name»'''
+				result.name = write.name
+			]
 		} else if (ElementTypeTeller.isVariable(modified)) {
 			// operators that modify a variable
 			val variableName = (modified as SimpleName).resolveBinding.name
 			val variable = getVariable(variableName)
-			val newValue = assigned.apply([variable.read])
-			result.name = newValue.name
-			if (delayed) {
-				val oldval = variable.read
-				variable.write(newValue)
-				return oldval				
-			} else {
-				variable.write(newValue)
-				return variable.read
-			}
+			delayWhen(delayed, [variable.read]) [
+				val rhs = assigned.apply([it])
+				val write = variable.write(rhs)
+				result.name = write.name
+			]
+		}
+	}
+
+	def void delayWhen(boolean delay, Supplier<Action> access, Consumer<Action> operation) {
+		if (delay) {
+			val temp = factory.createVariable
+			storeVariable(temp)
+			val act = access.get
+			temp.name = "#temp"
+			temp.type = act.result.type
+			temp.write(act)
+			operation.accept(access.get)
+			temp.read
+		} else {
+			operation.accept(access.get)
+			access.get
 		}
 	}
 
