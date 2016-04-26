@@ -169,6 +169,21 @@ public final class SharedUtils {
 		ITypeBinding declaringClass = methodBinding.getDeclaringClass();
 		return typeIsAssignableFrom(declaringClass, hu.elte.txtuml.api.model.Action.class);
 	}
+	
+	/**
+	 * Check if the method can be called with the given arguments. Used when we don't have
+	 * a direct link to the method that is invoked (for example: Action.create(...)).
+	 */
+	public static boolean isApplicableToCall(Iterable<ITypeBinding> args, IMethodBinding meth) {
+		int[] i = { 0 };
+		ITypeBinding[] params = meth.getParameterTypes();
+		for (ITypeBinding arg : args) {
+			if (params.length <= i[0] || !arg.isAssignmentCompatible(params[i[0]++])) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 	public static String qualifiedName(TypeDeclaration decl) {
 		String name = decl.getName().getIdentifier();

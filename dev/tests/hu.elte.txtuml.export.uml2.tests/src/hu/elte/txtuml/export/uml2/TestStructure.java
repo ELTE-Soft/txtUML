@@ -4,57 +4,30 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.AddStructuralFeatureValueAction;
+import org.eclipse.uml2.uml.AddVariableValueAction;
 import org.eclipse.uml2.uml.AggregationKind;
 import org.eclipse.uml2.uml.Association;
-import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallOperationAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Classifier;
-import org.eclipse.uml2.uml.ConditionalNode;
-import org.eclipse.uml2.uml.CreateLinkAction;
 import org.eclipse.uml2.uml.CreateObjectAction;
 import org.eclipse.uml2.uml.DataType;
-import org.eclipse.uml2.uml.DestroyLinkAction;
 import org.eclipse.uml2.uml.DestroyObjectAction;
-import org.eclipse.uml2.uml.ExecutableNode;
-import org.eclipse.uml2.uml.ExpansionRegion;
-import org.eclipse.uml2.uml.InputPin;
-import org.eclipse.uml2.uml.LinkEndCreationData;
-import org.eclipse.uml2.uml.LinkEndDestructionData;
-import org.eclipse.uml2.uml.LoopNode;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.Operation;
-import org.eclipse.uml2.uml.Parameter;
-import org.eclipse.uml2.uml.ParameterDirectionKind;
 import org.eclipse.uml2.uml.Property;
-import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.ReadSelfAction;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
-import org.eclipse.uml2.uml.Region;
-import org.eclipse.uml2.uml.SendObjectAction;
+import org.eclipse.uml2.uml.ReadVariableAction;
 import org.eclipse.uml2.uml.SequenceNode;
-import org.eclipse.uml2.uml.Signal;
-import org.eclipse.uml2.uml.SignalEvent;
-import org.eclipse.uml2.uml.StartClassifierBehaviorAction;
-import org.eclipse.uml2.uml.State;
-import org.eclipse.uml2.uml.StateMachine;
-import org.eclipse.uml2.uml.Transition;
 import org.eclipse.uml2.uml.ValueSpecificationAction;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestStructure {
-
-	private Model model;
-	private Class cls;
-	private Activity behav;
-	private Operation op;
-	private SequenceNode bodyNode;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -187,23 +160,164 @@ public class TestStructure {
 	}
 	
 	@Test
-	public void testCompoundOps() throws Exception {
+	public void testPrefixOperation() throws Exception {
 		Model model = model("hu.elte.txtuml.export.uml2.tests.models.compound_ops");
 		SequenceNode body = loadActionCode(model, "TestClass", "test");
-		SequenceNode stmtNode = (SequenceNode) body.getNode("this.fld=++this.fld;");
-		SequenceNode exprNode = (SequenceNode) stmtNode.getNode("this.fld=++this.fld");
-		node(exprNode, "this", ReadSelfAction.class);
-		node(exprNode, "this.fld", ReadStructuralFeatureAction.class);
-		node(exprNode, "1", ValueSpecificationAction.class);
-		node(exprNode, "++this.fld", CallOperationAction.class);
-		node(exprNode, "this.fld=++this.fld", AddStructuralFeatureValueAction.class);
+		SequenceNode preStmtNode = (SequenceNode) body.getNode("this.fld=++this.fld;");
+		SequenceNode preExprNode = (SequenceNode) preStmtNode.getNode("this.fld=++this.fld");
+		node(preExprNode, 0, "this", ReadSelfAction.class);
+		node(preExprNode, 1, "this.fld", ReadStructuralFeatureAction.class);
+		node(preExprNode, 2, "1", ValueSpecificationAction.class);
+		node(preExprNode, 3, "++this.fld", CallOperationAction.class);
+		node(preExprNode, 4, "this.fld=++this.fld", AddStructuralFeatureValueAction.class);
+		node(preExprNode, 5, "this.fld", ReadStructuralFeatureAction.class);
 	}
 	
-	private ActivityNode node(SequenceNode parent, String name, java.lang.Class<?> type) {
-		ActivityNode node = parent.getNode(name);
+	@Test
+	public void testPostfixOperation() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.compound_ops");
+		SequenceNode body = loadActionCode(model, "TestClass", "test");
+		SequenceNode postStmtNode = (SequenceNode) body.getNode("this.fld=this.fld++;");
+		SequenceNode postExprNode = (SequenceNode) postStmtNode.getNode("this.fld=this.fld++");
+		node(postExprNode, 0, "this", ReadSelfAction.class);
+		node(postExprNode, 1, "this.fld", ReadStructuralFeatureAction.class);
+		node(postExprNode, 2, "#temp=this.fld", AddVariableValueAction.class);
+		node(postExprNode, 3, "this.fld", ReadStructuralFeatureAction.class);
+		node(postExprNode, 4, "1", ValueSpecificationAction.class);
+		node(postExprNode, 5, "this.fld++", CallOperationAction.class);
+		node(postExprNode, 6, "this.fld=this.fld++", AddStructuralFeatureValueAction.class);
+		node(postExprNode, 7, "#temp", ReadVariableAction.class);
+	}
+		
+	@Test
+	public void testAssignment() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.compound_ops");
+		SequenceNode body = loadActionCode(model, "TestClass", "test");
+		SequenceNode assignStmtNode = (SequenceNode) body.getNode("this.fld=10;");
+		SequenceNode assignExprNode = (SequenceNode) assignStmtNode.getNode("this.fld=10");
+		node(assignExprNode, 0, "this", ReadSelfAction.class);
+		node(assignExprNode, 1, "this.fld", ReadStructuralFeatureAction.class);
+		node(assignExprNode, 2, "10", ValueSpecificationAction.class);
+		node(assignExprNode, 3, "this.fld=10", AddStructuralFeatureValueAction.class);
+		node(assignExprNode, 4, "this.fld", ReadStructuralFeatureAction.class);
+	}
+	
+	@Test
+	public void testCompoundAssignOperation() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.compound_ops");
+		SequenceNode body = loadActionCode(model, "TestClass", "test");
+		SequenceNode compoundStmtNode = (SequenceNode) body.getNode("this.fld=this.fld+10;");
+		SequenceNode compoundExprNode = (SequenceNode) compoundStmtNode.getNode("this.fld=this.fld+10");
+		node(compoundExprNode, 0, "this", ReadSelfAction.class);
+		node(compoundExprNode, 1, "this.fld", ReadStructuralFeatureAction.class);
+		node(compoundExprNode, 2, "10", ValueSpecificationAction.class);
+		node(compoundExprNode, 3, "this.fld+10", CallOperationAction.class);
+		node(compoundExprNode, 4, "this.fld=this.fld+10", AddStructuralFeatureValueAction.class);
+		node(compoundExprNode, 5, "this.fld", ReadStructuralFeatureAction.class);
+	}
+	
+	private ActivityNode node(SequenceNode parent, int index, String name, java.lang.Class<?> type) {
+		ActivityNode node = parent.getNodes().get(index);
+		assertEquals(name, node.getName());
 		assertNotNull(node);
 		assertTrue("Node is not a " + type.getName(), type.isInstance(node));
 		return node;
+	}
+	
+	@Test
+	public void testCreateActionBehavior() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.create_and_destroy");
+		SequenceNode body = loadActionCode(model, "TestClass", "testCreate");
+		SequenceNode createNode = (SequenceNode) body.getNode("create TestClass");
+		node(createNode, 0, "instantiate TestClass", CreateObjectAction.class);
+		node(createNode, 1, "#temp=instantiate TestClass", AddVariableValueAction.class);
+		node(createNode, 2, "#temp", ReadVariableAction.class);
+		node(createNode, 3, "1", ValueSpecificationAction.class);
+		node(createNode, 4, "2", ValueSpecificationAction.class);
+		node(createNode, 5, "#temp.TestClass(Integer p0, Integer p1)", CallOperationAction.class);
+		node(createNode, 6, "#temp", ReadVariableAction.class);
+	}
+
+	@Test
+	public void testDestroyActionBehavior() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.create_and_destroy");
+		SequenceNode body = loadActionCode(model, "TestClass", "testDestroy");
+		SequenceNode createNode = (SequenceNode) body.getNode("delete cls;");
+		node(createNode, 0, "cls", ReadVariableAction.class);
+		node(createNode, 1, "delete cls", DestroyObjectAction.class);
+	}
+	
+	@Test
+	public void testDefaultCtor() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.ctors");
+		SequenceNode body = loadActionCode(model, "TestClass", "testDefaultCtor");
+		checkDefaultCtor(body);
+	}
+	
+	@Test
+	public void testDefaultCtorAction() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.ctors");
+		SequenceNode body = loadActionCode(model, "TestClass", "testDefaultCtorCreate");
+		checkDefaultCtor(body);
+	}
+
+	private void checkDefaultCtor(SequenceNode body) {
+		SequenceNode createNode = (SequenceNode) body.getNode("create DefaultConstructible;");
+		SequenceNode createExprNode = (SequenceNode) createNode.getNode("create DefaultConstructible");
+		node(createExprNode, 0, "instantiate DefaultConstructible", CreateObjectAction.class);
+		node(createExprNode, 1, "#temp=instantiate DefaultConstructible", AddVariableValueAction.class);
+		node(createExprNode, 2, "#temp", ReadVariableAction.class);
+		node(createExprNode, 3, "#temp.DefaultConstructible()", CallOperationAction.class);
+		node(createExprNode, 4, "#temp", ReadVariableAction.class);
+	}
+	
+	@Test
+	public void testParameteredCtor() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.ctors");
+		SequenceNode body = loadActionCode(model, "TestClass", "testParameteredCtor");
+		checkParameteredCtor(body);
+	}
+	
+	@Test
+	public void testParameteredCtorAction() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.ctors");
+		SequenceNode body = loadActionCode(model, "TestClass", "testParameteredCtorCreate");
+		checkParameteredCtor(body);
+	}
+
+	private void checkParameteredCtor(SequenceNode body) {
+		SequenceNode createNode = (SequenceNode) body.getNode("create ClassWithCtors;");
+		SequenceNode createExprNode = (SequenceNode) createNode.getNode("create ClassWithCtors");
+		node(createExprNode, 0, "instantiate ClassWithCtors", CreateObjectAction.class);
+		node(createExprNode, 1, "#temp=instantiate ClassWithCtors", AddVariableValueAction.class);
+		node(createExprNode, 2, "#temp", ReadVariableAction.class);
+		node(createExprNode, 3, "1", ValueSpecificationAction.class);
+		node(createExprNode, 4, "#temp.ClassWithCtors(Integer p0)", CallOperationAction.class);
+		node(createExprNode, 5, "#temp", ReadVariableAction.class);
+	}
+	
+	@Test
+	public void testParameterlessCtor() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.ctors");
+		SequenceNode body = loadActionCode(model, "TestClass", "testParameterlessCtor");
+		checkParameterlessCtor(body);
+	}
+	
+	@Test
+	public void testParameterlessCtorAction() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.ctors");
+		SequenceNode body = loadActionCode(model, "TestClass", "testParameterlessCtorCreate");
+		checkParameterlessCtor(body);
+	}
+
+	private void checkParameterlessCtor(SequenceNode body) {
+		SequenceNode createNode = (SequenceNode) body.getNode("create ClassWithCtors;");
+		SequenceNode createExprNode = (SequenceNode) createNode.getNode("create ClassWithCtors");
+		node(createExprNode, 0, "instantiate ClassWithCtors", CreateObjectAction.class);
+		node(createExprNode, 1, "#temp=instantiate ClassWithCtors", AddVariableValueAction.class);
+		node(createExprNode, 2, "#temp", ReadVariableAction.class);
+		node(createExprNode, 3, "#temp.ClassWithCtors()", CallOperationAction.class);
+		node(createExprNode, 4, "#temp", ReadVariableAction.class);
 	}
 
 //	@Test
@@ -487,13 +601,7 @@ public class TestStructure {
 //		
 //		assertEquals("Collection", loop.getInputElements().get(0).getType().getName());
 //	}
-//
-//	@Test
-//	public void testConstructor() throws Exception {
-//		SequenceNode body = loadActionCode("ctors", "TestClass", "CtorCall");
-//		
-//		assertEquals(3, body.getExecutableNodes().size()); // value 10, create obj, call ctor 
-//	}
+
 //	
 //	@Test
 //	public void testLogAction() throws Exception {
@@ -516,11 +624,11 @@ public class TestStructure {
 //	}
 
 	private SequenceNode loadActionCode(Model model, String className, String operationName) throws Exception {
-		cls = cls(model, className);
-		op = operation(cls, operationName);
-		behav = (Activity) op.getMethod(operationName);
+		Class cls = cls(model, className);
+		Operation op = operation(cls, operationName);
+		Activity behav = (Activity) op.getMethod(operationName);
 		assertNotNull(behav);
-		bodyNode = (SequenceNode) behav.getOwnedNode("#body");
+		SequenceNode bodyNode = (SequenceNode) behav.getOwnedNode("#body");
 		assertNotNull(bodyNode);
 		return bodyNode;
 	}
