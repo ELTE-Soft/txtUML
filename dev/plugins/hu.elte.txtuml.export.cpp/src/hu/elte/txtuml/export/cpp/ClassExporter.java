@@ -27,6 +27,7 @@ import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.StateMachine;
+import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.Transition;
 import org.eclipse.uml2.uml.Trigger;
 import org.eclipse.uml2.uml.Type;
@@ -275,7 +276,7 @@ public class ClassExporter {
 					// TODO exception, unknown for me, need the model
 				}
 			}
-			if (!isConstructor(class_, operation)) {
+			if (!isConstructor(operation)) {
 
 				String returnType = getReturnType(operation.getReturnResult());
 
@@ -594,7 +595,7 @@ public class ClassExporter {
 		for (Operation item : class_.getOwnedOperations()) {
 			if (item.getVisibility().toString().equals(modifyer_)) {
 
-				if (isConstructor(class_, item)) {
+				if (isConstructor(item)) {
 					ownConstructor = true;
 					source.append(GenerationTemplates.constructorDecl(class_.getName(), getOperationParamTypes(item)));
 				} else {
@@ -653,12 +654,18 @@ public class ClassExporter {
 		return source;
 	}
 
-	private boolean isConstructor(Class cls, Operation operation) {
-		if (cls.getName().equals(operation.getName())) {
-			return true;
-		} else {
-			return false;
+	private boolean isConstructor(Operation operation) {
+			
+		for ( Stereotype stereotype : operation.getAppliedStereotypes()) {
+			
+			if(stereotype.getKeyword().equals(ActivityTemplates.CreateStereoType)) {
+				return true;
+				
+			}
 		}
+		
+		return false;
+		
 	}
 
 	private List<String> getOperationParamTypes(Operation op_) {

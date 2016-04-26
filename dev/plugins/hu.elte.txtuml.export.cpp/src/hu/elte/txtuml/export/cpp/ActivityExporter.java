@@ -45,6 +45,7 @@ import org.eclipse.uml2.uml.ReadVariableAction;
 import org.eclipse.uml2.uml.SendObjectAction;
 import org.eclipse.uml2.uml.SequenceNode;
 import org.eclipse.uml2.uml.StartClassifierBehaviorAction;
+import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.StructuredActivityNode;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -323,7 +324,6 @@ public class ActivityExporter {
 
 	private String createCreateObjectActionCode(CreateObjectAction node_) {
 		String type = node_.getClassifier().getName();
-		CallOperationAction ctrCallAction = null;
 		
 		ActivityTemplates.CreateObjectType objectType;
 		if (node_.getClassifier().eClass().equals(UMLPackage.Literals.SIGNAL)) {
@@ -332,21 +332,10 @@ public class ActivityExporter {
 		else {
 			objectType = CreateObjectType.Class;
 		}
-
-		for (ActivityEdge out : node_.getOutputs().get(0).getOutgoings()) {
-			if (out.getTarget().getOwner().eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
-				ctrCallAction = (CallOperationAction) out.getTarget().getOwner();
-
-			}
-		}
-		importOutputPinToMap(node_.getOutputs().get(0));
-		String name = tempVariables.get(node_.getOutputs().get(0));
+		
+		importOutputPinToMap(node_.getResult());
+		String name = tempVariables.get(node_.getResult());
 		_objectMap.put(node_, name);
-
-		if (ctrCallAction != null) {
-			constructorCalls.add(ctrCallAction);
-			return ActivityTemplates.createObject(type, name, objectType, getParamNames(ctrCallAction.getArguments()));
-		}
 
 		return ActivityTemplates.createObject(type, name,objectType);
 	}
@@ -618,6 +607,21 @@ public class ActivityExporter {
 			}
 
 		} else {
+			
+			
+			for ( Stereotype stereotype : node_.getOperation().getAppliedStereotypes()) {
+				
+				if(stereotype.getKeyword().equals(ActivityTemplates.CreateStereoType)) {
+					String val = ActivityTemplates.constructorCall(getTargetFromInputPin(node_.getTarget(), false), 
+							node_.getTarget().getType().getName(), 
+							node_.getTarget().getType().eClass().equals(UMLPackage.Literals.SIGNAL) ? 
+									ActivityTemplates.CreateObjectType.Signal : ActivityTemplates.CreateObjectType.Class, 
+							getParamNames(node_.getArguments()));
+					return source.append(ActivityTemplates.blockStatement(val));
+					
+				}
+			}
+			
 			String val = ActivityTemplates.operationCall(getTargetFromInputPin(node_.getTarget(), false),
 					ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node_.getTarget())),
 					node_.getOperation().getName(), getParamNames(node_.getArguments()));
@@ -625,6 +629,7 @@ public class ActivityExporter {
 				source.append(addValueToTemporalVariable(node_.getOperation().getType().getName(),
 						tempVariables.get(returnPin), val));
 			} else {
+				
 				source.append(ActivityTemplates.blockStatement(val));
 			}
 

@@ -16,6 +16,7 @@ public class ActivityTemplates {
 	public static final String AccessOperatorForSets = GenerationNames.SimpleAccess;
 	public static final String SignalSmartPointerType = GenerationNames.EventPtr;
 	public static final String ProcessorDirectivesSign = "#";
+	public static final String CreateStereoType = "Create";
 
 	public enum OperationSide {
 		Left, Right
@@ -178,16 +179,23 @@ public class ActivityTemplates {
 	public static String createObject(String typeName, String objName, CreateObjectType objectType, List<String> parameters) {
 		
 		if(objectType.equals(CreateObjectType.Signal)) {
-			return GenerationNames.EventPtr + " " + objName + "= "
-					+ GenerationNames.EventPtr + "(" + GenerationNames.MemoryAllocator + " "
-					+ signalType(typeName) + "(" + operationCallParamList(parameters) + "));\n";
+			return GenerationNames.EventPtr + " " + objName + ";\n";
 		}
 		else {
-			return GenerationNames.pointerType(typeName) + " " + objName + "= " + GenerationNames.MemoryAllocator + " "
-					+ typeName + "(" + operationCallParamList(parameters) + ");\n";
+			return GenerationNames.pointerType(typeName) + " " + objName + ";\n";
 		}
 
 		
+	}
+	
+	public static String constructorCall(String ownerName, String typeName, CreateObjectType objectType, List<String> parameters) {
+		if(objectType.equals(CreateObjectType.Signal)) {
+			return ownerName + ReplaceSimpleTypeOp + GenerationNames.EventPtr + "(" + GenerationNames.MemoryAllocator + " "
+					+ signalType(typeName) + "(" + operationCallParamList(parameters) + "))";
+		} else {
+			return ownerName + ReplaceSimpleTypeOp + GenerationNames.MemoryAllocator + " "
+					+ typeName + "(" + operationCallParamList(parameters) + ")";
+		}
 	}
 
 	public static String createObject(String typenName, String objName, CreateObjectType objectType) {
