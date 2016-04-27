@@ -27,6 +27,10 @@ import org.eclipse.uml2.uml.SequenceNode
 import org.eclipse.uml2.uml.Type
 import org.eclipse.uml2.uml.ValueSpecificationAction
 import org.eclipse.uml2.uml.Variable
+import hu.elte.txtuml.export.uml2.activity.statement.LoopInitExporter
+import org.eclipse.jdt.core.dom.ForStatement
+import hu.elte.txtuml.export.uml2.activity.statement.LoopUpdateExporter
+import hu.elte.txtuml.export.uml2.activity.statement.LoopConditionExporter
 
 /**
  * Base class for all exporters on the statement-expression level.
@@ -144,6 +148,24 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 		val expr = cache.export(new ConditionalExporter(this), source, source, [])
 		expr?.storeNode
 		return expr
+	}
+	
+	def exportLoopInit(ForStatement source) {
+		val init = cache.export(new LoopInitExporter(this), source, source, [])
+		storeNode(init)
+		return init
+	}
+	
+	def exportLoopCondition(ForStatement source) {
+		val cond = cache.export(new LoopConditionExporter(this), source, source, [])
+		storeNode(cond)
+		return cond
+	}
+	
+	def exportLoopUpdate(ForStatement source) {
+		val update = cache.export(new LoopUpdateExporter(this), source, source, [])
+		storeNode(update)
+		return update
 	}
 	
 	def read(Variable variable) { new VariableExpressionExporter(this).readVar(variable) }
