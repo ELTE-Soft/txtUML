@@ -12,7 +12,7 @@ class GetSignalExporter extends ActionExporter<MethodInvocation, CallOperationAc
 	}
 
 	override create(MethodInvocation access) {
-		if (isApiMethodInvocation(access.resolveMethodBinding) && access.resolveMethodBinding.name == "getSignal")
+		if (isApiMethodInvocation(access.resolveMethodBinding) && access.resolveMethodBinding.name == "getTrigger")
 			factory.createCallOperationAction
 	}
 
