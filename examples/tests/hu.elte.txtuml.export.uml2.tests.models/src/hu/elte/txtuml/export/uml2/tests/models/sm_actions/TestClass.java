@@ -45,5 +45,11 @@ public class TestClass extends ModelClass {
 			return false;
 		}
 		
+		@Override
+		public void effect() {
+			TestSignal sig = getTrigger(TestSignal.class);
+			Action.log("Init -> S1");
+		}
+		
 	}
 }
