@@ -24,7 +24,7 @@
 							<goal>testCompile</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>xtend-gen</outputDirectory>
+							<outputDirectory>${basedir}/xtend-gen</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
