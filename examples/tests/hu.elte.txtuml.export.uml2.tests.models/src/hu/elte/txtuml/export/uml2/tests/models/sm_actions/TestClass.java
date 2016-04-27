@@ -45,10 +45,5 @@ public class TestClass extends ModelClass {
 			return false;
 		}
 		
-		@Override
-		public void effect() {
-			TestSignal signal = getSignal();
-			Action.log(signal.data);
-		}
 	}
 }
