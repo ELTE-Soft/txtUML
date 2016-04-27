@@ -233,6 +233,13 @@ public final class ElementTypeTeller {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ContainmentKind.ContainerEnd.class);
 	}
 
+	@SuppressWarnings("unchecked")
+	public static boolean isContained(TypeDeclaration declaration) {
+		TypeDeclaration parent = (TypeDeclaration) declaration.getParent();
+		return parent.bodyDeclarations().stream().filter(d -> d != declaration)
+				.anyMatch(d -> isContainer((TypeDeclaration) d));
+	}
+
 	public static boolean isPort(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Port.class);
 	}
@@ -240,11 +247,11 @@ public final class ElementTypeTeller {
 	public static boolean isPort(ITypeBinding value) {
 		return hasSuperClass(value, Port.class.getCanonicalName());
 	}
-	
+
 	public static boolean isInterface(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Interface.class);
 	}
-	
+
 	public static boolean isInterface(ITypeBinding bnd) {
 		return SharedUtils.typeIsAssignableFrom(bnd, Interface.class);
 	}
@@ -252,7 +259,7 @@ public final class ElementTypeTeller {
 	public static boolean isConnector(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ConnectorBase.class);
 	}
-	
+
 	public static boolean isConnector(ITypeBinding typeDeclaration) {
 		return hasSuperClass(typeDeclaration, ConnectorBase.class.getCanonicalName());
 	}

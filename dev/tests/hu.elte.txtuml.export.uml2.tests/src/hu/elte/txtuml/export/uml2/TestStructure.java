@@ -75,12 +75,12 @@ public class TestStructure extends UMLExportTestBase {
 		assocEnd(b, a, "BEnd7", AggregationKind.NONE_LITERAL, 0, -1, true);
 
 		assoc(model, "Container_Many");
-		assocEnd(a, b, "Cont_End", AggregationKind.COMPOSITE_LITERAL, 0, 1, true);
-		assocEnd(b, a, "Contained_End_1", AggregationKind.NONE_LITERAL, 0, -1, true);
+		assocEnd(a, b, "Cont_End", AggregationKind.NONE_LITERAL, 0, 1, true);
+		assocEnd(b, a, "Contained_End_1", AggregationKind.COMPOSITE_LITERAL, 0, -1, true);
 
 		Association as9 = assoc(model, "Hidden_Container_Many");
-		assocEnd(a, as9, "Hidden_Cont_End", AggregationKind.COMPOSITE_LITERAL, 0, 1, false);
-		assocEnd(b, a, "Contained_End_2", AggregationKind.NONE_LITERAL, 0, -1, true);
+		assocEnd(a, as9, "Hidden_Cont_End", AggregationKind.NONE_LITERAL, 0, 1, false);
+		assocEnd(b, a, "Contained_End_2", AggregationKind.COMPOSITE_LITERAL, 0, -1, true);
 
 	}
 
