@@ -30,7 +30,7 @@ public class TestClass extends ModelClass {
 		
 		@Override
 		public void effect() {
-			Action.log("exit Init -> S1");
+			Action.log("Init -> S1");
 		}
 		
 	}

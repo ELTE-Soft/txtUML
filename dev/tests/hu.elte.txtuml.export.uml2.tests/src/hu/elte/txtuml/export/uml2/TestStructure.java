@@ -5,31 +5,57 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Optional;
+
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.AddStructuralFeatureValueAction;
 import org.eclipse.uml2.uml.AddVariableValueAction;
 import org.eclipse.uml2.uml.AggregationKind;
 import org.eclipse.uml2.uml.Association;
-import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallOperationAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Classifier;
+import org.eclipse.uml2.uml.Clause;
+import org.eclipse.uml2.uml.ConditionalNode;
+import org.eclipse.uml2.uml.Constraint;
+import org.eclipse.uml2.uml.CreateLinkAction;
 import org.eclipse.uml2.uml.CreateObjectAction;
 import org.eclipse.uml2.uml.DataType;
+import org.eclipse.uml2.uml.DestroyLinkAction;
 import org.eclipse.uml2.uml.DestroyObjectAction;
+import org.eclipse.uml2.uml.Event;
+import org.eclipse.uml2.uml.ExecutableNode;
 import org.eclipse.uml2.uml.ExpansionNode;
 import org.eclipse.uml2.uml.ExpansionRegion;
 import org.eclipse.uml2.uml.LoopNode;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.NamedElement;
+import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Operation;
+import org.eclipse.uml2.uml.Parameter;
+import org.eclipse.uml2.uml.ParameterDirectionKind;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.Pseudostate;
+import org.eclipse.uml2.uml.PseudostateKind;
+import org.eclipse.uml2.uml.ReadLinkAction;
 import org.eclipse.uml2.uml.ReadSelfAction;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.ReadVariableAction;
+import org.eclipse.uml2.uml.Region;
+import org.eclipse.uml2.uml.SendObjectAction;
+import org.eclipse.uml2.uml.SendSignalAction;
 import org.eclipse.uml2.uml.SequenceNode;
+import org.eclipse.uml2.uml.Signal;
+import org.eclipse.uml2.uml.SignalEvent;
+import org.eclipse.uml2.uml.StartObjectBehaviorAction;
+import org.eclipse.uml2.uml.State;
+import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.StructuredActivityNode;
+import org.eclipse.uml2.uml.Transition;
+import org.eclipse.uml2.uml.ValueSpecification;
 import org.eclipse.uml2.uml.ValueSpecificationAction;
+import org.eclipse.uml2.uml.Vertex;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -360,7 +386,7 @@ public class TestStructure {
 	public void testForLoop() throws Exception {
 		Model model = model("hu.elte.txtuml.export.uml2.tests.models.for_control");
 		SequenceNode body = loadActionCode(model, "TestClass", "test");
-		LoopNode loopNode = (LoopNode) node(body, 0, "for (i<limit) { ... }", LoopNode.class);
+		LoopNode loopNode = node(body, 0, "for (i<limit) { ... }", LoopNode.class);
 		SequenceNode bodyNode = loopBody(loopNode, 0, null, SequenceNode.class);
 		node(bodyNode, 0, "this.sum=this.sum+i;", SequenceNode.class);
 		SequenceNode increment = loopBody(loopNode, 1, "update", SequenceNode.class);
@@ -384,7 +410,7 @@ public class TestStructure {
 	public void testForEachLoop() throws Exception {
 		Model model = model("hu.elte.txtuml.export.uml2.tests.models.foreach_control");
 		SequenceNode body = loadActionCode(model, "TestClass", "test");
-		ExpansionRegion exp = (ExpansionRegion) node(body, 0, "foreach (coll)", ExpansionRegion.class);
+		ExpansionRegion exp = node(body, 0, "foreach (coll)", ExpansionRegion.class);
 		inputElement(exp, 0, "coll_expansion");
 		node(exp, 0, "coll", ReadVariableAction.class);
 		SequenceNode inner = node(exp, 1, null, SequenceNode.class);
@@ -404,17 +430,17 @@ public class TestStructure {
 		Class abstractBase = cls(model, "AbstractBaseClass");
 		Operation baseMethod = operation(abstractBase, "baseMethod");
 		assertTrue(baseMethod.isAbstract());
-		
+
 		Class concreteBase = cls(model, "ConcreteBaseClass");
 		checkSubclass(concreteBase, abstractBase);
 		Operation baseMethodInConcBase = operation(concreteBase, "baseMethod");
 		overrides(baseMethodInConcBase, baseMethod);
 		assertFalse(baseMethodInConcBase.isAbstract());
 		property(concreteBase, "baseField", "Integer");
-		
+
 		Class concreteSub = cls(model, "ConcreteSubclass");
 		checkSubclass(concreteSub, concreteBase);
-		
+
 		Operation baseMethodInConcSub = operation(concreteSub, "baseMethod");
 		Operation newMethod = operation(concreteSub, "newMethod");
 		Activity activity = (Activity) newMethod.getMethods().get(0);
@@ -423,335 +449,329 @@ public class TestStructure {
 		CallOperationAction callExpr = (CallOperationAction) callStmt.getNode("this.baseMethod()");
 		assertEquals(baseMethodInConcSub, callExpr.getOperation());
 	}
-	
+
 	private void checkSubclass(Class sub, Class generic) {
 		assertNotNull(sub.getGeneralization(generic));
 	}
-	
+
 	private void overrides(Operation overrider, Operation overridden) {
 		assertTrue(overrider.getRedefinedOperations().contains(overridden));
 	}
+
+	@Test
+	public void testIf() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.if_control");
+		SequenceNode body = loadActionCode(model, "TestClass", "testIf");
+		SequenceNode ifNode = node(body, 0, "if (test)", SequenceNode.class);
+		node(ifNode, 0, "test", ReadVariableAction.class);
+		node(ifNode, 1, "#if_cond=test", AddVariableValueAction.class);
+		ConditionalNode condNode = node(ifNode, 2, null, ConditionalNode.class);
+		clauseTest(condNode, 0, "#if_cond", ReadVariableAction.class);
+		SequenceNode clauseBody = clauseBody(condNode, 0, null, SequenceNode.class);
+		node(clauseBody, 0, "Action.log(\"then\");", SequenceNode.class);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T clauseTest(ConditionalNode condNode, int index, String name, java.lang.Class<T> type) {
+		Clause clause = condNode.getClauses().get(index);
+		assertNotNull(clause);
+		ExecutableNode testNode = clause.getTests().get(0);
+		assertNotNull(testNode);
+		assertEquals(name, testNode.getName());
+		assertTrue("Node is not a " + type.getName(), type.isInstance(testNode));
+		return (T) testNode;
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T clauseBody(ConditionalNode condNode, int index, String name, java.lang.Class<T> type) {
+		Clause clause = condNode.getClauses().get(index);
+		assertNotNull(clause);
+		ExecutableNode testNode = clause.getBodies().get(0);
+		assertNotNull(testNode);
+		assertEquals(name, testNode.getName());
+		assertTrue("Node is not a " + type.getName(), type.isInstance(testNode));
+		return (T) testNode;
+	}
+
+	@Test
+	public void testIfElse() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.if_control");
+		SequenceNode body = loadActionCode(model, "TestClass", "testIfElse");
+		SequenceNode ifNode = node(body, 0, "if (test)", SequenceNode.class);
+		node(ifNode, 0, "test", ReadVariableAction.class);
+		node(ifNode, 1, "#if_cond=test", AddVariableValueAction.class);
+		ConditionalNode condNode = node(ifNode, 2, null, ConditionalNode.class);
+		clauseTest(condNode, 0, "#if_cond", ReadVariableAction.class);
+		SequenceNode clauseBody = clauseBody(condNode, 0, null, SequenceNode.class);
+		node(clauseBody, 0, "Action.log(\"then\");", SequenceNode.class);
+		clauseTest(condNode, 1, "!#if_cond", CallOperationAction.class);
+		SequenceNode elseBody = clauseBody(condNode, 1, null, SequenceNode.class);
+		node(elseBody, 0, "Action.log(\"else\");", SequenceNode.class);
+	}
+
+	@Test
+	public void testInlineIf() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.if_control");
+		SequenceNode body = loadActionCode(model, "TestClass", "testInlineIf");
+		SequenceNode ifNode = node(body, 0, "if (test)", SequenceNode.class);
+		node(ifNode, 0, "test", ReadVariableAction.class);
+		node(ifNode, 1, "#if_cond=test", AddVariableValueAction.class);
+		ConditionalNode condNode = node(ifNode, 2, null, ConditionalNode.class);
+		clauseTest(condNode, 0, "#if_cond", ReadVariableAction.class);
+		clauseBody(condNode, 0, "Action.log(\"then\");", SequenceNode.class);
+	}
+
+	@Test
+	public void testInlineIfElse() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.if_control");
+		SequenceNode body = loadActionCode(model, "TestClass", "testInlineIfElse");
+		SequenceNode ifNode = node(body, 0, "if (test)", SequenceNode.class);
+		node(ifNode, 0, "test", ReadVariableAction.class);
+		node(ifNode, 1, "#if_cond=test", AddVariableValueAction.class);
+		ConditionalNode condNode = node(ifNode, 2, null, ConditionalNode.class);
+		clauseTest(condNode, 0, "#if_cond", ReadVariableAction.class);
+		clauseBody(condNode, 0, "Action.log(\"then\");", SequenceNode.class);
+		clauseTest(condNode, 1, "!#if_cond", CallOperationAction.class);
+		clauseBody(condNode, 1, "Action.log(\"else\");", SequenceNode.class);
+	}
+
+	@Test
+	public void testLink() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.link_and_unlink");
+		Class clsA = cls(model, "A");
+		Property otherEnd = property(clsA, "OtherEnd", "B");
+		Class clsB = cls(model, "B");
+		Property thisEnd = property(clsB, "ThisEnd", "A");
+
+		SequenceNode body = loadActionCode(model, "A", "testLink");
+		SequenceNode linkStmt = node(body, 0, "link inst1 to inst2;", SequenceNode.class);
+		node(linkStmt, 0, "inst1", ReadVariableAction.class);
+		node(linkStmt, 1, "inst2", ReadVariableAction.class);
+		CreateLinkAction linkNode = node(linkStmt, 2, "link inst1 to inst2", CreateLinkAction.class);
+		assertEquals(thisEnd, linkNode.getEndData().get(0).getEnd());
+		assertNotNull(linkNode.getEndData().get(0).getValue());
+		assertEquals(otherEnd, linkNode.getEndData().get(1).getEnd());
+		assertNotNull(linkNode.getEndData().get(1).getValue());
+	}
+
+	@Test
+	public void testUnlink() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.link_and_unlink");
+		Class clsA = cls(model, "A");
+		Property otherEnd = property(clsA, "OtherEnd", "B");
+		Class clsB = cls(model, "B");
+		Property thisEnd = property(clsB, "ThisEnd", "A");
+
+		SequenceNode body = loadActionCode(model, "A", "testUnlink");
+		SequenceNode linkStmt = node(body, 0, "unlink inst1 from inst2;", SequenceNode.class);
+		node(linkStmt, 0, "inst1", ReadVariableAction.class);
+		node(linkStmt, 1, "inst2", ReadVariableAction.class);
+		DestroyLinkAction linkNode = node(linkStmt, 2, "unlink inst1 from inst2", DestroyLinkAction.class);
+		assertEquals(thisEnd, linkNode.getEndData().get(0).getEnd());
+		assertNotNull(linkNode.getEndData().get(0).getValue());
+		assertEquals(otherEnd, linkNode.getEndData().get(1).getEnd());
+		assertNotNull(linkNode.getEndData().get(1).getValue());
+	}
+
+	@Test
+	public void testLog() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.log");
+
+		SequenceNode body = loadActionCode(model, "TestClass", "test");
+		SequenceNode logStmt = node(body, 0, "Action.log(\"Hello\");", SequenceNode.class);
+		node(logStmt, 0, "\"Hello\"", ValueSpecificationAction.class);
+		node(logStmt, 1, "Action.log(\"Hello\")", CallOperationAction.class);
+	}
+
+	@Test
+	public void testOperation() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.operation");
+		Class cls = cls(model, "TestClass");
+		Operation op1 = operation(cls, "op1");
+
+		Parameter returnParam = op1.getOwnedParameters().get(0);
+		assertEquals("return", returnParam.getName());
+		assertEquals("Integer", returnParam.getType().getName());
+		assertEquals(ParameterDirectionKind.RETURN_LITERAL, returnParam.getDirection());
+
+		Parameter param1 = op1.getOwnedParameters().get(1);
+		assertEquals("b", param1.getName());
+		assertEquals("Boolean", param1.getType().getName());
+		assertEquals(ParameterDirectionKind.IN_LITERAL, param1.getDirection());
+
+		Parameter param2 = op1.getOwnedParameters().get(2);
+		assertEquals("c", param2.getName());
+		assertEquals("String", param2.getType().getName());
+		assertEquals(ParameterDirectionKind.IN_LITERAL, param2.getDirection());
+
+		Operation op2 = operation(cls, "op2");
+		assertTrue(op2.getOwnedParameters().isEmpty());
+	}
+
+	@Test
+	public void testSend() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.send");
+		Class clsA = cls(model, "A");
+		Property otherEnd = property(clsA, "B_end", "B");
+		Class clsB = cls(model, "B");
+		Property thisEnd = property(clsB, "A_end", "A");
+
+		SequenceNode body = loadActionCode(model, "A", "test");
+		SequenceNode sendStmt = node(body, 0, "send create Sig to select(a -> B_end);", SequenceNode.class);
+		node(sendStmt, 0, "create Sig", SequenceNode.class);
+		node(sendStmt, 1, "a", ReadVariableAction.class);
+		ReadLinkAction readLink = node(sendStmt, 2, "a -> B_end", ReadLinkAction.class);
+		node(sendStmt, 3, "select(a -> B_end)", CallOperationAction.class);
+		node(sendStmt, 4, "send create Sig to select(a -> B_end)", SendObjectAction.class);
+		assertEquals(thisEnd, readLink.getEndData().get(0).getEnd());
+		assertNotNull(readLink.getEndData().get(0).getValue());
+		assertEquals(otherEnd, readLink.getEndData().get(1).getEnd());
+		assertEquals(null, readLink.getEndData().get(1).getValue());
+	}
+
+	@Test
+	public void testSignal() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.signal");
+		Signal sig = signal(model, "Sig");
+		SignalEvent sigEvent = signalEvent(model, "Sig");
+		assertEquals(sig, sigEvent.getSignal());
+		Class sigFactory = cls(model, "#Sig_factory");
+		Operation sigCtor = operation(sigFactory, "Sig");
+
+		SequenceNode body = loadActionCode(model, "A", "test");
+		SequenceNode createNode = node(body, 0, "create Sig", SequenceNode.class);
+		CreateObjectAction initiateNode = node(createNode, 0, "instantiate Sig", CreateObjectAction.class);
+		assertEquals(sig, initiateNode.getClassifier());
+		node(createNode, 1, "#temp=instantiate Sig", AddVariableValueAction.class);
+		node(createNode, 2, "#temp", ReadVariableAction.class);
+		node(createNode, 3, "1", ValueSpecificationAction.class);
+		node(createNode, 4, "true", ValueSpecificationAction.class);
+		node(createNode, 5, "\"test\"", ValueSpecificationAction.class);
+		CallOperationAction ctorCall = node(createNode, 6, "#temp.Sig(Integer p0, Boolean p1, String p2)", CallOperationAction.class);
+		assertEquals(sigCtor, ctorCall.getOperation());
+		node(createNode, 7, "#temp", ReadVariableAction.class);
+	}
+
+	private Signal signal(Model model, String name) {
+		Optional<NamedElement> sig = (Optional<NamedElement>) model.getMembers().stream()
+				.filter(m -> m.getName().equals(name) && m instanceof Signal).findFirst();
+		assertTrue(sig.isPresent());
+		return (Signal) sig.get();
+	}
+
+	private SignalEvent signalEvent(Model model, String name) {
+		Optional<NamedElement> sig = (Optional<NamedElement>) model.getMembers().stream()
+				.filter(m -> m.getName().equals(name) && m instanceof SignalEvent).findFirst();
+		assertTrue(sig.isPresent());
+		return (SignalEvent) sig.get();
+	}
 	
-	// @Test
-	// public void testOperation() throws Exception {
-	// org.eclipse.uml2.uml.Model model = ModelExportTestUtils
-	// .export("hu.elte.txtuml.export.uml2.tests.models.operation");
-	// assertNotNull(model);
-	// Class testClass = (Class) model.getMember("TestClass");
-	// assertNotNull(testClass);
-	// EList<Operation> ops = testClass.getOwnedOperations();
-	// assertEquals(2, ops.size());
-	// Operation op1 = testClass.getOperation("op1", null, null);
-	// assertNotNull(op1);
-	// EList<Parameter> params = op1.getOwnedParameters();
-	// assertEquals(3, params.size());
-	// for (Parameter param : params) {
-	// if (param.getType().getName().equals("Boolean")) {
-	// assertEquals("b", param.getName());
-	// } else if (param.getType().getName().equals("String")) {
-	// assertEquals("c", param.getName());
-	// } else if (param.getType().getName().equals("Integer")) {
-	// assertEquals(param.getDirection(),
-	// ParameterDirectionKind.RETURN_LITERAL);
-	// }
-	// }
-	// Operation op2 = testClass.getOwnedOperation("op2", null, null);
-	// params = op2.getOwnedParameters();
-	// assertEquals(0, params.size());
-	// }
-	//
-	// @Test
-	// public void testSignal() throws Exception {
-	// org.eclipse.uml2.uml.Model model = ModelExportTestUtils
-	// .export("hu.elte.txtuml.export.uml2.tests.models.signal");
-	// assertNotNull(model);
-	// assertEquals(4, model.getOwnedMembers().size());
-	//
-	// Signal sig = (Signal) model.getMember("Sig");
-	// assertNotNull(sig);
-	// assertEquals(3, sig.getOwnedAttributes().size());
-	// assertEquals("Sig", sig.getName());
-	// Property a = sig.getOwnedAttribute("val", null);
-	// assertNotNull(a);
-	// assertEquals("Integer", a.getType().getName());
-	// Property b = sig.getOwnedAttribute("b", null);
-	// assertNotNull(b);
-	// assertEquals("Boolean", b.getType().getName());
-	// Property c = sig.getOwnedAttribute("param", null);
-	// assertNotNull(c);
-	// assertEquals("String", c.getType().getName());
-	//
-	// SignalEvent ev = (SignalEvent) model.getMember("Sig_event");
-	// assertNotNull(ev);
-	// assertEquals(ev.getSignal(), sig);
-	// }
-	//
-	//
-	//
+	@Test
+	public void testSM() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.sm");
+		Class cls = cls(model, "TestClass");
+		SignalEvent sig = signalEvent(model, "TestSignal");
+		Region reg = region(cls);
+		Pseudostate init = pseudoState(reg, "Init", PseudostateKind.INITIAL_LITERAL);
+		State s1 = state(reg, "S1");
+		transition(reg, init, s1, null);
+		transition(reg, s1, s1, sig);
+	}
 
-	//
-	// @Test
-	// public void testStateMachine() throws Exception {
-	// org.eclipse.uml2.uml.Model model =
-	// ModelExportTestUtils.export("hu.elte.txtuml.export.uml2.tests.models.sm");
-	// assertNotNull(model);
-	// Signal s = (Signal) model.getMember("TestSignal");
-	// Class c = (Class) model.getMember("TestClass");
-	// assertNotNull(c);
-	// StateMachine sm = (StateMachine) c.getClassifierBehavior();
-	// assertNotNull(sm);
-	// assertEquals(1, sm.getRegions().size());
-	// Region r = sm.getRegions().get(0);
-	// assertEquals(2, r.getSubvertices().size());
-	// Pseudostate a = (Pseudostate) r.getSubvertex("Init");
-	// assertNotNull(a);
-	// State b = (State) r.getSubvertex("S1");
-	// assertNotNull(b);
-	// assertEquals(2, r.getTransitions().size());
-	// Transition ab = r.getTransition("Init_S1");
-	// assertEquals(a, ab.getSource());
-	// assertEquals(b, ab.getTarget());
-	// assertEquals(0, ab.getTriggers().size());
-	// Transition bb = r.getTransition("S1_S1");
-	// assertEquals(b, bb.getSource());
-	// assertEquals(b, bb.getTarget());
-	// assertEquals(1, bb.getTriggers().size());
-	// SignalEvent ev = (SignalEvent) bb.getTriggers().get(0).getEvent();
-	// assertNotNull(ev);
-	// assertEquals(s, ev.getSignal());
-	// }
-	//
-	// @Test
-	// public void testOperationBehavior() throws Exception {
-	// org.eclipse.uml2.uml.Model model = ModelExportTestUtils
-	// .export("hu.elte.txtuml.export.uml2.tests.models.operation_behavior");
-	// assertNotNull(model);
-	// Class testClass = (Class) model.getMember("TestClass");
-	// assertNotNull(testClass);
-	// EList<Operation> ops = testClass.getOwnedOperations();
-	// assertEquals(1, ops.size());
-	// Operation op = testClass.getOperation("op", null, null);
-	// assertNotNull(op);
-	// EList<Behavior> behaviors = op.getMethods();
-	// OpaqueBehavior behavior = null;
-	// for (int i = 0; i < behaviors.size(); ++i) {
-	// Behavior b = behaviors.get(i);
-	// if (b.getName().equals("op_opaqueBehavior") && b instanceof
-	// OpaqueBehavior) {
-	// behavior = (OpaqueBehavior) b;
-	// break;
-	// }
-	// }
-	// assertNotNull(behavior);
-	// assertEquals(testClass, behavior.getOwner());
-	// assertEquals(op, behavior.getSpecification());
-	// assertEquals(1, behavior.getLanguages().size());
-	// assertEquals("JtxtUML", behavior.getLanguages().get(0));
-	// assertEquals(1, behavior.getBodies().size());
-	// assertEquals("{a=5;}", behavior.getBodies().get(0).replaceAll("\\s",
-	// ""));
-	// }
-	//
-	// @Test
-	// public void testCreateActionBehavior() throws Exception {
-	// SequenceNode body = loadActionCode("create_and_destroy", "TestClass",
-	// "ObjectCreate");
-	//
-	// CreateObjectAction act = (CreateObjectAction)
-	// body.getExecutableNodes().get(2);
-	//
-	// assertEquals(cls.getName(), act.getResult().getType().getName());
-	// }
-	//
-	// @Test
-	// public void testDestroyActionBehavior() throws Exception {
-	// SequenceNode body = loadActionCode("create_and_destroy", "TestClass",
-	// "ObjectCreate");
-	//
-	// DestroyObjectAction act = (DestroyObjectAction)
-	// body.getExecutableNode("delete cls");
-	//
-	// assertEquals(cls.getName(), act.getTarget().getType().getName());
-	// }
-	//
-	// @Test
-	// public void testLinkAction() throws Exception {
-	// SequenceNode bodyNode = loadActionCode("link_and_unlink", "A",
-	// "LinkUnlinkAction");
-	//
-	// Class classB = (Class) model.getMember("B");
-	// assertNotNull(classB);
-	//
-	// CreateLinkAction act = (CreateLinkAction)
-	// bodyNode.getExecutableNodes().get(6);
-	//
-	// EList<?> list = act.getEndData();
-	//
-	// LinkEndCreationData leftEnd = (LinkEndCreationData) list.get(0);
-	// LinkEndCreationData rightEnd = (LinkEndCreationData) list.get(1);
-	//
-	// assertEquals(cls.getName(), leftEnd.getEnd().getType().getName());
-	// assertEquals(classB.getName(), rightEnd.getEnd().getType().getName());
-	// }
-	//
-	// @Test
-	// public void testUnLinkAction() throws Exception {
-	// SequenceNode body = loadActionCode("link_and_unlink", "A",
-	// "LinkUnlinkAction");
-	//
-	// Class classB = (Class) model.getMember("B");
-	// assertNotNull(classB);
-	//
-	// DestroyLinkAction act = (DestroyLinkAction)
-	// body.getExecutableNodes().get(9);
-	//
-	// EList<?> list = act.getEndData();
-	//
-	// LinkEndDestructionData leftEnd = (LinkEndDestructionData) list.get(0);
-	// LinkEndDestructionData rightEnd = (LinkEndDestructionData) list.get(1);
-	//
-	// assertEquals(cls.getName(), leftEnd.getEnd().getType().getName());
-	// assertEquals(classB.getName(), rightEnd.getEnd().getType().getName());
-	// }
-	//
-	// @Test
-	// public void testSendAction() throws Exception {
-	// SequenceNode body = loadActionCode("send", "A", "SendAction");
-	//
-	// Class classB = (Class) model.getMember("B");
-	// assertNotNull(classB);
-	//
-	// SendObjectAction act = (SendObjectAction)
-	// body.getExecutableNodes().get(10);
-	//
-	// assertEquals("Sig", act.getRequest().getType().getName());
-	// assertEquals(classB.getName(), act.getTarget().getType().getName());
-	// }
-	//
-	// @Test
-	// public void testStartAction() throws Exception {
-	// SequenceNode body = loadActionCode("start", "TestClass", "S1");
-	//
-	// StartClassifierBehaviorAction act = (StartClassifierBehaviorAction)
-	// body.getExecutableNodes().get(3);
-	//
-	// InputPin StartedClassPin = act.getInputs().get(0);
-	//
-	// assertEquals(cls.getName(), StartedClassPin.getType().getName());
-	// }
-	//
-	// @Test
-	// public void testIfControl() throws Exception {
-	// SequenceNode bodyNode = loadActionCode("if_control", "TestModelClass",
-	// "IfControl");
-	//
-	// ConditionalNode act = (ConditionalNode)
-	// bodyNode.getExecutableNodes().get(4);
-	//
-	// assertEquals(1, act.getClauses().get(0).getBodies().size());
-	// assertEquals(1, act.getClauses().get(1).getBodies().size());
-	// }
-	//
-	//
-	// @Test
-	// public void testIfThen() throws Exception {
-	// SequenceNode bodyNode = loadActionCode("if_then_control",
-	// "TestModelClass", "IfControl");
-	//
-	// ConditionalNode act = (ConditionalNode)
-	// bodyNode.getExecutableNodes().get(4);
-	//
-	// assertEquals(1, act.getClauses().get(0).getBodies().size());
-	// assertEquals(1, act.getClauses().get(1).getBodies().size());
-	// }
+	private Transition transition(Region reg, Vertex v1, Vertex v2, Event event) {
+		Optional<Transition> trans = reg.getTransitions().stream().filter(s -> s.getSource().equals(v1) && s.getTarget().equals(v2)).findFirst();
+		if (event != null) {
+			assertEquals(event, trans.get().getTriggers().get(0).getEvent());
+		}
+		return trans.get();
+	}
 
-	//
-	// @Test
-	// public void testWhileControl() throws Exception {
-	// SequenceNode body = loadActionCode("while_control", "TestClass",
-	// "WhileControl");
-	//
-	// LoopNode loop = (LoopNode) body.getExecutableNode("while gt(x,0)");
-	//
-	// SequenceNode loopBody = (SequenceNode) loop.getBodyParts().get(0);
-	//
-	// assertEquals(1, loop.getTests().size());
-	//
-	// assertNotNull(((SequenceNode)
-	// loop.getTest("cond")).getExecutableNode("gt(x,0)"));
-	//
-	// assertEquals("Boolean", loop.getDecider().getType().getName());
-	// assertEquals(3, loopBody.getExecutableNodes().size()); // read var, dec,
-	// write var
-	// }
-	//
-	// @Test
-	// public void testDoCycle() throws Exception {
-	// SequenceNode body = loadActionCode("do_while_control", "TestClass",
-	// "DoWhileControl");
-	//
-	// LoopNode loop = (LoopNode) body.getExecutableNode("dowhile gt(x,0)");
-	//
-	// SequenceNode loopBody = (SequenceNode) loop.getBodyPart("body");
-	//
-	// assertEquals(1, loop.getTests().size());
-	//
-	// assertNotNull(((SequenceNode)
-	// loop.getTest("cond")).getExecutableNode("gt(x,0)"));
-	//
-	// assertEquals("Boolean", loop.getDecider().getType().getName());
-	// assertEquals(3, loopBody.getExecutableNodes().size()); // read var, dec,
-	// write var
-	// assertEquals(3, ((SequenceNode)
-	// loop.getNode("init")).getExecutableNodes().size()); // the same as the
-	// loop body
-	// }
-	//
-	// @Test
-	// public void testForEachControl() throws Exception {
-	// SequenceNode body = loadActionCode("foreach_control", "TestClass",
-	// "ForEachControl");
-	//
-	// ExpansionRegion loop = (ExpansionRegion)
-	// body.getExecutableNode("foreach");
-	//
-	// assertEquals(3, loop.getNodes().size()); // input, read variable, create
-	// object
-	//
-	// assertEquals("Collection",
-	// loop.getInputElements().get(0).getType().getName());
-	// }
+	private Region region(Class cls) {
+		StateMachine sm = (StateMachine) cls.getClassifierBehavior();
+		Region reg = sm.getRegions().get(0);
+		assertNotNull(reg);
+		return reg;
+	}
+	
+	private Pseudostate pseudoState(Region reg, String name, PseudostateKind kind) {
+		Optional<Vertex> vertex = reg.getSubvertices().stream().filter(s -> s.getName().equals(name)).findFirst();
+		assertTrue(vertex.isPresent());
+		assertTrue("The vertex is not a PseudoState", vertex.get() instanceof Pseudostate);
+		assertEquals(kind, ((Pseudostate) vertex.get()).getKind());
+		return (Pseudostate) vertex.get();
+	}
+	
+	private State state(Region reg, String name) {
+		Optional<Vertex> vertex = reg.getSubvertices().stream().filter(s -> s.getName().equals(name)).findFirst();
+		assertTrue(vertex.isPresent());
+		assertTrue("The vertex is not a State", vertex.get() instanceof State);
+		return (State) vertex.get();
+	}
+	
+	@Test
+	public void testSMActions() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.sm_actions");
+		Class cls = cls(model, "TestClass");
+		SignalEvent sig = signalEvent(model, "TestSignal");
+		Region reg = region(cls);
+		Pseudostate init = pseudoState(reg, "Init", PseudostateKind.INITIAL_LITERAL);
+		State s1 = state(reg, "S1");
+		SequenceNode entryBody = getActivityBody((Activity) s1.getEntry());
+		node(entryBody, 0, "Action.log(\"entry S1\");", SequenceNode.class);
+		SequenceNode exitBody = getActivityBody((Activity) s1.getExit());
+		node(exitBody, 0, "Action.log(\"exit S1\");", SequenceNode.class);
+		assertNotNull(s1.getEntry());
+		Transition tr1 = transition(reg, init, s1, null);
+		SequenceNode effectBody = getActivityBody((Activity) tr1.getEffect());
+		node(effectBody, 0, "Action.log(\"Init -> S1\");", SequenceNode.class);
+		Transition tr2 = transition(reg, s1, s1, sig);
+		SequenceNode guardBody = getActivityBody(getGuardActivity(tr2));
+		node(guardBody, 0, "return false", SequenceNode.class);
+	}
 
-	//
-	// @Test
-	// public void testLogAction() throws Exception {
-	// SequenceNode body = loadActionCode("log", "TestClass", "S1");
-	//
-	// assertEquals(2, body.getExecutableNodes().size()); // String spec, log
-	// action
-	// }
 
-	// @Test
-	// public void testReturn() throws Exception {
-	// model = ModelExportTestUtils
-	// .export("hu.elte.txtuml.export.uml2.tests.models.return_stmt");
-	// assertNotNull(model);
-	// cls = (Class) model.getMember("TestModelClass");
-	// assertNotNull(cls);
-	// Activity act = (Activity) cls.getOwnedBehavior("returnOp");
-	// assertNotNull(act);
-	// ActivityNode finalNode = act.getNode("return_paramNode");
-	// assertNotNull(finalNode.getIncoming("objectflow_from_10_to_return_paramNode"));
-	// }
+	private Activity getGuardActivity(Transition tr2) {
+		Constraint guard = tr2.getGuard();
+		OpaqueExpression specification = (OpaqueExpression) guard.getSpecification();
+		Activity activity = (Activity) specification.getBehavior();
+		assertNotNull(activity);
+		return activity;
+	}
 
 	private SequenceNode loadActionCode(Model model, String className, String operationName) throws Exception {
 		Class cls = cls(model, className);
 		Operation op = operation(cls, operationName);
 		Activity behav = (Activity) op.getMethod(operationName);
+		return getActivityBody(behav);
+	}
+	
+	@Test
+	public void testStart() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.start");
+
+		SequenceNode body = loadActionCode(model, "TestClass", "test");
+		SequenceNode logStmt = node(body, 0, "start inst;", SequenceNode.class);
+		node(logStmt, 0, "inst", ReadVariableAction.class);
+		node(logStmt, 1, "start inst", StartObjectBehaviorAction.class);
+	}
+	
+	@Test
+	public void testWhileLoop() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.while_control");
+		SequenceNode body = loadActionCode(model, "TestClass", "test");
+		LoopNode loopNode = node(body, 0, "while (i>0) { ... }", LoopNode.class);
+		SequenceNode bodyNode = loopBody(loopNode, 0, null, SequenceNode.class);
+		node(bodyNode, 0, "i=--i;", SequenceNode.class);
+		loopCond(loopNode, "i>0", CallOperationAction.class);
+	}
+
+	private SequenceNode getActivityBody(Activity behav) {
 		assertNotNull(behav);
 		SequenceNode bodyNode = (SequenceNode) behav.getOwnedNode("#body");
 		assertNotNull(bodyNode);
 		return bodyNode;
 	}
+	
+	
 
 }

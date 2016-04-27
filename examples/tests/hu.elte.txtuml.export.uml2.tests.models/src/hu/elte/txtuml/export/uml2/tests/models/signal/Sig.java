@@ -11,7 +11,7 @@ public class Sig extends Signal {
 		this.param = param;
 	}
 	
-	int val;
-	boolean b;
-	String param;
+	public int val;
+	public boolean b;
+	public String param;
 }
