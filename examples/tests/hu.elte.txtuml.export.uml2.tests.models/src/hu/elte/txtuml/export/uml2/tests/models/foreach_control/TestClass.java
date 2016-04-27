@@ -5,8 +5,9 @@ import hu.elte.txtuml.api.model.ModelClass;
 
 public class TestClass extends ModelClass {
 
+	private int sum = 0;
+
 	public void test(Collection<Integer> coll) {
-		int sum = 0;
 		for (Integer i : coll) {
 			sum += i;
 		}

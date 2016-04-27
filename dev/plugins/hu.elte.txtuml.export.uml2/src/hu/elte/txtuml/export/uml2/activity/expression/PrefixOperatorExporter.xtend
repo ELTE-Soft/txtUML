@@ -45,7 +45,7 @@ class PrefixOperatorExporter extends OperatorExporter<PrefixExpression> {
 					val lhs = act.get
 					lhs.objectFlow(callOp.createArgument("arg", integerType))
 					val litOne = new NumberLiteralExporter(this).createIntegerLiteral(1)
-					litOne.objectFlow(callOp.createArgument("inc", integerType))
+					litOne.objectFlow(callOp.createArgument("change", integerType))
 					callOp.name = '''«source.operator»«lhs.name»'''
 					result.name = callOp.name
 					callOp.createResult(callOp.name, integerType)

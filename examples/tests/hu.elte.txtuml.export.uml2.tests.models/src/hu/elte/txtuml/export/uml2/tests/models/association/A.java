@@ -13,66 +13,66 @@ class B extends ModelClass {
 }
 
 class Maybe_One_A_Many_B extends Association {
-	class AEnd extends MaybeOne<A> {
+	class AEnd1 extends MaybeOne<A> {
 	}
 
-	class BEnd extends Many<B> {
+	class BEnd1 extends Many<B> {
 	}
 }
 
 class One_A_Some_B extends Association {
-	class AEnd extends One<A> {
+	class AEnd2 extends One<A> {
 	}
 
-	class BEnd extends Some<B> {
+	class BEnd2 extends Some<B> {
 	}
 }
 
 class _3to4_A_0to100_B extends Association {
 	@Min(3)
 	@Max(4)
-	class AEnd extends Multiple<A> {
+	class AEnd3 extends Multiple<A> {
 	}
 
 	@Min(0)
 	@Max(100)
-	class BEnd extends Multiple<B> {
+	class BEnd3 extends Multiple<B> {
 	}
 }
 
 class Maybe_One_Hidden_A_Many_Hidden_B extends Association {
-	class AEnd extends HiddenMaybeOne<A> {
+	class AEnd4 extends HiddenMaybeOne<A> {
 	}
 
-	class BEnd extends HiddenMany<B> {
+	class BEnd4 extends HiddenMany<B> {
 	}
 }
 
 class One_Hidden_A_Some_Hidden_B extends Association {
-	class AEnd extends HiddenOne<A> {
+	class AEnd5 extends HiddenOne<A> {
 	}
 
-	class BEnd extends HiddenSome<B> {
+	class BEnd5 extends HiddenSome<B> {
 	}
 }
 
 class _3to4_Hidden_A_0to100_Hidden_B extends Association {
 	@Min(3)
 	@Max(4)
-	class AEnd extends HiddenMultiple<A> {
+	class AEnd6 extends HiddenMultiple<A> {
 	}
 
 	@Min(0)
 	@Max(100)
-	class BEnd extends HiddenMultiple<B> {
+	class BEnd6 extends HiddenMultiple<B> {
 	}
 }
 
 class One_Hidden_A_Many_B extends Association {
-	class AEnd extends HiddenOne<A> {
+	class AEnd7 extends HiddenOne<A> {
 	}
 
-	class BEnd extends Many<B> {
+	class BEnd7 extends Many<B> {
 	}
 }
 
@@ -80,7 +80,7 @@ class Container_Many extends Composition {
 	class Cont_End extends Container<A> {
 	}
 
-	class Contained_End extends Many<B> {
+	class Contained_End_1 extends Many<B> {
 	}
 }
 
@@ -88,7 +88,7 @@ class Hidden_Container_Many extends Composition {
 	class Hidden_Cont_End extends HiddenContainer<A> {
 	}
 
-	class Contained_End extends Many<B> {
+	class Contained_End_2 extends Many<B> {
 	}
 }
 

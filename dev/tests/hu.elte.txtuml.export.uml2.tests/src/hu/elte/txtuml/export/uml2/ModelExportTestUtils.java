@@ -18,18 +18,18 @@ public class ModelExportTestUtils {
 	private static final String PROJECT_FILE = ".project";
 	private static final String TEST_PROJECT_NAME = "hu.elte.txtuml.export.uml2.tests.models";
 	private static final String TEST_PROJECT_PATH = "../../../examples/tests/" + TEST_PROJECT_NAME;
-	private static final String GEN_DIR = TEST_PROJECT_NAME + "/gen";
 	private static IJavaProject project;
 
 	public static Model export(String txtUMLModelTopPackage) throws Exception {
 		Model ret = TxtUMLToUML2.exportModel(project.getElementName(), txtUMLModelTopPackage,
-				GEN_DIR, ExportMode.ExportActionCode);
+				ExportMode.ExportActionCode);
 		return ret;
 	}
 
 	public static void initialize() throws CoreException, IOException, InterruptedException {
 		String projectPath = new File(TEST_PROJECT_PATH).getCanonicalPath();
-		IProjectDescription description = ResourcesPlugin.getWorkspace().loadProjectDescription(new Path(projectPath + Path.SEPARATOR + PROJECT_FILE));
+		IProjectDescription description = ResourcesPlugin.getWorkspace()
+				.loadProjectDescription(new Path(projectPath + Path.SEPARATOR + PROJECT_FILE));
 		IProject genericProject = ResourcesPlugin.getWorkspace().getRoot().getProject(description.getName());
 		if (!genericProject.exists()) {
 			genericProject.create(description, null);

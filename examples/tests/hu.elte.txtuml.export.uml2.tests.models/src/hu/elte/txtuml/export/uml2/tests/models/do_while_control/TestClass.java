@@ -4,8 +4,7 @@ import hu.elte.txtuml.api.model.ModelClass;
 
 public class TestClass extends ModelClass {
 
-	public void test() {
-		int x = 42;
+	public void test(int x) {
 		do {
 			--x;
 		} while (x > 0);

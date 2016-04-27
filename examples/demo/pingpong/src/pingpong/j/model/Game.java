@@ -46,7 +46,7 @@ public class Game extends ModelClass {
 		@Override
 		public void effect() {
 			Player left = assoc(LeftPlayer.player.class).selectAny();
-			Action.send(getSignal(), left);
+			Action.send(getTrigger(Ball.class), left);
 		}
 
 	}

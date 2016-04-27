@@ -20,7 +20,6 @@ import hu.elte.txtuml.export.uml2.activity.expression.MethodCallExporter
 import hu.elte.txtuml.export.uml2.activity.expression.NameFieldAccessExporter
 import hu.elte.txtuml.export.uml2.activity.expression.NullLiteralExporter
 import hu.elte.txtuml.export.uml2.activity.expression.NumberLiteralExporter
-import hu.elte.txtuml.export.uml2.activity.expression.ObjectCreationExporter
 import hu.elte.txtuml.export.uml2.activity.expression.OtherCtorCallExporter
 import hu.elte.txtuml.export.uml2.activity.expression.ParenExpressionExporter
 import hu.elte.txtuml.export.uml2.activity.expression.PostfixOperatorExporter
@@ -108,6 +107,7 @@ import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
 import hu.elte.txtuml.export.uml2.activity.apicalls.GetSignalExporter
 import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode
+import hu.elte.txtuml.export.uml2.activity.expression.ConstructorCallExporter
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -220,7 +220,6 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 					new CreateLinkActionExporter(this),
 					new SendActionExporter(this),
 					new UnlinkActionExporter(this),
-//					new ConnectActionExporter(this),
 					new CreateActionExporter(this),
 					new DeleteActionExporter(this),
 					new StartActionExporter(this),
@@ -232,7 +231,7 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 			SuperConstructorInvocation:
 				#[new SuperCtorCallExporter(this), new APISuperCtorCallExporter(this)]
 			ClassInstanceCreation:
-				#[new ObjectCreationExporter(this)]
+				#[new ConstructorCallExporter(this)]
 			SuperMethodInvocation:
 				#[new SuperCallExporter(this)]
 			StringLiteral:

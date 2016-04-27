@@ -121,7 +121,7 @@ public class Microwave extends ModelClass {
 		public class AdjustIntensity extends Transition {
 			@Override
 			public void effect() {
-				intensity = ((SetIntensity) getSignal()).value;
+				intensity = getTrigger(SetIntensity.class).value;
 				Action.log("Microwave: intensity set.");
 			}
 		}
@@ -132,7 +132,7 @@ public class Microwave extends ModelClass {
 		public class AdjustTime extends Transition {
 			@Override
 			public void effect() {
-				time = ((SetTime) getSignal()).value;
+				time = getTrigger(SetTime.class).value;
 				Action.log("Microwave: time set.");
 			}
 		}

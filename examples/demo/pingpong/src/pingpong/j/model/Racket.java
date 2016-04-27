@@ -50,12 +50,12 @@ public class Racket extends ModelClass {
 
 		@Override
 		public boolean guard() {
-			return ((Ball) getSignal()).countdown > 0;
+			return getTrigger(Ball.class).countdown > 0;
 		}
 
 		@Override
 		public void effect() {
-			Ball ball = getSignal();
+			Ball ball = getTrigger(Ball.class);
 			Action.send(new Ball(ball.countdown - 1), port(BallAtRacketPort.class).required::reception);
 			Action.send(new HitTheBall(), port(HitOrMissPort.class).required::reception);
 		}

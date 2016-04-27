@@ -68,6 +68,34 @@ public class TxtUMLToUML2 {
 	public static Model exportModel(String sourceProject, String packageName, URI outputDirectory,
 			ExportMode exportMode) throws NotFoundException, JavaModelException, IOException {
 
+		Model model = exportModel(sourceProject, packageName, exportMode);
+
+		File file = new File(model.eResource().getURI().toFileString());
+		file.getParentFile().mkdirs();
+		model.eResource().save(null);
+
+		IFile createdFile = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(file.toURI())[0];
+		try {
+			createdFile.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+		} catch (CoreException e) {
+			throw new RuntimeException(e);
+		}
+
+		IFileStore fileStore = EFS.getLocalFileSystem().getStore(file.toURI());
+		if (PlatformUI.isWorkbenchRunning()) {
+			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			try {
+				IDE.openEditorOnFileStore(page, fileStore);
+			} catch (PartInitException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		return model;
+	}
+
+	public static Model exportModel(String sourceProject, String packageName, ExportMode exportMode)
+			throws NotFoundException, JavaModelException {
 		IJavaProject javaProject = ProjectUtils.findJavaProject(sourceProject);
 
 		IPackageFragment[] packageFragments = PackageUtils.findPackageFragments(javaProject, packageName);
@@ -77,28 +105,7 @@ public class TxtUMLToUML2 {
 		}
 
 		Model model = new ModelExporter(exportMode).export(packageFragments[0]);
-		
-		File file = new File(model.eResource().getURI().toFileString());
-		file.getParentFile().mkdirs();
-		model.eResource().save(null);
-		
-	    IFile createdFile = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(file.toURI())[0];
-        try {
-			createdFile.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-		} catch (CoreException e) {
-			throw new RuntimeException(e);
-		}
-        
-        IFileStore fileStore = EFS.getLocalFileSystem().getStore(file.toURI());
-	    IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-	    
-	    try {
-	        IDE.openEditorOnFileStore( page, fileStore );
-	    } catch ( PartInitException e ) {
-	        throw new RuntimeException(e);
-	    }
-	    
-	    return model;
+		return model;
 	}
 
 	public static Model loadExportedModel(String uri) throws WrappedException {

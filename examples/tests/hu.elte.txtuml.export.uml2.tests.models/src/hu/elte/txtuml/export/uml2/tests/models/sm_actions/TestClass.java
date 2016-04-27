@@ -30,7 +30,7 @@ public class TestClass extends ModelClass {
 		
 		@Override
 		public void effect() {
-			Action.log("exit Init -> S1");
+			Action.log("Init -> S1");
 		}
 		
 	}
@@ -45,10 +45,5 @@ public class TestClass extends ModelClass {
 			return false;
 		}
 		
-		@Override
-		public void effect() {
-			TestSignal signal = getSignal();
-			Action.log(signal.data);
-		}
 	}
 }

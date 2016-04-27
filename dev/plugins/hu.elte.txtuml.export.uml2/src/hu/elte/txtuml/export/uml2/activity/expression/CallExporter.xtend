@@ -34,19 +34,17 @@ abstract class CallExporter<T> extends ActionExporter<T, CallOperationAction> {
 
 	override void exportContents(T source) {
 		val binding = source.binding
-		val operation = fetchElement(binding) as Operation
 		if (!Modifier.isStatic(binding.modifiers)) {
-			val target = exportExpression(source.expression) ?:
-				thisRef(binding.declaringClass.fetchType)
+			val target = exportExpression(source.expression) ?: thisRef(binding.declaringClass.fetchType)
 
-			createCall(result, operation, target, source.arguments)
+			createCall(result, binding, target, source.arguments)
 		} else {
-			createCall(result, operation, null, source.arguments)
+			createCall(result, binding, null, source.arguments)
 		}
 	}
 
-	def createCall(CallOperationAction call, Operation operation, Action base, Iterable<Expression> args) {
-		call.operation = operation
+	def createCall(CallOperationAction call, IMethodBinding binding, Action base, Iterable<Expression> args) {
+		call.operation = fetchElement(binding) as Operation
 
 		base?.result.objectFlow(call.createTarget("target", base.result.type))
 
@@ -58,15 +56,17 @@ abstract class CallExporter<T> extends ActionExporter<T, CallOperationAction> {
 		for (argi : 0 ..< call.arguments.length) {
 			argVals.get(argi).objectFlow(call.arguments.get(argi))
 		}
-		call.name = buildName(call).toString
+		call.name = buildName(binding, call, base).toString
 		return call
 	}
 
-	def buildName(
-		CallOperationAction call) '''«call.target?.name?.concat(".")»«call.operation?.name»(«buildArgs(call)»)'''
+	def buildName(IMethodBinding binding, CallOperationAction call, Action base) {
+		'''«base?.name.concat('.')»«binding.name»(«buildArgs(call)»)'''
+	}
 
-	def buildArgs(
-		CallOperationAction call) '''«FOR arg : call.getArguments SEPARATOR ", "»«arg.type.name» «arg.name»«ENDFOR»'''
+	def buildArgs(CallOperationAction call) {
+		'''«FOR arg : call.getArguments SEPARATOR ", "»«arg.type.name» «arg.name»«ENDFOR»'''
+	}
 
 }
 
@@ -127,11 +127,11 @@ class APISuperCtorCallExporter extends ActionExporter<SuperConstructorInvocation
 	new(Exporter<?, ?, ?> parent) {
 		super(parent)
 	}
-	
+
 	override create(SuperConstructorInvocation access) {
 		if(isApiMethodInvocation(access.resolveConstructorBinding)) factory.createSequenceNode
 	}
-	
+
 	override exportContents(SuperConstructorInvocation source) {
 		result.name = '#api_ctor_call'
 	}

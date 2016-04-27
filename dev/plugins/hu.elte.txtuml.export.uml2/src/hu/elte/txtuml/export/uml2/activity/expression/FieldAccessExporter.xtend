@@ -41,7 +41,7 @@ abstract class FieldAccessExporter<T extends Expression> extends ActionExporter<
 	}
 	
 	protected def finishFieldAccess(ReadStructuralFeatureAction action, Action base, Property field) {
-		action.name = field.name
+		action.name = '''«base.name».«field.name»'''
 		action.createResult(action.name, field.type)
 		if (!field.isStatic) {
 			base.result.objectFlow(action.createObject("base", base.result.type))

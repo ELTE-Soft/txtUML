@@ -25,6 +25,7 @@ class ForEachExporter extends ControlExporter<EnhancedForStatement, ExpansionReg
 		val loopVar = result.createVariable(source.parameter.name.identifier, expnode.type)
 		storeVariable(loopVar)
 		exportStatement(source.body)
+		result.name = '''foreach («expr.name»)'''
 	}
 	
 }

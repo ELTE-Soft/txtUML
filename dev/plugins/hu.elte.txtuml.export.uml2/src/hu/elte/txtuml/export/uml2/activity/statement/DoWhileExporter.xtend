@@ -14,7 +14,7 @@ class DoWhileExporter extends ControlExporter<DoStatement,LoopNode> {
 	
 	override exportContents(DoStatement source) {
 		val expr = exportExpression(source.expression)
-		result.name = '''while («expr.name») { ... }'''
+		result.name = '''do { ... } while («expr.name»)'''
 		result.setupParts += exportStatement(source.body)
 		result.tests += expr
 		result.decider = expr.result

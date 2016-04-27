@@ -83,7 +83,7 @@ class Display {
 		port HourPort;
 		trigger HandValue;
 		effect {
-			hour = sigdata.value;
+			hour = trigger.value;
 			minute = 0;
 			second = 0;
 			refresh();
@@ -96,7 +96,7 @@ class Display {
 		port MinutePort;
 		trigger HandValue;
 		effect {
-			minute = sigdata.value;
+			minute = trigger.value;
 			second = 0;
 			if (minute > 0) {
 				refresh();
@@ -110,7 +110,7 @@ class Display {
 		port SecondPort;
 		trigger HandValue;
 		effect {
-			second = sigdata.value;
+			second = trigger.value;
 			if (second > 0) {
 				refresh();
 			}
