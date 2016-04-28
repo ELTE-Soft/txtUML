@@ -5,7 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ TestStructure.class })
+@SuiteClasses({ TestStructure.class, TestActionCode.class, TestControlStructures.class })
 public class UnitTests {
 
 }
