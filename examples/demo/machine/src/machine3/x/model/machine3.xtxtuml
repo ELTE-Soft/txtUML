@@ -57,7 +57,7 @@ class Machine {
 			trigger DoTasks;
 
 			effect {
-				DoTasks doTasks = sigdata;
+				DoTasks doTasks = trigger;
 				Machine.this.tasksToDo -= doTasks.count;
 				log("\tMachine: becoming active...");
 			}

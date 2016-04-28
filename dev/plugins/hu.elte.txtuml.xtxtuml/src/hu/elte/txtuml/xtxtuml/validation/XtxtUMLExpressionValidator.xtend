@@ -86,8 +86,8 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		}
 
 		if (container == null || container.isReachableFromInitialState(newHashSet, true)) {
-			error("'sigdata' cannot be used here, as its container is directly reachable from the initial state",
-				sigExpr, RALF_SIGNAL_ACCESS_EXPRESSION__SIGDATA, INVALID_SIGNAL_ACCESS);
+			error("'trigger' cannot be used here, as its container is directly reachable from the initial state",
+				sigExpr, RALF_SIGNAL_ACCESS_EXPRESSION__TRIGGER, INVALID_SIGNAL_ACCESS);
 		}
 	}
 

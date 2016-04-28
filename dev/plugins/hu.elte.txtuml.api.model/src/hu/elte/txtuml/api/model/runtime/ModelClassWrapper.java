@@ -53,6 +53,6 @@ public interface ModelClassWrapper extends SignalTargetWrapper<ModelClass>, Runt
 
 	<P extends Port<?, ?>> P getPortInstance(Class<P> portType);
 
-	<S extends Signal> S getCurrentTriggeringSignal();
+	<S extends Signal> S getCurrentTrigger();
 
 }

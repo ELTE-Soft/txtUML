@@ -97,7 +97,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <S extends Signal> S getCurrentTriggeringSignal() {
+	public <S extends Signal> S getCurrentTrigger() {
 		return (S) getThread().getCurrentTriggeringSignal();
 	}
 

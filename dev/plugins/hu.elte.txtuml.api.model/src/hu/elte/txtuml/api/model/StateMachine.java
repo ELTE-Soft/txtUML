@@ -84,7 +84,7 @@ import hu.elte.txtuml.api.model.runtime.ModelClassWrapper;
  * 
  * 		{@literal @}Override
  * 		public boolean guard() {
- * 			SampleSignal sg = getSignal(SampleSignal.class); 
+ * 			SampleSignal sg = getTrigger(SampleSignal.class); 
  * 			return sg.sampleParam == 0;
  * 		}
  * 	}
@@ -563,8 +563,8 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 		 *             if the cast might not be performed
 		 */
 		@SuppressWarnings("unchecked")
-		protected final <T extends Signal> T getSignal(Class<T> signalClass) throws ClassCastException {
-	return (T) runtimeInfo().getCurrentTriggeringSignal();
+		protected final <T extends Signal> T getTrigger(Class<T> signalClass) throws ClassCastException {
+			return (T) runtimeInfo().getCurrentTrigger();
 		}
 
 		@Override
@@ -574,7 +574,6 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 		@Override
 		public void exit() {
 		}
-
 
 		@Override
 		public String getVertexTypeName() {
@@ -771,7 +770,7 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 		 * actions.
 		 * <p>
 		 * If the actual transition has a trigger defined, the
-		 * {@code getSignal} method can be used inside the
+		 * {@code getTrigger} method can be used inside the
 		 * overriding methods to get the triggering signal.
 		 * <p>
 		 * Overriding methods may only contain action code. See the
@@ -820,7 +819,7 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 		 * should always do so.
 		 * <p>
 		 * If the actual transition has a trigger defined, the
-		 * {@code getSignal} method can be used inside the
+		 * {@code getTrigger} method can be used inside the
 		 * overriding methods to get the triggering signal.
 		 * <p>
 		 * Overriding methods may only contain a condition evaluation. See the
@@ -869,8 +868,8 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 		 *             if the cast might not be performed
 		 */
 		@SuppressWarnings("unchecked")
-		protected final <T extends Signal> T getSignal(Class<T> signalClass) throws ClassCastException {
-			return (T) runtimeInfo().getCurrentTriggeringSignal();
+		protected final <T extends Signal> T getTrigger(Class<T> signalClass) throws ClassCastException {
+			return (T) runtimeInfo().getCurrentTrigger();
 		}
 
 		@Override
