@@ -461,12 +461,8 @@ public class ActivityExporter {
 		    
 		} else if (node_.eClass().equals(UMLPackage.Literals.OUTPUT_PIN)) {
 			OutputPin outPin = (OutputPin) node_;
-			if (tempVariables.containsKey(outPin)) {
-				source = tempVariables.get(outPin);
-			} else {
-
-				source = getTargetFromActivityNode((ActivityNode) node_.getOwner());
-			}
+			source = tempVariables.containsKey(outPin) ? tempVariables.get(outPin) : 
+				getTargetFromActivityNode((ActivityNode) node_.getOwner());
 
 		} else if (node_.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION)) {
 			source = getValueFromValueSpecification(((ValueSpecificationAction) node_).getValue());
@@ -474,8 +470,12 @@ public class ActivityExporter {
 		    
 			ReadVariableAction rA = (ReadVariableAction) node_;
 			source = getRealVariable(rA.getVariable());
-		} 
-		else {
+		} else if(node_.eClass().equals(UMLPackage.Literals.SEQUENCE_NODE)) {
+			SequenceNode seqNode = (SequenceNode) node_;
+			int lastIndex = seqNode.getNodes().size() - 1;
+			source = getTargetFromActivityNode(seqNode.getNodes().get(lastIndex));			
+			
+		} else {
 			System.out.println(node_.eClass().getName());
 			// TODO just for
 			// development debug

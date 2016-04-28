@@ -135,7 +135,7 @@ void ConfiguratedThreadedRT::setConfiguration(ThreadConfiguration* conf)
     poolManager->setConfiguration(conf);
 }
 
-void ConfiguratedThreadedRT::enqueObject(StateMachineI *sm) {}
+void ConfiguratedThreadedRT::enqueObject(StateMachineI*) {}
 
 ConfiguratedThreadedRT::~ConfiguratedThreadedRT()
 {
