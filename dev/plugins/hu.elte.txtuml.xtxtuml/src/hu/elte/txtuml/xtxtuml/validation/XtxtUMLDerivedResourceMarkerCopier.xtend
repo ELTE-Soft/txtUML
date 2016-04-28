@@ -68,7 +68,7 @@ class XtxtUMLDerivedResourceMarkerCopier extends DerivedResourceMarkerCopier {
 		}
 		val severitiesProvider = serviceProvider.get(IssueSeveritiesProvider);
 		val severity = severitiesProvider.getIssueSeverities(new ResourceImpl(resourceURI)).getSeverity(
-			IssueCodes.COPY_JTXTUML_PROBLEMS);
+			XtxtUMLIssueCodes.COPY_JTXTUML_PROBLEMS);
 		switch severity {
 			case WARNING:
 				return IMarker.SEVERITY_WARNING
@@ -164,4 +164,5 @@ class XtxtUMLDerivedResourceMarkerCopier extends DerivedResourceMarkerCopier {
 		}
 		return workspace.getRoot().getFile(storage.getFullPath())
 	}
+
 }

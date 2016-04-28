@@ -1,6 +1,7 @@
 package hu.elte.txtuml.xtxtuml.tests
 
 import com.google.inject.Inject
+import hu.elte.txtuml.xtxtuml.XtxtUMLInjectorProvider
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage
 import org.eclipse.xtext.junit4.InjectWith
@@ -10,10 +11,10 @@ import org.eclipse.xtext.junit4.validation.ValidationTestHelper
 import org.junit.Test
 import org.junit.runner.RunWith
 
-import static hu.elte.txtuml.xtxtuml.validation.XtxtUMLAssociationValidator.*
+import static hu.elte.txtuml.xtxtuml.validation.XtxtUMLIssueCodes.*
 
-@RunWith(typeof(XtextRunner))
-@InjectWith(typeof(CustomXtxtUMLInjectorProvider))
+@RunWith(XtextRunner)
+@InjectWith(XtxtUMLInjectorProvider)
 class XtxtUMLAssociationValidatorTest {
 
 	@Inject extension ParseHelper<TUFile>
@@ -22,6 +23,8 @@ class XtxtUMLAssociationValidatorTest {
 	@Test
 	def void testAssociationWithTwoEnds() {
 		'''
+			package model.test;
+			
 			class A {}
 			class B {}
 			association A_B {
@@ -34,6 +37,8 @@ class XtxtUMLAssociationValidatorTest {
 	@Test
 	def void testAssociationWithOneEnd() {
 		'''
+			package model.test;
+			
 			class A {}
 			class B {}
 			association A_B {
@@ -45,6 +50,8 @@ class XtxtUMLAssociationValidatorTest {
 	@Test
 	def void testAssociationWithThreeEnds() {
 		'''
+			package model.test;
+			
 			class A {}
 			class B {}
 			association A_B {
@@ -58,30 +65,36 @@ class XtxtUMLAssociationValidatorTest {
 	@Test
 	def void testAssociationWithNonUniqueEndNames() {
 		'''
+			package model.test;
+			
 			class A {}
 			class B {}
 			association A_B {
 				1 A a;
 				1 B a;
 			}
-		'''.parse.assertError(XtxtUMLPackage.eINSTANCE.TUAssociationEnd, ASSOCIATION_END_NAME_IS_NOT_UNIQUE)
+		'''.parse.assertError(XtxtUMLPackage.eINSTANCE.TUAssociationEnd, NOT_UNIQUE_NAME)
 	}
 
 	@Test
 	def void testAssociationWithContainerEnd() {
 		'''
+			package model.test;
+			
 			class A {}
 			class B {}
 			association A_B {
 				container A a;
 				1 B b;
 			}
-		'''.parse.assertError(XtxtUMLPackage.eINSTANCE.TUAssociationEnd, ASSOCIATION_CONTAINS_CONTAINER_END)
+		'''.parse.assertError(XtxtUMLPackage.eINSTANCE.TUAssociationEnd, CONTAINER_END_IN_ASSOCIATION)
 	}
 
 	@Test
 	def void testCompositionWithoutContainerEnd() {
 		'''
+			package model.test;
+			
 			class A {}
 			class B {}
 			composition A_B {
@@ -94,6 +107,8 @@ class XtxtUMLAssociationValidatorTest {
 	@Test
 	def void testCompositionWithTwoContainerEnds() {
 		'''
+			package model.test;
+			
 			class A {}
 			class B {}
 			composition A_B {
@@ -106,6 +121,8 @@ class XtxtUMLAssociationValidatorTest {
 	@Test
 	def void testCompositionWithOneContainerEnd() {
 		'''
+			package model.test;
+			
 			class A {}
 			class B {}
 			composition A_B {

@@ -1,0 +1,34 @@
+package producer_consumer.x;
+
+import hu.elte.txtuml.api.model.ModelExecutor;
+import producer_consumer.x.model.Consumer;
+import producer_consumer.x.model.Consumption;
+import producer_consumer.x.model.Producer;
+import producer_consumer.x.model.Production;
+import producer_consumer.x.model.Storage;
+
+execution Tester {
+	ModelExecutor.Settings.setExecutorLog(true);
+
+	Storage storage = create(Storage, 2);
+	Producer p1 = create(Producer, 3);
+	Producer p2 = create(Producer, 3);
+	Consumer c1 = create(Consumer, 2);
+	Consumer c2 = create(Consumer, 2);
+	Consumer c3 = create(Consumer, 2);
+
+	link(Production.producer, p1, Production.storage, storage);
+	link(Production.producer, p2, Production.storage, storage);
+	link(Consumption.consumer, c1, Consumption.storage, storage);
+	link(Consumption.consumer, c2, Consumption.storage, storage);
+	link(Consumption.consumer, c3, Consumption.storage, storage);
+
+	start(storage);
+	start(p1);
+	start(p2);
+	start(c1);
+	start(c2);
+	start(c3);
+
+	ModelExecutor.shutdown();
+}
