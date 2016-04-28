@@ -28,14 +28,13 @@ public class Human extends ModelClass {
 			Document doc = Action.create(Document.class);
 			doc.sideCount = count;
 
-			Action.link(DocumentToPrint.toPrint.class, doc, DocumentToPrint.PrinterFrontEnd.class, p);
+			Action.link(DocumentToPrint.toPrint.class, doc, DocumentToPrint.printerFrontend.class, p);
 			Action.send(new Print(), p);
 		}
 	}
 
 	@From(Init.class)
 	@To(DoPrint.class)
-	@Trigger(WantToPrint.class)
 	public class Initialize extends Transition {
 	}
 

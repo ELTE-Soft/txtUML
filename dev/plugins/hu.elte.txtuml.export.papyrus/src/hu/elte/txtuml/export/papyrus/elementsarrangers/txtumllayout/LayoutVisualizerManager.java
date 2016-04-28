@@ -46,7 +46,7 @@ public class LayoutVisualizerManager {
 		this.associations = links;
 		this.statementsSet = statements;
 		layoutVisualize = new LayoutVisualize();
-		layoutVisualize.setLogging(true);
+		layoutVisualize.setLogging(false);
 	}
 	
 	/**
@@ -115,6 +115,8 @@ public class LayoutVisualizerManager {
 
 		objects = layoutVisualize.getObjects();
 		associations = layoutVisualize.getAssocs();
+
+		//FileVisualize.printOutput(objects, associations, "C:/Users/Andris/Desktop/vis.txt");
 	}
 	
 	private String formatStatements(Collection<Statement> statements){

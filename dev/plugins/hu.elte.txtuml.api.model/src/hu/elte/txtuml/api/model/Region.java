@@ -144,6 +144,12 @@ public class Region extends StateMachine {
 		}
 		if (findAndExecuteTransition(port, signal)) {
 			callEntryAction(signal);
+		} else {
+			if (signal == null) {
+				Report.error.forEach(x -> x.missingInitialTransition(currentVertex));
+			} else {
+				Report.warning.forEach(x -> x.lostSignalAtObject(this, signal));
+			}
 		}
 	}
 

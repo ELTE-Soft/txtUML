@@ -60,7 +60,7 @@ public interface Collection<T> extends Iterable<T>, ModelElement {
 	/**
 	 * Checks whether a certain model object is in this collection.
 	 * 
-	 * @param object
+	 * @param element
 	 *            the model object to check
 	 * @return <code>true</code> if this collection contains the specified
 	 *         <code>object</code>; <code>false</code> otherwise
@@ -93,7 +93,7 @@ public interface Collection<T> extends Iterable<T>, ModelElement {
 	 * Creates a new collection which contains all the elements of this
 	 * collection and also the specified object.
 	 *
-	 * @param object
+	 * @param element
 	 *            the object to be included in the result collection
 	 * @return a new collection containing the desired elements
 	 */
@@ -117,7 +117,7 @@ public interface Collection<T> extends Iterable<T>, ModelElement {
 	 * collection without the specified object (if it was included in the
 	 * collection).
 	 *
-	 * @param object
+	 * @param element
 	 *            the object <i>not</i> to be included in the result collection
 	 * @return a new collection containing the desired elements
 	 */
@@ -211,4 +211,5 @@ public interface Collection<T> extends Iterable<T>, ModelElement {
 			return this;
 		}
 	}
+
 }

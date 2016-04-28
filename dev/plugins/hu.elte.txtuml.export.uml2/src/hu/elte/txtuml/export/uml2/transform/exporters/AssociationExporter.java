@@ -34,8 +34,7 @@ public class AssociationExporter {
 	 * @param exportedModel
 	 *            The exported UML2 model.
 	 */
-	public AssociationExporter(TypeDeclaration sourceClass,
-			ModelMapCollector mapping, Model exportedModel) {
+	public AssociationExporter(TypeDeclaration sourceClass, ModelMapCollector mapping, Model exportedModel) {
 		this.sourceClass = sourceClass;
 		this.mapping = mapping;
 		this.exportedModel = exportedModel;
@@ -46,20 +45,18 @@ public class AssociationExporter {
 	 * 
 	 * @return The exported UML2 association.
 	 * @throws ExportException
+	 *
 	 */
 	@SuppressWarnings("rawtypes")
 	public Association exportAssociation() throws ExportException {
 		List classes = this.sourceClass.bodyDeclarations();
 		if (classes.size() != 2) {
-			throw new ExportException(
-					"The following association doesn't have exactly 2 association ends: "
-							+ sourceClass.resolveBinding().getQualifiedName());
+			throw new ExportException("The following association doesn't have exactly 2 association ends: "
+					+ sourceClass.resolveBinding().getQualifiedName());
 		}
 
-		Association exportedAssociation = (Association) exportedModel
-				.createPackagedElement(sourceClass.getName()
-						.getFullyQualifiedName(), UMLPackage.eINSTANCE
-						.getAssociation());
+		Association exportedAssociation = (Association) exportedModel.createPackagedElement(
+				sourceClass.getName().getFullyQualifiedName(), UMLPackage.eINSTANCE.getAssociation());
 
 		exportAssociationEnd(exportedAssociation, classes.get(0), classes.get(1));
 		exportAssociationEnd(exportedAssociation, classes.get(1), classes.get(0));
@@ -75,6 +72,7 @@ public class AssociationExporter {
 	 * @param sourceElement
 	 *            The class representing the txtUML association end.
 	 * @throws ExportException
+	 *
 	 */
 	private void exportAssociationEnd(Association exportedAssociation, Object sourceElement, Object otherElement)
 			throws ExportException {
@@ -116,7 +114,7 @@ public class AssociationExporter {
 			mapping.put(SharedUtils.qualifiedName((TypeDeclaration)sourceElement), end);
 		}
 	}
-	
+
 	/**
 	 * @param end
 	 *            Type declaration representing an association end.

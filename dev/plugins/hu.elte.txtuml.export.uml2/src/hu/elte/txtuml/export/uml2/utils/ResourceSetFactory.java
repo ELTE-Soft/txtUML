@@ -28,27 +28,24 @@ public final class ResourceSetFactory {
 	public ResourceSet createAndInitResourceSet() {
 		ResourceSet resourceSet = new ResourceSetImpl();
 
-		URI uml2ResourcesPluginURI = URI
-				.createURI(ExporterConfiguration.UML2_RESOURCES_PLUGIN_PATH);
-		resourceSet.getPackageRegistry().put(UMLPackage.eNS_URI,
-				UMLPackage.eINSTANCE);
-		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap()
-				.put(UMLResource.FILE_EXTENSION, UMLResource.Factory.INSTANCE);
+		URI uml2ResourcesPluginURI = URI.createURI(ExporterConfiguration.UML2_RESOURCES_PLUGIN_PATH);
+		resourceSet.getPackageRegistry().put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
+		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION,
+				UMLResource.Factory.INSTANCE);
 
 		Map<URI, URI> uriMap = resourceSet.getURIConverter().getURIMap();
 
 		uriMap.put(URI.createURI(UMLResource.LIBRARIES_PATHMAP),
-				uml2ResourcesPluginURI.appendSegment("libraries")
-						.appendSegment(""));
+				uml2ResourcesPluginURI.appendSegment("libraries").appendSegment(""));
 
 		uriMap.put(URI.createURI(UMLResource.METAMODELS_PATHMAP),
-				uml2ResourcesPluginURI.appendSegment("metamodels")
-						.appendSegment(""));
+				uml2ResourcesPluginURI.appendSegment("metamodels").appendSegment(""));
 
-		uriMap.put(
-				URI.createURI(UMLResource.PROFILES_PATHMAP),
-				uml2ResourcesPluginURI.appendSegment("profiles").appendSegment(
-						""));
+		uriMap.put(URI.createURI(UMLResource.PROFILES_PATHMAP),
+				uml2ResourcesPluginURI.appendSegment("profiles").appendSegment(""));
+
+		uriMap.put(URI.createURI("pathmap://TXTUML_STDLIB/"),
+				URI.createURI("platform:/plugin/hu.elte.txtuml.stdlib/src/hu/elte/txtuml/stdlib/"));
 
 		UMLResourcesUtil.init(resourceSet);
 		return resourceSet;

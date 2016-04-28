@@ -78,12 +78,6 @@ public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 							new CreateCompositeDiagramCommand());
 				}
 			}
-		 
-		 
-		 /*if(txtumlregistry.getDescriptor().generateSMDs){
-			 List<Element> statemachines = modelManager.getElementsOfTypes(Arrays.asList(StateMachine.class));
-			 diagramManager.createDiagrams(statemachines, new CreateStateMachineDiagramCommand());
-		 }*/
 		 monitor.worked(100);
 	}
 	

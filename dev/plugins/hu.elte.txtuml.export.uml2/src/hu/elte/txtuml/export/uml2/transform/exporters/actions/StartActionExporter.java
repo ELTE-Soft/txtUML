@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.uml2.transform.exporters.actions;
 
 import java.util.List;
 
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.StartClassifierBehaviorAction;
 import org.eclipse.uml2.uml.UMLPackage;
 
@@ -10,20 +11,20 @@ import hu.elte.txtuml.export.uml2.transform.exporters.expressions.ExpressionExpo
 
 public class StartActionExporter {
 
-	private final ExpressionExporter expressionExporter;
+	private final ExpressionExporter<? extends ActivityNode> expressionExporter;
 
-	public StartActionExporter(ExpressionExporter expressionExporter) {
+	public StartActionExporter(ExpressionExporter<? extends ActivityNode> expressionExporter) {
 		this.expressionExporter = expressionExporter;
 	}
 
 	public void export(List<Expr> args) {
 		Expr arg = args.get(0);
+		arg.evaluate();
 
 		StartClassifierBehaviorAction startAction = (StartClassifierBehaviorAction) expressionExporter
-				.createExecutableNode("start " + arg.getName(),
-						UMLPackage.Literals.START_CLASSIFIER_BEHAVIOR_ACTION);
+				.createAndAddNode("start " + arg.getName(), UMLPackage.Literals.START_CLASSIFIER_BEHAVIOR_ACTION);
 
 		startAction.createObject(arg.getName(), arg.getType());
-
+		expressionExporter.createObjectFlowBetweenActivityNodes(arg.getOutputPin(), startAction.getObject());
 	}
 }

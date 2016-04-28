@@ -15,8 +15,8 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 
-import hu.elte.txtuml.export.ExportUtils;
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
+import hu.elte.txtuml.export.papyrus.utils.LayoutUtils;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.utils.Pair;
 
@@ -24,7 +24,7 @@ import hu.elte.txtuml.utils.Pair;
  * This class helps preparing the {@link PapyrusVisualizer} from a txtUML model
  */
 public class TxtUMLExporter {
-	
+
 	private String projectName;
 	private String outputFolder;
 	private String txtUMLModelName;
@@ -56,17 +56,21 @@ public class TxtUMLExporter {
 		List<Pair<String, DiagramExportationReport>> reports = new ArrayList<>();
 		
 		for(String layout : txtUMLLayout){
-			DiagramExportationReport report = ExportUtils.exportTxtUMLLayout(projectName, layout);
-	        if(!report.isSuccessful()){
-	        	StringBuilder errorMessages = new StringBuilder("Errors occured while exporting the layout description:"+System.lineSeparator());
-	        	for(Object error : report.getErrors()){
-	        		errorMessages.append("- "+error+System.lineSeparator());
-	        	}
-	        	errorMessages.append("Failed to export the layout description.");
-	        	throw new LayoutExportException(errorMessages.toString());
-	        }
-	        
-	        reports.add(new Pair<>(layout,report));
+			try {
+				DiagramExportationReport report = LayoutUtils.exportTxtUMLLayout(projectName, layout);
+		        if(!report.isSuccessful()){
+		        	StringBuilder errorMessages = new StringBuilder("Errors occured during layout exportation:"+System.lineSeparator());
+		        	for(Object error : report.getErrors()){
+		        		errorMessages.append("- "+error+System.lineSeparator());
+		        	}
+		        	errorMessages.append("The exportation was't successfull.");
+		        	throw new LayoutExportException(errorMessages.toString());
+		        }
+		        
+		        reports.add(new Pair<>(layout,report));
+			} catch (Exception e) {
+				throw e;
+			}
 		}
 		return new TxtUMLLayoutDescriptor(txtUMLModelName, reports); 
 	}

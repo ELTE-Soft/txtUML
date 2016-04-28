@@ -2,24 +2,23 @@ package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.RegionEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateEditPart;
-import org.eclipse.uml2.uml.Comment;
-import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.FinalState;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.Transition;
 
+import com.google.common.collect.Lists;
+
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
 import hu.elte.txtuml.export.papyrus.api.StateMachineDiagramElementsController;
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
 
 /**
@@ -53,8 +52,8 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 		ElementsManagerUtils.removeEditParts(diagramEditPart.getEditingDomain(), Arrays.asList(stateMachineEditpart));
 		ElementsManagerUtils.addElementsToEditPart(diagramEditPart, Arrays.asList(smElement));
 		
-		stateMachineEditpart = (EditPart) diagramEditPart.getChildren().get(0);
-		fillState(stateMachineEditpart);
+		EditPart newStateMachineEditpart = (EditPart) diagramEditPart.getChildren().get(0);
+		fillState(newStateMachineEditpart, elements);
 	}
 	
 	/**
@@ -62,7 +61,7 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	 * (Calls the {@link #addSubElements(EditPart)} for every region) 
 	 * @param state - The state
 	 */
-	private void fillState(EditPart state){
+	private void fillState(EditPart state, List<Element> elements){
 		EditPart ep = StateMachineDiagramElementsController.getStateCompartmentEditPart(state);
 		if(ep == null) {
 			ep = StateMachineDiagramElementsController.getCustomStateMachineCompartmentEditPart(state);
@@ -74,7 +73,7 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 		List<RegionEditPart> regions = ep.getChildren();
 		
 		for(RegionEditPart region : regions){
-			this.addSubElements(region);
+			this.addSubElements(region, elements);
 		}
 	}
 	
@@ -83,37 +82,31 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	 * for every state. 
 	 * @param region - The EditPart
 	 */
-	private void addSubElements(RegionEditPart region){
-		EObject parent = ((View) region.getModel()).getElement();
-		List<Element> list = ((Element) parent).getOwnedElements();
+	private void addSubElements(RegionEditPart region, List<Element> elements){
 		
-		List<State> states = UMLModelManager.getElementsOfTypeFromList(list, State.class);
-		List<Pseudostate> pseudostates = UMLModelManager.getElementsOfTypeFromList(list, Pseudostate.class);
-		List<FinalState> finalstates = UMLModelManager.getElementsOfTypeFromList(list, FinalState.class);
-		List<Transition> transitions = UMLModelManager.getElementsOfTypeFromList(list, Transition.class);
+		List<State> states = this.filterSubelementsOfRegion(region, UMLModelManager.getElementsOfTypeFromList(elements, State.class));
+		List<Pseudostate> pseudostates = this.filterSubelementsOfRegion(region, UMLModelManager.getElementsOfTypeFromList(elements, Pseudostate.class));
+		List<FinalState> finalstates = this.filterSubelementsOfRegion(region, UMLModelManager.getElementsOfTypeFromList(elements, FinalState.class));
+		List<Transition> transitions = this.filterSubelementsOfRegion(region, UMLModelManager.getElementsOfTypeFromList(elements, Transition.class));
 	
 		StateMachineDiagramElementsController.addPseudostatesToRegion(region, pseudostates);
 		StateMachineDiagramElementsController.addStatesToRegion(region, states);
 		StateMachineDiagramElementsController.addFinalStatesToRegion(region, finalstates);
 		StateMachineDiagramElementsController.addTransitionsToRegion(region, transitions);
 	
-		if(PreferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_CONSTRAINT_PREF)){
-			List<Constraint> constraints = UMLModelManager.getElementsOfTypeFromList(list, Constraint.class);
-			StateMachineDiagramElementsController.addElementsToRegion(region, constraints);
-		}
-		
-		if(PreferencesManager.getBoolean(PreferencesManager.STATEMACHINE_DIAGRAM_COMMENT_PREF)){
-			List<Comment> comments = UMLModelManager.getElementsOfTypeFromList(list, Comment.class);
-			StateMachineDiagramElementsController.addElementsToRegion(region, comments);
-		}
-		
 		@SuppressWarnings("unchecked")
 		List<EditPart> subEPs = StateMachineDiagramElementsController.getRegionCompatementEditPart(region).getChildren();
 		
 		for(EditPart subEP : subEPs){
 			if(subEP instanceof StateEditPart){
-				fillState(subEP);
+				fillState(subEP, elements);
 			}
 		}
+	}
+	
+	private <T> List<T> filterSubelementsOfRegion(RegionEditPart region, List<T> elements){
+		return elements.stream().filter((elem) -> {
+			return ((Element)((View)region.getModel()).getElement()).getOwnedElements().stream().anyMatch((child) -> child.equals(elem));
+		}).collect(Collectors.toList());
 	}
 }
