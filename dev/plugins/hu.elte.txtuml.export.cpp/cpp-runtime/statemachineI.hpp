@@ -24,7 +24,6 @@ public:
   void deleteNextMessage() {_messageQueue->pop_front(); }
   bool emptyMessageQueue(){return _messageQueue->empty();}
   void setPool(StateMachineThreadPool* pool_){_pool=pool_;}
-  //void setRuntime(RuntimeI* runtime_){_runtime=runtime_;}
   void setMessageQueue(std::shared_ptr<MessageQueueType> messageQueue_){_messageQueue=messageQueue_;}
   void setPooled(bool);
   bool isInPool(){return _inPool;}

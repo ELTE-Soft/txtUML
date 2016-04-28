@@ -61,6 +61,7 @@ import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 
 public class ActivityExporter {
 	Map<CreateObjectAction, String> _objectMap = new HashMap<CreateObjectAction, String>();
+	Map<Variable,String> objectVariableMap;
 	int tempVariableCounter;
 	int generatedTempVariableCounter;
 	int signalCounter;
@@ -70,6 +71,8 @@ public class ActivityExporter {
 
 	private Map<OutputPin, String> tempVariables;
 	private Map<Variable,String> generatedTempVariableNames;
+	
+	boolean isAddVariable;
 
 	public ActivityExporter() {
 		reinitilaize();
@@ -81,10 +84,12 @@ public class ActivityExporter {
 		generatedTempVariableNames = new HashMap<Variable,String>();
 		declaredTempVariables = new HashSet<String>();
 		constructorCalls = new HashSet<CallOperationAction>();
+		objectVariableMap = new HashMap<Variable,String>();
 		tempVariableCounter = 0;
 		generatedTempVariableCounter = 0;
 		signalCounter = 0;
 		returnNode = null;
+		isAddVariable = false;
 	}
 
 	public StringBuilder createfunctionBody(Activity activity_) {
@@ -228,10 +233,20 @@ public class ActivityExporter {
 
 		} else if (node.eClass().equals(UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION)) {
 			AddVariableValueAction avva = (AddVariableValueAction) node;
-			
-			source.append(ActivityTemplates.generalSetValue(getRealVariable(avva.getVariable()),
+			if (avva.getValue().getIncomings().size() > 0 && avva.getValue().getIncomings().get(0).getSource().getOwner() != null &&
+				avva.getValue().getIncomings().get(0).getSource().getOwner()
+				.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
+			    OutputPin objectPin = (OutputPin) 
+				    avva.getValue().getIncomings().get(0).getSource();
+			    objectVariableMap.put(avva.getVariable(), tempVariables.get(objectPin));
+			    
+			    
+			} else {
+			    source.append(ActivityTemplates.generalSetValue(getRealVariable(avva.getVariable()),
 					getTargetFromInputPin(avva.getValue()),
-					ActivityTemplates.getOperationFromType(avva.getVariable().isMultivalued(), avva.isReplaceAll())));
+					ActivityTemplates.getOperationFromType(avva.getVariable().isMultivalued(), avva.isReplaceAll()))); 
+			}
+			
 
 		} else if (node.eClass().equals(UMLPackage.Literals.LOOP_NODE)) {
 			source.append(createCycleCode((LoopNode) node));
@@ -716,8 +731,9 @@ public class ActivityExporter {
 	}
 	
 	private String getRealVariable(Variable variable) {
-	    return generatedTempVariableNames.containsKey(variable) ? 
-			 generatedTempVariableNames.get(variable) : variable.getName();
+	    return objectVariableMap.containsKey(variable) ? 
+		    objectVariableMap.get(variable) : generatedTempVariableNames.containsKey(variable) ?
+			    generatedTempVariableNames.get(variable) : variable.getName();
 	}
 
 	private String addValueToTemporalVariable(String type, String var, String value) {
