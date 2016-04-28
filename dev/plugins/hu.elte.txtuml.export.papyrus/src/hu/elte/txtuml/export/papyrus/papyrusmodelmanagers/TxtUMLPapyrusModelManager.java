@@ -16,6 +16,7 @@ import org.eclipse.uml2.uml.Element;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.ClassDiagramElementsTxtUmlArranger;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.CompositeDiagramElementsTxtUmlArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.StateMachineDiagramElementsTxtUmlArranger;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.ClassDiagramElementsManager;
@@ -118,6 +119,8 @@ public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 			diagramElementsArranger = new ClassDiagramElementsTxtUmlArranger(diagep, txtumlregistry);
 		}else if(diagram.getType().equals(diagramType_SMD)){                                 
 			diagramElementsArranger = new StateMachineDiagramElementsTxtUmlArranger(diagep, txtumlregistry);
+		}else if(diagram.getType().equals(diagramType_CSD)){                                 
+			diagramElementsArranger = new CompositeDiagramElementsTxtUmlArranger(diagep, txtumlregistry);
 		}else{
 			return;
 		}
