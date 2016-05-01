@@ -1,15 +1,18 @@
 package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.papyrus.uml.diagram.common.editparts.RoundedCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.composite.custom.utils.CompositeEditPartUtil;
 import org.eclipse.papyrus.uml.diagram.composite.edit.parts.ClassCompositeCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.composite.edit.parts.ClassCompositeEditPart;
-import org.eclipse.papyrus.uml.diagram.composite.edit.parts.ClassCompositeNameEditPart;
+import org.eclipse.papyrus.uml.diagram.composite.edit.parts.PropertyPartEditPartCN;
+import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Port;
 import org.eclipse.uml2.uml.Property;
@@ -36,40 +39,43 @@ public class CompositeDiagramElementsManager extends AbstractDiagramElementsMana
 		
 		elements.forEach(e -> {
 			if(e instanceof Property){
-				CompositeDiagramElementsController.addPropertyToClassCompositeCompartementEditPart(compartment, (Property)e);
-				
-				@SuppressWarnings("unchecked")
-				List<GraphicalEditPart> children = compartment.getChildren();
-				
-				for(GraphicalEditPart child : children){ 
-					if(child instanceof ClassCompositeEditPart){
-						addPortToComposite((ClassCompositeEditPart)child);
-					}
-				};
-				
+				CompositeDiagramElementsController.addPropertyToClassCompositeCompartementEditPart(compartment, (Property)e);				
 			}
 		});
+		
+		@SuppressWarnings("unchecked")
+		List<GraphicalEditPart> children = compartment.getChildren();
+		
+		for(GraphicalEditPart child : children){ 
+			if(child instanceof PropertyPartEditPartCN){
+				addPortToComposite((PropertyPartEditPartCN)child);
+			}
+			
+			if(child instanceof ClassCompositeEditPart){
+				addPortToComposite((ClassCompositeEditPart)child);
+			}
+		};
+
 		
 		addPortToComposite(composite);
 	}
 	
-	private void addPortToComposite(ClassCompositeEditPart composite) {
-		@SuppressWarnings("unchecked")
-		List<GraphicalEditPart> children = composite.getChildren();
-		@SuppressWarnings("unchecked")
-		List<Port> ports = (List<Port>) (Object) children.stream().map(e-> ((View)children.get(0).getModel()).getElement()).filter(e -> e instanceof Port).collect(Collectors.toList());
-		for(Port p : ports){
-			CompositeDiagramElementsController.addPortToClassCompositeNameEditPart(getClassCompositeNameEditPart(composite), p);
-		}
-	}
-	
-	private ClassCompositeNameEditPart getClassCompositeNameEditPart(ClassCompositeEditPart composite){
-		ClassCompositeNameEditPart result = null;
-		for(Object child : composite.getChildren()){
-			if(child instanceof ClassCompositeNameEditPart){
-				result = (ClassCompositeNameEditPart) child;
+	@SuppressWarnings("unchecked")
+	private void addPortToComposite(RoundedCompartmentEditPart composite) {
+		Element elem = (Element) ((View)composite.getModel()).getElement();
+		List<Port> ports = Collections.emptyList();
+		if(elem instanceof Property){
+			Property prop = (Property) elem;
+			Object clazz =  prop.getType();
+			if(clazz instanceof Classifier){
+				ports = (List<Port>) (Object) ((Classifier)clazz).getAttributes().stream().filter(p-> p instanceof Port).collect(Collectors.toList());
 			}
-		};
-		return result;
+		}else if(elem instanceof org.eclipse.uml2.uml.Class){
+			ports = (List<Port>) (Object) ((org.eclipse.uml2.uml.Class) elem).getAttributes().stream().filter(p-> p instanceof Port).collect(Collectors.toList());
+		}
+		
+		for(Port p : ports){
+			CompositeDiagramElementsController.addPortToClassCompositeEditPart(composite, p);
+		}
 	}
 }

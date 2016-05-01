@@ -1,7 +1,7 @@
 package hu.elte.txtuml.export.papyrus.api;
 
+import org.eclipse.papyrus.uml.diagram.common.editparts.RoundedCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.composite.edit.parts.ClassCompositeCompartmentEditPart;
-import org.eclipse.papyrus.uml.diagram.composite.edit.parts.ClassCompositeNameEditPart;
 import org.eclipse.uml2.uml.Port;
 import org.eclipse.uml2.uml.Property;
 
@@ -16,7 +16,7 @@ public class CompositeDiagramElementsController {
 		ElementsManagerUtils.addElementToEditPart(diagramEditPart, element);
 	}
 
-	public static void addPortToClassCompositeNameEditPart(ClassCompositeNameEditPart classCompositeNameEditPart,
+	public static void addPortToClassCompositeEditPart(RoundedCompartmentEditPart classCompositeNameEditPart,
 			Port p) {
 		ElementsManagerUtils.addElementToEditPart(classCompositeNameEditPart, p);
 	}
