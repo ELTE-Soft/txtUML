@@ -76,6 +76,12 @@ class ExporterCache {
 		}
 	}
 
+	def Map<String, Element> getMapping(){
+		val mapping = new HashMap<String, Element>();
+		fetchMap.forEach[key, value | mapping.put(key.value.toString, value)];
+		return mapping;
+	}
+
 	protected def generateAccessKey(Class<?> exporterClass, Object key) {
 		new Pair(exporterClass, generateSourceAccessKey(key))
 	}

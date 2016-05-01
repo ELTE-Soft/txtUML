@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
 
 /**
@@ -42,8 +43,10 @@ public class ModelMapCollector {
 	 *            EMF-UML2 model.
 	 */
 	public void put(String className, EObject eObject) {
-		String uriFragment = eObject.eResource().getURIFragment(eObject);
-		map.put(className, uriFragment);
+		if(eObject != null){
+			String uriFragment = eObject.eResource().getURIFragment(eObject);
+			map.put(className, uriFragment);
+		}
 	}
 
 	/**
