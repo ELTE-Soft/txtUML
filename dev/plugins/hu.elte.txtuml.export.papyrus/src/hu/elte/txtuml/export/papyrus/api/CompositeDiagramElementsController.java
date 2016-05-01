@@ -16,7 +16,7 @@ public class CompositeDiagramElementsController {
 		ElementsManagerUtils.addElementToEditPart(diagramEditPart, element);
 	}
 
-	public static void addPortToClassCompositeEditPart(RoundedCompartmentEditPart classCompositeNameEditPart,
+	public static void addPortToCompartmentEditPart(RoundedCompartmentEditPart classCompositeNameEditPart,
 			Port p) {
 		ElementsManagerUtils.addElementToEditPart(classCompositeNameEditPart, p);
 	}

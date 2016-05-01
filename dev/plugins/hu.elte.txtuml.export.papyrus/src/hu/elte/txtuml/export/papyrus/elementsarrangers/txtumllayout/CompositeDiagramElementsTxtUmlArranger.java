@@ -13,6 +13,7 @@ import org.eclipse.gmf.runtime.diagram.ui.layout.FreeFormLayoutEx;
 import org.eclipse.papyrus.uml.diagram.composite.custom.utils.CompositeEditPartUtil;
 import org.eclipse.papyrus.uml.diagram.composite.edit.parts.ClassCompositeCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.composite.edit.parts.ClassCompositeEditPart;
+import org.eclipse.papyrus.uml.diagram.composite.edit.parts.PropertyPartEditPartCN;
 import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateMachineEditPart;
 import org.eclipse.uml2.uml.Element;
 
@@ -41,10 +42,9 @@ public class CompositeDiagramElementsTxtUmlArranger extends AbstractDiagramEleme
 		List<GraphicalEditPart> children = compartment.getChildren();
 		
 		super.arrangeChildren(compartment, monitor);
-
 				
 		Dimension preferredSize = this.calculatePreferredSize((List<GraphicalEditPart>) children);
-		DiagramElementsModifier.resizeGraphicalEditPart(composite, preferredSize.width+15, preferredSize.height+35);
+		DiagramElementsModifier.resizeGraphicalEditPart(composite, preferredSize.width+25, preferredSize.height+45);
 	}
 
 	private Dimension calculatePreferredSize(List<? extends GraphicalEditPart> editparts){
@@ -67,6 +67,15 @@ public class CompositeDiagramElementsTxtUmlArranger extends AbstractDiagramEleme
 			bottomRight.y = constraint.getBottomRight().y > bottomRight.y ? constraint.getBottomRight().y : bottomRight.y;
 		}
 		
-		return new Dimension(bottomRight.x-topLeft.x, bottomRight.y-topLeft.y);
+		return new Dimension(bottomRight.x, bottomRight.y);
+	}
+	
+	@Override
+	protected Dimension getSize(GraphicalEditPart editpart){
+		Dimension dim = super.getSize(editpart);
+		if(editpart instanceof PropertyPartEditPartCN || editpart instanceof ClassCompositeEditPart){
+			dim = new Dimension(dim.width+20, dim.height+20);
+		}
+		return dim;
 	}
 }

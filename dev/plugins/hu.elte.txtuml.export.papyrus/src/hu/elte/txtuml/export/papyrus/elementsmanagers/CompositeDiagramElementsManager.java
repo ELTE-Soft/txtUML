@@ -61,8 +61,8 @@ public class CompositeDiagramElementsManager extends AbstractDiagramElementsMana
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void addPortToComposite(RoundedCompartmentEditPart composite) {
-		Element elem = (Element) ((View)composite.getModel()).getElement();
+	private void addPortToComposite(RoundedCompartmentEditPart compartment) {
+		Element elem = (Element) ((View)compartment.getModel()).getElement();
 		List<Port> ports = Collections.emptyList();
 		if(elem instanceof Property){
 			Property prop = (Property) elem;
@@ -75,7 +75,7 @@ public class CompositeDiagramElementsManager extends AbstractDiagramElementsMana
 		}
 		
 		for(Port p : ports){
-			CompositeDiagramElementsController.addPortToClassCompositeEditPart(composite, p);
+			CompositeDiagramElementsController.addPortToCompartmentEditPart(compartment, p);
 		}
 	}
 }
