@@ -42,21 +42,24 @@ class ExporterCache {
 	 * @param store Pre-store action, called before exportContents.
 	 */
 	def <S, A, R extends Element> R export(Exporter<S, A, R> exporter, S source, A access, Consumer<? super R> store) {
-		val exported = cache.get(new Pair(exporter.class, source))
+		val accessKey = generateAccessKey(exporter.class, access)
+		val exported = cache.get(accessKey)
+		
 		if (exported != null) {
 			return exported as R
 		}
-		val accessKey = generateAccessKey(exporter.class, access)
+		
 		val fetched = fetchMap.get(accessKey) as R;
 		if (fetched != null) {
 			exporter.alreadyExists(fetched)
+			cache.put(accessKey, fetched)
 			store.accept(fetched)
 			exporter.exportContents(source)
 			return fetched
 		}
 		val justExported = exporter.createResult(access)
 		if (justExported != null) {
-			cache.put(new Pair(exporter.class, source), justExported)
+			cache.put(accessKey, justExported)
 			fetchMap.put(accessKey, justExported)
 			store.accept(justExported)
 			exporter.exportContents(source)
@@ -78,7 +81,9 @@ class ExporterCache {
 
 	def Map<String, Element> getMapping(){
 		val mapping = new HashMap<String, Element>();
-		fetchMap.forEach[key, value | mapping.put(key.value.toString, value)];
+		cache.filter[key, value | key.value instanceof String].forEach[key, value |
+			mapping.put(key.value as String, value)
+		];
 		return mapping;
 	}
 
