@@ -1,5 +1,7 @@
 package hu.elte.txtuml.utils.jdt;
 
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
@@ -232,6 +234,10 @@ public final class ElementTypeTeller {
 	public static boolean isContainer(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ContainmentKind.ContainerEnd.class);
 	}
+	
+	public static boolean isContainer(ITypeBinding typeBinding) {
+		return SharedUtils.typeIsAssignableFrom(typeBinding, ContainmentKind.ContainerEnd.class);
+	}
 
 	@SuppressWarnings("unchecked")
 	public static boolean isContained(TypeDeclaration declaration) {
@@ -240,6 +246,13 @@ public final class ElementTypeTeller {
 				.anyMatch(d -> isContainer((TypeDeclaration) d));
 	}
 
+
+	public static boolean isContained(ITypeBinding value) {
+		ITypeBinding parent = (ITypeBinding) value.getDeclaringClass();
+		return Stream.of(parent.getDeclaredTypes()).filter(d -> d != value)
+				.anyMatch(d -> isContainer(d));
+	}
+	
 	public static boolean isPort(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Port.class);
 	}

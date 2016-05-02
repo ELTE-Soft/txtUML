@@ -10,7 +10,6 @@ import hu.elte.txtuml.export.uml2.structural.AssociationExporter
 import hu.elte.txtuml.export.uml2.structural.ClassExporter
 import hu.elte.txtuml.export.uml2.structural.ConnectorEndExporter
 import hu.elte.txtuml.export.uml2.structural.ConnectorExporter
-import hu.elte.txtuml.export.uml2.structural.ConnectorWrapperExporter
 import hu.elte.txtuml.export.uml2.structural.DataTypeExporter
 import hu.elte.txtuml.export.uml2.structural.DefaultConstructorBodyExporter
 import hu.elte.txtuml.export.uml2.structural.DefaultConstructorExporter
@@ -79,7 +78,7 @@ abstract class BaseExporter<S, A, R extends Element> {
 	def exportInterface(TypeDeclaration td, Consumer<Interface> store) {
 		cache.export(new InterfaceExporter(this), td, td.resolveBinding, store)
 	}
-	
+
 	def exportDataType(TypeDeclaration td, Consumer<DataType> store) {
 		cache.export(new DataTypeExporter(this), td, td.resolveBinding, store)
 	}
@@ -103,21 +102,17 @@ abstract class BaseExporter<S, A, R extends Element> {
 	def exportAssociationEnd(TypeDeclaration td, Consumer<Property> store) {
 		cache.export(new AssociationEndExporter(this), td, td.resolveBinding, store)
 	}
-	
+
 	def exportPort(TypeDeclaration td, Consumer<Port> store) {
 		cache.export(new PortExporter(this), td, td.resolveBinding, store)
 	}
-	
+
 	def exportConnector(TypeDeclaration td, Consumer<Connector> store) {
 		cache.export(new ConnectorExporter(this), td, td.resolveBinding, store)
 	}
 
 	def exportConnectorEnd(TypeDeclaration td, Consumer<ConnectorEnd> store) {
 		cache.export(new ConnectorEndExporter(this), td, td.resolveBinding, store)
-	}
-	
-	def exportConnectorWrapper(TypeDeclaration td, Consumer<Class> store) {
-		cache.export(new ConnectorWrapperExporter(this), td, td.resolveBinding, store)
 	}
 
 	def exportField(IVariableBinding td, Consumer<Property> store) {
@@ -127,11 +122,11 @@ abstract class BaseExporter<S, A, R extends Element> {
 	def exportOperation(MethodDeclaration md, Consumer<Operation> store) {
 		cache.export(new OperationExporter(this), md, md.resolveBinding, store)
 	}
-	
+
 	def exportDefaultConstructor(IMethodBinding bnd, Consumer<Operation> store) {
 		cache.export(new DefaultConstructorExporter(this), bnd, bnd, store)
 	}
-	
+
 	def exportDefaultConstructorBody(IMethodBinding bnd, Consumer<Activity> store) {
 		cache.export(new DefaultConstructorBodyExporter(this), bnd, bnd, store)
 	}

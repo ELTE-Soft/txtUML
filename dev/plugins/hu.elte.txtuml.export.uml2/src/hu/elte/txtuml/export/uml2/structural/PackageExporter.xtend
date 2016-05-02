@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration
 import org.eclipse.uml2.uml.Package
 import org.eclipse.uml2.uml.PackageableElement
 import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode
+import org.eclipse.jdt.internal.core.search.matching.SuperTypeNamesCollector.TypeDeclarationVisitor
 
 abstract class AbstractPackageExporter<T extends Package> extends Exporter<IPackageFragment, IPackageFragment, T> {
 
@@ -37,7 +38,7 @@ abstract class AbstractPackageExporter<T extends Package> extends Exporter<IPack
 	def exportCompUnit(ICompilationUnit compUnit) {
 		parseCompUnit(compUnit).types.forEach[exportType]
 	}
-	
+
 	override storePackaged(PackageableElement pkg) {
 		result.packagedElements += pkg
 	}
@@ -57,7 +58,19 @@ abstract class AbstractPackageExporter<T extends Package> extends Exporter<IPack
 				exportDataType(decl)[result.packagedElements += it]
 			}
 			case ElementTypeTeller.isConnector(decl): {
-				exportConnectorWrapper(decl)[result.packagedElements += it]
+				val end = decl.bodyDeclarations.filter[it instanceof TypeDeclaration].map[it as TypeDeclaration].
+					findFirst [
+						val binding = it.resolveBinding
+						ElementTypeTeller.isContained(binding.superclass.typeArguments.get(0))
+					]
+
+				val otherEnd = end.resolveBinding.superclass.typeArguments.get(0).declaringClass.declaredTypes.findFirst [
+					it != end
+				]
+
+				val owner = otherEnd.superclass.typeArguments.get(0)
+
+				exportConnector(decl)[(owner.fetchType as org.eclipse.uml2.uml.Class).ownedConnectors += it]
 			}
 			case ElementTypeTeller.isInterface(decl): {
 				exportInterface(decl)[result.packagedElements += it]
