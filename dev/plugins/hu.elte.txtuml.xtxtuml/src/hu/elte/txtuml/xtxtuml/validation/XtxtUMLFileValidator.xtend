@@ -4,7 +4,6 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
 import java.util.List
 import java.util.Map
 import org.eclipse.xtext.validation.Check
-import org.eclipse.xtext.xbase.validation.IssueCodes
 import org.eclipse.xtext.xtype.XImportDeclaration
 
 import static hu.elte.txtuml.xtxtuml.validation.XtxtUMLIssueCodes.*
@@ -22,12 +21,7 @@ class XtxtUMLFileValidator extends XtxtUMLExpressionValidator {
 	}
 
 	override protected addImportUnusedIssues(Map<String, List<XImportDeclaration>> imports) {
-		for (List<XImportDeclaration> importDeclarations : imports.values()) {
-			for (XImportDeclaration importDeclaration : importDeclarations) {
-				addIssue("The import '" + importDeclaration.importedType.getQualifiedName(".") + "' is never used.",
-					importDeclaration, IssueCodes.IMPORT_UNUSED);
-			}
-		}
+		// unused import warnings would be misleading in the current implementation
 	}
 
 }

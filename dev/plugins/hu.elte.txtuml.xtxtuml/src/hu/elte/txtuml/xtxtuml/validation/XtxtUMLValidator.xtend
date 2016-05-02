@@ -1,4 +1,4 @@
-package hu.elte.txtuml.xtxtuml.validation
+package hu.elte.txtuml.xtxtuml.validation;
 
 class XtxtUMLValidator extends XtxtUMLConnectorValidator {
 }

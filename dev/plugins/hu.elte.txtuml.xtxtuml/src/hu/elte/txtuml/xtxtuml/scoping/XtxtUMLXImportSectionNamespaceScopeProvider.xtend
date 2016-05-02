@@ -9,7 +9,10 @@ class XtxtUMLXImportSectionNamespaceScopeProvider extends XImportSectionNamespac
 	static final QualifiedName TXTUML_LIBRARY = QualifiedName::create("hu", "elte", "txtuml", "xtxtuml", "lib")
 
 	override protected getImplicitImports(boolean ignoreCase) {
-		(super.getImplicitImports(ignoreCase) + #[doCreateImportNormalizer(TXTUML_LIBRARY, true, false)]).toList
+		#[
+			doCreateImportNormalizer(JAVA_LANG, true, false),
+			doCreateImportNormalizer(TXTUML_LIBRARY, true, false)
+		]
 	}
 
 	override protected internalGetAllDescriptions(Resource resource) {
@@ -19,4 +22,5 @@ class XtxtUMLXImportSectionNamespaceScopeProvider extends XImportSectionNamespac
 	override protected doCreateImportNormalizer(QualifiedName importedNamespace, boolean wildcard, boolean ignoreCase) {
 		return new XtxtUMLImportNormalizer(importedNamespace, wildcard, ignoreCase);
 	}
+
 }
