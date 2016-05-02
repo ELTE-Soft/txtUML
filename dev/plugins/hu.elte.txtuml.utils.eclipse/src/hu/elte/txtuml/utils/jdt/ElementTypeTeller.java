@@ -30,6 +30,7 @@ import hu.elte.txtuml.api.model.Composition;
 import hu.elte.txtuml.api.model.ConnectorBase;
 import hu.elte.txtuml.api.model.ConnectorBase.ConnectorEnd;
 import hu.elte.txtuml.api.model.DataType;
+import hu.elte.txtuml.api.model.Delegation;
 import hu.elte.txtuml.api.model.Interface;
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.ModelClass;
@@ -385,5 +386,9 @@ public final class ElementTypeTeller {
 		}
 		IVariableBinding varBinding = (IVariableBinding) binding;
 		return varBinding.isField();
+	}
+
+	public static boolean isDelegation(ITypeBinding binding) {
+		return SharedUtils.typeIsAssignableFrom(binding, Delegation.class);
 	}
 }
