@@ -208,8 +208,8 @@ public class CompileTests {
 		}
 		if (compilerClangPresent) {
 			Map<String, String> env = new TreeMap<String, String>();
-			env.put("CC", "clang -fuse-ld=gold");
-			env.put("CXX", "clang++ -fuse-ld=gold");
+			env.put("CC", "clang");
+			env.put("CXX", "clang++");
 			compileEnvironments.add(env);
 		}
 
