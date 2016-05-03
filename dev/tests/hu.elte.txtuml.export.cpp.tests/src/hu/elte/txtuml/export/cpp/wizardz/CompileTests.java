@@ -215,6 +215,13 @@ public class CompileTests {
 
 		for (Map<String, String> compileEnv : compileEnvironments) {
 			for (String modeStr : new String[] { "Debug", "Release" }) {
+
+				// TODO Remove this as soon as LLVM distributions put back
+				// LLVMgold.so (broken symbolic link in llvm-dev package)
+				if (compileEnv.get("CC").equals("clang") && modeStr.equals("Release")) {
+					continue;
+				}
+
 				System.out.println("***************** CPP Compilation Test started on " + testProjectName + " "
 						+ compileEnv.get("CC").split(" ")[0] + modeStr);
 				String buildDir = testWorkspace + "/" + testProjectName + "/"
