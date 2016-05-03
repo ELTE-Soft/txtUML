@@ -32,15 +32,14 @@ void StateMachineThreadPool::startPool()
 void StateMachineThreadPool::stopUponCompletion()
 {
 	std::unique_lock<std::mutex> lock(stop_request_mu);
-	if(stateMachines.empty() && worker_threads == 0)
-	{
-		stopPool();
-	}
-	else
+	
+	if (!(stateMachines.empty() && worker_threads == 0))
 	{
 		stop_request = true;
-		stop_request_cond.wait(lock, [this]{return this->stateMachines.empty() && this->worker_threads == 0;});
+		stop_request_cond.wait(lock, [this] {return this->stateMachines.empty() && this->worker_threads == 0; });
 	}
+
+	stopPool();
 
 }
 

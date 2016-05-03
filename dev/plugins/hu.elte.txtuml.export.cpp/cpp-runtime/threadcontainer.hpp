@@ -20,7 +20,16 @@ struct EventProcessorThread
 	EventProcessorThread& operator=(EventProcessorThread&&) = delete;
 	EventProcessorThread(const EventProcessorThread&) = delete;
 	EventProcessorThread& operator=(const EventProcessorThread&) = delete;
-   ~EventProcessorThread() {if(_thread != nullptr) _thread->join(); delete _thread;}
+   ~EventProcessorThread()
+	{
+		if (_thread != nullptr)
+		{
+			
+			_thread->join();
+			
+			delete _thread;
+		}
+	}
 };
 
 class ThreadContainer
@@ -53,5 +62,8 @@ class ThreadContainer
 	
 	
 };
+
+typedef std::map<std::thread::id,EventProcessorThread>::iterator cont_it;
+
 
 #endif // THREAD_CONTAINER_HPP

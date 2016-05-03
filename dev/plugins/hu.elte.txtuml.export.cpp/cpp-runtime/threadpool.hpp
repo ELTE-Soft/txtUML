@@ -22,8 +22,6 @@ public:
 	void stopPool();
 	void stopUponCompletion();
 	void startPool();
-	void incrementWorkers();
-	void reduceWorkers();
 	void modifiedThreads(int);
 	~StateMachineThreadPool();
 private:
@@ -32,6 +30,9 @@ private:
 	// the task queue
 	PoolQueueType stateMachines; //must be blocking queue
 	int threads;
+	
+	void incrementWorkers();
+	void reduceWorkers();
 
 	// synchronization
 	std::atomic_bool stop;

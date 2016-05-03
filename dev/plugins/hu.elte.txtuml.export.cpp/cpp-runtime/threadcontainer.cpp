@@ -20,19 +20,20 @@ void ThreadContainer::gettingThreadsReadyToStop()
 {
     std::unique_lock<std::mutex> mlock(_mutex);
 
-	std::map<std::thread::id,EventProcessorThread>::iterator it = threads.begin();
-	std::map<std::thread::id,EventProcessorThread>::iterator it2;
-    while(isTooManyWorkes())
-    {
-		if(it->second._state == thread_state::working)
-        {
-		   it->second._state = thread_state::ready_to_stop;
-		   it++;
-
-        }
-		else if (it->second._state == thread_state::stopped)
+	cont_it it = threads.begin();
+	cont_it it2;
+	while (isTooManyWorkes() && it != threads.end())
+	{
+		if (it->second._state == thread_state::working)
 		{
 			active_threads--;
+			it->second._state = thread_state::ready_to_stop;
+			it++;
+
+		}
+		else if (it->second._state == thread_state::stopped)
+		{
+			
 			it2 = it;
 			it++;
 			threads.erase(it2);
@@ -41,7 +42,7 @@ void ThreadContainer::gettingThreadsReadyToStop()
 		{
 			it++;
 		}
-    }
+	}
 
     mlock.unlock();
 
