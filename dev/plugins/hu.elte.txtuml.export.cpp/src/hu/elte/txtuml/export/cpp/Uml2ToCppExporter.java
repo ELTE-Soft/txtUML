@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,6 +45,9 @@ public class Uml2ToCppExporter {
 	private final Options options;
 
 	ThreadHandlingManager threadManager;
+	
+	private Map<Class,String> generatedClassNames;
+	int generatedClassCounter;
 
 	Set<Class> classList;
 	EList<Element> elements;
@@ -57,6 +61,8 @@ public class Uml2ToCppExporter {
 		this.classList = new HashSet<Class>();
 		this.elements = model.allOwnedElements();
 		this.classNames = new LinkedList<String>();
+		this.generatedClassNames = new HashMap<Class,String>();
+		generatedClassCounter = 0;
 
 		Shared.getTypedElements(classList, elements, UMLPackage.Literals.CLASS);
 
@@ -77,13 +83,18 @@ public class Uml2ToCppExporter {
 		for (Class item : classList) {
 		    
 		    if(threadManager.getDescription().get(item.getName()) != null) {
+		    	
+		    if(generatedClass(item)) {
+		    	generatedClassNames.put(item, getNextGeneteredClass());
+		    }
 			classExporter.reiniIialize();
 			classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
+			classExporter.setRealName(getRealClassName(item));
 
 			classExporter.createSource(item, outputDirectory);
 
 			classNames.addAll(classExporter.getSubmachines());
-			classNames.add(item.getName());
+			classNames.add(getRealClassName(item));
 			classNames.addAll(classExporter.getAdditionalSources());
 		    }
 		}
@@ -91,6 +102,21 @@ public class Uml2ToCppExporter {
 		createCMakeFile(outputDirectory);
 	}
 
+	private boolean generatedClass(Class item) {
+		return item.getName().startsWith("#");
+		
+	}
+	
+	private String getNextGeneteredClass() {
+		generatedClassCounter++;
+		return "GeneratedClass" + generatedClassCounter;
+	}
+
+	
+	private String getRealClassName(Class cls) {
+		return generatedClassNames.containsKey(cls) ? generatedClassNames.get(cls) : cls.getName();
+	}
+	
 	private void copyPreWrittenCppFiles(String destination) throws IOException {
 
 		String cppFilesLocation = seekCppFilesLocation();

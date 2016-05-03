@@ -223,7 +223,7 @@ public class ActivityTemplates {
 		StringBuilder source = new StringBuilder("");
 		source.append(GenerationNames.signalType(signalType) + " ");
 		source.append(signalVariableName + " = ");
-		source.append(GenerationNames.signalType(signalType));
+		source.append(GenerationNames.signalType(signalType) + "(");
 		source.append(GenerationNames.MemoryAllocator + " " + PrivateFunctionalTemplates.signalType(signalType));
 		source.append("(" + GenerationNames.StaticCast + "<const " + PrivateFunctionalTemplates.signalType(signalType) + "&>");
 		source.append("(" + GenerationNames.EventFParamName + ")));\n");
