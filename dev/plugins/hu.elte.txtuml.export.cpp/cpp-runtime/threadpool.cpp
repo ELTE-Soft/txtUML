@@ -45,14 +45,8 @@ void StateMachineThreadPool::stopUponCompletion()
 
 void StateMachineThreadPool::task()
 {	
-	while(!this->stop)
+	while (!this->stop && !workers.isReadyToStop(std::this_thread::get_id()))
     {
-		
-		if (workers.isReadyToStop(std::this_thread::get_id()))
-		{
-			workers.signStop((std::this_thread::get_id()));
-			return;
-		}
 		
 		std::unique_lock<std::mutex> mlock(mu);
 		
@@ -65,6 +59,10 @@ void StateMachineThreadPool::task()
 				incrementWorkers();
 				stateMachines.pop_front(sm);			
 							
+			}
+			else if (workers.isReadyToStop(std::this_thread::get_id()))
+			{
+				return;
 			}
 			else
 			{
@@ -114,11 +112,12 @@ void StateMachineThreadPool::task()
 
 void StateMachineThreadPool::modifiedThreads(int n)
 {
-	workers.setExpectedThreads(n);
-
+		std::unique_lock<std::mutex> mlock(modifie_mutex);
+		
+		workers.setExpectedThreads(n);
         if (workers.isTooManyWorkes())
         {
-            workers.gettingThreadsReadyToStop();
+            workers.gettingThreadsReadyToStop(cond);
         }
         while (workers.isTooFewWorkes())
 		{
@@ -147,7 +146,6 @@ void StateMachineThreadPool::enqueObject(StateMachineI* sm)
         cond.notify_one();
 }
 
-// the destructor joins all threads
 StateMachineThreadPool::~StateMachineThreadPool()
 {
     stopPool();

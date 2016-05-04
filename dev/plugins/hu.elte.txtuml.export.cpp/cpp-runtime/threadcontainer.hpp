@@ -5,9 +5,10 @@
 #include <thread>
 #include <map>
 #include <mutex>
+#include <condition_variable>
 
 
-enum thread_state {working, ready_to_stop, stopped};
+enum thread_state {working, ready_to_stop};
 
 struct EventProcessorThread
 {
@@ -25,7 +26,8 @@ struct EventProcessorThread
 		if (_thread != nullptr)
 		{
 			
-			_thread->join();
+			if(_thread->joinable())
+				_thread->join();
 			
 			delete _thread;
 		}
@@ -41,8 +43,7 @@ class ThreadContainer
 		
 		void addThread(std::thread*);
 		void removeAll();
-        void gettingThreadsReadyToStop();
-		void signStop(std::thread::id);
+        void gettingThreadsReadyToStop(std::condition_variable&);
 		bool isReadyToStop(std::thread::id);
 		
 		void setExpectedThreads(int e) {expected_threads = e;}
@@ -52,6 +53,7 @@ class ThreadContainer
 	
 	
 	private:
+		void modifieThreadState(std::thread::id, thread_state);
 	
 		std::atomic_int active_threads; // number of active threads;
 		std::atomic_int expected_threads; // how many threads should be..

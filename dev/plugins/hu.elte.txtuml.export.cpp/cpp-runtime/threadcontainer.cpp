@@ -16,10 +16,9 @@ void ThreadContainer::addThread(std::thread* th)
 
 
 
-void ThreadContainer::gettingThreadsReadyToStop()
+void ThreadContainer::gettingThreadsReadyToStop(std::condition_variable& cond)
 {
-    std::unique_lock<std::mutex> mlock(_mutex);
-
+		
 	cont_it it = threads.begin();
 	cont_it it2;
 	while (isTooManyWorkes() && it != threads.end())
@@ -27,16 +26,13 @@ void ThreadContainer::gettingThreadsReadyToStop()
 		if (it->second._state == thread_state::working)
 		{
 			active_threads--;
-			it->second._state = thread_state::ready_to_stop;
+			modifieThreadState(it->first, thread_state::ready_to_stop);
+			cond.notify_all();
+			it2 = it;			
 			it++;
-
-		}
-		else if (it->second._state == thread_state::stopped)
-		{
-			
-			it2 = it;
-			it++;
+			it2->second._thread->join();
 			threads.erase(it2);
+
 		}
 		else
 		{
@@ -44,14 +40,13 @@ void ThreadContainer::gettingThreadsReadyToStop()
 		}
 	}
 
-    mlock.unlock();
 
 }
 
-void ThreadContainer::signStop(std::thread::id id)
+void ThreadContainer::modifieThreadState(std::thread::id id, thread_state state)
 {
 	std::unique_lock<std::mutex> mlock(_mutex);
-	threads[id]._state = stopped;
+	threads[id]._state = state;
 }
 
 bool ThreadContainer::isReadyToStop(std::thread::id thread_id)

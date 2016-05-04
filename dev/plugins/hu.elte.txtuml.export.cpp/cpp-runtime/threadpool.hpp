@@ -43,6 +43,7 @@ private:
 	std::condition_variable stop_request_cond;
 
 	std::mutex mu;
+	std::mutex modifie_mutex;
 	std::mutex stop_request_mu;
 };
 
