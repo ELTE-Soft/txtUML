@@ -16,7 +16,8 @@ TUFile :
 
 TUModelDeclaration :
 	{TUModelDeclaration}
-	model='model-package' name=QualifiedName ('as' modelName=STRING)? ';'?
+	model='model-package' name=QualifiedName ('as' modelName=STRING)? semiColon=';'?
+		// feature 'semiColon' is required because of the buggy formatter2 API
 ;
 
 // Model level
@@ -32,7 +33,7 @@ TUModelElement
 
 TUExecution :
 	'execution' name=ValidID
-		body=XBlockExpression
+		body=XBlockExpression ';'?
 ;
 
 TUSignal :
@@ -161,6 +162,7 @@ TUTransitionEffect :
 ;
 
 TUTransitionGuard :
+	{TUTransitionGuard} // required because of the buggy formatter2 API
 	guard='guard' '(' (else?='else' | expression=XExpression) ')' ';'? // feature 'guard' is for error markers
 ;
 

@@ -24,6 +24,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.uml2.uml.Model;
 
+import hu.elte.txtuml.export.uml2.mapping.ModelMapCollector;
+import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
 import hu.elte.txtuml.export.uml2.structural.ModelExporter;
 import hu.elte.txtuml.utils.eclipse.NotFoundException;
 import hu.elte.txtuml.utils.eclipse.PackageUtils;
@@ -104,7 +106,21 @@ public class TxtUMLToUML2 {
 			throw new NotFoundException("Cannot find package '" + packageName + "'");
 		}
 
-		Model model = new ModelExporter(exportMode).export(packageFragments[0]);
+		ModelExporter modelExporter = new ModelExporter(exportMode);
+		Model model = modelExporter.export(packageFragments[0]);
+		
+		ExporterCache cache = modelExporter.cache;
+		ModelMapCollector collector = new ModelMapCollector(model.eResource().getURI());
+		cache.getMapping().forEach((s, e)->collector.put(s, e));
+		try {
+			URI destination = URI.createFileURI(packageFragments[0].getJavaProject().getProject().getLocation().toOSString()).
+		appendSegment("gen");
+			String fileName = packageFragments[0].getElementName();
+			collector.save(destination, fileName);
+		} catch (ModelMapException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		return model;
 	}
 

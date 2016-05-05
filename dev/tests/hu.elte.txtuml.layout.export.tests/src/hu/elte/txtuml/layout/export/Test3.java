@@ -1,6 +1,6 @@
 package hu.elte.txtuml.layout.export;
 
-import hu.elte.txtuml.api.layout.Diagram;
+import hu.elte.txtuml.api.layout.ClassDiagram;
 import hu.elte.txtuml.api.layout.North;
 import hu.elte.txtuml.api.layout.Priority;
 import hu.elte.txtuml.api.layout.West;
@@ -14,7 +14,7 @@ import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 import org.junit.Test;
 
-class Diagram3 extends Diagram {
+class Diagram3 extends ClassDiagram {
 
 	@West(val = S1.class, from = S2.class)
 	@North(val = Init.class, from = { S1.class, S2.class })

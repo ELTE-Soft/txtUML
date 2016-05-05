@@ -37,6 +37,11 @@ public abstract class AbstractPapyrusModelManager {
 	protected final static String diagramType_AD = "PapyrusUMLActivityDiagram";
 	
 	/**
+	 * Name of Papyrus Composite Structure Diagram type.
+	 */
+	protected final static String diagramType_CSD = "CompositeStructure";
+	
+	/**
 	 * The DiagramManager controls the diagrams
 	 */
 	protected DiagramManager diagramManager;
@@ -108,6 +113,7 @@ public abstract class AbstractPapyrusModelManager {
 				Dialogs.errorMsgb("Arrange error",
 						"Error occured during arrangement of diagram '" +diagram.getName()+"'.", e);
 			}
+			
 		}
 	}
 	

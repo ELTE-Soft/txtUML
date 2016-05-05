@@ -10,7 +10,7 @@ import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.utils.Pair;
 
 /**
- * The instance holds infomration about the layout of a specific model
+ * The instance holds information about the layout of a specific model
  */
 public class TxtUMLLayoutDescriptor {
 	
@@ -18,11 +18,6 @@ public class TxtUMLLayoutDescriptor {
 	 * The canonical name of the txtUML model 
 	 */
 	public String modelName;
-	
-	/**
-	 * True if the user wants to generate StateMachines automatically
-	 */
-	public boolean generateSMDs;
 	
 	/**
 	 * The name of the Folder where the txtUML model and

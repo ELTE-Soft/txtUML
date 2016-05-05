@@ -68,14 +68,12 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		String txtUMLModelName = selectTxtUmlPage.getTxtUmlModelClass();
 		List<String> txtUMLLayout = selectTxtUmlPage.getTxtUmlLayout();
 		String txtUMLProjectName = selectTxtUmlPage.getTxtUmlProject();
-		boolean generateSMsAutomatically = selectTxtUmlPage.getGenerateSMDs();
 		String generatedFolderName = PreferencesManager
 				.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
 
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT, txtUMLProjectName);
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL, txtUMLModelName);
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, txtUMLLayout);
-		PreferencesManager.setValue(PreferencesManager.GENERATE_STATEMACHINES_AUTOMATICALLY, generateSMsAutomatically);
 
 		try {
 			
@@ -103,63 +101,61 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 						TxtUMLToUML2.exportModel(txtUMLProjectName, txtUMLModelName,
 								txtUMLProjectName + "/" + generatedFolderName, ExportMode.ExportDefinitions);
 						monitor.worked(10);
-						return;
 					} catch (Exception e) {
 						Dialogs.errorMsgb("txtUML export Error", "Error occured during the UML2 exportation.", e);
 						monitor.done();
 						throw new InterruptedException();
 					}
 
-//					monitor.subTask("Generating txtUML layout description...");
-//					TxtUMLLayoutDescriptor layoutDescriptor = null;
-//					try {
-//						layoutDescriptor = exporter.exportTxtUMLLayout();
-//
-//						List<String> warnings = new LinkedList<String>();
-//						for (DiagramExportationReport report : layoutDescriptor.getReports()) {
-//							warnings.addAll(report.getWarnings());
-//						}
-//
-//						layoutDescriptor.generateSMDs = generateSMsAutomatically;
-//						layoutDescriptor.mappingFolder = generatedFolderName;
-//						layoutDescriptor.projectName = txtUMLProjectName;
-//
-//						if (warnings.size() != 0) {
-//							StringBuilder warningMessages = new StringBuilder(
-//									"Warnings:" + System.lineSeparator() + System.lineSeparator() + "- ");
-//							warningMessages.append(
-//									String.join(System.lineSeparator() + System.lineSeparator() + "- ", warnings));
-//							warningMessages.append(
-//									System.lineSeparator() + System.lineSeparator() + "Do you want to continue?");
-//
-//							if (!Dialogs.WarningConfirm("Warnings about layout description",
-//									warningMessages.toString())) {
-//								throw new InterruptedException();
-//							}
-//						}
-//
-//						monitor.worked(5);
-//					} catch (Exception e) {
-//						if (e instanceof InterruptedException) {
-//							throw (InterruptedException) e;
-//						} else {
-//							Dialogs.errorMsgb("txtUML layout export Error",
-//									"Error occured during the diagram layout interpretation.", e);
-//							monitor.done();
-//							throw new InterruptedException();
-//						}
-//					}
-//
-//					try {
-//						PapyrusVisualizer pv = exporter.createVisualizer(layoutDescriptor);
-//						pv.registerPayprusModelManager(TxtUMLPapyrusModelManager.class);
-//						pv.run(new SubProgressMonitor(monitor, 85));
-//					} catch (Exception e) {
-//						Dialogs.errorMsgb("txtUML visualization Error",
-//								"Error occured during the visualization process.", e);
-//						monitor.done();
-//						throw new InterruptedException();
-//					}
+					monitor.subTask("Generating txtUML layout description...");
+					TxtUMLLayoutDescriptor layoutDescriptor = null;
+					try {
+						layoutDescriptor = exporter.exportTxtUMLLayout();
+
+						List<String> warnings = new LinkedList<String>();
+						for (DiagramExportationReport report : layoutDescriptor.getReports()) {
+							warnings.addAll(report.getWarnings());
+						}
+
+						layoutDescriptor.mappingFolder = generatedFolderName;
+						layoutDescriptor.projectName = txtUMLProjectName;
+
+						if (warnings.size() != 0) {
+							StringBuilder warningMessages = new StringBuilder(
+									"Warnings:" + System.lineSeparator() + System.lineSeparator() + "- ");
+							warningMessages.append(
+									String.join(System.lineSeparator() + System.lineSeparator() + "- ", warnings));
+							warningMessages.append(
+									System.lineSeparator() + System.lineSeparator() + "Do you want to continue?");
+
+							if (!Dialogs.WarningConfirm("Warnings about layout description",
+									warningMessages.toString())) {
+								throw new InterruptedException();
+							}
+						}
+
+						monitor.worked(5);
+					} catch (Exception e) {
+						if (e instanceof InterruptedException) {
+							throw (InterruptedException) e;
+						} else {
+							Dialogs.errorMsgb("txtUML layout export Error",
+									"Error occured during the diagram layout interpretation.", e);
+							monitor.done();
+							throw new InterruptedException();
+						}
+					}
+
+					try {
+						PapyrusVisualizer pv = exporter.createVisualizer(layoutDescriptor);
+						pv.registerPayprusModelManager(TxtUMLPapyrusModelManager.class);
+						pv.run(new SubProgressMonitor(monitor, 85));
+					} catch (Exception e) {
+						Dialogs.errorMsgb("txtUML visualization Error",
+								"Error occured during the visualization process.", e);
+						monitor.done();
+						throw new InterruptedException();
+					}
 				}
 			}, ResourcesPlugin.getWorkspace().getRoot());
 			return true;
@@ -169,7 +165,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 	}
 
 	private void checkEmptyLayoutDecsriptions() throws InterruptedException {
-		if(selectTxtUmlPage.getTxtUmlLayout().isEmpty() && !this.selectTxtUmlPage.getGenerateSMDs()){
+		if(selectTxtUmlPage.getTxtUmlLayout().isEmpty()){
 			boolean answer = Dialogs.WarningConfirm("No Layout descriptions",
 					"No diagrams will be generated using the current setup,"
 							+ " because no diagram descriptions are added."

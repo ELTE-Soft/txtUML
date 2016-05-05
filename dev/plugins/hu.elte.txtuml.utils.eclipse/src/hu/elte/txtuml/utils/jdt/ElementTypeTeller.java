@@ -1,5 +1,7 @@
 package hu.elte.txtuml.utils.jdt;
 
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
@@ -28,6 +30,7 @@ import hu.elte.txtuml.api.model.Composition;
 import hu.elte.txtuml.api.model.ConnectorBase;
 import hu.elte.txtuml.api.model.ConnectorBase.ConnectorEnd;
 import hu.elte.txtuml.api.model.DataType;
+import hu.elte.txtuml.api.model.Delegation;
 import hu.elte.txtuml.api.model.Interface;
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.ModelClass;
@@ -232,7 +235,25 @@ public final class ElementTypeTeller {
 	public static boolean isContainer(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ContainmentKind.ContainerEnd.class);
 	}
+	
+	public static boolean isContainer(ITypeBinding typeBinding) {
+		return SharedUtils.typeIsAssignableFrom(typeBinding, ContainmentKind.ContainerEnd.class);
+	}
 
+	@SuppressWarnings("unchecked")
+	public static boolean isContained(TypeDeclaration declaration) {
+		TypeDeclaration parent = (TypeDeclaration) declaration.getParent();
+		return parent.bodyDeclarations().stream().filter(d -> d != declaration)
+				.anyMatch(d -> isContainer((TypeDeclaration) d));
+	}
+
+
+	public static boolean isContained(ITypeBinding value) {
+		ITypeBinding parent = (ITypeBinding) value.getDeclaringClass();
+		return Stream.of(parent.getDeclaredTypes()).filter(d -> d != value)
+				.anyMatch(d -> isContainer(d));
+	}
+	
 	public static boolean isPort(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Port.class);
 	}
@@ -240,11 +261,11 @@ public final class ElementTypeTeller {
 	public static boolean isPort(ITypeBinding value) {
 		return hasSuperClass(value, Port.class.getCanonicalName());
 	}
-	
+
 	public static boolean isInterface(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Interface.class);
 	}
-	
+
 	public static boolean isInterface(ITypeBinding bnd) {
 		return SharedUtils.typeIsAssignableFrom(bnd, Interface.class);
 	}
@@ -252,7 +273,7 @@ public final class ElementTypeTeller {
 	public static boolean isConnector(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ConnectorBase.class);
 	}
-	
+
 	public static boolean isConnector(ITypeBinding typeDeclaration) {
 		return hasSuperClass(typeDeclaration, ConnectorBase.class.getCanonicalName());
 	}
@@ -365,5 +386,9 @@ public final class ElementTypeTeller {
 		}
 		IVariableBinding varBinding = (IVariableBinding) binding;
 		return varBinding.isField();
+	}
+
+	public static boolean isDelegation(ITypeBinding binding) {
+		return SharedUtils.typeIsAssignableFrom(binding, Delegation.class);
 	}
 }

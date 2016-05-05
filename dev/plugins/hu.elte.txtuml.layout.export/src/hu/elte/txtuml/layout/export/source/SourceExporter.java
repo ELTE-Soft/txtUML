@@ -18,7 +18,7 @@ import hu.elte.txtuml.utils.Pair;
  */
 public interface SourceExporter {
 
-	List<SourceExporter> ALL = Arrays.asList(new ClassDiagramExporter(), new StateMachineDiagramExporter());
+	List<SourceExporter> ALL = Arrays.asList(new ClassDiagramExporter(), new StateMachineDiagramExporter(), new CompositeDiagramExporter());
 
 	DiagramType getType();
 
