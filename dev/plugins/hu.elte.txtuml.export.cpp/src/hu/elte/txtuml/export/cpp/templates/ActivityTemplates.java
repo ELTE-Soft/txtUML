@@ -183,7 +183,8 @@ public class ActivityTemplates {
 			return GenerationNames.signalType(typeName) + " " + objName + ";\n";
 		}
 		else {
-			return GenerationNames.pointerType(typeName) + " " + objName + ";\n";
+			return GenerationNames.pointerType(typeName) + " " + objName + " "
+				+  ReplaceSimpleTypeOp + " " + GenerationNames.NullPtr + ";\n";
 		}
 
 		

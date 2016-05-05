@@ -61,12 +61,10 @@ import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 
 public class ActivityExporter {
 	Map<CreateObjectAction, String> _objectMap = new HashMap<CreateObjectAction, String>();
-	Map<Variable, String> objectVariableMap;
 	int tempVariableCounter;
 	int generatedTempVariableCounter;
 	int signalCounter;
 	Set<String> declaredTempVariables;
-	Set<CallOperationAction> constructorCalls;
 	ActivityNode returnNode;
 
 	private Map<OutputPin, String> tempVariables;
@@ -84,8 +82,6 @@ public class ActivityExporter {
 		tempVariables = new HashMap<OutputPin, String>();
 		generatedTempVariableNames = new HashMap<Variable, String>();
 		declaredTempVariables = new HashSet<String>();
-		constructorCalls = new HashSet<CallOperationAction>();
-		objectVariableMap = new HashMap<Variable, String>();
 		returnOutputsToCallActions = new HashMap<CallOperationAction,OutputPin>(); 
 		tempVariableCounter = 0;
 		generatedTempVariableCounter = 0;
@@ -226,25 +222,13 @@ public class ActivityExporter {
 		} else if (node.eClass().equals(UMLPackage.Literals.START_CLASSIFIER_BEHAVIOR_ACTION)) {
 			source.append(createStartObjectActionCode((StartClassifierBehaviorAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
-
-			if (!constructorCalls.contains((CallOperationAction) node)) {
-				source.append((createCallOperationActionCode((CallOperationAction) node)));
-			}
+		    	source.append(createCallOperationActionCode((CallOperationAction) node));
 
 		} else if (node.eClass().equals(UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION)) {
 			AddVariableValueAction avva = (AddVariableValueAction) node;
-			if (avva.getValue().getIncomings().size() > 0
-					&& avva.getValue().getIncomings().get(0).getSource().getOwner() != null
-					&& avva.getValue().getIncomings().get(0).getSource().getOwner().eClass()
-							.equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
-				OutputPin objectPin = (OutputPin) avva.getValue().getIncomings().get(0).getSource();
-				objectVariableMap.put(avva.getVariable(), tempVariables.get(objectPin));
-
-			} else {
-				source.append(ActivityTemplates.generalSetValue(getRealVariable(avva.getVariable()),
-						getTargetFromInputPin(avva.getValue()), ActivityTemplates
-								.getOperationFromType(avva.getVariable().isMultivalued(), avva.isReplaceAll())));
-			}
+			source.append(ActivityTemplates.generalSetValue(getRealVariable(avva.getVariable()),
+			getTargetFromInputPin(avva.getValue()), ActivityTemplates
+			.getOperationFromType(avva.getVariable().isMultivalued(), avva.isReplaceAll())));
 
 		} else if (node.eClass().equals(UMLPackage.Literals.LOOP_NODE)) {
 			source.append(createCycleCode((LoopNode) node));
@@ -350,29 +334,30 @@ public class ActivityExporter {
 
 	private StringBuilder createCycleCode(LoopNode loopNode) {
 		StringBuilder source = new StringBuilder("");
+		source.append(createStructuredActivityNodeVariables(loopNode));
 
 		for (ExecutableNode initNode : loopNode.getSetupParts()) {
 			source.append(createActivityNodeCode(initNode));
 		}
 
-		StringBuilder cond = new StringBuilder("");
+		StringBuilder condition = new StringBuilder("");
 		for (ExecutableNode condNode : loopNode.getTests()) {
-			cond.append(createActivityNodeCode(condNode));
+			condition.append(createActivityNodeCode(condNode));
 		}
-		source.append(cond);
+		source.append(condition);
 
 		StringBuilder body = new StringBuilder("");
 		for (ExecutableNode bodyNode : loopNode.getBodyParts()) {
 			body.append(createActivityNodeCode(bodyNode));
 		}
 
-		StringBuilder reCond = new StringBuilder("");
+		StringBuilder recalulcateCondition = new StringBuilder("");
 		for (ExecutableNode condNode : loopNode.getTests()) {
-			reCond.append(createActivityNodeCode(condNode));
+			recalulcateCondition.append(createActivityNodeCode(condNode));
 		}
 
 		source.append(ActivityTemplates.whileCycle(getTargetFromActivityNode(loopNode.getDecider()),
-				body.toString() + "\n" + reCond.toString()));
+				body.toString() + "\n" + recalulcateCondition.toString()));
 
 		return source;
 	}
@@ -731,9 +716,8 @@ public class ActivityExporter {
 	}
 
 	private String getRealVariable(Variable variable) {
-		return objectVariableMap.containsKey(variable) ? objectVariableMap.get(variable)
-				: generatedTempVariableNames.containsKey(variable) ? generatedTempVariableNames.get(variable)
-						: variable.getName();
+		return generatedTempVariableNames.containsKey(variable) ? 
+			generatedTempVariableNames.get(variable) : variable.getName();
 	}
 
 	private String addValueToTemporalVariable(String type, String var, String value) {
