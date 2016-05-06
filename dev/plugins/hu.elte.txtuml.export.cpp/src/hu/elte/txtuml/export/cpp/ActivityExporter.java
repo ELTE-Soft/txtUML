@@ -27,6 +27,8 @@ import org.eclipse.uml2.uml.DestroyLinkAction;
 import org.eclipse.uml2.uml.DestroyObjectAction;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutableNode;
+import org.eclipse.uml2.uml.ExpansionKind;
+import org.eclipse.uml2.uml.ExpansionNode;
 //import org.eclipse.uml2.uml.ExpansionKind;
 import org.eclipse.uml2.uml.InputPin;
 import org.eclipse.uml2.uml.LinkEndData;
@@ -244,25 +246,31 @@ public class ActivityExporter {
 		return source;
 	}
 
-	private StringBuilder createExpansionRegaionCode(ExpansionRegion node) {
-		StringBuilder source = new StringBuilder("");
+	private String createExpansionRegaionCode(ExpansionRegion node) {
+			String source = "UNKNOWN_EXPANSION_REAGION"; 
+		
+		  if(node.getMode().equals(ExpansionKind.ITERATIVE_LITERAL)) {
+			  
+			  
+			  Variable iterativeVar = node.getVariables().get(0);
+			  EList<ActivityNode> nodes = node.getNodes();
+			  StringBuilder body = createActivityNodeCode(nodes.get(nodes.size() - 1));
+			  StringBuilder inits = new StringBuilder("");
+			  for(int i = 0; i < nodes.size() - 1; i++) {
+				  inits.append(createActivityNodeCode(nodes.get(i)));
+			  	}
+			  
+			  String collection = getTargetFromActivityNode(node.getInputElements().get(0).getIncomings().get(0).getSource());	
+			  source = ActivityTemplates.foreachCycle(iterativeVar.getType().getName(), iterativeVar.getName(), 
+					  collection, body.toString(),inits.toString());
+			 }
+		  
+		  	return source;
+		  		
+		  
+		  	   
 
-		/*
-		 * if(node.getMode().equals(ExpansionKind.ITERATIVE_LITERAL)) {
-		 * 
-		 * ActivityNode collection =
-		 * node.getInputElements().get(0).getIncomings().get(0).getSource();
-		 * String collectionName = getTargetFromActivityNode (collection);
-		 * 
-		 * StringBuilder body = new StringBuilder(""); for(Variable var :
-		 * node.getVariables()) { body.append(createVariable(var)); }
-		 * for(ActivityNode activityNode : node.getNodes()) {
-		 * body.append(createActivityNodeCode(activityNode)); }
-		 * 
-		 * }
-		 */
-
-		return source;
+		
 	}
 
 	private String createReadLinkActionCode(ReadLinkAction node_) {
@@ -597,6 +605,12 @@ public class ActivityExporter {
 						source.append(addValueToTemporalVariable(
 								((InputPin) node_.getOutgoings().get(0).getTarget()).getType().getName(),
 								tempVariables.get(returnPin), val));
+					}
+					else if(returnPin.getOutgoings().size() > 0) {
+						source.append(addValueToTemporalVariable(
+								((InputPin) returnPin.getOutgoings().get(0).getTarget()).getType().getName(),
+								tempVariables.get(returnPin), val));
+					
 					}
 				}
 				

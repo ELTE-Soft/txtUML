@@ -42,7 +42,7 @@ public class GuardExporter {
 			}
 			else {
 				source = getGuardFromValueSpecification(guard_.getSpecification());
-				constratintFunctionMap.put(guard_, "guard" + guardCount + "("+ GenerationTemplates.eventParamName() + ")");
+				constratintFunctionMap.put(guard_, "guard" + guardCount);
 				guardCount++;
 			}
 			

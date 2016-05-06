@@ -431,11 +431,6 @@ public class ClassExporter {
 			if (constraint != null) {
 				String guardName = _unknownGuardName + unknownGuardCount.toString();
 				unknownGuardCount++;
-				if (constraint.getName() != null && !constraint.getName().isEmpty()) {
-					guardName = constraint.getName();
-					unknownGuardCount--;
-				}
-
 				String guard = guardExporter.getGuard(constraint);
 				if (guard.equals("else")) {
 					guard = guardExporter.calculateSmElseGuard(item);
@@ -783,7 +778,7 @@ public class ClassExporter {
 			if (eventSignalPair != null) {
 				Pair<String, String> guardTransitionPair = null;
 				if (item.getGuard() != null) {
-					guardTransitionPair = new Pair<String, String>(guardMap.get(guardExporter.getGuard(item.getGuard())),
+					guardTransitionPair = new Pair<String, String>(guardExporter.getGuard(item.getGuard()),
 							item.getName());
 
 				} else {

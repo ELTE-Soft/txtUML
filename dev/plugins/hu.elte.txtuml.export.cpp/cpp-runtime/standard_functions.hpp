@@ -2,6 +2,7 @@
 #define STANDARD_FUNCTIONS
 
 #include <string>
+#include <sstream>
 #include <list>
 int delayedInc(int,int&);
 int delayedDec(int,int&);
@@ -16,6 +17,15 @@ E* select(std::list<E*> elements)
 {
 	return elements.front();
 }
+
+template<typename T1, typename T2>
+std::string concat(T1 s1, T2 s2)
+{
+    std::ostringstream stream;
+    stream << s1 << s2;
+    return stream.str();
+}
+
 
 
 #endif
