@@ -51,6 +51,10 @@ abstract class CallExporter<T> extends ActionExporter<T, CallOperationAction> {
 		val i = new AtomicInteger
 		args.forEach[call.createArgument("p" + i.andIncrement, resolveTypeBinding.fetchType)]
 
+		if (binding.returnType.name != "void") {
+			call.createResult("return", fetchType(binding.returnType))
+		}
+
 		val argVals = args.map[exportExpression].map[it.result]
 
 		for (argi : 0 ..< call.arguments.length) {

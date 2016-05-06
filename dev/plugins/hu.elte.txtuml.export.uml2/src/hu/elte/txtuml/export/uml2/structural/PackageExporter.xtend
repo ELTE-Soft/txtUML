@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.uml2.structural
 
 import hu.elte.txtuml.export.uml2.BaseExporter
 import hu.elte.txtuml.export.uml2.Exporter
+import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller
 import hu.elte.txtuml.utils.jdt.SharedUtils
 import java.io.File
@@ -11,10 +12,9 @@ import org.eclipse.jdt.core.IPackageFragment
 import org.eclipse.jdt.core.IPackageFragmentRoot
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration
 import org.eclipse.jdt.core.dom.TypeDeclaration
+import org.eclipse.uml2.uml.Class
 import org.eclipse.uml2.uml.Package
 import org.eclipse.uml2.uml.PackageableElement
-import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode
-import org.eclipse.jdt.internal.core.search.matching.SuperTypeNamesCollector.TypeDeclarationVisitor
 
 abstract class AbstractPackageExporter<T extends Package> extends Exporter<IPackageFragment, IPackageFragment, T> {
 
@@ -70,7 +70,7 @@ abstract class AbstractPackageExporter<T extends Package> extends Exporter<IPack
 
 				val owner = otherEnd.superclass.typeArguments.get(0)
 
-				exportConnector(decl)[(owner.fetchType as org.eclipse.uml2.uml.Class).ownedConnectors += it]
+				exportConnector(decl)[(owner.fetchType as Class).ownedConnectors += it]
 			}
 			case ElementTypeTeller.isInterface(decl): {
 				exportInterface(decl)[result.packagedElements += it]

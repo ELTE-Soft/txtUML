@@ -105,17 +105,24 @@ public class TxtUMLToUML2 {
 		if (packageFragments.length == 0) {
 			throw new NotFoundException("Cannot find package '" + packageName + "'");
 		}
+		
+		IPackageFragment fragment = null;
+		for (IPackageFragment pf : packageFragments) {
+			if (pf.containsJavaResources()) {
+				fragment = pf;
+			}
+		}
 
 		ModelExporter modelExporter = new ModelExporter(exportMode);
-		Model model = modelExporter.export(packageFragments[0]);
+		Model model = modelExporter.export(fragment);
 		
 		ExporterCache cache = modelExporter.cache;
 		ModelMapCollector collector = new ModelMapCollector(model.eResource().getURI());
 		cache.getMapping().forEach((s, e)->collector.put(s, e));
 		try {
-			URI destination = URI.createFileURI(packageFragments[0].getJavaProject().getProject().getLocation().toOSString()).
+			URI destination = URI.createFileURI(fragment.getJavaProject().getProject().getLocation().toOSString()).
 		appendSegment("gen");
-			String fileName = packageFragments[0].getElementName();
+			String fileName = fragment.getElementName();
 			collector.save(destination, fileName);
 		} catch (ModelMapException e1) {
 			// TODO Auto-generated catch block
