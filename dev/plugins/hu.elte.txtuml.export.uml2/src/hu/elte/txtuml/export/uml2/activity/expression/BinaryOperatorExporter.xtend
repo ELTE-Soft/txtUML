@@ -29,9 +29,9 @@ class BinaryOperatorExporter extends ActionExporter<InfixExpression, CallOperati
 				divideOp
 			case Operator.REMAINDER:
 				remainderOp
-			case Operator.AND:
+			case Operator.CONDITIONAL_AND:
 				andOp
-			case Operator.OR:
+			case Operator.CONDITIONAL_OR:
 				orOp
 			case Operator.LESS:
 				lessOp
