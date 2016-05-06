@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.uml2;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.stream.Stream;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
@@ -108,7 +109,8 @@ public class TxtUMLToUML2 {
 		
 		IPackageFragment fragment = null;
 		for (IPackageFragment pf : packageFragments) {
-			if (pf.containsJavaResources()) {
+			boolean isModel = Stream.of(pf.getCompilationUnits()).anyMatch(cu -> cu.getElementName().equals(PackageUtils.PACKAGE_INFO));
+			if (isModel) {
 				fragment = pf;
 			}
 		}
