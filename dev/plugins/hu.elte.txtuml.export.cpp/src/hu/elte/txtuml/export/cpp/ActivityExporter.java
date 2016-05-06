@@ -28,8 +28,6 @@ import org.eclipse.uml2.uml.DestroyObjectAction;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ExecutableNode;
 import org.eclipse.uml2.uml.ExpansionKind;
-import org.eclipse.uml2.uml.ExpansionNode;
-//import org.eclipse.uml2.uml.ExpansionKind;
 import org.eclipse.uml2.uml.InputPin;
 import org.eclipse.uml2.uml.LinkEndData;
 import org.eclipse.uml2.uml.LiteralBoolean;

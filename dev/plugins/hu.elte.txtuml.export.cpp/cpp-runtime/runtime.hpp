@@ -4,6 +4,7 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
+#include <condition_variable>
 #include <vector>
 
 #include "runtimetypes.hpp"
@@ -95,7 +96,7 @@ private:
 class ConfiguratedThreadedRT: public RuntimeI<ConfiguratedThreadedRT>
 {
 public:
-
+	
     static ConfiguratedThreadedRT* createRuntime();
 	
     void start();
@@ -111,6 +112,9 @@ private:
     static ConfiguratedThreadedRT* instance;
 	ThreadPoolManager* poolManager;
 	std::vector<int> numberOfObjects;
+	std::atomic_int worker;
+	std::atomic_int messages;
+	std::condition_variable stop_request_cond;
 };
 
 

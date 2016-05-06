@@ -7,7 +7,7 @@
 
 
 StateMachineThreadPool::StateMachineThreadPool(int threads_)
-    : threads(threads_),stop(true),worker_threads(0) {}
+    : threads(threads_),stop(true){}
 	
 void StateMachineThreadPool::stopPool()
 {
@@ -20,7 +20,6 @@ void StateMachineThreadPool::startPool()
 {
 	
 	stop = false;
-	stop_request = false;
 	workers.setExpectedThreads(threads);
 	for(int i = 0; i < threads; ++i)
 	{
@@ -29,14 +28,13 @@ void StateMachineThreadPool::startPool()
         
 }
 
-void StateMachineThreadPool::stopUponCompletion()
+void StateMachineThreadPool::stopUponCompletion(std::atomic_int* messages)
 {
 	std::unique_lock<std::mutex> lock(stop_request_mu);
 	
-	if (!(stateMachines.empty() && worker_threads == 0))
+	if (!( (*messages) == 0 && (*worker_threads) == 0))
 	{
-		stop_request = true;
-		stop_request_cond.wait(lock, [this] {return this->stateMachines.empty() && this->worker_threads == 0; });
+		stop_request_cond->wait(lock, [this,messages] {return (*messages) == 0 && *(this->worker_threads) == 0; });
 	}
 
 	stopPool();
@@ -100,11 +98,9 @@ void StateMachineThreadPool::task()
 		}
 		
 		reduceWorkers();
-		
-		if(stop_request)
-		{
-			stop_request_cond.notify_one();
-		}
+
+		stop_request_cond->notify_one();
+
 					
     }
 	
@@ -131,13 +127,13 @@ void StateMachineThreadPool::modifiedThreads(int n)
 
 void StateMachineThreadPool::incrementWorkers()
 {	
-	worker_threads++;
+	(*worker_threads)++;
 
 }
 
 void StateMachineThreadPool::reduceWorkers()
 {
-	worker_threads--;
+	(*worker_threads)--;
 }
 
 void StateMachineThreadPool::enqueObject(StateMachineI* sm)

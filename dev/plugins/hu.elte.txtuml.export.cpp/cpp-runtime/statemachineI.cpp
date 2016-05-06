@@ -25,6 +25,7 @@ void StateMachineI::init()
 
 void StateMachineI::send(EventPtr e_)
 {
+  (*message_counter)++;
   _messageQueue->push_back(e_);
   if(_pool != nullptr)
   {

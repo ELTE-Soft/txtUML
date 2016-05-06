@@ -20,9 +20,11 @@ public:
 	void task();
 	void enqueObject(StateMachineI*);
 	void stopPool();
-	void stopUponCompletion();
+	void stopUponCompletion(std::atomic_int*);
 	void startPool();
 	void modifiedThreads(int);
+	void setWorkersCounter(std::atomic_int* counter) {this->worker_threads = counter;}
+	void setStopReqest(std::condition_variable* stop_req) {stop_request_cond = stop_req;}
 	~StateMachineThreadPool();
 private:
 	
@@ -36,11 +38,11 @@ private:
 
 	// synchronization
 	std::atomic_bool stop;
-	std::atomic_bool stop_request;
-	std::atomic_int worker_threads;
+	
+	std::atomic_int* worker_threads;
 	
 	std::condition_variable cond;
-	std::condition_variable stop_request_cond;
+	std::condition_variable* stop_request_cond;
 
 	std::mutex mu;
 	std::mutex modifie_mutex;

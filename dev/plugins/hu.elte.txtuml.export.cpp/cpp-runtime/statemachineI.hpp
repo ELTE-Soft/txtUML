@@ -21,7 +21,7 @@ public:
   void send(EventPtr e_);
   void init();
   EventPtr getNextMessage(){return _messageQueue->front();}
-  void deleteNextMessage() {_messageQueue->pop_front(); }
+  void deleteNextMessage() {_messageQueue->pop_front();(*message_counter)--; }
   bool emptyMessageQueue(){return _messageQueue->empty();}
   void setPool(StateMachineThreadPool* pool_){_pool=pool_;}
   void setMessageQueue(std::shared_ptr<MessageQueueType> messageQueue_){_messageQueue=messageQueue_;}
@@ -30,6 +30,7 @@ public:
   bool isStarted() {return _started;}
   bool isInitialized() {return _initialized; }
   int getPoolId() {return poolId;}
+  void setMessageCounter(std::atomic_int* counter) { message_counter = counter; }
   
   virtual ~StateMachineI();
 protected:
@@ -46,6 +47,7 @@ private:
   std::atomic_bool _inPool;
   std::atomic_bool _started;
   std::atomic_bool _initialized;
+  std::atomic_int* message_counter;
   int poolId;
   
   
