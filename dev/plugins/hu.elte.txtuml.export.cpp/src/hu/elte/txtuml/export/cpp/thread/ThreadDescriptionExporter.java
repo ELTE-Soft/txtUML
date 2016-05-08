@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.cpp.thread;
 
 import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.api.deployment.Configuration;
 import hu.elte.txtuml.api.deployment.Group;
 import hu.elte.txtuml.api.deployment.GroupContainer;
@@ -31,7 +32,8 @@ public class ThreadDescriptionExporter {
 		
 		this.allModelClassName = new HashSet<String>();
 		for(org.eclipse.uml2.uml.Class cls : allClass) {
-		    allModelClassName.add(cls.getName());
+			if(!Shared.generatedClass(cls))
+				allModelClassName.add(cls.getName());
 		}
 		exportedClasses = new HashSet<String>();
 		numberOfConfigurations = 0;

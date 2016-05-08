@@ -95,12 +95,11 @@ void StateMachineThreadPool::task()
 				sm->setPooled(false);
 			}
 			
+			reduceWorkers();
+
+			stop_request_cond->notify_one();
+			
 		}
-		
-		reduceWorkers();
-
-		stop_request_cond->notify_one();
-
 					
     }
 	

@@ -233,7 +233,7 @@ public class GenerationTemplates {
     }
 
     public static String getMultiplicityEnumType(Integer lowerLimit, Integer upperLimit) {
-	String multiplicity = "";
+	String multiplicity = "One";
 	if (lowerLimit == 1 && upperLimit == 1) {
 	    multiplicity = "One";
 	} else if (lowerLimit == 1 && upperLimit > 1) {

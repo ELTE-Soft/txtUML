@@ -6,7 +6,9 @@ SingleThreadRT* SingleThreadRT::instance = nullptr;
 
 SingleThreadRT::SingleThreadRT():_messageQueue(new PoolQueueType){}
 
-void SingleThreadRT::setupObjectSpecificRuntime(StateMachineI*){}
+void SingleThreadRT::setupObjectSpecificRuntime(StateMachineI* sm){
+	sm->setMessageCounter(new std::atomic_int(0));
+}
 
 bool SingleThreadRT::isConfigurated()
 {
@@ -93,7 +95,7 @@ void ConfiguratedThreadedRT::start()
 	}
 	else
 	{
-		//TODO sign error
+		abort();
 	}
 	
 
@@ -111,11 +113,11 @@ void ConfiguratedThreadedRT::setupObjectSpecificRuntime(StateMachineI* sm)
 {
 	
 	sm->setMessageCounter(&messages);
-	int objectID = sm->getPoolId();
-	StateMachineThreadPool* matchedPool = poolManager->getPool(objectID);
+	int objectId = sm->getPoolId();
+	StateMachineThreadPool* matchedPool = poolManager->getPool(objectId);
 	sm->setPool(matchedPool);
-	numberOfObjects[(size_t)objectID]++;
-	poolManager->recalculateThreads(objectID,numberOfObjects[(size_t)objectID]);
+	numberOfObjects[(size_t)objectId]++;
+	poolManager->recalculateThreads(objectId,numberOfObjects[(size_t)objectId]);
 }
 
 bool ConfiguratedThreadedRT::isConfigurated()
@@ -126,9 +128,9 @@ bool ConfiguratedThreadedRT::isConfigurated()
 
 void ConfiguratedThreadedRT::removeObject(StateMachineI* sm)
 {
-	int objectID = sm->getPoolId();
-	numberOfObjects[(size_t)objectID]--;
-	poolManager->recalculateThreads(objectID,numberOfObjects[(size_t)objectID]);
+	int objectId = sm->getPoolId();
+	numberOfObjects[(size_t)objectId]--;
+	poolManager->recalculateThreads(objectId,numberOfObjects[(size_t)objectId]);
 	
 }
 

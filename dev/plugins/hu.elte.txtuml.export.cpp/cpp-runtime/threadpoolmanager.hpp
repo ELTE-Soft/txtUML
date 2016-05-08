@@ -27,9 +27,4 @@ class ThreadPoolManager
 	
 };
 
-inline StateMachineThreadPool* ThreadPoolManager::getPool(int id)
-{
-	return configuration->getThreadPool(id);
-}
-
 #endif // THEAD_POOL_MANAGER_H

@@ -27,7 +27,6 @@ import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.StateMachine;
-import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.Transition;
 import org.eclipse.uml2.uml.Trigger;
 import org.eclipse.uml2.uml.Type;
@@ -286,7 +285,7 @@ public class ClassExporter {
 					// TODO exception, unknown for me, need the model
 				}
 			}
-			if (!isConstructor(operation)) {
+			if (!Shared.isConstructor(operation)) {
 
 				String returnType = getReturnType(operation.getReturnResult());
 
@@ -368,7 +367,7 @@ public class ClassExporter {
 
 	private void createFuncTypeMap(Region region, FuncTypeEnum funcType_, Boolean rt_) {
 		Map<String, Pair<String, String>> map = new HashMap<String, Pair<String, String>>();
-		StringBuilder source = new StringBuilder("");
+		String source = "";
 		String name = "";
 		for (State item : getStateList(region)) {
 			Behavior behavior = null;
@@ -389,11 +388,10 @@ public class ClassExporter {
 			if (behavior != null) {
 				if (behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
 					activityExporter.reinitilaize();
-					source.append(activityExporter.createfunctionBody((Activity)behavior));
-					name = behavior.getName();
-					if (name == null || name.isEmpty()) {
-						name = item.getName() + "_" + unknownName;
-					}
+					
+					source = activityExporter.createfunctionBody((Activity)behavior).toString();
+					name = item.getName() + "_" + unknownName;
+
 					map.put(name, new Pair<String, String>(item.getName(), source.toString()));
 				}
 			}
@@ -594,7 +592,7 @@ public class ClassExporter {
 		for (Operation item : class_.getOwnedOperations()) {
 			if (item.getVisibility().toString().equals(modifyer_)) {
 
-				if (isConstructor(item)) {
+				if (Shared.isConstructor(item)) {
 					ownConstructor = true;
 					source.append(GenerationTemplates.constructorDecl(realName, getOperationParamTypes(item)));
 				} else {
@@ -653,19 +651,7 @@ public class ClassExporter {
 		return source;
 	}
 
-	private boolean isConstructor(Operation operation) {
-			
-		for ( Stereotype stereotype : operation.getAppliedStereotypes()) {
-			
-			if(stereotype.getKeyword().equals(ActivityTemplates.CreateStereoType)) {
-				return true;
-				
-			}
-		}
-		
-		return false;
-		
-	}
+
 
 	private List<String> getOperationParamTypes(Operation op_) {
 		List<String> ret = new ArrayList<String>();

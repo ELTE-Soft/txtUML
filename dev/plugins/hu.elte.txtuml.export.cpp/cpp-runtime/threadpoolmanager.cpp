@@ -4,6 +4,10 @@ ThreadPoolManager::ThreadPoolManager() : configuration(nullptr) {}
 
 void ThreadPoolManager::recalculateThreads(int id,int n)
 {
+	if (!isConfigurated()) {
+		abort();
+	}
+	
 	LinearFunction function = *(configuration->getFunction(id));
 	int max = configuration->getMax(id);
 	if (function(n) < max) {
@@ -13,18 +17,36 @@ void ThreadPoolManager::recalculateThreads(int id,int n)
 
 void ThreadPoolManager::enqueObject(StateMachineI* sm)
 {
-	int objectID = sm->getPoolId();
-	configuration->getThreadPool(objectID)->enqueObject(sm);
+	if (!isConfigurated()) {
+		abort();
+	}
+	
+	int objectId = sm->getPoolId();
+	configuration->getThreadPool(objectId)->enqueObject(sm);
 }
 
 int ThreadPoolManager::getNumberOfConfigurations()
 {
+	if (!isConfigurated()) {
+		abort();
+	}
+	
 	return ((int)configuration->getNumberOfConfigurations());
+}
+
+StateMachineThreadPool* ThreadPoolManager::getPool(int id)
+{
+	if (!isConfigurated()) {
+		abort();
+	}
+	
+	return configuration->getThreadPool(id);
 }
 
 ThreadPoolManager::~ThreadPoolManager()
 {
-	delete configuration;
+	if(isConfigurated())
+		delete configuration;
 }
 
 void ThreadPoolManager::setConfiguration(ThreadConfiguration* configuration)

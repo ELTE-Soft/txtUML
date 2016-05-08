@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.Class;
@@ -82,11 +83,8 @@ public class Uml2ToCppExporter {
 
 		for (Class item : classList) {
 		    
-		    if(threadManager.getDescription().get(item.getName()) != null) {
+		    if(threadManager.getDescription().get(item.getName()) != null && !Shared.generatedClass(item)) {
 		    	
-		    if(generatedClass(item)) {
-		    	generatedClassNames.put(item, getNextGeneteredClass());
-		    }
 			classExporter.reiniIialize();
 			classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
 			classExporter.setRealName(getRealClassName(item));
@@ -102,15 +100,11 @@ public class Uml2ToCppExporter {
 		createCMakeFile(outputDirectory);
 	}
 
-	private boolean generatedClass(Class item) {
-		return item.getName().startsWith("#");
-		
-	}
 	
-	private String getNextGeneteredClass() {
+	/*private String getNextGeneteredClass() {
 		generatedClassCounter++;
 		return "GeneratedClass" + generatedClassCounter;
-	}
+	}*/
 
 	
 	private String getRealClassName(Class cls) {
@@ -220,10 +214,10 @@ public class Uml2ToCppExporter {
 		return GenerationTemplates.eventHeaderGuard(forwardDecl.toString());
 	}
 
-	private List<Pair<String, String>> getSignalParams(Signal signal_) {
+	private List<Pair<String, String>> getSignalParams(Signal signal) {
 		List<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
-		for (Property prop : signal_.getOwnedAttributes()) {
-			ret.add(new Pair<String, String>(prop.getType().getName(), prop.getName()));
+		for (Parameter param : Shared.getSignalConstructorParameters(signal,elements)) {
+			ret.add(new Pair<String, String>(param.getType().getName(), param.getName()));
 		}
 		return ret;
 	}

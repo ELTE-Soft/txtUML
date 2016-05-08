@@ -13,17 +13,14 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValueSpecification;
 
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 
-public class GuardExporter {
+public class GuardExporter extends ActivityExporter{
 	
-	private ActivityExporter guardActivityExporter;
 	private Map<Constraint,String> constratintFunctionMap;
 	
 	private int guardCount;
 	
 	public GuardExporter() {
-		guardActivityExporter = new ActivityExporter();
 		constratintFunctionMap = new HashMap<Constraint,String>();
 		
 		guardCount = 0;
@@ -62,13 +59,18 @@ public class GuardExporter {
 			} else if (guard_.eClass().equals(UMLPackage.Literals.OPAQUE_EXPRESSION)) {
 				OpaqueExpression expression = (OpaqueExpression) guard_;
 				if(expression.getBehavior() != null && expression.getBehavior().eClass().equals(UMLPackage.Literals.ACTIVITY))
-					guardActivityExporter.reinitilaize();
-					source = guardActivityExporter.createfunctionBody( (Activity) expression.getBehavior()).toString();
+					reinitilaize();
+					source = createfunctionBody( (Activity) expression.getBehavior()).toString();
 			} else {
 				source = "UNKNOWN_GUARD_TYPE";
 			}
 		}
 		return source;
+	}
+	
+	@Override
+	protected String createReturnParamaterCode(Activity activity_) {
+		return ActivityTemplates.returnTemplates(getRealVariable(activity_.getVariables().get(0)));
 	}
 	
 	public String calculateSmElseGuard(Transition elseTransition_) {
