@@ -28,7 +28,7 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 	public ClassDiagramElementsManager(Diagram diagram, ClassDiagramElementsProvider provider,
 			TransactionalEditingDomain domain, ClassDiagramElementsArranger arranger, IProgressMonitor monitor) {
 		super(diagram);
-		this.notationManager = new ClassDiagramNotationManager(domain); // TODO:
+		this.notationManager = new ClassDiagramNotationManager(diagram, domain); // TODO:
 																		// Consider
 																		// DI
 		this.arranger = arranger;
@@ -55,9 +55,9 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 	 */
 	@Override
 	public void addElementsToDiagram() {
-		this.elementsProvider.getClasses().forEach((clazz) -> this.notationManager.createClassForDiagram(this.diagram, clazz,
+		this.elementsProvider.getClasses().forEach((clazz) -> this.notationManager.createClassForDiagram(clazz,
 				this.arranger.getBoundsForElement(clazz), this.monitor));
-		this.elementsProvider.getSignals().forEach((signal) -> this.notationManager.createSignalForDiagram(this.diagram,
+		this.elementsProvider.getSignals().forEach((signal) -> this.notationManager.createSignalForDiagram(
 				signal, this.arranger.getBoundsForElement(signal), this.monitor));
 
 		this.elementsProvider.getAssociations().forEach((assoc) -> {
@@ -74,13 +74,13 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 			String sourceAnchor = this.arranger.getSourceAnchorForConnection(assoc);
 			String targetAnchor = this.arranger.getTargetAnchorForConnection(assoc);
 			this.notationManager.createAssociationForNodes((Classifier) memberT1, (Classifier) memberT2, assoc, route,
-					sourceAnchor, targetAnchor, this.diagram, this.monitor);
+					sourceAnchor, targetAnchor, this.monitor);
 		});
 
 		this.elementsProvider.getGeneralizations()
 				.forEach((generalization) -> this.notationManager.createGeneralizationForNodes(generalization,
 						this.arranger.getRouteForConnection(generalization),
 						this.arranger.getSourceAnchorForConnection(generalization),
-						this.arranger.getTargetAnchorForConnection(generalization), this.diagram, this.monitor));
+						this.arranger.getTargetAnchorForConnection(generalization),this.monitor));
 	}
 }

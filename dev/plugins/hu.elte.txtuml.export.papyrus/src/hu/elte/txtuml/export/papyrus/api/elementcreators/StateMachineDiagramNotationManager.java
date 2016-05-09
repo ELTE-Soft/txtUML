@@ -6,6 +6,7 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.diagram.core.preferences.PreferencesHint;
 import org.eclipse.gmf.runtime.diagram.core.services.ViewService;
 import org.eclipse.gmf.runtime.emf.type.core.IHintedType;
+import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.papyrus.uml.diagram.statemachine.providers.UMLElementTypes;
 import org.eclipse.papyrus.uml.diagram.statemachine.part.UMLDiagramEditorPlugin;
@@ -16,7 +17,8 @@ public class StateMachineDiagramNotationManager extends AbstractDiagramNotationM
 	
 	private static final Rectangle defaultStateBounds = new Rectangle(0,0,50,50);
 	
-	public StateMachineDiagramNotationManager(TransactionalEditingDomain domain){
+	public StateMachineDiagramNotationManager(Diagram diagram, TransactionalEditingDomain domain){
+		super(diagram);
 		this.domain = domain;
 	}
 	

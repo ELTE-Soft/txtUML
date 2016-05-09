@@ -37,11 +37,12 @@ public class ClassDiagramNotationManager extends AbstractDiagramNotationManager 
 
 	private static final Rectangle defaultClassBounds = new Rectangle(0, 0, 100, 100);
 
-	public ClassDiagramNotationManager(TransactionalEditingDomain domain) {
+	public ClassDiagramNotationManager(Diagram diagram, TransactionalEditingDomain domain) {
+		super(diagram);
 		this.domain = domain;
 	}
 
-	public void createClassForDiagram(Diagram diagram, Class objectToDisplay, Rectangle bounds,
+	public void createClassForDiagram(Class objectToDisplay, Rectangle bounds,
 			IProgressMonitor monitor) {
 
 		Runnable runnable = () -> {
@@ -60,10 +61,10 @@ public class ClassDiagramNotationManager extends AbstractDiagramNotationManager 
 			});
 
 		};
-		runInTransactionalCommand(runnable, "Creating Class for diagram " + diagram.getName(), monitor);
+		runInTransactionalCommand(runnable, "Creating Class for diagram " + this.diagram.getName(), monitor);
 	}
 
-	public void createPropertyForNode(Node node, Property propertyToDisplay, IProgressMonitor monitor) {
+	private void createPropertyForNode(Node node, Property propertyToDisplay, IProgressMonitor monitor) {
 		BasicCompartment comp = getPropertyCompartementOfNode(node);
 
 		if (comp == null) {
@@ -95,20 +96,20 @@ public class ClassDiagramNotationManager extends AbstractDiagramNotationManager 
 		runInTransactionalCommand(runnable, "Creating Operation for Node " + node, monitor);
 	}
 
-	public void createSignalForDiagram(Diagram diagram, Signal signal, Rectangle bounds, IProgressMonitor monitor) {
+	public void createSignalForDiagram(Signal signal, Rectangle bounds, IProgressMonitor monitor) {
 		// TODO Auto-generated method stub
 	}
 
 	public void createAssociationForNodes(Classifier source, Classifier target, Association assoc, List<Point> route,
-			String sourceAnchor, String targetAnchor, Diagram diagram, IProgressMonitor monitor) {
+			String sourceAnchor, String targetAnchor, IProgressMonitor monitor) {
 
-		View sourceView = getViewOfModel(source, diagram);
-		View targetView = getViewOfModel(target, diagram);
+		View sourceView = getViewOfModel(source, this.diagram);
+		View targetView = getViewOfModel(target, this.diagram);
 		IElementType elementType = UMLElementTypes.Association_4001;
 		String hint = ((IHintedType) elementType).getSemanticHint();
 
 		Runnable runnable = () -> {
-			Edge edge = (Edge) ViewService.getInstance().createEdge(elementType, diagram, hint, ViewUtil.APPEND,
+			Edge edge = (Edge) ViewService.getInstance().createEdge(elementType, this.diagram, hint, ViewUtil.APPEND,
 					ClassDiagramNotationManager.diagramPrefHint);
 			edge.setElement(assoc);
 			edge.setSource(sourceView);
@@ -121,17 +122,17 @@ public class ClassDiagramNotationManager extends AbstractDiagramNotationManager 
 	}
 
 	public void createGeneralizationForNodes(Generalization generalization, List<Point> route, String sourceAnchor,
-			String targetAnchor, Diagram diagram, IProgressMonitor monitor) {
+			String targetAnchor, IProgressMonitor monitor) {
 		Classifier subclass = generalization.getSpecific();
 		Classifier baseclass = generalization.getGeneral();
 
-		View sourceView = getViewOfModel(subclass, diagram);
-		View targetView = getViewOfModel(baseclass, diagram);
+		View sourceView = getViewOfModel(subclass, this.diagram);
+		View targetView = getViewOfModel(baseclass, this.diagram);
 		IElementType elementType = UMLElementTypes.Generalization_4002;
 		String hint = ((IHintedType) elementType).getSemanticHint();
 
 		Runnable runnable = () -> {
-			Edge edge = (Edge) ViewService.getInstance().createEdge(elementType, diagram, hint, ViewUtil.APPEND,
+			Edge edge = (Edge) ViewService.getInstance().createEdge(elementType, this.diagram, hint, ViewUtil.APPEND,
 					ClassDiagramNotationManager.diagramPrefHint);
 			edge.setElement(generalization);
 			edge.setSource(sourceView);

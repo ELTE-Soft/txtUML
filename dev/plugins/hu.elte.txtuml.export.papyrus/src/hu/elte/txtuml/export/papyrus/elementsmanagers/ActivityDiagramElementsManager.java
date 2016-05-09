@@ -42,6 +42,7 @@ import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 /**
  * An abstract class for adding/removing elements to ActivityDiagrams.
  */
+@Deprecated
 public class ActivityDiagramElementsManager extends AbstractDiagramElementsManager{
 	
 	private List<java.lang.Class<? extends Element>> nodesToBeAdded;
@@ -52,13 +53,14 @@ public class ActivityDiagramElementsManager extends AbstractDiagramElementsManag
 	 * @param modelManager - The ModelManager which serves the model elements
 	 * @param diagramEditPart - The DiagramEditPart of the diagram which is to be handled
 	 */
+	@Deprecated
 	public ActivityDiagramElementsManager(Diagram diagram, TransactionalEditingDomain domain) {
 		super(diagram);
 		nodesToBeAdded = generateNodesToBeAdded();
 		connectorsToBeAdded = generateConnectorsToBeAdded();
 		//TODO: ElementCreator field needed
 	}
-	
+	@Deprecated
 	public ActivityDiagramElementsManager(Diagram diagram, TransactionalEditingDomain domain, IProgressMonitor monitor) {
 		this(diagram, domain);
 		this.monitor = monitor;

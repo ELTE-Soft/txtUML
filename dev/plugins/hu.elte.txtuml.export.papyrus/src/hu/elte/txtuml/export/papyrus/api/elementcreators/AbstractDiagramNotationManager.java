@@ -17,6 +17,7 @@ import org.eclipse.gmf.runtime.common.core.command.CommandResult;
 import org.eclipse.gmf.runtime.common.core.command.ICommand;
 import org.eclipse.gmf.runtime.emf.commands.core.command.AbstractTransactionalCommand;
 import org.eclipse.gmf.runtime.notation.Bounds;
+import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.Edge;
 import org.eclipse.gmf.runtime.notation.IdentityAnchor;
 import org.eclipse.gmf.runtime.notation.NotationFactory;
@@ -37,8 +38,12 @@ public class AbstractDiagramNotationManager {
 	protected TransactionalEditingDomain domain;
 	
 	protected DiagramElementTypes types;
+	
+	protected Diagram diagram;
 
-	protected AbstractDiagramNotationManager(){
+	protected AbstractDiagramNotationManager(Diagram diagram){
+		
+		this.diagram = diagram;
 		
 		IProgressService progressService = PlatformUI.getWorkbench()
 				.getProgressService();

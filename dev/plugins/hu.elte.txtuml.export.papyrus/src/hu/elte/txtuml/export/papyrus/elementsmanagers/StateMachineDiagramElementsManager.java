@@ -1,34 +1,15 @@
 package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
-import java.util.List;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
-import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.notation.Diagram;
-import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.RegionEditPart;
-import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateEditPart;
-import org.eclipse.uml2.uml.Comment;
-import org.eclipse.uml2.uml.Constraint;
-import org.eclipse.uml2.uml.Element;
-import org.eclipse.uml2.uml.FinalState;
-import org.eclipse.uml2.uml.Pseudostate;
-import org.eclipse.uml2.uml.State;
-import org.eclipse.uml2.uml.Transition;
 
-import hu.elte.txtuml.export.papyrus.UMLModelManager;
-import hu.elte.txtuml.export.papyrus.api.StateMachineDiagramElementsController;
-import hu.elte.txtuml.export.papyrus.api.elementcreators.ClassDiagramNotationManager;
 import hu.elte.txtuml.export.papyrus.api.elementcreators.StateMachineDiagramNotationManager;
-import hu.elte.txtuml.export.papyrus.elementproviders.ClassDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.elementproviders.StateMachineDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.ClassDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.StateMachineDiagramElementsArranger;
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
 /**
  * An abstract class for adding/removing elements to StateMachineDiagrams.
@@ -48,7 +29,7 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	public StateMachineDiagramElementsManager(Diagram diagram, StateMachineDiagramElementsProvider provider,
 			TransactionalEditingDomain domain, StateMachineDiagramElementsArranger arranger, IProgressMonitor monitor) {
 		super(diagram);
-		this.notationManager = new StateMachineDiagramNotationManager(domain); // TODO: Consider DI
+		this.notationManager = new StateMachineDiagramNotationManager(diagram, domain); // TODO: Consider DI
 		this.arranger = arranger;
 		
 		try {
@@ -75,7 +56,7 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	public void addElementsToDiagram(){
 		
 		//TODO: Get the main region uml2 element and notation node 
-		this.elementsProvider.getStatesForRegion(null).forEach(state -> this.notationManager.createStateForRegion(null, state, this.monitor));
+		//this.elementsProvider.getStatesForRegion(null).forEach(state -> this.notationManager.createStateForRegion(null, state, this.monitor));
 		
 		//TODO: Probably a recursive algorithm is needed to build up state hierarchy
 	}
