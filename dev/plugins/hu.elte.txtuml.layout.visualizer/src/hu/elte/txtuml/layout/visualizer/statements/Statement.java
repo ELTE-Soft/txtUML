@@ -412,8 +412,10 @@ public class Statement
 	 * @throws InternalException
 	 *             Throws if the algorithm try to set a statement with no
 	 *             GroupId when it should have.
+	 * @throws UnknownStatementException Throws if there is no opposite 
+	 * of a {@link Statement}.
 	 */
-	public static Statement opposite(Statement s) throws InternalException
+	public static Statement opposite(Statement s) throws InternalException, UnknownStatementException
 	{
 		return new Statement(opposite(s.getType()), s.getLevel(),
 				s.getGroupId(), s.getParameter(1), s.getParameter(0));
@@ -427,8 +429,9 @@ public class Statement
 	 *            the {@link StatementType} we want the opposite of.
 	 * @return the opposite {@link StatementType} of the given st
 	 *         {@link StatementType}.
+	 * @throws UnknownStatementException 
 	 */
-	public static StatementType opposite(StatementType st)
+	public static StatementType opposite(StatementType st) throws UnknownStatementException
 	{
 		if (st.equals(StatementType.north))
 			return StatementType.south;
@@ -450,7 +453,7 @@ public class Statement
 		if (st.equals(StatementType.left))
 			return StatementType.right;
 		
-		return StatementType.unknown;
+		throw new UnknownStatementException("Internal error: This statement has no opposite!", st.toString());
 	}
 	
 	// end Statics

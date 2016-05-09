@@ -1,0 +1,48 @@
+package train.x;
+
+import hu.elte.txtuml.api.model.ModelExecutor;
+import train.x.model.Backward;
+import train.x.model.Engine;
+import train.x.model.Forward;
+import train.x.model.GE;
+import train.x.model.GL;
+import train.x.model.Gearbox;
+import train.x.model.LE;
+import train.x.model.Lamp;
+import train.x.model.SwitchLight;
+
+execution Tester {
+	ModelExecutor.Settings.setExecutorLog(true);
+	
+	Gearbox g = create(Gearbox);
+	Engine e = create(Engine);
+	Lamp l = create(Lamp);
+
+	link(GE.g, g, GE.e, e);
+	link(GL.g, g, GL.l, l);
+	link(LE.l, l, LE.e, e);
+	start(g);
+	start(e);
+	start(l);
+
+	int time = 50;
+	for (int i = 0; i < 3; i++) {
+		Thread.sleep(time);
+		log("");
+		send new SwitchLight() to l;
+	}
+
+	Thread.sleep(2 * time);
+
+	for (int i = 0; i < 3; i++) {
+		Thread.sleep(3 * time);
+		log("");
+		send new Forward() to g;
+
+		Thread.sleep(time);
+		log("");
+		send new Backward() to g;
+	}
+
+	ModelExecutor.shutdown();
+}

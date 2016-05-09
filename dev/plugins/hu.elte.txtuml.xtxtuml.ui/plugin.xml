@@ -627,4 +627,66 @@
     </fileTypes>
   </extension>
 
+  <extension point="org.eclipse.core.runtime.adapters">
+     <factory
+        class="hu.elte.txtuml.xtxtuml.ui.XtxtUMLExecutableExtensionFactory:hu.elte.txtuml.xtxtuml.ui.launching.XtxtUMLJavaElementDelegateAdapterFactory"
+        adaptableType="org.eclipse.ui.IFileEditorInput">
+        <adapter type="hu.elte.txtuml.xtxtuml.ui.launching.XtxtUMLJavaElementDelegateMainLaunch"/>
+     </factory>
+     <factory
+        class="hu.elte.txtuml.xtxtuml.ui.XtxtUMLExecutableExtensionFactory:hu.elte.txtuml.xtxtuml.ui.launching.XtxtUMLJavaElementDelegateAdapterFactory"
+        adaptableType="org.eclipse.ui.IEditorPart">
+        <adapter type="hu.elte.txtuml.xtxtuml.ui.launching.XtxtUMLJavaElementDelegateMainLaunch"/>
+     </factory>
+     <factory
+        class="hu.elte.txtuml.xtxtuml.ui.XtxtUMLExecutableExtensionFactory:hu.elte.txtuml.xtxtuml.ui.launching.XtxtUMLJavaElementDelegateAdapterFactory"
+        adaptableType="org.eclipse.core.resources.IResource">
+        <adapter type="hu.elte.txtuml.xtxtuml.ui.launching.XtxtUMLJavaElementDelegateMainLaunch"/>
+     </factory>
+     <factory
+        class="hu.elte.txtuml.xtxtuml.ui.XtxtUMLExecutableExtensionFactory:hu.elte.txtuml.xtxtuml.ui.launching.XtxtUMLJavaElementDelegateAdapterFactory"
+        adaptableType="hu.elte.txtuml.xtxtuml.ui.launching.XtxtUMLJavaElementDelegateMainLaunch">
+        <adapter type="org.eclipse.jdt.core.IJavaElement"/>
+     </factory>
+  </extension>
+
+  <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="hu.elte.txtuml.xtxtuml.ui.launching.XtxtUMLExecutionLaunchShortcut"
+            description="Launches the most relevant XtxtUML execution defined in the selected file"
+            icon="icons/execution.gif"
+            id="hu.elte.txtuml.xtxtuml.ui.launching.XtxtUMLExecutionLaunchShortcut"
+            label="XtxtUML Execution"
+            modes="run, debug">
+         <contextualLaunch>
+            <enablement>
+               <with variable="selection">
+                  <count value="1"/>
+                  <iterate>
+                     <and>
+                        <adapt type="org.eclipse.core.resources.IResource">
+                           <and>
+                              <or>
+                                 <test property="org.eclipse.core.resources.name" value="*.xtxtuml"/>
+                                 <test property="org.eclipse.core.resources.name" value="*.txtuml"/>
+                              </or>
+                              <test property="org.eclipse.core.resources.projectNature" value="hu.elte.txtuml.project.txtumlprojectNature"/>
+                           </and>
+                        </adapt>
+                        <not><adapt type="org.eclipse.jdt.core.IJavaElement"/></not>
+                        <adapt type="hu.elte.txtuml.xtxtuml.ui.launching.XtxtUMLJavaElementDelegateMainLaunch">
+                           <test property="org.eclipse.jdt.launching.hasMain"/>
+                        </adapt>
+                     </and>
+                  </iterate>
+               </with>
+            </enablement>
+         </contextualLaunch>
+         <configurationType
+            id="org.eclipse.jdt.launching.localJavaApplication">
+         </configurationType>
+     </shortcut>
+  </extension>
+
 </plugin>

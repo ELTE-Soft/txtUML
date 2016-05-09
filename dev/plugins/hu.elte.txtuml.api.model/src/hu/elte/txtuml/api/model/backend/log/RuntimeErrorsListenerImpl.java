@@ -53,12 +53,18 @@ final class RuntimeErrorsListenerImpl extends BaseListenerImpl implements Runtim
 
 	@Override
 	public void moreThanOneElseTransitionsFromChoice(Vertex choice) {
-		err("Error: there are more than one transitions from " + choice + " with an 'else' condition.");
+		err("Error: there are more than one transitions from " + choice.getStringRepresentation()
+				+ " with an 'else' condition.");
 	}
 
 	@Override
 	public void noTransitionFromChoice(Vertex choice) {
-		err("Error: there was no transition from " + choice + " which could be used.");
+		err("Error: there was no transition from " + choice.getStringRepresentation() + " which could be used.");
+	}
+
+	@Override
+	public void missingInitialTransition(Vertex fromInitial) {
+		err("Error: no initial transition is defined from " + fromInitial.getStringRepresentation() + ".");
 	}
 
 	@Override

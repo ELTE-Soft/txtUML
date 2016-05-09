@@ -9,6 +9,7 @@ class XtxtUMLConfigurableIssueCodes extends XbaseConfigurableIssueCodes {
 
 	override protected initialize(IAcceptor<PreferenceKey> iAcceptor) {
 		super.initialize(iAcceptor)
-		iAcceptor.accept(create(IssueCodes.COPY_JTXTUML_PROBLEMS, SeverityConverter.SEVERITY_ERROR))
+		iAcceptor.accept(create(XtxtUMLIssueCodes.COPY_JTXTUML_PROBLEMS, SeverityConverter.SEVERITY_ERROR))
 	}
+
 }
