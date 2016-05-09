@@ -131,14 +131,12 @@ public class TxtUMLElementsMapper {
 	 * 
 	 * @return
 	 */
-	public List<Pair<String, Element>> getDiagramRootsWithDiagramNames(TxtUMLLayoutDescriptor descriptor) {
-		List<Pair<String, Element>> roots = new ArrayList<>();
+	public List<Pair<DiagramExportationReport, Element>> getDiagramRootsWithDiagramNames(TxtUMLLayoutDescriptor descriptor) {
+		List<Pair<DiagramExportationReport, Element>> roots = new ArrayList<>();
 		for (Pair<String, DiagramExportationReport> pair : descriptor.getReportsWithDiagramNames()) {
 			DiagramExportationReport report = pair.getSecond();
-			// TODO: See if there is a better solution to get container of
-			// diagram
-			String name = report.getModelName();
-			findElement(name).ifPresent(e -> roots.add(new Pair<>(pair.getFirst(), e)));
+			String name = report.getReferencedElementName();
+			findElement(name).ifPresent(e -> roots.add(new Pair<>(report, e)));
 		}
 		return roots;
 	}

@@ -73,7 +73,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 
 		try {
 			
-			this.checkEmptyLayoutDecsriptions();
+			this.checkEmptyLayoutDescriptions();
 			
 			IProgressService progressService = PlatformUI.getWorkbench()
 					.getProgressService();
@@ -208,7 +208,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		}
 	}
 	
-	private void checkEmptyLayoutDecsriptions() throws InterruptedException {
+	private void checkEmptyLayoutDescriptions() throws InterruptedException {
 		if(selectTxtUmlPage.getTxtUmlLayout().isEmpty()){
 			boolean answer = Dialogs.WarningConfirm("No Layout descriptions",
 					"No diagrams will be generated using the current setup,"

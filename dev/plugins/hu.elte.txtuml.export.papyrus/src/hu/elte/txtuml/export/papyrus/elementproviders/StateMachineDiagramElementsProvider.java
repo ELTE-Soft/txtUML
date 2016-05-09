@@ -8,6 +8,8 @@ import org.eclipse.uml2.uml.State;
 public interface StateMachineDiagramElementsProvider {
 
 	Collection<State> getStatesForRegion(Region region);
+
+	Collection<Region> getMainRegions();
 	
 	//State , CompositeState?, PseudoState, FinalState, Choice, Merge etc.
 }

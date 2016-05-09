@@ -98,7 +98,8 @@ public class DiagramExporterImpl implements DiagramExporter {
 
 		if(isClassDiagram(diagClass))
 		{
-			//report.setReferencedElementName(diagClass.getPackage().getName() + ".model");
+			//TODO: add a real implementation instead of this hack.
+			report.setReferencedElementName(diagClass.getPackage().getName() + ".model");
 		} 
 		else if(isStateMachineDiagram(diagClass))
 		{

@@ -42,10 +42,10 @@ public class TxtUMLLayoutDescriptor {
 	 * @param modelName - The canonical name of the model
 	 * @param reports - The {@link DiagramExportationReport}s that hold all information about the layout
 	 */
-	public TxtUMLLayoutDescriptor(String modelName, List<Pair<String, DiagramExportationReport>> reports) {
+	public TxtUMLLayoutDescriptor(String modelName, List<DiagramExportationReport> reports) {
 		this.modelName = modelName;
-		for(Pair<String, DiagramExportationReport> pair : reports){
-			this.reports.put(pair.getFirst(), pair.getSecond());
+		for(DiagramExportationReport report : reports){
+			this.reports.put(report.getReferencedElementName(), report);
 		}
 		
 	}
@@ -73,7 +73,7 @@ public class TxtUMLLayoutDescriptor {
 	 * @param diagramName  - The name of the diagram
 	 * @return The {@link DiagramExportationReport} that is specified under the given root element
 	 */
-	public DiagramExportationReport getReport(String diagramName){
+	public DiagramExportationReport getReportByDiagramName(String diagramName){
 		return reports.get(diagramName);
 	}
 }
