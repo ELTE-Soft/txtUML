@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.uml2.structural
 
+import hu.elte.txtuml.export.uml2.ExportMode
 import hu.elte.txtuml.export.uml2.utils.ResourceSetFactory
 import hu.elte.txtuml.utils.eclipse.PackageUtils
 import java.util.Map
@@ -12,7 +13,6 @@ import org.eclipse.uml2.uml.Package
 import org.eclipse.uml2.uml.Profile
 import org.eclipse.uml2.uml.UMLPackage
 import org.eclipse.uml2.uml.resource.UMLResource
-import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode
 
 class ModelExporter extends AbstractPackageExporter<Model> {
 

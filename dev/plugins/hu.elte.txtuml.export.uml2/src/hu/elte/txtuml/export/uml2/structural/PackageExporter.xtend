@@ -1,8 +1,8 @@
 package hu.elte.txtuml.export.uml2.structural
 
 import hu.elte.txtuml.export.uml2.BaseExporter
+import hu.elte.txtuml.export.uml2.ExportMode
 import hu.elte.txtuml.export.uml2.Exporter
-import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller
 import hu.elte.txtuml.utils.jdt.SharedUtils
 import java.io.File

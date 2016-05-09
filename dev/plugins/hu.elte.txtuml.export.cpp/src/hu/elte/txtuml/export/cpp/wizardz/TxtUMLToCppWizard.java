@@ -16,8 +16,8 @@ import hu.elte.txtuml.api.deployment.Configuration;
 import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
 import hu.elte.txtuml.export.cpp.thread.ThreadDescriptionExporter;
+import hu.elte.txtuml.export.uml2.ExportMode;
 import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
-import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode;
 import hu.elte.txtuml.utils.eclipse.ClassLoaderProvider;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
 
@@ -69,7 +69,8 @@ public class TxtUMLToCppWizard extends Wizard {
 
 			Model model;
 			try {
-				model = TxtUMLToUML2.exportModel(txtUMLProject, txtUMLModel, umlFilesFolder, ExportMode.ExportActionCode);
+				model = TxtUMLToUML2.exportModel(txtUMLProject, txtUMLModel, umlFilesFolder,
+						ExportMode.ExportActionsPedantic);
 			} catch (Exception e) {
 				e.printStackTrace();
 				Dialogs.errorMsgb("txtUML export Error", e.getClass() + ":" + System.lineSeparator() + e.getMessage(),

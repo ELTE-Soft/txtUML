@@ -2,15 +2,15 @@ package hu.elte.txtuml.export.uml2
 
 import java.util.HashMap
 import java.util.Map
+import java.util.function.Consumer
+import org.eclipse.jdt.core.IPackageFragment
+import org.eclipse.jdt.core.dom.ASTNode
 import org.eclipse.jdt.core.dom.IMethodBinding
 import org.eclipse.jdt.core.dom.ITypeBinding
 import org.eclipse.jdt.core.dom.IVariableBinding
 import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.UMLFactory
-import org.eclipse.jdt.core.IPackageFragment
-import org.eclipse.jdt.core.dom.ASTNode
-import java.util.function.Consumer
-import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode
+import java.util.Set
 
 /**
  * The exporter cache keeps tabs on which elements have been partially or fully exported. For identifying the
@@ -26,13 +26,13 @@ class ExporterCache {
 	val Map<Pair<Class<?>, Object>, Element> fetchMap = new HashMap
 
 	protected val factory = UMLFactory.eINSTANCE
-	
+
 	val ExportMode exportMode
-	
+
 	new(ExportMode mode) {
 		exportMode = mode
 	}
-	
+
 	def getExportMode() { exportMode }
 
 	/** 
@@ -44,17 +44,17 @@ class ExporterCache {
 	def <S, A, R extends Element> R export(Exporter<S, A, R> exporter, S source, A access, Consumer<? super R> store) {
 		val accessKey = generateAccessKey(exporter.class, access)
 		val exported = cache.get(accessKey)
-		
+
 		if (exported != null) {
 			return exported as R
 		}
-		
+
 		val fetched = fetchMap.get(accessKey) as R;
 		if (fetched != null) {
 			exporter.alreadyExists(fetched)
 			cache.put(accessKey, fetched)
 			store.accept(fetched)
-			exporter.exportContents(source)
+			exportMode.handleErrors[exporter.exportContents(source)]
 			return fetched
 		}
 		val justExported = exporter.createResult(access)
@@ -62,7 +62,7 @@ class ExporterCache {
 			cache.put(accessKey, justExported)
 			fetchMap.put(accessKey, justExported)
 			store.accept(justExported)
-			exporter.exportContents(source)
+			exportMode.handleErrors[exporter.exportContents(source)]
 		}
 		return justExported
 	}
@@ -79,12 +79,16 @@ class ExporterCache {
 		}
 	}
 
-	def Map<String, Element> getMapping(){
+	def Map<String, Element> getMapping() {
 		val mapping = new HashMap<String, Element>();
-		cache.filter[key, value | key.value instanceof String].forEach[key, value |
+		cache.filter[key, value|key.value instanceof String].forEach [ key, value |
 			mapping.put(key.value as String, value)
 		];
 		return mapping;
+	}
+
+	def Set<Element> floatingElements() {
+		fetchMap.values.filter[it != null && !cache.values.contains(it)].toSet
 	}
 
 	protected def generateAccessKey(Class<?> exporterClass, Object key) {
