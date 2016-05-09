@@ -95,11 +95,16 @@ public class DiagramExporterImpl implements DiagramExporter {
 	}
 	
 	private void exportDiagram() {
-
+		exportDiagramBody(diagClass);
+		elementExporter.exportDefaultParentage();
+		// exportation finalizers
+		statementExporter.resolveMosts();
+		statementExporter.exportPhantoms();
+		elementExporter.exportImpliedLinks();
+		
 		if(isClassDiagram(diagClass))
 		{
-			//TODO: add a real implementation instead of this hack.
-			report.setReferencedElementName(diagClass.getPackage().getName() + ".model");
+			report.setReferencedElementName(elementExporter.getModelName());
 		} 
 		else if(isStateMachineDiagram(diagClass))
 		{
@@ -110,13 +115,6 @@ public class DiagramExporterImpl implements DiagramExporter {
 		{
 			report.error("No proper Diagram class found (ClassDiagram or StateMachineDiagram<T>)");
 		}
-		
-		exportDiagramBody(diagClass);
-		elementExporter.exportDefaultParentage();
-		// exportation finalizers
-		statementExporter.resolveMosts();
-		statementExporter.exportPhantoms();
-		elementExporter.exportImpliedLinks();
 	}
 	
 	private void exportDiagramBody(Class<?> diagClass)
