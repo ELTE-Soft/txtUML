@@ -8,18 +8,22 @@ import java.util.Optional;
 
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.uml2.uml.Association;
+import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Generalization;
+import org.eclipse.uml2.uml.Transition;
 
 import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapUtils;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.AssociationType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.utils.Pair;
+import hu.elte.txtuml.utils.Triple;
 
 /**
  * Finds the org.eclipse.uml2 element from a model according to the txtUML name 
@@ -57,14 +61,23 @@ public class TxtUMLElementsRegistry {
 	 * Returns the roots elements of all reports 
 	 * @return
 	 */
-	public List<Pair<String, Element>> getDiagramRootsWithDiagramNames(){
-		List<Pair<String, Element>> roots = new ArrayList<>();
+	public List<Triple<DiagramType, String, Element>> getDiagramRootsWithDiagramNames(){
+		List<Triple<DiagramType, String, Element>> roots = new ArrayList<>();
 		for(Pair<String, DiagramExportationReport> pair : this.descriptor.getReportsWithDiagramNames()){
 			DiagramExportationReport report = pair.getSecond();
-			String name = report.getModelName();
-			findElement(name).ifPresent(
-						e -> roots.add(new Pair<>(pair.getFirst(), e))
+			String name = report.getReferencedElementName();
+			DiagramType type = report.getType();
+			if(type.equals(DiagramType.Class)){
+				findElement(report.getModelName()).ifPresent(
+						e -> roots.add(new Triple<>(type, pair.getFirst(), e))
 					);
+			}else if(type.equals(DiagramType.StateMachine)){
+				Optional<Element> classOfStatemachine =  findElement(name);
+				if(classOfStatemachine.isPresent()){
+					Behavior behavior =  ((org.eclipse.uml2.uml.BehavioredClassifier) classOfStatemachine.get()).getClassifierBehavior();
+					roots.add(new Triple<>(type, pair.getFirst(), behavior));
+				}
+			}
 		}
 		return roots;
 	}
@@ -118,6 +131,10 @@ public class TxtUMLElementsRegistry {
 					elem = findAssociation(association.getId());
 				}
 				
+				if(!elem.isPresent()){
+					elem = findTransition(association.getId());
+				}
+				
 				if(elem.isPresent()){
 					elements.add(elem.get());
 				}
@@ -126,6 +143,7 @@ public class TxtUMLElementsRegistry {
 		
 		return elements;
 	}
+	
 	
 	/**
 	 * Finds an {@link Association} that matches the given ID
@@ -139,6 +157,7 @@ public class TxtUMLElementsRegistry {
 		}
 		return Optional.empty();
 	}
+	
 	
 	/**
 	 * Finds an {@link Generalization} that matches the given ID
@@ -156,6 +175,19 @@ public class TxtUMLElementsRegistry {
 				Classifier classif =  gen.getGeneral();
 				if(classif.equals(superclass.get())) return Optional.of(gen);
 			}
+		}
+		return Optional.empty();
+	}
+
+	/**
+	 * Finds an {@link Transition} that matches the given ID
+	 * @param id - the TxtUML ID of the transition
+	 * @return The Transition model Element
+	 */
+	public Optional<Transition> findTransition(String id) {
+		Optional<Element> elem = findElement(id);
+		if(elem.isPresent() && elem.get() instanceof Transition){
+			return Optional.of((Transition) elem.get());
 		}
 		return Optional.empty();
 	}

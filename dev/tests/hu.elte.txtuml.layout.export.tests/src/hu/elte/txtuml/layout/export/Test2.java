@@ -5,7 +5,7 @@ import org.junit.Test;
 import hu.elte.txtuml.api.layout.Alignment;
 import hu.elte.txtuml.api.layout.AlignmentType;
 import hu.elte.txtuml.api.layout.Contains;
-import hu.elte.txtuml.api.layout.Diagram;
+import hu.elte.txtuml.api.layout.ClassDiagram;
 import hu.elte.txtuml.api.layout.Diamond;
 import hu.elte.txtuml.api.layout.East;
 import hu.elte.txtuml.api.layout.LinkEnd;
@@ -38,7 +38,7 @@ import hu.elte.txtuml.layout.export.model2.associations.Random_BaseOfDiamond;
 import hu.elte.txtuml.layout.export.model2.associations.Random_BetweenBases;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
-class Diagram2 extends Diagram {
+class Diagram2 extends ClassDiagram {
 
 	@Contains({ ColumnTop.class, ColumnMiddle.class, ColumnBottom.class })
 	@Alignment(AlignmentType.TopToBottom)
