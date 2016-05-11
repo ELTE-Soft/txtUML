@@ -27,6 +27,7 @@ public class RegionExporter {
 		VertexVisitor visitor = new VertexVisitor(new VertexExporter(modelExporter, stateMachine, region, exportMode),
 				ownerDeclaration);
 		ownerDeclaration.accept(visitor);
+		
 	}
 
 	private void exportTransitions(TypeDeclaration ownerDeclaration, StateMachine stateMachine, Region region) {

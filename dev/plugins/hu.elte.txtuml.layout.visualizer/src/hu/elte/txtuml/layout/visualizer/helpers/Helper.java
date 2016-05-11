@@ -350,7 +350,7 @@ public class Helper
 				|| p.equals(Point.Add(obj.getPosition(),
 						Point.Multiply(Direction.east, obj.getWidth() - 1)))
 				|| p.equals(Point.Add(obj.getPosition(),
-						Point.Multiply(Direction.south, obj.getWidth() - 1)))
+						Point.Multiply(Direction.south, obj.getHeight() - 1)))
 				|| p.equals(obj.getBottomRight()))
 		{
 			return true;

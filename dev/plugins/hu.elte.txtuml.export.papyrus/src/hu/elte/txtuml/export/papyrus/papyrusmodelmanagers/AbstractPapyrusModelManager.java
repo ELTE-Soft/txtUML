@@ -108,6 +108,7 @@ public abstract class AbstractPapyrusModelManager {
 				Dialogs.errorMsgb("Arrange error",
 						"Error occured during arrangement of diagram '" +diagram.getName()+"'.", e);
 			}
+			
 		}
 	}
 	

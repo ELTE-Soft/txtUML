@@ -17,26 +17,30 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GraphicalEditPart;
 import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateEditPart;
 import org.eclipse.uml2.uml.Element;
 
 import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutTransformer.OrigoConstraint;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.model.AssociationType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
-import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 /**
  * An abstract class for arranging the elements with the txtUML arranging algorithm. 
  */
 public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDiagramElementsArranger{
+
+	protected int MINWIDTH = 20;
+	protected int MINHEIGHT = 20;
+	protected int MAXWIDTH = 200;
+	protected int MAXHEIGHT = 200;
 	
-	private TxtUMLElementsRegistry txtUmlRegistry;
+	protected TxtUMLElementsRegistry txtUmlRegistry;
 	
 	/**
 	 * The Constructor 
@@ -53,22 +57,17 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 	 * @param parent - The children of this EditPart will be arranged
 	 * @throws ArrangeException 
 	 */
-	protected void arrangeChildren(EditPart parent, IProgressMonitor monitor) throws ArrangeException{
+	protected void arrangeChildren(GraphicalEditPart parent, IProgressMonitor monitor) throws ArrangeException{
 		@SuppressWarnings("unchecked")
-		List<EditPart> editParts = parent.getChildren();
+		List<GraphicalEditPart> editParts = parent.getChildren();
 		if(!editParts.isEmpty()){
-			int MAXPIXELWIDTH = 200;
-			int MAXPIXELHEIGHT = 200;
-			
 			DiagramExportationReport report = txtUmlRegistry.getDescriptor().getReport(this.diagep.getDiagramView().getName());
 			Set<RectangleObject> objects = report.getNodes();
 			Set<LineAssociation> links = report.getLinks();
 			List<Statement> statements =  report.getStatements();
-
-			statements.add(new Statement(StatementType.corridorsize, "0.5"));
 			
 			Map<GraphicalEditPart, RectangleObject> editPartsObjectsMapping  = pairObjectsToEditParts(objects, editParts);
-			setPixelsizes(editPartsObjectsMapping, MAXPIXELWIDTH, MAXPIXELHEIGHT);
+			setPixelsizes(editPartsObjectsMapping);
 			
 			LayoutVisualizerManager vm = new LayoutVisualizerManager(objects, links, statements);
 			vm.addProgressMonitor(monitor);
@@ -85,13 +84,13 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			transformObjectsAndLinks(objectsTransform, linksTransform, 
 					vm.getPixelGridRatioHorizontal(), vm.getPixelGridRatioVertical());
 			
-			modifyEditParts(objectsTransform);		
-			modifyConnectionEditParts(linksTransform, objectsTransform);	
+			this.modifyEditParts(objectsTransform);		
+			this.modifyConnectionEditParts(linksTransform, objectsTransform);	
 		}
 	}
 
 	private Map<GraphicalEditPart, Rectangle> createObjectRectangleMappingFromObjectsAndEditParts(Set<RectangleObject> objects,
-			List<EditPart> editParts) {
+			List<GraphicalEditPart> editParts) {
 		Map<GraphicalEditPart, Rectangle> result = new HashMap<>();
 		for(RectangleObject obj : objects){
 			Optional<Element> e = txtUmlRegistry.findElement(obj.getName());
@@ -107,42 +106,42 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		return result;
 	}
 
-	private void setPixelsizes(Map<GraphicalEditPart, RectangleObject> editPartsObjectsMapping, int maxW, int maxH) {
+	private void setPixelsizes(Map<GraphicalEditPart, RectangleObject> editPartsObjectsMapping) {
 		editPartsObjectsMapping.forEach((GraphicalEditPart ep, RectangleObject obj) -> {
 			int w = getSize(ep).width;
 			int h = getSize(ep).height;
-			obj.setPixelWidth(w > maxW ? maxW : w);
-			obj.setPixelHeight(h > maxH ? maxH : h);
+			int nW = w > MAXWIDTH ? MAXWIDTH : w;
+			int nH = h > MAXHEIGHT ? MAXHEIGHT : h;
+			obj.setPixelWidth(nW);
+			obj.setPixelHeight(nH);
 		});
 	}
 
 	private void modifyConnectionEditParts(
 			Map<ConnectionNodeEditPart, List<Point>> linksTransform,
 			Map<GraphicalEditPart, Rectangle> objectTransform) {
-		
 		linksTransform.forEach((ConnectionNodeEditPart connection, List<Point> route)  ->{
 					if(connection != null && route.size() >= 2){
 						Rectangle source = objectTransform.get(connection.getSource());
 						Rectangle target = objectTransform.get(connection.getTarget());
-						
+
 			        	String anchor_start = getAnchor(source.getTopLeft(), route.get(0), source.width, source.height);
 			        	String anchor_end = getAnchor(target.getTopLeft(), route.get(route.size()-1), target.width, target.height);
-			        	route.remove(0);
-			        	route.remove(route.size()-1);
-			        	connection.getSource();
-			        	
+
 			        	DiagramElementsModifier.setConnectionAnchors(connection, anchor_start, anchor_end);
-			        	DiagramElementsModifier.setConnectionBendpoints(connection, route);
+			        	DiagramElementsModifier.setConnectionPoints(connection, route);
 					}
 		});
 	}
-	
-	private void modifyEditParts(
-			Map<GraphicalEditPart, Rectangle> editPartsObjectsMapping) {
+
+	private void modifyEditParts(Map<GraphicalEditPart, Rectangle> editPartsObjectsMapping) {
 		editPartsObjectsMapping.forEach((GraphicalEditPart ep, Rectangle rect) -> {
-				DiagramElementsModifier.resizeGraphicalEditPart(ep, rect.width, rect.height);
-				DiagramElementsModifier.moveGraphicalEditPart(ep, rect.getTopLeft());
-			});
+			if(ep instanceof CustomStateEditPart) {
+				DiagramElementsModifier.fixStateLabelHeight((CustomStateEditPart)ep);
+			}
+			DiagramElementsModifier.resizeGraphicalEditPart(ep, rect.width, rect.height);
+			DiagramElementsModifier.moveGraphicalEditPart(ep, rect.getTopLeft());
+		});
 	}
 
 	private void transformObjectsAndLinks(
@@ -152,8 +151,6 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		
 		LayoutTransformer trans = new LayoutTransformer(pixelGridRatioHorizontal, 
 				pixelGridRatioVertical);
-		trans.setOrigo(OrigoConstraint.UpperLeft);
-		trans.flipYAxis();
 		trans.doTranformations(objectsTransform, linksTransform);
 	}
 
@@ -164,11 +161,11 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		Map<ConnectionNodeEditPart, List<Point>> linksTransform = new HashMap<ConnectionNodeEditPart, List<Point>>(); 
 		for(LineAssociation la : links){
 			
-			Optional<? extends Element> e = txtUmlRegistry.findAssociation(la.getId());
-			if(!e.isPresent()) e = txtUmlRegistry.findGeneralization(la.getFrom(), la.getTo());
+			Optional<? extends Element> e = findConnection(la);
 			
 			if(e.isPresent()){
 				ConnectionNodeEditPart connection = (ConnectionNodeEditPart) getEditPartOfModelElement(connections, e.get());
+				if(connection == null) continue;
 				Element source = (Element) ((View)connection.getSource().getModel()).getElement();
 				Element target = (Element) ((View)connection.getTarget().getModel()).getElement();
 				
@@ -198,8 +195,19 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		return linksTransform;
 	}
 
+	/**
+	 * Returns the required element associated with the given lineassociation 
+	 * @param la - the lineAssociation in the registry
+	 * @return
+	 */
+	protected Optional<? extends Element> findConnection(LineAssociation la) {
+		Optional<? extends Element> e = txtUmlRegistry.findAssociation(la.getId());
+		if(!e.isPresent()) e = txtUmlRegistry.findGeneralization(la.getFrom(), la.getTo());
+		return e;
+	}
+
 	private Map<GraphicalEditPart, RectangleObject> pairObjectsToEditParts(Collection<RectangleObject> objects,
-			List<EditPart> editParts) {
+			List<GraphicalEditPart> editParts) {
 		
 		Map<GraphicalEditPart, RectangleObject> objectsTransform = new HashMap<>();
 		for(RectangleObject obj : objects){
@@ -214,11 +222,11 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		return objectsTransform;
 	}
 
-	private List<ConnectionNodeEditPart> getConnectionsOfEditParts(List<EditPart> editParts) {
+	private List<ConnectionNodeEditPart> getConnectionsOfEditParts(List<GraphicalEditPart> editParts) {
 		List<ConnectionNodeEditPart> connections = new LinkedList<ConnectionNodeEditPart>();
-		for (EditPart editpart : editParts) {
+		for (GraphicalEditPart editpart : editParts) {
 			@SuppressWarnings("unchecked")
-			List<ConnectionNodeEditPart> conns = ((GraphicalEditPart) editpart).getSourceConnections();
+			List<ConnectionNodeEditPart> conns = editpart.getSourceConnections();
 			connections.addAll(conns);
 		}
 		return connections;

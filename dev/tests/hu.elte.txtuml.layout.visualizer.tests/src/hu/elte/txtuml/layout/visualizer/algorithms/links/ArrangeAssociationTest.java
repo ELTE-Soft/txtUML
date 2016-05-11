@@ -19,6 +19,7 @@ import hu.elte.txtuml.layout.visualizer.helpers.Options;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
+import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.OverlapArrangeMode;
 import hu.elte.txtuml.layout.visualizer.model.Point;
@@ -66,27 +67,29 @@ public class ArrangeAssociationTest {
 		
 		Integer gid = 1;
 		
-		LineAssociation _A_B_expected_4wide = new LineAssociation(_A_B);
-		ArrayList<Point> abep = new ArrayList<Point>();
-		abep.add(new Point(0,0));
-		abep.add(new Point(2,-3));
-		abep.add(new Point(2,-4));
-		abep.add(new Point(2,-5));
-		abep.add(new Point(2,-6));
-		abep.add(new Point(2,-7));
-		abep.add(new Point(2,-8));
-		abep.add(new Point(0,-8));
-		_A_B_expected_4wide.setRoute(abep);
-		
 		try {
 			ArrangeAssociations aa = 
 					new ArrangeAssociations(os, as, ss, gid, _option);
+			
+			RectangleObject _A_mod = aa.objects().stream().filter(box -> box.getName().equals(_A.getName())).findFirst().get();
+			RectangleObject _B_mod = aa.objects().stream().filter(box -> box.getName().equals(_B.getName())).findFirst().get();
+			
 			for(LineAssociation a : aa.value())
 			{
-				if(a.getId().equals(_A_B_expected_4wide.getId()))
+				if(a.getId().equals("A_B"))
 				{
-					assertArrayEquals(_A_B_expected_4wide.getRoute().toArray(),
-							a.getRoute().toArray());
+					// Turn number equals
+					assertEquals(Integer.valueOf(0), a.getTurns());
+					
+					// link 'a' comes out of _A_mod's southern side
+					assertTrue(_A_mod.getPosition().isInTheDirection(a.getRoute().get(1), Direction.south, false) &&
+							_A_mod.getTopLeft().isInTheDirection(a.getRoute().get(1), Direction.east, false) &&
+							_A_mod.getBottomRight().isInTheDirection(a.getRoute().get(1), Direction.west, false));
+					
+					// link 'a' connects to _B_mod's northern side
+					assertTrue(_B_mod.getPosition().isInTheDirection(a.getRoute().get(a.getRoute().size() - 2), Direction.north, true) &&
+							_B_mod.getTopLeft().isInTheDirection(a.getRoute().get(a.getRoute().size() - 2), Direction.east, false) &&
+							_B_mod.getBottomRight().isInTheDirection(a.getRoute().get(a.getRoute().size() - 2), Direction.west, false));
 				}
 				else
 				{
@@ -115,31 +118,28 @@ public class ArrangeAssociationTest {
 		
 		Integer gid = 1;
 		
-		LineAssociation _A_B_expected_4wide = new LineAssociation(_A_B);
-		ArrayList<Point> abep = new ArrayList<Point>();
-		abep.add(new Point(0,0));
-		abep.add(new Point(3,-2));
-		abep.add(new Point(4,-2));
-		abep.add(new Point(4,-3));
-		abep.add(new Point(4,-4));
-		abep.add(new Point(4,-5));
-		abep.add(new Point(4,-6));
-		abep.add(new Point(4,-7));
-		abep.add(new Point(4,-8));
-		abep.add(new Point(4,-9));
-		abep.add(new Point(3,-9));
-		abep.add(new Point(0,-8));
-		_A_B_expected_4wide.setRoute(abep);
-		
 		try {
 			ArrangeAssociations aa = 
 					new ArrangeAssociations(os, as, ss, gid, _option);
+			
+			RectangleObject _A_mod = aa.objects().stream().filter(box -> box.getName().equals(_A.getName())).findFirst().get();
+			RectangleObject _B_mod = aa.objects().stream().filter(box -> box.getName().equals(_B.getName())).findFirst().get();
+			
 			for(LineAssociation a : aa.value())
 			{
-				if(a.getId().equals(_A_B_expected_4wide.getId()))
+				if(a.getId().equals("A_B"))
 				{
-					assertArrayEquals(_A_B_expected_4wide.getRoute().toArray(),
-							a.getRoute().toArray());
+					// Turn number equals
+					assertEquals(Integer.valueOf(2), a.getTurns());
+					
+					// link 'a' comes out of _A_mod's eastern side
+					assertTrue(_A_mod.getPosition().isInTheDirection(a.getRoute().get(1), Direction.east, false) &&
+							_A_mod.getTopLeft().isInTheDirection(a.getRoute().get(1), Direction.south, false) &&
+							_A_mod.getBottomRight().isInTheDirection(a.getRoute().get(1), Direction.north, false));
+					// link 'a' connects to _B_mod's eastern side
+					assertTrue(_B_mod.getPosition().isInTheDirection(a.getRoute().get(a.getRoute().size() - 2), Direction.east, false) &&
+							_B_mod.getTopLeft().isInTheDirection(a.getRoute().get(a.getRoute().size() - 2), Direction.south, false) &&
+							_B_mod.getBottomRight().isInTheDirection(a.getRoute().get(a.getRoute().size() - 2), Direction.north, false));
 				}
 				else
 				{
@@ -168,65 +168,44 @@ public class ArrangeAssociationTest {
 		
 		Integer gid = 1;
 		
-		LineAssociation _A_C_expected_4wide = new LineAssociation(_A_C);
-		ArrayList<Point> abep = new ArrayList<Point>();
-		abep.add(new Point(0,0));
-		abep.add(new Point(3,-2));
-		abep.add(new Point(4,-2));
-		abep.add(new Point(4,-3));
-		abep.add(new Point(4,-4));
-		abep.add(new Point(4,-5));
-		abep.add(new Point(4,-6));
-		abep.add(new Point(4,-7));
-		abep.add(new Point(4,-8));
-		abep.add(new Point(4,-9));
-		abep.add(new Point(4,-10));
-		abep.add(new Point(4,-11));
-		abep.add(new Point(4,-12));
-		abep.add(new Point(4,-13));
-		abep.add(new Point(4,-14));
-		abep.add(new Point(4,-15));
-		abep.add(new Point(4,-16));
-		abep.add(new Point(4,-17));
-		abep.add(new Point(3,-17));
-		abep.add(new Point(0,-16));
-		_A_C_expected_4wide.setRoute(abep);
-		
-		LineAssociation _A_C_expected_alternative_4wide = new LineAssociation(_A_C);
-		abep = new ArrayList<Point>();
-		abep.add(new Point(0,0));
-		abep.add(new Point(0,-2));
-		abep.add(new Point(-1,-2));
-		abep.add(new Point(-1,-3));
-		abep.add(new Point(-1,-4));
-		abep.add(new Point(-1,-5));
-		abep.add(new Point(-1,-6));
-		abep.add(new Point(-1,-7));
-		abep.add(new Point(-1,-8));
-		abep.add(new Point(-1,-9));
-		abep.add(new Point(-1,-10));
-		abep.add(new Point(-1,-11));
-		abep.add(new Point(-1,-12));
-		abep.add(new Point(-1,-13));
-		abep.add(new Point(-1,-14));
-		abep.add(new Point(-1,-15));
-		abep.add(new Point(-1,-16));
-		abep.add(new Point(-1,-17));
-		abep.add(new Point(0,-17));
-		abep.add(new Point(0,-16));
-		_A_C_expected_alternative_4wide.setRoute(abep);
-		
 		try {
 			ArrangeAssociations aa = 
 					new ArrangeAssociations(os, as, ss, gid, _option);
+			
+			RectangleObject _A_mod = aa.objects().stream().filter(box -> box.getName().equals(_A.getName())).findFirst().get();
+			RectangleObject _B_mod = aa.objects().stream().filter(box -> box.getName().equals(_B.getName())).findFirst().get();
+			RectangleObject _C_mod = aa.objects().stream().filter(box -> box.getName().equals(_C.getName())).findFirst().get();
+			
 			for(LineAssociation a : aa.value())
 			{
-				if(a.getId().equals(_A_C_expected_4wide.getId()))
+				if(a.getId().equals("A_C"))
 				{
-					assertTrue(_A_C_expected_alternative_4wide.getRoute().equals(a.getRoute())
-							|| _A_C_expected_4wide.getRoute().equals(a.getRoute()));
-					//assertArrayEquals(_A_C_expected_3wide.getRoute().toArray(),
-					//		a.getRoute().toArray());
+					// Turn number equals
+					assertEquals(Integer.valueOf(2), a.getTurns());
+					
+					// Link 'a' 's start is in the line of object 'A'
+					// Link 'a' comes out of object 'A' 's right side
+					// Link 'a' comes out of object 'A' 's left side
+					boolean inline_with_A = _A_mod.getTopLeft().isInTheDirection(a.getRoute().get(1), Direction.south, false) &&
+							_A_mod.getBottomRight().isInTheDirection(a.getRoute().get(1), Direction.north, false);
+					boolean right_of_A = _A_mod.getPosition().isInTheDirection(a.getRoute().get(1), Direction.east, false);
+					boolean left_of_A = _A_mod.getPosition().isInTheDirection(a.getRoute().get(1), Direction.west, true);
+					
+					// All of link 'a' 's points are right from object 'B'
+					// All of link 'a' 's points are left from object 'B'
+					boolean right_of_B = a.getRoute().stream().allMatch(route_point -> _B_mod.getPosition().isInTheDirection(route_point, Direction.east, false));
+					boolean left_of_B = a.getRoute().stream().allMatch(route_point -> _B_mod.getPosition().isInTheDirection(route_point, Direction.west, true));
+					
+					// Link 'a' 's end is in the line of object 'C'
+					// Link 'a' connects to object 'C' 's right side
+					// Link 'a' connects to object 'C' 's left side
+					boolean inline_with_C = _C_mod.getTopLeft().isInTheDirection(a.getRoute().get(a.getRoute().size() - 2), Direction.south, false) &&
+							_C_mod.getBottomRight().isInTheDirection(a.getRoute().get(a.getRoute().size() - 2), Direction.north, false);
+					boolean right_of_C = _C_mod.getPosition().isInTheDirection(a.getRoute().get(a.getRoute().size() - 2), Direction.east, false);
+					boolean left_of_C = _C_mod.getPosition().isInTheDirection(a.getRoute().get(a.getRoute().size() - 2), Direction.west, true);
+					
+					assertTrue(inline_with_A && inline_with_C && ((right_of_A && right_of_B && right_of_C) || (left_of_A && left_of_B && left_of_C)));
+					
 				}
 				else
 				{

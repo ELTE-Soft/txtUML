@@ -68,14 +68,12 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		String txtUMLModelName = selectTxtUmlPage.getTxtUmlModelClass();
 		List<String> txtUMLLayout = selectTxtUmlPage.getTxtUmlLayout();
 		String txtUMLProjectName = selectTxtUmlPage.getTxtUmlProject();
-		boolean generateSMsAutomatically = selectTxtUmlPage.getGenerateSMDs();
 		String generatedFolderName = PreferencesManager
 				.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
 
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT, txtUMLProjectName);
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL, txtUMLModelName);
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, txtUMLLayout);
-		PreferencesManager.setValue(PreferencesManager.GENERATE_STATEMACHINES_AUTOMATICALLY, generateSMsAutomatically);
 
 		try {
 			
@@ -119,7 +117,6 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 							warnings.addAll(report.getWarnings());
 						}
 
-						layoutDescriptor.generateSMDs = generateSMsAutomatically;
 						layoutDescriptor.mappingFolder = generatedFolderName;
 						layoutDescriptor.projectName = txtUMLProjectName;
 
@@ -168,7 +165,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 	}
 
 	private void checkEmptyLayoutDecsriptions() throws InterruptedException {
-		if(selectTxtUmlPage.getTxtUmlLayout().isEmpty() && !this.selectTxtUmlPage.getGenerateSMDs()){
+		if(selectTxtUmlPage.getTxtUmlLayout().isEmpty()){
 			boolean answer = Dialogs.WarningConfirm("No Layout descriptions",
 					"No diagrams will be generated using the current setup,"
 							+ " because no diagram descriptions are added."
