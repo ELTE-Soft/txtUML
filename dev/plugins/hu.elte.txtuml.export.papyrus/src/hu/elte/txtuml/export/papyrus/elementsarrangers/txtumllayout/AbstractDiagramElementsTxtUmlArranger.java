@@ -140,7 +140,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 				DiagramElementsModifier.fixStateLabelHeight((CustomStateEditPart)ep);
 			}
 			DiagramElementsModifier.resizeGraphicalEditPart(ep, rect.width, rect.height);
-			DiagramElementsModifier.moveGraphicalEditPart(ep, rect.getTopLeft());
+			DiagramElementsModifier.moveGraphicalEditPart(ep, new Point(20+rect.getTopLeft().x, 20+rect.getTopLeft().y));
 		});
 	}
 

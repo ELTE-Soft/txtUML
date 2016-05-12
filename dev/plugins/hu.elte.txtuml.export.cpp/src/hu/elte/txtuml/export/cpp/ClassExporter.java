@@ -308,11 +308,8 @@ public class ClassExporter {
 			if (behavior != null) {
 				if (behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
 					// source=ActivityExport.createfunctionBody((Activity)behavior,rt_);
-					source = "";
-					name = behavior.getName();
-					if (name == null || name.isEmpty()) {
-						name = item.getName() + "_" + unknownName;
-					}
+					source = "";					
+					name = item.getName() + "_" + unknownName;
 					map.put(name, new Pair<String, String>(item.getName(), source));
 				}
 			}
@@ -350,11 +347,6 @@ public class ClassExporter {
 			if (constraint != null) {
 				String guardName = _unknownGuardName + unknownGuardCount.toString();
 				unknownGuardCount++;
-				if (constraint.getName() != null && !constraint.getName().isEmpty()) {
-					guardName = constraint.getName();
-					unknownGuardCount--;
-				}
-
 				String guard = Shared.getGuard(constraint);
 				if (guard.equals("else")) {
 					guard = Shared.calculateSmElseGuard(item);
