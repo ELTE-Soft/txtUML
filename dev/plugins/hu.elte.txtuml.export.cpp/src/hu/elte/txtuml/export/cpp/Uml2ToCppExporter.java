@@ -76,13 +76,15 @@ public class Uml2ToCppExporter {
 		copyPreWrittenCppFiles(outputDirectory);
 
 		for (Class item : classList) {
-			classExporter.reiniIialize();
-			classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
+			if (threadManager.getDescription().get(item.getName()) != null && !Shared.isGeneratedClass(item)) {
+				classExporter.reiniIialize();
+				classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
 
-			classExporter.createSource(item, outputDirectory);
+				classExporter.createSource(item, outputDirectory);
 
-			classNames.addAll(classExporter.getSubmachines());
-			classNames.add(item.getName());
+				classNames.addAll(classExporter.getSubmachines());
+				classNames.add(item.getName());
+			}
 		}
 
 		createCMakeFile(outputDirectory);
