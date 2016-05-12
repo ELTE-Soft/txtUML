@@ -6,6 +6,8 @@ import org.eclipse.jdt.core.dom.IMethodBinding
 import org.eclipse.jdt.core.dom.MethodDeclaration
 import org.eclipse.uml2.uml.Constraint
 import org.eclipse.uml2.uml.Transition
+import org.eclipse.uml2.uml.Region
+import org.eclipse.uml2.uml.StateMachine
 
 class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constraint> {
 
@@ -20,8 +22,10 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 		result.specification = opaqueExpr
 		result.name = "guard_specification"
 		opaqueExpr.behavior = exportSMActivity(source) [
-			(result.owner as Transition).container.stateMachine.ownedBehaviors += it
+			(result.owner as Transition).container.getSM.ownedBehaviors += it
 		]
 	}
+	
+	def StateMachine getSM(Region reg) { reg.stateMachine ?: reg.state.container.getSM() }
 
 }
