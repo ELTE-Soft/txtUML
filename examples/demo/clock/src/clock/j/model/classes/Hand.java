@@ -7,9 +7,7 @@ import clock.j.model.signals.Tick;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.BehaviorPort;
 import hu.elte.txtuml.api.model.From;
-import hu.elte.txtuml.api.model.InPort;
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.OutPort;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
 

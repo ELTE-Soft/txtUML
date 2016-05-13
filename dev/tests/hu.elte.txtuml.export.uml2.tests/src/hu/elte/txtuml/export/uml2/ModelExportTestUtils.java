@@ -12,8 +12,6 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.uml2.uml.Model;
 
-import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode;
-
 public class ModelExportTestUtils {
 	private static final String PROJECT_FILE = ".project";
 	private static final String TEST_PROJECT_NAME = "hu.elte.txtuml.export.uml2.tests.models";
@@ -22,7 +20,7 @@ public class ModelExportTestUtils {
 
 	public static Model export(String txtUMLModelTopPackage) throws Exception {
 		Model ret = TxtUMLToUML2.exportModel(project.getElementName(), txtUMLModelTopPackage,
-				ExportMode.ExportActionCode);
+				ExportMode.ExportActionsPedantic);
 		return ret;
 	}
 

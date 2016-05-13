@@ -2,7 +2,7 @@ package hu.elte.txtuml.xtxtuml.validation;
 
 import hu.elte.txtuml.api.model.DataType
 import hu.elte.txtuml.api.model.ModelClass
-import hu.elte.txtuml.api.model.Port
+import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.api.model.external.ExternalType
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression

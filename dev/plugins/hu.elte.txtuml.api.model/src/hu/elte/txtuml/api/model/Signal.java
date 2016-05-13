@@ -60,15 +60,10 @@ package hu.elte.txtuml.api.model;
  * </code>
  * </pre>
  *
- * See the documentation of {@link Model} for an overview on modeling in JtxtUML.
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
  */
-public class Signal extends Event {
-
-	/**
-	 * Sole constructor of <code>Signal</code>.
-	 */
-	protected Signal() {
-	}
+public abstract class Signal extends Event {
 
 	@Override
 	public String toString() {

@@ -20,7 +20,6 @@ import clock.j.model.connectors.Seconds;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.Interface;
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.Port;
 
 public class Clock extends ModelClass {
 	

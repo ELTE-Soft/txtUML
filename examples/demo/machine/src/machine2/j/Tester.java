@@ -1,7 +1,7 @@
 package machine2.j;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.ModelExecutor;
+import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import machine2.j.model.Machine;
 import machine2.j.model.User;
 import machine2.j.model.associations.Usage;
@@ -9,9 +9,7 @@ import machine2.j.model.signals.DoYourWork;
 
 public class Tester {
 
-	void test() {
-		ModelExecutor.Settings.setExecutorLog(true);
-
+	static void init() {
 		Machine m = Action.create(Machine.class, 3);
 		User u1 = Action.create(User.class);
 		User u2 = Action.create(User.class);
@@ -25,12 +23,10 @@ public class Tester {
 		Action.start(u2);
 
 		Action.send(new DoYourWork(), u1);
-
-		ModelExecutor.shutdown();
 	}
 
 	public static void main(String[] args) {
-		new Tester().test();
+		ModelExecutor.create().setTraceLogging(true).run(Tester::init);
 	}
 
 }

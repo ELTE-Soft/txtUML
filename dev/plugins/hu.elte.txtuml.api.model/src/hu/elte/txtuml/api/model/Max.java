@@ -7,7 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A runtime annotation to define the upper bound of a custom multiplicity association end.
+ * A runtime annotation to define the upper bound of a custom multiplicity
+ * association end.
  * 
  * <p>
  * <b>Represents:</b> upper bound of a custom multiplicity association end
@@ -27,13 +28,14 @@ import java.lang.annotation.Target;
  * </code>
  * </pre>
  * 
- * See the documentation of {@link Model} for an overview on modeling in JtxtUML.
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
 public @interface Max {
-	
+
 	/**
 	 * The upper bound of the association end this annotation is used on.
 	 */

@@ -1,6 +1,8 @@
 package hu.elte.txtuml.examples.garage.control.glue;
 
+import hu.elte.txtuml.api.model.API;
 import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import hu.elte.txtuml.api.model.external.ExternalClass;
 import hu.elte.txtuml.examples.garage.control.model.Alarm;
 import hu.elte.txtuml.examples.garage.control.model.Door;
@@ -39,17 +41,16 @@ public class Glue implements ExternalClass, IControl, IControlled {
 	static Glue instance = null;
 
 	private Glue() {
-		// Initialize links and start object instances
-		Action.link(MotorMovesDoor.movedDoor.class, door,
-				MotorMovesDoor.movingMotor.class, motor);
-		Action.link(DoorSwitchesOnAlarm.SwitchingDoor.class, door,
-				DoorSwitchesOnAlarm.SwitchedAlarm.class, alarm);
-		Action.link(KeyboardProvidesCode.Provider.class, keyboard,
-				KeyboardProvidesCode.Receiver.class, alarm);
-		Action.start(door);
-		Action.start(motor);
-		Action.start(alarm);
-		Action.start(keyboard);
+		ModelExecutor.create().launch(() -> {
+			// Initialize links and start object instances
+			Action.link(MotorMovesDoor.movedDoor.class, door, MotorMovesDoor.movingMotor.class, motor);
+			Action.link(DoorSwitchesOnAlarm.SwitchingDoor.class, door, DoorSwitchesOnAlarm.SwitchedAlarm.class, alarm);
+			Action.link(KeyboardProvidesCode.Provider.class, keyboard, KeyboardProvidesCode.Receiver.class, alarm);
+			Action.start(door);
+			Action.start(motor);
+			Action.start(alarm);
+			Action.start(keyboard);
+		});
 	}
 
 	public static synchronized Glue getInstance() {
@@ -117,42 +118,42 @@ public class Glue implements ExternalClass, IControl, IControlled {
 	// IControl implementation
 	@Override
 	public void remoteControlButtonPressed() {
-		Action.send(new RemoteControlButtonPressed(), door);
+		API.send(new RemoteControlButtonPressed(), door);
 	}
 
 	@Override
 	public void motionSensorActivated() {
-		Action.send(new MotionSensorActivated(), door);
+		API.send(new MotionSensorActivated(), door);
 	}
 
 	@Override
 	public void alarmSensorActivated() {
-		Action.send(new AlarmSensorActivated(), alarm);
+		API.send(new AlarmSensorActivated(), alarm);
 	}
 
 	@Override
 	public void doorReachedTop() {
-		Action.send(new DoorReachedTop(), motor);
+		API.send(new DoorReachedTop(), motor);
 	}
 
 	@Override
 	public void doorReachedBottom() {
-		Action.send(new DoorReachedBottom(), motor);
+		API.send(new DoorReachedBottom(), motor);
 	}
 
 	@Override
 	public void keyPress(int nr) {
-		Action.send(new KeyPress(nr), keyboard);
+		API.send(new KeyPress(nr), keyboard);
 	}
 
 	@Override
 	public void starPressed() {
-		Action.send(new StarPressed(), alarm);
+		API.send(new StarPressed(), alarm);
 	}
 
 	@Override
 	public void hashPressed() {
-		Action.send(new HashPressed(), alarm);
+		API.send(new HashPressed(), alarm);
 	}
 
 }

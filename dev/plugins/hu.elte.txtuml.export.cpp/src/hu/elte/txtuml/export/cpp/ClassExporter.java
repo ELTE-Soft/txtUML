@@ -387,11 +387,9 @@ public class ClassExporter {
 
 			if (behavior != null) {
 				if (behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
-					activityExporter.reinitilaize();
-					
+					activityExporter.reinitilaize();					
 					source = activityExporter.createfunctionBody((Activity)behavior).toString();
 					name = item.getName() + "_" + unknownName;
-
 					map.put(name, new Pair<String, String>(item.getName(), source.toString()));
 				}
 			}

@@ -5,6 +5,8 @@ import hu.elte.txtuml.export.uml2.activity.SMActivityExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.CreateActionExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.CreateLinkActionExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.DeleteActionExporter
+import hu.elte.txtuml.export.uml2.activity.apicalls.GetSignalExporter
+import hu.elte.txtuml.export.uml2.activity.apicalls.IgnoredAPICallExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.LogActionExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.ReadLinkActionExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.SelectionExporter
@@ -16,6 +18,7 @@ import hu.elte.txtuml.export.uml2.activity.expression.AssignExporter
 import hu.elte.txtuml.export.uml2.activity.expression.BinaryOperatorExporter
 import hu.elte.txtuml.export.uml2.activity.expression.BooleanLiteralExporter
 import hu.elte.txtuml.export.uml2.activity.expression.CharacterLiteralExporter
+import hu.elte.txtuml.export.uml2.activity.expression.ConstructorCallExporter
 import hu.elte.txtuml.export.uml2.activity.expression.MethodCallExporter
 import hu.elte.txtuml.export.uml2.activity.expression.NameFieldAccessExporter
 import hu.elte.txtuml.export.uml2.activity.expression.NullLiteralExporter
@@ -105,10 +108,7 @@ import org.eclipse.uml2.uml.ExecutableNode
 import org.eclipse.uml2.uml.PackageableElement
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
-import hu.elte.txtuml.export.uml2.activity.apicalls.GetSignalExporter
-import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode
-import hu.elte.txtuml.export.uml2.activity.expression.ConstructorCallExporter
-import hu.elte.txtuml.export.uml2.activity.apicalls.IgnoredAPICallExporter
+import hu.elte.txtuml.export.uml2.statemachine.ChoiceStateExporter
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -159,9 +159,9 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 	def void alreadyExists(R result) {
 		this.result = result
 	}
-	
+
 	def boolean exportActions() {
-		cache.exportMode == ExportMode.ExportActionCode
+		cache.exportMode.exportActions();
 	}
 
 	/** 
@@ -180,7 +180,7 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 				return res
 			}
 		}
-		throw new IllegalArgumentException(access.toString)
+		cache.exportMode.handleErrors[throw new IllegalArgumentException(access.toString)]
 	}
 
 	/**
@@ -203,9 +203,10 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 				#[new PackageExporter(this)]
 			ITypeBinding:
 				#[new ClassExporter(this), new AssociationExporter(this), new AssociationEndExporter(this),
-					new StateExporter(this), new InitStateExporter(this), new DataTypeExporter(this),
-					new TransitionExporter(this), new SignalExporter(this), new PortExporter(this),
-					new InterfaceExporter(this), new ConnectorExporter(this), new ConnectorEndExporter(this)]
+					new StateExporter(this), new InitStateExporter(this), new ChoiceStateExporter(this),
+					new DataTypeExporter(this), new TransitionExporter(this), new SignalExporter(this),
+					new PortExporter(this), new InterfaceExporter(this), new ConnectorExporter(this),
+					new ConnectorEndExporter(this)]
 			IMethodBinding:
 				#[new DefaultConstructorExporter(this), new DefaultConstructorBodyExporter(this),
 					new OperationExporter(this), new MethodActivityExporter(this), new SMActivityExporter(this)]
@@ -315,7 +316,7 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 				return res;
 			}
 		}
-		throw new IllegalArgumentException(access.toString)
+		cache.exportMode.handleErrors[throw new IllegalArgumentException(access.toString)]
 	}
 
 	def getBooleanType() { getImportedElement("Boolean") as PrimitiveType }

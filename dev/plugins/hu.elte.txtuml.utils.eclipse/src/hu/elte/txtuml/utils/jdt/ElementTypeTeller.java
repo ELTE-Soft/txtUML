@@ -34,7 +34,7 @@ import hu.elte.txtuml.api.model.Delegation;
 import hu.elte.txtuml.api.model.Interface;
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.Port;
+import hu.elte.txtuml.api.model.ModelClass.Port;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.StateMachine.Choice;
 import hu.elte.txtuml.api.model.StateMachine.CompositeState;

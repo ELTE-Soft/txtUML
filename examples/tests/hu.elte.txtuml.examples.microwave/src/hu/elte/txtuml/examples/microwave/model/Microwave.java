@@ -5,7 +5,7 @@ import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
-import hu.elte.txtuml.api.stdlib.Timer;
+import hu.elte.txtuml.api.stdlib.timers.Timer;
 import hu.elte.txtuml.examples.microwave.model.associations.Usage;
 import hu.elte.txtuml.examples.microwave.model.signals.Close;
 import hu.elte.txtuml.examples.microwave.model.signals.Ding;

@@ -38,10 +38,6 @@ import hu.elte.txtuml.utils.eclipse.ProjectUtils;
  */
 public class TxtUMLToUML2 {
 
-	public enum ExportMode {
-		ExportDefinitions, ExportActionCode
-	}
-
 	/**
 	 * Exports the txtUML model to a org.eclipse.uml2.uml.Model representation
 	 * 
@@ -106,10 +102,11 @@ public class TxtUMLToUML2 {
 		if (packageFragments.length == 0) {
 			throw new NotFoundException("Cannot find package '" + packageName + "'");
 		}
-		
+
 		IPackageFragment fragment = null;
 		for (IPackageFragment pf : packageFragments) {
-			boolean isModel = Stream.of(pf.getCompilationUnits()).anyMatch(cu -> cu.getElementName().equals(PackageUtils.PACKAGE_INFO));
+			boolean isModel = Stream.of(pf.getCompilationUnits())
+					.anyMatch(cu -> cu.getElementName().equals(PackageUtils.PACKAGE_INFO));
 			if (isModel) {
 				fragment = pf;
 			}
@@ -117,13 +114,17 @@ public class TxtUMLToUML2 {
 
 		ModelExporter modelExporter = new ModelExporter(exportMode);
 		Model model = modelExporter.export(fragment);
-		
+
 		ExporterCache cache = modelExporter.cache;
+		
+		if (exportMode.isErrorHandler()) {
+			cache.floatingElements().forEach(e -> e.destroy());
+		}
 		ModelMapCollector collector = new ModelMapCollector(model.eResource().getURI());
-		cache.getMapping().forEach((s, e)->collector.put(s, e));
+		cache.getMapping().forEach((s, e) -> collector.put(s, e));
 		try {
-			URI destination = URI.createFileURI(fragment.getJavaProject().getProject().getLocation().toOSString()).
-		appendSegment("gen");
+			URI destination = URI.createFileURI(fragment.getJavaProject().getProject().getLocation().toOSString())
+					.appendSegment("gen");
 			String fileName = fragment.getElementName();
 			collector.save(destination, fileName);
 		} catch (ModelMapException e1) {

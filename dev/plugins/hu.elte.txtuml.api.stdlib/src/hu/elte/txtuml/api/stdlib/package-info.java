@@ -1,7 +1,5 @@
 /**
- * Contains the txtUML standard library which consists of external
- * classes (subclasses of {@link hu.elte.txtuml.api.model.external.ExternalClass})
- * that might be used to enhance the model with some special features which are
- * not part of the standard UML2, like {@link hu.elte.txtuml.stdlib.Timer Timers}.
+ * Contains the txtUML standard library which consists of predefined models that
+ * might be imported and used in user models.
  */
 package hu.elte.txtuml.api.stdlib;

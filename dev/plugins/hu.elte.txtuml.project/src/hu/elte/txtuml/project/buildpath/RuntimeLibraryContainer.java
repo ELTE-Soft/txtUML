@@ -28,9 +28,9 @@ public class RuntimeLibraryContainer implements IClasspathContainer {
 
 	public static final String[] BUNDLE_IDS_TO_INCLUDE = { "org.apache.log4j", "com.google.guava", //$NON-NLS-1$ //$NON-NLS-2$
 			"org.eclipse.uml2.uml", "org.eclipse.uml2.uml.resources", //$NON-NLS-1$ //$NON-NLS-2$
-			"org.eclipse.xtext.xbase.lib", "hu.elte.txtuml.api.deployment", "hu.elte.txtuml.api.model", //$NON-NLS-1$ //$NON-NLS-2$  //$NON-NLS-3$ 
-			"hu.elte.txtuml.api.layout", "hu.elte.txtuml.api.stdlib", //$NON-NLS-1$ //$NON-NLS-2$
-			"hu.elte.txtuml.api.diagnostics", "hu.elte.txtuml.export.papyrus", //$NON-NLS-1$ //$NON-NLS-2$
+			"org.eclipse.xtext.xbase.lib", "hu.elte.txtuml.api.deployment", "hu.elte.txtuml.api.model", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			"hu.elte.txtuml.api.model.execution", "hu.elte.txtuml.api.layout", "hu.elte.txtuml.api.stdlib", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			"hu.elte.txtuml.export.papyrus", //$NON-NLS-1$
 			"hu.elte.txtuml.export.uml2", "hu.elte.txtuml.layout.export", //$NON-NLS-1$ //$NON-NLS-2$
 			"hu.elte.txtuml.layout.visualizer", "hu.elte.txtuml.utils", //$NON-NLS-1$ //$NON-NLS-2$
 			"hu.elte.txtuml.xtxtuml.lib", "hu.elte.txtuml.xtxtuml", //$NON-NLS-1$ //$NON-NLS-2$
