@@ -22,7 +22,7 @@ import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
  * && make
  */
 class CMakeSupport {
-	private static final String CMAKE_MINIMUM_VERSION = "2.8";
+	private static final String CMAKE_MINIMUM_VERSION = "2.8.12";
 	private static final String CMAKE_FILE_NAME = "CMakeLists.txt";
 
 	private static final String CPP_STANDARD = "c++11";

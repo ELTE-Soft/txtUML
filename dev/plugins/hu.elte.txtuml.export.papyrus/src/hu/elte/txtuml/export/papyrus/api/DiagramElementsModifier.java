@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
@@ -21,9 +22,33 @@ import org.eclipse.gmf.runtime.diagram.ui.internal.commands.SetConnectionBendpoi
 import org.eclipse.gmf.runtime.emf.core.util.EObjectAdapter;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.common.commands.ShowHideLabelsRequest;
+import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateEditPart;
 
 @SuppressWarnings("restriction")
 public class DiagramElementsModifier {
+
+	/**
+	 * Decreases the height of the label compartment by 20 pixels.
+	 * 
+	 * This is a workaround for the following problem: When we place states onto
+	 * a diagram programmatically, the height of the label compartment becomes
+	 * 40 pixels, but after opening the diagram, Papyrus shrinks it to 20
+	 * pixels, and this causes the state to change height, and links get
+	 * distorted.
+	 * 
+	 * @param state
+	 *            The state to be fixed.
+	 */
+	public static void fixStateLabelHeight(CustomStateEditPart state) {
+        FixStateContentSizesCommand cmd = new FixStateContentSizesCommand(state);
+		try {
+			if (cmd != null && cmd.canExecute()) {
+				cmd.execute(null, null);
+			}
+		} catch (ExecutionException e) {
+		}
+	}
+	
 	/**
 	 * Resizes  a GraphicalEditPart
 	 * @param graphEP - The GraphicalEditPart that is to be resized
@@ -46,7 +71,7 @@ public class DiagramElementsModifier {
 	 * @param elements - The EditParts which's connection labels is to be hidden 
 	 * @param excluding - The types of connection labels which are not wanted to be hidden
 	 */
-	public static void hideConnectionLabelsForEditParts(List<EditPart> elements, List<java.lang.Class<?>> excluding){
+	public static void hideConnectionLabelsForEditParts(List<GraphicalEditPart> elements, List<java.lang.Class<?>> excluding){
 		for(EditPart editpart: elements){
 			GraphicalEditPart ep = ((GraphicalEditPart) editpart);
 			@SuppressWarnings("unchecked")
@@ -100,24 +125,22 @@ public class DiagramElementsModifier {
 	}
 	
 	/**
-	 * Sets the BendPoints of a connection. (Starting point and Ending points are not BendPoints)
+	 * Sets the points of a connection.
 	 * @param connection - The connection
-	 * @param bendpoints - The BendPoints
+	 * @param bendpoints - Start, end and bending points
 	 */
-	public static void setConnectionBendpoints(ConnectionNodeEditPart connection, List<Point> bendpoints){
+	public static void setConnectionPoints(ConnectionNodeEditPart connection, List<Point> bendpoints){
 		TransactionalEditingDomain editingDomain = connection.getEditingDomain();
 		SetConnectionBendpointsCommand cmd = new SetConnectionBendpointsCommand(editingDomain);
 		cmd.setEdgeAdapter(new EObjectAdapter(connection.getNotationView()));
 		
-		Point sourceRef = connection.getConnectionFigure().getSourceAnchor().getReferencePoint();
-		Point targetRef = connection.getConnectionFigure().getTargetAnchor().getReferencePoint();
+		Point sourceRef = bendpoints.get(0);
+		Point targetRef = bendpoints.get(bendpoints.size()-1);
 		PointList pointList = new PointList();
 		
-		pointList.addPoint(sourceRef);
 		for(Point bendpoint: bendpoints){
 			pointList.addPoint(bendpoint);
 		}
-		pointList.addPoint(targetRef);
 		
 		cmd.setNewPointList(pointList, sourceRef, targetRef);
 		Command proxy =  new ICommandProxy(cmd);

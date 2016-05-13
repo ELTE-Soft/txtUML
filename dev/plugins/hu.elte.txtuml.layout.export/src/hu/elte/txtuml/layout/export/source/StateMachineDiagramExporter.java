@@ -15,7 +15,7 @@ public class StateMachineDiagramExporter extends AbstractSourceExporter {
 	public DiagramType getType() {
 		return DiagramType.StateMachine;
 	}
-
+	
 	@Override
 	public boolean isNode(Class<?> cls) {
 		return Vertex.class.isAssignableFrom(cls);

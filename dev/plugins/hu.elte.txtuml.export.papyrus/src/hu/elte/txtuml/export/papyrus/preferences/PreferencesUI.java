@@ -63,6 +63,8 @@ public class PreferencesUI {
 								IconsUtil.ACTIVITY_DIAGRAM_16, PreferencesManager.ACTIVITY_DIAGRAM_PREF));
 		checkboxes.put("StateMachineDiagramCHBX", new CheckBoxRecord(tree, "StateMachine Diagram",
 								IconsUtil.STATEMACHINE_DIAGRAM_16, PreferencesManager.STATEMACHINE_DIAGRAM_PREF));
+		checkboxes.put("CompositeDiagramCHBX", new CheckBoxRecord(tree, "Composite Diagram",
+								IconsUtil.CLASS_DIAGRAM_16, PreferencesManager.COMPOSITE_DIAGRAM_PREF));
 		
 		checkboxes.put("CDConstraintCHBX", new CheckBoxRecord(checkboxes.get("ClassDiagramCHBX").chbx, "Constraint",
 								IconsUtil.CONSTRAINT_16, PreferencesManager.CLASS_DIAGRAM_CONSTRAINT_PREF));

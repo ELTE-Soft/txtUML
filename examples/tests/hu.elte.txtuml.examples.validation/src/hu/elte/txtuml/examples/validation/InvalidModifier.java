@@ -4,7 +4,7 @@ import hu.elte.txtuml.api.model.Signal;
 
 public class InvalidModifier extends ModelClass {
 	
-	protected void f() {}
+	synchronized void f() {}
 	
 	final void g() {}
 	

@@ -33,7 +33,7 @@ public class Utils {
 			if (modifier.isStatic()) {
 				valid = false;
 			} else {
-				valid = modifier.isPrivate() || modifier.isPublic();
+				valid = modifier.isPrivate() || modifier.isPublic() || modifier.isProtected();
 			}
 			if (!valid) {
 				collector.report(new InvalidModifier(collector.getSourceInfo(), modifier));

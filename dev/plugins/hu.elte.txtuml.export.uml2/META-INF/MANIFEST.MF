@@ -6,7 +6,6 @@ Bundle-Version: 0.4.0.qualifier
 Bundle-Vendor: ELTE
 Export-Package: hu.elte.txtuml.export.uml2,
  hu.elte.txtuml.export.uml2.mapping,
- hu.elte.txtuml.export.uml2.transform.exporters,
  hu.elte.txtuml.export.uml2.utils
 Require-Bundle: hu.elte.txtuml.api.model;bundle-version="0.4.0",
  hu.elte.txtuml.utils;bundle-version="0.4.0",
@@ -14,5 +13,13 @@ Require-Bundle: hu.elte.txtuml.api.model;bundle-version="0.4.0",
  org.eclipse.core.runtime;bundle-version="3.11.1",
  org.eclipse.uml2.uml.resources,
  org.eclipse.jdt.core,
- org.eclipse.core.resources
+ org.eclipse.core.resources,
+ com.google.guava,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.xtend.lib,
+ org.eclipse.xtend.lib.macro,
+ org.eclipse.core.filesystem;bundle-version="1.5.0",
+ org.eclipse.ui.workbench,
+ org.eclipse.ui.ide
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+

@@ -17,6 +17,7 @@ public class RectangleObject
 	private Integer _pixelWidth;
 	private Integer _pixelHeight;
 	private Boolean _phantom;
+	private SpecialBox _special;
 	
 	// private Set<Point> _points;
 	
@@ -247,6 +248,21 @@ public class RectangleObject
 		_phantom = value;
 	}
 	
+	public Boolean isSpecial()
+	{
+		return !_special.equals(SpecialBox.None);
+	}
+	
+	public SpecialBox getSpecial()
+	{
+		return _special;
+	}
+	
+	public void setSpecial(SpecialBox spec)
+	{
+		_special = spec;
+	}
+	
 	// end Getters, setters
 	
 	// Ctors
@@ -266,6 +282,21 @@ public class RectangleObject
 		_pixelWidth = 1;
 		_pixelHeight = 1;
 		_phantom = false;
+		_special = SpecialBox.None;
+	}
+	
+	/***
+	 * Create a RectanlgeObject with a name and special property.
+	 * 
+	 * @param n
+	 *            Name of the object.
+	 * @param sb
+	 * 	          SpecialBox value.
+	 */
+	public RectangleObject(String n, SpecialBox sb)
+	{
+		this(n);
+		_special = sb;
 	}
 	
 	/***
@@ -285,6 +316,7 @@ public class RectangleObject
 		_pixelWidth = 1;
 		_pixelHeight = 1;
 		_phantom = false;
+		_special = SpecialBox.None;
 	}
 	
 	/***
@@ -302,6 +334,7 @@ public class RectangleObject
 		_pixelWidth = new Integer(o._pixelWidth);
 		_pixelHeight = new Integer(o._pixelHeight);
 		_phantom = new Boolean(o._phantom);
+		_special = o._special;
 	}
 	
 	// end Ctors
@@ -372,7 +405,8 @@ public class RectangleObject
 	@Override
 	public String toString()
 	{
-		return _name + ": " + _position.toString() + "[w:" + _width.toString() + "("
+		String specialString = isSpecial()?("(" + _special.toString() + ")"):"";
+		return _name + specialString + ": " + _position.toString() + "[w:" + _width.toString() + "("
 				+ _pixelWidth.toString() + "), h:" + _height.toString() + "("
 				+ _pixelHeight.toString() + ")]";
 	}

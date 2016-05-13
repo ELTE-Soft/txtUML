@@ -55,7 +55,6 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	private Text txtUMLModel;
 	//private List<Text> txtUMLLayout = new LinkedList<>();
 	private Text txtUMLProject;
-	private Button generateSMDs;
 	private ScrolledComposite sc;
 	
 	private Map<Integer, Text> txtUMLLayout = new HashMap<>();
@@ -66,7 +65,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	public VisualizeTxtUMLPage() {
 		super("Visualize txtUML Page");
 		setTitle("Visualize txtUML page");
-	    setDescription("Give your txtUML project and model class to be visualized");
+	    setDescription("Provide the txtUML project, model package and diagrams to be visualized");
 	}
 	
 	/*
@@ -174,16 +173,11 @@ public class VisualizeTxtUMLPage extends WizardPage {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
-	    
-	    generateSMDs = new Button(container, SWT.CHECK);
-	    generateSMDs.setText(" generate StateMachine Diagrams automatically");
-	    generateSMDs.setSelection(PreferencesManager.getBoolean(PreferencesManager.GENERATE_STATEMACHINES_AUTOMATICALLY));
-	    
+
 	    GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false, 2,1);
 	    txtUMLModel.setLayoutData(gd);
 	    txtUMLProject.setLayoutData(gd);
 	    txtUMLLayout.values().forEach( (text) -> text.setLayoutData(GridData.FILL_HORIZONTAL) );
-	    generateSMDs.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 4,1));
 	    addDiagrambtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 4,1)); //adding multiple descriptions
 	    
 	    addInitialLayoutFields();
@@ -219,14 +213,14 @@ public class VisualizeTxtUMLPage extends WizardPage {
 		final Label label = new Label(container, SWT.NONE);
         label.setText("txtUML Diagram"+index+": ");
         Control[] children = container.getChildren();
-        label.moveAbove(children[children.length-3]);
+        label.moveAbove(children[children.length-2]);
         container.layout(new Control[] {label});
         
         final Text textField = new Text(container, SWT.BORDER);
         textField.setText(text);
         textField.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         children = container.getChildren();
-        textField.moveAbove(children[children.length-3]);
+        textField.moveAbove(children[children.length-2]);
         container.layout(new Control[] {textField});
         
         final Button browseBtn = new Button(container, SWT.NONE);
@@ -252,7 +246,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
         children = container.getChildren();
-        browseBtn.moveAbove(children[children.length-3]);
+        browseBtn.moveAbove(children[children.length-2]);
 	    container.layout(new Control[] {browseBtn});
 	    
         final Button deleteButton = new Button(container, SWT.CENTER);
@@ -273,7 +267,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 		});
         deleteButton.setText("X");
         children = container.getChildren();
-        deleteButton.moveAbove(children[children.length-3]);
+        deleteButton.moveAbove(children[children.length-2]);
         container.layout(new Control[] {deleteButton});
         
         txtUMLLayout.put(index, textField);
@@ -308,13 +302,5 @@ public class VisualizeTxtUMLPage extends WizardPage {
 			}
 		}
 		return result;
-	}
-	
-	/**
-	 * Returns true if the user wants to generate StateMachines automatically
-	 * @return
-	 */
-	public boolean getGenerateSMDs() {
-		return generateSMDs.getSelection();
 	}
 }

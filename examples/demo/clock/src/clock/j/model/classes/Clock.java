@@ -18,9 +18,14 @@ import clock.j.model.connectors.Minutes;
 import clock.j.model.connectors.SecondValues;
 import clock.j.model.connectors.Seconds;
 import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.Interface;
 import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.Port;
 
 public class Clock extends ModelClass {
+	
+	public class MyPort extends Port<Interface.Empty, Interface.Empty>{}
+	
 	public Clock(int hour, int minute, int second) {
 		Pendulum pendulum = Action.create(Pendulum.class);
 		Hand secondHand = new Hand(60,second);

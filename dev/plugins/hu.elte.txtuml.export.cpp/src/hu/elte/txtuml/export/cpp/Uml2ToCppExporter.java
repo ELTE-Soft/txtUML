@@ -31,6 +31,9 @@ import hu.elte.txtuml.export.cpp.thread.ThreadHandlingManager;
 import hu.elte.txtuml.utils.Pair;
 
 public class Uml2ToCppExporter {
+	public static final String GENERATED_CPP_FOLDER_NAME = "cpp-gen";
+	public static final String UML_FILES_FOLDER_NAME = "model";
+
 	private static final String RUNTIME_DIR_PREFIX = GenerationTemplates.RuntimePath;
 	private static final String RUNTIME_LIB_NAME = "libsmrt";
 	private static final String DEFAULT_TARGET_EXECUTABLE = "main";
@@ -73,13 +76,15 @@ public class Uml2ToCppExporter {
 		copyPreWrittenCppFiles(outputDirectory);
 
 		for (Class item : classList) {
-			classExporter.reiniIialize();
-			classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
+			if (threadManager.getDescription().get(item.getName()) != null && !Shared.isGeneratedClass(item)) {
+				classExporter.reiniIialize();
+				classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
 
-			classExporter.createSource(item, outputDirectory);
+				classExporter.createSource(item, outputDirectory);
 
-			classNames.addAll(classExporter.getSubmachines());
-			classNames.add(item.getName());
+				classNames.addAll(classExporter.getSubmachines());
+				classNames.add(item.getName());
+			}
 		}
 
 		createCMakeFile(outputDirectory);
