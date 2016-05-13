@@ -2,7 +2,7 @@ package hu.elte.txtuml.xtxtuml.compiler
 
 import com.google.inject.Inject
 import hu.elte.txtuml.api.model.Action
-import hu.elte.txtuml.api.model.Port
+import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression

@@ -22,7 +22,7 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * Apply on the top package of a JtxtUML model. Annotations on packages should
  * be defined in {@code package-info.java} file.
  * <p>
- * Set {@link value} to define a unique name of the model.
+ * Set {@link #value() value} to define a unique name of the model.
  * <p>
  * If package <i>A</i> is marked as a model and <i>B</i> is a subpackage of
  * <i>A</i> then <i>B</i> cannot be marked to be a model as it is already a part
@@ -58,11 +58,11 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * 
  * <ul>
  * <li>Using and extending classes, interfaces, enums and annotations of this
- * package and the {@link hu.elte.txtuml.api.model.blocks} package, if the
- * opposite is not stated on the corresponding pages of this documentation.</li>
+ * package (hu.elte.txtuml.api.model), if the opposite is not stated on the
+ * corresponding pages of this documentation.</li>
+ * <li>Using and extending types of other txtUML models.</li>
  * <li>Using Java primitive types and <code>String</code>s.</li>
- * <li>Using subclasses of <code>ExternalClass</code>, like the classes of the
- * <code>hu.elte.txtuml.api.stdlib</code> package. See the documentation of
+ * <li>Using subclasses of {@code ExternalClass}. See the documentation of
  * {@link ExternalClass} for details.</li>
  * </ul>
  * 
@@ -70,7 +70,8 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * 
  * <ul>
  * <li>Using or extending any type not included in the preceding list, including
- * Java built-in types (with the exception of <code>java.lang.Object</code>).</li>
+ * Java built-in types (with the exception of <code>java.lang.Object</code>).
+ * </li>
  * <li>Exception handling.</li>
  * <li>Defining <code>abstract class</code>es.</li>
  * <li>Defining <code>synchronized</code>, <code>native</code> or
@@ -83,9 +84,8 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  *
  * <p>
  * A JtxtUML model may never run by itself. It has to be managed or at least
- * started from the outside. As {@link ModelExecutor} (the class which is
- * responsible for executing models) uses its own thread, there are two main
- * cases of accessing the model from the outside:
+ * started from the outside. As model executors use their own threads, there are
+ * two main cases of accessing the model from the outside:
  * <ul>
  * <li>The model is accessed from another thread (that is, not the executor's
  * thread).</li>
@@ -96,35 +96,11 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * 
  * <p>
  * For details about the second case, see the documentation of
- * {@link ExternalClass}. In the first case, when the model is accessed from
- * another thread, <b>only the following actions might be performed</b>:
- * 
- * <ul>
- * <li>Create model objects (instances of subclasses of {@link ModelClass}) by
- * either calling their constructors or using the
- * {@link Action#create(Class, Object...) Action.create} method.</li>
- * <li>Use the static methods of the <code>Action</code> class to
- * {@link Action#link(Class, ModelClass, Class, ModelClass) link},
- * {@link Action#unlink(Class, ModelClass, Class, ModelClass) unlink},
- * {@link Action#start(ModelClass) start} or {@link Action#delete(ModelClass)
- * delete} model objects that <b>have not been started yet</b> (the
- * <code>start</code> method was not yet called with the corresponding model
- * object as its parameter).</li>
- * <li>Change fields or call methods of model objects that <b>have not been
- * started yet</b>. Calling methods is only allowed if the method itself also
- * follows these rules. <br>
- * <b>Note:</b> the {@link ModelClass#assoc(Class) ModelClass.assoc} method
- * applies to this rule.</li>
- * <li>Create instances of signal types (subclasses of {@link Signal}) and set
- * their fields <b>before they are sent</b> to the model (with the
- * {@link Action#send(Signal, ModelClass) Action.send} method).</li>
- * <li>Use the {@link Action#send(Signal, ModelClass) send} method to send
- * signals to a model object that <b>has already been started</b>.</li>
- * <li>Call {@link Action#log(String) Action.log} or
- * {@link Action#logError(String) Action.logError} at any time.</li>
- * <li>Call {@link ModelClass#getIdentifier() ModelClass.getIdentifier} to get
- * the unique identifier of a model object at any time.</li>
- * </ul>
+ * {@link ExternalClass}. In the first case, when the model is accessed <b>from
+ * another thread, only a small set of safe operations</b> can be done which are
+ * listed in the {@link API} class. This class cannot be used from the model but
+ * its static methods are the only ones which can be called from any other
+ * thread.
  * 
  * <h2>Definitions</h2>
  * 
@@ -141,13 +117,7 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * The most important features of the JtxtUML action language (the following
  * list is <i>not</i> restrictive):
  * <ul>
- * <li>Using the {@link Action} class and its static methods to
- * <ul>
- * <li>create, link, unlink, delete model objects,</li>
- * <li>send signals asynchronously to model objects,</li>
- * <li>implement control structures.</li>
- * </ul>
- * </li>
+ * <li>Using the {@link Action} class and its static methods.</li>
  * <li>Getting/setting fields of model objects (as UML attributes), calling
  * their methods (as UML operations).</li>
  * <li>Querying association ends with the {@link ModelClass#assoc(Class)
@@ -167,15 +137,14 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * <p>
  * Condition evaluations in JtxtUML include
  * {@link StateMachine.Transition#guard() guards} of transitions and conditions
- * of certain <code>Collection</code> methods (
- * {@link Collection#selectAll(hu.elte.txtuml.api.model.blocks.ParameterizedCondition)
- * selectAll} ).
+ * of certain <code>Collection</code> methods ( {@link Collection#selectAll} ).
  * <p>
  * A condition evaluation is exported as a single model query, so it <b>may
  * include only the following actions</b>:
  * <ul>
  * <li>Defining, modifying local variables.</li>
- * <li>Getting (but <i>not</i> setting) fields of model objects and signals.</li>
+ * <li>Getting (but <i>not</i> setting) fields of model objects and signals.
+ * </li>
  * <li>Querying association ends with the {@link ModelClass#assoc(Class)
  * ModelClass.assoc} method.</li>
  * <li>Using primitives (including <code>Sting</code>).</li>

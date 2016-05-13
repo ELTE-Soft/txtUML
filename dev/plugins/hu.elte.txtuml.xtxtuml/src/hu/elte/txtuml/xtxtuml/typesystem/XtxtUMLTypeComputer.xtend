@@ -3,7 +3,7 @@ package hu.elte.txtuml.xtxtuml.typesystem
 import com.google.inject.Inject
 import hu.elte.txtuml.api.model.Collection
 import hu.elte.txtuml.api.model.ModelClass
-import hu.elte.txtuml.api.model.Port
+import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression

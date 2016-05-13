@@ -21,15 +21,13 @@ package hu.elte.txtuml.api.model;
  * </ul>
  * 
  * <p>
- * See the documentation of {@link Model} for an overview on modeling in JtxtUML.
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
  *
  * @see Signal
  */
-public class Event implements ModelElement {
+public abstract class Event {
 
-	/**
-	 * Sole constructor of <code>Event</code>.
-	 */
 	Event() {
 	}
 

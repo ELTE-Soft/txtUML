@@ -2,6 +2,10 @@ package hu.elte.txtuml.utils;
 
 import java.util.function.Function;
 
+/*
+ * Multiple types defined in this file.
+ */
+
 /**
  * Methods of this interface should be used with extreme care.
  */
@@ -24,8 +28,7 @@ public interface Sneaky {
 		}
 	}
 
-	static <T, R, E extends Exception> R uncheck(
-			ExceptionThrowingFunction<T, R, E> f, T param) {
+	static <T, R, E extends Exception> R uncheck(ExceptionThrowingFunction<T, R, E> f, T param) {
 		try {
 			return f.apply(param);
 		} catch (Exception e) {
@@ -33,13 +36,11 @@ public interface Sneaky {
 		}
 	}
 
-	static <E extends Exception> Runnable unchecked(
-			ExceptionThrowingRunnable<E> r) {
+	static <E extends Exception> Runnable unchecked(ExceptionThrowingRunnable<E> r) {
 		return () -> uncheck(r);
 	}
 
-	static <T, R, E extends Exception> Function<T, R> unchecked(
-			ExceptionThrowingFunction<T, R, E> f) {
+	static <T, R, E extends Exception> Function<T, R> unchecked(ExceptionThrowingFunction<T, R, E> f) {
 		return t -> uncheck(f, t);
 	}
 

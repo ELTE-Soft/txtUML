@@ -1,8 +1,8 @@
 package hu.elte.txtuml.api.model;
 
-import hu.elte.txtuml.api.model.backend.ManyCollection;
-import hu.elte.txtuml.api.model.backend.MultiplicityException;
-import hu.elte.txtuml.api.model.backend.SingleItemCollection;
+import hu.elte.txtuml.api.model.assocends.Bounds;
+import hu.elte.txtuml.api.model.runtime.collections.Maybe;
+import hu.elte.txtuml.api.model.runtime.collections.Sequence;
 
 /*
  * Multiple classes defined in this file.
@@ -35,8 +35,7 @@ import hu.elte.txtuml.api.model.backend.SingleItemCollection;
  * error message is shown if it is still offended and the regarding model object
  * is not in {@link ModelClass.Status#DELETED DELETED} status. However, as this
  * check is relatively slow, it might be switched off along with other optional
- * checks with the {@link ModelExecutor.Settings#setDynamicChecks(boolean)
- * ModelExecutor.Settings.setDynamicChecks} method.
+ * checks.
  * <p>
  * See the documentation of {@link Model} for information about execution steps.
  * 
@@ -52,7 +51,8 @@ import hu.elte.txtuml.api.model.backend.SingleItemCollection;
  * See the documentation of {@link Association} for details on defining and
  * using associations.
  * <p>
- * See the documentation of {@link Model} for an overview on modeling in JtxtUML.
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
  *
  * @see Association.Many
  * @see Association.One
@@ -68,207 +68,52 @@ import hu.elte.txtuml.api.model.backend.SingleItemCollection;
  * @param <T>
  *            the type of model objects to be contained in this collection
  */
-public abstract class AssociationEnd<T extends ModelClass, C> implements
-		ModelElement {
+public abstract class AssociationEnd<T extends ModelClass, C extends Collection<T>> implements Bounds {
 
-	C collection;
-
-	/**
-	 * Sole constructor of <code>AssociationEnd</code>.
-	 */
 	AssociationEnd() {
 	}
 
-	C getCollection() {
-		return collection;
+	public abstract C createEmptyCollection();
+
+}
+
+abstract class MaybeEnd<T extends ModelClass> extends AssociationEnd<T, Maybe<T>> {
+
+	MaybeEnd() {
 	}
 
-	abstract boolean isEmpty();
-	
-	abstract boolean contains(ModelClass object);
-	
-	abstract void add(T object) throws MultiplicityException;
-
-	abstract void remove(ModelClass object);
-
-	/**
-	 * Checks whether the lower bound of this association end's multiplicity is
-	 * unoffended.
-	 * 
-	 * @return <code>true</code> if this association end has more or equal
-	 *         elements than its lower bound, <code>false</code> otherwise
-	 */
-	abstract boolean checkLowerBound();
-
 	@Override
-	public String toString() {
-		return collection.toString();
+	public Maybe<T> createEmptyCollection() {
+		return Maybe.empty();
 	}
 
 }
 
-/**
- * Base class for association ends having a multiplicity of 0..*.
- * <p>
- * Directly unusable by the user.
- *
- * @param <T>
- *            the type of model objects to be contained in this collection
- */
-class ManyBase<T extends ModelClass> extends AssociationEnd<T, Collection<T>> {
+abstract class ManyEnd<T extends ModelClass> extends AssociationEnd<T, Sequence<T>> {
 
-	{
-		collection = new ManyCollection<>();
+	ManyEnd() {
 	}
 
 	@Override
-	boolean isEmpty() {
-		return collection.isEmpty();
-	}
-
-	@Override
-	boolean contains(ModelClass object) {
-		return collection.contains(object);
-	}
-
-	@Override
-	void add(T object) throws MultiplicityException {
-		collection = collection.add(object);
-	}
-
-	@Override
-	void remove(ModelClass object) {
-		collection = collection.remove(object);
-	}
-
-	@Override
-	boolean checkLowerBound() {
-		return true; // There is no lower bound of Many.
+	public Sequence<T> createEmptyCollection() {
+		return Sequence.empty();
 	}
 
 }
 
-/**
- * Base class for association ends having a multiplicity of 0..1.
- * <p>
- * Directly unusable by the user.
- *
- * @param <T>
- *            the type of model objects to be contained in this collection
- */
-class MaybeOneBase<T extends ModelClass> extends
-		AssociationEnd<T, Collection<T>> {
+abstract class MultipleEnd<T extends ModelClass> extends ManyEnd<T> {
 
-	{
-		collection = new SingleItemCollection<>();
+	private final int lowerBound = lowerBound();
+	private final int upperBound = upperBound();
+
+	@Override
+	public boolean checkLowerBound(int actualSize) {
+		return actualSize >= lowerBound;
 	}
 
 	@Override
-	boolean isEmpty() {
-		return collection.isEmpty();
-	}
-	
-	@Override
-	boolean contains(ModelClass object) {
-		return collection.contains(object);
-	}
-	
-	@Override
-	void add(T object) throws MultiplicityException {
-		if (!collection.isEmpty() && !collection.selectAny().equals(object)) {
-			throw new MultiplicityException();
-		}
-		collection = collection.add(object);
-	}
-
-	@Override
-	void remove(ModelClass object) {
-		collection = collection.remove(object);
-	}
-
-	@Override
-	boolean checkLowerBound() {
-		return true; // There is no lower bound of MaybeOne.
-	}
-
-}
-
-/**
- * Base class for association ends having a user-defined multiplicity.
- * <p>
- * Inherits its implementation from <code>ManyBase</code>.
- * <p>
- * Directly unusable by the user.
- *
- * @param <T>
- *            the type of model objects to be contained in this collection
- */
-class MultipleBase<T extends ModelClass> extends ManyBase<T> {
-
-	/**
-	 * The actual lower bound of this association end.
-	 */
-	private final int min;
-	
-	/**
-	 * The actual upper bound of this association end.
-	 * <p>
-	 * -1 means an infinite bound.
-	 */
-	private final int max;
-
-	{
-		Min min = getClass().getAnnotation(Min.class);
-		this.min = min == null || min.value() < 0 ? 0 : min.value();
-
-		Max max = getClass().getAnnotation(Max.class);
-		this.max = max == null || max.value() < 0 ? -1 : max.value();
-	}
-
-	@Override
-	boolean checkLowerBound() {
-		return collection.count() >= min;
-	}
-
-	@Override
-	void add(T object) throws MultiplicityException {
-		if (max != -1 && collection.count() >= max) {
-			throw new MultiplicityException();
-		}
-		super.add(object);
-	}
-}
-
-/**
- * Base class for association ends having a multiplicity of 1.
- * <p>
- * Directly unusable by the user.
- *
- * @param <T>
- *            the type of model objects to be contained in this collection
- */
-class OneBase<T extends ModelClass> extends MaybeOneBase<T> {
-
-	@Override
-	boolean checkLowerBound() {
-		return collection.count() > 0;
-	}
-
-}
-
-/**
- * Base class for association ends having a multiplicity of 1..*.
- * <p>
- * Directly unusable by the user.
- *
- * @param <T>
- *            the type of model objects to be contained in this collection
- */
-class SomeBase<T extends ModelClass> extends ManyBase<T> {
-
-	@Override
-	boolean checkLowerBound() {
-		return collection.count() > 0;
+	public boolean checkUpperBound(int actualSize) {
+		return upperBound == -1 || actualSize <= upperBound;
 	}
 
 }

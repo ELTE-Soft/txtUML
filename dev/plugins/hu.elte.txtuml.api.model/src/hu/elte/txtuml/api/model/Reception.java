@@ -1,8 +1,8 @@
 package hu.elte.txtuml.api.model;
 
 /**
- * Functional interface that might be used to pass method references of
- * Java methods representing receptions.
+ * Functional interface that might be used to pass method references of Java
+ * methods representing receptions.
  * 
  * <p>
  * <b>Represents:</b> reception

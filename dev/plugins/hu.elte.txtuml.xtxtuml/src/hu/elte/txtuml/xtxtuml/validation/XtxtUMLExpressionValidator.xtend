@@ -1,7 +1,7 @@
 package hu.elte.txtuml.xtxtuml.validation;
 
 import com.google.inject.Inject
-import hu.elte.txtuml.api.model.Port
+import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression

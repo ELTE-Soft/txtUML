@@ -2,7 +2,8 @@ package hu.elte.txtuml.api.model.assocends;
 
 /**
  * A base interface to represent whether a certain association end is a
- * container end or not.
+ * container end or not. An association end is either a {@link ContainerEnd} or
+ * a {@link SimpleEnd}.
  * <p>
  * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
  * overview on modeling in JtxtUML.
