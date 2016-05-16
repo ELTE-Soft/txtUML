@@ -45,6 +45,9 @@ import org.eclipse.uml2.uml.Property
 import org.eclipse.uml2.uml.SequenceNode
 import org.eclipse.uml2.uml.Signal
 import org.eclipse.uml2.uml.SignalEvent
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller
+import hu.elte.txtuml.export.uml2.structural.OutPortExporter
+import hu.elte.txtuml.export.uml2.structural.InPortExporter
 
 /**
  * Base class for exporters, methods to export different kinds of elements using specific exporters.
@@ -104,7 +107,13 @@ abstract class BaseExporter<S, A, R extends Element> {
 	}
 
 	def exportPort(TypeDeclaration td, Consumer<Port> store) {
-		cache.export(new PortExporter(this), td, td.resolveBinding, store)
+		if (ElementTypeTeller.isInPort(td.resolveBinding)) {
+			cache.export(new InPortExporter(this), td, td.resolveBinding, store)
+		} else if (ElementTypeTeller.isOutPort(td.resolveBinding)) {
+			cache.export(new OutPortExporter(this), td, td.resolveBinding, store)
+		} else {
+			cache.export(new PortExporter(this), td, td.resolveBinding, store)
+		}
 	}
 
 	def exportConnector(TypeDeclaration td, Consumer<Connector> store) {

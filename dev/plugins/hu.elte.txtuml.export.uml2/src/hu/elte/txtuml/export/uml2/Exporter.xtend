@@ -45,6 +45,7 @@ import hu.elte.txtuml.export.uml2.activity.statement.IfExporter
 import hu.elte.txtuml.export.uml2.activity.statement.ReturnStatementExporter
 import hu.elte.txtuml.export.uml2.activity.statement.VariableDeclarationExporter
 import hu.elte.txtuml.export.uml2.activity.statement.WhileExporter
+import hu.elte.txtuml.export.uml2.statemachine.ChoiceStateExporter
 import hu.elte.txtuml.export.uml2.statemachine.InitStateExporter
 import hu.elte.txtuml.export.uml2.statemachine.StateExporter
 import hu.elte.txtuml.export.uml2.statemachine.TransitionExporter
@@ -108,7 +109,8 @@ import org.eclipse.uml2.uml.ExecutableNode
 import org.eclipse.uml2.uml.PackageableElement
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
-import hu.elte.txtuml.export.uml2.statemachine.ChoiceStateExporter
+import hu.elte.txtuml.export.uml2.structural.InPortExporter
+import hu.elte.txtuml.export.uml2.structural.OutPortExporter
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -205,8 +207,8 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 				#[new ClassExporter(this), new AssociationExporter(this), new AssociationEndExporter(this),
 					new StateExporter(this), new InitStateExporter(this), new ChoiceStateExporter(this),
 					new DataTypeExporter(this), new TransitionExporter(this), new SignalExporter(this),
-					new PortExporter(this), new InterfaceExporter(this), new ConnectorExporter(this),
-					new ConnectorEndExporter(this)]
+					new InPortExporter(this), new OutPortExporter(this), new PortExporter(this),
+					new InterfaceExporter(this), new ConnectorExporter(this), new ConnectorEndExporter(this)]
 			IMethodBinding:
 				#[new DefaultConstructorExporter(this), new DefaultConstructorBodyExporter(this),
 					new OperationExporter(this), new MethodActivityExporter(this), new SMActivityExporter(this)]
