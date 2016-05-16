@@ -1,9 +1,6 @@
 package hu.elte.txtuml.export.uml2;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.AddVariableValueAction;
@@ -17,6 +14,7 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.ParameterDirectionKind;
+import org.eclipse.uml2.uml.Port;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.PseudostateKind;
@@ -201,6 +199,24 @@ public class TestStructure extends UMLExportTestBase {
 
 		Operation op2 = operation(cls, "op2");
 		assertTrue(op2.getOwnedParameters().isEmpty());
+	}
+	
+	@Test
+	public void testPorts() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.ports");
+		Class cls = cls(model, "TestClass");
+		Port behavPort = port(cls, "BehavPort");
+		
+		assertTrue(behavPort.isBehavior());
+		assertEquals("Iface", getProvided(behavPort).getName());
+		
+		Port assemblyPort = port(cls, "AssemblyPort");
+		assertFalse(assemblyPort.isBehavior());
+		assertEquals("Iface", getProvided(assemblyPort).getName());
+		
+		// existance is checked
+		port(cls, "MyInPort");
+		port(cls, "MyOutPort");
 	}
 
 	@Test
