@@ -15,8 +15,6 @@ import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.Transition;
 
-import com.google.common.collect.Lists;
-
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
 import hu.elte.txtuml.export.papyrus.api.StateMachineDiagramElementsController;
 import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
