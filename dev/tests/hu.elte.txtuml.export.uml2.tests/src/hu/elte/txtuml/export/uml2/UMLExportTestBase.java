@@ -129,6 +129,15 @@ public class UMLExportTestBase {
 		return (T) node;
 	}
 
+	@SuppressWarnings("unchecked")
+	protected <T> T node(Activity parent, int index, String name, java.lang.Class<T> type) {
+		ActivityNode node = parent.getNodes().get(index);
+		assertEquals(name, node.getName());
+		assertNotNull(node);
+		assertTrue("Node is not a " + type.getName(), type.isInstance(node));
+		return (T) node;
+	}
+	
 	protected void checkDefaultCtor(SequenceNode body) {
 		SequenceNode createNode = (SequenceNode) body.getNode("create DefaultConstructible;");
 		SequenceNode createExprNode = (SequenceNode) createNode.getNode("create DefaultConstructible");

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.ActivityParameterNode;
 import org.eclipse.uml2.uml.AddStructuralFeatureValueAction;
 import org.eclipse.uml2.uml.AddVariableValueAction;
 import org.eclipse.uml2.uml.CallOperationAction;
@@ -182,7 +183,9 @@ public class TestActionCode extends UMLExportTestBase {
 		SequenceNode effectBody = getActivityBody((Activity) tr1.getEffect());
 		node(effectBody, 0, "Action.log(\"Init -> S1\");", SequenceNode.class);
 		Transition tr2 = transition(reg, s1, s1, sig);
-		SequenceNode guardBody = getActivityBody(getGuardActivity(tr2));
+		Activity guardActivity = getGuardActivity(tr2);
+		node(guardActivity, 2, "return", ActivityParameterNode.class);
+		SequenceNode guardBody = getActivityBody(guardActivity);
 		node(guardBody, 0, "return false", SequenceNode.class);
 	}
 

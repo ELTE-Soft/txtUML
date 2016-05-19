@@ -248,17 +248,18 @@ public class TestStructure extends UMLExportTestBase {
 		assertEquals(sig, sigEvent.getSignal());
 		Class sigFactory = cls(model, "#Sig_factory");
 		Operation sigCtor = operation(sigFactory, "Sig");
+		assertEquals(4, sigCtor.getOwnedParameters().size());
 
 		SequenceNode body = loadActionCode(model, "A", "test");
 		SequenceNode createNode = node(body, 0, "create Sig", SequenceNode.class);
 		CreateObjectAction initiateNode = node(createNode, 0, "instantiate Sig", CreateObjectAction.class);
 		assertEquals(sig, initiateNode.getClassifier());
 		node(createNode, 1, "#temp=instantiate Sig", AddVariableValueAction.class);
-		node(createNode, 2, "#temp", ReadVariableAction.class);
-		node(createNode, 3, "1", ValueSpecificationAction.class);
-		node(createNode, 4, "true", ValueSpecificationAction.class);
-		node(createNode, 5, "\"test\"", ValueSpecificationAction.class);
-		CallOperationAction ctorCall = node(createNode, 6, "#temp.Sig(Integer p0, Boolean p1, String p2)", CallOperationAction.class);
+		node(createNode, 2, "1", ValueSpecificationAction.class);
+		node(createNode, 3, "true", ValueSpecificationAction.class);
+		node(createNode, 4, "\"test\"", ValueSpecificationAction.class);
+		node(createNode, 5, "#temp", ReadVariableAction.class);
+		CallOperationAction ctorCall = node(createNode, 6, "#temp.Sig(Sig p0, Integer p1, Boolean p2, String p3)", CallOperationAction.class);
 		assertEquals(sigCtor, ctorCall.getOperation());
 		node(createNode, 7, "#temp", ReadVariableAction.class);
 	}
