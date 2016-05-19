@@ -259,7 +259,7 @@ public class TestStructure extends UMLExportTestBase {
 		node(createNode, 3, "true", ValueSpecificationAction.class);
 		node(createNode, 4, "\"test\"", ValueSpecificationAction.class);
 		node(createNode, 5, "#temp", ReadVariableAction.class);
-		CallOperationAction ctorCall = node(createNode, 6, "#temp.Sig(Sig p0, Integer p1, Boolean p2, String p3)", CallOperationAction.class);
+		CallOperationAction ctorCall = node(createNode, 6, "Sig(Sig p0, Integer p1, Boolean p2, String p3)", CallOperationAction.class);
 		assertEquals(sigCtor, ctorCall.getOperation());
 		node(createNode, 7, "#temp", ReadVariableAction.class);
 	}

@@ -54,8 +54,6 @@ class CreateActionExporter extends CreationExporter<MethodInvocation> {
 			new MethodCallExporter(this).createCall(factory.createCallOperationAction,
 				ctor, create, args).storeNode
 		}
-		new MethodCallExporter(this).createCall(factory.createCallOperationAction, ctor,
-			create, args).storeNode
 	}
 
 }
