@@ -2,16 +2,19 @@ package hu.elte.txtuml.export.uml2
 
 import hu.elte.txtuml.export.uml2.activity.MethodActivityExporter
 import hu.elte.txtuml.export.uml2.activity.SMActivityExporter
+import hu.elte.txtuml.export.uml2.activity.apicalls.AutoboxExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.CreateActionExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.CreateLinkActionExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.DeleteActionExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.GetSignalExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.IgnoredAPICallExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.LogActionExporter
+import hu.elte.txtuml.export.uml2.activity.apicalls.PrimitiveToStringExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.ReadLinkActionExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.SelectionExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.SendActionExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.StartActionExporter
+import hu.elte.txtuml.export.uml2.activity.apicalls.ToStringExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.UnlinkActionExporter
 import hu.elte.txtuml.export.uml2.activity.expression.APISuperCtorCallExporter
 import hu.elte.txtuml.export.uml2.activity.expression.AssignExporter
@@ -19,6 +22,7 @@ import hu.elte.txtuml.export.uml2.activity.expression.BinaryOperatorExporter
 import hu.elte.txtuml.export.uml2.activity.expression.BooleanLiteralExporter
 import hu.elte.txtuml.export.uml2.activity.expression.CharacterLiteralExporter
 import hu.elte.txtuml.export.uml2.activity.expression.ConstructorCallExporter
+import hu.elte.txtuml.export.uml2.activity.expression.EqualityExporter
 import hu.elte.txtuml.export.uml2.activity.expression.MethodCallExporter
 import hu.elte.txtuml.export.uml2.activity.expression.NameFieldAccessExporter
 import hu.elte.txtuml.export.uml2.activity.expression.NullLiteralExporter
@@ -33,6 +37,7 @@ import hu.elte.txtuml.export.uml2.activity.expression.StringLiteralExporter
 import hu.elte.txtuml.export.uml2.activity.expression.SuperCallExporter
 import hu.elte.txtuml.export.uml2.activity.expression.SuperCtorCallExporter
 import hu.elte.txtuml.export.uml2.activity.expression.ThisExporter
+import hu.elte.txtuml.export.uml2.activity.expression.UnequalityExporter
 import hu.elte.txtuml.export.uml2.activity.expression.VariableDeclarationExpressionExporter
 import hu.elte.txtuml.export.uml2.activity.expression.VariableExpressionExporter
 import hu.elte.txtuml.export.uml2.activity.statement.BlockExporter
@@ -58,8 +63,10 @@ import hu.elte.txtuml.export.uml2.structural.DataTypeExporter
 import hu.elte.txtuml.export.uml2.structural.DefaultConstructorBodyExporter
 import hu.elte.txtuml.export.uml2.structural.DefaultConstructorExporter
 import hu.elte.txtuml.export.uml2.structural.FieldExporter
+import hu.elte.txtuml.export.uml2.structural.InPortExporter
 import hu.elte.txtuml.export.uml2.structural.InterfaceExporter
 import hu.elte.txtuml.export.uml2.structural.OperationExporter
+import hu.elte.txtuml.export.uml2.structural.OutPortExporter
 import hu.elte.txtuml.export.uml2.structural.PackageExporter
 import hu.elte.txtuml.export.uml2.structural.ParameterExporter
 import hu.elte.txtuml.export.uml2.structural.PortExporter
@@ -109,11 +116,6 @@ import org.eclipse.uml2.uml.ExecutableNode
 import org.eclipse.uml2.uml.PackageableElement
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
-import hu.elte.txtuml.export.uml2.structural.InPortExporter
-import hu.elte.txtuml.export.uml2.structural.OutPortExporter
-import hu.elte.txtuml.export.uml2.activity.apicalls.PrimitiveToStringExporter
-import hu.elte.txtuml.export.uml2.activity.apicalls.ToStringExporter
-import hu.elte.txtuml.export.uml2.activity.apicalls.AutoboxExporter
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -262,7 +264,7 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 			ThisExpression:
 				#[new ThisExporter(this)]
 			InfixExpression:
-				#[new BinaryOperatorExporter(this)]
+				#[new EqualityExporter(this), new UnequalityExporter(this), new BinaryOperatorExporter(this)]
 			PrefixExpression:
 				#[new PrefixPlusExporter(this), new PrefixOperatorExporter(this)]
 			PostfixExpression:

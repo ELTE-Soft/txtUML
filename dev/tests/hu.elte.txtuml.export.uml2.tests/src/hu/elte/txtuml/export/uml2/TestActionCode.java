@@ -25,6 +25,7 @@ import org.eclipse.uml2.uml.SequenceNode;
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.StartObjectBehaviorAction;
 import org.eclipse.uml2.uml.State;
+import org.eclipse.uml2.uml.TestIdentityAction;
 import org.eclipse.uml2.uml.Transition;
 import org.eclipse.uml2.uml.ValueSpecificationAction;
 import org.junit.BeforeClass;
@@ -240,6 +241,29 @@ public class TestActionCode extends UMLExportTestBase {
 		SequenceNode stmt = node(body, 0, "3;", SequenceNode.class);
 		SequenceNode valueOfNode = node(stmt, 0, "3", SequenceNode.class);
 		node(valueOfNode, 0, "3", ValueSpecificationAction.class);
+	}	
+	
+	@Test
+	public void testEquality() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.equalities");
+
+		SequenceNode body = loadActionCode(model, "TestClass", "testEquality");
+		node(body, 0, "\"Fdf\"", ValueSpecificationAction.class);
+		node(body, 1, "\"Str\"", ValueSpecificationAction.class);
+		node(body, 2, "\"Fdf\"==\"Str\"", TestIdentityAction.class);
+		node(body, 3, "b=\"Fdf\"==\"Str\"", AddVariableValueAction.class);
+	}	
+	
+	@Test
+	public void testInequality() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.equalities");
+
+		SequenceNode body = loadActionCode(model, "TestClass", "testInequality");
+		node(body, 0, "\"Fdf\"", ValueSpecificationAction.class);
+		node(body, 1, "\"Str\"", ValueSpecificationAction.class);
+		node(body, 2, "\"Fdf\"==\"Str\"", TestIdentityAction.class);
+		node(body, 3, "!\"Fdf\"==\"Str\"", CallOperationAction.class);
+		node(body, 4, "b=!\"Fdf\"==\"Str\"", AddVariableValueAction.class);
 	}	
 
 }

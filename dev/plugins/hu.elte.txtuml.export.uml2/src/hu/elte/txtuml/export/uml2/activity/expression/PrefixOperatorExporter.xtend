@@ -59,6 +59,10 @@ class PrefixOperatorExporter extends OperatorExporter<PrefixExpression> {
 
 	def logicalNot(Action expr) {
 		val act = factory.createCallOperationAction
+		finishLogicalNot(act, expr)
+	}
+	
+	def finishLogicalNot(CallOperationAction act, Action expr) {
 		val operator = getImportedOperation("BooleanOperations", "not")
 		act.name = '''!«expr.name»'''
 		finishOperation(act, expr, operator)

@@ -42,12 +42,6 @@ class BinaryOperatorExporter extends ActionExporter<InfixExpression, CallOperati
 				lessEqualsOp
 			case Operator.GREATER_EQUALS:
 				greaterEqualsOp
-			case Operator.EQUALS:
-				switch argType.name {
-					case "int": integerEqOp
-					case "bool": boolEqOp
-					default: objectEqOp
-				}
 			case Operator.NOT_EQUALS:
 				switch argType.name {
 					case "int": integerNotEqualsOp
@@ -101,12 +95,6 @@ class BinaryOperatorExporter extends ActionExporter<InfixExpression, CallOperati
 	def lessEqualsOp() { getImportedOperation("IntegerOperations", "leq") }
 
 	def greaterEqualsOp() { getImportedOperation("IntegerOperations", "geq") }
-
-	def integerEqOp() { getImportedOperation("IntegerOperations", "eq") }
-
-	def boolEqOp() { getImportedOperation("BooleanOperations", "eq") }
-
-	def objectEqOp() { getImportedOperation("ObjectOperations", "eq") }
 
 	def integerNotEqualsOp() { getImportedOperation("IntegerOperations", "neq") }
 
