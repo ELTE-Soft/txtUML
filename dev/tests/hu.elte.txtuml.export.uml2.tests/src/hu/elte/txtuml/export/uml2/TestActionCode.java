@@ -265,5 +265,12 @@ public class TestActionCode extends UMLExportTestBase {
 		node(body, 3, "!\"Fdf\"==\"Str\"", CallOperationAction.class);
 		node(body, 4, "b=!\"Fdf\"==\"Str\"", AddVariableValueAction.class);
 	}	
+	
+	@Test
+	public void testImplicitCtorInvoke() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.ctors");
+		SequenceNode body = loadActionCode(model, "ClassExtending", "ClassExtending");
+		node(body, 0, "ClassWithCtors()", CallOperationAction.class);
+	}
 
 }

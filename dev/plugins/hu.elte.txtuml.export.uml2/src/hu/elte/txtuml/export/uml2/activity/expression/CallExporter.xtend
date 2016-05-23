@@ -43,6 +43,13 @@ abstract class CallExporter<T> extends ActionExporter<T, CallOperationAction> {
 		}
 	}
 
+	def createCall(IMethodBinding binding, Action base, Iterable<Expression> args) {
+		val call = factory.createCallOperationAction
+		createCallFromActions(call, binding, base, args.map[exportExpression])
+		storeNode(call)
+		return call
+	}
+
 	def createCall(CallOperationAction call, IMethodBinding binding, Action base, Iterable<Expression> args) {
 		createCallFromActions(call, binding, base, args.map[exportExpression])
 	}
