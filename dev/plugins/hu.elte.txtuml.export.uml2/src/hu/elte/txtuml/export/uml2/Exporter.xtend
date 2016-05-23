@@ -116,6 +116,7 @@ import org.eclipse.uml2.uml.ExecutableNode
 import org.eclipse.uml2.uml.PackageableElement
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
+import hu.elte.txtuml.export.uml2.activity.apicalls.CountExporter
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -236,6 +237,7 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 					new DeleteActionExporter(this),
 					new StartActionExporter(this),
 					new SelectionExporter(this),
+					new CountExporter(this),
 					new GetSignalExporter(this),
 					new IgnoredAPICallExporter(this)
 				]
