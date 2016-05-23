@@ -111,6 +111,9 @@ import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
 import hu.elte.txtuml.export.uml2.structural.InPortExporter
 import hu.elte.txtuml.export.uml2.structural.OutPortExporter
+import hu.elte.txtuml.export.uml2.activity.apicalls.PrimitiveToStringExporter
+import hu.elte.txtuml.export.uml2.activity.apicalls.ToStringExporter
+import hu.elte.txtuml.export.uml2.activity.apicalls.AutoboxExporter
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -218,6 +221,9 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 				#[new BlockExporter(this)]
 			MethodInvocation:
 				#[
+					new ToStringExporter(this),
+					new PrimitiveToStringExporter(this),
+					new AutoboxExporter(this),
 					new MethodCallExporter(this),
 					new ReadLinkActionExporter(this),
 					new LogActionExporter(this),

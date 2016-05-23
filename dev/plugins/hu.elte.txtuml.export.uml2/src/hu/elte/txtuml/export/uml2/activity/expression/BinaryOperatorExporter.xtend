@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.uml2.activity.expression
 
 import hu.elte.txtuml.export.uml2.BaseExporter
 import hu.elte.txtuml.export.uml2.activity.ActionExporter
+import hu.elte.txtuml.export.uml2.activity.apicalls.ToStringExporter
 import org.eclipse.jdt.core.dom.InfixExpression
 import org.eclipse.jdt.core.dom.InfixExpression.Operator
 import org.eclipse.uml2.uml.Action
@@ -54,10 +55,27 @@ class BinaryOperatorExporter extends ActionExporter<InfixExpression, CallOperati
 					default: objectNotEqualsOp
 				}
 		}
+		if (operator == concatOp) {
+			handleAutoConversion(source, operator)
+		}
 		val left = exportExpression(source.leftOperand)
 		val right = exportExpression(source.rightOperand)
 		finishOperator(result, source.operator.toString, operator, left, right)
 	}
+	
+	def handleAutoConversion(InfixExpression source, Operation operator) {
+		val left = autoToString(exportExpression(source.leftOperand))
+		val right = autoToString(exportExpression(source.rightOperand))
+		finishOperator(result, source.operator.toString, operator, left, right)
+	}
+	
+	def autoToString(Action action) {
+		if (action.result.type.name == "String") {
+			return action
+		} else {
+			new ToStringExporter(this).createToString(action)
+		}
+	}	
 
 	def minusOp() { getImportedOperation("IntegerOperations", "sub") }
 
