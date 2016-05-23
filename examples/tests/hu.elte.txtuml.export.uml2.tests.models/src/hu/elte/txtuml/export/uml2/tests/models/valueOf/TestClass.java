@@ -4,7 +4,7 @@ import hu.elte.txtuml.api.model.ModelClass;
 
 public class TestClass extends ModelClass {
 	
-	public void testToString() {
-		Integer a = Integer.valueOf(3);
+	public void testValueOf() {
+		Integer.valueOf(3);
 	}
 }

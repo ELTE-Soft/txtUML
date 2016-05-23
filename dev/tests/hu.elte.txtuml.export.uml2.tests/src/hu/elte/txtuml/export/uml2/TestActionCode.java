@@ -199,5 +199,47 @@ public class TestActionCode extends UMLExportTestBase {
 		node(logStmt, 0, "inst", ReadVariableAction.class);
 		node(logStmt, 1, "start inst", StartObjectBehaviorAction.class);
 	}	
+	
+	@Test
+	public void testToString() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.toString");
+
+		SequenceNode body = loadActionCode(model, "TestClass", "testToString");
+		SequenceNode toStringStmt = node(body, 0, "sut.toString;", SequenceNode.class);
+		node(toStringStmt, 0, "sut", ReadVariableAction.class);
+		node(toStringStmt, 1, "sut.toString", CallOperationAction.class);
+	}	
+	
+	@Test
+	public void testPrimitiveToString() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.toString");
+
+		SequenceNode body = loadActionCode(model, "TestClass", "testPrimitiveToString");
+		SequenceNode toStringStmt = node(body, 0, "3.toString;", SequenceNode.class);
+		node(toStringStmt, 0, "3", ValueSpecificationAction.class);
+		node(toStringStmt, 1, "3.toString", CallOperationAction.class);
+	}
+	
+	@Test
+	public void testAutoToString() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.toString");
+
+		SequenceNode body = loadActionCode(model, "TestClass", "testAuto");
+		node(body, 0, "\"a\"", ValueSpecificationAction.class);
+		node(body, 1, "3", ValueSpecificationAction.class);
+		node(body, 2, "3.toString", CallOperationAction.class);
+		node(body, 3, "\"a\"+3.toString", CallOperationAction.class);
+		node(body, 4, "a=\"a\"+3.toString", AddVariableValueAction.class);
+	}	
+	
+	@Test
+	public void testValueOf() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.valueOf");
+
+		SequenceNode body = loadActionCode(model, "TestClass", "testValueOf");
+		SequenceNode stmt = node(body, 0, "3;", SequenceNode.class);
+		SequenceNode valueOfNode = node(stmt, 0, "3", SequenceNode.class);
+		node(valueOfNode, 0, "3", ValueSpecificationAction.class);
+	}	
 
 }

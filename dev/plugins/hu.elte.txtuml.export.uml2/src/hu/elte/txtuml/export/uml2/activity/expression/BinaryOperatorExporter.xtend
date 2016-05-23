@@ -57,10 +57,11 @@ class BinaryOperatorExporter extends ActionExporter<InfixExpression, CallOperati
 		}
 		if (operator == concatOp) {
 			handleAutoConversion(source, operator)
+		} else {
+			val left = exportExpression(source.leftOperand)
+			val right = exportExpression(source.rightOperand)
+			finishOperator(result, source.operator.toString, operator, left, right)
 		}
-		val left = exportExpression(source.leftOperand)
-		val right = exportExpression(source.rightOperand)
-		finishOperator(result, source.operator.toString, operator, left, right)
 	}
 	
 	def handleAutoConversion(InfixExpression source, Operation operator) {
