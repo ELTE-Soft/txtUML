@@ -379,6 +379,20 @@
         </ownedParameter>
       </ownedTemplateSignature>
     </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_i2CYECC9EeaOft3ZDJwTtA" name="toString" isStatic="true">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_i2CYESC9EeaOft3ZDJwTtA" name="inp" type="_4jBEcAY7Eeae1rX0uG0rnw">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_i2CYEiC9EeaOft3ZDJwTtA" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_i2CYEyC9EeaOft3ZDJwTtA" value="1"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_i2CYFCC9EeaOft3ZDJwTtA" name="res" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedParameter>
+      <ownedTemplateSignature xmi:type="uml:TemplateSignature" xmi:id="_i2CYFSC9EeaOft3ZDJwTtA" parameter="_EIepICC-EeaOft3ZDJwTtA">
+        <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="_EIepICC-EeaOft3ZDJwTtA" parameteredElement="_SJAkoCC-EeaOft3ZDJwTtA">
+          <ownedParameteredElement xmi:type="uml:Class" xmi:id="_SJAkoCC-EeaOft3ZDJwTtA" name="E" templateParameter="_EIepICC-EeaOft3ZDJwTtA"/>
+        </ownedParameter>
+      </ownedTemplateSignature>
+    </ownedOperation>
   </packagedElement>
   <packagedElement xmi:type="uml:Class" xmi:id="_DJzhUNpoEeWuz-p1tuEm5Q" name="hu.elte.txtuml.api.model.Collection"/>
   <packagedElement xmi:type="uml:Class" xmi:id="_DubAAArpEeapa4Ow9IdZzQ" name="SignalOperations">
