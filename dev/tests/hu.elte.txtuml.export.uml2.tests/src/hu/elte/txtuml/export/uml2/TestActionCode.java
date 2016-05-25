@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.ActivityParameterNode;
 import org.eclipse.uml2.uml.AddStructuralFeatureValueAction;
 import org.eclipse.uml2.uml.AddVariableValueAction;
 import org.eclipse.uml2.uml.CallOperationAction;
@@ -24,6 +25,7 @@ import org.eclipse.uml2.uml.SequenceNode;
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.StartObjectBehaviorAction;
 import org.eclipse.uml2.uml.State;
+import org.eclipse.uml2.uml.TestIdentityAction;
 import org.eclipse.uml2.uml.Transition;
 import org.eclipse.uml2.uml.ValueSpecificationAction;
 import org.junit.BeforeClass;
@@ -182,7 +184,9 @@ public class TestActionCode extends UMLExportTestBase {
 		SequenceNode effectBody = getActivityBody((Activity) tr1.getEffect());
 		node(effectBody, 0, "Action.log(\"Init -> S1\");", SequenceNode.class);
 		Transition tr2 = transition(reg, s1, s1, sig);
-		SequenceNode guardBody = getActivityBody(getGuardActivity(tr2));
+		Activity guardActivity = getGuardActivity(tr2);
+		node(guardActivity, 2, "return", ActivityParameterNode.class);
+		SequenceNode guardBody = getActivityBody(guardActivity);
 		node(guardBody, 0, "return false", SequenceNode.class);
 	}
 
@@ -196,5 +200,77 @@ public class TestActionCode extends UMLExportTestBase {
 		node(logStmt, 0, "inst", ReadVariableAction.class);
 		node(logStmt, 1, "start inst", StartObjectBehaviorAction.class);
 	}	
+	
+	@Test
+	public void testToString() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.toString");
+
+		SequenceNode body = loadActionCode(model, "TestClass", "testToString");
+		SequenceNode toStringStmt = node(body, 0, "sut.toString;", SequenceNode.class);
+		node(toStringStmt, 0, "sut", ReadVariableAction.class);
+		node(toStringStmt, 1, "sut.toString", CallOperationAction.class);
+	}	
+	
+	@Test
+	public void testPrimitiveToString() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.toString");
+
+		SequenceNode body = loadActionCode(model, "TestClass", "testPrimitiveToString");
+		SequenceNode toStringStmt = node(body, 0, "3.toString;", SequenceNode.class);
+		node(toStringStmt, 0, "3", ValueSpecificationAction.class);
+		node(toStringStmt, 1, "3.toString", CallOperationAction.class);
+	}
+	
+	@Test
+	public void testAutoToString() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.toString");
+
+		SequenceNode body = loadActionCode(model, "TestClass", "testAuto");
+		node(body, 0, "\"a\"", ValueSpecificationAction.class);
+		node(body, 1, "3", ValueSpecificationAction.class);
+		node(body, 2, "3.toString", CallOperationAction.class);
+		node(body, 3, "\"a\"+3.toString", CallOperationAction.class);
+		node(body, 4, "a=\"a\"+3.toString", AddVariableValueAction.class);
+	}	
+	
+	@Test
+	public void testValueOf() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.valueOf");
+
+		SequenceNode body = loadActionCode(model, "TestClass", "testValueOf");
+		SequenceNode stmt = node(body, 0, "3;", SequenceNode.class);
+		SequenceNode valueOfNode = node(stmt, 0, "3", SequenceNode.class);
+		node(valueOfNode, 0, "3", ValueSpecificationAction.class);
+	}	
+	
+	@Test
+	public void testEquality() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.equalities");
+
+		SequenceNode body = loadActionCode(model, "TestClass", "testEquality");
+		node(body, 0, "\"Fdf\"", ValueSpecificationAction.class);
+		node(body, 1, "\"Str\"", ValueSpecificationAction.class);
+		node(body, 2, "\"Fdf\"==\"Str\"", TestIdentityAction.class);
+		node(body, 3, "b=\"Fdf\"==\"Str\"", AddVariableValueAction.class);
+	}	
+	
+	@Test
+	public void testInequality() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.equalities");
+
+		SequenceNode body = loadActionCode(model, "TestClass", "testInequality");
+		node(body, 0, "\"Fdf\"", ValueSpecificationAction.class);
+		node(body, 1, "\"Str\"", ValueSpecificationAction.class);
+		node(body, 2, "\"Fdf\"==\"Str\"", TestIdentityAction.class);
+		node(body, 3, "!\"Fdf\"==\"Str\"", CallOperationAction.class);
+		node(body, 4, "b=!\"Fdf\"==\"Str\"", AddVariableValueAction.class);
+	}	
+	
+	@Test
+	public void testImplicitCtorInvoke() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.ctors");
+		SequenceNode body = loadActionCode(model, "ClassExtending", "ClassExtending");
+		node(body, 0, "ClassWithCtors()", CallOperationAction.class);
+	}
 
 }

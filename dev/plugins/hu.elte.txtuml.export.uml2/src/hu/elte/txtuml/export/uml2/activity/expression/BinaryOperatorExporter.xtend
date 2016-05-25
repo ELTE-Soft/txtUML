@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.uml2.activity.expression
 
 import hu.elte.txtuml.export.uml2.BaseExporter
 import hu.elte.txtuml.export.uml2.activity.ActionExporter
+import hu.elte.txtuml.export.uml2.activity.apicalls.ToStringExporter
 import org.eclipse.jdt.core.dom.InfixExpression
 import org.eclipse.jdt.core.dom.InfixExpression.Operator
 import org.eclipse.uml2.uml.Action
@@ -41,12 +42,6 @@ class BinaryOperatorExporter extends ActionExporter<InfixExpression, CallOperati
 				lessEqualsOp
 			case Operator.GREATER_EQUALS:
 				greaterEqualsOp
-			case Operator.EQUALS:
-				switch argType.name {
-					case "int": integerEqOp
-					case "bool": boolEqOp
-					default: objectEqOp
-				}
 			case Operator.NOT_EQUALS:
 				switch argType.name {
 					case "int": integerNotEqualsOp
@@ -54,10 +49,28 @@ class BinaryOperatorExporter extends ActionExporter<InfixExpression, CallOperati
 					default: objectNotEqualsOp
 				}
 		}
-		val left = exportExpression(source.leftOperand)
-		val right = exportExpression(source.rightOperand)
+		if (operator == concatOp) {
+			handleAutoConversion(source, operator)
+		} else {
+			val left = exportExpression(source.leftOperand)
+			val right = exportExpression(source.rightOperand)
+			finishOperator(result, source.operator.toString, operator, left, right)
+		}
+	}
+	
+	def handleAutoConversion(InfixExpression source, Operation operator) {
+		val left = autoToString(exportExpression(source.leftOperand))
+		val right = autoToString(exportExpression(source.rightOperand))
 		finishOperator(result, source.operator.toString, operator, left, right)
 	}
+	
+	def autoToString(Action action) {
+		if (action.result.type.name == "String") {
+			return action
+		} else {
+			new ToStringExporter(this).createToString(action)
+		}
+	}	
 
 	def minusOp() { getImportedOperation("IntegerOperations", "sub") }
 
@@ -82,12 +95,6 @@ class BinaryOperatorExporter extends ActionExporter<InfixExpression, CallOperati
 	def lessEqualsOp() { getImportedOperation("IntegerOperations", "leq") }
 
 	def greaterEqualsOp() { getImportedOperation("IntegerOperations", "geq") }
-
-	def integerEqOp() { getImportedOperation("IntegerOperations", "eq") }
-
-	def boolEqOp() { getImportedOperation("BooleanOperations", "eq") }
-
-	def objectEqOp() { getImportedOperation("ObjectOperations", "eq") }
 
 	def integerNotEqualsOp() { getImportedOperation("IntegerOperations", "neq") }
 
