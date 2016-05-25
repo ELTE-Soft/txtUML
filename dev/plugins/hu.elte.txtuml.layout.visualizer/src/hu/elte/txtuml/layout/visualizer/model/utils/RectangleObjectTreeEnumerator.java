@@ -2,6 +2,7 @@ package hu.elte.txtuml.layout.visualizer.model.utils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
@@ -45,7 +46,11 @@ public class RectangleObjectTreeEnumerator implements Iterable<RectangleObject>,
 
 	@Override
 	public RectangleObject next() {
-		++currentIndex;
-		return _objects.get(currentIndex);
+		if(!this.hasNext()) {
+            throw new NoSuchElementException();
+        }
+        
+		//++currentIndex;
+		return _objects.get(currentIndex++);
 	}
 }

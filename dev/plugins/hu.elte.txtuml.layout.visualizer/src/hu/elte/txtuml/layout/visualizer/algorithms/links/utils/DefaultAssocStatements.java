@@ -42,12 +42,12 @@ public class DefaultAssocStatements {
 	 *             Throws if the algorithm encounters a value that should not
 	 *             have reached that part. Contact programmer for more details.
 	 */
-	public DefaultAssocStatements(Integer gid, List<Statement> stat, List<LineAssociation> assocs)
+	public DefaultAssocStatements(Integer gid, List<Statement> stat, Set<LineAssociation> assocs)
 			throws InternalException {
 		_result = stat;
 		_gId = gid;
 
-		predefinePriorities(assocs);
+		//predefinePriorities(assocs);
 	}
 
 	/**
@@ -68,6 +68,7 @@ public class DefaultAssocStatements {
 		return _result;
 	}
 
+	@SuppressWarnings("all")
 	private void predefinePriorities(List<LineAssociation> assocs) throws InternalException {
 		// select min priority
 		Set<Statement> priorities = _result.stream().filter(s -> s.getType().equals(StatementType.priority))

@@ -9,14 +9,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils.Graph;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils.Link;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils.Graph;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils.Link;
 import hu.elte.txtuml.layout.visualizer.algorithms.utils.BreathFirstSearch.LabelType;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.model.SpecialBox;
+import hu.elte.txtuml.layout.visualizer.model.utils.RectangleObjectTreeEnumerator;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementLevel;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
@@ -25,6 +26,7 @@ import hu.elte.txtuml.layout.visualizer.statements.StatementType;
  * This class generates the necessary default statements to auto layout a
  * diagram.
  */
+// TODO: Refactor this
 public class DefaultStatements {
 
 	/**
@@ -97,60 +99,67 @@ public class DefaultStatements {
 	/**
 	 * Run command for the generation of default statements.
 	 * 
-	 * @param os
+	 * @param objects
 	 *            Set of objects in the diagram.
-	 * @param as
+	 * @param links
 	 *            Set of links in the diagram.
-	 * @param ss
+	 * @param statements
 	 *            List of statements.
 	 * @throws InternalException
 	 *             Throws if some algorithm related error occurs. Contact with
 	 *             your programmer in the nearest zoo for more details.
 	 */
-	private void defaultClass(Set<RectangleObject> os, Set<LineAssociation> as, List<Statement> ss)
+	private void defaultClass(Set<RectangleObject> objects, Set<LineAssociation> links, List<Statement> statements)
 			throws InternalException {
+		
 		// Assamble access table
 		HashMap<String, HashSet<String>> accesses = new HashMap<String, HashSet<String>>();
-		for (RectangleObject o : os) {
-			accesses.put(o.getName(), new HashSet<String>());
+		HashMap<String, String> parent = new HashMap<String, String>();
+		for (RectangleObject box : objects) {
+			accesses.put(box.getName(), new HashSet<String>());
+			if (box.hasInner()) {
+				for (RectangleObject innerBox : new RectangleObjectTreeEnumerator(box.getInner().Objects)) {
+					parent.put(innerBox.getName(), box.getName());
+				}
+			}
 		}
 
-		for (LineAssociation a : as) {
+		for (LineAssociation link : links) {
 			// if (a.isReflexive())
 			// continue;
 
-			HashSet<String> tempF = accesses.get(a.getFrom());
-			if (!tempF.contains(a.getTo())) {
-				tempF.add(a.getTo());
-				accesses.put(a.getFrom(), tempF);
-			}
+			accesses = putAccess(link.getFrom(), link.getTo(), accesses, parent);
 
-			HashSet<String> tempT = accesses.get(a.getTo());
-			if (!tempT.contains(a.getFrom())) {
-				tempT.add(a.getFrom());
-				accesses.put(a.getTo(), tempT);
-			}
+			accesses = putAccess(link.getTo(), link.getFrom(), accesses, parent);
 		}
 
-		for (Statement s : ss) {
-			if (!StatementType.isOnObjects(s.getType()))
+		for (Statement statement : statements) {
+			if (!statement.getType().isOnObjects())
 				continue;
 
-			HashSet<String> tempF = accesses.get(s.getParameter(0));
-			if (!tempF.contains(s.getParameter(1))) {
-				tempF.add(s.getParameter(1));
-				accesses.put(s.getParameter(0), tempF);
-			}
+			accesses = putAccess(statement.getParameter(0), statement.getParameter(1), accesses, parent);
 
-			HashSet<String> tempT = accesses.get(s.getParameter(1));
-			if (!tempT.contains(s.getParameter(0))) {
-				tempT.add(s.getParameter(0));
-				accesses.put(s.getParameter(1), tempT);
-			}
+			accesses = putAccess(statement.getParameter(1), statement.getParameter(0), accesses, parent);
 		}
 
 		// Detect groups, arrange groups, arrange in groups
 		_statements.addAll(detectGroups(accesses));
+	}
+
+	private HashMap<String, HashSet<String>> putAccess(final String target1, final String target2,
+			final HashMap<String, HashSet<String>> accesses, final HashMap<String, String> parent) {
+		HashMap<String, HashSet<String>> result = new HashMap<String, HashSet<String>>(accesses);
+
+		HashSet<String> temp = accesses.get(target1);
+		if (temp == null) {
+			temp = accesses.get(parent.get(target1));
+		}
+		if (!temp.contains(target2)) {
+			temp.add(target2);
+			result.put(target1, temp);
+		}
+
+		return result;
 	}
 
 	/**
@@ -233,72 +242,64 @@ public class DefaultStatements {
 		return result;
 	}
 
-	private void defaultState(Set<RectangleObject> os, Set<LineAssociation> as, List<Statement> ss) throws InternalException {
+	private void defaultState(Set<RectangleObject> os, Set<LineAssociation> as, List<Statement> ss)
+			throws InternalException {
 		// Initial node on top left
 		Optional<RectangleObject> initial_element = os.stream().filter(o -> o.getSpecial().equals(SpecialBox.Initial))
 				.findFirst();
 		if (initial_element.isPresent()) {
 			++_gId;
 			for (RectangleObject otherBox : os) {
-				if(otherBox.getName().equals(initial_element.get().getName()))
+				if (otherBox.getName().equals(initial_element.get().getName()))
 					continue;
-				
+
 				_statements.add(new Statement(StatementType.north, StatementLevel.Medium, _gId,
 						initial_element.get().getName(), otherBox.getName()));
 			}
 		}
-		
+
 		// States in one row
-		Optional<RectangleObject> noInTransition = 
-				os.stream().filter(o -> (as.stream()
-						.filter(a -> a.getTo().equals(o.getName())).count()) == 0)
-				.findFirst();
-		
+		Optional<RectangleObject> noInTransition = os.stream()
+				.filter(o -> (as.stream().filter(a -> a.getTo().equals(o.getName())).count()) == 0).findFirst();
+
 		String first;
 		String before;
-		if(noInTransition.isPresent())
-		{
+		if (noInTransition.isPresent()) {
 			first = noInTransition.get().getName();
-		}
-		else
-		{
+		} else {
 			first = os.stream().findFirst().get().getName();
 		}
-		
+
 		before = first;
 		++_gId;
-		for(RectangleObject box : os)
-		{
-			if(box.getName().equals(first))
+		for (RectangleObject box : os) {
+			if (box.getName().equals(first))
 				continue;
-			
-			_statements.add(new Statement(StatementType.left, StatementLevel.High,
-					_gId, before, box.getName()));
-			
+
+			_statements.add(new Statement(StatementType.left, StatementLevel.High, _gId, before, box.getName()));
+
 			before = box.getName();
 		}
-		
+
 		// Forks
-		for(RectangleObject box : os)
-		{
-			if(box.getSpecial().equals(SpecialBox.Choice))
-			{
-				for(LineAssociation linkToChoice : as.stream().filter(a -> a.getTo().equals(box.getName())).collect(Collectors.toList()))
-				{
+		for (RectangleObject box : os) {
+			if (box.getSpecial().equals(SpecialBox.Choice)) {
+				for (LineAssociation linkToChoice : as.stream().filter(a -> a.getTo().equals(box.getName()))
+						.collect(Collectors.toList())) {
 					++_gId;
-					_statements.add(new Statement(StatementType.north, StatementLevel.Medium, 
-							_gId, linkToChoice.getId(), box.getName()));
+					_statements.add(new Statement(StatementType.north, StatementLevel.Medium, _gId,
+							linkToChoice.getId(), box.getName()));
 				}
-				
-				for(LineAssociation linkToChoice : as.stream().filter(a -> a.getFrom().equals(box.getName())).collect(Collectors.toList()))
-				{
+
+				for (LineAssociation linkToChoice : as.stream().filter(a -> a.getFrom().equals(box.getName()))
+						.collect(Collectors.toList())) {
 					++_gId;
-					_statements.add(new Statement(StatementType.south, StatementLevel.Medium, 
-							_gId, linkToChoice.getId(), box.getName()));
+					_statements.add(new Statement(StatementType.south, StatementLevel.Medium, _gId,
+							linkToChoice.getId(), box.getName()));
 				}
 			}
 		}
-		
+
 	}
 
 }

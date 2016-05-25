@@ -1,7 +1,6 @@
-package hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils;
+package hu.elte.txtuml.layout.visualizer.model;
 
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
-import hu.elte.txtuml.layout.visualizer.model.Point;
 
 /**
  * This class represents the bounds of a diagram.
@@ -63,7 +62,7 @@ public class Boundary
 	 * @throws InternalException
 	 *             Throws if the bounds are not correct (negative interval).
 	 */
-	public Boundary(Point tl, Point br) throws InternalException
+	public Boundary(Point tl, Point br)
 	{
 		this(tl.getY(), br.getY(), tl.getX(), br.getX());
 	}
@@ -83,15 +82,19 @@ public class Boundary
 	 *             Throws if the bounds are not correct (negative interval).
 	 */
 	public Boundary(Integer t, Integer b, Integer l, Integer r)
-			throws InternalException
 	{
 		_top = t;
 		_bottom = b;
 		_left = l;
 		_right = r;
-		
-		if (_top < _bottom || _left > _right)
-			throw new InternalException("Bounds are not correct!");
+	}
+	
+	public Boundary(final Boundary other)
+	{
+		_top = new Integer(other._top);
+		_bottom = new Integer(other._bottom);
+		_left = new Integer(other._left);
+		_right = new Integer(other._right);
 	}
 	
 	/**
@@ -127,14 +130,14 @@ public class Boundary
 	 * @param fallback
 	 *            value to expand the boundary by minimum
 	 */
-	public void addError(Integer percent, Integer fallback)
+	public void addError(Integer percent, Integer fallback_w, Integer fallback_h)
 	{
 		Integer extraWidth = (int) ((_right - _left) * (percent / 100.0));
-		if (extraWidth < fallback)
-			extraWidth = fallback;
+		if (extraWidth < fallback_w)
+			extraWidth = fallback_w;
 		Integer extraHeight = (int) ((_top - _bottom) * (percent / 100.0));
-		if (extraHeight < fallback)
-			extraHeight = fallback;
+		if (extraHeight < fallback_h)
+			extraHeight = fallback_h;
 		
 		_top = _top + extraHeight;
 		_bottom = _bottom - extraHeight;

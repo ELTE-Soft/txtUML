@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
-import hu.elte.txtuml.layout.visualizer.algorithms.utils.Helper;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
@@ -58,7 +57,7 @@ public class OverlapHelper
 						o2.getPosition()))
 				{
 					++gid;
-					Statement s = new Statement(Helper.asStatementType(dir),
+					Statement s = new Statement(dir.asStatementType(),
 							StatementLevel.Low, gid, o1.getName(), o2.getName());
 					if (!old.contains(s))
 						result.add(s);

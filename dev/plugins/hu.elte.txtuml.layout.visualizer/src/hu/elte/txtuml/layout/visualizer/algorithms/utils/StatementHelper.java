@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
-import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
 import hu.elte.txtuml.layout.visualizer.exceptions.StatementsConflictException;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
@@ -25,6 +24,7 @@ import hu.elte.txtuml.utils.Pair;
  * This static class handles a variety of {@link Statement} related support
  * features.
  */
+//TODO: Refactor this
 public class StatementHelper {
 	/**
 	 * Returns the {@link Statement}s defined on {@link LineAssociation}s.
@@ -36,71 +36,10 @@ public class StatementHelper {
 	 * @return the {@link Statement}s defined on {@link LineAssociation}s.
 	 */
 	public static List<Statement> splitAssocs(List<Statement> stats, Set<LineAssociation> assocs) {
-		return stats.stream().filter(s -> isAssocType(s.getType()) && isAssocParams(s.getParameters(), assocs))
+		return stats.stream().filter(s -> s.getType().isAssocType() && isAssocParams(s.getParameters(), assocs))
 				.collect(Collectors.toList());
 	}
-
-	/**
-	 * Checks the parameter types of the {@link Statement}s provided.
-	 * 
-	 * @param stats
-	 *            list of {@link Statement}s on objects/boxes to check.
-	 * @param astats
-	 *            list of {@link Statement}s on links to check.
-	 * @param objs
-	 *            set of objects/boxes in the diagram.
-	 * @param assocs
-	 *            set of links in the diagram.
-	 * @return true if all of the {@link Statement}s have correctly typed
-	 *         parameters according to the elements in the diagram.
-	 * @throws StatementTypeMatchException
-	 *             Throws if one of the {@link Statement}s have incorrect
-	 *             parameters.
-	 * @throws InternalException
-	 *             Throws if something bad happens, but it should not be allowed
-	 *             to happen.
-	 */
-	public static boolean checkTypes(List<Statement> stats, List<Statement> astats, Set<RectangleObject> objs,
-			Set<LineAssociation> assocs) throws StatementTypeMatchException, InternalException {
-		// Check Object Statement Types
-		for (Statement s : stats) {
-			if (!StatementHelper.isTypeChecked(s, objs, assocs))
-				throw new StatementTypeMatchException("Types not match at statement: " + s.toString() + "!");
-		}
-		// Check Association Statement Types
-		for (Statement s : astats) {
-			if (!StatementHelper.isTypeChecked(s, objs, assocs))
-				throw new StatementTypeMatchException("Types not match at statement: " + s.toString() + "!");
-		}
-
-		return true;
-	}
-
-	private static boolean isAssocType(StatementType t) {
-		switch (t) {
-		case north:
-		case south:
-		case east:
-		case west:
-		case priority:
-			return true;
-		case above:
-		case below:
-		case horizontal:
-		case left:
-		case phantom:
-		case right:
-		case unknown:
-		case vertical:
-		case corridorsize:
-		case overlaparrange:
-		default:
-			break;
-		}
-
-		return false;
-	}
-
+	
 	private static boolean isAssocParams(List<String> p, Set<LineAssociation> as) {
 		return as.stream().anyMatch(a -> a.getId().equals(p.get(0)));
 	}
@@ -151,7 +90,7 @@ public class StatementHelper {
 				}
 
 				if (tempObj.containsKey(pair)) {
-					if (tempObj.get(pair).equals(Helper.asDirection(s.getType())))
+					if (tempObj.get(pair).equals(s.getType().asDirection()))
 						continue; // WARNING: Duplicate
 					else {
 						if (!s.isUserDefined())
@@ -161,7 +100,7 @@ public class StatementHelper {
 									"Too many statements on " + s.getParameter(0) + " link!");
 					}
 				} else {
-					tempObj.put(pair, Helper.asDirection(s.getType()));
+					tempObj.put(pair, s.getType().asDirection());
 					result.add(s);
 				}
 			}
@@ -181,66 +120,6 @@ public class StatementHelper {
 		return stats.stream().filter(s -> s.getType().equals(StatementType.phantom))
 				.map(s -> s.getParameter(0))
 				.collect(Collectors.toSet());
-	}
-
-	/**
-	 * Returns whether a specific {@link Statement} has correct parameters
-	 * according to the diagram or not.
-	 * 
-	 * @param st
-	 *            {@link Statement} to check.
-	 * @param ob
-	 *            set of objects/boxes in the diagram.
-	 * @param as
-	 *            set of links in the diagram.
-	 * @return true if the {@link Statement} st has correct parameters.
-	 * @throws InternalException
-	 *             Throws if something bad happens, which should not be allowed
-	 *             to happen.
-	 */
-	public static boolean isTypeChecked(Statement st, Set<RectangleObject> ob, Set<LineAssociation> as)
-			throws InternalException {
-		switch (st.getType()) {
-		case north:
-		case south:
-		case east:
-		case west:
-			// both type
-			if (ob.stream().anyMatch(o -> o.getName().equals(st.getParameter(0)))
-					&& ob.stream().anyMatch(o -> o.getName().equals(st.getParameter(1))))
-				return true;
-			else if (as.stream().anyMatch(a -> a.getId().equals(st.getParameter(0)))
-					&& ob.stream().anyMatch(o -> o.getName().equals(st.getParameter(1))))
-				return true;
-			break;
-		case above:
-		case below:
-		case right:
-		case left:
-		case horizontal:
-		case vertical:
-			// only object/box
-			if (ob.stream().anyMatch(o -> o.getName().equals(st.getParameter(0)))
-					&& ob.stream().anyMatch(o -> o.getName().equals(st.getParameter(1))))
-				return true;
-			break;
-		case priority:
-			// only assoc/link
-			if (as.stream().anyMatch(a -> a.getId().equals(st.getParameter(0)))
-					&& Helper.tryParseInt(st.getParameter(1)))
-				return true;
-			break;
-		case phantom:
-			if (ob.stream().anyMatch(o -> o.getName().equals(st.getParameter(0))))
-				return true;
-			break;
-		case unknown:
-		case corridorsize:
-		case overlaparrange:
-		default:
-			throw new InternalException("This statement should not reach this code: " + st.toString() + "!");
-		}
-		return false;
 	}
 
 	/**
@@ -333,53 +212,19 @@ public class StatementHelper {
 
 		return new Pair<List<Statement>, Integer>(result, gid);
 	}
-
-	/**
-	 * Returns the abstract complexity value of a {@link Statement}.
-	 * 
-	 * @param s
-	 *            {@link Statement} to check.
-	 * @return the abstract complexity value of a {@link Statement}.
-	 */
-	public static Integer getComplexity(Statement s) {
-		Integer result = 0;
-
-		switch (s.getLevel()) {
-		case User:
-			result = -100;
-			break;
-		case High:
-			result = 100;
-			break;
-		case Medium:
-			result = 50;
-			break;
-		case Low:
-			result = 10;
-			break;
+	
+	public static List<Statement> filterBoxStatements(final List<Statement> stats, final List<RectangleObject> objs)
+	{
+		List<Statement> result = new ArrayList<Statement>();
+		
+		for(Statement statement : stats)
+		{
+			if(objs.stream().anyMatch(box -> box.getName().equals(statement.getParameter(0)) || box.getName().equals(statement.getParameter(1)) ))
+			{
+				result.add(statement);
+			}
 		}
-
-		switch (s.getType()) {
-		case north:
-		case south:
-		case east:
-		case west:
-			return result + 5;
-		case above:
-		case below:
-		case right:
-		case left:
-			return result + 10;
-		case horizontal:
-		case vertical:
-			return result + 15;
-		case phantom:
-		case priority:
-		case unknown:
-		case corridorsize:
-		case overlaparrange:
-		default:
-			return result + 100;
-		}
+		
+		return result;
 	}
 }
