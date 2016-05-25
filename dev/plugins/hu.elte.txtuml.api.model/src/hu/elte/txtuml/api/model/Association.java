@@ -77,13 +77,7 @@ import hu.elte.txtuml.api.model.assocends.Navigability;
  * @see Association.HiddenSome
  * @see Association.HiddenMultiple
  */
-public class Association implements ModelElement {
-
-	/**
-	 * Sole constructor of <code>Association</code>.
-	 */
-	protected Association() {
-	}
+public abstract class Association {
 
 	/**
 	 * An immutable collection which contains the elements of a navigable
@@ -132,14 +126,8 @@ public class Association implements ModelElement {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class Many<T extends ModelClass> extends ManyBase<T>
+	public class Many<T extends ModelClass> extends ManyEnd<T>
 			implements Navigability.Navigable, Multiplicity.ZeroToUnlimited, ContainmentKind.SimpleEnd {
-
-		/**
-		 * Sole constructor of <code>Many</code>.
-		 */
-		protected Many() {
-		}
 
 	}
 
@@ -190,14 +178,8 @@ public class Association implements ModelElement {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class Some<T extends ModelClass> extends SomeBase<T>
+	public abstract class Some<T extends ModelClass> extends ManyEnd<T>
 			implements Navigability.Navigable, Multiplicity.OneToUnlimited, ContainmentKind.SimpleEnd {
-
-		/**
-		 * Sole constructor of <code>Some</code>.
-		 */
-		protected Some() {
-		}
 
 	}
 
@@ -248,14 +230,8 @@ public class Association implements ModelElement {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class MaybeOne<T extends ModelClass> extends MaybeOneBase<T>
+	public abstract class MaybeOne<T extends ModelClass> extends MaybeEnd<T>
 			implements Navigability.Navigable, Multiplicity.ZeroToOne, ContainmentKind.SimpleEnd {
-
-		/**
-		 * Sole constructor of <code>MaybeOne</code>.
-		 */
-		protected MaybeOne() {
-		}
 
 	}
 
@@ -306,14 +282,8 @@ public class Association implements ModelElement {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class One<T extends ModelClass> extends OneBase<T>
+	public abstract class One<T extends ModelClass> extends MaybeEnd<T>
 			implements Navigability.Navigable, Multiplicity.One, ContainmentKind.SimpleEnd {
-
-		/**
-		 * Sole constructor of <code>One</code>.
-		 */
-		protected One() {
-		}
 
 	}
 
@@ -377,14 +347,8 @@ public class Association implements ModelElement {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class Multiple<T extends ModelClass> extends MultipleBase<T>
+	public abstract class Multiple<T extends ModelClass> extends MultipleEnd<T>
 			implements Navigability.Navigable, Multiplicity.MinToMax, ContainmentKind.SimpleEnd {
-
-		/**
-		 * Sole constructor of <code>Multiple</code>.
-		 */
-		protected Multiple() {
-		}
 
 	}
 
@@ -436,14 +400,8 @@ public class Association implements ModelElement {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class HiddenMany<T extends ModelClass> extends ManyBase<T>
+	public abstract class HiddenMany<T extends ModelClass> extends ManyEnd<T>
 			implements Navigability.NonNavigable, Multiplicity.ZeroToUnlimited, ContainmentKind.SimpleEnd {
-
-		/**
-		 * Sole constructor of <code>HiddenMany</code>.
-		 */
-		protected HiddenMany() {
-		}
 
 	}
 
@@ -495,14 +453,8 @@ public class Association implements ModelElement {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class HiddenSome<T extends ModelClass> extends SomeBase<T>
+	public abstract class HiddenSome<T extends ModelClass> extends ManyEnd<T>
 			implements Navigability.NonNavigable, Multiplicity.OneToUnlimited, ContainmentKind.SimpleEnd {
-
-		/**
-		 * Sole constructor of <code>HiddenSome</code>.
-		 */
-		protected HiddenSome() {
-		}
 
 	}
 
@@ -554,14 +506,8 @@ public class Association implements ModelElement {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class HiddenMaybeOne<T extends ModelClass> extends MaybeOneBase<T>
+	public abstract class HiddenMaybeOne<T extends ModelClass> extends MaybeEnd<T>
 			implements Navigability.NonNavigable, Multiplicity.ZeroToOne, ContainmentKind.SimpleEnd {
-
-		/**
-		 * Sole constructor of <code>HiddenMaybeOne</code>.
-		 */
-		protected HiddenMaybeOne() {
-		}
 
 	}
 
@@ -612,14 +558,8 @@ public class Association implements ModelElement {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class HiddenOne<T extends ModelClass> extends OneBase<T>
+	public abstract class HiddenOne<T extends ModelClass> extends MaybeEnd<T>
 			implements Navigability.NonNavigable, Multiplicity.One, ContainmentKind.SimpleEnd {
-
-		/**
-		 * Sole constructor of <code>HiddenOne</code>.
-		 */
-		protected HiddenOne() {
-		}
 
 	}
 
@@ -671,14 +611,8 @@ public class Association implements ModelElement {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public class HiddenMultiple<T extends ModelClass> extends MultipleBase<T>
+	public abstract class HiddenMultiple<T extends ModelClass> extends MultipleEnd<T>
 			implements Navigability.NonNavigable, Multiplicity.MinToMax, ContainmentKind.SimpleEnd {
-
-		/**
-		 * Sole constructor of <code>HiddenMultiple</code>.
-		 */
-		protected HiddenMultiple() {
-		}
 
 	}
 }

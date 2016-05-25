@@ -28,7 +28,7 @@ class XtxtUMLImportedTypesCollector extends ImportedTypesCollector {
 	@Inject extension IJvmModelAssociations;
 	@Inject extension ILocationInFileProvider;
 
-	override collectAllReferences(EObject rootElement) {
+	override protected collectAllReferences(EObject rootElement) {
 		super.collectAllReferences(rootElement);
 
 		// explicit type declaration is required to avoid incorrect type inference
@@ -52,16 +52,16 @@ class XtxtUMLImportedTypesCollector extends ImportedTypesCollector {
 					references.add(next.endClass?.getPrimaryJvmElement as JvmType ->
 						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUAssociationEnd_EndClass, 0))
 				TUClassPropertyAccessExpression:
-					references.add(next.right?.getPrimaryJvmElement as JvmType ->
-						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Right, 0))
+					references.add(adjustedNestedClassReference(next.right?.getPrimaryJvmElement as JvmType,
+						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Right, 0)))
 				TUReception:
 					references.add(next.signal?.getPrimaryJvmElement as JvmType ->
 						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUReception_Signal, 0))
 				TUConnectorEnd: {
-					references.add(next.role?.getPrimaryJvmElement as JvmType ->
-						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUConnectorEnd_Role, 0))
-					references.add(next.port?.getPrimaryJvmElement as JvmType ->
-						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUConnectorEnd_Port, 0))
+					references.add(adjustedNestedClassReference(next.role?.getPrimaryJvmElement as JvmType,
+						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUConnectorEnd_Role, 0)))
+					references.add(adjustedNestedClassReference(next.port?.getPrimaryJvmElement as JvmType,
+						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUConnectorEnd_Port, 0)))
 				}
 				TUPortMember:
 					references.add(next.interface?.getPrimaryJvmElement as JvmType ->
@@ -72,34 +72,18 @@ class XtxtUMLImportedTypesCollector extends ImportedTypesCollector {
 			}
 
 			for (ref : references) {
-				var jvmType = ref.key;
-				var refRegion = ref.value;
-
-				/* Apart from the original type references, enclosing types shall be considered too.
-				 * For example, if A is imported, B is a nested class of A and A.B is referenced, then
-				 * A is used as well, and so on.
-				 */
-				while (jvmType != null && refRegion != null) {
-					acceptType(jvmType, refRegion);
-
-					val enclosingClassRefLength = refRegion.length - jvmType.simpleName.length - 1;
-					refRegion = if (enclosingClassRefLength > 0) {
-						new TextRegion(refRegion.offset, enclosingClassRefLength)
-					} else {
-						null
-					}
-
-					jvmType = jvmType.eContainer as JvmType;
+				if (ref.key != null && ref.value != null) {
+					acceptType(ref.key, ref.value);
 				}
 			}
 		}
 	}
 
-	/*
-	 * Copy of the super implementation, as the used isIgnored method needs customization,
-	 * but it is private. This comment not being documentation is intentional.
+	/**
+	 * Overrides the super implementation to accept types even in case of fully qualified name references.
+	 * This aspect is used to make fully qualified name references simplifiable during import organization.
 	 */
-	override acceptType(JvmType type, JvmType usedType, ITextRegion refRegion) {
+	override protected acceptType(JvmType type, JvmType usedType, ITextRegion refRegion) {
 		val currentContext = getCurrentContext();
 		if (currentContext == null) {
 			return;
@@ -109,32 +93,29 @@ class XtxtUMLImportedTypesCollector extends ImportedTypesCollector {
 			throw new IllegalArgumentException();
 		}
 
-		if (type instanceof JvmDeclaredType && !isIgnored(type, refRegion)) {
+		if (type instanceof JvmDeclaredType) {
 			getTypeUsages().addTypeUsage(type as JvmDeclaredType, usedType as JvmDeclaredType, refRegion,
 				currentContext);
 		}
 	}
 
-	/*
-	 * Copy of the super implementation, apart from the commented line.
-	 * This comment not being documentation is intentional.
+	/**
+	 * Adjusts the given (type, reference) pair if the type is a nested class which is referenced
+	 * through its enclosing class, such that the actually used type becomes the enclosing class.
+	 * Used to preserve this indirection during import organization.
 	 */
-	def isIgnored(JvmType type, ITextRegion refRegion) {
-		val parseResult = getResource().getParseResult();
-		if (parseResult == null) {
-			return false;
+	def private adjustedNestedClassReference(JvmType nestedClass, ITextRegion refRegion) {
+		if (refRegion == null || nestedClass == null || !(nestedClass.eContainer instanceof JvmType)) {
+			return null -> null;
 		}
 
-		val completeText = parseResult.getRootNode().getText();
-		val refText = completeText.subSequence(refRegion.getOffset(), refRegion.getOffset() + refRegion.getLength());
+		if (refRegion.length > nestedClass.simpleName.length) {
+			val enclosingClassRefLength = refRegion.length - ("." + nestedClass.simpleName).length;
+			return nestedClass.eContainer as JvmType ->
+				new TextRegion(refRegion.offset, enclosingClassRefLength) as ITextRegion;
+		}
 
-		/*
-		 * By default, generated Java equivalents of nested XtxtUML types are distinguished by using
-		 * '$' as separator instead of '.' between enclosing and nested classes in qualified names.
-		 * This leads to false unused import warnings in XtxtUML, therefore '.' should be used
-		 * uniformly.
-		 */
-		return type.getQualifiedName(".").equals(refText);
+		return nestedClass -> refRegion;
 	}
 
 }

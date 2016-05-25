@@ -1,25 +1,21 @@
 package pingpong.j;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.ModelExecutor;
-import pingpong.j.model.TopClass;
-import pingpong.j.model.signals.PongSignal;
+import hu.elte.txtuml.api.model.execution.ModelExecutor;
+import pingpong.j.model.Game;
+import pingpong.j.model.signals.Ball;
 
 public class Tester {
 
-	void test() {
-		ModelExecutor.Settings.setExecutorLog(true);
-
-		TopClass top = Action.create(TopClass.class);
-		Action.start(top);
-		
-		Action.send(new PongSignal(4), top);
-		
-		ModelExecutor.shutdown();
+	static void init() {
+		Game game = Action.create(Game.class);
+		Action.start(game);
+		Action.send(new Ball(4), game);
 	}
 
 	public static void main(String[] args) {
-		new Tester().test();
+		ModelExecutor.create().setTraceLogging(true).run(Tester::init);
 	}
 
 }
+

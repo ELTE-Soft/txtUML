@@ -27,6 +27,7 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.TypeLiteral;
 
 import hu.elte.txtuml.utils.Sneaky;
 
@@ -83,6 +84,14 @@ public final class SharedUtils {
 					return singleMemberAnnot.getValue();
 				}
 			}
+		}
+		return null;
+	}
+	
+	public static ITypeBinding obtainTypeLiteralAnnotation(BodyDeclaration declaration, Class<?> annotationClass) {
+		Expression expr = obtainSingleMemberAnnotationValue(declaration, annotationClass);
+		if (expr instanceof TypeLiteral) {
+			return ((TypeLiteral) expr).getType().resolveBinding();
 		}
 		return null;
 	}
@@ -159,6 +168,21 @@ public final class SharedUtils {
 		IMethodBinding methodBinding = methodInvocation.resolveMethodBinding();
 		ITypeBinding declaringClass = methodBinding.getDeclaringClass();
 		return typeIsAssignableFrom(declaringClass, hu.elte.txtuml.api.model.Action.class);
+	}
+	
+	/**
+	 * Check if the method can be called with the given arguments. Used when we don't have
+	 * a direct link to the method that is invoked (for example: Action.create(...)).
+	 */
+	public static boolean isApplicableToCall(Iterable<ITypeBinding> args, IMethodBinding meth) {
+		int[] i = { 0 };
+		ITypeBinding[] params = meth.getParameterTypes();
+		for (ITypeBinding arg : args) {
+			if (params.length <= i[0] || !arg.isAssignmentCompatible(params[i[0]++])) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public static String qualifiedName(TypeDeclaration decl) {

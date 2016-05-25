@@ -35,7 +35,7 @@ public class TxtUMLExporter {
 	 * @param projectName - The txtUMLProject
 	 * @param outputFolder - The folder in the project where UML data and diagrams are put
 	 * @param txtUMLModelName - The fully qualified name of the txtUML model
-	 * @param txtUMLLayout - The fully qualified name of the txtUML Diagram
+	 * @param txtUMLLayout - The fully qualified names of the txtUML Diagrams
 	 * @param parent - the parent ClassLoader
 	 */
 	public TxtUMLExporter(String projectName, String outputFolder,
@@ -95,7 +95,7 @@ public class TxtUMLExporter {
 	
 	
 	/**
-	 * Closes the editor and deletes the files that are have the same name as the generated ones will have
+	 * Closes the editor and deletes the files that have the same name as the generated ones will have
 	 * @throws CoreException if this method fails. Reasons include: 
 		<ul>
 		<li>This resource could not be deleted for some reason.</li> 

@@ -1,6 +1,6 @@
-package clock.x.^model;
+package clock.x.model;
 
-import hu.elte.txtuml.api.stdlib.Timer;
+import hu.elte.txtuml.api.stdlib.timers.Timer
 
 // Classes
 
@@ -83,7 +83,7 @@ class Display {
 		port HourPort;
 		trigger HandValue;
 		effect {
-			hour = sigdata.value;
+			hour = trigger.value;
 			minute = 0;
 			second = 0;
 			refresh();
@@ -96,7 +96,7 @@ class Display {
 		port MinutePort;
 		trigger HandValue;
 		effect {
-			minute = sigdata.value;
+			minute = trigger.value;
 			second = 0;
 			if (minute > 0) {
 				refresh();
@@ -110,7 +110,7 @@ class Display {
 		port SecondPort;
 		trigger HandValue;
 		effect {
-			second = sigdata.value;
+			second = trigger.value;
 			if (second > 0) {
 				refresh();
 			}
@@ -169,7 +169,7 @@ class Hand {
 
 class Pendulum {
 
-	private Timer.Handle timerHandle;
+	private Timer timer;
 	private int unit;
 
 	public Pendulum() {
@@ -191,7 +191,7 @@ class Pendulum {
 		from Init;
 		to Working;
 		effect {
-			timerHandle = Timer.start(this, new Tick(), unit);
+			timer = Timer.start(this, new Tick(), unit);
 		}
 	}
 
@@ -200,7 +200,7 @@ class Pendulum {
 		to Working;
 		trigger Tick;
 		effect {
-			timerHandle.reset(unit);
+			timer.reset(unit);
 		}
 	}
 

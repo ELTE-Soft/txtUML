@@ -5,7 +5,6 @@ import clock.j.model.signals.HandValue;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.BehaviorPort;
 import hu.elte.txtuml.api.model.From;
-import hu.elte.txtuml.api.model.InPort;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
@@ -43,7 +42,7 @@ public class Display extends ModelClass {
 	@From(Accepting.class) @To(Accepting.class) @Trigger(port = HourPort.class, value = HandValue.class)
 	class HourChanged extends Transition {
 		public void effect() {
-			hour = ((HandValue)getSignal()).value;
+			hour = getTrigger(HandValue.class).value;
 			minute = 0;
 			second = 0;
 			refresh();
@@ -53,7 +52,7 @@ public class Display extends ModelClass {
 	@From(Accepting.class) @To(Accepting.class) @Trigger(port = MinutePort.class, value = HandValue.class)
 	class MinuteChanged extends Transition {
 		public void effect() {
-			minute = ((HandValue)getSignal()).value;
+			minute = getTrigger(HandValue.class).value;
 			second = 0;
 			if(minute > 0) {
 				refresh();
@@ -64,7 +63,7 @@ public class Display extends ModelClass {
 	@From(Accepting.class) @To(Accepting.class) @Trigger(port = SecondPort.class, value = HandValue.class)
 	class SecondChanged extends Transition {
 		public void effect() {
-			second = ((HandValue)getSignal()).value;
+			second = getTrigger(HandValue.class).value;
 			if(second > 0) {
 				refresh();
 			}

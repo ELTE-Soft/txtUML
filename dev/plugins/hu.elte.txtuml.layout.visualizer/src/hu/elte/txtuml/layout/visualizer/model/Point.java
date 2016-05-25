@@ -421,13 +421,13 @@ public class Point
 	{
 		Point dv = Point.Substract(p, this);
 		
-		if (dv.getX() >= 0 && dir.equals(Direction.east))
+		if ((dv.getX() > 0 ||  (inLineCounts && dv.getX() >= 0)) && dir.equals(Direction.east))
 			return true;
-		if (dv.getX() <= 0 && dir.equals(Direction.west))
+		if ((dv.getX() < 0 ||  (inLineCounts && dv.getX() <= 0)) && dir.equals(Direction.west))
 			return true;
-		if (dv.getY() >= 0 && dir.equals(Direction.north))
+		if ((dv.getY() > 0 ||  (inLineCounts && dv.getY() >= 0)) && dir.equals(Direction.north))
 			return true;
-		if (dv.getY() <= 0 && dir.equals(Direction.south))
+		if ((dv.getY() < 0 ||  (inLineCounts && dv.getY() <= 0)) && dir.equals(Direction.south))
 			return true;
 		
 		return false;

@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
@@ -13,8 +14,6 @@ import org.eclipse.uml2.uml.FinalState;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.Transition;
-
-import com.google.common.collect.Lists;
 
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
 import hu.elte.txtuml.export.papyrus.api.StateMachineDiagramElementsController;
@@ -83,10 +82,10 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	 */
 	private void addSubElements(RegionEditPart region, List<Element> elements){
 		
-		List<State> states = UMLModelManager.getElementsOfTypeFromList(elements, State.class);
-		List<Pseudostate> pseudostates = UMLModelManager.getElementsOfTypeFromList(elements, Pseudostate.class);
-		List<FinalState> finalstates = UMLModelManager.getElementsOfTypeFromList(elements, FinalState.class);
-		List<Transition> transitions = UMLModelManager.getElementsOfTypeFromList(elements, Transition.class);
+		List<State> states = this.filterSubelementsOfRegion(region, UMLModelManager.getElementsOfTypeFromList(elements, State.class));
+		List<Pseudostate> pseudostates = this.filterSubelementsOfRegion(region, UMLModelManager.getElementsOfTypeFromList(elements, Pseudostate.class));
+		List<FinalState> finalstates = this.filterSubelementsOfRegion(region, UMLModelManager.getElementsOfTypeFromList(elements, FinalState.class));
+		List<Transition> transitions = this.filterSubelementsOfRegion(region, UMLModelManager.getElementsOfTypeFromList(elements, Transition.class));
 	
 		StateMachineDiagramElementsController.addPseudostatesToRegion(region, pseudostates);
 		StateMachineDiagramElementsController.addStatesToRegion(region, states);
@@ -98,9 +97,14 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 		
 		for(EditPart subEP : subEPs){
 			if(subEP instanceof StateEditPart){
-				//TODO get the subelements of the State
-				fillState(subEP, Lists.newArrayList());
+				fillState(subEP, elements);
 			}
 		}
+	}
+	
+	private <T> List<T> filterSubelementsOfRegion(RegionEditPart region, List<T> elements){
+		return elements.stream().filter((elem) -> {
+			return ((Element)((View)region.getModel()).getElement()).getOwnedElements().stream().anyMatch((child) -> child.equals(elem));
+		}).collect(Collectors.toList());
 	}
 }

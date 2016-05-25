@@ -42,8 +42,10 @@ public class ModelMapCollector {
 	 *            EMF-UML2 model.
 	 */
 	public void put(String className, EObject eObject) {
-		String uriFragment = eObject.eResource().getURIFragment(eObject);
-		map.put(className, uriFragment);
+		if(eObject != null){
+			String uriFragment = eObject.eResource().getURIFragment(eObject);
+			map.put(className, uriFragment);
+		}
 	}
 
 	/**

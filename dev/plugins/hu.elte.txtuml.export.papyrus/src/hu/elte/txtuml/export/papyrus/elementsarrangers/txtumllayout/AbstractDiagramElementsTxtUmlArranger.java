@@ -157,7 +157,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 				DiagramElementsModifier.fixStateLabelHeight((CustomStateEditPart)ep);
 			}
 			DiagramElementsModifier.resizeGraphicalEditPart(ep, rect.width, rect.height);
-			DiagramElementsModifier.moveGraphicalEditPart(ep, rect.getTopLeft());
+			DiagramElementsModifier.moveGraphicalEditPart(ep, new Point(20+rect.getTopLeft().x, 20+rect.getTopLeft().y));
 		});
 	}
 
@@ -182,6 +182,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			
 			if(e.isPresent()){
 				ConnectionNodeEditPart connection = (ConnectionNodeEditPart) getEditPartOfModelElement(connections, e.get());
+				if(connection == null) continue;
 				Element source = (Element) ((View)connection.getSource().getModel()).getElement();
 				Element target = (Element) ((View)connection.getTarget().getModel()).getElement();
 				

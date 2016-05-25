@@ -2,7 +2,7 @@ package hu.elte.txtuml.xtxtuml.compiler
 
 import com.google.inject.Inject
 import hu.elte.txtuml.api.model.Action
-import hu.elte.txtuml.api.model.Port
+import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression
@@ -86,9 +86,9 @@ class XtxtUMLCompiler extends XbaseCompiler {
 	}
 
 	def dispatch toJavaExpression(RAlfSignalAccessExpression sigExpr, ITreeAppendable it) {
-		append("((");
+		append("getTrigger(");
 		append(sigExpr.lightweightType);
-		append(") getSignal())");
+		append(".class)");
 	}
 
 }

@@ -1,7 +1,7 @@
 package producer_consumer.j;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.ModelExecutor;
+import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import producer_consumer.j.model.Consumer;
 import producer_consumer.j.model.Consumption;
 import producer_consumer.j.model.Producer;
@@ -10,8 +10,7 @@ import producer_consumer.j.model.Storage;
 
 public class Tester {
 
-	public static void main(final String... args) {
-		ModelExecutor.Settings.setExecutorLog(true);
+	static void init() {
 		Storage storage = Action.create(Storage.class, Integer.valueOf(2));
 		Producer p1 = Action.create(Producer.class, Integer.valueOf(3));
 		Producer p2 = Action.create(Producer.class, Integer.valueOf(3));
@@ -29,6 +28,9 @@ public class Tester {
 		Action.start(c1);
 		Action.start(c2);
 		Action.start(c3);
-		ModelExecutor.shutdown();
+	}
+
+	public static void main(String[] init) {
+		ModelExecutor.create().run(Tester::init);
 	}
 }

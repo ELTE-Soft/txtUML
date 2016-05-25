@@ -7,6 +7,7 @@ import hu.elte.txtuml.api.layout.Above;
 import hu.elte.txtuml.api.layout.Below;
 import hu.elte.txtuml.api.layout.BottomMost;
 import hu.elte.txtuml.api.layout.Column;
+import hu.elte.txtuml.api.layout.CompositeDiagram;
 import hu.elte.txtuml.api.layout.Diagram;
 import hu.elte.txtuml.api.layout.ClassDiagram;
 import hu.elte.txtuml.api.layout.StateMachineDiagram;
@@ -96,17 +97,14 @@ public class DiagramExporterImpl implements DiagramExporter {
 	
 	private void exportDiagram() {
 
-		if(isClassDiagram(diagClass))
-		{
+		if(isClassDiagram(diagClass)) {
 			//report.setReferencedElementName(diagClass.getPackage().getName() + ".model");
 		} 
-		else if(isStateMachineDiagram(diagClass))
-		{
+		else if(isStateMachineDiagram(diagClass) || isCompositeDiagram(diagClass)) {
 			Class<?> cls = (Class<?>)((ParameterizedType)diagClass.getGenericSuperclass()).getActualTypeArguments()[0];
 			report.setReferencedElementName(cls.getCanonicalName());
 		}
-		else
-		{
+		else {
 			report.error("No proper Diagram class found (ClassDiagram or StateMachineDiagram<T>)");
 		}
 		
@@ -187,6 +185,10 @@ public class DiagramExporterImpl implements DiagramExporter {
 	private boolean isStateMachineDiagram(Class<? extends Diagram> cls)
 	{
 		return StateMachineDiagram.class.isAssignableFrom(cls);
+	}
+	
+	private boolean isCompositeDiagram(Class<? extends Diagram> cls) {
+		return CompositeDiagram.class.isAssignableFrom(cls);
 	}
 	
 	private boolean isLayout(Class<?> cls) {

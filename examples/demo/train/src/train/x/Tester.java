@@ -1,7 +1,8 @@
 package train.x;
 
+import hu.elte.txtuml.api.model.API;
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.ModelExecutor;
+import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import train.x.model.Backward;
 import train.x.model.Engine;
 import train.x.model.Forward;
@@ -14,8 +15,9 @@ import train.x.model.SwitchLight;
 
 public class Tester {
 	Tester() {
-		createInstances();
+		ModelExecutor executor = ModelExecutor.create().setTraceLogging(true).launch(this::createInstances);
 		test();
+		executor.shutdown();
 	}
 
 	Gearbox g;
@@ -23,7 +25,6 @@ public class Tester {
 	Lamp l;
 
 	public void createInstances() {
-		ModelExecutor.Settings.setExecutorLog(true);
 		g = Action.create(Gearbox.class);
 		e = Action.create(Engine.class);
 		l = Action.create(Lamp.class);
@@ -40,23 +41,22 @@ public class Tester {
 			int time = 50;
 			for (int i = 0; i < 3; i++) {
 				Thread.sleep(time);
-				Action.log("");
-				Action.send(new SwitchLight(), l);
+				API.log("");
+				API.send(new SwitchLight(), l);
 			}
 
 			Thread.sleep(2 * time);
 
 			for (int i = 0; i < 3; i++) {
 				Thread.sleep(3 * time);
-				Action.log("");
-				Action.send(new Forward(), g);
+				API.log("");
+				API.send(new Forward(), g);
 
 				Thread.sleep(time);
-				Action.log("");
-				Action.send(new Backward(), g);
+				API.log("");
+				API.send(new Backward(), g);
 			}
 
-			ModelExecutor.shutdown();
 		} catch (InterruptedException e) {
 		}
 	}

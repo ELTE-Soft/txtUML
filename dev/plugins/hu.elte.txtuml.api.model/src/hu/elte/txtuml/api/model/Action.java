@@ -1,16 +1,16 @@
 package hu.elte.txtuml.api.model;
 
 import hu.elte.txtuml.api.model.ConnectorBase.ConnectorEnd;
-import hu.elte.txtuml.api.model.ModelExecutor.Report;
-import hu.elte.txtuml.api.model.backend.MultipleContainerException;
-import hu.elte.txtuml.api.model.backend.MultiplicityException;
+import hu.elte.txtuml.api.model.ModelClass.Port;
+import hu.elte.txtuml.api.model.error.ObjectCreationError;
 import hu.elte.txtuml.utils.InstanceCreator;
 import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
 
 /**
- * Class <code>Action</code> provides methods for the user to be used as
- * statements of the action language.
+ * Provides static methods for the user to be used as statements of the action
+ * language. Its methods may only <b>be called from the model</b>, see the class
+ * {@link API} for possible ways to communicate with the model from the outside.
  * 
  * <p>
  * <b>Represents:</b> no model element directly, its static methods are part of
@@ -26,25 +26,14 @@ import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
  * <b>Java restrictions:</b>
  * <ul>
  * <li><i>Instantiate:</i> disallowed</li>
- * <li><i>Define subtype:</i> disallowed</li>
+ * <li><i>Define subtype:</i> allowed, for simplified access to its methods</li>
  * </ul>
  * 
  * <p>
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  */
-public class Action implements ModelElement {
-
-	/**
-	 * Sole constructor of <code>Action</code>.
-	 * <p>
-	 * <b>Implementation note:</b>
-	 * <p>
-	 * Package private to make sure that this class is neither instantiated, nor
-	 * directly inherited by the user.
-	 */
-	Action() {
-	}
+public abstract class Action {
 
 	/**
 	 * Creates a new instance of the specified model class. Shows an error
@@ -61,13 +50,41 @@ public class Action implements ModelElement {
 	 * @throws NullPointerException
 	 *             if <code>classType</code> is <code>null</code>
 	 */
-	public static <T extends ModelClass> T create(Class<T> classType, Object... parameters) {
+	public static <T extends ModelClass> T create(Class<T> classType, Object... parameters) throws ObjectCreationError {
 		try {
 			return InstanceCreator.create(classType, parameters);
 		} catch (IllegalArgumentException | RuntimeInvocationTargetException e) {
-			Report.error.forEach(x -> x.modelObjectCreationFailed(classType, parameters));
-			return null;
+			throw new ObjectCreationError(e);
 		}
+	}
+
+	/**
+	 * Creates a new instance of the specified model class and sets its name.
+	 * Shows an error message if the creation failed for any reason.
+	 * <p>
+	 * <b>Note:</b> The {@link ModelClass#toString} method returns the name of
+	 * the instance if it has been set. Therefore this name will be the string
+	 * representation of the created object in any report, unless its
+	 * {@code toString} method is overridden.
+	 * 
+	 * @param <T>
+	 *            the type of the new model object
+	 * @param classType
+	 *            the model class for which a new instance is to be created
+	 * @param name
+	 *            the name of the created object
+	 * @param parameters
+	 *            parameters of the new object
+	 * @return a new instance of <code>classType</code> or <code>null</code> if
+	 *         the creation failed
+	 * @throws NullPointerException
+	 *             if <code>classType</code> is <code>null</code>
+	 */
+	public static <T extends ModelClass> T createWithName(Class<T> classType, String name, Object... parameters)
+			throws ObjectCreationError {
+		T ret = create(classType, parameters);
+		ret.runtimeInfo().setName(name);
+		return ret;
 	}
 
 	/**
@@ -84,7 +101,7 @@ public class Action implements ModelElement {
 	 *             if <code>obj</code> is <code>null</code>
 	 */
 	public static void delete(ModelClass obj) {
-		obj.forceDelete();
+		obj.runtimeInfo().delete();
 	}
 
 	/**
@@ -107,8 +124,7 @@ public class Action implements ModelElement {
 	 */
 	public static <C1 extends ConnectorEnd<?, P1>, P1 extends Port<I1, I2>, C2 extends ConnectorEnd<?, P2>, P2 extends Port<I2, I1>, I1 extends Interface, I2 extends Interface> void connect(
 			Class<C1> leftEnd, P1 leftPort, Class<C2> rightEnd, P2 rightPort) {
-		leftPort.connectToPort(rightPort);
-		rightPort.connectToPort(leftPort);
+		leftPort.getRuntime().connect(leftEnd, leftPort, rightEnd, rightPort);
 	}
 
 	/**
@@ -128,8 +144,7 @@ public class Action implements ModelElement {
 	 */
 	public static <P1 extends Port<I1, I2>, C extends ConnectorEnd<?, P2>, P2 extends Port<I1, I2>, I1 extends Interface, I2 extends Interface> void connect(
 			P1 parentPort, Class<C> childEnd, P2 childPort) {
-		parentPort.connectToPort(childPort);
-		childPort.connectToPort(parentPort);
+		parentPort.getRuntime().connect(parentPort, childEnd, childPort);
 	}
 
 	/**
@@ -158,48 +173,7 @@ public class Action implements ModelElement {
 	 */
 	public static <L extends ModelClass, R extends ModelClass> void link(Class<? extends AssociationEnd<L, ?>> leftEnd,
 			L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj) {
-
-		if (isLinkingDeleted(leftObj) || isLinkingDeleted(rightObj)) {
-			return;
-		}
-
-		tryAddToAssoc(leftObj, rightEnd, rightObj, () -> {
-		});
-		tryAddToAssoc(rightObj, leftEnd, leftObj, () -> leftObj.removeFromAssoc(rightEnd, rightObj));
-	}
-
-	private static <R extends ModelClass, L extends ModelClass> void tryAddToAssoc(L leftObj,
-			Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj, Runnable rollBack) {
-		try {
-			leftObj.addToAssoc(rightEnd, rightObj);
-			return;
-		} catch (MultiplicityException e) {
-			Report.error.forEach(x -> x.upperBoundOfMultiplicityOffended(leftObj, rightEnd));
-		} catch (MultipleContainerException e) {
-			Report.error.forEach(x -> x.multipleContainerForAnObject(leftObj, rightEnd));
-		}
-		rollBack.run();
-	}
-
-	/**
-	 * Checks whether the specified model object is deleted; if it is, this
-	 * method shows an error about a failed linking operation because of the
-	 * deleted model object given as parameter to the {@link Action#link link}
-	 * method.
-	 * 
-	 * @param obj
-	 *            the model object which's deleted status is to be checked
-	 * @return <code>true</code> if the object is deleted, <code>false</code>
-	 *         otherwise
-	 * @throws NullPointerException
-	 *             if <code>obj</code> is <code>null</code>
-	 */
-	private static boolean isLinkingDeleted(ModelClass obj) {
-		if (obj.isDeleted()) {
-			Report.error.forEach(x -> x.linkingDeletedObject(obj));
-			return true;
-		}
-		return false;
+		leftObj.getRuntime().link(leftEnd, leftObj, rightEnd, rightObj);
 	}
 
 	/**
@@ -220,50 +194,14 @@ public class Action implements ModelElement {
 	 * @param rightObj
 	 *            the object at the right end of the association
 	 * @throws NullPointerException
-	 *             if either <code>leftEnd</code> or <code>rightEnd</code> is
-	 *             <code>null</code>
+	 *             if either parameter is <code>null</code>
 	 * @see Association
 	 * @see AssociationEnd
 	 */
 	public static <L extends ModelClass, R extends ModelClass> void unlink(
 			Class<? extends AssociationEnd<L, ?>> leftEnd, L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd,
 			R rightObj) {
-
-		if (isUnlinkingDeleted(leftObj) || isUnlinkingDeleted(rightObj)) {
-			return;
-		}
-
-		if (ModelExecutor.Settings.dynamicChecks()) {
-			if (!leftObj.hasAssoc(rightEnd, rightObj) || !rightObj.hasAssoc(leftEnd, leftObj)) {
-
-				Report.warning.forEach(x -> x.unlinkingNonExistingAssociation(leftObj, rightObj));
-				return;
-			}
-		}
-
-		leftObj.removeFromAssoc(rightEnd, rightObj);
-		rightObj.removeFromAssoc(leftEnd, leftObj);
-	}
-
-	/**
-	 * Checks whether the specified model object is deleted; if it is, this
-	 * method shows an error about a failed unlinking operation because of the
-	 * deleted model object given as parameter to the {@link Action#unlink
-	 * unlink} method.
-	 * 
-	 * @param obj
-	 *            the model object which's deleted status is to be checked
-	 * @return <code>true</code> if the object is deleted, <code>false</code>
-	 *         otherwise
-	 * @throws NullPointerException
-	 *             if <code>obj</code> is <code>null</code>
-	 */
-	private static boolean isUnlinkingDeleted(ModelClass obj) {
-		if (obj.isDeleted()) {
-			Report.error.forEach(x -> x.unlinkingDeletedObject(obj));
-			return true;
-		}
-		return false;
+		leftObj.getRuntime().unlink(leftEnd, leftObj, rightEnd, rightObj);
 	}
 
 	/**
@@ -277,11 +215,7 @@ public class Action implements ModelElement {
 	 *             if <code>obj</code> is <code>null</code>
 	 */
 	public static void start(ModelClass obj) {
-		if (obj.isDeleted()) {
-			Report.error.forEach(x -> x.startingDeletedObject(obj));
-		}
-
-		obj.start();
+		obj.runtimeInfo().start();
 	}
 
 	/**
@@ -323,7 +257,7 @@ public class Action implements ModelElement {
 	 *             if <code>target</code> is <code>null</code>
 	 */
 	public static void send(Signal signal, ModelClass target) {
-		target.send(signal);
+		target.runtimeInfo().send(signal);
 	}
 
 	/**

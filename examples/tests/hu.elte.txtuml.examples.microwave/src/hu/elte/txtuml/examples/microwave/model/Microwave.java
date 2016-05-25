@@ -5,7 +5,7 @@ import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
-import hu.elte.txtuml.api.stdlib.Timer;
+import hu.elte.txtuml.api.stdlib.timers.Timer;
 import hu.elte.txtuml.examples.microwave.model.associations.Usage;
 import hu.elte.txtuml.examples.microwave.model.signals.Close;
 import hu.elte.txtuml.examples.microwave.model.signals.Ding;
@@ -120,7 +120,7 @@ public class Microwave extends ModelClass {
 		public class AdjustIntensity extends Transition {
 			@Override
 			public void effect() {
-				intensity = ((SetIntensity) getSignal()).value;
+				intensity = getTrigger(SetIntensity.class).value;
 				Action.log("Microwave: intensity set.");
 			}
 		}
@@ -131,7 +131,7 @@ public class Microwave extends ModelClass {
 		public class AdjustTime extends Transition {
 			@Override
 			public void effect() {
-				time = ((SetTime) getSignal()).value;
+				time = getTrigger(SetTime.class).value;
 				Action.log("Microwave: time set.");
 			}
 		}

@@ -5,7 +5,7 @@ import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
-import hu.elte.txtuml.api.stdlib.Timer;
+import hu.elte.txtuml.api.stdlib.timers.Timer;
 import hu.elte.txtuml.examples.garage.control.glue.Glue;
 import hu.elte.txtuml.examples.garage.control.model.associations.KeyboardProvidesCode;
 import hu.elte.txtuml.examples.garage.control.model.signals.external.KeyPress;
@@ -14,7 +14,7 @@ import hu.elte.txtuml.examples.garage.control.model.signals.internal.KeyboardTim
 import hu.elte.txtuml.examples.garage.control.model.signals.internal.WaitForCode;
 
 public class Keyboard extends ModelClass {
-	Timer.Handle keyboardTimer;
+	Timer keyboardTimer;
 	int keyboardTimerCount;
 	int keyboardTimerMaxCount = 100;
 
@@ -43,7 +43,7 @@ public class Keyboard extends ModelClass {
 		@Override
 		public void effect() {
 			Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).selectAny();
-			Action.send(((KeyPress) getSignal()), a);
+			Action.send(getTrigger(KeyPress.class), a);
 		}
 	}
 
@@ -82,7 +82,7 @@ public class Keyboard extends ModelClass {
 		@Override
 		public void effect() {
 			Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).selectAny();
-			Action.send(((KeyPress) getSignal()), a);
+			Action.send(getTrigger(KeyPress.class), a);
 		}
 	}
 
