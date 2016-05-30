@@ -1,6 +1,5 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -14,8 +13,6 @@ import org.eclipse.papyrus.uml.diagram.composite.custom.utils.CompositeEditPartU
 import org.eclipse.papyrus.uml.diagram.composite.edit.parts.ClassCompositeCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.composite.edit.parts.ClassCompositeEditPart;
 import org.eclipse.papyrus.uml.diagram.composite.edit.parts.PropertyPartEditPartCN;
-import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateMachineEditPart;
-import org.eclipse.uml2.uml.Element;
 
 import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;

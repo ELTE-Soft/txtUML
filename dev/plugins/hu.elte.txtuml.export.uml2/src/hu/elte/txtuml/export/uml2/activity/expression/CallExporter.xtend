@@ -43,19 +43,32 @@ abstract class CallExporter<T> extends ActionExporter<T, CallOperationAction> {
 		}
 	}
 
+	def createCall(IMethodBinding binding, Action base, Iterable<Expression> args) {
+		val call = factory.createCallOperationAction
+		createCallFromActions(call, binding, base, args.map[exportExpression])
+		storeNode(call)
+		return call
+	}
+
 	def createCall(CallOperationAction call, IMethodBinding binding, Action base, Iterable<Expression> args) {
+		createCallFromActions(call, binding, base, args.map[exportExpression])
+	}
+	
+	def createCallFromActions(CallOperationAction call, IMethodBinding binding, Action base, Iterable<Action> args) {
 		call.operation = fetchElement(binding) as Operation
 
-		base?.result.objectFlow(call.createTarget("target", base.result.type))
+		if (base != null) {
+			base.result.objectFlow(call.createTarget("target", base.result.type))
+		}
 
 		val i = new AtomicInteger
-		args.forEach[call.createArgument("p" + i.andIncrement, resolveTypeBinding.fetchType)]
+		args.forEach[call.createArgument("p" + i.andIncrement, it.result.type)]
 
 		if (binding.returnType.name != "void") {
 			call.createResult("return", fetchType(binding.returnType))
 		}
 
-		val argVals = args.map[exportExpression].map[it.result]
+		val argVals = args.map[it.result]
 
 		for (argi : 0 ..< call.arguments.length) {
 			argVals.get(argi).objectFlow(call.arguments.get(argi))
@@ -65,7 +78,7 @@ abstract class CallExporter<T> extends ActionExporter<T, CallOperationAction> {
 	}
 
 	def buildName(IMethodBinding binding, CallOperationAction call, Action base) {
-		'''«base?.name.concat('.')»«binding.name»(«buildArgs(call)»)'''
+		'''«base?.name?.concat('.')»«binding.name»(«buildArgs(call)»)'''
 	}
 
 	def buildArgs(CallOperationAction call) {

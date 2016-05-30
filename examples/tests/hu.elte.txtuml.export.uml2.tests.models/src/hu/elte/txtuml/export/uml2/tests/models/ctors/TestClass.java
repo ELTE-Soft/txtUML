@@ -41,5 +41,11 @@ class ClassWithCtors extends ModelClass {
 	}
 }
 
+class ClassExtending extends ClassWithCtors {
+	
+	public ClassExtending() {
+	}
+}
+
 class DefaultConstructible extends ModelClass {
 }

@@ -34,6 +34,8 @@ import hu.elte.txtuml.api.model.Delegation;
 import hu.elte.txtuml.api.model.Interface;
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.ModelClass.InPort;
+import hu.elte.txtuml.api.model.ModelClass.OutPort;
 import hu.elte.txtuml.api.model.ModelClass.Port;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.StateMachine.Choice;
@@ -261,6 +263,14 @@ public final class ElementTypeTeller {
 	public static boolean isPort(ITypeBinding value) {
 		return hasSuperClass(value, Port.class.getCanonicalName());
 	}
+	
+	public static boolean isInPort(ITypeBinding binding) {
+		return hasSuperClass(binding, InPort.class.getCanonicalName());
+	}
+	
+	public static boolean isOutPort(ITypeBinding binding) {
+		return hasSuperClass(binding, OutPort.class.getCanonicalName());
+	}
 
 	public static boolean isInterface(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Interface.class);
@@ -391,4 +401,5 @@ public final class ElementTypeTeller {
 	public static boolean isDelegation(ITypeBinding binding) {
 		return SharedUtils.typeIsAssignableFrom(binding, Delegation.class);
 	}
+
 }

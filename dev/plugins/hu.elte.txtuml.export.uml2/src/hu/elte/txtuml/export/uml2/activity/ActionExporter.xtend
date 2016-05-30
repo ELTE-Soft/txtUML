@@ -31,6 +31,7 @@ import hu.elte.txtuml.export.uml2.activity.statement.LoopInitExporter
 import org.eclipse.jdt.core.dom.ForStatement
 import hu.elte.txtuml.export.uml2.activity.statement.LoopUpdateExporter
 import hu.elte.txtuml.export.uml2.activity.statement.LoopConditionExporter
+import org.eclipse.uml2.uml.TestIdentityAction
 
 /**
  * Base class for all exporters on the statement-expression level.
@@ -83,6 +84,8 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 	}
 
 	def dispatch OutputPin result(ReadVariableAction node) { node.result }
+	
+	def dispatch OutputPin result(TestIdentityAction node) { node.result }
 
 	def dispatch OutputPin result(ReadSelfAction node) { node.result }
 

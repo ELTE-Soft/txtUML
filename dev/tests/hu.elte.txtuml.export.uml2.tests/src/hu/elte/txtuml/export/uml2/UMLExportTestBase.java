@@ -23,11 +23,13 @@ import org.eclipse.uml2.uml.Event;
 import org.eclipse.uml2.uml.ExecutableNode;
 import org.eclipse.uml2.uml.ExpansionNode;
 import org.eclipse.uml2.uml.ExpansionRegion;
+import org.eclipse.uml2.uml.Interface;
 import org.eclipse.uml2.uml.LoopNode;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Operation;
+import org.eclipse.uml2.uml.Port;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.PseudostateKind;
@@ -65,6 +67,19 @@ public class UMLExportTestBase {
 		Association assoc = (Association) model.getMember(name);
 		assertNotNull(assoc);
 		return assoc;
+	}
+	
+	protected Port port(Class cls, String name) {
+		Port port = (Port) cls.getOwnedPort(name, null);
+		assertNotNull(port);
+		return port;
+	}
+	
+	protected Interface getProvided(Port port) {
+		Interface actualIface = port.getProvideds().get(0);
+		Interface formalIface = (Interface) actualIface.getGenerals().get(0);
+		assertNotNull(formalIface);
+		return formalIface;
 	}
 
 	protected Property assocEnd(Class a, Classifier ab, String name, AggregationKind kind, int lowerBound, int upperBound,
@@ -114,6 +129,15 @@ public class UMLExportTestBase {
 		return (T) node;
 	}
 
+	@SuppressWarnings("unchecked")
+	protected <T> T node(Activity parent, int index, String name, java.lang.Class<T> type) {
+		ActivityNode node = parent.getNodes().get(index);
+		assertEquals(name, node.getName());
+		assertNotNull(node);
+		assertTrue("Node is not a " + type.getName(), type.isInstance(node));
+		return (T) node;
+	}
+	
 	protected void checkDefaultCtor(SequenceNode body) {
 		SequenceNode createNode = (SequenceNode) body.getNode("create DefaultConstructible;");
 		SequenceNode createExprNode = (SequenceNode) createNode.getNode("create DefaultConstructible");
