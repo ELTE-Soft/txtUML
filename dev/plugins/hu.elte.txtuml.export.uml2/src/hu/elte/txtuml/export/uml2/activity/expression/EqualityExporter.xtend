@@ -30,7 +30,7 @@ class EqualityExporter extends ActionExporter<InfixExpression, TestIdentityActio
 		return ret
 	}
 
-	protected def finishIdentityTest(TestIdentityAction expr, Action left, Action right) {
+	def finishIdentityTest(TestIdentityAction expr, Action left, Action right) {
 		expr.createResult("result", booleanType)
 		left.result.objectFlow(expr.createFirst("left", left.result.type))
 		right.result.objectFlow(expr.createSecond("right", right.result.type))

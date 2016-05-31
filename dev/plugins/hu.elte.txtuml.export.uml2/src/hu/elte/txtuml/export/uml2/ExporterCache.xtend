@@ -74,7 +74,9 @@ class ExporterCache {
 			return fetchMap.get(accessKey) as R
 		} else {
 			val exported = exporter.createResult(access)
-			fetchMap.put(accessKey, exported)
+			if (exported != null) {
+				fetchMap.put(accessKey, exported)
+			}
 			return exported
 		}
 	}
