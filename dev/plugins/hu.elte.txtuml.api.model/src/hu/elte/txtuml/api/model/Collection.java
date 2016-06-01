@@ -191,7 +191,7 @@ public interface Collection<T> extends Iterable<T> {
 
 		@Override
 		public T selectAny() throws NoSuchElementException {
-			throw new NoSuchElementException();
+			return null;
 		}
 
 		@Override
