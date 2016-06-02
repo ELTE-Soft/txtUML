@@ -1,0 +1,334 @@
+package airport.xmodel
+
+class Plane {
+	private int id;
+	private int angle;
+	String status; // You can check the current status, and GUI show this value
+	
+	private double xCoor;
+	private double yCoor;
+	
+	
+	// Constructor
+	Plane(int parId, int x, int y, int newAngle) {
+		id = parId;
+		xCoor = x;
+		yCoor = y;
+		angle = newAngle;
+	}
+	
+	// Getters
+	public int getId() {
+		return id;
+	}
+	
+	public double getX() {
+		return xCoor;
+	}
+	
+	public int getAngle() {
+		return angle;
+	}
+	
+	public double getY() {
+		return yCoor;
+	}
+	
+	
+	public void plusAngle(int deg) {
+		angle += deg;
+		angle = angle % 360;
+	}
+	
+	private double mod(double x, int y)
+	{
+	    double result = x % y;
+	    if (result < 0)
+	    {
+	        result += y;
+	    }
+	    return result;
+	}
+	
+	public void go(int s) {
+		xCoor += Math.round(Math.sin(Math.toRadians(angle))*s);
+		yCoor -= Math.round(Math.cos(Math.toRadians(angle))*s);
+		
+		xCoor = mod(xCoor, 850);
+		yCoor = mod(yCoor, 420);
+		
+	}
+	
+	
+	
+	public String getStatus() {
+		return status;
+	}
+	
+	public int getTowerId() {
+		Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+		
+		if(t != null) {
+			return t.getId();
+		} else {	
+			return -1;
+		}
+	}
+	
+	// txtUML
+	initial Init;
+	state InAir;
+	state WaitingLanding;
+	state OnGround;
+	state WaitingTakingOff;
+	
+	state AbleToTakeOff;
+	state BeUnderTakingOff;
+	state AbleToLand;
+	state BeUnderLanding; // TODO
+	
+	// Initializing
+		transition Initial {
+			from Init;
+			to InAir;
+			effect {
+				status = "IA";
+			}
+		}
+	
+	// Landing
+		// The pilot sends the tower, that he/she would like to land
+		transition ToWaitLand {
+			from InAir;
+			to WaitingLanding;
+			trigger SignalPilotAskLandingPermission;
+			effect {
+				log("The plane (" + id + ") is waiting for the permission to land");
+				
+				Tower t = this->(PlaneTowerUsage.theTower).selectAny();
+				send new SignalPlaneSendTheLandingApplicationToTower(this.id) to t;
+				
+				status = "WL";
+			}
+		}
+		
+		
+		transition ToBeUnderLanding {
+			from AbleToLand;
+			to BeUnderLanding;
+			trigger SignalPlaneIsUnderLanding;
+			effect {
+				Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+				send new SignalToTowerPlaneIsUnderLanding(this.id) to t;
+				status = "UL";
+			}
+		}
+		
+		// The tower permit the land to the plane
+		transition ToPermitLand {
+			from WaitingLanding;
+			to AbleToLand;
+			trigger SignalGiveLandingPermission;
+			effect {
+				log("The plane (" + this.id + ") can land to the (" + trigger.runWayId + ") run way");
+				status = "AL";
+			}
+		}
+		
+		// The pilot sends to the tower, that he/she has already landed
+		transition ToBeOnTheGround {
+			from BeUnderLanding;
+			to OnGround;
+			trigger SignalPlaneAlreadyLanded;
+			effect {
+				Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+				send new SignalToTowerPlaneAlreadyLanded(this.id) to t;
+				status = "OG";
+			}
+		}
+		
+		// Annual the landing (The pilot sends to the tower)
+		transition AnnualLanding_AL {
+			from AbleToLand;
+			to InAir;
+			trigger SignalAnnulingTheLanding;
+			effect {
+				Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+				send new SignalToTowerAnnulingTheLanding_AL(this.id) to t;
+				status = "IA";
+			}
+		}
+		
+		transition AnnualLanding_WL {
+			from WaitingLanding;
+			to InAir;
+			trigger SignalAnnulingTheLanding;
+			effect {
+				Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+				send new SignalToTowerAnnulingTheLanding_WL(this.id) to t;
+				status = "IA";
+			}
+		}
+		
+		// The tower deny the landing
+		transition Wait_IA {
+			from WaitingLanding;
+			to WaitingLanding;
+			trigger SignalPleaseWait;
+			effect {
+				log("Please wait!");
+			}
+		}
+	
+	// Taking off
+		// The pilot sends it to the tower, he/she would like to take off
+		transition ToWaitTakingOff {
+			from OnGround;
+			to WaitingTakingOff;
+			trigger SignalPilotAskTakingOffPermission;
+			effect {
+				log("The plane (" + this.id + ") is waiting for taking off");
+				
+				Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+				send new SignalPlaneSendTheTakingOffApplicationToTower(this.id) to t;
+				status = "WT";
+			}
+		}
+		
+		
+		// The plane has already taken off, the pilot sends it to the tower
+		transition ToBeUnderTakingOff {
+			from AbleToTakeOff;
+			to BeUnderTakingOff;
+			trigger SignalPlaneIsUnderTakingOff;
+			effect {
+				Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+				send new SignalToTowerPlaneIsUnderTakingOff(this.id) to t;
+				status = "UT";
+			}
+		}
+		
+		// The plane has already taken off, the pilot sends it to the tower
+		transition ToBeInTheAir {
+			from BeUnderTakingOff;
+			to InAir;
+			trigger SignalPlaneAlreadyTakenOff;
+			effect {
+				Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+				send new SignalToTowerPlaneAlreadyTakenOff(this.id) to t;
+				status = "IA";
+			}
+		}
+		
+		// The tower permits the taking off
+		transition ToPermitTakingOff {
+			from WaitingTakingOff;
+			to AbleToTakeOff;
+			trigger SignalGiveTakingOffPermission;
+			effect {
+				log("The plane (" + this.id + ") can take off");
+				status = "AT";
+			}
+		}
+		
+		// The tower denies the taking off
+		transition Wait_OG {
+			from WaitingTakingOff;
+			to WaitingTakingOff;
+			trigger SignalPleaseWait;
+			effect {
+				log("Please wait!");
+			}
+		}
+		
+		// The tower annuals the taking off
+		transition AnnualTakingOff_AL {
+			from AbleToTakeOff;
+			to OnGround;
+			trigger SignalAnnulingTheTakingOff;
+			effect {
+				Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+				send new SignalToTowerAnnulingTheTakingOff_AL(this.id) to t;
+				status = "OG";
+			}
+		}
+		transition AnnualTakingOff_WL {
+			from WaitingTakingOff;
+			to OnGround;
+			trigger SignalAnnulingTheTakingOff;
+			effect {
+				Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+				send new SignalToTowerAnnulingTheTakingOff_WL(this.id) to t;
+				status = "OG";
+			}
+		}
+		
+		// Deny Taking off
+		transition DenyTakingOff_AT {
+			from AbleToTakeOff;
+			to WaitingTakingOff;
+			trigger SignalDenyTakingOff;
+			effect {
+				log("Sorry, the weather is so bad, you cannot take of, please wait (plane: "+ id +")");
+				
+				Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+				send new SignalPlaneSendTheTakingOffApplicationToTower(this.id) to t;
+				status = "WT";
+			}
+		}
+		
+			transition DenyTakingOff_OG {
+				from OnGround;
+				to OnGround;
+				trigger SignalDenyTakingOff;
+				effect {
+					// Nothing happens
+				}
+			}
+			
+			transition DenyTakingOff_WT {
+				from WaitingTakingOff;
+				to WaitingTakingOff;
+				trigger SignalDenyTakingOff;
+				effect {
+					// Nothing happens
+				}
+			}
+			
+			transition DenyTakingOff_UT {
+				from BeUnderTakingOff;
+				to BeUnderTakingOff;
+				trigger SignalDenyTakingOff;
+				effect {
+					// Nothing happens
+				}
+			}
+			
+			transition DenyTakingOff_IA {
+				from InAir;
+				to InAir;
+				trigger SignalDenyTakingOff;
+				effect {
+					// Nothing happens
+				}
+			}
+			
+			transition DenyTakingOff_WL {
+				from WaitingLanding;
+				to WaitingLanding;
+				trigger SignalDenyTakingOff;
+				effect {
+					// Nothing happens
+				}
+			}
+			
+			transition DenyTakingOff_AL {
+				from AbleToLand;
+				to AbleToLand;
+				trigger SignalDenyTakingOff;
+				effect {
+					// Nothing happens
+				}
+			}
+			
+}
