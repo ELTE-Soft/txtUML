@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.dom.IVariableBinding
 import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.UMLFactory
 import java.util.Set
+import org.eclipse.uml2.uml.Model
 
 /**
  * The exporter cache keeps tabs on which elements have been partially or fully exported. For identifying the
@@ -90,7 +91,7 @@ class ExporterCache {
 	}
 
 	def Set<Element> floatingElements() {
-		fetchMap.values.filter[it != null && !cache.values.contains(it)].toSet
+		fetchMap.values.filter[it != null && it.eContainer == null && !(it instanceof Model)].toSet
 	}
 
 	protected def generateAccessKey(Class<?> exporterClass, Object key) {

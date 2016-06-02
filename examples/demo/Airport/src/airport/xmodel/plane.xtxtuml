@@ -1,5 +1,7 @@
 package airport.xmodel
 
+import hu.elte.txtuml.api.stdlib.math.Math
+
 class Plane {
 	private int id;
 	private int angle;

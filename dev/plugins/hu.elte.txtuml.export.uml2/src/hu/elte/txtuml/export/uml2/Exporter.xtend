@@ -119,7 +119,7 @@ import org.eclipse.uml2.uml.PackageableElement
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
 import hu.elte.txtuml.export.uml2.stdlib.StdlibCallExporter
-import hu.elte.txtuml.export.uml2.stdlib.TimerExporter
+import hu.elte.txtuml.export.uml2.stdlib.StdlibClassExporter
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -213,7 +213,7 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 			IPackageFragment:
 				#[new PackageExporter(this)]
 			ITypeBinding:
-				#[new TimerExporter(this), new ClassExporter(this), new AssociationExporter(this),
+				#[new StdlibClassExporter(this), new ClassExporter(this), new AssociationExporter(this),
 					new AssociationEndExporter(this), new StateExporter(this), new InitStateExporter(this),
 					new ChoiceStateExporter(this), new DataTypeExporter(this), new TransitionExporter(this),
 					new SignalExporter(this), new InPortExporter(this), new OutPortExporter(this),
