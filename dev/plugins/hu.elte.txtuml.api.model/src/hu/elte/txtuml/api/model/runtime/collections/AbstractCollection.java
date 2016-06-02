@@ -61,7 +61,7 @@ public abstract class AbstractCollection<T, B extends java.util.Collection<T>> i
 		if (it.hasNext()) {
 			return it.next();
 		} else {
-			throw new NoSuchElementException();
+			return null;
 		}
 	}
 
