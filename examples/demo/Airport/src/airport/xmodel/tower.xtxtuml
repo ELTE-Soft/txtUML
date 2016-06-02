@@ -418,12 +418,9 @@ class Tower {
 			Runway ret = null;
 			
 			Collection<Runway> allRunWay = Tower.this->(TowerRunwayUsage.theRunway);
-			Iterator<Runway> itr = allRunWay.iterator();
-			while(itr.hasNext() && ret == null) {
-				Runway e = itr.next();
-				
-				if(e.getIsFree()) {
-					ret = e;	
+			for (Runway runway in allRunWay) {
+				if(runway.getIsFree()) {
+					ret = runway;	
 				}
 			}
 			return ret;
@@ -435,12 +432,9 @@ class Tower {
 			Runway ret = null;
 			
 			Collection<Runway> allRunWay = Tower.this->(TowerRunwayUsage.theRunway);
-			Iterator<Runway> itr = allRunWay.iterator();
-			while(itr.hasNext() && ret == null) {
-				Runway e = itr.next();
-				
-				if(e.getPlaneId() == planeId) {
-					ret = e;	
+			for (Runway runway in allRunWay) {
+				if(runway.getPlaneId() == planeId) {
+					ret = runway;	
 				}
 			}
 			return ret;

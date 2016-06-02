@@ -82,7 +82,7 @@ abstract class CallExporter<T> extends ActionExporter<T, CallOperationAction> {
 	}
 
 	def buildArgs(CallOperationAction call) {
-		'''«FOR arg : call.getArguments SEPARATOR ", "»«arg.type.name» «arg.name»«ENDFOR»'''
+		'''«FOR arg : call.getArguments SEPARATOR ", "»«arg?.type?.name» «arg.name»«ENDFOR»'''
 	}
 
 }
