@@ -118,6 +118,8 @@ import org.eclipse.uml2.uml.ExecutableNode
 import org.eclipse.uml2.uml.PackageableElement
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
+import hu.elte.txtuml.export.uml2.stdlib.StdlibCallExporter
+import hu.elte.txtuml.export.uml2.stdlib.TimerExporter
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -211,14 +213,15 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 			IPackageFragment:
 				#[new PackageExporter(this)]
 			ITypeBinding:
-				#[new ClassExporter(this), new AssociationExporter(this), new AssociationEndExporter(this),
-					new StateExporter(this), new InitStateExporter(this), new ChoiceStateExporter(this),
-					new DataTypeExporter(this), new TransitionExporter(this), new SignalExporter(this),
-					new InPortExporter(this), new OutPortExporter(this), new PortExporter(this),
-					new InterfaceExporter(this), new ConnectorExporter(this), new ConnectorEndExporter(this)]
+				#[new TimerExporter(this), new ClassExporter(this), new AssociationExporter(this),
+					new AssociationEndExporter(this), new StateExporter(this), new InitStateExporter(this),
+					new ChoiceStateExporter(this), new DataTypeExporter(this), new TransitionExporter(this),
+					new SignalExporter(this), new InPortExporter(this), new OutPortExporter(this),
+					new PortExporter(this), new InterfaceExporter(this), new ConnectorExporter(this),
+					new ConnectorEndExporter(this)]
 			IMethodBinding:
 				#[new DefaultConstructorExporter(this), new DefaultConstructorBodyExporter(this),
-					new OperationExporter(this), new MethodActivityExporter(this),
+					new StdlibCallExporter(this), new OperationExporter(this), new MethodActivityExporter(this),
 					new SMActivityExporter(this)]
 			IVariableBinding:
 				#[new FieldExporter(this), new ParameterExporter(this)]
@@ -227,7 +230,7 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 			MethodInvocation:
 				#[
 					new ToStringExporter(this),
-					new EqualsCallExporter(this), 
+					new EqualsCallExporter(this),
 					new PrimitiveToStringExporter(this),
 					new AutoboxExporter(this),
 					new MethodCallExporter(this),
