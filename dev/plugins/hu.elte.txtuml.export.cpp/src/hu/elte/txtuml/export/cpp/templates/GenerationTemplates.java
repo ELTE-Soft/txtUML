@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.State;
 
@@ -52,7 +53,8 @@ public class GenerationTemplates {
 	return eventBase;
     }
 
-    public static StringBuilder eventClass(String className, List<Pair<String, String>> params, Options options) {
+    public static StringBuilder eventClass(String className, List<Pair<String, String>> params, 
+    		List<Property> properites, Options options) {
 	StringBuilder source = new StringBuilder(
 		GenerationNames.ClassType + " " + GenerationNames.eventClassName(className) + ":public "
 			+ GenerationNames.EventBaseName + "\n{\n" + GenerationNames.eventClassName(className) + "(");
@@ -66,7 +68,10 @@ public class GenerationTemplates {
 	for (Pair<String, String> param : params) {
 	    source.append(
 		    "," + param.getSecond() + "(" + GenerationNames.formatIncomingParamName(param.getSecond()) + ")");
-	    body.append(PrivateFunctionalTemplates.cppType(param.getFirst()) + " " + param.getSecond() + ";\n");
+	}
+	
+	for(Property property : properites) {
+		body.append(variableDecl(property.getType().getName(), property.getName(),false));
 	}
 	source.append(body).append("};\n\n");
 	body.setLength(0);

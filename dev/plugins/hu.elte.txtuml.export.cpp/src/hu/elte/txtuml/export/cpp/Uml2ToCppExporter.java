@@ -195,12 +195,14 @@ public class Uml2ToCppExporter {
 		for (Signal item : signalList) {
 			List<Pair<String, String>> currentParams = getSignalParams(item);
 			allParam.addAll(currentParams);
-			source.append(GenerationTemplates.eventClass(item.getName(), currentParams, options));
+			source.append(GenerationTemplates.eventClass(item.getName(), 
+					 currentParams,item.getOwnedAttributes(), options));
 			events.append(item.getName() + "_EE,");
 		}
 		events = new StringBuilder(events.substring(0, events.length()-1));
 
-		source.append(GenerationTemplates.eventClass("InitSignal", new ArrayList<Pair<String, String>>(), options));
+		source.append(GenerationTemplates.eventClass("InitSignal", 
+				new ArrayList<Pair<String, String>>(),new ArrayList<Property>(),options));
 
 		for (Pair<String, String> param : allParam) {
 			if (!Shared.isBasicType(param.getFirst())) {

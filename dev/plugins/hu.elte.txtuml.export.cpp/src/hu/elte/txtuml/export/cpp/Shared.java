@@ -75,7 +75,10 @@ public class Shared {
 				   signalParameters.addAll(op.getOwnedParameters());
 			   }
 		   }
-	   }	   
+	   }
+	   
+	   //TODO need better solution
+	   signalParameters.removeIf(s -> s.getType().getName().contains(signal.getName()));
 	   
 	   return signalParameters;
    }

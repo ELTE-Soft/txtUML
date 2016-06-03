@@ -107,6 +107,10 @@ public class ActivityTemplates {
 		return Operators.getStandardSigneleOperatorName(operationName) + operand;
 
 	}
+	
+	public static String isEqualTesting(String firstArgument, String secondArgument) {
+		return firstArgument + " " + Operators.Equal + " " + secondArgument;
+	}
 
 	public static String simpleFunctionCall(String functionName, List<String> parameters) {
 		return functionName + "(" + operationCallParamList(parameters) + ")";
