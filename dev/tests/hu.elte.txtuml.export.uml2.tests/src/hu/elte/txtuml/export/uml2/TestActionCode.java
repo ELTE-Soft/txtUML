@@ -227,10 +227,11 @@ public class TestActionCode extends UMLExportTestBase {
 
 		SequenceNode body = loadActionCode(model, "TestClass", "testAuto");
 		node(body, 0, "\"a\"", ValueSpecificationAction.class);
-		node(body, 1, "3", ValueSpecificationAction.class);
-		node(body, 2, "3.toString", CallOperationAction.class);
-		node(body, 3, "\"a\"+3.toString", CallOperationAction.class);
-		node(body, 4, "a=\"a\"+3.toString", AddVariableValueAction.class);
+		node(body, 1, "\"a\".toString", CallOperationAction.class);
+		node(body, 2, "3", ValueSpecificationAction.class);
+		node(body, 3, "3.toString", CallOperationAction.class);
+		node(body, 4, "\"a\".toString+3.toString", CallOperationAction.class);
+		node(body, 5, "a=\"a\".toString+3.toString", AddVariableValueAction.class);
 	}	
 	
 	@Test
