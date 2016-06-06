@@ -533,7 +533,7 @@ public class ClassExporter {
 
 				String tmp = GenerationTemplates.variableDecl(type, item.getName(), multip);
 				// TODO suboptimal code
-				if (!source.toString().contains(tmp)) {
+				if (!source.toString().contains(item.getName())) {
 					source.append(tmp);
 				}
 			}
