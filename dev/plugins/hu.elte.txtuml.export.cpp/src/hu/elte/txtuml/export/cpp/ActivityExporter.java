@@ -295,35 +295,32 @@ public class ActivityExporter {
 		importOutputPinToMap(node_.getResult());
 
 		return ActivityTemplates.defineAndAddToCollection(otherMember.getType().getName(),
-				tempVariables.get(node_.getResult()), ActivityTemplates.selectAllTemplate(otherMember.getName()));
+				tempVariables.get(node_.getResult()), 
+				ActivityTemplates.selectAllTemplate(otherMember.getAssociation().getName(),otherMember.getName()));
 	}
 
-	private String createLinkActionCode(CreateLinkAction node_) {
-		LinkEndData firstLinkEnd = node_.getEndData().get(0);
-		LinkEndData secondLinkEnd = node_.getEndData().get(1);
+	private String createLinkActionCode(CreateLinkAction node) {
+		LinkEndData firstLinkEnd = node.getEndData().get(0);
+		LinkEndData secondLinkEnd = node.getEndData().get(1);
 
-		String firstEndClassType = firstLinkEnd.getEnd().getType().getName();
 		String firstEndObject = getTargetFromInputPin(firstLinkEnd.getValue());
-
-		String secondEndClassType = secondLinkEnd.getEnd().getType().getName();
 		String secondEndObject = getTargetFromInputPin(secondLinkEnd.getValue());
+		
 
-		return ActivityTemplates.linkObjects(firstEndClassType, firstEndObject, secondEndClassType, secondEndObject,
-				GenerationTemplates.LinkFunctionType.Link);
+		return ActivityTemplates.linkObjects(firstEndObject,secondEndObject, firstLinkEnd.getEnd().getAssociation().getName(),
+				firstLinkEnd.getEnd().getName(), secondLinkEnd.getEnd().getName(),GenerationTemplates.LinkFunctionType.Link);
 	}
 
 	private Object createDestroyLinkActionCode(DestroyLinkAction node) {
 		LinkEndData firstLinkEnd = node.getEndData().get(0);
 		LinkEndData secondLinkEnd = node.getEndData().get(1);
 
-		String firstEndClassType = firstLinkEnd.getEnd().getType().getName();
 		String firstEndObject = getTargetFromInputPin(firstLinkEnd.getValue());
-
-		String secondEndClassType = secondLinkEnd.getEnd().getType().getName();
 		String secondEndObject = getTargetFromInputPin(secondLinkEnd.getValue());
+		
 
-		return ActivityTemplates.linkObjects(firstEndClassType, firstEndObject, secondEndClassType, secondEndObject,
-				GenerationTemplates.LinkFunctionType.Unlink);
+		return ActivityTemplates.linkObjects(firstEndObject,secondEndObject,firstLinkEnd.getEnd().getAssociation().getName(),
+				firstLinkEnd.getEnd().getName(), secondLinkEnd.getEnd().getName(),GenerationTemplates.LinkFunctionType.Unlink);
 	}
 
 	private String createDestroyObjectActionCode(DestroyObjectAction node_) {

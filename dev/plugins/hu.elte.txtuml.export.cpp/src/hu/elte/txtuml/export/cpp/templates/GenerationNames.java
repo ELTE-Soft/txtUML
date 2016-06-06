@@ -76,7 +76,8 @@ class GenerationNames {
 	public static final String ParentSmMemberName = "_" + ParentSmName;
 
 	public static final String Unknown = "?";
-	public static final String AssocMultiplicityDataStruct = "Association";
+	public static final String AssocMultiplicityDataStruct = "AssociationEnd";
+	public static final String AssociationClassName = "Association";
 	public static final String AssocationHeaderName = "assocation";
 	public static final String DeploymentHeaderName = "deployment";
 	
@@ -96,11 +97,15 @@ class GenerationNames {
 	public static final String TemplateDecl = "template";
 	public static final String TemplateType = "typename";
 	public static final String TemplateParameterName = "T";
+	public static final String EndPointName = "EndPointName";
 	
 	public static final String ActionFunctionsNamespace = "action";
 	public static final String SelectAnyFunctionName = "getOne";
 	public static final String SelectAllFunctionName = "getAll";
 	public static final String Collection = "std::list";
+	public static final String AssociationsHeaderName = "associations";
+	public static final String EdgeType = "EdgeType";
+	
 	
 
 	public static String friendClassDecl(String className) {

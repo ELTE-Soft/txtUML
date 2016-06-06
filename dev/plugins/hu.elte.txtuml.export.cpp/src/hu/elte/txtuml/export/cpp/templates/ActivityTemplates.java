@@ -55,10 +55,11 @@ public class ActivityTemplates {
 		return source;
 	}
 
-	public static String linkObjects(String firstClassName, String firstObjectName, String secondClassName,
-			String secondObjectName, LinkFunctionType linkType) {
-		return GenerationNames.ActionFunctionsNamespace + "::" + GenerationTemplates.getLinkFunctionName(linkType) + "<" + firstClassName
-				+ "," + secondClassName + ">" + "(" + firstObjectName + "," + secondObjectName + ");\n";
+	public static String linkObjects(String firstObjectName,String secondObjectName, 
+			String associationName, String endPoint1, String endPoint2, LinkFunctionType linkType) {
+		return GenerationNames.ActionFunctionsNamespace + "::" + GenerationTemplates.getLinkFunctionName(linkType) + 
+				"<" + associationName + ",typename " + associationName + "::" + endPoint1 + ",typename " + associationName + "::" + endPoint2 +  
+				">" + "(" + firstObjectName + "," + secondObjectName + ");\n";
 	}
 
 	public static String signalSend(String target, String signalName) {
@@ -214,9 +215,9 @@ public class ActivityTemplates {
 
 	}
 
-	public static String selectAllTemplate(String otherEnd) {
+	public static String selectAllTemplate(String otherEnd,String associationName) {
 		return GenerationNames.Self + GenerationNames.PointerAccess +
-			otherEnd + GenerationNames.SimpleAccess + GenerationNames.SelectAllFunctionName + "()";
+		GenerationTemplates.formatAssociationRoleName(otherEnd, associationName) + GenerationNames.SimpleAccess + GenerationNames.SelectAllFunctionName + "()";
 	}
 
 	public static String collectionTemplate(String collectedType) {

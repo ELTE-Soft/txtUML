@@ -10,9 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.Activity;
-import org.eclipse.uml2.uml.Association;
-//import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Constraint;
@@ -117,12 +116,6 @@ public class ClassExporter {
 		source = (createClassCppSource(class_)).toString();
 		Shared.writeOutSource(dest_, GenerationTemplates.sourceName(realName),
 				GenerationTemplates.cppInclude(realName) + getAllDependency(class_, false) + source);
-		source = createClassLinkFunctionDefinitions(class_).toString();
-		if (!source.isEmpty()) {
-			Shared.writeOutSource(dest_, GenerationTemplates.linkSourceName(realName),
-					GenerationTemplates.cppInclude(realName) + source);
-			additionalSourcesNames.add(realName + "-link");
-		}
 	}
 
 
@@ -321,16 +314,18 @@ public class ClassExporter {
 		return source;
 	}
 	
-	private StringBuilder createLinkFunctionDeclerations(Class class_) {
-		StringBuilder source = new StringBuilder("");
+	private String createLinkFunctionDeclerations(Class class_) {
+		StringBuilder assocDeclerations = new StringBuilder("");
 		for (Property member : associationMembers) {
-			source.append(GenerationTemplates.linkTemplateSpecializationDecl(
-				realName, member.getType().getName(),GenerationTemplates.LinkFunctionType.Link));
-			source.append(GenerationTemplates.linkTemplateSpecializationDecl(
-				realName, member.getType().getName(),GenerationTemplates.LinkFunctionType.Unlink));
+						
+			assocDeclerations.append(GenerationTemplates.linkTemplateSpecializationDecl(
+				realName, member.getType().getName(), member.getName(),member.getAssociation().getName(),
+				GenerationTemplates.LinkFunctionType.Link));
+			assocDeclerations.append(GenerationTemplates.linkTemplateSpecializationDecl(
+				realName, member.getType().getName(), member.getName(),member.getAssociation().getName(),
+				GenerationTemplates.LinkFunctionType.Unlink));
 		}
-
-		return source;
+		return GenerationTemplates.cppInclude(GenerationTemplates.AssociationsStructuresHreaderName) + assocDeclerations.toString();
 	}
 
 	private Map<String, Pair<String, Region>> getSubMachines(Region region_) {
@@ -348,21 +343,6 @@ public class ClassExporter {
 			}
 		}
 		return submachineMap;
-	}
-
-	private StringBuilder createClassLinkFunctionDefinitions(Class cls) {
-		StringBuilder source = new StringBuilder("");
-
-		for (Property memberEnd : associationMembers) {
-			source.append(GenerationTemplates.linkTemplateSpecializationDef(cls.getName(),
-					memberEnd.getType().getName(), memberEnd.getName(),
-					GenerationTemplates.LinkFunctionType.Link));
-			source.append(GenerationTemplates.linkTemplateSpecializationDef(cls.getName(),
-				memberEnd.getType().getName(), memberEnd.getName(),
-				GenerationTemplates.LinkFunctionType.Unlink));
-		}
-
-		return source;
 	}
 
 	private void createFuncTypeMap(Region region, FuncTypeEnum funcType_, Boolean rt_) {
@@ -496,9 +476,12 @@ public class ClassExporter {
 			source.append(GenerationTemplates
 					.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.StandardFunctionsHeader));
 			source.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
+			source.append(GenerationTemplates.cppInclude
+					(GenerationTemplates.AssociationsStructuresHreaderName));
 		} else {
 			source.append(GenerationTemplates
 					.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.AssocationHeader));
+			
 		}
 
 		source.append("\n");
@@ -623,27 +606,21 @@ public class ClassExporter {
 
 	private StringBuilder getAssocations(Class class_) {
 		StringBuilder source = new StringBuilder("");
-		for (Association association : class_.getAssociations()) {
+		EList<Property> associationProperties = class_.getOwnedAttributes();
+		associationProperties.removeIf(p -> p.getAssociation() == null);
+		for (Property prop : associationProperties) {
+			
+			int upper = prop.getUpper();
+			int lower = prop.getLower();
 
-			Property memberEnd = null;
-			String linkedClass;
-
-			for (Property prop : association.getMemberEnds()) {
-				if (!prop.getType().equals(class_)) {
-					memberEnd = prop;
-				}
-			}
-
-			int upper = memberEnd.getUpper();
-			int lower = memberEnd.getLower();
-
-			if (memberEnd.getUpper() == _UMLMany) {
+			if (prop.getUpper() == _UMLMany) {
 				upper = Integer.MAX_VALUE;
 			}
 
-			linkedClass = GenerationTemplates.assocationDecl(memberEnd.getType().getName(), memberEnd.getName(), lower,
+			String linkedClass = GenerationTemplates.assocationDecl(prop.getType().getName(), 
+					GenerationTemplates.formatAssociationRoleName(prop.getAssociation().getName(), prop.getName()), lower,
 					upper);
-			associationMembers.add(memberEnd);
+			associationMembers.add(prop);
 			source.append(linkedClass);
 		}
 		return source;

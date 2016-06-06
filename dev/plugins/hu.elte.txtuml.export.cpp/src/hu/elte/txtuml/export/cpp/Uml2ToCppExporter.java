@@ -24,6 +24,7 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
+import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.osgi.framework.Bundle;
@@ -42,6 +43,7 @@ public class Uml2ToCppExporter {
 	private static final String RUNTIME_LIB_NAME = "libsmrt";
 	private static final String DEFAULT_TARGET_EXECUTABLE = "main";
 	private static final String DEFAULT_DEPLOYMENT_NAME = "deployment";
+	private static final String DEFAULT_ASSOCIATIONS_NAME = "associations";
 	private static final String PROJECT_NAME = "hu.elte.txtuml.export.cpp";
 	private static final String CPP_FILES_FOLDER_NAME = "cpp-runtime";
 
@@ -82,6 +84,7 @@ public class Uml2ToCppExporter {
 
 		Shared.writeOutSource(outputDirectory, (GenerationTemplates.EventHeader), createEventSource(elements));
 
+
 		copyPreWrittenCppFiles(outputDirectory);
 
 		for (Class item : classList) {
@@ -102,13 +105,9 @@ public class Uml2ToCppExporter {
 		}
 
 		createCMakeFile(outputDirectory);
+		createAssociationsSources(outputDirectory);
 	}
 
-	
-	/*private String getNextGeneteredClass() {
-		generatedClassCounter++;
-		return "GeneratedClass" + generatedClassCounter;
-	}*/
 
 	
 	private String getRealClassName(Class cls) {
@@ -178,6 +177,7 @@ public class Uml2ToCppExporter {
 		List<String> sourceNames = new ArrayList<String>();
 		sourceNames.add(DEFAULT_TARGET_EXECUTABLE);
 		sourceNames.add(DEFAULT_DEPLOYMENT_NAME);
+		sourceNames.add(DEFAULT_ASSOCIATIONS_NAME);
 		sourceNames.addAll(classNames);
 		cmake.addExecutableTarget(DEFAULT_TARGET_EXECUTABLE, sourceNames, "");
 		cmake.writeOutCMakeLists();
@@ -218,6 +218,61 @@ public class Uml2ToCppExporter {
 		forwardDecl.append("enum Events {" +  events + "};\n");
 		forwardDecl.append(source);
 		return GenerationTemplates.eventHeaderGuard(forwardDecl.toString());
+	}
+	
+	private void createAssociationsSources(String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException {		
+		
+		Set<String> associatedClasses = new HashSet<String>();
+		StringBuilder includes = new StringBuilder
+				(GenerationTemplates.cppInclude(GenerationTemplates.AssociationsStructuresHreaderName));
+		StringBuilder preDeclerations = new StringBuilder("");
+		StringBuilder structures = new StringBuilder("");
+		StringBuilder functions = new StringBuilder("");
+		
+		List<Association> associationList = new ArrayList<Association>();
+		Shared.getTypedElements(associationList, elements, UMLPackage.Literals.ASSOCIATION);
+		for(Association assoc: associationList) {
+			String e1 = assoc.getMemberEnds().get(0).getType().getName();
+			String e1Name = assoc.getMemberEnds().get(0).getName();
+			String e2 = assoc.getMemberEnds().get(1).getType().getName();
+			String e2Name = assoc.getMemberEnds().get(1).getName();
+			associatedClasses.add(e1);
+			associatedClasses.add(e2);
+		    structures.append(GenerationTemplates.createAssociationStructure
+		    		(assoc.getName(),e1,e2,e1Name,e2Name));
+		    
+		    functions.append(GenerationTemplates.linkTemplateSpecializationDef(e1,
+					e2, assoc.getName(), e2Name,
+					GenerationTemplates.LinkFunctionType.Link));
+		    functions.append(GenerationTemplates.linkTemplateSpecializationDef(e2,
+					e1, assoc.getName(), e1Name,
+					GenerationTemplates.LinkFunctionType.Link));
+		    
+		    functions.append(GenerationTemplates.linkTemplateSpecializationDef(e2,
+					e1, assoc.getName(), e1Name,
+					GenerationTemplates.LinkFunctionType.Unlink));		    
+		    functions.append(GenerationTemplates.linkTemplateSpecializationDef(e1,
+					e2, assoc.getName(), e2Name,
+					GenerationTemplates.LinkFunctionType.Unlink));
+
+		    
+		    
+		    
+		}
+		
+		for(String className : associatedClasses) {
+			includes.append(GenerationTemplates.cppInclude(className));
+			preDeclerations.append(GenerationTemplates.forwardDeclaration(className));
+		}
+		
+		Shared.writeOutSource(outputDirectory, (GenerationTemplates.AssociationStructuresHeader), 
+				GenerationTemplates.headerGuard
+				(GenerationTemplates.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.AssocationHeader)	
+						+ preDeclerations.toString() + structures.toString(), 
+						GenerationTemplates.AssociationsStructuresHreaderName));
+		Shared.writeOutSource(outputDirectory, (GenerationTemplates.AssociationStructuresSource), includes.toString() + functions.toString());
+				
+		
 	}
 
 	private List<Pair<String, String>> getSignalParams(Signal signal) {

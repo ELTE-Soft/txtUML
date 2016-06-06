@@ -5,30 +5,37 @@
 
 namespace action 
 {
-    template<typename E1, typename E2>
-    void link(E1* e1, E2* e2)
-    {
-        e1->link<E2>(e2);
-        e2->link<E1>(e1);
-    }
+	template<typename T, typename FirstRole, typename SecondRole>
+	void link(typename FirstRole::EdgeType* e1, typename SecondRole::EdgeType* e2)
+	{
+		e1->link<T,SecondRole>(e2);
+		e2->link<T,FirstRole>(e1);
+	}
 	
-	template<typename E1, typename E2>
-    void unlink(E1* e1, E2* e2)
-    {
-        e1->unlink<E2>(e2);
-        e2->unlink<E1>(e1);
-    }
+	template<typename T, typename FirstRole, typename SecondRole>
+	void unlink(typename FirstRole::EdgeType* e1, typename SecondRole::EdgeType* e2)
+	{
+		e1->link<T,SecondRole>(e2);
+		e2->link<T,FirstRole>(e1);
+	}
 }
 
 enum Multiplicity {One, Many, Some};
 
+template<typename End1Type, typename End2Type>
+struct Association
+{
+	typedef End1Type E1;
+	typedef End2Type E2;
+};
+
 template <typename T>
-class Association
+class AssociationEnd
 {
 
 public:
 
-    Association(Multiplicity multiplicity_): multiplicity(multiplicity_) {}
+    AssociationEnd(Multiplicity multiplicity_): multiplicity(multiplicity_) {}
 
     void addAssoc(T* o)
     {

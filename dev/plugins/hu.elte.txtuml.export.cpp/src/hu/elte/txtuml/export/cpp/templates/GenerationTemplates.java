@@ -28,6 +28,9 @@ public class GenerationTemplates {
     public static final String InitStateMachineProcedureName = GenerationNames.InitStateMachine;
     public static final String StandardFunctionsHeader = GenerationNames.StandardLibaryFunctionsHeaderName;
     public static final String AssocationHeader = GenerationNames.AssocationHeaderName;
+    public static final String AssociationsStructuresHreaderName = GenerationNames.AssociationsHeaderName;
+    public static final String AssociationStructuresHeader = GenerationNames.AssociationsHeaderName + "." + GenerationNames.HeaderExtension;
+    public static final String AssociationStructuresSource = GenerationNames.AssociationsHeaderName + "." + GenerationNames.SourceExtension;
     public static final String DeploymentHeader = GenerationNames.DeploymentHeaderName;
 
     public static final String InitSignal = GenerationNames.InitialEventName;
@@ -349,41 +352,46 @@ public class GenerationTemplates {
 		+ ";\n}";
     }
 
-    public static StringBuilder linkTemplateSpecializationDecl(String className, String otherClassName,LinkFunctionType linkFunction) {
+    
+    public static StringBuilder templateLinkFunctionGeneralDef(LinkFunctionType linkFunction) {
+
+	StringBuilder source = new StringBuilder("");
+	source.append(GenerationNames.TemplateDecl + "<" + GenerationNames.TemplateType + " "
+		+ GenerationNames.TemplateParameterName + "," + 
+			GenerationNames.TemplateType + " " + GenerationNames.EndPointName +  ">\n");
+	source.append(GenerationNames.NoReturn + " " + getLinkFunctionName(linkFunction));
+	source.append("("+ GenerationNames.TemplateType 
+			+ " " + PrivateFunctionalTemplates.cppType(GenerationNames.EndPointName + "::" + GenerationNames.EdgeType) + " " + ") {}\n");
+
+	return source;
+    }
+    
+    public static StringBuilder linkTemplateSpecializationDecl(String className, String otherClassName,
+    		String otherEndPointName, String assocName, LinkFunctionType linkFunction) {
 	StringBuilder source = new StringBuilder("");
 	source.append(GenerationNames.TemplateDecl + "<>\n");
 	source.append(GenerationNames.NoReturn + " " + className + "::" + getLinkFunctionName(linkFunction));
-	source.append("<" + otherClassName + ">");
+	source.append("<" + assocName + "," + GenerationNames.TemplateType + " " + assocName + "::" + otherEndPointName + ">");
 	source.append("(" + PrivateFunctionalTemplates.cppType(otherClassName) + ");\n");
 
 	return source;
     }
 
-    public static StringBuilder linkTemplateSpecializationDef(String className, String otherClassName, String roleName,
+    public static StringBuilder linkTemplateSpecializationDef(String className, String otherClassName, String assocName, String roleName,
 	    LinkFunctionType linkFunction) {
-	StringBuilder source = new StringBuilder("");
-	source.append(GenerationNames.TemplateDecl + "<>\n");
-	source.append(GenerationNames.NoReturn + " " + className + "::" + getLinkFunctionName(linkFunction));
-	source.append("<" + otherClassName + ">");
+    	StringBuilder source = new StringBuilder("");
+    	source.append(GenerationNames.TemplateDecl + "<>\n");
+    	source.append(GenerationNames.NoReturn + " " + className + "::" + getLinkFunctionName(linkFunction));
+    	source.append("<" + assocName + "," + GenerationNames.TemplateType + " " + assocName + "::" + roleName + ">");
 	source.append("(" + PrivateFunctionalTemplates.cppType(otherClassName) + " "
 		+ GenerationNames.AssocParameterName + ")\n");
-	source.append("{\n" + roleName + GenerationNames.SimpleAccess + getAddOrRemoveAssoc(linkFunction) + "("
+	source.append("{\n" + formatAssociationRoleName(assocName, roleName) + GenerationNames.SimpleAccess + getAddOrRemoveAssoc(linkFunction) + "("
 		+ GenerationNames.AssocParameterName + ");\n}\n");
 
 	return source;
     }
 
-    public static StringBuilder templateLinkFunctionGeneralDef(LinkFunctionType linkFunction) {
 
-	StringBuilder source = new StringBuilder("");
-	source.append(GenerationNames.TemplateDecl + "<" + GenerationNames.TemplateType + " "
-		+ GenerationNames.TemplateParameterName + ">\n");
-	source.append(GenerationNames.NoReturn + " " + getLinkFunctionName(linkFunction));
-	source.append("(" + PrivateFunctionalTemplates.cppType(GenerationNames.TemplateParameterName) + " "
-		+ GenerationNames.AssocParameterName + ") {}\n");
-
-	return source;
-    }
 
     public static String getLinkFunctionName(LinkFunctionType linkFunction) {
 	if (linkFunction == LinkFunctionType.Link)
@@ -688,6 +696,10 @@ public class GenerationTemplates {
     public static String debugOnlyCodeBlock(String code_) {
 	return "#ifndef " + GenerationNames.NoDebugSymbol + "\n" + code_ + "#endif\n";
     }
+    
+    public static String formatAssociationRoleName(String associationName, String role) {
+    	return associationName + "_" + role;
+    }
 
     public static String usingTemplateType(String usedName, String typeName, List<String> templateParams) {
 	String templateParameters = "<";
@@ -700,5 +712,22 @@ public class GenerationTemplates {
 	return "using " + usedName + " = " + typeName + templateParameters + ";\n";
 
     }
+
+	public static String createAssociationStructure(String associationName, 
+			String E1, String E2, String endPoint1, String endPoint2) {
+		StringBuilder source = new StringBuilder("");
+		source.append(GenerationNames.ClassType + " " + associationName);
+		source.append(" : public " + GenerationNames.AssociationClassName);
+		source.append("<" + E1 + "," + E2 + ">{\n");
+		source.append(createEndPointClass(E1, endPoint1));
+		source.append(createEndPointClass(E2, endPoint2));
+		source.append("};\n");
+		return source.toString();
+	}
+	
+	public static String createEndPointClass(String classType, String endPointName) {
+		return GenerationNames.ClassType + " " + endPointName + "{typedef " + classType + 
+				" " + GenerationNames.EdgeType + ";};\n"; 
+	}
 
 }
