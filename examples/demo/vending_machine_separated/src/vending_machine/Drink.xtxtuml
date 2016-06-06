@@ -1,0 +1,139 @@
+package vending_machine;
+
+class Drink {
+	int price;
+	int quantity;
+	java.lang.String name; 
+	
+	public Drink(int p, int q, java.lang.String n) {
+		price = p;
+		quantity = q;
+		name = n;
+	}
+	
+	public int getPrice() {
+		return price;
+	}
+	
+	public java.lang.String getName() {
+		return name;
+	}
+	
+	public boolean onStock() {
+		return quantity > 0;
+	}
+	
+	// state machine states
+	
+	initial Init;
+	choice isThereMore;
+	
+	state Available {
+		entry {
+			// log("Drink " + name + " is avalable. Quantity: " + quantity);
+		}
+	}
+	
+	state OutOfStock {
+		entry {
+			// log("Drink " + name + " is out of stock. Please refill.");
+		}
+	}
+	
+	// state machine transitions
+	
+	transition Initialize {
+		from Init;
+		to Available;
+	}
+	
+	transition Give {
+		from Available;
+		to isThereMore;
+		trigger request;
+		effect {
+			quantity--;
+			// log("A " + name + " is given.");
+			Thread.sleep(1000);
+		}
+	}
+	
+	transition ThereIs {
+		from isThereMore;
+		to Available;
+		guard( quantity > 0);
+		effect {
+			// log("There is " + quantity + " more of " + name);
+		}
+	}
+	
+	transition ThereIsNot {
+		from isThereMore;
+		to OutOfStock;
+		guard( quantity == 0);
+		effect {
+			// log("There is no more " + name);
+		}
+	}
+	
+	transition Refill {
+		from OutOfStock;
+		to Available;
+		trigger refill;
+		effect {
+				if (quantity + trigger.quantity < 50) {
+					quantity += trigger.quantity;
+				} else {
+					quantity = 50;
+				}
+				// log("Refilling " + name);
+				Drink.this->(Serve.theMachine).selectAny().updateMessage("<html><div style='text-align: center;'>Refilling<br>" + name + "</html>");
+				Thread.sleep(1000);
+				Drink.this->(Serve.theMachine).selectAny().updateMessage("Online");
+		}
+		guard (trigger.quantity > 0);
+	}
+	
+	transition TakeAll {
+		from Available;
+		to OutOfStock;
+		trigger allGone;
+	}
+	
+	transition LoadMore {
+		from Available;
+		to Available;
+		trigger refill;
+		effect {
+			if (quantity + trigger.quantity < 50) {
+				quantity += trigger.quantity;
+			} else {
+				quantity = 50;
+			}
+			// log("Refilling " + name);
+			if (trigger.quantity >= 0) {
+				Drink.this->(Serve.theMachine).selectAny().updateMessage("<html><div style='text-align: center;'>Loading more<br>" + name + "</html>");
+			} else {
+				Drink.this->(Serve.theMachine).selectAny().updateMessage("<html><div style='text-align: center;'>Taking some<br>" + name + "</html>");
+			}
+			if (quantity <= 0) {
+				quantity = 0;
+				send new allGone() to this;
+			}
+			Thread.sleep(1000);
+			Drink.this->(Serve.theMachine).selectAny().updateMessage("Online");
+		}
+	}
+	
+	transition NotToGive {
+		from OutOfStock;
+		to OutOfStock;
+		trigger request;
+		effect {
+			// log("Sorry, " + name + " is out of stock. Refill stock before buying.");
+			Drink.this->(Serve.theMachine).selectAny().updateMessage("Out of stock");
+			Thread.sleep(1000);
+		}
+	}
+	
+}

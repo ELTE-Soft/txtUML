@@ -1,0 +1,120 @@
+package vending_machine;
+
+class VendingMachine {
+	
+	java.lang.String message;
+	
+	public VendingMachine () {
+		message = "";
+	}
+	
+	public java.lang.String getMessage() {
+		return message;
+	}
+	
+	public void updateMessage(java.lang.String newMessage) {
+		message = newMessage;
+	}
+	
+	// state machine states
+	
+	initial Init;
+	
+	state Idle {
+		entry {
+			if (VendingMachine.this->(WorkTogether.theCashRegister).selectAny().howMuchIsInside() == 0) {
+				message = "Online";
+			} else {
+				message = "Inserted: " + VendingMachine.this->(WorkTogether.theCashRegister).selectAny().howMuchIsInside();
+			}
+			// log("Vending Machine is waiting for action.");
+			
+		}
+	}
+	
+	state ShowingPrice {
+		entry {
+			Drink selectedDrink;
+			for (Drink d in VendingMachine.this->(Serve.drinks)) {
+				if (d.name.equals(trigger.name)) {
+					selectedDrink = d;
+				}
+			}
+			if (selectedDrink.onStock()) {
+				// log("Drink " + selectedDrink.getName() + " costs " + selectedDrink.getPrice());
+				message = "<html><div style='text-align: center;'>" + selectedDrink.getName() + "<br>costs " +  selectedDrink.getPrice() + "</html>";
+			} else {
+				// log("Drink " + selectedDrink.getName() + " is out of stock");
+				message = "Out of stock";
+			}
+			// TODO flush text, just with thread.sleep for now
+			Thread.sleep(1000);
+			send new done() to this;
+		}
+	}
+	
+	state Vending {
+		entry {
+			Drink selectedDrink;
+			CashRegister register = VendingMachine.this->(WorkTogether.theCashRegister).selectAny();
+			
+			for (Drink d in VendingMachine.this->(Serve.drinks)) {
+				if (d.name.equals(trigger.name)) {
+					selectedDrink = d;
+				}
+			}
+			
+			if (selectedDrink.getPrice() <= register.howMuchIsInside()) {
+				send new request() to selectedDrink;
+				if (selectedDrink.onStock()) {
+					send new giveBackCash(register.howMuchIsInside() - selectedDrink.getPrice()) to register;
+				} /*else {
+					message = "Out of stock";
+					Thread.sleep(1000);
+				}*/
+			} else {
+				// log("Sorry, the money you inserted is not enough.");
+				message = "Money not enough";
+				Thread.sleep(1000);
+			}
+			// TODO delay is solved with sleep for now
+			send new done() to this;
+		}
+	}
+		
+			
+	
+	// state machine transitions
+	
+	transition initalize {
+		from Init;
+		to Idle;
+	}
+	
+	transition showPrice {
+		from Idle;
+		to ShowingPrice;
+		trigger drinkChosen;
+		guard ( VendingMachine.this->(WorkTogether.theCashRegister).selectAny().howMuchIsInside() == 0);
+	}
+	
+	transition hidePrice {
+		from ShowingPrice;
+		to Idle;
+		trigger done;
+	}
+	
+	
+	transition startVending {
+		from Idle;
+		to Vending;
+		trigger drinkChosen;
+		guard ( VendingMachine.this->(WorkTogether.theCashRegister).selectAny().howMuchIsInside() != 0);
+	}
+	
+	transition doneVending {
+		from Vending;
+		to Idle;
+		trigger done;
+	}
+}

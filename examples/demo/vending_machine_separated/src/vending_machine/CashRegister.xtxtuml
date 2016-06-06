@@ -1,0 +1,64 @@
+package vending_machine;
+
+class CashRegister {
+	int insertedCash;
+	
+	public CashRegister() {
+		insertedCash = 0;
+	}
+	
+	public int howMuchIsInside() {
+		return insertedCash;
+	}
+	
+	// state machine states
+	
+	initial Init;
+	
+	state Taking {
+		entry {
+			// log("Cash register is taking cash. Currently inserted: " + insertedCash);
+		}
+	}
+	
+	state Returning {
+		entry {
+			// log("Cash register is returning " + trigger.howMany + " cash.");
+			CashRegister.this->(WorkTogether.theMachine).selectAny().updateMessage("Returning: " + trigger.howMany);
+			insertedCash = 0;
+			// TODO delays are solved with sleep for now
+			Thread.sleep(1000);
+			CashRegister.this->(WorkTogether.theMachine).selectAny().updateMessage("Online");
+			send new done() to this;
+		}
+	}
+	
+	// state machine transitions
+	
+	transition Initialize {
+		from Init;
+		to Taking;
+	}
+	
+	transition StopTaking {
+		from Taking;
+		to Returning;
+		trigger giveBackCash;
+	}
+	
+	transition StopReturning {
+		from Returning;
+		to Taking;
+		trigger done;
+	}
+	
+	transition TakeCash {
+		from Taking;
+		to Taking;
+		trigger insertCash;
+		effect {
+			insertedCash += trigger.coin;
+			CashRegister.this->(WorkTogether.theMachine).selectAny().updateMessage("Inserted: " + insertedCash);
+		}
+	}
+}

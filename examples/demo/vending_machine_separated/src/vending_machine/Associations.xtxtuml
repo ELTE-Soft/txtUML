@@ -1,0 +1,12 @@
+package vending_machine;
+
+composition Serve {
+	container VendingMachine theMachine;
+	0..4 Drink drinks;
+}
+
+
+composition WorkTogether {
+	container VendingMachine theMachine;
+	1 CashRegister theCashRegister;
+}

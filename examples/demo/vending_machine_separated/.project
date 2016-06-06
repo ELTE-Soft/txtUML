@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>vending_machine_separated</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.xtext.ui.shared.xtextBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>hu.elte.txtuml.project.txtumlprojectNature</nature>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>src/images/VendingMachine.png</name>
+			<type>1</type>
+			<locationURI>PROJECT_LOC/src/images/VendingMachine.png</locationURI>
+		</link>
+		<link>
+			<name>src/sounds/coin.wav</name>
+			<type>1</type>
+			<locationURI>PROJECT_LOC/src/sounds/coin.wav</locationURI>
+		</link>
+		<link>
+			<name>src/sounds/return.wav</name>
+			<type>1</type>
+			<locationURI>PROJECT_LOC/src/sounds/return.wav</locationURI>
+		</link>
+	</linkedResources>
+</projectDescription>
