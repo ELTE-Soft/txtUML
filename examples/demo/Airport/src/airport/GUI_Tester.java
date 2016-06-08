@@ -71,7 +71,7 @@ public class GUI_Tester {
 
 	public static void main(String[] args) {
 
-		ModelExecutor.create().setTraceLogging(true).run(() -> {
+		ModelExecutor.create().run(() -> {
 			try {
 				new GUI_Tester();
 			} catch (FileNotFoundException e) {

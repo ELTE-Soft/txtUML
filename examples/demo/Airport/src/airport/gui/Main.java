@@ -67,7 +67,7 @@ public class Main extends JPanel {
 	private static int numOfTowers = 0;
 
 	public static void main(String[] args) {
-		ModelExecutor.create().setTraceLogging(false).run(() -> {
+		ModelExecutor.create().run(() -> {
 			
 			// xmodel
 			X_plane_factory = new PlaneFactory();
