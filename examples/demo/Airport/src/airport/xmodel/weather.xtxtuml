@@ -1,7 +1,7 @@
 package airport.xmodel;
 
 import hu.elte.txtuml.api.stdlib.timers.Timer
-import hu.elte.txtuml.api.^model.Collection
+import hu.elte.txtuml.api.model.Collection
 
 class Weather {
 	private int temperature;
