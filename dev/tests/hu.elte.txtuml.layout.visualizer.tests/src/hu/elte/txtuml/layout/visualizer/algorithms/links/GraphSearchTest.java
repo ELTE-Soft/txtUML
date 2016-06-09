@@ -2,9 +2,9 @@ package hu.elte.txtuml.layout.visualizer.algorithms.links;
 
 import static org.junit.Assert.*;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.GraphSearch;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Boundary;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Color;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Node;
+import hu.elte.txtuml.layout.visualizer.model.Boundary;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils.Color;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils.Node;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotStartAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;

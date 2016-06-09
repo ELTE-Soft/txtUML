@@ -49,6 +49,12 @@ public class FileVisualize {
 		return true;
 	}
 
+	/**
+	 * Use this to print a diagram to an output file.
+	 * @param diagram {@link Diagram} to print.
+	 * @param outputFilePath File to print.
+	 * @return whether the print was successful or not.
+	 */
 	public static boolean printOutput(Diagram diagram, String outputFilePath) {
 		try {
 			Set<RectangleObject> objects = new HashSet<RectangleObject>();

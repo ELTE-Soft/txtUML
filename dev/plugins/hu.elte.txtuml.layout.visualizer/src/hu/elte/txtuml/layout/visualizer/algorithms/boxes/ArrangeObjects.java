@@ -363,30 +363,30 @@ public class ArrangeObjects {
 			}
 			throw new BoxArrangeConflictException(excparam,
 					"There were conflicts in the statements (cyclic, unsolvable)!");
-		} else {
-			// For all nodes in the graph G
-			for (int v = 1; v < G.V(); v++) {
-				// Node 'v' has a path from Node 'START'
-				if (sp.hasPathTo(v)) {
-					String nameOfTheObject;
-					if (v > n) {
-						// set Y coordinate
-						nameOfTheObject = _indices.inverse().get(v - n);
+		}
+		
+		// For all nodes in the graph G
+		for (int v = 1; v < G.V(); v++) {
+			// Node 'v' has a path from Node 'START'
+			if (sp.hasPathTo(v)) {
+				String nameOfTheObject;
+				if (v > n) {
+					// set Y coordinate
+					nameOfTheObject = _indices.inverse().get(v - n);
 
-						RectangleObject mod = _objects.stream().filter(o -> o.getName().equals(nameOfTheObject))
-								.findFirst().get();
-						mod.setPosition(new Point(mod.getPosition().getX(), (int) sp.distTo(v)));
-					} else {
-						// set X coordinate
-						nameOfTheObject = _indices.inverse().get(v);
-
-						RectangleObject mod = _objects.stream().filter(o -> o.getName().equals(nameOfTheObject))
-								.findFirst().get();
-						mod.setPosition(new Point((int) sp.distTo(v), mod.getPosition().getY()));
-					}
+					RectangleObject mod = _objects.stream().filter(o -> o.getName().equals(nameOfTheObject))
+							.findFirst().get();
+					mod.setPosition(new Point(mod.getPosition().getX(), (int) sp.distTo(v)));
 				} else {
-					throw new InternalException("Certain elements are not connected to the others!");
+					// set X coordinate
+					nameOfTheObject = _indices.inverse().get(v);
+
+					RectangleObject mod = _objects.stream().filter(o -> o.getName().equals(nameOfTheObject))
+							.findFirst().get();
+					mod.setPosition(new Point((int) sp.distTo(v), mod.getPosition().getY()));
 				}
+			} else {
+				throw new InternalException("Certain elements are not connected to the others!");
 			}
 		}
 	}
