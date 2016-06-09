@@ -1,0 +1,37 @@
+package airport.xmodel;
+
+association PlaneTowerUsage {
+	* Plane thePlane;
+	0..1 Tower theTower;
+}
+
+association TheFirstWaitingLandingPlane {
+	hidden 0..1 Tower theTower;
+	0..1 Plane thePlane;
+}
+
+association TheNextWaitingLandingPlane {
+	hidden 0..1 Plane fromPlane;
+	0..1 Plane toPlane;
+}
+
+association TheFirstWaitingTakingOffPlane {
+	hidden 0..1 Tower theTower;
+	0..1 Plane thePlane;
+}
+
+association TheNextWaitingTakingOffPlane {
+	hidden 0..1 Plane fromPlane;
+	0..1 Plane toPlane;
+}
+
+association TowerWeatherUsage {
+	* Tower theTower;
+	hidden 1 Weather theWeather;
+}
+
+association TowerRunwayUsage {
+	hidden 1 Tower theTower;
+	1..* Runway theRunway;
+}
+

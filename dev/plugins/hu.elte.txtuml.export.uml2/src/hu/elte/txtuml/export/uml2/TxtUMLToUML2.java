@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.uml2;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.core.filesystem.EFS;
@@ -23,6 +24,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Model;
 
 import hu.elte.txtuml.export.uml2.mapping.ModelMapCollector;
@@ -116,9 +118,12 @@ public class TxtUMLToUML2 {
 		Model model = modelExporter.export(fragment);
 
 		ExporterCache cache = modelExporter.cache;
-		
+
+		Set<Element> unrooted = cache.floatingElements();
 		if (exportMode.isErrorHandler()) {
-			cache.floatingElements().forEach(e -> e.destroy());
+			unrooted.forEach(e -> e.destroy());
+		} else if(!unrooted.isEmpty()) {
+			throw new IllegalStateException("Unrooted elements found in the exported model: " + unrooted);
 		}
 		ModelMapCollector collector = new ModelMapCollector(model.eResource().getURI());
 		cache.getMapping().forEach((s, e) -> collector.put(s, e));

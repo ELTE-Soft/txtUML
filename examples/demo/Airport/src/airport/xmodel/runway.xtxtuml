@@ -1,0 +1,57 @@
+package airport.xmodel;
+
+class Runway {
+	private int id;
+	private boolean isFree;
+	private int planeId;
+	
+	// Constructor
+		Runway(int parId) {
+			id = parId;
+			isFree = true;
+		}
+	
+	// Getters
+		public int getId() {
+			return id;
+		}
+		public boolean getIsFree() {
+			return isFree;
+		}
+		public int getPlaneId() {
+			return planeId;
+		}
+	
+	// txtUML
+	initial Init;
+		
+	state Free;
+	state Occupied;
+	
+	transition Initial {
+		from Init;
+		to Free;
+	}
+	
+	transition RegisterThePlane {
+		from Free;
+		to Occupied;
+		trigger SignalSetNewPlane;
+		effect {
+			log("The runway ("+ id +") becomes occupied");
+			isFree = false;				
+			planeId = trigger.planeId;
+		}
+	}
+	
+	// The tower send it
+	transition SetFree {
+		from Occupied;
+		to Free;
+		trigger SignalSetFreeTheRunway;
+		effect {
+			log("The runway ("+ id +") becomes free");
+			isFree = true;
+		}
+	}
+}

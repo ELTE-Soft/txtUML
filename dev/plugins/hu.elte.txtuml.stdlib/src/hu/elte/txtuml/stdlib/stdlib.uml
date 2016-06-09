@@ -419,4 +419,47 @@
       </ownedTemplateSignature>
     </ownedOperation>
   </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="__n84QCiUEeapMvtX7A4jBw" name="Timer">
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_BjLO0CiVEeapMvtX7A4jBw" name="start">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_H_9FACiVEeapMvtX7A4jBw" name="recipient"/>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_LOvVMCiVEeapMvtX7A4jBw" name="signal"/>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_NCX2ACiVEeapMvtX7A4jBw" name="delay">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_snIrMCi_EeapMvtX7A4jBw" name="Math">
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_uLzi8Ci_EeapMvtX7A4jBw" name="round">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_xlZ8ACi_EeapMvtX7A4jBw" name="num">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_zPPAkCi_EeapMvtX7A4jBw" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_zq3MoCi_EeapMvtX7A4jBw" name="sin">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_zq3MoSi_EeapMvtX7A4jBw" name="num">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_zq3Moii_EeapMvtX7A4jBw" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_10tOACi_EeapMvtX7A4jBw" name="cos">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_10tOASi_EeapMvtX7A4jBw" name="num">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_10tOAii_EeapMvtX7A4jBw" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_15EwoCi_EeapMvtX7A4jBw" name="toRadians">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_15EwoSi_EeapMvtX7A4jBw" name="num">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_15Ewoii_EeapMvtX7A4jBw" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+    </ownedOperation>
+  </packagedElement>
 </uml:Model>

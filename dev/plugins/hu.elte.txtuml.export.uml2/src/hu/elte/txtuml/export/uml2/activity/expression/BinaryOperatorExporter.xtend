@@ -65,11 +65,7 @@ class BinaryOperatorExporter extends ActionExporter<InfixExpression, CallOperati
 	}
 	
 	def autoToString(Action action) {
-		if (action.result.type.name == "String") {
-			return action
-		} else {
-			new ToStringExporter(this).createToString(action)
-		}
+		new ToStringExporter(this).createToString(action)
 	}	
 
 	def minusOp() { getImportedOperation("IntegerOperations", "sub") }
