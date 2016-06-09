@@ -60,10 +60,9 @@ public class ArrangeAssociations {
 	/**
 	 * Arranges associations between objects, on the grid.
 	 * 
-	 * @param diagramObjects
-	 *            Objects on the grid.
-	 * @param diagramAssocs
-	 *            Associations to arrange on the grid.
+	 * @param diag
+	 *            Diagram to arrange.
+	 * 
 	 * @param stats
 	 *            Statements on associations.
 	 * @param gid
@@ -193,6 +192,8 @@ public class ArrangeAssociations {
 		result.removeIf(p -> occupied.contains(p.getFirst()));
 		// Remove corner points
 		result.removeIf(p -> tempObj.isCornerPoint(p.getFirst()));
+		// Remove points around corner
+		result.removeIf(p -> isAroundCorner(tempObj, p.getFirst()));
 
 		// Set the weights of nodes.
 		for (Pair<Point, Double> pair : result) {
@@ -216,6 +217,48 @@ public class ArrangeAssociations {
 			return convertToNodes(result, tempObj);
 		else
 			return convertToInvertedNodes(result, tempObj);
+	}
+
+	private boolean isAroundCorner(RectangleObject box, Point poi) {
+
+		Integer horizontalGridToDelete = (int) Math.floor(box.getWidth() * _options.CornerPercentage);
+		Integer verticalGridToDelete = (int) Math.floor(box.getHeight() * _options.CornerPercentage);
+
+		if(box.getTopLeft().getX() == poi.getX())
+		{
+			return isCloseToCorners(box.getTopLeft(), 
+					Point.Add(box.getTopLeft(), Point.Multiply(Direction.south, box.getHeight()-1)), 
+					poi, verticalGridToDelete);
+		}
+
+		if(box.getTopLeft().getY() == poi.getY())
+		{
+			return isCloseToCorners(box.getTopLeft(), 
+					Point.Add(box.getTopLeft(), Point.Multiply(Direction.east, box.getWidth()-1)), 
+					poi, horizontalGridToDelete);
+		}
+		
+		if(box.getBottomRight().getX() == poi.getX())
+		{
+			return isCloseToCorners(box.getBottomRight(), 
+					Point.Add(box.getBottomRight(), Point.Multiply(Direction.north, box.getHeight()-1)), 
+					poi, verticalGridToDelete);
+		}
+		
+		if(box.getBottomRight().getY() == poi.getY())
+		{
+			return isCloseToCorners(box.getBottomRight(), 
+					Point.Add(box.getBottomRight(), Point.Multiply(Direction.west, box.getWidth()-1)), 
+					poi, horizontalGridToDelete);
+		}
+
+		return false;
+	}
+
+	private boolean isCloseToCorners(Point corner1, Point corner2, Point poi, Integer bound) {
+		Boolean closeTL = Point.Substract(corner1, poi).length() <= bound;
+		Boolean closeTR = Point.Substract(corner2, poi).length() <= bound;
+		return closeTL || closeTR;
 	}
 
 	private Set<Pair<Point, Double>> setReflexiveSet(Set<Pair<Point, Double>> fromSet, RectangleObject obj,
@@ -335,14 +378,14 @@ public class ArrangeAssociations {
 						&& (s.getParameters().size() == 2 || s.getParameter(2).toLowerCase().equals("start"))) {
 					// RouteConfig.START
 					Point startPoint = getStartingPoint(s.getType().asDirection(), obj);
-					Direction moveDir = s.getType().asDirection();
+					Direction moveDir = getMoveDirection(s.getType().asDirection());
 					generatePossiblePoints(link, obj, startPoint, moveDir, RouteConfig.START);
 				}
 				if (link.getTo().equals(obj.getName())
 						&& (s.getParameters().size() == 2 || s.getParameter(2).toLowerCase().equals("end"))) {
 					// RouteConfig.END
 					Point startPoint = getStartingPoint(s.getType().asDirection(), obj);
-					Direction moveDir = s.getType().asDirection();
+					Direction moveDir = getMoveDirection(s.getType().asDirection());
 					generatePossiblePoints(link, obj, startPoint, moveDir, RouteConfig.END);
 				}
 			} catch (NoSuchElementException e) {
@@ -361,7 +404,22 @@ public class ArrangeAssociations {
 			throw new InternalException("Unknown Direction!");
 	}
 
-	private void generatePossiblePoints(LineAssociation toModify, RectangleObject connectsTo, Point first,
+	private Direction getMoveDirection(Direction type) throws InternalException {
+		switch (type) {
+		case north:
+			return Direction.east;
+		case east:
+			return Direction.north;
+		case south:
+			return Direction.west;
+		case west:
+			return Direction.south;
+		}
+
+		throw new InternalException("Unknown Direction!");
+	}
+
+	private void generatePossiblePoints(LineAssociation toModify, RectangleObject connectsTo, final Point first,
 			Direction toMove, RouteConfig r) {
 		HashSet<Point> points = new HashSet<Point>();
 
@@ -369,7 +427,8 @@ public class ArrangeAssociations {
 				: connectsTo.getWidth();
 
 		for (int i = 0; i < endOfSide; ++i) {
-			points.add(Point.Add(first, Point.Multiply(toMove, i)));
+			Point temp = Point.Add(first, Point.Multiply(toMove, i));
+			points.add(temp);
 		}
 		Pair<String, RouteConfig> key = new Pair<String, LineAssociation.RouteConfig>(toModify.getId(), r);
 
@@ -464,34 +523,31 @@ public class ArrangeAssociations {
 		return result;
 	}
 
-	private Map<Point, Color> getBoxPaintedPoints(RectangleObject box)
-	{
+	private Map<Point, Color> getBoxPaintedPoints(RectangleObject box) {
 		Map<Point, Color> result = new HashMap<Point, Color>();
-		
+
 		if (box.hasInner()) {
 			// Add compositeBox's outer rim as a warning line
 			for (Point p : box.getPerimiterPoints()) {
 				result.put(p, Color.Yellow);
 			}
-			
+
 			// Add compositeBox's inner boxes
-			for(RectangleObject innerBox : box.getInner().Objects)
-			{
+			for (RectangleObject innerBox : box.getInner().Objects) {
 				result.putAll(getBoxPaintedPoints(innerBox));
 			}
-			
+
 			// Add compositeBox's inner links
-			for(LineAssociation innerLink : box.getInner().Assocs)
-			{
+			for (LineAssociation innerLink : box.getInner().Assocs) {
 				result.putAll(getRoutePaintedPoints(innerLink));
 			}
-			
+
 		} else {
 			for (Point p : box.getPoints()) {
 				result.put(p, Color.Red);
 			}
 		}
-		
+
 		return result;
 	}
 
