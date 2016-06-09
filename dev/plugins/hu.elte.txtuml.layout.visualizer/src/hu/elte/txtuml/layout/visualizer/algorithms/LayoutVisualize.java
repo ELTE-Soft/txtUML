@@ -170,17 +170,18 @@ public class LayoutVisualize {
 	 * 
 	 * @param type
 	 *            Type of the diagram to arrange.
+	 * @param pPImpl A class that implements {@link IPixelDimensionProvider} interface
 	 */
 	@Deprecated
 	public LayoutVisualize(DiagramType type, IPixelDimensionProvider pPImpl) {
 		_pixelProvider = pPImpl;
 		_options = new Options();
-		_options.DiagramType = type;
 		setDefaults();
 	}
 	
 	/**
 	 * Layout algorithm initialize. Use load(), then arrange().
+	 * @param pPImpl A class that implements {@link IPixelDimensionProvider} interface.
 	 * 
 	 * @param type
 	 *            Type of the diagram to arrange.
@@ -198,6 +199,7 @@ public class LayoutVisualize {
 		_options.ArrangeOverlaps = OverlapArrangeMode.few;
 		_options.Logging = false;
 		_options.CorridorRatio = 1.0;
+		_options.CornerPercentage = 0.05;
 	}
 
 	/**
@@ -283,7 +285,7 @@ public class LayoutVisualize {
 		ProgressManager.end();
 		
 		//TODO
-		FileVisualize.printOutput(_diagram, "C:/Users/Alez/Documents/asd/hie.txt");
+		//FileVisualize.printOutput(_diagram, "C:/Users/Alez/Documents/asd/hie.txt");
 	}
 
 	private void getOptions() {
@@ -330,8 +332,7 @@ public class LayoutVisualize {
 	}
 
 	private Integer transformAssocsIntoStatements(Integer maxGroupId) throws InternalException {
-		Pair<List<Statement>, Integer> tempPair = StatementHelper.transformAssocs(_options.DiagramType,
-				_diagram.Objects, _diagram.Assocs, maxGroupId);
+		Pair<List<Statement>, Integer> tempPair = StatementHelper.transformAssocs(_diagram, maxGroupId);
 		_statements.addAll(tempPair.getFirst());
 		return tempPair.getSecond();
 	}
@@ -354,8 +355,7 @@ public class LayoutVisualize {
 	}
 
 	private Integer addDefaultStatements(Integer maxGroupId) throws InternalException {
-		DefaultStatements ds = new DefaultStatements(_options.DiagramType, _diagram.Objects, _diagram.Assocs,
-				_statements, maxGroupId);
+		DefaultStatements ds = new DefaultStatements(_diagram, _statements, maxGroupId);
 		_statements.addAll(ds.value());
 
 		return ds.getGroupId();
@@ -462,12 +462,12 @@ public class LayoutVisualize {
 		for (RectangleObject box : toLayout.Objects) {
 			// Box doesn't have inner diagram or
 			// it has a completed layout (boxes, links)
-			if (!box.hasInner() || box.getInner().hasLayout()) {
+			if (!box.hasInner() || box.getInner().hasValidLayout()) {
 				// The box haven't had any pixel values
 				if (!box.isPixelDimensionsPresent()) {
-					Pair<Integer, Integer> dim = _pixelProvider.getPixelDimensionsFor(box);
-					box.setPixelWidth(dim.getFirst());
-					box.setPixelHeight(dim.getSecond());
+					Pair<IPixelDimensionProvider.Width, IPixelDimensionProvider.Height> dim = _pixelProvider.getPixelDimensionsFor(box);
+					box.setPixelWidth(dim.getFirst().Value);
+					box.setPixelHeight(dim.getSecond().Value);
 				} else {
 					continue;
 				}
@@ -492,9 +492,11 @@ public class LayoutVisualize {
 		return new Pair<Integer, Diagram>(aa.getGId(), toLayout);
 	}
 
+	/** Loads a diagram into the arranger.
+	 * @param diag Diagram to load.
+	 */
 	public void load(Diagram diag) {
 		_diagram = new Diagram(diag);
-		_options.DiagramType = _diagram.Type;
 	}
 
 	/***

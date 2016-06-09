@@ -144,7 +144,7 @@ public class RectangleObject {
 	/***
 	 * Setter for the position of the object.
 	 * 
-	 * @param p
+	 * @param value
 	 *            Point to set the object's position.
 	 */
 	public void setPosition(Point value) {
@@ -177,7 +177,7 @@ public class RectangleObject {
 	 * @return Integer of the grid-width of the object.
 	 */
 	public Integer getWidth() {
-		if (_width == -1 && hasInner() && getInner().hasLayout()) {
+		if (_width == -1 && hasInner() && getInner().hasValidLayout()) {
 			return getInner().getWidth() + 2;
 		}
 
@@ -202,7 +202,7 @@ public class RectangleObject {
 	 * @return Integer of the grid-height of the object.
 	 */
 	public Integer getHeight() {
-		if (_height == -1 && hasInner() && getInner().hasLayout()) {
+		if (_height == -1 && hasInner() && getInner().hasValidLayout()) {
 			return getInner().getHeight() + 2;
 		}
 
@@ -221,8 +221,12 @@ public class RectangleObject {
 		}
 	}
 
+	/**
+	 * Whether the pixel values (any) are set on this {@link RectangleObject} or not.
+	 * @return true if set, false else.
+	 */
 	public boolean isPixelDimensionsPresent() {
-		return (_pixelWidth == -1 || _pixelHeight == -1);
+		return (_pixelWidth != -1 && _pixelHeight != -1);
 	}
 
 	/**
@@ -291,11 +295,19 @@ public class RectangleObject {
 		_phantom = value;
 	}
 
+	/**
+	 * Returns the number of links connected to this {@link RectangleObject}.
+	 * @return the number of links connected to this {@link RectangleObject}.
+	 */
 	public Integer getLinkNumber()
 	{
 		return _linkNumber;
 	}
 	
+	/**
+	 * Adds to the number of links connected to this {@link RectangleObject}.
+	 * @param value number to add.
+	 */
 	public void addLinkNumber(Integer value)
 	{
 		_linkNumber = _linkNumber + value;

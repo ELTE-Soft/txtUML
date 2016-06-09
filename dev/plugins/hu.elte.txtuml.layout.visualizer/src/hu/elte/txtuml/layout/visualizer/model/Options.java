@@ -3,12 +3,7 @@ package hu.elte.txtuml.layout.visualizer.model;
 /**
  * Class that encapsulates the multiple options of the algorithm.
  */
-public class Options
-{
-	/**
-	 * The type of the diagram to arrange.
-	 */
-	public DiagramType DiagramType;
+public class Options {
 	/**
 	 * Whether to print log messages.
 	 */
@@ -21,4 +16,9 @@ public class Options
 	 * The width of the corridors between boxes relative to the boxes' side.
 	 */
 	public Double CorridorRatio;
+	/**
+	 * The percentage of grid points around the corner that are considered
+	 * corner points.
+	 */
+	public Double CornerPercentage;
 }

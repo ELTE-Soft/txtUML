@@ -147,7 +147,7 @@ public class Helper
 		
 		for (LineAssociation a : toClone)
 		{
-			result.add(a.clone());
+			result.add(new LineAssociation(a));
 		}
 		
 		return result;
@@ -170,7 +170,9 @@ public class Helper
 				return true;
 			case State:
 			case Activity:
+			case Composite:
 				return false;
+			case unknown:
 			default:
 				return true;
 		}
@@ -241,33 +243,34 @@ public class Helper
 	
 	/**
 	 * Greatest Common Divisor
-	 * @param a
-	 * @param b
-	 * @return
+	 * @param a First Number
+	 * @param b Second Number.
+	 * @return greatest common divisor of 'a' and 'b'.
 	 */
 	public static Integer gcd(Integer a, Integer b)
 	{
 		if(b == 0)
-		{
 			return a;
-		}
-		else
-		{
-			return Helper.gcd(b, a % b);
-		}
+		
+		return Helper.gcd(b, a % b);
 	}
 	
 	/**
 	 * Least Common Multiplier
-	 * @param a
-	 * @param b
-	 * @return
+	 * @param a First Number.
+	 * @param b Second Number.
+	 * @return least common multiplier of 'a' and 'b'.
 	 */
 	public static Integer lcm(Integer a, Integer b)
 	{
 		return ( Math.abs(a)/ gcd(a,b) ) * Math.abs(b);
 	}
 	
+	/**
+	 * Least Common Multiplier
+	 * @param nums Numbers to work with.
+	 * @return least common multiplier of nums.
+	 */
 	public static Integer lcm(List<Integer> nums)
 	{
 		if(nums.size() < 2)

@@ -7,11 +7,19 @@ import java.util.NoSuchElementException;
 import hu.elte.txtuml.layout.visualizer.model.Diagram;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
+/**
+ * Class that helps to enumerate {@link Diagram}s.
+ *
+ */
 public class DiagramTreeEnumerator implements Iterable<Diagram>, Iterator<Diagram> {
 
 	private ArrayList<Diagram> _diagrams;
 	private Integer currentIndex = 0;
 	
+	/**
+	 * Create {@link DiagramTreeEnumerator}.
+	 * @param diag {@link Diagram} to work with.
+	 */
 	public DiagramTreeEnumerator(Diagram diag) {
 		_diagrams = new ArrayList<Diagram>(getChildren(diag));
 	}

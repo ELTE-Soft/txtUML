@@ -6,30 +6,56 @@ import java.util.function.Function;
 
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 
+/**
+ * Class to represent a Diagram.
+ */
 public class Diagram {
 
 	// Variables
 
+	/**
+	 * Type of the {@link Diagram}.
+	 */
 	public DiagramType Type;
+	/**
+	 * {@link RectangleObject}s in the {@link Diagram}
+	 */
 	public Set<RectangleObject> Objects;
+	/**
+	 * {@link LineAssociation}s in the {@link Diagram}.
+	 */
 	public Set<LineAssociation> Assocs;
 
 	// end Variables
 
 	// Ctors
 
+	/**
+	 * Create {@link Diagram}.
+	 * @param ty Type of the {@link Diagram}.
+	 */
 	public Diagram(DiagramType ty) {
 		Type = ty;
 		Objects = new HashSet<RectangleObject>();
 		Assocs = new HashSet<LineAssociation>();
 	}
 
+	/**
+	 * Copy {@link Diagram}.
+	 * @param diag Other {@link Diagram} to copy.
+	 */
 	public Diagram(final Diagram diag) {
 		Type = diag.Type;
 		Objects = new HashSet<RectangleObject>(diag.Objects);
 		Assocs = new HashSet<LineAssociation>(diag.Assocs);
 	}
 
+	/**
+	 * Create {@link Diagram}.
+	 * @param ty Type of the {@link Diagram}.
+	 * @param os {@link RectangleObject}s in the {@link Diagram}.
+	 * @param as {@link LineAssociation}s in the {@link Diagram}.
+	 */
 	public Diagram(DiagramType ty, Set<RectangleObject> os, Set<LineAssociation> as) {
 		Type = ty;
 
@@ -89,7 +115,7 @@ public class Diagram {
 	 * 
 	 * @return whether this {@link Diagram} has a layout applied or not.
 	 */
-	public boolean hasLayout() {
+	public boolean hasValidLayout() {
 		Boolean result = true;
 
 		for (RectangleObject box1 : Objects) {
@@ -125,7 +151,7 @@ public class Diagram {
 	 * @throws InternalException 
 	 */
 	public Integer getWidth() {
-		return Math.abs(getDimensions().get_left() - getDimensions().get_right());
+		return Math.abs((getDimensions().get_right() - getDimensions().get_left()) + 1);
 	}
 
 	/**
@@ -136,7 +162,7 @@ public class Diagram {
 	 * @throws InternalException 
 	 */
 	public Integer getHeight() {
-		return Math.abs(getDimensions().get_top() - getDimensions().get_bottom());
+		return Math.abs((getDimensions().get_top() - getDimensions().get_bottom()) + 1);
 	}
 
 	/**
@@ -184,17 +210,17 @@ public class Diagram {
 			if (!box.isSpecial() && box.isPixelDimensionsPresent()) {
 				gridSum += (gridSelector.apply(box) - 1);
 				pixelSum += pixelSelector.apply(box);
-			}
+			} 
 		}
 
 		return pixelSum / gridSum;
 	}
 
 	private Boundary getDimensions() {
-		Integer left = 0;
-		Integer right = 0;
-		Integer top = 0;
-		Integer bottom = 0;
+		Integer left = Integer.MAX_VALUE;
+		Integer right = Integer.MIN_VALUE;
+		Integer top = Integer.MIN_VALUE;
+		Integer bottom = Integer.MAX_VALUE;
 
 		for (RectangleObject box : Objects) {
 			if (box.getPosition().getX() < left)

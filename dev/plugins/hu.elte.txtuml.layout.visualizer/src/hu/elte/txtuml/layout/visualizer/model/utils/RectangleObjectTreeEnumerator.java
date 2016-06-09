@@ -7,11 +7,18 @@ import java.util.Set;
 
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
+/**
+ * Class that helps enumerate {@link RectangleObject}s.
+ */
 public class RectangleObjectTreeEnumerator implements Iterable<RectangleObject>, Iterator<RectangleObject> {
 
 	private ArrayList<RectangleObject> _objects;
 	private Integer currentIndex = 0;
 	
+	/**
+	 * Create {@link RectangleObjectTreeEnumerator}.
+	 * @param objs {@link RectangleObject}s to work with.
+	 */
 	public RectangleObjectTreeEnumerator(Set<RectangleObject> objs) {
 		_objects = new ArrayList<RectangleObject>(getChildren(objs));
 		_objects.sort((box1, box2) -> box1.getName().compareTo(box2.getName()));

@@ -490,24 +490,6 @@ public class LineAssociation
 		return a1.equals(a2);
 	}
 	
-	/**
-	 * Parse a string to get a {@link LineAssociation}.
-	 * 
-	 * @param line
-	 *            {@link String} to parse.
-	 * @return Parsed {@link LineAssociation}.
-	 */
-	public static LineAssociation Parse(String line)
-	{
-		String id = line.split(":")[0];
-		String from = line.split("\\(")[1].split("-")[0].trim();
-		String to = line.split("\\)")[0].split("-")[1].trim();
-		AssociationType type = AssociationType
-				.valueOf(line.split("\\(")[2].split("\\)")[0]);
-		
-		return new LineAssociation(id, from, to, type);
-	}
-	
 	// End Statics
 	
 	// Equality
@@ -567,14 +549,6 @@ public class LineAssociation
 	public boolean isPlaced()
 	{
 		return _route.size() > 2;
-	}
-	
-	@Override
-	public LineAssociation clone()
-	{
-		LineAssociation result = new LineAssociation(this);
-		
-		return result;
 	}
 	
 	@Override

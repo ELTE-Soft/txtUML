@@ -11,22 +11,40 @@ import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.model.SpecialBox;
 import hu.elte.txtuml.layout.visualizer.model.utils.RectangleObjectTreeEnumerator;
+import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 import hu.elte.txtuml.utils.Pair;
 
+/**
+ * Diagram to help the arrangement of links in the Diagram
+ *
+ */
 public class LinkArrangeDiagram extends Diagram {
 
 	private final Integer MINIMAL_CORRIDOR_SIZE = 1;
 
 	// Variables
 
+	/**
+	 * Width of each {@link RectangleObject}'s cell.
+	 */
 	public Integer WidthOfCells;
+	/**
+	 * Height of each {@link RectangleObject}'s cell.
+	 */
 	public Integer HeightOfCells;
+	/**
+	 * Position of each {@link RectangleObject}'s cell.
+	 */
 	public HashMap<String, Point> CellPositions;
 
 	// end Variables
 
 	// Ctors
 
+	/**
+	 * Creates a {@link LinkArrangeDiagram} from a {@link Diagram}.
+	 * @param diag {@link Diagram} to clone.
+	 */
 	public LinkArrangeDiagram(final Diagram diag) {
 		super(diag);
 		WidthOfCells = 1;
@@ -34,6 +52,10 @@ public class LinkArrangeDiagram extends Diagram {
 		CellPositions = new HashMap<String, Point>();
 	}
 
+	/**
+	 * Extract the base {@link Diagram} from this {@link LinkArrangeDiagram}.
+	 * @return the base {@link Diagram}.
+	 */
 	public Diagram getDiagram()
 	{
 		return new Diagram(Type, Objects, Assocs);
@@ -43,6 +65,12 @@ public class LinkArrangeDiagram extends Diagram {
 
 	// Publics
 
+	/**
+	 * Expand of the grid in the first step. Gives boxes a width/height, 
+	 * corrects inner diagrams' positions, set boxes's cells, 
+	 * set boxes' position in cells, creates corridors between cells
+	 * @param corridorRatio Ratio to adjust corridors with.
+	 */
 	public void initialExpand(Double corridorRatio) {
 		// min of all inner box ratio
 		Pair<Double, Double> globalRatio = getMinimalRatio();
@@ -57,6 +85,13 @@ public class LinkArrangeDiagram extends Diagram {
 		updateLinks();
 	}
 
+	/**
+	 * Expand of the grid during arrangement.
+	 * Creates additional grid lines between every line. 
+	 * (Grid multiplication by 2)
+	 * @throws ConversionException Throws if a {@link Direction} is not 
+	 * convertible to {@link StatementType} or vice versa.
+	 */
 	public void expand() throws ConversionException
 	{
 		expand(2);

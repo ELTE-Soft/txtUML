@@ -89,6 +89,10 @@ public class Boundary
 		_right = r;
 	}
 	
+	/**
+	 * Copy {@link Boundary}.
+	 * @param other Other {@link Boundary} to copy.
+	 */
 	public Boundary(final Boundary other)
 	{
 		_top = new Integer(other._top);
@@ -127,8 +131,8 @@ public class Boundary
 	 * 
 	 * @param percent
 	 *            error percent to add, relative to current bounds.
-	 * @param fallback
-	 *            value to expand the boundary by minimum
+	 * @param fallback_w width value to expand the boundary by minimum.
+	 * @param fallback_h height value to expand the boundary by minimum.
 	 */
 	public void addError(Integer percent, Integer fallback_w, Integer fallback_h)
 	{

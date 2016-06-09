@@ -4,6 +4,10 @@ import java.util.Comparator;
 
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 
+/**
+ * A class that compares to {@link LineAssociation} by their priority.
+ *
+ */
 public class LinkComparator implements Comparator<LineAssociation> {
 
 	@Override

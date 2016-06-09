@@ -7,9 +7,19 @@ import hu.elte.txtuml.utils.Pair;
 public class TxtUmlPixelDimensionProvider implements IPixelDimensionProvider {
 
 	@Override
-	public Pair<Integer, Integer> getPixelDimensionsFor(RectangleObject box) {
+	public Pair<Width, Height> getPixelDimensionsFor(RectangleObject box) {
 		// TODO Auto-generated method stub
-		return new Pair<Integer, Integer>(10,10);
+
+		if (!box.hasInner()) {
+			//TODO: search among simple elements / default value
+			return Pair.of(new Width(40), new Height(40));
+		} else // if(box.hasInner())
+		{
+			Integer wpx = box.getInner().getWidth() * box.getInner().getPixelGridHorizontal();
+			Integer hpx = box.getInner().getHeight() * box.getInner().getPixelGridVertical();
+
+			return Pair.of(new Width(wpx), new Height(hpx));
+		}
 	}
 
 }

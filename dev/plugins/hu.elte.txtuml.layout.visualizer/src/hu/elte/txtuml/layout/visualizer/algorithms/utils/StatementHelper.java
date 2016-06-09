@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.StatementsConflictException;
-import hu.elte.txtuml.layout.visualizer.model.DiagramType;
+import hu.elte.txtuml.layout.visualizer.model.Diagram;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
@@ -24,7 +24,6 @@ import hu.elte.txtuml.utils.Pair;
  * This static class handles a variety of {@link Statement} related support
  * features.
  */
-//TODO: Refactor this
 public class StatementHelper {
 	/**
 	 * Returns the {@link Statement}s defined on {@link LineAssociation}s.
@@ -126,14 +125,8 @@ public class StatementHelper {
 	 * Returns a {@link Pair} of generated {@link Statement}s based on
 	 * {@link LineAssociation}s, {@link RectangleObject}s and the latest Group
 	 * Id used.
+	 * @param diag {@link Diagram} to work with.
 	 * 
-	 * @param type
-	 *            type of the diagrams.
-	 * 
-	 * @param objs
-	 *            set of {@link RectangleObject}s to check.
-	 * @param assocs
-	 *            set of {@link LineAssociation}s to check.
 	 * @param par_gid
 	 *            latest Group Id number used.
 	 * @return a {@link Pair} of generated {@link Statement}s and the latest
@@ -142,20 +135,22 @@ public class StatementHelper {
 	 *             Throws if something bad happens, which is not allowed to
 	 *             happen.
 	 */
-	public static Pair<List<Statement>, Integer> transformAssocs(DiagramType type, Set<RectangleObject> objs,
-			Set<LineAssociation> assocs, Integer par_gid) throws InternalException {
-		switch (type) {
+	public static Pair<List<Statement>, Integer> transformAssocs(final Diagram diag,  final Integer par_gid) throws InternalException {
+		switch (diag.Type) {
 		case Class:
-			return transformAssocs_ClassDiagram(assocs, par_gid);
-		case Activity:
+			return transformAssocs_ClassDiagram(diag.Assocs, par_gid);
 		case State:
+			return Pair.of(new ArrayList<Statement>(), new Integer(par_gid));
+		case Activity:
+		case Composite:
+		case unknown:
 		default:
 			throw new InternalException("This diagram type is not supported");
 		}
 	}
 
-	private static Pair<List<Statement>, Integer> transformAssocs_ClassDiagram(Set<LineAssociation> assocs,
-			Integer par_gid) throws InternalException {
+	private static Pair<List<Statement>, Integer> transformAssocs_ClassDiagram(final Set<LineAssociation> assocs,
+			final Integer par_gid) throws InternalException {
 		Integer gid = par_gid;
 		List<Statement> result = new ArrayList<Statement>();
 
@@ -212,7 +207,14 @@ public class StatementHelper {
 
 		return new Pair<List<Statement>, Integer>(result, gid);
 	}
+
 	
+	/**
+	 * Filters the {@link Statement}s that are used on {@link RectangleObject}s.
+	 * @param stats {@link Statement}s to filter.
+	 * @param objs {@link RectangleObject} to check.
+	 * @return the {@link Statement}s that are used on {@link RectangleObject}s.
+	 */
 	public static List<Statement> filterBoxStatements(final List<Statement> stats, final List<RectangleObject> objs)
 	{
 		List<Statement> result = new ArrayList<Statement>();
