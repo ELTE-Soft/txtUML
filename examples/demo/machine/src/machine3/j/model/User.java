@@ -6,7 +6,7 @@ import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
-import hu.elte.txtuml.api.stdlib.Timer;
+import hu.elte.txtuml.api.stdlib.timers.Timer;
 import machine3.j.model.associations.Usage;
 import machine3.j.model.signals.ButtonPress;
 import machine3.j.model.signals.DoTasks;

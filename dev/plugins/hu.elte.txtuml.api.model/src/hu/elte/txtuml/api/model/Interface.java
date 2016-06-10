@@ -56,7 +56,7 @@ package hu.elte.txtuml.api.model;
  *
  * @see Interface.Empty
  */
-public interface Interface extends ModelElement {
+public interface Interface {
 
 	/**
 	 * Mandatory name of every reception defined on an interface.
@@ -96,7 +96,6 @@ public interface Interface extends ModelElement {
 	 *
 	 */
 	public interface Empty extends Interface {
-
 	}
 
 }

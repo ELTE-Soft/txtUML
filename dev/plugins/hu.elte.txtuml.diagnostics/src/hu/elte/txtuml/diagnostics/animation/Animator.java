@@ -15,8 +15,8 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.papyrus.infra.services.markerlistener.IPapyrusMarker;
 import org.eclipse.papyrus.infra.services.markerlistener.PapyrusMarkerAdapter;
 
-import hu.elte.txtuml.api.diagnostics.protocol.MessageType;
-import hu.elte.txtuml.api.diagnostics.protocol.ModelEvent;
+import hu.elte.txtuml.api.model.execution.diagnostics.protocol.MessageType;
+import hu.elte.txtuml.api.model.execution.diagnostics.protocol.ModelEvent;
 import hu.elte.txtuml.diagnostics.session.InstanceRegister;
 import hu.elte.txtuml.diagnostics.session.ModelMapper;
 import hu.elte.txtuml.diagnostics.session.UniqueInstance;

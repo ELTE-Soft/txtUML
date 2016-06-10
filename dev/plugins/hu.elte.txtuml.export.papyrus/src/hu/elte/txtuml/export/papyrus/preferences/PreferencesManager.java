@@ -25,6 +25,7 @@ public class PreferencesManager{
 	public static final String CLASS_DIAGRAM_PREF = "Class Diagram";
 	public static final String ACTIVITY_DIAGRAM_PREF = "Activity Diagram";
 	public static final String STATEMACHINE_DIAGRAM_PREF = "StateMachine Diagram";
+	public static final String COMPOSITE_DIAGRAM_PREF = "Composite Structure Diagram";
 	
 	public static final String CLASS_DIAGRAM_CONSTRAINT_PREF = "Class Diagram Constraint";
 	public static final String CLASS_DIAGRAM_SIGNAL_PREF = "Class Diagram Signal";
@@ -47,6 +48,7 @@ public class PreferencesManager{
 		fieldsWithDefaultValues.put(CLASS_DIAGRAM_PREF, true);
 		fieldsWithDefaultValues.put(ACTIVITY_DIAGRAM_PREF, false);
 		fieldsWithDefaultValues.put(STATEMACHINE_DIAGRAM_PREF, true);
+		fieldsWithDefaultValues.put(COMPOSITE_DIAGRAM_PREF, true);
 		
 		fieldsWithDefaultValues.put(CLASS_DIAGRAM_CONSTRAINT_PREF, false);
 		fieldsWithDefaultValues.put(CLASS_DIAGRAM_SIGNAL_PREF, false);

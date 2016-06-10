@@ -1,23 +1,51 @@
 package hu.elte.txtuml.export.uml2.tests.models.ctors;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.To;
 
 public class TestClass extends ModelClass {
-	class Init extends Initial {
+
+	public void testParameterlessCtorCreate() {
+		Action.create(ClassWithCtors.class);
 	}
 	
-	class CtorCall extends State {
-		@Override
-		public void entry() {
-			Action.create(OtherClass.class, 1);
-		}
+	public void testParameterlessCtor() {
+		new ClassWithCtors();
+	}
+	
+	public void testParameteredCtorCreate() {
+		Action.create(ClassWithCtors.class, 1);
+	}
+	
+	public void testParameteredCtor() {
+		new ClassWithCtors(1);
+	}
+	
+	public void testDefaultCtorCreate() {
+		Action.create(DefaultConstructible.class);
+	}
+	
+	public void testDefaultCtor() {
+		new DefaultConstructible();
+	}
+	
+}
+
+class ClassWithCtors extends ModelClass {
+
+	public ClassWithCtors() {
+		this(4);
 	}
 
-	@From(Init.class)
-	@To(CtorCall.class)
-	class InitCtorCall extends Transition {
+	public ClassWithCtors(int i) {
 	}
+}
+
+class ClassExtending extends ClassWithCtors {
+	
+	public ClassExtending() {
+	}
+}
+
+class DefaultConstructible extends ModelClass {
 }

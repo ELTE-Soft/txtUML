@@ -1,6 +1,6 @@
 package clock.x.model;
 
-import hu.elte.txtuml.api.stdlib.Timer;
+import hu.elte.txtuml.api.stdlib.timers.Timer
 
 // Classes
 
@@ -169,7 +169,7 @@ class Hand {
 
 class Pendulum {
 
-	private Timer.Handle timerHandle;
+	private Timer timer;
 	private int unit;
 
 	public Pendulum() {
@@ -191,7 +191,7 @@ class Pendulum {
 		from Init;
 		to Working;
 		effect {
-			timerHandle = Timer.start(this, new Tick(), unit);
+			timer = Timer.start(this, new Tick(), unit);
 		}
 	}
 
@@ -200,7 +200,7 @@ class Pendulum {
 		to Working;
 		trigger Tick;
 		effect {
-			timerHandle.reset(unit);
+			timer.reset(unit);
 		}
 	}
 

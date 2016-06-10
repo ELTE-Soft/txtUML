@@ -1,0 +1,26 @@
+t - take off
+l - land
+
+ut - under taking off
+ht - has taken off
+
+ul - under landing
+hl - has landed
+
+at - annual taking off
+al - annual landing
+
+
+-------------------
+
+IA - In air
+OG - On ground
+
+WL - Waiting landing
+WT - Waiting taking off
+
+AL - Able to land
+AT - Able to taking off
+
+UL - Under landing
+UT - Under taking off

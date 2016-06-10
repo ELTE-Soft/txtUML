@@ -11,7 +11,7 @@ import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.JavaLaunchDelegate;
 import org.eclipse.jdt.launching.SocketUtil;
 
-import hu.elte.txtuml.api.diagnostics.protocol.GlobalSettings;
+import hu.elte.txtuml.api.model.execution.diagnostics.protocol.GlobalSettings;
 import hu.elte.txtuml.diagnostics.session.DiagnosticsPlugin;
 import hu.elte.txtuml.diagnostics.session.IDisposable;
 import hu.elte.txtuml.diagnostics.session.RuntimeSessionTracker;

@@ -16,8 +16,8 @@ import java.lang.annotation.Target;
  * <p>
  * 
  * Use on a subclass of {@link hu.elte.txtuml.api.model.StateMachine.Transition
- * Transition} and set {@link #value() value} to reference the representing class
- * of the desired vertex.
+ * Transition} and set {@link #value() value} to reference the representing
+ * class of the desired vertex.
  * <p>
  * If used on class <i>t</i> with the value referencing class <i>v</i>, the
  * following conditions must be met:
@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
  * itself or any subclasses of <code>Vertex</code> defined as inner classes of
  * {@link StateMachine},
  * <li><i>t</i> and <i>v</i> must be inner classes of the same enclosing class,
- * either a subclass of {@link Region} or
+ * either a subclass of {@link ModelClass} or
  * {@link hu.elte.txtuml.api.model.StateMachine.CompositeState CompositeState},
  * <p>
  * <b>Note:</b> {@link ModelClass} is a subclass of <code>Region</code>.</li>
@@ -46,7 +46,8 @@ import java.lang.annotation.Target;
  * 
  * See the documentation of {@link StateMachine} for detailed examples.
  * <p>
- * See the documentation of {@link Model} for an overview on modeling in JtxtUML.
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
  *
  * @see StateMachine.Transition
  * @see From

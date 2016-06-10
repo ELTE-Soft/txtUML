@@ -15,6 +15,8 @@ import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLExporter;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.export.uml2.ExportMode;
+import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
 
@@ -72,14 +74,11 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, txtUMLLayout);
 
 		try {
-			
-			this.checkEmptyLayoutDescriptions();
-			
-			IProgressService progressService = PlatformUI.getWorkbench()
-					.getProgressService();
-			
-			//This code runs on the UI thread and the following should also because of the error/warning dialogs 
-			progressService.run(false, true, new IRunnableWithProgress() {
+			this.checkEmptyLayoutDecsriptions();
+
+			IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
+
+			progressService.runInUI(progressService, new IRunnableWithProgress() {
 				
 				@Override
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
@@ -87,7 +86,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 
 					TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName, generatedFolderName,
 							txtUMLModelName, txtUMLLayout);
-					
+							
 					clean(exporter);
 					exportModel(exporter, monitor);
 					TxtUMLLayoutDescriptor layoutDescriptor = generateLayoutDescription(exporter, monitor);
@@ -212,13 +211,12 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		if(selectTxtUmlPage.getTxtUmlLayout().isEmpty()){
 			boolean answer = Dialogs.WarningConfirm("No Layout descriptions",
 					"No diagrams will be generated using the current setup,"
-							+ " because no diagram descriptions are added."
-							+ System.lineSeparator() +
-							"Use the 'Add txtUML diagram descriptions' button to avoid this message."
+							+ " because no diagram descriptions are added." + System.lineSeparator()
+							+ "Use the 'Add txtUML diagram descriptions' button to avoid this message."
 							+ System.lineSeparator() + System.lineSeparator()
-							+ "Do you want to continue without diagram descriptions?"
-					);
-			if(!answer) throw new InterruptedException();
+							+ "Do you want to continue without diagram descriptions?");
+			if (!answer)
+				throw new InterruptedException();
 		}
 	}
 }

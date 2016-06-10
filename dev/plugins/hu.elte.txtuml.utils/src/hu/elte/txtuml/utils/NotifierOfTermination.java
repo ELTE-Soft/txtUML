@@ -8,6 +8,10 @@ public abstract class NotifierOfTermination {
 	private final List<Runnable> list = new ArrayList<>();
 	private boolean terminated = false;
 
+	public synchronized boolean isAlreadyTerminated() {
+		return terminated;
+	}
+
 	/**
 	 * @return true if this object was not already terminated; false otherwise
 	 */
@@ -35,7 +39,7 @@ public abstract class NotifierOfTermination {
 	public static final class TerminationManager extends NotifierOfTermination {
 
 		@Override
-		public void notifyAllOfTermination() {
+		public synchronized void notifyAllOfTermination() {
 			super.notifyAllOfTermination();
 		}
 

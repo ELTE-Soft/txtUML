@@ -89,6 +89,10 @@ public class Shared {
 		}
 
 	}
+	
+	public static boolean isGeneratedClass(Class item) {
+			return item.getName().startsWith("#");		
+	}
 
 	public static void writeOutSource(String path_, String fileName_, String source_)
 			throws FileNotFoundException, UnsupportedEncodingException {

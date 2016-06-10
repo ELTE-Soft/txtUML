@@ -1,6 +1,8 @@
 package hu.elte.txtuml.api.model;
 
-import hu.elte.txtuml.api.model.backend.ElseException;
+import hu.elte.txtuml.api.model.Runtime.Described;
+import hu.elte.txtuml.api.model.runtime.ElseException;
+import hu.elte.txtuml.api.model.runtime.ModelClassWrapper;
 
 /**
  * Base class for state machines in the model.
@@ -178,16 +180,10 @@ import hu.elte.txtuml.api.model.backend.ElseException;
  * @see State
  * @see CompositeState
  */
-public abstract class StateMachine extends InnerClassInstancesHolder implements ModelElement {
+public abstract class StateMachine extends Described<ModelClassWrapper> {
 
 	/**
-	 * Sole constructor of <code>StateMachine</code>.
-	 */
-	StateMachine() {
-	}
-
-	/**
-	 * Base class for vertices in the model.
+	 * Base type for vertices in the model.
 	 * 
 	 * <p>
 	 * <b>Represents:</b> vertex
@@ -216,12 +212,9 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements 
 	 * @see Initial
 	 * @see Choice
 	 */
-	public class Vertex implements ModelElement {
+	public abstract class Vertex {
 
-		/**
-		 * Sole constructor of <code>Vertex</code>.
-		 */
-		Vertex() {
+		private Vertex() {
 		}
 
 		/**
@@ -240,15 +233,6 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements 
 		 * documentation of {@link Model} for details about the action language.
 		 */
 		public void exit() {
-		}
-
-		/**
-		 * Gives this object the reference of the actual triggering signal.
-		 * 
-		 * @param s
-		 *            the actual triggering signal
-		 */
-		void setSignal(Signal s) {
 		}
 
 		@Override
@@ -299,12 +283,9 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements 
 	 * @see State
 	 * @see Vertex
 	 */
-	public class Pseudostate extends Vertex {
+	public abstract class Pseudostate extends Vertex {
 
-		/**
-		 * Sole constructor of <code>Pseudostate</code>.
-		 */
-		Pseudostate() {
+		private Pseudostate() {
 		}
 
 		/**
@@ -394,16 +375,10 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements 
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 */
-	public class Initial extends Pseudostate {
-
-		/**
-		 * Sole constructor of <code>Initial</code>.
-		 */
-		protected Initial() {
-		}
+	public abstract class Initial extends Pseudostate {
 
 		@Override
-		public String getVertexTypeName() {
+		String getVertexTypeName() {
 			return "initial";
 		}
 
@@ -470,16 +445,10 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements 
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 */
-	public class Choice extends Pseudostate {
-
-		/**
-		 * Sole constructor of <code>Choice</code>.
-		 */
-		protected Choice() {
-		}
+	public abstract class Choice extends Pseudostate {
 
 		@Override
-		public String getVertexTypeName() {
+		String getVertexTypeName() {
 			return "choice";
 		}
 
@@ -556,20 +525,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements 
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 */
-	public class State extends Vertex {
-
-		/**
-		 * Before the entry or exit action of this state is called, this field
-		 * must be set to be the actual signal receiving which triggered the
-		 * transition.
-		 */
-		private Signal signal;
-
-		/**
-		 * Sole constructor of <code>State</code>.
-		 */
-		protected State() {
-		}
+	public abstract class State extends Vertex {
 
 		/**
 		 * Returns the signal receiving which triggered the execution of the
@@ -607,15 +563,17 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements 
 		 *             if the cast might not be performed
 		 */
 		@SuppressWarnings("unchecked")
-		protected final <T extends Signal> T getTrigger(Class<T> signalClass) {
-			return (T) signal;
+		protected final <T extends Signal> T getTrigger(Class<T> signalClass) throws ClassCastException {
+			return (T) runtimeInfo().getCurrentTrigger();
 		}
 
 		@Override
-		final void setSignal(Signal s) {
-			signal = s;
+		public void entry() {
 		}
 
+		@Override
+		public void exit() {
+		}
 
 		@Override
 		public String getVertexTypeName() {
@@ -685,13 +643,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements 
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 */
-	public class CompositeState extends State {
-
-		/**
-		 * Sole constructor of <code>CompositeState</code>.
-		 */
-		protected CompositeState() {
-		}
+	public abstract class CompositeState extends State {
 
 		@Override
 		public String getVertexTypeName() {
@@ -700,7 +652,10 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements 
 
 	}
 
-	static class TransitionBase implements ModelElement {
+	static abstract class TransitionBase {
+
+		private TransitionBase() {
+		}
 
 		/**
 		 * In the {@link Transition#guard guard}s of transitions which are from
@@ -732,10 +687,10 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements 
 		 *         an <i>else</i> condition
 		 * @throws ElseException
 		 *             always, due to implementation issues; should <b>not be
-		 *             caught</b> by user code.
+		 *             caught</b> by user code
 		 * @see Transition#guard
 		 */
-		protected static final boolean Else() throws ElseException {
+		protected static boolean Else() throws ElseException {
 			throw new ElseException();
 		}
 
@@ -805,44 +760,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements 
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 */
-	public class Transition extends TransitionBase {
-
-		/**
-		 * An instance of the class representing this transition's source
-		 * vertex.
-		 */
-		private final Vertex source;
-
-		/**
-		 * An instance of the class representing this transition's target
-		 * vertex.
-		 */
-		private final Vertex target;
-
-		/**
-		 * Before this transition is executed or its guard is called, this field
-		 * must be set to be the actual signal receiving which triggered the
-		 * transition.
-		 */
-		private Signal signal;
-
-		/**
-		 * Sole constructor of <code>Transition</code>.
-		 */
-		protected Transition() {
-			Class<? extends Transition> cls = getClass();
-
-			From from = cls.getAnnotation(From.class);
-			To to = cls.getAnnotation(To.class);
-
-			if (from == null || to == null) {
-				this.source = null;
-				this.target = null;
-			} else {
-				this.source = getInnerClassInstance(from.value());
-				this.target = getInnerClassInstance(to.value());
-			}
-		}
+	public abstract class Transition extends TransitionBase {
 
 		/**
 		 * Overridable method to implement the effect of this transition.
@@ -852,7 +770,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements 
 		 * actions.
 		 * <p>
 		 * If the actual transition has a trigger defined, the
-		 * {@link #getTrigger(Class) getTrigger} method can be used inside the
+		 * {@code getTrigger} method can be used inside the
 		 * overriding methods to get the triggering signal.
 		 * <p>
 		 * Overriding methods may only contain action code. See the
@@ -901,7 +819,7 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements 
 		 * should always do so.
 		 * <p>
 		 * If the actual transition has a trigger defined, the
-		 * {@link #getTrigger(Class) getTrigger} method can be used inside the
+		 * {@code getTrigger} method can be used inside the
 		 * overriding methods to get the triggering signal.
 		 * <p>
 		 * Overriding methods may only contain a condition evaluation. See the
@@ -950,60 +868,13 @@ public abstract class StateMachine extends InnerClassInstancesHolder implements 
 		 *             if the cast might not be performed
 		 */
 		@SuppressWarnings("unchecked")
-		protected final <T extends Signal> T getTrigger(Class<T> signalClass) {
-			return (T) signal;
-		}
-
-		/**
-		 * Sets the <code>signal</code> field of this transition.
-		 * <p>
-		 * Before this transition is executed or its guard is called,
-		 * <code>signal</code> must be set to be the actual signal receiving
-		 * which triggered the transition.
-		 * <p>
-		 * If the transition has no triggers defined and is not from a choice
-		 * pseudostate, the value of the <code>signal</code> field is unused.
-		 * 
-		 * @param s
-		 *            the new value of the <code>signal</code> field
-		 */
-		final void setSignal(Signal s) {
-			signal = s;
-		}
-
-		/**
-		 * @return the held instance of the class representing this transition's
-		 *         source vertex
-		 */
-		Vertex getSource() {
-			return source;
-		}
-
-		/**
-		 * @return the held instance of the class representing this transition's
-		 *         target vertex
-		 */
-		Vertex getTarget() {
-			return target;
-		}
-
-		/**
-		 * Checks if the class <code>c</code> is the representing class of this
-		 * transition's source vertex.
-		 * 
-		 * @param c
-		 *            the class to check if it is the source of this transition
-		 * @return <code>true</code> if this transition is from <code>c</code>,
-		 *         <code>false</code> otherwise
-		 */
-		boolean isFromSource(Class<?> c) {
-			return source == null ? false : c == source.getClass();
+		protected final <T extends Signal> T getTrigger(Class<T> signalClass) throws ClassCastException {
+			return (T) runtimeInfo().getCurrentTrigger();
 		}
 
 		@Override
 		public String toString() {
-			return "transition:" + getClass().getSimpleName() + " (" + source.toString() + " --> " + target.toString()
-					+ ")";
+			return "transition:" + getClass().getSimpleName();
 		}
 
 	}

@@ -25,6 +25,7 @@ Require-Bundle:
  org.eclipse.papyrus.uml.diagram.clazz;bundle-version="1.1.2",
  org.eclipse.papyrus.uml.diagram.activity;bundle-version="1.1.2",
  org.eclipse.papyrus.uml.diagram.statemachine;bundle-version="1.1.2",
+ org.eclipse.papyrus.uml.diagram.composite;bundle-version="1.1.2",
  org.eclipse.papyrus.infra.core.log;bundle-version="1.1.2",
  org.eclipse.ui.ide,
  org.eclipse.uml2.uml,

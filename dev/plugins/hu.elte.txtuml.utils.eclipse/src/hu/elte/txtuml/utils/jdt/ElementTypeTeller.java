@@ -1,5 +1,7 @@
 package hu.elte.txtuml.utils.jdt;
 
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
@@ -8,22 +10,33 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
+import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.api.model.Association;
 import hu.elte.txtuml.api.model.AssociationEnd;
+import hu.elte.txtuml.api.model.BehaviorPort;
 import hu.elte.txtuml.api.model.Composition;
 import hu.elte.txtuml.api.model.ConnectorBase;
+import hu.elte.txtuml.api.model.ConnectorBase.ConnectorEnd;
 import hu.elte.txtuml.api.model.DataType;
+import hu.elte.txtuml.api.model.Delegation;
 import hu.elte.txtuml.api.model.Interface;
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.Port;
+import hu.elte.txtuml.api.model.ModelClass.InPort;
+import hu.elte.txtuml.api.model.ModelClass.OutPort;
+import hu.elte.txtuml.api.model.ModelClass.Port;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.StateMachine.Choice;
 import hu.elte.txtuml.api.model.StateMachine.CompositeState;
@@ -185,6 +198,10 @@ public final class ElementTypeTeller {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Transition.class);
 	}
 
+	public static boolean isTransition(ITypeBinding value) {
+		return hasSuperClass(value, Transition.class.getCanonicalName());
+	}
+
 	public static boolean isSignal(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Signal.class);
 	}
@@ -197,8 +214,20 @@ public final class ElementTypeTeller {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Association.class);
 	}
 
+	public static boolean isAssociation(ITypeBinding binding) {
+		return hasSuperClass(binding, Association.class.getCanonicalName());
+	}
+
 	public static boolean isAssociationeEnd(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, AssociationEnd.class);
+	}
+
+	public static boolean isAssociationEnd(ITypeBinding value) {
+		return hasSuperClass(value, AssociationEnd.class.getCanonicalName());
+	}
+
+	public static boolean isConnectorEnd(ITypeBinding value) {
+		return hasSuperClass(value, ConnectorEnd.class.getCanonicalName());
 	}
 
 	public static boolean isComposition(TypeDeclaration typeDeclaration) {
@@ -208,26 +237,71 @@ public final class ElementTypeTeller {
 	public static boolean isContainer(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ContainmentKind.ContainerEnd.class);
 	}
+	
+	public static boolean isContainer(ITypeBinding typeBinding) {
+		return SharedUtils.typeIsAssignableFrom(typeBinding, ContainmentKind.ContainerEnd.class);
+	}
 
+	@SuppressWarnings("unchecked")
+	public static boolean isContained(TypeDeclaration declaration) {
+		TypeDeclaration parent = (TypeDeclaration) declaration.getParent();
+		return parent.bodyDeclarations().stream().filter(d -> d != declaration)
+				.anyMatch(d -> isContainer((TypeDeclaration) d));
+	}
+
+
+	public static boolean isContained(ITypeBinding value) {
+		ITypeBinding parent = (ITypeBinding) value.getDeclaringClass();
+		return Stream.of(parent.getDeclaredTypes()).filter(d -> d != value)
+				.anyMatch(d -> isContainer(d));
+	}
+	
 	public static boolean isPort(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Port.class);
+	}
+
+	public static boolean isPort(ITypeBinding value) {
+		return hasSuperClass(value, Port.class.getCanonicalName());
+	}
+	
+	public static boolean isInPort(ITypeBinding binding) {
+		return hasSuperClass(binding, InPort.class.getCanonicalName());
+	}
+	
+	public static boolean isOutPort(ITypeBinding binding) {
+		return hasSuperClass(binding, OutPort.class.getCanonicalName());
 	}
 
 	public static boolean isInterface(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Interface.class);
 	}
 
+	public static boolean isInterface(ITypeBinding bnd) {
+		return SharedUtils.typeIsAssignableFrom(bnd, Interface.class);
+	}
+
 	public static boolean isConnector(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ConnectorBase.class);
 	}
 
+	public static boolean isConnector(ITypeBinding typeDeclaration) {
+		return hasSuperClass(typeDeclaration, ConnectorBase.class.getCanonicalName());
+	}
+
 	public static boolean isSpecificClassifier(TypeDeclaration classifierDeclaration) {
 		ITypeBinding superclassBinding = classifierDeclaration.resolveBinding().getSuperclass();
+		if (superclassBinding == null) {
+			return false;
+		}
 		String superclassQualifiedName = superclassBinding.getQualifiedName();
 		boolean extendsModelClass = superclassQualifiedName.equals(ModelClass.class.getCanonicalName());
 		boolean extendsSignal = superclassQualifiedName.equals(Signal.class.getCanonicalName());
 
 		return !extendsModelClass && !extendsSignal;
+	}
+
+	public static boolean isAbstract(ITypeBinding type) {
+		return (type.getModifiers() & Modifier.ABSTRACT) != 0;
 	}
 
 	public static boolean isAbstract(TypeDeclaration typeDeclaration) {
@@ -282,9 +356,50 @@ public final class ElementTypeTeller {
 	}
 
 	public static boolean hasSuperClass(ITypeBinding type, String superClassName) {
-		while (type != null && !type.getQualifiedName().equals(superClassName)) {
+		while (type != null && !type.getErasure().getQualifiedName().equals(superClassName)) {
 			type = type.getSuperclass();
 		}
 		return type != null;
 	}
+
+	public static boolean isBehavioralPort(TypeDeclaration typeDeclaration) {
+		for (IAnnotationBinding annot : typeDeclaration.resolveBinding().getAnnotations()) {
+			if (annot.getAnnotationType().getQualifiedName().equals(BehaviorPort.class.getCanonicalName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean isVariable(Expression expr) {
+		if (!(expr instanceof Name)) {
+			return false;
+		}
+		IBinding binding = ((Name) expr).resolveBinding();
+		if (!(binding instanceof IVariableBinding)) {
+			return false;
+		}
+		IVariableBinding varBinding = (IVariableBinding) binding;
+		return !varBinding.isField();
+	}
+
+	public static boolean isFieldAccess(Expression expr) {
+		if (expr instanceof FieldAccess) {
+			return true;
+		}
+		if (!(expr instanceof Name)) {
+			return false;
+		}
+		IBinding binding = ((Name) expr).resolveBinding();
+		if (!(binding instanceof IVariableBinding)) {
+			return false;
+		}
+		IVariableBinding varBinding = (IVariableBinding) binding;
+		return varBinding.isField();
+	}
+
+	public static boolean isDelegation(ITypeBinding binding) {
+		return SharedUtils.typeIsAssignableFrom(binding, Delegation.class);
+	}
+
 }

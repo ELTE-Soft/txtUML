@@ -1,0 +1,47 @@
+package airport.xmodel;
+
+import airport.xmodel.PlaneFactory.Initial;
+import airport.xmodel.PlaneFactory.Ready;
+
+class PlaneFactory {
+	
+	initial Initial;
+	state Ready;
+	
+	transition Init_Ready {
+		from Initial;
+		to Ready;
+	}
+	
+	transition MakePlane {
+		from Ready;
+		to Ready;
+		trigger MakePlane;
+		effect {
+			Plane plane = new Plane(trigger.planeId, trigger.xCoord, trigger.yCoord, trigger.angle);
+			Plane lastPlane = this->(LastPlaneCreated.plane).selectAny();
+			if (lastPlane != null) {
+				unlink(LastPlaneCreated.factory, this, LastPlaneCreated.plane, lastPlane);
+			}
+			link(LastPlaneCreated.factory, this, LastPlaneCreated.plane, plane);
+			start(plane);
+		}
+	}
+	
+	public Plane lastPlaneCreated() {
+		return this->(LastPlaneCreated.plane).selectAny();
+	}
+	
+}
+
+signal MakePlane {
+	int planeId;
+	int xCoord;
+	int yCoord;
+	int angle;
+}
+
+association LastPlaneCreated {
+	0..1 PlaneFactory factory;
+	0..1 Plane plane;
+}

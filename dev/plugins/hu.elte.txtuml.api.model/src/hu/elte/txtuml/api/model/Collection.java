@@ -3,10 +3,10 @@ package hu.elte.txtuml.api.model;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Spliterator;
+import java.util.function.Predicate;
 
-import hu.elte.txtuml.api.model.backend.ManyCollection;
-import hu.elte.txtuml.api.model.backend.SingleItemCollection;
-import hu.elte.txtuml.api.model.blocks.ParameterizedCondition;
+import hu.elte.txtuml.api.model.runtime.collections.Maybe;
+import hu.elte.txtuml.api.model.runtime.collections.Sequence;
 
 /**
  * Base interface for immutable collections.
@@ -31,14 +31,15 @@ import hu.elte.txtuml.api.model.blocks.ParameterizedCondition;
  * </ul>
  * 
  * <p>
- * See the documentation of {@link Model} for an overview on modeling in JtxtUML.
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
  *
  * @param <T>
  *            the type of objects to be contained in this collection
  * @see Collection.Empty
  * @see AssociationEnd
  */
-public interface Collection<T> extends Iterable<T>, ModelElement {
+public interface Collection<T> extends Iterable<T> {
 
 	/**
 	 * Checks if this collection is empty.
@@ -72,6 +73,7 @@ public interface Collection<T> extends Iterable<T>, ModelElement {
 	 * order is guaranteed, this method is allowed to return the same object
 	 * each time it is called on the same collection.
 	 * 
+	 *             if this collection is empty
 	 * @return an element of this collection, <code>null</code> if the
 	 *         collection is empty
 	 */
@@ -81,13 +83,13 @@ public interface Collection<T> extends Iterable<T>, ModelElement {
 	 * Selects all elements of this collection for which the specified condition
 	 * holds.
 	 * 
-	 * @param cond
+	 * @param pred
 	 *            a condition to filter the elements of this collection
 	 * @return a new collection containing the selected elements
 	 * @throws NullPointerException
-	 *             if <code>cond</code> is <code>null</code>
+	 *             if <code>pred</code> is <code>null</code>
 	 */
-	Collection<T> selectAll(ParameterizedCondition<T> cond);
+	Collection<T> selectAll(Predicate<T> pred);
 
 	/**
 	 * Creates a new collection which contains all the elements of this
@@ -103,14 +105,14 @@ public interface Collection<T> extends Iterable<T>, ModelElement {
 	 * Creates a new collection which contains all the elements of this
 	 * collection and also the elements of the specified collection.
 	 *
-	 * @param objects
+	 * @param elements
 	 *            the other collection which's elements are to be included in
 	 *            the result
 	 * @return a new collection containing the desired elements
 	 * @throws NullPointerException
 	 *             if <code>objects</code> is <code>null</code>
 	 */
-	Collection<T> addAll(Collection<T> objects);
+	Collection<T> addAll(Collection<T> elements);
 
 	/**
 	 * Creates a new collection which contains all the elements of this
@@ -192,18 +194,18 @@ public interface Collection<T> extends Iterable<T>, ModelElement {
 		}
 
 		@Override
-		public Collection<T> selectAll(ParameterizedCondition<T> cond) {
+		public Collection<T> selectAll(Predicate<T> cond) {
 			return this;
 		}
 
 		@Override
 		public Collection<T> add(T object) {
-			return new SingleItemCollection<T>(object);
+			return Maybe.of(object);
 		}
 
 		@Override
 		public Collection<T> addAll(Collection<T> objects) {
-			return new ManyCollection<T>(objects);
+			return Sequence.of(objects);
 		}
 
 		@Override
