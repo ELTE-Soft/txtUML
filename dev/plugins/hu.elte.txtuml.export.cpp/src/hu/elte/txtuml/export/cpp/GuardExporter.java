@@ -60,7 +60,7 @@ public class GuardExporter{
 			} else if (guard_.eClass().equals(UMLPackage.Literals.OPAQUE_EXPRESSION)) {
 				OpaqueExpression expression = (OpaqueExpression) guard_;
 				if(expression.getBehavior() != null && expression.getBehavior().eClass().equals(UMLPackage.Literals.ACTIVITY))
-					activityExporter.reinitilaize();
+					activityExporter.init();
 					source = activityExporter.createfunctionBody( (Activity) expression.getBehavior()).toString();
 			} else {
 				source = "UNKNOWN_GUARD_TYPE";

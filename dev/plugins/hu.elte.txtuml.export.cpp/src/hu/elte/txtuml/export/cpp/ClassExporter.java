@@ -268,7 +268,7 @@ public class ClassExporter {
 		}
 
 		for (Operation operation : class_.getOwnedOperations()) {
-			activityExporter.reinitilaize();
+			activityExporter.init();
 			String funcBody = "";
 			for (Behavior behavior : operation.getMethods()) {
 
@@ -367,7 +367,7 @@ public class ClassExporter {
 
 			if (behavior != null) {
 				if (behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
-					activityExporter.reinitilaize();					
+					activityExporter.init();					
 					source = activityExporter.createfunctionBody((Activity)behavior).toString();
 					name = item.getName() + "_" + unknownName;
 					map.put(name, new Pair<String, String>(item.getName(), source.toString()));
@@ -501,7 +501,7 @@ public class ClassExporter {
 		StringBuilder source = new StringBuilder("");
 		for (Transition item : region_.getTransitions()) {
 			String body = "";
-			activityExporter.reinitilaize();
+			activityExporter.init();
 			Behavior b = item.getEffect();
 			if (b != null && b.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
 				Activity a = (Activity) b;
@@ -509,7 +509,7 @@ public class ClassExporter {
 			}
 
 			source.append(GenerationTemplates.transitionActionDef(className_, item.getName(),
-					body + createSetState(item) + "\n"));
+					body + createSetState(item) + "\n", activityExporter.isContainsSignalAcces()));
 		}
 		source.append("\n");
 		return source;

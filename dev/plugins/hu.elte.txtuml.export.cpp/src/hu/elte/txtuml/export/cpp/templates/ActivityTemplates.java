@@ -95,7 +95,7 @@ public class ActivityTemplates {
 	}
 
 	public static String invokeProcedure(String operationName, List<String> parameters) {
-		return Operators.getStandardOperationName(operationName) + "(" + operationCallParamList(parameters) + ");\n";
+		return Operators.getStandardLibaryFunctionName(operationName) + "(" + operationCallParamList(parameters) + ");\n";
 	}
 
 	public static String stdLibOperationCall(String operationName, String left, String right) {
@@ -114,7 +114,7 @@ public class ActivityTemplates {
 	}
 
 	public static String simpleFunctionCall(String functionName, List<String> parameters) {
-		return functionName + "(" + operationCallParamList(parameters) + ")";
+		return Operators.getStandardLibaryFunctionName(functionName) + "(" + operationCallParamList(parameters) + ")";
 	}
 
 	public static String operationCallOnPointerVariable(String ownerName, String operationName, List<String> params) {
@@ -271,7 +271,7 @@ public class ActivityTemplates {
 	}
 	
 	public static String generatedTempVariable(int count) {
-	    return "generated_tmp" + count;
+	    return "gen" + count;
 	}
 
 	public static class Operators {
@@ -298,11 +298,11 @@ public class ActivityTemplates {
 		public static final String Not = "!";
 		public static final String And = "&&";
 		public static final String Or = "||";
-
-		public static final String Log = GenerationNames.
-			ActionFunctionsNamespace + "::" + "log";
+		
+		public static final String Log = "log";
 		public static final String Select = "select";
 		public static final String Concat = "concat";
+		public static final String ToString = "toString";
 		public static String Fork(String cond, String e1, String e2) {
 			return cond + " ? " + e1 + " : " + e2;
 		}
@@ -352,12 +352,6 @@ public class ActivityTemplates {
 			case "or":
 				name = Or;
 				break;
-			case "log":
-				name = Log;
-				break;
-			case "select":
-			    	name = Select;
-			    	break;
 			}
 
 			return name;
@@ -375,17 +369,27 @@ public class ActivityTemplates {
 			case "not":
 				name = Not;
 				break;
-			case "select":
-			    	name = Select;
 			default:
 				name = "";
 			}
 
 			return name;
 		}
+		
+		public static String getStandardLibaryFunctionName(String function) {
+			switch (function) {
+			case ToString :
+				return GenerationNames.ConversionNamspace + "::" + "to_string";
+			case Log :
+				return GenerationNames.ActionFunctionsNamespace + "::" + Log;
+			default:
+				return function;
+			}
+		}
 
 		public static boolean isStdLibFunction(String name) {
-			if (name.equals("delayedInc") || name.equals("delayedDec") || name.equals("select") ||  name.equals("concat")) {
+			if (name.equals("delayedInc") || name.equals("delayedDec") || 
+					name.equals(Select) ||  name.equals(Concat) || name.equals(ToString) || name.equals(Log)) {
 				return true;
 			} else {
 				return false;
@@ -398,6 +402,20 @@ public class ActivityTemplates {
 	   
 	    return name.startsWith(ProcessorDirectivesSign) || name.equals("return");
 	}
+
+	public static String setRegex(String variableName) {
+		return "[ ]*" + variableName + "[ ]*=[^;]*;\n";
+	}
+	
+	public static String declareRegex(String variableName) {
+		return "[ a-zA-z0-9<>]*" + variableName + "[ ]*;\n";
+	}
+
+	public static String formatUserVar(String varName, int userVarCounter) {
+		return varName + "_us" + userVarCounter;
+	}
+
+
 
 
 

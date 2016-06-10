@@ -293,9 +293,16 @@ public class GenerationTemplates {
 	return functionDecl(transitionActionName, params);
     }
 
-    public static String transitionActionDef(String className, String transitionActionName, String body) {
+    public static String transitionActionDef(String className, String transitionActionName, String body, boolean singalAcces) {
 	List<Pair<String, String>> params = new LinkedList<Pair<String, String>>();
-	params.add(new Pair<String, String>(GenerationNames.EventBaseRefName, GenerationNames.EventParamName));
+	if(singalAcces) {
+		params.add(new Pair<String, String>(GenerationNames.EventBaseRefName, GenerationNames.EventParamName));
+	}
+	else {
+		params.add(new Pair<String, String>(GenerationNames.EventBaseRefName,""));
+
+	}
+
 
 	return functionDef(className, transitionActionName, params,
 		PrivateFunctionalTemplates.debugLogMessage(className, transitionActionName) + body);
@@ -377,17 +384,19 @@ public class GenerationTemplates {
 	return source;
     }
 
-    public static StringBuilder linkTemplateSpecializationDef(String className, String otherClassName, String assocName, String roleName,
-	    LinkFunctionType linkFunction) {
+    public static StringBuilder linkTemplateSpecializationDef(String className, String otherClassName, String assocName, String roleName, boolean isNavigable,
+	    LinkFunctionType linkFunction) {   	
     	StringBuilder source = new StringBuilder("");
-    	source.append(GenerationNames.TemplateDecl + "<>\n");
-    	source.append(GenerationNames.NoReturn + " " + className + "::" + getLinkFunctionName(linkFunction));
-    	source.append("<" + assocName + "," + GenerationNames.TemplateType + " " + assocName + "::" + roleName + ">");
-	source.append("(" + PrivateFunctionalTemplates.cppType(otherClassName) + " "
-		+ GenerationNames.AssocParameterName + ")\n");
-	source.append("{\n" + formatAssociationRoleName(assocName, roleName) + GenerationNames.SimpleAccess + getAddOrRemoveAssoc(linkFunction) + "("
-		+ GenerationNames.AssocParameterName + ");\n}\n");
-
+    	if(isNavigable) {
+        	source.append(GenerationNames.TemplateDecl + "<>\n");
+        	source.append(GenerationNames.NoReturn + " " + className + "::" + getLinkFunctionName(linkFunction));
+        	source.append("<" + assocName + "," + GenerationNames.TemplateType + " " + assocName + "::" + roleName + ">");
+    	source.append("(" + PrivateFunctionalTemplates.cppType(otherClassName) + " "
+    		+ GenerationNames.AssocParameterName + ")\n");
+    	source.append("{\n" + formatAssociationRoleName(assocName, roleName) + GenerationNames.SimpleAccess + getAddOrRemoveAssoc(linkFunction) + "("
+    		+ GenerationNames.AssocParameterName + ");\n}\n");
+    	}
+    	
 	return source;
     }
 

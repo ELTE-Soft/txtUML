@@ -48,7 +48,8 @@ class GenerationNames {
 	public static final String ProcessEventFName = "process_event";
 	public static final String ProcessEventDeclShared = "bool " + ProcessEventFName + "(" + EventBaseRefName + " "
 			+ EventFParamName + ")";
-	public static final String ProcessEventDecl = ProcessEventDeclShared + ";\n";
+	public static final String UnParametrizadProcessEvent = "bool " + ProcessEventFName + "(" + EventBaseRefName + ")";
+	public static final String ProcessEventDecl = UnParametrizadProcessEvent + ";\n";
 	public static final String TransitionTable = "std::unordered_multimap<" + EventStateTypeName + "," + GuardActionName
 			+ "> " + TransitionTableName + ";\n";
 	public static final String SetStateDecl = NoReturn + " " + setStateFuncName + "(int "
@@ -58,7 +59,7 @@ class GenerationNames {
 	public static final String StatemachineBaseName = "StateMachineBase";
 	public static final String StatemachineBaseHeaderName = "statemachinebase";
 	public static final String DefaultGuardName = "defaultGuard";
-	public static final String DummyProcessEventDef = ProcessEventDeclShared + "{return false;}\n";
+	public static final String DummyProcessEventDef = UnParametrizadProcessEvent + "{return false;}\n";
 	public static final String StartSmMethodName = "startSM";
 
 	// hierarchical state machine
@@ -105,6 +106,7 @@ class GenerationNames {
 	public static final String Collection = "std::list";
 	public static final String AssociationsHeaderName = "associations";
 	public static final String EdgeType = "EdgeType";
+	public static final String ConversionNamspace = "conversion";
 	
 	
 
@@ -185,6 +187,9 @@ class GenerationNames {
 	}
 
 	public static String formatIncomingParamName(String paramName) {
+		if(paramName.isEmpty())
+			return "";
+		
 		return paramName + IncomingParamTypeId;
 	}
 }

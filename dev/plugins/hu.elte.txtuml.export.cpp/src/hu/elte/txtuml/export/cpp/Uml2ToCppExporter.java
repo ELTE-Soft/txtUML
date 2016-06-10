@@ -232,27 +232,29 @@ public class Uml2ToCppExporter {
 		List<Association> associationList = new ArrayList<Association>();
 		Shared.getTypedElements(associationList, elements, UMLPackage.Literals.ASSOCIATION);
 		for(Association assoc: associationList) {
-			String e1 = assoc.getMemberEnds().get(0).getType().getName();
-			String e1Name = assoc.getMemberEnds().get(0).getName();
-			String e2 = assoc.getMemberEnds().get(1).getType().getName();
-			String e2Name = assoc.getMemberEnds().get(1).getName();
+			Property e1End = assoc.getMemberEnds().get(0);
+			Property e2End = assoc.getMemberEnds().get(1);
+			String e1 = e1End.getType().getName();
+			String e1Name = e1End.getName();
+			String e2 = e2End.getType().getName();
+			String e2Name = e2End.getName();
 			associatedClasses.add(e1);
 			associatedClasses.add(e2);
 		    structures.append(GenerationTemplates.createAssociationStructure
 		    		(assoc.getName(),e1,e2,e1Name,e2Name));
 		    
 		    functions.append(GenerationTemplates.linkTemplateSpecializationDef(e1,
-					e2, assoc.getName(), e2Name,
+					e2, assoc.getName(), e2Name, e2End.isNavigable(),
 					GenerationTemplates.LinkFunctionType.Link));
 		    functions.append(GenerationTemplates.linkTemplateSpecializationDef(e2,
-					e1, assoc.getName(), e1Name,
+					e1, assoc.getName(), e1Name, e1End.isNavigable(),
 					GenerationTemplates.LinkFunctionType.Link));
 		    
 		    functions.append(GenerationTemplates.linkTemplateSpecializationDef(e2,
-					e1, assoc.getName(), e1Name,
+					e1, assoc.getName(), e1Name, e1End.isNavigable(),
 					GenerationTemplates.LinkFunctionType.Unlink));		    
 		    functions.append(GenerationTemplates.linkTemplateSpecializationDef(e1,
-					e2, assoc.getName(), e2Name,
+					e2, assoc.getName(), e2Name, e2End.isNavigable(),
 					GenerationTemplates.LinkFunctionType.Unlink));
 
 		    

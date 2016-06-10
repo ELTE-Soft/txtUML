@@ -4,6 +4,7 @@
 #include <memory>
 #include <mutex>
 #include <atomic>
+#include <string>
 
 #include "runtimetypes.hpp"
 
@@ -32,6 +33,7 @@ public:
   int getPoolId() {return poolId;}
   void setMessageCounter(std::atomic_int* counter) { message_counter = counter; }
   
+  virtual std::string toString() {return "";}
   virtual ~StateMachineI();
 protected:
   StateMachineI(std::shared_ptr<MessageQueueType> messageQueue_=std::shared_ptr<MessageQueueType>(new MessageQueueType()));

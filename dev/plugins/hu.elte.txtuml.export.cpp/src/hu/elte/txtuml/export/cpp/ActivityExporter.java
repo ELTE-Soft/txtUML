@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
@@ -46,7 +47,6 @@ import org.eclipse.uml2.uml.SendObjectAction;
 import org.eclipse.uml2.uml.SequenceNode;
 import org.eclipse.uml2.uml.StartClassifierBehaviorAction;
 import org.eclipse.uml2.uml.StartObjectBehaviorAction;
-import org.eclipse.uml2.uml.StructuredActivityNode;
 import org.eclipse.uml2.uml.TestIdentityAction;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -59,39 +59,43 @@ import org.eclipse.uml2.uml.ExpansionRegion;
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates.CreateObjectType;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.utils.Pair;
 
 public class ActivityExporter {
+	
 	Map<CreateObjectAction, String> _objectMap = new HashMap<CreateObjectAction, String>();
 	int tempVariableCounter;
 	int generatedTempVariableCounter;
+	int userVarCounter;
 	int signalCounter;
 	Set<String> declaredTempVariables;
 	ActivityNode returnNode;
+	private boolean containsSignalAcces;
 
 	private Map<OutputPin, String> tempVariables;
-	private Map<Variable, String> generatedTempVariableNames;
-	private Map<CallOperationAction,OutputPin> returnOutputsToCallActions;
-
-	boolean isAddVariable;
-
+	private Map<CallOperationAction,OutputPin> returnOutputsToCallActions;	
+	private Map<Variable, Pair<String,Boolean>> variableTable; // Variable - (GenVarName,Usage)
+	
 	public ActivityExporter() {
-		reinitilaize();
+		init();
 
 	}
 
-	public void reinitilaize() {
+	public void init() {
 		tempVariables = new HashMap<OutputPin, String>();
-		generatedTempVariableNames = new HashMap<Variable, String>();
 		declaredTempVariables = new HashSet<String>();
-		returnOutputsToCallActions = new HashMap<CallOperationAction,OutputPin>(); 
+		returnOutputsToCallActions = new HashMap<CallOperationAction,OutputPin>();
+		variableTable = new HashMap<Variable, Pair<String,Boolean>>();
+		containsSignalAcces = false;
 		tempVariableCounter = 0;
 		generatedTempVariableCounter = 0;
-		signalCounter = 0;
+		userVarCounter = 0;
+		signalCounter = 0;		
 		returnNode = null;
-		isAddVariable = false;
-	}
+		
+		}
 
-	public StringBuilder createfunctionBody(Activity activity_) {
+	public String createfunctionBody(Activity activity_) {
 		ActivityNode startNode = null;
 		StringBuilder source = new StringBuilder("");
 		for (ActivityNode node : activity_.getOwnedNodes()) {
@@ -100,10 +104,20 @@ public class ActivityExporter {
 				break;
 			}
 		}
-		source.append(createActivityVariables(activity_));
-		source.append(createActivityPartCode(startNode));
-		source.append(createReturnParamaterCode(activity_));
-		return source;
+		String reducedSource = createStructuredActivityNodeVariables(activity_.getVariables()) + 
+				createActivityPartCode(startNode) + createReturnParamaterCode(activity_);
+		for (Entry<Variable, Pair<String, Boolean>> var : variableTable.entrySet()) {
+			if(!var.getValue().getSecond()) {
+				reducedSource = reducedSource.replaceAll(ActivityTemplates.declareRegex(var.getValue().getFirst()), "");
+				reducedSource = reducedSource.replaceAll(ActivityTemplates.setRegex(var.getValue().getFirst()), "");
+			}
+		}
+		source.append(reducedSource);		
+		return source.toString();
+	}
+	
+	public boolean isContainsSignalAcces() {
+		return containsSignalAcces;
 	}
 	
 	private String createReturnParamaterCode(Activity activity_) {
@@ -115,18 +129,9 @@ public class ActivityExporter {
 
 	}
 
-	private String createActivityVariables(Activity activity_) {
-		//activity_.getAct
+	private String createStructuredActivityNodeVariables(EList<Variable> variables) {
 		StringBuilder source = new StringBuilder("");
-		for (Variable variable : activity_.getVariables()) {
-			source.append(createVariable(variable));
-		}
-		return source.toString();
-	}
-
-	private String createStructuredActivityNodeVariables(StructuredActivityNode structuedNode) {
-		StringBuilder source = new StringBuilder("");
-		for (Variable variable : structuedNode.getVariables()) {
+		for (Variable variable : variables) {
 			source.append(createVariable(variable));
 		}
 
@@ -138,15 +143,9 @@ public class ActivityExporter {
 		if (variable.getType() != null) {
 			type = variable.getType().getName();
 		}
-		String variableName;
-		if (ActivityTemplates.invalidIdentifier(variable.getName())) {
-			variableName = ActivityTemplates.generatedTempVariable(generatedTempVariableCounter);
-			generatedTempVariableCounter++;
-			generatedTempVariableNames.put(variable, variableName);
-		} else {
-			variableName = variable.getName();
-		}
-		return GenerationTemplates.variableDecl(type, variableName,
+		modofieVariableName(variable);	
+		
+		return GenerationTemplates.variableDecl(type, getRealVariable(variable),
 				variable.getType().eClass().equals(UMLPackage.Literals.SIGNAL));
 	}
 
@@ -158,7 +157,7 @@ public class ActivityExporter {
 
 	private String createActivityPartCode(ActivityNode startNode_, ActivityNode stopNode_,
 			List<ActivityNode> finishedControlNodes_) {
-		String source = "";
+		StringBuilder source = new StringBuilder("");
 		LinkedList<ActivityNode> nodeList = new LinkedList<ActivityNode>(Arrays.asList(startNode_));
 
 		List<ActivityNode> finishedControlNodes = finishedControlNodes_;
@@ -171,7 +170,7 @@ public class ActivityExporter {
 					currentNode = (ActivityNode) currentNode.getOwner();
 				}
 				// current node compile
-				source += createActivityNodeCode(currentNode);
+				source.append(createActivityNodeCode(currentNode));
 
 				for (ActivityNode node : getNextNodes(currentNode)) {
 					if (!finishedControlNodes.contains(node) && !nodeList.contains(node)) {
@@ -180,7 +179,7 @@ public class ActivityExporter {
 				}
 			}
 		}
-		return source;
+		return source.toString();
 	}
 
 	private StringBuilder createActivityNodeCode(ActivityNode node) {
@@ -203,10 +202,12 @@ public class ActivityExporter {
 					}
 				}
 			}
-
-			source.append(createStructuredActivityNodeVariables(seqNode));
+			
+			
+			source.append(createStructuredActivityNodeVariables(seqNode.getVariables()));			
 			for (ActivityNode aNode : seqNode.getNodes()) {
 				source.append(createActivityNodeCode(aNode));
+				
 			}
 
 		} else if (node.eClass().equals(UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION)) {
@@ -355,7 +356,7 @@ public class ActivityExporter {
 
 	private StringBuilder createCycleCode(LoopNode loopNode) {
 		StringBuilder source = new StringBuilder("");
-		source.append(createStructuredActivityNodeVariables(loopNode));
+		source.append(createStructuredActivityNodeVariables(loopNode.getVariables()));
 
 		for (ExecutableNode initNode : loopNode.getSetupParts()) {
 			source.append(createActivityNodeCode(initNode));
@@ -497,6 +498,9 @@ public class ActivityExporter {
 		} else if (node_.eClass().equals(UMLPackage.Literals.READ_VARIABLE_ACTION)) {
 
 			ReadVariableAction rA = (ReadVariableAction) node_;
+			if(!rA.getResult().getOutgoings().isEmpty() || !rA.getOutgoings().isEmpty() ||  ! (((ActivityNode) rA.getOwner()).getOutgoings().isEmpty()))
+				variableTable.replace(rA.getVariable(), new Pair<String,Boolean>(getRealVariable(rA.getVariable()),true));
+			
 			source = getRealVariable(rA.getVariable());
 		} else if (node_.eClass().equals(UMLPackage.Literals.SEQUENCE_NODE)) {
 			SequenceNode seqNode = (SequenceNode) node_;
@@ -606,6 +610,7 @@ public class ActivityExporter {
 		}
 		
 		if (node_.getOperation().getName().equals(ActivityTemplates.GetSignalFunctionName)) {
+			containsSignalAcces = true;
 			return ActivityTemplates.getRealSignal(returnPin.getType().getName(), tempVariables.get(returnPin));
 		}
 		
@@ -762,8 +767,7 @@ public class ActivityExporter {
 	}
 
 	private String getRealVariable(Variable variable) {
-		return generatedTempVariableNames.containsKey(variable) ? 
-			generatedTempVariableNames.get(variable) : variable.getName();
+		return variableTable.get(variable).getFirst();
 	}
 
 	private String addValueToTemporalVariable(String type, String var, String value) {
@@ -773,6 +777,20 @@ public class ActivityExporter {
 			declaredTempVariables.add(var);
 			return ActivityTemplates.addVariableTemplate(type, var, value);
 
+		}
+	}
+	
+	private void modofieVariableName(Variable var) {
+		if(!variableTable.containsKey(var)) {
+			if(ActivityTemplates.invalidIdentifier(var.getName())) {
+				variableTable.put(var, new Pair<String,Boolean>(ActivityTemplates.generatedTempVariable(generatedTempVariableCounter),false));
+				generatedTempVariableCounter++;
+			}
+			else {
+				variableTable.put(var, new Pair<String,Boolean>(ActivityTemplates.formatUserVar(var.getName(),userVarCounter),false));
+				userVarCounter++;
+			}
+			
 		}
 	}
 
