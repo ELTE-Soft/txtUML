@@ -21,8 +21,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 import hu.elte.txtuml.export.papyrus.utils.LayoutUtils;
 import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
-import hu.elte.txtuml.export.uml2.TxtUMLToUML2.ExportMode;
-import hu.elte.txtuml.export.uml2.transform.backend.ExportException;
+import hu.elte.txtuml.export.uml2.ExportMode;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.utils.eclipse.NotFoundException;
 
@@ -115,7 +114,7 @@ public class TxtUMLExporter {
 	 */
 	public void exportModel() throws JavaModelException, NotFoundException, IOException {
 		TxtUMLToUML2.exportModel(projectName, txtUMLModelName, projectName + "/" + outputFolder,
-				ExportMode.ExportDefinitions);
+				ExportMode.ExportActionsPedantic);
 	}
 
 	/**

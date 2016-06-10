@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -74,7 +75,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, txtUMLLayout);
 
 		try {
-			this.checkEmptyLayoutDecsriptions();
+			this.checkEmptyLayoutDescriptions();
 
 			IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
 
@@ -95,7 +96,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 
 					visualize(exporter, layoutDescriptor, monitor);
 				}
-			});
+			}, ResourcesPlugin.getWorkspace().getRoot());
 
 			return true;
 		} catch (InvocationTargetException | InterruptedException e) {

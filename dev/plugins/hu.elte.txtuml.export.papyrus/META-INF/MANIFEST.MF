@@ -48,4 +48,5 @@ Export-Package: hu.elte.txtuml.export.papyrus,
  hu.elte.txtuml.export.papyrus.layout.txtuml,
  hu.elte.txtuml.export.papyrus.preferences,
  hu.elte.txtuml.export.papyrus.wizardz
-Import-Package: hu.elte.txtuml.utils.eclipse
+Import-Package: hu.elte.txtuml.export.uml2.mapping,
+ hu.elte.txtuml.utils.eclipse
