@@ -130,7 +130,7 @@ public class ElementExporterImpl implements ElementExporter {
 	public Set<RectangleObject> getNodesAsObjects() {
 		// for efficiency purposes, phantoms are handled in NodeMap's convert()
 		// method
-		Set<RectangleObject> result = nodes.convert();
+		Set<RectangleObject> result = nodes.convert(getDiagramTypeBasedOnElements());
 		
 		convertLinks();
 		
@@ -176,8 +176,8 @@ public class ElementExporterImpl implements ElementExporter {
 				else if(isLinkOneEndInChildren(link, node))
 				{
 					// Partial
-					node.getInner().Assocs.add(link);
-					return true;
+					//node.getInner().Assocs.add(link);
+					return false;
 				}
 				else if(mergeLinkIntoObjects(link, node.getInner().Objects))
 				{
@@ -218,13 +218,11 @@ public class ElementExporterImpl implements ElementExporter {
 			if(link.getFrom().equals(child.getName()))
 			{
 				startFound = true;
-				continue;
 			}
 			
 			if(link.getTo().equals(child.getName()))
 			{
 				endFound = true;
-				continue;
 			}
 		}
 		

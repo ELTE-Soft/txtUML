@@ -17,6 +17,8 @@ import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutVisual
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.TxtUmlPixelDimensionProvider;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsMapper;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider.Height;
+import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider.Width;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
@@ -36,7 +38,7 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 	public ClassDiagramElementsArranger(DiagramExportationReport report, TxtUMLElementsMapper mapper) {
 		this.report = report;
 		this.elementsMapper = mapper;
-		this.pixelDimensionProvider = new TxtUmlPixelDimensionProvider(this.elementsMapper);
+		this.pixelDimensionProvider = new TxtUmlPixelDimensionProvider();
 	}
 
 	@Override
@@ -51,8 +53,7 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 
 		setPixelSizes(objects);
 		
-		LayoutVisualizerManager vm = new LayoutVisualizerManager(objects, links, statements, this.pixelDimensionProvider,
-				dType);
+		LayoutVisualizerManager vm = new LayoutVisualizerManager(objects, links, statements,dType);
 		vm.addProgressMonitor(monitor);
 		vm.arrange();
 		
@@ -74,9 +75,9 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 
 	private void setPixelSizes(Set<RectangleObject> objects) {
 		objects.forEach(object -> {
-			Pair<Integer, Integer> dimension = this.pixelDimensionProvider.getPixelDimensionsFor(object);
-			object.setPixelWidth(dimension.getFirst());
-			object.setPixelHeight(dimension.getSecond());
+			Pair<Width, Height> dimension = this.pixelDimensionProvider.getPixelDimensionsFor(object);
+			object.setPixelWidth(dimension.getFirst().Value);
+			object.setPixelHeight(dimension.getSecond().Value);
 		});
 	}
 

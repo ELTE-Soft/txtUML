@@ -7,14 +7,10 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
-import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Point;
-import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
-import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 /**
  * Static class for various algorithm related helping tasks, such as
@@ -151,97 +147,10 @@ public class Helper
 		
 		for (LineAssociation a : toClone)
 		{
-			result.add(a.clone());
+			result.add(new LineAssociation(a));
 		}
 		
 		return result;
-	}
-	
-	/**
-	 * Method for parsing a String value to Integer if possible.
-	 * 
-	 * @param value
-	 *            String to parse.
-	 * @return True if the value can be parsed, else False.
-	 */
-	public static boolean tryParseInt(String value)
-	{
-		try
-		{
-			Integer.parseInt(value);
-			return true;
-		}
-		catch (NumberFormatException nfe)
-		{
-			return false;
-		}
-	}
-	
-	/**
-	 * Method to convert {@link StatementType} to {@link Direction}.
-	 * 
-	 * @param ty
-	 *            StatementType to convert.
-	 * @return The converted Direction if possible.
-	 * @throws ConversionException
-	 *             Throws if the given StatementType is cannot be converted to
-	 *             any Direction.
-	 */
-	public static Direction asDirection(StatementType ty) throws ConversionException
-	{
-		switch (ty)
-		{
-			case north:
-			case above:
-				return Direction.north;
-			case south:
-			case below:
-				return Direction.south;
-			case east:
-			case right:
-				return Direction.east;
-			case west:
-			case left:
-				return Direction.west;
-			case horizontal:
-			case phantom:
-			case priority:
-			case unknown:
-			case vertical:
-			case corridorsize:
-			case overlaparrange:
-			default:
-				throw new ConversionException("Cannot convert type " + ty
-						+ " to Direction!");
-		}
-	}
-	
-	/**
-	 * Method to convert {@link Direction} to {@link StatementType}.
-	 * 
-	 * @param dir
-	 *            Dire.ction to convert
-	 * @return The converted StatementType
-	 * @throws ConversionException
-	 *             Throws if the given Direction is cannot be converted to any
-	 *             StatementType.
-	 */
-	public static StatementType asStatementType(Direction dir) throws ConversionException
-	{
-		switch (dir)
-		{
-			case north:
-				return StatementType.north;
-			case south:
-				return StatementType.south;
-			case east:
-				return StatementType.east;
-			case west:
-				return StatementType.west;
-			default:
-				throw new ConversionException("Cannot convert direction " + dir
-						+ " to StatementType!");
-		}
 	}
 	
 	/**
@@ -261,35 +170,15 @@ public class Helper
 				return true;
 			case State:
 			case Activity:
+			case Composite:
 				return false;
+			case unknown:
 			default:
 				return true;
 		}
 	}
 	
-	/**
-	 * Converts a Point(Vector) to a Direction.
-	 * 
-	 * @param p
-	 *            Point to convert.
-	 * @return The converted Direction.
-	 * @throws ConversionException
-	 *             Throws if no such Direction exists.
-	 */
-	public static Direction asDirection(Point p) throws ConversionException
-	{
-		if (p.getX() == 0 && p.getY() > 0)
-			return Direction.north;
-		if (p.getX() == 0 && p.getY() < 0)
-			return Direction.south;
-		if (p.getX() > 0 && p.getY() == 0)
-			return Direction.east;
-		if (p.getX() < 0 && p.getY() == 0)
-			return Direction.west;
-		
-		throw new ConversionException("Cannot convert Point " + p.toString()
-				+ " to any Direction!");
-	}
+	
 	
 	/**
 	 * Concatenates a list of lists of points to a single list of points.
@@ -336,30 +225,6 @@ public class Helper
 	}
 	
 	/**
-	 * Returns whether the Point p is the corner point of the Object obj.
-	 * 
-	 * @param p
-	 *            Point to check.
-	 * @param obj
-	 *            Object to check.
-	 * @return True if p is a corner point of obj.
-	 */
-	public static Boolean isCornerPoint(Point p, RectangleObject obj)
-	{
-		if (p.equals(obj.getPosition())
-				|| p.equals(Point.Add(obj.getPosition(),
-						Point.Multiply(Direction.east, obj.getWidth() - 1)))
-				|| p.equals(Point.Add(obj.getPosition(),
-						Point.Multiply(Direction.south, obj.getHeight() - 1)))
-				|| p.equals(obj.getBottomRight()))
-		{
-			return true;
-		}
-		
-		return false;
-	}
-	
-	/**
 	 * Checks if two {@link Double} values are close enough to each other to a
 	 * certain error value so they can be handled as equal.
 	 * 
@@ -376,4 +241,48 @@ public class Helper
 		return Math.abs(a - b) < error;
 	}
 	
+	/**
+	 * Greatest Common Divisor
+	 * @param a First Number
+	 * @param b Second Number.
+	 * @return greatest common divisor of 'a' and 'b'.
+	 */
+	public static Integer gcd(Integer a, Integer b)
+	{
+		if(b == 0)
+			return a;
+		
+		return Helper.gcd(b, a % b);
+	}
+	
+	/**
+	 * Least Common Multiplier
+	 * @param a First Number.
+	 * @param b Second Number.
+	 * @return least common multiplier of 'a' and 'b'.
+	 */
+	public static Integer lcm(Integer a, Integer b)
+	{
+		return ( Math.abs(a)/ gcd(a,b) ) * Math.abs(b);
+	}
+	
+	/**
+	 * Least Common Multiplier
+	 * @param nums Numbers to work with.
+	 * @return least common multiplier of nums.
+	 */
+	public static Integer lcm(List<Integer> nums)
+	{
+		if(nums.size() < 2)
+			throw new IllegalArgumentException("Need a list of at least 2 numbers!");
+		
+		Integer result = lcm(nums.get(0), nums.get(1));
+		
+		for(Integer i : nums.subList(2, nums.size()))
+		{
+			result = lcm(i, result);
+		}
+		
+		return result;
+	}
 }

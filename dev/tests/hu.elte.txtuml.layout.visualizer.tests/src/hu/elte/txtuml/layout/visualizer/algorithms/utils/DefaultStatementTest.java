@@ -1,12 +1,13 @@
-package hu.elte.txtuml.layout.visualizer.algorithms;
+package hu.elte.txtuml.layout.visualizer.algorithms.utils;
 
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import hu.elte.txtuml.layout.visualizer.algorithms.DefaultStatements;
+import hu.elte.txtuml.layout.visualizer.algorithms.utils.DefaultStatements;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
+import hu.elte.txtuml.layout.visualizer.model.Diagram;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
@@ -63,8 +64,10 @@ public class DefaultStatementTest {
 		HashSet<LineAssociation> as = new HashSet<LineAssociation>();
 		ArrayList<Statement> ss = new ArrayList<Statement>();
 		
+		Diagram diagram = new Diagram(DiagramType.Class, os, as);
+		
 		try {
-			DefaultStatements ds = new DefaultStatements(DiagramType.Class, os, as, ss, 0);
+			DefaultStatements ds = new DefaultStatements(diagram, ss, 0);
 		
 			assertEquals(new Integer(0), ds.getGroupId());
 			assertEquals(0, ds.value().size());
@@ -85,8 +88,10 @@ public class DefaultStatementTest {
 		
 		ArrayList<Statement> ss = new ArrayList<Statement>();
 		
+		Diagram diagram = new Diagram(DiagramType.Class, os, as);
+		
 		try {
-			DefaultStatements ds = new DefaultStatements(DiagramType.Class, os, as, ss, 0);
+			DefaultStatements ds = new DefaultStatements(diagram, ss, 0);
 		
 			assertEquals(new Integer(0), ds.getGroupId());
 			assertEquals(0, ds.value().size());
@@ -110,8 +115,10 @@ public class DefaultStatementTest {
 		
 		ArrayList<Statement> ss = new ArrayList<Statement>();
 		
+		Diagram diagram = new Diagram(DiagramType.Class, os, as);
+		
 		try {
-			DefaultStatements ds = new DefaultStatements(DiagramType.Class, os, as, ss, 0);
+			DefaultStatements ds = new DefaultStatements(diagram, ss, 0);
 		
 			assertEquals(new Integer(1), ds.getGroupId());
 			assertEquals(4, ds.value().size());
@@ -143,8 +150,10 @@ public class DefaultStatementTest {
 		ss.add(_a_n_b);
 		ss.add(_c_n_d);
 		
+		Diagram diagram = new Diagram(DiagramType.Class, os, as);
+		
 		try {
-			DefaultStatements ds = new DefaultStatements(DiagramType.Class, os, as, ss, 0);
+			DefaultStatements ds = new DefaultStatements(diagram, ss, 0);
 		
 			assertEquals(new Integer(1), ds.getGroupId());
 			assertEquals(4, ds.value().size());
@@ -176,8 +185,10 @@ public class DefaultStatementTest {
 		ArrayList<Statement> ss = new ArrayList<Statement>();
 		ss.add(_c_n_d);
 		
+		Diagram diagram = new Diagram(DiagramType.Class, os, as);
+		
 		try {
-			DefaultStatements ds = new DefaultStatements(DiagramType.Class, os, as, ss, 0);
+			DefaultStatements ds = new DefaultStatements(diagram, ss, 0);
 		
 			assertEquals(new Integer(1), ds.getGroupId());
 			assertEquals(4, ds.value().size());
@@ -215,8 +226,10 @@ public class DefaultStatementTest {
 		ss.add(_e_n_f);
 		ss.add(_g_n_h);
 		
+		Diagram diagram = new Diagram(DiagramType.Class, os, as);
+		
 		try {
-			DefaultStatements ds = new DefaultStatements(DiagramType.Class, os, as, ss, 0);
+			DefaultStatements ds = new DefaultStatements(diagram, ss, 0);
 		
 			assertEquals(new Integer(6), ds.getGroupId());
 			assertEquals(24, ds.value().size());		

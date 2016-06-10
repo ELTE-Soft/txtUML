@@ -18,10 +18,8 @@ import hu.elte.txtuml.layout.visualizer.exceptions.BoxOverlapConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
-import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
 import hu.elte.txtuml.layout.visualizer.exceptions.StatementsConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
-import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider;
 import hu.elte.txtuml.layout.visualizer.model.Diagram;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
@@ -32,8 +30,7 @@ import hu.elte.txtuml.layout.visualizer.statements.Statement;
  * The instance of this class handles the layout algorithm
  */
 public class LayoutVisualizerManager {
-	private Set<RectangleObject> objects;
-	private Set<LineAssociation> associations;
+	private Diagram diagram;
 	private List<Statement> statementsSet;
 	private IProgressMonitor progressMonitor = new NullProgressMonitor();
 	private final LayoutVisualize layoutVisualize;
@@ -52,11 +49,10 @@ public class LayoutVisualizerManager {
 	 *            with txtUML names
 	 */
 	public LayoutVisualizerManager(Set<RectangleObject> objects, Set<LineAssociation> links, List<Statement> statements,
-			IPixelDimensionProvider provider, DiagramType type) {
-		this.objects = objects;
-		this.associations = links;
+			DiagramType type) {
+		this.diagram = new Diagram(type, objects, links);
 		this.statementsSet = statements;
-		layoutVisualize = new LayoutVisualize(type, provider);
+		layoutVisualize = new LayoutVisualize(new TxtUmlPixelDimensionProvider());
 		layoutVisualize.setLogging(false);
 	}
 
@@ -87,14 +83,12 @@ public class LayoutVisualizerManager {
 			}
 		});
 
-		Diagram diag = new Diagram(this.objects, this.associations);
-
-		layoutVisualize.load(diag);
+		layoutVisualize.load(diagram);
 		try {
 			progressMonitor.beginTask("Arranging elements", 100);
 			progressMonitor.subTask("Arranging elements...");
 			layoutVisualize.arrange(new ArrayList<Statement>(statementsSet));
-		} catch (InternalException | BoxArrangeConflictException | ConversionException | StatementTypeMatchException
+		} catch (InternalException | BoxArrangeConflictException | ConversionException
 				| CannotFindAssociationRouteException | UnknownStatementException | BoxOverlapConflictException
 				| StatementsConflictException e) {
 
@@ -126,10 +120,10 @@ public class LayoutVisualizerManager {
 			}
 		}
 
-		objects = layoutVisualize.getDiagram().Objects;
-		associations = layoutVisualize.getDiagram().Assocs;
+		diagram = layoutVisualize.getDiagram();
 
-		FileVisualize.printOutput(objects, associations, "C:/Users/Andris/Desktop/vis.txt");
+		// FileVisualize.printOutput(diagram,
+		// "C:/Users/Andris/Documents/asd/vis.txt");
 	}
 
 	private String formatStatements(Collection<Statement> statements) {
@@ -149,14 +143,14 @@ public class LayoutVisualizerManager {
 	 * @return - The txtUML Objects
 	 */
 	public Set<RectangleObject> getObjects() {
-		return objects;
+		return diagram.Objects;
 	}
 
 	/**
 	 * @return - The txtUML Links
 	 */
 	public Set<LineAssociation> getAssociations() {
-		return associations;
+		return diagram.Assocs;
 	}
 
 	/**
@@ -169,11 +163,11 @@ public class LayoutVisualizerManager {
 	/**
 	 * @return
 	 */
-	public Integer getPixelGridRatioHorizontal() {
-		return layoutVisualize.getDiagram().getPixelGridHorizontal();
+	public int getPixelGridRatioHorizontal() {
+		return diagram.getPixelGridHorizontal().intValue();
 	}
 
-	public Integer getPixelGridRatioVertical() {
-		return layoutVisualize.getDiagram().getPixelGridVertical();
+	public int getPixelGridRatioVertical() {
+		return diagram.getPixelGridVertical().intValue();
 	}
 }

@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils;
+package hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils;
 
 import hu.elte.txtuml.layout.visualizer.model.Point;
 

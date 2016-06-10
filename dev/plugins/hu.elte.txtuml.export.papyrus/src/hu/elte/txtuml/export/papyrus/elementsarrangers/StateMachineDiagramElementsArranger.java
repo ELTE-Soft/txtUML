@@ -22,7 +22,7 @@ public class StateMachineDiagramElementsArranger implements IDiagramElementsArra
 		this.report = report;
 		this.elementsMapper = mapper;
 		//TODO: Separate pixelproviders for different diagram types
-		this.pixelDimensionProvider = new TxtUmlPixelDimensionProvider(this.elementsMapper);
+		this.pixelDimensionProvider = new TxtUmlPixelDimensionProvider();
 	}
 	
 	@Override

@@ -9,11 +9,11 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils.Color;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils.Node;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.DefaultAssocStatements;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.GraphSearch;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils.Boundary;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils.Color;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils.Node;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.LinkArrangeDiagram;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.LinkComparator;
 import hu.elte.txtuml.layout.visualizer.algorithms.utils.Helper;
 import hu.elte.txtuml.layout.visualizer.model.utils.RectangleObjectTreeEnumerator;
 import hu.elte.txtuml.layout.visualizer.events.ProgressManager;
@@ -22,13 +22,14 @@ import hu.elte.txtuml.layout.visualizer.exceptions.CannotStartAssociationRouteEx
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
+import hu.elte.txtuml.layout.visualizer.model.Boundary;
+import hu.elte.txtuml.layout.visualizer.model.Diagram;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Options;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation.RouteConfig;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
-import hu.elte.txtuml.layout.visualizer.model.SpecialBox;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 import hu.elte.txtuml.utils.Logger;
@@ -38,40 +39,14 @@ import hu.elte.txtuml.utils.Pair;
  * This class arranges the lines of links.
  */
 public class ArrangeAssociations {
-	private final Integer MINIMAL_CORRIDOR_SIZE = 1;
 	private final Integer MAXIMUM_TRY_COUNT = 100;
 
-	private Integer _widthOfCells;
-	private Integer _heightOfCells;
-
-	private Set<RectangleObject> _objects;
-	private HashMap<String, Point> _cellPositions;
-	private List<LineAssociation> _assocs;
+	private LinkArrangeDiagram _diagram;
 	private List<Statement> _statements;
 	private HashMap<Pair<String, RouteConfig>, HashSet<Point>> _possibleStarts;
 
 	private Integer _gId;
 	private Options _options;
-
-	/**
-	 * Gets the final width of the boxes, that was computed during the running
-	 * of the ArrangeAssociation algorithm
-	 * 
-	 * @return Integer number of the width of boxes.
-	 */
-	public Integer getWidthAmount() {
-		return _widthOfCells;
-	}
-
-	/**
-	 * Gets the final height of the boxes, that was computed during the running
-	 * of the ArrangeAssociation algorithm
-	 * 
-	 * @return Integer number of the height of boxes.
-	 */
-	public Integer getHeightAmount() {
-		return _heightOfCells;
-	}
 
 	/**
 	 * Returns the last use Group Id number.
@@ -85,10 +60,9 @@ public class ArrangeAssociations {
 	/**
 	 * Arranges associations between objects, on the grid.
 	 * 
-	 * @param diagramObjects
-	 *            Objects on the grid.
-	 * @param diagramAssocs
-	 *            Associations to arrange on the grid.
+	 * @param diag
+	 *            Diagram to arrange.
+	 * 
 	 * @param stats
 	 *            Statements on associations.
 	 * @param gid
@@ -107,24 +81,15 @@ public class ArrangeAssociations {
 	 *             Throws if some unknown statements are found during
 	 *             processing.
 	 */
-	public ArrangeAssociations(Set<RectangleObject> diagramObjects, Set<LineAssociation> diagramAssocs,
-			List<Statement> stats, Integer gid, Options opt) throws ConversionException, InternalException,
-					CannotFindAssociationRouteException, UnknownStatementException {
-		// Nothing to arrange
-		if (diagramAssocs == null)
-			return;
-
+	public ArrangeAssociations(Diagram diag, List<Statement> stats, Integer gid, Options opt)
+			throws ConversionException, InternalException, CannotFindAssociationRouteException,
+			UnknownStatementException {
 		// Setup variables and default values
 		_gId = gid;
 		_options = opt;
-		_cellPositions = new HashMap<String, Point>();
 
-		_widthOfCells = 1;
-		_heightOfCells = 1;
-		
-		_objects = new HashSet<>(diagramObjects);
-		_assocs = diagramAssocs.stream().collect(Collectors.toList());
-		_statements = new ArrayList<>(stats);
+		_diagram = new LinkArrangeDiagram(diag);
+		_statements = new ArrayList<Statement>(stats);
 
 		// Emit Event
 		ProgressManager.getEmitter().OnLinkArrangeStart();
@@ -141,15 +106,10 @@ public class ArrangeAssociations {
 
 		// Inflate diagram to start with a object width enough for the
 		// maximum number of links
-		defaultGrid();
-		
-		if(isPresentMultiLevelLinks())
-		{
-			//TODO
-		}
+		_diagram.initialExpand(_options.CorridorRatio);
 
 		// Get default statements on links
-		DefaultAssocStatements das = new DefaultAssocStatements(_gId, _statements, _assocs);
+		DefaultAssocStatements das = new DefaultAssocStatements(_gId, _statements, _diagram.Assocs);
 		_statements = das.value();
 		_gId = das.getGroupId();
 
@@ -166,15 +126,13 @@ public class ArrangeAssociations {
 
 			try {
 				// Maximum distance between objects
-				Boundary bounds = calculateBoundary();
-				bounds.addError(20, _widthOfCells);
+				Boundary bounds = new Boundary(_diagram.getArea());
+				bounds.addError(20, _diagram.WidthOfCells, _diagram.HeightOfCells);
 
 				// Add objects transformed place to occupied list
 				Map<Point, Color> occupied = new HashMap<Point, Color>();
-				for (RectangleObject obj : _objects) {
-					for (Point p : obj.getPoints()) {
-						occupied.put(p, Color.Red);
-					}
+				for (RectangleObject box : _diagram.Objects) {
+					occupied.putAll(getBoxPaintedPoints(box));
 				}
 
 				// Search for the route of every Link
@@ -185,260 +143,16 @@ public class ArrangeAssociations {
 
 				needRepeat = true;
 				// Grid * 2
-				expandGrid();
+				_diagram.expand();
 				continue;
 			}
 		}
-	}
-
-	private Integer calculateMaxLinks() {
-		if (_assocs.size() == 0)
-			return 0;
-
-		// Gather data
-		HashMap<String, Integer> data = new HashMap<String, Integer>();
-
-		Integer countMod = 1;
-		for (LineAssociation a : _assocs) {
-			// From
-			if (data.containsKey(a.getFrom())) {
-				data.put(a.getFrom(), data.get(a.getFrom()) + countMod);
-			} else {
-				data.put(a.getFrom(), countMod);
-			}
-
-			if (a.isReflexive())
-				continue;
-			// To
-			if (data.containsKey(a.getTo())) {
-				data.put(a.getTo(), data.get(a.getTo()) + countMod);
-			} else {
-				data.put(a.getTo(), countMod);
-			}
-		}
-
-		// Find max
-		Integer max = data.entrySet().stream().max((e1, e2) -> Integer.compare(e1.getValue(), e2.getValue())).get()
-				.getValue();
-
-		return max;
-	}
-
-	private void defaultGrid() {
-		Integer k = calculateMaxLinks();
-		
-		_widthOfCells = k;
-		_heightOfCells = k;
-
-		// Get the smallest of boxes to compute the grid dimensions
-		Pair<Double, Double> pixelPair = getPixelPerGrid(k);
-
-		// Set the grid sizes of boxes based on their pixel sizes
-		Set<RectangleObject> result = setBoxSizes(pixelPair);
-
-		// Set positions according to width/height of the cells
-		_objects = setBoxCells(result);
-
-		// Update the links' positions
-		updateLinks();
-
-		if (_options.Logging)
-			Logger.sys.info("(Default) Expanding Grid!");
-	}
-	
-	private Pair<Double, Double> getPixelPerGrid(Integer maxLinkNumber)
-	{
-		Integer smallestPixelWidth = _objects.stream().filter(box -> !box.getSpecial().equals(SpecialBox.Initial))
-				.min((o1, o2) -> {
-					return Integer.compare(o1.getPixelWidth(), o2.getPixelWidth());
-				}).get().getPixelWidth();
-		Integer smallestPixelHeight = _objects.stream().filter(box -> !box.getSpecial().equals(SpecialBox.Initial))
-				.min((o1, o2) -> {
-					return Integer.compare(o1.getPixelHeight(), o2.getPixelHeight());
-				}).get().getPixelHeight();
-		
-		return Pair.of(Math.floor(smallestPixelWidth / (maxLinkNumber + 2.0)),
-				Math.floor(smallestPixelHeight / (maxLinkNumber + 2.0)));
-	}
-
-	private Set<RectangleObject> setBoxSizes(Pair<Double, Double> pixelPair)
-	{
-		Set<RectangleObject> result = new HashSet<RectangleObject>();
-		
-		Double pixelPerGridWidth = pixelPair.getFirst();
-		Double pixelPerGridHeight = pixelPair.getSecond();
-		
-		for (RectangleObject obj : _objects) {
-			RectangleObject mod = new RectangleObject(obj);
-
-			if (mod.getSpecial().equals(SpecialBox.Initial)) {
-				mod.setWidth(3);
-				mod.setHeight(3);
-			} else {
-				mod.setWidth((int) Math.ceil(mod.getPixelWidth() / pixelPerGridWidth) + 1);
-				mod.setPixelWidth((int) ((mod.getWidth() - 1) * Math.floor(pixelPerGridWidth)));
-				mod.setHeight((int) Math.ceil(mod.getPixelHeight() / pixelPerGridHeight) + 1);
-				mod.setPixelHeight((int) ((mod.getHeight() - 1) * Math.floor(pixelPerGridHeight)));
-			}
-
-			if (_widthOfCells < mod.getWidth())
-				_widthOfCells = mod.getWidth();
-			if (_heightOfCells < mod.getHeight())
-				_heightOfCells = mod.getHeight();
-
-			result.add(mod);
-		}
-		
-		return result;
-	}
-	
-	private Set<RectangleObject> setBoxCells(Set<RectangleObject> result)
-	{
-		for (RectangleObject o : result) {
-			Point tempPos = new Point();
-
-			// Calculate the position of the cell
-			tempPos.setX(o.getPosition().getX() * calculateCorridorSize(_widthOfCells, _options.CorridorRatio));
-			tempPos.setY(o.getPosition().getY() * calculateCorridorSize(_heightOfCells, _options.CorridorRatio));
-			_cellPositions.put(o.getName(), new Point(tempPos));
-
-			// Calculate the position of the box in the cell
-			o.setPosition(getPositionInCell(tempPos, o));
-		}
-		
-		return result;
-	}
-	
-	private Integer calculateCorridorSize(Integer cellSize, Double multiplier) {
-		Integer result = (int) Math.floor(cellSize * (multiplier + 1.0));
-
-		if (result < MINIMAL_CORRIDOR_SIZE)
-			result = MINIMAL_CORRIDOR_SIZE;
-
-		return result;
-	}
-	
-	private void updateLinks()
-	{
-		for (LineAssociation a : _assocs) {
-			ArrayList<Point> route = new ArrayList<Point>();
-			route.add(_objects.stream().filter(o -> o.getName().equals(a.getFrom())).findFirst().get().getPosition());
-			route.add(_objects.stream().filter(o -> o.getName().equals(a.getTo())).findFirst().get().getPosition());
-
-			a.setRoute(route);
-		}
-	}
-	
-	private Point getPositionInCell(Point old_value, RectangleObject box)
-	{
-		Point result = new Point(old_value);
-		
-		Integer freeGridCountWidth = _widthOfCells - box.getWidth();
-		Integer freeGridCountHeight = _heightOfCells - box.getHeight();
-
-		result.setX(result.getX() + freeGridCountWidth / 2);
-		result.setY(result.getY() - freeGridCountHeight / 2);
-		
-		return result;
-	}
-	
-	private boolean isPresentMultiLevelLinks()
-	{
-		for(LineAssociation link : _assocs)
-		{
-			if(isEndInInnerDiagram(link.getTo()) || isEndInInnerDiagram(link.getFrom()))
-			{
-				return true;
-			}	
-		}
-		
-		return false;
-	}
-	
-	private boolean isEndInInnerDiagram(String boxName)
-	{
-		for(RectangleObject box : _objects)
-		{
-			if(box.getName().equals(boxName))
-			{
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	
-	private void expandGrid() throws ConversionException {
-		Set<RectangleObject> result = new HashSet<RectangleObject>();
-		_widthOfCells = _widthOfCells * 2;
-		_heightOfCells = _heightOfCells * 2;
-
-		for (RectangleObject o : _objects) {
-			RectangleObject mod = new RectangleObject(o);
-			mod.setWidth(mod.getWidth() * 2);
-			mod.setHeight(mod.getHeight() * 2);
-
-			// Calculate the position of the box in the cell
-			Point tempPos = Point.Multiply(_cellPositions.get(o.getName()), 2);
-			_cellPositions.put(o.getName(), new Point(tempPos));
-			
-			// Calculate the position of the box in the cell
-			mod.setPosition(getPositionInCell(tempPos, o));
-
-			result.add(mod);
-		}
-
-		for (LineAssociation mod : _assocs) {
-			RectangleObject fromBox = result.stream().filter(box -> box.getName().equals(mod.getFrom())).findFirst()
-					.get();
-			RectangleObject toBox = result.stream().filter(box -> box.getName().equals(mod.getTo())).findFirst().get();
-
-			ArrayList<Point> route = new ArrayList<Point>();
-			for (int j = 0; j < mod.getRoute().size(); ++j) {
-				Point p = new Point(mod.getRoute().get(j));
-
-				Point temp = Point.Multiply(p, 2);
-
-				if (mod.isPlaced() && j > 1 && j < mod.getRoute().size() - 1) {
-					Direction beforeDirection = Helper
-							.asDirection(Point.Substract(mod.getRoute().get(j - 1), mod.getRoute().get(j)));
-					Point before = Point.Add(temp, beforeDirection);
-
-					if (fromBox.getPerimiterPoints().contains(before) || toBox.getPerimiterPoints().contains(before)
-							|| (!fromBox.getPoints().contains(before) && !toBox.getPoints().contains(before)))
-						route.add(before);
-				}
-
-				if (fromBox.getPerimiterPoints().contains(temp) || toBox.getPerimiterPoints().contains(temp)
-						|| (!fromBox.getPoints().contains(temp) && !toBox.getPoints().contains(temp)))
-					route.add(temp);
-			}
-
-			mod.setRoute(route);
-		}
-
-		_objects = result;
 	}
 
 	private void processStatements() throws ConversionException, InternalException {
 		if (_statements != null && _statements.size() != 0) {
 			// Set priority
-			HashMap<String, Integer> priorityMap = setPriorityMap();
-
-			// Order based on priority
-			_assocs.sort((a1, a2) -> {
-				if (priorityMap.containsKey(a1.getId())) {
-					if (priorityMap.containsKey(a2.getId())) {
-						return -1 * Integer.compare(priorityMap.get(a1.getId()), priorityMap.get(a2.getId()));
-					} else
-						return -1;
-				} else {
-					if (priorityMap.containsKey(a2.getId()))
-						return 1;
-					else
-						return 0;
-				}
-			});
+			setPriorityMap();
 
 			ArrayList<Statement> priorityless = new ArrayList<Statement>(_statements);
 			priorityless.removeIf(s -> s.getType().equals(StatementType.priority));
@@ -448,7 +162,7 @@ public class ArrangeAssociations {
 		}
 	}
 
-	private Set<Pair<Node, Double>> setSet(Pair<String, RouteConfig> key, Point start, Integer p_width,
+	private Set<Pair<Node, Double>> getSet(Pair<String, RouteConfig> key, Point start, Integer p_width,
 			Integer p_height, Set<Point> occupied, Boolean isReflexive, Boolean isStart) throws InternalException {
 		Set<Pair<Point, Double>> result = new HashSet<Pair<Point, Double>>();
 		Double defaultWeight = -1.0;
@@ -477,7 +191,9 @@ public class ArrangeAssociations {
 		// Remove occupied points
 		result.removeIf(p -> occupied.contains(p.getFirst()));
 		// Remove corner points
-		result.removeIf(p -> Helper.isCornerPoint(p.getFirst(), tempObj));
+		result.removeIf(p -> tempObj.isCornerPoint(p.getFirst()));
+		// Remove points around corner
+		result.removeIf(p -> isAroundCorner(tempObj, p.getFirst()));
 
 		// Set the weights of nodes.
 		for (Pair<Point, Double> pair : result) {
@@ -501,6 +217,48 @@ public class ArrangeAssociations {
 			return convertToNodes(result, tempObj);
 		else
 			return convertToInvertedNodes(result, tempObj);
+	}
+
+	private boolean isAroundCorner(RectangleObject box, Point poi) {
+
+		Integer horizontalGridToDelete = (int) Math.floor(box.getWidth() * _options.CornerPercentage);
+		Integer verticalGridToDelete = (int) Math.floor(box.getHeight() * _options.CornerPercentage);
+
+		if(box.getTopLeft().getX() == poi.getX())
+		{
+			return isCloseToCorners(box.getTopLeft(), 
+					Point.Add(box.getTopLeft(), Point.Multiply(Direction.south, box.getHeight()-1)), 
+					poi, verticalGridToDelete);
+		}
+
+		if(box.getTopLeft().getY() == poi.getY())
+		{
+			return isCloseToCorners(box.getTopLeft(), 
+					Point.Add(box.getTopLeft(), Point.Multiply(Direction.east, box.getWidth()-1)), 
+					poi, horizontalGridToDelete);
+		}
+		
+		if(box.getBottomRight().getX() == poi.getX())
+		{
+			return isCloseToCorners(box.getBottomRight(), 
+					Point.Add(box.getBottomRight(), Point.Multiply(Direction.north, box.getHeight()-1)), 
+					poi, verticalGridToDelete);
+		}
+		
+		if(box.getBottomRight().getY() == poi.getY())
+		{
+			return isCloseToCorners(box.getBottomRight(), 
+					Point.Add(box.getBottomRight(), Point.Multiply(Direction.west, box.getWidth()-1)), 
+					poi, horizontalGridToDelete);
+		}
+
+		return false;
+	}
+
+	private boolean isCloseToCorners(Point corner1, Point corner2, Point poi, Integer bound) {
+		Boolean closeTL = Point.Substract(corner1, poi).length() <= bound;
+		Boolean closeTR = Point.Substract(corner2, poi).length() <= bound;
+		return closeTL || closeTR;
 	}
 
 	private Set<Pair<Point, Double>> setReflexiveSet(Set<Pair<Point, Double>> fromSet, RectangleObject obj,
@@ -590,28 +348,7 @@ public class ArrangeAssociations {
 		return result;
 	}
 
-	private Boundary calculateBoundary() throws InternalException {
-		Integer minX = Integer.MAX_VALUE;
-		Integer maxX = Integer.MIN_VALUE;
-		Integer minY = Integer.MAX_VALUE;
-		Integer maxY = Integer.MIN_VALUE;
-
-		for (RectangleObject o : _objects) {
-			if (minX > o.getTopLeft().getX())
-				minX = o.getTopLeft().getX();
-			if (maxX < o.getBottomRight().getX())
-				maxX = o.getBottomRight().getX();
-
-			if (minY > o.getBottomRight().getY())
-				minY = o.getBottomRight().getY();
-			if (maxY < o.getTopLeft().getY())
-				maxY = o.getTopLeft().getY();
-		}
-
-		return new Boundary(maxY, minY, minX, maxX);
-	}
-
-	private HashMap<String, Integer> setPriorityMap() {
+	private void setPriorityMap() {
 		HashMap<String, Integer> result = new HashMap<String, Integer>();
 
 		for (Statement s : _statements) {
@@ -620,29 +357,35 @@ public class ArrangeAssociations {
 			}
 		}
 
-		return result;
+		// Set the priority for all links
+		for (LineAssociation link : _diagram.Assocs) {
+			if (result.containsKey(link.getId())) {
+				link.setPriority(result.get(link.getId()));
+			} else {
+				link.setPriority(Integer.MIN_VALUE);
+			}
+		}
 	}
 
-	private void setPossibles(List<Statement> prioritylessStats)
-			throws ConversionException, InternalException {
+	private void setPossibles(List<Statement> prioritylessStats) throws ConversionException, InternalException {
 		for (Statement s : prioritylessStats) {
 			try {
-				LineAssociation link = _assocs.stream().filter(a -> a.getId().equals(s.getParameter(0))).findFirst()
-						.get();
-				RectangleObject obj = _objects.stream().filter(o -> o.getName().equals(s.getParameter(1))).findFirst()
-						.get();
+				LineAssociation link = _diagram.Assocs.stream().filter(a -> a.getId().equals(s.getParameter(0)))
+						.findFirst().get();
+				RectangleObject obj = _diagram.Objects.stream().filter(o -> o.getName().equals(s.getParameter(1)))
+						.findFirst().get();
 				if (link.getFrom().equals(obj.getName())
 						&& (s.getParameters().size() == 2 || s.getParameter(2).toLowerCase().equals("start"))) {
 					// RouteConfig.START
-					Point startPoint = getStartingPoint(Helper.asDirection(s.getType()), obj);
-					Direction moveDir = getMoveDirection(s.getType());
+					Point startPoint = getStartingPoint(s.getType().asDirection(), obj);
+					Direction moveDir = getMoveDirection(s.getType().asDirection());
 					generatePossiblePoints(link, obj, startPoint, moveDir, RouteConfig.START);
 				}
 				if (link.getTo().equals(obj.getName())
 						&& (s.getParameters().size() == 2 || s.getParameter(2).toLowerCase().equals("end"))) {
 					// RouteConfig.END
-					Point startPoint = getStartingPoint(Helper.asDirection(s.getType()), obj);
-					Direction moveDir = getMoveDirection(s.getType());
+					Point startPoint = getStartingPoint(s.getType().asDirection(), obj);
+					Direction moveDir = getMoveDirection(s.getType().asDirection());
 					generatePossiblePoints(link, obj, startPoint, moveDir, RouteConfig.END);
 				}
 			} catch (NoSuchElementException e) {
@@ -661,33 +404,22 @@ public class ArrangeAssociations {
 			throw new InternalException("Unknown Direction!");
 	}
 
-	private Direction getMoveDirection(StatementType ty) throws InternalException {
-		switch (ty) {
+	private Direction getMoveDirection(Direction type) throws InternalException {
+		switch (type) {
 		case north:
 			return Direction.east;
-		case west:
-			return Direction.south;
-		case south:
-			return Direction.west;
 		case east:
 			return Direction.north;
-		case above:
-		case below:
-		case horizontal:
-		case left:
-		case phantom:
-		case priority:
-		case right:
-		case unknown:
-		case vertical:
-		case corridorsize:
-		case overlaparrange:
-		default:
-			throw new InternalException("Cannot evaluate MoveDirection for " + ty.toString() + "!");
+		case south:
+			return Direction.west;
+		case west:
+			return Direction.south;
 		}
+
+		throw new InternalException("Unknown Direction!");
 	}
 
-	private void generatePossiblePoints(LineAssociation toModify, RectangleObject connectsTo, Point first,
+	private void generatePossiblePoints(LineAssociation toModify, RectangleObject connectsTo, final Point first,
 			Direction toMove, RouteConfig r) {
 		HashSet<Point> points = new HashSet<Point>();
 
@@ -695,71 +427,70 @@ public class ArrangeAssociations {
 				: connectsTo.getWidth();
 
 		for (int i = 0; i < endOfSide; ++i) {
-			points.add(Point.Add(first, Point.Multiply(toMove, i)));
+			Point temp = Point.Add(first, Point.Multiply(toMove, i));
+			points.add(temp);
 		}
 		Pair<String, RouteConfig> key = new Pair<String, LineAssociation.RouteConfig>(toModify.getId(), r);
 
 		_possibleStarts.put(key, points);
 	}
 
-	private void arrangeLinks(Map<Point, Color> occupied, Boundary bounds)
-			throws CannotStartAssociationRouteException, CannotFindAssociationRouteException, InternalException,
-			ConversionException {
+	private void arrangeLinks(Map<Point, Color> occupied, Boundary bounds) throws CannotStartAssociationRouteException,
+			CannotFindAssociationRouteException, InternalException, ConversionException {
 		Map<Point, Color> occupiedLinks = new HashMap<Point, Color>();
 
-		Integer c = 0;
-		for (LineAssociation a : _assocs) {
-			++c;
+		Integer countOfLinksDone = 0;
+		for (LineAssociation link : _diagram.Assocs.stream().sorted(new LinkComparator())
+				.collect(Collectors.toList())) {
+			++countOfLinksDone;
 			if (_options.Logging)
-				Logger.sys.info(c + "/" + _assocs.size() + ": " + a.getId() + " ... ");
+				Logger.sys.info(countOfLinksDone + "/" + _diagram.Assocs.size() + ": " + link.getId() + " ... ");
 
-			if (a.isPlaced()) {
+			if (link.isPlaced()) {
 				if (_options.Logging)
 					Logger.sys.info("NOTHING TO DO!");
 
-				Map<Point, Color> routePoints = getRoutePaintedPoints(a);
+				Map<Point, Color> routePoints = getRoutePaintedPoints(link);
 				occupiedLinks.putAll(routePoints);
 				occupied.putAll(routePoints);
 				continue;
 			}
 
-			doGraphSearch(a, occupiedLinks, occupied, bounds);
+			doGraphSearch(link, occupiedLinks, occupied, bounds);
 
 			if (_options.Logging)
 				Logger.sys.info("DONE!");
 
-			if (a.getRoute().size() < 3)
+			if (link.getRoute().size() < 3)
 				throw new InternalException("Route is shorter then 3!");
 
 			// Update occupied places with the route of this link
-			Map<Point, Color> routePoints = getRoutePaintedPoints(a);
+			Map<Point, Color> routePoints = getRoutePaintedPoints(link);
 			occupiedLinks.putAll(routePoints);
 			occupied.putAll(routePoints);
 
-			if (_assocs.indexOf(a) == (int) (_assocs.size() * 25.0 / 100.0)) {
+			if (countOfLinksDone == (int) (_diagram.Assocs.size() * 25.0 / 100.0)) {
 				ProgressManager.getEmitter().OnLinkArrangeFirstQuarter();
-			} else if (_assocs.indexOf(a) == (int) (_assocs.size() * 50.0 / 100.0)) {
+			} else if (countOfLinksDone == (int) (_diagram.Assocs.size() * 50.0 / 100.0)) {
 				ProgressManager.getEmitter().OnLinkArrangeHalf();
-			} else if (_assocs.indexOf(a) == (int) (_assocs.size() * 75.0 / 100.0)) {
+			} else if (countOfLinksDone == (int) (_diagram.Assocs.size() * 75.0 / 100.0)) {
 				ProgressManager.getEmitter().OnLinkArrangeThirdQuarter();
 			}
 		}
 	}
 
-	private void doGraphSearch( LineAssociation a, Map<Point, Color> occupiedLinks,
-			Map<Point, Color> occupied, Boundary bounds) throws InternalException,
-					CannotStartAssociationRouteException, CannotFindAssociationRouteException, ConversionException {
-		Map<Point, Color> ignores = new HashMap<Point, Color>();
-		
-		RectangleObject STARTBOX = getBox(a.getFrom(), ignores);
-		RectangleObject ENDBOX = getBox(a.getTo(), ignores);
-		
-		Set<Pair<Node, Double>> STARTSET = setSet(new Pair<String, RouteConfig>(a.getId(), RouteConfig.START),
-				STARTBOX.getPosition(), STARTBOX.getWidth(), STARTBOX.getHeight(), occupiedLinks.keySet(),
-				a.isReflexive(), true);
+	private void doGraphSearch(LineAssociation link, Map<Point, Color> occupiedLinks, Map<Point, Color> occupied,
+			Boundary bounds) throws InternalException, CannotStartAssociationRouteException,
+					CannotFindAssociationRouteException, ConversionException {
+		RectangleObject STARTBOX = getBox(link.getFrom());
+		RectangleObject ENDBOX = getBox(link.getTo());
 
-		Set<Pair<Node, Double>> ENDSET = setSet(new Pair<String, RouteConfig>(a.getId(), RouteConfig.END),
-				ENDBOX.getPosition(), ENDBOX.getWidth(), ENDBOX.getHeight(), occupiedLinks.keySet(), a.isReflexive(),
+		Set<Pair<Node, Double>> STARTSET = getSet(new Pair<String, RouteConfig>(link.getId(), RouteConfig.START),
+				STARTBOX.getPosition(), STARTBOX.getWidth(), STARTBOX.getHeight(), occupiedLinks.keySet(),
+				link.isReflexive(), true);
+
+		Set<Pair<Node, Double>> ENDSET = getSet(new Pair<String, RouteConfig>(link.getId(), RouteConfig.END),
+				ENDBOX.getPosition(), ENDBOX.getWidth(), ENDBOX.getHeight(), occupiedLinks.keySet(), link.isReflexive(),
 				false);
 
 		// Search for the route
@@ -768,31 +499,55 @@ public class ArrangeAssociations {
 			throw new CannotStartAssociationRouteException("Cannot get out of start, or cannot enter end!");
 		}
 
-		GraphSearch gs = new GraphSearch(STARTSET, ENDSET, occupied, ignores, bounds);
+		GraphSearch gs = new GraphSearch(STARTSET, ENDSET, occupied, bounds);
 
-		a.setRoute(convertFromNodes(gs.value(), STARTBOX.getPosition(), ENDBOX.getPosition()));
-		a.setExtends(gs.extendsNum());
+		link.setRoute(convertFromNodes(gs.value(), STARTBOX.getPosition(), ENDBOX.getPosition()));
+		link.setExtends(gs.extendsNum());
 	}
-	
-	private RectangleObject getBox(String name, Map<Point, Color> ignores)
-	{
-		RectangleObject result = _objects.stream().filter(o -> o.getName().equals(name)).findFirst()
+
+	private RectangleObject getBox(String name) {
+		RectangleObject result = _diagram.Objects.stream().filter(o -> o.getName().equals(name)).findFirst()
 				.orElse(null);
-		
-		if(result == null)
-		{
-			//Link goes into sub package
-			
-			//Not handled currently
-			for(RectangleObject box : new RectangleObjectTreeEnumerator(_objects))
-			{
-				if(box.getName().equals(name))
-				{
-					return	box;
+
+		if (result == null) {
+			// Link goes into sub package
+
+			// Not handled currently
+			for (RectangleObject box : new RectangleObjectTreeEnumerator(_diagram.Objects)) {
+				if (box.getName().equals(name)) {
+					return box;
 				}
 			}
 		}
-		
+
+		return result;
+	}
+
+	private Map<Point, Color> getBoxPaintedPoints(RectangleObject box) {
+		Map<Point, Color> result = new HashMap<Point, Color>();
+
+		if (box.hasInner()) {
+			// Add compositeBox's outer rim as a warning line
+			for (Point p : box.getPerimiterPoints()) {
+				result.put(p, Color.Yellow);
+			}
+
+			// Add compositeBox's inner boxes
+			for (RectangleObject innerBox : box.getInner().Objects) {
+				result.putAll(getBoxPaintedPoints(innerBox));
+			}
+
+			// Add compositeBox's inner links
+			for (LineAssociation innerLink : box.getInner().Assocs) {
+				result.putAll(getRoutePaintedPoints(innerLink));
+			}
+
+		} else {
+			for (Point p : box.getPoints()) {
+				result.put(p, Color.Red);
+			}
+		}
+
 		return result;
 	}
 
@@ -827,23 +582,12 @@ public class ArrangeAssociations {
 	}
 
 	/**
-	 * Returns the final value of the lines of links.
+	 * Returns the final arranged {@link Diagram}.
 	 * 
-	 * @return Set of the arranged lines of links.
+	 * @return the final arranged {@link Diagram}.
 	 */
-	public Set<LineAssociation> value() {
-		Set<LineAssociation> result = _assocs.stream().collect(Collectors.toSet());
-
-		return result;
-	}
-
-	/**
-	 * Returns the final layout of the boxes.
-	 * 
-	 * @return the final layout of the boxes.
-	 */
-	public Set<RectangleObject> objects() {
-		return _objects;
+	public Diagram getDiagram() {
+		return _diagram.getDiagram();
 	}
 
 }

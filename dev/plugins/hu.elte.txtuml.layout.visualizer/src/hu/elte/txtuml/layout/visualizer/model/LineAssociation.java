@@ -18,6 +18,9 @@ public class LineAssociation
 	private String _to;
 	private AssociationType _type;
 	private List<Point> _route;
+	
+	private Integer _priority;
+	
 	private Integer _turns;
 	private Integer _extends;
 	
@@ -247,6 +250,24 @@ public class LineAssociation
 		return result;
 	}
 	
+	/**
+	 * Returns the priority associated with this {@link LineAssociation}.
+	 * @return the priority associated with this {@link LineAssociation}.
+	 */
+	public Integer getPriority()
+	{
+		return _priority;
+	}
+	
+	/**
+	 * Sets the priority associated with this {@link LineAssociation} to value.
+	 * @param value the priority associated with this {@link LineAssociation}.
+	 */
+	public void setPriority(Integer value)
+	{
+		_priority = value;
+	}
+	
 	/***
 	 * Getter for the turns the link makes during it's route.
 	 * 
@@ -319,6 +340,7 @@ public class LineAssociation
 		_to = t;
 		_route = new ArrayList<Point>();
 		_turns = -1;
+		_priority = 0;
 		_extends = 0;
 		_type = AssociationType.normal;
 	}
@@ -359,6 +381,7 @@ public class LineAssociation
 		_route = new ArrayList<Point>();
 		_route.add(f.getPosition());
 		_route.add(t.getPosition());
+		_priority = 0;
 		_turns = -1;
 		_extends = 0;
 		_type = AssociationType.normal;
@@ -405,6 +428,7 @@ public class LineAssociation
 		_route = new ArrayList<Point>();
 		_route.add(s);
 		_route.add(e);
+		_priority = 0;
 		_turns = -1;
 		_extends = 0;
 		_type = AssociationType.normal;
@@ -436,15 +460,16 @@ public class LineAssociation
 	/**
 	 * Copy LineAssociation.
 	 * 
-	 * @param a
+	 * @param other
 	 *            An already existing LineAssociation to copy.
 	 */
-	public LineAssociation(LineAssociation a)
+	public LineAssociation(LineAssociation other)
 	{
-		this(a.getId(), a.getFrom(), a.getTo(), a.getType());
-		_route = Helper.clonePointList(a.getRoute());
-		_extends = new Integer(a.getExtends());
-		_turns = new Integer(a.getTurns());
+		this(other.getId(), other.getFrom(), other.getTo(), other.getType());
+		_route = Helper.clonePointList(other.getRoute());
+		_extends = new Integer(other.getExtends());
+		_turns = new Integer(other.getTurns());
+		_priority = new Integer(other.getPriority());
 	}
 	
 	// End Ctors
@@ -463,24 +488,6 @@ public class LineAssociation
 	public static boolean Equals(LineAssociation a1, LineAssociation a2)
 	{
 		return a1.equals(a2);
-	}
-	
-	/**
-	 * Parse a string to get a {@link LineAssociation}.
-	 * 
-	 * @param line
-	 *            {@link String} to parse.
-	 * @return Parsed {@link LineAssociation}.
-	 */
-	public static LineAssociation Parse(String line)
-	{
-		String id = line.split(":")[0];
-		String from = line.split("\\(")[1].split("-")[0].trim();
-		String to = line.split("\\)")[0].split("-")[1].trim();
-		AssociationType type = AssociationType
-				.valueOf(line.split("\\(")[2].split("\\)")[0]);
-		
-		return new LineAssociation(id, from, to, type);
 	}
 	
 	// End Statics
@@ -542,14 +549,6 @@ public class LineAssociation
 	public boolean isPlaced()
 	{
 		return _route.size() > 2;
-	}
-	
-	@Override
-	public LineAssociation clone()
-	{
-		LineAssociation result = new LineAssociation(this);
-		
-		return result;
 	}
 	
 	@Override

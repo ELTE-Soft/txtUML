@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
+import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.elementinfo.NodeInfo;
 import hu.elte.txtuml.layout.export.interfaces.NodeMap;
 import hu.elte.txtuml.layout.export.interfaces.ParentMap;
@@ -55,18 +56,18 @@ public class NodeMapImpl extends LinkedHashMap<Class<?>, NodeInfo> implements No
 	private Set<RectangleObject> converted;
 	
 	@Override
-	public Set<RectangleObject> convert() {
+	public Set<RectangleObject> convert(DiagramType dType) {
 		converted = new HashSet<>();
 		
 		for(Class<?> node : this.keySet())
 		{
-			convertNode(node);
+			convertNode(node, dType);
 		}
 
 		return converted;
 	}
 
-	private RectangleObject convertNode(Class<?> nodeToConvert)
+	private RectangleObject convertNode(Class<?> nodeToConvert, DiagramType dType)
 	{
 		//System.err.println(nodeToConvert.toString());
 		RectangleObject convertedNode = this.get(nodeToConvert).convert();
@@ -78,10 +79,10 @@ public class NodeMapImpl extends LinkedHashMap<Class<?>, NodeInfo> implements No
 		
 		if(_parentMap.containsKey(nodeToConvert))
 		{
-			RectangleObject parent = convertNode(_parentMap.get(nodeToConvert));
+			RectangleObject parent = convertNode(_parentMap.get(nodeToConvert), dType);
 			if(!parent.hasInner())
 			{
-				parent.setInner(new Diagram());
+				parent.setInner(new Diagram(dType.convert()));
 			}
 			parent.getInner().Objects.add(convertedNode);
 		}

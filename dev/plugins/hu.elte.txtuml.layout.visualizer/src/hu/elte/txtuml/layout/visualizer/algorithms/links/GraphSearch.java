@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.visualizer.algorithms.links.utils;
+package hu.elte.txtuml.layout.visualizer.algorithms.links;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,17 +7,17 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 
-import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils.Boundary;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils.Color;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils.Cost;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils.Graph;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils.Link;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils.Node;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.graphsearchutils.Parent;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils.Color;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils.Cost;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils.Graph;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils.Link;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils.Node;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils.Parent;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotStartAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
+import hu.elte.txtuml.layout.visualizer.model.Boundary;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.utils.Pair;
@@ -25,7 +25,7 @@ import hu.elte.txtuml.utils.Pair;
 /**
  * This class implements an A^* graph search algorithm.
  */
-public class GraphSearch {
+class GraphSearch {
 
 	// Constants
 
@@ -78,7 +78,7 @@ public class GraphSearch {
 	 *             Throws if the algorithm encounters something which it should
 	 *             not have.
 	 */
-	public GraphSearch(Set<Pair<Node, Double>> ss, Set<Pair<Node, Double>> es, Map<Point, Color> cols, Map<Point, Color> ign, Boundary bounds)
+	public GraphSearch(Set<Pair<Node, Double>> ss, Set<Pair<Node, Double>> es, Map<Point, Color> cols, Boundary bounds)
 			throws CannotFindAssociationRouteException, CannotStartAssociationRouteException, ConversionException,
 			InternalException {
 		// Initialize
@@ -90,7 +90,6 @@ public class GraphSearch {
 		_end = new Node(new Point(), new Point());
 		_endSet = new HashSet<Node>();
 		_colors = new HashMap<>(cols);
-		//ign.entrySet().forEach(entry -> _colors.remove(entry.getKey()));
 
 		_boundary = bounds;
 		_extends = 0;
@@ -292,7 +291,6 @@ public class GraphSearch {
 		if (!_colors.containsKey(parent.getTo())) {
 			Direction sub = Point.directionOf(parent.getTo(), parent.getFrom());
 
-			// ~0.5ms
 			for (Direction dir : Direction.values()) {
 				Double w = 0.0;
 
