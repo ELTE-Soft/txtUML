@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.papyrus.elementproviders;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Region;
@@ -37,8 +38,11 @@ public class StateMachineDiagramElementsProviderImpl implements StateMachineDiag
 
 	@Override
 	public Collection<State> getStatesForRegion(Region region) {
-		// TODO Auto-generated method stub
-		return null;
+		List<State> result = new ArrayList<>();
+		result = region.getOwnedElements().stream()
+				.filter(e->(e instanceof State) && this.nodes.contains(e))
+				.map(e -> (State)e).collect(Collectors.toList());
+		return result;
 	}
 
 	@Override
@@ -49,6 +53,15 @@ public class StateMachineDiagramElementsProviderImpl implements StateMachineDiag
 			result.addAll(((StateMachine) sm).getRegions());
 		});
 		
+		return result;
+	}
+
+	@Override
+	public Collection<Region> getRegionsOfState(State state) {
+		List<Region> result = new ArrayList<>();
+		result = state.getOwnedElements().stream()
+				.filter(e->(e instanceof Region)&& this.nodes.contains(e))
+				.map(e -> (Region)e).collect(Collectors.toList());
 		return result;
 	}
 

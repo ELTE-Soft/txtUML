@@ -114,7 +114,7 @@ public class TxtUMLExporter {
 	 */
 	public void exportModel() throws JavaModelException, NotFoundException, IOException {
 		TxtUMLToUML2.exportModel(projectName, txtUMLModelName, projectName + "/" + outputFolder,
-				ExportMode.ExportActionsPedantic);
+				ExportMode.ExportActionsErrorHandling);
 	}
 
 	/**

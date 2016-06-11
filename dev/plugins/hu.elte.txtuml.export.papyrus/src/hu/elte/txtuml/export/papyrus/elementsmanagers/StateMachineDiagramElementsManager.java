@@ -1,13 +1,11 @@
 package hu.elte.txtuml.export.papyrus.elementsmanagers;
 
 import java.util.Collection;
-import java.util.stream.Collector;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.notation.Diagram;
-import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.RegionEditPart;
 import org.eclipse.uml2.uml.Region;
 
 import hu.elte.txtuml.export.papyrus.api.elementcreators.StateMachineDiagramNotationManager;
@@ -64,41 +62,18 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	@Override
 	public void addElementsToDiagram() {
 		Collection<Region> regions = this.elementsProvider.getMainRegions();
-		regions.forEach(region -> this.elementsProvider.getStatesForRegion(region)
-				.forEach(state -> this.notationManager.createStateForRegion(region, state, this.monitor)));
-
-		// TODO: Probably a recursive algorithm is needed to build up state
-		// hierarchy
+		addSubelementsRecursively(regions);
 	}
 
-	/**
-	 * Adds the subElements to an EditPart. Then calls the
-	 * {@link #fillState(EditPart)} for every state.
-	 * 
-	 * @param region
-	 *            - The EditPart
-	 */
-	private void addSubElements(RegionEditPart region) {
-		/*
-		 * EObject parent = ((View) region.getModel()).getElement();
-		 * List<Element> list = ((Element) parent).getOwnedElements();
-		 * 
-		 * List<State> states = UMLModelManager.getElementsOfTypeFromList(list,
-		 * State.class); List<Pseudostate> pseudostates =
-		 * UMLModelManager.getElementsOfTypeFromList(list, Pseudostate.class);
-		 * List<FinalState> finalstates =
-		 * UMLModelManager.getElementsOfTypeFromList(list, FinalState.class);
-		 * List<Transition> transitions =
-		 * UMLModelManager.getElementsOfTypeFromList(list, Transition.class);
-		 * 
-		 * StateMachineDiagramElementsController.addPseudostatesToRegion(region,
-		 * pseudostates);
-		 * StateMachineDiagramElementsController.addStatesToRegion(region,
-		 * states);
-		 * StateMachineDiagramElementsController.addFinalStatesToRegion(region,
-		 * finalstates);
-		 * StateMachineDiagramElementsController.addTransitionsToRegion(region,
-		 * transitions);
-		 */
+	private void addSubelementsRecursively(Collection<Region> regions){
+		regions.stream()
+				.forEach(region -> this.elementsProvider.getStatesForRegion(region)
+						.forEach(state->{
+							this.notationManager.createStateForRegion(region, state, this.monitor);
+							addSubelementsRecursively(this.elementsProvider.getRegionsOfState(state));
+						})
+				);
 	}
+	
+	
 }
