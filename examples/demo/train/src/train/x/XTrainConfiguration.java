@@ -1,11 +1,11 @@
-package train.j;
+package train.x;
 
 import hu.elte.txtuml.api.deployment.Configuration;
 import hu.elte.txtuml.api.deployment.Group;
-import train.j.model.Engine;
-import train.j.model.Gearbox;
+import train.x.model.Engine;
+import train.x.model.Gearbox;
 
 @Group(contains = { Engine.class, Gearbox.class }, max = 5, constant = 2)
-public class DefaultConfiguration extends Configuration {
+public class XTrainConfiguration extends Configuration {
 
 }

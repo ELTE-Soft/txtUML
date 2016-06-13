@@ -8,6 +8,6 @@ import monitoring.x.model.ResourceMonitor;
 
 @Group(contains = { ResourceMonitor.class })
 @Group(contains = { Alert.class, Aggregator.class })
-public class DefaultConfiguration extends Configuration {
+public class XMonitoringConfiguration extends Configuration {
 
 }
