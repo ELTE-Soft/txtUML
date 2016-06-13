@@ -22,10 +22,10 @@ public class Racket extends ModelClass {
 	public class HitOrMissPort extends OutPort<HitOrMissIfc> {
 	}
 	
-	class Init extends Initial {
+	public class Init extends Initial {
 	}
 
-	class Waiting extends State {
+	public class Waiting extends State {
 	}
 
 	@From(Init.class)
@@ -33,7 +33,7 @@ public class Racket extends ModelClass {
 	class Initialize extends Transition {
 	}
 
-	class Check extends Choice {
+	public class Check extends Choice {
 	}
 
 	@From(Waiting.class)

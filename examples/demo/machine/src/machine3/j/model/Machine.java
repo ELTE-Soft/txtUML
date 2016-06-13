@@ -15,10 +15,10 @@ public class Machine extends ModelClass {
 		this.tasksToDo = tasksToDo;
 	}
 
-	class Init extends Initial {
+	public class Init extends Initial {
 	}
 
-	class Off extends State {
+	public class Off extends State {
 		@Override
 		public void entry() {
 			Action.log("\tMachine enters state: 'off'");
@@ -30,7 +30,7 @@ public class Machine extends ModelClass {
 		}
 	}
 
-	class On extends CompositeState {
+	public class On extends CompositeState {
 		@Override
 		public void entry() {
 			Action.log("\tMachine enters state: 'on'");
@@ -41,10 +41,10 @@ public class Machine extends ModelClass {
 			Action.log("\tMachine exits state: 'on'");
 		}
 
-		class Init extends Initial {
+		public class Init extends Initial {
 		}
 
-		class Active extends State {
+		public class Active extends State {
 			@Override
 			public void entry() {
 				Action.log("\tMachine enters state: 'active'");
