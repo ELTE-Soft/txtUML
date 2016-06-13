@@ -46,10 +46,7 @@ import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.Runtime;
 import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import airport.xmodel.*;
 
@@ -75,8 +72,7 @@ public class GUI_Tester {
 			try {
 				new GUI_Tester();
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Action.logError("Could not create GUI tester: " + e.getMessage());
 			}
 		});
 	}
