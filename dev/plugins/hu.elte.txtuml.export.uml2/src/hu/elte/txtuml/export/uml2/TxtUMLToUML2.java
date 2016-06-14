@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.uml2;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -105,14 +106,7 @@ public class TxtUMLToUML2 {
 			throw new NotFoundException("Cannot find package '" + packageName + "'");
 		}
 
-		IPackageFragment fragment = null;
-		for (IPackageFragment pf : packageFragments) {
-			boolean isModel = Stream.of(pf.getCompilationUnits())
-					.anyMatch(cu -> cu.getElementName().equals(PackageUtils.PACKAGE_INFO));
-			if (isModel) {
-				fragment = pf;
-			}
-		}
+		IPackageFragment fragment = Stream.of(packageFragments).min(Comparator.comparing(pf -> pf.getElementName().length())).get();
 
 		ModelExporter modelExporter = new ModelExporter(exportMode);
 		Model model = modelExporter.export(fragment);
