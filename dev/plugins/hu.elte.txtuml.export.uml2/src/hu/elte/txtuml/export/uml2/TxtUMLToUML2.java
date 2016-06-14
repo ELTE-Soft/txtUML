@@ -2,7 +2,6 @@ package hu.elte.txtuml.export.uml2;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
