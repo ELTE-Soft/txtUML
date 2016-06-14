@@ -3,7 +3,9 @@ package hu.elte.txtuml.export.uml2;
 import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.core.filesystem.EFS;
@@ -106,11 +108,11 @@ public class TxtUMLToUML2 {
 			throw new NotFoundException("Cannot find package '" + packageName + "'");
 		}
 
-		IPackageFragment fragment = Stream.of(packageFragments)
-				.min(Comparator.comparing(pf -> pf.getElementName().length())).get();
+		List<IPackageFragment> rootFragments = Stream.of(packageFragments)
+				.filter(pf -> pf.getElementName().equals(packageName)).collect(Collectors.toList());
 
 		ModelExporter modelExporter = new ModelExporter(exportMode);
-		Model model = modelExporter.export(fragment);
+		Model model = modelExporter.export(rootFragments);
 		if (model == null) {
 			throw new IllegalArgumentException("The selected package is not a txtUML model.");
 		}
@@ -126,9 +128,9 @@ public class TxtUMLToUML2 {
 		ModelMapCollector collector = new ModelMapCollector(model.eResource().getURI());
 		cache.getMapping().forEach((s, e) -> collector.put(s, e));
 		try {
-			URI destination = URI.createFileURI(fragment.getJavaProject().getProject().getLocation().toOSString())
+			URI destination = URI.createFileURI(rootFragments.get(0).getJavaProject().getProject().getLocation().toOSString())
 					.appendSegment("gen");
-			String fileName = fragment.getElementName();
+			String fileName = rootFragments.get(0).getElementName();
 			collector.save(destination, fileName);
 		} catch (ModelMapException e1) {
 			// TODO Auto-generated catch block
