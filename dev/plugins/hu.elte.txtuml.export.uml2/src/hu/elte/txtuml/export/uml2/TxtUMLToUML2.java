@@ -106,17 +106,21 @@ public class TxtUMLToUML2 {
 			throw new NotFoundException("Cannot find package '" + packageName + "'");
 		}
 
-		IPackageFragment fragment = Stream.of(packageFragments).min(Comparator.comparing(pf -> pf.getElementName().length())).get();
+		IPackageFragment fragment = Stream.of(packageFragments)
+				.min(Comparator.comparing(pf -> pf.getElementName().length())).get();
 
 		ModelExporter modelExporter = new ModelExporter(exportMode);
 		Model model = modelExporter.export(fragment);
+		if (model == null) {
+			throw new IllegalArgumentException("The selected package is not a txtUML model.");
+		}
 
 		ExporterCache cache = modelExporter.cache;
 
 		Set<Element> unrooted = cache.floatingElements();
 		if (exportMode.isErrorHandler()) {
 			unrooted.forEach(e -> e.destroy());
-		} else if(!unrooted.isEmpty()) {
+		} else if (!unrooted.isEmpty()) {
 			throw new IllegalStateException("Unrooted elements found in the exported model: " + unrooted);
 		}
 		ModelMapCollector collector = new ModelMapCollector(model.eResource().getURI());

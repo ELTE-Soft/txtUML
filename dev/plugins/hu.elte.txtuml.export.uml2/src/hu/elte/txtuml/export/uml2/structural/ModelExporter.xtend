@@ -13,6 +13,9 @@ import org.eclipse.uml2.uml.Package
 import org.eclipse.uml2.uml.Profile
 import org.eclipse.uml2.uml.UMLPackage
 import org.eclipse.uml2.uml.resource.UMLResource
+import java.io.FileNotFoundException
+import java.nio.file.NoSuchFileException
+import java.io.IOException
 
 class ModelExporter extends AbstractPackageExporter<Model> {
 
@@ -35,7 +38,15 @@ class ModelExporter extends AbstractPackageExporter<Model> {
 		cache.export(this, pf, pf, [])
 	}
 
-	override create(IPackageFragment pf) { factory.createModel }
+	override create(IPackageFragment pf) {
+		try {
+			val unit = pf.getCompilationUnit(PackageUtils.PACKAGE_INFO).parseCompUnit
+			if (unit.findModelName != null)
+				factory.createModel
+		} catch (IOException e) {
+			return null
+		}
+	}
 
 	override getImportedElement(String name) {
 		result.getImportedMember(NAME_MAP.get(name) ?: name) ?: result.importedPackages.findFirst[it.name == name]
