@@ -16,7 +16,7 @@ import org.eclipse.uml2.uml.Class
 import org.eclipse.uml2.uml.Package
 import org.eclipse.uml2.uml.PackageableElement
 
-abstract class AbstractPackageExporter<T extends Package> extends Exporter<IPackageFragment, IPackageFragment, T> {
+abstract class AbstractPackageExporter<S, T extends Package> extends Exporter<S, S, T> {
 
 	new(ExportMode mode) {
 		super(mode)
@@ -26,7 +26,7 @@ abstract class AbstractPackageExporter<T extends Package> extends Exporter<IPack
 		super(parent);
 	}
 
-	override exportContents(IPackageFragment packageFragment) {
+	def exportPackageFragment(IPackageFragment packageFragment) {
 		packageFragment.children.forEach[exportCompUnit(it as ICompilationUnit)]
 		val packageRoot = packageFragment.parent as IPackageFragmentRoot
 		val subPackages = packageRoot.children.map[it as IPackageFragment].filter [
@@ -89,7 +89,7 @@ abstract class AbstractPackageExporter<T extends Package> extends Exporter<IPack
 	}
 }
 
-class PackageExporter extends AbstractPackageExporter<Package> {
+class PackageExporter extends AbstractPackageExporter<IPackageFragment, Package> {
 
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
@@ -99,6 +99,6 @@ class PackageExporter extends AbstractPackageExporter<Package> {
 
 	override exportContents(IPackageFragment s) {
 		result.name = s.elementName.split(Pattern.quote(".")).last
-		super.exportContents(s)
+		exportPackageFragment(s)
 	}
 }

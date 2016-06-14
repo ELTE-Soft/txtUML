@@ -3,9 +3,12 @@ package hu.elte.txtuml.export.uml2.structural
 import hu.elte.txtuml.export.uml2.ExportMode
 import hu.elte.txtuml.export.uml2.utils.ResourceSetFactory
 import hu.elte.txtuml.utils.eclipse.PackageUtils
+import java.io.IOException
+import java.util.List
 import java.util.Map
 import org.eclipse.emf.common.util.URI
 import org.eclipse.emf.ecore.util.EcoreUtil
+import org.eclipse.jdt.core.IJavaProject
 import org.eclipse.jdt.core.IPackageFragment
 import org.eclipse.jdt.core.dom.CompilationUnit
 import org.eclipse.uml2.uml.Model
@@ -14,7 +17,7 @@ import org.eclipse.uml2.uml.Profile
 import org.eclipse.uml2.uml.UMLPackage
 import org.eclipse.uml2.uml.resource.UMLResource
 
-class ModelExporter extends AbstractPackageExporter<Model> {
+class ModelExporter extends AbstractPackageExporter<List<IPackageFragment>, Model> {
 
 	static final val STDLIB_URI = "pathmap://TXTUML_STDLIB/stdlib.uml";
 	static final val STDPROF_URI = "pathmap://UML_PROFILES/Standard.profile.uml";
@@ -31,30 +34,45 @@ class ModelExporter extends AbstractPackageExporter<Model> {
 		super(mode)
 	}
 
-	def export(IPackageFragment pf) {
+	def export(List<IPackageFragment> pf) {
 		cache.export(this, pf, pf, [])
 	}
 
-	override create(IPackageFragment pf) { factory.createModel }
+	override create(List<IPackageFragment> fragments) {
+		if(getModelName(fragments) != null) factory.createModel
+	}
+
+	def getModelName(List<IPackageFragment> rootFragments) {
+		for (IPackageFragment pf : rootFragments) {
+			try {
+				val unit = pf.getCompilationUnit(PackageUtils.PACKAGE_INFO).parseCompUnit
+				val modelName = unit.findModelName
+				if (modelName != null)
+					return modelName
+			} catch (IOException e) {
+			}
+		}
+	}
 
 	override getImportedElement(String name) {
 		result.getImportedMember(NAME_MAP.get(name) ?: name) ?: result.importedPackages.findFirst[it.name == name]
 	}
 
-	override exportContents(IPackageFragment packageFragment) {
-		val unit = packageFragment.getCompilationUnit(PackageUtils.PACKAGE_INFO).parseCompUnit
-		setupResourceSet(packageFragment)
-		result.name = unit.findModelName
+	override exportContents(List<IPackageFragment> rootFragments) {
+		val firstFragment = rootFragments.get(0)
+		setupResourceSet(firstFragment.javaProject, firstFragment.elementName)
+		result.name = getModelName(rootFragments)
 		addPackageImport(STDLIB_URI)
 		addPackageImport(STDPROF_URI)
 		addProfileApplication(getImportedElement(STD_PROF_NAME) as Profile)
-		super.exportContents(packageFragment)
+		for (IPackageFragment packageFragment : rootFragments) {
+			super.exportPackageFragment(packageFragment)
+		}
 	}
 
-	def setupResourceSet(IPackageFragment packageFragment) {
-		val uri = URI.createFileURI(packageFragment.getJavaProject().getProject().getLocation().toOSString()).
-			appendSegment("gen").appendSegment(packageFragment.elementName).appendFileExtension(
-				UMLResource.FILE_EXTENSION);
+	def setupResourceSet(IJavaProject project, String packageName) {
+		val uri = URI.createFileURI(project.getProject().getLocation().toOSString()).appendSegment("gen").
+			appendSegment(packageName).appendFileExtension(UMLResource.FILE_EXTENSION);
 		val resourceSet = new ResourceSetFactory().createAndInitResourceSet();
 		val modelResource = resourceSet.createResource(uri);
 		modelResource.contents.add(result)
