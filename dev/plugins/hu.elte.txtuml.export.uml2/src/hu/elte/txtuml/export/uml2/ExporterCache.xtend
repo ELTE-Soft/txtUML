@@ -11,6 +11,8 @@ import org.eclipse.jdt.core.dom.IVariableBinding
 import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.UMLFactory
 import java.util.Set
+import org.eclipse.uml2.uml.Model
+import java.util.List
 
 /**
  * The exporter cache keeps tabs on which elements have been partially or fully exported. For identifying the
@@ -74,7 +76,9 @@ class ExporterCache {
 			return fetchMap.get(accessKey) as R
 		} else {
 			val exported = exporter.createResult(access)
-			fetchMap.put(accessKey, exported)
+			if (exported != null) {
+				fetchMap.put(accessKey, exported)
+			}
 			return exported
 		}
 	}
@@ -88,7 +92,7 @@ class ExporterCache {
 	}
 
 	def Set<Element> floatingElements() {
-		fetchMap.values.filter[it != null && !cache.values.contains(it)].toSet
+		fetchMap.values.filter[it != null && it.eContainer == null && !(it instanceof Model)].toSet
 	}
 
 	protected def generateAccessKey(Class<?> exporterClass, Object key) {
@@ -121,6 +125,10 @@ class ExporterCache {
 	}
 
 	protected def dispatch Object generateSourceAccessKey(ASTNode node) { node }
+	
+	protected def dispatch Object generateSourceAccessKey(List<?> objs) {
+		objs.map[generateSourceAccessKey].join
+	}
 
 	protected def dispatch Object generateSourceAccessKey(Object obj) {
 		throw new IllegalArgumentException(obj.toString)

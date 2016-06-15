@@ -3,7 +3,6 @@ package clock.j;
 import hu.elte.txtuml.api.layout.CompositeDiagram;
 import hu.elte.txtuml.api.layout.East;
 import hu.elte.txtuml.api.layout.North;
-import hu.elte.txtuml.api.layout.Show;
 import hu.elte.txtuml.api.layout.Spacing;
 import clock.j.model.associations.HourHand;
 import clock.j.model.associations.MinuteHand;

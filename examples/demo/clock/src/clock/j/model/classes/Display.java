@@ -33,8 +33,8 @@ public class Display extends ModelClass {
 		Action.log("" + hour + ":" + minute + ":" + second);
 	}
 	
-	class Init extends Initial {}
-	class Accepting extends State {}
+	public class Init extends Initial {}
+	public class Accepting extends State {}
 	
 	@From(Init.class) @To(Accepting.class)
 	class Initialize extends Transition {}

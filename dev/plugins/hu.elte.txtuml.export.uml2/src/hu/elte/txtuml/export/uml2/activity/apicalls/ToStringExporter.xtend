@@ -21,7 +21,7 @@ class ToStringExporter extends ActionExporter<MethodInvocation, CallOperationAct
 		val action = exportExpression(source.expression)
 		createToString(result, action)
 	}
-	
+
 	def createToString(Action action) {
 		val res = createToString(factory.createCallOperationAction, action)
 		storeNode(res)
@@ -40,14 +40,14 @@ class ToStringExporter extends ActionExporter<MethodInvocation, CallOperationAct
 
 class PrimitiveToStringExporter extends ActionExporter<MethodInvocation, CallOperationAction> {
 
-	private val VALUE_OF_CLASSES = #[Boolean, Byte, Short, Integer, Long, Float, Double].map[canonicalName]
+	private val TO_STRING_CLASSES = #[Boolean, Byte, Short, Integer, Long, Float, Double].map[canonicalName]
 
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
 	}
 
 	override create(MethodInvocation access) {
-		if (VALUE_OF_CLASSES.contains(access.resolveMethodBinding.declaringClass.qualifiedName) &&
+		if (TO_STRING_CLASSES.contains(access.resolveMethodBinding.declaringClass.qualifiedName) &&
 			access.resolveMethodBinding.name == "toString" && access.arguments.size == 1)
 			factory.createCallOperationAction
 	}
