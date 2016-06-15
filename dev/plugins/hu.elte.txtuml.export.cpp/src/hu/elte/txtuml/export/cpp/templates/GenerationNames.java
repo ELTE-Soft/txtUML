@@ -108,6 +108,9 @@ class GenerationNames {
 	public static final String EdgeType = "EdgeType";
 	public static final String ConversionNamspace = "conversion";
 	
+	public static final String DefaultParentSmInicialization = GenerationNames.ParentSmMemberName + "(" + 
+	GenerationNames.ParentSmPointerName + ")";
+	
 	
 
 	public static String friendClassDecl(String className) {

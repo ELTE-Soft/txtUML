@@ -152,7 +152,7 @@ public class ClassExporter {
 			createSubSmSource(entry.getValue().getFirst(), parentClass, entry.getValue().getSecond(), dest_);
 		}
 
-		source = createSubSmClassHeaderSource(className_, region_);
+		source = createSubSmClassHeaderSource(className_,parentClass,region_);
 		Shared.writeOutSource(dest_, GenerationTemplates.headerName(className_),
 				GenerationTemplates.headerGuard(source, className_));
 		source = createSubSmClassCppSource(className_, parentClass, region_).toString();
@@ -194,7 +194,7 @@ public class ClassExporter {
 
 			if (_submachineMap.isEmpty()) {
 				source = GenerationTemplates
-						.simpleStateMachineClassHeader(dependency.toString(), realName, getBaseClass(class_),
+						.simpleStateMachineClassHeader(dependency.toString(), realName, getBaseClass(class_), null,
 								publicParts.toString(), protectedParts.toString(), privateParts.toString(), true)
 						.toString();
 			} else {
@@ -209,23 +209,28 @@ public class ClassExporter {
 		return source;
 	}
 
-	private String createSubSmClassHeaderSource(String className_, Region region_) {
+	private String createSubSmClassHeaderSource(String className_,String parentClass, Region region_)  {
 		String source = "";
-		String dependency = "";
+		StringBuilder dependency = new StringBuilder(GenerationTemplates.cppInclude(parentClass));
+		dependency.append(GenerationTemplates.cppInclude(GenerationTemplates.StandardFunctionsHeader));
 
 		StringBuilder privateParts = createEntryFunctionsDecl(region_);
 		privateParts.append(createExitFunctionsDecl(region_));
 		privateParts.append(GenerationTemplates.formatSubSmFunctions(createGuardFunctions(region_).toString()));
 		privateParts.append(createTransitionFunctionDecl(region_));
 		String protectedParts = "";
-		StringBuilder publicParts = new StringBuilder(
-				GenerationTemplates.stateEnum(getStateList(region_), getInitialState(region_)));
-		publicParts.append(GenerationTemplates.constructorDecl(className_, null));
+		
+		 StringBuilder publicParts = new StringBuilder("");
+		 List<String> params = new ArrayList<String>();
+		 params.add(parentClass);
+		 publicParts.append(GenerationTemplates.constructorDecl(className_,params));		
+		 publicParts.append(GenerationTemplates.stateEnum(getStateList(region_), getInitialState(region_)));
+		
 		if (_submachineMap.isEmpty()) {
-			source = GenerationTemplates.simpleSubStateMachineClassHeader(dependency, className_,
+			source = GenerationTemplates.simpleSubStateMachineClassHeader(dependency.toString(), className_, parentClass,
 					publicParts.toString(), protectedParts, privateParts.toString()).toString();
 		} else {
-			source = GenerationTemplates.hierarchicalSubStateMachineClassHeader(dependency, className_,
+			source = GenerationTemplates.hierarchicalSubStateMachineClassHeader(dependency.toString(), className_, parentClass,
 					getSubmachines(), publicParts.toString(), protectedParts, privateParts.toString()).toString();
 		}
 		return source;
@@ -473,8 +478,6 @@ public class ClassExporter {
 
 		if (!isHeader) {
 			source.append(GenerationTemplates.cppInclude(GenerationTemplates.DeploymentHeader));
-			source.append(GenerationTemplates
-					.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.StandardFunctionsHeader));
 			source.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
 			source.append(GenerationTemplates.cppInclude
 					(GenerationTemplates.AssociationsStructuresHreaderName));
@@ -483,6 +486,8 @@ public class ClassExporter {
 					.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.AssocationHeader));
 			
 		}
+		source.append(GenerationTemplates
+				.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.StandardFunctionsHeader));
 
 		source.append("\n");
 		return source;

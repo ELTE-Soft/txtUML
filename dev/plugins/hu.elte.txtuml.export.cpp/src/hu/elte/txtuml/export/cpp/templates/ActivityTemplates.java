@@ -303,6 +303,7 @@ public class ActivityTemplates {
 		public static final String Select = "select";
 		public static final String Concat = "concat";
 		public static final String ToString = "toString";
+		public static final String Count = "count";
 		public static String Fork(String cond, String e1, String e2) {
 			return cond + " ? " + e1 + " : " + e2;
 		}
@@ -388,8 +389,8 @@ public class ActivityTemplates {
 		}
 
 		public static boolean isStdLibFunction(String name) {
-			if (name.equals("delayedInc") || name.equals("delayedDec") || 
-					name.equals(Select) ||  name.equals(Concat) || name.equals(ToString) || name.equals(Log)) {
+			if (name.equals(Select) ||  name.equals(Concat) || 
+					name.equals(ToString) || name.equals(Log) || name.equals(Count)) {
 				return true;
 			} else {
 				return false;
@@ -408,7 +409,7 @@ public class ActivityTemplates {
 	}
 	
 	public static String declareRegex(String variableName) {
-		return "[ a-zA-z0-9<>]*" + variableName + "[ ]*;\n";
+		return "[ a-zA-z0-9<>*]*" + variableName + "[ ]*;\n";
 	}
 
 	public static String formatUserVar(String varName, int userVarCounter) {

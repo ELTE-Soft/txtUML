@@ -23,7 +23,7 @@ class PrivateFunctionalTemplates {
 			source.append(
 					GenerationNames.CompositeStateMapName + ".emplace(" + GenerationNames.stateEnumName(entry.getKey())
 							+ "," + GenerationNames.CompositeStateMapSmType + "(" + GenerationNames.MemoryAllocator
-							+ " " + entry.getValue() + "()" + "));\n");
+							+ " " + entry.getValue() + "(" + GenerationNames.Self +")" + "));\n");
 		}
 
 		source.append("\n"

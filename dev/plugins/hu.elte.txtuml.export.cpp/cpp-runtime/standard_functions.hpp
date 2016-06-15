@@ -21,6 +21,12 @@ E* select(std::list<E*> elements)
 	return elements.front();
 }
 
+template<typename E>
+int count(std::list<E*> elements)
+{
+	return elements.size();
+}
+
 template<typename T1, typename T2>
 std::string concat(T1 s1, T2 s2)
 {
