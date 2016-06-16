@@ -20,6 +20,7 @@ import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.StatementsConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
+import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider;
 import hu.elte.txtuml.layout.visualizer.model.Diagram;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
@@ -49,10 +50,10 @@ public class LayoutVisualizerManager {
 	 *            with txtUML names
 	 */
 	public LayoutVisualizerManager(Set<RectangleObject> objects, Set<LineAssociation> links, List<Statement> statements,
-			DiagramType type) {
+			DiagramType type, IPixelDimensionProvider pixelProvider) {
 		this.diagram = new Diagram(type, objects, links);
 		this.statementsSet = statements;
-		layoutVisualize = new LayoutVisualize(new TxtUmlPixelDimensionProvider());
+		layoutVisualize = new LayoutVisualize(pixelProvider);
 		layoutVisualize.setLogging(false);
 	}
 

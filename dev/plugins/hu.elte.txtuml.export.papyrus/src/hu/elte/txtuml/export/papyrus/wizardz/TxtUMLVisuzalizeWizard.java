@@ -197,7 +197,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 			IProgressMonitor monitor) throws InterruptedException {
 		try {
 			PapyrusVisualizer pv = exporter.createVisualizer(layoutDescriptor);
-			PlatformUI.getWorkbench().getProgressService().run(true, true, pv);
+			PlatformUI.getWorkbench().getProgressService().run(false, true, pv);
 		} catch (Exception e) {
 			Dialogs.errorMsgb("txtUML visualization Error",
 					"Error occured during the visualization process.", e);

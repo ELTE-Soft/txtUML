@@ -15,6 +15,7 @@ import hu.elte.txtuml.export.papyrus.api.elementcreators.ClassDiagramNotationMan
 import hu.elte.txtuml.export.papyrus.elementproviders.ClassDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ClassDiagramElementsArranger;
+import hu.elte.txtuml.utils.Logger;
 
 /**
  * An abstract class for adding/removing elements to ClassDiagrams.
@@ -35,6 +36,7 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 		try {
 			this.arranger.arrange(monitor);
 		} catch (ArrangeException e) {
+			Logger.user.error(e.getMessage());
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

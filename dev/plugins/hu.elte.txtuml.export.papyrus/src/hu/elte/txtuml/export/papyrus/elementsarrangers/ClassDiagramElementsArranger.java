@@ -28,17 +28,17 @@ import hu.elte.txtuml.utils.Pair;
 public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 
 	private DiagramExportationReport report;
-	private Map<Element, Rectangle> elementbounds;
-	private Map<Relationship, List<Point>> connectionRoutes;
 	private TxtUMLElementsMapper elementsMapper;
-	private Map<Relationship, String> connectionSourceAnchors;
-	private Map<Relationship, String> connectionTargetAnchors;
 	private TxtUmlPixelDimensionProvider pixelDimensionProvider;
+	private Map<Element, Rectangle> elementbounds = new HashMap<>();
+	private Map<Relationship, List<Point>> connectionRoutes = new HashMap<>();
+	private Map<Relationship, String> connectionSourceAnchors = new HashMap<>();
+	private Map<Relationship, String> connectionTargetAnchors = new HashMap<>();
 
 	public ClassDiagramElementsArranger(DiagramExportationReport report, TxtUMLElementsMapper mapper) {
 		this.report = report;
 		this.elementsMapper = mapper;
-		this.pixelDimensionProvider = new TxtUmlPixelDimensionProvider();
+		this.pixelDimensionProvider = new TxtUmlPixelDimensionProvider(mapper);
 	}
 
 	@Override
@@ -52,11 +52,12 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 		DiagramType dType = convertDiagramType(report.getType());
 
 		setPixelSizes(objects);
-		
-		LayoutVisualizerManager vm = new LayoutVisualizerManager(objects, links, statements,dType);
+
+		LayoutVisualizerManager vm = new LayoutVisualizerManager(objects, links, statements, dType,
+				this.pixelDimensionProvider);
 		vm.addProgressMonitor(monitor);
 		vm.arrange();
-		
+
 		Set<RectangleObject> arrangedObjects = vm.getObjects();
 		Set<LineAssociation> arrangedLinks = vm.getAssociations();
 
@@ -134,7 +135,12 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 
 	@Override
 	public Rectangle getBoundsForElement(Element element) {
-		return this.elementbounds.get(element);
+		Rectangle rect = this.elementbounds.get(element);
+		if (rect == null) {
+			rect = new Rectangle(0, 0, 100, 100); // TODO: Add a proper
+													// implementation
+		}
+		return rect;
 	}
 
 	@Override
