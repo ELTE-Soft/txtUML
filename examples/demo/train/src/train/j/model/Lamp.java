@@ -8,13 +8,13 @@ import train.j.model.signals.LightOff;
 import train.j.model.signals.SwitchLight;
 
 public class Lamp extends ModelClass {
-	class Init extends Initial {
+	public class Init extends Initial {
 	}
 
-	class Dark extends State {
+	public class Dark extends State {
 	}
 
-	class Light extends State {
+	public class Light extends State {
 	}
 
 	@From(Init.class)

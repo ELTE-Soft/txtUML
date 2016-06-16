@@ -18,13 +18,13 @@ public class User extends ModelClass {
 	public int id;
 	int workToDo = 7;
 
-	class Init extends Initial {
+	public class Init extends Initial {
 	}
 
-	class NotWorking extends State {
+	public class NotWorking extends State {
 	}
 
-	class WhereToGo extends Choice {
+	public class WhereToGo extends Choice {
 	}
 
 	@From(Init.class)

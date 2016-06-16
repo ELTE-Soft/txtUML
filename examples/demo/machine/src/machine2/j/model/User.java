@@ -12,10 +12,10 @@ import machine2.j.model.signals.DoYourWork;
 
 public class User extends ModelClass {
 
-	class Init extends Initial {
+	public class Init extends Initial {
 	}
 
-	class Ready extends State {
+	public class Ready extends State {
 	}
 
 	@From(Init.class)

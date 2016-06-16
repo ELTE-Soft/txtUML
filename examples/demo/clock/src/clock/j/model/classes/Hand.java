@@ -26,8 +26,8 @@ public class Hand extends ModelClass {
 		this.currentValue = currentValue;
 	}
 	
-	class Init extends Initial {}
-	class Working extends State {}
+	public class Init extends Initial {}
+	public class Working extends State {}
 
 	@From(Init.class) @To(Working.class)
 	class Initialize extends Transition {}
