@@ -96,6 +96,7 @@ public class ActivityExporter {
 		}
 
 	public String createfunctionBody(Activity activity_) {
+		System.out.println(activity_.getName());
 		ActivityNode startNode = null;
 		StringBuilder source = new StringBuilder("");
 		for (ActivityNode node : activity_.getOwnedNodes()) {
@@ -538,6 +539,8 @@ public class ActivityExporter {
 	}
 
 	private String createSendSignalActionCode(SendObjectAction sendObjectAction) {
+		System.out.println(sendObjectAction.getName());
+		System.out.println(sendObjectAction.getRequest());
 
 		String target = getTargetFromInputPin(sendObjectAction.getTarget());
 		String singal = getTargetFromInputPin(sendObjectAction.getRequest());
@@ -593,6 +596,7 @@ public class ActivityExporter {
 
 	private StringBuilder createCallOperationActionCode(CallOperationAction node_) {
 		StringBuilder source = new StringBuilder("");
+		System.out.println(node_.getName());
 
 		exportAllOutputPinToMap(node_.getOutputs());		
 		OutputPin returnPin = searchReturnPin(node_.getResults(), node_.getOperation().outputParameters());
@@ -700,7 +704,7 @@ public class ActivityExporter {
 	}
 
 	private OutputPin searchReturnPin(EList<OutputPin> results, EList<Parameter> outputParameters) {
-		for (int i = 0; i < results.size(); i++) {
+		for (int i = 0; i < Math.min(results.size(),outputParameters.size()); i++) {
 
 			if (outputParameters.get(i).getDirection().equals(ParameterDirectionKind.RETURN_LITERAL)) {
 				return results.get(i);
@@ -767,7 +771,9 @@ public class ActivityExporter {
 	}
 
 	private String getRealVariable(Variable variable) {
-		return variableTable.get(variable).getFirst();
+		//System.out.println(variable.getName());
+		return variableTable.containsKey(variable) ? 
+				variableTable.get(variable).getFirst() : variable.getName();
 	}
 
 	private String addValueToTemporalVariable(String type, String var, String value) {

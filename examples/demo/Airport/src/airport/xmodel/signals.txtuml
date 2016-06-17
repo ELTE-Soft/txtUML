@@ -1,0 +1,84 @@
+package airport.xmodel;
+
+// Pilot sends
+signal SignalPilotAskLandingPermission; // The pilot uses it, when he/she would like to take off
+signal SignalPilotAskTakingOffPermission; // The pilot uses it, when he/she would like to land
+
+// Tower sends
+signal SignalPleaseWait;
+signal SignalGiveLandingPermission { // The tower sends it to the plane
+	int runWayId; // It shows where the plane can be landed
+}
+signal SignalGiveTakingOffPermission; // The tower sends it to the plane
+
+signal SignalPlaneSendTheLandingApplicationToTower { // The plane sends it
+	int id;
+}
+signal SignalPlaneSendTheTakingOffApplicationToTower { // The plane sends it
+	int id;
+}
+
+signal SignalPlaneIsUnderTakingOff;
+signal SignalToTowerPlaneIsUnderTakingOff {
+	int id;
+}
+signal SignalPlaneAlreadyTakenOff;
+signal SignalToTowerPlaneAlreadyTakenOff {
+	int id;
+}
+
+
+signal SignalPlaneIsUnderLanding;
+signal SignalToTowerPlaneIsUnderLanding {
+	int id;
+}
+signal SignalPlaneAlreadyLanded;
+signal SignalToTowerPlaneAlreadyLanded {
+	int id;
+}
+
+// Annuling
+signal SignalAnnulingTheLanding;
+signal SignalToTowerAnnulingTheLanding_AL {
+	int id;
+}
+signal SignalToTowerAnnulingTheLanding_WL {
+	int id;
+}
+
+signal SignalAnnulingTheTakingOff;
+signal SignalToTowerAnnulingTheTakingOff_AL {
+	int id;
+}
+signal SignalToTowerAnnulingTheTakingOff_WL {
+	int id;
+}
+
+
+signal SignalDenyTakingOff;
+
+// Tower
+signal SignalTowerWorks;
+
+
+// Runway
+signal SignalSetNewPlane {
+	int planeId;
+}
+signal SignalSetFreeTheRunway;
+
+
+// Weather
+signal SignalWeatherAutoSending;
+signal SignalSendTheWeatherValues {
+	int temperature;
+	int wind;
+	int rain;
+}
+/*
+signal setNewWeather {
+	int temperature;
+	int wind;
+	int rain;
+}*/
+
