@@ -108,6 +108,11 @@ class GenerationNames {
 	public static final String EdgeType = "EdgeType";
 	public static final String ConversionNamspace = "conversion";
 	
+	public static final String TimerInterFaceName = "ITimer";
+	public static final String StartTimerFunctionName = "start";
+	public static final String TimerClassName = "Timer";
+	
+	
 	public static final String DefaultParentSmInicialization = GenerationNames.ParentSmMemberName + "(" + 
 	GenerationNames.ParentSmPointerName + ")";
 	

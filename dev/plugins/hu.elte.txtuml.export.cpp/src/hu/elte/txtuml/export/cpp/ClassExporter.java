@@ -481,6 +481,8 @@ public class ClassExporter {
 			source.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
 			source.append(GenerationTemplates.cppInclude
 					(GenerationTemplates.AssociationsStructuresHreaderName));
+			source.append(GenerationTemplates.cppInclude(GenerationTemplates.TimerInterfaceHeader));
+			source.append(GenerationTemplates.cppInclude(GenerationTemplates.TimerHeader));
 		} else {
 			source.append(GenerationTemplates
 					.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.AssocationHeader));

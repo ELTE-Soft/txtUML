@@ -38,7 +38,12 @@ namespace conversion
 	}
 	std::string to_string(bool b)
 	{
-		return b ? "1" : "0";
+		return b ? "True" : "False";
+	}
+	
+	std::string to_string(std::string s)
+	{
+		return s;
 	}
 }
 

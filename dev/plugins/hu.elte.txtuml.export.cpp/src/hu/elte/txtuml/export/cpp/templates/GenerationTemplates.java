@@ -32,8 +32,12 @@ public class GenerationTemplates {
     public static final String AssociationStructuresHeader = GenerationNames.AssociationsHeaderName + "." + GenerationNames.HeaderExtension;
     public static final String AssociationStructuresSource = GenerationNames.AssociationsHeaderName + "." + GenerationNames.SourceExtension;
     public static final String DeploymentHeader = GenerationNames.DeploymentHeaderName;
+    public static final String TimerInterfaceHeader = GenerationNames.TimerInterFaceName;
+    public static final String TimerHeader = GenerationNames.TimerClassName;
+
 
     public static final String InitSignal = GenerationNames.InitialEventName;
+   
 
     public enum LinkFunctionType {
 	Link, Unlink
@@ -280,7 +284,7 @@ public class GenerationTemplates {
 
     public static String destructorDef(String className, Boolean ownStates) {
 	if (!ownStates) {
-	    return className + "::" + "~" + className + "()" + emptyBody() + "\n";
+	    return className + "::" + "~" + className + "(){}\n";
 	} else {
 	    return className + "::" + "~" + className + "()\n{\n" + RuntimeTemplates.GetRuntimeInstance
 		    + GenerationNames.PointerAccess + RuntimeTemplates.ObjectRemoverForRuntime + "("
@@ -677,37 +681,6 @@ public class GenerationTemplates {
 		+ "();\n";
     }
 
-    public static String getDefaultReturn(String returnType) {
-
-	if (returnType == null) {
-	    return "\n";
-	} else {
-	    return "return " + getDefaultReturnValue(returnType) + ";\n";
-	}
-
-    }
-
-    public static String getDefaultReturnValue(String returnType) {
-
-	switch (PrivateFunctionalTemplates.cppType(returnType)) {
-	case "int":
-	    return "0";
-	case "double":
-	    return "0";
-	case "bool":
-	    return "true";
-	case GenerationNames.cppString:
-	    return "\"\"";
-	default:
-	    return "0";
-
-	}
-
-    }
-
-    public static String emptyBody() {
-	return "{}";
-    }
 
     public static String debugOnlyCodeBlock(String code_) {
 	return "#ifndef " + GenerationNames.NoDebugSymbol + "\n" + code_ + "#endif\n";

@@ -304,6 +304,9 @@ public class ActivityTemplates {
 		public static final String Concat = "concat";
 		public static final String ToString = "toString";
 		public static final String Count = "count";
+		public static final String TimerStart = GenerationNames.StartTimerFunctionName;
+		
+		
 		public static String Fork(String cond, String e1, String e2) {
 			return cond + " ? " + e1 + " : " + e2;
 		}
@@ -383,13 +386,15 @@ public class ActivityTemplates {
 				return GenerationNames.ConversionNamspace + "::" + "to_string";
 			case Log :
 				return GenerationNames.ActionFunctionsNamespace + "::" + Log;
+			case TimerStart :
+				return GenerationNames.TimerInterFaceName + "::" + TimerStart;
 			default:
 				return function;
 			}
 		}
 
 		public static boolean isStdLibFunction(String name) {
-			if (name.equals(Select) ||  name.equals(Concat) || 
+			if (name.equals(Select) ||  name.equals(Concat) ||  name.equals(TimerStart) ||
 					name.equals(ToString) || name.equals(Log) || name.equals(Count)) {
 				return true;
 			} else {
