@@ -420,12 +420,13 @@
     </ownedOperation>
   </packagedElement>
   <packagedElement xmi:type="uml:Class" xmi:id="__n84QCiUEeapMvtX7A4jBw" name="Timer">
-    <ownedOperation xmi:type="uml:Operation" xmi:id="_BjLO0CiVEeapMvtX7A4jBw" name="start">
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_BjLO0CiVEeapMvtX7A4jBw" name="start" isStatic="true">
       <ownedParameter xmi:type="uml:Parameter" xmi:id="_H_9FACiVEeapMvtX7A4jBw" name="recipient"/>
       <ownedParameter xmi:type="uml:Parameter" xmi:id="_LOvVMCiVEeapMvtX7A4jBw" name="signal"/>
       <ownedParameter xmi:type="uml:Parameter" xmi:id="_NCX2ACiVEeapMvtX7A4jBw" name="delay">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
       </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_J0GLUDa7EeaaWotM5HRdBg" name="ret" type="__n84QCiUEeapMvtX7A4jBw" direction="return"/>
     </ownedOperation>
   </packagedElement>
   <packagedElement xmi:type="uml:Class" xmi:id="_snIrMCi_EeapMvtX7A4jBw" name="Math">
