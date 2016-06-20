@@ -110,7 +110,7 @@ public class Animator {
 			IMarker imarker = null;
 			try {
 				imarker = resource.createMarker(AnimationConfig.TXTUML_ANIMATION_MARKER_ID);
-				imarker.setAttribute(EValidator.URI_ATTRIBUTE, URI.createPlatformResourceURI(resource.getFullPath() + "#" + EcoreUtil.getURI(eobject).fragment(), false).toString());
+				imarker.setAttribute(EValidator.URI_ATTRIBUTE, URI.createPlatformResourceURI(resource.getFullPath().toString(), true) + "#" + EcoreUtil.getURI(eobject).fragment());
 			} catch (CoreException e) {
 				e.printStackTrace();
 			}
