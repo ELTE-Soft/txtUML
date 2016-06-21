@@ -16,6 +16,8 @@ import org.eclipse.uml2.uml.Package
 import org.eclipse.uml2.uml.Profile
 import org.eclipse.uml2.uml.UMLPackage
 import org.eclipse.uml2.uml.resource.UMLResource
+import java.util.HashMap
+import org.eclipse.uml2.uml.Element
 
 class ModelExporter extends AbstractPackageExporter<List<IPackageFragment>, Model> {
 
@@ -29,6 +31,8 @@ class ModelExporter extends AbstractPackageExporter<List<IPackageFragment>, Mode
 		byte.canonicalName -> "Integer", Byte.canonicalName -> "Integer", long.canonicalName -> "Integer",
 		Long.canonicalName -> "Integer", double.canonicalName -> "Real", Double.canonicalName -> "Real",
 		float.canonicalName -> "Real", Float.canonicalName -> "Real"}
+
+	final Map<String, Element> importCache = new HashMap();
 
 	new(ExportMode mode) {
 		super(mode)
@@ -55,7 +59,13 @@ class ModelExporter extends AbstractPackageExporter<List<IPackageFragment>, Mode
 	}
 
 	override getImportedElement(String name) {
-		result.getImportedMember(NAME_MAP.get(name) ?: name) ?: result.importedPackages.findFirst[it.name == name]
+		val normalName = NAME_MAP.get(name) ?: name
+		val inCache = importCache.get(normalName);
+		if (inCache != null) {
+			return inCache
+		} else {
+			result.importedPackages.findFirst[it.name == name]
+		}
 	}
 
 	override exportContents(List<IPackageFragment> rootFragments) {
@@ -65,6 +75,7 @@ class ModelExporter extends AbstractPackageExporter<List<IPackageFragment>, Mode
 		addPackageImport(STDLIB_URI)
 		addPackageImport(STDPROF_URI)
 		addProfileApplication(getImportedElement(STD_PROF_NAME) as Profile)
+		result.importedMembers.forEach[importCache.put(it.name, it)]
 		for (IPackageFragment packageFragment : rootFragments) {
 			super.exportPackageFragment(packageFragment)
 		}
