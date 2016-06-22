@@ -111,7 +111,7 @@ public class AssociationExporter {
 			end.setIsNavigable(navigable);
 			end.setLower(lowerBound);
 			end.setUpper(upperBound);
-			end.setAggregation(AggregationKind.NONE_LITERAL);
+			mapping.put(SharedUtils.qualifiedName((TypeDeclaration)sourceElement), end);
 		}
 	}
 
