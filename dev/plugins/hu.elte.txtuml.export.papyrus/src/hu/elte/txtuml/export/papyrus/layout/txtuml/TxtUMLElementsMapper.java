@@ -81,6 +81,9 @@ public class TxtUMLElementsMapper {
 					this.connectionMap.put(link.getId(), e);
 				});
 			}
+			
+			String refElementName =  report.getReferencedElementName();
+			findElement(refElementName).ifPresent(n -> this.elementMap.put(refElementName, n));
 		}
 	}
 
