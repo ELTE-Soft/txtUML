@@ -6,7 +6,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.notation.Diagram;
-import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.Vertex;
 
@@ -70,17 +69,19 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	private void addSubelementsRecursively(Collection<Region> regions) {
 		regions.stream().forEach(region -> {
 			this.elementsProvider.getStatesForRegion(region).forEach(state -> {
-				this.notationManager.createStateForRegion(region, state, this.monitor);
+				this.notationManager.createStateForRegion(region, state, this.arranger.getBoundsForElement(state),
+						this.monitor);
 				addSubelementsRecursively(this.elementsProvider.getRegionsOfState(state));
 			});
 			this.elementsProvider.getInitialStatesForRegion(region).forEach(initialState -> {
-				this.notationManager.createInitialStateForRegion(region, initialState, monitor);
+				this.notationManager.createInitialStateForRegion(region, initialState,
+						this.arranger.getBoundsForElement(initialState), monitor);
 			});
 			this.elementsProvider.getTransitionsForRegion(region).forEach(transition -> {
-				
+
 				Vertex source = transition.getSource();
 				Vertex target = transition.getTarget();
-				
+
 				this.notationManager.createTransitionForRegion(region, source, target, transition,
 						this.arranger.getRouteForConnection(transition),
 						this.arranger.getSourceAnchorForConnection(transition),

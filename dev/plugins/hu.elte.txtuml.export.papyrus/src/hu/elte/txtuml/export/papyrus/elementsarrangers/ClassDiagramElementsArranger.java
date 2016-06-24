@@ -12,24 +12,21 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Relationship;
 
+import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.ClassDiagramPixelDimensionProvider;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutTransformer;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutVisualizerManager;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.TxtUmlPixelDimensionProvider;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.ClassDiagramElementsMapper;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
-import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider.Height;
-import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider.Width;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
-import hu.elte.txtuml.utils.Pair;
+import hu.elte.txtuml.utils.Logger;
 
-public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
+public class ClassDiagramElementsArranger extends AbstractDiagramElementsArranger {
 
 	private DiagramExportationReport report;
 	private ClassDiagramElementsMapper elementsMapper;
-	private TxtUmlPixelDimensionProvider pixelDimensionProvider;
 	private Map<Element, Rectangle> elementbounds = new HashMap<>();
 	private Map<Relationship, List<Point>> connectionRoutes = new HashMap<>();
 	private Map<Relationship, String> connectionSourceAnchors = new HashMap<>();
@@ -38,7 +35,7 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 	public ClassDiagramElementsArranger(DiagramExportationReport report, ClassDiagramElementsMapper mapper) {
 		this.report = report;
 		this.elementsMapper = mapper;
-		this.pixelDimensionProvider = new TxtUmlPixelDimensionProvider(mapper);
+		this.pixelDimensionProvider = new ClassDiagramPixelDimensionProvider(mapper);
 	}
 	
 	@Override
@@ -72,25 +69,6 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 		this.connectionSourceAnchors = createSourceAnchors(arrangedLinks);
 		this.connectionTargetAnchors = createTargetAnchors(arrangedLinks);
 		monitor.worked(1);
-	}
-
-	private void setPixelSizes(Set<RectangleObject> objects) {
-		objects.forEach(object -> {
-			Pair<Width, Height> dimension = this.pixelDimensionProvider.getPixelDimensionsFor(object);
-			object.setPixelWidth(dimension.getFirst().Value);
-			object.setPixelHeight(dimension.getSecond().Value);
-		});
-	}
-
-	private DiagramType convertDiagramType(hu.elte.txtuml.layout.export.DiagramType type) {
-		switch (type) {
-		case Class:
-			return DiagramType.Class;
-		case StateMachine:
-			return DiagramType.State;
-		default:
-			return DiagramType.unknown;
-		}
 	}
 
 	private Map<Element, Rectangle> createElementsMapping(Set<RectangleObject> arrangedObjects) {
@@ -139,6 +117,7 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 		if (rect == null) {
 			rect = new Rectangle(0, 0, 100, 100); // TODO: Add a proper
 													// implementation
+			Logger.sys.error("Could not find bounds for an element");
 		}
 		return rect;
 	}

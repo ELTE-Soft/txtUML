@@ -3,12 +3,13 @@ package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Element;
 
+import hu.elte.txtuml.export.papyrus.layout.txtuml.ClassDiagramElementsMapper;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.IDiagramElementsMapper;
 import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.utils.Pair;
 
-public class TxtUmlPixelDimensionProvider implements IPixelDimensionProvider {
+public class ClassDiagramPixelDimensionProvider implements IPixelDimensionProvider {
 
 	private static final int DEFAULT_ELEMENT_WIDTH = 100;
 	private static final int DEFAULT_ELEMENT_HEIGHT = 100;
@@ -22,7 +23,7 @@ public class TxtUmlPixelDimensionProvider implements IPixelDimensionProvider {
 
 	private IDiagramElementsMapper elementsMapper;
 
-	public TxtUmlPixelDimensionProvider(IDiagramElementsMapper mapper) {
+	public ClassDiagramPixelDimensionProvider(ClassDiagramElementsMapper mapper) {
 		this.elementsMapper = mapper;
 	}
 

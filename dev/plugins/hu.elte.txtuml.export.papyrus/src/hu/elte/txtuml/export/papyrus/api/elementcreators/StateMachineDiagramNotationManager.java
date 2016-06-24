@@ -85,26 +85,29 @@ public class StateMachineDiagramNotationManager extends AbstractDiagramNotationM
 		return regionsForState;
 	}
 
-	public void createStateForRegion(Region region, State state, IProgressMonitor monitor) {
+	public void createStateForRegion(Region region, State state, Rectangle bounds, IProgressMonitor monitor) {
 
 		Node regionNode = this.notationMap.get(region);
 		Node node = findCanvasOfRegion(regionNode);
 
 		Runnable runnable = () -> {
 			String hint = ((IHintedType) UMLElementTypes.State_6000).getSemanticHint();
-			ViewService.createNode(node, state, hint, StateMachineDiagramNotationManager.diagramPrefHint);
+			Node newNode = ViewService.createNode(node, state, hint, StateMachineDiagramNotationManager.diagramPrefHint);
+			newNode.setLayoutConstraint(createBounds(bounds, defaultStateBounds));
 		};
 
 		runInTransactionalCommand(runnable, "Creating State for Node " + node, monitor);
 	}
 
-	public void createInitialStateForRegion(Region region, Pseudostate InitialState, IProgressMonitor monitor) {
+	public void createInitialStateForRegion(Region region, Pseudostate InitialState, Rectangle bounds,
+			IProgressMonitor monitor) {
 		Node regionNode = this.notationMap.get(region);
 		Node node = findCanvasOfRegion(regionNode);
 
 		Runnable runnable = () -> {
 			String hint = ((IHintedType) UMLElementTypes.Pseudostate_8000).getSemanticHint();
-			ViewService.createNode(node, InitialState, hint, StateMachineDiagramNotationManager.diagramPrefHint);
+			Node newNode = ViewService.createNode(node, InitialState, hint, StateMachineDiagramNotationManager.diagramPrefHint);
+			newNode.setLayoutConstraint(createBounds(bounds, defaultStateBounds));
 		};
 
 		runInTransactionalCommand(runnable, "Creating Initialstate for Node " + node, monitor);
