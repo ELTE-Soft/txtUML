@@ -38,7 +38,7 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 	public ClassDiagramElementsArranger(DiagramExportationReport report, TxtUMLElementsMapper mapper) {
 		this.report = report;
 		this.elementsMapper = mapper;
-		this.pixelDimensionProvider = new TxtUmlPixelDimensionProvider(mapper);
+		this.pixelDimensionProvider = new TxtUmlPixelDimensionProvider(mapper, this.report);
 	}
 
 	@Override
@@ -95,14 +95,15 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 
 	private Map<Element, Rectangle> createElementsMapping(Set<RectangleObject> arrangedObjects) {
 		return arrangedObjects.stream()
-				.collect(Collectors.toMap(ro -> this.elementsMapper.findNode(ro.getName()),
+				.collect(Collectors.toMap(ro -> this.elementsMapper.findNode(ro.getName(), this.report),
 						ro -> new Rectangle(ro.getTopLeft().getX(), ro.getTopLeft().getY(), ro.getPixelWidth(),
 								ro.getPixelHeight())));
 	}
 
 	private Map<Relationship, List<Point>> createConnectionMapping(Set<LineAssociation> arrangedLinks) {
 		return arrangedLinks.stream()
-				.collect(Collectors.toMap(la -> (Relationship) this.elementsMapper.findConnection(la.getId()),
+				.collect(Collectors.toMap(
+						la -> (Relationship) this.elementsMapper.findConnection(la.getId(), this.report),
 						la -> la.getMinimalRoute().stream().map(p -> new Point(p.getX(), p.getY()))
 								.collect(Collectors.toList())));
 	}
@@ -110,8 +111,8 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 	private Map<Relationship, String> createTargetAnchors(Set<LineAssociation> links) {
 		Map<Relationship, String> result = new HashMap<>();
 		links.forEach(l -> {
-			Relationship connection = (Relationship) this.elementsMapper.findConnection(l.getId());
-			Rectangle targetNode = this.elementbounds.get(this.elementsMapper.findNode(l.getTo()));
+			Relationship connection = (Relationship) this.elementsMapper.findConnection(l.getId(), this.report);
+			Rectangle targetNode = this.elementbounds.get(this.elementsMapper.findNode(l.getTo(), this.report));
 			List<Point> pointlist = this.connectionRoutes.get(connection);
 			Point endPoint = pointlist.get(pointlist.size() - 1);
 			String anchor = "(" + (endPoint.x - targetNode.x) / (float) targetNode.width + ","
@@ -124,8 +125,8 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 	private Map<Relationship, String> createSourceAnchors(Set<LineAssociation> links) {
 		Map<Relationship, String> result = new HashMap<>();
 		links.forEach(l -> {
-			Relationship connection = (Relationship) this.elementsMapper.findConnection(l.getId());
-			Rectangle sourceNode = this.elementbounds.get(this.elementsMapper.findNode(l.getFrom()));
+			Relationship connection = (Relationship) this.elementsMapper.findConnection(l.getId(), this.report);
+			Rectangle sourceNode = this.elementbounds.get(this.elementsMapper.findNode(l.getFrom(), this.report));
 			Point startPoint = this.connectionRoutes.get(connection).get(0);
 			result.put(connection, "(" + (startPoint.x - sourceNode.x) / (float) sourceNode.width + ","
 					+ (startPoint.y - sourceNode.y) / (float) sourceNode.height + ")");

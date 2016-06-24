@@ -36,11 +36,11 @@ public class ClassDiagramElementsProviderImpl implements ClassDiagramElementsPro
 	}
 
 	private void cacheNodes(TxtUMLElementsMapper mapper) {
-		this.nodes = mapper.getNodes();
+		this.nodes = mapper.getNodes(this.report);
 	}
 
 	private void cacheConnections(TxtUMLElementsMapper mapper) {
-		this.connections = mapper.getConnections().stream()
+		this.connections = mapper.getConnections(this.report).stream()
 				.filter(e -> e instanceof Relationship)
 				.map(e -> (Relationship)e).collect(Collectors.toList());
 	}

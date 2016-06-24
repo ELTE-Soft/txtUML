@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Element;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsMapper;
+import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.utils.Pair;
@@ -20,8 +21,9 @@ public class TxtUmlPixelDimensionProvider implements IPixelDimensionProvider {
 	private static final int MAX_CLASS_HEIGHT = 200;
 
 	private TxtUMLElementsMapper elementsMapper;
+	private DiagramExportationReport report;
 
-	public TxtUmlPixelDimensionProvider(TxtUMLElementsMapper mapper) {
+	public TxtUmlPixelDimensionProvider(TxtUMLElementsMapper mapper, DiagramExportationReport report) {
 		this.elementsMapper = mapper;
 	}
 
@@ -30,7 +32,7 @@ public class TxtUmlPixelDimensionProvider implements IPixelDimensionProvider {
 		Integer width = DEFAULT_ELEMENT_WIDTH;
 		Integer height = DEFAULT_ELEMENT_HEIGHT;
 
-		Element elem = this.elementsMapper.findNode(box.getName());
+		Element elem = this.elementsMapper.findNode(box.getName(), this.report);
 		if (elem != null && elem instanceof Classifier) {
 			width = ((Classifier) elem).getFeatures().stream()
 					.mapToInt((attribute) -> attribute.getName().length() * PIXELWIDTH_OF_CHARACTER).max().orElse(0);

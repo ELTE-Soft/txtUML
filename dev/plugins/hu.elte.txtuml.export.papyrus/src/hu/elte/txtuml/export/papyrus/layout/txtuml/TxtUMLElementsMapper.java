@@ -23,14 +23,16 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.utils.Pair;
 
+
+//TODO: Currenty this class behaves as a singleton. Maybe more instances (for every report) could be better
 /**
  * Finds the org.eclipse.uml2 element from a model according to the txtUML name
  */
 public class TxtUMLElementsMapper {
 
 	private Collection<ModelMapProvider> modelMapProviders;
-	private Map<String, Element> connectionMap = new HashMap<>();
-	private Map<String, Element> elementMap = new HashMap<>();
+	private Map<DiagramExportationReport, Map<String, Element>> connectionMaps = new HashMap<>();
+	private Map<DiagramExportationReport, Map<String, Element>> elementMaps = new HashMap<>();
 
 	/**
 	 * The Constructor
@@ -62,10 +64,12 @@ public class TxtUMLElementsMapper {
 	 */
 	private void init(Collection<ModelMapProvider> modelMapProviders, TxtUMLLayoutDescriptor descriptor) {
 		for (DiagramExportationReport report : descriptor.getReports()) {
+			this.elementMaps.put(report, new HashMap<String, Element>());
+			
 			// Nodes
 			for (RectangleObject node : report.getNodes()) {
 				findElement(node.getName()).ifPresent((e) -> {
-					this.elementMap.put(node.getName(), e);
+					this.elementMaps.get(report).put(node.getName(), e);
 				});
 			}
 
@@ -81,12 +85,12 @@ public class TxtUMLElementsMapper {
 					}
 				}
 				elem.ifPresent((e) -> {
-					this.connectionMap.put(link.getId(), e);
+					this.connectionMaps.get(report).put(link.getId(), e);
 				});
 			}
 			
 			String refElementName =  report.getReferencedElementName();
-			findElement(refElementName).ifPresent(n -> this.elementMap.put(refElementName, n));
+			findElement(refElementName).ifPresent(n -> this.elementMaps.get(report).put(refElementName, n));
 		}
 	}
 
@@ -155,19 +159,19 @@ public class TxtUMLElementsMapper {
 		return roots;
 	}
 
-	public Element findNode(String object) {
-		return this.elementMap.get(object);
+	public Element findNode(String object, DiagramExportationReport report) {
+		return this.elementMaps.get(report).get(object);
 	}
 
-	public Element findConnection(String object) {
-		return this.connectionMap.get(object);
+	public Element findConnection(String object, DiagramExportationReport report) {
+		return this.connectionMaps.get(report).get(object);
 	}
 
-	public Collection<Element> getNodes() {
-		return this.elementMap.values();
+	public Collection<Element> getNodes(DiagramExportationReport report) {
+		return this.elementMaps.get(report).values();
 	}
 
-	public Collection<Element> getConnections() {
-		return this.connectionMap.values();
+	public Collection<Element> getConnections(DiagramExportationReport report) {
+		return this.connectionMaps.get(report).values();
 	}
 }

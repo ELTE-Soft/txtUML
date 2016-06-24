@@ -3,7 +3,6 @@ package hu.elte.txtuml.export.papyrus.elementproviders;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.eclipse.uml2.uml.Class;
@@ -28,28 +27,25 @@ public class StateMachineDiagramElementsProviderImpl implements StateMachineDiag
 		this.report = report;
 		cacheNodes(mapper);
 		cacheConnections(mapper);
-		Class clazz = (Class) mapper.findNode(this.report.getReferencedElementName());
-		
+		Class clazz = (Class) mapper.findNode(this.report.getReferencedElementName(), this.report);
+
 		this.mainElement = (StateMachine) clazz.getClassifierBehavior();
 	}
 
 	private void cacheConnections(TxtUMLElementsMapper mapper) {
-		this.connections = mapper.getConnections().stream()
-				.filter(c -> c instanceof Transition)
-				.map(c -> (Transition)c)
-				.collect(Collectors.toList());
+		this.connections = mapper.getConnections(this.report).stream().filter(c -> c instanceof Transition)
+				.map(c -> (Transition) c).collect(Collectors.toList());
 	}
 
 	private void cacheNodes(TxtUMLElementsMapper mapper) {
-		this.nodes = mapper.getNodes();
+		this.nodes = mapper.getNodes(this.report);
 	}
 
 	@Override
 	public Collection<State> getStatesForRegion(Region region) {
 		List<State> result = new ArrayList<>();
-		result = region.getOwnedElements().stream()
-				.filter(e->(e instanceof State) && this.nodes.contains(e))
-				.map(e -> (State)e).collect(Collectors.toList());
+		result = region.getOwnedElements().stream().filter(e -> (e instanceof State) && this.nodes.contains(e))
+				.map(e -> (State) e).collect(Collectors.toList());
 		return result;
 	}
 
@@ -61,18 +57,16 @@ public class StateMachineDiagramElementsProviderImpl implements StateMachineDiag
 	@Override
 	public Collection<Region> getRegionsOfState(State state) {
 		List<Region> result = new ArrayList<>();
-		result = state.getOwnedElements().stream()
-				.filter(e->(e instanceof Region)&& this.nodes.contains(e))
-				.map(e -> (Region)e).collect(Collectors.toList());
+		result = state.getOwnedElements().stream().filter(e -> (e instanceof Region) && this.nodes.contains(e))
+				.map(e -> (Region) e).collect(Collectors.toList());
 		return result;
 	}
 
 	@Override
 	public Collection<Pseudostate> getInitialStatesForRegion(Region region) {
 		List<Pseudostate> result = new ArrayList<>();
-		result = region.getOwnedElements().stream()
-				.filter(e->(e instanceof Pseudostate) && this.nodes.contains(e))
-				.map(e -> (Pseudostate)e).collect(Collectors.toList());
+		result = region.getOwnedElements().stream().filter(e -> (e instanceof Pseudostate) && this.nodes.contains(e))
+				.map(e -> (Pseudostate) e).collect(Collectors.toList());
 		return result;
 	}
 
@@ -80,8 +74,8 @@ public class StateMachineDiagramElementsProviderImpl implements StateMachineDiag
 	public Collection<Transition> getTransitionsForRegion(Region region) {
 		List<Transition> result = new ArrayList<>();
 		result = region.getOwnedElements().stream()
-				.filter(e->(e instanceof Transition) && this.connections.contains(e))
-				.map(e -> (Transition)e).collect(Collectors.toList());
+				.filter(e -> (e instanceof Transition) && this.connections.contains(e)).map(e -> (Transition) e)
+				.collect(Collectors.toList());
 		return result;
 	}
 

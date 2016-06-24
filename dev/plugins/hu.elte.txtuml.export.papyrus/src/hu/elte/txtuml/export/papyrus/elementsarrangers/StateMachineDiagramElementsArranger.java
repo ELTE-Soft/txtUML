@@ -31,7 +31,7 @@ public class StateMachineDiagramElementsArranger implements IDiagramElementsArra
 		this.report = report;
 		this.elementsMapper = mapper;
 		// TODO: Separate pixelproviders for different diagram types
-		this.pixelDimensionProvider = new TxtUmlPixelDimensionProvider(mapper);
+		this.pixelDimensionProvider = new TxtUmlPixelDimensionProvider(mapper, this.report);
 	}
 
 	@Override
@@ -44,8 +44,8 @@ public class StateMachineDiagramElementsArranger implements IDiagramElementsArra
 	private Map<Transition, String> createTargetAnchors(Set<LineAssociation> links) {
 		Map<Transition, String> result = new HashMap<>();
 		links.forEach(l -> {
-			Transition connection = (Transition) this.elementsMapper.findConnection(l.getId());
-			Rectangle targetNode = this.elementbounds.get(this.elementsMapper.findNode(l.getTo()));
+			Transition connection = (Transition) this.elementsMapper.findConnection(l.getId(), this.report);
+			Rectangle targetNode = this.elementbounds.get(this.elementsMapper.findNode(l.getTo(), this.report));
 			List<Point> pointlist = this.connectionRoutes.get(connection);
 			Point endPoint = pointlist.get(pointlist.size() - 1);
 			String anchor = "(" + (endPoint.x - targetNode.x) / (float) targetNode.width + ","
@@ -58,8 +58,8 @@ public class StateMachineDiagramElementsArranger implements IDiagramElementsArra
 	private Map<Transition, String> createSourceAnchors(Set<LineAssociation> links) {
 		Map<Transition, String> result = new HashMap<>();
 		links.forEach(l -> {
-			Transition connection = (Transition) this.elementsMapper.findConnection(l.getId());
-			Rectangle sourceNode = this.elementbounds.get(this.elementsMapper.findNode(l.getFrom()));
+			Transition connection = (Transition) this.elementsMapper.findConnection(l.getId(), this.report);
+			Rectangle sourceNode = this.elementbounds.get(this.elementsMapper.findNode(l.getFrom(), this.report));
 			Point startPoint = this.connectionRoutes.get(connection).get(0);
 			result.put(connection, "(" + (startPoint.x - sourceNode.x) / (float) sourceNode.width + ","
 					+ (startPoint.y - sourceNode.y) / (float) sourceNode.height + ")");
