@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.State;
+import org.eclipse.uml2.uml.Transition;
 
 public interface StateMachineDiagramElementsProvider {
 
@@ -15,6 +16,8 @@ public interface StateMachineDiagramElementsProvider {
 	Collection<Region> getRegionsOfState(State state);
 
 	Collection<Region> getMainRegions();
+
+	Collection<Transition>  getTransitionsForRegion(Region region);
 	
 	//State , CompositeState?, PseudoState, FinalState, Choice, Merge etc.
 }

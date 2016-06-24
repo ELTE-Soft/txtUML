@@ -12,7 +12,7 @@ import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Generalization;
-import org.eclipse.uml2.uml.Relationship;
+import org.eclipse.uml2.uml.Transition;
 
 import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
@@ -29,7 +29,7 @@ import hu.elte.txtuml.utils.Pair;
 public class TxtUMLElementsMapper {
 
 	private Collection<ModelMapProvider> modelMapProviders;
-	private Map<String, Relationship> connectionMap = new HashMap<>();
+	private Map<String, Element> connectionMap = new HashMap<>();
 	private Map<String, Element> elementMap = new HashMap<>();
 
 	/**
@@ -71,11 +71,14 @@ public class TxtUMLElementsMapper {
 
 			// Connections
 			for (LineAssociation link : report.getLinks()) {
-				Optional<? extends Relationship> elem = Optional.empty();
+				Optional<? extends Element> elem = Optional.empty();
 				if (link.getType() == AssociationType.generalization) {
 					elem = findGeneralization(link);
 				} else {
 					elem = findAssociation(link);
+					if(!elem.isPresent()){
+						elem = findTransition(link);
+					}
 				}
 				elem.ifPresent((e) -> {
 					this.connectionMap.put(link.getId(), e);
@@ -128,6 +131,14 @@ public class TxtUMLElementsMapper {
 		}
 		return Optional.empty();
 	}
+	
+	private Optional<Transition> findTransition(LineAssociation trans){
+		Optional<Element> elem = findElement(trans.getId());
+		if (elem.isPresent() && elem.get() instanceof Transition) {
+			return Optional.of((Transition) elem.get());
+		}
+		return Optional.empty();
+	}
 
 	/**
 	 * Returns the roots elements of all reports
@@ -148,15 +159,15 @@ public class TxtUMLElementsMapper {
 		return this.elementMap.get(object);
 	}
 
-	public Relationship findConnection(String object) {
+	public Element findConnection(String object) {
 		return this.connectionMap.get(object);
 	}
 
-	public Collection<Element> getNodes(DiagramExportationReport report) {
+	public Collection<Element> getNodes() {
 		return this.elementMap.values();
 	}
 
-	public Collection<Relationship> getConnections(DiagramExportationReport report) {
+	public Collection<Element> getConnections() {
 		return this.connectionMap.values();
 	}
 }

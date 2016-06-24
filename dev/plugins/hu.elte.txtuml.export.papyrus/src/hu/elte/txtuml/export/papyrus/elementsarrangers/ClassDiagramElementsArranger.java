@@ -102,7 +102,7 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 
 	private Map<Relationship, List<Point>> createConnectionMapping(Set<LineAssociation> arrangedLinks) {
 		return arrangedLinks.stream()
-				.collect(Collectors.toMap(la -> this.elementsMapper.findConnection(la.getId()),
+				.collect(Collectors.toMap(la -> (Relationship) this.elementsMapper.findConnection(la.getId()),
 						la -> la.getMinimalRoute().stream().map(p -> new Point(p.getX(), p.getY()))
 								.collect(Collectors.toList())));
 	}
@@ -110,7 +110,7 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 	private Map<Relationship, String> createTargetAnchors(Set<LineAssociation> links) {
 		Map<Relationship, String> result = new HashMap<>();
 		links.forEach(l -> {
-			Relationship connection = this.elementsMapper.findConnection(l.getId());
+			Relationship connection = (Relationship) this.elementsMapper.findConnection(l.getId());
 			Rectangle targetNode = this.elementbounds.get(this.elementsMapper.findNode(l.getTo()));
 			List<Point> pointlist = this.connectionRoutes.get(connection);
 			Point endPoint = pointlist.get(pointlist.size() - 1);
@@ -124,7 +124,7 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 	private Map<Relationship, String> createSourceAnchors(Set<LineAssociation> links) {
 		Map<Relationship, String> result = new HashMap<>();
 		links.forEach(l -> {
-			Relationship connection = this.elementsMapper.findConnection(l.getId());
+			Relationship connection = (Relationship) this.elementsMapper.findConnection(l.getId());
 			Rectangle sourceNode = this.elementbounds.get(this.elementsMapper.findNode(l.getFrom()));
 			Point startPoint = this.connectionRoutes.get(connection).get(0);
 			result.put(connection, "(" + (startPoint.x - sourceNode.x) / (float) sourceNode.width + ","
@@ -143,7 +143,6 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 		return rect;
 	}
 
-	@Override
 	public List<Point> getRouteForConnection(Relationship connection) {
 		return this.connectionRoutes.get(connection);
 	}

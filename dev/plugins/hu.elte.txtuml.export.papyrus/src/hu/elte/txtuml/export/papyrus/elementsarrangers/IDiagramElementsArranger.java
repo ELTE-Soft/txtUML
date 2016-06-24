@@ -21,6 +21,4 @@ public interface IDiagramElementsArranger {
 	public void arrange(IProgressMonitor monitor) throws ArrangeException;
 
 	public Rectangle getBoundsForElement(Element element);
-	
-	public List<Point> getRouteForConnection(Relationship connection);
 }
