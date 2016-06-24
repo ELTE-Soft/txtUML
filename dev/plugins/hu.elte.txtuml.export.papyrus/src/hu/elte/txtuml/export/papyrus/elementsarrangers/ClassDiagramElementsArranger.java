@@ -15,7 +15,7 @@ import org.eclipse.uml2.uml.Relationship;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutTransformer;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutVisualizerManager;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.TxtUmlPixelDimensionProvider;
-import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsMapper;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.ClassDiagramElementsMapper;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider.Height;
 import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider.Width;
@@ -28,19 +28,19 @@ import hu.elte.txtuml.utils.Pair;
 public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 
 	private DiagramExportationReport report;
-	private TxtUMLElementsMapper elementsMapper;
+	private ClassDiagramElementsMapper elementsMapper;
 	private TxtUmlPixelDimensionProvider pixelDimensionProvider;
 	private Map<Element, Rectangle> elementbounds = new HashMap<>();
 	private Map<Relationship, List<Point>> connectionRoutes = new HashMap<>();
 	private Map<Relationship, String> connectionSourceAnchors = new HashMap<>();
 	private Map<Relationship, String> connectionTargetAnchors = new HashMap<>();
 
-	public ClassDiagramElementsArranger(DiagramExportationReport report, TxtUMLElementsMapper mapper) {
+	public ClassDiagramElementsArranger(DiagramExportationReport report, ClassDiagramElementsMapper mapper) {
 		this.report = report;
 		this.elementsMapper = mapper;
-		this.pixelDimensionProvider = new TxtUmlPixelDimensionProvider(mapper, this.report);
+		this.pixelDimensionProvider = new TxtUmlPixelDimensionProvider(mapper);
 	}
-
+	
 	@Override
 	public void arrange(IProgressMonitor monitor) throws ArrangeException {
 		monitor.beginTask("Arrange", 1);
@@ -95,15 +95,14 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 
 	private Map<Element, Rectangle> createElementsMapping(Set<RectangleObject> arrangedObjects) {
 		return arrangedObjects.stream()
-				.collect(Collectors.toMap(ro -> this.elementsMapper.findNode(ro.getName(), this.report),
+				.collect(Collectors.toMap(ro -> this.elementsMapper.findNode(ro.getName()),
 						ro -> new Rectangle(ro.getTopLeft().getX(), ro.getTopLeft().getY(), ro.getPixelWidth(),
 								ro.getPixelHeight())));
 	}
 
 	private Map<Relationship, List<Point>> createConnectionMapping(Set<LineAssociation> arrangedLinks) {
 		return arrangedLinks.stream()
-				.collect(Collectors.toMap(
-						la -> (Relationship) this.elementsMapper.findConnection(la.getId(), this.report),
+				.collect(Collectors.toMap(la -> (Relationship) this.elementsMapper.findConnection(la.getId()),
 						la -> la.getMinimalRoute().stream().map(p -> new Point(p.getX(), p.getY()))
 								.collect(Collectors.toList())));
 	}
@@ -111,8 +110,8 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 	private Map<Relationship, String> createTargetAnchors(Set<LineAssociation> links) {
 		Map<Relationship, String> result = new HashMap<>();
 		links.forEach(l -> {
-			Relationship connection = (Relationship) this.elementsMapper.findConnection(l.getId(), this.report);
-			Rectangle targetNode = this.elementbounds.get(this.elementsMapper.findNode(l.getTo(), this.report));
+			Relationship connection = (Relationship) this.elementsMapper.findConnection(l.getId());
+			Rectangle targetNode = this.elementbounds.get(this.elementsMapper.findNode(l.getTo()));
 			List<Point> pointlist = this.connectionRoutes.get(connection);
 			Point endPoint = pointlist.get(pointlist.size() - 1);
 			String anchor = "(" + (endPoint.x - targetNode.x) / (float) targetNode.width + ","
@@ -125,8 +124,8 @@ public class ClassDiagramElementsArranger implements IDiagramElementsArranger {
 	private Map<Relationship, String> createSourceAnchors(Set<LineAssociation> links) {
 		Map<Relationship, String> result = new HashMap<>();
 		links.forEach(l -> {
-			Relationship connection = (Relationship) this.elementsMapper.findConnection(l.getId(), this.report);
-			Rectangle sourceNode = this.elementbounds.get(this.elementsMapper.findNode(l.getFrom(), this.report));
+			Relationship connection = (Relationship) this.elementsMapper.findConnection(l.getId());
+			Rectangle sourceNode = this.elementbounds.get(this.elementsMapper.findNode(l.getFrom()));
 			Point startPoint = this.connectionRoutes.get(connection).get(0);
 			result.put(connection, "(" + (startPoint.x - sourceNode.x) / (float) sourceNode.width + ","
 					+ (startPoint.y - sourceNode.y) / (float) sourceNode.height + ")");

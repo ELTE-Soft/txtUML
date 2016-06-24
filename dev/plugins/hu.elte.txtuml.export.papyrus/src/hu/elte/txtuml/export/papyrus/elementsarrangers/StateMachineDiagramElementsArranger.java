@@ -13,25 +13,26 @@ import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Transition;
 
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.TxtUmlPixelDimensionProvider;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.IDiagramElementsMapper;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.StateMachineDiagramElementsMapper;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsMapper;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 
 public class StateMachineDiagramElementsArranger implements IDiagramElementsArranger {
 
-	private DiagramExportationReport report;
-	private TxtUMLElementsMapper elementsMapper;
+	private StateMachineDiagramElementsMapper elementsMapper;
 	private Map<Element, Rectangle> elementbounds = new HashMap<>();
 	private Map<Transition, List<Point>> connectionRoutes = new HashMap<>();
 	private TxtUmlPixelDimensionProvider pixelDimensionProvider;
 	private Map<Transition, String> connectionSourceAnchors;
 	private Map<Transition, String> connectionTargetAnchors;
 
-	public StateMachineDiagramElementsArranger(DiagramExportationReport report, TxtUMLElementsMapper mapper) {
-		this.report = report;
+	public StateMachineDiagramElementsArranger(DiagramExportationReport report,
+			StateMachineDiagramElementsMapper mapper) {
 		this.elementsMapper = mapper;
 		// TODO: Separate pixelproviders for different diagram types
-		this.pixelDimensionProvider = new TxtUmlPixelDimensionProvider(mapper, this.report);
+		this.pixelDimensionProvider = new TxtUmlPixelDimensionProvider(mapper);
 	}
 
 	@Override
@@ -44,8 +45,8 @@ public class StateMachineDiagramElementsArranger implements IDiagramElementsArra
 	private Map<Transition, String> createTargetAnchors(Set<LineAssociation> links) {
 		Map<Transition, String> result = new HashMap<>();
 		links.forEach(l -> {
-			Transition connection = (Transition) this.elementsMapper.findConnection(l.getId(), this.report);
-			Rectangle targetNode = this.elementbounds.get(this.elementsMapper.findNode(l.getTo(), this.report));
+			Transition connection = (Transition) this.elementsMapper.findConnection(l.getId());
+			Rectangle targetNode = this.elementbounds.get(this.elementsMapper.findNode(l.getTo()));
 			List<Point> pointlist = this.connectionRoutes.get(connection);
 			Point endPoint = pointlist.get(pointlist.size() - 1);
 			String anchor = "(" + (endPoint.x - targetNode.x) / (float) targetNode.width + ","
@@ -58,8 +59,8 @@ public class StateMachineDiagramElementsArranger implements IDiagramElementsArra
 	private Map<Transition, String> createSourceAnchors(Set<LineAssociation> links) {
 		Map<Transition, String> result = new HashMap<>();
 		links.forEach(l -> {
-			Transition connection = (Transition) this.elementsMapper.findConnection(l.getId(), this.report);
-			Rectangle sourceNode = this.elementbounds.get(this.elementsMapper.findNode(l.getFrom(), this.report));
+			Transition connection = (Transition) this.elementsMapper.findConnection(l.getId());
+			Rectangle sourceNode = this.elementbounds.get(this.elementsMapper.findNode(l.getFrom()));
 			Point startPoint = this.connectionRoutes.get(connection).get(0);
 			result.put(connection, "(" + (startPoint.x - sourceNode.x) / (float) sourceNode.width + ","
 					+ (startPoint.y - sourceNode.y) / (float) sourceNode.height + ")");

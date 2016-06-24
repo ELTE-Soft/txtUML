@@ -23,8 +23,6 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.utils.Pair;
 
-
-//TODO: Currenty this class behaves as a singleton. Maybe more instances (for every report) could be better
 /**
  * Finds the org.eclipse.uml2 element from a model according to the txtUML name
  */
@@ -65,7 +63,8 @@ public class TxtUMLElementsMapper {
 	private void init(Collection<ModelMapProvider> modelMapProviders, TxtUMLLayoutDescriptor descriptor) {
 		for (DiagramExportationReport report : descriptor.getReports()) {
 			this.elementMaps.put(report, new HashMap<String, Element>());
-			
+			this.connectionMaps.put(report, new HashMap<String, Element>());
+
 			// Nodes
 			for (RectangleObject node : report.getNodes()) {
 				findElement(node.getName()).ifPresent((e) -> {
@@ -80,7 +79,7 @@ public class TxtUMLElementsMapper {
 					elem = findGeneralization(link);
 				} else {
 					elem = findAssociation(link);
-					if(!elem.isPresent()){
+					if (!elem.isPresent()) {
 						elem = findTransition(link);
 					}
 				}
@@ -88,8 +87,8 @@ public class TxtUMLElementsMapper {
 					this.connectionMaps.get(report).put(link.getId(), e);
 				});
 			}
-			
-			String refElementName =  report.getReferencedElementName();
+
+			String refElementName = report.getReferencedElementName();
 			findElement(refElementName).ifPresent(n -> this.elementMaps.get(report).put(refElementName, n));
 		}
 	}
@@ -135,8 +134,8 @@ public class TxtUMLElementsMapper {
 		}
 		return Optional.empty();
 	}
-	
-	private Optional<Transition> findTransition(LineAssociation trans){
+
+	private Optional<Transition> findTransition(LineAssociation trans) {
 		Optional<Element> elem = findElement(trans.getId());
 		if (elem.isPresent() && elem.get() instanceof Transition) {
 			return Optional.of((Transition) elem.get());
@@ -149,7 +148,8 @@ public class TxtUMLElementsMapper {
 	 * 
 	 * @return
 	 */
-	public List<Pair<DiagramExportationReport, Element>> getDiagramRootsWithDiagramNames(TxtUMLLayoutDescriptor descriptor) {
+	public List<Pair<DiagramExportationReport, Element>> getDiagramRootsWithDiagramNames(
+			TxtUMLLayoutDescriptor descriptor) {
 		List<Pair<DiagramExportationReport, Element>> roots = new ArrayList<>();
 		for (Pair<String, DiagramExportationReport> pair : descriptor.getReportsWithDiagramNames()) {
 			DiagramExportationReport report = pair.getSecond();
@@ -159,19 +159,14 @@ public class TxtUMLElementsMapper {
 		return roots;
 	}
 
-	public Element findNode(String object, DiagramExportationReport report) {
-		return this.elementMaps.get(report).get(object);
-	}
-
-	public Element findConnection(String object, DiagramExportationReport report) {
-		return this.connectionMaps.get(report).get(object);
-	}
-
-	public Collection<Element> getNodes(DiagramExportationReport report) {
-		return this.elementMaps.get(report).values();
-	}
-
-	public Collection<Element> getConnections(DiagramExportationReport report) {
-		return this.connectionMaps.get(report).values();
+	public IDiagramElementsMapper getMapperForReport(DiagramExportationReport report) {
+		switch (report.getType()) {
+		case Class:
+			return new ClassDiagramElementsMapper(this.elementMaps.get(report), this.connectionMaps.get(report));
+		case StateMachine:
+			return new StateMachineDiagramElementsMapper(this.elementMaps.get(report), this.connectionMaps.get(report));
+		default:
+			return null;
+		}
 	}
 }

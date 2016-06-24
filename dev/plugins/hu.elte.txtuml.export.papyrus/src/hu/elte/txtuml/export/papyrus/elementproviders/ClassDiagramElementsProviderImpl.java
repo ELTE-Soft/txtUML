@@ -20,29 +20,25 @@ import org.eclipse.uml2.uml.Realization;
 import org.eclipse.uml2.uml.Relationship;
 import org.eclipse.uml2.uml.Signal;
 
-import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsMapper;
-import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.ClassDiagramElementsMapper;
 
 public class ClassDiagramElementsProviderImpl implements ClassDiagramElementsProvider {
 
-	private DiagramExportationReport report;
 	private Collection<Element> nodes;
 	private Collection<Relationship> connections;
 
-	public ClassDiagramElementsProviderImpl(DiagramExportationReport report, TxtUMLElementsMapper mapper) {
-		this.report = report;
-		cacheNodes(mapper);
-		cacheConnections(mapper);
+	public ClassDiagramElementsProviderImpl(ClassDiagramElementsMapper classDiagramElementsMapper) {
+		cacheNodes(classDiagramElementsMapper);
+		cacheConnections(classDiagramElementsMapper);
 	}
 
-	private void cacheNodes(TxtUMLElementsMapper mapper) {
-		this.nodes = mapper.getNodes(this.report);
+	private void cacheNodes(ClassDiagramElementsMapper mapper) {
+		this.nodes = mapper.getNodes();
 	}
 
-	private void cacheConnections(TxtUMLElementsMapper mapper) {
-		this.connections = mapper.getConnections(this.report).stream()
-				.filter(e -> e instanceof Relationship)
-				.map(e -> (Relationship)e).collect(Collectors.toList());
+	private void cacheConnections(ClassDiagramElementsMapper mapper) {
+		this.connections = mapper.getConnections().stream().filter(e -> e instanceof Relationship)
+				.map(e -> (Relationship) e).collect(Collectors.toList());
 	}
 
 	@Override
@@ -136,8 +132,8 @@ public class ClassDiagramElementsProviderImpl implements ClassDiagramElementsPro
 	@Override
 	@SuppressWarnings("unchecked")
 	public Collection<InterfaceRealization> getInterfaceRealizations() {
-		List<InterfaceRealization> intarfaceRealizations = (List<InterfaceRealization>) (Object) this.connections.stream()
-				.filter((e) -> e instanceof InterfaceRealization).collect(Collectors.toList());
+		List<InterfaceRealization> intarfaceRealizations = (List<InterfaceRealization>) (Object) this.connections
+				.stream().filter((e) -> e instanceof InterfaceRealization).collect(Collectors.toList());
 		return intarfaceRealizations;
 	}
 

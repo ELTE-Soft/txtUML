@@ -29,6 +29,8 @@ import hu.elte.txtuml.export.papyrus.elementsarrangers.StateMachineDiagramElemen
 import hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.ClassDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.StateMachineDiagramElementsManager;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.StateMachineDiagramElementsMapper;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.ClassDiagramElementsMapper;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsMapper;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
@@ -143,13 +145,16 @@ public class PapyrusModelManager {
 		DiagramExportationReport report = this.descriptor.getReportByDiagramName(diagram.getName());
 
 		if (diagram.getType().equals(diagramType_CD)) {
-			ClassDiagramElementsProvider provider = new ClassDiagramElementsProviderImpl(report, this.mapper);
-			ClassDiagramElementsArranger arranger = new ClassDiagramElementsArranger(report, this.mapper);
+			ClassDiagramElementsMapper mapper = (ClassDiagramElementsMapper) this.mapper.getMapperForReport(report);
+
+			ClassDiagramElementsProvider provider = new ClassDiagramElementsProviderImpl(mapper);
+			ClassDiagramElementsArranger arranger = new ClassDiagramElementsArranger(report, mapper);
 			diagramElementsManager = new ClassDiagramElementsManager(diagram, provider, this.domain, arranger, monitor);
 		} else if (diagram.getType().equals(diagramType_SMD)) {
-			StateMachineDiagramElementsProvider provider = new StateMachineDiagramElementsProviderImpl(report,
-					this.mapper);
-			StateMachineDiagramElementsArranger arranger = new StateMachineDiagramElementsArranger(report, this.mapper);
+			StateMachineDiagramElementsMapper mapper = (StateMachineDiagramElementsMapper) this.mapper.getMapperForReport(report);
+			
+			StateMachineDiagramElementsProvider provider = new StateMachineDiagramElementsProviderImpl(report, mapper);
+			StateMachineDiagramElementsArranger arranger = new StateMachineDiagramElementsArranger(report, mapper);
 			diagramElementsManager = new StateMachineDiagramElementsManager(diagram, provider, this.domain, arranger,
 					monitor);
 		} else {

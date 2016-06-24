@@ -13,7 +13,7 @@ import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.Transition;
 
-import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsMapper;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.StateMachineDiagramElementsMapper;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 
 public class StateMachineDiagramElementsProviderImpl implements StateMachineDiagramElementsProvider {
@@ -23,22 +23,23 @@ public class StateMachineDiagramElementsProviderImpl implements StateMachineDiag
 	private Collection<Element> nodes;
 	private Collection<Transition> connections;
 
-	public StateMachineDiagramElementsProviderImpl(DiagramExportationReport report, TxtUMLElementsMapper mapper) {
+	public StateMachineDiagramElementsProviderImpl(DiagramExportationReport report,
+			StateMachineDiagramElementsMapper mapper) {
 		this.report = report;
 		cacheNodes(mapper);
 		cacheConnections(mapper);
-		Class clazz = (Class) mapper.findNode(this.report.getReferencedElementName(), this.report);
+		Class clazz = (Class) mapper.findNode(this.report.getReferencedElementName());
 
 		this.mainElement = (StateMachine) clazz.getClassifierBehavior();
 	}
 
-	private void cacheConnections(TxtUMLElementsMapper mapper) {
-		this.connections = mapper.getConnections(this.report).stream().filter(c -> c instanceof Transition)
+	private void cacheConnections(StateMachineDiagramElementsMapper mapper) {
+		this.connections = mapper.getConnections().stream().filter(c -> c instanceof Transition)
 				.map(c -> (Transition) c).collect(Collectors.toList());
 	}
 
-	private void cacheNodes(TxtUMLElementsMapper mapper) {
-		this.nodes = mapper.getNodes(this.report);
+	private void cacheNodes(StateMachineDiagramElementsMapper mapper) {
+		this.nodes = mapper.getNodes();
 	}
 
 	@Override
