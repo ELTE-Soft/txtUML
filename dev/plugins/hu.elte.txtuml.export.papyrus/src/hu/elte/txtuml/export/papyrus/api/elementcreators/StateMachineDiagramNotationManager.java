@@ -21,6 +21,7 @@ import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.RegionCompartment
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateMachineCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.part.UMLDiagramEditorPlugin;
+import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.Vertex;
@@ -80,7 +81,7 @@ public class StateMachineDiagramNotationManager extends AbstractDiagramNotationM
 		return regionsForState;
 	}
 
-	public void createStateForRegion(Region region, Vertex state, IProgressMonitor monitor){
+	public void createStateForRegion(Region region, State state, IProgressMonitor monitor){
 		
 		Node regionNode = this.notationMap.get(region);
 		Node node = (Node) regionNode.getChildren().get(0); //a decorationNode between region and substates
@@ -88,6 +89,18 @@ public class StateMachineDiagramNotationManager extends AbstractDiagramNotationM
 		Runnable runnable = () -> {
 			String hint = ((IHintedType) UMLElementTypes.State_6000).getSemanticHint();
 			ViewService.createNode(node, state, hint, StateMachineDiagramNotationManager.diagramPrefHint);
+		};
+		
+		runInTransactionalCommand(runnable, "Creating State for Node "+node, monitor);
+	}
+	
+	public void createInitialStateForRegion(Region region, Pseudostate InitialState, IProgressMonitor monitor){
+		Node regionNode = this.notationMap.get(region);
+		Node node = (Node) regionNode.getChildren().get(0); //a decorationNode between region and substates
+		
+		Runnable runnable = () -> {
+			String hint = ((IHintedType) UMLElementTypes.Pseudostate_8000).getSemanticHint();
+			ViewService.createNode(node, InitialState, hint, StateMachineDiagramNotationManager.diagramPrefHint);
 		};
 		
 		runInTransactionalCommand(runnable, "Creating State for Node "+node, monitor);

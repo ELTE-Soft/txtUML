@@ -67,8 +67,11 @@ public class StateMachineDiagramElementsProviderImpl implements StateMachineDiag
 
 	@Override
 	public Collection<Pseudostate> getInitialStatesForRegion(Region region) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Pseudostate> result = new ArrayList<>();
+		result = region.getOwnedElements().stream()
+				.filter(e->(e instanceof Pseudostate) && this.nodes.contains(e))
+				.map(e -> (Pseudostate)e).collect(Collectors.toList());
+		return result;
 	}
 
 }

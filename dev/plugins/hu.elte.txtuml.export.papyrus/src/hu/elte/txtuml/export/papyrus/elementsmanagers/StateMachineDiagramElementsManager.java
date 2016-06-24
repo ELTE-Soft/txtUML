@@ -67,11 +67,17 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 
 	private void addSubelementsRecursively(Collection<Region> regions){
 		regions.stream()
-				.forEach(region -> this.elementsProvider.getStatesForRegion(region)
+				.forEach(region -> {
+					this.elementsProvider.getStatesForRegion(region)
 						.forEach(state->{
 							this.notationManager.createStateForRegion(region, state, this.monitor);
 							addSubelementsRecursively(this.elementsProvider.getRegionsOfState(state));
-						})
+						});
+					this.elementsProvider.getInitialStatesForRegion(region)
+						.forEach(initialState->{
+							this.notationManager.createInitialStateForRegion(region, initialState, monitor);
+						});
+					}		
 				);
 	}
 	
