@@ -18,9 +18,7 @@ import org.eclipse.papyrus.uml.diagram.clazz.CreateClassDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.statemachine.CreateStateMachineDiagramCommand;
 import org.eclipse.papyrus.uml.tools.model.UmlModel;
 import org.eclipse.uml2.uml.BehavioredClassifier;
-import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Element;
-import org.eclipse.uml2.uml.StateMachine;
 
 import hu.elte.txtuml.export.papyrus.elementproviders.ClassDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.elementproviders.ClassDiagramElementsProviderImpl;
@@ -60,11 +58,6 @@ public class PapyrusModelManager {
 	 */
 	protected DiagramManager diagramManager;
 
-	/**
-	 * The ModelManager controls the model elements
-	 */
-	protected UMLModelManager modelManager;
-
 	protected ModelSet modelSet;
 
 	protected TransactionalEditingDomain domain;
@@ -92,7 +85,6 @@ public class PapyrusModelManager {
 			this.domain = ServiceUtils.getInstance().getTransactionalEditingDomain(registry);
 			this.model = (UmlModel) this.modelSet.getModel(UmlModel.MODEL_ID);
 			this.modelSet.loadModel(UmlModel.MODEL_ID);
-			this.modelManager = new UMLModelManager(model);
 			this.diagramManager = new DiagramManager(registry);
 		} catch (ServiceException | BadStateException e) {
 			throw new RuntimeException(e);

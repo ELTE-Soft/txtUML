@@ -23,6 +23,7 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.common.commands.ShowHideLabelsRequest;
 import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateEditPart;
 
+@Deprecated
 @SuppressWarnings("restriction")
 public class DiagramElementsModifier {
 

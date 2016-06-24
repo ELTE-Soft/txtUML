@@ -36,7 +36,6 @@ import org.eclipse.uml2.uml.SendObjectAction;
 import org.eclipse.uml2.uml.SendSignalAction;
 import org.eclipse.uml2.uml.ValueSpecificationAction;
 
-import hu.elte.txtuml.export.papyrus.UMLModelManager;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 
 /**
