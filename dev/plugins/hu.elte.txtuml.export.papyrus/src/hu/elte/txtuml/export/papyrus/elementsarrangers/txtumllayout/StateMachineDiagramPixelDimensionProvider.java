@@ -12,8 +12,8 @@ import hu.elte.txtuml.utils.Pair;
 
 public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensionProvider {
 
-	private static final int DEFAULT_ELEMENT_WIDTH = 40;
-	private static final int DEFAULT_ELEMENT_HEIGHT = 40;
+	private static final int DEFAULT_ELEMENT_WIDTH = 80;
+	private static final int DEFAULT_ELEMENT_HEIGHT = 60;
 
 	private static final int MIN_STATE_WIDTH = 40;
 	private static final int MAX_STATE_WIDTH = 200;

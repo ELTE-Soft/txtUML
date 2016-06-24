@@ -123,8 +123,7 @@ public class LayoutVisualizerManager {
 
 		diagram = layoutVisualize.getDiagram();
 
-		 FileVisualize.printOutput(diagram,
-		 "C:/Users/Andris/Desktop/vis.txt");
+	//	 FileVisualize.printOutput(diagram, "C:/Users/Andris/Desktop/vis.txt");
 	}
 
 	private String formatStatements(Collection<Statement> statements) {

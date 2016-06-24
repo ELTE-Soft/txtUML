@@ -50,8 +50,6 @@ public class StateMachineDiagramElementsArranger extends AbstractDiagramElements
 		List<Statement> statements = report.getStatements();
 		DiagramType dType = convertDiagramType(report.getType());
 
-		setPixelSizes(objects);
-
 		LayoutVisualizerManager vm = new LayoutVisualizerManager(objects, links, statements, dType,
 				this.pixelDimensionProvider);
 		vm.addProgressMonitor(monitor);
