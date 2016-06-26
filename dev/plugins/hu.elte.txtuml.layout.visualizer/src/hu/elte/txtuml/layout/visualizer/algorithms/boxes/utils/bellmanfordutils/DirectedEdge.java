@@ -14,6 +14,8 @@ import hu.elte.txtuml.layout.visualizer.statements.Statement;
  *
  * @author Robert Sedgewick
  * @author Kevin Wayne
+ * 
+ * Additional data added to aid Diagram generation.
  */
 
 public class DirectedEdge
@@ -22,39 +24,39 @@ public class DirectedEdge
 	private final int v;
 	private final int w;
 	private final double weight;
-	private final Statement s;
+	private final Statement stat;
 	
 	/**
 	 * Initializes a directed edge from vertex <tt>v</tt> to vertex <tt>w</tt>
 	 * with the given <tt>weight</tt>.
 	 * 
-	 * @param v
+	 * @param p_v
 	 *            the tail vertex
-	 * @param w
+	 * @param p_w
 	 *            the head vertex
-	 * @param weight
+	 * @param p_weight
 	 *            the weight of the directed edge
-	 * @param stat
+	 * @param p_stat
 	 *            the statement associated with this edge.
 	 * @throws java.lang.IndexOutOfBoundsException
 	 *             if either <tt>v</tt> or <tt>w</tt> is a negative integer
 	 * @throws IllegalArgumentException
 	 *             if <tt>weight</tt> is <tt>NaN</tt>
 	 */
-	public DirectedEdge(int v, int w, double weight, Statement stat)
+	public DirectedEdge(int p_v, int p_w, double p_weight, Statement p_stat)
 	{
-		if (v < 0)
+		if (p_v < 0)
 			throw new IndexOutOfBoundsException(
 					"Vertex names must be nonnegative integers");
-		if (w < 0)
+		if (p_w < 0)
 			throw new IndexOutOfBoundsException(
 					"Vertex names must be nonnegative integers");
-		if (Double.isNaN(weight))
+		if (Double.isNaN(p_weight))
 			throw new IllegalArgumentException("Weight is NaN");
-		this.v = v;
-		this.w = w;
-		this.weight = weight;
-		this.s = stat;
+		this.v = p_v;
+		this.w = p_w;
+		this.weight = p_weight;
+		this.stat = p_stat;
 	}
 	
 	/**
@@ -94,7 +96,7 @@ public class DirectedEdge
 	 */
 	public Statement stat()
 	{
-		return s;
+		return stat;
 	}
 	
 	/**

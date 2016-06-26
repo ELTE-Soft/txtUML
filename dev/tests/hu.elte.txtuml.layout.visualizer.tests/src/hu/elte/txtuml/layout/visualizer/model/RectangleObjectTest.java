@@ -76,5 +76,28 @@ public class RectangleObjectTest {
 		assertFalse(_c.isCornerPoint(new Point(1, -11)));
 	}
 	
+	@Test
+	public void CenterPointTest1()
+	{
+		//Width/Height is odd
+		assertEquals(4, _a.getCenterPoints().size());
+		
+		for(Point cp : _a.getCenterPoints()) {
+			assertTrue(cp.equals(new Point(1, 0)) || cp.equals(new Point(0, -1)) ||
+					 cp.equals(new Point(1, -2)) || cp.equals(new Point(2, -1)));
+		}
+	}
+	
+	@Test
+	public void CenterPointTest2()
+	{
+		//Width/Height is equal
+		assertEquals(4, _c.getCenterPoints().size());
+
+		for(Point cp : _c.getCenterPoints()) {
+			assertTrue(cp.equals(new Point(2, -10)) || cp.equals(new Point(0, -12)) ||
+					cp.equals(new Point(2, -15)) || cp.equals(new Point(5, -12)));
+		}
+	}
 	
 }

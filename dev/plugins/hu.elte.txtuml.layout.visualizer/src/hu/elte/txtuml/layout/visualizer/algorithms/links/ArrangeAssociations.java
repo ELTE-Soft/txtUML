@@ -14,7 +14,6 @@ import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils.Node;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.DefaultAssocStatements;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.LinkArrangeDiagram;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.utils.LinkComparator;
-import hu.elte.txtuml.layout.visualizer.algorithms.utils.Helper;
 import hu.elte.txtuml.layout.visualizer.model.utils.RectangleObjectTreeEnumerator;
 import hu.elte.txtuml.layout.visualizer.events.ProgressManager;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
@@ -30,6 +29,7 @@ import hu.elte.txtuml.layout.visualizer.model.Options;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation.RouteConfig;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.layout.visualizer.model.SpecialBox;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 import hu.elte.txtuml.utils.Logger;
@@ -162,8 +162,8 @@ public class ArrangeAssociations {
 		}
 	}
 
-	private Set<Pair<Node, Double>> getSet(Pair<String, RouteConfig> key, Point start, Integer p_width,
-			Integer p_height, Set<Point> occupied, Boolean isReflexive, Boolean isStart) throws InternalException {
+	private Set<Pair<Node, Double>> getSet(Pair<String, RouteConfig> key, RectangleObject boxAtLinkEnd,
+			Set<Point> occupied, Boolean isReflexive, Boolean isStart) throws InternalException {
 		Set<Pair<Point, Double>> result = new HashSet<Pair<Point, Double>>();
 		Double defaultWeight = -1.0;
 
@@ -173,50 +173,64 @@ public class ArrangeAssociations {
 					.collect(Collectors.toSet()));
 
 		// Add Object's points
-		RectangleObject tempObj = new RectangleObject("TEMP", start);
-		tempObj.setWidth(p_width);
-		tempObj.setHeight(p_height);
-
 		if (result.size() == 0) {
-			result.addAll(tempObj.getPerimiterPoints().stream().map(poi -> new Pair<Point, Double>(poi, defaultWeight))
-					.collect(Collectors.toSet()));
+			if (boxAtLinkEnd.isSpecial()) {
+				if (boxAtLinkEnd.getSpecial().equals(SpecialBox.Initial)) {
+					result.addAll(boxAtLinkEnd.getCenterPoints().stream()
+							.map(poi -> new Pair<Point, Double>(poi, defaultWeight)).collect(Collectors.toSet()));
+				}
+				// TODO: other specials
+			} else {
+				result.addAll(boxAtLinkEnd.getPerimiterPoints().stream()
+						.map(poi -> new Pair<Point, Double>(poi, defaultWeight)).collect(Collectors.toSet()));
+			}
 			if (isReflexive) {
 				if (isStart)
-					result = setReflexiveSet(result, tempObj, true);
+					result = setReflexiveSet(result, boxAtLinkEnd, true);
 				else
-					result = setReflexiveSet(result, tempObj, false);
+					result = setReflexiveSet(result, boxAtLinkEnd, false);
 			}
 		}
 
 		// Remove occupied points
 		result.removeIf(p -> occupied.contains(p.getFirst()));
 		// Remove corner points
-		result.removeIf(p -> tempObj.isCornerPoint(p.getFirst()));
+		result.removeIf(p -> boxAtLinkEnd.isCornerPoint(p.getFirst()));
 		// Remove points around corner
-		result.removeIf(p -> isAroundCorner(tempObj, p.getFirst()));
+		result.removeIf(p -> isAroundCorner(boxAtLinkEnd, p.getFirst()));
+
+		Set<Pair<Point, Double>> oldResult = new HashSet<Pair<Point, Double>>(result);
+		result.clear();
 
 		// Set the weights of nodes.
-		for (Pair<Point, Double> pair : result) {
+		for (Pair<Point, Double> pair : oldResult) {
 			if (pair.getSecond() < 0.0) {
-				Double distance1 = Point.Substract(pair.getFirst(), tempObj.getTopLeft()).length();
-				Double distance2 = Point.Substract(pair.getFirst(), tempObj.getBottomRight()).length();
 
-				Double w = p_width / 2.0;
-				Double h = p_height / 2.0;
+				Double shortestDistance = boxAtLinkEnd.getCenterPoints().stream()
+						.map(p -> Point.Substract(p, pair.getFirst()).length()).min((d1, d2) -> {
+							return Double.compare(d1, d2);
+						}).get();
 
-				if (Helper.isAlmostEqual(distance1, w, 0.8) || Helper.isAlmostEqual(distance1, h, 0.8)
-						|| Helper.isAlmostEqual(distance2, w, 0.8) || Helper.isAlmostEqual(distance2, h, 0.8)) {
-					pair = new Pair<Point, Double>(pair.getFirst(), 0.0);
-				} else {
-					pair = new Pair<Point, Double>(pair.getFirst(), 1.0);
-				}
+				Double maxSide = (double) Math.max(boxAtLinkEnd.getWidth(), boxAtLinkEnd.getHeight());
+
+				result.add(Pair.of(pair.getFirst(), maxSide - shortestDistance));
+				/*
+				 * if (Helper.isAlmostEqual(distanceFromTL, widthHalf, 0.8) ||
+				 * Helper.isAlmostEqual(distanceFromTL, heightHalf, 0.8) ||
+				 * Helper.isAlmostEqual(distanceFromBR, widthHalf, 0.8) ||
+				 * Helper.isAlmostEqual(distanceFromBR, heightHalf, 0.8)) { pair
+				 * = new Pair<Point, Double>(pair.getFirst(), 0.0); } else {
+				 * pair = new Pair<Point, Double>(pair.getFirst(), 1.0); }
+				 */
+			} else {
+				result.add(pair);
 			}
 		}
 
 		if (isStart)
-			return convertToNodes(result, tempObj);
+			return convertToNodes(result, boxAtLinkEnd);
 		else
-			return convertToInvertedNodes(result, tempObj);
+			return convertToInvertedNodes(result, boxAtLinkEnd);
 	}
 
 	private boolean isAroundCorner(RectangleObject box, Point poi) {
@@ -224,32 +238,28 @@ public class ArrangeAssociations {
 		Integer horizontalGridToDelete = (int) Math.floor(box.getWidth() * _options.CornerPercentage);
 		Integer verticalGridToDelete = (int) Math.floor(box.getHeight() * _options.CornerPercentage);
 
-		if(box.getTopLeft().getX() == poi.getX())
-		{
-			return isCloseToCorners(box.getTopLeft(), 
-					Point.Add(box.getTopLeft(), Point.Multiply(Direction.south, box.getHeight()-1)), 
-					poi, verticalGridToDelete);
+		if (box.getTopLeft().getX() == poi.getX()) {
+			return isCloseToCorners(box.getTopLeft(),
+					Point.Add(box.getTopLeft(), Point.Multiply(Direction.south, box.getHeight() - 1)), poi,
+					verticalGridToDelete);
 		}
 
-		if(box.getTopLeft().getY() == poi.getY())
-		{
-			return isCloseToCorners(box.getTopLeft(), 
-					Point.Add(box.getTopLeft(), Point.Multiply(Direction.east, box.getWidth()-1)), 
-					poi, horizontalGridToDelete);
+		if (box.getTopLeft().getY() == poi.getY()) {
+			return isCloseToCorners(box.getTopLeft(),
+					Point.Add(box.getTopLeft(), Point.Multiply(Direction.east, box.getWidth() - 1)), poi,
+					horizontalGridToDelete);
 		}
-		
-		if(box.getBottomRight().getX() == poi.getX())
-		{
-			return isCloseToCorners(box.getBottomRight(), 
-					Point.Add(box.getBottomRight(), Point.Multiply(Direction.north, box.getHeight()-1)), 
-					poi, verticalGridToDelete);
+
+		if (box.getBottomRight().getX() == poi.getX()) {
+			return isCloseToCorners(box.getBottomRight(),
+					Point.Add(box.getBottomRight(), Point.Multiply(Direction.north, box.getHeight() - 1)), poi,
+					verticalGridToDelete);
 		}
-		
-		if(box.getBottomRight().getY() == poi.getY())
-		{
-			return isCloseToCorners(box.getBottomRight(), 
-					Point.Add(box.getBottomRight(), Point.Multiply(Direction.west, box.getWidth()-1)), 
-					poi, horizontalGridToDelete);
+
+		if (box.getBottomRight().getY() == poi.getY()) {
+			return isCloseToCorners(box.getBottomRight(),
+					Point.Add(box.getBottomRight(), Point.Multiply(Direction.west, box.getWidth() - 1)), poi,
+					horizontalGridToDelete);
 		}
 
 		return false;
@@ -481,17 +491,15 @@ public class ArrangeAssociations {
 
 	private void doGraphSearch(LineAssociation link, Map<Point, Color> occupiedLinks, Map<Point, Color> occupied,
 			Boundary bounds) throws InternalException, CannotStartAssociationRouteException,
-					CannotFindAssociationRouteException, ConversionException {
+			CannotFindAssociationRouteException, ConversionException {
 		RectangleObject STARTBOX = getBox(link.getFrom());
 		RectangleObject ENDBOX = getBox(link.getTo());
 
 		Set<Pair<Node, Double>> STARTSET = getSet(new Pair<String, RouteConfig>(link.getId(), RouteConfig.START),
-				STARTBOX.getPosition(), STARTBOX.getWidth(), STARTBOX.getHeight(), occupiedLinks.keySet(),
-				link.isReflexive(), true);
+				STARTBOX, occupiedLinks.keySet(), link.isReflexive(), true);
 
-		Set<Pair<Node, Double>> ENDSET = getSet(new Pair<String, RouteConfig>(link.getId(), RouteConfig.END),
-				ENDBOX.getPosition(), ENDBOX.getWidth(), ENDBOX.getHeight(), occupiedLinks.keySet(), link.isReflexive(),
-				false);
+		Set<Pair<Node, Double>> ENDSET = getSet(new Pair<String, RouteConfig>(link.getId(), RouteConfig.END), ENDBOX,
+				occupiedLinks.keySet(), link.isReflexive(), false);
 
 		// Search for the route
 		if (STARTSET.size() == 0 || ENDSET.size() == 0) {

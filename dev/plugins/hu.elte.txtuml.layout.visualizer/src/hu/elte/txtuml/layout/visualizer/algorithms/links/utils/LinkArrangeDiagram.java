@@ -9,7 +9,6 @@ import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
-import hu.elte.txtuml.layout.visualizer.model.SpecialBox;
 import hu.elte.txtuml.layout.visualizer.model.utils.RectangleObjectTreeEnumerator;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 import hu.elte.txtuml.utils.Pair;
@@ -187,24 +186,19 @@ public class LinkArrangeDiagram extends Diagram {
 
 	private void setupBoxDimensions(Pair<Double, Double> globalRatio) {
 		for (RectangleObject box : Objects) {
-			if (box.isSpecial() && box.getSpecial().equals(SpecialBox.Initial)) {
-				box.setWidth(3);
-				box.setHeight(3);
+			Integer linkNumber = box.getLinkNumber();
+
+			if (!box.hasInner()) {
+				Integer width = Math.max(linkNumber + 2,
+						1 + (int) Math.ceil(box.getPixelWidth() / globalRatio.getFirst()));
+				box.setWidth(width);
+
+				Integer height = Math.max(linkNumber + 2,
+						1 + (int) Math.ceil(box.getPixelHeight() / globalRatio.getSecond()));
+				box.setHeight(height);
 			} else {
-				Integer linkNumber = box.getLinkNumber();
-
-				if (!box.hasInner()) {
-					Integer width = Math.max(linkNumber + 2,
-							1 + (int) Math.ceil(box.getPixelWidth() / globalRatio.getFirst()));
-					box.setWidth(width);
-
-					Integer height = Math.max(linkNumber + 2,
-							1 + (int) Math.ceil(box.getPixelHeight() / globalRatio.getSecond()));
-					box.setHeight(height);
-				} else {
-					box.setWidth(box.getInner().getWidth());
-					box.setHeight(box.getInner().getHeight());
-				}
+				box.setWidth(box.getInner().getWidth());
+				box.setHeight(box.getInner().getHeight());
 			}
 
 			if (WidthOfCells < box.getWidth())

@@ -1,7 +1,5 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils;
 
-import java.util.Set;
-
 /**
  * This class is used to add additional information to other classes using
  * coloring.
@@ -23,14 +21,6 @@ public class Painted<Item>
 	// Ctors
 	
 	/**
-	 * Create an empty Painted class.
-	 */
-	public Painted()
-	{
-		
-	}
-	
-	/**
 	 * Create a Painted class.
 	 * 
 	 * @param c
@@ -39,22 +29,6 @@ public class Painted<Item>
 	 *            Inner Item to paint.
 	 */
 	public Painted(Color c, Item i)
-	{
-		Color = c;
-		Inner = i;
-	}
-	
-	/**
-	 * Create a Painted class.
-	 * 
-	 * @param c
-	 *            Color of the Item.
-	 * @param i
-	 *            Inner Item to paint.
-	 * @param bs
-	 *            Set of Ids of the batch.
-	 */
-	public Painted(Color c, Item i, Set<Integer> bs)
 	{
 		Color = c;
 		Inner = i;
@@ -97,8 +71,8 @@ public class Painted<Item>
 	{
 		String result;
 		
-		result = "Color: " + Color.toString();
-		result += ", Inner: " + Inner.toString() + ".";
+		result = "[Color: " + Color.toString();
+		result += ", Inner: " + Inner.toString() + "]";
 		
 		return result;
 	}

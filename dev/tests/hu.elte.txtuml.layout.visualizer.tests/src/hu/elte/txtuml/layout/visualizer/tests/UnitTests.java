@@ -1,5 +1,6 @@
 package hu.elte.txtuml.layout.visualizer.tests;
 
+import hu.elte.txtuml.layout.visualizer.algorithms.LayoutVisualizeTest;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.ArrangeAssociationTest;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.GraphSearchTest;
 import hu.elte.txtuml.layout.visualizer.algorithms.utils.DefaultStatementTest;
@@ -15,6 +16,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+	LayoutVisualizeTest.class,
 	DefaultStatementTest.class,
 	ArrangeAssociationTest.class,
 	GraphSearchTest.class,

@@ -122,6 +122,29 @@ public class RectangleObject {
 
 		return result;
 	}
+	
+	/**
+	 * Returns the center points of each side.
+	 * @return the center points of each side.
+	 */
+	public Set<Point> getCenterPoints() {
+		Set<Point> result = new HashSet<Point>();
+		
+		int horizontalHalf = _width / 2;
+		int verticalHalf = _height / 2;
+		
+		result.add(Point.Add(getBottomRight(), Point.Multiply(Direction.west, horizontalHalf)));
+		result.add(Point.Add(getBottomRight(), Point.Multiply(Direction.north, verticalHalf)));
+		
+		if(_width % 2 == 0)
+			horizontalHalf = horizontalHalf - 1;
+		result.add(Point.Add(getTopLeft(), Point.Multiply(Direction.east, horizontalHalf)));
+		if(_height % 2 == 0)
+			verticalHalf = verticalHalf - 1;
+		result.add(Point.Add(getTopLeft(), Point.Multiply(Direction.south, verticalHalf)));
+		
+		return result;
+	}
 
 	/**
 	 * Getter for the top left point of the objects.
