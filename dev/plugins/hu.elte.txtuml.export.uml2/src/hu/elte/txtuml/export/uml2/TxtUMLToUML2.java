@@ -51,11 +51,13 @@ public class TxtUMLToUML2 {
 	 *            fully qualified name of the txtUML model
 	 * @param outputDirectory
 	 *            where the result model should be saved
+	 * @param folder
+	 *            the target folder for generated model
 	 */
 	public static Model exportModel(String sourceProject, String packageName, String outputDirectory,
-			ExportMode exportMode) throws JavaModelException, NotFoundException, IOException {
+			ExportMode exportMode, String folder) throws JavaModelException, NotFoundException, IOException {
 		return exportModel(sourceProject, packageName, URI.createPlatformResourceURI(outputDirectory, false),
-				exportMode);
+				exportMode, folder);
 	}
 
 	/**
@@ -67,11 +69,13 @@ public class TxtUMLToUML2 {
 	 *            fully qualified name of the txtUML model
 	 * @param outputDirectory
 	 *            where the result model should be saved
+	 * @param folder
+	 *            the target folder for generated model
 	 */
 	public static Model exportModel(String sourceProject, String packageName, URI outputDirectory,
-			ExportMode exportMode) throws NotFoundException, JavaModelException, IOException {
+			ExportMode exportMode, String folder) throws NotFoundException, JavaModelException, IOException {
 
-		Model model = exportModel(sourceProject, packageName, exportMode);
+		Model model = exportModel(sourceProject, packageName, exportMode, folder);
 
 		File file = new File(model.eResource().getURI().toFileString());
 		file.getParentFile().mkdirs();
@@ -97,7 +101,7 @@ public class TxtUMLToUML2 {
 		return model;
 	}
 
-	public static Model exportModel(String sourceProject, String packageName, ExportMode exportMode)
+	public static Model exportModel(String sourceProject, String packageName, ExportMode exportMode, String folder)
 			throws NotFoundException, JavaModelException {
 		IJavaProject javaProject = ProjectUtils.findJavaProject(sourceProject);
 
@@ -110,7 +114,7 @@ public class TxtUMLToUML2 {
 		List<IPackageFragment> rootFragments = Stream.of(packageFragments)
 				.filter(pf -> pf.getElementName().equals(packageName)).collect(Collectors.toList());
 
-		ModelExporter modelExporter = new ModelExporter(exportMode);
+		ModelExporter modelExporter = new ModelExporter(folder, exportMode);
 		Model model = modelExporter.export(rootFragments);
 		if (model == null) {
 			throw new IllegalArgumentException("The selected package is not a txtUML model.");
@@ -127,8 +131,9 @@ public class TxtUMLToUML2 {
 		ModelMapCollector collector = new ModelMapCollector(model.eResource().getURI());
 		cache.getMapping().forEach((s, e) -> collector.put(s, e));
 		try {
-			URI destination = URI.createFileURI(rootFragments.get(0).getJavaProject().getProject().getLocation().toOSString())
-					.appendSegment("gen");
+			URI destination = URI
+					.createFileURI(rootFragments.get(0).getJavaProject().getProject().getLocation().toOSString())
+					.appendSegment(folder);
 			String fileName = rootFragments.get(0).getElementName();
 			collector.save(destination, fileName);
 		} catch (ModelMapException e1) {
