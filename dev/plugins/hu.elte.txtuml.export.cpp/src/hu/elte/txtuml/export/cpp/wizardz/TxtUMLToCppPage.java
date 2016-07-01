@@ -50,6 +50,7 @@ public class TxtUMLToCppPage extends WizardPage {
 	private Button descriptionBrowser;
 
 	Button addRuntime;
+	Button overWriteMainFle;
 
 	String tempText;
 
@@ -184,6 +185,11 @@ public class TxtUMLToCppPage extends WizardPage {
 		addRuntime = new Button(composite, SWT.CHECK);
 		addRuntime.setSelection(true);
 		addRuntime.setText("Copy runtime next to generated files");
+		
+		overWriteMainFle = new Button(composite, SWT.CHECK);
+		overWriteMainFle.setSelection(false);
+		overWriteMainFle.setText("Overwrite main file if it exsists");
+		
 
 		setControl(composite);
 		setPageComplete(true);
@@ -204,5 +210,9 @@ public class TxtUMLToCppPage extends WizardPage {
 
 	public boolean getAddRuntimeOptionSelection() {
 		return addRuntime.getSelection();
+	}
+	
+	public boolean getOverWriteMainFileSelection() {
+		return overWriteMainFle.getSelection();
 	}
 }

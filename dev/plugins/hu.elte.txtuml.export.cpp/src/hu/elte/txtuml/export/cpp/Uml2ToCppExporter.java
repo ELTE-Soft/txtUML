@@ -61,7 +61,7 @@ public class Uml2ToCppExporter {
 	List<String> classNames;
 
 	public Uml2ToCppExporter(Model model, Map<String, ThreadPoolConfiguration> threadDescription,
-			boolean addRuntimeOption) {
+			boolean addRuntimeOption, boolean overWriteMainFileOption) {
 		classExporter = new ClassExporter();
 
 		this.classList = new HashSet<Class>();
@@ -72,7 +72,7 @@ public class Uml2ToCppExporter {
 
 		Shared.getTypedElements(classList, elements, UMLPackage.Literals.CLASS);
 
-		options = new Options(addRuntimeOption);
+		options = new Options(addRuntimeOption, overWriteMainFileOption);
 		threadManager = new ThreadHandlingManager(threadDescription);
 	}
 
@@ -136,8 +136,14 @@ public class Uml2ToCppExporter {
 			copyFolder(sourceRuntimeDir, outputRuntimeDir);
 
 		}
-		Files.copy(Paths.get(cppFilesLocation + "main.cpp"), Paths.get(destination + File.separator + "main.cpp"),
-				StandardCopyOption.REPLACE_EXISTING);
+		
+		
+		
+		if(!Paths.get(destination + File.separator + "main.cpp").toFile().exists() || options.isOverWriteMainFile()) {
+			Files.copy(Paths.get(cppFilesLocation + "main.cpp"), Paths.get(destination + File.separator + "main.cpp"),
+					StandardCopyOption.REPLACE_EXISTING);
+		}
+		
 
 	}
 

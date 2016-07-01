@@ -40,10 +40,11 @@ public class TxtUMLToCppWizard extends Wizard {
 	    TxtUMLToCppPage.DESCRIPTION_NAME = threadManagmentDescription;
 
 	    boolean addRuntimeOption = createCppCodePage.getAddRuntimeOptionSelection();
+	    boolean overWriteMainFileOption = createCppCodePage.getOverWriteMainFileSelection();
 
 
 			TxtUMLToCppGovernor governor = new TxtUMLToCppGovernor(false);
-			governor.uml2ToCpp(txtUMLProject, txtUMLModel, threadManagmentDescription, addRuntimeOption);
+			governor.uml2ToCpp(txtUMLProject, txtUMLModel, threadManagmentDescription, addRuntimeOption, overWriteMainFileOption);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;

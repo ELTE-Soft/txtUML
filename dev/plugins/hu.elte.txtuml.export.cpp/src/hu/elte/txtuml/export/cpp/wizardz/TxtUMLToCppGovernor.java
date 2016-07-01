@@ -30,7 +30,7 @@ class TxtUMLToCppGovernor {
 	}
 
 	@SuppressWarnings("unchecked")
-	void uml2ToCpp(String txtUMLProject, String txtUMLModel, String deploymentDescription, boolean addRuntimeOption)
+	void uml2ToCpp(String txtUMLProject, String txtUMLModel, String deploymentDescription, boolean addRuntimeOption, boolean overWriteMainFileOption)
 			throws Exception {
 		String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation().toFile()
 				.getAbsolutePath();
@@ -78,7 +78,7 @@ class TxtUMLToCppGovernor {
 			}
 		}
 
-		Uml2ToCppExporter cppExporter = new Uml2ToCppExporter(model, exporter.getConfigMap(), addRuntimeOption);
+		Uml2ToCppExporter cppExporter = new Uml2ToCppExporter(model, exporter.getConfigMap(), addRuntimeOption, overWriteMainFileOption);
 		try {
 			cppExporter.buildCppCode(
 					projectFolder + File.separator + GeneratedCPPFolderName + File.separator + txtUMLModel);

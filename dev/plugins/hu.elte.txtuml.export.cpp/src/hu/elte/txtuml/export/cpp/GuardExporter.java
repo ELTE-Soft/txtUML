@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Constraint;
-import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.Transition;
@@ -52,12 +51,7 @@ public class GuardExporter{
 	public String getGuardFromValueSpecification(ValueSpecification guard_) {
 		String source = "";
 		if (guard_ != null) {
-			if (guard_.eClass().equals(UMLPackage.Literals.LITERAL_STRING)) {
-				source = ((LiteralString) guard_).getValue();
-				if (source.toLowerCase().equals("else")) {
-					source = "";
-				}
-			} else if (guard_.eClass().equals(UMLPackage.Literals.OPAQUE_EXPRESSION)) {
+			if (guard_.eClass().equals(UMLPackage.Literals.OPAQUE_EXPRESSION)) {
 				OpaqueExpression expression = (OpaqueExpression) guard_;
 				if(expression.getBehavior() != null && expression.getBehavior().eClass().equals(UMLPackage.Literals.ACTIVITY))
 					activityExporter.init();

@@ -27,7 +27,8 @@ public class ThreadHandlingManager {
 	private static final String ThreadPoolClassName = "StateMachineThreadPool";
 	private static final String FunctionName = "LinearFunction";
 	private static final String NamespaceName = "deployment";
-	private static final String SingleRuntimeName = "SingleThreadRT";
+	//private static final String SingleRuntimeName = "SingleThreadRT";
+	private static final String ConfiguratedThreadedRuntimeName = "ConfiguratedThreadedRT";
 	private static final String SetConfigurationMethod = "configure";
 	private static final String CreatorFunction = "createThreadedRuntime";
 	private static final String CreateRTMethod = "createRuntime";
@@ -56,7 +57,7 @@ public class ThreadHandlingManager {
 		source.append("\n\n");
 
 		List<String> templateParams = new ArrayList<String>();
-		templateParams.add(SingleRuntimeName);
+		templateParams.add(ConfiguratedThreadedRuntimeName);
 		source.append(GenerationTemplates.usingTemplateType(GenerationTemplates.MyRuntimeName,
 				GenerationTemplates.RuntimeName, templateParams));
 		source.append("\n\n");
