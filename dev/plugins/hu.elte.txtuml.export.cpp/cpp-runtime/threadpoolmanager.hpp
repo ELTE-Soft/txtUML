@@ -17,6 +17,7 @@ class ThreadPoolManager
 		~ThreadPoolManager();
 		StateMachineThreadPool* getPool(int);
 		void recalculateThreads(int,int);
+		int calculateNOfThreads(int,int);
 		void enqueObject(StateMachineI*);
 		int getNumberOfConfigurations();
 		void setConfiguration(ThreadConfiguration*);

@@ -1,4 +1,5 @@
 #include "runtime.hpp"
+#include <stdlib.h>
 
 //********************************SingleThreadRT**********************************
 
@@ -80,17 +81,11 @@ void ConfiguratedThreadedRT::start()
 {
     if (poolManager->isConfigurated())
     {
-
-        int numberOfConfigurations = poolManager->getNumberOfConfigurations();
-		
-		numberOfObjects.clear();
-        numberOfObjects.resize((unsigned int)numberOfConfigurations);
-
-		for(int i = 0; i < numberOfConfigurations; i++)
+		for(int i = 0; i < poolManager->getNumberOfConfigurations(); i++)
 		{
 			poolManager->getPool(i)->setWorkersCounter(&worker);
 			poolManager->getPool(i)->setStopReqest(&stop_request_cond);
-			poolManager->getPool(i)->startPool();
+			poolManager->getPool(i)->startPool(poolManager->calculateNOfThreads(i,numberOfObjects[(size_t)i]));
 		}
 	}
 	else
@@ -137,6 +132,9 @@ void ConfiguratedThreadedRT::removeObject(StateMachineI* sm)
 void ConfiguratedThreadedRT::setConfiguration(ThreadConfiguration* conf)
 {
     poolManager->setConfiguration(conf);
+	int numberOfConfigurations = poolManager->getNumberOfConfigurations();
+	numberOfObjects.clear();
+	numberOfObjects.resize((unsigned int)numberOfConfigurations);
 }
 
 void ConfiguratedThreadedRT::enqueObject(StateMachineI*) {}

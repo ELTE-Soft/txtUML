@@ -1,6 +1,7 @@
 #include "standard_functions.hpp"
 #include <iostream>
 #include <string>
+#include <math.h>
 
 int delayedInc(int i, int& out)
 {

@@ -1,7 +1,9 @@
 #ifndef ITIMER_H
 #define ITIMER_H
 
-struct Timer;
+#include "statemachineI.hpp"
+#include "runtimetypes.hpp"
+class Timer;
 
 class ITimer
 {

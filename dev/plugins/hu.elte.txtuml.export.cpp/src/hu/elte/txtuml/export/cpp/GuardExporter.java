@@ -13,39 +13,42 @@ import org.eclipse.uml2.uml.ValueSpecification;
 
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 
-public class GuardExporter{
+public class GuardExporter extends ActivityExporter{
 	
-	private Map<Constraint,String> constratintFunctionMap;
-	private ActivityExporter activityExporter;
+	private static String GuardName = "guard";
 	
+	private Map<Constraint,String> constratintFunctionMap;	
 	private int guardCount;
 	
 	public GuardExporter() {
 		constratintFunctionMap = new HashMap<Constraint,String>();
-		activityExporter = new ActivityExporter();
 		guardCount = 0;
 	}
 	
-	public String getGuard(Constraint guard_) {
+	public Map<Constraint, String> getGuards() {
+		return constratintFunctionMap;
+	}
+	
+	public void exportConstraintToMap(Constraint guard) {
+		constratintFunctionMap.put(guard, GuardName + guardCount);
+		guardCount++;
+	}
+	
+	public String getGuard(Constraint guard) {
 		String source = "";
-		if (guard_.eClass().equals(UMLPackage.Literals.DURATION_CONSTRAINT)) {
+		if (guard.eClass().equals(UMLPackage.Literals.DURATION_CONSTRAINT)) {
 			// TODO
-		} else if (guard_.eClass().equals(UMLPackage.Literals.TIME_CONSTRAINT)) {
+		} else if (guard.eClass().equals(UMLPackage.Literals.TIME_CONSTRAINT)) {
 			// TODO
-		} else if (guard_.eClass().equals(UMLPackage.Literals.CONSTRAINT)) {
+		} else if (guard.eClass().equals(UMLPackage.Literals.CONSTRAINT)) {
 			
-			if(constratintFunctionMap.containsKey(guard_)) {
-				source = constratintFunctionMap.get(guard_);
-			}
-			else {
-				source = getGuardFromValueSpecification(guard_.getSpecification());
-				constratintFunctionMap.put(guard_, "guard" + guardCount);
-				guardCount++;
-			}
+			source = constratintFunctionMap.get(guard);
 			
 		}
 		return source;
 	}
+	
+	
 
 	// TODO we need a more complex ocl parse....
 	public String getGuardFromValueSpecification(ValueSpecification guard_) {
@@ -54,8 +57,8 @@ public class GuardExporter{
 			if (guard_.eClass().equals(UMLPackage.Literals.OPAQUE_EXPRESSION)) {
 				OpaqueExpression expression = (OpaqueExpression) guard_;
 				if(expression.getBehavior() != null && expression.getBehavior().eClass().equals(UMLPackage.Literals.ACTIVITY))
-					activityExporter.init();
-					source = activityExporter.createfunctionBody( (Activity) expression.getBehavior()).toString();
+					init();
+					source = createfunctionBody( (Activity) expression.getBehavior()).toString();
 			} else {
 				source = "UNKNOWN_GUARD_TYPE";
 			}

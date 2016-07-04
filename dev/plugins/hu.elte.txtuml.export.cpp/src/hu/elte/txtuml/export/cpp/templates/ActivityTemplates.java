@@ -18,6 +18,7 @@ public class ActivityTemplates {
 	public static final String ProcessorDirectivesSign = "#";
 	public static final String CreateStereoType = "Create";
 	public static final String GetSignalFunctionName = "getSignal";
+	public static final String TempVar = "temp";
 
 	public enum OperationSide {
 		Left, Right
@@ -304,6 +305,9 @@ public class ActivityTemplates {
 		public static final String Concat = "concat";
 		public static final String ToString = "toString";
 		public static final String Count = "count";
+		public static final String Round = "round";
+		public static final String Sinus = "sin";
+		public static final String Cosinus = "cos";
 		public static final String TimerStart = GenerationNames.StartTimerFunctionName;
 		
 		
@@ -395,7 +399,8 @@ public class ActivityTemplates {
 
 		public static boolean isStdLibFunction(String name) {
 			if (name.equals(Select) ||  name.equals(Concat) ||  name.equals(TimerStart) ||
-					name.equals(ToString) || name.equals(Log) || name.equals(Count)) {
+					name.equals(ToString) || name.equals(Log) || name.equals(Count) || name.equals(Round)
+			|| name.equals(Sinus) || name.equals(Cosinus )){
 				return true;
 			} else {
 				return false;

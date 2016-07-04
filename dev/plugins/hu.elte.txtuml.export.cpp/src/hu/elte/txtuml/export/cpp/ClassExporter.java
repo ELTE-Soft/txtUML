@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
@@ -22,7 +23,6 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.PseudostateKind;
 import org.eclipse.uml2.uml.Region;
-import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.StateMachine;
@@ -41,12 +41,10 @@ import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 
 public class ClassExporter {
 	private static final int _UMLMany = -1;
-	private static String _unknownGuardName = "guard";
 	private static String _unknownEntryName = "entry";
 	private static String _unknownExitName = "exit";
 	
 
-	private Map<String, String> guardMap;// <guardConstraint,guardName>
 	private Map<String, Pair<String, String>> _entryMap;// <name,<state,funcBody>>
 	private Map<String, Pair<String, String>> _exitMap;// <name,<state,funcBody>>
 	private Map<String, Pair<String, Region>> _submachineMap;// <stateName,<machinename,behavior>>
@@ -73,7 +71,6 @@ public class ClassExporter {
 	public void reiniIialize() {
 		activityExporter = new ActivityExporter();
 		guardExporter = new GuardExporter();
-		guardMap = new HashMap<String, String>();
 		associationMembers = new ArrayList<Property>();
 		additionalSourcesNames = new ArrayList<String>();
 		_entryMap = null;
@@ -103,6 +100,7 @@ public class ClassExporter {
 
 			for (Map.Entry<String, Pair<String, Region>> entry : _submachineMap.entrySet()) {
 				ClassExporter classExporter = new ClassExporter();
+				classExporter.setRealName(entry.getValue().getFirst());
 				classExporter.createSubSmSource(entry.getValue().getFirst(), realName,
 						entry.getValue().getSecond(), dest_);
 				subSubMachines.addAll(classExporter.getSubmachines());
@@ -188,7 +186,7 @@ public class ClassExporter {
 			Region region = smList.get(0).getRegions().get(0);
 			privateParts.append(createEntryFunctionsDecl(region));
 			privateParts.append(createExitFunctionsDecl(region));
-			privateParts.append(createGuardFunctions(region));
+			privateParts.append(declareGuardFunctions(region));
 			privateParts.append(createTransitionFunctionDecl(region));
 			publicParts.append(GenerationTemplates.stateEnum(getStateList(region), getInitialState(region)));
 
@@ -216,7 +214,7 @@ public class ClassExporter {
 
 		StringBuilder privateParts = createEntryFunctionsDecl(region_);
 		privateParts.append(createExitFunctionsDecl(region_));
-		privateParts.append(GenerationTemplates.formatSubSmFunctions(createGuardFunctions(region_).toString()));
+		privateParts.append(GenerationTemplates.formatSubSmFunctions(declareGuardFunctions(region_).toString()));
 		privateParts.append(createTransitionFunctionDecl(region_));
 		String protectedParts = "";
 		
@@ -261,13 +259,16 @@ public class ClassExporter {
 						getInitialState(region), false));
 
 			}
+			
 			source.append(GenerationTemplates.destructorDef(realName, true));
+			source.append(defnieGuardFunctions());
 			source.append(createEntryFunctionsDef(realName, region));
 			source.append(createExitFunctionsDef(realName, region));
 			source.append(createTransitionFunctionsDef(realName, region, true));
 
 			source.append(GenerationTemplates.entry(realName, createStateActionMap(_entryMap, region)) + "\n");
 			source.append(GenerationTemplates.exit(realName, createStateActionMap(_exitMap, region)) + "\n");
+			
 		} else {
 			source.append(GenerationTemplates.destructorDef(realName, false));
 		}
@@ -311,6 +312,7 @@ public class ClassExporter {
 		source.append(GenerationTemplates.destructorDef(className_, false));
 		StringBuilder subSmSpec = createEntryFunctionsDef(className_, region_);
 		subSmSpec.append(createExitFunctionsDef(className_, region_));
+		subSmSpec.append(defnieGuardFunctions());
 		subSmSpec.append(createTransitionFunctionsDef(className_, region_, false));
 		subSmSpec.append(GenerationTemplates.entry(className_, createStateActionMap(_entryMap, region_)) + "\n");
 		subSmSpec.append(GenerationTemplates.exit(className_, createStateActionMap(_exitMap, region_)) + "\n");
@@ -404,25 +406,29 @@ public class ClassExporter {
 		return source;
 	}
 
-	private StringBuilder createGuardFunctions(Region region_) {
+	private StringBuilder declareGuardFunctions(Region region_) {
 		StringBuilder source = new StringBuilder("");
-		Integer unknownGuardCount = 0;
 		for (Transition item : region_.getTransitions()) {
 			Constraint constraint = item.getGuard();
 			if (constraint != null) {
-				String guardName = _unknownGuardName + unknownGuardCount.toString();
-				unknownGuardCount++;
-				String guard = guardExporter.getGuard(constraint);
-				if (guard.equals("else")) {
-					guard = guardExporter.calculateSmElseGuard(item);
-
-				}
-
-				guardMap.put(guard, guardName);
-				source.append(GenerationTemplates.guardFunction(guardName, guard, parameterisedEventTrigger(item)));
+				//TODO else..
+				guardExporter.exportConstraintToMap(constraint);			
+				source.append(GenerationTemplates.guardDecleration(guardExporter.getGuard(constraint)));
 			}
 		}
 		source.append("\n");
+		return source;
+	}
+	
+	private StringBuilder defnieGuardFunctions() {
+		StringBuilder source = new StringBuilder("");
+		for(Entry<Constraint, String> guardEntry: guardExporter.getGuards().entrySet()) {
+			guardExporter.init();
+			String body = guardExporter.getGuardFromValueSpecification(guardEntry.getKey().getSpecification());
+			source.append(GenerationTemplates.guardDefinition(guardEntry.getValue(), 
+					body, realName, guardExporter.isContainsSignalAcces()));
+		}
+		
 		return source;
 	}
 
@@ -514,9 +520,10 @@ public class ClassExporter {
 				Activity a = (Activity) b;
 				body = activityExporter.createfunctionBody(a).toString();
 			}
-
+			
+			Pair<String,Boolean> setState = createSetState(item);
 			source.append(GenerationTemplates.transitionActionDef(className_, item.getName(),
-					body + createSetState(item) + "\n", activityExporter.isContainsSignalAcces()));
+					body + setState.getFirst() + "\n", activityExporter.isContainsSignalAcces() || setState.getSecond() ));
 		}
 		source.append("\n");
 		return source;
@@ -526,20 +533,20 @@ public class ClassExporter {
 	 * handle the choice in the statemachine looks: state -transition-
 	 * choiceNode < (guard1/tran1) (guard2/tran2)
 	 */
-	private String createSetState(Transition transition_) {
+	private Pair<String,Boolean> createSetState(Transition transition_) {
 		String source = "";
+		boolean containsChoice = false;
 		Vertex targetState = transition_.getTarget();
 		
 		// choice handling
 		if (targetState.eClass().equals(UMLPackage.Literals.PSEUDOSTATE)
 				&& ((Pseudostate) targetState).getKind().equals(PseudostateKind.CHOICE_LITERAL) ) {
-			
 			List<Pair<String, String>> branches = new LinkedList<Pair<String, String>>();
 			Pair<String, String> elseBranch = null;
-			
+			containsChoice = true;
 			for (Transition trans : targetState.getOutgoings()) {
 				
-				String guard = guardExporter.getGuard(trans.getGuard());
+				String guard = guardExporter.getGuard(trans.getGuard()) + "(" + GenerationTemplates.eventParamName() + ")";
 				String body = ActivityTemplates.blockStatement(
 						ActivityTemplates.transitionActionCall(trans.getName())).toString();
 
@@ -554,25 +561,12 @@ public class ClassExporter {
 			}
 			source = ActivityTemplates.elseIf(branches).toString();
 		} else if (targetState.eClass().equals(UMLPackage.Literals.STATE)) {
-			source = GenerationTemplates.setState(targetState.getName());
+			source = GenerationTemplates.setState(targetState.getName());			
+			
 		} else {
 			source = GenerationTemplates.setState("UNKNOWN_TRANSITION_TARGET");
 		}
-		return source;
-	}
-
-	private String parameterisedEventTrigger(Transition transition_) {
-		for (Trigger tri : transition_.getTriggers()) {
-			Event e = tri.getEvent();
-			if (e != null && e.eClass().equals(UMLPackage.Literals.SIGNAL_EVENT)) {
-				SignalEvent se = (SignalEvent) e;
-				Signal sig = se.getSignal();
-				if (se.getSignal().getAllAttributes() != null && !se.getSignal().getAllAttributes().isEmpty()) {
-					return sig.getName();
-				}
-			}
-		}
-		return "";
+		return new Pair<String,Boolean>(source,containsChoice);
 	}
 
 	private StringBuilder createParts(Class class_, String modifyer_) {

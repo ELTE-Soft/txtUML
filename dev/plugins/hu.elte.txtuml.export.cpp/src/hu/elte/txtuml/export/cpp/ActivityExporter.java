@@ -96,7 +96,6 @@ public class ActivityExporter {
 		}
 
 	public String createfunctionBody(Activity activity_) {
-		System.out.println(activity_.getName());
 		ActivityNode startNode = null;
 		StringBuilder source = new StringBuilder("");
 		for (ActivityNode node : activity_.getOwnedNodes()) {
@@ -539,8 +538,6 @@ public class ActivityExporter {
 	}
 
 	private String createSendSignalActionCode(SendObjectAction sendObjectAction) {
-		System.out.println(sendObjectAction.getName());
-		System.out.println(sendObjectAction.getRequest());
 
 		String target = getTargetFromInputPin(sendObjectAction.getTarget());
 		String singal = getTargetFromInputPin(sendObjectAction.getRequest());
@@ -596,8 +593,6 @@ public class ActivityExporter {
 
 	private StringBuilder createCallOperationActionCode(CallOperationAction node_) {
 		StringBuilder source = new StringBuilder("");
-		System.out.println(node_.getName());
-
 		exportAllOutputPinToMap(node_.getOutputs());		
 		OutputPin returnPin = searchReturnPin(node_.getResults(), node_.getOperation().outputParameters());
 		if(returnPin != null)
@@ -802,7 +797,7 @@ public class ActivityExporter {
 
 	private void importOutputPinToMap(OutputPin out) {
 		if (!tempVariables.containsKey(out)) {
-			tempVariables.put(out, "tmp" + tempVariableCounter);
+			tempVariables.put(out, ActivityTemplates.TempVar + tempVariableCounter);
 			tempVariableCounter++;
 		}
 

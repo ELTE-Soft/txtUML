@@ -135,7 +135,6 @@ public class ThreadHandlingManager {
 
 	private String allocatePoolObject(ThreadPoolConfiguration pool) {
 		List<String> params = new ArrayList<String>();
-		params.add(new Integer(pool.getFunction().getConstant()).toString());
 		return GenerationTemplates.allocateObject(ThreadPoolClassName, params);
 	}
 

@@ -8,6 +8,9 @@
 #include <ostream>
 #include <thread>
 
+#include "statemachineI.hpp"
+#include "runtimetypes.hpp"
+
 #include "itimer.hpp"
 
 class Timer : public ITimer

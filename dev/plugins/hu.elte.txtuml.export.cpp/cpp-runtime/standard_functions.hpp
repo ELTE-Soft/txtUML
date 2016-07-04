@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <list>
+#include <math.h>
 #include "StateMachineI.hpp"
 
 int delayedInc(int,int&);
@@ -34,6 +35,8 @@ std::string concat(T1 s1, T2 s2)
     stream << s1 << s2;
     return stream.str();
 }
+
+
 
 namespace conversion 
 {

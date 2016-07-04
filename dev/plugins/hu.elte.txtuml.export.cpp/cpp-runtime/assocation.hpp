@@ -60,11 +60,6 @@ public:
                 object = e;
             }
         }
-
-        if(object == nullptr)
-        {
-            //TODO sign error
-        }
         return object;
     }
 

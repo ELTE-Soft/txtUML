@@ -6,8 +6,7 @@
 
 
 
-StateMachineThreadPool::StateMachineThreadPool(int threads_)
-    : threads(threads_),stop(true){}
+StateMachineThreadPool::StateMachineThreadPool():stop(true){}
 	
 void StateMachineThreadPool::stopPool()
 {
@@ -16,15 +15,11 @@ void StateMachineThreadPool::stopPool()
 	
 }
 
-void StateMachineThreadPool::startPool()
+void StateMachineThreadPool::startPool(int n)
 {
 	
 	stop = false;
-	workers.setExpectedThreads(threads);
-	for(int i = 0; i < threads; ++i)
-	{
-		workers.addThread(new std::thread(&StateMachineThreadPool::task,this));
-	}
+	modifiedThreads(n);
         
 }
 
@@ -107,19 +102,20 @@ void StateMachineThreadPool::task()
 
 void StateMachineThreadPool::modifiedThreads(int n)
 {
+	if(!stop) 
+	{
 		std::unique_lock<std::mutex> mlock(modifie_mutex);
 		
 		workers.setExpectedThreads(n);
-        if (workers.isTooManyWorkes())
-        {
-            workers.gettingThreadsReadyToStop(cond);
-        }
-        while (workers.isTooFewWorkes())
+		if (workers.isTooManyWorkes())
 		{
-            workers.addThread(new std::thread(&StateMachineThreadPool::task,this));
+			workers.gettingThreadsReadyToStop(cond);
 		}
-
-
+		while (workers.isTooFewWorkes())
+		{
+			workers.addThread(new std::thread(&StateMachineThreadPool::task,this));
+		}
+	}
 	
 }
 

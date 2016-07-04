@@ -1,4 +1,6 @@
 #include "threadpoolmanager.hpp"
+#include <stdlib.h>
+#include <algorithm> 
 
 ThreadPoolManager::ThreadPoolManager() : configuration(nullptr) {}
 
@@ -8,11 +10,19 @@ void ThreadPoolManager::recalculateThreads(int id,int n)
 		abort();
 	}
 	
+	configuration->getThreadPool(id)->modifiedThreads(calculateNOfThreads(id,n));
+}
+
+int ThreadPoolManager::calculateNOfThreads(int id, int n)
+{
+	if (!isConfigurated()) {
+		abort();
+	}
+	
 	LinearFunction function = *(configuration->getFunction(id));
 	int max = configuration->getMax(id);
-	if (function(n) < max) {
-		configuration->getThreadPool(id)->modifiedThreads(function(n));
-	}
+	return std::min(function(n),max);
+	
 }
 
 void ThreadPoolManager::enqueObject(StateMachineI* sm)
