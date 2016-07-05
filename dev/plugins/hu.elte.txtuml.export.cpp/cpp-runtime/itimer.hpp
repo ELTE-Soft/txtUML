@@ -8,7 +8,7 @@ class Timer;
 class ITimer
 {
 public:
-    static Timer* start(StateMachineI*,EventPtr,long);
+    static Timer* start(StateMachineI*,EventPtr,int);
 
     virtual int quary() = 0;
     virtual void reset(int) = 0;

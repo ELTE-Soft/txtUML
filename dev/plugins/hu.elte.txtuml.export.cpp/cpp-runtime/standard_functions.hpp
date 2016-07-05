@@ -5,7 +5,7 @@
 #include <sstream>
 #include <list>
 #include <math.h>
-#include "StateMachineI.hpp"
+#include "statemachineI.hpp"
 
 int delayedInc(int,int&);
 int delayedDec(int,int&);
@@ -25,7 +25,7 @@ E* select(std::list<E*> elements)
 template<typename E>
 int count(std::list<E*> elements)
 {
-	return elements.size();
+	return (int)elements.size();
 }
 
 template<typename T1, typename T2>

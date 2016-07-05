@@ -34,8 +34,8 @@ public class GenerationTemplates {
 	public static final String AssociationStructuresSource = GenerationNames.AssociationsHeaderName + "."
 			+ GenerationNames.SourceExtension;
 	public static final String DeploymentHeader = GenerationNames.DeploymentHeaderName;
-	public static final String TimerInterfaceHeader = GenerationNames.TimerInterFaceName;
-	public static final String TimerHeader = GenerationNames.TimerClassName;
+	public static final String TimerInterfaceHeader = GenerationNames.TimerInterFaceName.toLowerCase();
+	public static final String TimerHeader = GenerationNames.TimerClassName.toLowerCase();
 
 	public static final String InitSignal = GenerationNames.InitialEventName;
 
