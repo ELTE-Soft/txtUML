@@ -9,7 +9,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Association;
+import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Operation;
@@ -59,28 +61,71 @@ public class Shared {
    
    public static List<Parameter> getSignalConstructorParameters(Signal signal, EList<Element> elements) {
 	   List<Parameter> signalParameters = new LinkedList<Parameter>();
-	   Class factoryClass = null;
-	   for(Element element : elements) {
-		   if(element.eClass().equals(UMLPackage.Literals.CLASS)) {
-			   Class cls = (Class) element;
-			   if(cls.getName().contains(signal.getName())) {
-				   factoryClass = cls;
-			   }
-		   }
-	   }
-	   
+
+	   Class factoryClass = getSignalFactoryClass(signal,elements);
 	   if(factoryClass != null) {
 		   for(Operation op : factoryClass.getOperations()) {
 			   if(isConstructor(op)) {
+				   
 				   signalParameters.addAll(op.getOwnedParameters());
 			   }
 		   }
 	   }
 	   
 	   //TODO need better solution
-	   signalParameters.removeIf(s -> s.getType().getName().contains(signal.getName()));
+	   signalParameters.removeIf(s -> s.getType().getName().equals(signal.getName()));
 	   
 	   return signalParameters;
+   }
+   
+   public static String signalCtrBody(Signal signal, EList<Element> elements) {
+	  ActivityExporter activityExporter = new ActivityExporter();
+	  Class factoryClass = getSignalFactoryClass(signal,elements);
+	  String body = "";
+	  for(Operation operation : factoryClass.getOperations()) {
+		   if(isConstructor(operation)) {
+				body = activityExporter.createfunctionBody(Shared.getOperationActivity(operation)).toString();
+			   
+		   }
+	   }	  
+	  
+	  return body;
+	   
+   }
+   
+   public static Activity getOperationActivity(Operation operation) {
+	    Activity activity = null;
+		for (Behavior behavior : operation.getMethods()) {
+
+			if (behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
+				activity = (Activity) behavior;
+			} else {
+				// TODO exception, unknown for me, need the model
+			}
+		}
+		
+		return activity;
+   }
+   
+   public static Class getSignalFactoryClass(Signal signal, EList<Element> elements) {
+	   for(Element element : elements) {
+		   if(element.eClass().equals(UMLPackage.Literals.CLASS)) {
+			   Class cls = (Class) element;
+			   for(Operation operation : cls.getOperations()) {
+				   if(isConstructor(operation)) {
+					   for(Parameter param : operation.getOwnedParameters()) {
+						   if(param.getType().getName().equals(signal.getName()))
+								   return cls;
+					   }
+				   }
+					   
+						   
+				   
+			   }
+		   }
+	   }
+	   
+	   return null;
    }
    
 	public static boolean isConstructor(Operation operation) {

@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Constraint;
@@ -324,13 +325,15 @@ public class ClassExporter {
 	private String createLinkFunctionDeclerations(Class class_) {
 		StringBuilder assocDeclerations = new StringBuilder("");
 		for (Property member : associationMembers) {
-						
-			assocDeclerations.append(GenerationTemplates.linkTemplateSpecializationDecl(
-				realName, member.getType().getName(), member.getName(),member.getAssociation().getName(),
-				GenerationTemplates.LinkFunctionType.Link));
-			assocDeclerations.append(GenerationTemplates.linkTemplateSpecializationDecl(
-				realName, member.getType().getName(), member.getName(),member.getAssociation().getName(),
-				GenerationTemplates.LinkFunctionType.Unlink));
+			if(member.isNavigable()) {
+				assocDeclerations.append(GenerationTemplates.linkTemplateSpecializationDecl(
+						realName, member.getType().getName(), member.getName(),member.getAssociation().getName(),
+						GenerationTemplates.LinkFunctionType.Link));
+					assocDeclerations.append(GenerationTemplates.linkTemplateSpecializationDecl(
+						realName, member.getType().getName(), member.getName(),member.getAssociation().getName(),
+						GenerationTemplates.LinkFunctionType.Unlink));
+			}
+
 		}
 		return GenerationTemplates.cppInclude(GenerationTemplates.AssociationsStructuresHreaderName) + assocDeclerations.toString();
 	}
@@ -487,15 +490,17 @@ public class ClassExporter {
 			source.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
 			source.append(GenerationTemplates.cppInclude
 					(GenerationTemplates.AssociationsStructuresHreaderName));
-			source.append(GenerationTemplates.cppInclude(GenerationTemplates.TimerInterfaceHeader));
-			source.append(GenerationTemplates.cppInclude(GenerationTemplates.TimerHeader));
+			source.append(GenerationTemplates
+					.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.StandardFunctionsHeader));
+			source.append(GenerationTemplates.
+					cppInclude(GenerationTemplates.RuntimePath  + GenerationTemplates.TimerInterfaceHeader));
+			source.append(GenerationTemplates.
+					cppInclude(GenerationTemplates.RuntimePath  + GenerationTemplates.TimerHeader));
 		} else {
 			source.append(GenerationTemplates
 					.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.AssocationHeader));
 			
 		}
-		source.append(GenerationTemplates
-				.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.StandardFunctionsHeader));
 
 		source.append("\n");
 		return source;
@@ -607,9 +612,16 @@ public class ClassExporter {
 
 	private StringBuilder getAssocations(Class class_) {
 		StringBuilder source = new StringBuilder("");
-		EList<Property> associationProperties = class_.getOwnedAttributes();
-		associationProperties.removeIf(p -> p.getAssociation() == null);
-		for (Property prop : associationProperties) {
+		EList<Association> associationProperties = class_.getAssociations();
+		for (Association assoc : associationProperties) {
+			
+			Property prop = null;
+			for(Property end : assoc.getMemberEnds()) {
+				if(!end.getType().getName().equals(class_.getName())) {
+					prop = end;
+				}
+			}
+			
 			
 			int upper = prop.getUpper();
 			int lower = prop.getLower();
@@ -622,7 +634,8 @@ public class ClassExporter {
 					GenerationTemplates.formatAssociationRoleName(prop.getAssociation().getName(), prop.getName()), lower,
 					upper);
 			associationMembers.add(prop);
-			source.append(linkedClass);
+			if(prop.isNavigable())
+				source.append(linkedClass);
 		}
 		return source;
 	}

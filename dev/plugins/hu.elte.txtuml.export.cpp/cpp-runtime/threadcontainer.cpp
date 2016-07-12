@@ -9,7 +9,7 @@ void ThreadContainer::addThread(std::thread* th)
 
 	threads.insert
 		(std::pair<std::thread::id, EventProcessorThread>
-			(th->get_id(), std::move(EventProcessorThread(th))));
+                        (th->get_id(), EventProcessorThread(th)));
 
 	active_threads++;
 }

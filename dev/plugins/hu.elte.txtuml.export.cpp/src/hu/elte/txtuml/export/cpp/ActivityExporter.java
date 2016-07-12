@@ -498,7 +498,7 @@ public class ActivityExporter {
 		} else if (node_.eClass().equals(UMLPackage.Literals.READ_VARIABLE_ACTION)) {
 
 			ReadVariableAction rA = (ReadVariableAction) node_;
-			if(!rA.getResult().getOutgoings().isEmpty() || !rA.getOutgoings().isEmpty() ||  ! (((ActivityNode) rA.getOwner()).getOutgoings().isEmpty()))
+			//if(!rA.getResult().getOutgoings().isEmpty() || !rA.getOutgoings().isEmpty() ||  ! (((ActivityNode) rA.getOwner()).getOutgoings().isEmpty()))
 				variableTable.replace(rA.getVariable(), new Pair<String,Boolean>(getRealVariable(rA.getVariable()),true));
 			
 			source = getRealVariable(rA.getVariable());

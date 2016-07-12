@@ -60,7 +60,7 @@ public class GenerationTemplates {
 		return eventBase;
 	}
 
-	public static StringBuilder eventClass(String className, List<Pair<String, String>> params,
+	public static StringBuilder eventClass(String className, List<Pair<String, String>> params, String constructorBody,
 			List<Property> properites, Options options) {
 		StringBuilder source = new StringBuilder(
 				GenerationNames.ClassType + " " + GenerationNames.eventClassName(className) + ":public "
@@ -71,11 +71,7 @@ public class GenerationTemplates {
 		}
 		source.append("):" + GenerationNames.EventBaseName + "(");
 		source.append(className + "_EE)");
-		StringBuilder body = new StringBuilder("{}\n");
-		for (Pair<String, String> param : params) {
-			source.append(
-					"," + param.getSecond() + "(" + GenerationNames.formatIncomingParamName(param.getSecond()) + ")");
-		}
+		StringBuilder body = new StringBuilder("\n{\n" + constructorBody + "}\n");
 
 		for (Property property : properites) {
 			body.append(variableDecl(property.getType().getName(), property.getName(), false));
