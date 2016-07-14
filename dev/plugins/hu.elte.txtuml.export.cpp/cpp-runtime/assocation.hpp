@@ -8,15 +8,15 @@ namespace action
 	template<typename T, typename FirstRole, typename SecondRole>
 	void link(typename FirstRole::EdgeType* e1, typename SecondRole::EdgeType* e2)
 	{
-		e1->link<T,SecondRole>(e2);
-		e2->link<T,FirstRole>(e1);
+		e1->template link<T,SecondRole>(e2);
+		e2->template link<T,FirstRole>(e1);
 	}
 	
 	template<typename T, typename FirstRole, typename SecondRole>
 	void unlink(typename FirstRole::EdgeType* e1, typename SecondRole::EdgeType* e2)
 	{
-		e1->link<T,SecondRole>(e2);
-		e2->link<T,FirstRole>(e1);
+		e1->template link<T,SecondRole>(e2);
+		e2->template link<T,FirstRole>(e1);
 	}
 }
 

@@ -41,6 +41,11 @@ namespace conversion
 	{
 		return b ? "True" : "False";
 	}
+
+	std::string to_string(const char* s)
+	{
+		return std::string(s);
+	}
 	
 	std::string to_string(std::string s)
 	{

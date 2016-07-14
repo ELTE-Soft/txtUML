@@ -44,7 +44,8 @@ std::string to_string(StateMachineI*);
 std::string to_string(int);
 std::string to_string(double);
 std::string to_string(bool);
-std::string to_string(std::string);	
+std::string to_string(std::string);
+std::string to_string(const char*);	
 }
 
 
