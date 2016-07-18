@@ -23,8 +23,10 @@ public class ActivityTemplates {
 	public enum OperationSide {
 		Left, Right
 	}
-	
-	public enum CreateObjectType {Signal, Class}
+
+	public enum CreateObjectType {
+		Signal, Class
+	}
 
 	public static String generalSetValue(String leftValueName, String rightValueName, String operator) {
 		if (operator == AddCompositTypeOp) {
@@ -56,11 +58,11 @@ public class ActivityTemplates {
 		return source;
 	}
 
-	public static String linkObjects(String firstObjectName,String secondObjectName, 
-			String associationName, String endPoint1, String endPoint2, LinkFunctionType linkType) {
-		return GenerationNames.ActionFunctionsNamespace + "::" + GenerationTemplates.getLinkFunctionName(linkType) + 
-				"<" + associationName + ",typename " + associationName + "::" + endPoint1 + ",typename " + associationName + "::" + endPoint2 +  
-				">" + "(" + firstObjectName + "," + secondObjectName + ");\n";
+	public static String linkObjects(String firstObjectName, String secondObjectName, String associationName,
+			String endPoint1, String endPoint2, LinkFunctionType linkType) {
+		return GenerationNames.ActionFunctionsNamespace + "::" + GenerationTemplates.getLinkFunctionName(linkType) + "<"
+				+ associationName + ",typename " + associationName + "::" + endPoint1 + ",typename " + associationName
+				+ "::" + endPoint2 + ">" + "(" + firstObjectName + "," + secondObjectName + ");\n";
 	}
 
 	public static String signalSend(String target, String signalName) {
@@ -96,7 +98,8 @@ public class ActivityTemplates {
 	}
 
 	public static String invokeProcedure(String operationName, List<String> parameters) {
-		return Operators.getStandardLibaryFunctionName(operationName) + "(" + operationCallParamList(parameters) + ");\n";
+		return Operators.getStandardLibaryFunctionName(operationName) + "(" + operationCallParamList(parameters)
+				+ ");\n";
 	}
 
 	public static String stdLibOperationCall(String operationName, String left, String right) {
@@ -109,7 +112,7 @@ public class ActivityTemplates {
 		return Operators.getStandardSigneleOperatorName(operationName) + operand;
 
 	}
-	
+
 	public static String isEqualTesting(String firstArgument, String secondArgument) {
 		return firstArgument + " " + Operators.Equal + " " + secondArgument;
 	}
@@ -123,7 +126,7 @@ public class ActivityTemplates {
 	}
 
 	public static StringBuilder blockStatement(String statement) {
-	    	
+
 		return new StringBuilder(statement).append(";\n");
 	}
 
@@ -174,7 +177,8 @@ public class ActivityTemplates {
 		return simpleCondControlStruct("while", cond, body);
 	}
 
-	public static String foreachCycle(String conatinedType, String paramName, String collection, String body,String inits) {
+	public static String foreachCycle(String conatinedType, String paramName, String collection, String body,
+			String inits) {
 		return inits + "for (" + PrivateFunctionalTemplates.cppType(conatinedType) + " " + paramName + " :" + collection
 				+ ")\n{\n" + body + "\n}\n";
 	}
@@ -183,32 +187,33 @@ public class ActivityTemplates {
 		return GenerationNames.RealEventName + "." + paramName;
 	}
 
-	public static String createObject(String typeName, String objName, CreateObjectType objectType, List<String> parameters) {
-		
-		if(objectType.equals(CreateObjectType.Signal)) {
+	public static String createObject(String typeName, String objName, CreateObjectType objectType,
+			List<String> parameters) {
+
+		if (objectType.equals(CreateObjectType.Signal)) {
 			return GenerationNames.signalType(typeName) + " " + objName + ";\n";
-		}
-		else {
-			return GenerationNames.pointerType(typeName) + " " + objName + " "
-				+  ReplaceSimpleTypeOp + " " + GenerationNames.NullPtr + ";\n";
+		} else {
+			return GenerationNames.pointerType(typeName) + " " + objName + " " + ReplaceSimpleTypeOp + " "
+					+ GenerationNames.NullPtr + ";\n";
 		}
 
-		
 	}
-	
-	public static String constructorCall(String ownerName, String typeName, CreateObjectType objectType, List<String> parameters) {
-		if(objectType.equals(CreateObjectType.Signal)) {
-			return ownerName + ReplaceSimpleTypeOp + GenerationNames.signalType(typeName) + "(" + GenerationNames.MemoryAllocator + " "
-					+ PrivateFunctionalTemplates.signalType(typeName) + "(" + operationCallParamList(parameters) + "))";
+
+	public static String constructorCall(String ownerName, String typeName, CreateObjectType objectType,
+			List<String> parameters) {
+		if (objectType.equals(CreateObjectType.Signal)) {
+			return ownerName + ReplaceSimpleTypeOp + GenerationNames.signalType(typeName) + "("
+					+ GenerationNames.MemoryAllocator + " " + PrivateFunctionalTemplates.signalType(typeName) + "("
+					+ operationCallParamList(parameters) + "))";
 		} else {
-			return ownerName + ReplaceSimpleTypeOp + GenerationNames.MemoryAllocator + " "
-					+ typeName + "(" + operationCallParamList(parameters) + ")";
+			return ownerName + ReplaceSimpleTypeOp + GenerationNames.MemoryAllocator + " " + typeName + "("
+					+ operationCallParamList(parameters) + ")";
 		}
 	}
 
 	public static String createObject(String typenName, String objName, CreateObjectType objectType) {
 
-		return createObject(typenName, objName,objectType, new ArrayList<String>());
+		return createObject(typenName, objName, objectType, new ArrayList<String>());
 	}
 
 	public static String selectAnyTemplate(String otherEnd) {
@@ -216,23 +221,25 @@ public class ActivityTemplates {
 
 	}
 
-	public static String selectAllTemplate(String otherEnd,String associationName) {
-		return GenerationNames.Self + GenerationNames.PointerAccess +
-		GenerationTemplates.formatAssociationRoleName(otherEnd, associationName) + GenerationNames.SimpleAccess + GenerationNames.SelectAllFunctionName + "()";
+	public static String selectAllTemplate(String otherEnd, String associationName) {
+		return GenerationNames.Self + GenerationNames.PointerAccess
+				+ GenerationTemplates.formatAssociationRoleName(otherEnd, associationName)
+				+ GenerationNames.SimpleAccess + GenerationNames.SelectAllFunctionName + "()";
 	}
 
 	public static String collectionTemplate(String collectedType) {
 		return GenerationNames.Collection + "<" + PrivateFunctionalTemplates.cppType(collectedType) + ">";
 
 	}
-	
+
 	public static StringBuilder getRealSignal(String signalType, String signalVariableName) {
 		StringBuilder source = new StringBuilder("");
 		source.append(GenerationNames.signalType(signalType) + " ");
 		source.append(signalVariableName + " = ");
 		source.append(GenerationNames.signalType(signalType) + "(");
 		source.append(GenerationNames.MemoryAllocator + " " + PrivateFunctionalTemplates.signalType(signalType));
-		source.append("(" + GenerationNames.StaticCast + "<const " + PrivateFunctionalTemplates.signalType(signalType) + "&>");
+		source.append("(" + GenerationNames.StaticCast + "<const " + PrivateFunctionalTemplates.signalType(signalType)
+				+ "&>");
 		source.append("(" + GenerationNames.EventFParamName + ")));\n");
 		return source;
 	}
@@ -270,9 +277,9 @@ public class ActivityTemplates {
 		return collectionTemplate(collectedType) + " " + collectionName + " " + ReplaceSimpleTypeOp + " " + valueName
 				+ ";\n";
 	}
-	
+
 	public static String generatedTempVariable(int count) {
-	    return "gen" + count;
+		return "gen" + count;
 	}
 
 	public static class Operators {
@@ -299,7 +306,7 @@ public class ActivityTemplates {
 		public static final String Not = "!";
 		public static final String And = "&&";
 		public static final String Or = "||";
-		
+
 		public static final String Log = "log";
 		public static final String Select = "select";
 		public static final String Concat = "concat";
@@ -309,8 +316,7 @@ public class ActivityTemplates {
 		public static final String Sinus = "sin";
 		public static final String Cosinus = "cos";
 		public static final String TimerStart = GenerationNames.StartTimerFunctionName;
-		
-		
+
 		public static String Fork(String cond, String e1, String e2) {
 			return cond + " ? " + e1 + " : " + e2;
 		}
@@ -383,14 +389,14 @@ public class ActivityTemplates {
 
 			return name;
 		}
-		
+
 		public static String getStandardLibaryFunctionName(String function) {
 			switch (function) {
-			case ToString :
+			case ToString:
 				return GenerationNames.ConversionNamspace + "::" + "to_string";
-			case Log :
+			case Log:
 				return GenerationNames.ActionFunctionsNamespace + "::" + Log;
-			case TimerStart :
+			case TimerStart:
 				return GenerationNames.TimerInterFaceName + "::" + TimerStart;
 			default:
 				return function;
@@ -398,9 +404,9 @@ public class ActivityTemplates {
 		}
 
 		public static boolean isStdLibFunction(String name) {
-			if (name.equals(Select) ||  name.equals(Concat) ||  name.equals(TimerStart) ||
-					name.equals(ToString) || name.equals(Log) || name.equals(Count) || name.equals(Round)
-			|| name.equals(Sinus) || name.equals(Cosinus )){
+			if (name.equals(Select) || name.equals(Concat) || name.equals(TimerStart) || name.equals(ToString)
+					|| name.equals(Log) || name.equals(Count) || name.equals(Round) || name.equals(Sinus)
+					|| name.equals(Cosinus)) {
 				return true;
 			} else {
 				return false;
@@ -410,14 +416,14 @@ public class ActivityTemplates {
 	}
 
 	public static boolean invalidIdentifier(String name) {
-	   
-	    return name.startsWith(ProcessorDirectivesSign) || name.equals("return");
+
+		return name.startsWith(ProcessorDirectivesSign) || name.equals("return");
 	}
 
 	public static String setRegex(String variableName) {
 		return "[ ]*" + variableName + "[ ]*=[^;]*;\n";
 	}
-	
+
 	public static String declareRegex(String variableName) {
 		return "[ a-zA-z0-9<>*]*" + variableName + "[ ]*;\n";
 	}
@@ -425,9 +431,5 @@ public class ActivityTemplates {
 	public static String formatUserVar(String varName, int userVarCounter) {
 		return varName + "_us" + userVarCounter;
 	}
-
-
-
-
 
 }

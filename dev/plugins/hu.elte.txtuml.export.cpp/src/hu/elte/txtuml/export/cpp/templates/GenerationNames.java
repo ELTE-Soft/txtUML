@@ -13,7 +13,7 @@ class GenerationNames {
 	// NDEBUG is the only thing guaranteed, DEBUG and _DEBUG is non-standard
 	public static final String NoDebugSymbol = "NDEBUG";
 	public static final String StandardIOinclude = "#include <iostream>\n";
-	
+
 	public static final String StandardLibaryFunctionsHeaderName = "standard_functions";
 
 	public static final String NullPtr = "nullptr";
@@ -81,7 +81,7 @@ class GenerationNames {
 	public static final String AssociationClassName = "Association";
 	public static final String AssocationHeaderName = "assocation";
 	public static final String DeploymentHeaderName = "deployment";
-	
+
 	public static final String InitStateMachine = "initStateMachine";
 
 	public static final String PoolIdSetter = "setPoolId";
@@ -99,7 +99,7 @@ class GenerationNames {
 	public static final String TemplateType = "typename";
 	public static final String TemplateParameterName = "T";
 	public static final String EndPointName = "EndPointName";
-	
+
 	public static final String ActionFunctionsNamespace = "action";
 	public static final String SelectAnyFunctionName = "getOne";
 	public static final String SelectAllFunctionName = "getAll";
@@ -107,16 +107,13 @@ class GenerationNames {
 	public static final String AssociationsHeaderName = "associations";
 	public static final String EdgeType = "EdgeType";
 	public static final String ConversionNamspace = "conversion";
-	
+
 	public static final String TimerInterFaceName = "ITimer";
 	public static final String StartTimerFunctionName = "start";
 	public static final String TimerClassName = "Timer";
-	
-	
-	public static final String DefaultParentSmInicialization = GenerationNames.ParentSmMemberName + "(" + 
-	GenerationNames.ParentSmPointerName + ")";
-	
-	
+
+	public static final String DefaultParentSmInicialization = GenerationNames.ParentSmMemberName + "("
+			+ GenerationNames.ParentSmPointerName + ")";
 
 	public static String friendClassDecl(String className) {
 		return "friend " + GenerationNames.ClassType + " " + className + ";\n";
@@ -165,9 +162,9 @@ class GenerationNames {
 				+ "if(it!=" + CompositeStateMapName + ".end())\n" + "{\n" + CurrentMachineName
 				+ "=(it->second).get();\n" + CurrentMachineName + "->" + SetInitialStateName
 				+ "();//restarting from initial state\n" + CurrentMachineName + "->" + ProcessEventFName + "("
-				+ GenerationNames.InitialEventName + "_EC());\n" + "}\n" + "else\n" + "{\n"
-				+ CurrentMachineName + "=" + NullPtr + ";\n" + "}\n" + CurrentStateName + "="
-				+ GenerationNames.StateParamName + ";\n" + EntryName + "();\n" + "}\n";
+				+ GenerationNames.InitialEventName + "_EC());\n" + "}\n" + "else\n" + "{\n" + CurrentMachineName + "="
+				+ NullPtr + ";\n" + "}\n" + CurrentStateName + "=" + GenerationNames.StateParamName + ";\n" + EntryName
+				+ "();\n" + "}\n";
 	}
 
 	public static String eventClassName(String eventName) {
@@ -189,15 +186,15 @@ class GenerationNames {
 	public static String pointerType(String typeName) {
 		return typeName + "*";
 	}
-	
+
 	public static String signalType(String signalClassName) {
 		return SmartPtr + "<" + PrivateFunctionalTemplates.signalType(signalClassName) + ">";
 	}
 
 	public static String formatIncomingParamName(String paramName) {
-		if(paramName.isEmpty())
+		if (paramName.isEmpty())
 			return "";
-		
+
 		return paramName + IncomingParamTypeId;
 	}
 }

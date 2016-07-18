@@ -40,7 +40,7 @@ public class ThreadPoolConfiguration {
 		}
 
 	}
-	
+
 	private LinearFunction function;
 	private int id;
 	private int maxThread;
@@ -54,6 +54,7 @@ public class ThreadPoolConfiguration {
 	public void decraseId() {
 		id = id - 1;
 	}
+
 	public int getId() {
 		return id;
 	}

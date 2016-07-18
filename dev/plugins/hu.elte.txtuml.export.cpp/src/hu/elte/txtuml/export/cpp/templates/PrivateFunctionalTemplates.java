@@ -15,19 +15,19 @@ class PrivateFunctionalTemplates {
 	 * 
 	 * Map<String,String> <event,SubmachineName>
 	 */
-	public static StringBuilder hierarchicalStateMachineClassConstructorSharedBody(String className, String parentStateMchine,
-			 Multimap<Pair<String, String>, Pair<String, String>> machine,
+	public static StringBuilder hierarchicalStateMachineClassConstructorSharedBody(String className,
+			String parentStateMchine, Multimap<Pair<String, String>, Pair<String, String>> machine,
 			Map<String, String> subMachines, String intialState, Boolean rt) {
 		StringBuilder source = new StringBuilder("");
 		for (Map.Entry<String, String> entry : subMachines.entrySet()) {
 			source.append(
 					GenerationNames.CompositeStateMapName + ".emplace(" + GenerationNames.stateEnumName(entry.getKey())
 							+ "," + GenerationNames.CompositeStateMapSmType + "(" + GenerationNames.MemoryAllocator
-							+ " " + entry.getValue() + "(" + GenerationNames.Self +")" + "));\n");
+							+ " " + entry.getValue() + "(" + GenerationNames.Self + ")" + "));\n");
 		}
 
 		source.append("\n"
-				+ stateMachineClassConstructorSharedBody(className,parentStateMchine, machine, intialState, rt, null)
+				+ stateMachineClassConstructorSharedBody(className, parentStateMchine, machine, intialState, rt, null)
 				+ "\n\n");
 		return source;
 	}
@@ -35,21 +35,18 @@ class PrivateFunctionalTemplates {
 	public static String simpleStateMachineClassConstructorSharedBody(String className,
 			Multimap<Pair<String, String>, Pair<String, String>> machine, String intialState, Boolean simpleMachine) {
 		String source = "";
-		if(simpleMachine) {
+		if (simpleMachine) {
 			source += RuntimeTemplates.rtFunctionDef(className);
 		}
-		
-		
 
 		return source + GenerationNames.simpleProcessEventDef(className) + "\n"
 				+ GenerationNames.simpleSetStateDef(className) + "\n"
 				+ PrivateFunctionalTemplates.setInitialState(className, intialState) + "\n";
 	}
-	
+
 	public static String signalType(String type) {
 		return type + GenerationNames.EventClassTypeId;
 	}
-	
 
 	public static StringBuilder stateMachineClassConstructorSharedBody(String className, String parentStateMachine,
 			Multimap<Pair<String, String>, Pair<String, String>> machine, String intialState, Boolean simpleMachine,
@@ -57,8 +54,8 @@ class PrivateFunctionalTemplates {
 		StringBuilder source = new StringBuilder("");
 		for (Pair<String, String> key : machine.keySet()) {
 			for (Pair<String, String> value : machine.get(key)) {
-				source.append(
-						GenerationNames.TransitionTableName + ".emplace(" +  GenerationNames.EventStateTypeName + "(" + GenerationNames.EventsEnumName + "::");
+				source.append(GenerationNames.TransitionTableName + ".emplace(" + GenerationNames.EventStateTypeName
+						+ "(" + GenerationNames.EventsEnumName + "::");
 				source.append(GenerationNames.eventEnumName(key.getFirst()) + ","
 						+ GenerationNames.stateEnumName(key.getSecond()) + "),");
 				String guardName = GenerationNames.DefaultGuardName;
@@ -75,10 +72,9 @@ class PrivateFunctionalTemplates {
 		if (poolId != null) {
 			source.append(GenerationNames.PoolIdSetter + "(" + poolId + ");\n");
 		}
-		if(simpleMachine) {
+		if (simpleMachine) {
 			source.append(RuntimeTemplates.initStateMachineForRuntime());
 		}
-		
 
 		source.append(GenerationNames.SetInitialStateName + "();\n");
 
@@ -191,7 +187,7 @@ class PrivateFunctionalTemplates {
 				case "String":
 					cppType = GenerationNames.cppString;
 					break;
-				case GenerationNames.EventPtr : 
+				case GenerationNames.EventPtr:
 					cppType = GenerationNames.EventPtr;
 					break;
 				default:

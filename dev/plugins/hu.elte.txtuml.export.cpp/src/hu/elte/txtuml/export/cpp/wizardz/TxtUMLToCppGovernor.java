@@ -30,8 +30,8 @@ class TxtUMLToCppGovernor {
 	}
 
 	@SuppressWarnings("unchecked")
-	void uml2ToCpp(String txtUMLProject, String txtUMLModel, String deploymentDescription, boolean addRuntimeOption, boolean overWriteMainFileOption)
-			throws Exception {
+	void uml2ToCpp(String txtUMLProject, String txtUMLModel, String deploymentDescription, boolean addRuntimeOption,
+			boolean overWriteMainFileOption) throws Exception {
 		String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation().toFile()
 				.getAbsolutePath();
 		String umlFilesFolder = txtUMLProject + File.separator + GeneratedCPPFolderName + File.separator + txtUMLModel
@@ -39,7 +39,8 @@ class TxtUMLToCppGovernor {
 
 		Model model;
 		try {
-			model = TxtUMLToUML2.exportModel(txtUMLProject, txtUMLModel, umlFilesFolder, ExportMode.ExportActionsPedantic);
+			model = TxtUMLToUML2.exportModel(txtUMLProject, txtUMLModel, umlFilesFolder,
+					ExportMode.ExportActionsPedantic);
 		} catch (Exception e) {
 			if (!testing) {
 				Dialogs.errorMsgb("txtUML export Error", e.getClass() + ":" + System.lineSeparator() + e.getMessage(),
@@ -61,11 +62,11 @@ class TxtUMLToCppGovernor {
 			throw e;
 		}
 
-	    Set<org.eclipse.uml2.uml.Class> allClass = new HashSet<org.eclipse.uml2.uml.Class>();
-	    Shared.getTypedElements(allClass, model.getOwnedElements(), UMLPackage.Literals.CLASS);
+		Set<org.eclipse.uml2.uml.Class> allClass = new HashSet<org.eclipse.uml2.uml.Class>();
+		Shared.getTypedElements(allClass, model.getOwnedElements(), UMLPackage.Literals.CLASS);
 
-	    ThreadDescriptionExporter exporter = new ThreadDescriptionExporter(allClass);
-	    exporter.exportDescription((Class<? extends Configuration>) txtUMLThreadDescription);
+		ThreadDescriptionExporter exporter = new ThreadDescriptionExporter(allClass);
+		exporter.exportDescription((Class<? extends Configuration>) txtUMLThreadDescription);
 
 		if (!exporter.warningListIsEmpty()) {
 			StringBuilder warnings = new StringBuilder("");
@@ -78,7 +79,8 @@ class TxtUMLToCppGovernor {
 			}
 		}
 
-		Uml2ToCppExporter cppExporter = new Uml2ToCppExporter(model, exporter.getConfigMap(), addRuntimeOption, overWriteMainFileOption);
+		Uml2ToCppExporter cppExporter = new Uml2ToCppExporter(model, exporter.getConfigMap(), addRuntimeOption,
+				overWriteMainFileOption);
 		try {
 			cppExporter.buildCppCode(
 					projectFolder + File.separator + GeneratedCPPFolderName + File.separator + txtUMLModel);

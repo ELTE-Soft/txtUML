@@ -23,78 +23,77 @@ import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 
-
 public class Shared {
-    public static List<Property> getProperties(Class class_) {
-	List<Property> properties = new LinkedList<Property>();
-	for (Association assoc : class_.getAssociations()) {
-	    for (Property prop : assoc.getMemberEnds()) {
-		if (!prop.getType().equals(class_)) {
-		    properties.add(prop);
+	public static List<Property> getProperties(Class class_) {
+		List<Property> properties = new LinkedList<Property>();
+		for (Association assoc : class_.getAssociations()) {
+			for (Property prop : assoc.getMemberEnds()) {
+				if (!prop.getType().equals(class_)) {
+					properties.add(prop);
+				}
+			}
 		}
-	    }
+		properties.addAll(class_.getOwnedAttributes());
+		return properties;
 	}
-	properties.addAll(class_.getOwnedAttributes());
-	return properties;
-    }
 
-    @SuppressWarnings("unchecked")
-    public static <ElementTypeT, EClassTypeT> void getTypedElements(Collection<ElementTypeT> dest_,
-	    Collection<Element> source_, EClassTypeT eClass_) {
-	for (Element item : source_) {
-	    if (item.eClass().equals(eClass_)) {
-		dest_.add((ElementTypeT) item);
-	    }
+	@SuppressWarnings("unchecked")
+	public static <ElementTypeT, EClassTypeT> void getTypedElements(Collection<ElementTypeT> dest_,
+			Collection<Element> source_, EClassTypeT eClass_) {
+		for (Element item : source_) {
+			if (item.eClass().equals(eClass_)) {
+				dest_.add((ElementTypeT) item);
+			}
+		}
 	}
-    }
 
-    // TODO need a better solution
-    public static boolean isBasicType(String typeName_) {
+	// TODO need a better solution
+	public static boolean isBasicType(String typeName_) {
 
-	return typeName_.equals("Integer") || typeName_.equals("Real") || typeName_.equals("Boolean");
+		return typeName_.equals("Integer") || typeName_.equals("Real") || typeName_.equals("Boolean");
 
-    }
-    
-   public static boolean generatedClass(Class item) {
-		return item.getName().startsWith("#");		
 	}
-   
-   public static List<Parameter> getSignalConstructorParameters(Signal signal, EList<Element> elements) {
-	   List<Parameter> signalParameters = new LinkedList<Parameter>();
 
-	   Class factoryClass = getSignalFactoryClass(signal,elements);
-	   if(factoryClass != null) {
-		   for(Operation op : factoryClass.getOperations()) {
-			   if(isConstructor(op)) {
-				   
-				   signalParameters.addAll(op.getOwnedParameters());
-			   }
-		   }
-	   }
-	   
-	   //TODO need better solution
-	   signalParameters.removeIf(s -> s.getType().getName().equals(signal.getName()));
-	   
-	   return signalParameters;
-   }
-   
-   public static String signalCtrBody(Signal signal, EList<Element> elements) {
-	  ActivityExporter activityExporter = new ActivityExporter();
-	  Class factoryClass = getSignalFactoryClass(signal,elements);
-	  String body = "";
-	  for(Operation operation : factoryClass.getOperations()) {
-		   if(isConstructor(operation)) {
+	public static boolean generatedClass(Class item) {
+		return item.getName().startsWith("#");
+	}
+
+	public static List<Parameter> getSignalConstructorParameters(Signal signal, EList<Element> elements) {
+		List<Parameter> signalParameters = new LinkedList<Parameter>();
+
+		Class factoryClass = getSignalFactoryClass(signal, elements);
+		if (factoryClass != null) {
+			for (Operation op : factoryClass.getOperations()) {
+				if (isConstructor(op)) {
+
+					signalParameters.addAll(op.getOwnedParameters());
+				}
+			}
+		}
+
+		// TODO need better solution
+		signalParameters.removeIf(s -> s.getType().getName().equals(signal.getName()));
+
+		return signalParameters;
+	}
+
+	public static String signalCtrBody(Signal signal, EList<Element> elements) {
+		ActivityExporter activityExporter = new ActivityExporter();
+		Class factoryClass = getSignalFactoryClass(signal, elements);
+		String body = "";
+		for (Operation operation : factoryClass.getOperations()) {
+			if (isConstructor(operation)) {
 				body = activityExporter.createfunctionBody(Shared.getOperationActivity(operation)).toString();
-			   
-		   }
-	   }	  
-	  
-	  return body;
-	   
-   }
-   
-   public static Activity getOperationActivity(Operation operation) {
-	    Activity activity = null;
+
+			}
+		}
+
+		return body;
+
+	}
+
+	public static Activity getOperationActivity(Operation operation) {
+		Activity activity = null;
 		for (Behavior behavior : operation.getMethods()) {
 
 			if (behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
@@ -103,60 +102,58 @@ public class Shared {
 				// TODO exception, unknown for me, need the model
 			}
 		}
-		
+
 		return activity;
-   }
-   
-   public static Class getSignalFactoryClass(Signal signal, EList<Element> elements) {
-	   for(Element element : elements) {
-		   if(element.eClass().equals(UMLPackage.Literals.CLASS)) {
-			   Class cls = (Class) element;
-			   for(Operation operation : cls.getOperations()) {
-				   if(isConstructor(operation)) {
-					   for(Parameter param : operation.getOwnedParameters()) {
-						   if(param.getType().getName().equals(signal.getName()))
-								   return cls;
-					   }
-				   }
-					   
-						   
-				   
-			   }
-		   }
-	   }
-	   
-	   return null;
-   }
-   
-	public static boolean isConstructor(Operation operation) {
-		
-		for ( Stereotype stereotype : operation.getAppliedStereotypes()) {
-			
-			if(stereotype.getKeyword().equals(ActivityTemplates.CreateStereoType)) {
-				return true;
-				
+	}
+
+	public static Class getSignalFactoryClass(Signal signal, EList<Element> elements) {
+		for (Element element : elements) {
+			if (element.eClass().equals(UMLPackage.Literals.CLASS)) {
+				Class cls = (Class) element;
+				for (Operation operation : cls.getOperations()) {
+					if (isConstructor(operation)) {
+						for (Parameter param : operation.getOwnedParameters()) {
+							if (param.getType().getName().equals(signal.getName()))
+								return cls;
+						}
+					}
+
+				}
 			}
 		}
-		
+
+		return null;
+	}
+
+	public static boolean isConstructor(Operation operation) {
+
+		for (Stereotype stereotype : operation.getAppliedStereotypes()) {
+
+			if (stereotype.getKeyword().equals(ActivityTemplates.CreateStereoType)) {
+				return true;
+
+			}
+		}
+
 		return false;
-		
+
 	}
 
-    public static void writeOutSource(String path_, String fileName_, String source_)
-	    throws FileNotFoundException, UnsupportedEncodingException {
-	try {
-	    File file = new File(path_);
-	    if (!file.exists()) {
-		file.mkdirs();
-	    }
+	public static void writeOutSource(String path_, String fileName_, String source_)
+			throws FileNotFoundException, UnsupportedEncodingException {
+		try {
+			File file = new File(path_);
+			if (!file.exists()) {
+				file.mkdirs();
+			}
 
-	} catch (Exception e) {
-	    e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		PrintWriter writer = new PrintWriter(path_ + File.separator + fileName_, "UTF-8");
+		writer.println(source_);
+		writer.close();
 	}
-	
-	PrintWriter writer = new PrintWriter(path_ + File.separator + fileName_, "UTF-8");
-	writer.println(source_);
-	writer.close();
-    }
 
 }

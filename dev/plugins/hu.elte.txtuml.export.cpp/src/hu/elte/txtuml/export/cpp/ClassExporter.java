@@ -44,7 +44,6 @@ public class ClassExporter {
 	private static final int _UMLMany = -1;
 	private static String _unknownEntryName = "entry";
 	private static String _unknownExitName = "exit";
-	
 
 	private Map<String, Pair<String, String>> _entryMap;// <name,<state,funcBody>>
 	private Map<String, Pair<String, String>> _exitMap;// <name,<state,funcBody>>
@@ -56,7 +55,6 @@ public class ClassExporter {
 
 	ActivityExporter activityExporter;
 	GuardExporter guardExporter;
-	
 
 	private enum FuncTypeEnum {
 		Entry, Exit
@@ -85,8 +83,6 @@ public class ClassExporter {
 	public List<String> getAdditionalSources() {
 		return additionalSourcesNames;
 	}
-	
-
 
 	public void createSource(Class class_, String dest_) throws FileNotFoundException, UnsupportedEncodingException {
 		String source;
@@ -102,8 +98,8 @@ public class ClassExporter {
 			for (Map.Entry<String, Pair<String, Region>> entry : _submachineMap.entrySet()) {
 				ClassExporter classExporter = new ClassExporter();
 				classExporter.setRealName(entry.getValue().getFirst());
-				classExporter.createSubSmSource(entry.getValue().getFirst(), realName,
-						entry.getValue().getSecond(), dest_);
+				classExporter.createSubSmSource(entry.getValue().getFirst(), realName, entry.getValue().getSecond(),
+						dest_);
 				subSubMachines.addAll(classExporter.getSubmachines());
 			}
 		}
@@ -116,8 +112,6 @@ public class ClassExporter {
 		Shared.writeOutSource(dest_, GenerationTemplates.sourceName(realName),
 				GenerationTemplates.cppInclude(realName) + getAllDependency(class_, false) + source);
 	}
-
-
 
 	public List<String> getSubmachines() {
 		List<String> ret = new LinkedList<String>();
@@ -134,10 +128,10 @@ public class ClassExporter {
 		this.poolId = poolId;
 
 	}
-	
+
 	public void setRealName(String realClassName) {
 		this.realName = realClassName;
-		
+
 	}
 
 	private void createSubSmSource(String className_, String parentClass, Region region_, String dest_)
@@ -151,7 +145,7 @@ public class ClassExporter {
 			createSubSmSource(entry.getValue().getFirst(), parentClass, entry.getValue().getSecond(), dest_);
 		}
 
-		source = createSubSmClassHeaderSource(className_,parentClass,region_);
+		source = createSubSmClassHeaderSource(className_, parentClass, region_);
 		Shared.writeOutSource(dest_, GenerationTemplates.headerName(className_),
 				GenerationTemplates.headerGuard(source, className_));
 		source = createSubSmClassCppSource(className_, parentClass, region_).toString();
@@ -179,8 +173,10 @@ public class ClassExporter {
 		publicParts.append("\n" + getAssocations(class_));
 
 		if (!associationMembers.isEmpty()) {
-			publicParts.append(GenerationTemplates.templateLinkFunctionGeneralDef(GenerationTemplates.LinkFunctionType.Link));
-			publicParts.append(GenerationTemplates.templateLinkFunctionGeneralDef(GenerationTemplates.LinkFunctionType.Unlink));
+			publicParts.append(
+					GenerationTemplates.templateLinkFunctionGeneralDef(GenerationTemplates.LinkFunctionType.Link));
+			publicParts.append(
+					GenerationTemplates.templateLinkFunctionGeneralDef(GenerationTemplates.LinkFunctionType.Unlink));
 		}
 
 		if (ownStates(class_, smList)) {
@@ -197,9 +193,9 @@ public class ClassExporter {
 								publicParts.toString(), protectedParts.toString(), privateParts.toString(), true)
 						.toString();
 			} else {
-				source = GenerationTemplates.hierarchicalStateMachineClassHeader(dependency.toString(),
-						realName, getBaseClass(class_), getSubmachines(), publicParts.toString(),
-						protectedParts.toString(), privateParts.toString(), true).toString();
+				source = GenerationTemplates.hierarchicalStateMachineClassHeader(dependency.toString(), realName,
+						getBaseClass(class_), getSubmachines(), publicParts.toString(), protectedParts.toString(),
+						privateParts.toString(), true).toString();
 			}
 		} else {
 			source = GenerationTemplates.classHeader(dependency.toString(), realName, getBaseClass(class_),
@@ -208,7 +204,7 @@ public class ClassExporter {
 		return source;
 	}
 
-	private String createSubSmClassHeaderSource(String className_,String parentClass, Region region_)  {
+	private String createSubSmClassHeaderSource(String className_, String parentClass, Region region_) {
 		String source = "";
 		StringBuilder dependency = new StringBuilder(GenerationTemplates.cppInclude(parentClass));
 		dependency.append(GenerationTemplates.cppInclude(GenerationTemplates.StandardFunctionsHeader));
@@ -218,19 +214,21 @@ public class ClassExporter {
 		privateParts.append(GenerationTemplates.formatSubSmFunctions(declareGuardFunctions(region_).toString()));
 		privateParts.append(createTransitionFunctionDecl(region_));
 		String protectedParts = "";
-		
-		 StringBuilder publicParts = new StringBuilder("");
-		 List<String> params = new ArrayList<String>();
-		 params.add(parentClass);
-		 publicParts.append(GenerationTemplates.constructorDecl(className_,params));		
-		 publicParts.append(GenerationTemplates.stateEnum(getStateList(region_), getInitialState(region_)));
-		
+
+		StringBuilder publicParts = new StringBuilder("");
+		List<String> params = new ArrayList<String>();
+		params.add(parentClass);
+		publicParts.append(GenerationTemplates.constructorDecl(className_, params));
+		publicParts.append(GenerationTemplates.stateEnum(getStateList(region_), getInitialState(region_)));
+
 		if (_submachineMap.isEmpty()) {
-			source = GenerationTemplates.simpleSubStateMachineClassHeader(dependency.toString(), className_, parentClass,
-					publicParts.toString(), protectedParts, privateParts.toString()).toString();
+			source = GenerationTemplates.simpleSubStateMachineClassHeader(dependency.toString(), className_,
+					parentClass, publicParts.toString(), protectedParts, privateParts.toString()).toString();
 		} else {
-			source = GenerationTemplates.hierarchicalSubStateMachineClassHeader(dependency.toString(), className_, parentClass,
-					getSubmachines(), publicParts.toString(), protectedParts, privateParts.toString()).toString();
+			source = GenerationTemplates
+					.hierarchicalSubStateMachineClassHeader(dependency.toString(), className_, parentClass,
+							getSubmachines(), publicParts.toString(), protectedParts, privateParts.toString())
+					.toString();
 		}
 		return source;
 	}
@@ -248,8 +246,8 @@ public class ClassExporter {
 			Region region = smList.get(0).getRegions().get(0);
 			Multimap<Pair<String, String>, Pair<String, String>> smMap = createMachine(region);
 			if (_submachineMap.isEmpty()) {
-				source.append(GenerationTemplates.simpleStateMachineInitialization(realName,
-						getInitialState(region), true, poolId, smMap));
+				source.append(GenerationTemplates.simpleStateMachineInitialization(realName, getInitialState(region),
+						true, poolId, smMap));
 				source.append(GenerationTemplates.simpleStateMachineFixFunctionDefnitions(realName,
 						getInitialState(region), false));
 
@@ -260,7 +258,7 @@ public class ClassExporter {
 						getInitialState(region), false));
 
 			}
-			
+
 			source.append(GenerationTemplates.destructorDef(realName, true));
 			source.append(defnieGuardFunctions());
 			source.append(createEntryFunctionsDef(realName, region));
@@ -269,7 +267,7 @@ public class ClassExporter {
 
 			source.append(GenerationTemplates.entry(realName, createStateActionMap(_entryMap, region)) + "\n");
 			source.append(GenerationTemplates.exit(realName, createStateActionMap(_exitMap, region)) + "\n");
-			
+
 		} else {
 			source.append(GenerationTemplates.destructorDef(realName, false));
 		}
@@ -321,21 +319,22 @@ public class ClassExporter {
 		source.append(GenerationTemplates.formatSubSmFunctions(subSmSpec.toString()));
 		return source;
 	}
-	
+
 	private String createLinkFunctionDeclerations(Class class_) {
 		StringBuilder assocDeclerations = new StringBuilder("");
 		for (Property member : associationMembers) {
-			if(member.isNavigable()) {
-				assocDeclerations.append(GenerationTemplates.linkTemplateSpecializationDecl(
-						realName, member.getType().getName(), member.getName(),member.getAssociation().getName(),
+			if (member.isNavigable()) {
+				assocDeclerations.append(GenerationTemplates.linkTemplateSpecializationDecl(realName,
+						member.getType().getName(), member.getName(), member.getAssociation().getName(),
 						GenerationTemplates.LinkFunctionType.Link));
-					assocDeclerations.append(GenerationTemplates.linkTemplateSpecializationDecl(
-						realName, member.getType().getName(), member.getName(),member.getAssociation().getName(),
+				assocDeclerations.append(GenerationTemplates.linkTemplateSpecializationDecl(realName,
+						member.getType().getName(), member.getName(), member.getAssociation().getName(),
 						GenerationTemplates.LinkFunctionType.Unlink));
 			}
 
 		}
-		return GenerationTemplates.cppInclude(GenerationTemplates.AssociationsStructuresHreaderName) + assocDeclerations.toString();
+		return GenerationTemplates.cppInclude(GenerationTemplates.AssociationsStructuresHreaderName)
+				+ assocDeclerations.toString();
 	}
 
 	private Map<String, Pair<String, Region>> getSubMachines(Region region_) {
@@ -377,8 +376,8 @@ public class ClassExporter {
 
 			if (behavior != null) {
 				if (behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
-					activityExporter.init();					
-					source = activityExporter.createfunctionBody((Activity)behavior).toString();
+					activityExporter.init();
+					source = activityExporter.createfunctionBody((Activity) behavior).toString();
 					name = item.getName() + "_" + unknownName;
 					map.put(name, new Pair<String, String>(item.getName(), source.toString()));
 				}
@@ -414,24 +413,24 @@ public class ClassExporter {
 		for (Transition item : region_.getTransitions()) {
 			Constraint constraint = item.getGuard();
 			if (constraint != null) {
-				//TODO else..
-				guardExporter.exportConstraintToMap(constraint);			
+				// TODO else..
+				guardExporter.exportConstraintToMap(constraint);
 				source.append(GenerationTemplates.guardDecleration(guardExporter.getGuard(constraint)));
 			}
 		}
 		source.append("\n");
 		return source;
 	}
-	
+
 	private StringBuilder defnieGuardFunctions() {
 		StringBuilder source = new StringBuilder("");
-		for(Entry<Constraint, String> guardEntry: guardExporter.getGuards().entrySet()) {
+		for (Entry<Constraint, String> guardEntry : guardExporter.getGuards().entrySet()) {
 			guardExporter.init();
 			String body = guardExporter.getGuardFromValueSpecification(guardEntry.getKey().getSpecification());
-			source.append(GenerationTemplates.guardDefinition(guardEntry.getValue(), 
-					body, realName, guardExporter.isContainsSignalAcces()));
+			source.append(GenerationTemplates.guardDefinition(guardEntry.getValue(), body, realName,
+					guardExporter.isContainsSignalAcces()));
 		}
-		
+
 		return source;
 	}
 
@@ -488,18 +487,17 @@ public class ClassExporter {
 		if (!isHeader) {
 			source.append(GenerationTemplates.cppInclude(GenerationTemplates.DeploymentHeader));
 			source.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
-			source.append(GenerationTemplates.cppInclude
-					(GenerationTemplates.AssociationsStructuresHreaderName));
+			source.append(GenerationTemplates.cppInclude(GenerationTemplates.AssociationsStructuresHreaderName));
 			source.append(GenerationTemplates
 					.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.StandardFunctionsHeader));
-			source.append(GenerationTemplates.
-					cppInclude(GenerationTemplates.RuntimePath  + GenerationTemplates.TimerInterfaceHeader));
-			source.append(GenerationTemplates.
-					cppInclude(GenerationTemplates.RuntimePath  + GenerationTemplates.TimerHeader));
+			source.append(GenerationTemplates
+					.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.TimerInterfaceHeader));
+			source.append(
+					GenerationTemplates.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.TimerHeader));
 		} else {
 			source.append(GenerationTemplates
 					.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.AssocationHeader));
-			
+
 		}
 
 		source.append("\n");
@@ -525,10 +523,11 @@ public class ClassExporter {
 				Activity a = (Activity) b;
 				body = activityExporter.createfunctionBody(a).toString();
 			}
-			
-			Pair<String,Boolean> setState = createSetState(item);
+
+			Pair<String, Boolean> setState = createSetState(item);
 			source.append(GenerationTemplates.transitionActionDef(className_, item.getName(),
-					body + setState.getFirst() + "\n", activityExporter.isContainsSignalAcces() || setState.getSecond() ));
+					body + setState.getFirst() + "\n",
+					activityExporter.isContainsSignalAcces() || setState.getSecond()));
 		}
 		source.append("\n");
 		return source;
@@ -538,22 +537,23 @@ public class ClassExporter {
 	 * handle the choice in the statemachine looks: state -transition-
 	 * choiceNode < (guard1/tran1) (guard2/tran2)
 	 */
-	private Pair<String,Boolean> createSetState(Transition transition_) {
+	private Pair<String, Boolean> createSetState(Transition transition_) {
 		String source = "";
 		boolean containsChoice = false;
 		Vertex targetState = transition_.getTarget();
-		
+
 		// choice handling
 		if (targetState.eClass().equals(UMLPackage.Literals.PSEUDOSTATE)
-				&& ((Pseudostate) targetState).getKind().equals(PseudostateKind.CHOICE_LITERAL) ) {
+				&& ((Pseudostate) targetState).getKind().equals(PseudostateKind.CHOICE_LITERAL)) {
 			List<Pair<String, String>> branches = new LinkedList<Pair<String, String>>();
 			Pair<String, String> elseBranch = null;
 			containsChoice = true;
 			for (Transition trans : targetState.getOutgoings()) {
-				
-				String guard = guardExporter.getGuard(trans.getGuard()) + "(" + GenerationTemplates.eventParamName() + ")";
-				String body = ActivityTemplates.blockStatement(
-						ActivityTemplates.transitionActionCall(trans.getName())).toString();
+
+				String guard = guardExporter.getGuard(trans.getGuard()) + "(" + GenerationTemplates.eventParamName()
+						+ ")";
+				String body = ActivityTemplates.blockStatement(ActivityTemplates.transitionActionCall(trans.getName()))
+						.toString();
 
 				if (guard.isEmpty() || guard.equals("else")) {
 					elseBranch = new Pair<String, String>(guard, body);
@@ -566,12 +566,12 @@ public class ClassExporter {
 			}
 			source = ActivityTemplates.elseIf(branches).toString();
 		} else if (targetState.eClass().equals(UMLPackage.Literals.STATE)) {
-			source = GenerationTemplates.setState(targetState.getName());			
-			
+			source = GenerationTemplates.setState(targetState.getName());
+
 		} else {
 			source = GenerationTemplates.setState("UNKNOWN_TRANSITION_TARGET");
 		}
-		return new Pair<String,Boolean>(source,containsChoice);
+		return new Pair<String, Boolean>(source, containsChoice);
 	}
 
 	private StringBuilder createParts(Class class_, String modifyer_) {
@@ -614,15 +614,14 @@ public class ClassExporter {
 		StringBuilder source = new StringBuilder("");
 		EList<Association> associationProperties = class_.getAssociations();
 		for (Association assoc : associationProperties) {
-			
+
 			Property prop = null;
-			for(Property end : assoc.getMemberEnds()) {
-				if(!end.getType().getName().equals(class_.getName())) {
+			for (Property end : assoc.getMemberEnds()) {
+				if (!end.getType().getName().equals(class_.getName())) {
 					prop = end;
 				}
 			}
-			
-			
+
 			int upper = prop.getUpper();
 			int lower = prop.getLower();
 
@@ -630,17 +629,15 @@ public class ClassExporter {
 				upper = Integer.MAX_VALUE;
 			}
 
-			String linkedClass = GenerationTemplates.assocationDecl(prop.getType().getName(), 
-					GenerationTemplates.formatAssociationRoleName(prop.getAssociation().getName(), prop.getName()), lower,
-					upper);
+			String linkedClass = GenerationTemplates.assocationDecl(prop.getType().getName(),
+					GenerationTemplates.formatAssociationRoleName(prop.getAssociation().getName(), prop.getName()),
+					lower, upper);
 			associationMembers.add(prop);
-			if(prop.isNavigable())
+			if (prop.isNavigable())
 				source.append(linkedClass);
 		}
 		return source;
 	}
-
-
 
 	private List<String> getOperationParamTypes(Operation op_) {
 		List<String> ret = new ArrayList<String>();
@@ -714,14 +711,14 @@ public class ClassExporter {
 	private String getInitialState(Region region_) {
 		String source = "NO_INITIAL_STATE";
 		for (Vertex item : region_.getSubvertices()) {
-			
+
 			if (item.eClass().equals(UMLPackage.Literals.PSEUDOSTATE)) {
-				
+
 				Pseudostate pseduoState = (Pseudostate) item;
 				if (pseduoState.getKind().equals(PseudostateKind.INITIAL_LITERAL)) {
 					source = item.getName();
 				}
-				
+
 			}
 		}
 		return source;
@@ -818,7 +815,5 @@ public class ClassExporter {
 			return null;
 		}
 	}
-
-
 
 }

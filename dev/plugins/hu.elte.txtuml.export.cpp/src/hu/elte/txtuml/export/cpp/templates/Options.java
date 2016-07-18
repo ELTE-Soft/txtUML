@@ -12,7 +12,7 @@ public class Options {
 	public boolean isAddRuntime() {
 		return addRuntime;
 	}
-	
+
 	public boolean isOverWriteMainFile() {
 		return overWriteMainFile;
 	}

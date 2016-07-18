@@ -29,10 +29,11 @@ public class ThreadDescriptionExporter {
 
 	public ThreadDescriptionExporter(Set<org.eclipse.uml2.uml.Class> allClass) {
 		configMap = new HashMap<String, ThreadPoolConfiguration>();
-		
+
 		this.allModelClassName = new HashSet<String>();
-		for(org.eclipse.uml2.uml.Class cls : allClass) {
-			if(!Shared.generatedClass(cls))
+		for (org.eclipse.uml2.uml.Class cls : allClass) {
+			//TODO static signals class: not too optimal this solution..
+			if (!Shared.generatedClass(cls))
 				allModelClassName.add(cls.getName());
 		}
 		exportedClasses = new HashSet<String>();
