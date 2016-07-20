@@ -11,9 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.Activity;
-import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Constraint;
@@ -612,29 +610,23 @@ public class ClassExporter {
 
 	private StringBuilder getAssocations(Class class_) {
 		StringBuilder source = new StringBuilder("");
-		EList<Association> associationProperties = class_.getAssociations();
-		for (Association assoc : associationProperties) {
+		for (Property prop : class_.getOwnedAttributes()) {
+			if(prop.getAssociation() != null){
+				int upper = prop.getUpper();
+				int lower = prop.getLower();
 
-			Property prop = null;
-			for (Property end : assoc.getMemberEnds()) {
-				if (!end.getType().getName().equals(class_.getName())) {
-					prop = end;
+				if (prop.getUpper() == _UMLMany) {
+					upper = Integer.MAX_VALUE;
 				}
-			}
 
-			int upper = prop.getUpper();
-			int lower = prop.getLower();
+				String linkedClass = GenerationTemplates.assocationDecl(prop.getType().getName(),
+						GenerationTemplates.formatAssociationRoleName(prop.getAssociation().getName(), prop.getName()),
+						lower, upper);
+				associationMembers.add(prop);
+				if (prop.isNavigable())
+					source.append(linkedClass);
+			}				
 
-			if (prop.getUpper() == _UMLMany) {
-				upper = Integer.MAX_VALUE;
-			}
-
-			String linkedClass = GenerationTemplates.assocationDecl(prop.getType().getName(),
-					GenerationTemplates.formatAssociationRoleName(prop.getAssociation().getName(), prop.getName()),
-					lower, upper);
-			associationMembers.add(prop);
-			if (prop.isNavigable())
-				source.append(linkedClass);
 		}
 		return source;
 	}

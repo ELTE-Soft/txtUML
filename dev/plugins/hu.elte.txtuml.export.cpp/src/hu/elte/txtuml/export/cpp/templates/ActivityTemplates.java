@@ -19,6 +19,7 @@ public class ActivityTemplates {
 	public static final String CreateStereoType = "Create";
 	public static final String GetSignalFunctionName = "getSignal";
 	public static final String TempVar = "temp";
+	public static final String NullPtrLiteral = GenerationNames.NullPtr;
 
 	public enum OperationSide {
 		Left, Right

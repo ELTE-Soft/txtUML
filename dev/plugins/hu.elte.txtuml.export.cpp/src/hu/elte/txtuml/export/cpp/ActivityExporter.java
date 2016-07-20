@@ -444,7 +444,11 @@ public class ActivityExporter {
 			source = ((Boolean) ((LiteralBoolean) valueSpec_).isValue()).toString();
 		} else if (valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_STRING)) {
 			source = "\"" + ((LiteralString) valueSpec_).getValue() + "\"";
-		} else {
+		
+		} else if(valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_NULL)) {
+			source = ActivityTemplates.NullPtrLiteral;
+		}
+		else {
 			source = "UNHANDLED_VALUEPIN_VALUETYPE";
 		}
 		return source;
