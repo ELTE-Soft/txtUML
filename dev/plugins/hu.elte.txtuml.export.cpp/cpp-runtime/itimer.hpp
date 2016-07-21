@@ -13,7 +13,7 @@ public:
     virtual int query() = 0;
     virtual void reset(int) = 0;
     virtual void add(int) = 0;
-    virtual bool canel() = 0;
+    virtual bool cancel() = 0;
 
 
 };

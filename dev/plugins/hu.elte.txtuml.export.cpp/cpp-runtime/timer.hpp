@@ -24,7 +24,7 @@ class Timer : public ITimer
            virtual void reset(int) {}
            virtual int query() {return 0;}
            virtual void add(int) {}
-           virtual bool canel() {return false;}
+           virtual bool cancel() {return false;}
 
        private:
 
