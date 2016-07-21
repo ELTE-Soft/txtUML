@@ -242,20 +242,7 @@ public class GenerationTemplates {
 	public static String assocationDecl(String className, String roleName, Integer lower, Integer upper) {
 		return GenerationNames.AssocMultiplicityDataStruct + "<" + className + ">" + " " + roleName + " "
 				+ GenerationNames.AssigmentOperator + " " + GenerationNames.AssocMultiplicityDataStruct + "<"
-				+ className + ">" + "(" + GenerationNames.MultiplicityEnum + "::"
-				+ getMultiplicityEnumType(lower, upper) + ");\n";
-	}
-
-	public static String getMultiplicityEnumType(Integer lowerLimit, Integer upperLimit) {
-		String multiplicity = "One";
-		if (lowerLimit == 1 && upperLimit == 1) {
-			multiplicity = "One";
-		} else if (lowerLimit == 1 && upperLimit > 1) {
-			multiplicity = "Some";
-		} else if (lowerLimit == 0 && upperLimit > 1) {
-			multiplicity = "Many";
-		}
-		return multiplicity;
+				+ className + ">" + "(" + lower + "," + upper +  ");\n";
 	}
 
 	public static StringBuilder constructorDef(String className, String baseClassName, String body,

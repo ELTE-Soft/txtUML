@@ -22,7 +22,7 @@ class Timer : public ITimer
 
            //TODO implement
            virtual void reset(int) {}
-           virtual int quary() {return 0;}
+           virtual int query() {return 0;}
            virtual void add(int) {}
            virtual bool canel() {return false;}
 

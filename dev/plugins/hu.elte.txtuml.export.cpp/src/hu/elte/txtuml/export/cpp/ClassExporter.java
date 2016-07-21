@@ -39,7 +39,7 @@ import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 
 public class ClassExporter {
-	private static final int _UMLMany = -1;
+	//private static final int _UMLMany = -1;
 	private static String _unknownEntryName = "entry";
 	private static String _unknownExitName = "exit";
 
@@ -615,9 +615,6 @@ public class ClassExporter {
 				int upper = prop.getUpper();
 				int lower = prop.getLower();
 
-				if (prop.getUpper() == _UMLMany) {
-					upper = Integer.MAX_VALUE;
-				}
 
 				String linkedClass = GenerationTemplates.assocationDecl(prop.getType().getName(),
 						GenerationTemplates.formatAssociationRoleName(prop.getAssociation().getName(), prop.getName()),

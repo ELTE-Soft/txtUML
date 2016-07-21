@@ -1,5 +1,5 @@
-#ifndef ASSOCATION_H
-#define ASSOCATION_H
+#ifndef ASSOCIATION_H
+#define ASSOCIATION_H
 
 #include <list>
 
@@ -20,8 +20,6 @@ namespace action
 	}
 }
 
-enum Multiplicity {One, Many, Some};
-
 template<typename End1Type, typename End2Type>
 struct Association
 {
@@ -35,11 +33,11 @@ class AssociationEnd
 
 public:
 
-    AssociationEnd(Multiplicity multiplicity_): multiplicity(multiplicity_) {}
+    AssociationEnd(int lower_, int upper_): limits(lower_,upper_) {}
 
     void addAssoc(T* o)
     {
-        if (multiplicity != Multiplicity::One || (linkedObjects.size() == 0))
+        if ((int)linkedObjects.size() < limits.second || limits.second == AssociationEnd::UNLIMITED())
         {
             linkedObjects.push_back(o);
         }
@@ -79,7 +77,9 @@ public:
 private:
 
     std::list<T*> linkedObjects;
-    Multiplicity multiplicity;
+    std::pair<int,int> limits; //lower, upper
+	
+	static int UNLIMITED() {return -1;}
 };
 
-#endif // ASSOCATION_H
+#endif // ASSOCIATION_H

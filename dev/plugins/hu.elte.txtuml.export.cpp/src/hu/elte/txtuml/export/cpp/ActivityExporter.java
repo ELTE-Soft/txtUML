@@ -787,6 +787,7 @@ public class ActivityExporter {
 	private void importOutputPinToMap(OutputPin out) {
 		if (!tempVariables.containsKey(out)) {
 			tempVariables.put(out, ActivityTemplates.TempVar + tempVariableCounter);
+			
 			tempVariableCounter++;
 		}
 

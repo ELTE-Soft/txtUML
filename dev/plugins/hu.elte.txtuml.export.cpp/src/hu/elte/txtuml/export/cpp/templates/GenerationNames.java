@@ -79,7 +79,7 @@ class GenerationNames {
 	public static final String Unknown = "?";
 	public static final String AssocMultiplicityDataStruct = "AssociationEnd";
 	public static final String AssociationClassName = "Association";
-	public static final String AssocationHeaderName = "assocation";
+	public static final String AssocationHeaderName = "association";
 	public static final String DeploymentHeaderName = "deployment";
 
 	public static final String InitStateMachine = "initStateMachine";
