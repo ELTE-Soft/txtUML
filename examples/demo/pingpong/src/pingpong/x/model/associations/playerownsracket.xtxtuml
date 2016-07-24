@@ -1,0 +1,9 @@
+package pingpong.x.model.associations;
+
+import pingpong.x.model.Player;
+import pingpong.x.model.Racket;
+
+composition PlayerOwnsRacket {
+	hidden container Player player;
+	1 Racket racket;
+}

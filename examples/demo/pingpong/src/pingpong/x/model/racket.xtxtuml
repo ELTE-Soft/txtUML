@@ -1,0 +1,62 @@
+package pingpong.x.model;
+
+import pingpong.x.model.signals.BallIfc;
+import pingpong.x.model.signals.HitOrMissIfc;
+import pingpong.x.model.signals.Ball;
+import pingpong.x.model.signals.HitTheBall;
+import pingpong.x.model.signals.MissedTheBall;
+
+class Racket {
+
+	behavior port BallAtRacketPort {
+		required BallIfc;
+		provided BallIfc;
+	}
+
+	behavior port HitOrMissPort {
+		required HitOrMissIfc;
+	}
+	
+	initial Init;
+
+	state Waiting;
+
+	transition Initialize {
+		from Init;
+		to Waiting;
+	}
+
+	choice Check;
+
+	transition ReceiveBall {
+		from Waiting;
+		to Check;
+		trigger Ball;
+	}
+
+	transition CanHit {
+		from Check;
+		to Waiting;
+		guard (trigger.countdown > 0)
+
+		effect {
+			Ball ball = trigger;
+			 
+			send new Ball(ball.countdown - 1) to this->(Racket.BallAtRacketPort);
+			send new HitTheBall() to this->(Racket.HitOrMissPort);
+		}
+
+	}
+
+	transition CannotHit {
+		from Check;
+		to Waiting;
+		guard (else)
+
+		effect {
+			send new MissedTheBall() to this->(Racket.HitOrMissPort);
+		}
+
+	}
+
+}

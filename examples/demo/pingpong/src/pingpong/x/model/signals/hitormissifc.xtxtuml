@@ -1,0 +1,6 @@
+package pingpong.x.model.signals;
+
+interface HitOrMissIfc {
+	reception HitTheBall;
+	reception MissedTheBall;
+}
