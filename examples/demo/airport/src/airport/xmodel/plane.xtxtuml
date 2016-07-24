@@ -70,6 +70,8 @@ class Plane {
 	public int getTowerId() {
 		Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
 		
+		for (Tower tv in this->(PlaneTowerUsage.theTower)) {}
+		
 		if(t != null) {
 			return t.getId();
 		} else {	

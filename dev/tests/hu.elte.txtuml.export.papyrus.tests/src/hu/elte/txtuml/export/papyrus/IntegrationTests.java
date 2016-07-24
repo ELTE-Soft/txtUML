@@ -7,5 +7,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({PapyrusModelCreatorTest.class, ProjectUtilsTest.class,
 	DiagramManagerIntegrationTest.class})
+
 public class IntegrationTests {
 }
