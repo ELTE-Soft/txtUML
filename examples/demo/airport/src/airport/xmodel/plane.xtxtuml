@@ -87,7 +87,7 @@ class Plane {
 	state AbleToTakeOff;
 	state BeUnderTakingOff;
 	state AbleToLand;
-	state BeUnderLanding; // TODO
+	state BeUnderLanding; // TODO: Needs revision
 	
 	// Initializing
 		transition Initial {
