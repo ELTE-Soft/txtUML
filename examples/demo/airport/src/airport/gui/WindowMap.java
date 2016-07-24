@@ -1,19 +1,14 @@
 package airport.gui;
 
 
-import airport.imgs.*;
 import airport.xmodel.Plane;
 import airport.xmodel.Tower;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
-import java.awt.image.*;
-import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
-import javax.print.DocFlavor.*;
 import javax.swing.*;
 
 
@@ -38,7 +33,7 @@ class WindowMap extends JPanel {
 		 
 		 for(int i = 0; i < Main.getTowerCount(); i++) {
 	    	 Tower tower = Main.getTower(Main.getTowerId(i));
-	    	 Image towerImg = Toolkit.getDefaultToolkit().getImage(WindowMap.class.getResource("/airport/imgs/towerRed.png"));
+	    	 //Image towerImg = Toolkit.getDefaultToolkit().getImage(WindowMap.class.getResource("/airport/imgs/towerRed.png"));
 		     
 	    	 allTower.add(tower);
 	    	 towerIds.add(new JLabel(Integer.toString(tower.getId())));
