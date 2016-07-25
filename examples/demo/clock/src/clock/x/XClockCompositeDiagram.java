@@ -4,9 +4,9 @@ import hu.elte.txtuml.api.layout.CompositeDiagram;
 import hu.elte.txtuml.api.layout.East;
 import hu.elte.txtuml.api.layout.North;
 import hu.elte.txtuml.api.layout.Spacing;
-import clock.x.model.HourHand;
-import clock.x.model.MinuteHand;
-import clock.x.model.SecondHand;
+import clock.x.model.associations.HourHand;
+import clock.x.model.associations.MinuteHand;
+import clock.x.model.associations.SecondHand;
 import clock.x.model.Clock;
 
 public class XClockCompositeDiagram extends CompositeDiagram<Clock> {
