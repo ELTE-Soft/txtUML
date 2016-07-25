@@ -127,7 +127,7 @@ class ExporterCache {
 	protected def dispatch Object generateSourceAccessKey(ASTNode node) { node }
 	
 	protected def dispatch Object generateSourceAccessKey(List<?> objs) {
-		objs.map[generateSourceAccessKey].join
+		objs.get(0).generateSourceAccessKey
 	}
 
 	protected def dispatch Object generateSourceAccessKey(Object obj) {
