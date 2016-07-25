@@ -426,7 +426,7 @@ public class ActivityTemplates {
 	}
 
 	public static String declareRegex(String variableName) {
-		return "[ a-zA-z0-9<>*]*" + variableName + "[ ]*;\n";
+		return "[ a-zA-z0-9<>:*]*" + variableName + "[ ]*;\n";
 	}
 
 	public static String formatUserVar(String varName, int userVarCounter) {
