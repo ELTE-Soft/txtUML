@@ -33,9 +33,11 @@ class ModelExporter extends AbstractPackageExporter<List<IPackageFragment>, Mode
 		float.canonicalName -> "Real", Float.canonicalName -> "Real"}
 
 	final Map<String, Element> importCache = new HashMap();
+	final String folder
 
-	new(ExportMode mode) {
+	new(String folder, ExportMode mode) {
 		super(mode)
+		this.folder = folder
 	}
 
 	def export(List<IPackageFragment> pf) {
@@ -82,7 +84,7 @@ class ModelExporter extends AbstractPackageExporter<List<IPackageFragment>, Mode
 	}
 
 	def setupResourceSet(IJavaProject project, String packageName) {
-		val uri = URI.createFileURI(project.getProject().getLocation().toOSString()).appendSegment("gen").
+		val uri = URI.createFileURI(project.getProject().getLocation().toOSString()).appendSegment(folder).
 			appendSegment(packageName).appendFileExtension(UMLResource.FILE_EXTENSION);
 		val resourceSet = new ResourceSetFactory().createAndInitResourceSet();
 		val modelResource = resourceSet.createResource(uri);
