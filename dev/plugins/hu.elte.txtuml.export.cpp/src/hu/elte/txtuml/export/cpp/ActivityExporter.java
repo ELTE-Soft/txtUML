@@ -285,10 +285,12 @@ public class ActivityExporter {
 			}
 		}
 		importOutputPinToMap(node_.getResult());
+		
+		String target = getTargetFromInputPin(node_.getInputValues().get(0));
 
 		return ActivityTemplates.defineAndAddToCollection(otherMember.getType().getName(),
 				tempVariables.get(node_.getResult()),
-				ActivityTemplates.selectAllTemplate(otherMember.getAssociation().getName(), otherMember.getName()));
+				ActivityTemplates.selectAllTemplate(target,otherMember.getAssociation().getName(), otherMember.getName()));
 	}
 
 	private String createLinkActionCode(CreateLinkAction node) {

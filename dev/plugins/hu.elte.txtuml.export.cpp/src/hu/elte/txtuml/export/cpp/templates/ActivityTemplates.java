@@ -222,8 +222,8 @@ public class ActivityTemplates {
 
 	}
 
-	public static String selectAllTemplate(String otherEnd, String associationName) {
-		return GenerationNames.Self + GenerationNames.PointerAccess
+	public static String selectAllTemplate(String target, String otherEnd, String associationName) {
+		return target + GenerationNames.PointerAccess
 				+ GenerationTemplates.formatAssociationRoleName(otherEnd, associationName)
 				+ GenerationNames.SimpleAccess + GenerationNames.SelectAllFunctionName + "()";
 	}

@@ -197,4 +197,9 @@ class GenerationNames {
 
 		return paramName + IncomingParamTypeId;
 	}
+
+	public static String sharedPtrType(String typeName) {
+		
+		return SmartPtr + "<" + typeName + ">";
+	}
 }

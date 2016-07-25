@@ -187,6 +187,9 @@ class PrivateFunctionalTemplates {
 				case "String":
 					cppType = GenerationNames.cppString;
 					break;
+				case GenerationNames.TimerClassName :
+					cppType = GenerationNames.sharedPtrType(typeName);
+					break;
 				case GenerationNames.EventPtr:
 					cppType = GenerationNames.EventPtr;
 					break;
