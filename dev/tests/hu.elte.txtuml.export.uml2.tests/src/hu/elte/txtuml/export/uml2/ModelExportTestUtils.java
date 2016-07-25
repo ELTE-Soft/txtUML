@@ -20,7 +20,7 @@ public class ModelExportTestUtils {
 
 	public static Model export(String txtUMLModelTopPackage) throws Exception {
 		Model ret = TxtUMLToUML2.exportModel(project.getElementName(), txtUMLModelTopPackage,
-				ExportMode.ExportActionsPedantic);
+				ExportMode.ExportActionsPedantic, "gen");
 		return ret;
 	}
 
