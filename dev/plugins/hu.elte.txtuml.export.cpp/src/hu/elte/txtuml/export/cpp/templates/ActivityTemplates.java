@@ -383,6 +383,8 @@ public class ActivityTemplates {
 				break;
 			case "not":
 				name = Not;
+			case "neg":
+				name = Neg;
 				break;
 			default:
 				name = "";
