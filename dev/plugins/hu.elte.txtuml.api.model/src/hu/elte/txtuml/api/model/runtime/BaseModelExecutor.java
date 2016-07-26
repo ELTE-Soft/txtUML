@@ -9,7 +9,7 @@ import hu.elte.txtuml.api.model.error.MissingRuntimeContextError;
  * <p>
  * These features are those which has to be provided by <i>any</i> txtUML model
  * executor and therefore <i>these and only these</i> can be used to implement
- * external libraries for txtUML models. *
+ * external libraries for txtUML models.
  * <p>
  * As a general rule, all methods of this interface will throw
  * {@link NullPointerException} if a null reference is given to them as a
