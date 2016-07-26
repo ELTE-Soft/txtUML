@@ -73,7 +73,7 @@ public abstract class Runtime {
 	 * The model execution time helps testing txtUML models in the following
 	 * way: when any time-related event inside the model is set to take
 	 * <i>ms</i> milliseconds, that event will take <i>ms</i> <code>*</code>
-	 * <i>mul</i> millseconds during model execution, where <i>mul</i> is the
+	 * <i>mul</i> milliseconds during model execution, where <i>mul</i> is the
 	 * current execution time multiplier. This way, txtUML models might be
 	 * tested at the desired speed.
 	 * <p>

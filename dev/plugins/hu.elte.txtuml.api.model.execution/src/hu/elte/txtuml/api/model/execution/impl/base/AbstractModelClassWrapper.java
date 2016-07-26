@@ -179,7 +179,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 	/**
 	 * Finds and executes a transition from the current vertex if that is
 	 * <b>not</b> a choice pseudostate. Does not check if the value of
-	 * {@code currentVertex} is truly <i>not</i> a choice psuedostate but should
+	 * {@code currentVertex} is truly <i>not</i> a choice pseudostate but should
 	 * only be called in this case.
 	 * 
 	 * @param signal
@@ -248,7 +248,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 	/**
 	 * Finds and executes a transition from the current vertex if that is a
 	 * choice pseudostate. Does not check if the value of {@code currentVertex}
-	 * is truly a choice psuedostate but should only be called in this case.
+	 * is truly a choice pseudostate but should only be called in this case.
 	 */
 	private void findAndExecuteTransitionFromChoice() {
 		TransitionWrapper applicableTransition = null;
@@ -315,7 +315,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 	}
 
 	/**
-	 * Execute the specified transition.
+	 * Executes the specified transition.
 	 * 
 	 * @param transition
 	 *            the transition to be executed
@@ -387,7 +387,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 			Class<? extends AssociationEnd<T, C>> otherEnd);
 
 	/**
-	 * Checks if the specified object is element of the collection containing
+	 * Checks if the specified object is an element of the collection containing
 	 * the objects in association with the wrapped ModelClass instance and being
 	 * on the specified opposite association end.
 	 */
@@ -401,7 +401,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 	 */
 	public abstract <T extends ModelClass, C extends Collection<T>> void addToAssoc(
 			Class<? extends AssociationEnd<T, C>> otherEnd, T object)
-			throws MultiplicityException, MultipleContainerException;
+					throws MultiplicityException, MultipleContainerException;
 
 	/**
 	 * Removes the specified object from the collection containing the objects
