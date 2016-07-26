@@ -9,17 +9,22 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
+import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.osgi.framework.Bundle;
@@ -38,6 +43,7 @@ public class Uml2ToCppExporter {
 	private static final String RUNTIME_LIB_NAME = "libsmrt";
 	private static final String DEFAULT_TARGET_EXECUTABLE = "main";
 	private static final String DEFAULT_DEPLOYMENT_NAME = "deployment";
+	private static final String DEFAULT_ASSOCIATIONS_NAME = "associations";
 	private static final String PROJECT_NAME = "hu.elte.txtuml.export.cpp";
 	private static final String CPP_FILES_FOLDER_NAME = "cpp-runtime";
 
@@ -46,22 +52,27 @@ public class Uml2ToCppExporter {
 
 	ThreadHandlingManager threadManager;
 
-	List<Class> classList;
+	private Map<Class, String> generatedClassNames;
+	int generatedClassCounter;
+
+	Set<Class> classList;
 	EList<Element> elements;
 
 	List<String> classNames;
 
 	public Uml2ToCppExporter(Model model, Map<String, ThreadPoolConfiguration> threadDescription,
-			boolean addRuntimeOption) {
+			boolean addRuntimeOption, boolean overWriteMainFileOption) {
 		classExporter = new ClassExporter();
 
-		this.classList = new ArrayList<Class>();
+		this.classList = new HashSet<Class>();
 		this.elements = model.allOwnedElements();
 		this.classNames = new LinkedList<String>();
+		this.generatedClassNames = new HashMap<Class, String>();
+		generatedClassCounter = 0;
 
 		Shared.getTypedElements(classList, elements, UMLPackage.Literals.CLASS);
 
-		options = new Options(addRuntimeOption);
+		options = new Options(addRuntimeOption, overWriteMainFileOption);
 		threadManager = new ThreadHandlingManager(threadDescription);
 	}
 
@@ -76,18 +87,28 @@ public class Uml2ToCppExporter {
 		copyPreWrittenCppFiles(outputDirectory);
 
 		for (Class item : classList) {
-			if (threadManager.getDescription().get(item.getName()) != null && !Shared.isGeneratedClass(item)) {
+
+			if (threadManager.getDescription().get(item.getName()) != null && !Shared.generatedClass(item)) {
+
 				classExporter.reiniIialize();
 				classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
+				classExporter.setRealName(getRealClassName(item));
 
 				classExporter.createSource(item, outputDirectory);
 
 				classNames.addAll(classExporter.getSubmachines());
-				classNames.add(item.getName());
+				classNames.add(getRealClassName(item));
+				classNames.addAll(classExporter.getAdditionalSources());
 			}
+
 		}
 
 		createCMakeFile(outputDirectory);
+		createAssociationsSources(outputDirectory);
+	}
+
+	private String getRealClassName(Class cls) {
+		return generatedClassNames.containsKey(cls) ? generatedClassNames.get(cls) : cls.getName();
 	}
 
 	private void copyPreWrittenCppFiles(String destination) throws IOException {
@@ -112,8 +133,11 @@ public class Uml2ToCppExporter {
 			copyFolder(sourceRuntimeDir, outputRuntimeDir);
 
 		}
-		Files.copy(Paths.get(cppFilesLocation + "main.cpp"), Paths.get(destination + File.separator + "main.cpp"),
-				StandardCopyOption.REPLACE_EXISTING);
+
+		if (!Paths.get(destination + File.separator + "main.cpp").toFile().exists() || options.isOverWriteMainFile()) {
+			Files.copy(Paths.get(cppFilesLocation + "main.cpp"), Paths.get(destination + File.separator + "main.cpp"),
+					StandardCopyOption.REPLACE_EXISTING);
+		}
 
 	}
 
@@ -148,10 +172,14 @@ public class Uml2ToCppExporter {
 		librarySourceClasses.add("threadpoolmanager");
 		librarySourceClasses.add("threadcontainer");
 		librarySourceClasses.add("threadconfiguration");
+		librarySourceClasses.add("standard_functions");
+		librarySourceClasses.add("timer");
+		librarySourceClasses.add("itimer");
 		cmake.addStaticLibraryTarget(RUNTIME_LIB_NAME, librarySourceClasses, RUNTIME_DIR_PREFIX);
 		List<String> sourceNames = new ArrayList<String>();
 		sourceNames.add(DEFAULT_TARGET_EXECUTABLE);
 		sourceNames.add(DEFAULT_DEPLOYMENT_NAME);
+		sourceNames.add(DEFAULT_ASSOCIATIONS_NAME);
 		sourceNames.addAll(classNames);
 		cmake.addExecutableTarget(DEFAULT_TARGET_EXECUTABLE, sourceNames, "");
 		cmake.writeOutCMakeLists();
@@ -161,16 +189,23 @@ public class Uml2ToCppExporter {
 		List<Signal> signalList = new ArrayList<Signal>();
 		Shared.getTypedElements(signalList, elements_, UMLPackage.Literals.SIGNAL);
 		StringBuilder forwardDecl = new StringBuilder("");
-		StringBuilder source = GenerationTemplates.eventBase(options).append("\n");
+		StringBuilder events = new StringBuilder("");
+		StringBuilder source = new StringBuilder("");
 		List<Pair<String, String>> allParam = new LinkedList<Pair<String, String>>();
 
+		events.append("InitSignal_EE,");
 		for (Signal item : signalList) {
 			List<Pair<String, String>> currentParams = getSignalParams(item);
+			String ctrBody = Shared.signalCtrBody(item, elements_);
 			allParam.addAll(currentParams);
-			source.append(GenerationTemplates.eventClass(item.getName(), currentParams, options));
+			source.append(GenerationTemplates.eventClass(item.getName(), currentParams, ctrBody,
+					item.getOwnedAttributes(), options));
+			events.append(item.getName() + "_EE,");
 		}
+		events = new StringBuilder(events.substring(0, events.length() - 1));
 
-		source.append(GenerationTemplates.eventClass("InitSignal", new ArrayList<Pair<String, String>>(), options));
+		source.append(GenerationTemplates.eventClass("InitSignal", new ArrayList<Pair<String, String>>(), "",
+				new ArrayList<Property>(), options));
 
 		for (Pair<String, String> param : allParam) {
 			if (!Shared.isBasicType(param.getFirst())) {
@@ -181,15 +216,68 @@ public class Uml2ToCppExporter {
 				}
 			}
 		}
-		forwardDecl.append("\n");
+
+		forwardDecl.append(GenerationTemplates.eventBase(options).append("\n"));
+		forwardDecl.append("enum Events {" + events + "};\n");
 		forwardDecl.append(source);
 		return GenerationTemplates.eventHeaderGuard(forwardDecl.toString());
 	}
 
-	private List<Pair<String, String>> getSignalParams(Signal signal_) {
+	private void createAssociationsSources(String outputDirectory)
+			throws FileNotFoundException, UnsupportedEncodingException {
+
+		Set<String> associatedClasses = new HashSet<String>();
+		StringBuilder includes = new StringBuilder(
+				GenerationTemplates.cppInclude(GenerationTemplates.AssociationsStructuresHreaderName));
+		StringBuilder preDeclerations = new StringBuilder("");
+		StringBuilder structures = new StringBuilder("");
+		StringBuilder functions = new StringBuilder("");
+
+		List<Association> associationList = new ArrayList<Association>();
+		Shared.getTypedElements(associationList, elements, UMLPackage.Literals.ASSOCIATION);
+		for (Association assoc : associationList) {
+			Property e1End = assoc.getMemberEnds().get(0);
+			Property e2End = assoc.getMemberEnds().get(1);
+			String e1 = e1End.getType().getName();
+			String e1Name = e1End.getName();
+			String e2 = e2End.getType().getName();
+			String e2Name = e2End.getName();
+			associatedClasses.add(e1);
+			associatedClasses.add(e2);
+			structures.append(GenerationTemplates.createAssociationStructure(assoc.getName(), e1, e2, e1Name, e2Name));
+
+			functions.append(GenerationTemplates.linkTemplateSpecializationDef(e1, e2, assoc.getName(), e2Name,
+					e2End.isNavigable(), GenerationTemplates.LinkFunctionType.Link));
+			functions.append(GenerationTemplates.linkTemplateSpecializationDef(e2, e1, assoc.getName(), e1Name,
+					e1End.isNavigable(), GenerationTemplates.LinkFunctionType.Link));
+
+			functions.append(GenerationTemplates.linkTemplateSpecializationDef(e2, e1, assoc.getName(), e1Name,
+					e1End.isNavigable(), GenerationTemplates.LinkFunctionType.Unlink));
+			functions.append(GenerationTemplates.linkTemplateSpecializationDef(e1, e2, assoc.getName(), e2Name,
+					e2End.isNavigable(), GenerationTemplates.LinkFunctionType.Unlink));
+
+		}
+
+		for (String className : associatedClasses) {
+			includes.append(GenerationTemplates.cppInclude(className));
+			preDeclerations.append(GenerationTemplates.forwardDeclaration(className));
+		}
+
+		Shared.writeOutSource(outputDirectory, (GenerationTemplates.AssociationStructuresHeader),
+				GenerationTemplates.headerGuard(
+						GenerationTemplates
+								.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.AssocationHeader)
+								+ preDeclerations.toString() + structures.toString(),
+						GenerationTemplates.AssociationsStructuresHreaderName));
+		Shared.writeOutSource(outputDirectory, (GenerationTemplates.AssociationStructuresSource),
+				includes.toString() + functions.toString());
+
+	}
+
+	private List<Pair<String, String>> getSignalParams(Signal signal) {
 		List<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
-		for (Property prop : signal_.getOwnedAttributes()) {
-			ret.add(new Pair<String, String>(prop.getType().getName(), prop.getName()));
+		for (Parameter param : Shared.getSignalConstructorParameters(signal, elements)) {
+			ret.add(new Pair<String, String>(param.getType().getName(), param.getName()));
 		}
 		return ret;
 	}

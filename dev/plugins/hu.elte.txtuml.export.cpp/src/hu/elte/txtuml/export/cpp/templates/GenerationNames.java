@@ -4,6 +4,7 @@ class GenerationNames {
 	public static final String EventHeaderName = "event";
 	public static final String EventBaseName = "EventBase";
 	public static final String EventBaseRefName = EventBaseName + "CRef";
+	public static final String EventsEnumName = "Events";
 	public static final String NoReturn = "void";
 	public static final String HeaderExtension = "hpp";
 	public static final String SourceExtension = "cpp";
@@ -13,15 +14,20 @@ class GenerationNames {
 	public static final String NoDebugSymbol = "NDEBUG";
 	public static final String StandardIOinclude = "#include <iostream>\n";
 
+	public static final String StandardLibaryFunctionsHeaderName = "standard_functions";
+
 	public static final String NullPtr = "nullptr";
 	public static final String Self = "this";
 	public static final String MemoryAllocator = "new";
 	public static final String PointerAccess = "->";
 	public static final String SimpleAccess = ".";
+	public static final String DeleteObject = "delete";
+	public static final String StaticCast = "static_cast";
 	public static final String cppString = "std::string";
 	public static final String IncomingParamTypeId = "_";
 	public static final String RealEventName = "realEvent";
 	public static final String SmartPtr = "std::shared_ptr";
+	public static final String EventPtr = "EventPtr";
 	public static final String EventClassTypeId = "_EC";
 	public static final String EventEnumTypeId = "_EE";
 	public static final String StateEnumTypeId = "_ST";
@@ -42,7 +48,8 @@ class GenerationNames {
 	public static final String ProcessEventFName = "process_event";
 	public static final String ProcessEventDeclShared = "bool " + ProcessEventFName + "(" + EventBaseRefName + " "
 			+ EventFParamName + ")";
-	public static final String ProcessEventDecl = ProcessEventDeclShared + ";\n";
+	public static final String UnParametrizadProcessEvent = "bool " + ProcessEventFName + "(" + EventBaseRefName + ")";
+	public static final String ProcessEventDecl = UnParametrizadProcessEvent + ";\n";
 	public static final String TransitionTable = "std::unordered_multimap<" + EventStateTypeName + "," + GuardActionName
 			+ "> " + TransitionTableName + ";\n";
 	public static final String SetStateDecl = NoReturn + " " + setStateFuncName + "(int "
@@ -52,7 +59,8 @@ class GenerationNames {
 	public static final String StatemachineBaseName = "StateMachineBase";
 	public static final String StatemachineBaseHeaderName = "statemachinebase";
 	public static final String DefaultGuardName = "defaultGuard";
-	public static final String DummyProcessEventDef = ProcessEventDeclShared + "{return false;}\n";
+	public static final String DummyProcessEventDef = UnParametrizadProcessEvent + "{return false;}\n";
+	public static final String StartSmMethodName = "startSM";
 
 	// hierarchical state machine
 	public static final String ParentSmPointerName = "_parentSm";
@@ -69,11 +77,43 @@ class GenerationNames {
 	public static final String ParentSmMemberName = "_" + ParentSmName;
 
 	public static final String Unknown = "?";
-	public static final String AssocMultiplicityDataStruct = "std::list";
+	public static final String AssocMultiplicityDataStruct = "AssociationEnd";
+	public static final String AssociationClassName = "Association";
+	public static final String AssocationHeaderName = "association";
+	public static final String DeploymentHeaderName = "deployment";
 
-	//
+	public static final String InitStateMachine = "initStateMachine";
+
 	public static final String PoolIdSetter = "setPoolId";
 	public static final String InitialEventName = "InitSignal";
+	public static final String SendSignal = "send";
+	public static final String MultiplicityEnum = "Multiplicity";
+	public static final String AssigmentOperator = "=";
+	public static final String AddAssocToAssocationFunctionName = "addAssoc";
+	public static final String RemoveAssocToAssocationFunctionName = "removeAssoc";
+	public static final String AssocParameterName = "object";
+	public static final String LinkActionName = "link";
+	public static final String UnLinkActionName = "unlink";
+	public static final String LinkAddition = "link";
+	public static final String TemplateDecl = "template";
+	public static final String TemplateType = "typename";
+	public static final String TemplateParameterName = "T";
+	public static final String EndPointName = "EndPointName";
+
+	public static final String ActionFunctionsNamespace = "action";
+	public static final String SelectAnyFunctionName = "getOne";
+	public static final String SelectAllFunctionName = "getAll";
+	public static final String Collection = "std::list";
+	public static final String AssociationsHeaderName = "associations";
+	public static final String EdgeType = "EdgeType";
+	public static final String ConversionNamspace = "conversion";
+
+	public static final String TimerInterFaceName = "ITimer";
+	public static final String StartTimerFunctionName = "start";
+	public static final String TimerClassName = "Timer";
+
+	public static final String DefaultParentSmInicialization = GenerationNames.ParentSmMemberName + "("
+			+ GenerationNames.ParentSmPointerName + ")";
 
 	public static String friendClassDecl(String className) {
 		return "friend " + GenerationNames.ClassType + " " + className + ";\n";
@@ -122,10 +162,9 @@ class GenerationNames {
 				+ "if(it!=" + CompositeStateMapName + ".end())\n" + "{\n" + CurrentMachineName
 				+ "=(it->second).get();\n" + CurrentMachineName + "->" + SetInitialStateName
 				+ "();//restarting from initial state\n" + CurrentMachineName + "->" + ProcessEventFName + "("
-				+ GenerationNames.InitialEventName + "_EC(" + derefenrencePointer(GenerationNames.Self) + ", "
-				+ className + "::" + GenerationNames.InitialEventName + "_EE));\n" + "}\n" + "else\n" + "{\n"
-				+ CurrentMachineName + "=" + NullPtr + ";\n" + "}\n" + CurrentStateName + "="
-				+ GenerationNames.StateParamName + ";\n" + EntryName + "();\n" + "}\n";
+				+ GenerationNames.InitialEventName + "_EC());\n" + "}\n" + "else\n" + "{\n" + CurrentMachineName + "="
+				+ NullPtr + ";\n" + "}\n" + CurrentStateName + "=" + GenerationNames.StateParamName + ";\n" + EntryName
+				+ "();\n" + "}\n";
 	}
 
 	public static String eventClassName(String eventName) {
@@ -148,7 +187,19 @@ class GenerationNames {
 		return typeName + "*";
 	}
 
+	public static String signalType(String signalClassName) {
+		return SmartPtr + "<" + PrivateFunctionalTemplates.signalType(signalClassName) + ">";
+	}
+
 	public static String formatIncomingParamName(String paramName) {
+		if (paramName.isEmpty())
+			return "";
+
 		return paramName + IncomingParamTypeId;
+	}
+
+	public static String sharedPtrType(String typeName) {
+		
+		return SmartPtr + "<" + typeName + ">";
 	}
 }

@@ -5,10 +5,8 @@ class StateMachineI;
 
 struct EventI
 {
-  EventI(StateMachineI& dest_):dest(dest_){}
+  EventI() {}
   virtual ~EventI(){}
-
-  StateMachineI& dest;
 };
 
 #endif // EVENTI_HPP_INCLUDED

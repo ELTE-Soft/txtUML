@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.cpp.thread;
 
 import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.api.deployment.Configuration;
 import hu.elte.txtuml.api.deployment.Group;
 import hu.elte.txtuml.api.deployment.GroupContainer;
@@ -18,16 +19,23 @@ public class ThreadDescriptionExporter {
 	private Map<String, ThreadPoolConfiguration> configMap;
 	private boolean descriptionExported = false;
 
-	List<String> warningList;
-	List<String> errorList;
+	private List<String> warningList;
+	private List<String> errorList;
 
-	int numberOfConfigurations;
+	private int numberOfConfigurations;
 
-	Set<String> exportedClasses;
-	Set<String> allClass;
-	public ThreadDescriptionExporter(Set<String> allClass) {
+	private Set<String> exportedClasses;
+	private Set<String> allModelClassName;
+
+	public ThreadDescriptionExporter(Set<org.eclipse.uml2.uml.Class> allClass) {
 		configMap = new HashMap<String, ThreadPoolConfiguration>();
-		this.allClass = allClass;
+
+		this.allModelClassName = new HashSet<String>();
+		for (org.eclipse.uml2.uml.Class cls : allClass) {
+			//TODO static signals class: not too optimal this solution..
+			if (!Shared.generatedClass(cls))
+				allModelClassName.add(cls.getName());
+		}
 		exportedClasses = new HashSet<String>();
 		numberOfConfigurations = 0;
 
@@ -59,14 +67,12 @@ public class ThreadDescriptionExporter {
 				warningList.add("Only Group annotations are allowed to use.");
 			}
 		}
-		
+
 		exportDefaultConfiguration();
 
 		descriptionExported = true;
 
 	}
-
-
 
 	public boolean isSuccessfulExportation() {
 		if (!descriptionExported) {
@@ -115,21 +121,27 @@ public class ThreadDescriptionExporter {
 
 		}
 	}
-	
+
 	private void exportDefaultConfiguration() {
-		
-		if(allClass.size() != exportedClasses.size()) {
+
+		if (allModelClassName.size() != exportedClasses.size()) {
 			Set<String> nonExportedClasses = new HashSet<String>();
-			nonExportedClasses.addAll(allClass);
+			nonExportedClasses.addAll(allModelClassName);
 			nonExportedClasses.removeAll(exportedClasses);
-			
-			ThreadPoolConfiguration config = new ThreadPoolConfiguration(0,0,1);
+
+			ThreadPoolConfiguration config = new ThreadPoolConfiguration(0, 0, 1);
 			config.setMaxThreads(1);
-			for(String cls : nonExportedClasses) {
-				configMap.put(cls, config);
+			for (String uncategorizedClassName : nonExportedClasses) {
+				configMap.put(uncategorizedClassName, config);
+			}
+		} else {
+			Set<ThreadPoolConfiguration> configs = new HashSet<ThreadPoolConfiguration>();
+			configs.addAll(configMap.values());
+			for (ThreadPoolConfiguration config : configs) {
+				config.decraseId();
 			}
 		}
-		
+
 	}
 
 	private void checkEmptyGroup(Class<? extends ModelClass>[] classes) {

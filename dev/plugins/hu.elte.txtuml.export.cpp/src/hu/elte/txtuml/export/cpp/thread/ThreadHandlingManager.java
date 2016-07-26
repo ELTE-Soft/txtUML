@@ -27,9 +27,8 @@ public class ThreadHandlingManager {
 	private static final String ThreadPoolClassName = "StateMachineThreadPool";
 	private static final String FunctionName = "LinearFunction";
 	private static final String NamespaceName = "deployment";
-	// private static final String ThreadedRuntimeName =
-	// "ConfiguratedThreadedRT";
-	private static final String SingleRuntimeName = "SingleThreadRT";
+	// private static final String SingleRuntimeName = "SingleThreadRT";
+	private static final String ConfiguratedThreadedRuntimeName = "ConfiguratedThreadedRT";
 	private static final String SetConfigurationMethod = "configure";
 	private static final String CreatorFunction = "createThreadedRuntime";
 	private static final String CreateRTMethod = "createRuntime";
@@ -58,31 +57,31 @@ public class ThreadHandlingManager {
 		source.append("\n\n");
 
 		List<String> templateParams = new ArrayList<String>();
-		templateParams.add(SingleRuntimeName);
+		templateParams.add(ConfiguratedThreadedRuntimeName);
 		source.append(GenerationTemplates.usingTemplateType(GenerationTemplates.MyRuntimeName,
 				GenerationTemplates.RuntimeName, templateParams));
 		source.append("\n\n");
 
-		source.append(GenerationTemplates
-				.putNamespace(GenerationTemplates.simpleFunctionDecl(GenerationTemplates.MyRuntimeName, CreatorFunction) + ";",
-						NamespaceName));
+		source.append(GenerationTemplates.putNamespace(
+				GenerationTemplates.simpleFunctionDecl(GenerationTemplates.MyRuntimeName, CreatorFunction) + ";",
+				NamespaceName));
 
 		Shared.writeOutSource(dest, GenerationTemplates.headerName(ConfigurationFile),
 				GenerationTemplates.headerGuard(source.toString(), ConfigurationFile));
-		
+
 		source = createDeplyomentFunctionDefinition();
 		Shared.writeOutSource(dest, GenerationTemplates.sourceName(ConfigurationFile), source.toString());
 
 	}
 
 	private StringBuilder createDeplyomentFunctionDefinition() {
-		StringBuilder source  = new StringBuilder("");
+		StringBuilder source = new StringBuilder("");
 		source.append(GenerationTemplates.cppInclude(ConfigurationFile));
 		source.append(GenerationTemplates
 				.putNamespace(GenerationTemplates.simpleFunctionDef(GenerationTemplates.MyRuntimeName, CreatorFunction,
 						(createConfiguration().append(createThreadedRuntime()).toString()),
 						GenerationTemplates.RuntimeParamaterName), NamespaceName));
-		
+
 		return source;
 	}
 
@@ -92,8 +91,8 @@ public class ThreadHandlingManager {
 				GenerationTemplates.RuntimeParamaterName, CreateRTMethod));
 		List<String> params = new ArrayList<String>();
 		params.add(ConfigurationObjectVariableName);
-		source.append(ActivityTemplates.operationCallOnPointerVariable(GenerationTemplates.RuntimeParamaterName,
-				SetConfigurationMethod, params));
+		source.append(ActivityTemplates.blockStatement(ActivityTemplates.operationCallOnPointerVariable(
+				GenerationTemplates.RuntimeParamaterName, SetConfigurationMethod, params)));
 		return source;
 	}
 
@@ -117,13 +116,13 @@ public class ThreadHandlingManager {
 		return source;
 	}
 
-	private String insertToConfiguration(Integer id, String configuration) {
+	private StringBuilder insertToConfiguration(Integer id, String configuration) {
 		List<String> params = new ArrayList<String>();
 		params.add(id.toString());
 		params.add(configuration);
 
-		return ActivityTemplates.operationCallOnPointerVariable(ConfigurationObjectVariableName,
-				InsertConfigurationOperationName, params);
+		return ActivityTemplates.blockStatement(ActivityTemplates.operationCallOnPointerVariable(
+				ConfigurationObjectVariableName, InsertConfigurationOperationName, params));
 	}
 
 	private String allocateFunctionObject(LinearFunction function) {
@@ -136,7 +135,6 @@ public class ThreadHandlingManager {
 
 	private String allocatePoolObject(ThreadPoolConfiguration pool) {
 		List<String> params = new ArrayList<String>();
-		params.add(new Integer(pool.getFunction().getConstant()).toString());
 		return GenerationTemplates.allocateObject(ThreadPoolClassName, params);
 	}
 
