@@ -286,7 +286,8 @@ public class ActivityExporter {
 		}
 		importOutputPinToMap(node_.getResult());
 		
-		String target = getTargetFromInputPin(node_.getInputValues().get(0));
+		String target = node_.getInputValues().size() > 0 ? 
+				getTargetFromInputPin(node_.getInputValues().get(0)) : ActivityTemplates.Self;
 
 		return ActivityTemplates.defineAndAddToCollection(otherMember.getType().getName(),
 				tempVariables.get(node_.getResult()),

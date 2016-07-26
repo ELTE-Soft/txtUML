@@ -187,7 +187,7 @@ public class TxtUMLToCppPage extends WizardPage {
 
 		overWriteMainFle = new Button(composite, SWT.CHECK);
 		overWriteMainFle.setSelection(false);
-		overWriteMainFle.setText("Overwrite main file if it exsists");
+		overWriteMainFle.setText("Overwrite main file if it exists");
 
 		setControl(composite);
 		setPageComplete(true);
