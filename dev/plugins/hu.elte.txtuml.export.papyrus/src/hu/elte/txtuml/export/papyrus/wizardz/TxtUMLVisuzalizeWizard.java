@@ -98,7 +98,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 					monitor.subTask("Exporting txtUML Model to UML2 model...");
 					try {
 						TxtUMLToUML2.exportModel(txtUMLProjectName, txtUMLModelName,
-								txtUMLProjectName + "/" + generatedFolderName, ExportMode.ErrorHandlingNoActions);
+								txtUMLProjectName + "/" + generatedFolderName, ExportMode.ErrorHandlingNoActions, "gen");
 						monitor.worked(10);
 					} catch (Exception e) {
 						Dialogs.errorMsgb("txtUML export Error", "Error occured during the UML2 exportation.", e);

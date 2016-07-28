@@ -12,6 +12,7 @@ import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.UMLFactory
 import java.util.Set
 import org.eclipse.uml2.uml.Model
+import java.util.List
 
 /**
  * The exporter cache keeps tabs on which elements have been partially or fully exported. For identifying the
@@ -124,6 +125,10 @@ class ExporterCache {
 	}
 
 	protected def dispatch Object generateSourceAccessKey(ASTNode node) { node }
+	
+	protected def dispatch Object generateSourceAccessKey(List<?> objs) {
+		objs.get(0).generateSourceAccessKey
+	}
 
 	protected def dispatch Object generateSourceAccessKey(Object obj) {
 		throw new IllegalArgumentException(obj.toString)

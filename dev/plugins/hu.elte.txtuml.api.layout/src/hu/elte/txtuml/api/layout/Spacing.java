@@ -6,9 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A diagram layout statement which sets the spacing of the 
- * corridors between boxes. It is a ratio relative to the 
- * boxes sizes.
+ * A diagram layout statement which sets the spacing of the corridors between
+ * boxes. It is a ratio relative to the size of the boxes.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

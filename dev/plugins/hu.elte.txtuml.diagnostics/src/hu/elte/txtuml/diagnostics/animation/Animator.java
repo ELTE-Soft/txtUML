@@ -4,11 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -90,13 +93,24 @@ public class Animator {
 		IResource resource = null;
 		IWorkspace workspace = ResourcesPlugin.getWorkspace(); 
 		if (workspace != null) {
-			resource = workspace.getRoot().getFile(new Path(eobject.eResource().getURI().toPlatformString(true)));
+			URI uri = eobject.eResource().getURI();
+			if (uri.isPlatform()) {
+				resource = workspace.getRoot().getFile(new Path(uri.toPlatformString(true)));
+			} else {
+				IPath fs = new Path(uri.toFileString());
+				for (IProject proj : workspace.getRoot().getProjects()) {
+					if (proj.getLocation().isPrefixOf(fs)) {
+						IPath relative = fs.makeRelativeTo(proj.getLocation());
+						resource = proj.findMember(relative);
+					}
+				}
+			}
 		}
 		if (resource != null && resource.exists()) {
 			IMarker imarker = null;
 			try {
 				imarker = resource.createMarker(AnimationConfig.TXTUML_ANIMATION_MARKER_ID);
-				imarker.setAttribute(EValidator.URI_ATTRIBUTE, EcoreUtil.getURI(eobject).toString());
+				imarker.setAttribute(EValidator.URI_ATTRIBUTE, URI.createPlatformResourceURI(resource.getFullPath().toString(), true) + "#" + EcoreUtil.getURI(eobject).fragment());
 			} catch (CoreException e) {
 				e.printStackTrace();
 			}

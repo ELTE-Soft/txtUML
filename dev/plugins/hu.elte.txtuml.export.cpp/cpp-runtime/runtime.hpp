@@ -4,6 +4,7 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
+#include <condition_variable>
 #include <vector>
 
 #include "runtimetypes.hpp"
@@ -27,6 +28,11 @@ public:
   {
       static_cast<RuntimeType*>(this)->setupObjectSpecificRuntime(sm_);
   }
+  
+  void enqueObject(StateMachineI* sm)
+  {
+      static_cast<RuntimeType*>(this)->enqueObject(sm);
+  }
 
   void setupObject(ObjectList& ol_)
   {
@@ -35,6 +41,8 @@ public:
         static_cast<RuntimeType*>(this)->setupObjectSpecificRuntime(*it);
       }
   }
+  
+  
 
   void configure(ThreadConfiguration* configuration)
   {
@@ -74,34 +82,39 @@ public:
   void start();
   void setupObjectSpecificRuntime(StateMachineI*);
   void setConfiguration(ThreadConfiguration*);
+  void enqueObject(StateMachineI*);
   void stopUponCompletion();
   void removeObject(StateMachineI*);
   bool isConfigurated();
 private:
   SingleThreadRT();
   static SingleThreadRT* instance;  
-  std::shared_ptr<MessageQueueType> _messageQueue;
+  std::shared_ptr<PoolQueueType> _messageQueue;
 
 };
 
 class ConfiguratedThreadedRT: public RuntimeI<ConfiguratedThreadedRT>
 {
 public:
-
+	
     static ConfiguratedThreadedRT* createRuntime();
 	
     void start();
 	void removeObject(StateMachineI*);
 	void stopUponCompletion();
 	void setConfiguration(ThreadConfiguration*);
+	void enqueObject(StateMachineI*);
 	bool isConfigurated();
 	void setupObjectSpecificRuntime(StateMachineI*);
-        ~ConfiguratedThreadedRT();
+   ~ConfiguratedThreadedRT();
 private:
-        ConfiguratedThreadedRT();
-        static ConfiguratedThreadedRT* instance;
+    ConfiguratedThreadedRT();
+    static ConfiguratedThreadedRT* instance;
 	ThreadPoolManager* poolManager;
 	std::vector<int> numberOfObjects;
+	std::atomic_int worker;
+	std::atomic_int messages;
+	std::condition_variable stop_request_cond;
 };
 
 

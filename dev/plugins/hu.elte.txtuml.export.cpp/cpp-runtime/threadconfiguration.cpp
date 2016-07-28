@@ -8,7 +8,7 @@ ThreadConfiguration::ThreadConfiguration(int size)
 
 void ThreadConfiguration::insertConfiguration(int id,Configuration* conf)
 {
-	configurations[(size_t)id] = conf;
+        configurations[(size_t)id] = conf;
 }
 
 StateMachineThreadPool* ThreadConfiguration::getThreadPool(int id)
@@ -19,13 +19,13 @@ StateMachineThreadPool* ThreadConfiguration::getThreadPool(int id)
 LinearFunction* ThreadConfiguration::getFunction(int id)
 {
 
-	return configurations[(size_t)id]->function;
+        return configurations[(size_t)id]->function;
 }
 
 int ThreadConfiguration::getMax(int id)
 {
 
-	return configurations[(size_t)id]->max;
+        return configurations[(size_t)id]->max;
 
 }
 

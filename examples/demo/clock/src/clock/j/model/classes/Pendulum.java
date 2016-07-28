@@ -15,8 +15,8 @@ public class Pendulum extends ModelClass {
 	
 	public class OutTickPort extends OutPort<TickIfc> {}
 	
-	class Init extends Initial {}
-	class Working extends State {
+	public class Init extends Initial {}
+	public class Working extends State {
 		public void entry() {
 			Action.send(new Tick(), port(OutTickPort.class).required::reception);
 		}

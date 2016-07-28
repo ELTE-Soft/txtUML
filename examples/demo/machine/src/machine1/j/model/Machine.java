@@ -8,9 +8,9 @@ import hu.elte.txtuml.api.model.Trigger;
 import machine1.j.model.signals.ButtonPress;
 
 public class Machine extends ModelClass {
-	class Init extends Initial {}
+	public class Init extends Initial {}
 
-	class Off extends State {
+	public class Off extends State {
 		@Override
 		public void entry() {
 			Action.log("\tMachine enters state: 'off'");
@@ -22,7 +22,7 @@ public class Machine extends ModelClass {
 		}
 	}
 
-	class On extends State {
+	public class On extends State {
 		@Override
 		public void entry() {
 			Action.log("\tMachine enters state: 'on'");

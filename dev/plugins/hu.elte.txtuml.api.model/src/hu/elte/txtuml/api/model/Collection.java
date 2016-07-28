@@ -69,11 +69,10 @@ public interface Collection<T> extends Iterable<T> {
 	boolean contains(Object element);
 
 	/**
-	 * Selects an element of this collection. Nor randomness, nor any iteration
-	 * order is guaranteed, this method is allowed to return the same object
-	 * each time it is called on the same collection.
+	 * Selects an element of this collection. Neither randomness, nor any
+	 * iteration order is guaranteed, this method is allowed to return the same
+	 * object each time it is called on the same collection.
 	 * 
-	 *             if this collection is empty
 	 * @return an element of this collection, <code>null</code> if the
 	 *         collection is empty
 	 */

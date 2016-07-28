@@ -22,7 +22,7 @@ import hu.elte.txtuml.utils.NotifierOfTermination;
 
 /**
  * Registers itself as a {@link TraceListener} in a {@link ModelExecutor} and
- * sends information the the DiagnosticsPlugin about events happening. Blocks
+ * sends information to the DiagnosticsPlugin about events happening. Blocks
  * execution until animation is in progress (will be optional later).
  */
 public class DiagnosticsService extends NotifierOfTermination implements TraceListener {

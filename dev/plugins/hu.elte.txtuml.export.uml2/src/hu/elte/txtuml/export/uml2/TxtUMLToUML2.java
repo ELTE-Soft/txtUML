@@ -2,7 +2,9 @@ package hu.elte.txtuml.export.uml2;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.core.filesystem.EFS;
@@ -49,11 +51,13 @@ public class TxtUMLToUML2 {
 	 *            fully qualified name of the txtUML model
 	 * @param outputDirectory
 	 *            where the result model should be saved
+	 * @param folder
+	 *            the target folder for generated model
 	 */
 	public static Model exportModel(String sourceProject, String packageName, String outputDirectory,
-			ExportMode exportMode) throws JavaModelException, NotFoundException, IOException {
+			ExportMode exportMode, String folder) throws JavaModelException, NotFoundException, IOException {
 		return exportModel(sourceProject, packageName, URI.createPlatformResourceURI(outputDirectory, false),
-				exportMode);
+				exportMode, folder);
 	}
 
 	/**
@@ -65,11 +69,13 @@ public class TxtUMLToUML2 {
 	 *            fully qualified name of the txtUML model
 	 * @param outputDirectory
 	 *            where the result model should be saved
+	 * @param folder
+	 *            the target folder for generated model
 	 */
 	public static Model exportModel(String sourceProject, String packageName, URI outputDirectory,
-			ExportMode exportMode) throws NotFoundException, JavaModelException, IOException {
+			ExportMode exportMode, String folder) throws NotFoundException, JavaModelException, IOException {
 
-		Model model = exportModel(sourceProject, packageName, exportMode);
+		Model model = exportModel(sourceProject, packageName, exportMode, folder);
 
 		File file = new File(model.eResource().getURI().toFileString());
 		file.getParentFile().mkdirs();
@@ -95,7 +101,7 @@ public class TxtUMLToUML2 {
 		return model;
 	}
 
-	public static Model exportModel(String sourceProject, String packageName, ExportMode exportMode)
+	public static Model exportModel(String sourceProject, String packageName, ExportMode exportMode, String folder)
 			throws NotFoundException, JavaModelException {
 		IJavaProject javaProject = ProjectUtils.findJavaProject(sourceProject);
 
@@ -105,32 +111,30 @@ public class TxtUMLToUML2 {
 			throw new NotFoundException("Cannot find package '" + packageName + "'");
 		}
 
-		IPackageFragment fragment = null;
-		for (IPackageFragment pf : packageFragments) {
-			boolean isModel = Stream.of(pf.getCompilationUnits())
-					.anyMatch(cu -> cu.getElementName().equals(PackageUtils.PACKAGE_INFO));
-			if (isModel) {
-				fragment = pf;
-			}
-		}
+		List<IPackageFragment> rootFragments = Stream.of(packageFragments)
+				.filter(pf -> pf.getElementName().equals(packageName)).collect(Collectors.toList());
 
-		ModelExporter modelExporter = new ModelExporter(exportMode);
-		Model model = modelExporter.export(fragment);
+		ModelExporter modelExporter = new ModelExporter(folder, exportMode);
+		Model model = modelExporter.export(rootFragments);
+		if (model == null) {
+			throw new IllegalArgumentException("The selected package is not a txtUML model.");
+		}
 
 		ExporterCache cache = modelExporter.cache;
 
 		Set<Element> unrooted = cache.floatingElements();
 		if (exportMode.isErrorHandler()) {
 			unrooted.forEach(e -> e.destroy());
-		} else if(!unrooted.isEmpty()) {
+		} else if (!unrooted.isEmpty()) {
 			throw new IllegalStateException("Unrooted elements found in the exported model: " + unrooted);
 		}
 		ModelMapCollector collector = new ModelMapCollector(model.eResource().getURI());
 		cache.getMapping().forEach((s, e) -> collector.put(s, e));
 		try {
-			URI destination = URI.createFileURI(fragment.getJavaProject().getProject().getLocation().toOSString())
-					.appendSegment("gen");
-			String fileName = fragment.getElementName();
+			URI destination = URI
+					.createFileURI(rootFragments.get(0).getJavaProject().getProject().getLocation().toOSString())
+					.appendSegment(folder);
+			String fileName = rootFragments.get(0).getElementName();
 			collector.save(destination, fileName);
 		} catch (ModelMapException e1) {
 			// TODO Auto-generated catch block

@@ -4,6 +4,7 @@
 #include <memory>
 #include <mutex>
 #include <atomic>
+#include <string>
 
 #include "runtimetypes.hpp"
 
@@ -21,17 +22,18 @@ public:
   void send(EventPtr e_);
   void init();
   EventPtr getNextMessage(){return _messageQueue->front();}
-  void deleteNextMessage() {_messageQueue->pop_front(); }
+  void deleteNextMessage() {_messageQueue->pop_front();(*message_counter)--; }
   bool emptyMessageQueue(){return _messageQueue->empty();}
   void setPool(StateMachineThreadPool* pool_){_pool=pool_;}
-  //void setRuntime(RuntimeI* runtime_){_runtime=runtime_;}
   void setMessageQueue(std::shared_ptr<MessageQueueType> messageQueue_){_messageQueue=messageQueue_;}
   void setPooled(bool);
   bool isInPool(){return _inPool;}
   bool isStarted() {return _started;}
   bool isInitialized() {return _initialized; }
   int getPoolId() {return poolId;}
+  void setMessageCounter(std::atomic_int* counter) { message_counter = counter; }
   
+  virtual std::string toString() {return "";}
   virtual ~StateMachineI();
 protected:
   StateMachineI(std::shared_ptr<MessageQueueType> messageQueue_=std::shared_ptr<MessageQueueType>(new MessageQueueType()));
@@ -47,6 +49,7 @@ private:
   std::atomic_bool _inPool;
   std::atomic_bool _started;
   std::atomic_bool _initialized;
+  std::atomic_int* message_counter;
   int poolId;
   
   

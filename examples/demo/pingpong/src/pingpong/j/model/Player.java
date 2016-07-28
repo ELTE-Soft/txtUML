@@ -40,10 +40,10 @@ public class Player extends ModelClass {
 		Action.start(racket);
 	}
 
-	class Init extends Initial {
+	public class Init extends Initial {
 	}
 
-	class Waiting extends State {
+	public class Waiting extends State {
 	}
 
 	@From(Init.class)

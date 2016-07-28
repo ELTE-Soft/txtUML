@@ -2,9 +2,7 @@ package hu.elte.txtuml.export.cpp.wizardz;
 
 import java.io.File;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -32,8 +30,8 @@ class TxtUMLToCppGovernor {
 	}
 
 	@SuppressWarnings("unchecked")
-	void uml2ToCpp(String txtUMLProject, String txtUMLModel, String deploymentDescription, boolean addRuntimeOption)
-			throws Exception {
+	void uml2ToCpp(String txtUMLProject, String txtUMLModel, String deploymentDescription, boolean addRuntimeOption,
+			boolean overWriteMainFileOption) throws Exception {
 		String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation().toFile()
 				.getAbsolutePath();
 		String umlFilesFolder = txtUMLProject + File.separator + GeneratedCPPFolderName + File.separator + txtUMLModel
@@ -41,7 +39,9 @@ class TxtUMLToCppGovernor {
 
 		Model model;
 		try {
-			model = TxtUMLToUML2.exportModel(txtUMLProject, txtUMLModel, umlFilesFolder, ExportMode.ExportActionsPedantic);
+			model = TxtUMLToUML2.exportModel(txtUMLProject, txtUMLModel, umlFilesFolder,
+					ExportMode.ExportActionsPedantic, GeneratedCPPFolderName);
+
 		} catch (Exception e) {
 			if (!testing) {
 				Dialogs.errorMsgb("txtUML export Error", e.getClass() + ":" + System.lineSeparator() + e.getMessage(),
@@ -63,15 +63,11 @@ class TxtUMLToCppGovernor {
 			throw e;
 		}
 
-		List<org.eclipse.uml2.uml.Class> classList = new ArrayList<org.eclipse.uml2.uml.Class>();
-		Shared.getTypedElements(classList, model.getOwnedElements(), UMLPackage.Literals.CLASS);
-		Set<String> allClass = new HashSet<String>();
-		for (org.eclipse.uml2.uml.Class cls : classList) {
-			allClass.add(cls.getName());
-		}
+		Set<org.eclipse.uml2.uml.Class> allClass = new HashSet<org.eclipse.uml2.uml.Class>();
+		Shared.getTypedElements(allClass, model.getOwnedElements(), UMLPackage.Literals.CLASS);
 
 		ThreadDescriptionExporter exporter = new ThreadDescriptionExporter(allClass);
-		exporter.exportDescription(txtUMLThreadDescription);
+		exporter.exportDescription((Class<? extends Configuration>) txtUMLThreadDescription);
 
 		if (!exporter.warningListIsEmpty()) {
 			StringBuilder warnings = new StringBuilder("");
@@ -84,14 +80,14 @@ class TxtUMLToCppGovernor {
 			}
 		}
 
-		Uml2ToCppExporter cppExporter = new Uml2ToCppExporter(model, exporter.getConfigMap(), addRuntimeOption);
+		Uml2ToCppExporter cppExporter = new Uml2ToCppExporter(model, exporter.getConfigMap(), addRuntimeOption,
+				overWriteMainFileOption);
 		try {
 			cppExporter.buildCppCode(
 					projectFolder + File.separator + GeneratedCPPFolderName + File.separator + txtUMLModel);
 		} catch (Exception e) {
 			if (!testing) {
-				Dialogs.errorMsgb("Compilation failed", e.getClass() + ":" + System.lineSeparator() + e.getMessage(),
-						e);
+				Dialogs.errorMsgb("C++ export error!", e.getClass() + ":" + System.lineSeparator() + e.getMessage(), e);
 			}
 			throw e;
 		}

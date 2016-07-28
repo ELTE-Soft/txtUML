@@ -1,7 +1,6 @@
 package hu.elte.txtuml.export.cpp.templates;
 
 import java.io.File;
-import java.util.ArrayList;
 
 class RuntimeTemplates {
 	public static final String RTPath = "runtime" + File.separator;
@@ -18,18 +17,18 @@ class RuntimeTemplates {
 	public static final String RuntimeVarName = "_runtime";
 	public static final String RuntimeParamter = "rt";
 	public static final String UsingRuntime = "Runtime";
-	public static final String RuntimeIntanceMethod= "createRuntime";
+	public static final String RuntimeIntanceMethod = "createRuntime";
 	public static final String GetRuntimeInstance = UsingRuntime + "::" + RuntimeIntanceMethod + "()";
 	public static final String ObjectSetterForRuntime = "setupObject";
 	public static final String ObjectRemoverForRuntime = "removeObject";
-	
 
 	public static String createObject(String objName) {
 		return GetRuntimeInstance + GenerationNames.PointerAccess + ObjectSetterForRuntime + "(" + objName + ");\n";
 	}
 
 	public static String initStateMachineForRuntime() {
-		return GetRuntimeInstance + GenerationNames.PointerAccess + ObjectSetterForRuntime + "(" + GenerationNames.Self + ");\n";
+		return GetRuntimeInstance + GenerationNames.PointerAccess + ObjectSetterForRuntime + "(" + GenerationNames.Self
+				+ ");\n";
 	}
 
 	public static String processEventVirtual(String className) {
@@ -46,19 +45,15 @@ class RuntimeTemplates {
 
 	public static String processInitTransition(String className) {
 		return GenerationNames.NoReturn + " " + className + "::processInitTranstion()\n{\n"
-				+ GenerationNames.ProcessEventFName + "(" + GenerationNames.InitialEventName + "_EC((*"
-				+ GenerationNames.Self + "), " + className + "::" + GenerationNames.InitialEventName + "_EE));\n}\n";
+				+ GenerationNames.ProcessEventFName + "(" + GenerationNames.InitialEventName + "_EC());\n}\n";
 
 	}
 
 	public static String startSM(String className, Options options) {
-		return GenerationNames.NoReturn + " " + className + "::startSM()\n{\n"
-				+ ActivityTemplates.signalSend(GenerationNames.InitialEventName, GenerationNames.Self, className,
-						GenerationNames.PointerAccess, new ArrayList<String>(), options.isAddRuntime())
-				+ "\n}\n";
+		return GenerationNames.NoReturn + " " + className + "::startSM()\n{\n" + "\n}\n";
 	}
 
-	public static String rtFunctionDecl(String className) {
+	public static String rtFunctionDef(String className) {
 		return processEventVirtual(className) + "\n" + processInitTransition(className) + "\n";
 	}
 

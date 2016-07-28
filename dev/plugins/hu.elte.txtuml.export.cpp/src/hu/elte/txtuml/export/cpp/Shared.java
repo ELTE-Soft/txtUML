@@ -1,8 +1,5 @@
 package hu.elte.txtuml.export.cpp;
 
-import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -11,17 +8,32 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.emf.common.util.EList;
+
+import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Association;
+import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
-import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.Element;
-import org.eclipse.uml2.uml.LiteralString;
-import org.eclipse.uml2.uml.OpaqueExpression;
+import org.eclipse.uml2.uml.Operation;
+import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Property;
-import org.eclipse.uml2.uml.Pseudostate;
-import org.eclipse.uml2.uml.Transition;
+import org.eclipse.uml2.uml.Signal;
+import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.UMLPackage;
-import org.eclipse.uml2.uml.ValueSpecification;
+
+/*import org.eclipse.text.edits.MalformedTreeException;
+import org.eclipse.text.edits.TextEdit;
+
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IDocument;*/
+
+//import org.eclipse.cdt.core.formatter.CodeFormatter;
+
+
+
+import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 
 public class Shared {
 	public static List<Property> getProperties(Class class_) {
@@ -37,38 +49,6 @@ public class Shared {
 		return properties;
 	}
 
-	public static String getGuard(Constraint guard_) {
-		String source = "";
-		if (guard_.eClass().equals(UMLPackage.Literals.DURATION_CONSTRAINT)) {
-			// TODO
-		} else if (guard_.eClass().equals(UMLPackage.Literals.TIME_CONSTRAINT)) {
-			// TODO
-		} else if (guard_.eClass().equals(UMLPackage.Literals.CONSTRAINT)) {
-
-			// source=getGuardFromValueSpecification(guard_.getSpecification());
-			source = GenerationTemplates.getDefaultReturnValue("Boolean");
-		}
-		return source;
-	}
-
-	// TODO we need a more complex ocl parse....
-	public static String getGuardFromValueSpecification(ValueSpecification guard_) {
-		String source = "";
-		if (guard_ != null) {
-			if (guard_.eClass().equals(UMLPackage.Literals.LITERAL_STRING)) {
-				source = ((LiteralString) guard_).getValue();
-				if (source.toLowerCase().equals("else")) {
-					source = "";
-				}
-			} else if (guard_.eClass().equals(UMLPackage.Literals.OPAQUE_EXPRESSION)) {
-				source = parseOCL(((OpaqueExpression) guard_).getBodies().get(0));
-			} else {
-				source = "UNKNOWN_GUARD_TYPE";
-			}
-		}
-		return source;
-	}
-
 	@SuppressWarnings("unchecked")
 	public static <ElementTypeT, EClassTypeT> void getTypedElements(Collection<ElementTypeT> dest_,
 			Collection<Element> source_, EClassTypeT eClass_) {
@@ -82,19 +62,96 @@ public class Shared {
 	// TODO need a better solution
 	public static boolean isBasicType(String typeName_) {
 
-		if (typeName_.equals("Integer") || typeName_.equals("Real") || typeName_.equals("Boolean")) {
-			return true;
-		} else {
-			return false;
+		return typeName_.equals("Integer") || typeName_.equals("Real") || typeName_.equals("Boolean");
+
+	}
+
+	public static boolean generatedClass(Class item) {
+		return item.getName().startsWith("#");
+	}
+
+	public static List<Parameter> getSignalConstructorParameters(Signal signal, EList<Element> elements) {
+		List<Parameter> signalParameters = new LinkedList<Parameter>();
+
+		Class factoryClass = getSignalFactoryClass(signal, elements);
+		if (factoryClass != null) {
+			for (Operation op : factoryClass.getOperations()) {
+				if (isConstructor(op)) {
+
+					signalParameters.addAll(op.getOwnedParameters());
+				}
+			}
 		}
 
-	}
-	
-	public static boolean isGeneratedClass(Class item) {
-			return item.getName().startsWith("#");		
+		// TODO need better solution
+		signalParameters.removeIf(s -> s.getType().getName().equals(signal.getName()));
+
+		return signalParameters;
 	}
 
-	public static void writeOutSource(String path_, String fileName_, String source_)
+	public static String signalCtrBody(Signal signal, EList<Element> elements) {
+		ActivityExporter activityExporter = new ActivityExporter();
+		Class factoryClass = getSignalFactoryClass(signal, elements);
+		String body = "";
+		for (Operation operation : factoryClass.getOperations()) {
+			if (isConstructor(operation)) {
+				body = activityExporter.createfunctionBody(Shared.getOperationActivity(operation)).toString();
+
+			}
+		}
+
+		return body;
+
+	}
+
+	public static Activity getOperationActivity(Operation operation) {
+		Activity activity = null;
+		for (Behavior behavior : operation.getMethods()) {
+
+			if (behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
+				activity = (Activity) behavior;
+			} else {
+				// TODO exception, unknown for me, need the model
+			}
+		}
+
+		return activity;
+	}
+
+	public static Class getSignalFactoryClass(Signal signal, EList<Element> elements) {
+		for (Element element : elements) {
+			if (element.eClass().equals(UMLPackage.Literals.CLASS)) {
+				Class cls = (Class) element;
+				for (Operation operation : cls.getOperations()) {
+					if (isConstructor(operation)) {
+						for (Parameter param : operation.getOwnedParameters()) {
+							if (param.getType().getName().equals(signal.getName()))
+								return cls;
+						}
+					}
+
+				}
+			}
+		}
+
+		return null;
+	}
+
+	public static boolean isConstructor(Operation operation) {
+
+		for (Stereotype stereotype : operation.getAppliedStereotypes()) {
+
+			if (stereotype.getKeyword().equals(ActivityTemplates.CreateStereoType)) {
+				return true;
+
+			}
+		}
+
+		return false;
+
+	}
+
+	public static void writeOutSource(String path_, String fileName_, String source)
 			throws FileNotFoundException, UnsupportedEncodingException {
 		try {
 			File file = new File(path_);
@@ -105,54 +162,30 @@ public class Shared {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+
 		PrintWriter writer = new PrintWriter(path_ + File.separator + fileName_, "UTF-8");
-		writer.println(source_);
+		writer.println(format(source));
 		writer.close();
 	}
 
-	// TODO just basic pars, need a much better
-	public static String parseOCL(String ocl_) {
-		String source = ocl_.replaceAll("\n", "");
-		if (!source.equals("self")) {
-			source = source.replaceAll("self.", "(*" + ActivityTemplates.Self + ").");
-			source = source.replace("self", ActivityTemplates.Self);
-			source = source.replaceAll("->", ActivityTemplates.AccessOperatorForSets);
-		} else {
-			source = ActivityTemplates.Self;
-		}
-
-		if (source.contains("first")) {
-			source = source.replaceAll("first", ActivityTemplates.Operators.First);
-		}
-		if (source.contains("last")) {
-			source = source.replaceAll("last", ActivityTemplates.Operators.Last);
-		}
-		if (source.contains("not")) {
-			source = source.replaceAll("^[a-zA-Z]not", ActivityTemplates.Operators.Not);
-		}
-		if (source.contains("=")) {
-			source = source.replaceAll("[^<>]=", ActivityTemplates.Operators.Equal);
-		}
-		if (source.contains("<>")) {
-			source = source.replaceAll("<>", ActivityTemplates.Operators.NotEqual);
-		}
-		if (source.contains("excluding")) {
-			source = source.replaceAll("excluding", ActivityTemplates.Operators.Remove);
-		}
-		return source;
-	}
-
-	public static String calculateSmElseGuard(Transition elseTransition_) {
-		String source = "";
-		Pseudostate choice = (Pseudostate) elseTransition_.getSource();
-		for (Transition transition : choice.getOutgoings()) {
-			if (!transition.equals(elseTransition_)) {
-				if (!source.isEmpty()) {
-					source += " " + ActivityTemplates.Operators.And + " ";
-				}
-				source += ActivityTemplates.Operators.Not + "(" + Shared.getGuard(transition.getGuard()) + ")";
-			}
-		}
+	public static String format(String source) {
+		
+		/*CodeFormatter formatter = ToolFactory.createDefaultCodeFormatter(null);
+		TextEdit edit = formatter.format(0, source, 0, source.length(), 0, null);		
+		IDocument document = new Document(source);
+		try {
+			edit.apply(document);
+		} catch (MalformedTreeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+		String formattedSource = document.get();*/
+		
+		//return formattedSource;
 		return source;
 	}
 
