@@ -2,9 +2,6 @@ package airport.gui;
 
 import javax.swing.*;
 
-import airport.xmodel.*;
-import hu.elte.txtuml.api.model.Action;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 

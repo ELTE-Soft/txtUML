@@ -1,0 +1,10 @@
+package clock.x.model.connectors;
+
+import clock.x.model.associations.MinuteHand;
+import clock.x.model.associations.HourHand;
+import clock.x.model.Hand;
+
+connector Hours {
+	MinuteHand.minuteHand->Hand.OutTickPort minuteHand;
+	HourHand.hourHand->Hand.InTickPort hourHand;
+}
