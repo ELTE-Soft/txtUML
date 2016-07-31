@@ -1,0 +1,54 @@
+package clock.x.model;
+
+import clock.x.model.signals.Tick;
+import clock.x.model.signals.HandValue;
+import clock.x.model.interfaces.ValueIfc;
+import clock.x.model.interfaces.TickIfc;
+
+class Hand {
+
+	private int maxValue;
+	private int currentValue;
+
+	behavior port InTickPort {
+		provided TickIfc;
+	}
+
+	port OutTickPort {
+		required TickIfc;
+	}
+
+	port ValuePort {
+		required ValueIfc;
+	}
+
+	public Hand(int maxValue, int currentValue) {
+		this.maxValue = maxValue;
+		this.currentValue = currentValue;
+	}
+
+	initial Init;
+	state Working;
+
+	transition Initialize {
+		from Init;
+		to Working;
+	}
+
+	transition DoWork {
+		from Working;
+		to Working;
+		trigger Tick;
+		effect {
+			currentValue++;
+
+			if (currentValue == maxValue) {
+				currentValue = 0;
+				send new Tick() to this->(OutTickPort);
+			}
+
+			send new HandValue(currentValue) to this->(ValuePort);
+		}
+	}
+
+}

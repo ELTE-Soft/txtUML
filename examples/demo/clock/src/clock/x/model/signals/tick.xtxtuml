@@ -1,0 +1,3 @@
+package clock.x.model.signals;
+
+signal Tick;

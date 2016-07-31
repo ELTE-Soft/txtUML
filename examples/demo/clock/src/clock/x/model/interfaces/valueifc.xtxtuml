@@ -1,0 +1,7 @@
+package clock.x.model.interfaces;
+
+import clock.x.model.signals.HandValue;
+
+interface ValueIfc {
+	reception HandValue;
+}

@@ -1,0 +1,10 @@
+package pingpong.x.model.connectors;
+
+import pingpong.x.model.associations.LeftPlayer;
+import pingpong.x.model.associations.RightPlayer;
+import pingpong.x.model.Player;
+
+connector Table { // assembly connector
+	LeftPlayer.player->Player.BallAtPlayerPort left;
+	RightPlayer.player->Player.BallAtPlayerPort right;
+}

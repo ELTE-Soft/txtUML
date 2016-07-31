@@ -1,0 +1,5 @@
+package clock.x.model.signals;
+
+signal HandValue {
+	public int value;
+}

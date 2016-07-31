@@ -233,7 +233,7 @@ class txtUMLPanel extends JPanel {
 
 					id = file.nextInt();
 					action = file.next();
-					// TODO ut, ul
+					// TODO: Need handling of commands: ut, ul.
 					if (action.equals("t")) {
 						Action.send(new SignalPilotAskTakingOffPermission(), _planes.get(id));
 					} else if (action.equals("l")) {
@@ -259,7 +259,6 @@ class txtUMLPanel extends JPanel {
 						try {
 							Thread.sleep(sleepTime);
 						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						System.out.println("[Sleep] " + sleepTime);
@@ -297,7 +296,7 @@ class txtUMLPanel extends JPanel {
 					}
 				}
 
-				// TODO ut, ul
+				// TODO: Need UI for commands: ut, ul.
 				// Buttons
 				for (int i = 0; i < numOfPlanes; i++) {
 					if (t.get(i).contains(me.getPoint())) {

@@ -1,0 +1,9 @@
+package pingpong.x.model.associations;
+
+import pingpong.x.model.Game;
+import pingpong.x.model.Player;
+
+composition RightPlayer {
+	hidden container Game inGame;
+	1 Player player;
+}

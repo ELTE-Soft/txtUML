@@ -1,0 +1,82 @@
+package clock.x.model;
+
+import clock.x.model.interfaces.ValueIfc;
+import clock.x.model.signals.HandValue;
+
+class Display {
+
+	int hour;
+	int minute;
+	int second;
+
+	behavior port HourPort {
+		provided ValueIfc;
+	}
+
+	behavior port MinutePort {
+		provided ValueIfc;
+	}
+
+	behavior port SecondPort {
+		provided ValueIfc;
+	}
+
+	public Display(int hour, int minute, int second) {
+		this.hour = hour;
+		this.minute = minute;
+		this.second = second;
+	}
+
+	private void refresh() {
+		log("" + hour + ":" + minute + ":" + second);
+	}
+
+	initial Init;
+	state Accepting;
+
+	transition Initialize {
+		from Init;
+		to Accepting;
+	}
+
+	transition HourChanged {
+		from Accepting;
+		to Accepting;
+		port HourPort;
+		trigger HandValue;
+		effect {
+			hour = trigger.value;
+			minute = 0;
+			second = 0;
+			refresh();
+		}
+	}
+
+	transition MinuteChanged {
+		from Accepting;
+		to Accepting;
+		port MinutePort;
+		trigger HandValue;
+		effect {
+			minute = trigger.value;
+			second = 0;
+			if (minute > 0) {
+				refresh();
+			}
+		}
+	}
+
+	transition SecondChanged {
+		from Accepting;
+		to Accepting;
+		port SecondPort;
+		trigger HandValue;
+		effect {
+			second = trigger.value;
+			if (second > 0) {
+				refresh();
+			}
+		}
+	}
+
+}

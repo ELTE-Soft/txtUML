@@ -1,0 +1,11 @@
+package clock.x.model.connectors;
+
+import clock.x.model.Display;
+import clock.x.model.associations.SecondHand;
+import clock.x.model.associations.DisplayInClock;
+import clock.x.model.Hand;
+
+connector SecondValues {
+	SecondHand.secondHand->Hand.ValuePort secondHand;
+	DisplayInClock.face->Display.SecondPort face;
+}

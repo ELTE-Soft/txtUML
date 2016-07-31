@@ -4,16 +4,10 @@ import javax.swing.*;
 
 import airport.xmodel.Plane;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 
 public class WindowOnePlane extends JPanel implements KeyListener {
@@ -125,28 +119,24 @@ public class WindowOnePlane extends JPanel implements KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
 		int pressed = e.getKeyCode();
 		
-		// TODO Auto-generated method stub
+		if(pressed == 37) {
+			Main.minus15(id);
+		}
+		if(pressed == 38) {
+			Main.go(id);
+		}
+		if(pressed == 39) {
+			Main.plus15(id);
+		}
 		
-				if(pressed == 37) {
-					Main.minus15(id);
-				}
-				if(pressed == 38) {
-					Main.go(id);
-				}
-				if(pressed == 39) {
-					Main.plus15(id);
-				}
-				
-				refresh();
+		refresh();
 	}
 
 	@Override
 	public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		// Empty: Nothing to do!
 	}
 
 }
