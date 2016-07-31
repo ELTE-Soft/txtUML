@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.cpp;
+package hu.elte.txtuml.export.cpp.activity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,6 +57,7 @@ import org.eclipse.uml2.uml.ValueSpecificationAction;
 import org.eclipse.uml2.uml.Variable;
 import org.eclipse.uml2.uml.ExpansionRegion;
 
+import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates.CreateObjectType;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
@@ -601,7 +602,8 @@ public class ActivityExporter {
 			returnOutputsToCallActions.put(node_, returnPin);
 
 		if (Shared.isConstructor(node_.getOperation())) {
-
+			
+			//TODO
 			InputPin target = node_.getTarget() == null ? node_.getArguments().get(0) : node_.getTarget();
 			EList<InputPin> arguments = node_.getArguments();
 			arguments.remove(target);

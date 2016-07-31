@@ -22,6 +22,8 @@ import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.UMLPackage;
 
+import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
+
 /*import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 
