@@ -328,6 +328,9 @@ public class ActivityTemplates {
 			case "add":
 				name = Add;
 				break;
+			case "concat":
+				name = Add;
+				break;
 			case "sub":
 				name = Sub;
 				break;

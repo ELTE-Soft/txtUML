@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.cpp.activity;
+package hu.elte.txtuml.export.cpp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,7 +33,6 @@ import org.eclipse.uml2.uml.InputPin;
 import org.eclipse.uml2.uml.LinkEndData;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralInteger;
-import org.eclipse.uml2.uml.LiteralReal;
 import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.LoopNode;
 import org.eclipse.uml2.uml.ObjectFlow;
@@ -57,7 +56,6 @@ import org.eclipse.uml2.uml.ValueSpecificationAction;
 import org.eclipse.uml2.uml.Variable;
 import org.eclipse.uml2.uml.ExpansionRegion;
 
-import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates.CreateObjectType;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
@@ -445,10 +443,7 @@ public class ActivityExporter {
 		String source = "";
 		if (valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_INTEGER)) {
 			source = ((Integer) ((LiteralInteger) valueSpec_).getValue()).toString();
-		} else if(valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_REAL)) {
-			source = ((Double)  ((LiteralReal) valueSpec_).getValue()).toString();
-		}
-		else if (valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_BOOLEAN)) {
+		} else if (valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_BOOLEAN)) {
 			source = ((Boolean) ((LiteralBoolean) valueSpec_).isValue()).toString();
 		} else if (valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_STRING)) {
 			source = "\"" + ((LiteralString) valueSpec_).getValue() + "\"";
@@ -602,8 +597,7 @@ public class ActivityExporter {
 			returnOutputsToCallActions.put(node_, returnPin);
 
 		if (Shared.isConstructor(node_.getOperation())) {
-			
-			//TODO
+
 			InputPin target = node_.getTarget() == null ? node_.getArguments().get(0) : node_.getTarget();
 			EList<InputPin> arguments = node_.getArguments();
 			arguments.remove(target);
