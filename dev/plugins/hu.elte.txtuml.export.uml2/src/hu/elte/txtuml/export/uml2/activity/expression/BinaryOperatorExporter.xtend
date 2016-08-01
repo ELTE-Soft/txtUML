@@ -21,7 +21,7 @@ class BinaryOperatorExporter extends ActionExporter<InfixExpression, CallOperati
 		val argType = source.leftOperand.resolveTypeBinding
 		val operator = switch source.operator {
 			case Operator.PLUS:
-				if(argType.name == "int") plusOp else concatOp
+				if(argType.name == "String") concatOp else plusOp
 			case Operator.MINUS:
 				minusOp
 			case Operator.TIMES:
