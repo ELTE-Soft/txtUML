@@ -33,6 +33,7 @@ import org.eclipse.uml2.uml.InputPin;
 import org.eclipse.uml2.uml.LinkEndData;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralInteger;
+import org.eclipse.uml2.uml.LiteralReal;
 import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.LoopNode;
 import org.eclipse.uml2.uml.ObjectFlow;
@@ -443,7 +444,10 @@ public class ActivityExporter {
 		String source = "";
 		if (valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_INTEGER)) {
 			source = ((Integer) ((LiteralInteger) valueSpec_).getValue()).toString();
-		} else if (valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_BOOLEAN)) {
+		} else if(valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_REAL)) {
+			source = ((Double)  ((LiteralReal) valueSpec_).getValue()).toString();
+		}
+		else if (valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_BOOLEAN)) {
 			source = ((Boolean) ((LiteralBoolean) valueSpec_).isValue()).toString();
 		} else if (valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_STRING)) {
 			source = "\"" + ((LiteralString) valueSpec_).getValue() + "\"";
