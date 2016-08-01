@@ -1,0 +1,5 @@
+package pingpong.x.model.signals;
+
+signal Ball {
+	public int countdown;
+}

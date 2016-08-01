@@ -20,7 +20,6 @@ import airport.xmodel.MakePlane;
 import airport.xmodel.Plane;
 import airport.xmodel.PlaneFactory;
 import airport.xmodel.PlaneTowerUsage;
-import airport.xmodel.Runway;
 import airport.xmodel.Tower;
 import airport.xmodel.TowerWeatherUsage;
 import airport.xmodel.Weather;
@@ -37,8 +36,8 @@ public class Main extends JPanel {
 	private static Map<Integer, WindowOnePlane> _onePlane;
 
 	// Others
-	private static int fps = 24;
-	private static int sps = Math.round(1000 / fps);
+	//private static int fps = 24;
+	//private static int sps = Math.round(1000 / fps);
 	// Windows
 	private static JFrame mapWindow;
 	private static JFrame weatherWindow;
@@ -47,7 +46,7 @@ public class Main extends JPanel {
 	private static int windowPlanesWidth = 400;
 
 	private static Map<Integer, JFrame> planeWindow;
-	private static Map<Integer, JFrame> towerWindow;
+	//private static Map<Integer, JFrame> towerWindow;
 
 	private static int currentPlaneId = 0;
 	private static int currentTowerId = 0;
@@ -57,14 +56,14 @@ public class Main extends JPanel {
 	private static ArrayList<Integer> planeIds;
 
 	private static Map<Integer, Plane> X_planes;
-	private static Map<Integer, Runway> X_runways;
+	//private static Map<Integer, Runway> X_runways;
 	private static Map<Integer, Tower> X_towers;
 	private static Weather X_weather;
 	private static PlaneFactory X_plane_factory;
 
-	private static int numOfPlanes = 0;
-	private static int numOfRunways = 0;
-	private static int numOfTowers = 0;
+	//private static int numOfPlanes = 0;
+	//private static int numOfRunways = 0;
+	//private static int numOfTowers = 0;
 
 	public static void main(String[] args) {
 		ModelExecutor.create().run(() -> {
@@ -137,9 +136,8 @@ public class Main extends JPanel {
 			_onePlane = new HashMap<Integer, WindowOnePlane>();
 
 			// Windows
-			// TODO: Them
 			planeWindow = new HashMap<Integer, JFrame>();
-			towerWindow = new HashMap<Integer, JFrame>();
+			//towerWindow = new HashMap<Integer, JFrame>();
 
 			// ------------------------------------------ OK
 
@@ -190,7 +188,6 @@ public class Main extends JPanel {
 
 			file.add(exit);
 
-			// TODO: add action listener
 			JMenuItem weather = new JMenuItem("Weather");
 			weather.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {

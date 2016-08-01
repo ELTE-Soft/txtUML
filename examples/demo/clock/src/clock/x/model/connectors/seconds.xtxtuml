@@ -1,0 +1,11 @@
+package clock.x.model.connectors;
+
+import clock.x.model.associations.PendulumInClock;
+import clock.x.model.associations.SecondHand;
+import clock.x.model.Hand;
+import clock.x.model.Pendulum;
+
+connector Seconds {
+	PendulumInClock.pendulum->Pendulum.OutTickPort pendulum;
+	SecondHand.secondHand->Hand.InTickPort secondHand;
+}

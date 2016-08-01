@@ -1,0 +1,9 @@
+package clock.x.model.associations;
+
+import clock.x.model.Clock;
+import clock.x.model.Display;
+
+composition DisplayInClock {
+	hidden container Clock clock;
+	1 Display face;
+}
