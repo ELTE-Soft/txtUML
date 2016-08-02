@@ -2,10 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: XtxtUML Eclipse UI Support
 Bundle-Vendor: ELTE
-Bundle-Version: 0.4.0.qualifier
+Bundle-Version: 0.5.0.qualifier
 Bundle-SymbolicName: hu.elte.txtuml.xtxtuml.ui; singleton:=true
 Bundle-ActivationPolicy: lazy
-Require-Bundle: hu.elte.txtuml.xtxtuml;bundle-version="0.4.0";visibility:=reexport,
+Require-Bundle: hu.elte.txtuml.xtxtuml;bundle-version="0.5.0";visibility:=reexport,
  org.eclipse.xtext.ui,
  org.eclipse.ui.editors;bundle-version="3.5.0",
  org.eclipse.ui.ide;bundle-version="3.5.0",
@@ -18,7 +18,7 @@ Require-Bundle: hu.elte.txtuml.xtxtuml;bundle-version="0.4.0";visibility:=reexpo
  org.eclipse.jdt.debug.ui,
  org.eclipse.xtext.ui.codetemplates.ui,
  org.eclipse.compare,
- hu.elte.txtuml.api.model;bundle-version="0.4.0",
+ hu.elte.txtuml.api.model;bundle-version="0.5.0",
  org.eclipse.jdt.core;bundle-version="3.11.1"
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
