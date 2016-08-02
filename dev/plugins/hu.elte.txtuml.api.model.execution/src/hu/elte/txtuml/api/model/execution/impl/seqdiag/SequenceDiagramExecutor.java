@@ -3,11 +3,7 @@ package hu.elte.txtuml.api.model.execution.impl.seqdiag;
 import java.util.ArrayList;
 
 import hu.elte.txtuml.api.model.error.seqdiag.ValidationError;
-import hu.elte.txtuml.api.model.execution.ModelExecutor.Status;
 import hu.elte.txtuml.api.model.execution.impl.DefaultModelExecutor;
-import hu.elte.txtuml.api.model.execution.impl.base.AbstractRuntime;
-import hu.elte.txtuml.api.model.execution.impl.base.SwitchOnLogging;
-import hu.elte.txtuml.api.model.execution.impl.singlethread.SingleThreadModelExecutor;
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
 
 public class SequenceDiagramExecutor implements Runnable {

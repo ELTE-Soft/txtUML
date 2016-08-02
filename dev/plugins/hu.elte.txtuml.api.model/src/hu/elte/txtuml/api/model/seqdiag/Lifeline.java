@@ -14,13 +14,4 @@ public class Lifeline<T extends ModelClass> /*extends Descriptor<LifelineWrapper
 	{		
 		return instance;
 	}
-	
-	//public abstract void run();
-
-	/*@Override
-	LifelineWrapper<T> createRuntimeInfo() {
-		ModelClass instance = this.getInstance();
-		
-		return (LifelineWrapper<T>) ((Runtime)Runtime.currentRuntime()).createLifelineWrapper(instance,this);
-	}*/
 }

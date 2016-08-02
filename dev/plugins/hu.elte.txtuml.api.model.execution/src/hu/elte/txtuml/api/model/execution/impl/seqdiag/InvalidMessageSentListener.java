@@ -1,7 +1,5 @@
 package hu.elte.txtuml.api.model.execution.impl.seqdiag;
 
-import java.util.ArrayList;
-
 import hu.elte.txtuml.api.model.ModelClass;
 
 import hu.elte.txtuml.api.model.Signal;

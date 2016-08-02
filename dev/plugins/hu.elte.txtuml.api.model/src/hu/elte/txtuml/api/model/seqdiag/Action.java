@@ -4,7 +4,6 @@ import hu.elte.txtuml.api.model.AssociationEnd;
 import hu.elte.txtuml.api.model.Interface;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelClass.Port;
-import hu.elte.txtuml.api.model.Reception;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.ConnectorBase.ConnectorEnd;
 
@@ -74,8 +73,13 @@ public class Action {
 		//TODO Code Action
 	}
 	
+	/**
+	 * @deprecated not needed since new version
+	 * @param signal signal received
+	 * @param from sender ModelClass
+	 */
 	public static void receive(Signal signal,ModelClass from)
 	{
 		//TODO code Action
-	}	
+	}
 }
