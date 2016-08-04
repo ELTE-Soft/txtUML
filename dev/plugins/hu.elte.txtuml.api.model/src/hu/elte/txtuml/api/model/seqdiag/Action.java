@@ -18,9 +18,11 @@ public class Action {
 		return new Lifeline<T>(instance);
 	}
 	
-	public static void delete(ModelClass obj)
+	public static void delete(Lifeline obj)
 	{
-		hu.elte.txtuml.api.model.Action.delete(obj);
+		RuntimeContext context = (RuntimeContext)Thread.currentThread();
+		InteractionWrapper wrapper = context.getInteractionWrapper();
+		wrapper.findLifeline(obj).delete();
 	}
 	
 	public static <C1 extends ConnectorEnd<?, P1>, P1 extends Port<I1, I2>, C2 extends ConnectorEnd<?, P2>, P2 extends Port<I2, I1>, I1 extends Interface, I2 extends Interface> void connect(
@@ -48,14 +50,18 @@ public class Action {
 		hu.elte.txtuml.api.model.Action.unlink(leftEnd, leftObj, rightEnd, rightObj);
 	}
 	
-	public static void start(ModelClass obj)
+	public static void start(Lifeline obj)
 	{
-		hu.elte.txtuml.api.model.Action.start(obj);
+		RuntimeContext context = (RuntimeContext)Thread.currentThread();
+		InteractionWrapper wrapper = context.getInteractionWrapper();
+		wrapper.findLifeline(obj).start();
 	}
 	
 	public static <S extends Signal> void send(Lifeline<?> from,S signal, Lifeline<?> target) {
 		
-		hu.elte.txtuml.api.model.Action.send(signal, target.getInstance());
+		RuntimeContext context = (RuntimeContext)Thread.currentThread();
+		InteractionWrapper wrapper = context.getInteractionWrapper();
+		wrapper.findLifeline(from).send(signal,wrapper.findLifeline(target));
 	}
 	
 	public static void log(String message)
@@ -68,6 +74,10 @@ public class Action {
 		hu.elte.txtuml.api.model.Action.logError(message);
 	}
 	
+	/**
+	 * @deprecated not needed since new version
+	 * @param units units of time needed to process signal
+	 */
 	public static void duration(int units)
 	{
 		//TODO Code Action
@@ -81,5 +91,11 @@ public class Action {
 	public static void receive(Signal signal,ModelClass from)
 	{
 		//TODO code Action
+	}
+	
+	public static void testWrapper()
+	{
+		Thread[] array = new Thread[Thread.activeCount()];
+		Thread.enumerate(array);
 	}
 }

@@ -5,19 +5,25 @@ import java.util.ArrayList;
 import hu.elte.txtuml.api.model.error.seqdiag.ValidationError;
 import hu.elte.txtuml.api.model.execution.impl.DefaultModelExecutor;
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
+import hu.elte.txtuml.api.model.seqdiag.InteractionWrapper;
+import hu.elte.txtuml.api.model.seqdiag.RuntimeContext;
 
 public class SequenceDiagramExecutor implements Runnable {
 	
-	protected Interaction interaction;
+	protected InteractionWrapper interaction;
+	protected Interaction base;
 	protected InvalidMessageSentListener messageListener;
 	protected CommunicationListener traceListener;
 	protected DefaultModelExecutor executor;
+	
+	private Boolean isLocked;
 	
 	private SequenceDiagramExecutorThread thread;
 	
 	private ArrayList<ValidationError> errors;
 	
 	public SequenceDiagramExecutor() {
+		isLocked = false;
 		this.messageListener = new InvalidMessageSentListener(this);
 		this.traceListener = new CommunicationListener(this);
 		this.executor = new DefaultModelExecutor();
@@ -29,32 +35,63 @@ public class SequenceDiagramExecutor implements Runnable {
 		this.thread = new SequenceDiagramExecutorThread(this);
 	}
 	
-	public void setInteraction(Interaction interaction)
+	public void setInteraction(Interaction interaction) throws Exception
 	{
-		this.interaction = interaction;
+		if(isLocked)
+			throw new Exception("Invalid method call! Executor is currently executing an interaction");
+		this.base = interaction;
+	}
+	
+	public SequenceDiagramExecutor start()
+	{
+		thread.start();
+		return this;
 	}
 	
 	public void run()
 	{
-		thread.start();
+		this.start().shutdown().awaitTermination();
+	}
+	
+	public void execute()
+	{
+		isLocked = true;
+		
+		this.interaction = ( (RuntimeContext)Thread.currentThread() ).getRuntime().getInteractionWrapper(base);
+		
+		executor.setInitialization(new Runnable(){
+			public void run()
+			{
+				interaction.getWrapped().initialize();
+				interaction.finalize();
+			}
+		});
+		
+		executor.launch();
+		interaction.getWrapped().run();
+		executor.shutdown();
+		executor.awaitTermination();
+	}
+	
+	public SequenceDiagramExecutor shutdown()
+	{
+
+		isLocked = false;
+		return this;
+	}
+	
+	public void awaitTermination()
+	{				
 		try {
-			thread.join();
+			this.thread.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void execute()
+	public InteractionWrapper getInteractionWrapper()
 	{
-		executor.setInitialization(new Runnable(){
-			public void run()
-			{
-				interaction.initialize();
-				interaction.run();
-			}
-		});
-		
-		executor.run();
+		return this.interaction;
 	}
 	
 	public ArrayList<ValidationError> getErrors()

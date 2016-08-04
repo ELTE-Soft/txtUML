@@ -1,13 +1,21 @@
 package hu.elte.txtuml.api.model.execution.impl.seqdiag;
 
-public class SequenceDiagramExecutorThread extends Thread {
+import hu.elte.txtuml.api.model.seqdiag.InteractionWrapper;
+import hu.elte.txtuml.api.model.seqdiag.Runtime;
+import hu.elte.txtuml.api.model.seqdiag.RuntimeContext;
+
+public class SequenceDiagramExecutorThread extends Thread implements RuntimeContext {
 
 	private SequenceDiagramExecutor executor;
+	private Runtime runtime;
 	
 	public SequenceDiagramExecutorThread(SequenceDiagramExecutor executor)
 	{
 		super(executor);
 		this.executor = executor;
+		this.setName("SequenceDiagram-Thread-" + this.getId());
+		
+		runtime = new Runtime();
 	}
 	
 	public SequenceDiagramExecutor getExecutor()
@@ -24,5 +32,15 @@ public class SequenceDiagramExecutorThread extends Thread {
 	public void run()
 	{
 		this.executor.execute();
+	}
+
+	@Override
+	public Runtime getRuntime() {
+		return this.runtime;
+	}
+
+	@Override
+	public InteractionWrapper getInteractionWrapper() {
+		return this.executor.getInteractionWrapper();
 	}	
 }
