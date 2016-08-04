@@ -239,15 +239,11 @@ class XtxtUMLUniquenessValidator extends AbstractXtxtUMLValidator {
 	}
 
 	@Check
-	def checkConnectorEndIsUnique(TUConnectorEnd connectorEnd) {
-		val container = connectorEnd.eContainer as TUConnector;
-		if (container.ends.exists [
-			(name == connectorEnd.name || role?.fullyQualifiedName == connectorEnd.role?.fullyQualifiedName) &&
-				it != connectorEnd // direct comparison is safe here
-		]) {
-			error("Duplicate connector end " + connectorEnd.name + " in connector " + container.name +
-				" – names and roles must be unique among ends of a connector", connectorEnd, TU_CONNECTOR_END__NAME,
-				NOT_UNIQUE_CONNECTOR_END);
+	def checkConnectorEndNamesAreUnique(TUConnectorEnd connectorEnd) {
+		val connector = connectorEnd.eContainer as TUConnector;
+		if (1 < connector.ends.filter[name == connectorEnd.name].length) {
+			error("Connector end " + connectorEnd.name + " in connector " + connector.name +
+				" must have a unique name", connectorEnd, TU_CONNECTOR_END__NAME, NOT_UNIQUE_NAME);
 		}
 	}
 

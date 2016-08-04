@@ -61,7 +61,6 @@ class XtxtUMLConnectorValidator extends XtxtUMLAssociationValidator {
 			}
 		} else { // assembly connector
 			if (compositionOfRoleA == null || compositionOfRoleB == null // roles must be from compositions
-			|| compositionOfRoleA.fullyQualifiedName == compositionOfRoleB.fullyQualifiedName // underlying compositions must be different
 			|| compositionOfRoleA.ends.findFirst[container]?.endClass?.fullyQualifiedName !=
 				compositionOfRoleB.ends.findFirst[container]?.endClass?.fullyQualifiedName // container must be the same
 			) {
