@@ -1,4 +1,4 @@
-package tester;
+package tester_GUI;
 
 
 import hu.elte.txtuml.api.layout.ClassDiagram;
@@ -7,7 +7,7 @@ import vending_machine.CashRegister;
 import vending_machine.Drink;
 import vending_machine.VendingMachine;
 
-class diagram extends ClassDiagram {
+public class VendingMachineDiagram extends ClassDiagram {
 	@Row({Drink.class, VendingMachine.class, CashRegister.class})
 	
 	class myLayout extends Layout {}

@@ -1,7 +1,10 @@
 package vending_machine;
 
+import hu.elte.txtuml.api.stdlib.timers.Timer;
+
 class CashRegister {
 	int insertedCash;
+	Timer timerHandle;
 	
 	public CashRegister() {
 		insertedCash = 0;
@@ -15,21 +18,13 @@ class CashRegister {
 	
 	initial Init;
 	
-	state Taking {
-		entry {
-			// log("Cash register is taking cash. Currently inserted: " + insertedCash);
-		}
-	}
+	state Taking;
 	
 	state Returning {
 		entry {
-			// log("Cash register is returning " + trigger.howMany + " cash.");
 			CashRegister.this->(WorkTogether.theMachine).selectAny().updateMessage("Returning: " + trigger.howMany);
 			insertedCash = 0;
-			// TODO delays are solved with sleep for now
-			Thread.sleep(1000);
-			CashRegister.this->(WorkTogether.theMachine).selectAny().updateMessage("Online");
-			send new done() to this;
+			timerHandle = Timer.start(this, new done(), 1000);
 		}
 	}
 	
@@ -50,6 +45,10 @@ class CashRegister {
 		from Returning;
 		to Taking;
 		trigger done;
+		effect {
+			CashRegister.this->(WorkTogether.theMachine).selectAny().updateMessage("Online");
+			timerHandle.cancel();
+		}
 	}
 	
 	transition TakeCash {

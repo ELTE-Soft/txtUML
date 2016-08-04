@@ -26,15 +26,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import hu.elte.txtuml.api.model.execution.ModelExecutor;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
-import vending_machine.Drink;
 import tester_GUI.Glue;
 import tester_GUI.IControl;
-import tester_GUI.IControlled;
 
-public class GUITester implements IControlled {
+public class GUITester {
 	private MachinePanel machinePanel = new MachinePanel(this);
 	private JPanel buttonPanel = new JPanel();
 	private JFrame frame = new JFrame("Vending Machine");
@@ -62,7 +62,7 @@ public class GUITester implements IControlled {
 	
 	private GUITester() {
 		control = Glue.getInstance();
-		((Glue)control).setControlled(this);
+		
 		
 
 		buttonPanel.setOpaque(false);
@@ -336,19 +336,10 @@ public class GUITester implements IControlled {
 	}
 	
 	public static void main(String[] args) {
-		new GUITester();
+		ModelExecutor.create().setTraceLogging(false).launch( () -> new GUITester() );
 	}
-	
-	// ICONTROLLED INTERFACE OVERRIDE
-	
-	@Override
-	public void showDrink(Drink drink) {
-		// Ez a metódus fogja majd megjeleníteni a vásárolt italt a kiadónyílásban
-	}
-	
-	public void showMoney() {
-		// Ez a metódus fogja majd megjeleníteni a visszajáró pénzérméket a kiadónyílásban
-	}	
+
+
 }
 
 class MachinePanel extends ImagePanel {

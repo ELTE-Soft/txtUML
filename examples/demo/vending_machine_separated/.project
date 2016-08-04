@@ -25,17 +25,17 @@
 		<link>
 			<name>src/images/VendingMachine.png</name>
 			<type>1</type>
-			<locationURI>PROJECT_LOC/src/images/VendingMachine.png</locationURI>
+			<location>PROJECT_LOC/src/images/VendingMachine.png</location>
 		</link>
 		<link>
 			<name>src/sounds/coin.wav</name>
 			<type>1</type>
-			<locationURI>PROJECT_LOC/src/sounds/coin.wav</locationURI>
+			<location>PROJECT_LOC/src/sounds/coin.wav</location>
 		</link>
 		<link>
 			<name>src/sounds/return.wav</name>
 			<type>1</type>
-			<locationURI>PROJECT_LOC/src/sounds/return.wav</locationURI>
+			<location>PROJECT_LOC/src/sounds/return.wav</location>
 		</link>
 	</linkedResources>
 </projectDescription>

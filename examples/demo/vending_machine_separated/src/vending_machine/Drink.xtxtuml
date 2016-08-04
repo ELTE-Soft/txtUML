@@ -1,9 +1,12 @@
 package vending_machine;
 
+import hu.elte.txtuml.api.stdlib.timers.Timer;
+
 class Drink {
 	int price;
 	int quantity;
-	java.lang.String name; 
+	java.lang.String name;
+	Timer timerHandle;
 	
 	public Drink(int p, int q, java.lang.String n) {
 		price = p;
@@ -27,16 +30,38 @@ class Drink {
 	
 	initial Init;
 	choice isThereMore;
-	
-	state Available {
+	state Available;
+	state OutOfStock;
+	state Giving {
 		entry {
-			// log("Drink " + name + " is avalable. Quantity: " + quantity);
+			quantity--;
+			Drink.this->(Serve.theMachine).selectAny().updateMessage("<html><div style='text-align: center;'>Done! Take your<br>" + name + "</html>");
+			timerHandle = Timer.start(this, new done(), 1000);
 		}
 	}
 	
-	state OutOfStock {
+	state Refilling {
 		entry {
-			// log("Drink " + name + " is out of stock. Please refill.");
+			Drink.this->(Serve.theMachine).selectAny().updateMessage("<html><div style='text-align: center;'>Refilling<br>" + name + "</html>");
+			timerHandle = Timer.start(this, new done(), 1000);
+		}
+	}
+	
+	state Loading {
+		entry {
+			if (quantity <= 0) {
+				quantity = 0;
+				timerHandle = Timer.start(this, new allGone(), 1000);
+			} else {
+				timerHandle = Timer.start(this, new done(), 1000);
+			}
+		}
+	}
+	
+	state NotGiving {
+		entry {
+			Drink.this->(Serve.theMachine).selectAny().updateMessage("Out of stock");
+			timerHandle = Timer.start(this, new done(), 1000);
 		}
 	}
 	
@@ -49,12 +74,18 @@ class Drink {
 	
 	transition Give {
 		from Available;
-		to isThereMore;
+		to Giving;
 		trigger request;
+	}
+	
+	transition DoneGiving {
+		from Giving;
+		to isThereMore;
+		trigger done;
 		effect {
-			quantity--;
-			// log("A " + name + " is given.");
-			Thread.sleep(1000);
+			timerHandle.cancel();
+			CashRegister register = this->(Serve.theMachine).selectAny()->(WorkTogether.theCashRegister).selectAny();
+			send new giveBackCash(register.howMuchIsInside() - price) to register;
 		}
 	}
 	
@@ -62,23 +93,17 @@ class Drink {
 		from isThereMore;
 		to Available;
 		guard( quantity > 0);
-		effect {
-			// log("There is " + quantity + " more of " + name);
-		}
 	}
 	
 	transition ThereIsNot {
 		from isThereMore;
 		to OutOfStock;
 		guard( quantity == 0);
-		effect {
-			// log("There is no more " + name);
-		}
 	}
 	
 	transition Refill {
 		from OutOfStock;
-		to Available;
+		to Refilling;
 		trigger refill;
 		effect {
 				if (quantity + trigger.quantity < 50) {
@@ -86,23 +111,33 @@ class Drink {
 				} else {
 					quantity = 50;
 				}
-				// log("Refilling " + name);
-				Drink.this->(Serve.theMachine).selectAny().updateMessage("<html><div style='text-align: center;'>Refilling<br>" + name + "</html>");
-				Thread.sleep(1000);
-				Drink.this->(Serve.theMachine).selectAny().updateMessage("Online");
 		}
 		guard (trigger.quantity > 0);
 	}
 	
+	transition DoneRefilling {
+		from Refilling;
+		to isThereMore;
+		trigger done;
+		effect {
+			Drink.this->(Serve.theMachine).selectAny().updateMessage("Online");
+			timerHandle.cancel();
+		}
+	}
+	
 	transition TakeAll {
-		from Available;
+		from Loading;
 		to OutOfStock;
 		trigger allGone;
+		effect {
+			Drink.this->(Serve.theMachine).selectAny().updateMessage("Online");
+			timerHandle.cancel();
+		}
 	}
 	
 	transition LoadMore {
 		from Available;
-		to Available;
+		to Loading;
 		trigger refill;
 		effect {
 			if (quantity + trigger.quantity < 50) {
@@ -110,29 +145,36 @@ class Drink {
 			} else {
 				quantity = 50;
 			}
-			// log("Refilling " + name);
 			if (trigger.quantity >= 0) {
 				Drink.this->(Serve.theMachine).selectAny().updateMessage("<html><div style='text-align: center;'>Loading more<br>" + name + "</html>");
 			} else {
 				Drink.this->(Serve.theMachine).selectAny().updateMessage("<html><div style='text-align: center;'>Taking some<br>" + name + "</html>");
 			}
-			if (quantity <= 0) {
-				quantity = 0;
-				send new allGone() to this;
-			}
-			Thread.sleep(1000);
+		}
+	}
+	
+	transition DoneLoading {
+		from Loading;
+		to isThereMore;
+		trigger done;
+		effect {
 			Drink.this->(Serve.theMachine).selectAny().updateMessage("Online");
+			timerHandle.cancel();
 		}
 	}
 	
 	transition NotToGive {
 		from OutOfStock;
-		to OutOfStock;
+		to NotGiving;
 		trigger request;
+	}
+	
+	transition ReturnToOutOfStock {
+		from NotGiving;
+		to OutOfStock;
+		trigger done;
 		effect {
-			// log("Sorry, " + name + " is out of stock. Refill stock before buying.");
-			Drink.this->(Serve.theMachine).selectAny().updateMessage("Out of stock");
-			Thread.sleep(1000);
+			timerHandle.cancel();
 		}
 	}
 	

@@ -1,8 +1,11 @@
 package vending_machine;
 
+import hu.elte.txtuml.api.stdlib.timers.Timer;
+
 class VendingMachine {
 	
 	java.lang.String message;
+	Timer timerHandle;
 	
 	public VendingMachine () {
 		message = "";
@@ -27,8 +30,6 @@ class VendingMachine {
 			} else {
 				message = "Inserted: " + VendingMachine.this->(WorkTogether.theCashRegister).selectAny().howMuchIsInside();
 			}
-			// log("Vending Machine is waiting for action.");
-			
 		}
 	}
 	
@@ -41,15 +42,11 @@ class VendingMachine {
 				}
 			}
 			if (selectedDrink.onStock()) {
-				// log("Drink " + selectedDrink.getName() + " costs " + selectedDrink.getPrice());
 				message = "<html><div style='text-align: center;'>" + selectedDrink.getName() + "<br>costs " +  selectedDrink.getPrice() + "</html>";
 			} else {
-				// log("Drink " + selectedDrink.getName() + " is out of stock");
 				message = "Out of stock";
 			}
-			// TODO flush text, just with thread.sleep for now
-			Thread.sleep(1000);
-			send new done() to this;
+			timerHandle = Timer.start(this, new done(), 1000);
 		}
 	}
 	
@@ -66,19 +63,10 @@ class VendingMachine {
 			
 			if (selectedDrink.getPrice() <= register.howMuchIsInside()) {
 				send new request() to selectedDrink;
-				if (selectedDrink.onStock()) {
-					send new giveBackCash(register.howMuchIsInside() - selectedDrink.getPrice()) to register;
-				} /*else {
-					message = "Out of stock";
-					Thread.sleep(1000);
-				}*/
 			} else {
-				// log("Sorry, the money you inserted is not enough.");
 				message = "Money not enough";
-				Thread.sleep(1000);
 			}
-			// TODO delay is solved with sleep for now
-			send new done() to this;
+			timerHandle = Timer.start(this, new done(), 1000);
 		}
 	}
 		
@@ -102,6 +90,9 @@ class VendingMachine {
 		from ShowingPrice;
 		to Idle;
 		trigger done;
+		effect {
+			timerHandle.cancel();
+		}
 	}
 	
 	
@@ -116,5 +107,8 @@ class VendingMachine {
 		from Vending;
 		to Idle;
 		trigger done;
+		effect {
+			timerHandle.cancel();
+		}
 	}
 }
