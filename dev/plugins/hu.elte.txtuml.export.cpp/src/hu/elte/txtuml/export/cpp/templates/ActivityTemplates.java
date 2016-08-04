@@ -98,27 +98,17 @@ public class ActivityTemplates {
 		return source;
 	}
 
-	public static String invokeProcedure(String operationName, List<String> parameters) {
-		return Operators.getStandardLibaryFunctionName(operationName) + "(" + operationCallParamList(parameters)
-				+ ");\n";
-	}
-
-	public static String stdLibOperationCall(String operationName, String left, String right) {
-
-		return "(" + left + " " + Operators.getStandardOperationName(operationName) + " " + right + ")";
-
-	}
-
-	public static String stdLibOperationCall(String operationName, String operand) {
-		return Operators.getStandardSigneleOperatorName(operationName) + operand;
-
-	}
-
 	public static String isEqualTesting(String firstArgument, String secondArgument) {
 		return firstArgument + " " + Operators.Equal + " " + secondArgument;
 	}
 
-	public static String simpleFunctionCall(String functionName, List<String> parameters) {
+	public static String stdLibCall(String functionName, List<String> parameters) {
+		if(Operators.isInfixBinaryOperator(functionName)) {
+			assert(parameters.size() == 2);
+			return "(" + parameters.get(0) + Operators.resolveBinaryOperation(functionName) + 
+					parameters.get(1) + ")";
+		}
+		
 		return Operators.getStandardLibaryFunctionName(functionName) + "(" + operationCallParamList(parameters) + ")";
 	}
 
@@ -126,9 +116,9 @@ public class ActivityTemplates {
 		return operationCall(ownerName, GenerationNames.PointerAccess, operationName, params);
 	}
 
-	public static StringBuilder blockStatement(String statement) {
+	public static String blockStatement(String statement) {
 
-		return new StringBuilder(statement).append(";\n");
+		return statement + ";\n";
 	}
 
 	private static String operationCallParamList(List<String> params) {
@@ -233,7 +223,7 @@ public class ActivityTemplates {
 
 	}
 
-	public static StringBuilder getRealSignal(String signalType, String signalVariableName) {
+	public static String getRealSignal(String signalType, String signalVariableName) {
 		StringBuilder source = new StringBuilder("");
 		source.append(GenerationNames.signalType(signalType) + " ");
 		source.append(signalVariableName + " = ");
@@ -242,7 +232,7 @@ public class ActivityTemplates {
 		source.append("(" + GenerationNames.StaticCast + "<const " + PrivateFunctionalTemplates.signalType(signalType)
 				+ "&>");
 		source.append("(" + GenerationNames.EventFParamName + ")));\n");
-		return source;
+		return source.toString();
 	}
 
 	public static String returnTemplates(String variable) {
@@ -317,14 +307,21 @@ public class ActivityTemplates {
 		public static final String Sinus = "sin";
 		public static final String Cosinus = "cos";
 		public static final String TimerStart = GenerationNames.StartTimerFunctionName;
+		
+		
+		public static final String NotBinaryOperator = "not_binary_operator";
 
 		public static String Fork(String cond, String e1, String e2) {
 			return cond + " ? " + e1 + " : " + e2;
 		}
 
-		public static String getStandardOperationName(String operation) {
-			String name = "unknown_operator";
-			switch (operation) {
+		public static boolean isInfixBinaryOperator(String functionName) {
+			return resolveBinaryOperation(functionName) != NotBinaryOperator;
+		}
+
+		public static String resolveBinaryOperation(String operationNem) {
+			String name = NotBinaryOperator;
+			switch (operationNem) {
 			case "add":
 				name = Add;
 				break;
@@ -372,27 +369,6 @@ public class ActivityTemplates {
 			return name;
 		}
 
-		public static String getStandardSigneleOperatorName(String operation) {
-			String name = "";
-			switch (operation) {
-			case "inc":
-				name = Increment;
-				break;
-			case "dec":
-				name = Decrement;
-				break;
-			case "not":
-				name = Not;
-			case "neg":
-				name = Neg;
-				break;
-			default:
-				name = "";
-			}
-
-			return name;
-		}
-
 		public static String getStandardLibaryFunctionName(String function) {
 			switch (function) {
 			case ToString:
@@ -401,20 +377,18 @@ public class ActivityTemplates {
 				return GenerationNames.ActionFunctionsNamespace + "::" + Log;
 			case TimerStart:
 				return GenerationNames.TimerInterFaceName + "::" + TimerStart;
+			case "inc":
+				return Increment;
+			case "dec":
+				return Decrement;
+			case "not":
+				return Not;
+			case "neg":
+				return Neg;
+				
 			default:
 				return function;
 			}
-		}
-
-		public static boolean isStdLibFunction(String name) {
-			if (name.equals(Select) || name.equals(Concat) || name.equals(TimerStart) || name.equals(ToString)
-					|| name.equals(Log) || name.equals(Count) || name.equals(Round) || name.equals(Sinus)
-					|| name.equals(Cosinus)) {
-				return true;
-			} else {
-				return false;
-			}
-
 		}
 	}
 

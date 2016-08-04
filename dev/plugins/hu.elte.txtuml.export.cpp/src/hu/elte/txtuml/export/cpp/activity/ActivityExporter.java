@@ -3,11 +3,9 @@ package hu.elte.txtuml.export.cpp.activity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.Activity;
@@ -25,12 +23,10 @@ import org.eclipse.uml2.uml.DestroyLinkAction;
 import org.eclipse.uml2.uml.DestroyObjectAction;
 import org.eclipse.uml2.uml.ExecutableNode;
 import org.eclipse.uml2.uml.ExpansionKind;
-import org.eclipse.uml2.uml.InputPin;
 import org.eclipse.uml2.uml.LinkEndData;
 import org.eclipse.uml2.uml.LoopNode;
 import org.eclipse.uml2.uml.ObjectFlow;
 import org.eclipse.uml2.uml.OutputPin;
-import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.ParameterDirectionKind;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ReadLinkAction;
@@ -48,20 +44,19 @@ import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates.CreateObjectType;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 
-import hu.elte.txtuml.utils.Logger;
+//import hu.elte.txtuml.utils.Logger;
 
 
 public class ActivityExporter {
 
 	private Map<CreateObjectAction, String> objectMap;
 	private Map<CallOperationAction, OutputPin> returnOutputsToCallActions;
-	private Set<String> declaredTempVariables;
 	private ActivityNode returnNode;
-	private boolean containsSignalAcces;
 	
 	private OutVariableExporter tempVariableExporter;
 	private UserVariableExporter userVariableExporter;
 	private ActivityNodeResolver activityExportResolver;
+	private CallOperationExporter callOperationExporter;
 	
 	
 
@@ -75,11 +70,11 @@ public class ActivityExporter {
 		userVariableExporter = new UserVariableExporter();
 		activityExportResolver = new ActivityNodeResolver(objectMap,returnOutputsToCallActions,
 				tempVariableExporter,userVariableExporter);
+		callOperationExporter = new CallOperationExporter(tempVariableExporter,returnOutputsToCallActions,
+				activityExportResolver);
 		
-		declaredTempVariables = new HashSet<String>();
 		objectMap = new HashMap<CreateObjectAction, String>();
 		returnOutputsToCallActions = new HashMap<CallOperationAction, OutputPin>();
-		containsSignalAcces = false;
 		returnNode = null;
 
 	}
@@ -106,10 +101,10 @@ public class ActivityExporter {
 	}
 
 	public boolean isContainsSignalAcces() {
-		return containsSignalAcces;
+		return callOperationExporter.isUsedSignalParameter();
 	}
 
-	private String createReturnParamaterCode(Activity activity_) {
+	private String createReturnParamaterCode(Activity activity) {
 		if (returnNode != null) {
 			return ActivityTemplates.returnTemplates(activityExportResolver.getTargetFromActivityNode(returnNode));
 		} else {
@@ -216,7 +211,7 @@ public class ActivityExporter {
 		} else if (node.eClass().equals(UMLPackage.Literals.START_OBJECT_BEHAVIOR_ACTION)) {
 			source.append(createStartObjectActionCode((StartObjectBehaviorAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
-			source.append(createCallOperationActionCode((CallOperationAction) node));
+			source.append(callOperationExporter.createCallOperationActionCode((CallOperationAction) node));
 
 		} else if (node.eClass().equals(UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION)) {
 			AddVariableValueAction avva = (AddVariableValueAction) node;
@@ -235,7 +230,7 @@ public class ActivityExporter {
 		} else if (node.eClass().equals(UMLPackage.Literals.DESTROY_OBJECT_ACTION)) {
 			source.append(createDestroyObjectActionCode((DestroyObjectAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.TEST_IDENTITY_ACTION)) {
-			source.append(createTestIdentityActionCode((TestIdentityAction) node));
+			source.append(callOperationExporter.createTestIdentityActionCode((TestIdentityAction) node));
 		}
 
 		return source;
@@ -318,19 +313,19 @@ public class ActivityExporter {
 		return ActivityTemplates.startObject(activityExportResolver.getTargetFromInputPin(node_.getObject()));
 	}
 
-	private String createCreateObjectActionCode(CreateObjectAction node_) {
-		String type = node_.getClassifier().getName();
+	private String createCreateObjectActionCode(CreateObjectAction createObjectActionNode) {
+		String type = createObjectActionNode.getClassifier().getName();
 
 		ActivityTemplates.CreateObjectType objectType;
-		if (node_.getClassifier().eClass().equals(UMLPackage.Literals.SIGNAL)) {
+		if (createObjectActionNode.getClassifier().eClass().equals(UMLPackage.Literals.SIGNAL)) {
 			objectType = ActivityTemplates.CreateObjectType.Signal;
 		} else {
 			objectType = CreateObjectType.Class;
 		}
 
-		tempVariableExporter.exportOutputPinToMap(node_.getResult());
-		String name = tempVariableExporter.getRealVariableName(node_.getResult());
-		objectMap.put(node_, name);
+		tempVariableExporter.exportOutputPinToMap(createObjectActionNode.getResult());
+		String name = tempVariableExporter.getRealVariableName(createObjectActionNode.getResult());
+		objectMap.put(createObjectActionNode, name);
 
 		return ActivityTemplates.createObject(type, name, objectType);
 	}
@@ -390,19 +385,6 @@ public class ActivityExporter {
 		return source;
 	}
 
-	private String createTestIdentityActionCode(TestIdentityAction node) {
-		InputPin firstArgument = node.getInputs().get(0);
-		InputPin secondArgument = node.getInputs().get(1);
-		tempVariableExporter.exportOutputPinToMap(node.getResult());
-
-		String val = ActivityTemplates.isEqualTesting(activityExportResolver.getTargetFromInputPin(firstArgument),
-				activityExportResolver.getTargetFromInputPin(secondArgument));
-
-		return addValueToTemporalVariable(node.getResult().getType().getName(), 
-				tempVariableExporter.getRealVariableName(node.getResult()),
-				val);
-	}
-
 
 
 	private String createSendSignalActionCode(SendObjectAction sendObjectAction) {
@@ -414,147 +396,12 @@ public class ActivityExporter {
 
 	}
 
-	private StringBuilder createCallOperationActionCode(CallOperationAction node_) {
-		StringBuilder source = new StringBuilder("");
-		tempVariableExporter.exportAllOutputPinToMap(node_.getOutputs());
-		OutputPin returnPin = searchReturnPin(node_.getResults(), node_.getOperation().outputParameters());
-		if (returnPin != null)
-			returnOutputsToCallActions.put(node_, returnPin);
 
-		if (Shared.isConstructor(node_.getOperation())) {
-
-			InputPin target = node_.getTarget() == null ? node_.getArguments().get(0) : node_.getTarget();
-			EList<InputPin> arguments = node_.getArguments();
-			arguments.remove(target);
-			return source.append(ActivityTemplates.blockStatement(createConstructorCallAction(target, arguments)));
-		}
-
-		if (node_.getOperation().getName().equals(ActivityTemplates.GetSignalFunctionName)) {
-			containsSignalAcces = true;
-			return ActivityTemplates.getRealSignal(returnPin.getType().getName(), 
-					tempVariableExporter.getRealVariableName(returnPin));
-		}
-
-		if (isStdLibOperation(node_)) {
-
-			String val = "";
-
-			if (ActivityTemplates.Operators.isStdLibFunction(node_.getOperation().getName())) {
-
-				EList<OutputPin> outParamaterPins = node_.getResults();
-				outParamaterPins.remove(returnPin);
-				source.append(declareAllOutTempParameter(outParamaterPins));
-				List<String> parameterVariables = new ArrayList<String>(getParamNames(node_.getArguments()));
-				addOutParametrsToList(parameterVariables, outParamaterPins);
-
-				val = ActivityTemplates.simpleFunctionCall(node_.getOperation().getName(), parameterVariables);
-
-			} else if (node_.getArguments().size() == 2) {
-
-				val = ActivityTemplates.stdLibOperationCall(node_.getOperation().getName(),
-						activityExportResolver.getTargetFromInputPin((node_.getArguments()).get(0)),
-						activityExportResolver.getTargetFromInputPin((node_.getArguments()).get(1)));
-
-			} else if (node_.getArguments().size() == 1) {
-				val = ActivityTemplates.stdLibOperationCall(node_.getOperation().getName(),
-						activityExportResolver.getTargetFromInputPin((node_.getArguments()).get(0)));
-
-			}
-
-			if (node_.getOperation().getType() != null) {
-				if (!node_.getOperation().isTemplate()) {
-					source.append(addValueToTemporalVariable(node_.getOperation().getType().getName(),
-							tempVariableExporter.getRealVariableName(returnPin), val));
-
-				} else {
-					if (node_.getOutgoings().size() > 0) {
-						source.append(addValueToTemporalVariable(
-								((InputPin) node_.getOutgoings().get(0).getTarget()).getType().getName(),
-								tempVariableExporter.getRealVariableName(returnPin), val));
-					} else if (returnPin.getOutgoings().size() > 0) {
-						source.append(addValueToTemporalVariable(
-								((InputPin) returnPin.getOutgoings().get(0).getTarget()).getType().getName(),
-								tempVariableExporter.getRealVariableName(returnPin), val));
-
-					}
-				}
-
-			} else {
-				source.append(ActivityTemplates.invokeProcedure(node_.getOperation().getName(),
-						getParamNames(node_.getArguments())));
-			}
-
-		} else {
-
-			String val = ActivityTemplates.operationCall(activityExportResolver.getTargetFromInputPin(node_.getTarget(), false),
-					ActivityTemplates.accesOperatoForType(activityExportResolver.getTypeFromInputPin(node_.getTarget())),
-					node_.getOperation().getName(), getParamNames(node_.getArguments()));
-			if (returnPin != null) {
-				source.append(addValueToTemporalVariable(node_.getOperation().getType().getName(),
-						tempVariableExporter.getRealVariableName(returnPin), val));
-			} else {
-
-				source.append(ActivityTemplates.blockStatement(val));
-			}
-
-		}
-		return source;
-
-	}
-
-	private void addOutParametrsToList(List<String> parameterVariables, EList<OutputPin> outParamaterPins) {
-		for (OutputPin outPin : outParamaterPins) {
-			parameterVariables.add(tempVariableExporter.getRealVariableName(outPin));
-		}
-	}
-
-	private StringBuilder declareAllOutTempParameter(EList<OutputPin> outParamaterPins) {
-		StringBuilder declerations = new StringBuilder("");
-		for (OutputPin outPin : outParamaterPins) {
-			declerations.append(
-					GenerationTemplates.variableDecl(outPin.getType().getName(), tempVariableExporter.getRealVariableName(outPin), false));
-		}
-
-		return declerations;
-	}
-
-	private OutputPin searchReturnPin(EList<OutputPin> results, EList<Parameter> outputParameters) {
-		for (int i = 0; i < Math.min(results.size(), outputParameters.size()); i++) {
-
-			if (outputParameters.get(i).getDirection().equals(ParameterDirectionKind.RETURN_LITERAL)) {
-				return results.get(i);
-			}
-		}
-		return null;
-	}
-
-
-
-	private String createConstructorCallAction(InputPin target, EList<InputPin> arguments) {
-
-		return ActivityTemplates.constructorCall(activityExportResolver.getTargetFromInputPin(target, false),
-				target.getType().getName(), target.getType().eClass().equals(UMLPackage.Literals.SIGNAL)
-						? ActivityTemplates.CreateObjectType.Signal : ActivityTemplates.CreateObjectType.Class,
-				getParamNames(arguments));
-	}
-
-	private boolean isStdLibOperation(CallOperationAction node_) {
-		return node_.getTarget() == null;
-	}
-
-	private List<String> getParamNames(List<InputPin> arguments_) {
-		List<String> params = new ArrayList<String>();
-		for (InputPin param : arguments_) {
-			params.add(activityExportResolver.getTargetFromInputPin(param));
-		}
-		return params;
-	}
-
-	private LinkedList<ActivityNode> getNextNodes(ActivityNode node_) {
-		ActivityNode currentNode = node_;
+	private LinkedList<ActivityNode> getNextNodes(ActivityNode node) {
+		ActivityNode currentNode = node;
 		LinkedList<ActivityNode> nextNodes = new LinkedList<ActivityNode>();
-		if (node_.eClass().equals(UMLPackage.Literals.INPUT_PIN)) {
-			currentNode = (ActivityNode) node_.getOwner();
+		if (node.eClass().equals(UMLPackage.Literals.INPUT_PIN)) {
+			currentNode = (ActivityNode) node.getOwner();
 			nextNodes.add(currentNode);
 		}
 
@@ -577,15 +424,5 @@ public class ActivityExporter {
 		}
 		return nextNodes;
 	}
-	
-	private String addValueToTemporalVariable(String type, String var, String value) {
-		if (declaredTempVariables.contains(var)) {
-			return ActivityTemplates.simpleSetValue(var, value);
-		} else {
-			declaredTempVariables.add(var);
-			return ActivityTemplates.addVariableTemplate(type, var, value);
-
-		}
-}
 
 }
