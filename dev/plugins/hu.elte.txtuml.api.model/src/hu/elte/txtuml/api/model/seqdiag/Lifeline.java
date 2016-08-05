@@ -5,18 +5,18 @@ import hu.elte.txtuml.utils.InstanceCreator;
 
 public class Lifeline<T extends ModelClass> /*extends Descriptor<LifelineWrapper>*/ {
 	
-	protected ModelClass instance;
+	protected T instance;
 	
 	public Lifeline(Class<T> classToInstaniate,Object... params)
 	{
 		this.instance = InstanceCreator.create(classToInstaniate, params);
 	}
 	
-	public Lifeline(ModelClass instance){
+	public Lifeline(T instance){
 		this.instance = instance;
 	}
 	
-	public ModelClass getInstance()
+	public T getInstance()
 	{		
 		return instance;
 	}

@@ -6,14 +6,14 @@ import java.util.ArrayList;
 public class InteractionWrapper extends AbstractWrapper<Interaction> {
 	
 	private ArrayList<CombinedFragmentWrapper> fragments;
-	private ArrayList<LifelineWrapper> lifelines;
+	private ArrayList<LifelineWrapper<?>> lifelines;
 	private Runtime runtime;
 	
 	public InteractionWrapper(Interaction interaction)
 	{
 		super(interaction);
 		fragments = new ArrayList<CombinedFragmentWrapper>();
-		lifelines = new ArrayList<LifelineWrapper>();
+		lifelines = new ArrayList<LifelineWrapper<?>>();
 		
 		runtime = ( (RuntimeContext)Thread.currentThread() ).getRuntime();
 	}
@@ -38,9 +38,9 @@ public class InteractionWrapper extends AbstractWrapper<Interaction> {
 		}
 	}
 	
-	LifelineWrapper findLifeline(Lifeline<?> lf)
+	LifelineWrapper<?> findLifeline(Lifeline<?> lf)
 	{
-		for(LifelineWrapper wrapper : this.lifelines)
+		for(LifelineWrapper<?> wrapper : this.lifelines)
 		{
 			if(wrapper.getWrapped().equals(lf))
 			{

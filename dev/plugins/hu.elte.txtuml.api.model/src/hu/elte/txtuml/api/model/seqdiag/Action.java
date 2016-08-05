@@ -18,7 +18,7 @@ public class Action {
 		return new Lifeline<T>(instance);
 	}
 	
-	public static void delete(Lifeline obj)
+	public static void delete(Lifeline<?> obj)
 	{
 		RuntimeContext context = (RuntimeContext)Thread.currentThread();
 		InteractionWrapper wrapper = context.getInteractionWrapper();
@@ -38,19 +38,31 @@ public class Action {
 	}
 	
 	public static <L extends ModelClass, R extends ModelClass> void link(Class<? extends AssociationEnd<L, ?>> leftEnd,
-			L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj)
+			Lifeline<L> leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd, Lifeline<R> rightObj)
 	{
-		hu.elte.txtuml.api.model.Action.link(leftEnd, leftObj, rightEnd, rightObj);
+		RuntimeContext context = (RuntimeContext)Thread.currentThread();
+		InteractionWrapper wrapper = context.getInteractionWrapper();
+		@SuppressWarnings("unchecked")
+		LifelineWrapper<R> rightObjWrapper = (LifelineWrapper<R>) wrapper.findLifeline(rightObj);
+		@SuppressWarnings("unchecked")
+		LifelineWrapper<L> leftObjWrapper = (LifelineWrapper<L>) wrapper.findLifeline(leftObj);
+		leftObjWrapper.link(leftEnd, rightEnd, rightObjWrapper);
 	}
 	
 	public static <L extends ModelClass, R extends ModelClass> void unlink(
-			Class<? extends AssociationEnd<L, ?>> leftEnd, L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd,
-			R rightObj)
+			Class<? extends AssociationEnd<L, ?>> leftEnd, Lifeline<L> leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd,
+			Lifeline<R> rightObj)
 	{
-		hu.elte.txtuml.api.model.Action.unlink(leftEnd, leftObj, rightEnd, rightObj);
+		RuntimeContext context = (RuntimeContext)Thread.currentThread();
+		InteractionWrapper wrapper = context.getInteractionWrapper();
+		@SuppressWarnings("unchecked")
+		LifelineWrapper<R> rightObjWrapper = (LifelineWrapper<R>) wrapper.findLifeline(rightObj);
+		@SuppressWarnings("unchecked")
+		LifelineWrapper<L> leftObjWrapper = (LifelineWrapper<L>) wrapper.findLifeline(leftObj);
+		leftObjWrapper.unlink(leftEnd, rightEnd, rightObjWrapper);
 	}
 	
-	public static void start(Lifeline obj)
+	public static void start(Lifeline<?> obj)
 	{
 		RuntimeContext context = (RuntimeContext)Thread.currentThread();
 		InteractionWrapper wrapper = context.getInteractionWrapper();
@@ -91,11 +103,5 @@ public class Action {
 	public static void receive(Signal signal,ModelClass from)
 	{
 		//TODO code Action
-	}
-	
-	public static void testWrapper()
-	{
-		Thread[] array = new Thread[Thread.activeCount()];
-		Thread.enumerate(array);
 	}
 }
