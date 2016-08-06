@@ -38,6 +38,7 @@ class XtxtUMLIssueCodes {
 	// File-related issues
 
 	public static val MISPLACED_MODEL_DECLARATION = ISSUE_CODE_PREFIX + "misplaced_model_declaration";
+	public static val WRONG_MODEL_INFO = ISSUE_CODE_PREFIX + "wrong_model_info";
 
 	// Class-related issues
 
