@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: txtUML C++ Model Compiler Tests
 Bundle-SymbolicName: hu.elte.txtuml.export.cpp.tests
-Bundle-Version: 0.4.0.qualifier
+Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: ELTE
 Fragment-Host: hu.elte.txtuml.export.cpp
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
