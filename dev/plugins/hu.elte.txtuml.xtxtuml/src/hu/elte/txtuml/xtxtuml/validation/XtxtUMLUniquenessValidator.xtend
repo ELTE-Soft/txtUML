@@ -57,10 +57,13 @@ class XtxtUMLUniquenessValidator extends AbstractXtxtUMLValidator {
 	@Check
 	def checkModelElementNameIsUniqueInternal(TUModelElement modelElement) {
 		val siblingsAndSelf = (modelElement.eContainer as TUFile).elements;
-		if (siblingsAndSelf.exists [
-			name == modelElement.name && it != modelElement // direct comparison is safe here
-		]) {
-			error("Duplicate model element " + modelElement.name, modelElement, TU_MODEL_ELEMENT__NAME,
+		val duplicateName = siblingsAndSelf.findFirst [
+			name.toLowerCase == modelElement.name.toLowerCase && it != modelElement
+		]?.name; // direct comparison is safe here
+
+		if (duplicateName != null) {
+			error("Duplicate model element " + modelElement.name +
+				optionalCaseInsensitivityWarning(modelElement.name, duplicateName), modelElement, TU_MODEL_ELEMENT__NAME,
 				NOT_UNIQUE_NAME);
 		}
 	}
@@ -134,14 +137,19 @@ class XtxtUMLUniquenessValidator extends AbstractXtxtUMLValidator {
 
 	@Check
 	def checkStateNameIsUnique(TUState state) {
-		if (state.membersOfEnclosingElement.exists [
-			it instanceof TUState && (it as TUState).name == state.name && it != state || // direct comparison is safe here
-			it instanceof TUTransition && (it as TUTransition).name == state.name ||
-				it instanceof TUPort && (it as TUPort).name == state.name
-		]) {
-			error("State " + state.classQualifiedName +
-				" must have a unique name among states, transitions and ports of the enclosing element", state,
-				TU_STATE__NAME, NOT_UNIQUE_NAME);
+		val lowerCaseName = state.name.toLowerCase;
+		val duplicate = state.membersOfEnclosingElement.findFirst [
+			it instanceof TUState && (it as TUState).name.toLowerCase == lowerCaseName && it != state || // direct comparison is safe here
+			it instanceof TUTransition && (it as TUTransition).name.toLowerCase == lowerCaseName ||
+				it instanceof TUPort && (it as TUPort).name.toLowerCase == lowerCaseName
+		];
+
+		if (duplicate != null) {
+			error(
+				"State " + state.classQualifiedName +
+					" must have a unique name among states, transitions and ports of the enclosing element" +
+					optionalCaseInsensitivityWarning(state.name, duplicate.nameOfClassLikeMember), state, TU_STATE__NAME,
+				NOT_UNIQUE_NAME);
 		}
 	}
 
@@ -177,16 +185,21 @@ class XtxtUMLUniquenessValidator extends AbstractXtxtUMLValidator {
 
 	@Check
 	def checkTransitionNameIsUnique(TUTransition transition) {
-		if (transition.membersOfEnclosingElement.exists [
-			it instanceof TUTransition && (it as TUTransition).name == transition.name && it != transition || // direct comparison is safe here
-			it instanceof TUState && (it as TUState).name == transition.name ||
-				it instanceof TUPort && (it as TUPort).name == transition.name
-		]) {
-			error("Transition " + transition.classQualifiedName +
-				" must have a unique name among states, transitions and ports of the enclosing element", transition,
-				TU_TRANSITION__NAME, NOT_UNIQUE_NAME);
-		}
+		val lowerCaseName = transition.name.toLowerCase;
+		val duplicate = transition.membersOfEnclosingElement.findFirst [
+			it instanceof TUTransition && (it as TUTransition).name.toLowerCase == lowerCaseName &&
+				it != transition || // direct comparison is safe here
+			it instanceof TUState && (it as TUState).name.toLowerCase == lowerCaseName ||
+				it instanceof TUPort && (it as TUPort).name.toLowerCase == lowerCaseName
+		];
 
+		if (duplicate != null) {
+			error(
+				"Transition " + transition.classQualifiedName +
+					" must have a unique name among states, transitions and ports of the enclosing element" +
+					optionalCaseInsensitivityWarning(transition.name, duplicate.nameOfClassLikeMember),
+				transition, TU_TRANSITION__NAME, NOT_UNIQUE_NAME);
+		}
 	}
 
 	@Check
@@ -205,14 +218,19 @@ class XtxtUMLUniquenessValidator extends AbstractXtxtUMLValidator {
 
 	@Check
 	def checkPortNameIsUnique(TUPort port) {
+		val lowerCaseName = port.name.toLowerCase;
 		val containingClass = port.eContainer as TUClass;
-		if (containingClass.members.exists [
-			it instanceof TUPort && (it as TUPort).name == port.name && it != port // direct comparison is safe here
-			|| it instanceof TUState && (it as TUState).name == port.name ||
-				it instanceof TUTransition && (it as TUTransition).name == port.name
-		]) {
-			error("Port " + port.name + " in class " + containingClass.name +
-				" must have a unique name among states, transitions and ports of the enclosing element", port,
+		val duplicate = containingClass.members.findFirst [
+			it instanceof TUPort && (it as TUPort).name.toLowerCase == lowerCaseName && it != port // direct comparison is safe here
+			|| it instanceof TUState && (it as TUState).name.toLowerCase == lowerCaseName ||
+				it instanceof TUTransition && (it as TUTransition).name.toLowerCase == lowerCaseName
+		];
+
+		if (duplicate != null) {
+			error(
+				"Port " + port.name + " in class " + containingClass.name +
+					" must have a unique name among states, transitions and ports of the enclosing element" +
+					optionalCaseInsensitivityWarning(port.name, duplicate.nameOfClassLikeMember), port,
 				TU_CLASS_PROPERTY__NAME, NOT_UNIQUE_NAME);
 		}
 	}
@@ -232,18 +250,28 @@ class XtxtUMLUniquenessValidator extends AbstractXtxtUMLValidator {
 	@Check
 	def checkAssociationEndNamesAreUnique(TUAssociationEnd associationEnd) {
 		val association = associationEnd.eContainer as TUAssociation;
-		if (1 < association.ends.filter[name == associationEnd.name].length) {
+		val duplicateName = association.ends.findFirst [
+			name.toLowerCase == associationEnd.name.toLowerCase && it != associationEnd // direct comparison is safe here
+		]?.name;
+
+		if (duplicateName != null) {
 			error("Association end " + associationEnd.name + " in association " + association.name +
-				" must have a unique name", associationEnd, TU_CLASS_PROPERTY__NAME, NOT_UNIQUE_NAME);
+				" must have a unique name" + optionalCaseInsensitivityWarning(associationEnd.name, duplicateName),
+				associationEnd, TU_CLASS_PROPERTY__NAME, NOT_UNIQUE_NAME);
 		}
 	}
 
 	@Check
 	def checkConnectorEndNamesAreUnique(TUConnectorEnd connectorEnd) {
 		val connector = connectorEnd.eContainer as TUConnector;
-		if (1 < connector.ends.filter[name == connectorEnd.name].length) {
+		val duplicateName = connector.ends.findFirst [
+			name.toLowerCase == connectorEnd.name.toLowerCase && it != connectorEnd // direct comparison is safe here
+		]?.name;
+
+		if (duplicateName != null) {
 			error("Connector end " + connectorEnd.name + " in connector " + connector.name +
-				" must have a unique name", connectorEnd, TU_CONNECTOR_END__NAME, NOT_UNIQUE_NAME);
+				" must have a unique name" + optionalCaseInsensitivityWarning(connectorEnd.name, duplicateName),
+				connectorEnd, TU_CONNECTOR_END__NAME, NOT_UNIQUE_NAME);
 		}
 	}
 
@@ -298,6 +326,28 @@ class XtxtUMLUniquenessValidator extends AbstractXtxtUMLValidator {
 		switch (container : stateMember.eContainer) {
 			TUClass: container.members
 			TUState: container.members
+		}
+	}
+
+	/**
+	 * Should be called only when <code>name1.toLowerCase() == name2.toLowerCase()</code> holds.
+	 */
+	def protected optionalCaseInsensitivityWarning(String name1, String name2) {
+		if (name1 != name2) {
+			" – uniqueness validation in this case is case insensitive"
+		} else {
+			""
+		}
+	}
+
+	/**
+	 * <code>it</code> should be either a state, a transition or a port.
+	 */
+	def protected nameOfClassLikeMember(Object it) {
+		switch (it) {
+			TUState: name
+			TUTransition: name
+			TUPort: name
 		}
 	}
 
