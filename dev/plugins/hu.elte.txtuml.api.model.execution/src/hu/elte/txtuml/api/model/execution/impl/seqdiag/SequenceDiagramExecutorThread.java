@@ -41,6 +41,6 @@ public class SequenceDiagramExecutorThread extends Thread implements RuntimeCont
 
 	@Override
 	public InteractionWrapper getInteractionWrapper() {
-		return this.executor.getInteractionWrapper();
+		return this.runtime.getCurrentInteraction();
 	}	
 }

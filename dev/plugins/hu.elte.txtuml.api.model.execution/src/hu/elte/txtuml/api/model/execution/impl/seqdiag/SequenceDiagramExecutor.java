@@ -9,9 +9,7 @@ import hu.elte.txtuml.api.model.seqdiag.InteractionWrapper;
 import hu.elte.txtuml.api.model.seqdiag.RuntimeContext;
 
 public class SequenceDiagramExecutor implements Runnable {
-	
-	protected InteractionWrapper interaction;
-	protected Interaction base;
+
 	protected InvalidMessageSentListener messageListener;
 	protected CommunicationListener traceListener;
 	protected DefaultModelExecutor executor;
@@ -20,6 +18,7 @@ public class SequenceDiagramExecutor implements Runnable {
 	
 	private SequenceDiagramExecutorThread thread;
 	
+	private Interaction base;
 	private ArrayList<ValidationError> errors;
 	
 	public SequenceDiagramExecutor() {
@@ -57,7 +56,8 @@ public class SequenceDiagramExecutor implements Runnable {
 	{
 		isLocked = true;
 		
-		this.interaction = ( (RuntimeContext)Thread.currentThread() ).getRuntime().getInteractionWrapper(base);
+		InteractionWrapper interaction = ( (RuntimeContext)Thread.currentThread() ).getRuntime().getInteractionWrapper(base);
+		this.thread.getRuntime().setCurrentInteraction(interaction);
 		
 		executor.setInitialization(new Runnable(){
 			public void run()
@@ -87,11 +87,6 @@ public class SequenceDiagramExecutor implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public InteractionWrapper getInteractionWrapper()
-	{
-		return this.interaction;
 	}
 	
 	public ArrayList<ValidationError> getErrors()
