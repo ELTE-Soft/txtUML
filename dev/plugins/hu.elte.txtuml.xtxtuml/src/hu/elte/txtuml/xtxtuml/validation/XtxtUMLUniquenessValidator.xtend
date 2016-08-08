@@ -11,10 +11,12 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelElement
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPortMember
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUReception
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
@@ -65,6 +67,17 @@ class XtxtUMLUniquenessValidator extends AbstractXtxtUMLValidator {
 			error("Duplicate model element " + modelElement.name +
 				optionalCaseInsensitivityWarning(modelElement.name, duplicateName), modelElement, TU_MODEL_ELEMENT__NAME,
 				NOT_UNIQUE_NAME);
+		}
+	}
+
+	@Check
+	def checkReceptionIsUnique(TUReception reception) {
+		val enclosingInterface = reception.eContainer as TUInterface;
+		if (enclosingInterface.receptions.exists [
+			signal.fullyQualifiedName == reception.signal.fullyQualifiedName && it != reception // direct comparison is safe here
+		]) {
+			error("Duplicate reception in interface " + enclosingInterface.name, reception, TU_RECEPTION__SIGNAL,
+				NOT_UNIQUE_RECEPTION);
 		}
 	}
 

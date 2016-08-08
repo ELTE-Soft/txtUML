@@ -17,6 +17,7 @@ class XtxtUMLIssueCodes {
 	public static val NOT_UNIQUE_INITIAL_TRANSITION = ISSUE_CODE_PREFIX + "not_unique_initial_transition";
 	public static val NOT_UNIQUE_TRANSITION_MEMBER = ISSUE_CODE_PREFIX + "not_unique_transition_member";
 	public static val NOT_UNIQUE_PORT_MEMBER = ISSUE_CODE_PREFIX + "not_unique_port_member";
+	public static val NOT_UNIQUE_RECEPTION = ISSUE_CODE_PREFIX + "not_unique_reception";
 
 	// Typing-related issues
 
