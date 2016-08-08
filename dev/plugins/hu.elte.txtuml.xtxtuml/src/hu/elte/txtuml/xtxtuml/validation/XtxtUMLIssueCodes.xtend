@@ -7,6 +7,10 @@ class XtxtUMLIssueCodes {
 
 	protected static val ISSUE_CODE_PREFIX = "hu.elte.txtuml.xtxtuml.validation.IssueCodes.";
 
+	// Name-related issues
+
+	public static val RESERVED_NAME = ISSUE_CODE_PREFIX + "reserved_name";
+
 	// Uniqueness-related issues
 
 	public static val NOT_UNIQUE_NAME = ISSUE_CODE_PREFIX + "not_unique_name";

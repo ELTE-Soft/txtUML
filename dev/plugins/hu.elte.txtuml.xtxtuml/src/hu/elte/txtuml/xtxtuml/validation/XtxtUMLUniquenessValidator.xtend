@@ -39,7 +39,7 @@ import org.eclipse.xtext.validation.Check
 import static hu.elte.txtuml.xtxtuml.validation.XtxtUMLIssueCodes.*
 import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 
-class XtxtUMLUniquenessValidator extends AbstractXtxtUMLValidator {
+class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 
 	@Inject extension IQualifiedNameProvider;
 
