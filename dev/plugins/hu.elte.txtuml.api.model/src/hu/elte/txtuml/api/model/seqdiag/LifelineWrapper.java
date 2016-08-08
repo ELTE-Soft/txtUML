@@ -24,7 +24,9 @@ public class LifelineWrapper<T extends ModelClass> extends AbstractWrapper<Lifel
 	
 	public void send(Signal sig,LifelineWrapper<?> wrapper)
 	{
-		hu.elte.txtuml.api.model.Action.send(sig, wrapper.getWrapped().getInstance());
+		ImprintedListener listener = ( (RuntimeContext)Thread.currentThread() ).getTraceListener();
+		listener.addToPattern(sig);
+		//hu.elte.txtuml.api.model.Action.send(sig, wrapper.getWrapped().getInstance());
 	}
 	
 	protected <R extends ModelClass> void 

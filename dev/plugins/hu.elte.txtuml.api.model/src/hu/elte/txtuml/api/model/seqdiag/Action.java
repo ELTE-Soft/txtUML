@@ -14,10 +14,9 @@ public class Action {
 	public static <T extends ModelClass> Lifeline<T> create(Class<T> classType, Object... parameters)
 	{
 		T instance = hu.elte.txtuml.api.model.Action.create(classType, parameters);
-		hu.elte.txtuml.api.model.Action.start(instance);
 		return new Lifeline<T>(instance);
 	}
-	
+
 	public static void delete(Lifeline<?> obj)
 	{
 		RuntimeContext context = (RuntimeContext)Thread.currentThread();
@@ -70,7 +69,6 @@ public class Action {
 	}
 	
 	public static <S extends Signal> void send(Lifeline<?> from,S signal, Lifeline<?> target) {
-		
 		RuntimeContext context = (RuntimeContext)Thread.currentThread();
 		InteractionWrapper wrapper = context.getInteractionWrapper();
 		wrapper.findLifeline(from).send(signal,wrapper.findLifeline(target));

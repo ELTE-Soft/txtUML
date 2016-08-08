@@ -15,9 +15,7 @@ public class SequenceDiagramExecutor implements Runnable {
 	protected DefaultModelExecutor executor;
 	
 	private Boolean isLocked;
-	
 	private SequenceDiagramExecutorThread thread;
-	
 	private Interaction base;
 	private ArrayList<ValidationError> errors;
 	
