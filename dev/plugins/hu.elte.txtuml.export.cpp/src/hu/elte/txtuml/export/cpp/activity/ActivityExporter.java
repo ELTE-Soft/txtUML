@@ -23,12 +23,10 @@ import org.eclipse.uml2.uml.DestroyLinkAction;
 import org.eclipse.uml2.uml.DestroyObjectAction;
 import org.eclipse.uml2.uml.ExecutableNode;
 import org.eclipse.uml2.uml.ExpansionKind;
-import org.eclipse.uml2.uml.LinkEndData;
 import org.eclipse.uml2.uml.LoopNode;
 import org.eclipse.uml2.uml.ObjectFlow;
 import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.ParameterDirectionKind;
-import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ReadLinkAction;
 import org.eclipse.uml2.uml.SendObjectAction;
 import org.eclipse.uml2.uml.SequenceNode;
@@ -57,6 +55,7 @@ public class ActivityExporter {
 	private UserVariableExporter userVariableExporter;
 	private ActivityNodeResolver activityExportResolver;
 	private CallOperationExporter callOperationExporter;
+	private LinkAnctionExporter linkActionExporter;
 	
 	
 
@@ -72,8 +71,9 @@ public class ActivityExporter {
 				tempVariableExporter,userVariableExporter);
 		callOperationExporter = new CallOperationExporter(tempVariableExporter,returnOutputsToCallActions,
 				activityExportResolver);
+		linkActionExporter = new LinkAnctionExporter(tempVariableExporter,activityExportResolver);
 		
-		objectMap = new HashMap<CreateObjectAction, String>();
+		objectMap = new HashMap<CreateObjectAction,String>();
 		returnOutputsToCallActions = new HashMap<CallOperationAction, OutputPin>();
 		returnNode = null;
 
@@ -199,11 +199,11 @@ public class ActivityExporter {
 		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
 			source.append(createCreateObjectActionCode((CreateObjectAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_LINK_ACTION)) {
-			source.append(createLinkActionCode((CreateLinkAction) node));
+			source.append(linkActionExporter.createLinkActionCode((CreateLinkAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.DESTROY_LINK_ACTION)) {
-			source.append(createDestroyLinkActionCode((DestroyLinkAction) node));
+			source.append(linkActionExporter.createDestroyLinkActionCode((DestroyLinkAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.READ_LINK_ACTION)) {
-			source.append(createReadLinkActionCode((ReadLinkAction) node));
+			source.append(linkActionExporter.createReadLinkActionCode((ReadLinkAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.SEND_OBJECT_ACTION)) {
 			source.append(createSendSignalActionCode((SendObjectAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.START_CLASSIFIER_BEHAVIOR_ACTION)) {
@@ -257,48 +257,6 @@ public class ActivityExporter {
 
 		return source;
 
-	}
-
-	private String createReadLinkActionCode(ReadLinkAction readLinkNode) {
-
-		Property otherMember = null;
-		for (LinkEndData end : readLinkNode.getEndData()) {
-			if (end.getValue() == null) {
-				otherMember = end.getEnd();
-			}
-		}
-		tempVariableExporter.exportOutputPinToMap(readLinkNode.getResult());
-		
-		String target = readLinkNode.getInputValues().size() > 0 ? 
-				activityExportResolver.getTargetFromInputPin(readLinkNode.getInputValues().get(0)) : ActivityTemplates.Self;
-
-		return ActivityTemplates.defineAndAddToCollection(otherMember.getType().getName(),
-				tempVariableExporter.getRealVariableName(readLinkNode.getResult()),
-				ActivityTemplates.selectAllTemplate(target,otherMember.getAssociation().getName(), otherMember.getName()));
-	}
-
-	private String createLinkActionCode(CreateLinkAction node) {
-		LinkEndData firstLinkEnd = node.getEndData().get(0);
-		LinkEndData secondLinkEnd = node.getEndData().get(1);
-
-		String firstEndObject = activityExportResolver.getTargetFromInputPin(firstLinkEnd.getValue());
-		String secondEndObject = activityExportResolver.getTargetFromInputPin(secondLinkEnd.getValue());
-
-		return ActivityTemplates.linkObjects(firstEndObject, secondEndObject,
-				firstLinkEnd.getEnd().getAssociation().getName(), firstLinkEnd.getEnd().getName(),
-				secondLinkEnd.getEnd().getName(), GenerationTemplates.LinkFunctionType.Link);
-	}
-
-	private Object createDestroyLinkActionCode(DestroyLinkAction node) {
-		LinkEndData firstLinkEnd = node.getEndData().get(0);
-		LinkEndData secondLinkEnd = node.getEndData().get(1);
-
-		String firstEndObject = activityExportResolver.getTargetFromInputPin(firstLinkEnd.getValue());
-		String secondEndObject = activityExportResolver.getTargetFromInputPin(secondLinkEnd.getValue());
-
-		return ActivityTemplates.linkObjects(firstEndObject, secondEndObject,
-				firstLinkEnd.getEnd().getAssociation().getName(), firstLinkEnd.getEnd().getName(),
-				secondLinkEnd.getEnd().getName(), GenerationTemplates.LinkFunctionType.Unlink);
 	}
 
 	private String createDestroyObjectActionCode(DestroyObjectAction node_) {
