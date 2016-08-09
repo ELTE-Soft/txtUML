@@ -9,13 +9,13 @@ import org.eclipse.uml2.uml.ReadLinkAction;
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 
-class LinkAnctionExporter {
+class LinkActionExporter {
 	
 	private OutVariableExporter tempVariableExporter;
 	private ActivityNodeResolver activityExportResolver;
 	
 	
-	public LinkAnctionExporter(OutVariableExporter tempVariableExporter,ActivityNodeResolver activityExportResolver) {
+	public LinkActionExporter(OutVariableExporter tempVariableExporter,ActivityNodeResolver activityExportResolver) {
 		this.tempVariableExporter = tempVariableExporter;
 		this.activityExportResolver = activityExportResolver;
 	}

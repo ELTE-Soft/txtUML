@@ -55,7 +55,8 @@ public class ActivityExporter {
 	private UserVariableExporter userVariableExporter;
 	private ActivityNodeResolver activityExportResolver;
 	private CallOperationExporter callOperationExporter;
-	private LinkAnctionExporter linkActionExporter;
+	private LinkActionExporter linkActionExporter;
+	private ObjectActionExporter objectActionExporter;
 	
 	
 
@@ -71,7 +72,8 @@ public class ActivityExporter {
 				tempVariableExporter,userVariableExporter);
 		callOperationExporter = new CallOperationExporter(tempVariableExporter,returnOutputsToCallActions,
 				activityExportResolver);
-		linkActionExporter = new LinkAnctionExporter(tempVariableExporter,activityExportResolver);
+		linkActionExporter = new LinkActionExporter(tempVariableExporter,activityExportResolver);
+		objectActionExporter = new ObjectActionExporter(tempVariableExporter,objectMap,activityExportResolver);
 		
 		objectMap = new HashMap<CreateObjectAction,String>();
 		returnOutputsToCallActions = new HashMap<CallOperationAction, OutputPin>();
@@ -169,7 +171,9 @@ public class ActivityExporter {
 		StringBuilder source = new StringBuilder("");
 
 		if (node.eClass().equals(UMLPackage.Literals.SEQUENCE_NODE)) {
+			
 			SequenceNode seqNode = (SequenceNode) node;
+			
 			if (returnNode == null) {
 				for (ActivityEdge aEdge : seqNode.getContainedEdges()) {
 					if (aEdge.eClass().equals(UMLPackage.Literals.OBJECT_FLOW)) {
@@ -197,7 +201,7 @@ public class ActivityExporter {
 					activityExportResolver.getTargetFromInputPin(asfva.getValue(), false), ActivityTemplates
 							.getOperationFromType(asfva.getStructuralFeature().isMultivalued(), asfva.isReplaceAll())));
 		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
-			source.append(createCreateObjectActionCode((CreateObjectAction) node));
+			source.append(objectActionExporter.createCreateObjectActionCode((CreateObjectAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_LINK_ACTION)) {
 			source.append(linkActionExporter.createLinkActionCode((CreateLinkAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.DESTROY_LINK_ACTION)) {
@@ -207,9 +211,9 @@ public class ActivityExporter {
 		} else if (node.eClass().equals(UMLPackage.Literals.SEND_OBJECT_ACTION)) {
 			source.append(createSendSignalActionCode((SendObjectAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.START_CLASSIFIER_BEHAVIOR_ACTION)) {
-			source.append(createStartObjectActionCode((StartClassifierBehaviorAction) node));
+			source.append(objectActionExporter.createStartObjectActionCode((StartClassifierBehaviorAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.START_OBJECT_BEHAVIOR_ACTION)) {
-			source.append(createStartObjectActionCode((StartObjectBehaviorAction) node));
+			source.append(objectActionExporter.createStartObjectActionCode((StartObjectBehaviorAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
 			source.append(callOperationExporter.createCallOperationActionCode((CallOperationAction) node));
 
@@ -226,9 +230,8 @@ public class ActivityExporter {
 		} else if (node.eClass().equals(UMLPackage.Literals.CONDITIONAL_NODE)) {
 			source.append(createConditionalCode(((ConditionalNode) node)));
 		} else if (node.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION)) {
-
 		} else if (node.eClass().equals(UMLPackage.Literals.DESTROY_OBJECT_ACTION)) {
-			source.append(createDestroyObjectActionCode((DestroyObjectAction) node));
+			source.append(objectActionExporter.createDestroyObjectActionCode((DestroyObjectAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.TEST_IDENTITY_ACTION)) {
 			source.append(callOperationExporter.createTestIdentityActionCode((TestIdentityAction) node));
 		}
@@ -257,35 +260,6 @@ public class ActivityExporter {
 
 		return source;
 
-	}
-
-	private String createDestroyObjectActionCode(DestroyObjectAction node_) {
-		return ActivityTemplates.deleteObject(activityExportResolver.getTargetFromInputPin(node_.getTarget()));
-	}
-
-	private String createStartObjectActionCode(StartClassifierBehaviorAction node_) {
-		return ActivityTemplates.startObject(activityExportResolver.getTargetFromInputPin(node_.getObject()));
-	}
-
-	private String createStartObjectActionCode(StartObjectBehaviorAction node_) {
-		return ActivityTemplates.startObject(activityExportResolver.getTargetFromInputPin(node_.getObject()));
-	}
-
-	private String createCreateObjectActionCode(CreateObjectAction createObjectActionNode) {
-		String type = createObjectActionNode.getClassifier().getName();
-
-		ActivityTemplates.CreateObjectType objectType;
-		if (createObjectActionNode.getClassifier().eClass().equals(UMLPackage.Literals.SIGNAL)) {
-			objectType = ActivityTemplates.CreateObjectType.Signal;
-		} else {
-			objectType = CreateObjectType.Class;
-		}
-
-		tempVariableExporter.exportOutputPinToMap(createObjectActionNode.getResult());
-		String name = tempVariableExporter.getRealVariableName(createObjectActionNode.getResult());
-		objectMap.put(createObjectActionNode, name);
-
-		return ActivityTemplates.createObject(type, name, objectType);
 	}
 
 	private StringBuilder createCycleCode(LoopNode loopNode) {
