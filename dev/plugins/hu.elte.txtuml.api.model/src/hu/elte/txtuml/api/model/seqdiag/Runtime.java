@@ -16,16 +16,14 @@ public class Runtime {
 	@SuppressWarnings("unchecked")
 	public <T extends ModelClass> LifelineWrapper<T> getLifelineWrapper(Field lifeline,InteractionWrapper parent)
 	{
-		Lifeline<T> data = null;
+		T data = null;
 		try {
-			data = (Lifeline<T>)lifeline.get(parent.getWrapped());
+			data = (T)lifeline.get(parent.getWrapped());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if(data != null)
-			return new LifelineWrapper<T>(parent,data);
-		else
-			return null;
+			
+		return new LifelineWrapper<T>(parent,data,lifeline.getDeclaredAnnotation(Position.class).value(),lifeline.getName());
 	}
 	
 	public CombinedFragmentWrapper getCombinedFragmentWrapper(CombinedFragmentType type,InteractionWrapper parent, String name)

@@ -7,9 +7,13 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.Signal;
+
 public class InteractionWrapper extends AbstractWrapper<Interaction> {
 	
 	private HashMap<String,CombinedFragmentWrapper> fragments;
+	private ArrayList<MessageWrapper> messages;
 	private ArrayList<LifelineWrapper<?>> lifelines;
 	private Runtime runtime;
 	
@@ -18,17 +22,28 @@ public class InteractionWrapper extends AbstractWrapper<Interaction> {
 		super(interaction);
 		fragments = new HashMap<String,CombinedFragmentWrapper>();
 		lifelines = new ArrayList<LifelineWrapper<?>>();
+		messages = new ArrayList<MessageWrapper>();
 		
 		runtime = ( (RuntimeContext)Thread.currentThread() ).getRuntime();
 	}
 	
-	public void finalize()
+	public ArrayList<LifelineWrapper<?>> getLifelines()
 	{
-		getLifelines();
-		getCombinedFragments();
+		return this.lifelines;
 	}
 	
-	private void getCombinedFragments()
+	public ArrayList<MessageWrapper> getMessages()
+	{
+		return this.messages;
+	}
+	
+	public void finalize()
+	{
+		parseLifelines();
+		parseCombinedFragments();
+	}
+	
+	private void parseCombinedFragments()
 	{
 		Method[] methods = this.wrapped.getClass().getMethods();
 		for(Method combinedFragment : methods)
@@ -39,7 +54,7 @@ public class InteractionWrapper extends AbstractWrapper<Interaction> {
 		}
 	}
 	
-	private void getLifelines()
+	private void parseLifelines()
 	{
 		Field[] fields = this.wrapped.getClass().getDeclaredFields();
 		for(Field lifeline : fields)
@@ -48,7 +63,7 @@ public class InteractionWrapper extends AbstractWrapper<Interaction> {
 		}
 	}
 	
-	LifelineWrapper<?> findLifeline(Lifeline<?> lf)
+	LifelineWrapper<?> findLifeline(ModelClass lf)
 	{
 		for(LifelineWrapper<?> wrapper : this.lifelines)
 		{
@@ -59,5 +74,10 @@ public class InteractionWrapper extends AbstractWrapper<Interaction> {
 		}
 		
 		return null;
+	}
+	
+	public void storeMessage(ModelClass from,Signal sig,ModelClass to)
+	{
+		this.messages.add(new MessageWrapper(from,sig,to));
 	}
 }

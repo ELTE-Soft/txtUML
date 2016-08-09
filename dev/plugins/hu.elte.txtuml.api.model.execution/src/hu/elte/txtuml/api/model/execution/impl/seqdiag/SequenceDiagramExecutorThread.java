@@ -10,6 +10,20 @@ public class SequenceDiagramExecutorThread extends Thread implements RuntimeCont
 	private SequenceDiagramExecutor executor;
 	private Runtime runtime;
 	
+	static SequenceDiagramExecutorThread getCurrentExecutorThread()
+	{
+		Thread[] threads = new Thread[Thread.activeCount()];
+		for(Thread thread : threads)
+		{
+			if(thread instanceof SequenceDiagramExecutorThread)
+			{
+				return (SequenceDiagramExecutorThread) thread;
+			}
+		}
+		
+		return null;
+	}
+	
 	public SequenceDiagramExecutorThread(SequenceDiagramExecutor executor)
 	{
 		super(executor);

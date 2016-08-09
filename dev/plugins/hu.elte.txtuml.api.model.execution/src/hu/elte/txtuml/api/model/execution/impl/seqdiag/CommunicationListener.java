@@ -9,26 +9,28 @@ import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.error.seqdiag.InvalidMessageError;
 import hu.elte.txtuml.api.model.execution.TraceListener;
 import hu.elte.txtuml.api.model.seqdiag.ImprintedListener;
+import hu.elte.txtuml.api.model.seqdiag.MessageWrapper;
 
 public class CommunicationListener extends AbstractSequenceDiagramModelListener implements TraceListener,ImprintedListener  {
 	
-	protected LinkedList<Signal> suggestedMessagePattern; 
+	protected LinkedList<MessageWrapper> suggestedMessagePattern; 
 	
 	public CommunicationListener(SequenceDiagramExecutor executor)
 	{
 		super(executor);
-		suggestedMessagePattern = new LinkedList<Signal>();
+		suggestedMessagePattern = new LinkedList<MessageWrapper>();
 	}
 	
 	public void executionStarted() {
 	}
 
 	public void processingSignal(ModelClass object, Signal signal) {
+				
 		if(suggestedMessagePattern.size() > 0)
 		{	
-			Signal required = suggestedMessagePattern.poll();
+			MessageWrapper required = suggestedMessagePattern.poll();
 			
-			if(!signal.equals(required))
+			if(!signal.equals(required.signal))
 			{
 				executor.addError(new InvalidMessageError(object,"The model diverged from the Sequence-diagram Specified behaviour:\n it sent: " + signal.toString() + " instead of " + required.toString() + "\n" ));
 			}
@@ -39,9 +41,9 @@ public class CommunicationListener extends AbstractSequenceDiagramModelListener 
 		}
 	}
 	
-	public void addToPattern(Signal sig)
+	public void addToPattern(ModelClass from,Signal sig,ModelClass to)
 	{
-		this.suggestedMessagePattern.add(sig);
+		this.suggestedMessagePattern.add(new MessageWrapper(from,sig,to));
 	}
 
 	public void usingTransition(ModelClass object, Transition transition) {

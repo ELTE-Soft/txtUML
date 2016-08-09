@@ -11,13 +11,12 @@ public class Action {
 	
 	Action(){}
 	
-	public static <T extends ModelClass> Lifeline<T> create(Class<T> classType, Object... parameters)
+	public static <T extends ModelClass> T create(Class<T> classType, Object... parameters)
 	{
-		T instance = hu.elte.txtuml.api.model.Action.create(classType, parameters);
-		return new Lifeline<T>(instance);
+		return hu.elte.txtuml.api.model.Action.create(classType, parameters);
 	}
 
-	public static void delete(Lifeline<?> obj)
+	public static void delete(ModelClass obj)
 	{
 		RuntimeContext context = (RuntimeContext)Thread.currentThread();
 		InteractionWrapper wrapper = context.getInteractionWrapper();
@@ -37,7 +36,7 @@ public class Action {
 	}
 	
 	public static <L extends ModelClass, R extends ModelClass> void link(Class<? extends AssociationEnd<L, ?>> leftEnd,
-			Lifeline<L> leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd, Lifeline<R> rightObj)
+			L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj)
 	{
 		RuntimeContext context = (RuntimeContext)Thread.currentThread();
 		InteractionWrapper wrapper = context.getInteractionWrapper();
@@ -49,8 +48,8 @@ public class Action {
 	}
 	
 	public static <L extends ModelClass, R extends ModelClass> void unlink(
-			Class<? extends AssociationEnd<L, ?>> leftEnd, Lifeline<L> leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd,
-			Lifeline<R> rightObj)
+			Class<? extends AssociationEnd<L, ?>> leftEnd, L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd,
+			R rightObj)
 	{
 		RuntimeContext context = (RuntimeContext)Thread.currentThread();
 		InteractionWrapper wrapper = context.getInteractionWrapper();
@@ -61,17 +60,18 @@ public class Action {
 		leftObjWrapper.unlink(leftEnd, rightEnd, rightObjWrapper);
 	}
 	
-	public static void start(Lifeline<?> obj)
+	public static void start(ModelClass obj)
 	{
 		RuntimeContext context = (RuntimeContext)Thread.currentThread();
 		InteractionWrapper wrapper = context.getInteractionWrapper();
 		wrapper.findLifeline(obj).start();
 	}
 	
-	public static <S extends Signal> void send(Lifeline<?> from,S signal, Lifeline<?> target) {
-		RuntimeContext context = (RuntimeContext)Thread.currentThread();
+	public static <S extends Signal> void send(ModelClass from,S signal, ModelClass target) {
+		RuntimeContext context = RuntimeContext.getCurrentExecutorThread();
 		InteractionWrapper wrapper = context.getInteractionWrapper();
-		wrapper.findLifeline(from).send(signal,wrapper.findLifeline(target));
+		wrapper.storeMessage(from, signal, target);
+		context.getTraceListener().addToPattern(from, signal, target);
 	}
 	
 	public static void log(String message)

@@ -2,7 +2,9 @@ package hu.elte.txtuml.api.model.execution.impl.seqdiag;
 
 import java.util.ArrayList;
 
+import hu.elte.txtuml.api.model.error.seqdiag.InvalidMessageError;
 import hu.elte.txtuml.api.model.error.seqdiag.ValidationError;
+import hu.elte.txtuml.api.model.execution.LockedModelExecutorException;
 import hu.elte.txtuml.api.model.execution.impl.DefaultModelExecutor;
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
 import hu.elte.txtuml.api.model.seqdiag.InteractionWrapper;
@@ -62,13 +64,21 @@ public class SequenceDiagramExecutor implements Runnable {
 			{
 				interaction.getWrapped().initialize();
 				interaction.finalize();
+				interaction.getWrapped().run();
 			}
 		});
 		
 		executor.launch();
-		interaction.getWrapped().run();
 		executor.shutdown();
 		executor.awaitTermination();
+		
+		if(traceListener.suggestedMessagePattern.size() != 0)
+		{
+			this.errors.add(new InvalidMessageError(this.thread.getInteractionWrapper().getLifelines().get(0).getWrapped(),"The pattern given is bigger than the model"));
+		}
+		
+		PlantUmlGenerator generator = new PlantUmlGenerator("plantUml.txt", interaction);
+		generator.generate();
 	}
 	
 	public SequenceDiagramExecutor shutdown()
