@@ -7,21 +7,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.AddStructuralFeatureValueAction;
 import org.eclipse.uml2.uml.AddVariableValueAction;
 import org.eclipse.uml2.uml.CallOperationAction;
-import org.eclipse.uml2.uml.Clause;
 import org.eclipse.uml2.uml.ConditionalNode;
 import org.eclipse.uml2.uml.CreateLinkAction;
 import org.eclipse.uml2.uml.CreateObjectAction;
 import org.eclipse.uml2.uml.DestroyLinkAction;
 import org.eclipse.uml2.uml.DestroyObjectAction;
-import org.eclipse.uml2.uml.ExecutableNode;
-import org.eclipse.uml2.uml.ExpansionKind;
 import org.eclipse.uml2.uml.LoopNode;
 import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.ReadLinkAction;
@@ -31,12 +27,10 @@ import org.eclipse.uml2.uml.StartClassifierBehaviorAction;
 import org.eclipse.uml2.uml.StartObjectBehaviorAction;
 import org.eclipse.uml2.uml.TestIdentityAction;
 import org.eclipse.uml2.uml.UMLPackage;
-import org.eclipse.uml2.uml.Variable;
 import org.eclipse.uml2.uml.ExpansionRegion;
 
 import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 
 //import hu.elte.txtuml.utils.Logger;
 
@@ -48,10 +42,12 @@ public class ActivityExporter {
 	private OutVariableExporter tempVariableExporter;
 	private UserVariableExporter userVariableExporter;
 	private ActivityNodeResolver activityExportResolver;
+	private StructuredControlNodeExporter controlNodeExporter;
 	private CallOperationExporter callOperationExporter;
 	private LinkActionExporter linkActionExporter;
 	private ObjectActionExporter objectActionExporter;
 	private ReturnNodeExporter returnNodeExporter;
+	
 
 	public ActivityExporter() {
 		init();
@@ -63,6 +59,7 @@ public class ActivityExporter {
 		userVariableExporter = new UserVariableExporter();
 		activityExportResolver = new ActivityNodeResolver(objectMap, returnOutputsToCallActions, tempVariableExporter,
 				userVariableExporter);
+		controlNodeExporter = new StructuredControlNodeExporter(this, activityExportResolver, userVariableExporter);
 		callOperationExporter = new CallOperationExporter(tempVariableExporter, returnOutputsToCallActions,
 				activityExportResolver);
 		linkActionExporter = new LinkActionExporter(tempVariableExporter, activityExportResolver);
@@ -83,7 +80,7 @@ public class ActivityExporter {
 			}
 		}
 
-		source.append(createStructuredActivityNodeVariables(activity_.getVariables()));
+		source.append(controlNodeExporter.createStructuredActivityNodeVariables(activity_.getVariables()));
 		source.append(createActivityPartCode(startNode));
 		source.append(returnNodeExporter.createReturnParamaterCode());
 
@@ -99,26 +96,6 @@ public class ActivityExporter {
 
 	public boolean isContainsSignalAcces() {
 		return callOperationExporter.isUsedSignalParameter();
-	}
-
-	private String createStructuredActivityNodeVariables(EList<Variable> variables) {
-		StringBuilder source = new StringBuilder("");
-		for (Variable variable : variables) {
-			source.append(createVariable(variable));
-		}
-
-		return source.toString();
-	}
-
-	private String createVariable(Variable variable) {
-		String type = "!!!UNKNOWNTYPE!!!";
-		if (variable.getType() != null) {
-			type = variable.getType().getName();
-		}
-		userVariableExporter.exportNewVariable(variable);
-
-		return GenerationTemplates.variableDecl(type, userVariableExporter.getRealVariableName(variable),
-				variable.getType().eClass().equals(UMLPackage.Literals.SIGNAL));
 	}
 
 	private String createActivityPartCode(ActivityNode startNode) {
@@ -180,18 +157,12 @@ public class ActivityExporter {
 		return nextNodes;
 	}
 
-	private StringBuilder createActivityNodeCode(ActivityNode node) {
+	StringBuilder createActivityNodeCode(ActivityNode node) {
 
 		StringBuilder source = new StringBuilder("");
 
 		if (node.eClass().equals(UMLPackage.Literals.SEQUENCE_NODE)) {
-			SequenceNode seqNode = (SequenceNode) node;
-			returnNodeExporter.searchRetunNode(seqNode.getContainedEdges());
-			source.append(createStructuredActivityNodeVariables(seqNode.getVariables()));
-			for (ActivityNode aNode : seqNode.getNodes()) {
-				source.append(createActivityNodeCode(aNode));
-			}
-
+			source.append(controlNodeExporter.createSequenceNodeCode((SequenceNode) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION)) {
 			AddStructuralFeatureValueAction asfva = (AddStructuralFeatureValueAction) node;
 			source.append(ActivityTemplates.generalSetValue(activityExportResolver.getTargetFromASFVA(asfva),
@@ -222,11 +193,11 @@ public class ActivityExporter {
 					ActivityTemplates.getOperationFromType(avva.getVariable().isMultivalued(), avva.isReplaceAll())));
 
 		} else if (node.eClass().equals(UMLPackage.Literals.LOOP_NODE)) {
-			source.append(createCycleCode((LoopNode) node));
+			source.append(controlNodeExporter.createLoopNodeCode((LoopNode) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.EXPANSION_REGION)) {
-			source.append(createExpansionRegaionCode((ExpansionRegion) node));
+			source.append(controlNodeExporter.createExpansionRegaionCode((ExpansionRegion) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.CONDITIONAL_NODE)) {
-			source.append(createConditionalCode(((ConditionalNode) node)));
+			source.append(controlNodeExporter.createConditionalCode(((ConditionalNode) node)));
 		} else if (node.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION)) {
 		} else if (node.eClass().equals(UMLPackage.Literals.DESTROY_OBJECT_ACTION)) {
 			source.append(objectActionExporter.createDestroyObjectActionCode((DestroyObjectAction) node));
@@ -234,85 +205,6 @@ public class ActivityExporter {
 			source.append(callOperationExporter.createTestIdentityActionCode((TestIdentityAction) node));
 		}
 
-		return source;
-	}
-
-	private String createExpansionRegaionCode(ExpansionRegion node) {
-		String source = "UNKNOWN_EXPANSION_REAGION";
-
-		if (node.getMode().equals(ExpansionKind.ITERATIVE_LITERAL)) {
-
-			Variable iterativeVar = node.getVariables().get(0);
-			EList<ActivityNode> nodes = node.getNodes();
-			StringBuilder body = createActivityNodeCode(nodes.get(nodes.size() - 1));
-			StringBuilder inits = new StringBuilder("");
-			for (int i = 0; i < nodes.size() - 1; i++) {
-				inits.append(createActivityNodeCode(nodes.get(i)));
-			}
-
-			String collection = activityExportResolver
-					.getTargetFromActivityNode(node.getInputElements().get(0).getIncomings().get(0).getSource());
-			source = ActivityTemplates.foreachCycle(iterativeVar.getType().getName(), iterativeVar.getName(),
-					collection, body.toString(), inits.toString());
-		}
-
-		return source;
-
-	}
-
-	private StringBuilder createCycleCode(LoopNode loopNode) {
-		StringBuilder source = new StringBuilder("");
-		source.append(createStructuredActivityNodeVariables(loopNode.getVariables()));
-
-		for (ExecutableNode initNode : loopNode.getSetupParts()) {
-			source.append(createActivityNodeCode(initNode));
-		}
-
-		StringBuilder condition = new StringBuilder("");
-		for (ExecutableNode condNode : loopNode.getTests()) {
-			condition.append(createActivityNodeCode(condNode));
-		}
-		source.append(condition);
-
-		StringBuilder body = new StringBuilder("");
-		for (ExecutableNode bodyNode : loopNode.getBodyParts()) {
-			body.append(createActivityNodeCode(bodyNode));
-		}
-
-		StringBuilder recalulcateCondition = new StringBuilder("");
-		for (ExecutableNode condNode : loopNode.getTests()) {
-			recalulcateCondition.append(createActivityNodeCode(condNode));
-		}
-
-		source.append(
-				ActivityTemplates.whileCycle(activityExportResolver.getTargetFromActivityNode(loopNode.getDecider()),
-						body.toString() + "\n" + recalulcateCondition.toString()));
-
-		return source;
-	}
-
-	private StringBuilder createConditionalCode(ConditionalNode conditionalNode) {
-		StringBuilder source = new StringBuilder("");
-		StringBuilder tests = new StringBuilder("");
-		StringBuilder bodies = new StringBuilder("");
-
-		for (Clause clause : conditionalNode.getClauses()) {
-			for (ExecutableNode test : clause.getTests()) {
-				tests.append(createActivityNodeCode(test));
-			}
-
-			String cond = activityExportResolver.getTargetFromActivityNode(clause.getDecider());
-			StringBuilder body = new StringBuilder("");
-			for (ExecutableNode node : clause.getBodies()) {
-				body.append(createActivityNodeCode(node));
-			}
-
-			bodies.append(ActivityTemplates.simpleIf(cond, body.toString()));
-
-		}
-
-		source.append(tests);
-		source.append(bodies);
 		return source;
 	}
 
