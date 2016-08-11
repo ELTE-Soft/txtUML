@@ -26,11 +26,11 @@ public class MessageWrapper {
 		{
 			MessageWrapper otherWrapper = (MessageWrapper)other;
 			
-			if(!otherWrapper.sender.equals(sender))
+			if(!otherWrapper.sender.equals(sender) && sender != null && otherWrapper.sender != null)
 			{
 				return false;
 			}
-			else if(!otherWrapper.receiver.equals(receiver))
+			else if(!otherWrapper.receiver.runtimeInfo().getIdentifier().equals(receiver.runtimeInfo().getIdentifier()))
 			{
 				return false;
 			}

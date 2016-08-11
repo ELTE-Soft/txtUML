@@ -19,6 +19,10 @@ public interface TraceListener {
 
 	default void processingSignal(ModelClass object, Signal signal) {
 	}
+	
+	default void sendingSignal(ModelClass sender,Signal signal){
+		
+	}
 
 	default void usingTransition(ModelClass object, Transition transition) {
 	}

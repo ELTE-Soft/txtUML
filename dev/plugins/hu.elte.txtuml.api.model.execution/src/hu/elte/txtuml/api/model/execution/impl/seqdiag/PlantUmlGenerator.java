@@ -1,8 +1,6 @@
 package hu.elte.txtuml.api.model.execution.impl.seqdiag;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
 
 import hu.elte.txtuml.api.model.ModelClass;

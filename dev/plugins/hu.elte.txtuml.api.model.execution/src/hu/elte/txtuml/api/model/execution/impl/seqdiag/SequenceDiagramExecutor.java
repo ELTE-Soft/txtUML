@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import hu.elte.txtuml.api.model.error.seqdiag.InvalidMessageError;
 import hu.elte.txtuml.api.model.error.seqdiag.ValidationError;
-import hu.elte.txtuml.api.model.execution.LockedModelExecutorException;
 import hu.elte.txtuml.api.model.execution.impl.DefaultModelExecutor;
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
 import hu.elte.txtuml.api.model.seqdiag.InteractionWrapper;
@@ -63,7 +62,7 @@ public class SequenceDiagramExecutor implements Runnable {
 			public void run()
 			{
 				interaction.getWrapped().initialize();
-				interaction.finalize();
+				interaction.prepare();
 				interaction.getWrapped().run();
 			}
 		});

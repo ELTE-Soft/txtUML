@@ -1,7 +1,6 @@
 package hu.elte.txtuml.api.model.seqdiag;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -37,7 +36,7 @@ public class InteractionWrapper extends AbstractWrapper<Interaction> {
 		return this.messages;
 	}
 	
-	public void finalize()
+	public void prepare()
 	{
 		parseLifelines();
 		parseCombinedFragments();

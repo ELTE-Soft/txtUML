@@ -13,31 +13,51 @@ import hu.elte.txtuml.api.model.seqdiag.MessageWrapper;
 
 public class CommunicationListener extends AbstractSequenceDiagramModelListener implements TraceListener,ImprintedListener  {
 	
-	protected LinkedList<MessageWrapper> suggestedMessagePattern; 
+	protected LinkedList<MessageWrapper> suggestedMessagePattern;
+	
+	private ModelClass currentSender;
+	private Signal sentSignal;
 	
 	public CommunicationListener(SequenceDiagramExecutor executor)
 	{
 		super(executor);
 		suggestedMessagePattern = new LinkedList<MessageWrapper>();
+		currentSender = null;
+		sentSignal = null;
 	}
 	
 	public void executionStarted() {
 	}
 
+	public void sendingSignal(ModelClass sender,Signal signal)
+	{
+		currentSender = sender;
+		sentSignal = signal;
+	}
+	
 	public void processingSignal(ModelClass object, Signal signal) {
-				
-		if(suggestedMessagePattern.size() > 0)
-		{	
-			MessageWrapper required = suggestedMessagePattern.poll();
-			
-			if(!signal.equals(required.signal))
-			{
-				executor.addError(new InvalidMessageError(object,"The model diverged from the Sequence-diagram Specified behaviour:\n it sent: " + signal.toString() + " instead of " + required.toString() + "\n" ));
-			}
-		}
-		else
+	
+		MessageWrapper sentWrapper = null;
+		
+		if(signal.equals(sentSignal) && currentSender != null)
 		{
-			executor.addError(new InvalidMessageError(object,"The model sent more signals than the pattern ovelapped" ));
+			sentWrapper = new MessageWrapper(currentSender,sentSignal,object);
+			currentSender = null;
+			sentSignal = null;
+			
+			if(suggestedMessagePattern.size() > 0)
+			{	
+				MessageWrapper required = suggestedMessagePattern.poll();
+				
+				if(!required.equals(sentWrapper))
+				{
+					executor.addError(new InvalidMessageError(object,"The model diverged from the Sequence-diagram Specified behaviour:\n it sent: " + signal.toString() + " instead of " + required.toString() + "\n" ));
+				}
+			}
+			else
+			{
+				executor.addError(new InvalidMessageError(object,"The model sent more signals than the pattern ovelapped" ));
+			}
 		}
 	}
 	

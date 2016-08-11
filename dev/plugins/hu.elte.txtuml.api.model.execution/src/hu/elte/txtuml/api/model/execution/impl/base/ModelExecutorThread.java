@@ -218,4 +218,6 @@ public abstract class ModelExecutorThread extends Thread implements RuntimeConte
 	 */
 	public abstract void send(Signal signal, AbstractPortWrapper sender, AbstractModelClassWrapper target);
 
+	public abstract void sent(Signal signal, AbstractModelClassWrapper sender);
+
 }
