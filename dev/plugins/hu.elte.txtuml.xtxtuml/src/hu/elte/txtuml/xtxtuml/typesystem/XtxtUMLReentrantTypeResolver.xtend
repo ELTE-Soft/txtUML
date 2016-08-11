@@ -1,10 +1,11 @@
-package hu.elte.txtuml.xtxtuml.typesystem
+package hu.elte.txtuml.xtxtuml.typesystem;
 
 import com.google.common.collect.ImmutableMap
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import org.eclipse.xtext.common.types.JvmDeclaredType
 import org.eclipse.xtext.common.types.JvmTypeReference
+import org.eclipse.xtext.util.CancelIndicator
 import org.eclipse.xtext.xbase.scoping.batch.IFeatureNames
 import org.eclipse.xtext.xbase.scoping.batch.IFeatureScopeSession
 import org.eclipse.xtext.xbase.typesystem.internal.LogicalContainerAwareReentrantTypeResolver
@@ -59,6 +60,10 @@ class XtxtUMLReentrantTypeResolver extends LogicalContainerAwareReentrantTypeRes
 			childSession = childSession.addNestedTypesToScope(thisMaybeModelClassType);
 
 		return childSession;
+	}
+
+	override protected createResolvedTypes(CancelIndicator monitor) {
+		return new XtxtUMLRootResolvedTypes(this, monitor);
 	}
 
 }
