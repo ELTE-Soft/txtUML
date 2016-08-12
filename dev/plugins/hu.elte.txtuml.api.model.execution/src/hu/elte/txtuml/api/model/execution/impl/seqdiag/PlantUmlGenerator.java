@@ -21,7 +21,6 @@ public class PlantUmlGenerator {
 			fileCreator.createNewFile();
 			this.targetFile = new PrintWriter(targetFile);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		this.baseInteraction = interactionWrap;
@@ -38,17 +37,53 @@ public class PlantUmlGenerator {
 			
 		}
 		
-		for(MessageWrapper wrapper : this.baseInteraction.getMessages())
-		{
-			ModelClass from = wrapper.sender;
-			ModelClass to = wrapper.receiver;
-			Signal sig = wrapper.signal;
-			targetFile.println(from.toString() + "->" + to.toString() + ":" + sig.toString());
-			
-		}
+		MessageWrapper wrapper = this.baseInteraction.getMessages().get(0);
+		
+		targetFile.println("activate " + wrapper.sender.toString());
+		ModelClass from = wrapper.sender;
+		ModelClass to = wrapper.receiver;
+		Signal sig = wrapper.signal;
+		targetFile.println(from.toString() + "->" + to.toString() + ":" + sig.toString());
+		generateMessages(wrapper.receiver,1);
+		targetFile.println("deactivate " + wrapper.sender.toString());
 		
 		targetFile.println("@enduml");
 		targetFile.flush();
 		targetFile.close();
+	}
+	
+	protected int generateMessages(ModelClass receiver,int continueIndex)
+	{
+		boolean sameReceiver = true;
+		int i = continueIndex;
+		
+		while(sameReceiver && i < this.baseInteraction.getMessages().size())
+		{
+			MessageWrapper wrapper = this.baseInteraction.getMessages().get(i);
+			targetFile.println("activate " + wrapper.sender.toString());
+			ModelClass from = wrapper.sender;
+			ModelClass to = wrapper.receiver;
+			Signal sig = wrapper.signal;
+			targetFile.println(from.toString() + "->" + to.toString() + ":" + sig.toString());
+			if(i + 1 < this.baseInteraction.getMessages().size())
+			{
+				if(this.baseInteraction.getMessages().get(i+1).sender.equals(from))
+				{
+					++i;
+				}
+			}
+			else
+			{
+				i = generateMessages(to,++i);	
+			}
+			targetFile.println("deactivate " + wrapper.sender.toString());
+			
+			if(i < this.baseInteraction.getMessages().size())
+			{
+				sameReceiver = this.baseInteraction.getMessages().get(i).receiver.equals(receiver);
+			}
+		}
+		
+		return i;
 	}
 }
