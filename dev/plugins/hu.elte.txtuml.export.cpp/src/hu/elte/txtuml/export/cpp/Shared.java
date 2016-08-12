@@ -22,14 +22,14 @@ import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.UMLPackage;
 
-/*import org.eclipse.text.edits.MalformedTreeException;
+import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.IDocument;*/
-
-//import org.eclipse.cdt.core.formatter.CodeFormatter;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.cdt.core.ToolFactory;
+import org.eclipse.cdt.core.formatter.CodeFormatter;
 
 
 
@@ -171,8 +171,8 @@ public class Shared {
 
 	public static String format(String source) {
 		
-		/*CodeFormatter formatter = ToolFactory.createDefaultCodeFormatter(null);
-		TextEdit edit = formatter.format(0, source, 0, source.length(), 0, null);		
+		CodeFormatter formatter = ToolFactory.createDefaultCodeFormatter(null);
+		TextEdit edit = formatter.format(CodeFormatter.K_TRANSLATION_UNIT, source, 0, source.length(), 0, null);		
 		IDocument document = new Document(source);
 		try {
 			edit.apply(document);
@@ -183,10 +183,9 @@ public class Shared {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
-		String formattedSource = document.get();*/
+		String formattedSource = document.get();
 		
-		//return formattedSource;
-		return source;
+		return formattedSource;
 	}
 
 }
