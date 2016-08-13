@@ -1,10 +1,11 @@
-package hu.elte.txtuml.xtxtuml.validation
+package hu.elte.txtuml.xtxtuml.ui.validation;
 
 import com.google.common.collect.ImmutableSet
 import com.google.inject.Inject
+import hu.elte.txtuml.utils.Logger
 import hu.elte.txtuml.validation.JtxtUMLCompilationParticipant
+import hu.elte.txtuml.xtxtuml.validation.XtxtUMLIssueCodes
 import java.util.Set
-import org.apache.log4j.Logger
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.IMarker
 import org.eclipse.core.resources.IResource
@@ -26,10 +27,7 @@ import org.eclipse.xtext.validation.IssueSeveritiesProvider
 
 class XtxtUMLDerivedResourceMarkerCopier extends DerivedResourceMarkerCopier {
 
-	static val LOG = Logger.getLogger(XtxtUMLDerivedResourceMarkerCopier)
-
 	public static val PROPAGATED_FROM_FILE = "fromFile"
-
 	val fileExtensions = ImmutableSet.of("txtuml", "xtxtuml")
 
 	@Inject
@@ -98,7 +96,7 @@ class XtxtUMLDerivedResourceMarkerCopier extends DerivedResourceMarkerCopier {
 						sourceMarkerType = determinateMarkerTypeByURI(associatedLocation.getSrcRelativeResourceURI());
 					}
 					if (!srcFile.equals(findIFile(associatedLocation, srcFile.getWorkspace()))) {
-						LOG.error("File in associated location is not the same as main source file.");
+						Logger.sys.error("File in associated location is not the same as main source file.");
 					}
 					val xtendMarker = srcFile.createMarker(sourceMarkerType);
 					xtendMarker.setAttribute(IMarker.MESSAGE, message);
@@ -158,7 +156,7 @@ class XtxtUMLDerivedResourceMarkerCopier extends DerivedResourceMarkerCopier {
 	private def findIFile(ILocationInResource locationInResource, IWorkspace workspace) {
 		val storage = locationInResource.getStorage()
 		if (storage == null) {
-			LOG.warn("Failed to find Storage. Please make sure there are no outdated generated files. URI: " +
+			Logger.sys.warn("Failed to find Storage. Please make sure there are no outdated generated files. URI: " +
 				locationInResource.getAbsoluteResourceURI())
 			return null;
 		}
