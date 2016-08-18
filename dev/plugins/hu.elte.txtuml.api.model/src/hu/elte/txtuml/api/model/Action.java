@@ -257,7 +257,7 @@ public abstract class Action {
 	 *             if <code>target</code> is <code>null</code>
 	 */
 	public static void send(Signal signal, ModelClass target) {
-		Action.send(null, signal, target);
+		Action.send(signal, target, null);
 	}
 	
 	/**
@@ -266,19 +266,20 @@ public abstract class Action {
 	 * Does not check whether the target object is deleted, it is only checked
 	 * when the signal arrives to the object.
 	 * 
-	 * @param sender
-	 *            the sender model object 
+	 *
 	 * @param signal
 	 *            the signal object to send
 	 * @param target
 	 *            the model object which will receive the signal
+	 * @param sender
+	 *            the sender model object( optional )
 	 * 
 	 * @throws NullPointerException
 	 *             if <code>target</code> is <code>null</code>
 	 */
-	public static void send(ModelClass sender,Signal signal, ModelClass target)
+	public static void send(Signal signal, ModelClass target, ModelClass sender)
 	{
-		if(sender != null)
+		if (sender != null)
 		{
 			sender.runtimeInfo().sent(signal);
 		}

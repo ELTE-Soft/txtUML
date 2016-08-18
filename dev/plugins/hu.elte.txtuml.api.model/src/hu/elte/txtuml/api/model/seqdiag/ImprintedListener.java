@@ -5,6 +5,6 @@ import hu.elte.txtuml.api.model.Signal;
 
 public interface ImprintedListener {
 
-	public void addToPattern(ModelClass from,Signal sig,ModelClass to);
-	
+	public void addToPattern(ModelClass from, Signal sig, ModelClass to);
+
 }

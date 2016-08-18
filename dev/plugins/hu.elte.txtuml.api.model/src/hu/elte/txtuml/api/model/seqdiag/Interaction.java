@@ -5,10 +5,12 @@ package hu.elte.txtuml.api.model.seqdiag;
  *
  */
 public abstract class Interaction implements Runnable {
-	
-	protected Interaction(){}
-	
-	public void initialize(){};
-	
+
+	protected Interaction() {
+	}
+
+	public void initialize() {
+	};
+
 	public abstract void run();
 }

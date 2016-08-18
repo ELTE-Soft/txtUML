@@ -9,43 +9,36 @@ public class SequenceDiagramExecutorThread extends Thread implements RuntimeCont
 
 	private SequenceDiagramExecutor executor;
 	private Runtime runtime;
-	
-	static SequenceDiagramExecutorThread getCurrentExecutorThread()
-	{
+
+	static SequenceDiagramExecutorThread getCurrentExecutorThread() {
 		Thread[] threads = new Thread[Thread.activeCount()];
-		for(Thread thread : threads)
-		{
-			if(thread instanceof SequenceDiagramExecutorThread)
-			{
+		for (Thread thread : threads) {
+			if (thread instanceof SequenceDiagramExecutorThread) {
 				return (SequenceDiagramExecutorThread) thread;
 			}
 		}
-		
+
 		return null;
 	}
-	
-	public SequenceDiagramExecutorThread(SequenceDiagramExecutor executor)
-	{
+
+	public SequenceDiagramExecutorThread(SequenceDiagramExecutor executor) {
 		super(executor);
 		this.executor = executor;
 		this.setName("SequenceDiagram-Thread-" + this.getId());
-		
-		runtime = new Runtime();
+
+		runtime = new Runtime(this.getExecutor().frListeners);
 	}
-	
-	public SequenceDiagramExecutor getExecutor()
-	{
+
+	public SequenceDiagramExecutor getExecutor() {
 		return this.executor;
 	}
-	
-	public SequenceDiagramExecutorThread getThread()
-	{
+
+	public SequenceDiagramExecutorThread getThread() {
 		return this;
 	}
-	
+
 	@Override
-	public void run()
-	{
+	public void run() {
 		this.executor.execute();
 	}
 
@@ -62,5 +55,5 @@ public class SequenceDiagramExecutorThread extends Thread implements RuntimeCont
 	@Override
 	public ImprintedListener getTraceListener() {
 		return executor.traceListener;
-	}	
+	}
 }

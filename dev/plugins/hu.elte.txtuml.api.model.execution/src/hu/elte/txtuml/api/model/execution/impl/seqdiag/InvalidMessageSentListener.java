@@ -9,24 +9,22 @@ import hu.elte.txtuml.api.model.execution.WarningListener;
 
 public class InvalidMessageSentListener extends AbstractSequenceDiagramModelListener implements WarningListener {
 
-	public InvalidMessageSentListener(SequenceDiagramExecutor executor)
-	{
+	public InvalidMessageSentListener(SequenceDiagramExecutor executor) {
 		super(executor);
 	}
-	
+
 	@Override
-	public void lostSignalAtObject(Signal signal, ModelClass obj) {		
+	public void lostSignalAtObject(Signal signal, ModelClass obj) {
 		executor.addError(new InvalidMessageError(obj, "Error: Invalid message sent!"));
 	}
-	
+
 	@Override
-	public void signalArrivedToDeletedObject(ModelClass obj, Signal signal)
-	{
+	public void signalArrivedToDeletedObject(ModelClass obj, Signal signal) {
 		executor.addError(new InvalidMessageError(obj, "Error: Invalid message sent!"));
 	}
-	
+
 	@Override
 	public void lostSignalAtPort(Signal signal, Port<?, ?> portInstance) {
-		//portError
+		// portError
 	}
 }
