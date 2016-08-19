@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.plantuml.generator;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -14,6 +15,7 @@ public class PlantUmlGenerator {
 	private CompilationUnit sourceCU;
 
 	private MethodStatementWalker walker;
+	private ArrayList<String> activeLifelines;
 
 	public PlantUmlGenerator(IFile targetFile, Class<Interaction> sourceResource, CompilationUnit source) {
 
@@ -26,6 +28,7 @@ public class PlantUmlGenerator {
 
 		this.sourceResource = sourceResource;
 		this.sourceCU = source;
+		this.activeLifelines = new ArrayList<String>();
 	}
 
 	public void generate() {
@@ -80,4 +83,40 @@ public class PlantUmlGenerator {
 	 * 
 	 * return i; }
 	 */
+
+	public boolean lifelineIsActive(String lifeline) {
+		if (activeLifelines.contains(lifeline)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public void activateLifeline(String lifeline) {
+
+
+		if (!lifelineIsActive(lifeline)) {
+			targetFile.println("activate " + lifeline);
+		}
+		
+		activeLifelines.add(lifeline);
+	}
+
+	public void deactivateLifeline(String lifeline) {
+		if (lifelineIsActive(lifeline)) {
+			activeLifelines.remove(lifeline);
+			
+			if (!lifelineIsActive(lifeline)) {
+				targetFile.println("deactivate " + lifeline);
+			}
+		}
+	}
+	
+	public void deactivateAllLifelines()
+	{
+		while(activeLifelines.size() > 0)
+		{
+			this.deactivateLifeline(activeLifelines.get(0));
+		}
+	}
 }

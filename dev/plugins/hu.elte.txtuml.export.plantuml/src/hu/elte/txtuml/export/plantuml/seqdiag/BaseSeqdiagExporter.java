@@ -4,12 +4,16 @@ import java.io.PrintWriter;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
+import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
+
 public abstract class BaseSeqdiagExporter<T extends ASTNode> {
 
 	protected PrintWriter targetFile;
+	protected PlantUmlGenerator generator;
 
-	public BaseSeqdiagExporter(PrintWriter targetFile) {
+	public BaseSeqdiagExporter(PrintWriter targetFile,PlantUmlGenerator generator) {
 		this.targetFile = targetFile;
+		this.generator = generator;
 	}
 
 	public abstract boolean validElement(ASTNode curElement);

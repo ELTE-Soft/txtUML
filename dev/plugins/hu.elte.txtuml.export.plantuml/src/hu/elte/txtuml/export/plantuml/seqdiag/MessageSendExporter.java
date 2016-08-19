@@ -6,10 +6,12 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
+import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
+
 public class MessageSendExporter extends BaseSeqdiagExporter<MethodInvocation> {
 
-	public MessageSendExporter(PrintWriter targetFile) {
-		super(targetFile);
+	public MessageSendExporter(PrintWriter targetFile, PlantUmlGenerator generator) {
+		super(targetFile, generator);
 	}
 
 	@Override
@@ -18,7 +20,8 @@ public class MessageSendExporter extends BaseSeqdiagExporter<MethodInvocation> {
 			MethodInvocation invoc = (MethodInvocation) curElement;
 			String QualifiedTypeName = invoc.resolveMethodBinding().getDeclaringClass().getQualifiedName();
 			String MethodName = invoc.getName().toString();
-			if (MethodName.equals("send") && QualifiedTypeName.equals("hu.elte.txtuml.api.model.seqdiag.Action")) {
+			if (MethodName.equals("send") && (QualifiedTypeName.equals("hu.elte.txtuml.api.model.seqdiag.Action")
+					|| QualifiedTypeName.equals("hu.elte.txtuml.api.model.API"))) {
 				return true;
 			}
 		}
@@ -29,6 +32,16 @@ public class MessageSendExporter extends BaseSeqdiagExporter<MethodInvocation> {
 	@Override
 	public void preNext(MethodInvocation curElement) {
 
+		if (curElement.arguments().size() == 2) {
+			Expression target = (Expression) curElement.arguments().get(1);
+			String targetName = target.toString();
+
+			if (!generator.lifelineIsActive(targetName)) {
+				generator.activateLifeline(targetName);
+			}
+			return;
+		}
+
 		Expression sender = (Expression) curElement.arguments().get(0);
 		String senderName = sender.toString();
 
@@ -38,16 +51,23 @@ public class MessageSendExporter extends BaseSeqdiagExporter<MethodInvocation> {
 		Expression signal = (Expression) curElement.arguments().get(1);
 		String signalExpr = signal.resolveTypeBinding().getQualifiedName();
 
-		targetFile.println("activate " + senderName);
+		if (!generator.lifelineIsActive(targetName)) {
+			generator.activateLifeline(targetName);
+		}
+
 		targetFile.println(senderName + "->" + targetName + " : " + signalExpr);
 	}
 
 	@Override
 	public void afterNext(MethodInvocation curElement) {
-		Expression sender = (Expression) curElement.arguments().get(0);
-		String senderName = sender.toString();
+		/*if (curElement.arguments().size() == 3) {
+			Expression target = (Expression) curElement.arguments().get(2);
+			String targetName = target.toString();
 
-		targetFile.println("deactivate " + senderName);
+			if (generator.lifelineIsActive(targetName)) {
+				generator.deactivateLifeline(targetName);
+			}
+		}*/
 	}
 
 }
