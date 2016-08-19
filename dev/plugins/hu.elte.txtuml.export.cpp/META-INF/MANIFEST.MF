@@ -26,10 +26,10 @@ Require-Bundle: org.eclipse.uml2.uml,
  org.eclipse.ui,
  org.eclipse.debug.ui,
  com.google.guava,
- org.eclipse.cdt,
- org.eclipse.papyrus.uml.diagram.common,
+ org.eclipse.jface.text,
+ org.eclipse.text,
  org.eclipse.cdt.core,
- org.eclipse.jface.text
+ org.eclipse.papyrus.uml.diagram.common
 Export-Package: hu.elte.txtuml.export.cpp
 Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.ui.dialogs
