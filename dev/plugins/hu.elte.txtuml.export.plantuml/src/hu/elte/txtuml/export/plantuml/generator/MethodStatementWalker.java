@@ -24,7 +24,7 @@ public class MethodStatementWalker extends ASTVisitor {
 		expQueue = new Stack<BaseSeqdiagExporter<?>>();
 
 		this.generator = generator;
-		
+
 		errors = new ArrayList<ASTNode>();
 	}
 
@@ -100,6 +100,11 @@ public class MethodStatementWalker extends ASTVisitor {
 	@Override
 	public void endVisit(MethodInvocation statement) {
 		BaseSeqdiagExporter<? extends ASTNode> exp = expQueue.peek();
+		String invoc = statement.resolveMethodBinding().getDeclaringClass().getQualifiedName();
+
+		if (invoc.equals("hu.elte.txtuml.api.model.Action")) {
+			return;
+		}
 
 		if (exp instanceof MessageSendExporter) {
 			MessageSendExporter cExp = (MessageSendExporter) exp;
@@ -123,20 +128,17 @@ public class MethodStatementWalker extends ASTVisitor {
 			}
 		}
 	}
-	
-	public List<String> getErrors()
-	{
+
+	public List<String> getErrors() {
 		ArrayList<String> errList = new ArrayList<String>();
-		for(ASTNode error : errors)
-		{
+		for (ASTNode error : errors) {
 			errList.add("Error! Couldn't parse the following statement: " + error.toString() + "\n");
 		}
-		
-		if(!expQueue.isEmpty())
-		{
+
+		if (!expQueue.isEmpty()) {
 			errList.add("Warning! Some expressions where left unparsed/unclosed \n");
 		}
-		
+
 		return errList;
 	}
 }

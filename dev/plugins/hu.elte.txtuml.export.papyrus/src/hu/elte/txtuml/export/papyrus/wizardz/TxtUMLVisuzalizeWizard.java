@@ -81,6 +81,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 
 		if (exp.wasSeqDiagExport()) {
 			if (!exp.isSuccessful()) {
+				System.out.println(exp.getErrorMessage());
 				return false;
 			}
 

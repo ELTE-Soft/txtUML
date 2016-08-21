@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.plantuml.generator;
 
+import java.io.ByteArrayInputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
@@ -18,8 +19,10 @@ public class PlantUmlGenerator {
 
 	public PlantUmlGenerator(IFile targetFile, CompilationUnit source) {
 
+		ByteArrayInputStream stream = new ByteArrayInputStream("".getBytes());
+
 		try {
-			targetFile.create(null, false, null);
+			targetFile.create(stream, false, null);
 			this.targetFile = new PrintWriter(targetFile.getLocation().toOSString());
 		} catch (Exception e) {
 			e.printStackTrace();

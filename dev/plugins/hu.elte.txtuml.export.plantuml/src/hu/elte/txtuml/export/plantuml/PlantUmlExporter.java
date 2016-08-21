@@ -7,6 +7,7 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.CommonPlugin;
 import org.eclipse.emf.common.util.URI;
@@ -84,15 +85,19 @@ public class PlantUmlExporter {
 					.resolve(URI.createFileURI(projectName + "/" + genFolderName + "/" + fileName + ".txt"));
 
 			IFile targetFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(targetURI.toFileString()));
-			PlantUmlGenerator generator = new PlantUmlGenerator(targetFile, cu);
-
 			try {
+				if (targetFile.exists()) {
+
+					targetFile.delete(true, null);
+
+				}
+				PlantUmlGenerator generator = new PlantUmlGenerator(targetFile, cu);
 				generator.generate();
-			} catch (SequenceDiagramStructuralException ex) {
+				project.refreshLocal(IProject.DEPTH_INFINITE, null);
+			} catch (SequenceDiagramStructuralException | CoreException ex) {
 				hadErrors = true;
 				errorMessage = ex.getMessage();
 			}
-
 		}
 	}
 
