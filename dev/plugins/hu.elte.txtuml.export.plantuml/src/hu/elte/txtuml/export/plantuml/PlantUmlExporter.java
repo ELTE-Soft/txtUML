@@ -17,6 +17,7 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
+import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramStructuralException;
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
 import hu.elte.txtuml.utils.eclipse.ClassLoaderProvider;
 
@@ -24,16 +25,20 @@ public class PlantUmlExporter {
 
 	private String projectName;
 	private String genFolderName;
-	private String modelName;
 	private List<String> diagrams;
 	private List<Class<Interaction>> seqDiagrams;
 
-	public PlantUmlExporter(String txtUMLProjectName, String generatedFolderName, String txtUmlModelName,
-			List<String> SeqDiagramNames) {
+	protected int exportedCount = 0;
+	protected int nonExportedCount = 0;
+
+	protected boolean hadErrors = false;
+	protected String errorMessage = null;
+
+	public PlantUmlExporter(String txtUMLProjectName, String generatedFolderName, List<String> SeqDiagramNames) {
 		projectName = txtUMLProjectName;
 		genFolderName = generatedFolderName;
-		modelName = txtUmlModelName;
 		diagrams = SeqDiagramNames;
+		nonExportedCount = diagrams.size();
 		filterDiagramsByType();
 	}
 
@@ -49,6 +54,8 @@ public class PlantUmlExporter {
 				if (Interaction.class.isAssignableFrom(diagramClass)) {
 					seqDiagrams.add((Class<Interaction>) diagramClass);
 					diagrams.remove(diagram);
+					nonExportedCount--;
+					exportedCount++;
 				} else {
 				}
 
@@ -58,7 +65,7 @@ public class PlantUmlExporter {
 		}
 	}
 
-	public void generatePlantUmlOutput(String fileName) {
+	public void generatePlantUmlOutput() {
 		for (Class<Interaction> sequenceDiagram : seqDiagrams) {
 			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 			IFile resource = project.getFile("src/" + sequenceDiagram.getName().replace('.', '/') + ".java");
@@ -71,14 +78,50 @@ public class PlantUmlExporter {
 			parser.setSource(element);
 
 			CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+			String fileName = sequenceDiagram.getSimpleName();
 
-			URI targetURI = CommonPlugin.resolve(URI.createFileURI(projectName + "/" + genFolderName + "/plantUml.txt"));
-			
-			IFile targetFile = ResourcesPlugin.getWorkspace().getRoot().getFile( new Path( targetURI.toFileString()) );
-			PlantUmlGenerator generator = new PlantUmlGenerator(targetFile, sequenceDiagram, cu);
+			URI targetURI = CommonPlugin
+					.resolve(URI.createFileURI(projectName + "/" + genFolderName + "/" + fileName + ".txt"));
 
-			generator.generate();
+			IFile targetFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(targetURI.toFileString()));
+			PlantUmlGenerator generator = new PlantUmlGenerator(targetFile, cu);
+
+			try {
+				generator.generate();
+			} catch (SequenceDiagramStructuralException ex) {
+				hadErrors = true;
+				errorMessage = ex.getMessage();
+			}
+
 		}
+	}
+
+	public boolean isSuccessful() {
+		return !hadErrors;
+	}
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public boolean exportedAll() {
+		return nonExportedCount == 0;
+	}
+
+	public boolean didExport() {
+		return exportedCount > 0;
+	}
+
+	public boolean wasSeqDiagExport() {
+		return exportedAll() && didExport();
+	}
+
+	public int expotedCount() {
+		return exportedCount;
+	}
+
+	public int nonExportedCount() {
+		return nonExportedCount;
 	}
 
 }

@@ -18,6 +18,7 @@ import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLExporter;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.TxtUMLPapyrusModelManager;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.export.plantuml.PlantUmlExporter;
 import hu.elte.txtuml.export.uml2.ExportMode;
 import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
@@ -75,6 +76,17 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL, txtUMLModelName);
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, txtUMLLayout);
 
+		PlantUmlExporter exp = new PlantUmlExporter(txtUMLProjectName, generatedFolderName, txtUMLLayout);
+		exp.generatePlantUmlOutput();
+
+		if (exp.wasSeqDiagExport()) {
+			if (!exp.isSuccessful()) {
+				return false;
+			}
+
+			return true;
+		}
+
 		try {
 
 			this.checkEmptyLayoutDecsriptions();
@@ -82,6 +94,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 			IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
 
 			progressService.runInUI(progressService, new IRunnableWithProgress() {
+
 				@Override
 				public void run(IProgressMonitor monitor) throws InterruptedException {
 					monitor.beginTask("Visualization", 100);
@@ -98,7 +111,8 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 					monitor.subTask("Exporting txtUML Model to UML2 model...");
 					try {
 						TxtUMLToUML2.exportModel(txtUMLProjectName, txtUMLModelName,
-								txtUMLProjectName + "/" + generatedFolderName, ExportMode.ErrorHandlingNoActions, "gen");
+								txtUMLProjectName + "/" + generatedFolderName, ExportMode.ErrorHandlingNoActions,
+								"gen");
 						monitor.worked(10);
 					} catch (Exception e) {
 						Dialogs.errorMsgb("txtUML export Error", "Error occured during the UML2 exportation.", e);

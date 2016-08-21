@@ -60,14 +60,7 @@ public class MessageSendExporter extends BaseSeqdiagExporter<MethodInvocation> {
 
 	@Override
 	public void afterNext(MethodInvocation curElement) {
-		/*if (curElement.arguments().size() == 3) {
-			Expression target = (Expression) curElement.arguments().get(2);
-			String targetName = target.toString();
-
-			if (generator.lifelineIsActive(targetName)) {
-				generator.deactivateLifeline(targetName);
-			}
-		}*/
+		
 	}
 
 }
