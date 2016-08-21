@@ -16,6 +16,12 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.ui.IEditorDescriptor;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.FileEditorInput;
 
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
 import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramStructuralException;
@@ -114,6 +120,14 @@ public class PlantUmlExporter {
 				PlantUmlGenerator generator = new PlantUmlGenerator(targetFile, cu);
 				generator.generate();
 				project.refreshLocal(IProject.DEPTH_INFINITE, null);
+
+				IWorkbench workbench = PlatformUI.getWorkbench();
+				IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
+				IEditorDescriptor editor = workbench.getEditorRegistry().getDefaultEditor(targetFile.getName());
+				IEditorPart editorPart = page.openEditor(new FileEditorInput(targetFile), editor.getId());
+				page.activate(editorPart);
+				page.showView("net.sourceforge.plantuml.eclipse.views.PlantUmlView");
+
 			} catch (SequenceDiagramStructuralException | CoreException ex) {
 				hadErrors = true;
 				errorMessage = ex.getMessage();
