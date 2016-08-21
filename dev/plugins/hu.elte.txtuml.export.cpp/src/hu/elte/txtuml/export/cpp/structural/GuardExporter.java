@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.cpp;
+package hu.elte.txtuml.export.cpp.structural;
 
 import java.util.HashMap;
 import java.util.Map;

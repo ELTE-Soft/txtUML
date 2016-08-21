@@ -30,6 +30,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.osgi.framework.Bundle;
 
 import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
+import hu.elte.txtuml.export.cpp.structural.ClassExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.Options;
 import hu.elte.txtuml.export.cpp.thread.ThreadHandlingManager;
@@ -90,7 +91,7 @@ public class Uml2ToCppExporter {
 
 			if (threadManager.getDescription().get(item.getName()) != null && !Shared.generatedClass(item)) {
 
-				classExporter.reiniIialize();
+				classExporter.init();
 				classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
 				classExporter.setRealName(getRealClassName(item));
 
