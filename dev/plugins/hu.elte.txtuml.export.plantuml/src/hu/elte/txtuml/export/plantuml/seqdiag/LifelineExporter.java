@@ -7,6 +7,14 @@ import org.eclipse.jdt.core.dom.FieldDeclaration;
 
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
 
+/**
+ * 
+ * @author Zoli
+ * 
+ *         Responsible for exporting the {@link ModelClass} lifelines from the
+ *         SequenceDiagram
+ *
+ */
 public class LifelineExporter extends BaseSeqdiagExporter<FieldDeclaration> {
 
 	public LifelineExporter(PrintWriter targetFile, PlantUmlGenerator generator) {

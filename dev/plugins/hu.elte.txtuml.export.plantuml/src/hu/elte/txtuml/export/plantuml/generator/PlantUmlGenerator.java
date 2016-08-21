@@ -55,6 +55,13 @@ public class PlantUmlGenerator {
 		return this.targetFile;
 	}
 
+	/**
+	 * 
+	 * checks if lifeline is active( used in exporting)
+	 * 
+	 * @param lifeline
+	 * @return true if the lifeline is activated
+	 */
 	public boolean lifelineIsActive(String lifeline) {
 		if (activeLifelines.contains(lifeline)) {
 			return true;
@@ -63,6 +70,12 @@ public class PlantUmlGenerator {
 		return false;
 	}
 
+	/**
+	 * activates lifeline and does the needed supplementary operations
+	 * 
+	 * @param lifeline
+	 *            lifeline to activate
+	 */
 	public void activateLifeline(String lifeline) {
 
 		if (!lifelineIsActive(lifeline)) {
@@ -72,6 +85,13 @@ public class PlantUmlGenerator {
 		activeLifelines.add(lifeline);
 	}
 
+	/**
+	 * 
+	 * deactivates lifeline and does the needed supplementary operations
+	 * 
+	 * @param lifeline
+	 *            lifeline to deactivate
+	 */
 	public void deactivateLifeline(String lifeline) {
 		if (lifelineIsActive(lifeline)) {
 			activeLifelines.remove(lifeline);
@@ -82,6 +102,9 @@ public class PlantUmlGenerator {
 		}
 	}
 
+	/**
+	 * deactivates all active lifelines
+	 */
 	public void deactivateAllLifelines() {
 		while (activeLifelines.size() > 0) {
 			this.deactivateLifeline(activeLifelines.get(0));

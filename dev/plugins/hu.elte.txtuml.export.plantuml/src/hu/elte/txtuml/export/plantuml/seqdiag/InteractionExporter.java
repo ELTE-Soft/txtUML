@@ -5,8 +5,18 @@ import java.io.PrintWriter;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
+import hu.elte.txtuml.api.model.seqdiag.Interaction;
+import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
 
+/**
+ * 
+ * @author Zoli
+ *
+ *
+ *         The class responsible for exporting the {@link SequenceDiagram} and
+ *         {@link Interaction} classes
+ */
 public class InteractionExporter extends BaseSeqdiagExporter<TypeDeclaration> {
 
 	public InteractionExporter(PrintWriter targetFile, PlantUmlGenerator generator) {

@@ -8,6 +8,14 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
 
+/**
+ * 
+ * @author Zoli
+ *
+ *         Responsible for exporting the message sending from the
+ *         SequenceDiagrams( {@code API.send() } and {@code Action.send() }})
+ *
+ */
 public class MessageSendExporter extends BaseSeqdiagExporter<MethodInvocation> {
 
 	public MessageSendExporter(PrintWriter targetFile, PlantUmlGenerator generator) {
@@ -60,7 +68,7 @@ public class MessageSendExporter extends BaseSeqdiagExporter<MethodInvocation> {
 
 	@Override
 	public void afterNext(MethodInvocation curElement) {
-		
+
 	}
 
 }

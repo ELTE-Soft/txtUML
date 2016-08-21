@@ -22,6 +22,17 @@ import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramStructuralExcept
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
 import hu.elte.txtuml.utils.eclipse.ClassLoaderProvider;
 
+/**
+ * 
+ * @author Zoli
+ *
+ *         PlantUml exporter class
+ *         <p>
+ *         Exports sequence diagrams to plantuml textual output into the gen
+ *         folder filenames are the same as the sequence diagram class names
+ *         </p>
+ *
+ */
 public class PlantUmlExporter {
 
 	private String projectName;
@@ -44,6 +55,11 @@ public class PlantUmlExporter {
 	}
 
 	@SuppressWarnings("unchecked")
+	/**
+	 * Filter method to separate sequenceDiagrams from normal Layouts, leave
+	 * normal layouts in remove SequenceDiagrams
+	 * 
+	 */
 	private void filterDiagramsByType() {
 		seqDiagrams = new ArrayList<Class<Interaction>>();
 		for (String diagram : diagrams) {
@@ -66,6 +82,10 @@ public class PlantUmlExporter {
 		}
 	}
 
+	/**
+	 * Generate the output into the gen folder using JDT. At the end refresh the
+	 * project so the freshly created resource shows up
+	 */
 	public void generatePlantUmlOutput() {
 		for (Class<Interaction> sequenceDiagram : seqDiagrams) {
 			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
