@@ -79,7 +79,7 @@ public class MoonLander extends ModelClass {
 		@Override
 		public boolean guard() {
 			ControlCycleSignal signal = getTrigger(ControlCycleSignal.class);
-			return signal.h < 1 && signal.v >= (0-10);
+			return signal.h < 1 && signal.v >= -10;
 		}
 	}
 
@@ -100,7 +100,7 @@ public class MoonLander extends ModelClass {
 		@Override
 		public boolean guard() {
 			ControlCycleSignal signal = getTrigger(ControlCycleSignal.class);
-			return signal.h < 1 && signal.v < (0-10);
+			return signal.h < 1 && signal.v < -10;
 		}
 	}
 	
