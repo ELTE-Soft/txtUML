@@ -8,7 +8,12 @@ import hu.elte.txtuml.api.model.Trigger;
 
 public class MoonLander extends ModelClass {
 
+	public void add() {
+		
+	}
+	
 	public MoonLander(World world) {
+		add();
 		Action.link(LanderWorld.world.class, world, LanderWorld.lander.class, this);
 	}
 		

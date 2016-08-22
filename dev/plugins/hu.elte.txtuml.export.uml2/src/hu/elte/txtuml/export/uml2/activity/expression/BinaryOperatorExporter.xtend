@@ -8,15 +8,6 @@ import org.eclipse.jdt.core.dom.InfixExpression.Operator
 import org.eclipse.uml2.uml.Action
 import org.eclipse.uml2.uml.CallOperationAction
 import org.eclipse.uml2.uml.Operation
-import static hu.elte.txtuml.export.uml2.activity.expression.OperatorType.*;
-
-enum OperatorType {
-	INTEGER,
-	REAL,
-	BOOLEAN,
-	STRING,
-	OBJECT
-}
 
 class BinaryOperatorExporter extends ActionExporter<InfixExpression, CallOperationAction> {
 
@@ -27,79 +18,61 @@ class BinaryOperatorExporter extends ActionExporter<InfixExpression, CallOperati
 	override create(InfixExpression access) { factory.createCallOperationAction }
 
 	override exportContents(InfixExpression source) {
-		val argType = source.leftOperand.resolveTypeBinding
+		val op1t = getType(source.leftOperand.resolveTypeBinding)
+		val op2t = getType(source.rightOperand.resolveTypeBinding)
+		val opst = combineTypes(op1t, op2t)
+		val rest = getType(source.resolveTypeBinding)
 
-		val optype = switch argType.name {
-			case "int",
-			case "Int",
-			case "long",
-			case "Long",
-			case "short",
-			case "Short",
-			case "byte",
-			case "Byte": INTEGER
-			case "double",
-			case "Double",
-			case "float",
-			case "Float": REAL
-			case "boolean",
-			case "Boolean": BOOLEAN
-			case "String": STRING
-			default: OBJECT
-		}
-
-		val operator = switch #[source.operator, optype] {
-			case #[Operator.PLUS, INTEGER]:
-				plusOp
-			case #[Operator.PLUS, REAL]:
-				realPlusOp
-			case #[Operator.PLUS, STRING]:
-				concatOp
-			case #[Operator.MINUS, INTEGER]:
-				minusOp
-			case #[Operator.MINUS, REAL]:
-				realMinusOp
-			case #[Operator.TIMES, INTEGER]:
-				timesOp
-			case #[Operator.TIMES, REAL]:
-				realTimesOp
-			case #[Operator.DIVIDE, INTEGER]:
-				divideOp
-			case #[Operator.DIVIDE, REAL]:
-				realDivideOp
-			case #[Operator.REMAINDER, INTEGER]:
+		val operator = switch source.operator {
+			case Operator.PLUS:
+				switch rest {
+					case INTEGER: plusOp
+					case REAL: realPlusOp
+					case STRING: concatOp
+				}
+			case Operator.MINUS:
+				switch rest {
+					case INTEGER: minusOp
+					case REAL: realMinusOp
+				}
+			case Operator.TIMES:
+				switch rest {
+					case INTEGER: timesOp
+					case REAL: realTimesOp
+				}
+			case Operator.DIVIDE:
+				switch rest {
+					case INTEGER: divideOp
+					case REAL: realDivideOp
+				}
+			case Operator.REMAINDER:
 				remainderOp
-			case #[Operator.CONDITIONAL_AND, BOOLEAN]:
-				andOp
-			case #[Operator.CONDITIONAL_OR, BOOLEAN]:
-				orOp
-			case #[Operator.LESS, INTEGER]:
-				lessOp
-			case #[Operator.LESS, REAL]:
-				realLessOp
-			case #[Operator.GREATER, INTEGER]:
-				greaterOp
-			case #[Operator.GREATER, REAL]:
-				realGreaterOp
-			case #[Operator.LESS_EQUALS, INTEGER]:
-				lessEqualsOp
-			case #[Operator.LESS_EQUALS, REAL]:
-				realLessEqualsOp
-			case #[Operator.GREATER_EQUALS, INTEGER]:
-				greaterEqualsOp
-			case #[Operator.GREATER_EQUALS, REAL]:
-				realGreaterEqualsOp
-			case #[Operator.NOT_EQUALS, INTEGER]:
-				integerNotEqualsOp
-			case #[Operator.NOT_EQUALS, REAL]:
-				realNotEqualsOp
-			case #[Operator.NOT_EQUALS, BOOLEAN]:
-				boolNotEqualsOp
-			case #[Operator.NOT_EQUALS, STRING],
-			case #[Operator.NOT_EQUALS, OBJECT]:
-				objectNotEqualsOp
+			case Operator.CONDITIONAL_AND: andOp
+			case Operator.CONDITIONAL_OR: orOp
+			case Operator.LESS: switch opst {
+				case INTEGER: lessOp
+				case REAL: realLessOp
+			}
+			case Operator.GREATER: switch opst {
+				case INTEGER: greaterOp
+				case REAL: realGreaterOp
+			}
+			case Operator.LESS_EQUALS: switch opst {
+				case INTEGER: lessEqualsOp
+				case REAL: realLessEqualsOp
+			}
+			case Operator.GREATER_EQUALS: switch opst {
+				case INTEGER: greaterEqualsOp
+				case REAL: realGreaterEqualsOp
+			}
+			case Operator.NOT_EQUALS: switch opst {
+				case INTEGER: integerNotEqualsOp
+				case REAL: realNotEqualsOp
+				case BOOLEAN: boolNotEqualsOp
+				default: objectNotEqualsOp
+			}
 			default:
-				throw new RuntimeException("Unrecognized operator: " + source.operator + " for operator type " + optype)
+				throw new RuntimeException("Unrecognized operator: " + source.operator)
 		}
 		if (operator == concatOp) {
 			handleAutoConversion(source, operator)
