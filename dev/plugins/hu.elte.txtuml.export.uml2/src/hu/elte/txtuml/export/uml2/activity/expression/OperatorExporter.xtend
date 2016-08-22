@@ -6,8 +6,10 @@ import hu.elte.txtuml.utils.jdt.ElementTypeTeller
 import java.util.function.Consumer
 import java.util.function.Function
 import java.util.function.Supplier
+import javax.print.DocFlavor.STRING
 import org.eclipse.jdt.core.dom.Expression
 import org.eclipse.jdt.core.dom.FieldAccess
+import org.eclipse.jdt.core.dom.ITypeBinding
 import org.eclipse.jdt.core.dom.IVariableBinding
 import org.eclipse.jdt.core.dom.QualifiedName
 import org.eclipse.jdt.core.dom.SimpleName
