@@ -10,7 +10,38 @@ import hu.elte.txtuml.api.model.seqdiag.FragmentListener;
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
 import hu.elte.txtuml.api.model.seqdiag.InteractionWrapper;
 import hu.elte.txtuml.api.model.seqdiag.RuntimeContext;
+import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 
+/**
+ * 
+ * 
+ *
+ * Class responsible for executing the SequenceDiagram code.
+ * <p>
+ * This class executes the model, and watches for the described behavior to
+ * happen. If it does happen then the SequenceDiagram returns with no errors, if
+ * it does not it marks the errors by showing where did the model-execution
+ * diverge from the expected execution path
+ * </p>
+ * On how to write Sequence Diagrams see {@link SequenceDiagram} or
+ * {@link Interaction} classes documentation
+ * <p>
+ * How to Use:
+ * <ol>
+ * <li>Set the Interaction to run by using the {@code setInteraction() } method.
+ * Its Single parameter is an interaction</li>
+ * <li>Run the Executor using the {@code start()} or {@code run()} methods more
+ * on these below</li>
+ * </ol>
+ * The execution can be started using the following two methods: The first
+ * method is {@code run()}, which translates to calling start,
+ * awaitInititialization and awaitShutdown after another in this order The
+ * second( {@code start}) is for simply starting the executor and not waiting
+ * for it to finish running.
+ * </p>
+ * 
+ * @author Turi Zoltan(G4R8AJ)
+ */
 public class SequenceDiagramExecutor implements Runnable, BaseSequenceDiagramExecutor {
 
 	protected InvalidMessageSentListener messageListener;
