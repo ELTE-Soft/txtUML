@@ -31,7 +31,6 @@ import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import hu.elte.txtuml.utils.Pair;
@@ -55,8 +54,9 @@ public class ClassExporter {
 	ActivityExporter activityExporter;
 	GuardExporter guardExporter;
 	AssociationExporter associationExporter;
+	StateMachineExporter stateMachineExporter;
 
-	private enum FuncTypeEnum {
+	public enum FuncTypeEnum {
 		Entry, Exit
 	}
 
@@ -71,6 +71,8 @@ public class ClassExporter {
 		activityExporter = new ActivityExporter();
 		guardExporter = new GuardExporter();
 		associationExporter = new AssociationExporter();
+		
+		
 		additionalSourcesNames = new ArrayList<String>();
 		entryMap = null;
 		exitMap = null;
@@ -93,8 +95,8 @@ public class ClassExporter {
 		if (ownStates(cls, smList)) {
 			Region region = smList.get(0).getRegions().get(0);
 			submachineMap = getSubMachines(region);
-			createFuncTypeMap(region, FuncTypeEnum.Entry, true);
-			createFuncTypeMap(region, FuncTypeEnum.Exit, true);
+			createFuncTypeMap(region, FuncTypeEnum.Entry);
+			createFuncTypeMap(region, FuncTypeEnum.Exit);
 
 			for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
 				ClassExporter classExporter = new ClassExporter();
@@ -138,8 +140,8 @@ public class ClassExporter {
 			throws FileNotFoundException, UnsupportedEncodingException {
 		String source = "";
 		submachineMap = getSubMachines(region_);
-		createFuncTypeMap(region_, FuncTypeEnum.Entry, false);
-		createFuncTypeMap(region_, FuncTypeEnum.Exit, false);
+		createFuncTypeMap(region_, FuncTypeEnum.Entry);
+		createFuncTypeMap(region_, FuncTypeEnum.Exit);
 
 		for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
 			createSubSmSource(entry.getValue().getFirst(), parentClass, entry.getValue().getSecond(), dest_);
@@ -203,36 +205,7 @@ public class ClassExporter {
 		}
 		return source;
 	}
-
-	private String createSubSmClassHeaderSource(String className_, String parentClass, Region region_) {
-		String source = "";
-		StringBuilder dependency = new StringBuilder(GenerationTemplates.cppInclude(parentClass));
-		dependency.append(GenerationTemplates.cppInclude(GenerationTemplates.StandardFunctionsHeader));
-
-		StringBuilder privateParts = createEntryFunctionsDecl(region_);
-		privateParts.append(createExitFunctionsDecl(region_));
-		privateParts.append(GenerationTemplates.formatSubSmFunctions(declareGuardFunctions(region_).toString()));
-		privateParts.append(createTransitionFunctionDecl(region_));
-		String protectedParts = "";
-
-		StringBuilder publicParts = new StringBuilder("");
-		List<String> params = new ArrayList<String>();
-		params.add(parentClass);
-		publicParts.append(GenerationTemplates.constructorDecl(className_, params));
-		publicParts.append(GenerationTemplates.stateEnum(getStateList(region_), getInitialState(region_)));
-
-		if (submachineMap.isEmpty()) {
-			source = GenerationTemplates.simpleSubStateMachineClassHeader(dependency.toString(), className_,
-					parentClass, publicParts.toString(), protectedParts, privateParts.toString()).toString();
-		} else {
-			source = GenerationTemplates
-					.hierarchicalSubStateMachineClassHeader(dependency.toString(), className_, parentClass,
-							getSubmachines(), publicParts.toString(), protectedParts, privateParts.toString())
-					.toString();
-		}
-		return source;
-	}
-
+	
 	private StringBuilder createClassCppSource(Class class_) {
 		StringBuilder source = new StringBuilder("");
 		List<StateMachine> smList = new ArrayList<StateMachine>();
@@ -244,7 +217,8 @@ public class ClassExporter {
 
 		if (ownStates(class_, smList)) {
 			Region region = smList.get(0).getRegions().get(0);
-			Multimap<Pair<String, String>, Pair<String, String>> smMap = createMachine(region);
+			stateMachineExporter = new StateMachineExporter(region,guardExporter);
+			Multimap<Pair<String, String>, Pair<String, String>> smMap = stateMachineExporter.getMachine();
 			if (submachineMap.isEmpty()) {
 				source.append(GenerationTemplates.simpleStateMachineInitialization(name, getInitialState(region), true,
 						poolId, smMap));
@@ -298,9 +272,41 @@ public class ClassExporter {
 		return source;
 	}
 
+	private String createSubSmClassHeaderSource(String className_, String parentClass, Region region_) {
+		String source = "";
+		StringBuilder dependency = new StringBuilder(GenerationTemplates.cppInclude(parentClass));
+		dependency.append(GenerationTemplates.cppInclude(GenerationTemplates.StandardFunctionsHeader));
+
+		StringBuilder privateParts = createEntryFunctionsDecl(region_);
+		privateParts.append(createExitFunctionsDecl(region_));
+		privateParts.append(GenerationTemplates.formatSubSmFunctions(declareGuardFunctions(region_).toString()));
+		privateParts.append(createTransitionFunctionDecl(region_));
+		String protectedParts = "";
+
+		StringBuilder publicParts = new StringBuilder("");
+		List<String> params = new ArrayList<String>();
+		params.add(parentClass);
+		publicParts.append(GenerationTemplates.constructorDecl(className_, params));
+		publicParts.append(GenerationTemplates.stateEnum(getStateList(region_), getInitialState(region_)));
+
+		if (submachineMap.isEmpty()) {
+			source = GenerationTemplates.simpleSubStateMachineClassHeader(dependency.toString(), className_,
+					parentClass, publicParts.toString(), protectedParts, privateParts.toString()).toString();
+		} else {
+			source = GenerationTemplates
+					.hierarchicalSubStateMachineClassHeader(dependency.toString(), className_, parentClass,
+							getSubmachines(), publicParts.toString(), protectedParts, privateParts.toString())
+					.toString();
+		}
+		return source;
+	}
+
+
+
 	private StringBuilder createSubSmClassCppSource(String className_, String parentStateMachine, Region region_) {
 		StringBuilder source = new StringBuilder("");
-		Multimap<Pair<String, String>, Pair<String, String>> smMap = createMachine(region_);
+		stateMachineExporter = new StateMachineExporter(region_,guardExporter);
+		Multimap<Pair<String, String>, Pair<String, String>> smMap = stateMachineExporter.getMachine();
 		if (submachineMap.isEmpty()) {
 			source.append(GenerationTemplates.simpleSubStateMachineClassConstructor(className_, parentStateMachine,
 					smMap, getInitialState(region_)));
@@ -337,14 +343,14 @@ public class ClassExporter {
 		return submachineMap;
 	}
 
-	private void createFuncTypeMap(Region region, FuncTypeEnum funcType_, Boolean rt_) {
+	private void createFuncTypeMap(Region region, FuncTypeEnum funcType) {
 		Map<String, Pair<String, String>> map = new HashMap<String, Pair<String, String>>();
 		String source = "";
 		String name = "";
 		for (State item : getStateList(region)) {
 			Behavior behavior = null;
 			String unknownName = null;
-			switch (funcType_) {
+			switch (funcType) {
 			case Entry: {
 				behavior = item.getEntry();
 				unknownName = unknownEntryName;
@@ -367,9 +373,9 @@ public class ClassExporter {
 			}
 		}
 
-		if (funcType_ == FuncTypeEnum.Entry) {
+		if (funcType == FuncTypeEnum.Entry) {
 			entryMap = map;
-		} else if (funcType_ == FuncTypeEnum.Exit) {
+		} else if (funcType == FuncTypeEnum.Exit) {
 			exitMap = map;
 		}
 
@@ -676,44 +682,6 @@ public class ClassExporter {
 			}
 		}
 		return source;
-	}
-
-	/*
-	 * Map<Pair<String, String>,<String,String> <event,
-	 * state>,<guard,handlerName>
-	 */
-	private Multimap<Pair<String, String>, Pair<String, String>> createMachine(Region region_) {
-		Multimap<Pair<String, String>, Pair<String, String>> smMap = HashMultimap.create();
-		for (Transition item : region_.getTransitions()) {
-			Pair<String, String> eventSignalPair = null;
-
-			if (item.getSource().getName().equals(getInitialState(region_))) {
-				eventSignalPair = new Pair<String, String>(GenerationTemplates.InitSignal, item.getSource().getName());
-			}
-
-			for (Trigger tri : item.getTriggers()) {
-				Event e = tri.getEvent();
-				if (e != null && e.eClass().equals(UMLPackage.Literals.SIGNAL_EVENT)) {
-					SignalEvent se = (SignalEvent) e;
-					if (se != null) {
-						eventSignalPair = new Pair<String, String>(se.getSignal().getName(),
-								item.getSource().getName());
-					}
-				}
-			}
-			if (eventSignalPair != null) {
-				Pair<String, String> guardTransitionPair = null;
-				if (item.getGuard() != null) {
-					guardTransitionPair = new Pair<String, String>(guardExporter.getGuard(item.getGuard()),
-							item.getName());
-
-				} else {
-					guardTransitionPair = new Pair<String, String>(null, item.getName());
-				}
-				smMap.put(eventSignalPair, guardTransitionPair);
-			}
-		}
-		return smMap;
 	}
 
 	private List<State> getStateList(Region region_) {
