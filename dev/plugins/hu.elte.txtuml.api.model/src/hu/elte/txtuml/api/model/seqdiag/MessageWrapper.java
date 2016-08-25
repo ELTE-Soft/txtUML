@@ -50,8 +50,8 @@ public class MessageWrapper {
 				if (!otherWrapper.receiver.runtimeInfo().getIdentifier()
 						.equals(receiver.runtimeInfo().getIdentifier())) {
 					return false;
-				} 
-				
+				}
+
 				if (!signalsEqual(otherWrapper.signal)) {
 					return false;
 				}
