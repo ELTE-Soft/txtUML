@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.cpp.structural;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.uml2.uml.Activity;
@@ -25,11 +26,11 @@ public class EntryExitFunctionExporter {
 	private Map<String, Pair<String, String>> exitMap;// <name,<state,funcBody>>
 	
 	private ActivityExporter activityExporter;
-	private StateExporter stateExporter;
+	private List<State> stateList;
 	
-	EntryExitFunctionExporter(ActivityExporter activityExporter,StateExporter stateExporter) {
+	EntryExitFunctionExporter(ActivityExporter activityExporter,List<State> stateList) {
 		this.activityExporter = activityExporter;
-		this.stateExporter = stateExporter;
+		this.stateList = stateList;
 	}
 	
 	public Map<String, Pair<String, String>> getExitMap() {
@@ -84,7 +85,7 @@ public class EntryExitFunctionExporter {
 		Map<String, Pair<String, String>> map = new HashMap<String, Pair<String, String>>();
 		String source = "";
 		String name = "";
-		for (State item : stateExporter.getStateList()) {
+		for (State item : stateList) {
 			Behavior behavior = null;
 			String unknownName = null;
 			switch (funcType) {
