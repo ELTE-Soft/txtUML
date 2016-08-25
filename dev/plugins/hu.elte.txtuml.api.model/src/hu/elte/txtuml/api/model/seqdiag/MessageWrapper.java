@@ -9,15 +9,17 @@ public class MessageWrapper {
 	public ModelClass sender;
 	public Signal signal;
 	public ModelClass receiver;
+	public boolean isAPI;
 
 	public MessageWrapper(ModelClass sender, Signal signal, ModelClass receiver) {
-		this(sender,signal,receiver,false);
+		this(sender, signal, receiver, false);
 	}
-	
-	public MessageWrapper(ModelClass sender, Signal signal, ModelClass receiver,boolean isInit) {
+
+	public MessageWrapper(ModelClass sender, Signal signal, ModelClass receiver, boolean isAPI) {
 		this.sender = sender;
 		this.signal = signal;
 		this.receiver = receiver;
+		this.isAPI = isAPI;
 	}
 
 	@Override
@@ -25,16 +27,34 @@ public class MessageWrapper {
 		if (!(other instanceof MessageWrapper)) {
 			return false;
 		} else {
+
 			MessageWrapper otherWrapper = (MessageWrapper) other;
 
-			if (sender != null && otherWrapper.sender != null && !otherWrapper.sender.runtimeInfo().getIdentifier()
-					.equals(sender.runtimeInfo().getIdentifier())) {
+			if (otherWrapper.isAPI && !this.isAPI) {
 				return false;
-			} else if (!otherWrapper.receiver.runtimeInfo().getIdentifier()
-					.equals(receiver.runtimeInfo().getIdentifier())) {
-				return false;
-			} else if (!signalsEqual(otherWrapper.signal)) {
-				return false;
+			} else if (!otherWrapper.isAPI && !this.isAPI) {
+				if (sender != null && otherWrapper.sender != null && !otherWrapper.sender.runtimeInfo().getIdentifier()
+						.equals(sender.runtimeInfo().getIdentifier())) {
+					return false;
+				}
+
+				if (!otherWrapper.receiver.runtimeInfo().getIdentifier()
+						.equals(receiver.runtimeInfo().getIdentifier())) {
+					return false;
+				}
+
+				if (!signalsEqual(otherWrapper.signal)) {
+					return false;
+				}
+			} else {
+				if (!otherWrapper.receiver.runtimeInfo().getIdentifier()
+						.equals(receiver.runtimeInfo().getIdentifier())) {
+					return false;
+				} 
+				
+				if (!signalsEqual(otherWrapper.signal)) {
+					return false;
+				}
 			}
 
 			return true;

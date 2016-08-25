@@ -164,6 +164,11 @@ public class SequenceDiagramExecutor implements Runnable, BaseSequenceDiagramExe
 		this.frListeners.remove(listener);
 
 	}
+	
+	public void awaitInitialization()
+	{
+		executor.awaitInitialization();
+	}
 
 	public enum ExecutorState {
 		INITIALIZE, READY, ENDED

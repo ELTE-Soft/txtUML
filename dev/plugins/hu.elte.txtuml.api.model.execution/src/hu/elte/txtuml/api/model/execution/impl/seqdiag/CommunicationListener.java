@@ -8,10 +8,10 @@ import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.error.seqdiag.InvalidMessageError;
 import hu.elte.txtuml.api.model.execution.TraceListener;
+import hu.elte.txtuml.api.model.runtime.RuntimeContext;
 import hu.elte.txtuml.api.model.seqdiag.MessageWrapper;
 
-public class CommunicationListener extends AbstractSequenceDiagramModelListener
-		implements TraceListener  {
+public class CommunicationListener extends AbstractSequenceDiagramModelListener implements TraceListener {
 
 	protected LinkedList<MessageWrapper> suggestedMessagePattern;
 
@@ -25,7 +25,7 @@ public class CommunicationListener extends AbstractSequenceDiagramModelListener
 	}
 
 	public void executionStarted() {
-		suggestedMessagePattern = new LinkedList<MessageWrapper>(this.executor.getThread().getInteractionWrapper().getMessages());	
+
 	}
 
 	public void sendingSignal(ModelClass sender, Signal signal) {
@@ -35,6 +35,11 @@ public class CommunicationListener extends AbstractSequenceDiagramModelListener
 
 	public void processingSignal(ModelClass object, Signal signal) {
 
+		if (suggestedMessagePattern == null) {
+			suggestedMessagePattern = new LinkedList<MessageWrapper>(
+					this.executor.getThread().getInteractionWrapper().getMessages());
+		}
+
 		MessageWrapper sentWrapper = null;
 
 		if (sentSignal != null && currentSender != null && signal.equals(sentSignal)) {
@@ -42,7 +47,7 @@ public class CommunicationListener extends AbstractSequenceDiagramModelListener
 		} else {
 			sentWrapper = new MessageWrapper(null, signal, object);
 		}
-		
+
 		if (suggestedMessagePattern.size() > 0) {
 			MessageWrapper required = suggestedMessagePattern.poll();
 
@@ -55,7 +60,7 @@ public class CommunicationListener extends AbstractSequenceDiagramModelListener
 			executor.addError(
 					new InvalidMessageError(object, "The model sent more signals than the pattern ovelapped"));
 		}
-		
+
 		currentSender = null;
 		sentSignal = null;
 	}
