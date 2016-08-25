@@ -53,8 +53,12 @@ public class ClassExporter {
 
 	ActivityExporter activityExporter;
 	GuardExporter guardExporter;
-	AssociationExporter associationExporter;
-	StateMachineExporter stateMachineExporter;
+	AssociationExporter associationExporter;	
+	
+	private Class cls;
+	
+	private StateMachineExporter stateMachineExporter;
+	private SubStateMachineExporter subStateMachineExporter;
 
 	public enum FuncTypeEnum {
 		Entry, Exit
@@ -62,6 +66,12 @@ public class ClassExporter {
 
 	private Integer poolId;
 	private String name;
+	
+	public ClassExporter(Class cls, String name, String sourceDestination) {
+		this.cls = cls;
+		this.name = name;
+		
+	}
 
 	public ClassExporter() {
 		init();
@@ -217,8 +227,7 @@ public class ClassExporter {
 
 		if (ownStates(class_, smList)) {
 			Region region = smList.get(0).getRegions().get(0);
-			stateMachineExporter = new StateMachineExporter(region,guardExporter);
-			Multimap<Pair<String, String>, Pair<String, String>> smMap = stateMachineExporter.getMachine();
+			Multimap<Pair<String, String>, Pair<String, String>> smMap = stateMachineExporter.getStateMachine();
 			if (submachineMap.isEmpty()) {
 				source.append(GenerationTemplates.simpleStateMachineInitialization(name, getInitialState(region), true,
 						poolId, smMap));
@@ -305,8 +314,7 @@ public class ClassExporter {
 
 	private StringBuilder createSubSmClassCppSource(String className_, String parentStateMachine, Region region_) {
 		StringBuilder source = new StringBuilder("");
-		stateMachineExporter = new StateMachineExporter(region_,guardExporter);
-		Multimap<Pair<String, String>, Pair<String, String>> smMap = stateMachineExporter.getMachine();
+		Multimap<Pair<String, String>, Pair<String, String>> smMap = subStateMachineExporter.getStateMachine();
 		if (submachineMap.isEmpty()) {
 			source.append(GenerationTemplates.simpleSubStateMachineClassConstructor(className_, parentStateMachine,
 					smMap, getInitialState(region_)));

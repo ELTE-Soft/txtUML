@@ -9,6 +9,7 @@ import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.utils.Pair;
 
 public class EntryExitFunctionExporter {
@@ -24,9 +25,9 @@ public class EntryExitFunctionExporter {
 	private Map<String, Pair<String, String>> exitMap;// <name,<state,funcBody>>
 	
 	private ActivityExporter activityExporter;
-	private StateMachineExporter stateExporter;
+	private StateExporter stateExporter;
 	
-	EntryExitFunctionExporter(ActivityExporter activityExporter,StateMachineExporter stateExporter) {
+	EntryExitFunctionExporter(ActivityExporter activityExporter,StateExporter stateExporter) {
 		this.activityExporter = activityExporter;
 		this.stateExporter = stateExporter;
 	}
@@ -39,7 +40,47 @@ public class EntryExitFunctionExporter {
 		return entryMap;
 	}
 	
-	void createFuncTypeMap(FuncTypeEnum funcType) {
+	public void createEntryFunctionTypeMap() {
+		createFuncTypeMap(FuncTypeEnum.Entry);
+	}
+	
+	public void createExitFunctionTypeMap() {
+		createFuncTypeMap(FuncTypeEnum.Exit);
+	}
+	
+	public StringBuilder createEntryFunctionsDecl() {
+		StringBuilder source = new StringBuilder("");
+		for (Map.Entry<String, Pair<String, String>> entry : entryMap.entrySet()) {
+			source.append(GenerationTemplates.functionDecl(entry.getKey()));
+		}
+		return source;
+	}
+
+	public StringBuilder createExitFunctionsDecl() {
+		StringBuilder source = new StringBuilder("");
+		for (Map.Entry<String, Pair<String, String>> entry : exitMap.entrySet()) {
+			source.append(GenerationTemplates.functionDecl(entry.getKey()));
+		}
+		return source;
+	}
+	
+	public StringBuilder createEntryFunctionsDef(String className) {
+		StringBuilder source = new StringBuilder("");
+		for (Map.Entry<String, Pair<String, String>> entry : entryMap.entrySet()) {
+			source.append(GenerationTemplates.functionDef(className, entry.getKey(), entry.getValue().getSecond()));
+		}
+		return source;
+	}
+
+	public StringBuilder createExitFunctionsDef(String className) {
+		StringBuilder source = new StringBuilder("");
+		for (Map.Entry<String, Pair<String, String>> entry : exitMap.entrySet()) {
+			source.append(GenerationTemplates.functionDef(className, entry.getKey(), entry.getValue().getSecond()));
+		}
+		return source;
+	}
+	
+	private void createFuncTypeMap(FuncTypeEnum funcType) {
 		Map<String, Pair<String, String>> map = new HashMap<String, Pair<String, String>>();
 		String source = "";
 		String name = "";

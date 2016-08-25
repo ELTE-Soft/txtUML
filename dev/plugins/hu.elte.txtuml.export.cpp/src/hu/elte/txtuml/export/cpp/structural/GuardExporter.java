@@ -2,17 +2,20 @@ package hu.elte.txtuml.export.cpp.structural;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Pseudostate;
+import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.Transition;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValueSpecification;
 
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 
 public class GuardExporter extends ActivityExporter{
 	
@@ -46,6 +49,32 @@ public class GuardExporter extends ActivityExporter{
 			source = constratintFunctionMap.get(guard);
 			
 		}
+		return source;
+	}
+	
+	public String declareGuardFunctions(Region region_) {
+		StringBuilder source = new StringBuilder("");
+		for (Transition item : region_.getTransitions()) {
+			Constraint constraint = item.getGuard();
+			if (constraint != null) {
+				// TODO else..
+				exportConstraintToMap(constraint);
+				source.append(GenerationTemplates.guardDecleration(getGuard(constraint)));
+			}
+		}
+		source.append("\n");
+		return source.toString();
+	}
+	
+	public StringBuilder defnieGuardFunctions(String className) {
+		StringBuilder source = new StringBuilder("");
+		for (Entry<Constraint, String> guardEntry : getGuards().entrySet()) {
+			init();
+			String body =getGuardFromValueSpecification(guardEntry.getKey().getSpecification());
+			source.append(GenerationTemplates.guardDefinition(guardEntry.getValue(), body, className,
+					isContainsSignalAcces()));
+		}
+
 		return source;
 	}
 	
