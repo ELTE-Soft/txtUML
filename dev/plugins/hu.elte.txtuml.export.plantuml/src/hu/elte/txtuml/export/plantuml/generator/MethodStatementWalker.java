@@ -9,47 +9,34 @@ import hu.elte.txtuml.export.plantuml.seqdiag.MessageSendExporter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 import org.eclipse.jdt.core.dom.*;
 
 public class MethodStatementWalker extends ASTVisitor {
 
 	private PlantUmlGenerator generator;
-	private Stack<BaseSeqdiagExporter<?>> expQueue;
 	private List<ASTNode> errors;
 
 	public MethodStatementWalker(PlantUmlGenerator generator) {
-
-		expQueue = new Stack<BaseSeqdiagExporter<?>>();
-
 		this.generator = generator;
-
 		errors = new ArrayList<ASTNode>();
 	}
 
 	@Override
 	public boolean visit(TypeDeclaration statement) {
 		InteractionExporter exp = new InteractionExporter(generator.getTargetFile(), generator);
-		exp.visit(statement);
 
-		if (exp.validElement(statement)) {
-			expQueue.push(exp);
-		}
-
-		return true;
+		return exp.visit(statement);
 	}
 
 	@Override
 	public void endVisit(TypeDeclaration statement) {
-		BaseSeqdiagExporter<?> exp = expQueue.peek();
+		BaseSeqdiagExporter<?> exp = generator.postProcessingStatement();
 
 		if (exp instanceof InteractionExporter) {
 			InteractionExporter cExp = (InteractionExporter) exp;
 
-			if (cExp.endVisit(statement)) {
-				expQueue.pop();
-			}
+			cExp.endVisit(statement);
 		} else {
 			errors.add(statement);
 		}
@@ -59,26 +46,18 @@ public class MethodStatementWalker extends ASTVisitor {
 	public boolean visit(FieldDeclaration statement) {
 		LifelineExporter exp = new LifelineExporter(generator.getTargetFile(), generator);
 
-		exp.visit(statement);
-
-		if (exp.validElement(statement)) {
-			expQueue.push(exp);
-		}
-
-		return true;
+		return exp.visit(statement);
 	}
 
 	@Override
 	public void endVisit(FieldDeclaration statement) {
 
-		BaseSeqdiagExporter<? extends ASTNode> exp = expQueue.peek();
+		BaseSeqdiagExporter<? extends ASTNode> exp = generator.postProcessingStatement();
 
 		if (exp instanceof LifelineExporter) {
 			LifelineExporter cExp = (LifelineExporter) exp;
 
-			if (cExp.endVisit(statement)) {
-				expQueue.pop();
-			}
+			cExp.endVisit(statement);
 		} else {
 			errors.add(statement);
 		}
@@ -88,18 +67,12 @@ public class MethodStatementWalker extends ASTVisitor {
 	public boolean visit(MethodInvocation statement) {
 		MessageSendExporter exp = new MessageSendExporter(generator.getTargetFile(), generator);
 
-		exp.visit(statement);
-
-		if (exp.validElement(statement)) {
-			expQueue.push(exp);
-		}
-
-		return true;
+		return exp.visit(statement);
 	}
 
 	@Override
 	public void endVisit(MethodInvocation statement) {
-		BaseSeqdiagExporter<? extends ASTNode> exp = expQueue.peek();
+		BaseSeqdiagExporter<? extends ASTNode> exp = generator.postProcessingStatement();
 		String invoc = statement.resolveMethodBinding().getDeclaringClass().getQualifiedName();
 
 		if (invoc.equals("hu.elte.txtuml.api.model.Action")) {
@@ -109,11 +82,7 @@ public class MethodStatementWalker extends ASTVisitor {
 		if (exp instanceof MessageSendExporter) {
 			MessageSendExporter cExp = (MessageSendExporter) exp;
 
-			boolean endElement = cExp.endVisit(statement);
-
-			if (endElement) {
-				expQueue.pop();
-			}
+			cExp.endVisit(statement);
 		} else {
 			errors.add(statement);
 		}
@@ -133,10 +102,6 @@ public class MethodStatementWalker extends ASTVisitor {
 		ArrayList<String> errList = new ArrayList<String>();
 		for (ASTNode error : errors) {
 			errList.add("Error! Couldn't parse the following statement: " + error.toString() + "\n");
-		}
-
-		if (!expQueue.isEmpty()) {
-			errList.add("Warning! Some expressions where left unparsed/unclosed \n");
 		}
 
 		return errList;

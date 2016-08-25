@@ -65,7 +65,6 @@ public class Action {
 		RuntimeContext context = RuntimeContext.getCurrentExecutorThread();
 		InteractionWrapper wrapper = context.getInteractionWrapper();
 		wrapper.storeMessage(from, signal, target);
-		context.getTraceListener().addToPattern(from, signal, target);
 	}
 
 	public static void log(String message) {
@@ -95,13 +94,4 @@ public class Action {
 	public static void receive(Signal signal, ModelClass from) {
 		// TODO code Action
 	}
-
-	public static void startFragment(CombinedFragmentType type) {
-		RuntimeContext.getCurrentExecutorThread().getRuntime().fragment(x -> x.FragmentStarted(type));
-	}
-
-	public static void endFragment(CombinedFragmentType type) {
-		RuntimeContext.getCurrentExecutorThread().getRuntime().fragment(x -> x.FragmentEnded(type));
-	}
-
 }

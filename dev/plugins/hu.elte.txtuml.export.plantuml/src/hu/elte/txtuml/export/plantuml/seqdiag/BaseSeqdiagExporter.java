@@ -48,19 +48,32 @@ public abstract class BaseSeqdiagExporter<T extends ASTNode> {
 	 */
 	public abstract void afterNext(T curElement);
 
+	/**
+	 * Pre processing of the current sub-tree's root node
+	 * 
+	 * @param curElement
+	 *            current statement to process
+	 * @return true if the child-nodes should be visited
+	 */
 	public boolean visit(T curElement) {
 		if (this.validElement(curElement)) {
 			this.preNext(curElement);
+			generator.preProcessedStatement(this);
 		}
 
 		return true;
 	}
 
-	public boolean endVisit(T curElement) {
+	/**
+	 * Post processing of the sub tree's root node
+	 * 
+	 * @param curElement
+	 *            current statement to process
+	 */
+	public void endVisit(T curElement) {
 		if (this.validElement(curElement)) {
 			this.afterNext(curElement);
-			return true;
+			generator.postProcessedStatement();
 		}
-		return false;
 	}
 }

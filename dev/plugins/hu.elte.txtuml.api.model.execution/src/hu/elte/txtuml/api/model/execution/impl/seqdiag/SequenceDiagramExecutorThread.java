@@ -1,6 +1,5 @@
 package hu.elte.txtuml.api.model.execution.impl.seqdiag;
 
-import hu.elte.txtuml.api.model.seqdiag.ImprintedListener;
 import hu.elte.txtuml.api.model.seqdiag.InteractionWrapper;
 import hu.elte.txtuml.api.model.seqdiag.Runtime;
 import hu.elte.txtuml.api.model.seqdiag.RuntimeContext;
@@ -50,10 +49,5 @@ public class SequenceDiagramExecutorThread extends Thread implements RuntimeCont
 	@Override
 	public InteractionWrapper getInteractionWrapper() {
 		return this.runtime.getCurrentInteraction();
-	}
-
-	@Override
-	public ImprintedListener getTraceListener() {
-		return executor.traceListener;
 	}
 }

@@ -3,11 +3,14 @@ package hu.elte.txtuml.export.plantuml.generator;
 import java.io.ByteArrayInputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Stack;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramStructuralException;
+import hu.elte.txtuml.export.plantuml.seqdiag.BaseSeqdiagExporter;
 
 public class PlantUmlGenerator {
 
@@ -16,6 +19,7 @@ public class PlantUmlGenerator {
 
 	private MethodStatementWalker walker;
 	private ArrayList<String> activeLifelines;
+	private Stack<BaseSeqdiagExporter<? extends ASTNode>> expQueue;
 
 	public PlantUmlGenerator(IFile targetFile, CompilationUnit source) {
 
@@ -30,6 +34,7 @@ public class PlantUmlGenerator {
 
 		this.sourceCU = source;
 		this.activeLifelines = new ArrayList<String>();
+		expQueue = new Stack<BaseSeqdiagExporter<? extends ASTNode>>();
 	}
 
 	public void generate() throws SequenceDiagramStructuralException {
@@ -42,6 +47,10 @@ public class PlantUmlGenerator {
 
 			for (String error : walker.getErrors()) {
 				errString += error;
+			}
+
+			if (!expQueue.isEmpty()) {
+				errString += "Warning! Some expressions where left unparsed/unclosed \n";
 			}
 			throw new SequenceDiagramStructuralException(errString);
 		}
@@ -109,5 +118,17 @@ public class PlantUmlGenerator {
 		while (activeLifelines.size() > 0) {
 			this.deactivateLifeline(activeLifelines.get(0));
 		}
+	}
+
+	public void preProcessedStatement(BaseSeqdiagExporter<? extends ASTNode> exporter) {
+		expQueue.push(exporter);
+	}
+
+	public BaseSeqdiagExporter<? extends ASTNode> postProcessingStatement() {
+		return expQueue.peek();
+	}
+
+	public void postProcessedStatement() {
+		expQueue.pop();
 	}
 }

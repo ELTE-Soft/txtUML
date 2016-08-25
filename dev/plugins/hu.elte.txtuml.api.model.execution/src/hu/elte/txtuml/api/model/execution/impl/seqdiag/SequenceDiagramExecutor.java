@@ -54,6 +54,8 @@ public class SequenceDiagramExecutor implements Runnable, BaseSequenceDiagramExe
 	private Interaction base;
 	private ArrayList<ValidationError> errors;
 
+	private ExecutorState state = ExecutorState.INITIALIZE;
+
 	ArrayList<FragmentListener> frListeners;
 
 	public SequenceDiagramExecutor() {
@@ -101,13 +103,15 @@ public class SequenceDiagramExecutor implements Runnable, BaseSequenceDiagramExe
 			public void run() {
 				interaction.getWrapped().initialize();
 				interaction.prepare();
+				state = ExecutorState.READY;
 				interaction.getWrapped().run();
 			}
 		});
-
+		
 		executor.launch();
 		executor.shutdown();
 		executor.awaitTermination();
+		state = ExecutorState.ENDED;
 
 		if (traceListener.suggestedMessagePattern.size() != 0) {
 			this.errors
@@ -119,6 +123,9 @@ public class SequenceDiagramExecutor implements Runnable, BaseSequenceDiagramExe
 
 	public SequenceDiagramExecutor shutdown() {
 
+		if (state.equals(ExecutorState.ENDED)) {
+			this.executor = null;
+		}
 		isLocked = false;
 		return this;
 	}
@@ -156,5 +163,9 @@ public class SequenceDiagramExecutor implements Runnable, BaseSequenceDiagramExe
 	public void removeFragmentListener(FragmentListener listener) {
 		this.frListeners.remove(listener);
 
+	}
+
+	public enum ExecutorState {
+		INITIALIZE, READY, ENDED
 	}
 }

@@ -16,4 +16,5 @@ Require-Bundle: hu.elte.txtuml.api.model;bundle-version="0.5.0",
  org.eclipse.ui.editors;bundle-version="3.9.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: ELTE
-Export-Package: hu.elte.txtuml.export.plantuml
+Export-Package: hu.elte.txtuml.export.plantuml,
+ hu.elte.txtuml.export.plantuml.exceptions

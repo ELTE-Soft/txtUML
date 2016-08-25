@@ -62,7 +62,12 @@ public class InteractionWrapper extends AbstractWrapper<Interaction> {
 		return null;
 	}
 
-	public void storeMessage(ModelClass from, Signal sig, ModelClass to) {
-		this.messages.add(new MessageWrapper(from, sig, to));
+	public void storeMessage(ModelClass from, Signal sig, ModelClass to)
+	{
+		storeMessage(from,sig,to,false);
+	}
+	
+	public void storeMessage(ModelClass from, Signal sig, ModelClass to,boolean isAPI) {
+		this.messages.add(new MessageWrapper(from, sig, to,isAPI));
 	}
 }

@@ -8,11 +8,10 @@ import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.error.seqdiag.InvalidMessageError;
 import hu.elte.txtuml.api.model.execution.TraceListener;
-import hu.elte.txtuml.api.model.seqdiag.ImprintedListener;
 import hu.elte.txtuml.api.model.seqdiag.MessageWrapper;
 
 public class CommunicationListener extends AbstractSequenceDiagramModelListener
-		implements TraceListener, ImprintedListener {
+		implements TraceListener  {
 
 	protected LinkedList<MessageWrapper> suggestedMessagePattern;
 
@@ -21,12 +20,12 @@ public class CommunicationListener extends AbstractSequenceDiagramModelListener
 
 	public CommunicationListener(SequenceDiagramExecutor executor) {
 		super(executor);
-		suggestedMessagePattern = new LinkedList<MessageWrapper>();
 		currentSender = null;
 		sentSignal = null;
 	}
 
 	public void executionStarted() {
+		suggestedMessagePattern = new LinkedList<MessageWrapper>(this.executor.getThread().getInteractionWrapper().getMessages());	
 	}
 
 	public void sendingSignal(ModelClass sender, Signal signal) {
@@ -40,31 +39,25 @@ public class CommunicationListener extends AbstractSequenceDiagramModelListener
 
 		if (sentSignal != null && currentSender != null && signal.equals(sentSignal)) {
 			sentWrapper = new MessageWrapper(currentSender, sentSignal, object);
-			currentSender = null;
-			sentSignal = null;
-
-			if (suggestedMessagePattern.size() > 0) {
-				MessageWrapper required = suggestedMessagePattern.poll();
-
-				if (!required.equals(sentWrapper)) {
-					executor.addError(new InvalidMessageError(object,
-							"The model diverged from the Sequence-diagram Specified behaviour:\n it sent: "
-									+ signal.toString() + " instead of " + required.signal.toString() + "\n"));
-				}
-			} else {
-				executor.addError(
-						new InvalidMessageError(object, "The model sent more signals than the pattern ovelapped"));
-			}
-
+		} else {
+			sentWrapper = new MessageWrapper(null, signal, object);
 		}
-		/*
-		 * else { sentWrapper = new MessageWrapper(null,signal,object); }
-		 */
+		
+		if (suggestedMessagePattern.size() > 0) {
+			MessageWrapper required = suggestedMessagePattern.poll();
 
-	}
-
-	public void addToPattern(ModelClass from, Signal sig, ModelClass to) {
-		this.suggestedMessagePattern.add(new MessageWrapper(from, sig, to));
+			if (!required.equals(sentWrapper)) {
+				executor.addError(new InvalidMessageError(object,
+						"The model diverged from the Sequence-diagram Specified behaviour:\n it sent: "
+								+ signal.toString() + " instead of " + required.signal.toString() + "\n"));
+			}
+		} else {
+			executor.addError(
+					new InvalidMessageError(object, "The model sent more signals than the pattern ovelapped"));
+		}
+		
+		currentSender = null;
+		sentSignal = null;
 	}
 
 	public void usingTransition(ModelClass object, Transition transition) {

@@ -8,6 +8,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.CommonPlugin;
 import org.eclipse.emf.common.util.URI;
@@ -17,7 +18,9 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.ui.IEditorDescriptor;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
@@ -78,7 +81,6 @@ public class PlantUmlExporter {
 					seqDiagrams.add((Class<Interaction>) diagramClass);
 					diagrams.remove(diagram);
 					nonExportedCount--;
-					exportedCount++;
 				} else {
 				}
 
@@ -92,7 +94,8 @@ public class PlantUmlExporter {
 	 * Generate the output into the gen folder using JDT. At the end refresh the
 	 * project so the freshly created resource shows up
 	 */
-	public void generatePlantUmlOutput() {
+	public void generatePlantUmlOutput(IProgressMonitor monitor) throws CoreException,SequenceDiagramStructuralException {
+
 		for (Class<Interaction> sequenceDiagram : seqDiagrams) {
 			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 			IFile resource = project.getFile("src/" + sequenceDiagram.getName().replace('.', '/') + ".java");
@@ -111,27 +114,47 @@ public class PlantUmlExporter {
 					.resolve(URI.createFileURI(projectName + "/" + genFolderName + "/" + fileName + ".txt"));
 
 			IFile targetFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(targetURI.toFileString()));
-			try {
-				if (targetFile.exists()) {
 
-					targetFile.delete(true, null);
+			IWorkbench workbench = PlatformUI.getWorkbench();
+			IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
 
+			cleanupWorkbench(targetFile, page);
+
+			monitor.worked(100 / (seqDiagrams.size() * 2));
+
+			PlantUmlGenerator generator = new PlantUmlGenerator(targetFile, cu);
+			generator.generate();
+			project.refreshLocal(IProject.DEPTH_INFINITE, null);
+
+			IEditorDescriptor editor = workbench.getEditorRegistry().getDefaultEditor(targetFile.getName());
+			IEditorPart editorPart = page.openEditor(new FileEditorInput(targetFile), editor.getId());
+			page.activate(editorPart);
+			page.showView("net.sourceforge.plantuml.eclipse.views.PlantUmlView");
+
+			monitor.worked(100 / (seqDiagrams.size() * 2));
+			exportedCount++;
+		}
+	}
+
+	protected void cleanupWorkbench(IFile targetFile, IWorkbenchPage page) throws CoreException {
+
+		if (targetFile.exists()) {
+
+			IEditorReference[] refs = page.getEditorReferences();
+			for (IEditorReference ref : refs) {
+
+				IEditorPart part = ref.getEditor(false);
+				if (part != null) {
+					IEditorInput inp = part.getEditorInput();
+					if (inp instanceof FileEditorInput) {
+						if (((FileEditorInput) inp).getFile().equals(targetFile)) {
+							page.closeEditor(ref.getEditor(false), true);
+						}
+					}
 				}
-				PlantUmlGenerator generator = new PlantUmlGenerator(targetFile, cu);
-				generator.generate();
-				project.refreshLocal(IProject.DEPTH_INFINITE, null);
-
-				IWorkbench workbench = PlatformUI.getWorkbench();
-				IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
-				IEditorDescriptor editor = workbench.getEditorRegistry().getDefaultEditor(targetFile.getName());
-				IEditorPart editorPart = page.openEditor(new FileEditorInput(targetFile), editor.getId());
-				page.activate(editorPart);
-				page.showView("net.sourceforge.plantuml.eclipse.views.PlantUmlView");
-
-			} catch (SequenceDiagramStructuralException | CoreException ex) {
-				hadErrors = true;
-				errorMessage = ex.getMessage();
 			}
+
+			targetFile.delete(true, null);
 		}
 	}
 
@@ -161,6 +184,14 @@ public class PlantUmlExporter {
 
 	public int nonExportedCount() {
 		return nonExportedCount;
+	}
+
+	public boolean hasSequenceDiagram() {
+		return seqDiagrams.size() > 0;
+	}
+
+	public boolean noDiagramLayout() {
+		return diagrams.size() == 0;
 	}
 
 }

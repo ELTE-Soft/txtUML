@@ -2,7 +2,6 @@ package hu.elte.txtuml.api.model.seqdiag;
 
 import hu.elte.txtuml.api.model.AssociationEnd;
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.Signal;
 
 public class LifelineWrapper<T extends ModelClass> extends AbstractWrapper<T> {
 
@@ -26,12 +25,6 @@ public class LifelineWrapper<T extends ModelClass> extends AbstractWrapper<T> {
 
 	public void start() {
 		hu.elte.txtuml.api.model.Action.start(this.getWrapped());
-	}
-
-	public void send(Signal sig, LifelineWrapper<?> wrapper) {
-		ImprintedListener listener = ((RuntimeContext) Thread.currentThread()).getTraceListener();
-		listener.addToPattern(this.getWrapped(), sig, this.getWrapped());
-		// hu.elte.txtuml.api.model.Action.send(sig, wrapper.getWrapped());
 	}
 
 	protected <R extends ModelClass> void link(Class<? extends AssociationEnd<T, ?>> leftEnd,

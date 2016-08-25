@@ -11,6 +11,10 @@ public class MessageWrapper {
 	public ModelClass receiver;
 
 	public MessageWrapper(ModelClass sender, Signal signal, ModelClass receiver) {
+		this(sender,signal,receiver,false);
+	}
+	
+	public MessageWrapper(ModelClass sender, Signal signal, ModelClass receiver,boolean isInit) {
 		this.sender = sender;
 		this.signal = signal;
 		this.receiver = receiver;

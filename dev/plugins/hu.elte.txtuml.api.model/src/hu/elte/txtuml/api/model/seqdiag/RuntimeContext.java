@@ -5,8 +5,6 @@ public interface RuntimeContext {
 
 	public InteractionWrapper getInteractionWrapper();
 
-	public ImprintedListener getTraceListener();
-
 	public BaseSequenceDiagramExecutor getExecutor();
 
 	public static RuntimeContext getCurrentExecutorThread() {
