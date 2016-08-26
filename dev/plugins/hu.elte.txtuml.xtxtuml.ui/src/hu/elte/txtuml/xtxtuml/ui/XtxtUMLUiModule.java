@@ -1,6 +1,7 @@
 package hu.elte.txtuml.xtxtuml.ui;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.xtext.builder.IXtextBuilderParticipant;
 import org.eclipse.xtext.service.SingletonBinding;
 import org.eclipse.xtext.ui.editor.contentassist.AbstractJavaBasedContentProposalProvider;
 import org.eclipse.xtext.ui.editor.syntaxcoloring.IHighlightingConfiguration;
@@ -16,6 +17,7 @@ import hu.elte.txtuml.xtxtuml.ui.highlighting.XtxtUMLHighlightingConfiguration;
 import hu.elte.txtuml.xtxtuml.ui.hover.XtxtUMLDeclarativeHoverSignatureProvider;
 import hu.elte.txtuml.xtxtuml.ui.hover.XtxtUMLHoverDocumentationProvider;
 import hu.elte.txtuml.xtxtuml.ui.quickfix.XtxtUMLTypeNameGuesser;
+import hu.elte.txtuml.xtxtuml.ui.validation.XtxtUMLBuilderParticipant;
 import hu.elte.txtuml.xtxtuml.ui.validation.XtxtUMLUIValidator;
 
 public class XtxtUMLUiModule extends hu.elte.txtuml.xtxtuml.ui.AbstractXtxtUMLUiModule {
@@ -55,6 +57,11 @@ public class XtxtUMLUiModule extends hu.elte.txtuml.xtxtuml.ui.AbstractXtxtUMLUi
 	@SingletonBinding(eager = true)
 	public Class<? extends XbaseUIValidator> bindXbaseUIValidator() {
 		return XtxtUMLUIValidator.class;
+	}
+
+	@Override
+	public Class<? extends IXtextBuilderParticipant> bindIXtextBuilderParticipant() {
+		return XtxtUMLBuilderParticipant.class;
 	}
 
 }
