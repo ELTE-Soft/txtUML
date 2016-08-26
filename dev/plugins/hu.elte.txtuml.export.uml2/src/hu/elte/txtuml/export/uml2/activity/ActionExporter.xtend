@@ -6,8 +6,13 @@ import hu.elte.txtuml.export.uml2.Exporter
 import hu.elte.txtuml.export.uml2.activity.expression.ThisExporter
 import hu.elte.txtuml.export.uml2.activity.expression.VariableExpressionExporter
 import hu.elte.txtuml.export.uml2.activity.statement.ConditionalExporter
+import hu.elte.txtuml.export.uml2.activity.statement.LoopConditionExporter
+import hu.elte.txtuml.export.uml2.activity.statement.LoopInitExporter
+import hu.elte.txtuml.export.uml2.activity.statement.LoopUpdateExporter
 import org.eclipse.jdt.core.dom.Expression
+import org.eclipse.jdt.core.dom.ForStatement
 import org.eclipse.jdt.core.dom.IMethodBinding
+import org.eclipse.jdt.core.dom.ITypeBinding
 import org.eclipse.jdt.core.dom.IfStatement
 import org.eclipse.jdt.core.dom.Statement
 import org.eclipse.uml2.uml.Action
@@ -24,14 +29,12 @@ import org.eclipse.uml2.uml.ReadSelfAction
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction
 import org.eclipse.uml2.uml.ReadVariableAction
 import org.eclipse.uml2.uml.SequenceNode
+import org.eclipse.uml2.uml.TestIdentityAction
 import org.eclipse.uml2.uml.Type
 import org.eclipse.uml2.uml.ValueSpecificationAction
 import org.eclipse.uml2.uml.Variable
-import hu.elte.txtuml.export.uml2.activity.statement.LoopInitExporter
-import org.eclipse.jdt.core.dom.ForStatement
-import hu.elte.txtuml.export.uml2.activity.statement.LoopUpdateExporter
-import hu.elte.txtuml.export.uml2.activity.statement.LoopConditionExporter
-import org.eclipse.uml2.uml.TestIdentityAction
+
+import static hu.elte.txtuml.export.uml2.activity.ActionExporter.OperatorType.*
 
 /**
  * Base class for all exporters on the statement-expression level.
@@ -84,7 +87,7 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 	}
 
 	def dispatch OutputPin result(ReadVariableAction node) { node.result }
-	
+
 	def dispatch OutputPin result(TestIdentityAction node) { node.result }
 
 	def dispatch OutputPin result(ReadSelfAction node) { node.result }
@@ -92,7 +95,7 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 	def dispatch OutputPin result(ReadLinkAction node) { node.result }
 
 	def dispatch OutputPin result(ReadStructuralFeatureAction node) { node.result }
-	
+
 	def dispatch OutputPin result(CreateObjectAction node) { node.result }
 
 	def dispatch OutputPin result(CallOperationAction node) { node.results.get(0) }
@@ -146,33 +149,33 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 		expr?.storeNode
 		return expr
 	}
-	
+
 	def exportConditional(IfStatement source) {
 		val expr = cache.export(new ConditionalExporter(this), source, source, [])
 		expr?.storeNode
 		return expr
 	}
-	
+
 	def exportLoopInit(ForStatement source) {
 		val init = cache.export(new LoopInitExporter(this), source, source, [])
 		storeNode(init)
 		return init
 	}
-	
+
 	def exportLoopCondition(ForStatement source) {
 		val cond = cache.export(new LoopConditionExporter(this), source, source, [])
 		storeNode(cond)
 		return cond
 	}
-	
+
 	def exportLoopUpdate(ForStatement source) {
 		val update = cache.export(new LoopUpdateExporter(this), source, source, [])
 		storeNode(update)
 		return update
 	}
-	
+
 	def read(Variable variable) { new VariableExpressionExporter(this).readVar(variable) }
-	
+
 	def write(Variable variable, Action newValue) {
 		val write = factory.createAddVariableValueAction
 		write.name = '''«variable.name»=«newValue.name»'''
@@ -182,6 +185,47 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 		storeNode(write)
 		return write
 	}
-	
+
 	def thisRef(Type cls) { new ThisExporter(this).createThis(cls) }
+
+	enum OperatorType {
+		INTEGER,
+		REAL,
+		BOOLEAN,
+		STRING,
+		OBJECT
+	}
+
+	def getType(ITypeBinding javaType) {
+		switch javaType.name {
+			case "int",
+			case "Int",
+			case "long",
+			case "Long",
+			case "short",
+			case "Short",
+			case "byte",
+			case "Byte": INTEGER
+			case "double",
+			case "Double",
+			case "float",
+			case "Float": REAL
+			case "boolean",
+			case "Boolean": BOOLEAN
+			case "String": STRING
+			default: OBJECT
+		}
+	}
+
+	def combineTypes(OperatorType opt1, OperatorType opt2) {
+		switch opt1 {
+			case INTEGER:
+				switch opt2 {
+					case INTEGER: INTEGER
+					default: REAL
+				}
+			default:
+				return opt1
+		}
+	}
 }
