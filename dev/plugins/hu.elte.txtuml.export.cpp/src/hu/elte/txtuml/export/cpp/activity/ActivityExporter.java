@@ -59,28 +59,28 @@ public class ActivityExporter {
 		userVariableExporter = new UserVariableExporter();
 		activityExportResolver = new ActivityNodeResolver(objectMap, returnOutputsToCallActions, tempVariableExporter,
 				userVariableExporter);
-		controlNodeExporter = new StructuredControlNodeExporter(this, activityExportResolver, userVariableExporter);
+		returnNodeExporter = new ReturnNodeExporter(activityExportResolver);
+		controlNodeExporter = new StructuredControlNodeExporter(this, activityExportResolver, userVariableExporter, returnNodeExporter);
 		callOperationExporter = new CallOperationExporter(tempVariableExporter, returnOutputsToCallActions,
 				activityExportResolver);
 		linkActionExporter = new LinkActionExporter(tempVariableExporter, activityExportResolver);
 		objectActionExporter = new ObjectActionExporter(tempVariableExporter, objectMap, activityExportResolver);
-		returnNodeExporter = new ReturnNodeExporter(activityExportResolver);
 
 		objectMap = new HashMap<CreateObjectAction, String>();
 		returnOutputsToCallActions = new HashMap<CallOperationAction, OutputPin>();
 	}
 
-	public String createfunctionBody(Activity activity_) {
+	public String createfunctionBody(Activity activity) {
 		ActivityNode startNode = null;
 		StringBuilder source = new StringBuilder("");
-		for (ActivityNode node : activity_.getOwnedNodes()) {
+		for (ActivityNode node : activity.getOwnedNodes()) {
 			if (node.eClass().equals(UMLPackage.Literals.INITIAL_NODE)) {
 				startNode = node;
 				break;
 			}
 		}
 
-		source.append(controlNodeExporter.createStructuredActivityNodeVariables(activity_.getVariables()));
+		source.append(controlNodeExporter.createStructuredActivityNodeVariables(activity.getVariables()));
 		source.append(createActivityPartCode(startNode));
 		source.append(returnNodeExporter.createReturnParamaterCode());
 

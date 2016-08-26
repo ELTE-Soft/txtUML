@@ -91,11 +91,8 @@ public class Uml2ToCppExporter {
 
 			if (threadManager.getDescription().get(item.getName()) != null && !Shared.generatedClass(item)) {
 
-				classExporter.init();
-				classExporter.setConfiguratedPoolId(threadManager.getDescription().get(item.getName()).getId());
-				classExporter.setRealName(getRealClassName(item));
-
-				classExporter.createSource(item, outputDirectory);
+				classExporter.init(item,getRealClassName(item),threadManager.getDescription().get(item.getName()).getId());
+				classExporter.createSource(outputDirectory);
 
 				classNames.addAll(classExporter.getSubmachines());
 				classNames.add(getRealClassName(item));

@@ -27,10 +27,15 @@ public class EntryExitFunctionExporter {
 	
 	private ActivityExporter activityExporter;
 	private List<State> stateList;
+	private String className;
 	
-	EntryExitFunctionExporter(ActivityExporter activityExporter,List<State> stateList) {
-		this.activityExporter = activityExporter;
+	EntryExitFunctionExporter(String className,List<State> stateList) {
+		activityExporter = new ActivityExporter();
+		this.className = className;
 		this.stateList = stateList;
+		
+		createFuncTypeMap(FuncTypeEnum.Entry);
+		createFuncTypeMap(FuncTypeEnum.Exit);
 	}
 	
 	public Map<String, Pair<String, String>> getExitMap() {
@@ -65,7 +70,7 @@ public class EntryExitFunctionExporter {
 		return source;
 	}
 	
-	public StringBuilder createEntryFunctionsDef(String className) {
+	public StringBuilder createEntryFunctionsDef() {
 		StringBuilder source = new StringBuilder("");
 		for (Map.Entry<String, Pair<String, String>> entry : entryMap.entrySet()) {
 			source.append(GenerationTemplates.functionDef(className, entry.getKey(), entry.getValue().getSecond()));
@@ -73,7 +78,7 @@ public class EntryExitFunctionExporter {
 		return source;
 	}
 
-	public StringBuilder createExitFunctionsDef(String className) {
+	public StringBuilder createExitFunctionsDef() {
 		StringBuilder source = new StringBuilder("");
 		for (Map.Entry<String, Pair<String, String>> entry : exitMap.entrySet()) {
 			source.append(GenerationTemplates.functionDef(className, entry.getKey(), entry.getValue().getSecond()));

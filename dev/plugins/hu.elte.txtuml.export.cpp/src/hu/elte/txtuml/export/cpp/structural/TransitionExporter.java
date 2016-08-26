@@ -23,9 +23,12 @@ public class TransitionExporter {
 	String className;
 	List<Transition> transitions;
 	
-	TransitionExporter(String className,List<Transition> transitions) {
+	TransitionExporter(String className,List<Transition> transitions, GuardExporter guardExporter) {
+		activityExporter = new ActivityExporter();
+		
 		this.className = className;
 		this.transitions = transitions;
+		this.guardExporter = guardExporter;
 	}
 	
 	String createTransitionFunctionDecl() {

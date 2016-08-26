@@ -23,10 +23,11 @@ class StructuredControlNodeExporter {
 	private ReturnNodeExporter returnNodeExporter;
 	
 	public StructuredControlNodeExporter(ActivityExporter activityExporter,ActivityNodeResolver activityExportResolver,
-			UserVariableExporter userVariableExporter) {
+			UserVariableExporter userVariableExporter, ReturnNodeExporter returnNodeExporter) {
 		this.activityExporter = activityExporter;
 		this.activityExportResolver = activityExportResolver;
 		this.userVariableExporter = userVariableExporter;
+		this.returnNodeExporter = returnNodeExporter;
 	}
 	
 	String createSequenceNodeCode(SequenceNode seqNode) {

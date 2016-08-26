@@ -93,7 +93,7 @@ class CallOperationExporter {
 			if (node.getOperation().getType() != null) {
 				if (node.getOutgoings().size() > 0) {
 					returnTypeName = ((InputPin) node.getOutgoings().get(0).getTarget()).getType().getName();
-				} else if (returnPin.getOutgoings().size() > 0) {
+				} else if (returnPin != null && returnPin.getOutgoings().size() > 0) {
 					returnTypeName = ((InputPin) returnPin.getOutgoings().get(0).getTarget()).getType().getName();
 
 				}

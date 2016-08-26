@@ -15,6 +15,7 @@ import org.eclipse.uml2.uml.Trigger;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import hu.elte.txtuml.export.cpp.Shared;
@@ -28,19 +29,50 @@ import org.eclipse.uml2.uml.PseudostateKind;
 class StateMachineExporter {
 	
 	protected Multimap<Pair<String, String>, Pair<String, String>> stateMachineMap;
-
-	private List<String> subSubMachines;
+	protected Map<String, Pair<String, Region>> submachineMap;// <stateName,<machinename,behavior>>
 	protected List<State> stateList;
 	protected Region stateMachineRegion;
+	
+	private List<String> subSubMachines;
 	private Pseudostate initialState;
 	private boolean ownStateMachine;
-	private GuardExporter guardExporter;
+	protected GuardExporter guardExporter;
+	protected TransitionExporter transitionExporter;
+	private EntryExitFunctionExporter entryExitFunctionExporter;
+	protected String className;
+	private int poolId;
 	
-	StateMachineExporter(Region region) {
+	StateMachineExporter(Region region, String name) {
 		stateMachineRegion = region;
+		createStateList();
+		init();
 	}
 
-	StateMachineExporter(Class cls) {
+	StateMachineExporter(String className,int poolId, Class cls) {	
+		createStateMachineRegion(cls);
+		if(isOwnStateMachine()) {
+			init();
+		}
+		
+		this.poolId = poolId;
+		this.className = className;
+	}
+	
+	private void init() {
+		stateMachineMap = HashMultimap.create();
+		submachineMap = new HashMap<String, Pair<String, Region>>();
+		subSubMachines = new ArrayList<String>();
+		
+		guardExporter = new GuardExporter();
+		transitionExporter = new TransitionExporter(className,stateMachineRegion.getTransitions(),guardExporter);
+		entryExitFunctionExporter = new EntryExitFunctionExporter(className,stateList);
+		entryExitFunctionExporter.createEntryFunctionTypeMap();
+		entryExitFunctionExporter.createExitFunctionTypeMap();		
+		searchInitialState();
+		createMachine();
+	}
+	
+	private void createStateMachineRegion(Class cls) {
 		List<StateMachine> smList = new ArrayList<StateMachine>();
 		Shared.getTypedElements(smList, cls.allOwnedElements(), UMLPackage.Literals.STATE_MACHINE);
 		if(!smList.isEmpty()) {
@@ -51,11 +83,50 @@ class StateMachineExporter {
 		} else {
 			ownStateMachine = true;
 		}
+	}
+	
+	public String createStateMachineRelatedHeadedDeclerationCodes() {
+		StringBuilder source = new StringBuilder("");
 		
-		if(isOwnStateMachine()) {
-			searchInitialState();
-			createMachine();
+		source.append(entryExitFunctionExporter.createEntryFunctionsDecl());
+		source.append(entryExitFunctionExporter.createExitFunctionsDecl());
+		source.append(guardExporter.declareGuardFunctions(stateMachineRegion));
+		source.append(transitionExporter.createTransitionFunctionDecl());
+		
+		return source.toString();
+	}
+	
+	public String createStateMachineRelatedCppSourceCodes() {
+		StringBuilder source = new StringBuilder("");
+		
+		if (submachineMap.isEmpty()) {
+			source.append(GenerationTemplates.simpleStateMachineInitialization(className, getInitialStateName(), true,
+					poolId, getStateMachine()));
+			source.append(GenerationTemplates.simpleStateMachineFixFunctionDefnitions(className, getInitialStateName(),
+					false));
+
+		} else {
+			source.append(GenerationTemplates.hierachialStateMachineInitialization(className, getInitialStateName(),
+					true, poolId, getStateMachine(), getEventSubmachineNameMap()));
+			source.append(GenerationTemplates.hiearchialStateMachineFixFunctionDefinitions(className,
+					getInitialStateName(), false));
+
 		}
+
+		source.append(GenerationTemplates.destructorDef(className, true));
+		source.append(guardExporter.defnieGuardFunctions(className));
+		source.append(entryExitFunctionExporter.createEntryFunctionsDef());
+		source.append(entryExitFunctionExporter.createExitFunctionsDef());
+		source.append(transitionExporter.createTransitionFunctionsDef());
+
+		source.append(GenerationTemplates.entry(className, createStateActionMap(entryExitFunctionExporter.getEntryMap())) + "\n");
+		source.append(GenerationTemplates.exit(className, createStateActionMap(entryExitFunctionExporter.getExitMap())) + "\n");
+		
+		return source.toString();
+	}
+	
+	public String createStateEnumCode() {
+		return GenerationTemplates.stateEnum(stateList, getInitialStateName());
 	}
 
 	public boolean isOwnStateMachine() {
@@ -66,7 +137,6 @@ class StateMachineExporter {
 		return stateMachineMap;
 	}
 
-	protected Map<String, Pair<String, Region>> submachineMap;// <stateName,<machinename,behavior>>
 
 	public List<String> getSubmachines() {
 		List<String> ret = new LinkedList<String>();
@@ -77,6 +147,23 @@ class StateMachineExporter {
 			ret.addAll(subSubMachines);
 		}
 		return ret;
+	}
+	
+	public Map<String, Pair<String, Region>> getSubMachines() {
+		Map<String, Pair<String, Region>> submachineMap = new HashMap<String, Pair<String, Region>>();
+		for (State state : stateList) {
+			// either got a submachine or a region, both is not permitted
+			StateMachine m = state.getSubmachine();
+			if (m != null) {
+				submachineMap.put(state.getName(), new Pair<String, Region>(m.getName(), m.getRegions().get(0)));
+			} else {
+				List<Region> r = state.getRegions();
+				if (!r.isEmpty()) {
+					submachineMap.put(state.getName(), new Pair<String, Region>(state.getName() + "_subSM", r.get(0)));
+				}
+			}
+		}
+		return submachineMap;
 	}
 
 	protected Map<String, String> createStateActionMap(Map<String, Pair<String, String>> map) {
@@ -95,7 +182,7 @@ class StateMachineExporter {
 		return ret;
 	}
 	
-	private void  createMachine() {
+	private void createMachine() {
 		for (Transition item : stateMachineRegion.getTransitions()) {
 			Pair<String, String> eventSignalPair = null;
 
@@ -132,7 +219,7 @@ class StateMachineExporter {
 	}
 
 	private void createStateList() {
-		List<State> stateList = new ArrayList<State>();
+		stateList = new ArrayList<State>();
 		for (Vertex item : stateMachineRegion.getSubvertices()) {
 			if (item.eClass().equals(UMLPackage.Literals.STATE)) {
 				stateList.add((State) item);
