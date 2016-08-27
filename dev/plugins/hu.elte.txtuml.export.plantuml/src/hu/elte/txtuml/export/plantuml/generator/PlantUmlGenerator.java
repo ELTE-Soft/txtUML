@@ -42,6 +42,9 @@ public class PlantUmlGenerator {
 		walker = new MethodStatementWalker(this);
 		sourceCU.accept(walker);
 
+		targetFile.flush();
+		targetFile.close();
+		
 		if (walker.getErrors().size() > 0) {
 			String errString = "";
 
@@ -52,15 +55,12 @@ public class PlantUmlGenerator {
 			if (!expQueue.isEmpty()) {
 				errString += "Warning! Some expressions where left unparsed/unclosed \n";
 			}
+			
 			throw new SequenceDiagramStructuralException(errString);
 		}
-
-		targetFile.flush();
-		targetFile.close();
-
 	}
 
-	PrintWriter getTargetFile() {
+	public PrintWriter getTargetFile() {
 		return this.targetFile;
 	}
 
@@ -130,5 +130,9 @@ public class PlantUmlGenerator {
 
 	public void postProcessedStatement() {
 		expQueue.pop();
+	}
+
+	public boolean hasPreprocessedStatement() {
+		return !expQueue.isEmpty();
 	}
 }

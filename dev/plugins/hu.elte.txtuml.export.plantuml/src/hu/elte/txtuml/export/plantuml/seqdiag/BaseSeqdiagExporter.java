@@ -18,9 +18,9 @@ public abstract class BaseSeqdiagExporter<T extends ASTNode> {
 	protected PrintWriter targetFile;
 	protected PlantUmlGenerator generator;
 
-	public BaseSeqdiagExporter(PrintWriter targetFile, PlantUmlGenerator generator) {
-		this.targetFile = targetFile;
+	public BaseSeqdiagExporter(PlantUmlGenerator generator) {
 		this.generator = generator;
+		targetFile = generator.getTargetFile();
 	}
 
 	/**
@@ -55,9 +55,10 @@ public abstract class BaseSeqdiagExporter<T extends ASTNode> {
 	 *            current statement to process
 	 * @return true if the child-nodes should be visited
 	 */
-	public boolean visit(T curElement) {
+	@SuppressWarnings("unchecked")
+	public boolean visit(ASTNode curElement) {
 		if (this.validElement(curElement)) {
-			this.preNext(curElement);
+			this.preNext((T)curElement);
 			generator.preProcessedStatement(this);
 		}
 
@@ -70,10 +71,38 @@ public abstract class BaseSeqdiagExporter<T extends ASTNode> {
 	 * @param curElement
 	 *            current statement to process
 	 */
-	public void endVisit(T curElement) {
+	@SuppressWarnings("unchecked")
+	public void endVisit(ASTNode curElement) {
 		if (this.validElement(curElement)) {
-			this.afterNext(curElement);
+			this.afterNext((T)curElement);
 			generator.postProcessedStatement();
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T extends ASTNode> BaseSeqdiagExporter<T> createExporter(ASTNode curElement,PlantUmlGenerator generator)
+	{	
+		switch(curElement.getNodeType())
+		{
+		case ASTNode.TYPE_DECLARATION:
+			return (BaseSeqdiagExporter<T>) new InteractionExporter(generator);
+		case ASTNode.FIELD_DECLARATION:
+			return (BaseSeqdiagExporter<T>) new LifelineExporter(generator);
+		case ASTNode.METHOD_INVOCATION:
+			return (BaseSeqdiagExporter<T>) new MessageSendExporter(generator);
+		case ASTNode.WHILE_STATEMENT:
+		case ASTNode.FOR_STATEMENT:
+		case ASTNode.ENHANCED_FOR_STATEMENT:
+			return (BaseSeqdiagExporter<T>) new LoopFragment(generator);
+		case ASTNode.BLOCK:
+			return (BaseSeqdiagExporter<T>) new LifelineDeactivator(generator);
+		}
+		
+		return null;
+	}
+	
+	public boolean skippedStatement(ASTNode node)
+	{
+		return !validElement(node);
 	}
 }

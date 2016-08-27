@@ -3,9 +3,6 @@ package hu.elte.txtuml.export.plantuml.generator;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 
 import hu.elte.txtuml.export.plantuml.seqdiag.BaseSeqdiagExporter;
-import hu.elte.txtuml.export.plantuml.seqdiag.InteractionExporter;
-import hu.elte.txtuml.export.plantuml.seqdiag.LifelineExporter;
-import hu.elte.txtuml.export.plantuml.seqdiag.MessageSendExporter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,82 +15,34 @@ public class MethodStatementWalker extends ASTVisitor {
 	private List<ASTNode> errors;
 
 	public MethodStatementWalker(PlantUmlGenerator generator) {
+		super();
 		this.generator = generator;
 		errors = new ArrayList<ASTNode>();
 	}
 
 	@Override
-	public boolean visit(TypeDeclaration statement) {
-		InteractionExporter exp = new InteractionExporter(generator.getTargetFile(), generator);
+	public boolean preVisit2(ASTNode node) {
 
-		return exp.visit(statement);
-	}
+		BaseSeqdiagExporter<?> exp = BaseSeqdiagExporter.createExporter(node, generator);
 
-	@Override
-	public void endVisit(TypeDeclaration statement) {
-		BaseSeqdiagExporter<?> exp = generator.postProcessingStatement();
-
-		if (exp instanceof InteractionExporter) {
-			InteractionExporter cExp = (InteractionExporter) exp;
-
-			cExp.endVisit(statement);
-		} else {
-			errors.add(statement);
-		}
-	}
-
-	@Override
-	public boolean visit(FieldDeclaration statement) {
-		LifelineExporter exp = new LifelineExporter(generator.getTargetFile(), generator);
-
-		return exp.visit(statement);
-	}
-
-	@Override
-	public void endVisit(FieldDeclaration statement) {
-
-		BaseSeqdiagExporter<? extends ASTNode> exp = generator.postProcessingStatement();
-
-		if (exp instanceof LifelineExporter) {
-			LifelineExporter cExp = (LifelineExporter) exp;
-
-			cExp.endVisit(statement);
-		} else {
-			errors.add(statement);
-		}
-	}
-
-	@Override
-	public boolean visit(MethodInvocation statement) {
-		MessageSendExporter exp = new MessageSendExporter(generator.getTargetFile(), generator);
-
-		return exp.visit(statement);
-	}
-
-	@Override
-	public void endVisit(MethodInvocation statement) {
-		BaseSeqdiagExporter<? extends ASTNode> exp = generator.postProcessingStatement();
-		String invoc = statement.resolveMethodBinding().getDeclaringClass().getQualifiedName();
-
-		if (invoc.equals("hu.elte.txtuml.api.model.Action")) {
-			return;
+		if (exp != null) {
+			return exp.visit(node);
 		}
 
-		if (exp instanceof MessageSendExporter) {
-			MessageSendExporter cExp = (MessageSendExporter) exp;
-
-			cExp.endVisit(statement);
-		} else {
-			errors.add(statement);
-		}
-	}
+		return true;
+	};
 
 	@Override
-	public void endVisit(Block statement) {
-		if (statement.getParent() instanceof MethodDeclaration) {
-			MethodDeclaration method = (MethodDeclaration) statement.getParent();
-			if (method.getName().toString().equals("run")) {
-				generator.deactivateAllLifelines();
+	public void postVisit(ASTNode node) {
+		BaseSeqdiagExporter<?> expt = BaseSeqdiagExporter.createExporter(node, generator);
+
+		if (generator.hasPreprocessedStatement() && expt != null && !expt.skippedStatement(node)) {
+			BaseSeqdiagExporter<?> exp = generator.postProcessingStatement();
+
+			if (expt.getClass().isInstance(exp)) {
+				exp.endVisit(node);
+			} else if (!expt.getClass().isInstance(exp) && !expt.skippedStatement(node)) {
+				errors.add(node);
 			}
 		}
 	}

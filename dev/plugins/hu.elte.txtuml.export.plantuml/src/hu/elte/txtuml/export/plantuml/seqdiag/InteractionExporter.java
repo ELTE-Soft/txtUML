@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.plantuml.seqdiag;
 
-import java.io.PrintWriter;
-
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
@@ -19,8 +17,8 @@ import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
  */
 public class InteractionExporter extends BaseSeqdiagExporter<TypeDeclaration> {
 
-	public InteractionExporter(PrintWriter targetFile, PlantUmlGenerator generator) {
-		super(targetFile, generator);
+	public InteractionExporter(PlantUmlGenerator generator) {
+		super(generator);
 	}
 
 	@Override

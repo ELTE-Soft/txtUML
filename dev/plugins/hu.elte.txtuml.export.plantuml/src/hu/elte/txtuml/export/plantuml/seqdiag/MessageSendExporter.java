@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.plantuml.seqdiag;
 
-import java.io.PrintWriter;
-
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.MethodInvocation;
@@ -18,18 +16,16 @@ import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
  */
 public class MessageSendExporter extends BaseSeqdiagExporter<MethodInvocation> {
 
-	public MessageSendExporter(PrintWriter targetFile, PlantUmlGenerator generator) {
-		super(targetFile, generator);
+	public MessageSendExporter(PlantUmlGenerator generator) {
+		super(generator);
 	}
 
 	@Override
 	public boolean validElement(ASTNode curElement) {
 		if (curElement.getNodeType() == ASTNode.METHOD_INVOCATION) {
-			MethodInvocation invoc = (MethodInvocation) curElement;
-			String QualifiedTypeName = invoc.resolveMethodBinding().getDeclaringClass().getQualifiedName();
-			String MethodName = invoc.getName().toString();
-			if (MethodName.equals("send") && (QualifiedTypeName.equals("hu.elte.txtuml.api.model.seqdiag.Action")
-					|| QualifiedTypeName.equals("hu.elte.txtuml.api.model.API"))) {
+			String fullName = getMethodFullyQualifiedName((MethodInvocation)curElement);
+			if (fullName.equals("hu.elte.txtuml.api.model.seqdiag.Action.send")
+					|| fullName.equals("hu.elte.txtuml.api.model.seqdiag.API.send")) {
 				return true;
 			}
 		}
@@ -71,4 +67,10 @@ public class MessageSendExporter extends BaseSeqdiagExporter<MethodInvocation> {
 
 	}
 
+	protected String getMethodFullyQualifiedName(MethodInvocation inv) {
+		String QualifiedTypeName = inv.resolveMethodBinding().getDeclaringClass().getQualifiedName();
+		String MethodName = inv.getName().toString();
+
+		return QualifiedTypeName + "." + MethodName;
+	}
 }

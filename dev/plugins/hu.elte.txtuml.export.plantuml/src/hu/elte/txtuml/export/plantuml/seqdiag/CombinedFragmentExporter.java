@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.plantuml.seqdiag;
 
-import java.io.PrintWriter;
-
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 
@@ -9,8 +7,8 @@ import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
 
 public abstract class CombinedFragmentExporter<T extends ASTNode> extends BaseSeqdiagExporter<T> {
 
-	public CombinedFragmentExporter(PrintWriter targetFile, PlantUmlGenerator generator) {
-		super(targetFile, generator);
+	public CombinedFragmentExporter(PlantUmlGenerator generator) {
+		super(generator);
 	}
 
 	@Override
@@ -33,15 +31,4 @@ public abstract class CombinedFragmentExporter<T extends ASTNode> extends BaseSe
 
 		return false;
 	}
-
-	@Override
-	public void preNext(T curElement) {
-		//@TODO implement
-	}
-
-	@Override
-	public void afterNext(T curElement) {
-		//@TODO implement
-	}
-
 }
