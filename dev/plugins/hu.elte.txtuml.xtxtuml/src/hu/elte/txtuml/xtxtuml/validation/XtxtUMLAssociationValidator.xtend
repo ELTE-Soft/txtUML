@@ -1,6 +1,7 @@
 package hu.elte.txtuml.xtxtuml.validation;
 
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
 import org.eclipse.xtext.validation.Check
 
@@ -31,6 +32,29 @@ class XtxtUMLAssociationValidator extends XtxtUMLClassValidator {
 					" must not be present in an association", it, TU_ASSOCIATION_END__CONTAINER,
 					CONTAINER_END_IN_ASSOCIATION);
 			]
+		}
+	}
+
+	@Check
+	def checkContainerEndMultiplicity(TUAssociationEnd assocEnd) {
+		val multipl = assocEnd.multiplicity;
+		if (assocEnd.container && multipl != null) { // container end with explicit multiplicity
+			warning("The multiplicity of container end " + assocEnd.name +
+				" is implicitly 0..1 – the specified multiplicity will be ignored", assocEnd,
+				TU_ASSOCIATION_END__MULTIPLICITY, WRONG_ASSOCIATION_END_MULTIPLICITY);
+		}
+	}
+
+	@Check
+	def checkMultiplicity(TUAssociationEnd assocEnd) {
+		val multipl = assocEnd.multiplicity;
+		if (multipl != null && !multipl.any) { // explicit, not *
+			val exactlyZero = multipl.lower == 0 && (!multipl.upperSet || !multipl.isUpperInf && multipl.upper == 0);
+			val lowerIsGreaterThanUpper = multipl.upperSet && !multipl.upperInf && multipl.lower > multipl.upper;
+			if (exactlyZero || lowerIsGreaterThanUpper) {
+				warning("The effective multiplicity of association end " + assocEnd.name + " is zero", assocEnd,
+					TU_ASSOCIATION_END__MULTIPLICITY, WRONG_ASSOCIATION_END_MULTIPLICITY);
+			}
 		}
 	}
 

@@ -689,4 +689,11 @@
      </shortcut>
   </extension>
 
+  <extension
+        point="org.eclipse.xtext.ui.shared.overridingGuiceModule">
+     <module
+           class="hu.elte.txtuml.xtxtuml.ui.BuilderCustomizationModule">
+     </module>
+  </extension>
+
 </plugin>
