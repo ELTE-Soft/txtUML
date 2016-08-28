@@ -38,22 +38,25 @@ class StateMachineExporter {
 	private boolean ownStateMachine;
 	protected GuardExporter guardExporter;
 	protected TransitionExporter transitionExporter;
-	private EntryExitFunctionExporter entryExitFunctionExporter;
+	protected EntryExitFunctionExporter entryExitFunctionExporter;
 	protected String className;
 	private int poolId;
 	
 	StateMachineExporter(Region region, String name) {
-		stateMachineRegion = region;
+		this.stateMachineRegion = region;
+		this.className = name;
 		createStateList();
 		init();
+		
 	}
 
 	StateMachineExporter(String className,int poolId, Class cls) {	
 		createStateMachineRegion(cls);
-		if(isOwnStateMachine()) {
+		if(isOwnStateMachine()) {			
 			init();
-		}
-		
+			entryExitFunctionExporter.createEntryFunctionTypeMap();
+			entryExitFunctionExporter.createExitFunctionTypeMap();
+		}		
 		this.poolId = poolId;
 		this.className = className;
 	}
@@ -61,13 +64,10 @@ class StateMachineExporter {
 	private void init() {
 		stateMachineMap = HashMultimap.create();
 		submachineMap = new HashMap<String, Pair<String, Region>>();
-		subSubMachines = new ArrayList<String>();
-		
+		subSubMachines = new ArrayList<String>();	
 		guardExporter = new GuardExporter();
 		transitionExporter = new TransitionExporter(className,stateMachineRegion.getTransitions(),guardExporter);
-		entryExitFunctionExporter = new EntryExitFunctionExporter(className,stateList);
-		entryExitFunctionExporter.createEntryFunctionTypeMap();
-		entryExitFunctionExporter.createExitFunctionTypeMap();		
+		entryExitFunctionExporter = new EntryExitFunctionExporter(className,stateList);		
 		searchInitialState();
 		createMachine();
 	}
@@ -88,8 +88,7 @@ class StateMachineExporter {
 	public String createStateMachineRelatedHeadedDeclerationCodes() {
 		StringBuilder source = new StringBuilder("");
 		
-		source.append(entryExitFunctionExporter.createEntryFunctionsDecl());
-		source.append(entryExitFunctionExporter.createExitFunctionsDecl());
+
 		source.append(guardExporter.declareGuardFunctions(stateMachineRegion));
 		source.append(transitionExporter.createTransitionFunctionDecl());
 		
@@ -99,6 +98,7 @@ class StateMachineExporter {
 	public String createStateMachineRelatedCppSourceCodes() {
 		StringBuilder source = new StringBuilder("");
 		
+
 		if (submachineMap.isEmpty()) {
 			source.append(GenerationTemplates.simpleStateMachineInitialization(className, getInitialStateName(), true,
 					poolId, getStateMachine()));
@@ -229,7 +229,6 @@ class StateMachineExporter {
 	
 	private void searchInitialState() {
 		for (Vertex item : stateMachineRegion.getSubvertices()) {
-
 			if (item.eClass().equals(UMLPackage.Literals.PSEUDOSTATE)) {
 
 				Pseudostate pseduoState = (Pseudostate) item;

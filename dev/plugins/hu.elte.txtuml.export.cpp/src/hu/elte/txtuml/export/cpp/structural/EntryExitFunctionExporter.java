@@ -33,9 +33,6 @@ public class EntryExitFunctionExporter {
 		activityExporter = new ActivityExporter();
 		this.className = className;
 		this.stateList = stateList;
-		
-		createFuncTypeMap(FuncTypeEnum.Entry);
-		createFuncTypeMap(FuncTypeEnum.Exit);
 	}
 	
 	public Map<String, Pair<String, String>> getExitMap() {
