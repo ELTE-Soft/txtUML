@@ -50,15 +50,16 @@ class StateMachineExporter {
 		
 	}
 
-	StateMachineExporter(String className,int poolId, Class cls) {	
+	StateMachineExporter(String className,int poolId, Class cls) {
+		this.poolId = poolId;
+		this.className = className;
 		createStateMachineRegion(cls);
 		if(isOwnStateMachine()) {			
 			init();
 			entryExitFunctionExporter.createEntryFunctionTypeMap();
 			entryExitFunctionExporter.createExitFunctionTypeMap();
 		}		
-		this.poolId = poolId;
-		this.className = className;
+
 	}
 	
 	private void init() {
@@ -81,7 +82,7 @@ class StateMachineExporter {
 			ownStateMachine = !stateList.isEmpty();
 			
 		} else {
-			ownStateMachine = true;
+			ownStateMachine = false;
 		}
 	}
 	
@@ -91,6 +92,8 @@ class StateMachineExporter {
 
 		source.append(guardExporter.declareGuardFunctions(stateMachineRegion));
 		source.append(transitionExporter.createTransitionFunctionDecl());
+		source.append(entryExitFunctionExporter.createEntryFunctionsDecl());
+		source.append(entryExitFunctionExporter.createExitFunctionsDecl());
 		
 		return source.toString();
 	}

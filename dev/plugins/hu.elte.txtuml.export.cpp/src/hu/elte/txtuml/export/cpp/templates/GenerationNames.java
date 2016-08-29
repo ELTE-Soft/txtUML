@@ -31,8 +31,8 @@ class GenerationNames {
 	public static final String EventClassTypeId = "_EC";
 	public static final String EventEnumTypeId = "_EE";
 	public static final String StateEnumTypeId = "_ST";
-	public static final String EntryName = "Entry";
-	public static final String ExitName = "Exit";
+	public static final String EntryName = "entry";
+	public static final String ExitName = "exit";
 	public static final String EventParamName = "e";
 	public static final String EventFParamName = formatIncomingParamName(EventParamName);
 	public static final String StateParamName = "s_";
