@@ -9,6 +9,7 @@ class GenerationNames {
 	public static final String HeaderExtension = "hpp";
 	public static final String SourceExtension = "cpp";
 	public static final String ClassType = "struct";
+	public static final String DataType = "struct";
 
 	// NDEBUG is the only thing guaranteed, DEBUG and _DEBUG is non-standard
 	public static final String NoDebugSymbol = "NDEBUG";

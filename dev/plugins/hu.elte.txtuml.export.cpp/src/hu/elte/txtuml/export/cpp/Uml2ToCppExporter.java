@@ -26,11 +26,13 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.osgi.framework.Bundle;
 
 import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
 import hu.elte.txtuml.export.cpp.structural.ClassExporter;
+import hu.elte.txtuml.export.cpp.structural.DataTypeExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.Options;
 import hu.elte.txtuml.export.cpp.thread.ThreadHandlingManager;
@@ -49,14 +51,13 @@ public class Uml2ToCppExporter {
 	private static final String CPP_FILES_FOLDER_NAME = "cpp-runtime";
 
 	private ClassExporter classExporter;
+	private DataTypeExporter dataTypeExporter;
 	private final Options options;
 
 	ThreadHandlingManager threadManager;
 
-	private Map<Class, String> generatedClassNames;
-	int generatedClassCounter;
-
-	Set<Class> classList;
+	Set<Class> classes;
+	List<DataType> dataTypes;
 	EList<Element> elements;
 
 	List<String> classNames;
@@ -64,14 +65,15 @@ public class Uml2ToCppExporter {
 	public Uml2ToCppExporter(Model model, Map<String, ThreadPoolConfiguration> threadDescription,
 			boolean addRuntimeOption, boolean overWriteMainFileOption) {
 		classExporter = new ClassExporter();
+		dataTypeExporter = new DataTypeExporter();
 
-		this.classList = new HashSet<Class>();
+		this.classes = new HashSet<Class>();
+		this.dataTypes = new ArrayList<DataType>();
 		this.elements = model.allOwnedElements();
 		this.classNames = new LinkedList<String>();
-		this.generatedClassNames = new HashMap<Class, String>();
-		generatedClassCounter = 0;
 
-		Shared.getTypedElements(classList, elements, UMLPackage.Literals.CLASS);
+		Shared.getTypedElements(classes, elements, UMLPackage.Literals.CLASS);
+		Shared.getTypedElements(dataTypes, elements, UMLPackage.Literals.DATA_TYPE);
 
 		options = new Options(addRuntimeOption, overWriteMainFileOption);
 		threadManager = new ThreadHandlingManager(threadDescription);
@@ -87,26 +89,30 @@ public class Uml2ToCppExporter {
 
 		copyPreWrittenCppFiles(outputDirectory);
 
-		for (Class item : classList) {
+		for (Class item : classes) {
 
 			if (threadManager.getDescription().get(item.getName()) != null && !Shared.generatedClass(item)) {
 
-				classExporter.init(item,getRealClassName(item),threadManager.getDescription().get(item.getName()).getId());
+				classExporter.init(item,item.getName(),threadManager.getDescription().get(item.getName()).getId());
 				classExporter.createSource(outputDirectory);
 
 				classNames.addAll(classExporter.getSubmachines());
-				classNames.add(getRealClassName(item));
+				classNames.add(item.getName());
 				classNames.addAll(classExporter.getAdditionalSources());
 			}
 
 		}
-
-		createCMakeFile(outputDirectory);
+		createDataTypes(outputDirectory);
 		createAssociationsSources(outputDirectory);
+		createCMakeFile(outputDirectory);
 	}
 
-	private String getRealClassName(Class cls) {
-		return generatedClassNames.containsKey(cls) ? generatedClassNames.get(cls) : cls.getName();
+	private void createDataTypes(String outputDirectory) throws IOException {
+		for(DataType dataType : dataTypes) {
+			dataTypeExporter.init(dataType, dataType.getName(), outputDirectory);
+			dataTypeExporter.exportDataType();
+		}
+		
 	}
 
 	private void copyPreWrittenCppFiles(String destination) throws IOException {

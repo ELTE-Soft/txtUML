@@ -212,6 +212,11 @@ public class GenerationTemplates {
 
 		return source;
 	}
+	
+	public static String dataType(String datatTypeName, String attributes) {
+		return GenerationNames.DataType + " " + datatTypeName + "\n" +
+				"{\n" + attributes + "}";
+	}
 
 	public static String paramName(String paramName) {
 		return GenerationNames.formatIncomingParamName(paramName);
@@ -593,6 +598,10 @@ public class GenerationTemplates {
 	}
 
 	public static String cppInclude(String className) {
+		String cppType = PrivateFunctionalTemplates.cppType(className);
+		if(PrivateFunctionalTemplates.stdType(cppType)) {
+			return PrivateFunctionalTemplates.include(cppType);
+		}
 		return PrivateFunctionalTemplates.include(className);
 	}
 
