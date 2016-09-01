@@ -27,8 +27,6 @@ public class ClassExporter {
 	// private static final int _UMLMany = -1;
 	
 	private Class cls;
-
-	private Map<String, Pair<String, Region>> submachineMap;// <stateName,<machinename,behavior>>
 	private List<String> subSubMachines;
 	private List<String> additionalSourcesNames;
 	private boolean ownConstructor;
@@ -71,10 +69,9 @@ public class ClassExporter {
 		List<StateMachine> smList = new ArrayList<StateMachine>();
 		Shared.getTypedElements(smList, cls.allOwnedElements(), UMLPackage.Literals.STATE_MACHINE);
 		if (stateMachineExporter.isOwnStateMachine()) {
-			submachineMap = stateMachineExporter.getSubMachines();
 
-			for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
-				subStateMachineExporter = new SubStateMachineExporter(entry.getValue().getSecond(), name,entry.getValue().getFirst(), dest);
+			for (Map.Entry<String, Pair<String, Region>> entry : stateMachineExporter.getSubMachineMap().entrySet()) {
+				subStateMachineExporter = new SubStateMachineExporter(entry.getValue().getSecond(),name,entry.getValue().getFirst(), dest);
 				subStateMachineExporter.createSubSmSource();
 				subSubMachines.addAll(subStateMachineExporter.getSubmachines());
 			}
@@ -83,21 +80,15 @@ public class ClassExporter {
 		source = createClassHeaderSource();
 		externalDeclerations.append(associationExporter.createLinkFunctionDeclerations(name));
 		Shared.writeOutSource(dest, GenerationTemplates.headerName(name),
-				GenerationTemplates.headerGuard(source.toString() + externalDeclerations.toString(), name));
-		source = (createClassCppSource(cls)).toString();
+				GenerationTemplates.headerGuard(source + externalDeclerations.toString(), name));
+		
+		source = createClassCppSource();
 		Shared.writeOutSource(dest, GenerationTemplates.sourceName(name),
 				GenerationTemplates.cppInclude(name) + getAllDependency(false) + source);
 	}
 
 	public List<String> getSubmachines() {
-		List<String> ret = new LinkedList<String>();
-		if (submachineMap != null) {
-			for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
-				ret.add(entry.getValue().getFirst());
-			}
-			ret.addAll(subSubMachines);
-		}
-		return ret;
+		return stateMachineExporter.getSubmachines();
 	}
 
 	public void setRealName(String realClassName) {
@@ -115,6 +106,7 @@ public class ClassExporter {
 		if (!ownConstructor) {
 			publicParts.append(GenerationTemplates.constructorDecl(name, null) + "\n");
 		}
+		publicParts.append(GenerationTemplates.destructorDecl(name));
 
 		publicParts.append("\n" + associationExporter.createAssociationMemeberDeclerationsCode());
 
@@ -130,7 +122,7 @@ public class ClassExporter {
 			publicParts.append(stateMachineExporter.createStateEnumCode());
 			privateParts.append(stateMachineExporter.createStateMachineRelatedHeadedDeclerationCodes());
 
-			if (submachineMap.isEmpty()) {
+			if (stateMachineExporter.ownSubMachine()) {
 				source = GenerationTemplates
 						.simpleStateMachineClassHeader(dependency.toString(), name, getBaseClass(), null,
 								publicParts.toString(), protectedParts.toString(), privateParts.toString(), true)
@@ -147,10 +139,10 @@ public class ClassExporter {
 		return source;
 	}
 
-	private StringBuilder createClassCppSource(Class class_) {
+	private String createClassCppSource() {
 		StringBuilder source = new StringBuilder("");
 		List<StateMachine> smList = new ArrayList<StateMachine>();
-		Shared.getTypedElements(smList, class_.allOwnedElements(), UMLPackage.Literals.STATE_MACHINE);
+		Shared.getTypedElements(smList, cls.allOwnedElements(), UMLPackage.Literals.STATE_MACHINE);
 
 		if (!ownConstructor) {
 			source.append(GenerationTemplates.constructorDef(name, stateMachineExporter.isOwnStateMachine()) + "\n");
@@ -159,11 +151,9 @@ public class ClassExporter {
 		if (stateMachineExporter.isOwnStateMachine()) {
 			source.append(stateMachineExporter.createStateMachineRelatedCppSourceCodes());
 
-		} else {
-			source.append(GenerationTemplates.destructorDef(name, false));
 		}
 
-		for (Operation operation : class_.getOwnedOperations()) {
+		for (Operation operation : cls.getOwnedOperations()) {
 			activityExporter.init();
 			String funcBody = "";
 			for (Behavior behavior : operation.getMethods()) {
@@ -184,12 +174,14 @@ public class ClassExporter {
 
 				source.append(GenerationTemplates.constructorDef(name, getBaseClass(), funcBody,
 						getOperationParams(operation), null, stateMachineExporter.isOwnStateMachine()));
-			}
+			}		
+			source.append(stateMachineExporter.isOwnStateMachine() ? GenerationTemplates.destructorDef(name, true) : 
+				GenerationTemplates.destructorDef(name, false));
+
 		}
-		return source;
+		return source.toString();
 	}
 
-	// TODO string dependency as special case ....
 	private StringBuilder getAllDependency(Boolean isHeader) {
 		StringBuilder source = new StringBuilder("");
 		List<String> types = new ArrayList<String>();
@@ -210,11 +202,12 @@ public class ClassExporter {
 			}
 		}
 
-		if (submachineMap != null) {
-			for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
-				types.add(entry.getValue().getFirst());
-			}
+
+		for (Map.Entry<String, Pair<String, Region>> entry : stateMachineExporter.getSubMachineMap().entrySet()) {
+			types.add(entry.getValue().getFirst());
+
 		}
+
 
 		// dependency analysis
 		String header = "";

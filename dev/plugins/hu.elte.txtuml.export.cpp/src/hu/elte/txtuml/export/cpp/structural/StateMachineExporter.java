@@ -64,7 +64,7 @@ class StateMachineExporter {
 	
 	private void init() {
 		stateMachineMap = HashMultimap.create();
-		submachineMap = new HashMap<String, Pair<String, Region>>();
+		submachineMap = getSubMachines();
 		subSubMachines = new ArrayList<String>();	
 		guardExporter = new GuardExporter();
 		transitionExporter = new TransitionExporter(className,stateMachineRegion.getTransitions(),guardExporter);
@@ -116,7 +116,6 @@ class StateMachineExporter {
 
 		}
 
-		source.append(GenerationTemplates.destructorDef(className, true));
 		source.append(guardExporter.defnieGuardFunctions(className));
 		source.append(entryExitFunctionExporter.createEntryFunctionsDef());
 		source.append(entryExitFunctionExporter.createExitFunctionsDef());
@@ -156,16 +155,25 @@ class StateMachineExporter {
 		Map<String, Pair<String, Region>> submachineMap = new HashMap<String, Pair<String, Region>>();
 		for (State state : stateList) {
 			// either got a submachine or a region, both is not permitted
-			StateMachine m = state.getSubmachine();
-			if (m != null) {
-				submachineMap.put(state.getName(), new Pair<String, Region>(m.getName(), m.getRegions().get(0)));
+			StateMachine stateMachine = state.getSubmachine();
+			if (stateMachine != null) {
+				submachineMap.put(state.getName(), new Pair<String, Region>(stateMachine.getName(), stateMachine.getRegions().get(0)));
 			} else {
-				List<Region> r = state.getRegions();
-				if (!r.isEmpty()) {
-					submachineMap.put(state.getName(), new Pair<String, Region>(state.getName() + "_subSM", r.get(0)));
+				List<Region> region = state.getRegions();
+				if (!region.isEmpty()) {
+					Region subMachineRegion = region.get(0);
+					submachineMap.put(state.getName(), new Pair<String, Region>(state.getName() + "_subSM",subMachineRegion));
 				}
 			}
 		}
+		return submachineMap;
+	}
+	
+	public boolean ownSubMachine() {
+		return submachineMap.isEmpty();
+	}
+	
+	public Map<String, Pair<String, Region>> getSubMachineMap() {
 		return submachineMap;
 	}
 

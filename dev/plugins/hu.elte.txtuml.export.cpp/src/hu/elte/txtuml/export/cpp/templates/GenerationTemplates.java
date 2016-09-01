@@ -190,8 +190,6 @@ public class GenerationTemplates {
 
 		}
 		source.append("\n{\n");
-		source.append("~" + className + "();\n");
-
 		if (!sm && baseClassName == null) {
 			source.append(GenerationNames.DummyProcessEventDef);
 		}
@@ -329,6 +327,10 @@ public class GenerationTemplates {
 		source.append(PrivateFunctionalTemplates.paramTypeList(params) + ");\n");
 
 		return source;
+	}
+	
+	public static String destructorDecl(String className) {
+		return "~" + className + "();\n";
 	}
 
 	public static String functionDef(String className, String functionName, String body) {
