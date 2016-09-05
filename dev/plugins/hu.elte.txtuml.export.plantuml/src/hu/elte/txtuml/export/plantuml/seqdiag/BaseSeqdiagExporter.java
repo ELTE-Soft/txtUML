@@ -1,10 +1,10 @@
 package hu.elte.txtuml.export.plantuml.seqdiag;
 
-import java.io.PrintWriter;
-
 import org.eclipse.jdt.core.dom.ASTNode;
 
-import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
+import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
+import hu.elte.txtuml.export.plantuml.seqdiag.fragments.LoopFragment;
+import hu.elte.txtuml.export.plantuml.seqdiag.fragments.OptAltFragment;
 
 /**
  * 
@@ -15,12 +15,10 @@ import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
  */
 public abstract class BaseSeqdiagExporter<T extends ASTNode> {
 
-	protected PrintWriter targetFile;
-	protected PlantUmlGenerator generator;
+	protected PlantUmlCompiler compiler;
 
-	public BaseSeqdiagExporter(PlantUmlGenerator generator) {
-		this.generator = generator;
-		targetFile = generator.getTargetFile();
+	public BaseSeqdiagExporter(PlantUmlCompiler compiler) {
+		this.compiler = compiler;
 	}
 
 	/**
@@ -37,7 +35,7 @@ public abstract class BaseSeqdiagExporter<T extends ASTNode> {
 	 * @param curElement
 	 *            current element to be parsed
 	 */
-	public abstract void preNext(T curElement);
+	public abstract boolean preNext(T curElement);
 
 	/**
 	 * What to do on the end of the visit(when all child nodes was visited and
@@ -57,12 +55,13 @@ public abstract class BaseSeqdiagExporter<T extends ASTNode> {
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean visit(ASTNode curElement) {
+		boolean retVal = true;
 		if (this.validElement(curElement)) {
-			this.preNext((T)curElement);
-			generator.preProcessedStatement(this);
+			retVal = this.preNext((T) curElement);
+			compiler.preProcessedStatement(this);
 		}
 
-		return true;
+		return retVal;
 	}
 
 	/**
@@ -74,35 +73,35 @@ public abstract class BaseSeqdiagExporter<T extends ASTNode> {
 	@SuppressWarnings("unchecked")
 	public void endVisit(ASTNode curElement) {
 		if (this.validElement(curElement)) {
-			this.afterNext((T)curElement);
-			generator.postProcessedStatement();
+			this.afterNext((T) curElement);
+			compiler.postProcessedStatement();
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public static <T extends ASTNode> BaseSeqdiagExporter<T> createExporter(ASTNode curElement,PlantUmlGenerator generator)
-	{	
-		switch(curElement.getNodeType())
-		{
+	public static <T extends ASTNode> BaseSeqdiagExporter<T> createExporter(ASTNode curElement,
+			PlantUmlCompiler compiler) {
+		switch (curElement.getNodeType()) {
 		case ASTNode.TYPE_DECLARATION:
-			return (BaseSeqdiagExporter<T>) new InteractionExporter(generator);
+			return (BaseSeqdiagExporter<T>) new InteractionExporter(compiler);
 		case ASTNode.FIELD_DECLARATION:
-			return (BaseSeqdiagExporter<T>) new LifelineExporter(generator);
+			return (BaseSeqdiagExporter<T>) new LifelineExporter(compiler);
 		case ASTNode.METHOD_INVOCATION:
-			return (BaseSeqdiagExporter<T>) new MessageSendExporter(generator);
+			return (BaseSeqdiagExporter<T>) new MessageSendExporter(compiler);
 		case ASTNode.WHILE_STATEMENT:
 		case ASTNode.FOR_STATEMENT:
 		case ASTNode.ENHANCED_FOR_STATEMENT:
-			return (BaseSeqdiagExporter<T>) new LoopFragment(generator);
+			return (BaseSeqdiagExporter<T>) new LoopFragment(compiler);
+		case ASTNode.IF_STATEMENT:
+			return (BaseSeqdiagExporter<T>) new OptAltFragment(compiler);
 		case ASTNode.BLOCK:
-			return (BaseSeqdiagExporter<T>) new LifelineDeactivator(generator);
+			return (BaseSeqdiagExporter<T>) new LifelineDeactivator(compiler);
 		}
-		
+
 		return null;
 	}
-	
-	public boolean skippedStatement(ASTNode node)
-	{
+
+	public boolean skippedStatement(ASTNode node) {
 		return !validElement(node);
 	}
 }

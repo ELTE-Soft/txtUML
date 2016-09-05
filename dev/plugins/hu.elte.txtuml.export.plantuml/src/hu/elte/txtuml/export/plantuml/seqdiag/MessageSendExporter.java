@@ -4,7 +4,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
-import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
+import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 /**
  * 
@@ -14,16 +14,16 @@ import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
  *         SequenceDiagrams( {@code API.send() } and {@code Action.send() }})
  *
  */
-public class MessageSendExporter extends BaseSeqdiagExporter<MethodInvocation> {
+public class MessageSendExporter extends MethodInvocationExporter {
 
-	public MessageSendExporter(PlantUmlGenerator generator) {
-		super(generator);
+	public MessageSendExporter(PlantUmlCompiler compiler) {
+		super(compiler);
 	}
 
 	@Override
 	public boolean validElement(ASTNode curElement) {
-		if (curElement.getNodeType() == ASTNode.METHOD_INVOCATION) {
-			String fullName = getMethodFullyQualifiedName((MethodInvocation)curElement);
+		if (super.validElement(curElement)) {
+			String fullName = getMethodFullyQualifiedName((MethodInvocation) curElement);
 			if (fullName.equals("hu.elte.txtuml.api.model.seqdiag.Action.send")
 					|| fullName.equals("hu.elte.txtuml.api.model.seqdiag.API.send")) {
 				return true;
@@ -34,16 +34,16 @@ public class MessageSendExporter extends BaseSeqdiagExporter<MethodInvocation> {
 	}
 
 	@Override
-	public void preNext(MethodInvocation curElement) {
+	public boolean preNext(MethodInvocation curElement) {
 
 		if (curElement.arguments().size() == 2) {
 			Expression target = (Expression) curElement.arguments().get(1);
 			String targetName = target.toString();
 
-			if (!generator.lifelineIsActive(targetName)) {
-				generator.activateLifeline(targetName);
+			if (!compiler.lifelineIsActive(targetName)) {
+				compiler.activateLifeline(targetName);
 			}
-			return;
+			return true;
 		}
 
 		Expression sender = (Expression) curElement.arguments().get(0);
@@ -55,11 +55,13 @@ public class MessageSendExporter extends BaseSeqdiagExporter<MethodInvocation> {
 		Expression signal = (Expression) curElement.arguments().get(1);
 		String signalExpr = signal.resolveTypeBinding().getQualifiedName();
 
-		if (!generator.lifelineIsActive(targetName)) {
-			generator.activateLifeline(targetName);
+		if (!compiler.lifelineIsActive(targetName)) {
+			compiler.activateLifeline(targetName);
 		}
 
-		targetFile.println(senderName + "->" + targetName + " : " + signalExpr);
+		compiler.println(senderName + "->" + targetName + " : " + signalExpr);
+
+		return true;
 	}
 
 	@Override

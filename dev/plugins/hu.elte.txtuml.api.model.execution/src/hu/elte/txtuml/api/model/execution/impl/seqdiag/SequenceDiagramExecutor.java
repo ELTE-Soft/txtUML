@@ -113,7 +113,7 @@ public class SequenceDiagramExecutor implements Runnable, BaseSequenceDiagramExe
 		executor.awaitTermination();
 		state = ExecutorState.ENDED;
 
-		if (traceListener.suggestedMessagePattern.size() != 0) {
+		if (traceListener.suggestedMessagePattern != null && traceListener.suggestedMessagePattern.size() != 0) {
 			this.errors
 					.add(new InvalidMessageError(this.thread.getInteractionWrapper().getLifelines().get(0).getWrapped(),
 							"The pattern given is bigger than the model"));

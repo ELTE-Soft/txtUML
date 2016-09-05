@@ -4,12 +4,12 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 
-import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
+import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 public class LifelineDeactivator extends BaseSeqdiagExporter<Block> {
 
-	public LifelineDeactivator(PlantUmlGenerator generator) {
-		super(generator);
+	public LifelineDeactivator(PlantUmlCompiler compiler) {
+		super(compiler);
 	}
 
 	@Override
@@ -25,12 +25,12 @@ public class LifelineDeactivator extends BaseSeqdiagExporter<Block> {
 	}
 
 	@Override
-	public void preNext(Block curElement) {
-
+	public boolean preNext(Block curElement) {
+		return true;
 	}
 
 	@Override
 	public void afterNext(Block curElement) {
-		generator.deactivateAllLifelines();
+		compiler.deactivateAllLifelines();
 	}
 }

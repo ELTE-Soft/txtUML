@@ -7,8 +7,8 @@ import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.error.seqdiag.InvalidMessageError;
+import hu.elte.txtuml.api.model.error.seqdiag.PatternMismatchError;
 import hu.elte.txtuml.api.model.execution.TraceListener;
-import hu.elte.txtuml.api.model.runtime.RuntimeContext;
 import hu.elte.txtuml.api.model.seqdiag.MessageWrapper;
 
 public class CommunicationListener extends AbstractSequenceDiagramModelListener implements TraceListener {
@@ -52,9 +52,8 @@ public class CommunicationListener extends AbstractSequenceDiagramModelListener 
 			MessageWrapper required = suggestedMessagePattern.poll();
 
 			if (!required.equals(sentWrapper)) {
-				executor.addError(new InvalidMessageError(object,
-						"The model diverged from the Sequence-diagram Specified behaviour:\n it sent: "
-								+ signal.toString() + " instead of " + required.signal.toString() + "\n"));
+				executor.addError(new PatternMismatchError(required.sender, currentSender, required.signal, signal,
+						required.receiver, object));
 			}
 		} else {
 			executor.addError(

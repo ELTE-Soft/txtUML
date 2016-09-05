@@ -5,7 +5,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
-import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
+import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 /**
  * 
@@ -17,8 +17,8 @@ import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
  */
 public class InteractionExporter extends BaseSeqdiagExporter<TypeDeclaration> {
 
-	public InteractionExporter(PlantUmlGenerator generator) {
-		super(generator);
+	public InteractionExporter(PlantUmlCompiler compiler) {
+		super(compiler);
 	}
 
 	@Override
@@ -30,12 +30,13 @@ public class InteractionExporter extends BaseSeqdiagExporter<TypeDeclaration> {
 	}
 
 	@Override
-	public void preNext(TypeDeclaration curElement) {
-		targetFile.println("@startuml");
+	public boolean preNext(TypeDeclaration curElement) {
+		compiler.println("@startuml");
+		return true;
 	}
 
 	@Override
 	public void afterNext(TypeDeclaration curElement) {
-		targetFile.println("@enduml");
+		compiler.println("@enduml");
 	}
 }

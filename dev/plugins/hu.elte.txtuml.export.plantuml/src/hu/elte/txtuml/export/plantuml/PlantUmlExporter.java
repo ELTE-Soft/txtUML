@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -119,6 +120,14 @@ public class PlantUmlExporter {
 			IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
 
 			cleanupWorkbench(targetFile, page);
+			
+			URI targetDirURI = CommonPlugin.resolve(URI.createFileURI(projectName + "/" + genFolderName));
+			
+			IFolder targetDir = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(targetDirURI.toFileString()));
+			if(!targetDir.exists())
+			{
+				targetDir.create(false, true, null);
+			}
 
 			monitor.worked(100 / (seqDiagrams.size() * 2));
 

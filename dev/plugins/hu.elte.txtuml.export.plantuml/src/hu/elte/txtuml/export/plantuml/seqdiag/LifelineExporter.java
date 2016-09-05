@@ -3,7 +3,7 @@ package hu.elte.txtuml.export.plantuml.seqdiag;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 
-import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
+import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 /**
  * 
@@ -15,8 +15,8 @@ import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
  */
 public class LifelineExporter extends BaseSeqdiagExporter<FieldDeclaration> {
 
-	public LifelineExporter(PlantUmlGenerator generator) {
-		super(generator);
+	public LifelineExporter(PlantUmlCompiler compiler) {
+		super(compiler);
 	}
 
 	@Override
@@ -26,11 +26,12 @@ public class LifelineExporter extends BaseSeqdiagExporter<FieldDeclaration> {
 	}
 
 	@Override
-	public void preNext(FieldDeclaration curElement) {
+	public boolean preNext(FieldDeclaration curElement) {
 
 		String participantName = curElement.fragments().get(0).toString();
 
-		targetFile.println("participant " + participantName);
+		compiler.println("participant " + participantName);
+		return true;
 	}
 
 	@Override

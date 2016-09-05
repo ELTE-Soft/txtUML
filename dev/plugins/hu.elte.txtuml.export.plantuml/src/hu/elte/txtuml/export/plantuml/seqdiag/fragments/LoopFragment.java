@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.plantuml.seqdiag;
+package hu.elte.txtuml.export.plantuml.seqdiag.fragments;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
@@ -9,12 +9,12 @@ import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
-import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
+import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 public class LoopFragment extends CombinedFragmentExporter<Statement> {
 
-	public LoopFragment(PlantUmlGenerator generator) {
-		super(generator);
+	public LoopFragment(PlantUmlCompiler compiler) {
+		super(compiler);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class LoopFragment extends CombinedFragmentExporter<Statement> {
 	}
 
 	@Override
-	public void preNext(Statement curElement) {
+	public boolean preNext(Statement curElement) {
 		switch (curElement.getNodeType()) {
 		case ASTNode.WHILE_STATEMENT:
 			exportWhile((WhileStatement) curElement);
@@ -44,6 +44,8 @@ public class LoopFragment extends CombinedFragmentExporter<Statement> {
 			exportForEach((EnhancedForStatement) curElement);
 			break;
 		}
+
+		return true;
 	}
 
 	protected void exportFor(ForStatement statement) {
@@ -64,34 +66,28 @@ public class LoopFragment extends CombinedFragmentExporter<Statement> {
 			updater = (Expression) statement.updaters().get(0);
 		}
 
-		targetFile.println("loop from " + initName + "=" + initValue + " to " + condition.toString() + " by "
+		compiler.println("loop from " + initName + "=" + initValue + " to " + condition.toString() + " by "
 				+ updaterConverter(updater));
 	}
 
 	protected String updaterConverter(Expression updater) {
-		if(updater.toString().equals("++i") || updater.toString().equals("i++"))
-		{
+		if (updater.toString().equals("++i") || updater.toString().equals("i++")) {
 			return "i+1";
 		}
-		
+
 		return updater.toString();
 	}
 
 	protected void exportWhile(WhileStatement statement) {
 		Expression condition = statement.getExpression();
 
-		targetFile.println("loop while " + condition.toString());
+		compiler.println("loop while " + condition.toString());
 	}
 
 	protected void exportForEach(EnhancedForStatement statement) {
 		Expression loopVar = statement.getExpression();
 
-		targetFile.println("loop for each " + loopVar.toString());
-	}
-
-	@Override
-	public void afterNext(Statement curElement) {
-		targetFile.println("end");
+		compiler.println("loop for each " + loopVar.toString());
 	}
 
 	@Override
