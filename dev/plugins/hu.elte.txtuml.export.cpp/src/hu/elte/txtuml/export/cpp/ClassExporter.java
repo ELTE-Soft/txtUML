@@ -105,10 +105,10 @@ public class ClassExporter {
 		source = createClassHeaderSource(class_);
 		externalDeclerations.append(createLinkFunctionDeclerations(class_));
 		Shared.writeOutSource(dest_, GenerationTemplates.headerName(realName),
-				GenerationTemplates.headerGuard(source.toString() + externalDeclerations.toString(), realName));
+				Shared.format(GenerationTemplates.headerGuard(source.toString() + externalDeclerations.toString(), realName)));
 		source = (createClassCppSource(class_)).toString();
 		Shared.writeOutSource(dest_, GenerationTemplates.sourceName(realName),
-				GenerationTemplates.cppInclude(realName) + getAllDependency(class_, false) + source);
+				Shared.format(GenerationTemplates.cppInclude(realName) + getAllDependency(class_, false) + source));
 	}
 
 	public List<String> getSubmachines() {

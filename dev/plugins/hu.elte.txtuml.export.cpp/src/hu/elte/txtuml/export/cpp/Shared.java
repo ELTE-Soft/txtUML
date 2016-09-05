@@ -166,7 +166,7 @@ public class Shared {
 
 
 		PrintWriter writer = new PrintWriter(path_ + File.separator + fileName_, "UTF-8");
-		writer.println(format(source));
+		writer.println(source);
 		writer.close();
 	}
 
