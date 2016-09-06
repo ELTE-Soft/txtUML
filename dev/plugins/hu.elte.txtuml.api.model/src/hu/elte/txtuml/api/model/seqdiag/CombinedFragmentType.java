@@ -8,8 +8,5 @@ package hu.elte.txtuml.api.model.seqdiag;
  * @TODO implement other types
  */
 public enum CombinedFragmentType {
-	SEQ, /* comes out of the box */
-	ALT, /* Not Implemented */
-	LOOP, /* Not Implemented */
-	PAR /* Not implemented */
+	SEQ, STRICT, ALT, LOOP, PAR /* Not implemented */
 }

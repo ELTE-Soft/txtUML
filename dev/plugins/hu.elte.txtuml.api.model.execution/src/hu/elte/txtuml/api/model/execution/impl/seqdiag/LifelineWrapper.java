@@ -1,9 +1,12 @@
-package hu.elte.txtuml.api.model.seqdiag;
+package hu.elte.txtuml.api.model.execution.impl.seqdiag;
 
 import hu.elte.txtuml.api.model.AssociationEnd;
 import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.seqdiag.BaseLifelineWrapper;
+import hu.elte.txtuml.api.model.seqdiag.Runtime;
+import hu.elte.txtuml.api.model.seqdiag.RuntimeContext;
 
-public class LifelineWrapper<T extends ModelClass> extends AbstractWrapper<T> {
+public class LifelineWrapper<T extends ModelClass> extends AbstractWrapper<T> implements BaseLifelineWrapper<T> {
 
 	InteractionWrapper parent;
 	int position;
@@ -35,5 +38,15 @@ public class LifelineWrapper<T extends ModelClass> extends AbstractWrapper<T> {
 	protected <R extends ModelClass> void unlink(Class<? extends AssociationEnd<T, ?>> leftEnd,
 			Class<? extends AssociationEnd<R, ?>> rightEnd, LifelineWrapper<R> rightObj) {
 		hu.elte.txtuml.api.model.Action.unlink(leftEnd, this.getWrapped(), rightEnd, rightObj.getWrapped());
+	}
+
+	@Override
+	public String getStringRepresentation() {
+		return "Lifeline of:" + this.getWrapped().toString();
+	}
+
+	@Override
+	public Runtime getRuntime() {
+		return RuntimeContext.getCurrentExecutorThread().getRuntime();
 	}
 }

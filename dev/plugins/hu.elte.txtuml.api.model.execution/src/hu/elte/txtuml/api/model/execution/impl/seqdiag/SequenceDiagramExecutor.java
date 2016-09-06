@@ -5,11 +5,9 @@ import java.util.ArrayList;
 import hu.elte.txtuml.api.model.error.seqdiag.InvalidMessageError;
 import hu.elte.txtuml.api.model.error.seqdiag.ValidationError;
 import hu.elte.txtuml.api.model.execution.impl.DefaultModelExecutor;
+import hu.elte.txtuml.api.model.seqdiag.BaseInteractionWrapper;
 import hu.elte.txtuml.api.model.seqdiag.BaseSequenceDiagramExecutor;
-import hu.elte.txtuml.api.model.seqdiag.FragmentListener;
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
-import hu.elte.txtuml.api.model.seqdiag.InteractionWrapper;
-import hu.elte.txtuml.api.model.seqdiag.RuntimeContext;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 
 /**
@@ -47,7 +45,6 @@ public class SequenceDiagramExecutor implements Runnable, BaseSequenceDiagramExe
 	protected InvalidMessageSentListener messageListener;
 	protected CommunicationListener traceListener;
 	protected DefaultModelExecutor executor;
-	protected FragmentCreationListener frCreator;
 
 	private Boolean isLocked;
 	private SequenceDiagramExecutorThread thread;
@@ -56,24 +53,27 @@ public class SequenceDiagramExecutor implements Runnable, BaseSequenceDiagramExe
 
 	private ExecutorState state = ExecutorState.INITIALIZE;
 
-	ArrayList<FragmentListener> frListeners;
-
 	public SequenceDiagramExecutor() {
 		isLocked = false;
-		frListeners = new ArrayList<FragmentListener>();
 
 		messageListener = new InvalidMessageSentListener(this);
 		traceListener = new CommunicationListener(this);
-		frCreator = new FragmentCreationListener(this);
-
-		executor = new DefaultModelExecutor();
-		executor.addWarningListener(messageListener);
-		executor.addTraceListener(traceListener);
-
-		this.addFragmentListener(frCreator);
 
 		errors = new ArrayList<ValidationError>();
 
+		prepareExecutor();
+	}
+
+	private void prepareExecutor() {
+		executor = new DefaultModelExecutor();
+		executor.addWarningListener(messageListener);
+		executor.addTraceListener(traceListener);
+		errors.clear();
+	}
+
+	public void reInitialize() {
+		prepareExecutor();
+		state = ExecutorState.INITIALIZE;
 	}
 
 	public void setInteraction(Interaction interaction) throws Exception {
@@ -95,8 +95,7 @@ public class SequenceDiagramExecutor implements Runnable, BaseSequenceDiagramExe
 	public void execute() {
 		isLocked = true;
 
-		InteractionWrapper interaction = ((RuntimeContext) Thread.currentThread()).getRuntime()
-				.getInteractionWrapper(base);
+		BaseInteractionWrapper interaction = this.thread.getRuntime().createInteractionWrapper(base);
 		this.thread.getRuntime().setCurrentInteraction(interaction);
 
 		executor.setInitialization(new Runnable() {
@@ -107,16 +106,16 @@ public class SequenceDiagramExecutor implements Runnable, BaseSequenceDiagramExe
 				interaction.getWrapped().run();
 			}
 		});
-		
+
 		executor.launch();
 		executor.shutdown();
 		executor.awaitTermination();
 		state = ExecutorState.ENDED;
 
 		if (traceListener.suggestedMessagePattern != null && traceListener.suggestedMessagePattern.size() != 0) {
-			this.errors
-					.add(new InvalidMessageError(this.thread.getInteractionWrapper().getLifelines().get(0).getWrapped(),
-							"The pattern given is bigger than the model"));
+			this.errors.add(new InvalidMessageError(
+					this.thread.getRuntime().getCurrentInteraction().getLifelines().get(0).getWrapped(),
+					"The pattern given is bigger than the model"));
 		}
 
 	}
@@ -131,10 +130,13 @@ public class SequenceDiagramExecutor implements Runnable, BaseSequenceDiagramExe
 	}
 
 	public void awaitTermination() {
-		try {
-			this.thread.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		while (true) {
+			try {
+				this.thread.join();
+				return;
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -154,23 +156,19 @@ public class SequenceDiagramExecutor implements Runnable, BaseSequenceDiagramExe
 		return this.thread;
 	}
 
-	@Override
-	public void addFragmentListener(FragmentListener listener) {
-		this.frListeners.add(listener);
-	}
-
-	@Override
-	public void removeFragmentListener(FragmentListener listener) {
-		this.frListeners.remove(listener);
-
-	}
-	
-	public void awaitInitialization()
-	{
+	public void awaitInitialization() {
 		executor.awaitInitialization();
 	}
 
 	public enum ExecutorState {
 		INITIALIZE, READY, ENDED
+	}
+
+	@Override
+	public boolean checkThread(Thread thread) {
+		if (this.thread.equals(thread)) {
+			return true;
+		}
+		return false;
 	}
 }

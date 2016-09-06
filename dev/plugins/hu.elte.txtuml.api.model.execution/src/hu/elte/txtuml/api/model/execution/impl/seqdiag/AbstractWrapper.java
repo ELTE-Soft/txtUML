@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.model.seqdiag;
+package hu.elte.txtuml.api.model.execution.impl.seqdiag;
 
 public class AbstractWrapper<T> {
 	T wrapped;

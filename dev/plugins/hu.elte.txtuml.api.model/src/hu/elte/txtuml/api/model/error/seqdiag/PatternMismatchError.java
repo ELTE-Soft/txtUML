@@ -5,6 +5,8 @@ import hu.elte.txtuml.api.model.Signal;
 
 public class PatternMismatchError extends InvalidMessageError {
 
+	private static final long serialVersionUID = -2489869288687106259L;
+
 	public PatternMismatchError(ModelClass patternSource, ModelClass modelSource, Signal patternSignal,
 			Signal modelSignal, ModelClass patternTarget, ModelClass modelTarget) {
 		super(patternSource, "The model diverged from the Sequence-diagram Specified behaviour:\n it sent: \n");

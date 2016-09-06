@@ -7,10 +7,7 @@ import hu.elte.txtuml.api.model.ModelClass.Port;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.ConnectorBase.ConnectorEnd;
 
-public class Action {
-
-	Action() {
-	}
+public abstract class Action {
 
 	public static <T extends ModelClass> T create(Class<T> classType, Object... parameters) {
 		return hu.elte.txtuml.api.model.Action.create(classType, parameters);
@@ -47,8 +44,8 @@ public class Action {
 
 	public static <S extends Signal> void send(ModelClass from, S signal, ModelClass target) {
 		RuntimeContext context = RuntimeContext.getCurrentExecutorThread();
-		InteractionWrapper wrapper = context.getInteractionWrapper();
-		wrapper.storeMessage(from, signal, target);
+		BaseInteractionWrapper wrapper = context.getRuntime().getCurrentInteraction();
+		wrapper.storeMessage(from, signal, target, false);
 	}
 
 	public static void log(String message) {
@@ -60,30 +57,36 @@ public class Action {
 	}
 
 	/**
-	 * @deprecated not needed since new version
-	 * @param units
-	 *            units of time needed to process signal
+	 * Manually deactivate a lifeline
 	 */
-	public static void duration(int units) {
-		// TODO Code Action
+	public static void deactivate() {
+
 	}
 
 	/**
-	 * @deprecated not needed since new version
-	 * @param signal
-	 *            signal received
-	 * @param from
-	 *            sender ModelClass
+	 * manually activate a lifeline
 	 */
-	public static void receive(Signal signal, ModelClass from) {
-		// TODO code Action
+	public static void activate() {
+
 	}
-	
-	public static <T extends Signal> T lastReceivedSignal(Class<T> signalClass)
-	{
+
+	public static void startFragment(CombinedFragmentType type) {
+
+	}
+
+	public static void startFragment(CombinedFragmentType type, String fragmentName) {
 		RuntimeContext context = RuntimeContext.getCurrentExecutorThread();
-		InteractionWrapper wrapper = context.getInteractionWrapper();
-		T element = (T)wrapper.getMessages().get(wrapper.getMessages().size() - 1).signal;
-		return element;
+		context.getRuntime().setExecutionMode(type);
+		if (fragmentName == null) {
+			fragmentName = "UnnamedFragment";
+		}
+		context.getRuntime().getCurrentInteraction().storeFragment(type, fragmentName);
+	}
+
+	public static void endFragment() {
+		RuntimeContext context = RuntimeContext.getCurrentExecutorThread();
+		context.getRuntime().executionModeEnded();
+
+		context.getRuntime().getCurrentInteraction().endFragment();
 	}
 }

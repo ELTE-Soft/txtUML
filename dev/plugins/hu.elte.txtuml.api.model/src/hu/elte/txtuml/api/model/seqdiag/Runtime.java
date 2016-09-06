@@ -1,52 +1,29 @@
 package hu.elte.txtuml.api.model.seqdiag;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.function.Consumer;
 
 import hu.elte.txtuml.api.model.ModelClass;
 
-public class Runtime {
+public abstract class Runtime {
 
-	private InteractionWrapper currentInteraction;
-	private ArrayList<FragmentListener> frListeners;
-
-	public Runtime(ArrayList<FragmentListener> fragmentListeners) {
-		frListeners = new ArrayList<FragmentListener>(fragmentListeners);
+	public Runtime() {
 	}
 
-	public InteractionWrapper getInteractionWrapper(Interaction interaction) {
-		return new InteractionWrapper(interaction);
+	public abstract BaseInteractionWrapper createInteractionWrapper(Interaction interaction);
 
-	}
+	public abstract <T extends ModelClass> BaseLifelineWrapper<T> createLifelineWrapper(Field lifeline);
 
-	@SuppressWarnings("unchecked")
-	public <T extends ModelClass> LifelineWrapper<T> getLifelineWrapper(Field lifeline, InteractionWrapper parent) {
-		T data = null;
-		try {
-			data = (T) lifeline.get(parent.getWrapped());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public abstract BaseCombinedFragmentWrapper createCombinedFragmentWrapper(CombinedFragmentType type, String name);
 
-		return new LifelineWrapper<T>(parent, data, lifeline.getDeclaredAnnotation(Position.class).value(),
-				lifeline.getName());
-	}
+	public abstract void setCurrentInteraction(BaseInteractionWrapper interaction);
 
-	public CombinedFragmentWrapper getCombinedFragmentWrapper(CombinedFragmentType type, InteractionWrapper parent,
-			String name) {
-		return new CombinedFragmentWrapper(parent, type, name);
-	}
+	public abstract BaseInteractionWrapper getCurrentInteraction();
 
-	public void setCurrentInteraction(InteractionWrapper interaction) {
-		this.currentInteraction = interaction;
-	}
+	public abstract void setExecutionMode(CombinedFragmentType type);
 
-	public InteractionWrapper getCurrentInteraction() {
-		return this.currentInteraction;
-	}
+	public abstract void executionModeEnded();
 
-	public void fragment(Consumer<FragmentListener> funct) {
-		frListeners.forEach(funct);
-	}
+	public abstract CombinedFragmentType getExecutionMode();
+
+	public abstract BaseSequenceDiagramExecutor getExecutor();
 }

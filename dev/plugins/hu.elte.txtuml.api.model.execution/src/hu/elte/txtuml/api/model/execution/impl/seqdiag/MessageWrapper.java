@@ -1,15 +1,19 @@
-package hu.elte.txtuml.api.model.seqdiag;
+package hu.elte.txtuml.api.model.execution.impl.seqdiag;
 
 import java.lang.reflect.Field;
 
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
+import hu.elte.txtuml.api.model.seqdiag.BaseFragmentWrapper;
+import hu.elte.txtuml.api.model.seqdiag.BaseMessageWrapper;
+import hu.elte.txtuml.api.model.seqdiag.Runtime;
+import hu.elte.txtuml.api.model.seqdiag.RuntimeContext;
 
-public class MessageWrapper {
-	public ModelClass sender;
-	public Signal signal;
-	public ModelClass receiver;
-	public boolean isAPI;
+public class MessageWrapper implements BaseMessageWrapper, BaseFragmentWrapper {
+	private ModelClass sender;
+	private Signal signal;
+	private ModelClass receiver;
+	private boolean isAPI;
 
 	public MessageWrapper(ModelClass sender, Signal signal, ModelClass receiver) {
 		this(sender, signal, receiver, false);
@@ -78,5 +82,35 @@ public class MessageWrapper {
 			}
 			return true;
 		}
+	}
+
+	@Override
+	public Signal getSignal() {
+		return this.signal;
+	}
+
+	@Override
+	public ModelClass getSender() {
+		return this.sender;
+	}
+
+	@Override
+	public ModelClass getReceiver() {
+		return this.receiver;
+	}
+
+	@Override
+	public String getStringRepresentation() {
+		return "Message: " + signal.toString();
+	}
+
+	@Override
+	public Runtime getRuntime() {
+		return RuntimeContext.getCurrentExecutorThread().getRuntime();
+	}
+
+	@Override
+	public int size() {
+		return 1;
 	}
 }
