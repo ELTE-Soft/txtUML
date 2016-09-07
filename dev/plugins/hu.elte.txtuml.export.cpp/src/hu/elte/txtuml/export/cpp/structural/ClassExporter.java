@@ -7,55 +7,40 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.uml2.uml.Activity;
-import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
-import org.eclipse.uml2.uml.Operation;
-import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.StateMachine;
-import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.export.cpp.Shared;
-import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 
-public class ClassExporter {
-	// private static final int _UMLMany = -1;
+public class ClassExporter extends StructuredElementExporter<Class>{
 	
-	private Class cls;
 	private List<String> subSubMachines;
 	private List<String> additionalSourcesNames;
-	private boolean ownConstructor;
-
-	private ActivityExporter activityExporter;
 	private AssociationExporter associationExporter;
+	private ConstructorExporter constructorExporter;
 
 	private StateMachineExporter stateMachineExporter;
 	private SubStateMachineExporter subStateMachineExporter;
 
-	private String name;
-
 	public ClassExporter() {}
-
 	public ClassExporter(Class cls, String name, int poolId) {
-		init(cls, name, poolId);
+		super(cls,name);
+		init(cls,name,poolId);
 	}
 
 	public void init(Class cls, String name, int poolId) {
-		this.cls = cls;
-		this.name = name;
-		activityExporter = new ActivityExporter();
+		super.init(cls, name);
 		associationExporter = new AssociationExporter();
 		stateMachineExporter = new StateMachineExporter(name, poolId, cls);
+		constructorExporter = new ConstructorExporter(structuredElement.getOwnedOperations());
 
 		additionalSourcesNames = new ArrayList<String>();
 		subSubMachines = new LinkedList<String>();
-		ownConstructor = false;
-
 	}
 
 	public List<String> getAdditionalSources() {
@@ -65,9 +50,9 @@ public class ClassExporter {
 	public void createSource(String dest) throws FileNotFoundException, UnsupportedEncodingException {
 		String source;
 		StringBuilder externalDeclerations = new StringBuilder("");
-		associationExporter.exportAssocations(cls.getOwnedAttributes());
+		associationExporter.exportAssocations(structuredElement.getOwnedAttributes());
 		List<StateMachine> smList = new ArrayList<StateMachine>();
-		Shared.getTypedElements(smList, cls.allOwnedElements(), UMLPackage.Literals.STATE_MACHINE);
+		Shared.getTypedElements(smList, structuredElement.allOwnedElements(), UMLPackage.Literals.STATE_MACHINE);
 		if (stateMachineExporter.isOwnStateMachine()) {
 
 			for (Map.Entry<String, Pair<String, Region>> entry : stateMachineExporter.getSubMachineMap().entrySet()) {
@@ -99,13 +84,11 @@ public class ClassExporter {
 	private String createClassHeaderSource() {
 		String source = "";
 		StringBuilder dependency = getAllDependency(true);
-		StringBuilder privateParts = createParts("private");
-		StringBuilder protectedParts = createParts("protected");
-		StringBuilder publicParts = createParts("public");
-
-		if (!ownConstructor) {
-			publicParts.append(GenerationTemplates.constructorDecl(name, null) + "\n");
-		}
+		StringBuilder privateParts = new StringBuilder(super.createPrivateAttrbutes() + super.createPrivateOperationsDeclerations());
+		StringBuilder protectedParts = new StringBuilder(super.createProtectedAttributes() + super.createProtectedOperationsDeclerations());
+		StringBuilder publicParts = new StringBuilder(super.createPublicAttributes() + super.createPublicOperationDecelerations());
+		
+		publicParts.append(constructorExporter.exportConstructorDeclareations(name));
 		publicParts.append(GenerationTemplates.destructorDecl(name));
 
 		publicParts.append("\n" + associationExporter.createAssociationMemeberDeclerationsCode());
@@ -142,91 +125,38 @@ public class ClassExporter {
 	private String createClassCppSource() {
 		StringBuilder source = new StringBuilder("");
 		List<StateMachine> smList = new ArrayList<StateMachine>();
-		Shared.getTypedElements(smList, cls.allOwnedElements(), UMLPackage.Literals.STATE_MACHINE);
-
-		if (!ownConstructor) {
-			source.append(GenerationTemplates.constructorDef(name, stateMachineExporter.isOwnStateMachine()) + "\n");
-		}
+		Shared.getTypedElements(smList, structuredElement.allOwnedElements(), UMLPackage.Literals.STATE_MACHINE);
 
 		if (stateMachineExporter.isOwnStateMachine()) {
 			source.append(stateMachineExporter.createStateMachineRelatedCppSourceCodes());
 
 		}
 
-		for (Operation operation : cls.getOwnedOperations()) {
-			activityExporter.init();
-			String funcBody = "";
-			for (Behavior behavior : operation.getMethods()) {
+		source.append(super.createOperationDefinitions());
+		source.append(constructorExporter.exportConstructorsDefinitions(name,stateMachineExporter.isOwnStateMachine()));
+		source.append(stateMachineExporter.isOwnStateMachine() ? GenerationTemplates.destructorDef(name, true) : GenerationTemplates.destructorDef(name, false));
 
-				if (behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
-					funcBody = activityExporter.createfunctionBody((Activity) behavior).toString();
-				} else {
-					// TODO exception, unknown for me, need the model
-				}
-			}
-			if (!Shared.isConstructor(operation)) {
-
-				String returnType = getReturnType(operation.getReturnResult());
-
-				source.append(GenerationTemplates.functionDef(name, returnType, operation.getName(),
-						getOperationParams(operation), funcBody));
-			} else {
-
-				source.append(GenerationTemplates.constructorDef(name, getBaseClass(), funcBody,
-						getOperationParams(operation), null, stateMachineExporter.isOwnStateMachine()));
-			}		
-			source.append(stateMachineExporter.isOwnStateMachine() ? GenerationTemplates.destructorDef(name, true) : 
-				GenerationTemplates.destructorDef(name, false));
-
-		}
+		
 		return source.toString();
 	}
 
 	private StringBuilder getAllDependency(Boolean isHeader) {
 		StringBuilder source = new StringBuilder("");
-		List<String> types = new ArrayList<String>();
-
-		// collecting each item type for dependency analysis
-		for (Operation item : cls.getAllOperations()) {
-			if (item.getReturnResult() != null) {
-				types.add(item.getReturnResult().getType().getName());
-			}
-			types.addAll(getOperationParamTypes(item));
-		}
-
-		for (Property item : Shared.getProperties(cls)) {
+		//TODO assoc
+		for (Property item : Shared.getProperties(structuredElement)) {
 			if (item.getType() != null) {
-
-				Type attr = item.getType();
-				types.add(attr.getName());
+				dependecies.add(item.getType().getName());
 			}
 		}
-
-
-		for (Map.Entry<String, Pair<String, Region>> entry : stateMachineExporter.getSubMachineMap().entrySet()) {
-			types.add(entry.getValue().getFirst());
-
+		if(stateMachineExporter.isOwnStateMachine()) {
+			for (Map.Entry<String, Pair<String, Region>> entry : stateMachineExporter.getSubMachineMap().entrySet()) {
+				dependecies.add(entry.getValue().getFirst());
 		}
 
 
-		// dependency analysis
-		String header = "";
-		for (String t : types) {
-			if (!Shared.isBasicType(t) && t != name) {
-				if (isHeader) {
-					header = GenerationTemplates.forwardDeclaration(t);
-				} else {
-					if (!t.equals("String")) {
-						header = GenerationTemplates.cppInclude(t);
-					}
-				}
-
-				// TODO this is suboptimal
-				if (!source.toString().contains(header)) {
-					source.append(header);
-				}
-			}
 		}
+
+		source.append(createDependencyIncudesCode(isHeader));
 
 		if (getBaseClass() != null) {
 			source.append(GenerationTemplates.cppInclude(getBaseClass()));
@@ -252,79 +182,9 @@ public class ClassExporter {
 		return source;
 	}
 
-	private StringBuilder createParts(String modifyer) {
-		StringBuilder source = new StringBuilder("");
-		for (Operation item : cls.getOwnedOperations()) {
-			if (item.getVisibility().toString().equals(modifyer)) {
-
-				if (Shared.isConstructor(item)) {
-					ownConstructor = true;
-					source.append(GenerationTemplates.constructorDecl(name, getOperationParamTypes(item)));
-				} else {
-					String returnType = getReturnType(item.getReturnResult());
-					source.append(
-							GenerationTemplates.functionDecl(returnType, item.getName(), getOperationParamTypes(item)));
-				}
-			}
-		}
-
-		for (Property attribute : cls.getOwnedAttributes()) {
-			if (attribute.getVisibility().toString().equals(modifyer)) {
-				String type = "!!!UNKNOWNTYPE!!!";
-				if (attribute.getType() != null) {
-					type = attribute.getType().getName();
-				}
-
-				String tmp = GenerationTemplates.variableDecl(type, attribute.getName(), 1);
-				if (attribute.getAssociation() == null) {
-					source.append(tmp);
-				}
-
-			}
-		}
-
-		return source;
-	}
-
-	private List<String> getOperationParamTypes(Operation operation) {
-		List<String> ret = new ArrayList<String>();
-		for (Parameter param : operation.getOwnedParameters()) {
-			if (param != operation.getReturnResult()) {
-				if (param.getType() != null) {
-					ret.add(param.getType().getName());
-				}
-			}
-		}
-		return ret;
-	}
-
-	private List<Pair<String, String>> getOperationParams(Operation operation) {
-		List<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
-		for (Parameter param : operation.getOwnedParameters()) {
-			if (param != operation.getReturnResult()) {
-				if (param.getType() != null) {
-					ret.add(new Pair<String, String>(param.getType().getName(), param.getName()));
-				} else {
-					// TODO exception if we want to stop the compile (missing
-					// operation, seems fatal error)
-					ret.add(new Pair<String, String>("UNKNOWN_TYPE", param.getName()));
-				}
-			}
-		}
-		return ret;
-	}
-
-	private String getReturnType(Parameter returnResult) {
-		String returnType = null;
-		if (returnResult != null) {
-			returnType = returnResult.getType().getName();
-		}
-		return returnType;
-	}
-
 	private String getBaseClass() {
-		if (!cls.getGeneralizations().isEmpty()) {
-			return cls.getGeneralizations().get(0).getGeneral().getName();
+		if (!structuredElement.getGeneralizations().isEmpty()) {
+			return structuredElement.getGeneralizations().get(0).getGeneral().getName();
 		} else {
 			return null;
 		}

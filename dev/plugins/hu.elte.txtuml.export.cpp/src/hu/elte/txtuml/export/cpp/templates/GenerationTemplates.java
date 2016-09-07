@@ -321,12 +321,16 @@ public class GenerationTemplates {
 				+ PrivateFunctionalTemplates.paramTypeList(params) + ");\n";
 	}
 
-	public static StringBuilder constructorDecl(String className, List<String> params) {
+	public static String constructorDecl(String className, List<String> params) {
 		StringBuilder source = new StringBuilder("");
 		source.append(className + "(");
 		source.append(PrivateFunctionalTemplates.paramTypeList(params) + ");\n");
 
-		return source;
+		return source.toString();
+	}
+	
+	public static String defaultConstructorDecl(String className) {
+		return constructorDecl(className,null);
 	}
 	
 	public static String destructorDecl(String className) {

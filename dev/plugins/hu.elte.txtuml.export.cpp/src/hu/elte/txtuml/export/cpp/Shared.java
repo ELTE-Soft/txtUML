@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.eclipse.jface.text.IDocument;*/
 
 
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
+import hu.elte.txtuml.utils.Pair;
 
 public class Shared {
 	public static List<Property> getProperties(Class class_) {
@@ -151,6 +153,34 @@ public class Shared {
 
 		return false;
 
+	}
+	
+	public static List<String> getOperationParamTypes(Operation operation) {
+		List<String> ret = new ArrayList<String>();
+		for (Parameter param : operation.getOwnedParameters()) {
+			if (param != operation.getReturnResult()) {
+				if (param.getType() != null) {
+					ret.add(param.getType().getName());
+				}
+			}
+		}
+		return ret;
+	}
+	
+	public static List<Pair<String, String>> getOperationParams(Operation operation) {
+		List<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
+		for (Parameter param : operation.getOwnedParameters()) {
+			if (param != operation.getReturnResult()) {
+				if (param.getType() != null) {
+					ret.add(new Pair<String, String>(param.getType().getName(), param.getName()));
+				} else {
+					// TODO exception if we want to stop the compile (missing
+					// operation, seems fatal error)
+					ret.add(new Pair<String, String>("UNKNOWN_TYPE", param.getName()));
+				}
+			}
+		}
+		return ret;
 	}
 
 	public static void writeOutSource(String path_, String fileName_, String source)
