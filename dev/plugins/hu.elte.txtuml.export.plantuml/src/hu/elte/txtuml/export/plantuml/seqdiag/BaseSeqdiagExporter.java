@@ -87,7 +87,7 @@ public abstract class BaseSeqdiagExporter<T extends ASTNode> {
 		case ASTNode.FIELD_DECLARATION:
 			return (BaseSeqdiagExporter<T>) new LifelineExporter(compiler);
 		case ASTNode.METHOD_INVOCATION:
-			return (BaseSeqdiagExporter<T>) new MessageSendExporter(compiler);
+			return (BaseSeqdiagExporter<T>) MethodInvocationExporter.createExporter(curElement, compiler);
 		case ASTNode.WHILE_STATEMENT:
 		case ASTNode.FOR_STATEMENT:
 		case ASTNode.ENHANCED_FOR_STATEMENT:

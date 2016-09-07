@@ -2,10 +2,13 @@ package hu.elte.txtuml.api.model.execution.impl.seqdiag;
 
 import java.util.ArrayList;
 
+import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.error.seqdiag.InvalidMessageError;
 import hu.elte.txtuml.api.model.error.seqdiag.ValidationError;
 import hu.elte.txtuml.api.model.execution.impl.DefaultModelExecutor;
 import hu.elte.txtuml.api.model.seqdiag.BaseInteractionWrapper;
+import hu.elte.txtuml.api.model.seqdiag.BaseMessageWrapper;
 import hu.elte.txtuml.api.model.seqdiag.BaseSequenceDiagramExecutor;
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
@@ -170,5 +173,33 @@ public class SequenceDiagramExecutor implements Runnable, BaseSequenceDiagramExe
 			return true;
 		}
 		return false;
+	}
+
+	private BaseMessageWrapper getLastMessage() {
+		return ((InteractionWrapper) this.thread.getRuntime().getCurrentInteraction()).getLastMessage();
+	}
+
+	@Override
+	public Signal lastSignal() {
+		if (getLastMessage() == null)
+			return null;
+
+		return getLastMessage().getSignal();
+	}
+
+	@Override
+	public ModelClass lastSender() {
+		if (getLastMessage() == null)
+			return null;
+
+		return getLastMessage().getSender();
+	}
+
+	@Override
+	public ModelClass lastReceiver() {
+		if (getLastMessage() == null)
+			return null;
+
+		return getLastMessage().getReceiver();
 	}
 }

@@ -1,5 +1,8 @@
 package hu.elte.txtuml.api.model.seqdiag;
 
+import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.Signal;
+
 /**
  * This class represents an interaction UML element ( equivalent to a full
  * sequence diagram ). This is a container class for lifelines,messages and
@@ -19,4 +22,20 @@ public abstract class Interaction implements Runnable {
 	};
 
 	public abstract void run();
+
+	private BaseSequenceDiagramExecutor getExecutor() {
+		return RuntimeContext.getCurrentExecutorThread().getRuntime().getExecutor();
+	}
+
+	public Signal lastSignal() {
+		return getExecutor().lastSignal();
+	}
+
+	public ModelClass lastSender() {
+		return getExecutor().lastSender();
+	}
+
+	public ModelClass lastReceiver() {
+		return getExecutor().lastReceiver();
+	}
 }

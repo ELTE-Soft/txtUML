@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.plantuml;
 
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -72,7 +73,8 @@ public class PlantUmlExporter {
 	 */
 	private void filterDiagramsByType() {
 		seqDiagrams = new ArrayList<Class<Interaction>>();
-		for (String diagram : diagrams) {
+		for (Iterator<String> iterator = diagrams.iterator(); iterator.hasNext();) {
+			String diagram = iterator.next();
 			try {
 				URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(projectName,
 						Interaction.class.getClassLoader());
@@ -80,7 +82,7 @@ public class PlantUmlExporter {
 
 				if (Interaction.class.isAssignableFrom(diagramClass)) {
 					seqDiagrams.add((Class<Interaction>) diagramClass);
-					diagrams.remove(diagram);
+					iterator.remove();
 					nonExportedCount--;
 				} else {
 				}
@@ -95,7 +97,8 @@ public class PlantUmlExporter {
 	 * Generate the output into the gen folder using JDT. At the end refresh the
 	 * project so the freshly created resource shows up
 	 */
-	public void generatePlantUmlOutput(IProgressMonitor monitor) throws CoreException,SequenceDiagramStructuralException {
+	public void generatePlantUmlOutput(IProgressMonitor monitor)
+			throws CoreException, SequenceDiagramStructuralException {
 
 		for (Class<Interaction> sequenceDiagram : seqDiagrams) {
 			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
@@ -120,12 +123,12 @@ public class PlantUmlExporter {
 			IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
 
 			cleanupWorkbench(targetFile, page);
-			
+
 			URI targetDirURI = CommonPlugin.resolve(URI.createFileURI(projectName + "/" + genFolderName));
-			
-			IFolder targetDir = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(targetDirURI.toFileString()));
-			if(!targetDir.exists())
-			{
+
+			IFolder targetDir = ResourcesPlugin.getWorkspace().getRoot()
+					.getFolder(new Path(targetDirURI.toFileString()));
+			if (!targetDir.exists()) {
 				targetDir.create(false, true, null);
 			}
 

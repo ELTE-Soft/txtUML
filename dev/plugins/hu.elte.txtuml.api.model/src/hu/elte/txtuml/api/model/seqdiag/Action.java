@@ -57,23 +57,37 @@ public abstract class Action {
 	}
 
 	/**
-	 * Manually deactivate a lifeline
+	 * Manually deactivate a lifeline(Only used when generating plantUML output)
 	 */
 	public static void deactivate() {
 
 	}
 
 	/**
-	 * manually activate a lifeline
+	 * manually activate a lifeline(Only used when generating plantUML output)
 	 */
 	public static void activate() {
 
 	}
 
+	/**
+	 * 
+	 * @param type
+	 *            fragment's type
+	 * @see #Action.startFragment(CombinedFragmentType, String)
+	 */
 	public static void startFragment(CombinedFragmentType type) {
-
+		Action.startFragment(type, null);
 	}
 
+	/**
+	 * Method used to create in-line fragments like Seq,Strict,Pars
+	 * 
+	 * @param type
+	 *            fragment's type
+	 * @param fragmentName
+	 *            the name of the fragment
+	 */
 	public static void startFragment(CombinedFragmentType type, String fragmentName) {
 		RuntimeContext context = RuntimeContext.getCurrentExecutorThread();
 		context.getRuntime().setExecutionMode(type);
@@ -83,6 +97,9 @@ public abstract class Action {
 		context.getRuntime().getCurrentInteraction().storeFragment(type, fragmentName);
 	}
 
+	/**
+	 * Used to mark the end of in-line fragmentss
+	 */
 	public static void endFragment() {
 		RuntimeContext context = RuntimeContext.getCurrentExecutorThread();
 		context.getRuntime().executionModeEnded();

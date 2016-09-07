@@ -80,4 +80,5 @@ public class CommunicationListener extends AbstractSequenceDiagramModelListener 
 
 	public void executionTerminated() {
 	}
+
 }

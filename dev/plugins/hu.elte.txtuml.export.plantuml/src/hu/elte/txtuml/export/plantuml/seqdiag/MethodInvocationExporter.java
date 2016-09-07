@@ -19,11 +19,14 @@ public abstract class MethodInvocationExporter extends BaseSeqdiagExporter<Metho
 		return false;
 	}
 
-	public static MethodInvocationExporter create(PlantUmlCompiler compiler, MethodInvocation curElement) {
-		MessageSendExporter exp = new MessageSendExporter(compiler);
+	@SuppressWarnings("unchecked")
+	public static <T extends ASTNode> BaseSeqdiagExporter<T> createExporter(ASTNode curElement,
+			PlantUmlCompiler compiler) {
+		MethodInvocationExporter exp = new MessageSendExporter(compiler);
 		if (exp.validElement(curElement)) {
-			return exp;
+			return (BaseSeqdiagExporter<T>) exp;
+		} else {
+			return (BaseSeqdiagExporter<T>) (new FragmentInvocationExporter(compiler));
 		}
-		return null;
 	}
 }

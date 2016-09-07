@@ -7,6 +7,8 @@ import java.util.Stack;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.export.plantuml.seqdiag.BaseSeqdiagExporter;
 
@@ -15,11 +17,13 @@ public class PlantUmlCompiler extends ASTVisitor {
 	private Stack<BaseSeqdiagExporter<? extends ASTNode>> expQueue;
 	private List<MethodDeclaration> fragments;
 	private List<String> activeLifelines;
+	private String currentClassFullyQualifiedName;
 
 	private String compiledOutput;
 	private CompiledElementsCache cache;
+	private boolean fragmentCompile = false;
 
-	public PlantUmlCompiler(List<MethodDeclaration> fragments) {
+	public PlantUmlCompiler(List<MethodDeclaration> fragments, boolean fragmentCompile) {
 		errors = new ArrayList<ASTNode>();
 		this.fragments = fragments;
 		activeLifelines = new ArrayList<String>();
@@ -27,6 +31,7 @@ public class PlantUmlCompiler extends ASTVisitor {
 
 		compiledOutput = "";
 		cache = new CompiledElementsCache();
+		this.fragmentCompile = fragmentCompile;
 	}
 
 	public String getCompiledOutput() {
@@ -45,15 +50,38 @@ public class PlantUmlCompiler extends ASTVisitor {
 		return true;
 	};
 
+	public boolean visit(TypeDeclaration decl) {
+		currentClassFullyQualifiedName = decl.resolveBinding().getQualifiedName().toString();
+		return true;
+	}
+
+	public boolean visit(MethodDeclaration decl) {
+		if (decl.resolveBinding().getDeclaringClass().getQualifiedName().toString()
+				.equals(currentClassFullyQualifiedName) && decl.getName().toString().equals("run")
+				|| decl.getName().toString().equals("initialize")) {
+			return true;
+		} else if (fragmentCompile) {
+			return true;
+		}
+		return false;
+	}
+
 	public static String getFullyQualifiedName(MethodDeclaration decl) {
 		return decl.resolveBinding().getDeclaringClass().getQualifiedName().toString() + "."
 				+ decl.getName().toString();
 	}
 
+	public static String getFullyQualifiedName(MethodInvocation invoc) {
+		return invoc.resolveMethodBinding().getDeclaringClass().getQualifiedName().toString() + "."
+				+ invoc.getName().toString();
+	}
+
 	public String compile(String fullyQualifiedName) {
 
 		if (this.cache.hasCompiledElement(fullyQualifiedName)) {
-			return this.cache.getCompiledElement(fullyQualifiedName);
+			CompileCache cache = this.cache.getCompiledElement(fullyQualifiedName);
+			activeLifelines.addAll(cache.getActiveLifeines());
+			return this.compiledOutput;
 		}
 
 		boolean hasDecl = false;
@@ -68,12 +96,15 @@ public class PlantUmlCompiler extends ASTVisitor {
 		}
 
 		if (hasDecl) {
-			PlantUmlCompiler compiler = new PlantUmlCompiler(this.fragments);
+			PlantUmlCompiler compiler = new PlantUmlCompiler(this.fragments, true);
+			compiler.activeLifelines = activeLifelines;
 			declaration.accept(compiler);
-			this.cache.addCompiledElement(PlantUmlCompiler.getFullyQualifiedName(declaration), compiler.getCompiledOutput());
+			this.cache.addCompiledElement(PlantUmlCompiler.getFullyQualifiedName(declaration),
+					compiler.getCompiledOutput(), compiler.activeLifelines);
+			activeLifelines.addAll(compiler.activeLifelines);
 			return compiler.getCompiledOutput();
 		}
-		
+
 		return null;
 	}
 
@@ -171,5 +202,9 @@ public class PlantUmlCompiler extends ASTVisitor {
 
 	public void println(String message) {
 		this.compiledOutput += message + System.lineSeparator();
+	}
+
+	public String getCurrentClassName() {
+		return this.currentClassFullyQualifiedName;
 	}
 }

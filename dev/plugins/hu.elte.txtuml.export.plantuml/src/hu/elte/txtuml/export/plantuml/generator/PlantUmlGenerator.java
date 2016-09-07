@@ -12,7 +12,7 @@ public class PlantUmlGenerator {
 	private IFile targetFile;
 	private CompilationUnit sourceCU;
 
-	private MethodStatementWalker walker;
+	private PlantUmlPreCompiler walker;
 	private PlantUmlCompiler compiler;
 
 	public PlantUmlGenerator(IFile targetFile, CompilationUnit source) {
@@ -23,29 +23,29 @@ public class PlantUmlGenerator {
 
 	public void generate() throws SequenceDiagramStructuralException {
 
-		walker = new MethodStatementWalker();
+		walker = new PlantUmlPreCompiler();
 		sourceCU.accept(walker);
 
-		compiler = new PlantUmlCompiler(walker.fragments);
+		compiler = new PlantUmlCompiler(walker.fragments, false);
 		sourceCU.accept(compiler);
-		
+
 		String compiledOutput = compiler.getCompiledOutput();
-		
+
 		ByteArrayInputStream stream = new ByteArrayInputStream(compiledOutput.getBytes());
-		
+
 		try {
 			targetFile.create(stream, false, null);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		if (compiler.getErrors().size() > 0) {
 			String errString = "";
 
 			for (String error : compiler.getErrors()) {
 				errString += error;
 			}
-			
+
 			throw new SequenceDiagramStructuralException(errString);
 		}
 	}

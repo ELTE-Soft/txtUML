@@ -11,6 +11,7 @@ import hu.elte.txtuml.api.model.seqdiag.BaseCombinedFragmentWrapper;
 import hu.elte.txtuml.api.model.seqdiag.BaseFragmentWrapper;
 import hu.elte.txtuml.api.model.seqdiag.BaseInteractionWrapper;
 import hu.elte.txtuml.api.model.seqdiag.BaseLifelineWrapper;
+import hu.elte.txtuml.api.model.seqdiag.BaseMessageWrapper;
 import hu.elte.txtuml.api.model.seqdiag.CombinedFragmentType;
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
 import hu.elte.txtuml.api.model.seqdiag.Runtime;
@@ -20,6 +21,7 @@ public class InteractionWrapper extends AbstractWrapper<Interaction> implements 
 
 	private BaseFragmentWrapper fragments;
 	private ArrayList<BaseLifelineWrapper<?>> lifelines;
+	private BaseMessageWrapper lastMessage = null;
 
 	public InteractionWrapper(Interaction interaction) {
 		super(interaction);
@@ -32,9 +34,11 @@ public class InteractionWrapper extends AbstractWrapper<Interaction> implements 
 	}
 
 	private void parseLifelines() {
-		Field[] fields = this.wrapped.getClass().getDeclaredFields();
+		Field[] fields = this.wrapped.getClass().getFields();
 		for (Field lifeline : fields) {
-			this.lifelines.add((LifelineWrapper<ModelClass>) getRuntime().createLifelineWrapper(lifeline));
+			if (ModelClass.class.isAssignableFrom(lifeline.getType())) {
+				this.lifelines.add((LifelineWrapper<ModelClass>) getRuntime().createLifelineWrapper(lifeline));
+			}
 		}
 	}
 
@@ -52,7 +56,10 @@ public class InteractionWrapper extends AbstractWrapper<Interaction> implements 
 		if (!(this.fragments instanceof BaseCombinedFragmentWrapper)) {
 			throw new RuntimeException("Couldn't add fragment, uppermost fragment of the tree is invalid!");
 		}
-		((BaseCombinedFragmentWrapper) this.fragments).add(new MessageWrapper(from, sig, to, isAPI));
+
+		BaseFragmentWrapper wrapper = new MessageWrapper(from, sig, to, isAPI);
+		lastMessage = (BaseMessageWrapper) wrapper;
+		((BaseCombinedFragmentWrapper) this.fragments).add(wrapper);
 
 	}
 
@@ -82,5 +89,9 @@ public class InteractionWrapper extends AbstractWrapper<Interaction> implements 
 	@Override
 	public Runtime getRuntime() {
 		return RuntimeContext.getCurrentExecutorThread().getRuntime();
+	}
+
+	public BaseMessageWrapper getLastMessage() {
+		return this.lastMessage;
 	}
 }

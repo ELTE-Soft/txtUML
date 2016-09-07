@@ -23,7 +23,7 @@ public class MessageSendExporter extends MethodInvocationExporter {
 	@Override
 	public boolean validElement(ASTNode curElement) {
 		if (super.validElement(curElement)) {
-			String fullName = getMethodFullyQualifiedName((MethodInvocation) curElement);
+			String fullName = PlantUmlCompiler.getFullyQualifiedName((MethodInvocation) curElement);
 			if (fullName.equals("hu.elte.txtuml.api.model.seqdiag.Action.send")
 					|| fullName.equals("hu.elte.txtuml.api.model.seqdiag.API.send")) {
 				return true;

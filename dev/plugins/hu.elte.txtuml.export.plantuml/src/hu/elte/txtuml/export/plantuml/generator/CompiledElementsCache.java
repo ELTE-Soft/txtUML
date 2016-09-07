@@ -1,20 +1,21 @@
 package hu.elte.txtuml.export.plantuml.generator;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class CompiledElementsCache {
 
-	private HashMap<String, String> compiledElements;
+	private HashMap<String, CompileCache> compiledElements;
 
 	public CompiledElementsCache() {
-		compiledElements = new HashMap<String, String>();
+		compiledElements = new HashMap<String, CompileCache>();
 	}
 
-	public void addCompiledElement(String fullyQualifiedName, String element) {
-		compiledElements.put(fullyQualifiedName, element);
+	public void addCompiledElement(String fullyQualifiedName, String element, List<String> activatedLifelines) {
+		compiledElements.put(fullyQualifiedName, new CompileCache(element, activatedLifelines));
 	}
 
-	public String getCompiledElement(String fullyQualifiedName) {
+	public CompileCache getCompiledElement(String fullyQualifiedName) {
 		return compiledElements.get(fullyQualifiedName);
 	}
 

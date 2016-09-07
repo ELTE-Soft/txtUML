@@ -5,12 +5,12 @@ import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.Statement;
 
-import hu.elte.txtuml.export.plantuml.generator.MethodStatementWalker;
+import hu.elte.txtuml.export.plantuml.generator.PlantUmlPreCompiler;
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 public class OptAltFragment extends CombinedFragmentExporter<IfStatement> {
 
-	protected MethodStatementWalker walker;
+	protected PlantUmlPreCompiler walker;
 
 	public OptAltFragment(PlantUmlCompiler compiler) {
 		super(compiler);
@@ -37,9 +37,30 @@ public class OptAltFragment extends CombinedFragmentExporter<IfStatement> {
 		} else {
 			compiler.println("alt " + condition.toString());
 			thenStatement.accept(compiler);
-			compiler.println("else");
-			elseStatement.accept(compiler);
+			if (elseStatement instanceof IfStatement) {
+				processAltStatement((IfStatement) elseStatement);
+			} else {
+				compiler.println("else");
+				elseStatement.accept(compiler);
+			}
 			return false;
+		}
+	}
+
+	private void processAltStatement(IfStatement statement) {
+		Statement thenStatement = statement.getThenStatement();
+		Statement elseStatement = statement.getElseStatement();
+		Expression condition = statement.getExpression();
+
+		compiler.println("else " + condition.toString());
+		thenStatement.accept(compiler);
+		if (elseStatement != null) {
+			if (elseStatement instanceof IfStatement) {
+				processAltStatement((IfStatement) elseStatement);
+			} else {
+				compiler.println("else");
+				elseStatement.accept(compiler);
+			}
 		}
 	}
 }
