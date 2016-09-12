@@ -25,7 +25,7 @@ public class DataTypeExporter extends StructuredElementExporter<DataType>{
 		
 		String attributes = super.createPublicAttributes();
 		
-		Shared.writeOutSource(destiation, GenerationTemplates.headerName(name), GenerationTemplates.headerGuard(super.createDependencyIncudesCode(true) + 
+		Shared.writeOutSource(destiation, GenerationTemplates.headerName(name), GenerationTemplates.headerGuard(dependencyExporter.createDependencyIncudesCode(true) + 
 				GenerationTemplates.dataType(name, attributes.toString()), name));
 	}
 

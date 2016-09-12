@@ -10,9 +10,11 @@ import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 
 class AssociationExporter {
 	private List<Property> associationMembers;
+	private boolean ownAssociations;
 	
 	AssociationExporter() {
 		associationMembers = new ArrayList<Property>();
+		ownAssociations = false;
 	}
 	
 	AssociationExporter(EList<Property> properites) {
@@ -24,11 +26,12 @@ class AssociationExporter {
 		for (Property prop : properites) {
 			if (prop.getAssociation() != null) {
 				associationMembers.add(prop);
+				ownAssociations = true;
 			}
 		}
 	}
 	
-	boolean ownAssociation() {return !associationMembers.isEmpty();}
+	boolean ownAssociation() {return ownAssociations;}
 
 	String createAssociationMemeberDeclerationsCode() {
 		StringBuilder source = new StringBuilder("");
@@ -59,6 +62,15 @@ class AssociationExporter {
 		}
 		return GenerationTemplates.cppInclude(GenerationTemplates.AssociationsStructuresHreaderName)
 				+ assocDeclerations.toString();
+	}
+	
+	List<String> getAssociatedPropertyNames() {
+		List<String> assocNames = new ArrayList<String>();
+		for(Property assoc : associationMembers) {
+			assocNames.add(assoc.getName());
+		}
+		
+		return assocNames;
 	}
 
 }

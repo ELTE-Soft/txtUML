@@ -22,6 +22,7 @@ import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 class CallOperationExporter {
 
 	private boolean containsSignalAcces;
+	private boolean containsTimerOperator;
 
 	private OutVariableExporter tempVariableExporter;
 	private Map<CallOperationAction, OutputPin> returnOutputsToCallActions;
@@ -32,6 +33,7 @@ class CallOperationExporter {
 			Map<CallOperationAction, OutputPin> returnOutputsToCallActions,
 			ActivityNodeResolver activityExportResolver) {
 		containsSignalAcces = false;
+		containsTimerOperator = false;
 		declaredTempVariables = new HashSet<String>();
 
 		this.tempVariableExporter = tempVariableExporter;
@@ -41,6 +43,10 @@ class CallOperationExporter {
 
 	public boolean isUsedSignalParameter() {
 		return containsSignalAcces;
+	}
+	
+	public boolean isInvokedTimerOperation() {
+		return containsTimerOperator;
 	}
 
 	public String createTestIdentityActionCode(TestIdentityAction node) {
@@ -89,6 +95,9 @@ class CallOperationExporter {
 			addOutParametrsToList(parameterVariables, outParamaterPins);
 
 			val = ActivityTemplates.stdLibCall(node.getOperation().getName(), parameterVariables);
+			if(ActivityTemplates.Operators.isTimerStart(node.getOperation().getName())) {
+				containsTimerOperator = true;
+			}
 
 			if (node.getOperation().getType() != null) {
 				if (node.getOutgoings().size() > 0) {

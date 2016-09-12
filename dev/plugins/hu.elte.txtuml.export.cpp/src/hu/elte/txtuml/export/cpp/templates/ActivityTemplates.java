@@ -390,7 +390,13 @@ public class ActivityTemplates {
 				return function;
 			}
 		}
+		
+		public static boolean isTimerStart(String function) {
+			return function == TimerStart;
+		}
 	}
+	
+
 
 	public static boolean invalidIdentifier(String name) {
 

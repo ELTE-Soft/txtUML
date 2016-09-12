@@ -47,8 +47,8 @@ public class TransitionExporter {
 			activityExporter.init();
 			Behavior b = item.getEffect();
 			if (b != null && b.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
-				Activity a = (Activity) b;
-				body = activityExporter.createfunctionBody(a).toString();
+				body = activityExporter.createfunctionBody((Activity) b);
+				
 			}
 
 			Pair<String, Boolean> setState = createSetState(item);

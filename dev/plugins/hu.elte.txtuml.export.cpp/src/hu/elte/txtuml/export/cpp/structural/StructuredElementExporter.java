@@ -1,10 +1,7 @@
 package hu.elte.txtuml.export.cpp.structural;
 
-import java.util.Set;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-
 import org.eclipse.uml2.uml.AttributeOwner;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.OperationOwner;
@@ -22,9 +19,9 @@ public class StructuredElementExporter<StructuredElement extends OperationOwner 
 
 	protected StructuredElement structuredElement;
 	protected String name;
-	protected Set<String> dependecies;
 	
 	protected ActivityExporter activityExporter;
+	protected DependencyExporter dependencyExporter;
 	
 	
 	protected StructuredElementExporter() {}
@@ -33,7 +30,7 @@ public class StructuredElementExporter<StructuredElement extends OperationOwner 
 	}
 
 	protected void init(StructuredElement structuredElement, String name) {
-		dependecies = new HashSet<String>();
+		dependencyExporter = new DependencyExporter();
 		activityExporter = new ActivityExporter();
 		
 		this.structuredElement = structuredElement;
@@ -68,7 +65,8 @@ public class StructuredElementExporter<StructuredElement extends OperationOwner 
 		StringBuilder source = new StringBuilder("");
 		for (Operation operation : structuredElement.getOwnedOperations()) {
 			activityExporter.init();
-			String funcBody = activityExporter.createfunctionBody(Shared.getOperationActivity(operation));
+			String funcBody = activityExporter.createfunctionBody(Shared.getOperationActivity(operation));		
+			
 			if (!Shared.isConstructor(operation)) {
 
 				String returnType = getReturnType(operation.getReturnResult());
@@ -79,20 +77,6 @@ public class StructuredElementExporter<StructuredElement extends OperationOwner 
 
 		}
 		return source.toString();
-	}
-	
-	protected String createDependencyIncudesCode(boolean isHeader) {
-		StringBuilder includes = new StringBuilder("");
-		for(String type : dependecies) {
-			if(isHeader) {
-				includes.append(GenerationTemplates.forwardDeclaration(type));
-			}
-			else {
-				includes.append(GenerationTemplates.cppInclude(type));
-			}
-		}
-		
-		return includes.toString();
 	}
 
 	private String createAttributes(VisibilityKind modifyer) {
@@ -105,7 +89,7 @@ public class StructuredElementExporter<StructuredElement extends OperationOwner 
 				}
 
 				if (!Shared.isBasicType(type)) {
-					dependecies.add(type);
+					dependencyExporter.addDependecy(type);
 				}
 				if (isSimpleAttribute(attribute)) {
 					source.append(GenerationTemplates.variableDecl(type, attribute.getName(), 1));
@@ -124,9 +108,9 @@ public class StructuredElementExporter<StructuredElement extends OperationOwner 
 					source.append(GenerationTemplates.functionDecl(returnType, operation.getName(), getOperationParamTypes(operation)));
 				}
 				if(returnType != null) {
-					dependecies.add(returnType);
+					dependencyExporter.addDependecy(returnType);
 				}
-				dependecies.addAll(getOperationParamTypes(operation));
+				dependencyExporter.addDependecies(getOperationParamTypes(operation));
 			}
 		}
 		

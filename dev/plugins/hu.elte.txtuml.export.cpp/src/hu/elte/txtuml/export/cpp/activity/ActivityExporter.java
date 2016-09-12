@@ -97,6 +97,9 @@ public class ActivityExporter {
 	public boolean isContainsSignalAcces() {
 		return callOperationExporter.isUsedSignalParameter();
 	}
+	public boolean isContainsTimerOperation() {
+		return callOperationExporter.isInvokedTimerOperation();
+	}
 
 	private String createActivityPartCode(ActivityNode startNode) {
 		return createActivityPartCode(startNode, null, new ArrayList<ActivityNode>());
