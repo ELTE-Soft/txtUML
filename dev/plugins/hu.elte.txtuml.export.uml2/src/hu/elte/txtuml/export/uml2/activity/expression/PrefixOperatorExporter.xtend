@@ -19,8 +19,10 @@ class PrefixOperatorExporter extends OperatorExporter<PrefixExpression> {
 
 	override exportContents(PrefixExpression source) {
 		val operator = switch source.operator {
-			case Operator.MINUS:
-				getImportedOperation("IntegerOperations", "neg")
+			case Operator.MINUS: switch getType(source.operand.resolveTypeBinding) {
+				case INTEGER: getImportedOperation("IntegerOperations", "neg")
+				case REAL: getImportedOperation("RealOperations", "neg")
+			}
 			case Operator.INCREMENT:
 				getImportedOperation("IntegerOperations", "add")
 			case Operator.DECREMENT:

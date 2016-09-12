@@ -10,11 +10,5 @@
        genModel = "model/generated/XtxtUML.genmodel" /> 
 	
   </extension>
-  <extension
-        point="org.eclipse.xtext.ui.shared.overridingGuiceModule">
-     <module
-           class="hu.elte.txtuml.xtxtuml.BuilderCustomizationModule">
-     </module>
-  </extension>
 
 </plugin>

@@ -1,6 +1,11 @@
 package hu.elte.txtuml.validation;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -22,8 +27,11 @@ import hu.elte.txtuml.validation.visitors.ModelVisitor;
  * reconcile events (not typing for a few seconds) and build events
  */
 public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler.CompilationParticipant {
+
 	private static final String TXTUML_NATURE_ID = "hu.elte.txtuml.project.txtumlprojectNature"; //$NON-NLS-1$
 	public static final String JTXTUML_MARKER_TYPE = "hu.elte.txtuml.validation.jtxtumlmarker"; //$NON-NLS-1$
+
+	private Map<IJavaProject, Set<BuildContext>> javaProjectToFileSet = new HashMap<>();
 
 	@Override
 	public boolean isActive(IJavaProject project) {
@@ -57,12 +65,36 @@ public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler
 	@Override
 	public void buildStarting(BuildContext[] files, boolean isBatch) {
 		for (BuildContext file : files) {
-			validateFile(file);
+			IProject project = file.getFile().getProject();
+			IJavaProject javaProject = JavaCore.create(project);
+
+			Set<BuildContext> projectFileSet = javaProjectToFileSet.get(javaProject);
+			if (projectFileSet == null) {
+				projectFileSet = new HashSet<>();
+				javaProjectToFileSet.put(javaProject, projectFileSet);
+			}
+
+			projectFileSet.add(file);
 		}
 	}
 
-	private void validateFile(BuildContext file) {
-		java.io.File systemFile = null;
+	@Override
+	public void buildFinished(IJavaProject javaProject) {
+		Set<BuildContext> projectFileSet = javaProjectToFileSet.get(javaProject);
+		if (projectFileSet == null) { // buildFinished might be called without
+										// buildStarting
+			return;
+		}
+
+		for (BuildContext file : projectFileSet) {
+			validateFile(file, javaProject);
+		}
+
+		javaProjectToFileSet.remove(javaProject);
+	}
+
+	private void validateFile(BuildContext file, IJavaProject javaProject) {
+		File systemFile = null;
 		IPath location = file.getFile().getLocation();
 		if (location != null) {
 			systemFile = location.toFile();
@@ -71,8 +103,6 @@ public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler
 			return;
 		}
 
-		IProject project = file.getFile().getProject();
-		IJavaProject javaProject = JavaCore.create(project);
 		CompilationUnit unit = null;
 		try {
 			unit = SharedUtils.parseJavaSource(systemFile, javaProject);
