@@ -1,6 +1,8 @@
 package hu.elte.txtuml.export.plantuml.seqdiag.fragments;
 
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.Assignment;
+import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ForStatement;
@@ -24,7 +26,7 @@ public class LoopFragment extends CombinedFragmentExporter<Statement> {
 		boolean isLoopStatement = false;
 
 		if (curElement instanceof WhileStatement || curElement instanceof ForStatement
-				|| curElement.getNodeType() == ASTNode.ENHANCED_FOR_STATEMENT) {
+				|| curElement instanceof EnhancedForStatement || curElement instanceof DoStatement) {
 			isLoopStatement = true;
 		}
 
@@ -43,6 +45,9 @@ public class LoopFragment extends CombinedFragmentExporter<Statement> {
 		case ASTNode.ENHANCED_FOR_STATEMENT:
 			exportForEach((EnhancedForStatement) curElement);
 			break;
+		case ASTNode.DO_STATEMENT:
+			exportDoWhileStatement((DoStatement)curElement);
+			break;
 		}
 
 		return true;
@@ -55,10 +60,16 @@ public class LoopFragment extends CombinedFragmentExporter<Statement> {
 		Expression condition = statement.getExpression();
 
 		if (statement.initializers().size() == 1) {
-			VariableDeclarationExpression init = (VariableDeclarationExpression) statement.initializers().get(0);
-			VariableDeclarationFragment fragment = (VariableDeclarationFragment) init.fragments().get(0);
-			initName = fragment.getName().toString();
-			initValue = fragment.getInitializer().resolveConstantExpressionValue().toString();
+			Expression init = (Expression) statement.initializers().get(0);
+			if (init instanceof VariableDeclarationExpression) {
+				VariableDeclarationFragment fragment = (VariableDeclarationFragment) ((VariableDeclarationExpression) init)
+						.fragments().get(0);
+				initName = fragment.getName().toString();
+				initValue = fragment.getInitializer().resolveConstantExpressionValue().toString();
+			} else if (init instanceof Assignment) {
+				initName = ((Assignment) init).getLeftHandSide().toString();
+				initValue = ((Assignment) init).getRightHandSide().resolveConstantExpressionValue().toString();
+			}
 
 		}
 
@@ -88,6 +99,12 @@ public class LoopFragment extends CombinedFragmentExporter<Statement> {
 		Expression loopVar = statement.getExpression();
 
 		compiler.println("loop for each " + loopVar.toString());
+	}
+
+	protected void exportDoWhileStatement(DoStatement statement) {
+		Expression condition = statement.getExpression();
+
+		compiler.println("loop while " + condition.toString());
 	}
 
 	@Override

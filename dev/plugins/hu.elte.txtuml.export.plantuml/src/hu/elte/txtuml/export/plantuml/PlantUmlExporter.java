@@ -132,7 +132,9 @@ public class PlantUmlExporter {
 				targetDir.create(false, true, null);
 			}
 
-			monitor.worked(100 / (seqDiagrams.size() * 2));
+			if (monitor != null) {
+				monitor.worked(100 / (seqDiagrams.size() * 2));
+			}
 
 			PlantUmlGenerator generator = new PlantUmlGenerator(targetFile, cu);
 			generator.generate();
@@ -143,7 +145,9 @@ public class PlantUmlExporter {
 			page.activate(editorPart);
 			page.showView("net.sourceforge.plantuml.eclipse.views.PlantUmlView");
 
-			monitor.worked(100 / (seqDiagrams.size() * 2));
+			if (monitor != null) {
+				monitor.worked(100 / (seqDiagrams.size() * 2));
+			}
 			exportedCount++;
 		}
 	}

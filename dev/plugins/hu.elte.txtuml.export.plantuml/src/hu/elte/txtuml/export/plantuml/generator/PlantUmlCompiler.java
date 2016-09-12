@@ -1,11 +1,13 @@
 package hu.elte.txtuml.export.plantuml.generator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -16,14 +18,19 @@ public class PlantUmlCompiler extends ASTVisitor {
 	private List<ASTNode> errors;
 	private Stack<BaseSeqdiagExporter<? extends ASTNode>> expQueue;
 	private List<MethodDeclaration> fragments;
+	private List<FieldDeclaration> superFields;
 	private List<String> activeLifelines;
 	private String currentClassFullyQualifiedName;
+
+	private HashMap<Integer, FieldDeclaration> fieldDeclarationOrder;
+	private int lastPosFilled;
 
 	private String compiledOutput;
 	private CompiledElementsCache cache;
 	private boolean fragmentCompile = false;
 
-	public PlantUmlCompiler(List<MethodDeclaration> fragments, boolean fragmentCompile) {
+	public PlantUmlCompiler(List<FieldDeclaration> superFields, List<MethodDeclaration> fragments,
+			boolean fragmentCompile) {
 		errors = new ArrayList<ASTNode>();
 		this.fragments = fragments;
 		activeLifelines = new ArrayList<String>();
@@ -32,6 +39,9 @@ public class PlantUmlCompiler extends ASTVisitor {
 		compiledOutput = "";
 		cache = new CompiledElementsCache();
 		this.fragmentCompile = fragmentCompile;
+		this.superFields = superFields;
+		fieldDeclarationOrder = new HashMap<Integer, FieldDeclaration>();
+		lastPosFilled = 0;
 	}
 
 	public String getCompiledOutput() {
@@ -52,6 +62,13 @@ public class PlantUmlCompiler extends ASTVisitor {
 
 	public boolean visit(TypeDeclaration decl) {
 		currentClassFullyQualifiedName = decl.resolveBinding().getQualifiedName().toString();
+
+		if (!fragmentCompile) {
+			for (FieldDeclaration sfdecl : superFields) {
+				sfdecl.accept(this);
+			}
+		}
+
 		return true;
 	}
 
@@ -96,7 +113,7 @@ public class PlantUmlCompiler extends ASTVisitor {
 		}
 
 		if (hasDecl) {
-			PlantUmlCompiler compiler = new PlantUmlCompiler(this.fragments, true);
+			PlantUmlCompiler compiler = new PlantUmlCompiler(this.superFields, this.fragments, true);
 			compiler.activeLifelines = activeLifelines;
 			declaration.accept(compiler);
 			this.cache.addCompiledElement(PlantUmlCompiler.getFullyQualifiedName(declaration),
@@ -206,5 +223,25 @@ public class PlantUmlCompiler extends ASTVisitor {
 
 	public String getCurrentClassName() {
 		return this.currentClassFullyQualifiedName;
+	}
+
+	public int lastDeclaredParticipantID() {
+		return this.lastPosFilled;
+	}
+
+	public void addToWaitingList(int id, FieldDeclaration element) {
+		fieldDeclarationOrder.put(id, element);
+	}
+
+	public void compiledLifeline(int id) {
+		this.lastPosFilled = id;
+	}
+
+	public void compileWaitingLifelines() {
+		for (int key : fieldDeclarationOrder.keySet()) {
+			if (key == this.lastPosFilled || key == this.lastPosFilled + 1) {
+				fieldDeclarationOrder.get(key).accept(this);
+			}
+		}
 	}
 }

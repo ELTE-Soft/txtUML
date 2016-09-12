@@ -5,41 +5,46 @@ import java.util.Queue;
 
 import hu.elte.txtuml.api.model.execution.impl.seqdiag.AbstractWrapper;
 import hu.elte.txtuml.api.model.execution.impl.seqdiag.InteractionWrapper;
+import hu.elte.txtuml.api.model.execution.impl.seqdiag.fragments.execstrats.ExecutionStrategy;
 import hu.elte.txtuml.api.model.seqdiag.BaseCombinedFragmentWrapper;
 import hu.elte.txtuml.api.model.seqdiag.BaseFragmentWrapper;
+import hu.elte.txtuml.api.model.seqdiag.BaseMessageWrapper;
 import hu.elte.txtuml.api.model.seqdiag.CombinedFragmentType;
 import hu.elte.txtuml.api.model.seqdiag.RuntimeContext;
 
 public abstract class CombinedFragmentWrapper extends AbstractWrapper<String>
 		implements BaseCombinedFragmentWrapper, BaseFragmentWrapper {
 
-	InteractionWrapper parent;
+	InteractionWrapper parentInteraction;
+	BaseCombinedFragmentWrapper parent;
 	CombinedFragmentType type;
 	Queue<BaseFragmentWrapper> containedFragments;
-	private BaseFragmentWrapper fragmentInProgress;
-	private boolean overlapWarning;
+	protected BaseFragmentWrapper fragmentInProgress;
+	protected boolean overlapWarning;
+	protected ExecutionStrategy strategy = null;
 
-	public CombinedFragmentWrapper(InteractionWrapper parent, CombinedFragmentType type, String fragmentName,
-			boolean overlapWarning) {
+	public CombinedFragmentWrapper(BaseCombinedFragmentWrapper parent, InteractionWrapper parentInteraction,
+			CombinedFragmentType type, String fragmentName, boolean overlapWarning) {
 		super(fragmentName);
 
-		this.parent = parent;
+		this.parentInteraction = parentInteraction;
 		this.type = type;
 		this.containedFragments = new LinkedList<BaseFragmentWrapper>();
 		this.overlapWarning = overlapWarning;
+		this.parent = parent;
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends CombinedFragmentWrapper> T createWrapper(InteractionWrapper parent,
-			CombinedFragmentType type, String fragmentName) {
+	public static <T extends CombinedFragmentWrapper> T createWrapper(BaseCombinedFragmentWrapper parent,
+			InteractionWrapper parentInteraction, CombinedFragmentType type, String fragmentName) {
 		switch (type) {
 		case STRICT:
-			return (T) new StrictFragmentWrapper(parent, fragmentName);
-		case PAR:
+			return (T) new StrictFragmentWrapper(parent, parentInteraction, fragmentName);
 		case LOOP:
 		case ALT:
+			//return (T) new EmptyFragmentWrapper(parent, parentInteraction, fragmentName);
 		case SEQ:
-			return (T) new SEQFragmentWrapper(parent, fragmentName);
+			return (T) new SEQFragmentWrapper(parent, parentInteraction, fragmentName);
 		}
 
 		return null;
@@ -49,7 +54,7 @@ public abstract class CombinedFragmentWrapper extends AbstractWrapper<String>
 		if (fragmentInProgress != null) {
 			((CombinedFragmentWrapper) this.fragmentInProgress).openFragment(type, fragmentName);
 		} else {
-			fragmentInProgress = CombinedFragmentWrapper.createWrapper(parent, type, fragmentName);
+			fragmentInProgress = CombinedFragmentWrapper.createWrapper(this, parentInteraction, type, fragmentName);
 		}
 	}
 
@@ -62,7 +67,7 @@ public abstract class CombinedFragmentWrapper extends AbstractWrapper<String>
 		}
 	}
 
-	private boolean hasOpenFragment() {
+	protected boolean hasOpenFragment() {
 		return this.fragmentInProgress != null;
 	}
 
@@ -102,5 +107,19 @@ public abstract class CombinedFragmentWrapper extends AbstractWrapper<String>
 	@Override
 	public boolean hasOverlapWarning() {
 		return overlapWarning;
+	}
+
+	public BaseCombinedFragmentWrapper getParent() {
+		return parent;
+	}
+
+	@Override
+	public boolean checkMessageSendToPattern(BaseMessageWrapper message) {
+		return strategy.checkMessageSendToPattern(containedFragments, message);
+	}
+
+	@Override
+	public boolean containsMessage(BaseMessageWrapper message) {
+		return strategy.containsMessage(containedFragments, message);
 	}
 }

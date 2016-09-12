@@ -58,16 +58,21 @@ public abstract class Action {
 
 	/**
 	 * Manually deactivate a lifeline(Only used when generating plantUML output)
+	 * 
+	 * @param lifeline
+	 *            the lifeline to deactivate
 	 */
-	public static void deactivate() {
+	public static void deactivate(ModelClass lifeline) {
 
 	}
 
 	/**
 	 * manually activate a lifeline(Only used when generating plantUML output)
+	 * 
+	 * @param lifeline
+	 *            the lifeline to activate
 	 */
-	public static void activate() {
-
+	public static void activate(ModelClass lifeline) {
 	}
 
 	/**

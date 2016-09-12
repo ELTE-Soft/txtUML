@@ -10,4 +10,8 @@ public interface BaseCombinedFragmentWrapper extends BaseWrapper<String> {
 	public void add(BaseFragmentWrapper fragment);
 
 	public boolean hasOverlapWarning();
+	
+	public boolean containsMessage(BaseMessageWrapper message);
+	
+	public BaseCombinedFragmentWrapper getParent();
 }

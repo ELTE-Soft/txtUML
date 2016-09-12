@@ -14,9 +14,9 @@ import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
  *         SequenceDiagrams( {@code API.send() } and {@code Action.send() }})
  *
  */
-public class MessageSendExporter extends MethodInvocationExporter {
+public class ActionExporter extends MethodInvocationExporter {
 
-	public MessageSendExporter(PlantUmlCompiler compiler) {
+	public ActionExporter(PlantUmlCompiler compiler) {
 		super(compiler);
 	}
 

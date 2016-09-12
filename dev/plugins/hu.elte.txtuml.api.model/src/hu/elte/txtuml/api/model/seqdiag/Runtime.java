@@ -19,7 +19,7 @@ public abstract class Runtime {
 
 	public abstract BaseInteractionWrapper getCurrentInteraction();
 
-	public abstract void setExecutionMode(CombinedFragmentType type);
+	public abstract void setExecutionMode(CombinedFragmentType mode);
 
 	public abstract void executionModeEnded();
 

@@ -91,6 +91,7 @@ public abstract class BaseSeqdiagExporter<T extends ASTNode> {
 		case ASTNode.WHILE_STATEMENT:
 		case ASTNode.FOR_STATEMENT:
 		case ASTNode.ENHANCED_FOR_STATEMENT:
+		case ASTNode.DO_STATEMENT:
 			return (BaseSeqdiagExporter<T>) new LoopFragment(compiler);
 		case ASTNode.IF_STATEMENT:
 			return (BaseSeqdiagExporter<T>) new OptAltFragment(compiler);

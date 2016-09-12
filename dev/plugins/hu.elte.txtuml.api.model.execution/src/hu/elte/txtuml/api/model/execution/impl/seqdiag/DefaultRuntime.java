@@ -9,6 +9,7 @@ import hu.elte.txtuml.api.model.seqdiag.BaseInteractionWrapper;
 import hu.elte.txtuml.api.model.seqdiag.BaseLifelineWrapper;
 import hu.elte.txtuml.api.model.seqdiag.BaseSequenceDiagramExecutor;
 import hu.elte.txtuml.api.model.seqdiag.CombinedFragmentType;
+import hu.elte.txtuml.api.model.seqdiag.ExecutionMode;
 import hu.elte.txtuml.api.model.seqdiag.FragmentType;
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
 import hu.elte.txtuml.api.model.seqdiag.Position;
@@ -32,14 +33,27 @@ public class DefaultRuntime extends hu.elte.txtuml.api.model.seqdiag.Runtime {
 		if (!runMethodChecked) {
 			runMethodChecked = true;
 			try {
+				ExecutionMode baseMode = interaction.getClass().getMethod("run").getAnnotation(ExecutionMode.class);
 				FragmentType baseType = interaction.getClass().getMethod("run").getAnnotation(FragmentType.class);
-				if (baseType != null) {
+				if (baseMode != null && baseType == null) {
+					switch (baseMode.value()) {
+					case Lenient:
+						/*this.executionMode = CombinedFragmentType.PAR;
+						break;*/
+					case Sequential:
+						this.executionMode = CombinedFragmentType.SEQ;
+						break;
+					case Strict:
+						this.executionMode = CombinedFragmentType.STRICT;
+						break;
+					}
+				} else if (baseMode == null && baseType != null) {
 					this.executionMode = baseType.value();
 				} else {
 					this.executionMode = CombinedFragmentType.STRICT;
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+
 			}
 		}
 
@@ -62,7 +76,7 @@ public class DefaultRuntime extends hu.elte.txtuml.api.model.seqdiag.Runtime {
 
 	@Override
 	public CombinedFragmentWrapper createCombinedFragmentWrapper(CombinedFragmentType type, String name) {
-		return CombinedFragmentWrapper.createWrapper(currentInteraction, type, name);
+		return CombinedFragmentWrapper.createWrapper(null,currentInteraction, type, name);
 	}
 
 	@Override
@@ -76,9 +90,9 @@ public class DefaultRuntime extends hu.elte.txtuml.api.model.seqdiag.Runtime {
 	}
 
 	@Override
-	public void setExecutionMode(CombinedFragmentType type) {
+	public void setExecutionMode(CombinedFragmentType mode) {
 		this.lastTypes.push(this.executionMode);
-		this.executionMode = type;
+		this.executionMode = mode;
 	}
 
 	@Override

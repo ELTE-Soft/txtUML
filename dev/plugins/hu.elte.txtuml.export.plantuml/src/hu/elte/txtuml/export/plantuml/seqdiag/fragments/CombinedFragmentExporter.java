@@ -16,8 +16,9 @@ public abstract class CombinedFragmentExporter<T extends ASTNode> extends BaseSe
 	public boolean validElement(ASTNode curElement) {
 		int nodeType = curElement.getNodeType();
 
-		if (nodeType == ASTNode.WHILE_STATEMENT || nodeType == ASTNode.FOR_STATEMENT || nodeType == ASTNode.IF_STATEMENT
-				|| nodeType == ASTNode.METHOD_DECLARATION) {
+		if (nodeType == ASTNode.DO_STATEMENT || nodeType == ASTNode.ENHANCED_FOR_STATEMENT
+				|| nodeType == ASTNode.WHILE_STATEMENT || nodeType == ASTNode.FOR_STATEMENT
+				|| nodeType == ASTNode.IF_STATEMENT || nodeType == ASTNode.METHOD_DECLARATION) {
 
 			if (nodeType == ASTNode.METHOD_DECLARATION) {
 				MethodDeclaration decl = (MethodDeclaration) curElement;

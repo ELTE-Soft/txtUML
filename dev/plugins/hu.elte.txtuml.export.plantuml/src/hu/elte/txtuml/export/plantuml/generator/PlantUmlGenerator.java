@@ -3,7 +3,11 @@ package hu.elte.txtuml.export.plantuml.generator;
 import java.io.ByteArrayInputStream;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Type;
 
 import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramStructuralException;
 
@@ -12,7 +16,7 @@ public class PlantUmlGenerator {
 	private IFile targetFile;
 	private CompilationUnit sourceCU;
 
-	private PlantUmlPreCompiler walker;
+	private PlantUmlPreCompiler preCompiler;
 	private PlantUmlCompiler compiler;
 
 	public PlantUmlGenerator(IFile targetFile, CompilationUnit source) {
@@ -23,10 +27,20 @@ public class PlantUmlGenerator {
 
 	public void generate() throws SequenceDiagramStructuralException {
 
-		walker = new PlantUmlPreCompiler();
-		sourceCU.accept(walker);
+		preCompiler = new PlantUmlPreCompiler();
+		sourceCU.accept(preCompiler);
 
-		compiler = new PlantUmlCompiler(walker.fragments, false);
+		Type superClass = preCompiler.getSuperClass();
+
+		CompilationUnit cu = null;
+
+		if (superClass != null) {
+			cu = getSuperClassCU(superClass);
+		}
+		preCompiler.setIsSuper(true);
+		cu.accept(preCompiler);
+
+		compiler = new PlantUmlCompiler(preCompiler.superFields, preCompiler.fragments, false);
 		sourceCU.accept(compiler);
 
 		String compiledOutput = compiler.getCompiledOutput();
@@ -48,5 +62,20 @@ public class PlantUmlGenerator {
 
 			throw new SequenceDiagramStructuralException(errString);
 		}
+	}
+
+	private CompilationUnit getSuperClassCU(Type superClass) {
+
+		ICompilationUnit element = (ICompilationUnit) superClass.resolveBinding().getTypeDeclaration().getJavaElement()
+				.getParent();
+
+		ASTParser parser = ASTParser.newParser(AST.JLS8);
+		parser.setResolveBindings(true);
+		parser.setBindingsRecovery(true);
+		parser.setSource(element);
+
+		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+
+		return cu;
 	}
 }
