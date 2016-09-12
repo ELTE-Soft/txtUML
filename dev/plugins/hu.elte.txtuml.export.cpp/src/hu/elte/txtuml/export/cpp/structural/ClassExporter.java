@@ -148,7 +148,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 	private StringBuilder getAllDependency(Boolean isHeader) {
 		StringBuilder source = new StringBuilder("");
-		dependencyExporter.addDependecies(associationExporter.getAssociatedPropertyNames());
+		dependencyExporter.addDependecies(associationExporter.getAssociatedPropertyTypes());
 
 		if (stateMachineExporter.isOwnStateMachine()) {
 			for (Map.Entry<String, Pair<String, Region>> entry : stateMachineExporter.getSubMachineMap().entrySet()) {

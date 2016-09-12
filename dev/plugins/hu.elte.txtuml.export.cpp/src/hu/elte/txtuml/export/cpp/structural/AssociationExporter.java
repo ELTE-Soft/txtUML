@@ -64,10 +64,10 @@ class AssociationExporter {
 				+ assocDeclerations.toString();
 	}
 	
-	List<String> getAssociatedPropertyNames() {
+	List<String> getAssociatedPropertyTypes() {
 		List<String> assocNames = new ArrayList<String>();
 		for(Property assoc : associationMembers) {
-			assocNames.add(assoc.getName());
+			assocNames.add(assoc.getType().getName());
 		}
 		
 		return assocNames;
