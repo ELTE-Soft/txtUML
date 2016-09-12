@@ -85,7 +85,6 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 	private String createClassHeaderSource() {
 		String source = "";
-		StringBuilder dependency = getAllDependency(true);
 		StringBuilder privateParts = new StringBuilder(
 				super.createPrivateAttrbutes() + super.createPrivateOperationsDeclerations());
 		StringBuilder protectedParts = new StringBuilder(
@@ -112,16 +111,16 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 			if (stateMachineExporter.ownSubMachine()) {
 				source = GenerationTemplates
-						.simpleStateMachineClassHeader(dependency.toString(), name, getBaseClass(), null,
+						.simpleStateMachineClassHeader(getAllDependency(true), name, getBaseClass(), null,
 								publicParts.toString(), protectedParts.toString(), privateParts.toString(), true)
 						.toString();
 			} else {
-				source = GenerationTemplates.hierarchicalStateMachineClassHeader(dependency.toString(), name,
+				source = GenerationTemplates.hierarchicalStateMachineClassHeader(getAllDependency(true), name,
 						getBaseClass(), getSubmachines(), publicParts.toString(), protectedParts.toString(),
 						privateParts.toString(), true).toString();
 			}
 		} else {
-			source = GenerationTemplates.classHeader(dependency.toString(), name, getBaseClass(),
+			source = GenerationTemplates.classHeader(getAllDependency(true), name, getBaseClass(),
 					publicParts.toString(), protectedParts.toString(), privateParts.toString(), true).toString();
 		}
 		return source;
@@ -146,7 +145,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		return source.toString();
 	}
 
-	private StringBuilder getAllDependency(Boolean isHeader) {
+	private String getAllDependency(Boolean isHeader) {
 		StringBuilder source = new StringBuilder("");
 		dependencyExporter.addDependecies(associationExporter.getAssociatedPropertyTypes());
 
@@ -189,7 +188,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		}
 
 		source.append("\n");
-		return source;
+		return source.toString();
 	}
 
 	private String getBaseClass() {

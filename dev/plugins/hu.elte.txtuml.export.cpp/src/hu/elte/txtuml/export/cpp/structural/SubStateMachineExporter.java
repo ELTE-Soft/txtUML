@@ -95,7 +95,6 @@ class SubStateMachineExporter extends StateMachineExporter{
 			source.append(GenerationTemplates.hierarchicalSubStateMachineClassConstructor(className,
 					parentClassName, stateMachineMap, getEventSubmachineNameMap(), getInitialStateName()));
 		}
-		source.append(GenerationTemplates.destructorDef(className, false));
 		StringBuilder subSmSpec = entryExitFunctionExporter.createEntryFunctionsDef();
 		subSmSpec.append(entryExitFunctionExporter.createExitFunctionsDef());
 		subSmSpec.append(guardExporter.defnieGuardFunctions(className));
