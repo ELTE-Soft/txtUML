@@ -11,10 +11,12 @@ import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 /**
  * 
- * @author Zoli
  * 
- *         Responsible for exporting the {@link ModelClass} lifelines from the
- *         SequenceDiagram
+ * 
+ * Responsible for exporting the {@link ModelClass} lifelines from the
+ * SequenceDiagram
+ * 
+ * @author Zoli
  *
  */
 public class LifelineExporter extends BaseSeqdiagExporter<FieldDeclaration> {

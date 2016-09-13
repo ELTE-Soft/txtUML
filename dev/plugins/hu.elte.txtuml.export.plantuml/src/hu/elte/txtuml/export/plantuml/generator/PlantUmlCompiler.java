@@ -66,13 +66,6 @@ public class PlantUmlCompiler extends ASTVisitor {
 	@Override
 	public boolean preVisit2(ASTNode node) {
 
-		/*
-		 * We handle lifelines when we handle TypeDeclarations so we skip field
-		 * declarations here
-		 */
-		if (node.getNodeType() == ASTNode.FIELD_DECLARATION)
-			return true;
-
 		BaseSeqdiagExporter<?> exp = BaseSeqdiagExporter.createExporter(node, this);
 
 		if (exp != null) {

@@ -42,7 +42,9 @@ public abstract class CombinedFragmentWrapper extends AbstractWrapper<String>
 			return (T) new StrictFragmentWrapper(parent, parentInteraction, fragmentName);
 		case LOOP:
 		case ALT:
-			//return (T) new EmptyFragmentWrapper(parent, parentInteraction, fragmentName);
+		case OPT:
+			// return (T) new EmptyFragmentWrapper(parent, parentInteraction,
+			// fragmentName);
 		case SEQ:
 			return (T) new SEQFragmentWrapper(parent, parentInteraction, fragmentName);
 		}

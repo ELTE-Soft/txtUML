@@ -1,6 +1,5 @@
 package hu.elte.txtuml.export.plantuml.tests;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -17,8 +16,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import hu.elte.txtuml.export.plantuml.PlantUmlExporter;
-import hu.elte.txtuml.export.plantuml.exceptions.PreCompilationError;
-import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramStructuralException;
 
 public class SequenceDiagramFragmentsTests {
 	static PlantUmlExporter exporter;
@@ -65,9 +62,8 @@ public class SequenceDiagramFragmentsTests {
 			Assert.assertEquals("@enduml", rd.nextLine());
 
 			rd.close();
-			// outfile.delete(true, null);
 
-		} catch (CoreException | SequenceDiagramStructuralException | IOException | PreCompilationError e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.assertFalse(true);
 		} finally {
@@ -104,9 +100,8 @@ public class SequenceDiagramFragmentsTests {
 			Assert.assertEquals("@enduml", rd.nextLine());
 
 			rd.close();
-			// outfile.delete(true, null);
 
-		} catch (CoreException | SequenceDiagramStructuralException | IOException | PreCompilationError e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.assertFalse(true);
 		} finally {
@@ -142,9 +137,8 @@ public class SequenceDiagramFragmentsTests {
 			Assert.assertEquals("@enduml", rd.nextLine());
 
 			rd.close();
-			// outfile.delete(true, null);
 
-		} catch (CoreException | SequenceDiagramStructuralException | IOException | PreCompilationError e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.assertFalse(true);
 		} finally {
@@ -183,7 +177,7 @@ public class SequenceDiagramFragmentsTests {
 
 			rd.close();
 
-		} catch (CoreException | SequenceDiagramStructuralException | IOException | PreCompilationError e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.assertFalse(true);
 		} finally {
@@ -222,7 +216,7 @@ public class SequenceDiagramFragmentsTests {
 			Assert.assertEquals("end", rd.nextLine());
 			Assert.assertEquals("@enduml", rd.nextLine());
 
-		} catch (CoreException | SequenceDiagramStructuralException | IOException | PreCompilationError e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.assertFalse(true);
 		} finally {

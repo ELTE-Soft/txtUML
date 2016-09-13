@@ -40,6 +40,7 @@ public class PlantUmlPreCompiler extends ASTVisitor {
 	}
 
 	public boolean visit(TypeDeclaration decl) {
+		superClass = null;
 		currentClassName = decl.resolveBinding().getQualifiedName().toString();
 		Type sc = decl.getSuperclassType();
 
@@ -80,8 +81,13 @@ public class PlantUmlPreCompiler extends ASTVisitor {
 		return true;
 	}
 
+	/**
+	 * Get the superClass of the current Type
+	 * 
+	 * @return
+	 */
 	public Type getSuperClass() {
-		return this.superClass;
+		return superClass;
 	}
 
 	public List<Exception> getErrors() {
