@@ -17,6 +17,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import hu.elte.txtuml.export.plantuml.PlantUmlExporter;
+import hu.elte.txtuml.export.plantuml.exceptions.PreCompilationError;
 import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramStructuralException;
 
 public class SequenceDiagramFragmentsTests {
@@ -66,7 +67,7 @@ public class SequenceDiagramFragmentsTests {
 			rd.close();
 			// outfile.delete(true, null);
 
-		} catch (CoreException | SequenceDiagramStructuralException | IOException e) {
+		} catch (CoreException | SequenceDiagramStructuralException | IOException | PreCompilationError e) {
 			e.printStackTrace();
 			Assert.assertFalse(true);
 		} finally {
@@ -105,7 +106,7 @@ public class SequenceDiagramFragmentsTests {
 			rd.close();
 			// outfile.delete(true, null);
 
-		} catch (CoreException | SequenceDiagramStructuralException | IOException e) {
+		} catch (CoreException | SequenceDiagramStructuralException | IOException | PreCompilationError e) {
 			e.printStackTrace();
 			Assert.assertFalse(true);
 		} finally {
@@ -143,7 +144,7 @@ public class SequenceDiagramFragmentsTests {
 			rd.close();
 			// outfile.delete(true, null);
 
-		} catch (CoreException | SequenceDiagramStructuralException | IOException e) {
+		} catch (CoreException | SequenceDiagramStructuralException | IOException | PreCompilationError e) {
 			e.printStackTrace();
 			Assert.assertFalse(true);
 		} finally {
@@ -182,7 +183,7 @@ public class SequenceDiagramFragmentsTests {
 
 			rd.close();
 
-		} catch (CoreException | SequenceDiagramStructuralException | IOException e) {
+		} catch (CoreException | SequenceDiagramStructuralException | IOException | PreCompilationError e) {
 			e.printStackTrace();
 			Assert.assertFalse(true);
 		} finally {
@@ -221,7 +222,7 @@ public class SequenceDiagramFragmentsTests {
 			Assert.assertEquals("end", rd.nextLine());
 			Assert.assertEquals("@enduml", rd.nextLine());
 
-		} catch (CoreException | SequenceDiagramStructuralException | IOException e) {
+		} catch (CoreException | SequenceDiagramStructuralException | IOException | PreCompilationError e) {
 			e.printStackTrace();
 			Assert.assertFalse(true);
 		} finally {
