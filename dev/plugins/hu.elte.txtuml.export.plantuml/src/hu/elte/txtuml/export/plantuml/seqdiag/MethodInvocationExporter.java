@@ -5,6 +5,13 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
+/**
+ * Base exporter for all MethodInvocation handlers(Actions and
+ * fragmentInvocations)
+ * 
+ * @author Zoli
+ *
+ */
 public abstract class MethodInvocationExporter extends BaseSeqdiagExporter<MethodInvocation> {
 
 	public MethodInvocationExporter(PlantUmlCompiler compiler) {

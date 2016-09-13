@@ -13,6 +13,12 @@ import org.eclipse.jdt.core.dom.WhileStatement;
 
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
+/**
+ * All looptypes handled by this compiler(While,do - While, for and foreach)
+ * 
+ * @author Zoli
+ *
+ */
 public class LoopFragment extends CombinedFragmentExporter<Statement> {
 
 	public LoopFragment(PlantUmlCompiler compiler) {
@@ -46,7 +52,7 @@ public class LoopFragment extends CombinedFragmentExporter<Statement> {
 			exportForEach((EnhancedForStatement) curElement);
 			break;
 		case ASTNode.DO_STATEMENT:
-			exportDoWhileStatement((DoStatement)curElement);
+			exportDoWhileStatement((DoStatement) curElement);
 			break;
 		}
 

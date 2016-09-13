@@ -29,6 +29,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
+import hu.elte.txtuml.export.plantuml.exceptions.PreCompilationError;
 import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramStructuralException;
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
 import hu.elte.txtuml.utils.eclipse.ClassLoaderProvider;
@@ -96,9 +97,13 @@ public class PlantUmlExporter {
 	/**
 	 * Generate the output into the gen folder using JDT. At the end refresh the
 	 * project so the freshly created resource shows up
+	 * 
+	 * @throws CoreException
+	 * @throws SequenceDiagramStructuralException
+	 * @throws PreCompilationError
 	 */
 	public void generatePlantUmlOutput(IProgressMonitor monitor)
-			throws CoreException, SequenceDiagramStructuralException {
+			throws CoreException, SequenceDiagramStructuralException, PreCompilationError {
 
 		for (Class<Interaction> sequenceDiagram : seqDiagrams) {
 			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);

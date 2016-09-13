@@ -10,8 +10,9 @@ import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
  * 
  * @author Zoli
  *
- *         Responsible for exporting the message sending from the
+ *         Currently responsible for exporting the message sending from the
  *         SequenceDiagrams( {@code API.send() } and {@code Action.send() }})
+ * @Todo lifeline activation,deactivation, deletion, creation
  *
  */
 public class ActionExporter extends MethodInvocationExporter {

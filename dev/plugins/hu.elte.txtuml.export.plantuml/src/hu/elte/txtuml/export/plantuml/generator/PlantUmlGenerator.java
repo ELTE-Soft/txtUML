@@ -9,8 +9,17 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Type;
 
+import hu.elte.txtuml.export.plantuml.exceptions.PreCompilationError;
 import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramStructuralException;
 
+/**
+ * 
+ * This Class combines the compiler and the preCompiler and runs them. Provides
+ * the required utility functions for them
+ * 
+ * @author Zoli
+ *
+ */
 public class PlantUmlGenerator {
 
 	private IFile targetFile;
@@ -25,22 +34,33 @@ public class PlantUmlGenerator {
 		this.sourceCU = source;
 	}
 
-	public void generate() throws SequenceDiagramStructuralException {
+	public void generate() throws SequenceDiagramStructuralException, PreCompilationError {
 
 		preCompiler = new PlantUmlPreCompiler();
 		sourceCU.accept(preCompiler);
+		if (!preCompiler.getErrors().isEmpty()) {
+
+			String messages = "";
+
+			for (Exception ex : preCompiler.getErrors()) {
+				messages += "\n" + ex.getMessage();
+			}
+			throw new PreCompilationError(messages);
+		}
 
 		Type superClass = preCompiler.getSuperClass();
+		while (superClass != null) {
+			CompilationUnit cu = null;
 
-		CompilationUnit cu = null;
+			if (superClass != null) {
+				cu = getSuperClassCU(superClass);
+			}
+			cu.accept(preCompiler);
 
-		if (superClass != null) {
-			cu = getSuperClassCU(superClass);
+			superClass = preCompiler.getSuperClass();
 		}
-		preCompiler.setIsSuper(true);
-		cu.accept(preCompiler);
 
-		compiler = new PlantUmlCompiler(preCompiler.superFields, preCompiler.fragments, false);
+		compiler = new PlantUmlCompiler(preCompiler.lifelines, preCompiler.fragments, false);
 		sourceCU.accept(compiler);
 
 		String compiledOutput = compiler.getCompiledOutput();

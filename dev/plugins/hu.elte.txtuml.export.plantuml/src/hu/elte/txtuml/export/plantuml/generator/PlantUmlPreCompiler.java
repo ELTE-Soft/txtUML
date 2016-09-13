@@ -5,18 +5,38 @@ import java.util.List;
 
 import org.eclipse.jdt.core.dom.*;
 
+import hu.elte.txtuml.api.model.ModelClass;
+
+/**
+ * 
+ * 
+ * 
+ * The PreCompiler classes primary role is to gather preliminary data for the
+ * compilation process.<br>
+ * This data includes:
+ * <ul>
+ * <li>Combined fragments declared in the class and it's superClasses</li>
+ * <li>Lifelines declared in the class and it's superClasses</li>
+ * <li>The name of the superClass of the current class</li>
+ * </ul>
+ * <br>
+ * The generation stops if an error occurs!
+ * 
+ * @author Zoli
+ */
 public class PlantUmlPreCompiler extends ASTVisitor {
 
 	protected List<MethodDeclaration> fragments;
-	protected ArrayList<FieldDeclaration> superFields;
+	protected ArrayList<FieldDeclaration> lifelines;
 	private String currentClassName;
 	private Type superClass;
-	boolean isSuper;
+	private ArrayList<Exception> errorList;
 
 	public PlantUmlPreCompiler() {
 		super();
 		fragments = new ArrayList<MethodDeclaration>();
-		superFields = new ArrayList<FieldDeclaration>();
+		lifelines = new ArrayList<FieldDeclaration>();
+		errorList = new ArrayList<Exception>();
 	}
 
 	public boolean visit(TypeDeclaration decl) {
@@ -45,18 +65,27 @@ public class PlantUmlPreCompiler extends ASTVisitor {
 		return false;
 	}
 
-	public void setIsSuper(boolean base) {
-		isSuper = base;
-	}
-
 	public boolean visit(FieldDeclaration decl) {
-		if (isSuper) {
-			superFields.add(decl);
+
+		Class<?> declCls = null;
+		try {
+			declCls = Class.forName(decl.getType().resolveBinding().getQualifiedName());
+			if (ModelClass.class.isAssignableFrom(declCls)) {
+				lifelines.add(decl);
+			}
+		} catch (ClassNotFoundException e) {
+			errorList.add(e);
 		}
+
 		return true;
 	}
 
 	public Type getSuperClass() {
 		return this.superClass;
+	}
+
+	public List<Exception> getErrors() {
+		return errorList;
+
 	}
 }

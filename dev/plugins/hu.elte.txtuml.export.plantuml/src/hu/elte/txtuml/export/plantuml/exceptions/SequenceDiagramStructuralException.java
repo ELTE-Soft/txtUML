@@ -8,7 +8,7 @@ package hu.elte.txtuml.export.plantuml.exceptions;
  *         error
  *
  */
-public class SequenceDiagramStructuralException extends Exception {
+public class SequenceDiagramStructuralException extends SequenceDiagramExportException {
 
 	private static final long serialVersionUID = 4985302244057281568L;
 

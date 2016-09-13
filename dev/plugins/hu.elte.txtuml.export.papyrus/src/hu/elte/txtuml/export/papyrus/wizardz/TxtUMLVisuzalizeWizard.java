@@ -19,7 +19,7 @@ import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.TxtUMLPapyrusModelManager;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.export.plantuml.PlantUmlExporter;
-import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramStructuralException;
+import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramExportException;
 import hu.elte.txtuml.export.uml2.ExportMode;
 import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
@@ -92,7 +92,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 						monitor.beginTask("Sequence Diagram Export", 100);
 						try {
 							exp.generatePlantUmlOutput(monitor);
-						} catch (CoreException | SequenceDiagramStructuralException e) {
+						} catch (CoreException | SequenceDiagramExportException e) {
 							Dialogs.errorMsgb("txtUML export Error", "Error occured during the PlantUml exportation.",
 									e);
 							monitor.done();

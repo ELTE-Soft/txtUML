@@ -8,6 +8,12 @@ import org.eclipse.jdt.core.dom.Statement;
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlPreCompiler;
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
+/**
+ * This class handles the OPT and ALT fragments
+ * 
+ * @author Zoli
+ *
+ */
 public class OptAltFragment extends CombinedFragmentExporter<IfStatement> {
 
 	protected PlantUmlPreCompiler walker;

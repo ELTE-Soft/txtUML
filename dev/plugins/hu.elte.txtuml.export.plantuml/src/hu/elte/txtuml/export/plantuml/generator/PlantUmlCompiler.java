@@ -14,11 +14,22 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.export.plantuml.seqdiag.BaseSeqdiagExporter;
 
+/**
+ * Main Compiler Class Only visits the run and initialize methods of the class
+ * fragments are compiled when required.<br>
+ * {@link CompileCache} caches the compiled fragment for reuse and the
+ * {@link #compile(String) } method compiles it depending on a fully qualified
+ * name. Furthermore handles lifeline de-activation and activation. <br>
+ * for more information on the compilation see {@link BaseSeqdiagExporter}
+ * 
+ * @author Zoli
+ *
+ */
 public class PlantUmlCompiler extends ASTVisitor {
 	private List<ASTNode> errors;
 	private Stack<BaseSeqdiagExporter<? extends ASTNode>> expQueue;
 	private List<MethodDeclaration> fragments;
-	private List<FieldDeclaration> superFields;
+	private List<FieldDeclaration> lifelines;
 	private List<String> activeLifelines;
 	private String currentClassFullyQualifiedName;
 
@@ -27,9 +38,13 @@ public class PlantUmlCompiler extends ASTVisitor {
 
 	private String compiledOutput;
 	private CompiledElementsCache cache;
+
+	/**
+	 * flag to mark if we are compiling a fragment right now
+	 */
 	private boolean fragmentCompile = false;
 
-	public PlantUmlCompiler(List<FieldDeclaration> superFields, List<MethodDeclaration> fragments,
+	public PlantUmlCompiler(List<FieldDeclaration> lifelines, List<MethodDeclaration> fragments,
 			boolean fragmentCompile) {
 		errors = new ArrayList<ASTNode>();
 		this.fragments = fragments;
@@ -39,7 +54,7 @@ public class PlantUmlCompiler extends ASTVisitor {
 		compiledOutput = "";
 		cache = new CompiledElementsCache();
 		this.fragmentCompile = fragmentCompile;
-		this.superFields = superFields;
+		this.lifelines = lifelines;
 		fieldDeclarationOrder = new HashMap<Integer, FieldDeclaration>();
 		lastPosFilled = 0;
 	}
@@ -51,6 +66,13 @@ public class PlantUmlCompiler extends ASTVisitor {
 	@Override
 	public boolean preVisit2(ASTNode node) {
 
+		/*
+		 * We handle lifelines when we handle TypeDeclarations so we skip field
+		 * declarations here
+		 */
+		if (node.getNodeType() == ASTNode.FIELD_DECLARATION)
+			return true;
+
 		BaseSeqdiagExporter<?> exp = BaseSeqdiagExporter.createExporter(node, this);
 
 		if (exp != null) {
@@ -60,11 +82,15 @@ public class PlantUmlCompiler extends ASTVisitor {
 		return true;
 	};
 
+	/**
+	 * In case we are visiting a TypeDeclaration we need to generate the
+	 * participants too
+	 */
 	public boolean visit(TypeDeclaration decl) {
 		currentClassFullyQualifiedName = decl.resolveBinding().getQualifiedName().toString();
 
 		if (!fragmentCompile) {
-			for (FieldDeclaration sfdecl : superFields) {
+			for (FieldDeclaration sfdecl : lifelines) {
 				sfdecl.accept(this);
 			}
 		}
@@ -72,6 +98,12 @@ public class PlantUmlCompiler extends ASTVisitor {
 		return true;
 	}
 
+	/**
+	 * Normally we only need to care if the method is the run or the initialize
+	 * method we can skip the rest.<br>
+	 * In case of fragment compilation we need to compile all method
+	 * declarations( should be only the one we are compiling rigth now)
+	 */
 	public boolean visit(MethodDeclaration decl) {
 		if (decl.resolveBinding().getDeclaringClass().getQualifiedName().toString()
 				.equals(currentClassFullyQualifiedName) && decl.getName().toString().equals("run")
@@ -83,16 +115,42 @@ public class PlantUmlCompiler extends ASTVisitor {
 		return false;
 	}
 
+	/*
+	 * Get fully qualified names of a method
+	 */
+
+	/**
+	 * 
+	 * @param decl
+	 *            the {@link MethodDeclaration} we need the fully qualified name
+	 *            of
+	 * @return
+	 */
 	public static String getFullyQualifiedName(MethodDeclaration decl) {
 		return decl.resolveBinding().getDeclaringClass().getQualifiedName().toString() + "."
 				+ decl.getName().toString();
 	}
 
+	/**
+	 * 
+	 * @param invoc
+	 *            the {@link MethodInvocation} we need the fully qualified name
+	 *            of
+	 * @return
+	 */
 	public static String getFullyQualifiedName(MethodInvocation invoc) {
 		return invoc.resolveMethodBinding().getDeclaringClass().getQualifiedName().toString() + "."
 				+ invoc.getName().toString();
 	}
 
+	/**
+	 * get a compiled fragment from cache, or if it's not in the cache compile
+	 * it.
+	 * 
+	 * @param fullyQualifiedName
+	 *            the fully qualified name of the fragment we are compiling
+	 * @return
+	 */
 	public String compile(String fullyQualifiedName) {
 
 		if (this.cache.hasCompiledElement(fullyQualifiedName)) {
@@ -113,7 +171,7 @@ public class PlantUmlCompiler extends ASTVisitor {
 		}
 
 		if (hasDecl) {
-			PlantUmlCompiler compiler = new PlantUmlCompiler(this.superFields, this.fragments, true);
+			PlantUmlCompiler compiler = new PlantUmlCompiler(this.lifelines, this.fragments, true);
 			compiler.activeLifelines = activeLifelines;
 			declaration.accept(compiler);
 			this.cache.addCompiledElement(PlantUmlCompiler.getFullyQualifiedName(declaration),
@@ -125,6 +183,9 @@ public class PlantUmlCompiler extends ASTVisitor {
 		return null;
 	}
 
+	/**
+	 * End of visit actions
+	 */
 	@Override
 	public void postVisit(ASTNode node) {
 		BaseSeqdiagExporter<?> expt = BaseSeqdiagExporter.createExporter(node, this);
@@ -140,6 +201,11 @@ public class PlantUmlCompiler extends ASTVisitor {
 		}
 	}
 
+	/**
+	 * Get the compilation errors
+	 * 
+	 * @return
+	 */
 	public List<String> getErrors() {
 		ArrayList<String> errList = new ArrayList<String>();
 		for (ASTNode error : errors) {
@@ -152,6 +218,10 @@ public class PlantUmlCompiler extends ASTVisitor {
 
 		return errList;
 	}
+
+	/*
+	 * compile time statement handling
+	 */
 
 	public void preProcessedStatement(BaseSeqdiagExporter<? extends ASTNode> exporter) {
 		expQueue.push(exporter);
@@ -224,6 +294,10 @@ public class PlantUmlCompiler extends ASTVisitor {
 	public String getCurrentClassName() {
 		return this.currentClassFullyQualifiedName;
 	}
+
+	/*
+	 * Lifeline order handling
+	 */
 
 	public int lastDeclaredParticipantID() {
 		return this.lastPosFilled;
