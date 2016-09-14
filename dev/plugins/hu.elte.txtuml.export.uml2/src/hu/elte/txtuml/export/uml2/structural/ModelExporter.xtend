@@ -33,9 +33,11 @@ class ModelExporter extends AbstractPackageExporter<List<IPackageFragment>, Mode
 		float.canonicalName -> "Real", Float.canonicalName -> "Real"}
 
 	final Map<String, Element> importCache = new HashMap();
+	final String folder
 
-	new(ExportMode mode) {
+	new(String folder, ExportMode mode) {
 		super(mode)
+		this.folder = folder
 	}
 
 	def export(List<IPackageFragment> pf) {
@@ -58,6 +60,13 @@ class ModelExporter extends AbstractPackageExporter<List<IPackageFragment>, Mode
 		}
 	}
 
+	def getActiveSourceDir(List<IPackageFragment> rootFragments) {
+		for (IPackageFragment pf : rootFragments) {
+			if (pf.getCompilationUnit(PackageUtils.PACKAGE_INFO).exists)
+				return pf
+		}
+	}
+
 	override getImportedElement(String name) {
 		val normalName = NAME_MAP.get(name) ?: name
 		val inCache = importCache.get(normalName);
@@ -76,13 +85,11 @@ class ModelExporter extends AbstractPackageExporter<List<IPackageFragment>, Mode
 		addPackageImport(STDPROF_URI)
 		addProfileApplication(getImportedElement(STD_PROF_NAME) as Profile)
 		result.importedMembers.forEach[importCache.put(it.name, it)]
-		for (IPackageFragment packageFragment : rootFragments) {
-			super.exportPackageFragment(packageFragment)
-		}
+		super.exportPackageFragment(getActiveSourceDir(rootFragments))
 	}
 
 	def setupResourceSet(IJavaProject project, String packageName) {
-		val uri = URI.createFileURI(project.getProject().getLocation().toOSString()).appendSegment("gen").
+		val uri = URI.createFileURI(project.getProject().getLocation().toOSString()).appendSegment(folder).
 			appendSegment(packageName).appendFileExtension(UMLResource.FILE_EXTENSION);
 		val resourceSet = new ResourceSetFactory().createAndInitResourceSet();
 		val modelResource = resourceSet.createResource(uri);

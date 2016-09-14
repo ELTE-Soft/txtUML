@@ -41,24 +41,22 @@ public class ThreadPoolConfiguration {
 
 	}
 
+	private LinearFunction function;
+	private int id;
+	private int maxThread;
+
 	public ThreadPoolConfiguration(int id, double gradient, int constant) {
 		this.id = id;
 		function = new LinearFunction(gradient, constant);
 
 	}
 
-	private LinearFunction function;
-
-	private int id;
-	private int threads;
-	private int maxThread;
+	public void decraseId() {
+		id = id - 1;
+	}
 
 	public int getId() {
 		return id;
-	}
-
-	public int getNumberOfThreads() {
-		return threads;
 	}
 
 	public int getMaxThread() {

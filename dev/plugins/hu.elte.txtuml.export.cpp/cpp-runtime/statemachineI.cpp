@@ -25,10 +25,15 @@ void StateMachineI::init()
 
 void StateMachineI::send(EventPtr e_)
 {
+  (*message_counter)++;
   _messageQueue->push_back(e_);
   if(_pool != nullptr)
   {
     handlePool();
+  }
+  else
+  {
+      RuntimeI<SingleThreadRT>::createRuntime()->enqueObject(this);
   }
   
 
@@ -57,10 +62,5 @@ StateMachineI::~StateMachineI()
 	{
 		_cond.wait(mlock);
 	}
-	
-        /*if(_runtime != nullptr)
-	{
-		_runtime->removeObject(this);
-        }*/
 		
 }

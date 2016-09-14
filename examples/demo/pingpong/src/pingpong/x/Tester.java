@@ -2,8 +2,8 @@ package pingpong.x;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.execution.ModelExecutor;
-import pingpong.x.model.Ball;
 import pingpong.x.model.Game;
+import pingpong.x.model.signals.Ball;
 
 public class Tester {
 

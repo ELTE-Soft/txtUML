@@ -15,9 +15,9 @@ import java.lang.annotation.Target;
  * <b>Usage:</b>
  * <p>
  * 
- * Annotate a port (a subclass of {@link ModelClass.Port}) with this annotation to show
- * that the specific port is behavior port which means that it is connected to
- * the state machine of its containing model object on one side.
+ * Annotate a port (a subclass of {@link ModelClass.Port}) with this annotation
+ * to show that the specific port is a behavior port which means that it is
+ * connected to the state machine of its containing model object on one side.
  * 
  * <p>
  * 

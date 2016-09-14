@@ -21,7 +21,7 @@ class ReadLinkActionExporter extends LinkActionExporterBase<ReadLinkAction> {
 		val otherEndType = clsLit.type.resolveBinding
 		val thisEndType = otherEndType.declaringClass.declaredTypes.findFirst[it != otherEndType]
 		val thisEnd = createEnd(factory.createLinkEndData, thisEndType, source.expression)
-		val otherEnd = createEnd(factory.createLinkEndData, otherEndType, null)
+		val otherEnd = createEnd(factory.createLinkEndData, otherEndType)
 		result.endData += #[thisEnd, otherEnd]
 		result.createResult(result.name, otherEnd.end.type)
 		result.name = '''«thisEnd.value.name» -> «otherEndType.name»'''

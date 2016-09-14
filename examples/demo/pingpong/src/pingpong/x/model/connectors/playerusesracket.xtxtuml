@@ -1,0 +1,10 @@
+package pingpong.x.model.connectors;
+
+import pingpong.x.model.associations.PlayerOwnsRacket;
+import pingpong.x.model.Player;
+import pingpong.x.model.Racket;
+
+delegation PlayerUsesRacket {
+	PlayerOwnsRacket.player->Player.BallAtPlayerPort player;
+	PlayerOwnsRacket.racket->Racket.BallAtRacketPort racket;
+}

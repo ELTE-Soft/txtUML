@@ -3,6 +3,7 @@ package hu.elte.txtuml.xtxtuml.validation;
 import com.google.inject.Inject
 import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.api.model.Signal
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression
@@ -39,6 +40,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 	@Inject extension ExtendedEarlyExitComputer;
 	@Inject extension IJvmModelAssociations;
 	@Inject extension IQualifiedNameProvider;
+	@Inject extension XtxtUMLUtils;
 
 	@Check
 	def checkMandatoryIntentionalReturn(TUOperation operation) {
@@ -116,13 +118,18 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 			return;
 		}
 
+		val sendExprEnclosingClass = EcoreUtil2.getContainerOfType(sendExpr, TUClass) as TUClass;
+		if (sendExprEnclosingClass == null) {
+			return;
+		}
+
 		val portType = sendExpr.target.actualType.type;
 		val portEnclosingClassName = portType.eContainer?.fullyQualifiedName;
-		val sendExprEnclosingClassName = EcoreUtil2.getContainerOfType(sendExpr, TUClass)?.fullyQualifiedName;
+		val classOwnsPort = [TUClass clazz | clazz.fullyQualifiedName == portEnclosingClassName];
 
-		if (portEnclosingClassName != sendExprEnclosingClassName) {
+		if (sendExprEnclosingClass.travelClassHierarchy(classOwnsPort) == false) {
 			error(
-				"Port " + portType.simpleName + " does not belong to class " + sendExprEnclosingClassName?.lastSegment +
+				"Port " + portType.simpleName + " does not belong to class " + sendExprEnclosingClass.fullyQualifiedName.lastSegment +
 					" – signals can be sent only to owned ports",
 				sendExpr,
 				RALF_SEND_SIGNAL_EXPRESSION__TARGET,
@@ -142,9 +149,10 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		switch (prop : propAccessExpr.right) {
 			TUAssociationEnd: {
 				val enclosingAssociation = prop.eContainer as TUAssociation;
-				val validAccessor = enclosingAssociation.ends.findFirst[name != prop.name]?.endClass;
-
-				if (sourceClass.fullyQualifiedName != validAccessor?.fullyQualifiedName) {
+				val otherEndClassName = enclosingAssociation.ends.findFirst[name != prop.name]?.endClass
+					?.fullyQualifiedName;
+				
+				if (sourceClass.travelClassHierarchy[fullyQualifiedName == otherEndClassName] == false) {
 					error(
 						"Association end " + enclosingAssociation.name + "." + prop.name +
 							" is not accessible from class " + sourceClass?.name, propAccessExpr,
@@ -155,8 +163,10 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 				}
 			}
 			TUPort: {
-				val validAccessor = prop.eContainer as TUClass;
-				if (sourceClass.fullyQualifiedName != validAccessor.fullyQualifiedName) {
+				val portEnclosingClassName = prop.eContainer?.fullyQualifiedName;
+				val classOwnsPort = [TUClass clazz | clazz.fullyQualifiedName == portEnclosingClassName];
+				
+				if (sourceClass.travelClassHierarchy(classOwnsPort) == false) {
 					error(prop.name + " cannot be resolved as a port of class " + sourceClass.name, propAccessExpr,
 						TU_CLASS_PROPERTY_ACCESS_EXPRESSION__RIGHT, NOT_ACCESSIBLE_PORT);
 				}

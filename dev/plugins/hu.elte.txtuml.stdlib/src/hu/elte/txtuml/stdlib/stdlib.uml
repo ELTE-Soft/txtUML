@@ -469,4 +469,201 @@
   <packagedElement xmi:type="uml:Class" xmi:id="_3aG8kFAyEearmvnotm2LMg" name="hu.elte.txtuml.api.model.runtime.collections.Maybe">
     <generalization xmi:type="uml:Generalization" xmi:id="_3aHjoFAyEearmvnotm2LMg" general="_DJzhUNpoEeWuz-p1tuEm5Q"/>
   </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_nJLtYGg8EeaTWu89rekDRA" name="RealOperations">
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_nJLtYWg8EeaTWu89rekDRA" name="add_opaqueBehavior" specification="_nJLtbWg8EeaTWu89rekDRA">
+      <language>JtxtUML</language>
+      <body>{
+  return left + right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_nJLtYmg8EeaTWu89rekDRA" name="sub_opaqueBehavior" specification="_nJLtcWg8EeaTWu89rekDRA">
+      <language>JtxtUML</language>
+      <body>{
+  return left - right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_nJLtY2g8EeaTWu89rekDRA" name="mul_opaqueBehavior" specification="_nJLtdWg8EeaTWu89rekDRA">
+      <language>JtxtUML</language>
+      <body>{
+  return left * right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_nJLtZGg8EeaTWu89rekDRA" name="div_opaqueBehavior" specification="_nJLteWg8EeaTWu89rekDRA">
+      <language>JtxtUML</language>
+      <body>{
+  return left / right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_nJLtZmg8EeaTWu89rekDRA" name="neg_opaqueBehavior" specification="_nJLtgWg8EeaTWu89rekDRA">
+      <language>JtxtUML</language>
+      <body>{
+  return -arg;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_nJLtZ2g8EeaTWu89rekDRA" name="lt_opaqueBehavior" specification="_nJLthGg8EeaTWu89rekDRA">
+      <language>JtxtUML</language>
+      <body>{
+  return left &lt; right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_nJLtaGg8EeaTWu89rekDRA" name="gt_opaqueBehavior" specification="_nJLtiGg8EeaTWu89rekDRA">
+      <language>JtxtUML</language>
+      <body>{
+  return left > right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_nJLtaWg8EeaTWu89rekDRA" name="leq_opaqueBehavior" specification="_nJLtjGg8EeaTWu89rekDRA">
+      <language>JtxtUML</language>
+      <body>{
+  return left &lt;= right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_nJLtamg8EeaTWu89rekDRA" name="geq_opaqueBehavior" specification="_nJLtkGg8EeaTWu89rekDRA">
+      <language>JtxtUML</language>
+      <body>{
+  return left >= right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_nJLta2g8EeaTWu89rekDRA" name="eq_opaqueBehavior" specification="_nJLtlGg8EeaTWu89rekDRA">
+      <language>JtxtUML</language>
+      <body>{
+  return left == right;
+}
+</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_nJLtbGg8EeaTWu89rekDRA" name="neq_opaqueBehavior" specification="_nJLtmGg8EeaTWu89rekDRA">
+      <language>JtxtUML</language>
+      <body>{
+  return left != right;
+}
+</body>
+    </ownedBehavior>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_nJLtbWg8EeaTWu89rekDRA" name="add" visibility="public" isStatic="true" method="_nJLtYWg8EeaTWu89rekDRA">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtbmg8EeaTWu89rekDRA" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtb2g8EeaTWu89rekDRA" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtcGg8EeaTWu89rekDRA" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_nJLtcWg8EeaTWu89rekDRA" name="sub" visibility="public" isStatic="true" method="_nJLtYmg8EeaTWu89rekDRA">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtcmg8EeaTWu89rekDRA" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtc2g8EeaTWu89rekDRA" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtdGg8EeaTWu89rekDRA" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_nJLtdWg8EeaTWu89rekDRA" name="mul" visibility="public" isStatic="true" method="_nJLtY2g8EeaTWu89rekDRA">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtdmg8EeaTWu89rekDRA" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtd2g8EeaTWu89rekDRA" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLteGg8EeaTWu89rekDRA" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_nJLteWg8EeaTWu89rekDRA" name="div" visibility="public" isStatic="true" method="_nJLtZGg8EeaTWu89rekDRA">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtemg8EeaTWu89rekDRA" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLte2g8EeaTWu89rekDRA" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtfGg8EeaTWu89rekDRA" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_nJLtgWg8EeaTWu89rekDRA" name="neg" visibility="public" isStatic="true" method="_nJLtZmg8EeaTWu89rekDRA">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtgmg8EeaTWu89rekDRA" name="arg">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtg2g8EeaTWu89rekDRA" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_nJLthGg8EeaTWu89rekDRA" name="lt" visibility="public" isStatic="true" method="_nJLtZ2g8EeaTWu89rekDRA">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLthWg8EeaTWu89rekDRA" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLthmg8EeaTWu89rekDRA" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLth2g8EeaTWu89rekDRA" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_nJLtiGg8EeaTWu89rekDRA" name="gt" visibility="public" isStatic="true" method="_nJLtaGg8EeaTWu89rekDRA">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtiWg8EeaTWu89rekDRA" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtimg8EeaTWu89rekDRA" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLti2g8EeaTWu89rekDRA" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_nJLtjGg8EeaTWu89rekDRA" name="leq" visibility="public" isStatic="true" method="_nJLtaWg8EeaTWu89rekDRA">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtjWg8EeaTWu89rekDRA" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtjmg8EeaTWu89rekDRA" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtj2g8EeaTWu89rekDRA" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_nJLtkGg8EeaTWu89rekDRA" name="geq" visibility="public" isStatic="true" method="_nJLtamg8EeaTWu89rekDRA">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtkWg8EeaTWu89rekDRA" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtkmg8EeaTWu89rekDRA" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtk2g8EeaTWu89rekDRA" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_nJLtlGg8EeaTWu89rekDRA" name="eq" visibility="public" isStatic="true" method="_nJLta2g8EeaTWu89rekDRA">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtlWg8EeaTWu89rekDRA" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtlmg8EeaTWu89rekDRA" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtl2g8EeaTWu89rekDRA" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+    </ownedOperation>
+    <ownedOperation xmi:type="uml:Operation" xmi:id="_nJLtmGg8EeaTWu89rekDRA" name="neq" visibility="public" isStatic="true" method="_nJLtbGg8EeaTWu89rekDRA">
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtmWg8EeaTWu89rekDRA" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtmmg8EeaTWu89rekDRA" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Real"/>
+      </ownedParameter>
+      <ownedParameter xmi:type="uml:Parameter" xmi:id="_nJLtm2g8EeaTWu89rekDRA" name="return" direction="return">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      </ownedParameter>
+    </ownedOperation>
+  </packagedElement>
 </uml:Model>

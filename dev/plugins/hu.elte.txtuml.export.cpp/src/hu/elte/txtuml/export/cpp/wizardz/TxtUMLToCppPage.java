@@ -50,6 +50,7 @@ public class TxtUMLToCppPage extends WizardPage {
 	private Button descriptionBrowser;
 
 	Button addRuntime;
+	Button overWriteMainFle;
 
 	String tempText;
 
@@ -86,14 +87,14 @@ public class TxtUMLToCppPage extends WizardPage {
 			public void widgetSelected(SelectionEvent e) {
 				ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(composite.getShell(),
 						new WorkbenchLabelProvider(), new WorkbenchContentProvider() {
-					@Override
-					public Object[] getChildren(Object element) {
-						if (element instanceof IWorkspaceRoot) {
-							return ((IWorkspaceRoot) element).getProjects();
-						}
-						return new Object[0];
-					}
-				});
+							@Override
+							public Object[] getChildren(Object element) {
+								if (element instanceof IWorkspaceRoot) {
+									return ((IWorkspaceRoot) element).getProjects();
+								}
+								return new Object[0];
+							}
+						});
 				dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
 				dialog.setTitle("Project Selection");
 				dialog.open();
@@ -130,8 +131,7 @@ public class TxtUMLToCppPage extends WizardPage {
 				} catch (JavaModelException | NotFoundException ex) {
 				}
 				PackageSelectionDialog dialog = new PackageSelectionDialog(getShell(), getContainer(),
-						PackageSelectionDialog.F_HIDE_DEFAULT_PACKAGE | PackageSelectionDialog.F_REMOVE_DUPLICATES
-								| PackageSelectionDialog.F_HIDE_EMPTY_INNER,
+						PackageSelectionDialog.F_HIDE_DEFAULT_PACKAGE | PackageSelectionDialog.F_REMOVE_DUPLICATES,
 						scope);
 
 				dialog.setTitle("Project Selection");
@@ -185,6 +185,10 @@ public class TxtUMLToCppPage extends WizardPage {
 		addRuntime.setSelection(true);
 		addRuntime.setText("Copy runtime next to generated files");
 
+		overWriteMainFle = new Button(composite, SWT.CHECK);
+		overWriteMainFle.setSelection(false);
+		overWriteMainFle.setText("Overwrite main file if it exists");
+
 		setControl(composite);
 		setPageComplete(true);
 
@@ -204,5 +208,9 @@ public class TxtUMLToCppPage extends WizardPage {
 
 	public boolean getAddRuntimeOptionSelection() {
 		return addRuntime.getSelection();
+	}
+
+	public boolean getOverWriteMainFileSelection() {
+		return overWriteMainFle.getSelection();
 	}
 }

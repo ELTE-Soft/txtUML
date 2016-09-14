@@ -1,6 +1,17 @@
 package clock.x.model;
 
 import hu.elte.txtuml.api.stdlib.timers.Timer
+import clock.x.model.connectors.SecondValues;
+import clock.x.model.connectors.MinuteValues;
+import clock.x.model.connectors.HourValues;
+import clock.x.model.connectors.Hours;
+import clock.x.model.connectors.Minutes;
+import clock.x.model.connectors.Seconds;
+import clock.x.model.associations.PendulumInClock;
+import clock.x.model.associations.SecondHand;
+import clock.x.model.associations.MinuteHand;
+import clock.x.model.associations.HourHand;
+import clock.x.model.associations.DisplayInClock;
 
 // Classes
 
@@ -20,7 +31,7 @@ class Clock {
 		link(DisplayInClock.clock, this, DisplayInClock.face, display);
 
 		connect(Seconds.pendulum, pendulum->(Pendulum.OutTickPort),
-					Seconds.secondHand, secondHand->(Hand.InTickPort));
+				Seconds.secondHand, secondHand->(Hand.InTickPort));
 		connect(Minutes.secondHand, secondHand->(Hand.OutTickPort),
 				Minutes.minuteHand, minuteHand->(Hand.InTickPort));
 		connect(Hours.minuteHand, minuteHand->(Hand.OutTickPort),
@@ -41,244 +52,3 @@ class Clock {
 
 }
 
-class Display {
-
-	int hour;
-	int minute;
-	int second;
-
-	behavior port HourPort {
-		provided ValueIfc;
-	}
-
-	behavior port MinutePort {
-		provided ValueIfc;
-	}
-
-	behavior port SecondPort {
-		provided ValueIfc;
-	}
-
-	public Display(int hour, int minute, int second) {
-		this.hour = hour;
-		this.minute = minute;
-		this.second = second;
-	}
-
-	private void refresh() {
-		log("" + hour + ":" + minute + ":" + second);
-	}
-
-	initial Init;
-	state Accepting;
-
-	transition Initialize {
-		from Init;
-		to Accepting;
-	}
-
-	transition HourChanged {
-		from Accepting;
-		to Accepting;
-		port HourPort;
-		trigger HandValue;
-		effect {
-			hour = trigger.value;
-			minute = 0;
-			second = 0;
-			refresh();
-		}
-	}
-
-	transition MinuteChanged {
-		from Accepting;
-		to Accepting;
-		port MinutePort;
-		trigger HandValue;
-		effect {
-			minute = trigger.value;
-			second = 0;
-			if (minute > 0) {
-				refresh();
-			}
-		}
-	}
-
-	transition SecondChanged {
-		from Accepting;
-		to Accepting;
-		port SecondPort;
-		trigger HandValue;
-		effect {
-			second = trigger.value;
-			if (second > 0) {
-				refresh();
-			}
-		}
-	}
-
-}
-
-class Hand {
-
-	private int maxValue;
-	private int currentValue;
-
-	behavior port InTickPort {
-		provided TickIfc;
-	}
-
-	port OutTickPort {
-		required TickIfc;
-	}
-
-	port ValuePort {
-		required ValueIfc;
-	}
-
-	public Hand(int maxValue, int currentValue) {
-		this.maxValue = maxValue;
-		this.currentValue = currentValue;
-	}
-
-	initial Init;
-	state Working;
-
-	transition Initialize {
-		from Init;
-		to Working;
-	}
-
-	transition DoWork {
-		from Working;
-		to Working;
-		trigger Tick;
-		effect {
-			currentValue++;
-
-			if (currentValue == maxValue) {
-				currentValue = 0;
-				send new Tick() to this->(OutTickPort);
-			}
-
-			send new HandValue(currentValue) to this->(ValuePort);
-		}
-	}
-
-}
-
-class Pendulum {
-
-	private Timer timer;
-	private int unit;
-
-	public Pendulum() {
-		this.unit = 1000; // init expressions are not yet supported
-	}
-
-	port OutTickPort {
-		required TickIfc;
-	}
-
-	initial Init;
-	state Working {
-		entry {
-			send new Tick() to this->(OutTickPort);
-		}
-	}
-
-	transition Initialize {
-		from Init;
-		to Working;
-		effect {
-			timer = Timer.start(this, new Tick(), unit);
-		}
-	}
-
-	transition DoTick {
-		from Working;
-		to Working;
-		trigger Tick;
-		effect {
-			timer.reset(unit);
-		}
-	}
-
-}
-
-// Signals
-
-signal Tick;
-
-signal HandValue {
-	public int value;
-}
-
-// Interfaces
-
-interface TickIfc {
-	reception Tick;
-}
-
-interface ValueIfc {
-	reception HandValue;
-}
-
-// Associations
-
-composition DisplayInClock {
-	hidden container Clock clock;
-	1 Display face;
-}
-
-composition HourHand {
-	hidden container Clock clock;
-	1 Hand hourHand;
-}
-
-composition MinuteHand {
-	hidden container Clock clock;
-	1 Hand minuteHand;
-}
-
-composition PendulumInClock {
-	hidden container Clock clock;
-	1 Pendulum pendulum;
-}
-
-composition SecondHand {
-	hidden container Clock clock;
-	1 Hand secondHand;
-}
-
-// Connectors
-
-connector Hours {
-	MinuteHand.minuteHand->Hand.OutTickPort minuteHand;
-	HourHand.hourHand->Hand.InTickPort hourHand;
-}
-
-connector HourValues {
-	HourHand.hourHand->Hand.ValuePort hourHand;
-	DisplayInClock.face->Display.HourPort face;
-}
-
-connector Minutes {
-	SecondHand.secondHand->Hand.OutTickPort secondHand;
-	MinuteHand.minuteHand->Hand.InTickPort minuteHand;
-}
-
-connector MinuteValues {
-	MinuteHand.minuteHand->Hand.ValuePort minuteHand;
-	DisplayInClock.face->Display.MinutePort face;
-}
-
-connector Seconds {
-	PendulumInClock.pendulum->Pendulum.OutTickPort pendulum;
-	SecondHand.secondHand->Hand.InTickPort secondHand;
-}
-
-connector SecondValues {
-	SecondHand.secondHand->Hand.ValuePort secondHand;
-	DisplayInClock.face->Display.SecondPort face;
-}

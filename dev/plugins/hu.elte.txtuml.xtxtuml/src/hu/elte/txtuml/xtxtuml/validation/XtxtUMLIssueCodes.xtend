@@ -7,6 +7,10 @@ class XtxtUMLIssueCodes {
 
 	protected static val ISSUE_CODE_PREFIX = "hu.elte.txtuml.xtxtuml.validation.IssueCodes.";
 
+	// Name-related issues
+
+	public static val RESERVED_NAME = ISSUE_CODE_PREFIX + "reserved_name";
+
 	// Uniqueness-related issues
 
 	public static val NOT_UNIQUE_NAME = ISSUE_CODE_PREFIX + "not_unique_name";
@@ -17,7 +21,7 @@ class XtxtUMLIssueCodes {
 	public static val NOT_UNIQUE_INITIAL_TRANSITION = ISSUE_CODE_PREFIX + "not_unique_initial_transition";
 	public static val NOT_UNIQUE_TRANSITION_MEMBER = ISSUE_CODE_PREFIX + "not_unique_transition_member";
 	public static val NOT_UNIQUE_PORT_MEMBER = ISSUE_CODE_PREFIX + "not_unique_port_member";
-	public static val NOT_UNIQUE_CONNECTOR_END = ISSUE_CODE_PREFIX + "not_unique_connector_end";
+	public static val NOT_UNIQUE_RECEPTION = ISSUE_CODE_PREFIX + "not_unique_reception";
 
 	// Typing-related issues
 
@@ -39,6 +43,7 @@ class XtxtUMLIssueCodes {
 	// File-related issues
 
 	public static val MISPLACED_MODEL_DECLARATION = ISSUE_CODE_PREFIX + "misplaced_model_declaration";
+	public static val WRONG_MODEL_INFO = ISSUE_CODE_PREFIX + "wrong_model_info";
 
 	// Class-related issues
 
@@ -62,6 +67,7 @@ class XtxtUMLIssueCodes {
 	public static val ASSOCIATION_END_COUNT_MISMATCH = ISSUE_CODE_PREFIX + "association_end_count_mismatch";
 	public static val CONTAINER_END_IN_ASSOCIATION = ISSUE_CODE_PREFIX + "container_end_in_association";
 	public static val CONTAINER_END_COUNT_MISMATCH = ISSUE_CODE_PREFIX + "container_end_count_mismatch";
+	public static val WRONG_ASSOCIATION_END_MULTIPLICITY = ISSUE_CODE_PREFIX + "wrong_association_end_multiplicity";
 
 	// Connector-related issues
 
@@ -72,6 +78,10 @@ class XtxtUMLIssueCodes {
 	public static val COMPOSITION_MISMATCH_IN_ASSEMBLY_CONNECTOR = ISSUE_CODE_PREFIX + "composition_mismatch_in_assembly_connector";
 	public static val INCOMPATIBLE_PORTS = ISSUE_CODE_PREFIX + "incompatible_ports";
 	public static val NOT_OWNED_PORT = ISSUE_CODE_PREFIX + "not_owned_port";
+
+	// UI-related issues
+	
+	public static val WRONG_PACKAGE = ISSUE_CODE_PREFIX + "wrong_package";
 
 	/**
 	 * Used by {@link XtxtUMLDerivedResourceMarkerCopier} to propagate JtxtUML validation errors to XtxtUML source.

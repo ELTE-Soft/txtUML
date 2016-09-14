@@ -1,0 +1,9 @@
+package clock.x.model.associations;
+
+import clock.x.model.Clock;
+import clock.x.model.Hand;
+
+composition SecondHand {
+	hidden container Clock clock;
+	1 Hand secondHand;
+}

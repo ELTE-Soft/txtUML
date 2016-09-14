@@ -9,7 +9,7 @@ import "http://www.eclipse.org/xtext/xbase/Xtype" as xtype
 
 TUFile :
 	TUModelDeclaration |
-	('package' name=QualifiedName ';'?
+	(('package' name=QualifiedName ';'?)?
 	importSection=XImportSection?
 	elements+=TUModelElement*)
 ;

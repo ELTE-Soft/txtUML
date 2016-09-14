@@ -51,7 +51,7 @@ public abstract class API {
 	 * Logs an error message.
 	 * 
 	 * @param message
-	 *            the error message to logged
+	 *            the error message to be logged
 	 */
 	public static void logError(String message) {
 		Action.logError(message);

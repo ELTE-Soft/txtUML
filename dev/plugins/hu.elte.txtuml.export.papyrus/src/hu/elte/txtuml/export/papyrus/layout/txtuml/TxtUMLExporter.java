@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.papyrus.layout.txtuml;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -113,8 +114,8 @@ public class TxtUMLExporter {
 	 * @throws IOException
 	 */
 	public void exportModel() throws JavaModelException, NotFoundException, IOException {
-		TxtUMLToUML2.exportModel(projectName, txtUMLModelName, projectName + "/" + outputFolder,
-				ExportMode.ErrorHandlingNoActions);
+		TxtUMLToUML2.exportModel(projectName, txtUMLModelName, projectName + File.separator + "gen",
+				ExportMode.ErrorHandlingNoActions, "gen");
 	}
 
 	/**
