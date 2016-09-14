@@ -29,6 +29,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
+import hu.elte.txtuml.export.plantuml.exceptions.ExportRuntimeException;
 import hu.elte.txtuml.export.plantuml.exceptions.PreCompilationError;
 import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramStructuralException;
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
@@ -74,8 +75,9 @@ public class PlantUmlExporter {
 	 */
 	private void filterDiagramsByType() {
 		seqDiagrams = new ArrayList<Class<Interaction>>();
+		String diagram = null;
 		for (Iterator<String> iterator = diagrams.iterator(); iterator.hasNext();) {
-			String diagram = iterator.next();
+			diagram = iterator.next();
 			try {
 				URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(projectName,
 						Interaction.class.getClassLoader());
@@ -89,7 +91,7 @@ public class PlantUmlExporter {
 				}
 
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+				throw new ExportRuntimeException("The following class couldn't be found in the projects:" + diagram);
 			}
 		}
 	}

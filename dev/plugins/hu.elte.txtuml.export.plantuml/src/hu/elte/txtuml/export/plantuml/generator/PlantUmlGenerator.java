@@ -9,6 +9,7 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Type;
 
+import hu.elte.txtuml.export.plantuml.exceptions.ExportRuntimeException;
 import hu.elte.txtuml.export.plantuml.exceptions.PreCompilationError;
 import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramStructuralException;
 
@@ -70,7 +71,8 @@ public class PlantUmlGenerator {
 		try {
 			targetFile.create(stream, false, null);
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new ExportRuntimeException(
+					"couldn't create targetFile:" + targetFile.getName() + "\n Reason:" + e.getMessage());
 		}
 
 		if (compiler.getErrors().size() > 0) {

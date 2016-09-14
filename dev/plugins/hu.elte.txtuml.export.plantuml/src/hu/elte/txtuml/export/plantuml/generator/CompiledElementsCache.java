@@ -3,6 +3,12 @@ package hu.elte.txtuml.export.plantuml.generator;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Cache element for the {@link CompileCache}
+ * 
+ * @author Zoli
+ *
+ */
 public class CompiledElementsCache {
 
 	private HashMap<String, CompileCache> compiledElements;

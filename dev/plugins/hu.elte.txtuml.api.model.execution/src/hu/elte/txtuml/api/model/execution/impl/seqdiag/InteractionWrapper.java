@@ -6,6 +6,7 @@ import java.util.List;
 
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
+import hu.elte.txtuml.api.model.error.seqdiag.ModelRuntimeException;
 import hu.elte.txtuml.api.model.execution.impl.seqdiag.fragments.CombinedFragmentWrapper;
 import hu.elte.txtuml.api.model.seqdiag.BaseCombinedFragmentWrapper;
 import hu.elte.txtuml.api.model.seqdiag.BaseFragmentWrapper;
@@ -26,7 +27,8 @@ public class InteractionWrapper extends AbstractWrapper<Interaction> implements 
 	public InteractionWrapper(Interaction interaction) {
 		super(interaction);
 		lifelines = new ArrayList<BaseLifelineWrapper<?>>();
-		this.fragments = CombinedFragmentWrapper.createWrapper(null,this, this.getRuntime().getExecutionMode(), "ROOT");
+		this.fragments = CombinedFragmentWrapper.createWrapper(null, this, this.getRuntime().getExecutionMode(),
+				"ROOT");
 	}
 
 	public void prepare() {
@@ -54,7 +56,7 @@ public class InteractionWrapper extends AbstractWrapper<Interaction> implements 
 
 	public void storeMessage(ModelClass from, Signal sig, ModelClass to, boolean isAPI) {
 		if (!(this.fragments instanceof BaseCombinedFragmentWrapper)) {
-			throw new RuntimeException("Couldn't add fragment, uppermost fragment of the tree is invalid!");
+			throw new ModelRuntimeException("Couldn't add fragment, uppermost fragment of the tree is invalid!");
 		}
 
 		BaseFragmentWrapper wrapper = new MessageWrapper(from, sig, to, isAPI);

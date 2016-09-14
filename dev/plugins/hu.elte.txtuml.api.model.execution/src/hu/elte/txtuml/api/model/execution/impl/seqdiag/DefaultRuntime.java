@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.LinkedList;
 
 import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.error.seqdiag.ModelRuntimeException;
 import hu.elte.txtuml.api.model.execution.impl.seqdiag.fragments.CombinedFragmentWrapper;
 import hu.elte.txtuml.api.model.seqdiag.BaseInteractionWrapper;
 import hu.elte.txtuml.api.model.seqdiag.BaseLifelineWrapper;
@@ -38,8 +39,9 @@ public class DefaultRuntime extends hu.elte.txtuml.api.model.seqdiag.Runtime {
 				if (baseMode != null && baseType == null) {
 					switch (baseMode.value()) {
 					case Lenient:
-						/*this.executionMode = CombinedFragmentType.PAR;
-						break;*/
+						/*
+						 * this.executionMode = CombinedFragmentType.PAR; break;
+						 */
 					case Sequential:
 						this.executionMode = CombinedFragmentType.SEQ;
 						break;
@@ -67,7 +69,8 @@ public class DefaultRuntime extends hu.elte.txtuml.api.model.seqdiag.Runtime {
 		try {
 			data = (T) lifeline.get(currentInteraction.getWrapped());
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new ModelRuntimeException("All lifeline fields need to be accessible in the interaction:"
+					+ currentInteraction.getWrapped().toString());
 		}
 
 		return new LifelineWrapper<T>(currentInteraction, data, lifeline.getDeclaredAnnotation(Position.class).value(),
@@ -76,7 +79,7 @@ public class DefaultRuntime extends hu.elte.txtuml.api.model.seqdiag.Runtime {
 
 	@Override
 	public CombinedFragmentWrapper createCombinedFragmentWrapper(CombinedFragmentType type, String name) {
-		return CombinedFragmentWrapper.createWrapper(null,currentInteraction, type, name);
+		return CombinedFragmentWrapper.createWrapper(null, currentInteraction, type, name);
 	}
 
 	@Override

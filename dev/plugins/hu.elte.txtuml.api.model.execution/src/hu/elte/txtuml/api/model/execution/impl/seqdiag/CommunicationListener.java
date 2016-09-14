@@ -5,6 +5,7 @@ import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.error.seqdiag.InvalidMessageError;
+import hu.elte.txtuml.api.model.error.seqdiag.ModelRuntimeException;
 import hu.elte.txtuml.api.model.error.seqdiag.PatternMismatchError;
 import hu.elte.txtuml.api.model.execution.TraceListener;
 import hu.elte.txtuml.api.model.seqdiag.BaseCombinedFragmentWrapper;
@@ -55,7 +56,8 @@ public class CommunicationListener extends AbstractSequenceDiagramModelListener 
 					executor.addError(ex);
 				}
 			} else {
-				// ERR Case
+				throw new ModelRuntimeException(
+						"Something went bad while parsing the model - invalid model was parsed");
 			}
 		} else {
 			if (suggestedMessagePattern instanceof BaseCombinedFragmentWrapper

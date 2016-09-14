@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
+import hu.elte.txtuml.api.model.error.seqdiag.ModelRuntimeException;
 import hu.elte.txtuml.api.model.seqdiag.BaseFragmentWrapper;
 import hu.elte.txtuml.api.model.seqdiag.BaseMessageWrapper;
 import hu.elte.txtuml.api.model.seqdiag.Runtime;
@@ -76,8 +77,8 @@ public class MessageWrapper implements BaseMessageWrapper, BaseFragmentWrapper {
 					if (!(attribute.get(signal).equals(attribute.get(otherSignal)))) {
 						return false;
 					}
-				} catch (IllegalArgumentException | IllegalAccessException e) {
-					e.printStackTrace();
+				} catch (Exception e) {
+					throw new ModelRuntimeException(e.getMessage());
 				}
 			}
 			return true;

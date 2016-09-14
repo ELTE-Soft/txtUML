@@ -138,7 +138,7 @@ public class SequenceDiagramExecutor implements Runnable, BaseSequenceDiagramExe
 				this.thread.join();
 				return;
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+
 			}
 		}
 	}
