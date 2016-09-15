@@ -1,5 +1,7 @@
 package hu.elte.txtuml.export.cpp.structural;
 
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.uml2.uml.AttributeOwner;
@@ -13,7 +15,7 @@ import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 
-public class StructuredElementExporter<StructuredElement extends OperationOwner & AttributeOwner> {
+public abstract class StructuredElementExporter<StructuredElement extends OperationOwner & AttributeOwner> {
 	
 	private static final String UKNOWN_TYPE = "!!UNKNOWNTYPE!!";
 
@@ -25,17 +27,23 @@ public class StructuredElementExporter<StructuredElement extends OperationOwner 
 	
 	
 	protected StructuredElementExporter() {}
-	protected StructuredElementExporter(StructuredElement structuredElement, String name) {
-		init(structuredElement, name);
-	}
-
-	protected void init(StructuredElement structuredElement, String name) {
-		dependencyExporter = new DependencyExporter();
-		activityExporter = new ActivityExporter();
-		
-		this.structuredElement = structuredElement;
+	
+	public void setName(String name) {
 		this.name = name;
 	}
+	
+	abstract public void exportStructuredElement(StructuredElement structuredElement, String sourceDestination)
+			throws FileNotFoundException, UnsupportedEncodingException;
+	
+	protected void setStructuredElement(StructuredElement structuredElement) {
+		this.structuredElement = structuredElement;
+	}
+	
+	protected void init() {
+		dependencyExporter = new DependencyExporter();
+		activityExporter = new ActivityExporter();
+	}
+	
 
 	protected String createPublicAttributes() {
 		return createAttributes(VisibilityKind.PUBLIC_LITERAL);

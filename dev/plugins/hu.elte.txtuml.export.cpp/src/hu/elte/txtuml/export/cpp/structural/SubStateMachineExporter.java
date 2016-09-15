@@ -13,38 +13,43 @@ import hu.elte.txtuml.utils.Pair;
 class SubStateMachineExporter extends StateMachineExporter{
 
 	private String parentClassName;
-	private String sourceDestination;
 	private Map<String, Pair<String, Region>> submachineMap;// <stateName,<machinename,behavior>>
 
 	private SubStateMachineExporter subStateMachineExporter;
-
-	SubStateMachineExporter(Region region,String parentClassName, String subMachineName,String sourceDestination) {
-		super(region,subMachineName);
-		init(parentClassName, sourceDestination);
-	}
-
-	void init(String parentClassName, String sourceDestination) {
-		this.parentClassName = parentClassName;
-		this.sourceDestination = sourceDestination;
+	
+	SubStateMachineExporter() {}
+	
+	@Override
+	public boolean ownStateMachine() {
+		return true;
 	}
 	
 	void setRegion(Region region) {
 		this.stateMachineRegion = region;
+		createStateList();
+	}
+	
+	void setParentClass(String name) {
+		this.parentClassName = name;
 	}
 
-	void createSubSmSource() throws FileNotFoundException, UnsupportedEncodingException {
+	void createSubSmSource(String destination) throws FileNotFoundException, UnsupportedEncodingException {
+		super.init();
 		String source = "";
 		submachineMap = getSubMachines();
 		entryExitFunctionExporter.createEntryFunctionTypeMap();
 		entryExitFunctionExporter.createExitFunctionTypeMap();
 
 		for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
-			subStateMachineExporter = new SubStateMachineExporter(entry.getValue().getSecond(),parentClassName,entry.getValue().getFirst(),sourceDestination);
-			subStateMachineExporter.createSubSmSource();
+			subStateMachineExporter = new SubStateMachineExporter();
+			subStateMachineExporter.setRegion(entry.getValue().getSecond());
+			subStateMachineExporter.setName(entry.getValue().getFirst());
+			subStateMachineExporter.setParentClass(parentClassName);			
+			subStateMachineExporter.createSubSmSource(destination);
 		}
 
 		source = createSubSmClassHeaderSource();
-		Shared.writeOutSource(sourceDestination, GenerationTemplates.headerName(className),
+		Shared.writeOutSource(destination, GenerationTemplates.headerName(className),
 				GenerationTemplates.headerGuard(source, className));
 		source = createSubSmClassCppSource().toString();
 
@@ -52,7 +57,7 @@ class SubStateMachineExporter extends StateMachineExporter{
 		dependencyIncludes = GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude)
 				+ dependencyIncludes + GenerationTemplates.cppInclude(className);
 
-		Shared.writeOutSource(sourceDestination, GenerationTemplates.sourceName(className),
+		Shared.writeOutSource(destination, GenerationTemplates.sourceName(className),
 				dependencyIncludes + "\n" + source);
 	}
 

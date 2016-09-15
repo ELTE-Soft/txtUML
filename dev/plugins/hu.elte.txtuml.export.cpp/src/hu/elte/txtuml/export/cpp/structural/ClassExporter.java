@@ -26,61 +26,69 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	private StateMachineExporter stateMachineExporter;
 	private SubStateMachineExporter subStateMachineExporter;
 
+	private int poolId;
+
 	public ClassExporter() {
-	}
-
-	public ClassExporter(Class cls, String name, int poolId) {
-		super(cls, name);
-		init(cls, name, poolId);
-	}
-
-	public void init(Class cls, String name, int poolId) {
-		super.init(cls, name);
-		associationExporter = new AssociationExporter();
-		stateMachineExporter = new StateMachineExporter(name, poolId,cls);
-		constructorExporter = new ConstructorExporter(structuredElement.getOwnedOperations());
-
-		additionalSourcesNames = new ArrayList<String>();
-		subSubMachines = new LinkedList<String>();
 	}
 
 	public List<String> getAdditionalSources() {
 		return additionalSourcesNames;
 	}
 
-	public void createSource(String dest) throws FileNotFoundException, UnsupportedEncodingException {
-		String source;
-		StringBuilder externalDeclerations = new StringBuilder("");
-		associationExporter.exportAssocations(structuredElement.getOwnedAttributes());
-		List<StateMachine> smList = new ArrayList<StateMachine>();
-		Shared.getTypedElements(smList, structuredElement.allOwnedElements(), UMLPackage.Literals.STATE_MACHINE);
-		if (stateMachineExporter.isOwnStateMachine()) {
+	@Override
+	public void exportStructuredElement(Class structuredElement, String sourceDestination)
+			throws FileNotFoundException, UnsupportedEncodingException {
+		super.init();
+		super.setStructuredElement(structuredElement);
 
-			for (Map.Entry<String, Pair<String, Region>> entry : stateMachineExporter.getSubMachineMap().entrySet()) {
-				subStateMachineExporter = new SubStateMachineExporter(entry.getValue().getSecond(), name,
-						entry.getValue().getFirst(), dest);
-				subStateMachineExporter.createSubSmSource();
-				subSubMachines.addAll(subStateMachineExporter.getSubmachines());
-			}
-		}
+		constructorExporter = new ConstructorExporter(structuredElement.getOwnedOperations());
+		associationExporter = new AssociationExporter();
+		stateMachineExporter = new StateMachineExporter();
+		additionalSourcesNames = new ArrayList<String>();
+		subSubMachines = new LinkedList<String>();
 
-		source = createClassHeaderSource();
-		externalDeclerations.append(associationExporter.createLinkFunctionDeclerations(name));
-		Shared.writeOutSource(dest, GenerationTemplates.headerName(name),
-				GenerationTemplates.headerGuard(source + externalDeclerations.toString(), name));
+		stateMachineExporter.setName(name);
+		stateMachineExporter.setStateMachineThreadPoolId(poolId);
+		
+		createSource(sourceDestination);
 
-		source = createClassCppSource();
-		Shared.writeOutSource(dest, GenerationTemplates.sourceName(name),
-				GenerationTemplates.cppInclude(name) + getAllDependency(false) + source);
+	}
+
+	public void setPoolId(int poolId) {
+		this.poolId = poolId;
 	}
 
 	public List<String> getSubmachines() {
 		return stateMachineExporter.getSubmachines();
 	}
 
-	public void setRealName(String realClassName) {
-		this.name = realClassName;
+	private void createSource(String dest) throws FileNotFoundException, UnsupportedEncodingException {
+		String source;
+		associationExporter.exportAssocations(structuredElement.getOwnedAttributes());
+		stateMachineExporter.createStateMachineRegion(structuredElement);
+		if (stateMachineExporter.ownStateMachine()) {
+			stateMachineExporter.init();
+			stateMachineExporter.createMachine();
+			stateMachineExporter.searchInitialState();
 
+			for (Map.Entry<String, Pair<String, Region>> entry : stateMachineExporter.getSubMachineMap().entrySet()) {
+				subStateMachineExporter = new SubStateMachineExporter();
+				subStateMachineExporter.setRegion(entry.getValue().getSecond());
+				subStateMachineExporter.setName(entry.getValue().getFirst());
+				subStateMachineExporter.setParentClass(name);
+				subStateMachineExporter.createSubSmSource(dest);
+				subSubMachines.addAll(subStateMachineExporter.getSubmachines());
+			}
+		}
+
+		source = createClassHeaderSource();
+		String externalDeclerations = associationExporter.createLinkFunctionDeclerations(name);
+		Shared.writeOutSource(dest, GenerationTemplates.headerName(name),
+				GenerationTemplates.headerGuard(source + externalDeclerations, name));
+
+		source = createClassCppSource();
+		Shared.writeOutSource(dest, GenerationTemplates.sourceName(name),
+				GenerationTemplates.cppInclude(name) + getAllDependency(false) + source);
 	}
 
 	private String createClassHeaderSource() {
@@ -104,7 +112,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 					GenerationTemplates.templateLinkFunctionGeneralDef(GenerationTemplates.LinkFunctionType.Unlink));
 		}
 
-		if (stateMachineExporter.isOwnStateMachine()) {
+		if (stateMachineExporter.ownStateMachine()) {
 
 			publicParts.append(stateMachineExporter.createStateEnumCode());
 			privateParts.append(stateMachineExporter.createStateMachineRelatedHeadedDeclerationCodes());
@@ -131,15 +139,14 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		List<StateMachine> smList = new ArrayList<StateMachine>();
 		Shared.getTypedElements(smList, structuredElement.allOwnedElements(), UMLPackage.Literals.STATE_MACHINE);
 
-		if (stateMachineExporter.isOwnStateMachine()) {
+		if (stateMachineExporter.ownStateMachine()) {
 			source.append(stateMachineExporter.createStateMachineRelatedCppSourceCodes());
 
 		}
 
 		source.append(super.createOperationDefinitions());
-		source.append(
-				constructorExporter.exportConstructorsDefinitions(name, stateMachineExporter.isOwnStateMachine()));
-		source.append(stateMachineExporter.isOwnStateMachine() ? GenerationTemplates.destructorDef(name, true)
+		source.append(constructorExporter.exportConstructorsDefinitions(name, stateMachineExporter.ownStateMachine()));
+		source.append(stateMachineExporter.ownStateMachine() ? GenerationTemplates.destructorDef(name, true)
 				: GenerationTemplates.destructorDef(name, false));
 
 		return source.toString();
@@ -149,7 +156,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		StringBuilder source = new StringBuilder("");
 		dependencyExporter.addDependecies(associationExporter.getAssociatedPropertyTypes());
 
-		if (stateMachineExporter.isOwnStateMachine()) {
+		if (stateMachineExporter.ownStateMachine()) {
 			for (Map.Entry<String, Pair<String, Region>> entry : stateMachineExporter.getSubMachineMap().entrySet()) {
 				dependencyExporter.addDependecy(entry.getValue().getFirst());
 			}
@@ -163,7 +170,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		}
 
 		if (!isHeader) {
-			if (stateMachineExporter.isOwnStateMachine()) {
+			if (stateMachineExporter.ownStateMachine()) {
 				source.append(GenerationTemplates.cppInclude(GenerationTemplates.DeploymentHeader));
 				source.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
 			}
@@ -179,11 +186,10 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			source.append(
 					GenerationTemplates.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.TimerHeader));
 		} else {
-			if(associationExporter.ownAssociation()) {
-				source.append(GenerationTemplates.
-						cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.AssocationHeader));
+			if (associationExporter.ownAssociation()) {
+				source.append(GenerationTemplates
+						.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.AssocationHeader));
 			}
-
 
 		}
 

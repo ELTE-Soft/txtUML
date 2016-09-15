@@ -88,30 +88,36 @@ public class Uml2ToCppExporter {
 
 		copyPreWrittenCppFiles(outputDirectory);
 
-		for (Class item : classes) {
-
-			if (threadManager.getDescription().get(item.getName()) != null && !Shared.generatedClass(item)) {
-
-				classExporter.init(item,item.getName(),threadManager.getDescription().get(item.getName()).getId());
-				classExporter.createSource(outputDirectory);
-
-				classNames.addAll(classExporter.getSubmachines());
-				classNames.add(item.getName());
-				classNames.addAll(classExporter.getAdditionalSources());
-			}
-
-		}
+		createClassSources(outputDirectory);
 		createDataTypes(outputDirectory);
 		createAssociationsSources(outputDirectory);
 		createCMakeFile(outputDirectory);
 	}
+	
+	private void createClassSources(String outputDirectory) throws IOException {
+		for (Class cls: classes) {
+
+			if (threadManager.getDescription().get(cls.getName()) != null && !Shared.generatedClass(cls)) {
+
+				classExporter.setName(cls.getName());
+				classExporter.setPoolId(threadManager.getDescription().get(cls.getName()).getId());
+				classExporter.exportStructuredElement(cls, outputDirectory);
+
+				classNames.addAll(classExporter.getSubmachines());
+				classNames.add(cls.getName());
+				classNames.addAll(classExporter.getAdditionalSources());
+			}
+
+		}
+	}
 
 	private void createDataTypes(String outputDirectory) throws IOException {
-		for(DataType dataType : dataTypes) {
-			dataTypeExporter.init(dataType, dataType.getName(), outputDirectory);
-			dataTypeExporter.exportDataType();
+		for (DataType dataType : dataTypes) {
+			dataTypeExporter.setName(dataType.getName());
+			dataTypeExporter.init();
+			dataTypeExporter.exportStructuredElement(dataType, outputDirectory);
 		}
-		
+
 	}
 
 	private void copyPreWrittenCppFiles(String destination) throws IOException {
@@ -188,9 +194,9 @@ public class Uml2ToCppExporter {
 		cmake.writeOutCMakeLists();
 	}
 
-	private String createEventSource(EList<Element> elements_) {
+	private String createEventSource(EList<Element> elements) {
 		List<Signal> signalList = new ArrayList<Signal>();
-		Shared.getTypedElements(signalList, elements_, UMLPackage.Literals.SIGNAL);
+		Shared.getTypedElements(signalList, elements, UMLPackage.Literals.SIGNAL);
 		StringBuilder forwardDecl = new StringBuilder("");
 		StringBuilder events = new StringBuilder("");
 		StringBuilder source = new StringBuilder("");
@@ -199,7 +205,7 @@ public class Uml2ToCppExporter {
 		events.append("InitSignal_EE,");
 		for (Signal item : signalList) {
 			List<Pair<String, String>> currentParams = getSignalParams(item);
-			String ctrBody = Shared.signalCtrBody(item, elements_);
+			String ctrBody = Shared.signalCtrBody(item, elements);
 			allParam.addAll(currentParams);
 			source.append(GenerationTemplates.eventClass(item.getName(), currentParams, ctrBody,
 					item.getOwnedAttributes(), options));
