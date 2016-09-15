@@ -82,7 +82,7 @@ public class Uml2ToCppExporter {
 			threadManager.createConfigurationSource(outputDirectory);
 		}
 
-		Shared.writeOutSource(outputDirectory, (GenerationTemplates.EventHeader), createEventSource(elements));
+		Shared.writeOutSource(outputDirectory, (GenerationTemplates.EventHeader), Shared.format(createEventSource(elements)));
 
 		copyPreWrittenCppFiles(outputDirectory);
 
@@ -263,14 +263,14 @@ public class Uml2ToCppExporter {
 			preDeclerations.append(GenerationTemplates.forwardDeclaration(className));
 		}
 
-		Shared.writeOutSource(outputDirectory, (GenerationTemplates.AssociationStructuresHeader),
+		Shared.writeOutSource(outputDirectory, (GenerationTemplates.AssociationStructuresHeader), Shared.format(
 				GenerationTemplates.headerGuard(
 						GenerationTemplates
 								.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.AssocationHeader)
 								+ preDeclerations.toString() + structures.toString(),
-						GenerationTemplates.AssociationsStructuresHreaderName));
+						GenerationTemplates.AssociationsStructuresHreaderName)));
 		Shared.writeOutSource(outputDirectory, (GenerationTemplates.AssociationStructuresSource),
-				includes.toString() + functions.toString());
+				Shared.format(includes.toString() + functions.toString()));
 
 	}
 

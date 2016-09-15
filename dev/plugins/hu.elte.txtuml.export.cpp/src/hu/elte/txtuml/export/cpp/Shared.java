@@ -173,15 +173,13 @@ public class Shared {
 	public static String format(String source) {
 		
 		CodeFormatter formatter = ToolFactory.createDefaultCodeFormatter(null);
-		TextEdit edit = formatter.format(CodeFormatter.K_TRANSLATION_UNIT, source, 0, source.length(), 0, null);		
+		TextEdit edit = formatter.format(CodeFormatter.K_STATEMENTS, source, 0, source.length(), 0, null);		
 		IDocument document = new Document(source);
 		try {
 			edit.apply(document);
 		} catch (MalformedTreeException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
 		String formattedSource = document.get();
