@@ -9,6 +9,17 @@ import hu.elte.txtuml.api.model.Signal;
  * combined fragments. With this structure one can describe what is the expected
  * behavior of a model in a given scenario and if the model diverges from the
  * scenario the runtime will return the point of divergence.
+ * <p>
+ * How to Use: <br/>
+ * <ol>
+ * <li>Create a new subclass of this or the {@link SequenceDiagram} class</li>
+ * <li>Define Lifelines as attributes. These need to be a subclass of ModelClass
+ * </li>
+ * <li>Define the initialize(optional) to initialize the lifelines and the run
+ * to define the behaviour of the model</li>
+ * </ol>
+ * </p>
+ * 
  * 
  * @author Turi Zoltan(G4R8AJ)
  *

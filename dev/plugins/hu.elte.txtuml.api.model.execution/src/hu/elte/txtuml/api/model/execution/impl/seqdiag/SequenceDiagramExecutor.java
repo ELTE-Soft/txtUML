@@ -29,15 +29,16 @@ import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
  * <p>
  * How to Use:
  * <ol>
- * <li>Set the Interaction to run by using the {@code setInteraction() } method.
- * Its Single parameter is an interaction</li>
- * <li>Run the Executor using the {@code start()} or {@code run()} methods more
- * on these below</li>
+ * <li>Set the Interaction to run by using the
+ * {@link #setInteraction(Interaction) } method. Its Single parameter is an
+ * interaction subclass instance</li>
+ * <li>Run the Executor using the {@link #start()} or {@link #run()} methods
+ * more on these below</li>
  * </ol>
  * The execution can be started using the following two methods: The first
- * method is {@code run()}, which translates to calling start,
+ * method is {@link #run()}, which translates to calling start,
  * awaitInititialization and awaitShutdown after another in this order The
- * second( {@code start}) is for simply starting the executor and not waiting
+ * second( {@link #start}) is for simply starting the executor and not waiting
  * for it to finish running.
  * </p>
  * 
