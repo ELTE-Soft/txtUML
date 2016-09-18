@@ -144,15 +144,15 @@ public class ClassExporter {
 		}
 
 		source = createSubSmClassHeaderSource(className_, parentClass, region_);
-		Shared.writeOutSource(dest_, GenerationTemplates.headerName(className_),
-				GenerationTemplates.headerGuard(source, className_));
+		Shared.writeOutSource(dest_, GenerationTemplates.headerName(className_),Shared.format(
+				GenerationTemplates.headerGuard(source, className_)));
 		source = createSubSmClassCppSource(className_, parentClass, region_).toString();
 
 		String dependencyIncludes = GenerationTemplates.cppInclude(className_);
 		dependencyIncludes = GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude)
 				+ dependencyIncludes + GenerationTemplates.cppInclude(parentClass);
 
-		Shared.writeOutSource(dest_, GenerationTemplates.sourceName(className_), dependencyIncludes + "\n" + source);
+		Shared.writeOutSource(dest_, GenerationTemplates.sourceName(className_), Shared.format(dependencyIncludes + "\n" + source));
 	}
 
 	private String createClassHeaderSource(Class class_) {
