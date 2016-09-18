@@ -19,11 +19,11 @@ public abstract class Runtime {
 
 	public abstract BaseInteractionWrapper getCurrentInteraction();
 
-	public abstract void setExecutionMode(CombinedFragmentType mode);
+	public abstract void setFragmentMode(CombinedFragmentType mode);
 
-	public abstract void executionModeEnded();
+	public abstract void fragmentModeEnded();
 
-	public abstract CombinedFragmentType getExecutionMode();
+	public abstract ExecMode getExecutionMode();
 
 	public abstract BaseSequenceDiagramExecutor getExecutor();
 }

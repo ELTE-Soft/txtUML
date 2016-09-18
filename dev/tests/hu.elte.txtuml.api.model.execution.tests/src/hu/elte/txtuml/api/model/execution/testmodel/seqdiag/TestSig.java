@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.plantuml.tests.testModel;
+package hu.elte.txtuml.api.model.execution.testmodel.seqdiag;
 
 import hu.elte.txtuml.api.model.Signal;
 

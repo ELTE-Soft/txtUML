@@ -10,6 +10,7 @@ import hu.elte.txtuml.api.model.seqdiag.BaseInteractionWrapper;
 import hu.elte.txtuml.api.model.seqdiag.BaseLifelineWrapper;
 import hu.elte.txtuml.api.model.seqdiag.BaseSequenceDiagramExecutor;
 import hu.elte.txtuml.api.model.seqdiag.CombinedFragmentType;
+import hu.elte.txtuml.api.model.seqdiag.ExecMode;
 import hu.elte.txtuml.api.model.seqdiag.ExecutionMode;
 import hu.elte.txtuml.api.model.seqdiag.FragmentType;
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
@@ -18,7 +19,8 @@ import hu.elte.txtuml.api.model.seqdiag.Position;
 public class DefaultRuntime extends hu.elte.txtuml.api.model.seqdiag.Runtime {
 
 	private InteractionWrapper currentInteraction;
-	private CombinedFragmentType executionMode = CombinedFragmentType.STRICT;
+	private ExecMode executionMode = ExecMode.STRICT;
+	private CombinedFragmentType fragmentMode = CombinedFragmentType.STRICT;
 	private LinkedList<CombinedFragmentType> lastTypes;
 	private SequenceDiagramExecutor executor;
 	private boolean runMethodChecked = false;
@@ -36,26 +38,17 @@ public class DefaultRuntime extends hu.elte.txtuml.api.model.seqdiag.Runtime {
 			try {
 				ExecutionMode baseMode = interaction.getClass().getMethod("run").getAnnotation(ExecutionMode.class);
 				FragmentType baseType = interaction.getClass().getMethod("run").getAnnotation(FragmentType.class);
-				if (baseMode != null && baseType == null) {
-					switch (baseMode.value()) {
-					case Lenient:
-						/*
-						 * this.executionMode = CombinedFragmentType.PAR; break;
-						 */
-					case Sequential:
-						this.executionMode = CombinedFragmentType.SEQ;
-						break;
-					case Strict:
-						this.executionMode = CombinedFragmentType.STRICT;
-						break;
-					}
-				} else if (baseMode == null && baseType != null) {
-					this.executionMode = baseType.value();
-				} else {
-					this.executionMode = CombinedFragmentType.STRICT;
+				
+				if (baseMode != null) {
+					this.executionMode = baseMode.value();
 				}
-			} catch (Exception e) {
 
+				if (baseType != null) {
+					this.fragmentMode = baseType.value();
+				}
+
+			} catch (Exception e) {
+				throw new ModelRuntimeException(e.getMessage());
 			}
 		}
 
@@ -93,18 +86,22 @@ public class DefaultRuntime extends hu.elte.txtuml.api.model.seqdiag.Runtime {
 	}
 
 	@Override
-	public void setExecutionMode(CombinedFragmentType mode) {
-		this.lastTypes.push(this.executionMode);
-		this.executionMode = mode;
+	public void setFragmentMode(CombinedFragmentType mode) {
+		this.lastTypes.push(this.fragmentMode);
+		this.fragmentMode = mode;
 	}
 
 	@Override
-	public void executionModeEnded() {
-		this.executionMode = this.lastTypes.pop();
+	public void fragmentModeEnded() {
+		this.fragmentMode = this.lastTypes.pop();
+	}
+
+	CombinedFragmentType getFragmentMode() {
+		return this.fragmentMode;
 	}
 
 	@Override
-	public CombinedFragmentType getExecutionMode() {
+	public ExecMode getExecutionMode() {
 		return this.executionMode;
 	}
 

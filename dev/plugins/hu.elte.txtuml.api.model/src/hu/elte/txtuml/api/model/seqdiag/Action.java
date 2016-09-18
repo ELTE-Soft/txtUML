@@ -14,7 +14,7 @@ public abstract class Action {
 	}
 
 	public static void delete(ModelClass obj) {
-		Action.delete(obj);
+		hu.elte.txtuml.api.model.Action.delete(obj);
 	}
 
 	public static <C1 extends ConnectorEnd<?, P1>, P1 extends Port<I1, I2>, C2 extends ConnectorEnd<?, P2>, P2 extends Port<I2, I1>, I1 extends Interface, I2 extends Interface> void connect(
@@ -29,17 +29,17 @@ public abstract class Action {
 
 	public static <L extends ModelClass, R extends ModelClass> void link(Class<? extends AssociationEnd<L, ?>> leftEnd,
 			L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj) {
-		Action.link(leftEnd, leftObj, rightEnd, rightObj);
+		hu.elte.txtuml.api.model.Action.link(leftEnd, leftObj, rightEnd, rightObj);
 	}
 
 	public static <L extends ModelClass, R extends ModelClass> void unlink(
 			Class<? extends AssociationEnd<L, ?>> leftEnd, L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd,
 			R rightObj) {
-		Action.unlink(leftEnd, leftObj, rightEnd, rightObj);
+		hu.elte.txtuml.api.model.Action.unlink(leftEnd, leftObj, rightEnd, rightObj);
 	}
 
 	public static void start(ModelClass obj) {
-		Action.start(obj);
+		hu.elte.txtuml.api.model.Action.start(obj);
 	}
 
 	public static <S extends Signal> void send(ModelClass from, S signal, ModelClass target) {
@@ -95,7 +95,7 @@ public abstract class Action {
 	 */
 	public static void startFragment(CombinedFragmentType type, String fragmentName) {
 		RuntimeContext context = RuntimeContext.getCurrentExecutorThread();
-		context.getRuntime().setExecutionMode(type);
+		context.getRuntime().setFragmentMode(type);
 		if (fragmentName == null) {
 			fragmentName = "UnnamedFragment";
 		}
@@ -107,7 +107,7 @@ public abstract class Action {
 	 */
 	public static void endFragment() {
 		RuntimeContext context = RuntimeContext.getCurrentExecutorThread();
-		context.getRuntime().executionModeEnded();
+		context.getRuntime().fragmentModeEnded();
 
 		context.getRuntime().getCurrentInteraction().endFragment();
 	}

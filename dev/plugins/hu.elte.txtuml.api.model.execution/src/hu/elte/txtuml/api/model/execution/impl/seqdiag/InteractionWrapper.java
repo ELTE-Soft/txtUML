@@ -27,7 +27,7 @@ public class InteractionWrapper extends AbstractWrapper<Interaction> implements 
 	public InteractionWrapper(Interaction interaction) {
 		super(interaction);
 		lifelines = new ArrayList<BaseLifelineWrapper<?>>();
-		this.fragments = CombinedFragmentWrapper.createWrapper(null, this, this.getRuntime().getExecutionMode(),
+		this.fragments = CombinedFragmentWrapper.createWrapper(null, this, ((DefaultRuntime)this.getRuntime()).getFragmentMode(),
 				"ROOT");
 	}
 

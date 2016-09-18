@@ -13,7 +13,7 @@ import hu.elte.txtuml.api.model.seqdiag.CombinedFragmentType;
 			String fragmentName) {
 		super(parent, parentInteraction, CombinedFragmentType.PAR, fragmentName, parent.hasOverlapWarning());
 
-		strategy = new ExecutionStrategyLenient();
+		strategy = ((CombinedFragmentWrapper)this.parent).getExecutionStrategy();
 	}
 
 	@Override

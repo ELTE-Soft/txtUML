@@ -3,13 +3,19 @@ package hu.elte.txtuml.api.model.execution.impl.seqdiag.fragments;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import hu.elte.txtuml.api.model.error.seqdiag.ModelRuntimeException;
 import hu.elte.txtuml.api.model.execution.impl.seqdiag.AbstractWrapper;
+import hu.elte.txtuml.api.model.execution.impl.seqdiag.DefaultRuntime;
 import hu.elte.txtuml.api.model.execution.impl.seqdiag.InteractionWrapper;
 import hu.elte.txtuml.api.model.execution.impl.seqdiag.fragments.execstrats.ExecutionStrategy;
+import hu.elte.txtuml.api.model.execution.impl.seqdiag.fragments.execstrats.ExecutionStrategyLenient;
+import hu.elte.txtuml.api.model.execution.impl.seqdiag.fragments.execstrats.ExecutionStrategySeq;
+import hu.elte.txtuml.api.model.execution.impl.seqdiag.fragments.execstrats.ExecutionStrategyStrict;
 import hu.elte.txtuml.api.model.seqdiag.BaseCombinedFragmentWrapper;
 import hu.elte.txtuml.api.model.seqdiag.BaseFragmentWrapper;
 import hu.elte.txtuml.api.model.seqdiag.BaseMessageWrapper;
 import hu.elte.txtuml.api.model.seqdiag.CombinedFragmentType;
+import hu.elte.txtuml.api.model.seqdiag.ExecMode;
 import hu.elte.txtuml.api.model.seqdiag.RuntimeContext;
 
 public abstract class CombinedFragmentWrapper extends AbstractWrapper<String>
@@ -32,6 +38,30 @@ public abstract class CombinedFragmentWrapper extends AbstractWrapper<String>
 		this.containedFragments = new LinkedList<BaseFragmentWrapper>();
 		this.overlapWarning = overlapWarning;
 		this.parent = parent;
+		if (parent != null) {
+			strategy = ((CombinedFragmentWrapper) this.parent).getExecutionStrategy();
+		} else {
+			strategy = CombinedFragmentWrapper.createExecStrategy(
+					((DefaultRuntime) RuntimeContext.getCurrentExecutorThread().getRuntime()).getExecutionMode());
+		}
+		
+		if(strategy == null)
+		{
+			throw new ModelRuntimeException("Unable to create Combined fragment:" + fragmentName);
+		}
+	}
+
+	private static ExecutionStrategy createExecStrategy(ExecMode mode) {
+		switch (mode) {
+		case LENIENT:
+			return new ExecutionStrategyLenient();
+		case NORMAL:
+			return new ExecutionStrategySeq();
+		case STRICT:
+			return new ExecutionStrategyStrict();
+		}
+
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -123,5 +153,9 @@ public abstract class CombinedFragmentWrapper extends AbstractWrapper<String>
 	@Override
 	public boolean containsMessage(BaseMessageWrapper message) {
 		return strategy.containsMessage(containedFragments, message);
+	}
+
+	ExecutionStrategy getExecutionStrategy() {
+		return this.strategy;
 	}
 }
