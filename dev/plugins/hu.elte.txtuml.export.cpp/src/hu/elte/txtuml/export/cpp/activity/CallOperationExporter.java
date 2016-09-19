@@ -44,7 +44,7 @@ class CallOperationExporter {
 	public boolean isUsedSignalParameter() {
 		return containsSignalAcces;
 	}
-	
+
 	public boolean isInvokedTimerOperation() {
 		return containsTimerOperator;
 	}
@@ -70,6 +70,10 @@ class CallOperationExporter {
 
 		if (Shared.isConstructor(node.getOperation())) {
 
+			/*
+			 * In case of signal factory's constructor the first parameter is
+			 * the signal type which is the target.
+			 */
 			InputPin target = node.getTarget() == null ? node.getArguments().get(0) : node.getTarget();
 			EList<InputPin> arguments = node.getArguments();
 			arguments.remove(target);
@@ -95,7 +99,7 @@ class CallOperationExporter {
 			addOutParametrsToList(parameterVariables, outParamaterPins);
 
 			val = ActivityTemplates.stdLibCall(node.getOperation().getName(), parameterVariables);
-			if(ActivityTemplates.Operators.isTimerStart(node.getOperation().getName())) {
+			if (ActivityTemplates.Operators.isTimerStart(node.getOperation().getName())) {
 				containsTimerOperator = true;
 			}
 

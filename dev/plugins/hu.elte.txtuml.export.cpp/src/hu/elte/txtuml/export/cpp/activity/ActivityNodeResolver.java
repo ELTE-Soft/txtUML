@@ -188,19 +188,19 @@ class ActivityNodeResolver {
 		return (Class) parent;
 	}
 	
-	private String getValueFromValueSpecification(ValueSpecification valueSpec_) {
+	private String getValueFromValueSpecification(ValueSpecification valueSpec) {
 		String source = "";
-		if (valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_INTEGER)) {
-			source = ((Integer) ((LiteralInteger) valueSpec_).getValue()).toString();
-		} else if(valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_REAL)) {
-			source = ((Double)  ((LiteralReal) valueSpec_).getValue()).toString();
+		if (valueSpec.eClass().equals(UMLPackage.Literals.LITERAL_INTEGER)) {
+			source = ((Integer) ((LiteralInteger) valueSpec).getValue()).toString();
+		} else if(valueSpec.eClass().equals(UMLPackage.Literals.LITERAL_REAL)) {
+			source = ((Double)  ((LiteralReal) valueSpec).getValue()).toString();
 		}
-		else if (valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_BOOLEAN)) {
-			source = ((Boolean) ((LiteralBoolean) valueSpec_).isValue()).toString();
-		} else if (valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_STRING)) {
-			source = "\"" + ((LiteralString) valueSpec_).getValue() + "\"";
+		else if (valueSpec.eClass().equals(UMLPackage.Literals.LITERAL_BOOLEAN)) {
+			source = ((Boolean) ((LiteralBoolean) valueSpec).isValue()).toString();
+		} else if (valueSpec.eClass().equals(UMLPackage.Literals.LITERAL_STRING)) {
+			source = "\"" + ((LiteralString) valueSpec).getValue() + "\"";
 		
-		} else if(valueSpec_.eClass().equals(UMLPackage.Literals.LITERAL_NULL)) {
+		} else if(valueSpec.eClass().equals(UMLPackage.Literals.LITERAL_NULL)) {
 			source = ActivityTemplates.NullPtrLiteral;
 		}
 		else {

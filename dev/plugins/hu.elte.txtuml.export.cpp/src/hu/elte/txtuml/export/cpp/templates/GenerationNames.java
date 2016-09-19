@@ -116,6 +116,12 @@ class GenerationNames {
 	public static final String DefaultParentSmInicialization = GenerationNames.ParentSmMemberName + "("
 			+ GenerationNames.ParentSmPointerName + ")";
 
+	public static final String InitFunctionName = "init";
+
+	public static String initFunctionName(String className) {
+		return InitFunctionName + className;
+	}
+
 	public static String friendClassDecl(String className) {
 		return "friend " + GenerationNames.ClassType + " " + className + ";\n";
 	}
@@ -200,7 +206,7 @@ class GenerationNames {
 	}
 
 	public static String sharedPtrType(String typeName) {
-		
+
 		return SmartPtr + "<" + typeName + ">";
 	}
 }

@@ -15,11 +15,16 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.LiteralBoolean;
+import org.eclipse.uml2.uml.LiteralInteger;
+import org.eclipse.uml2.uml.LiteralReal;
+import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.ValueSpecification;
 
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 
@@ -31,8 +36,6 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;*/
 
 //import org.eclipse.cdt.core.formatter.CodeFormatter;
-
-
 
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 import hu.elte.txtuml.utils.Pair;
@@ -66,11 +69,11 @@ public class Shared {
 		if (factoryClass != null) {
 			for (Operation op : factoryClass.getOperations()) {
 				if (isConstructor(op)) {
-					for(Parameter parameter : op.getOwnedParameters()) {
-						if(!parameter.getType().getName().equals(signal.getName())) {
+					for (Parameter parameter : op.getOwnedParameters()) {
+						if (!parameter.getType().getName().equals(signal.getName())) {
 							signalParameters.add(parameter);
 						}
-					}				
+					}
 					break;
 				}
 			}
@@ -136,7 +139,7 @@ public class Shared {
 		return false;
 
 	}
-	
+
 	public static List<String> getOperationParamTypes(Operation operation) {
 		List<String> operationParameterTypes = new ArrayList<String>();
 		for (Parameter param : operation.getOwnedParameters()) {
@@ -148,7 +151,19 @@ public class Shared {
 		}
 		return operationParameterTypes;
 	}
-	
+
+	public static List<String> getOperationParamNames(Operation operation) {
+		List<String> operationParameterTypes = new ArrayList<String>();
+		for (Parameter param : operation.getOwnedParameters()) {
+			if (param != operation.getReturnResult()) {
+				if (param.getType() != null) {
+					operationParameterTypes.add(param.getName());
+				}
+			}
+		}
+		return operationParameterTypes;
+	}
+
 	public static List<Pair<String, String>> getOperationParams(Operation operation) {
 		List<Pair<String, String>> operationParameters = new ArrayList<Pair<String, String>>();
 		for (Parameter param : operation.getOwnedParameters()) {
@@ -156,8 +171,6 @@ public class Shared {
 				if (param.getType() != null) {
 					operationParameters.add(new Pair<String, String>(param.getType().getName(), param.getName()));
 				} else {
-					// TODO exception if we want to stop the compile (missing
-					// operation, seems fatal error)
 					operationParameters.add(new Pair<String, String>("UNKNOWN_TYPE", param.getName()));
 				}
 			}
@@ -177,29 +190,25 @@ public class Shared {
 			e.printStackTrace();
 		}
 
-
 		PrintWriter writer = new PrintWriter(path_ + File.separator + fileName_, "UTF-8");
 		writer.println(format(source));
 		writer.close();
 	}
 
 	public static String format(String source) {
-		
-		/*CodeFormatter formatter = ToolFactory.createDefaultCodeFormatter(null);
-		TextEdit edit = formatter.format(0, source, 0, source.length(), 0, null);		
-		IDocument document = new Document(source);
-		try {
-			edit.apply(document);
-		} catch (MalformedTreeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
-		String formattedSource = document.get();*/
-		
-		//return formattedSource;
+
+		/*
+		 * CodeFormatter formatter =
+		 * ToolFactory.createDefaultCodeFormatter(null); TextEdit edit =
+		 * formatter.format(0, source, 0, source.length(), 0, null); IDocument
+		 * document = new Document(source); try { edit.apply(document); } catch
+		 * (MalformedTreeException e) { // TODO Auto-generated catch block
+		 * e.printStackTrace(); } catch (BadLocationException e) { // TODO
+		 * Auto-generated catch block e.printStackTrace(); } String
+		 * formattedSource = document.get();
+		 */
+
+		// return formattedSource;
 		return source;
 	}
 

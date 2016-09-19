@@ -169,6 +169,17 @@ class PrivateFunctionalTemplates {
 		}
 		return source.substring(0, source.length() - 1);
 	}
+	
+	public static String paramNameList(List<String> params) {
+		if (params == null || params.size() == 0)
+			return "";
+		
+		StringBuilder source = new StringBuilder("");
+		for (String param : params) {
+			source.append(GenerationNames.formatIncomingParamName(param) + ",");
+		}
+		return source.substring(0, source.length() - 1);
+	}
 
 	public static String cppType(String typeName) {
 		String cppType = typeName;

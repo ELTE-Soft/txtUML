@@ -103,12 +103,11 @@ public class ActivityTemplates {
 	}
 
 	public static String stdLibCall(String functionName, List<String> parameters) {
-		if(Operators.isInfixBinaryOperator(functionName)) {
-			assert(parameters.size() == 2);
-			return "(" + parameters.get(0) + Operators.resolveBinaryOperation(functionName) + 
-					parameters.get(1) + ")";
+		if (Operators.isInfixBinaryOperator(functionName)) {
+			assert (parameters.size() == 2);
+			return "(" + parameters.get(0) + Operators.resolveBinaryOperation(functionName) + parameters.get(1) + ")";
 		}
-		
+
 		return Operators.getStandardLibaryFunctionName(functionName) + "(" + operationCallParamList(parameters) + ")";
 	}
 
@@ -197,8 +196,14 @@ public class ActivityTemplates {
 					+ GenerationNames.MemoryAllocator + " " + PrivateFunctionalTemplates.signalType(typeName) + "("
 					+ operationCallParamList(parameters) + "))";
 		} else {
-			return ownerName + ReplaceSimpleTypeOp + GenerationNames.MemoryAllocator + " " + typeName + "("
-					+ operationCallParamList(parameters) + ")";
+			if (ownerName != Self) {
+				return ownerName + ReplaceSimpleTypeOp + GenerationNames.MemoryAllocator + " " + typeName + "("
+						+ operationCallParamList(parameters) + ")";
+			} else {
+				return ownerName + GenerationNames.PointerAccess + GenerationNames.initFunctionName(typeName) + "("
+						+ operationCallParamList(parameters) + ")";
+			}
+
 		}
 	}
 
@@ -307,8 +312,7 @@ public class ActivityTemplates {
 		public static final String Sinus = "sin";
 		public static final String Cosinus = "cos";
 		public static final String TimerStart = GenerationNames.StartTimerFunctionName;
-		
-		
+
 		public static final String NotBinaryOperator = "not_binary_operator";
 
 		public static String Fork(String cond, String e1, String e2) {
@@ -385,18 +389,16 @@ public class ActivityTemplates {
 				return Not;
 			case "neg":
 				return Neg;
-				
+
 			default:
 				return function;
 			}
 		}
-		
+
 		public static boolean isTimerStart(String function) {
 			return function == TimerStart;
 		}
 	}
-	
-
 
 	public static boolean invalidIdentifier(String name) {
 

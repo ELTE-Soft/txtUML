@@ -74,7 +74,7 @@ public class GenerationTemplates {
 		StringBuilder body = new StringBuilder("\n{\n" + constructorBody + "}\n");
 
 		for (Property property : properites) {
-			body.append(variableDecl(property.getType().getName(), property.getName(), false));
+			body.append(variableDecl(property.getType().getName(), property.getName(),null,false));
 		}
 		source.append(body).append("};\n\n");
 		body.setLength(0);
@@ -134,7 +134,7 @@ public class GenerationTemplates {
 		parentParam.add(parentClass);
 
 		return hierarchicalStateMachineClassHeader(dependency, className, null, public_, protected_,
-				GenerationTemplates.variableDecl(parentClass, GenerationNames.ParentSmMemberName, false) + (private_),
+				GenerationTemplates.variableDecl(parentClass, GenerationNames.ParentSmMemberName,null,false) + (private_),
 				false);
 	}
 
@@ -152,7 +152,7 @@ public class GenerationTemplates {
 			String parentClass, String public_, String protected_, String private_) {
 
 		return simpleStateMachineClassHeader(dependency, className, null, parentClass, public_, protected_,
-				GenerationTemplates.variableDecl(parentClass, GenerationNames.ParentSmMemberName, false) + (private_),
+				GenerationTemplates.variableDecl(parentClass, GenerationNames.ParentSmMemberName,null,false) + (private_),
 				false);
 	}
 
@@ -210,10 +210,9 @@ public class GenerationTemplates {
 
 		return source;
 	}
-	
+
 	public static String dataType(String datatTypeName, String attributes) {
-		return GenerationNames.DataType + " " + datatTypeName + "\n" +
-				"{\n" + attributes + "}";
+		return GenerationNames.DataType + " " + datatTypeName + "\n" + "{\n" + attributes + "}";
 	}
 
 	public static String paramName(String paramName) {
@@ -224,38 +223,55 @@ public class GenerationTemplates {
 		return GenerationNames.formatIncomingParamName(GenerationNames.EventParamName);
 	}
 
-	public static String variableDecl(String typeName, String variableName, boolean isSignal) {
-		String generatedType = isSignal ? GenerationNames.signalType(typeName)
-				: PrivateFunctionalTemplates.cppType(typeName);
-		return generatedType + " " + variableName + ";\n";
+	public static String variableDecl(String typeName, String variableName,String defaultValue,boolean isSignal) {
+		StringBuilder source = new StringBuilder("");
+		source.append(isSignal ? GenerationNames.signalType(typeName)
+				: PrivateFunctionalTemplates.cppType(typeName));
+		source.append(" ");
+		source.append(variableName);
+		if(defaultValue != "" && defaultValue != null) {
+			source.append(ActivityTemplates.ReplaceSimpleTypeOp + defaultValue);
+		}
+		
+		return ActivityTemplates.blockStatement(source.toString());
 	}
 
 	public static String manyMultiplicityDependecy() {
 		return PrivateFunctionalTemplates.outerInclude(GenerationNames.Collection);
 	}
 
-	public static String variableDecl(String typeName, String variableName, Integer multiplicity) {
-		if (multiplicity > 1) {
-			return GenerationNames.AssocMultiplicityDataStruct + "<" + PrivateFunctionalTemplates.cppType(typeName)
-					+ ">" + " " + variableName + ";\n";
-		}
-		return variableDecl(typeName, variableName, false);
+	public static String variableDecl(String typeName, String variableName) {
+		return variableDecl(typeName, variableName, "",false);
+	}
+	
+	public static String variableDecl(String typeName, String variableName, boolean isSignal) {
+		return variableDecl(typeName, variableName,"",isSignal); 
+	}
+	
+	public static String propertyDecl(String typeName, String variableName, String defaultValue) {
+		return variableDecl(typeName,variableName,defaultValue,false); 
 	}
 
 	public static String assocationDecl(String className, String roleName, Integer lower, Integer upper) {
 		return GenerationNames.AssocMultiplicityDataStruct + "<" + className + ">" + " " + roleName + " "
 				+ GenerationNames.AssigmentOperator + " " + GenerationNames.AssocMultiplicityDataStruct + "<"
-				+ className + ">" + "(" + lower + "," + upper +  ");\n";
+				+ className + ">" + "(" + lower + "," + upper + ");\n";
 	}
 
-	public static StringBuilder constructorDef(String className, String baseClassName, String body,
-			List<Pair<String, String>> params, List<Pair<String, String>> baseParams, Boolean stateMachine) {
+	public static String constructorDef(String className, List<String> paramNames, List<Pair<String, String>> params) {
+
+		return className + "::" + className + "(" + PrivateFunctionalTemplates.paramList(params) + ")" + "{"
+				+ GenerationNames.initFunctionName(className) + "("
+				+ PrivateFunctionalTemplates.paramNameList(paramNames) + ");}\n";
+
+	}
+
+	public static String initDef(String className, String body, List<Pair<String, String>> params,
+			Boolean stateMachine) {
 		StringBuilder source = new StringBuilder("");
-		source.append(className + "::" + className + "(");
+		source.append(GenerationNames.NoReturn + " ");
+		source.append(className + "::" + GenerationNames.initFunctionName(className) + "(");
 		source.append(PrivateFunctionalTemplates.paramList(params) + ")");
-		if (baseClassName != null) {
-			source.append(":" + baseClassName + "(" + PrivateFunctionalTemplates.paramList(baseParams) + ")");
-		}
 
 		source.append("\n{\n" + body + "\n");
 		if (stateMachine) {
@@ -263,12 +279,7 @@ public class GenerationTemplates {
 		}
 		source.append("}\n");
 
-		return source;
-
-	}
-
-	public static StringBuilder constructorDef(String className, Boolean stateMachine) {
-		return constructorDef(className, null, "", null, null, stateMachine);
+		return source.toString();
 	}
 
 	public static String destructorDef(String className, Boolean ownStates) {
@@ -323,16 +334,26 @@ public class GenerationTemplates {
 
 	public static String constructorDecl(String className, List<String> params) {
 		StringBuilder source = new StringBuilder("");
-		source.append(className + "(");
-		source.append(PrivateFunctionalTemplates.paramTypeList(params) + ");\n");
+		source.append(className);
+		source.append("(" + PrivateFunctionalTemplates.paramTypeList(params) + ");\n");
 
 		return source.toString();
 	}
-	
-	public static String defaultConstructorDecl(String className) {
-		return constructorDecl(className,null);
+
+	public static String initDecl(String className, List<String> params) {
+		StringBuilder source = new StringBuilder("");
+
+		source.append(GenerationNames.NoReturn + " ");
+		source.append(GenerationNames.initFunctionName(className));
+		source.append("(" + PrivateFunctionalTemplates.paramTypeList(params) + ");\n");
+
+		return source.toString();
 	}
-	
+
+	public static String defaultConstructorDecl(String className) {
+		return constructorDecl(className, null);
+	}
+
 	public static String destructorDecl(String className) {
 		return "~" + className + "();\n";
 	}
@@ -545,11 +566,13 @@ public class GenerationTemplates {
 		}
 	}
 
-	public static String guardDefinition(String guardFunctionName,String constraint,String className, boolean eventParamUsage) {
-		StringBuilder source = new StringBuilder("bool " + className + "::" + guardFunctionName + "(" + GenerationNames.EventBaseRefName);
+	public static String guardDefinition(String guardFunctionName, String constraint, String className,
+			boolean eventParamUsage) {
+		StringBuilder source = new StringBuilder(
+				"bool " + className + "::" + guardFunctionName + "(" + GenerationNames.EventBaseRefName);
 		if (eventParamUsage) {
 			source.append(" " + GenerationNames.EventFParamName);
-			
+
 		}
 		source.append(")\n{\n");
 
@@ -605,7 +628,7 @@ public class GenerationTemplates {
 
 	public static String cppInclude(String className) {
 		String cppType = PrivateFunctionalTemplates.cppType(className);
-		if(PrivateFunctionalTemplates.stdType(cppType)) {
+		if (PrivateFunctionalTemplates.stdType(cppType)) {
 			return PrivateFunctionalTemplates.include(cppType);
 		}
 		return PrivateFunctionalTemplates.include(className);

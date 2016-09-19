@@ -79,8 +79,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 				String returnType = getReturnType(operation.getReturnResult());
 				source.append(GenerationTemplates.functionDef(name, returnType, operation.getName(),
 						Shared.getOperationParams(operation), funcBody));
-			}		
-			
+			}					
 
 		}
 		return source.toString();
@@ -99,7 +98,8 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 					dependencyExporter.addDependecy(type);
 				}
 				if (isSimpleAttribute(attribute)) {
-					source.append(GenerationTemplates.variableDecl(type, attribute.getName(), 1));
+					
+					source.append(GenerationTemplates.propertyDecl(type, attribute.getName(),attribute.getDefault()));
 				}
 			}
 		}
