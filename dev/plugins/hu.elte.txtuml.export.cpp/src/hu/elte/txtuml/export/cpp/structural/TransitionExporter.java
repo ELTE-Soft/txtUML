@@ -44,7 +44,6 @@ public class TransitionExporter {
 		StringBuilder source = new StringBuilder("");
 		for (Transition item : transitions) {
 			String body = "";
-			activityExporter.init();
 			Behavior b = item.getEffect();
 			if (b != null && b.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
 				body = activityExporter.createfunctionBody((Activity) b);

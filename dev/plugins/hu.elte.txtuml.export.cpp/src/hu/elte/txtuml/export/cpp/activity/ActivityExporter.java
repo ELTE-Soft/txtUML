@@ -49,12 +49,9 @@ public class ActivityExporter {
 	private ReturnNodeExporter returnNodeExporter;
 	
 
-	public ActivityExporter() {
-		init();
+	public ActivityExporter() { }
 
-	}
-
-	public void init() {
+	private void init() {
 		tempVariableExporter = new OutVariableExporter();
 		userVariableExporter = new UserVariableExporter();
 		activityExportResolver = new ActivityNodeResolver(objectMap, returnOutputsToCallActions, tempVariableExporter,
@@ -71,6 +68,7 @@ public class ActivityExporter {
 	}
 
 	public String createfunctionBody(Activity activity) {
+		init();
 		ActivityNode startNode = null;
 		StringBuilder source = new StringBuilder("");
 		for (ActivityNode node : activity.getOwnedNodes()) {

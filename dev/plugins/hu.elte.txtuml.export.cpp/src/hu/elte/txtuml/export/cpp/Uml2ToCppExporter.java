@@ -53,29 +53,29 @@ public class Uml2ToCppExporter {
 	private DataTypeExporter dataTypeExporter;
 	private final Options options;
 
-	ThreadHandlingManager threadManager;
+	private ThreadHandlingManager threadManager;
 
-	Set<Class> classes;
-	List<DataType> dataTypes;
-	EList<Element> elements;
+	private Set<Class> classes;
+	private List<DataType> dataTypes;
+	private EList<Element> elements;
 
-	List<String> classNames;
+	private List<String> classNames;
 
 	public Uml2ToCppExporter(Model model, Map<String, ThreadPoolConfiguration> threadDescription,
 			boolean addRuntimeOption, boolean overWriteMainFileOption) {
 		classExporter = new ClassExporter();
 		dataTypeExporter = new DataTypeExporter();
+		threadManager = new ThreadHandlingManager(threadDescription);
 
-		this.classes = new HashSet<Class>();
-		this.dataTypes = new ArrayList<DataType>();
-		this.elements = model.allOwnedElements();
-		this.classNames = new LinkedList<String>();
+		classes = new HashSet<Class>();
+		dataTypes = new ArrayList<DataType>();
+		elements = model.allOwnedElements();
+		classNames = new LinkedList<String>();
+		options = new Options(addRuntimeOption, overWriteMainFileOption);
 
 		Shared.getTypedElements(classes, elements, UMLPackage.Literals.CLASS);
 		Shared.getTypedElements(dataTypes, elements, UMLPackage.Literals.DATA_TYPE);
 
-		options = new Options(addRuntimeOption, overWriteMainFileOption);
-		threadManager = new ThreadHandlingManager(threadDescription);
 	}
 
 	public void buildCppCode(String outputDirectory) throws IOException {

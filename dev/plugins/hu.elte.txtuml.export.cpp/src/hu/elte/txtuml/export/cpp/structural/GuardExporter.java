@@ -44,8 +44,7 @@ public class GuardExporter extends ActivityExporter{
 			// TODO
 		} else if (guard.eClass().equals(UMLPackage.Literals.TIME_CONSTRAINT)) {
 			// TODO
-		} else if (guard.eClass().equals(UMLPackage.Literals.CONSTRAINT)) {
-			
+		} else if (guard.eClass().equals(UMLPackage.Literals.CONSTRAINT)) {			
 			source = constratintFunctionMap.get(guard);
 			
 		}
@@ -69,7 +68,6 @@ public class GuardExporter extends ActivityExporter{
 	public StringBuilder defnieGuardFunctions(String className) {
 		StringBuilder source = new StringBuilder("");
 		for (Entry<Constraint, String> guardEntry : getGuards().entrySet()) {
-			init();
 			String body =getGuardFromValueSpecification(guardEntry.getKey().getSpecification());
 			source.append(GenerationTemplates.guardDefinition(guardEntry.getValue(), body, className,
 					isContainsSignalAcces()));
@@ -80,14 +78,12 @@ public class GuardExporter extends ActivityExporter{
 	
 	
 
-	// TODO we need a more complex ocl parse....
-	public String getGuardFromValueSpecification(ValueSpecification guard_) {
+	public String getGuardFromValueSpecification(ValueSpecification guard) {
 		String source = "";
-		if (guard_ != null) {
-			if (guard_.eClass().equals(UMLPackage.Literals.OPAQUE_EXPRESSION)) {
-				OpaqueExpression expression = (OpaqueExpression) guard_;
+		if (guard != null) {
+			if (guard.eClass().equals(UMLPackage.Literals.OPAQUE_EXPRESSION)) {
+				OpaqueExpression expression = (OpaqueExpression) guard;
 				if(expression.getBehavior() != null && expression.getBehavior().eClass().equals(UMLPackage.Literals.ACTIVITY))
-					init();
 					source = createfunctionBody( (Activity) expression.getBehavior()).toString();
 			} else {
 				source = "UNKNOWN_GUARD_TYPE";
@@ -96,11 +92,11 @@ public class GuardExporter extends ActivityExporter{
 		return source;
 	}
 	
-	public String calculateSmElseGuard(Transition elseTransition_) {
+	public String calculateSmElseGuard(Transition elseTransition) {
 		String source = "";
-		Pseudostate choice = (Pseudostate) elseTransition_.getSource();
+		Pseudostate choice = (Pseudostate) elseTransition.getSource();
 		for (Transition transition : choice.getOutgoings()) {
-			if (!transition.equals(elseTransition_)) {
+			if (!transition.equals(elseTransition)) {
 				if (!source.isEmpty()) {
 					source += " " + ActivityTemplates.Operators.And + " ";
 				}

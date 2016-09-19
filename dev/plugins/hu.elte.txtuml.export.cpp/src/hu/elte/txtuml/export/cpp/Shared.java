@@ -12,13 +12,11 @@ import java.util.List;
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.uml2.uml.Activity;
-import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Parameter;
-import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -40,33 +38,20 @@ import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 import hu.elte.txtuml.utils.Pair;
 
 public class Shared {
-	public static List<Property> getProperties(Class class_) {
-		List<Property> properties = new LinkedList<Property>();
-		for (Association assoc : class_.getAssociations()) {
-			for (Property prop : assoc.getMemberEnds()) {
-				if (!prop.getType().equals(class_)) {
-					properties.add(prop);
-				}
-			}
-		}
-		properties.addAll(class_.getOwnedAttributes());
-		return properties;
-	}
-
 	@SuppressWarnings("unchecked")
-	public static <ElementTypeT, EClassTypeT> void getTypedElements(Collection<ElementTypeT> dest_,
-			Collection<Element> source_, EClassTypeT eClass_) {
-		for (Element item : source_) {
-			if (item.eClass().equals(eClass_)) {
-				dest_.add((ElementTypeT) item);
+	public static <ElementTypeT, EClassTypeT> void getTypedElements(Collection<ElementTypeT> dest,
+			Collection<Element> source, EClassTypeT eClass) {
+		for (Element item : source) {
+			if (item.eClass().equals(eClass)) {
+				dest.add((ElementTypeT) item);
 			}
 		}
 	}
 
 	// TODO need a better solution
-	public static boolean isBasicType(String typeName_) {
+	public static boolean isBasicType(String typeName) {
 
-		return typeName_.equals("Integer") || typeName_.equals("Real") || typeName_.equals("Boolean");
+		return typeName.equals("Integer") || typeName.equals("Real") || typeName.equals("Boolean");
 
 	}
 
@@ -81,14 +66,15 @@ public class Shared {
 		if (factoryClass != null) {
 			for (Operation op : factoryClass.getOperations()) {
 				if (isConstructor(op)) {
-
-					signalParameters.addAll(op.getOwnedParameters());
+					for(Parameter parameter : op.getOwnedParameters()) {
+						if(!parameter.getType().getName().equals(signal.getName())) {
+							signalParameters.add(parameter);
+						}
+					}				
+					break;
 				}
 			}
 		}
-
-		// TODO need better solution
-		signalParameters.removeIf(s -> s.getType().getName().equals(signal.getName()));
 
 		return signalParameters;
 	}
@@ -114,8 +100,6 @@ public class Shared {
 
 			if (behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
 				activity = (Activity) behavior;
-			} else {
-				// TODO exception, unknown for me, need the model
 			}
 		}
 
@@ -144,43 +128,41 @@ public class Shared {
 	public static boolean isConstructor(Operation operation) {
 
 		for (Stereotype stereotype : operation.getAppliedStereotypes()) {
-
 			if (stereotype.getKeyword().equals(ActivityTemplates.CreateStereoType)) {
 				return true;
 
 			}
 		}
-
 		return false;
 
 	}
 	
 	public static List<String> getOperationParamTypes(Operation operation) {
-		List<String> ret = new ArrayList<String>();
+		List<String> operationParameterTypes = new ArrayList<String>();
 		for (Parameter param : operation.getOwnedParameters()) {
 			if (param != operation.getReturnResult()) {
 				if (param.getType() != null) {
-					ret.add(param.getType().getName());
+					operationParameterTypes.add(param.getType().getName());
 				}
 			}
 		}
-		return ret;
+		return operationParameterTypes;
 	}
 	
 	public static List<Pair<String, String>> getOperationParams(Operation operation) {
-		List<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
+		List<Pair<String, String>> operationParameters = new ArrayList<Pair<String, String>>();
 		for (Parameter param : operation.getOwnedParameters()) {
 			if (param != operation.getReturnResult()) {
 				if (param.getType() != null) {
-					ret.add(new Pair<String, String>(param.getType().getName(), param.getName()));
+					operationParameters.add(new Pair<String, String>(param.getType().getName(), param.getName()));
 				} else {
 					// TODO exception if we want to stop the compile (missing
 					// operation, seems fatal error)
-					ret.add(new Pair<String, String>("UNKNOWN_TYPE", param.getName()));
+					operationParameters.add(new Pair<String, String>("UNKNOWN_TYPE", param.getName()));
 				}
 			}
 		}
-		return ret;
+		return operationParameters;
 	}
 
 	public static void writeOutSource(String path_, String fileName_, String source)

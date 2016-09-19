@@ -32,7 +32,7 @@ public class ThreadDescriptionExporter {
 
 		this.allModelClassName = new HashSet<String>();
 		for (org.eclipse.uml2.uml.Class cls : allClass) {
-			//TODO static signals class: not too optimal this solution..
+			//TODO static signals class: this solution is not optimal
 			if (!Shared.generatedClass(cls))
 				allModelClassName.add(cls.getName());
 		}
@@ -96,19 +96,12 @@ public class ThreadDescriptionExporter {
 
 	private void exportGroup(Group group) {
 		numberOfConfigurations = numberOfConfigurations + 1;
-
-		if (group.gradient() < 0 || group.gradient() > 1) {
-			warningList.add("The gradient of linear function should be beetween 0 and 1.");
-		}
-
-		if (group.constant() < 0) {
-			warningList.add("The constant of linear function should be higher than 0.");
-		}
+		
+		checkConfigurationOptions(group.gradient(),group.constant(),group.max());
 
 		ThreadPoolConfiguration config = new ThreadPoolConfiguration(numberOfConfigurations, group.gradient(),
-				group.constant());
-		config.setMaxThreads(group.max());
-
+				group.constant(),group.max());
+		
 		checkEmptyGroup(group.contains());
 
 		for (Class<? extends ModelClass> cls : group.contains()) {
@@ -129,8 +122,7 @@ public class ThreadDescriptionExporter {
 			nonExportedClasses.addAll(allModelClassName);
 			nonExportedClasses.removeAll(exportedClasses);
 
-			ThreadPoolConfiguration config = new ThreadPoolConfiguration(0, 0, 1);
-			config.setMaxThreads(1);
+			ThreadPoolConfiguration config = new ThreadPoolConfiguration(0, 0, 1, 1);
 			for (String uncategorizedClassName : nonExportedClasses) {
 				configMap.put(uncategorizedClassName, config);
 			}
@@ -149,5 +141,19 @@ public class ThreadDescriptionExporter {
 			warningList.add("Group annotation is empty.");
 		}
 
+	}
+	
+	private void checkConfigurationOptions(double gradient, int contstant, int max) {
+		if (gradient < 0 || gradient > 1) {
+			warningList.add("The gradient of linear function should be beetween 0 and 1.");
+		}
+
+		if (contstant < 0) {
+			warningList.add("The constant of linear function should be higher than 0.");
+		}
+		
+		if(max < contstant) {
+			warningList.add("The maximum of threads should be more then the constant");
+		}
 	}
 }
