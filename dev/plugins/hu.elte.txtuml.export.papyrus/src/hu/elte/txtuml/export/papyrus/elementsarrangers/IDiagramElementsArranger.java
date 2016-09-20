@@ -1,12 +1,8 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers;
 
-import java.util.List;
-
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.uml2.uml.Element;
-import org.eclipse.uml2.uml.Relationship;
 
 /**
  * An Interface for arranging elements of a diagram 

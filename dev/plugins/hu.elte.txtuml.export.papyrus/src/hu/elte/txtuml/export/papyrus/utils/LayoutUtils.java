@@ -2,6 +2,8 @@ package hu.elte.txtuml.export.papyrus.utils;
 
 import java.net.URLClassLoader;
 
+import org.eclipse.swt.widgets.Display;
+
 import hu.elte.txtuml.api.layout.Diagram;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.export.DiagramExporter;
@@ -35,5 +37,13 @@ public class LayoutUtils {
 			DiagramExportationReport report = exporter.export();
 			return report;
 		}
+	}
+	
+	public static Display getDisplay() {
+		Display display = Display.getCurrent();
+		// may be null if outside the UI thread
+		if (display == null)
+			display = Display.getDefault();
+		return display;		
 	}
 }

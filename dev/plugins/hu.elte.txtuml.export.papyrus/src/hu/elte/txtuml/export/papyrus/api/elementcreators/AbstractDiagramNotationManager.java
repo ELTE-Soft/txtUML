@@ -1,11 +1,9 @@
 package hu.elte.txtuml.export.papyrus.api.elementcreators;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -25,45 +23,29 @@ import org.eclipse.gmf.runtime.notation.RelativeBendpoints;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.gmf.runtime.notation.datatype.RelativeBendpoint;
 import org.eclipse.gmf.tooling.runtime.providers.DiagramElementTypes;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.papyrus.uml.diagram.clazz.providers.UMLElementTypes;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.progress.IProgressService;
 import org.eclipse.uml2.uml.Element;
 
+import hu.elte.txtuml.export.papyrus.utils.LayoutUtils;
 import hu.elte.txtuml.utils.Logger;
 
 public class AbstractDiagramNotationManager {
 
 	protected TransactionalEditingDomain domain;
-	
+
 	protected DiagramElementTypes types;
-	
+
 	protected Diagram diagram;
 
-	protected AbstractDiagramNotationManager(Diagram diagram){
-		
-		this.diagram = diagram;
-		
-		IProgressService progressService = PlatformUI.getWorkbench()
-				.getProgressService();
-		try {
-			progressService.runInUI(progressService, new IRunnableWithProgress() {
+	protected AbstractDiagramNotationManager(Diagram diagram) {
 
-				@Override
-				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-					types = UMLElementTypes.TYPED_INSTANCE;
-				}
-			}, ResourcesPlugin.getWorkspace().getRoot());
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.diagram = diagram;
+
+		LayoutUtils.getDisplay().syncExec(() -> {
+			types = UMLElementTypes.TYPED_INSTANCE;
+		});
 	}
-	
+
 	protected void runInTransactionalCommand(Runnable runnable, String commandName, IProgressMonitor monitor) {
 
 		if (monitor == null)
@@ -104,7 +86,7 @@ public class AbstractDiagramNotationManager {
 		layoutConstraint.setHeight(bounds.height);
 		return layoutConstraint;
 	}
-	
+
 	protected void createAnchorsForEdge(Edge edge, String sourceAnchor, String targetAnchor) {
 		IdentityAnchor sourceanchor = NotationFactory.eINSTANCE.createIdentityAnchor();
 		sourceanchor.setId(sourceAnchor);
@@ -132,9 +114,9 @@ public class AbstractDiagramNotationManager {
 	protected static View getViewOfModel(Element model, View container) {
 		@SuppressWarnings("unchecked")
 		EList<View> children = container.getChildren();
-		
-		for(View child : children){
-			if(child.getElement().equals(model))
+
+		for (View child : children) {
+			if (child.getElement().equals(model))
 				return child;
 		}
 		return null;

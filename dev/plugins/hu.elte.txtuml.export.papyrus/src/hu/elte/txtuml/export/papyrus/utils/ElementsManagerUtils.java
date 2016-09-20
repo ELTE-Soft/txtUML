@@ -16,6 +16,7 @@ import org.eclipse.uml2.uml.Element;
 /**
  * This Class provides servies of adding and removing elements from the diagram or it's elements
  */
+@Deprecated
 public class ElementsManagerUtils {
 	
 	/**
@@ -32,6 +33,7 @@ public class ElementsManagerUtils {
 	 * @param EP - The EditPart that is to be added to
 	 * @param diagramElements - The Elements that are to be added
 	 */
+	@Deprecated
 	@SuppressWarnings("unchecked")
 	public static void addElementsToEditPart(EditPart EP, Collection<? extends Element> diagramElements) {
 		List<Element> diagramElementsList;
@@ -67,6 +69,7 @@ public class ElementsManagerUtils {
 	 * @param editingDomain - the domain required by {@link RemoveCommand#create(EditingDomain, Object)}. It is the EditingDomain of the {@link DiagramEditPart}
 	 * @param editParts - the EditParts that are to be removed
 	 */
+	@Deprecated
 	public static void removeEditParts(EditingDomain editingDomain, List<EditPart> editParts) {
 			List<Object> modelElements = new LinkedList<Object>();
 			for(EditPart editPart : editParts){
