@@ -66,11 +66,11 @@ public class ThreadHandlingManager {
 				GenerationTemplates.simpleFunctionDecl(GenerationTemplates.MyRuntimeName, CreatorFunction) + ";",
 				NamespaceName));
 
-		Shared.writeOutSource(dest, GenerationTemplates.headerName(ConfigurationFile),
-				GenerationTemplates.headerGuard(source.toString(), ConfigurationFile));
+		Shared.writeOutSource(dest, GenerationTemplates.headerName(ConfigurationFile), Shared.format(
+				GenerationTemplates.headerGuard(source.toString(), ConfigurationFile)));
 
 		source = createDeplyomentFunctionDefinition();
-		Shared.writeOutSource(dest, GenerationTemplates.sourceName(ConfigurationFile), source.toString());
+		Shared.writeOutSource(dest, GenerationTemplates.sourceName(ConfigurationFile), Shared.format(source.toString()));
 
 	}
 
