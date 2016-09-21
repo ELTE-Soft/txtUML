@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,7 @@ public class ClassDiagramElementsArranger extends AbstractDiagramElementsArrange
 		Set<LineAssociation> arrangedLinks = vm.getAssociations();
 
 		this.elementbounds = createElementsMapping(arrangedObjects);
-		this.connectionRoutes = createConnectionMapping(arrangedLinks);
+		this.connectionRoutes = createConnectionMapping(arrangedLinks, arrangedObjects);
 
 		LayoutTransformer transformer = new LayoutTransformer(vm.getPixelGridRatioHorizontal(),
 				vm.getPixelGridRatioVertical());
@@ -70,17 +71,48 @@ public class ClassDiagramElementsArranger extends AbstractDiagramElementsArrange
 	}
 
 	private Map<Element, Rectangle> createElementsMapping(Set<RectangleObject> arrangedObjects) {
-		return arrangedObjects.stream()
+		List<RectangleObject> flattenedObjects = flattenArrangedObjectsRecursively(arrangedObjects);
+		
+		return flattenedObjects.stream()
 				.collect(Collectors.toMap(ro -> this.elementsMapper.findNode(ro.getName()),
 						ro -> new Rectangle(ro.getTopLeft().getX(), ro.getTopLeft().getY(), ro.getPixelWidth(),
 								ro.getPixelHeight())));
 	}
 
-	private Map<Relationship, List<Point>> createConnectionMapping(Set<LineAssociation> arrangedLinks) {
-		return arrangedLinks.stream()
+	private List<RectangleObject> flattenArrangedObjectsRecursively(Set<RectangleObject> arrangedObjects) {
+		List<RectangleObject> arrayList = new ArrayList<>();
+		arrangedObjects.forEach(object -> {
+			if(object.hasInner()){
+				arrayList.addAll(flattenArrangedObjectsRecursively(object.getInner().Objects));
+			}else{
+				arrayList.add(object);
+			}
+		});
+		return arrayList;
+	}
+
+	private Map<Relationship, List<Point>> createConnectionMapping(Set<LineAssociation> arrangedLinks, Set<RectangleObject> arrangedObjects) {
+		Map<Relationship, List<Point>> result = arrangedLinks.stream()
 				.collect(Collectors.toMap(la -> (Relationship) this.elementsMapper.findConnection(la.getId()),
 						la -> la.getMinimalRoute().stream().map(p -> new Point(p.getX(), p.getY()))
 								.collect(Collectors.toList())));
+		
+		result.putAll(addArrangedLinksRecursivelyFromObjects(arrangedObjects));
+		
+		return result;
+	}
+
+	private Map<Relationship, List<Point>> addArrangedLinksRecursivelyFromObjects(Set<RectangleObject> arrangedObjects) {
+		Map<Relationship, List<Point>> result = new HashMap<Relationship, List<Point>>();
+		arrangedObjects.forEach(object -> {
+			if(object.hasInner()){
+				result.putAll(object.getInner().Assocs.stream().collect(Collectors.toMap(la -> (Relationship) this.elementsMapper.findConnection(la.getId()),
+						la -> la.getMinimalRoute().stream().map(p -> new Point(p.getX(), p.getY()))
+								.collect(Collectors.toList()))));
+				result.putAll(addArrangedLinksRecursivelyFromObjects(object.getInner().Objects));
+			}
+		});
+		return result;
 	}
 
 	private Map<Relationship, String> createTargetAnchors(Set<LineAssociation> links) {

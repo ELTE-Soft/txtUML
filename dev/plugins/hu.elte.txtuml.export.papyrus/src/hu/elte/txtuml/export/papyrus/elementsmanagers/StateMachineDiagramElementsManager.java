@@ -13,6 +13,7 @@ import hu.elte.txtuml.export.papyrus.api.elementcreators.StateMachineDiagramNota
 import hu.elte.txtuml.export.papyrus.elementproviders.StateMachineDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.StateMachineDiagramElementsArranger;
+import hu.elte.txtuml.utils.Logger;
 
 /**
  * An abstract class for adding/removing elements to StateMachineDiagrams.
@@ -42,8 +43,9 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 		try {
 			this.arranger.arrange(monitor);
 		} catch (ArrangeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			String msg = "Error during the arrangement of elements: "+ e.getMessage();
+			Logger.sys.fatal(msg);
+			throw new RuntimeException(msg);
 		}
 		this.elementsProvider = provider;
 		this.monitor = monitor;

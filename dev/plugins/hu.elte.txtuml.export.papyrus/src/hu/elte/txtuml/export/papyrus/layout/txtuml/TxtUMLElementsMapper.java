@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.uml2.uml.Association;
@@ -66,31 +67,59 @@ public class TxtUMLElementsMapper {
 			this.connectionMaps.put(report, new HashMap<String, Element>());
 
 			// Nodes
-			for (RectangleObject node : report.getNodes()) {
-				findElement(node.getName()).ifPresent((e) -> {
-					this.elementMaps.get(report).put(node.getName(), e);
-				});
-			}
+			addNodesRecursively(report, report.getNodes());
 
 			// Connections
-			for (LineAssociation link : report.getLinks()) {
-				Optional<? extends Element> elem = Optional.empty();
-				if (link.getType() == AssociationType.generalization) {
-					elem = findGeneralization(link);
-				} else {
-					elem = findAssociation(link);
-					if (!elem.isPresent()) {
-						elem = findTransition(link);
-					}
-				}
-				elem.ifPresent((e) -> {
-					this.connectionMaps.get(report).put(link.getId(), e);
-				});
-			}
+			addConnections(report, report.getLinks(), report.getNodes());
 
 			String refElementName = report.getReferencedElementName();
 			findElement(refElementName).ifPresent(n -> this.elementMaps.get(report).put(refElementName, n));
 		}
+	}
+	
+	private void addNodesRecursively(DiagramExportationReport report, Set<RectangleObject> nodes) {
+		for (RectangleObject node : nodes) {
+			if(node.hasInner()){
+				addNodesRecursively(report, node.getInner().Objects);
+			}
+			findElement(node.getName()).ifPresent((e) -> {
+				this.elementMaps.get(report).put(node.getName(), e);
+			});
+		}
+	}
+	
+	private void addConnections(DiagramExportationReport report, Set<LineAssociation> links, Set<RectangleObject> objects) {
+		for (LineAssociation link : links) {
+			addConnection(report, link);
+		}
+		
+		addConnectionsRecursivelyFromObjects(report, objects);
+	}
+
+	
+	
+	private void addConnectionsRecursivelyFromObjects(DiagramExportationReport report, Set<RectangleObject> objects){
+		objects.forEach(object -> {
+			if(object.hasInner()){
+				object.getInner().Assocs.forEach(assoc -> addConnection(report, assoc));
+				addConnectionsRecursivelyFromObjects(report, object.getInner().Objects);
+			}
+		});
+	}
+
+	private void addConnection(DiagramExportationReport report,LineAssociation link) {
+		Optional<? extends Element> elem = Optional.empty();
+		if (link.getType() == AssociationType.generalization) {
+			elem = findGeneralization(link);
+		} else {
+			elem = findAssociation(link);
+			if (!elem.isPresent()) {
+				elem = findTransition(link);
+			}
+		}
+		elem.ifPresent((e) -> {
+			this.connectionMaps.get(report).put(link.getId(), e);
+		});
 	}
 
 	/**
