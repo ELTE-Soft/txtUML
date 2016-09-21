@@ -13,9 +13,7 @@ import org.eclipse.uml2.uml.Type;
 
 import hu.elte.txtuml.export.papyrus.api.elementcreators.ClassDiagramNotationManager;
 import hu.elte.txtuml.export.papyrus.elementproviders.ClassDiagramElementsProvider;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ClassDiagramElementsArranger;
-import hu.elte.txtuml.utils.Logger;
 
 /**
  * An abstract class for adding/removing elements to ClassDiagrams.
@@ -24,7 +22,6 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 
 	protected ClassDiagramNotationManager notationManager;
 	protected ClassDiagramElementsProvider elementsProvider;
-	protected ClassDiagramElementsArranger arranger;
 
 	public ClassDiagramElementsManager(Diagram diagram, ClassDiagramElementsProvider provider,
 			TransactionalEditingDomain domain, ClassDiagramElementsArranger arranger, IProgressMonitor monitor) {
@@ -33,13 +30,9 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 																		// Consider
 																		// DI
 		this.arranger = arranger;
-		try {
-			this.arranger.arrange(monitor);
-		} catch (ArrangeException e) {
-			Logger.user.error(e.getMessage());
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		arrangeWithErrorHandling();
+		
 		this.elementsProvider = provider;
 		this.monitor = monitor;
 	}

@@ -152,15 +152,18 @@ public class ClassDiagramElementsArranger extends AbstractDiagramElementsArrange
 		return rect;
 	}
 
-	public List<Point> getRouteForConnection(Relationship connection) {
+	@Override
+	public List<Point> getRouteForConnection(Element connection) {
 		return this.connectionRoutes.get(connection);
 	}
 
-	public String getSourceAnchorForConnection(Relationship assoc) {
+	@Override
+	public String getSourceAnchorForConnection(Element assoc) {
 		return this.connectionSourceAnchors.get(assoc);
 	}
 
-	public String getTargetAnchorForConnection(Relationship assoc) {
+	@Override
+	public String getTargetAnchorForConnection(Element assoc) {
 		return this.connectionTargetAnchors.get(assoc);
 	}
 

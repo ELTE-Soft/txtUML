@@ -1,6 +1,9 @@
 package hu.elte.txtuml.export.papyrus.elementsarrangers;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.uml2.uml.Element;
 
@@ -27,4 +30,12 @@ public abstract class AbstractDiagramElementsArranger implements IDiagramElement
 			return DiagramType.unknown;
 		}
 	}
+
+	public abstract List<Point> getRouteForConnection(Element transition);
+
+	public abstract String getSourceAnchorForConnection(Element transition);
+
+	public abstract String getTargetAnchorForConnection(Element generalization);
+	
+	
 }

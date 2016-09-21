@@ -11,9 +11,7 @@ import org.eclipse.uml2.uml.Vertex;
 
 import hu.elte.txtuml.export.papyrus.api.elementcreators.StateMachineDiagramNotationManager;
 import hu.elte.txtuml.export.papyrus.elementproviders.StateMachineDiagramElementsProvider;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.StateMachineDiagramElementsArranger;
-import hu.elte.txtuml.utils.Logger;
 
 /**
  * An abstract class for adding/removing elements to StateMachineDiagrams.
@@ -22,7 +20,6 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 
 	protected StateMachineDiagramNotationManager notationManager;
 	protected StateMachineDiagramElementsProvider elementsProvider;
-	protected StateMachineDiagramElementsArranger arranger;
 
 	/**
 	 * The Constructor
@@ -40,13 +37,8 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 																						// DI
 		this.arranger = arranger;
 
-		try {
-			this.arranger.arrange(monitor);
-		} catch (ArrangeException e) {
-			String msg = "Error during the arrangement of elements: "+ e.getMessage();
-			Logger.sys.fatal(msg);
-			throw new RuntimeException(msg);
-		}
+		arrangeWithErrorHandling();
+		
 		this.elementsProvider = provider;
 		this.monitor = monitor;
 	}

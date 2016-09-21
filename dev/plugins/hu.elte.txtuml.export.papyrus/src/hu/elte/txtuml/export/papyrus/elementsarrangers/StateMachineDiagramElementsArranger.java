@@ -122,15 +122,18 @@ public class StateMachineDiagramElementsArranger extends AbstractDiagramElements
 		return rect;
 	}
 
-	public List<Point> getRouteForConnection(Transition connection) {
+	@Override
+	public List<Point> getRouteForConnection(Element connection) {
 		return this.connectionRoutes.get(connection);
 	}
 
-	public String getSourceAnchorForConnection(Transition transition) {
+	@Override
+	public String getSourceAnchorForConnection(Element transition) {
 		return this.connectionSourceAnchors.get(transition);
 	}
 
-	public String getTargetAnchorForConnection(Transition transition) {
+	@Override
+	public String getTargetAnchorForConnection(Element transition) {
 		return this.connectionTargetAnchors.get(transition);
 	}
 
