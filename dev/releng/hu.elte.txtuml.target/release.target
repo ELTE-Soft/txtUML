@@ -14,6 +14,7 @@
 <unit id="org.eclipse.xtext.ui.feature.group" version="2.8.4.v201508050135"/>
 <unit id="org.eclipse.xtext.xbase.feature.group" version="2.8.4.v201508050135"/>
 <unit id="org.eclipse.xtext.xtext.ui.feature.group" version="2.8.4.v201508050135"/>
+<unit id="org.eclipse.cdt.feature.group" version="8.8.0.201509131935"/>
 <repository location="http://download.eclipse.org/releases/mars/201510021000"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
