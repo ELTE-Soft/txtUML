@@ -1,15 +1,14 @@
 package hu.elte.txtuml.layout.visualizer.algorithms.boxes;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.utils.BellmanFordSP;
+import hu.elte.txtuml.layout.visualizer.algorithms.boxes.utils.MatrixOverlapRemover;
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.utils.OverlapHelper;
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.utils.bellmanfordutils.DirectedEdge;
 import hu.elte.txtuml.layout.visualizer.algorithms.boxes.utils.bellmanfordutils.EdgeWeightedDigraph;
@@ -27,7 +26,6 @@ import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementLevel;
-import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.Quadruple;
@@ -205,33 +203,11 @@ public class ArrangeObjects {
 	}
 
 	private void removeOverlapsWithOne() throws ConversionException, InternalException, BoxOverlapConflictException {
-		// Fixes the layout of the diagram by giving statements preserving the
-		// current state
-		Pair<List<Statement>, Integer> pair = OverlapHelper.fixCurrentState(_objects, _statements, _gId);
-		_statements.addAll(pair.getFirst());
-		_gId = pair.getSecond();
-
-		for (Entry<Point, HashSet<String>> entry : OverlapHelper.overlaps(_objects).entrySet()) {
-			if (entry.getValue().size() > 1) {
-				Integer matrixSize = (int) Math.ceil(Math.sqrt(entry.getValue().size()));
-				String[][] matrix = new String[matrixSize][matrixSize];
-
-				Integer nextI = 0;
-				Integer nextJ = 0;
-
-				for (String name : entry.getValue()) {
-					matrix[nextI][nextJ] = name;
-					++nextJ;
-
-					if (nextJ >= matrixSize) {
-						++nextI;
-						nextJ = 0;
-					}
-				}
-
-				makeStatementsForMatrix(matrix, matrixSize);
-			}
-		}
+		MatrixOverlapRemover overlapRemover = new MatrixOverlapRemover(_objects,  _statements, _gId);
+		Pair<List<Statement>, Integer> result = overlapRemover.makeStatements();
+		
+		_statements = result.getFirst();
+		_gId = result.getSecond();
 
 		try {
 			arrange();
@@ -240,25 +216,6 @@ public class ArrangeObjects {
 					.getValue().stream().collect(Collectors.toList()));
 		}
 
-	}
-
-	private void makeStatementsForMatrix(String[][] matrix, Integer size) throws InternalException {
-		++_gId;
-		for (int i = 0; i < size; ++i) {
-			for (int j = 0; j < size; ++j) {
-				if (matrix[i][j] == null)
-					continue;
-
-				if (i > 0) {
-					_statements.add(new Statement(StatementType.south, StatementLevel.Medium, _gId, matrix[i][j],
-							matrix[i - 1][j]));
-				}
-				if (j > 0) {
-					_statements.add(new Statement(StatementType.east, StatementLevel.Medium, _gId, matrix[i][j],
-							matrix[i][j - 1]));
-				}
-			}
-		}
 	}
 
 	private void removeOverlapsWithFew() throws InternalException, ConversionException, BoxOverlapConflictException {

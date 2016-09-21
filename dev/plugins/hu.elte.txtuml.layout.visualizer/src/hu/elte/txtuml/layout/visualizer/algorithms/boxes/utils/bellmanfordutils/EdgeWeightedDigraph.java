@@ -37,22 +37,22 @@ public class EdgeWeightedDigraph
 	 * Initializes an empty edge-weighted digraph with <tt>V</tt> vertices and 0
 	 * edges.
 	 * 
-	 * @param V
+	 * @param p_V
 	 *            the number of vertices
 	 * 
 	 * @throws java.lang.IllegalArgumentException
 	 *             if <tt>V</tt> < 0
 	 */
 	@SuppressWarnings("unchecked")
-	public EdgeWeightedDigraph(int V)
+	public EdgeWeightedDigraph(int p_V)
 	{
-		if (V < 0)
+		if (p_V < 0)
 			throw new IllegalArgumentException(
 					"Number of vertices in a Digraph must be nonnegative");
-		this.V = V;
+		this.V = p_V;
 		this.E = 0;
-		adj = new Bag[V];
-		for (int v = 0; v < V; v++)
+		adj = new Bag[p_V];
+		for (int v = 0; v < p_V; v++)
 			adj[v] = new Bag<DirectedEdge>();
 	}
 	

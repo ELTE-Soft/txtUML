@@ -44,12 +44,12 @@ import hu.elte.txtuml.utils.Pair;
  * This class is used to wrap the arrange of a whole diagram.
  */
 public class LayoutVisualize {
-	/***
+	/**
 	 * Diagram to arrange.
 	 */
 	private Diagram _diagram;
 
-	/***
+	/**
 	 * Statements which arrange. Later the statements on the objects.
 	 */
 	private List<Statement> _statements;
@@ -199,7 +199,7 @@ public class LayoutVisualize {
 		_options.ArrangeOverlaps = OverlapArrangeMode.few;
 		_options.Logging = false;
 		_options.CorridorRatio = 1.0;
-		_options.CornerPercentage = 0.05;
+		_options.CornerPercentage = 0.15;
 	}
 
 	/**
@@ -231,9 +231,9 @@ public class LayoutVisualize {
 	 *             Throws if any error occurs which should not happen. Contact
 	 *             developer for more details!
 	 */
-	public void arrange(ArrayList<Statement> par_stats) throws InternalException, BoxArrangeConflictException,
-			ConversionException, CannotFindAssociationRouteException,
-			UnknownStatementException, BoxOverlapConflictException, StatementsConflictException {
+	public void arrange(List<Statement> par_stats)
+			throws InternalException, ConversionException, StatementsConflictException, BoxArrangeConflictException,
+			BoxOverlapConflictException, CannotFindAssociationRouteException, UnknownStatementException {
 		if (_diagram.Objects == null)
 			return;
 		

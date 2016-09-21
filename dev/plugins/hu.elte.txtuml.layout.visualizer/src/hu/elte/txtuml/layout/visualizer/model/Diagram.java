@@ -207,7 +207,7 @@ public class Diagram {
 		Integer pixelSum = 0;
 
 		for (RectangleObject box : Objects) {
-			if (!box.isSpecial() && box.isPixelDimensionsPresent()) {
+			if (box.isPixelDimensionsPresent()) {
 				gridSum += (gridSelector.apply(box) - 1);
 				pixelSum += pixelSelector.apply(box);
 			} 
