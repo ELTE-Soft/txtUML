@@ -31,7 +31,7 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	 */
 	public StateMachineDiagramElementsManager(Diagram diagram, StateMachineDiagramElementsProvider provider,
 			TransactionalEditingDomain domain, StateMachineDiagramElementsArranger arranger, IProgressMonitor monitor) {
-		super(diagram);
+		super(diagram, monitor);
 		this.notationManager = new StateMachineDiagramNotationManager(diagram, domain); // TODO:
 																						// Consider
 																						// DI
@@ -40,7 +40,6 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 		arrangeWithErrorHandling();
 		
 		this.elementsProvider = provider;
-		this.monitor = monitor;
 	}
 
 	public StateMachineDiagramElementsManager(Diagram diagram, StateMachineDiagramElementsProvider provider,

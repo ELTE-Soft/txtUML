@@ -9,6 +9,7 @@ import org.eclipse.emf.ecore.EObject;
  * <p>
  * reference: http://jorgemanrubia.net/blog/wp-content/uploads/2008/07/emfcomparator.java
  */
+@Deprecated
 public class EObjectComparator implements Comparator<EObject> {
 	@Override
 	public int compare(EObject object1, EObject object2) {

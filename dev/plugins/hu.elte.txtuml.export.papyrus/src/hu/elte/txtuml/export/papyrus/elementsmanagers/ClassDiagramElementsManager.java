@@ -25,7 +25,7 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 
 	public ClassDiagramElementsManager(Diagram diagram, ClassDiagramElementsProvider provider,
 			TransactionalEditingDomain domain, ClassDiagramElementsArranger arranger, IProgressMonitor monitor) {
-		super(diagram);
+		super(diagram, monitor);
 		this.notationManager = new ClassDiagramNotationManager(diagram, domain); // TODO:
 																		// Consider
 																		// DI
@@ -34,7 +34,6 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 		arrangeWithErrorHandling();
 		
 		this.elementsProvider = provider;
-		this.monitor = monitor;
 	}
 
 	public ClassDiagramElementsManager(Diagram diagram, ClassDiagramElementsProvider provider,
