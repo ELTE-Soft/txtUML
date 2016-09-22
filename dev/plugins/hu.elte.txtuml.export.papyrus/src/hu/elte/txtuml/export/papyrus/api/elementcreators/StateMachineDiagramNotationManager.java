@@ -32,7 +32,7 @@ import org.eclipse.uml2.uml.Vertex;
 import hu.elte.txtuml.utils.Logger;
 
 public class StateMachineDiagramNotationManager extends AbstractDiagramNotationManager {
-	private static final PreferencesHint diagramPrefHint = UMLDiagramEditorPlugin.DIAGRAM_PREFERENCES_HINT;
+	private static final PreferencesHint DIAGRAM_PREFERENCES_HINT = UMLDiagramEditorPlugin.DIAGRAM_PREFERENCES_HINT;
 
 	private static final Rectangle defaultStateBounds = new Rectangle(0, 0, 50, 50);
 
@@ -68,20 +68,11 @@ public class StateMachineDiagramNotationManager extends AbstractDiagramNotationM
 
 	private static List<Node> regionsForState(Node stateMachineView) {
 		ArrayList<Node> regionsForState = new ArrayList<>();
+		Node regionCompartement = findRegionCompartementOfState(stateMachineView);
 
 		@SuppressWarnings("unchecked")
-		List<Node> decorationNodes = stateMachineView.getChildren();
-		for (Node decorationNode : decorationNodes) {
-			if (decorationNode.getType().equals(String.valueOf(StateMachineCompartmentEditPart.VISUAL_ID))
-					|| decorationNode.getType().equals(String.valueOf(StateCompartmentEditPart.VISUAL_ID))) {
-
-				@SuppressWarnings("unchecked")
-				List<Node> regions = decorationNode.getChildren();
-				for (Node region : regions) {
-					regionsForState.add(region);
-				}
-			}
-		}
+		List<Node> regions = regionCompartement.getChildren();
+		regionsForState.addAll(regions);
 		return regionsForState;
 	}
 
@@ -92,11 +83,14 @@ public class StateMachineDiagramNotationManager extends AbstractDiagramNotationM
 
 		Runnable runnable = () -> {
 			String hint = ((IHintedType) UMLElementTypes.State_6000).getSemanticHint();
-			Node newNode = ViewService.createNode(node, state, hint, StateMachineDiagramNotationManager.diagramPrefHint);
+			Node newNode = ViewService.createNode(node, state, hint, DIAGRAM_PREFERENCES_HINT);
 			newNode.setLayoutConstraint(createBounds(bounds, defaultStateBounds));
+
+			this.notationMap.put(state, newNode);
 		};
 
 		runInTransactionalCommand(runnable, "Creating State for Node " + node, monitor);
+
 	}
 
 	public void createInitialStateForRegion(Region region, Pseudostate InitialState, Rectangle bounds,
@@ -106,7 +100,7 @@ public class StateMachineDiagramNotationManager extends AbstractDiagramNotationM
 
 		Runnable runnable = () -> {
 			String hint = ((IHintedType) UMLElementTypes.Pseudostate_8000).getSemanticHint();
-			Node newNode = ViewService.createNode(node, InitialState, hint, StateMachineDiagramNotationManager.diagramPrefHint);
+			Node newNode = ViewService.createNode(node, InitialState, hint, DIAGRAM_PREFERENCES_HINT);
 			newNode.setLayoutConstraint(createBounds(bounds, defaultStateBounds));
 		};
 
@@ -126,7 +120,7 @@ public class StateMachineDiagramNotationManager extends AbstractDiagramNotationM
 
 		Runnable runnable = () -> {
 			Edge edge = (Edge) ViewService.getInstance().createEdge(elementType, this.diagram, hint, ViewUtil.APPEND,
-					StateMachineDiagramNotationManager.diagramPrefHint);
+					DIAGRAM_PREFERENCES_HINT);
 			edge.setElement(transition);
 			edge.setSource(sourceView);
 			edge.setTarget(targetView);
@@ -135,6 +129,33 @@ public class StateMachineDiagramNotationManager extends AbstractDiagramNotationM
 		};
 
 		runInTransactionalCommand(runnable, "Creating Transition  between " + source + " and " + target, monitor);
+	}
+
+	public void createRegionForState(State state, Region region, IProgressMonitor monitor) {
+
+		Node stateNode = this.notationMap.get(state);
+		Node node = findRegionCompartementOfState(stateNode);
+
+		Runnable runnable = () -> {
+			String hint = ((IHintedType) UMLElementTypes.Region_3000).getSemanticHint();
+			Node newNode = ViewService.createNode(node, region, hint, DIAGRAM_PREFERENCES_HINT);
+			
+			this.notationMap.put(region, newNode);
+		};
+
+		runInTransactionalCommand(runnable, "Creating Region for Node " + node, monitor);
+	}
+
+	private static Node findRegionCompartementOfState(Node stateNode) {
+		@SuppressWarnings("unchecked")
+		List<Node> decorationNodes = stateNode.getChildren();
+		for (Node decorationNode : decorationNodes) {
+			if (decorationNode.getType().equals(String.valueOf(StateMachineCompartmentEditPart.VISUAL_ID))
+					|| decorationNode.getType().equals(String.valueOf(StateCompartmentEditPart.VISUAL_ID))) {
+				return decorationNode;
+			}
+		}
+		return null;
 	}
 
 	private Node findCanvasOfRegion(Node regionNode) {

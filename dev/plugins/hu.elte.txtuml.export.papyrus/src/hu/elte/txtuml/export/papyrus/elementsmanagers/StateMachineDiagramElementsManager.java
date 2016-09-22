@@ -64,7 +64,12 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 			this.elementsProvider.getStatesForRegion(region).forEach(state -> {
 				this.notationManager.createStateForRegion(region, state, this.arranger.getBoundsForElement(state),
 						this.monitor);
-				addSubelementsRecursively(this.elementsProvider.getRegionsOfState(state));
+				if(!state.isSimple()){
+					state.getRegions().forEach(reg -> {
+						this.notationManager.createRegionForState(state, reg, this.monitor);
+					});
+					addSubelementsRecursively(this.elementsProvider.getRegionsOfState(state));
+				}
 			});
 			this.elementsProvider.getInitialStatesForRegion(region).forEach(initialState -> {
 				this.notationManager.createInitialStateForRegion(region, initialState,

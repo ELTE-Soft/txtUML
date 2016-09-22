@@ -45,7 +45,8 @@ public class StateMachineDiagramElementsProviderImpl implements StateMachineDiag
 	@Override
 	public Collection<State> getStatesForRegion(Region region) {
 		List<State> result = new ArrayList<>();
-		result = region.getOwnedElements().stream().filter(e -> (e instanceof State) && this.nodes.contains(e))
+		
+		result = region.getSubvertices().stream().filter(e -> (e instanceof State) && this.nodes.contains(e))
 				.map(e -> (State) e).collect(Collectors.toList());
 		return result;
 	}
@@ -57,10 +58,7 @@ public class StateMachineDiagramElementsProviderImpl implements StateMachineDiag
 
 	@Override
 	public Collection<Region> getRegionsOfState(State state) {
-		List<Region> result = new ArrayList<>();
-		result = state.getOwnedElements().stream().filter(e -> (e instanceof Region) && this.nodes.contains(e))
-				.map(e -> (Region) e).collect(Collectors.toList());
-		return result;
+		return state.getRegions();
 	}
 
 	@Override
