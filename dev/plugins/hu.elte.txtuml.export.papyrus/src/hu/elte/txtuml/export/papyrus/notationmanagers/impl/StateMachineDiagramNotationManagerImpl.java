@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.api.elementcreators;
+package hu.elte.txtuml.export.papyrus.notationmanagers.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,16 +29,18 @@ import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.Transition;
 import org.eclipse.uml2.uml.Vertex;
 
+import hu.elte.txtuml.export.papyrus.notationmanagers.AbstractDiagramNotationManager;
+import hu.elte.txtuml.export.papyrus.notationmanagers.StateMachineDiagramNotationManager;
 import hu.elte.txtuml.utils.Logger;
 
-public class StateMachineDiagramNotationManager extends AbstractDiagramNotationManager {
+public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotationManager implements StateMachineDiagramNotationManager {
 	private static final PreferencesHint DIAGRAM_PREFERENCES_HINT = UMLDiagramEditorPlugin.DIAGRAM_PREFERENCES_HINT;
 
 	private static final Rectangle defaultStateBounds = new Rectangle(0, 0, 50, 50);
 
 	private Map<EObject, Node> notationMap = new HashMap<>();
 
-	public StateMachineDiagramNotationManager(Diagram diagram, TransactionalEditingDomain domain) {
+	public StateMachineDiagramNotationManagerImpl(Diagram diagram, TransactionalEditingDomain domain) {
 		super(diagram);
 		this.domain = domain;
 		initNotationMap();
@@ -76,6 +78,7 @@ public class StateMachineDiagramNotationManager extends AbstractDiagramNotationM
 		return regionsForState;
 	}
 
+	@Override
 	public void createStateForRegion(Region region, State state, Rectangle bounds, IProgressMonitor monitor) {
 
 		Node regionNode = this.notationMap.get(region);
@@ -93,6 +96,7 @@ public class StateMachineDiagramNotationManager extends AbstractDiagramNotationM
 
 	}
 
+	@Override
 	public void createInitialStateForRegion(Region region, Pseudostate InitialState, Rectangle bounds,
 			IProgressMonitor monitor) {
 		Node regionNode = this.notationMap.get(region);
@@ -107,6 +111,7 @@ public class StateMachineDiagramNotationManager extends AbstractDiagramNotationM
 		runInTransactionalCommand(runnable, "Creating Initialstate for Node " + node, monitor);
 	}
 
+	@Override
 	public void createTransitionForRegion(Region region, Vertex source, Vertex target, Transition transition,
 			List<Point> route, String sourceAnchor, String targetAnchor, IProgressMonitor monitor) {
 
@@ -131,6 +136,7 @@ public class StateMachineDiagramNotationManager extends AbstractDiagramNotationM
 		runInTransactionalCommand(runnable, "Creating Transition  between " + source + " and " + target, monitor);
 	}
 
+	@Override
 	public void createRegionForState(State state, Region region, IProgressMonitor monitor) {
 
 		Node stateNode = this.notationMap.get(state);

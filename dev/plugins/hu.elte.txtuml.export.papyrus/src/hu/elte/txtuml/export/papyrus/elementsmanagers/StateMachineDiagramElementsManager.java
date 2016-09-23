@@ -9,9 +9,9 @@ import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.Vertex;
 
-import hu.elte.txtuml.export.papyrus.api.elementcreators.StateMachineDiagramNotationManager;
 import hu.elte.txtuml.export.papyrus.elementproviders.StateMachineDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.StateMachineDiagramElementsArranger;
+import hu.elte.txtuml.export.papyrus.notationmanagers.StateMachineDiagramNotationManager;
 
 /**
  * An abstract class for adding/removing elements to StateMachineDiagrams.

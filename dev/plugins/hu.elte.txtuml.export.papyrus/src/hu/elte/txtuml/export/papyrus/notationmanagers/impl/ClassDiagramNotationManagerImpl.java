@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.api.elementcreators;
+package hu.elte.txtuml.export.papyrus.notationmanagers.impl;
 
 import java.util.List;
 
@@ -29,26 +29,29 @@ import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
 
+import hu.elte.txtuml.export.papyrus.notationmanagers.AbstractDiagramNotationManager;
+import hu.elte.txtuml.export.papyrus.notationmanagers.ClassDiagramNotationManager;
 import hu.elte.txtuml.utils.Logger;
 
-public class ClassDiagramNotationManager extends AbstractDiagramNotationManager {
+public class ClassDiagramNotationManagerImpl extends AbstractDiagramNotationManager
+		implements ClassDiagramNotationManager {
 
 	private static final PreferencesHint diagramPrefHint = UMLDiagramEditorPlugin.DIAGRAM_PREFERENCES_HINT;
 
 	private static final Rectangle defaultClassBounds = new Rectangle(0, 0, 100, 100);
 
-	public ClassDiagramNotationManager(Diagram diagram, TransactionalEditingDomain domain) {
+	public ClassDiagramNotationManagerImpl(Diagram diagram, TransactionalEditingDomain domain) {
 		super(diagram);
 		this.domain = domain;
 	}
 
-	public void createClassForDiagram(Class objectToDisplay, Rectangle bounds,
-			IProgressMonitor monitor) {
+	@Override
+	public void createClassForDiagram(Class objectToDisplay, Rectangle bounds, IProgressMonitor monitor) {
 
 		Runnable runnable = () -> {
 			String hint = ((IHintedType) UMLElementTypes.Class_2008).getSemanticHint();
 			Node newNode = ViewService.createNode(diagram, objectToDisplay, hint,
-					ClassDiagramNotationManager.diagramPrefHint);
+					ClassDiagramNotationManagerImpl.diagramPrefHint);
 
 			newNode.setLayoutConstraint(createBounds(bounds, defaultClassBounds));
 
@@ -74,12 +77,13 @@ public class ClassDiagramNotationManager extends AbstractDiagramNotationManager 
 
 		Runnable runnable = () -> {
 			String hint = ((IHintedType) UMLElementTypes.Property_3012).getSemanticHint();
-			ViewService.createNode(comp, propertyToDisplay, hint, ClassDiagramNotationManager.diagramPrefHint);
+			ViewService.createNode(comp, propertyToDisplay, hint, ClassDiagramNotationManagerImpl.diagramPrefHint);
 		};
 
 		runInTransactionalCommand(runnable, "Creating Property for Node " + node, monitor);
 	}
 
+	@Override
 	public void createOperationForNode(Node node, Operation operationToDisplay, IProgressMonitor monitor) {
 		BasicCompartment comp = getOperationCompartementOfNode(node);
 
@@ -90,16 +94,18 @@ public class ClassDiagramNotationManager extends AbstractDiagramNotationManager 
 
 		Runnable runnable = () -> {
 			String hint = ((IHintedType) UMLElementTypes.Operation_3013).getSemanticHint();
-			ViewService.createNode(comp, operationToDisplay, hint, ClassDiagramNotationManager.diagramPrefHint);
+			ViewService.createNode(comp, operationToDisplay, hint, ClassDiagramNotationManagerImpl.diagramPrefHint);
 		};
 
 		runInTransactionalCommand(runnable, "Creating Operation for Node " + node, monitor);
 	}
 
+	@Override
 	public void createSignalForDiagram(Signal signal, Rectangle bounds, IProgressMonitor monitor) {
 		// TODO Auto-generated method stub
 	}
 
+	@Override
 	public void createAssociationForNodes(Classifier source, Classifier target, Association assoc, List<Point> route,
 			String sourceAnchor, String targetAnchor, IProgressMonitor monitor) {
 
@@ -110,7 +116,7 @@ public class ClassDiagramNotationManager extends AbstractDiagramNotationManager 
 
 		Runnable runnable = () -> {
 			Edge edge = (Edge) ViewService.getInstance().createEdge(elementType, this.diagram, hint, ViewUtil.APPEND,
-					ClassDiagramNotationManager.diagramPrefHint);
+					ClassDiagramNotationManagerImpl.diagramPrefHint);
 			edge.setElement(assoc);
 			edge.setSource(sourceView);
 			edge.setTarget(targetView);
@@ -121,6 +127,7 @@ public class ClassDiagramNotationManager extends AbstractDiagramNotationManager 
 		runInTransactionalCommand(runnable, "Creating Assoc", monitor);
 	}
 
+	@Override
 	public void createGeneralizationForNodes(Generalization generalization, List<Point> route, String sourceAnchor,
 			String targetAnchor, IProgressMonitor monitor) {
 		Classifier subclass = generalization.getSpecific();
@@ -133,7 +140,7 @@ public class ClassDiagramNotationManager extends AbstractDiagramNotationManager 
 
 		Runnable runnable = () -> {
 			Edge edge = (Edge) ViewService.getInstance().createEdge(elementType, this.diagram, hint, ViewUtil.APPEND,
-					ClassDiagramNotationManager.diagramPrefHint);
+					ClassDiagramNotationManagerImpl.diagramPrefHint);
 			edge.setElement(generalization);
 			edge.setSource(sourceView);
 			edge.setTarget(targetView);

@@ -10,9 +10,9 @@ import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 
-import hu.elte.txtuml.export.papyrus.api.elementcreators.ClassDiagramNotationManager;
 import hu.elte.txtuml.export.papyrus.elementproviders.ClassDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ClassDiagramElementsArranger;
+import hu.elte.txtuml.export.papyrus.notationmanagers.ClassDiagramNotationManager;
 
 /**
  * An abstract class for adding/removing elements to ClassDiagrams.

@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.api.elementcreators;
+package hu.elte.txtuml.export.papyrus.notationmanagers;
 
 import java.util.List;
 import java.util.stream.Collectors;
