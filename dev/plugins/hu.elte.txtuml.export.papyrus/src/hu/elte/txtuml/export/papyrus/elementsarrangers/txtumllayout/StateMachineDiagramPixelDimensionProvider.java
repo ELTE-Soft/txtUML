@@ -8,6 +8,7 @@ import hu.elte.txtuml.export.papyrus.layout.txtuml.IDiagramElementsMapper;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.StateMachineDiagramElementsMapper;
 import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.layout.visualizer.model.SpecialBox;
 import hu.elte.txtuml.utils.Pair;
 
 public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensionProvider {
@@ -21,15 +22,35 @@ public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensio
 	private static final int MAX_STATE_HEIGHT = 200;
 
 	private IDiagramElementsMapper elementsMapper;
-	
+
 	public StateMachineDiagramPixelDimensionProvider(StateMachineDiagramElementsMapper mapper) {
 		this.elementsMapper = mapper;
 	}
 
 	@Override
 	public Pair<Width, Height> getPixelDimensionsFor(RectangleObject box) {
-		Integer width = DEFAULT_ELEMENT_WIDTH;
-		Integer height = DEFAULT_ELEMENT_HEIGHT;
+		int width;
+		int height;
+
+		if (!box.hasInner()) {
+			if (box.isSpecial() && box.getSpecial().equals(SpecialBox.Initial)) {
+				width = 20;
+				height = 20;
+			} else {
+				// TODO: search among simple elements / default value
+				width = DEFAULT_ELEMENT_WIDTH;
+				height = DEFAULT_ELEMENT_HEIGHT;
+			}
+		} else // if(box.hasInner())
+		{
+			width = box.getInner().getWidth() * box.getInner().getPixelGridHorizontal();
+			height = box.getInner().getHeight() * box.getInner().getPixelGridVertical();
+		}
+
+		return normalizeSizes(box, width, height);
+	}
+
+	private Pair<Width, Height> normalizeSizes(RectangleObject box, int width, int height) {
 
 		Element elem = this.elementsMapper.findNode(box.getName());
 		if (elem != null && elem instanceof State) {
@@ -38,11 +59,10 @@ public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensio
 
 			height = height < MIN_STATE_HEIGHT ? MIN_STATE_HEIGHT : height;
 			height = height > MAX_STATE_HEIGHT ? MAX_STATE_HEIGHT : height;
-		}else if(elem != null && elem instanceof Pseudostate){
+		} else if (elem != null && elem instanceof Pseudostate) {
 			width = 20;
 			height = 20;
 		}
 		return Pair.of(new Width(width), new Height(height));
 	}
-
 }
