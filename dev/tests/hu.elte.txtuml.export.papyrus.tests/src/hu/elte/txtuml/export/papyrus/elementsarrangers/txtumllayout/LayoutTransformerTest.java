@@ -10,7 +10,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.junit.Assert;
 import org.junit.Test;
 
-import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutTransformer;
+import hu.elte.txtuml.export.papyrus.arrange.LayoutTransformer;
 
 public class LayoutTransformerTest {
 

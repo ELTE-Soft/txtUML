@@ -14,6 +14,7 @@ import hu.elte.txtuml.export.papyrus.graphics.IconsUtil;
 /**
  * Creates the controls for the preferences
  */
+@Deprecated
 public class PreferencesUI {
 
 	/**

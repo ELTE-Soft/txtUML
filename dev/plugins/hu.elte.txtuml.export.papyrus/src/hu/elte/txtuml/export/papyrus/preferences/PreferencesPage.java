@@ -12,6 +12,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
  * The Preferences page for txtUML Papyrus visualization
  * The UI is the same as by {@link hu.elte.txtuml.export.papyrus.wizardz.PreferencesPage PreferencesPage}
  */
+@Deprecated
 public class PreferencesPage extends PreferencePage implements IWorkbenchPreferencePage{
 
 	private PreferencesUI preferencesUI;
