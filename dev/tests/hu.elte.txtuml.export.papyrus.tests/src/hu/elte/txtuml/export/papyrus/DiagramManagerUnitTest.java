@@ -2,17 +2,14 @@ package hu.elte.txtuml.export.papyrus;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramEditor;
 import org.eclipse.gmf.runtime.notation.Diagram;
-import org.eclipse.papyrus.commands.ICreationCommand;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.infra.core.resource.ModelSet;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
@@ -20,13 +17,10 @@ import org.eclipse.papyrus.infra.core.services.ServicesRegistry;
 import org.eclipse.papyrus.infra.gmfdiag.common.model.NotationModel;
 import org.eclipse.papyrus.infra.gmfdiag.css.notation.CSSDiagramImpl;
 import org.eclipse.papyrus.infra.gmfdiag.css.resource.CSSNotationResource;
-import org.eclipse.uml2.uml.Element;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import hu.elte.txtuml.export.papyrus.DiagramManager;
 
 //TODO Rewrite these tests
 
@@ -34,6 +28,8 @@ public class DiagramManagerUnitTest {
 	private DiagramManager diagramManager;
 	private ModelSet ms;
 	private DiagramEditor editorPart;
+	
+	
 	@Before
 	public void setUp(){
 		IMultiDiagramEditor editor = Mockito.mock(IMultiDiagramEditor.class);
@@ -52,24 +48,12 @@ public class DiagramManagerUnitTest {
 		Mockito.when(editor.getServicesRegistry()).thenReturn(reg);
 		Mockito.when(editor.getActiveEditor()).thenReturn(this.editorPart);
 		
-	//	this.diagramManager = new DiagramManager(editor);
+		this.diagramManager = new DiagramManager(editor.getServicesRegistry());
 	}
 	
 	@After
 	public void tearDown(){
 		this.diagramManager = null;
-	}
-	
-	
-	@Test
-	public void testDiagramCreation(){
-		Element elem = Mockito.mock(Element.class);
-		ICreationCommand command = Mockito.mock(ICreationCommand.class); 
-		String diagramName = "MockDiagram";		
-		
-		//diagramManager.createDiagram(elem, diagramName, command);
-		
-		verify(command).createDiagram(ms, elem, diagramName);
 	}
 	
 	@Test

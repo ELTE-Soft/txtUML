@@ -20,6 +20,8 @@ import org.eclipse.papyrus.uml.tools.model.UmlModel;
 import org.eclipse.uml2.uml.BehavioredClassifier;
 import org.eclipse.uml2.uml.Element;
 
+import hu.elte.txtuml.export.papyrus.api.elementcreators.ClassDiagramNotationManager;
+import hu.elte.txtuml.export.papyrus.api.elementcreators.StateMachineDiagramNotationManager;
 import hu.elte.txtuml.export.papyrus.elementproviders.ClassDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.elementproviders.ClassDiagramElementsProviderImpl;
 import hu.elte.txtuml.export.papyrus.elementproviders.StateMachineDiagramElementsProvider;
@@ -29,8 +31,8 @@ import hu.elte.txtuml.export.papyrus.elementsarrangers.StateMachineDiagramElemen
 import hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.ClassDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.StateMachineDiagramElementsManager;
-import hu.elte.txtuml.export.papyrus.layout.txtuml.StateMachineDiagramElementsMapper;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.ClassDiagramElementsMapper;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.StateMachineDiagramElementsMapper;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsMapper;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
@@ -141,7 +143,6 @@ public class PapyrusModelManager {
 	 */
 	protected void addElementsToDiagram(Diagram diagram, IProgressMonitor monitor) {
 		AbstractDiagramElementsManager diagramElementsManager;
-
 		DiagramExportationReport report = this.descriptor.getReportByDiagramName(diagram.getName());
 
 		if (diagram.getType().equals(diagramType_CD)) {
@@ -149,13 +150,15 @@ public class PapyrusModelManager {
 
 			ClassDiagramElementsProvider provider = new ClassDiagramElementsProviderImpl(mapper);
 			ClassDiagramElementsArranger arranger = new ClassDiagramElementsArranger(report, mapper);
-			diagramElementsManager = new ClassDiagramElementsManager(diagram, provider, this.domain, arranger, monitor);
+			ClassDiagramNotationManager notation = new ClassDiagramNotationManager(diagram, this.domain);
+			diagramElementsManager = new ClassDiagramElementsManager(diagram, provider, notation, arranger, monitor);
 		} else if (diagram.getType().equals(diagramType_SMD)) {
 			StateMachineDiagramElementsMapper mapper = (StateMachineDiagramElementsMapper) this.mapper.getMapperForReport(report);
 			
 			StateMachineDiagramElementsProvider provider = new StateMachineDiagramElementsProviderImpl(report, mapper);
 			StateMachineDiagramElementsArranger arranger = new StateMachineDiagramElementsArranger(report, mapper);
-			diagramElementsManager = new StateMachineDiagramElementsManager(diagram, provider, this.domain, arranger,
+			StateMachineDiagramNotationManager notation = new StateMachineDiagramNotationManager(diagram, this.domain);
+			diagramElementsManager = new StateMachineDiagramElementsManager(diagram, provider, notation, arranger,
 					monitor);
 		} else {
 			return;

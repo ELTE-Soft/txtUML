@@ -5,7 +5,6 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Property;
@@ -24,21 +23,18 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 	protected ClassDiagramElementsProvider elementsProvider;
 
 	public ClassDiagramElementsManager(Diagram diagram, ClassDiagramElementsProvider provider,
-			TransactionalEditingDomain domain, ClassDiagramElementsArranger arranger, IProgressMonitor monitor) {
+			ClassDiagramNotationManager notation, ClassDiagramElementsArranger arranger, IProgressMonitor monitor) {
 		super(diagram, monitor);
-		this.notationManager = new ClassDiagramNotationManager(diagram, domain); // TODO:
-																		// Consider
-																		// DI
+		this.notationManager = notation;
 		this.arranger = arranger;
+		this.elementsProvider = provider;
 
 		arrangeWithErrorHandling();
-		
-		this.elementsProvider = provider;
 	}
 
 	public ClassDiagramElementsManager(Diagram diagram, ClassDiagramElementsProvider provider,
-			TransactionalEditingDomain domain, ClassDiagramElementsArranger arranger) {
-		this(diagram, provider, domain, arranger, new NullProgressMonitor());
+			ClassDiagramNotationManager notation, ClassDiagramElementsArranger arranger) {
+		this(diagram, provider, notation, arranger, new NullProgressMonitor());
 	}
 
 	/*
@@ -51,8 +47,8 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 	public void addElementsToDiagram() {
 		this.elementsProvider.getClasses().forEach((clazz) -> this.notationManager.createClassForDiagram(clazz,
 				this.arranger.getBoundsForElement(clazz), this.monitor));
-		this.elementsProvider.getSignals().forEach((signal) -> this.notationManager.createSignalForDiagram(
-				signal, this.arranger.getBoundsForElement(signal), this.monitor));
+		this.elementsProvider.getSignals().forEach((signal) -> this.notationManager.createSignalForDiagram(signal,
+				this.arranger.getBoundsForElement(signal), this.monitor));
 
 		this.elementsProvider.getAssociations().forEach((assoc) -> {
 			// A txtUML scpecific implementation. Assoiciations are exported
@@ -75,6 +71,6 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 				.forEach((generalization) -> this.notationManager.createGeneralizationForNodes(generalization,
 						this.arranger.getRouteForConnection(generalization),
 						this.arranger.getSourceAnchorForConnection(generalization),
-						this.arranger.getTargetAnchorForConnection(generalization),this.monitor));
+						this.arranger.getTargetAnchorForConnection(generalization), this.monitor));
 	}
 }

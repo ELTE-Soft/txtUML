@@ -30,21 +30,19 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	 *            - The DiagramEditPart of the diagram which is to be handled
 	 */
 	public StateMachineDiagramElementsManager(Diagram diagram, StateMachineDiagramElementsProvider provider,
-			TransactionalEditingDomain domain, StateMachineDiagramElementsArranger arranger, IProgressMonitor monitor) {
+			StateMachineDiagramNotationManager notation, StateMachineDiagramElementsArranger arranger,
+			IProgressMonitor monitor) {
 		super(diagram, monitor);
-		this.notationManager = new StateMachineDiagramNotationManager(diagram, domain); // TODO:
-																						// Consider
-																						// DI
+		this.notationManager = notation;
 		this.arranger = arranger;
+		this.elementsProvider = provider;
 
 		arrangeWithErrorHandling();
-		
-		this.elementsProvider = provider;
 	}
 
 	public StateMachineDiagramElementsManager(Diagram diagram, StateMachineDiagramElementsProvider provider,
-			TransactionalEditingDomain domain, StateMachineDiagramElementsArranger arranger) {
-		this(diagram, provider, domain, arranger, new NullProgressMonitor());
+			StateMachineDiagramNotationManager notation, StateMachineDiagramElementsArranger arranger) {
+		this(diagram, provider, notation, arranger, new NullProgressMonitor());
 	}
 
 	/*
@@ -64,7 +62,7 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 			this.elementsProvider.getStatesForRegion(region).forEach(state -> {
 				this.notationManager.createStateForRegion(region, state, this.arranger.getBoundsForElement(state),
 						this.monitor);
-				if(!state.isSimple()){
+				if (!state.isSimple()) {
 					state.getRegions().forEach(reg -> {
 						this.notationManager.createRegionForState(state, reg, this.monitor);
 					});
