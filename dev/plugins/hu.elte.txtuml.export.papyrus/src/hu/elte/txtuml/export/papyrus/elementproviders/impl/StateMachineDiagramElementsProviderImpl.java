@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.elementproviders;
+package hu.elte.txtuml.export.papyrus.elementproviders.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,6 +13,7 @@ import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.Transition;
 
+import hu.elte.txtuml.export.papyrus.elementproviders.StateMachineDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.StateMachineDiagramElementsMapper;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 

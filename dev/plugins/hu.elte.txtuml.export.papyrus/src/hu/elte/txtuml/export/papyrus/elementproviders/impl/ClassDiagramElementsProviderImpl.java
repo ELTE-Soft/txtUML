@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.elementproviders;
+package hu.elte.txtuml.export.papyrus.elementproviders.impl;
 
 import java.util.Collection;
 import java.util.List;
@@ -20,6 +20,7 @@ import org.eclipse.uml2.uml.Realization;
 import org.eclipse.uml2.uml.Relationship;
 import org.eclipse.uml2.uml.Signal;
 
+import hu.elte.txtuml.export.papyrus.elementproviders.ClassDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.ClassDiagramElementsMapper;
 
 public class ClassDiagramElementsProviderImpl implements ClassDiagramElementsProvider {

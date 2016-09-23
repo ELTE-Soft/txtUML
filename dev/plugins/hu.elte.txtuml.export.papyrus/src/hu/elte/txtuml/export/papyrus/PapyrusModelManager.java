@@ -21,9 +21,9 @@ import org.eclipse.uml2.uml.BehavioredClassifier;
 import org.eclipse.uml2.uml.Element;
 
 import hu.elte.txtuml.export.papyrus.elementproviders.ClassDiagramElementsProvider;
-import hu.elte.txtuml.export.papyrus.elementproviders.ClassDiagramElementsProviderImpl;
 import hu.elte.txtuml.export.papyrus.elementproviders.StateMachineDiagramElementsProvider;
-import hu.elte.txtuml.export.papyrus.elementproviders.StateMachineDiagramElementsProviderImpl;
+import hu.elte.txtuml.export.papyrus.elementproviders.impl.ClassDiagramElementsProviderImpl;
+import hu.elte.txtuml.export.papyrus.elementproviders.impl.StateMachineDiagramElementsProviderImpl;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ClassDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.StateMachineDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsManager;
