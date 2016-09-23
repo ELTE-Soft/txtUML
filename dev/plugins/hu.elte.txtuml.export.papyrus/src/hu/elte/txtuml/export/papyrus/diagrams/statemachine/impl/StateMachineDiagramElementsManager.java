@@ -8,6 +8,7 @@ import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.Vertex;
 
+import hu.elte.txtuml.export.papyrus.arrange.IDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.diagrams.AbstractDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.diagrams.statemachine.StateMachineDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.diagrams.statemachine.StateMachineDiagramNotationManager;
@@ -29,7 +30,7 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	 *            - The DiagramEditPart of the diagram which is to be handled
 	 */
 	public StateMachineDiagramElementsManager(Diagram diagram, StateMachineDiagramElementsProvider provider,
-			StateMachineDiagramNotationManager notation, StateMachineDiagramElementsArranger arranger,
+			StateMachineDiagramNotationManager notation, IDiagramElementsArranger arranger,
 			IProgressMonitor monitor) {
 		super(diagram, monitor);
 		this.notationManager = notation;
@@ -40,7 +41,7 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	}
 
 	public StateMachineDiagramElementsManager(Diagram diagram, StateMachineDiagramElementsProvider provider,
-			StateMachineDiagramNotationManager notation, StateMachineDiagramElementsArranger arranger) {
+			StateMachineDiagramNotationManager notation, IDiagramElementsArranger arranger) {
 		this(diagram, provider, notation, arranger, new NullProgressMonitor());
 	}
 

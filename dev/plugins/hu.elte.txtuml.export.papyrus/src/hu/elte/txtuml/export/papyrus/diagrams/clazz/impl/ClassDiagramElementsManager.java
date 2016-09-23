@@ -10,6 +10,7 @@ import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 
+import hu.elte.txtuml.export.papyrus.arrange.IDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.diagrams.AbstractDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.diagrams.clazz.ClassDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.diagrams.clazz.ClassDiagramNotationManager;
@@ -23,7 +24,7 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 	protected ClassDiagramElementsProvider elementsProvider;
 
 	public ClassDiagramElementsManager(Diagram diagram, ClassDiagramElementsProvider provider,
-			ClassDiagramNotationManager notation, ClassDiagramElementsArranger arranger, IProgressMonitor monitor) {
+			ClassDiagramNotationManager notation, IDiagramElementsArranger arranger, IProgressMonitor monitor) {
 		super(diagram, monitor);
 		this.notationManager = notation;
 		this.arranger = arranger;
@@ -33,7 +34,7 @@ public class ClassDiagramElementsManager extends AbstractDiagramElementsManager 
 	}
 
 	public ClassDiagramElementsManager(Diagram diagram, ClassDiagramElementsProvider provider,
-			ClassDiagramNotationManager notation, ClassDiagramElementsArranger arranger) {
+			ClassDiagramNotationManager notation, IDiagramElementsArranger arranger) {
 		this(diagram, provider, notation, arranger, new NullProgressMonitor());
 	}
 

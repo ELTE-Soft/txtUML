@@ -1,6 +1,9 @@
 package hu.elte.txtuml.export.papyrus.arrange;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.uml2.uml.Element;
 
@@ -17,4 +20,10 @@ public interface IDiagramElementsArranger {
 	public void arrange(IProgressMonitor monitor) throws ArrangeException;
 
 	public Rectangle getBoundsForElement(Element element);
+	
+	public List<Point> getRouteForConnection(Element transition);
+
+	public String getSourceAnchorForConnection(Element transition);
+
+	public String getTargetAnchorForConnection(Element generalization);
 }

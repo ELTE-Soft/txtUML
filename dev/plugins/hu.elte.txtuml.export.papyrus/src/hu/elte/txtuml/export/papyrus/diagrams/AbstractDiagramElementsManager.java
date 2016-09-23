@@ -3,8 +3,8 @@ package hu.elte.txtuml.export.papyrus.diagrams;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gmf.runtime.notation.Diagram;
 
-import hu.elte.txtuml.export.papyrus.arrange.AbstractDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.arrange.ArrangeException;
+import hu.elte.txtuml.export.papyrus.arrange.IDiagramElementsArranger;
 import hu.elte.txtuml.utils.Logger;
 
 /**
@@ -19,7 +19,7 @@ public abstract class AbstractDiagramElementsManager {
 
 	protected IProgressMonitor monitor;
 
-	protected AbstractDiagramElementsArranger arranger;
+	protected IDiagramElementsArranger arranger;
 
 	protected AbstractDiagramElementsManager(Diagram diagram, IProgressMonitor monitor) {
 		this.diagram = diagram;
