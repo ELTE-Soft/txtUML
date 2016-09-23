@@ -18,11 +18,6 @@
       </command>
 -->
       <command
-            defaultHandler="hu.elte.txtuml.export.papyrus.handlers.PreferencesPageHandler"
-            id="hu.elte.txtuml.export.papyrus.PreferencePageCommand"
-            name="PreferencePageCommand">
-      </command>
-      <command
             defaultHandler="hu.elte.txtuml.export.papyrus.handlers.TxtUMLVisualizeHandler"
             id="hu.elte.txtuml.export.papyrus.txtUMLVisualize"
             name="txtUMLVisualize">
@@ -80,31 +75,8 @@
                   style="push">
             </command>
 -->
-            <separator
-                  name="separator"
-                  visible="true">
-            </separator>
-            <command
-                  commandId="hu.elte.txtuml.export.papyrus.PreferencePageCommand"
-                  label="Preferences"
-                  style="push">
-            </command>
          </menu>
       </menuContribution>
-   </extension>
-   <extension
-         point="org.eclipse.ui.preferencePages">
-      <page
-            class="hu.elte.txtuml.export.papyrus.preferences.PreferencesPage"
-            id="hu.elte.txtuml.export.papyrus.preferences1"
-            name="txtUML Diagram Generation">
-      </page>
-   </extension>
-   <extension
-         point="org.eclipse.core.runtime.preferences">
-      <initializer
-            class="hu.elte.txtuml.export.papyrus.preferences.PreferencesInitializer">
-      </initializer>
    </extension>
 
 </plugin>
