@@ -54,17 +54,17 @@ public class ActivityExporter {
 	private void init() {
 		tempVariableExporter = new OutVariableExporter();
 		userVariableExporter = new UserVariableExporter();
+		returnOutputsToCallActions = new HashMap<CallOperationAction, OutputPin>();
+		objectMap = new HashMap<CreateObjectAction, String>();
 		activityExportResolver = new ActivityNodeResolver(objectMap, returnOutputsToCallActions, tempVariableExporter,
 				userVariableExporter);
 		returnNodeExporter = new ReturnNodeExporter(activityExportResolver);
-		controlNodeExporter = new StructuredControlNodeExporter(this, activityExportResolver, userVariableExporter, returnNodeExporter);
 		callOperationExporter = new CallOperationExporter(tempVariableExporter, returnOutputsToCallActions,
 				activityExportResolver);
 		linkActionExporter = new LinkActionExporter(tempVariableExporter, activityExportResolver);
 		objectActionExporter = new ObjectActionExporter(tempVariableExporter, objectMap, activityExportResolver);
+		controlNodeExporter = new StructuredControlNodeExporter(this, activityExportResolver, userVariableExporter, returnNodeExporter);
 
-		objectMap = new HashMap<CreateObjectAction, String>();
-		returnOutputsToCallActions = new HashMap<CallOperationAction, OutputPin>();
 	}
 
 	public String createfunctionBody(Activity activity) {

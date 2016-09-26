@@ -44,16 +44,17 @@ public class TransitionExporter {
 		StringBuilder source = new StringBuilder("");
 		for (Transition item : transitions) {
 			String body = "";
+			boolean signalAcces = false;
 			Behavior b = item.getEffect();
+			Pair<String, Boolean> setState = createSetState(item);
 			if (b != null && b.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
 				body = activityExporter.createfunctionBody((Activity) b);
+				signalAcces = activityExporter.isContainsSignalAcces() || setState.getSecond();
 				
 			}
 
-			Pair<String, Boolean> setState = createSetState(item);
 			source.append(GenerationTemplates.transitionActionDef(className, item.getName(),
-					body + setState.getFirst() + "\n",
-					activityExporter.isContainsSignalAcces() || setState.getSecond()));
+					body + setState.getFirst() + "\n", signalAcces));
 		}
 		source.append("\n");
 		return source.toString();

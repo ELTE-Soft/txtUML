@@ -1,6 +1,7 @@
 package hu.elte.txtuml.xtxtuml.validation;
 
 import com.google.inject.Inject
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassMember
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
@@ -27,26 +28,12 @@ import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 
 	@Inject extension IQualifiedNameProvider;
+	@Inject extension XtxtUMLUtils;
 
 	@Check
 	def checkNoCycleInClassHiearchy(TUClass clazz) {
-		if (clazz.superClass == null) {
-			return;
-		}
-
-		val visitedClasses = newHashSet;
-		visitedClasses.add(clazz);
-
-		var currentClass = clazz.superClass;
-		while (currentClass != null) {
-			if (visitedClasses.contains(currentClass)) {
-				error("Cycle in hierarchy of class " + clazz.name + " reaching " + currentClass.name,
-					TU_CLASS__SUPER_CLASS, CLASS_HIERARCHY_CYCLE);
-				return;
-			}
-
-			visitedClasses.add(currentClass);
-			currentClass = currentClass.superClass;
+		if (clazz.travelClassHierarchy[false] == null) {
+			error("Cycle in hierarchy of class " + clazz.name, clazz, TU_CLASS__SUPER_CLASS, CLASS_HIERARCHY_CYCLE);
 		}
 	}
 

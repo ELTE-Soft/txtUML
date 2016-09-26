@@ -68,8 +68,9 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		stateMachineExporter.createStateMachineRegion(structuredElement);
 		if (stateMachineExporter.ownStateMachine()) {
 			stateMachineExporter.init();
-			stateMachineExporter.createMachine();
 			stateMachineExporter.searchInitialState();
+			stateMachineExporter.createMachine();
+
 
 			for (Map.Entry<String, Pair<String, Region>> entry : stateMachineExporter.getSubMachineMap().entrySet()) {
 				subStateMachineExporter = new SubStateMachineExporter();
@@ -83,12 +84,12 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 		source = createClassHeaderSource();
 		String externalDeclerations = associationExporter.createLinkFunctionDeclerations(name);
-		Shared.writeOutSource(dest, GenerationTemplates.headerName(name),
-				GenerationTemplates.headerGuard(source + externalDeclerations, name));
+		Shared.writeOutSource(dest, GenerationTemplates.headerName(name),Shared.format(
+				GenerationTemplates.headerGuard(source + externalDeclerations, name)));
 
 		source = createClassCppSource();
-		Shared.writeOutSource(dest, GenerationTemplates.sourceName(name),
-				GenerationTemplates.cppInclude(name) + getAllDependency(false) + source);
+		Shared.writeOutSource(dest, GenerationTemplates.sourceName(name),Shared.format(
+				GenerationTemplates.cppInclude(name) + getAllDependency(false) + source));
 	}
 
 	private String createClassHeaderSource() {

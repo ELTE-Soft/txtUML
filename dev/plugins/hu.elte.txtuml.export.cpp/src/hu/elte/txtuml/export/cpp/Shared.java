@@ -15,27 +15,23 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Element;
-import org.eclipse.uml2.uml.LiteralBoolean;
-import org.eclipse.uml2.uml.LiteralInteger;
-import org.eclipse.uml2.uml.LiteralReal;
-import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.UMLPackage;
-import org.eclipse.uml2.uml.ValueSpecification;
 
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 
-/*import org.eclipse.text.edits.MalformedTreeException;
-import org.eclipse.text.edits.TextEdit;
-
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.IDocument;*/
+import org.eclipse.jface.text.IDocument;
 
-//import org.eclipse.cdt.core.formatter.CodeFormatter;
+import org.eclipse.text.edits.MalformedTreeException;
+import org.eclipse.text.edits.TextEdit;
+
+import org.eclipse.cdt.core.ToolFactory;
+import org.eclipse.cdt.core.formatter.CodeFormatter;
 
 import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 import hu.elte.txtuml.utils.Pair;
@@ -54,7 +50,9 @@ public class Shared {
 	// TODO need a better solution
 	public static boolean isBasicType(String typeName) {
 
-		return typeName.equals("Integer") || typeName.equals("Real") || typeName.equals("Boolean");
+		return typeName.equals("Integer") || 
+			   typeName.equals("Real") || 
+			   typeName.equals("Boolean");
 
 	}
 
@@ -178,10 +176,10 @@ public class Shared {
 		return operationParameters;
 	}
 
-	public static void writeOutSource(String path_, String fileName_, String source)
+	public static void writeOutSource(String path, String fileName, String source)
 			throws FileNotFoundException, UnsupportedEncodingException {
 		try {
-			File file = new File(path_);
+			File file = new File(path);
 			if (!file.exists()) {
 				file.mkdirs();
 			}
@@ -190,26 +188,26 @@ public class Shared {
 			e.printStackTrace();
 		}
 
-		PrintWriter writer = new PrintWriter(path_ + File.separator + fileName_, "UTF-8");
-		writer.println(format(source));
+		PrintWriter writer = new PrintWriter(path + File.separator + fileName, "UTF-8");
+		writer.println(source);
 		writer.close();
 	}
 
 	public static String format(String source) {
 
-		/*
-		 * CodeFormatter formatter =
-		 * ToolFactory.createDefaultCodeFormatter(null); TextEdit edit =
-		 * formatter.format(0, source, 0, source.length(), 0, null); IDocument
-		 * document = new Document(source); try { edit.apply(document); } catch
-		 * (MalformedTreeException e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } catch (BadLocationException e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } String
-		 * formattedSource = document.get();
-		 */
+		CodeFormatter formatter = ToolFactory.createDefaultCodeFormatter(null);
+		TextEdit edit = formatter.format(CodeFormatter.K_STATEMENTS, source, 0, source.length(), 0, null);
+		IDocument document = new Document(source);
+		try {
+			edit.apply(document);
+		} catch (MalformedTreeException e) {
+			e.printStackTrace();
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+		String formattedSource = document.get();
 
-		// return formattedSource;
-		return source;
+		return formattedSource;
 	}
 
 }
