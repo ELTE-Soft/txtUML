@@ -83,8 +83,7 @@ public class ClassDiagramNotationManagerImpl extends AbstractDiagramNotationMana
 		runInTransactionalCommand(runnable, "Creating Property for Node " + node, monitor);
 	}
 
-	@Override
-	public void createOperationForNode(Node node, Operation operationToDisplay, IProgressMonitor monitor) {
+	private void createOperationForNode(Node node, Operation operationToDisplay, IProgressMonitor monitor) {
 		BasicCompartment comp = getOperationCompartementOfNode(node);
 
 		if (comp == null) {

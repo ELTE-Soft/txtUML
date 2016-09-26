@@ -1,5 +1,12 @@
 package hu.elte.txtuml.export.papyrus.diagrams.clazz.impl;
 
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,19 +18,18 @@ import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.uml2.uml.AggregationKind;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Mockito.*;
 
 import hu.elte.txtuml.export.papyrus.arrange.ArrangeException;
 import hu.elte.txtuml.export.papyrus.arrange.IDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.diagrams.clazz.ClassDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.diagrams.clazz.ClassDiagramNotationManager;
 
-//TODO: Add test for Generalizations, Classes with methods and Properties
 
 public class ClassDiagramElementsManagerTest {
 
@@ -133,10 +139,6 @@ public class ClassDiagramElementsManagerTest {
 
 		when(provider.getClasses()).thenReturn(Arrays.asList(class1, class2));
 		when(provider.getAssociations()).thenReturn(Arrays.asList(assoc));
-		Rectangle boundsOfSignal1 = new Rectangle(20, 20, 100, 100);
-		Rectangle boundsOfSignal2 = new Rectangle(140, 20, 100, 100);
-		when(arranger.getBoundsForElement(class1)).thenReturn(boundsOfSignal1);
-		when(arranger.getBoundsForElement(class2)).thenReturn(boundsOfSignal2);
 
 		// when
 		instance.addElementsToDiagram();
@@ -146,5 +148,25 @@ public class ClassDiagramElementsManagerTest {
 		verify(provider).getAssociations();
 		verify(notation).createAssociationForNodes(eq(class2), eq(class1), eq(assoc),
 				anyListOf(Point.class), anyString(), anyString(), eq(monitor));
+	}
+	
+	@Test
+	public void testAddGeneralizationToDiagram() {
+		// given
+		Model model = UMLFactory.eINSTANCE.createModel();
+		Class superClass = model.createOwnedClass("SuperClass", false);
+		Class subClass = model.createOwnedClass("Subclass", false);
+		Generalization gen = subClass.createGeneralization(superClass);
+
+		when(provider.getClasses()).thenReturn(Arrays.asList(superClass, subClass));
+		when(provider.getGeneralizations()).thenReturn(Arrays.asList(gen));
+
+		// when
+		instance.addElementsToDiagram();
+
+		// then
+		verify(provider).getClasses();
+		verify(provider).getGeneralizations();
+		verify(notation).createGeneralizationForNodes(eq(gen), anyListOf(Point.class), anyString(), anyString(), eq(monitor));
 	}
 }
