@@ -27,7 +27,6 @@ public class ThreadHandlingManager {
 	private static final String ThreadPoolClassName = "StateMachineThreadPool";
 	private static final String FunctionName = "LinearFunction";
 	private static final String NamespaceName = "deployment";
-	// private static final String SingleRuntimeName = "SingleThreadRT";
 	private static final String ConfiguratedThreadedRuntimeName = "ConfiguratedThreadedRT";
 	private static final String SetConfigurationMethod = "configure";
 	private static final String CreatorFunction = "createThreadedRuntime";

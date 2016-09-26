@@ -47,7 +47,6 @@ public class Shared {
 		}
 	}
 
-	// TODO need a better solution
 	public static boolean isBasicType(String typeName) {
 
 		return typeName.equals("Integer") || 
@@ -101,6 +100,7 @@ public class Shared {
 
 			if (behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
 				activity = (Activity) behavior;
+				break;
 			}
 		}
 
@@ -137,6 +137,20 @@ public class Shared {
 		return false;
 
 	}
+	
+	public static List<Pair<String, String>> getOperationParams(Operation operation) {
+		List<Pair<String, String>> operationParameters = new ArrayList<Pair<String, String>>();
+		for (Parameter param : operation.getOwnedParameters()) {
+			if (param != operation.getReturnResult()) {
+				if (param.getType() != null) {
+					operationParameters.add(new Pair<String, String>(param.getType().getName(), param.getName()));
+				} else {
+					operationParameters.add(new Pair<String, String>("UNKNOWN_TYPE", param.getName()));
+				}
+			}
+		}
+		return operationParameters;
+	}
 
 	public static List<String> getOperationParamTypes(Operation operation) {
 		List<String> operationParameterTypes = new ArrayList<String>();
@@ -160,20 +174,6 @@ public class Shared {
 			}
 		}
 		return operationParameterTypes;
-	}
-
-	public static List<Pair<String, String>> getOperationParams(Operation operation) {
-		List<Pair<String, String>> operationParameters = new ArrayList<Pair<String, String>>();
-		for (Parameter param : operation.getOwnedParameters()) {
-			if (param != operation.getReturnResult()) {
-				if (param.getType() != null) {
-					operationParameters.add(new Pair<String, String>(param.getType().getName(), param.getName()));
-				} else {
-					operationParameters.add(new Pair<String, String>("UNKNOWN_TYPE", param.getName()));
-				}
-			}
-		}
-		return operationParameters;
 	}
 
 	public static void writeOutSource(String path, String fileName, String source)

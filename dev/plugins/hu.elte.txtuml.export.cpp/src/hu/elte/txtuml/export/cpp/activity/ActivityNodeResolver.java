@@ -84,9 +84,6 @@ class ActivityNodeResolver {
 		} else if (node.eClass().equals(UMLPackage.Literals.READ_VARIABLE_ACTION)) {
 
 			ReadVariableAction rA = (ReadVariableAction) node;
-			// if(!rA.getResult().getOutgoings().isEmpty() ||
-			// !rA.getOutgoings().isEmpty() || ! (((ActivityNode)
-			// rA.getOwner()).getOutgoings().isEmpty()))
 			userVariableExporter.modifyVariableInfo(rA.getVariable());
 			source = userVariableExporter.getRealVariableName(rA.getVariable());
 		} else if (node.eClass().equals(UMLPackage.Literals.SEQUENCE_NODE)) {
@@ -103,26 +100,26 @@ class ActivityNodeResolver {
 		return source;
 	}
 	
-	public String getTargetFromASFVA(AddStructuralFeatureValueAction node_) {
-		String source = node_.getStructuralFeature().getName();
-		String object = getTargetFromInputPin(node_.getObject());
+	public String getTargetFromASFVA(AddStructuralFeatureValueAction node) {
+		String source = node.getStructuralFeature().getName();
+		String object = getTargetFromInputPin(node.getObject());
 		if (!object.isEmpty()) {
-			source = object + ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node_.getObject())) + source;
+			source = object + ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node.getObject())) + source;
 		}
 		return source;
 	}
 	
-	private String getTargetFromRSFA(ReadStructuralFeatureAction node_) {
-		String source = node_.getStructuralFeature().getName();
-		String object = getTargetFromInputPin(node_.getObject());
+	private String getTargetFromRSFA(ReadStructuralFeatureAction node) {
+		String source = node.getStructuralFeature().getName();
+		String object = getTargetFromInputPin(node.getObject());
 		if (!object.isEmpty()) {
-			source = object + ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node_.getObject())) + source;
+			source = object + ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node.getObject())) + source;
 		}
 		return source;
 	}
 	
-	public String getTargetFromInputPin(InputPin node_) {
-		return getTargetFromInputPin(node_, true);
+	public String getTargetFromInputPin(InputPin node) {
+		return getTargetFromInputPin(node, true);
 	}
 	
 	public String getTargetFromInputPin(InputPin node, Boolean recursive) {

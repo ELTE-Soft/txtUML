@@ -56,7 +56,9 @@ class UserVariableExporter {
 	}
 	
 	public void modifyVariableInfo(Variable var) {
-		variableTable.get(var).setUsage(true);
+		if(variableTable.get(var) != null) {
+			variableTable.get(var).setUsage(true);
+		}
 	}
 	
 	public Collection<VariableInfo> getElements() {
@@ -64,9 +66,11 @@ class UserVariableExporter {
 	}
 	
 	public String getRealVariableName(Variable var) {
-		assert(variableTable.containsKey(var));
-		
-		return variableTable.get(var).getName();
+		if(variableTable.get(var) != null) {
+			return variableTable.get(var).getName();
+		} else {
+			return var.getName();
+		}
 
 	}
 }
