@@ -11,7 +11,7 @@ import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.Transition;
 import org.eclipse.uml2.uml.Vertex;
 
-public interface StateMachineDiagramNotationManager {
+public interface StateMachineDiagramNotationManager{
 
 	void createStateForRegion(Region region, State state, Rectangle bounds, IProgressMonitor monitor);
 

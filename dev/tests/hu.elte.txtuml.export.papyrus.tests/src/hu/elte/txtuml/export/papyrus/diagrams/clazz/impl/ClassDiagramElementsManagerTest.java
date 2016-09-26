@@ -60,7 +60,6 @@ public class ClassDiagramElementsManagerTest {
 			verify(arranger).arrange(monitor);
 		} catch (ArrangeException e) {
 			// unreachable
-			throw new RuntimeException("Impossible behaviour: mock arranger threw ArrangeException");
 		}
 	}
 
