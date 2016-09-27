@@ -9,7 +9,6 @@ import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallOperationAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Element;
-import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.StateMachine;
@@ -28,9 +27,9 @@ public class CallActionsDetector {
 	private List<Class> classList;
 	private List<String> syncronousWarnings;
 
-	public CallActionsDetector(Model model, Map<String, ThreadPoolConfiguration> threadDescription) {
+	public CallActionsDetector(Shared shared, Map<String, ThreadPoolConfiguration> threadDescription) {
 		this.threadDescription = threadDescription;
-		Shared.getTypedElements(classList, model.allOwnedElements(), UMLPackage.Literals.CLASS);
+		shared.getTypedElements(classList, UMLPackage.Literals.CLASS);
 		syncronousWarnings = new ArrayList<String>();
 	}
 

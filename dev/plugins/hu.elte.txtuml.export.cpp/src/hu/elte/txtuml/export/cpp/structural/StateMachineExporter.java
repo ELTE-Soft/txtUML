@@ -41,8 +41,12 @@ class StateMachineExporter {
 	protected EntryExitFunctionExporter entryExitFunctionExporter;
 	protected String className;
 	private int poolId;
+	
+	Shared shared;
 
-	StateMachineExporter() {}
+	StateMachineExporter() {
+		shared = new Shared();
+	}
 
 	public void setName(String name) {
 		this.className = name;
@@ -54,7 +58,8 @@ class StateMachineExporter {
 
 	public <E extends Element> void createStateMachineRegion(E element) {
 		List<StateMachine> smList = new ArrayList<StateMachine>();
-		Shared.getTypedElements(smList, element.allOwnedElements(), UMLPackage.Literals.STATE_MACHINE);
+		shared.setModelElements(element.allOwnedElements());
+		shared.getTypedElements(smList, UMLPackage.Literals.STATE_MACHINE);
 		if (!smList.isEmpty()) {
 			stateMachineRegion = smList.get(0).getRegions().get(0);
 			createStateList();

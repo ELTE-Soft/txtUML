@@ -23,12 +23,15 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	private AssociationExporter associationExporter;
 	private ConstructorExporter constructorExporter;
 
+	private Shared shared;
+
 	private StateMachineExporter stateMachineExporter;
 	private SubStateMachineExporter subStateMachineExporter;
 
 	private int poolId;
 
 	public ClassExporter() {
+		shared = new Shared();
 	}
 
 	public List<String> getAdditionalSources() {
@@ -47,9 +50,11 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		additionalSourcesNames = new ArrayList<String>();
 		subSubMachines = new LinkedList<String>();
 
+		shared.setModelElements(structuredElement.allOwnedElements());
+
 		stateMachineExporter.setName(name);
 		stateMachineExporter.setStateMachineThreadPoolId(poolId);
-		
+
 		createSource(sourceDestination);
 
 	}
@@ -71,7 +76,6 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			stateMachineExporter.searchInitialState();
 			stateMachineExporter.createMachine();
 
-
 			for (Map.Entry<String, Pair<String, Region>> entry : stateMachineExporter.getSubMachineMap().entrySet()) {
 				subStateMachineExporter = new SubStateMachineExporter();
 				subStateMachineExporter.setRegion(entry.getValue().getSecond());
@@ -84,12 +88,12 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 		source = createClassHeaderSource();
 		String externalDeclerations = associationExporter.createLinkFunctionDeclerations(name);
-		Shared.writeOutSource(dest, GenerationTemplates.headerName(name),Shared.format(
-				GenerationTemplates.headerGuard(source + externalDeclerations, name)));
+		Shared.writeOutSource(dest, GenerationTemplates.headerName(name),
+				Shared.format(GenerationTemplates.headerGuard(source + externalDeclerations, name)));
 
 		source = createClassCppSource();
-		Shared.writeOutSource(dest, GenerationTemplates.sourceName(name),Shared.format(
-				GenerationTemplates.cppInclude(name) + getAllDependency(false) + source));
+		Shared.writeOutSource(dest, GenerationTemplates.sourceName(name),
+				Shared.format(GenerationTemplates.cppInclude(name) + getAllDependency(false) + source));
 	}
 
 	private String createClassHeaderSource() {
@@ -106,12 +110,10 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 		publicParts.append("\n" + associationExporter.createAssociationMemeberDeclerationsCode());
 
-		if (associationExporter.ownAssociation()) {
-			publicParts.append(
-					GenerationTemplates.templateLinkFunctionGeneralDef(GenerationTemplates.LinkFunctionType.Link));
-			publicParts.append(
-					GenerationTemplates.templateLinkFunctionGeneralDef(GenerationTemplates.LinkFunctionType.Unlink));
-		}
+		publicParts
+				.append(GenerationTemplates.templateLinkFunctionGeneralDef(GenerationTemplates.LinkFunctionType.Link));
+		publicParts.append(
+				GenerationTemplates.templateLinkFunctionGeneralDef(GenerationTemplates.LinkFunctionType.Unlink));
 
 		if (stateMachineExporter.ownStateMachine()) {
 
@@ -138,7 +140,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	private String createClassCppSource() {
 		StringBuilder source = new StringBuilder("");
 		List<StateMachine> smList = new ArrayList<StateMachine>();
-		Shared.getTypedElements(smList, structuredElement.allOwnedElements(), UMLPackage.Literals.STATE_MACHINE);
+		shared.getTypedElements(smList, UMLPackage.Literals.STATE_MACHINE);
 
 		if (stateMachineExporter.ownStateMachine()) {
 			source.append(stateMachineExporter.createStateMachineRelatedCppSourceCodes());

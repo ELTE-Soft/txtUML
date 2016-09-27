@@ -1,7 +1,6 @@
 package hu.elte.txtuml.export.cpp.thread;
 
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.api.deployment.Configuration;
 import hu.elte.txtuml.api.deployment.Group;
 import hu.elte.txtuml.api.deployment.GroupContainer;
@@ -27,15 +26,10 @@ public class ThreadDescriptionExporter {
 	private Set<String> exportedClasses;
 	private Set<String> allModelClassName;
 
-	public ThreadDescriptionExporter(Set<org.eclipse.uml2.uml.Class> allClass) {
+	public ThreadDescriptionExporter(Set<String> allModelClassName) {
 		configMap = new HashMap<String, ThreadPoolConfiguration>();
 
-		this.allModelClassName = new HashSet<String>();
-		for (org.eclipse.uml2.uml.Class cls : allClass) {
-			//TODO static signals class: this solution is not optimal
-			if (!Shared.generatedClass(cls))
-				allModelClassName.add(cls.getName());
-		}
+		this.allModelClassName = allModelClassName;
 		exportedClasses = new HashSet<String>();
 		numberOfConfigurations = 0;
 
@@ -95,13 +89,11 @@ public class ThreadDescriptionExporter {
 	}
 
 	private void exportGroup(Group group) {
-		numberOfConfigurations = numberOfConfigurations + 1;
-		
-		checkConfigurationOptions(group.gradient(),group.constant(),group.max());
 
-		ThreadPoolConfiguration config = new ThreadPoolConfiguration(numberOfConfigurations, group.gradient(),
-				group.constant(),group.max());
-		
+		checkConfigurationOptions(group.gradient(), group.constant(), group.max());
+
+		ThreadPoolConfiguration config = createNewPoolConfiguration(group.gradient(), group.constant(), group.max());
+
 		checkEmptyGroup(group.contains());
 
 		for (Class<? extends ModelClass> cls : group.contains()) {
@@ -115,6 +107,13 @@ public class ThreadDescriptionExporter {
 		}
 	}
 
+	private ThreadPoolConfiguration createNewPoolConfiguration(double gradient, int constant, int max) {
+		ThreadPoolConfiguration config = new ThreadPoolConfiguration(numberOfConfigurations, gradient, constant, max);
+		numberOfConfigurations++;
+
+		return config;
+	}
+
 	private void exportDefaultConfiguration() {
 
 		if (allModelClassName.size() != exportedClasses.size()) {
@@ -122,15 +121,9 @@ public class ThreadDescriptionExporter {
 			nonExportedClasses.addAll(allModelClassName);
 			nonExportedClasses.removeAll(exportedClasses);
 
-			ThreadPoolConfiguration config = new ThreadPoolConfiguration(0, 0, 1, 1);
+			ThreadPoolConfiguration config = createNewPoolConfiguration(0, 1, 1);
 			for (String uncategorizedClassName : nonExportedClasses) {
 				configMap.put(uncategorizedClassName, config);
-			}
-		} else {
-			Set<ThreadPoolConfiguration> configs = new HashSet<ThreadPoolConfiguration>();
-			configs.addAll(configMap.values());
-			for (ThreadPoolConfiguration config : configs) {
-				config.decraseId();
 			}
 		}
 
@@ -142,26 +135,23 @@ public class ThreadDescriptionExporter {
 		}
 
 	}
-	
+
 	private void checkConfigurationOptions(double gradient, int contstant, int max) {
 		if (gradient < 0 || gradient > 1) {
-			warningList.add("The gradient of linear function should be beetween 0 and 1: " + 
-							"conversion to zero.");
+			warningList.add("The gradient of linear function should be beetween 0 and 1: " + "conversion to zero.");
 		}
 
 		if (contstant < 1) {
-			warningList.add("The constant of linear function should be higher than 0: " + 
-							"conversion to one.");
+			warningList.add("The constant of linear function should be higher than 0: " + "conversion to one.");
 		}
-		
-		if(max < 1) {
-			warningList.add("The maximum of threads should be higher than 0: " + 
-							"conversion to one.");
+
+		if (max < 1) {
+			warningList.add("The maximum of threads should be higher than 0: " + "conversion to one.");
 		}
-		
-		if(max < contstant) {
-			warningList.add("The maximum of threads should more or equal than constant: " + 
-					"conversion to value of constant.");
+
+		if (max < contstant) {
+			warningList.add(
+					"The maximum of threads should more or equal than constant: " + "conversion to value of constant.");
 		}
 	}
 }

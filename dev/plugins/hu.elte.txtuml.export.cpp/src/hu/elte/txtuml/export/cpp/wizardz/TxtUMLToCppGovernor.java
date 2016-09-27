@@ -63,10 +63,12 @@ class TxtUMLToCppGovernor {
 			throw e;
 		}
 
-		Set<org.eclipse.uml2.uml.Class> allClass = new HashSet<org.eclipse.uml2.uml.Class>();
-		Shared.getTypedElements(allClass, model.getOwnedElements(), UMLPackage.Literals.CLASS);
+		Shared shared = new Shared(model.allOwnedElements());
 
-		ThreadDescriptionExporter exporter = new ThreadDescriptionExporter(allClass);
+		Set<org.eclipse.uml2.uml.Class> allClass = new HashSet<org.eclipse.uml2.uml.Class>();
+		shared.getTypedElements(allClass, UMLPackage.Literals.CLASS);
+
+		ThreadDescriptionExporter exporter = new ThreadDescriptionExporter(shared.getAllModelClassName());
 		exporter.exportDescription((Class<? extends Configuration>) txtUMLThreadDescription);
 
 		if (!exporter.warningListIsEmpty()) {
@@ -80,7 +82,7 @@ class TxtUMLToCppGovernor {
 			}
 		}
 
-		Uml2ToCppExporter cppExporter = new Uml2ToCppExporter(model, exporter.getConfigMap(), addRuntimeOption,
+		Uml2ToCppExporter cppExporter = new Uml2ToCppExporter(shared, exporter.getConfigMap(), addRuntimeOption,
 				overWriteMainFileOption);
 		try {
 			cppExporter.buildCppCode(

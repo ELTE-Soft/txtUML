@@ -6,10 +6,10 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.eclipse.emf.common.util.EList;
+import java.util.Set;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
@@ -37,32 +37,54 @@ import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 import hu.elte.txtuml.utils.Pair;
 
 public class Shared {
+
+	private Collection<Element> modelElements;
+
+	public Shared() {
+	}
+
+	public Shared(Collection<Element> modelElements) {
+		setModelElements(modelElements);
+	}
+
+	public void setModelElements(Collection<Element> modelElements) {
+		this.modelElements = modelElements;
+	}
+
 	@SuppressWarnings("unchecked")
-	public static <ElementTypeT, EClassTypeT> void getTypedElements(Collection<ElementTypeT> dest,
-			Collection<Element> source, EClassTypeT eClass) {
-		for (Element item : source) {
+	public <ElementTypeT, EClassTypeT> void getTypedElements(Collection<ElementTypeT> dest, EClassTypeT eClass) {
+		for (Element item : modelElements) {
 			if (item.eClass().equals(eClass)) {
 				dest.add((ElementTypeT) item);
 			}
 		}
 	}
 
-	public static boolean isBasicType(String typeName) {
+	public List<Class> getAllModelCLass() {
+		List<Class> classes = new ArrayList<Class>();
+		getTypedElements(classes, UMLPackage.Literals.CLASS);
+		classes.removeIf(c -> isSignalFactoryClass(c));
 
-		return typeName.equals("Integer") || 
-			   typeName.equals("Real") || 
-			   typeName.equals("Boolean");
+		return classes;
+	}
+
+	public Set<String> getAllModelClassName() {
+
+		Set<String> classNames = new HashSet<String>();
+		for (Class cls : getAllModelCLass()) {
+			if (!isSignalFactoryClass(cls)) {
+				classNames.add(cls.getName());
+			}
+		}
+
+		return classNames;
 
 	}
 
-	public static boolean generatedClass(Class item) {
-		return item.getName().startsWith("#");
-	}
-
-	public static List<Parameter> getSignalConstructorParameters(Signal signal, EList<Element> elements) {
+	public List<Parameter> getSignalConstructorParameters(Signal signal) {
 		List<Parameter> signalParameters = new LinkedList<Parameter>();
 
-		Class factoryClass = getSignalFactoryClass(signal, elements);
+		Class factoryClass = getSignalFactoryClass(signal);
 		if (factoryClass != null) {
 			for (Operation op : factoryClass.getOperations()) {
 				if (isConstructor(op)) {
@@ -79,9 +101,9 @@ public class Shared {
 		return signalParameters;
 	}
 
-	public static String signalCtrBody(Signal signal, EList<Element> elements) {
+	public String signalCtrBody(Signal signal) {
 		ActivityExporter activityExporter = new ActivityExporter();
-		Class factoryClass = getSignalFactoryClass(signal, elements);
+		Class factoryClass = getSignalFactoryClass(signal);
 		String body = "";
 		for (Operation operation : factoryClass.getOperations()) {
 			if (isConstructor(operation)) {
@@ -94,21 +116,8 @@ public class Shared {
 
 	}
 
-	public static Activity getOperationActivity(Operation operation) {
-		Activity activity = null;
-		for (Behavior behavior : operation.getMethods()) {
-
-			if (behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
-				activity = (Activity) behavior;
-				break;
-			}
-		}
-
-		return activity;
-	}
-
-	public static Class getSignalFactoryClass(Signal signal, EList<Element> elements) {
-		for (Element element : elements) {
+	public Class getSignalFactoryClass(Signal signal) {
+		for (Element element : modelElements) {
 			if (element.eClass().equals(UMLPackage.Literals.CLASS)) {
 				Class cls = (Class) element;
 				for (Operation operation : cls.getOperations()) {
@@ -126,6 +135,45 @@ public class Shared {
 		return null;
 	}
 
+	public static Activity getOperationActivity(Operation operation) {
+		Activity activity = null;
+		for (Behavior behavior : operation.getMethods()) {
+
+			if (behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
+				activity = (Activity) behavior;
+				break;
+			}
+		}
+
+		return activity;
+	}
+
+	public static boolean isBasicType(String typeName) {
+
+		return typeName.equals("Integer") || typeName.equals("Real") || typeName.equals("Boolean");
+
+	}
+
+	public static boolean generatedClass(Class item) {
+		return item.getName().startsWith("#");
+	}
+
+	public boolean isSignalFactoryClass(Class cls) {
+		List<Signal> signals = new ArrayList<Signal>();
+		getTypedElements(signals, UMLPackage.Literals.SIGNAL);
+		for (Operation op : cls.getOperations()) {
+			if (isConstructor(op)) {
+				for (Parameter param : op.getOwnedParameters()) {
+					if (signals.contains(param.getType())) {
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
 	public static boolean isConstructor(Operation operation) {
 
 		for (Stereotype stereotype : operation.getAppliedStereotypes()) {
@@ -137,7 +185,7 @@ public class Shared {
 		return false;
 
 	}
-	
+
 	public static List<Pair<String, String>> getOperationParams(Operation operation) {
 		List<Pair<String, String>> operationParameters = new ArrayList<Pair<String, String>>();
 		for (Parameter param : operation.getOwnedParameters()) {

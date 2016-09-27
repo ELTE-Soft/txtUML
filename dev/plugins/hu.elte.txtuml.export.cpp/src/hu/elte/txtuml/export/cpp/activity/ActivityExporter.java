@@ -48,10 +48,13 @@ public class ActivityExporter {
 	private ObjectActionExporter objectActionExporter;
 	private ReturnNodeExporter returnNodeExporter;
 	
+	private Shared shared;
+	
 
 	public ActivityExporter() { }
 
 	private void init() {
+		shared = new Shared();
 		tempVariableExporter = new OutVariableExporter();
 		userVariableExporter = new UserVariableExporter();
 		returnOutputsToCallActions = new HashMap<CallOperationAction, OutputPin>();
@@ -142,7 +145,8 @@ public class ActivityExporter {
 		List<ActivityEdge> edges = currentNode.getOutgoings();
 		// output edges from output pin
 		List<OutputPin> outputPins = new LinkedList<OutputPin>();
-		Shared.getTypedElements(outputPins, currentNode.getOwnedElements(), UMLPackage.Literals.OUTPUT_PIN);
+		shared.setModelElements(currentNode.getOwnedElements());
+		shared.getTypedElements(outputPins, UMLPackage.Literals.OUTPUT_PIN);
 		for (OutputPin pin : outputPins) {
 			edges.addAll(pin.getOutgoings());
 		}
