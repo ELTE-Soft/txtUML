@@ -9,4 +9,8 @@ public class TestClass extends ModelClass {
 
 	public void op2() {
 	}
+	
+	private void op3() {
+		
+	}
 }

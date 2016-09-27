@@ -23,6 +23,9 @@ public class TestClass extends ModelClass {
 	String string;
 	
 	Reals dt;
+	
+	private int private_attribute;
+	public int public_attribute;
 }
 
 class Reals extends DataType {
