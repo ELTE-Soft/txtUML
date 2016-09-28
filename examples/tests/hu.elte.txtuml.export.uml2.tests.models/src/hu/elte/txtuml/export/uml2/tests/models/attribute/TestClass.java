@@ -25,6 +25,7 @@ public class TestClass extends ModelClass {
 	Reals dt;
 	
 	private int private_attribute;
+	protected int protected_attribute;
 	public int public_attribute;
 }
 

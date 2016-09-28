@@ -103,6 +103,8 @@ public class TestStructure extends UMLExportTestBase {
 
 		Property privateAttribute = property(testClass, "private_attribute", "Integer");
 		assertEquals(VisibilityKind.PRIVATE_LITERAL, privateAttribute.getVisibility());
+		Property protectedAttribute = property(testClass, "protected_attribute", "Integer");
+		assertEquals(VisibilityKind.PROTECTED_LITERAL, protectedAttribute.getVisibility());
 		Property publicAttribute = property(testClass, "public_attribute", "Integer");
 		assertEquals(VisibilityKind.PUBLIC_LITERAL, publicAttribute.getVisibility());
 
@@ -208,6 +210,8 @@ public class TestStructure extends UMLExportTestBase {
 
 		Operation op3 = operation(cls, "op3");
 		assertEquals(VisibilityKind.PRIVATE_LITERAL, op3.getVisibility());
+		Operation op4 = operation(cls, "op4");
+		assertEquals(VisibilityKind.PROTECTED_LITERAL, op4.getVisibility());
 	}
 
 	@Test

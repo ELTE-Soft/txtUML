@@ -13,4 +13,7 @@ public class TestClass extends ModelClass {
 	private void op3() {
 		
 	}
+	
+	protected op4() {
+	}
 }
