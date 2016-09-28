@@ -14,6 +14,6 @@ public class TestClass extends ModelClass {
 		
 	}
 	
-	protected op4() {
+	protected void op4() {
 	}
 }
