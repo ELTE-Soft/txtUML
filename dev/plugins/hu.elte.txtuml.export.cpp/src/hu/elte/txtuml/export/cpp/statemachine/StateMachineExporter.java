@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.cpp.structural;
+package hu.elte.txtuml.export.cpp.statemachine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,14 +19,15 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import hu.elte.txtuml.export.cpp.Shared;
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
+import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.utils.Pair;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Event;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.PseudostateKind;
 
-class StateMachineExporter {
+public class StateMachineExporter {
 
 	protected Multimap<Pair<String, String>, Pair<String, String>> stateMachineMap;
 	protected Map<String, Pair<String, Region>> submachineMap;// <stateName,<machinename,behavior>>
@@ -42,9 +43,9 @@ class StateMachineExporter {
 	protected String className;
 	private int poolId;
 	
-	Shared shared;
+	private Shared shared;
 
-	StateMachineExporter() {
+	public StateMachineExporter() {
 		shared = new Shared();
 	}
 
@@ -97,15 +98,15 @@ class StateMachineExporter {
 		StringBuilder source = new StringBuilder("");
 
 		if (submachineMap.isEmpty()) {
-			source.append(GenerationTemplates.simpleStateMachineInitialization(className, getInitialStateName(), true,
+			source.append(StateMachineTemplates.simpleStateMachineInitialization(className, getInitialStateName(), true,
 					poolId, getStateMachine()));
-			source.append(GenerationTemplates.simpleStateMachineFixFunctionDefnitions(className, getInitialStateName(),
+			source.append(StateMachineTemplates.simpleStateMachineFixFunctionDefnitions(className, getInitialStateName(),
 					false));
 
 		} else {
-			source.append(GenerationTemplates.hierachialStateMachineInitialization(className, getInitialStateName(),
+			source.append(StateMachineTemplates.hierachialStateMachineInitialization(className, getInitialStateName(),
 					true, poolId, getStateMachine(), getEventSubmachineNameMap()));
-			source.append(GenerationTemplates.hiearchialStateMachineFixFunctionDefinitions(className,
+			source.append(StateMachineTemplates.hiearchialStateMachineFixFunctionDefinitions(className,
 					getInitialStateName(), false));
 
 		}
@@ -116,16 +117,16 @@ class StateMachineExporter {
 		source.append(transitionExporter.createTransitionFunctionsDef());
 
 		source.append(
-				GenerationTemplates.entry(className, createStateActionMap(entryExitFunctionExporter.getEntryMap()))
+				StateMachineTemplates.entry(className, createStateActionMap(entryExitFunctionExporter.getEntryMap()))
 						+ "\n");
-		source.append(GenerationTemplates.exit(className, createStateActionMap(entryExitFunctionExporter.getExitMap()))
+		source.append(StateMachineTemplates.exit(className, createStateActionMap(entryExitFunctionExporter.getExitMap()))
 				+ "\n");
 
 		return source.toString();
 	}
 
 	public String createStateEnumCode() {
-		return GenerationTemplates.stateEnum(stateList, getInitialStateName());
+		return StateMachineTemplates.stateEnum(stateList, getInitialStateName());
 	}
 
 	public boolean ownStateMachine() {
@@ -193,7 +194,7 @@ class StateMachineExporter {
 			Pair<String, String> eventSignalPair = null;
 
 			if (item.getSource().getName().equals(getInitialStateName())) {
-				eventSignalPair = new Pair<String, String>(GenerationTemplates.InitSignal, item.getSource().getName());
+				eventSignalPair = new Pair<String, String>(EventTemplates.InitSignal, item.getSource().getName());
 			}
 
 			for (Trigger tri : item.getTriggers()) {

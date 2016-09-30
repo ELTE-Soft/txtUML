@@ -16,8 +16,9 @@ import org.eclipse.uml2.uml.TestIdentityAction;
 import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.export.cpp.Shared;
-import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
+import hu.elte.txtuml.export.cpp.templates.activity.OperatorTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
 
 class CallOperationExporter {
 
@@ -99,7 +100,7 @@ class CallOperationExporter {
 			addOutParametrsToList(parameterVariables, outParamaterPins);
 
 			val = ActivityTemplates.stdLibCall(node.getOperation().getName(), parameterVariables);
-			if (ActivityTemplates.Operators.isTimerStart(node.getOperation().getName())) {
+			if (OperatorTemplates.isTimerStart(node.getOperation().getName())) {
 				containsTimerOperator = true;
 			}
 
@@ -149,7 +150,7 @@ class CallOperationExporter {
 	private StringBuilder declareAllOutTempParameter(EList<OutputPin> outParamaterPins) {
 		StringBuilder declerations = new StringBuilder("");
 		for (OutputPin outPin : outParamaterPins) {
-			declerations.append(GenerationTemplates.variableDecl(outPin.getType().getName(),
+			declerations.append(VariableTemplates.variableDecl(outPin.getType().getName(),
 					tempVariableExporter.getRealVariableName(outPin), false));
 		}
 

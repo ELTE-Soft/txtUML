@@ -30,7 +30,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ExpansionRegion;
 
 import hu.elte.txtuml.export.cpp.Shared;
-import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
+import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 
 //import hu.elte.txtuml.utils.Logger;
 
@@ -47,11 +47,11 @@ public class ActivityExporter {
 	private LinkActionExporter linkActionExporter;
 	private ObjectActionExporter objectActionExporter;
 	private ReturnNodeExporter returnNodeExporter;
-	
-	private Shared shared;
-	
 
-	public ActivityExporter() { }
+	private Shared shared;
+
+	public ActivityExporter() {
+	}
 
 	private void init() {
 		shared = new Shared();
@@ -66,7 +66,8 @@ public class ActivityExporter {
 				activityExportResolver);
 		linkActionExporter = new LinkActionExporter(tempVariableExporter, activityExportResolver);
 		objectActionExporter = new ObjectActionExporter(tempVariableExporter, objectMap, activityExportResolver);
-		controlNodeExporter = new StructuredControlNodeExporter(this, activityExportResolver, userVariableExporter, returnNodeExporter);
+		controlNodeExporter = new StructuredControlNodeExporter(this, activityExportResolver, userVariableExporter,
+				returnNodeExporter);
 
 	}
 
@@ -98,6 +99,7 @@ public class ActivityExporter {
 	public boolean isContainsSignalAcces() {
 		return callOperationExporter.isUsedSignalParameter();
 	}
+
 	public boolean isContainsTimerOperation() {
 		return callOperationExporter.isInvokedTimerOperation();
 	}

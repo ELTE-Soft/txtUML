@@ -1,8 +1,11 @@
 package hu.elte.txtuml.export.cpp.thread;
 
 import hu.elte.txtuml.export.cpp.Shared;
-import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
+import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration.LinearFunction;
 
 import java.io.FileNotFoundException;
@@ -52,46 +55,47 @@ public class ThreadHandlingManager {
 
 		StringBuilder source = new StringBuilder("");
 		source.append(GenerationTemplates.cppInclude(ThreadConfigurationClassName.toLowerCase()));
-		source.append(GenerationTemplates.cppInclude(GenerationTemplates.RuntimeHeader));
+		source.append(GenerationTemplates.cppInclude(RuntimeTemplates.RuntimeHeaderName));
 		source.append("\n\n");
 
 		List<String> templateParams = new ArrayList<String>();
 		templateParams.add(ConfiguratedThreadedRuntimeName);
-		source.append(GenerationTemplates.usingTemplateType(GenerationTemplates.MyRuntimeName,
-				GenerationTemplates.RuntimeName, templateParams));
+		source.append(GenerationTemplates.usingTemplateType(RuntimeTemplates.UsingRuntime,
+				RuntimeTemplates.RuntimeIterfaceName, templateParams));
 		source.append("\n\n");
 
 		source.append(GenerationTemplates.putNamespace(
-				GenerationTemplates.simpleFunctionDecl(GenerationTemplates.MyRuntimeName, CreatorFunction) + ";",
+				FunctionTemplates.simpleFunctionDecl(RuntimeTemplates.UsingRuntime, CreatorFunction) + ";",
 				NamespaceName));
 
-		Shared.writeOutSource(dest, GenerationTemplates.headerName(ConfigurationFile), Shared.format(
-				GenerationTemplates.headerGuard(source.toString(), ConfigurationFile)));
+		Shared.writeOutSource(dest, GenerationTemplates.headerName(ConfigurationFile),
+				Shared.format(HeaderTemplates.headerGuard(source.toString(), ConfigurationFile)));
 
 		source = createDeplyomentFunctionDefinition();
-		Shared.writeOutSource(dest, GenerationTemplates.sourceName(ConfigurationFile), Shared.format(source.toString()));
+		Shared.writeOutSource(dest, GenerationTemplates.sourceName(ConfigurationFile),
+				Shared.format(source.toString()));
 
 	}
 
 	private StringBuilder createDeplyomentFunctionDefinition() {
 		StringBuilder source = new StringBuilder("");
 		source.append(GenerationTemplates.cppInclude(ConfigurationFile));
-		source.append(GenerationTemplates
-				.putNamespace(GenerationTemplates.simpleFunctionDef(GenerationTemplates.MyRuntimeName, CreatorFunction,
-						(createConfiguration().append(createThreadedRuntime()).toString()),
-						GenerationTemplates.RuntimeParamaterName), NamespaceName));
+		source.append(
+				GenerationTemplates.putNamespace(FunctionTemplates.simpleFunctionDef(RuntimeTemplates.UsingRuntime,
+						CreatorFunction, (createConfiguration().append(createThreadedRuntime()).toString()),
+						RuntimeTemplates.RuntimeParameterName), NamespaceName));
 
 		return source;
 	}
 
 	private StringBuilder createThreadedRuntime() {
 		StringBuilder source = new StringBuilder("");
-		source.append(GenerationTemplates.staticCreate(GenerationTemplates.MyRuntimeName,
-				GenerationTemplates.RuntimeParamaterName, CreateRTMethod));
+		source.append(GenerationTemplates.staticCreate(RuntimeTemplates.UsingRuntime,
+				RuntimeTemplates.RuntimeParameterName, CreateRTMethod));
 		List<String> params = new ArrayList<String>();
 		params.add(ConfigurationObjectVariableName);
 		source.append(ActivityTemplates.blockStatement(ActivityTemplates.operationCallOnPointerVariable(
-				GenerationTemplates.RuntimeParamaterName, SetConfigurationMethod, params)));
+				RuntimeTemplates.RuntimeParameterName, SetConfigurationMethod, params)));
 		return source;
 	}
 

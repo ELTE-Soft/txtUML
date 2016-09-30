@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.cpp.structural;
+package hu.elte.txtuml.export.cpp.statemachine;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -12,29 +12,30 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
-import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
+import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
+import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.utils.Pair;
 
 public class TransitionExporter {
 	private ActivityExporter activityExporter;
 	private GuardExporter guardExporter;
-	
+
 	String className;
 	List<Transition> transitions;
-	
-	TransitionExporter(String className,List<Transition> transitions, GuardExporter guardExporter) {
+
+	TransitionExporter(String className, List<Transition> transitions, GuardExporter guardExporter) {
 		activityExporter = new ActivityExporter();
-		
+
 		this.className = className;
 		this.transitions = transitions;
 		this.guardExporter = guardExporter;
 	}
-	
+
 	String createTransitionFunctionDecl() {
 		StringBuilder source = new StringBuilder("");
 		for (Transition item : transitions) {
-			source.append(GenerationTemplates.transitionActionDecl(item.getName()));
+			source.append(StateMachineTemplates.transitionActionDecl(item.getName()));
 		}
 		source.append("\n");
 		return source.toString();
@@ -50,16 +51,16 @@ public class TransitionExporter {
 			if (b != null && b.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
 				body = activityExporter.createfunctionBody((Activity) b);
 				signalAcces = activityExporter.isContainsSignalAcces() || setState.getSecond();
-				
+
 			}
 
-			source.append(GenerationTemplates.transitionActionDef(className, item.getName(),
+			source.append(StateMachineTemplates.transitionActionDef(className, item.getName(),
 					body + setState.getFirst() + "\n", signalAcces));
 		}
 		source.append("\n");
 		return source.toString();
 	}
-	
+
 	private Pair<String, Boolean> createSetState(Transition transition) {
 		String source = "";
 		boolean containsChoice = false;
@@ -73,8 +74,7 @@ public class TransitionExporter {
 			containsChoice = true;
 			for (Transition trans : targetState.getOutgoings()) {
 
-				String guard = guardExporter.getGuard(trans.getGuard()) + "(" + GenerationTemplates.eventParamName()
-						+ ")";
+				String guard = guardExporter.getGuard(trans.getGuard()) + "(" + EventTemplates.eventParamName() + ")";
 				String body = ActivityTemplates.blockStatement(ActivityTemplates.transitionActionCall(trans.getName()))
 						.toString();
 
@@ -89,10 +89,10 @@ public class TransitionExporter {
 			}
 			source = ActivityTemplates.elseIf(branches).toString();
 		} else if (targetState.eClass().equals(UMLPackage.Literals.STATE)) {
-			source = GenerationTemplates.setState(targetState.getName());
+			source = StateMachineTemplates.setState(targetState.getName());
 
 		} else {
-			source = GenerationTemplates.setState("UNKNOWN_TRANSITION_TARGET");
+			source = StateMachineTemplates.setState("UNKNOWN_TRANSITION_TARGET");
 		}
 		return new Pair<String, Boolean>(source, containsChoice);
 	}

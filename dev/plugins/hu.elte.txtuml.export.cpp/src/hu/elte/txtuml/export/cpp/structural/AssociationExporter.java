@@ -7,6 +7,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.Property;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 
 class AssociationExporter {
 	private List<Property> associationMembers;
@@ -38,8 +39,8 @@ class AssociationExporter {
 		for (Property prop : associationMembers) {
 			int upper = prop.getUpper();
 			int lower = prop.getLower();
-			String linkedClass = GenerationTemplates.assocationDecl(prop.getType().getName(),
-					GenerationTemplates.formatAssociationRoleName(prop.getAssociation().getName(), prop.getName()),
+			String linkedClass = LinkTemplates.assocationDecl(prop.getType().getName(),
+					LinkTemplates.formatAssociationRoleName(prop.getAssociation().getName(), prop.getName()),
 					lower, upper);
 			if (prop.isNavigable())
 				source.append(linkedClass);
@@ -51,16 +52,16 @@ class AssociationExporter {
 		StringBuilder assocDeclerations = new StringBuilder("");
 		for (Property member : associationMembers) {
 			if (member.isNavigable()) {
-				assocDeclerations.append(GenerationTemplates.linkTemplateSpecializationDecl(className,
+				assocDeclerations.append(LinkTemplates.linkTemplateSpecializationDecl(className,
 						member.getType().getName(), member.getName(), member.getAssociation().getName(),
-						GenerationTemplates.LinkFunctionType.Link));
-				assocDeclerations.append(GenerationTemplates.linkTemplateSpecializationDecl(className,
+						LinkTemplates.LinkFunctionType.Link));
+				assocDeclerations.append(LinkTemplates.linkTemplateSpecializationDecl(className,
 						member.getType().getName(), member.getName(), member.getAssociation().getName(),
-						GenerationTemplates.LinkFunctionType.Unlink));
+						LinkTemplates.LinkFunctionType.Unlink));
 			}
 
 		}
-		return GenerationTemplates.cppInclude(GenerationTemplates.AssociationsStructuresHreaderName)
+		return GenerationTemplates.cppInclude(LinkTemplates.AssociationsStructuresHreaderName)
 				+ assocDeclerations.toString();
 	}
 	

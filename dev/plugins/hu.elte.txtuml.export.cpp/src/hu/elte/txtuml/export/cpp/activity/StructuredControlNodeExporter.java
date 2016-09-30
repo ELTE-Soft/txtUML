@@ -12,24 +12,24 @@ import org.eclipse.uml2.uml.SequenceNode;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Variable;
 
-import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
 
 class StructuredControlNodeExporter {
-	
+
 	private ActivityExporter activityExporter;
 	private UserVariableExporter userVariableExporter;
 	private ActivityNodeResolver activityExportResolver;
 	private ReturnNodeExporter returnNodeExporter;
-	
-	public StructuredControlNodeExporter(ActivityExporter activityExporter,ActivityNodeResolver activityExportResolver,
+
+	public StructuredControlNodeExporter(ActivityExporter activityExporter, ActivityNodeResolver activityExportResolver,
 			UserVariableExporter userVariableExporter, ReturnNodeExporter returnNodeExporter) {
 		this.activityExporter = activityExporter;
 		this.activityExportResolver = activityExportResolver;
 		this.userVariableExporter = userVariableExporter;
 		this.returnNodeExporter = returnNodeExporter;
 	}
-	
+
 	String createSequenceNodeCode(SequenceNode seqNode) {
 		StringBuilder source = new StringBuilder("");
 		returnNodeExporter.searchRetunNode(seqNode.getContainedEdges());
@@ -37,10 +37,10 @@ class StructuredControlNodeExporter {
 		for (ActivityNode aNode : seqNode.getNodes()) {
 			source.append(activityExporter.createActivityNodeCode(aNode));
 		}
-		
+
 		return source.toString();
 	}
-	
+
 	String createExpansionRegaionCode(ExpansionRegion node) {
 		String source = "UNKNOWN_EXPANSION_REAGION";
 
@@ -119,7 +119,7 @@ class StructuredControlNodeExporter {
 		source.append(bodies);
 		return source;
 	}
-	
+
 	String createStructuredActivityNodeVariables(EList<Variable> variables) {
 		StringBuilder source = new StringBuilder("");
 		for (Variable variable : variables) {
@@ -136,7 +136,7 @@ class StructuredControlNodeExporter {
 		}
 		userVariableExporter.exportNewVariable(variable);
 
-		return GenerationTemplates.variableDecl(type, userVariableExporter.getRealVariableName(variable),
+		return VariableTemplates.variableDecl(type, userVariableExporter.getRealVariableName(variable),
 				variable.getType().eClass().equals(UMLPackage.Literals.SIGNAL));
 	}
 }

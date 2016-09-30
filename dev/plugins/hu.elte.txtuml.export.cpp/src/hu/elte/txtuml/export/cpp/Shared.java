@@ -22,6 +22,7 @@ import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
+import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
@@ -33,7 +34,6 @@ import org.eclipse.text.edits.TextEdit;
 import org.eclipse.cdt.core.ToolFactory;
 import org.eclipse.cdt.core.formatter.CodeFormatter;
 
-import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 import hu.elte.txtuml.utils.Pair;
 
 public class Shared {

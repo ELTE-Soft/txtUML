@@ -14,7 +14,13 @@ import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.export.cpp.Shared;
+import hu.elte.txtuml.export.cpp.statemachine.StateMachineExporter;
+import hu.elte.txtuml.export.cpp.statemachine.SubStateMachineExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.ConstructorTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 
 public class ClassExporter extends StructuredElementExporter<Class> {
 
@@ -89,7 +95,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		source = createClassHeaderSource();
 		String externalDeclerations = associationExporter.createLinkFunctionDeclerations(name);
 		Shared.writeOutSource(dest, GenerationTemplates.headerName(name),
-				Shared.format(GenerationTemplates.headerGuard(source + externalDeclerations, name)));
+				Shared.format(HeaderTemplates.headerGuard(source + externalDeclerations, name)));
 
 		source = createClassCppSource();
 		Shared.writeOutSource(dest, GenerationTemplates.sourceName(name),
@@ -106,14 +112,12 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 				super.createPublicAttributes() + super.createPublicOperationDecelerations());
 
 		publicParts.append(constructorExporter.exportConstructorDeclareations(name));
-		publicParts.append(GenerationTemplates.destructorDecl(name));
+		publicParts.append(ConstructorTemplates.destructorDecl(name));
 
 		publicParts.append("\n" + associationExporter.createAssociationMemeberDeclerationsCode());
 
-		publicParts
-				.append(GenerationTemplates.templateLinkFunctionGeneralDef(GenerationTemplates.LinkFunctionType.Link));
-		publicParts.append(
-				GenerationTemplates.templateLinkFunctionGeneralDef(GenerationTemplates.LinkFunctionType.Unlink));
+		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Link));
+		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Unlink));
 
 		if (stateMachineExporter.ownStateMachine()) {
 
@@ -121,18 +125,18 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			privateParts.append(stateMachineExporter.createStateMachineRelatedHeadedDeclerationCodes());
 
 			if (stateMachineExporter.ownSubMachine()) {
-				source = GenerationTemplates
+				source = HeaderTemplates
 						.simpleStateMachineClassHeader(getAllDependency(true), name, getBaseClass(), null,
 								publicParts.toString(), protectedParts.toString(), privateParts.toString(), true)
 						.toString();
 			} else {
-				source = GenerationTemplates.hierarchicalStateMachineClassHeader(getAllDependency(true), name,
+				source = HeaderTemplates.hierarchicalStateMachineClassHeader(getAllDependency(true), name,
 						getBaseClass(), getSubmachines(), publicParts.toString(), protectedParts.toString(),
 						privateParts.toString(), true).toString();
 			}
 		} else {
-			source = GenerationTemplates.classHeader(getAllDependency(true), name, getBaseClass(),
-					publicParts.toString(), protectedParts.toString(), privateParts.toString(), true).toString();
+			source = HeaderTemplates.classHeader(getAllDependency(true), name, getBaseClass(), publicParts.toString(),
+					protectedParts.toString(), privateParts.toString(), true).toString();
 		}
 		return source;
 	}
@@ -149,8 +153,8 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 		source.append(super.createOperationDefinitions());
 		source.append(constructorExporter.exportConstructorsDefinitions(name, stateMachineExporter.ownStateMachine()));
-		source.append(stateMachineExporter.ownStateMachine() ? GenerationTemplates.destructorDef(name, true)
-				: GenerationTemplates.destructorDef(name, false));
+		source.append(stateMachineExporter.ownStateMachine() ? ConstructorTemplates.destructorDef(name, true)
+				: ConstructorTemplates.destructorDef(name, false));
 
 		return source.toString();
 	}
@@ -178,20 +182,18 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 				source.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
 			}
 			if (associationExporter.ownAssociation()) {
-				source.append(GenerationTemplates.cppInclude(GenerationTemplates.AssociationsStructuresHreaderName));
+				source.append(GenerationTemplates.cppInclude(LinkTemplates.AssociationsStructuresHreaderName));
 
 			}
 			// TODO analyze what dependency is necessary..
 			source.append(GenerationTemplates
-					.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.StandardFunctionsHeader));
-			source.append(GenerationTemplates
-					.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.TimerInterfaceHeader));
+					.cppInclude(RuntimeTemplates.RTPath + GenerationTemplates.StandardFunctionsHeader));
 			source.append(
-					GenerationTemplates.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.TimerHeader));
+					GenerationTemplates.cppInclude(RuntimeTemplates.RTPath + GenerationTemplates.TimerInterfaceHeader));
+			source.append(GenerationTemplates.cppInclude(RuntimeTemplates.RTPath + GenerationTemplates.TimerHeader));
 		} else {
 			if (associationExporter.ownAssociation()) {
-				source.append(GenerationTemplates
-						.cppInclude(GenerationTemplates.RuntimePath + GenerationTemplates.AssocationHeader));
+				source.append(GenerationTemplates.cppInclude(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader));
 			}
 
 		}

@@ -31,20 +31,29 @@ import hu.elte.txtuml.export.cpp.structural.ClassExporter;
 import hu.elte.txtuml.export.cpp.structural.DataTypeExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.Options;
+import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
+import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
+import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 import hu.elte.txtuml.export.cpp.thread.ThreadHandlingManager;
+import hu.elte.txtuml.export.cpp.structural.DependencyExporter;
+
 import hu.elte.txtuml.utils.Pair;
 
 public class Uml2ToCppExporter {
 	public static final String GENERATED_CPP_FOLDER_NAME = "cpp-gen";
 	public static final String UML_FILES_FOLDER_NAME = "model";
 
-	private static final String RUNTIME_DIR_PREFIX = GenerationTemplates.RuntimePath;
+	private static final String RUNTIME_DIR_PREFIX = RuntimeTemplates.RTPath;
 	private static final String RUNTIME_LIB_NAME = "libsmrt";
 	private static final String DEFAULT_TARGET_EXECUTABLE = "main";
 	private static final String DEFAULT_DEPLOYMENT_NAME = "deployment";
 	private static final String DEFAULT_ASSOCIATIONS_NAME = "associations";
 	private static final String PROJECT_NAME = "hu.elte.txtuml.export.cpp";
 	private static final String CPP_FILES_FOLDER_NAME = "cpp-runtime";
+
+	private static final String SIGNAL_ENUM_EXTENSION = "_EE";
 
 	private ClassExporter classExporter;
 	private DataTypeExporter dataTypeExporter;
@@ -76,11 +85,9 @@ public class Uml2ToCppExporter {
 
 	public void buildCppCode(String outputDirectory) throws IOException {
 
-		if (options.isAddRuntime()) {
-			threadManager.createConfigurationSource(outputDirectory);
-		}
+		threadManager.createConfigurationSource(outputDirectory);
 
-		Shared.writeOutSource(outputDirectory, (GenerationTemplates.EventHeader), Shared.format(createEventSource()));
+		Shared.writeOutSource(outputDirectory, (EventTemplates.EventHeader), Shared.format(createEventSource()));
 
 		copyPreWrittenCppFiles(outputDirectory);
 
@@ -121,8 +128,8 @@ public class Uml2ToCppExporter {
 			file.mkdirs();
 		}
 
-		Files.copy(Paths.get(cppFilesLocation + GenerationTemplates.StateMachineBaseHeader),
-				Paths.get(destination + File.separator + GenerationTemplates.StateMachineBaseHeader),
+		Files.copy(Paths.get(cppFilesLocation + StateMachineTemplates.StateMachineBaseHeader),
+				Paths.get(destination + File.separator + StateMachineTemplates.StateMachineBaseHeader),
 				StandardCopyOption.REPLACE_EXISTING);
 		if (options.isAddRuntime()) {
 
@@ -195,34 +202,29 @@ public class Uml2ToCppExporter {
 		StringBuilder source = new StringBuilder("");
 		List<Pair<String, String>> allParam = new LinkedList<Pair<String, String>>();
 
-		events.append("InitSignal_EE,");
+		events.append(EventTemplates.InitSignal + SIGNAL_ENUM_EXTENSION + ",");
 		for (Signal signal : signalList) {
 			List<Pair<String, String>> currentParams = getSignalParams(signal);
 			String ctrBody = shared.signalCtrBody(signal);
 			allParam.addAll(currentParams);
-			source.append(GenerationTemplates.eventClass(signal.getName(), currentParams, ctrBody,
-					signal.getOwnedAttributes(), options));
-			events.append(signal.getName() + "_EE,");
+			source.append(
+					EventTemplates.eventClass(signal.getName(), currentParams, ctrBody, signal.getOwnedAttributes()));
+			events.append(signal.getName() + SIGNAL_ENUM_EXTENSION + ",");
 		}
 		events = new StringBuilder(events.substring(0, events.length() - 1));
 
-		source.append(GenerationTemplates.eventClass("InitSignal", new ArrayList<Pair<String, String>>(), "",
-				new ArrayList<Property>(), options));
+		source.append(EventTemplates.eventClass(EventTemplates.InitSignal, new ArrayList<Pair<String, String>>(), "",
+				new ArrayList<Property>()));
 
+		DependencyExporter dependencyEporter = new DependencyExporter();
 		for (Pair<String, String> param : allParam) {
-			if (!Shared.isBasicType(param.getFirst())) {
-				String tmp = GenerationTemplates.forwardDeclaration(param.getFirst());
-				// TODO this is suboptimal
-				if (!forwardDecl.toString().contains(tmp)) {
-					forwardDecl.append(tmp);
-				}
-			}
+			dependencyEporter.addDependecy(param.getSecond());
 		}
-
-		forwardDecl.append(GenerationTemplates.eventBase(options).append("\n"));
+		forwardDecl.append(dependencyEporter.createDependencyIncudesCode(true));
+		forwardDecl.append(EventTemplates.eventBase(options) + "\n");
 		forwardDecl.append("enum Events {" + events + "};\n");
 		forwardDecl.append(source);
-		return GenerationTemplates.eventHeaderGuard(forwardDecl.toString());
+		return EventTemplates.eventHeaderGuard(forwardDecl.toString());
 	}
 
 	private void createAssociationsSources(String outputDirectory)
@@ -230,7 +232,7 @@ public class Uml2ToCppExporter {
 
 		Set<String> associatedClasses = new HashSet<String>();
 		StringBuilder includes = new StringBuilder(
-				GenerationTemplates.cppInclude(GenerationTemplates.AssociationsStructuresHreaderName));
+				GenerationTemplates.cppInclude(LinkTemplates.AssociationsStructuresHreaderName));
 		StringBuilder preDeclerations = new StringBuilder("");
 		StringBuilder structures = new StringBuilder("");
 		StringBuilder functions = new StringBuilder("");
@@ -246,17 +248,17 @@ public class Uml2ToCppExporter {
 			String e2Name = e2End.getName();
 			associatedClasses.add(e1);
 			associatedClasses.add(e2);
-			structures.append(GenerationTemplates.createAssociationStructure(assoc.getName(), e1, e2, e1Name, e2Name));
+			structures.append(LinkTemplates.createAssociationStructure(assoc.getName(), e1, e2, e1Name, e2Name));
 
-			functions.append(GenerationTemplates.linkTemplateSpecializationDef(e1, e2, assoc.getName(), e2Name,
-					e2End.isNavigable(), GenerationTemplates.LinkFunctionType.Link));
-			functions.append(GenerationTemplates.linkTemplateSpecializationDef(e2, e1, assoc.getName(), e1Name,
-					e1End.isNavigable(), GenerationTemplates.LinkFunctionType.Link));
+			functions.append(LinkTemplates.linkTemplateSpecializationDef(e1, e2, assoc.getName(), e2Name,
+					e2End.isNavigable(), LinkTemplates.LinkFunctionType.Link));
+			functions.append(LinkTemplates.linkTemplateSpecializationDef(e2, e1, assoc.getName(), e1Name,
+					e1End.isNavigable(), LinkTemplates.LinkFunctionType.Link));
 
-			functions.append(GenerationTemplates.linkTemplateSpecializationDef(e2, e1, assoc.getName(), e1Name,
-					e1End.isNavigable(), GenerationTemplates.LinkFunctionType.Unlink));
-			functions.append(GenerationTemplates.linkTemplateSpecializationDef(e1, e2, assoc.getName(), e2Name,
-					e2End.isNavigable(), GenerationTemplates.LinkFunctionType.Unlink));
+			functions.append(LinkTemplates.linkTemplateSpecializationDef(e2, e1, assoc.getName(), e1Name,
+					e1End.isNavigable(), LinkTemplates.LinkFunctionType.Unlink));
+			functions.append(LinkTemplates.linkTemplateSpecializationDef(e1, e2, assoc.getName(), e2Name,
+					e2End.isNavigable(), LinkTemplates.LinkFunctionType.Unlink));
 
 		}
 
@@ -265,16 +267,12 @@ public class Uml2ToCppExporter {
 			preDeclerations.append(GenerationTemplates.forwardDeclaration(className));
 		}
 
-		Shared.writeOutSource(outputDirectory, (GenerationTemplates.AssociationStructuresHeader),
-				Shared.format(
-						GenerationTemplates
-								.headerGuard(
-										GenerationTemplates
-												.cppInclude(GenerationTemplates.RuntimePath
-														+ GenerationTemplates.AssocationHeader)
-												+ preDeclerations.toString() + structures.toString(),
-										GenerationTemplates.AssociationsStructuresHreaderName)));
-		Shared.writeOutSource(outputDirectory, (GenerationTemplates.AssociationStructuresSource),
+		Shared.writeOutSource(outputDirectory, (LinkTemplates.AssociationStructuresHeader),
+				Shared.format(HeaderTemplates.headerGuard(
+						GenerationTemplates.cppInclude(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader)
+								+ preDeclerations.toString() + structures.toString(),
+						LinkTemplates.AssociationsStructuresHreaderName)));
+		Shared.writeOutSource(outputDirectory, (LinkTemplates.AssociationStructuresSource),
 				Shared.format(includes.toString() + functions.toString()));
 
 	}

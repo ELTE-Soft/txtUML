@@ -13,7 +13,8 @@ import org.eclipse.uml2.uml.VisibilityKind;
 
 import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
 
 public abstract class StructuredElementExporter<StructuredElement extends OperationOwner & AttributeOwner> {
 	
@@ -39,7 +40,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 		this.structuredElement = structuredElement;
 	}
 	
-	protected void init() {
+	public void init() {
 		dependencyExporter = new DependencyExporter();
 		activityExporter = new ActivityExporter();
 	}
@@ -77,7 +78,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 			if (!Shared.isConstructor(operation)) {
 
 				String returnType = getReturnType(operation.getReturnResult());
-				source.append(GenerationTemplates.functionDef(name, returnType, operation.getName(),
+				source.append(FunctionTemplates.functionDef(name, returnType, operation.getName(),
 						Shared.getOperationParams(operation), funcBody));
 			}					
 
@@ -99,7 +100,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 				}
 				if (isSimpleAttribute(attribute)) {
 					
-					source.append(GenerationTemplates.propertyDecl(type, attribute.getName(),attribute.getDefault()));
+					source.append(VariableTemplates.propertyDecl(type, attribute.getName(),attribute.getDefault()));
 				}
 			}
 		}
@@ -112,7 +113,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 			if (operation.getVisibility().equals(modifyer)) {
 				String returnType = getReturnType(operation.getReturnResult());
 				if(!Shared.isConstructor(operation)) {
-					source.append(GenerationTemplates.functionDecl(returnType, operation.getName(), getOperationParamTypes(operation)));
+					source.append(FunctionTemplates.functionDecl(returnType, operation.getName(), getOperationParamTypes(operation)));
 				}
 				if(returnType != null) {
 					dependencyExporter.addDependecy(returnType);

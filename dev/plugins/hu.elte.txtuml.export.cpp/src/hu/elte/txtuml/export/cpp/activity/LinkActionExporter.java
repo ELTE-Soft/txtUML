@@ -6,20 +6,19 @@ import org.eclipse.uml2.uml.LinkEndData;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ReadLinkAction;
 
-import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 
 class LinkActionExporter {
-	
+
 	private OutVariableExporter tempVariableExporter;
 	private ActivityNodeResolver activityExportResolver;
-	
-	
-	public LinkActionExporter(OutVariableExporter tempVariableExporter,ActivityNodeResolver activityExportResolver) {
+
+	public LinkActionExporter(OutVariableExporter tempVariableExporter, ActivityNodeResolver activityExportResolver) {
 		this.tempVariableExporter = tempVariableExporter;
 		this.activityExportResolver = activityExportResolver;
 	}
-	
+
 	public String createReadLinkActionCode(ReadLinkAction readLinkNode) {
 
 		Property otherMember = null;
@@ -29,13 +28,14 @@ class LinkActionExporter {
 			}
 		}
 		tempVariableExporter.exportOutputPinToMap(readLinkNode.getResult());
-		
-		String target = readLinkNode.getInputValues().size() > 0 ? 
-				activityExportResolver.getTargetFromInputPin(readLinkNode.getInputValues().get(0)) : ActivityTemplates.Self;
+
+		String target = readLinkNode.getInputValues().size() > 0
+				? activityExportResolver.getTargetFromInputPin(readLinkNode.getInputValues().get(0))
+				: ActivityTemplates.SelfLiteral;
 
 		return ActivityTemplates.defineAndAddToCollection(otherMember.getType().getName(),
-				tempVariableExporter.getRealVariableName(readLinkNode.getResult()),
-				ActivityTemplates.selectAllTemplate(target,otherMember.getAssociation().getName(), otherMember.getName()));
+				tempVariableExporter.getRealVariableName(readLinkNode.getResult()), ActivityTemplates
+						.selectAllTemplate(target, otherMember.getAssociation().getName(), otherMember.getName()));
 	}
 
 	public String createLinkActionCode(CreateLinkAction node) {
@@ -47,7 +47,7 @@ class LinkActionExporter {
 
 		return ActivityTemplates.linkObjects(firstEndObject, secondEndObject,
 				firstLinkEnd.getEnd().getAssociation().getName(), firstLinkEnd.getEnd().getName(),
-				secondLinkEnd.getEnd().getName(), GenerationTemplates.LinkFunctionType.Link);
+				secondLinkEnd.getEnd().getName(), LinkTemplates.LinkFunctionType.Link);
 	}
 
 	public Object createDestroyLinkActionCode(DestroyLinkAction node) {
@@ -59,6 +59,6 @@ class LinkActionExporter {
 
 		return ActivityTemplates.linkObjects(firstEndObject, secondEndObject,
 				firstLinkEnd.getEnd().getAssociation().getName(), firstLinkEnd.getEnd().getName(),
-				secondLinkEnd.getEnd().getName(), GenerationTemplates.LinkFunctionType.Unlink);
+				secondLinkEnd.getEnd().getName(), LinkTemplates.LinkFunctionType.Unlink);
 	}
 }

@@ -6,14 +6,13 @@ import org.eclipse.uml2.uml.DataType;
 
 import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 
-public class DataTypeExporter extends StructuredElementExporter<DataType>{
-	
-	public DataTypeExporter (){}	
-	public void init() {
-		super.init();
+public class DataTypeExporter extends StructuredElementExporter<DataType> {
+
+	public DataTypeExporter() {
 	}
-	
+
 	@Override
 	public void exportStructuredElement(DataType structuredElement, String sourceDestination)
 			throws FileNotFoundException, UnsupportedEncodingException {
@@ -22,11 +21,11 @@ public class DataTypeExporter extends StructuredElementExporter<DataType>{
 	}
 
 	private void exportDataType(String destiation) throws FileNotFoundException, UnsupportedEncodingException {
-		
-		String attributes = super.createPublicAttributes();		
-		Shared.writeOutSource(destiation, GenerationTemplates.headerName(name), GenerationTemplates.headerGuard(dependencyExporter.createDependencyIncudesCode(true) + 
-				GenerationTemplates.dataType(name, attributes.toString()), name));
-	}
 
+		String attributes = super.createPublicAttributes();
+		Shared.writeOutSource(destiation, GenerationTemplates.headerName(name),
+				HeaderTemplates.headerGuard(dependencyExporter.createDependencyIncudesCode(true)
+						+ GenerationTemplates.dataType(name, attributes.toString()), name));
+	}
 
 }

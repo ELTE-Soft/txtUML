@@ -1,84 +1,13 @@
 package hu.elte.txtuml.export.cpp.templates;
 
 import java.util.List;
-import java.util.Map;
-
-import com.google.common.collect.Multimap;
 
 import hu.elte.txtuml.utils.Pair;
 
-class PrivateFunctionalTemplates {
-
-	/*
-	 * Map<Pair<String, String>,<String,String> <event,
-	 * state>,<guard,handlerName>
-	 * 
-	 * Map<String,String> <event,SubmachineName>
-	 */
-	public static StringBuilder hierarchicalStateMachineClassConstructorSharedBody(String className,
-			String parentStateMchine, Multimap<Pair<String, String>, Pair<String, String>> machine,
-			Map<String, String> subMachines, String intialState, Boolean rt) {
-		StringBuilder source = new StringBuilder("");
-		for (Map.Entry<String, String> entry : subMachines.entrySet()) {
-			source.append(
-					GenerationNames.CompositeStateMapName + ".emplace(" + GenerationNames.stateEnumName(entry.getKey())
-							+ "," + GenerationNames.CompositeStateMapSmType + "(" + GenerationNames.MemoryAllocator
-							+ " " + entry.getValue() + "(" + GenerationNames.Self + ")" + "));\n");
-		}
-
-		source.append("\n"
-				+ stateMachineClassConstructorSharedBody(className, parentStateMchine, machine, intialState, rt, null)
-				+ "\n\n");
-		return source;
-	}
-
-	public static String simpleStateMachineClassConstructorSharedBody(String className,
-			Multimap<Pair<String, String>, Pair<String, String>> machine, String intialState, Boolean simpleMachine) {
-		String source = "";
-		if (simpleMachine) {
-			source += RuntimeTemplates.rtFunctionDef(className);
-		}
-
-		return source + GenerationNames.simpleProcessEventDef(className) + "\n"
-				+ GenerationNames.simpleSetStateDef(className) + "\n"
-				+ PrivateFunctionalTemplates.setInitialState(className, intialState) + "\n";
-	}
+public class PrivateFunctionalTemplates {
 
 	public static String signalType(String type) {
 		return type + GenerationNames.EventClassTypeId;
-	}
-
-	public static StringBuilder stateMachineClassConstructorSharedBody(String className, String parentStateMachine,
-			Multimap<Pair<String, String>, Pair<String, String>> machine, String intialState, Boolean simpleMachine,
-			Integer poolId) {
-		StringBuilder source = new StringBuilder("");
-		for (Pair<String, String> key : machine.keySet()) {
-			for (Pair<String, String> value : machine.get(key)) {
-				source.append(GenerationNames.TransitionTableName + ".emplace(" + GenerationNames.EventStateTypeName
-						+ "(" + GenerationNames.EventsEnumName + "::");
-				source.append(GenerationNames.eventEnumName(key.getFirst()) + ","
-						+ GenerationNames.stateEnumName(key.getSecond()) + "),");
-				String guardName = GenerationNames.DefaultGuardName;
-				if (value.getFirst() != null) {
-					guardName = value.getFirst();
-				}
-				source.append(GenerationNames.GuardActionName + "(" + GenerationNames.GuardFuncTypeName + "(&"
-						+ className + "::" + guardName + ")," + GenerationNames.FunctionPtrTypeName + "(&" + className
-						+ "::" + value.getSecond() + ")));\n");
-			}
-
-		}
-
-		if (poolId != null) {
-			source.append(GenerationNames.PoolIdSetter + "(" + poolId + ");\n");
-		}
-		if (simpleMachine) {
-			source.append(RuntimeTemplates.initStateMachineForRuntime());
-		}
-
-		source.append(GenerationNames.SetInitialStateName + "();\n");
-
-		return source;
 	}
 
 	public static String classHeaderIncludes(Boolean rt) {
@@ -107,34 +36,6 @@ class PrivateFunctionalTemplates {
 			className = className.substring(5);
 		}
 		return "#include <" + className + ">\n";
-	}
-
-	public static String stateMachineClassFixPublicParts(String className, Boolean rt) {
-		String source = GenerationNames.ProcessEventDecl + GenerationNames.SetInitialStateDecl + "\n";
-		if (rt) {
-			source += "//RuntimeFunctions\n" + RuntimeTemplates.HeaderFuncs + "\n";
-		}
-		return source;
-	}
-
-	public static String simpleStateMachineClassFixPrivateParts(String className) {
-		return GenerationNames.SetStateDecl + GenerationNames.NoReturn + " " + GenerationNames.EntryName + "();\n"
-				+ GenerationNames.NoReturn + " " + GenerationNames.ExitName + "();\n\n" + "int "
-				+ GenerationNames.CurrentStateName + ";\n" + typedefs(className) + GenerationNames.TransitionTable;
-	}
-
-	public static String hierarchicalStateMachineClassFixPrivateParts(String className, List<String> subMachines) {
-		return "//Hierarchical Machine Parts\n" + GenerationNames.ActionCallerDecl + GenerationNames.CurrentMachine
-				+ GenerationNames.CompositeStateMap + subMachineFriendDecls(subMachines) + "//Simple Machine Parts\n"
-				+ simpleStateMachineClassFixPrivateParts(className);
-	}
-
-	private static StringBuilder subMachineFriendDecls(List<String> subMachines) {
-		StringBuilder source = new StringBuilder("");
-		for (String subMachine : subMachines) {
-			source.append(GenerationNames.friendClassDecl(subMachine));
-		}
-		return source;
 	}
 
 	public static String typedefs(String className) {
@@ -213,29 +114,6 @@ class PrivateFunctionalTemplates {
 			}
 		}
 		return cppType;
-	}
-
-	public static String entryExitTemplate(String typeName, String className, Map<String, String> states) {
-		String source = GenerationNames.NoReturn + " " + className + "::" + typeName + "()\n{\n";
-		if (states != null && !states.isEmpty()) {
-			source += "switch(" + GenerationNames.CurrentStateName + ")\n{\n";
-			for (Map.Entry<String, String> entry : states.entrySet()) {
-				source += "case(" + GenerationNames.stateEnumName(entry.getKey()) + "):{" + entry.getValue()
-						+ "();break;}\n";
-			}
-			source += "}\n";
-		}
-		return source + "}\n";
-	}
-
-	public static String setInitialState(String className, String initialState) {
-
-		return GenerationNames.NoReturn + " " + className + "::" + GenerationNames.SetInitialStateName + "(){"
-				+ GenerationNames.setStateFuncName + "(" + GenerationNames.stateEnumName(initialState) + ");}\n";
-	}
-
-	public static String subStateMachineClassFixPrivateParts(String parentClass) {
-		return GenerationNames.pointerType(parentClass) + " " + GenerationNames.ParentSmMemberName + ";\n";
 	}
 
 	public static boolean stdType(String cppType) {

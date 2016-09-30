@@ -1,10 +1,13 @@
-package hu.elte.txtuml.export.cpp.templates;
+package hu.elte.txtuml.export.cpp.templates.activity;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates.LinkFunctionType;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates.LinkFunctionType;
 import hu.elte.txtuml.utils.Pair;
 
 public class ActivityTemplates {
@@ -12,7 +15,6 @@ public class ActivityTemplates {
 	public static final String ReplaceSimpleTypeOp = "=";
 	public static final String AddCompositTypeOp = ".push_back";
 	public static final String ReplaceCompositTypeOp = ReplaceSimpleTypeOp;
-	public static final String Self = "this";
 	public static final String AccessOperatorForSets = GenerationNames.SimpleAccess;
 	public static final String SignalSmartPointerType = GenerationNames.EventPtr;
 	public static final String ProcessorDirectivesSign = "#";
@@ -20,6 +22,7 @@ public class ActivityTemplates {
 	public static final String GetSignalFunctionName = "getSignal";
 	public static final String TempVar = "temp";
 	public static final String NullPtrLiteral = GenerationNames.NullPtr;
+	public static final String SelfLiteral = GenerationNames.Self;
 
 	public enum OperationSide {
 		Left, Right
@@ -40,8 +43,8 @@ public class ActivityTemplates {
 		return generalSetValue(leftValueName, rightValueName, ReplaceSimpleTypeOp);
 	}
 
-	public static StringBuilder signalSend(String signalName, String targetName, String targetTypeName,
-			String accessOperator, List<String> params) {
+	public static String signalSend(String signalName, String targetName, String targetTypeName, String accessOperator,
+			List<String> params) {
 		StringBuilder source = new StringBuilder(targetName + accessOperator);
 		StringBuilder signal = new StringBuilder(GenerationNames.eventClassName(signalName) + "(");
 		signal.append(GenerationNames.derefenrencePointer(targetName) + ",");
@@ -53,15 +56,19 @@ public class ActivityTemplates {
 		}
 		signal.append(")");
 
-		source.append(RuntimeTemplates.sendSignal(signal.toString()));
+		source.append(sendSignal(signal.toString()));
 		source.append(");\n");
 
-		return source;
+		return source.toString();
+	}
+
+	public static String sendSignal(String signalName) {
+		return "send(EventPtr(" + GenerationNames.MemoryAllocator + " " + signalName + ")";
 	}
 
 	public static String linkObjects(String firstObjectName, String secondObjectName, String associationName,
 			String endPoint1, String endPoint2, LinkFunctionType linkType) {
-		return GenerationNames.ActionFunctionsNamespace + "::" + GenerationTemplates.getLinkFunctionName(linkType) + "<"
+		return GenerationNames.ActionFunctionsNamespace + "::" + LinkTemplates.getLinkFunctionName(linkType) + "<"
 				+ associationName + ",typename " + associationName + "::" + endPoint1 + ",typename " + associationName
 				+ "::" + endPoint2 + ">" + "(" + firstObjectName + "," + secondObjectName + ");\n";
 	}
@@ -99,16 +106,18 @@ public class ActivityTemplates {
 	}
 
 	public static String isEqualTesting(String firstArgument, String secondArgument) {
-		return firstArgument + " " + Operators.Equal + " " + secondArgument;
+		return firstArgument + " " + OperatorTemplates.Equal + " " + secondArgument;
 	}
 
 	public static String stdLibCall(String functionName, List<String> parameters) {
-		if (Operators.isInfixBinaryOperator(functionName)) {
+		if (OperatorTemplates.isInfixBinaryOperator(functionName)) {
 			assert (parameters.size() == 2);
-			return "(" + parameters.get(0) + Operators.resolveBinaryOperation(functionName) + parameters.get(1) + ")";
+			return "(" + parameters.get(0) + OperatorTemplates.resolveBinaryOperation(functionName) + parameters.get(1)
+					+ ")";
 		}
 
-		return Operators.getStandardLibaryFunctionName(functionName) + "(" + operationCallParamList(parameters) + ")";
+		return OperatorTemplates.getStandardLibaryFunctionName(functionName) + "(" + operationCallParamList(parameters)
+				+ ")";
 	}
 
 	public static String operationCallOnPointerVariable(String ownerName, String operationName, List<String> params) {
@@ -196,7 +205,7 @@ public class ActivityTemplates {
 					+ GenerationNames.MemoryAllocator + " " + PrivateFunctionalTemplates.signalType(typeName) + "("
 					+ operationCallParamList(parameters) + "))";
 		} else {
-			if (ownerName != Self) {
+			if (ownerName != GenerationNames.Self) {
 				return ownerName + ReplaceSimpleTypeOp + GenerationNames.MemoryAllocator + " " + typeName + "("
 						+ operationCallParamList(parameters) + ")";
 			} else {
@@ -219,8 +228,8 @@ public class ActivityTemplates {
 
 	public static String selectAllTemplate(String target, String otherEnd, String associationName) {
 		return target + GenerationNames.PointerAccess
-				+ GenerationTemplates.formatAssociationRoleName(otherEnd, associationName)
-				+ GenerationNames.SimpleAccess + GenerationNames.SelectAllFunctionName + "()";
+				+ LinkTemplates.formatAssociationRoleName(otherEnd, associationName) + GenerationNames.SimpleAccess
+				+ GenerationNames.SelectAllFunctionName + "()";
 	}
 
 	public static String collectionTemplate(String collectedType) {
@@ -278,128 +287,6 @@ public class ActivityTemplates {
 		return "gen" + count;
 	}
 
-	public static class Operators {
-
-		public static final String Remove = "remove";
-		public static final String First = "front";
-		public static final String Last = "back";
-
-		public static final String Add = "+";
-		public static final String Sub = "-";
-		public static final String Mul = "*";
-		public static final String Div = "/";
-		public static final String Mod = "%";
-		public static final String Increment = "++";
-		public static final String Decrement = "--";
-		public static final String Neg = "-";
-		public static final String Equal = "==";
-		public static final String NotEqual = "!=";
-		public static final String LessThen = "<";
-		public static final String GreatThen = ">";
-		public static final String LessOrEqThen = "<=";
-		public static final String GreatOrEqThen = ">=";
-
-		public static final String Not = "!";
-		public static final String And = "&&";
-		public static final String Or = "||";
-
-		public static final String Log = "log";
-		public static final String Select = "select";
-		public static final String Concat = "concat";
-		public static final String ToString = "toString";
-		public static final String Count = "count";
-		public static final String Round = "round";
-		public static final String Sinus = "sin";
-		public static final String Cosinus = "cos";
-		public static final String TimerStart = GenerationNames.StartTimerFunctionName;
-
-		public static final String NotBinaryOperator = "not_binary_operator";
-
-		public static String Fork(String cond, String e1, String e2) {
-			return cond + " ? " + e1 + " : " + e2;
-		}
-
-		public static boolean isInfixBinaryOperator(String functionName) {
-			return resolveBinaryOperation(functionName) != NotBinaryOperator;
-		}
-
-		public static String resolveBinaryOperation(String operationNem) {
-			String name = NotBinaryOperator;
-			switch (operationNem) {
-			case "add":
-				name = Add;
-				break;
-			case "concat":
-				name = Add;
-				break;
-			case "sub":
-				name = Sub;
-				break;
-			case "mul":
-				name = Mul;
-				break;
-			case "div":
-				name = Div;
-				break;
-			case "mod":
-				name = Mod;
-				break;
-			case "eq":
-				name = Equal;
-				break;
-			case "neq":
-				name = NotEqual;
-				break;
-			case "lt":
-				name = LessThen;
-				break;
-			case "gt":
-				name = GreatThen;
-				break;
-			case "leq":
-				name = LessOrEqThen;
-				break;
-			case "geq":
-				name = GreatOrEqThen;
-				break;
-			case "and":
-				name = And;
-				break;
-			case "or":
-				name = Or;
-				break;
-			}
-
-			return name;
-		}
-
-		public static String getStandardLibaryFunctionName(String function) {
-			switch (function) {
-			case ToString:
-				return GenerationNames.ConversionNamspace + "::" + "to_string";
-			case Log:
-				return GenerationNames.ActionFunctionsNamespace + "::" + Log;
-			case TimerStart:
-				return GenerationNames.TimerInterFaceName + "::" + TimerStart;
-			case "inc":
-				return Increment;
-			case "dec":
-				return Decrement;
-			case "not":
-				return Not;
-			case "neg":
-				return Neg;
-
-			default:
-				return function;
-			}
-		}
-
-		public static boolean isTimerStart(String function) {
-			return function == TimerStart;
-		}
-	}
-
 	public static boolean invalidIdentifier(String name) {
 
 		return name.startsWith(ProcessorDirectivesSign) || name.equals("return");
@@ -415,6 +302,12 @@ public class ActivityTemplates {
 
 	public static String formatUserVar(String varName, int userVarCounter) {
 		return varName + "_us" + userVarCounter;
+	}
+
+	public static String getRealEvent(String eventName) {
+		return "const " + eventName + GenerationNames.EventClassTypeId + "& " + GenerationNames.RealEventName
+				+ "=static_cast<const " + eventName + GenerationNames.EventClassTypeId + "&>("
+				+ GenerationNames.EventFParamName + ");\n";
 	}
 
 }

@@ -26,8 +26,8 @@ import org.eclipse.uml2.uml.ValuePin;
 import org.eclipse.uml2.uml.ValueSpecification;
 import org.eclipse.uml2.uml.ValueSpecificationAction;
 
-import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.utils.Logger;
 
 class ActivityNodeResolver {
@@ -68,7 +68,7 @@ class ActivityNodeResolver {
 		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
 			source = objectMap.get(node);
 		} else if (node.eClass().equals(UMLPackage.Literals.READ_SELF_ACTION)) {
-			source = ActivityTemplates.Self;
+			source = ActivityTemplates.SelfLiteral;
 
 		} else if (node.eClass().equals(UMLPackage.Literals.READ_LINK_ACTION)) {
 			source = getTargetFromActivityNode(((ReadLinkAction) node).getResult());
@@ -145,7 +145,7 @@ class ActivityNodeResolver {
 	
 	public String getTypeFromInputPin(InputPin inputPin) {
 		Type type = inputPin.getType();
-		String targetTypeName = "null";
+		String targetTypeName = "UNKNOWN_TARGET_TYPE_NAME";
 		if (type != null) {
 			targetTypeName = type.getName();
 		} else if (inputPin.eClass().equals(UMLPackage.Literals.INPUT_PIN)) {
@@ -177,8 +177,8 @@ class ActivityNodeResolver {
 		return targetTypeName;
 	}
 	
-	private <ItemType extends Element> Class getParentClass(ItemType element_) {
-		Element parent = element_.getOwner();
+	private <ItemType extends Element> Class getParentClass(ItemType element) {
+		Element parent = element.getOwner();
 		while (!parent.eClass().equals(UMLPackage.Literals.CLASS)) {
 			parent = parent.getOwner();
 		}

@@ -9,23 +9,23 @@ import org.eclipse.uml2.uml.StartClassifierBehaviorAction;
 import org.eclipse.uml2.uml.StartObjectBehaviorAction;
 import org.eclipse.uml2.uml.UMLPackage;
 
-import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
-import hu.elte.txtuml.export.cpp.templates.ActivityTemplates.CreateObjectType;
+import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
+import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates.CreateObjectType;
 
 class ObjectActionExporter {
-	
+
 	private Map<CreateObjectAction, String> objectMap;
 	private OutVariableExporter tempVariableExporter;
 	private ActivityNodeResolver activityExportResolver;
-	
-	ObjectActionExporter(OutVariableExporter tempVariableExporter,
-			Map<CreateObjectAction, String> objectMap,ActivityNodeResolver activityExportResolver) {
-		
+
+	ObjectActionExporter(OutVariableExporter tempVariableExporter, Map<CreateObjectAction, String> objectMap,
+			ActivityNodeResolver activityExportResolver) {
+
 		this.tempVariableExporter = tempVariableExporter;
 		this.activityExportResolver = activityExportResolver;
 		this.objectMap = objectMap;
 	}
-	
+
 	public String createCreateObjectActionCode(CreateObjectAction createObjectActionNode) {
 		String type = createObjectActionNode.getClassifier().getName();
 
@@ -43,7 +43,6 @@ class ObjectActionExporter {
 		return ActivityTemplates.createObject(type, name, objectType);
 	}
 
-	
 	public String createDestroyObjectActionCode(DestroyObjectAction node) {
 		return ActivityTemplates.deleteObject(activityExportResolver.getTargetFromInputPin(node.getTarget()));
 	}
@@ -53,9 +52,9 @@ class ObjectActionExporter {
 	}
 
 	public String createStartObjectActionCode(StartObjectBehaviorAction node) {
-		 return ActivityTemplates.startObject(activityExportResolver.getTargetFromInputPin(node.getObject()));
+		return ActivityTemplates.startObject(activityExportResolver.getTargetFromInputPin(node.getObject()));
 	}
-	
+
 	public String createSendSignalActionCode(SendObjectAction sendObjectAction) {
 
 		String target = activityExportResolver.getTargetFromInputPin(sendObjectAction.getTarget());

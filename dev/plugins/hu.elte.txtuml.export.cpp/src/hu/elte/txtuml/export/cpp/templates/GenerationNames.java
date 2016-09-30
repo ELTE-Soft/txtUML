@@ -1,6 +1,6 @@
 package hu.elte.txtuml.export.cpp.templates;
 
-class GenerationNames {
+public class GenerationNames {
 	public static final String EventHeaderName = "event";
 	public static final String EventBaseName = "EventBase";
 	public static final String EventBaseRefName = EventBaseName + "CRef";
@@ -40,15 +40,11 @@ class GenerationNames {
 	public static final String TransitionTableName = "_mM";
 	public static final String setStateFuncName = "setState";
 	public static final String CurrentStateName = "_cS";
-	public static final String DefaultInvalidState = "-1";
-	public static final String DefaultStateInitialization = CurrentStateName + "(" + DefaultInvalidState + ")";
 	public static final String FunctionPtrTypeName = "ActionFuncType";
 	public static final String GuardFuncTypeName = "GuardFuncType";
 	public static final String GuardActionName = "GuardAction";
 	public static final String EventStateTypeName = "EventState";
 	public static final String ProcessEventFName = "process_event";
-	public static final String ProcessEventDeclShared = "bool " + ProcessEventFName + "(" + EventBaseRefName + " "
-			+ EventFParamName + ")";
 	public static final String UnParametrizadProcessEvent = "bool " + ProcessEventFName + "(" + EventBaseRefName + ")";
 	public static final String ProcessEventDecl = UnParametrizadProcessEvent + ";\n";
 	public static final String TransitionTable = "std::unordered_multimap<" + EventStateTypeName + "," + GuardActionName
@@ -77,7 +73,6 @@ class GenerationNames {
 	public static final String ParentSmName = "pSm";
 	public static final String ParentSmMemberName = "_" + ParentSmName;
 
-	public static final String Unknown = "?";
 	public static final String AssocMultiplicityDataStruct = "AssociationEnd";
 	public static final String AssociationClassName = "Association";
 	public static final String AssocationHeaderName = "association";
@@ -88,7 +83,6 @@ class GenerationNames {
 	public static final String PoolIdSetter = "setPoolId";
 	public static final String InitialEventName = "InitSignal";
 	public static final String SendSignal = "send";
-	public static final String MultiplicityEnum = "Multiplicity";
 	public static final String AssigmentOperator = "=";
 	public static final String AddAssocToAssocationFunctionName = "addAssoc";
 	public static final String RemoveAssocToAssocationFunctionName = "removeAssoc";

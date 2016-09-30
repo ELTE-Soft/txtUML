@@ -9,7 +9,7 @@ import org.eclipse.uml2.uml.ObjectFlow;
 import org.eclipse.uml2.uml.ParameterDirectionKind;
 import org.eclipse.uml2.uml.UMLPackage;
 
-import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
+import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 
 public class ReturnNodeExporter {
 

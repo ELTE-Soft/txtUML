@@ -7,7 +7,7 @@ import org.eclipse.uml2.uml.Operation;
 
 import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.ConstructorTemplates;
 
 class ConstructorExporter {
 
@@ -28,9 +28,9 @@ class ConstructorExporter {
 		StringBuilder source = new StringBuilder();
 		for (Operation operation : constructors) {
 			String body = activityExporter.createfunctionBody(Shared.getOperationActivity(operation));
-			source.append(GenerationTemplates.constructorDef(className, Shared.getOperationParamNames(operation),
+			source.append(ConstructorTemplates.constructorDef(className, Shared.getOperationParamNames(operation),
 					Shared.getOperationParams(operation)));
-			source.append(GenerationTemplates.initDef(className, body, Shared.getOperationParams(operation),
+			source.append(ConstructorTemplates.initDef(className, body, Shared.getOperationParams(operation),
 					ownStateMachine));
 
 		}
@@ -41,12 +41,13 @@ class ConstructorExporter {
 		StringBuilder source = new StringBuilder();
 		if (ownConstructor) {
 			for (Operation operation : constructors) {
-				source.append(GenerationTemplates.constructorDecl(className, Shared.getOperationParamTypes(operation)));
-				source.append(GenerationTemplates.initDecl(className, Shared.getOperationParamTypes(operation)));
+				source.append(
+						ConstructorTemplates.constructorDecl(className, Shared.getOperationParamTypes(operation)));
+				source.append(ConstructorTemplates.initDecl(className, Shared.getOperationParamTypes(operation)));
 
 			}
 		} else {
-			source.append(GenerationTemplates.defaultConstructorDecl(className));
+			source.append(ConstructorTemplates.defaultConstructorDecl(className));
 		}
 
 		return source.toString();
