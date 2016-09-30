@@ -62,6 +62,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 	 */
 	@Override
 	public boolean performFinish() {
+		PreferencesManager.setDefaults();
 		String txtUMLModelName = selectTxtUmlPage.getTxtUmlModelClass();
 		List<String> txtUMLLayout = selectTxtUmlPage.getTxtUmlLayout();
 		String txtUMLProjectName = selectTxtUmlPage.getTxtUmlProject();

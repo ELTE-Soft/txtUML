@@ -22,46 +22,15 @@ public class PreferencesManager{
 	private static Map<String, Object> fieldsWithDefaultValues;
 	private static final String STRING_DELIMITER = "__#010#__"; 
 	
-	public static final String CLASS_DIAGRAM_PREF = "Class Diagram";
-	public static final String ACTIVITY_DIAGRAM_PREF = "Activity Diagram";
-	public static final String STATEMACHINE_DIAGRAM_PREF = "StateMachine Diagram";
-	public static final String COMPOSITE_DIAGRAM_PREF = "Composite Structure Diagram";
-	
-	public static final String CLASS_DIAGRAM_CONSTRAINT_PREF = "Class Diagram Constraint";
-	public static final String CLASS_DIAGRAM_SIGNAL_PREF = "Class Diagram Signal";
-	public static final String CLASS_DIAGRAM_COMMENT_PREF = "Class Diagram Comment";
-	
-	public static final String ACTIVITY_DIAGRAM_COMMENT_PREF = "Activity Diagram Comment";
-	
-	public static final String STATEMACHINE_DIAGRAM_CONSTRAINT_PREF = "StateMachine Diagram Constraint";
-	public static final String STATEMACHINE_DIAGRAM_COMMENT_PREF = "StateMachine Diagram Comment";
-	
 	public static final String TXTUML_VISUALIZE_TXTUML_MODEL = "txtUML Visualize txtUML Model";
 	public static final String TXTUML_VISUALIZE_TXTUML_PROJECT = "txtUML Visualize txtUML Project";
 	public static final String TXTUML_VISUALIZE_DESTINATION_FOLDER = "txtUML Visualize Destination Folder";
 	public static final String TXTUML_VISUALIZE_TXTUML_LAYOUT = "txtUML Visualize txtUML Layout";
-	public static final String GENERATE_STATEMACHINES_AUTOMATICALLY = "generate StateMachines Automatically";
 	
 	static{
 		fieldsWithDefaultValues = new HashMap<String, Object>();
-		
-		fieldsWithDefaultValues.put(CLASS_DIAGRAM_PREF, true);
-		fieldsWithDefaultValues.put(ACTIVITY_DIAGRAM_PREF, false);
-		fieldsWithDefaultValues.put(STATEMACHINE_DIAGRAM_PREF, true);
-		fieldsWithDefaultValues.put(COMPOSITE_DIAGRAM_PREF, true);
-		
-		fieldsWithDefaultValues.put(CLASS_DIAGRAM_CONSTRAINT_PREF, false);
-		fieldsWithDefaultValues.put(CLASS_DIAGRAM_SIGNAL_PREF, false);
-		fieldsWithDefaultValues.put(CLASS_DIAGRAM_COMMENT_PREF, true);
-	    
-		fieldsWithDefaultValues.put(ACTIVITY_DIAGRAM_COMMENT_PREF, false);
-		
-		fieldsWithDefaultValues.put(STATEMACHINE_DIAGRAM_CONSTRAINT_PREF, false);
-		fieldsWithDefaultValues.put(STATEMACHINE_DIAGRAM_COMMENT_PREF, true);
-		
 		fieldsWithDefaultValues.put(TXTUML_VISUALIZE_TXTUML_MODEL, "");
 		fieldsWithDefaultValues.put(TXTUML_VISUALIZE_DESTINATION_FOLDER, "gen");
-		fieldsWithDefaultValues.put(GENERATE_STATEMACHINES_AUTOMATICALLY, true);
 	}
 	
 	/**
