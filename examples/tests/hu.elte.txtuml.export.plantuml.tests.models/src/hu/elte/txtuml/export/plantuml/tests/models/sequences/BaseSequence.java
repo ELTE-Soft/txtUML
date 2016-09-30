@@ -1,15 +1,15 @@
-package hu.elte.txtuml.export.plantuml.tests.sequences;
+package hu.elte.txtuml.export.plantuml.tests.models.sequences;
 
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.seqdiag.API;
 import hu.elte.txtuml.api.model.seqdiag.Action;
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
 import hu.elte.txtuml.api.model.seqdiag.Position;
-import hu.elte.txtuml.export.plantuml.tests.testmodel.A;
-import hu.elte.txtuml.export.plantuml.tests.testmodel.AToB;
-import hu.elte.txtuml.export.plantuml.tests.testmodel.B;
-import hu.elte.txtuml.export.plantuml.tests.testmodel.BToC;
-import hu.elte.txtuml.export.plantuml.tests.testmodel.C;
+import hu.elte.txtuml.export.plantuml.tests.models.testmodel.A;
+import hu.elte.txtuml.export.plantuml.tests.models.testmodel.AToB;
+import hu.elte.txtuml.export.plantuml.tests.models.testmodel.B;
+import hu.elte.txtuml.export.plantuml.tests.models.testmodel.BToC;
+import hu.elte.txtuml.export.plantuml.tests.models.testmodel.C;
 
 public abstract class BaseSequence extends Interaction {
 	@Position(1)

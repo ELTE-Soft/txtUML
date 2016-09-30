@@ -1,10 +1,10 @@
-package hu.elte.txtuml.export.plantuml.tests.sequences;
+package hu.elte.txtuml.export.plantuml.tests.models.sequences;
 
 import hu.elte.txtuml.api.model.seqdiag.API;
 import hu.elte.txtuml.api.model.seqdiag.Action;
 import hu.elte.txtuml.api.model.seqdiag.ExecMode;
 import hu.elte.txtuml.api.model.seqdiag.ExecutionMode;
-import hu.elte.txtuml.export.plantuml.tests.testmodel.TestSig;
+import hu.elte.txtuml.export.plantuml.tests.models.testmodel.TestSig;
 
 public class SequenceMessaging extends BaseSequence {
 

@@ -8,7 +8,6 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -24,14 +23,8 @@ public class SequenceDiagramFragmentsTests {
 	static IProject project;
 
 	@BeforeClass
-	public static void setUp() {
-		try {
-			project = PlantUmlExportTestUtils.getSelfProject();
-			project.open(new NullProgressMonitor());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+	public static void setUp() throws Exception {
+		project = PlantUmlExportTestUtils.getSelfProject();
 		genFolder = project.getFolder("gen");
 	}
 
@@ -39,10 +32,10 @@ public class SequenceDiagramFragmentsTests {
 	public void testSeqFragment() {
 		Scanner rd = null;
 		try {
-			ArrayList<String> SeqDiagName = new ArrayList<String>();
-			SeqDiagName.add("hu.elte.txtuml.export.plantuml.tests.sequences.SeqFragment");
+			ArrayList<String> SeqDiagNames = new ArrayList<String>();
+			SeqDiagNames.add(project.getName().toString() + ".sequences.SeqFragment");
 
-			exporter = new PlantUmlExporter("hu.elte.txtuml.export.plantuml.tests", "gen", SeqDiagName);
+			exporter = new PlantUmlExporter(project.getName().toString(), "gen", SeqDiagNames);
 
 			exporter.generatePlantUmlOutput(new NullProgressMonitor());
 
@@ -64,8 +57,7 @@ public class SequenceDiagramFragmentsTests {
 			rd.close();
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			Assert.assertFalse(true);
+			Assert.assertFalse("Exception:" + e.getMessage(), true);
 		} finally {
 			if (rd != null) {
 				rd.close();
@@ -77,10 +69,10 @@ public class SequenceDiagramFragmentsTests {
 	public void testStrictFragment() {
 		Scanner rd = null;
 		try {
-			ArrayList<String> SeqDiagName = new ArrayList<String>();
-			SeqDiagName.add("hu.elte.txtuml.export.plantuml.tests.sequences.StrictFragment");
+			ArrayList<String> SeqDiagNames = new ArrayList<String>();
+			SeqDiagNames.add(project.getName().toString() + ".sequences.StrictFragment");
 
-			exporter = new PlantUmlExporter("hu.elte.txtuml.export.plantuml.tests", "gen", SeqDiagName);
+			exporter = new PlantUmlExporter(project.getName().toString(), "gen", SeqDiagNames);
 
 			exporter.generatePlantUmlOutput(new NullProgressMonitor());
 
@@ -102,8 +94,7 @@ public class SequenceDiagramFragmentsTests {
 			rd.close();
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			Assert.assertFalse(true);
+			Assert.assertFalse("Exception:" + e.getMessage(), true);
 		} finally {
 			if (rd != null) {
 				rd.close();
@@ -115,10 +106,10 @@ public class SequenceDiagramFragmentsTests {
 	public void testOptFragment() {
 		Scanner rd = null;
 		try {
-			ArrayList<String> SeqDiagName = new ArrayList<String>();
-			SeqDiagName.add("hu.elte.txtuml.export.plantuml.tests.sequences.OPTFragment");
+			ArrayList<String> SeqDiagNames = new ArrayList<String>();
+			SeqDiagNames.add(project.getName().toString() + ".sequences.OPTFragment");
 
-			exporter = new PlantUmlExporter("hu.elte.txtuml.export.plantuml.tests", "gen", SeqDiagName);
+			exporter = new PlantUmlExporter(project.getName().toString(), "gen", SeqDiagNames);
 
 			exporter.generatePlantUmlOutput(new NullProgressMonitor());
 
@@ -139,8 +130,7 @@ public class SequenceDiagramFragmentsTests {
 			rd.close();
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			Assert.assertFalse(true);
+			Assert.assertFalse("Exception:" + e.getMessage(), true);
 		} finally {
 			if (rd != null) {
 				rd.close();
@@ -152,10 +142,10 @@ public class SequenceDiagramFragmentsTests {
 	public void testAltFragment() {
 		Scanner rd = null;
 		try {
-			ArrayList<String> SeqDiagName = new ArrayList<String>();
-			SeqDiagName.add("hu.elte.txtuml.export.plantuml.tests.sequences.ALTFragment");
+			ArrayList<String> SeqDiagNames = new ArrayList<String>();
+			SeqDiagNames.add(project.getName().toString() + ".sequences.ALTFragment");
 
-			exporter = new PlantUmlExporter("hu.elte.txtuml.export.plantuml.tests", "gen", SeqDiagName);
+			exporter = new PlantUmlExporter(project.getName().toString(), "gen", SeqDiagNames);
 
 			exporter.generatePlantUmlOutput(new NullProgressMonitor());
 
@@ -178,8 +168,7 @@ public class SequenceDiagramFragmentsTests {
 			rd.close();
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			Assert.assertFalse(true);
+			Assert.assertFalse("Exception:" + e.getMessage(), true);
 		} finally {
 			if (rd != null) {
 				rd.close();
@@ -191,10 +180,10 @@ public class SequenceDiagramFragmentsTests {
 	public void testLoopFragment() {
 		Scanner rd = null;
 		try {
-			ArrayList<String> SeqDiagName = new ArrayList<String>();
-			SeqDiagName.add("hu.elte.txtuml.export.plantuml.tests.sequences.LoopFragment");
+			ArrayList<String> SeqDiagNames = new ArrayList<String>();
+			SeqDiagNames.add(project.getName().toString() + ".sequences.LoopFragment");
 
-			exporter = new PlantUmlExporter("hu.elte.txtuml.export.plantuml.tests", "gen", SeqDiagName);
+			exporter = new PlantUmlExporter(project.getName().toString(), "gen", SeqDiagNames);
 
 			exporter.generatePlantUmlOutput(new NullProgressMonitor());
 
@@ -217,8 +206,7 @@ public class SequenceDiagramFragmentsTests {
 			Assert.assertEquals("@enduml", rd.nextLine());
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			Assert.assertFalse(true);
+			Assert.assertFalse("Exception:" + e.getMessage(), true);
 		} finally {
 			if (rd != null) {
 				rd.close();
@@ -227,14 +215,9 @@ public class SequenceDiagramFragmentsTests {
 	}
 
 	@AfterClass
-	public static void tearDown() {
+	public static void tearDown() throws Exception {
 		exporter = null;
-
-		try {
-			genFolder.delete(true, new NullProgressMonitor());
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
+		genFolder.delete(true, new NullProgressMonitor());
 
 		project = null;
 		genFolder = null;

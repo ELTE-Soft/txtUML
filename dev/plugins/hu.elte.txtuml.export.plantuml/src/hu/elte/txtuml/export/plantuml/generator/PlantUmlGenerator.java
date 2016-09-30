@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.plantuml.generator;
 
 import java.io.ByteArrayInputStream;
+import java.net.URLClassLoader;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -25,19 +26,21 @@ public class PlantUmlGenerator {
 
 	private IFile targetFile;
 	private CompilationUnit sourceCU;
+	private URLClassLoader loader;
 
 	private PlantUmlPreCompiler preCompiler;
 	private PlantUmlCompiler compiler;
 
-	public PlantUmlGenerator(IFile targetFile, CompilationUnit source) {
+	public PlantUmlGenerator(URLClassLoader loader, IFile targetFile, CompilationUnit source) {
 
 		this.targetFile = targetFile;
 		this.sourceCU = source;
+		this.loader = loader;
 	}
 
 	public void generate() throws SequenceDiagramStructuralException, PreCompilationError {
 
-		preCompiler = new PlantUmlPreCompiler();
+		preCompiler = new PlantUmlPreCompiler(loader);
 		sourceCU.accept(preCompiler);
 		if (!preCompiler.getErrors().isEmpty()) {
 

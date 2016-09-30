@@ -16,38 +16,30 @@ import org.junit.Test;
 import hu.elte.txtuml.export.plantuml.PlantUmlExporter;
 
 public class FileManagementTests {
-	static PlantUmlExporter exporter;
-	static IFolder genFolder;
-	static IProject project;
+	private static PlantUmlExporter exporter;
+	private static IFolder genFolder;
+	private static IProject project;
 
 	@BeforeClass
-	public static void setUp() {
-		try {
-			project = PlantUmlExportTestUtils.getSelfProject();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public static void setUp() throws Exception {
+		project = PlantUmlExportTestUtils.getSelfProject();
 
 		genFolder = project.getFolder("gen");
 
-		ArrayList<String> SeqDiagName = new ArrayList<String>();
-		SeqDiagName.add("hu.elte.txtuml.export.plantuml.tests.sequences.SequenceBasic");
-		exporter = new PlantUmlExporter("hu.elte.txtuml.export.plantuml.tests", "gen", SeqDiagName);
-		try {
-			exporter.generatePlantUmlOutput(null);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		ArrayList<String> SeqDiagNames = new ArrayList<String>();
+		SeqDiagNames.add(project.getName().toString() + ".sequences.SequenceBasic");
+		exporter = new PlantUmlExporter(project.getName().toString(), "gen", SeqDiagNames);
+		exporter.generatePlantUmlOutput(new NullProgressMonitor());
 	}
 
 	@Test
 	public void testFolderCreation() {
-		Assert.assertTrue(genFolder.exists());
+		Assert.assertTrue("gen folder does not exists", genFolder.exists());
 	}
 
 	@Test
 	public void testFileCreation() {
-		Assert.assertTrue(genFolder.exists());
+		Assert.assertTrue("gen folder does not exists", genFolder.exists());
 		Assert.assertEquals(1, exporter.expotedCount());
 
 		int fileCount = 0;
@@ -58,25 +50,20 @@ public class FileManagementTests {
 				}
 			}
 		} catch (CoreException e) {
-			e.printStackTrace();
-			Assert.assertFalse(true);
+			Assert.assertFalse("Exception:" + e.getMessage(), true);
 		}
 
 		IFile outfile = genFolder.getFile("SequenceBasic.txt");
 
 		Assert.assertEquals(1, fileCount);
-		Assert.assertTrue(outfile.exists());
+		Assert.assertTrue("Output file does not exists", outfile.exists());
 	}
 
 	@AfterClass
-	public static void tearDown() {
+	public static void tearDown() throws Exception {
 		exporter = null;
-		try {
-			genFolder.delete(true, new NullProgressMonitor());
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
-		
+		genFolder.delete(true, new NullProgressMonitor());
+
 		genFolder = null;
 		project = null;
 	}

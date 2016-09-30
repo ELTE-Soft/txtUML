@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.plantuml.tests.sequences;
+package hu.elte.txtuml.export.plantuml.tests.models.sequences;
 
 public class ALTFragment extends BaseSequence {
 

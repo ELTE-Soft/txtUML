@@ -6,7 +6,7 @@
       provider-name="ELTE">
 
    <description url="http://txtuml.inf.elte.hu">
-      Textual, executable, translatable UML.
+      Textual, executable, translatable UML.(Java 8 Required)
    </description>
 
    <copyright>

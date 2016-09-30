@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.plantuml.tests.testmodel;
+package hu.elte.txtuml.export.plantuml.tests.models.testmodel;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.From;
@@ -6,7 +6,7 @@ import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
 
-public class A extends ModelClass {
+public class C extends ModelClass {
 
 	public class Init extends Initial {
 
@@ -14,7 +14,7 @@ public class A extends ModelClass {
 
 	@From(Init.class)
 	@To(StateA.class)
-	public class IToStateA extends Transition {
+	public class IToA extends Transition {
 
 	}
 
@@ -32,7 +32,7 @@ public class A extends ModelClass {
 	public class StateB extends State {
 		@Override
 		public void entry() {
-			Action.send(new TestSig(), assoc(AToB.BSide.class).selectAny());
+			Action.send(new TestSig(), assoc(BToC.BSide.class).selectAny());
 		}
 	}
 

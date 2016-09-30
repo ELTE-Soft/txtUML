@@ -11,4 +11,37 @@
 	</parent>
 	<artifactId>hu.elte.txtuml.export.plantuml.tests</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-surefire-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<osgiDataDirectory>${basedir}/work</osgiDataDirectory>
+					<deleteOsgiDataDirectory>false</deleteOsgiDataDirectory> 		
+				</configuration>
+			</plugin>
+			<plugin>
+			   <groupId>org.eclipse.tycho</groupId>
+			   <artifactId>target-platform-configuration</artifactId>
+			   <version>${tycho.version}</version>
+			   <configuration>
+			      <dependency-resolution>
+			         <extraRequirements>
+			      
+			            <requirement>
+                           <type>eclipse-plugin</type>
+                           <id>hu.elte.txtuml.api.model</id>
+                           <versionRange>0.0.0</versionRange>
+                        </requirement>
+                   
+			         </extraRequirements>
+			      </dependency-resolution>
+			   </configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
 </project>

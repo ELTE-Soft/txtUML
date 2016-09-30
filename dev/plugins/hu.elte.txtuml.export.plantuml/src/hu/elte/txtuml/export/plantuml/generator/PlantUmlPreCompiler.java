@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.plantuml.generator;
 
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,12 +32,14 @@ public class PlantUmlPreCompiler extends ASTVisitor {
 	private String currentClassName;
 	private Type superClass;
 	private ArrayList<Exception> errorList;
+	private URLClassLoader loader;
 
-	public PlantUmlPreCompiler() {
+	public PlantUmlPreCompiler(URLClassLoader loader) {
 		super();
 		fragments = new ArrayList<MethodDeclaration>();
 		lifelines = new ArrayList<FieldDeclaration>();
 		errorList = new ArrayList<Exception>();
+		this.loader = loader;
 	}
 
 	public boolean visit(TypeDeclaration decl) {
@@ -70,7 +73,7 @@ public class PlantUmlPreCompiler extends ASTVisitor {
 
 		Class<?> declCls = null;
 		try {
-			declCls = Class.forName(decl.getType().resolveBinding().getQualifiedName());
+			declCls = loader.loadClass(decl.getType().resolveBinding().getQualifiedName());
 			if (ModelClass.class.isAssignableFrom(declCls)) {
 				lifelines.add(decl);
 			}

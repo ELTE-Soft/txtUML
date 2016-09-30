@@ -6,7 +6,6 @@ import java.util.Scanner;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -22,13 +21,8 @@ public class BasicSeqDiagElementTests {
 	static IProject project;
 
 	@BeforeClass
-	public static void setUp() {
-		try {
-			project = PlantUmlExportTestUtils.getSelfProject();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+	public static void setUp() throws Exception {
+		project = PlantUmlExportTestUtils.getSelfProject();
 		genFolder = project.getFolder("gen");
 	}
 
@@ -36,10 +30,11 @@ public class BasicSeqDiagElementTests {
 	public void testLifelines() {
 		Scanner rd = null;
 		try {
-			ArrayList<String> SeqDiagName = new ArrayList<String>();
-			SeqDiagName.add("hu.elte.txtuml.export.plantuml.tests.sequences.SequenceBasic");
+			ArrayList<String> SeqDiagNames = new ArrayList<String>();
 
-			exporter = new PlantUmlExporter("hu.elte.txtuml.export.plantuml.tests", "gen", SeqDiagName);
+			SeqDiagNames.add(project.getName().toString() + ".sequences.SequenceBasic");
+
+			exporter = new PlantUmlExporter(project.getName().toString(), "gen", SeqDiagNames);
 			exporter.generatePlantUmlOutput(null);
 			IFile outfile = genFolder.getFile("SequenceBasic.txt");
 
@@ -53,7 +48,8 @@ public class BasicSeqDiagElementTests {
 			Assert.assertEquals("participant lifeline2", rd.nextLine());
 			Assert.assertEquals("@enduml", rd.nextLine());
 		} catch (Exception e) {
-			Assert.assertFalse(true);
+			e.printStackTrace(System.err);
+			Assert.assertFalse("Exception:" + e.getMessage(), true);
 		} finally {
 			if (rd != null) {
 				rd.close();
@@ -65,9 +61,9 @@ public class BasicSeqDiagElementTests {
 	public void testMessaging() {
 		Scanner rd = null;
 		try {
-			ArrayList<String> SeqDiagName = new ArrayList<String>();
-			SeqDiagName.add("hu.elte.txtuml.export.plantuml.tests.sequences.SequenceMessaging");
-			exporter = new PlantUmlExporter("hu.elte.txtuml.export.plantuml.tests", "gen", SeqDiagName);
+			ArrayList<String> SeqDiagNames = new ArrayList<String>();
+			SeqDiagNames.add(project.getName().toString() + ".sequences.SequenceMessaging");
+			exporter = new PlantUmlExporter(project.getName().toString(), "gen", SeqDiagNames);
 			exporter.generatePlantUmlOutput(null);
 			IFile outfile = genFolder.getFile("SequenceMessaging.txt");
 
@@ -81,22 +77,17 @@ public class BasicSeqDiagElementTests {
 			Assert.assertEquals("participant lifeline2", rd.nextLine());
 			Assert.assertEquals("activate lifeline1", rd.nextLine());
 			Assert.assertEquals("activate lifeline2", rd.nextLine());
-			Assert.assertEquals("lifeline1->lifeline2 : hu.elte.txtuml.export.plantuml.tests.testModel.TestSig",
-					rd.nextLine());
+			Assert.assertEquals("lifeline1->lifeline2 : " + project.getName() + ".testmodel.TestSig", rd.nextLine());
 			Assert.assertEquals("activate lifeline3", rd.nextLine());
-			Assert.assertEquals("lifeline2->lifeline3 : hu.elte.txtuml.export.plantuml.tests.testModel.TestSig",
-					rd.nextLine());
-			Assert.assertEquals("lifeline3->lifeline2 : hu.elte.txtuml.export.plantuml.tests.testModel.TestSig",
-					rd.nextLine());
-			Assert.assertEquals("lifeline2->lifeline1 : hu.elte.txtuml.export.plantuml.tests.testModel.TestSig",
-					rd.nextLine());
+			Assert.assertEquals("lifeline2->lifeline3 : " + project.getName() + ".testmodel.TestSig", rd.nextLine());
+			Assert.assertEquals("lifeline3->lifeline2 : " + project.getName() + ".testmodel.TestSig", rd.nextLine());
+			Assert.assertEquals("lifeline2->lifeline1 : " + project.getName() + ".testmodel.TestSig", rd.nextLine());
 			Assert.assertEquals("deactivate lifeline1", rd.nextLine());
 			Assert.assertEquals("deactivate lifeline2", rd.nextLine());
 			Assert.assertEquals("deactivate lifeline3", rd.nextLine());
 			Assert.assertEquals("@enduml", rd.nextLine());
 		} catch (Exception e) {
-
-			Assert.assertFalse(true);
+			Assert.assertFalse("Exception:" + e.getMessage(), true);
 		} finally {
 			if (rd != null) {
 				rd.close();
@@ -105,14 +96,9 @@ public class BasicSeqDiagElementTests {
 	}
 
 	@AfterClass
-	public static void tearDown() {
+	public static void tearDown() throws Exception {
 		exporter = null;
-
-		try {
-			genFolder.delete(true, new NullProgressMonitor());
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
+		genFolder.delete(true, new NullProgressMonitor());
 
 		genFolder = null;
 		project = null;

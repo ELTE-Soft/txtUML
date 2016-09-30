@@ -11,6 +11,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.CommonPlugin;
 import org.eclipse.emf.common.util.URI;
@@ -52,6 +53,7 @@ public class PlantUmlExporter {
 	private String genFolderName;
 	private List<String> diagrams;
 	private List<Class<Interaction>> seqDiagrams;
+	private URLClassLoader loader;
 
 	protected int exportedCount = 0;
 	protected int nonExportedCount = 0;
@@ -64,6 +66,7 @@ public class PlantUmlExporter {
 		genFolderName = generatedFolderName;
 		diagrams = SeqDiagramNames;
 		nonExportedCount = diagrams.size();
+		loader = ClassLoaderProvider.getClassLoaderForProject(projectName, Interaction.class.getClassLoader());
 		filterDiagramsByType();
 	}
 
@@ -79,15 +82,12 @@ public class PlantUmlExporter {
 		for (Iterator<String> iterator = diagrams.iterator(); iterator.hasNext();) {
 			diagram = iterator.next();
 			try {
-				URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(projectName,
-						Interaction.class.getClassLoader());
 				Class<?> diagramClass = loader.loadClass(diagram);
 
 				if (Interaction.class.isAssignableFrom(diagramClass)) {
 					seqDiagrams.add((Class<Interaction>) diagramClass);
 					iterator.remove();
 					nonExportedCount--;
-				} else {
 				}
 
 			} catch (ClassNotFoundException e) {
@@ -106,7 +106,6 @@ public class PlantUmlExporter {
 	 */
 	public void generatePlantUmlOutput(IProgressMonitor monitor)
 			throws CoreException, SequenceDiagramStructuralException, PreCompilationError {
-
 		for (Class<Interaction> sequenceDiagram : seqDiagrams) {
 			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 			IFile resource = project.getFile("src/" + sequenceDiagram.getName().replace('.', '/') + ".java");
@@ -126,31 +125,41 @@ public class PlantUmlExporter {
 
 			IFile targetFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(targetURI.toFileString()));
 
-			IWorkbench workbench = PlatformUI.getWorkbench();
-			IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
+			if (PlatformUI.isWorkbenchRunning()) {
+				IWorkbench workbench = PlatformUI.getWorkbench();
+				IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
 
-			cleanupWorkbench(targetFile, page);
+				cleanupWorkbench(targetFile, page);
+				if (targetFile.exists()) {
+					targetFile.delete(true, null);
+				}
+			}
 
 			URI targetDirURI = CommonPlugin.resolve(URI.createFileURI(projectName + "/" + genFolderName));
 
 			IFolder targetDir = ResourcesPlugin.getWorkspace().getRoot()
 					.getFolder(new Path(targetDirURI.toFileString()));
+
 			if (!targetDir.exists()) {
-				targetDir.create(false, true, null);
+				targetDir.create(false, true, new NullProgressMonitor());
 			}
 
 			if (monitor != null) {
 				monitor.worked(100 / (seqDiagrams.size() * 2));
 			}
 
-			PlantUmlGenerator generator = new PlantUmlGenerator(targetFile, cu);
+			PlantUmlGenerator generator = new PlantUmlGenerator(loader, targetFile, cu);
 			generator.generate();
 			project.refreshLocal(IProject.DEPTH_INFINITE, null);
 
-			IEditorDescriptor editor = workbench.getEditorRegistry().getDefaultEditor(targetFile.getName());
-			IEditorPart editorPart = page.openEditor(new FileEditorInput(targetFile), editor.getId());
-			page.activate(editorPart);
-			page.showView("net.sourceforge.plantuml.eclipse.views.PlantUmlView");
+			if (PlatformUI.isWorkbenchRunning()) {
+				IWorkbench workbench = PlatformUI.getWorkbench();
+				IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
+				IEditorDescriptor editor = workbench.getEditorRegistry().getDefaultEditor(targetFile.getName());
+				IEditorPart editorPart = page.openEditor(new FileEditorInput(targetFile), editor.getId());
+				page.activate(editorPart);
+				page.showView("net.sourceforge.plantuml.eclipse.views.PlantUmlView");
+			}
 
 			if (monitor != null) {
 				monitor.worked(100 / (seqDiagrams.size() * 2));
@@ -162,7 +171,6 @@ public class PlantUmlExporter {
 	protected void cleanupWorkbench(IFile targetFile, IWorkbenchPage page) throws CoreException {
 
 		if (targetFile.exists()) {
-
 			IEditorReference[] refs = page.getEditorReferences();
 			for (IEditorReference ref : refs) {
 
@@ -176,8 +184,6 @@ public class PlantUmlExporter {
 					}
 				}
 			}
-
-			targetFile.delete(true, null);
 		}
 	}
 
