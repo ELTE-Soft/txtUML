@@ -1,5 +1,6 @@
 package hu.elte.txtuml.validation.visitors;
 
+import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.SimpleName;
@@ -12,10 +13,10 @@ import hu.elte.txtuml.validation.problems.state.UnknownStateMethod;
 public class StateVisitor extends VisitorBase {
 
 	public static final Class<?>[] ALLOWED_STATE_DECLARATIONS = new Class<?>[] { MethodDeclaration.class,
-			SimpleName.class, SimpleType.class, Modifier.class };
+			SimpleName.class, SimpleType.class, Modifier.class, Javadoc.class };
 
 	public static final Class<?>[] ALLOWED_INITIAL_STATE_DECLARATIONS = new Class<?>[] { SimpleName.class,
-			SimpleType.class, Modifier.class };
+			SimpleType.class, Modifier.class, Javadoc.class };
 
 	public StateVisitor(ProblemCollector collector) {
 		super(collector);

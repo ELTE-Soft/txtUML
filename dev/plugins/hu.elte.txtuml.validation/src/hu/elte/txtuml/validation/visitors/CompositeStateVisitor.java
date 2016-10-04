@@ -1,5 +1,6 @@
 package hu.elte.txtuml.validation.visitors;
 
+import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.SimpleName;
@@ -13,7 +14,7 @@ import hu.elte.txtuml.validation.problems.state.UnknownClassInState;
 public class CompositeStateVisitor extends StateVisitor {
 
 	public static final Class<?>[] ALLOWED_COMPOSITE_STATE_DECLARATIONS = new Class<?>[] { TypeDeclaration.class,
-			MethodDeclaration.class, SimpleName.class, SimpleType.class, Modifier.class };
+			MethodDeclaration.class, SimpleName.class, SimpleType.class, Modifier.class, Javadoc.class };
 
 	public CompositeStateVisitor(ProblemCollector collector) {
 		super(collector);

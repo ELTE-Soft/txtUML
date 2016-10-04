@@ -4,6 +4,7 @@ import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.SimpleName;
@@ -26,7 +27,7 @@ import hu.elte.txtuml.validation.problems.transition.UnknownTransitionMethod;
 public class TransitionVisitor extends VisitorBase {
 
 	public static final Class<?>[] ALLOWED_TRANSITION_DECLARATIONS = new Class<?>[] { MethodDeclaration.class,
-			SimpleName.class, SimpleType.class, Modifier.class, Annotation.class };
+			SimpleName.class, SimpleType.class, Modifier.class, Annotation.class, Javadoc.class };
 
 	private TypeDeclaration transition;
 
