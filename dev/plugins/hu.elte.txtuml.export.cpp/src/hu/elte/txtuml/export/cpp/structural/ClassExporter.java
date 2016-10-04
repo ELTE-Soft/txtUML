@@ -99,7 +99,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 		source = createClassCppSource();
 		Shared.writeOutSource(dest, GenerationTemplates.sourceName(name),
-				Shared.format(GenerationTemplates.cppInclude(name) + getAllDependency(false) + source));
+				Shared.format(getAllDependency(false) + source));
 	}
 
 	private String createClassHeaderSource() {
@@ -170,13 +170,12 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 		}
 
-		source.append(dependencyExporter.createDependencyIncudesCode(isHeader));
-
 		if (getBaseClass() != null) {
 			source.append(GenerationTemplates.cppInclude(getBaseClass()));
 		}
 
 		if (!isHeader) {
+			source.append(dependencyExporter.createDependencyCppIncudesCode(name));
 			if (stateMachineExporter.ownStateMachine()) {
 				source.append(GenerationTemplates.cppInclude(GenerationTemplates.DeploymentHeader));
 				source.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
@@ -192,6 +191,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 					GenerationTemplates.cppInclude(RuntimeTemplates.RTPath + GenerationTemplates.TimerInterfaceHeader));
 			source.append(GenerationTemplates.cppInclude(RuntimeTemplates.RTPath + GenerationTemplates.TimerHeader));
 		} else {
+			source.append(dependencyExporter.createDependecyHeaderIncludeCode());
 			if (associationExporter.ownAssociation()) {
 				source.append(GenerationTemplates.cppInclude(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader));
 			}

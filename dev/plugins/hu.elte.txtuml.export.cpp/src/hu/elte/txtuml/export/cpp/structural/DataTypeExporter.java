@@ -10,8 +10,7 @@ import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 
 public class DataTypeExporter extends StructuredElementExporter<DataType> {
 
-	public DataTypeExporter() {
-	}
+	public DataTypeExporter() {}
 
 	@Override
 	public void exportStructuredElement(DataType structuredElement, String sourceDestination)
@@ -24,7 +23,7 @@ public class DataTypeExporter extends StructuredElementExporter<DataType> {
 
 		String attributes = super.createPublicAttributes();
 		Shared.writeOutSource(destiation, GenerationTemplates.headerName(name),
-				HeaderTemplates.headerGuard(dependencyExporter.createDependencyIncudesCode(true)
+				HeaderTemplates.headerGuard(dependencyExporter.createDependecyHeaderIncludeCode()
 						+ GenerationTemplates.dataType(name, attributes.toString()), name));
 	}
 

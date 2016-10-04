@@ -64,7 +64,7 @@ public class GuardExporter extends ActivityExporter {
 		return source.toString();
 	}
 
-	public StringBuilder defnieGuardFunctions(String className) {
+	public String defnieGuardFunctions(String className) {
 		StringBuilder source = new StringBuilder("");
 		for (Entry<Constraint, String> guardEntry : getGuards().entrySet()) {
 			String body = getGuardFromValueSpecification(guardEntry.getKey().getSpecification());
@@ -72,7 +72,7 @@ public class GuardExporter extends ActivityExporter {
 					isContainsSignalAcces()));
 		}
 
-		return source;
+		return source.toString();
 	}
 
 	public String getGuardFromValueSpecification(ValueSpecification guard) {

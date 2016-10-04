@@ -164,7 +164,7 @@ public class ActivityExporter {
 		return nextNodes;
 	}
 
-	StringBuilder createActivityNodeCode(ActivityNode node) {
+	String createActivityNodeCode(ActivityNode node) {
 
 		StringBuilder source = new StringBuilder("");
 
@@ -212,7 +212,7 @@ public class ActivityExporter {
 			source.append(callOperationExporter.createTestIdentityActionCode((TestIdentityAction) node));
 		}
 
-		return source;
+		return source.toString();
 	}
 
 }

@@ -71,24 +71,23 @@ public class ThreadHandlingManager {
 		Shared.writeOutSource(dest, GenerationTemplates.headerName(ConfigurationFile),
 				Shared.format(HeaderTemplates.headerGuard(source.toString(), ConfigurationFile)));
 
-		source = createDeplyomentFunctionDefinition();
 		Shared.writeOutSource(dest, GenerationTemplates.sourceName(ConfigurationFile),
-				Shared.format(source.toString()));
+				Shared.format(createDeplyomentFunctionDefinition()));
 
 	}
 
-	private StringBuilder createDeplyomentFunctionDefinition() {
+	private String createDeplyomentFunctionDefinition() {
 		StringBuilder source = new StringBuilder("");
 		source.append(GenerationTemplates.cppInclude(ConfigurationFile));
 		source.append(
 				GenerationTemplates.putNamespace(FunctionTemplates.simpleFunctionDef(RuntimeTemplates.UsingRuntime,
-						CreatorFunction, (createConfiguration().append(createThreadedRuntime()).toString()),
+						CreatorFunction,createConfiguration() + createThreadedRuntime(),
 						RuntimeTemplates.RuntimeParameterName), NamespaceName));
 
-		return source;
+		return source.toString();
 	}
 
-	private StringBuilder createThreadedRuntime() {
+	private String createThreadedRuntime() {
 		StringBuilder source = new StringBuilder("");
 		source.append(GenerationTemplates.staticCreate(RuntimeTemplates.UsingRuntime,
 				RuntimeTemplates.RuntimeParameterName, CreateRTMethod));
@@ -96,10 +95,10 @@ public class ThreadHandlingManager {
 		params.add(ConfigurationObjectVariableName);
 		source.append(ActivityTemplates.blockStatement(ActivityTemplates.operationCallOnPointerVariable(
 				RuntimeTemplates.RuntimeParameterName, SetConfigurationMethod, params)));
-		return source;
+		return source.toString();
 	}
 
-	private StringBuilder createConfiguration() {
+	private String createConfiguration() {
 		StringBuilder source = new StringBuilder("");
 		List<String> parameters = new ArrayList<String>();
 		parameters.add(new Integer(pools.size()).toString());
@@ -116,7 +115,7 @@ public class ThreadHandlingManager {
 					GenerationTemplates.allocateObject(ConfigurationStructName, parameters)));
 		}
 
-		return source;
+		return source.toString();
 	}
 
 	private String insertToConfiguration(Integer id, String configuration) {

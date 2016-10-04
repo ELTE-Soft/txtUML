@@ -78,19 +78,17 @@ public class Uml2ToCppExporter {
 		options = new Options(addRuntimeOption, overWriteMainFileOption);
 
 		this.shared = shared;
-		classes = shared.getAllModelCLass();
 		shared.getTypedElements(dataTypes, UMLPackage.Literals.DATA_TYPE);
+		classes = shared.getAllModelCLass();
 
 	}
 
 	public void buildCppCode(String outputDirectory) throws IOException {
 
 		threadManager.createConfigurationSource(outputDirectory);
-
-		Shared.writeOutSource(outputDirectory, (EventTemplates.EventHeader), Shared.format(createEventSource()));
-
+		
 		copyPreWrittenCppFiles(outputDirectory);
-
+		createEventSource(outputDirectory);
 		createClassSources(outputDirectory);
 		createDataTypes(outputDirectory);
 		createAssociationsSources(outputDirectory);
@@ -194,7 +192,7 @@ public class Uml2ToCppExporter {
 		cmake.writeOutCMakeLists();
 	}
 
-	private String createEventSource() {
+	private void createEventSource(String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException {
 		List<Signal> signalList = new ArrayList<Signal>();
 		shared.getTypedElements(signalList, UMLPackage.Literals.SIGNAL);
 		StringBuilder forwardDecl = new StringBuilder("");
@@ -220,11 +218,13 @@ public class Uml2ToCppExporter {
 		for (Pair<String, String> param : allParam) {
 			dependencyEporter.addDependecy(param.getSecond());
 		}
-		forwardDecl.append(dependencyEporter.createDependencyIncudesCode(true));
+		forwardDecl.append(dependencyEporter.createDependecyHeaderIncludeCode());
 		forwardDecl.append(EventTemplates.eventBase(options) + "\n");
 		forwardDecl.append("enum Events {" + events + "};\n");
 		forwardDecl.append(source);
-		return EventTemplates.eventHeaderGuard(forwardDecl.toString());
+		Shared.writeOutSource(outputDirectory, (EventTemplates.EventHeader), 
+				Shared.format(EventTemplates.eventHeaderGuard(forwardDecl.toString())));
+
 	}
 
 	private void createAssociationsSources(String outputDirectory)

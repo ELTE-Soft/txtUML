@@ -33,7 +33,7 @@ public class EventTemplates {
 		return eventBase.toString();
 	}
 
-	public static StringBuilder eventClass(String className, List<Pair<String, String>> params, String constructorBody,
+	public static String eventClass(String className, List<Pair<String, String>> params, String constructorBody,
 			List<Property> properites) {
 		StringBuilder source = new StringBuilder(
 				GenerationNames.ClassType + " " + GenerationNames.eventClassName(className) + ":public "
@@ -51,7 +51,7 @@ public class EventTemplates {
 		}
 		source.append(body).append("};\n\n");
 		body.setLength(0);
-		return source;
+		return source.toString();
 	}
 
 	// TODO works only with signal events! (Time,Change,.. not handled) - not

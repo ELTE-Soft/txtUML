@@ -48,7 +48,7 @@ class StructuredControlNodeExporter {
 
 			Variable iterativeVar = node.getVariables().get(0);
 			EList<ActivityNode> nodes = node.getNodes();
-			StringBuilder body = activityExporter.createActivityNodeCode(nodes.get(nodes.size() - 1));
+			String body = activityExporter.createActivityNodeCode(nodes.get(nodes.size() - 1));
 			StringBuilder inits = new StringBuilder("");
 			for (int i = 0; i < nodes.size() - 1; i++) {
 				inits.append(activityExporter.createActivityNodeCode(nodes.get(i)));
@@ -64,7 +64,7 @@ class StructuredControlNodeExporter {
 
 	}
 
-	StringBuilder createLoopNodeCode(LoopNode loopNode) {
+	String createLoopNodeCode(LoopNode loopNode) {
 		StringBuilder source = new StringBuilder("");
 		source.append(createStructuredActivityNodeVariables(loopNode.getVariables()));
 
@@ -92,10 +92,10 @@ class StructuredControlNodeExporter {
 				ActivityTemplates.whileCycle(activityExportResolver.getTargetFromActivityNode(loopNode.getDecider()),
 						body.toString() + "\n" + recalulcateCondition.toString()));
 
-		return source;
+		return source.toString();
 	}
 
-	StringBuilder createConditionalCode(ConditionalNode conditionalNode) {
+	String createConditionalCode(ConditionalNode conditionalNode) {
 		StringBuilder source = new StringBuilder("");
 		StringBuilder tests = new StringBuilder("");
 		StringBuilder bodies = new StringBuilder("");
@@ -117,7 +117,7 @@ class StructuredControlNodeExporter {
 
 		source.append(tests);
 		source.append(bodies);
-		return source;
+		return source.toString();
 	}
 
 	String createStructuredActivityNodeVariables(EList<Variable> variables) {

@@ -69,7 +69,7 @@ public class SubStateMachineExporter extends StateMachineExporter {
 		StringBuilder dependency = new StringBuilder(GenerationTemplates.cppInclude(parentClassName));
 		dependency.append(GenerationTemplates.cppInclude(GenerationTemplates.StandardFunctionsHeader));
 
-		StringBuilder privateParts = entryExitFunctionExporter.createEntryFunctionsDecl();
+		StringBuilder privateParts = new StringBuilder(entryExitFunctionExporter.createEntryFunctionsDecl());
 		privateParts.append(entryExitFunctionExporter.createExitFunctionsDecl());
 		privateParts.append(GenerationTemplates
 				.formatSubSmFunctions(guardExporter.declareGuardFunctions(stateMachineRegion).toString()));
@@ -94,7 +94,7 @@ public class SubStateMachineExporter extends StateMachineExporter {
 		return source;
 	}
 
-	private StringBuilder createSubSmClassCppSource() {
+	private String createSubSmClassCppSource() {
 		StringBuilder source = new StringBuilder("");
 		if (submachineMap.isEmpty()) {
 			source.append(ConstructorTemplates.simpleSubStateMachineClassConstructor(className, parentClassName,
@@ -103,7 +103,7 @@ public class SubStateMachineExporter extends StateMachineExporter {
 			source.append(ConstructorTemplates.hierarchicalSubStateMachineClassConstructor(className, parentClassName,
 					stateMachineMap, getEventSubmachineNameMap(), getInitialStateName()));
 		}
-		StringBuilder subSmSpec = entryExitFunctionExporter.createEntryFunctionsDef();
+		StringBuilder subSmSpec = new StringBuilder(entryExitFunctionExporter.createEntryFunctionsDef());
 		subSmSpec.append(entryExitFunctionExporter.createExitFunctionsDef());
 		subSmSpec.append(guardExporter.defnieGuardFunctions(className));
 		subSmSpec.append(transitionExporter.createTransitionFunctionsDef());
@@ -115,7 +115,8 @@ public class SubStateMachineExporter extends StateMachineExporter {
 						+ "\n");
 
 		source.append(GenerationTemplates.formatSubSmFunctions(subSmSpec.toString()));
-		return source;
+		
+		return source.toString();
 	}
 
 }

@@ -51,36 +51,36 @@ public class EntryExitFunctionExporter {
 		createFuncTypeMap(FuncTypeEnum.Exit);
 	}
 
-	public StringBuilder createEntryFunctionsDecl() {
+	public String createEntryFunctionsDecl() {
 		StringBuilder source = new StringBuilder("");
 		for (Map.Entry<String, Pair<String, String>> entry : entryMap.entrySet()) {
 			source.append(FunctionTemplates.functionDecl(entry.getKey()));
 		}
-		return source;
+		return source.toString();
 	}
 
-	public StringBuilder createExitFunctionsDecl() {
+	public String createExitFunctionsDecl() {
 		StringBuilder source = new StringBuilder("");
 		for (Map.Entry<String, Pair<String, String>> entry : exitMap.entrySet()) {
 			source.append(FunctionTemplates.functionDecl(entry.getKey()));
 		}
-		return source;
+		return source.toString();
 	}
 
-	public StringBuilder createEntryFunctionsDef() {
+	public String createEntryFunctionsDef() {
 		StringBuilder source = new StringBuilder("");
 		for (Map.Entry<String, Pair<String, String>> entry : entryMap.entrySet()) {
 			source.append(FunctionTemplates.functionDef(className, entry.getKey(), entry.getValue().getSecond()));
 		}
-		return source;
+		return source.toString();
 	}
 
-	public StringBuilder createExitFunctionsDef() {
+	public String createExitFunctionsDef() {
 		StringBuilder source = new StringBuilder("");
 		for (Map.Entry<String, Pair<String, String>> entry : exitMap.entrySet()) {
 			source.append(FunctionTemplates.functionDef(className, entry.getKey(), entry.getValue().getSecond()));
 		}
-		return source;
+		return source.toString();
 	}
 
 	private void createFuncTypeMap(FuncTypeEnum funcType) {

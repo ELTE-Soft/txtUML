@@ -14,17 +14,25 @@ public class DependencyExporter {
 		dependecies = new HashSet<String>();
 	}
 
-	public String createDependencyIncudesCode(boolean isHeader) {
+	public String createDependencyCppIncudesCode(String className) {
 		StringBuilder includes = new StringBuilder("");
-		for (String type : dependecies) {
-			if (isHeader) {
-				includes.append(GenerationTemplates.forwardDeclaration(type));
-			} else {
-				includes.append(GenerationTemplates.cppInclude(type));
-			}
+		if (!dependecies.contains(className)) {
+			includes.append(GenerationTemplates.cppInclude(className));
 		}
+		dependecies.forEach(type -> {
+			includes.append(GenerationTemplates.cppInclude(type));
+		});
+		return includes.toString();
+	}
+
+	public String createDependecyHeaderIncludeCode() {
+		StringBuilder includes = new StringBuilder();
+		dependecies.forEach(type -> {
+			includes.append(GenerationTemplates.forwardDeclaration(type));
+		});
 
 		return includes.toString();
+
 	}
 
 	public void addDependecy(String depndency) {

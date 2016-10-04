@@ -147,14 +147,14 @@ class CallOperationExporter {
 		}
 	}
 
-	private StringBuilder declareAllOutTempParameter(EList<OutputPin> outParamaterPins) {
+	private String declareAllOutTempParameter(EList<OutputPin> outParamaterPins) {
 		StringBuilder declerations = new StringBuilder("");
 		for (OutputPin outPin : outParamaterPins) {
 			declerations.append(VariableTemplates.variableDecl(outPin.getType().getName(),
 					tempVariableExporter.getRealVariableName(outPin), false));
 		}
 
-		return declerations;
+		return declerations.toString();
 	}
 
 	private OutputPin searchReturnPin(EList<OutputPin> results, EList<Parameter> outputParameters) {
