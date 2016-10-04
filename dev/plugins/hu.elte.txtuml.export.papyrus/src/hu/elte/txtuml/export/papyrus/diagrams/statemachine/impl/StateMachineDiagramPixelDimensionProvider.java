@@ -19,7 +19,10 @@ public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensio
 	private static final int MAX_STATE_WIDTH = 200;
 	private static final int MIN_STATE_HEIGHT = 40;
 	private static final int MAX_STATE_HEIGHT = 200;
-
+	
+	private static final int PSEUDOSTATE_WIDTH = 20;
+	private static final int PSEUDOSTATE_HEIGHT = 20;
+	
 	private IDiagramElementsMapper elementsMapper;
 
 	public StateMachineDiagramPixelDimensionProvider(StateMachineDiagramElementsMapper mapper) {
@@ -33,8 +36,8 @@ public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensio
 
 		if (!box.hasInner()) {
 			if (box.isSpecial() && box.getSpecial().equals(SpecialBox.Initial)) {
-				width = 20;
-				height = 20;
+				width = PSEUDOSTATE_WIDTH;
+				height = PSEUDOSTATE_HEIGHT;
 			} else {
 				// TODO: search among simple elements / default value
 				width = DEFAULT_ELEMENT_WIDTH;
@@ -59,8 +62,8 @@ public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensio
 			height = height < MIN_STATE_HEIGHT ? MIN_STATE_HEIGHT : height;
 			height = height > MAX_STATE_HEIGHT ? MAX_STATE_HEIGHT : height;
 		} else if (elem != null && elem instanceof Pseudostate) {
-			width = 20;
-			height = 20;
+			width = PSEUDOSTATE_WIDTH;
+			height = PSEUDOSTATE_HEIGHT;
 		}
 		return Pair.of(new Width(width), new Height(height));
 	}
