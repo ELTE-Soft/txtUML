@@ -29,7 +29,6 @@ class TxtUMLToCppGovernor {
 		this.testing = testing;
 	}
 
-	@SuppressWarnings("unchecked")
 	void uml2ToCpp(String txtUMLProject, String txtUMLModel, String deploymentDescription, boolean addRuntimeOption,
 			boolean overWriteMainFileOption) throws Exception {
 		String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation().toFile()
@@ -50,12 +49,10 @@ class TxtUMLToCppGovernor {
 			throw e;
 		}
 
-		URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(txtUMLProject,
-				ThreadDescriptionExporter.class.getClassLoader());
 		Class<? extends Configuration> txtUMLThreadDescription;
 		try {
-			txtUMLThreadDescription = (Class<? extends Configuration>) loader.loadClass(deploymentDescription);
-		} catch (ClassNotFoundException e) {
+			txtUMLThreadDescription = loadConfigurationClass(txtUMLProject, deploymentDescription);
+		} catch (ClassNotFoundException | NotCofigurationClassException e) {
 			if (!testing) {
 				Dialogs.errorMsgb("Description Class Error",
 						e.getClass() + ":" + System.lineSeparator() + e.getMessage(), e);
@@ -93,6 +90,34 @@ class TxtUMLToCppGovernor {
 			}
 			throw e;
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private Class<? extends Configuration> loadConfigurationClass(String txtUMLProject, String deploymentDescription)
+			throws ClassNotFoundException, NotCofigurationClassException {
+		URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(txtUMLProject,
+				ThreadDescriptionExporter.class.getClassLoader());
+		Class<? extends Configuration> txtUMLThreadDescription;
+		txtUMLThreadDescription = (Class<? extends Configuration>) loader.loadClass(deploymentDescription);
+		if (!txtUMLThreadDescription.getSuperclass().equals(Configuration.class)) {
+			throw new NotCofigurationClassException("The selected deployment class is not a configuration class");
+
+		}
+
+		return txtUMLThreadDescription;
+	}
+
+}
+
+class NotCofigurationClassException extends Exception {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8949106365297613887L;
+
+	public NotCofigurationClassException(String message) {
+		super(message);
 	}
 
 }
