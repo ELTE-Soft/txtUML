@@ -20,6 +20,7 @@ import org.eclipse.papyrus.uml.tools.model.UmlModel;
 import org.eclipse.uml2.uml.BehavioredClassifier;
 import org.eclipse.uml2.uml.Element;
 
+import hu.elte.txtuml.export.papyrus.arrange.AbstractDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.diagrams.AbstractDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.diagrams.clazz.ClassDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.diagrams.clazz.ClassDiagramNotationManager;
@@ -151,7 +152,7 @@ public class PapyrusModelManager {
 			ClassDiagramElementsMapper mapper = (ClassDiagramElementsMapper) this.mapper.getMapperForReport(report);
 
 			ClassDiagramElementsProvider provider = new ClassDiagramElementsProviderImpl(mapper);
-			ClassDiagramElementsArranger arranger = new ClassDiagramElementsArranger(report, mapper);
+			AbstractDiagramElementsArranger arranger = new ClassDiagramElementsArranger(report, mapper);
 			ClassDiagramNotationManager notation = new ClassDiagramNotationManagerImpl(diagram, this.domain);
 			diagramElementsManager = new ClassDiagramElementsManager(diagram, provider, notation, arranger, monitor);
 		} else if (diagram.getType().equals(diagramType_SMD)) {
