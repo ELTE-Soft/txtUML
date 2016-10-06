@@ -478,6 +478,10 @@ public class LayoutVisualize {
 				Pair<Integer, Diagram> res = recursiveLinkArrange(maxGroupId, box.getInner());
 				maxGroupId = res.getFirst();
 				box.setInner(res.getSecond());
+				
+				Pair<IPixelDimensionProvider.Width, IPixelDimensionProvider.Height> dim = _pixelProvider.getPixelDimensionsFor(box);
+				box.setPixelWidth(dim.getFirst().Value);
+				box.setPixelHeight(dim.getSecond().Value);
 
 				if (_options.Logging)
 					Logger.sys.info("> > Recursive link arrange DONE!");
