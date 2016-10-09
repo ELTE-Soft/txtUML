@@ -102,7 +102,7 @@ public class PlantUmlExporter {
 		for (Iterator<String> iterator = diagrams.iterator(); iterator.hasNext();) {
 			diagram = iterator.next();
 			try {
-				System.out.println(loader.getURLs().toString());
+				System.out.println(loader.getURLs()[0].toString());
 				Class<?> diagramClass = loader.loadClass(diagram);
 
 				if (Interaction.class.isAssignableFrom(diagramClass)) {
