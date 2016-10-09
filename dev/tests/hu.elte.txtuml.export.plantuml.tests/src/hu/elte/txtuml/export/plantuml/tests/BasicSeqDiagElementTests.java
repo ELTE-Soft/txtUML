@@ -34,7 +34,7 @@ public class BasicSeqDiagElementTests {
 
 			SeqDiagNames.add(project.getName().toString() + ".sequences.SequenceBasic");
 
-			exporter = new PlantUmlExporter(project.getName().toString(), "gen", SeqDiagNames);
+			exporter = new PlantUmlExporter(project, "gen", SeqDiagNames);
 			exporter.generatePlantUmlOutput(null);
 			IFile outfile = genFolder.getFile("SequenceBasic.txt");
 
@@ -62,7 +62,7 @@ public class BasicSeqDiagElementTests {
 		try {
 			ArrayList<String> SeqDiagNames = new ArrayList<String>();
 			SeqDiagNames.add(project.getName().toString() + ".sequences.SequenceMessaging");
-			exporter = new PlantUmlExporter(project.getName().toString(), "gen", SeqDiagNames);
+			exporter = new PlantUmlExporter(project, "gen", SeqDiagNames);
 			exporter.generatePlantUmlOutput(null);
 			IFile outfile = genFolder.getFile("SequenceMessaging.txt");
 

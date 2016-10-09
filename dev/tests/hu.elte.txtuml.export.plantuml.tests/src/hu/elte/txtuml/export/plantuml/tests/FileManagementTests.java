@@ -28,7 +28,7 @@ public class FileManagementTests {
 
 		ArrayList<String> SeqDiagNames = new ArrayList<String>();
 		SeqDiagNames.add(project.getName().toString() + ".sequences.SequenceBasic");
-		exporter = new PlantUmlExporter(project.getName().toString(), "gen", SeqDiagNames);
+		exporter = new PlantUmlExporter(project, "gen", SeqDiagNames);
 		exporter.generatePlantUmlOutput(new NullProgressMonitor());
 	}
 

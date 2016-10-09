@@ -35,7 +35,7 @@ public class SequenceDiagramFragmentsTests {
 			ArrayList<String> SeqDiagNames = new ArrayList<String>();
 			SeqDiagNames.add(project.getName().toString() + ".sequences.SeqFragment");
 
-			exporter = new PlantUmlExporter(project.getName().toString(), "gen", SeqDiagNames);
+			exporter = new PlantUmlExporter(project, "gen", SeqDiagNames);
 
 			exporter.generatePlantUmlOutput(new NullProgressMonitor());
 
@@ -72,7 +72,7 @@ public class SequenceDiagramFragmentsTests {
 			ArrayList<String> SeqDiagNames = new ArrayList<String>();
 			SeqDiagNames.add(project.getName().toString() + ".sequences.StrictFragment");
 
-			exporter = new PlantUmlExporter(project.getName().toString(), "gen", SeqDiagNames);
+			exporter = new PlantUmlExporter(project, "gen", SeqDiagNames);
 
 			exporter.generatePlantUmlOutput(new NullProgressMonitor());
 
@@ -109,7 +109,7 @@ public class SequenceDiagramFragmentsTests {
 			ArrayList<String> SeqDiagNames = new ArrayList<String>();
 			SeqDiagNames.add(project.getName().toString() + ".sequences.OPTFragment");
 
-			exporter = new PlantUmlExporter(project.getName().toString(), "gen", SeqDiagNames);
+			exporter = new PlantUmlExporter(project, "gen", SeqDiagNames);
 
 			exporter.generatePlantUmlOutput(new NullProgressMonitor());
 
@@ -145,7 +145,7 @@ public class SequenceDiagramFragmentsTests {
 			ArrayList<String> SeqDiagNames = new ArrayList<String>();
 			SeqDiagNames.add(project.getName().toString() + ".sequences.ALTFragment");
 
-			exporter = new PlantUmlExporter(project.getName().toString(), "gen", SeqDiagNames);
+			exporter = new PlantUmlExporter(project, "gen", SeqDiagNames);
 
 			exporter.generatePlantUmlOutput(new NullProgressMonitor());
 
@@ -183,7 +183,7 @@ public class SequenceDiagramFragmentsTests {
 			ArrayList<String> SeqDiagNames = new ArrayList<String>();
 			SeqDiagNames.add(project.getName().toString() + ".sequences.LoopFragment");
 
-			exporter = new PlantUmlExporter(project.getName().toString(), "gen", SeqDiagNames);
+			exporter = new PlantUmlExporter(project, "gen", SeqDiagNames);
 
 			exporter.generatePlantUmlOutput(new NullProgressMonitor());
 

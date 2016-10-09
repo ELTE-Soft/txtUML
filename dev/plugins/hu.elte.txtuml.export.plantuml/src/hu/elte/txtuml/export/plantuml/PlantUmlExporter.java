@@ -50,6 +50,7 @@ import hu.elte.txtuml.utils.eclipse.ClassLoaderProvider;
 public class PlantUmlExporter {
 
 	private String projectName;
+	private IProject project;
 	private String genFolderName;
 	private List<String> diagrams;
 	private List<Class<Interaction>> seqDiagrams;
@@ -62,20 +63,28 @@ public class PlantUmlExporter {
 	protected String errorMessage = null;
 
 	public PlantUmlExporter(String txtUMLProjectName, String generatedFolderName, List<String> SeqDiagramNames) {
+		IProject _project = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProjectName);
+
+		if (_project == null) {
+			throw new ExportRuntimeException("Project not found with name:" + txtUMLProjectName);
+		}
+
+		project = _project;
 		projectName = txtUMLProjectName;
 		genFolderName = generatedFolderName;
 		diagrams = SeqDiagramNames;
 		nonExportedCount = diagrams.size();
-		loader = ClassLoaderProvider.getClassLoaderForProject(projectName, Interaction.class.getClassLoader());
+		loader = ClassLoaderProvider.getClassLoaderForProject(project, Interaction.class.getClassLoader());
 		filterDiagramsByType();
 	}
 
 	public PlantUmlExporter(IProject txtUMLProject, String generatedFolderName, List<String> SeqDiagramNames) {
+		project = txtUMLProject;
 		projectName = txtUMLProject.getName();
 		genFolderName = generatedFolderName;
 		diagrams = SeqDiagramNames;
 		nonExportedCount = diagrams.size();
-		loader = ClassLoaderProvider.getClassLoaderForProject(projectName, Interaction.class.getClassLoader());
+		loader = ClassLoaderProvider.getClassLoaderForProject(project, Interaction.class.getClassLoader());
 		System.out.println("Project location");
 		System.out.println(txtUMLProject.getLocationURI().toString());
 		filterDiagramsByType();
@@ -120,7 +129,6 @@ public class PlantUmlExporter {
 	public void generatePlantUmlOutput(IProgressMonitor monitor)
 			throws CoreException, SequenceDiagramStructuralException, PreCompilationError {
 		for (Class<Interaction> sequenceDiagram : seqDiagrams) {
-			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 			IFile resource = project.getFile("src/" + sequenceDiagram.getName().replace('.', '/') + ".java");
 
 			ICompilationUnit element = (ICompilationUnit) JavaCore.create(resource);
