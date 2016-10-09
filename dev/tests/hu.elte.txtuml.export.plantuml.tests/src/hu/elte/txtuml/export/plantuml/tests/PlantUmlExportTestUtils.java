@@ -8,6 +8,8 @@ import java.io.InputStream;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -24,10 +26,11 @@ public class PlantUmlExportTestUtils {
 
 	public static IProject getModelsProject() throws IOException, CoreException {
 		String projectPath = new File(TEST_MODEL_PATH).getCanonicalPath();
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-		IProjectDescription description = ResourcesPlugin.getWorkspace()
+		IProjectDescription description = workspace
 				.loadProjectDescription(new Path(projectPath + Path.SEPARATOR + PROJECT_FILE));
-		IProject genericProject = ResourcesPlugin.getWorkspace().getRoot().getProject(description.getName());
+		IProject genericProject = workspace.getRoot().getProject(description.getName());
 
 		if (!genericProject.exists()) {
 			genericProject.create(description, new NullProgressMonitor());
@@ -36,6 +39,7 @@ public class PlantUmlExportTestUtils {
 		genericProject.open(new NullProgressMonitor());
 		project = JavaCore.create(genericProject);
 		genericProject.refreshLocal(IProject.DEPTH_INFINITE, new NullProgressMonitor());
+		genericProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
 
 		return genericProject;
 	}
@@ -54,7 +58,7 @@ public class PlantUmlExportTestUtils {
 		return str.toString("UTF-8");
 	}
 
-	public static IJavaProject getJavaModelsProject() throws CoreException, IOException{
+	public static IJavaProject getJavaModelsProject() throws CoreException, IOException {
 		PlantUmlExportTestUtils.getModelsProject();
 		return PlantUmlExportTestUtils.project;
 	}

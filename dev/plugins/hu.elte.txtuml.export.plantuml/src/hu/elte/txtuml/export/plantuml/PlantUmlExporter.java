@@ -102,8 +102,6 @@ public class PlantUmlExporter {
 		for (Iterator<String> iterator = diagrams.iterator(); iterator.hasNext();) {
 			diagram = iterator.next();
 			try {
-				Class<?> InteractionClass = loader.loadClass(Interaction.class.getCanonicalName());
-				System.out.println("InteractionFound! " + InteractionClass.getName());
 				Class<?> diagramClass = loader.loadClass(diagram);
 
 				if (Interaction.class.isAssignableFrom(diagramClass)) {
