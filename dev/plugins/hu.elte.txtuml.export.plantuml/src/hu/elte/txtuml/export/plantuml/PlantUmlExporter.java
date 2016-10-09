@@ -70,6 +70,17 @@ public class PlantUmlExporter {
 		filterDiagramsByType();
 	}
 
+	public PlantUmlExporter(IProject txtUMLProject, String generatedFolderName, List<String> SeqDiagramNames) {
+		projectName = txtUMLProject.getName();
+		genFolderName = generatedFolderName;
+		diagrams = SeqDiagramNames;
+		nonExportedCount = diagrams.size();
+		loader = ClassLoaderProvider.getClassLoaderForProject(projectName, Interaction.class.getClassLoader());
+		System.out.println("Project location");
+		System.out.println(txtUMLProject.getLocationURI().toString());
+		filterDiagramsByType();
+	}
+
 	@SuppressWarnings("unchecked")
 	/**
 	 * Filter method to separate sequenceDiagrams from normal Layouts, leave
@@ -82,6 +93,7 @@ public class PlantUmlExporter {
 		for (Iterator<String> iterator = diagrams.iterator(); iterator.hasNext();) {
 			diagram = iterator.next();
 			try {
+				System.out.println(loader.getURLs().toString());
 				Class<?> diagramClass = loader.loadClass(diagram);
 
 				if (Interaction.class.isAssignableFrom(diagramClass)) {
