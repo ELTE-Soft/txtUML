@@ -1,12 +1,12 @@
 package hu.elte.txtuml.export.plantuml.generator;
 
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.*;
 
 import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.utils.jdt.SharedUtils;
 
 /**
  * 
@@ -32,14 +32,12 @@ public class PlantUmlPreCompiler extends ASTVisitor {
 	private String currentClassName;
 	private Type superClass;
 	private ArrayList<Exception> errorList;
-	private URLClassLoader loader;
 
-	public PlantUmlPreCompiler(URLClassLoader loader) {
+	public PlantUmlPreCompiler() {
 		super();
 		fragments = new ArrayList<MethodDeclaration>();
 		lifelines = new ArrayList<FieldDeclaration>();
 		errorList = new ArrayList<Exception>();
-		this.loader = loader;
 	}
 
 	public boolean visit(TypeDeclaration decl) {
@@ -71,14 +69,8 @@ public class PlantUmlPreCompiler extends ASTVisitor {
 
 	public boolean visit(FieldDeclaration decl) {
 
-		Class<?> declCls = null;
-		try {
-			declCls = loader.loadClass(decl.getType().resolveBinding().getQualifiedName());
-			if (ModelClass.class.isAssignableFrom(declCls)) {
-				lifelines.add(decl);
-			}
-		} catch (ClassNotFoundException e) {
-			errorList.add(e);
+		if (SharedUtils.typeIsAssignableFrom(decl.getType().resolveBinding(), ModelClass.class)) {
+			lifelines.add(decl);
 		}
 
 		return true;

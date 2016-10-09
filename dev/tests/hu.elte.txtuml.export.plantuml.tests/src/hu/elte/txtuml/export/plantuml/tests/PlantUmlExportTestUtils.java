@@ -9,7 +9,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -37,9 +36,11 @@ public class PlantUmlExportTestUtils {
 		}
 
 		genericProject.open(new NullProgressMonitor());
+		if (!genericProject.isOpen()) {
+			throw new RuntimeException("Couldn't open project: " + genericProject.getName());
+		}
 		project = JavaCore.create(genericProject);
 		genericProject.refreshLocal(IProject.DEPTH_INFINITE, new NullProgressMonitor());
-		genericProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
 
 		return genericProject;
 	}
