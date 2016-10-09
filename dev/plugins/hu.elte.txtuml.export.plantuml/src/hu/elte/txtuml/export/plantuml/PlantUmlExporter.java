@@ -1,6 +1,5 @@
 package hu.elte.txtuml.export.plantuml;
 
-import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -57,6 +56,8 @@ public class PlantUmlExporter {
 	private List<Class<Interaction>> seqDiagrams;
 	private URLClassLoader loader;
 
+	private static final ClassLoader InteractionParent = Interaction.class.getClassLoader();
+
 	protected int exportedCount = 0;
 	protected int nonExportedCount = 0;
 
@@ -66,29 +67,27 @@ public class PlantUmlExporter {
 	public PlantUmlExporter(String txtUMLProjectName, String generatedFolderName, List<String> SeqDiagramNames) {
 		IProject _project = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProjectName);
 
-		if (_project == null) {
+		if (_project == null || !_project.exists()) {
 			throw new ExportRuntimeException("Project not found with name:" + txtUMLProjectName);
 		}
 
-		project = _project;
-		projectName = txtUMLProjectName;
-		genFolderName = generatedFolderName;
-		diagrams = SeqDiagramNames;
-		nonExportedCount = diagrams.size();
-		loader = ClassLoaderProvider.getClassLoaderForProject(project, Interaction.class.getClassLoader());
+		initialize(_project, generatedFolderName, SeqDiagramNames);
 		filterDiagramsByType();
 	}
 
 	public PlantUmlExporter(IProject txtUMLProject, String generatedFolderName, List<String> SeqDiagramNames) {
+
+		initialize(txtUMLProject, generatedFolderName, SeqDiagramNames);
+		filterDiagramsByType();
+	}
+
+	private void initialize(IProject txtUMLProject, String generatedFolderName, List<String> SeqDiagramNames) {
 		project = txtUMLProject;
 		projectName = txtUMLProject.getName();
 		genFolderName = generatedFolderName;
 		diagrams = SeqDiagramNames;
 		nonExportedCount = diagrams.size();
-		loader = ClassLoaderProvider.getClassLoaderForProject(project, Interaction.class.getClassLoader());
-		System.out.println("Project location");
-		System.out.println(txtUMLProject.getLocationURI().toString());
-		filterDiagramsByType();
+		loader = ClassLoaderProvider.getClassLoaderForProject(project, InteractionParent);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -103,10 +102,8 @@ public class PlantUmlExporter {
 		for (Iterator<String> iterator = diagrams.iterator(); iterator.hasNext();) {
 			diagram = iterator.next();
 			try {
-				System.out.println(loader.getURLs().length);
-				for (URL url : loader.getURLs()) {
-					System.out.println(url.toString());
-				}
+				Class<?> InteractionClass = loader.loadClass(Interaction.class.getCanonicalName());
+				System.out.println("InteractionFound! " + InteractionClass.getName());
 				Class<?> diagramClass = loader.loadClass(diagram);
 
 				if (Interaction.class.isAssignableFrom(diagramClass)) {
@@ -116,8 +113,8 @@ public class PlantUmlExporter {
 				}
 
 			} catch (ClassNotFoundException e) {
-				throw new ExportRuntimeException("There was an error while trying to load Class " + diagram
-						+ ", the error was the following:" + e.getMessage());
+				throw new ExportRuntimeException("There was an error while trying to load Class " + e.getMessage()
+						+ ", this error originated from the loading of " + diagram + " class", e);
 			}
 		}
 	}

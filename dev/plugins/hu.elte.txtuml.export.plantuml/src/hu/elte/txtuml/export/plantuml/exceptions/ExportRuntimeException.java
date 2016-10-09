@@ -8,4 +8,8 @@ public class ExportRuntimeException extends RuntimeException {
 		super(message);
 	}
 
+	public ExportRuntimeException(String message, Exception cause) {
+		super(message,cause);
+	}
+
 }
