@@ -22,7 +22,7 @@ public class FileManagementTests {
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		project = PlantUmlExportTestUtils.getSelfProject();
+		project = PlantUmlExportTestUtils.getModelsProject();
 
 		genFolder = project.getFolder("gen");
 

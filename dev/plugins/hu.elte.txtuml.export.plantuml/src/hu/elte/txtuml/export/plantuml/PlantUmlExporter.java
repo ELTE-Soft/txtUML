@@ -91,7 +91,8 @@ public class PlantUmlExporter {
 				}
 
 			} catch (ClassNotFoundException e) {
-				throw new ExportRuntimeException("The following class couldn't be found in the projects:" + diagram);
+				throw new ExportRuntimeException("There was an error while trying to load Class " + diagram
+						+ ", the error was the following:" + e.getMessage());
 			}
 		}
 	}

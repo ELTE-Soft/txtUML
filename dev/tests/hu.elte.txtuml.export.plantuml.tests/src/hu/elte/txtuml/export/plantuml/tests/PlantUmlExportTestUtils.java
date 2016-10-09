@@ -22,7 +22,7 @@ public class PlantUmlExportTestUtils {
 	private static final String TEST_MODEL_PATH = "../../../examples/tests/" + TEST_MODEL_NAME;
 	private static IJavaProject project;
 
-	public static IProject getSelfProject() throws IOException, CoreException {
+	public static IProject getModelsProject() throws IOException, CoreException {
 		String projectPath = new File(TEST_MODEL_PATH).getCanonicalPath();
 
 		IProjectDescription description = ResourcesPlugin.getWorkspace()
@@ -54,8 +54,8 @@ public class PlantUmlExportTestUtils {
 		return str.toString("UTF-8");
 	}
 
-	public static IJavaProject getJavaSelfProject() throws CoreException, IOException{
-		PlantUmlExportTestUtils.getSelfProject();
+	public static IJavaProject getJavaModelsProject() throws CoreException, IOException{
+		PlantUmlExportTestUtils.getModelsProject();
 		return PlantUmlExportTestUtils.project;
 	}
 }

@@ -22,7 +22,7 @@ public class BasicSeqDiagElementTests {
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		project = PlantUmlExportTestUtils.getSelfProject();
+		project = PlantUmlExportTestUtils.getModelsProject();
 		genFolder = project.getFolder("gen");
 	}
 
@@ -48,7 +48,6 @@ public class BasicSeqDiagElementTests {
 			Assert.assertEquals("participant lifeline2", rd.nextLine());
 			Assert.assertEquals("@enduml", rd.nextLine());
 		} catch (Exception e) {
-			e.printStackTrace(System.err);
 			Assert.assertFalse("Exception:" + e.getMessage(), true);
 		} finally {
 			if (rd != null) {
@@ -99,7 +98,6 @@ public class BasicSeqDiagElementTests {
 	public static void tearDown() throws Exception {
 		exporter = null;
 		genFolder.delete(true, new NullProgressMonitor());
-
 		genFolder = null;
 		project = null;
 	}
