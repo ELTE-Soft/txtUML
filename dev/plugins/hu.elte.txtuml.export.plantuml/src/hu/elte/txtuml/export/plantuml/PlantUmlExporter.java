@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.plantuml;
 
+import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -102,7 +103,10 @@ public class PlantUmlExporter {
 		for (Iterator<String> iterator = diagrams.iterator(); iterator.hasNext();) {
 			diagram = iterator.next();
 			try {
-				System.out.println(loader.getURLs()[0].toString());
+				System.out.println(loader.getURLs().length);
+				for (URL url : loader.getURLs()) {
+					System.out.println(url.toString());
+				}
 				Class<?> diagramClass = loader.loadClass(diagram);
 
 				if (Interaction.class.isAssignableFrom(diagramClass)) {
