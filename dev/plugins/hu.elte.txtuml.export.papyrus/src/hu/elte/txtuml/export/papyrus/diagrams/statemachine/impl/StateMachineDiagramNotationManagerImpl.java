@@ -15,12 +15,15 @@ import org.eclipse.gmf.runtime.diagram.core.services.ViewService;
 import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.emf.type.core.IHintedType;
+import org.eclipse.gmf.runtime.notation.Bounds;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.gmf.runtime.notation.Edge;
 import org.eclipse.gmf.runtime.notation.Node;
+import org.eclipse.gmf.runtime.notation.NotationFactory;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateCompartmentEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateMachineCompartmentEditPart;
+import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateNameEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.part.UMLDiagramEditorPlugin;
 import org.eclipse.papyrus.uml.diagram.statemachine.providers.UMLElementTypes;
 import org.eclipse.uml2.uml.Pseudostate;
@@ -138,13 +141,20 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 
 	@Override
 	public void createRegionForState(State state, Region region, IProgressMonitor monitor) {
-
+		final int COMPOSITE_STATE_HEADER_HEIGHT = 20;
+		
 		Node stateNode = this.notationMap.get(state);
 		Node node = findRegionCompartementOfState(stateNode);
-
+		Node stateNameNode = findStateNameNodeOfState(stateNode);
+		
 		Runnable runnable = () -> {
 			String hint = ((IHintedType) UMLElementTypes.Region_3000).getSemanticHint();
 			Node newNode = ViewService.createNode(node, region, hint, DIAGRAM_PREFERENCES_HINT);
+			
+			//The height of header must be set. Otherwise the view will be corrupted.
+			Bounds nameLayoutConstraint = NotationFactory.eINSTANCE.createBounds();
+			nameLayoutConstraint.setHeight(COMPOSITE_STATE_HEADER_HEIGHT);
+			stateNameNode.setLayoutConstraint(nameLayoutConstraint);
 			
 			this.notationMap.put(region, newNode);
 		};
@@ -158,6 +168,17 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 		for (Node decorationNode : decorationNodes) {
 			if (decorationNode.getType().equals(String.valueOf(StateMachineCompartmentEditPart.VISUAL_ID))
 					|| decorationNode.getType().equals(String.valueOf(StateCompartmentEditPart.VISUAL_ID))) {
+				return decorationNode;
+			}
+		}
+		return null;
+	}
+	
+	private static Node findStateNameNodeOfState(Node stateNode) {
+		@SuppressWarnings("unchecked")
+		List<Node> decorationNodes = stateNode.getChildren();
+		for (Node decorationNode : decorationNodes) {
+			if (decorationNode.getType().equals(String.valueOf(StateNameEditPart.VISUAL_ID))) {
 				return decorationNode;
 			}
 		}

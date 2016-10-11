@@ -14,15 +14,16 @@ public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensio
 
 	private static final int DEFAULT_ELEMENT_WIDTH = 80;
 	private static final int DEFAULT_ELEMENT_HEIGHT = 60;
+	private static final int STATE_HEADER_HEIGHT = 20;
 
 	private static final int MIN_STATE_WIDTH = 40;
 	private static final int MAX_STATE_WIDTH = 200;
 	private static final int MIN_STATE_HEIGHT = 40;
 	private static final int MAX_STATE_HEIGHT = 200;
-	
+
 	private static final int PSEUDOSTATE_WIDTH = 20;
 	private static final int PSEUDOSTATE_HEIGHT = 20;
-	
+
 	private IDiagramElementsMapper elementsMapper;
 
 	public StateMachineDiagramPixelDimensionProvider(StateMachineDiagramElementsMapper mapper) {
@@ -46,7 +47,7 @@ public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensio
 		} else // if(box.hasInner())
 		{
 			width = box.getInner().getWidth() * box.getInner().getPixelGridHorizontal();
-			height = box.getInner().getHeight() * box.getInner().getPixelGridVertical();
+			height = box.getInner().getHeight() * box.getInner().getPixelGridVertical() + STATE_HEADER_HEIGHT;
 		}
 
 		return normalizeSizes(box, width, height);
