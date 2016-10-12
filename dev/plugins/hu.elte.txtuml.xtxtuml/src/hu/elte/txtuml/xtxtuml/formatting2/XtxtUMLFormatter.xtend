@@ -47,15 +47,15 @@ import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 class XtxtUMLFormatter extends XbaseFormatter {
 
 	def dispatch void format(TUModelDeclaration it, extension IFormattableDocument document) {
-		regionForKeyword('model-package').prepend[noSpace].append[oneSpace];
-		regionForKeyword('as').surround[oneSpace];
-		regionForFeature(TU_MODEL_DECLARATION__SEMI_COLON).prepend[noSpace].append[newLine];
+		regionFor.keyword('model-package').prepend[noSpace].append[oneSpace];
+		regionFor.keyword('as').surround[oneSpace];
+		regionFor.feature(TU_MODEL_DECLARATION__SEMI_COLON).prepend[noSpace].append[newLine];
 	}
 
 	def dispatch void format(TUFile it, extension IFormattableDocument document) {
-		regionForKeyword('package').prepend[noSpace];
-		regionForFeature(TU_FILE__NAME).prepend[oneSpace].append[noSpace];
-		regionForKeyword(';').append[newLines = 2];
+		regionFor.keyword('package').prepend[noSpace];
+		regionFor.feature(TU_FILE__NAME).prepend[oneSpace].append[noSpace];
+		regionFor.keyword(';').append[newLines = 2];
 
 		format(importSection, document);
 
@@ -66,29 +66,29 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	}
 
 	def dispatch void format(TUExecution it, extension IFormattableDocument document) {
-		regionForKeyword('execution').prepend[noIndentation];
-		regionForFeature(TU_MODEL_ELEMENT__NAME).surround[oneSpace];
-		regionForKeyword(';').prepend[noSpace];
+		regionFor.keyword('execution').prepend[noIndentation];
+		regionFor.feature(TU_MODEL_ELEMENT__NAME).surround[oneSpace];
+		regionFor.keyword(';').prepend[noSpace];
 
 		format(body, document);
 	}
 
 	def dispatch void format(TUSignal it, extension IFormattableDocument document) {
-		formatBlockElement(it, document, regionForKeyword('signal'), attributes, false);
+		formatBlockElement(it, document, regionFor.keyword('signal'), attributes, false);
 	}
 
 	def dispatch void format(TUClass it, extension IFormattableDocument document) {
-		formatBlockElement(it, document, regionForKeyword('class'), members, true);
-		regionForKeyword('extends').surround[oneSpace];
+		formatBlockElement(it, document, regionFor.keyword('class'), members, true);
+		regionFor.keyword('extends').surround[oneSpace];
 	}
 
 	def dispatch void format(TUAssociation it, extension IFormattableDocument document) {
 		formatBlockElement(it, document,
-			regionForKeyword(if(it instanceof TUComposition) 'composition' else 'association'), ends, false);
+			regionFor.keyword(if(it instanceof TUComposition) 'composition' else 'association'), ends, false);
 	}
 
 	def dispatch void format(TUInterface it, extension IFormattableDocument document) {
-		formatBlockElement(it, document, regionForKeyword('interface'), receptions, false);
+		formatBlockElement(it, document, regionFor.keyword('interface'), receptions, false);
 	}
 
 	def dispatch void format(TUReception it, extension IFormattableDocument document) {
@@ -96,25 +96,25 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	}
 
 	def dispatch void format(TUConnector it, extension IFormattableDocument document) {
-		formatBlockElement(it, document, regionForKeyword(if(delegation) 'delegation' else 'connector'), ends, false);
+		formatBlockElement(it, document, regionFor.keyword(if(delegation) 'delegation' else 'connector'), ends, false);
 	}
 
 	def dispatch void format(TUConnectorEnd it, extension IFormattableDocument document) {
-		regionForKeyword('->').surround[noSpace];
-		regionForFeature(TU_CONNECTOR_END__NAME).prepend[oneSpace].append[noSpace];
+		regionFor.keyword('->').surround[noSpace];
+		regionFor.feature(TU_CONNECTOR_END__NAME).prepend[oneSpace].append[noSpace];
 	}
 
 	def dispatch void format(TUSignalAttribute it, extension IFormattableDocument document) {
-		regionForFeature(TU_SIGNAL_ATTRIBUTE__VISIBILITY).append[oneSpace];
-		regionForFeature(TU_SIGNAL_ATTRIBUTE__NAME).prepend[oneSpace].append[noSpace];
+		regionFor.feature(TU_SIGNAL_ATTRIBUTE__VISIBILITY).append[oneSpace];
+		regionFor.feature(TU_SIGNAL_ATTRIBUTE__NAME).prepend[oneSpace].append[noSpace];
 		format(type, document);
 	}
 
 	def dispatch void format(TUOperation it, extension IFormattableDocument document) {
-		regionForFeature(TU_OPERATION__NAME).prepend[oneSpace];
-		regionForKeyword('(').surround[noSpace];
-		regionForKeyword(')').prepend[noSpace].append[oneSpace];
-		regionsForKeywords(',').forEach[prepend[noSpace].append[oneSpace]];
+		regionFor.feature(TU_OPERATION__NAME).prepend[oneSpace];
+		regionFor.keyword('(').surround[noSpace];
+		regionFor.keyword(')').prepend[noSpace].append[oneSpace];
+		regionFor.keywords(',').forEach[prepend[noSpace].append[oneSpace]];
 
 		format(body, document);
 		format(prefix, document);
@@ -124,10 +124,10 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	}
 
 	def dispatch void format(TUConstructor it, extension IFormattableDocument document) {
-		regionForFeature(TU_CONSTRUCTOR__VISIBILITY).append[oneSpace];
-		regionForKeyword('(').surround[noSpace];
-		regionForKeyword(')').prepend[noSpace].append[oneSpace];
-		regionsForKeywords(',').forEach[prepend[noSpace].append[oneSpace]];
+		regionFor.feature(TU_CONSTRUCTOR__VISIBILITY).append[oneSpace];
+		regionFor.keyword('(').surround[noSpace];
+		regionFor.keyword(')').prepend[noSpace].append[oneSpace];
+		regionFor.keywords(',').forEach[prepend[noSpace].append[oneSpace]];
 
 		format(body, document);
 		for (parameter : parameters) {
@@ -136,12 +136,12 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	}
 
 	def dispatch void format(TUAttributeOrOperationDeclarationPrefix it, extension IFormattableDocument document) {
-		regionForFeature(TU_ATTRIBUTE_OR_OPERATION_DECLARATION_PREFIX__VISIBILITY).append[oneSpace];
+		regionFor.feature(TU_ATTRIBUTE_OR_OPERATION_DECLARATION_PREFIX__VISIBILITY).append[oneSpace];
 		format(type, document);
 	}
 
 	def dispatch void format(TUState it, extension IFormattableDocument document) {
-		formatBlockElement(it, document, regionForFeature(TU_STATE__TYPE), members, false);
+		formatBlockElement(it, document, regionFor.feature(TU_STATE__TYPE), members, false);
 	}
 
 	def dispatch void format(TUEntryOrExitActivity it, extension IFormattableDocument document) {
@@ -149,7 +149,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	}
 
 	def dispatch void format(TUTransition it, extension IFormattableDocument document) {
-		formatBlockElement(it, document, regionForKeyword('transition'), members, false);
+		formatBlockElement(it, document, regionFor.keyword('transition'), members, false);
 	}
 
 	def dispatch void format(TUTransitionTrigger it, extension IFormattableDocument document) {
@@ -165,9 +165,9 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	}
 
 	def dispatch void format(TUTransitionGuard it, extension IFormattableDocument document) {
-		regionForKeyword('(').surround[oneSpace];
+		regionFor.keyword('(').surround[oneSpace];
 		expression.append[oneSpace];
-		regionForKeyword(';').prepend[noSpace];
+		regionFor.keyword(';').prepend[noSpace];
 
 		format(expression, document);
 	}
@@ -177,8 +177,8 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	}
 
 	def dispatch void format(TUPort it, extension IFormattableDocument document) {
-		regionForKeyword('behavior').append[oneSpace];
-		formatBlockElement(it, document, regionForKeyword('port'), members, false);
+		regionFor.keyword('behavior').append[oneSpace];
+		formatBlockElement(it, document, regionFor.keyword('port'), members, false);
 	}
 
 	def dispatch void format(TUPortMember it, extension IFormattableDocument document) {
@@ -186,19 +186,19 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	}
 
 	def dispatch void format(TUAssociationEnd it, extension IFormattableDocument document) {
-		regionForFeature(TU_ASSOCIATION_END__VISIBILITY).append[oneSpace];
-		regionForKeyword('hidden').append[oneSpace];
+		regionFor.feature(TU_ASSOCIATION_END__VISIBILITY).append[oneSpace];
+		regionFor.keyword('hidden').append[oneSpace];
 
 		multiplicity.append[oneSpace];
 
-		regionForKeyword('container').append[oneSpace];
-		regionForFeature(TU_CLASS_PROPERTY__NAME).prepend[oneSpace].append[noSpace];
+		regionFor.keyword('container').append[oneSpace];
+		regionFor.feature(TU_CLASS_PROPERTY__NAME).prepend[oneSpace].append[noSpace];
 
 		format(multiplicity, document);
 	}
 
 	def dispatch void format(TUMultiplicity it, extension IFormattableDocument document) {
-		regionForKeyword('..').surround[noSpace];
+		regionFor.keyword('..').surround[noSpace];
 	}
 
 	def dispatch void format(RAlfSendSignalExpression it, extension IFormattableDocument document) {
@@ -215,7 +215,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	}
 
 	override dispatch void format(XBlockExpression it, extension IFormattableDocument document) {
-		val open = regionForKeyword('{');
+		val open = regionFor.keyword('{');
 
 		if (expressions.empty && !open.nextHiddenRegion.containsComment) {
 			open.append[noSpace];
@@ -235,7 +235,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	}
 
 	override dispatch void format(XVariableDeclaration it, extension IFormattableDocument document) {
-		regionForKeyword(';').prepend[noSpace];
+		regionFor.keyword(';').prepend[noSpace];
 		super._format(it, document); // generated _format is used to prevent infinite recursion
 	}
 
@@ -245,8 +245,8 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	}
 
 	def dispatch void format(TUClassPropertyAccessExpression it, extension IFormattableDocument document) {
-		regionForKeyword('->').surround[noSpace];
-		regionForFeature(TU_CLASS_PROPERTY_ACCESS_EXPRESSION__RIGHT).surround[noSpace];
+		regionFor.keyword('->').surround[noSpace];
+		regionFor.feature(TU_CLASS_PROPERTY_ACCESS_EXPRESSION__RIGHT).surround[noSpace];
 
 		format(left, document);
 	}
@@ -255,18 +255,18 @@ class XtxtUMLFormatter extends XbaseFormatter {
 		EList<? extends EObject> members, boolean isSpacious) {
 		typeKeyword.append[oneSpace];
 
-		val open = regionForKeyword('{');
+		val open = regionFor.keyword('{');
 		open.prepend[oneSpace];
 
 		val delimiterLineCount = if(isSpacious) 2 else 1;
-		if (members.empty && (open == null || !open.nextHiddenRegion.containsComment)) {
-			open.append[noSpace];
+		if (open == null || members.empty && !open.nextHiddenRegion.containsComment) {
+			open.append[noSpace]; // null is not a problem here
 		} else {
-			open.append[newLines = delimiterLineCount; increaseIndentation];
-			regionForKeyword('}').prepend[decreaseIndentation];
+			open.append[newLines = delimiterLineCount];
+			interior(open, regionFor.keyword('}'), [indent]);
 		}
 
-		regionForKeyword(';').prepend[noSpace];
+		regionFor.keyword(';').prepend[noSpace];
 
 		for (member : members) {
 			member.append[newLines = delimiterLineCount];
@@ -276,11 +276,11 @@ class XtxtUMLFormatter extends XbaseFormatter {
 
 	def private formatSimpleMember(EObject it, extension IFormattableDocument document,
 		EStructuralFeature mainFeature) {
-		regionForFeature(mainFeature).prepend[oneSpace].append[noSpace];
+		regionFor.feature(mainFeature).prepend[oneSpace].append[noSpace];
 	}
 
 	def private formatUnnamedBlockElement(EObject it, extension IFormattableDocument document, XBlockExpression body) {
-		body.regionForKeyword('{').prepend[oneSpace];
+		body.regionFor.keyword('{').prepend[oneSpace];
 		format(body, document);
 	}
 
