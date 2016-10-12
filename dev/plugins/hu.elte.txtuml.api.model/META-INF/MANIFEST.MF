@@ -11,4 +11,4 @@ Export-Package: hu.elte.txtuml.api.model,
  hu.elte.txtuml.api.model.external,
  hu.elte.txtuml.api.model.runtime,
  hu.elte.txtuml.api.model.runtime.collections
-Require-Bundle: hu.elte.txtuml.utils;bundle-version="0.5.0"
+Require-Bundle: hu.elte.txtuml.utils

@@ -11,10 +11,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jdt.core,
  org.eclipse.jdt.launching,
- hu.elte.txtuml.utils;bundle-version="0.5.0",
+ hu.elte.txtuml.utils,
  org.eclipse.xtext.xtext.ui,
  org.eclipse.jdt.ui,
- hu.elte.txtuml.api.model;bundle-version="0.5.0",
- hu.elte.txtuml.utils.eclipse;bundle-version="0.5.0",
- hu.elte.txtuml.export.uml2;bundle-version="0.5.0"
+ hu.elte.txtuml.api.model,
+ hu.elte.txtuml.utils.eclipse,
+ hu.elte.txtuml.export.uml2
 Export-Package: hu.elte.txtuml.project

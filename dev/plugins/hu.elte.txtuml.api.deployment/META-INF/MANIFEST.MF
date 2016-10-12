@@ -6,4 +6,4 @@ Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: ELTE
 Export-Package: hu.elte.txtuml.api.deployment
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: hu.elte.txtuml.api.model;bundle-version="0.5.0"
+Require-Bundle: hu.elte.txtuml.api.model
