@@ -17,6 +17,7 @@ import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.statemachine.StateMachineExporter;
 import hu.elte.txtuml.export.cpp.statemachine.SubStateMachineExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ConstructorTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
@@ -101,6 +102,10 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		Shared.writeOutSource(dest, GenerationTemplates.sourceName(name),
 				Shared.format(getAllDependency(false) + source));
 	}
+	
+	public boolean isStateMachineOwner() {
+		return stateMachineExporter.ownStateMachine();
+	}
 
 	private String createClassHeaderSource() {
 		String source = "";
@@ -132,11 +137,11 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			} else {
 				source = HeaderTemplates.hierarchicalStateMachineClassHeader(getAllDependency(true), name,
 						getBaseClass(), getSubmachines(), publicParts.toString(), protectedParts.toString(),
-						privateParts.toString(), true).toString();
+						privateParts.toString(), true);
 			}
 		} else {
 			source = HeaderTemplates.classHeader(getAllDependency(true), name, getBaseClass(), publicParts.toString(),
-					protectedParts.toString(), privateParts.toString(), true).toString();
+					protectedParts.toString(), privateParts.toString(), true);
 		}
 		return source;
 	}

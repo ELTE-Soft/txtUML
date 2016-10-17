@@ -110,8 +110,11 @@ public class GenerationTemplates {
 	}
 
 	public static String staticCreate(String typeName, String objName, String creatorMethod) {
-		return GenerationNames.pointerType(typeName) + " " + objName + " = " + typeName + "::" + creatorMethod
-				+ "();\n";
+		return GenerationNames.pointerType(typeName) + " " + objName + " = " + staticMethodInvoke(typeName,creatorMethod) + ";\n";
+	}
+	
+	public static String staticMethodInvoke(String className, String method) {
+		return className + "::" + method + "()";
 	}
 
 	public static String debugOnlyCodeBlock(String code_) {

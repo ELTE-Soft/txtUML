@@ -32,7 +32,7 @@ public class ThreadHandlingManager {
 	private static final String NamespaceName = "deployment";
 	private static final String ConfiguratedThreadedRuntimeName = "ConfiguratedThreadedRT";
 	private static final String SetConfigurationMethod = "configure";
-	private static final String CreatorFunction = "createThreadedRuntime";
+	private static final String CreatorFunction = "initRuntime";
 	private static final String CreateRTMethod = "createRuntime";
 
 	int numberOfThreads;

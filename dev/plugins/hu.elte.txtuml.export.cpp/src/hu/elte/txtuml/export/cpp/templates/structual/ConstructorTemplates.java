@@ -83,8 +83,8 @@ public class ConstructorTemplates {
 		String parentParamName = GenerationNames.formatIncomingParamName(GenerationNames.ParentSmName);
 		String source = className + "::" + className + "(" + PrivateFunctionalTemplates.cppType(parentStateMachine)
 				+ " " + parentParamName + "):" + GenerationNames.ParentSmMemberName + "(" + parentParamName + ")"
-				+ "\n{\n" + StateMachineTemplates.stateMachineInitializationSharedBody(className, parentStateMachine,
-						machine, intialState, false, null)
+				+ "\n{\n" + StateMachineTemplates.stateMachineInitializationSharedBody(className,
+						intialState, false, null)
 				+ "}\n\n";
 		return source + StateMachineTemplates.simpleStateMachineClassConstructorSharedBody(className, machine,
 				intialState, false);
@@ -99,7 +99,7 @@ public class ConstructorTemplates {
 				+ GenerationNames.CurrentMachineName + "(" + GenerationNames.NullPtr + "),"
 				+ GenerationNames.ParentSmMemberName + "(" + parentParamName + ")" + "\n{\n";
 		return source + StateMachineTemplates.hierarchicalStateMachineClassConstructorSharedBody(className,
-				parentClassName, machine, subMachines, intialState, false);
+				parentClassName, subMachines, intialState, false);
 	}
 
 }

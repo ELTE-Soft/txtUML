@@ -22,6 +22,7 @@ public class RuntimeTemplates {
 	public static final String ObjectRemoverForRuntime = "removeObject";
 
 
+
 	public static String initStateMachineForRuntime() {
 		return GetRuntimeInstance + GenerationNames.PointerAccess + ObjectSetterForRuntime + "(" + GenerationNames.Self
 				+ ");\n";

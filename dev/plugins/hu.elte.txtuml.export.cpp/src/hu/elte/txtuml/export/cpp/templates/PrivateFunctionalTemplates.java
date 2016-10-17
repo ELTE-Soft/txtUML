@@ -46,6 +46,21 @@ public class PrivateFunctionalTemplates {
 				+ "," + GenerationNames.FunctionPtrTypeName + "> " + GenerationNames.GuardActionName + ";\n";
 	}
 
+	private static String tranSitionTableType(String className) {
+		return "std::unordered_multimap<" + GenerationNames.EventStateTypeName + "," + className + "::"
+				+ GenerationNames.GuardActionName + ">";
+	}
+
+	public static String transitionTableDecl(String className) {
+		return GenerationNames.StaticModifier + " " + tranSitionTableType(className) + " "
+				+ GenerationNames.TransitionTableName + ";\n";
+
+	}
+
+	public static String transitionTableDef(String className) {
+		return tranSitionTableType(className) + " " + className + "::" + GenerationNames.TransitionTableName + ";\n";
+	}
+
 	public static String pointerBaseType(String typeName) {
 		return typeName.substring(0, typeName.indexOf("*"));
 	}
@@ -70,11 +85,11 @@ public class PrivateFunctionalTemplates {
 		}
 		return source.substring(0, source.length() - 1);
 	}
-	
+
 	public static String paramNameList(List<String> params) {
 		if (params == null || params.size() == 0)
 			return "";
-		
+
 		StringBuilder source = new StringBuilder("");
 		for (String param : params) {
 			source.append(GenerationNames.formatIncomingParamName(param) + ",");
@@ -99,7 +114,7 @@ public class PrivateFunctionalTemplates {
 				case "String":
 					cppType = GenerationNames.cppString;
 					break;
-				case GenerationNames.TimerClassName :
+				case GenerationNames.TimerClassName:
 					cppType = GenerationNames.sharedPtrType(typeName);
 					break;
 				case GenerationNames.EventPtr:

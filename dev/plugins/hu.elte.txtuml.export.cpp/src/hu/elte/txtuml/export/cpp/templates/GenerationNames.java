@@ -16,6 +16,9 @@ public class GenerationNames {
 	public static final String StandardIOinclude = "#include <iostream>\n";
 
 	public static final String StandardLibaryFunctionsHeaderName = "standard_functions";
+	
+	//Modifies
+	public static final String StaticModifier = "static";
 
 	public static final String NullPtr = "nullptr";
 	public static final String Self = "this";
@@ -47,8 +50,6 @@ public class GenerationNames {
 	public static final String ProcessEventFName = "process_event";
 	public static final String UnParametrizadProcessEvent = "bool " + ProcessEventFName + "(" + EventBaseRefName + ")";
 	public static final String ProcessEventDecl = UnParametrizadProcessEvent + ";\n";
-	public static final String TransitionTable = "std::unordered_multimap<" + EventStateTypeName + "," + GuardActionName
-			+ "> " + TransitionTableName + ";\n";
 	public static final String SetStateDecl = NoReturn + " " + setStateFuncName + "(int "
 			+ GenerationNames.StateParamName + ");\n";
 	public static final String SetInitialStateName = "setInitialState";
@@ -56,7 +57,6 @@ public class GenerationNames {
 	public static final String StatemachineBaseName = "StateMachineBase";
 	public static final String StatemachineBaseHeaderName = "statemachinebase";
 	public static final String DefaultGuardName = "defaultGuard";
-	public static final String DummyProcessEventDef = UnParametrizadProcessEvent + "{return false;}\n";
 	public static final String StartSmMethodName = "startSM";
 
 	// hierarchical state machine
@@ -111,6 +111,7 @@ public class GenerationNames {
 			+ GenerationNames.ParentSmPointerName + ")";
 
 	public static final String InitFunctionName = "init";
+	
 
 	public static String initFunctionName(String className) {
 		return InitFunctionName + className;

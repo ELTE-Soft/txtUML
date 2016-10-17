@@ -17,7 +17,7 @@ public class HeaderTemplates {
 				+ GenerationNames.HeaderExtension.toUpperCase() + "_";
 	}
 
-	public static StringBuilder hierarchicalStateMachineClassHeader(String dependency, String className,
+	public static String hierarchicalStateMachineClassHeader(String dependency, String className,
 			String baseClassName, List<String> subMachines, String publicPart, String protectedPart, String privatePart,
 			Boolean rt) {
 		return HeaderTemplates.classHeader(PrivateFunctionalTemplates.classHeaderIncludes(rt) + dependency, className,
@@ -28,7 +28,7 @@ public class HeaderTemplates {
 				true, rt);
 	}
 
-	public static StringBuilder simpleSubStateMachineClassHeader(String dependency, String className,
+	public static String simpleSubStateMachineClassHeader(String dependency, String className,
 			String parentClass, String publicPart, String protectedPart, String privatePart) {
 
 		return HeaderTemplates.simpleStateMachineClassHeader(dependency, className, null, parentClass, publicPart,
@@ -38,32 +38,29 @@ public class HeaderTemplates {
 				false);
 	}
 
-	public static StringBuilder simpleStateMachineClassHeader(String dependency, String className, String baseClassName,
+	public static String simpleStateMachineClassHeader(String dependency, String className, String baseClassName,
 			String parentClass, String publicPart, String protectedPart, String privatePart, Boolean rt) {
 		return HeaderTemplates.classHeader(PrivateFunctionalTemplates.classHeaderIncludes(rt) + dependency, className,
 				baseClassName, StateMachineTemplates.stateMachineClassFixPublicParts(className, rt) + publicPart,
-				protectedPart, StateMachineTemplates.simpleStateMachineClassFixPrivateParts(className) + privatePart,
+				StateMachineTemplates.simpleStateMachineClassFixProtectedParts(className) + protectedPart, StateMachineTemplates.simpleStateMachineClassFixPrivateParts(className) + privatePart,
 				true, rt);
 	}
 
-	public static StringBuilder classHeader(String dependency, String name, String baseClassName, String publicPart,
+	public static String classHeader(String dependency, String name, String baseClassName, String publicPart,
 			String protectedPart, String privatePart) {
 		return HeaderTemplates.classHeader(dependency, name, baseClassName, publicPart, protectedPart, privatePart,
 				false, false);
 	}
 
-	public static StringBuilder classHeader(String dependency, String name, String baseClassName, String publicPart,
+	public static String classHeader(String dependency, String name, String baseClassName, String publicPart,
 			String protectedPart, String privatePart, Boolean rt) {
 		return HeaderTemplates.classHeader(dependency, name, baseClassName, publicPart, protectedPart, privatePart,
 				false, rt);
 	}
 
-	public static StringBuilder classHeader(String dependency, String className, String baseClassName,
+	public static String classHeader(String dependency, String className, String baseClassName,
 			String publicPart, String protectedPart, String privatePart, Boolean sm, Boolean rt) {
 		StringBuilder source = new StringBuilder(dependency);
-		if (!sm) {
-			source.append(PrivateFunctionalTemplates.localInclude(GenerationNames.EventHeaderName) + "\n");
-		}
 		source.append(GenerationNames.ClassType + " " + className);
 		if (baseClassName != null) {
 			source.append(": public " + baseClassName);
@@ -75,9 +72,6 @@ public class HeaderTemplates {
 
 		}
 		source.append("\n{\n");
-		if (!sm && baseClassName == null) {
-			source.append(GenerationNames.DummyProcessEventDef);
-		}
 
 		if (!publicPart.isEmpty()) {
 			source.append(publicPart);
@@ -86,17 +80,16 @@ public class HeaderTemplates {
 			source.append("\nprotected:\n" + protectedPart);
 		}
 		source.append("\nprivate:\n");
-		source.append(FunctionTemplates.functionDecl(GenerationNames.InitStateMachine) + "\n");
 		if (!privatePart.isEmpty()) {
 			source.append(privatePart);
 
 		}
 		source.append("\n};\n\n");
 
-		return source;
+		return source.toString();
 	}
 
-	public static StringBuilder hierarchicalSubStateMachineClassHeader(String dependency, String className,
+	public static String hierarchicalSubStateMachineClassHeader(String dependency, String className,
 			String parentClass, List<String> subMachines, String publicPart, String protectedPart, String privatePart) {
 		List<String> parentParam = new LinkedList<String>();
 		parentParam.add(parentClass);
@@ -108,7 +101,7 @@ public class HeaderTemplates {
 				false);
 	}
 
-	public static StringBuilder hierarchicalStateMachineClassHeader(String dependency, String className,
+	public static String hierarchicalStateMachineClassHeader(String dependency, String className,
 			List<String> subMachines, String publicPart, String protectedPart, String privatePart, Boolean rt) {
 		return hierarchicalStateMachineClassHeader(dependency, className, null, subMachines, publicPart, protectedPart,
 				privatePart, rt);

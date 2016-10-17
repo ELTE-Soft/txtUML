@@ -29,11 +29,14 @@ import org.osgi.framework.Bundle;
 import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
 import hu.elte.txtuml.export.cpp.structural.ClassExporter;
 import hu.elte.txtuml.export.cpp.structural.DataTypeExporter;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.Options;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
+import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 import hu.elte.txtuml.export.cpp.thread.ThreadHandlingManager;
@@ -52,8 +55,8 @@ public class Uml2ToCppExporter {
 	private static final String DEFAULT_ASSOCIATIONS_NAME = "associations";
 	private static final String PROJECT_NAME = "hu.elte.txtuml.export.cpp";
 	private static final String CPP_FILES_FOLDER_NAME = "cpp-runtime";
-
 	private static final String SIGNAL_ENUM_EXTENSION = "_EE";
+	private static final String DEFAULT_INIT_MACHINE_NAME = StateMachineTemplates.TransitionTableInitialSourceName;
 
 	private ClassExporter classExporter;
 	private DataTypeExporter dataTypeExporter;
@@ -63,6 +66,7 @@ public class Uml2ToCppExporter {
 	private ThreadHandlingManager threadManager;
 
 	private List<Class> classes;
+	private List<String> stateMachineOwners;
 	private List<DataType> dataTypes;
 	private List<String> classNames;
 
@@ -75,6 +79,7 @@ public class Uml2ToCppExporter {
 		classes = new ArrayList<Class>();
 		dataTypes = new ArrayList<DataType>();
 		classNames = new LinkedList<String>();
+		stateMachineOwners = new ArrayList<String>();
 		options = new Options(addRuntimeOption, overWriteMainFileOption);
 
 		this.shared = shared;
@@ -86,10 +91,11 @@ public class Uml2ToCppExporter {
 	public void buildCppCode(String outputDirectory) throws IOException {
 
 		threadManager.createConfigurationSource(outputDirectory);
-		
+
 		copyPreWrittenCppFiles(outputDirectory);
 		createEventSource(outputDirectory);
 		createClassSources(outputDirectory);
+		createTransitionTableInitialSource(outputDirectory);
 		createDataTypes(outputDirectory);
 		createAssociationsSources(outputDirectory);
 		createCMakeFile(outputDirectory);
@@ -106,7 +112,44 @@ public class Uml2ToCppExporter {
 			classNames.add(cls.getName());
 			classNames.addAll(classExporter.getAdditionalSources());
 
+			if (classExporter.isStateMachineOwner()) {
+				stateMachineOwners.add(cls.getName());
+				stateMachineOwners.addAll(classExporter.getSubmachines());
+			}
+
 		}
+	}
+
+	private void createTransitionTableInitialSource(String outputDirectory) throws IOException {
+		Shared.writeOutSource(outputDirectory,
+				GenerationTemplates
+						.headerName(StateMachineTemplates.TransitionTableInitialSourceName),
+				Shared.format(
+						HeaderTemplates
+								.headerGuard(
+										GenerationTemplates.putNamespace(
+												FunctionTemplates.functionDecl(
+														StateMachineTemplates.AllTransitionTableInitialProcName),
+												StateMachineTemplates.MachineNamespace),
+										StateMachineTemplates.TransitionTableInitialSourceName)));
+
+		DependencyExporter dependencyExporter = new DependencyExporter();
+		dependencyExporter.addDependecies(stateMachineOwners);
+		StringBuilder initalFunctionBody = new StringBuilder("");
+		for (String stateMachineOwner : stateMachineOwners) {
+			initalFunctionBody.append(ActivityTemplates.blockStatement(GenerationTemplates
+					.staticMethodInvoke(stateMachineOwner, StateMachineTemplates.InitTransitionTable)));
+		}
+
+		Shared.writeOutSource(outputDirectory,
+				GenerationTemplates.sourceName(StateMachineTemplates.TransitionTableInitialSourceName),
+				Shared.format(dependencyExporter.createDependencyCppIncudesCode(
+						StateMachineTemplates.TransitionTableInitialSourceName)
+						+ GenerationTemplates.putNamespace(
+								FunctionTemplates.simpleFunctionDef(GenerationNames.NoReturn,
+										StateMachineTemplates.AllTransitionTableInitialProcName,
+										initalFunctionBody.toString(),""),StateMachineTemplates.MachineNamespace)));
+
 	}
 
 	private void createDataTypes(String outputDirectory) throws IOException {
@@ -187,6 +230,7 @@ public class Uml2ToCppExporter {
 		sourceNames.add(DEFAULT_TARGET_EXECUTABLE);
 		sourceNames.add(DEFAULT_DEPLOYMENT_NAME);
 		sourceNames.add(DEFAULT_ASSOCIATIONS_NAME);
+		sourceNames.add(DEFAULT_INIT_MACHINE_NAME);
 		sourceNames.addAll(classNames);
 		cmake.addExecutableTarget(DEFAULT_TARGET_EXECUTABLE, sourceNames, "");
 		cmake.writeOutCMakeLists();
@@ -222,7 +266,7 @@ public class Uml2ToCppExporter {
 		forwardDecl.append(EventTemplates.eventBase(options) + "\n");
 		forwardDecl.append("enum Events {" + events + "};\n");
 		forwardDecl.append(source);
-		Shared.writeOutSource(outputDirectory, (EventTemplates.EventHeader), 
+		Shared.writeOutSource(outputDirectory, (EventTemplates.EventHeader),
 				Shared.format(EventTemplates.eventHeaderGuard(forwardDecl.toString())));
 
 	}
