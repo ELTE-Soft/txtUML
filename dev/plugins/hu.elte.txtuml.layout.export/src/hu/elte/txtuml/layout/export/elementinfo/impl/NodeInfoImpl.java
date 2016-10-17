@@ -22,17 +22,26 @@ public class NodeInfoImpl extends ElementInfoImpl implements NodeInfo {
 
 	@Override
 	public boolean isPhantom() {
-		return toString().startsWith("#phantom_");
+		return getElementClass() != null && 
+				toString().startsWith("#phantom_");
 	}
 	
 	@Override
 	public boolean isBoxContainer() {
 		return ElementExporter.isBoxContainer(getElementClass());
 	}
+	
+	@Override
+	public boolean isVirtualPhantom()
+	{
+		return getElementClass() == null && 
+				toString().startsWith("#phantom_");
+	}
 
 	@Override
 	public SpecialBox getSpecialProperty() {
-		if (Initial.class.isAssignableFrom(getElementClass())) {
+		if (!isVirtualPhantom() &&
+				Initial.class.isAssignableFrom(getElementClass())) {
 			return SpecialBox.Initial;
 		}
 

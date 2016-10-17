@@ -128,9 +128,11 @@ public class ElementExporterImpl implements ElementExporter {
 	
 	@Override
 	public Set<RectangleObject> getNodesAsObjects() {
-		// for efficiency purposes, phantoms are handled in NodeMap's convert()
-		// method
+		//Convert default Nodes (model elements) and container phantoms (box).
 		Set<RectangleObject> result = nodes.convert(getDiagramTypeBasedOnElements());
+		//Convert phantoms (virtual phantom) that are not explicitly declared 
+		//but is a side effect of another statement.
+		result.addAll(phantoms.convert());
 		
 		convertLinks();
 		

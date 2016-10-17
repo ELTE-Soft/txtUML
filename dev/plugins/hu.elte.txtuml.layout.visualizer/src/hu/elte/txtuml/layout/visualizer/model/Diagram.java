@@ -213,7 +213,7 @@ public class Diagram {
 			} 
 		}
 
-		return pixelSum / gridSum;
+		return (int) Math.round((double)pixelSum / (double)gridSum);
 	}
 
 	private Boundary getDimensions() {

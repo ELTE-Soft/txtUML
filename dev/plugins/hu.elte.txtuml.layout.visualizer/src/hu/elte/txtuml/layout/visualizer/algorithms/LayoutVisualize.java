@@ -1,5 +1,7 @@
 package hu.elte.txtuml.layout.visualizer.algorithms;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -269,7 +271,7 @@ public class LayoutVisualize {
 
 		// Box arrange
 		maxGroupId = boxArrange(maxGroupId);
-
+		
 		// Set start-end positions for associations
 		updateAssocsEnd();
 		
@@ -278,6 +280,10 @@ public class LayoutVisualize {
 
 		// Arrange associations between objects
 		maxGroupId = linkArrange(maxGroupId);
+		
+		// Eliminate the phantom boxes. Lift up possible inner
+		// diagram.
+		eliminatePhantoms(_diagram);
 
 		if (_options.Logging)
 			Logger.sys.info("End of arrange!");
@@ -285,7 +291,13 @@ public class LayoutVisualize {
 		ProgressManager.end();
 		
 		//TODO
-		//FileVisualize.printOutput(_diagram, "C:/Users/Alez/Documents/asd/hie.txt");
+		/*String filename = LocalDateTime.now().getYear() + "-" + 
+				LocalDateTime.now().getMonthValue() + "-" + 
+				LocalDateTime.now().getDayOfMonth() + "__" + 
+				LocalDateTime.now().getHour() + "-" + 
+				LocalDateTime.now().getMinute() + "-" +
+				LocalDateTime.now().getSecond();
+		FileVisualize.printOutput(_diagram, "C:/Users/Alez/Documents/asd/" + filename + ".txt");*/
 	}
 
 	private void getOptions() {
@@ -366,30 +378,37 @@ public class LayoutVisualize {
 		if (_options.Logging)
 			Logger.sys.info("> Starting box arrange...");
 
-		// Arrange Outer objects
-		ArrangeObjects ao = new ArrangeObjects(_diagram.Objects.stream().collect(Collectors.toList()), _statements,
-				maxGroupId, _options);
-		_diagram.Objects = new HashSet<RectangleObject>(ao.value());
-		_statements = ao.statements();
-		maxGroupId = ao.getGId();
-
-		// Arrange each inner object's inner diagram if it has any
-		for (RectangleObject box : new RectangleObjectTreeEnumerator(_diagram.Objects)) {
-			if (box.hasInner()) {
-				ao = new ArrangeObjects(box.getInner().Objects.stream().collect(Collectors.toList()), _statements,
-						maxGroupId, _options);
-				box.getInner().Objects = new HashSet<RectangleObject>(ao.value());
-				_statements = ao.statements();
-				maxGroupId = ao.getGId();
-			}
-		}
+		Pair<Integer, Diagram> result = recursiveBoxArrange(maxGroupId, _diagram);
+		_diagram = result.getSecond();
+		maxGroupId = result.getFirst();
 
 		if (_options.Logging)
 			Logger.sys.info("> Box arrange DONE!");
 
 		return maxGroupId;
 	}
-
+	
+	private Pair<Integer, Diagram> recursiveBoxArrange(Integer maxGroupId, Diagram diag) throws BoxArrangeConflictException, InternalException, ConversionException, BoxOverlapConflictException
+	{
+		for(RectangleObject box : diag.Objects)
+		{
+			if(box.hasInner())
+			{
+				Pair<Integer, Diagram> result = recursiveBoxArrange(maxGroupId, box.getInner());
+				box.setInner(result.getSecond());
+				maxGroupId = result.getFirst();
+			}
+		}
+		
+		ArrangeObjects ao = new ArrangeObjects(diag.Objects.stream().collect(Collectors.toList()), _statements,
+				maxGroupId, _options);
+		diag.Objects = new HashSet<RectangleObject>(ao.value());
+		_statements = ao.statements();
+		maxGroupId = ao.getGId();
+		
+		return Pair.of(maxGroupId, diag);
+	}
+	
 	private void updateAssocsEnd() throws InternalException {
 		for (LineAssociation link : _diagram.Assocs) {
 			ArrayList<Point> linkRoute = new ArrayList<Point>();
@@ -494,6 +513,28 @@ public class LayoutVisualize {
 		toLayout = aa.getDiagram();
 
 		return new Pair<Integer, Diagram>(aa.getGId(), toLayout);
+	}
+	
+	private void eliminatePhantoms(Diagram diag) {
+		
+		for(RectangleObject box : diag.Objects)
+		{
+			// If it's a phantom box, it must be removed, but...
+			if(box.isPhantom())
+			{
+				// First the inner diagram needs to be lifted
+				if(box.hasInner())
+				{
+					eliminatePhantoms(box.getInner());
+					
+					diag.Objects.addAll(box.getInner().Objects);
+					diag.Assocs.addAll(box.getInner().Assocs);
+				}
+			}
+		}
+		
+		// Remove phantom boxes
+		diag.Objects.removeIf(box -> box.isPhantom());
 	}
 
 	/** Loads a diagram into the arranger.

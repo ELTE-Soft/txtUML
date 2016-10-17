@@ -20,6 +20,7 @@ import hu.elte.txtuml.layout.visualizer.exceptions.BoxOverlapConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.MyException;
+import hu.elte.txtuml.layout.visualizer.model.Diagram;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.Options;
 import hu.elte.txtuml.layout.visualizer.model.Point;
@@ -112,6 +113,9 @@ public class ArrangeObjects {
 
 		if (OverlapHelper.isThereOverlapping(_objects))
 			arrangeOverlaps();
+		
+		// Move objects to fourth plane quadrant
+		moveResultToFourthQuadrant();
 	}
 
 	private void arrangeUntilNotConflicted() throws InternalException, BoxArrangeConflictException {
@@ -468,6 +472,26 @@ public class ArrangeObjects {
 
 		return result;
 	}
+	
+	private void moveResultToFourthQuadrant() {
+		
+		Integer minLeft = _objects.stream().map(box -> box.getPosition().getX())
+				.min((a, b) -> Integer.compare(a, b)).get();
+		Integer maxTop = _objects.stream().map(box -> box.getPosition().getY())
+				.max((a, b) -> Integer.compare(a, b)).get();
+		Boolean moveHorizontal = minLeft < 0;
+		Boolean moveVertical = maxTop > 0;
+		
+		for(RectangleObject box : _objects)
+		{
+			Integer xCoord = moveHorizontal ? (-1 * minLeft) : 0;
+			Integer yCoord = moveVertical ? (-1 * maxTop) : 0;
+			Point toMove = new Point(xCoord, yCoord);
+			
+			box.setPosition(Point.Add(box.getPosition(), toMove));
+		}
+	}
+
 
 	/**
 	 * Returns the value of the arrangement.

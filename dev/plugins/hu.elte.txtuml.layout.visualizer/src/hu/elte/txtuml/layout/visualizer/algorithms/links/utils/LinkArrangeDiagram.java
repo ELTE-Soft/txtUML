@@ -110,15 +110,17 @@ public class LinkArrangeDiagram extends Diagram {
 		HeightOfCells = HeightOfCells * multiplier;
 		
 		for (RectangleObject box : Objects) {
-			if (box.hasInner()) {
+			/*if (box.hasInner()) {
 				LinkArrangeDiagram innerDiagram = new LinkArrangeDiagram(box.getInner());
 				innerDiagram.expand(multiplier);
 				box.setInner(innerDiagram.getDiagram());
-			}
+				
+				//System.err.print("Inner: " + box.getInner().getWidth() + " x " + box.getInner().getHeight() + " <> ");
+			}*/
 			
 			box.setWidth(box.getWidth() * multiplier);
 			box.setHeight(box.getHeight() * multiplier);
-
+			
 			// Calculate the position of the box in the cell
 			Point tempPos = Point.Multiply(CellPositions.get(box.getName()), multiplier);
 			CellPositions.put(box.getName(), new Point(tempPos));

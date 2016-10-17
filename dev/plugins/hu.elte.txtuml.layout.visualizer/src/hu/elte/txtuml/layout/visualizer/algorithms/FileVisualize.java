@@ -12,6 +12,8 @@ import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.layout.visualizer.model.utils.DiagramTreeEnumerator;
+import hu.elte.txtuml.layout.visualizer.model.utils.RectangleObjectTreeEnumerator;
 
 /**
  * This class writes the textual visualization of a model.
@@ -64,6 +66,22 @@ public class FileVisualize {
 			links = getLinks(diagram);
 
 			PrintWriter writer = new PrintWriter(outputFilePath, "UTF-8");
+			
+			writer.println(diagram.getWidth() + " x " + diagram.getHeight());
+			writer.println(diagram.getPixelGridHorizontal() + ", " + diagram.getPixelGridVertical());
+			writer.println("Boxes:");
+			for(RectangleObject box : new RectangleObjectTreeEnumerator(diagram.Objects))
+			{
+				writer.println(box.toString());
+			}
+			writer.println("Links:");
+			for(Diagram diag : new DiagramTreeEnumerator(diagram))
+			{
+				for(LineAssociation link : diag.Assocs)
+					writer.println(link.toString());
+			}
+			writer.println("-----");
+			
 			String[][] outputText = createOutputText(objects, links);
 			for (String[] ss : outputText) {
 				for (String s : ss)
@@ -125,9 +143,79 @@ public class FileVisualize {
 		Integer verticalDimension = Math.abs(topleft.getY() - bottomright.getY()) + 1;
 		Integer horizontalDimension = Math.abs(bottomright.getX() - topleft.getX()) + 1;
 
+		Integer verticalShift = bottomright.getY() < 0 ? Math.abs(bottomright.getY()) : 0;
+		Integer horizontalShift = topleft.getX() < 0 ? Math.abs(topleft.getX()) : 0;
+		
 		String[][] result = new String[verticalDimension][horizontalDimension];
+		for(int i = 0; i < horizontalDimension; ++i)
+			for(int j = 0; j < verticalDimension; ++j)
+				result[j][i] = "  ";
 
-		for (int i = 0; i < result.length; ++i) {
+		int num = 0;
+		int maxNum = links.size() + objects.size();
+		
+		for(LineAssociation link : links)
+		{
+			for(Point linkPoint : link.getRoute())
+			{
+				if(link.getRoute().get(0) == linkPoint)
+					continue;
+				if(link.getRoute().get(link.getRoute().size() - 1) == linkPoint)
+					continue;
+				
+				if(link.getRoute().get(1) == linkPoint || 
+						link.getRoute().get(link.getRoute().size() - 2) == linkPoint)
+				{
+					// Start/End
+					result[verticalShift + linkPoint.getY()][horizontalShift + linkPoint.getX()] = "@ ";
+				} else if(result[verticalShift + linkPoint.getY()][horizontalShift + linkPoint.getX()] != "  ") {
+					result[verticalShift + linkPoint.getY()][horizontalShift + linkPoint.getX()] = "+ ";
+				} else if (isTurningPoint(link, linkPoint)) {
+					result[verticalShift + linkPoint.getY()][horizontalShift + linkPoint.getX()] = "* ";
+				} else if (isVerticalPoint(link, linkPoint)) {
+					result[verticalShift + linkPoint.getY()][horizontalShift + linkPoint.getX()] = "| ";
+				} else if (isHorizontalPoint(link, linkPoint)) {
+					result[verticalShift + linkPoint.getY()][horizontalShift + linkPoint.getX()] = "- ";
+				}
+			}
+			
+			++num;
+			//System.err.println(num + " / " + maxNum);
+		}
+		
+		for(RectangleObject box : objects)
+		{
+			Point nameLocation = Point.Add(Point.Add(box.getPosition(), Direction.east), Direction.south);
+			String name = box.getName().length() >= 2 ? box.getName().substring(0, 2) : "# ";
+			result[verticalShift + nameLocation.getY()][horizontalShift + nameLocation.getX()] = name;
+			
+			if(box.hasInner())
+			{
+				for(Point peri : box.getPerimiterPoints())
+				{
+					if(result[verticalShift + peri.getY()][horizontalShift + peri.getX()] == "  ")
+					{
+						result[verticalShift + peri.getY()][horizontalShift + peri.getX()] = "# ";
+					}
+				}
+			}
+			else
+			{
+				for(Point poi : box.getPoints())
+				{
+					if(result[verticalShift + poi.getY()][horizontalShift + poi.getX()] == "  ")
+					{
+						result[verticalShift + poi.getY()][horizontalShift + poi.getX()] = "# ";
+					}
+				}
+			}
+			
+			++num;
+			//System.err.println(num + " / " + maxNum);
+		}
+		
+		
+		/*for (int i = 0; i < result.length; ++i) {
 			for (int j = 0; j < result[i].length; ++j) {
 				Point diagramPoint = new Point(j + topleft.getX(), i + bottomright.getY());
 				String symbol = "";
@@ -199,6 +287,14 @@ public class FileVisualize {
 
 				result[result.length - i - 1][j] = symbol;
 			}
+		}*/
+		
+		//Flip diagram
+		for(int i = 0; i < (verticalDimension / 2); ++i)
+		{
+			String[] row = result[result.length - 1 - i];
+			result[result.length - 1 - i] = result[i];
+			result[i] = row;
 		}
 
 		return result;
@@ -247,10 +343,6 @@ public class FileVisualize {
 		}
 
 		return false;
-	}
-
-	private static boolean isCrossingPoint(Set<LineAssociation> as, Point p) {
-		return as.stream().filter(a -> a.getRoute().contains(p)).collect(Collectors.toSet()).size() == 2;
 	}
 
 	private static boolean isVerticalPoint(LineAssociation a, Point p) {

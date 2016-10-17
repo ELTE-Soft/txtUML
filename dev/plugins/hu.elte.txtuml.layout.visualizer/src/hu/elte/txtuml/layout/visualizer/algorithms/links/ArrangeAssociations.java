@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils.Color;
@@ -278,29 +280,22 @@ public class ArrangeAssociations {
 		Integer halfwayH = ((obj.getWidth() % 2) == 0) ? ((obj.getWidth() / 2) - 1) : ((obj.getWidth() - 1) / 2);
 		Integer halfwayV = ((obj.getHeight() % 2) == 0) ? ((obj.getHeight() / 2) - 1) : ((obj.getHeight() - 1) / 2);
 
+		Function<Point, Integer> selX = p -> p.getX();
+		Function<Point, Integer> selY = p -> p.getY();
+		BiFunction<Integer, Integer, Boolean> ge = (x, y) -> { return x >= y; };
+		BiFunction<Integer, Integer, Boolean> le = (x, y) -> { return x <= y; };
+		
 		Point northern = Point.Add(obj.getPosition(), new Point(halfwayH, 0));
-		if (isStart)
-			result.removeIf(p -> p.getFirst().getY().equals(northern.getY()) && p.getFirst().getX() >= northern.getX());
-		else
-			result.removeIf(p -> p.getFirst().getY().equals(northern.getY()) && p.getFirst().getX() <= northern.getX());
+		result.removeIf(p -> isOnHalfSide(p, northern, selY, selX, isStart ? ge : le));
 
 		Point eastern = Point.Add(obj.getBottomRight(), new Point(0, halfwayV));
-		if (isStart)
-			result.removeIf(p -> p.getFirst().getX().equals(eastern.getX()) && p.getFirst().getY() <= eastern.getY());
-		else
-			result.removeIf(p -> p.getFirst().getX().equals(eastern.getX()) && p.getFirst().getY() >= eastern.getY());
+		result.removeIf(p -> isOnHalfSide(p, eastern, selX, selY, isStart ? le : ge));
 
 		Point southern = Point.Add(obj.getBottomRight(), new Point(-1 * halfwayH, 0));
-		if (isStart)
-			result.removeIf(p -> p.getFirst().getY().equals(southern.getY()) && p.getFirst().getX() <= southern.getX());
-		else
-			result.removeIf(p -> p.getFirst().getY().equals(southern.getY()) && p.getFirst().getX() >= southern.getX());
+		result.removeIf(p -> isOnHalfSide(p, southern, selY, selX, isStart ? le : ge));
 
 		Point western = Point.Add(obj.getPosition(), new Point(0, -1 * halfwayV));
-		if (isStart)
-			result.removeIf(p -> p.getFirst().getX().equals(western.getX()) && p.getFirst().getY() >= western.getY());
-		else
-			result.removeIf(p -> p.getFirst().getX().equals(western.getX()) && p.getFirst().getY() <= western.getY());
+		result.removeIf(p -> isOnHalfSide(p, western, selX, selY, isStart ? ge : le));
 
 		// Set the weights of points
 		for (Pair<Point, Double> pair : result) {
@@ -308,6 +303,17 @@ public class ArrangeAssociations {
 		}
 
 		return result;
+	}
+	
+	private boolean isOnHalfSide(Pair<Point, Double> toTest, Point halfPoint, 
+			Function<Point, Integer> firstSelector,
+			Function<Point, Integer> secondSelector,
+			BiFunction<Integer, Integer, Boolean> compare)
+	{
+		Boolean result1 = firstSelector.apply(toTest.getFirst()).equals(firstSelector.apply(halfPoint));
+		Boolean result2 = compare.apply(secondSelector.apply(toTest.getFirst()), secondSelector.apply(halfPoint));
+	
+		return result1 && result2;
 	}
 
 	private Set<Pair<Node, Double>> convertToNodes(Set<Pair<Point, Double>> ps, RectangleObject obj)
@@ -535,9 +541,11 @@ public class ArrangeAssociations {
 		Map<Point, Color> result = new HashMap<Point, Color>();
 
 		if (box.hasInner()) {
-			// Add compositeBox's outer rim as a warning line
-			for (Point p : box.getPerimiterPoints()) {
-				result.put(p, Color.Yellow);
+			if(!box.isPhantom()) {
+				// Add compositeBox's outer rim as a warning line
+				for (Point p : box.getPerimiterPoints()) {
+					result.put(p, Color.Yellow);
+				}
 			}
 
 			// Add compositeBox's inner boxes
@@ -550,7 +558,7 @@ public class ArrangeAssociations {
 				result.putAll(getRoutePaintedPoints(innerLink));
 			}
 
-		} else {
+		} else if (!box.isPhantom()) {
 			for (Point p : box.getPoints()) {
 				result.put(p, Color.Red);
 			}
