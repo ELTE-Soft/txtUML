@@ -26,6 +26,7 @@ class OperationExporter extends Exporter<MethodDeclaration, IMethodBinding, Oper
 	override exportContents(MethodDeclaration decl) {
 		val binding = decl.resolveBinding
 		result.name = binding.name
+		result.visibility = getVisibility(decl.getModifiers)
 		if (binding.returnType.qualifiedName != void.canonicalName) {
 			val retParam = factory.createParameter
 			retParam.type = fetchType(binding.returnType)
