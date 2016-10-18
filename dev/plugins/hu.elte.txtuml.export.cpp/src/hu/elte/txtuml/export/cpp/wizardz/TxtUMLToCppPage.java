@@ -1,18 +1,23 @@
 package hu.elte.txtuml.export.cpp.wizardz;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.jdt.core.IAnnotation;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
-import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.search.IJavaSearchConstants;
-import org.eclipse.jdt.core.search.SearchEngine;
-import org.eclipse.jdt.internal.core.SourceType;
 import org.eclipse.jdt.internal.core.search.JavaSearchScope;
-import org.eclipse.jdt.internal.ui.dialogs.FilteredTypesSelectionDialog;
 import org.eclipse.jdt.internal.ui.dialogs.PackageSelectionDialog;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -23,11 +28,12 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
+import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.utils.eclipse.NotFoundException;
 import hu.elte.txtuml.utils.eclipse.PackageUtils;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
@@ -125,11 +131,28 @@ public class TxtUMLToCppPage extends WizardPage {
 				JavaSearchScope scope = new JavaSearchScope();
 				try {
 					IJavaProject javaProject = ProjectUtils.findJavaProject(txtUMLProject.getText());
-					for (IPackageFragmentRoot root : PackageUtils.getPackageFragmentRoots(javaProject)) {
-						scope.add(root);
+					
+					for (IPackageFragment pFragment : PackageUtils.findAllPackageFragmentsAsStream(javaProject).collect(Collectors.toList())) {
+						Optional<ICompilationUnit> foundPackageInfoCompilationUnit = Optional.of(pFragment.getCompilationUnit("package-info.java"));
+						
+						if (!foundPackageInfoCompilationUnit.isPresent() || !foundPackageInfoCompilationUnit.get().exists()) {
+							continue;
+						}
+						
+						ICompilationUnit packageInfoCompilationUnit = foundPackageInfoCompilationUnit.get();
+						
+						for (IPackageDeclaration packDecl : packageInfoCompilationUnit.getPackageDeclarations()) {
+							for (IAnnotation annot : packDecl.getAnnotations()) {
+								boolean isModelPackage = isImportedNameResolvedTo(packageInfoCompilationUnit, annot.getElementName(), Model.class.getCanonicalName());
+								if (isModelPackage) {
+									scope.add(pFragment);
+									break;
+								}
+							}
+						}
 					}
-				} catch (JavaModelException | NotFoundException ex) {
-				}
+				} catch (JavaModelException | NotFoundException ex) {}
+				
 				PackageSelectionDialog dialog = new PackageSelectionDialog(getShell(), getContainer(),
 						PackageSelectionDialog.F_HIDE_DEFAULT_PACKAGE | PackageSelectionDialog.F_REMOVE_DUPLICATES,
 						scope);
@@ -160,14 +183,66 @@ public class TxtUMLToCppPage extends WizardPage {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FilteredTypesSelectionDialog dialog = new FilteredTypesSelectionDialog(composite.getShell(), false,
-						PlatformUI.getWorkbench().getProgressService(), SearchEngine.createWorkspaceScope(),
-						IJavaSearchConstants.CLASS_AND_INTERFACE);
+				JavaSearchScope scope = new JavaSearchScope();
+				IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+				List<ICompilationUnit> compUnits = new ArrayList<ICompilationUnit>();
+				
+				for (IProject prj : root.getProjects()) {
+					IJavaProject javaPrj;
+					Stream<IPackageFragment> packageFragments;
+					try {
+						javaPrj = ProjectUtils.findJavaProject(prj.getName());
+						packageFragments = PackageUtils.findAllPackageFragmentsAsStream(javaPrj);
+					} catch (NotFoundException | JavaModelException ex) {
+						continue;
+					}
+					
+					try {
+						for (IPackageFragment pFragment : packageFragments.collect(Collectors.toList())) {
+							ICompilationUnit[] compilationUnits = pFragment.getCompilationUnits();
+							for (ICompilationUnit compUnit : compilationUnits) {
+								boolean isConfigClass = Stream.of(compUnit.getAllTypes()).anyMatch(type -> {
+									try {
+										return type.getSuperclassName().equals("Configuration");	// ...
+									} catch (JavaModelException | NullPointerException ex) {
+										return false;
+									}
+								});
+
+								if (isConfigClass) {
+									scope.add(compUnit);
+									compUnits.add(compUnit);
+								}
+							}
+						}
+					} catch (JavaModelException ex) {}
+				}
+				
+				/*FilteredTypesSelectionDialog dialog = new FilteredTypesSelectionDialog(composite.getShell(), false,
+						getContainer(), scope,
+						IJavaSearchConstants.CLASS_AND_INTERFACE);*/
+				ElementListSelectionDialog dialog = new ElementListSelectionDialog(composite.getShell(), new LabelProvider() {
+					
+					@Override
+					public String getText(Object element) {
+						ICompilationUnit item = (ICompilationUnit) element;
+						try {
+							return item.getTypes()[0].getFullyQualifiedName();
+						} catch (JavaModelException e) {
+							return "";
+						}
+					}
+					
+				});
+				
+				dialog.setElements(compUnits.toArray());
 				dialog.open();
 				Object[] result = dialog.getResult();
-				if (result != null && result.length > 0 && result[0] instanceof SourceType) {
-					SourceType item = (SourceType) result[0];
-					threadManagerDescription.setText(item.getFullyQualifiedName());
+				if (result != null && result.length > 0 && result[0] instanceof ICompilationUnit) {
+					ICompilationUnit item = (ICompilationUnit) result[0];
+					try {
+						threadManagerDescription.setText(item.getTypes()[0].getFullyQualifiedName());
+					}catch (JavaModelException ex) {}
 				}
 			}
 
@@ -213,4 +288,17 @@ public class TxtUMLToCppPage extends WizardPage {
 	public boolean getOverWriteMainFileSelection() {
 		return overWriteMainFle.getSelection();
 	}
+	
+	private static boolean isImportedNameResolvedTo(ICompilationUnit compUnit, String elementName, String qualifiedName) {
+		if (qualifiedName.equals(elementName)) {
+			return true;
+		}
+		if (!qualifiedName.endsWith(elementName)) {
+			return false;
+		}
+		int lastSection = qualifiedName.lastIndexOf(".");
+		String pack = qualifiedName.substring(0, lastSection);
+		return (compUnit.getImport(qualifiedName).exists() || compUnit.getImport(pack + ".*").exists());
+	}
+	
 }
