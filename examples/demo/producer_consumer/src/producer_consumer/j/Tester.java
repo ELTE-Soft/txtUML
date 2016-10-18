@@ -30,7 +30,7 @@ public class Tester {
 		Action.start(c3);
 	}
 
-	public static void main(String[] init) {
-		ModelExecutor.create().run(Tester::init);
+	public static void main(String[] args) {
+		ModelExecutor.create().setTraceLogging(true).run(Tester::init);
 	}
 }
