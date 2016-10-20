@@ -51,30 +51,6 @@ public class RectangleObjectTest {
 		assertFalse(_a.isSpecial());
 		assertTrue(_init.isSpecial());
 	}
-
-	@Test
-	public void IsCornerTest(){
-		assertTrue(_a.isCornerPoint(new Point(0, 0)));
-		assertTrue(_a.isCornerPoint(new Point(2, 0)));
-		assertTrue(_a.isCornerPoint(new Point(2, -2)));
-		assertTrue(_a.isCornerPoint(new Point(0, -2)));
-		
-		assertFalse(_a.isCornerPoint(new Point(2, 1)));
-		assertFalse(_a.isCornerPoint(new Point(3, 3)));
-		
-	}
-	
-	@Test
-	public void IsCornerTest2()
-	{
-		assertTrue(_c.isCornerPoint(new Point(0, -10)));
-		assertTrue(_c.isCornerPoint(new Point(0, -15)));
-		assertTrue(_c.isCornerPoint(new Point(5, -10)));
-		assertTrue(_c.isCornerPoint(new Point(5, -15)));
-		
-		assertFalse(_c.isCornerPoint(new Point(1, -10)));
-		assertFalse(_c.isCornerPoint(new Point(1, -11)));
-	}
 	
 	@Test
 	public void CenterPointTest1()

@@ -137,9 +137,16 @@ public class ArrangeAssociationTest {
 					assertEquals(Integer.valueOf(2), a.getTurns());
 
 					// link 'a' comes out of _A_mod's eastern side
+					//TODO
+					System.err.println(_A_mod.toString());
+					System.err.println(Point.Substract(_A_mod.getBottomRight(), a.getRoute().get(1)).length());//TODO
+					System.err.println(_A_mod.getBottomRight().toString() + " " + a.getRoute().get(1).toString());
+					System.err.println(0.0 <= 1);
+					
 					assertTrue(_A_mod.getPosition().isInTheDirection(a.getRoute().get(1), Direction.east, false)
 							&& _A_mod.getTopLeft().isInTheDirection(a.getRoute().get(1), Direction.south, false)
 							&& _A_mod.getBottomRight().isInTheDirection(a.getRoute().get(1), Direction.north, false));
+					
 					// link 'a' connects to _B_mod's eastern side
 					assertTrue(_B_mod.getPosition()
 							.isInTheDirection(a.getRoute()

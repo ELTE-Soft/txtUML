@@ -36,8 +36,8 @@ public class LayoutVisualizeTest {
 				return Pair.of(new Width(40), new Height(40));
 			} else // if(box.hasInner())
 			{
-				Integer wpx = box.getInner().getWidth() * box.getInner().getPixelGridHorizontal();
-				Integer hpx = box.getInner().getHeight() * box.getInner().getPixelGridVertical();
+				Integer wpx = (int)(box.getInner().getWidth() * box.getInner().getPixelGridHorizontal());
+				Integer hpx = (int)(box.getInner().getHeight() * box.getInner().getPixelGridVertical());
 
 				return Pair.of(new Width(wpx), new Height(hpx));
 			}

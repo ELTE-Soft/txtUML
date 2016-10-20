@@ -13,6 +13,7 @@ public class PointTest {
 	private Point _b;
 	private Point _c;
 	private Point _d;
+	private Point _e;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -20,6 +21,7 @@ public class PointTest {
 		_b = new Point(1, 0);
 		_c = new Point(-1, 0);
 		_d = new Point(2, 0);
+		_e = new Point(0, -1);
 	}
 	
 	@Test
@@ -76,6 +78,8 @@ public class PointTest {
 		assertTrue(Point.isInTheDirection(_c, _a, Direction.east, false));
 		assertTrue(Point.isInTheDirection(_d, _b, Direction.west, false));
 		assertFalse(Point.isInTheDirection(_a, _b, Direction.north, false));
+		assertTrue(Point.isInTheDirection(_a, _e, Direction.south, false));
+		assertTrue(Point.isInTheDirection(_e, _a, Direction.north, false));
 	}
 	
 	@Test
