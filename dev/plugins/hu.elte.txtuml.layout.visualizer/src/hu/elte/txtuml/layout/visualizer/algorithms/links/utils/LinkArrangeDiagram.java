@@ -104,7 +104,7 @@ public class LinkArrangeDiagram extends Diagram {
 
 	// Privates
 
-	private void expandBoxes(Integer multiplier) throws ConversionException
+	private void expandBoxes(Integer multiplier)
 	{
 		WidthOfCells = WidthOfCells * multiplier;
 		HeightOfCells = HeightOfCells * multiplier;
@@ -199,8 +199,8 @@ public class LinkArrangeDiagram extends Diagram {
 						1 + (int) Math.ceil(box.getPixelHeight() / globalRatio.getSecond()));
 				box.setHeight(height);
 			} else {
-				box.setWidth(box.getInner().getWidth());
-				box.setHeight(box.getInner().getHeight());
+				box.setWidth(box.getInner().getWidth() + 2);
+				box.setHeight(box.getInner().getHeight() + 2);
 			}
 
 			if (WidthOfCells < box.getWidth())

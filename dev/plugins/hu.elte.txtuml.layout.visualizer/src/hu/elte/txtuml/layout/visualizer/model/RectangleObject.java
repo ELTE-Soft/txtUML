@@ -453,24 +453,6 @@ public class RectangleObject {
 	// Methods
 
 	/**
-	 * Returns whether the Point p is the corner point.
-	 * 
-	 * @param p
-	 *            Point to check.
-	 * @return True if p is a corner point.
-	 */
-	public Boolean isCornerPoint(Point p) {
-		if (p.equals(this.getPosition())
-				|| p.equals(Point.Add(this.getPosition(), Point.Multiply(Direction.east, this.getWidth() - 1)))
-				|| p.equals(Point.Add(this.getPosition(), Point.Multiply(Direction.south, this.getHeight() - 1)))
-				|| p.equals(this.getBottomRight())) {
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
 	 * Equality method for comparing a RectangleObject.
 	 * 
 	 * @param obj
@@ -504,6 +486,8 @@ public class RectangleObject {
 		int result = 1;
 		result = prime * result + _name.hashCode();
 		result = prime * result + _position.hashCode();
+		result = prime * result + _phantom.hashCode();
+		result = prime * result + _special.hashCode();
 		return result;
 	}
 

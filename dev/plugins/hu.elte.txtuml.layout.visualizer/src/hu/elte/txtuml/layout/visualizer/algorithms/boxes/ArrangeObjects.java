@@ -20,7 +20,6 @@ import hu.elte.txtuml.layout.visualizer.exceptions.BoxOverlapConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
 import hu.elte.txtuml.layout.visualizer.exceptions.MyException;
-import hu.elte.txtuml.layout.visualizer.model.Diagram;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.Options;
 import hu.elte.txtuml.layout.visualizer.model.Point;
@@ -106,9 +105,10 @@ public class ArrangeObjects {
 
 		// Emit Event
 		ProgressManager.getEmitter().OnBoxArrangeStart();
-
+		
 		// Arrange, arrange overlaps
 		setIndices();
+		
 		arrangeUntilNotConflicted();
 
 		if (OverlapHelper.isThereOverlapping(_objects))
@@ -487,7 +487,7 @@ public class ArrangeObjects {
 			Integer xCoord = moveHorizontal ? (-1 * minLeft) : 0;
 			Integer yCoord = moveVertical ? (-1 * maxTop) : 0;
 			Point toMove = new Point(xCoord, yCoord);
-			
+			//+X, -Y
 			box.setPosition(Point.Add(box.getPosition(), toMove));
 		}
 	}

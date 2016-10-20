@@ -1,7 +1,5 @@
 package hu.elte.txtuml.layout.visualizer.algorithms;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -123,7 +121,7 @@ public class LayoutVisualize {
 	 */
 	@Deprecated()
 	public Integer getPixelGridHorizontal() {
-		return _diagram.getPixelGridHorizontal();
+		return _diagram.getPixelGridHorizontal().intValue();
 	}
 
 	/**
@@ -134,7 +132,7 @@ public class LayoutVisualize {
 	 */
 	@Deprecated
 	public Integer getPixelGridVertical() {
-		return _diagram.getPixelGridVertical();
+		return _diagram.getPixelGridVertical().intValue();
 	}
 	
 	
@@ -268,7 +266,7 @@ public class LayoutVisualize {
 
 		// Set Default Statements
 		maxGroupId = addDefaultStatements(maxGroupId);
-
+		
 		// Box arrange
 		maxGroupId = boxArrange(maxGroupId);
 		
@@ -283,7 +281,11 @@ public class LayoutVisualize {
 		
 		// Eliminate the phantom boxes. Lift up possible inner
 		// diagram.
-		eliminatePhantoms(_diagram);
+		_diagram = eliminatePhantoms(_diagram);
+		
+		//TODO
+		//Temporarily move inner diagram items back to their relative coordinates
+		_diagram = moveInnersBack(null, _diagram);
 
 		if (_options.Logging)
 			Logger.sys.info("End of arrange!");
@@ -296,8 +298,8 @@ public class LayoutVisualize {
 				LocalDateTime.now().getDayOfMonth() + "__" + 
 				LocalDateTime.now().getHour() + "-" + 
 				LocalDateTime.now().getMinute() + "-" +
-				LocalDateTime.now().getSecond();
-		FileVisualize.printOutput(_diagram, "C:/Users/Alez/Documents/asd/" + filename + ".txt");*/
+				LocalDateTime.now().getSecond();*/
+		//FileVisualize.printOutput(_diagram, "C:/Users/Alez/Documents/asd/" + filename + ".txt");
 	}
 
 	private void getOptions() {
@@ -390,6 +392,13 @@ public class LayoutVisualize {
 	
 	private Pair<Integer, Diagram> recursiveBoxArrange(Integer maxGroupId, Diagram diag) throws BoxArrangeConflictException, InternalException, ConversionException, BoxOverlapConflictException
 	{
+		ArrangeObjects ao = new ArrangeObjects(diag.Objects.stream().collect(Collectors.toList()), _statements,
+				maxGroupId, _options);
+		diag.Objects = new HashSet<RectangleObject>(ao.value());
+		
+		_statements = ao.statements();
+		maxGroupId = ao.getGId();
+		
 		for(RectangleObject box : diag.Objects)
 		{
 			if(box.hasInner())
@@ -399,13 +408,7 @@ public class LayoutVisualize {
 				maxGroupId = result.getFirst();
 			}
 		}
-		
-		ArrangeObjects ao = new ArrangeObjects(diag.Objects.stream().collect(Collectors.toList()), _statements,
-				maxGroupId, _options);
-		diag.Objects = new HashSet<RectangleObject>(ao.value());
-		_statements = ao.statements();
-		maxGroupId = ao.getGId();
-		
+
 		return Pair.of(maxGroupId, diag);
 	}
 	
@@ -476,37 +479,24 @@ public class LayoutVisualize {
 	private Pair<Integer, Diagram> recursiveLinkArrange(Integer maxGroupId, Diagram toLayout)
 			throws ConversionException, InternalException, CannotFindAssociationRouteException,
 			UnknownStatementException {
-		
 		// Arrange all siblings' children and get their pixel values
 		for (RectangleObject box : toLayout.Objects) {
-			// Box doesn't have inner diagram or
-			// it has a completed layout (boxes, links)
-			if (!box.hasInner() || box.getInner().hasValidLayout()) {
-				// The box haven't had any pixel values
-				if (!box.isPixelDimensionsPresent()) {
-					Pair<IPixelDimensionProvider.Width, IPixelDimensionProvider.Height> dim = _pixelProvider.getPixelDimensionsFor(box);
-					box.setPixelWidth(dim.getFirst().Value);
-					box.setPixelHeight(dim.getSecond().Value);
-				} else {
-					continue;
-				}
-			} else if(box.hasInner()) {
+			if(box.hasInner()) {
 				if (_options.Logging)
 					Logger.sys.info("> > Starting recursive link arrange!");
 
 				Pair<Integer, Diagram> res = recursiveLinkArrange(maxGroupId, box.getInner());
 				maxGroupId = res.getFirst();
 				box.setInner(res.getSecond());
-				
-				Pair<IPixelDimensionProvider.Width, IPixelDimensionProvider.Height> dim = _pixelProvider.getPixelDimensionsFor(box);
-				box.setPixelWidth(dim.getFirst().Value);
-				box.setPixelHeight(dim.getSecond().Value);
 
 				if (_options.Logging)
 					Logger.sys.info("> > Recursive link arrange DONE!");
 			}
+			
+			Pair<IPixelDimensionProvider.Width, IPixelDimensionProvider.Height> dim = _pixelProvider.getPixelDimensionsFor(box);
+			box.setPixelWidth(dim.getFirst().Value);
+			box.setPixelHeight(dim.getSecond().Value);
 		}
-
 		// Arrange of siblings
 		ArrangeAssociations aa = new ArrangeAssociations(toLayout, _assocStatements,
 				maxGroupId, _options);
@@ -515,26 +505,61 @@ public class LayoutVisualize {
 		return new Pair<Integer, Diagram>(aa.getGId(), toLayout);
 	}
 	
-	private void eliminatePhantoms(Diagram diag) {
+	private Diagram eliminatePhantoms(final Diagram diag) {
+		Diagram result = new Diagram(diag.Type);
 		
 		for(RectangleObject box : diag.Objects)
 		{
-			// If it's a phantom box, it must be removed, but...
+			if(box.hasInner())
+			{
+				box.setInner(eliminatePhantoms(box.getInner()));
+			}
+			
 			if(box.isPhantom())
 			{
-				// First the inner diagram needs to be lifted
 				if(box.hasInner())
 				{
-					eliminatePhantoms(box.getInner());
-					
-					diag.Objects.addAll(box.getInner().Objects);
-					diag.Assocs.addAll(box.getInner().Assocs);
+					result.Objects.addAll(box.getInner().Objects);
+					result.Assocs.addAll(box.getInner().Assocs);
+				}
+			}
+			else
+			{
+				result.Objects.add(box);
+			}
+		}
+		
+		result.Assocs.addAll(diag.Assocs);
+		
+		return result;
+	}
+	
+	private Diagram moveInnersBack(Point parentPos, Diagram diag)
+	{
+		if(parentPos != null)
+		{
+			for(RectangleObject box : diag.Objects)
+			{
+				box.setPosition(Point.Substract(box.getPosition(), parentPos));
+			}
+			
+			for(LineAssociation link : diag.Assocs)
+			{
+				for(Point p : link.getRoute())
+				{
+					p.setX(p.getX() - parentPos.getX());
+					p.setY(p.getY() - parentPos.getY());
 				}
 			}
 		}
 		
-		// Remove phantom boxes
-		diag.Objects.removeIf(box -> box.isPhantom());
+		for(RectangleObject box : diag.Objects)
+		{
+			if(box.hasInner())
+				box.setInner(moveInnersBack(box.getPosition(), box.getInner()));
+		}
+
+		return diag;
 	}
 
 	/** Loads a diagram into the arranger.
