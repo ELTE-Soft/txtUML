@@ -91,7 +91,8 @@ public class FileVisualize {
 
 			writer.close();
 
-		} catch (UnsupportedEncodingException | FileNotFoundException ex) {
+		} catch (/*UnsupportedEncodingException | FileNotFoundException ex |*/
+				Exception ex) {
 			System.err.println(ex.getMessage());
 			return false;
 		}
@@ -133,9 +134,14 @@ public class FileVisualize {
 		Set<Point> stuff = new HashSet<Point>();
 
 		for (RectangleObject o : objects)
-			stuff.addAll(o.getPoints().stream().collect(Collectors.toSet()));
+		{
+			stuff.add(o.getTopLeft());
+			stuff.add(o.getBottomRight());
+		}
 		for (LineAssociation a : links)
+		{
 			stuff.addAll(a.getRoute().stream().collect(Collectors.toSet()));
+		}
 
 		Point topleft = getTopLeftPoint(stuff);
 		Point bottomright = getBottomRightPoint(stuff);
@@ -143,28 +149,26 @@ public class FileVisualize {
 		Integer verticalDimension = Math.abs(topleft.getY() - bottomright.getY()) + 1;
 		Integer horizontalDimension = Math.abs(bottomright.getX() - topleft.getX()) + 1;
 
-		Integer verticalShift = bottomright.getY() < 0 ? Math.abs(bottomright.getY()) : 0;
-		Integer horizontalShift = topleft.getX() < 0 ? Math.abs(topleft.getX()) : 0;
+		Integer verticalShift = Math.abs(bottomright.getY());
+		Integer horizontalShift = -1*Math.abs(topleft.getX());
 		
 		String[][] result = new String[verticalDimension][horizontalDimension];
 		for(int i = 0; i < horizontalDimension; ++i)
 			for(int j = 0; j < verticalDimension; ++j)
 				result[j][i] = "  ";
-
-		int num = 0;
-		int maxNum = links.size() + objects.size();
 		
 		for(LineAssociation link : links)
 		{
 			for(Point linkPoint : link.getRoute())
 			{
-				if(link.getRoute().get(0) == linkPoint)
+				//Skip Start/End Point
+				if(link.getRoute().get(0).equals(linkPoint))
 					continue;
-				if(link.getRoute().get(link.getRoute().size() - 1) == linkPoint)
+				if(link.getRoute().get(link.getRoute().size() - 1).equals(linkPoint))
 					continue;
 				
 				if(link.getRoute().get(1) == linkPoint || 
-						link.getRoute().get(link.getRoute().size() - 2) == linkPoint)
+						link.getRoute().get(link.getRoute().size() - 2).equals(linkPoint))
 				{
 					// Start/End
 					result[verticalShift + linkPoint.getY()][horizontalShift + linkPoint.getX()] = "@ ";
@@ -178,9 +182,6 @@ public class FileVisualize {
 					result[verticalShift + linkPoint.getY()][horizontalShift + linkPoint.getX()] = "- ";
 				}
 			}
-			
-			++num;
-			//System.err.println(num + " / " + maxNum);
 		}
 		
 		for(RectangleObject box : objects)
@@ -209,85 +210,7 @@ public class FileVisualize {
 					}
 				}
 			}
-			
-			++num;
-			//System.err.println(num + " / " + maxNum);
 		}
-		
-		
-		/*for (int i = 0; i < result.length; ++i) {
-			for (int j = 0; j < result[i].length; ++j) {
-				Point diagramPoint = new Point(j + topleft.getX(), i + bottomright.getY());
-				String symbol = "";
-
-				// Print name of the box on it's second line
-				if( objects.stream().anyMatch(o -> 
-						diagramPoint.getY() == Point.Add(o.getPosition(), Direction.south).getY() && 
-						diagramPoint.getX() > o.getPosition().getX() &&
-						diagramPoint.getX() < Point.Add(o.getPosition(), Point.Multiply(Direction.east, o.getWidth() - 1)).getX()))
-				{
-					RectangleObject currentBox = objects.stream().filter(o -> 
-					diagramPoint.getY() == Point.Add(o.getPosition(), Direction.south).getY() && 
-					diagramPoint.getX() > o.getPosition().getX() &&
-					diagramPoint.getX() < Point.Add(o.getPosition(), Point.Multiply(Direction.east, o.getWidth() - 1)).getX()).findFirst().get();
-				
-					if(diagramPoint.equals(Point.Add(Point.Add(currentBox.getPosition(), Direction.east), Direction.south)))
-					{
-						String name = currentBox.getName().split("\\.")[currentBox.getName().split("\\.").length-1];
-						
-						Integer boxCharLength = (currentBox.getWidth()-2)*2;
-						Integer len = Math.min(name.length(), boxCharLength);
-						
-						symbol = name.substring(0, len);
-						if(symbol.length() % 2 == 1)
-						{
-							symbol += " ";
-							++len;
-						}
-						
-						for(int k = len; k < boxCharLength; k = k + 2)
-						{
-							symbol += "# ";
-						}
-					}
-					// Box border points are either link connections or just box part
-				} else if (objects.stream().anyMatch(o -> o.getPerimiterPoints().contains(diagramPoint))) {
-					if (links.stream()
-							.anyMatch(a -> a.getRoute().contains(diagramPoint)
-									&& !(a.getRoute().indexOf(diagramPoint) == 0
-											|| a.getRoute().indexOf(diagramPoint) == a.getRoute().size() - 1))) {
-						symbol = "@ ";
-					} else {
-						symbol = "# ";
-					}
-					// Box's inside
-				} else if (objects.stream().anyMatch(o -> o.getPoints().contains(diagramPoint))) {
-					if(objects.stream().anyMatch(o -> o.getPoints().contains(diagramPoint) && !o.hasInner())) {
-						symbol = "# ";
-					} else {
-						symbol = "  ";
-					}
-					// Link's path
-				} else if (links.stream().anyMatch(a -> a.getRoute().contains(diagramPoint))) {
-					LineAssociation link = links.stream().filter(a -> a.getRoute().contains(diagramPoint)).findFirst()
-							.get();
-					if (isTurningPoint(link, diagramPoint)) {
-						symbol = "* ";
-					} else if (isCrossingPoint(links, diagramPoint)) {
-						symbol = "+ ";
-					} else if (isVerticalPoint(link, diagramPoint)) {
-						symbol = "| ";
-					} else if (isHorizontalPoint(link, diagramPoint)) {
-						symbol = "- ";
-					}
-					// Free space
-				} else {
-					symbol = "  ";
-				}
-
-				result[result.length - i - 1][j] = symbol;
-			}
-		}*/
 		
 		//Flip diagram
 		for(int i = 0; i < (verticalDimension / 2); ++i)
@@ -305,9 +228,11 @@ public class FileVisualize {
 		for (Point p : sp) {
 			if (bottomright == null) {
 				bottomright = new Point(p);
-			} else if (p.getX() > bottomright.getX()) {
+			}
+			if (p.getX() > bottomright.getX()) {
 				bottomright.setX(p.getX());
-			} else if (p.getY() < bottomright.getY()) {
+			}
+			if (p.getY() < bottomright.getY()) {
 				bottomright.setY(p.getY());
 			}
 		}
@@ -320,9 +245,11 @@ public class FileVisualize {
 		for (Point p : sp) {
 			if (topleft == null) {
 				topleft = new Point(p);
-			} else if (p.getX() < topleft.getX()) {
+			}
+			if (p.getX() < topleft.getX()) {
 				topleft.setX(p.getX());
-			} else if (p.getY() > topleft.getY()) {
+			}
+			if (p.getY() > topleft.getY()) {
 				topleft.setY(p.getY());
 			}
 		}
