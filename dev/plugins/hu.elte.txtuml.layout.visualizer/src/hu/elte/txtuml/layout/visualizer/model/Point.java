@@ -390,18 +390,7 @@ public class Point
 	 */
 	public boolean isInTheDirection(Point p, Direction dir)
 	{
-		Point dv = Point.Substract(p, this);
-		
-		if (dv.getX() > 0 && dir.equals(Direction.east))
-			return true;
-		if (dv.getX() < 0 && dir.equals(Direction.west))
-			return true;
-		if (dv.getY() > 0 && dir.equals(Direction.north))
-			return true;
-		if (dv.getY() < 0 && dir.equals(Direction.south))
-			return true;
-		
-		return false;
+		return isInTheDirection(p, dir, false);
 	}
 	
 	/**
