@@ -69,7 +69,6 @@ public class NodeMapImpl extends LinkedHashMap<Class<?>, NodeInfo> implements No
 
 	private RectangleObject convertNode(Class<?> nodeToConvert, DiagramType dType)
 	{
-		//System.err.println(nodeToConvert.toString());
 		RectangleObject convertedNode = this.get(nodeToConvert).convert();
 		if(converted.contains(convertedNode))
 		{
