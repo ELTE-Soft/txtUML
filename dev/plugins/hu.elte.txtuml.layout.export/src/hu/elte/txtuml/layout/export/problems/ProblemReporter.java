@@ -31,30 +31,31 @@ public class ProblemReporter {
 	}
 
 	public void lineStatementExportationFailed(String name, Class<?>[] nodes) {
-		statementExportationFailed(Utils.lineStatementAsString(name, nodes));
+		statementExportationFailed(Utils.lineStatementAsString(name, nodes), 
+				"node");
 	}
 
 	public void diamondStatementExportationFailed(Class<?> top, Class<?> right,
 			Class<?> bottom, Class<?> left) {
 		statementExportationFailed(Utils.diamondStatementAsString(top, right,
-				bottom, left));
+				bottom, left), "node");
 	}
 
 	public void adjacencyStatementExportationFailed(StatementType type,
 			Class<?> val, Class<?> from) {
 		statementExportationFailed(Utils.adjacencyStatementAsString(type, val,
-				from));
+				from), "node");
 	}
 
 	public void cardinalStatementExportationFailed(StatementType type,
 			Class<?>[] val, Class<?>[] from, LinkEnd end) {
 		statementExportationFailed(Utils.cardinalStatementAsString(type, val,
-				from, end));
+				from, end), "(node, node), (link, node)");
 	}
 
 	public void mostStatementExportationFailed(
 			Class<? extends Annotation> type, Class<?>[] val) {
-		statementExportationFailed(Utils.mostStatementAsString(type, val));
+		statementExportationFailed(Utils.mostStatementAsString(type, val), "node");
 	}
 
 	public void multipleMostStatement(Class<? extends Annotation> type,
@@ -160,8 +161,9 @@ public class ProblemReporter {
 				+ ". Acceptable model elements here: " + valid + ".");
 	}
 
-	private void statementExportationFailed(String statement) {
-		report.error("Exportation of statement " + statement + " failed.");
+	private void statementExportationFailed(String statement, String valid) {
+		report.error("Exportation of statement " + statement + " failed." +
+				" Acceptable model elements here: " + valid + ".");
 	}
 
 	private void emptyStatement(String statement) {

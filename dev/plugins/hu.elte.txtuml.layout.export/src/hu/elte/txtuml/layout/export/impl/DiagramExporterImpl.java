@@ -112,7 +112,7 @@ public class DiagramExporterImpl implements DiagramExporter {
 			report.setReferencedElementName(cls.getCanonicalName());
 		}
 		else {
-			report.error("No proper Diagram class found (ClassDiagram or StateMachineDiagram<T>)");
+			report.error("No proper Diagram class found (ClassDiagram, StateMachineDiagram<T> or CompositeStructureDiagram)");
 		}
 	}
 	
