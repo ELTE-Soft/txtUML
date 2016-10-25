@@ -42,7 +42,7 @@ public class HeaderTemplates {
 			String parentClass, String publicPart, String protectedPart, String privatePart, Boolean rt) {
 		return HeaderTemplates.classHeader(PrivateFunctionalTemplates.classHeaderIncludes(rt) + dependency, className,
 				baseClassName, StateMachineTemplates.stateMachineClassFixPublicParts(className, rt) + publicPart,
-				StateMachineTemplates.simpleStateMachineClassFixProtectedParts(className) + protectedPart, StateMachineTemplates.simpleStateMachineClassFixPrivateParts(className) + privatePart,
+				 protectedPart, StateMachineTemplates.simpleStateMachineClassFixPrivateParts(className) + privatePart,
 				true, rt);
 	}
 
@@ -76,8 +76,11 @@ public class HeaderTemplates {
 		if (!publicPart.isEmpty()) {
 			source.append(publicPart);
 		}
-		if (!protectedPart.isEmpty()) {
+		
+		
+		if (!protectedPart.isEmpty() || sm) {
 			source.append("\nprotected:\n" + protectedPart);
+			source.append(StateMachineTemplates.simpleStateMachineClassFixProtectedParts(className));
 		}
 		source.append("\nprivate:\n");
 		if (!privatePart.isEmpty()) {

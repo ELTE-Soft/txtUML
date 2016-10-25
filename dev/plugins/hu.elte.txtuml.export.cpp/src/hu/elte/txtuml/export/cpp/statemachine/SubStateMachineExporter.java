@@ -96,6 +96,7 @@ public class SubStateMachineExporter extends StateMachineExporter {
 
 	private String createSubSmClassCppSource() {
 		StringBuilder source = new StringBuilder("");
+		source.append(createTransitionTableInitRelatedCodes());
 		if (submachineMap.isEmpty()) {
 			source.append(ConstructorTemplates.simpleSubStateMachineClassConstructor(className, parentClassName,
 					stateMachineMap, getInitialStateName()));

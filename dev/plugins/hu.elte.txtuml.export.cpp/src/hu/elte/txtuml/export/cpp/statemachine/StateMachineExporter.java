@@ -19,12 +19,10 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import hu.elte.txtuml.export.cpp.Shared;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
-import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
 import hu.elte.txtuml.utils.Pair;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Event;
@@ -100,9 +98,7 @@ public class StateMachineExporter {
 
 	public String createStateMachineRelatedCppSourceCodes() {
 		StringBuilder source = new StringBuilder("");
-		source.append(PrivateFunctionalTemplates.transitionTableDef(className));
-		source.append(FunctionTemplates.functionDef(className, StateMachineTemplates.InitTransitionTable,
-				StateMachineTemplates.transitionTableInitilizationBody(className, getStateMachine())));
+		source.append(createTransitionTableInitRelatedCodes());
 		if (submachineMap.isEmpty()) {
 			source.append(StateMachineTemplates.simpleStateMachineInitializationDefinition(className, getInitialStateName(), true,
 					poolId));
@@ -116,7 +112,7 @@ public class StateMachineExporter {
 					getInitialStateName(), false));
 
 		}
-
+		//TODO separate
 		source.append(guardExporter.defnieGuardFunctions(className));
 		source.append(entryExitFunctionExporter.createEntryFunctionsDef());
 		source.append(entryExitFunctionExporter.createExitFunctionsDef());
@@ -225,6 +221,15 @@ public class StateMachineExporter {
 				stateMachineMap.put(eventSignalPair, guardTransitionPair);
 			}
 		}
+	}
+	
+	protected String createTransitionTableInitRelatedCodes() {
+		StringBuilder source = new StringBuilder("");
+		source.append(PrivateFunctionalTemplates.transitionTableDef(className));
+		source.append(FunctionTemplates.functionDef(className, StateMachineTemplates.InitTransitionTable,
+				StateMachineTemplates.transitionTableInitilizationBody(className, getStateMachine())));
+		
+		return source.toString();
 	}
 
 	protected Map<String, String> createStateActionMap(Map<String, Pair<String, String>> map) {
