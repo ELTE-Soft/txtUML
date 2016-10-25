@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="hu.elte.txtuml.export.javascript.handlers.TxtUMLVisualizeHandler"
+            id="hu.elte.txtuml.export.javascript.txtUMLVisualize"
+            name="txtUMLVisualize">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:org.eclipse.ui.main.menu">
+         <menu
+               id="hu.elte.txtuml.export.menu"
+               label="txtUML">
+            <command
+                  commandId="hu.elte.txtuml.export.javascript.txtUMLVisualize"
+                  label="Generate javascript diagrams from txtUML"
+                  style="push">
+            </command>
+         </menu>
+      </menuContribution>
+   </extension>
+
+</plugin>

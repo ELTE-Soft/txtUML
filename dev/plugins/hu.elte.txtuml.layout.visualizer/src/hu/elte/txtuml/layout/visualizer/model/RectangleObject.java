@@ -266,6 +266,11 @@ public class RectangleObject
 	// end Getters, setters
 	
 	// Ctors
+	/***
+	 * Empty, no-arg constructor for serialization
+	 */
+	protected RectangleObject(){
+	}
 	
 	/***
 	 * Create a RectanlgeObject with a name.

@@ -303,6 +303,12 @@ public class LineAssociation
 	// Ctors
 	
 	/***
+	 * Empty, no-arg constructor for serialization
+	 */
+	protected LineAssociation(){
+	}
+	
+	/***
 	 * Create a representation of a link.
 	 * 
 	 * @param n
