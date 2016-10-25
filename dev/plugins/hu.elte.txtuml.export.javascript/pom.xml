@@ -11,12 +11,4 @@
                 <version>0.5.1-SNAPSHOT</version>
                 <relativePath>../../releng/hu.elte.txtuml.parent/pom.xml</relativePath>
         </parent>
-        <dependencies>
-        <dependency>
-        	<groupId>org.json</groupId>
-        	<artifactId>json</artifactId>
-        	<version>20160810</version>
-        	<type>bundle</type>
-        </dependency>
-        </dependencies>
 </project>
