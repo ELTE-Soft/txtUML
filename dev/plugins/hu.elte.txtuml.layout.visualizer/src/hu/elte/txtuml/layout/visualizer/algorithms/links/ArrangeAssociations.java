@@ -245,6 +245,7 @@ public class ArrangeAssociations {
 			return convertToInvertedNodes(result, boxAtLinkEnd);
 	}
 	
+	@SuppressWarnings("all")
 	private boolean isCorner(RectangleObject box, Point poi)
 	{
 		return box.getTopLeft().equals(poi) ||
