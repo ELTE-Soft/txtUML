@@ -7,6 +7,7 @@ Export-Package: hu.elte.txtuml.layout.visualizer.algorithms;uses:="hu.elte.txtum
  hu.elte.txtuml.layout.visualizer.exceptions,
  hu.elte.txtuml.layout.visualizer.interfaces,
  hu.elte.txtuml.layout.visualizer.model,
+ hu.elte.txtuml.layout.visualizer.model.utils,
  hu.elte.txtuml.layout.visualizer.statements
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: ELTE
