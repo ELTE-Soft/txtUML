@@ -10,6 +10,7 @@ import hu.elte.txtuml.layout.export.interfaces.NodeMap;
 import hu.elte.txtuml.layout.export.interfaces.ParentMap;
 import hu.elte.txtuml.layout.visualizer.model.Diagram;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.layout.visualizer.model.utils.RectangleObjectTreeEnumerator;
 
 /**
  * Default implementation for {@link NodeMap}.
@@ -70,11 +71,10 @@ public class NodeMapImpl extends LinkedHashMap<Class<?>, NodeInfo> implements No
 	private RectangleObject convertNode(Class<?> nodeToConvert, DiagramType dType)
 	{
 		RectangleObject convertedNode = this.get(nodeToConvert).convert();
-		if(converted.contains(convertedNode))
-		{
-			return converted.stream()
-					.filter(con -> con.equals(convertedNode)).findAny().get();
-		}
+		
+		RectangleObject containedBox = containsRecursively(converted, convertedNode);
+		if(containedBox != null)
+			return containedBox;
 		
 		if(_parentMap.containsKey(nodeToConvert))
 		{
@@ -89,5 +89,15 @@ public class NodeMapImpl extends LinkedHashMap<Class<?>, NodeInfo> implements No
 			converted.add(convertedNode);
 		
 		return convertedNode;
+	}
+	
+	private RectangleObject containsRecursively(Set<RectangleObject> resultSet, 
+			RectangleObject toSearch) {
+		for(RectangleObject box : new RectangleObjectTreeEnumerator(resultSet)) {
+			if(box.equals(toSearch))
+				return box;
+		}
+		
+		return null;
 	}
 }
