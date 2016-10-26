@@ -211,6 +211,7 @@ public class StatementHelper {
 	
 	/**
 	 * Filters the {@link Statement}s that are used on {@link RectangleObject}s.
+	 * Also filters {@link Statement}s to match only boxes mentioned in objs parameter.
 	 * @param stats {@link Statement}s to filter.
 	 * @param objs {@link RectangleObject} to check.
 	 * @return the {@link Statement}s that are used on {@link RectangleObject}s.
@@ -221,7 +222,9 @@ public class StatementHelper {
 		
 		for(Statement statement : stats)
 		{
-			if(objs.stream().anyMatch(box -> box.getName().equals(statement.getParameter(0)) || box.getName().equals(statement.getParameter(1)) ))
+			
+			if(objs.stream().anyMatch(box -> box.getName().equals(statement.getParameter(0))) &&
+					objs.stream().anyMatch(box -> box.getName().equals(statement.getParameter(1)) ))
 			{
 				result.add(statement);
 			}
