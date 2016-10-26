@@ -49,6 +49,16 @@ public class NodeMapImpl extends LinkedHashMap<Class<?>, NodeInfo> implements No
 	}
 	
 	@Override
+	public Class<?> getCurrentParent() {
+		return _parentMap.getLast();
+	}
+	
+	@Override
+	public Class<?> getParent(Class<?> child) {
+		return _parentMap.get(child);
+	}
+	
+	@Override
 	public void endOfParent()
 	{
 		_parentMap.removeLast();
@@ -100,4 +110,5 @@ public class NodeMapImpl extends LinkedHashMap<Class<?>, NodeInfo> implements No
 		
 		return null;
 	}
+
 }

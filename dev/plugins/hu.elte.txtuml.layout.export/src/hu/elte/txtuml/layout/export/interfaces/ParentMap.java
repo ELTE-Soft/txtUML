@@ -17,6 +17,8 @@ public interface ParentMap extends Map<Class<?>, Class<?>> {
 	
 	void addNew(Class<?> parent);
 	
+	Class<?> getLast();
+	
 	Class<?> removeLast();
 	
 }

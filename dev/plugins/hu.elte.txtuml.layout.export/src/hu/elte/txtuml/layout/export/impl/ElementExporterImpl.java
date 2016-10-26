@@ -505,6 +505,16 @@ public class ElementExporterImpl implements ElementExporter {
 	}
 	
 	@Override
+	public Class<?> getCurrentParent() {
+		return nodes.getCurrentParent();
+	}
+	
+	@Override
+	public Class<?> getParent(Class<?> child) {
+		return nodes.getParent(child);
+	}
+	
+	@Override
 	public void endOfParent()
 	{
 		nodes.endOfParent();

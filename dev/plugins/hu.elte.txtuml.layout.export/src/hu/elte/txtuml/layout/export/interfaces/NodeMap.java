@@ -18,6 +18,8 @@ public interface NodeMap extends Map<Class<?>, NodeInfo> {
 	
 	void startOfParent(Class<?> node);
 	void setParent(Class<?> child, Class<?> parent);
+	Class<?> getCurrentParent();
+	Class<?> getParent(Class<?> child);
 	void endOfParent();
 	
 }

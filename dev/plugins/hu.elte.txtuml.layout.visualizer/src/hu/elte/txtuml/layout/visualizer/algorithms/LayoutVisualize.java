@@ -418,6 +418,7 @@ public class LayoutVisualize {
 
 			Point startend = null;
 			Point endend = null;
+			
 			for (RectangleObject o : new RectangleObjectTreeEnumerator(_diagram.Objects)) {
 				if (link.getFrom().equals(o.getName())) {
 					startend = o.getPosition();

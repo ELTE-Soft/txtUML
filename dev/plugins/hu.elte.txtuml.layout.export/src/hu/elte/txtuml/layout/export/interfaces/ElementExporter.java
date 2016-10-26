@@ -91,6 +91,8 @@ public interface ElementExporter {
 	
 	void startOfParent(Class<?> parent);
 	void setParent(Class<?> child, Class<?> parent);
+	Class<?> getCurrentParent();
+	Class<?> getParent(Class<?> child);
 	void endOfParent();
 	
 	/**

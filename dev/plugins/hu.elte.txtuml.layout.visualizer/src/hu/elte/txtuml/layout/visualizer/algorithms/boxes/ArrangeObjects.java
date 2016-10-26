@@ -309,9 +309,9 @@ public class ArrangeObjects {
 	private void arrange() throws InternalException, BoxArrangeConflictException {
 		int n = _objects.size();
 		int startNode = 0;
-		ArrayList<Quadruple<Integer, Integer, Integer, Statement>> l = buildEdges(n, _statements);
+		ArrayList<Quadruple<Integer, Integer, Integer, Statement>> edgeList = buildEdges(n, _statements);
 
-		EdgeWeightedDigraph G = new EdgeWeightedDigraph((2 * n) + 1, l);
+		EdgeWeightedDigraph G = new EdgeWeightedDigraph((2 * n) + 1, edgeList);
 
 		BellmanFordSP sp = new BellmanFordSP(G, startNode);
 

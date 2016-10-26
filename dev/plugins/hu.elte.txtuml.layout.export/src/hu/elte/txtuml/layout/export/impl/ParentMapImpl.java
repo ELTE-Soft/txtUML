@@ -38,6 +38,13 @@ implements ParentMap {
 	}
 	
 	@Override
+	public Class<?> getLast() {
+		if(_parentTrace.isEmpty())
+			return null;
+		return _parentTrace.getLast();
+	}
+	
+	@Override
 	public Class<?> removeLast()
 	{
 		return _parentTrace.removeLast();
