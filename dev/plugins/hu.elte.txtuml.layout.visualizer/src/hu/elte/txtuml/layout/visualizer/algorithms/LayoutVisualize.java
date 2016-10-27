@@ -64,8 +64,8 @@ public class LayoutVisualize {
 	private IPixelDimensionProvider _pixelProvider;
 
 	/***
-	 * Get the current set of {@link RectangleObject}.
-	 * Deprecated: Use ".getDiagram()" instead.
+	 * Get the current set of {@link RectangleObject}. Deprecated: Use
+	 * ".getDiagram()" instead.
 	 * 
 	 * @return Set of Objects. Can be null.
 	 */
@@ -75,8 +75,8 @@ public class LayoutVisualize {
 	}
 
 	/***
-	 * Get the current set of {@link LineAssociation}.
-	 * Deprecated: Use ".getDiagram()" instead.
+	 * Get the current set of {@link LineAssociation}. Deprecated: Use
+	 * ".getDiagram()" instead.
 	 * 
 	 * @return Set of Links. Can be null.
 	 */
@@ -84,14 +84,13 @@ public class LayoutVisualize {
 	public Set<LineAssociation> getAssocs() {
 		return _diagram.Assocs;
 	}
-	
+
 	/**
 	 * Returns the outer most {@link Diagram}.
 	 * 
 	 * @return the outer most {@link Diagram}.
 	 */
-	public Diagram getDiagram()
-	{
+	public Diagram getDiagram() {
 		return _diagram;
 	}
 
@@ -114,8 +113,8 @@ public class LayoutVisualize {
 	}
 
 	/**
-	 *  Returns the Horizontal pixel-grid ratio. 
-	 * Deprecated: Use ".getDiagram().getPixelGridHorizontal()" instead.
+	 * Returns the Horizontal pixel-grid ratio. Deprecated: Use
+	 * ".getDiagram().getPixelGridHorizontal()" instead.
 	 * 
 	 * @return the Horizontal pixel-grid ratio.
 	 */
@@ -125,8 +124,8 @@ public class LayoutVisualize {
 	}
 
 	/**
-	 * Returns the Vertical pixel-grid ratio.
-	 * Deprecated: Use ".getDiagram().getPixelGridHorizontal()" instead.
+	 * Returns the Vertical pixel-grid ratio. Deprecated: Use
+	 * ".getDiagram().getPixelGridHorizontal()" instead.
 	 * 
 	 * @return the Vertical pixel-grid ratio.
 	 */
@@ -134,8 +133,7 @@ public class LayoutVisualize {
 	public Integer getPixelGridVertical() {
 		return _diagram.getPixelGridVertical().intValue();
 	}
-	
-	
+
 	/**
 	 * Returns the ProgressEmitter class.
 	 * 
@@ -170,7 +168,9 @@ public class LayoutVisualize {
 	 * 
 	 * @param type
 	 *            Type of the diagram to arrange.
-	 * @param pPImpl A class that implements {@link IPixelDimensionProvider} interface
+	 * @param pPImpl
+	 *            A class that implements {@link IPixelDimensionProvider}
+	 *            interface
 	 */
 	@Deprecated
 	public LayoutVisualize(DiagramType type, IPixelDimensionProvider pPImpl) {
@@ -178,10 +178,13 @@ public class LayoutVisualize {
 		_options = new Options();
 		setDefaults();
 	}
-	
+
 	/**
 	 * Layout algorithm initialize. Use load(), then arrange().
-	 * @param pPImpl A class that implements {@link IPixelDimensionProvider} interface.
+	 * 
+	 * @param pPImpl
+	 *            A class that implements {@link IPixelDimensionProvider}
+	 *            interface.
 	 * 
 	 * @param type
 	 *            Type of the diagram to arrange.
@@ -198,8 +201,11 @@ public class LayoutVisualize {
 		_diagram = null;
 		_options.ArrangeOverlaps = OverlapArrangeMode.few;
 		_options.Logging = false;
-		_options.CorridorRatio = 1.0;
+		_options.CorridorRatio = new HashMap<String, Double>();
 		_options.CornerPercentage = 0.15;
+		
+		_statements = new ArrayList<Statement>();
+		_statements.add(new Statement(StatementType.corridorsize, "1.0", ""));
 	}
 
 	/**
@@ -236,9 +242,9 @@ public class LayoutVisualize {
 			BoxOverlapConflictException, CannotFindAssociationRouteException, UnknownStatementException {
 		if (_diagram.Objects == null)
 			return;
-		
+
 		// Clone statements into local working copy
-		_statements = Helper.cloneStatementList(par_stats);
+		_statements.addAll(Helper.cloneStatementList(par_stats));
 		_statements.sort((s1, s2) -> {
 			return s1.getType().compareTo(s2.getType());
 		});
@@ -262,54 +268,73 @@ public class LayoutVisualize {
 
 		// Transform Phantom statements into Objects
 		// This is handled in layout.export (?)
-		getPhantoms();	
+		getPhantoms();
 
 		// Set Default Statements
 		maxGroupId = addDefaultStatements(maxGroupId);
-		
+
 		// Box arrange
 		maxGroupId = boxArrange(maxGroupId);
-		
+
 		// Set start-end positions for associations
 		updateAssocsEnd();
-		
+
 		// Sets the number of links connected to each box
 		updateLinkNumber();
 
 		// Arrange associations between objects
 		maxGroupId = linkArrange(maxGroupId);
-		
+
 		// Eliminate the phantom boxes. Lift up possible inner
 		// diagram.
 		_diagram = eliminatePhantoms(_diagram);
-		
-		//TODO
-		//Temporarily move inner diagram items back to their relative coordinates
+
+		// TODO
+		// Temporarily move inner diagram items back to their relative
+		// coordinates
 		_diagram = moveInnersBack(null, _diagram);
 
 		if (_options.Logging)
 			Logger.sys.info("End of arrange!");
 
 		ProgressManager.end();
-		
-		//TODO
-		/*String filename = LocalDateTime.now().getYear() + "-" + 
-				LocalDateTime.now().getMonthValue() + "-" + 
-				LocalDateTime.now().getDayOfMonth() + "__" + 
-				LocalDateTime.now().getHour() + "-" + 
-				LocalDateTime.now().getMinute() + "-" +
-				LocalDateTime.now().getSecond();*/
-		//FileVisualize.printOutput(_diagram, "C:/Users/Alez/Documents/asd/" + filename + ".txt");
+
+		// TODO
+		/*
+		 * String filename = LocalDateTime.now().getYear() + "-" +
+		 * LocalDateTime.now().getMonthValue() + "-" +
+		 * LocalDateTime.now().getDayOfMonth() + "__" +
+		 * LocalDateTime.now().getHour() + "-" + LocalDateTime.now().getMinute()
+		 * + "-" + LocalDateTime.now().getSecond();
+		 */
+		// FileVisualize.printOutput(_diagram, "C:/Users/Alez/Documents/asd/" +
+		// filename + ".txt");
 	}
 
-	private void getOptions() {
+	private void getOptions() throws InternalException {
 		// Remove corridorsize from statements
 
 		List<Statement> optionList = _statements.stream().filter(s -> s.getType().equals(StatementType.corridorsize))
 				.collect(Collectors.toList());
 
 		if (optionList.size() > 0) {
-			_options.CorridorRatio = Double.parseDouble(optionList.get(0).getParameter(0));
+			for (Statement stat : optionList) {
+				Double value = Double.parseDouble(stat.getParameter(0));
+				_options.CorridorRatio.put(stat.getParameter(1), value);
+
+				// Apply this spacing to all lower layers
+				RectangleObject parentBox = findBox(stat.getParameter(1));
+				String parentName = (parentBox == null)? "" : parentBox.getName();
+				if (parentBox != null && !parentBox.hasInner())
+					throw new InternalException("Box should have inner diagram: " + parentName + "!");
+
+				Diagram currDiag = (parentBox == null)? _diagram : parentBox.getInner();
+				for (RectangleObject box : new RectangleObjectTreeEnumerator(currDiag.Objects)) {
+					if (box.hasInner() && !_options.CorridorRatio.containsKey(box.getName())) {
+						_options.CorridorRatio.put(box.getName(), value);
+					}
+				}
+			}
 
 			if (_options.Logging)
 				Logger.sys.info("Found Corridor size option setting (" + _options.CorridorRatio.toString() + ")!");
@@ -329,6 +354,16 @@ public class LayoutVisualize {
 
 		_statements.removeIf(s -> s.getType().equals(StatementType.corridorsize)
 				|| s.getType().equals(StatementType.overlaparrange));
+	}
+
+	private RectangleObject findBox(String name) {
+		for (RectangleObject box : new RectangleObjectTreeEnumerator(_diagram.Objects)) {
+			if (box.getName().equals(name)) {
+				return box;
+			}
+		}
+
+		return null;
 	}
 
 	private Integer getGroupId() {
@@ -389,20 +424,18 @@ public class LayoutVisualize {
 
 		return maxGroupId;
 	}
-	
-	private Pair<Integer, Diagram> recursiveBoxArrange(Integer maxGroupId, Diagram diag) throws BoxArrangeConflictException, InternalException, ConversionException, BoxOverlapConflictException
-	{
+
+	private Pair<Integer, Diagram> recursiveBoxArrange(Integer maxGroupId, Diagram diag)
+			throws BoxArrangeConflictException, InternalException, ConversionException, BoxOverlapConflictException {
 		ArrangeObjects ao = new ArrangeObjects(diag.Objects.stream().collect(Collectors.toList()), _statements,
 				maxGroupId, _options);
 		diag.Objects = new HashSet<RectangleObject>(ao.value());
-		
+
 		_statements = ao.statements();
 		maxGroupId = ao.getGId();
-		
-		for(RectangleObject box : diag.Objects)
-		{
-			if(box.hasInner())
-			{
+
+		for (RectangleObject box : diag.Objects) {
+			if (box.hasInner()) {
 				Pair<Integer, Diagram> result = recursiveBoxArrange(maxGroupId, box.getInner());
 				box.setInner(result.getSecond());
 				maxGroupId = result.getFirst();
@@ -411,14 +444,14 @@ public class LayoutVisualize {
 
 		return Pair.of(maxGroupId, diag);
 	}
-	
+
 	private void updateAssocsEnd() throws InternalException {
 		for (LineAssociation link : _diagram.Assocs) {
 			ArrayList<Point> linkRoute = new ArrayList<Point>();
 
 			Point startend = null;
 			Point endend = null;
-			
+
 			for (RectangleObject o : new RectangleObjectTreeEnumerator(_diagram.Objects)) {
 				if (link.getFrom().equals(o.getName())) {
 					startend = o.getPosition();
@@ -439,22 +472,18 @@ public class LayoutVisualize {
 			link.setRoute(linkRoute);
 		}
 	}
-	
-	private void updateLinkNumber()
-	{
+
+	private void updateLinkNumber() {
 		Map<String, RectangleObject> nameMapper = new HashMap<String, RectangleObject>();
-		
-		//Setup mapper
-		for(RectangleObject box : new RectangleObjectTreeEnumerator(_diagram.Objects))
-		{
+
+		// Setup mapper
+		for (RectangleObject box : new RectangleObjectTreeEnumerator(_diagram.Objects)) {
 			nameMapper.put(box.getName(), box);
 		}
-		
-		//Update linknumbers based on mapper
-		for(Diagram diag : new DiagramTreeEnumerator(_diagram))
-		{
-			for(LineAssociation link : diag.Assocs)
-			{
+
+		// Update linknumbers based on mapper
+		for (Diagram diag : new DiagramTreeEnumerator(_diagram)) {
+			for (LineAssociation link : diag.Assocs) {
 				nameMapper.get(link.getFrom()).addLinkNumber(1);
 				nameMapper.get(link.getTo()).addLinkNumber(1);
 			}
@@ -465,9 +494,9 @@ public class LayoutVisualize {
 			CannotFindAssociationRouteException, UnknownStatementException {
 		if (_options.Logging)
 			Logger.sys.info("> Starting link arrange...");
-		
+
 		// Start arrange the links of this diagram inside out.
-		Pair<Integer, Diagram> result = recursiveLinkArrange(maxGroupId, _diagram);
+		Pair<Integer, Diagram> result = recursiveLinkArrange(maxGroupId, _diagram, "");
 		_diagram = result.getSecond();
 
 		if (_options.Logging)
@@ -477,94 +506,85 @@ public class LayoutVisualize {
 		return result.getFirst();
 	}
 
-	private Pair<Integer, Diagram> recursiveLinkArrange(Integer maxGroupId, Diagram toLayout)
+	private Pair<Integer, Diagram> recursiveLinkArrange(Integer maxGroupId, Diagram toLayout, String parentName)
 			throws ConversionException, InternalException, CannotFindAssociationRouteException,
 			UnknownStatementException {
 		// Arrange all siblings' children and get their pixel values
 		for (RectangleObject box : toLayout.Objects) {
-			if(box.hasInner()) {
+			if (box.hasInner()) {
 				if (_options.Logging)
 					Logger.sys.info("> > Starting recursive link arrange!");
 
-				Pair<Integer, Diagram> res = recursiveLinkArrange(maxGroupId, box.getInner());
+				Pair<Integer, Diagram> res = recursiveLinkArrange(maxGroupId, box.getInner(), box.getName());
 				maxGroupId = res.getFirst();
 				box.setInner(res.getSecond());
 
 				if (_options.Logging)
 					Logger.sys.info("> > Recursive link arrange DONE!");
 			}
-			
-			Pair<IPixelDimensionProvider.Width, IPixelDimensionProvider.Height> dim = _pixelProvider.getPixelDimensionsFor(box);
+
+			Pair<IPixelDimensionProvider.Width, IPixelDimensionProvider.Height> dim = _pixelProvider
+					.getPixelDimensionsFor(box);
 			box.setPixelWidth(dim.getFirst().Value);
 			box.setPixelHeight(dim.getSecond().Value);
 		}
 		// Arrange of siblings
-		ArrangeAssociations aa = new ArrangeAssociations(toLayout, _assocStatements,
-				maxGroupId, _options);
+		ArrangeAssociations aa = new ArrangeAssociations(toLayout, _assocStatements, parentName, maxGroupId, _options);
 		toLayout = aa.getDiagram();
 
 		return new Pair<Integer, Diagram>(aa.getGId(), toLayout);
 	}
-	
+
 	private Diagram eliminatePhantoms(final Diagram diag) {
 		Diagram result = new Diagram(diag.Type);
-		
-		for(RectangleObject box : diag.Objects)
-		{
-			if(box.hasInner())
-			{
+
+		for (RectangleObject box : diag.Objects) {
+			if (box.hasInner()) {
 				box.setInner(eliminatePhantoms(box.getInner()));
 			}
-			
-			if(box.isPhantom())
-			{
-				if(box.hasInner())
-				{
+
+			if (box.isPhantom()) {
+				if (box.hasInner()) {
 					result.Objects.addAll(box.getInner().Objects);
 					result.Assocs.addAll(box.getInner().Assocs);
 				}
-			}
-			else
-			{
+			} else {
 				result.Objects.add(box);
 			}
 		}
-		
+
 		result.Assocs.addAll(diag.Assocs);
-		
+
 		return result;
 	}
-	
-	private Diagram moveInnersBack(Point parentPos, Diagram diag)
-	{
-		if(parentPos != null)
-		{
-			for(RectangleObject box : diag.Objects)
-			{
+
+	private Diagram moveInnersBack(Point parentPos, Diagram diag) {
+		if (parentPos != null) {
+			for (RectangleObject box : diag.Objects) {
 				box.setPosition(Point.Substract(box.getPosition(), parentPos));
 			}
-			
-			for(LineAssociation link : diag.Assocs)
-			{
-				for(Point p : link.getRoute())
-				{
+
+			for (LineAssociation link : diag.Assocs) {
+				for (Point p : link.getRoute()) {
 					p.setX(p.getX() - parentPos.getX());
 					p.setY(p.getY() - parentPos.getY());
 				}
 			}
 		}
-		
-		for(RectangleObject box : diag.Objects)
-		{
-			if(box.hasInner())
+
+		for (RectangleObject box : diag.Objects) {
+			if (box.hasInner())
 				box.setInner(moveInnersBack(box.getPosition(), box.getInner()));
 		}
 
 		return diag;
 	}
 
-	/** Loads a diagram into the arranger.
-	 * @param diag Diagram to load.
+	/**
+	 * Loads a diagram into the arranger.
+	 * 
+	 * @param diag
+	 *            Diagram to load.
 	 */
 	public void load(Diagram diag) {
 		_diagram = new Diagram(diag);

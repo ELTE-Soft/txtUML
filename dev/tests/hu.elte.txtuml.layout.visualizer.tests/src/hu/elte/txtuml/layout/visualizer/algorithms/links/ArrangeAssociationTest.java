@@ -3,6 +3,7 @@ package hu.elte.txtuml.layout.visualizer.algorithms.links;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.junit.Before;
@@ -50,7 +51,8 @@ public class ArrangeAssociationTest {
 
 		_option = new Options();
 		_option.ArrangeOverlaps = OverlapArrangeMode.few;
-		_option.CorridorRatio = 1.0;
+		_option.CorridorRatio = new HashMap<String, Double>();
+		_option.CorridorRatio.put("", 1.0);
 		_option.Logging = false;
 		_option.CornerPercentage = 0.05;
 	}
@@ -70,7 +72,7 @@ public class ArrangeAssociationTest {
 
 		try {
 			Diagram diagram = new Diagram(DiagramType.Class, os, as);
-			ArrangeAssociations aa = new ArrangeAssociations(diagram, ss, gid, _option);
+			ArrangeAssociations aa = new ArrangeAssociations(diagram, ss, "", gid, _option);
 
 			RectangleObject _A_mod = aa.getDiagram().Objects.stream().filter(box -> box.getName().equals(_A.getName()))
 					.findFirst().get();
@@ -124,7 +126,7 @@ public class ArrangeAssociationTest {
 
 		try {
 			Diagram diagram = new Diagram(DiagramType.Class, os, as);
-			ArrangeAssociations aa = new ArrangeAssociations(diagram, ss, gid, _option);
+			ArrangeAssociations aa = new ArrangeAssociations(diagram, ss, "", gid, _option);
 
 			RectangleObject _A_mod = aa.getDiagram().Objects.stream().filter(box -> box.getName().equals(_A.getName()))
 					.findFirst().get();
@@ -137,12 +139,6 @@ public class ArrangeAssociationTest {
 					assertEquals(Integer.valueOf(2), a.getTurns());
 
 					// link 'a' comes out of _A_mod's eastern side
-					//TODO
-					System.err.println(_A_mod.toString());
-					System.err.println(Point.Substract(_A_mod.getBottomRight(), a.getRoute().get(1)).length());//TODO
-					System.err.println(_A_mod.getBottomRight().toString() + " " + a.getRoute().get(1).toString());
-					System.err.println(0.0 <= 1);
-					
 					assertTrue(_A_mod.getPosition().isInTheDirection(a.getRoute().get(1), Direction.east, false)
 							&& _A_mod.getTopLeft().isInTheDirection(a.getRoute().get(1), Direction.south, false)
 							&& _A_mod.getBottomRight().isInTheDirection(a.getRoute().get(1), Direction.north, false));
@@ -184,7 +180,7 @@ public class ArrangeAssociationTest {
 
 		try {
 			Diagram diagram = new Diagram(DiagramType.Class, os, as);
-			ArrangeAssociations aa = new ArrangeAssociations(diagram, ss, gid, _option);
+			ArrangeAssociations aa = new ArrangeAssociations(diagram, ss, "", gid, _option);
 
 			RectangleObject _A_mod = aa.getDiagram().Objects.stream().filter(box -> box.getName().equals(_A.getName()))
 					.findFirst().get();

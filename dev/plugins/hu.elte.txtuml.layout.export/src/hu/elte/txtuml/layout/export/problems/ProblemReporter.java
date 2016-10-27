@@ -61,7 +61,12 @@ public class ProblemReporter {
 	public void multipleMostStatement(Class<? extends Annotation> type,
 			Class<?>[] val) {
 		report.error("Statement " + Utils.mostStatementAsString(type, val)
-				+ " is illegal. Only one *most statement is allowed per type.");
+				+ " is illegal. Only one *most statement is allowed per hierarchy layer.");
+	}
+	
+	public void multipleSpacingStatement(Double val) {
+		report.error("Statement " + Utils.spacingStatementAsString(val)
+			+ " is illegal. Only one spacing statement is allowed per hierarchy layer.");
 	}
 
 	public void invalidGroup(Class<?> groupClass, Class<?> elementClass) {

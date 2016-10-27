@@ -324,6 +324,7 @@ public class Statement {
 		case horizontal:
 		case vertical:
 		case priority:
+		case corridorsize:
 			if (p.length == 2)
 				return true;
 			break;
@@ -331,7 +332,6 @@ public class Statement {
 			if (p.length == 1)
 				return true;
 			break;
-		case corridorsize:
 		case overlaparrange:
 			if (p.length == 1)
 				return true;

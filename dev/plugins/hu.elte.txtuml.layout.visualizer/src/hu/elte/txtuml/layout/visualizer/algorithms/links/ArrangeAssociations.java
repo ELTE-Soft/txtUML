@@ -67,6 +67,9 @@ public class ArrangeAssociations {
 	 * 
 	 * @param stats
 	 *            Statements on associations.
+	 * @param parentName
+	 *            Name of the box that is the parent to the currently arranged
+	 *            {@link Diagram}.
 	 * @param gid
 	 *            The max group id yet existing.
 	 * @param opt
@@ -83,7 +86,7 @@ public class ArrangeAssociations {
 	 *             Throws if some unknown statements are found during
 	 *             processing.
 	 */
-	public ArrangeAssociations(Diagram diag, List<Statement> stats, Integer gid, Options opt)
+	public ArrangeAssociations(Diagram diag, List<Statement> stats, String parentName, Integer gid, Options opt)
 			throws ConversionException, InternalException, CannotFindAssociationRouteException,
 			UnknownStatementException {
 		// Setup variables and default values
@@ -97,21 +100,25 @@ public class ArrangeAssociations {
 		ProgressManager.getEmitter().OnLinkArrangeStart();
 
 		// Arrange the links
-		arrange();
-		
+		arrange(parentName);
+
 		snapToBoundaries();
 
 		// Emit Event
 		ProgressManager.getEmitter().OnLinkArrangeEnd();
 	}
 
-	private void arrange() throws ConversionException, InternalException {
+	private void arrange(String parentName) throws ConversionException, InternalException {
 		_possibleStarts = new HashMap<Pair<String, RouteConfig>, HashSet<Point>>();
 
 		// Inflate diagram to start with a object width enough for the
 		// maximum number of links
-		_diagram.initialExpand(_options.CorridorRatio);
-		
+		Double corridorRatio = _options.CorridorRatio.get(parentName);
+		if (corridorRatio == null)
+			throw new InternalException("This layer (" + parentName + ") should have a spacing associated with!");
+
+		_diagram.initialExpand(corridorRatio);
+
 		// Get default statements on links
 		DefaultAssocStatements das = new DefaultAssocStatements(_gId, _statements, _diagram.Assocs);
 		_statements = das.value();
@@ -185,14 +192,12 @@ public class ArrangeAssociations {
 				}
 				// TODO: other specials
 			} else {
-				for(Point p : boxAtLinkEnd.getPerimiterPoints())
-				{
+				for (Point p : boxAtLinkEnd.getPerimiterPoints()) {
 					// If corner, or around corner, don't add it
-					if(isAroundCorner(boxAtLinkEnd, p))
-					{
+					if (isAroundCorner(boxAtLinkEnd, p)) {
 						continue;
 					}
-					
+
 					result.add(new Pair<Point, Double>(p, defaultWeight));
 				}
 			}
@@ -207,10 +212,10 @@ public class ArrangeAssociations {
 		// Remove occupied points
 		result.removeIf(p -> occupiedLinks.contains(p.getFirst()));
 		// Remove corner points
-		//result.removeIf(p -> boxAtLinkEnd.isCornerPoint(p.getFirst()));
+		// result.removeIf(p -> boxAtLinkEnd.isCornerPoint(p.getFirst()));
 		// Remove points around corner
-		//result.removeIf(p -> isAroundCorner(boxAtLinkEnd, p.getFirst()));
-		
+		// result.removeIf(p -> isAroundCorner(boxAtLinkEnd, p.getFirst()));
+
 		Set<Pair<Point, Double>> oldResult = new HashSet<Pair<Point, Double>>(result);
 		result.clear();
 
@@ -244,37 +249,33 @@ public class ArrangeAssociations {
 		else
 			return convertToInvertedNodes(result, boxAtLinkEnd);
 	}
-	
+
 	@SuppressWarnings("all")
-	private boolean isCorner(RectangleObject box, Point poi)
-	{
-		return box.getTopLeft().equals(poi) ||
-				box.getBottomRight().equals(poi) ||
-				Point.Add(box.getTopLeft(), Point.Multiply(Direction.east, box.getWidth() - 1)).equals(poi) ||
-				Point.Add(box.getTopLeft(), Point.Multiply(Direction.south, box.getHeight() - 1)).equals(poi);
+	private boolean isCorner(RectangleObject box, Point poi) {
+		return box.getTopLeft().equals(poi) || box.getBottomRight().equals(poi)
+				|| Point.Add(box.getTopLeft(), Point.Multiply(Direction.east, box.getWidth() - 1)).equals(poi)
+				|| Point.Add(box.getTopLeft(), Point.Multiply(Direction.south, box.getHeight() - 1)).equals(poi);
 	}
-	
+
 	private boolean isAroundCorner(RectangleObject box, Point poi) throws InternalException {
 
 		int horizontalGridToDelete = (int) Math.floor(box.getWidth() * _options.CornerPercentage);
 		int verticalGridToDelete = (int) Math.floor(box.getHeight() * _options.CornerPercentage);
-		
+
 		Set<Point> corners = new HashSet<Point>();
 		corners.add(box.getTopLeft());
 		corners.add(box.getBottomRight());
 		corners.add(Point.Add(box.getTopLeft(), Point.Multiply(Direction.south, box.getHeight() - 1)));
 		corners.add(Point.Add(box.getTopLeft(), Point.Multiply(Direction.east, box.getWidth() - 1)));
-		
-		if(box.getTopLeft().getX().equals(poi.getX()) || box.getBottomRight().getX().equals(poi.getX()))
-		{
+
+		if (box.getTopLeft().getX().equals(poi.getX()) || box.getBottomRight().getX().equals(poi.getX())) {
 			return corners.stream().anyMatch(p -> Point.Substract(p, poi).length() <= verticalGridToDelete);
 		}
-		
-		if(box.getTopLeft().getY().equals(poi.getY()) || box.getBottomRight().getY().equals(poi.getY()))
-		{
+
+		if (box.getTopLeft().getY().equals(poi.getY()) || box.getBottomRight().getY().equals(poi.getY())) {
 			return corners.stream().anyMatch(p -> Point.Substract(p, poi).length() <= horizontalGridToDelete);
 		}
-		
+
 		throw new InternalException("Only perimeter points should be here!");
 	}
 
@@ -287,9 +288,13 @@ public class ArrangeAssociations {
 
 		Function<Point, Integer> selX = p -> p.getX();
 		Function<Point, Integer> selY = p -> p.getY();
-		BiFunction<Integer, Integer, Boolean> ge = (x, y) -> { return x >= y; };
-		BiFunction<Integer, Integer, Boolean> le = (x, y) -> { return x <= y; };
-		
+		BiFunction<Integer, Integer, Boolean> ge = (x, y) -> {
+			return x >= y;
+		};
+		BiFunction<Integer, Integer, Boolean> le = (x, y) -> {
+			return x <= y;
+		};
+
 		Point northern = Point.Add(obj.getPosition(), new Point(halfwayH, 0));
 		result.removeIf(p -> isOnHalfSide(p, northern, selY, selX, isStart ? ge : le));
 
@@ -309,15 +314,12 @@ public class ArrangeAssociations {
 
 		return result;
 	}
-	
-	private boolean isOnHalfSide(Pair<Point, Double> toTest, Point halfPoint, 
-			Function<Point, Integer> firstSelector,
-			Function<Point, Integer> secondSelector,
-			BiFunction<Integer, Integer, Boolean> compare)
-	{
+
+	private boolean isOnHalfSide(Pair<Point, Double> toTest, Point halfPoint, Function<Point, Integer> firstSelector,
+			Function<Point, Integer> secondSelector, BiFunction<Integer, Integer, Boolean> compare) {
 		Boolean result1 = firstSelector.apply(toTest.getFirst()).equals(firstSelector.apply(halfPoint));
 		Boolean result2 = compare.apply(secondSelector.apply(toTest.getFirst()), secondSelector.apply(halfPoint));
-	
+
 		return result1 && result2;
 	}
 
@@ -449,10 +451,10 @@ public class ArrangeAssociations {
 
 		for (int i = 0; i < endOfSide; ++i) {
 			Point temp = Point.Add(first, Point.Multiply(toMove, i));
-			
-			if(isAroundCorner(connectsTo, temp))
+
+			if (isAroundCorner(connectsTo, temp))
 				continue;
-			
+
 			points.add(temp);
 		}
 		Pair<String, RouteConfig> key = new Pair<String, LineAssociation.RouteConfig>(toModify.getId(), r);
@@ -550,7 +552,7 @@ public class ArrangeAssociations {
 		Map<Point, Color> result = new HashMap<Point, Color>();
 
 		if (box.hasInner()) {
-			if(!box.isPhantom()) {
+			if (!box.isPhantom()) {
 				// Add compositeBox's outer rim as a warning line
 				for (Point p : box.getPerimiterPoints()) {
 					result.put(p, Color.Yellow);
@@ -605,45 +607,37 @@ public class ArrangeAssociations {
 
 		return result;
 	}
-	
-	private void snapToBoundaries()
-	{
-		//Search for the topleft point
+
+	private void snapToBoundaries() {
+		// Search for the topleft point
 		Point topleft = null;
-		for(RectangleObject box : _diagram.Objects)
-		{
-			if(topleft == null)
+		for (RectangleObject box : _diagram.Objects) {
+			if (topleft == null)
 				topleft = new Point(box.getTopLeft());
-			else
-			{
-				if(box.getTopLeft().getX() < topleft.getX())
+			else {
+				if (box.getTopLeft().getX() < topleft.getX())
 					topleft.setX(box.getTopLeft().getX());
-				if(box.getTopLeft().getY() > topleft.getY())
+				if (box.getTopLeft().getY() > topleft.getY())
 					topleft.setY(box.getTopLeft().getY());
 			}
 		}
-		
-		for(LineAssociation link : _diagram.Assocs)
-		{
-			for(Point p : link.getRoute())
-			{
-				if(p.getX() < topleft.getX())
+
+		for (LineAssociation link : _diagram.Assocs) {
+			for (Point p : link.getRoute()) {
+				if (p.getX() < topleft.getX())
 					topleft.setX(p.getX());
-				if(p.getY() > topleft.getY())
+				if (p.getY() > topleft.getY())
 					topleft.setY(p.getY());
 			}
 		}
-		
-		//Modify positions to snap to topleft corner
-		for(RectangleObject box : _diagram.Objects)
-		{
+
+		// Modify positions to snap to topleft corner
+		for (RectangleObject box : _diagram.Objects) {
 			box.setPosition(Point.Substract(box.getPosition(), topleft));
 		}
-		
-		for(LineAssociation link : _diagram.Assocs)
-		{
-			for(Point p : link.getRoute())
-			{
+
+		for (LineAssociation link : _diagram.Assocs) {
+			for (Point p : link.getRoute()) {
 				p.setX(p.getX().intValue() - topleft.getX().intValue());
 				p.setY(p.getY().intValue() - topleft.getY().intValue());
 			}

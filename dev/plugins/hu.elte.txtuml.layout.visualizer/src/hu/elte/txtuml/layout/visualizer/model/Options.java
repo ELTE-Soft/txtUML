@@ -1,5 +1,7 @@
 package hu.elte.txtuml.layout.visualizer.model;
 
+import java.util.Map;
+
 /**
  * Class that encapsulates the multiple options of the algorithm.
  */
@@ -15,7 +17,7 @@ public class Options {
 	/**
 	 * The width of the corridors between boxes relative to the boxes' side.
 	 */
-	public Double CorridorRatio;
+	public Map<String, Double> CorridorRatio;
 	/**
 	 * The percentage of grid points around the corner that are considered
 	 * corner points.

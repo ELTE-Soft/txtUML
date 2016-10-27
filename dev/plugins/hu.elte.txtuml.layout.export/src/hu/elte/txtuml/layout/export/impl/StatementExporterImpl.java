@@ -49,6 +49,7 @@ import hu.elte.txtuml.layout.export.interfaces.StatementExporter;
 import hu.elte.txtuml.layout.export.interfaces.StatementList;
 import hu.elte.txtuml.layout.export.problems.ElementExportationException;
 import hu.elte.txtuml.layout.export.problems.ProblemReporter;
+import hu.elte.txtuml.layout.export.problems.Utils;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 import hu.elte.txtuml.utils.Pair;
 
@@ -250,9 +251,16 @@ public class StatementExporterImpl implements StatementExporter {
 	}
 
 	@Override
-	public void exportCorridorRatio(hu.elte.txtuml.api.layout.Spacing annot) {
-		if (!statements.stream().anyMatch(st -> st.getType().equals(StatementType.corridorsize))) {
-			statements.addNew(StatementType.corridorsize, Double.toString(annot.value()));
+	public void exportSpacing(hu.elte.txtuml.api.layout.Spacing annot) {
+		String currentParent = (elementExporter.getCurrentParent() == null) ? ""
+				: Utils.classAsString(elementExporter.getCurrentParent());
+		
+		if (!statements.stream().anyMatch(st -> st.getType().equals(StatementType.corridorsize) &&
+				st.getParameter(1).equals(currentParent))) {
+			statements.addNew(StatementType.corridorsize, 
+					Double.toString(annot.value()), currentParent);
+		} else {
+			problemReporter.multipleSpacingStatement(annot.value());
 		}
 	}
 
@@ -514,10 +522,16 @@ public class StatementExporterImpl implements StatementExporter {
 		for (Class<?> nodeClass : allNodes.keySet()) {
 			if (!mostedNodes.containsKey(nodeClass)) {
 				for (NodeInfo valNodeInfo : mostedNodes.values()) {
-					if ((elementExporter.getParent(nodeClass) == null &&
-							elementExporter.getParent(valNodeInfo.getElementClass()) == null) ||
-						(elementExporter.getParent(nodeClass)
-							.equals(elementExporter.getParent(valNodeInfo.getElementClass())))) {
+					// Both node's parent is null
+					// OR
+					// nodeClass's parent is NOT null 
+					//   AND 
+					//   both node's parent is the same
+					if ((elementExporter.getParent(nodeClass) == 
+							elementExporter.getParent(valNodeInfo.getElementClass())) 
+							|| (elementExporter.getParent(nodeClass) != null &&
+									elementExporter.getParent(nodeClass)
+									.equals(elementExporter.getParent(valNodeInfo.getElementClass())))) {
 						statements.addNew(type, valNodeInfo.toString(), allNodes.get(nodeClass).toString());
 					}
 				}

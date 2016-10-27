@@ -249,7 +249,7 @@ public class DiagramExporterImpl implements DiagramExporter {
 				statementExporter.exportDiamond((Diamond) annot);
 
 			} else if (isOfType(Spacing.class, annot)) {
-				statementExporter.exportCorridorRatio((Spacing) annot);
+				statementExporter.exportSpacing((Spacing) annot);
 				
 			} else if (isOfType(AboveContainer.class, annot)) {
 				statementExporter.exportAboveContainer((AboveContainer) annot);

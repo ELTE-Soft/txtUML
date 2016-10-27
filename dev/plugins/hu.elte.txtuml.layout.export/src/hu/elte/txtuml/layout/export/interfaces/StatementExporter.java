@@ -83,7 +83,7 @@ public interface StatementExporter {
 	
 	void exportDiamond(Diamond annot);
 	
-	void exportCorridorRatio(Spacing annot);
+	void exportSpacing(Spacing annot);
 	
 	// statement container exporters
 	

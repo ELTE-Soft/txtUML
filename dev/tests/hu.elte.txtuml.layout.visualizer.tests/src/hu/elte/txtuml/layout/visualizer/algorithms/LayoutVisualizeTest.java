@@ -71,7 +71,7 @@ public class LayoutVisualizeTest {
 		_diagramA.Assocs.add(new LineAssociation("A_R_C", "A_C", "A_C"));
 		
 		_statementsA = new ArrayList<Statement>();
-		_statementsA.add(new Statement(StatementType.corridorsize, "0.5"));
+		_statementsA.add(new Statement(StatementType.corridorsize, "0.5", ""));
 		_statementsA.add(new Statement(StatementType.above, "A_A", "A_B"));
 		_statementsA.add(new Statement(StatementType.above, "A_B", "A_C"));
 		_statementsA.add(new Statement(StatementType.north, "A_R_A", "A_A", "Start"));
