@@ -8,14 +8,6 @@
  StateMachineI::StateMachineI(std::shared_ptr<MessageQueueType> messageQueue_)
          :_messageQueue(messageQueue_), _pool(nullptr), _inPool(false), _started(false), _initialized(false){}
 
- 
-void StateMachineI::runSM()
-{
-    for(;;)
-    {
-      processEventVirtual();
-    }
-}
 
 void StateMachineI::init()
 {
@@ -27,13 +19,16 @@ void StateMachineI::send(EventPtr e_)
 {
   (*message_counter)++;
   _messageQueue->push_back(e_);
-  if(_pool != nullptr)
+  if (_started)
   {
-    handlePool();
-  }
-  else
-  {
-      RuntimeI<SingleThreadRT>::createRuntime()->enqueObject(this);
+	if(_pool != nullptr)
+  	{
+    		handlePool();
+  	}
+	else
+	{
+	    	RuntimeI<SingleThreadRT>::createRuntime()->enqueObject(this);
+	}
   }
   
 

@@ -17,7 +17,7 @@ public:
   virtual void processEventVirtual()=0;
   virtual void processInitTranstion() = 0;
 
-  void startSM() {_started = true;}
+  void startSM() {_started = true;handlePool();}
   void runSM();
   void send(EventPtr e_);
   void init();

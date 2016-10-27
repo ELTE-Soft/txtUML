@@ -68,18 +68,12 @@ void StateMachineThreadPool::task()
 		if(sm)
 		{
 			
-			if(sm->isStarted() && sm->isInitialized())
+			if (!sm->isInitialized()) sm->init();
+			for(int i = 0; i < 5 && !sm->emptyMessageQueue(); ++i)
 			{
-				for(int i = 0; i < 5 && !sm->emptyMessageQueue(); ++i)
-				{
-					sm->processEventVirtual();
-				}
+				sm->processEventVirtual();
+			}
 					
-			}
-			else if(sm->isStarted() && !sm->isInitialized())
-			{
-				sm->init();
-			}
 			
 			if(!sm->emptyMessageQueue())
 			{
