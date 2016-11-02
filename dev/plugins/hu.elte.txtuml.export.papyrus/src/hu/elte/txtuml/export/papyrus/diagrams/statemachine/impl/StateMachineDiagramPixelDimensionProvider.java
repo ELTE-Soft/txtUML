@@ -17,9 +17,9 @@ public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensio
 	private static final int STATE_HEADER_HEIGHT = 20;
 
 	private static final int MIN_STATE_WIDTH = 40;
-	private static final int MAX_STATE_WIDTH = 200;
+	private static final int MAX_STATE_WIDTH = 800;
 	private static final int MIN_STATE_HEIGHT = 40;
-	private static final int MAX_STATE_HEIGHT = 200;
+	private static final int MAX_STATE_HEIGHT = 800;
 
 	private static final int PSEUDOSTATE_WIDTH = 20;
 	private static final int PSEUDOSTATE_HEIGHT = 20;
