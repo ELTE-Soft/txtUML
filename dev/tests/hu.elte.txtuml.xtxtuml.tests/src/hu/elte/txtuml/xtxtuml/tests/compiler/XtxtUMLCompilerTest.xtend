@@ -1,4 +1,4 @@
-package hu.elte.txtuml.xtxtuml.tests
+package hu.elte.txtuml.xtxtuml.tests.compiler;
 
 import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.XtxtUMLInjectorProvider
