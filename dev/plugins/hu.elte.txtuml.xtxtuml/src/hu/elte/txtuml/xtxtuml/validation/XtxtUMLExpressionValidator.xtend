@@ -4,17 +4,17 @@ import com.google.inject.Inject
 import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
@@ -72,7 +72,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 	}
 
 	@Check
-	def checkSignalAccessExpression(RAlfSignalAccessExpression sigExpr) {
+	def checkSignalAccessExpression(TUSignalAccessExpression sigExpr) {
 		var container = sigExpr.eContainer;
 		while (container != null && !(container instanceof TUEntryOrExitActivity) &&
 			!(container instanceof TUTransition)) {
@@ -89,12 +89,12 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 
 		if (container == null || container.isReachableFromInitialState(newHashSet, true)) {
 			error("'trigger' cannot be used here, as its container is directly reachable from the initial state",
-				sigExpr, RALF_SIGNAL_ACCESS_EXPRESSION__TRIGGER, INVALID_SIGNAL_ACCESS);
+				sigExpr, TU_SIGNAL_ACCESS_EXPRESSION__TRIGGER, INVALID_SIGNAL_ACCESS);
 		}
 	}
 
 	@Check
-	def checkSignalSentToPortIsRequired(RAlfSendSignalExpression sendExpr) {
+	def checkSignalSentToPortIsRequired(TUSendSignalExpression sendExpr) {
 		if (!sendExpr.target.isConformantWith(Port, false) || !sendExpr.signal.isConformantWith(Signal, false)) {
 			return;
 		}
@@ -108,12 +108,12 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 			signal?.fullyQualifiedName == sentSignalSourceElement?.fullyQualifiedName
 		] == null) {
 			error("Signal type " + sentSignalSourceElement.name + " is not required by port " + portSourceElement.name,
-				sendExpr, RALF_SEND_SIGNAL_EXPRESSION__SIGNAL, NOT_REQUIRED_SIGNAL);
+				sendExpr, TU_SEND_SIGNAL_EXPRESSION__SIGNAL, NOT_REQUIRED_SIGNAL);
 		}
 	}
 
 	@Check
-	def checkQueriedPortIsOwned(RAlfSendSignalExpression sendExpr) {
+	def checkQueriedPortIsOwned(TUSendSignalExpression sendExpr) {
 		if (!sendExpr.target.isConformantWith(Port, false)) {
 			return;
 		}
@@ -132,7 +132,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 				"Port " + portType.simpleName + " does not belong to class " + sendExprEnclosingClass.fullyQualifiedName.lastSegment +
 					" – signals can be sent only to owned ports",
 				sendExpr,
-				RALF_SEND_SIGNAL_EXPRESSION__TARGET,
+				TU_SEND_SIGNAL_EXPRESSION__TARGET,
 				QUERIED_PORT_IS_NOT_OWNED
 			);
 		}
@@ -230,8 +230,8 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 	override protected isValueExpectedRecursive(XExpression expr) {
 		val container = expr.eContainer;
 		return switch (container) {
-			RAlfSendSignalExpression,
-			RAlfDeleteObjectExpression: true
+			TUSendSignalExpression,
+			TUDeleteObjectExpression: true
 			XBlockExpression: false
 			default: super.isValueExpectedRecursive(expr)
 		}

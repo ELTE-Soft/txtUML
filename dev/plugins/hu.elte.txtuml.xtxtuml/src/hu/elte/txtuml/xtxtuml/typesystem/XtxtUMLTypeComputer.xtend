@@ -5,14 +5,14 @@ import hu.elte.txtuml.api.model.Collection
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.api.model.Signal
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
@@ -104,7 +104,7 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		return null;
 	}
 
-	def dispatch computeTypes(RAlfSignalAccessExpression sigExpr, ITypeComputationState state) {
+	def dispatch computeTypes(TUSignalAccessExpression sigExpr, ITypeComputationState state) {
 		var container = sigExpr.eContainer;
 		while (container != null && !(container instanceof TUEntryOrExitActivity) &&
 			!(container instanceof TUTransition)) {
@@ -194,12 +194,12 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		}
 	}
 
-	def dispatch computeTypes(RAlfDeleteObjectExpression deleteExpr, ITypeComputationState state) {
+	def dispatch computeTypes(TUDeleteObjectExpression deleteExpr, ITypeComputationState state) {
 		state.computeTypes(deleteExpr.object);
 		state.acceptActualType(state.getPrimitiveVoid);
 	}
 
-	def dispatch computeTypes(RAlfSendSignalExpression sendExpr, ITypeComputationState state) {
+	def dispatch computeTypes(TUSendSignalExpression sendExpr, ITypeComputationState state) {
 		state.computeTypes(sendExpr.signal);
 		state.computeTypes(sendExpr.target);
 		state.acceptActualType(state.getPrimitiveVoid);

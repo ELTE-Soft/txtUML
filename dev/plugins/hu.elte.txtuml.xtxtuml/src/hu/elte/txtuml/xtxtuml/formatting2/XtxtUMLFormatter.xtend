@@ -1,7 +1,5 @@
 package hu.elte.txtuml.xtxtuml.formatting2;
 
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
@@ -12,6 +10,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
@@ -22,6 +21,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPortMember
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUReception
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
@@ -201,7 +201,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 		regionFor.keyword('..').surround[noSpace];
 	}
 
-	def dispatch void format(RAlfSendSignalExpression it, extension IFormattableDocument document) {
+	def dispatch void format(TUSendSignalExpression it, extension IFormattableDocument document) {
 		signal.surround[oneSpace];
 		target.prepend[oneSpace];
 
@@ -209,7 +209,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 		format(target, document);
 	}
 
-	def dispatch void format(RAlfDeleteObjectExpression it, extension IFormattableDocument document) {
+	def dispatch void format(TUDeleteObjectExpression it, extension IFormattableDocument document) {
 		object.prepend[oneSpace];
 		format(object, document);
 	}

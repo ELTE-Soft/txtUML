@@ -78,16 +78,10 @@ TUConnectorEnd :
 
 // Signal- and Class-related
 
-/*
- * TODO replace with general TUAttribute
- */
 TUSignalAttribute :
 	visibility=TUVisibility? type=JvmTypeReference name=ValidID ';'
 ;
 
-/*
- * TODO left-factoring is no longer necessary
- */
 TUClassMember
 	: TUConstructor
 	| TUAttributeOrOperationDeclarationPrefix (
@@ -150,24 +144,29 @@ TUTransitionMember
 ;
 
 TUTransitionTrigger :
-	triggerKeyword='trigger' trigger=[TUSignal|QualifiedName] ';' // feature 'triggerKeyword' is for error markers
+	triggerKeyword='trigger' trigger=[TUSignal|QualifiedName] ';'
+		// feature 'triggerKeyword' is for error markers
 ;
 
 TUTransitionVertex :
-	(from?='from' | to='to') vertex=[TUState|QualifiedName] ';' // feature 'to' is for error markers
+	(from?='from' | to='to') vertex=[TUState|QualifiedName] ';'
+		// feature 'to' is for error markers
 ;
 
 TUTransitionEffect :
-	effect='effect' body=XBlockExpression ';'? // feature 'effect' is for error markers
+	effect='effect' body=XBlockExpression ';'?
+		// feature 'effect' is for error markers
 ;
 
 TUTransitionGuard :
 	{TUTransitionGuard} // required because of the buggy formatter2 API
-	guard='guard' '(' (else?='else' | expression=XExpression) ')' ';'? // feature 'guard' is for error markers
+	guard='guard' '(' (else?='else' | expression=XExpression) ')' ';'?
+		// feature 'guard' is for error markers
 ;
 
 TUTransitionPort :
-	portKeyword='port' port=[TUPort|QualifiedName] ';' // feature 'portKeyword' is for error markers
+	portKeyword='port' port=[TUPort|QualifiedName] ';'
+		// feature 'portKeyword' is for error markers
 ;
 
 TUPort :
@@ -177,7 +176,8 @@ TUPort :
 ;
 
 TUPortMember :
-	(required?='required' | provided='provided') interface=[TUInterface|QualifiedName] ';' // feature 'provided' is for error markers
+	(required?='required' | provided='provided') interface=[TUInterface|QualifiedName] ';'
+		// feature 'provided' is for error markers
 ;
 
 // Association-related
@@ -198,36 +198,25 @@ enum TUVisibility :
 	PACKAGE = 'package' | PRIVATE = 'private' | PROTECTED = 'protected' | PUBLIC = 'public'
 ;
 
-// rAlf
+// Actions
 
-RAlfSendSignalExpression returns xbase::XExpression :
-	{RAlfSendSignalExpression}
+TUSendSignalExpression returns xbase::XExpression :
+	{TUSendSignalExpression}
 	'send' signal=XExpression 'to' target=XExpression
 ;
 
-RAlfDeleteObjectExpression returns xbase::XExpression :
-	{RAlfDeleteObjectExpression}
+TUDeleteObjectExpression returns xbase::XExpression :
+	{TUDeleteObjectExpression}
 	'delete' object=XExpression
 ;
 
-RAlfSignalAccessExpression returns xbase::XExpression :
-	{RAlfSignalAccessExpression}
+TUSignalAccessExpression returns xbase::XExpression :
+	{TUSignalAccessExpression}
 	trigger='trigger'
-	// the sole purpose of the 'trigger' feature
-	// is to provide a feature for validation
-	// to put a marker on
+		// feature 'trigger' is for error markers
 ;
 
-// Added rAlf-Xbase rules
-
-/*
- * only for readibility reasons
- */ 
-XRAlfStatement returns xbase::XExpression :
-	XRAlfStatementSemicolonNeeded | XRAlfStatementSemicolonNotNeeded
-;
-
-XRAlfStatementSemicolonNotNeeded returns xbase::XExpression
+TUStatementSemicolonNotNeeded returns xbase::XExpression
 	: XIfExpression
 	| XForLoopExpression
 	| XBasicForLoopExpression
@@ -237,16 +226,12 @@ XRAlfStatementSemicolonNotNeeded returns xbase::XExpression
 	| XVariableDeclaration // semicolon included in rule
 ;
 
-XRAlfStatementSemicolonNeeded returns xbase::XExpression
+TUStatementSemicolonNeeded returns xbase::XExpression
 	: XReturnExpression
 	| XDoWhileExpression
 	| XExpression
-	| RAlfSendSignalExpression
-	| RAlfDeleteObjectExpression
-;
-
-XParenthesizedRAlfExpression returns xbase::XExpression :
-	'(' XExpression ')'
+	| TUSendSignalExpression
+	| TUDeleteObjectExpression
 ;
 
 // Overridden Xbase rules
@@ -288,13 +273,12 @@ XLiteral returns xbase::XExpression
  *             <li>XThrowExpression</li>
  *             <li>XReturnExpression</li>
  *             <li>XTryCatchFinallyExpression</li>
- *             <li>XParenthesizedExpression</li>
  *         </ul>
  *     </li>
  *     <li>
  *         Added:
  *         <ul>
- *             <li>XParenthesizedRAlfExpression</li>
+ *             <li>TUSignalAccessExpression</li>
  *         </ul>
  *     </li>
  * </ul>
@@ -303,8 +287,8 @@ XPrimaryExpression returns xbase::XExpression
 	: XConstructorCall
 	| XFeatureCall
 	| XLiteral
-	| XParenthesizedRAlfExpression
-	| RAlfSignalAccessExpression
+	| XParenthesizedExpression
+	| TUSignalAccessExpression
 ;
 
 /*
@@ -333,15 +317,15 @@ XConstructorCall returns xbase::XExpression :
 XBlockExpression returns xbase::XExpression : 
 	{xbase::XBlockExpression}
 	'{' 
-		(expressions+=XRAlfStatementSemicolonNotNeeded | =>(expressions+=XRAlfStatementSemicolonNeeded) ';' )*
+		(expressions+=TUStatementSemicolonNotNeeded | =>(expressions+=TUStatementSemicolonNeeded) ';' )*
+			// don't change the syntactic predicate here, it would break the grammar
 	'}'
 ;
 
 /* 
  * Changes:
  * <ul>
- *     <li>predicate is an XExpression instead of XExpression</li>
- *     <li>body is an XBlockExpression instead of XExpression</li>
+ *     <li>body is an XBlockExpression instead of an XExpression</li>
  * </ul>
  */
 XWhileExpression returns xbase::XExpression :
@@ -353,8 +337,7 @@ XWhileExpression returns xbase::XExpression :
 /* 
  * Changes:
  * <ul>
- *     <li>predicate is an XExpression instead of XExpression</li>
- *     <li>body is an XBlockExpression instead of XExpression</li>
+ *     <li>body is an XBlockExpression instead of an XExpression</li>
  * </ul>
  */
 XDoWhileExpression returns xbase::XExpression :
@@ -369,7 +352,6 @@ XDoWhileExpression returns xbase::XExpression :
  * <ul>
  *     <li>no closures after parentheses</li>
  *     <li>no type parameters</li>
- *     <li>XExpression -> XExpression</li>
  * </ul>
  */
 XFeatureCall returns xbase::XExpression :
@@ -386,7 +368,6 @@ XFeatureCall returns xbase::XExpression :
  * Changes:
  * <ul>
  *     <li>XBlockExpression is mandatory, except for an "else if" construct</li>
- *     <li>XExpression -> XExpression</li>
  * </ul>
  */
 XIfExpression returns xbase::XExpression :
@@ -399,15 +380,13 @@ XIfExpression returns xbase::XExpression :
 /*
  * Changes:
  * <ul>
- *     <li>'in' instead of ':'</li>
  *     <li>JvmFormalParameter -> FullJvmFormalParameter (type is mandatory)</li>
  *     <li>XBlockExpression is mandatory</li>
- *     <li>XExpression -> XExpression</li>
  * </ul>
  */
 XForLoopExpression returns xbase::XExpression :
 	=>({xbase::XForLoopExpression}
-	'for' '(' declaredParam=FullJvmFormalParameter 'in') forExpression=XExpression ')'
+	'for' '(' declaredParam=FullJvmFormalParameter ':') forExpression=XExpression ')'
 		eachExpression=XBlockExpression
 ;
 
@@ -416,7 +395,6 @@ XForLoopExpression returns xbase::XExpression :
  * <ul>
  *     <li>no variable declaration allowed</li>
  *     <li>parentheses are mandatory</li>
- *     <li>XExpression -> XExpression</li>
  *     <li>default has to be a block</li>
  * </ul>
  */
@@ -432,7 +410,6 @@ XSwitchExpression returns xbase::XExpression :
  * Changes:
  * <ul>
  *     <li>removed type guards (thus 'case' is mandatory)</li>
- *     <li>XExpression -> XExpression</li>
  *     <li>then attribute can only be a block</li>
  * </ul>
  */
@@ -445,14 +422,13 @@ XCasePart returns xbase::XCasePart :
  * Changes:
  * <ul>
  *     <li>only one init and update expression is allowed</li>
- *     <li>changed Xbase expressions to corresponding RAlf-Xbase expressions</li>
  *     <li>XBlockExpression is mandatory</li>
  * </ul>
  */
 XBasicForLoopExpression returns xbase::XBasicForLoopExpression : 
 	{xbase::XBasicForLoopExpression}
 	'for' '(' (initExpressions+=XExpression ';' | initExpressions+=XVariableDeclaration | ';') 
-		expression=XExpression? ';' (updateExpressions+=XExpression)? ')'
+		expression=XExpression? ';' updateExpressions+=XExpression? ')'
 			eachExpression=XBlockExpression
 ;
 
@@ -461,7 +437,6 @@ XBasicForLoopExpression returns xbase::XBasicForLoopExpression :
  * <ul>
  *     <li>removed 'var' and 'val' keywords</li>
  *     <li>type is mandatory</li>
- *     <li>XExpression as initializiation</li>
  * </ul>
  */
 XVariableDeclaration returns xbase::XExpression :
@@ -482,21 +457,10 @@ XOtherOperatorExpression returns xbase::XExpression :
 /*
  * Changes:
  * <ul>
- *     <li>XExpression -> XExpression</li>
- * </ul>
- */
-XReturnExpression returns xbase::XExpression :
-	{xbase::XReturnExpression}
-	'return' (->expression=XExpression)?
-;
-
-/*
- * Changes:
- * <ul>
  *     <li>no nullsafe feature call keyword</li>
  *     <li>no type arguments for features</li>
  *     <li>no closure after parenthesis</li>
- *     <li>XExpression -> XExpression in call arguments</li>
+ *     <li>added class property access expression</li>
  * </ul>
  */
 XMemberFeatureCall returns xbase::XExpression :
