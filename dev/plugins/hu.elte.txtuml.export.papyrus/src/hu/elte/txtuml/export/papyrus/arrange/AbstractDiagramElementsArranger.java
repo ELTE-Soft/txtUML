@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.papyrus.arrange;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +16,7 @@ import org.eclipse.uml2.uml.Element;
 import hu.elte.txtuml.export.papyrus.layout.IDiagramElementsMapper;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider;
+import hu.elte.txtuml.layout.visualizer.model.Diagram;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
@@ -50,17 +52,36 @@ public abstract class AbstractDiagramElementsArranger implements IDiagramElement
 		Set<LineAssociation> arrangedLinks = vm.getAssociations();
 	
 		this.elementbounds = createElementsMapping(arrangedObjects);
-		this.connectionRoutes = createConnectionMapping(arrangedLinks, arrangedObjects);
+		Set<LineAssociation> allLinks = flattenAllLinks(arrangedLinks, arrangedObjects);
+		this.connectionRoutes = createConnectionMapping(allLinks);
 	
 		LayoutTransformer transformer = new LayoutTransformer(vm.getPixelGridRatioHorizontal(),
 				vm.getPixelGridRatioVertical());
 	
 		transformer.doTranformations(this.elementbounds, this.connectionRoutes);
 	
-		this.connectionSourceAnchors = createSourceAnchors(arrangedLinks);
-		this.connectionTargetAnchors = createTargetAnchors(arrangedLinks);
+		this.connectionSourceAnchors = createSourceAnchors(allLinks);
+		this.connectionTargetAnchors = createTargetAnchors(allLinks);
 		monitor.worked(1);
 	}
+
+	private Set<LineAssociation> flattenAllLinks(Set<LineAssociation> arrangedLinks,
+			Set<RectangleObject> arrangedObjects) {
+		Set<LineAssociation> links = new HashSet<LineAssociation>();
+
+		for (LineAssociation link : arrangedLinks) {
+			links.add(link);
+		}
+
+		for (RectangleObject box : arrangedObjects) {
+			if (box.hasInner()) {
+				links.addAll(flattenAllLinks(box.getInner().Assocs, box.getInner().Objects));
+			}
+		}
+
+		return links;
+	}
+
 
 	private Map<Element, Rectangle> createElementsMapping(Set<RectangleObject> arrangedObjects) {
 		List<RectangleObject> flattenedObjects = flattenArrangedObjectsRecursively(arrangedObjects);
@@ -84,31 +105,11 @@ public abstract class AbstractDiagramElementsArranger implements IDiagramElement
 		return arrayList;
 	}
 
-	private Map<Element, List<Point>> createConnectionMapping(Set<LineAssociation> arrangedLinks, Set<RectangleObject> arrangedObjects) {
+	private Map<Element, List<Point>> createConnectionMapping(Set<LineAssociation> arrangedLinks) {
 		Map<Element, List<Point>> result = arrangedLinks.stream()
 				.collect(Collectors.toMap(la -> this.elementsMapper.findConnection(la.getId()),
 						la -> la.getMinimalRoute().stream().map(p -> new Point(p.getX(), p.getY()))
 								.collect(Collectors.toList())));
-	
-		result.putAll(addArrangedLinksRecursivelyFromObjects(arrangedObjects));
-	
-		return result;
-	}
-
-	private Map<Element, List<Point>> addArrangedLinksRecursivelyFromObjects(Set<RectangleObject> arrangedObjects) {
-		Map<Element, List<Point>> result = new HashMap<Element, List<Point>>();
-		arrangedObjects.forEach(object -> {
-			if (object.hasInner()) {
-				result.putAll(
-						object.getInner().Assocs.stream()
-								.collect(Collectors
-										.toMap(la -> this.elementsMapper.findConnection(la.getId()),
-												la -> la.getMinimalRoute().stream()
-														.map(p -> new Point(p.getX(), p.getY()))
-														.collect(Collectors.toList()))));
-				result.putAll(addArrangedLinksRecursivelyFromObjects(object.getInner().Objects));
-			}
-		});
 		return result;
 	}
 
