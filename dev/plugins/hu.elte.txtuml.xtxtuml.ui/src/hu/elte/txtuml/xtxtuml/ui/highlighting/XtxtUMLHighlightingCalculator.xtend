@@ -9,22 +9,22 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.common.types.JvmFormalParameter
 import org.eclipse.xtext.documentation.impl.MultiLineCommentDocumentationProvider
+import org.eclipse.xtext.ide.editor.syntaxcoloring.IHighlightedPositionAcceptor
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils
-import org.eclipse.xtext.ui.editor.syntaxcoloring.IHighlightedPositionAcceptor
+import org.eclipse.xtext.util.CancelIndicator
 import org.eclipse.xtext.xbase.XAbstractFeatureCall
-import org.eclipse.xtext.xbase.ui.highlighting.XbaseHighlightingCalculator
+import org.eclipse.xtext.xbase.ide.highlighting.XbaseHighlightingCalculator
 
 import static hu.elte.txtuml.xtxtuml.ui.highlighting.XtxtUMLHighlightingConfiguration.*
 import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 import static org.eclipse.xtext.common.types.TypesPackage.Literals.*
 import static org.eclipse.xtext.xbase.XbasePackage.Literals.*
-import static org.eclipse.xtext.xbase.ui.highlighting.XbaseHighlightingConfiguration.*
 
 class XtxtUMLHighlightingCalculator extends XbaseHighlightingCalculator {
 
 	@Inject extension MultiLineCommentDocumentationProvider;
 
-	override highlightElement(EObject object, IHighlightedPositionAcceptor acceptor) {
+	override highlightElement(EObject object, IHighlightedPositionAcceptor acceptor, CancelIndicator cancelIndicator) {
 		highlightDocumentationComment(object, acceptor);
 
 		switch (object) {
@@ -45,7 +45,7 @@ class XtxtUMLHighlightingCalculator extends XbaseHighlightingCalculator {
 				acceptor.addPosition(textRegion.offset, textRegion.length, MULTIPLICITY);
 			}
 			default:
-				super.highlightElement(object, acceptor)
+				super.highlightElement(object, acceptor, cancelIndicator)
 		}
 
 		return false;

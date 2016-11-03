@@ -27,6 +27,7 @@ import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.ValueSpecificationAction;
+import org.eclipse.uml2.uml.VisibilityKind;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -100,13 +101,19 @@ public class TestStructure extends UMLExportTestBase {
 		property(testClass, "string", "String");
 		property(testClass, "dt", "Reals");
 
+		Property privateAttribute = property(testClass, "private_attribute", "Integer");
+		assertEquals(VisibilityKind.PRIVATE_LITERAL, privateAttribute.getVisibility());
+		Property protectedAttribute = property(testClass, "protected_attribute", "Integer");
+		assertEquals(VisibilityKind.PROTECTED_LITERAL, protectedAttribute.getVisibility());
+		Property publicAttribute = property(testClass, "public_attribute", "Integer");
+		assertEquals(VisibilityKind.PUBLIC_LITERAL, publicAttribute.getVisibility());
+
 		DataType reals = dataType(model, "Reals");
 		property(reals, "double_prim", "Real");
 		property(reals, "double_boxed", "Real");
 		property(reals, "float_prim", "Real");
 		property(reals, "float_boxed", "Real");
 	}
-
 
 	@Test
 	public void testDefaultCtor() throws Exception {
@@ -199,21 +206,27 @@ public class TestStructure extends UMLExportTestBase {
 
 		Operation op2 = operation(cls, "op2");
 		assertTrue(op2.getOwnedParameters().isEmpty());
+		assertEquals(VisibilityKind.PUBLIC_LITERAL, op2.getVisibility());
+
+		Operation op3 = operation(cls, "op3");
+		assertEquals(VisibilityKind.PRIVATE_LITERAL, op3.getVisibility());
+		Operation op4 = operation(cls, "op4");
+		assertEquals(VisibilityKind.PROTECTED_LITERAL, op4.getVisibility());
 	}
-	
+
 	@Test
 	public void testPorts() throws Exception {
 		Model model = model("hu.elte.txtuml.export.uml2.tests.models.ports");
 		Class cls = cls(model, "TestClass");
 		Port behavPort = port(cls, "BehavPort");
-		
+
 		assertTrue(behavPort.isBehavior());
 		assertEquals("Iface", getProvided(behavPort).getName());
-		
+
 		Port assemblyPort = port(cls, "AssemblyPort");
 		assertFalse(assemblyPort.isBehavior());
 		assertEquals("Iface", getProvided(assemblyPort).getName());
-		
+
 		// existance is checked
 		port(cls, "MyInPort");
 		port(cls, "MyOutPort");
@@ -259,7 +272,8 @@ public class TestStructure extends UMLExportTestBase {
 		node(createNode, 3, "true", ValueSpecificationAction.class);
 		node(createNode, 4, "\"test\"", ValueSpecificationAction.class);
 		node(createNode, 5, "#temp", ReadVariableAction.class);
-		CallOperationAction ctorCall = node(createNode, 6, "Sig(Sig p0, Integer p1, Boolean p2, String p3)", CallOperationAction.class);
+		CallOperationAction ctorCall = node(createNode, 6, "Sig(Sig p0, Integer p1, Boolean p2, String p3)",
+				CallOperationAction.class);
 		assertEquals(sigCtor, ctorCall.getOperation());
 		node(createNode, 7, "#temp", ReadVariableAction.class);
 	}
