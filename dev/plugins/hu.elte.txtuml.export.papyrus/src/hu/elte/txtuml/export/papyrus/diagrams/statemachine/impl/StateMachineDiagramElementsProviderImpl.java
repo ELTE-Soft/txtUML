@@ -57,6 +57,11 @@ public class StateMachineDiagramElementsProviderImpl implements StateMachineDiag
 	}
 
 	@Override
+	public StateMachine getMainElement() {
+		return mainElement;
+	}
+
+	@Override
 	public Collection<Region> getRegionsOfState(State state) {
 		return state.getRegions();
 	}

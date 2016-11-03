@@ -26,6 +26,7 @@ import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateMachineCompa
 import org.eclipse.papyrus.uml.diagram.statemachine.edit.parts.StateNameEditPart;
 import org.eclipse.papyrus.uml.diagram.statemachine.part.UMLDiagramEditorPlugin;
 import org.eclipse.papyrus.uml.diagram.statemachine.providers.UMLElementTypes;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.State;
@@ -36,7 +37,8 @@ import hu.elte.txtuml.export.papyrus.diagrams.AbstractDiagramNotationManager;
 import hu.elte.txtuml.export.papyrus.diagrams.statemachine.StateMachineDiagramNotationManager;
 import hu.elte.txtuml.utils.Logger;
 
-public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotationManager implements StateMachineDiagramNotationManager {
+public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotationManager
+		implements StateMachineDiagramNotationManager {
 	private static final PreferencesHint DIAGRAM_PREFERENCES_HINT = UMLDiagramEditorPlugin.DIAGRAM_PREFERENCES_HINT;
 
 	private static final Rectangle defaultStateBounds = new Rectangle(0, 0, 50, 50);
@@ -67,8 +69,29 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 
 		Node regionView = regionsForStateMachine.get(0); // expecting one and
 															// only one region
+
+		// bounds is set for StateMachines by default. This can cause conflicts
+		// later, hence it's eliminated
+		eliminateDefaultSizeConstraints();
+
 		EObject regionModel = regionView.getElement();
 		this.notationMap.put(regionModel, regionView);
+	}
+
+	private void eliminateDefaultSizeConstraints() {
+		Runnable runnable = () -> {
+			Node stateMachineView = (Node) diagram.getChildren().get(0);
+			List<Node> regionsForStateMachine = regionsForState(stateMachineView);
+			Node regionView = regionsForStateMachine.get(0);
+			stateMachineView.setLayoutConstraint(NotationFactory.eINSTANCE.createBounds());
+			((Node) stateMachineView.getChildren().get(0))
+					.setLayoutConstraint(NotationFactory.eINSTANCE.createBounds());
+			((Node) stateMachineView.getChildren().get(1))
+					.setLayoutConstraint(NotationFactory.eINSTANCE.createBounds());
+			regionView.setLayoutConstraint(NotationFactory.eINSTANCE.createBounds());
+		};
+
+		runInTransactionalCommand(runnable, "Eliminating default layout constraints.", null);
 	}
 
 	private static List<Node> regionsForState(Node stateMachineView) {
@@ -141,21 +164,22 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 
 	@Override
 	public void createRegionForState(State state, Region region, IProgressMonitor monitor) {
-		final int COMPOSITE_STATE_HEADER_HEIGHT = 20;
-		
+		final int COMPOSITE_STATE_HEADER_HEIGHT = StateMachineDiagramPixelDimensionProvider.STATE_HEADER_HEIGHT;
+
 		Node stateNode = this.notationMap.get(state);
 		Node node = findRegionCompartementOfState(stateNode);
 		Node stateNameNode = findStateNameNodeOfState(stateNode);
-		
+
 		Runnable runnable = () -> {
 			String hint = ((IHintedType) UMLElementTypes.Region_3000).getSemanticHint();
 			Node newNode = ViewService.createNode(node, region, hint, DIAGRAM_PREFERENCES_HINT);
-			
-			//The height of header must be set. Otherwise the view will be corrupted.
+
+			// The height of header must be set. Otherwise the view will be
+			// corrupted.
 			Bounds nameLayoutConstraint = NotationFactory.eINSTANCE.createBounds();
 			nameLayoutConstraint.setHeight(COMPOSITE_STATE_HEADER_HEIGHT);
 			stateNameNode.setLayoutConstraint(nameLayoutConstraint);
-			
+
 			this.notationMap.put(region, newNode);
 		};
 
@@ -173,7 +197,7 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 		}
 		return null;
 	}
-	
+
 	private static Node findStateNameNodeOfState(Node stateNode) {
 		@SuppressWarnings("unchecked")
 		List<Node> decorationNodes = stateNode.getChildren();
@@ -189,5 +213,19 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 		return (Node) regionNode.getChildren().get(0); // a decorationNode
 														// between region and
 														// substates
+	}
+
+	@Override
+	public void changeBoundsOfElement(Element elem, Rectangle bounds, IProgressMonitor monitor) {
+		Node node = this.notationMap.get(elem);
+		if (node != null) {
+			Runnable runnable = () -> {
+				node.setLayoutConstraint(createBounds(bounds, defaultStateBounds));
+			};
+
+			runInTransactionalCommand(runnable, "Creating Initialstate for Node " + node, monitor);
+		} else {
+			Logger.sys.error("Cannot change bounds of node. This element (" + elem + ") has no node!");
+		}
 	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.State;
@@ -22,5 +23,7 @@ public interface StateMachineDiagramNotationManager{
 			List<Point> route, String sourceAnchor, String targetAnchor, IProgressMonitor monitor);
 
 	void createRegionForState(State state, Region region, IProgressMonitor monitor);
+
+	void changeBoundsOfElement(Element elem, Rectangle boundsForElement, IProgressMonitor monitor);
 
 }

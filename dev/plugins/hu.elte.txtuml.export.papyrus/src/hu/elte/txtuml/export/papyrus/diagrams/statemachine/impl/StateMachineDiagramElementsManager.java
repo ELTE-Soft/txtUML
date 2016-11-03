@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.uml2.uml.Region;
+import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.Vertex;
 
 import hu.elte.txtuml.export.papyrus.arrange.IDiagramElementsArranger;
@@ -55,6 +56,8 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	public void addElementsToDiagram() {
 		Collection<Region> regions = this.elementsProvider.getMainRegions();
 		addSubelementsRecursively(regions);
+		StateMachine sm = this.elementsProvider.getMainElement();
+		this.notationManager.changeBoundsOfElement(sm, this.arranger.getBoundsForElement(sm), this.monitor);
 	}
 
 	private void addSubelementsRecursively(Collection<Region> regions) {
