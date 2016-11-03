@@ -10,6 +10,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
+import hu.elte.txtuml.layout.visualizer.algorithms.FileVisualize;
 import hu.elte.txtuml.layout.visualizer.algorithms.LayoutVisualize;
 import hu.elte.txtuml.layout.visualizer.exceptions.BoxArrangeConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.BoxOverlapConflictException;
@@ -120,6 +121,7 @@ public class LayoutVisualizerManager {
 		}
 
 		diagram = layoutVisualize.getDiagram();
+		FileVisualize.printOutput(diagram, "C:\\Users\\dobreffandras\\Desktop", "visualize");
 	}
 
 	private String formatStatements(Collection<Statement> statements) {
