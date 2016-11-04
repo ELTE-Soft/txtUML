@@ -19,6 +19,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
 import java.util.HashSet
+import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.common.types.JvmOperation
 import org.eclipse.xtext.naming.IQualifiedNameProvider
@@ -201,6 +202,15 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 			error("Empty parentheses are required for operations without parameters", featureCall,
 				XbasePackage.Literals.XABSTRACT_FEATURE_CALL__FEATURE, MISSING_OPERATION_PARENTHESES);
 		}
+	}
+
+	/*
+	 * The purpose of this dispatch case is to enforce the common <code>EObject</code> supertype (which would
+	 * otherwise be <code>TUClassOrStateMember</code>).
+	 */
+	def protected dispatch boolean isReachableFromInitialState(EObject object, HashSet<TUState> visitedStates,
+		boolean throughPseudostatesOnly) {
+		throw new IllegalArgumentException("Unhandled parameter type: EObject");
 	}
 
 	def protected dispatch boolean isReachableFromInitialState(TUTransition transition, HashSet<TUState> visitedStates,

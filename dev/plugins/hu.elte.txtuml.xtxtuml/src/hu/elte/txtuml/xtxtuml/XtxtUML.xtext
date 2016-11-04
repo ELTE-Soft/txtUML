@@ -95,7 +95,7 @@ TUClassMember
 ;
 
 /*
- * The inferred EClass is used in TUClassPropertyAccessExpression.
+ * The inferred <code>EClass</code> is used in TUClassPropertyAccessExpression.
  */
 TUClassProperty :
 	TUPort | TUAssociationEnd
@@ -122,6 +122,13 @@ enum TUStateType :
 
 TUStateMember :
 	TUState | TUEntryOrExitActivity | TUTransition
+;
+
+/*
+ * The inferred <code>EClass</code> is used in unit tests.
+ */
+TUClassOrStateMember :
+	TUClassMember | TUStateMember
 ;
 
 TUEntryOrExitActivity :
