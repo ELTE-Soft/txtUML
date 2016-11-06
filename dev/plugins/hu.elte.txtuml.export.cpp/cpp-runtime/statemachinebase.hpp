@@ -9,14 +9,18 @@
 #include <unordered_map>
 #include <memory>
 
-#include "event.hpp"
+#include "runtime/ievent.hpp"
 
 struct EventState : public std::pair<int, int> {
-  EventState(int e_, int s_) : std::pair<int, int>(e_,s_) {}
+  EventState(int e_, int s_, int p_) : event (e_), state (s_), port (p_) {}
 
   bool operator == (const EventState& a){
-    return this->first == a.first && this->second == a.second;
+    return event == a.event && this->state == a.state && this->port == a.port;
   }
+  
+	int event;
+	int state;
+	int port;
 };
 
 namespace std
@@ -27,11 +31,12 @@ namespace std
 	  std::size_t operator ()(const EventState& es_) const
 	  {
 	    hash<int> intHash;
-	    size_t hashValue = (intHash(es_.first) ^ intHash(es_.second));
+	    size_t hashValue = (intHash(es_.event) ^ intHash(es_.state) ^ intHash(es_.port) );
 	    return hashValue;
 	  }
 	};
 }
+
 
 class StateMachineBase
 {

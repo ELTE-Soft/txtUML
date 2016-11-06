@@ -5,8 +5,8 @@ import java.io.File;
 public class RuntimeTemplates {
 	public static final String RTPath = "runtime" + File.separator;
 	public static final String RuntimeHeaderName = RTPath + "runtime";
-	public static final String EventIName = "EventI";
-	public static final String EventIHeaderName = "eventI";
+	public static final String EventIName = "IEvent";
+	public static final String EventIHeaderName = "ievent";
 	public static final String STMIName = "StateMachineI";
 	public static final String SMIHeaderName = "statemachineI";
 	public static final String SMRefName = "dest";
@@ -47,7 +47,8 @@ public class RuntimeTemplates {
 		return processEventVirtual(className) + "\n" + processInitTransition(className) + "\n";
 	}
 
-	public static String rtEventHeaderInclude() {
+	public static String eventHeaderInclude() {
 		return PrivateFunctionalTemplates.include(RTPath + EventIHeaderName);
 	}
+
 }

@@ -39,6 +39,7 @@ import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.PortTemplates;
 import hu.elte.txtuml.export.cpp.thread.ThreadHandlingManager;
 import hu.elte.txtuml.export.cpp.structural.DependencyExporter;
 
@@ -55,7 +56,7 @@ public class Uml2ToCppExporter {
 	private static final String DEFAULT_ASSOCIATIONS_NAME = "associations";
 	private static final String PROJECT_NAME = "hu.elte.txtuml.export.cpp";
 	private static final String CPP_FILES_FOLDER_NAME = "cpp-runtime";
-	private static final String SIGNAL_ENUM_EXTENSION = "_EE";
+	private static final String ENUM_EXTENSION = "_EE";
 	private static final String DEFAULT_INIT_MACHINE_NAME = StateMachineTemplates.TransitionTableInitialSourceName;
 
 	private ClassExporter classExporter;
@@ -244,14 +245,14 @@ public class Uml2ToCppExporter {
 		StringBuilder source = new StringBuilder("");
 		List<Pair<String, String>> allParam = new LinkedList<Pair<String, String>>();
 
-		events.append(EventTemplates.InitSignal + SIGNAL_ENUM_EXTENSION + ",");
+		events.append(EventTemplates.InitSignal + ENUM_EXTENSION + ",");
 		for (Signal signal : signalList) {
 			List<Pair<String, String>> currentParams = getSignalParams(signal);
 			String ctrBody = shared.signalCtrBody(signal);
 			allParam.addAll(currentParams);
 			source.append(
 					EventTemplates.eventClass(signal.getName(), currentParams, ctrBody, signal.getOwnedAttributes()));
-			events.append(signal.getName() + SIGNAL_ENUM_EXTENSION + ",");
+			events.append(signal.getName() + ENUM_EXTENSION + ",");
 		}
 		events = new StringBuilder(events.substring(0, events.length() - 1));
 
@@ -262,8 +263,10 @@ public class Uml2ToCppExporter {
 		for (Pair<String, String> param : allParam) {
 			dependencyEporter.addDependecy(param.getSecond());
 		}
+		
+		
 		forwardDecl.append(dependencyEporter.createDependecyHeaderIncludeCode());
-		forwardDecl.append(EventTemplates.eventBase(options) + "\n");
+		forwardDecl.append(RuntimeTemplates.eventHeaderInclude());
 		forwardDecl.append("enum Events {" + events + "};\n");
 		forwardDecl.append(source);
 		Shared.writeOutSource(outputDirectory, (EventTemplates.EventHeader),

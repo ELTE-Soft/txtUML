@@ -10,6 +10,7 @@ public class GenerationNames {
 	public static final String SourceExtension = "cpp";
 	public static final String ClassType = "struct";
 	public static final String DataType = "struct";
+	public static final String EnumName = "enum";
 
 	// NDEBUG is the only thing guaranteed, DEBUG and _DEBUG is non-standard
 	public static final String NoDebugSymbol = "NDEBUG";
@@ -146,7 +147,7 @@ public class GenerationNames {
 
 	private static final String simpleProcessEventDefBody() {
 		return "{\n" + "bool handled=false;\n" + "auto range = " + TransitionTableName + ".equal_range(EventState("
-				+ EventFParamName + ".t," + CurrentStateName + "));\n" + "if(range.first!=" + TransitionTableName
+				+ EventFParamName + ".t," + CurrentStateName + "," + EventFParamName +  ".p));\n" + "if(range.first!=" + TransitionTableName
 				+ ".end())\n" + "{\n" + "for(auto it=range.first;it!=range.second;++it)\n" + "{\n"
 				+ "if((it->second).first(*this," + EventFParamName + "))//Guard call\n" + "{\n" + ExitName + "();\n"
 				+ "(it->second).second(*this," + EventFParamName + ");//Action Call\n" + "handled=true;\n" + "break;\n"

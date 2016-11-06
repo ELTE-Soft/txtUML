@@ -16,6 +16,7 @@ import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.statemachine.StateMachineExporter;
 import hu.elte.txtuml.export.cpp.statemachine.SubStateMachineExporter;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ConstructorTemplates;
@@ -32,6 +33,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	private Shared shared;
 
 	private StateMachineExporter stateMachineExporter;
+	private PortExporter portExporter;
 	private SubStateMachineExporter subStateMachineExporter;
 
 	private int poolId;
@@ -39,6 +41,8 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	public ClassExporter() {
 		shared = new Shared();
 	}
+	
+	
 
 	public List<String> getAdditionalSources() {
 		return additionalSourcesNames;
@@ -55,6 +59,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		stateMachineExporter = new StateMachineExporter();
 		additionalSourcesNames = new ArrayList<String>();
 		subSubMachines = new LinkedList<String>();
+		portExporter = new PortExporter();
 
 		shared.setModelElements(structuredElement.allOwnedElements());
 
@@ -104,6 +109,8 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	
 	public boolean isStateMachineOwner() {
 		return stateMachineExporter.ownStateMachine();
+		
+		
 	}
 
 	private String createClassHeaderSource() {
@@ -126,6 +133,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		if (stateMachineExporter.ownStateMachine()) {
 
 			publicParts.append(stateMachineExporter.createStateEnumCode());
+			publicParts.append(portExporter.createPortEnumCode(structuredElement.getOwnedPorts()));
 			privateParts.append(stateMachineExporter.createStateMachineRelatedHeadedDeclerationCodes());
 
 			if (stateMachineExporter.ownSubMachine()) {
@@ -184,6 +192,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 				source.append(GenerationTemplates.cppInclude(GenerationTemplates.DeploymentHeader));
 				source.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
 			}
+			source.append(GenerationTemplates.cppInclude(GenerationNames.EventHeaderName));
 			if (associationExporter.ownAssociation()) {
 				source.append(GenerationTemplates.cppInclude(LinkTemplates.AssociationsStructuresHreaderName));
 

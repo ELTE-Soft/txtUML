@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.google.common.collect.Multimap;
 
+import hu.elte.txtuml.export.cpp.statemachine.TransitionConditions;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
@@ -78,8 +79,8 @@ public class ConstructorTemplates {
 	 * Map<Pair<String, String>,<String,String> <event,
 	 * state>,<guard,handlerName>
 	 */
-	public static String simpleSubStateMachineClassConstructor(String className, String parentStateMachine,
-			Multimap<Pair<String, String>, Pair<String, String>> machine, String intialState) {
+	public static String simpleSubStateMachineClassConstructor (String className, String parentStateMachine,
+			Multimap<TransitionConditions, Pair<String, String>> machine, String intialState) {
 		String parentParamName = GenerationNames.formatIncomingParamName(GenerationNames.ParentSmName);
 		String source = className + "::" + className + "(" + PrivateFunctionalTemplates.cppType(parentStateMachine)
 				+ " " + parentParamName + "):" + GenerationNames.ParentSmMemberName + "(" + parentParamName + ")"
@@ -91,7 +92,7 @@ public class ConstructorTemplates {
 	}
 
 	public static String hierarchicalSubStateMachineClassConstructor(String className, String parentClassName,
-			Multimap<Pair<String, String>, Pair<String, String>> machine, Map<String, String> subMachines,
+			Multimap<TransitionConditions, Pair<String, String>> machine, Map<String, String> subMachines,
 			String intialState) {
 
 		String parentParamName = GenerationNames.formatIncomingParamName(GenerationNames.ParentSmName);

@@ -19,7 +19,7 @@ public class EventTemplates {
 	public static String eventBase(Options options) {
 		StringBuilder eventBase = new StringBuilder("");
 
-		eventBase.append(RuntimeTemplates.rtEventHeaderInclude()).append("\n");
+		eventBase.append(RuntimeTemplates.eventHeaderInclude()).append("\n");
 
 		eventBase.append(GenerationNames.ClassType + " " + GenerationNames.EventBaseName);
 		if (options.isAddRuntime()) {

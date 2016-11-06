@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.cpp.activity;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.uml2.uml.CreateObjectAction;
@@ -17,13 +18,15 @@ class ObjectActionExporter {
 	private Map<CreateObjectAction, String> objectMap;
 	private OutVariableExporter tempVariableExporter;
 	private ActivityNodeResolver activityExportResolver;
+	private List<String> createdObjectsDependencies;
 
 	ObjectActionExporter(OutVariableExporter tempVariableExporter, Map<CreateObjectAction, String> objectMap,
-			ActivityNodeResolver activityExportResolver) {
+			ActivityNodeResolver activityExportResolver, List<String> createdObjectsDependencies) {
 
 		this.tempVariableExporter = tempVariableExporter;
 		this.activityExportResolver = activityExportResolver;
 		this.objectMap = objectMap;
+		this.createdObjectsDependencies = createdObjectsDependencies;
 	}
 
 	public String createCreateObjectActionCode(CreateObjectAction createObjectActionNode) {
@@ -34,12 +37,13 @@ class ObjectActionExporter {
 			objectType = ActivityTemplates.CreateObjectType.Signal;
 		} else {
 			objectType = CreateObjectType.Class;
+			createdObjectsDependencies.add(type);
 		}
 
 		tempVariableExporter.exportOutputPinToMap(createObjectActionNode.getResult());
 		String name = tempVariableExporter.getRealVariableName(createObjectActionNode.getResult());
 		objectMap.put(createObjectActionNode, name);
-
+		
 		return ActivityTemplates.createObject(type, name, objectType);
 	}
 

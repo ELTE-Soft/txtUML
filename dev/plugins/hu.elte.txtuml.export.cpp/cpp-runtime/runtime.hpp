@@ -33,17 +33,7 @@ public:
   {
       static_cast<RuntimeType*>(this)->enqueObject(sm);
   }
-
-  void setupObject(ObjectList& ol_)
-  {
-      for(auto it=ol_.begin();it!=ol_.end();++it)
-      {
-        static_cast<RuntimeType*>(this)->setupObjectSpecificRuntime(*it);
-      }
-  }
   
-  
-
   void configure(ThreadConfiguration* configuration)
   {
 	  if(!(static_cast<RuntimeType*>(this)->isConfigurated()))

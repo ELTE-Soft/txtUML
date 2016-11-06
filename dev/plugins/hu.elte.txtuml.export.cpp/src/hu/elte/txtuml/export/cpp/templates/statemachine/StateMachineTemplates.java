@@ -7,10 +7,12 @@ import org.eclipse.uml2.uml.State;
 
 import com.google.common.collect.Multimap;
 
+import hu.elte.txtuml.export.cpp.statemachine.TransitionConditions;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.PortTemplates;
 import hu.elte.txtuml.utils.Pair;
 
 public class StateMachineTemplates {
@@ -122,14 +124,15 @@ public class StateMachineTemplates {
 		return source.toString();
 	}
 	
-	public static String transitionTableInitilizationBody(String className, Multimap<Pair<String, String>, Pair<String, String>> machine) {
+	public static String transitionTableInitilizationBody(String className, Multimap<TransitionConditions, Pair<String, String>> machine) {
 		StringBuilder source = new StringBuilder("");
-		for (Pair<String, String> key : machine.keySet()) {
+		for (TransitionConditions key : machine.keySet()) {
 			for (Pair<String, String> value : machine.get(key)) {
 				source.append(className + "::" + GenerationNames.TransitionTableName + ".emplace(" + GenerationNames.EventStateTypeName
 						+ "(" + GenerationNames.EventsEnumName + "::");
-				source.append(GenerationNames.eventEnumName(key.getFirst()) + ","
-						+ GenerationNames.stateEnumName(key.getSecond()) + "),");
+				source.append(GenerationNames.eventEnumName(key.getEvent()) + ","
+						+ GenerationNames.stateEnumName(key.getState()) + ","
+								+ PortTemplates.ponrtEnumName(key.getPort()) + "),");
 				String guardName = GenerationNames.DefaultGuardName;
 				if (value.getFirst() != null) {
 					guardName = value.getFirst();
@@ -192,7 +195,7 @@ public class StateMachineTemplates {
 	}
 
 	public static String simpleStateMachineClassConstructorSharedBody(String className,
-			Multimap<Pair<String, String>, Pair<String, String>> machine, String intialState, Boolean simpleMachine) {
+			Multimap<TransitionConditions, Pair<String, String>> machine, String intialState, Boolean simpleMachine) {
 		String source = "";
 		if (simpleMachine) {
 			source += RuntimeTemplates.rtFunctionDef(className);

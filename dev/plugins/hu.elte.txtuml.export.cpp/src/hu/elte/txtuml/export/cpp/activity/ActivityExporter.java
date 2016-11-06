@@ -47,6 +47,8 @@ public class ActivityExporter {
 	private LinkActionExporter linkActionExporter;
 	private ObjectActionExporter objectActionExporter;
 	private ReturnNodeExporter returnNodeExporter;
+	
+	private List<String> createdClassDependecies;
 
 	private Shared shared;
 
@@ -55,6 +57,8 @@ public class ActivityExporter {
 
 	private void init() {
 		shared = new Shared();
+		createdClassDependecies = new LinkedList<String>();
+
 		tempVariableExporter = new OutVariableExporter();
 		userVariableExporter = new UserVariableExporter();
 		returnOutputsToCallActions = new HashMap<CallOperationAction, OutputPin>();
@@ -65,9 +69,10 @@ public class ActivityExporter {
 		callOperationExporter = new CallOperationExporter(tempVariableExporter, returnOutputsToCallActions,
 				activityExportResolver);
 		linkActionExporter = new LinkActionExporter(tempVariableExporter, activityExportResolver);
-		objectActionExporter = new ObjectActionExporter(tempVariableExporter, objectMap, activityExportResolver);
+		objectActionExporter = new ObjectActionExporter(tempVariableExporter, objectMap, activityExportResolver, createdClassDependecies);
 		controlNodeExporter = new StructuredControlNodeExporter(this, activityExportResolver, userVariableExporter,
 				returnNodeExporter);
+		
 
 	}
 
@@ -102,6 +107,10 @@ public class ActivityExporter {
 
 	public boolean isContainsTimerOperation() {
 		return callOperationExporter.isInvokedTimerOperation();
+	}
+	
+	public List<String> getAsdditionClassDependencies() {
+		return createdClassDependecies;
 	}
 
 	private String createActivityPartCode(ActivityNode startNode) {
