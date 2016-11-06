@@ -1,25 +1,27 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.jdt.core.IAnnotation;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
-import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.search.IJavaSearchConstants;
-import org.eclipse.jdt.core.search.SearchEngine;
-import org.eclipse.jdt.internal.core.SourceType;
 import org.eclipse.jdt.internal.core.search.JavaSearchScope;
-import org.eclipse.jdt.internal.ui.dialogs.FilteredTypesSelectionDialog;
 import org.eclipse.jdt.internal.ui.dialogs.PackageSelectionDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -30,14 +32,17 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
+import hu.elte.txtuml.api.layout.ClassDiagram;
+import hu.elte.txtuml.api.layout.StateMachineDiagram;
+import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.utils.eclipse.NotFoundException;
 import hu.elte.txtuml.utils.eclipse.PackageUtils;
@@ -53,19 +58,17 @@ public class VisualizeTxtUMLPage extends WizardPage {
 
 	private Composite container;
 	private Text txtUMLModel;
-	// private List<Text> txtUMLLayout = new LinkedList<>();
+	private List<IType> txtUMLLayout = new LinkedList<>();
 	private Text txtUMLProject;
 	private ScrolledComposite sc;
-
-	private Map<Integer, Text> txtUMLLayout = new HashMap<>();
 
 	/**
 	 * The Constructor
 	 */
 	public VisualizeTxtUMLPage() {
-		super("Visualize txtUML Page");
+		super("Visualize txtUML page");
 		setTitle("Visualize txtUML page");
-		setDescription("Provide the txtUML project, model package and diagrams to be visualized");
+		setDescription("Provide the txtUML project, model package and diagrams to be visualized.");
 	}
 
 	/*
@@ -122,14 +125,17 @@ public class VisualizeTxtUMLPage extends WizardPage {
 		Button browseModel = new Button(container, SWT.NONE);
 		browseModel.setText(browseButtonText);
 		browseModel.addSelectionListener(new SelectionListener() {
-
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				JavaSearchScope scope = new JavaSearchScope();
 				try {
 					IJavaProject javaProject = ProjectUtils.findJavaProject(txtUMLProject.getText());
-					for (IPackageFragmentRoot root : PackageUtils.getPackageFragmentRoots(javaProject)) {
-						scope.add(root);
+					List<IPackageFragment> allPackageFragments = PackageUtils
+							.findAllPackageFragmentsAsStream(javaProject).collect(Collectors.toList());
+
+					List<IPackageFragment> modelPackages = getModelPackages(allPackageFragments);
+					for (IPackageFragment modelPackage : modelPackages) {
+						scope.add(modelPackage);
 					}
 				} catch (JavaModelException | NotFoundException ex) {
 				}
@@ -150,36 +156,92 @@ public class VisualizeTxtUMLPage extends WizardPage {
 			}
 		});
 
-		/**
-		 * Future improvement - adding multiple descriptions **
-		 */
-		Button addDiagrambtn = new Button(container, SWT.NONE);
-		addDiagrambtn.setText("Add txtUML diagram description");
-		addDiagrambtn.addSelectionListener(new SelectionListener() {
+		final Label label = new Label(container, SWT.TOP);
+		label.setText("txtUML Diagrams: ");
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				addLayoutField("");
+		addInitialLayoutFields();
+
+		// diagram descriptions tree
+		Tree tree = new Tree(container, SWT.CHECK | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
+		TreeItem projectToExpand = null;
+
+		// add projects to the tree
+		IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+		for (IProject pr : allProjects) {
+			IJavaProject javaProject = null;
+			try {
+				javaProject = ProjectUtils.findJavaProject(pr.getName());
+			} catch (NotFoundException e) {
+				continue;
+			}
+			TreeItem projectItem = new TreeItem(tree, SWT.NONE);
+			projectItem.setText(javaProject.getElementName());
+			projectItem.setGrayed(true);
+			projectItem.setData(javaProject);
+			if (javaProject.getElementName().equals(txtUMLProject.getText())) {
+				projectToExpand = projectItem;
 			}
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
+			// add diagram description classes
+			List<IPackageFragment> packageFragments;
+			try {
+				packageFragments = PackageUtils.findAllPackageFragmentsAsStream(javaProject)
+						.collect(Collectors.toList());
+			} catch (JavaModelException ex) {
+				projectItem.dispose();
+				continue;
+			}
+
+			List<IType> types = packageFragments.stream().flatMap(pf -> getDiagramDescriptions(pf).stream())
+					.collect(Collectors.toList());
+
+			for (IType type : types) {
+				TreeItem diagramDescriptionItem = new TreeItem(projectItem, SWT.NONE);
+				diagramDescriptionItem.setText(type.getElementName());
+				diagramDescriptionItem.setData(type);
+				if (txtUMLLayout.contains(type)) {
+					diagramDescriptionItem.setChecked(true);
+				}
+			}
+		}
+
+		tree.addListener(SWT.Selection, event -> {
+			if (event.detail == SWT.CHECK) {
+				TreeItem item = (TreeItem) event.item;
+				if (item.getData() instanceof IType) {
+					IType type = (IType) item.getData();
+
+					if (!txtUMLLayout.contains(type)) {
+						txtUMLLayout.add(type);
+					} else {
+						txtUMLLayout.remove(type);
+					}
+					updateParentCheck(item.getParentItem());
+				} else {
+					checkItems(item, item.getChecked());
+				}
 			}
 		});
 
+		if (projectToExpand != null) {
+			projectToExpand.setExpanded(true);
+		}
+
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
+		GridData treeGd = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
+		treeGd.heightHint = 200;
+		treeGd.widthHint = 150;
+		GridData labelGd = new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1);
+		labelGd.verticalIndent = 5;
 		txtUMLModel.setLayoutData(gd);
 		txtUMLProject.setLayoutData(gd);
-		txtUMLLayout.values().forEach((text) -> text.setLayoutData(GridData.FILL_HORIZONTAL));
-		addDiagrambtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 4, 1));
-		// adding multiple descriptions
-
-		addInitialLayoutFields();
+		tree.setLayoutData(treeGd);
+		label.setLayoutData(labelGd);
 
 		sc.setContent(container);
 		sc.setExpandHorizontal(true);
 		sc.setExpandVertical(true);
-		container.setSize(container.computeSize(400, 300, true));
+		container.setSize(container.computeSize(450, 300, true));
 		sc.setMinSize(container.getSize());
 		sc.setSize(container.getSize());
 
@@ -195,78 +257,21 @@ public class VisualizeTxtUMLPage extends WizardPage {
 		}
 	}
 
-	private void addLayoutField(String text) {
-		Integer temp_index;
-		try {
-			temp_index = Collections.max(txtUMLLayout.keySet()) + 1;
-		} catch (NoSuchElementException e) {
-			temp_index = 1;
+	private void addLayoutField(String qualifiedName) {
+		// find type by qualified name
+		IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+		for (IProject pr : allProjects) {
+			IJavaProject javaProject = null;
+			try {
+				javaProject = ProjectUtils.findJavaProject(pr.getName());
+				List<IType> types = PackageUtils.findAllPackageFragmentsAsStream(javaProject)
+						.flatMap(pf -> getDiagramDescriptions(pf).stream()).collect(Collectors.toList());
+				types.stream().filter(type -> type.getFullyQualifiedName().equals(qualifiedName))
+						.forEach(type -> txtUMLLayout.add(type));
+			} catch (NotFoundException | JavaModelException ex) {
+				continue;
+			}
 		}
-
-		final Integer index = temp_index;
-
-		final Label label = new Label(container, SWT.NONE);
-		label.setText("txtUML Diagram" + index + ": ");
-		Control[] children = container.getChildren();
-		label.moveAbove(children[children.length - 2]);
-		container.layout(new Control[] { label });
-
-		final Text textField = new Text(container, SWT.BORDER);
-		textField.setText(text);
-		textField.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		children = container.getChildren();
-		textField.moveAbove(children[children.length - 2]);
-		container.layout(new Control[] { textField });
-
-		final Button browseBtn = new Button(container, SWT.NONE);
-		browseBtn.setText(browseButtonText);
-		browseBtn.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				FilteredTypesSelectionDialog dialog = new FilteredTypesSelectionDialog(container.getShell(), false,
-						PlatformUI.getWorkbench().getProgressService(), SearchEngine.createWorkspaceScope(),
-						IJavaSearchConstants.CLASS_AND_INTERFACE);
-				dialog.open();
-				Object[] result = dialog.getResult();
-				if (result != null && result.length > 0 && result[0] instanceof SourceType) {
-					SourceType item = (SourceType) result[0];
-					textField.setText(item.getFullyQualifiedName());
-				}
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-		children = container.getChildren();
-		browseBtn.moveAbove(children[children.length - 2]);
-		container.layout(new Control[] { browseBtn });
-
-		final Button deleteButton = new Button(container, SWT.CENTER);
-		deleteButton.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				label.dispose();
-				textField.dispose();
-				browseBtn.dispose();
-				deleteButton.dispose();
-				container.layout();
-				txtUMLLayout.remove(index);
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-		deleteButton.setText("X");
-		children = container.getChildren();
-		deleteButton.moveAbove(children[children.length - 2]);
-		container.layout(new Control[] { deleteButton });
-
-		txtUMLLayout.put(index, textField);
-		sc.setMinHeight(container.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
 	}
 
 	/**
@@ -288,17 +293,121 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	}
 
 	/**
-	 * Returns the txtUML model layout
+	 * Returns the txtUML model layout classes and containing project names
 	 * 
 	 * @return
 	 */
-	public List<String> getTxtUmlLayout() {
-		List<String> result = new LinkedList<String>();
-		for (Text t : txtUMLLayout.values()) {
-			if (!"".equals(t.getText())) {
-				result.add(t.getText());
+	public Map<String, String> getTxtUmlLayout() {
+		HashMap<String, String> result = new HashMap<String, String>();
+		for (IType layout : txtUMLLayout) {
+			String layoutName = layout.getFullyQualifiedName();
+			if (!"".equals(layoutName)) {
+				result.put(layoutName, layout.getJavaProject().getElementName());
 			}
 		}
 		return result;
 	}
+
+	private List<IPackageFragment> getModelPackages(List<IPackageFragment> packageFragments) {
+		List<IPackageFragment> modelPackages = new ArrayList<>();
+		for (IPackageFragment pFragment : packageFragments) {
+			Optional<ICompilationUnit> foundPackageInfoCompilationUnit = Optional
+					.of(pFragment.getCompilationUnit("package-info.java"));
+
+			if (!foundPackageInfoCompilationUnit.isPresent() || !foundPackageInfoCompilationUnit.get().exists()) {
+				continue;
+			}
+
+			ICompilationUnit packageInfoCompilationUnit = foundPackageInfoCompilationUnit.get();
+
+			try {
+				for (IPackageDeclaration packDecl : packageInfoCompilationUnit.getPackageDeclarations()) {
+					for (IAnnotation annot : packDecl.getAnnotations()) {
+						boolean isModelPackage = isImportedNameResolvedTo(packageInfoCompilationUnit,
+								annot.getElementName(), Model.class.getCanonicalName());
+
+						if (isModelPackage) {
+							modelPackages.add(pFragment);
+							break;
+						}
+					}
+				}
+			} catch (JavaModelException ex) {
+				return Collections.emptyList();
+			}
+		}
+		return modelPackages;
+	}
+
+	private List<IType> getDiagramDescriptions(IPackageFragment packageFragment) {
+		List<IType> diagramDescriptionTypes = new ArrayList<>();
+
+		ICompilationUnit[] compilationUnits;
+		try {
+			compilationUnits = packageFragment.getCompilationUnits();
+		} catch (JavaModelException ex) {
+			return Collections.emptyList();
+		}
+
+		for (ICompilationUnit cUnit : compilationUnits) {
+			IType[] types = null;
+			try {
+				types = cUnit.getAllTypes();
+			} catch (JavaModelException e) {
+				continue;
+			}
+
+			Stream.of(types).filter(type -> {
+				try {
+					int indexOfTypeParam = type.getSuperclassName().indexOf("<");
+					String stateMachineSuperclass = type.getSuperclassName();
+					if (indexOfTypeParam != -1) {
+						stateMachineSuperclass = stateMachineSuperclass.substring(0, indexOfTypeParam);
+					}
+					return isImportedNameResolvedTo(cUnit, type.getSuperclassName(),
+							ClassDiagram.class.getCanonicalName())
+							|| isImportedNameResolvedTo(cUnit, stateMachineSuperclass,
+									StateMachineDiagram.class.getCanonicalName());
+				} catch (JavaModelException | NullPointerException ex) {
+					return false;
+				}
+			}).forEach(type -> diagramDescriptionTypes.add(type));
+		}
+		return diagramDescriptionTypes;
+	}
+
+	private boolean isImportedNameResolvedTo(ICompilationUnit cUnit, String elementName, String qualifiedName) {
+		if (!qualifiedName.endsWith(elementName)) {
+			return false;
+		}
+		int lastSection = qualifiedName.lastIndexOf(".");
+		String pack = qualifiedName.substring(0, lastSection);
+		return (cUnit.getImport(qualifiedName).exists() || cUnit.getImport(pack + ".*").exists());
+	}
+
+	private void updateParentCheck(TreeItem parentItem) {
+		boolean isAnyChecked = Stream.of(parentItem.getItems()).anyMatch(child -> child.getChecked());
+		boolean isAllChecked = Stream.of(parentItem.getItems()).allMatch(child -> child.getChecked());
+
+		if (isAllChecked) {
+			parentItem.setGrayed(false);
+			parentItem.setChecked(true);
+		} else if (isAnyChecked) {
+			parentItem.setChecked(true);
+			parentItem.setGrayed(true);
+		} else {
+			parentItem.setGrayed(false);
+			parentItem.setChecked(false);
+		}
+	}
+
+	private void checkItems(TreeItem item, boolean checked) {
+		item.setGrayed(false);
+		item.setChecked(checked);
+		TreeItem[] items = item.getItems();
+		for (int i = 0; i < items.length; ++i) {
+			items[i].setChecked(checked);
+		}
+	}
+
 }
