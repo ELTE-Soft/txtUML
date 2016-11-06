@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import org.eclipse.uml2.uml.Region;
 import hu.elte.txtuml.export.cpp.Shared;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ConstructorTemplates;
@@ -57,7 +58,7 @@ public class SubStateMachineExporter extends StateMachineExporter {
 				HeaderTemplates.headerGuard(source, className));
 
 		source = createSubSmClassCppSource().toString();
-		String dependencyIncludes = GenerationTemplates.cppInclude(className);
+		String dependencyIncludes = GenerationTemplates.cppInclude(className) + GenerationTemplates.cppInclude(GenerationNames.EventHeaderName);
 		dependencyIncludes = GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude)
 				+ dependencyIncludes + GenerationTemplates.cppInclude(className);
 		Shared.writeOutSource(destination, GenerationTemplates.sourceName(className),
