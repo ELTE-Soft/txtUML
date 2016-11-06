@@ -96,14 +96,14 @@ public class VisualizeTxtUMLPage extends WizardPage {
 			public void widgetSelected(SelectionEvent e) {
 				ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(container.getShell(),
 						new WorkbenchLabelProvider(), new WorkbenchContentProvider() {
-					@Override
-					public Object[] getChildren(Object element) {
-						if (element instanceof IWorkspaceRoot) {
-							return ((IWorkspaceRoot) element).getProjects();
-						}
-						return new Object[0];
-					}
-				});
+							@Override
+							public Object[] getChildren(Object element) {
+								if (element instanceof IWorkspaceRoot) {
+									return ((IWorkspaceRoot) element).getProjects();
+								}
+								return new Object[0];
+							}
+						});
 				dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
 				dialog.setTitle("Project Selection");
 				dialog.open();

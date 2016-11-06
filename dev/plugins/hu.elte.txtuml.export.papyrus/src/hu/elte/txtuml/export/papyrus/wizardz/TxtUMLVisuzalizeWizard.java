@@ -46,7 +46,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 	 */
 	@Override
 	public String getWindowTitle() {
-		return "Create Papyrus Model from txtUML Model";
+		return "Create Papyrus model from txtUML model";
 	}
 
 	/*
