@@ -41,21 +41,21 @@ public class Glue implements ExternalClass, IControl, IControlled {
 	static Glue instance = null;
 
 	private Glue() {
-		ModelExecutor.create().start(() -> {
+		ModelExecutor.create().launch(() -> {
 			try {
-			door = Action.create(Door.class);
-			motor = Action.create(Motor.class);
-			alarm = Action.create(Alarm.class);
-			keyboard = Action.create(Keyboard.class);
+				door = Action.create(Door.class);
+				motor = Action.create(Motor.class);
+				alarm = Action.create(Alarm.class);
+				keyboard = Action.create(Keyboard.class);
 
-			// Initialize links and start object instances
-			Action.link(MotorMovesDoor.movedDoor.class, door, MotorMovesDoor.movingMotor.class, motor);
-			Action.link(DoorSwitchesOnAlarm.SwitchingDoor.class, door, DoorSwitchesOnAlarm.SwitchedAlarm.class, alarm);
-			Action.link(KeyboardProvidesCode.Provider.class, keyboard, KeyboardProvidesCode.Receiver.class, alarm);
-			Action.start(door);
-			Action.start(motor);
-			Action.start(alarm);
-			Action.start(keyboard);
+				// Initialize links and start object instances
+				Action.link(MotorMovesDoor.movedDoor.class, door, MotorMovesDoor.movingMotor.class, motor);
+				Action.link(DoorSwitchesOnAlarm.SwitchingDoor.class, door, DoorSwitchesOnAlarm.SwitchedAlarm.class, alarm);
+				Action.link(KeyboardProvidesCode.Provider.class, keyboard, KeyboardProvidesCode.Receiver.class, alarm);
+				Action.start(door);
+				Action.start(motor);
+				Action.start(alarm);
+				Action.start(keyboard);
 			} catch (Throwable t) {
 				t.printStackTrace();
 			}
