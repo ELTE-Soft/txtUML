@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.javascript.wizardz;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,8 +13,10 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
+import org.eclipse.uml2.uml.Model;
 
-import hu.elte.txtuml.export.javascript.JSONExporter;
+import hu.elte.txtuml.export.javascript.Exporter;
+import hu.elte.txtuml.export.javascript.json.JSONExporter;
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLExporter;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
@@ -98,17 +101,17 @@ public class TxtUMLVisualizeWizard extends Wizard {
 				@Override
 				public void run(IProgressMonitor monitor) throws InterruptedException {
 					monitor.beginTask("Visualization", 100);
-						
+
 					TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName, generatedFolderName,
 							txtUMLModelName, txtUMLLayout);
-					/*try {
+					try {
 						exporter.cleanBeforeVisualization();
 					} catch (CoreException e) {
 						Dialogs.errorMsgb("txtUML export Error - cleaning resources",
 								"Error occured when cleaning resources.", e);
 						throw new InterruptedException();
-					}*/
-					/*monitor.subTask("Exporting txtUML Model to UML2 model...");
+					}
+					monitor.subTask("Exporting txtUML Model to UML2 model...");
 					try {
 						TxtUMLToUML2.exportModel(txtUMLProjectName, txtUMLModelName,
 								txtUMLProjectName + "/" + generatedFolderName, ExportMode.ErrorHandlingNoActions, "gen");
@@ -117,7 +120,7 @@ public class TxtUMLVisualizeWizard extends Wizard {
 						Dialogs.errorMsgb("txtUML export Error", "Error occured during the UML2 exportation.", e);
 						monitor.done();
 						throw new InterruptedException();
-					}*/
+					}
 
 					monitor.subTask("Generating txtUML layout description...");
 					TxtUMLLayoutDescriptor layoutDescriptor = null;
@@ -157,9 +160,15 @@ public class TxtUMLVisualizeWizard extends Wizard {
 							throw new InterruptedException();
 						}
 					}
-					try {
 
-						JSONExporter.JSONFromReport(layoutDescriptor.getReports());
+					try {
+						Exporter ex = new Exporter(layoutDescriptor);
+						try {
+							ex.export();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 					} catch (Exception e) {
 						Dialogs.errorMsgb("txtUML visualization Error",
 								"Error occured during the visualization process.", e);
