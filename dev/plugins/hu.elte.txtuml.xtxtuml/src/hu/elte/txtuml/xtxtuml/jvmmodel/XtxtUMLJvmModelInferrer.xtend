@@ -15,6 +15,7 @@ import hu.elte.txtuml.api.model.Max
 import hu.elte.txtuml.api.model.Min
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.api.model.ModelClass.Port
+import hu.elte.txtuml.api.model.ModelEnum
 import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.api.model.StateMachine
 import hu.elte.txtuml.api.model.To
@@ -29,6 +30,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnum
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
@@ -153,6 +155,16 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				register(member, acceptor, isPreIndexingPhase)
 			}
 		}
+	}
+
+	def dispatch void infer(TUEnum enumeration, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+		acceptor.accept(enumeration.toEnumerationType(enumeration.fullyQualifiedName.toString)) [
+			documentation = enumeration.documentation
+			superTypes += ModelEnum.typeRef
+			enumeration.literals.forEach [ literal |
+				it.members += enumeration.toEnumerationLiteral(literal)
+			]
+		]
 	}
 
 	def dispatch void infer(TUConnector connector, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
