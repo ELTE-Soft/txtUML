@@ -23,8 +23,8 @@ public class PortExporter {
 			return "";
 		}
 		
-		StringBuilder source = new StringBuilder ("");
-		source.append(GenerationNames.EnumName);
+		StringBuilder source = new StringBuilder ("\n");
+		source.append(GenerationNames.EnumName).append(" ");
 		source.append(PortTemplates.PORT_ENUM_NAME);
 		source.append(" { ");
 		for(Port port : ports) {
@@ -32,7 +32,7 @@ public class PortExporter {
 			source.append(",");
 		}
 		source.deleteCharAt(source.length() - 1);
-		source.append(" } ");
+		source.append(" }; ");
 		
 		return source.toString();
 	}

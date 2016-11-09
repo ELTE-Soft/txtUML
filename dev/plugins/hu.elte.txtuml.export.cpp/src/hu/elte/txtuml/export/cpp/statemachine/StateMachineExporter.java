@@ -47,7 +47,6 @@ public class StateMachineExporter {
 	protected EntryExitFunctionExporter entryExitFunctionExporter;
 	protected String className;
 	private int poolId;
-	private PortExporter portExporter;
 	
 	private Shared shared;
 
@@ -82,7 +81,6 @@ public class StateMachineExporter {
 		submachineMap = getSubMachines();
 		subSubMachines = new ArrayList<String>();
 		guardExporter = new GuardExporter();
-		portExporter = new PortExporter();
 		transitionExporter = new TransitionExporter(className, stateMachineRegion.getTransitions(), guardExporter);
 		entryExitFunctionExporter = new EntryExitFunctionExporter(className, stateList);
 		entryExitFunctionExporter.createEntryFunctionTypeMap();
@@ -202,6 +200,7 @@ public class StateMachineExporter {
 			if (item.getSource().getName().equals(getInitialStateName())) {
 				transitionCondition = new TransitionConditions(EventTemplates.InitSignal, item.getSource().getName(), PortTemplates.NO_PORT);
 			}
+			
 			for (Trigger tri : item.getTriggers()) {
 				Event e = tri.getEvent();
 				

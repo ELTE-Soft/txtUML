@@ -39,7 +39,6 @@ import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
-import hu.elte.txtuml.export.cpp.templates.structual.PortTemplates;
 import hu.elte.txtuml.export.cpp.thread.ThreadHandlingManager;
 import hu.elte.txtuml.export.cpp.structural.DependencyExporter;
 

@@ -1,11 +1,11 @@
-package machine1.j;
+package machine1.x;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.execution.ModelExecutor;
-import machine1.j.model.Machine;
-import machine1.j.model.User;
-import machine1.j.model.associations.Usage;
-import machine1.j.model.signals.DoYourWork;
+import machine1.x.model.DoYourWork;
+import machine1.x.model.Machine;
+import machine1.x.model.Usage;
+import machine1.x.model.User;
 
 public class Tester {
 
@@ -26,7 +26,7 @@ public class Tester {
 	}
 
 	public static void main(String[] args) {
-		ModelExecutor.create().setTraceLogging(false).run(Tester::init);
+		ModelExecutor.create().setTraceLogging(true).run(Tester::init);
 	}
 
 }
