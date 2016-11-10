@@ -2,7 +2,6 @@ package hu.elte.txtuml.layout.visualizer.interfaces;
 
 import hu.elte.txtuml.layout.visualizer.model.Diagram;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
-import hu.elte.txtuml.utils.Pair;
 
 /**
  * Interface for a defining pixel dimension values for a certain box.
@@ -11,48 +10,55 @@ import hu.elte.txtuml.utils.Pair;
 public interface IPixelDimensionProvider {
 
 	/**
-	 * Class that represents the Width of a box.
+	 * Dimension of a box.
+	 *
 	 */
-	public class Width {
+	public class Dimension {
 		/**
-		 * Value of Width.
+		 * Width of the box in pixels.
 		 */
-		public Integer Value;
-		
+		public Integer Width;
 		/**
-		 * Create Width.
-		 * @param val Value of Width.
+		 * Height of the box in pixels.
 		 */
-		public Width(Integer val){
-			Value = val;
+		public Integer Height;
+		/**
+		 * If the box contains inner elements 
+		 * this amount of pixels must be left empty
+		 * at the inner diagram's top.
+		 */
+		public Integer TopExtra;
+		/**
+		 * If the box contains inner elements 
+		 * this amount of pixels must be left empty
+		 * at the inner diagram's left side.
+		 */
+		public Integer LeftExtra;
+	
+		/**
+		 * Creates a basic Dimension object with the given parameters.
+		 * @param w Width.
+		 * @param h Height.
+		 * @param tg TopExtra
+		 * @param lg LeftExtra
+		 */
+		public Dimension(Integer w, Integer h, Integer tg, Integer lg)
+		{
+			Width = w;
+			Height = h;
+			TopExtra = tg;
+			LeftExtra = lg;
 		}
 	}
-	
+
 	/**
-	 * Class that represents the Height of a box.
-	 */
-	public class Height {
-		/**
-		 * Value of Height.
-		 */
-		public Integer Value;
-		
-		/**
-		 * Create Height.
-		 * @param val Value of Height.
-		 */
-		public Height(Integer val){
-			Value = val;
-		}
-	}
-	
-	/**
-	 * Returns the Pixel values for the box's width and height in
-	 * a format of Pair<WIDTH, HEIGHT>.
-	 * Parameter box might be flat, or might contain inner {@link Diagram} 
-	 * whose layout is already applied.
-	 * @param box {@link RectangleObject} to get the dimensions for.
+	 * Returns the Pixel values for the box's width, height and the extra
+	 * boundaries. Parameter box might be flat, or might contain inner
+	 * {@link Diagram} whose layout is already applied.
+	 * 
+	 * @param box
+	 *            {@link RectangleObject} to get the dimensions for.
 	 * @return Width and Height of the box in pixels.
 	 */
-	public Pair<Width, Height> getPixelDimensionsFor(RectangleObject box);
+	public Dimension getPixelDimensionsFor(RectangleObject box);
 }

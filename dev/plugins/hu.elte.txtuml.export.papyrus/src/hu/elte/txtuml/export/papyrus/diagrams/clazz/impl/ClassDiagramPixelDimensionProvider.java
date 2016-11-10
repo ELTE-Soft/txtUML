@@ -6,7 +6,6 @@ import org.eclipse.uml2.uml.Element;
 import hu.elte.txtuml.export.papyrus.layout.IDiagramElementsMapper;
 import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
-import hu.elte.txtuml.utils.Pair;
 
 public class ClassDiagramPixelDimensionProvider implements IPixelDimensionProvider {
 
@@ -27,7 +26,7 @@ public class ClassDiagramPixelDimensionProvider implements IPixelDimensionProvid
 	}
 
 	@Override
-	public Pair<Width, Height> getPixelDimensionsFor(RectangleObject box) {
+	public Dimension getPixelDimensionsFor(RectangleObject box) {
 		Integer width = DEFAULT_ELEMENT_WIDTH;
 		Integer height = DEFAULT_ELEMENT_HEIGHT;
 
@@ -42,6 +41,8 @@ public class ClassDiagramPixelDimensionProvider implements IPixelDimensionProvid
 			height = height < MIN_CLASS_HEIGHT ? MIN_CLASS_HEIGHT : height;
 			height = height > MAX_CLASS_HEIGHT ? MAX_CLASS_HEIGHT : height;
 		}
-		return Pair.of(new Width(width), new Height(height));
+		
+		//TODO
+		return new Dimension(width, height, 0, 0);
 	}
 }

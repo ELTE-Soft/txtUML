@@ -24,22 +24,21 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
-import hu.elte.txtuml.utils.Pair;
 
 public class LayoutVisualizeTest {
 
 	private class TestPixelProvider implements IPixelDimensionProvider {
 
 		@Override
-		public Pair<Width, Height> getPixelDimensionsFor(RectangleObject box) {
+		public Dimension getPixelDimensionsFor(RectangleObject box) {
 			if (!box.hasInner()) {
-				return Pair.of(new Width(40), new Height(40));
+				return new Dimension(40, 40, 0, 0);
 			} else // if(box.hasInner())
 			{
 				Integer wpx = (int)(box.getInner().getWidth() * box.getInner().getPixelGridHorizontal());
 				Integer hpx = (int)(box.getInner().getHeight() * box.getInner().getPixelGridVertical());
 
-				return Pair.of(new Width(wpx), new Height(hpx));
+				return new Dimension(wpx, hpx, 0, 0);
 			}
 		}
 		

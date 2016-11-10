@@ -8,13 +8,13 @@ import hu.elte.txtuml.export.papyrus.layout.IDiagramElementsMapper;
 import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.model.SpecialBox;
-import hu.elte.txtuml.utils.Pair;
 
 public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensionProvider {
 
 	private static final int DEFAULT_ELEMENT_WIDTH = 80;
 	private static final int DEFAULT_ELEMENT_HEIGHT = 60;
 	public static final int STATE_HEADER_HEIGHT = 20;
+	private static final int DEFAULT_ELEMENT_BORDER = 20;//TODO
 
 	private static final int MIN_STATE_WIDTH = 40;
 	private static final int MAX_STATE_WIDTH = 800;
@@ -31,9 +31,10 @@ public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensio
 	}
 
 	@Override
-	public Pair<Width, Height> getPixelDimensionsFor(RectangleObject box) {
+	public Dimension getPixelDimensionsFor(RectangleObject box) {
 		int width;
 		int height;
+		int border = 0;
 
 		if (!box.hasInner()) {
 			if (box.isSpecial() && box.getSpecial().equals(SpecialBox.Initial)) {
@@ -46,14 +47,18 @@ public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensio
 			}
 		} else // if(box.hasInner())
 		{
+			border = DEFAULT_ELEMENT_BORDER;
 			width = box.getInner().getWidth() * box.getInner().getPixelGridHorizontal();
+			width += 2 * border;
 			height = box.getInner().getHeight() * box.getInner().getPixelGridVertical() + STATE_HEADER_HEIGHT;
+			height += 2 * border;
 		}
 
-		return normalizeSizes(box, width, height);
+		return normalizeSizes(box, width, height, border);
 	}
 
-	private Pair<Width, Height> normalizeSizes(RectangleObject box, int width, int height) {
+	private Dimension normalizeSizes(RectangleObject box, int width, int height, 
+			int border) {
 
 		Element elem = this.elementsMapper.findNode(box.getName());
 		if (elem != null && elem instanceof State) {
@@ -66,6 +71,7 @@ public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensio
 			width = PSEUDOSTATE_WIDTH;
 			height = PSEUDOSTATE_HEIGHT;
 		}
-		return Pair.of(new Width(width), new Height(height));
+		
+		return new Dimension(width, height, border, border);
 	}
 }

@@ -28,8 +28,10 @@ import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
 import hu.elte.txtuml.layout.visualizer.exceptions.StatementsConflictException;
 import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
 import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider;
+import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider.Dimension;
 import hu.elte.txtuml.layout.visualizer.model.Diagram;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
+import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Options;
 import hu.elte.txtuml.layout.visualizer.model.OverlapArrangeMode;
@@ -298,17 +300,8 @@ public class LayoutVisualize {
 			Logger.sys.info("End of arrange!");
 
 		ProgressManager.end();
-
-		// TODO
-		/*
-		 * String filename = LocalDateTime.now().getYear() + "-" +
-		 * LocalDateTime.now().getMonthValue() + "-" +
-		 * LocalDateTime.now().getDayOfMonth() + "__" +
-		 * LocalDateTime.now().getHour() + "-" + LocalDateTime.now().getMinute()
-		 * + "-" + LocalDateTime.now().getSecond();
-		 */
-		// FileVisualize.printOutput(_diagram, "C:/Users/Alez/Documents/asd/" +
-		// filename + ".txt");
+		
+		//FileVisualize.printOutput(_diagram, "C:\\Users\\Alez\\Documents\\asd", "1");
 	}
 
 	private void getOptions() throws InternalException {
@@ -498,7 +491,13 @@ public class LayoutVisualize {
 		// Start arrange the links of this diagram inside out.
 		Pair<Integer, Diagram> result = recursiveLinkArrange(maxGroupId, _diagram, "");
 		_diagram = result.getSecond();
-
+		
+		//TODO
+		/*Integer topGap = 20 / _diagram.getPixelGridVertical();
+		Integer leftGap = 20 / _diagram.getPixelGridHorizontal();
+		
+		moveInners(_diagram, topGap, leftGap);*/
+		
 		if (_options.Logging)
 			Logger.sys.info("> Link arrange DONE!");
 
@@ -523,16 +522,42 @@ public class LayoutVisualize {
 					Logger.sys.info("> > Recursive link arrange DONE!");
 			}
 
-			Pair<IPixelDimensionProvider.Width, IPixelDimensionProvider.Height> dim = _pixelProvider
-					.getPixelDimensionsFor(box);
-			box.setPixelWidth(dim.getFirst().Value);
-			box.setPixelHeight(dim.getSecond().Value);
+			Dimension dim = _pixelProvider.getPixelDimensionsFor(box);
+			box.setPixelWidth(dim.Width);
+			box.setPixelHeight(dim.Height);
+			
+			if(box.hasInner())
+			{
+				Integer topGap = dim.TopExtra / box.getInner().getPixelGridVertical();
+				Integer leftGap = dim.LeftExtra / box.getInner().getPixelGridHorizontal();
+				
+				addGap(box.getInner(), topGap, leftGap);
+			}
 		}
 		// Arrange of siblings
 		ArrangeAssociations aa = new ArrangeAssociations(toLayout, _assocStatements, parentName, maxGroupId, _options);
 		toLayout = aa.getDiagram();
 
 		return new Pair<Integer, Diagram>(aa.getGId(), toLayout);
+	}
+	
+	private void addGap(Diagram inner, Integer topGap, Integer leftGap)
+	{
+		for(RectangleObject box : inner.Objects)
+		{
+			box.setPosition(new Point(box.getPosition().getX() + leftGap,
+					box.getPosition().getY() - topGap));
+		}
+		
+		for(LineAssociation link : inner.Assocs)
+		{
+			List<Point> newroute = new ArrayList<Point>();
+			for(Point p : link.getRoute())
+			{
+				newroute.add(new Point(p.getX() + leftGap, p.getY() - topGap));
+			}
+			link.setRoute(newroute);
+		}
 	}
 
 	private Diagram eliminatePhantoms(final Diagram diag) {
