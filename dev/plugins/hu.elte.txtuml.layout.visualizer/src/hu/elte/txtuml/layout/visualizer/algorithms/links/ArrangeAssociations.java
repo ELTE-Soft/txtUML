@@ -554,19 +554,21 @@ public class ArrangeAssociations {
 		if (box.hasInner()) {
 			if (!box.isPhantom()) {
 				// Add compositeBox's outer rim as a warning line
-				for (Point p : box.getPerimiterPoints()) {
-					result.put(p, Color.Yellow);
+				for (Point p : box.getPoints()) {
+					result.put(p, Color.Red);
 				}
 			}
-
-			// Add compositeBox's inner boxes
-			for (RectangleObject innerBox : box.getInner().Objects) {
-				result.putAll(getBoxPaintedPoints(innerBox));
-			}
-
-			// Add compositeBox's inner links
-			for (LineAssociation innerLink : box.getInner().Assocs) {
-				result.putAll(getRoutePaintedPoints(innerLink));
+			else
+			{
+				// Add phantom's inner boxes
+				for (RectangleObject innerBox : box.getInner().Objects) {
+					result.putAll(getBoxPaintedPoints(innerBox));
+				}
+	
+				// Add phantom's inner links
+				for (LineAssociation innerLink : box.getInner().Assocs) {
+					result.putAll(getRoutePaintedPoints(innerLink));
+				}
 			}
 
 		} else if (!box.isPhantom()) {
