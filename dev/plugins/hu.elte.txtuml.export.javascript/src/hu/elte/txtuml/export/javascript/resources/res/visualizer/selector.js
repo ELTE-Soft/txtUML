@@ -5,7 +5,7 @@ visualizer.Selector  = function(input){
 	var params = window.location.hash.substring(1).split('_');
 	var paramsValid = params.length === 2 &&
 		_.has(visualizer.Utils.MAPS.DIAGRAMTYPE_TO_COLLECTION_PROPERTY, params[0]) && 
-		visualizer.Utils.arrayContains(input[params[0]], params[1]);
+		input[visualizer.Utils.MAPS.DIAGRAMTYPE_TO_COLLECTION_PROPERTY[params[0]]].length > params[1];
 	
 	clazz._diagramMap = {};
 	clazz._selected = null;
@@ -14,6 +14,7 @@ visualizer.Selector  = function(input){
 		var collectionName = visualizer.Utils.MAPS.DIAGRAMTYPE_TO_COLLECTION_PROPERTY[params[0]];
 		clazz._selected = input[collectionName][params[1]];
 		clazz._selected.type = params[0];
+
 	}
 	$.each(visualizer.Utils.MAPS.DIAGRAMTYPE_TO_COLLECTION_PROPERTY, function(type, diagramCollectionName){			
 		if (clazz._selected === null && input[diagramCollectionName].length > 0){

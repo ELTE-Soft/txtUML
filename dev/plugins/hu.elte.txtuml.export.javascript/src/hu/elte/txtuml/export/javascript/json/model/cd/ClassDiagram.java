@@ -25,7 +25,7 @@ public class ClassDiagram {
 	
 	protected ClassDiagram() {}
 	
-	public ClassDiagram(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links, ModelMapProvider map) throws UnexpectedAssociationEndException{
+	public ClassDiagram(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links, ModelMapProvider map) {
 		name = diagramName;
 		classes = new ArrayList<ClassNode>();
 		attributeLinks = new ArrayList<ClassAttributeLink>();

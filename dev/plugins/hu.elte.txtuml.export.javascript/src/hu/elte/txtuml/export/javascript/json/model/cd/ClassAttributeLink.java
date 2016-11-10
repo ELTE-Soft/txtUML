@@ -21,10 +21,12 @@ public class ClassAttributeLink extends ClassLink {
 
 	protected ClassAttributeLink() {}
 	
-	public ClassAttributeLink(LineAssociation layout, Association assoc, Classifier fromClass, Classifier toClass) throws UnexpectedAssociationEndException {
+	public ClassAttributeLink(LineAssociation layout, Association assoc, Classifier fromClass, Classifier toClass) {
 		super(layout);
 		type = "normal";
 		name = assoc.getLabel();
+		from = null;
+		to = null;
 		for (Property end : assoc.getMemberEnds()){
 			if (end.isComposite()){
 				type = "composition";
@@ -32,15 +34,17 @@ public class ClassAttributeLink extends ClassLink {
 			
 			Element ownerElement = end.getOwner();
 			if (!(ownerElement instanceof Class)){
-				to = new AssociationEnd(layout.getTo(), end);
+				if (from == null){
+					from = new AssociationEnd(layout.getFrom(), end);
+				}else{
+					to = new AssociationEnd(layout.getTo(), end);
+				}
 			}else{
 				Class owner = (Class) ownerElement;
-				if (owner == fromClass){
+				if (owner == fromClass && from == null){
 					from = new AssociationEnd(layout.getFrom(), end);
-				}else if (owner == toClass){
+				}else if (owner == toClass && to == null){
 					to = new AssociationEnd(layout.getTo(), end);
-				}else{
-					throw new UnexpectedAssociationEndException(fromClass.getName(), toClass.getName(), owner.getName());
 				}
 			}
 		}		

@@ -14,7 +14,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 import hu.elte.txtuml.export.javascript.json.JSONExporter;
 import hu.elte.txtuml.export.javascript.json.model.ExportationModel;
-import hu.elte.txtuml.export.javascript.json.model.cd.UnexpectedAssociationEndException;
 import hu.elte.txtuml.export.javascript.resources.ResourceHandler;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutVisualizerManager;
@@ -73,7 +72,7 @@ public class Exporter {
 		display();
 	}
 
-	private void createModel() throws ModelMapException, ArrangeException, UnexpectedAssociationEndException {
+	private void createModel() throws ModelMapException, ArrangeException {
 		
 		for (Pair<String,DiagramExportationReport> report : layout.getReportsWithDiagramNames()){
 				String name = report.getFirst();
