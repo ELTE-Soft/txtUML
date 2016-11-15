@@ -40,7 +40,7 @@ visualizer.linkholders.OrthogonalLink = function (link){
 	//console.log(clazz);
 	//clazz._sideFrom = clazz._getDirectionFromAToB(route[0],route[1]);
 	//clazz._sideTo = clazz._getDirectionFromAToB(route[route.length -  1],route[route.length - 2]);
-	clazz._gridRoute = route.slice(1,-1);
+	//clazz._gridRoute = route.slice(1,-1);
 }
 
 visualizer.linkholders.OrthogonalLink.prototype = Object.create(visualizer.linkholders.Link.prototype);
@@ -207,3 +207,39 @@ visualizer.linkholders.ClassNonAttributeLink = function (link){
 }
 visualizer.linkholders.ClassNonAttributeLink.prototype = Object.create(visualizer.linkholders.OrthogonalLink.prototype);
 visualizer.linkholders.ClassNonAttributeLink.prototype.constructor = visualizer.linkholders.ClassNonAttributeLink;
+
+visualizer.linkholders.TransitionLink = function (link){
+	clazz = this;
+	visualizer.linkholders.OrthogonalLink.call(clazz, link);
+	var linkData = {  	
+		'source':{  
+			'id':link.fromID 
+		},
+		'target':{  
+			'id':link.toID
+		},
+		'labels':[  
+			{  
+				'position':{  
+					'distance':0.5,
+					'offset':-20
+				},
+				'attrs':{  
+					'smooth': true,
+					'text':{  
+						'font-family': '"Lucida Console", Monaco, monospace',
+						'text':link.name
+					}
+					
+			
+				}
+			}
+		]
+	
+	};
+	
+	clazz._link = new joint.shapes.uml.Transition(linkData);
+}
+visualizer.linkholders.TransitionLink.prototype = Object.create(visualizer.linkholders.OrthogonalLink.prototype);
+visualizer.linkholders.TransitionLink.prototype.constructor = visualizer.linkholders.TransitionLink;
+

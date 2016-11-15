@@ -24,7 +24,8 @@ public class ResourceHandler {
 			"visualizer/shapes.js",
 			"visualizer/utils.js",
 			"visualizer/utils.js",
-			"visualizer/attributeassociationview.js"
+			"visualizer/attributeassociationview.js",
+			"visualizer/visualizers.js"
 			};
 
 	public static void copyResourcesTo(String targetDirectory) throws IOException{

@@ -82,8 +82,10 @@ public class Exporter {
 				lvm.arrange();
 				
 				ModelMapProvider map = new ModelMapProvider(URI.createFileURI(genFolder), der.getModelName());
-				
-				model.addClassDiagram(name, lvm.getObjects(), lvm.getAssociations(), map); 
+				switch (der.getType()){
+					case Class: model.addClassDiagram(name, lvm.getObjects(), lvm.getAssociations(), map); break;
+					case StateMachine: model.addStateChartDiagram(name, lvm.getObjects(), lvm.getAssociations(), map); break;
+				}
 		}
 		
 	}

@@ -1,151 +1,160 @@
 visualizer.Grid = function(nodes, links, padding){
 	var clazz = this;
-	clazz._left = null;
-	clazz._right = null;
-	clazz._top = null;
-	clazz._bottom = null;
-	clazz._padding = padding;
-	
-	clazz._colWidth = clazz._GLOBAL_MIN_WIDTH;
-	clazz._rowHeight = clazz._GLOBAL_MIN_HEIGHT;
-
-	$.each(nodes,function(key,value){
+	if (nodes.length === 0){
+		clazz._left = 0;
+		clazz._right = 0;
+		clazz._top = 0;
+		clazz._bottom = 0;
+		clazz._padding = padding;
+		clazz._totalPixelWidth = padding * 2;
+		clazz._totalPixelHeight = padding * 2;
+	}else{
+		var clazz = this;
+		clazz._left = null;
+		clazz._right = null;
+		clazz._top = null;
+		clazz._bottom = null;
+		clazz._padding = padding;
 		
-		var position = value.getGridPosition();
-		var size = value.getGridSize();
-		if (clazz._left === null){
-			clazz._left = position.x;
-			clazz._top = position.y;
-			clazz._right = position.x + size.width;	
-			clazz._bottom = position.y - size.height;			
-		}else{
-			clazz._left = Math.min(clazz._left,position.x);
-			clazz._top = Math.max(clazz._top,position.y);
-			clazz._right = Math.max(clazz._right,position.x + size.width);
-			clazz._bottom = Math.min(clazz._bottom,position.y - size.height);
-		}
-	});
-	
-	$.each(links,function(key,link){
-		var route = link.getRoute();
-		$.each(route,function(key, position){
-			clazz._left = Math.min(clazz._left,position.x - 1);
-			clazz._top = Math.max(clazz._top,position.y + 1);
-			clazz._right = Math.max(clazz._right,position.x + 1);
-			clazz._bottom = Math.min(clazz._bottom,position.y - 1);			
+		clazz._colWidth = clazz._GLOBAL_MIN_WIDTH;
+		clazz._rowHeight = clazz._GLOBAL_MIN_HEIGHT;
+		$.each(nodes,function(key,value){
+			
+			var position = value.getGridPosition();
+			var size = value.getGridSize();
+			if (clazz._left === null){
+				clazz._left = position.x;
+				clazz._top = position.y;
+				clazz._right = position.x + size.width;	
+				clazz._bottom = position.y - size.height;			
+			}else{
+				clazz._left = Math.min(clazz._left,position.x);
+				clazz._top = Math.max(clazz._top,position.y);
+				clazz._right = Math.max(clazz._right,position.x + size.width);
+				clazz._bottom = Math.min(clazz._bottom,position.y - size.height);
+			}
 		});
-	});
-	// Uniform
-	/*var i;
-	$.each(nodes,function(key,node){
-		var size = node.getGridSize();
-		var pixelSize = node.getPixelSize();
 		
-		var widthRatio = Math.ceil(pixelSize.width / size.width);
-		var heightRatio = Math.ceil(pixelSize.height / size.height);
-		
-		clazz._colWidth = Math.max(widthRatio, clazz._colWidth);
-		clazz._rowHeight = Math.max(heightRatio, clazz._rowHeight);
-	});
-	
-	clazz._totalPixelWidth = clazz._padding * 2 + clazz._colWidth * (clazz._right - clazz._left);
-	clazz._totalPixelHeight = clazz._padding * 2 + clazz._rowHeight * (clazz._top - clazz._bottom);*/
-	clazz._columns = {}
-	clazz._rows = {}
-	
-	
-	var i;
-	for (i = clazz._left; i < clazz._right; ++i){
-		clazz._columns[i] = {
-			'x':padding,
-			'width':clazz._GLOBAL_MIN_WIDTH
-		}
-	}
-	for (i = clazz._top; i > clazz._bottom; --i){
-		clazz._rows[i] = {
-			'y':padding,
-			'height':clazz._GLOBAL_MIN_HEIGHT
-		}
-	}
-	$.each(links, function(key, link){
-		var route = link.getRoute();
-		$.each(route,function(poskey, position){
-			clazz._columns[position.x].width = clazz._TURNING_MIN_WIDTH;
-			clazz._rows[position.y].height = clazz._TURNING_MIN_HEIGHT;
+		$.each(links,function(key,link){
+			var route = link.getRoute();
+			$.each(route,function(key, position){
+				clazz._left = Math.min(clazz._left,position.x - 1);
+				clazz._top = Math.max(clazz._top,position.y + 1);
+				clazz._right = Math.max(clazz._right,position.x + 1);
+				clazz._bottom = Math.min(clazz._bottom,position.y - 1);			
+			});
 		});
-	});
-	$.each(nodes,function(key,node){
-		var position = node.getGridPosition();
-		var size = node.getGridSize();
-		var pixelSize = node.getPixelSize();
+		// Uniform
+		/*var i;
+		$.each(nodes,function(key,node){
+			var size = node.getGridSize();
+			var pixelSize = node.getPixelSize();
+			
+			var widthRatio = Math.ceil(pixelSize.width / size.width);
+			var heightRatio = Math.ceil(pixelSize.height / size.height);
+			
+			clazz._colWidth = Math.max(widthRatio, clazz._colWidth);
+			clazz._rowHeight = Math.max(heightRatio, clazz._rowHeight);
+		});
 		
-		var widthRatio = Math.ceil(pixelSize.width / size.width);
-		var heightRatio = Math.ceil(pixelSize.height / size.height);
+		clazz._totalPixelWidth = clazz._padding * 2 + clazz._colWidth * (clazz._right - clazz._left);
+		clazz._totalPixelHeight = clazz._padding * 2 + clazz._rowHeight * (clazz._top - clazz._bottom);*/
+		clazz._columns = {}
+		clazz._rows = {}
+		
+		
 		var i;
-		var right = position.x + size.width;
-		var bottom = position.y - size.height;
-		
-		var changeIndexes = [];
-		var subsize = 0;
-		
-		for (i = position.x; i < right; ++i ){
+		for (i = clazz._left; i < clazz._right; ++i){
+			clazz._columns[i] = {
+				'x':padding,
+				'width':clazz._GLOBAL_MIN_WIDTH
+			}
+		}
+		for (i = clazz._top; i > clazz._bottom; --i){
+			clazz._rows[i] = {
+				'y':padding,
+				'height':clazz._GLOBAL_MIN_HEIGHT
+			}
+		}
+		$.each(links, function(key, link){
+			var route = link.getRoute();
+			$.each(route,function(poskey, position){
+				clazz._columns[position.x].width = clazz._TURNING_MIN_WIDTH;
+				clazz._rows[position.y].height = clazz._TURNING_MIN_HEIGHT;
+			});
+		});
+		$.each(nodes,function(key,node){
+			var position = node.getGridPosition();
+			var size = node.getGridSize();
+			var pixelSize = node.getPixelSize();
+			
+			var widthRatio = Math.ceil(pixelSize.width / size.width);
+			var heightRatio = Math.ceil(pixelSize.height / size.height);
+			var i;
+			var right = position.x + size.width;
+			var bottom = position.y - size.height;
+			
+			var changeIndexes = [];
+			var subsize = 0;
+			
+			for (i = position.x; i < right; ++i ){
 
-			if (clazz._columns[i].width < widthRatio){
-				changeIndexes.push(i);
-			}else{
-				subsize += clazz._columns[i].width;
+				if (clazz._columns[i].width < widthRatio){
+					changeIndexes.push(i);
+				}else{
+					subsize += clazz._columns[i].width;
+				}
+			}
+			
+			if (changeIndexes.length !== 0 && pixelSize.width > subsize){
+				var correctedSizeRatio = (pixelSize.width - subsize) / changeIndexes.length;
+				$.each(changeIndexes, function(key,index){
+					clazz._columns[index].width = correctedSizeRatio;
+				});
+			}
+
+			subsize = 0;
+			changeIndexes = [];
+			for (i = position.y; i > bottom; --i ){
+				if (clazz._rows[i].height < heightRatio){
+					changeIndexes.push(i);
+				}else{
+					subsize += clazz._rows[i].height;
+				}
+			}
+			
+			if (changeIndexes.length !== 0 && pixelSize.width > subsize){
+				var correctedSizeRatio = (pixelSize.height - subsize) / changeIndexes.length;
+				$.each(changeIndexes, function(key,index){
+					clazz._rows[index].height = correctedSizeRatio;
+				});
+			}
+			
+			
+		});
+		
+		for (i = clazz._left; i < clazz._right; ++i){		
+			if (i < clazz._right - 1){
+				clazz._columns[i+1].x = clazz._columns[i].x + clazz._columns[i].width;
 			}
 		}
 		
-		if (changeIndexes.length !== 0 && pixelSize.width > subsize){
-			var correctedSizeRatio = (pixelSize.width - subsize) / changeIndexes.length;
-			$.each(changeIndexes, function(key,index){
-				clazz._columns[index].width = correctedSizeRatio;
-			});
-		}
-
-		subsize = 0;
-		changeIndexes = [];
-		for (i = position.y; i > bottom; --i ){
-			if (clazz._rows[i].height < heightRatio){
-				changeIndexes.push(i);
-			}else{
-				subsize += clazz._rows[i].height;
+		for (i = clazz._top; i > clazz._bottom; --i){
+			if (i > clazz._bottom + 1){
+				clazz._rows[i-1].y = clazz._rows[i].y + clazz._rows[i].height;
 			}
 		}
 		
-		if (changeIndexes.length !== 0 && pixelSize.width > subsize){
-			var correctedSizeRatio = (pixelSize.height - subsize) / changeIndexes.length;
-			$.each(changeIndexes, function(key,index){
-				clazz._rows[index].height = correctedSizeRatio;
-			});
-		}
-		
-		
-	});
-	
-	for (i = clazz._left; i < clazz._right; ++i){		
-		if (i < clazz._right - 1){
-			clazz._columns[i+1].x = clazz._columns[i].x + clazz._columns[i].width;
-		}
+		var lastCol = clazz._columns[clazz._right - 1];
+		var lastRow = clazz._rows[clazz._bottom + 1];
+		clazz._totalPixelWidth = lastCol.x + lastCol.width + padding * 2;
+		clazz._totalPixelHeight = lastRow.y + lastRow.height + padding * 2;
 	}
-	
-	for (i = clazz._top; i > clazz._bottom; --i){
-		if (i > clazz._bottom + 1){
-			clazz._rows[i-1].y = clazz._rows[i].y + clazz._rows[i].height;
-		}
-	}
-	
-	var lastCol = clazz._columns[clazz._right - 1];
-	var lastRow = clazz._rows[clazz._bottom + 1];
-	
-	clazz._totalPixelWidth = lastCol.x + lastCol.width + padding * 2;
-	clazz._totalPixelHeight = lastRow.y + lastRow.height + padding * 2;
 	
 }
 
-visualizer.Grid.prototype._GLOBAL_MIN_WIDTH = 5;
-visualizer.Grid.prototype._GLOBAL_MIN_HEIGHT = 5;
+visualizer.Grid.prototype._GLOBAL_MIN_WIDTH = 1;
+visualizer.Grid.prototype._GLOBAL_MIN_HEIGHT = 1;
 visualizer.Grid.prototype._TURNING_MIN_WIDTH = 100;
 visualizer.Grid.prototype._TURNING_MIN_HEIGHT = 75;
 
@@ -159,7 +168,7 @@ visualizer.Grid.prototype.getTotalPixelSize = function(){
 visualizer.Grid.prototype.getPixelBounds = function(position, size){
 	var x = this._columns[position.x].x;
 	var y = this._rows[position.y].y;
-	return bounds = {
+	var bounds = {
 		'position' : {
 			'x' : x,
 			'y' : y

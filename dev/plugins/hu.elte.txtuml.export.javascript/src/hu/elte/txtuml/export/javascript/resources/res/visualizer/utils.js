@@ -22,13 +22,19 @@ visualizer.Utils.reverseMap = function(map){
 }
 
 visualizer.Utils.MAPS = {
-	DIAGRAMTYPE_TO_COLLECTION_PROPERTY : {'class' : 'classDiagrams'},
+	DIAGRAMTYPE_TO_COLLECTION_PROPERTY : {
+		'class' : 'classDiagrams',
+		'state' : 'stateChartDiagrams'
+	},
 	VISIBILITY_MAP : {
 		'public' : '+',
 		'package' : '~',
 		'protected' : '#',
 		'private' : '-'
-	}
+	},
+	NON_SCALABLE_PSEUDOSTATE_KINDS : [
+		'initial'
+	]
 }
 
 visualizer.Utils.INT_MAX = 2147483646;

@@ -32,10 +32,14 @@ visualizer.nodeholders.Node.prototype.getPixelSize = function(){
 }
 
 visualizer.nodeholders.Node.prototype.setBounds = function(bounds){
+	console.log('Setting bounds for: ' + this._id);
 	this._node.set('position', bounds.position);
-	this._node.attr('rect/width', bounds.size.width);
+	//this._node.attr('rect/width', bounds.size.width); //TODO: find better fix for IE
 	this._node.set('size',bounds.size);
+	console.log('Set bounds for: ' + this._id);
 	//this._node.updateRectangles();
+	
+
 	//this._node.attr('rect',bounds.size);
 }
 
@@ -110,4 +114,103 @@ visualizer.nodeholders.ClassNode.prototype.addMemberClasses = function(paper){
 	})
 }
 
+visualizer.nodeholders.StateNode = function(node){
+	visualizer.nodeholders.Node.call(this, node);
+	var nodeData = {
+		'name' : node.name,
+		'id' : node.id
+	}
+	this._node = new visualizer.shapes.State(nodeData);
+	
+}
 
+visualizer.nodeholders.StateNode.prototype = Object.create(visualizer.nodeholders.Node.prototype);
+visualizer.nodeholders.StateNode.prototype.constructor = visualizer.nodeholders.StateNode;
+
+visualizer.nodeholders.NonScalablePseudoStateNode = function(node){
+	visualizer.nodeholders.Node.call(this, node);
+	this._gridSize = {
+		'width' : 1,
+		'height' : 1
+	}
+	var nodeData = {
+		'attrs' : {
+			'text':{
+				'text':node.name
+			}
+		},
+		'id' : node.id,
+		'size':{
+			'width':30,
+			'height':30			
+		}
+	}
+	switch (node.kind){
+		case 'initial': this._node = new visualizer.shapes.StartState(nodeData);
+	}
+	
+}
+
+
+visualizer.nodeholders.NonScalablePseudoStateNode.prototype = Object.create(visualizer.nodeholders.Node.prototype);
+visualizer.nodeholders.NonScalablePseudoStateNode.prototype.constructor = visualizer.nodeholders.NonScalablePseudoStateNode;
+
+visualizer.nodeholders.NonScalablePseudoStateNode.prototype.setBounds = function(bounds){
+	var size = this._node.get('size');
+	var target = bounds.position;
+	target.x += bounds.size.width / 2 - size.width / 2;
+	target.y += bounds.size.height / 2 - size.height / 2;
+	this._node.set('position', target);
+}
+
+visualizer.nodeholders.NonScalablePseudoStateNode.prototype.correctGridBounds = function(anchor, routeFirst){
+	var position = {};
+	if (anchor.x > routeFirst.x){
+		position.x = anchor.x + 1;
+		position.y = anchor.y;
+	}else if (anchor.x < routeFirst.x){
+		position.x = anchor.x - 1;
+		position.y = anchor.y;
+	}else if (anchor.y > routeFirst.y){
+		position.x = anchor.x;
+		position.y = anchor.y + 1;
+	}else{
+		position.x = anchor.x;
+		position.y = anchor.y - 1;
+	}
+	this._gridPosition = anchor;
+	console.log('ok');
+	
+}
+
+/*visualizer.nodeholders.NonScalablePseudoStateNode.prototype.getGridPosition = function(){
+	var x = this._gridPosition.x + this._gridSize.width / 4;  //TODO: teszt
+	var y = this._gridPosition.y - this._gridSize.height / 4;
+	console.log(x,y);
+	return {
+		'x' : x,
+		'y' : y
+	}
+
+}*/
+
+visualizer.nodeholders.ScalablePseudoStateNode = function(node){
+	visualizer.nodeholders.Node.call(this, node);
+	var nodeData = {
+		'attrs' : {
+			'text':{
+				'text':node.name
+			}
+		},
+		'id' : node.id
+	}
+	switch (node.kind){
+		case 'initial': this._node = new visualizer.shapes.StartState(nodeData);
+		case 'choice': this._node = new visualizer.shapes.Choice(nodeData);
+	}
+	
+}
+
+
+visualizer.nodeholders.ScalablePseudoStateNode.prototype = Object.create(visualizer.nodeholders.Node.prototype);
+visualizer.nodeholders.ScalablePseudoStateNode.prototype.constructor = visualizer.nodeholders.ScalablePseudoStateNode;

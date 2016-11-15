@@ -36,13 +36,10 @@ public class ClassLink {
 			List<Point> points = assoc.getRoute();
 			int center = points.size() / 2;
 			route = new ArrayList<Point>();
-			route.add(points.get(0));
 			route.add(points.get(center));
-			route.add(points.get(points.size() - 1));
 		}else{
 			List<Point> points = assoc.getMinimalRoute();
-			//route = points.subList(1, points.size() - 1);
-			route = points;
+			route = points.subList(1, points.size() - 1);
 		}
 	}
 	

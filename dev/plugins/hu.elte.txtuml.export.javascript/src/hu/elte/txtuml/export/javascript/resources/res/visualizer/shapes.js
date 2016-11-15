@@ -94,3 +94,145 @@ visualizer.shapes.AttributeAssociation = joint.shapes.uml.Association.extend({
 	}, joint.shapes.uml.Association.prototype.defaults)
 });
 
+visualizer.shapes.State = joint.shapes.uml.State.extend({		
+		defaults: joint.util.deepSupplement({
+			type: 'visualizer.shapes.State',
+			attrs: {
+				'.uml-state-name': {
+					'fill': '#000000', 'font-family': '"Lucida Console", Monaco, monospace', 'font-size': 14
+				},
+				'.uml-state-events': {
+					'fill': '#000000', 'font-family': '"Lucida Console", Monaco, monospace', 'font-size': 14
+				}
+			}
+		},joint.shapes.uml.State.prototype.defaults),
+		initialize: function() {
+
+			joint.shapes.uml.State.prototype.initialize.apply(this, arguments);
+			this.autoSize();
+		},
+		update: function(){
+			console.log("up");
+		},
+		autoSize: function() {
+			var attrs = this.get('attrs');
+
+			var rects = [
+				{ type: 'name', text: this.get('name') },
+				{ type: 'events', text: this.get('events') }
+			];
+
+			var offsetY = 0;
+			var rectHeight = 0;
+			var maxChars = 0;
+			_.each(rects, function(rect) {
+				
+
+				var lines = _.isArray(rect.text) ? rect.text : [rect.text];
+				rectHeight = lines.length * 20 + 20;
+				
+
+				_.each(lines, function(line){
+					maxChars = Math.max(maxChars, line.length);
+				})
+				
+				offsetY += rectHeight;
+			});
+			// autosizing TODO: less font-relied solution
+			this.get("size").height = offsetY * 0.5 + 20; 
+			this.get("size").width = maxChars * 7.2 + 20;
+		}
+});
+
+visualizer.shapes.StartState = joint.shapes.uml.StartState.extend({
+	markup: '<g class="rotatable"><g class="scalable"><circle class="uml-startstate-circle"/></g><rect class="uml-startstate-name-bg" /><text class="uml-startstate-name"/></g>',
+    defaults: joint.util.deepSupplement({
+
+        type: 'visualizer.shapes.StartState',
+		attrs:{
+			'text':{
+                'ref': '.uml-startstate-circle', 'ref-x': .5, 'ref-y': .5, 'text-anchor': 'middle',
+                'fill': '#000000', 'font-family': '"Lucida Console", Monaco, monospace', 'font-size': 12,
+				'text' : ''
+			},
+			'.uml-startstate-name-bg':{
+				'ref': 'text', 'ref-x':-1, 'ref-y':-1,
+				'fill':'white',
+				'width':10,
+				'height':14
+			},
+		}
+        //attrs: { 'circle': { 'fill': '#34495e', 'stroke': '#2c3e50', 'stroke-width': 2, 'rx': 1 }},
+		
+		
+
+    }, joint.shapes.uml.StartState.prototype.defaults),
+	initialize: function(){
+		this.on({
+			'change:text/text': this.updateName
+		});
+		//this.attr('text',{});
+		joint.shapes.uml.StartState.prototype.initialize.apply(this, arguments);
+		this.updateName();
+	},
+	updateName: function(){
+		var str = this.attr('text/text');
+		
+		this.attr('.uml-startstate-name-bg/width', str.length * 7.2 + 2);
+	}
+
+});
+visualizer.shapes.Choice = joint.shapes.basic.Generic.extend({
+	markup: '<g class="rotatable"><g class="scalable"><path class="uml-choice-body"/><path class="uml-choice-fill"/></g><rect class="uml-choice-name-bg" /><text class="uml-choice-name"/></g>',
+    defaults: joint.util.deepSupplement({
+
+        type: 'visualizer.shapes.Choice',
+		attrs:{
+			'.uml-choice-body':{
+				'd': 'M 0 100 L 100 0 L 200 100 L 100 200 z',
+				'fill':'black'
+			},
+			'.uml-choice-fill':{
+				'd': 'M 4 100 L 100 4 L 196 100 L 100 196 z',
+				'fill': 'white'
+			},
+			'text':{
+                'ref': '.uml-choice-body', 'ref-x': .5, 'ref-y': .5,  'text-anchor': 'middle',
+                'fill': '#000000', 'font-family': '"Lucida Console", Monaco, monospace', 'font-size': 12,
+				'text' : ''
+			},
+			'.uml-choice-name-bg':{
+				'ref': 'text', 'ref-x':-1, 'ref-y':-1,
+				'fill':'white',
+				'width':1,
+				'height':14
+			},
+		},
+		/*size:{
+			'width': 100,
+			'height': 100
+		}*/
+        //attrs: { 'circle': { 'fill': '#34495e', 'stroke': '#2c3e50', 'stroke-width': 2, 'rx': 1 }},
+		
+		
+
+    }, joint.shapes.basic.Generic.prototype.defaults),
+	initialize: function(){
+		this.on({
+			'change:text/text': this.updateName
+		});
+		joint.shapes.basic.Generic.prototype.initialize.apply(this, arguments);
+		this.updateName();
+	},
+	updateName: function(){
+		var str = this.attr('text/text');
+		
+		this.attr('.uml-choice-name-bg/width', str.length * 7.2 + 2);
+		var size = {
+			'width': str.length * 7.2 + 2,
+			'height': str.length * 7.2 + 2
+		}
+		this.set('size',size);
+	}
+
+});
