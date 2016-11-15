@@ -1,20 +1,14 @@
 package hu.elte.txtuml.export.cpp.wizardz;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.jdt.core.IAnnotation;
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -35,10 +29,10 @@ import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 import hu.elte.txtuml.api.deployment.Configuration;
-import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.utils.eclipse.NotFoundException;
 import hu.elte.txtuml.utils.eclipse.PackageUtils;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
+import hu.elte.txtuml.utils.eclipse.WizardUtils;
 
 @SuppressWarnings("restriction")
 public class TxtUMLToCppPage extends WizardPage {
@@ -127,26 +121,9 @@ public class TxtUMLToCppPage extends WizardPage {
 		modelBrowser.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		modelBrowser.setText(browseButtonText);
 		modelBrowser.addSelectionListener(new SelectionListener() {
-
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				JavaSearchScope scope = new JavaSearchScope();
-				try {
-					IJavaProject javaProject = ProjectUtils.findJavaProject(txtUMLProject.getText());
-					List<IPackageFragment> allPackageFragments = PackageUtils
-							.findAllPackageFragmentsAsStream(javaProject).collect(Collectors.toList());
-					List<IPackageFragment> modelPackages = getModelPackages(allPackageFragments);
-
-					for (IPackageFragment modelPackage : modelPackages) {
-						scope.add(modelPackage);
-					}
-				} catch (NotFoundException | JavaModelException ex) {
-				}
-
-				PackageSelectionDialog dialog = new PackageSelectionDialog(getShell(), getContainer(),
-						PackageSelectionDialog.F_HIDE_DEFAULT_PACKAGE | PackageSelectionDialog.F_REMOVE_DUPLICATES,
-						scope);
-
+				PackageSelectionDialog dialog = getModelBrowserDialog();
 				dialog.setTitle("Project Selection");
 				dialog.open();
 				Object[] result = dialog.getResult();
@@ -173,55 +150,7 @@ public class TxtUMLToCppPage extends WizardPage {
 		descriptionBrowser.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(composite.getShell(),
-						new WorkbenchLabelProvider(), new WorkbenchContentProvider() {
-							@Override
-							public Object[] getChildren(Object element) {
-								if (element instanceof IWorkspaceRoot) {
-									List<IJavaProject> javaProjects = new ArrayList<>();
-									IProject[] allProjects = ((IWorkspaceRoot) element).getProjects();
-									for (IProject pr : allProjects) {
-										try {
-											javaProjects.add(ProjectUtils.findJavaProject(pr.getName()));
-										} catch (NotFoundException e) {
-										}
-									}
-									return javaProjects.toArray();
-								}
-								if (element instanceof IJavaProject) {
-									List<IPackageFragment> packageFragments = null;
-									try {
-										packageFragments = PackageUtils
-												.findAllPackageFragmentsAsStream((IJavaProject) element)
-												.collect(Collectors.toList());
-									} catch (JavaModelException ex) {
-									}
-									List<IType> configTypes = packageFragments.stream()
-											.flatMap(pf -> getConfigurations(pf).stream()).collect(Collectors.toList());
-									return configTypes.toArray();
-								}
-								return new Object[0];
-							}
-
-							@Override
-							public Object[] getElements(Object inputElement) {
-								return getChildren(inputElement);
-							}
-
-							@Override
-							public Object getParent(Object element) {
-								if (element instanceof IResource) {
-									return ((IResource) element).getParent();
-								}
-								return null;
-							}
-
-							@Override
-							public boolean hasChildren(Object element) {
-								return getChildren(element).length > 0;
-							}
-						});
-
+				ElementTreeSelectionDialog dialog = getConfigurationSelectionDialog();
 				dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
 				dialog.open();
 				Object[] result = dialog.getResult();
@@ -278,79 +207,73 @@ public class TxtUMLToCppPage extends WizardPage {
 		return overWriteMainFle.getSelection();
 	}
 
-	private boolean isImportedNameResolvedTo(ICompilationUnit compUnit, String elementName, String qualifiedName) {
-		if (!qualifiedName.endsWith(elementName)) {
-			return false;
-		}
-		int lastSection = qualifiedName.lastIndexOf(".");
-		String pack = qualifiedName.substring(0, lastSection);
-		return (compUnit.getImport(qualifiedName).exists() || compUnit.getImport(pack + ".*").exists());
-	}
-
-	private List<IType> getConfigurations(IPackageFragment packageFragment) {
-		List<IType> configTypes = new ArrayList<>();
-
-		ICompilationUnit[] compilationUnits;
+	private PackageSelectionDialog getModelBrowserDialog() {
+		JavaSearchScope scope = new JavaSearchScope();
 		try {
-			compilationUnits = packageFragment.getCompilationUnits();
-		} catch (JavaModelException ex) {
-			return Collections.emptyList();
-		}
+			IJavaProject javaProject = ProjectUtils.findJavaProject(txtUMLProject.getText());
+			List<IPackageFragment> allPackageFragments = PackageUtils.findAllPackageFragmentsAsStream(javaProject)
+					.collect(Collectors.toList());
 
-		for (ICompilationUnit cUnit : compilationUnits) {
-			IType[] types = null;
-			try {
-				types = cUnit.getAllTypes();
-			} catch (JavaModelException e) {
-				continue;
+			List<IPackageFragment> modelPackages = WizardUtils.getModelPackages(allPackageFragments);
+			for (IPackageFragment modelPackage : modelPackages) {
+				scope.add(modelPackage);
 			}
-
-			Stream.of(types).filter(type -> {
-				try {
-					int indexOfTypeParam = type.getSuperclassName().indexOf("<");
-					String stateMachineSuperclass = type.getSuperclassName();
-					if (indexOfTypeParam != -1) {
-						stateMachineSuperclass = stateMachineSuperclass.substring(0, indexOfTypeParam);
-					}
-					return isImportedNameResolvedTo(cUnit, type.getSuperclassName(),
-							Configuration.class.getCanonicalName());
-				} catch (JavaModelException | NullPointerException ex) {
-					return false;
-				}
-			}).forEach(type -> configTypes.add(type));
+		} catch (NotFoundException | JavaModelException ex) {
 		}
-		return configTypes;
+
+		return new PackageSelectionDialog(getShell(), getContainer(),
+				PackageSelectionDialog.F_HIDE_DEFAULT_PACKAGE | PackageSelectionDialog.F_REMOVE_DUPLICATES, scope);
 	}
 
-	private List<IPackageFragment> getModelPackages(List<IPackageFragment> packageFragments) {
-		List<IPackageFragment> modelPackages = new ArrayList<>();
-		for (IPackageFragment pFragment : packageFragments) {
-			Optional<ICompilationUnit> foundPackageInfoCompilationUnit = Optional
-					.of(pFragment.getCompilationUnit("package-info.java"));
-
-			if (!foundPackageInfoCompilationUnit.isPresent() || !foundPackageInfoCompilationUnit.get().exists()) {
-				continue;
-			}
-
-			ICompilationUnit packageInfoCompilationUnit = foundPackageInfoCompilationUnit.get();
-
-			try {
-				for (IPackageDeclaration packDecl : packageInfoCompilationUnit.getPackageDeclarations()) {
-					for (IAnnotation annot : packDecl.getAnnotations()) {
-						boolean isModelPackage = isImportedNameResolvedTo(packageInfoCompilationUnit,
-								annot.getElementName(), Model.class.getCanonicalName());
-
-						if (isModelPackage) {
-							modelPackages.add(pFragment);
-							break;
+	private ElementTreeSelectionDialog getConfigurationSelectionDialog() {
+		return new ElementTreeSelectionDialog(composite.getShell(), new WorkbenchLabelProvider(),
+				new WorkbenchContentProvider() {
+					@Override
+					public Object[] getChildren(Object element) {
+						if (element instanceof IWorkspaceRoot) {
+							List<IJavaProject> javaProjects = new ArrayList<>();
+							IProject[] allProjects = ((IWorkspaceRoot) element).getProjects();
+							for (IProject pr : allProjects) {
+								try {
+									javaProjects.add(ProjectUtils.findJavaProject(pr.getName()));
+								} catch (NotFoundException e) {
+								}
+							}
+							return javaProjects.toArray();
 						}
+						if (element instanceof IJavaProject) {
+							List<IPackageFragment> packageFragments = null;
+							try {
+								packageFragments = PackageUtils.findAllPackageFragmentsAsStream((IJavaProject) element)
+										.collect(Collectors.toList());
+							} catch (JavaModelException ex) {
+							}
+							List<IType> configTypes = packageFragments.stream()
+									.flatMap(pf -> WizardUtils.getTypesBySuperclass(pf, Configuration.class).stream())
+									.collect(Collectors.toList());
+							return configTypes.toArray();
+						}
+						return new Object[0];
 					}
-				}
-			} catch (JavaModelException ex) {
-				return Collections.emptyList();
-			}
-		}
-		return modelPackages;
+
+					@Override
+					public Object[] getElements(Object inputElement) {
+						return getChildren(inputElement);
+					}
+
+					@Override
+					public Object getParent(Object element) {
+						if (element instanceof IResource) {
+							return ((IResource) element).getParent();
+						}
+						return null;
+					}
+
+					@Override
+					public boolean hasChildren(Object element) {
+						return getChildren(element).length > 0;
+					}
+				});
 	}
 
 }
