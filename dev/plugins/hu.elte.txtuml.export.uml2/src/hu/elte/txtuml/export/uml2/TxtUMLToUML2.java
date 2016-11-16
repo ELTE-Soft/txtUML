@@ -88,16 +88,6 @@ public class TxtUMLToUML2 {
 			throw new RuntimeException(e);
 		}
 
-		IFileStore fileStore = EFS.getLocalFileSystem().getStore(file.toURI());
-		if (PlatformUI.isWorkbenchRunning()) {
-			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			try {
-				IDE.openEditorOnFileStore(page, fileStore);
-			} catch (PartInitException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
 		return model;
 	}
 
