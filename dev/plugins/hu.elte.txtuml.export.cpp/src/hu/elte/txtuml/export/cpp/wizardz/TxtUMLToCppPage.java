@@ -235,7 +235,10 @@ public class TxtUMLToCppPage extends WizardPage {
 							IProject[] allProjects = ((IWorkspaceRoot) element).getProjects();
 							for (IProject pr : allProjects) {
 								try {
-									javaProjects.add(ProjectUtils.findJavaProject(pr.getName()));
+									IJavaProject javaProject = ProjectUtils.findJavaProject(pr.getName());
+									if (WizardUtils.containsClassesWithSuperTypes(javaProject, Configuration.class)) {
+										javaProjects.add(javaProject);
+									}
 								} catch (NotFoundException e) {
 								}
 							}
@@ -271,7 +274,11 @@ public class TxtUMLToCppPage extends WizardPage {
 
 					@Override
 					public boolean hasChildren(Object element) {
-						return getChildren(element).length > 0;
+						try {
+							return getChildren(element).length > 0;
+						} catch (NullPointerException ex) {
+							return false;
+						}
 					}
 				});
 	}

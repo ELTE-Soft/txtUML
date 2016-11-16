@@ -52,6 +52,7 @@ import hu.elte.txtuml.utils.eclipse.WizardUtils;
 public class VisualizeTxtUMLPage extends WizardPage {
 
 	private static final String browseButtonText = "Browse...";
+	private static final Class<?>[] diagramTypes = { StateMachineDiagram.class, ClassDiagram.class };
 
 	private Composite container;
 	private Text txtUMLModel;
@@ -148,8 +149,14 @@ public class VisualizeTxtUMLPage extends WizardPage {
 		// diagram descriptions tree
 		ScrolledComposite treeComposite = new ScrolledComposite(container, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		CheckboxTreeViewer tree = getDiagramTreeViewer(treeComposite);
+
 		tree.expandAll();
-		tree.setCheckedElements(txtUMLLayout.toArray());
+		List<Object> checkedElements = new ArrayList<>(txtUMLLayout);
+		List<Object> checkedProjects = txtUMLLayout.stream().map(diagramLayout -> diagramLayout.getJavaProject())
+				.collect(Collectors.toList());
+		checkedElements.addAll(checkedProjects);
+		tree.setCheckedElements(checkedElements.toArray());
+		checkedProjects.stream().forEach(elem -> tree.setGrayed(elem, true));
 		tree.collapseAll();
 
 		try {
@@ -226,7 +233,10 @@ public class VisualizeTxtUMLPage extends WizardPage {
 					IProject[] allProjects = ((IWorkspaceRoot) element).getProjects();
 					for (IProject pr : allProjects) {
 						try {
-							javaProjects.add(ProjectUtils.findJavaProject(pr.getName()));
+							IJavaProject javaProject = ProjectUtils.findJavaProject(pr.getName());
+							if (WizardUtils.containsClassesWithSuperTypes(javaProject, diagramTypes)) {
+								javaProjects.add(ProjectUtils.findJavaProject(pr.getName()));
+							}
 						} catch (NotFoundException e) {
 						}
 					}
@@ -240,9 +250,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 					} catch (JavaModelException ex) {
 					}
 					List<IType> descriptionTypes = packageFragments.stream()
-							.flatMap(pf -> WizardUtils
-									.getTypesBySuperclass(pf, StateMachineDiagram.class, ClassDiagram.class).stream())
-							.collect(Collectors.toList());
+							.flatMap(pf -> getDiagramDescriptions(pf).stream()).collect(Collectors.toList());
 					return descriptionTypes.toArray();
 				}
 				return new Object[0];
@@ -263,7 +271,11 @@ public class VisualizeTxtUMLPage extends WizardPage {
 
 			@Override
 			public boolean hasChildren(Object element) {
-				return getChildren(element).length > 0;
+				try {
+					return getChildren(element).length > 0;
+				} catch (NullPointerException ex) {
+					return false;
+				}
 			}
 		};
 
@@ -291,6 +303,10 @@ public class VisualizeTxtUMLPage extends WizardPage {
 		return tree;
 	}
 
+	private List<IType> getDiagramDescriptions(IPackageFragment packageFragment) {
+		return WizardUtils.getTypesBySuperclass(packageFragment, diagramTypes);
+	}
+
 	private void addInitialLayoutFields() {
 		Collection<String> layouts = PreferencesManager.getStrings(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT);
 		for (String layout : layouts) {
@@ -307,9 +323,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 			try {
 				javaProject = ProjectUtils.findJavaProject(pr.getName());
 				List<IType> types = PackageUtils.findAllPackageFragmentsAsStream(javaProject)
-						.flatMap(pf -> WizardUtils
-								.getTypesBySuperclass(pf, ClassDiagram.class, StateMachineDiagram.class).stream())
-						.collect(Collectors.toList());
+						.flatMap(pf -> getDiagramDescriptions(pf).stream()).collect(Collectors.toList());
 				types.stream().filter(type -> type.getFullyQualifiedName().equals(qualifiedName))
 						.forEach(type -> txtUMLLayout.add(type));
 			} catch (NotFoundException | JavaModelException ex) {

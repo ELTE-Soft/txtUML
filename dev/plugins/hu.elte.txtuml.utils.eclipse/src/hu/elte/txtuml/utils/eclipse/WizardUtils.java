@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
@@ -82,6 +83,15 @@ public class WizardUtils {
 			}
 		}
 		return modelPackages;
+	}
+
+	public static boolean containsClassesWithSuperTypes(IJavaProject javaProject, Class<?>... superClasses) {
+		try {
+			return PackageUtils.findAllPackageFragmentsAsStream(javaProject)
+					.anyMatch(pf -> !getTypesBySuperclass(pf, superClasses).isEmpty());
+		} catch (JavaModelException ex) {
+			return false;
+		}
 	}
 
 	private static boolean isImportedNameResolvedTo(ICompilationUnit compilationUnit, String elementName,
