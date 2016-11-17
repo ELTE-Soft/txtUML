@@ -5,6 +5,6 @@ import org.junit.runners.Suite
 import org.junit.runners.Suite.SuiteClasses
 
 @RunWith(Suite)
-@SuiteClasses(XtxtUMLCompilerTest)
+@SuiteClasses(XtxtUMLStructureCompilerTest, XtxtUMLExpressionCompilerTest)
 class XtxtUMLCompilerTests {
 }
