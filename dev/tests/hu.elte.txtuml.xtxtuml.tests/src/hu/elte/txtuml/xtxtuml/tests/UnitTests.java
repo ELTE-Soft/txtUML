@@ -6,9 +6,11 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import hu.elte.txtuml.xtxtuml.tests.compiler.XtxtUMLCompilerTests;
 import hu.elte.txtuml.xtxtuml.tests.parser.XtxtUMLParserTests;
+import hu.elte.txtuml.xtxtuml.tests.typesystem.XtxtUMLTypeComputerTests;
 import hu.elte.txtuml.xtxtuml.tests.validation.XtxtUMLValidationTests;
 
 @RunWith(Suite.class)
-@SuiteClasses({ XtxtUMLValidationTests.class, XtxtUMLCompilerTests.class, XtxtUMLParserTests.class })
+@SuiteClasses({ XtxtUMLValidationTests.class, XtxtUMLCompilerTests.class, XtxtUMLParserTests.class,
+		XtxtUMLTypeComputerTests.class })
 public class UnitTests {
 }
