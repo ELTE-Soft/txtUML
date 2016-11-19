@@ -42,8 +42,9 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 	@Inject extension IQualifiedNameProvider;
 
 	def dispatch void computeTypes(TUClassPropertyAccessExpression accessExpr, ITypeComputationState state) {
-		// expectations for childs are enabled by default,
-		// see val foo = if (bar) foobar else baz
+		// Subexpressions have to be typed in a child computation state.
+		// Expectations for children are enabled by default,
+		// see val foo = if (bar) foobar else baz.
 		val childState = state.withoutRootExpectation;
 
 		// left child
@@ -135,7 +136,7 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 
 	def private LightweightTypeReference getCommonSignalSuperType(
 		TUTransition trans,
-		ITypeComputationState cState,
+		ITypeComputationState computationState,
 		HashSet<TUState> visitedStates
 	) {
 		var trigger = (trans.members.findFirst [
@@ -143,7 +144,7 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		] as TUTransitionTrigger)?.trigger;
 
 		if (trigger != null) {
-			return cState.nullSafeJvmElementTypeRef(trigger, Signal);
+			return computationState.nullSafeJvmElementTypeRef(trigger, Signal);
 		}
 
 		var from = (trans.members.findFirst [
@@ -151,20 +152,20 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		] as TUTransitionVertex)?.vertex;
 
 		if (from != null && from.type == TUStateType.CHOICE) {
-			return getCommonSignalSuperType(from, cState, true, visitedStates);
+			return getCommonSignalSuperType(from, computationState, true, visitedStates);
 		}
 
-		return getTypeForName(Signal, cState);
+		return getTypeForName(Signal, computationState);
 	}
 
 	def private LightweightTypeReference getCommonSignalSuperType(
 		TUState state,
-		ITypeComputationState cState,
+		ITypeComputationState computationState,
 		boolean toState,
 		HashSet<TUState> visitedStates
 	) {
 		if (!visitedStates.add(state)) {
-			return getTypeForName(Signal, cState);
+			return getTypeForName(Signal, computationState);
 		}
 
 		val siblingsAndSelf = switch (c : state.eContainer) {
@@ -180,7 +181,7 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 				signalCandidates.add(
 					getCommonSignalSuperType(
 						siblingOrSelf as TUTransition,
-						cState,
+						computationState,
 						visitedStates
 					)
 				);
@@ -188,21 +189,23 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		}
 
 		return if (!signalCandidates.empty) {
-			getCommonSuperType(signalCandidates, cState)
+			getCommonSuperType(signalCandidates, computationState)
 		} else {
-			getTypeForName(Signal, cState)
+			getTypeForName(Signal, computationState)
 		}
 	}
 
 	def dispatch computeTypes(TUDeleteObjectExpression deleteExpr, ITypeComputationState state) {
-		state.computeTypes(deleteExpr.object);
 		state.acceptActualType(state.getPrimitiveVoid);
+		state.withoutRootExpectation.computeTypes(deleteExpr.object);
 	}
 
 	def dispatch computeTypes(TUSendSignalExpression sendExpr, ITypeComputationState state) {
-		state.computeTypes(sendExpr.signal);
-		state.computeTypes(sendExpr.target);
 		state.acceptActualType(state.getPrimitiveVoid);
+		val childState = state.withoutRootExpectation;
+
+		childState.computeTypes(sendExpr.signal);
+		childState.computeTypes(sendExpr.target);
 	}
 
 	override dispatch computeTypes(XBlockExpression block, ITypeComputationState state) {
