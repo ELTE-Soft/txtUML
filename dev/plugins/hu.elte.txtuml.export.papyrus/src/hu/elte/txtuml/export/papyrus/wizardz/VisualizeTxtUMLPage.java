@@ -19,6 +19,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.search.JavaSearchScope;
 import org.eclipse.jdt.internal.ui.dialogs.PackageSelectionDialog;
+import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.wizard.WizardPage;
@@ -224,7 +225,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	}
 
 	private CheckboxTreeViewer getDiagramTreeViewer(ScrolledComposite treeComposite) {
-		CheckboxTreeViewer tree = new CheckboxTreeViewer(treeComposite, SWT.NONE);
+		CheckboxTreeViewer tree = new CheckboxTreeViewer(treeComposite, SWT.FULL_SELECTION);
 		IContentProvider cp = new WorkbenchContentProvider() {
 			@Override
 			public Object[] getChildren(Object element) {
@@ -297,7 +298,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 		});
 
 		tree.setContentProvider(cp);
-		tree.setLabelProvider(new WorkbenchLabelProvider());
+		tree.setLabelProvider(new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_POST_QUALIFIED));
 		tree.setInput(ResourcesPlugin.getWorkspace().getRoot());
 
 		return tree;

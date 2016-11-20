@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.search.JavaSearchScope;
 import org.eclipse.jdt.internal.ui.dialogs.PackageSelectionDialog;
+import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -226,7 +227,8 @@ public class TxtUMLToCppPage extends WizardPage {
 	}
 
 	private ElementTreeSelectionDialog getConfigurationSelectionDialog() {
-		return new ElementTreeSelectionDialog(composite.getShell(), new WorkbenchLabelProvider(),
+		return new ElementTreeSelectionDialog(composite.getShell(),
+				new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_POST_QUALIFIED),
 				new WorkbenchContentProvider() {
 					@Override
 					public Object[] getChildren(Object element) {
