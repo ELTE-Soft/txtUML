@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.cpp.wizardz;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -93,7 +94,8 @@ public class TxtUMLToCppPage extends WizardPage {
 							@Override
 							public Object[] getChildren(Object element) {
 								if (element instanceof IWorkspaceRoot) {
-									return ((IWorkspaceRoot) element).getProjects();
+									return Stream.of(((IWorkspaceRoot) element).getProjects()).filter(pr -> pr.isOpen())
+											.toArray();
 								}
 								return new Object[0];
 							}
@@ -228,7 +230,8 @@ public class TxtUMLToCppPage extends WizardPage {
 
 	private ElementTreeSelectionDialog getConfigurationSelectionDialog() {
 		return new ElementTreeSelectionDialog(composite.getShell(),
-				new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_POST_QUALIFIED),
+				new JavaElementLabelProvider(
+						JavaElementLabelProvider.SHOW_POST_QUALIFIED | JavaElementLabelProvider.SHOW_SMALL_ICONS),
 				new WorkbenchContentProvider() {
 					@Override
 					public Object[] getChildren(Object element) {

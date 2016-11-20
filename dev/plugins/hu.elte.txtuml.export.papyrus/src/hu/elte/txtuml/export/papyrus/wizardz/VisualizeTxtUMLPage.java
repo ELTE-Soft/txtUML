@@ -98,7 +98,8 @@ public class VisualizeTxtUMLPage extends WizardPage {
 							@Override
 							public Object[] getChildren(Object element) {
 								if (element instanceof IWorkspaceRoot) {
-									return ((IWorkspaceRoot) element).getProjects();
+									return Stream.of(((IWorkspaceRoot) element).getProjects()).filter(pr -> pr.isOpen())
+											.toArray();
 								}
 								return new Object[0];
 							}
@@ -298,7 +299,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 		});
 
 		tree.setContentProvider(cp);
-		tree.setLabelProvider(new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_POST_QUALIFIED));
+		tree.setLabelProvider(new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_POST_QUALIFIED | JavaElementLabelProvider.SHOW_SMALL_ICONS));
 		tree.setInput(ResourcesPlugin.getWorkspace().getRoot());
 
 		return tree;
