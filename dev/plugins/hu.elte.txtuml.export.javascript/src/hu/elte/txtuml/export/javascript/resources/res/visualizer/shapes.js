@@ -20,7 +20,15 @@ visualizer.shapes.Class = joint.shapes.uml.Class.extend({
 		}, joint.shapes.uml.Class.prototype.defaults),
 		
 		updateRectangles: function() {
+			// if init is false, then we are already have a size and need to provide approximate width and height for the rectangles
+			// to fit the new size and avoid scaling issues in IE (or other browser not supporting svg non-scaling-stroke attribute)
+			
+			var init = typeof this._init === 'undefined' ? true : this._init;
+			if (!init){
+				var size = this.get('size');
+			}
 			var attrs = this.get('attrs');
+			
 
 			var rects = [
 				{ type: 'name', text: this.getClassName() },
@@ -47,10 +55,22 @@ visualizer.shapes.Class = joint.shapes.uml.Class.extend({
 				attrs['.uml-class-' + rect.type + '-rect'].transform = 'translate(0,' + offsetY + ')';
 				
 				offsetY += rectHeight;
-			});
+			},this);
+			
+			
 			// autosizing TODO: less font-relied solution
-			this.get("size").height = offsetY * 0.5 + 20; 
-			this.get("size").width = maxChars * 7.2 + 12;
+			if (init){
+				var minSize = {};
+				minSize.height = offsetY * 0.5 + 20; 
+				minSize.width = maxChars * 7.2 + 12;
+				this.set('size',minSize);
+				this._init = false;
+			}else{
+				this.attr('.uml-class-methods-rect/height', (size.height - 20) * 2 - (offsetY - rectHeight));  
+				this.attr('rect/width', size.width);
+			}
+
+			
 		}
 	});
 visualizer.shapes.ClassView = joint.shapes.uml.ClassView;
@@ -111,9 +131,6 @@ visualizer.shapes.State = joint.shapes.uml.State.extend({
 			joint.shapes.uml.State.prototype.initialize.apply(this, arguments);
 			this.autoSize();
 		},
-		update: function(){
-			console.log("up");
-		},
 		autoSize: function() {
 			var attrs = this.get('attrs');
 
@@ -139,8 +156,14 @@ visualizer.shapes.State = joint.shapes.uml.State.extend({
 				offsetY += rectHeight;
 			});
 			// autosizing TODO: less font-relied solution
-			this.get("size").height = offsetY * 0.5 + 20; 
-			this.get("size").width = maxChars * 7.2 + 20;
+			var minSize = {
+				'width' : maxChars * 7.2 + 20,
+				'height' : offsetY * 0.5 + 20
+			}
+			this.set('size',minSize);
+		},
+		strechToNewSize: function(){
+			this.attr('rect',this.get('size'));
 		}
 });
 

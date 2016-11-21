@@ -32,11 +32,9 @@ visualizer.nodeholders.Node.prototype.getPixelSize = function(){
 }
 
 visualizer.nodeholders.Node.prototype.setBounds = function(bounds){
-	console.log('Setting bounds for: ' + this._id);
 	this._node.set('position', bounds.position);
 	//this._node.attr('rect/width', bounds.size.width); //TODO: find better fix for IE
 	this._node.set('size',bounds.size);
-	console.log('Set bounds for: ' + this._id);
 	//this._node.updateRectangles();
 	
 
@@ -73,8 +71,16 @@ visualizer.nodeholders.ClassNode = function (node){
 	}
 }
 
+
+
 visualizer.nodeholders.ClassNode.prototype = Object.create(visualizer.nodeholders.Node.prototype);
 visualizer.nodeholders.ClassNode.prototype.constructor = visualizer.nodeholders.ClassNode;
+
+
+visualizer.nodeholders.ClassNode.prototype.setBounds = function(bounds){
+	visualizer.nodeholders.Node.prototype.setBounds.call(this,bounds);
+	this._node.updateRectangles();
+}
 
 visualizer.nodeholders.ClassNode.prototype._MAPS = {
 	VISIBILITY_MAP : {
@@ -126,6 +132,11 @@ visualizer.nodeholders.StateNode = function(node){
 
 visualizer.nodeholders.StateNode.prototype = Object.create(visualizer.nodeholders.Node.prototype);
 visualizer.nodeholders.StateNode.prototype.constructor = visualizer.nodeholders.StateNode;
+
+visualizer.nodeholders.StateNode.prototype.setBounds = function(bounds){
+	visualizer.nodeholders.Node.prototype.setBounds.call(this,bounds);
+	this._node.strechToNewSize();
+}
 
 visualizer.nodeholders.NonScalablePseudoStateNode = function(node){
 	visualizer.nodeholders.Node.call(this, node);
@@ -179,7 +190,6 @@ visualizer.nodeholders.NonScalablePseudoStateNode.prototype.correctGridBounds = 
 		position.y = anchor.y - 1;
 	}
 	this._gridPosition = anchor;
-	console.log('ok');
 	
 }
 
