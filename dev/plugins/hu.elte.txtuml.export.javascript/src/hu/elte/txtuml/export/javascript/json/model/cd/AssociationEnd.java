@@ -12,6 +12,8 @@ public class AssociationEnd {
 	private String visibility;
 	@XmlAccessMethods(getMethodName="isNavigable")
 	private Boolean navigable;
+	@XmlAccessMethods(getMethodName="isComposition")
+	private Boolean composition;
 	
 	protected AssociationEnd(){};
 	
@@ -27,6 +29,7 @@ public class AssociationEnd {
 		}
 		visibility = end.getVisibility().getLiteral();
 		navigable = end.isNavigable();
+		composition = end.isComposite();
 		/*AggregationKind akind = end.getAggregation();
 		if (akind.getValue() == AggregationKind.NONE){
 			if (end.isNavigable()){
@@ -51,6 +54,10 @@ public class AssociationEnd {
 	
 	public Boolean isNavigable() {
 		return navigable;
+	}
+	
+	public Boolean isComposition() {
+		return composition;
 	}
 
 }

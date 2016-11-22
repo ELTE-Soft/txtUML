@@ -72,20 +72,32 @@ visualizer.linkholders.OrthogonalLink.prototype._getDirectionFromAToB = function
 visualizer.linkholders.ClassAttributeLink = function (link){
 	clazz = this;
 	visualizer.linkholders.OrthogonalLink.call(clazz, link);
-	var sourceMarker = [];
-	var targetMarker = [];
-	var sourceOffset = 0;
-	var targetOffset = 0;
-	if (link.type === 'composition'){
-		sourceMarker.push('M 30 0 L 15 7.5 L 0 0 L 15 -7.5 z');
-		sourceOffset += 30;
+	var markers = {
+		'from': {
+			'offset': 0,
+			'markers': []
+		}, 
+		'to': {
+			'offset': 0,
+			'markers': []
+		}
+	};
+	
+	var flipMap = {
+		'from' : 'to',
+		'to' : 'from'
 	}
-	if (link.from.navigable){
-			sourceMarker.push(clazz._generateNavigabilityMarker(sourceOffset));
-	}
-	if (link.to.navigable){
-			targetMarker.push(clazz._generateNavigabilityMarker(targetOffset));
-	}
+		
+	_.each(markers, function(value, key){
+		if (link[key].composition){
+			value.markers.push('M 30 0 L 15 7.5 L 0 0 L 15 -7.5 z');
+			value.offset += 30;
+		}
+		if (link[flipMap[key]].navigable){
+			value.markers.push(clazz._generateNavigabilityMarker(value.offset));
+		}
+	}, this);
+	
 	var linkData = {  
 		'source':{  
 			'id':link.fromID
@@ -95,11 +107,11 @@ visualizer.linkholders.ClassAttributeLink = function (link){
 		},
 		'attrs': { 
 			'.marker-source': {
-				'd':targetMarker.join(' '),
+				'd':markers.from.markers.join(' '),
 				'fill': 'black'
 			},
 			'.marker-target': {
-				'd':sourceMarker.join(' '),
+				'd':markers.to.markers.join(' '),
 				'fill': 'black'
 			}
 		},

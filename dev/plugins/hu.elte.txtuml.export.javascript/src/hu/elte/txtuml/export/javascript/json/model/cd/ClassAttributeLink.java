@@ -18,20 +18,18 @@ public class ClassAttributeLink extends ClassLink {
 	@XmlAccessMethods(getMethodName="getName")
 	protected String name;
 	
+	
+	
 
 	protected ClassAttributeLink() {}
 	
 	public ClassAttributeLink(LineAssociation layout, Association assoc, Classifier fromClass, Classifier toClass) {
 		super(layout);
-		type = "normal";
+		type = "attribute";
 		name = assoc.getLabel();
 		from = null;
 		to = null;
-		for (Property end : assoc.getMemberEnds()){
-			if (end.isComposite()){
-				type = "composition";
-			}
-			
+		for (Property end : assoc.getMemberEnds()){		
 			Element ownerElement = end.getOwner();
 			if (!(ownerElement instanceof Class)){
 				if (from == null){
@@ -45,7 +43,7 @@ public class ClassAttributeLink extends ClassLink {
 					from = new AssociationEnd(layout.getFrom(), end);
 				}else if (owner == toClass && to == null){
 					to = new AssociationEnd(layout.getTo(), end);
-				}
+				} 
 			}
 		}		
 	}
