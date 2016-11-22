@@ -11,7 +11,7 @@ StateMachineThreadPool::StateMachineThreadPool():stop(true){}
 void StateMachineThreadPool::stopPool()
 {
 	stop = true;
-	cond.notify_all();
+	stateMachines.stopQueue ();
 	
 }
 
@@ -41,28 +41,23 @@ void StateMachineThreadPool::task()
 	while (!this->stop && !workers.isReadyToStop(std::this_thread::get_id()))
     {
 		
-		std::unique_lock<std::mutex> mlock(mu);
+		//std::unique_lock<std::mutex> mlock(mu);
 		
 		StateMachineI* sm = nullptr;
 		while(!sm && !this->stop)
 		{
 			
-			if(!stateMachines.empty())
-			{
-				incrementWorkers();
-				stateMachines.pop_front(sm);			
+			
 							
-			}
-			else if (workers.isReadyToStop(std::this_thread::get_id()))
+			if (workers.isReadyToStop(std::this_thread::get_id()))
 			{
 				return;
 			}
-			else
-			{
-				cond.wait(mlock);
-			}
+
+			stateMachines.pop_front(sm);
+			incrementWorkers();
 		}
-		mlock.unlock();
+		//mlock.unlock();
 		
 	
 		if(sm)
@@ -128,7 +123,6 @@ void StateMachineThreadPool::reduceWorkers()
 void StateMachineThreadPool::enqueObject(StateMachineI* sm)
 {
         stateMachines.push_back(sm);
-        cond.notify_one();
 }
 
 StateMachineThreadPool::~StateMachineThreadPool()

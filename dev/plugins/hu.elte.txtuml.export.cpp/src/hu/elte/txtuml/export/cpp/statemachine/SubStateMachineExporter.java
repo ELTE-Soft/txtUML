@@ -14,7 +14,7 @@ import hu.elte.txtuml.export.cpp.templates.structual.ConstructorTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.utils.Pair;
 
-public class SubStateMachineExporter extends StateMachineExporter {
+public class SubStateMachineExporter extends StateMachineExporterBase {
 
 	private String parentClassName;
 	private Map<String, Pair<String, Region>> submachineMap;// <stateName,<machinename,behavior>>
@@ -22,11 +22,6 @@ public class SubStateMachineExporter extends StateMachineExporter {
 	private SubStateMachineExporter subStateMachineExporter;
 
 	public SubStateMachineExporter() {
-	}
-
-	@Override
-	public boolean ownStateMachine() {
-		return true;
 	}
 
 	public void setRegion(Region region) {
@@ -39,8 +34,6 @@ public class SubStateMachineExporter extends StateMachineExporter {
 	}
 
 	public void createSubSmSource(String destination) throws FileNotFoundException, UnsupportedEncodingException {
-		super.init();
-		super.searchInitialState();
 		super.createMachine();
 		String source = "";
 		submachineMap = getSubMachines();
@@ -54,14 +47,14 @@ public class SubStateMachineExporter extends StateMachineExporter {
 		}
 
 		source = createSubSmClassHeaderSource();
-		Shared.writeOutSource(destination, GenerationTemplates.headerName(className),
-				HeaderTemplates.headerGuard(source, className));
+		Shared.writeOutSource(destination, GenerationTemplates.headerName(ownerClassName),
+				HeaderTemplates.headerGuard(source, ownerClassName));
 
 		source = createSubSmClassCppSource().toString();
-		String dependencyIncludes = GenerationTemplates.cppInclude(className) + GenerationTemplates.cppInclude(GenerationNames.EventHeaderName);
+		String dependencyIncludes = GenerationTemplates.cppInclude(ownerClassName) + GenerationTemplates.cppInclude(GenerationNames.EventHeaderName);
 		dependencyIncludes = GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude)
-				+ dependencyIncludes + GenerationTemplates.cppInclude(className);
-		Shared.writeOutSource(destination, GenerationTemplates.sourceName(className),
+				+ dependencyIncludes + GenerationTemplates.cppInclude(ownerClassName);
+		Shared.writeOutSource(destination, GenerationTemplates.sourceName(ownerClassName),
 				Shared.format(dependencyIncludes + "\n" + source));
 	}
 
@@ -80,16 +73,16 @@ public class SubStateMachineExporter extends StateMachineExporter {
 		StringBuilder publicParts = new StringBuilder("");
 		List<String> params = new ArrayList<String>();
 		params.add(parentClassName);
-		publicParts.append(ConstructorTemplates.constructorDecl(className, params));
+		publicParts.append(ConstructorTemplates.constructorDecl(ownerClassName, params));
 		publicParts.append(StateMachineTemplates.stateEnum(stateList, getInitialStateName()));
 
 		if (submachineMap.isEmpty()) {
-			source = HeaderTemplates.simpleSubStateMachineClassHeader(dependency.toString(), className, parentClassName,
+			source = HeaderTemplates.simpleSubStateMachineClassHeader(dependency.toString(), ownerClassName, parentClassName,
 					publicParts.toString(), protectedParts, privateParts.toString()).toString();
 		} else {
 			source = HeaderTemplates
-					.hierarchicalSubStateMachineClassHeader(dependency.toString(), className, parentClassName,
-							getSubmachines(), publicParts.toString(), protectedParts, privateParts.toString())
+					.hierarchicalSubStateMachineClassHeader(dependency.toString(), ownerClassName, parentClassName,
+							getSubmachineNameList(), publicParts.toString(), protectedParts, privateParts.toString())
 					.toString();
 		}
 		return source;
@@ -99,21 +92,21 @@ public class SubStateMachineExporter extends StateMachineExporter {
 		StringBuilder source = new StringBuilder("");
 		source.append(createTransitionTableInitRelatedCodes());
 		if (submachineMap.isEmpty()) {
-			source.append(ConstructorTemplates.simpleSubStateMachineClassConstructor(className, parentClassName,
+			source.append(ConstructorTemplates.simpleSubStateMachineClassConstructor(ownerClassName, parentClassName,
 					stateMachineMap, getInitialStateName()));
 		} else {
-			source.append(ConstructorTemplates.hierarchicalSubStateMachineClassConstructor(className, parentClassName,
+			source.append(ConstructorTemplates.hierarchicalSubStateMachineClassConstructor(ownerClassName, parentClassName,
 					stateMachineMap, getEventSubmachineNameMap(), getInitialStateName()));
 		}
 		StringBuilder subSmSpec = new StringBuilder(entryExitFunctionExporter.createEntryFunctionsDef());
 		subSmSpec.append(entryExitFunctionExporter.createExitFunctionsDef());
-		subSmSpec.append(guardExporter.defnieGuardFunctions(className));
+		subSmSpec.append(guardExporter.defnieGuardFunctions(ownerClassName));
 		subSmSpec.append(transitionExporter.createTransitionFunctionsDef());
 		subSmSpec.append(
-				StateMachineTemplates.entry(className, createStateActionMap(entryExitFunctionExporter.getEntryMap()))
+				StateMachineTemplates.entry(ownerClassName, createStateActionMap(entryExitFunctionExporter.getEntryMap()))
 						+ "\n");
 		subSmSpec.append(
-				StateMachineTemplates.exit(className, createStateActionMap(entryExitFunctionExporter.getExitMap()))
+				StateMachineTemplates.exit(ownerClassName, createStateActionMap(entryExitFunctionExporter.getExitMap()))
 						+ "\n");
 
 		source.append(GenerationTemplates.formatSubSmFunctions(subSmSpec.toString()));
