@@ -84,6 +84,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 			if (container.entry) {
 				container = container.eContainer;
 			} else {
+				// exit activities are invalid in a choice
 				return;
 			}
 		}
@@ -140,7 +141,19 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 	}
 
 	@Check
+	def checkAccessedClassPropertyIsSpecified(TUClassPropertyAccessExpression propAccessExpr) {
+		if (propAccessExpr.right == null) {
+			error("The accessed class property cannot be null", propAccessExpr,
+				TU_CLASS_PROPERTY_ACCESS_EXPRESSION__ARROW, MISSING_CLASS_PROPERTY);
+		}
+	}
+
+	@Check
 	def checkOwnerOfAccessedClassProperty(TUClassPropertyAccessExpression propAccessExpr) {
+		if (propAccessExpr.right == null) {
+			return;
+		}
+
 		val leftSourceElement = propAccessExpr.left.actualType.type.primarySourceElement;
 		if (!(leftSourceElement instanceof TUClass)) {
 			return; // typechecks will mark it
@@ -180,10 +193,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 	 */
 	def private doCheckNoExplicitExtensionCall(XAbstractFeatureCall featureCall) {
 		if (featureCall.isExtension) {
-			val actualArgs = featureCall.
-				actualArguments
-			;
-
+			val actualArgs = featureCall.actualArguments;
 			error('''The operation «featureCall.feature?.simpleName»(«actualArgs.drop(1).join(", ")[actualType.simpleName.replace("$", ".")]») is undefined for the class «actualArgs.head.actualType.simpleName.replace("$", ".")»''',
 				featureCall, XbasePackage.Literals.XABSTRACT_FEATURE_CALL__FEATURE, UNDEFINED_OPERATION);
 		}

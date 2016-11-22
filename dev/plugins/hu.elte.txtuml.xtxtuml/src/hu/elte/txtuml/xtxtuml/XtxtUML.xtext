@@ -489,8 +489,9 @@ XMemberFeatureCall returns xbase::XExpression :
 			)? ')'
 		)?
 	| 
-		=>({TUClassPropertyAccessExpression.left=current} '->') '('
-			right=[TUClassProperty|QualifiedName]
+		=>({TUClassPropertyAccessExpression.left=current} arrow='->') '('
+			// feature 'arrow' is for error markers
+			right=[TUClassProperty|QualifiedName]?
 		')'
 	)*
 ;

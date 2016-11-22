@@ -245,7 +245,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	}
 
 	def dispatch void format(TUClassPropertyAccessExpression it, extension IFormattableDocument document) {
-		regionFor.keyword('->').surround[noSpace];
+		regionFor.feature(TU_CLASS_PROPERTY_ACCESS_EXPRESSION__ARROW).surround[noSpace];
 		regionFor.feature(TU_CLASS_PROPERTY_ACCESS_EXPRESSION__RIGHT).surround[noSpace];
 
 		format(left, document);
