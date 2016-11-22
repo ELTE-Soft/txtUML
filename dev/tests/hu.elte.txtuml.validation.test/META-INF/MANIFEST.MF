@@ -2,18 +2,18 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JtxtUML Validation Tests
 Bundle-SymbolicName: hu.elte.txtuml.validation.test
-Bundle-Version: 0.5.0.qualifier
+Bundle-Version: 0.5.1.qualifier
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.junit,
  org.eclipse.jdt.core,
  org.eclipse.core.resources,
- hu.elte.txtuml.export.uml2;bundle-version="0.5.0",
+ hu.elte.txtuml.export.uml2,
  org.mockito.mockito-core,
- hu.elte.txtuml.validation;bundle-version="0.5.0",
+ hu.elte.txtuml.validation,
  org.objenesis,
  com.google.guava,
- hu.elte.txtuml.utils.eclipse;bundle-version="0.5.0"
+ hu.elte.txtuml.utils.eclipse
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: hu.elte.txtuml.api.model

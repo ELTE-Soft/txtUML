@@ -120,6 +120,8 @@ import org.eclipse.uml2.uml.ExecutableNode
 import org.eclipse.uml2.uml.PackageableElement
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
+import org.eclipse.uml2.uml.VisibilityKind
+import org.eclipse.jdt.core.dom.Modifier
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -359,6 +361,16 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 
 	def getImportedOperation(String clsName, String opName) {
 		(getImportedElement(clsName) as Class).ownedOperations.findFirst[name == opName]
+	}
+	
+	def VisibilityKind getVisibility(int modifier) {
+		if(Modifier.isPublic(modifier)) {
+			VisibilityKind.PUBLIC_LITERAL
+		} else if(Modifier.isProtected(modifier)) {
+			VisibilityKind.PROTECTED_LITERAL
+		} else if(Modifier.isPrivate(modifier)) {
+			VisibilityKind.PRIVATE_LITERAL
+		}
 	}
 
 }
