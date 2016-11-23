@@ -217,7 +217,7 @@ public class Uml2ToCppExporter {
 		cmake.addIncludeDirectory(RUNTIME_DIR_PREFIX.substring(0, RUNTIME_DIR_PREFIX.indexOf(File.separator)));
 		List<String> librarySourceClasses = new ArrayList<String>();
 		librarySourceClasses.add("runtime");
-		librarySourceClasses.add("statemachineI");
+		librarySourceClasses.add("istatemachine");
 		librarySourceClasses.add("threadpool");
 		librarySourceClasses.add("threadpoolmanager");
 		librarySourceClasses.add("threadcontainer");

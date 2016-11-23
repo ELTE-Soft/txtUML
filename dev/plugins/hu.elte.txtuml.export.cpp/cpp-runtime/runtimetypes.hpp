@@ -7,12 +7,12 @@
 #include "threadsafequeue.hpp"
 
 struct IEvent;
-class StateMachineI;
+class IStateMachine;
 
 
 typedef std::shared_ptr<IEvent> EventPtr;
 typedef ThreadSafeQueue<EventPtr > MessageQueueType;
-typedef ThreadSafeQueue<StateMachineI*> PoolQueueType;
+typedef ThreadSafeQueue<IStateMachine*> PoolQueueType;
 
 const int NoPort_PE = 1;
 

@@ -4,9 +4,7 @@
 
 #include "threadpool.hpp"
 
-
-
-StateMachineThreadPool::StateMachineThreadPool():stop(true){}
+StateMachineThreadPool::StateMachineThreadPool():stop (true) {}
 	
 void StateMachineThreadPool::stopPool()
 {
@@ -17,7 +15,7 @@ void StateMachineThreadPool::stopPool()
 
 void StateMachineThreadPool::startPool(int n)
 {
-	
+	stateMachines.startQueue ();
 	stop = false;
 	modifiedThreads(n);
         
@@ -39,11 +37,11 @@ void StateMachineThreadPool::stopUponCompletion(std::atomic_int* messages)
 void StateMachineThreadPool::task()
 {	
 	while (!this->stop && !workers.isReadyToStop(std::this_thread::get_id()))
-    {
+    	{
 		
-		//std::unique_lock<std::mutex> mlock(mu);
+
 		
-		StateMachineI* sm = nullptr;
+		IStateMachine* sm = nullptr;
 		while(!sm && !this->stop)
 		{
 			
@@ -57,52 +55,49 @@ void StateMachineThreadPool::task()
 			stateMachines.pop_front(sm);
 			incrementWorkers();
 		}
-		//mlock.unlock();
 		
 	
-		if(sm)
+		if (sm)
 		{
 			
 			if (!sm->isInitialized()) sm->init();
-			for(int i = 0; i < 5 && !sm->emptyMessageQueue(); ++i)
+			for (int i = 0; i < 5 && !sm->emptyMessageQueue(); ++i)
 			{
 				sm->processEventVirtual();
 			}
 					
 			
-			if(!sm->emptyMessageQueue())
+			if (!sm->emptyMessageQueue())
 			{
 				stateMachines.push_back(sm);
 			}
 			else
 			{
-				sm->setPooled(false);
+				sm->setPooled (false);
 			}
 			
-			reduceWorkers();
-
-			stop_request_cond->notify_one();
-			
+			reduceWorkers ();
+			stop_request_cond->notify_one ();			
 		}
 					
     }
 	
 }
 
-void StateMachineThreadPool::modifiedThreads(int n)
+void StateMachineThreadPool::modifiedThreads (int n)
 {
-	if(!stop) 
+	if (!stop) 
 	{
 		std::unique_lock<std::mutex> mlock(modifie_mutex);
 		
-		workers.setExpectedThreads(n);
+		workers.setExpectedThreads (n);
 		if (workers.isTooManyWorkes())
 		{
 			workers.gettingThreadsReadyToStop(cond);
 		}
-		while (workers.isTooFewWorkes())
+		while (workers.isTooFewWorkes ())
 		{
-			workers.addThread(new std::thread(&StateMachineThreadPool::task,this));
+			workers.addThread (new std::thread(&StateMachineThreadPool::task,this));
 		}
 	}
 	
@@ -120,13 +115,13 @@ void StateMachineThreadPool::reduceWorkers()
 	(*worker_threads)--;
 }
 
-void StateMachineThreadPool::enqueObject(StateMachineI* sm)
+void StateMachineThreadPool::enqueObject(IStateMachine* sm)
 {
         stateMachines.push_back(sm);
 }
 
 StateMachineThreadPool::~StateMachineThreadPool()
 {
-    stopPool();
+    	stopPool();
 	workers.removeAll();
 }

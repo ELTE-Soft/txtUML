@@ -25,7 +25,7 @@ int ThreadPoolManager::calculateNOfThreads(int id, int n)
 	
 }
 
-void ThreadPoolManager::enqueObject(StateMachineI* sm)
+void ThreadPoolManager::enqueObject(IStateMachine* sm)
 {
 	if (!isConfigurated()) {
 		abort();

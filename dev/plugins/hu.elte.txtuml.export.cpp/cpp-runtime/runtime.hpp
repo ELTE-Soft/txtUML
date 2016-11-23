@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "runtimetypes.hpp"
-#include "statemachineI.hpp"
+#include "istatemachine.hpp"
 #include "threadpool.hpp"
 #include "ievent.hpp"
 #include "threadpoolmanager.hpp"
@@ -24,12 +24,12 @@ public:
       return RuntimeType::createRuntime();
   }
 
-  void setupObject(StateMachineI* sm_)
+  void setupObject(IStateMachine* sm_)
   {
       static_cast<RuntimeType*>(this)->setupObjectSpecificRuntime(sm_);
   }
   
-  void enqueObject(StateMachineI* sm)
+  void enqueObject(IStateMachine* sm)
   {
       static_cast<RuntimeType*>(this)->enqueObject(sm);
   }
@@ -48,7 +48,7 @@ public:
         static_cast<RuntimeType*>(this)->start();
   }
 
-  void removeObject(StateMachineI* sm)
+  void removeObject(IStateMachine* sm)
   {
       static_cast<RuntimeType*>(this)->removeObject(sm);
   }
@@ -70,11 +70,11 @@ public:
 
   static SingleThreadRT* createRuntime();
   void start();
-  void setupObjectSpecificRuntime(StateMachineI*);
+  void setupObjectSpecificRuntime(IStateMachine*);
   void setConfiguration(ThreadConfiguration*);
-  void enqueObject(StateMachineI*);
+  void enqueObject(IStateMachine*);
   void stopUponCompletion();
-  void removeObject(StateMachineI*);
+  void removeObject(IStateMachine*);
   bool isConfigurated();
 private:
   SingleThreadRT();
@@ -90,12 +90,12 @@ public:
     static ConfiguratedThreadedRT* createRuntime();
 	
     void start();
-	void removeObject(StateMachineI*);
+	void removeObject(IStateMachine*);
 	void stopUponCompletion();
 	void setConfiguration(ThreadConfiguration*);
-	void enqueObject(StateMachineI*);
+	void enqueObject(IStateMachine*);
 	bool isConfigurated();
-	void setupObjectSpecificRuntime(StateMachineI*);
+	void setupObjectSpecificRuntime(IStateMachine*);
    ~ConfiguratedThreadedRT();
 private:
     ConfiguratedThreadedRT();
