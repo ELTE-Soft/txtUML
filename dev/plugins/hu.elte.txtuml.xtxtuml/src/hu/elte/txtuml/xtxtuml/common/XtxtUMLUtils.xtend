@@ -2,6 +2,7 @@ package hu.elte.txtuml.xtxtuml.common
 
 import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
+import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.resource.IEObjectDescription
 import org.eclipse.xtext.resource.IResourceDescriptions
@@ -19,6 +20,16 @@ public class XtxtUMLUtils {
 		return resourceDescription.exportedObjects.findFirst [
 			EObjectURI.fragment == containerUriFragment
 		];
+	}
+
+	def ownsPort(TUClass clazz, EObject port) {
+		if (clazz == null || port == null) {
+			return true;
+		}
+
+		val portEnclosingClassName = port.eContainer?.fullyQualifiedName;
+		val classOwnsPort = [TUClass klass | klass.fullyQualifiedName == portEnclosingClassName];
+		return clazz.travelClassHierarchy(classOwnsPort);
 	}
 
 	/**

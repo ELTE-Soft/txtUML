@@ -121,15 +121,9 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		}
 
 		val sendExprEnclosingClass = EcoreUtil2.getContainerOfType(sendExpr, TUClass) as TUClass;
-		if (sendExprEnclosingClass == null) {
-			return;
-		}
-
 		val portType = sendExpr.target.actualType.type;
-		val portEnclosingClassName = portType.eContainer?.fullyQualifiedName;
-		val classOwnsPort = [TUClass clazz | clazz.fullyQualifiedName == portEnclosingClassName];
 
-		if (sendExprEnclosingClass.travelClassHierarchy(classOwnsPort) == false) {
+		if (!sendExprEnclosingClass.ownsPort(portType)) {
 			error(
 				"Port " + portType.simpleName + " does not belong to class " + sendExprEnclosingClass.fullyQualifiedName.lastSegment +
 					" – signals can be sent only to owned ports",
@@ -177,10 +171,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 				}
 			}
 			TUPort: {
-				val portEnclosingClassName = prop.eContainer?.fullyQualifiedName;
-				val classOwnsPort = [TUClass clazz | clazz.fullyQualifiedName == portEnclosingClassName];
-				
-				if (sourceClass.travelClassHierarchy(classOwnsPort) == false) {
+				if (!sourceClass.ownsPort(prop)) {
 					error(prop.name + " cannot be resolved as a port of class " + sourceClass.name, propAccessExpr,
 						TU_CLASS_PROPERTY_ACCESS_EXPRESSION__RIGHT, NOT_ACCESSIBLE_PORT);
 				}
