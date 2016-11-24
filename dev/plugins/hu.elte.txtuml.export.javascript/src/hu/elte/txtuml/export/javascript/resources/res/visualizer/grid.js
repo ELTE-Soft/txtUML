@@ -96,17 +96,18 @@ visualizer.Grid = function(nodes, links, padding){
 			
 			var changeIndexes = [];
 			var subsize = 0;
+			var totalsize = 0;
 			
 			for (i = position.x; i < right; ++i ){
-
 				if (clazz._columns[i].width < widthRatio){
 					changeIndexes.push(i);
 				}else{
 					subsize += clazz._columns[i].width;
 				}
+				totalsize += clazz._columns[i].width;
 			}
 			
-			if (changeIndexes.length !== 0 && pixelSize.width > subsize){
+			if (totalsize < pixelSize.width){
 				var correctedSizeRatio = (pixelSize.width - subsize) / changeIndexes.length;
 				$.each(changeIndexes, function(key,index){
 					clazz._columns[index].width = correctedSizeRatio;
@@ -115,15 +116,18 @@ visualizer.Grid = function(nodes, links, padding){
 
 			subsize = 0;
 			changeIndexes = [];
+			totalsize = 0;
 			for (i = position.y; i > bottom; --i ){
+				
 				if (clazz._rows[i].height < heightRatio){
 					changeIndexes.push(i);
 				}else{
 					subsize += clazz._rows[i].height;
 				}
+				totalsize += clazz._rows[i].height;
 			}
 			
-			if (changeIndexes.length !== 0 && pixelSize.width > subsize){
+			if (totalsize < pixelSize.height){
 				var correctedSizeRatio = (pixelSize.height - subsize) / changeIndexes.length;
 				$.each(changeIndexes, function(key,index){
 					clazz._rows[index].height = correctedSizeRatio;
