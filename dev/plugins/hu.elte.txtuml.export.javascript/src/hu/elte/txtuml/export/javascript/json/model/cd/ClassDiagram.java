@@ -14,37 +14,40 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 public class ClassDiagram {
-	@XmlAccessMethods(getMethodName="getName")
+	@XmlAccessMethods(getMethodName = "getName")
 	private String name;
-	@XmlAccessMethods(getMethodName="getClasses")
+	@XmlAccessMethods(getMethodName = "getClasses")
 	private List<ClassNode> classes;
-	@XmlAccessMethods(getMethodName="getAttributeLinks")
+	@XmlAccessMethods(getMethodName = "getAttributeLinks")
 	private List<ClassAttributeLink> attributeLinks;
-	@XmlAccessMethods(getMethodName="getNonAttributeLinks")
+	@XmlAccessMethods(getMethodName = "getNonAttributeLinks")
 	private List<ClassLink> nonAttributeLinks;
-	
-	protected ClassDiagram() {}
-	
-	public ClassDiagram(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links, ModelMapProvider map) {
+
+	protected ClassDiagram() {
+	}
+
+	public ClassDiagram(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links,
+			ModelMapProvider map) {
 		name = diagramName;
 		classes = new ArrayList<ClassNode>();
 		attributeLinks = new ArrayList<ClassAttributeLink>();
 		nonAttributeLinks = new ArrayList<ClassLink>();
-		
-		for (RectangleObject node : nodes){
-			Classifier clazz = (Classifier)map.getByName(node.getName());
+
+		for (RectangleObject node : nodes) {
+			Classifier clazz = (Classifier) map.getByName(node.getName());
 			classes.add(new ClassNode(node, clazz));
 		}
-		
-		for (LineAssociation link :  links){
-			if (link.getType() == AssociationType.generalization){
+
+		for (LineAssociation link : links) {
+			if (link.getType() == AssociationType.generalization) {
 				nonAttributeLinks.add(new ClassLink(link, AssociationType.generalization.toString()));
-			}else{
-				Association assoc = (Association)map.getByName(link.getId());
-				attributeLinks.add(new ClassAttributeLink(link, assoc, (Classifier) map.getByName(link.getFrom()), (Classifier) map.getByName(link.getTo())));
+			} else {
+				Association assoc = (Association) map.getByName(link.getId());
+				attributeLinks.add(new ClassAttributeLink(link, assoc, (Classifier) map.getByName(link.getFrom()),
+						(Classifier) map.getByName(link.getTo())));
 			}
 		}
-		
+
 	}
 
 	public String getName() {
@@ -62,5 +65,5 @@ public class ClassDiagram {
 	public List<ClassLink> getNonAttributeLinks() {
 		return nonAttributeLinks;
 	}
-	
+
 }

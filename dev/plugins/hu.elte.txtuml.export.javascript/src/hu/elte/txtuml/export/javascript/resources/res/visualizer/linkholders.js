@@ -5,19 +5,6 @@ visualizer.linkholders.Link = function (link){
     }
 	var clazz = this;
 	clazz._gridRoute = link.route;
-	/*var turningPoints = []
-	for (var i = 1; i < clazz._gridRoute.length - 1; ++i){
-		var before = clazz._gridRoute[i - 1];
-		var current = clazz._gridRoute[i];
-		var after = clazz._gridRoute[i];
-		if (before.x !== after.x && before.y !== after.y ){
-			turningPoints.push(clazz._gridRoute[i]);
-		}
-	}
-	if (turningPoints.length = 0){
-		turningPoints.push(clazz._gridRoute[clazz._gridRoute.length / 2]);
-	}
-	clazz._gridRoute = turningPoints;*/
 	this._link = null;
 }
 
@@ -37,10 +24,6 @@ visualizer.linkholders.OrthogonalLink = function (link){
 	clazz = this;
 	visualizer.linkholders.Link.call(clazz, link);
 	var route = clazz._gridRoute;
-	//console.log(clazz);
-	//clazz._sideFrom = clazz._getDirectionFromAToB(route[0],route[1]);
-	//clazz._sideTo = clazz._getDirectionFromAToB(route[route.length -  1],route[route.length - 2]);
-	//clazz._gridRoute = route.slice(1,-1);
 }
 
 visualizer.linkholders.OrthogonalLink.prototype = Object.create(visualizer.linkholders.Link.prototype);
@@ -52,22 +35,6 @@ visualizer.linkholders.OrthogonalLink.prototype.SIDES = {
 	RIGHT : 2,
 	BOTTOM : 3
 };
-visualizer.linkholders.OrthogonalLink.prototype._getDirectionFromAToB = function(a, b){
-	var direction = undefined;
-	if (a.x > b.x){
-		direction = this.SIDES.RIGHT;
-	}else if (a.x < b.x){
-		direction = this.SIDES.LEFT;
-	}else if (a.y < b.y){
-		direction = this.SIDES.TOP;
-	}else if (a.y > b.y){
-		direction = this.SIDES.BOTTOM;
-	}else{
-		throw new Error('Invalid direction');
-	}
-	return direction;
-}
-
 
 visualizer.linkholders.ClassAttributeLink = function (link){
 	clazz = this;
@@ -113,7 +80,8 @@ visualizer.linkholders.ClassAttributeLink = function (link){
 			'.marker-target': {
 				'd':markers.to.markers.join(' '),
 				'fill': 'black'
-			}
+			},
+			'snapLabels' : true
 		},
 		'labels':[  
 			{  

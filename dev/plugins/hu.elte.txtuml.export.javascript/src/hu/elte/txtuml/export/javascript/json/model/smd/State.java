@@ -6,19 +6,20 @@ import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 public class State {
-	@XmlAccessMethods(getMethodName="getId")
+	@XmlAccessMethods(getMethodName = "getId")
 	private String id;
-	@XmlAccessMethods(getMethodName="getName")
+	@XmlAccessMethods(getMethodName = "getName")
 	private String name;
-	@XmlAccessMethods(getMethodName="getPosition")
+	@XmlAccessMethods(getMethodName = "getPosition")
 	private Point position;
-	@XmlAccessMethods(getMethodName="getWidth")
+	@XmlAccessMethods(getMethodName = "getWidth")
 	private Integer width;
-	@XmlAccessMethods(getMethodName="getHeight")
+	@XmlAccessMethods(getMethodName = "getHeight")
 	private Integer height;
-	
-	protected State(){}
-	
+
+	protected State() {
+	}
+
 	public State(RectangleObject node, org.eclipse.uml2.uml.State state) {
 		id = node.getName();
 		name = state.getLabel();

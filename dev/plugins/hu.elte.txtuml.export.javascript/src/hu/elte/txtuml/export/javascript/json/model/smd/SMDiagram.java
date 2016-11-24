@@ -19,47 +19,48 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 public class SMDiagram {
-	@XmlAccessMethods(getMethodName="getName")
+	@XmlAccessMethods(getMethodName = "getName")
 	private String name;
-	@XmlAccessMethods(getMethodName="getMachineName")
+	@XmlAccessMethods(getMethodName = "getMachineName")
 	private String machineName;
-	@XmlAccessMethods(getMethodName="getStates")
+	@XmlAccessMethods(getMethodName = "getStates")
 	private List<State> states;
-	@XmlAccessMethods(getMethodName="getPseudoStates")
+	@XmlAccessMethods(getMethodName = "getPseudoStates")
 	private List<PseudoState> pseudoStates;
-	@XmlAccessMethods(getMethodName="getSignals")
-	private List<Transition> signals;
-	
-	
-	
-	protected SMDiagram(){}
-	
-	public SMDiagram(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links, ModelMapProvider map){
+	@XmlAccessMethods(getMethodName = "getTransitions")
+	private List<Transition> transitions;
+
+	protected SMDiagram() {
+	}
+
+	public SMDiagram(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links, ModelMapProvider map) {
 		name = diagramName;
 		machineName = null;
 		states = new ArrayList<State>();
 		pseudoStates = new ArrayList<PseudoState>();
-		signals = new ArrayList<Transition>();
-		
-		for (RectangleObject node : nodes){
+		transitions = new ArrayList<Transition>();
+
+		for (RectangleObject node : nodes) {
 			EObject estate = map.getByName(node.getName());
-			if (estate instanceof org.eclipse.uml2.uml.State){
+			if (estate instanceof org.eclipse.uml2.uml.State) {
 				org.eclipse.uml2.uml.State state = (org.eclipse.uml2.uml.State) estate;
 				states.add(new State(node, state));
-			}else if (estate instanceof org.eclipse.uml2.uml.Pseudostate){
+			} else if (estate instanceof org.eclipse.uml2.uml.Pseudostate) {
 				org.eclipse.uml2.uml.Pseudostate state = (org.eclipse.uml2.uml.Pseudostate) estate;
-				/*if (machineName == null) {
-					machineName = state.getStateMachine().getLabel();
-				}*/
+				/*
+				 * if (machineName == null) { machineName =
+				 * state.getStateMachine().getLabel(); }
+				 */
 				pseudoStates.add(new PseudoState(node, state));
 			}
 		}
-		
-		for (LineAssociation link :  links){
-				org.eclipse.uml2.uml.Transition signal = (org.eclipse.uml2.uml.Transition)map.getByName(link.getId());
-				signals.add(new Transition(link, signal));
+
+		for (LineAssociation link : links) {
+			org.eclipse.uml2.uml.Transition signal = (org.eclipse.uml2.uml.Transition) map.getByName(link.getId());
+			transitions.add(new Transition(link, signal));
 		}
 	}
+
 	public String getName() {
 		return name;
 	}
@@ -72,14 +73,12 @@ public class SMDiagram {
 		return pseudoStates;
 	}
 
-	public List<Transition> getSignals() {
-		return signals;
+	public List<Transition> getTransitions() {
+		return transitions;
 	}
+
 	public String getMachineName() {
 		return machineName;
 	}
-		
+
 }
-	
-
-

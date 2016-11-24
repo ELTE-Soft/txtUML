@@ -4,40 +4,38 @@ import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.uml2.uml.Property;
 
 public class AssociationEnd {
-	@XmlAccessMethods(getMethodName="getName")
+	@XmlAccessMethods(getMethodName = "getName")
 	private String name;
-	@XmlAccessMethods(getMethodName="getMultiplicity")
+	@XmlAccessMethods(getMethodName = "getMultiplicity")
 	private String multiplicity;
-	@XmlAccessMethods(getMethodName="getVisibility")
+	@XmlAccessMethods(getMethodName = "getVisibility")
 	private String visibility;
-	@XmlAccessMethods(getMethodName="isNavigable")
+	@XmlAccessMethods(getMethodName = "isNavigable")
 	private Boolean navigable;
-	@XmlAccessMethods(getMethodName="isComposition")
+	@XmlAccessMethods(getMethodName = "isComposition")
 	private Boolean composition;
-	
-	protected AssociationEnd(){};
-	
+
+	protected AssociationEnd() {
+	};
+
 	public AssociationEnd(String endID, Property end) {
 		name = end.getLabel();
 		int low = end.lowerBound();
 		int high = end.upperBound();
-		
-		if (low == high){
+
+		if (low == high) {
 			multiplicity = Integer.toString(low);
-		}else{
+		} else {
 			multiplicity = low + ".." + (high == -1 ? "*" : high);
 		}
 		visibility = end.getVisibility().getLiteral();
 		navigable = end.isNavigable();
 		composition = end.isComposite();
-		/*AggregationKind akind = end.getAggregation();
-		if (akind.getValue() == AggregationKind.NONE){
-			if (end.isNavigable()){
-				type = "direction";		
-			}
-		}else{
-			type = akind.getLiteral();
-		}		*/
+		/*
+		 * AggregationKind akind = end.getAggregation(); if (akind.getValue() ==
+		 * AggregationKind.NONE){ if (end.isNavigable()){ type = "direction"; }
+		 * }else{ type = akind.getLiteral(); }
+		 */
 	}
 
 	public String getName() {
@@ -51,11 +49,11 @@ public class AssociationEnd {
 	public String getVisibility() {
 		return visibility;
 	}
-	
+
 	public Boolean isNavigable() {
 		return navigable;
 	}
-	
+
 	public Boolean isComposition() {
 		return composition;
 	}

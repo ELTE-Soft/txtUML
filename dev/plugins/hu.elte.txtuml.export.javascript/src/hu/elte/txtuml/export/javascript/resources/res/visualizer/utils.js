@@ -24,7 +24,7 @@ visualizer.Utils.reverseMap = function(map){
 visualizer.Utils.MAPS = {
 	DIAGRAMTYPE_TO_COLLECTION_PROPERTY : {
 		'class' : 'classDiagrams',
-		'state' : 'stateChartDiagrams'
+		'state' : 'stateMachines'
 	},
 	VISIBILITY_MAP : {
 		'public' : '+',

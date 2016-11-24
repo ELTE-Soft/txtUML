@@ -8,30 +8,31 @@ import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Property;
 
 public class ClassMember {
-	@XmlAccessMethods(getMethodName="getVisibility")
-	protected String visibility; 
-	@XmlAccessMethods(getMethodName="getModifiers")
+	@XmlAccessMethods(getMethodName = "getVisibility")
+	protected String visibility;
+	@XmlAccessMethods(getMethodName = "getModifiers")
 	protected List<String> modifiers;
-	@XmlAccessMethods(getMethodName="getName")
+	@XmlAccessMethods(getMethodName = "getName")
 	protected String name;
-	
-	protected ClassMember() {}
-	
+
+	protected ClassMember() {
+	}
+
 	protected ClassMember(Property attr) {
-		name = attr.getName();	
+		name = attr.getName();
 		visibility = attr.getVisibility().getLiteral();
 		modifiers = new ArrayList<String>();
-		if (attr.isStatic()){ 
+		if (attr.isStatic()) {
 			modifiers.add("static");
 		}
-		
+
 	}
-	
+
 	public ClassMember(Operation op) {
-		name = op.getName();	
+		name = op.getName();
 		visibility = op.getVisibility().getLiteral();
 		modifiers = new ArrayList<String>();
-		if (op.isStatic()){ 
+		if (op.isStatic()) {
 			modifiers.add("static");
 		}
 	}
@@ -47,6 +48,5 @@ public class ClassMember {
 	public String getName() {
 		return name;
 	}
-	
 
 }

@@ -5,6 +5,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -24,71 +27,82 @@ import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.utils.Pair;
 
 public class Exporter {
-	
+
 	private String target;
 	private String genFolder;
 	private TxtUMLLayoutDescriptor layout;
 	private ExportationModel model;
-	
-	public Exporter(TxtUMLLayoutDescriptor layout){
+	private List<String> warnings;
+
+	public Exporter(TxtUMLLayoutDescriptor layout) {
 		this.layout = layout;
-		String projectAbsLocation = ResourcesPlugin.getWorkspace().getRoot().getProject(layout.projectName).getLocation().toFile()
-				.getAbsolutePath();
-		genFolder = Paths.get(projectAbsLocation,layout.mappingFolder).toFile().getAbsolutePath();
-		target = Paths.get(genFolder,"js").toFile().getAbsolutePath();
+		String projectAbsLocation = ResourcesPlugin.getWorkspace().getRoot().getProject(layout.projectName)
+				.getLocation().toFile().getAbsolutePath();
+		genFolder = Paths.get(projectAbsLocation, layout.mappingFolder).toFile().getAbsolutePath();
+		target = Paths.get(genFolder, "js").toFile().getAbsolutePath();
 		model = new ExportationModel();
 	}
-	
-	private void prepare() throws IOException{
+
+	private void prepare() throws IOException {
 		ResourceHandler.copyResourcesTo(target);
 	}
-	
-	private void insertInput() throws IOException, JAXBException{	
-				
-		try(
-			FileWriter fw = new FileWriter(Paths.get(target, "input.js").toFile());
-			BufferedWriter jsfile = new BufferedWriter(fw);
-		){
+
+	private void insertInput() throws IOException, JAXBException {
+
+		try (FileWriter fw = new FileWriter(Paths.get(target, "input.js").toFile());
+				BufferedWriter jsfile = new BufferedWriter(fw);) {
 			jsfile.write("var input = ");
 			JSONExporter.JSONFromReport(model, jsfile);
 			jsfile.write(";");
-			
+
 		} catch (IOException e) {
 			throw e;
 		} catch (JAXBException e) {
 			throw e;
 		}
 	}
-	
-	private void display() throws PartInitException, MalformedURLException{
-		final IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().createBrowser("hu.elte.txtuml.export.javascript");
+
+	private void display() throws PartInitException, MalformedURLException {
+		final IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport()
+				.createBrowser("hu.elte.txtuml.export.javascript");
 		browser.openURL(Paths.get(target, "visualize.html").toUri().toURL());
 	}
-	
-	public void export() throws Exception{
+
+	public void export() throws ModelMapException, ArrangeException, UnknownDiagramTypeException, IOException,
+			JAXBException, PartInitException {
 		createModel();
 		prepare();
 		insertInput();
 		display();
 	}
 
-	private void createModel() throws ModelMapException, ArrangeException {
-		
-		for (Pair<String,DiagramExportationReport> report : layout.getReportsWithDiagramNames()){
-				String name = report.getFirst();
-				DiagramExportationReport der = report.getSecond();
-				
-				LayoutVisualizerManager lvm = new LayoutVisualizerManager(der.getNodes(), der.getLinks(), der.getStatements());
-				lvm.arrange();
-				
-				ModelMapProvider map = new ModelMapProvider(URI.createFileURI(genFolder), der.getModelName());
-				switch (der.getType()){
-					case Class: model.addClassDiagram(name, lvm.getObjects(), lvm.getAssociations(), map); break;
-					case StateMachine: model.addStateChartDiagram(name, lvm.getObjects(), lvm.getAssociations(), map); break;
-				}
+	private void createModel() throws ModelMapException, ArrangeException, UnknownDiagramTypeException {
+
+		for (Pair<String, DiagramExportationReport> report : layout.getReportsWithDiagramNames()) {
+			String name = report.getFirst();
+			DiagramExportationReport der = report.getSecond();
+
+			LayoutVisualizerManager lvm = new LayoutVisualizerManager(der.getNodes(), der.getLinks(),
+					der.getStatements());
+			lvm.arrange();
+
+			ModelMapProvider map = new ModelMapProvider(URI.createFileURI(genFolder), der.getModelName());
+			switch (der.getType()) {
+			case Class:
+				model.addClassDiagram(name, lvm.getObjects(), lvm.getAssociations(), map);
+				break;
+			case StateMachine:
+				model.addStateMachine(name, lvm.getObjects(), lvm.getAssociations(), map);
+				break;
+			default:
+				throw new UnknownDiagramTypeException(name, der.getType().name());
+			}
 		}
-		
+
 	}
 
+	public List<String> getWarnings() {
+		return warnings;
+	}
 
 }

@@ -8,30 +8,31 @@ import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Parameter;
 
 public class MemberOperation extends ClassMember {
-	@XmlAccessMethods(getMethodName="getArgs")
+	@XmlAccessMethods(getMethodName = "getArgs")
 	private List<Argument> args;
-	@XmlAccessMethods(getMethodName="getReturnType")
+	@XmlAccessMethods(getMethodName = "getReturnType")
 	private String returnType;
-	
-	protected MemberOperation() {}
-	
+
+	protected MemberOperation() {
+	}
+
 	public MemberOperation(Operation op) {
 		super(op);
 		returnType = null;
 		args = new ArrayList<Argument>();
-		for(Parameter arg : op.getOwnedParameters()){
-			if (arg.getName().equals("return")){
+		for (Parameter arg : op.getOwnedParameters()) {
+			if (arg.getName().equals("return")) {
 				returnType = arg.getType().getName();
-			}else{
+			} else {
 				args.add(new Argument(arg));
 			}
 		}
 	}
-	
-	public List<Argument> getArgs(){
+
+	public List<Argument> getArgs() {
 		return args;
 	}
-	
+
 	public String getReturnType() {
 		return returnType;
 	}

@@ -10,42 +10,40 @@ import org.eclipse.uml2.uml.Element;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 
 public class ClassAttributeLink extends ClassLink {
-	
-	@XmlAccessMethods(getMethodName="getFrom")
-	private AssociationEnd from;
-	@XmlAccessMethods(getMethodName="getTo")
-	private AssociationEnd to;
-	@XmlAccessMethods(getMethodName="getName")
-	protected String name;
-	
-	
-	
 
-	protected ClassAttributeLink() {}
-	
+	@XmlAccessMethods(getMethodName = "getFrom")
+	private AssociationEnd from;
+	@XmlAccessMethods(getMethodName = "getTo")
+	private AssociationEnd to;
+	@XmlAccessMethods(getMethodName = "getName")
+	protected String name;
+
+	protected ClassAttributeLink() {
+	}
+
 	public ClassAttributeLink(LineAssociation layout, Association assoc, Classifier fromClass, Classifier toClass) {
 		super(layout);
 		type = "attribute";
 		name = assoc.getLabel();
 		from = null;
 		to = null;
-		for (Property end : assoc.getMemberEnds()){		
+		for (Property end : assoc.getMemberEnds()) {
 			Element ownerElement = end.getOwner();
-			if (!(ownerElement instanceof Class)){
-				if (from == null){
+			if (!(ownerElement instanceof Class)) {
+				if (from == null) {
 					from = new AssociationEnd(layout.getFrom(), end);
-				}else{
+				} else {
 					to = new AssociationEnd(layout.getTo(), end);
 				}
-			}else{
+			} else {
 				Class owner = (Class) ownerElement;
-				if (owner == fromClass && from == null){
+				if (owner == fromClass && from == null) {
 					from = new AssociationEnd(layout.getFrom(), end);
-				}else if (owner == toClass && to == null){
+				} else if (owner == toClass && to == null) {
 					to = new AssociationEnd(layout.getTo(), end);
-				} 
+				}
 			}
-		}		
+		}
 	}
 
 	public AssociationEnd getFrom() {
@@ -55,14 +53,13 @@ public class ClassAttributeLink extends ClassLink {
 	public AssociationEnd getTo() {
 		return to;
 	}
-	
+
 	public String getType() {
 		return type;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-
 
 }

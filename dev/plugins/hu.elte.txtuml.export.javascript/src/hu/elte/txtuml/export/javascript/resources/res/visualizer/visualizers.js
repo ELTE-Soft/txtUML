@@ -115,7 +115,7 @@ visualizer.visualizers.SMVisualizer.prototype._populateNodesAndLinks = function(
 	},this);
 	
 		
-	_.each(this._diagram.signals, function (link) {
+	_.each(this._diagram.transitions, function (link) {
 		this._links.push(new visualizer.linkholders.TransitionLink(link));
 		if (_.has(inits,link.fromID)){
             inits[link.fromID].correctGridBounds(link.anchors[0],link.route[0]);

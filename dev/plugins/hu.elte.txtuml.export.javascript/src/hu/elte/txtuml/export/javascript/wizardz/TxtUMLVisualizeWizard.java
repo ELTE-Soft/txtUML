@@ -114,7 +114,8 @@ public class TxtUMLVisualizeWizard extends Wizard {
 					monitor.subTask("Exporting txtUML Model to UML2 model...");
 					try {
 						TxtUMLToUML2.exportModel(txtUMLProjectName, txtUMLModelName,
-								txtUMLProjectName + "/" + generatedFolderName, ExportMode.ErrorHandlingNoActions, "gen");
+								txtUMLProjectName + "/" + generatedFolderName, ExportMode.ErrorHandlingNoActions,
+								"gen");
 						monitor.worked(10);
 					} catch (Exception e) {
 						Dialogs.errorMsgb("txtUML export Error", "Error occured during the UML2 exportation.", e);
@@ -163,12 +164,7 @@ public class TxtUMLVisualizeWizard extends Wizard {
 
 					try {
 						Exporter ex = new Exporter(layoutDescriptor);
-						try {
-							ex.export();
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
+						ex.export();
 					} catch (Exception e) {
 						Dialogs.errorMsgb("txtUML visualization Error",
 								"Error occured during the visualization process.", e);

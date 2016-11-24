@@ -13,33 +13,33 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 public class ExportationModel {
-	
-	@XmlAccessMethods(getMethodName="getClassDiagrams")
+
+	@XmlAccessMethods(getMethodName = "getClassDiagrams")
 	private List<ClassDiagram> classDiagrams;
-	@XmlAccessMethods(getMethodName="getStateChartDiagrams")
-	private List<SMDiagram> stateChartDiagrams;
-	
-	public ExportationModel(){
+	@XmlAccessMethods(getMethodName = "getStateMachines")
+	private List<SMDiagram> stateMachines;
+
+	public ExportationModel() {
 		classDiagrams = new ArrayList<ClassDiagram>();
-		stateChartDiagrams = new ArrayList<SMDiagram>();
+		stateMachines = new ArrayList<SMDiagram>();
 	}
 
-	public void addClassDiagram(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links, ModelMapProvider map){
+	public void addClassDiagram(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links,
+			ModelMapProvider map) {
 		classDiagrams.add(new ClassDiagram(diagramName, nodes, links, map));
 	}
-	
-	public void addStateChartDiagram(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links, ModelMapProvider map){
-		stateChartDiagrams.add(new SMDiagram(diagramName, nodes, links, map));
+
+	public void addStateMachine(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links,
+			ModelMapProvider map) {
+		stateMachines.add(new SMDiagram(diagramName, nodes, links, map));
 	}
-	
+
 	public List<ClassDiagram> getClassDiagrams() {
 		return classDiagrams;
 	}
-	
-	public List<SMDiagram> getStateChartDiagrams() {
-		return stateChartDiagrams;
+
+	public List<SMDiagram> getStateMachines() {
+		return stateMachines;
 	}
-	
-	 
-	
+
 }

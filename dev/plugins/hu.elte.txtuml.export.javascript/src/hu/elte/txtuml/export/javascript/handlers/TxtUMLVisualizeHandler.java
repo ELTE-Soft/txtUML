@@ -10,7 +10,7 @@ import hu.elte.txtuml.export.javascript.wizardz.TxtUMLVisualizeWizard;
 /**
  * Handles the call to txtUML Visualization
  */
-public class TxtUMLVisualizeHandler  extends AbstractHandler {
+public class TxtUMLVisualizeHandler extends AbstractHandler {
 
 	/**
 	 * Opens a TxtUMLVisuzalize wizard
@@ -18,12 +18,10 @@ public class TxtUMLVisualizeHandler  extends AbstractHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
+		WizardDialog wizardDialog = new WizardDialog(null, new TxtUMLVisualizeWizard());
 
-		WizardDialog wizardDialog = new WizardDialog( null,
-	      new TxtUMLVisualizeWizard());
-		
 		wizardDialog.open();
 		return null;
 	}
-	
+
 }

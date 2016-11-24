@@ -9,32 +9,33 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 
 public class Transition {
-	@XmlAccessMethods(getMethodName="getFromID")
+	@XmlAccessMethods(getMethodName = "getFromID")
 	private String fromID;
-	@XmlAccessMethods(getMethodName="getToID")
+	@XmlAccessMethods(getMethodName = "getToID")
 	private String toID;
-	@XmlAccessMethods(getMethodName="getName")
+	@XmlAccessMethods(getMethodName = "getName")
 	private String name;
-	@XmlAccessMethods(getMethodName="getRoute")
+	@XmlAccessMethods(getMethodName = "getRoute")
 	protected List<Point> route;
-	@XmlAccessMethods(getMethodName="getAnchors")
+	@XmlAccessMethods(getMethodName = "getAnchors")
 	protected List<Point> anchors;
-	
-	protected Transition() {}
-	
+
+	protected Transition() {
+	}
+
 	public Transition(LineAssociation link, org.eclipse.uml2.uml.Transition signal) {
 		fromID = link.getFrom();
 		toID = link.getTo();
 		name = signal.getLabel();
-		if (link.getTurns() == 0){
+		if (link.getTurns() == 0) {
 			List<Point> points = link.getRoute();
 			int center = points.size() / 2;
 			route = new ArrayList<Point>();
 			route.add(points.get(center));
-		}else{
+		} else {
 			List<Point> points = link.getMinimalRoute();
 			route = points.subList(1, points.size() - 1);
-			//route = points;
+			// route = points;
 		}
 		anchors = new ArrayList<Point>();
 		List<Point> points = link.getMinimalRoute();
@@ -53,11 +54,12 @@ public class Transition {
 	public String getName() {
 		return name;
 	}
-	public List<Point> getRoute(){
+
+	public List<Point> getRoute() {
 		return route;
 	}
-	
-	public List<Point> getAnchors(){
+
+	public List<Point> getAnchors() {
 		return anchors;
 	}
 

@@ -9,40 +9,40 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 
 public class ClassLink {
-	@XmlAccessMethods(getMethodName="getId")
+	@XmlAccessMethods(getMethodName = "getId")
 	protected String id;
-	@XmlAccessMethods(getMethodName="getFromID")
+	@XmlAccessMethods(getMethodName = "getFromID")
 	protected String fromID;
-	@XmlAccessMethods(getMethodName="getToID")
+	@XmlAccessMethods(getMethodName = "getToID")
 	protected String toID;
-	@XmlAccessMethods(getMethodName="getRoute")
+	@XmlAccessMethods(getMethodName = "getRoute")
 	protected List<Point> route;
-	@XmlAccessMethods(getMethodName="getType")
+	@XmlAccessMethods(getMethodName = "getType")
 	protected String type;
 
-
-	protected ClassLink() {}
-	
-	public ClassLink(LineAssociation assoc, String type){
-		this(assoc);
-		this.type = type; 
+	protected ClassLink() {
 	}
-	
-	protected ClassLink(LineAssociation assoc){
+
+	public ClassLink(LineAssociation assoc, String type) {
+		this(assoc);
+		this.type = type;
+	}
+
+	protected ClassLink(LineAssociation assoc) {
 		id = assoc.getId();
 		fromID = assoc.getFrom();
 		toID = assoc.getTo();
-		if (assoc.getTurns() == 0){
+		if (assoc.getTurns() == 0) {
 			List<Point> points = assoc.getRoute();
 			int center = points.size() / 2;
 			route = new ArrayList<Point>();
 			route.add(points.get(center));
-		}else{
+		} else {
 			List<Point> points = assoc.getMinimalRoute();
 			route = points.subList(1, points.size() - 1);
 		}
 	}
-	
+
 	public String getId() {
 		return id;
 	}
@@ -54,11 +54,11 @@ public class ClassLink {
 	public String getToID() {
 		return toID;
 	}
-	
-	public List<Point> getRoute(){
+
+	public List<Point> getRoute() {
 		return route;
 	}
-	
+
 	public String getType() {
 		return type;
 	}
