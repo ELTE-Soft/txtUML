@@ -28,21 +28,24 @@ public class ClassAttributeLink extends ClassLink {
 		from = null;
 		to = null;
 		for (Property end : assoc.getMemberEnds()) {
-			Element ownerElement = end.getOwner();
-			if (!(ownerElement instanceof Class)) {
-				if (from == null) {
-					from = new AssociationEnd(layout.getFrom(), end);
-				} else {
-					to = new AssociationEnd(layout.getTo(), end);
-				}
-			} else {
-				Class owner = (Class) ownerElement;
-				if (owner == fromClass && from == null) {
-					from = new AssociationEnd(layout.getFrom(), end);
-				} else if (owner == toClass && to == null) {
-					to = new AssociationEnd(layout.getTo(), end);
-				}
+
+			/*
+			 * Element ownerElement = end.getOwner(); if (end.getType()
+			 * instanceof Class){ ownerElement = end.getType(); }else{
+			 * ownerElement = end.getOwner(); }
+			 * 
+			 * if (!(ownerElement instanceof Class)) { if (from == null) { from
+			 * = new AssociationEnd(layout.getFrom(), end); } else { to = new
+			 * AssociationEnd(layout.getTo(), end); } } else {
+			 */
+
+			Class owner = (Class) end.getType();
+			if (owner == fromClass && from == null) {
+				from = new AssociationEnd(layout.getFrom(), end);
+			} else if (owner == toClass && to == null) {
+				to = new AssociationEnd(layout.getTo(), end);
 			}
+
 		}
 	}
 

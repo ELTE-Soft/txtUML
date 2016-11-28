@@ -74,11 +74,11 @@ visualizer.linkholders.ClassAttributeLink = function (link){
 		},
 		'attrs': { 
 			'.marker-source': {
-				'd':markers.from.markers.join(' '),
+				'd':markers.to.markers.join(' '),
 				'fill': 'black'
 			},
 			'.marker-target': {
-				'd':markers.to.markers.join(' '),
+				'd':markers.from.markers.join(' '),
 				'fill': 'black'
 			},
 			'snapLabels' : true
@@ -92,7 +92,7 @@ visualizer.linkholders.ClassAttributeLink = function (link){
 				'attrs':{  
 					'text':{  
 						'font-family': '"Lucida Console", Monaco, monospace',
-						'text':visualizer.Utils.MAPS.VISIBILITY_MAP[link.to.visibility] + ' ' + link.to.name
+						'text':visualizer.Utils.MAPS.VISIBILITY_MAP[link.from.visibility] + ' ' + link.from.name
 					}
 					
 			
@@ -106,7 +106,7 @@ visualizer.linkholders.ClassAttributeLink = function (link){
 				'attrs':{  
 					'text':{  
 						'font-family': '"Lucida Console", Monaco, monospace',
-						'text':link.to.multiplicity
+						'text':link.from.multiplicity
 					}
 				}
 			},
@@ -118,7 +118,7 @@ visualizer.linkholders.ClassAttributeLink = function (link){
 				'attrs':{  
 					'text':{  
 						'font-family': '"Lucida Console", Monaco, monospace',
-						'text':visualizer.Utils.MAPS.VISIBILITY_MAP[link.from.visibility] + ' ' + link.from.name
+						'text':visualizer.Utils.MAPS.VISIBILITY_MAP[link.to.visibility] + ' ' + link.to.name
 					}
 				}
 			},
@@ -130,7 +130,7 @@ visualizer.linkholders.ClassAttributeLink = function (link){
 				'attrs':{  
 					'text':{  
 						'font-family': '"Lucida Console", Monaco, monospace',
-						'text':link.from.multiplicity
+						'text':link.to.multiplicity
 					}
 				}
 			},
@@ -205,7 +205,6 @@ visualizer.linkholders.TransitionLink = function (link){
 					'offset':-20
 				},
 				'attrs':{  
-					'smooth': true,
 					'text':{  
 						'font-family': '"Lucida Console", Monaco, monospace',
 						'text':link.name
