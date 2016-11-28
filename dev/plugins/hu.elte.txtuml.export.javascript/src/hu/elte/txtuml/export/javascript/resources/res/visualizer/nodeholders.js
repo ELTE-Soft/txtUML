@@ -214,10 +214,8 @@ visualizer.nodeholders.ScalablePseudoStateNode = function(node){
 		},
 		'id' : node.id
 	}
-	switch (node.kind){
-		case 'initial': this._node = new visualizer.shapes.StartState(nodeData);
-		case 'choice': this._node = new visualizer.shapes.Choice(nodeData);
-	}
+	console.log(node.name);
+	this._node = new visualizer.shapes.Choice(nodeData);
 	
 }
 

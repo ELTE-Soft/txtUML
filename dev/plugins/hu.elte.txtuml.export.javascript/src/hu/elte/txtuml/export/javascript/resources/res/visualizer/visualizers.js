@@ -104,7 +104,7 @@ visualizer.visualizers.SMVisualizer.prototype._populateNodesAndLinks = function(
 			current = new visualizer.nodeholders.NonScalablePseudoStateNode(state);
 			this._nodes.push(current);
 		}else{
-			current = new visualizer.nodeholders.NonScalablePseudoStateNode(state);
+			current = new visualizer.nodeholders.ScalablePseudoStateNode(state);
 			this._nodes.push(current);
 		}
 		
