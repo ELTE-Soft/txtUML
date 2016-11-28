@@ -133,7 +133,7 @@ visualizer.visualizers.SMVisualizer.prototype._previsualize = function(){
 			'x':10,
 			'y':10
 		},
-		'name' : this._diagram.name
+		'name' : this._diagram.machineName
 	});
 	var size = {
 		'width': totalSize.width - 20,

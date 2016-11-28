@@ -8,6 +8,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Classifier;
+import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.StateMachine;
 
 import hu.elte.txtuml.export.javascript.json.model.cd.ClassAttributeLink;
@@ -41,9 +43,15 @@ public class SMDiagram {
 		transitions = new ArrayList<Transition>();
 
 		for (RectangleObject node : nodes) {
+
 			EObject estate = map.getByName(node.getName());
+
 			if (estate instanceof org.eclipse.uml2.uml.State) {
 				org.eclipse.uml2.uml.State state = (org.eclipse.uml2.uml.State) estate;
+
+				if (machineName == null) {
+					machineName = ((Region) state.getOwner()).getName();
+				}
 				states.add(new State(node, state));
 			} else if (estate instanceof org.eclipse.uml2.uml.Pseudostate) {
 				org.eclipse.uml2.uml.Pseudostate state = (org.eclipse.uml2.uml.Pseudostate) estate;
