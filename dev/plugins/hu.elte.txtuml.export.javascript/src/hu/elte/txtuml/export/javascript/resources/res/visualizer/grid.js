@@ -160,7 +160,7 @@ visualizer.Grid = function(nodes, links, padding){
 visualizer.Grid.prototype._GLOBAL_MIN_WIDTH = 1;
 visualizer.Grid.prototype._GLOBAL_MIN_HEIGHT = 1;
 visualizer.Grid.prototype._TURNING_MIN_WIDTH = 100;
-visualizer.Grid.prototype._TURNING_MIN_HEIGHT = 75;
+visualizer.Grid.prototype._TURNING_MIN_HEIGHT = 100;
 
 visualizer.Grid.prototype.getTotalPixelSize = function(){
 	return {

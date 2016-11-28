@@ -157,7 +157,7 @@ visualizer.shapes.State = joint.shapes.uml.State.extend({
 			});
 			// autosizing TODO: less font-relied solution
 			var minSize = {
-				'width' : maxChars * 7.2 + 20,
+				'width' : maxChars * 7.2 + 35,
 				'height' : offsetY * 0.5 + 20
 			}
 			this.set('size',minSize);
