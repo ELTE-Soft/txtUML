@@ -2,6 +2,9 @@ package hu.elte.txtuml.export.cpp.wizardz;
 
 import org.eclipse.jface.wizard.Wizard;
 
+import hu.elte.txtuml.utils.eclipse.SaveUtils;
+
+
 public class TxtUMLToCppWizard extends Wizard {
 
 	private TxtUMLToCppPage createCppCodePage;
@@ -32,7 +35,11 @@ public class TxtUMLToCppWizard extends Wizard {
 			TxtUMLToCppPage.PROJECT_NAME = txtUMLProject;
 			TxtUMLToCppPage.MODEL_NAME = txtUMLModel;
 			TxtUMLToCppPage.DESCRIPTION_NAME = threadManagmentDescription;
-
+			
+			boolean saveSucceeded = SaveUtils.Save(getShell(), txtUMLProject, txtUMLModel, threadManagmentDescription);
+			if (!saveSucceeded)
+				return false;
+			
 			boolean addRuntimeOption = createCppCodePage.getAddRuntimeOptionSelection();
 			boolean overWriteMainFileOption = createCppCodePage.getOverWriteMainFileSelection();
 
