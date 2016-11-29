@@ -6,10 +6,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -20,6 +22,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ListSelectionDialog;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 public final class SaveUtils {
 	private static HashSet<String> getPackageElements(String projectName, String modelName, List<String> descriptions) {
@@ -111,22 +114,32 @@ public final class SaveUtils {
 		ArrayList<IEditorPart> editors = getEffectedDirtyEditors(projectName, modelName, descriptions);
 		
 		if (!editors.isEmpty()) {
-			ListSelectionDialog lsd = new ListSelectionDialog(shell, editors, new ArrayContentProvider(), getLabelProvider() , "Select resources to save:");
-		    lsd.setInitialSelections(editors.toArray());
-		    lsd.setTitle("Save and Launch");
-		    lsd.open();
-		    
-		    Object[] results = lsd.getResult();
-		    if (results == null)
-		    	return false;
-		    
-		    for (Object o : results) {
-		    	((IEditorPart)o).doSave(monitor);
-		    }
+			if (!saveAutomatically()) {
+				ListSelectionDialog lsd = new ListSelectionDialog(shell, editors, new ArrayContentProvider(), getLabelProvider() , "Select resources to save:");
+			    lsd.setInitialSelections(editors.toArray());
+			    lsd.setTitle("Save and Launch");
+			    lsd.open();
+			    
+			    Object[] results = lsd.getResult();
+			    if (results == null)
+			    	return false;
+			    
+			    for (Object o : results) {
+			    	((IEditorPart)o).doSave(monitor);
+			    }
+			} else {
+				for (Object o : editors) {
+			    	((IEditorPart)o).doSave(monitor);
+			    }
+			}
 		}
 	    return true;
 	}
 
+	public static boolean saveAutomatically() {
+		IPreferenceStore s = new ScopedPreferenceStore(InstanceScope.INSTANCE, "org.eclipse.ui.ide");
+		return s.contains("SAVE_ALL_BEFORE_BUILD") && s.getBoolean("SAVE_ALL_BEFORE_BUILD");
+	}
 
 	public static boolean Save(Shell shell, String projectName, String modelName, String description) {
 		List<String> descriptions = new LinkedList<String>();
