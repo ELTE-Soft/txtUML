@@ -76,7 +76,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL, txtUMLModelName);
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, txtUMLLayout);
 		
-		boolean saveSucceeded = SaveUtils.Save(getShell(), txtUMLProjectName, txtUMLModelName, txtUMLLayout);;
+		boolean saveSucceeded = SaveUtils.saveAffectedFiles(getShell(), txtUMLProjectName, txtUMLModelName, txtUMLLayout);;
 		if (!saveSucceeded)
 			return false;
 

@@ -36,7 +36,7 @@ public class TxtUMLToCppWizard extends Wizard {
 			TxtUMLToCppPage.MODEL_NAME = txtUMLModel;
 			TxtUMLToCppPage.DESCRIPTION_NAME = threadManagmentDescription;
 			
-			boolean saveSucceeded = SaveUtils.Save(getShell(), txtUMLProject, txtUMLModel, threadManagmentDescription);
+			boolean saveSucceeded = SaveUtils.saveAffectedFiles(getShell(), txtUMLProject, txtUMLModel, threadManagmentDescription);
 			if (!saveSucceeded)
 				return false;
 			
