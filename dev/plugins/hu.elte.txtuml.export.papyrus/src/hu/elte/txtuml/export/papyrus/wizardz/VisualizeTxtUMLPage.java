@@ -17,8 +17,6 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.core.search.JavaSearchScope;
-import org.eclipse.jdt.internal.ui.dialogs.PackageSelectionDialog;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.IContentProvider;
@@ -31,6 +29,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
@@ -39,6 +38,7 @@ import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 import hu.elte.txtuml.api.layout.ClassDiagram;
+import hu.elte.txtuml.api.layout.CompositeDiagram;
 import hu.elte.txtuml.api.layout.StateMachineDiagram;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.utils.eclipse.NotFoundException;
@@ -49,11 +49,11 @@ import hu.elte.txtuml.utils.eclipse.WizardUtils;
 /**
  * The Page for txtUML visualization.
  */
-@SuppressWarnings("restriction")
 public class VisualizeTxtUMLPage extends WizardPage {
 
 	private static final String browseButtonText = "Browse...";
-	private static final Class<?>[] diagramTypes = { StateMachineDiagram.class, ClassDiagram.class };
+	private static final Class<?>[] diagramTypes = { StateMachineDiagram.class, ClassDiagram.class,
+			CompositeDiagram.class };
 
 	private Composite container;
 	private Text txtUMLModel;
@@ -127,10 +127,9 @@ public class VisualizeTxtUMLPage extends WizardPage {
 		browseModel.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-
-				PackageSelectionDialog dialog = getModelBrowserDialog();
-
-				dialog.setTitle("Project Selection");
+				ElementTreeSelectionDialog dialog = getModelBrowserDialog();
+				dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
+				dialog.setTitle("Model Selection");
 				dialog.open();
 				Object[] result = dialog.getResult();
 				if (result != null && result.length > 0) {
@@ -226,7 +225,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	}
 
 	private CheckboxTreeViewer getDiagramTreeViewer(ScrolledComposite treeComposite) {
-		CheckboxTreeViewer tree = new CheckboxTreeViewer(treeComposite, SWT.FULL_SELECTION);
+		CheckboxTreeViewer tree = new CheckboxTreeViewer(treeComposite, SWT.NONE);
 		IContentProvider cp = new WorkbenchContentProvider() {
 			@Override
 			public Object[] getChildren(Object element) {
@@ -281,28 +280,30 @@ public class VisualizeTxtUMLPage extends WizardPage {
 			}
 		};
 
-		tree.getTree().addListener(SWT.Selection, event -> {
-			if (event.detail == SWT.CHECK) {
-				TreeItem item = (TreeItem) event.item;
-				if (item.getData() instanceof IType) {
-					IType type = (IType) item.getData();
-					if (!txtUMLLayout.contains(type)) {
-						txtUMLLayout.add(type);
-					} else {
-						txtUMLLayout.remove(type);
-					}
-					updateParentCheck(item.getParentItem());
-				} else {
-					checkItems(item, item.getChecked());
-				}
-			}
-		});
-
+		tree.getTree().addListener(SWT.Selection, event -> selectionHandler(event));
 		tree.setContentProvider(cp);
-		tree.setLabelProvider(new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_POST_QUALIFIED | JavaElementLabelProvider.SHOW_SMALL_ICONS));
+		tree.setLabelProvider(new JavaElementLabelProvider(
+				JavaElementLabelProvider.SHOW_POST_QUALIFIED | JavaElementLabelProvider.SHOW_SMALL_ICONS));
 		tree.setInput(ResourcesPlugin.getWorkspace().getRoot());
 
 		return tree;
+	}
+
+	private void selectionHandler(Event event) {
+		if (event.detail == SWT.CHECK) {
+			TreeItem item = (TreeItem) event.item;
+			if (item.getData() instanceof IType) {
+				IType type = (IType) item.getData();
+				if (!txtUMLLayout.contains(type)) {
+					txtUMLLayout.add(type);
+				} else {
+					txtUMLLayout.remove(type);
+				}
+				updateParentCheck(item.getParentItem());
+			} else {
+				checkItems(item, item.getChecked());
+			}
+		}
 	}
 
 	private List<IType> getDiagramDescriptions(IPackageFragment packageFragment) {
@@ -334,22 +335,25 @@ public class VisualizeTxtUMLPage extends WizardPage {
 		}
 	}
 
-	private PackageSelectionDialog getModelBrowserDialog() {
-		JavaSearchScope scope = new JavaSearchScope();
-		try {
-			IJavaProject javaProject = ProjectUtils.findJavaProject(txtUMLProject.getText());
-			List<IPackageFragment> allPackageFragments = PackageUtils.findAllPackageFragmentsAsStream(javaProject)
-					.collect(Collectors.toList());
-
-			List<IPackageFragment> modelPackages = WizardUtils.getModelPackages(allPackageFragments);
-			for (IPackageFragment modelPackage : modelPackages) {
-				scope.add(modelPackage);
-			}
-		} catch (NotFoundException | JavaModelException ex) {
-		}
-
-		return new PackageSelectionDialog(getShell(), getContainer(),
-				PackageSelectionDialog.F_HIDE_DEFAULT_PACKAGE | PackageSelectionDialog.F_REMOVE_DUPLICATES, scope);
+	private ElementTreeSelectionDialog getModelBrowserDialog() {
+		return new ElementTreeSelectionDialog(container.getShell(), new WorkbenchLabelProvider(),
+				new WorkbenchContentProvider() {
+					@Override
+					public Object[] getChildren(Object element) {
+						if (element instanceof IWorkspaceRoot) {
+							IJavaProject javaProject;
+							List<IPackageFragment> allPackageFragments = new ArrayList<>();
+							try {
+								javaProject = ProjectUtils.findJavaProject(txtUMLProject.getText());
+								allPackageFragments = PackageUtils.findAllPackageFragmentsAsStream(javaProject)
+										.collect(Collectors.toList());
+							} catch (NotFoundException | JavaModelException ex) {
+							}
+							return WizardUtils.getModelPackages(allPackageFragments).toArray();
+						}
+						return new Object[0];
+					}
+				});
 	}
 
 	private void updateParentCheck(TreeItem parentItem) {

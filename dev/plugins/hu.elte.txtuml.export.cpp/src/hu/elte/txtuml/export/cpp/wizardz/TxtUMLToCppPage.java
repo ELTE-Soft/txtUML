@@ -13,8 +13,6 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.core.search.JavaSearchScope;
-import org.eclipse.jdt.internal.ui.dialogs.PackageSelectionDialog;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -36,7 +34,6 @@ import hu.elte.txtuml.utils.eclipse.PackageUtils;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 import hu.elte.txtuml.utils.eclipse.WizardUtils;
 
-@SuppressWarnings("restriction")
 public class TxtUMLToCppPage extends WizardPage {
 
 	private static final String browseButtonText = "Browse...";
@@ -126,7 +123,8 @@ public class TxtUMLToCppPage extends WizardPage {
 		modelBrowser.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				PackageSelectionDialog dialog = getModelBrowserDialog();
+				ElementTreeSelectionDialog dialog = getModelBrowserDialog();
+				dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
 				dialog.setTitle("Project Selection");
 				dialog.open();
 				Object[] result = dialog.getResult();
@@ -154,6 +152,7 @@ public class TxtUMLToCppPage extends WizardPage {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				ElementTreeSelectionDialog dialog = getConfigurationSelectionDialog();
+				dialog.setTitle("Configuration selection");
 				dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
 				dialog.open();
 				Object[] result = dialog.getResult();
@@ -210,22 +209,24 @@ public class TxtUMLToCppPage extends WizardPage {
 		return overWriteMainFle.getSelection();
 	}
 
-	private PackageSelectionDialog getModelBrowserDialog() {
-		JavaSearchScope scope = new JavaSearchScope();
-		try {
-			IJavaProject javaProject = ProjectUtils.findJavaProject(txtUMLProject.getText());
-			List<IPackageFragment> allPackageFragments = PackageUtils.findAllPackageFragmentsAsStream(javaProject)
-					.collect(Collectors.toList());
-
-			List<IPackageFragment> modelPackages = WizardUtils.getModelPackages(allPackageFragments);
-			for (IPackageFragment modelPackage : modelPackages) {
-				scope.add(modelPackage);
+	private ElementTreeSelectionDialog getModelBrowserDialog() {
+		return new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(), new WorkbenchContentProvider() {
+			@Override
+			public Object[] getChildren(Object element) {
+				if (element instanceof IWorkspaceRoot) {
+					IJavaProject javaProject;
+					List<IPackageFragment> allPackageFragments = new ArrayList<>();
+					try {
+						javaProject = ProjectUtils.findJavaProject(txtUMLProject.getText());
+						allPackageFragments = PackageUtils.findAllPackageFragmentsAsStream(javaProject)
+								.collect(Collectors.toList());
+					} catch (NotFoundException | JavaModelException ex) {
+					}
+					return WizardUtils.getModelPackages(allPackageFragments).toArray();
+				}
+				return new Object[0];
 			}
-		} catch (NotFoundException | JavaModelException ex) {
-		}
-
-		return new PackageSelectionDialog(getShell(), getContainer(),
-				PackageSelectionDialog.F_HIDE_DEFAULT_PACKAGE | PackageSelectionDialog.F_REMOVE_DUPLICATES, scope);
+		});
 	}
 
 	private ElementTreeSelectionDialog getConfigurationSelectionDialog() {
