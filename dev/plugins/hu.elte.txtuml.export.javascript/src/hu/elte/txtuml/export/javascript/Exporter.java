@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -24,6 +25,8 @@ import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.layout.visualizer.statements.Statement;
+import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 import hu.elte.txtuml.utils.Pair;
 
 public class Exporter {
@@ -87,12 +90,19 @@ public class Exporter {
 			lvm.arrange();
 
 			ModelMapProvider map = new ModelMapProvider(URI.createFileURI(genFolder), der.getModelName());
+			List<Statement> statements = lvm.getStatementsSet();
+			double spacing = 0.8;
+			Statement s = statements.stream().filter(statement -> statement.getType() == StatementType.corridorsize).findFirst().orElse(null);
+			if (s != null){
+				spacing = Double.parseDouble(s.getParameter(0));
+			}
+			
 			switch (der.getType()) {
 			case Class:
-				model.addClassDiagram(name, lvm.getObjects(), lvm.getAssociations(), map);
+				model.addClassDiagram(name, lvm.getObjects(), lvm.getAssociations(), map, spacing);
 				break;
 			case StateMachine:
-				model.addStateMachine(name, lvm.getObjects(), lvm.getAssociations(), map);
+				model.addStateMachine(name, lvm.getObjects(), lvm.getAssociations(), map, spacing);
 				break;
 			default:
 				throw new UnknownDiagramTypeException(name, der.getType().name());

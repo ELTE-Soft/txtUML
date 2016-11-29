@@ -14,6 +14,7 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 public class ClassDiagram {
+	
 	@XmlAccessMethods(getMethodName = "getName")
 	private String name;
 	@XmlAccessMethods(getMethodName = "getClasses")
@@ -22,12 +23,15 @@ public class ClassDiagram {
 	private List<ClassAttributeLink> attributeLinks;
 	@XmlAccessMethods(getMethodName = "getNonAttributeLinks")
 	private List<ClassLink> nonAttributeLinks;
+	@XmlAccessMethods(getMethodName = "getSpacing")
+	private double spacing;
 
 	protected ClassDiagram() {
 	}
 
 	public ClassDiagram(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links,
-			ModelMapProvider map) {
+			ModelMapProvider map, double spacing) {
+		this.spacing = spacing;
 		name = diagramName;
 		classes = new ArrayList<ClassNode>();
 		attributeLinks = new ArrayList<ClassAttributeLink>();
@@ -64,6 +68,10 @@ public class ClassDiagram {
 
 	public List<ClassLink> getNonAttributeLinks() {
 		return nonAttributeLinks;
+	}
+	
+	public double getSpacing() {
+		return spacing;
 	}
 
 }

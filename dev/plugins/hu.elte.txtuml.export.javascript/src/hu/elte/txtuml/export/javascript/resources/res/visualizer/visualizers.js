@@ -10,7 +10,7 @@ visualizer.visualizers.Visualizer = function (diagram, padding){
 
 	this._populateNodesAndLinks();
 	
-	this._grid = new visualizer.Grid(this._nodes,this._links, padding);
+	this._grid = new visualizer.Grid(this._nodes,this._links, padding, diagram.spacing);
 
 	
 }

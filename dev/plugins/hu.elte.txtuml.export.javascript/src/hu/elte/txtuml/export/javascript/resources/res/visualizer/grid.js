@@ -1,4 +1,4 @@
-visualizer.Grid = function(nodes, links, padding){
+visualizer.Grid = function(nodes, links, padding, spacing){
 	var clazz = this;
 	if (nodes.length === 0){
 		clazz._left = 0;
@@ -44,21 +44,11 @@ visualizer.Grid = function(nodes, links, padding){
 				clazz._bottom = Math.min(clazz._bottom,position.y - 1);			
 			});
 		});
-		// Uniform
-		/*var i;
-		$.each(nodes,function(key,node){
-			var size = node.getGridSize();
-			var pixelSize = node.getPixelSize();
-			
-			var widthRatio = Math.ceil(pixelSize.width / size.width);
-			var heightRatio = Math.ceil(pixelSize.height / size.height);
-			
-			clazz._colWidth = Math.max(widthRatio, clazz._colWidth);
-			clazz._rowHeight = Math.max(heightRatio, clazz._rowHeight);
-		});
 		
-		clazz._totalPixelWidth = clazz._padding * 2 + clazz._colWidth * (clazz._right - clazz._left);
-		clazz._totalPixelHeight = clazz._padding * 2 + clazz._rowHeight * (clazz._top - clazz._bottom);*/
+		--clazz._left;
+		++clazz._right;
+		++clazz._top;
+		--clazz._bottom;
 		clazz._columns = {}
 		clazz._rows = {}
 		
@@ -134,6 +124,13 @@ visualizer.Grid = function(nodes, links, padding){
 				});
 			}
 			
+			console.log(position.x);
+			console.log(clazz._left);
+			clazz._rows[position.y + 1].height = Math.max(clazz._SPACING_HEIGHT * spacing, clazz._rows[position.y + 1].height);
+			clazz._rows[bottom].height = Math.max(clazz._SPACING_HEIGHT * spacing, clazz._rows[bottom].height);
+			clazz._columns[position.x - 1].width = Math.max(clazz._SPACING_WIDTH * spacing, clazz._columns[position.x - 1].width);
+			clazz._columns[right].width = Math.max(clazz._SPACING_WIDTH * spacing, clazz._columns[right].width);
+			
 			
 		});
 		
@@ -157,6 +154,8 @@ visualizer.Grid = function(nodes, links, padding){
 	
 }
 
+visualizer.Grid.prototype._SPACING_WIDTH = 50;
+visualizer.Grid.prototype._SPACING_HEIGHT = 50;
 visualizer.Grid.prototype._GLOBAL_MIN_WIDTH = 1;
 visualizer.Grid.prototype._GLOBAL_MIN_HEIGHT = 1;
 visualizer.Grid.prototype._TURNING_MIN_WIDTH = 100;

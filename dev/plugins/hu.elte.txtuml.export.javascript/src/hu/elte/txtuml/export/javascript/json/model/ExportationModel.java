@@ -25,13 +25,13 @@ public class ExportationModel {
 	}
 
 	public void addClassDiagram(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links,
-			ModelMapProvider map) {
-		classDiagrams.add(new ClassDiagram(diagramName, nodes, links, map));
+			ModelMapProvider map, double spacing) {
+		classDiagrams.add(new ClassDiagram(diagramName, nodes, links, map, spacing));
 	}
 
 	public void addStateMachine(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links,
-			ModelMapProvider map) {
-		stateMachines.add(new SMDiagram(diagramName, nodes, links, map));
+			ModelMapProvider map, double spacing) {
+		stateMachines.add(new SMDiagram(diagramName, nodes, links, map, spacing));
 	}
 
 	public List<ClassDiagram> getClassDiagrams() {

@@ -31,11 +31,15 @@ public class SMDiagram {
 	private List<PseudoState> pseudoStates;
 	@XmlAccessMethods(getMethodName = "getTransitions")
 	private List<Transition> transitions;
+	@XmlAccessMethods(getMethodName = "getSpacing")
+	private double spacing;
+	
 
 	protected SMDiagram() {
 	}
 
-	public SMDiagram(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links, ModelMapProvider map) {
+	public SMDiagram(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links, ModelMapProvider map, double spacing) {
+		this.spacing = spacing;
 		name = diagramName;
 		machineName = null;
 		states = new ArrayList<State>();
@@ -87,6 +91,10 @@ public class SMDiagram {
 
 	public String getMachineName() {
 		return machineName;
+	}
+	
+	public double getSpacing() {
+		return spacing;
 	}
 
 }
