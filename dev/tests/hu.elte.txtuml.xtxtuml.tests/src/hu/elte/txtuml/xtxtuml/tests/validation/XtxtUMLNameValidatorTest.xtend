@@ -21,6 +21,7 @@ class XtxtUMLNameValidatorTest {
 
 	@Inject extension ParseHelper<TUFile>;
 	@Inject extension ValidationTestHelper;
+	@Inject extension XtxtUMLValidationTestUtils;
 
 	@Test
 	def checkPackageNameIsNotReserved() {
@@ -28,9 +29,11 @@ class XtxtUMLNameValidatorTest {
 			package test.model;
 		'''.parse.assertNoError(RESERVED_NAME);
 
-		'''
+		val rawFile = '''
 			package goto;
-		'''.parse.assertError(TU_FILE, RESERVED_NAME, 8, 4);
+		''';
+
+		rawFile.parse.assertError(TU_FILE, RESERVED_NAME, rawFile.indexOf("goto"), 4);
 	}
 
 	@Test
@@ -44,21 +47,22 @@ class XtxtUMLNameValidatorTest {
 			connector C {}
 		'''.parse.assertNoError(RESERVED_NAME);
 
-		val file = '''
+		val rawFile = '''
 			execution goto {}
 			signal assert;
 			class native;
 			association volatile {}
 			interface transient {}
 			connector implements {}
-		'''.parse;
+		''';
 
-		file.assertError(TU_MODEL_ELEMENT, RESERVED_NAME, 10, 4);
-		file.assertError(TU_MODEL_ELEMENT, RESERVED_NAME, 26, 6);
-		file.assertError(TU_MODEL_ELEMENT, RESERVED_NAME, 41, 6);
-		file.assertError(TU_MODEL_ELEMENT, RESERVED_NAME, 62, 8);
-		file.assertError(TU_MODEL_ELEMENT, RESERVED_NAME, 85, 9);
-		file.assertError(TU_MODEL_ELEMENT, RESERVED_NAME, 109, 10);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_MODEL_ELEMENT, RESERVED_NAME, rawFile.indexOf("goto"), 4);
+		parsedFile.assertError(TU_MODEL_ELEMENT, RESERVED_NAME, rawFile.indexOf("assert"), 6);
+		parsedFile.assertError(TU_MODEL_ELEMENT, RESERVED_NAME, rawFile.indexOf("native"), 6);
+		parsedFile.assertError(TU_MODEL_ELEMENT, RESERVED_NAME, rawFile.indexOf("volatile"), 8);
+		parsedFile.assertError(TU_MODEL_ELEMENT, RESERVED_NAME, rawFile.indexOf("transient"), 9);
+		parsedFile.assertError(TU_MODEL_ELEMENT, RESERVED_NAME, rawFile.indexOf("implements"), 10);
 	}
 
 	@Test
@@ -69,11 +73,13 @@ class XtxtUMLNameValidatorTest {
 			}
 		'''.parse.assertNoError(RESERVED_NAME);
 
-		'''
+		val rawFile = '''
 			signal S {
 				int goto;
 			}
-		'''.parse.assertError(TU_SIGNAL_ATTRIBUTE, RESERVED_NAME, 17, 4);
+		''';
+
+		rawFile.parse.assertError(TU_SIGNAL_ATTRIBUTE, RESERVED_NAME, rawFile.indexOf("goto"), 4);
 	}
 
 	@Test
@@ -84,11 +90,13 @@ class XtxtUMLNameValidatorTest {
 			}
 		'''.parse.assertNoError(RESERVED_NAME);
 
-		'''
+		val rawFile = '''
 			class A {
 				int goto;
 			}
-		'''.parse.assertError(TU_ATTRIBUTE, RESERVED_NAME, 16, 4);
+		''';
+
+		rawFile.parse.assertError(TU_ATTRIBUTE, RESERVED_NAME, rawFile.indexOf("goto"), 4);
 	}
 
 	@Test
@@ -99,11 +107,13 @@ class XtxtUMLNameValidatorTest {
 			}
 		'''.parse.assertNoError(RESERVED_NAME);
 
-		'''
+		val rawFile = '''
 			class goto {
 				goto() {}
 			}
-		'''.parse.assertError(TU_CONSTRUCTOR, RESERVED_NAME, 15, 4);
+		''';
+
+		rawFile.parse.assertError(TU_CONSTRUCTOR, RESERVED_NAME, rawFile.indexOfNth("goto", 1), 4);
 	}
 
 	@Test
@@ -114,11 +124,13 @@ class XtxtUMLNameValidatorTest {
 			}
 		'''.parse.assertNoError(RESERVED_NAME);
 
-		'''
+		val rawFile = '''
 			class A {
 				void goto() {}
 			}
-		'''.parse.assertError(TU_OPERATION, RESERVED_NAME, 17, 4);
+		'''
+
+		rawFile.parse.assertError(TU_OPERATION, RESERVED_NAME, rawFile.indexOf("goto"), 4);
 	}
 
 	@Test
@@ -131,17 +143,18 @@ class XtxtUMLNameValidatorTest {
 			}
 		'''.parse.assertNoError(RESERVED_NAME);
 
-		val file = '''
+		val rawFile = '''
 			class A {
 				initial goto;
 				state transient;
 				choice assert;
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_STATE, RESERVED_NAME, 20, 4);
-		file.assertError(TU_STATE, RESERVED_NAME, 34, 9);
-		file.assertError(TU_STATE, RESERVED_NAME, 54, 6);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_STATE, RESERVED_NAME, rawFile.indexOf("goto"), 4);
+		parsedFile.assertError(TU_STATE, RESERVED_NAME, rawFile.indexOf("transient"), 9);
+		parsedFile.assertError(TU_STATE, RESERVED_NAME, rawFile.indexOf("assert"), 6);
 	}
 
 	@Test
@@ -152,11 +165,13 @@ class XtxtUMLNameValidatorTest {
 			}
 		'''.parse.assertNoError(RESERVED_NAME);
 
-		'''
+		val rawFile = '''
 			class A {
 				transition goto {}
 			}
-		'''.parse.assertError(TU_TRANSITION, RESERVED_NAME, 23, 4);
+		''';
+
+		rawFile.parse.assertError(TU_TRANSITION, RESERVED_NAME, rawFile.indexOf("goto"), 4);
 	}
 
 	@Test
@@ -167,11 +182,13 @@ class XtxtUMLNameValidatorTest {
 			}
 		'''.parse.assertNoError(RESERVED_NAME);
 
-		'''
+		val rawFile = '''
 			class A {
 				port goto {}
 			}
-		'''.parse.assertError(TU_PORT, RESERVED_NAME, 17, 4);
+		''';
+
+		rawFile.parse.assertError(TU_PORT, RESERVED_NAME, rawFile.indexOf("goto"), 4);
 	}
 
 	@Test
@@ -183,12 +200,14 @@ class XtxtUMLNameValidatorTest {
 			}
 		'''.parse.assertNoError(RESERVED_NAME);
 
-		'''
+		val rawFile = '''
 			class A;
 			association S {
 				A goto;
 			}
-		'''.parse.assertError(TU_ASSOCIATION_END, RESERVED_NAME, 30, 4);
+		''';
+
+		rawFile.parse.assertError(TU_ASSOCIATION_END, RESERVED_NAME, rawFile.indexOf("goto"), 4);
 	}
 
 	@Test
@@ -203,7 +222,7 @@ class XtxtUMLNameValidatorTest {
 			}
 		'''.parse.assertNoError(RESERVED_NAME);
 
-		'''
+		val rawFile = '''
 			class A { port P {} }
 			association AA {
 				A a;
@@ -211,7 +230,9 @@ class XtxtUMLNameValidatorTest {
 			connector C {
 				AA.a->A.P goto;
 			}
-		'''.parse.assertError(TU_CONNECTOR_END, RESERVED_NAME, 77, 4);
+		''';
+
+		rawFile.parse.assertError(TU_CONNECTOR_END, RESERVED_NAME, rawFile.indexOf("goto"), 4);
 	}
 
 	@Test
@@ -225,18 +246,20 @@ class XtxtUMLNameValidatorTest {
 			}
 		'''.parse.assertNoError(RESERVED_NAME);
 
-		val file = '''
+		val rawFile = '''
 			class A {
 				A(int goto) {}
 				void foo(int transient) {
 					for (int throws : null) {}
 				}
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TypesPackage.Literals.JVM_FORMAL_PARAMETER, RESERVED_NAME, 18, 4);
-		file.assertError(TypesPackage.Literals.JVM_FORMAL_PARAMETER, RESERVED_NAME, 42, 9);
-		file.assertError(TypesPackage.Literals.JVM_FORMAL_PARAMETER, RESERVED_NAME, 67, 6);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TypesPackage.Literals.JVM_FORMAL_PARAMETER, RESERVED_NAME, rawFile.indexOf("goto"), 4);
+		parsedFile.assertError(TypesPackage.Literals.JVM_FORMAL_PARAMETER, RESERVED_NAME, rawFile.indexOf("transient"),
+			9);
+		parsedFile.assertError(TypesPackage.Literals.JVM_FORMAL_PARAMETER, RESERVED_NAME, rawFile.indexOf("throws"), 6);
 	}
 
 	@Test
@@ -250,17 +273,19 @@ class XtxtUMLNameValidatorTest {
 			}
 		'''.parse.assertNoError(RESERVED_NAME);
 
-		val file = '''
+		val rawFile = '''
 			class A {
 				void foo() {
 					int goto = 0;
 					for (int transient = 0;;) {}
 				}
 			}
-		'''.parse;
+		''';
 
-		file.assertError(XbasePackage.Literals.XVARIABLE_DECLARATION, RESERVED_NAME, 32, 4);
-		file.assertError(XbasePackage.Literals.XVARIABLE_DECLARATION, RESERVED_NAME, 54, 9);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(XbasePackage.Literals.XVARIABLE_DECLARATION, RESERVED_NAME, rawFile.indexOf("goto"), 4);
+		parsedFile.assertError(XbasePackage.Literals.XVARIABLE_DECLARATION, RESERVED_NAME, rawFile.indexOf("transient"),
+			9);
 	}
 
 }

@@ -19,6 +19,7 @@ class XtxtUMLUniquenessValidatorTest {
 
 	@Inject extension ParseHelper<TUFile>;
 	@Inject extension ValidationTestHelper;
+	@Inject extension XtxtUMLValidationTestUtils;
 
 	@Test
 	def checkModelElementNameIsUniqueExternal() {
@@ -32,7 +33,7 @@ class XtxtUMLUniquenessValidatorTest {
 			connector __4416cWAUcf82 {}
 		'''.parse.assertNoError(NOT_UNIQUE_NAME);
 
-		val file = '''
+		val rawFile = '''
 			package java.lang;
 			execution Object {}
 			signal Double;
@@ -40,191 +41,197 @@ class XtxtUMLUniquenessValidatorTest {
 			association Exception {}
 			interface Error {}
 			connector String {}
-		'''.parse;
+		''';
 
-		file.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, 30, 6);
-		file.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, 48, 6);
-		file.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, 63, 5);
-		file.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, 83, 9);
-		file.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, 107, 5);
-		file.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, 127, 6);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, rawFile.indexOf("Object"), 6);
+		parsedFile.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, rawFile.indexOf("Double"), 6);
+		parsedFile.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, rawFile.indexOf("Float"), 5);
+		parsedFile.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, rawFile.indexOf("Exception"), 9);
+		parsedFile.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, rawFile.indexOf("Error"), 5);
+		parsedFile.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, rawFile.indexOf("String"), 6);
 	}
 
 	@Test
 	def checkModelElementNameIsUniqueInternal() {
 		'''
-			class A;
-			class B;
+			class Foo;
+			class Bar;
 		'''.parse.assertNoError(NOT_UNIQUE_NAME);
 
-		val sameType = '''
-			class A;
-			class A;
-			class B;
-			class b;
-		'''.parse;
+		val sameTypeRaw = '''
+			class Foo;
+			class Foo;
+			class Bar;
+			class bar;
+		''';
 
-		sameType.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, 6, 1);
-		sameType.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, 16, 1);
-		sameType.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, 26, 1);
-		sameType.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, 36, 1);
+		val sameTypeParsed = sameTypeRaw.parse;
+		sameTypeParsed.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, sameTypeRaw.indexOfNth("Foo", 0), 3);
+		sameTypeParsed.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, sameTypeRaw.indexOfNth("Foo", 1), 3);
+		sameTypeParsed.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, sameTypeRaw.indexOf("Bar"), 3);
+		sameTypeParsed.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, sameTypeRaw.indexOf("bar"), 3);
 
-		val differentTypes = '''
-			class A;
-			signal A;
-			class B;
-			signal b;
-		'''.parse;
+		val differentTypesRaw = '''
+			class Foo;
+			signal Foo;
+			class Bar;
+			signal bar;
+		''';
 
-		differentTypes.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, 6, 1);
-		differentTypes.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, 17, 1);
-		differentTypes.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, 27, 1);
-		differentTypes.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, 38, 1);
+		val differentTypesParsed = differentTypesRaw.parse;
+		differentTypesParsed.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, differentTypesRaw.indexOfNth("Foo", 0), 3);
+		differentTypesParsed.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, differentTypesRaw.indexOfNth("Foo", 1), 3);
+		differentTypesParsed.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, differentTypesRaw.indexOf("Bar"), 3);
+		differentTypesParsed.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, differentTypesRaw.indexOf("bar"), 3);
 	}
 
 	@Test
 	def checkReceptionIsUnique() {
 		'''
-			signal S;
-			interface I {
-				reception S;
+			signal Foo;
+			interface Bar {
+				reception Foo;
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_RECEPTION);
 
-		val file = '''
-			signal S;
-			interface I {
-				reception S;
-				reception S;
+		val rawFile = '''
+			signal Foo;
+			interface Bar {
+				reception Foo;
+				reception Foo;
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_RECEPTION, NOT_UNIQUE_RECEPTION, 37, 1);
-		file.assertError(TU_RECEPTION, NOT_UNIQUE_RECEPTION, 52, 1);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_RECEPTION, NOT_UNIQUE_RECEPTION, rawFile.indexOfNth("Foo", 1), 3);
+		parsedFile.assertError(TU_RECEPTION, NOT_UNIQUE_RECEPTION, rawFile.indexOfNth("Foo", 2), 3);
 	}
 
 	@Test
 	def checkSignalAttributeNameIsUnique() {
 		'''
-			signal S {
-				int a;
+			signal Foo {
+				int bar;
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_NAME);
 
-		val file = '''
-			signal S {
-				int a;
-				int a;
-				double a;
+		val rawFile = '''
+			signal Foo {
+				int bar;
+				int bar;
+				double bar;
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_SIGNAL_ATTRIBUTE, NOT_UNIQUE_NAME, 17, 1);
-		file.assertError(TU_SIGNAL_ATTRIBUTE, NOT_UNIQUE_NAME, 26, 1);
-		file.assertError(TU_SIGNAL_ATTRIBUTE, NOT_UNIQUE_NAME, 38, 1);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_SIGNAL_ATTRIBUTE, NOT_UNIQUE_NAME, rawFile.indexOfNth("bar", 0), 3);
+		parsedFile.assertError(TU_SIGNAL_ATTRIBUTE, NOT_UNIQUE_NAME, rawFile.indexOfNth("bar", 1), 3);
+		parsedFile.assertError(TU_SIGNAL_ATTRIBUTE, NOT_UNIQUE_NAME, rawFile.indexOfNth("bar", 2), 3);
 	}
 
 	@Test
 	def checkAttributeNameIsUnique() {
 		'''
-			class A {
-				int a;
+			class Foo {
+				int bar;
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_NAME);
 
-		val file = '''
-			class A {
-				int a;
-				int a;
-				double a;
+		val rawFile = '''
+			class Foo {
+				int bar;
+				int bar;
+				double bar;
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_ATTRIBUTE, NOT_UNIQUE_NAME, 16, 1);
-		file.assertError(TU_ATTRIBUTE, NOT_UNIQUE_NAME, 25, 1);
-		file.assertError(TU_ATTRIBUTE, NOT_UNIQUE_NAME, 37, 1);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_ATTRIBUTE, NOT_UNIQUE_NAME, rawFile.indexOfNth("bar", 0), 3);
+		parsedFile.assertError(TU_ATTRIBUTE, NOT_UNIQUE_NAME, rawFile.indexOfNth("bar", 1), 3);
+		parsedFile.assertError(TU_ATTRIBUTE, NOT_UNIQUE_NAME, rawFile.indexOfNth("bar", 2), 3);
 	}
 
 	@Test
 	def checkConstructorIsUnique() {
 		'''
-			class A {
-				public A() {}
+			class Foo {
+				public Foo() {}
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_CONSTRUCTOR);
 
 		'''
-			class A {
-				public A() {}
-				public A(int a) {}
+			class Foo {
+				public Foo() {}
+				public Foo(int bar) {}
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_CONSTRUCTOR);
 
-		val file = '''
-			class A {
-				public A() {}
-				A() {}
-				public A(int a) {}
-				A(int a) {}
+		val rawFile = '''
+			class Foo {
+				public Foo() {}
+				Foo() {}
+				public Foo(int bar) {}
+				Foo(int bar) {}
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_CONSTRUCTOR, NOT_UNIQUE_CONSTRUCTOR, 19, 1);
-		file.assertError(TU_CONSTRUCTOR, NOT_UNIQUE_CONSTRUCTOR, 28, 1);
-		file.assertError(TU_CONSTRUCTOR, NOT_UNIQUE_CONSTRUCTOR, 44, 1);
-		file.assertError(TU_CONSTRUCTOR, NOT_UNIQUE_CONSTRUCTOR, 58, 1);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_CONSTRUCTOR, NOT_UNIQUE_CONSTRUCTOR, rawFile.indexOfNth("Foo", 1), 3);
+		parsedFile.assertError(TU_CONSTRUCTOR, NOT_UNIQUE_CONSTRUCTOR, rawFile.indexOfNth("Foo", 2), 3);
+		parsedFile.assertError(TU_CONSTRUCTOR, NOT_UNIQUE_CONSTRUCTOR, rawFile.indexOfNth("Foo", 3), 3);
+		parsedFile.assertError(TU_CONSTRUCTOR, NOT_UNIQUE_CONSTRUCTOR, rawFile.indexOfNth("Foo", 4), 3);
 	}
 
 	@Test
 	def checkOperationIsUnique() {
 		'''
-			class A {
-				void foo() {}
-			}
-		'''.parse.assertNoError(NOT_UNIQUE_OPERATION);
-
-		'''
-			class A {
-				void foo() {}
+			class Foo {
 				void bar() {}
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_OPERATION);
 
 		'''
-			package test.model;
-			class A {
-				void foo() {}
-				void foo(int a) {}
-				void foo(double a) {}
+			class Foo {
+				void bar() {}
+				void baz() {}
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_OPERATION);
 
-		val file = '''
-			package test.model;
-			class A {
-				void foo() {}
-				int foo() { return 0; }
-				void foo(int a) {}
-				void foo(int b) {}
+		'''
+			class Foo {
+				void bar() {}
+				void bar(int baz) {}
+				void bar(double baz) {}
 			}
-		'''.parse;
+		'''.parse.assertNoError(NOT_UNIQUE_OPERATION);
 
-		file.assertError(TU_OPERATION, NOT_UNIQUE_OPERATION, 38, 3);
-		file.assertError(TU_OPERATION, NOT_UNIQUE_OPERATION, 53, 3);
-		file.assertError(TU_OPERATION, NOT_UNIQUE_OPERATION, 80, 3);
-		file.assertError(TU_OPERATION, NOT_UNIQUE_OPERATION, 101, 3);
+		val rawFile = '''
+			class Foo {
+				void bar() {}
+				int bar() { return 0; }
+				void bar(int baz) {}
+				void bar(int foo) {}
+			}
+		''';
+
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_OPERATION, NOT_UNIQUE_OPERATION, rawFile.indexOfNth("bar", 0), 3);
+		parsedFile.assertError(TU_OPERATION, NOT_UNIQUE_OPERATION, rawFile.indexOfNth("bar", 1), 3);
+		parsedFile.assertError(TU_OPERATION, NOT_UNIQUE_OPERATION, rawFile.indexOfNth("bar", 2), 3);
+		parsedFile.assertError(TU_OPERATION, NOT_UNIQUE_OPERATION, rawFile.indexOfNth("bar", 3), 3);
 	}
 
 	@Test
 	def checkInitialStateIsUnique() {
 		'''
-			class A {
+			class Foo {
 				initial Init;
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_INITIAL_STATE);
 
 		'''
-			class A {
+			class Foo {
 				initial Init;
 				composite CS {
 					initial Init;
@@ -232,8 +239,8 @@ class XtxtUMLUniquenessValidatorTest {
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_INITIAL_STATE);
 
-		val file = '''
-			class A {
+		val rawFile = '''
+			class Foo {
 				initial Init1;
 				initial Init2;
 				composite CS {
@@ -241,140 +248,146 @@ class XtxtUMLUniquenessValidatorTest {
 					initial Init4;
 				}
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_STATE, NOT_UNIQUE_INITIAL_STATE, 20, 5);
-		file.assertError(TU_STATE, NOT_UNIQUE_INITIAL_STATE, 37, 5);
-		file.assertError(TU_STATE, NOT_UNIQUE_INITIAL_STATE, 72, 5);
-		file.assertError(TU_STATE, NOT_UNIQUE_INITIAL_STATE, 90, 5);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_STATE, NOT_UNIQUE_INITIAL_STATE, rawFile.indexOf("Init1"), 5);
+		parsedFile.assertError(TU_STATE, NOT_UNIQUE_INITIAL_STATE, rawFile.indexOf("Init2"), 5);
+		parsedFile.assertError(TU_STATE, NOT_UNIQUE_INITIAL_STATE, rawFile.indexOf("Init3"), 5);
+		parsedFile.assertError(TU_STATE, NOT_UNIQUE_INITIAL_STATE, rawFile.indexOf("Init4"), 5);
 	}
 
 	@Test
 	def checkNestedClassMemberNameIsUnique() {
 		'''
-			class A {
-				state S;
+			class Foo {
+				state Bar;
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_NAME);
 
 		'''
-			class A {
-				transition T {}
+			class Foo {
+				transition Bar {}
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_NAME);
 
 		'''
-			class A {
-				port P {}
+			class Foo {
+				port Bar {}
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_NAME);
 
-		val states = '''
-			class A {
-				state S;
-				state S;
-				state s;
+		val statesRaw = '''
+			class Foo {
+				state Bar;
+				state Bar;
+				state bar;
 			}
-		'''.parse;
+		''';
 
-		states.assertError(TU_STATE, NOT_UNIQUE_NAME, 18, 1);
-		states.assertError(TU_STATE, NOT_UNIQUE_NAME, 29, 1);
-		states.assertError(TU_STATE, NOT_UNIQUE_NAME, 40, 1);
+		val statesParsed = statesRaw.parse;
+		statesParsed.assertError(TU_STATE, NOT_UNIQUE_NAME, statesRaw.indexOfNth("Bar", 0), 3);
+		statesParsed.assertError(TU_STATE, NOT_UNIQUE_NAME, statesRaw.indexOfNth("Bar", 1), 3);
+		statesParsed.assertError(TU_STATE, NOT_UNIQUE_NAME, statesRaw.indexOf("bar"), 3);
 
-		val transitions = '''
-			class A {
-				transition T {}
-				transition T {}
-				transition t {}
+		val transitionsRaw = '''
+			class Foo {
+				transition Bar {}
+				transition Bar {}
+				transition bar {}
 			}
-		'''.parse;
+		''';
 
-		transitions.assertError(TU_TRANSITION, NOT_UNIQUE_NAME, 23, 1);
-		transitions.assertError(TU_TRANSITION, NOT_UNIQUE_NAME, 41, 1);
-		transitions.assertError(TU_TRANSITION, NOT_UNIQUE_NAME, 59, 1);
+		val transitionsParsed = transitionsRaw.parse;
+		transitionsParsed.assertError(TU_TRANSITION, NOT_UNIQUE_NAME, transitionsRaw.indexOfNth("Bar", 0), 3);
+		transitionsParsed.assertError(TU_TRANSITION, NOT_UNIQUE_NAME, transitionsRaw.indexOfNth("Bar", 1), 3);
+		transitionsParsed.assertError(TU_TRANSITION, NOT_UNIQUE_NAME, transitionsRaw.indexOf("bar"), 3);
 
-		val ports = '''
-			class A {
-				port P {}
-				port P {}
-				port p {}
+		val portsRaw = '''
+			class Foo {
+				port Bar {}
+				port Bar {}
+				port bar {}
 			}
-		'''.parse;
+		''';
 
-		ports.assertError(TU_PORT, NOT_UNIQUE_NAME, 17, 1);
-		ports.assertError(TU_PORT, NOT_UNIQUE_NAME, 29, 1);
-		ports.assertError(TU_PORT, NOT_UNIQUE_NAME, 41, 1);
+		val portsParsed = portsRaw.parse;
+		portsParsed.assertError(TU_PORT, NOT_UNIQUE_NAME, portsRaw.indexOfNth("Bar", 0), 3);
+		portsParsed.assertError(TU_PORT, NOT_UNIQUE_NAME, portsRaw.indexOfNth("Bar", 1), 3);
+		portsParsed.assertError(TU_PORT, NOT_UNIQUE_NAME, portsRaw.indexOf("bar"), 3);
 
-		val all = '''
-			class A {
-				state D;
-				transition D {}
-				port D {}
-				state d;
-				transition d {}
-				port d {}
+		val allRaw = '''
+			class Foo {
+				state Bar;
+				transition Bar {}
+				port Bar {}
+				state bar;
+				transition bar {}
+				port bar {}
 			}
-		'''.parse;
+		''';
 
-		all.assertError(TU_STATE, NOT_UNIQUE_NAME, 18, 1);
-		all.assertError(TU_TRANSITION, NOT_UNIQUE_NAME, 34, 1);
-		all.assertError(TU_PORT, NOT_UNIQUE_NAME, 46, 1);
-		all.assertError(TU_STATE, NOT_UNIQUE_NAME, 59, 1);
-		all.assertError(TU_TRANSITION, NOT_UNIQUE_NAME, 75, 1);
-		all.assertError(TU_PORT, NOT_UNIQUE_NAME, 87, 1);
+		val allParsed = allRaw.parse;
+		allParsed.assertError(TU_STATE, NOT_UNIQUE_NAME, allRaw.indexOfNth("Bar", 0), 3);
+		allParsed.assertError(TU_TRANSITION, NOT_UNIQUE_NAME, allRaw.indexOfNth("Bar", 1), 3);
+		allParsed.assertError(TU_PORT, NOT_UNIQUE_NAME, allRaw.indexOfNth("Bar", 2), 3);
+		allParsed.assertError(TU_STATE, NOT_UNIQUE_NAME, allRaw.indexOfNth("bar", 0), 3);
+		allParsed.assertError(TU_TRANSITION, NOT_UNIQUE_NAME, allRaw.indexOfNth("bar", 1), 3);
+		allParsed.assertError(TU_PORT, NOT_UNIQUE_NAME, allRaw.indexOfNth("bar", 2), 3);
 	}
 
 	@Test
 	def checkStateActivityIsUnique() {
 		'''
-			class A {
-				state S {
+			class Foo {
+				state Bar {
 					entry {}
 				}
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_STATE_ACTIVITY);
 
 		'''
-			class A {
-				state S {
+			class Foo {
+				state Bar {
 					entry {}
 					exit {}
 				}
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_STATE_ACTIVITY);
 
-		val file = '''
-			class A {
-				state S {
+		val rawFile = '''
+			class Foo {
+				state Bar {
 					entry {}
 					entry {}
 					exit {}
 					exit {}
 				}
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_ENTRY_OR_EXIT_ACTIVITY, NOT_UNIQUE_STATE_ACTIVITY, 25, 5);
-		file.assertError(TU_ENTRY_OR_EXIT_ACTIVITY, NOT_UNIQUE_STATE_ACTIVITY, 37, 5);
-		file.assertError(TU_ENTRY_OR_EXIT_ACTIVITY, NOT_UNIQUE_STATE_ACTIVITY, 49, 4);
-		file.assertError(TU_ENTRY_OR_EXIT_ACTIVITY, NOT_UNIQUE_STATE_ACTIVITY, 60, 4);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_ENTRY_OR_EXIT_ACTIVITY, NOT_UNIQUE_STATE_ACTIVITY, rawFile.indexOfNth("entry", 0), 5);
+		parsedFile.assertError(TU_ENTRY_OR_EXIT_ACTIVITY, NOT_UNIQUE_STATE_ACTIVITY, rawFile.indexOfNth("entry", 1), 5);
+		parsedFile.assertError(TU_ENTRY_OR_EXIT_ACTIVITY, NOT_UNIQUE_STATE_ACTIVITY, rawFile.indexOfNth("exit", 0), 4);
+		parsedFile.assertError(TU_ENTRY_OR_EXIT_ACTIVITY, NOT_UNIQUE_STATE_ACTIVITY, rawFile.indexOfNth("exit", 1), 4);
 	}
 
 	@Test
 	def checkInitialTransitionIsUnique() {
 		'''
-			class A {
-				initial I;
-				state S;
+			class Foo {
+				initial Init;
+				state Bar;
 				transition {
-					from I;
-					to S;
+					from Init;
+					to Bar;
 				}
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_INITIAL_TRANSITION);
 
 		'''
-			class A {
+			class Foo {
 				initial Init;
 				transition T1 {
 					from Init;
@@ -382,17 +395,17 @@ class XtxtUMLUniquenessValidatorTest {
 				}
 				composite CS {
 					initial Init;
-					state S;
+					state Bar;
 					transition T2 {
 						from Init;
-						to S;
+						to Bar;
 					}
 				}
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_INITIAL_TRANSITION);
 
-		val flat = '''
-			class A {
+		val flatRaw = '''
+			class Foo {
 				initial Init;
 				state S1;
 				state S2;
@@ -405,13 +418,14 @@ class XtxtUMLUniquenessValidatorTest {
 					to S2;
 				}
 			}
-		'''.parse;
+		''';
 
-		flat.assertError(TU_TRANSITION, NOT_UNIQUE_INITIAL_TRANSITION, 63, 2);
-		flat.assertError(TU_TRANSITION, NOT_UNIQUE_INITIAL_TRANSITION, 109, 2);
+		val flatParsed = flatRaw.parse;
+		flatParsed.assertError(TU_TRANSITION, NOT_UNIQUE_INITIAL_TRANSITION, flatRaw.indexOf("T1"), 2);
+		flatParsed.assertError(TU_TRANSITION, NOT_UNIQUE_INITIAL_TRANSITION, flatRaw.indexOf("T2"), 2);
 
-		val hierarchical = '''
-			class A {
+		val hierarchicalRaw = '''
+			class Foo {
 				composite CS {
 					initial Init;
 					state S1;
@@ -426,174 +440,179 @@ class XtxtUMLUniquenessValidatorTest {
 					}
 				}
 			}
-		'''.parse;
+		''';
 
-		hierarchical.assertError(TU_TRANSITION, NOT_UNIQUE_INITIAL_TRANSITION, 84, 2);
-		hierarchical.assertError(TU_TRANSITION, NOT_UNIQUE_INITIAL_TRANSITION, 134, 2);
+		val hierarchicalParsed = hierarchicalRaw.parse;
+		hierarchicalParsed.assertError(TU_TRANSITION, NOT_UNIQUE_INITIAL_TRANSITION, hierarchicalRaw.indexOf("T1"), 2);
+		hierarchicalParsed.assertError(TU_TRANSITION, NOT_UNIQUE_INITIAL_TRANSITION, hierarchicalRaw.indexOf("T2"), 2);
 	}
 
 	@Test
 	def checkTransitionMemberIsUnique() {
 		'''
 			signal Sig;
-			class A {
-				port P {}
+			class Foo {
+				port Po {}
 				state St;
 				transition T {
 					from St;
 					to St;
 					trigger Sig;
-					port P;
+					port Po;
 					guard ( true );
 					effect {}
 				}
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_TRANSITION_MEMBER);
 
-		val file = '''
+		val rawFile = '''
 			signal Sig;
-			class A {
-				port P {}
+			class Foo {
+				port Po {}
 				state St;
-				transition T {
+				transition Tr {
 					from St; from St;
 					to St; to St;
 					trigger Sig; trigger Sig;
-					port P; port P;
+					port Po; port Po;
 					guard ( true ); guard ( true );
 					effect {} effect {}
 				}
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, 67, 4);
-		file.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, 76, 4);
-		file.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, 88, 2);
-		file.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, 95, 2);
-		file.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, 105, 7);
-		file.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, 118, 7);
-		file.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, 134, 4);
-		file.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, 142, 4);
-		file.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, 153, 5);
-		file.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, 169, 5);
-		file.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, 188, 6);
-		file.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, 198, 6);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, rawFile.indexOfNth("from", 0), 4);
+		parsedFile.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, rawFile.indexOfNth("from", 1), 4);
+		parsedFile.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, rawFile.indexOfNth("to", 0), 2);
+		parsedFile.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, rawFile.indexOfNth("to", 1), 2);
+		parsedFile.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, rawFile.indexOfNth("trigger", 0), 7);
+		parsedFile.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, rawFile.indexOfNth("trigger", 1), 7);
+		parsedFile.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, rawFile.indexOfNth("port", 1), 4);
+		parsedFile.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, rawFile.indexOfNth("port", 2), 4);
+		parsedFile.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, rawFile.indexOfNth("guard", 0), 5);
+		parsedFile.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, rawFile.indexOfNth("guard", 1), 5);
+		parsedFile.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, rawFile.indexOfNth("effect", 0), 6);
+		parsedFile.assertError(TU_TRANSITION_MEMBER, NOT_UNIQUE_TRANSITION_MEMBER, rawFile.indexOfNth("effect", 1), 6);
 	}
 
 	@Test
 	def checkPortMemberIsUnique() {
 		'''
-			interface I {}
-			class A {
-				port P {
-					provided I;
+			interface If {}
+			class Foo {
+				port Po {
+					provided If;
 				}
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_PORT_MEMBER);
 
 		'''
-			interface I {}
-			class A {
-				port P {
-					provided I;
-					required I1;
+			interface If {}
+			class Foo {
+				port Po {
+					provided If;
+					required If;
 				}
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_PORT_MEMBER);
 
-		val file = '''
+		val rawFile = '''
 			interface I1 {}
 			interface I2 {}
-			class A {
-				port P {
+			class Foo {
+				port Po {
 					provided I1;
 					provided I1;
 					required I1;
 					required I2;
 				}
 			}
-		'''.parse
+		''';
 
-		file.assertError(TU_PORT_MEMBER, NOT_UNIQUE_PORT_MEMBER, 58, 8);
-		file.assertError(TU_PORT_MEMBER, NOT_UNIQUE_PORT_MEMBER, 74, 8);
-		file.assertError(TU_PORT_MEMBER, NOT_UNIQUE_PORT_MEMBER, 90, 8);
-		file.assertError(TU_PORT_MEMBER, NOT_UNIQUE_PORT_MEMBER, 106, 8);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_PORT_MEMBER, NOT_UNIQUE_PORT_MEMBER, rawFile.indexOfNth("provided", 0), 8);
+		parsedFile.assertError(TU_PORT_MEMBER, NOT_UNIQUE_PORT_MEMBER, rawFile.indexOfNth("provided", 1), 8);
+		parsedFile.assertError(TU_PORT_MEMBER, NOT_UNIQUE_PORT_MEMBER, rawFile.indexOfNth("required", 0), 8);
+		parsedFile.assertError(TU_PORT_MEMBER, NOT_UNIQUE_PORT_MEMBER, rawFile.indexOfNth("required", 1), 8);
 	}
 
 	@Test
 	def checkAssociationEndNamesAreUnique() {
 		'''
-			class A;
-			class B;
-			association AB {
-				A a;
-				B b;
+			class Foo;
+			class Bar;
+			association FooBar {
+				Foo foo;
+				Bar bar;
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_NAME);
 
 		'''
-			class A;
-			association AA {
-				A e1;
-				A e2;
+			class Foo;
+			association FooFoo {
+				Foo e1;
+				Foo e2;
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_NAME);
 
-		val file = '''
-			class A;
-			class B;
-			association AB {
-				A e;
-				B e;
+		val rawFile = '''
+			class Foo;
+			class Bar;
+			association FooBar {
+				Foo end;
+				Bar end;
 			}
-			association AA {
-				A a1;
-				A A1;
+			association FooFoo {
+				Foo end;
+				Foo End;
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_ASSOCIATION_END, NOT_UNIQUE_NAME, 41, 1);
-		file.assertError(TU_ASSOCIATION_END, NOT_UNIQUE_NAME, 48, 1);
-		file.assertError(TU_ASSOCIATION_END, NOT_UNIQUE_NAME, 76, 2);
-		file.assertError(TU_ASSOCIATION_END, NOT_UNIQUE_NAME, 84, 2);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_ASSOCIATION_END, NOT_UNIQUE_NAME, rawFile.indexOfNth("end", 0), 3);
+		parsedFile.assertError(TU_ASSOCIATION_END, NOT_UNIQUE_NAME, rawFile.indexOfNth("end", 1), 3);
+		parsedFile.assertError(TU_ASSOCIATION_END, NOT_UNIQUE_NAME, rawFile.indexOfNth("end", 2), 3);
+		parsedFile.assertError(TU_ASSOCIATION_END, NOT_UNIQUE_NAME, rawFile.indexOf("End"), 3);
 	}
 
 	@Test
 	def checkConnectorEndNamesAreUnique() {
 		'''
-			class A { port P {} }
-			class B { port P {} }
-			composition CAB {
-				container A a;
-				B b;
+			class Foo { port Po {} }
+			class Bar { port Po {} }
+			composition CFooBar {
+				container Foo foo;
+				Bar bar;
 			}
-			delegation DAB {
-				CAB.a->A.P a;
-				CAB.b->B.P b;
+			delegation DFooBar {
+				CFooBar.foo->Foo.Po foo;
+				CFooBar.bar->Bar.Po bar;
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_NAME);
 
-		val file = '''
-			class A { port P {} }
-			class B { port P {} }
-			composition CAB {
-				container A a;
-				B b;
+		val rawFile = '''
+			class Foo { port Po {} }
+			class Bar { port Po {} }
+			composition CFooBar {
+				container Foo foo;
+				Bar bar;
 			}
-			delegation DAB1 {
-				CAB.a->A.P a;
-				CAB.b->B.P a;
+			delegation DFooBar1 {
+				CFooBar.foo->Foo.Po foo;
+				CFooBar.bar->Bar.Po foo;
 			}
-			delegation DAB2 {
-				CAB.a->A.P a1;
-				CAB.b->B.P A1;
+			delegation DFooBar2 {
+				CFooBar.foo->Foo.Po a1;
+				CFooBar.bar->Bar.Po A1;
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_CONNECTOR_END, NOT_UNIQUE_NAME, 123, 1);
-		file.assertError(TU_CONNECTOR_END, NOT_UNIQUE_NAME, 139, 1);
-		file.assertError(TU_CONNECTOR_END, NOT_UNIQUE_NAME, 177, 2);
-		file.assertError(TU_CONNECTOR_END, NOT_UNIQUE_NAME, 194, 2);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_CONNECTOR_END, NOT_UNIQUE_NAME, rawFile.indexOfNth("foo", 2), 3);
+		parsedFile.assertError(TU_CONNECTOR_END, NOT_UNIQUE_NAME, rawFile.indexOfNth("foo", 3), 3);
+		parsedFile.assertError(TU_CONNECTOR_END, NOT_UNIQUE_NAME, rawFile.indexOf("a1"), 2);
+		parsedFile.assertError(TU_CONNECTOR_END, NOT_UNIQUE_NAME, rawFile.indexOf("A1"), 2);
 	}
 
 }

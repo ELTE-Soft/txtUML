@@ -19,6 +19,7 @@ class XtxtUMLClassValidatorTest {
 
 	@Inject extension ParseHelper<TUFile>;
 	@Inject extension ValidationTestHelper;
+	@Inject extension XtxtUMLValidationTestUtils;
 
 	@Test
 	def checkNoCycleInClassHiearchy() {
@@ -30,43 +31,46 @@ class XtxtUMLClassValidatorTest {
 			class E extends C;
 		'''.parse.assertNoError(CLASS_HIERARCHY_CYCLE);
 
-		val file = '''
+		val rawFile = '''
 			class A extends A;
 			class B extends C;
 			class C extends D;
 			class D extends B;
 			class E extends D;
 			class F extends E;
-		'''.parse;
+		''';
 
-		file.assertError(TU_CLASS, CLASS_HIERARCHY_CYCLE, 16, 1);
-		file.assertError(TU_CLASS, CLASS_HIERARCHY_CYCLE, 36, 1);
-		file.assertError(TU_CLASS, CLASS_HIERARCHY_CYCLE, 56, 1);
-		file.assertError(TU_CLASS, CLASS_HIERARCHY_CYCLE, 76, 1);
-		file.assertError(TU_CLASS, CLASS_HIERARCHY_CYCLE, 96, 1);
-		file.assertError(TU_CLASS, CLASS_HIERARCHY_CYCLE, 116, 1);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_CLASS, CLASS_HIERARCHY_CYCLE, rawFile.indexOfNth("A", 1), 1);
+		parsedFile.assertError(TU_CLASS, CLASS_HIERARCHY_CYCLE, rawFile.indexOfNth("C", 0), 1);
+		parsedFile.assertError(TU_CLASS, CLASS_HIERARCHY_CYCLE, rawFile.indexOfNth("D", 0), 1);
+		parsedFile.assertError(TU_CLASS, CLASS_HIERARCHY_CYCLE, rawFile.indexOfNth("B", 1), 1);
+		parsedFile.assertError(TU_CLASS, CLASS_HIERARCHY_CYCLE, rawFile.indexOfNth("D", 2), 1);
+		parsedFile.assertError(TU_CLASS, CLASS_HIERARCHY_CYCLE, rawFile.indexOfNth("E", 1), 1);
 	}
 
 	@Test
 	def checkConstructorName() {
 		'''
-			class A {
-				A() {}
+			class Foo {
+				Foo() {}
 			}
 		'''.parse.assertNoError(INVALID_CONSTRUCTOR_NAME);
 
-		'''
-			class A {
-				a() {}
+		val rawFile = '''
+			class Foo {
+				foo() {}
 			}
-		'''.parse.assertError(TU_CONSTRUCTOR, INVALID_CONSTRUCTOR_NAME, 12, 1);
+		''';
+
+		rawFile.parse.assertError(TU_CONSTRUCTOR, INVALID_CONSTRUCTOR_NAME, rawFile.indexOf("foo"), 3);
 	}
 
 	@Test
 	def checkInitialStateIsDefined() {
 		val noWarningFile = '''
-			class A;
-			class B {
+			class Foo;
+			class Bar {
 				initial Init;
 				composite CS;
 			}
@@ -75,56 +79,58 @@ class XtxtUMLClassValidatorTest {
 		noWarningFile.assertNoWarnings(TU_CLASS, MISSING_INITIAL_STATE);
 		noWarningFile.assertNoWarnings(TU_STATE, MISSING_INITIAL_STATE);
 
-		val file = '''
-			class A {
+		val rawFile = '''
+			class Foo {
 				composite CS {
-					state S;
+					state St;
 				}
 			}
-		'''.parse;
+		''';
 
-		file.assertWarning(TU_CLASS, MISSING_INITIAL_STATE, 6, 1);
-		file.assertWarning(TU_STATE, MISSING_INITIAL_STATE, 22, 2);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertWarning(TU_CLASS, MISSING_INITIAL_STATE, rawFile.indexOf("Foo"), 3);
+		parsedFile.assertWarning(TU_STATE, MISSING_INITIAL_STATE, rawFile.indexOf("CS"), 2);
 	}
 
 	@Test
 	def checkPseudostateIsLeavable() {
 		'''
-			class A {
+			class Foo {
 				initial Init;
-				choice C;
-				state S;
+				choice Ch;
+				state St;
 				transition T1 {
 					from Init;
-					to C;
+					to Ch;
 				}
 				transition T2 {
-					from C;
-					to S;
+					from Ch;
+					to St;
 				}
 			}
 		'''.parse.assertNoError(NOT_LEAVABLE_PSEUDOSTATE);
 
-		val file = '''
-			class A {
+		val rawFile = '''
+			class Foo {
 				initial Init;
-				choice C;
-				state S;
-				transition T {
-					from S;
-					to C;
+				choice Ch;
+				state St;
+				transition Tr {
+					from St;
+					to Ch;
 				}
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_STATE, NOT_LEAVABLE_PSEUDOSTATE, 20, 4);
-		file.assertError(TU_STATE, NOT_LEAVABLE_PSEUDOSTATE, 35, 1);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_STATE, NOT_LEAVABLE_PSEUDOSTATE, rawFile.indexOf("Init"), 4);
+		parsedFile.assertError(TU_STATE, NOT_LEAVABLE_PSEUDOSTATE, rawFile.indexOf("Ch"), 2);
 	}
 
 	@Test
 	def checkStateIsReachable() {
 		'''
-			class A {
+			class Foo {
 				initial Init;
 				state S1;
 				state S2;
@@ -146,8 +152,8 @@ class XtxtUMLClassValidatorTest {
 			}
 		'''.parse.assertNoWarnings(TU_STATE, UNREACHABLE_STATE);
 
-		val file = '''
-			class A {
+		val rawFile = '''
+			class Foo {
 				initial Init;
 				state S1;
 				state S2;
@@ -169,43 +175,45 @@ class XtxtUMLClassValidatorTest {
 					to CS;
 				}
 			}
-		'''.parse;
+		''';
 
-		file.assertWarning(TU_STATE, UNREACHABLE_STATE, 58, 2);
-		file.assertWarning(TU_STATE, UNREACHABLE_STATE, 74, 2);
-		file.assertWarning(TU_STATE, UNREACHABLE_STATE, 105, 2);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertWarning(TU_STATE, UNREACHABLE_STATE, rawFile.indexOfNth("S1", 1), 2);
+		parsedFile.assertWarning(TU_STATE, UNREACHABLE_STATE, rawFile.indexOf("S3"), 2);
+		parsedFile.assertWarning(TU_STATE, UNREACHABLE_STATE, rawFile.indexOf("CS"), 2);
 	}
 
 	@Test
 	def checkStateOrTransitionIsDefinedInClassOrCompositeState() {
 		'''
-			class A {
+			class Foo {
 				composite CS {
-					state S;
+					state St;
 					transition T2 {}
 				}
 				transition T1 {}
 			}
 		'''.parse.assertNoError(STATE_OR_TRANSITION_IN_NOT_COMPOSITE_STATE);
 
-		val file = '''
-			class A {
+		val rawFile = '''
+			class Foo {
 				state PS {
-					state S;
+					state St;
 					transition T2 {}
 				}
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_STATE, STATE_OR_TRANSITION_IN_NOT_COMPOSITE_STATE, 32, 1);
-		file.assertError(TU_TRANSITION, STATE_OR_TRANSITION_IN_NOT_COMPOSITE_STATE, 49, 2);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_STATE, STATE_OR_TRANSITION_IN_NOT_COMPOSITE_STATE, rawFile.indexOf("St"), 2);
+		parsedFile.assertError(TU_TRANSITION, STATE_OR_TRANSITION_IN_NOT_COMPOSITE_STATE, rawFile.indexOf("T2"), 2);
 	}
 
 	@Test
 	def checkNoActivityInPseudostate() {
 		'''
-			class A {
-				state S {
+			class Foo {
+				state St {
 					entry {}
 					exit {}
 				}
@@ -216,52 +224,53 @@ class XtxtUMLClassValidatorTest {
 			}
 		'''.parse.assertNoError(ACTIVITY_IN_PSEUDOSTATE);
 
-		val file = '''
-			class A {
+		val rawFile = '''
+			class Foo {
 				initial Init {
 					entry {}
 					exit {}
 				}
-				choice C {
+				choice Ch {
 					entry {}
 					exit {}
 				}
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_ENTRY_OR_EXIT_ACTIVITY, ACTIVITY_IN_PSEUDOSTATE, 30, 5);
-		file.assertError(TU_ENTRY_OR_EXIT_ACTIVITY, ACTIVITY_IN_PSEUDOSTATE, 42, 4);
-		file.assertError(TU_ENTRY_OR_EXIT_ACTIVITY, ACTIVITY_IN_PSEUDOSTATE, 70, 5);
-		file.assertError(TU_ENTRY_OR_EXIT_ACTIVITY, ACTIVITY_IN_PSEUDOSTATE, 82, 4);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_ENTRY_OR_EXIT_ACTIVITY, ACTIVITY_IN_PSEUDOSTATE, rawFile.indexOfNth("entry", 0), 5);
+		parsedFile.assertError(TU_ENTRY_OR_EXIT_ACTIVITY, ACTIVITY_IN_PSEUDOSTATE, rawFile.indexOfNth("exit", 0), 4);
+		parsedFile.assertError(TU_ENTRY_OR_EXIT_ACTIVITY, ACTIVITY_IN_PSEUDOSTATE, rawFile.indexOfNth("entry", 1), 5);
+		parsedFile.assertError(TU_ENTRY_OR_EXIT_ACTIVITY, ACTIVITY_IN_PSEUDOSTATE, rawFile.indexOfNth("exit", 1), 4);
 	}
 
 	@Test
 	def checkMandatoryTransitionMembers() {
 		'''
 			signal Sig;
-			class A {
+			class Foo {
 				initial Init;
 				state St;
-				choice C;
+				choice Ch;
 				transition T1 {
 					from Init;
 					to St;
 				}
 				transition T2 {
-					from C;
+					from Ch;
 					to St;
 				}
 				transition T3 {
 					from St;
-					to C;
+					to Ch;
 					trigger Sig;
 				}
 			}
 		'''.parse.assertNoError(MISSING_MANDATORY_TRANSITION_MEMBER);
 
-		val file = '''
+		val rawFile = '''
 			signal Sig;
-			class A {
+			class Foo {
 				state St;
 				transition T1 {
 					to St;
@@ -277,126 +286,132 @@ class XtxtUMLClassValidatorTest {
 				}
 				transition T4 {}
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_TRANSITION, MISSING_MANDATORY_TRANSITION_MEMBER, 48, 2);
-		file.assertError(TU_TRANSITION, MISSING_MANDATORY_TRANSITION_MEMBER, 96, 2);
-		file.assertError(TU_TRANSITION, MISSING_MANDATORY_TRANSITION_MEMBER, 146, 2);
-		file.assertError(TU_TRANSITION, MISSING_MANDATORY_TRANSITION_MEMBER, 190, 2);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_TRANSITION, MISSING_MANDATORY_TRANSITION_MEMBER, rawFile.indexOf("T1"), 2);
+		parsedFile.assertError(TU_TRANSITION, MISSING_MANDATORY_TRANSITION_MEMBER, rawFile.indexOf("T2"), 2);
+		parsedFile.assertError(TU_TRANSITION, MISSING_MANDATORY_TRANSITION_MEMBER, rawFile.indexOf("T3"), 2);
+		parsedFile.assertError(TU_TRANSITION, MISSING_MANDATORY_TRANSITION_MEMBER, rawFile.indexOf("T4"), 2);
 	}
 
 	@Test
 	def checkTransitionTargetIsNotInitialState() {
 		'''
-			class A {
-				state S;
-				transition T {
-					to S;
+			class Foo {
+				state St;
+				transition Tr {
+					to St;
 				}
 			}
 		'''.parse.assertNoError(TARGET_IS_INITIAL_STATE);
 
-		'''
-			class A {
+		val rawFile = '''
+			class Foo {
 				initial Init;
-				transition T {
+				transition Tr {
 					to Init;
 				}
 			}
-		'''.parse.assertError(TU_TRANSITION_VERTEX, TARGET_IS_INITIAL_STATE, 49, 4);
+		''';
+
+		rawFile.parse.assertError(TU_TRANSITION_VERTEX, TARGET_IS_INITIAL_STATE, rawFile.indexOfNth("Init", 1), 4);
 	}
 
 	@Test
 	def checkGuardIsNotForInitialTransition() {
 		'''
-			class A {
-				state S;
-				transition T {
-					from S;
+			class Foo {
+				state St;
+				transition Tr {
+					from St;
 					guard ( true );
 				}
 			}
 		'''.parse.assertNoError(INVALID_TRANSITION_MEMBER);
 
-		'''
-			class A {
+		val rawFile = '''
+			class Foo {
 				initial Init;
-				transition T {
+				transition Tr {
 					from Init;
 					guard ( true );
 				}
 			}
-		'''.parse.assertError(TU_TRANSITION_GUARD, INVALID_TRANSITION_MEMBER, 60, 5);
+		''';
+
+		rawFile.parse.assertError(TU_TRANSITION_GUARD, INVALID_TRANSITION_MEMBER, rawFile.indexOf("guard"), 5);
 	}
 
 	@Test
 	def checkMemberOfTransitionFromPseudostate() {
 		'''
 			signal Sig;
-			class A {
-				behavior port P {}
+			class Foo {
+				behavior port Po {}
 				state St;
 				composite CS;
 				transition T1 {
 					from St;
 					trigger Sig;
-					port P;
+					port Po;
 				}
 				transition T2 {
 					from CS;
 					trigger Sig;
-					port P;
+					port Po;
 				}
 			}
 		'''.parse.assertNoError(INVALID_TRANSITION_MEMBER);
 
-		val file = '''
+		val rawFile = '''
 			signal Sig;
-			class A {
-				behavior port P {}
+			class Foo {
+				behavior port Po {}
 				initial Init;
-				choice C;
+				choice Ch;
 				transition T1 {
 					from Init;
 					trigger Sig;
-					port P;
+					port Po;
 				}
 				transition T2 {
-					from C;
+					from Ch;
 					trigger Sig;
-					port P;
+					port Po;
 				}
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_TRANSITION_TRIGGER, INVALID_TRANSITION_MEMBER, 107, 7)
-		file.assertError(TU_TRANSITION_PORT, INVALID_TRANSITION_MEMBER, 123, 4)
-		file.assertError(TU_TRANSITION_TRIGGER, INVALID_TRANSITION_MEMBER, 167, 7)
-		file.assertError(TU_TRANSITION_PORT, INVALID_TRANSITION_MEMBER, 183, 4);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_TRANSITION_TRIGGER, INVALID_TRANSITION_MEMBER, rawFile.indexOfNth("trigger", 0), 7)
+		parsedFile.assertError(TU_TRANSITION_PORT, INVALID_TRANSITION_MEMBER, rawFile.indexOfNth("port", 1), 4)
+		parsedFile.assertError(TU_TRANSITION_TRIGGER, INVALID_TRANSITION_MEMBER, rawFile.indexOfNth("trigger", 1), 7)
+		parsedFile.assertError(TU_TRANSITION_PORT, INVALID_TRANSITION_MEMBER, rawFile.indexOfNth("port", 2), 4);
 	}
 
 	@Test
 	def checkElseGuard() {
 		'''
-			class A {
-				choice C;
+			class Foo {
+				choice Ch;
 				transition T1 {
-					from C;
+					from Ch;
 					guard ( false );
 				}
 				transition T2 {
-					from C;
+					from Ch;
 					guard ( else );
 				}
 			}
 		'''.parse.assertNoError(INVALID_ELSE_GUARD);
 
-		val file = '''
-			class A {
-				state S;
+		val rawFile = '''
+			class Foo {
+				state St;
 				composite CS;
 				transition T1 {
-					from S;
+					from St;
 					guard ( else );
 				}
 				transition T2 {
@@ -404,108 +419,112 @@ class XtxtUMLClassValidatorTest {
 					guard ( else );
 				}
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_TRANSITION_GUARD, INVALID_ELSE_GUARD, 77, 4);
-		file.assertError(TU_TRANSITION_GUARD, INVALID_ELSE_GUARD, 130, 4);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_TRANSITION_GUARD, INVALID_ELSE_GUARD, rawFile.indexOfNth("else", 0), 4);
+		parsedFile.assertError(TU_TRANSITION_GUARD, INVALID_ELSE_GUARD, rawFile.indexOfNth("else", 1), 4);
 	}
 
 	@Test
 	def checkOwnerOfTriggerPort() {
 		'''
-			class A {
-				behavior port P {}
-				transition T {
-					port P;
+			class Foo {
+				behavior port Po {}
+				transition Tr {
+					port Po;
 				}
 				composite CS {
-					transition T {
-						port P;
+					transition Tr {
+						port Po;
 					}
 				}
 			}
-			class B extends A {
-				transition T {
-					port A.P;
+			class Bar extends Foo {
+				transition Tr {
+					port Foo.Po;
 				}
 			}
-			class C extends B {
+			class Baz extends Bar {
 				composite CS {
-					transition T {
-						port A.P;
+					transition Tr {
+						port Foo.Po;
 					}
 				}
 			}
-			class D {
-				behavior port P {}
+			class Doo {
+				behavior port Po {}
 			}
-			class E extends D {
-				transition T {
-					port D.P;
+			class Ear extends Doo {
+				transition Tr {
+					port Doo.Po;
 				}
 			}
 		'''.parse.assertNoError(NOT_OWNED_TRIGGER_PORT);
 
-		val file = '''
-			class A {
-				behavior port P {}
+		val rawFile = '''
+			class Foo {
+				behavior port Po {}
 				transition T1 {
-					port B.P;
+					port Bar.Po;
 				}
 				transition T2 {
-					port C.P;
+					port Baz.Po;
 				}
 			}
-			class B {
-				behavior port P {}
-				transition T {
-					port A.P;
+			class Bar {
+				behavior port Po {}
+				transition Tr {
+					port Foo.Po;
 				}
 			}
-			class C extends A {
-				behavior port P {}
-				transition T {
-					port B.P;
+			class Baz extends Foo {
+				behavior port Po {}
+				transition Tr {
+					port Bar.Po;
 				}
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_TRANSITION_PORT, NOT_OWNED_TRIGGER_PORT, 57, 3);
-		file.assertError(TU_TRANSITION_PORT, NOT_OWNED_TRIGGER_PORT, 92, 3);
-		file.assertError(TU_TRANSITION_PORT, NOT_OWNED_TRIGGER_PORT, 161, 3);
-		file.assertError(TU_TRANSITION_PORT, NOT_OWNED_TRIGGER_PORT, 240, 3);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_TRANSITION_PORT, NOT_OWNED_TRIGGER_PORT, rawFile.indexOfNth("Bar.Po", 0), 6);
+		parsedFile.assertError(TU_TRANSITION_PORT, NOT_OWNED_TRIGGER_PORT, rawFile.indexOf("Baz.Po"), 6);
+		parsedFile.assertError(TU_TRANSITION_PORT, NOT_OWNED_TRIGGER_PORT, rawFile.indexOf("Foo.Po"), 6);
+		parsedFile.assertError(TU_TRANSITION_PORT, NOT_OWNED_TRIGGER_PORT, rawFile.indexOfNth("Bar.Po", 1), 6);
 	}
 
 	@Test
 	def checkTriggerPortIsBehavior() {
 		'''
-			class A {
-				behavior port P {}
-				transition T {
-					port P;
+			class Foo {
+				behavior port BP {}
+				transition Tr {
+					port BP;
 				}
 			}
 		'''.parse.assertNoError(NOT_BEHAVIOR_TRIGGER_PORT);
 
-		'''
-			class A {
-				port P {}
-				transition T {
-					port P;
+		val rawFile = '''
+			class Foo {
+				port Po {}
+				transition Tr {
+					port Po;
 				}
 			}
-		'''.parse.assertError(TU_TRANSITION_PORT, NOT_BEHAVIOR_TRIGGER_PORT, 47, 1);
+		''';
+
+		rawFile.parse.assertError(TU_TRANSITION_PORT, NOT_BEHAVIOR_TRIGGER_PORT, rawFile.indexOfNth("Po", 1), 2);
 	}
 
 	@Test
 	def checkTransitionVertexLevel() {
 		'''
-			class A {
+			class Foo {
 				composite CS {
-					state S;
+					state St;
 					transition T2 {
-						from S;
-						to S;
+						from St;
+						to St;
 					}
 				}
 				transition T1 {
@@ -515,38 +534,39 @@ class XtxtUMLClassValidatorTest {
 			}
 		'''.parse.assertNoError(VERTEX_LEVEL_MISMATCH);
 
-		val file = '''
-			class A {
+		val rawFile = '''
+			class Foo {
 				composite CS {
-					state S;
+					state St;
 					transition T2 {
 						from CS;
 						to CS;
 					}
 					transition T3 {
-						from S;
+						from St;
 						to CS;
 					}
 				}
 				transition T1 {
-					from CS.S;
+					from CS.St;
 					to CS;
 				}
 				transition T4 {
 					from CS;
-					to B.S;
+					to Bar.St;
 				}
 			}
-			class B {
-				state S;
+			class Bar {
+				state St;
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_TRANSITION_VERTEX, VERTEX_LEVEL_MISMATCH, 67, 2);
-		file.assertError(TU_TRANSITION_VERTEX, VERTEX_LEVEL_MISMATCH, 78, 2);
-		file.assertError(TU_TRANSITION_VERTEX, VERTEX_LEVEL_MISMATCH, 125, 2);
-		file.assertError(TU_TRANSITION_VERTEX, VERTEX_LEVEL_MISMATCH, 164, 4);
-		file.assertError(TU_TRANSITION_VERTEX, VERTEX_LEVEL_MISMATCH, 220, 3);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_TRANSITION_VERTEX, VERTEX_LEVEL_MISMATCH, rawFile.indexOfNth("CS", 1), 2);
+		parsedFile.assertError(TU_TRANSITION_VERTEX, VERTEX_LEVEL_MISMATCH, rawFile.indexOfNth("CS", 2), 2);
+		parsedFile.assertError(TU_TRANSITION_VERTEX, VERTEX_LEVEL_MISMATCH, rawFile.indexOfNth("CS", 3), 2);
+		parsedFile.assertError(TU_TRANSITION_VERTEX, VERTEX_LEVEL_MISMATCH, rawFile.indexOf("CS.St"), 5);
+		parsedFile.assertError(TU_TRANSITION_VERTEX, VERTEX_LEVEL_MISMATCH, rawFile.indexOf("Bar.St"), 6);
 	}
 
 }

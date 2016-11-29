@@ -19,6 +19,7 @@ class XtxtUMLConnectorValidatorTest {
 
 	@Inject extension ParseHelper<TUFile>;
 	@Inject extension ValidationTestHelper;
+	@Inject extension XtxtUMLValidationTestUtils;
 
 	@Test
 	def checkConnectorHasExactlyTwoEnds() {
@@ -33,7 +34,7 @@ class XtxtUMLConnectorValidatorTest {
 			}
 		'''.parse.assertNoError(CONNECTOR_END_COUNT_MISMATCH);
 
-		val file = '''
+		val rawFile = '''
 			connector C1 {}
 			connector C2 {
 				r->p e1;
@@ -43,51 +44,54 @@ class XtxtUMLConnectorValidatorTest {
 				r->p e2;
 				r->p e3;
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_CONNECTOR, CONNECTOR_END_COUNT_MISMATCH, 10, 2);
-		file.assertError(TU_CONNECTOR, CONNECTOR_END_COUNT_MISMATCH, 27, 2);
-		file.assertError(TU_CONNECTOR, CONNECTOR_END_COUNT_MISMATCH, 57, 2);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_CONNECTOR, CONNECTOR_END_COUNT_MISMATCH, rawFile.indexOf("C1"), 2);
+		parsedFile.assertError(TU_CONNECTOR, CONNECTOR_END_COUNT_MISMATCH, rawFile.indexOf("C2"), 2);
+		parsedFile.assertError(TU_CONNECTOR, CONNECTOR_END_COUNT_MISMATCH, rawFile.indexOf("C3"), 2);
 	}
 
 	@Test
 	def checkContainerEndIsAllowedAndNeededOnlyInDelegation() {
 		val validFile = '''
-			composition C {
-				container A a;
-				B b;
+			composition Co {
+				container Cl1 e1;
+				Cl2 e2;
 			}
 			delegation DC {
-				C.a->p e1;
-				C.b->q e2;
+				Co.e1->p e1;
+				Co.e2->q e2;
 			}
 		'''.parse;
 
 		validFile.assertNoError(CONTAINER_ROLE_COUNT_MISMATCH);
 		validFile.assertNoError(CONTAINER_ROLE_IN_ASSSEMBLY_CONNECTOR);
 
-		val invalidFile = '''
-			composition C {
-				container A a;
-				B b;
+		val invalidFileRaw = '''
+			composition Co {
+				container Cl1 e1;
+				Cl2 e2;
 			}
 			connector AC {
-				C.a->p e1;
-				C.b->q e2;
+				Co.e1->p e1;
+				Co.e2->q e2;
 			}
 			delegation DC1 {
-				C.b->q e1;
-				C.b->q e2;
+				Co.e2->q e1;
+				Co.e2->q e2;
 			}
 			delegation DC2 {
-				C.a->p e1;
-				C.a->p e2;
+				Co.e1->p e1;
+				Co.e1->p e2;
 			}
-		'''.parse;
+		''';
 
-		invalidFile.assertError(TU_CONNECTOR_END, CONTAINER_ROLE_IN_ASSSEMBLY_CONNECTOR, 61, 3);
-		invalidFile.assertError(TU_CONNECTOR, CONTAINER_ROLE_COUNT_MISMATCH, 100, 3);
-		invalidFile.assertError(TU_CONNECTOR, CONTAINER_ROLE_COUNT_MISMATCH, 147, 3);
+		val invalidFileParsed = invalidFileRaw.parse;
+		invalidFileParsed.assertError(TU_CONNECTOR_END, CONTAINER_ROLE_IN_ASSSEMBLY_CONNECTOR,
+			invalidFileRaw.indexOf("Co.e1"), 5);
+		invalidFileParsed.assertError(TU_CONNECTOR, CONTAINER_ROLE_COUNT_MISMATCH, invalidFileRaw.indexOf("DC1"), 3);
+		invalidFileParsed.assertError(TU_CONNECTOR, CONTAINER_ROLE_COUNT_MISMATCH, invalidFileRaw.indexOf("DC2"), 3);
 	}
 
 	@Test
@@ -121,7 +125,7 @@ class XtxtUMLConnectorValidatorTest {
 		validFile.assertNoError(COMPOSITION_MISMATCH_IN_ASSEMBLY_CONNECTOR);
 		validFile.assertNoError(COMPOSITION_MISMATCH_IN_DELEGATION_CONNECTOR);
 
-		val file = '''
+		val rawFile = '''
 			class A;
 			class B;
 			class C;
@@ -146,10 +150,11 @@ class XtxtUMLConnectorValidatorTest {
 				CB.c->r e1;
 				DB.b->q e2;
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_CONNECTOR, COMPOSITION_MISMATCH_IN_ASSEMBLY_CONNECTOR, 185, 2);
-		file.assertError(TU_CONNECTOR, COMPOSITION_MISMATCH_IN_DELEGATION_CONNECTOR, 233, 2);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_CONNECTOR, COMPOSITION_MISMATCH_IN_ASSEMBLY_CONNECTOR, rawFile.indexOf("AC"), 2);
+		parsedFile.assertError(TU_CONNECTOR, COMPOSITION_MISMATCH_IN_DELEGATION_CONNECTOR, rawFile.indexOf("DC"), 2);
 	}
 
 	@Test
@@ -208,7 +213,7 @@ class XtxtUMLConnectorValidatorTest {
 			}
 		'''.parse.assertNoError(INCOMPATIBLE_PORTS);
 
-		val file = '''
+		val rawFile = '''
 			interface I1 {}
 			interface I2 {}
 			interface I3 {}
@@ -252,14 +257,15 @@ class XtxtUMLConnectorValidatorTest {
 				r->A.P2 e1;
 				s->A.P4 e2;
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_CONNECTOR, INCOMPATIBLE_PORTS, 235, 2);
-		file.assertError(TU_CONNECTOR, INCOMPATIBLE_PORTS, 282, 2);
-		file.assertError(TU_CONNECTOR, INCOMPATIBLE_PORTS, 329, 2);
-		file.assertError(TU_CONNECTOR, INCOMPATIBLE_PORTS, 377, 2);
-		file.assertError(TU_CONNECTOR, INCOMPATIBLE_PORTS, 425, 2);
-		file.assertError(TU_CONNECTOR, INCOMPATIBLE_PORTS, 473, 2);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_CONNECTOR, INCOMPATIBLE_PORTS, rawFile.indexOf("C1"), 2);
+		parsedFile.assertError(TU_CONNECTOR, INCOMPATIBLE_PORTS, rawFile.indexOf("C2"), 2);
+		parsedFile.assertError(TU_CONNECTOR, INCOMPATIBLE_PORTS, rawFile.indexOf("C3"), 2);
+		parsedFile.assertError(TU_CONNECTOR, INCOMPATIBLE_PORTS, rawFile.indexOf("D1"), 2);
+		parsedFile.assertError(TU_CONNECTOR, INCOMPATIBLE_PORTS, rawFile.indexOf("D2"), 2);
+		parsedFile.assertError(TU_CONNECTOR, INCOMPATIBLE_PORTS, rawFile.indexOf("D3"), 2);
 	}
 
 	@Test
@@ -287,7 +293,7 @@ class XtxtUMLConnectorValidatorTest {
 			}
 		'''.parse.assertNoError(NOT_OWNED_PORT);
 
-		val file = '''
+		val rawFile = '''
 			class A { port P {} }
 			class B { port P {} }
 			class C extends A;
@@ -303,13 +309,14 @@ class XtxtUMLConnectorValidatorTest {
 				AB.b->A.P e2;
 			}
 			delegation DAB2 {
-				AB.a->B.P e1;
+				AB.a->B.P e3;
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_CONNECTOR_END, NOT_OWNED_PORT, 173, 3);
-		file.assertError(TU_CONNECTOR_END, NOT_OWNED_PORT, 189, 3);
-		file.assertError(TU_CONNECTOR_END, NOT_OWNED_PORT, 227, 3);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_CONNECTOR_END, NOT_OWNED_PORT, rawFile.indexOfNth("B.P", 0), 3);
+		parsedFile.assertError(TU_CONNECTOR_END, NOT_OWNED_PORT, rawFile.indexOf("A.P"), 3);
+		parsedFile.assertError(TU_CONNECTOR_END, NOT_OWNED_PORT, rawFile.indexOfNth("B.P", 1), 3);
 	}
 
 }

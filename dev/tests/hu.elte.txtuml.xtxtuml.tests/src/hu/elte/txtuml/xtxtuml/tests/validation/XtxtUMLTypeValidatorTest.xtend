@@ -20,17 +20,18 @@ class XtxtUMLTypeValidatorTest {
 
 	@Inject extension ParseHelper<TUFile>;
 	@Inject extension ValidationTestHelper;
+	@Inject extension XtxtUMLValidationTestUtils;
 
 	@Test
 	def checkTypeReference() {
 		'''
-			signal S {
+			signal Sig {
 				int a1;
 				boolean a2;
 				double a3;
 				String a4;
 			}
-			class A {
+			class Foo {
 				int a1;
 				boolean a2;
 				double a3;
@@ -39,133 +40,145 @@ class XtxtUMLTypeValidatorTest {
 				int o2(boolean p) {}
 				boolean o3(double p) {}
 				double o4(String p) {}
-				A o5() {}
+				Foo o5(Foo p) {}
 			}
 		'''.parse.assertNoError(INVALID_TYPE);
 
-		val file = '''
-			signal S {
+		val rawFile = '''
+			signal Sig {
 				long a1;
-				A a2;
+				Foo a2;
 				Class a3;
 				void a4;
 			}
-			class A {
+			class Foo {
 				long a1;
-				A a2;
+				Foo a2;
 				Class a3;
 				void a4;
 				long o1() {}
 				Class o2(Class p) {}
 			}
-		'''.parse;
+		''';
 
-		file.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, 13, 4);
-		file.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, 24, 1);
-		file.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, 32, 5);
-		file.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, 44, 4);
+		val parsedFile = rawFile.parse;
 
-		file.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, 69, 4);
-		file.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, 80, 1);
-		file.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, 88, 5);
-		file.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, 100, 4);
-		file.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, 111, 4);
-		file.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, 126, 5);
-		file.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, 135, 5);
+		parsedFile.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, rawFile.indexOfNth("long", 0), 4);
+		parsedFile.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, rawFile.indexOfNth("Foo", 0), 3);
+		parsedFile.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, rawFile.indexOfNth("Class", 0), 5);
+		parsedFile.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, rawFile.indexOfNth("void", 0), 4);
+
+		parsedFile.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, rawFile.indexOfNth("long", 1), 4);
+		parsedFile.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, rawFile.indexOfNth("Foo", 2), 3);
+		parsedFile.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, rawFile.indexOfNth("Class", 1), 5);
+		parsedFile.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, rawFile.indexOfNth("void", 1), 4);
+		parsedFile.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, rawFile.indexOfNth("long", 2), 4);
+		parsedFile.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, rawFile.indexOfNth("Class", 2), 5);
+		parsedFile.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, rawFile.indexOfNth("Class", 3), 5);
 	}
 
 	@Test
 	def checkSendSignalExpressionTypes() {
 		'''
-			signal S;
-			class A {
+			signal Sig;
+			class Foo {
 				void foo() {
-					send new S() to this;
+					send new Sig() to this;
 				}
 			}
 		'''.parse.assertNoError(TYPE_MISMATCH);
 
-		val nulls = '''
-			class A {
+		val nullsRaw = '''
+			class Foo {
 				void foo() {
 					send null to null;
 				}
 			}
-		'''.parse;
+		''';
 
-		nulls.assertError(TU_SEND_SIGNAL_EXPRESSION, TYPE_MISMATCH, 33, 4);
-		nulls.assertError(TU_SEND_SIGNAL_EXPRESSION, TYPE_MISMATCH, 41, 4);
+		val nullsParsed = nullsRaw.parse;
+		nullsParsed.assertError(TU_SEND_SIGNAL_EXPRESSION, TYPE_MISMATCH, nullsRaw.indexOfNth("null", 0), 4);
+		nullsParsed.assertError(TU_SEND_SIGNAL_EXPRESSION, TYPE_MISMATCH, nullsRaw.indexOfNth("null", 1), 4);
 
-		val strings = '''
-			class A {
+		val stringsRaw = '''
+			class Foo {
 				void foo() {
 					send "signal" to "object";
 				}
 			}
-		'''.parse;
+		''';
 
-		strings.assertError(TU_SEND_SIGNAL_EXPRESSION, TYPE_MISMATCH, 33, 8);
-		strings.assertError(TU_SEND_SIGNAL_EXPRESSION, TYPE_MISMATCH, 45, 8);
+		val stringsParsed = stringsRaw.parse;
+		stringsParsed.assertError(TU_SEND_SIGNAL_EXPRESSION, TYPE_MISMATCH, stringsRaw.indexOf('"signal"'), 8);
+		stringsParsed.assertError(TU_SEND_SIGNAL_EXPRESSION, TYPE_MISMATCH, stringsRaw.indexOf('"object"'), 8);
 	}
 
 	@Test
 	def checkDeleteObjectExpressionTypes() {
 		'''
-			class A {
+			class Foo {
 				void foo() {
 					delete this;
 				}
 			}
 		'''.parse.assertNoError(TYPE_MISMATCH);
 
-		'''
-			class A {
+		val nullRaw = '''
+			class Foo {
 				void foo() {
 					delete null;
 				}
 			}
-		'''.parse.assertError(TU_DELETE_OBJECT_EXPRESSION, TYPE_MISMATCH, 35, 4);
+		''';
 
-		'''
-			class A {
+		nullRaw.parse.assertError(TU_DELETE_OBJECT_EXPRESSION, TYPE_MISMATCH, nullRaw.indexOf("null"), 4);
+
+		val stringRaw = '''
+			class Foo {
 				void foo() {
 					delete "object";
 				}
 			}
-		'''.parse.assertError(TU_DELETE_OBJECT_EXPRESSION, TYPE_MISMATCH, 35, 8);
+		''';
+
+		stringRaw.parse.assertError(TU_DELETE_OBJECT_EXPRESSION, TYPE_MISMATCH, stringRaw.indexOf('"object"'), 8);
 	}
 
 	@Test
 	def checkClassPropertyAccessExpressionTypes() {
 		'''
-			signal S;
-			class A {
-				port P {}
+			signal Sig;
+			class Foo {
+				port Po {}
 				void foo() {
-					send new S() to this->(P);
+					send new Sig() to this->(Po);
 				}
 			}
 		'''.parse.assertNoError(TYPE_MISMATCH);
 
-		'''
-			signal S;
-			class A {
-				port P {}
+		val nullRaw = '''
+			signal Sig;
+			class Foo {
+				port Po {}
 				void foo() {
-					send new S() to null->(P);
+					send new Sig() to null->(Po);
 				}
 			}
-		'''.parse.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, TYPE_MISMATCH, 67, 4);
+		''';
 
-		'''
-			signal S;
-			class A {
-				port P {}
+		nullRaw.parse.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, TYPE_MISMATCH, nullRaw.indexOf("null"), 4);
+
+		val stringRaw = '''
+			signal Sig;
+			class Foo {
+				port Po {}
 				void foo() {
-					send new S() to "this"->(P);
+					send new Sig() to "this"->(Po);
 				}
 			}
-		'''.parse.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, TYPE_MISMATCH, 67, 6);
+		''';
+
+		stringRaw.parse.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, TYPE_MISMATCH, stringRaw.indexOf('"this"'), 6);
 	}
 
 }

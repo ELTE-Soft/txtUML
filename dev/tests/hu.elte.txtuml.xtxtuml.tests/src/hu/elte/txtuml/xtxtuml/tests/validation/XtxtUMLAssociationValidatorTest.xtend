@@ -23,114 +23,119 @@ class XtxtUMLAssociationValidatorTest {
 	@Test
 	def checkAssociationHasExactlyTwoEnds() {
 		'''
-			class A;
-			association AA {
-				A a1;
-				A a2;
+			class Foo;
+			association As {
+				Foo e1;
+				Foo e2;
 			}
 		'''.parse.assertNoError(ASSOCIATION_END_COUNT_MISMATCH);
 
-		val file = '''
-			class A;
+		val rawFile = '''
+			class Foo;
 			association A1 {}
 			association A2 {
-				A a1;
+				Foo e1;
 			}
 			association A3 {
-				A a1;
-				A a2;
-				A a3;
+				Foo e1;
+				Foo e2;
+				Foo e3;
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_ASSOCIATION, ASSOCIATION_END_COUNT_MISMATCH, 22, 2);
-		file.assertError(TU_ASSOCIATION, ASSOCIATION_END_COUNT_MISMATCH, 41, 2);
-		file.assertError(TU_ASSOCIATION, ASSOCIATION_END_COUNT_MISMATCH, 70, 2);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_ASSOCIATION, ASSOCIATION_END_COUNT_MISMATCH, rawFile.indexOf("A1"), 2);
+		parsedFile.assertError(TU_ASSOCIATION, ASSOCIATION_END_COUNT_MISMATCH, rawFile.indexOf("A2"), 2);
+		parsedFile.assertError(TU_ASSOCIATION, ASSOCIATION_END_COUNT_MISMATCH, rawFile.indexOf("A3"), 2);
 	}
 
 	@Test
 	def checkContainerEndIsAllowedAndNeededOnlyInComposition() {
 		val validFile = '''
-			class A;
-			composition C {
-				container A a1;
-				A a2;
+			class Foo;
+			composition Co {
+				container Foo e1;
+				Foo e2;
 			}
 		'''.parse;
 
 		validFile.assertNoError(CONTAINER_END_COUNT_MISMATCH);
 		validFile.assertNoError(CONTAINER_END_IN_ASSOCIATION);
 
-		val invalidFile = '''
-			class A;
-			association AA {
-				container A a1;
-				A a2;
+		val invalidFileRaw = '''
+			class Foo;
+			association As {
+				container Foo e1;
+				Foo e2;
 			}
 			composition C1 {
-				A a1;
-				A a2;
+				Foo e1;
+				Foo e2;
 			}
 			composition C2 {
-				container A a1;
-				container A a2;
+				container Foo e1;
+				container Foo e2;
 			}
-		'''.parse;
+		''';
 
-		invalidFile.assertError(TU_ASSOCIATION_END, CONTAINER_END_IN_ASSOCIATION, 29, 9);
-		invalidFile.assertError(TU_COMPOSITION, CONTAINER_END_COUNT_MISMATCH, 69, 2);
-		invalidFile.assertError(TU_COMPOSITION, CONTAINER_END_COUNT_MISMATCH, 106, 2);
+		val invalidFileParsed = invalidFileRaw.parse;
+		invalidFileParsed.assertError(TU_ASSOCIATION_END, CONTAINER_END_IN_ASSOCIATION,
+			invalidFileRaw.indexOf("container"), 9);
+		invalidFileParsed.assertError(TU_COMPOSITION, CONTAINER_END_COUNT_MISMATCH, invalidFileRaw.indexOf("C1"), 2);
+		invalidFileParsed.assertError(TU_COMPOSITION, CONTAINER_END_COUNT_MISMATCH, invalidFileRaw.indexOf("C2"), 2);
 	}
 
 	@Test
 	def checkContainerEndMultiplicity() {
 		'''
-			class A;
-			composition C {
-				container A a;
+			class Foo;
+			composition Co {
+				container Foo foo;
 			}
 		'''.parse.assertNoWarnings(TU_ASSOCIATION_END, WRONG_ASSOCIATION_END_MULTIPLICITY);
 
-		val file = '''
-			class A;
-			composition C {
-				0..1 container A a1;
-				* container A a2;
+		val rawFile = '''
+			class Foo;
+			composition Co {
+				0..1 container Foo e1;
+				* container Foo e2;
 			}
-		'''.parse;
+		''';
 
-		file.assertWarning(TU_ASSOCIATION_END, WRONG_ASSOCIATION_END_MULTIPLICITY, 28, 4);
-		file.assertWarning(TU_ASSOCIATION_END, WRONG_ASSOCIATION_END_MULTIPLICITY, 51, 1);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertWarning(TU_ASSOCIATION_END, WRONG_ASSOCIATION_END_MULTIPLICITY, rawFile.indexOf("0..1"), 4);
+		parsedFile.assertWarning(TU_ASSOCIATION_END, WRONG_ASSOCIATION_END_MULTIPLICITY, rawFile.indexOf("*"), 1);
 	}
 
 	@Test
 	def checkMultiplicity() {
 		'''
-			class A;
-			association AA {
-				A a1;
-				* A a2;
-				1 A a3;
-				2 A a4;
-				0..* A a5;
-				1..* A a6;
-				1..1 A a7;
-				1..2 A a8;
+			class Foo;
+			association As {
+				Foo e1;
+				* Foo e2;
+				1 Foo e3;
+				2 Foo e4;
+				0..* Foo e5;
+				1..* Foo e6;
+				1..1 Foo e7;
+				1..2 Foo e8;
 			}
 		'''.parse.assertNoWarnings(TU_ASSOCIATION_END, WRONG_ASSOCIATION_END_MULTIPLICITY);
 
-		val file = '''
-			class A;
-			association AA {
-				0 A a1;
-				0..0 A a2;
-				1..0 A a3;
+		val rawFile = '''
+			class Foo;
+			association As {
+				0 Foo e1;
+				0..0 Foo e2;
+				1..0 Foo e3;
 			}
-		'''.parse;
+		''';
 
-		file.assertWarning(TU_ASSOCIATION_END, WRONG_ASSOCIATION_END_MULTIPLICITY, 29, 1);
-		file.assertWarning(TU_ASSOCIATION_END, WRONG_ASSOCIATION_END_MULTIPLICITY, 39, 4);
-		file.assertWarning(TU_ASSOCIATION_END, WRONG_ASSOCIATION_END_MULTIPLICITY, 52, 4);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertWarning(TU_ASSOCIATION_END, WRONG_ASSOCIATION_END_MULTIPLICITY, rawFile.indexOf("0"), 1);
+		parsedFile.assertWarning(TU_ASSOCIATION_END, WRONG_ASSOCIATION_END_MULTIPLICITY, rawFile.indexOf("0..0"), 4);
+		parsedFile.assertWarning(TU_ASSOCIATION_END, WRONG_ASSOCIATION_END_MULTIPLICITY, rawFile.indexOf("1..0"), 4);
 	}
 
 }

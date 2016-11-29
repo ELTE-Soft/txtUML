@@ -20,11 +20,12 @@ class XtxtUMLExpressionValidatorTest {
 
 	@Inject extension ParseHelper<TUFile>;
 	@Inject extension ValidationTestHelper;
+	@Inject extension XtxtUMLValidationTestUtils;
 
 	@Test
 	def checkMandatoryIntentionalReturn() {
 		'''
-			class A {
+			class Foo {
 				void foo() { return; }
 				int bar() { return 0; }
 				int baz() {
@@ -58,8 +59,8 @@ class XtxtUMLExpressionValidatorTest {
 			}
 		'''.parse.assertNoError(MISSING_RETURN);
 
-		val file = '''
-			class A {
+		val rawFile = '''
+			class Foo {
 				int foo() {}
 				int bar() {
 					for (int i = 0; i < 1; i++) {}
@@ -77,43 +78,45 @@ class XtxtUMLExpressionValidatorTest {
 					if (false) { return 0; }
 				}
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_OPERATION, MISSING_RETURN, 16, 3);
-		file.assertError(TU_OPERATION, MISSING_RETURN, 31, 3);
-		file.assertError(TU_OPERATION, MISSING_RETURN, 83, 3);
-		file.assertError(TU_OPERATION, MISSING_RETURN, 120, 6);
-		file.assertError(TU_OPERATION, MISSING_RETURN, 164, 6);
-		file.assertError(TU_OPERATION, MISSING_RETURN, 207, 6);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_OPERATION, MISSING_RETURN, rawFile.indexOf("foo"), 3);
+		parsedFile.assertError(TU_OPERATION, MISSING_RETURN, rawFile.indexOf("bar"), 3);
+		parsedFile.assertError(TU_OPERATION, MISSING_RETURN, rawFile.indexOf("baz"), 3);
+		parsedFile.assertError(TU_OPERATION, MISSING_RETURN, rawFile.indexOf("foobar"), 6);
+		parsedFile.assertError(TU_OPERATION, MISSING_RETURN, rawFile.indexOf("barbaz"), 6);
+		parsedFile.assertError(TU_OPERATION, MISSING_RETURN, rawFile.indexOf("foobaz"), 6);
 	}
 
 	@Test
 	def checkNoExplicitExtensionCall() {
 		'''
-			class A {
-				void foo(A a) {
-					foo(a);
+			class Foo {
+				void foo(Foo bar) {
+					foo(bar);
 				}
 			}
 		'''.parse.assertNoError(UNDEFINED_OPERATION);
 
-		val file = '''
-			class A {
-				void foo(A a) {
+		val rawFile = '''
+			class Foo {
+				void foo(Foo bar) {
 					foo();
 					this.foo();
 				}
 			}
-		'''.parse;
+		''';
 
-		file.assertError(XFEATURE_CALL, UNDEFINED_OPERATION, 31, 3)
-		file.assertError(XMEMBER_FEATURE_CALL, UNDEFINED_OPERATION, 46, 3);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(XFEATURE_CALL, UNDEFINED_OPERATION, rawFile.indexOfNth("foo", 1), 3);
+		parsedFile.assertError(XMEMBER_FEATURE_CALL, UNDEFINED_OPERATION, rawFile.indexOfNth("foo", 2), 3);
 	}
 
 	@Test
 	def checkXtxtUMLExplicitOperationCall() {
 		'''
-			class A {
+			class Foo {
 				void foo() {
 					foo();
 					this.foo();
@@ -121,24 +124,25 @@ class XtxtUMLExpressionValidatorTest {
 			}
 		'''.parse.assertNoError(MISSING_OPERATION_PARENTHESES);
 
-		val file = '''
-			class A {
+		val rawFile = '''
+			class Foo {
 				void foo() {
 					foo;
 					this.foo;
 				}
 			}
-		'''.parse;
+		''';
 
-		file.assertError(XFEATURE_CALL, MISSING_OPERATION_PARENTHESES, 28, 3);
-		file.assertError(XMEMBER_FEATURE_CALL, MISSING_OPERATION_PARENTHESES, 41, 3);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(XFEATURE_CALL, MISSING_OPERATION_PARENTHESES, rawFile.indexOfNth("foo", 1), 3);
+		parsedFile.assertError(XMEMBER_FEATURE_CALL, MISSING_OPERATION_PARENTHESES, rawFile.indexOfNth("foo", 2), 3);
 	}
 
 	@Test
 	def checkSignalAccessExpression() {
 		'''
-			class A {
-				state S {
+			class Foo {
+				state St {
 					entry {
 						trigger;
 					}
@@ -150,8 +154,8 @@ class XtxtUMLExpressionValidatorTest {
 		'''.parse.assertNoError(INVALID_SIGNAL_ACCESS);
 
 		'''
-			class A {
-				transition T {
+			class Foo {
+				transition Tr {
 					effect {
 						trigger;
 					}
@@ -160,39 +164,39 @@ class XtxtUMLExpressionValidatorTest {
 		'''.parse.assertNoError(INVALID_SIGNAL_ACCESS);
 
 		'''
-			class A {
+			class Foo {
 				initial Init;
-				state S {
+				state St {
 					exit {
 						trigger;
 					}
 				}
-				transition T {
+				transition Tr {
 					from Init;
-					to S;
+					to St;
 				}
 			}
 		'''.parse.assertNoError(INVALID_SIGNAL_ACCESS);
 
 		'''
-			class A {
+			class Foo {
 				initial Init;
-				state S;
-				choice C;
+				state St;
+				choice Ch;
 				transition T1 {
 					from Init;
-					to S;
+					to St;
 				}
 				transition T2 {
-					from S;
-					to C;
+					from St;
+					to Ch;
 					effect {
 						trigger;
 					}
 				}
 				transition T3 {
-					from C;
-					to S;
+					from Ch;
+					to St;
 					effect {
 						trigger;
 					}
@@ -200,22 +204,25 @@ class XtxtUMLExpressionValidatorTest {
 			}
 		'''.parse.assertNoError(INVALID_SIGNAL_ACCESS);
 
-		val trivialInvalid = '''
-			execution E {
+		val trivialInvalidRaw = '''
+			execution Ex {
 				trigger;
 			}
-			class A {
-				void foo() {
+			class Foo {
+				void op() {
 					trigger;
 				}
 			}
-		'''.parse;
+		''';
 
-		trivialInvalid.assertError(TU_SIGNAL_ACCESS_EXPRESSION, INVALID_SIGNAL_ACCESS, 16, 7);
-		trivialInvalid.assertError(TU_SIGNAL_ACCESS_EXPRESSION, INVALID_SIGNAL_ACCESS, 57, 7);
+		val trivialInvalidParsed = trivialInvalidRaw.parse;
+		trivialInvalidParsed.assertError(TU_SIGNAL_ACCESS_EXPRESSION, INVALID_SIGNAL_ACCESS,
+			trivialInvalidRaw.indexOfNth("trigger", 0), 7);
+		trivialInvalidParsed.assertError(TU_SIGNAL_ACCESS_EXPRESSION, INVALID_SIGNAL_ACCESS,
+			trivialInvalidRaw.indexOfNth("trigger", 1), 7);
 
-		val nonTrivialInvalid = '''
-			class A {
+		val nonTrivialInvalidRaw = '''
+			class Foo {
 				initial Init;
 				choice C1;
 				choice C2;
@@ -253,12 +260,17 @@ class XtxtUMLExpressionValidatorTest {
 					to S1;
 				}
 			}
-		'''.parse;
+		''';
 
-		nonTrivialInvalid.assertError(TU_SIGNAL_ACCESS_EXPRESSION, INVALID_SIGNAL_ACCESS, 102, 7);
-		nonTrivialInvalid.assertError(TU_SIGNAL_ACCESS_EXPRESSION, INVALID_SIGNAL_ACCESS, 183, 7);
-		nonTrivialInvalid.assertError(TU_SIGNAL_ACCESS_EXPRESSION, INVALID_SIGNAL_ACCESS, 250, 7);
-		nonTrivialInvalid.assertError(TU_SIGNAL_ACCESS_EXPRESSION, INVALID_SIGNAL_ACCESS, 405, 7);
+		val nonTrivialInvalidParsed = nonTrivialInvalidRaw.parse;
+		nonTrivialInvalidParsed.assertError(TU_SIGNAL_ACCESS_EXPRESSION, INVALID_SIGNAL_ACCESS,
+			nonTrivialInvalidRaw.indexOfNth("trigger", 0), 7);
+		nonTrivialInvalidParsed.assertError(TU_SIGNAL_ACCESS_EXPRESSION, INVALID_SIGNAL_ACCESS,
+			nonTrivialInvalidRaw.indexOfNth("trigger", 1), 7);
+		nonTrivialInvalidParsed.assertError(TU_SIGNAL_ACCESS_EXPRESSION, INVALID_SIGNAL_ACCESS,
+			nonTrivialInvalidRaw.indexOfNth("trigger", 2), 7);
+		nonTrivialInvalidParsed.assertError(TU_SIGNAL_ACCESS_EXPRESSION, INVALID_SIGNAL_ACCESS,
+			nonTrivialInvalidRaw.indexOfNth("trigger", 3), 7);
 	}
 
 	@Test
@@ -266,27 +278,27 @@ class XtxtUMLExpressionValidatorTest {
 		'''
 			signal S1;
 			signal S2;
-			interface I {
+			interface If {
 				reception S1;
 				reception S2;
 			}
-			class A {
-				port P { required I; }
+			class Foo {
+				port Po { required If; }
 				void foo() {
-					send new S1() to this->(P);
-					send new S2() to this->(P);
+					send new S1() to this->(Po);
+					send new S2() to this->(Po);
 				}
 			}
 		'''.parse.assertNoError(NOT_REQUIRED_SIGNAL);
 
-		val file = '''
+		val rawFile = '''
 			signal S1;
 			signal S2;
-			interface I {
+			interface If {
 				reception S1;
 			}
-			class A {
-				port P1 { required I; }
+			class Foo {
+				port P1 { required If; }
 				port P2 {}
 				void foo() {
 					send new S1() to this->(P1);
@@ -295,138 +307,147 @@ class XtxtUMLExpressionValidatorTest {
 					send new S2() to this->(P2);
 				}
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_SEND_SIGNAL_EXPRESSION, NOT_REQUIRED_SIGNAL, 162, 8);
-		file.assertError(TU_SEND_SIGNAL_EXPRESSION, NOT_REQUIRED_SIGNAL, 194, 8);
-		file.assertError(TU_SEND_SIGNAL_EXPRESSION, NOT_REQUIRED_SIGNAL, 226, 8);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_SEND_SIGNAL_EXPRESSION, NOT_REQUIRED_SIGNAL, rawFile.indexOfNth("new S2()", 0), 8);
+		parsedFile.assertError(TU_SEND_SIGNAL_EXPRESSION, NOT_REQUIRED_SIGNAL, rawFile.indexOfNth("new S1()", 1), 8);
+		parsedFile.assertError(TU_SEND_SIGNAL_EXPRESSION, NOT_REQUIRED_SIGNAL, rawFile.indexOfNth("new S2()", 1), 8);
 	}
 
 	@Test
 	def checkQueriedPortIsOwned() {
 		'''
-			class A {
-				port P {}
+			class Cl1 {
+				port Po {}
 				void foo() {
-					send null to this->(P);
+					send null to this->(Po);
 				}
 			}
-			class B {
-				port P {}
+			class Cl2 {
+				port Po {}
 				void foo() {
-					send null to this->(P);
+					send null to this->(Po);
 				}
 			}
-			class C {
-				port P {}
+			class Cl3 {
+				port Po {}
 			}
-			class D extends C {
+			class Cl4 extends Cl3 {
 				void foo() {
-					send null to this->(C.P);
+					send null to this->(Cl3.Po);
 				}
 			}
-			class E extends D {
+			class Cl5 extends Cl4 {
 				void foo() {
-					send null to this->(C.P);
+					send null to this->(Cl3.Po);
 				}
 			}
 		'''.parse.assertNoError(QUERIED_PORT_IS_NOT_OWNED);
 
-		val file = '''
-			class A {
-				port P {}
+		val rawFile = '''
+			class Cl1 {
+				port Po {}
 				void foo() {
-					send null to this->(B.P);
+					send null to this->(Cl2.Po);
 				}
 			}
-			class B {
-				port P {}
+			class Cl2 {
+				port Po {}
 				void foo() {
-					send null to this->(A.P);
+					send null to this->(Cl1.Po);
 				}
 			}
-			class C {
+			class Cl3 {
 				void bar() {
-					send null to this->(D.P);
+					send null to this->(Cl4.Po);
 				}
 			}
-			class D extends C {
-				port P {}
+			class Cl4 extends Cl3 {
+				port Po {}
 			}
-			class E extends C {
+			class Cl5 extends Cl3 {
 				void foo() {
-					send null to this->(D.P);
+					send null to this->(Cl4.Po);
 				}
 			}
-		'''.parse;
+		''';
 
-		file.assertError(TU_SEND_SIGNAL_EXPRESSION, QUERIED_PORT_IS_NOT_OWNED, 53, 11);
-		file.assertError(TU_SEND_SIGNAL_EXPRESSION, QUERIED_PORT_IS_NOT_OWNED, 127, 11);
-		file.assertError(TU_SEND_SIGNAL_EXPRESSION, QUERIED_PORT_IS_NOT_OWNED, 189, 11);
-		file.assertError(TU_SEND_SIGNAL_EXPRESSION, QUERIED_PORT_IS_NOT_OWNED, 297, 11);
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_SEND_SIGNAL_EXPRESSION, QUERIED_PORT_IS_NOT_OWNED, rawFile.indexOf("this->(Cl2.Po)"),
+			14);
+		parsedFile.assertError(TU_SEND_SIGNAL_EXPRESSION, QUERIED_PORT_IS_NOT_OWNED, rawFile.indexOf("this->(Cl1.Po)"),
+			14);
+		parsedFile.assertError(TU_SEND_SIGNAL_EXPRESSION, QUERIED_PORT_IS_NOT_OWNED,
+			rawFile.indexOfNth("this->(Cl4.Po)", 0), 14);
+		parsedFile.assertError(TU_SEND_SIGNAL_EXPRESSION, QUERIED_PORT_IS_NOT_OWNED,
+			rawFile.indexOfNth("this->(Cl4.Po)", 1), 14);
 	}
 
 	@Test
 	def checkAccessedClassPropertyIsSpecified() {
 		'''
-			class A {
+			class Cl1 {
 				void foo() {
-					this->(AB.b);
+					this->(Cl1Cl2.cl2);
 				}
 			}
-			class B;
-			association AB {
-				A a;
-				B b;
+			class Cl2;
+			association Cl1Cl2 {
+				Cl1 cl1;
+				Cl2 cl2;
 			}
 		'''.parse.assertNoError(MISSING_CLASS_PROPERTY);
 
-		'''
-			class A {
+		val rawFile = '''
+			class Cl1 {
 				void foo() {
 					this->();
 				}
 			}
-			class B;
-			association AB {
-				A a;
-				B b;
+			class Cl2;
+			association Cl1Cl2 {
+				Cl1 cl1;
+				Cl2 cl2;
 			}
-		'''.parse.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, MISSING_CLASS_PROPERTY, 32, 2);
+		''';
+
+		rawFile.parse.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, MISSING_CLASS_PROPERTY, rawFile.indexOf("->"),
+			2);
 	}
 
 	@Test
 	def checkOwnerOfAccessedClassProperty() {
 		val accessibleProps = '''
-			class A {
-				port P {}
+			class Cl1 {
+				port Po {}
 				void foo() {
-					this->(AB.b);
-					this->(P);
+					this->(Cl1Cl2.cl2);
+					this->(Po);
 				}
 			}
-			class AD extends A {
+			class Cl1D extends Cl1 {
 				void bar() {
-					this->(AB.b);
-					this->(A.P);
+					this->(Cl1Cl2.cl2);
+					this->(Cl1.Po);
 				}
 			}
-			class ADD extends AD {
+			class Cl1DD extends Cl1D {
 				void baz() {
-					this->(AB.b);
-					this->(A.P);
+					this->(Cl1Cl2.cl2);
+					this->(Cl1.Po);
 				}
 			}
-			class B {
-				port P {}
+			class Cl2 {
+				port Po {}
 				void bar() {
-					this->(AB.a);
-					this->(P);
+					this->(Cl1Cl2.cl1);
+					this->(Po);
 				}
 			}
-			association AB {
-				A a;
-				B b;
+			association Cl1Cl2 {
+				Cl1 cl1;
+				Cl2 cl2;
 			}
 		'''.parse;
 
@@ -434,53 +455,61 @@ class XtxtUMLExpressionValidatorTest {
 		accessibleProps.assertNoError(NOT_ACCESSIBLE_ASSOCIATION_END);
 		accessibleProps.assertNoError(NOT_ACCESSIBLE_PORT);
 
-		val notAccessibleProps = '''
-			class A {
-				port P {}
+		val notAccessiblePropsRaw = '''
+			class Foo {
+				port Po {}
 				void foo() {
-					this->(AB1.a);
-					this->(AB2.b);
-					this->(AD1B.b);
-					this->(AD1.ADP);
+					this->(FooBar1.foo);
+					this->(FooBar2.bar);
+					this->(FooD1Bar.bar);
+					this->(FooD1.FooDPo);
 				}
 			}
-			class AD1 extends A {
-				port ADP {}
+			class FooD1 extends Foo {
+				port FooDPo {}
 			}
-			class AD2 extends A {
+			class FooD2 extends Foo {
 				void bar() {
-					this->(AD1.ADP);
+					this->(FooD1.FooDPo);
 				}
 			}
-			class B {
-				port P {}
+			class Bar {
+				port Po {}
 				void bar() {
-					this->(AB1.b);
-					this->(A.P);
+					this->(FooBar1.bar);
+					this->(Foo.Po);
 				}
 			}
-			association AB1 {
-				A a;
-				B b;
+			association FooBar1 {
+				Foo foo;
+				Bar bar;
 			}
-			association AB2 {
-				A a;
-				hidden B b;
+			association FooBar2 {
+				Foo foo;
+				hidden Bar bar;
 			}
-			association AD1B {
-				AD1 ad1;
-				B b;
+			association FooD1Bar {
+				FooD1 fooD1;
+				Bar bar;
 			}
-		'''.parse;
+		''';
 
-		notAccessibleProps.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, NOT_ACCESSIBLE_ASSOCIATION_END, 47, 5);
-		notAccessibleProps.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, NOT_NAVIGABLE_ASSOCIATION_END, 65, 5);
-		notAccessibleProps.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, NOT_ACCESSIBLE_ASSOCIATION_END, 83, 6);
-		notAccessibleProps.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, NOT_ACCESSIBLE_PORT, 102, 7);
+		val notAccessiblePropsParsed = notAccessiblePropsRaw.parse;
+		notAccessiblePropsParsed.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, NOT_ACCESSIBLE_ASSOCIATION_END,
+			notAccessiblePropsRaw.indexOf("FooBar1.foo"), 11);
+		notAccessiblePropsParsed.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, NOT_NAVIGABLE_ASSOCIATION_END,
+			notAccessiblePropsRaw.indexOf("FooBar2.bar)"), 11);
+		notAccessiblePropsParsed.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, NOT_ACCESSIBLE_ASSOCIATION_END,
+			notAccessiblePropsRaw.indexOf("FooD1Bar.bar"), 12);
+		notAccessiblePropsParsed.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, NOT_ACCESSIBLE_PORT,
+			notAccessiblePropsRaw.indexOfNth("FooD1.FooDPo", 0), 12);
 
-		notAccessibleProps.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, NOT_ACCESSIBLE_PORT, 207, 7);
-		notAccessibleProps.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, NOT_ACCESSIBLE_ASSOCIATION_END, 272, 5);
-		notAccessibleProps.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, NOT_ACCESSIBLE_PORT, 290, 3);
+		notAccessiblePropsParsed.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, NOT_ACCESSIBLE_PORT,
+			notAccessiblePropsRaw.indexOfNth("FooD1.FooDPo", 1), 12);
+		notAccessiblePropsParsed.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, NOT_ACCESSIBLE_ASSOCIATION_END,
+			notAccessiblePropsRaw.indexOf("FooBar1.bar"), 11);
+		notAccessiblePropsParsed.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, NOT_ACCESSIBLE_PORT,
+			notAccessiblePropsRaw.indexOf("Foo.Po"), 6);
 	}
 
 }
