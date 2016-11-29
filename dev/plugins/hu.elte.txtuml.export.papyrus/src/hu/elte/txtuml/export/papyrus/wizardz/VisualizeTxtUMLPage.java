@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -60,6 +61,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	private List<IType> txtUMLLayout = new LinkedList<>();
 	private Text txtUMLProject;
 	private ScrolledComposite sc;
+	private CheckboxTreeViewer tree;
 
 	/**
 	 * The Constructor
@@ -149,15 +151,10 @@ public class VisualizeTxtUMLPage extends WizardPage {
 
 		// diagram descriptions tree
 		ScrolledComposite treeComposite = new ScrolledComposite(container, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-		CheckboxTreeViewer tree = getDiagramTreeViewer(treeComposite);
+		tree = getDiagramTreeViewer(treeComposite);
 
 		tree.expandAll();
-		List<Object> checkedElements = new ArrayList<>(txtUMLLayout);
-		List<Object> checkedProjects = txtUMLLayout.stream().map(diagramLayout -> diagramLayout.getJavaProject())
-				.collect(Collectors.toList());
-		checkedElements.addAll(checkedProjects);
-		tree.setCheckedElements(checkedElements.toArray());
-		checkedProjects.stream().forEach(elem -> tree.setGrayed(elem, true));
+		selectElementsInDiagramTree(txtUMLLayout.toArray());
 		tree.collapseAll();
 
 		try {
@@ -222,6 +219,28 @@ public class VisualizeTxtUMLPage extends WizardPage {
 			}
 		}
 		return result;
+	}
+
+	/**
+	 * Selects the given elements in the diagram selection tree
+	 */
+	public void selectElementsInDiagramTree(Object[] elements) {
+		txtUMLLayout.clear();
+		Stream.of(elements).forEach(type -> tree.setCheckedElements(elements));
+		List<IType> checkedTypes = Arrays.asList(elements).stream().filter(e -> e instanceof IType).map(e -> (IType) e)
+				.collect(Collectors.toList());
+
+		if (checkedTypes.isEmpty()) {
+			return;
+		}
+
+		checkedTypes.forEach(type -> txtUMLLayout.add(type));
+
+		Stream.of(tree.getTree().getItems()).flatMap(project -> Stream.of(project.getItems()))
+				.filter(type -> type.getData() instanceof IType && checkedTypes.stream()
+						.anyMatch(checkedType -> checkedType.getFullyQualifiedName()
+								.equals(((IType) type.getData()).getFullyQualifiedName())))
+				.forEach(s -> updateParentCheck(s.getParentItem()));
 	}
 
 	private CheckboxTreeViewer getDiagramTreeViewer(ScrolledComposite treeComposite) {
