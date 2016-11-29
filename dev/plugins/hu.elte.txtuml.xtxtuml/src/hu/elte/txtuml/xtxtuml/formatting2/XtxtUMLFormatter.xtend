@@ -44,6 +44,9 @@ import org.eclipse.xtext.xbase.formatting2.XbaseFormatter
 
 import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 
+/**
+ * Defines formatting rules for XtxtUML elements.
+ */
 class XtxtUMLFormatter extends XbaseFormatter {
 
 	def dispatch void format(TUModelDeclaration it, extension IFormattableDocument document) {
@@ -251,6 +254,18 @@ class XtxtUMLFormatter extends XbaseFormatter {
 		format(left, document);
 	}
 
+	/**
+	 * Can be used to format a block element according to the following format:
+	 * <pre>
+	 *     «typeKeyword» «name» {
+	 *         «members»
+	 *     }
+	 * </pre> if <code>members</code> is not empty and
+	 * <pre>
+	 *     «typeKeyword» «name» {}
+	 * </pre> otherwise. The parameter <code>isSpacious</code> indicates whether
+	 * empty lines should be placed around each member.
+	 */
 	def private formatBlockElement(EObject it, extension IFormattableDocument document, ISemanticRegion typeKeyword,
 		EList<? extends EObject> members, boolean isSpacious) {
 		typeKeyword.append[oneSpace];
@@ -274,11 +289,25 @@ class XtxtUMLFormatter extends XbaseFormatter {
 		}
 	}
 
+	/**
+	 * Can be used to format a simple element according to the following format:
+	 * <pre>
+	 *     «typeKeyword» «reference»;
+	 * </pre>
+	 */
 	def private formatSimpleMember(EObject it, extension IFormattableDocument document,
 		EStructuralFeature mainFeature) {
 		regionFor.feature(mainFeature).prepend[oneSpace].append[noSpace];
 	}
 
+	/**
+	 * Can be used to format an unnamed block element according to the following format:
+	 * <pre>
+	 *     «typeKeyword» {
+	 *         «members»
+	 *     }
+	 * </pre>
+	 */
 	def private formatUnnamedBlockElement(EObject it, extension IFormattableDocument document, XBlockExpression body) {
 		body.regionFor.keyword('{').prepend[oneSpace];
 		format(body, document);

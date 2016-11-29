@@ -205,7 +205,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		}
 	}
 
-	/*
+	/**
 	 * The purpose of this dispatch case is to enforce the common <code>EObject</code> supertype (which would
 	 * otherwise be <code>TUClassOrStateMember</code>).
 	 */
@@ -221,6 +221,10 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 			isReachableFromInitialState(from, visitedStates, throughPseudostatesOnly);
 	}
 
+	/**
+	 * @param throughPseudostatesOnly whether only pseudostates should be considered while
+	 * checking if the given state is reachable from the initial state of the enclosing state machine
+	 */
 	def protected dispatch boolean isReachableFromInitialState(TUState state, HashSet<TUState> visitedStates,
 		boolean throughPseudostatesOnly) {
 		if (state.type == TUStateType.INITIAL) {
@@ -238,6 +242,9 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		];
 	}
 
+	/**
+	 * Extends the default behavior to XtxtUML expressions.
+	 */
 	override protected isValueExpectedRecursive(XExpression expr) {
 		val container = expr.eContainer;
 		return switch (container) {

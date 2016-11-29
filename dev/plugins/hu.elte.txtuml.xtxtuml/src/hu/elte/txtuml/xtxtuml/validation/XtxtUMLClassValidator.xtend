@@ -208,6 +208,10 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 		}
 	}
 
+	/**
+	 * An initial state is missing from a state machine iff
+	 * it has at least one state, but none of them is initial.
+	 */
 	def protected isInitialStateMissing(EList<? extends EObject> members) {
 		if (members == null) {
 			return false;

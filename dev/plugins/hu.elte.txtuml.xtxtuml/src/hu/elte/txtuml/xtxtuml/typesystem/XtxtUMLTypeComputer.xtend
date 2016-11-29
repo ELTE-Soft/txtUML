@@ -1,4 +1,4 @@
-package hu.elte.txtuml.xtxtuml.typesystem
+package hu.elte.txtuml.xtxtuml.typesystem;
 
 import com.google.inject.Inject
 import hu.elte.txtuml.api.model.Collection
@@ -72,6 +72,11 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		}
 	}
 
+	/**
+	 * Tries to acquire the associated JVM element of the given source element, considering
+	 * the resource set of the given {@link ITypeComputationState}. An instance of
+	 * <code>fallbackType</code> is returned if no such element has been found.
+	 */
 	def private nullSafeJvmElementTypeRef(ITypeComputationState state, EObject sourceElement, Class<?> fallbackType) {
 		val inferredType = sourceElement.getPrimaryJvmElement as JvmType;
 		return if (inferredType != null) {
@@ -134,6 +139,10 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		state.acceptActualType(type);
 	}
 
+	/**
+	 * Computes the common signal supertype accessible
+	 * from the effect of the given transition.
+	 */
 	def private LightweightTypeReference getCommonSignalSuperType(
 		TUTransition trans,
 		ITypeComputationState computationState,
@@ -158,6 +167,10 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		return getTypeForName(Signal, computationState);
 	}
 
+	/**
+	 * Computes the common signal supertype accessible from the entry or exit activity of the given state.
+	 * @param toState indicates whether the entry activity should be considered instead of the exit one
+	 */
 	def private LightweightTypeReference getCommonSignalSuperType(
 		TUState state,
 		ITypeComputationState computationState,
@@ -208,6 +221,11 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		childState.computeTypes(sendExpr.target);
 	}
 
+	/**
+	 * Overrides the default implementation such that it doesn't delegate child
+	 * expression types to their enclosing block expression. Instead, the type
+	 * of the given block will be accepted as <code>void</code>.
+	 */
 	override dispatch computeTypes(XBlockExpression block, ITypeComputationState state) {
 		val children = block.expressions;
 		if (!children.isEmpty) {

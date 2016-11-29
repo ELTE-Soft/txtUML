@@ -1,4 +1,4 @@
-package hu.elte.txtuml.xtxtuml.compiler
+package hu.elte.txtuml.xtxtuml.compiler;
 
 import com.google.inject.Inject
 import hu.elte.txtuml.api.model.Action

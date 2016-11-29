@@ -1,4 +1,4 @@
-package hu.elte.txtuml.xtxtuml.jvmmodel
+package hu.elte.txtuml.xtxtuml.jvmmodel;
 
 import hu.elte.txtuml.xtxtuml.compiler.XtxtUMLGenerator
 import hu.elte.txtuml.xtxtuml.compiler.XtxtUMLModelPackageInfoAdapter
@@ -23,4 +23,5 @@ class XtxtUMLTypesBuilder extends JvmTypesBuilder {
 		copyDocumentationTo(sourceElement, result)
 		associate(sourceElement, result)
 	}
+
 }

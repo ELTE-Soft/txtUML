@@ -1,4 +1,4 @@
-package hu.elte.txtuml.xtxtuml.imports
+package hu.elte.txtuml.xtxtuml.imports;
 
 import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
@@ -28,6 +28,9 @@ class XtxtUMLImportedTypesCollector extends ImportedTypesCollector {
 	@Inject extension IJvmModelAssociations;
 	@Inject extension ILocationInFileProvider;
 
+	/**
+	 * Extends the default behavior to collect XtxtUML references as well.
+	 */
 	override protected collectAllReferences(EObject rootElement) {
 		super.collectAllReferences(rootElement);
 

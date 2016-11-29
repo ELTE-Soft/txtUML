@@ -12,6 +12,10 @@ public class XtxtUMLUtils {
 	@Inject IResourceDescriptions index;
 	@Inject extension IQualifiedNameProvider;
 
+	/**
+	 * Returns the IEObjectDescription of the specified <code>objectDescription</code>'s
+	 * container, if exists. Returns <code>null</code> otherwise.
+	 */
 	def getEContainerDescription(IEObjectDescription objectDescription) {
 		val objectUriFragment = objectDescription.EObjectURI.fragment;
 		val containerUriFragment = objectUriFragment.substring(0, objectUriFragment.lastIndexOf('/'));
