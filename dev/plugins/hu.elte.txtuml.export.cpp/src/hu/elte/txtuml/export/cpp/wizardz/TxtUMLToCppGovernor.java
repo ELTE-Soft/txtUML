@@ -29,8 +29,11 @@ class TxtUMLToCppGovernor {
 		this.testing = testing;
 	}
 
-	void uml2ToCpp(String txtUMLProject, String txtUMLModel, String deploymentDescription, boolean addRuntimeOption,
-			boolean overWriteMainFileOption) throws Exception {
+
+	void uml2ToCpp(String txtUMLProject, String txtUMLModel, String deploymentDescription,
+			String deploymentDescriptionProjectName, boolean addRuntimeOption, boolean overWriteMainFileOption)
+			throws Exception {
+		
 		String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation().toFile()
 				.getAbsolutePath();
 		String umlFilesFolder = txtUMLProject + File.separator + GeneratedCPPFolderName + File.separator + txtUMLModel
@@ -51,7 +54,7 @@ class TxtUMLToCppGovernor {
 
 		Class<? extends Configuration> txtUMLThreadDescription;
 		try {
-			txtUMLThreadDescription = loadConfigurationClass(txtUMLProject, deploymentDescription);
+			txtUMLThreadDescription = loadConfigurationClass(deploymentDescriptionProjectName, deploymentDescription);
 		} catch (ClassNotFoundException | NotCofigurationClassException e) {
 			if (!testing) {
 				Dialogs.errorMsgb("Description Class Error",
@@ -93,9 +96,9 @@ class TxtUMLToCppGovernor {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Class<? extends Configuration> loadConfigurationClass(String txtUMLProject, String deploymentDescription)
+	private Class<? extends Configuration> loadConfigurationClass(String deploymentDescriptionProjectName, String deploymentDescription)
 			throws ClassNotFoundException, NotCofigurationClassException {
-		URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(txtUMLProject,
+		URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(deploymentDescriptionProjectName,
 				ThreadDescriptionExporter.class.getClassLoader());
 		Class<? extends Configuration> txtUMLThreadDescription;
 		txtUMLThreadDescription = (Class<? extends Configuration>) loader.loadClass(deploymentDescription);
