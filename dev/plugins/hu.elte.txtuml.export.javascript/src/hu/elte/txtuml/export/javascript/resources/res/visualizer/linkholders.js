@@ -197,8 +197,10 @@ visualizer.linkholders.TransitionLink = function (link){
 		},
 		'target':{  
 			'id':link.toID
-		},
-		'labels':[  
+		}
+	};
+	if (_.has(link,'trigger') && link.trigger.length > 0){
+		linkData.labels = [  
 			{  
 				'position':{  
 					'distance':0.5,
@@ -207,15 +209,12 @@ visualizer.linkholders.TransitionLink = function (link){
 				'attrs':{  
 					'text':{  
 						'font-family': '"Lucida Console", Monaco, monospace',
-						'text':link.name
+						'text':link.trigger
 					}
-					
-			
 				}
 			}
-		]
-	
-	};
+		];
+	}
 	
 	clazz._link = new joint.shapes.uml.Transition(linkData);
 }

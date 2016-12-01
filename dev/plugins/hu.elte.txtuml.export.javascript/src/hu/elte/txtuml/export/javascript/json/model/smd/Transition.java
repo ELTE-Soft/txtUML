@@ -3,7 +3,9 @@ package hu.elte.txtuml.export.javascript.json.model.smd;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
+import org.eclipse.uml2.uml.Trigger;
 
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Point;
@@ -13,8 +15,8 @@ public class Transition {
 	private String fromID;
 	@XmlAccessMethods(getMethodName = "getToID")
 	private String toID;
-	@XmlAccessMethods(getMethodName = "getName")
-	private String name;
+	@XmlAccessMethods(getMethodName = "getTrigger")
+	private String trigger;
 	@XmlAccessMethods(getMethodName = "getRoute")
 	protected List<Point> route;
 	@XmlAccessMethods(getMethodName = "getAnchors")
@@ -23,10 +25,15 @@ public class Transition {
 	protected Transition() {
 	}
 
-	public Transition(LineAssociation link, org.eclipse.uml2.uml.Transition signal) {
+	public Transition(LineAssociation link, org.eclipse.uml2.uml.Transition transition) {
 		fromID = link.getFrom();
 		toID = link.getTo();
-		name = signal.getLabel();
+		trigger = null;
+		List<Trigger> triggers = transition.getTriggers();
+		if (triggers.size() > 0){
+			trigger = triggers.get(0).getEvent().getLabel();
+		}
+		
 		if (link.getTurns() == 0) {
 			List<Point> points = link.getRoute();
 			int center = points.size() / 2;
@@ -51,8 +58,8 @@ public class Transition {
 		return toID;
 	}
 
-	public String getName() {
-		return name;
+	public String getTrigger() {
+		return trigger;
 	}
 
 	public List<Point> getRoute() {
