@@ -18,6 +18,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 import hu.elte.txtuml.export.javascript.json.JSONExporter;
 import hu.elte.txtuml.export.javascript.json.model.ExportationModel;
+import hu.elte.txtuml.export.javascript.json.model.cd.UnexpectedEndException;
 import hu.elte.txtuml.export.javascript.resources.ResourceHandler;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutVisualizerManager;
@@ -35,7 +36,6 @@ public class Exporter {
 	private String genFolder;
 	private TxtUMLLayoutDescriptor layout;
 	private ExportationModel model;
-	private List<String> warnings;
 
 	public Exporter(TxtUMLLayoutDescriptor layout) {
 		this.layout = layout;
@@ -72,14 +72,15 @@ public class Exporter {
 	}
 
 	public void export() throws ModelMapException, ArrangeException, UnknownDiagramTypeException, IOException,
-			JAXBException, PartInitException {
+			JAXBException, PartInitException, UnexpectedEndException {
 		createModel();
 		prepare();
 		insertInput();
 		display();
 	}
 
-	private void createModel() throws ModelMapException, ArrangeException, UnknownDiagramTypeException {
+	private void createModel()
+			throws ModelMapException, ArrangeException, UnknownDiagramTypeException, UnexpectedEndException {
 
 		for (Pair<String, DiagramExportationReport> report : layout.getReportsWithDiagramNames()) {
 			String name = report.getFirst();
@@ -92,11 +93,12 @@ public class Exporter {
 			ModelMapProvider map = new ModelMapProvider(URI.createFileURI(genFolder), der.getModelName());
 			List<Statement> statements = lvm.getStatementsSet();
 			double spacing = 0.8;
-			Statement s = statements.stream().filter(statement -> statement.getType() == StatementType.corridorsize).findFirst().orElse(null);
-			if (s != null){
+			Statement s = statements.stream().filter(statement -> statement.getType() == StatementType.corridorsize)
+					.findFirst().orElse(null);
+			if (s != null) {
 				spacing = Double.parseDouble(s.getParameter(0));
 			}
-			
+
 			switch (der.getType()) {
 			case Class:
 				model.addClassDiagram(name, lvm.getObjects(), lvm.getAssociations(), map, spacing);
@@ -109,10 +111,6 @@ public class Exporter {
 			}
 		}
 
-	}
-
-	public List<String> getWarnings() {
-		return warnings;
 	}
 
 }

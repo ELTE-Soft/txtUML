@@ -1,32 +1,39 @@
 visualizer.shapes = {};
 visualizer.shapes.Class = joint.shapes.uml.Class.extend({
 		defaults: joint.util.deepSupplement({
-
 			type: 'visualizer.shapes.Class',
-
-			attrs: {
-				rect: { 'width': 200 },
+			attrs: {				
 				'.uml-class-name-text': {
-					'font-family': '"Lucida Console", Monaco, monospace'
+					'font-family': visualizer.Fonts.default.getFamily()
 				},
 				'.uml-class-attrs-text': {
-					'font-family': '"Lucida Console", Monaco, monospace'
+					'font-family': visualizer.Fonts.default.getFamily()
 				},
 				'.uml-class-methods-text': {
-					'font-family': '"Lucida Console", Monaco, monospace'
+					'font-family': visualizer.Fonts.default.getFamily()
 				}
 			}
 
 		}, joint.shapes.uml.Class.prototype.defaults),
 		
+		initialize: function() {
+
+			joint.shapes.uml.Class.prototype.initialize.apply(this, arguments);
+			this.on({
+				'change:size': this.updateRectangles
+			});
+		},
+		
 		updateRectangles: function() {
 			// if init is false, then we are already have a size and need to provide approximate width and height for the rectangles
 			// to fit the new size and avoid scaling issues in IE (or other browser not supporting svg non-scaling-stroke attribute)
-			
 			var init = typeof this._init === 'undefined' ? true : this._init;
 			if (!init){
 				var size = this.get('size');
 			}
+			
+			var font = visualizer.Fonts.default;
+			
 			var attrs = this.get('attrs');
 			
 
@@ -43,7 +50,7 @@ visualizer.shapes.Class = joint.shapes.uml.Class.extend({
 				
 
 				var lines = _.isArray(rect.text) ? rect.text : [rect.text];
-				rectHeight = lines.length * 20 + 20;
+				rectHeight = lines.length * font.getContainerHeight(3) + 20;
 				
 
 				_.each(lines, function(line){
@@ -57,13 +64,12 @@ visualizer.shapes.Class = joint.shapes.uml.Class.extend({
 				offsetY += rectHeight;
 			},this);
 			
-			
-			// autosizing TODO: less font-relied solution
 			if (init){
 				var minSize = {};
-				minSize.height = offsetY * 0.5 + 20; 
-				minSize.width = maxChars * 7.2 + 12;
+				minSize.height = offsetY * 0.5 + 20;  
+				minSize.width = maxChars * font.getContainerWidth(0) + 12;
 				this.set('size',minSize);
+				this.attr('rect/width', minSize.width);
 				this._init = false;
 			}else{
 				this.attr('.uml-class-methods-rect/height', (size.height - 20) * 2 - (offsetY - rectHeight));  
@@ -91,27 +97,87 @@ visualizer.shapes.Abstract = visualizer.shapes.Class.extend({
 	});
 visualizer.shapes.AbstractView = visualizer.shapes.ClassView;
 	
-visualizer.shapes.Interface = visualizer.shapes.Class.extend({
-		type: 'visualizer.shapes.Interface',
-		defaults: joint.util.deepSupplement({
-			type: 'uml.Interface',
-			attrs: {
-				'.uml-class-name-rect': { fill : '#f1c40f' },
-				'.uml-class-attrs-rect': { fill : '#f39c12' },
-				'.uml-class-methods-rect': { fill : '#f39c12' }
-			}
-		}, visualizer.shapes.Class.prototype.defaults),
+visualizer.shapes.AttributeAssociation = joint.shapes.uml.Association.extend({
+	'defaults': joint.util.deepSupplement({
+		
+		'type': 'visualizer.shapes.AttributeAssociation',
+		'attrs':{
+			'snapLabels': true
+		},
+		'sourceName': 'sourceName',
+		'sourceNum': 'sourceNum',
+		'targetName': 'targetName',
+		'targetNum': 'targetNum',
+		'name': 'name'
+		
+	}, joint.shapes.uml.Association.prototype.defaults),
+	
+	'initialize': function(options){
+		var labelTypes = ['sourceName', 'sourceNum', 'targetName', 'targetNum', 'name'];
+		var offsets = [-20, 20, 20, -20, 10];
+		var distances = [0, 0, 1, 1, 0.5];
 
-		getClassName: function() {
-			return ['<<Interface>>', this.get('name')];
-		}
+		_.each(labelTypes, function(labelType,key){
+			this.label(key, { 
+				'position':{  
+					'distance': distances[key],
+					'offset': offsets[key]
+				},
+				'attrs':{  
+					'text':{  
+						'font-family': visualizer.Fonts.links.getFamily(),
+						'font-size': visualizer.Fonts.links.getSize(),
+						'text': this.attributes[labelType]
+					}
+				}
+			});
+		},this);
+		
+		joint.shapes.uml.Association.prototype.initialize.apply(this, options);
+	}
 });
 
-visualizer.shapes.AttributeAssociation = joint.shapes.uml.Association.extend({
-	defaults: joint.util.deepSupplement({
+visualizer.shapes.Generalization = joint.shapes.uml.Generalization.extend({
+	'defaults': joint.util.deepSupplement({
+		
+		'type': 'visualizer.shapes.AttributeAssociation',
+		'attrs': { 
+			'.marker-source': { d:'M 15 0 L 0 7.5 L 15 15 z', fill: 'white'},
+			'.marker-target': { d:'', fill: 'none'}
+			
+		}
+	}, joint.shapes.uml.Generalization.prototype.defaults)
+});
 
-        type: 'visualizer.shapes.AttributeAssociation'
-	}, joint.shapes.uml.Association.prototype.defaults)
+
+visualizer.shapes.Transition = joint.shapes.uml.Transition.extend({
+	'defaults': joint.util.deepSupplement({
+		
+		'type': 'visualizer.shapes.Transition',
+		'trigger': null
+		
+	}, joint.shapes.uml.Transition.prototype.defaults),
+	
+	'initialize': function(options){
+		
+		if (this.attributes.trigger){
+			this.label(0, { 
+					'position':{  
+						'distance': 0.5,
+						'offset': 10
+					},
+					'attrs':{  
+						'text':{  
+							'font-family': visualizer.Fonts.links.getFamily(),
+							'font-size': visualizer.Fonts.links.getSize(),
+							'text': this.attributes.trigger
+						}
+					}
+				});
+		}
+		
+		joint.shapes.uml.Transition.prototype.initialize.apply(this, options);
+	}
 });
 
 visualizer.shapes.State = joint.shapes.uml.State.extend({		
@@ -119,19 +185,23 @@ visualizer.shapes.State = joint.shapes.uml.State.extend({
 			type: 'visualizer.shapes.State',
 			attrs: {
 				'.uml-state-name': {
-					'fill': '#000000', 'font-family': '"Lucida Console", Monaco, monospace', 'font-size': 14
+					'fill': '#000000', 'font-family': visualizer.Fonts.default.getFamily(), 'font-size': visualizer.Fonts.default.getSize()
 				},
 				'.uml-state-events': {
-					'fill': '#000000', 'font-family': '"Lucida Console", Monaco, monospace', 'font-size': 14
+					'fill': '#000000', 'font-family': visualizer.Fonts.default.getFamily(), 'font-size': visualizer.Fonts.default.getSize()
 				}
 			}
 		},joint.shapes.uml.State.prototype.defaults),
 		initialize: function() {
 
 			joint.shapes.uml.State.prototype.initialize.apply(this, arguments);
+			this.on({
+				'change:size': this.fixBorders
+			});
 			this.autoSize();
 		},
 		autoSize: function() {
+			var font = visualizer.Fonts.default;
 			var attrs = this.get('attrs');
 
 			var rects = [
@@ -146,7 +216,7 @@ visualizer.shapes.State = joint.shapes.uml.State.extend({
 				
 
 				var lines = _.isArray(rect.text) ? rect.text : [rect.text];
-				rectHeight = lines.length * 20 + 20;
+				rectHeight = lines.length * font.getContainerHeight(3);
 				
 
 				_.each(lines, function(line){
@@ -155,16 +225,18 @@ visualizer.shapes.State = joint.shapes.uml.State.extend({
 				
 				offsetY += rectHeight;
 			});
-			// autosizing TODO: less font-relied solution
 			var minSize = {
-				'width' : maxChars * 7.2 + 35,
-				'height' : offsetY * 0.5 + 20
+				'width' : maxChars * font.getContainerWidth(0) + 35,
+				'height' : offsetY + 20
 			}
-			this.set('size',minSize);
+			this.set('size', minSize);
 		},
-		strechToNewSize: function(){
-			this.attr('rect',this.get('size'));
+		fixBorders: function(){
+			var size = this.get('size');
+			this.attr('rect/width',size.width);
+			this.attr('rect/height',size.height);
 		}
+		
 });
 
 visualizer.shapes.StartState = joint.shapes.uml.StartState.extend({
@@ -175,33 +247,33 @@ visualizer.shapes.StartState = joint.shapes.uml.StartState.extend({
 		attrs:{
 			'text':{
                 'ref': '.uml-startstate-circle', 'ref-x': .5, 'ref-y': .5, 'text-anchor': 'middle',
-                'fill': '#000000', 'font-family': '"Lucida Console", Monaco, monospace', 'font-size': 12,
+                'fill': '#000000', 'font-family':visualizer.Fonts.pseudostates.getFamily() , 'font-size': visualizer.Fonts.pseudostates.getSize(),
 				'text' : ''
 			},
 			'.uml-startstate-name-bg':{
 				'ref': 'text', 'ref-x':-1, 'ref-y':-1,
 				'fill':'white',
-				'width':10,
-				'height':14
+				'width':1,
+				'height':visualizer.Fonts.pseudostates.getContainerHeight(1)
 			},
-		}
-        //attrs: { 'circle': { 'fill': '#34495e', 'stroke': '#2c3e50', 'stroke-width': 2, 'rx': 1 }},
-		
-		
+		},
+		'size':{
+			'width':30,
+			'height':30			
+		}		
 
     }, joint.shapes.uml.StartState.prototype.defaults),
 	initialize: function(){
 		this.on({
 			'change:text/text': this.updateName
 		});
-		//this.attr('text',{});
 		joint.shapes.uml.StartState.prototype.initialize.apply(this, arguments);
 		this.updateName();
 	},
 	updateName: function(){
+		var font = visualizer.Fonts.pseudostates;
 		var str = this.attr('text/text');
-		
-		this.attr('.uml-startstate-name-bg/width', str.length * 7.2 + 2);
+		this.attr('.uml-startstate-name-bg/width', font.getContainerBoxSize(str, 1, 0).width);
 	}
 
 });
@@ -221,24 +293,21 @@ visualizer.shapes.Choice = joint.shapes.basic.Generic.extend({
 			},
 			'text':{
                 'ref': '.uml-choice-body', 'ref-x': .5, 'ref-y': .5,  'text-anchor': 'middle',
-                'fill': '#000000', 'font-family': '"Lucida Console", Monaco, monospace', 'font-size': 12,
+                'fill': '#000000', 'font-family': visualizer.Fonts.pseudostates.getFamily(), 'font-size': visualizer.Fonts.pseudostates.getSize(),
 				'text' : ''
 			},
 			'.uml-choice-name-bg':{
 				'ref': 'text', 'ref-x':-1, 'ref-y':-1,
 				'fill':'white',
 				'width':1,
-				'height':14
+				'height':visualizer.Fonts.pseudostates.getContainerHeight(1)
 			},
+			
 		},
-		/*size:{
-			'width': 100,
-			'height': 100
-		}*/
-        //attrs: { 'circle': { 'fill': '#34495e', 'stroke': '#2c3e50', 'stroke-width': 2, 'rx': 1 }},
-		
-		
-
+		'size':{
+			'width':100,
+			'height':100
+		}
     }, joint.shapes.basic.Generic.prototype.defaults),
 	initialize: function(){
 		this.on({
@@ -249,11 +318,14 @@ visualizer.shapes.Choice = joint.shapes.basic.Generic.extend({
 	},
 	updateName: function(){
 		var str = this.attr('text/text');
+		var font = visualizer.Fonts.pseudostates;
 		
-		this.attr('.uml-choice-name-bg/width', str.length * 7.2 + 2);
+		var width = font.getContainerBoxSize(str, 1, 0).width;
+		this.attr('.uml-choice-name-bg/width', width);
+		var oldSize = this.get('size');
 		var size = {
-			'width': str.length * 7.2 + 2,
-			'height': str.length * 7.2 + 2
+			'width': Math.max(width + 20, oldSize.width),
+			'height': oldSize.height
 		}
 		this.set('size',size);
 	}

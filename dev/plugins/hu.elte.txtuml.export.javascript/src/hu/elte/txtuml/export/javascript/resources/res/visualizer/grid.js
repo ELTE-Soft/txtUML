@@ -1,79 +1,75 @@
 visualizer.Grid = function(nodes, links, padding, spacing){
-	var clazz = this;
+	var context = this;
 	if (nodes.length === 0){
-		clazz._left = 0;
-		clazz._right = 0;
-		clazz._top = 0;
-		clazz._bottom = 0;
-		clazz._padding = padding;
-		clazz._totalPixelWidth = padding * 2;
-		clazz._totalPixelHeight = padding * 2;
+		this._left = 0;
+		this._right = 0;
+		this._top = 0;
+		this._bottom = 0;
+		this._padding = padding;
+		this._totalPixelWidth = padding * 2;
+		this._totalPixelHeight = padding * 2;
 	}else{
-		var clazz = this;
-		clazz._left = null;
-		clazz._right = null;
-		clazz._top = null;
-		clazz._bottom = null;
-		clazz._padding = padding;
-		
-		clazz._colWidth = clazz._GLOBAL_MIN_WIDTH;
-		clazz._rowHeight = clazz._GLOBAL_MIN_HEIGHT;
-		$.each(nodes,function(key,value){
+		this._left = null;
+		this._right = null;
+		this._top = null;
+		this._bottom = null;
+		this._padding = padding;
+		_.each(nodes,function(value){
 			
 			var position = value.getGridPosition();
 			var size = value.getGridSize();
-			if (clazz._left === null){
-				clazz._left = position.x;
-				clazz._top = position.y;
-				clazz._right = position.x + size.width;	
-				clazz._bottom = position.y - size.height;			
+			if (this._left === null){
+				this._left = position.x;
+				this._top = position.y;
+				this._right = position.x + size.width;	
+				this._bottom = position.y - size.height;			
 			}else{
-				clazz._left = Math.min(clazz._left,position.x);
-				clazz._top = Math.max(clazz._top,position.y);
-				clazz._right = Math.max(clazz._right,position.x + size.width);
-				clazz._bottom = Math.min(clazz._bottom,position.y - size.height);
+				this._left = Math.min(this._left,position.x);
+				this._top = Math.max(this._top,position.y);
+				this._right = Math.max(this._right,position.x + size.width);
+				this._bottom = Math.min(this._bottom,position.y - size.height);
 			}
-		});
+		},this);
 		
-		$.each(links,function(key,link){
+		_.each(links,function(link){
 			var route = link.getRoute();
-			$.each(route,function(key, position){
-				clazz._left = Math.min(clazz._left,position.x - 1);
-				clazz._top = Math.max(clazz._top,position.y + 1);
-				clazz._right = Math.max(clazz._right,position.x + 1);
-				clazz._bottom = Math.min(clazz._bottom,position.y - 1);			
-			});
-		});
+			_.each(route,function(position){
+				this._left = Math.min(this._left,position.x - 1);
+				this._top = Math.max(this._top,position.y + 1);
+				this._right = Math.max(this._right,position.x + 1);
+				this._bottom = Math.min(this._bottom,position.y - 1);			
+			},this);
+		},this);
 		
-		--clazz._left;
-		++clazz._right;
-		++clazz._top;
-		--clazz._bottom;
-		clazz._columns = {}
-		clazz._rows = {}
+		--this._left;
+		++this._right;
+		++this._top;
+		--this._bottom;
+		this._columns = {}
+		this._rows = {}
 		
 		
 		var i;
-		for (i = clazz._left; i < clazz._right; ++i){
-			clazz._columns[i] = {
+		for (i = this._left; i < this._right; ++i){
+			this._columns[i] = {
 				'x':padding,
-				'width':clazz._GLOBAL_MIN_WIDTH
+				'width':this._GLOBAL_MIN_WIDTH
 			}
 		}
-		for (i = clazz._top; i > clazz._bottom; --i){
-			clazz._rows[i] = {
+		for (i = this._top; i > this._bottom; --i){
+			this._rows[i] = {
 				'y':padding,
-				'height':clazz._GLOBAL_MIN_HEIGHT
+				'height':this._GLOBAL_MIN_HEIGHT
 			}
 		}
-		$.each(links, function(key, link){
+		_.each(links, function(link){
 			var route = link.getRoute();
-			$.each(route,function(poskey, position){
-				clazz._columns[position.x].width = clazz._TURNING_MIN_WIDTH;
-				clazz._rows[position.y].height = clazz._TURNING_MIN_HEIGHT;
-			});
-		});
-		$.each(nodes,function(key,node){
+			_.each(route,function( position){
+				this._columns[position.x].width = this._TURNING_MIN_WIDTH;
+				this._rows[position.y].height = this._TURNING_MIN_HEIGHT;
+			},this);
+		},this);
+		_.each(nodes,function(node){
 			var position = node.getGridPosition();
 			var size = node.getGridSize();
 			var pixelSize = node.getPixelSize();
@@ -89,19 +85,19 @@ visualizer.Grid = function(nodes, links, padding, spacing){
 			var totalsize = 0;
 			
 			for (i = position.x; i < right; ++i ){
-				if (clazz._columns[i].width < widthRatio){
+				if (this._columns[i].width < widthRatio){
 					changeIndexes.push(i);
 				}else{
-					subsize += clazz._columns[i].width;
+					subsize += this._columns[i].width;
 				}
-				totalsize += clazz._columns[i].width;
+				totalsize += this._columns[i].width;
 			}
 			
 			if (totalsize < pixelSize.width){
 				var correctedSizeRatio = (pixelSize.width - subsize) / changeIndexes.length;
-				$.each(changeIndexes, function(key,index){
-					clazz._columns[index].width = correctedSizeRatio;
-				});
+				_.each(changeIndexes, function(index){
+					this._columns[index].width = correctedSizeRatio;
+				},this);
 			}
 
 			subsize = 0;
@@ -109,47 +105,45 @@ visualizer.Grid = function(nodes, links, padding, spacing){
 			totalsize = 0;
 			for (i = position.y; i > bottom; --i ){
 				
-				if (clazz._rows[i].height < heightRatio){
+				if (this._rows[i].height < heightRatio){
 					changeIndexes.push(i);
 				}else{
-					subsize += clazz._rows[i].height;
+					subsize += this._rows[i].height;
 				}
-				totalsize += clazz._rows[i].height;
+				totalsize += this._rows[i].height;
 			}
 			
 			if (totalsize < pixelSize.height){
 				var correctedSizeRatio = (pixelSize.height - subsize) / changeIndexes.length;
-				$.each(changeIndexes, function(key,index){
-					clazz._rows[index].height = correctedSizeRatio;
-				});
+				_.each(changeIndexes, function(index){
+					this._rows[index].height = correctedSizeRatio;
+				},this);
 			}
 			
-			console.log(position.x);
-			console.log(clazz._left);
-			clazz._rows[position.y + 1].height = Math.max(clazz._SPACING_HEIGHT * spacing, clazz._rows[position.y + 1].height);
-			clazz._rows[bottom].height = Math.max(clazz._SPACING_HEIGHT * spacing, clazz._rows[bottom].height);
-			clazz._columns[position.x - 1].width = Math.max(clazz._SPACING_WIDTH * spacing, clazz._columns[position.x - 1].width);
-			clazz._columns[right].width = Math.max(clazz._SPACING_WIDTH * spacing, clazz._columns[right].width);
+			this._rows[position.y + 1].height = Math.max(this._SPACING_HEIGHT * spacing, this._rows[position.y + 1].height);
+			this._rows[bottom].height = Math.max(this._SPACING_HEIGHT * spacing, this._rows[bottom].height);
+			this._columns[position.x - 1].width = Math.max(this._SPACING_WIDTH * spacing, this._columns[position.x - 1].width);
+			this._columns[right].width = Math.max(this._SPACING_WIDTH * spacing, this._columns[right].width);
 			
 			
-		});
+		},this);
 		
-		for (i = clazz._left; i < clazz._right; ++i){		
-			if (i < clazz._right - 1){
-				clazz._columns[i+1].x = clazz._columns[i].x + clazz._columns[i].width;
+		for (i = this._left; i < this._right; ++i){		
+			if (i < this._right - 1){
+				this._columns[i+1].x = this._columns[i].x + this._columns[i].width;
 			}
 		}
 		
-		for (i = clazz._top; i > clazz._bottom; --i){
-			if (i > clazz._bottom + 1){
-				clazz._rows[i-1].y = clazz._rows[i].y + clazz._rows[i].height;
+		for (i = this._top; i > this._bottom; --i){
+			if (i > this._bottom + 1){
+				this._rows[i-1].y = this._rows[i].y + this._rows[i].height;
 			}
 		}
 		
-		var lastCol = clazz._columns[clazz._right - 1];
-		var lastRow = clazz._rows[clazz._bottom + 1];
-		clazz._totalPixelWidth = lastCol.x + lastCol.width + padding * 2;
-		clazz._totalPixelHeight = lastRow.y + lastRow.height + padding * 2;
+		var lastCol = this._columns[this._right - 1];
+		var lastRow = this._rows[this._bottom + 1];
+		this._totalPixelWidth = lastCol.x + lastCol.width + padding * 2;
+		this._totalPixelHeight = lastRow.y + lastRow.height + padding * 2;
 	}
 	
 }
@@ -186,13 +180,12 @@ visualizer.Grid.prototype.getPixelBounds = function(position, size){
 }
 
 visualizer.Grid.prototype.translateRoute = function(gridRoute){
-	var clazz = this;
 	var pixelRoute = [];
-	$.each(gridRoute, function(key, point){
+	_.each(gridRoute, function(point){
 		pixelRoute.push({
-			'x': Math.ceil(clazz._columns[point.x].x + clazz._columns[point.x].width / 2),
-			'y': Math.ceil(clazz._rows[point.y].y + clazz._rows[point.y].height / 2)
+			'x': Math.ceil(this._columns[point.x].x + this._columns[point.x].width / 2),
+			'y': Math.ceil(this._rows[point.y].y + this._rows[point.y].height / 2)
 		});
-	});
+	},this);
 	return pixelRoute;
 }

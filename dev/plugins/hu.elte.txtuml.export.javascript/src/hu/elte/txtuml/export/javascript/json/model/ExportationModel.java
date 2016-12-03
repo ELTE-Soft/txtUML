@@ -7,6 +7,7 @@ import java.util.Set;
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 
 import hu.elte.txtuml.export.javascript.json.model.cd.ClassDiagram;
+import hu.elte.txtuml.export.javascript.json.model.cd.UnexpectedEndException;
 import hu.elte.txtuml.export.javascript.json.model.smd.SMDiagram;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
@@ -25,7 +26,7 @@ public class ExportationModel {
 	}
 
 	public void addClassDiagram(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links,
-			ModelMapProvider map, double spacing) {
+			ModelMapProvider map, double spacing) throws UnexpectedEndException {
 		classDiagrams.add(new ClassDiagram(diagramName, nodes, links, map, spacing));
 	}
 

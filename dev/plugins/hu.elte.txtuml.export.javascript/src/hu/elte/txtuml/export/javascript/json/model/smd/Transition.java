@@ -30,20 +30,19 @@ public class Transition {
 		toID = link.getTo();
 		trigger = null;
 		List<Trigger> triggers = transition.getTriggers();
-		if (triggers.size() > 0){
+		if (triggers.size() > 0) {
 			trigger = triggers.get(0).getEvent().getLabel();
 		}
-		
+
 		if (link.getTurns() == 0) {
 			List<Point> points = link.getRoute();
 			int center = points.size() / 2;
-			route = new ArrayList<Point>();
-			route.add(points.get(center));
+			route = points.subList(center, center + 1);
 		} else {
 			List<Point> points = link.getMinimalRoute();
 			route = points.subList(1, points.size() - 1);
-			// route = points;
 		}
+
 		anchors = new ArrayList<Point>();
 		List<Point> points = link.getMinimalRoute();
 		anchors.add(points.get(0));

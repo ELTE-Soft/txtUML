@@ -1,40 +1,34 @@
 visualizer.Selector  = function(input){
 	
-	var clazz = this;
-	
 	var params = window.location.hash.substring(1).split('_');
 	var paramsValid = params.length === 2 &&
 		_.has(visualizer.Utils.MAPS.DIAGRAMTYPE_TO_COLLECTION_PROPERTY, params[0]) && 
 		input[visualizer.Utils.MAPS.DIAGRAMTYPE_TO_COLLECTION_PROPERTY[params[0]]].length > params[1];
 	
-	clazz._diagramMap = {};
-	clazz._selected = null;
+	this._diagramMap = {};
+	this._selected = null;
 	
 	if (paramsValid){
 		var collectionName = visualizer.Utils.MAPS.DIAGRAMTYPE_TO_COLLECTION_PROPERTY[params[0]];
-		clazz._selected = input[collectionName][params[1]];
-		clazz._selected.type = params[0];
+		this._selected = input[collectionName][params[1]];
+		this._selected.type = params[0];
 
 	}
-	$.each(visualizer.Utils.MAPS.DIAGRAMTYPE_TO_COLLECTION_PROPERTY, function(type, diagramCollectionName){			
-		if (clazz._selected === null && input[diagramCollectionName].length > 0){
-			clazz._selected = input[diagramCollectionName][0];
-			clazz._selected.type = type;
+	_.each(visualizer.Utils.MAPS.DIAGRAMTYPE_TO_COLLECTION_PROPERTY, function(diagramCollectionName, type){			
+		if (this._selected === null && input[diagramCollectionName].length > 0){
+			this._selected = input[diagramCollectionName][0];
+			this._selected.type = type;
 		}
-		clazz._diagramMap[type] = [];
-		$.each(input[diagramCollectionName], function(key, diagram){
-			clazz._diagramMap[type].push(diagram.name);
-		});
+		this._diagramMap[type] = [];
+		_.each(input[diagramCollectionName], function(diagram){
+			this._diagramMap[type].push(diagram.name);
+		},this);
 		
-	});
-	if (clazz._selected === null){
-		throw new Error('No diagrams loaded')
+	},this);
+	if (this._selected === null){
+		throw new Error('No diagrams provided');
 	}
-	
-	
-	
-	
-	
+
 }
 
 visualizer.Selector.prototype.getSelectedDiagram = function(){
@@ -44,9 +38,9 @@ visualizer.Selector.prototype.getSelectedDiagram = function(){
 visualizer.Selector.prototype.putLinks = function(table_holder){
 	var innerHTML = '<tr>';
 	var timestamp = new Date().getTime();
-	$.each(this._diagramMap, function(type, diagrams){
+	_.each(this._diagramMap, function(diagrams, type){
 		innerHTML += '<td><ul>';
-		$.each(diagrams, function(key, diagramName){
+		_.each(diagrams, function(diagramName, key){
 			innerHTML += '<li><a href="?refresh=' + timestamp + '#'+ type + '_' + key + '">'+ diagramName +'</a></li>';
 		});
 		innerHTML += '</ul></td>'

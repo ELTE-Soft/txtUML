@@ -33,12 +33,12 @@ public class SMDiagram {
 	private List<Transition> transitions;
 	@XmlAccessMethods(getMethodName = "getSpacing")
 	private double spacing;
-	
 
 	protected SMDiagram() {
 	}
 
-	public SMDiagram(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links, ModelMapProvider map, double spacing) {
+	public SMDiagram(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links, ModelMapProvider map,
+			double spacing) {
 		this.spacing = spacing;
 		name = diagramName;
 		machineName = null;
@@ -59,10 +59,10 @@ public class SMDiagram {
 				states.add(new State(node, state));
 			} else if (estate instanceof org.eclipse.uml2.uml.Pseudostate) {
 				org.eclipse.uml2.uml.Pseudostate state = (org.eclipse.uml2.uml.Pseudostate) estate;
-				/*
-				 * if (machineName == null) { machineName =
-				 * state.getStateMachine().getLabel(); }
-				 */
+
+				if (machineName == null) {
+					machineName = ((Region) state.getOwner()).getName();
+				}
 				pseudoStates.add(new PseudoState(node, state));
 			}
 		}
@@ -92,7 +92,7 @@ public class SMDiagram {
 	public String getMachineName() {
 		return machineName;
 	}
-	
+
 	public double getSpacing() {
 		return spacing;
 	}

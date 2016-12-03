@@ -33,30 +33,21 @@ visualizer.nodeholders.Node.prototype.getPixelSize = function(){
 
 visualizer.nodeholders.Node.prototype.setBounds = function(bounds){
 	this._node.set('position', bounds.position);
-	//this._node.attr('rect/width', bounds.size.width); //TODO: find better fix for IE
-	this._node.set('size',bounds.size);
-	//this._node.updateRectangles();
-	
-
-	//this._node.attr('rect',bounds.size);
+	this._node.set('size', bounds.size);
 }
 
 
 visualizer.nodeholders.ClassNode = function (node){
-	var clazz = this;
-	visualizer.nodeholders.Node.call(clazz, node);
+	visualizer.nodeholders.Node.call(this, node);
 	var attributes = [];
 	var operations = [];
-	clazz._attrClasses = [];
-	clazz._opClasses = [];
-	$.each(node.attributes, function(key, attribute){
-		attributes.push(clazz._memberToString(attribute, false));
-		clazz._attrClasses.push([attribute.visibility].concat(attribute.modifiers).join(' '))
-	})
-	$.each(node.operations, function(key, operation){
-		operations.push(clazz._memberToString(operation, true));
-		clazz._opClasses.push([operation.visibility].concat(operation.modifiers).join(' '))
-	})
+	_.each(node.attributes, function(attribute){
+		attributes.push(this._memberToString(attribute, false));
+	},this);
+	
+	_.each(node.operations, function(operation){
+		operations.push(this._memberToString(operation, true));
+	},this)
 	var classData = {
 		'name' : node.name,
 		'id' : node.id,
@@ -64,9 +55,8 @@ visualizer.nodeholders.ClassNode = function (node){
 		'methods' : operations
 	}
 	switch (node.type){
-		case 'class': clazz._node = new visualizer.shapes.Class(classData); break;
-		//case 'interface': clazz._node = new visualizer.shapes.Interface(classData); break;
-		case 'abstract': clazz._node = new visualizer.shapes.Abstract(classData); break;
+		case 'class': this._node = new visualizer.shapes.Class(classData); break;
+		case 'abstract': this._node = new visualizer.shapes.Abstract(classData); break;
 		default: throw new Error('Unexpected class type: ' + node.type); break;
 	}
 }
@@ -76,11 +66,6 @@ visualizer.nodeholders.ClassNode = function (node){
 visualizer.nodeholders.ClassNode.prototype = Object.create(visualizer.nodeholders.Node.prototype);
 visualizer.nodeholders.ClassNode.prototype.constructor = visualizer.nodeholders.ClassNode;
 
-
-visualizer.nodeholders.ClassNode.prototype.setBounds = function(bounds){
-	visualizer.nodeholders.Node.prototype.setBounds.call(this,bounds);
-	this._node.updateRectangles();
-}
 
 visualizer.nodeholders.ClassNode.prototype._MAPS = {
 	VISIBILITY_MAP : {
@@ -108,18 +93,6 @@ visualizer.nodeholders.ClassNode.prototype._memberToString = function(member, is
 	return memberString;
 }
 
-visualizer.nodeholders.ClassNode.prototype.addMemberClasses = function(paper){
-	var clazz = this;
-	var box = $(paper.findViewByModel(clazz._node).el);
-	box.find('.uml-class-attrs-text').find('.v-line').each(function(key, tspan){
-		V(tspan).addClass(clazz._attrClasses[key]);
-	});
-	
-	box.find('.uml-class-methods-text').find('.v-line').each(function(key, tspan){
-		V(tspan).addClass(clazz._opClasses[key]);
-	})
-}
-
 visualizer.nodeholders.StateNode = function(node){
 	visualizer.nodeholders.Node.call(this, node);
 	var nodeData = {
@@ -133,11 +106,6 @@ visualizer.nodeholders.StateNode = function(node){
 visualizer.nodeholders.StateNode.prototype = Object.create(visualizer.nodeholders.Node.prototype);
 visualizer.nodeholders.StateNode.prototype.constructor = visualizer.nodeholders.StateNode;
 
-visualizer.nodeholders.StateNode.prototype.setBounds = function(bounds){
-	visualizer.nodeholders.Node.prototype.setBounds.call(this,bounds);
-	this._node.strechToNewSize();
-}
-
 visualizer.nodeholders.NonScalablePseudoStateNode = function(node){
 	visualizer.nodeholders.Node.call(this, node);
 	this._gridSize = {
@@ -150,11 +118,7 @@ visualizer.nodeholders.NonScalablePseudoStateNode = function(node){
 				'text':node.name
 			}
 		},
-		'id' : node.id,
-		'size':{
-			'width':30,
-			'height':30			
-		}
+		'id' : node.id
 	}
 	switch (node.kind){
 		case 'initial': this._node = new visualizer.shapes.StartState(nodeData);
@@ -193,17 +157,6 @@ visualizer.nodeholders.NonScalablePseudoStateNode.prototype.correctGridBounds = 
 	
 }
 
-/*visualizer.nodeholders.NonScalablePseudoStateNode.prototype.getGridPosition = function(){
-	var x = this._gridPosition.x + this._gridSize.width / 4;  //TODO: teszt
-	var y = this._gridPosition.y - this._gridSize.height / 4;
-	console.log(x,y);
-	return {
-		'x' : x,
-		'y' : y
-	}
-
-}*/
-
 visualizer.nodeholders.ScalablePseudoStateNode = function(node){
 	visualizer.nodeholders.Node.call(this, node);
 	var nodeData = {
@@ -214,7 +167,6 @@ visualizer.nodeholders.ScalablePseudoStateNode = function(node){
 		},
 		'id' : node.id
 	}
-	console.log(node.name);
 	this._node = new visualizer.shapes.Choice(nodeData);
 	
 }

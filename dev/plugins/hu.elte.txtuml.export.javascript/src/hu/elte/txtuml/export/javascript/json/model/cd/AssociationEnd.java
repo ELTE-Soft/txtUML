@@ -31,11 +31,6 @@ public class AssociationEnd {
 		visibility = end.getVisibility().getLiteral();
 		navigable = end.isNavigable();
 		composition = end.isComposite();
-		/*
-		 * AggregationKind akind = end.getAggregation(); if (akind.getValue() ==
-		 * AggregationKind.NONE){ if (end.isNavigable()){ type = "direction"; }
-		 * }else{ type = akind.getLiteral(); }
-		 */
 	}
 
 	public String getName() {

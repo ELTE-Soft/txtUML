@@ -35,8 +35,7 @@ public class ClassLink {
 		if (assoc.getTurns() == 0) {
 			List<Point> points = assoc.getRoute();
 			int center = points.size() / 2;
-			route = new ArrayList<Point>();
-			route.add(points.get(center));
+			route = points.subList(center, center + 1);
 		} else {
 			List<Point> points = assoc.getMinimalRoute();
 			route = points.subList(1, points.size() - 1);

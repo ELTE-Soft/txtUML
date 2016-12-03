@@ -21,20 +21,22 @@ public class ClassAttributeLink extends ClassLink {
 	protected ClassAttributeLink() {
 	}
 
-	public ClassAttributeLink(LineAssociation layout, Association assoc, Classifier fromClass, Classifier toClass) {
+	public ClassAttributeLink(LineAssociation layout, Association assoc, Classifier fromClass, Classifier toClass)
+			throws UnexpectedEndException {
 		super(layout);
 		type = "attribute";
 		name = assoc.getLabel();
 		from = null;
 		to = null;
 		for (Property end : assoc.getMemberEnds()) {
-			Class owner = (Class) end.getType();
-			if (owner == fromClass && from == null) {
+			Class endClass = (Class) end.getType();
+			if (endClass == fromClass && from == null) {
 				from = new AssociationEnd(layout.getFrom(), end);
-			} else if (owner == toClass && to == null) {
+			} else if (endClass == toClass && to == null) {
 				to = new AssociationEnd(layout.getTo(), end);
+			} else {
+				throw new UnexpectedEndException(end.getName());
 			}
-
 		}
 	}
 

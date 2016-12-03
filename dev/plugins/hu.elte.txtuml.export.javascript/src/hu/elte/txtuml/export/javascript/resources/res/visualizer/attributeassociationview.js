@@ -1,50 +1,15 @@
 visualizer.shapes.AttributeAssociationView = joint.dia.LinkView.extend({
-	markup: [
-        '<path class="connection" stroke="black" d="M 0 0 0 0"/>',
-        '<path class="marker-source" fill="black" stroke="black" d="M 0 0 0 0"/>',
-        '<path class="marker-target" fill="black" stroke="black" d="M 0 0 0 0"/>',
-        '<path class="connection-wrap" d="M 0 0 0 0"/>',
-        '<g class="labels"/>',
-        '<g class="marker-vertices"/>',
-        '<g class="marker-arrowheads"/>',
-        '<g class="link-tools"/>'
-    ].join(''),
-
-    labelMarkup: [
-        '<g class="label">',
-        '<rect />',
-        '<text />',
-        '</g>'
-    ].join(''),
 	update: function(model, attributes, opt) {
-
-        opt = opt || {};
-
-        if (!opt.updateConnectionOnly) {
-            // update SVG attributes defined by 'attrs/'.
-            this.updateAttributes();
-        }
-
-        // update the link path, label position etc.
-        this.updateConnection(opt);
-        this.updateToolsPosition();
-		//this.updateLabelPositions();
-        this.updateArrowheadMarkers();
-		this.updateLabelPositions(); // needs to be called after arrowhead positioning
-
-        // Local perpendicular flag (as opposed to one defined on paper).
-        // Could be enabled inside a connector/router. It's valid only
-        // during the update execution.
-        this.options.perpendicular = null;
-        // Mark that postponed update has been already executed.
-        this.updatePostponed = false;
-
-        return this;
+		joint.dia.LinkView.prototype.update.call(this, model, attributes, opt)
+		this.snapLabels();
     },
-	updateLabelPositions: function() {
-		joint.dia.LinkView.prototype.updateLabelPositions.call(this);
+	
+	snapLabels: function() {
 		var snap = this.model.attr('snapLabels');
 		if (typeof snap !== 'undefined' && snap === true){
+			if  (this._labelCache.length < 5){
+				throw new Error('Useage of snapLabel flag requires at least 5 labels to present.');
+			}
 			var arrowheads = [this._V.sourceArrowhead, this._V.targetArrowhead];
 			_.each(arrowheads, function(arrowhead, idx){
 				var angle = 0;
@@ -75,13 +40,8 @@ visualizer.shapes.AttributeAssociationView = joint.dia.LinkView.extend({
 					this._labelCache[idx * 2].attr('transform', 'translate(' + (bbox.x + labelbox1.width / 2) + ', ' + (bbox.y - labelbox1.height / 2) + ')');
 					this._labelCache[idx * 2 + 1].attr('transform', 'translate(' + (bbox.x + labelbox2.width / 2) + ', ' + (bbox.y + bbox.height + labelbox2.height / 2) + ')');
 				}
-				else{
-					console.log('Non diagonal link');
-				}
 			
 			}, this);
-			//console.log('target' + (bbox.x + bbox.width + labelbox.width / 2));
-			//this._labelCache[0].attr('transform', 'translate(' + (bbox.x + bbox.width + labelbox.width / 2) + ', ' + bbox.y + ')');
 		}
         return this;
     }

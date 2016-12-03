@@ -14,7 +14,7 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 public class ClassDiagram {
-	
+
 	@XmlAccessMethods(getMethodName = "getName")
 	private String name;
 	@XmlAccessMethods(getMethodName = "getClasses")
@@ -30,7 +30,7 @@ public class ClassDiagram {
 	}
 
 	public ClassDiagram(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links,
-			ModelMapProvider map, double spacing) {
+			ModelMapProvider map, double spacing) throws UnexpectedEndException {
 		this.spacing = spacing;
 		name = diagramName;
 		classes = new ArrayList<ClassNode>();
@@ -69,7 +69,7 @@ public class ClassDiagram {
 	public List<ClassLink> getNonAttributeLinks() {
 		return nonAttributeLinks;
 	}
-	
+
 	public double getSpacing() {
 		return spacing;
 	}

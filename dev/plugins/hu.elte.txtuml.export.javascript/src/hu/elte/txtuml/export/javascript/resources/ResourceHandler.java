@@ -8,9 +8,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class ResourceHandler {
-	private static final String[] FILES = { "visualize.html", "visualizer.js", "visualizer.css", "lib/backbone-min.js",
-			"lib/joint.css", "lib/joint.js", "lib/jquery.min.js", "lib/lodash.min.js", "visualizer/grid.js",
-			"visualizer/linkholders.js", "visualizer/nodeholders.js", "visualizer/selector.js", "visualizer/shapes.js",
+	private static final String[] FILES = { "visualize.html", "visualizer.js", "lib/backbone-min.js", "lib/joint.css",
+			"lib/joint.js", "lib/jquery.min.js", "lib/lodash.min.js", "visualizer/grid.js", "visualizer/linkholders.js",
+			"visualizer/nodeholders.js", "visualizer/fonts.js", "visualizer/selector.js", "visualizer/shapes.js",
 			"visualizer/utils.js", "visualizer/utils.js", "visualizer/attributeassociationview.js",
 			"visualizer/visualizers.js" };
 

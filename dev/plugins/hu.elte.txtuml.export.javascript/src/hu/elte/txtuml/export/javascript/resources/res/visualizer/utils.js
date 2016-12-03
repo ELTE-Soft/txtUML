@@ -5,22 +5,6 @@ visualizer.Utils = function(){
 	
 };
 
-visualizer.Utils.arrayhasIndex = function(array, index){
-	return typeof array[index] !== 'undefined';
-}
-
-visualizer.Utils.arrayContains = function(array, value){
-	return $.inArray(value, array) > -1;
-}
-
-visualizer.Utils.reverseMap = function(map){
-	var reverseMap = {};
-	$.each(map, function(key, value){
-		reverseMap.value = key;
-	})
-	return reverseMap;
-}
-
 visualizer.Utils.MAPS = {
 	DIAGRAMTYPE_TO_COLLECTION_PROPERTY : {
 		'class' : 'classDiagrams',
@@ -37,5 +21,3 @@ visualizer.Utils.MAPS = {
 	]
 }
 
-visualizer.Utils.INT_MAX = 2147483646;
-visualizer.Utils.INT_MIN = -2147483647;

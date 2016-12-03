@@ -34,10 +34,10 @@ visualizer.visualizers.Visualizer.prototype.visualize = function(holder){
 	
 	
 	this._previsualize();
-	_.each(this._nodes, function (clazz) {
-		var bounds = this._grid.getPixelBounds(clazz.getGridPosition(), clazz.getGridSize());
-		clazz.setBounds(bounds);
-		this._graph.addCell(clazz.getNode());
+	_.each(this._nodes, function (node) {
+		var bounds = this._grid.getPixelBounds(node.getGridPosition(), node.getGridSize());
+		node.setBounds(bounds);
+		this._graph.addCell(node.getNode());
 	},this);
 
 	_.each(this._links, function (relation) {
@@ -67,8 +67,8 @@ visualizer.visualizers.CDVisualizer.prototype._getLinkView = function(){
 }
 
 visualizer.visualizers.CDVisualizer.prototype._populateNodesAndLinks = function(){
-	_.each(this._diagram.classes, function (clazz) {
-		this._nodes.push(new visualizer.nodeholders.ClassNode(clazz));
+	_.each(this._diagram.classes, function (node) {
+		this._nodes.push(new visualizer.nodeholders.ClassNode(node));
 	},this);
 
 	_.each(this._diagram.attributeLinks, function (link) {
@@ -140,11 +140,9 @@ visualizer.visualizers.SMVisualizer.prototype._previsualize = function(){
 		'height': totalSize.height - 20
 	}
 	this._container.set('size',size);
-	this._container.attr('rect/width',size.width);
-	this._container.attr('rect/height',size.height);
 	
-	_.each(this._nodes, function (clazz) {
-		this._container.embed(clazz.getNode());
+	_.each(this._nodes, function (node) {
+		this._container.embed(node.getNode());
 	},this);
 
 	_.each(this._links, function (relation) {

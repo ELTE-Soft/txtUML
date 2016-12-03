@@ -3,8 +3,7 @@ visualizer.linkholders.Link = function (link){
 	if (this.constructor === visualizer.linkholders.Link) {
       throw new Error("Can't instantiate abstract class!");
     }
-	var clazz = this;
-	clazz._gridRoute = link.route;
+	this._gridRoute = link.route;
 	this._link = null;
 }
 
@@ -21,24 +20,15 @@ visualizer.linkholders.Link.prototype.setPixelRoute = function(route){
 }
 
 visualizer.linkholders.OrthogonalLink = function (link){
-	clazz = this;
-	visualizer.linkholders.Link.call(clazz, link);
-	var route = clazz._gridRoute;
+	visualizer.linkholders.Link.call(this, link);
+	var route = this._gridRoute;
 }
 
 visualizer.linkholders.OrthogonalLink.prototype = Object.create(visualizer.linkholders.Link.prototype);
 visualizer.linkholders.OrthogonalLink.prototype.constructor = visualizer.linkholders.OrthogonalLink;
 
-visualizer.linkholders.OrthogonalLink.prototype.SIDES = {
-	LEFT : 0,
-	TOP : 1,
-	RIGHT : 2,
-	BOTTOM : 3
-};
-
 visualizer.linkholders.ClassAttributeLink = function (link){
-	clazz = this;
-	visualizer.linkholders.OrthogonalLink.call(clazz, link);
+	visualizer.linkholders.OrthogonalLink.call(this, link);
 	var markers = {
 		'from': {
 			'offset': 0,
@@ -61,7 +51,7 @@ visualizer.linkholders.ClassAttributeLink = function (link){
 			value.offset += 30;
 		}
 		if (link[flipMap[key]].navigable){
-			value.markers.push(clazz._generateNavigabilityMarker(value.offset));
+			value.markers.push(this._generateNavigabilityMarker(value.offset));
 		}
 	}, this);
 	
@@ -80,75 +70,15 @@ visualizer.linkholders.ClassAttributeLink = function (link){
 			'.marker-target': {
 				'd':markers.from.markers.join(' '),
 				'fill': 'black'
-			},
-			'snapLabels' : true
-		},
-		'labels':[  
-			{  
-				'position':{  
-					'distance':0,
-					'offset':-20
-				},
-				'attrs':{  
-					'text':{  
-						'font-family': '"Lucida Console", Monaco, monospace',
-						'text':visualizer.Utils.MAPS.VISIBILITY_MAP[link.from.visibility] + ' ' + link.from.name
-					}
-					
-			
-				}
-			},
-			{  
-				'position':{  
-					'distance':0,
-					'offset':20
-				},
-				'attrs':{  
-					'text':{  
-						'font-family': '"Lucida Console", Monaco, monospace',
-						'text':link.from.multiplicity
-					}
-				}
-			},
-			{  
-				'position':{  
-					'distance':1,
-					'offset':20
-				},
-				'attrs':{  
-					'text':{  
-						'font-family': '"Lucida Console", Monaco, monospace',
-						'text':visualizer.Utils.MAPS.VISIBILITY_MAP[link.to.visibility] + ' ' + link.to.name
-					}
-				}
-			},
-			{  
-				'position':{  
-					'distance':1,
-					'offset':-20
-				},
-				'attrs':{  
-					'text':{  
-						'font-family': '"Lucida Console", Monaco, monospace',
-						'text':link.to.multiplicity
-					}
-				}
-			},
-			{  
-				'position':{  
-					'distance':0.5,
-					'offset':10
-				},
-				'attrs':{  
-					'text':{  
-						'font-family': '"Lucida Console", Monaco, monospace',
-						'text':link.name,
-					}
-				}
 			}
-		]
-	};
-	clazz._link = new visualizer.shapes.AttributeAssociation(linkData);
+		},
+		'sourceName':visualizer.Utils.MAPS.VISIBILITY_MAP[link.from.visibility] + ' ' + link.from.name,
+		'sourceNum':link.from.multiplicity,
+		'targetName':visualizer.Utils.MAPS.VISIBILITY_MAP[link.to.visibility] + ' ' + link.to.name,
+		'targetNum':link.to.multiplicity,
+		'name':link.name
+	}
+	this._link = new visualizer.shapes.AttributeAssociation(linkData);
 	
 	
 	
@@ -163,25 +93,18 @@ visualizer.linkholders.ClassAttributeLink.prototype._generateNavigabilityMarker 
 }
 
 visualizer.linkholders.ClassNonAttributeLink = function (link){
-	clazz = this;
-	visualizer.linkholders.OrthogonalLink.call(clazz, link);
+	visualizer.linkholders.OrthogonalLink.call(this, link);
 	var linkData = {  	
 		'source':{  
 			'id':link.fromID 
 		},
 		'target':{  
 			'id':link.toID
-		},
-		'attrs': { 
-			'.marker-source': { d:'M 15 0 L 0 7.5 L 15 15 z', fill: 'white'},
-			'.marker-target': { d:'', fill: 'none'}
-			
-		}
-	
+		}	
 	};
 	
 	switch (link.type){
-		case 'generalization': clazz._link = new joint.shapes.uml.Generalization(linkData); break;
+		case 'generalization': this._link = new visualizer.shapes.Generalization(linkData); break;
 		default: throw new Error('Unexpected link type: ' + link.type); break;
 	}	
 }
@@ -189,8 +112,7 @@ visualizer.linkholders.ClassNonAttributeLink.prototype = Object.create(visualize
 visualizer.linkholders.ClassNonAttributeLink.prototype.constructor = visualizer.linkholders.ClassNonAttributeLink;
 
 visualizer.linkholders.TransitionLink = function (link){
-	clazz = this;
-	visualizer.linkholders.OrthogonalLink.call(clazz, link);
+	visualizer.linkholders.OrthogonalLink.call(this, link);
 	var linkData = {  	
 		'source':{  
 			'id':link.fromID 
@@ -200,23 +122,10 @@ visualizer.linkholders.TransitionLink = function (link){
 		}
 	};
 	if (_.has(link,'trigger') && link.trigger.length > 0){
-		linkData.labels = [  
-			{  
-				'position':{  
-					'distance':0.5,
-					'offset':-20
-				},
-				'attrs':{  
-					'text':{  
-						'font-family': '"Lucida Console", Monaco, monospace',
-						'text':link.trigger
-					}
-				}
-			}
-		];
+		linkData.trigger = link.trigger;
 	}
 	
-	clazz._link = new joint.shapes.uml.Transition(linkData);
+	this._link = new visualizer.shapes.Transition(linkData);
 }
 visualizer.linkholders.TransitionLink.prototype = Object.create(visualizer.linkholders.OrthogonalLink.prototype);
 visualizer.linkholders.TransitionLink.prototype.constructor = visualizer.linkholders.TransitionLink;
