@@ -11,21 +11,23 @@
 
 #include "runtime/ievent.hpp"
 
-struct EventState : public std::pair<int, int> {
-  EventState(int e_, int s_, int p_) : event (e_), state (s_), port (p_) {}
-
-  bool operator == (const EventState& a){
-    return event == a.event && this->state == a.state && this->port == a.port;
-  }
+struct EventState {
+	EventState(int e_, int s_, int p_) : event (e_), state (s_), port (p_) {}
   
 	int event;
 	int state;
 	int port;
 };
 
+inline bool operator == (const EventState& a, const EventState& b) {
+	return b.event == a.event && b.state == a.state && b.port == a.port;
+
+}
+
 namespace std
 {
-  template<>
+	
+	template<>
 	struct hash<EventState> : public unary_function<EventState, size_t>
 	{
 	  std::size_t operator ()(const EventState& es_) const
