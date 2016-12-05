@@ -7,7 +7,7 @@ import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Property;
 
-public class ClassMember {
+public abstract class ClassMember {
 	@XmlAccessMethods(getMethodName = "getVisibility")
 	protected String visibility;
 	@XmlAccessMethods(getMethodName = "getName")

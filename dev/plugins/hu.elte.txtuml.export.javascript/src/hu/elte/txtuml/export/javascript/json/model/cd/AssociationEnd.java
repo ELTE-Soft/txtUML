@@ -18,12 +18,14 @@ public class AssociationEnd {
 	protected AssociationEnd() {
 	};
 
-	public AssociationEnd(String endID, Property end) {
+	public AssociationEnd(Property end) {
 		name = end.getLabel();
 		int low = end.lowerBound();
 		int high = end.upperBound();
 
-		if (low == high) {
+		if (low == 0 && high == -1) {
+			multiplicity = "*";
+		} else if (low == high) {
 			multiplicity = Integer.toString(low);
 		} else {
 			multiplicity = low + ".." + (high == -1 ? "*" : high);

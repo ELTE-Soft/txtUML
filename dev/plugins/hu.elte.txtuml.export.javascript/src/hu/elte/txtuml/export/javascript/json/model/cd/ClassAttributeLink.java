@@ -30,10 +30,10 @@ public class ClassAttributeLink extends ClassLink {
 		to = null;
 		for (Property end : assoc.getMemberEnds()) {
 			Class endClass = (Class) end.getType();
-			if (endClass == fromClass && from == null) {
-				from = new AssociationEnd(layout.getFrom(), end);
-			} else if (endClass == toClass && to == null) {
-				to = new AssociationEnd(layout.getTo(), end);
+			if (endClass == toClass && to == null) {
+				to = new AssociationEnd(end);
+			} else if (endClass == fromClass && from == null) {
+				from = new AssociationEnd(end);
 			} else {
 				throw new UnexpectedEndException(end.getName());
 			}

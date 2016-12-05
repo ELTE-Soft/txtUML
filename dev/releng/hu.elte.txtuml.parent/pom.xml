@@ -28,7 +28,7 @@
 		<module>../../plugins/hu.elte.txtuml.api.stdlib</module>
 		<module>../../plugins/hu.elte.txtuml.diagnostics</module>
 		<module>../../plugins/hu.elte.txtuml.export.cpp</module>
-		<module>../../plugins/hu.elte.txtuml.export.javascript/pom.xml</module>
+		<module>../../plugins/hu.elte.txtuml.export.javascript</module>
 		<module>../../plugins/hu.elte.txtuml.export.papyrus</module>
 		<module>../../plugins/hu.elte.txtuml.export.uml2</module>
 		<module>../../plugins/hu.elte.txtuml.layout.export</module>

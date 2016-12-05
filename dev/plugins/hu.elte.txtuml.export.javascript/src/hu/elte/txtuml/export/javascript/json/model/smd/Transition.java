@@ -11,6 +11,8 @@ import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 
 public class Transition {
+	@XmlAccessMethods(getMethodName = "getId")
+	protected String id;
 	@XmlAccessMethods(getMethodName = "getFromID")
 	private String fromID;
 	@XmlAccessMethods(getMethodName = "getToID")
@@ -26,6 +28,7 @@ public class Transition {
 	}
 
 	public Transition(LineAssociation link, org.eclipse.uml2.uml.Transition transition) {
+		id = link.getId();
 		fromID = link.getFrom();
 		toID = link.getTo();
 		trigger = null;
@@ -33,6 +36,7 @@ public class Transition {
 		if (triggers.size() > 0) {
 			trigger = triggers.get(0).getEvent().getLabel();
 		}
+		anchors = new ArrayList<Point>();
 
 		if (link.getTurns() == 0) {
 			List<Point> points = link.getRoute();
@@ -43,10 +47,13 @@ public class Transition {
 			route = points.subList(1, points.size() - 1);
 		}
 
-		anchors = new ArrayList<Point>();
 		List<Point> points = link.getMinimalRoute();
 		anchors.add(points.get(0));
 		anchors.add(points.get(points.size() - 1));
+	}
+
+	public String getId() {
+		return id;
 	}
 
 	public String getFromID() {
