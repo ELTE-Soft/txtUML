@@ -4,13 +4,16 @@ visualizer.shapes.Class = joint.shapes.uml.Class.extend({
 			type: 'visualizer.shapes.Class',
 			attrs: {				
 				'.uml-class-name-text': {
-					'font-family': visualizer.Fonts.default.getFamily()
+					'font-family': visualizer.Fonts.default.getFamily(),
+					'font-size': visualizer.Fonts.default.getSize()
 				},
 				'.uml-class-attrs-text': {
-					'font-family': visualizer.Fonts.default.getFamily()
+					'font-family': visualizer.Fonts.default.getFamily(),
+					'font-size': visualizer.Fonts.default.getSize()
 				},
 				'.uml-class-methods-text': {
-					'font-family': visualizer.Fonts.default.getFamily()
+					'font-family': visualizer.Fonts.default.getFamily(),
+					'font-size': visualizer.Fonts.default.getSize()
 				}
 			}
 
@@ -50,7 +53,8 @@ visualizer.shapes.Class = joint.shapes.uml.Class.extend({
 				
 
 				var lines = _.isArray(rect.text) ? rect.text : [rect.text];
-				rectHeight = lines.length * font.getContainerHeight(3) + 20;
+				rectHeight = lines.length * font.getContainerHeight(0) + (rect.type == 'name' ? 15 : 10) ;
+				rectHeight = Math.max(rectHeight * 2, 30);
 				
 
 				_.each(lines, function(line){
@@ -65,15 +69,15 @@ visualizer.shapes.Class = joint.shapes.uml.Class.extend({
 			},this);
 			
 			if (init){
-				var minSize = {};
+				var minSize = {}; 
 				minSize.height = offsetY * 0.5 + 20;  
-				minSize.width = maxChars * font.getContainerWidth(0) + 12;
+				minSize.width = maxChars * font.getContainerWidth(0) + 5;
 				this.set('size',minSize);
-				this.attr('rect/width', minSize.width);
+				this.attr('rect/width', minSize.width * 2);
 				this._init = false;
 			}else{
 				this.attr('.uml-class-methods-rect/height', (size.height - 20) * 2 - (offsetY - rectHeight));  
-				this.attr('rect/width', size.width);
+				this.attr('rect/width', size.width * 2);
 			}
 
 			
@@ -292,7 +296,7 @@ visualizer.shapes.Choice = joint.shapes.basic.Generic.extend({
 				'fill': 'white'
 			},
 			'text':{
-                'ref': '.uml-choice-body', 'ref-x': .5, 'ref-y': .5,  'text-anchor': 'middle',
+                'ref': '.uml-choice-body', 'ref-x': .5, 'ref-y': .5,  'text-anchor': 'middle', 'y':'0.4em',
                 'fill': '#000000', 'font-family': visualizer.Fonts.pseudostates.getFamily(), 'font-size': visualizer.Fonts.pseudostates.getSize(),
 				'text' : ''
 			},
@@ -305,8 +309,8 @@ visualizer.shapes.Choice = joint.shapes.basic.Generic.extend({
 			
 		},
 		'size':{
-			'width':100,
-			'height':100
+			'width':60,
+			'height':60
 		}
     }, joint.shapes.basic.Generic.prototype.defaults),
 	initialize: function(){
@@ -325,7 +329,7 @@ visualizer.shapes.Choice = joint.shapes.basic.Generic.extend({
 		var oldSize = this.get('size');
 		var size = {
 			'width': Math.max(width + 20, oldSize.width),
-			'height': oldSize.height
+			'height': oldSize.width
 		}
 		this.set('size',size);
 	}

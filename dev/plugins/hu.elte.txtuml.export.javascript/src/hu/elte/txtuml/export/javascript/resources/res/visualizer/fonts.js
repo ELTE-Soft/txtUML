@@ -29,19 +29,19 @@ visualizer.Font.FONTDATA = {
 	'default':{
 		'family': '"Lucida Console", Monaco, monospace',
 		'size': 14,
-		'containerWidth': 7.2,
+		'containerWidth': 8.8,
 		'containerHeight': 14
 	},
 	'links':{
 		'family': '"Lucida Console", Monaco, monospace',
 		'size': 14,
-		'containerWidth': 7.2,
+		'containerWidth': 8.8,
 		'containerHeight': 14
 	},
 	'pseudostates':{
 		'family': '"Lucida Console", Monaco, monospace',
 		'size': 12,
-		'containerWidth': 7,
+		'containerWidth': 7.2,
 		'containerHeight': 12
 	}
 }
