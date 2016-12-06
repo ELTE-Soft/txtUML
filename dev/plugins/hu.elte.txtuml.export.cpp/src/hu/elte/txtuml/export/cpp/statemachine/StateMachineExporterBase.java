@@ -71,6 +71,7 @@ public class StateMachineExporterBase {
 			if (transitionCondition != null) {
 				Pair<String, String> guardTransitionPair = null;
 				if (item.getGuard() != null) {
+					guardExporter.exportConstraintToMap(item.getGuard());
 					guardTransitionPair = new Pair<String, String>(guardExporter.getGuard(item.getGuard()),
 							item.getName());
 

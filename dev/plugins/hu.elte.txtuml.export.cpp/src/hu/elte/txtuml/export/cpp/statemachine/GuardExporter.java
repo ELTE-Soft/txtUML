@@ -34,8 +34,11 @@ public class GuardExporter extends ActivityExporter {
 	}
 
 	public void exportConstraintToMap(Constraint guard) {
-		constratintFunctionMap.put(guard, GuardName + guardCount);
-		guardCount++;
+		if (!constratintFunctionMap.containsKey(guard)) {
+			constratintFunctionMap.put(guard, GuardName + guardCount);
+			guardCount++;
+		}
+
 	}
 
 	public String getGuard(Constraint guard) {
@@ -51,9 +54,9 @@ public class GuardExporter extends ActivityExporter {
 		return source;
 	}
 
-	public String declareGuardFunctions(Region region_) {
+	public String declareGuardFunctions(Region region) {
 		StringBuilder source = new StringBuilder("");
-		for (Transition item : region_.getTransitions()) {
+		for (Transition item : region.getTransitions()) {
 			Constraint constraint = item.getGuard();
 			if (constraint != null) {
 				exportConstraintToMap(constraint);
