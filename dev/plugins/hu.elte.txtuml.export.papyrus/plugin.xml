@@ -69,7 +69,7 @@
             <command
                   commandId="hu.elte.txtuml.export.papyrus.txtUMLVisualize"
                   icon="icons/txtUML_papyrus.png"
-                  label="Generate diagrams from txtUML"
+                  label="Generate Papyrus diagrams from txtUML"
                   style="push">
             </command>
 <!--

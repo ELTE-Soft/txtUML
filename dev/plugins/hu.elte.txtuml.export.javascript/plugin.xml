@@ -21,7 +21,7 @@
                label="txtUML">
             <command
                   commandId="hu.elte.txtuml.export.javascript.txtUMLVisualize"
-                  label="Generate javascript diagrams from txtUML"
+                  label="Generate JointJS diagrams from txtUML"
                   style="push">
             </command>
          </menu>
