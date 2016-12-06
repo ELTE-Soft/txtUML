@@ -100,6 +100,7 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 						this.arranger.getRouteForConnection(transition),
 						this.arranger.getSourceAnchorForConnection(transition),
 						this.arranger.getTargetAnchorForConnection(transition), this.monitor);
+				this.notationManager.hideConnectionLabelOfTransition(transition, StateMachineDiagramNotationManager.ConnectionLabelType.Name);
 			});
 		});
 	}

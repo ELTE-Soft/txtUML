@@ -41,9 +41,12 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 		implements StateMachineDiagramNotationManager {
 	private static final PreferencesHint DIAGRAM_PREFERENCES_HINT = UMLDiagramEditorPlugin.DIAGRAM_PREFERENCES_HINT;
 
-	private static final Rectangle defaultStateBounds(){ return new Rectangle(0, 0, 50, 50);}
+	private static final Rectangle defaultStateBounds() {
+		return new Rectangle(0, 0, 50, 50);
+	}
 
-	private Map<EObject, Node> notationMap = new HashMap<>();
+	private Map<EObject, Node> nodeMap = new HashMap<>();
+	private Map<EObject, Edge> edgeMap = new HashMap<>();
 
 	public StateMachineDiagramNotationManagerImpl(Diagram diagram, TransactionalEditingDomain domain) {
 		super(diagram);
@@ -59,7 +62,7 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 
 		Node stateMachineView = (Node) diagram.getChildren().get(0);
 		EObject stateMachineModel = stateMachineView.getElement();
-		this.notationMap.put(stateMachineModel, stateMachineView);
+		this.nodeMap.put(stateMachineModel, stateMachineView);
 
 		List<Node> regionsForStateMachine = regionsForState(stateMachineView);
 		if (regionsForStateMachine.size() != 1) {
@@ -75,7 +78,7 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 		eliminateDefaultSizeConstraints();
 
 		EObject regionModel = regionView.getElement();
-		this.notationMap.put(regionModel, regionView);
+		this.nodeMap.put(regionModel, regionView);
 	}
 
 	private void eliminateDefaultSizeConstraints() {
@@ -107,7 +110,7 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 	@Override
 	public void createStateForRegion(Region region, State state, Rectangle bounds, IProgressMonitor monitor) {
 
-		Node regionNode = this.notationMap.get(region);
+		Node regionNode = this.nodeMap.get(region);
 		Node node = findCanvasOfRegion(regionNode);
 
 		Runnable runnable = () -> {
@@ -115,7 +118,7 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 			Node newNode = ViewService.createNode(node, state, hint, DIAGRAM_PREFERENCES_HINT);
 			newNode.setLayoutConstraint(createBounds(bounds, defaultStateBounds()));
 
-			this.notationMap.put(state, newNode);
+			this.nodeMap.put(state, newNode);
 		};
 
 		runInTransactionalCommand(runnable, "Creating State for Node " + node, monitor);
@@ -125,15 +128,15 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 	@Override
 	public void createInitialStateForRegion(Region region, Pseudostate InitialState, Rectangle bounds,
 			IProgressMonitor monitor) {
-		Node regionNode = this.notationMap.get(region);
+		Node regionNode = this.nodeMap.get(region);
 		Node node = findCanvasOfRegion(regionNode);
 
 		Runnable runnable = () -> {
 			String hint = ((IHintedType) UMLElementTypes.Pseudostate_8000).getSemanticHint();
 			Node newNode = ViewService.createNode(node, InitialState, hint, DIAGRAM_PREFERENCES_HINT);
 			newNode.setLayoutConstraint(createBounds(bounds, defaultStateBounds()));
-			
-			this.notationMap.put(InitialState, newNode);
+
+			this.nodeMap.put(InitialState, newNode);
 		};
 
 		runInTransactionalCommand(runnable, "Creating Initialstate for Node " + node, monitor);
@@ -143,7 +146,7 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 	public void createTransitionForRegion(Region region, Vertex source, Vertex target, Transition transition,
 			List<Point> route, String sourceAnchor, String targetAnchor, IProgressMonitor monitor) {
 
-		Node regionNode = this.notationMap.get(region);
+		Node regionNode = this.nodeMap.get(region);
 		Node node = findCanvasOfRegion(regionNode);
 
 		View sourceView = getViewOfModel(source, node);
@@ -159,6 +162,8 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 			edge.setTarget(targetView);
 			edge.setBendpoints(createBendsPoints(route));
 			createAnchorsForEdge(edge, sourceAnchor, targetAnchor);
+
+			this.edgeMap.put(transition, edge);
 		};
 
 		runInTransactionalCommand(runnable, "Creating Transition  between " + source + " and " + target, monitor);
@@ -168,7 +173,7 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 	public void createRegionForState(State state, Region region, IProgressMonitor monitor) {
 		final int COMPOSITE_STATE_HEADER_HEIGHT = StateMachineDiagramPixelDimensionProvider.STATE_HEADER_HEIGHT;
 
-		Node stateNode = this.notationMap.get(state);
+		Node stateNode = this.nodeMap.get(state);
 		Node node = findRegionCompartementOfState(stateNode);
 		Node stateNameNode = findStateNameNodeOfState(stateNode);
 
@@ -182,7 +187,7 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 			nameLayoutConstraint.setHeight(COMPOSITE_STATE_HEADER_HEIGHT);
 			stateNameNode.setLayoutConstraint(nameLayoutConstraint);
 
-			this.notationMap.put(region, newNode);
+			this.nodeMap.put(region, newNode);
 		};
 
 		runInTransactionalCommand(runnable, "Creating Region for Node " + node, monitor);
@@ -219,7 +224,7 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 
 	@Override
 	public void changeBoundsOfElement(Element elem, Rectangle bounds, IProgressMonitor monitor) {
-		Node node = this.notationMap.get(elem);
+		Node node = this.nodeMap.get(elem);
 		if (node != null) {
 			Runnable runnable = () -> {
 				node.setLayoutConstraint(createBounds(bounds, defaultStateBounds()));
@@ -233,11 +238,27 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 
 	@Override
 	public Rectangle getBoundsOfElement(Element elem, IProgressMonitor monitor) {
-		Node node = this.notationMap.get(elem);
-		if(node != null){
+		Node node = this.nodeMap.get(elem);
+		if (node != null) {
 			Bounds bounds = (Bounds) node.getLayoutConstraint();
 			return new Rectangle(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
 		}
 		return defaultStateBounds();
+	}
+
+	@Override
+	public void hideConnectionLabelOfTransition(Transition transition, ConnectionLabelType connectionLabelType) {
+		Runnable runnable = () ->{
+			Edge node = this.edgeMap.get(transition);
+			@SuppressWarnings("unchecked")
+			List<Node> nodes = node.getPersistedChildren();
+	
+			for (Node child : nodes) {
+				if (child.getType().equals(String.valueOf(connectionLabelType.getVisualID()))) {
+					child.setVisible(false);
+				}
+			}
+		};
+		runInTransactionalCommand(runnable, "Hiding connection labels ", null);
 	}
 }
