@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.notation.Diagram;
@@ -106,14 +107,18 @@ public class PapyrusModelManager {
 	 *            - The monitor that listens the progress
 	 */
 	public void createAndFillDiagrams(IProgressMonitor monitor) {
-		monitor.beginTask("Generating Diagrams", 100);
-		createDiagrams(new SubProgressMonitor(monitor, 20));
-		addElementsToDiagrams(new SubProgressMonitor(monitor, 80));
+		SubMonitor subMonitor = SubMonitor.convert(monitor);
+		subMonitor.setTaskName("Generating Diagrams");
+		createDiagrams(subMonitor.newChild(20));
+		subMonitor.worked(20);
+		addElementsToDiagrams(subMonitor.newChild(80));
 		try {
 			this.modelSet.save(new NullProgressMonitor());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			monitor.done();
 		}
 	}
 
@@ -126,14 +131,17 @@ public class PapyrusModelManager {
 
 		List<Diagram> diags = diagramManager.getDiagrams();
 		int diagNum = diags.size();
-		monitor.beginTask("Filling diagrams", diagNum * 2);
+		SubMonitor progress = SubMonitor.convert(monitor, 100);
+		SubMonitor loopProgress = progress.newChild(100).setWorkRemaining(diagNum);
 
-		for (int i = 0; i < diagNum * 2; i = i + 2) {
-			Diagram diagram = diags.get(i / 2);
-			monitor.subTask("Filling diagrams " + (i + 2) / 2 + "/" + diagNum);
-			addElementsToDiagram(diagram, monitor);
-			monitor.worked(1);
+		int i = 1;
+		for (Diagram diagram : diags) {
+			loopProgress.setTaskName("Filling diagrams " + i + "/" + diagNum);
+			addElementsToDiagram(diagram, loopProgress.newChild(1));
+			loopProgress.worked(1);
+			i++;
 		}
+		progress.done();
 	}
 
 	/**
@@ -147,27 +155,30 @@ public class PapyrusModelManager {
 	protected void addElementsToDiagram(Diagram diagram, IProgressMonitor monitor) {
 		AbstractDiagramElementsManager diagramElementsManager;
 		DiagramExportationReport report = this.descriptor.getReportByDiagramName(diagram.getName());
-
+		SubMonitor subMonitor = SubMonitor.convert(monitor);
 		if (diagram.getType().equals(diagramType_CD)) {
 			ClassDiagramElementsMapper mapper = (ClassDiagramElementsMapper) this.mapper.getMapperForReport(report);
 
 			ClassDiagramElementsProvider provider = new ClassDiagramElementsProviderImpl(mapper);
 			AbstractDiagramElementsArranger arranger = new ClassDiagramElementsArranger(report, mapper);
 			ClassDiagramNotationManager notation = new ClassDiagramNotationManagerImpl(diagram, this.domain);
-			diagramElementsManager = new ClassDiagramElementsManager(diagram, provider, notation, arranger, monitor);
+			diagramElementsManager = new ClassDiagramElementsManager(diagram, provider, notation, arranger, subMonitor);
 		} else if (diagram.getType().equals(diagramType_SMD)) {
-			StateMachineDiagramElementsMapper mapper = (StateMachineDiagramElementsMapper) this.mapper.getMapperForReport(report);
-			
+			StateMachineDiagramElementsMapper mapper = (StateMachineDiagramElementsMapper) this.mapper
+					.getMapperForReport(report);
+
 			StateMachineDiagramElementsProvider provider = new StateMachineDiagramElementsProviderImpl(report, mapper);
 			StateMachineDiagramElementsArranger arranger = new StateMachineDiagramElementsArranger(report, mapper);
-			StateMachineDiagramNotationManager notation = new StateMachineDiagramNotationManagerImpl(diagram, this.domain);
+			StateMachineDiagramNotationManager notation = new StateMachineDiagramNotationManagerImpl(diagram,
+					this.domain);
 			diagramElementsManager = new StateMachineDiagramElementsManager(diagram, provider, notation, arranger,
-					monitor);
+					subMonitor);
 		} else {
 			return;
 		}
 
 		diagramElementsManager.addElementsToDiagram();
+		subMonitor.done();
 	}
 
 	/**

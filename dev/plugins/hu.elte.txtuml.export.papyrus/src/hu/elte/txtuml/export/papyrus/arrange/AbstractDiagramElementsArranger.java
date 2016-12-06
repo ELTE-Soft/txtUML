@@ -16,7 +16,6 @@ import org.eclipse.uml2.uml.Element;
 import hu.elte.txtuml.export.papyrus.layout.IDiagramElementsMapper;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider;
-import hu.elte.txtuml.layout.visualizer.model.Diagram;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
@@ -35,9 +34,6 @@ public abstract class AbstractDiagramElementsArranger implements IDiagramElement
 
 	@Override
 	public void arrange(IProgressMonitor monitor) throws ArrangeException {
-		monitor.beginTask("Arrange", 1);
-		monitor.subTask("Arranging elements...");
-	
 		Set<RectangleObject> objects = report.getNodes();
 		Set<LineAssociation> links = report.getLinks();
 		List<Statement> statements = report.getStatements();
@@ -62,7 +58,6 @@ public abstract class AbstractDiagramElementsArranger implements IDiagramElement
 	
 		this.connectionSourceAnchors = createSourceAnchors(allLinks);
 		this.connectionTargetAnchors = createTargetAnchors(allLinks);
-		monitor.worked(1);
 	}
 
 	private Set<LineAssociation> flattenAllLinks(Set<LineAssociation> arrangedLinks,

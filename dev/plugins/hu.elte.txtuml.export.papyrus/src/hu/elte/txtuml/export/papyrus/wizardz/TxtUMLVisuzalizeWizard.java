@@ -8,7 +8,10 @@ import java.util.Map;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.PlatformUI;
@@ -77,30 +80,44 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 
 		try {
 			this.checkEmptyLayoutDescriptions();
-
+/*
 			IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
 
 			progressService.runInUI(progressService, new IRunnableWithProgress() {
 				
 				@Override
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-					monitor.beginTask("Visualization", 100);
-
-					TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName, generatedFolderName,
-							txtUMLModelName, txtUMLLayout);
-							
-					clean(exporter);
-					exportModel(exporter, monitor);
-					TxtUMLLayoutDescriptor layoutDescriptor = generateLayoutDescription(exporter, monitor);
-					layoutDescriptor.mappingFolder = generatedFolderName;
-					layoutDescriptor.projectName = txtUMLProjectName;
-
-					visualize(exporter, layoutDescriptor, monitor);
-				}
+									}
 			}, ResourcesPlugin.getWorkspace().getRoot());
+*/
+			Job job = new Job("Diagram Visualization") {
+				
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {							
+					try {
+						monitor.beginTask("Visualization", 100);
 
+						TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName, generatedFolderName,
+								txtUMLModelName, txtUMLLayout);
+
+						clean(exporter);
+						exportModel(exporter, monitor);
+						TxtUMLLayoutDescriptor layoutDescriptor = generateLayoutDescription(exporter, monitor);
+						layoutDescriptor.mappingFolder = generatedFolderName;
+						layoutDescriptor.projectName = txtUMLProjectName;
+
+						visualize(exporter, layoutDescriptor, monitor);
+						return Status.OK_STATUS;
+					} catch (InterruptedException e) {
+						// ignore
+						return Status.CANCEL_STATUS;
+					}
+				}
+			};
+			job.setUser(true);
+			job.schedule();
 			return true;
-		} catch (InvocationTargetException | InterruptedException e) {
+		} catch (InterruptedException e) {
 			return false;
 		}
 	}
@@ -113,7 +130,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 	private void clean(TxtUMLExporter exporter) throws InterruptedException {
 		try {
 			exporter.cleanBeforeVisualization();
-		} catch (CoreException | InvocationTargetException e) {
+		} catch (Exception e) {
 			Dialogs.errorMsgb("txtUML export Error - cleaning resources",
 					"Error occured when cleaning resources.", e);
 			throw new InterruptedException();
@@ -128,14 +145,28 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 	 */
 	private void exportModel(TxtUMLExporter exporter, IProgressMonitor monitor) throws InterruptedException {
 		monitor.subTask("Exporting txtUML Model to UML2 model...");
-		try {
-			exporter.exportModel();
+		
+			IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
+
+			try {
+				progressService.runInUI(progressService, new IRunnableWithProgress() {
+					
+					@Override
+					public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+						try {
+							exporter.exportModel();
+						} catch (Exception e) {
+							Dialogs.errorMsgb("txtUML export Error", "Error occured during the UML2 exportation.", e);
+							monitor.done();
+							throw new RuntimeException();
+						}
+					}
+				}, ResourcesPlugin.getWorkspace().getRoot());
+			} catch (InvocationTargetException e) {
+				throw new RuntimeException(e);
+			}
+			
 			monitor.worked(10);
-		} catch (Exception e) {
-			Dialogs.errorMsgb("txtUML export Error", "Error occured during the UML2 exportation.", e);
-			monitor.done();
-			throw new InterruptedException();
-		}
 	}
 
 	/**

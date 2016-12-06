@@ -4,10 +4,12 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.papyrus.infra.core.resource.ModelMultiException;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
+import org.eclipse.swt.widgets.Display;
 
 import hu.elte.txtuml.export.papyrus.utils.EditorOpener;
 import hu.elte.txtuml.utils.Logger;
@@ -69,7 +71,7 @@ public class PapyrusVisualizer implements IRunnableWithProgress {
 	 * @throws ModelMultiException
 	 */
 	@Override
-	public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+	public void run(IProgressMonitor monitor) {
 		monitor.beginTask("Visualization", 100);
 		monitor.subTask("Creating new Papyrus project...");
 
@@ -77,9 +79,13 @@ public class PapyrusVisualizer implements IRunnableWithProgress {
 		ProjectUtils.openProject(project);
 
 		monitor.worked(20);
+		PapyrusModelCreator papyrusModelCreator = new PapyrusModelCreator(projectName + "/" + modelName);
 		try {
-			createAndOpenPapyrusModel(new SubProgressMonitor(monitor, 80));
+
+			createPapyrusModel(papyrusModelCreator, new SubProgressMonitor(monitor, 80));
+			openPapyrusModel(papyrusModelCreator, new SubProgressMonitor(monitor, 70));
 		} catch (Exception e) {
+			// TODO
 			throw new RuntimeException(e);
 		}
 	}
@@ -92,28 +98,33 @@ public class PapyrusVisualizer implements IRunnableWithProgress {
 	 *             - If the loading of existing model fails
 	 * @throws ServiceException
 	 */
-	private void createAndOpenPapyrusModel(IProgressMonitor monitor)
+	private void createPapyrusModel(PapyrusModelCreator papyrusModelCreator, IProgressMonitor monitor)
 			throws ModelMultiException, ServiceException, InvocationTargetException, InterruptedException {
-		monitor.beginTask("Generating Papyrus Model", 100);
-		PapyrusModelCreator papyrusModelCreator = new PapyrusModelCreator(projectName + "/" + modelName);
+		SubMonitor progress = SubMonitor.convert(monitor, 100);
 		papyrusModelCreator.setUpUML(sourceUMLPath);
 		if (!papyrusModelCreator.diExists()) {
 
-			monitor.subTask("Generating Papyrus model...");
+			progress.setTaskName("Generating Papyrus model...");
 			papyrusModelCreator.createPapyrusModel();
 
 			papyrusModelManager = new PapyrusModelManager(papyrusModelCreator.getServiceRegistry());
 			papyrusModelManager.setLayoutController(layoutDescriptor);
-			monitor.worked(10);
+			progress.worked(10);
 
-			papyrusModelManager.createAndFillDiagrams(new SubProgressMonitor(monitor, 90));
+			papyrusModelManager.createAndFillDiagrams(progress.newChild(90));
 		}
+		monitor.done();
+	}
 
-		if (papyrusModelCreator.diExists()) {
-			EditorOpener.openPapyrusEditor(papyrusModelCreator.getDi());
-		} else {
-			Logger.user.error(".di File does not exist. Papyrus Model can't be opened.");
-		}
-
+	private void openPapyrusModel(PapyrusModelCreator papyrusModelCreator, IProgressMonitor monitor) {
+		monitor.beginTask("Opening papyrus model...", 100);
+		Display.getDefault().syncExec(()->{
+				if (papyrusModelCreator.diExists()) {
+					EditorOpener.openPapyrusEditor(papyrusModelCreator.getDi());
+				} else {
+					Logger.user.error(".di File does not exist. Papyrus Model can't be opened.");
+				}
+		});
+		monitor.worked(100);
 	}
 }

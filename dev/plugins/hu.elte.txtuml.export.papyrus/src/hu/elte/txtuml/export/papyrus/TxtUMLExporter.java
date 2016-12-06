@@ -10,21 +10,24 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.CommonPlugin;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.progress.IProgressService;
 
 import hu.elte.txtuml.export.papyrus.layout.LayoutExportException;
 import hu.elte.txtuml.export.papyrus.layout.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.utils.LayoutUtils;
-import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
 import hu.elte.txtuml.export.uml2.ExportMode;
+import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.utils.eclipse.NotFoundException;
 
@@ -135,7 +138,7 @@ public class TxtUMLExporter {
 	 *             for more details.</li>
 	 *             </ul>
 	 */
-	public void cleanBeforeVisualization() throws CoreException, InvocationTargetException, InterruptedException {
+	public void cleanBeforeVisualization() throws InvocationTargetException, InterruptedException {
 		String location = projectName + "/" + this.outputFolder + "/" + this.txtUMLModelName;
 		URI diFileURI = URI.createFileURI(location + ".di");
 		URI umlFileURI = URI.createFileURI(location + ".uml");
@@ -156,16 +159,30 @@ public class TxtUMLExporter {
 
 		IEditorInput input = new FileEditorInput(diFile);
 
-		IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findEditor(input);
-		if (editor != null) {
-			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().closeEditor(editor, false);
+		IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
 
-		}
+		progressService.runInUI(progressService, new IRunnableWithProgress() {
+			
+			@Override
+			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+				IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findEditor(input);
+				if (editor != null) {
+					PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().closeEditor(editor, false);
 
-		diFile.delete(true, new NullProgressMonitor());
-		umlFile.delete(true, new NullProgressMonitor());
-		profileFile.delete(true, new NullProgressMonitor());
-		mappingFile.delete(true, new NullProgressMonitor());
-		notationFile.delete(true, new NullProgressMonitor());
+				}
+
+				try {
+					diFile.delete(true, new NullProgressMonitor());
+					umlFile.delete(true, new NullProgressMonitor());
+					profileFile.delete(true, new NullProgressMonitor());
+					mappingFile.delete(true, new NullProgressMonitor());
+					notationFile.delete(true, new NullProgressMonitor());
+				} catch (CoreException e) {
+					throw new RuntimeException(e);
+				}
+				
+			}
+		}, ResourcesPlugin.getWorkspace().getRoot());
+
 	}
 }
