@@ -121,7 +121,7 @@ public class LayoutVisualizerManager {
 		}
 
 		diagram = layoutVisualize.getDiagram();
-		FileVisualize.printOutput(diagram, "C:\\Users\\dobreffandras\\Desktop", "visualize");
+		//FileVisualize.printOutput(diagram, "C:\\Users\\dobreffandras\\Desktop", "visualize");
 	}
 
 	private String formatStatements(Collection<Statement> statements) {

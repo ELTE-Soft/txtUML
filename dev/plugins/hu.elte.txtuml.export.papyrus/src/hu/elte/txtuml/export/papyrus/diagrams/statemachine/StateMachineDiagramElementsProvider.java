@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.papyrus.diagrams.statemachine;
 
 import java.util.Collection;
 
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Pseudostate;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.State;
@@ -21,6 +22,8 @@ public interface StateMachineDiagramElementsProvider {
 	Collection<Transition>  getTransitionsForRegion(Region region);
 
 	StateMachine getMainElement();
+
+	Collection<Element> getElementsOfRegion(Region region);
 	
 	//State , CompositeState?, PseudoState, FinalState, Choice, Merge etc.
 }

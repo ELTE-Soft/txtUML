@@ -83,4 +83,11 @@ public class StateMachineDiagramElementsProviderImpl implements StateMachineDiag
 		return result;
 	}
 
+	@Override
+	public Collection<Element> getElementsOfRegion(Region region) {
+		List<Element> result = new ArrayList<>();
+		result = region.getOwnedElements().stream().filter(e -> this.nodes.contains(e)).collect(Collectors.toList());
+		return result;
+	}
+
 }

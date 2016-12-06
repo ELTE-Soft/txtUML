@@ -25,5 +25,13 @@ public interface StateMachineDiagramNotationManager{
 	void createRegionForState(State state, Region region, IProgressMonitor monitor);
 
 	void changeBoundsOfElement(Element elem, Rectangle boundsForElement, IProgressMonitor monitor);
+	
+	/**
+	 * Returns the bounds of element if found, default bounds otherwise
+	 * @param elem
+	 * @param monitor 
+	 * @return
+	 */
+	Rectangle getBoundsOfElement(Element elem, IProgressMonitor monitor);
 
 }

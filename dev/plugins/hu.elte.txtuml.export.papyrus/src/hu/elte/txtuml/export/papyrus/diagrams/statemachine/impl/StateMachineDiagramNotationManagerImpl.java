@@ -41,7 +41,7 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 		implements StateMachineDiagramNotationManager {
 	private static final PreferencesHint DIAGRAM_PREFERENCES_HINT = UMLDiagramEditorPlugin.DIAGRAM_PREFERENCES_HINT;
 
-	private static final Rectangle defaultStateBounds = new Rectangle(0, 0, 50, 50);
+	private static final Rectangle defaultStateBounds(){ return new Rectangle(0, 0, 50, 50);}
 
 	private Map<EObject, Node> notationMap = new HashMap<>();
 
@@ -113,7 +113,7 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 		Runnable runnable = () -> {
 			String hint = ((IHintedType) UMLElementTypes.State_6000).getSemanticHint();
 			Node newNode = ViewService.createNode(node, state, hint, DIAGRAM_PREFERENCES_HINT);
-			newNode.setLayoutConstraint(createBounds(bounds, defaultStateBounds));
+			newNode.setLayoutConstraint(createBounds(bounds, defaultStateBounds()));
 
 			this.notationMap.put(state, newNode);
 		};
@@ -131,7 +131,9 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 		Runnable runnable = () -> {
 			String hint = ((IHintedType) UMLElementTypes.Pseudostate_8000).getSemanticHint();
 			Node newNode = ViewService.createNode(node, InitialState, hint, DIAGRAM_PREFERENCES_HINT);
-			newNode.setLayoutConstraint(createBounds(bounds, defaultStateBounds));
+			newNode.setLayoutConstraint(createBounds(bounds, defaultStateBounds()));
+			
+			this.notationMap.put(InitialState, newNode);
 		};
 
 		runInTransactionalCommand(runnable, "Creating Initialstate for Node " + node, monitor);
@@ -220,12 +222,22 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 		Node node = this.notationMap.get(elem);
 		if (node != null) {
 			Runnable runnable = () -> {
-				node.setLayoutConstraint(createBounds(bounds, defaultStateBounds));
+				node.setLayoutConstraint(createBounds(bounds, defaultStateBounds()));
 			};
 
 			runInTransactionalCommand(runnable, "Creating Initialstate for Node " + node, monitor);
 		} else {
 			Logger.sys.error("Cannot change bounds of node. This element (" + elem + ") has no node!");
 		}
+	}
+
+	@Override
+	public Rectangle getBoundsOfElement(Element elem, IProgressMonitor monitor) {
+		Node node = this.notationMap.get(elem);
+		if(node != null){
+			Bounds bounds = (Bounds) node.getLayoutConstraint();
+			return new Rectangle(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
+		}
+		return defaultStateBounds();
 	}
 }

@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.StateMachine;
@@ -56,8 +57,22 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	public void addElementsToDiagram() {
 		Collection<Region> regions = this.elementsProvider.getMainRegions();
 		addSubelementsRecursively(regions);
+		addPaddingToStateMachine();
+	}
+
+	private void addPaddingToStateMachine() {
 		StateMachine sm = this.elementsProvider.getMainElement();
 		this.notationManager.changeBoundsOfElement(sm, this.arranger.getBoundsForElement(sm), this.monitor);
+		Collection<Region> regions = this.elementsProvider.getMainRegions();
+		regions.forEach(region ->{
+			this.elementsProvider.getElementsOfRegion(region).forEach(element -> {
+				
+				Rectangle boundsForElement = this.notationManager.getBoundsOfElement(element, this.monitor);
+				boundsForElement.x = boundsForElement.x+StateMachineDiagramPixelDimensionProvider.DEFAULT_ELEMENT_BORDER;
+				boundsForElement.y = boundsForElement.y+StateMachineDiagramPixelDimensionProvider.DEFAULT_ELEMENT_BORDER;
+				this.notationManager.changeBoundsOfElement(element, boundsForElement , this.monitor);
+			});
+		});
 	}
 
 	private void addSubelementsRecursively(Collection<Region> regions) {
