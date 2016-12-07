@@ -1,26 +1,21 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.progress.IProgressService;
 
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 import hu.elte.txtuml.export.papyrus.TxtUMLExporter;
 import hu.elte.txtuml.export.papyrus.layout.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.export.papyrus.utils.LayoutUtils;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
 
@@ -80,16 +75,6 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 
 		try {
 			this.checkEmptyLayoutDescriptions();
-/*
-			IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
-
-			progressService.runInUI(progressService, new IRunnableWithProgress() {
-				
-				@Override
-				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-									}
-			}, ResourcesPlugin.getWorkspace().getRoot());
-*/
 			Job job = new Job("Diagram Visualization") {
 				
 				@Override
@@ -145,28 +130,16 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 	 */
 	private void exportModel(TxtUMLExporter exporter, IProgressMonitor monitor) throws InterruptedException {
 		monitor.subTask("Exporting txtUML Model to UML2 model...");
-		
-			IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
-
-			try {
-				progressService.runInUI(progressService, new IRunnableWithProgress() {
-					
-					@Override
-					public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-						try {
-							exporter.exportModel();
-						} catch (Exception e) {
-							Dialogs.errorMsgb("txtUML export Error", "Error occured during the UML2 exportation.", e);
-							monitor.done();
-							throw new RuntimeException();
-						}
-					}
-				}, ResourcesPlugin.getWorkspace().getRoot());
-			} catch (InvocationTargetException e) {
-				throw new RuntimeException(e);
-			}
-			
-			monitor.worked(10);
+			LayoutUtils.getDisplay().syncExec(() ->{
+				try {
+					exporter.exportModel();
+				} catch (Exception e) {
+					Dialogs.errorMsgb("txtUML export Error", "Error occured during the UML2 exportation.", e);
+					monitor.done();
+					throw new RuntimeException();
+				}
+			});
+		monitor.worked(10);
 	}
 
 	/**

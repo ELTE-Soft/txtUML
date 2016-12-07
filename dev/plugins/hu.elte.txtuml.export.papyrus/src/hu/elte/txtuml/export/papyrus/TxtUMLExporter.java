@@ -10,18 +10,15 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.CommonPlugin;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
-import org.eclipse.ui.progress.IProgressService;
 
 import hu.elte.txtuml.export.papyrus.layout.LayoutExportException;
 import hu.elte.txtuml.export.papyrus.layout.TxtUMLLayoutDescriptor;
@@ -159,12 +156,7 @@ public class TxtUMLExporter {
 
 		IEditorInput input = new FileEditorInput(diFile);
 
-		IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
-
-		progressService.runInUI(progressService, new IRunnableWithProgress() {
-			
-			@Override
-			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+		LayoutUtils.getDisplay().syncExec(() ->{
 				IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findEditor(input);
 				if (editor != null) {
 					PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().closeEditor(editor, false);
@@ -181,8 +173,6 @@ public class TxtUMLExporter {
 					throw new RuntimeException(e);
 				}
 				
-			}
-		}, ResourcesPlugin.getWorkspace().getRoot());
-
+			});
 	}
 }

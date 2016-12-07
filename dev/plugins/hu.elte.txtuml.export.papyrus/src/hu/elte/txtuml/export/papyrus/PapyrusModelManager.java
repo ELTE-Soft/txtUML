@@ -6,7 +6,6 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.papyrus.commands.ICreationCommand;
@@ -135,7 +134,7 @@ public class PapyrusModelManager {
 
 		int i = 1;
 		for (Diagram diagram : diags) {
-			 loopProgress.setTaskName("Filling diagrams " + i + "/" + diagNum);
+			loopProgress.setTaskName("Filling diagrams " + i + "/" + diagNum);
 			addElementsToDiagram(diagram, loopProgress.newChild(1));
 			i++;
 		}
@@ -160,7 +159,8 @@ public class PapyrusModelManager {
 			ClassDiagramElementsProvider provider = new ClassDiagramElementsProviderImpl(mapper);
 			AbstractDiagramElementsArranger arranger = new ClassDiagramElementsArranger(report, mapper);
 			ClassDiagramNotationManager notation = new ClassDiagramNotationManagerImpl(diagram, this.domain);
-			diagramElementsManager = new ClassDiagramElementsManager(diagram, provider, notation, arranger, subMonitor.newChild(100));
+			diagramElementsManager = new ClassDiagramElementsManager(diagram, provider, notation, arranger,
+					subMonitor.newChild(100));
 		} else if (diagram.getType().equals(diagramType_SMD)) {
 			StateMachineDiagramElementsMapper mapper = (StateMachineDiagramElementsMapper) this.mapper
 					.getMapperForReport(report);
@@ -169,7 +169,8 @@ public class PapyrusModelManager {
 			StateMachineDiagramElementsArranger arranger = new StateMachineDiagramElementsArranger(report, mapper);
 			StateMachineDiagramNotationManager notation = new StateMachineDiagramNotationManagerImpl(diagram,
 					this.domain);
-			diagramElementsManager = new StateMachineDiagramElementsManager(diagram, provider, notation, arranger, subMonitor.newChild(100));
+			diagramElementsManager = new StateMachineDiagramElementsManager(diagram, provider, notation, arranger,
+					subMonitor.newChild(100));
 		} else {
 			return;
 		}

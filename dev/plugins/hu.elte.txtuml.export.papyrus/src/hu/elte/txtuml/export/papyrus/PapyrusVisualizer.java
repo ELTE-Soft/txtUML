@@ -5,13 +5,12 @@ import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.papyrus.infra.core.resource.ModelMultiException;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
-import org.eclipse.swt.widgets.Display;
 
 import hu.elte.txtuml.export.papyrus.utils.EditorOpener;
+import hu.elte.txtuml.export.papyrus.utils.LayoutUtils;
 import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
@@ -72,7 +71,7 @@ public class PapyrusVisualizer implements IRunnableWithProgress {
 	 */
 	@Override
 	public void run(IProgressMonitor monitor) {
-		SubMonitor submonitor = SubMonitor.convert(monitor,100);
+		SubMonitor submonitor = SubMonitor.convert(monitor, 100);
 		submonitor.subTask("Creating Papyrus model...");
 
 		IProject project = ProjectUtils.createProject(projectName);
@@ -118,12 +117,12 @@ public class PapyrusVisualizer implements IRunnableWithProgress {
 
 	private void openPapyrusModel(PapyrusModelCreator papyrusModelCreator, IProgressMonitor monitor) {
 		monitor.setTaskName("Opening Papyrus Editor...");
-		Display.getDefault().syncExec(()->{
-				if (papyrusModelCreator.diExists()) {
-					EditorOpener.openPapyrusEditor(papyrusModelCreator.getDi());
-				} else {
-					Logger.user.error(".di File does not exist. Papyrus Model can't be opened.");
-				}
+		LayoutUtils.getDisplay().syncExec(() -> {
+			if (papyrusModelCreator.diExists()) {
+				EditorOpener.openPapyrusEditor(papyrusModelCreator.getDi());
+			} else {
+				Logger.user.error(".di File does not exist. Papyrus Model can't be opened.");
+			}
 		});
 		monitor.done();
 	}
