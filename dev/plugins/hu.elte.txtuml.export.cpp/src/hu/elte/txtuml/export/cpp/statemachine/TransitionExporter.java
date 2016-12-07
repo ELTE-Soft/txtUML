@@ -50,10 +50,10 @@ public class TransitionExporter {
 			Pair<String, Boolean> setState = createSetState(item);
 			if (b != null && b.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
 				body = activityExporter.createfunctionBody((Activity) b);
-				signalAcces = activityExporter.isContainsSignalAcces() || setState.getSecond();
+				signalAcces = activityExporter.isContainsSignalAcces();
 
 			}
-
+			signalAcces = signalAcces || setState.getSecond();
 			source.append(StateMachineTemplates.transitionActionDef(className, item.getName(),
 					body + setState.getFirst() + "\n", signalAcces));
 		}
