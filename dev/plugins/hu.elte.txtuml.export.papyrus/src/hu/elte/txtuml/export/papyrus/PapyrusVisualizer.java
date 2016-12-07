@@ -72,20 +72,20 @@ public class PapyrusVisualizer implements IRunnableWithProgress {
 	 */
 	@Override
 	public void run(IProgressMonitor monitor) {
-		monitor.beginTask("Visualization", 100);
-		monitor.subTask("Creating new Papyrus project...");
+		SubMonitor submonitor = SubMonitor.convert(monitor,100);
+		submonitor.subTask("Creating Papyrus model...");
 
 		IProject project = ProjectUtils.createProject(projectName);
 		ProjectUtils.openProject(project);
 
-		monitor.worked(20);
+		submonitor.worked(20);
 		PapyrusModelCreator papyrusModelCreator = new PapyrusModelCreator(projectName + "/" + modelName);
 		try {
 
-			createPapyrusModel(papyrusModelCreator, new SubProgressMonitor(monitor, 80));
-			openPapyrusModel(papyrusModelCreator, new SubProgressMonitor(monitor, 70));
+			createPapyrusModel(papyrusModelCreator, submonitor.newChild(70));
+			openPapyrusModel(papyrusModelCreator, submonitor.newChild(10));
 		} catch (Exception e) {
-			// TODO
+			// TODO: Handle exception precisely
 			throw new RuntimeException(e);
 		}
 	}
@@ -117,7 +117,7 @@ public class PapyrusVisualizer implements IRunnableWithProgress {
 	}
 
 	private void openPapyrusModel(PapyrusModelCreator papyrusModelCreator, IProgressMonitor monitor) {
-		monitor.beginTask("Opening papyrus model...", 100);
+		monitor.setTaskName("Opening Papyrus Editor...");
 		Display.getDefault().syncExec(()->{
 				if (papyrusModelCreator.diExists()) {
 					EditorOpener.openPapyrusEditor(papyrusModelCreator.getDi());
@@ -125,6 +125,6 @@ public class PapyrusVisualizer implements IRunnableWithProgress {
 					Logger.user.error(".di File does not exist. Papyrus Model can't be opened.");
 				}
 		});
-		monitor.worked(100);
+		monitor.done();
 	}
 }

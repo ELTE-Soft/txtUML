@@ -107,11 +107,11 @@ public class PapyrusModelManager {
 	 *            - The monitor that listens the progress
 	 */
 	public void createAndFillDiagrams(IProgressMonitor monitor) {
-		SubMonitor subMonitor = SubMonitor.convert(monitor);
+		SubMonitor subMonitor = SubMonitor.convert(monitor, 100);
 		subMonitor.setTaskName("Generating Diagrams");
 		createDiagrams(subMonitor.newChild(20));
-		subMonitor.worked(20);
 		addElementsToDiagrams(subMonitor.newChild(80));
+
 		try {
 			this.modelSet.save(new NullProgressMonitor());
 		} catch (IOException e) {
@@ -131,17 +131,15 @@ public class PapyrusModelManager {
 
 		List<Diagram> diags = diagramManager.getDiagrams();
 		int diagNum = diags.size();
-		SubMonitor progress = SubMonitor.convert(monitor, 100);
-		SubMonitor loopProgress = progress.newChild(100).setWorkRemaining(diagNum);
+		SubMonitor loopProgress = SubMonitor.convert(monitor, diagNum);
 
 		int i = 1;
 		for (Diagram diagram : diags) {
-			loopProgress.setTaskName("Filling diagrams " + i + "/" + diagNum);
+			 loopProgress.setTaskName("Filling diagrams " + i + "/" + diagNum);
 			addElementsToDiagram(diagram, loopProgress.newChild(1));
-			loopProgress.worked(1);
 			i++;
 		}
-		progress.done();
+		loopProgress.done();
 	}
 
 	/**
@@ -155,14 +153,14 @@ public class PapyrusModelManager {
 	protected void addElementsToDiagram(Diagram diagram, IProgressMonitor monitor) {
 		AbstractDiagramElementsManager diagramElementsManager;
 		DiagramExportationReport report = this.descriptor.getReportByDiagramName(diagram.getName());
-		SubMonitor subMonitor = SubMonitor.convert(monitor);
+		SubMonitor subMonitor = SubMonitor.convert(monitor, 100);
 		if (diagram.getType().equals(diagramType_CD)) {
 			ClassDiagramElementsMapper mapper = (ClassDiagramElementsMapper) this.mapper.getMapperForReport(report);
 
 			ClassDiagramElementsProvider provider = new ClassDiagramElementsProviderImpl(mapper);
 			AbstractDiagramElementsArranger arranger = new ClassDiagramElementsArranger(report, mapper);
 			ClassDiagramNotationManager notation = new ClassDiagramNotationManagerImpl(diagram, this.domain);
-			diagramElementsManager = new ClassDiagramElementsManager(diagram, provider, notation, arranger, subMonitor);
+			diagramElementsManager = new ClassDiagramElementsManager(diagram, provider, notation, arranger, subMonitor.newChild(100));
 		} else if (diagram.getType().equals(diagramType_SMD)) {
 			StateMachineDiagramElementsMapper mapper = (StateMachineDiagramElementsMapper) this.mapper
 					.getMapperForReport(report);
@@ -171,8 +169,7 @@ public class PapyrusModelManager {
 			StateMachineDiagramElementsArranger arranger = new StateMachineDiagramElementsArranger(report, mapper);
 			StateMachineDiagramNotationManager notation = new StateMachineDiagramNotationManagerImpl(diagram,
 					this.domain);
-			diagramElementsManager = new StateMachineDiagramElementsManager(diagram, provider, notation, arranger,
-					subMonitor);
+			diagramElementsManager = new StateMachineDiagramElementsManager(diagram, provider, notation, arranger, subMonitor.newChild(100));
 		} else {
 			return;
 		}
@@ -188,15 +185,20 @@ public class PapyrusModelManager {
 	 *            - The progress monitor
 	 */
 	protected void createDiagrams(IProgressMonitor monitor) {
-		monitor.beginTask("Generating empty diagrams", 100);
-		monitor.subTask("Creating empty diagrams...");
+		SubMonitor subMonitor = SubMonitor.convert(monitor);
+		subMonitor.setTaskName("Generating empty diagrams...");
 
 		List<Pair<DiagramExportationReport, Element>> diagramRoots = mapper
 				.getDiagramRootsWithDiagramNames(this.descriptor);
 
 		ICreationCommand cmd;
-
+		int diagNum = diagramRoots.size();
+		subMonitor.setWorkRemaining(diagNum);
+		int i = 1;
 		for (Pair<DiagramExportationReport, Element> diagramRoot : diagramRoots) {
+
+			subMonitor.setTaskName("Creating diagram " + i + "/" + diagNum + "...");
+
 			DiagramExportationReport report = diagramRoot.getFirst();
 			Element root;
 
@@ -213,9 +215,10 @@ public class PapyrusModelManager {
 
 			diagramRoot.getSecond();
 			diagramManager.createDiagram(root, report.getReferencedElementName(), cmd, this.domain);
+			subMonitor.worked(1);
+			i++;
 		}
-
-		monitor.worked(100);
+		subMonitor.done();
 	}
 
 	/**
