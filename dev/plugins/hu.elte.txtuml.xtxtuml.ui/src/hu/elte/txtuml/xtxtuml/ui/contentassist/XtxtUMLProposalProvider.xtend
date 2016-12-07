@@ -18,11 +18,11 @@ class XtxtUMLProposalProvider extends AbstractXtxtUMLProposalProvider {
 	override completeJvmParameterizedTypeReference_Type(EObject model, Assignment assignment,
 		ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
 		allowedPrimitives.forEach [
-			acceptor.accept(createCompletionProposal(it, new StyledString(it), getImage(null), context));
+			acceptor.accept(createCompletionProposal(it, new StyledString(it), getImage(null as EObject), context));
 		]
 
 		if (model instanceof TUClass || model instanceof TUAttributeOrOperationDeclarationPrefix) {
-			acceptor.accept(createCompletionProposal("void", new StyledString("void"), getImage(null), context));
+			acceptor.accept(createCompletionProposal("void", new StyledString("void"), getImage(null as EObject), context));
 		}
 	}
 
