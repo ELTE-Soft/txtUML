@@ -16,7 +16,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.papyrus.infra.core.resource.ModelSet;
-import org.eclipse.papyrus.infra.core.sasheditor.contentprovider.IPageManager;
 import org.eclipse.papyrus.infra.core.services.ExtensionServicesRegistry;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.infra.core.services.ServicesRegistry;
@@ -197,13 +196,6 @@ public class PapyrusModelCreator {
 			} catch (ServiceException ex) {
 				// Ignore this exception: some services may not have been loaded,
 				// which is probably normal at this point
-			}
-			
-			//TODO: remove
-			try{
-				registry.getService(IPageManager.class);
-			}catch (ServiceException e){
-				throw new RuntimeException(e);
 			}
 		});
 	}

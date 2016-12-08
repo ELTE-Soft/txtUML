@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.papyrus.diagrams;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,6 @@ import org.eclipse.gmf.runtime.notation.RelativeBendpoints;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.gmf.runtime.notation.datatype.RelativeBendpoint;
 import org.eclipse.gmf.tooling.runtime.providers.DiagramElementTypes;
-import org.eclipse.papyrus.uml.diagram.clazz.providers.UMLElementTypes;
 import org.eclipse.uml2.uml.Element;
 
 import hu.elte.txtuml.export.papyrus.utils.LayoutUtils;
@@ -33,7 +33,7 @@ public class AbstractDiagramNotationManager {
 
 	protected TransactionalEditingDomain domain;
 
-	protected DiagramElementTypes types;
+	protected List<DiagramElementTypes> types = new ArrayList<DiagramElementTypes>();
 
 	protected Diagram diagram;
 
@@ -41,8 +41,14 @@ public class AbstractDiagramNotationManager {
 
 		this.diagram = diagram;
 
+		// Papyrus requires to create reference to the UMLElementTypes provider
+		// for each diagram type unless an exception will be thrown because they
+		// aren't set up
 		LayoutUtils.getDisplay().syncExec(() -> {
-			types = UMLElementTypes.TYPED_INSTANCE;
+			types.add(org.eclipse.papyrus.uml.diagram.clazz.providers.UMLElementTypes.TYPED_INSTANCE);
+			types.add(org.eclipse.papyrus.uml.diagram.statemachine.providers.UMLElementTypes.TYPED_INSTANCE);
+			types.add(org.eclipse.papyrus.uml.diagram.activity.providers.UMLElementTypes.TYPED_INSTANCE);
+			// TODO: Extend this list
 		});
 	}
 

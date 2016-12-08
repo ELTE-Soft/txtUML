@@ -155,8 +155,7 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 		String hint = ((IHintedType) elementType).getSemanticHint();
 
 		Runnable runnable = () -> {
-			Edge edge = (Edge) ViewService.getInstance().createEdge(elementType, this.diagram, hint, ViewUtil.APPEND,
-					DIAGRAM_PREFERENCES_HINT);
+			Edge edge = (Edge) ViewService.getInstance().createEdge(elementType, this.diagram, hint, ViewUtil.APPEND, DIAGRAM_PREFERENCES_HINT);
 			edge.setElement(transition);
 			edge.setSource(sourceView);
 			edge.setTarget(targetView);
