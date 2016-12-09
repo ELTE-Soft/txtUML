@@ -1,6 +1,5 @@
 package hu.elte.txtuml.export.javascript.wizardz;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,35 +7,19 @@ import java.util.List;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
-import org.eclipse.uml2.uml.Model;
 
 import hu.elte.txtuml.export.javascript.Exporter;
-import hu.elte.txtuml.export.javascript.json.JSONExporter;
-import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLExporter;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
-import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.TxtUMLPapyrusModelManager;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.export.papyrus.wizardz.VisualizeTxtUMLPage;
 import hu.elte.txtuml.export.uml2.ExportMode;
 import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
-import hu.elte.txtuml.layout.export.DiagramExporter;
-import hu.elte.txtuml.layout.visualizer.algorithms.LayoutVisualize;
-import hu.elte.txtuml.layout.visualizer.exceptions.BoxArrangeConflictException;
-import hu.elte.txtuml.layout.visualizer.exceptions.BoxOverlapConflictException;
-import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
-import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
-import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
-import hu.elte.txtuml.layout.visualizer.exceptions.StatementTypeMatchException;
-import hu.elte.txtuml.layout.visualizer.exceptions.StatementsConflictException;
-import hu.elte.txtuml.layout.visualizer.exceptions.UnknownStatementException;
-import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 /**
@@ -101,7 +84,6 @@ public class TxtUMLVisualizeWizard extends Wizard {
 				@Override
 				public void run(IProgressMonitor monitor) throws InterruptedException {
 					monitor.beginTask("Visualization", 100);
-
 					TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName, generatedFolderName,
 							txtUMLModelName, txtUMLLayout);
 					try {
@@ -116,7 +98,7 @@ public class TxtUMLVisualizeWizard extends Wizard {
 						TxtUMLToUML2.exportModel(txtUMLProjectName, txtUMLModelName,
 								txtUMLProjectName + "/" + generatedFolderName, ExportMode.ErrorHandlingNoActions,
 								"gen");
-						monitor.worked(10);
+						monitor.worked(50);
 					} catch (Exception e) {
 						Dialogs.errorMsgb("txtUML export Error", "Error occured during the UML2 exportation.", e);
 						monitor.done();
@@ -150,7 +132,7 @@ public class TxtUMLVisualizeWizard extends Wizard {
 							}
 						}
 
-						monitor.worked(5);
+						monitor.worked(30);
 					} catch (Exception e) {
 						if (e instanceof InterruptedException) {
 							throw (InterruptedException) e;
@@ -161,7 +143,7 @@ public class TxtUMLVisualizeWizard extends Wizard {
 							throw new InterruptedException();
 						}
 					}
-
+					monitor.subTask("Exporting diagrams for JointJS visualization...");
 					try {
 						Exporter ex = new Exporter(layoutDescriptor);
 						ex.export();
@@ -171,6 +153,8 @@ public class TxtUMLVisualizeWizard extends Wizard {
 						monitor.done();
 						throw new InterruptedException();
 					}
+					monitor.worked(20);
+					monitor.done();
 				}
 			}, ResourcesPlugin.getWorkspace().getRoot());
 			return true;

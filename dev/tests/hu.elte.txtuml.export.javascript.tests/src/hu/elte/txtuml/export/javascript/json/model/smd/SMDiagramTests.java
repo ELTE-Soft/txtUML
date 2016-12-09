@@ -1,31 +1,5 @@
 package hu.elte.txtuml.export.javascript.json.model.smd;
 
-import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.PseudostateKind;
-import org.eclipse.uml2.uml.Region;
-import org.eclipse.uml2.uml.Signal;
-import org.eclipse.uml2.uml.StateMachine;
-import org.eclipse.uml2.uml.Trigger;
-import org.eclipse.uml2.uml.UMLFactory;
-import org.eclipse.uml2.uml.UMLPackage;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import hu.elte.txtuml.export.javascript.json.model.cd.ClassAttributeLink;
-import hu.elte.txtuml.export.javascript.json.model.cd.ClassDiagram;
-import hu.elte.txtuml.export.javascript.json.model.cd.ClassLink;
-import hu.elte.txtuml.export.javascript.json.model.cd.ClassNode;
-import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
-import hu.elte.txtuml.layout.visualizer.model.AssociationType;
-import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
-import hu.elte.txtuml.layout.visualizer.model.Point;
-import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
-import hu.elte.txtuml.utils.Pair;
-
-import org.junit.Assert;
-
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -38,10 +12,24 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.uml2.uml.AggregationKind;
-import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Event;
+import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.PseudostateKind;
+import org.eclipse.uml2.uml.Region;
+import org.eclipse.uml2.uml.StateMachine;
+import org.eclipse.uml2.uml.UMLFactory;
+import org.eclipse.uml2.uml.UMLPackage;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
+import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
+import hu.elte.txtuml.layout.visualizer.model.Point;
+import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 public class SMDiagramTests {
 	private Model model;

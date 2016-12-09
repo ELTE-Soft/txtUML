@@ -2,10 +2,13 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="lib/joint.css" />
+	<!-- 3rd party libraries -->
     <script src="lib/jquery.min.js"></script>
     <script src="lib/lodash.min.js"></script>
     <script src="lib/backbone-min.js"></script>
-    <script src="lib/joint.js"></script>
+	<script src="lib/joint.js"></script>
+	
+	<!-- visualizer libraries -->
 	<script src="visualizer/utils.js"></script>
 	<script src="visualizer/fonts.js"></script>
 	<script src="visualizer/selector.js"></script>
@@ -18,13 +21,22 @@
 
 </head>
 <body>
+	<!-- selector link holder -->
 	<table>
-	<tbody id="selector"></tbody>
+		<tbody id="selector"></tbody>
 	</table>
+	
+	<!-- diagram holder -->
     <div id="paper"></div>
+	
+	<!-- input -->
     <script src="input.js"></script>
+	
+	<!-- visualizing script -->
     <script src="visualizer.js"></script>
-		<div>
+	
+	
+	<div>
 		The source and licensing details of the 3rd party libraries which this page uses can be found at their respective websites:
 		<ul>
 			<li><a href="http://jointjs.com/opensource">JointJS</a></li>

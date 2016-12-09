@@ -5,6 +5,11 @@ import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
+/**
+ * 
+ * Holds information about a pseudo state of a statemachine
+ *
+ */
 public class PseudoState {
 	@XmlAccessMethods(getMethodName = "getId")
 	private String id;
@@ -19,9 +24,22 @@ public class PseudoState {
 	@XmlAccessMethods(getMethodName = "getHeight")
 	private Integer height;
 
+	/**
+	 * No-arg constructor required for serialization
+	 */
 	protected PseudoState() {
 	}
 
+	/**
+	 * Creates a PseudoState based on the EMF-UML model-element and layout
+	 * information provided
+	 * 
+	 * @param node
+	 *            the layout information
+	 * @param state
+	 *            the EMF-UML model-element which holds informations of this
+	 *            diagram element
+	 */
 	public PseudoState(RectangleObject node, org.eclipse.uml2.uml.Pseudostate state) {
 		id = node.getName();
 		name = state.getLabel();
@@ -32,26 +50,50 @@ public class PseudoState {
 
 	}
 
+	/**
+	 * 
+	 * @return the layout descriptor ID of the pseudo state
+	 */
 	public String getId() {
 		return id;
 	}
 
+	/**
+	 * 
+	 * @return the name of the pseudo state
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * 
+	 * @return the kind of the pseudo state
+	 */
 	public String getKind() {
 		return kind;
 	}
 
+	/**
+	 * 
+	 * @return the position of the pseudo state
+	 */
 	public Point getPosition() {
 		return position;
 	}
 
+	/**
+	 * 
+	 * @return the width of the pseudo state
+	 */
 	public Integer getWidth() {
 		return width;
 	}
 
+	/**
+	 * 
+	 * @return the height of the pseudo state
+	 */
 	public Integer getHeight() {
 		return height;
 	}
