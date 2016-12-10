@@ -1,0 +1,27 @@
+package nuclearpower.model.assocination;
+
+import nuclearpower.model.SolarPanel;
+import nuclearpower.model.Battery;
+import nuclearpower.model.UI;
+import nuclearpower.model.NuclearPowerPlant;
+import nuclearpower.model.Consumer;
+
+association PanelUIAssociation {
+	1 SolarPanel panel;
+	1 UI ui;
+}
+
+association PlantUIAssociation {
+	1 NuclearPowerPlant plant;
+	1 UI ui;
+}
+
+association BatteryUIAssociation {
+	1 Battery battery;
+	1 UI ui;
+}
+
+association ConsumerUIAssociation {
+	1 Consumer consumer;
+	1 UI ui;
+}

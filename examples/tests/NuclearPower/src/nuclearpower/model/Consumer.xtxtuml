@@ -1,11 +1,20 @@
 package nuclearpower.model;
 
 import nuclearpower.model.assocination.PlantConsumerAssociation;
+import nuclearpower.model.assocination.ConsumerUIAssociation;
 
 class Consumer {
 	initial Init;
-	state Off;
-	state On;
+	state Off{
+		entry{
+			this->(ConsumerUIAssociation.ui).selectAny().gui.consumerStateChanged("Off");
+		}
+	};
+	state On{
+		entry{
+			this->(ConsumerUIAssociation.ui).selectAny().gui.consumerStateChanged("On");
+		}
+	};
 	
 	transition Initialize {
 		from Init;

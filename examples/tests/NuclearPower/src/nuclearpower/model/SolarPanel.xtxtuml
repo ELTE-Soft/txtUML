@@ -3,6 +3,8 @@ package nuclearpower.model;
 import nuclearpower.model.assocination.PanelBatteryComposition;
 import nuclearpower.model.assocination.PlantPanelAssociation;
 import hu.elte.txtuml.api.stdlib.timers.Timer;
+import nuclearpower.model.assocination.PanelUIAssociation;
+import nuclearpower.model.assocination.BatteryUIAssociation;
 
 signal WatherTick;
 signal UsingTick;
@@ -17,14 +19,14 @@ class SolarPanel {
 	state Warhousing {
 		entry {
 			watherTimer = Timer.start(this, new WatherTick(), 1000);
-			
+			this->(PanelUIAssociation.ui).selectAny().gui.panelStateChanged("Warehousing");
 		}
 	}
 	state NotWarhousing {
 		entry {
 			watherTimer = Timer.start(this, new WatherTick(), 1000);
 			usingBatteryTimer = Timer.start(this, new UsingTick(), 1000);
-			
+			this->(PanelUIAssociation.ui).selectAny().gui.panelStateChanged("Not Warehousing");
 		}
 	}
 	
@@ -53,8 +55,6 @@ class SolarPanel {
 		effect {
 			NuclearPowerPlant plant = this->(PlantPanelAssociation.plant).selectAny();
 			send new IncraseProductionVolume() to plant;
-		
-		
 		}
 	}
 	
@@ -65,8 +65,6 @@ class SolarPanel {
 		effect {
 			NuclearPowerPlant plant = this->(PlantPanelAssociation.plant).selectAny();
 			send new IncraseProductionVolume() to plant;
-		
-		
 		}
 	}
 	
@@ -84,7 +82,7 @@ class SolarPanel {
 	transition WatherBecameSunnyWhenWarhousing {
 		from Warhousing;
 		to Warhousing;
-		trigger WatherChanged;
+		trigger WeatherChanged;
 		effect {
 				watherIsSunny = true;
 				Battery battery = this->(PanelBatteryComposition.battery).selectAny();				
@@ -97,7 +95,7 @@ class SolarPanel {
 	transition WatherBecameCloudyWhenWarhousing {
 		from Warhousing;
 		to Warhousing;
-		trigger WatherChanged;
+		trigger WeatherChanged;
 		effect {
 			watherIsSunny = false;
 			Battery battery = this->(PanelBatteryComposition.battery).selectAny();
@@ -109,7 +107,7 @@ class SolarPanel {
 	transition WatherBecameSunnyWhenNotWarhousing {
 		from NotWarhousing;
 		to NotWarhousing;
-		trigger WatherChanged;
+		trigger WeatherChanged;
 		effect {
 				watherIsSunny = true;
 			}
@@ -120,7 +118,7 @@ class SolarPanel {
 	transition WatherBecameCloudyWhenNotWarhousing {
 		from NotWarhousing;
 		to NotWarhousing;
-		trigger WatherChanged;
+		trigger WeatherChanged;
 		effect {
 			watherIsSunny = false;
 			Battery battery = this->(PanelBatteryComposition.battery).selectAny();
@@ -144,9 +142,5 @@ class SolarPanel {
 	
 	public SolarPanel () {
 		watherIsSunny = false;
-		
-		Battery battery = new Battery (100);
-		link (PanelBatteryComposition.panel, this, PanelBatteryComposition.battery, battery);
-		start(battery);
 	}
 }

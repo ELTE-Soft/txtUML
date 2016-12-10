@@ -1,5 +1,6 @@
 package nuclearpower.model;
 
+import nuclearpower.model.assocination.BatteryUIAssociation;
 import nuclearpower.model.assocination.PanelBatteryComposition;
 
 class Battery {
@@ -9,9 +10,21 @@ class Battery {
 	}
 	
 	initial Init;
-	state Passive;
-	state Loading;
-	state ProvidesEnergy;
+	state Passive{
+		entry{
+			this->(BatteryUIAssociation.ui).selectAny().gui.batteryStateChanged("Passive");
+		}
+	};
+	state Loading{
+		entry{
+			this->(BatteryUIAssociation.ui).selectAny().gui.batteryStateChanged("Loading");
+		}
+	};
+	state ProvidesEnergy{
+		entry{
+			this->(BatteryUIAssociation.ui).selectAny().gui.batteryStateChanged("Provides Energy");
+		}
+	};
 	
 	transition Initialize {
 		from Init;
@@ -24,7 +37,7 @@ class Battery {
 		trigger SunyWather;
 		effect {
 			capacity++;
-			log ("Capacity of battery: " + capacity);
+			this->(BatteryUIAssociation.ui).selectAny().gui.batteryCapacityChanged(capacity);
 		}
 		guard (capacity < maxCapacity);
 	}
@@ -35,7 +48,7 @@ class Battery {
 		trigger SunyWather;
 		effect {
 			capacity++;
-			log ("Capacity of battery: " + capacity);
+			this->(BatteryUIAssociation.ui).selectAny().gui.batteryCapacityChanged(capacity);
 		}
 		guard (capacity < maxCapacity);
 	}
@@ -62,7 +75,7 @@ class Battery {
 		guard (capacity > 0);
 		effect {
 			capacity--;
-			log ("Capacity of battery: " + capacity);
+			this->(BatteryUIAssociation.ui).selectAny().gui.batteryCapacityChanged(capacity);
 		}
 	}
 	
@@ -73,8 +86,7 @@ class Battery {
 		guard (capacity > 1);
 		effect {
 			capacity--;
-			log ("Capacity of battery: " + capacity);
-					
+			this->(BatteryUIAssociation.ui).selectAny().gui.batteryCapacityChanged(capacity);		
 		}
 	}
 	
@@ -87,8 +99,7 @@ class Battery {
 			capacity--;
 			SolarPanel panel = this->(PanelBatteryComposition.panel).selectAny();
 			send new BatteryRunOutFromEnergy() to panel;
-			log ("Capacity of battery: " + capacity);
-			
+			this->(BatteryUIAssociation.ui).selectAny().gui.batteryCapacityChanged(capacity);
 		}
 	}
 	

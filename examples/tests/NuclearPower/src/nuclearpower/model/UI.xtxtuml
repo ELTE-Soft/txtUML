@@ -1,0 +1,8 @@
+package nuclearpower.model;
+
+import nuclearpower.GUIInterface;
+
+class UI
+{
+	public GUIInterface gui;
+}

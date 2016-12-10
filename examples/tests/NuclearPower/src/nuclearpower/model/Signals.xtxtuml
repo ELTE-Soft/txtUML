@@ -14,7 +14,7 @@ signal ButtonPressed;
 //solar panel signals
 signal BatteryRunOutFromEnergy;
 signal BattaryProvidesEnergy;
-signal WatherChanged;
+signal WeatherChanged;
 signal WarhouseButtonPressed;
 signal ChangeToWarhousingPressed;
 signal ChangeToNotWarhousingPressed;

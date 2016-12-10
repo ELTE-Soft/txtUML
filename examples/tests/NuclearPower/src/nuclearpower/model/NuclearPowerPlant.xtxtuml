@@ -1,15 +1,28 @@
 package nuclearpower.model;
 
 import nuclearpower.model.assocination.PlantPanelAssociation;
+import nuclearpower.model.assocination.PlantUIAssociation;
 
 class NuclearPowerPlant {
 	
 	initial Init;
-	state NotInOperation;
+	state NotInOperation{
+		entry{
+			this->(PlantUIAssociation.ui).selectAny().gui.powerStationStateChanged("Shut down");	
+		}
+	};
 	composite ProducePower {
 		initial Init;
-		state ProduceMuchPower;
-		state ProduceFewPower;
+		state ProduceMuchPower{
+			entry{
+				this->(PlantUIAssociation.ui).selectAny().gui.powerStationStateChanged("Full power");
+			}
+		};
+		state ProduceFewPower{
+			entry{
+				this->(PlantUIAssociation.ui).selectAny().gui.powerStationStateChanged("Normal power");
+			}
+		};
 		
 		transition Initialize {
 			from Init;
