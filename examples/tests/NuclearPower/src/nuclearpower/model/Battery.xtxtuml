@@ -1,12 +1,12 @@
 package nuclearpower.model;
 
-
-
-signal SunyWather;
-signal CouldyWather;
-signal UsingBattery;
+import nuclearpower.model.assocination.PanelBatteryComposition;
 
 class Battery {
+	
+	public boolean hasCapacity () {
+		return capacity > 0;
+	}
 	
 	initial Init;
 	state Passive;
@@ -24,6 +24,18 @@ class Battery {
 		trigger SunyWather;
 		effect {
 			capacity++;
+			log ("Capacity of battery: " + capacity);
+		}
+		guard (capacity < maxCapacity);
+	}
+	
+	transition ChargingFromSunEnergy {
+		from Loading;
+		to Loading;
+		trigger SunyWather;
+		effect {
+			capacity++;
+			log ("Capacity of battery: " + capacity);
 		}
 		guard (capacity < maxCapacity);
 	}
@@ -41,6 +53,8 @@ class Battery {
 		trigger CouldyWather;
 	}
 	
+	
+	
 	transition StartUsing {
 		from Passive;
 		to ProvidesEnergy;
@@ -48,6 +62,7 @@ class Battery {
 		guard (capacity > 0);
 		effect {
 			capacity--;
+			log ("Capacity of battery: " + capacity);
 		}
 	}
 	
@@ -55,9 +70,11 @@ class Battery {
 		from ProvidesEnergy;
 		to ProvidesEnergy;
 		trigger UsingBattery;
-		guard (capacity > 0);
+		guard (capacity > 1);
 		effect {
 			capacity--;
+			log ("Capacity of battery: " + capacity);
+					
 		}
 	}
 	
@@ -65,14 +82,19 @@ class Battery {
 		from ProvidesEnergy;
 		to Passive;
 		trigger UsingBattery;
-		guard (capacity == 0);
+		guard (capacity == 1);
 		effect {
 			capacity--;
+			SolarPanel panel = this->(PanelBatteryComposition.panel).selectAny();
+			send new BatteryRunOutFromEnergy() to panel;
+			log ("Capacity of battery: " + capacity);
+			
 		}
 	}
 	
 	public Battery (int maxCapacity) {
 		this.maxCapacity = maxCapacity;
+		capacity = 0;
 	}
 	
 	private int capacity;

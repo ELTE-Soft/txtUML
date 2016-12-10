@@ -1,6 +1,6 @@
 package nuclearpower.model;
 
-signal ButtonPressed;
+import nuclearpower.model.assocination.PlantConsumerAssociation;
 
 class Consumer {
 	initial Init;
@@ -16,11 +16,19 @@ class Consumer {
 		from Off;
 		to On;
 		trigger ButtonPressed;
+		effect {
+			NuclearPowerPlant plant = this->(PlantConsumerAssociation.plant).selectAny();
+			send new SwitchOnPlant() to plant;
+		}
 	}
 	
 	transition SwitchOff {
 		from On;
 		to Off;
 		trigger ButtonPressed;
+		effect {
+			NuclearPowerPlant plant = this->(PlantConsumerAssociation.plant).selectAny();
+			send new SwitchOffPlant() to plant;
+		}
 	}
 }

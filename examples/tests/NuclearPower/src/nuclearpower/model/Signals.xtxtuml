@@ -1,0 +1,25 @@
+package nuclearpower.model;
+
+//NuclearPowerPlant signals
+signal ChangeProductionVolume;
+signal IncraseProductionVolume;
+signal ReduceProductionVolume;
+signal ControlNuclearPowerOperation;
+signal SwitchOnPlant;
+signal SwitchOffPlant;
+
+//Consumer signals
+signal ButtonPressed;
+
+//solar panel signals
+signal BatteryRunOutFromEnergy;
+signal BattaryProvidesEnergy;
+signal WatherChanged;
+signal WarhouseButtonPressed;
+signal ChangeToWarhousingPressed;
+signal ChangeToNotWarhousingPressed;
+
+//battery signals
+signal SunyWather;
+signal CouldyWather;
+signal UsingBattery;
