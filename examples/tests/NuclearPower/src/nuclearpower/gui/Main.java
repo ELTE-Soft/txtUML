@@ -7,6 +7,7 @@ import java.awt.Image;
 
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -24,6 +25,10 @@ public class Main extends JFrame{
 	private JLabel solarPanelImagePanel = new JLabel();
 	private JLabel houseImagePanel = new JLabel();
 	private JLabel accumulatorImagePanel = new JLabel();
+	
+	private JButton solarPanelButton = new JButton("Change weather");
+	private JButton houseButton = new JButton("Swicth");
+	private JButton accumulatorButton = new JButton("AccBtn");
 
 	public static void main(String[] args) {
 		new Main().setVisible(true);
@@ -34,7 +39,7 @@ public class Main extends JFrame{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 	    // set the jframe size and location
-	    setPreferredSize(new Dimension(1000, 1200));
+	    setPreferredSize(new Dimension(1200, 800));
 
 	    createImages();
 	    createLayout();
@@ -51,11 +56,7 @@ public class Main extends JFrame{
 		houseImagePanel.setIcon(new ImageIcon(houseImage.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH)));
 		ImageIcon accumulatorImage = new ImageIcon(this.getClass().getResource(ASSETS_FOLDER + "accu_empty.png"));
 		accumulatorImagePanel.setIcon(new ImageIcon(accumulatorImage.getImage().getScaledInstance(150, 300, Image.SCALE_SMOOTH)));
-		/*
-		this.add(powerPlantImagePanel);
-		this.add(solarPanelImagePanel);
-		this.add(houseImagePanel);
-		this.add(accumulatorImagePanel);*/
+
 		Font font = new Font("Serif", Font.BOLD, 24);
 		houseLabel.setFont(font);
 		accumulatorLabel.setFont(font);
@@ -73,13 +74,16 @@ public class Main extends JFrame{
 				   layout.createSequentialGroup()
 				      .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				    		  .addComponent(houseLabel)
-				    		  .addComponent(houseImagePanel))
+				    		  .addComponent(houseImagePanel)
+				    		  .addComponent(houseButton))
 				      .addGap(100)
 				      .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				    		  .addComponent(solarPanelLabel)
 				    		  .addComponent(solarPanelImagePanel)
+				    		  .addComponent(solarPanelButton)
 				    		  .addComponent(accumulatorLabel)
-				    		  .addComponent(accumulatorImagePanel))
+				    		  .addComponent(accumulatorImagePanel)
+				    		  .addComponent(accumulatorButton))
 				      .addGap(100)
 				      .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				    		  .addComponent(powerPlantLabel)
@@ -89,13 +93,16 @@ public class Main extends JFrame{
 		   layout.createParallelGroup()
 		   		.addGroup(layout.createSequentialGroup()
 	   				.addComponent(houseLabel)
-			        .addComponent(houseImagePanel))
+			        .addComponent(houseImagePanel)
+			        .addComponent(houseButton))
 		   		.addGap(100)
 		      .addGroup(layout.createSequentialGroup()
 	    		  	.addComponent(solarPanelLabel)
 	    		  	.addComponent(solarPanelImagePanel)
+	    		  	.addComponent(solarPanelButton)
 	    		  	.addComponent(accumulatorLabel)
-	    		  	.addComponent(accumulatorImagePanel))
+	    		  	.addComponent(accumulatorImagePanel)
+	    		  	.addComponent(accumulatorButton))
 		      .addGap(100)
 		      .addGroup(layout.createSequentialGroup()  
 		    		  .addComponent(powerPlantLabel)
