@@ -1,42 +1,152 @@
 package nuclearpower.model;
 
 import nuclearpower.model.assocination.PanelBatteryComposition;
+import nuclearpower.model.assocination.PlantPanelAssociation;
+import hu.elte.txtuml.api.stdlib.timers.Timer;
 
-signal BatteryRunOutFromEnergy;
-signal BattaryProvidesEnergy;
+signal WatherTick;
+signal UsingTick;
 
 class SolarPanel {
 	
+	private Timer watherTimer;
+	private Timer usingBatteryTimer;
+	private boolean watherIsSunny;
+	
 	initial Init;
-	state Working;
+	state Warhousing {
+		entry {
+			watherTimer = Timer.start(this, new WatherTick(), 1000);
+			
+		}
+	}
+	state NotWarhousing {
+		entry {
+			watherTimer = Timer.start(this, new WatherTick(), 1000);
+			usingBatteryTimer = Timer.start(this, new UsingTick(), 1000);
+			
+		}
+	}
 	
 	transition Initialize {
 		from Init;
-		to Working;
+		to Warhousing;
+	}
+	
+	transition ChangeToWarhousing {
+		from Warhousing;
+		to NotWarhousing;
+		trigger ChangeToNotWarhousingPressed;
+		effect {
+			NuclearPowerPlant plant = this->(PlantPanelAssociation.plant).selectAny();
+			send new ReduceProductionVolume() to plant;
+		
+		
+		}
+		guard (this->(PanelBatteryComposition.battery).selectAny().hasCapacity ());
+	}
+	
+	transition ChangeToNotWarhosing {
+		from NotWarhousing;
+		to Warhousing;
+		trigger ChangeToWarhousingPressed;
+		effect {
+			NuclearPowerPlant plant = this->(PlantPanelAssociation.plant).selectAny();
+			send new IncraseProductionVolume() to plant;
+		
+		
+		}
 	}
 	
 	transition RunningOutFromEnergy {
-		from Working;
-		to Working;
+		from NotWarhousing;
+		to Warhousing;
 		trigger BatteryRunOutFromEnergy;
 		effect {
-			// sending a signal to Plant
+			NuclearPowerPlant plant = this->(PlantPanelAssociation.plant).selectAny();
+			send new IncraseProductionVolume() to plant;
 		
 		
 		}
 	}
 	
-	transition ProvidingEnergy {
-		from Working;
-		to Working;
-		trigger BattaryProvidesEnergy;
-		effect {
-			// sending a signal to Plant
-		}
+	transition ChargingBatteryInSunnyWatherWhenWarhousing {
+			from Warhousing;
+			to Warhousing;
+			trigger WatherTick;
+			effect {
+				Battery battery = this->(PanelBatteryComposition.battery).selectAny();
+				send new SunyWather() to battery;
+			}
+			guard (watherIsSunny);
 	}
+	
+	transition WatherBecameSunnyWhenWarhousing {
+		from Warhousing;
+		to Warhousing;
+		trigger WatherChanged;
+		effect {
+				watherIsSunny = true;
+				Battery battery = this->(PanelBatteryComposition.battery).selectAny();				
+				send new SunyWather() to battery;
+			}
+			guard (!watherIsSunny);	
+		}
+		
+	
+	transition WatherBecameCloudyWhenWarhousing {
+		from Warhousing;
+		to Warhousing;
+		trigger WatherChanged;
+		effect {
+			watherIsSunny = false;
+			Battery battery = this->(PanelBatteryComposition.battery).selectAny();
+			send new CouldyWather() to battery;
+		}
+		guard (watherIsSunny);
+	}
+	
+	transition WatherBecameSunnyWhenNotWarhousing {
+		from NotWarhousing;
+		to NotWarhousing;
+		trigger WatherChanged;
+		effect {
+				watherIsSunny = true;
+			}
+			guard (!watherIsSunny);	
+		}
+		
+	
+	transition WatherBecameCloudyWhenNotWarhousing {
+		from NotWarhousing;
+		to NotWarhousing;
+		trigger WatherChanged;
+		effect {
+			watherIsSunny = false;
+			Battery battery = this->(PanelBatteryComposition.battery).selectAny();
+			send new CouldyWather() to battery;
+		}
+		guard (watherIsSunny);
+	}
+	
+	transition UsingBatteryWhenNotWarhousing {
+		from NotWarhousing;
+		to NotWarhousing;
+		trigger UsingTick;
+		effect {
+			Battery battery = this->(PanelBatteryComposition.battery).selectAny();
+			send new UsingBattery() to battery;
+		}
+		guard (!watherIsSunny);
+	}
+	
+
 	
 	public SolarPanel () {
+		watherIsSunny = false;
+		
 		Battery battery = new Battery (100);
 		link (PanelBatteryComposition.panel, this, PanelBatteryComposition.battery, battery);
+		start(battery);
 	}
 }

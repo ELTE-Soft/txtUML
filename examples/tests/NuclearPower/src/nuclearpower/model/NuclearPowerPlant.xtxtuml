@@ -1,7 +1,6 @@
 package nuclearpower.model;
 
-signal ChangeProductionVolume;
-signal ControlNuclearPowerOperation;
+import nuclearpower.model.assocination.PlantPanelAssociation;
 
 class NuclearPowerPlant {
 	
@@ -20,13 +19,13 @@ class NuclearPowerPlant {
 		transition FewPowerProducing {
 			from ProduceMuchPower;
 			to ProduceFewPower;
-			trigger ChangeProductionVolume;
+			trigger ReduceProductionVolume;
 		}
 		
 		transition MorePowerProducing {
 			from ProduceFewPower;
 			to ProduceMuchPower;
-			trigger ChangeProductionVolume;
+			trigger IncraseProductionVolume;
 		}
 	}
 		
@@ -39,12 +38,12 @@ class NuclearPowerPlant {
 	transition ShutingDown {
 		from ProducePower;
 		to NotInOperation;
-		trigger ControlNuclearPowerOperation;
+		trigger SwitchOffPlant;
 	}
 	
 	transition TurnOnPlant {
 		from NotInOperation;
 		to ProducePower;
-		trigger ControlNuclearPowerOperation;
+		trigger SwitchOnPlant;
 	}
 }
