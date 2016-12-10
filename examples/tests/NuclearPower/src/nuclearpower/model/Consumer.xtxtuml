@@ -1,0 +1,26 @@
+package nuclearpower.model;
+
+signal ButtonPressed;
+
+class Consumer {
+	initial Init;
+	state Off;
+	state On;
+	
+	transition Initialize {
+		from Init;
+		to Off;
+	}
+	
+	transition SwitchOn {
+		from Off;
+		to On;
+		trigger ButtonPressed;
+	}
+	
+	transition SwitchOff {
+		from On;
+		to Off;
+		trigger ButtonPressed;
+	}
+}

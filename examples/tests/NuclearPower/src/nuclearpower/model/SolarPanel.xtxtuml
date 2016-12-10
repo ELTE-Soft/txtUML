@@ -1,0 +1,42 @@
+package nuclearpower.model;
+
+import nuclearpower.model.assocination.PanelBatteryComposition;
+
+signal BatteryRunOutFromEnergy;
+signal BattaryProvidesEnergy;
+
+class SolarPanel {
+	
+	initial Init;
+	state Working;
+	
+	transition Initialize {
+		from Init;
+		to Working;
+	}
+	
+	transition RunningOutFromEnergy {
+		from Working;
+		to Working;
+		trigger BatteryRunOutFromEnergy;
+		effect {
+			// sending a signal to Plant
+		
+		
+		}
+	}
+	
+	transition ProvidingEnergy {
+		from Working;
+		to Working;
+		trigger BattaryProvidesEnergy;
+		effect {
+			// sending a signal to Plant
+		}
+	}
+	
+	public SolarPanel () {
+		Battery battery = new Battery (100);
+		link (PanelBatteryComposition.panel, this, PanelBatteryComposition.battery, battery);
+	}
+}

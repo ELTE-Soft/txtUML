@@ -1,0 +1,9 @@
+package nuclearpower.model.assocination;
+
+import nuclearpower.model.NuclearPowerPlant;
+import nuclearpower.model.Consumer;
+
+association PlantConsumerAssociation {
+	1 NuclearPowerPlant plant;
+	1 Consumer consumer;
+}

@@ -1,0 +1,80 @@
+package nuclearpower.model;
+
+
+
+signal SunyWather;
+signal CouldyWather;
+signal UsingBattery;
+
+class Battery {
+	
+	initial Init;
+	state Passive;
+	state Loading;
+	state ProvidesEnergy;
+	
+	transition Initialize {
+		from Init;
+		to Passive;
+	}
+	
+	transition StartCharging {
+		from Passive;
+		to Loading;
+		trigger SunyWather;
+		effect {
+			capacity++;
+		}
+		guard (capacity < maxCapacity);
+	}
+	
+	transition FinishCharging {
+		from Loading;
+		to Passive;
+		trigger SunyWather;
+		guard (capacity == maxCapacity);
+	}
+	
+	transition WatherBecomeCloudy {
+		from Loading;
+		to Passive;
+		trigger CouldyWather;
+	}
+	
+	transition StartUsing {
+		from Passive;
+		to ProvidesEnergy;
+		trigger UsingBattery;
+		guard (capacity > 0);
+		effect {
+			capacity--;
+		}
+	}
+	
+	transition ProvidingEnergy {
+		from ProvidesEnergy;
+		to ProvidesEnergy;
+		trigger UsingBattery;
+		guard (capacity > 0);
+		effect {
+			capacity--;
+		}
+	}
+	
+	transition RunningOutFromEnergy {
+		from ProvidesEnergy;
+		to Passive;
+		trigger UsingBattery;
+		guard (capacity == 0);
+		effect {
+			capacity--;
+		}
+	}
+	
+	public Battery (int maxCapacity) {
+		this.maxCapacity = maxCapacity;
+	}
+	
+	private int capacity;
+	private int maxCapacity;
+}

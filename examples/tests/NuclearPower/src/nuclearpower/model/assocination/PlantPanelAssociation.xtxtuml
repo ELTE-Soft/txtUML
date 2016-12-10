@@ -1,0 +1,9 @@
+package nuclearpower.model.assocination;
+
+import nuclearpower.model.NuclearPowerPlant;
+import nuclearpower.model.SolarPanel;
+
+association PlantPanelAssociation {
+	1 NuclearPowerPlant plant;
+	1 SolarPanel panel;
+}

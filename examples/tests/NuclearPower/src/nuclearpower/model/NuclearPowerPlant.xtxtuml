@@ -1,0 +1,50 @@
+package nuclearpower.model;
+
+signal ChangeProductionVolume;
+signal ControlNuclearPowerOperation;
+
+class NuclearPowerPlant {
+	
+	initial Init;
+	state NotInOperation;
+	composite ProducePower {
+		initial Init;
+		state ProduceMuchPower;
+		state ProduceFewPower;
+		
+		transition Initialize {
+			from Init;
+			to ProduceMuchPower;
+		}
+		
+		transition FewPowerProducing {
+			from ProduceMuchPower;
+			to ProduceFewPower;
+			trigger ChangeProductionVolume;
+		}
+		
+		transition MorePowerProducing {
+			from ProduceFewPower;
+			to ProduceMuchPower;
+			trigger ChangeProductionVolume;
+		}
+	}
+		
+	
+	transition Initialize {
+		from Init;
+		to NotInOperation;
+	}
+	
+	transition ShutingDown {
+		from ProducePower;
+		to NotInOperation;
+		trigger ControlNuclearPowerOperation;
+	}
+	
+	transition TurnOnPlant {
+		from NotInOperation;
+		to ProducePower;
+		trigger ControlNuclearPowerOperation;
+	}
+}
