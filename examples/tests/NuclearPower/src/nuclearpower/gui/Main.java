@@ -1,111 +1,66 @@
 package nuclearpower.gui;
 
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Image;
+import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.execution.ModelExecutor;
+import nuclearpower.model.Battery;
+import nuclearpower.model.Consumer;
+import nuclearpower.model.NuclearPowerPlant;
+import nuclearpower.model.SolarPanel;
+import nuclearpower.model.UI;
+import nuclearpower.model.assocination.BatteryUIAssociation;
+import nuclearpower.model.assocination.ConsumerUIAssociation;
+import nuclearpower.model.assocination.PanelBatteryComposition;
+import nuclearpower.model.assocination.PanelUIAssociation;
+import nuclearpower.model.assocination.PlantConsumerAssociation;
+import nuclearpower.model.assocination.PlantPanelAssociation;
+import nuclearpower.model.assocination.PlantUIAssociation;
 
-import javax.swing.GroupLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-
-public class Main extends JFrame{
+public class Main {
 	
-	private static final String ASSETS_FOLDER = "/nuclearpower/gui/assets/";
-	
-	private JLabel powerPlantLabel = new JLabel("Power plant: Off");
-	private JLabel solarPanelLabel = new JLabel("Solar panel: Off");
-	private JLabel accumulatorLabel = new JLabel("Accumulator: Off");
-	private JLabel houseLabel = new JLabel("House: Off");
-	
-	private JLabel powerPlantImagePanel = new JLabel();
-	private JLabel solarPanelImagePanel = new JLabel();
-	private JLabel houseImagePanel = new JLabel();
-	private JLabel accumulatorImagePanel = new JLabel();
-	
-	private JButton solarPanelButton = new JButton("Change weather");
-	private JButton houseButton = new JButton("Swicth");
-	private JButton accumulatorButton = new JButton("AccBtn");
-
+	static NuclearPowerPlant nuclearPowerPlant;
+	static SolarPanel solarPanel;
+	static Consumer consumer;
+	static Battery battery;
+	static UI ui;
+	static GUI gui;
 	public static void main(String[] args) {
-		new Main().setVisible(true);
+		gui = new GUI();
+		ModelExecutor.create().setTraceLogging(true).launch(Main::init);
+		gui.setVisible(true);
+		
 	}
 	
-	public Main(){
-		super("Nuclear Power Station model");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-	    // set the jframe size and location
-	    setPreferredSize(new Dimension(1200, 800));
-
-	    createImages();
-	    createLayout();
-	    pack();
-	    setLocationRelativeTo(null);
+	private static void init(){
+		setupModel();
+		launchModel();
 	}
 
-	private void createImages() {
-		ImageIcon powerPlantImage = new ImageIcon(this.getClass().getResource(ASSETS_FOLDER + "powerstation_off.png"));
-		powerPlantImagePanel.setIcon(new ImageIcon(powerPlantImage.getImage().getScaledInstance(300, 275, Image.SCALE_SMOOTH)));
-		ImageIcon solarPanelImage = new ImageIcon(this.getClass().getResource(ASSETS_FOLDER + "solarpanel_rainy.png"));
-		solarPanelImagePanel.setIcon(new ImageIcon(solarPanelImage.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH)));
-		ImageIcon houseImage = new ImageIcon(this.getClass().getResource(ASSETS_FOLDER + "house_off.png"));
-		houseImagePanel.setIcon(new ImageIcon(houseImage.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH)));
-		ImageIcon accumulatorImage = new ImageIcon(this.getClass().getResource(ASSETS_FOLDER + "accu_empty.png"));
-		accumulatorImagePanel.setIcon(new ImageIcon(accumulatorImage.getImage().getScaledInstance(150, 300, Image.SCALE_SMOOTH)));
-
-		Font font = new Font("Serif", Font.BOLD, 24);
-		houseLabel.setFont(font);
-		accumulatorLabel.setFont(font);
-		solarPanelLabel.setFont(font);
-		powerPlantLabel.setFont(font);
+	private static void launchModel() {
+		Action.start(nuclearPowerPlant);
+		Action.start(solarPanel);
+		Action.start(battery);
+		Action.start(consumer);
 	}
 
-	private void createLayout() {
-		GroupLayout layout = new GroupLayout(this.getContentPane());
-		this.getContentPane().setLayout(layout);
-		//layout.setAutoCreateGaps(true);
-		layout.setAutoCreateContainerGaps(true);
+	private static void setupModel() {
+		nuclearPowerPlant = Action.create (NuclearPowerPlant.class);
+		solarPanel = Action.create(SolarPanel.class);
+		consumer = Action.create(Consumer.class);
+		battery = Action.create(Battery.class, 100);
+		Action.link (PanelBatteryComposition.panel.class, solarPanel, PanelBatteryComposition.battery.class, battery);
 		
-		layout.setHorizontalGroup(
-				   layout.createSequentialGroup()
-				      .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				    		  .addComponent(houseLabel)
-				    		  .addComponent(houseImagePanel)
-				    		  .addComponent(houseButton))
-				      .addGap(100)
-				      .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				    		  .addComponent(solarPanelLabel)
-				    		  .addComponent(solarPanelImagePanel)
-				    		  .addComponent(solarPanelButton)
-				    		  .addComponent(accumulatorLabel)
-				    		  .addComponent(accumulatorImagePanel)
-				    		  .addComponent(accumulatorButton))
-				      .addGap(100)
-				      .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				    		  .addComponent(powerPlantLabel)
-				    		  .addComponent(powerPlantImagePanel))
-				);
-		layout.setVerticalGroup(
-		   layout.createParallelGroup()
-		   		.addGroup(layout.createSequentialGroup()
-	   				.addComponent(houseLabel)
-			        .addComponent(houseImagePanel)
-			        .addComponent(houseButton))
-		   		.addGap(100)
-		      .addGroup(layout.createSequentialGroup()
-	    		  	.addComponent(solarPanelLabel)
-	    		  	.addComponent(solarPanelImagePanel)
-	    		  	.addComponent(solarPanelButton)
-	    		  	.addComponent(accumulatorLabel)
-	    		  	.addComponent(accumulatorImagePanel)
-	    		  	.addComponent(accumulatorButton))
-		      .addGap(100)
-		      .addGroup(layout.createSequentialGroup()  
-		    		  .addComponent(powerPlantLabel)
-		    		  .addComponent(powerPlantImagePanel))
-		);
+		ui = Action.create(UI.class);
+		ui.gui = gui;
+		Action.link(PlantPanelAssociation.plant.class, nuclearPowerPlant, PlantPanelAssociation.panel.class, solarPanel);
+		Action.link(PlantConsumerAssociation.plant.class, nuclearPowerPlant, PlantConsumerAssociation.consumer.class, consumer);
+		
+		Action.link(PlantUIAssociation.plant.class, nuclearPowerPlant, PlantUIAssociation.ui.class, ui);
+		Action.link(PanelUIAssociation.panel.class, solarPanel, PanelUIAssociation.ui.class, ui);
+		Action.link(ConsumerUIAssociation.consumer.class, consumer, ConsumerUIAssociation.ui.class, ui);
+		Action.link (BatteryUIAssociation.battery.class, battery, BatteryUIAssociation.ui.class, ui);
+		
+		gui.setSolarPanel(solarPanel);
+		gui.setConsumer(consumer);
 	}
 
 }

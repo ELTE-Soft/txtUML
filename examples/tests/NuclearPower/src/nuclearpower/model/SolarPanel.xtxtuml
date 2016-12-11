@@ -85,7 +85,8 @@ class SolarPanel {
 		trigger WeatherChanged;
 		effect {
 				watherIsSunny = true;
-				Battery battery = this->(PanelBatteryComposition.battery).selectAny();				
+				Battery battery = this->(PanelBatteryComposition.battery).selectAny();
+				this->(assocination.PanelUIAssociation.ui).selectAny().gui.weatherChanged("Sunny");				
 				send new SunyWather() to battery;
 			}
 			guard (!watherIsSunny);	
@@ -98,6 +99,7 @@ class SolarPanel {
 		trigger WeatherChanged;
 		effect {
 			watherIsSunny = false;
+			this->(assocination.PanelUIAssociation.ui).selectAny().gui.weatherChanged("Rainy");
 			Battery battery = this->(PanelBatteryComposition.battery).selectAny();
 			send new CouldyWather() to battery;
 		}
@@ -110,6 +112,7 @@ class SolarPanel {
 		trigger WeatherChanged;
 		effect {
 				watherIsSunny = true;
+				this->(assocination.PanelUIAssociation.ui).selectAny().gui.weatherChanged("Sunny");
 			}
 			guard (!watherIsSunny);	
 		}
@@ -121,6 +124,7 @@ class SolarPanel {
 		trigger WeatherChanged;
 		effect {
 			watherIsSunny = false;
+			this->(assocination.PanelUIAssociation.ui).selectAny().gui.weatherChanged("Rainy");
 			Battery battery = this->(PanelBatteryComposition.battery).selectAny();
 			send new CouldyWather() to battery;
 		}

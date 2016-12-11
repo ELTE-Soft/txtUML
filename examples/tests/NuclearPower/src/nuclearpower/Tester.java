@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import hu.elte.txtuml.api.model.API;
 import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import nuclearpower.model.Battery;
 import nuclearpower.model.ButtonPressed;
@@ -63,6 +64,17 @@ public class Tester {
 			public void powerStationStateChanged(String newState) {
 				System.out.println("Power Station: " + newState);
 			}
+			
+			@Override
+			public void setSolarPanel(ModelClass modelClass) {}
+
+			@Override
+			public void setConsumer(ModelClass modelClass) {}
+
+			@Override
+			public void weatherChanged(String newWeather) {
+				System.out.println("Weather is "+newWeather);
+			}
 		};
 		
 		Action.link(PlantPanelAssociation.plant.class, nuclearPowerPlant, PlantPanelAssociation.panel.class, solarPanel);
@@ -75,10 +87,7 @@ public class Tester {
 		Action.start(nuclearPowerPlant);
 		Action.start(solarPanel);
 		Action.start(battery);
-		Action.start(consumer);
-		
-
-		
+		Action.start(consumer);		
 	}
 	
 	public static void main (String[] args) {
