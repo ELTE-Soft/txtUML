@@ -9,17 +9,19 @@ signal SwitchOnPlant;
 signal SwitchOffPlant;
 
 //Consumer signals
-signal ButtonPressed;
+signal ConsumerButtonPressed;
 
 //solar panel signals
 signal BatteryRunOutFromEnergy;
-signal BattaryProvidesEnergy;
+signal BatteryProvidesEnergy;
 signal WeatherChanged;
-signal WarhouseButtonPressed;
 signal ChangeToWarhousingPressed;
 signal ChangeToNotWarhousingPressed;
 
+//weather signals
+signal WeatherButtonPressed;
+
 //battery signals
-signal SunyWather;
-signal CouldyWather;
+signal ChargingBattery;
+signal StopChargingBattery;
 signal UsingBattery;

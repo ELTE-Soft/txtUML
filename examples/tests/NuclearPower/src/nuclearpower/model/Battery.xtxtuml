@@ -29,12 +29,15 @@ class Battery {
 	transition Initialize {
 		from Init;
 		to Passive;
+		effect{
+			this->(BatteryUIAssociation.ui).selectAny().gui.batteryCapacityChanged(capacity);
+		}
 	}
 	
 	transition StartCharging {
 		from Passive;
 		to Loading;
-		trigger SunyWather;
+		trigger ChargingBattery;
 		effect {
 			capacity++;
 			this->(BatteryUIAssociation.ui).selectAny().gui.batteryCapacityChanged(capacity);
@@ -45,7 +48,7 @@ class Battery {
 	transition ChargingFromSunEnergy {
 		from Loading;
 		to Loading;
-		trigger SunyWather;
+		trigger ChargingBattery;
 		effect {
 			capacity++;
 			this->(BatteryUIAssociation.ui).selectAny().gui.batteryCapacityChanged(capacity);
@@ -56,14 +59,14 @@ class Battery {
 	transition FinishCharging {
 		from Loading;
 		to Passive;
-		trigger SunyWather;
+		trigger ChargingBattery;
 		guard (capacity == maxCapacity);
 	}
 	
 	transition WatherBecomeCloudy {
 		from Loading;
 		to Passive;
-		trigger CouldyWather;
+		trigger StopChargingBattery;
 	}
 	
 	

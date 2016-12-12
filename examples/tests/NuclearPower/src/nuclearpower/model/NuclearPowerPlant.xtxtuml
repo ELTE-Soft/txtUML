@@ -5,10 +5,16 @@ import nuclearpower.model.assocination.PlantUIAssociation;
 
 class NuclearPowerPlant {
 	
+	private boolean isInOperation;
+	public boolean isInOperation(){
+		return isInOperation;
+	} 
+	
 	initial Init;
 	state NotInOperation{
 		entry{
-			this->(PlantUIAssociation.ui).selectAny().gui.powerStationStateChanged("Shut down");	
+			this->(PlantUIAssociation.ui).selectAny().gui.powerStationStateChanged("Shut down");
+			isInOperation = false;	
 		}
 	};
 	composite ProducePower {
@@ -39,6 +45,10 @@ class NuclearPowerPlant {
 			from ProduceFewPower;
 			to ProduceMuchPower;
 			trigger IncraseProductionVolume;
+		}
+		
+		entry{
+			isInOperation = true;
 		}
 	}
 		

@@ -5,26 +5,26 @@ import nuclearpower.model.assocination.PlantPanelAssociation;
 import hu.elte.txtuml.api.stdlib.timers.Timer;
 import nuclearpower.model.assocination.PanelUIAssociation;
 import nuclearpower.model.assocination.BatteryUIAssociation;
+import nuclearpower.model.assocination.PanelWeatherAssociation;
 
-signal WatherTick;
+signal ChargingTick;
 signal UsingTick;
 
 class SolarPanel {
 	
-	private Timer watherTimer;
+	private Timer chargingTimer;
 	private Timer usingBatteryTimer;
-	private boolean watherIsSunny;
 	
 	initial Init;
 	state Warhousing {
 		entry {
-			watherTimer = Timer.start(this, new WatherTick(), 1000);
+			chargingTimer = Timer.start(this, new ChargingTick(), 1000);
 			this->(PanelUIAssociation.ui).selectAny().gui.panelStateChanged("Warehousing");
 		}
 	}
 	state NotWarhousing {
 		entry {
-			watherTimer = Timer.start(this, new WatherTick(), 1000);
+			chargingTimer = Timer.start(this, new ChargingTick(), 1000);
 			usingBatteryTimer = Timer.start(this, new UsingTick(), 1000);
 			this->(PanelUIAssociation.ui).selectAny().gui.panelStateChanged("Not Warehousing");
 		}
@@ -35,20 +35,20 @@ class SolarPanel {
 		to Warhousing;
 	}
 	
-	transition ChangeToWarhousing {
+	transition ChangeToNotWarhousing {
 		from Warhousing;
 		to NotWarhousing;
 		trigger ChangeToNotWarhousingPressed;
 		effect {
 			NuclearPowerPlant plant = this->(PlantPanelAssociation.plant).selectAny();
+			Battery battery = this->(PanelBatteryComposition.battery).selectAny();
 			send new ReduceProductionVolume() to plant;
-		
-		
+			send new StopChargingBattery() to battery;
 		}
 		guard (this->(PanelBatteryComposition.battery).selectAny().hasCapacity ());
 	}
 	
-	transition ChangeToNotWarhosing {
+	transition ChangeToWarhosing {
 		from NotWarhousing;
 		to Warhousing;
 		trigger ChangeToWarhousingPressed;
@@ -71,26 +71,24 @@ class SolarPanel {
 	transition ChargingBatteryInSunnyWatherWhenWarhousing {
 			from Warhousing;
 			to Warhousing;
-			trigger WatherTick;
+			trigger ChargingTick;
 			effect {
 				Battery battery = this->(PanelBatteryComposition.battery).selectAny();
-				send new SunyWather() to battery;
+				send new ChargingBattery() to battery;
 			}
-			guard (watherIsSunny);
+			guard (this->(PanelWeatherAssociation.weather).selectAny().isSunny());
 	}
 	
 	transition WatherBecameSunnyWhenWarhousing {
 		from Warhousing;
 		to Warhousing;
 		trigger WeatherChanged;
-		effect {
-				watherIsSunny = true;
+		effect {		
 				Battery battery = this->(PanelBatteryComposition.battery).selectAny();
-				this->(assocination.PanelUIAssociation.ui).selectAny().gui.weatherChanged("Sunny");				
-				send new SunyWather() to battery;
-			}
-			guard (!watherIsSunny);	
+				send new ChargingBattery() to battery;
 		}
+		guard (!this->(PanelWeatherAssociation.weather).selectAny().isSunny());	
+	}
 		
 	
 	transition WatherBecameCloudyWhenWarhousing {
@@ -98,37 +96,21 @@ class SolarPanel {
 		to Warhousing;
 		trigger WeatherChanged;
 		effect {
-			watherIsSunny = false;
-			this->(assocination.PanelUIAssociation.ui).selectAny().gui.weatherChanged("Rainy");
 			Battery battery = this->(PanelBatteryComposition.battery).selectAny();
-			send new CouldyWather() to battery;
+			send new StopChargingBattery() to battery;
 		}
-		guard (watherIsSunny);
-	}
-	
-	transition WatherBecameSunnyWhenNotWarhousing {
-		from NotWarhousing;
-		to NotWarhousing;
-		trigger WeatherChanged;
-		effect {
-				watherIsSunny = true;
-				this->(assocination.PanelUIAssociation.ui).selectAny().gui.weatherChanged("Sunny");
-			}
-			guard (!watherIsSunny);	
-		}
-		
+		guard (this->(PanelWeatherAssociation.weather).selectAny().isSunny());
+	}	
 	
 	transition WatherBecameCloudyWhenNotWarhousing {
 		from NotWarhousing;
 		to NotWarhousing;
 		trigger WeatherChanged;
 		effect {
-			watherIsSunny = false;
-			this->(assocination.PanelUIAssociation.ui).selectAny().gui.weatherChanged("Rainy");
 			Battery battery = this->(PanelBatteryComposition.battery).selectAny();
-			send new CouldyWather() to battery;
+			send new StopChargingBattery() to battery;
 		}
-		guard (watherIsSunny);
+		guard (this->(PanelWeatherAssociation.weather).selectAny().isSunny());
 	}
 	
 	transition UsingBatteryWhenNotWarhousing {
@@ -139,12 +121,6 @@ class SolarPanel {
 			Battery battery = this->(PanelBatteryComposition.battery).selectAny();
 			send new UsingBattery() to battery;
 		}
-		guard (!watherIsSunny);
-	}
-	
-
-	
-	public SolarPanel () {
-		watherIsSunny = false;
+		guard (this->(PlantPanelAssociation.plant).selectAny().isInOperation())
 	}
 }

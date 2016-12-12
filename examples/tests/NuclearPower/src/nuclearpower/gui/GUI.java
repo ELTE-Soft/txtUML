@@ -13,10 +13,11 @@ import javax.swing.JLabel;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.ModelClass;
 import nuclearpower.GUIInterface;
-import nuclearpower.model.ButtonPressed;
 import nuclearpower.model.ChangeToNotWarhousingPressed;
 import nuclearpower.model.ChangeToWarhousingPressed;
-import nuclearpower.model.WeatherChanged;
+import nuclearpower.model.ConsumerButtonPressed;
+import nuclearpower.model.Weather;
+import nuclearpower.model.WeatherButtonPressed;
 
 public class GUI extends JFrame implements GUIInterface{
 	private static final long serialVersionUID = 1L;
@@ -41,7 +42,8 @@ public class GUI extends JFrame implements GUIInterface{
 	private JButton notwarehousingButton = new JButton("Not warehousing");
 	
 	private ModelClass solarPanel;
-	private ModelClass consumer; 
+	private ModelClass consumer;
+	private ModelClass weather; 
 	
 	private static ImageIcon POWERPLANT_OFF;
 	private static ImageIcon POWERPLANT_NORMAL;
@@ -62,7 +64,7 @@ public class GUI extends JFrame implements GUIInterface{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 	    // set the jframe size and location
-	    setPreferredSize(new Dimension(1200, 800));
+	    setPreferredSize(new Dimension(1200, 900));
 	    setUpUIElementActions();
 	    createImages();
 	    createLayout();
@@ -73,7 +75,7 @@ public class GUI extends JFrame implements GUIInterface{
 
 	private void setUpUIElementActions() {
 		weatherButton.addActionListener((action) -> {
-			Action.send(new WeatherChanged(), solarPanel);
+			Action.send(new WeatherButtonPressed(), weather);
 		});
 		
 		warehousingButton.addActionListener((action) -> {
@@ -85,7 +87,7 @@ public class GUI extends JFrame implements GUIInterface{
 		});
 		
 		houseButton.addActionListener((action) -> {
-			Action.send(new ButtonPressed(), consumer);
+			Action.send(new ConsumerButtonPressed(), consumer);
 		});
 	}
 
@@ -246,6 +248,11 @@ public class GUI extends JFrame implements GUIInterface{
 		this.consumer = modelClass;
 	}
 
+	@Override
+	public void setWeather(Weather modelClass) {
+		this.weather = modelClass;
+	}
+	
 	@Override
 	public void weatherChanged(String newWeather) {
 		this.weatherLabel.setText("Weather: "+newWeather);

@@ -1,0 +1,55 @@
+package nuclearpower.model;
+
+import nuclearpower.model.assocination.WeatherUIAssociation;
+import nuclearpower.model.assocination.PanelWeatherAssociation;
+
+class Weather{
+	
+	private boolean isSunny;
+	
+	public boolean isSunny(){
+		return isSunny;
+	};
+	
+
+	initial init;
+	state Sunny{
+		entry{
+			isSunny = true;
+			this->(WeatherUIAssociation.ui).selectAny().gui.weatherChanged("Sunny");
+		}
+	};
+	state Rainy{
+		entry{
+			isSunny = false;
+			this->(WeatherUIAssociation.ui).selectAny().gui.weatherChanged("Rainy");
+		}
+	};
+
+	transition WeatherBecomesSunny{
+		from Rainy;
+		to Sunny;
+		trigger WeatherButtonPressed;
+		effect{
+			SolarPanel panel = this->(PanelWeatherAssociation.panel).selectAny();
+			send new WeatherChanged() to panel;
+		}
+	}
+
+	transition WeatherBecomesRainy{
+		from Sunny;
+		to Rainy;
+		trigger WeatherButtonPressed;
+		effect{
+			SolarPanel panel = this->(PanelWeatherAssociation.panel).selectAny();
+			send new WeatherChanged() to panel;
+		}
+	}
+	
+	transition initialt{
+		from init;
+		to Weather.Rainy;
+	}
+}
+
+

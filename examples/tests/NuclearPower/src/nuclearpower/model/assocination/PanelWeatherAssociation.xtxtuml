@@ -1,0 +1,9 @@
+package nuclearpower.model.assocination;
+
+import nuclearpower.model.SolarPanel;
+import nuclearpower.model.Weather;
+
+association PanelWeatherAssociation{
+	1 SolarPanel panel;
+	1 Weather weather;
+}

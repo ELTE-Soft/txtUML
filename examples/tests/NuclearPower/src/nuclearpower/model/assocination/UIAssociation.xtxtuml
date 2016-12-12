@@ -5,6 +5,7 @@ import nuclearpower.model.Battery;
 import nuclearpower.model.UI;
 import nuclearpower.model.NuclearPowerPlant;
 import nuclearpower.model.Consumer;
+import nuclearpower.model.Weather;
 
 association PanelUIAssociation {
 	1 SolarPanel panel;
@@ -25,3 +26,9 @@ association ConsumerUIAssociation {
 	1 Consumer consumer;
 	1 UI ui;
 }
+
+association WeatherUIAssociation {
+	1 Weather weather;
+	1 UI ui;
+}
+

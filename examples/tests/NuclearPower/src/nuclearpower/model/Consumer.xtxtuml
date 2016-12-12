@@ -24,7 +24,7 @@ class Consumer {
 	transition SwitchOn {
 		from Off;
 		to On;
-		trigger ButtonPressed;
+		trigger ConsumerButtonPressed;
 		effect {
 			NuclearPowerPlant plant = this->(PlantConsumerAssociation.plant).selectAny();
 			send new SwitchOnPlant() to plant;
@@ -34,7 +34,7 @@ class Consumer {
 	transition SwitchOff {
 		from On;
 		to Off;
-		trigger ButtonPressed;
+		trigger ConsumerButtonPressed;
 		effect {
 			NuclearPowerPlant plant = this->(PlantConsumerAssociation.plant).selectAny();
 			send new SwitchOffPlant() to plant;
