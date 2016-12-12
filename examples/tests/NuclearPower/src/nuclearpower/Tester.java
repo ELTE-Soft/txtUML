@@ -96,7 +96,7 @@ public class Tester {
 		Action.link(PlantConsumerAssociation.plant.class, nuclearPowerPlant, PlantConsumerAssociation.consumer.class,
 				consumer);
 		Action.link(PanelBatteryComposition.battery.class, battery, PanelBatteryComposition.panel.class, solarPanel);
-		Action.link (PanelWeatherAssociation.weather.class, weather, PanelWeatherAssociation.panel.class, solarPanel);
+		Action.link(PanelWeatherAssociation.weather.class, weather, PanelWeatherAssociation.panel.class, solarPanel);
 		
 		Action.link(PlantUIAssociation.plant.class, nuclearPowerPlant, PlantUIAssociation.ui.class, ui);
 		Action.link(PanelUIAssociation.panel.class, solarPanel, PanelUIAssociation.ui.class, ui);

@@ -16,7 +16,7 @@ class Battery {
 			this->(BatteryUIAssociation.ui).selectAny().gui.batteryStateChanged("Passive");
 		}
 	};
-	state Loading{
+	state Charging{
 		entry{
 			this->(BatteryUIAssociation.ui).selectAny().gui.batteryStateChanged("Charging");
 		}
@@ -37,7 +37,7 @@ class Battery {
 	
 	transition StartCharging {
 		from Passive;
-		to Loading;
+		to Charging;
 		trigger ChargingBattery;
 		effect{
 			Timer.start(this, new ChargingTick(), 250);
@@ -45,8 +45,8 @@ class Battery {
 	}
 	
 	transition chargeOneUnit {
-		from Loading;
-		to Loading;
+		from Charging;
+		to Charging;
 		trigger ChargingTick;
 		effect {
 			capacity++;
@@ -57,7 +57,7 @@ class Battery {
 	}
 	
 	transition stopCharging {
-		from Loading;
+		from Charging;
 		to Passive;
 		trigger StopChargingBattery;
 	}

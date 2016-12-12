@@ -1,4 +1,4 @@
-package nuclearpower;
+package nuclearpower.diagrams;
 
 import hu.elte.txtuml.api.layout.Above;
 import hu.elte.txtuml.api.layout.Below;
