@@ -85,13 +85,15 @@ public class ProjectUtils {
 		return root.getProject(projectName);
 	}
 
-	public static IJavaProject findJavaProject(String projectName)
-			throws NotFoundException {
-		IProject project = ResourcesPlugin.getWorkspace().getRoot()
-				.getProject(projectName);
+	public static IJavaProject findJavaProject(String projectName) throws NotFoundException {
+		IProject project;
+		try {
+			project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		} catch (IllegalArgumentException e) {
+			project = null;
+		}
 		if (project == null || !project.exists()) {
-			throw new NotFoundException("Cannot find project '" + projectName
-					+ "'");
+			throw new NotFoundException("Cannot find project '" + projectName + "'");
 		}
 		return JavaCore.create(project);
 	}

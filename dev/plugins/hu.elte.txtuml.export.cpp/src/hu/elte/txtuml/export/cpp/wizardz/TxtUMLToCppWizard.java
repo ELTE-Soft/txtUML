@@ -31,6 +31,7 @@ public class TxtUMLToCppWizard extends Wizard {
 			String txtUMLProject = createCppCodePage.getProject();
 			String txtUMLModel = createCppCodePage.getModel();
 			String threadManagmentDescription = createCppCodePage.getThreadDescription();
+			String descriptionProjectName = createCppCodePage.getThreadDescriptionProjectName();
 
 			TxtUMLToCppPage.PROJECT_NAME = txtUMLProject;
 			TxtUMLToCppPage.MODEL_NAME = txtUMLModel;
@@ -44,8 +45,8 @@ public class TxtUMLToCppWizard extends Wizard {
 			boolean overWriteMainFileOption = createCppCodePage.getOverWriteMainFileSelection();
 
 			TxtUMLToCppGovernor governor = new TxtUMLToCppGovernor(false);
-			governor.uml2ToCpp(txtUMLProject, txtUMLModel, threadManagmentDescription, addRuntimeOption,
-					overWriteMainFileOption);
+			governor.uml2ToCpp(txtUMLProject, txtUMLModel, threadManagmentDescription, descriptionProjectName,
+					addRuntimeOption, overWriteMainFileOption);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;

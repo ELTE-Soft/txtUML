@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.papyrus.layout.txtuml;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -28,18 +29,18 @@ public class TxtUMLExporter {
 	private String projectName;
 	private String outputFolder;
 	private String txtUMLModelName;
-	private List<String> txtUMLLayout;
+	private Map<String, String> txtUMLLayout;	// <layout name, project name>
 	
 	/**
 	 * The Constructor
 	 * @param projectName - The txtUMLProject
 	 * @param outputFolder - The folder in the project where UML data and diagrams are put
 	 * @param txtUMLModelName - The fully qualified name of the txtUML model
-	 * @param txtUMLLayout - The fully qualified names of the txtUML Diagrams
+	 * @param txtUMLLayout - The fully qualified names of the txtUML Diagrams and the project names
 	 * @param parent - the parent ClassLoader
 	 */
 	public TxtUMLExporter(String projectName, String outputFolder,
-			String txtUMLModelName, List<String> txtUMLLayout) {
+			String txtUMLModelName, Map<String, String> txtUMLLayout) {
 		
 		this.projectName = projectName;
 		this.outputFolder = outputFolder;
@@ -55,9 +56,9 @@ public class TxtUMLExporter {
 	public TxtUMLLayoutDescriptor exportTxtUMLLayout() throws Exception{
 		List<Pair<String, DiagramExportationReport>> reports = new ArrayList<>();
 		
-		for(String layout : txtUMLLayout){
+		for(Map.Entry<String,String> layout : txtUMLLayout.entrySet()){
 			try {
-				DiagramExportationReport report = LayoutUtils.exportTxtUMLLayout(projectName, layout);
+				DiagramExportationReport report = LayoutUtils.exportTxtUMLLayout(projectName, layout.getKey(), layout.getValue());
 		        if(!report.isSuccessful()){
 		        	StringBuilder errorMessages = new StringBuilder("Errors occured during layout exportation:"+System.lineSeparator());
 		        	for(Object error : report.getErrors()){
@@ -67,7 +68,7 @@ public class TxtUMLExporter {
 		        	throw new LayoutExportException(errorMessages.toString());
 		        }
 		        
-		        reports.add(new Pair<>(layout,report));
+		        reports.add(new Pair<>(layout.getKey(), report));
 			} catch (Exception e) {
 				throw e;
 			}
