@@ -8,119 +8,78 @@ import nuclearpower.model.assocination.BatteryUIAssociation;
 import nuclearpower.model.assocination.PanelWeatherAssociation;
 
 signal ChargingTick;
+
 signal UsingTick;
 
 class SolarPanel {
-	
-	private Timer chargingTimer;
-	private Timer usingBatteryTimer;
-	
+
 	initial Init;
-	state Warhousing {
+
+	state NotInOperation {
 		entry {
-			chargingTimer = Timer.start(this, new ChargingTick(), 1000);
-			this->(PanelUIAssociation.ui).selectAny().gui.panelStateChanged("Warehousing");
+			this->(PanelUIAssociation.ui).selectAny().gui.panelStateChanged("Not in operation");
 		}
 	}
-	state NotWarhousing {
-		entry {
-			chargingTimer = Timer.start(this, new ChargingTick(), 1000);
-			usingBatteryTimer = Timer.start(this, new UsingTick(), 1000);
-			this->(PanelUIAssociation.ui).selectAny().gui.panelStateChanged("Not Warehousing");
-		}
-	}
-	
-	transition Initialize {
-		from Init;
-		to Warhousing;
-	}
-	
-	transition ChangeToNotWarhousing {
-		from Warhousing;
-		to NotWarhousing;
-		trigger ChangeToNotWarhousingPressed;
-		effect {
-			NuclearPowerPlant plant = this->(PlantPanelAssociation.plant).selectAny();
-			Battery battery = this->(PanelBatteryComposition.battery).selectAny();
-			send new ReduceProductionVolume() to plant;
-			send new StopChargingBattery() to battery;
-		}
-		guard (this->(PanelBatteryComposition.battery).selectAny().hasCapacity ());
-	}
-	
-	transition ChangeToWarhosing {
-		from NotWarhousing;
-		to Warhousing;
-		trigger ChangeToWarhousingPressed;
-		effect {
-			NuclearPowerPlant plant = this->(PlantPanelAssociation.plant).selectAny();
-			send new IncraseProductionVolume() to plant;
-		}
-	}
-	
-	transition RunningOutFromEnergy {
-		from NotWarhousing;
-		to Warhousing;
-		trigger BatteryRunOutFromEnergy;
-		effect {
-			NuclearPowerPlant plant = this->(PlantPanelAssociation.plant).selectAny();
-			send new IncraseProductionVolume() to plant;
-		}
-	}
-	
-	transition ChargingBatteryInSunnyWatherWhenWarhousing {
-			from Warhousing;
-			to Warhousing;
-			trigger ChargingTick;
-			effect {
-				Battery battery = this->(PanelBatteryComposition.battery).selectAny();
-				send new ChargingBattery() to battery;
-			}
-			guard (this->(PanelWeatherAssociation.weather).selectAny().isSunny());
-	}
-	
-	transition WatherBecameSunnyWhenWarhousing {
-		from Warhousing;
-		to Warhousing;
-		trigger WeatherChanged;
-		effect {		
-				Battery battery = this->(PanelBatteryComposition.battery).selectAny();
-				send new ChargingBattery() to battery;
-		}
-		guard (!this->(PanelWeatherAssociation.weather).selectAny().isSunny());	
-	}
+
+	composite InOperation {
+		initial Init;
 		
-	
-	transition WatherBecameCloudyWhenWarhousing {
-		from Warhousing;
-		to Warhousing;
-		trigger WeatherChanged;
-		effect {
-			Battery battery = this->(PanelBatteryComposition.battery).selectAny();
-			send new StopChargingBattery() to battery;
+		state ProducesPower {
+			entry {
+				this->(PanelUIAssociation.ui).selectAny().gui.panelStateChanged("Produces power");
+			}
 		}
-		guard (this->(PanelWeatherAssociation.weather).selectAny().isSunny());
-	}	
-	
-	transition WatherBecameCloudyWhenNotWarhousing {
-		from NotWarhousing;
-		to NotWarhousing;
-		trigger WeatherChanged;
-		effect {
-			Battery battery = this->(PanelBatteryComposition.battery).selectAny();
-			send new StopChargingBattery() to battery;
+		
+		state Passive {
+			entry {
+				this->(PanelUIAssociation.ui).selectAny().gui.panelStateChanged("Passive");
+			}
 		}
-		guard (this->(PanelWeatherAssociation.weather).selectAny().isSunny());
+		
+		transition producePower {
+			from Passive;
+			to ProducesPower;
+			trigger SwitchSolarPanel;
+			effect {
+				send new ReduceProductionVolume() to this->(PlantPanelAssociation.plant).selectAny();
+			}
+			// when the power plant is off, there is no need for electricity
+			guard ( this->(PlantPanelAssociation.plant).selectAny().isInOperation() )
+		}
+		
+		transition stopProducingPower {
+			from ProducesPower;
+			to Passive;
+			trigger SwitchSolarPanel;
+			effect {
+				send new IncreaseProductionVolume() to this->(PlantPanelAssociation.plant).selectAny();
+			}
+		}
+		
+		transition initialtrans {
+			from Init;
+			to Passive;
+		}
 	}
-	
-	transition UsingBatteryWhenNotWarhousing {
-		from NotWarhousing;
-		to NotWarhousing;
-		trigger UsingTick;
+
+	transition initialTrans {
+		from Init;
+		to NotInOperation;
+	}
+
+	transition weatherBecameRainy {
+		from InOperation;
+		to NotInOperation;
+		trigger WeatherChanged;
 		effect {
-			Battery battery = this->(PanelBatteryComposition.battery).selectAny();
-			send new UsingBattery() to battery;
+			send new IncreaseProductionVolume() to this->(PlantPanelAssociation.plant).selectAny();
 		}
-		guard (this->(PlantPanelAssociation.plant).selectAny().isInOperation())
+	}
+
+	transition weatherBacameSunny {
+		from NotInOperation;
+		to InOperation;
+		trigger WeatherChanged;
 	}
 }
+

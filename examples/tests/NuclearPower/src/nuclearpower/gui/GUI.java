@@ -13,9 +13,8 @@ import javax.swing.JLabel;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.ModelClass;
 import nuclearpower.GUIInterface;
-import nuclearpower.model.ChangeToNotWarhousingPressed;
-import nuclearpower.model.ChangeToWarhousingPressed;
 import nuclearpower.model.ConsumerButtonPressed;
+import nuclearpower.model.SwitchSolarPanel;
 import nuclearpower.model.Weather;
 import nuclearpower.model.WeatherButtonPressed;
 
@@ -38,8 +37,7 @@ public class GUI extends JFrame implements GUIInterface{
 	
 	private JButton weatherButton = new JButton("Change weather");
 	private JButton houseButton = new JButton("Switch");
-	private JButton warehousingButton = new JButton("Warehousing");
-	private JButton notwarehousingButton = new JButton("Not warehousing");
+	private JButton warehousingButton = new JButton("Switch");
 	
 	private ModelClass solarPanel;
 	private ModelClass consumer;
@@ -79,11 +77,7 @@ public class GUI extends JFrame implements GUIInterface{
 		});
 		
 		warehousingButton.addActionListener((action) -> {
-			Action.send(new ChangeToWarhousingPressed(), solarPanel);
-		});
-		
-		notwarehousingButton.addActionListener((action) -> {
-			Action.send(new ChangeToNotWarhousingPressed(), solarPanel);
+			Action.send(new SwitchSolarPanel(), solarPanel);
 		});
 		
 		houseButton.addActionListener((action) -> {
@@ -148,9 +142,7 @@ public class GUI extends JFrame implements GUIInterface{
 				    		  .addComponent(weatherLabel)
 				    		  .addComponent(weatherButton)
 				    		  .addComponent(solarPanelLabel)
-				    		  .addGroup(layout.createSequentialGroup()
-				    		  			.addComponent(warehousingButton)
-				    		  			.addComponent(notwarehousingButton))
+				    		  .addComponent(warehousingButton)
 				    		  .addComponent(solarPanelImagePanel)
 				    		  .addComponent(batteryStateLabel)
 				    		  .addComponent(batteryCapacityLabel)
@@ -173,9 +165,7 @@ public class GUI extends JFrame implements GUIInterface{
 		    		.addComponent(weatherLabel)
 	    		  	.addComponent(weatherButton)
 		    		.addComponent(solarPanelLabel)
-	    		  	.addGroup(layout.createParallelGroup()
-	    		  			.addComponent(warehousingButton)
-	    		  			.addComponent(notwarehousingButton))
+		  			.addComponent(warehousingButton)
 	    		  	.addComponent(solarPanelImagePanel)
 	    		  	.addComponent(batteryStateLabel)
 	    		  	.addComponent(batteryCapacityLabel)

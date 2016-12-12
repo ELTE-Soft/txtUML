@@ -2,7 +2,7 @@ package nuclearpower.model;
 
 //NuclearPowerPlant signals
 signal ChangeProductionVolume;
-signal IncraseProductionVolume;
+signal IncreaseProductionVolume;
 signal ReduceProductionVolume;
 signal ControlNuclearPowerOperation;
 signal SwitchOnPlant;
@@ -15,8 +15,7 @@ signal ConsumerButtonPressed;
 signal BatteryRunOutFromEnergy;
 signal BatteryProvidesEnergy;
 signal WeatherChanged;
-signal ChangeToWarhousingPressed;
-signal ChangeToNotWarhousingPressed;
+signal SwitchSolarPanel;
 
 //weather signals
 signal WeatherButtonPressed;
