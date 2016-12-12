@@ -2,6 +2,7 @@ package nuclearpower.model;
 
 import nuclearpower.model.assocination.BatteryUIAssociation;
 import nuclearpower.model.assocination.PanelBatteryComposition;
+import hu.elte.txtuml.api.stdlib.timers.Timer;
 
 class Battery {
 	
@@ -17,7 +18,7 @@ class Battery {
 	};
 	state Loading{
 		entry{
-			this->(BatteryUIAssociation.ui).selectAny().gui.batteryStateChanged("Loading");
+			this->(BatteryUIAssociation.ui).selectAny().gui.batteryStateChanged("Charging");
 		}
 	};
 	state ProvidesEnergy{
@@ -38,70 +39,66 @@ class Battery {
 		from Passive;
 		to Loading;
 		trigger ChargingBattery;
-		effect {
-			capacity++;
-			this->(BatteryUIAssociation.ui).selectAny().gui.batteryCapacityChanged(capacity);
+		effect{
+			Timer.start(this, new ChargingTick(), 250);
 		}
-		guard (capacity < maxCapacity);
 	}
 	
-	transition ChargingFromSunEnergy {
+	transition chargeOneUnit {
 		from Loading;
 		to Loading;
-		trigger ChargingBattery;
+		trigger ChargingTick;
 		effect {
 			capacity++;
+			Timer.start(this, new ChargingTick(), 250);
 			this->(BatteryUIAssociation.ui).selectAny().gui.batteryCapacityChanged(capacity);
 		}
 		guard (capacity < maxCapacity);
 	}
 	
-	transition FinishCharging {
-		from Loading;
-		to Passive;
-		trigger ChargingBattery;
-		guard (capacity == maxCapacity);
-	}
-	
-	transition WatherBecomeCloudy {
+	transition stopCharging {
 		from Loading;
 		to Passive;
 		trigger StopChargingBattery;
 	}
 	
-	
-	
 	transition StartUsing {
 		from Passive;
 		to ProvidesEnergy;
 		trigger UsingBattery;
-		guard (capacity > 0);
-		effect {
-			capacity--;
-			this->(BatteryUIAssociation.ui).selectAny().gui.batteryCapacityChanged(capacity);
+		guard (hasCapacity());
+		effect{
+			Timer.start(this, new UsingTick(), 250);
 		}
 	}
 	
-	transition ProvidingEnergy {
+	transition useOneUnit {
 		from ProvidesEnergy;
 		to ProvidesEnergy;
-		trigger UsingBattery;
-		guard (capacity > 1);
+		trigger UsingTick;
+		guard (capacity > 1); // capacity == 1 handled in "RunningOutOfEnergy"
 		effect {
-			capacity--;
+			capacity--;	
+			Timer.start(this, new UsingTick(), 250);
 			this->(BatteryUIAssociation.ui).selectAny().gui.batteryCapacityChanged(capacity);		
 		}
 	}
 	
-	transition RunningOutFromEnergy {
+	transition stopUsing {
 		from ProvidesEnergy;
 		to Passive;
-		trigger UsingBattery;
+		trigger StopUsingBattery;
+	}
+	
+	transition RunningOutOfEnergy {
+		from ProvidesEnergy;
+		to Passive;
+		trigger UsingTick;
 		guard (capacity == 1);
 		effect {
 			capacity--;
 			SolarPanel panel = this->(PanelBatteryComposition.panel).selectAny();
-			send new BatteryRunOutFromEnergy() to panel;
+			send new BatteryRunOutOfEnergy() to panel;
 			this->(BatteryUIAssociation.ui).selectAny().gui.batteryCapacityChanged(capacity);
 		}
 	}
@@ -114,3 +111,6 @@ class Battery {
 	private int capacity;
 	private int maxCapacity;
 }
+
+signal ChargingTick;
+signal UsingTick;

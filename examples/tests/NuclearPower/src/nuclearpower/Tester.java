@@ -10,8 +10,10 @@ import nuclearpower.model.Battery;
 import nuclearpower.model.Consumer;
 import nuclearpower.model.ConsumerButtonPressed;
 import nuclearpower.model.NuclearPowerPlant;
+import nuclearpower.model.ProduceEnergyWithPanel;
 import nuclearpower.model.SolarPanel;
-import nuclearpower.model.SwitchSolarPanel;
+import nuclearpower.model.StopUsingBattery;
+import nuclearpower.model.StopUsingPanel;
 import nuclearpower.model.UI;
 import nuclearpower.model.Weather;
 import nuclearpower.model.WeatherChanged;
@@ -110,10 +112,10 @@ public class Tester {
 				} else if (c == 'w') {
 					API.send(new WeatherChanged(), solarPanel);
 				} else if (c == 'a') {
-					API.send(new SwitchSolarPanel(), solarPanel);
+					API.send(new ProduceEnergyWithPanel(), solarPanel);
 				}
 				else if (c == 'b') {
-					API.send(new SwitchSolarPanel(), solarPanel);
+					API.send(new StopUsingPanel(), solarPanel);
 				}
 				c = (char) System.in.read();
 			}

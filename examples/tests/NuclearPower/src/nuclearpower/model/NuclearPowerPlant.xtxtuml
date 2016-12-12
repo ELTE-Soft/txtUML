@@ -63,7 +63,7 @@ class NuclearPowerPlant {
 		to NotInOperation;
 		trigger SwitchOffPlant;
 		effect{
-			send new SwitchSolarPanel() to this->(PlantPanelAssociation.panel).selectAny();
+			send new NoEnergyNeeded() to this->(PlantPanelAssociation.panel).selectAny();
 		}
 	}
 	

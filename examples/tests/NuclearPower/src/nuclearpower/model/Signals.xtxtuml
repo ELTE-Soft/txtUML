@@ -12,10 +12,15 @@ signal SwitchOffPlant;
 signal ConsumerButtonPressed;
 
 //solar panel signals
-signal BatteryRunOutFromEnergy;
-signal BatteryProvidesEnergy;
+signal BatteryRunOutOfEnergy;
+signal BatteryProvidesEnergy; //---
 signal WeatherChanged;
-signal SwitchSolarPanel;
+signal ProduceEnergyWithPanel;
+signal StopUsingPanel;
+signal UsePanelBattery;
+signal ChargePanelBattery;
+signal StopUsingPanelBattery;
+signal NoEnergyNeeded;
 
 //weather signals
 signal WeatherButtonPressed;
@@ -24,3 +29,4 @@ signal WeatherButtonPressed;
 signal ChargingBattery;
 signal StopChargingBattery;
 signal UsingBattery;
+signal StopUsingBattery;

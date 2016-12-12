@@ -13,8 +13,11 @@ import javax.swing.JLabel;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.ModelClass;
 import nuclearpower.GUIInterface;
+import nuclearpower.model.ChargePanelBattery;
 import nuclearpower.model.ConsumerButtonPressed;
-import nuclearpower.model.SwitchSolarPanel;
+import nuclearpower.model.ProduceEnergyWithPanel;
+import nuclearpower.model.StopUsingPanel;
+import nuclearpower.model.UsePanelBattery;
 import nuclearpower.model.Weather;
 import nuclearpower.model.WeatherButtonPressed;
 
@@ -37,7 +40,10 @@ public class GUI extends JFrame implements GUIInterface{
 	
 	private JButton weatherButton = new JButton("Change weather");
 	private JButton houseButton = new JButton("Switch");
-	private JButton warehousingButton = new JButton("Switch");
+	private JButton panelEnergyProductionButton = new JButton("Produce Energy");
+	private JButton panelBatteryChargeButton = new JButton("Charge battery");
+	private JButton panelBatteryUseButton = new JButton("Use battery");
+	private JButton panelStopButton = new JButton("Turn off");
 	
 	private ModelClass solarPanel;
 	private ModelClass consumer;
@@ -76,10 +82,21 @@ public class GUI extends JFrame implements GUIInterface{
 			Action.send(new WeatherButtonPressed(), weather);
 		});
 		
-		warehousingButton.addActionListener((action) -> {
-			Action.send(new SwitchSolarPanel(), solarPanel);
+		panelEnergyProductionButton.addActionListener((action) -> {
+			Action.send(new ProduceEnergyWithPanel(), solarPanel);
 		});
 		
+		panelBatteryChargeButton.addActionListener((action) -> {
+			Action.send(new ChargePanelBattery(), solarPanel);
+		});
+		
+		panelBatteryUseButton.addActionListener((action) -> {
+			Action.send(new UsePanelBattery(), solarPanel);
+		});
+		
+		panelStopButton.addActionListener((action) -> {
+			Action.send(new StopUsingPanel(), solarPanel);
+		});
 		houseButton.addActionListener((action) -> {
 			Action.send(new ConsumerButtonPressed(), consumer);
 		});
@@ -142,7 +159,11 @@ public class GUI extends JFrame implements GUIInterface{
 				    		  .addComponent(weatherLabel)
 				    		  .addComponent(weatherButton)
 				    		  .addComponent(solarPanelLabel)
-				    		  .addComponent(warehousingButton)
+				    		  .addComponent(panelStopButton)
+				    		  	.addGroup(layout.createSequentialGroup()
+										.addComponent(panelEnergyProductionButton)
+				    		  			.addComponent(panelBatteryChargeButton))
+				    		  	.addComponent(panelBatteryUseButton)
 				    		  .addComponent(solarPanelImagePanel)
 				    		  .addComponent(batteryStateLabel)
 				    		  .addComponent(batteryCapacityLabel)
@@ -165,7 +186,11 @@ public class GUI extends JFrame implements GUIInterface{
 		    		.addComponent(weatherLabel)
 	    		  	.addComponent(weatherButton)
 		    		.addComponent(solarPanelLabel)
-		  			.addComponent(warehousingButton)
+		    		.addComponent(panelStopButton)
+	    		  	.addGroup(layout.createParallelGroup()
+							.addComponent(panelEnergyProductionButton)
+	    		  			.addComponent(panelBatteryChargeButton))
+	    		  	.addComponent(panelBatteryUseButton)
 	    		  	.addComponent(solarPanelImagePanel)
 	    		  	.addComponent(batteryStateLabel)
 	    		  	.addComponent(batteryCapacityLabel)

@@ -2,28 +2,89 @@ package nuclearpower.model;
 
 import nuclearpower.model.assocination.PanelBatteryComposition;
 import nuclearpower.model.assocination.PlantPanelAssociation;
-import hu.elte.txtuml.api.stdlib.timers.Timer;
 import nuclearpower.model.assocination.PanelUIAssociation;
 import nuclearpower.model.assocination.BatteryUIAssociation;
 import nuclearpower.model.assocination.PanelWeatherAssociation;
-
-signal ChargingTick;
-
-signal UsingTick;
 
 class SolarPanel {
 
 	initial Init;
 
-	state NotInOperation {
-		entry {
-			this->(PanelUIAssociation.ui).selectAny().gui.panelStateChanged("Not in operation");
+	composite NotInOperation {
+		initial Init;
+		state UsesBattery {
+			entry {
+				this->(PanelUIAssociation.ui).selectAny().gui.panelStateChanged("Uses Battery");
+			}
+		}
+		state Passive {
+			entry {
+				this->(PanelUIAssociation.ui).selectAny().gui.panelStateChanged("Not in operation");
+			}
+		}
+		transition initialTrans {
+			from Init;
+			to Passive;
+		}
+		
+		transition useBattery {
+			from Passive;
+			to UsesBattery;
+			trigger UsePanelBattery;
+			effect {
+				send new ReduceProductionVolume() to this->(PlantPanelAssociation.plant).selectAny();
+				send new UsingBattery() to this->(PanelBatteryComposition.battery).selectAny();
+			}
+			// when the power plant is off, there is no need for electricity
+			guard ( this->(PlantPanelAssociation.plant).selectAny().isInOperation() &&
+				this->(PanelBatteryComposition.battery).selectAny().hasCapacity() )
+		}
+		
+		transition stopUsingBattery {
+			from UsesBattery;
+			to Passive;
+			trigger StopUsingPanelBattery;
+			effect {
+				send new IncreaseProductionVolume() to this->(PlantPanelAssociation.plant).selectAny();
+				send new StopUsingBattery() to this->(PanelBatteryComposition.battery).selectAny();
+			}
+		}
+		
+		transition batteryRunOutOfEnergy {
+			from UsesBattery;
+			to Passive;
+			trigger BatteryRunOutOfEnergy;
+			effect {
+				send new IncreaseProductionVolume() to this->(PlantPanelAssociation.plant).selectAny();
+			}
+		}
+		
+		transition noMoreEnergyNeeded{
+			from UsesBattery;
+			to Passive;
+			trigger NoEnergyNeeded;
+			effect{
+				send new StopUsingBattery() to this->(PanelBatteryComposition.battery).selectAny();
+			}
+		}
+		
+		transition turnOff{
+			from UsesBattery;
+			to Passive;
+			trigger StopUsingPanel;
+			effect{
+				send new StopUsingBattery() to this->(PanelBatteryComposition.battery).selectAny();
+				send new IncreaseProductionVolume() to this->(PlantPanelAssociation.plant).selectAny();
+			}
+		}
+		
+		exit{
+			send new StopUsingBattery() to this->(PanelBatteryComposition.battery).selectAny();
 		}
 	}
 
 	composite InOperation {
 		initial Init;
-		
 		state ProducesPower {
 			entry {
 				this->(PanelUIAssociation.ui).selectAny().gui.panelStateChanged("Produces power");
@@ -36,10 +97,16 @@ class SolarPanel {
 			}
 		}
 		
+		state ChargesBattery{
+			entry {
+				this->(PanelUIAssociation.ui).selectAny().gui.panelStateChanged("Charges Battery");
+			}
+		}
+		
 		transition producePower {
 			from Passive;
 			to ProducesPower;
-			trigger SwitchSolarPanel;
+			trigger ProduceEnergyWithPanel;
 			effect {
 				send new ReduceProductionVolume() to this->(PlantPanelAssociation.plant).selectAny();
 			}
@@ -50,15 +117,69 @@ class SolarPanel {
 		transition stopProducingPower {
 			from ProducesPower;
 			to Passive;
-			trigger SwitchSolarPanel;
+			trigger NoEnergyNeeded;
 			effect {
 				send new IncreaseProductionVolume() to this->(PlantPanelAssociation.plant).selectAny();
+			}
+		}
+		
+		
+		transition turnOff{
+			from ProducesPower;
+			to Passive;
+			trigger StopUsingPanel;
+			effect{
+				send new IncreaseProductionVolume() to this->(PlantPanelAssociation.plant).selectAny();
+			}
+		}
+		
+		transition stopCharginBattery {
+			from ChargesBattery;
+			to Passive;
+			trigger StopUsingPanel;
+			effect{
+				send new StopChargingBattery() to this->(PanelBatteryComposition.battery).selectAny();
+			}
+		}
+		
+		transition CharginBatteryFromEnergyProduction {
+			from ChargesBattery;
+			to ProducesPower;
+			trigger ProduceEnergyWithPanel;
+			effect{
+				send new StopChargingBattery() to this->(PanelBatteryComposition.battery).selectAny();
+				send new ReduceProductionVolume() to this->(PlantPanelAssociation.plant).selectAny();
+			}
+			// when the power plant is off, there is no need for electricity
+			guard ( this->(PlantPanelAssociation.plant).selectAny().isInOperation() )
+		}
+		
+		transition chargeBatteryFromEnergyProduction{
+			from ProducesPower;
+			to ChargesBattery;
+			trigger ChargePanelBattery;
+			effect{
+				send new ChargingBattery() to this->(PanelBatteryComposition.battery).selectAny();
+				send new IncreaseProductionVolume() to this->(PlantPanelAssociation.plant).selectAny();
+			}
+		}
+		
+		transition chargeBatteryFromPassive{
+			from Passive;
+			to ChargesBattery;
+			trigger ChargePanelBattery;
+			effect{
+				send new ChargingBattery() to this->(PanelBatteryComposition.battery).selectAny();
 			}
 		}
 		
 		transition initialtrans {
 			from Init;
 			to Passive;
+		}
+		
+		exit{
+			send new StopChargingBattery() to this->(PanelBatteryComposition.battery).selectAny();
 		}
 	}
 
@@ -81,5 +202,6 @@ class SolarPanel {
 		to InOperation;
 		trigger WeatherChanged;
 	}
+
 }
 
