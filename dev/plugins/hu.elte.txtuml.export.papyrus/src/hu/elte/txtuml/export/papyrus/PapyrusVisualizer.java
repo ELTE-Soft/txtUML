@@ -4,7 +4,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.papyrus.infra.ui.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.infra.core.resource.ModelMultiException;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
@@ -69,7 +69,7 @@ public class PapyrusVisualizer {
 		ProjectUtils.openProject(project);
 		monitor.worked(20);
 		
-		createAndOpenPapyrusModel(new SubProgressMonitor(monitor, 80));
+		createAndOpenPapyrusModel(SubMonitor.convert(monitor, 80));
 		SettingsRegistry.clear();
 		return Status.OK_STATUS;
 	}
@@ -95,7 +95,7 @@ public class PapyrusVisualizer {
 			papyrusModelManager.setLayoutController(layoutDescriptor);
 			monitor.worked(10);
 			
-			papyrusModelManager.createAndFillDiagrams(new SubProgressMonitor(monitor, 90));
+			papyrusModelManager.createAndFillDiagrams(SubMonitor.convert(monitor, 90));
 		} 
 	}
 	

@@ -7,7 +7,7 @@ import java.util.List;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.PlatformUI;
@@ -148,7 +148,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 					try {
 						PapyrusVisualizer pv = exporter.createVisualizer(layoutDescriptor);
 						pv.registerPayprusModelManager(TxtUMLPapyrusModelManager.class);
-						pv.run(new SubProgressMonitor(monitor, 85));
+						pv.run(SubMonitor.convert(monitor, 85));
 					} catch (Exception e) {
 						Dialogs.errorMsgb("txtUML visualization Error",
 								"Error occured during the visualization process.", e);
