@@ -1,0 +1,32 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: hu.elte.txtuml.xd
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: hu.elte.txtuml.xd; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.xtext,
+ org.eclipse.xtext.xbase,
+ org.eclipse.equinox.common;bundle-version="3.5.0",
+ org.eclipse.emf.ecore,
+ org.eclipse.xtext.xbase.lib,
+ org.antlr.runtime,
+ org.eclipse.xtext.util,
+ org.eclipse.xtend.lib,
+ org.eclipse.emf.common,
+ org.eclipse.xtext.common.types,
+ org.objectweb.asm;bundle-version="[5.0.1,6.0.0)";resolution:=optional
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: hu.elte.txtuml.xd.serializer,
+ hu.elte.txtuml.xd.parser.antlr,
+ hu.elte.txtuml.xd.services,
+ hu.elte.txtuml.xd.parser.antlr.internal,
+ hu.elte.txtuml.xd,
+ hu.elte.txtuml.xd.xDiagramDefinition.util,
+ hu.elte.txtuml.xd.xDiagramDefinition,
+ hu.elte.txtuml.xd.scoping,
+ hu.elte.txtuml.xd.xDiagramDefinition.impl,
+ hu.elte.txtuml.xd.validation,
+ hu.elte.txtuml.xd.generator,
+ hu.elte.txtuml.xd.jvmmodel
+Import-Package: org.apache.log4j

@@ -40,7 +40,10 @@
 		<module>../../plugins/hu.elte.txtuml.xtxtuml</module>
 		<module>../../plugins/hu.elte.txtuml.xtxtuml.lib</module>
 		<module>../../plugins/hu.elte.txtuml.xtxtuml.ui</module>
-
+		<module>../../plugins/hu.elte.txtuml.xd</module>
+		<module>../../plugins/hu.elte.txtuml.xd.ide</module>
+		<module>../../plugins/hu.elte.txtuml.xd.ui</module>
+		
 		<module>../../tests/hu.elte.txtuml.api.model.execution.tests</module>
 		<module>../../tests/hu.elte.txtuml.diagnostics.tests</module>
 		<module>../../tests/hu.elte.txtuml.export.cpp.tests</module>
@@ -50,6 +53,8 @@
 		<module>../../tests/hu.elte.txtuml.layout.visualizer.tests</module>
 		<module>../../tests/hu.elte.txtuml.utils.tests</module>
 		
+		<module>../../tests/hu.elte.txtuml.xd.tests</module>
+		<module>../../tests/hu.elte.txtuml.xd.ui.tests</module>
 		<module>../../tests/hu.elte.txtuml.xtxtuml.tests</module>
 
 		<module>../../releng/hu.elte.txtuml.target</module>

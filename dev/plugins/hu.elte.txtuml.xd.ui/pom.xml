@@ -1,0 +1,30 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>hu.elte.txtuml</groupId>
+		<artifactId>hu.elte.txtuml.parent</artifactId>
+		<version>0.5.1-SNAPSHOT</version>
+		<relativePath>../../releng/hu.elte.txtuml.parent/pom.xml</relativePath>
+	</parent>
+	<artifactId>hu.elte.txtuml.xd.ui</artifactId>
+	<packaging>eclipse-plugin</packaging>
+
+	<build>
+		<!-- enable Xtend -->
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.xtend</groupId>
+				<artifactId>xtend-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+</project>

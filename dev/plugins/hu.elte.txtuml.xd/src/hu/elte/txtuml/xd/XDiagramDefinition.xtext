@@ -1,0 +1,103 @@
+grammar hu.elte.txtuml.xd.XDiagramDefinition with org.eclipse.xtext.xbase.Xbase
+generate xDiagramDefinition "http://www.elte.hu/txtuml/xd/XDiagramDefinition"
+
+import "http://www.eclipse.org/xtext/common/JavaVMTypes" as types
+
+Model:
+	(package = PackageDeclaration)?
+	(imports = XImportSection)?
+	signature = DiagramSignature '{' (instructions += Instruction)* '}'
+;
+
+// environment
+
+PackageDeclaration:
+    'package' name=QualifiedName ';'
+;
+
+// diagram instructions
+
+DiagramSignature :
+	// generic types
+	diagramType = "state-machine-diagram" name=ID "for" genArg=[types::JvmType|QualifiedName] |
+	// non-generic types
+	diagramType = "class-diagram" name=ID
+;
+
+BinaryIdentifierInstruction:
+	val = TypeExpression 
+	op = ("left-of" | "right-of" | "top-of" | "bottom-of") 
+	of = TypeExpression
+;
+
+BinaryListInstruction:
+	val = TypeExpressionList
+	op = ("east-of" | "west-of" | "north-of" | "south-of")
+	of = TypeExpressionList
+;
+
+UnaryIdentifierInstruction:
+	op = ("phantom")
+	val = TypeExpression
+;
+
+UnaryListInstruction:
+	op = ("topmost" | "leftmost" | "rightmost" | "bottommost" | "row" | "column") 
+	val = TypeExpressionList
+;
+
+GroupInstruction:
+	op = ("group") 
+	name=ID 
+	val = TypeExpressionList
+;
+
+UnaryNumberInstruction:
+	op = ("spacing") 
+	val = NumericExpression
+;
+
+DiamondArgName:
+	"top" | "right" | "bottom" | "left"
+;
+
+DiamondInstruction:
+	op = "diamond"
+	(
+		// TODO: this parameter list check should be moved to the validation phase
+		args+=TypeExpression ',' args+=TypeExpression ',' args+=TypeExpression ',' args+=TypeExpression |
+		'{' args+=TypeExpression ',' args+=TypeExpression ',' args+=TypeExpression ',' args+=TypeExpression '}' |
+		argNames+=DiamondArgName ':' args+=TypeExpression (',' argNames+=DiamondArgName ':' args+=TypeExpression)* |
+		'{' argNames+=DiamondArgName ':' args+=TypeExpression (',' argNames+=DiamondArgName ':' args+=TypeExpression)* '}'
+	)	
+;
+
+Instruction:
+	(
+		BinaryIdentifierInstruction |
+		BinaryListInstruction |
+		UnaryIdentifierInstruction |
+		UnaryListInstruction |
+		GroupInstruction |
+		UnaryNumberInstruction |
+		DiamondInstruction
+	)
+	";"
+;
+
+// Argument & list types
+
+TypeExpressionList :
+	expressions += TypeExpression (',' expressions += TypeExpression)* |
+	'{'	TypeExpressionList '}'
+;
+
+TypeExpression :
+	phantom="phantom" | name=[types::JvmType|QualifiedName]
+	// TODO: this could be also in {} (optionally of course) but that conflicts with the diamond
+;
+
+NumericExpression :
+	Number'%'?
+	// TODO: this could be also in {} (optionally of course)
+;

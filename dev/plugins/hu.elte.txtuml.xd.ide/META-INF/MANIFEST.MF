@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: hu.elte.txtuml.xd.ide
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: hu.elte.txtuml.xd.ide; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: hu.elte.txtuml.xd,
+ org.eclipse.xtext.ide,
+ org.eclipse.xtext.xbase.ide
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: hu.elte.txtuml.xd.ide.contentassist.antlr.internal,
+ hu.elte.txtuml.xd.ide.contentassist.antlr
+Import-Package: hu.elte.txtuml.xd.services
+

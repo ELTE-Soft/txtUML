@@ -1,0 +1,8 @@
+bin/
+model/
+src-gen/
+xtend-gen/
+target/
+META-INF/MANIFEST.MF_gen
+plugin.xml_gen
+/.antlr-generator-3.2.0-patch.jar

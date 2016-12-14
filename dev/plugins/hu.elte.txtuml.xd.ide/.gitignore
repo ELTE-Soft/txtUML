@@ -1,0 +1,6 @@
+bin/
+src-gen/
+xtend-gen/
+target/
+META-INF/MANIFEST.MF_gen
+/classes/

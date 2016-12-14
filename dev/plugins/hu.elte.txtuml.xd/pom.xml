@@ -1,0 +1,96 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>hu.elte.txtuml.xd</artifactId>
+	<packaging>eclipse-plugin</packaging>
+	<parent>
+		<groupId>hu.elte.txtuml</groupId>
+		<artifactId>hu.elte.txtuml.parent</artifactId>
+		<version>0.5.1-SNAPSHOT</version>
+		<relativePath>../../releng/hu.elte.txtuml.parent/pom.xml</relativePath>
+	</parent>
+
+	<build>
+		<!-- enable Xtend -->
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+			</plugin>
+
+			<!-- special clean for src-gens -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<filesets combine.children="append">
+						<fileset>
+							<directory>${basedir}/src-gen/</directory>
+						</fileset>
+						<fileset>
+							<directory>${basedir}/model/generated/</directory>
+						</fileset>
+						<fileset>
+							<directory>${basedir}/../${project.artifactId}.ide/src-gen/</directory>
+						</fileset>
+						<fileset>
+							<directory>${basedir}/../${project.artifactId}.ui/src-gen/</directory>
+						</fileset>
+						<fileset>
+							<directory>${basedir}/../../tests/${project.artifactId}.tests/src-gen/</directory>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+
+			<!-- for Xtext generation -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>${exec-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<includeProjectDependencies>false</includeProjectDependencies>
+					<includePluginDependencies>true</includePluginDependencies>
+					<mainClass>org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher</mainClass>
+					<cleanupDaemonThreads>false</cleanupDaemonThreads>
+					<arguments>
+						<argument>
+							file://${project.basedir}/src/hu/elte/txtuml/xd/GenerateXDiagramDefinition.mwe2
+						</argument>
+						<argument>
+							-p
+						</argument>
+						<argument>
+							runtimeProject=/${project.basedir}
+						</argument>
+					</arguments>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.eclipse.xtext</groupId>
+						<artifactId>org.eclipse.xtext.xtext</artifactId>
+						<version>${xtend.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.eclipse.xtext</groupId>
+						<artifactId>org.eclipse.xtext.xbase</artifactId>
+						<version>${xtend.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+
+			<plugin>
+				<groupId>org.eclipse.xtend</groupId>
+				<artifactId>xtend-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+</project>
