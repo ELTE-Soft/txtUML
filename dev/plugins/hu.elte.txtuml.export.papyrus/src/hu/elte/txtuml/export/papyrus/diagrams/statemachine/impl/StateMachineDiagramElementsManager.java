@@ -32,8 +32,7 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	 *            - The DiagramEditPart of the diagram which is to be handled
 	 */
 	public StateMachineDiagramElementsManager(Diagram diagram, StateMachineDiagramElementsProvider provider,
-			StateMachineDiagramNotationManager notation, IDiagramElementsArranger arranger,
-			IProgressMonitor monitor) {
+			StateMachineDiagramNotationManager notation, IDiagramElementsArranger arranger, IProgressMonitor monitor) {
 		super(diagram, monitor);
 		this.notationManager = notation;
 		this.arranger = arranger;
@@ -64,13 +63,15 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 		StateMachine sm = this.elementsProvider.getMainElement();
 		this.notationManager.changeBoundsOfElement(sm, this.arranger.getBoundsForElement(sm), this.monitor);
 		Collection<Region> regions = this.elementsProvider.getMainRegions();
-		regions.forEach(region ->{
+		regions.forEach(region -> {
 			this.elementsProvider.getElementsOfRegion(region).forEach(element -> {
-				
+
 				Rectangle boundsForElement = this.notationManager.getBoundsOfElement(element, this.monitor);
-				boundsForElement.x = boundsForElement.x+StateMachineDiagramPixelDimensionProvider.DEFAULT_ELEMENT_BORDER;
-				boundsForElement.y = boundsForElement.y+StateMachineDiagramPixelDimensionProvider.DEFAULT_ELEMENT_BORDER;
-				this.notationManager.changeBoundsOfElement(element, boundsForElement , this.monitor);
+				boundsForElement.x = boundsForElement.x
+						+ StateMachineDiagramPixelDimensionProvider.DEFAULT_ELEMENT_BORDER;
+				boundsForElement.y = boundsForElement.y
+						+ StateMachineDiagramPixelDimensionProvider.DEFAULT_ELEMENT_BORDER;
+				this.notationManager.changeBoundsOfElement(element, boundsForElement, this.monitor);
 			});
 		});
 	}
@@ -100,7 +101,8 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 						this.arranger.getRouteForConnection(transition),
 						this.arranger.getSourceAnchorForConnection(transition),
 						this.arranger.getTargetAnchorForConnection(transition), this.monitor);
-				this.notationManager.hideConnectionLabelOfTransition(transition, StateMachineDiagramNotationManager.ConnectionLabelType.Name);
+				this.notationManager.hideConnectionLabelOfTransition(transition,
+						StateMachineDiagramNotationManager.ConnectionLabelType.Name);
 			});
 		});
 	}

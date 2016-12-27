@@ -13,7 +13,7 @@ public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensio
 
 	private static final int DEFAULT_ELEMENT_WIDTH = 80;
 	private static final int DEFAULT_ELEMENT_HEIGHT = 60;
-	public static final int STATE_HEADER_HEIGHT = 20;
+	public static final int STATE_HEADER_HEIGHT = 25;
 	public static final int DEFAULT_ELEMENT_BORDER = 20;
 
 	private static final int MIN_STATE_WIDTH = 40;

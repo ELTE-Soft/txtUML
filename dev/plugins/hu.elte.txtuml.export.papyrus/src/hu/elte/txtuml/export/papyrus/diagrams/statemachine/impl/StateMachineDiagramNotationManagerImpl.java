@@ -75,22 +75,28 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 
 		// bounds is set for StateMachines by default. This can cause conflicts
 		// later, hence it's eliminated
-		eliminateDefaultSizeConstraints();
+		resetSizeConstraintsOfDiagram();
 
 		EObject regionModel = regionView.getElement();
 		this.nodeMap.put(regionModel, regionView);
 	}
 
-	private void eliminateDefaultSizeConstraints() {
+	private void resetSizeConstraintsOfDiagram() {
 		Runnable runnable = () -> {
 			Node stateMachineView = (Node) diagram.getChildren().get(0);
 			List<Node> regionsForStateMachine = regionsForState(stateMachineView);
 			Node regionView = regionsForStateMachine.get(0);
 			stateMachineView.setLayoutConstraint(NotationFactory.eINSTANCE.createBounds());
+			
 			((Node) stateMachineView.getChildren().get(0))
 					.setLayoutConstraint(NotationFactory.eINSTANCE.createBounds());
+			
+			((Bounds) ((Node) stateMachineView.getChildren().get(0)).getLayoutConstraint())
+					.setHeight(StateMachineDiagramPixelDimensionProvider.STATE_HEADER_HEIGHT);
+			
 			((Node) stateMachineView.getChildren().get(1))
 					.setLayoutConstraint(NotationFactory.eINSTANCE.createBounds());
+			
 			regionView.setLayoutConstraint(NotationFactory.eINSTANCE.createBounds());
 		};
 
@@ -155,7 +161,8 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 		String hint = ((IHintedType) elementType).getSemanticHint();
 
 		Runnable runnable = () -> {
-			Edge edge = (Edge) ViewService.getInstance().createEdge(elementType, this.diagram, hint, ViewUtil.APPEND, DIAGRAM_PREFERENCES_HINT);
+			Edge edge = (Edge) ViewService.getInstance().createEdge(elementType, this.diagram, hint, ViewUtil.APPEND,
+					DIAGRAM_PREFERENCES_HINT);
 			edge.setElement(transition);
 			edge.setSource(sourceView);
 			edge.setTarget(targetView);
@@ -247,11 +254,11 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 
 	@Override
 	public void hideConnectionLabelOfTransition(Transition transition, ConnectionLabelType connectionLabelType) {
-		Runnable runnable = () ->{
+		Runnable runnable = () -> {
 			Edge node = this.edgeMap.get(transition);
 			@SuppressWarnings("unchecked")
 			List<Node> nodes = node.getPersistedChildren();
-	
+
 			for (Node child : nodes) {
 				if (child.getType().equals(String.valueOf(connectionLabelType.getVisualID()))) {
 					child.setVisible(false);

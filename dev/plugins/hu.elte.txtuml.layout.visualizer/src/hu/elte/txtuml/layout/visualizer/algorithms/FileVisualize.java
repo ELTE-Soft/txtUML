@@ -224,8 +224,8 @@ public class FileVisualize {
 		Integer verticalDimension = Math.abs(topleft.getY() - bottomright.getY()) + 1;
 		Integer horizontalDimension = Math.abs(bottomright.getX() - topleft.getX()) + 1;
 
-		Integer verticalShift = Math.abs(bottomright.getY());
-		Integer horizontalShift = Math.abs(topleft.getX());
+		Integer verticalShift = -1*bottomright.getY();
+		Integer horizontalShift = -1*topleft.getX();
 
 		String[][] result = new String[verticalDimension][horizontalDimension];
 		for (int i = 0; i < horizontalDimension; ++i)
@@ -257,7 +257,7 @@ public class FileVisualize {
 				}
 			}
 		}
-
+/**/
 		for (RectangleObject box : objects) {
 			Point nameLocation = Point.Add(Point.Add(box.getPosition(), Direction.east), Direction.south);
 			String name = box.getName().length() >= 2 ? box.getName().substring(0, 2) : PIXEL_OBJECT;
@@ -265,19 +265,23 @@ public class FileVisualize {
 
 			if (box.hasInner()) {
 				for (Point peri : box.getPerimiterPoints()) {
-					if (result[verticalShift + peri.getY()][horizontalShift + peri.getX()] == PIXEL_EMPTY) {
-						result[verticalShift + peri.getY()][horizontalShift + peri.getX()] = PIXEL_OBJECT;
+					int y = verticalShift + peri.getY();
+					int x = horizontalShift + peri.getX()-1;
+					if (result[y][x] == PIXEL_EMPTY) {
+						result[y][x] = PIXEL_OBJECT;
 					}
 				}
 			} else {
 				for (Point poi : box.getPoints()) {
-					if (result[verticalShift + poi.getY()][horizontalShift + poi.getX()] == PIXEL_EMPTY) {
-						result[verticalShift + poi.getY()][horizontalShift + poi.getX()] = PIXEL_OBJECT;
+					int y = verticalShift + poi.getY();
+					int x = horizontalShift + poi.getX();
+					if (result[y][x] == PIXEL_EMPTY) {
+						result[y][x] = PIXEL_OBJECT;
 					}
 				}
 			}
 		}
-
+//*/
 		// Flip diagram
 		for (int i = 0; i < (verticalDimension / 2); ++i) {
 			String[] row = result[result.length - 1 - i];

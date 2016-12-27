@@ -34,8 +34,9 @@ public class StateMachineDiagramElementsArranger extends AbstractDiagramElements
 				.max().getAsInt();
 		int BottomMost = this.report.getNodes().stream().map(node -> node.getBottomRight().getY())
 				.mapToInt(Integer::intValue).min().getAsInt();
-		int width = rightMost - leftMost + 2*StateMachineDiagramPixelDimensionProvider.DEFAULT_ELEMENT_BORDER;
-		int height = TopMost - BottomMost + 2*StateMachineDiagramPixelDimensionProvider.DEFAULT_ELEMENT_BORDER;
+		int width = rightMost - leftMost + 2 * StateMachineDiagramPixelDimensionProvider.DEFAULT_ELEMENT_BORDER;
+		int height = TopMost - BottomMost + 2 * StateMachineDiagramPixelDimensionProvider.DEFAULT_ELEMENT_BORDER
+				+ StateMachineDiagramPixelDimensionProvider.STATE_HEADER_HEIGHT;
 		return new Rectangle(0, 0, width, height);
 	}
 }
