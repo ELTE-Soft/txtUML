@@ -9,7 +9,6 @@ import hu.elte.txtuml.export.uml2.activity.apicalls.CreateLinkActionExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.DeleteActionExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.EqualsCallExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.GetSignalExporter
-import hu.elte.txtuml.export.uml2.activity.apicalls.IgnoredAPICallExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.LogActionExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.PrimitiveToStringExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.ReadLinkActionExporter
@@ -52,6 +51,7 @@ import hu.elte.txtuml.export.uml2.activity.statement.IfExporter
 import hu.elte.txtuml.export.uml2.activity.statement.ReturnStatementExporter
 import hu.elte.txtuml.export.uml2.activity.statement.VariableDeclarationExporter
 import hu.elte.txtuml.export.uml2.activity.statement.WhileExporter
+import hu.elte.txtuml.export.uml2.fmu.FMUEnvironmentExporter
 import hu.elte.txtuml.export.uml2.statemachine.ChoiceStateExporter
 import hu.elte.txtuml.export.uml2.statemachine.InitStateExporter
 import hu.elte.txtuml.export.uml2.statemachine.StateExporter
@@ -98,6 +98,7 @@ import org.eclipse.jdt.core.dom.IVariableBinding
 import org.eclipse.jdt.core.dom.IfStatement
 import org.eclipse.jdt.core.dom.InfixExpression
 import org.eclipse.jdt.core.dom.MethodInvocation
+import org.eclipse.jdt.core.dom.Modifier
 import org.eclipse.jdt.core.dom.Name
 import org.eclipse.jdt.core.dom.NullLiteral
 import org.eclipse.jdt.core.dom.NumberLiteral
@@ -121,7 +122,7 @@ import org.eclipse.uml2.uml.PackageableElement
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
 import org.eclipse.uml2.uml.VisibilityKind
-import org.eclipse.jdt.core.dom.Modifier
+import hu.elte.txtuml.export.uml2.activity.apicalls.IgnoredAPICallExporter
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -215,7 +216,7 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 			IPackageFragment:
 				#[new PackageExporter(this)]
 			ITypeBinding:
-				#[new StdlibClassExporter(this), new ClassExporter(this), new AssociationExporter(this),
+				#[new FMUEnvironmentExporter(this), new StdlibClassExporter(this), new ClassExporter(this), new AssociationExporter(this),
 					new AssociationEndExporter(this), new StateExporter(this), new InitStateExporter(this),
 					new ChoiceStateExporter(this), new DataTypeExporter(this), new TransitionExporter(this),
 					new SignalExporter(this), new InPortExporter(this), new OutPortExporter(this),

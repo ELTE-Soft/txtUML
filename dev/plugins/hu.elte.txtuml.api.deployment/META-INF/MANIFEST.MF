@@ -4,6 +4,7 @@ Bundle-Name: txtUML API for CPP deployment description
 Bundle-SymbolicName: hu.elte.txtuml.api.deployment
 Bundle-Version: 0.5.1.qualifier
 Bundle-Vendor: ELTE
-Export-Package: hu.elte.txtuml.api.deployment
+Export-Package: hu.elte.txtuml.api.deployment,
+ hu.elte.txtuml.api.deployment.fmi
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: hu.elte.txtuml.api.model

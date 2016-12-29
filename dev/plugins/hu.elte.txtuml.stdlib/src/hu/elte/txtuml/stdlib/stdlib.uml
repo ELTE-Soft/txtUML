@@ -666,4 +666,5 @@
       </ownedParameter>
     </ownedOperation>
   </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_YY_usLx_Eea1b9Eyy2ugAQ" name="FMUEnvironment"/>
 </uml:Model>

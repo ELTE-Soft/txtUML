@@ -14,4 +14,5 @@ Require-Bundle: hu.elte.txtuml.api.model,
  org.eclipse.core.resources,
  org.eclipse.jface,
  org.eclipse.ui.ide,
- org.eclipse.jdt.launching
+ org.eclipse.jdt.launching,
+ hu.elte.txtuml.api.deployment

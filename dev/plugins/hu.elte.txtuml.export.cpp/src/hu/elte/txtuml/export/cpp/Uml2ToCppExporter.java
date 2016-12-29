@@ -44,7 +44,7 @@ public class Uml2ToCppExporter {
 	private static final String DEFAULT_TARGET_EXECUTABLE = "main";
 	private static final String DEFAULT_DEPLOYMENT_NAME = "deployment";
 	private static final String DEFAULT_ASSOCIATIONS_NAME = "associations";
-	private static final String PROJECT_NAME = "hu.elte.txtuml.export.cpp";
+	public static final String PROJECT_NAME = "hu.elte.txtuml.export.cpp";
 	private static final String CPP_FILES_FOLDER_NAME = "cpp-runtime";
 
 	private ClassExporter classExporter;

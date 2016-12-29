@@ -1,5 +1,6 @@
 package hu.eltesoft.moonlander.model;
 
+import hu.elte.txtuml.api.deployment.fmi.FMUEnvironment;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
@@ -12,7 +13,7 @@ public class MoonLander extends ModelClass {
 		
 	}
 	
-	public MoonLander(World world) {
+	public MoonLander(FMUEnvironment world) {
 		add();
 		Action.link(LanderWorld.world.class, world, LanderWorld.lander.class, this);
 	}
@@ -29,7 +30,7 @@ public class MoonLander extends ModelClass {
 		
 		@Override
 		public void entry() {
-			World world = assoc(LanderWorld.world.class).selectAny();
+			FMUEnvironment world = assoc(LanderWorld.world.class).selectAny();
 			Action.send(new ControlSignal(0), world);
 		}
 	}
@@ -60,9 +61,10 @@ public class MoonLander extends ModelClass {
 		
 		@Override
 		public void entry() {
-			World world = assoc(LanderWorld.world.class).selectAny();
+			ControlCycleSignal signal = getTrigger(ControlCycleSignal.class);
+			FMUEnvironment world = assoc(LanderWorld.world.class).selectAny();
 			// better because of rounding in generated code
-			Action.send(new ControlSignal(world.v*world.h*world.h/500000 - (-world.v*world.h/1000) - world.v/2), world);
+			Action.send(new ControlSignal(signal.v*signal.h*signal.h/500000 - (-signal.v*signal.h/1000) - signal.v/2), world);
 		}
 	}
 	
@@ -93,7 +95,7 @@ public class MoonLander extends ModelClass {
 		
 		@Override
 		public void entry() {
-			World world = assoc(LanderWorld.world.class).selectAny();
+			FMUEnvironment world = assoc(LanderWorld.world.class).selectAny();
 			Action.send(new ControlSignal(0), world);
 		}
 	}
@@ -113,7 +115,7 @@ public class MoonLander extends ModelClass {
 		
 		@Override
 		public void entry() {
-			World world = assoc(LanderWorld.world.class).selectAny();
+			FMUEnvironment world = assoc(LanderWorld.world.class).selectAny();
 			Action.send(new ControlSignal(0), world);
 		}
 	}
