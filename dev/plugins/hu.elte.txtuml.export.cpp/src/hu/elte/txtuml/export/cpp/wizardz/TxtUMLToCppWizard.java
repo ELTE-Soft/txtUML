@@ -3,8 +3,10 @@ package hu.elte.txtuml.export.cpp.wizardz;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.wizard.Wizard;
 
+import hu.elte.txtuml.export.fmu.EnvironmentExporter;
 import hu.elte.txtuml.export.fmu.FMUConfig;
 import hu.elte.txtuml.export.fmu.FMUExportGovernor;
+import hu.elte.txtuml.export.fmu.FMUResourceHandler;
 import hu.elte.txtuml.export.fmu.ModelDescriptionExporter;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
@@ -54,8 +56,12 @@ public class TxtUMLToCppWizard extends Wizard {
 				FMUExportGovernor fmuGovernor = new FMUExportGovernor();
 				FMUConfig fmuConfig = fmuGovernor.extractFMUConfig(txtUMLProject, fmuDescription);
 				ModelDescriptionExporter descriptionExporter = new ModelDescriptionExporter();
+				EnvironmentExporter environmentExporter = new EnvironmentExporter();
+				FMUResourceHandler resourceHandler = new FMUResourceHandler();
 				IProject proj = ProjectUtils.getProject(txtUMLProject);
 				descriptionExporter.export(proj.getLocation(), fmuConfig);
+				environmentExporter.export(proj.getLocation(), fmuConfig);
+				resourceHandler.copyResources(proj.getLocation());
 			}
 			
 		} catch (Exception e) {
