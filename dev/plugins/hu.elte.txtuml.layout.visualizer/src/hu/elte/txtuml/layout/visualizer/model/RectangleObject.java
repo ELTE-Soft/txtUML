@@ -122,27 +122,28 @@ public class RectangleObject {
 
 		return result;
 	}
-	
+
 	/**
 	 * Returns the center points of each side.
+	 * 
 	 * @return the center points of each side.
 	 */
 	public Set<Point> getCenterPoints() {
 		Set<Point> result = new HashSet<Point>();
-		
+
 		int horizontalHalf = _width / 2;
 		int verticalHalf = _height / 2;
-		
+
 		result.add(Point.Add(getBottomRight(), Point.Multiply(Direction.west, horizontalHalf)));
 		result.add(Point.Add(getBottomRight(), Point.Multiply(Direction.north, verticalHalf)));
-		
-		if(_width % 2 == 0)
+
+		if (_width % 2 == 0)
 			horizontalHalf = horizontalHalf - 1;
 		result.add(Point.Add(getTopLeft(), Point.Multiply(Direction.east, horizontalHalf)));
-		if(_height % 2 == 0)
+		if (_height % 2 == 0)
 			verticalHalf = verticalHalf - 1;
 		result.add(Point.Add(getTopLeft(), Point.Multiply(Direction.south, verticalHalf)));
-		
+
 		return result;
 	}
 
@@ -201,8 +202,10 @@ public class RectangleObject {
 	 */
 	public Integer getWidth() {
 		if (hasInner() && getInner().hasValidLayout()) {
-			int border = (int)Math.round(getInner().getPixelBorder()/getInner().getPixelGridHorizontal());
-			return getInner().getWidth() + 2+2*border;
+			double ratio = getInner().getPixelGridHorizontal();
+			int leftborder = (int) Math.round(getInner().getLeftPixelBorder() / ratio);
+			int rightborder = (int) Math.round(getInner().getLeftPixelBorder() / ratio);
+			return getInner().getWidth() + 2 + leftborder + rightborder;
 		}
 
 		return _width;
@@ -227,9 +230,11 @@ public class RectangleObject {
 	 */
 	public Integer getHeight() {
 		if (hasInner() && getInner().hasValidLayout()) {
-			int border = (int)Math.round(getInner().getPixelBorder()/getInner().getPixelGridVertical());
-			int header = (int)Math.round(getInner().getPixelHeader()/getInner().getPixelGridVertical());
-			return getInner().getHeight() + 2+2*border+header;
+			double ratio = getInner().getPixelGridVertical();
+			int topborder = (int) Math.round(getInner().getTopPixelBorder() / ratio);
+			int bottomborder = (int) Math.round(getInner().getBottomPixelBorder() / ratio);
+			int header = (int) Math.round(getInner().getPixelHeader() / getInner().getPixelGridVertical());
+			return getInner().getHeight() + 2 + topborder + bottomborder + header;
 		}
 
 		return _height;
@@ -248,7 +253,9 @@ public class RectangleObject {
 	}
 
 	/**
-	 * Whether the pixel values (any) are set on this {@link RectangleObject} or not.
+	 * Whether the pixel values (any) are set on this {@link RectangleObject} or
+	 * not.
+	 * 
 	 * @return true if set, false else.
 	 */
 	public boolean isPixelDimensionsPresent() {
@@ -323,28 +330,29 @@ public class RectangleObject {
 
 	/**
 	 * Returns the number of links connected to this {@link RectangleObject}.
+	 * 
 	 * @return the number of links connected to this {@link RectangleObject}.
 	 */
-	public Integer getLinkNumber()
-	{
+	public Integer getLinkNumber() {
 		return _linkNumber;
 	}
-	
+
 	/**
 	 * Adds to the number of links connected to this {@link RectangleObject}.
-	 * @param value number to add.
+	 * 
+	 * @param value
+	 *            number to add.
 	 */
-	public void addLinkNumber(Integer value)
-	{
+	public void addLinkNumber(Integer value) {
 		_linkNumber = _linkNumber + value;
 	}
-	
+
 	/**
 	 * Returns whether this {@link RectangleObject} is a special type of box or
 	 * not.
 	 * 
 	 * @return whether this {@link RectangleObject} is a special type of box or
-	 * not.
+	 *         not.
 	 */
 	public Boolean isSpecial() {
 		return !_special.equals(SpecialBox.None);
@@ -352,6 +360,7 @@ public class RectangleObject {
 
 	/**
 	 * Returns the {@link SpecialBox} type of this {@link RectangleObject}.
+	 * 
 	 * @return the {@link SpecialBox} type of this {@link RectangleObject}.
 	 */
 	public SpecialBox getSpecial() {
@@ -360,7 +369,9 @@ public class RectangleObject {
 
 	/**
 	 * Sets the {@link SpecialBox} type of this {@link RectangleObject}.
-	 * @param spec the {@link SpecialBox} type of this {@link RectangleObject}.
+	 * 
+	 * @param spec
+	 *            the {@link SpecialBox} type of this {@link RectangleObject}.
 	 */
 	public void setSpecial(SpecialBox spec) {
 		_special = spec;

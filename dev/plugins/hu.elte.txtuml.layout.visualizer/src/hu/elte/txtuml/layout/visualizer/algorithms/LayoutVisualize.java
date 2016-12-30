@@ -521,10 +521,14 @@ public class LayoutVisualize {
 			
 			if(box.hasInner())
 			{
-				Integer topGap = (int)Math.round(dim.TopExtra / box.getInner().getPixelGridVertical());
-				Integer leftGap = (int)Math.round(dim.LeftExtra / box.getInner().getPixelGridHorizontal());
+				Integer topGap = (int)Math.round(dim.TopBorder / box.getInner().getPixelGridVertical());
+				Integer leftGap = (int)Math.round(dim.LeftBorder / box.getInner().getPixelGridHorizontal());
 				
-				box.getInner().setPixelBorder(dim.LeftExtra);
+				box.getInner().setLeftPixelBorder(dim.LeftBorder);
+				box.getInner().setTopPixelBorder(dim.TopBorder);
+				box.getInner().setBottomPixelBorder(dim.BottomBorder);
+				box.getInner().setRightPixelBorder(dim.RightBorder);
+				
 				box.getInner().setPixelHeader(dim.Header);
 				addGap(box, topGap, leftGap);
 			}

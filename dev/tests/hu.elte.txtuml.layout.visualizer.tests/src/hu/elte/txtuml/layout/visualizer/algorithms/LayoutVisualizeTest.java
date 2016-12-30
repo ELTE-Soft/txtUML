@@ -32,13 +32,13 @@ public class LayoutVisualizeTest {
 		@Override
 		public Dimension getPixelDimensionsFor(RectangleObject box) {
 			if (!box.hasInner()) {
-				return new Dimension(40, 40, 0, 0, 0);
+				return new Dimension(40, 40);
 			} else // if(box.hasInner())
 			{
 				Integer wpx = (int)(box.getInner().getWidth() * box.getInner().getPixelGridHorizontal());
 				Integer hpx = (int)(box.getInner().getHeight() * box.getInner().getPixelGridVertical());
 
-				return new Dimension(wpx, hpx, 0, 0, 0);
+				return new Dimension(wpx, hpx);
 			}
 		}
 		

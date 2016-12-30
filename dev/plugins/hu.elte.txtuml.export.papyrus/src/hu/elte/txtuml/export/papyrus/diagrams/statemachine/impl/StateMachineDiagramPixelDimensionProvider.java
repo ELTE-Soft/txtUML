@@ -56,11 +56,11 @@ public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensio
 		}
 
 		//return normalizeSizes(box, width, height, border); // normalizing the size can introduce corrupted pixel/grid ratios
-		return new Dimension(width, height, border, border, header);
+		return new Dimension(width, height, border, header);
 	}
 
 	private Dimension normalizeSizes(RectangleObject box, int width, int height, 
-			int border) {
+			int border, int header) {
 
 		Element elem = this.elementsMapper.findNode(box.getName());
 		if (elem != null && elem instanceof State) {
@@ -74,6 +74,6 @@ public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensio
 			height = PSEUDOSTATE_HEIGHT;
 		}
 		
-		return new Dimension(width, height, border, border, 0);
+		return new Dimension(width, height, border, header);
 	}
 }

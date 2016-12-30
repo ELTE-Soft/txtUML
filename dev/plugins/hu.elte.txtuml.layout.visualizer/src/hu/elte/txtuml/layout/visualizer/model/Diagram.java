@@ -26,7 +26,13 @@ public class Diagram {
 	 */
 	public Set<LineAssociation> Assocs;
 
-	private int pxBorder;
+	private int pxLeftBorder;
+	
+	private int pxRightBorder;
+	
+	private int pxTopBorder;
+	
+	private int pxBottomBorder;
 	
 	private int pxHeader;
 	// end Variables
@@ -198,23 +204,65 @@ public class Diagram {
 		result += ")";
 
 		return result;
+	}	
+
+	/**
+	 * @return left border thickness of the diagram in pixels
+	 */
+	public int getLeftPixelBorder() {
+		return pxLeftBorder;
+	}
+
+	/**
+	 * @param pxBorder sets the left border thickness of the diagram in pixels
+	 */
+	public void setLeftPixelBorder(int pxBorder) {
+		this.pxLeftBorder = pxBorder;
+	}
+
+	/**
+	 * @return right border thickness of the diagram in pixels
+	 */
+	public int getRightPixelBorder() {
+		return pxRightBorder;
+	}
+
+	/**
+	 * @param pxBorder sets the right border thickness of the diagram in pixels
+	 */
+	public void setRightPixelBorder(int pxBorder) {
+		this.pxRightBorder = pxBorder;
 	}
 	
 
 	/**
-	 * @return border thickness of the diagram in pixels
+	 * @return top border thickness of the diagram in pixels
 	 */
-	public int getPixelBorder() {
-		return pxBorder;
+	public int getTopPixelBorder() {
+		return pxTopBorder;
 	}
 
 	/**
-	 * @param pxBorder sets the border thickness of the diagram in pixels
+	 * @param pxBorder sets the top border thickness of the diagram in pixels
 	 */
-	public void setPixelBorder(int pxBorder) {
-		this.pxBorder = pxBorder;
+	public void setTopPixelBorder(int pxBorder) {
+		this.pxTopBorder = pxBorder;
+	}
+	
+
+	/**
+	 * @return bottom border thickness of the diagram in pixels
+	 */
+	public int getBottomPixelBorder() {
+		return pxBottomBorder;
 	}
 
+	/**
+	 * @param pxBorder sets the bottom border thickness of the diagram in pixels
+	 */
+	public void setBottomPixelBorder(int pxBorder) {
+		this.pxBottomBorder = pxBorder;
+	}
 	/**
 	 * @return the header thickness of the diagram
 	 */
