@@ -35,7 +35,7 @@ public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensio
 		int width;
 		int height;
 		int border = 0;
-
+		int header = 0;
 		if (!box.hasInner()) {
 			if (box.isSpecial() && box.getSpecial().equals(SpecialBox.Initial)) {
 				width = PSEUDOSTATE_WIDTH;
@@ -48,13 +48,15 @@ public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensio
 		} else // if(box.hasInner())
 		{
 			border = DEFAULT_ELEMENT_BORDER;
-			width = box.getInner().getWidth() * box.getInner().getPixelGridHorizontal();
+			width = (int) Math.round(box.getInner().getWidth() * box.getInner().getPixelGridHorizontal());
 			width += 2 * border;
-			height = box.getInner().getHeight() * box.getInner().getPixelGridVertical() + STATE_HEADER_HEIGHT;
+			height = (int) Math.round(box.getInner().getHeight() * box.getInner().getPixelGridVertical() + STATE_HEADER_HEIGHT);
 			height += 2 * border;
+			header = STATE_HEADER_HEIGHT;
 		}
 
-		return normalizeSizes(box, width, height, border);
+		//return normalizeSizes(box, width, height, border); // normalizing the size can introduce corrupted pixel/grid ratios
+		return new Dimension(width, height, border, border, header);
 	}
 
 	private Dimension normalizeSizes(RectangleObject box, int width, int height, 
@@ -72,6 +74,6 @@ public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensio
 			height = PSEUDOSTATE_HEIGHT;
 		}
 		
-		return new Dimension(width, height, border, border);
+		return new Dimension(width, height, border, border, 0);
 	}
 }

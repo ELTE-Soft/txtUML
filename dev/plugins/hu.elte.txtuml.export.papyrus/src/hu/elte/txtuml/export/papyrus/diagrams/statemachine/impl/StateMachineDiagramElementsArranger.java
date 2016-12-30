@@ -26,16 +26,15 @@ public class StateMachineDiagramElementsArranger extends AbstractDiagramElements
 	}
 
 	private Rectangle calculateBoundsOfStatemachine() {
-		int leftMost = this.report.getNodes().stream().map(node -> node.getTopLeft().getX()).mapToInt(Integer::intValue)
-				.min().getAsInt();
-		int rightMost = this.report.getNodes().stream().map(node -> node.getBottomRight().getX())
+		int leftMost = this.elementbounds.values().stream().map(rect -> rect.getTopLeft().x).mapToInt(Integer::intValue).min().getAsInt();
+		int rightMost = this.elementbounds.values().stream().map(node -> node.getBottomRight().x)
 				.mapToInt(Integer::intValue).max().getAsInt();
-		int TopMost = this.report.getNodes().stream().map(node -> node.getTopLeft().getY()).mapToInt(Integer::intValue)
-				.max().getAsInt();
-		int BottomMost = this.report.getNodes().stream().map(node -> node.getBottomRight().getY())
-				.mapToInt(Integer::intValue).min().getAsInt();
+		int TopMost = this.elementbounds.values().stream().map(node -> node.getTopLeft().y).mapToInt(Integer::intValue)
+				.min().getAsInt();
+		int BottomMost = this.elementbounds.values().stream().map(node -> node.getBottomRight().y)
+				.mapToInt(Integer::intValue).max().getAsInt();
 		int width = rightMost - leftMost + 2 * StateMachineDiagramPixelDimensionProvider.DEFAULT_ELEMENT_BORDER;
-		int height = TopMost - BottomMost + 2 * StateMachineDiagramPixelDimensionProvider.DEFAULT_ELEMENT_BORDER
+		int height = BottomMost - TopMost + 2 * StateMachineDiagramPixelDimensionProvider.DEFAULT_ELEMENT_BORDER
 				+ StateMachineDiagramPixelDimensionProvider.STATE_HEADER_HEIGHT;
 		return new Rectangle(0, 0, width, height);
 	}

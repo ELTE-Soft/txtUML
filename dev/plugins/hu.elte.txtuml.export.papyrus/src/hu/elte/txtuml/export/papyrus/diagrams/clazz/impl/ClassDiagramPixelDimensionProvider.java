@@ -42,7 +42,6 @@ public class ClassDiagramPixelDimensionProvider implements IPixelDimensionProvid
 			height = height > MAX_CLASS_HEIGHT ? MAX_CLASS_HEIGHT : height;
 		}
 		
-		//TODO
-		return new Dimension(width, height, 0, 0);
+		return new Dimension(width, height, 0, 0, 0);
 	}
 }

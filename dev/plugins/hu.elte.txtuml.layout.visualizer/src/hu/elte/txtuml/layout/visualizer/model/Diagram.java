@@ -26,6 +26,9 @@ public class Diagram {
 	 */
 	public Set<LineAssociation> Assocs;
 
+	private int pxBorder;
+	
+	private int pxHeader;
 	// end Variables
 
 	// Ctors
@@ -97,7 +100,7 @@ public class Diagram {
 	 * 
 	 * @return the Horizontal pixel-grid ratio.
 	 */
-	public Integer getPixelGridHorizontal() {
+	public Double getPixelGridHorizontal() {
 		return getPixelGridRatio(box -> box.getWidth(), box -> box.getPixelWidth());
 	}
 
@@ -106,7 +109,7 @@ public class Diagram {
 	 * 
 	 * @return the Vertical pixel-grid ratio.
 	 */
-	public Integer getPixelGridVertical() {
+	public Double getPixelGridVertical() {
 		return getPixelGridRatio(box -> box.getHeight(), box -> box.getPixelHeight());
 	}
 
@@ -196,12 +199,41 @@ public class Diagram {
 
 		return result;
 	}
+	
 
+	/**
+	 * @return border thickness of the diagram in pixels
+	 */
+	public int getPixelBorder() {
+		return pxBorder;
+	}
+
+	/**
+	 * @param pxBorder sets the border thickness of the diagram in pixels
+	 */
+	public void setPixelBorder(int pxBorder) {
+		this.pxBorder = pxBorder;
+	}
+
+	/**
+	 * @return the header thickness of the diagram
+	 */
+	public int getPixelHeader() {
+		return pxHeader;
+	}
+
+	/**
+	 * @param pxHeader sets the header thickness of the diagram in pixels
+	 */
+	public void setPixelHeader(int pxHeader) {
+		this.pxHeader = pxHeader;
+	}
+	
 	// end Publics
 
 	// Privates
 
-	private Integer getPixelGridRatio(Function<RectangleObject, Integer> gridSelector,
+	private double getPixelGridRatio(Function<RectangleObject, Integer> gridSelector,
 			Function<RectangleObject, Integer> pixelSelector) {
 		Integer gridSum = 0;
 		Integer pixelSum = 0;
@@ -210,10 +242,10 @@ public class Diagram {
 			if (box.isPixelDimensionsPresent()) {
 				gridSum += (gridSelector.apply(box) - 1);
 				pixelSum += pixelSelector.apply(box);
-			} 
+			}
 		}
 
-		Integer result = (int)Math.round((double)pixelSum / (double)gridSum);
+		double result = (double)pixelSum / (double)gridSum;
 		
 		if(result <= 1)
 			return 1;
@@ -253,7 +285,6 @@ public class Diagram {
 
 		return new Boundary(top, bottom, left, right);
 	}
-
+	
 	// end Privates
-
 }

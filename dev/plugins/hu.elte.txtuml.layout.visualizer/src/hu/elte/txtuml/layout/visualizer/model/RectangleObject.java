@@ -200,8 +200,9 @@ public class RectangleObject {
 	 * @return Integer of the grid-width of the object.
 	 */
 	public Integer getWidth() {
-		if (_width == -1 && hasInner() && getInner().hasValidLayout()) {
-			return getInner().getWidth() + 2;
+		if (hasInner() && getInner().hasValidLayout()) {
+			int border = (int)Math.round(getInner().getPixelBorder()/getInner().getPixelGridHorizontal());
+			return getInner().getWidth() + 2+2*border;
 		}
 
 		return _width;
@@ -225,8 +226,10 @@ public class RectangleObject {
 	 * @return Integer of the grid-height of the object.
 	 */
 	public Integer getHeight() {
-		if (_height == -1 && hasInner() && getInner().hasValidLayout()) {
-			return getInner().getHeight() + 2;
+		if (hasInner() && getInner().hasValidLayout()) {
+			int border = (int)Math.round(getInner().getPixelBorder()/getInner().getPixelGridVertical());
+			int header = (int)Math.round(getInner().getPixelHeader()/getInner().getPixelGridVertical());
+			return getInner().getHeight() + 2+2*border+header;
 		}
 
 		return _height;

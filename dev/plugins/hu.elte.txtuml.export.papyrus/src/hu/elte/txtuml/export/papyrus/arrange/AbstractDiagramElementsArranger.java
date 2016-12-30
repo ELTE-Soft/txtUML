@@ -25,8 +25,8 @@ import hu.elte.txtuml.utils.Logger;
 public abstract class AbstractDiagramElementsArranger implements IDiagramElementsArranger {
 
 	protected IPixelDimensionProvider pixelDimensionProvider;
-	private Map<Element, Rectangle> elementbounds = new HashMap<>();
-	private Map<Element, List<Point>> connectionRoutes = new HashMap<>();
+	protected Map<Element, Rectangle> elementbounds = new HashMap<>();
+	protected Map<Element, List<Point>> connectionRoutes = new HashMap<>();
 	private Map<Element, String> connectionSourceAnchors = new HashMap<>();
 	private Map<Element, String> connectionTargetAnchors = new HashMap<>();
 	public DiagramExportationReport report;
@@ -91,8 +91,7 @@ public abstract class AbstractDiagramElementsArranger implements IDiagramElement
 		List<RectangleObject> arrayList = new ArrayList<>();
 		arrangedObjects.forEach(object -> {
 			if (object.hasInner()) {
-				arrayList.addAll(flattenArrangedObjectsRecursively(object.getInner().Objects));
-				
+				arrayList.addAll(flattenArrangedObjectsRecursively(object.getInner().Objects));			
 			}
 			
 			arrayList.add(object);

@@ -17,37 +17,47 @@ public interface IPixelDimensionProvider {
 		/**
 		 * Width of the box in pixels.
 		 */
-		public Integer Width;
+		public final Integer Width;
 		/**
 		 * Height of the box in pixels.
 		 */
-		public Integer Height;
+		public final Integer Height;
 		/**
-		 * If the box contains inner elements 
-		 * this amount of pixels must be left empty
-		 * at the inner diagram's top.
+		 * If the box contains inner elements this amount of pixels must be left
+		 * empty at the inner diagram's top.
 		 */
-		public Integer TopExtra;
+		public final Integer TopExtra;
 		/**
-		 * If the box contains inner elements 
-		 * this amount of pixels must be left empty
-		 * at the inner diagram's left side.
+		 * If the box contains inner elements this amount of pixels must be left
+		 * empty at the inner diagram's left side.
 		 */
-		public Integer LeftExtra;
-	
+		public final Integer LeftExtra;
+
+		/**
+		 * If the box has a header this amount of pixels is the header thickness
+		 */
+		public final Integer Header;
+
 		/**
 		 * Creates a basic Dimension object with the given parameters.
-		 * @param w Width.
-		 * @param h Height.
-		 * @param tg TopExtra
-		 * @param lg LeftExtra
+		 * 
+		 * @param w
+		 *            Width.
+		 * @param h
+		 *            Height.
+		 * @param textra
+		 *            TopExtra
+		 * @param lextra
+		 *            LeftExtra
+		 * @param header
+		 *            Header
 		 */
-		public Dimension(Integer w, Integer h, Integer tg, Integer lg)
-		{
+		public Dimension(Integer w, Integer h, Integer textra, Integer lextra, Integer header) {
 			Width = w;
 			Height = h;
-			TopExtra = tg;
-			LeftExtra = lg;
+			TopExtra = textra;
+			LeftExtra = lextra;
+			Header = header;
 		}
 	}
 

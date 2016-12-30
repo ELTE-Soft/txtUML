@@ -36,7 +36,7 @@ public class LayoutTransformer {
 	public void doTranformations(Map<?, Rectangle> objects, Map<?, List<Point>> connections) {
 		flipYAxis(objects, connections);
 		translateOrigo(objects, connections);
-		scaleUpObjects(objects, connections);
+		//scaleUpObjects(objects, connections);
 	}
 	
 	

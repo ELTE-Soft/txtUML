@@ -14,8 +14,6 @@ import hu.elte.txtuml.layout.visualizer.algorithms.boxes.ArrangeObjects;
 import hu.elte.txtuml.layout.visualizer.algorithms.links.ArrangeAssociations;
 import hu.elte.txtuml.layout.visualizer.algorithms.utils.DefaultStatements;
 import hu.elte.txtuml.layout.visualizer.algorithms.utils.Helper;
-import hu.elte.txtuml.layout.visualizer.model.utils.DiagramTreeEnumerator;
-import hu.elte.txtuml.layout.visualizer.model.utils.RectangleObjectTreeEnumerator;
 import hu.elte.txtuml.layout.visualizer.algorithms.utils.StatementHelper;
 import hu.elte.txtuml.layout.visualizer.events.ProgressEmitter;
 import hu.elte.txtuml.layout.visualizer.events.ProgressManager;
@@ -31,12 +29,13 @@ import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider;
 import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider.Dimension;
 import hu.elte.txtuml.layout.visualizer.model.Diagram;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
-import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Options;
 import hu.elte.txtuml.layout.visualizer.model.OverlapArrangeMode;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.layout.visualizer.model.utils.DiagramTreeEnumerator;
+import hu.elte.txtuml.layout.visualizer.model.utils.RectangleObjectTreeEnumerator;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 import hu.elte.txtuml.utils.Logger;
@@ -492,12 +491,6 @@ public class LayoutVisualize {
 		Pair<Integer, Diagram> result = recursiveLinkArrange(maxGroupId, _diagram, "");
 		_diagram = result.getSecond();
 		
-		//TODO
-		/*Integer topGap = 20 / _diagram.getPixelGridVertical();
-		Integer leftGap = 20 / _diagram.getPixelGridHorizontal();
-		
-		moveInners(_diagram, topGap, leftGap);*/
-		
 		if (_options.Logging)
 			Logger.sys.info("> Link arrange DONE!");
 
@@ -528,10 +521,12 @@ public class LayoutVisualize {
 			
 			if(box.hasInner())
 			{
-				Integer topGap = dim.TopExtra / box.getInner().getPixelGridVertical();
-				Integer leftGap = dim.LeftExtra / box.getInner().getPixelGridHorizontal();
+				Integer topGap = (int)Math.round(dim.TopExtra / box.getInner().getPixelGridVertical());
+				Integer leftGap = (int)Math.round(dim.LeftExtra / box.getInner().getPixelGridHorizontal());
 				
-				addGap(box.getInner(), topGap, leftGap);
+				box.getInner().setPixelBorder(dim.LeftExtra);
+				box.getInner().setPixelHeader(dim.Header);
+				addGap(box, topGap, leftGap);
 			}
 		}
 		// Arrange of siblings
@@ -541,8 +536,14 @@ public class LayoutVisualize {
 		return new Pair<Integer, Diagram>(aa.getGId(), toLayout);
 	}
 	
-	private void addGap(Diagram inner, Integer topGap, Integer leftGap)
+	private void addGap(RectangleObject rect, Integer topGap, Integer leftGap)
 	{
+		/*
+		rect.setHeight(rect.getHeight()+topGap*2);
+		rect.setWidth(rect.getWidth()+leftGap*2);
+		*/
+		Diagram inner = rect.getInner();
+		
 		for(RectangleObject box : inner.Objects)
 		{
 			box.setPosition(new Point(box.getPosition().getX() + leftGap,
